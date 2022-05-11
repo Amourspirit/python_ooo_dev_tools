@@ -7,7 +7,7 @@ from typing import Any
 from pathlib import Path
 from ..utils import util
 # from ..lib.connect import LoSocketStart
-from ..utils import uno_util
+from ooodev.utils import uno_util
 
 
 def run_lo_py(*args: str) -> None:
