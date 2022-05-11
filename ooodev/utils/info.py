@@ -564,10 +564,52 @@ class Info:
         for service in services:
             print(f"'{service}'")
 
+
+    @overload
     @staticmethod
-    def support_service(obj: XServiceInfo, service_name: str) -> bool:
+    def support_service(obj: XServiceInfo, service: XInterface) -> bool:
+        """
+        Gets if ``obj`` supports service
+
+        Args:
+            obj (XServiceInfo): Object to check for supported service
+            service (XInterface): Any UNO interface. Intervaces start with x
+
+        Returns:
+            bool: True if obj supports service; Otherwise; False
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def support_service(obj: XServiceInfo, service: str) -> bool:
+        """
+        Gets if ``obj`` supports service
+
+        Args:
+            obj (XServiceInfo): Object to check for supported service
+            service (string): Any UNO such as 'com.sun.star.uno.XInterface'
+
+        Returns:
+            bool: True if obj supports service; Otherwise; False
+        """
+        ...
+
+    @staticmethod
+    def support_service(obj: XServiceInfo, service = None) -> bool:
+        srv = None
+        if isinstance(service, str):
+            srv = service
+        else:
+            try:
+                srv = service.__pyunointerface__
+            except AttributeError:
+                print('service does not have __pyunointerface__ attribute')
+                return False
         try:
-            return obj.supportsService(service_name)
+            return obj.supportsService(srv)
+        except AttributeError:
+            print("Object does not implement XServiceInfo")
         except Exception:
             pass
         return False
