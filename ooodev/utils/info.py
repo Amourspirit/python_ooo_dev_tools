@@ -5,10 +5,12 @@ from __future__ import annotations
 from datetime import datetime
 from pathlib import Path
 import mimetypes
+from platform import platform
 from typing import TYPE_CHECKING, Tuple, Union, List, overload, Optional
 from lxml import etree as ET
 
 from . import props as m_props
+from .sys_info import SysInfo
 
 
 Props = m_props.Props
@@ -95,6 +97,40 @@ class Info:
         names = list(names_set)
         names.sort()
         return names
+    
+    @classmethod
+    def get_font_mono_name() -> str:
+        """
+        Gets a general font such as ``Courier New`` (windows) or ``Liberation Mono``
+
+        Returns:
+            str: Font Name
+        
+        See Also:
+            `Fonts <https://wiki.documentfoundation.org/Fonts>`_ on Document Foundation’s wiki/
+        """
+        pf = SysInfo.get_platform()
+        if pf == SysInfo.PlatformEnum.WINDOWS:
+            return "Courier New"
+        else:
+            return "Liberation Mono" # Metrically compatible with Courier New
+    
+    @classmethod
+    def get_font_general_name() -> str:
+        """
+        Gets a general font such as ``Times New Roman`` (windows) or ``Liberation Serif``
+
+        Returns:
+            str: Font Name
+        
+        See Also:
+            `Fonts <https://wiki.documentfoundation.org/Fonts>`_ on Document Foundation’s wiki/
+        """
+        pf = SysInfo.get_platform()
+        if pf == SysInfo.PlatformEnum.WINDOWS:
+            return "Times New Roman"
+        else:
+            return "Liberation Serif" # Metrically compatible with Times New Roman
 
     @classmethod
     def get_reg_mods_path(cls) -> Union[str, None]:
