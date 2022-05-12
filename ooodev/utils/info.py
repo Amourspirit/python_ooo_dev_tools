@@ -2,11 +2,12 @@
 # Python conversion of Info.java by Andrew Davison, ad@fivedots.coe.psu.ac.th
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 from __future__ import annotations
+import sys
 from datetime import datetime
 from pathlib import Path
 import mimetypes
 from platform import platform
-from typing import TYPE_CHECKING, Tuple, Union, List, overload, Optional
+from typing import TYPE_CHECKING, Tuple, List, overload, Optional
 from lxml import etree as ET
 
 from . import props as m_props
@@ -41,6 +42,11 @@ if TYPE_CHECKING:
 from . import lo
 from . import file_io
 from . import props
+
+if sys.version_info >= (3, 10):
+    from typing import Union
+else:
+    from typing_extensions import Union
 
 _xml_parser = ET.XMLParser(remove_blank_text=True)
 
@@ -77,7 +83,7 @@ class Info:
     PREFERRED = 0x10000000
 
     @staticmethod
-    def get_fonts() -> Union[Tuple[FontDescriptor, ...], None]:
+    def get_fonts() -> Tuple[FontDescriptor, ...] | None:
         xtoolkit: XToolkit = lo.Lo.create_instance_mcf("com.sun.star.awt.Toolkit")
         device = xtoolkit.createScreenCompatibleDevice(0, 0)
         if device is None:
@@ -86,7 +92,7 @@ class Info:
         return device.getFontDescriptors()
 
     @classmethod
-    def get_font_name(cls) -> Union[List[str], None]:
+    def get_font_name(cls) -> List[str] | None:
         fds = cls.get_fonts()
         if fds is None:
             return None
@@ -97,7 +103,7 @@ class Info:
         names = list(names_set)
         names.sort()
         return names
-    
+
     @classmethod
     def get_font_mono_name() -> str:
         """
@@ -105,7 +111,7 @@ class Info:
 
         Returns:
             str: Font Name
-        
+
         See Also:
             `Fonts <https://wiki.documentfoundation.org/Fonts>`_ on Document Foundation’s wiki/
         """
@@ -113,8 +119,8 @@ class Info:
         if pf == SysInfo.PlatformEnum.WINDOWS:
             return "Courier New"
         else:
-            return "Liberation Mono" # Metrically compatible with Courier New
-    
+            return "Liberation Mono"  # Metrically compatible with Courier New
+
     @classmethod
     def get_font_general_name() -> str:
         """
@@ -122,7 +128,7 @@ class Info:
 
         Returns:
             str: Font Name
-        
+
         See Also:
             `Fonts <https://wiki.documentfoundation.org/Fonts>`_ on Document Foundation’s wiki/
         """
@@ -130,10 +136,10 @@ class Info:
         if pf == SysInfo.PlatformEnum.WINDOWS:
             return "Times New Roman"
         else:
-            return "Liberation Serif" # Metrically compatible with Times New Roman
+            return "Liberation Serif"  # Metrically compatible with Times New Roman
 
     @classmethod
-    def get_reg_mods_path(cls) -> Union[str, None]:
+    def get_reg_mods_path(cls) -> str | None:
         user_cfg_dir = file_io.FileIO.url_to_path(cls.get_paths("UserConfig"))
 
         try:
@@ -146,18 +152,18 @@ class Info:
 
     @overload
     @classmethod
-    def get_reg_item_prop(cls, item: str, prop: str) -> Union[str, None]:
+    def get_reg_item_prop(cls, item: str, prop: str) -> str | None:
         ...
 
     @overload
     @classmethod
-    def get_reg_item_prop(cls, item: str, prop: str, node: str) -> Union[str, None]:
+    def get_reg_item_prop(cls, item: str, prop: str, node: str) -> str | None:
         ...
 
     @classmethod
     def get_reg_item_prop(
         cls, item: str, prop: str, node: Optional[str] = None
-    ) -> Union[str, None]:
+    ) -> str | None:
         # return value from "registrymodifications.xcu"
         # e.g. "Writer/MailMergeWizard" null, "MailAddress"
         # e.g. "Logging/Settings", "org.openoffice.logging.sdbc.DriverManager", "LogLevel"
@@ -192,11 +198,11 @@ class Info:
         return value
 
     @overload
-    def get_config(node_str: str) -> Union[str, None]:
+    def get_config(node_str: str) -> str | None:
         ...
 
     @overload
-    def get_config(node_str: str, node_path: str) -> Union[object, None]:
+    def get_config(node_str: str, node_path: str) -> object | None:
         ...
 
     @classmethod
@@ -222,7 +228,7 @@ class Info:
         return None
 
     @staticmethod
-    def get_config_props(node_path: str) -> Union[XPropertySet, None]:
+    def get_config_props(node_path: str) -> XPropertySet | None:
         con_prov: XMultiServiceFactory = lo.Lo.create_instance_mcf(
             "com.sun.star.configuration.ConfigurationProvider"
         )
@@ -267,7 +273,7 @@ class Info:
         return None
 
     @classmethod
-    def get_dirs(cls, setting: str) -> Union[List[str], None]:
+    def get_dirs(cls, setting: str) -> List[str] | None:
         paths = cls.get_paths(setting)
         if paths is None:
             print(f"Cound not find paths for '{setting}'")
@@ -282,7 +288,7 @@ class Info:
         return dirs
 
     @classmethod
-    def get_office_dir(cls) -> Union[str, None]:
+    def get_office_dir(cls) -> str | None:
         """
         returns the file path to the office dir
 
@@ -304,16 +310,14 @@ class Info:
         return str(p)
 
     @classmethod
-    def get_gallery_dir(cls) -> Union[str, None]:
+    def get_gallery_dir(cls) -> str | None:
         gallery_dirs = cls.get_dirs("Gallery")
         if gallery_dirs is None:
             return None
         return gallery_dirs[0]
 
     @classmethod
-    def create_configuration_view(
-        cls, path: str
-    ) -> Union[XHierarchicalPropertySet, None]:
+    def create_configuration_view(cls, path: str) -> XHierarchicalPropertySet | None:
         con_prov: XMultiServiceFactory = lo.Lo.create_instance_mcf(
             "com.sun.star.configuration.ConfigurationProvider"
         )
@@ -333,7 +337,7 @@ class Info:
     # =================== update configuration settings ================
 
     @staticmethod
-    def set_config_props(node_path: str) -> Union[XPropertySet, None]:
+    def set_config_props(node_path: str) -> XPropertySet | None:
         con_prov: XMultiServiceFactory = lo.Lo.create_instance_mcf(
             "com.sun.star.configuration.ConfigurationProvider"
         )
@@ -380,7 +384,7 @@ class Info:
         return p.stem
 
     @staticmethod
-    def get_ext(fnm: str) -> Union[str, None]:
+    def get_ext(fnm: str) -> str | None:
         """return extenson without the ``.``"""
         if fnm == "":
             print(f"Zero length string")
@@ -411,7 +415,7 @@ class Info:
         return str(p)
 
     @staticmethod
-    def get_doc_type(fnm: str) -> Union[str, None]:
+    def get_doc_type(fnm: str) -> str | None:
         xdetect: XTypeDetection = lo.Lo.create_instance_mcf(
             "com.sun.star.document.TypeDetection"
         )
@@ -483,7 +487,7 @@ class Info:
             return False
 
     @staticmethod
-    def get_implementation_name(obj: XServiceInfo) -> Union[str, None]:
+    def get_implementation_name(obj: XServiceInfo) -> str | None:
         try:
             return obj.getImplementationName()
         except Exception as e:
@@ -532,24 +536,22 @@ class Info:
     # ------------------------ services, interfaces, methods info ----------------------
     @overload
     @classmethod
-    def get_service_names(cls) -> Union[List[str], None]:
+    def get_service_names(cls) -> List[str] | None:
         ...
 
     @overload
     @classmethod
-    def get_service_names(cls, service_name: str) -> Union[List[str], None]:
+    def get_service_names(cls, service_name: str) -> List[str] | None:
         ...
 
     @classmethod
-    def get_service_names(
-        cls, service_name: Optional[str] = None
-    ) -> Union[List[str], None]:
+    def get_service_names(cls, service_name: Optional[str] = None) -> List[str] | None:
         if service_name is None:
             return cls._get_service_names1()
         return cls._get_service_names2(service_name=service_name)
 
     @staticmethod
-    def _get_service_names1() -> Union[List[str], None]:
+    def _get_service_names1() -> List[str] | None:
         mc_factory = lo.Lo.get_component_factory()
         if mc_factory is None:
             return None
@@ -558,7 +560,7 @@ class Info:
         return service_names
 
     @staticmethod
-    def _get_service_names2(service_name: str) -> Union[List[str], None]:
+    def _get_service_names2(service_name: str) -> List[str] | None:
         names: List[str] = []
         try:
             enum_access: XContentEnumerationAccess = lo.Lo.get_component_factory()
@@ -577,7 +579,7 @@ class Info:
         return names
 
     @staticmethod
-    def get_services(obj: XServiceInfo) -> Union[List[str], None]:
+    def get_services(obj: XServiceInfo) -> List[str] | None:
         try:
             names = obj.getSupportedServiceNames()
             service_names = list(names)
@@ -599,7 +601,6 @@ class Info:
         print(f"{obj_name} Supported Services ({len(services)})")
         for service in services:
             print(f"'{service}'")
-
 
     @overload
     @staticmethod
@@ -632,7 +633,7 @@ class Info:
         ...
 
     @staticmethod
-    def support_service(obj: XServiceInfo, service = None) -> bool:
+    def support_service(obj: XServiceInfo, service=None) -> bool:
         srv = None
         if isinstance(service, str):
             srv = service
@@ -640,7 +641,7 @@ class Info:
             try:
                 srv = service.__pyunointerface__
             except AttributeError:
-                print('service does not have __pyunointerface__ attribute')
+                print("service does not have __pyunointerface__ attribute")
                 return False
         try:
             return obj.supportsService(srv)
@@ -662,7 +663,7 @@ class Info:
         return services
 
     @staticmethod
-    def get_interface_types(target: XTypeProvider) -> Union[Tuple[object, ...], None]:
+    def get_interface_types(target: XTypeProvider) -> Tuple[object, ...] | None:
         try:
             types = target.getTypes()
             return types
@@ -674,7 +675,7 @@ class Info:
         return None
 
     @staticmethod
-    def get_interfaces(type_provider: XTypeProvider) -> Union[List[str], None]:
+    def get_interfaces(type_provider: XTypeProvider) -> List[str] | None:
         try:
             types = type_provider.getTypes()
             # use a set to exclude duplicate names
@@ -700,7 +701,7 @@ class Info:
             print(f"  {s}")
 
     @staticmethod
-    def get_methods(interface_name: str) -> Union[List[str], None]:
+    def get_methods(interface_name: str) -> List[str] | None:
         """Get Interface Methods"""
         # from com.sun.star.beans.PropertyConcept import ALL
         # ctx = XSCRIPTCONTEXT.getComponentContext()
@@ -751,7 +752,7 @@ class Info:
     # -------------------------- style info --------------------------
 
     @staticmethod
-    def get_style_family_names(doc: XStyleFamiliesSupplier) -> Union[List[str], None]:
+    def get_style_family_names(doc: XStyleFamiliesSupplier) -> List[str] | None:
         try:
             name_acc = doc.getStyleFamilies()
             names = name_acc.getElementNames()
@@ -768,7 +769,7 @@ class Info:
     @staticmethod
     def get_style_container(
         doc: XStyleFamiliesSupplier, family_style_name: str
-    ) -> Union[XNameContainer, None]:
+    ) -> XNameContainer | None:
         try:
             name_acc = doc.getStyleFamilies()
             return name_acc.getByName(family_style_name)
@@ -782,7 +783,7 @@ class Info:
     @classmethod
     def get_style_names(
         cls, doc: XStyleFamiliesSupplier, family_style_name: str
-    ) -> Union[List[str], None]:
+    ) -> List[str] | None:
         style_container = cls.get_style_container(
             doc=doc, family_style_name=family_style_name
         )
@@ -796,7 +797,7 @@ class Info:
     @classmethod
     def get_style_props(
         cls, doc: XStyleFamiliesSupplier, family_style_name: str, prop_set_nm: str
-    ) -> Union[XPropertySet, None]:
+    ) -> XPropertySet | None:
         style_container = cls.get_style_container(doc, family_style_name)
         #       container is a collection of named property sets
         if style_container is None:
@@ -809,15 +810,13 @@ class Info:
         return name_props
 
     @classmethod
-    def get_page_style_props(
-        cls, doc: XStyleFamiliesSupplier
-    ) -> Union[XPropertySet, None]:
+    def get_page_style_props(cls, doc: XStyleFamiliesSupplier) -> XPropertySet | None:
         return cls.get_style_props(doc, "PageStyles", "Standard")
 
     @classmethod
     def get_paragraph_style_props(
         cls, doc: XStyleFamiliesSupplier
-    ) -> Union[XPropertySet, None]:
+    ) -> XPropertySet | None:
         return cls.get_style_props(doc, "ParagraphStyles", "Standard")
 
     # ----------------------------- document properties ----------------------
@@ -903,7 +902,7 @@ class Info:
     @staticmethod
     def get_user_defined_props(
         doc: XDocumentPropertiesSupplier,
-    ) -> Union[XPropertyContainer, None]:
+    ) -> XPropertyContainer | None:
         """Set document properties for subject, title, author"""
         try:
             dps = doc.getDocumentProperties()
@@ -941,7 +940,7 @@ class Info:
             print()
 
     @classmethod
-    def get_extension_info(cls, id: str) -> Union[List[str], None]:
+    def get_extension_info(cls, id: str) -> List[str] | None:
         pip = cls.get_pip()
         if pip is None:
             print("No package info provider found")
@@ -956,7 +955,7 @@ class Info:
         return None
 
     @classmethod
-    def get_extension_loc(cls, id: str) -> Union[str, None]:
+    def get_extension_loc(cls, id: str) -> str | None:
         pip = cls.get_pip()
         if pip is None:
             print("No package info provider found")
@@ -964,7 +963,7 @@ class Info:
         return pip.getPackageLocation(id)
 
     @staticmethod
-    def get_filter_names() -> Union[Tuple[str, ...], None]:
+    def get_filter_names() -> Tuple[str, ...] | None:
         na: XNameAccess = lo.Lo.create_instance_mcf(
             "com.sun.star.document.FilterFactory"
         )
@@ -974,7 +973,7 @@ class Info:
         return na.getElementNames()
 
     @staticmethod
-    def get_filter_props(filter_nm: str) -> Union[List[PropertyValue], None]:
+    def get_filter_props(filter_nm: str) -> List[PropertyValue] | None:
         na: XNameAccess = lo.Lo.create_instance_mcf(
             "com.sun.star.document.FilterFactory"
         )

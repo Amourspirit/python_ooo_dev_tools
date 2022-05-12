@@ -17,10 +17,14 @@ setup(
     # package_data={"": ["*.json"]},
     python_requires='>=3.7.0',
     url="https://github.com/Amourspirit/python_ooo_dev_tools",
-    packages=find_packages(exclude=['src', 'src.*', 'env', 'env.*', 'cmds', 'cmds.*']),
+    packages=find_packages(exclude=['src', 'src.*', 'env', 'env.*', 'cmds', 'cmds.*', 'tmp', 'tmp.*']),
     author=":Barry-Thomas-Paul: Moss",
     author_email='bigbytetech@gmail.com',
     license="mit",
+    install_requires=[
+        'typing_extensions>=4.2.0;python_version<"3.10"',
+        'types-unopy>=0.1.7'
+    ],
     keywords=['libreoffice', 'openoffice' 'macro', 'uno', 'ooouno', 'pyuno'],
     classifiers=[
         "License :: OSI Approved :: MIT License",
