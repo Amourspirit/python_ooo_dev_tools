@@ -3,8 +3,7 @@ from __future__ import annotations
 import sys
 from typing import TYPE_CHECKING, Iterable, List, overload, cast
 import uno
-
-
+import re
 
 from ..utils.gen_util import TableHelper
 from ..utils import lo as m_lo
@@ -58,10 +57,16 @@ if TYPE_CHECKING:
     from com.sun.star.text import XTextFrame
     from com.sun.star.frame import XModel
     from com.sun.star.lang import XComponent
-    from com.sun.star.linguistic2 import XLinguProperties
-    from com.sun.star.linguistic2 import XLinguServiceManager2
+    from com.sun.star.linguistic2 import SingleProofreadingError
     from com.sun.star.linguistic2 import XConversionDictionaryList
+    from com.sun.star.linguistic2 import XLanguageGuessing
+    from com.sun.star.linguistic2 import XLinguProperties
+    from com.sun.star.linguistic2 import XLinguServiceManager
+    from com.sun.star.linguistic2 import XLinguServiceManager2
+    from com.sun.star.linguistic2 import XProofreader
     from com.sun.star.linguistic2 import XSearchableDictionaryList
+    from com.sun.star.linguistic2 import XSpellChecker
+    from com.sun.star.linguistic2 import XThesaurus
     from com.sun.star.text import XSimpleText
     from com.sun.star.text import XTextCursor
     from com.sun.star.text import XTextField
@@ -792,12 +797,12 @@ class Write:
             print(f"    {e}")
     
     @overload
-    @classmethod
-    def add_image_shape(cls, doc: XTextDocument, cursor: XTextCursor, fnm: str) -> None:...
+    @staticmethod
+    def add_image_shape(doc: XTextDocument, cursor: XTextCursor, fnm: str) -> None:...
     
     @overload
-    @classmethod
-    def add_image_shape(cls, doc: XTextDocument, cursor: XTextCursor, fnm: str, width: int, height: int) -> None:...
+    @staticmethod
+    def add_image_shape(doc: XTextDocument, cursor: XTextCursor, fnm: str, width: int, height: int) -> None:...
     
 
     @classmethod
@@ -1028,3 +1033,133 @@ class Write:
         return Lo.create_instance_mcf("com.sun.star.linguistic2.LinguProperties")
 
     # ---------------- Linguistics: spell checking --------------
+
+    @staticmethod
+    def load_spell_checker() -> XSpellChecker | None:
+        lingo_mgr: XLinguServiceManager = Lo.create_instance_mcf("com.sun.star.linguistic2.LinguServiceManager")
+        if lingo_mgr is None:
+            print("No linguistics manager found")
+            return None
+        return lingo_mgr.getSpellChecker()
+    
+    @classmethod
+    def spell_sentence(cls, sent: str, speller:XSpellChecker) -> int:
+        # https://tinyurl.com/y6o8doh2
+        words = re.split('\W+', sent)
+        count = 0
+        for word in words:
+            is_correct = cls.spell_word(word, speller)
+            count = count + (0 if is_correct else 1)
+        return count
+    
+    @staticmethod
+    def spell_word(word: str, speller: XSpellChecker) -> bool:
+        loc = Locale("en", "US", "")
+        alts = speller.spell(word, loc, tuple())
+        if alts is not None:
+            print(f"* '{word}' is unknown. Try:")
+            alt_words = alts.getAlternatives()
+            Lo.print_names(alt_words)
+            return False
+        return True
+    
+    # ---------------- Linguistics: thesaurus --------------
+    
+    @staticmethod
+    def load_thesaurus() -> XThesaurus:
+        lingo_mgr: XLinguServiceManager = Lo.create_instance_mcf("com.sun.star.linguistic2.LinguServiceManager")
+        if lingo_mgr is None:
+            print("No linguistics manager found")
+            return None
+        return lingo_mgr.getThesaurus()
+    
+    @staticmethod
+    def print_meaning(word: str, thesaurus: XThesaurus) -> int:
+        loc = Locale("en", "US", "")
+        meanings = thesaurus.queryMeanings(word, loc, tuple())
+        if meanings is None:
+            print(f"'{word}' NOT found int thesaurus")
+            print()
+            return 0
+        m_len = len(meanings)
+        print(f"'{word}' found in thesaurus; number of meanings: {m_len}")
+        
+        for i, meaning in enumerate(meanings):
+            print(f"{i+1}. Meaning: {meaning.getMeaning()}")
+            synonyms = meaning.querySynonyms()
+            print(f" No. of  synonyms: {len(synonyms)}")
+            for synonym in synonyms:
+                print(f"    {synonym}")
+            print()
+        return m_len
+    
+    # ---------------- Linguistics: grammar checking --------------
+    
+    @staticmethod
+    def load_proofreader() -> XProofreader:
+        return Lo.create_instance_mcf("com.sun.star.linguistic2.Proofreader")
+    
+    @classmethod
+    def proof_sentence(cls, sent: str, proofreader: XProofreader) -> int:
+        loc = Locale("en", "US", "")
+        pr_res = proofreader.doProofreading("1", sent, loc, 0, len(sent), tuple())
+        num_errs = 0
+        if pr_res is not None:
+            errs = pr_res.aErrors
+            if len(errs) > 0:
+                for err in errs:
+                    cls.print_proof_error(err)
+                    num_errs += 1
+        return num_errs
+    
+    @staticmethod
+    def print_proof_error(string:str, err: SingleProofreadingError) -> None:
+        e_end = err.nErrorStart + err.nErrorLength
+        err_txt = string[err.nErrorStart:e_end]
+        print(f"G* {err.aShortComment} in: '{err_txt}'")
+        if err.aSuggestions > 0:
+            print(f"  Suggested change: '{err.aSuggestions[0]}'")
+        print()
+    
+    # ---------------- Linguistics: location guessing --------------
+    
+    @staticmethod
+    def guess_locale(test_str: str) -> Locale | None:
+        guesser: XLanguageGuessing = Lo.create_instance_mcf("com.sun.star.linguistic2.LanguageGuessing")
+        if guesser is None:
+            print("No language guesser found")
+            return None
+        return guesser.guessPrimaryLanguage(test_str, 0, len(test_str))
+    
+    @staticmethod
+    def print_locale(loc: Locale) -> None:
+        if loc is not None:
+            print(f"Locale lang: '{loc.Language}'; country: '{loc.Country}'; variant: '{loc.Variant}'")
+    
+    # ---------------- Linguistics dialogs and menu items --------------
+    
+    @staticmethod
+    def open_sent_check_options() -> None:
+        """open Options - Language Settings - English sentence checking"""
+        pip = Info.get_pip()
+        lang_ext = pip.getPackageLocation("org.openoffice.en.hunspell.dictionaries")
+        print(f"Lang Ext: {lang_ext}")
+        url = f"{lang_ext}/dialog/en.xdl"
+        props = Props.make_props(OptionsPageURL=url)
+        Lo.dispatch_cmd(cmd="OptionsTreeDialog", props=props)
+        Lo.wait(2000)
+    
+    @staticmethod
+    def open_spell_grammar_dialog() -> None:
+        """activate dialog in  Tools > Speling and Grammar..."""
+        Lo.dispatch_cmd("SpellingAndGrammarDialog")
+        Lo.wait(2000)
+    
+    @staticmethod
+    def toggle_auto_spell_check() -> None:
+        Lo.dispatch_cmd("SpellOnline")
+    
+    @staticmethod
+    def open_thesaurus_dialog() -> None:
+        Lo.dispatch_cmd("ThesaurusDialog")
+    
