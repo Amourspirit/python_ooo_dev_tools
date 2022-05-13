@@ -1,5 +1,9 @@
 {
     "python.formatting.provider": "black",
+    "[python]": {
+        "editor.formatOnPaste": false,
+        "editor.formatOnSaveMode": "file"
+    },
     "python.defaultInterpreterPath": "${workspaceRoot}/env/bin/python",
     "autoDocstring.docstringFormat": "google",
     "workbench.colorCustomizations": {

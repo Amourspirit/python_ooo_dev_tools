@@ -3,9 +3,10 @@
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 
 from __future__ import annotations
+import sys
 from datetime import datetime
 import time
-from typing import TYPE_CHECKING, Iterable, Optional, List, Tuple, Union, overload
+from typing import TYPE_CHECKING, Iterable, Optional, List, Tuple, overload, TypeVar, Type
 from urllib.parse import urlparse
 from .connect import ConnectBase, LoPipeStart, LoSocketStart
 from com.sun.star.lang import DisposedException
@@ -21,7 +22,7 @@ from . import file_io as m_file_io
 from . import xml_util as m_xml_util
 from . import info as m_info
 
-
+T = TypeVar('T')
 Props = m_props.Props
 FileIO = m_file_io.FileIO
 XML = m_xml_util.XML
@@ -46,6 +47,11 @@ if TYPE_CHECKING:
     from com.sun.star.uno import XComponentContext
     from com.sun.star.uno import XInterface
     from com.sun.star.util import XCloseable
+
+if sys.version_info >= (3, 10):
+    from typing import Union
+else:
+    from typing_extensions import Union
 
 
 class Lo:
@@ -124,6 +130,22 @@ class Lo:
     is_office_terminated: bool = False
 
     lo_inst: ConnectBase = None
+    
+    @staticmethod
+    def qi(atype:Type[T], obj:object) -> T | None:
+        """
+        Generic method that test if an object supports an interface.
+
+        Args:
+            atype (T): Interface type such as XInterface
+            o (object): Object to test for interface support.
+
+        Returns:
+            T | None: Return obj if interface is supported: Otherwise, None
+        """
+        if Info.support_service(obj, atype):
+            return obj
+        return None
 
     @classmethod
     def get_context(cls) -> XComponentContext:
@@ -152,7 +174,7 @@ class Lo:
 
     # region interface object creation
     @classmethod
-    def create_instance_msf(cls, service_name: str) -> Union[XInterface, None]:
+    def create_instance_msf(cls, service_name: str) -> XInterface | None:
         if cls.ms_factory is None:
             print("No document found")
             return None
@@ -165,7 +187,7 @@ class Lo:
 
     @overload
     @classmethod
-    def create_instance_mcf(cls, service_name: str) -> Union[XInterface, None]:
+    def create_instance_mcf(cls, service_name: str) -> XInterface | None:
         """
         Create an interface object of class aType from the named service
 
@@ -180,7 +202,7 @@ class Lo:
     @classmethod
     def create_instance_mcf(
         cls, service_name: str, args: Tuple[object, ...]
-    ) -> Union[XInterface, None]:
+    ) -> XInterface | None:
         """
         Create an interface object of class aType from the named service
 
@@ -195,7 +217,7 @@ class Lo:
     @classmethod
     def create_instance_mcf(
         cls, service_name: str, args: Optional[Tuple[object, ...]] = None
-    ) -> Union[XInterface, None]:
+    ) -> XInterface | None:
         #  create an interface object of class aType from the named service;
         #  uses XComponentContext and 'new' XMultiComponentFactory
         #  so only a bridge to office is needed
@@ -335,21 +357,21 @@ class Lo:
     @classmethod
     def open_flat_doc(
         cls, fnm: str, doc_type: str, loader: XComponentLoader
-    ) -> Union[XComponent, None]:
+    ) -> XComponent | None:
         nn = XML.get_flat_fiter_name(doc_type=doc_type)
         print(f"Flat filter Name: {nn}")
         return cls.open_doc(fnm, loader, Props.make_props(Hidden=True))
 
     @overload
     @classmethod
-    def open_doc(cls, fnm: str, loader: XComponentLoader) -> Union[XComponent, None]:
+    def open_doc(cls, fnm: str, loader: XComponentLoader) -> XComponent | None:
         ...
 
     @overload
     @classmethod
     def open_doc(
         cls, fnm: str, loader: XComponentLoader, props: Iterable[PropertyValue]
-    ) -> Union[XComponent, None]:
+    ) -> XComponent | None:
         ...
 
     @classmethod
@@ -358,7 +380,7 @@ class Lo:
         fnm: str,
         loader: XComponentLoader,
         props: Optional[Iterable[PropertyValue]] = None,
-    ) -> Union[XComponent, None]:
+    ) -> XComponent | None:
         if fnm is None:
             print("Filename is null")
             return None
@@ -434,14 +456,14 @@ class Lo:
 
     @overload
     @staticmethod
-    def create_doc(doc_type: str, loader: XComponentLoader) -> Union[XComponent, None]:
+    def create_doc(doc_type: str, loader: XComponentLoader) -> XComponent | None:
         ...
 
     @overload
     @staticmethod
     def create_doc(
         doc_type: str, loader: XComponentLoader, props: Iterable[PropertyValue]
-    ) -> Union[XComponent, None]:
+    ) -> XComponent | None:
         ...
 
     @staticmethod
@@ -449,7 +471,7 @@ class Lo:
         doc_type: str,
         loader: XComponentLoader,
         props: Optional[Iterable[PropertyValue]] = None,
-    ) -> Union[XComponent, None]:
+    ) -> XComponent | None:
         if props is None:
             props = Props.make_props(Hidden=True)
         print(f"Creating Office document {doc_type}")
@@ -465,7 +487,7 @@ class Lo:
     @classmethod
     def create_macro_doc(
         cls, doc_type: str, loader: XComponentLoader
-    ) -> Union[XComponent, None]:
+    ) -> XComponent | None:
         return cls.create_doc(
             doc_type=doc_type,
             loader=loader,
@@ -477,7 +499,7 @@ class Lo:
     @staticmethod
     def create_doc_from_template(
         template_path: str, loader: XComponentLoader
-    ) -> Union[XComponent, None]:
+    ) -> XComponent | None:
         if not FileIO.is_openable(template_path):
             print(f"Template file can not be opened: '{template_path}'")
             return None
@@ -740,7 +762,7 @@ class Lo:
     # ================= initialization via Addon-supplied context ====================
 
     @staticmethod
-    def addon_initialize(addon_xcc: XComponentContext) -> Union[XComponent, None]:
+    def addon_initialize(addon_xcc: XComponentContext) -> XComponent | None:
         xcc = addon_xcc
         if xcc is None:
             print("Could not access component context")
@@ -766,7 +788,7 @@ class Lo:
     # ============= initialization via script context ======================
 
     @staticmethod
-    def script_initialize(sc: XScriptContext) -> Union[XComponent, None]:
+    def script_initialize(sc: XScriptContext) -> XComponent | None:
         if sc is None:
             print("Script Context is null")
             return None
@@ -836,7 +858,7 @@ class Lo:
         return f"vnd.sun.star.script:Foo/Foo.{item_name}?language=Java&location=share"
 
     @staticmethod
-    def extract_item_name(uno_cmd: str) -> Union[str, None]:
+    def extract_item_name(uno_cmd: str) -> str | None:
         try:
             foo_pos = uno_cmd.index("Foo.")
         except ValueError:
@@ -951,7 +973,7 @@ class Lo:
     # endregion document opening
 
     @staticmethod
-    def capitalize(s: str) -> Union[str, None]:
+    def capitalize(s: str) -> str | None:
         if s is None or len(s) == 0:
             return None
         return s.capitalize()
@@ -999,7 +1021,7 @@ class Lo:
         print()
 
     @staticmethod
-    def get_container_names(con: XIndexAccess) -> Union[List[str], None]:
+    def get_container_names(con: XIndexAccess) -> List[str] | None:
         if con is None:
             print("Container is null")
             return None
@@ -1019,7 +1041,7 @@ class Lo:
         return names_list
 
     @staticmethod
-    def find_container_props(con: XIndexAccess, nm: str) -> Union[XPropertySet, None]:
+    def find_container_props(con: XIndexAccess, nm: str) -> XPropertySet | None:
         if con is None:
             print("Container is null")
             return None
