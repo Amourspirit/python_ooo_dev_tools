@@ -12,8 +12,8 @@ from ..utils import file_io as m_file_io
 from ..utils import props as m_props
 from ..utils import images as m_images
 
-from com.sun.star.awt import FontWeight # type: ignore
-from com.sun.star.awt.FontSlant import ITALIC as FS_ITALIC # type: ignore
+from com.sun.star.awt import FontWeight
+from com.sun.star.awt.FontSlant import ITALIC as FS_ITALIC # enum values
 from com.sun.star.awt import Size # struct
 from com.sun.star.beans import XPropertySet
 from com.sun.star.container import XEnumerationAccess
@@ -22,14 +22,14 @@ from com.sun.star.drawing import XDrawPageSupplier
 from com.sun.star.drawing import XShape
 from com.sun.star.lang import XServiceInfo
 from com.sun.star.lang import Locale # struct class
-from com.sun.star.linguistic2.DictionaryType import POSITIVE as DT_POSITIVE, NEGATIVE as DT_NEGATIVE, MIXED as DT_MIXED # type: ignore enum values
-from com.sun.star.style import NumberingType # type: ignore
-from com.sun.star.style.BreakType import PAGE_AFTER as BT_PAGE_AFTER, COLUMN_AFTER as BT_COLUMN_AFTER # type: ignore
-from com.sun.star.style.ParagraphAdjust import CENTER as PA_CENTER, RIGHT as PA_RIGHT # type: ignore
+from com.sun.star.linguistic2.DictionaryType import POSITIVE as DT_POSITIVE, NEGATIVE as DT_NEGATIVE, MIXED as DT_MIXED # enum values
+from com.sun.star.style import NumberingType # const
+from com.sun.star.style.BreakType import PAGE_AFTER as BT_PAGE_AFTER, COLUMN_AFTER as BT_COLUMN_AFTER # enum values
+from com.sun.star.style.ParagraphAdjust import CENTER as PA_CENTER, RIGHT as PA_RIGHT # enum values
 from com.sun.star.table import BorderLine # struct
-from com.sun.star.text import ControlCharacter # type: ignore
-from com.sun.star.text import HoriOrientation #type: ignore Const
-from com.sun.star.text import VertOrientation #type: ignore const
+from com.sun.star.text import ControlCharacter
+from com.sun.star.text import HoriOrientation
+from com.sun.star.text import VertOrientation
 from com.sun.star.text import XBookmarksSupplier
 from com.sun.star.text import XPageCursor
 from com.sun.star.text import XParagraphCursor
@@ -40,10 +40,10 @@ from com.sun.star.text import XTextDocument
 from com.sun.star.text import XTextGraphicObjectsSupplier
 from com.sun.star.text import XTextViewCursor
 from com.sun.star.text import XWordCursor
-from com.sun.star.text.PageNumberType import CURRENT as PN_CURRENT # type: ignore
-from com.sun.star.view.PaperFormat import A4 as PF_A4 # type: ignore
-from com.sun.star.text.TextContentAnchorType import AS_CHARACTER # type: ignore
-from com.sun.star.text.TextContentAnchorType import AT_PAGE #type: ignore
+from com.sun.star.text.PageNumberType import CURRENT as PN_CURRENT # enum values
+from com.sun.star.view.PaperFormat import A4 as PF_A4 # enum values
+from com.sun.star.text.TextContentAnchorType import AS_CHARACTER # enum value
+from com.sun.star.text.TextContentAnchorType import AT_PAGE # enum value
 from com.sun.star.uno import Exception as UnoException
 
 if TYPE_CHECKING:
@@ -307,8 +307,11 @@ class Write:
         elif 'text_content' in kwargs:
             kargs["second"] = kwargs['text_content']
             i = 3
-        for i, arg in enumerate(args):
-            kargs[ordered_keys[i]] = arg
+        for j, arg in enumerate(args):
+            kargs[ordered_keys[j]] = arg
+        if len(kargs) != 2:
+            print('invalid number of arguments for append()')
+            return
         if i == 0:
             # str, int or, XTextContent
             sec = kargs['second']

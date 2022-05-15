@@ -8,11 +8,12 @@ from datetime import datetime
 import time
 from typing import TYPE_CHECKING, Iterable, Optional, List, Tuple, overload, TypeVar, Type
 from urllib.parse import urlparse
+import uno
 from .connect import ConnectBase, LoPipeStart, LoSocketStart
 from com.sun.star.lang import DisposedException
 from com.sun.star.util import CloseVetoException
 from com.sun.star.io import IOException
-from com.sun.star.document import MacroExecMode  # type: ignore
+from com.sun.star.document import MacroExecMode
 
 
 # import module and not module content to avoid circular import issue.
@@ -43,6 +44,7 @@ if TYPE_CHECKING:
     from com.sun.star.lang import XMultiComponentFactory
     from com.sun.star.lang import XComponent
     from com.sun.star.lang import XMultiServiceFactory
+    from com.sun.star.lang import XTypeProvider
     from com.sun.star.script.provider import XScriptContext
     from com.sun.star.uno import XComponentContext
     from com.sun.star.uno import XInterface
@@ -132,19 +134,26 @@ class Lo:
     lo_inst: ConnectBase = None
     
     @staticmethod
-    def qi(atype:Type[T], obj:object) -> T | None:
+    def qi(atype:Type[T], obj: XTypeProvider) -> T | None:
         """
-        Generic method that test if an object supports an interface.
+        Generic method that test if an object implements an interface.
 
         Args:
             atype (T): Interface type such as XInterface
-            o (object): Object to test for interface support.
+            o (object): Object to test for interface.
 
         Returns:
             T | None: Return obj if interface is supported: Otherwise, None
         """
-        if Info.support_service(obj, atype):
-            return obj
+        if uno.isInterface(atype):
+            uno_t = uno.getTypeByName(atype.__pyunointerface__)
+            try:
+                types = obj.getTypes()
+            except Exception:
+                return None
+            for t in types:
+                if t == uno_t:
+                    return obj
         return None
 
     @classmethod
@@ -844,7 +853,7 @@ class Lo:
             print(f"Could not create dispatch helper for command {cmd}")
             return False
         try:
-            helper.executeDispatch(frame, (".uno:" + cmd), "", 0, props)
+            helper.executeDispatch(frame, f".uno:{cmd}", "", 0, props)
             return True
         except Exception as e:
             print(f"Could not dispatch '{cmd}'")
@@ -924,7 +933,7 @@ class Lo:
     # ================== other utils =============================
 
     @staticmethod
-    def wait(ms: int) -> None:
+    def delay(ms: int) -> None:
         """
         Delay execution for a given number of milli-seconds.
 
@@ -936,6 +945,8 @@ class Lo:
             return
         sec = ms / 1000
         time.sleep(sec)
+
+    wait = delay
 
     @staticmethod
     def is_null_or_empty(s: str) -> bool:

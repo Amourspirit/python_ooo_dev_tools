@@ -65,6 +65,21 @@ class Props:
 
         Returns:
             Tuple[PropertyValue, ...]: Tuple of Properties
+        
+        Notes:
+            String properties such as ``Zoom.Value`` can be pass by constructing a dictionary
+            and passing dictionary via exapnsion.
+            
+            Example Expansion
+
+            .. code::
+            
+                p_dic = {
+                    "Zoom.Value": 0,
+                    "Zoom.ValueSet": 28703,
+                    "Zoom.Type": 1
+                    }
+                props = Props.make_props(**p_dic)
         """
         lst = []
         for k, v in kwargs.items():
