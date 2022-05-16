@@ -17,7 +17,7 @@ setup(
     # package_data={"": ["*.json"]},
     python_requires='>=3.7.0',
     url="https://github.com/Amourspirit/python_ooo_dev_tools",
-    packages=find_packages(exclude=['src', 'src.*', 'env', 'env.*', 'cmds', 'cmds.*', 'tmp', 'tmp.*']),
+    packages=find_packages(exclude=['src', 'src.*', 'env', 'env.*', 'cmds', 'cmds.*',"*.tests", "*.tests.*", "tests.*", "tests", 'tmp', 'tmp.*']),
     author=":Barry-Thomas-Paul: Moss",
     author_email='bigbytetech@gmail.com',
     license="mit",

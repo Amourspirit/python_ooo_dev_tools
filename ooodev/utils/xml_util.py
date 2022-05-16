@@ -6,9 +6,7 @@ from xml.dom import minidom
 import urllib.request
 from xml.dom.minicompat import NodeList
 from lxml import etree as ET
-from . import lo as m_lo
-
-Lo = m_lo.Lo
+from . import lo
 
 _xml_parser = ET.XMLParser(remove_blank_text=True)
 
@@ -273,7 +271,7 @@ class XML:
         data = [[1] * num_cols for _ in range(num_rows + 1)]
         # put column strings in first row of list
         for col, col_id in enumerate(col_ids):
-            data[0][col] = Lo.capitalize(col_ids[col])
+            data[0][col] = lo.Lo.capitalize(col_ids[col])
 
         for i, node in enumerate(row_nodes):
             # extract all the column strings for ith row
@@ -390,13 +388,13 @@ class XML:
         Returns:
             str: Flat XML filter name.
         """
-        if doc_type == Lo.WRITER_STR:
+        if doc_type == lo.Lo.WRITER_STR:
             return "OpenDocument Text Flat XML"
-        elif doc_type == Lo.CALC_STR:
+        elif doc_type == lo.Lo.CALC_STR:
             return "OpenDocument Spreadsheet Flat XML"
-        elif doc_type == Lo.DRAW_STR:
+        elif doc_type == lo.Lo.DRAW_STR:
             return "OpenDocument Drawing Flat XML"
-        elif doc_type == Lo.IMPRESS_STR:
+        elif doc_type == lo.Lo.IMPRESS_STR:
             return "OpenDocument Presentation Flat XML"
         else:
             print("No Flat XML filter for this document type; using Flat text")

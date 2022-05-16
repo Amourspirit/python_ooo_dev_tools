@@ -15,9 +15,9 @@ from com.sun.star.uno import RuntimeException
 
 # import module and not module content to avoid circular import issue.
 # https://stackoverflow.com/questions/22187279/python-circular-importing
-from . import lo as m_lo
+from . import lo as mLo
 
-Lo = m_lo.Lo
+# Lo = m_lo.Lo
 
 if TYPE_CHECKING:
     from com.sun.star.beans import XPropertySet
@@ -286,7 +286,7 @@ class Props:
         if type is None:
             print('type is None')
             return
-        xtype_detect: Union[XTypeDetection, XNameAccess] = Lo.create_instance_mcf("com.sun.star.document.TypeDetection")
+        xtype_detect: Union[XTypeDetection, XNameAccess] = mLo.Lo.create_instance_mcf("com.sun.star.document.TypeDetection")
         if xtype_detect is None:
             print('No type detector reference')
             return

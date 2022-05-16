@@ -14,20 +14,17 @@ from com.sun.star.lang import DisposedException
 from com.sun.star.util import CloseVetoException
 from com.sun.star.io import IOException
 from com.sun.star.document import MacroExecMode
+from com.sun.star.util import XCloseable
+from contextlib import contextmanager
 
-
-# import module and not module content to avoid circular import issue.
-# https://stackoverflow.com/questions/22187279/python-circular-importing
-from . import props as m_props
-from . import file_io as m_file_io
-from . import xml_util as m_xml_util
-from . import info as m_info
 
 T = TypeVar('T')
-Props = m_props.Props
-FileIO = m_file_io.FileIO
-XML = m_xml_util.XML
-Info = m_info.Info
+# import module and not module content to avoid circular import issue.
+# https://stackoverflow.com/questions/22187279/python-circular-importing
+from . import props as mProps
+from . import file_io as mFileIO
+from . import xml_util as mXML
+from . import info as mInfo
 
 if TYPE_CHECKING:
     from com.sun.star.beans import PropertyValue
@@ -48,15 +45,39 @@ if TYPE_CHECKING:
     from com.sun.star.script.provider import XScriptContext
     from com.sun.star.uno import XComponentContext
     from com.sun.star.uno import XInterface
-    from com.sun.star.util import XCloseable
 
 if sys.version_info >= (3, 10):
     from typing import Union
 else:
     from typing_extensions import Union
 
-
 class Lo:
+    class Loader:
+        """
+        Context Manager for Loader
+        
+        Example:
+        
+            .. code::
+            
+                with Lo.Loader() as loader:
+                    doc = Write.create_doc(loader)
+                    ...
+        """
+        def __init__(self, using_pipes=False):
+            """
+            Create a connection to office
+
+            Args:
+                using_pipes (bool, optional): If True the pipes are used to connect to office; Otherwise, connection is made with 'host' and 'port'. Defaults to False.
+            """
+            self.loader = Lo.load_office(using_pipes=using_pipes)
+        
+        def __enter__(self) -> XComponentLoader:
+            return self.loader
+        
+        def __exit__(self, exc_type, exc_val, exc_tb):
+            Lo.close_office()
     # region docType ints
     UNKNOWN = 0
     WRITER = 1
@@ -147,13 +168,16 @@ class Lo:
         """
         if uno.isInterface(atype):
             uno_t = uno.getTypeByName(atype.__pyunointerface__)
-            try:
-                types = obj.getTypes()
-            except Exception:
-                return None
-            for t in types:
-                if t == uno_t:
-                    return obj
+            q_obj = obj.queryInterface(uno_t)
+            if q_obj:
+                return q_obj
+            # try:
+            #     types = obj.getTypes()
+            # except Exception:
+            #     return None
+            # for t in types:
+            #     if t == uno_t:
+            #         return obj
         return None
 
     @classmethod
@@ -260,15 +284,16 @@ class Lo:
         """
         return a_component.getParent()
 
+
     # region Start Office
     @overload
-    @classmethod
-    def load_office(cls) -> XComponentLoader:
+    @staticmethod
+    def load_office() -> XComponentLoader:
         ...
 
     @overload
-    @classmethod
-    def load_office(cls, using_pipes: bool) -> XComponentLoader:
+    @staticmethod
+    def load_office(using_pipes: bool) -> XComponentLoader:
         ...
 
     @classmethod
@@ -367,9 +392,9 @@ class Lo:
     def open_flat_doc(
         cls, fnm: str, doc_type: str, loader: XComponentLoader
     ) -> XComponent | None:
-        nn = XML.get_flat_fiter_name(doc_type=doc_type)
+        nn = mXML.XML.get_flat_fiter_name(doc_type=doc_type)
         print(f"Flat filter Name: {nn}")
-        return cls.open_doc(fnm, loader, Props.make_props(Hidden=True))
+        return cls.open_doc(fnm, loader, mProps.Props.make_props(Hidden=True))
 
     @overload
     @classmethod
@@ -395,9 +420,9 @@ class Lo:
             return None
 
         if props is None:
-            props = Props.make_props(Hidden=True)
+            props = mProps.Props.make_props(Hidden=True)
         open_file_url = None
-        if not FileIO.is_openable(fnm):
+        if not mFileIO.FileIO.is_openable(fnm):
             if cls.is_url(fnm):
                 print(f"Will treat filename as a URL: '{fnm}'")
                 open_file_url = fnm
@@ -405,7 +430,7 @@ class Lo:
                 return None
         else:
             print(f"Opening {fnm}")
-            open_file_url = FileIO.fnm_to_url(fnm)
+            open_file_url = mFileIO.FileIO.fnm_to_url(fnm)
             if open_file_url is None:
                 return None
 
@@ -418,7 +443,7 @@ class Lo:
 
     @classmethod
     def open_readonly_doc(cls, fnm: str, loader: XComponentLoader) -> XComponent:
-        return cls.open_doc(fnm, loader, Props.make_props(Hidden=True, ReadOnly=True))
+        return cls.open_doc(fnm, loader, mProps.Props.make_props(Hidden=True, ReadOnly=True))
 
     # ======================== document creation ==============
 
@@ -482,7 +507,7 @@ class Lo:
         props: Optional[Iterable[PropertyValue]] = None,
     ) -> XComponent | None:
         if props is None:
-            props = Props.make_props(Hidden=True)
+            props = mProps.Props.make_props(Hidden=True)
         print(f"Creating Office document {doc_type}")
         doc: XMultiServiceFactory = None
         try:
@@ -500,7 +525,7 @@ class Lo:
         return cls.create_doc(
             doc_type=doc_type,
             loader=loader,
-            props=Props.make_props(
+            props=mProps.Props.make_props(
                 Hidden=False, MacroExecutionMode=MacroExecMode.ALWAYS_EXECUTE
             ),
         )
@@ -509,15 +534,15 @@ class Lo:
     def create_doc_from_template(
         template_path: str, loader: XComponentLoader
     ) -> XComponent | None:
-        if not FileIO.is_openable(template_path):
+        if not mFileIO.FileIO.is_openable(template_path):
             print(f"Template file can not be opened: '{template_path}'")
             return None
         print(f"Opening template: '{template_path}'")
-        template_url = FileIO.fnm_to_url(fnm=template_path)
+        template_url = mFileIO.FileIO.fnm_to_url(fnm=template_path)
         if template_url is None:
             return None
 
-        props = Props.make_props(Hidden=True, AsTemplate=True)
+        props = mProps.Props.make_props(Hidden=True, AsTemplate=True)
         doc = None
         try:
             doc = loader.loadComponentFromURL(template_url, "_blank", 0, props)
@@ -555,7 +580,7 @@ class Lo:
     def save_doc(
         cls, doc: XStorable, fnm: str, password: str = None, format: str = None
     ) -> None:
-        doc_type = Info.report_doc_type(doc)
+        doc_type = mInfo.Info.report_doc_type(doc)
         kargs = {"fnm": fnm, "store": doc, "doc_type": doc_type}
         if password is not None:
             kargs["password"] = password
@@ -579,7 +604,7 @@ class Lo:
     def store_doc(
         cls, store: XStorable, doc_type: int, fnm: str, password: Optional[str] = None
     ) -> None:
-        ext = Info.get_ext(fnm)
+        ext = mInfo.Info.get_ext(fnm)
         frmt = "Text"
         if ext is None:
             "Assuming a text format"
@@ -736,13 +761,13 @@ class Lo:
         print(f"Using format {format}")
 
         try:
-            save_file_url = FileIO.fnm_to_url(fnm)
+            save_file_url = mFileIO.FileIO.fnm_to_url(fnm)
             if save_file_url is None:
                 return
             if password is None:
-                store_props = Props.make_props(Overwrite=True, FilterName=format)
+                store_props = mProps.Props.make_props(Overwrite=True, FilterName=format)
             else:
-                store_props = Props.make_props(
+                store_props = mProps.Props.make_props(
                     Overwrite=True, FilterName=format, Password=password
                 )
             store.storeToURL(save_file_url, store_props)
@@ -751,20 +776,80 @@ class Lo:
 
     # ======================== document closing ==============
 
+    @overload
     @staticmethod
     def close(closeable: XCloseable) -> None:
+        """
+        Closes a document.
+
+        Args:
+            closeable (XCloseable): Object that implements XCloseable interface.
+        """
+        ...
+    
+    @overload
+    @staticmethod
+    def close(closeable: XCloseable, deliver_ownership: bool) -> None:
+        """
+        Closes a document.
+
+        Args:
+            closeable (XCloseable): Object that implements XCloseable interface.
+            deliver_ownership (bool): True delegates the ownership of this closing object to
+                anyone which throw the CloseVetoException.
+                This new owner has to close the closing object again if his still running
+                processes will be finished.
+                False let the ownership at the original one which called the close() method.
+                They must react for possible CloseVetoExceptions such as when document needs saving
+                and try it again at a later time. This can be useful for a generic UI handling.
+        """
+        ...
+
+    @staticmethod
+    def close(closeable: XCloseable, deliver_ownership=False) -> None:
         if closeable is None:
             return
         print("Closing the document")
         try:
-            closeable.close(False)
+            closeable.close(deliver_ownership)
         except CloseVetoException:
             print("Close was vetoed")
 
+
+    @overload
+    @staticmethod
+    def close_doc(doc: object) -> None:
+        """
+        Closes document.
+
+        Args:
+            doc (XCloseable): Closeable doccument
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def close_doc(doc: object, deliver_ownership: bool) -> None:
+        """
+        Closes document.
+
+        Args:
+            doc (XCloseable): Closeable doccument
+            deliver_ownership (bool): True delegates the ownership of this closing object to
+                anyone which throw the CloseVetoException.
+                This new owner has to close the closing object again if his still running
+                processes will be finished.
+                False let the ownership at the original one which called the close() method.
+                They must react for possible CloseVetoExceptions such as when document needs saving
+                and try it again at a later time. This can be useful for a generic UI handling.
+        """
+        ...
+
     @classmethod
-    def close_doc(cls, doc: XCloseable) -> None:
+    def close_doc(cls, doc: object, deliver_ownership=False) -> None:
         try:
-            cls.close(doc)
+            closeable = cls.qi(XCloseable, doc)
+            cls.close(closeable)
         except DisposedException:
             print("Document close failed since Office link disposed")
 
@@ -889,7 +974,7 @@ class Lo:
             print("No office connection found")
             return
         try:
-            ts = Info.get_interface_types(obj)
+            ts = mInfo.Info.get_interface_types(obj)
             title = "Object"
             if ts is not None and len(ts) > 0:
                 title = ts[0].getTypeName() + " " + title

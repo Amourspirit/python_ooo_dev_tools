@@ -11,6 +11,7 @@ import zipfile
 from pathlib import Path
 from urllib.parse import urlparse
 from typing import Iterable, List, TYPE_CHECKING
+import uno
 from com.sun.star.uno import Exception as UnoException
 
 if TYPE_CHECKING:
@@ -20,14 +21,14 @@ if TYPE_CHECKING:
     from com.sun.star.io import XTextInputStream
     from com.sun.star.io import XActiveDataSink
 
-from . import lo as m_lo
+from . import lo as Util
 
 if sys.version_info >= (3, 10):
     from typing import Union
 else:
     from typing_extensions import Union
 
-Lo = m_lo.Lo
+# Lo = m_lo.Lo
 
 _UTIL_PATH = str(Path(__file__).parent)
 
@@ -272,7 +273,7 @@ class FileIO:
     # ----------------------- zip access ---------------------------------------
     @classmethod
     def zip_access(cls, fnm: str) -> XZipFileAccess:
-        return Lo.create_instance_mcf(
+        return Util.Lo.create_instance_mcf(
             "com.sun.star.packages.zip.ZipFileAccess", (cls.fnm_to_url(fnm),)
         )
 
@@ -283,7 +284,7 @@ class FileIO:
         zfa: XNameAccess = cls.zip_access(fnm)
         names = zfa.getElementNames()
         print(f"\nZippendContents of '{fnm}'")
-        Lo.print_names(names, 1)
+        Util.Lo.print_names(names, 1)
 
     @staticmethod
     def unzip_file(zfa: XZipFileAccess, fnm: str) -> None:
@@ -294,7 +295,7 @@ class FileIO:
         lines = []
         lines_arr = None
         try:
-            tis: XTextInputStream | XActiveDataSink = Lo.create_instance_mcf(
+            tis: XTextInputStream | XActiveDataSink = Util.Lo.create_instance_mcf(
                 "com.sun.star.io.TextInputStream"
             )
             tis.setInputStream(in_stream)
