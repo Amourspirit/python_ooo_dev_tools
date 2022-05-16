@@ -1,24 +1,20 @@
 # coding: utf-8
 from __future__ import annotations
 import os
-from com.sun.star.connection import NoConnectException
+import sys
 from abc import ABC, abstractstaticmethod
-
 from pathlib import Path
 import subprocess
 import tempfile
-import os
-import sys
 import signal
 from typing import Union, TYPE_CHECKING
 import uuid
 import time
-
-# import uno
 import shutil
 from distutils.dir_util import copy_tree
 import uno
-from src.utils import uno_util
+from . import paths
+from com.sun.star.connection import NoConnectException
 
 if TYPE_CHECKING:
     from com.sun.star.script.provider import XScriptContext
@@ -279,7 +275,7 @@ class ConnectBase(ABC):
     @property
     def soffice_install_path(self) -> Path:
         if self._soffice_install_path is None:
-            self._soffice_install_path = uno_util.get_soffice_install_path()
+            self._soffice_install_path = paths.get_soffice_install_path()
         return self._soffice_install_path
 
     @property

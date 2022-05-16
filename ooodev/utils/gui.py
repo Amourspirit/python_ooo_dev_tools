@@ -5,13 +5,7 @@ from logging import exception
 import sys
 from typing import TYPE_CHECKING, Iterable, List, cast, overload
 from enum import IntEnum
-
-
-from ..utils import lo as m_lo
-from ..utils import images as m_images
-from ..utils import props as m_props
-from ..utils import sys_info as m_sys_info
-from ..utils import info as m_info
+import uno
 
 from com.sun.star.accessibility import XAccessible
 from com.sun.star.awt import PosSize
@@ -36,6 +30,7 @@ from com.sun.star.frame import XFrame
 from com.sun.star.frame import XFramesSupplier
 from com.sun.star.frame import XModel
 from com.sun.star.lang import SystemDependent
+from com.sun.star.lang import XComponent
 from com.sun.star.view import DocumentZoomType
 from com.sun.star.view import XControlAccess
 from com.sun.star.view import XSelectionSupplier
@@ -48,15 +43,15 @@ if TYPE_CHECKING:
     from com.sun.star.awt import Toolkit
     from com.sun.star.awt import XTopWindow
     from com.sun.star.awt import XToolkit
-    from com.sun.star.lang import XComponent
     from com.sun.star.ui import XUIElement
 
+from ..utils import lo as mLo
+from ..utils import images as mImages
+from ..utils import props as mProps
+from ..utils import info as mInfo
+from ..utils import sys_info as m_sys_info
 # endregion Imports
 
-Lo = m_lo.Lo
-Images = m_images.Images
-Props = m_props.Props
-Info = m_info.Info
 SysInfo = m_sys_info.SysInfo
 
 if sys.version_info >= (3, 10):
@@ -181,15 +176,15 @@ class GUI:
         """
         Add a user-defined icon and command to the start of the specified toolbar.
         """
-        cmd = Lo.make_uno_cmd(item_name)
+        cmd = mLo.Lo.make_uno_cmd(item_name)
         conf_man: XUIConfigurationManager = cls.get_ui_config_manager_doc(doc)
         if conf_man is None:
             print("Cannot create configuration manager")
             return
         try:
-            image_man = Lo.qi(XImageManager, conf_man.getImageManager())
+            image_man = mLo.Lo.qi(XImageManager, conf_man.getImageManager())
             cmds = (cmd,)
-            img = Images.load_graphic_file(im_fnm)
+            img = mImages.Images.load_graphic_file(im_fnm)
             if img is None:
                 print(f"Unable to load graphics file: '{im_fnm}'")
                 return
@@ -198,10 +193,10 @@ class GUI:
 
             # add item to toolbar
             settings = conf_man.getSettings(toolbar_name, True)
-            con_settings = Lo.qi(XIndexContainer, settings)
+            con_settings = mLo.Lo.qi(XIndexContainer, settings)
             if con_settings is None:
                 raise TypeError("con_settings is None")
-            item_props = Props.make_bar_item(cmd, item_name)
+            item_props = mProps.Props.make_bar_item(cmd, item_name)
             con_settings.insertByIndex(0, item_props)
             conf_man.replaceSettings(toolbar_name, con_settings)
         except Exception as e:
@@ -214,7 +209,7 @@ class GUI:
         title: str, x: int, y: int, width: int, height: int
     ) -> XFrame | None:
         """create a floating XFrame at the given position and size"""
-        xtoolkit: XToolkit = Lo.create_instance_mcf("com.sun.star.awt.Toolkit")
+        xtoolkit: XToolkit = mLo.Lo.create_instance_mcf("com.sun.star.awt.Toolkit")
         if xtoolkit is None:
             return None
         desc = WindowDescriptor()
@@ -232,12 +227,12 @@ class GUI:
         )
 
         xwindow_peer = xtoolkit.createWindow(desc)
-        window = Lo.qi(XWindow, xwindow_peer)
+        window = mLo.Lo.qi(XWindow, xwindow_peer)
         if window is None:
             print("Could not create window")
             return None
 
-        xframe: XFrame = Lo.create_instance_mcf("com.sun.star.frame.Frame")
+        xframe: XFrame = mLo.Lo.create_instance_mcf("com.sun.star.frame.Frame")
         if xframe is None:
             print("Could not create frame")
             return None
@@ -245,7 +240,7 @@ class GUI:
         xframe.setName(title)
         xframe.initialize(window)
 
-        xframes_sup = Lo.qi(XFramesSupplier, Lo.get_desktop())
+        xframes_sup = mLo.Lo.qi(XFramesSupplier, mLo.Lo.get_desktop())
         xframes = xframes_sup.getFrames()
         if xframes is None:
             print("Mo desktop frames found")
@@ -257,11 +252,11 @@ class GUI:
 
     @classmethod
     def show_message_box(cls, title: str, message: str) -> None:
-        xtoolkit: XToolkit = Lo.create_instance_mcf("com.sun.star.awt.Toolkit")
+        xtoolkit: XToolkit = mLo.Lo.create_instance_mcf("com.sun.star.awt.Toolkit")
         xwindow = cls.get_window()
         if xtoolkit is None or xwindow is None:
             return None
-        xpeer = Lo.qi(XWindowPeer, xwindow)
+        xpeer = mLo.Lo.qi(XWindowPeer, xwindow)
         desc = WindowDescriptor()
         desc.Type = WC_MODALTOP
         desc.WindowServiceName = "infobox"
@@ -276,7 +271,7 @@ class GUI:
 
         desc_peer = xtoolkit.createWindow(desc)
         if desc_peer is None:
-            msg_box = Lo.qi(XMessageBox, desc_peer)
+            msg_box = mLo.Lo.qi(XMessageBox, desc_peer)
             if msg_box is not None:
                 msg_box.CaptionText = title
                 msg_box.MessageText = message
@@ -310,8 +305,8 @@ class GUI:
 
     @staticmethod
     def get_current_controller(odoc: object) -> XController | None:
-        doc = Lo.qi(XComponent, odoc)
-        model = Lo.qi(XModel, doc)
+        doc = mLo.Lo.qi(XComponent, odoc)
+        model = mLo.Lo.qi(XModel, doc)
         if model is None:
             print("Document has no data model")
             return None
@@ -326,28 +321,28 @@ class GUI:
 
     @staticmethod
     def get_control_access(doc: XComponent) -> XControlAccess | None:
-        return Lo.qi(XControlAccess, doc)
+        return mLo.Lo.qi(XControlAccess, doc)
 
     @staticmethod
     def get_uii(doc: XComponent) -> XUserInputInterception | None:
-        return Lo.qi(XUserInputInterception, doc)
+        return mLo.Lo.qi(XUserInputInterception, doc)
 
     @classmethod
     def get_selection_supplier(cls, odoc: object) -> XSelectionSupplier | None:
-        doc = Lo.qi(XComponent, odoc)
+        doc = mLo.Lo.qi(XComponent, odoc)
         if doc is None:
             return None
         xcontroler = cls.get_current_controller(doc)
         if xcontroler is None:
             return None
-        return Lo.qi(XSelectionSupplier, xcontroler)
+        return mLo.Lo.qi(XSelectionSupplier, xcontroler)
 
     @classmethod
     def get_dpi(cls, doc: XComponent) -> XDispatchProviderInterception | None:
         xframe = cls.get_frame(doc)
         if xframe is None:
             return None
-        return Lo.qi(XDispatchProviderInterception, xframe)
+        return mLo.Lo.qi(XDispatchProviderInterception, xframe)
 
     # -------------------------- Office container window -------------
     @overload
@@ -363,7 +358,7 @@ class GUI:
     @classmethod
     def get_window(cls, doc: XComponent = None) -> XWindow | None:
         if doc is None:
-            desktop = Lo.get_desktop()
+            desktop = mLo.Lo.get_desktop()
             frame = desktop.getCurrentFrame()
             if frame is None:
                 print("No current frame")
@@ -390,10 +385,10 @@ class GUI:
         if odoc is None:
             xwindow = cls.get_window()
         else:
-            doc = Lo.qi(XComponent, odoc)
+            doc = mLo.Lo.qi(XComponent, odoc)
             if doc is None:
                 return
-            xwindow = cls.get_frame(doc)
+            xwindow = cls.get_frame(doc).getContainerWindow()
 
         if xwindow is not None:
             xwindow.setVisible(is_visible)
@@ -425,7 +420,7 @@ class GUI:
 
     @staticmethod
     def get_top_window() -> XTopWindow | None:
-        tk: Toolkit = Lo.create_instance_mcf("com.sun.star.awt.Toolkit")
+        tk: Toolkit = mLo.Lo.create_instance_mcf("com.sun.star.awt.Toolkit")
         if tk is None:
             print("Toolkit not found")
             return None
@@ -440,7 +435,7 @@ class GUI:
         top_win = cls.get_top_window()
         if top_win is None:
             return None
-        acc = Lo.qi(XAccessible, top_win)
+        acc = mLo.Lo.qi(XAccessible, top_win)
         if acc is None:
             print("Top window not accessible")
             return None
@@ -465,7 +460,7 @@ class GUI:
 
             See also: `Toolkit <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1Toolkit.html>`_
         """
-        tk: Toolkit = Lo.create_instance_mcf("com.sun.star.awt.Toolkit")
+        tk: Toolkit = mLo.Lo.create_instance_mcf("com.sun.star.awt.Toolkit")
         if tk is None:
             print("Toolkit not found")
             return None
@@ -493,7 +488,7 @@ class GUI:
             Use this method at your own risk.
         """
         win = cls.get_window(doc)
-        win_peer = Lo.qi(XSystemDependentWindowPeer, win)
+        win_peer = mLo.Lo.qi(XSystemDependentWindowPeer, win)
         pid = tuple([0 for _ in range(8)])  # tuple of zero's
         info = SysInfo.get_platform()
         if info == SysInfo.PlatformEnum.WINDOWS:
@@ -528,15 +523,15 @@ class GUI:
             view (int | ZoomEnum): Zoom value
         """
         if view == cls.ZoomEnum.OPTIMAL:
-            Lo.dispatch_cmd("ZoomOptimal")
+            mLo.Lo.dispatch_cmd("ZoomOptimal")
         elif view == cls.ZoomEnum.PAGE_WIDTH:
-            Lo.dispatch_cmd("ZoomPageWidth")
+            mLo.Lo.dispatch_cmd("ZoomPageWidth")
         elif view == cls.ZoomEnum.ENTIRE_PAGE:
-            Lo.dispatch_cmd("ZoomPage")
+            mLo.Lo.dispatch_cmd("ZoomPage")
         else:
             print(f"Did not recognize zoom view: {view}; using optimal")
-            Lo.dispatch_cmd("ZoomOptimal")
-        Lo.delay(500)
+            mLo.Lo.dispatch_cmd("ZoomOptimal")
+        mLo.Lo.delay(500)
 
     @classmethod
     def zoom_value(cls, value: int, view: int | ZoomEnum = ZoomEnum.BY_VALUE) -> None:
@@ -552,19 +547,19 @@ class GUI:
         if view == cls.ZoomEnum.BY_VALUE:
             p_dic["Zoom.Value"] = value
 
-        props = Props.make_props(**p_dic)
-        Lo.dispatch_cmd(cmd="Zoom", props=props)
-        Lo.delay(500)
+        props = mProps.Props.make_props(**p_dic)
+        mLo.Lo.dispatch_cmd(cmd="Zoom", props=props)
+        mLo.Lo.delay(500)
 
     # ================= UI config manager =========================
 
     @staticmethod
     def get_ui_config_manager(doc: XComponent) -> XUIConfigurationManager | None:
-        xmodel = Lo.qi(XModel, doc)
+        xmodel = mLo.Lo.qi(XModel, doc)
         if xmodel is None:
             print("No XModel interface")
             return None
-        xsupplier = Lo.qi(XUIConfigurationManagerSupplier, xmodel)
+        xsupplier = mLo.Lo.qi(XUIConfigurationManagerSupplier, xmodel)
         if xsupplier is None:
             print("No XUIConfigurationManagerSupplier interface")
             return None
@@ -572,13 +567,13 @@ class GUI:
 
     @staticmethod
     def get_ui_config_manager_doc(doc: XComponent) -> XUIConfigurationManager | None:
-        doc_type = Info.doc_type_string(doc)
+        doc_type = mInfo.Info.doc_type_string(doc)
 
-        xmodel = Lo.qi(XModel, doc)
+        xmodel = mLo.Lo.qi(XModel, doc)
         if xmodel is None:
             print("No XModel interface")
             return None
-        xsupplier = Lo.qi(XUIConfigurationManagerSupplier, xmodel)
+        xsupplier = mLo.Lo.qi(XUIConfigurationManagerSupplier, xmodel)
         if xsupplier is None:
             print("No XUIConfigurationManagerSupplier interface")
             return None
@@ -614,7 +609,7 @@ class GUI:
         if len(kargs) != 2:
             print("invalid number of arguments for print_ui_cmds()")
             return
-        obj = Lo.qi(XUIConfigurationManager, kargs["second"])
+        obj = mLo.Lo.qi(XUIConfigurationManager, kargs["second"])
         if obj is None:
             cls._print_ui_cmds2(ui_elem_name=kargs["first"], doc=kargs["second"])
         else:
@@ -633,8 +628,8 @@ class GUI:
 
             for i in range(num_settings):
                 setting_props = cast(Iterable[PropertyValue], settings.getByIndex(i))
-                val = Props.get_value(name="CommandURL", props=setting_props)
-                print(f"{i}) {Props.prop_value_to_string(val)}")
+                val = mProps.Props.get_value(name="CommandURL", props=setting_props)
+                print(f"{i}) {mProps.Props.prop_value_to_string(val)}")
             print()
         except exception as e:
             print(e)
@@ -661,7 +656,7 @@ class GUI:
     @classmethod
     def get_layout_manager(cls, doc: XComponent = None) -> XLayoutManager | None:
         if doc is None:
-            desktop = Lo.get_desktop()
+            desktop = mLo.Lo.get_desktop()
             frame = desktop.getCurrentFrame()
         else:
             frame = cls.get_frame(doc)
@@ -672,8 +667,8 @@ class GUI:
 
         lm = None
         try:
-            prop_set = Lo.qi(XPropertySet, frame)
-            lm = Lo.qi(XLayoutManager, prop_set.getPropertyValue("LayoutManager"))
+            prop_set = mLo.Lo.qi(XPropertySet, frame)
+            lm = mLo.Lo.qi(XLayoutManager, prop_set.getPropertyValue("LayoutManager"))
         except Exception:
             print("Could not access layout manager")
         return lm
@@ -713,7 +708,7 @@ class GUI:
         if k_len == 0:
             lm = cls.get_layout_manager()
         else:
-            obj = Lo.qi(XLayoutManager, kargs["first"])
+            obj = mLo.Lo.qi(XLayoutManager, kargs["first"])
             if obj is None:
                 lm = cls.get_layout_manager(kargs["first"])
             else:
@@ -838,9 +833,9 @@ class GUI:
         bar = None
         try:
             omenu_bar = lm.getElement(cls.MENU_BAR)
-            props = Lo.qi(XPropertySet, omenu_bar)
+            props = mLo.Lo.qi(XPropertySet, omenu_bar)
 
-            bar = Lo.qi(XMenuBar, props.getPropertyValue("XMenuBar"))
+            bar = mLo.Lo.qi(XMenuBar, props.getPropertyValue("XMenuBar"))
             # the XMenuBar reference is a property of the menubar UI
             if bar is None:
                 print("Menubar reference not found")

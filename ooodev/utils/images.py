@@ -5,6 +5,7 @@ import io
 import base64
 from typing import TYPE_CHECKING, Tuple
 import sys
+import uno
 from com.sun.star.awt import Size
 from com.sun.star.beans import XPropertySet
 if TYPE_CHECKING:
@@ -13,29 +14,30 @@ if TYPE_CHECKING:
     from com.sun.star.graphic import XGraphic
     from com.sun.star.graphic import XGraphicProvider
 
-from ..utils import lo as m_lo
-from ..utils import file_io as m_file_io
-from ..utils import props as m_props
+from ..utils import lo as mLo
+from ..utils import file_io as mFileIO
+from ..utils import props as mProps
 
 if sys.version_info >= (3, 10):
     from typing import Union
 else:
     from typing_extensions import Union
 
-Lo = m_lo.Lo
-FileIO = m_file_io.FileIO
-Props = m_props.Props
+
+# Lo = m_lo.Lo
+# FileIO = m_file_io.FileIO
+# Props = m_props.Props
 
 class Images:
     
     @staticmethod
     def get_bitmap(fnm: str) -> str | None:
         try:
-            bitmap_container: XNameContainer = Lo.create_instance_msf("com.sun.star.drawing.BitmapTable")
-            if not FileIO.is_openable(fnm):
+            bitmap_container: XNameContainer = mLo.Lo.create_instance_msf("com.sun.star.drawing.BitmapTable")
+            if not mFileIO.FileIO.is_openable(fnm):
                 return None
             
-            pic_url = FileIO.fnm_to_url(fnm)
+            pic_url = mFileIO.FileIO.fnm_to_url(fnm)
             if pic_url is None:
                 return None
             bitmap_container.insertByName(fnm, pic_url)
@@ -117,25 +119,25 @@ class Images:
             print("No image found")
             return None
 
-        temp_fnm = FileIO.create_temp_file(im_format='png')
+        temp_fnm = mFileIO.FileIO.create_temp_file(im_format='png')
         if temp_fnm is None:
             print("Could not create a temporary file for the image")
             return None
         
         im.save(temp_fnm, format='png')
         graphic = cls.load_graphic_file(temp_fnm)
-        FileIO.delete_file(temp_fnm)
+        mFileIO.FileIO.delete_file(temp_fnm)
         return graphic
     
     @staticmethod
     def load_graphic_file(im_fnm: str) -> XGraphic | None:
         print(f"Loading XGraphic from '{im_fnm}'")
-        gprovider: XGraphicProvider = Lo.create_instance_mcf("com.sun.star.graphic.GraphicProvider")
+        gprovider: XGraphicProvider = mLo.Lo.create_instance_mcf("com.sun.star.graphic.GraphicProvider")
         if gprovider is None:
             print("Graphic Provider could not be found")
             return None
         
-        file_props = Props.make_props(URL=FileIO.fnm_to_url(im_fnm))
+        file_props = mProps.Props.make_props(URL=mFileIO.FileIO.fnm_to_url(im_fnm))
         try:
             return gprovider.queryGraphic(file_props)
         except Exception as e:
@@ -148,26 +150,26 @@ class Images:
         graphic = cls.load_graphic_file(im_fnm)
         if graphic is None:
             return None
-        return Props.get_property(x_props=graphic, name="SizePixel")
+        return mProps.Props.get_property(x_props=graphic, name="SizePixel")
     
     @classmethod
     def get_size_100mm(cls, im_fnm: str) -> Size | None:
         graphic = cls.load_graphic_file(im_fnm)
         if graphic is None:
             return None
-        return Props.get_property(x_props=graphic, name="Size100thMM")
+        return mProps.Props.get_property(x_props=graphic, name="Size100thMM")
     
     @staticmethod
     def load_graphic_link(graphic_link: object) -> XGraphic | None:
-        gprovider: XGraphicProvider = Lo.create_instance_mcf("com.sun.star.graphic.GraphicProvider")
+        gprovider: XGraphicProvider = mLo.Lo.create_instance_mcf("com.sun.star.graphic.GraphicProvider")
         if gprovider is None:
             print("Graphic Provider could not be found")
             return None
         
-        xprops = Lo.qi(XPropertySet, graphic_link)
+        xprops = mLo.Lo.qi(XPropertySet, graphic_link)
         if xprops is None:
             return None
-        gprops = Props.make_props(URL=str(xprops.getPropertyValue("GraphicURL")))
+        gprops = mProps.Props.make_props(URL=str(xprops.getPropertyValue("GraphicURL")))
 
         try:
             return gprovider.queryGraphic(gprops)
@@ -181,12 +183,12 @@ class Images:
         if graphic is None:
             print("No graphic found")
             return None
-        tmp_fnm = FileIO.create_temp_file("png")
+        tmp_fnm = mFileIO.FileIO.create_temp_file("png")
         if tmp_fnm is None:
             return None
         cls.save_graphic(graphic, tmp_fnm, "png")
         im = cls.load_image(tmp_fnm)
-        FileIO.delete_file(tmp_fnm)
+        mFileIO.FileIO.delete_file(tmp_fnm)
         return im
     
     @staticmethod
@@ -197,12 +199,12 @@ class Images:
             print("Supplied image is null")
             return
 
-        gprovider: XGraphicProvider = Lo.create_instance_mcf("com.sun.star.graphic.GraphicProvider")
+        gprovider: XGraphicProvider = mLo.Lo.create_instance_mcf("com.sun.star.graphic.GraphicProvider")
         if gprovider is None:
             print("Graphic Provider could not be found")
             return
         
-        png_props = Props.make_props(URL= FileIO.fnm_to_url(fnm), MimeType=f"image/{im_format}")
+        png_props = mProps.Props.make_props(URL= mFileIO.FileIO.fnm_to_url(fnm), MimeType=f"image/{im_format}")
         
         try:
             gprovider.storeGraphic(png_props)
@@ -212,7 +214,7 @@ class Images:
         
     @staticmethod
     def get_mime_types() -> Tuple[str, ...]:
-        mi: XMimeTypeInfo = Lo.create_instance_mcf("com.sun.star.drawing.GraphicExportFilter")
+        mi: XMimeTypeInfo = mLo.Lo.create_instance_mcf("com.sun.star.drawing.GraphicExportFilter")
         return mi.getSupportedMimeTypeNames()
     
     @classmethod

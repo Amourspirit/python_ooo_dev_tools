@@ -6,11 +6,12 @@ import uno
 import re
 
 from ..utils.gen_util import TableHelper
-from ..utils import lo as m_lo
-from ..utils import info as m_info
-from ..utils import file_io as m_file_io
-from ..utils import props as m_props
-from ..utils import images as m_images
+from ..utils import lo as mLo
+from ..utils import info as mInfo
+from ..utils import file_io as mFileIO
+from ..utils import props as mProps
+from ..utils import images as mImages
+
 
 from com.sun.star.awt import FontWeight
 from com.sun.star.awt.FontSlant import ITALIC as FS_ITALIC # enum values
@@ -79,60 +80,55 @@ if sys.version_info >= (3, 10):
 else:
     from typing_extensions import Union
 
-Lo = m_lo.Lo
-Info = m_info.Info
-FileIO = m_file_io.FileIO
-Props = m_props.Props
-Images = m_images.Images
 
 class Write:
     
     @classmethod
     def open_doc(cls, fnm: str, loader: XComponentLoader) -> XTextDocument | None:
-        doc = Lo.open_doc(fnm=fnm, loader=loader)
+        doc = mLo.Lo.open_doc(fnm=fnm, loader=loader)
         if doc is None:
             print("Document is null")
             return None
         if not cls.is_text(doc):
             print(f"Not a text document; closing '{fnm}'")
+            mLo.Lo.close_doc(doc)
             return None
-        
-        if not Info.support_service(doc, XTextDocument):
+        text_doc = mLo.Lo.qi(XTextDocument, doc)
+        if text_doc is None:
             print(f"Not a text document; closing '{fnm}'")
-            Lo.close_doc(doc)
-            return None
-        return doc
+            mLo.Lo.close_doc(doc)
+        return text_doc
     
     @staticmethod
     def is_text(doc: XComponent) -> bool:
-        return Info.is_doc_type(obj=doc, doc_type=Lo.WRITER_SERVICE)
+        return mInfo.Info.is_doc_type(obj=doc, doc_type=mLo.Lo.WRITER_SERVICE)
     
     @staticmethod
-    def get_text_doc(doc: XComponent) -> XTextDocument:
+    def get_text_doc(doc: XComponent) -> XTextDocument | None:
         if doc is None:
             print("Document is null")
             return None
-        
-        if not Info.support_service(doc, XTextDocument):
+        text_doc = mLo.Lo.qi(XTextDocument, doc)
+        if text_doc is None:
             print("Not a text document")
             return None
-        return doc
+        return text_doc
     
     @staticmethod
     def create_doc(loader: XComponentLoader) -> XTextDocument:
-        return Lo.create_doc(doc_type=Lo.WRITER_STR, loader=loader)
+        return mLo.Lo.create_doc(doc_type=mLo.Lo.WRITER_STR, loader=loader)
     
     @staticmethod
     def create_doc_from_template(template_path: str, loader: XComponentLoader) -> XTextDocument:
-        return Lo.create_doc_from_template(template_path=template_path, loader=loader)
+        return mLo.Lo.create_doc_from_template(template_path=template_path, loader=loader)
     
     @staticmethod
     def close_doc(text_doc: XTextDocument) -> None:
-        Lo.close(text_doc)
+        mLo.Lo.close(text_doc)
     
     @staticmethod
     def save_doc(text_doc: XTextDocument, fnm: str) -> None:
-        Lo.save_doc(doc=text_doc, fnm=fnm)
+        mLo.Lo.save_doc(doc=text_doc, fnm=fnm)
     
     @classmethod
     def open_flat_doc_using_text_template(cls, fnm: str, template_path: str, loader: XComponentLoader) -> XTextDocument | None:
@@ -141,36 +137,46 @@ class Write:
             return None
         
         open_file_url = None
-        if not FileIO.is_openable(fnm):
-            if Lo.is_url(fnm):
+        if not mFileIO.FileIO.is_openable(fnm):
+            if mLo.Lo.is_url(fnm):
                 print(f"Will treat filename as a URL: '{fnm}'")
                 open_file_url = fnm
             else:
                 return None
         else:
-            open_file_url = FileIO.fnm_to_url(fnm)
+            open_file_url = mFileIO.FileIO.fnm_to_url(fnm)
             if open_file_url is None:
                 return None
         
-        template_ext = Info.get_ext(template_path)
+        template_ext = mInfo.Info.get_ext(template_path)
         if template_ext != 'ott':
             print("Can only apply a text template as formatting")
             return None
 
-        doc = Lo.create_doc_from_template(template_path==template_path, loader=loader)
+        doc = mLo.Lo.create_doc_from_template(template_path==template_path, loader=loader)
         if doc is None:
             return None
-        cursor = cast(XTextCursor | XDocumentInsertable, cls.get_cursor(doc))
+        text_doc = mLo.Lo.qi(XTextDocument, doc)
+        if text_doc is None:
+            print(f"Not a text document '{fnm}'")
+            return None
+        
+        cursor = cls.get_cursor(text_doc)
+        if cursor is None:
+            print(f"Unable to get cursor: '{fnm}'")
+            return None
+
         try:
             cursor.gotoEnd(True)
-            if not Info.support_service(cursor, XDocumentInsertable):
-                print("Document inserter could not be created")
+            di = mLo.Lo.qi(XDocumentInsertable, cursor)
+            if di is None:
+                print()
             else:
-                cursor.insertDocumentFromURL(open_file_url, tuple())
+                di.insertDocumentFromURL(open_file_url, tuple())
         except Exception as e:
             print("Could not insert document")
             print(f"    {e}")
-        return doc
+        return text_doc
     
     # --------------------- model cursor methods -------------------------------
 
@@ -185,12 +191,13 @@ class Write:
     
     @staticmethod
     def get_cursor(cursor_obj: XTextDocument | XTextViewCursor) -> XTextCursor | None:
+        text_view_cursor = mLo.Lo.qi(XTextViewCursor, cursor_obj)
+        if text_view_cursor:
+            return text_view_cursor.getText().createTextCursorByRange(cursor_obj)
         xtext = cursor_obj.getText()
         if xtext is None:
             print("Text not found in document")
             return None
-        if Info.support_service(cursor_obj, XTextViewCursor):
-            return xtext.createTextCursorByRange(cursor_obj)
         return xtext.createTextCursor()
     
     @classmethod
@@ -199,10 +206,8 @@ class Write:
         if cursor is None:
             print("Text cursor is null")
             return None
-        if not Info.support_service(cursor, XWordCursor):
-            print("Text is not XWordCursor")
-            return None
-        return cursor
+        return mLo.Lo.qi(XWordCursor, text_doc)
+
     
     @classmethod
     def get_sentence_cursor(cls, text_doc: XTextDocument) -> XSentenceCursor | None:
@@ -210,10 +215,7 @@ class Write:
         if cursor is None:
             print("Text cursor is null")
             return None
-        if not Info.support_service(cursor, XSentenceCursor):
-            print("Text is not XSentenceCursor")
-            return None
-        return cursor
+        return mLo.Lo.qi(XSentenceCursor, text_doc)
     
     @classmethod
     def get_paragraph_cursor(cls, text_doc: XTextDocument) -> XParagraphCursor | None:
@@ -221,10 +223,8 @@ class Write:
         if cursor is None:
             print("Text cursor is null")
             return None
-        if not Info.support_service(cursor, XParagraphCursor):
-            print("Text is not XParagraphCursor")
-            return None
-        return cursor
+        return mLo.Lo.qi(XParagraphCursor, text_doc)
+
     
     @staticmethod
     def get_position(cursor: XTextCursor) -> int:
@@ -238,7 +238,8 @@ class Write:
     
     @staticmethod
     def get_current_page(tv_cursor: XTextViewCursor | XPageCursor) -> int:
-        if not Info.support_service(tv_cursor, XPageCursor):
+        page_cursor = mLo.Lo.qi(XPageCursor, tv_cursor)
+        if page_cursor is None:
             print("Could not create a page cursor")
             return -1
         return tv_cursor.getPage()
@@ -251,7 +252,7 @@ class Write:
     @staticmethod
     def get_page_count(text_doc: XTextDocument | XModel) -> int:
         xcontroller = text_doc.getCurrentController()
-        return int(Props.get_property(xcontroller, "PageCount"))
+        return int(mProps.Props.get_property(xcontroller, "PageCount"))
     
     @classmethod
     def get_text_view_cursor_prop_set(cls, text_doc: XTextDocument) -> XPropertySet:
@@ -299,11 +300,11 @@ class Write:
         kargs["first"] = kwargs.get("cursor", None)
         i = 0
         if 'text' in kwargs:
-            kargs['second'] = kwargs['second']
+            kargs['second'] = kwargs['text']
             i = 1
         elif 'ctl_char' in kwargs:
-            kargs['second'] = kargs['ctl_char']
-            i =2
+            kargs['second'] = kwargs['ctl_char']
+            i = 2
         elif 'text_content' in kwargs:
             kargs["second"] = kwargs['text_content']
             i = 3
@@ -330,13 +331,13 @@ class Write:
     @classmethod
     def append_date_time(cls, cursor: XTextCursor) -> int:
         """append two DateTime fields, one for the date, one for the time"""
-        dt_field: XTextField = Lo.create_instance_mcf("com.sun.star.text.TextField.DateTime")
-        Props.set_property(dt_field, "IsDate", True) # so date is reported
+        dt_field: XTextField = mLo.Lo.create_instance_mcf("com.sun.star.text.TextField.DateTime")
+        mProps.Props.set_property(dt_field, "IsDate", True) # so date is reported
         cls.append(cursor, dt_field)
         cls.append(cursor, "; ")
         
-        dt_field: XTextField = Lo.create_instance_mcf("com.sun.star.text.TextField.DateTime")
-        Props.set_property(dt_field, "IsDate", False) # so time is reported
+        dt_field: XTextField = mLo.Lo.create_instance_mcf("com.sun.star.text.TextField.DateTime")
+        mProps.Props.set_property(dt_field, "IsDate", False) # so time is reported
         return cls.append(cursor, dt_field)
     
     @classmethod
@@ -355,12 +356,12 @@ class Write:
     
     @classmethod
     def page_break(cls, cursor: XTextCursor) -> None:
-        Props.set_property(cursor, "BreakType", BT_PAGE_AFTER)
+        mProps.Props.set_property(cursor, "BreakType", BT_PAGE_AFTER)
         cls.end_paragraph(cursor)
     
     @classmethod
     def column_break(cls, cursor: XTextCursor) -> None:
-        Props.set_property(cursor, "BreakType", BT_COLUMN_AFTER)
+        mProps.Props.set_property(cursor, "BreakType", BT_COLUMN_AFTER)
         cls.end_paragraph(cursor)
     
     @classmethod
@@ -383,8 +384,9 @@ class Write:
     
     @staticmethod
     def get_enumeration(obj: XEnumerationAccess) -> XEnumeration | None:
-        if not Info.support_service(obj, XEnumerationAccess):
-            print("XEnumerationAccess not supported for obj")
+        enum_access = mLo.Lo.qi(XEnumerationAccess, obj)
+        if enum_access is None:
+            print("Could not create enumeration")
             return None
         return obj.createEnumeration()
     
@@ -404,19 +406,19 @@ class Write:
     
     @classmethod
     def style_left_code(cls, cursor: XTextCursor, pos: int) -> None:
-        cls.style_left(cursor, pos, "CharFontName", Info.get_font_mono_name())
+        cls.style_left(cursor, pos, "CharFontName", mInfo.Info.get_font_mono_name())
         cls.style_left(cursor, pos, "CharHeight", 10)
     
     @classmethod
     def style_left(cls, cursor: XTextCursor, pos: int, prop_name: str, prop_val: object) -> None:
-        old_val = Props.get_property(cursor, prop_name)
+        old_val = mProps.Props.get_property(cursor, prop_name)
         
         curr_pos = cls.get_position(cursor)
         cursor.goLeft(curr_pos - pos, False)
-        Props.set_property(prop_set=cursor, name=prop_name, value=prop_val)
+        mProps.Props.set_property(prop_set=cursor, name=prop_name, value=prop_val)
         
         cursor.goRight(curr_pos - pos, False)
-        Props.set_property(prop_set=cursor, name=prop_name, value=old_val)
+        mProps.Props.set_property(prop_set=cursor, name=prop_name, value=old_val)
     
     @overload
     @staticmethod
@@ -429,21 +431,21 @@ class Write:
     def style_prev_paragraph(cursor: XTextCursor | XParagraphCursor, prop_val: object, prop_name: str = None) -> None:
         if prop_name is None:
             prop_name = "ParaStyleName"
-        old_val = Props.get_property(cursor, prop_name)
+        old_val = mProps.Props.get_property(cursor, prop_name)
         
         cursor.gotoPreviousParagraph(True) # select previous paragraph
-        Props.set_property(prop_set=cursor, name=prop_name, value=prop_val)
+        mProps.Props.set_property(prop_set=cursor, name=prop_name, value=prop_val)
         
         # reset
         cursor.gotoNextParagraph(False)
-        Props.set_property(prop_set=cursor, name=prop_name, value=old_val)
+        mProps.Props.set_property(prop_set=cursor, name=prop_name, value=old_val)
 
     # ---------------------------- style methods -------------------------------
     
     @staticmethod
     def get_page_text_width(text_doc: XTextDocument) -> int:
         """get the width of the page's text area"""
-        props = Info.get_style_props(doc=text_doc, family_style_name="PageStyles",prop_set_nm="Standard")
+        props = mInfo.Info.get_style_props(doc=text_doc, family_style_name="PageStyles",prop_set_nm="Standard")
         if props is None:
             print("Could not access the standard page style")
             return 0
@@ -460,7 +462,7 @@ class Write:
         
     @staticmethod
     def get_page_size(text_doc: XTextDocument) -> Size | None:
-        props = Info.get_style_props(doc=text_doc, family_style_name="PageStyles", prop_set_nm="Standard")
+        props = mInfo.Info.get_style_props(doc=text_doc, family_style_name="PageStyles", prop_set_nm="Standard")
         if props is None:
             print("Could not access the standard page style")
             return None
@@ -475,7 +477,7 @@ class Write:
     
     @staticmethod
     def set_a4_page_format(text_doc: XTextDocument | XPrintable) -> None:
-        printer_desc = Props.make_props(PaperFormat=PF_A4)
+        printer_desc = mProps.Props.make_props(PaperFormat=PF_A4)
         
         # Paper Orientation           
         # java
@@ -492,7 +494,7 @@ class Write:
         Modify the footer via the page style for the document. 
         Put page number & count in the center of the footer in Times New Roman, 12pt
         """
-        props = Info.get_style_props(doc=text_doc, family_style_name="PageStyles",prop_set_nm="Standard")
+        props = mInfo.Info.get_style_props(doc=text_doc, family_style_name="PageStyles",prop_set_nm="Standard")
         if props is None:
             print("Could not access the standard page style")
             return None
@@ -503,9 +505,9 @@ class Write:
             footer_text: XText = props.getPropertyValue("FooterText")
             footer_cursor = footer_text.createTextCursor()
             
-            Props.set_property(prop_set=footer_cursor, name="CharFontName", value=Info.get_font_general_name())
-            Props.set_property(prop_set=footer_cursor, name="CharHeight", value=12.0)
-            Props.set_property(prop_set=footer_cursor, name="ParaAdjust", value=PA_CENTER)
+            mProps.Props.set_property(prop_set=footer_cursor, name="CharFontName", value=mInfo.Info.get_font_general_name())
+            mProps.Props.set_property(prop_set=footer_cursor, name="CharHeight", value=12.0)
+            mProps.Props.set_property(prop_set=footer_cursor, name="ParaAdjust", value=PA_CENTER)
         
             # add text fields to the footer
             cls._append3(cursor=footer_cursor,text_content=cls.get_page_number())
@@ -517,16 +519,16 @@ class Write:
     @staticmethod
     def get_page_number() -> XTextField:
         """return arabic style number showing current page value"""
-        num_field: XTextField = Lo.create_instance_msf("com.sun.star.text.TextField.PageNumber")
-        Props.set_property(prop_set=num_field, name="NumberingType", value=NumberingType.ARABIC)
-        Props.set_property(prop_set=num_field, name="SubType", value=PN_CURRENT)
+        num_field: XTextField = mLo.Lo.create_instance_msf("com.sun.star.text.TextField.PageNumber")
+        mProps.Props.set_property(prop_set=num_field, name="NumberingType", value=NumberingType.ARABIC)
+        mProps.Props.set_property(prop_set=num_field, name="SubType", value=PN_CURRENT)
         return num_field
     
     @staticmethod
     def get_page_count() -> XTextField:
         """return arabic style number showing current page count"""
-        pc_field: XTextField = Lo.create_instance_msf("com.sun.star.text.TextField.PageCount")
-        Props.set_property(prop_set=pc_field, name="NumberingType", value=NumberingType.ARABIC)
+        pc_field: XTextField = mLo.Lo.create_instance_msf("com.sun.star.text.TextField.PageCount")
+        mProps.Props.set_property(prop_set=pc_field, name="NumberingType", value=NumberingType.ARABIC)
         return pc_field
     
     @staticmethod
@@ -536,7 +538,7 @@ class Write:
         Put the text on the right hand side in the header in
         a general font of 10pt.
         """
-        props = Info.get_style_props(doc=text_doc,family_style_name="PageStyles", prop_set_nm="Standard")
+        props = mInfo.Info.get_style_props(doc=text_doc,family_style_name="PageStyles", prop_set_nm="Standard")
         if props is None:
             print("Could not access the standard page style container")
             return
@@ -548,7 +550,7 @@ class Write:
             header_cursor = cast(XTextCursor | XPropertySet, header_text.createTextCursor())
             header_cursor.gotoEnd(False)
             
-            header_cursor.setPropertyValue("CharFontName", Info.get_font_general_name())
+            header_cursor.setPropertyValue("CharFontName", mInfo.Info.get_font_general_name())
             header_cursor.setPropertyValue("CharHeight", 10)
             header_cursor.setPropertyValue("ParaAdjust", PA_RIGHT)
             
@@ -558,8 +560,9 @@ class Write:
 
     @staticmethod
     def get_draw_page(doc: XTextDocument | XDrawPageSupplier) -> XDrawPage | None:
-        if not Info.support_service(obj=doc, service=XDrawPageSupplier):
-            print("XDrawPageSupplier interface is not supporte for doc")
+        xsupp_page = mLo.Lo.qi(XDrawPageSupplier, doc)
+        if xsupp_page is None:
+            print("No draw page found")
             return None
         return doc.getDrawPage()
 
@@ -568,13 +571,13 @@ class Write:
     @classmethod
     def add_formula(cls, cursor: XTextCursor, formula: str) -> None:
         try:
-            embed_content: XTextContent = Lo.create_instance_msf("com.sun.star.text.TextEmbeddedObject")
+            embed_content: XTextContent = mLo.Lo.create_instance_msf("com.sun.star.text.TextEmbeddedObject")
             if embed_content is None:
                 print("Could not create a formula embedded object")
                 return
             # set class ID for type of object being inserted
             props = cast(XPropertySet, embed_content)
-            props.setPropertyValue("CLSID", Lo.MATH_CLSID)
+            props.setPropertyValue("CLSID", mLo.Lo.MATH_CLSID)
             props.setPropertyValue("AnchorType", AS_CHARACTER)
             
             # insert object in document
@@ -593,18 +596,18 @@ class Write:
     
     @classmethod
     def add_hyperlink(cls, cursor: XTextCursor, label: str, url_str: str) -> None:
-        link: XTextContent = Lo.create_instance_msf("com.sun.star.text.TextField.URL")
+        link: XTextContent = mLo.Lo.create_instance_msf("com.sun.star.text.TextField.URL")
         if link is None:
             print("Could not create a hyperlink")
             return
-        Props.set_property(prop_set=link, name= "URL", value=url_str)
-        Props.set_property(prop_set=link, name= "Representation", value=label)
+        mProps.Props.set_property(prop_set=link, name= "URL", value=url_str)
+        mProps.Props.set_property(prop_set=link, name= "Representation", value=label)
         
         cls._append3(cursor, link)
     
     @classmethod
     def add_bookmark(cls, cursor: XTextCursor, name: str) -> None:
-        bmk_content: XTextContent = Lo.create_instance_msf("com.sun.star.text.Bookmark")
+        bmk_content: XTextContent = mLo.Lo.create_instance_msf("com.sun.star.text.Bookmark")
         if bmk_content is None:
             print("Could not create a bookmark")
             return
@@ -616,7 +619,7 @@ class Write:
     
     @staticmethod
     def find_bookmark(doc: XTextDocument, bm_name:str) -> XTextContent | None:
-        supplier = Lo.qi(XBookmarksSupplier, doc)
+        supplier = mLo.Lo.qi(XBookmarksSupplier, doc)
         
         if supplier is None:
             print("Bookmark supplier could not be created")
@@ -633,18 +636,18 @@ class Write:
         except Exception:
             print(f"Bookmark '{bm_name}' not found")
             return None
-        return Lo.qi(XTextContent, obookmark)
+        return mLo.Lo.qi(XTextContent, obookmark)
     
     @classmethod
     def add_text_frame(cls, cursor: XTextCursor, ypos: int, text: str, width: int, height: int) -> None:
         try:
-            xframe: XTextFrame = Lo.create_instance_msf("com.sun.star.text.TextFrame")
-            tf_shape = Lo.qi(XShape, xframe)
+            xframe: XTextFrame = mLo.Lo.create_instance_msf("com.sun.star.text.TextFrame")
+            tf_shape = mLo.Lo.qi(XShape, xframe)
             if tf_shape is None:
                 return
             
             tf_shape.setSize(Size(width, height))
-            frame_props = Lo.qi(XPropertySet, xframe)
+            frame_props = mLo.Lo.qi(XPropertySet, xframe)
             if frame_props is None:
                 return
             frame_props.setPropertyValue("AnchorType", AT_PAGE)
@@ -686,7 +689,7 @@ class Write:
         and colored in dark blue, and the rest in light blue. 
         """
         try:
-            table: XTextTable = Lo.create_instance_msf("com.sun.star.text.TextTable")
+            table: XTextTable = mLo.Lo.create_instance_msf("com.sun.star.text.TextTable")
             if table is None:
                 print("Could not create a text table")
                 return
@@ -701,7 +704,7 @@ class Write:
             cls._append3(cursor, table)
             cls.end_paragraph(cursor)
             
-            table_props = Lo.qi(XPropertySet, table)
+            table_props = mLo.Lo.qi(XPropertySet, table)
             if table_props is None:
                 return None
             
@@ -711,7 +714,7 @@ class Write:
             
             # set color of first row (i.e. the header) to be dark blue
             rows = table.getRows()
-            Props.set_property(prop_set=rows.getByIndex(0), name="BackColor", value=0x666694) # dark blue
+            mProps.Props.set_property(prop_set=rows.getByIndex(0), name="BackColor", value=0x666694) # dark blue
             
             #  write table header
             row_data = rows_list[0]
@@ -748,17 +751,17 @@ class Write:
     
     @staticmethod
     def set_cell_header(cell_name: str, data: str, table: XTextTable) -> None:
-        cell_text = Lo.qi(XText, table.getCellByName(cell_name))
+        cell_text = mLo.Lo.qi(XText, table.getCellByName(cell_name))
         if cell_text is None:
             return
         text_cursor = cell_text.createTextCursor()
-        Props.set_property(prop_set=text_cursor, name="CharColor",value=0xFFFFFF) # use white text
+        mProps.Props.set_property(prop_set=text_cursor, name="CharColor",value=0xFFFFFF) # use white text
         
         cell_text.setString(str(data))
         
     @staticmethod
     def set_cell_text(cell_name: str, data: str, table: XTextTable) -> None:
-        cell_text = Lo.qi(XText, table.getCellByName(cell_name))
+        cell_text = mLo.Lo.qi(XText, table.getCellByName(cell_name))
         if cell_text is None:
             return
         cell_text.setString(str(data))
@@ -775,17 +778,17 @@ class Write:
     @classmethod
     def add_image_link(cls, doc: XTextDocument, cursor: XTextCursor, fnm: str, width: int = 0, height: int = 0) -> None:
         try:
-            tgo: XTextContent = Lo.create_instance_msf("com.sun.star.text.TextGraphicObject")
+            tgo: XTextContent = mLo.Lo.create_instance_msf("com.sun.star.text.TextGraphicObject")
             if tgo is None:
                 print("Could not create a text graphic object")
                 return
             
-            props = Lo.qi(XPropertySet, tgo)
+            props = mLo.Lo.qi(XPropertySet, tgo)
             if props is None:
                 print("Could not create a text graphic object")
                 return
             props.setPropertyValue("AnchorType", AS_CHARACTER)
-            props.setPropertyValue("GraphicURL", FileIO.fnm_to_url(fnm))
+            props.setPropertyValue("GraphicURL", mFileIO.FileIO.fnm_to_url(fnm))
             
             # optionally set the width and height
             if width > 0 and height > 0:
@@ -813,25 +816,25 @@ class Write:
         if width > 0 and height > 0:
             im_size = Size(width, height)
         else:
-            im_size = Images.get_size_100mm(fnm) # in 1/100 mm units
+            im_size = mImages.Images.get_size_100mm(fnm) # in 1/100 mm units
             if im_size is None:
                 return
         
         try:
             # create TextContent for an empty graphic
-            gos: XTextContent = Lo.create_instance_msf("com.sun.star.drawing.GraphicObjectShape")
+            gos: XTextContent = mLo.Lo.create_instance_msf("com.sun.star.drawing.GraphicObjectShape")
             if gos is None:
                 print("Could not create a graphic object shape")
                 return
             
-            bitmap = Images.get_bitmap(fnm)
+            bitmap = mImages.Images.get_bitmap(fnm)
             if bitmap is None:
                 return
             # store the image's bitmap as the graphic shape's URL's value
-            Props.set_property(prop_set=gos, name="GraphicURL", value=bitmap)
+            mProps.Props.set_property(prop_set=gos, name="GraphicURL", value=bitmap)
             
             # set the shape's size
-            xdraw_shape = Lo.qi(XShape, gos)
+            xdraw_shape = mLo.Lo.qi(XShape, gos)
             xdraw_shape.setSize(im_size)
             
             # insert image shape into the document, followed by newline
@@ -844,12 +847,12 @@ class Write:
     @classmethod
     def add_line_divider(cls, cursor: XTextCursor, line_width: int) -> None:
         try:
-            ls: XTextContent = Lo.create_instance_msf("com.sun.star.drawing.LineShape")
+            ls: XTextContent = mLo.Lo.create_instance_msf("com.sun.star.drawing.LineShape")
             if ls is None:
                 print("Could not create a line shape")
                 return
             
-            line_shape = Lo.qi(XShape, ls)
+            line_shape = mLo.Lo.qi(XShape, ls)
             line_shape.setSize(Size(line_width, 0))
             
             cls.end_paragraph(cursor)
@@ -883,7 +886,7 @@ class Write:
             if graphic_link is None:
                 print(f"No graphic found for {name}")
             else:
-                xgraphic = Images.load_graphic_link(graphic_link)
+                xgraphic = mImages.Images.load_graphic_link(graphic_link)
                 if xgraphic is not None:
                     pics.append(xgraphic)
                 else:
@@ -894,7 +897,7 @@ class Write:
     
     @staticmethod
     def get_graphic_links(doc: XComponent) -> XNameAccess | None:
-        ims_supplier = Lo.qi(XTextGraphicObjectsSupplier, doc)
+        ims_supplier = mLo.Lo.qi(XTextGraphicObjectsSupplier, doc)
         if ims_supplier is None:
             print("Text graphics supplier could not be created")
             return None
@@ -912,12 +915,12 @@ class Write:
     
     @staticmethod
     def is_anchored_graphic(graphic: object) -> bool:
-        serv_info = Lo.qi(XServiceInfo, graphic)
+        serv_info = mLo.Lo.qi(XServiceInfo, graphic)
         return serv_info is not None and serv_info.supportsService("com.sun.star.text.TextContent") and serv_info.supportsService("com.sun.star.text.TextGraphicObject")
 
     @staticmethod
     def get_shapes(text_doc: XTextDocument) -> XDrawPage | None:
-        draw_page_supplier = Lo.qi(XDrawPageSupplier, text_doc)
+        draw_page_supplier = mLo.Lo.qi(XDrawPageSupplier, text_doc)
         if draw_page_supplier is None:
             print("Draw page supplier could not be created")
             return None
@@ -985,13 +988,13 @@ class Write:
     
     @classmethod
     def dicts_info(cls) -> None:
-        dict_lst: XSearchableDictionaryList = Lo.create_instance_mcf("com.sun.star.linguistic2.DictionaryList")
+        dict_lst: XSearchableDictionaryList = mLo.Lo.create_instance_mcf("com.sun.star.linguistic2.DictionaryList")
         if not dict_lst:
             print("No list of dictionaries found")
             return
         cls.print_dicts_info(dict_lst)
         
-        cd_list: XConversionDictionaryList = Lo.create_instance_mcf("com.sun.star.linguistic2.ConversionDictionaryList")
+        cd_list: XConversionDictionaryList = mLo.Lo.create_instance_mcf("com.sun.star.linguistic2.ConversionDictionaryList")
         if cd_list is None:
             print("No list of conversion dictionaries found")
             return
@@ -1033,13 +1036,13 @@ class Write:
     
     @staticmethod
     def get_lingu_properties() -> XLinguProperties:
-        return Lo.create_instance_mcf("com.sun.star.linguistic2.LinguProperties")
+        return mLo.Lo.create_instance_mcf("com.sun.star.linguistic2.LinguProperties")
 
     # ---------------- Linguistics: spell checking --------------
 
     @staticmethod
     def load_spell_checker() -> XSpellChecker | None:
-        lingo_mgr: XLinguServiceManager = Lo.create_instance_mcf("com.sun.star.linguistic2.LinguServiceManager")
+        lingo_mgr: XLinguServiceManager = mLo.Lo.create_instance_mcf("com.sun.star.linguistic2.LinguServiceManager")
         if lingo_mgr is None:
             print("No linguistics manager found")
             return None
@@ -1062,7 +1065,7 @@ class Write:
         if alts is not None:
             print(f"* '{word}' is unknown. Try:")
             alt_words = alts.getAlternatives()
-            Lo.print_names(alt_words)
+            mLo.Lo.print_names(alt_words)
             return False
         return True
     
@@ -1070,7 +1073,7 @@ class Write:
     
     @staticmethod
     def load_thesaurus() -> XThesaurus:
-        lingo_mgr: XLinguServiceManager = Lo.create_instance_mcf("com.sun.star.linguistic2.LinguServiceManager")
+        lingo_mgr: XLinguServiceManager = mLo.Lo.create_instance_mcf("com.sun.star.linguistic2.LinguServiceManager")
         if lingo_mgr is None:
             print("No linguistics manager found")
             return None
@@ -1100,7 +1103,7 @@ class Write:
     
     @staticmethod
     def load_proofreader() -> XProofreader:
-        return Lo.create_instance_mcf("com.sun.star.linguistic2.Proofreader")
+        return mLo.Lo.create_instance_mcf("com.sun.star.linguistic2.Proofreader")
     
     @classmethod
     def proof_sentence(cls, sent: str, proofreader: XProofreader) -> int:
@@ -1128,7 +1131,7 @@ class Write:
     
     @staticmethod
     def guess_locale(test_str: str) -> Locale | None:
-        guesser: XLanguageGuessing = Lo.create_instance_mcf("com.sun.star.linguistic2.LanguageGuessing")
+        guesser: XLanguageGuessing = mLo.Lo.create_instance_mcf("com.sun.star.linguistic2.LanguageGuessing")
         if guesser is None:
             print("No language guesser found")
             return None
@@ -1144,25 +1147,25 @@ class Write:
     @staticmethod
     def open_sent_check_options() -> None:
         """open Options - Language Settings - English sentence checking"""
-        pip = Info.get_pip()
+        pip = mInfo.Info.get_pip()
         lang_ext = pip.getPackageLocation("org.openoffice.en.hunspell.dictionaries")
         print(f"Lang Ext: {lang_ext}")
         url = f"{lang_ext}/dialog/en.xdl"
-        props = Props.make_props(OptionsPageURL=url)
-        Lo.dispatch_cmd(cmd="OptionsTreeDialog", props=props)
-        Lo.wait(2000)
+        props = mProps.Props.make_props(OptionsPageURL=url)
+        mLo.Lo.dispatch_cmd(cmd="OptionsTreeDialog", props=props)
+        mLo.Lo.wait(2000)
     
     @staticmethod
     def open_spell_grammar_dialog() -> None:
         """activate dialog in  Tools > Speling and Grammar..."""
-        Lo.dispatch_cmd("SpellingAndGrammarDialog")
-        Lo.wait(2000)
+        mLo.Lo.dispatch_cmd("SpellingAndGrammarDialog")
+        mLo.Lo.wait(2000)
     
     @staticmethod
     def toggle_auto_spell_check() -> None:
-        Lo.dispatch_cmd("SpellOnline")
+        mLo.Lo.dispatch_cmd("SpellOnline")
     
     @staticmethod
     def open_thesaurus_dialog() -> None:
-        Lo.dispatch_cmd("ThesaurusDialog")
+        mLo.Lo.dispatch_cmd("ThesaurusDialog")
     

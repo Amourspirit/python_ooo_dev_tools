@@ -6,10 +6,9 @@ import sys
 from datetime import datetime
 from pathlib import Path
 import mimetypes
-from platform import platform
 from typing import TYPE_CHECKING, Tuple, List, overload, Optional
 from lxml import etree as ET
-
+import uno
 from . import props as m_props
 from .sys_info import SysInfo
 
@@ -39,9 +38,9 @@ if TYPE_CHECKING:
     from com.sun.star.uno import XInterface
     from com.sun.star.util import XChangesBatch
 
-from . import lo
-from . import file_io
-from . import props
+from . import lo as mLo
+from . import file_io as mFileIO
+from . import props as mProps
 
 if sys.version_info >= (3, 10):
     from typing import Union
@@ -84,7 +83,7 @@ class Info:
 
     @staticmethod
     def get_fonts() -> Tuple[FontDescriptor, ...] | None:
-        xtoolkit: XToolkit = lo.Lo.create_instance_mcf("com.sun.star.awt.Toolkit")
+        xtoolkit: XToolkit = mLo.Lo.create_instance_mcf("com.sun.star.awt.Toolkit")
         device = xtoolkit.createScreenCompatibleDevice(0, 0)
         if device is None:
             print("Could not access graphical output device")
@@ -140,7 +139,7 @@ class Info:
 
     @classmethod
     def get_reg_mods_path(cls) -> str | None:
-        user_cfg_dir = file_io.FileIO.url_to_path(cls.get_paths("UserConfig"))
+        user_cfg_dir = mFileIO.FileIO.url_to_path(cls.get_paths("UserConfig"))
 
         try:
             parent_path = Path(user_cfg_dir).parent
@@ -213,10 +212,10 @@ class Info:
 
     @classmethod
     def _get_config1(cls, node_str: str, node_path: str):
-        _props = cls.get_config_props(node_path)
-        if _props is None:
+        props = cls.get_config_props(node_path)
+        if props is None:
             return None
-        return props.Props.get_property(x_props=props, name=node_str)
+        return mProps.Props.get_property(x_props=props, name=node_str)
 
     @classmethod
     def _get_config2(cls, node_str: str):
@@ -229,13 +228,13 @@ class Info:
 
     @staticmethod
     def get_config_props(node_path: str) -> XPropertySet | None:
-        con_prov: XMultiServiceFactory = lo.Lo.create_instance_mcf(
+        con_prov: XMultiServiceFactory = mLo.Lo.create_instance_mcf(
             "com.sun.star.configuration.ConfigurationProvider"
         )
         if con_prov is None:
             print("Could not create configuration provider")
             return None
-        p = props.Props.make_props(nodepath=node_path)
+        p = mProps.Props.make_props(nodepath=node_path)
         try:
             return con_prov.createInstanceWithArguments(
                 "com.sun.star.configuration.ConfigurationAccess", p
@@ -259,7 +258,7 @@ class Info:
         #    UserDictionary (deprecated), Work
 
         # Replaced by thePathSetting in LibreOffice 4.3
-        prop_set: XPropertySet = lo.Lo.create_instance_mcf(
+        prop_set: XPropertySet = mLo.Lo.create_instance_mcf(
             "com.sun.star.util.PathSettings"
         )
         if prop_set is None:
@@ -284,7 +283,7 @@ class Info:
             return [paths]
         dirs = []
         for el in paths_arr:
-            dirs.append(file_io.FileIO.uri_to_path(el))
+            dirs.append(mFileIO.FileIO.uri_to_path(el))
         return dirs
 
     @classmethod
@@ -298,7 +297,7 @@ class Info:
         if addin_dir is None:
             print("Cound not find settings information")
             return None
-        addin_path = file_io.FileIO.uri_to_path(addin_dir)
+        addin_path = mFileIO.FileIO.uri_to_path(addin_dir)
         #   e.g.  C:\Program Files (x86)\LibreOffice 6\program\addin
         try:
             idx = addin_path.index("program")
@@ -318,13 +317,13 @@ class Info:
 
     @classmethod
     def create_configuration_view(cls, path: str) -> XHierarchicalPropertySet | None:
-        con_prov: XMultiServiceFactory = lo.Lo.create_instance_mcf(
+        con_prov: XMultiServiceFactory = mLo.Lo.create_instance_mcf(
             "com.sun.star.configuration.ConfigurationProvider"
         )
         if con_prov is None:
             print("Could not create configuration provider")
             return None
-        _props = props.Props.make_props(nodepath=path)
+        _props = mProps.Props.make_props(nodepath=path)
         try:
             root: XInterface = con_prov.createInstanceWithArguments(
                 "com.sun.star.configuration.ConfigurationAccess", _props
@@ -338,13 +337,13 @@ class Info:
 
     @staticmethod
     def set_config_props(node_path: str) -> XPropertySet | None:
-        con_prov: XMultiServiceFactory = lo.Lo.create_instance_mcf(
+        con_prov: XMultiServiceFactory = mLo.Lo.create_instance_mcf(
             "com.sun.star.configuration.ConfigurationProvider"
         )
         if con_prov is None:
             print("Could not create configuration provider")
             return None
-        _props = props.Props.make_props(nodepath=node_path)
+        _props = mProps.Props.make_props(nodepath=node_path)
         try:
             return con_prov.createInstanceWithArguments(
                 "com.sun.star.configuration.ConfigurationAccess", _props
@@ -358,7 +357,7 @@ class Info:
         _props: XChangesBatch = cls.set_config_props(node_path=node_path)
         if _props is None:
             return False
-        props.Props.set_property(prop_set=_props, name=node_str, value=val)
+        mProps.Props.set_property(prop_set=_props, name=node_str, value=val)
         try:
             _props.commitChanges()
             return True
@@ -390,9 +389,9 @@ class Info:
             print(f"Zero length string")
             return None
         p = Path(fnm)
-        if not p.is_file():
-            print(f"Not a file: {fnm}")
-            return None
+        # if not p.is_file():
+        #     print(f"Not a file: {fnm}")
+        #     return None
         if p.suffix == "":
             print(f"No extension found for '{fnm}'")
             return None
@@ -416,15 +415,15 @@ class Info:
 
     @staticmethod
     def get_doc_type(fnm: str) -> str | None:
-        xdetect: XTypeDetection = lo.Lo.create_instance_mcf(
+        xdetect: XTypeDetection = mLo.Lo.create_instance_mcf(
             "com.sun.star.document.TypeDetection"
         )
         if xdetect is None:
             print("No type detector reference")
             return None
-        if not file_io.FileIO.is_openable(fnm):
+        if not mFileIO.FileIO.is_openable(fnm):
             return None
-        url_str = file_io.FileIO.fnm_to_url(fnm)
+        url_str = mFileIO.FileIO.fnm_to_url(fnm)
         if url_str is None:
             return None
         media_desc = [[Props.make_prop_value(name="URL", value=url_str)]]
@@ -432,52 +431,52 @@ class Info:
 
     @classmethod
     def report_doc_type(cls, doc: object) -> int:
-        doc_type = lo.Lo.UNKNOWN
-        if cls.is_doc_type(obj=doc, doc_type=lo.Lo.WRITER_SERVICE):
+        doc_type = mLo.Lo.UNKNOWN
+        if cls.is_doc_type(obj=doc, doc_type=mLo.Lo.WRITER_SERVICE):
             print("A Writer document")
-            doc_type = lo.Lo.WRITER
-        elif cls.is_doc_type(obj=doc, doc_type=lo.Lo.IMPRESS_SERVICE):
+            doc_type = mLo.Lo.WRITER
+        elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.IMPRESS_SERVICE):
             print("A Impress document")
-            doc_type = lo.Lo.IMPRESS
-        elif cls.is_doc_type(obj=doc, doc_type=lo.Lo.DRAW_SERVICE):
+            doc_type = mLo.Lo.IMPRESS
+        elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.DRAW_SERVICE):
             print("A Draw document")
-            doc_type = lo.Lo.DRAW
-        elif cls.is_doc_type(obj=doc, doc_type=lo.Lo.CALC_SERVICE):
+            doc_type = mLo.Lo.DRAW
+        elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.CALC_SERVICE):
             print("A Calc document")
-            doc_type = lo.Lo.CALC
-        elif cls.is_doc_type(obj=doc, doc_type=lo.Lo.BASE_SERVICE):
+            doc_type = mLo.Lo.CALC
+        elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.BASE_SERVICE):
             print("A Base document")
-            doc_type = lo.Lo.BASE
-        elif cls.is_doc_type(obj=doc, doc_type=lo.Lo.MATH_SERVICE):
+            doc_type = mLo.Lo.BASE
+        elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.MATH_SERVICE):
             print("A Math document")
-            doc_type = lo.Lo.MATH
+            doc_type = mLo.Lo.MATH
         else:
             print("Unknown document")
         return doc_type
 
     @classmethod
     def doc_type_string(cls, doc: object) -> str:
-        if cls.is_doc_type(obj=doc, doc_type=lo.Lo.WRITER_SERVICE):
+        if cls.is_doc_type(obj=doc, doc_type=mLo.Lo.WRITER_SERVICE):
             print("A Writer document")
-            return lo.Lo.WRITER_SERVICE
-        elif cls.is_doc_type(obj=doc, doc_type=lo.Lo.IMPRESS_SERVICE):
+            return mLo.Lo.WRITER_SERVICE
+        elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.IMPRESS_SERVICE):
             print("A Impress document")
-            return lo.Lo.IMPRESS_SERVICE
-        elif cls.is_doc_type(obj=doc, doc_type=lo.Lo.DRAW_SERVICE):
+            return mLo.Lo.IMPRESS_SERVICE
+        elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.DRAW_SERVICE):
             print("A Draw document")
-            return lo.Lo.DRAW_SERVICE
-        elif cls.is_doc_type(obj=doc, doc_type=lo.Lo.CALC_SERVICE):
+            return mLo.Lo.DRAW_SERVICE
+        elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.CALC_SERVICE):
             print("A Calc document")
-            return lo.Lo.CALC_SERVICE
-        elif cls.is_doc_type(obj=doc, doc_type=lo.Lo.BASE_SERVICE):
+            return mLo.Lo.CALC_SERVICE
+        elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.BASE_SERVICE):
             print("A Base document")
-            return lo.Lo.BASE_SERVICE
-        elif cls.is_doc_type(obj=doc, doc_type=lo.Lo.MATH_SERVICE):
+            return mLo.Lo.BASE_SERVICE
+        elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.MATH_SERVICE):
             print("A Math document")
-            return lo.Lo.MATH_SERVICE
+            return mLo.Lo.MATH_SERVICE
         else:
             print("Unknown document")
-            return lo.Lo.UNKNOWN_SERVICE
+            return mLo.Lo.UNKNOWN_SERVICE
 
     @staticmethod
     def is_doc_type(obj: XServiceInfo, doc_type: str) -> bool:
@@ -506,24 +505,24 @@ class Info:
     @staticmethod
     def mime_doc_type(mime_type: str) -> int:
         if mime_type is None:
-            return lo.Lo.UNKNOWN
+            return mLo.Lo.UNKNOWN
         if mime_type.find("vnd.oasis.opendocument.text") >= 0:
-            return lo.Lo.WRITER
+            return mLo.Lo.WRITER
         if mime_type.find("vnd.oasis.opendocument.base") >= 0:
-            return lo.Lo.BASE
+            return mLo.Lo.BASE
         if mime_type.find("vnd.oasis.opendocument.spreadsheet") >= 0:
-            return lo.Lo.CALC
+            return mLo.Lo.CALC
         if (
             mime_type.find("vnd.oasis.opendocument.graphics") >= 0
             or mime_type.find("vnd.oasis.opendocument.image") >= 0
             or mime_type.find("vnd.oasis.opendocument.chart") >= 0
         ):
-            return lo.Lo.DRAW
+            return mLo.Lo.DRAW
         if mime_type.find("vnd.oasis.opendocument.presentation") >= 0:
-            return lo.Lo.IMPRESS
+            return mLo.Lo.IMPRESS
         if mime_type.find("vnd.oasis.opendocument.formula") >= 0:
-            return lo.Lo.MATH
-        return lo.Lo.UNKNOWN
+            return mLo.Lo.MATH
+        return mLo.Lo.UNKNOWN
 
     @staticmethod
     def is_image_mime(mime_type: str) -> bool:
@@ -552,7 +551,7 @@ class Info:
 
     @staticmethod
     def _get_service_names1() -> List[str] | None:
-        mc_factory = lo.Lo.get_component_factory()
+        mc_factory = mLo.Lo.get_component_factory()
         if mc_factory is None:
             return None
         service_names = list(mc_factory.getAvailableServiceNames())
@@ -563,7 +562,7 @@ class Info:
     def _get_service_names2(service_name: str) -> List[str] | None:
         names: List[str] = []
         try:
-            enum_access: XContentEnumerationAccess = lo.Lo.get_component_factory()
+            enum_access: XContentEnumerationAccess = mLo.Lo.get_component_factory()
             x_enum = enum_access.createContentEnumeration(service_name)
             while x_enum.hasMoreElements():
                 si: XServiceInfo = x_enum.nextElement()
@@ -720,7 +719,7 @@ class Info:
         # See Also: https://github.com/hanya/MRI/wiki/RunMRI#Python
         # See Also: https://tinyurl.com/y3m4tx9r#L268
 
-        reflection: CoreReflection = lo.Lo.create_instance_mcf(
+        reflection: CoreReflection = mLo.Lo.create_instance_mcf(
             "com.sun.star.reflection.CoreReflection"
         )
         # fname = reflection.forName('com.sun.star.uno.XInterface')
@@ -918,12 +917,12 @@ class Info:
 
     @staticmethod
     def get_pip() -> XPackageInformationProvider:
-        ctx = lo.Lo.get_context()
+        ctx = mLo.Lo.get_context()
         pip: PackageInformationProvider = ctx.getValueByName(
             "/singletons/com.sun.star.deployment.PackageInformationProvider"
         )
         return pip
-        # return pip.get(lo.Lo.get_context())
+        # return pip.get(mLo.Lo.get_context())
 
     @classmethod
     def list_extensions(cls) -> None:
@@ -946,7 +945,7 @@ class Info:
             print("No package info provider found")
             return
         exts_tbl = pip.getExtensionList()
-        lo.Lo.print_table("Extension", exts_tbl)
+        mLo.Lo.print_table("Extension", exts_tbl)
         for el in exts_tbl:
             if el[0] == id:
                 return el
@@ -964,7 +963,7 @@ class Info:
 
     @staticmethod
     def get_filter_names() -> Tuple[str, ...] | None:
-        na: XNameAccess = lo.Lo.create_instance_mcf(
+        na: XNameAccess = mLo.Lo.create_instance_mcf(
             "com.sun.star.document.FilterFactory"
         )
         if na is None:
@@ -974,7 +973,7 @@ class Info:
 
     @staticmethod
     def get_filter_props(filter_nm: str) -> List[PropertyValue] | None:
-        na: XNameAccess = lo.Lo.create_instance_mcf(
+        na: XNameAccess = mLo.Lo.create_instance_mcf(
             "com.sun.star.document.FilterFactory"
         )
         if na is None:
