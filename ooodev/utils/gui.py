@@ -800,7 +800,7 @@ class GUI:
         for ui_elm in ui_elms:
             el_name = ui_elm.ResourceURL
             to_hide = True
-            show_elms_lst = list(show_elms)
+            # show_elms_lst = list(show_elms)
             for el in show_elms:
                 if el == el_name:
                     show_elms.remove(el)  # this elem is in lm so remove from show_elems

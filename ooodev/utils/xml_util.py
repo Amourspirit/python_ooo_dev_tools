@@ -6,7 +6,8 @@ from xml.dom import minidom
 import urllib.request
 from xml.dom.minicompat import NodeList
 from lxml import etree as ET
-from . import lo
+from . import lo as mLo
+from .gen_util import TableHelper
 
 _xml_parser = ET.XMLParser(remove_blank_text=True)
 
@@ -268,10 +269,11 @@ class XML:
         num_cols = len(col_ids)
         if num_cols == 0 or num_rows == 0:
             return []
-        data = [[1] * num_cols for _ in range(num_rows + 1)]
+        data = TableHelper.make_2d_array(num_rows=num_rows, num_cols=num_cols)
+        # data = [[1] * num_cols for _ in range(num_rows + 1)]
         # put column strings in first row of list
-        for col, col_id in enumerate(col_ids):
-            data[0][col] = lo.Lo.capitalize(col_ids[col])
+        for col, _ in enumerate(col_ids):
+            data[0][col] = mLo.Lo.capitalize(col_ids[col])
 
         for i, node in enumerate(row_nodes):
             # extract all the column strings for ith row
@@ -388,13 +390,13 @@ class XML:
         Returns:
             str: Flat XML filter name.
         """
-        if doc_type == lo.Lo.WRITER_STR:
+        if doc_type == mLo.Lo.WRITER_STR:
             return "OpenDocument Text Flat XML"
-        elif doc_type == lo.Lo.CALC_STR:
+        elif doc_type == mLo.Lo.CALC_STR:
             return "OpenDocument Spreadsheet Flat XML"
-        elif doc_type == lo.Lo.DRAW_STR:
+        elif doc_type == mLo.Lo.DRAW_STR:
             return "OpenDocument Drawing Flat XML"
-        elif doc_type == lo.Lo.IMPRESS_STR:
+        elif doc_type == mLo.Lo.IMPRESS_STR:
             return "OpenDocument Presentation Flat XML"
         else:
             print("No Flat XML filter for this document type; using Flat text")
