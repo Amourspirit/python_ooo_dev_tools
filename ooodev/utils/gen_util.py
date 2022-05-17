@@ -1,5 +1,5 @@
-
 # coding: utf-8
+from typing import NamedTuple, Any
 
 class TableHelper:
 
@@ -44,3 +44,8 @@ class TableHelper:
             (div, mod) = divmod(div-1, 26) # will return (x, 0 .. 25)
             str_col = chr(mod + 65) + str_col
         return str_col
+
+class ArgsHelper:
+    class NameValue(NamedTuple):
+        name: str
+        value: Any
