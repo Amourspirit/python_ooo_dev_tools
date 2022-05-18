@@ -167,3 +167,28 @@ def test_to_2d_tuple():
     assert len(tpl) == 1
     assert isinstance(tpl[0], tuple)
     assert tpl[0][0] == "one"
+
+def test_col_name_to_int():
+    name = 'a'
+    i = TableHelper.col_name_to_int(name)
+    assert i == 1
+    
+    name = 'A'
+    i = TableHelper.col_name_to_int(name)
+    assert i == 1
+    
+    name = 'Z'
+    i = TableHelper.col_name_to_int(name)
+    assert i == 26
+    
+    name = 'AA'
+    i = TableHelper.col_name_to_int(name)
+    assert i == 27
+    
+    name = 'ABC'
+    i = TableHelper.col_name_to_int(name)
+    assert i == 731
+    
+    col_name = TableHelper.make_column_name(473)
+    i = TableHelper.col_name_to_int(col_name)
+    assert i == 473

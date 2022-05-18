@@ -4,6 +4,25 @@ from inspect import isclass
 
 
 class TableHelper:
+    @staticmethod
+    def col_name_to_int(name: str) -> int:
+        """
+        Converts a Column Name into an int.
+        Results are one based so ``a`` converts to ``1``
+
+        Args:
+            name (str):Case insensitive column name such as 'a' or 'AB'
+
+        Returns:
+            int: One based int representing column name
+        """
+        pow = 1
+        col_num = 0
+        for letter in name[::-1]:
+                col_num += (int(letter, 36) -9) * pow
+                pow *= 26
+        return col_num
+
     @classmethod
     def make_cell_name(cls, row: int, col: int) -> str:
         """
