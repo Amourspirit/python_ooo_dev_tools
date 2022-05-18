@@ -34,8 +34,11 @@ from com.sun.star.sheet import XViewFreezable
 from com.sun.star.sheet.CellDeleteMode import LEFT as DM_LEFT, UP as DM_UP
 from com.sun.star.sheet.CellInsertMode import RIGHT as IM_RIGHT, DOWN as IM_DOWN
 from com.sun.star.sheet.FillDateMode import FILL_DATE_DAY
+from com.sun.star.style import XStyle
+from com.sun.star.table import BorderLine2  # struct
 from com.sun.star.table import CellAddress
 from com.sun.star.table import CellRangeAddress
+from com.sun.star.table import TableBorder2  # struct
 from com.sun.star.table import XColumnRowRange
 from com.sun.star.table import XCell
 from com.sun.star.table import XCellRange
@@ -49,6 +52,8 @@ from com.sun.star.uno import Exception as UnoException
 from com.sun.star.util import NumberFormat  # const
 from com.sun.star.util import XNumberFormatsSupplier
 from com.sun.star.util import XNumberFormatTypes
+from com.sun.star.util import XSearchable
+from com.sun.star.util import XSearchDescriptor
 
 from ..utils import lo as mLo
 from ..utils import info as mInfo
@@ -600,35 +605,49 @@ class Calc:
 
     @classmethod
     def set_val(cls, *args, **kwargs) -> None:
-        ordered_keys = ("first", "second", "third", "fourth")
-        kargs = {}
-        kargs["first"] = kwargs.get("value", None)
-        if "cell" in kwargs:
-            kargs["second"] = kwargs["cell"]
-        elif "sheet" in kwargs:
-            kargs["second"] = kwargs["sheet"]
-        elif "cell_name" in kwargs:
-            kargs["third"] = kwargs["cell_name"]
-        elif "column" in kwargs:
-            kargs["third"] = kwargs["column"]
-        elif "row" in kwargs:
-            kargs["fourth"] = kwargs["row"]
-        for i, arg in enumerate(args):
-            kargs[ordered_keys[i]] = arg
-        k_len = len(kargs)
-        if k_len < 2 or k_len > 4:
+        ordered_keys = (1, 2, 3, 4)
+        count = len(args) + len(kwargs)
+
+        def get_kwargs() -> dict:
+            ka = {}
+            ka[1] = kwargs.get("value", None)
+            keys = ("cell", "sheet")
+            for key in keys:
+                if key in kwargs:
+                    ka[2] = kwargs[key]
+                    break
+            if count == 2:
+                return ka
+            
+            keys = ("cell_name", "column")
+            for key in keys:
+                if key in kwargs:
+                    ka[3] = kwargs[key]
+                    break
+            if count == 3:
+                return ka
+            ka[4] = kwargs.get["row", None]
+            return ka
+
+        if not count in (2, 3, 4):
             print("invalid number of arguments for set_val()")
             return
-        if k_len == 2:
-            cls._set_val_by_cell(value=kargs["first"], cell=kargs["second"])
-        elif k_len == 3:
-            cls._set_val_by_cell_name(value=kargs["first"], sheet=kargs["second"], cell_name=kargs["third"])
-        elif k_len == 4:
+
+        kargs = get_kwargs()
+
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
+
+        if count == 2:
+            cls._set_val_by_cell(value=kargs[1], cell=kargs[2])
+        elif count == 3:
+            cls._set_val_by_cell_name(value=kargs[1], sheet=kargs[2], cell_name=kargs[3])
+        elif count == 4:
             cls._set_val_by_col_row(
-                value=kargs["first"],
-                sheet=kargs["second"],
-                column=kargs["third"],
-                row=kargs["fourth"],
+                value=kargs[1],
+                sheet=kargs[2],
+                column=kargs[3],
+                row=kargs[4]
             )
 
     @staticmethod
@@ -1549,7 +1568,7 @@ class Calc:
         return addr.getRangeAddress()
 
     @classmethod
-    def _get_address_sheet(cls, sheet: XSpreadsheet, range_name: str) -> CellRangeAddress | None:
+    def _get_address_sht_rng(cls, sheet: XSpreadsheet, range_name: str) -> CellRangeAddress | None:
         return cls._get_address_cell(cls._get_cell_range_rng_name(sheet=sheet, range_name=range_name))
 
     @overload
@@ -1597,7 +1616,7 @@ class Calc:
         if count == 1:
             return cls._get_address_cell(kargs["first"])
         else:
-            return cls._get_address_sheet(kargs["first"], kargs["second"])
+            return cls._get_address_sht_rng(kargs["first"], kargs["second"])
 
     @overload
     @staticmethod
@@ -1611,7 +1630,7 @@ class Calc:
 
     @classmethod
     def print_cell_address(cls, *args, **kwargs) -> None:
-        ordered_keys = "first"
+        ordered_keys = ("first",)
         count = len(args) + len(kwargs)
 
         def get_kwargs() -> dict:
@@ -1653,16 +1672,16 @@ class Calc:
 
     @classmethod
     def print_address(cls, *args, **kwargs) -> None:
-        ordered_keys = "first"
+        ordered_keys = ("first",)
         count = len(args) + len(kwargs)
 
         def get_kwargs() -> dict:
             ka = {}
-            key = "cell"
+            key = "cell_range"
             if key in kwargs:
                 ka["first"] = kwargs[key]
 
-            key = "addr"
+            key = "cr_addr"
             if key in kwargs:
                 ka["first"] = kwargs[key]
             return ka
@@ -1717,12 +1736,11 @@ class Calc:
                 return False
         except AttributeError:
             return False
-
-        if addr1.typeName == "com.sun.star.table.CellAddress":
+        if mInfo.Info.is_type_struct(addr1, "com.sun.star.table.CellAddress"):
             a = cast(CellAddress, addr1)
             b = cast(CellAddress, addr2)
             return a.Sheet == b.Sheet and a.Column == b.Column and a.Row == b.Row
-        if addr1.typeName == "com.sun.star.table.CellRangeAddress":
+        if mInfo.Info.is_type_struct(addr1, "com.sun.star.table.CellRangeAddress"):
             a = cast(CellRangeAddress, addr1)
             b = cast(CellRangeAddress, addr2)
             return (
@@ -1735,15 +1753,137 @@ class Calc:
         return False
 
     # ------- convert cell range address to string ------------------
+    @classmethod
+    def _get_range_str_cell_rng_sht(cls, cell_range: XCellRange, sheet: XSpreadsheet) -> str:
+        return cls._get_range_str_cr_addr_sht(cls._get_address_cell(cell_range=cell_range), sheet)
+
+    @classmethod
+    def _get_range_str_cr_addr_sht(cls, cr_addr: CellRangeAddress, sheet: XSpreadsheet) -> str:
+        xnamed = mLo.Lo.qi(XNamed, cr_addr)
+        return f"{xnamed.getName()}.{cls._get_range_str_cr_addr(cr_addr)}"
+
+    @classmethod
+    def _get_range_str_cell_rng(cls, cell_range: XCellRange) -> str:
+        return cls._get_range_str_cr_addr(cls._get_address_cell(cell_range=cell_range))
+
+    @classmethod
+    def _get_range_str_cr_addr(cls, cr_addr: CellRangeAddress) -> str:
+        result = f"{cls._get_cell_str_col_row(cr_addr.StartColumn, cr_addr.StartRow)}:"
+        result += f"{cls._get_cell_str_col_row(cr_addr.EndColumn, cr_addr.EndRow)}"
+        return result
+
+    @classmethod
+    def _get_range_str_col_row(cls, start_col: int, start_row: int, end_col: int, end_row: int) -> str:
+        return f"{cls._get_cell_str_col_row(start_col, start_row)}:{cls._get_cell_str_col_row(end_col, end_row)}"
 
     @overload
     @staticmethod
-    def get_cell_str(cell: XCell) -> str:
+    def get_range_str(cell_range: XCellRange, sheet: XSpreadsheet) -> str:
         ...
 
     @overload
     @staticmethod
+    def get_range_str(cr_addr: CellRangeAddress, sheet: XSpreadsheet) -> str:
+        ...
+
+    @overload
+    @staticmethod
+    def get_range_str(cell_range: XCellRange) -> str:
+        ...
+
+    @overload
+    @staticmethod
+    def get_range_str(cr_addr: CellRangeAddress) -> str:
+        ...
+
+    @overload
+    @staticmethod
+    def get_range_str(start_col: int, start_row: int, end_col: int, end_row: int) -> str:
+        ...
+
+    @classmethod
+    def get_range_str(cls, *args, **kwargs) -> str:
+        ordered_keys = ("first", "second", "third", "fourth")
+        count = len(args) + len(kwargs)
+
+        def get_kwargs() -> dict:
+            ka = {}
+            keys = ("cell_range", "cr_addr", "cell_range", "start_col")
+            for key in keys:
+                if key in kwargs:
+                    ka["first"] = kwargs[key]
+                    break
+
+            if count == 1:
+                return ka
+
+            keys = ("sheet", "start_row")
+            for key in keys:
+                if key in kwargs:
+                    ka["second"] = kwargs[key]
+                    break
+            if count == 2:
+
+                return ka
+
+            ka["third"] = kwargs.get["end_col", None]
+            ka["fourth"] = kwargs.get["end_row", None]
+
+            return ka
+
+        if count < 1 or count > 4:
+            print("invalid number of arguments for get_range_str()")
+            return None
+
+        kargs = get_kwargs()
+
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
+
+        if count == 1:
+            # def get_range_str(cell_range: XCellRange) or
+            # def get_range_str(cr_addr: CellRangeAddress)
+            if mInfo.Info.is_type_interface(kargs["first"], "com.sun.star.table.XCellRange"):
+                return cls._get_range_str_cell_rng(cell_range=kargs["first"])
+            else:
+                return cls._get_range_str_cr_addr(cr_addr=kargs["first"])
+
+        elif count == 2:
+            # def get_range_str(cell_range: XCellRange, sheet: XSpreadsheet) or
+            # def get_range_str(cr_addr: CellRangeAddress, sheet: XSpreadsheet)
+            if mInfo.Info.is_type_interface(kargs["first"], "com.sun.star.table.XCellRange"):
+                return cls._get_range_str_cell_rng_sht(cell_range=kargs["first"], sheet=kargs["second"])
+            else:
+                return cls._get_range_str_cr_addr_sht(cr_add=kargs["first"], sheet=kargs["second"])
+        else:
+            # def get_range_str(start_col:int, start_row:int, end_col:int, end_row:int)
+            return cls._get_range_str_col_row(
+                start_col=kargs["first"], start_row=kargs["second"], end_col=kargs["third"], end_row=kargs["fourth"]
+            )
+
+    @classmethod
+    def _get_cell_str_addr(cls, addr: CellAddress) -> str:
+        return cls._get_cell_str_col_row(col=addr.Column, row=addr.Row)
+
+    @classmethod
+    def _get_cell_str_col_row(cls, col: int, row: int) -> str:
+        if col < 0 or row > 0:
+            print("Cell position is negative; using A1")
+            return "A1"
+        return f"{cls.column_number_str(col)}{row + 1}"
+
+    @classmethod
+    def _get_cell_str_cell(cls, cell: XCell) -> str:
+        return cls._get_cell_str_addr(cls._get_cell_address_cell(cell=cell))
+
+    @overload
+    @staticmethod
     def get_cell_str(addr: CellAddress) -> str:
+        ...
+
+    @overload
+    @staticmethod
+    def get_cell_str(cell: XCell) -> str:
         ...
 
     @overload
@@ -1753,4 +1893,316 @@ class Calc:
 
     @classmethod
     def get_cell_str(cls, *args, **kwargs) -> str:
+        ordered_keys = ("first", "second")
+        count = len(args) + len(kwargs)
+
+        def get_kwargs() -> dict:
+            ka = {}
+            keys = ("addr", "cell", "col")
+            for key in keys:
+                if key in kwargs:
+                    ka["first"] = kwargs[key]
+                    break
+
+            if count == 1:
+                return ka
+
+            ka["second"] = kwargs.get["row", None]
+            return ka
+
+        if count < 1 or count > 2:
+            print("invalid number of arguments for get_cell_str()")
+            return None
+
+        kargs = get_kwargs()
+
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
+
+        if count == 1:
+            # def get_cell_str(addr: CellAddress) or
+            # def get_cell_str(cell: XCell)
+            if mInfo.Info.is_type_interface(kargs["first"], "com.sun.star.table.XCell"):
+                return cls._get_cell_str_cell(kargs["first"])
+            else:
+                return cls._get_cell_str_addr(kargs["first"])
+        else:
+            # def get_cell_str(col: int, row: int)
+            return cls._get_cell_str_col_row(col=kargs["first"], row=kargs["second"])
+
+    @staticmethod
+    def column_number_str(col: int) -> str:
+        """
+        Creates a colum Name from zero base column number.
+
+        Columns are numbered starting at 0 where 0 corresponds to ``A``
+        They run as ``A-Z``, ``AA-AZ``, ``BA-BZ``, ..., ``IV``
+
+        Args:
+            col (int): Zero based column name
+
+        Returns:
+            str: Column Name
+        """
+        num = col + 1  # shift to one based.
+        return TableHelper.make_column_name(num)
+
+    # --------------------- search -----------------------------
+
+    @staticmethod
+    def find_all(srch: XSearchable, sd: XSearchDescriptor) -> Sequence[XCellRange] | None:
+        con = srch.findAll(sd)
+        if con is None:
+            print("Match result is null")
+            return None
+        c_count = con.getCount()
+        if c_count == 0:
+            print("No matches found")
+            return None
+
+        crs = []
+        for i in range(c_count):
+            try:
+                cr = mLo.Lo.qi(XCellRange, con.getByIndex(i))
+                if cr is None:
+                    continue
+                crs.append(cr)
+            except Exception:
+                print(f"Could not access match index {i}")
+        if len(crs) == 0:
+            print(f"Found {c_count} matches but unable to acces any match")
+            return None
+        return crs
+
+    # ---------------------------- cell decoration ------------------------
+
+    @staticmethod
+    def create_cell_style(doc: XSpreadsheetDocument, style_name: str) -> XStyle | None:
+        comp_doc = mLo.Lo.qi(XComponent, doc)
+        style_families = mInfo.Info.get_style_container(doc=comp_doc, family_style_name="CellStyles")
+        style: XStyle = mLo.Lo.create_instance_msf("com.sun.star.style.CellStyle")
+        # "com.sun.star.sheet.TableCellStyle"  crashes insertByName() ??
+        try:
+            style_families.insertByName(style_name, style)
+            return style
+        except Exception:
+            print(f"Unable to create style: {style_name}")
+        return None
+
+    @overload
+    @staticmethod
+    def change_style(sheet: XSpreadsheet, style_name: str, range_name: str) -> None:
         ...
+
+    @overload
+    @staticmethod
+    def change_style(sheet: XSpreadsheet, style_name: str, x1: int, y1: int, x2: int, y2: int) -> None:
+        ...
+
+    @classmethod
+    def change_style(cls, *args, **kwargs) -> None:
+        ordered_keys = (1, 2, 3, 4, 5, 6)
+        count = len(args) + len(kwargs)
+
+        def get_kwargs() -> dict:
+            ka = {}
+            ka[1] = kwargs.get("sheet", None)
+            ka[2] = kwargs.get("style_name", None)
+            keys = ("range_name", "x1")
+            for key in keys:
+                if key in kwargs:
+                    ka[3] = kwargs[key]
+                    break
+
+            if count == 3:
+                return ka
+
+            ka[4] = kwargs.get["y1", None]
+            ka[5] = kwargs.get["x2", None]
+            ka[6] = kwargs.get["y2", None]
+            return ka
+
+        if not count in (3, 6):
+            print("invalid number of arguments for change_style()")
+            return None
+
+        kargs = get_kwargs()
+
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
+        if count == 3:
+            # def change_style(sheet: XSpreadsheet, style_name: str, range_name: str)
+            cell_range = cls._get_cell_range_rng_name(sheet=kargs[1], range_name=kargs[3])  # 1 sheet, 3 range_name
+            if cell_range is None:
+                return
+            mProps.Props.set_property(prop_set=cell_range, name="CellStyle", value=kargs[2])  # 2 style_name
+            return
+        else:
+            # def change_style(sheet: XSpreadsheet, style_name: str, x1: int, y1: int, x2: int, y2:int)
+            cell_range = cls._get_cell_range_col_row(
+                sheet=kargs[1],  # sheet
+                col_start=kargs[3],  # x1
+                row_start=kargs[4],  # y1
+                col_end=kargs[5],  # x2
+                row_end=kargs[6],  # y2
+            )
+            mProps.Props.set_property(prop_set=cell_range, name="CellStyle", value=kargs[2])  # 2 style_name
+        return
+
+    @classmethod
+    def _add_border_sht_rng(cls, sheet: XSpreadsheet, range_name: str) -> None:
+        cls._add_border_sht_rng_color(sheet=sheet, range_name=range_name, color=cls.BLACK)  # color black
+
+    @classmethod
+    def _add_border_sht_rng_color(cls, sheet: XSpreadsheet, range_name: str, color: int) -> None:
+        vals = (
+            cls.BorderEnum.LEFT_BORDER
+            | cls.BorderEnum.RIGHT_BORDER
+            | cls.BorderEnum.TOP_BORDER
+            | cls.BorderEnum.BOTTOM_BORDER
+        )
+        cls._add_border_sht_rng_color_vals(sheet=sheet, range_name=range_name, color=color, border_vals=vals)
+
+    @classmethod
+    def _add_border_sht_rng_color_vals(
+        cls,
+        sheet: XSpreadsheet,
+        range_name: str,
+        color: int,
+        border_vals: "int | Calc.BorderEnum",
+    ) -> None:
+        line = BorderLine2()  # create the border line
+        line.Color = color
+        line.InnerLineWidth = 0
+        line.LineDistance = 0
+        line.OuterLineWidth = 100
+        bvs = cls.BorderEnum(int(border_vals))
+        border = TableBorder2()
+
+        if (bvs & cls.BorderEnum.TOP_BORDER) == cls.BorderEnum.TOP_BORDER:
+            border.TopLine = line
+            border.IsTopLineValid = True
+
+        if (bvs & cls.BorderEnum.BOTTOM_BORDER) == cls.BorderEnum.BOTTOM_BORDER:
+            border.BottomLine = line
+            border.IsBottomLineValid = True
+
+        if (bvs & cls.BorderEnum.LEFT_BORDER) == cls.BorderEnum.LEFT_BORDER:
+            border.LeftLine = line
+            border.IsLeftLineValid = True
+
+        if (bvs & cls.BorderEnum.RIGHT_BORDER) == cls.BorderEnum.RIGHT_BORDER:
+            border.RightLine = line
+            border.IsRightLineValid = True
+        cell_range = sheet.getCellRangeByName(range_name)
+        mProps.Props.set_property(prop_set=cell_range, name="TableBorder2", value=border)
+
+    @overload
+    @staticmethod
+    def add_border(sheet: XSpreadsheet, range_name: str) -> None:
+        ...
+
+    @overload
+    @staticmethod
+    def add_border(sheet: XSpreadsheet, range_name: str, color: int) -> None:
+        ...
+
+    @overload
+    @staticmethod
+    def add_border(sheet: XSpreadsheet, range_name: str, color: int, border_vals: int) -> None:
+        ...
+
+    @overload
+    @staticmethod
+    def add_border(sheet: XSpreadsheet, range_name: str, color: int, border_vals: "Calc.BorderEnum") -> None:
+        ...
+
+    @classmethod
+    def add_border(cls, *args, **kwargs) -> None:
+        ordered_keys = (1, 2, 3, 4)
+        count = len(args) + len(kwargs)
+
+        def get_kwargs() -> dict:
+            ka = {}
+            ka[1] = kwargs.get("sheet", None)
+            ka[2] = kwargs.get("range_name", None)
+            if count == 2:
+                return ka
+            ka[3] = kwargs.get("color", None)
+            if count == 3:
+                return ka
+            ka[4] = kwargs.get["border_vals", None]
+            return ka
+
+        if not count in (2, 3, 4):
+            print("invalid number of arguments for add_border()")
+            return None
+
+        kargs = get_kwargs()
+
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
+        if count == 2:
+            # def add_border(sheet: XSpreadsheet, range_name: str)
+            cls._add_border_sht_rng(sheet=kargs[1], range_name=kargs[2])
+        elif count == 3:
+            # def add_border(sheet: XSpreadsheet, range_name: str, color: int)
+            cls._add_border_sht_rng_color(sheet=kargs[1], range_name=kargs[2], color=kargs[3])
+        else:
+            # def add_border(sheet: XSpreadsheet, range_name: str, color: int, border_vals: int) or
+            # def add_border(sheet: XSpreadsheet, range_name: str, color: int, border_vals: Calc.BorderEnum)
+            cls._add_border_sht_rng_color_vals(
+                sheet=kargs[1], range_name=kargs[2], color=kargs[3], border_vals=kargs[3]
+            )
+
+    @classmethod
+    def highlight_range(cls, sheet: XSpreadsheet, range_name: str, headline: str) -> None:
+        """
+        Draw a colored border around the range and write a headline in the
+        top-left cell of the range.
+        """
+        cls._add_border_sht_rng_color(sheet=sheet, range_name=range_name, color=cls.LIGHT_BLUE)
+        
+        # color the headline
+        addr = cls._get_address_sht_rng(sheet=sheet, range_name=range_name)
+        if addr is None:
+            return
+        header_range = cls._get_cell_range_col_row(
+            sheet=sheet,
+            col_start=addr.StartColumn,
+            row_start=addr.StartRow,
+            col_end=addr.EndColumn,
+            row_end=addr.StartRow
+            )
+        if header_range is None:
+            return
+        first_cell = cls._get_cell_cell_rng(cell_range=header_range, column=0, row=0)
+        if first_cell is None:
+            return
+        cls._set_val_by_cell(value=headline, cell=first_cell)
+    
+    @classmethod
+    def set_col_width(cls, sheet: XSpreadsheet, idx: int, width: int) -> None:
+        """
+        Sets column width.
+        width is in mm, e.g. 6
+        """
+        cell_range = cls.get_col_range(sheet=sheet, idx=idx)
+        if cell_range is None:
+            return
+        mProps.Props.set_property(prop_set=cell_range, name="Width", value=(width*100))
+        
+    @classmethod
+    def set_row_height(cls, sheet: XSpreadsheet, idx: int, height: int) -> None:
+        """
+        Sets column width.
+        height is in mm, e.g. 6
+        """
+        cell_range = cls.get_row_range(sheet=sheet, idx=idx)
+        if cell_range is None:
+            return
+        mInfo.Info.show_services(obj_name="Cell range for a row", obj=cell_range)
+        mProps.Props.set_property(prop_set=cell_range, name="Height", value=(height*100))
+    
+    # --------------------------- scenarios -------------------------------
+    
