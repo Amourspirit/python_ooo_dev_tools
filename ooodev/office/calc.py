@@ -1,11 +1,16 @@
 # coding: utf-8
 # Python conversion of Calc.java by Andrew Davison, ad@fivedots.coe.psu.ac.th
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
+from os import stat
 import sys
 from enum import IntFlag
 import numbers
 import re
+from tkinter import X
 from typing import Any, Iterable, List, Tuple, cast, overload, Sequence
+from com.sun.star._pyi.beans.property_value import PropertyValue
+from com.sun.star._pyi.beans.x_property_set import XPropertySet
+from com.sun.star._pyi.text.x_text import XText
 from com.sun.star.awt import Point
 from com.sun.star.container import XIndexAccess
 from com.sun.star.container import XNamed
@@ -16,18 +21,54 @@ from com.sun.star.frame import XModel
 from com.sun.star.lang import XComponent
 from com.sun.star.lang import Locale
 from com.sun.star.rendering import ViewState
+from com.sun.star.sheet.GeneralFunction import (
+    NONE as GF_NONE,
+    AUTO as GF_AUTO,
+    SUM as GF_SUM,
+    COUNT as GF_COUNT,
+    AVERAGE as GF_AVERAGE,
+    MAX as GF_MAX,
+    MIN as GF_MIN,
+    PRODUCT as GF_PRODUCT,
+    COUNTNUMS as GF_COUNTNUMS,
+    STDEV as GF_STDEV,
+    STDEVP as GF_STDEVP,
+    VAR as GF_VAR,
+    VARP as GF_VARP,
+)
+from com.sun.star.sheet import FunctionArgument  # struct
+from com.sun.star.sheet import SolverConstraint  # struct
+from com.sun.star.sheet.SolverConstraintOperator import (
+    LESS_EQUAL as SCO_LESS_EQUAL,
+    EQUAL as SCO_EQUAL,
+    GREATER_EQUAL as SCO_GREATER_EQUAL,
+    INTEGER as SCO_INTEGER,
+    BINARY as SCO_BINARY,
+)
 from com.sun.star.sheet import XCellAddressable
 from com.sun.star.sheet import XCellRangeData
 from com.sun.star.sheet import XCellRangeAddressable
 from com.sun.star.sheet import XCellRangeMovement
 from com.sun.star.sheet import XCellSeries
+from com.sun.star.sheet import XDataPilotTable
+from com.sun.star.sheet import XDataPilotTables
+from com.sun.star.sheet import XDataPilotTablesSupplier
+from com.sun.star.sheet import XFunctionAccess
+from com.sun.star.sheet import XFunctionDescriptions
+from com.sun.star.sheet import XGoalSeek
+from com.sun.star.sheet import XHeaderFooterContent
+from com.sun.star.sheet import XRecentFunctions
+from com.sun.star.sheet import XScenario
+from com.sun.star.sheet import XScenariosSupplier
 from com.sun.star.sheet import XSheetCellCursor
+from com.sun.star.sheet import XSolver
 from com.sun.star.sheet import XSpreadsheet
 from com.sun.star.sheet import XSpreadsheetDocument
 from com.sun.star.sheet import XSpreadsheetView
 from com.sun.star.sheet import XSheetAnnotationAnchor
 from com.sun.star.sheet import XSheetAnnotationsSupplier
 from com.sun.star.sheet import XSheetCellRange
+from com.sun.star.sheet import XSheetOperation
 from com.sun.star.sheet import XUsedAreaCursor
 from com.sun.star.sheet import XViewPane
 from com.sun.star.sheet import XViewFreezable
@@ -60,6 +101,7 @@ from ..utils import info as mInfo
 from ..utils import gui as mGui
 from ..utils import props as mProps
 from ..utils.gen_util import ArgsHelper, TableHelper
+from ..utils import enum_helper
 
 NameVal = ArgsHelper.NameValue
 
@@ -83,6 +125,34 @@ class Calc:
         BOTTOM_BORDER = 0x02
         LEFT_BORDER = 0x04
         RIGHT_BORDER = 0x08
+
+    class GeneralFunction:
+        __typename__ = "com.sun.star.sheet.GeneralFunction"
+        NONE = GF_NONE
+        AUTO = GF_AUTO
+        SUM = GF_SUM
+        COUNT = GF_COUNT
+        AVERAGE = GF_AVERAGE
+        MAX = GF_MAX
+        MIN = GF_MIN
+        PRODUCT = GF_PRODUCT
+        COUNTNUMS = GF_COUNTNUMS
+        STDEV = GF_STDEV
+        STDEVP = GF_STDEVP
+        VAR = GF_VAR
+        VARP = GF_VARP
+
+    setattr(GeneralFunction, "__new__", enum_helper.uno_enum_class_new)
+
+    class SolverConstraintOperator:
+        __typename__ = "com.sun.star.sheet.SolverConstraintOperator"
+        LESS_EQUAL = SCO_LESS_EQUAL
+        EQUAL = SCO_EQUAL
+        GREATER_EQUAL = SCO_GREATER_EQUAL
+        INTEGER = SCO_INTEGER
+        BINARY = SCO_BINARY
+
+    setattr(SolverConstraintOperator, "__new__", enum_helper.uno_enum_class_new)
 
     # largest value used in XCellSeries.fillSeries
     MAX_VALUE = 0x7FFFFFFF
@@ -618,7 +688,7 @@ class Calc:
                     break
             if count == 2:
                 return ka
-            
+
             keys = ("cell_name", "column")
             for key in keys:
                 if key in kwargs:
@@ -643,12 +713,7 @@ class Calc:
         elif count == 3:
             cls._set_val_by_cell_name(value=kargs[1], sheet=kargs[2], cell_name=kargs[3])
         elif count == 4:
-            cls._set_val_by_col_row(
-                value=kargs[1],
-                sheet=kargs[2],
-                column=kargs[3],
-                row=kargs[4]
-            )
+            cls._set_val_by_col_row(value=kargs[1], sheet=kargs[2], column=kargs[3], row=kargs[4])
 
     @staticmethod
     def convert_to_double(val: object) -> float:
@@ -2069,7 +2134,7 @@ class Calc:
         sheet: XSpreadsheet,
         range_name: str,
         color: int,
-        border_vals: "int | Calc.BorderEnum",
+        border_vals: int | BorderEnum,
     ) -> None:
         line = BorderLine2()  # create the border line
         line.Color = color
@@ -2162,7 +2227,7 @@ class Calc:
         top-left cell of the range.
         """
         cls._add_border_sht_rng_color(sheet=sheet, range_name=range_name, color=cls.LIGHT_BLUE)
-        
+
         # color the headline
         addr = cls._get_address_sht_rng(sheet=sheet, range_name=range_name)
         if addr is None:
@@ -2172,15 +2237,15 @@ class Calc:
             col_start=addr.StartColumn,
             row_start=addr.StartRow,
             col_end=addr.EndColumn,
-            row_end=addr.StartRow
-            )
+            row_end=addr.StartRow,
+        )
         if header_range is None:
             return
         first_cell = cls._get_cell_cell_rng(cell_range=header_range, column=0, row=0)
         if first_cell is None:
             return
         cls._set_val_by_cell(value=headline, cell=first_cell)
-    
+
     @classmethod
     def set_col_width(cls, sheet: XSpreadsheet, idx: int, width: int) -> None:
         """
@@ -2190,8 +2255,8 @@ class Calc:
         cell_range = cls.get_col_range(sheet=sheet, idx=idx)
         if cell_range is None:
             return
-        mProps.Props.set_property(prop_set=cell_range, name="Width", value=(width*100))
-        
+        mProps.Props.set_property(prop_set=cell_range, name="Width", value=(width * 100))
+
     @classmethod
     def set_row_height(cls, sheet: XSpreadsheet, idx: int, height: int) -> None:
         """
@@ -2202,7 +2267,462 @@ class Calc:
         if cell_range is None:
             return
         mInfo.Info.show_services(obj_name="Cell range for a row", obj=cell_range)
-        mProps.Props.set_property(prop_set=cell_range, name="Height", value=(height*100))
-    
+        mProps.Props.set_property(prop_set=cell_range, name="Height", value=(height * 100))
+
     # --------------------------- scenarios -------------------------------
+
+    @staticmethod
+    def insert_scenario(
+        sheet: XSpreadsheet, reange_str: str, vals: Sequence[Sequence[object]], scen_name: str, comment: str
+    ) -> None:
+        # get the cell range with the given address
+        cell_range = sheet.getCellRangeByName(reange_str)
+
+        # create the range address sequence
+        addr = mLo.Lo.qi(XCellRangeAddressable, cell_range)
+        if addr is None:
+            return None
+        cr_addr = [addr.getRangeAddress()]
+
+        # create the scenario
+        supp = mLo.Lo.qi(XScenariosSupplier, sheet)
+        scens = supp.getScenarios()
+        scens.addNewByName(scen_name, cr_addr, comment)
+
+        # insert the values into the range
+        cr_data = mLo.Lo.qi(XCellRangeData, cell_range)
+        cr_data.setDataArray(vals)
+
+    @staticmethod
+    def apply_scenario(sheet: XSpreadsheet, name: str) -> None:
+        try:
+            # get the scenario set
+            supp = mLo.Lo.qi(XScenariosSupplier, sheet)
+            scenarios = supp.getScenarios()
+
+            # get the scenario and activate it
+            scenario = mLo.Lo.qi(XScenario, scenarios.getByName(name))
+
+            scenario.apply()
+        except Exception as e:
+            print("Scenario could not be applied:")
+            print(f"    {e}")
+
+    # ---------------- data pilot methods --------------------------
+
+    @staticmethod
+    def get_pilot_tables(sheet: XSpreadsheet) -> XDataPilotTables | None:
+        db_supp = mLo.Lo.qi(XDataPilotTablesSupplier, sheet)
+        if db_supp is None:
+            print("No data pilot supplier found")
+            return None
+        dp_tables = db_supp.getDataPilotTables()
+        if dp_tables is None:
+            print("No data pilot tables found")
+            return None
+        return dp_tables
+
+    @staticmethod
+    def get_pilot_table(dp_tables: XDataPilotTables, name: str) -> XDataPilotTable | None:
+        try:
+            otable = dp_tables.getByName(name)
+            if otable is None:
+                print(f"Did not find data pilot table '{name}'")
+                return None
+            return mLo.Lo.qi(XDataPilotTable, otable)
+        except Exception as e:
+            print(f"Pilot table lookup failed for '{name}'")
+            print(f"    {e}")
+
+        return None
+
+    # ------------------ using calc functions --------------------------
+
+    @classmethod
+    def compute_function(cls, fn: GeneralFunction | str, cell_range: XCellRange) -> float:
+        """
+        Compuutes a Calc Function
+
+        Args:
+            fn (GeneralFunction | str): Function to calculate, GeneralFunction Enum value or String such as 'SUM' or 'MAX'
+            cell_range (XCellRange): Cell range to apply function on.
+
+        Returns:
+            float: result of function if successful. If there is an errro then 0.0 is returned.
+        """
+        try:
+            sheet_op = mLo.Lo.qi(XSheetOperation, cell_range)
+            func = cls.GeneralFunction(fn)  # convert to enum value if str
+            if not mInfo.Info.is_type_enum(func, cls.GeneralFunction.__typename__):
+                print("Arg fn is invalid, returning 0.0")
+                return 0.0
+            return sheet_op.computeFunction(func)
+        except Exception as e:
+            print("Compute function failed. Returning 0.0")
+            print(f"    {e}")
+        return 0.0
+
+    @overload
+    @staticmethod
+    def call_fun(func_name: str, arg: object) -> object:
+        ...
+
+    @overload
+    @staticmethod
+    def call_fun(func_name: str, args: Tuple[object, ...]) -> object:
+        ...
+
+    @staticmethod
+    def call_fun(*args, **kwargs) -> object | None:
+        ordered_keys = (1, 2)
+        count = len(args) + len(kwargs)
+
+        def get_kwargs() -> dict:
+            ka = {}
+            ka[1] = kwargs.get("func_name", None)
+            keys = ("arg", "args")
+            for key in keys:
+                if key in kwargs:
+                    ka[2] = kwargs[key]
+                    break
+            return ka
+
+        if count != 2:
+            print("invalid number of arguments for call_fun()")
+            return None
+
+        kargs = get_kwargs()
+
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
+
+        if isinstance(kargs[2], tuple):
+            arg = kargs[2]
+        else:
+            arg = [kargs[2]]
+        try:
+            fa: XFunctionAccess = mLo.Lo.create_instance_mcf("com.sun.star.sheet.FunctionAccess")
+            return fa.callFunction(kargs[1], kargs[2])
+        except Exception:
+            print(f"Could not invoke function '{kargs[1]}'")
+        return None
+
+    @staticmethod
+    def get_function_names() -> List[str] | None:
+        funcs_desc: XFunctionDescriptions = mLo.Lo.create_instance_mcf("com.sun.star.sheet.FunctionDescriptions")
+        if funcs_desc is None:
+            print("No function descriptions were found")
+            return None
+
+        nms: List[str] = []
+        for i in range(funcs_desc.getCount()):
+            try:
+                props = cast(Sequence[PropertyValue], funcs_desc.getByIndex(i))
+                for p in props:
+                    if p.Name == "Name":
+                        nms.append(str(p.Value))
+                        break
+            except Exception:
+                continue
+        if len(nms) == 0:
+            print("No function names were found")
+            return None
+        nms.sort()
+        return nms
+
+    @staticmethod
+    def _find_function_by_name(func_nm: str) -> Tuple[PropertyValue] | None:
+        if not func_nm:
+            print("Please supply a function name to find.")
+            return None
+        func_desc: XFunctionDescriptions = mLo.Lo.create_instance_mcf("com.sun.star.sheet.FunctionDescriptions")
+        if func_desc is None:
+            print("No function descriptions were found")
+            return None
+
+        for i in range(func_desc.getCount()):
+            try:
+                props = cast(Sequence[PropertyValue], func_desc.getByIndex(i))
+                for p in props:
+                    if p.Name == "Name" and str(p.Value) == func_nm:
+                        return tuple(props)
+            except Exception:
+                continue
+        print(f"Function '{func_nm}' not found")
+        return None
+
+    @staticmethod
+    def _find_function_by_idx(idx: int) -> Tuple[PropertyValue] | None:
+        if idx < 0:
+            print("Please supply a positive index value to.")
+            return None
+        func_desc: XFunctionDescriptions = mLo.Lo.create_instance_mcf("com.sun.star.sheet.FunctionDescriptions")
+        if func_desc is None:
+            print("No function descriptions were found")
+            return None
+
+        try:
+            return tuple(func_desc.getByIndex(idx))
+        except Exception as e:
+            print(f"Could not access function description {idx}")
+            print(f"    {e}")
+        return None
+
+    @overload
+    @staticmethod
+    def find_function(func_nm: str) -> Tuple[PropertyValue] | None:
+        ...
+
+    @overload
+    @staticmethod
+    def find_function(idx: int) -> Tuple[PropertyValue] | None:
+        ...
+
+    @classmethod
+    def find_function(cls, *args, **kwargs) -> Tuple[PropertyValue] | None:
+        ordered_keys = (1,)
+        count = len(args) + len(kwargs)
+
+        def get_kwargs() -> dict:
+            ka = {}
+            keys = ("func_nm", "idx")
+            for key in keys:
+                if key in kwargs:
+                    ka[1] = kwargs[key]
+                    break
+            return ka
+
+        if count != 1:
+            print("invalid number of arguments for find_function()")
+            return None
+
+        kargs = get_kwargs()
+
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
+        if isinstance(kargs[1], int):
+            return cls._find_function_by_idx(kargs[1])
+        return cls._find_function_by_name(kargs[1])
+
+    @classmethod
+    def print_fun_argument(cls, prop_vals: Sequence[PropertyValue]) -> None:
+        fargs: Sequence[FunctionArgument] = mProps.Props.get_value(name="Arguments", props=prop_vals)
+        if fargs is None:
+            print("No arguments found")
+            return
+
+        print(f"No. of arguments: {len(fargs)}")
+        for i, arg in enumerate(fargs):
+            cls.print_fun_argument(i, arg)
+
+    @staticmethod
+    def print_fun_argument(i: int, fa: FunctionArgument) -> None:
+        print(f"{i+1}. Argument name: {fa.Name}")
+        print(f"  Description: '{fa.Description}'")
+        print(f"  Is optional?: {fa.IsOptional}")
+        print()
+
+    @staticmethod
+    def get_recent_functions() -> Tuple[int, ...] | None:
+        recent_funcs: XRecentFunctions = mLo.Lo.create_instance_mcf("com.sun.star.sheet.RecentFunctions")
+        if recent_funcs is None:
+            print("No recent functions found")
+            return None
+
+        return recent_funcs.getRecentFunctionIds()
+
+    # ------------------------ solver methods --------------------------
+
+    @classmethod
+    def goal_seek(
+        cls, gs: XGoalSeek, sheet: XSpreadsheet, cell_name: str, formula_cell_name: str, result: float
+    ) -> float:
+        """find x in formula when it equals result"""
+        xpos = cls._get_cell_address_sheet(sheet=sheet, cell_name=cell_name)
+        formula_pos = cls._get_cell_address_sheet(sheet=sheet, cell_name=formula_cell_name)
+
+        goal_result = gs.seekGoal(formula_pos, xpos, f"{result}")
+        if goal_result.Divergence >= 0.1:
+            print(f"NO result; divergence: {goal_result.Divergence}")
+        return goal_result.Divergence
+
+    @staticmethod
+    def list_solvers() -> None:
+        print("Services offered by the solver:")
+        nms = mInfo.Info.get_service_names(service_name="com.sun.star.sheet.Solver")
+        if nms is None:
+            print("  none")
+            return
+
+        for service in nms:
+            print(f"  {service}")
+        print()
+
+    @classmethod
+    def to_constraint_op(cls, op: str) -> SolverConstraintOperator:
+        if op == "=" or op == "==":
+            return cls.SolverConstraintOperator.EQUAL
+        if (op == "<=") or op == "=<":
+            return cls.SolverConstraintOperator.LESS_EQUAL
+        if (op == ">=") or op == "=>":
+            return cls.SolverConstraintOperator.GREATER_EQUAL
+        print(f"Do not recognise op: {op}; using EQUAL")
+        return cls.SolverConstraintOperator.EQUAL
+
+    # region    make_constraint()
+    @classmethod
+    def _make_constraint_op_str_sht_cell_name(
+        cls, num: float, op: str, sheet: XSpreadsheet, cell_name: str
+    ) -> SolverConstraint | None:
+        return cls._make_constraint_op_str_addr(
+            num=num, op=op, addr=cls._get_cell_address_sheet(sheet=sheet, cell_name=cell_name)
+        )
+
+    @classmethod
+    def _make_constraint_op_str_addr(cls, num: float, op: str, addr: CellAddress) -> SolverConstraint | None:
+        return cls._make_constraint_op_sco_addr(num=num, op=cls.to_constraint_op(op), addr=addr)
+
+    @classmethod
+    def _make_constraint_op_sco_sht_cell_name(
+        cls, num: float, op: SolverConstraintOperator, sheet: XSpreadsheet, cell_name: str
+    ) -> SolverConstraint | None:
+        return cls._make_constraint_op_sco_addr(
+            num=num, op=op, addr=cls._get_cell_address_sheet(sheet=sheet, cell_name=cell_name)
+        )
+
+    @classmethod
+    def _make_constraint_op_sco_addr(
+        cls, num: float, op: SolverConstraintOperator, addr: CellAddress
+    ) -> SolverConstraint | None:
+        sc = SolverConstraint()
+        sc.Left = addr
+        sc.Operator = op
+        sc.Right = num
+        return sc
+
+    @overload
+    @staticmethod
+    def make_constraint(num: float, op: str, addr: CellAddress) -> SolverConstraint | None:
+        ...
+
+    @overload
+    @staticmethod
+    def make_constraint(num: float, op: SolverConstraintOperator, addr: CellAddress) -> SolverConstraint | None:
+        ...
+
+    @overload
+    @staticmethod
+    def make_constraint(num: float, op: str, sheet: XSpreadsheet, cell_name: str) -> SolverConstraint | None:
+        ...
+
+    @overload
+    @staticmethod
+    def make_constraint(
+        num: float, op: SolverConstraintOperator, sheet: XSpreadsheet, cell_name: str
+    ) -> SolverConstraint | None:
+        ...
+
+    @classmethod
+    def make_constraint(cls, *args, **kwargs) -> SolverConstraint | None:
+        ordered_keys = (1, 2, 3, 4)
+        count = len(args) + len(kwargs)
+
+        def get_kwargs() -> dict:
+            ka = {}
+            ka[1] = kwargs.get("num", None)
+            ka[2] = kwargs.get("op", None)
+            keys = ("sheet", "addr")
+            for key in keys:
+                if key in kwargs:
+                    ka[3] = kwargs[key]
+                    break
+            if count == 3:
+                return ka
+            ka[4] = kwargs.get("cell_name", None)
+            return ka
+
+        if not count(3, 4):
+            print("invalid number of arguments for make_constraint()")
+            return None
+
+        kargs = get_kwargs()
+
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
+        if count == 3:
+            if isinstance(kargs[2], str):
+                # def make_constraint(num: float, op: str, addr: CellAddress)
+                return cls._make_constraint_op_str_addr(num=kargs[1], op=kargs[2], addr=kargs[3])
+            else:
+                # def make_constraint(num: float, op: SolverConstraintOperator, addr: CellAddress)
+                return cls._make_constraint_op_sco_addr(num=kargs[1], op=kargs[2], addr=kargs[3])
+        else:
+            if isinstance(kargs[2], str):
+                # def make_constraint(num: float, op: str, sheet: XSpreadsheet, cell_name:str)
+                return cls._make_constraint_op_str_sht_cell_name(
+                    num=kargs[1], op=kargs[2], sheet=kargs[3], cell_name=kargs[4]
+                )
+            else:
+                # def make_constraint(num: float, op: SolverConstraintOperator, sheet: XSpreadsheet, cell_name:str)
+                return cls._make_constraint_op_sco_sht_cell_name(
+                    num=kargs[1], op=kargs[2], sheet=kargs[3], cell_name=kargs[4]
+                )
+    # endregion    make_constraint()
     
+    @classmethod
+    def solver_report(cls, solver: XSolver) -> None:
+        # note: in original java it was getSuccess(), getObjective(), getVariables(), getSolution(),
+        # These are typedef properties. The types-unopy typings are correct. Typedef are represented as Class Properties.
+        is_successful = solver.Success
+        cell_name = cls._get_cell_str_addr(solver.Objective)
+        print("Solver result: ")
+        print(f"  {cell_name} == {solver.ResultValue:.4f}")
+        addrs = solver.Variables
+        solns = solver.Solution
+        print("Solver variables: ")
+        for i, num in enumerate(solns):
+            cell_name = cls._get_cell_str_addr(addrs[i])
+            print(f"  {cell_name} == {num:.4f}")
+        print()
+    
+    # ------------------ headers /footers --------------------------
+    
+    @staticmethod
+    def get_head_foot(props: XPropertySet, content: str) -> XHeaderFooterContent | None:
+        return mLo.Lo.qi(
+            XHeaderFooterContent,
+            mProps.Props.get_property(x_props=props, name=content)
+            )
+    
+    @staticmethod
+    def print_head_foot(title: str, hfc: XHeaderFooterContent) -> None:
+        left = hfc.getLeftText()
+        center = hfc.getCenterText()
+        right = hfc.getRightText()
+        print(f"{title}: '{left.getString()}' : '{center.getString()}' : '{right.getString()}'")
+    
+    @classmethod
+    def get_region(cls, hfc: XHeaderFooterContent, region: int) -> XText | None:
+        if hfc is None:
+            print("Header/footer content is null")
+            return None
+    
+        if region == cls.HF_LEFT:
+            return hfc.getLeftText()
+        if region == cls.HF_CENTER:
+            return hfc.getCenterText()
+        if region == cls.HF_RIGHT:
+            return hfc.getRightText()
+        print("Unknown header/footer region")
+        return None
+    
+    @classmethod
+    def set_head_foot(cls, hfc: XHeaderFooterContent, region:int, text: str) -> None:
+        xtext = cls.get_region(hfc=hfc, region = region)
+        if xtext is None:
+            print("Could not set text")
+            return
+        header_cursor = xtext.createTextCursor()
+        header_cursor.gotoStart(False)
+        header_cursor.gotoEnd(True)
+        header_cursor.setString(text)

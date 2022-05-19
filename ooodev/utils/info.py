@@ -1076,4 +1076,22 @@ class Info:
         if hasattr(obj, "__pyunointerface__"):
             return obj.__pyunointerface__ == type_name
         return False
+    
+    @staticmethod
+    def is_type_enum(obj: uno.Enum, type_name: str) -> bool:
+        """
+        Gets if an object is a Uno enum of matching type.
+
+        Args:
+            obj (object): Object to test if is uno enum
+            type_name (str): Type string such as 'com.sun.star.sheet.GeneralFunction'
+
+        Returns:
+            bool: True if 'obj' is uno enum and 'obj' matches 'type_name'; Otherwise, False
+        """
+        if obj is None:
+            return False
+        if hasattr(obj, "typeName"):
+            return obj.typeName == type_name
+        return False
         
