@@ -2377,10 +2377,10 @@ class Calc:
 
     @staticmethod
     def insert_scenario(
-        sheet: XSpreadsheet, reange_str: str, vals: Sequence[Sequence[object]], scen_name: str, comment: str
+        sheet: XSpreadsheet, range_str: str, vals: Sequence[Sequence[object]], scen_name: str, comment: str
     ) -> None:
         # get the cell range with the given address
-        cell_range = sheet.getCellRangeByName(reange_str)
+        cell_range = sheet.getCellRangeByName(range_str)
 
         # create the range address sequence
         addr = mLo.Lo.qi(XCellRangeAddressable, cell_range)
