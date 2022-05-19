@@ -208,6 +208,7 @@ class Calc:
 
     # region --------------- sheet methods -----------------------------
 
+    # region    get_sheet()
     @staticmethod
     def _get_sheet_index(doc: XSpreadsheetDocument, index: int) -> XSpreadsheet | None:
         """return the spreadsheet with the specified index (0-based)"""
@@ -260,6 +261,8 @@ class Calc:
             return cls._get_sheet_index(kargs["first"], kargs["second"])
         return cls._get_sheet_name(kargs["first"], kargs["second"])
 
+    # endregion get_sheet()
+
     @staticmethod
     def insert_sheet(doc: XSpreadsheetDocument, name: str, idx: int) -> XSpreadsheet | None:
         sheets = doc.getSheets()
@@ -271,6 +274,8 @@ class Calc:
             print("Could not insert sheet:")
             print(f"    {e}")
         return sheet
+
+    # region    remove_sheet()
 
     @staticmethod
     def _remove_sheet_name(doc: XSpreadsheetDocument, sheet_name: str) -> bool:
@@ -326,6 +331,8 @@ class Calc:
         if isinstance(kargs["first"], int):
             return cls._remove_sheet_index(kargs["first"], kargs["second"])
         return cls._remove_sheet_name(kargs["first"], kargs["second"])
+
+    # endregion remove_sheet()
 
     @staticmethod
     def move_sheet(doc: XSpreadsheetDocument, name: str, idx: int) -> bool:
@@ -418,6 +425,7 @@ class Calc:
     def freeze_rows(cls, doc: XSpreadsheetDocument, num_rows: int) -> None:
         cls.freeze(doc=doc, num_cols=0, num_rows=num_rows)
 
+    # region    goto_cell()
     @overload
     @staticmethod
     def goto_cell(cell_name: str, doc: XSpreadsheetDocument) -> None:
@@ -451,12 +459,16 @@ class Calc:
         props = mProps.Props.make_props(ToPoint=kargs["first"])
         mLo.Lo.dispatch_cmd(cmd="GoToCell", props=props, frame=frame)
 
+    # endregion    goto_cell()
+
     @classmethod
     def split_window(cls, doc: XSpreadsheetDocument, cell_name: str) -> None:
         frame = cls.get_controller(doc).getFrame()
         cls.goto_cell(cell_name=cell_name, frame=frame)
         props = mProps.Props.make_props(ToPoint=cell_name)
         mLo.Lo.dispatch_cmd(cmd="SplitWindow", props=props, frame=frame)
+
+    # region    get_selected_addr()
 
     @overload
     @staticmethod
@@ -469,25 +481,35 @@ class Calc:
         ...
 
     @classmethod
-    def get_selected_addr_model(cls, *args, **kwargs) -> CellRangeAddress | None:
-        ordered_keys = ("first",)
-        kargs = {}
-        if "doc" in kwargs:
-            kargs["first"] = kwargs["doc"]
-        elif "model" in kwargs:
-            kargs["first"] = kwargs["model"]
+    def get_selected_addr(cls, *args, **kwargs) -> CellRangeAddress | None:
+        ordered_keys = (1,)
+        count = len(args) + len(kwargs)
+
+        def get_kwargs() -> dict:
+            ka = {}
+            keys = ("doc", "model")
+            for key in keys:
+                if key in kwargs:
+                    ka[1] = kwargs[key]
+                    break
+            return ka
+
+        if count != 1:
+            print("invalid number of arguments for get_selected_addr()")
+            return None
+
+        kargs = get_kwargs()
+
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
-        k_len = len(kargs)
-        if k_len != 1:
-            print("invalid number of arguments for get_selected_addr_model()")
-            return
-
-        doc = mLo.Lo.qi(XSpreadsheetDocument, kargs["first"])
-        if doc is not None:
-            model = mLo.Lo.qi(XModel, doc)
+        
+        if mInfo.Info.is_type_interface(obj=kargs[1], type_name=XSpreadsheetDocument.__pyunointerface__):
+            # def get_selected_addr(doc: XSpreadsheetDocument)
+            model = mLo.Lo.qi(XModel, kargs[1])
         else:
-            model = cast(XModel, kargs["first"])
+            # def get_selected_addr(model: XModel)
+            model = cast(XModel,  kargs[1])
+ 
         if model is None:
             print("No document model found")
             return None
@@ -496,6 +518,8 @@ class Calc:
             print("No range address found")
             return None
         return ra.getRangeAddress()
+
+    # endregion  get_selected_addr()
 
     @classmethod
     def get_selected_cell_addr(cls, doc: XSpreadsheetDocument) -> CellRangeAddress:
@@ -644,6 +668,7 @@ class Calc:
     # endregion ------------ insert/remove rows, columns, cells -----
 
     # region --------------- set/get values in cells -------------------
+    # region    set_val()
     @staticmethod
     def _set_val_by_cell(value: object, cell: XCell) -> None:
         if isinstance(value, numbers.Number):
@@ -720,6 +745,8 @@ class Calc:
         elif count == 4:
             cls._set_val_by_col_row(value=kargs[1], sheet=kargs[2], column=kargs[3], row=kargs[4])
 
+    # endregion    set_val()
+
     @staticmethod
     def convert_to_double(val: object) -> float:
         if val is None:
@@ -746,6 +773,8 @@ class Calc:
             return "FORMULA"
         print("Unknown cell type")
         return "??"
+
+    # region    get_val()
 
     @classmethod
     def _get_val_by_cell(cls, cell: XCell, column: int, row: int) -> object | None:
@@ -854,6 +883,10 @@ class Calc:
             return cls._get_val_by_col_row(sheet=kargs["first"], column=kargs["second"], row=kargs["third"])
         return None
 
+    # endregion get_val()
+
+    # region    get_num()
+
     @overload
     @staticmethod
     def get_num(sheet: XSpreadsheet, cell_name: str) -> float:
@@ -913,6 +946,9 @@ class Calc:
             return cls.convert_to_double(cls.get_val(sheet=kargs["first"], addr=kargs["second"]))
         return 0
 
+    # endregion get_num()
+
+    # region    get_string()
     @overload
     @staticmethod
     def get_string(sheet: XSpreadsheet, cell_name: str) -> str | None:
@@ -976,6 +1012,7 @@ class Calc:
                 return str(cls.get_val(sheet=kargs["first"], cell_name=kargs["second"]))
             return str(cls.get_val(sheet=kargs["first"], addr=kargs["second"]))
         return None
+    # endregion get_string()
 
     # endregion ------------ set/get values in cells -----------------
 
@@ -1079,6 +1116,7 @@ class Calc:
 
     # region --------------- set/get rows and columns ------------------
 
+    # region    set_col()
     @overload
     @staticmethod
     def set_col(sheet: XSpreadsheet, values: Sequence[Any], cel_name: str) -> None:
@@ -1141,6 +1179,8 @@ class Calc:
         for val in range(val_len):
             xcell = cls.get_cell(cell_range=cell_range, column=0, row=i)
             cls.set_val(cell=xcell, value=values[i])
+
+    # endregion set_col()
 
     @classmethod
     def set_row(cls, sheet: XSpreadsheet, values: Sequence[Any], col_start: int, row_start: int) -> None:
@@ -1243,6 +1283,7 @@ class Calc:
 
     # region --------------- get XCell and XCellRange methods ----------
 
+    # region    get_cell()
     @classmethod
     def _get_cell_sheet_col_row(cls, sheet: XSpreadsheet, column: int, row: int) -> XCell | None:
         return sheet.getCellByPosition(column, row)
@@ -1337,6 +1378,8 @@ class Calc:
             else:
                 return cls._get_cell_sheet_col_row(sheet=sheet, column=kargs["second"], row=kargs["third"])
 
+    # endregion get_cell()
+
     @staticmethod
     def is_cell_range_name(s: str) -> bool:
         return ":" in s
@@ -1345,6 +1388,8 @@ class Calc:
     def is_single_cell_range(addr: CellRangeAddress) -> bool:
         return addr.StartColumn == addr.EndColumn and addr.StartRow == addr.EndRow
 
+
+    # region    get_cell_range()
     @classmethod
     def _get_cell_range_addr(cls, sheet: XSpreadsheet, addr: CellRangeAddress) -> XCellRange | None:
         return cls._get_cell_range_col_row(
@@ -1454,6 +1499,10 @@ class Calc:
                 row_end=kargs["fifth"],
             )
 
+    # endregion get_cell_range()
+
+    # region    find_used_range()
+
     @overload
     @staticmethod
     def find_used_range(sheet: XSpreadsheet) -> XCellRange | None:
@@ -1473,6 +1522,8 @@ class Calc:
             cell_range = mLo.Lo.qi(XSheetCellRange, xrange)
             cursor = sheet.createCursorByRange(cell_range)
         return cls.find_used_cursor(cursor)
+
+    # endregion find_used_range()
 
     @staticmethod
     def find_used_cursor(cursor: XSheetCellCursor) -> XCellRange | None:
@@ -1582,6 +1633,8 @@ class Calc:
 
     # region --------------- get cell and cell range addresses ---------
 
+    # region    get_cell_address()
+
     @staticmethod
     def _get_cell_address_cell(cell: XCell) -> CellAddress | None:
         addr = mLo.Lo.qi(XCellAddressable, cell)
@@ -1642,6 +1695,9 @@ class Calc:
         else:
             return cls._get_cell_address_sheet(kargs["first"], kargs["second"])
 
+    # endregion get_cell_address()
+
+    # region    get_address()
     @staticmethod
     def _get_address_cell(cell_range: XCellRange) -> CellRangeAddress | None:
         addr = mLo.Lo.qi(XCellRangeAddressable, cell_range)
@@ -1700,6 +1756,9 @@ class Calc:
         else:
             return cls._get_address_sht_rng(kargs["first"], kargs["second"])
 
+    # endregion get_address()
+
+    # region    print_cell_address()
     @overload
     @staticmethod
     def print_cell_address(cell: XCell) -> None:
@@ -1741,7 +1800,9 @@ class Calc:
         else:
             addr = cls._get_cell_address_cell(cell=kargs["first"])
         print(f"Cell: Sheet{addr.Sheet+1}.{cls.get_cell_str(addr=addr)})")
-
+    # endregion    print_cell_address()
+    
+    # region    print_address()
     @overload
     @staticmethod
     def print_address(cell_range: XCellRange) -> None:
@@ -1786,6 +1847,8 @@ class Calc:
         msg += f"{cls.get_cell_str(col=cr_addr.EndColumn, row=cr_addr.EndRow)}"
         print(msg)
 
+    # endregion  print_address()
+
     @classmethod
     def print_addresses(cls, cr_addrs: Sequence[CellRangeAddress]) -> None:
         print(f"No of cellrange addresses: {len(cr_addrs)}")
@@ -1797,6 +1860,8 @@ class Calc:
     def get_cell_series(sheet: XSpreadsheet, range_name: str) -> XCellSeries | None:
         cell_range = sheet.getCellRangeByName(range_name)
         return mLo.Lo.qi(XCellSeries, cell_range)
+
+    # region    is_equal_addresses()
 
     @overload
     @staticmethod
@@ -1834,9 +1899,13 @@ class Calc:
             )
         return False
 
+    # endregion  is_equal_addresses()
+
     # endregion ------------ get cell and cell range addresses ---------
 
     # region --------------- convert cell range address to string ------
+    
+    # region    get_range_str()
     @classmethod
     def _get_range_str_cell_rng_sht(cls, cell_range: XCellRange, sheet: XSpreadsheet) -> str:
         return cls._get_range_str_cr_addr_sht(cls._get_address_cell(cell_range=cell_range), sheet)
@@ -1945,6 +2014,9 @@ class Calc:
                 start_col=kargs["first"], start_row=kargs["second"], end_col=kargs["third"], end_row=kargs["fourth"]
             )
 
+    # endregion get_range_str()
+
+    # region    get_cell_str()
     @classmethod
     def _get_cell_str_addr(cls, addr: CellAddress) -> str:
         return cls._get_cell_str_col_row(col=addr.Column, row=addr.Row)
@@ -2014,6 +2086,8 @@ class Calc:
             # def get_cell_str(col: int, row: int)
             return cls._get_cell_str_col_row(col=kargs["first"], row=kargs["second"])
 
+    # endregion get_cell_str()
+
     @staticmethod
     def column_number_str(col: int) -> str:
         """
@@ -2076,6 +2150,8 @@ class Calc:
             print(f"Unable to create style: {style_name}")
         return None
 
+    # region    change_style()
+
     @overload
     @staticmethod
     def change_style(sheet: XSpreadsheet, style_name: str, range_name: str) -> None:
@@ -2135,7 +2211,10 @@ class Calc:
             )
             mProps.Props.set_property(prop_set=cell_range, name="CellStyle", value=kargs[2])  # 2 style_name
         return
+    
+        # endregion change_style()
 
+    # region    add_border()
     @classmethod
     def _add_border_sht_rng(cls, sheet: XSpreadsheet, range_name: str) -> None:
         cls._add_border_sht_rng_color(sheet=sheet, range_name=range_name, color=CommonColor.BLACK)  # color black
@@ -2241,6 +2320,7 @@ class Calc:
             cls._add_border_sht_rng_color_vals(
                 sheet=kargs[1], range_name=kargs[2], color=kargs[3], border_vals=kargs[3]
             )
+    # endregion add_border()
 
     @classmethod
     def highlight_range(cls, sheet: XSpreadsheet, range_name: str, headline: str) -> None:
@@ -2390,6 +2470,8 @@ class Calc:
             print(f"    {e}")
         return 0.0
 
+    # region    call_fun()
+
     @overload
     @staticmethod
     def call_fun(func_name: str, arg: object) -> object:
@@ -2435,6 +2517,8 @@ class Calc:
             print(f"Could not invoke function '{kargs[1]}'")
         return None
 
+    # endregion call_fun()
+
     @staticmethod
     def get_function_names() -> List[str] | None:
         funcs_desc: XFunctionDescriptions = mLo.Lo.create_instance_mcf("com.sun.star.sheet.FunctionDescriptions")
@@ -2457,6 +2541,8 @@ class Calc:
             return None
         nms.sort()
         return nms
+
+    # region    find_function()
 
     @staticmethod
     def _find_function_by_name(func_nm: str) -> Tuple[PropertyValue] | None:
@@ -2532,8 +2618,19 @@ class Calc:
             return cls._find_function_by_idx(kargs[1])
         return cls._find_function_by_name(kargs[1])
 
+    # endregion find_function()
+
     @classmethod
-    def print_fun_argument(cls, prop_vals: Sequence[PropertyValue]) -> None:
+    def print_function_info(cls, func_name: str) -> None:
+        prop_vals = cls._find_function_by_name(func_nm=func_name)
+        if prop_vals is None:
+            return
+        mProps.Props.show_props(prop_kind=func_name, props_set=prop_vals)
+        cls.print_fun_arguments(prop_vals)
+        print()
+
+    @classmethod
+    def print_fun_arguments(cls, prop_vals: Sequence[PropertyValue]) -> None:
         fargs: Sequence[FunctionArgument] = mProps.Props.get_value(name="Arguments", props=prop_vals)
         if fargs is None:
             print("No arguments found")
