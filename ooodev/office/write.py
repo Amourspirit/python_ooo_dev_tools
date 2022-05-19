@@ -1,7 +1,7 @@
 # coding: utf-8
 # Python conversion of Write.java by Andrew Davison, ad@fivedots.coe.psu.ac.th
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
-
+# region Imports
 from __future__ import annotations
 import sys
 from typing import TYPE_CHECKING, Iterable, List, overload, cast
@@ -15,7 +15,6 @@ from ..utils import file_io as mFileIO
 from ..utils import props as mProps
 from ..utils import images as mImages
 
-
 from com.sun.star.awt import FontWeight
 from com.sun.star.awt.FontSlant import ITALIC as FS_ITALIC # enum values
 from com.sun.star.awt import Size # struct
@@ -26,6 +25,11 @@ from com.sun.star.drawing import XDrawPageSupplier
 from com.sun.star.drawing import XShape
 from com.sun.star.lang import XServiceInfo
 from com.sun.star.lang import Locale # struct class
+from com.sun.star.linguistic2 import XConversionDictionaryList
+from com.sun.star.linguistic2 import XLanguageGuessing
+from com.sun.star.linguistic2 import XLinguProperties
+from com.sun.star.linguistic2 import XLinguServiceManager
+from com.sun.star.linguistic2 import XProofreader
 from com.sun.star.linguistic2.DictionaryType import POSITIVE as DT_POSITIVE, NEGATIVE as DT_NEGATIVE, MIXED as DT_MIXED # enum values
 from com.sun.star.style import NumberingType # const
 from com.sun.star.style.BreakType import PAGE_AFTER as BT_PAGE_AFTER, COLUMN_AFTER as BT_COLUMN_AFTER # enum values
@@ -42,6 +46,9 @@ from com.sun.star.text import XText
 from com.sun.star.text import XTextContent
 from com.sun.star.text import XTextDocument
 from com.sun.star.text import XTextGraphicObjectsSupplier
+from com.sun.star.text import XTextField
+from com.sun.star.text import XTextFrame
+from com.sun.star.text import XTextTable
 from com.sun.star.text import XTextViewCursor
 from com.sun.star.text import XWordCursor
 from com.sun.star.text.PageNumberType import CURRENT as PN_CURRENT # enum values
@@ -58,23 +65,15 @@ if TYPE_CHECKING:
     from com.sun.star.drawing import XDrawPage
     from com.sun.star.frame import XComponentLoader
     from com.sun.star.graphic import XGraphic
-    from com.sun.star.text import XTextFrame
     from com.sun.star.frame import XModel
     from com.sun.star.lang import XComponent
     from com.sun.star.linguistic2 import SingleProofreadingError
-    from com.sun.star.linguistic2 import XConversionDictionaryList
-    from com.sun.star.linguistic2 import XLanguageGuessing
-    from com.sun.star.linguistic2 import XLinguProperties
-    from com.sun.star.linguistic2 import XLinguServiceManager
     from com.sun.star.linguistic2 import XLinguServiceManager2
-    from com.sun.star.linguistic2 import XProofreader
     from com.sun.star.linguistic2 import XSearchableDictionaryList
     from com.sun.star.linguistic2 import XSpellChecker
     from com.sun.star.linguistic2 import XThesaurus
     from com.sun.star.text import XSimpleText
     from com.sun.star.text import XTextCursor
-    from com.sun.star.text import XTextField
-    from com.sun.star.text import XTextTable
     from com.sun.star.text import XTextViewCursorSupplier
     from com.sun.star.view import XPrintable
 
@@ -82,10 +81,10 @@ if sys.version_info >= (3, 10):
     from typing import Union
 else:
     from typing_extensions import Union
-
+# endregion Imports
 
 class Write:
-    
+    # region ------------- doc / open / close /create/ etc -------------
     @classmethod
     def open_doc(cls, fnm: str, loader: XComponentLoader) -> XTextDocument | None:
         doc = mLo.Lo.open_doc(fnm=fnm, loader=loader)
@@ -180,9 +179,11 @@ class Write:
             print("Could not insert document")
             print(f"    {e}")
         return text_doc
-    
-    # --------------------- model cursor methods -------------------------------
+    # endregion ---------- doc / open / close /create/ etc -------------
 
+    # region ------------- model cursor methods ------------------------
+
+    # region    get_cursor()
     @overload
     @staticmethod
     def get_cursor(cursor_obj: XTextDocument) -> XTextCursor | None:...
@@ -202,6 +203,7 @@ class Write:
             print("Text not found in document")
             return None
         return xtext.createTextCursor()
+    # endregion get_cursor()
     
     @classmethod
     def get_word_cursor(cls, text_doc: XTextDocument) -> XWordCursor | None:
@@ -232,8 +234,10 @@ class Write:
     @staticmethod
     def get_position(cursor: XTextCursor) -> int:
         return len(cursor.getText().getString())
-    
-    # ---------------------- view cursor methods ------------------------------
+
+    # endregion ---------- model cursor methods ------------------------
+
+    # region ------------- view cursor methods -------------------------
     @staticmethod
     def get_view_cursor(text_doc: XTextDocument | XModel) -> XTextViewCursor:
         xcontroller: XTextViewCursorSupplier = text_doc.getCurrentController()
@@ -262,8 +266,11 @@ class Write:
         xview_cursor = cls.get_view_cursor(text_doc)
         return xview_cursor
 
-    # ------------------------- text writing methods ------------------------------------
+    # endregion ---------- view cursor methods -------------------------
+
+    # region ------------- text writing methods ------------------------
     
+    # region    append()
     @classmethod
     def _append1(cls, cursor: XTextCursor, text:str) -> int:
         cursor.setString(text)
@@ -331,15 +338,17 @@ class Write:
             return cls._append2(kargs["first"], kargs["second"])
         return cls._append3(kargs["first"], kargs["second"])
 
+    # endregion append()
+
     @classmethod
     def append_date_time(cls, cursor: XTextCursor) -> int:
         """append two DateTime fields, one for the date, one for the time"""
-        dt_field: XTextField = mLo.Lo.create_instance_mcf("com.sun.star.text.TextField.DateTime")
+        dt_field = mLo.Lo.create_instance_mcf(XTextField, "com.sun.star.text.TextField.DateTime")
         mProps.Props.set_property(dt_field, "IsDate", True) # so date is reported
         cls.append(cursor, dt_field)
         cls.append(cursor, "; ")
         
-        dt_field: XTextField = mLo.Lo.create_instance_mcf("com.sun.star.text.TextField.DateTime")
+        dt_field = mLo.Lo.create_instance_mcf(XTextField, "com.sun.star.text.TextField.DateTime")
         mProps.Props.set_property(dt_field, "IsDate", False) # so time is reported
         return cls.append(cursor, dt_field)
     
@@ -374,7 +383,9 @@ class Write:
         xtext.insertControlCharacter(cursor, ControlCharacter.PARAGRAPH_BREAK, False)
         cls.style_prev_paragraph(cursor, para_style)
     
-    # --------------------- extract text from document ------------------------
+    # endregion ---------- text writing methods ------------------------
+    
+    # region ------------- extract text from document ------------------
     
     @staticmethod
     def get_all_text(cursor: XTextCursor) -> str:
@@ -393,7 +404,9 @@ class Write:
             return None
         return obj.createEnumeration()
     
-    # ------------------------ text cursor property methods -----------------------------------
+    # endregion ---------- extract text from document ------------------
+    
+    # region ------------- text cursor property methods ----------------
     
     @classmethod
     def style_left_bold(cls, cursor: XTextCursor, pos: int) -> None:
@@ -423,6 +436,7 @@ class Write:
         cursor.goRight(curr_pos - pos, False)
         mProps.Props.set_property(prop_set=cursor, name=prop_name, value=old_val)
     
+    # region    style_prev_paragraph()
     @overload
     @staticmethod
     def style_prev_paragraph(cursor: XTextCursor, prop_val: object) -> None:...
@@ -443,7 +457,11 @@ class Write:
         cursor.gotoNextParagraph(False)
         mProps.Props.set_property(prop_set=cursor, name=prop_name, value=old_val)
 
-    # ---------------------------- style methods -------------------------------
+    # endregion style_prev_paragraph()
+
+    # endregion ---------- text cursor property methods ----------------
+
+    # region ------------- style methods -------------------------------
     
     @staticmethod
     def get_page_text_width(text_doc: XTextDocument) -> int:
@@ -489,8 +507,10 @@ class Write:
         # printerDesc[1].Value = PaperOrientation.LANDSCAPE;
         
         text_doc.setPrinter(printer_desc)
-    
-    # ------------------------ headers and footers ----------------------------
+
+    # endregion ---------- style methods -------------------------------
+
+    # region ------------- headers and footers -------------------------
     @classmethod
     def set_page_numbers(cls, text_doc: XTextDocument) -> None:
         """
@@ -522,7 +542,7 @@ class Write:
     @staticmethod
     def get_page_number() -> XTextField:
         """return arabic style number showing current page value"""
-        num_field: XTextField = mLo.Lo.create_instance_msf("com.sun.star.text.TextField.PageNumber")
+        num_field = mLo.Lo.create_instance_msf(XTextField, "com.sun.star.text.TextField.PageNumber")
         mProps.Props.set_property(prop_set=num_field, name="NumberingType", value=NumberingType.ARABIC)
         mProps.Props.set_property(prop_set=num_field, name="SubType", value=PN_CURRENT)
         return num_field
@@ -530,7 +550,7 @@ class Write:
     @staticmethod
     def get_page_count() -> XTextField:
         """return arabic style number showing current page count"""
-        pc_field: XTextField = mLo.Lo.create_instance_msf("com.sun.star.text.TextField.PageCount")
+        pc_field = mLo.Lo.create_instance_msf(XTextField, "com.sun.star.text.TextField.PageCount")
         mProps.Props.set_property(prop_set=pc_field, name="NumberingType", value=NumberingType.ARABIC)
         return pc_field
     
@@ -549,13 +569,14 @@ class Write:
             props.setPropertyValue("HeaderIsOn", True)
                     # header must be turned on in the document
             # props.setPropertyValue("TopMargin", 2200)
-            header_text: XText = props.getPropertyValue("HeaderText")
-            header_cursor = cast(XTextCursor | XPropertySet, header_text.createTextCursor())
+            header_text = mLo.Lo.qi(XText, props.getPropertyValue("HeaderText"))
+            header_cursor = header_text.createTextCursor()
             header_cursor.gotoEnd(False)
             
-            header_cursor.setPropertyValue("CharFontName", mInfo.Info.get_font_general_name())
-            header_cursor.setPropertyValue("CharHeight", 10)
-            header_cursor.setPropertyValue("ParaAdjust", PA_RIGHT)
+            header_props = mLo.Lo.qi(XPropertySet, header_cursor)
+            header_props.setPropertyValue("CharFontName", mInfo.Info.get_font_general_name())
+            header_props.setPropertyValue("CharHeight", 10)
+            header_props.setPropertyValue("ParaAdjust", PA_RIGHT)
             
             header_text.setString(f"{h_text}\n")
         except Exception as e:
@@ -569,12 +590,14 @@ class Write:
             return None
         return doc.getDrawPage()
 
-    # -------------------------- adding elements ----------------------------
+    # endregion ---------- headers and footers -------------------------
+
+    # region ------------- adding elements -----------------------------
     
     @classmethod
     def add_formula(cls, cursor: XTextCursor, formula: str) -> None:
         try:
-            embed_content: XTextContent = mLo.Lo.create_instance_msf("com.sun.star.text.TextEmbeddedObject")
+            embed_content = mLo.Lo.create_instance_msf(XTextContent, "com.sun.star.text.TextEmbeddedObject")
             if embed_content is None:
                 print("Could not create a formula embedded object")
                 return
@@ -588,7 +611,8 @@ class Write:
             cls.end_line(cursor)
             
             # access object's model
-            embed_obj_supplier = cast(XEmbeddedObjectSupplier2, embed_content)
+            # when cast is used with an import the is not available at runtime must be quoted.
+            embed_obj_supplier = cast('XEmbeddedObjectSupplier2', embed_content)
             embed_obj_model = embed_obj_supplier.getEmbeddedObject()
             formula_props = cast(XPropertySet, embed_obj_model)
             formula_props.setPropertyValue("Formula", formula)
@@ -599,7 +623,7 @@ class Write:
     
     @classmethod
     def add_hyperlink(cls, cursor: XTextCursor, label: str, url_str: str) -> None:
-        link: XTextContent = mLo.Lo.create_instance_msf("com.sun.star.text.TextField.URL")
+        link = mLo.Lo.create_instance_msf(XTextContent, "com.sun.star.text.TextField.URL")
         if link is None:
             print("Could not create a hyperlink")
             return
@@ -610,12 +634,12 @@ class Write:
     
     @classmethod
     def add_bookmark(cls, cursor: XTextCursor, name: str) -> None:
-        bmk_content: XTextContent = mLo.Lo.create_instance_msf("com.sun.star.text.Bookmark")
+        bmk_content = mLo.Lo.create_instance_msf(XTextContent, "com.sun.star.text.Bookmark")
         if bmk_content is None:
             print("Could not create a bookmark")
             return
-        
-        bmk_named = cast(XNamed, bmk_content)
+        # when cast is used with an import the is not available at runtime must be quoted.
+        bmk_named = cast('XNamed', bmk_content)
         bmk_named.setName(name)
         
         cls._append3(cursor, bmk_content)
@@ -644,7 +668,7 @@ class Write:
     @classmethod
     def add_text_frame(cls, cursor: XTextCursor, ypos: int, text: str, width: int, height: int) -> None:
         try:
-            xframe: XTextFrame = mLo.Lo.create_instance_msf("com.sun.star.text.TextFrame")
+            xframe = mLo.Lo.create_instance_msf(XTextFrame, "com.sun.star.text.TextFrame")
             tf_shape = mLo.Lo.qi(XShape, xframe)
             if tf_shape is None:
                 return
@@ -679,7 +703,8 @@ class Write:
             
             # add text into the text frame
             xframe_text = xframe.getText()
-            xframe_cursor = cast(XSimpleText, xframe_text.createTextCursor())
+            # when cast is used with an import that is not available at runtime must be quoted.
+            xframe_cursor = cast('XSimpleText', xframe_text.createTextCursor())
             xframe_cursor.insertString(xframe_cursor, text, False)
         except Exception as e:
             print("Insertion of text frame failed:")
@@ -692,7 +717,7 @@ class Write:
         and colored in dark blue, and the rest in light blue. 
         """
         try:
-            table: XTextTable = mLo.Lo.create_instance_msf("com.sun.star.text.TextTable")
+            table = mLo.Lo.create_instance_msf(XTextTable, "com.sun.star.text.TextTable")
             if table is None:
                 print("Could not create a text table")
                 return
@@ -769,6 +794,8 @@ class Write:
             return
         cell_text.setString(str(data))
 
+    # region    add_image_link()
+
     @overload
     @classmethod
     def add_image_link(cls, doc: XTextDocument, cursor: XTextCursor, fnm: str) -> None:...
@@ -781,7 +808,7 @@ class Write:
     @classmethod
     def add_image_link(cls, doc: XTextDocument, cursor: XTextCursor, fnm: str, width: int = 0, height: int = 0) -> None:
         try:
-            tgo: XTextContent = mLo.Lo.create_instance_msf("com.sun.star.text.TextGraphicObject")
+            tgo = mLo.Lo.create_instance_msf(XTextContent, "com.sun.star.text.TextGraphicObject")
             if tgo is None:
                 print("Could not create a text graphic object")
                 return
@@ -804,7 +831,10 @@ class Write:
         except Exception as e:
             print(f"Insertion of graphic in '{fnm}' failed:")
             print(f"    {e}")
-    
+
+    # endregion add_image_link()
+
+    # region    add_image_shape()
     @overload
     @staticmethod
     def add_image_shape(doc: XTextDocument, cursor: XTextCursor, fnm: str) -> None:...
@@ -825,7 +855,7 @@ class Write:
         
         try:
             # create TextContent for an empty graphic
-            gos: XTextContent = mLo.Lo.create_instance_msf("com.sun.star.drawing.GraphicObjectShape")
+            gos = mLo.Lo.create_instance_msf(XTextContent, "com.sun.star.drawing.GraphicObjectShape")
             if gos is None:
                 print("Could not create a graphic object shape")
                 return
@@ -847,10 +877,12 @@ class Write:
             print(f"Insertion of graphic in '{fnm}' failed:")
             print(f"   {e}")
 
+    # endregion add_image_shape()
+
     @classmethod
     def add_line_divider(cls, cursor: XTextCursor, line_width: int) -> None:
         try:
-            ls: XTextContent = mLo.Lo.create_instance_msf("com.sun.star.drawing.LineShape")
+            ls  = mLo.Lo.create_instance_msf(XTextContent, "com.sun.star.drawing.LineShape")
             if ls is None:
                 print("Could not create a line shape")
                 return
@@ -869,8 +901,10 @@ class Write:
         except Exception as e:
             print("Insertion of graphic line failed")
             print(f"    {e}")
-    
-    # =================== extracting graphics from text doc ================
+
+    # endregion ---------- adding elements -----------------------------
+
+    # region ------------- extracting graphics from text doc -----------
     
     @classmethod
     def get_text_graphics(cls, text_doc: XTextDocument) -> List[XGraphic] | None:
@@ -929,8 +963,10 @@ class Write:
             return None
         
         return draw_page_supplier.getDrawPage()
-    
-    # -----------------  Linguistic API ------------------------
+
+    # endregion ---------- extracting graphics from text doc -----------
+
+    # region ------------  Linguistic API ------------------------------
 
     @classmethod
     def print_services_info(cls, lingo_mgr: XLinguServiceManager2) -> None:
@@ -991,13 +1027,13 @@ class Write:
     
     @classmethod
     def dicts_info(cls) -> None:
-        dict_lst: XSearchableDictionaryList = mLo.Lo.create_instance_mcf("com.sun.star.linguistic2.DictionaryList")
+        dict_lst = mLo.Lo.create_instance_mcf(XSearchableDictionaryList, "com.sun.star.linguistic2.DictionaryList")
         if not dict_lst:
             print("No list of dictionaries found")
             return
         cls.print_dicts_info(dict_lst)
         
-        cd_list: XConversionDictionaryList = mLo.Lo.create_instance_mcf("com.sun.star.linguistic2.ConversionDictionaryList")
+        cd_list = mLo.Lo.create_instance_mcf(XConversionDictionaryList, "com.sun.star.linguistic2.ConversionDictionaryList")
         if cd_list is None:
             print("No list of conversion dictionaries found")
             return
@@ -1039,13 +1075,15 @@ class Write:
     
     @staticmethod
     def get_lingu_properties() -> XLinguProperties:
-        return mLo.Lo.create_instance_mcf("com.sun.star.linguistic2.LinguProperties")
+        return mLo.Lo.create_instance_mcf(XLinguProperties, "com.sun.star.linguistic2.LinguProperties")
 
-    # ---------------- Linguistics: spell checking --------------
+    # endregion ---------  Linguistic API ------------------------------
+
+    # region ------------- Linguistics: spell checking -----------------
 
     @staticmethod
     def load_spell_checker() -> XSpellChecker | None:
-        lingo_mgr: XLinguServiceManager = mLo.Lo.create_instance_mcf("com.sun.star.linguistic2.LinguServiceManager")
+        lingo_mgr = mLo.Lo.create_instance_mcf(XLinguServiceManager, "com.sun.star.linguistic2.LinguServiceManager")
         if lingo_mgr is None:
             print("No linguistics manager found")
             return None
@@ -1071,12 +1109,14 @@ class Write:
             mLo.Lo.print_names(alt_words)
             return False
         return True
-    
-    # ---------------- Linguistics: thesaurus --------------
+
+    # endregion ---------- Linguistics: spell checking -----------------
+
+    # region ------------- Linguistics: thesaurus ----------------------
     
     @staticmethod
     def load_thesaurus() -> XThesaurus:
-        lingo_mgr: XLinguServiceManager = mLo.Lo.create_instance_mcf("com.sun.star.linguistic2.LinguServiceManager")
+        lingo_mgr = mLo.Lo.create_instance_mcf(XLinguServiceManager, "com.sun.star.linguistic2.LinguServiceManager")
         if lingo_mgr is None:
             print("No linguistics manager found")
             return None
@@ -1101,12 +1141,14 @@ class Write:
                 print(f"    {synonym}")
             print()
         return m_len
-    
-    # ---------------- Linguistics: grammar checking --------------
+
+    # endregion ---------- Linguistics: thesaurus ----------------------
+
+    # region ------------- Linguistics: grammar checking ---------------
     
     @staticmethod
     def load_proofreader() -> XProofreader:
-        return mLo.Lo.create_instance_mcf("com.sun.star.linguistic2.Proofreader")
+        return mLo.Lo.create_instance_mcf(XProofreader, "com.sun.star.linguistic2.Proofreader")
     
     @classmethod
     def proof_sentence(cls, sent: str, proofreader: XProofreader) -> int:
@@ -1129,12 +1171,14 @@ class Write:
         if err.aSuggestions > 0:
             print(f"  Suggested change: '{err.aSuggestions[0]}'")
         print()
-    
-    # ---------------- Linguistics: location guessing --------------
+
+    # endregion ---------- Linguistics: grammar checking ---------------
+
+    # region ------------- Linguistics: location guessing --------------
     
     @staticmethod
     def guess_locale(test_str: str) -> Locale | None:
-        guesser: XLanguageGuessing = mLo.Lo.create_instance_mcf("com.sun.star.linguistic2.LanguageGuessing")
+        guesser = mLo.Lo.create_instance_mcf(XLanguageGuessing, "com.sun.star.linguistic2.LanguageGuessing")
         if guesser is None:
             print("No language guesser found")
             return None
@@ -1145,7 +1189,9 @@ class Write:
         if loc is not None:
             print(f"Locale lang: '{loc.Language}'; country: '{loc.Country}'; variant: '{loc.Variant}'")
     
-    # ---------------- Linguistics dialogs and menu items --------------
+    # endregion ---------- Linguistics: location guessing --------------
+    
+    # region ------------- Linguistics dialogs and menu items ----------
     
     @staticmethod
     def open_sent_check_options() -> None:
@@ -1172,3 +1218,4 @@ class Write:
     def open_thesaurus_dialog() -> None:
         mLo.Lo.dispatch_cmd("ThesaurusDialog")
     
+    # endregion ---------- Linguistics dialogs and menu items ----------

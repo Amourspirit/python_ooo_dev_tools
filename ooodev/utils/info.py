@@ -15,28 +15,29 @@ from .sys_info import SysInfo
 
 Props = m_props.Props
 
+from com.sun.star.awt import XToolkit
+from com.sun.star.beans import XPropertySet
+from com.sun.star.container import XContentEnumerationAccess
+from com.sun.star.container import XNameAccess
+from com.sun.star.document import XTypeDetection
+from com.sun.star.lang import XMultiServiceFactory
+from com.sun.star.lang import XServiceInfo
+from com.sun.star.reflection import XIdlReflection
+from com.sun.star.util import XChangesBatch
+
 if TYPE_CHECKING:
     from com.sun.star.awt import FontDescriptor
-    from com.sun.star.awt import XToolkit
     from com.sun.star.beans import PropertyValue
     from com.sun.star.beans import XHierarchicalPropertySet
     from com.sun.star.beans import XPropertyContainer
-    from com.sun.star.beans import XPropertySet
-    from com.sun.star.container import XContentEnumerationAccess
     from com.sun.star.container import XNameContainer
-    from com.sun.star.container import XNameAccess
     from com.sun.star.deployment import XPackageInformationProvider
     from com.sun.star.deployment import PackageInformationProvider
-    from com.sun.star.document import XTypeDetection
     from com.sun.star.document import XDocumentPropertiesSupplier
-    from com.sun.star.lang import XMultiServiceFactory
-    from com.sun.star.lang import XServiceInfo
     from com.sun.star.lang import XTypeProvider
-    from com.sun.star.reflection import CoreReflection
     from com.sun.star.reflection import XIdlMethod
     from com.sun.star.style import XStyleFamiliesSupplier
     from com.sun.star.uno import XInterface
-    from com.sun.star.util import XChangesBatch
 
 from . import lo as mLo
 from . import file_io as mFileIO
@@ -83,7 +84,7 @@ class Info:
 
     @staticmethod
     def get_fonts() -> Tuple[FontDescriptor, ...] | None:
-        xtoolkit: XToolkit = mLo.Lo.create_instance_mcf("com.sun.star.awt.Toolkit")
+        xtoolkit = mLo.Lo.create_instance_mcf(XToolkit, "com.sun.star.awt.Toolkit")
         device = xtoolkit.createScreenCompatibleDevice(0, 0)
         if device is None:
             print("Could not access graphical output device")
@@ -160,9 +161,7 @@ class Info:
         ...
 
     @classmethod
-    def get_reg_item_prop(
-        cls, item: str, prop: str, node: Optional[str] = None
-    ) -> str | None:
+    def get_reg_item_prop(cls, item: str, prop: str, node: Optional[str] = None) -> str | None:
         # return value from "registrymodifications.xcu"
         # e.g. "Writer/MailMergeWizard" null, "MailAddress"
         # e.g. "Logging/Settings", "org.openoffice.logging.sdbc.DriverManager", "LogLevel"
@@ -215,7 +214,7 @@ class Info:
         props = cls.get_config_props(node_path)
         if props is None:
             return None
-        return mProps.Props.get_property(x_props=props, name=node_str)
+        return mProps.Props.get_property(xprops=props, name=node_str)
 
     @classmethod
     def _get_config2(cls, node_str: str):
@@ -228,17 +227,13 @@ class Info:
 
     @staticmethod
     def get_config_props(node_path: str) -> XPropertySet | None:
-        con_prov: XMultiServiceFactory = mLo.Lo.create_instance_mcf(
-            "com.sun.star.configuration.ConfigurationProvider"
-        )
+        con_prov = mLo.Lo.create_instance_mcf(XMultiServiceFactory, "com.sun.star.configuration.ConfigurationProvider")
         if con_prov is None:
             print("Could not create configuration provider")
             return None
         p = mProps.Props.make_props(nodepath=node_path)
         try:
-            return con_prov.createInstanceWithArguments(
-                "com.sun.star.configuration.ConfigurationAccess", p
-            )
+            return con_prov.createInstanceWithArguments("com.sun.star.configuration.ConfigurationAccess", p)
         except Exception as e:
             print(f"Unable to access config properties for\n\n  '{node_path}'")
         return None
@@ -258,9 +253,7 @@ class Info:
         #    UserDictionary (deprecated), Work
 
         # Replaced by thePathSetting in LibreOffice 4.3
-        prop_set: XPropertySet = mLo.Lo.create_instance_mcf(
-            "com.sun.star.util.PathSettings"
-        )
+        prop_set = mLo.Lo.create_instance_mcf(XPropertySet, "com.sun.star.util.PathSettings")
         if prop_set is None:
             print("Could not access office settings")
             return None
@@ -317,15 +310,13 @@ class Info:
 
     @classmethod
     def create_configuration_view(cls, path: str) -> XHierarchicalPropertySet | None:
-        con_prov: XMultiServiceFactory = mLo.Lo.create_instance_mcf(
-            "com.sun.star.configuration.ConfigurationProvider"
-        )
+        con_prov = mLo.Lo.create_instance_mcf(XMultiServiceFactory, "com.sun.star.configuration.ConfigurationProvider")
         if con_prov is None:
             print("Could not create configuration provider")
             return None
         _props = mProps.Props.make_props(nodepath=path)
         try:
-            root: XInterface = con_prov.createInstanceWithArguments(
+            root = con_prov.createInstanceWithArguments(
                 "com.sun.star.configuration.ConfigurationAccess", _props
             )
             cls.show_services(obj_name="ConfigurationAccess", obj=root)
@@ -337,29 +328,26 @@ class Info:
 
     @staticmethod
     def set_config_props(node_path: str) -> XPropertySet | None:
-        con_prov: XMultiServiceFactory = mLo.Lo.create_instance_mcf(
-            "com.sun.star.configuration.ConfigurationProvider"
-        )
+        con_prov = mLo.Lo.create_instance_mcf(XMultiServiceFactory, "com.sun.star.configuration.ConfigurationProvider")
         if con_prov is None:
             print("Could not create configuration provider")
             return None
         _props = mProps.Props.make_props(nodepath=node_path)
         try:
-            return con_prov.createInstanceWithArguments(
-                "com.sun.star.configuration.ConfigurationAccess", _props
-            )
+            return con_prov.createInstanceWithArguments("com.sun.star.configuration.ConfigurationAccess", _props)
         except Exception:
             print(f"Unable to access config update properties for\n  '{node_path}'")
         return None
 
     @classmethod
     def set_config(cls, node_path: str, node_str: str, val: object) -> bool:
-        _props: XChangesBatch = cls.set_config_props(node_path=node_path)
-        if _props is None:
+        props = cls.set_config_props(node_path=node_path)
+        if props is None:
             return False
-        mProps.Props.set_property(prop_set=_props, name=node_str, value=val)
+        mProps.Props.set_property(prop_set=props, name=node_str, value=val)
+        secure_change = mLo.Lo.qi(XChangesBatch, props)
         try:
-            _props.commitChanges()
+            secure_change.commitChanges()
             return True
         except Exception:
             print(f"Unable to commit config update for\n  '{node_path}'")
@@ -415,9 +403,7 @@ class Info:
 
     @staticmethod
     def get_doc_type(fnm: str) -> str | None:
-        xdetect: XTypeDetection = mLo.Lo.create_instance_mcf(
-            "com.sun.star.document.TypeDetection"
-        )
+        xdetect = mLo.Lo.create_instance_mcf(XTypeDetection, "com.sun.star.document.TypeDetection")
         if xdetect is None:
             print("No type detector reference")
             return None
@@ -562,10 +548,10 @@ class Info:
     def _get_service_names2(service_name: str) -> List[str] | None:
         names: List[str] = []
         try:
-            enum_access: XContentEnumerationAccess = mLo.Lo.get_component_factory()
+            enum_access = mLo.Lo.qi(XContentEnumerationAccess, mLo.Lo.get_component_factory())
             x_enum = enum_access.createContentEnumeration(service_name)
             while x_enum.hasMoreElements():
-                si: XServiceInfo = x_enum.nextElement()
+                si = mLo.Lo.qi(XServiceInfo, x_enum.nextElement())
                 names.append(si.getImplementationName())
         except Exception:
             print(f"Could not collect service names for: {service_name}")
@@ -719,11 +705,9 @@ class Info:
         # See Also: https://github.com/hanya/MRI/wiki/RunMRI#Python
         # See Also: https://tinyurl.com/y3m4tx9r#L268
 
-        reflection: CoreReflection = mLo.Lo.create_instance_mcf(
-            "com.sun.star.reflection.CoreReflection"
-        )
-        # fname = reflection.forName('com.sun.star.uno.XInterface')
+        reflection = mLo.Lo.create_instance_mcf(XIdlReflection, "com.sun.star.reflection.CoreReflection")
         fname = reflection.forName(interface_name)
+
         if fname is None:
             print(f"Could not find the interface name: {interface_name}")
             return None
@@ -766,9 +750,7 @@ class Info:
         return None
 
     @staticmethod
-    def get_style_container(
-        doc: XStyleFamiliesSupplier, family_style_name: str
-    ) -> XNameContainer | None:
+    def get_style_container(doc: XStyleFamiliesSupplier, family_style_name: str) -> XNameContainer | None:
         try:
             name_acc = doc.getStyleFamilies()
             return name_acc.getByName(family_style_name)
@@ -780,12 +762,8 @@ class Info:
         return None
 
     @classmethod
-    def get_style_names(
-        cls, doc: XStyleFamiliesSupplier, family_style_name: str
-    ) -> List[str] | None:
-        style_container = cls.get_style_container(
-            doc=doc, family_style_name=family_style_name
-        )
+    def get_style_names(cls, doc: XStyleFamiliesSupplier, family_style_name: str) -> List[str] | None:
+        style_container = cls.get_style_container(doc=doc, family_style_name=family_style_name)
         if style_container is None:
             return None
         names = style_container.getElementNames()
@@ -813,9 +791,7 @@ class Info:
         return cls.get_style_props(doc, "PageStyles", "Standard")
 
     @classmethod
-    def get_paragraph_style_props(
-        cls, doc: XStyleFamiliesSupplier
-    ) -> XPropertySet | None:
+    def get_paragraph_style_props(cls, doc: XStyleFamiliesSupplier) -> XPropertySet | None:
         return cls.get_style_props(doc, "ParagraphStyles", "Standard")
 
     # ----------------------------- document properties ----------------------
@@ -882,9 +858,7 @@ class Info:
         return
 
     @staticmethod
-    def set_doc_props(
-        doc: XDocumentPropertiesSupplier, subject: str, title: str, author: str
-    ) -> None:
+    def set_doc_props(doc: XDocumentPropertiesSupplier, subject: str, title: str, author: str) -> None:
         """Set document properties for subject, title, author"""
         try:
             doc_props = doc.getDocumentProperties()
@@ -963,9 +937,7 @@ class Info:
 
     @staticmethod
     def get_filter_names() -> Tuple[str, ...] | None:
-        na: XNameAccess = mLo.Lo.create_instance_mcf(
-            "com.sun.star.document.FilterFactory"
-        )
+        na = mLo.Lo.create_instance_mcf(XNameAccess, "com.sun.star.document.FilterFactory")
         if na is None:
             print("No Filter factory found")
             return None
@@ -973,9 +945,7 @@ class Info:
 
     @staticmethod
     def get_filter_props(filter_nm: str) -> List[PropertyValue] | None:
-        na: XNameAccess = mLo.Lo.create_instance_mcf(
-            "com.sun.star.document.FilterFactory"
-        )
+        na = mLo.Lo.create_instance_mcf(XNameAccess, "com.sun.star.document.FilterFactory")
         if na is None:
             print("No Filter factory found")
             return None
@@ -1058,7 +1028,7 @@ class Info:
         if hasattr(obj, "typeName"):
             return obj.typeName == type_name
         return False
-    
+
     @staticmethod
     def is_type_interface(obj: object, type_name: str) -> bool:
         """
@@ -1076,7 +1046,7 @@ class Info:
         if hasattr(obj, "__pyunointerface__"):
             return obj.__pyunointerface__ == type_name
         return False
-    
+
     @staticmethod
     def is_type_enum(obj: uno.Enum, type_name: str) -> bool:
         """
@@ -1094,4 +1064,3 @@ class Info:
         if hasattr(obj, "typeName"):
             return obj.typeName == type_name
         return False
-        

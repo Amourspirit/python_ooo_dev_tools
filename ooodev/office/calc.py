@@ -2,23 +2,19 @@
 # Python conversion of Calc.java by Andrew Davison, ad@fivedots.coe.psu.ac.th
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 # region Imports
+from __future__ import annotations
 import sys
 from enum import IntFlag
 import numbers
 import re
-from typing import Any, Iterable, List, Tuple, cast, overload, Sequence
+from typing import Any, Iterable, List, Tuple, cast, overload, Sequence, TYPE_CHECKING
 from com.sun.star.awt import Point
-from com.sun.star.beans import PropertyValue
-from com.sun.star.beans import XPropertySet
 from com.sun.star.container import XIndexAccess
 from com.sun.star.container import XNamed
-from com.sun.star.frame import XComponentLoader
-from com.sun.star.frame import XController
-from com.sun.star.frame import XFrame
 from com.sun.star.frame import XModel
 from com.sun.star.lang import XComponent
 from com.sun.star.lang import Locale
-from com.sun.star.rendering import ViewState
+from com.sun.star.rendering import ViewState # struct
 from com.sun.star.sheet.GeneralFunction import (
     NONE as GF_NONE,
     AUTO as GF_AUTO,
@@ -34,7 +30,6 @@ from com.sun.star.sheet.GeneralFunction import (
     VAR as GF_VAR,
     VARP as GF_VARP,
 )
-from com.sun.star.sheet import FunctionArgument  # struct
 from com.sun.star.sheet import SolverConstraint  # struct
 from com.sun.star.sheet.SolverConstraintOperator import (
     LESS_EQUAL as SCO_LESS_EQUAL,
@@ -49,17 +44,13 @@ from com.sun.star.sheet import XCellRangeAddressable
 from com.sun.star.sheet import XCellRangeMovement
 from com.sun.star.sheet import XCellSeries
 from com.sun.star.sheet import XDataPilotTable
-from com.sun.star.sheet import XDataPilotTables
 from com.sun.star.sheet import XDataPilotTablesSupplier
 from com.sun.star.sheet import XFunctionAccess
 from com.sun.star.sheet import XFunctionDescriptions
-from com.sun.star.sheet import XGoalSeek
 from com.sun.star.sheet import XHeaderFooterContent
 from com.sun.star.sheet import XRecentFunctions
 from com.sun.star.sheet import XScenario
 from com.sun.star.sheet import XScenariosSupplier
-from com.sun.star.sheet import XSheetCellCursor
-from com.sun.star.sheet import XSolver
 from com.sun.star.sheet import XSpreadsheet
 from com.sun.star.sheet import XSpreadsheetDocument
 from com.sun.star.sheet import XSpreadsheetView
@@ -75,11 +66,8 @@ from com.sun.star.sheet.CellInsertMode import RIGHT as IM_RIGHT, DOWN as IM_DOWN
 from com.sun.star.sheet.FillDateMode import FILL_DATE_DAY
 from com.sun.star.style import XStyle
 from com.sun.star.table import BorderLine2  # struct
-from com.sun.star.table import CellAddress
-from com.sun.star.table import CellRangeAddress
 from com.sun.star.table import TableBorder2  # struct
 from com.sun.star.table import XColumnRowRange
-from com.sun.star.table import XCell
 from com.sun.star.table import XCellRange
 from com.sun.star.table.CellContentType import (
     EMPTY as CCT_EMPTY,
@@ -87,13 +75,29 @@ from com.sun.star.table.CellContentType import (
     TEXT as CCT_TEXT,
     FORMULA as CCT_FORMULA,
 )
-from com.sun.star.text import XText
 from com.sun.star.uno import Exception as UnoException
 from com.sun.star.util import NumberFormat  # const
 from com.sun.star.util import XNumberFormatsSupplier
 from com.sun.star.util import XNumberFormatTypes
-from com.sun.star.util import XSearchable
-from com.sun.star.util import XSearchDescriptor
+
+if TYPE_CHECKING:
+    from com.sun.star.beans import PropertyValue
+    from com.sun.star.beans import XPropertySet
+    from com.sun.star.frame import XComponentLoader
+    from com.sun.star.frame import XController
+    from com.sun.star.frame import XFrame
+    from com.sun.star.sheet import FunctionArgument  # struct
+    from com.sun.star.sheet import XDataPilotTables
+    from com.sun.star.sheet import XGoalSeek
+    from com.sun.star.sheet import XSheetCellCursor
+    from com.sun.star.sheet import XSolver
+    from com.sun.star.table import CellAddress
+    from com.sun.star.table import CellRangeAddress
+    from com.sun.star.table import XCell
+    from com.sun.star.text import XText
+    from com.sun.star.util import XSearchable
+    from com.sun.star.util import XSearchDescriptor
+
 
 from ..utils import lo as mLo
 from ..utils import info as mInfo
@@ -1249,7 +1253,7 @@ class Calc:
         xcell = cls.get_cell(sheet=sheet, cell_name=cell_name)
         xcell.setFormula(f"{month}/{day}/{year}")
 
-        nfs_supplier: XNumberFormatsSupplier = mLo.Lo.create_instance_mcf("com.sun.star.util.NumberFormatsSupplier")
+        nfs_supplier = mLo.Lo.create_instance_mcf(XNumberFormatsSupplier, "com.sun.star.util.NumberFormatsSupplier")
         if nfs_supplier is None:
             return
         number_formats = nfs_supplier.getNumberFormats()
@@ -1591,7 +1595,7 @@ class Calc:
     @classmethod
     def get_cell_pos(cls, sheet: XSpreadsheet, cell_name: str) -> Point:
         xcell = cls._get_cell_sheet_cell(sheet=sheet, cell_name=cell_name)
-        pos = mProps.Props.get_property(x_props=xcell, name="Position")
+        pos = mProps.Props.get_property(xprops=xcell, name="Position")
         if pos is None:
             print(f"Could not determine position of cell '{cell_name}'")
             pos = cls.CELL_POS
@@ -1793,12 +1797,10 @@ class Calc:
 
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
-
-        cell = mLo.Lo.qi(XCell, kargs["first"])
-        if cell is None:
-            addr = kargs["first"]
-        else:
+        if mInfo.Info.is_type_interface(obj=kargs["first"], type_name="com.sun.star.table.XCell"):
             addr = cls._get_cell_address_cell(cell=kargs["first"])
+        else:
+            addr = kargs["first"]
         print(f"Cell: Sheet{addr.Sheet+1}.{cls.get_cell_str(addr=addr)})")
     # endregion    print_cell_address()
     
@@ -1840,7 +1842,8 @@ class Calc:
 
         cell_range = mLo.Lo.qi(XCellRange, kargs["first"])
         if cell_range is None:
-            cr_addr = cast(CellRangeAddress, kargs["first"])
+            # when cast is used with an import the is not available at runtime must be quoted.
+            cr_addr = cast('CellRangeAddress', kargs["first"])
         else:
             cr_addr = cls._get_address_cell(cell_range=kargs["first"])
         msg = f"Range: Sheet{cr_addr.Sheet+1}.{cls.get_cell_str(col=cr_addr.StartColumn,row=cr_addr.StartRow)}:"
@@ -1884,12 +1887,14 @@ class Calc:
         except AttributeError:
             return False
         if mInfo.Info.is_type_struct(addr1, "com.sun.star.table.CellAddress"):
-            a = cast(CellAddress, addr1)
-            b = cast(CellAddress, addr2)
+            # when cast is used with an import the is not available at runtime must be quoted.
+            a = cast('CellAddress', addr1)
+            b = cast('CellAddress', addr2)
             return a.Sheet == b.Sheet and a.Column == b.Column and a.Row == b.Row
         if mInfo.Info.is_type_struct(addr1, "com.sun.star.table.CellRangeAddress"):
-            a = cast(CellRangeAddress, addr1)
-            b = cast(CellRangeAddress, addr2)
+            # when cast is used with an import the is not available at runtime must be quoted.
+            a = cast('CellRangeAddress', addr1)
+            b = cast('CellRangeAddress', addr2)
             return (
                 a.Sheet == b.Sheet
                 and a.StartColumn == b.StartColumn
@@ -2141,7 +2146,7 @@ class Calc:
     def create_cell_style(doc: XSpreadsheetDocument, style_name: str) -> XStyle | None:
         comp_doc = mLo.Lo.qi(XComponent, doc)
         style_families = mInfo.Info.get_style_container(doc=comp_doc, family_style_name="CellStyles")
-        style: XStyle = mLo.Lo.create_instance_msf("com.sun.star.style.CellStyle")
+        style = mLo.Lo.create_instance_msf(XStyle, "com.sun.star.style.CellStyle")
         # "com.sun.star.sheet.TableCellStyle"  crashes insertByName() ??
         try:
             style_families.insertByName(style_name, style)
@@ -2511,7 +2516,7 @@ class Calc:
         else:
             arg = [kargs[2]]
         try:
-            fa: XFunctionAccess = mLo.Lo.create_instance_mcf("com.sun.star.sheet.FunctionAccess")
+            fa = mLo.Lo.create_instance_mcf(XFunctionAccess, "com.sun.star.sheet.FunctionAccess")
             return fa.callFunction(kargs[1], kargs[2])
         except Exception:
             print(f"Could not invoke function '{kargs[1]}'")
@@ -2521,7 +2526,7 @@ class Calc:
 
     @staticmethod
     def get_function_names() -> List[str] | None:
-        funcs_desc: XFunctionDescriptions = mLo.Lo.create_instance_mcf("com.sun.star.sheet.FunctionDescriptions")
+        funcs_desc = mLo.Lo.create_instance_mcf(XFunctionDescriptions, "com.sun.star.sheet.FunctionDescriptions")
         if funcs_desc is None:
             print("No function descriptions were found")
             return None
@@ -2549,7 +2554,7 @@ class Calc:
         if not func_nm:
             print("Please supply a function name to find.")
             return None
-        func_desc: XFunctionDescriptions = mLo.Lo.create_instance_mcf("com.sun.star.sheet.FunctionDescriptions")
+        func_desc = mLo.Lo.create_instance_mcf(XFunctionDescriptions, "com.sun.star.sheet.FunctionDescriptions")
         if func_desc is None:
             print("No function descriptions were found")
             return None
@@ -2570,7 +2575,7 @@ class Calc:
         if idx < 0:
             print("Please supply a positive index value to.")
             return None
-        func_desc: XFunctionDescriptions = mLo.Lo.create_instance_mcf("com.sun.star.sheet.FunctionDescriptions")
+        func_desc = mLo.Lo.create_instance_mcf(XFunctionDescriptions, "com.sun.star.sheet.FunctionDescriptions")
         if func_desc is None:
             print("No function descriptions were found")
             return None
@@ -2649,7 +2654,7 @@ class Calc:
 
     @staticmethod
     def get_recent_functions() -> Tuple[int, ...] | None:
-        recent_funcs: XRecentFunctions = mLo.Lo.create_instance_mcf("com.sun.star.sheet.RecentFunctions")
+        recent_funcs = mLo.Lo.create_instance_mcf(XRecentFunctions, "com.sun.star.sheet.RecentFunctions")
         if recent_funcs is None:
             print("No recent functions found")
             return None
@@ -2820,7 +2825,7 @@ class Calc:
     def get_head_foot(props: XPropertySet, content: str) -> XHeaderFooterContent | None:
         return mLo.Lo.qi(
             XHeaderFooterContent,
-            mProps.Props.get_property(x_props=props, name=content)
+            mProps.Props.get_property(xprops=props, name=content)
             )
     
     @staticmethod

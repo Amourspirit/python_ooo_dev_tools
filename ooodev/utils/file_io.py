@@ -1,6 +1,7 @@
 # coding: utf-8
 # Python conversion of FileIO.java by Andrew Davison, ad@fivedots.coe.psu.ac.th
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
+# region Imports
 from __future__ import annotations
 import os
 import sys
@@ -12,14 +13,14 @@ from pathlib import Path
 from urllib.parse import urlparse
 from typing import Iterable, List, TYPE_CHECKING
 import uno
+from com.sun.star.io import XActiveDataSink
+from com.sun.star.io import XTextInputStream
+from com.sun.star.packages.zip import XZipFileAccess
 from com.sun.star.uno import Exception as UnoException
 
 if TYPE_CHECKING:
-    from com.sun.star.packages.zip import XZipFileAccess
     from com.sun.star.container import XNameAccess
     from com.sun.star.io import XInputStream
-    from com.sun.star.io import XTextInputStream
-    from com.sun.star.io import XActiveDataSink
 
 from . import lo as Util
 
@@ -27,13 +28,14 @@ if sys.version_info >= (3, 10):
     from typing import Union
 else:
     from typing_extensions import Union
-
-# Lo = m_lo.Lo
+# endregion imports
 
 _UTIL_PATH = str(Path(__file__).parent)
 
 
 class FileIO:
+    
+    # region ------------- file path methods ---------------------------
     @staticmethod
     def get_utils_folder() -> str:
         """
@@ -76,32 +78,6 @@ class FileIO:
             print(f"Could not parse '{url}'")
         return None
 
-    @staticmethod
-    def is_openable(fnm: str) -> bool:
-        """
-        Gets if a file can be opened
-
-        Args:
-            fnm (str): file path
-
-        Returns:
-            bool: True if file can be opened; Otherwise, False
-        """
-        try:
-            p = Path(fnm)
-            if not p.exists():
-                print(f"'{fnm}' does not exist")
-                return False
-            if not p.is_file():
-                print(f"'{fnm}' does is not a file")
-                return False
-            if not os.access(fnm, os.R_OK):
-                print(f"'{fnm}' is not readable")
-                return False
-            return True
-        except Exception as e:
-            print(f"File is not openable: {e}")
-        return False
 
     @staticmethod
     def fnm_to_url(fnm: str) -> str | None:
@@ -124,20 +100,6 @@ class FileIO:
     @classmethod
     def uri_to_path(cls, uri_fnm: str) -> str:
         return cls.url_to_path(url=uri_fnm)
-
-    @staticmethod
-    def make_directory(dir: str | Path) -> None:
-        """
-        Creates path and subpaths not existing.
-
-        Args:
-            dest_dir (str | Path): PathLike object
-        """
-        # Python ≥ 3.5
-        if isinstance(dir, Path):
-            dir.mkdir(parents=True, exist_ok=True)
-        else:
-            Path(dir).mkdir(parents=True, exist_ok=True)
 
     @staticmethod
     def get_file_names(dir: str) -> List[str]:
@@ -175,6 +137,51 @@ class FileIO:
             print(f"Unable to get name for '{path}'")
             print(f"    {e}")
         return ""
+    
+    # endregion ---------- file path methods ---------------------------
+
+    # region ------------- file creation / deletion --------------------
+
+    @staticmethod
+    def is_openable(fnm: str) -> bool:
+        """
+        Gets if a file can be opened
+
+        Args:
+            fnm (str): file path
+
+        Returns:
+            bool: True if file can be opened; Otherwise, False
+        """
+        try:
+            p = Path(fnm)
+            if not p.exists():
+                print(f"'{fnm}' does not exist")
+                return False
+            if not p.is_file():
+                print(f"'{fnm}' does is not a file")
+                return False
+            if not os.access(fnm, os.R_OK):
+                print(f"'{fnm}' is not readable")
+                return False
+            return True
+        except Exception as e:
+            print(f"File is not openable: {e}")
+        return False
+
+    @staticmethod
+    def make_directory(dir: str | Path) -> None:
+        """
+        Creates path and subpaths not existing.
+
+        Args:
+            dest_dir (str | Path): PathLike object
+        """
+        # Python ≥ 3.5
+        if isinstance(dir, Path):
+            dir.mkdir(parents=True, exist_ok=True)
+        else:
+            Path(dir).mkdir(parents=True, exist_ok=True)
 
     @staticmethod
     def create_temp_file(im_format: str) -> str | None:
@@ -188,9 +195,7 @@ class FileIO:
             str | None: Path to temp file.
         """
         try:
-            tmp = tempfile.NamedTemporaryFile(
-                prefix="loTemp", sufix=f".{im_format}", delete=True
-            )
+            tmp = tempfile.NamedTemporaryFile(prefix="loTemp", sufix=f".{im_format}", delete=True)
             return tmp.name
         except Exception as e:
             print("Could not create temp file")
@@ -270,11 +275,13 @@ class FileIO:
             print(f"unable to append to '{fnm}'")
             print(f"    {e}")
 
-    # ----------------------- zip access ---------------------------------------
+    # endregion ---------- file creation / deletion --------------------
+
+    # region ------------- zip access ----------------------------------
     @classmethod
     def zip_access(cls, fnm: str) -> XZipFileAccess:
         return Util.Lo.create_instance_mcf(
-            "com.sun.star.packages.zip.ZipFileAccess", (cls.fnm_to_url(fnm),)
+            XZipFileAccess, "com.sun.star.packages.zip.ZipFileAccess", (cls.fnm_to_url(fnm),)
         )
 
     @classmethod
@@ -293,25 +300,24 @@ class FileIO:
     @staticmethod
     def read_lines(in_stream: XInputStream) -> List[str] | None:
         lines = []
-        lines_arr = None
         try:
-            tis: XTextInputStream | XActiveDataSink = Util.Lo.create_instance_mcf(
-                "com.sun.star.io.TextInputStream"
-            )
-            tis.setInputStream(in_stream)
+            tis = Util.Lo.create_instance_mcf(XTextInputStream, "com.sun.star.io.TextInputStream")
+            sink = Util.Lo.qi(XActiveDataSink, tis)
+            sink.setInputStream(in_stream)
+
             while tis.isEOF() is False:
                 lines.append(tis.readLine())
             tis.closeInput()
-            lines_arr = []
-            lines_arr.extend(lines)
         except Exception as e:
             print(e)
-        return lines_arr
+        if len(lines) == 0:
+            return None
+        return lines
 
     @classmethod
     def get_mime_type(cls, zfa: XZipFileAccess) -> str | None:
         try:
-            in_stream: XInputStream = zfa.getStreamByPattern("mimetype")
+            in_stream = zfa.getStreamByPattern("mimetype")
             lines = cls.read_lines(in_stream)
             if lines is not None:
                 return lines[0].strip()
@@ -320,7 +326,9 @@ class FileIO:
         print("No mimetype found")
         return None
 
-    # ----------------- switch to Python's zip APIs ------------
+    # endregion ------------- zip access -------------------------------
+
+    # region ------------- switch to Python's zip APIs -----------------
 
     @staticmethod
     def zip_list(fnm: str) -> None:
@@ -329,14 +337,11 @@ class FileIO:
                 for info in zip.getinfo():
                     print(info.filename)
                     print("\tModified:\t" + str(datetime.datetime(*info.date_time)))
-                    print(
-                        "\tSystem:\t\t"
-                        + str(info.create_system)
-                        + "(0 = Windows, 3 = Unix)"
-                    )
+                    print("\tSystem:\t\t" + str(info.create_system) + "(0 = Windows, 3 = Unix)")
                     print("\tZIP version:\t" + str(info.create_version))
                     print("\tCompressed:\t" + str(info.compress_size) + " bytes")
                     print("\tUncompressed:\t" + str(info.file_size) + " bytes")
             print()
         except Exception as e:
             print(e)
+    # endregion ---------- switch to Python's zip APIs -----------------
