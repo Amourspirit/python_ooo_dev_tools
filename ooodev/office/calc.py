@@ -1249,7 +1249,7 @@ class Calc:
         xcell = cls.get_cell(sheet=sheet, cell_name=cell_name)
         xcell.setFormula(f"{month}/{day}/{year}")
 
-        nfs_supplier: XNumberFormatsSupplier = mLo.Lo.create_instance_mcf("com.sun.star.util.NumberFormatsSupplier")
+        nfs_supplier = mLo.Lo.create_instance_mcf(XNumberFormatsSupplier, "com.sun.star.util.NumberFormatsSupplier")
         if nfs_supplier is None:
             return
         number_formats = nfs_supplier.getNumberFormats()
@@ -1591,7 +1591,7 @@ class Calc:
     @classmethod
     def get_cell_pos(cls, sheet: XSpreadsheet, cell_name: str) -> Point:
         xcell = cls._get_cell_sheet_cell(sheet=sheet, cell_name=cell_name)
-        pos = mProps.Props.get_property(x_props=xcell, name="Position")
+        pos = mProps.Props.get_property(xprops=xcell, name="Position")
         if pos is None:
             print(f"Could not determine position of cell '{cell_name}'")
             pos = cls.CELL_POS
@@ -2141,7 +2141,7 @@ class Calc:
     def create_cell_style(doc: XSpreadsheetDocument, style_name: str) -> XStyle | None:
         comp_doc = mLo.Lo.qi(XComponent, doc)
         style_families = mInfo.Info.get_style_container(doc=comp_doc, family_style_name="CellStyles")
-        style: XStyle = mLo.Lo.create_instance_msf("com.sun.star.style.CellStyle")
+        style = mLo.Lo.create_instance_msf(XStyle, "com.sun.star.style.CellStyle")
         # "com.sun.star.sheet.TableCellStyle"  crashes insertByName() ??
         try:
             style_families.insertByName(style_name, style)
@@ -2511,7 +2511,7 @@ class Calc:
         else:
             arg = [kargs[2]]
         try:
-            fa: XFunctionAccess = mLo.Lo.create_instance_mcf("com.sun.star.sheet.FunctionAccess")
+            fa = mLo.Lo.create_instance_mcf(XFunctionAccess, "com.sun.star.sheet.FunctionAccess")
             return fa.callFunction(kargs[1], kargs[2])
         except Exception:
             print(f"Could not invoke function '{kargs[1]}'")
@@ -2521,7 +2521,7 @@ class Calc:
 
     @staticmethod
     def get_function_names() -> List[str] | None:
-        funcs_desc: XFunctionDescriptions = mLo.Lo.create_instance_mcf("com.sun.star.sheet.FunctionDescriptions")
+        funcs_desc = mLo.Lo.create_instance_mcf(XFunctionDescriptions, "com.sun.star.sheet.FunctionDescriptions")
         if funcs_desc is None:
             print("No function descriptions were found")
             return None
@@ -2549,7 +2549,7 @@ class Calc:
         if not func_nm:
             print("Please supply a function name to find.")
             return None
-        func_desc: XFunctionDescriptions = mLo.Lo.create_instance_mcf("com.sun.star.sheet.FunctionDescriptions")
+        func_desc = mLo.Lo.create_instance_mcf(XFunctionDescriptions, "com.sun.star.sheet.FunctionDescriptions")
         if func_desc is None:
             print("No function descriptions were found")
             return None
@@ -2570,7 +2570,7 @@ class Calc:
         if idx < 0:
             print("Please supply a positive index value to.")
             return None
-        func_desc: XFunctionDescriptions = mLo.Lo.create_instance_mcf("com.sun.star.sheet.FunctionDescriptions")
+        func_desc = mLo.Lo.create_instance_mcf(XFunctionDescriptions, "com.sun.star.sheet.FunctionDescriptions")
         if func_desc is None:
             print("No function descriptions were found")
             return None
@@ -2649,7 +2649,7 @@ class Calc:
 
     @staticmethod
     def get_recent_functions() -> Tuple[int, ...] | None:
-        recent_funcs: XRecentFunctions = mLo.Lo.create_instance_mcf("com.sun.star.sheet.RecentFunctions")
+        recent_funcs = mLo.Lo.create_instance_mcf(XRecentFunctions, "com.sun.star.sheet.RecentFunctions")
         if recent_funcs is None:
             print("No recent functions found")
             return None
@@ -2820,7 +2820,7 @@ class Calc:
     def get_head_foot(props: XPropertySet, content: str) -> XHeaderFooterContent | None:
         return mLo.Lo.qi(
             XHeaderFooterContent,
-            mProps.Props.get_property(x_props=props, name=content)
+            mProps.Props.get_property(xprops=props, name=content)
             )
     
     @staticmethod

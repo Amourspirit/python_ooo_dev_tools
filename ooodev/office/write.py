@@ -334,12 +334,12 @@ class Write:
     @classmethod
     def append_date_time(cls, cursor: XTextCursor) -> int:
         """append two DateTime fields, one for the date, one for the time"""
-        dt_field: XTextField = mLo.Lo.create_instance_mcf("com.sun.star.text.TextField.DateTime")
+        dt_field = mLo.Lo.create_instance_mcf(XTextField, "com.sun.star.text.TextField.DateTime")
         mProps.Props.set_property(dt_field, "IsDate", True) # so date is reported
         cls.append(cursor, dt_field)
         cls.append(cursor, "; ")
         
-        dt_field: XTextField = mLo.Lo.create_instance_mcf("com.sun.star.text.TextField.DateTime")
+        dt_field = mLo.Lo.create_instance_mcf(XTextField, "com.sun.star.text.TextField.DateTime")
         mProps.Props.set_property(dt_field, "IsDate", False) # so time is reported
         return cls.append(cursor, dt_field)
     
@@ -522,7 +522,7 @@ class Write:
     @staticmethod
     def get_page_number() -> XTextField:
         """return arabic style number showing current page value"""
-        num_field: XTextField = mLo.Lo.create_instance_msf("com.sun.star.text.TextField.PageNumber")
+        num_field = mLo.Lo.create_instance_msf(XTextField, "com.sun.star.text.TextField.PageNumber")
         mProps.Props.set_property(prop_set=num_field, name="NumberingType", value=NumberingType.ARABIC)
         mProps.Props.set_property(prop_set=num_field, name="SubType", value=PN_CURRENT)
         return num_field
@@ -530,7 +530,7 @@ class Write:
     @staticmethod
     def get_page_count() -> XTextField:
         """return arabic style number showing current page count"""
-        pc_field: XTextField = mLo.Lo.create_instance_msf("com.sun.star.text.TextField.PageCount")
+        pc_field = mLo.Lo.create_instance_msf(XTextField, "com.sun.star.text.TextField.PageCount")
         mProps.Props.set_property(prop_set=pc_field, name="NumberingType", value=NumberingType.ARABIC)
         return pc_field
     
@@ -574,7 +574,7 @@ class Write:
     @classmethod
     def add_formula(cls, cursor: XTextCursor, formula: str) -> None:
         try:
-            embed_content: XTextContent = mLo.Lo.create_instance_msf("com.sun.star.text.TextEmbeddedObject")
+            embed_content = mLo.Lo.create_instance_msf(XTextContent, "com.sun.star.text.TextEmbeddedObject")
             if embed_content is None:
                 print("Could not create a formula embedded object")
                 return
@@ -599,7 +599,7 @@ class Write:
     
     @classmethod
     def add_hyperlink(cls, cursor: XTextCursor, label: str, url_str: str) -> None:
-        link: XTextContent = mLo.Lo.create_instance_msf("com.sun.star.text.TextField.URL")
+        link = mLo.Lo.create_instance_msf(XTextContent, "com.sun.star.text.TextField.URL")
         if link is None:
             print("Could not create a hyperlink")
             return
@@ -610,7 +610,7 @@ class Write:
     
     @classmethod
     def add_bookmark(cls, cursor: XTextCursor, name: str) -> None:
-        bmk_content: XTextContent = mLo.Lo.create_instance_msf("com.sun.star.text.Bookmark")
+        bmk_content = mLo.Lo.create_instance_msf(XTextContent, "com.sun.star.text.Bookmark")
         if bmk_content is None:
             print("Could not create a bookmark")
             return
@@ -644,7 +644,7 @@ class Write:
     @classmethod
     def add_text_frame(cls, cursor: XTextCursor, ypos: int, text: str, width: int, height: int) -> None:
         try:
-            xframe: XTextFrame = mLo.Lo.create_instance_msf("com.sun.star.text.TextFrame")
+            xframe = mLo.Lo.create_instance_msf(XTextFrame, "com.sun.star.text.TextFrame")
             tf_shape = mLo.Lo.qi(XShape, xframe)
             if tf_shape is None:
                 return
@@ -692,7 +692,7 @@ class Write:
         and colored in dark blue, and the rest in light blue. 
         """
         try:
-            table: XTextTable = mLo.Lo.create_instance_msf("com.sun.star.text.TextTable")
+            table = mLo.Lo.create_instance_msf(XTextTable, "com.sun.star.text.TextTable")
             if table is None:
                 print("Could not create a text table")
                 return
@@ -781,7 +781,7 @@ class Write:
     @classmethod
     def add_image_link(cls, doc: XTextDocument, cursor: XTextCursor, fnm: str, width: int = 0, height: int = 0) -> None:
         try:
-            tgo: XTextContent = mLo.Lo.create_instance_msf("com.sun.star.text.TextGraphicObject")
+            tgo = mLo.Lo.create_instance_msf(XTextContent, "com.sun.star.text.TextGraphicObject")
             if tgo is None:
                 print("Could not create a text graphic object")
                 return
@@ -825,7 +825,7 @@ class Write:
         
         try:
             # create TextContent for an empty graphic
-            gos: XTextContent = mLo.Lo.create_instance_msf("com.sun.star.drawing.GraphicObjectShape")
+            gos = mLo.Lo.create_instance_msf(XTextContent, "com.sun.star.drawing.GraphicObjectShape")
             if gos is None:
                 print("Could not create a graphic object shape")
                 return
@@ -850,7 +850,7 @@ class Write:
     @classmethod
     def add_line_divider(cls, cursor: XTextCursor, line_width: int) -> None:
         try:
-            ls: XTextContent = mLo.Lo.create_instance_msf("com.sun.star.drawing.LineShape")
+            ls  = mLo.Lo.create_instance_msf(XTextContent, "com.sun.star.drawing.LineShape")
             if ls is None:
                 print("Could not create a line shape")
                 return
@@ -991,13 +991,13 @@ class Write:
     
     @classmethod
     def dicts_info(cls) -> None:
-        dict_lst: XSearchableDictionaryList = mLo.Lo.create_instance_mcf("com.sun.star.linguistic2.DictionaryList")
+        dict_lst = mLo.Lo.create_instance_mcf(XSearchableDictionaryList, "com.sun.star.linguistic2.DictionaryList")
         if not dict_lst:
             print("No list of dictionaries found")
             return
         cls.print_dicts_info(dict_lst)
         
-        cd_list: XConversionDictionaryList = mLo.Lo.create_instance_mcf("com.sun.star.linguistic2.ConversionDictionaryList")
+        cd_list = mLo.Lo.create_instance_mcf(XConversionDictionaryList, "com.sun.star.linguistic2.ConversionDictionaryList")
         if cd_list is None:
             print("No list of conversion dictionaries found")
             return
@@ -1039,13 +1039,13 @@ class Write:
     
     @staticmethod
     def get_lingu_properties() -> XLinguProperties:
-        return mLo.Lo.create_instance_mcf("com.sun.star.linguistic2.LinguProperties")
+        return mLo.Lo.create_instance_mcf(XLinguProperties, "com.sun.star.linguistic2.LinguProperties")
 
     # ---------------- Linguistics: spell checking --------------
 
     @staticmethod
     def load_spell_checker() -> XSpellChecker | None:
-        lingo_mgr: XLinguServiceManager = mLo.Lo.create_instance_mcf("com.sun.star.linguistic2.LinguServiceManager")
+        lingo_mgr = mLo.Lo.create_instance_mcf(XLinguServiceManager, "com.sun.star.linguistic2.LinguServiceManager")
         if lingo_mgr is None:
             print("No linguistics manager found")
             return None
@@ -1076,7 +1076,7 @@ class Write:
     
     @staticmethod
     def load_thesaurus() -> XThesaurus:
-        lingo_mgr: XLinguServiceManager = mLo.Lo.create_instance_mcf("com.sun.star.linguistic2.LinguServiceManager")
+        lingo_mgr = mLo.Lo.create_instance_mcf(XLinguServiceManager, "com.sun.star.linguistic2.LinguServiceManager")
         if lingo_mgr is None:
             print("No linguistics manager found")
             return None
@@ -1106,7 +1106,7 @@ class Write:
     
     @staticmethod
     def load_proofreader() -> XProofreader:
-        return mLo.Lo.create_instance_mcf("com.sun.star.linguistic2.Proofreader")
+        return mLo.Lo.create_instance_mcf(XProofreader, "com.sun.star.linguistic2.Proofreader")
     
     @classmethod
     def proof_sentence(cls, sent: str, proofreader: XProofreader) -> int:
@@ -1134,7 +1134,7 @@ class Write:
     
     @staticmethod
     def guess_locale(test_str: str) -> Locale | None:
-        guesser: XLanguageGuessing = mLo.Lo.create_instance_mcf("com.sun.star.linguistic2.LanguageGuessing")
+        guesser = mLo.Lo.create_instance_mcf(XLanguageGuessing, "com.sun.star.linguistic2.LanguageGuessing")
         if guesser is None:
             print("No language guesser found")
             return None

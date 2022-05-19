@@ -18,7 +18,7 @@ from com.sun.star.util import XCloseable
 from contextlib import contextmanager
 
 
-T = TypeVar('T')
+T = TypeVar("T")
 # import module and not module content to avoid circular import issue.
 # https://stackoverflow.com/questions/22187279/python-circular-importing
 from . import props as mProps
@@ -51,19 +51,21 @@ if sys.version_info >= (3, 10):
 else:
     from typing_extensions import Union
 
+
 class Lo:
     class Loader:
         """
         Context Manager for Loader
-        
+
         Example:
-        
+
             .. code::
-            
+
                 with Lo.Loader() as loader:
                     doc = Write.create_doc(loader)
                     ...
         """
+
         def __init__(self, using_pipes=False):
             """
             Create a connection to office
@@ -72,12 +74,13 @@ class Lo:
                 using_pipes (bool, optional): If True the pipes are used to connect to office; Otherwise, connection is made with 'host' and 'port'. Defaults to False.
             """
             self.loader = Lo.load_office(using_pipes=using_pipes)
-        
+
         def __enter__(self) -> XComponentLoader:
             return self.loader
-        
+
         def __exit__(self, exc_type, exc_val, exc_tb):
             Lo.close_office()
+
     # region docType ints
     UNKNOWN = 0
     WRITER = 1
@@ -153,9 +156,9 @@ class Lo:
     is_office_terminated: bool = False
 
     lo_inst: ConnectBase = None
-    
+
     @staticmethod
-    def qi(atype:Type[T], obj: XTypeProvider) -> T | None:
+    def qi(atype: Type[T], obj: XTypeProvider) -> T | None:
         """
         Generic method that test if an object implements an interface.
 
@@ -206,21 +209,40 @@ class Lo:
             print(f"Couldn't initialize LO using OOoBean: {e}")
 
     # region interface object creation
+
+    # region    create_instance_msf()
+    @overload
+    @staticmethod
+    def create_instance_msf(atype: Type[T], service_name: str) -> T | None:
+        ...
+
+    @overload
+    @staticmethod
+    def create_instance_msf(atype: Type[T], service_name: str, msf: XMultiServiceFactory) -> T | None:
+        ...
+
     @classmethod
-    def create_instance_msf(cls, service_name: str) -> XInterface | None:
+    def create_instance_msf(cls, atype: Type[T], service_name: str, msf: XMultiServiceFactory = None) -> T | None:
         if cls.ms_factory is None:
             print("No document found")
             return None
         try:
-            obj = cls.ms_factory.createInstance(service_name)
+            if msf is None:
+                obj = cls.ms_factory.createInstance(service_name)
+            else:
+                msf.createInstance(service_name)
+            interface_obj = cls.qi(atype=atype, obj=obj)
         except Exception as e:
             print(f"Couldn't create interface for '{service_name}': {e}")
             return None
-        return obj
+        return interface_obj
 
+    # endregion create_instance_msf()
+
+    # region    create_instance_mcf()
     @overload
-    @classmethod
-    def create_instance_mcf(cls, service_name: str) -> XInterface | None:
+    @staticmethod
+    def create_instance_mcf(atype: Type[T], service_name: str) -> T | None:
         """
         Create an interface object of class aType from the named service
 
@@ -232,10 +254,8 @@ class Lo:
         """
 
     @overload
-    @classmethod
-    def create_instance_mcf(
-        cls, service_name: str, args: Tuple[object, ...]
-    ) -> XInterface | None:
+    @staticmethod
+    def create_instance_mcf(atype: Type[T], service_name: str, args: Tuple[object, ...]) -> T | None:
         """
         Create an interface object of class aType from the named service
 
@@ -249,8 +269,8 @@ class Lo:
 
     @classmethod
     def create_instance_mcf(
-        cls, service_name: str, args: Optional[Tuple[object, ...]] = None
-    ) -> XInterface | None:
+        cls, atype: Type[T], service_name: str, args: Optional[Tuple[object, ...]] = None
+    ) -> T | None:
         #  create an interface object of class aType from the named service;
         #  uses XComponentContext and 'new' XMultiComponentFactory
         #  so only a bridge to office is needed
@@ -259,15 +279,16 @@ class Lo:
             return None
         try:
             if args is not None:
-                obj = cls.mc_factory.createInstanceWithArgumentsAndContext(
-                    service_name, args, cls.xcc
-                )
+                obj = cls.mc_factory.createInstanceWithArgumentsAndContext(service_name, args, cls.xcc)
             else:
                 obj = cls.mc_factory.createInstanceWithContext(service_name, cls.xcc)
+            interface_obj = cls.qi(atype=atype, obj=obj)
         except Exception as e:
             print(f"Couldn't create interface for '{service_name}': {e}")
             return None
-        return obj
+        return interface_obj
+
+    # endregion create_instance_mcf()
 
     # endregion interface object creation
 
@@ -283,7 +304,6 @@ class Lo:
             XInterface: parent component.
         """
         return a_component.getParent()
-
 
     # region Start Office
     @overload
@@ -325,7 +345,7 @@ class Lo:
         if cls.mc_factory is None:
             print("Office Service Manager is unavailable")
             raise SystemExit(1)
-        cls.xdesktop = cls.create_instance_mcf("com.sun.star.frame.Desktop")
+        cls.xdesktop = cls.create_instance_mcf(XDesktop, "com.sun.star.frame.Desktop")
         if cls.xdesktop is None:
             print("Could not create a desktop service")
             raise SystemExit(1)
@@ -389,9 +409,7 @@ class Lo:
 
     # region document opening
     @classmethod
-    def open_flat_doc(
-        cls, fnm: str, doc_type: str, loader: XComponentLoader
-    ) -> XComponent | None:
+    def open_flat_doc(cls, fnm: str, doc_type: str, loader: XComponentLoader) -> XComponent | None:
         nn = mXML.XML.get_flat_fiter_name(doc_type=doc_type)
         print(f"Flat filter Name: {nn}")
         return cls.open_doc(fnm, loader, mProps.Props.make_props(Hidden=True))
@@ -403,9 +421,7 @@ class Lo:
 
     @overload
     @classmethod
-    def open_doc(
-        cls, fnm: str, loader: XComponentLoader, props: Iterable[PropertyValue]
-    ) -> XComponent | None:
+    def open_doc(cls, fnm: str, loader: XComponentLoader, props: Iterable[PropertyValue]) -> XComponent | None:
         ...
 
     @classmethod
@@ -495,9 +511,7 @@ class Lo:
 
     @overload
     @staticmethod
-    def create_doc(
-        doc_type: str, loader: XComponentLoader, props: Iterable[PropertyValue]
-    ) -> XComponent | None:
+    def create_doc(doc_type: str, loader: XComponentLoader, props: Iterable[PropertyValue]) -> XComponent | None:
         ...
 
     @staticmethod
@@ -511,29 +525,21 @@ class Lo:
         print(f"Creating Office document {doc_type}")
         doc: XMultiServiceFactory = None
         try:
-            doc = loader.loadComponentFromURL(
-                f"private:factory/{doc_type}", "_blank", 0, props
-            )
+            doc = loader.loadComponentFromURL(f"private:factory/{doc_type}", "_blank", 0, props)
         except Exception:
             print("Could not create a document")
         return doc
 
     @classmethod
-    def create_macro_doc(
-        cls, doc_type: str, loader: XComponentLoader
-    ) -> XComponent | None:
+    def create_macro_doc(cls, doc_type: str, loader: XComponentLoader) -> XComponent | None:
         return cls.create_doc(
             doc_type=doc_type,
             loader=loader,
-            props=mProps.Props.make_props(
-                Hidden=False, MacroExecutionMode=MacroExecMode.ALWAYS_EXECUTE
-            ),
+            props=mProps.Props.make_props(Hidden=False, MacroExecutionMode=MacroExecMode.ALWAYS_EXECUTE),
         )
 
     @staticmethod
-    def create_doc_from_template(
-        template_path: str, loader: XComponentLoader
-    ) -> XComponent | None:
+    def create_doc_from_template(template_path: str, loader: XComponentLoader) -> XComponent | None:
         if not mFileIO.FileIO.is_openable(template_path):
             print(f"Template file can not be opened: '{template_path}'")
             return None
@@ -577,9 +583,7 @@ class Lo:
         ...
 
     @classmethod
-    def save_doc(
-        cls, doc: XStorable, fnm: str, password: str = None, format: str = None
-    ) -> None:
+    def save_doc(cls, doc: XStorable, fnm: str, password: str = None, format: str = None) -> None:
         doc_type = mInfo.Info.report_doc_type(doc)
         kargs = {"fnm": fnm, "store": doc, "doc_type": doc_type}
         if password is not None:
@@ -601,9 +605,7 @@ class Lo:
         ...
 
     @classmethod
-    def store_doc(
-        cls, store: XStorable, doc_type: int, fnm: str, password: Optional[str] = None
-    ) -> None:
+    def store_doc(cls, store: XStorable, doc_type: int, fnm: str, password: Optional[str] = None) -> None:
         ext = mInfo.Info.get_ext(fnm)
         frmt = "Text"
         if ext is None:
@@ -748,15 +750,11 @@ class Lo:
 
     @overload
     @staticmethod
-    def store_doc_format(
-        store: XStorable, fnm: str, format: str, password: str
-    ) -> None:
+    def store_doc_format(store: XStorable, fnm: str, format: str, password: str) -> None:
         ...
 
     @staticmethod
-    def store_doc_format(
-        store: XStorable, fnm: str, format: str, password: str = None
-    ) -> None:
+    def store_doc_format(store: XStorable, fnm: str, format: str, password: str = None) -> None:
         print(f"Saving the document in '{fnm}'")
         print(f"Using format {format}")
 
@@ -767,9 +765,7 @@ class Lo:
             if password is None:
                 store_props = mProps.Props.make_props(Overwrite=True, FilterName=format)
             else:
-                store_props = mProps.Props.make_props(
-                    Overwrite=True, FilterName=format, Password=password
-                )
+                store_props = mProps.Props.make_props(Overwrite=True, FilterName=format, Password=password)
             store.storeToURL(save_file_url, store_props)
         except IOException as e:
             print(f"Could not save '{fnm}': {e}")
@@ -786,7 +782,7 @@ class Lo:
             closeable (XCloseable): Object that implements XCloseable interface.
         """
         ...
-    
+
     @overload
     @staticmethod
     def close(closeable: XCloseable, deliver_ownership: bool) -> None:
@@ -814,7 +810,6 @@ class Lo:
             closeable.close(deliver_ownership)
         except CloseVetoException:
             print("Close was vetoed")
-
 
     @overload
     @staticmethod
@@ -867,9 +862,7 @@ class Lo:
             return None
 
         try:
-            xdesktop: XDesktop = mc_factory.createInstanceWithContext(
-                "com.sun.star.frame.Desktop", xcc
-            )
+            xdesktop: XDesktop = mc_factory.createInstanceWithContext("com.sun.star.frame.Desktop", xcc)
         except Exception:
             print("Could not access desktop")
             return None
@@ -923,17 +916,13 @@ class Lo:
         ...
 
     @classmethod
-    def dispatch_cmd(
-        cls, cmd: str, props: Iterable[PropertyValue] = None, frame: XFrame = None
-    ) -> bool:
+    def dispatch_cmd(cls, cmd: str, props: Iterable[PropertyValue] = None, frame: XFrame = None) -> bool:
         if props is None:
             props = ()
         if frame is None:
             frame = cls.xdesktop.getCurrentFrame()
 
-        helper: XDispatchHelper = cls.create_instance_mcf(
-            "com.sun.star.frame.DispatchHelper"
-        )
+        helper = cls.create_instance_mcf(XDispatchHelper, "com.sun.star.frame.DispatchHelper")
         if helper is None:
             print(f"Could not create dispatch helper for command {cmd}")
             return False
@@ -978,17 +967,13 @@ class Lo:
             title = "Object"
             if ts is not None and len(ts) > 0:
                 title = ts[0].getTypeName() + " " + title
-            inspector = cls.mc_factory.createInstanceWithContext(
-                "org.openoffice.InstanceInspector", cls.xcc
-            )
+            inspector = cls.mc_factory.createInstanceWithContext("org.openoffice.InstanceInspector", cls.xcc)
             #       hands on second use
             if inspector is None:
                 print("Inspector Service could not be instantiated")
                 return
             print("Inspector Service instantiated")
-            intro: XIntrospection = cls.create_instance_mcf(
-                "com.sun.star.beans.Introspection"
-            )
+            intro = cls.create_instance_mcf(XIntrospection, "com.sun.star.beans.Introspection")
             intro_acc = intro.inspect(inspector)
             method = intro_acc.getMethod("inspect", -1)
             print(f"inspect() method was found: {method is not None}")
@@ -1005,7 +990,7 @@ class Lo:
         #               or http://extensions.services.openoffice.org/en/project/MRI
         #  Docs: https://github.com/hanya/MRI/wiki
         #  Forum tutorial: https://forum.openoffice.org/en/forum/viewtopic.php?f=74&t=49294
-        xi: XIntrospection = cls.create_instance_mcf("mytools.Mri")
+        xi = cls.create_instance_mcf(XIntrospection, "mytools.Mri")
         if xi is None:
             print("MRI Inspector Service could not be instantiated")
             return

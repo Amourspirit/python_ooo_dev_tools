@@ -188,9 +188,7 @@ class FileIO:
             str | None: Path to temp file.
         """
         try:
-            tmp = tempfile.NamedTemporaryFile(
-                prefix="loTemp", sufix=f".{im_format}", delete=True
-            )
+            tmp = tempfile.NamedTemporaryFile(prefix="loTemp", sufix=f".{im_format}", delete=True)
             return tmp.name
         except Exception as e:
             print("Could not create temp file")
@@ -274,7 +272,7 @@ class FileIO:
     @classmethod
     def zip_access(cls, fnm: str) -> XZipFileAccess:
         return Util.Lo.create_instance_mcf(
-            "com.sun.star.packages.zip.ZipFileAccess", (cls.fnm_to_url(fnm),)
+            XZipFileAccess, "com.sun.star.packages.zip.ZipFileAccess", (cls.fnm_to_url(fnm),)
         )
 
     @classmethod
@@ -293,20 +291,19 @@ class FileIO:
     @staticmethod
     def read_lines(in_stream: XInputStream) -> List[str] | None:
         lines = []
-        lines_arr = None
         try:
-            tis: XTextInputStream | XActiveDataSink = Util.Lo.create_instance_mcf(
-                "com.sun.star.io.TextInputStream"
-            )
-            tis.setInputStream(in_stream)
+            tis = Util.Lo.create_instance_mcf(XTextInputStream, "com.sun.star.io.TextInputStream")
+            sink = Util.Lo.qi(XActiveDataSink, tis)
+            sink.setInputStream(in_stream)
+
             while tis.isEOF() is False:
                 lines.append(tis.readLine())
             tis.closeInput()
-            lines_arr = []
-            lines_arr.extend(lines)
         except Exception as e:
             print(e)
-        return lines_arr
+        if len(lines) == 0:
+            return None
+        return lines
 
     @classmethod
     def get_mime_type(cls, zfa: XZipFileAccess) -> str | None:
@@ -329,11 +326,7 @@ class FileIO:
                 for info in zip.getinfo():
                     print(info.filename)
                     print("\tModified:\t" + str(datetime.datetime(*info.date_time)))
-                    print(
-                        "\tSystem:\t\t"
-                        + str(info.create_system)
-                        + "(0 = Windows, 3 = Unix)"
-                    )
+                    print("\tSystem:\t\t" + str(info.create_system) + "(0 = Windows, 3 = Unix)")
                     print("\tZIP version:\t" + str(info.create_version))
                     print("\tCompressed:\t" + str(info.compress_size) + " bytes")
                     print("\tUncompressed:\t" + str(info.file_size) + " bytes")

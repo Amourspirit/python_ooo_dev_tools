@@ -210,7 +210,7 @@ class GUI:
         title: str, x: int, y: int, width: int, height: int
     ) -> XFrame | None:
         """create a floating XFrame at the given position and size"""
-        xtoolkit: XToolkit = mLo.Lo.create_instance_mcf("com.sun.star.awt.Toolkit")
+        xtoolkit = mLo.Lo.create_instance_mcf(XToolkit, "com.sun.star.awt.Toolkit")
         if xtoolkit is None:
             return None
         desc = WindowDescriptor()
@@ -233,7 +233,7 @@ class GUI:
             print("Could not create window")
             return None
 
-        xframe: XFrame = mLo.Lo.create_instance_mcf("com.sun.star.frame.Frame")
+        xframe = mLo.Lo.create_instance_mcf(XFrame, "com.sun.star.frame.Frame")
         if xframe is None:
             print("Could not create frame")
             return None
@@ -253,7 +253,7 @@ class GUI:
 
     @classmethod
     def show_message_box(cls, title: str, message: str) -> None:
-        xtoolkit: XToolkit = mLo.Lo.create_instance_mcf("com.sun.star.awt.Toolkit")
+        xtoolkit = mLo.Lo.create_instance_mcf(XToolkit, "com.sun.star.awt.Toolkit")
         xwindow = cls.get_window()
         if xtoolkit is None or xwindow is None:
             return None
@@ -421,7 +421,7 @@ class GUI:
 
     @staticmethod
     def get_top_window() -> XTopWindow | None:
-        tk: Toolkit = mLo.Lo.create_instance_mcf("com.sun.star.awt.Toolkit")
+        tk = mLo.Lo.create_instance_mcf(Toolkit, "com.sun.star.awt.Toolkit")
         if tk is None:
             print("Toolkit not found")
             return None
@@ -461,7 +461,7 @@ class GUI:
 
             See also: `Toolkit <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1Toolkit.html>`_
         """
-        tk: Toolkit = mLo.Lo.create_instance_mcf("com.sun.star.awt.Toolkit")
+        tk = mLo.Lo.create_instance_mcf(Toolkit, "com.sun.star.awt.Toolkit")
         if tk is None:
             print("Toolkit not found")
             return None

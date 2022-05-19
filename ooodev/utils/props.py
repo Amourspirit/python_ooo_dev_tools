@@ -3,7 +3,7 @@
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 """make/get/set properties in an array"""
 from __future__ import annotations
-from typing import Iterable, Optional, Tuple, Union, TYPE_CHECKING
+from typing import Iterable, Optional, Sequence, Tuple, Union, TYPE_CHECKING, overload
 import uno
 
 from com.sun.star.beans import Property, PropertyValue
@@ -16,7 +16,7 @@ from com.sun.star.uno import RuntimeException
 # import module and not module content to avoid circular import issue.
 # https://stackoverflow.com/questions/22187279/python-circular-importing
 from . import lo as mLo
-
+from . import info as mInfo
 # Lo = m_lo.Lo
 
 if TYPE_CHECKING:
@@ -138,10 +138,10 @@ class Props:
                 print(f"Could not set property '{itm}': {e}")
     
     @staticmethod
-    def get_property(x_props: XPropertySet, name: str) -> Union[object, None]:
+    def get_property(xprops: XPropertySet, name: str) -> Union[object, None]:
         value = None
         try:
-            value = x_props.getPropertyValue(name)
+            value = xprops.getPropertyValue(name)
         except RuntimeException as e:
             print(f"Could not get runtime property '{name}': {e}")
         except Exception as e:
@@ -193,15 +193,7 @@ class Props:
             except Exception as e:
                 print(f"Could not get elem {i}: {e}")
 
-    @classmethod
-    def show_props(cls, title: str, props: Iterable[PropertyValue]) -> None:
-        print(f"Properties for '{title}':")
-        if props is None:
-            print("  none found")
-            return
-        for prop in props:
-            print(f"  {prop.Name}: {cls.prop_value_to_string(prop.Value)}")
-        print()
+   
     
     @staticmethod
     def prop_value_to_string(val: Union[Iterable[PropertyValue], Iterable[str], object]) -> str:
@@ -253,10 +245,65 @@ class Props:
             pass
         
         print(f"No properties found for {prop_kind}")
+
+    # region    show_props()
+    @overload
+    @staticmethod
+    def show_props(title: str, props: Sequence[PropertyValue]) -> None:...
+
+    @overload
+    @staticmethod
+    def show_props(prop_kind: str, props_set: XPropertySet) -> None:...
+
+    @classmethod
+    def show_props(cls, *args, **kwargs) -> None:
+        ordered_keys = (1, 2)
+        count = len(args) + len(kwargs)
+
+        def get_kwargs() -> dict:
+            ka = {}
+            keys = ("title", "prop_kind")
+            for key in keys:
+                if key in kwargs:
+                    ka[1] = kwargs[key]
+                    break
+            keys = ("props", "props_set")
+            for key in keys:
+                if key in kwargs:
+                    ka[2] = kwargs[key]
+                    break
+            return ka
+
+        if count != 2:
+            print("invalid number of arguments for show_props()")
+            return None
+
+        kargs = get_kwargs()
+
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
+        
+        if mInfo.Info.is_type_interface(kargs[2], XPropertySet.__pyunointerface__):
+            # def show_props(prop_kind: str, props_set: XPropertySet)
+            return cls._show_props_str_xpropertyset(prop_kind=kargs[1], props_set=kargs[2])
+        else:
+            # def show_props(title: str, props: Sequence[PropertyValue])
+            return cls._show_props_str_props(title=kargs[1], props=kargs[2])
+
     
     @classmethod
-    def show_props(cls, prop_kind: str, props_set: XPropertySet) -> None:
-        props = cls.props_set_to_array(props_set)
+    def _show_props_str_props(cls, title: str, props: Sequence[PropertyValue]) -> None:
+        print(f"Properties for '{title}':")
+        if props is None:
+            print("  none found")
+            return
+        for prop in props:
+            print(f"  {prop.Name}: {cls.prop_value_to_string(prop.Value)}")
+        print()
+    
+    @classmethod
+    def _show_props_str_xpropertyset(cls, prop_kind: str, props_set: XPropertySet) -> None:
+        props = cls.props_set_to_tuple(props_set)
         if props is None:
             print(f"No {prop_kind} properties found")
             return
@@ -264,17 +311,20 @@ class Props:
         lst.sort(key=lambda prop: prop.Name)
         print(f"{prop_kind} Properties")
         for prop in lst:
-            prop_value = cls.get_property(props_set, prop.Name)
+            prop_value = cls.get_property(xprops=props_set, name=prop.Name)
             print(f"  {prop.Name} == {prop_value}")
         print()
-        
+    # endregion  show_props()
+
     @staticmethod
-    def props_set_to_array(xprops: XPropertySet) -> Tuple[Property, ...]:
+    def props_set_to_tuple(xprops: XPropertySet) -> Tuple[Property, ...]:
         if xprops is None:
             return ()
         xprops_info = xprops.getPropertySetInfo()
         return xprops_info.getProperties()
-    
+
+    props_set_to_array = props_set_to_tuple
+
     @staticmethod
     def show_property(p: Property) -> str:
         return f"{p.Name}: {p.Type.getTypeName()}"
@@ -286,12 +336,14 @@ class Props:
         if type is None:
             print('type is None')
             return
-        xtype_detect: Union[XTypeDetection, XNameAccess] = mLo.Lo.create_instance_mcf("com.sun.star.document.TypeDetection")
+        xtype_detect = mLo.Lo.create_instance_mcf(XTypeDetection, "com.sun.star.document.TypeDetection")
         if xtype_detect is None:
             print('No type detector reference')
             return
+        
+        xname_access = mLo.Lo.qi(XNameAccess, xtype_detect)
         try:
-            props = xtype_detect.getByName(type)
+            props = xname_access.getByName(type)
             cls.show_props(type, props)
         except Exception:
             print(f"No properties for '{type}'")
