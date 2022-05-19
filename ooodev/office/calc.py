@@ -1,17 +1,15 @@
 # coding: utf-8
 # Python conversion of Calc.java by Andrew Davison, ad@fivedots.coe.psu.ac.th
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
-from os import stat
+# region Imports
 import sys
 from enum import IntFlag
 import numbers
 import re
-from tkinter import X
 from typing import Any, Iterable, List, Tuple, cast, overload, Sequence
-from com.sun.star._pyi.beans.property_value import PropertyValue
-from com.sun.star._pyi.beans.x_property_set import XPropertySet
-from com.sun.star._pyi.text.x_text import XText
 from com.sun.star.awt import Point
+from com.sun.star.beans import PropertyValue
+from com.sun.star.beans import XPropertySet
 from com.sun.star.container import XIndexAccess
 from com.sun.star.container import XNamed
 from com.sun.star.frame import XComponentLoader
@@ -89,6 +87,7 @@ from com.sun.star.table.CellContentType import (
     TEXT as CCT_TEXT,
     FORMULA as CCT_FORMULA,
 )
+from com.sun.star.text import XText
 from com.sun.star.uno import Exception as UnoException
 from com.sun.star.util import NumberFormat  # const
 from com.sun.star.util import XNumberFormatsSupplier
@@ -102,6 +101,7 @@ from ..utils import gui as mGui
 from ..utils import props as mProps
 from ..utils.gen_util import ArgsHelper, TableHelper
 from ..utils import enum_helper
+from ..utils.color import CommonColor
 
 NameVal = ArgsHelper.NameValue
 
@@ -109,13 +109,15 @@ if sys.version_info >= (3, 10):
     from typing import Union
 else:
     from typing_extensions import Union
-
+# endregion Imports
 
 class Calc:
+    # region classes
     # for headers and footers
-    HF_LEFT = 0
-    HF_CENTER = 1
-    HF_RIGHT = 2
+    class HeaderFooter:
+        HF_LEFT = 0
+        HF_CENTER = 1
+        HF_RIGHT = 2
 
     # for zooming, Use GUI.ZoomEnum
 
@@ -154,31 +156,24 @@ class Calc:
 
     setattr(SolverConstraintOperator, "__new__", enum_helper.uno_enum_class_new)
 
+    # endregion classes
+
+    # region Constants
     # largest value used in XCellSeries.fillSeries
     MAX_VALUE = 0x7FFFFFFF
 
     # use a better name when date mode doesn't matter
     NO_DATE = FILL_DATE_DAY
 
-    # some hex values for commonly used colors
-    BLACK = 0x000000
-    WHITE = 0xFFFFFF
-
-    RED = 0xFF0000
-    GREEN = 0x00FF00
-    BLUE = 0x0000FF
-    YELLOW = 0xFFFF00
-    ORANGE = 0xFFA500
-
-    DARK_BLUE = 0x003399
-    LIGHT_BLUE = 0x99CCFF
-    PALE_BLUE = 0xD6EBFF
+    
 
     CELL_POS = Point(3, 4)
 
     _rx_cell = re.compile(r"([a-zA-Z]+)([0-9]+)")
 
-    # --------------- document methods ------------------
+    # endregion Constants
+
+    # region --------------- document methods --------------------------
 
     @classmethod
     def open_doc(cls, fnm: str, loader: XComponentLoader) -> XSpreadsheetDocument | None:
@@ -209,7 +204,9 @@ class Calc:
         return mLo.Lo.qi(XSpreadsheetDocument, doc)
         # XSpreadsheetDocument does not inherit XComponent!
 
-    # ------------------------ sheet methods -------------------------
+    # endregion ------------ document methods ------------------
+
+    # region --------------- sheet methods -----------------------------
 
     @staticmethod
     def _get_sheet_index(doc: XSpreadsheetDocument, index: int) -> XSpreadsheet | None:
@@ -361,7 +358,9 @@ class Calc:
             return
         xnamed.setName(name)
 
-    # ----------------- view methods --------------------------
+    # endregion --------------------- sheet methods -------------------------
+
+    # region --------------- view methods ------------------------------
 
     @staticmethod
     def get_controller(doc: XSpreadsheetDocument) -> XController | None:
@@ -508,7 +507,9 @@ class Calc:
             addr = cls.get_cell_address(cell)
         return addr
 
-    # -------------------- view data methods ---------------------------------
+    # endregion -------------- view methods ----------------------------
+
+    # region --------------- view data methods -------------------------
 
     @staticmethod
     def get_view_panes(doc: XSpreadsheetDocument) -> Iterable[XViewPane] | None:
@@ -594,7 +595,9 @@ class Calc:
         print(s_data)
         ctrl.restoreViewData(s_data)
 
-    # ----------- insert/remove rows, columns, cells ---------------
+    # endregion ----------------- view data methods ---------------------------------
+
+    # region --------------- insert/remove rows, columns, cells --------
 
     @staticmethod
     def insert_row(sheet: XSpreadsheet, idx: int) -> None:
@@ -638,7 +641,9 @@ class Calc:
         else:
             mover.removeRange(addr, DM_UP)
 
-    # ----------- set/get values in cells ------------------
+    # endregion ------------ insert/remove rows, columns, cells -----
+
+    # region --------------- set/get values in cells -------------------
     @staticmethod
     def _set_val_by_cell(value: object, cell: XCell) -> None:
         if isinstance(value, numbers.Number):
@@ -972,7 +977,9 @@ class Calc:
             return str(cls.get_val(sheet=kargs["first"], addr=kargs["second"]))
         return None
 
-    # ----------- set/get values in 2D array ------------------
+    # endregion ------------ set/get values in cells -----------------
+
+    # region --------------- set/get values in 2D array ----------------
 
     @classmethod
     def set_array(cls, sheet: XSpreadsheet, name: str, values: Tuple[Tuple[object, ...], ...]) -> None:
@@ -1068,7 +1075,9 @@ class Calc:
             print(col_str)
         print()
 
-    # ---------- set/get rows and columns -------------------------
+    # endregion ------------- set/get values in 2D array --------------
+
+    # region --------------- set/get rows and columns ------------------
 
     @overload
     @staticmethod
@@ -1190,7 +1199,9 @@ class Calc:
 
     convert_to_floats = convert_to_doubles
 
-    # ----------------- special cell types ---------------------
+    # endregion --------------- set/get rows and columns -----------------
+
+    # region --------------- special cell types ------------------------
 
     @classmethod
     def set_date(cls, sheet: XSpreadsheet, cell_name: str, day: int, month: int, year: int) -> None:
@@ -1228,7 +1239,9 @@ class Calc:
         ann = ann_anchor.getAnnotation()
         ann.setIsVisible(True)
 
-    # ----------------- get XCell and XCellRange methods ---------------------------
+    # endregion ------------ special cell types ------------------------
+
+    # region --------------- get XCell and XCellRange methods ----------
 
     @classmethod
     def _get_cell_sheet_col_row(cls, sheet: XSpreadsheet, column: int, row: int) -> XCell | None:
@@ -1499,7 +1512,9 @@ class Calc:
             print(f"Could not access range for row position: {idx}")
         return None
 
-    # ----- convert cell/cellrange names to positions ----------------
+    # endregion ------------ get XCell and XCellRange methods ----------
+
+    # region --------------- convert cell/cellrange names to positions -
 
     @classmethod
     def get_cell_range_positions(cls, cell_range: str) -> Tuple[Point] | None:
@@ -1563,7 +1578,9 @@ class Calc:
             print(f"Incorrect format for {row_str}")
         return 0
 
-    # ---------------- get cell and cell range addresses --------------------
+    # endregion ----------- convert cell/cellrange names to positions --
+
+    # region --------------- get cell and cell range addresses ---------
 
     @staticmethod
     def _get_cell_address_cell(cell: XCell) -> CellAddress | None:
@@ -1817,7 +1834,9 @@ class Calc:
             )
         return False
 
-    # ------- convert cell range address to string ------------------
+    # endregion ------------ get cell and cell range addresses ---------
+
+    # region --------------- convert cell range address to string ------
     @classmethod
     def _get_range_str_cell_rng_sht(cls, cell_range: XCellRange, sheet: XSpreadsheet) -> str:
         return cls._get_range_str_cr_addr_sht(cls._get_address_cell(cell_range=cell_range), sheet)
@@ -2012,7 +2031,9 @@ class Calc:
         num = col + 1  # shift to one based.
         return TableHelper.make_column_name(num)
 
-    # --------------------- search -----------------------------
+    # endregion ------------ convert cell range address to string ------
+
+    # region --------------- search ------------------------------------
 
     @staticmethod
     def find_all(srch: XSearchable, sd: XSearchDescriptor) -> Sequence[XCellRange] | None:
@@ -2038,8 +2059,9 @@ class Calc:
             print(f"Found {c_count} matches but unable to acces any match")
             return None
         return crs
+    # endregion ------------ search ------------------------------------
 
-    # ---------------------------- cell decoration ------------------------
+    # region --------------- cell decoration ---------------------------
 
     @staticmethod
     def create_cell_style(doc: XSpreadsheetDocument, style_name: str) -> XStyle | None:
@@ -2116,7 +2138,7 @@ class Calc:
 
     @classmethod
     def _add_border_sht_rng(cls, sheet: XSpreadsheet, range_name: str) -> None:
-        cls._add_border_sht_rng_color(sheet=sheet, range_name=range_name, color=cls.BLACK)  # color black
+        cls._add_border_sht_rng_color(sheet=sheet, range_name=range_name, color=CommonColor.BLACK)  # color black
 
     @classmethod
     def _add_border_sht_rng_color(cls, sheet: XSpreadsheet, range_name: str, color: int) -> None:
@@ -2226,7 +2248,7 @@ class Calc:
         Draw a colored border around the range and write a headline in the
         top-left cell of the range.
         """
-        cls._add_border_sht_rng_color(sheet=sheet, range_name=range_name, color=cls.LIGHT_BLUE)
+        cls._add_border_sht_rng_color(sheet=sheet, range_name=range_name, color=CommonColor.LIGHT_BLUE)
 
         # color the headline
         addr = cls._get_address_sht_rng(sheet=sheet, range_name=range_name)
@@ -2269,7 +2291,9 @@ class Calc:
         mInfo.Info.show_services(obj_name="Cell range for a row", obj=cell_range)
         mProps.Props.set_property(prop_set=cell_range, name="Height", value=(height * 100))
 
-    # --------------------------- scenarios -------------------------------
+    # endregion ------------ cell decoration ---------------------------
+
+    # region --------------- scenarios ---------------------------------
 
     @staticmethod
     def insert_scenario(
@@ -2308,7 +2332,9 @@ class Calc:
             print("Scenario could not be applied:")
             print(f"    {e}")
 
-    # ---------------- data pilot methods --------------------------
+    # endregion ------------ scenarios ---------------------------------
+
+    # region --------------- data pilot methods ------------------------
 
     @staticmethod
     def get_pilot_tables(sheet: XSpreadsheet) -> XDataPilotTables | None:
@@ -2336,7 +2362,9 @@ class Calc:
 
         return None
 
-    # ------------------ using calc functions --------------------------
+    # endregion ------------ data pilot methods ------------------------
+
+    # region --------------- using calc functions ----------------------
 
     @classmethod
     def compute_function(cls, fn: GeneralFunction | str, cell_range: XCellRange) -> float:
@@ -2531,7 +2559,9 @@ class Calc:
 
         return recent_funcs.getRecentFunctionIds()
 
-    # ------------------------ solver methods --------------------------
+    # endregion ------------ using calc functions ----------------------
+
+    # region --------------- solver methods ----------------------------
 
     @classmethod
     def goal_seek(
@@ -2684,8 +2714,10 @@ class Calc:
             cell_name = cls._get_cell_str_addr(addrs[i])
             print(f"  {cell_name} == {num:.4f}")
         print()
-    
-    # ------------------ headers /footers --------------------------
+
+    # endregion ------------ solver methods ----------------------------
+
+    # region --------------- headers /footers --------------------------
     
     @staticmethod
     def get_head_foot(props: XPropertySet, content: str) -> XHeaderFooterContent | None:
@@ -2707,11 +2739,11 @@ class Calc:
             print("Header/footer content is null")
             return None
     
-        if region == cls.HF_LEFT:
+        if region == cls.HeaderFooter.HF_LEFT:
             return hfc.getLeftText()
-        if region == cls.HF_CENTER:
+        if region == cls.HeaderFooter.HF_CENTER:
             return hfc.getCenterText()
-        if region == cls.HF_RIGHT:
+        if region == cls.HeaderFooter.HF_RIGHT:
             return hfc.getRightText()
         print("Unknown header/footer region")
         return None
@@ -2726,3 +2758,5 @@ class Calc:
         header_cursor.gotoStart(False)
         header_cursor.gotoEnd(True)
         header_cursor.setString(text)
+
+    # endregion --------------- headers /footers -----------------------
