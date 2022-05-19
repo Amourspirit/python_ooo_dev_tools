@@ -11,6 +11,20 @@ from typing import Union, NamedTuple, overload
 MAX_COLOR = 255
 MIN_COLOR = 0
 
+class CommonColor:
+    # some hex values for commonly used colors
+    BLACK = 0x000000
+    WHITE = 0xFFFFFF
+
+    RED = 0xFF0000
+    GREEN = 0x00FF00
+    BLUE = 0x0000FF
+    YELLOW = 0xFFFF00
+    ORANGE = 0xFFA500
+
+    DARK_BLUE = 0x003399
+    LIGHT_BLUE = 0x99CCFF
+    PALE_BLUE = 0xD6EBFF
 
 class rgb(NamedTuple):
     red: int

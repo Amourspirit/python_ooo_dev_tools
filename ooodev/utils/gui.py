@@ -68,7 +68,8 @@ class GUI:
         PAGE_WIDTH = DocumentZoomType.PAGE_WIDTH
         ENTIRE_PAGE = DocumentZoomType.ENTIRE_PAGE
         BY_VALUE = DocumentZoomType.BY_VALUE
-
+        PAGE_WIDTH_EXACT = DocumentZoomType.PAGE_WIDTH_EXACT
+        
     MENU_BAR = "private:resource/menubar/menubar"
     STATUS_BAR = "private:resource/statusbar/statusbar"
     FIND_BAR = "private:resource/toolbar/findbar"
@@ -698,7 +699,7 @@ class GUI:
         if "doc" in kwargs:
             kargs["first"] = kwargs["doc"]
         elif "lm" in kwargs:
-            kargs["first"] = kargs["lm"]
+            kargs["first"] = kwargs["lm"]
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
         k_len = len(kargs)
@@ -799,7 +800,7 @@ class GUI:
         for ui_elm in ui_elms:
             el_name = ui_elm.ResourceURL
             to_hide = True
-            show_elms_lst = list(show_elms)
+            # show_elms_lst = list(show_elms)
             for el in show_elms:
                 if el == el_name:
                     show_elms.remove(el)  # this elem is in lm so remove from show_elems

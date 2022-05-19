@@ -1,4 +1,7 @@
 # coding: utf-8
+# Python conversion of Write.java by Andrew Davison, ad@fivedots.coe.psu.ac.th
+# See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
+
 from __future__ import annotations
 import sys
 from typing import TYPE_CHECKING, Iterable, List, overload, cast

@@ -1040,3 +1040,58 @@ class Info:
     @classmethod
     def is_preferred(cls, filter_flags: int) -> bool:
         return (filter_flags & cls.PREFERRED) == cls.PREFERRED
+
+    @staticmethod
+    def is_type_struct(obj: object, type_name: str) -> bool:
+        """
+        Gets if an object is a Uno Struct of matching type.
+
+        Args:
+            obj (object): Object to test if is struct
+            type_name (str): Type string such as 'com.sun.star.table.CellRangeAddress'
+
+        Returns:
+            bool: True if 'obj' is struct and 'obj' matches 'type_name'; Otherwise, False
+        """
+        if obj is None:
+            return False
+        if hasattr(obj, "typeName"):
+            return obj.typeName == type_name
+        return False
+    
+    @staticmethod
+    def is_type_interface(obj: object, type_name: str) -> bool:
+        """
+        Gets if an object is a Uno interface of matching type.
+
+        Args:
+            obj (object): Object to test if is interface
+            type_name (str): Type string such as 'com.sun.star.uno.XInterface'
+
+        Returns:
+            bool: True if 'obj' is interface and 'obj' matches 'type_name'; Otherwise, False
+        """
+        if obj is None:
+            return False
+        if hasattr(obj, "__pyunointerface__"):
+            return obj.__pyunointerface__ == type_name
+        return False
+    
+    @staticmethod
+    def is_type_enum(obj: uno.Enum, type_name: str) -> bool:
+        """
+        Gets if an object is a Uno enum of matching type.
+
+        Args:
+            obj (object): Object to test if is uno enum
+            type_name (str): Type string such as 'com.sun.star.sheet.GeneralFunction'
+
+        Returns:
+            bool: True if 'obj' is uno enum and 'obj' matches 'type_name'; Otherwise, False
+        """
+        if obj is None:
+            return False
+        if hasattr(obj, "typeName"):
+            return obj.typeName == type_name
+        return False
+        
