@@ -2,23 +2,19 @@
 # Python conversion of Calc.java by Andrew Davison, ad@fivedots.coe.psu.ac.th
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 # region Imports
+from __future__ import annotations
 import sys
 from enum import IntFlag
 import numbers
 import re
-from typing import Any, Iterable, List, Tuple, cast, overload, Sequence
+from typing import Any, Iterable, List, Tuple, cast, overload, Sequence, TYPE_CHECKING
 from com.sun.star.awt import Point
-from com.sun.star.beans import PropertyValue
-from com.sun.star.beans import XPropertySet
 from com.sun.star.container import XIndexAccess
 from com.sun.star.container import XNamed
-from com.sun.star.frame import XComponentLoader
-from com.sun.star.frame import XController
-from com.sun.star.frame import XFrame
 from com.sun.star.frame import XModel
 from com.sun.star.lang import XComponent
 from com.sun.star.lang import Locale
-from com.sun.star.rendering import ViewState
+from com.sun.star.rendering import ViewState # struct
 from com.sun.star.sheet.GeneralFunction import (
     NONE as GF_NONE,
     AUTO as GF_AUTO,
@@ -34,7 +30,6 @@ from com.sun.star.sheet.GeneralFunction import (
     VAR as GF_VAR,
     VARP as GF_VARP,
 )
-from com.sun.star.sheet import FunctionArgument  # struct
 from com.sun.star.sheet import SolverConstraint  # struct
 from com.sun.star.sheet.SolverConstraintOperator import (
     LESS_EQUAL as SCO_LESS_EQUAL,
@@ -49,17 +44,13 @@ from com.sun.star.sheet import XCellRangeAddressable
 from com.sun.star.sheet import XCellRangeMovement
 from com.sun.star.sheet import XCellSeries
 from com.sun.star.sheet import XDataPilotTable
-from com.sun.star.sheet import XDataPilotTables
 from com.sun.star.sheet import XDataPilotTablesSupplier
 from com.sun.star.sheet import XFunctionAccess
 from com.sun.star.sheet import XFunctionDescriptions
-from com.sun.star.sheet import XGoalSeek
 from com.sun.star.sheet import XHeaderFooterContent
 from com.sun.star.sheet import XRecentFunctions
 from com.sun.star.sheet import XScenario
 from com.sun.star.sheet import XScenariosSupplier
-from com.sun.star.sheet import XSheetCellCursor
-from com.sun.star.sheet import XSolver
 from com.sun.star.sheet import XSpreadsheet
 from com.sun.star.sheet import XSpreadsheetDocument
 from com.sun.star.sheet import XSpreadsheetView
@@ -75,11 +66,8 @@ from com.sun.star.sheet.CellInsertMode import RIGHT as IM_RIGHT, DOWN as IM_DOWN
 from com.sun.star.sheet.FillDateMode import FILL_DATE_DAY
 from com.sun.star.style import XStyle
 from com.sun.star.table import BorderLine2  # struct
-from com.sun.star.table import CellAddress
-from com.sun.star.table import CellRangeAddress
 from com.sun.star.table import TableBorder2  # struct
 from com.sun.star.table import XColumnRowRange
-from com.sun.star.table import XCell
 from com.sun.star.table import XCellRange
 from com.sun.star.table.CellContentType import (
     EMPTY as CCT_EMPTY,
@@ -87,13 +75,29 @@ from com.sun.star.table.CellContentType import (
     TEXT as CCT_TEXT,
     FORMULA as CCT_FORMULA,
 )
-from com.sun.star.text import XText
 from com.sun.star.uno import Exception as UnoException
 from com.sun.star.util import NumberFormat  # const
 from com.sun.star.util import XNumberFormatsSupplier
 from com.sun.star.util import XNumberFormatTypes
-from com.sun.star.util import XSearchable
-from com.sun.star.util import XSearchDescriptor
+
+if TYPE_CHECKING:
+    from com.sun.star.beans import PropertyValue
+    from com.sun.star.beans import XPropertySet
+    from com.sun.star.frame import XComponentLoader
+    from com.sun.star.frame import XController
+    from com.sun.star.frame import XFrame
+    from com.sun.star.sheet import FunctionArgument  # struct
+    from com.sun.star.sheet import XDataPilotTables
+    from com.sun.star.sheet import XGoalSeek
+    from com.sun.star.sheet import XSheetCellCursor
+    from com.sun.star.sheet import XSolver
+    from com.sun.star.table import CellAddress
+    from com.sun.star.table import CellRangeAddress
+    from com.sun.star.table import XCell
+    from com.sun.star.text import XText
+    from com.sun.star.util import XSearchable
+    from com.sun.star.util import XSearchDescriptor
+
 
 from ..utils import lo as mLo
 from ..utils import info as mInfo
@@ -1793,12 +1797,10 @@ class Calc:
 
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
-
-        cell = mLo.Lo.qi(XCell, kargs["first"])
-        if cell is None:
-            addr = kargs["first"]
-        else:
+        if mInfo.Info.is_type_interface(obj=kargs["first"], type_name="com.sun.star.table.XCell"):
             addr = cls._get_cell_address_cell(cell=kargs["first"])
+        else:
+            addr = kargs["first"]
         print(f"Cell: Sheet{addr.Sheet+1}.{cls.get_cell_str(addr=addr)})")
     # endregion    print_cell_address()
     
@@ -1840,7 +1842,8 @@ class Calc:
 
         cell_range = mLo.Lo.qi(XCellRange, kargs["first"])
         if cell_range is None:
-            cr_addr = cast(CellRangeAddress, kargs["first"])
+            # when cast is used with an import the is not available at runtime must be quoted.
+            cr_addr = cast('CellRangeAddress', kargs["first"])
         else:
             cr_addr = cls._get_address_cell(cell_range=kargs["first"])
         msg = f"Range: Sheet{cr_addr.Sheet+1}.{cls.get_cell_str(col=cr_addr.StartColumn,row=cr_addr.StartRow)}:"
@@ -1884,12 +1887,14 @@ class Calc:
         except AttributeError:
             return False
         if mInfo.Info.is_type_struct(addr1, "com.sun.star.table.CellAddress"):
-            a = cast(CellAddress, addr1)
-            b = cast(CellAddress, addr2)
+            # when cast is used with an import the is not available at runtime must be quoted.
+            a = cast('CellAddress', addr1)
+            b = cast('CellAddress', addr2)
             return a.Sheet == b.Sheet and a.Column == b.Column and a.Row == b.Row
         if mInfo.Info.is_type_struct(addr1, "com.sun.star.table.CellRangeAddress"):
-            a = cast(CellRangeAddress, addr1)
-            b = cast(CellRangeAddress, addr2)
+            # when cast is used with an import the is not available at runtime must be quoted.
+            a = cast('CellRangeAddress', addr1)
+            b = cast('CellRangeAddress', addr2)
             return (
                 a.Sheet == b.Sheet
                 and a.StartColumn == b.StartColumn

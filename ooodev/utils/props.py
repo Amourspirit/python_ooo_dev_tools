@@ -2,33 +2,36 @@
 # Python conversion of Props.java by Andrew Davison, ad@fivedots.coe.psu.ac.th
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 """make/get/set properties in an array"""
+# region Imports
 from __future__ import annotations
 from typing import Iterable, Optional, Sequence, Tuple, Union, TYPE_CHECKING, overload
 import uno
 
-from com.sun.star.beans import Property, PropertyValue
-from com.sun.star.beans import PropertyAttribute # type: ignore
-from com.sun.star.ui import ItemType # type: ignore
-from com.sun.star.ui import ItemStyle # type: ignore
+from com.sun.star.beans import PropertyAttribute # const
+from com.sun.star.beans import XPropertySet
+from com.sun.star.container import XNameAccess
+from com.sun.star.document import XTypeDetection
+from com.sun.star.ui import ItemType # const
+from com.sun.star.ui import ItemStyle # const
 from com.sun.star.lang import IllegalArgumentException
 from com.sun.star.uno import RuntimeException
+
+
+if TYPE_CHECKING:
+    from com.sun.star.beans import Property, PropertyValue
+    from com.sun.star.container import XIndexAccess
+    from com.sun.star.lang import XServiceInfo
+    from com.sun.star.beans import XMultiPropertySet
 
 # import module and not module content to avoid circular import issue.
 # https://stackoverflow.com/questions/22187279/python-circular-importing
 from . import lo as mLo
 from . import info as mInfo
-# Lo = m_lo.Lo
-
-if TYPE_CHECKING:
-    from com.sun.star.beans import XPropertySet
-    from com.sun.star.container import XIndexAccess
-    from com.sun.star.lang import XServiceInfo
-    from com.sun.star.document import XTypeDetection 
-    from com.sun.star.container import XNameAccess
-    from com.sun.star.beans import XMultiPropertySet
+# endregion Imports
 
 class Props:
     """make/get/set properties in an array"""
+    # region ------------------- make properties -----------------------
     @staticmethod
     def make_prop_value(name: Optional[str] = None, value: Optional[str] = None) -> PropertyValue:
         p: PropertyValue = uno.createUnoStruct("com.sun.star.beans.PropertyValue")
@@ -88,6 +91,9 @@ class Props:
             )
         return tuple(lst)
 
+    # endregion ---------------- make properties -----------------------
+
+    # region ------------------- set properties ------------------------
     @staticmethod
     def set_prop(props: Iterable[PropertyValue], name: str, value: object) -> None:
         if props is None:
@@ -136,7 +142,9 @@ class Props:
                 prop_set.setPropertyValue(itm, cls.get_property(from_props, itm))
             except Exception as e:
                 print(f"Could not set property '{itm}': {e}")
+    # endregion ---------------- set properties ----------------------- 
     
+    # region ------------------- get properties ------------------------
     @staticmethod
     def get_property(xprops: XPropertySet, name: str) -> Union[object, None]:
         value = None
@@ -162,9 +170,7 @@ class Props:
             nms.append(prop.Name)
         return tuple(nms)
     
-    @staticmethod
-    def has_property(prop_set: XPropertySet, name: str) -> bool:
-        return prop_set.getPropertySetInfo().hasPropertyByName(name)
+    
     
     @staticmethod
     def get_value(name: str, props: Iterable[PropertyValue]) -> Union[object, None]:
@@ -174,7 +180,9 @@ class Props:
         print(f"{name} not found")
         return None
     
-    # ------------------ show properties array ------------------------------
+    # endregion ---------------- get properties ------------------------
+    
+    # region ------------------- show properties array -----------------
     
     @classmethod
     def show_indexed_props(cls, title: str, obj: XIndexAccess) -> None:
@@ -232,14 +240,19 @@ class Props:
                 print(f"{prop.Name}: {cls.prop_value_to_string(prop.Value)}")
                 return
         print(f"{name} not found")
+    # endregion ---------------- show properties array -----------------
 
-    # ------------------- show properties of an Object ----------------
+    # region ------------------- show properties of an Object ----------
     
     @classmethod
     def show_obj_props(cls, prop_kind:str, obj: XServiceInfo) -> None:
+        prop_set = mLo.Lo.qi(XPropertySet, obj)
+        if prop_set is None:
+            print(f"no {prop_kind} properties found")
+            return
         try:
             if obj.supportsService('com.sun.star.beans.XPropertySet'):
-                cls.show_props(prop_kind, obj)
+                cls._show_props_str_xpropertyset(prop_kind, prop_set)
                 return
         except AttributeError:
             pass
@@ -283,7 +296,7 @@ class Props:
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
         
-        if mInfo.Info.is_type_interface(kargs[2], XPropertySet.__pyunointerface__):
+        if mInfo.Info.is_type_interface(kargs[2], "com.sun.star.beans.XPropertySet"):
             # def show_props(prop_kind: str, props_set: XPropertySet)
             return cls._show_props_str_xpropertyset(prop_kind=kargs[1], props_set=kargs[2])
         else:
@@ -328,8 +341,12 @@ class Props:
     @staticmethod
     def show_property(p: Property) -> str:
         return f"{p.Name}: {p.Type.getTypeName()}"
+    # endregion ---------------- show properties of an Object ----------
     
-    # --------------------------- others ------------------------------
+    # region ------------------- others --------------------------------
+    @staticmethod
+    def has_property(prop_set: XPropertySet, name: str) -> bool:
+        return prop_set.getPropertySetInfo().hasPropertyByName(name)
     
     @classmethod
     def show_doc_type_props(cls, type: str) -> None:
@@ -364,3 +381,5 @@ class Props:
             return ()
         print(f"No. of suitable properties: {names_len}")
         return tuple(names)
+    
+    # endregion ---------------- others --------------------------------

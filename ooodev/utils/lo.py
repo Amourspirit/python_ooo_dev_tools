@@ -10,32 +10,22 @@ from typing import TYPE_CHECKING, Iterable, Optional, List, Tuple, overload, Typ
 from urllib.parse import urlparse
 import uno
 from .connect import ConnectBase, LoPipeStart, LoSocketStart
+from com.sun.star.beans import XPropertySet
+from com.sun.star.beans import XIntrospection
+from com.sun.star.container import XNamed
+from com.sun.star.document import MacroExecMode # const
+from com.sun.star.frame import XDesktop
+from com.sun.star.frame import XDispatchHelper
 from com.sun.star.lang import DisposedException
-from com.sun.star.util import CloseVetoException
 from com.sun.star.io import IOException
-from com.sun.star.document import MacroExecMode
+from com.sun.star.util import CloseVetoException
 from com.sun.star.util import XCloseable
-from contextlib import contextmanager
-
-
-T = TypeVar("T")
-# import module and not module content to avoid circular import issue.
-# https://stackoverflow.com/questions/22187279/python-circular-importing
-from . import props as mProps
-from . import file_io as mFileIO
-from . import xml_util as mXML
-from . import info as mInfo
 
 if TYPE_CHECKING:
     from com.sun.star.beans import PropertyValue
-    from com.sun.star.beans import XPropertySet
-    from com.sun.star.beans import XIntrospection
     from com.sun.star.container import XChild
     from com.sun.star.container import XIndexAccess
-    from com.sun.star.container import XNamed
-    from com.sun.star.frame import XDesktop
     from com.sun.star.frame import XComponentLoader
-    from com.sun.star.frame import XDispatchHelper
     from com.sun.star.frame import XFrame
     from com.sun.star.frame import XStorable
     from com.sun.star.lang import XMultiComponentFactory
@@ -45,6 +35,15 @@ if TYPE_CHECKING:
     from com.sun.star.script.provider import XScriptContext
     from com.sun.star.uno import XComponentContext
     from com.sun.star.uno import XInterface
+
+T = TypeVar("T")
+# import module and not module content to avoid circular import issue.
+# https://stackoverflow.com/questions/22187279/python-circular-importing
+from . import props as mProps
+from . import file_io as mFileIO
+from . import xml_util as mXML
+from . import info as mInfo
+
 
 if sys.version_info >= (3, 10):
     from typing import Union
@@ -450,7 +449,7 @@ class Lo:
             if open_file_url is None:
                 return None
 
-        doc: XComponent = None
+        doc = None
         try:
             doc = loader.loadComponentFromURL(open_file_url, "_blank", 0, props)
         except Exception:
@@ -523,7 +522,7 @@ class Lo:
         if props is None:
             props = mProps.Props.make_props(Hidden=True)
         print(f"Creating Office document {doc_type}")
-        doc: XMultiServiceFactory = None
+        doc = None
         try:
             doc = loader.loadComponentFromURL(f"private:factory/{doc_type}", "_blank", 0, props)
         except Exception:
@@ -1121,16 +1120,17 @@ class Lo:
             return None
         return names_list
 
-    @staticmethod
-    def find_container_props(con: XIndexAccess, nm: str) -> XPropertySet | None:
+    @classmethod
+    def find_container_props(cls, con: XIndexAccess, nm: str) -> XPropertySet | None:
         if con is None:
             print("Container is null")
             return None
         for i in range(con.getCount()):
             try:
-                named: XNamed = con.getByIndex(i)
-                if named.getName() == nm:
-                    return named
+                el = con.getByIndex(i)
+                named = cls.qi(XNamed, el)
+                if named and named.getName() == nm:
+                    return cls.qi(XPropertySet, el)
             except Exception:
                 print(f"Could not access element {i}")
         print(f"Could not find a '{nm}' property set in the container")

@@ -15,29 +15,29 @@ from .sys_info import SysInfo
 
 Props = m_props.Props
 
+from com.sun.star.awt import XToolkit
+from com.sun.star.beans import XPropertySet
+from com.sun.star.container import XContentEnumerationAccess
+from com.sun.star.container import XNameAccess
+from com.sun.star.document import XTypeDetection
+from com.sun.star.lang import XMultiServiceFactory
+from com.sun.star.lang import XServiceInfo
 from com.sun.star.reflection import XIdlReflection
+from com.sun.star.util import XChangesBatch
 
 if TYPE_CHECKING:
     from com.sun.star.awt import FontDescriptor
-    from com.sun.star.awt import XToolkit
     from com.sun.star.beans import PropertyValue
     from com.sun.star.beans import XHierarchicalPropertySet
     from com.sun.star.beans import XPropertyContainer
-    from com.sun.star.beans import XPropertySet
-    from com.sun.star.container import XContentEnumerationAccess
     from com.sun.star.container import XNameContainer
-    from com.sun.star.container import XNameAccess
     from com.sun.star.deployment import XPackageInformationProvider
     from com.sun.star.deployment import PackageInformationProvider
-    from com.sun.star.document import XTypeDetection
     from com.sun.star.document import XDocumentPropertiesSupplier
-    from com.sun.star.lang import XMultiServiceFactory
-    from com.sun.star.lang import XServiceInfo
     from com.sun.star.lang import XTypeProvider
     from com.sun.star.reflection import XIdlMethod
     from com.sun.star.style import XStyleFamiliesSupplier
     from com.sun.star.uno import XInterface
-    from com.sun.star.util import XChangesBatch
 
 from . import lo as mLo
 from . import file_io as mFileIO
@@ -316,7 +316,7 @@ class Info:
             return None
         _props = mProps.Props.make_props(nodepath=path)
         try:
-            root: XInterface = con_prov.createInstanceWithArguments(
+            root = con_prov.createInstanceWithArguments(
                 "com.sun.star.configuration.ConfigurationAccess", _props
             )
             cls.show_services(obj_name="ConfigurationAccess", obj=root)
@@ -341,12 +341,13 @@ class Info:
 
     @classmethod
     def set_config(cls, node_path: str, node_str: str, val: object) -> bool:
-        _props: XChangesBatch = cls.set_config_props(node_path=node_path)
-        if _props is None:
+        props = cls.set_config_props(node_path=node_path)
+        if props is None:
             return False
-        mProps.Props.set_property(prop_set=_props, name=node_str, value=val)
+        mProps.Props.set_property(prop_set=props, name=node_str, value=val)
+        secure_change = mLo.Lo.qi(XChangesBatch, props)
         try:
-            _props.commitChanges()
+            secure_change.commitChanges()
             return True
         except Exception:
             print(f"Unable to commit config update for\n  '{node_path}'")
@@ -547,10 +548,10 @@ class Info:
     def _get_service_names2(service_name: str) -> List[str] | None:
         names: List[str] = []
         try:
-            enum_access: XContentEnumerationAccess = mLo.Lo.get_component_factory()
+            enum_access = mLo.Lo.qi(XContentEnumerationAccess, mLo.Lo.get_component_factory())
             x_enum = enum_access.createContentEnumeration(service_name)
             while x_enum.hasMoreElements():
-                si: XServiceInfo = x_enum.nextElement()
+                si = mLo.Lo.qi(XServiceInfo, x_enum.nextElement())
                 names.append(si.getImplementationName())
         except Exception:
             print(f"Could not collect service names for: {service_name}")

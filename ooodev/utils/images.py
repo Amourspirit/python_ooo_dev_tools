@@ -8,12 +8,12 @@ import sys
 import uno
 from com.sun.star.awt import Size
 from com.sun.star.beans import XPropertySet
+from com.sun.star.container import XNameContainer
+from com.sun.star.document import XMimeTypeInfo
+from com.sun.star.graphic import XGraphicProvider
 
 if TYPE_CHECKING:
-    from com.sun.star.container import XNameContainer
-    from com.sun.star.document import XMimeTypeInfo
     from com.sun.star.graphic import XGraphic
-    from com.sun.star.graphic import XGraphicProvider
 
 from ..utils import lo as mLo
 from ..utils import file_io as mFileIO

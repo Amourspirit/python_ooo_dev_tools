@@ -8,41 +8,41 @@ from enum import IntEnum
 import uno
 
 from com.sun.star.accessibility import XAccessible
-from com.sun.star.awt import PosSize
-from com.sun.star.awt import Rectangle
-from com.sun.star.awt import WindowAttribute
-from com.sun.star.awt import VclWindowPeerAttribute
-from com.sun.star.awt import WindowDescriptor
+from com.sun.star.awt import PosSize # const
+from com.sun.star.awt import Rectangle # struct
+from com.sun.star.awt import WindowAttribute # const
+from com.sun.star.awt import VclWindowPeerAttribute # const
+from com.sun.star.awt import WindowDescriptor # struct
+from com.sun.star.awt import XExtendedToolkit
 from com.sun.star.awt import XMenuBar
 from com.sun.star.awt import XMessageBox
 from com.sun.star.awt import XSystemDependentWindowPeer
+from com.sun.star.awt import XToolkit
 from com.sun.star.awt import XUserInputInterception
 from com.sun.star.awt import XWindow
 from com.sun.star.awt import XWindowPeer
 from com.sun.star.awt.WindowClass import TOP as WC_TOP, MODALTOP as WC_MODALTOP
-from com.sun.star.beans import PropertyValue
 from com.sun.star.beans import XPropertySet
 from com.sun.star.container import XIndexContainer
-from com.sun.star.frame import XController
 from com.sun.star.frame import XDispatchProviderInterception
 from com.sun.star.frame import XLayoutManager
 from com.sun.star.frame import XFrame
 from com.sun.star.frame import XFramesSupplier
 from com.sun.star.frame import XModel
-from com.sun.star.lang import SystemDependent
+from com.sun.star.lang import SystemDependent # const
 from com.sun.star.lang import XComponent
-from com.sun.star.view import DocumentZoomType
+from com.sun.star.view import DocumentZoomType # const
 from com.sun.star.view import XControlAccess
 from com.sun.star.view import XSelectionSupplier
-from com.sun.star.ui import UIElementType
+from com.sun.star.ui import UIElementType # const
 from com.sun.star.ui import XImageManager
 from com.sun.star.ui import XUIConfigurationManagerSupplier
 from com.sun.star.ui import XUIConfigurationManager
 
 if TYPE_CHECKING:
-    from com.sun.star.awt import Toolkit
+    # from com.sun.star.awt import Toolkit
+    from com.sun.star.frame import XController
     from com.sun.star.awt import XTopWindow
-    from com.sun.star.awt import XToolkit
     from com.sun.star.ui import XUIElement
 
 from ..utils import lo as mLo
@@ -62,6 +62,7 @@ else:
 
 class GUI:
 
+    # region Class Enums
     # view settings zoom constants
     class ZoomEnum(IntEnum):
         OPTIMAL = DocumentZoomType.OPTIMAL
@@ -69,7 +70,9 @@ class GUI:
         ENTIRE_PAGE = DocumentZoomType.ENTIRE_PAGE
         BY_VALUE = DocumentZoomType.BY_VALUE
         PAGE_WIDTH_EXACT = DocumentZoomType.PAGE_WIDTH_EXACT
-        
+    # endregion Class Enums
+
+    # region class Constants
     MENU_BAR = "private:resource/menubar/menubar"
     STATUS_BAR = "private:resource/statusbar/statusbar"
     FIND_BAR = "private:resource/toolbar/findbar"
@@ -159,7 +162,9 @@ class GUI:
         "zoombar",
     )
 
-    # ---------------- toolbar addition ------------------
+    # endregion class Constants
+
+    # region ---------------- toolbar addition -------------------------
 
     @classmethod
     def get_toobar_resource(cls, nm: str) -> str | None:
@@ -203,7 +208,9 @@ class GUI:
         except Exception as e:
             print(e)
 
-    # --------------------- floating frame, message box ---------------------
+    # endregion ------------- toolbar addition -------------------------
+
+    # region ---------------- floating frame, message box --------------
 
     @staticmethod
     def create_floating_frame(
@@ -302,7 +309,9 @@ class GUI:
         # in original java this was done by creating a input box with a password field
         # this could likely be done with LibreOffice API, create input box and set input as password field
 
-    # -------------------------- controller and frame -------------
+    # endregion ------------- floating frame, message box --------------
+
+    # region ---------------- controller and frame ---------------------
 
     @staticmethod
     def get_current_controller(odoc: object) -> XController | None:
@@ -345,7 +354,9 @@ class GUI:
             return None
         return mLo.Lo.qi(XDispatchProviderInterception, xframe)
 
-    # -------------------------- Office container window -------------
+    # endregion ---------------- controller and frame ------------------
+
+    # region ---------------- Office container window ------------------
     @overload
     @staticmethod
     def get_window() -> XWindow | None:
@@ -421,7 +432,7 @@ class GUI:
 
     @staticmethod
     def get_top_window() -> XTopWindow | None:
-        tk = mLo.Lo.create_instance_mcf(Toolkit, "com.sun.star.awt.Toolkit")
+        tk = mLo.Lo.create_instance_mcf(XExtendedToolkit, "com.sun.star.awt.Toolkit")
         if tk is None:
             print("Toolkit not found")
             return None
@@ -461,7 +472,7 @@ class GUI:
 
             See also: `Toolkit <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1Toolkit.html>`_
         """
-        tk = mLo.Lo.create_instance_mcf(Toolkit, "com.sun.star.awt.Toolkit")
+        tk = mLo.Lo.create_instance_mcf(XToolkit, "com.sun.star.awt.Toolkit")
         if tk is None:
             print("Toolkit not found")
             return None
@@ -513,7 +524,9 @@ class GUI:
         """
         raise NotImplementedError
 
-    # ----------------------------- zooming --------------------------------
+    # endregion ------------- Office container window ------------------
+
+    # region ---------------- zooming ----------------------------------
 
     @classmethod
     def zoom(cls, view: int | ZoomEnum) -> None:
@@ -552,7 +565,9 @@ class GUI:
         mLo.Lo.dispatch_cmd(cmd="Zoom", props=props)
         mLo.Lo.delay(500)
 
-    # ================= UI config manager =========================
+    # endregion ------------- zooming ----------------------------------
+
+    # region ---------------- UI config manager ------------------------
 
     @staticmethod
     def get_ui_config_manager(doc: XComponent) -> XUIConfigurationManager | None:
@@ -585,6 +600,8 @@ class GUI:
             print(f"Could not create a config manager using '{doc_type}'")
             print(f"    {e}")
         return config_man
+
+    # region print_ui_cmds()
 
     @overload
     @staticmethod
@@ -622,13 +639,16 @@ class GUI:
         config_man: XUIConfigurationManager,
     ) -> None:
         """print every command used by the toolbar whose resource name is uiElemName"""
+        # see Also: https://wiki.openoffice.org/wiki/Documentation/DevGuide/ProUNO/Properties
         try:
             settings = config_man.getSettings(ui_elem_name, True)
             num_settings = settings.getCount()
             print(f"No. of slements in '{ui_elem_name}' toolbar: {num_settings}")
 
             for i in range(num_settings):
-                setting_props = cast(Iterable[PropertyValue], settings.getByIndex(i))
+                # line from java
+                # PropertyValue[] settingProps =  Lo.qi(PropertyValue[].class, settings.getByIndex(i));
+                setting_props = mLo.Lo.qi(XPropertySet, settings.getByIndex(i))
                 val = mProps.Props.get_value(name="CommandURL", props=setting_props)
                 print(f"{i}) {mProps.Props.prop_value_to_string(val)}")
             print()
@@ -642,8 +662,13 @@ class GUI:
             print("Cannot create configuration manager")
             return
         cls.print_ui_cmds()
+    # endregion print_ui_cmds()
 
-    # ================= layout manager =========================
+    # endregion ------------- UI config manager ------------------------
+
+    # region ---------------- layout manager ---------------------------
+
+    # region    get_layout_manager()
     @overload
     @staticmethod
     def get_layout_manager() -> XLayoutManager | None:
@@ -674,6 +699,9 @@ class GUI:
             print("Could not access layout manager")
         return lm
 
+    # endregion    get_layout_manager()
+
+    # region    print_u_is()
     @overload
     @staticmethod
     def print_u_is() -> None:
@@ -722,6 +750,8 @@ class GUI:
         for el in ui_elems:
             print(f"  {el.ResourceURL}; {cls.get_ui_element_type_str(el.Type)}")
         print()
+
+    # endregion print_u_is()
 
     @staticmethod
     def get_ui_element_type_str(t: int) -> str:
@@ -823,7 +853,9 @@ class GUI:
             lm.hideElement(elem_name)
             print(f"{elem_name} hidden")
 
-    # ----------------------- menu bar --------------------
+    # endregion ------------- layout manager ---------------------------
+
+    # region ---------------- menu bar ---------------------------------
 
     @classmethod
     def get_menubar(cls, lm: XLayoutManager) -> XMenuBar | None:
@@ -861,3 +893,5 @@ class GUI:
                 max_id = id
 
         return max_id
+
+    # endregion ------------- menu bar ---------------------------------
