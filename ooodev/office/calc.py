@@ -248,22 +248,31 @@ class Calc:
 
     @classmethod
     def get_sheet(cls, *args, **kwargs) -> XSpreadsheet | None:
-        ordered_keys = ("first", "second")
-        kargs = {}
-        kargs["first"] = kwargs.get("doc", None)
-        if "index" in kwargs:
-            kargs["second"] = kwargs["index"]
-        elif "sheet_name" in kwargs:
-            kargs["second"] = kwargs["sheet_name"]
+        ordered_keys = (1, 2)
+        count = len(args) + len(kwargs)
+
+        def get_kwargs() -> dict:
+            ka = {}
+            ka[1] = kwargs.get("doc", None)
+            keys = ("index", "sheet_name")
+            for key in keys:
+                if key in kwargs:
+                    ka[2] = kwargs[key]
+                    break
+            return ka
+
+        if count != 2:
+            print("invalid number of arguments for get_sheet()")
+            return None
+
+        kargs = get_kwargs()
+
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
-        k_len = len(kargs)
-        if k_len != 2:
-            print("invalid number of arguments for get_sheet()")
-            return
-        if isinstance(kargs["first"], int):
-            return cls._get_sheet_index(kargs["first"], kargs["second"])
-        return cls._get_sheet_name(kargs["first"], kargs["second"])
+
+        if isinstance(kargs[2], int):
+            return cls._get_sheet_index(kargs[1], kargs[2])
+        return cls._get_sheet_name(kargs[1], kargs[2])
 
     # endregion get_sheet()
 
