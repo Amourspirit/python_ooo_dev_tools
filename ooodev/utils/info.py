@@ -9,11 +9,7 @@ import mimetypes
 from typing import TYPE_CHECKING, Tuple, List, overload, Optional
 from lxml import etree as ET
 import uno
-from . import props as m_props
-from .sys_info import SysInfo
-
-
-Props = m_props.Props
+from . sys_info import SysInfo
 
 from com.sun.star.awt import XToolkit
 from com.sun.star.beans import XPropertySet
@@ -412,7 +408,7 @@ class Info:
         url_str = mFileIO.FileIO.fnm_to_url(fnm)
         if url_str is None:
             return None
-        media_desc = [[Props.make_prop_value(name="URL", value=url_str)]]
+        media_desc = [[mProps.Props.make_prop_value(name="URL", value=url_str)]]
         return xdetect.queryTypeByDescriptor(media_desc, True)
 
     @classmethod
