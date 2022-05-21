@@ -5,7 +5,7 @@ from pathlib import Path
 if __name__ == "__main__":
     pytest.main([__file__])
 
-def test_calc_get_sheet():
+def test_get_sheet() -> None:
     # get_sheet is overload method.
     # testiing each overload.
     from ooodev.utils import lo as mLo
@@ -42,4 +42,85 @@ def test_calc_get_sheet():
         assert name_1_4 == name_1_1
         # Lo.delay(2000)
         Lo.close_doc(doc=doc, deliver_ownership=False)
+
+def test_insert_sheet() -> None:
+    from ooodev.utils import lo as mLo
+    from ooodev.office.calc import Calc
+    Lo = mLo.Lo
+    with Lo.Loader() as loader:
+        assert loader is not None
+        doc = Calc.create_doc(loader)
+        assert doc is not None
+        
+        sheet_names = Calc.get_sheet_names(doc)
+        assert len(sheet_names) == 1
+        assert sheet_names[0] == 'Sheet1'
+        
+        new_sht = Calc.insert_sheet(doc, "mysheet", 1)
+        assert new_sht is not None
+        
+        sheet_names = Calc.get_sheet_names(doc)
+        assert len(sheet_names) == 2
+        assert sheet_names[1] == 'mysheet'
+
+def test_remove_sheet() -> None:
+    from ooodev.utils import lo as mLo
+    from ooodev.office.calc import Calc
+    Lo = mLo.Lo
+    sheet_name = 'mysheet'
+    def add_sheet(doc):
+        new_sht = Calc.insert_sheet(doc, sheet_name, 1)
+        return new_sht
+    with Lo.Loader() as loader:
+        assert loader is not None
+        doc = Calc.create_doc(loader)
+        assert doc is not None
+        
+        sheet_names = Calc.get_sheet_names(doc)
+        
+        new_sht = add_sheet(doc)
+        assert new_sht is not None
+    
+        sheet_names = Calc.get_sheet_names(doc)
+        assert len(sheet_names) == 2
+        assert sheet_names[1] == sheet_name
+        # test overloads
+        # test named args
+        assert Calc.remove_sheet(doc=doc, sheet_name=sheet_name)
+        
+        new_sht = add_sheet(doc)
+        assert new_sht is not None
+        sheet_names = Calc.get_sheet_names(doc)
+        assert len(sheet_names) == 2
+        assert sheet_names[1] == sheet_name
+        # test positional args
+        assert Calc.remove_sheet(doc, sheet_name)
+        
+        new_sht = add_sheet(doc)
+        assert new_sht is not None
+        sheet_names = Calc.get_sheet_names(doc)
+        assert len(sheet_names) == 2
+        assert sheet_names[1] == sheet_name
+        # test named args
+        assert Calc.remove_sheet(doc=doc, index=1)
+        
+        new_sht = add_sheet(doc)
+        assert new_sht is not None
+        sheet_names = Calc.get_sheet_names(doc)
+        assert len(sheet_names) == 2
+        assert sheet_names[1] == sheet_name
+        # test positional args
+        assert Calc.remove_sheet(doc, 1)
+        
+        # sheet no longer exist
+        assert Calc.remove_sheet(doc, 1) is False
+        assert Calc.remove_sheet(doc, sheet_name) is False
+        
+        # incorrect number of arguments
+        assert Calc.remove_sheet(doc) is False
+        assert Calc.remove_sheet(doc, 0, "any") is False
+        
+        # incorrect type
+        assert Calc.remove_sheet(doc, 22.3) is False
+        
         

@@ -278,6 +278,17 @@ class Calc:
 
     @staticmethod
     def insert_sheet(doc: XSpreadsheetDocument, name: str, idx: int) -> XSpreadsheet | None:
+        """
+        Inserts a spreadsheet into document.
+
+        Args:
+            doc (XSpreadsheetDocument): Spreadsheet document
+            name (str): Name of sheet to insert
+            idx (int): zero-based index position of the sheet to insert
+
+        Returns:
+            XSpreadsheet | None: The newly inserted sheet on success; Othwrwise, None
+        """
         sheets = doc.getSheets()
         sheet = None
         try:
@@ -312,7 +323,7 @@ class Calc:
             sheets.removeByName(sheet_name)
             return True
         except Exception:
-            print(f"Could not remove sheet: {sheet_name}")
+            print(f"Could not remove sheet at index: {index}")
         return False
 
     @overload
@@ -325,25 +336,33 @@ class Calc:
     def remove_sheet(doc: XSpreadsheetDocument, index: int) -> bool:
         ...
 
-    @overload
     @classmethod
     def remove_sheet(cls, *args, **kwargs) -> bool:
-        ordered_keys = ("first", "second")
-        kargs = {}
-        kargs["first"] = kwargs.get("doc", None)
-        if "index" in kwargs:
-            kargs["second"] = kwargs["index"]
-        elif "sheet_name" in kwargs:
-            kargs["second"] = kwargs["sheet_name"]
+        ordered_keys = (1, 2)
+        count = len(args) + len(kwargs)
+
+        def get_kwargs() -> dict:
+            ka = {}
+            ka[1] = kwargs.get("doc", None)
+            keys = ("index", "sheet_name")
+            for key in keys:
+                if key in kwargs:
+                    ka[2] = kwargs[key]
+                    break
+            return ka
+
+        if count != 2:
+            print("invalid number of arguments for remove_sheet()")
+            return False
+
+        kargs = get_kwargs()
+
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
-        k_len = len(kargs)
-        if k_len != 2:
-            print("invalid number of arguments for get_sheet()")
-            return
-        if isinstance(kargs["first"], int):
-            return cls._remove_sheet_index(kargs["first"], kargs["second"])
-        return cls._remove_sheet_name(kargs["first"], kargs["second"])
+
+        if isinstance(kargs[2], int):
+            return cls._remove_sheet_index(kargs[1], kargs[2])
+        return cls._remove_sheet_name(kargs[1], kargs[2])
 
     # endregion remove_sheet()
 
