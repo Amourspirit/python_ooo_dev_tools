@@ -1041,6 +1041,11 @@ class Info:
             return False
         if hasattr(obj, "__pyunointerface__"):
             return obj.__pyunointerface__ == type_name
+        elif hasattr(obj, "queryInterface"):
+            uno_t = uno.getTypeByName(type_name)
+            q_obj = obj.queryInterface(uno_t)
+            if q_obj:
+                return True
         return False
 
     @staticmethod
