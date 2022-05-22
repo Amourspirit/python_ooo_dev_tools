@@ -239,36 +239,76 @@ class Calc:
     @overload
     @staticmethod
     def get_sheet(doc: XSpreadsheetDocument, index: int) -> XSpreadsheet | None:
+        """
+        Gets a sheet of spreadsheet document
+
+        Args:
+            doc (XSpreadsheetDocument): Spreadsheet document
+            index (int): Zero based index of spreadsheet
+
+        Returns:
+            XSpreadsheet | None: Spreadsheet at index if found; Otherwise, False
+        """
         ...
 
     @overload
     @staticmethod
     def get_sheet(doc: XSpreadsheetDocument, sheet_name: str) -> XSpreadsheet | None:
+        """
+        Gets a sheet of spreadsheet document
+
+        Args:
+            doc (XSpreadsheetDocument): Spreadsheet document
+            sheet_name (str): Name of spreadsheet
+
+        Returns:
+            XSpreadsheet | None: Spreadsheet with matching name if found; Otherwise, False
+        """
         ...
 
     @classmethod
     def get_sheet(cls, *args, **kwargs) -> XSpreadsheet | None:
-        ordered_keys = ("first", "second")
-        kargs = {}
-        kargs["first"] = kwargs.get("doc", None)
-        if "index" in kwargs:
-            kargs["second"] = kwargs["index"]
-        elif "sheet_name" in kwargs:
-            kargs["second"] = kwargs["sheet_name"]
+        ordered_keys = (1, 2)
+        count = len(args) + len(kwargs)
+
+        def get_kwargs() -> dict:
+            ka = {}
+            ka[1] = kwargs.get("doc", None)
+            keys = ("index", "sheet_name")
+            for key in keys:
+                if key in kwargs:
+                    ka[2] = kwargs[key]
+                    break
+            return ka
+
+        if count != 2:
+            print("invalid number of arguments for get_sheet()")
+            return None
+
+        kargs = get_kwargs()
+
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
-        k_len = len(kargs)
-        if k_len != 2:
-            print("invalid number of arguments for get_sheet()")
-            return
-        if isinstance(kargs["first"], int):
-            return cls._get_sheet_index(kargs["first"], kargs["second"])
-        return cls._get_sheet_name(kargs["first"], kargs["second"])
+
+        if isinstance(kargs[2], int):
+            return cls._get_sheet_index(kargs[1], kargs[2])
+        return cls._get_sheet_name(kargs[1], kargs[2])
 
     # endregion get_sheet()
 
     @staticmethod
     def insert_sheet(doc: XSpreadsheetDocument, name: str, idx: int) -> XSpreadsheet | None:
+        """
+        Inserts a spreadsheet into document.
+
+        Args:
+            doc (XSpreadsheetDocument): Spreadsheet document
+            name (str): Name of sheet to insert
+            idx (int): zero-based index position of the sheet to insert
+
+        Returns:
+            XSpreadsheet | None: The newly inserted sheet on success; Othwrwise, None
+        """
         sheets = doc.getSheets()
         sheet = None
         try:
@@ -303,43 +343,82 @@ class Calc:
             sheets.removeByName(sheet_name)
             return True
         except Exception:
-            print(f"Could not remove sheet: {sheet_name}")
+            print(f"Could not remove sheet at index: {index}")
         return False
 
     @overload
     @staticmethod
     def remove_sheet(doc: XSpreadsheetDocument, sheet_name: str) -> bool:
+        """
+        Removes a sheet from document
+
+        Args:
+            doc (XSpreadsheetDocument): Spreadsheet document
+            sheet_name (str): Name of sheet to remove
+
+        Returns:
+            bool: True of sheet was removed; Otherwise, False
+        """
         ...
 
     @overload
     @staticmethod
     def remove_sheet(doc: XSpreadsheetDocument, index: int) -> bool:
+        """
+        Removes a sheet from document
+
+        Args:
+            doc (XSpreadsheetDocument): Spreadsheet document
+            index (int): Zero based index of sheet to remove.
+
+        Returns:
+            bool: True of sheet was removed; Otherwise, False
+        """
         ...
 
-    @overload
     @classmethod
     def remove_sheet(cls, *args, **kwargs) -> bool:
-        ordered_keys = ("first", "second")
-        kargs = {}
-        kargs["first"] = kwargs.get("doc", None)
-        if "index" in kwargs:
-            kargs["second"] = kwargs["index"]
-        elif "sheet_name" in kwargs:
-            kargs["second"] = kwargs["sheet_name"]
+        ordered_keys = (1, 2)
+        count = len(args) + len(kwargs)
+
+        def get_kwargs() -> dict:
+            ka = {}
+            ka[1] = kwargs.get("doc", None)
+            keys = ("index", "sheet_name")
+            for key in keys:
+                if key in kwargs:
+                    ka[2] = kwargs[key]
+                    break
+            return ka
+
+        if count != 2:
+            print("invalid number of arguments for remove_sheet()")
+            return False
+
+        kargs = get_kwargs()
+
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
-        k_len = len(kargs)
-        if k_len != 2:
-            print("invalid number of arguments for get_sheet()")
-            return
-        if isinstance(kargs["first"], int):
-            return cls._remove_sheet_index(kargs["first"], kargs["second"])
-        return cls._remove_sheet_name(kargs["first"], kargs["second"])
+
+        if isinstance(kargs[2], int):
+            return cls._remove_sheet_index(kargs[1], kargs[2])
+        return cls._remove_sheet_name(kargs[1], kargs[2])
 
     # endregion remove_sheet()
 
     @staticmethod
     def move_sheet(doc: XSpreadsheetDocument, name: str, idx: int) -> bool:
+        """
+        Moves a sheet in a spreadsheet document
+
+        Args:
+            doc (XSpreadsheetDocument): Spreadsheet document.
+            name (str): Name of sheet to move
+            idx (int): The zero based index to move sheet into.
+
+        Returns:
+            bool: True on success; Otherwise, False
+        """
         sheets = doc.getSheets()
         num_sheets = len(sheets.getElementNames())
         if idx < 0 or idx >= num_sheets:
@@ -350,11 +429,29 @@ class Calc:
 
     @staticmethod
     def get_sheet_names(doc: XSpreadsheetDocument) -> Tuple[str, ...]:
+        """
+        Gets names of all existing spreadsheets in the spreadsheet document.
+
+        Args:
+            doc (XSpreadsheetDocument): Document to get sheets of
+
+        Returns:
+            Tuple[str, ...]: Tuple of sheet names.
+        """
         sheets = doc.getSheets()
         return sheets.getElementNames()
 
     @staticmethod
     def get_sheet_name(sheet: XSpreadsheet) -> str | None:
+        """
+        Gets the name of a sheet
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+
+        Returns:
+            str | None: Name of sheet on success; Otherwise, None
+        """
         xnamed = mLo.Lo.qi(XNamed, sheet)
         if xnamed is None:
             print("Could not access spreadsheet name")
@@ -363,6 +460,13 @@ class Calc:
 
     @staticmethod
     def set_sheet_name(sheet: XSpreadsheet, name: str) -> None:
+        """
+        Sets the name of a spreadsheet.
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet to set name of
+            name (str): New name for spreadsheet.
+        """
         xnamed = mLo.Lo.qi(XNamed, sheet)
         if xnamed is None:
             print("Could not access spreadsheet")
@@ -375,6 +479,15 @@ class Calc:
 
     @staticmethod
     def get_controller(doc: XSpreadsheetDocument) -> XController | None:
+        """
+        Provides access to the controller which currently controls this model
+
+        Args:
+            doc (XSpreadsheetDocument): Spreadsheet Document
+
+        Returns:
+            XController | None: Controller for Spreadsheet Document
+        """
         model = mLo.Lo.qi(XModel, doc)
         if model is None:
             return None
@@ -382,6 +495,13 @@ class Calc:
 
     @classmethod
     def zoom_value(cls, doc: XSpreadsheetDocument, value: int) -> None:
+        """
+        Sets the zoom level of the Spreadsheet Document
+
+        Args:
+            doc (XSpreadsheetDocument): Spreadsheet Document
+            value (int): Value to set zoom. e.g. 160 set zoom to 160%
+        """
         ctrl = cls.get_controller(doc)
         if ctrl is None:
             return
@@ -390,17 +510,46 @@ class Calc:
 
     @classmethod
     def zoom(cls, doc: XSpreadsheetDocument, type: mGui.GUI.ZoomEnum) -> None:
+        """
+        Zooms spreadsheet document to a specific view.
+
+        Args:
+            doc (XSpreadsheetDocument): Spreadsheet Document
+            type (mGui.GUI.ZoomEnum): Type of Zoom to set.
+        """
         ctrl = cls.get_controller(doc)
         if ctrl is None:
             return
         mProps.Props.set_property(prop_set=ctrl, name="ZoomType", value=type)
 
-    @staticmethod
-    def get_view(doc: XSpreadsheetDocument) -> XSpreadsheetView | None:
-        return mLo.Lo.qi(XSpreadsheetView, doc)
+    @classmethod
+    def get_view(cls, doc: XSpreadsheetDocument) -> XSpreadsheetView | None:
+        """
+        Is the main interface of a SpreadsheetView.
+    
+        It manages the active sheet within this view.
+        
+        The com.sun.star.sheet.SpreadsheetView service is the spreadsheet's extension
+        of the com.sun.star.frame.Controller service and represents a table editing view
+        for a spreadsheet document. 
+
+        Args:
+            doc (XSpreadsheetDocument): Spreadsheet Document
+
+        Returns:
+            XSpreadsheetView | None: XSpreadsheetView on success; Otherwise, None 
+        """
+        return mLo.Lo.qi(XSpreadsheetView, cls.get_controller(doc))
 
     @classmethod
     def set_active_sheet(cls, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> None:
+        """
+        Sets the active sheet
+
+        Args:
+            doc (XSpreadsheetDocument): Spreadsheet Document
+            sheet (XSpreadsheet): Sheet to set active
+        """
         ss_view = cls.get_view(doc)
         if ss_view is None:
             return
@@ -408,6 +557,15 @@ class Calc:
 
     @classmethod
     def get_active_sheet(cls, doc: XSpreadsheetDocument) -> XSpreadsheet | None:
+        """
+        Gets the active sheet
+
+        Args:
+            doc (XSpreadsheetDocument): Spreadsheet Document
+
+        Returns:
+            XSpreadsheet | None: Active Sheet if found; Otherwise, None
+        """
         ss_view = cls.get_view(doc)
         if ss_view is None:
             return
@@ -415,58 +573,111 @@ class Calc:
 
     @classmethod
     def freeze(cls, doc: XSpreadsheetDocument, num_cols: int, num_rows: int) -> None:
+        """
+        Freezes spreadsheet columns and rows
+
+        Args:
+            doc (XSpreadsheetDocument): Spreadsheet Document
+            num_cols (int): Number of columns to freeze
+            num_rows (int): Number of rows to freeze
+        """
         ctrl = cls.get_controller(doc)
         if ctrl is None:
+            return
+        if num_cols < 0 or num_rows < 0:
             return
         xfreeze = mLo.Lo.qi(XViewFreezable, ctrl)
         xfreeze.freezeAtPosition(num_cols, num_rows)
 
     @classmethod
     def freeze_cols(cls, doc: XSpreadsheetDocument, num_cols: int) -> None:
+        """
+        Freezes spreadsheet columns
+
+        Args:
+            doc (XSpreadsheetDocument): Spreadsheet Document
+            num_cols (int): Number of columns to freeze
+        """
         cls.freeze(doc=doc, num_cols=num_cols, num_rows=0)
 
     @classmethod
     def freeze_rows(cls, doc: XSpreadsheetDocument, num_rows: int) -> None:
+        """
+        Freezes spreadsheet rows
+
+        Args:
+            doc (XSpreadsheetDocument): Spreadsheet Document
+            num_rows (int): Number of rows to freeze
+        """
         cls.freeze(doc=doc, num_cols=0, num_rows=num_rows)
 
     # region    goto_cell()
     @overload
     @staticmethod
     def goto_cell(cell_name: str, doc: XSpreadsheetDocument) -> None:
+        """
+        Go to a cell
+
+        Args:
+            cell_name (str): Cell Name such as 'B4'
+            doc (XSpreadsheetDocument): Spreadsheet Document
+        """
         ...
 
     @overload
     @staticmethod
     def goto_cell(cell_name: str, frame: XFrame) -> None:
+        """
+        Go to a cell
+
+        Args:
+            cell_name (str): Cell Name such as 'B4'
+            frame (XFrame): Spreadsheet frame.
+        """
         ...
 
     @classmethod
     def goto_cell(cls, *args, **kwargs) -> None:
-        ordered_keys = ("first", "second")
-        kargs = {}
-        kargs["first"] = kwargs.get("cell_name", None)
-        if "doc" in kwargs:
-            kargs["second"] = kwargs["doc"]
-        elif "frame" in kwargs:
-            kargs["second"] = kwargs["frame"]
-        for i, arg in enumerate(args):
-            kargs[ordered_keys[i]] = arg
-        k_len = len(kargs)
-        if k_len != 2:
+        ordered_keys = (1, 2)
+        count = len(args) + len(kwargs)
+
+        def get_kwargs() -> dict:
+            ka = {}
+            ka[1] = kwargs.get("cell_name", None)
+            keys = ("doc", "frame")
+            for key in keys:
+                if key in kwargs:
+                    ka[2] = kwargs[key]
+                    break
+            return ka
+
+        if count != 2:
             print("invalid number of arguments for goto_cell()")
             return
-        doc = mLo.Lo.qi(XSpreadsheetDocument, kargs["second"])
+
+        kargs = get_kwargs()
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
+
+        doc = mLo.Lo.qi(XSpreadsheetDocument, kargs[2])
         if doc is not None:
             frame = cls.get_controller(doc).getFrame()
         else:
-            frame = kargs["second"]
-        props = mProps.Props.make_props(ToPoint=kargs["first"])
+            frame = kargs[2]
+        props = mProps.Props.make_props(ToPoint=kargs[1])
         mLo.Lo.dispatch_cmd(cmd="GoToCell", props=props, frame=frame)
 
     # endregion    goto_cell()
 
     @classmethod
     def split_window(cls, doc: XSpreadsheetDocument, cell_name: str) -> None:
+        """
+        Splits window
+
+        Args:
+            doc (XSpreadsheetDocument): Spreadsheet Document
+            cell_name (str): Cell to preform split on. e.g. 'C4'
+        """
         frame = cls.get_controller(doc).getFrame()
         cls.goto_cell(cell_name=cell_name, frame=frame)
         props = mProps.Props.make_props(ToPoint=cell_name)
@@ -477,11 +688,29 @@ class Calc:
     @overload
     @staticmethod
     def get_selected_addr(doc: XSpreadsheetDocument) -> CellRangeAddress | None:
+        """
+        Gets select cell range addresses
+
+        Args:
+            doc (XSpreadsheetDocument): Spreadsheet Document
+
+        Returns:
+            CellRangeAddress | None: Cell range adresses on success; Othwrwise, None
+        """
         ...
 
     @overload
     @staticmethod
     def get_selected_addr(model: XModel) -> CellRangeAddress | None:
+        """
+        Gets select cell range addresses
+
+        Args:
+            model (XModel): model used to access sheet
+
+        Returns:
+            CellRangeAddress | None: Cell range adresses on success; Othwrwise, None
+        """
         ...
 
     @classmethod
@@ -507,9 +736,9 @@ class Calc:
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
         
-        if mInfo.Info.is_type_interface(obj=kargs[1], type_name=XSpreadsheetDocument.__pyunointerface__):
-            # def get_selected_addr(doc: XSpreadsheetDocument)
-            model = mLo.Lo.qi(XModel, kargs[1])
+        doc = mLo.Lo.qi(XSpreadsheetDocument, kargs[1])
+        if doc:
+            model = mLo.Lo.qi(XModel, doc)
         else:
             # def get_selected_addr(model: XModel)
             model = cast(XModel,  kargs[1])
@@ -526,7 +755,22 @@ class Calc:
     # endregion  get_selected_addr()
 
     @classmethod
-    def get_selected_cell_addr(cls, doc: XSpreadsheetDocument) -> CellRangeAddress:
+    def get_selected_cell_addr(cls, doc: XSpreadsheetDocument) -> CellAddress | None:
+        """
+        Gets the cell address of current selected cell of the active sheet.
+
+        Args:
+            doc (XSpreadsheetDocument): Spreadsheet document
+
+        Returns:
+            CellAddress | None: CellAddress on success; Otherwise, None
+        
+        Note:
+            If more then a single cell is selected then ``None`` is returned.
+        
+            CellAddress returns Zero-base values.
+            For instance: Cell ``B4`` has Column value of ``1`` and Row value of ``3``
+        """
         cr_addr = cls.get_selected_addr(doc=doc)
         addr = None
         if cls.is_single_cell_range(cr_addr):
@@ -539,9 +783,26 @@ class Calc:
 
     # region --------------- view data methods -------------------------
 
-    @staticmethod
-    def get_view_panes(doc: XSpreadsheetDocument) -> Iterable[XViewPane] | None:
-        con = mLo.Lo.qi(XIndexAccess, doc)
+    @classmethod
+    def get_view_panes(cls, doc: XSpreadsheetDocument) -> List[XViewPane] | None:
+        """
+        represents a pane in a view of a spreadsheet document. 
+
+        Args:
+            doc (XSpreadsheetDocument): Spreadsheet Document
+
+        Returns:
+            List[XViewPane] | None: List of XViewPane on success; Otherwise, None
+        
+        Notes:
+            The com.sun.star.sheet.XViewPane interface's getFirstVisibleColumn(), getFirstVisibleRow(),
+            setFirstVisibleColumn() and setFirstVisibleRow() methods query and set the start of
+            the exposed area. The getVisibleRange() method returns a com.sun.star.table.
+            CellRangeAddress struct describing which cells are shown in the pane.
+            Columns or rows that are only partly visible at the right or lower edge of the view
+            are not included. 
+        """
+        con = mLo.Lo.qi(XIndexAccess, cls.get_controller(doc))
         if con is None:
             print("Could not access the view pane container")
             return None
@@ -559,16 +820,34 @@ class Calc:
 
     @classmethod
     def get_view_data(cls, doc: XSpreadsheetDocument) -> str:
+        """
+        Gets a set of data that can be used to restore the current view status at
+        later time by using ``set_view_data()``
+
+        Args:
+            doc (XSpreadsheetDocument): Spreadsheet Document
+
+        Returns:
+            str: View Data
+        """
         ctrl = cls.get_controller(doc)
         return str(ctrl.getViewData())
 
     @classmethod
     def set_view_data(cls, doc: XSpreadsheetDocument, view_data: str) -> None:
+        """
+        Restores the view status using the data gotten from a previous call to
+        ``get_view_data()``
+
+        Args:
+            doc (XSpreadsheetDocument): Spreadsheet Document
+            view_data (str): Data to restore.
+        """
         ctrl = cls.get_controller(doc)
         ctrl.restoreViewData(view_data)
 
     @classmethod
-    def get_view_states(cls, doc: XSpreadsheetDocument) -> Iterable[ViewState] | None:
+    def get_view_states(cls, doc: XSpreadsheetDocument) -> List[ViewState] | None:
         """
         Extract the view states for all the sheets from the view data.
         The states are returned as an array of ViewState objects.
@@ -594,11 +873,13 @@ class Calc:
             return None
         states = []
         for i in range(3, p_len):
+            vs = ViewState()
+            vs.AffineTransform
             states.append(ViewState(view_parts[i]))
         return states
 
     @classmethod
-    def set_view_states(cls, doc: XSpreadsheetDocument, states: Iterable[ViewState]) -> None:
+    def set_view_states(cls, doc: XSpreadsheetDocument, states: Sequence[ViewState]) -> None:
         """
         Update the sheet state part of the view data, which starts as
         the 4th entry in the view data string
@@ -1425,11 +1706,31 @@ class Calc:
     @overload
     @staticmethod
     def get_cell_range(sheet: XSpreadsheet, addr: CellRangeAddress) -> XCellRange | None:
+        """
+        Gets a cell range
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet Document
+            addr (CellRangeAddress): Cell range Address
+
+        Returns:
+            XCellRange | None: Cell range is successful; Otherwise, None
+        """
         ...
 
     @overload
     @staticmethod
     def get_cell_range(sheet: XSpreadsheet, range_name: str) -> XCellRange | None:
+        """
+        Gets a cell range
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet Document
+            range_name (str): Range Name such as 'A1:D5'
+
+        Returns:
+            XCellRange | None: Cell range is successful; Otherwise, None
+        """
         ...
 
     @overload
@@ -1437,70 +1738,63 @@ class Calc:
     def get_cell_range(
         sheet: XSpreadsheet, col_start: int, row_start: int, col_end: int, row_end: int
     ) -> XCellRange | None:
+        """
+        Gets a cell range
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet Document
+            col_start (int): Start Column
+            row_start (int): Start Row
+            col_end (int): End Column
+            row_end (int): End Row
+
+        Returns:
+            XCellRange | None: Cell range is successful; Otherwise, None
+        """
         ...
 
     @classmethod
     def get_cell_range(cls, *args, **kwargs) -> XCellRange | None:
-        ordered_keys = ("first", "second", "third", "fourth", "fifth")
+        ordered_keys = (1, 2, 3, 4, 5)
         count = len(args) + len(kwargs)
 
         def get_kwargs() -> dict:
             ka = {}
-            key = "sheet"
-            if key in kwargs:
-                ka["first"] = kwargs[key]
-
+            ka[1] = kwargs.get("sheet", None)
+            keys = ("addr", "range_name", "col_start")
+            for key in keys:
+                if key in kwargs:
+                    ka[2] = kwargs[key]
+                    break
             if count == 2:
-                # when only two args are possilbe must be cell_name
-                key = "addr"
-                if key in kwargs:
-                    ka["second"] = kwargs[key]
-
-                key = "range_name"
-                if key in kwargs:
-                    ka["range_name"] = kwargs[key]
                 return ka
-
-            # can only be column an row at this point
-            key = "col_start"
-            if key in kwargs:
-                ka["second"] = kwargs[key]
-
-            key = "row_start"
-            if key in kwargs:
-                ka["third"] = kwargs[key]
-
-            key = "col_end"
-            if key in kwargs:
-                ka["fourth"] = kwargs[key]
-
-            key = "row_end"
-            if key in kwargs:
-                ka["fifth"] = kwargs[key]
+            ka[3] = kwargs.get("row_start", None)
+            ka[4] = kwargs.get("col_end", None)
+            ka[5] = kwargs.get("row_end", None)
             return ka
 
-        kargs = get_kwargs()
+        if not count in (2, 5):
+            print("invalid number of arguments for get_cell_range()")
+            return None
 
+        kargs = get_kwargs()
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
 
-        if count < 2 or count > 5:
-            print("invalid number of arguments for get_cell_range()")
-            return None
         if count == 2:
             # get_cell_range(sheet: XSpreadsheet, addr:CellRangeAddress) or
             # def get_cell_range(sheet: XSpreadsheet, range_name: str)
-            if isinstance(kargs["second"], str):
-                return cls._get_cell_range_rng_name(sheet=kargs["first"], range_name=kargs["second"])
+            if isinstance(kargs[2], str):
+                return cls._get_cell_range_rng_name(sheet=kargs[1], range_name=kargs[2])
             else:
-                return cls._get_cell_range_addr(sheet=kargs["first"], addr=kargs["second"])
+                return cls._get_cell_range_addr(sheet=kargs[1], addr=kargs[2])
         else:
             return cls._get_cell_range_col_row(
-                sheet=kargs["first"],
-                col_start=kargs["second"],
-                row_start=kargs["third"],
-                col_end=kargs["fourth"],
-                row_end=kargs["fifth"],
+                sheet=kargs[1],
+                col_start=kargs[2],
+                row_start=kargs[3],
+                col_end=kargs[4],
+                row_end=kargs[5],
             )
 
     # endregion get_cell_range()
@@ -1515,6 +1809,16 @@ class Calc:
     @overload
     @staticmethod
     def find_used_range(sheet: XSpreadsheet, cell_name: str) -> XCellRange | None:
+        """
+        Find used range
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet Document
+            cell_name (str): Cell Name
+
+        Returns:
+            XCellRange | None: _description_
+        """
         ...
 
     @classmethod

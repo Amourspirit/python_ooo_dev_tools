@@ -173,13 +173,6 @@ class Lo:
             q_obj = obj.queryInterface(uno_t)
             if q_obj:
                 return q_obj
-            # try:
-            #     types = obj.getTypes()
-            # except Exception:
-            #     return None
-            # for t in types:
-            #     if t == uno_t:
-            #         return obj
         return None
 
     @classmethod
