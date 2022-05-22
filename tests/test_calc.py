@@ -849,4 +849,68 @@ def test_get_str(loader) -> None:
 # endregion set/get values in cells
 
 # region set/get values in 2D array
+def test_set_array_by_range(loader) -> None:
+    from ooodev.utils.lo import Lo
+    from ooodev.office.calc import Calc
+    from ooodev.utils.gen_util import TableHelper
+    from ooodev.utils.gui import GUI
+
+    assert loader is not None
+    doc = Calc.create_doc(loader)
+    assert doc is not None
+    arr1 = (
+        (1, 2, 3),
+        (4, 5, 6),
+        (7, 8 , 9)
+    )
+    arr = TableHelper.to_2d_list(arr1)
+    sheet = Calc.get_active_sheet(doc=doc)
+    Calc.set_array(sheet=sheet, name="A1:C3", values=arr)
+    GUI.set_visible(is_visible=True, odoc=doc)
+    Lo.delay(3500)
+    val = Calc.get_num(sheet,'A1')
+    assert val == 1.0
+    val = Calc.get_num(sheet,'c2')
+    assert val == 6.0
+    val = Calc.get_num(sheet,'C3')
+    assert val == 9.0
+    
+    arr_size = 50
+    arr = TableHelper.to_2d_tuple(TableHelper.make_2d_array(arr_size, arr_size))
+    rng = TableHelper.make_column_name(arr_size)
+    Calc.set_array(sheet=sheet, name=f"A1:{rng}{arr_size}", values=arr)
+    # GUI.set_visible(is_visible=True, odoc=doc)
+    # Lo.delay(3500)
+    val = Calc.get_num(sheet, f"{rng}{arr_size}")
+    assert val == 1.0
+    
+    Lo.close(closeable=doc, deliver_ownership=False)
+
+
+def test_set_array_by_cell(loader) -> None:
+    from ooodev.utils.lo import Lo
+    from ooodev.office.calc import Calc
+    from ooodev.utils.gui import GUI
+    from ooodev.utils.gen_util import TableHelper
+    assert loader is not None
+    doc = Calc.create_doc(loader)
+    assert doc is not None
+    arr = TableHelper.to_2d_tuple(TableHelper.to_tuple(2))
+    sheet = Calc.get_active_sheet(doc=doc)
+    Calc.set_array(sheet=sheet, name="B2", values=arr)
+    # GUI.set_visible(is_visible=True, odoc=doc)
+    # Lo.delay(1500)
+    val = Calc.get_num(sheet,'B2')
+    assert val == 2.0
+    
+    arr_size = 12
+    arr = TableHelper.to_2d_tuple(TableHelper.make_2d_array(arr_size, arr_size, 45.7))
+    rng = TableHelper.make_column_name(arr_size)
+    Calc.set_array(sheet=sheet, name=f"A1:{rng}{arr_size}", values=arr)
+    # GUI.set_visible(is_visible=True, odoc=doc)
+    # Lo.delay(3500)
+    val = Calc.get_num(sheet, f"{rng}{arr_size}")
+    assert val == 45.7
+    
+    Lo.close(closeable=doc, deliver_ownership=False)
 # endregion set/get values in 2D array

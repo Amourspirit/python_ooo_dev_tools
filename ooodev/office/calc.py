@@ -1157,7 +1157,7 @@ class Calc:
         if t == CCT_EMPTY:
             return None
         if t == CCT_VALUE:
-            return float(cell.getValue())
+            return cls.convert_to_float(cell.getValue())
         if t == CCT_TEXT or t == CCT_FORMULA:
             return cell.getFormula()
         print("Unknown cell type; returning None")
@@ -1310,7 +1310,6 @@ class Calc:
         """
         ...
 
-
     @overload
     @staticmethod
     def get_num(sheet: XSpreadsheet, cell_name: str) -> float:
@@ -1417,6 +1416,7 @@ class Calc:
             str: Cell value as string.
         """
         ...
+
     @overload
     @staticmethod
     def get_string(sheet: XSpreadsheet, cell_name: str) -> str:
@@ -1498,7 +1498,7 @@ class Calc:
 
         def convert(obj) -> str:
             if obj is None:
-                return ''
+                return ""
             return str(obj)
 
         if count == 1:
@@ -1519,7 +1519,19 @@ class Calc:
     # region --------------- set/get values in 2D array ----------------
 
     @classmethod
-    def set_array(cls, sheet: XSpreadsheet, name: str, values: Tuple[Tuple[object, ...], ...]) -> None:
+    def set_array(cls, sheet: XSpreadsheet, name: str, values: Sequence[Sequence[object]]) -> None:
+        """
+        Inserts array of data into spreadsheet
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            name (str): Range name such as 'A1:D4' or cell name such as 'B4'
+            values (Sequence[Sequence[object]]): An 2-Dimensional array of valuse such as a list of list or tuple of tuples.
+        
+        Notes:
+            If ``name`` is a single cell such as ``A1`` then then values are inserter at the named cell
+            and expand to the size of the value array.
+        """
         if cls.is_cell_range_name(name):
             cls.set_array_range(sheet=sheet, range_name=name, values=values)
         else:
@@ -1530,20 +1542,20 @@ class Calc:
         cls,
         sheet: XSpreadsheet,
         range_name: str,
-        values: Tuple[Tuple[object, ...], ...],
+        values: Sequence[Sequence[object]],
     ) -> None:
         cell_range = cls.get_cell_range(sheet=sheet, range_name=range_name)
         cls.set_cell_range_array(cell_range=cell_range, values=values)
 
     @staticmethod
-    def set_cell_range_array(cell_range: XCellRange, values: Tuple[Tuple[object, ...], ...]) -> None:
+    def set_cell_range_array(cell_range: XCellRange, values: Sequence[Sequence[object]]) -> None:
         cr_data = mLo.Lo.qi(XCellRangeData, cell_range)
         if cr_data is None:
             return
         cr_data.setDataArray(values)
 
     @classmethod
-    def set_array_cell(cls, sheet: XSpreadsheet, cell_name: str, values: Tuple[Tuple[object, ...], ...]) -> None:
+    def set_array_cell(cls, sheet: XSpreadsheet, cell_name: str, values: Sequence[Sequence[object]]) -> None:
         pos = cls.get_cell_position(cell_name)
         col_end = pos.X + (len(values[0]) - 1)
         row_end = pos.Y + (len(values) - 1)

@@ -106,12 +106,14 @@ class TableHelper:
     make_2d_list = make_2d_array
 
     @staticmethod
-    def to_list(iter_obj: Iterable[Any]) -> List[Any]:
+    def to_list(iter_obj: Iterable[Any] | object) -> List[Any]:
         """
         Converts an iterable of objects into a list of objects
+        
+        If ``iter_obj`` is not iterable it will be return as a tuple containing ``iter_obj``
 
         Args:
-            iter_obj (Iterable[Any]): iterable object.
+            iter_obj (Iterable[Any] | object): iterable object or object.
 
         Returns:
             List[Any]: List containing same elements of itter_obj
@@ -121,12 +123,14 @@ class TableHelper:
         return [iter_obj]
 
     @staticmethod
-    def to_tuple(iter_obj: Iterable[Any]) -> Tuple[Any]:
+    def to_tuple(iter_obj: Iterable[Any] | object) -> Tuple[Any]:
         """
-        Converts an iterable of objects into a tuple of objects
+        Converts an iterable of objects or object into a tuple of objects
+        
+        If ``iter_obj`` is not iterable it will be return as a tuple containing ``iter_obj``
 
         Args:
-            iter_obj (Iterable[Any]): iterable object.
+            iter_obj (Iterable[Any] | object): iterable object or object.
 
         Returns:
             Tuple[Any]: Tuple containing same elements of itter_obj
@@ -136,7 +140,7 @@ class TableHelper:
         return (iter_obj,)
 
     @classmethod
-    def to_2d_list(cls, seq_obj: Sequence[Sequence[Any]]) -> List[List[Any]]:
+    def to_2d_list(cls, seq_obj: Sequence[Any]) -> List[List[Any]]:
         """
         Converts a sequene of sequenc to a list.
 
@@ -145,7 +149,7 @@ class TableHelper:
         An array of tuples is immutable and can not add or remove elemetns whereas a list is mutable.
 
         Args:
-            seq_obj (Sequence[Sequence[Any]]): Sequence of Sequence
+            seq_obj (Sequence[Any]): 1-Dimensional or 2-Dimensional List
 
         Returns:
             List[List[Any]]: 2-Dimensional list
@@ -167,15 +171,14 @@ class TableHelper:
         return lst
 
     @classmethod
-    def to_2d_tuple(cls, seq_obj: Sequence[Sequence[Any]]) -> Tuple[Tuple[Any, ...], ...]:
+    def to_2d_tuple(cls, seq_obj: Sequence[Any]) -> Tuple[Tuple[Any, ...], ...]:
         """
         Converts a sequene of sequenc to a list.
 
         Converts 1-Dimensional or 2-Dimensional array such as a List or List of list's into a Tuple of Tuple.
 
         Args:
-            seq_obj (Sequence[Sequence[Any]]): Sequence of Sequence
-
+            seq_obj (Sequence[Any]): 1-Dimensional or 2-Dimensional Sequence
         Returns:
             Tuple[Tuple[Any, ...], ...]: 2-Dimensional tuple
         """
