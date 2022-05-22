@@ -475,16 +475,16 @@ def test_get_set_view_data() -> None:
         result = Calc.set_view_data(doc=doc, view_data=data)
         assert result is None
 
-# def test_get_set_view_states() -> None:
-#     from ooodev.utils.lo import Lo
-#     from ooodev.office.calc import Calc
+def test_get_set_view_states() -> None:
+    from ooodev.utils.lo import Lo
+    from ooodev.office.calc import Calc
 
-#     with Lo.Loader() as loader:
-#         assert loader is not None
-#         doc = Calc.create_doc(loader)
+    with Lo.Loader() as loader:
+        assert loader is not None
+        doc = Calc.create_doc(loader)
         
-#         data = Calc.get_view_states(doc)
-#         assert data is not None
-#         result = Calc.set_view_states(doc=doc, states=data)
-#         assert result is None
+        data = Calc.get_view_states(doc)
+        assert data is not None
+        result = Calc.set_view_states(doc=doc, states=data)
+        assert result is None
 # endregion view data methods

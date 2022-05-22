@@ -14,7 +14,6 @@ from com.sun.star.container import XNamed
 from com.sun.star.frame import XModel
 from com.sun.star.lang import XComponent
 from com.sun.star.lang import Locale
-from com.sun.star.rendering import ViewState # struct
 from com.sun.star.sheet.GeneralFunction import (
     NONE as GF_NONE,
     AUTO as GF_AUTO,
@@ -106,6 +105,7 @@ from ..utils import props as mProps
 from ..utils.gen_util import ArgsHelper, TableHelper
 from ..utils import enum_helper
 from ..utils.color import CommonColor
+from ..utils import view_state as mViewState
 
 NameVal = ArgsHelper.NameValue
 
@@ -847,7 +847,7 @@ class Calc:
         ctrl.restoreViewData(view_data)
 
     @classmethod
-    def get_view_states(cls, doc: XSpreadsheetDocument) -> List[ViewState] | None:
+    def get_view_states(cls, doc: XSpreadsheetDocument) -> List[mViewState.ViewState] | None:
         """
         Extract the view states for all the sheets from the view data.
         The states are returned as an array of ViewState objects.
@@ -873,13 +873,11 @@ class Calc:
             return None
         states = []
         for i in range(3, p_len):
-            vs = ViewState()
-            vs.AffineTransform
-            states.append(ViewState(view_parts[i]))
+            states.append(mViewState.ViewState(view_parts[i]))
         return states
 
     @classmethod
-    def set_view_states(cls, doc: XSpreadsheetDocument, states: Sequence[ViewState]) -> None:
+    def set_view_states(cls, doc: XSpreadsheetDocument, states: Sequence[mViewState.ViewState]) -> None:
         """
         Update the sheet state part of the view data, which starts as
         the 4th entry in the view data string
