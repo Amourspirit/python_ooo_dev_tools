@@ -783,9 +783,26 @@ class Calc:
 
     # region --------------- view data methods -------------------------
 
-    @staticmethod
-    def get_view_panes(doc: XSpreadsheetDocument) -> Iterable[XViewPane] | None:
-        con = mLo.Lo.qi(XIndexAccess, doc)
+    @classmethod
+    def get_view_panes(cls, doc: XSpreadsheetDocument) -> List[XViewPane] | None:
+        """
+        represents a pane in a view of a spreadsheet document. 
+
+        Args:
+            doc (XSpreadsheetDocument): Spreadsheet Document
+
+        Returns:
+            List[XViewPane] | None: List of XViewPane on success; Otherwise, None
+        
+        Notes:
+            The com.sun.star.sheet.XViewPane interface's getFirstVisibleColumn(), getFirstVisibleRow(),
+            setFirstVisibleColumn() and setFirstVisibleRow() methods query and set the start of
+            the exposed area. The getVisibleRange() method returns a com.sun.star.table.
+            CellRangeAddress struct describing which cells are shown in the pane.
+            Columns or rows that are only partly visible at the right or lower edge of the view
+            are not included. 
+        """
+        con = mLo.Lo.qi(XIndexAccess, cls.get_controller(doc))
         if con is None:
             print("Could not access the view pane container")
             return None
@@ -803,16 +820,34 @@ class Calc:
 
     @classmethod
     def get_view_data(cls, doc: XSpreadsheetDocument) -> str:
+        """
+        Gets a set of data that can be used to restore the current view status at
+        later time by using ``set_view_data()``
+
+        Args:
+            doc (XSpreadsheetDocument): Spreadsheet Document
+
+        Returns:
+            str: View Data
+        """
         ctrl = cls.get_controller(doc)
         return str(ctrl.getViewData())
 
     @classmethod
     def set_view_data(cls, doc: XSpreadsheetDocument, view_data: str) -> None:
+        """
+        Restores the view status using the data gotten from a previous call to
+        ``get_view_data()``
+
+        Args:
+            doc (XSpreadsheetDocument): Spreadsheet Document
+            view_data (str): Data to restore.
+        """
         ctrl = cls.get_controller(doc)
         ctrl.restoreViewData(view_data)
 
     @classmethod
-    def get_view_states(cls, doc: XSpreadsheetDocument) -> Iterable[ViewState] | None:
+    def get_view_states(cls, doc: XSpreadsheetDocument) -> List[ViewState] | None:
         """
         Extract the view states for all the sheets from the view data.
         The states are returned as an array of ViewState objects.
@@ -838,11 +873,13 @@ class Calc:
             return None
         states = []
         for i in range(3, p_len):
+            vs = ViewState()
+            vs.AffineTransform
             states.append(ViewState(view_parts[i]))
         return states
 
     @classmethod
-    def set_view_states(cls, doc: XSpreadsheetDocument, states: Iterable[ViewState]) -> None:
+    def set_view_states(cls, doc: XSpreadsheetDocument, states: Sequence[ViewState]) -> None:
         """
         Update the sheet state part of the view data, which starts as
         the 4th entry in the view data string
