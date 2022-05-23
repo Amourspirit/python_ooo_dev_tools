@@ -1,6 +1,6 @@
 # coding: utf-8
 from __future__ import annotations
-from typing import Iterable, Iterator, Sequence, List, NamedTuple, Any, Tuple, overload
+from typing import Callable, Iterable, Iterator, Sequence, List, NamedTuple, Any, Tuple, overload
 from inspect import isclass
 
 
@@ -96,12 +96,39 @@ class TableHelper:
             List[List[Any]]: 2-Dimensional List of values
         """
         ...
+    @overload
+    @staticmethod
+    def make_2d_array(num_rows: int, num_cols: int, val: Callable[[int, int, Any], Any]) -> List[List[Any]]:
+        """
+        Make a 2-Dimensional List of values
+
+        Args:
+            num_rows (int): Number of rows
+            num_cols (int): Number of Columns in each row.
+            val (Callable[[int, int, Any], Any]): Callable that provide each value.
+                Callback e.g. cb(row: int, col: int, prev_value: None | int) -> int:...
+
+        Returns:
+            List[List[Any]]: 2-Dimensional List of values
+        """
 
     @staticmethod
-    def make_2d_array(num_rows: int, num_cols: int, val=1) -> List[List[Any]]:
+    def make_2d_array(num_rows: int, num_cols: int, val=None) -> List[List[Any]]:
         if num_cols == 0 or num_rows == 0:
             return []
-        data = [[val] * num_cols for _ in range(num_rows)]
+        if val is None:
+            val = 1
+        if callable(val):
+            data = []
+            new_val = None
+            for row in range(num_rows):
+                col_data = []
+                for col in range(num_cols):
+                    new_val = val(row, col, new_val)
+                    col_data.append(new_val)
+                data.append(col_data)
+        else:
+            data = [[val] * num_cols for _ in range(num_rows)]
         return data
 
     make_2d_list = make_2d_array
