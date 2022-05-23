@@ -4,7 +4,7 @@
 # region Imports
 from __future__ import annotations
 import sys
-from enum import IntFlag
+from enum import IntFlag, Enum
 import numbers
 import re
 from typing import Any, Iterable, List, Tuple, cast, overload, Sequence, TYPE_CHECKING
@@ -115,6 +115,7 @@ else:
     from typing_extensions import Union
 # endregion Imports
 
+
 class Calc:
     # region classes
     # for headers and footers
@@ -131,6 +132,13 @@ class Calc:
         BOTTOM_BORDER = 0x02
         LEFT_BORDER = 0x04
         RIGHT_BORDER = 0x08
+
+    class CellTypeEnum(str, Enum):
+        EMPTY = "EMPTY"
+        VALUE = "VALUE"
+        TEXT = "TEXT"
+        FORMULA = "FORMULA"
+        UNKNOWN = "UNKNOWN"
 
     class GeneralFunction:
         __typename__ = "com.sun.star.sheet.GeneralFunction"
@@ -168,8 +176,6 @@ class Calc:
 
     # use a better name when date mode doesn't matter
     NO_DATE = FILL_DATE_DAY
-
-    
 
     CELL_POS = Point(3, 4)
 
@@ -526,18 +532,18 @@ class Calc:
     def get_view(cls, doc: XSpreadsheetDocument) -> XSpreadsheetView | None:
         """
         Is the main interface of a SpreadsheetView.
-    
+
         It manages the active sheet within this view.
-        
+
         The com.sun.star.sheet.SpreadsheetView service is the spreadsheet's extension
         of the com.sun.star.frame.Controller service and represents a table editing view
-        for a spreadsheet document. 
+        for a spreadsheet document.
 
         Args:
             doc (XSpreadsheetDocument): Spreadsheet Document
 
         Returns:
-            XSpreadsheetView | None: XSpreadsheetView on success; Otherwise, None 
+            XSpreadsheetView | None: XSpreadsheetView on success; Otherwise, None
         """
         return mLo.Lo.qi(XSpreadsheetView, cls.get_controller(doc))
 
@@ -735,14 +741,14 @@ class Calc:
 
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
-        
+
         doc = mLo.Lo.qi(XSpreadsheetDocument, kargs[1])
         if doc:
             model = mLo.Lo.qi(XModel, doc)
         else:
             # def get_selected_addr(model: XModel)
-            model = cast(XModel,  kargs[1])
- 
+            model = cast(XModel, kargs[1])
+
         if model is None:
             print("No document model found")
             return None
@@ -764,10 +770,10 @@ class Calc:
 
         Returns:
             CellAddress | None: CellAddress on success; Otherwise, None
-        
+
         Note:
             If more then a single cell is selected then ``None`` is returned.
-        
+
             CellAddress returns Zero-base values.
             For instance: Cell ``B4`` has Column value of ``1`` and Row value of ``3``
         """
@@ -786,21 +792,21 @@ class Calc:
     @classmethod
     def get_view_panes(cls, doc: XSpreadsheetDocument) -> List[XViewPane] | None:
         """
-        represents a pane in a view of a spreadsheet document. 
+        represents a pane in a view of a spreadsheet document.
 
         Args:
             doc (XSpreadsheetDocument): Spreadsheet Document
 
         Returns:
             List[XViewPane] | None: List of XViewPane on success; Otherwise, None
-        
+
         Notes:
             The com.sun.star.sheet.XViewPane interface's getFirstVisibleColumn(), getFirstVisibleRow(),
             setFirstVisibleColumn() and setFirstVisibleRow() methods query and set the start of
             the exposed area. The getVisibleRange() method returns a com.sun.star.table.
             CellRangeAddress struct describing which cells are shown in the pane.
             Columns or rows that are only partly visible at the right or lower edge of the view
-            are not included. 
+            are not included.
         """
         con = mLo.Lo.qi(XIndexAccess, cls.get_controller(doc))
         if con is None:
@@ -908,30 +914,66 @@ class Calc:
 
     @staticmethod
     def insert_row(sheet: XSpreadsheet, idx: int) -> None:
+        """
+        Inserts a row in spreadsheet
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            idx (int): Zero base index of row to insert.
+        """
         cr_range = mLo.Lo.qi(XColumnRowRange, sheet)
         rows = cr_range.getRows()
         rows.insertByIndex(idx, 1)  # add 1 row at idx position
 
     @staticmethod
     def delete_row(sheet: XSpreadsheet, idx: int) -> None:
+        """
+        Deletes a row from spreadsheet
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            idx (int): Zero based index of row to delete
+        """
         cr_range = mLo.Lo.qi(XColumnRowRange, sheet)
         rows = cr_range.getRows()
         rows.removeByIndex(idx, 1)  # remove 1 row at idx position
 
     @staticmethod
     def insert_column(sheet: XSpreadsheet, idx: int) -> None:
+        """
+        Inserts a column in a spreadsheet.
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            idx (int): Zero base index of column to insert.
+        """
         cr_range = mLo.Lo.qi(XColumnRowRange, sheet)
         cols = cr_range.getColumns()
         cols.insertByIndex(idx, 1)  # add 1 column at idx position
 
     @staticmethod
     def delete_column(sheet: XSpreadsheet, idx: int) -> None:
+        """
+        Delete a column from a spreadsheet
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            idx (int): Zero base of index of column to delete
+        """
         cr_range = mLo.Lo.qi(XColumnRowRange, sheet)
         cols = cr_range.getColumns()
         cols.removeByIndex(idx, 1)  # remove 1 row at idx position
 
     @classmethod
     def insert_cells(cls, sheet: XSpreadsheet, cell_range: XCellRange, is_shift_right: bool) -> None:
+        """
+        Inserts Cells into a spreadsheet
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            cell_range (XCellRange): Cell range to insert
+            is_shift_right (bool): If True then cell are inserted to the right; Otherwise, inserted down.
+        """
         mover = mLo.Lo.qi(XCellRangeMovement, sheet)
         addr = cls.get_address(cell_range)
         if is_shift_right:
@@ -940,10 +982,18 @@ class Calc:
             mover.insertCells(addr, IM_DOWN)
 
     @classmethod
-    def delete_cells(cls, sheet: XSpreadsheet, cell_range: XCellRange, is_shift_right: bool) -> None:
+    def delete_cells(cls, sheet: XSpreadsheet, cell_range: XCellRange, is_shift_left: bool) -> None:
+        """
+        Deletes cell in a spreadsheet
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            cell_range (XCellRange): Cell range to delete
+            is_shift_left (bool): If True then cell are shifted left; Otherwise, cells are shifted up.
+        """
         mover = mLo.Lo.qi(XCellRangeMovement, sheet)
         addr = cls.get_address(cell_range)
-        if is_shift_right:
+        if is_shift_left:
             mover.removeRange(addr, DM_LEFT)
         else:
             mover.removeRange(addr, DM_UP)
@@ -974,16 +1024,40 @@ class Calc:
     @overload
     @staticmethod
     def set_val(value: object, cell: XCell) -> None:
+        """
+        Sets the value of a cell
+
+        Args:
+            value (object): Value for cell
+            cell (XCell): Cell to assign value
+        """
         ...
 
     @overload
     @staticmethod
     def set_val(value: object, sheet: XSpreadsheet, cell_name: str) -> None:
+        """
+        Sets the value of a cell
+
+        Args:
+            value (object): Value for cell
+            sheet (XSpreadsheet): Spreadsheet
+            cell_name (str): Name of cel to set value of such as 'B4'
+        """
         ...
 
     @overload
     @staticmethod
     def set_val(value: object, sheet: XSpreadsheet, column: int, row: int) -> None:
+        """
+        Sets the value of a cell
+
+        Args:
+            value (object): Value for cell
+            sheet (XSpreadsheet): Spreadsheet
+            column (int): Cell column as zero-based integer
+            row (int): Cell row as zero-based integer
+        """
         ...
 
     @classmethod
@@ -1009,7 +1083,7 @@ class Calc:
                     break
             if count == 3:
                 return ka
-            ka[4] = kwargs.get["row", None]
+            ka[4] = kwargs.get("row", None)
             return ka
 
         if not count in (2, 3, 4):
@@ -1031,41 +1105,59 @@ class Calc:
     # endregion    set_val()
 
     @staticmethod
-    def convert_to_double(val: object) -> float:
+    def convert_to_float(val: object) -> float:
+        """
+        Converts value to float
+
+        Args:
+            val (object): Value to convert
+
+        Returns:
+            float: value converted to float. 0.0 is returned if conversion fails.
+        """
         if val is None:
             print("Value is null; using 0")
-            return 0
+            return 0.0
         try:
             return float(val)
         except ValueError:
             print(f"Could not convert {val} to double; using 0")
-            return 0
+            return 0.0
 
-    convert_to_float = convert_to_double
+    convert_to_double = convert_to_float
 
-    @staticmethod
-    def get_type_string(cell: XCell) -> str:
+    @classmethod
+    def get_type_string(cls, cell: XCell) -> CellTypeEnum:
+        """
+        Gets String representing the Type
+
+        Args:
+            cell (XCell): _description_
+
+        Returns:
+            str: _description_
+        """
         t = cell.getType()
         if t == CCT_EMPTY:
-            return "EMPTY"
+            return cls.CellTypeEnum.EMPTY
         if t == CCT_VALUE:
-            return "VALUE"
+            return cls.CellTypeEnum.VALUE
         if t == CCT_TEXT:
-            return "TEXT"
+            return cls.CellTypeEnum.TEXT
         if t == CCT_FORMULA:
-            return "FORMULA"
+            return cls.CellTypeEnum.FORMULA
         print("Unknown cell type")
-        return "??"
+        return cls.CellTypeEnum.UNKNOWN
 
     # region    get_val()
 
     @classmethod
-    def _get_val_by_cell(cls, cell: XCell, column: int, row: int) -> object | None:
+    def _get_val_by_cell(cls, cell: XCell) -> object | None:
         t = cell.getType()
         if t == CCT_EMPTY:
             return None
         if t == CCT_VALUE:
-            return float(cell.getValue())
+            return cls.convert_to_float(cell.getValue())
         if t == CCT_TEXT or t == CCT_FORMULA:
             return cell.getFormula()
         print("Unknown cell type; returning None")
@@ -1074,7 +1166,7 @@ class Calc:
     @classmethod
     def _get_val_by_col_row(cls, sheet: XSpreadsheet, column: int, row: int) -> object | None:
         xcell = cls.get_cell(sheet=sheet, column=column, row=row)
-        return cls._get_val_by_cell(cell=xcell, column=column, row=row)
+        return cls._get_val_by_cell(cell=xcell)
 
     @classmethod
     def _get_val_by_cell_name(cls, sheet: XSpreadsheet, cell_name: str) -> object | None:
@@ -1089,212 +1181,337 @@ class Calc:
 
     @overload
     @staticmethod
+    def get_val(cell: XCell) -> object | None:
+        """
+        Gets cell value
+
+        Args:
+            cell (XCell): cell to get value of
+
+        Returns:
+            object | None: Cell value cell has a value; Otherwise, None
+        """
+        ...
+
+    @overload
+    @staticmethod
     def get_val(sheet: XSpreadsheet, addr: CellAddress) -> object | None:
+        """
+        Get cell value
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            addr (CellAddress): Address of cell
+
+        Returns:
+            object | None: Cell value cell has a value; Otherwise, None
+        """
         ...
 
     @overload
     @staticmethod
     def get_val(sheet: XSpreadsheet, cell_name: str) -> object | None:
+        """
+        Gets cell value
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            cell_name (str): Name of cell such as 'B4'
+
+        Returns:
+            object | None: Cell value cell has a value; Otherwise, None
+        """
         ...
 
     @overload
     @staticmethod
     def get_val(sheet: XSpreadsheet, column: int, row: int) -> object | None:
-        ...
+        """
+        Get cell value
 
-    @overload
-    @staticmethod
-    def get_val(cell: XCell, column: int, row: int) -> object | None:
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            column (int): Cell zero-based column
+            row (int): Cell zero-base row
+
+        Returns:
+            object | None: Cell value cell has a value; Otherwise, None
+        """
         ...
 
     @classmethod
     def get_val(cls, *args, **kwargs) -> object | None:
-        ordered_keys = ("first", "second", "third")
+        ordered_keys = (1, 2, 3)
+        count = len(args) + len(kwargs)
 
         def get_kwargs() -> dict:
             ka = {}
-            key = "sheet"
-            if key in kwargs:
-                ka["first"] = kwargs[key]
-
-            key = "cell"
-            if key in kwargs:
-                ka["first"] = kwargs[key]
-
-            key = "addr"
-            if key in kwargs:
-                ka["second"] = kwargs[key]
-
-            key = "cell_name"
-            if key in kwargs:
-                ka["second"] = kwargs[key]
-
-            key = "column"
-            if key in kwargs:
-                ka["second"] = kwargs[key]
-
-            key = "row"
-            if key in kwargs:
-                ka["third"] = kwargs[key]
+            keys = ("sheet", "cell")
+            for key in keys:
+                if key in kwargs:
+                    ka[1] = kwargs[key]
+                    break
+            if count == 1:
+                return ka
+            keys = ("addr", "cell_name", "column")
+            for key in keys:
+                if key in kwargs:
+                    ka[2] = kwargs[key]
+                    break
+            if count == 2:
+                return ka
+            ka[3] = kwargs.get("row", None)
             return ka
 
-        kargs = get_kwargs()
+        if not count in (1, 2, 3):
+            print("invalid number of arguments for get_val()")
+            return None
 
+        kargs = get_kwargs()
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
 
-        k_len = len(kargs)
-        if k_len < 2 or k_len > 4:
-            print("invalid number of arguments for set_val()")
-            return
-
-        first_arg = mLo.Lo.qi(XSpreadsheet, kargs["first"])
+        first_arg = mLo.Lo.qi(XSpreadsheet, kargs[1])
         if first_arg is None:
-            # can only be: get_val(cell: XCell, column: int, row: int)
-            return cls._get_val_by_cell(cell=kargs["first"], column=kargs["second"], row=kargs["third"])
+            # can only be: get_val(cell: XCell)
+            if count != 1:
+                return None
+            return cls._get_val_by_cell(cell=kargs[1])
 
-        if k_len == 2:
-            # get_val(sheet: XSpreadsheet, addr: CellAddress) or
-            # get_val(sheet: XSpreadsheet, cell_name: str)
-            if isinstance(kargs["second"], str):
-                # get_val(sheet: XSpreadsheet, cell_name: str)
-                return cls._get_val_by_cell_name(sheet=kargs["first"], cell_name=kargs["second"])
-            return cls._get_val_by_cell_addr(sheet=kargs["first"], addr=kargs["second"])
+        if count == 2:
+            if isinstance(kargs[2], str):
+                #   get_val(sheet: XSpreadsheet, cell_name: str)
+                return cls._get_val_by_cell_name(sheet=kargs[1], cell_name=kargs[2])
 
-        if k_len == 3:
-            # get_val(sheet: XSpreadsheet, column: int, row: int)
-            return cls._get_val_by_col_row(sheet=kargs["first"], column=kargs["second"], row=kargs["third"])
+            #   get_val(sheet: XSpreadsheet, addr: CellAddress)
+            return cls._get_val_by_cell_addr(sheet=kargs[1], addr=kargs[2])
+
+        if count == 3:
+            #   get_val(sheet: XSpreadsheet, column: int, row: int)
+            return cls._get_val_by_col_row(sheet=kargs[1], column=kargs[2], row=kargs[3])
         return None
 
     # endregion get_val()
 
     # region    get_num()
 
+    # cell: XCell
+    @overload
+    @staticmethod
+    def get_num(cell: XCell) -> float:
+        """
+        Get cell value a float
+
+        Args:
+            cell (XCell): Cell to get value of
+
+        Returns:
+            float: Cell value as float. If cell value cannot be converted then 0.0 is returned.
+        """
+        ...
+
     @overload
     @staticmethod
     def get_num(sheet: XSpreadsheet, cell_name: str) -> float:
+        """
+        Gets cell value as float
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            cell_name (str): Cell name such as 'B4'
+
+        Returns:
+            float: Cell value as float. If cell value cannot be converted then 0.0 is returned.
+        """
         ...
 
     @overload
     @staticmethod
     def get_num(sheet: XSpreadsheet, addr: CellAddress) -> float:
+        """
+        Gets cell value as float
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            addr (CellAddress): Cell Address
+
+        Returns:
+            float: Cell value as float. If cell value cannot be converted then 0.0 is returned.
+        """
         ...
 
     @overload
     @staticmethod
     def get_num(sheet: XSpreadsheet, column: int, row: int) -> float:
+        """
+        Gets cell value as float
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            column (int): Cell zero-base column number
+            row (int): Cell zero-base row number.
+
+        Returns:
+            float: Cell value as float. If cell value cannot be converted then 0.0 is returned.
+        """
         ...
 
     @classmethod
     def get_num(cls, *args, **kwargs) -> float:
-        ordered_keys = ("first", "second", "third")
+        ordered_keys = (1, 2, 3)
+        count = len(args) + len(kwargs)
 
         def get_kwargs() -> dict:
             ka = {}
-            key = "sheet"
-            if key in kwargs:
-                ka["first"] = kwargs[key]
-
-            key = "cell_name"
-            if key in kwargs:
-                ka["second"] = kwargs[key]
-
-            key = "addr"
-            if key in kwargs:
-                ka["second"] = kwargs[key]
-
-            key = "column"
-            if key in kwargs:
-                ka["second"] = kwargs[key]
-
-            key = "row"
-            if key in kwargs:
-                ka["third"] = kwargs[key]
+            keys = ("sheet", "cell")
+            for key in keys:
+                if key in kwargs:
+                    ka[1] = kwargs[key]
+                    break
+            if count == 1:
+                return ka
+            keys = ("cell_name", "addr", "column")
+            for key in keys:
+                if key in kwargs:
+                    ka[2] = kwargs[key]
+                    break
+            if count == 2:
+                return ka
+            ka[3] = kwargs.get("row", None)
             return ka
+
+        if not count in (1, 2, 3):
+            print("invalid number of arguments for get_num()")
+            return 0.0
 
         kargs = get_kwargs()
 
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
 
-        k_len = len(kargs)
-        if k_len < 2 or k_len > 3:
-            print("invalid number of arguments for get_num()")
-            return 0
-        if k_len == 3:
-            return cls.convert_to_double(cls.get_val(sheet=kargs["first"], column=kargs["second"], row=kargs["third"]))
-        if k_len == 2:
-            if isinstance(kargs["second"], str):
-                return cls.convert_to_double(cls.get_val(sheet=kargs["first"], cell_name=kargs["second"]))
-            return cls.convert_to_double(cls.get_val(sheet=kargs["first"], addr=kargs["second"]))
-        return 0
+        if count == 1:
+            return cls.convert_to_float(cls.get_val(cell=kargs[1]))
+
+        if count == 3:
+            return cls.convert_to_float(cls.get_val(sheet=kargs[1], column=kargs[2], row=kargs[3]))
+        if count == 2:
+            if isinstance(kargs[2], str):
+                return cls.convert_to_float(cls.get_val(sheet=kargs[1], cell_name=kargs[2]))
+            return cls.convert_to_float(cls.get_val(sheet=kargs[1], addr=kargs[2]))
+        return 0.0
 
     # endregion get_num()
 
     # region    get_string()
     @overload
     @staticmethod
-    def get_string(sheet: XSpreadsheet, cell_name: str) -> str | None:
+    def get_string(cell: XCell) -> str:
+        """
+        Gets the value of a cell as a string.
+
+        Args:
+            cell (XCell): Cell to get value of
+
+        Returns:
+            str: Cell value as string.
+        """
         ...
 
     @overload
     @staticmethod
-    def get_string(sheet: XSpreadsheet, cell_name: str) -> str | None:
+    def get_string(sheet: XSpreadsheet, cell_name: str) -> str:
+        """
+        Gets the value of a cell as a string
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            cell_name (str): Name of cell to get the value of such as 'B4'
+
+        Returns:
+            str: Cell value as string
+        """
         ...
 
     @overload
     @staticmethod
-    def get_string(sheet: XSpreadsheet, addr: CellAddress) -> str | None:
+    def get_string(sheet: XSpreadsheet, addr: CellAddress) -> str:
+        """
+        Gets the value of a cell as a string
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            addr (CellAddress): Cell address
+
+        Returns:
+            str: Cell value as string
+        """
         ...
 
     @overload
     @staticmethod
-    def get_string(sheet: XSpreadsheet, column: int, row: int) -> str | None:
+    def get_string(sheet: XSpreadsheet, column: int, row: int) -> str:
+        """
+        Gets the value of a cell as a string
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            column (int): Cell zero-based column number
+            row (int): Cell zero-based row number
+
+        Returns:
+            str: Cell value as string
+        """
         ...
 
     @classmethod
-    def get_string(cls, *args, **kwargs) -> str | None:
-        ordered_keys = ("first", "second", "third")
+    def get_string(cls, *args, **kwargs) -> str:
+        ordered_keys = (1, 2, 3)
+        count = len(args) + len(kwargs)
 
         def get_kwargs() -> dict:
             ka = {}
-            key = "sheet"
-            if key in kwargs:
-                ka["first"] = kwargs[key]
-
-            key = "cell_name"
-            if key in kwargs:
-                ka["second"] = kwargs[key]
-
-            key = "addr"
-            if key in kwargs:
-                ka["second"] = kwargs[key]
-
-            key = "column"
-            if key in kwargs:
-                ka["second"] = kwargs[key]
-
-            key = "row"
-            if key in kwargs:
-                ka["third"] = kwargs[key]
+            keys = ("cell", "sheet")
+            for key in keys:
+                if key in kwargs:
+                    ka[1] = kwargs[key]
+                    break
+            if count == 1:
+                return ka
+            keys = ("cell_name", "addr", "column")
+            for key in keys:
+                if key in kwargs:
+                    ka[2] = kwargs[key]
+                    break
+            if count == 2:
+                return ka
+            ka[3] = kwargs.get("row", None)
             return ka
+
+        if not count in (1, 2, 3):
+            print("invalid number of arguments for get_string()")
+            return None
 
         kargs = get_kwargs()
 
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
 
-        k_len = len(kargs)
-        if k_len < 2 or k_len > 3:
-            print("invalid number of arguments for get_string()")
-            return None
-        if k_len == 3:
-            return str(cls.get_val(sheet=kargs["first"], column=kargs["second"], row=kargs["third"]))
-        if k_len == 2:
-            if isinstance(kargs["second"], str):
-                return str(cls.get_val(sheet=kargs["first"], cell_name=kargs["second"]))
-            return str(cls.get_val(sheet=kargs["first"], addr=kargs["second"]))
+        def convert(obj) -> str:
+            if obj is None:
+                return ""
+            return str(obj)
+
+        if count == 1:
+            return convert(cls.get_val(cell=kargs[1]))
+
+        if count == 3:
+            return convert(cls.get_val(sheet=kargs[1], column=kargs[2], row=kargs[3]))
+        if count == 2:
+            if isinstance(kargs[2], str):
+                return convert(cls.get_val(sheet=kargs[1], cell_name=kargs[2]))
+            return convert(cls.get_val(sheet=kargs[1], addr=kargs[2]))
         return None
+
     # endregion get_string()
 
     # endregion ------------ set/get values in cells -----------------
@@ -1302,7 +1519,19 @@ class Calc:
     # region --------------- set/get values in 2D array ----------------
 
     @classmethod
-    def set_array(cls, sheet: XSpreadsheet, name: str, values: Tuple[Tuple[object, ...], ...]) -> None:
+    def set_array(cls, sheet: XSpreadsheet, name: str, values: Sequence[Sequence[object]]) -> None:
+        """
+        Inserts array of data into spreadsheet
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            name (str): Range name such as 'A1:D4' or cell name such as 'B4'
+            values (Sequence[Sequence[object]]): An 2-Dimensional array of valuse such as a list of list or tuple of tuples.
+        
+        Notes:
+            If ``name`` is a single cell such as ``A1`` then then values are inserter at the named cell
+            and expand to the size of the value array.
+        """
         if cls.is_cell_range_name(name):
             cls.set_array_range(sheet=sheet, range_name=name, values=values)
         else:
@@ -1313,20 +1542,20 @@ class Calc:
         cls,
         sheet: XSpreadsheet,
         range_name: str,
-        values: Tuple[Tuple[object, ...], ...],
+        values: Sequence[Sequence[object]],
     ) -> None:
         cell_range = cls.get_cell_range(sheet=sheet, range_name=range_name)
         cls.set_cell_range_array(cell_range=cell_range, values=values)
 
     @staticmethod
-    def set_cell_range_array(cell_range: XCellRange, values: Tuple[Tuple[object, ...], ...]) -> None:
+    def set_cell_range_array(cell_range: XCellRange, values: Sequence[Sequence[object]]) -> None:
         cr_data = mLo.Lo.qi(XCellRangeData, cell_range)
         if cr_data is None:
             return
         cr_data.setDataArray(values)
 
     @classmethod
-    def set_array_cell(cls, sheet: XSpreadsheet, cell_name: str, values: Tuple[Tuple[object, ...], ...]) -> None:
+    def set_array_cell(cls, sheet: XSpreadsheet, cell_name: str, values: Sequence[Sequence[object]]) -> None:
         pos = cls.get_cell_position(cell_name)
         col_end = pos.X + (len(values[0]) - 1)
         row_end = pos.Y + (len(values) - 1)
@@ -1412,47 +1641,40 @@ class Calc:
 
     @classmethod
     def set_col(cls, *args, **kwargs) -> None:
-        ordered_keys = ("first", "second", "third", "fourth")
+        ordered_keys = (1, 2, 3, 4)
         count = len(args) + len(kwargs)
 
         def get_kwargs() -> dict:
             ka = {}
-            key = "sheet"
-            if key in kwargs:
-                ka["first"] = kwargs[key]
-            key = "values"
-            if key in kwargs:
-                ka["second"] = kwargs[key]
-
-            key = "cell_name"
-            if key in kwargs:
-                ka["third"] = kwargs[key]
-
-            key = "col_start"
-            if key in kwargs:
-                ka["third"] = kwargs[key]
-
-            key = "row_start"
-            if key in kwargs:
-                ka["fourth"] = kwargs[key]
+            ka[1] = kwargs.get("sheet", None)
+            ka[2] = kwargs.get("values", None)
+            keys = ("cel_name", "col_start")
+            for key in keys:
+                if key in kwargs:
+                    ka[3] = kwargs[key]
+                    break
+            if count == 3:
+                return ka
+            ka[4] = kwargs.get("row_start", None)
             return ka
+
+        if not count in (3, 4):
+            print("invalid number of arguments for set_col()")
+            return
 
         kargs = get_kwargs()
 
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
 
-        if count < 3 or count > 4:
-            print("invalid number of arguments for set_col()")
-            return None
         if count == 3:
-            pos = cls.get_cell_position(kargs["third"])
+            pos = cls.get_cell_position(kargs[3])
             x = pos.X
             y = pos.Y
         else:
-            x = kargs["third"]
-            y = kargs["fourth"]
-        values = cast(Sequence[Any], kargs["second"])
+            x = kargs[3]
+            y = kargs[4]
+        values = cast(Sequence[Any], kargs[2])
         val_len = len(values)  # values
 
         cell_range = cls.get_cell_range(
@@ -1607,59 +1829,50 @@ class Calc:
 
     @classmethod
     def get_cell(cls, *args, **kwargs) -> XCell | None:
-        ordered_keys = ("first", "second", "third")
+        ordered_keys = (1, 2, 3)
         count = len(args) + len(kwargs)
 
         def get_kwargs() -> dict:
             ka = {}
-            key = "sheet"
-            if key in kwargs:
-                ka["first"] = kwargs[key]
-
-            key = "cell_range"
-            if key in kwargs:
-                ka["first"] = kwargs[key]
-
-            if count == 2:
-                # when only two args are possilbe must be cell_name
-                key = "cell_name"
+            keys = ("sheet", "cell_range")
+            for key in keys:
                 if key in kwargs:
-                    ka["second"] = kwargs[key]
+                    ka[1] = kwargs[key]
+                    break
+            keys = ("addr", "column", "cell_name")
+            for key in keys:
+                if key in kwargs:
+                    ka[2] = kwargs[key]
+                    break
+            if count == 2:
                 return ka
-
-            # can only be column an row at this point
-            key = "column"
-            if key in kwargs:
-                ka["second"] = kwargs[key]
-
-            key = "row"
-            if key in kwargs:
-                ka["third"] = kwargs[key]
+            ka[3] = kwargs.get("row", None)
             return ka
+
+        if not count in (2, 3):
+            print("invalid number of arguments for get_cell()")
+            return None
 
         kargs = get_kwargs()
 
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
 
-        if count < 2 or count > 3:
-            print("invalid number of arguments for get_cell()")
-            return None
         if count == 2:
             # def get_cell(sheet: XSpreadsheet, cell_name: str) or
             # def get_cell(sheet: XSpreadsheet, addr: CellAddress)
-            if isinstance(kargs["second"], str):
-                return cls._get_cell_sheet_cell(sheet=kargs["first"], cell_name=kargs["second"])
+            if isinstance(kargs[2], str):
+                return cls._get_cell_sheet_cell(sheet=kargs[1], cell_name=kargs[2])
             else:
-                return cls._get_cell_sheet_addr(sheet=kargs["first"], addr=kargs["second"])
+                return cls._get_cell_sheet_addr(sheet=kargs[1], addr=kargs[2])
         else:
             # def get_cell(sheet: XSpreadsheet, column: int, row: int) or
             # def get_cell(cell_range: XCellRange, column: int, row: int)
-            sheet = mLo.Lo.qi(XSpreadsheet, kargs["first"])
+            sheet = mLo.Lo.qi(XSpreadsheet, kargs[1])
             if sheet is None:
-                return cls._get_cell_cell_rng(cell_range=kargs["first"], column=kargs["second"], row=kargs["third"])
+                return cls._get_cell_cell_rng(cell_range=kargs[1], column=kargs[2], row=kargs[3])
             else:
-                return cls._get_cell_sheet_col_row(sheet=sheet, column=kargs["second"], row=kargs["third"])
+                return cls._get_cell_sheet_col_row(sheet=sheet, column=kargs[2], row=kargs[3])
 
     # endregion get_cell()
 
@@ -1670,7 +1883,6 @@ class Calc:
     @staticmethod
     def is_single_cell_range(addr: CellRangeAddress) -> bool:
         return addr.StartColumn == addr.EndColumn and addr.StartRow == addr.EndRow
-
 
     # region    get_cell_range()
     @classmethod
@@ -1884,7 +2096,7 @@ class Calc:
         return (start_pos, end_pos)
 
     @classmethod
-    def get_cell_position(cls, cell_name) -> Point | None:
+    def get_cell_position(cls, cell_name: str) -> Point | None:
         m = cls._rx_cell.match(cell_name)
         if m:
             ncolumn = cls.column_string_to_number(str(m.group(1)).upper())
@@ -1930,7 +2142,7 @@ class Calc:
             int: Number if conversion succeeds; Othwrwise, 0
         """
         try:
-            return int(row_str)
+            return int(row_str) - 1
         except ValueError:
             print(f"Incorrect format for {row_str}")
         return 0
@@ -2104,8 +2316,9 @@ class Calc:
         else:
             addr = kargs["first"]
         print(f"Cell: Sheet{addr.Sheet+1}.{cls.get_cell_str(addr=addr)})")
+
     # endregion    print_cell_address()
-    
+
     # region    print_address()
     @overload
     @staticmethod
@@ -2145,7 +2358,7 @@ class Calc:
         cell_range = mLo.Lo.qi(XCellRange, kargs["first"])
         if cell_range is None:
             # when cast is used with an import the is not available at runtime must be quoted.
-            cr_addr = cast('CellRangeAddress', kargs["first"])
+            cr_addr = cast("CellRangeAddress", kargs["first"])
         else:
             cr_addr = cls._get_address_cell(cell_range=kargs["first"])
         msg = f"Range: Sheet{cr_addr.Sheet+1}.{cls.get_cell_str(col=cr_addr.StartColumn,row=cr_addr.StartRow)}:"
@@ -2190,13 +2403,13 @@ class Calc:
             return False
         if mInfo.Info.is_type_struct(addr1, "com.sun.star.table.CellAddress"):
             # when cast is used with an import the is not available at runtime must be quoted.
-            a = cast('CellAddress', addr1)
-            b = cast('CellAddress', addr2)
+            a = cast("CellAddress", addr1)
+            b = cast("CellAddress", addr2)
             return a.Sheet == b.Sheet and a.Column == b.Column and a.Row == b.Row
         if mInfo.Info.is_type_struct(addr1, "com.sun.star.table.CellRangeAddress"):
             # when cast is used with an import the is not available at runtime must be quoted.
-            a = cast('CellRangeAddress', addr1)
-            b = cast('CellRangeAddress', addr2)
+            a = cast("CellRangeAddress", addr1)
+            b = cast("CellRangeAddress", addr2)
             return (
                 a.Sheet == b.Sheet
                 and a.StartColumn == b.StartColumn
@@ -2211,7 +2424,7 @@ class Calc:
     # endregion ------------ get cell and cell range addresses ---------
 
     # region --------------- convert cell range address to string ------
-    
+
     # region    get_range_str()
     @classmethod
     def _get_range_str_cell_rng_sht(cls, cell_range: XCellRange, sheet: XSpreadsheet) -> str:
@@ -2440,6 +2653,7 @@ class Calc:
             print(f"Found {c_count} matches but unable to acces any match")
             return None
         return crs
+
     # endregion ------------ search ------------------------------------
 
     # region --------------- cell decoration ---------------------------
@@ -2518,7 +2732,7 @@ class Calc:
             )
             mProps.Props.set_property(prop_set=cell_range, name="CellStyle", value=kargs[2])  # 2 style_name
         return
-    
+
         # endregion change_style()
 
     # region    add_border()
@@ -2627,6 +2841,7 @@ class Calc:
             cls._add_border_sht_rng_color_vals(
                 sheet=kargs[1], range_name=kargs[2], color=kargs[3], border_vals=kargs[3]
             )
+
     # endregion add_border()
 
     @classmethod
@@ -3101,8 +3316,9 @@ class Calc:
                 return cls._make_constraint_op_sco_sht_cell_name(
                     num=kargs[1], op=kargs[2], sheet=kargs[3], cell_name=kargs[4]
                 )
+
     # endregion    make_constraint()
-    
+
     @classmethod
     def solver_report(cls, solver: XSolver) -> None:
         # note: in original java it was getSuccess(), getObjective(), getVariables(), getSolution(),
@@ -3122,27 +3338,24 @@ class Calc:
     # endregion ------------ solver methods ----------------------------
 
     # region --------------- headers /footers --------------------------
-    
+
     @staticmethod
     def get_head_foot(props: XPropertySet, content: str) -> XHeaderFooterContent | None:
-        return mLo.Lo.qi(
-            XHeaderFooterContent,
-            mProps.Props.get_property(xprops=props, name=content)
-            )
-    
+        return mLo.Lo.qi(XHeaderFooterContent, mProps.Props.get_property(xprops=props, name=content))
+
     @staticmethod
     def print_head_foot(title: str, hfc: XHeaderFooterContent) -> None:
         left = hfc.getLeftText()
         center = hfc.getCenterText()
         right = hfc.getRightText()
         print(f"{title}: '{left.getString()}' : '{center.getString()}' : '{right.getString()}'")
-    
+
     @classmethod
     def get_region(cls, hfc: XHeaderFooterContent, region: int) -> XText | None:
         if hfc is None:
             print("Header/footer content is null")
             return None
-    
+
         if region == cls.HeaderFooter.HF_LEFT:
             return hfc.getLeftText()
         if region == cls.HeaderFooter.HF_CENTER:
@@ -3151,10 +3364,10 @@ class Calc:
             return hfc.getRightText()
         print("Unknown header/footer region")
         return None
-    
+
     @classmethod
-    def set_head_foot(cls, hfc: XHeaderFooterContent, region:int, text: str) -> None:
-        xtext = cls.get_region(hfc=hfc, region = region)
+    def set_head_foot(cls, hfc: XHeaderFooterContent, region: int, text: str) -> None:
+        xtext = cls.get_region(hfc=hfc, region=region)
         if xtext is None:
             print("Could not set text")
             return
