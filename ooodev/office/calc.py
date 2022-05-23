@@ -7,7 +7,7 @@ import sys
 from enum import IntFlag, Enum
 import numbers
 import re
-from typing import Any, Iterable, List, Tuple, cast, overload, Sequence, TYPE_CHECKING
+from typing import Any, List, Tuple, cast, overload, Sequence, TYPE_CHECKING
 from com.sun.star.awt import Point
 from com.sun.star.container import XIndexAccess
 from com.sun.star.container import XNamed
