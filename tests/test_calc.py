@@ -1,5 +1,5 @@
 import pytest
-from pathlib import Path
+import sys
 
 # from ooodev.office.write import Write
 if __name__ == "__main__":
@@ -984,7 +984,7 @@ def test_set_array(loader) -> None:
     val = Calc.get_num(sheet, f"{rng}{arr_size}")
     assert val == float(arr_size * arr_size)
     # positional args
-    cell_range = Calc.get_cell_range(sheet=sheet, col_start=col_start, row_start=row_start, col_end=col_end, row_end=row_end)
+    cell_range = Calc.get_cell_range(sheet, col_start, row_start, col_end, row_end)
     Calc.set_array(arr, cell_range)
     val = Calc.get_num(sheet, f"{rng}{arr_size}")
     assert val == float(arr_size * arr_size)
@@ -1015,7 +1015,7 @@ def test_get_array(loader) -> None:
     assert loader is not None
     doc = Calc.create_doc(loader)
     assert doc is not None
-    sheet = Calc.get_active_sheet(doc=doc)
+    sheet = Calc.get_sheet(doc=doc, index=0)
     
     arr_size = 8
     arr = TableHelper.to_2d_tuple(TableHelper.make_2d_array(arr_size, arr_size,arr_cb))
@@ -1052,4 +1052,48 @@ def test_get_array(loader) -> None:
             assert result_arr[row][col] == arr[row][col]
 
     Lo.close(closeable=doc, deliver_ownership=False)
+    
+
+def test_print_array(capsys: pytest.CaptureFixture) -> None:
+    from ooodev.office.calc import Calc
+    Calc.print_array([])
+    captured = capsys.readouterr()
+    assert captured.out == "No data in array to print\n"
+    arr1 = (
+        (1, 2, 3),
+        (4, 5, 6),
+        (7, 8 , 9)
+    )
+    Calc.print_array(arr1)
+    captured = capsys.readouterr()
+    # assert captured.out == 'Row x Column size: 3 x 3\n1  2  3\n4  5  6\n7  8  9\n\n'
+    assert captured.out == """Row x Column size: 3 x 3
+1  2  3
+4  5  6
+7  8  9
+
+"""
+
+def test_get_float_array(loader) -> None:
+    def arr_cb(row:int, col:int, prev_val) -> str:
+        if row == 0 and col == 0:
+            return "1"
+        return str(int(prev_val) + 1)
+    from ooodev.utils.lo import Lo
+    from ooodev.office.calc import Calc
+    # from ooodev.utils.gui import GUI
+    from ooodev.utils.gen_util import TableHelper
+    assert loader is not None
+    doc = Calc.create_doc(loader)
+    assert doc is not None
+    sheet = Calc.get_sheet(doc=doc, index=0)
+    arr_size = 8
+    arr = TableHelper.to_2d_tuple(TableHelper.make_2d_array(arr_size, arr_size,arr_cb))
+    rng_name = Calc.get_range_str(start_col=0, start_row=0, end_col= arr_size -1, end_row=arr_size -1)
+    Calc.set_array(values=arr,sheet=sheet, name=rng_name)
+    arr_float = Calc.get_float_array(sheet=sheet, range_name=rng_name)
+    for row, row_data in enumerate(arr):
+        for col, _ in enumerate(row_data):
+            assert arr_float[row][col] == float(arr[row][col])
+    
 # endregion set/get values in 2D array

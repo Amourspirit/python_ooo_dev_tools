@@ -103,7 +103,7 @@ from ..utils import lo as mLo
 from ..utils import info as mInfo
 from ..utils import gui as mGui
 from ..utils import props as mProps
-from ..utils.gen_util import ArgsHelper, TableHelper
+from ..utils.gen_util import ArgsHelper, TableHelper, Util as GenUtil
 from ..utils import enum_helper
 from ..utils.color import CommonColor
 from ..utils import view_state as mViewState
@@ -1540,7 +1540,7 @@ class Calc:
         Inserts array of data into spreadsheet
 
         Args:
-            values (Sequence[Sequence[object]]): An 2-Dimensional array of valuse such as a list of list or tuple of tuples.
+            values (Sequence[Sequence[object]]): A 2-Dimensional array of valuse such as a list of list or tuple of tuples.
             cell_range (XCellRange): Range in spreadsheet to insert data
         """
         ...
@@ -1552,7 +1552,7 @@ class Calc:
         Inserts array of data into spreadsheet
 
         Args:
-            values (Sequence[Sequence[object]]): An 2-Dimensional array of valuse such as a list of list or tuple of tuples.
+            values (Sequence[Sequence[object]]): A 2-Dimensional array of valuse such as a list of list or tuple of tuples.
             sheet (XSpreadsheet): Spreadsheet
             name (str): Range name such as 'A1:D4' or cell name such as 'B4'
 
@@ -1569,7 +1569,7 @@ class Calc:
         Inserts array of data into spreadsheet
 
         Args:
-            values (Sequence[Sequence[object]]): An 2-Dimensional array of valuse such as a list of list or tuple of tuples.
+            values (Sequence[Sequence[object]]): A 2-Dimensional array of valuse such as a list of list or tuple of tuples.
             doc (XSpreadsheetDocument): Spreadsheet Document
             addr (CellAddress): Address to insert data.
         """
@@ -1582,7 +1582,7 @@ class Calc:
         Inserts array of data into spreadsheet
 
         Args:
-            values (Sequence[Sequence[object]]): An 2-Dimensional array of valuse such as a list of list or tuple of tuples.
+            values (Sequence[Sequence[object]]): A 2-Dimensional array of valuse such as a list of list or tuple of tuples.
             sheet (XSpreadsheet): Spreadsheet
             col_start (int): Zero-base Start Colum
             row_start (int): Zero-base Start Row
@@ -1655,6 +1655,14 @@ class Calc:
         range_name: str,
         values: Sequence[Sequence[object]],
     ) -> None:
+        """
+        Inserts array of data into spreadsheet
+
+        Args:
+            sheet (XSpreadsheet): _description_
+            range_name (str): Range to insert data such as 'A1:E12'
+            values (Sequence[Sequence[object]]): A 2-Dimensional array of valuse such as a list of list or tuple of tuples.
+        """
         v_len = len(values)
         if v_len == 0:
             print('Values has not data')
@@ -1664,6 +1672,13 @@ class Calc:
 
     @staticmethod
     def set_cell_range_array(cell_range: XCellRange, values: Sequence[Sequence[object]]) -> None:
+        """
+        Inserts array of data into spreadsheet
+
+        Args:
+            cell_range (XCellRange): Cell Rnage
+            values (Sequence[Sequence[object]]): A 2-Dimensional array of valuse such as a list of list or tuple of tuples.
+        """
         v_len = len(values)
         if v_len == 0:
             print('Values has not data')
@@ -1675,6 +1690,14 @@ class Calc:
 
     @classmethod
     def set_array_cell(cls, sheet: XSpreadsheet, cell_name: str, values: Sequence[Sequence[object]]) -> None:
+        """
+        Inserts array of data into spreadsheet
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            cell_name (str): Cell Name such as 'A1'
+            values (Sequence[Sequence[object]]): A 2-Dimensional array of valuse such as a list of list or tuple of tuples.
+        """
         v_len = len(values)
         if v_len == 0:
             print('Values has not data')
@@ -1760,6 +1783,12 @@ class Calc:
 
     @staticmethod
     def print_array(vals: Sequence[Sequence[object]]) -> None:
+        """
+        Prints a 2-Dimensional array to terminal
+
+        Args:
+            vals (Sequence[Sequence[object]]): A 2-Dimensional array of valuse such as a list of list or tuple of tuples.
+        """
         row_len = len(vals)
         if row_len == 0:
             print("No data in array to print")
@@ -1772,13 +1801,32 @@ class Calc:
         print()
 
     @classmethod
-    def get_doubles_array(cls, sheet: XSpreadsheet, range_name: str) -> List[List[float]]:
-        return cls.convert_to_doubles(cls.get_array(sheet=sheet, range_name=range_name))
+    def get_float_array(cls, sheet: XSpreadsheet, range_name: str) -> List[List[float]]:
+        """
+        Gets a 2-Dimensional List of floats
 
-    get_float_array = get_doubles_array
+        Args:
+            sheet (XSpreadsheet): Spreadsheet to get the float values from.
+            range_name (str): Range to get array of floats frm such as 'A1:E18'
+
+        Returns:
+            List[List[float]]: 2-Dimensional List of floats
+        """
+        return cls._convert_to_floats_2d(cls.get_array(sheet=sheet, range_name=range_name))
+
+    get_doubles_array = get_float_array
+
+    # region    convert_to_floats()
 
     @classmethod
-    def convert_to_doubles(cls, vals: Sequence[Sequence[object]]) -> List[List[float]]:
+    def _convert_to_floats_1d(cls, vals: Sequence[object]) -> List[float]:
+        doubles = []
+        for val in vals:
+            doubles.append(cls.convert_to_float(val))
+        return doubles
+    
+    @classmethod
+    def _convert_to_floats_2d(cls, vals: Sequence[Sequence[object]]) -> List[List[float]]:
         row_len = len(vals)
         if row_len == 0:
             return []
@@ -1787,21 +1835,51 @@ class Calc:
         doubles = TableHelper.make_2d_array(num_rows=row_len, num_cols=col_len)
         for row in range(row_len):
             for col in range(col_len):
-                doubles[row][col] = cls.convert_to_double(vals[row][col])
+                doubles[row][col] = cls.convert_to_float(vals[row][col])
         return doubles
 
-    convert_to_floats = convert_to_doubles
-
+    @overload
     @staticmethod
-    def print_array(vals: Sequence[Sequence[object]]) -> None:
-        vals_len = len(vals)
-        if vals_len == 0:
-            return
-        print(f"Row x Column size: {vals_len} x {len(vals[0])}")
-        for row in vals:
-            col_str = "  ".join([str(obj) for obj in row])
-            print(col_str)
-        print()
+    def convert_to_floats(vals: Sequence[object]) -> List[float]:
+        """
+        Converts a 1-Dimensional array into List of float
+
+        Args:
+            vals (Sequence[object]): List to convert to floats.
+
+        Returns:
+            List[float]: vals converted to float
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def convert_to_floats(vals: Sequence[Sequence[object]]) -> List[List[float]]:
+        """
+        Converts a 2-Dimensional array into List of float
+
+        Args:
+            vals (Sequence[Sequence[object]]): 2-Dimensional list to convert to floats
+
+        Returns:
+            List[List[float]]: 2-Dimensional list of floats.
+        """
+        ...
+
+    @classmethod
+    def convert_to_floats(cls, vals):
+        v_len = len(vals)
+        if v_len == 0:
+            return []
+        first = vals[0]
+        if GenUtil.is_iterable(arg=first):
+            return cls._convert_to_floats_2d(vals)
+        else:
+            return cls._convert_to_floats_1d(vals)
+
+    convert_to_doubles = convert_to_floats
+
+    # endregion convert_to_floats()
 
     # endregion ------------- set/get values in 2D array --------------
 
@@ -1914,14 +1992,8 @@ class Calc:
             col_vals.append(row[col_idx])
         return col_vals
 
-    @classmethod
-    def convert_to_doubles(cls, vals: Sequence[Any]) -> List[float]:
-        doubles = []
-        for val in vals:
-            doubles.append(cls.convert_to_double(val))
-        return doubles
+   
 
-    convert_to_floats = convert_to_doubles
 
     # endregion --------------- set/get rows and columns -----------------
 
