@@ -918,4 +918,33 @@ def test_set_array_by_cell(loader) -> None:
     assert val == 3.14
     
     Lo.close(closeable=doc, deliver_ownership=False)
+
+def test_get_array(loader) -> None:
+    def arr_cb(row:int, col:int, prev_val) -> float:
+        if row == 0 and col == 0:
+            return 1.0
+        return prev_val + 1.0
+    from ooodev.utils.lo import Lo
+    from ooodev.office.calc import Calc
+    # from ooodev.utils.gui import GUI
+    from ooodev.utils.gen_util import TableHelper
+    assert loader is not None
+    doc = Calc.create_doc(loader)
+    assert doc is not None
+    sheet = Calc.get_active_sheet(doc=doc)
+    
+    arr_size = 8
+    arr = TableHelper.to_2d_tuple(TableHelper.make_2d_array(arr_size, arr_size,arr_cb))
+    rng = TableHelper.make_column_name(arr_size)
+    Calc.set_array(sheet=sheet, name=f"A1", values=arr)
+    val = Calc.get_num(sheet, f"{rng}{arr_size}")
+    assert val == float(arr_size * arr_size)
+    
+    rng_name = Calc.get_range_str(start_col=0, start_row=0, end_col= arr_size -1, end_row=arr_size -1)
+    result_arr = Calc.get_array(sheet=sheet, range_name=rng_name)
+    for row, row_data in enumerate(arr):
+        for col, _ in enumerate(row_data):
+            assert result_arr[row][col] == arr[row][col]
+    
+    Lo.close(closeable=doc, deliver_ownership=False)
 # endregion set/get values in 2D array
