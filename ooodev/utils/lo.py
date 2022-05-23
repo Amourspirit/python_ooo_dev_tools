@@ -45,10 +45,10 @@ from . import xml_util as mXML
 from . import info as mInfo
 
 
-if sys.version_info >= (3, 10):
-    from typing import Union
-else:
-    from typing_extensions import Union
+# if sys.version_info >= (3, 10):
+#     from typing import Union
+# else:
+#     from typing_extensions import Union
 
 
 class Lo:

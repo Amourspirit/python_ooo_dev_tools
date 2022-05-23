@@ -1,10 +1,8 @@
 # coding: utf-8
 # Python conversion of ViewState.java by Andrew Davison, ad@fivedots.coe.psu.ac.th
 # See Also: https:#fivedots.coe.psu.ac.th/~ad/jlop/
-
+from __future__ import annotations
 from enum import IntEnum
-from multiprocessing.sharedctypes import Value
-
 from ..office import calc as mCalc
 
 class ViewState:

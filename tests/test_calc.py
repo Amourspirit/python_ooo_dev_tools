@@ -853,7 +853,7 @@ def test_set_array_by_range(loader) -> None:
     from ooodev.utils.lo import Lo
     from ooodev.office.calc import Calc
     from ooodev.utils.gen_util import TableHelper
-    from ooodev.utils.gui import GUI
+    # from ooodev.utils.gui import GUI
 
     assert loader is not None
     doc = Calc.create_doc(loader)
@@ -866,8 +866,8 @@ def test_set_array_by_range(loader) -> None:
     arr = TableHelper.to_2d_list(arr1)
     sheet = Calc.get_active_sheet(doc=doc)
     Calc.set_array(sheet=sheet, name="A1:C3", values=arr)
-    GUI.set_visible(is_visible=True, odoc=doc)
-    Lo.delay(3500)
+    # GUI.set_visible(is_visible=True, odoc=doc)
+    # Lo.delay(3500)
     val = Calc.get_num(sheet,'A1')
     assert val == 1.0
     val = Calc.get_num(sheet,'c2')
@@ -879,7 +879,6 @@ def test_set_array_by_range(loader) -> None:
     arr = TableHelper.to_2d_tuple(TableHelper.make_2d_array(arr_size, arr_size))
     rng = TableHelper.make_column_name(arr_size)
     Calc.set_array(sheet=sheet, name=f"A1:{rng}{arr_size}", values=arr)
-    # GUI.set_visible(is_visible=True, odoc=doc)
     # Lo.delay(3500)
     val = Calc.get_num(sheet, f"{rng}{arr_size}")
     assert val == 1.0
@@ -890,7 +889,7 @@ def test_set_array_by_range(loader) -> None:
 def test_set_array_by_cell(loader) -> None:
     from ooodev.utils.lo import Lo
     from ooodev.office.calc import Calc
-    from ooodev.utils.gui import GUI
+    # from ooodev.utils.gui import GUI
     from ooodev.utils.gen_util import TableHelper
     assert loader is not None
     doc = Calc.create_doc(loader)

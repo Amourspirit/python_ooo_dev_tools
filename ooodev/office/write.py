@@ -77,10 +77,10 @@ if TYPE_CHECKING:
     from com.sun.star.text import XTextViewCursorSupplier
     from com.sun.star.view import XPrintable
 
-if sys.version_info >= (3, 10):
-    from typing import Union
-else:
-    from typing_extensions import Union
+# if sys.version_info >= (3, 10):
+#     from typing import Union
+# else:
+#     from typing_extensions import Union
 # endregion Imports
 
 class Write:

@@ -54,10 +54,10 @@ from ..utils import sys_info as m_sys_info
 
 SysInfo = m_sys_info.SysInfo
 
-if sys.version_info >= (3, 10):
-    from typing import Union
-else:
-    from typing_extensions import Union
+# if sys.version_info >= (3, 10):
+#     from typing import Union
+# else:
+#     from typing_extensions import Union
 
 
 class GUI:
