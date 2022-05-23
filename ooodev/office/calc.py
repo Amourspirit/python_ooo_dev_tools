@@ -7,7 +7,7 @@ import sys
 from enum import IntFlag, Enum
 import numbers
 import re
-from typing import Any, Iterable, List, Tuple, cast, overload, Sequence, TYPE_CHECKING
+from typing import Any, List, Tuple, cast, overload, Sequence, TYPE_CHECKING
 from com.sun.star.awt import Point
 from com.sun.star.container import XIndexAccess
 from com.sun.star.container import XNamed
@@ -108,11 +108,6 @@ from ..utils.color import CommonColor
 from ..utils import view_state as mViewState
 
 NameVal = ArgsHelper.NameValue
-
-if sys.version_info >= (3, 10):
-    from typing import Union
-else:
-    from typing_extensions import Union
 # endregion Imports
 
 
@@ -1527,7 +1522,7 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet
             name (str): Range name such as 'A1:D4' or cell name such as 'B4'
             values (Sequence[Sequence[object]]): An 2-Dimensional array of valuse such as a list of list or tuple of tuples.
-        
+
         Notes:
             If ``name`` is a single cell such as ``A1`` then then values are inserter at the named cell
             and expand to the size of the value array.

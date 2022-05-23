@@ -24,10 +24,10 @@ if TYPE_CHECKING:
 
 from . import lo as Util
 
-if sys.version_info >= (3, 10):
-    from typing import Union
-else:
-    from typing_extensions import Union
+# if sys.version_info >= (3, 10):
+#     from typing import Union
+# else:
+#     from typing_extensions import Union
 # endregion imports
 
 _UTIL_PATH = str(Path(__file__).parent)

@@ -1,4 +1,5 @@
 # coding: utf-8
+from __future__ import annotations
 from typing import Iterable, Iterator, Sequence, List, NamedTuple, Any, Tuple, overload
 from inspect import isclass
 

@@ -5,7 +5,8 @@ import shutil
 import __main__
 from pathlib import Path
 from typing import Union, overload
-if sys.platform == 'win32':
+
+if sys.platform == "win32":
     import winreg
 
 _INSTALL_PATH = None
@@ -14,7 +15,7 @@ _INSTALL_PATH = None
 def get_soffice_install_path() -> Path:
     """
     Gets the Soffice install path.
-    
+
     For windows this will be something like: ``C:\Program Files\LibreOffice``.
     For Linux this will be somethon like: ``/usr/lib/libreoffice``
 
@@ -24,33 +25,31 @@ def get_soffice_install_path() -> Path:
     global _INSTALL_PATH
     if _INSTALL_PATH is not None:
         return _INSTALL_PATH
-    if sys.platform == 'win32':
+    if sys.platform == "win32":
         # get the path location from registery
-        value = ''
+        value = ""
         for _key in (
-                    # LibreOffice 3.4.5,6,7 on Windows
-                    "SOFTWARE\\LibreOffice\\UNO\\InstallPath",
-                    # OpenOffice 3.3
-                    "SOFTWARE\\OpenOffice.org\\UNO\\InstallPath"
-                    ):
+            # LibreOffice 3.4.5,6,7 on Windows
+            "SOFTWARE\\LibreOffice\\UNO\\InstallPath",
+            # OpenOffice 3.3
+            "SOFTWARE\\OpenOffice.org\\UNO\\InstallPath",
+        ):
             try:
                 value = winreg.QueryValue(winreg.HKEY_LOCAL_MACHINE, _key)
             except Exception as detail:
-                value = ''
+                value = ""
                 _errMess = "%s" % detail
             else:
-                break   # first existing key will do
-        if value != '':
-            _INSTALL_PATH = Path('\\'.join(value.split('\\')[:-1])) # drop the program
+                break  # first existing key will do
+        if value != "":
+            _INSTALL_PATH = Path("\\".join(value.split("\\")[:-1]))  # drop the program
             return _INSTALL_PATH
 
         # failed to get path from registery. Going Manual
         soffice = "soffice.exe"
         p_sf = Path(os.environ["PROGRAMFILES"], "LibreOffice", "program", soffice)
         if p_sf.exists() is False or p_sf.is_file() is False:
-            p_sf = Path(
-                os.environ["PROGRAMFILES(X86)"], "LibreOffice", "program", soffice
-            )
+            p_sf = Path(os.environ["PROGRAMFILES(X86)"], "LibreOffice", "program", soffice)
         if not p_sf.exists():
             raise FileNotFoundError(f"LibreOffice '{p_sf}' not found.")
         if not p_sf.is_file():
@@ -85,6 +84,7 @@ def get_soffice_install_path() -> Path:
         # drop /program/soffice
         _INSTALL_PATH = p_sf.parent.parent
         return _INSTALL_PATH
+
 
 def get_uno_path() -> Path:
     """

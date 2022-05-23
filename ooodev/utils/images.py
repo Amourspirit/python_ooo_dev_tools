@@ -19,16 +19,6 @@ from ..utils import lo as mLo
 from ..utils import file_io as mFileIO
 from ..utils import props as mProps
 
-if sys.version_info >= (3, 10):
-    from typing import Union
-else:
-    from typing_extensions import Union
-
-
-# Lo = m_lo.Lo
-# FileIO = m_file_io.FileIO
-# Props = m_props.Props
-
 
 class Images:
     @staticmethod
