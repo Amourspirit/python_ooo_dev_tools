@@ -907,10 +907,16 @@ def test_set_array_by_cell(loader) -> None:
     arr = TableHelper.to_2d_tuple(TableHelper.make_2d_array(arr_size, arr_size, 45.7))
     rng = TableHelper.make_column_name(arr_size)
     Calc.set_array(sheet=sheet, name=f"A1:{rng}{arr_size}", values=arr)
-    # GUI.set_visible(is_visible=True, odoc=doc)
-    # Lo.delay(3500)
     val = Calc.get_num(sheet, f"{rng}{arr_size}")
     assert val == 45.7
+    
+    # set as single cell
+    arr_size = 12
+    arr = TableHelper.to_2d_tuple(TableHelper.make_2d_array(arr_size, arr_size, 3.14))
+    rng = TableHelper.make_column_name(arr_size)
+    Calc.set_array(sheet=sheet, name=f"A1", values=arr)
+    val = Calc.get_num(sheet, f"{rng}{arr_size}")
+    assert val == 3.14
     
     Lo.close(closeable=doc, deliver_ownership=False)
 # endregion set/get values in 2D array
