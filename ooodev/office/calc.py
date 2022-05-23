@@ -3,11 +3,12 @@
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 # region Imports
 from __future__ import annotations
-import sys
 from enum import IntFlag, Enum
 import numbers
 import re
 from typing import Any, List, Tuple, cast, overload, Sequence, TYPE_CHECKING
+import uno
+
 from com.sun.star.awt import Point
 from com.sun.star.container import XIndexAccess
 from com.sun.star.container import XNamed
@@ -2173,40 +2174,33 @@ class Calc:
 
     @classmethod
     def get_cell_address(cls, *args, **kwargs) -> CellAddress | None:
-        ordered_keys = ("first", "second")
+        ordered_keys = (1, 2)
         count = len(args) + len(kwargs)
 
         def get_kwargs() -> dict:
             ka = {}
-            key = "sheet"
-            if key in kwargs:
-                ka["first"] = kwargs[key]
-
-            key = "cell"
-            if key in kwargs:
-                ka["first"] = kwargs[key]
-
+            keys = ("cell", "sheet")
+            for key in keys:
+                if key in kwargs:
+                    ka[1] = kwargs[key]
+                    break
             if count == 1:
                 return ka
-
-            key = "cell_name"
-            if key in kwargs:
-                ka["second"] = kwargs[key]
+            ka[2] = kwargs.get("cell_name", None)
             return ka
 
-        if count < 1 or count > 2:
+        if not count in (1, 2):
             print("invalid number of arguments for get_cell_address()")
             return None
 
         kargs = get_kwargs()
-
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
 
         if count == 1:
-            return cls._get_cell_address_cell(kargs["first"])
+            return cls._get_cell_address_cell(kargs[1])
         else:
-            return cls._get_cell_address_sheet(kargs["first"], kargs["second"])
+            return cls._get_cell_address_sheet(kargs[1], kargs[2])
 
     # endregion get_cell_address()
 
@@ -2234,40 +2228,33 @@ class Calc:
 
     @classmethod
     def get_address(cls, *args, **kwargs) -> CellRangeAddress | None:
-        ordered_keys = ("first", "second")
+        ordered_keys = (1, 2)
         count = len(args) + len(kwargs)
 
         def get_kwargs() -> dict:
             ka = {}
-            key = "sheet"
-            if key in kwargs:
-                ka["first"] = kwargs[key]
-
-            key = "cell_range"
-            if key in kwargs:
-                ka["first"] = kwargs[key]
-
+            keys = ("cell_range", "sheet")
+            for key in keys:
+                if key in kwargs:
+                    ka[1] = kwargs[key]
+                    break
             if count == 1:
                 return ka
-
-            key = "range_name"
-            if key in kwargs:
-                ka["second"] = kwargs[key]
+            ka[2] = kwargs.get("range_name", None)
             return ka
 
-        if count < 1 or count > 2:
+        if not count in (1, 2):
             print("invalid number of arguments for get_address()")
             return None
 
         kargs = get_kwargs()
-
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
 
         if count == 1:
-            return cls._get_address_cell(kargs["first"])
+            return cls._get_address_cell(kargs[1])
         else:
-            return cls._get_address_sht_rng(kargs["first"], kargs["second"])
+            return cls._get_address_sht_rng(kargs[1], kargs[2])
 
     # endregion get_address()
 
@@ -2284,32 +2271,32 @@ class Calc:
 
     @classmethod
     def print_cell_address(cls, *args, **kwargs) -> None:
-        ordered_keys = ("first",)
+        ordered_keys = (1,)
         count = len(args) + len(kwargs)
 
         def get_kwargs() -> dict:
             ka = {}
-            key = "cell"
-            if key in kwargs:
-                ka["first"] = kwargs[key]
-
-            key = "addr"
-            if key in kwargs:
-                ka["first"] = kwargs[key]
+            keys = ("cell", "addr")
+            for key in keys:
+                if key in kwargs:
+                    ka[1] = kwargs[key]
+                    break
             return ka
 
         if count != 1:
             print("invalid number of arguments for print_cell_address()")
-            return None
+            return
 
         kargs = get_kwargs()
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
 
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
-        if mInfo.Info.is_type_interface(obj=kargs["first"], type_name="com.sun.star.table.XCell"):
-            addr = cls._get_cell_address_cell(cell=kargs["first"])
+        if mInfo.Info.is_type_interface(obj=kargs[1], type_name="com.sun.star.table.XCell"):
+            addr = cls._get_cell_address_cell(cell=kargs[1])
         else:
-            addr = kargs["first"]
+            addr = kargs[1]
         print(f"Cell: Sheet{addr.Sheet+1}.{cls.get_cell_str(addr=addr)})")
 
     # endregion    print_cell_address()
@@ -2471,62 +2458,56 @@ class Calc:
 
     @classmethod
     def get_range_str(cls, *args, **kwargs) -> str:
-        ordered_keys = ("first", "second", "third", "fourth")
+        ordered_keys = (1, 2, 3, 4)
         count = len(args) + len(kwargs)
 
         def get_kwargs() -> dict:
             ka = {}
-            keys = ("cell_range", "cr_addr", "cell_range", "start_col")
+            keys = ("cell_range", "cr_addr", "start_col")
             for key in keys:
                 if key in kwargs:
-                    ka["first"] = kwargs[key]
+                    ka[1] = kwargs[key]
                     break
-
             if count == 1:
                 return ka
-
             keys = ("sheet", "start_row")
             for key in keys:
                 if key in kwargs:
-                    ka["second"] = kwargs[key]
+                    ka[2] = kwargs[key]
                     break
             if count == 2:
-
                 return ka
-
-            ka["third"] = kwargs.get["end_col", None]
-            ka["fourth"] = kwargs.get["end_row", None]
-
+            ka[3] = kwargs.get("end_col", None)
+            ka[4] = kwargs.get("end_row", None)
             return ka
 
-        if count < 1 or count > 4:
+        if not count in (1, 2, 4):
             print("invalid number of arguments for get_range_str()")
-            return None
+            return ""
 
         kargs = get_kwargs()
-
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
 
         if count == 1:
             # def get_range_str(cell_range: XCellRange) or
             # def get_range_str(cr_addr: CellRangeAddress)
-            if mInfo.Info.is_type_interface(kargs["first"], "com.sun.star.table.XCellRange"):
-                return cls._get_range_str_cell_rng(cell_range=kargs["first"])
+            if mInfo.Info.is_type_interface(kargs[1], "com.sun.star.table.XCellRange"):
+                return cls._get_range_str_cell_rng(cell_range=kargs[1])
             else:
-                return cls._get_range_str_cr_addr(cr_addr=kargs["first"])
+                return cls._get_range_str_cr_addr(cr_addr=kargs[1])
 
         elif count == 2:
             # def get_range_str(cell_range: XCellRange, sheet: XSpreadsheet) or
             # def get_range_str(cr_addr: CellRangeAddress, sheet: XSpreadsheet)
-            if mInfo.Info.is_type_interface(kargs["first"], "com.sun.star.table.XCellRange"):
-                return cls._get_range_str_cell_rng_sht(cell_range=kargs["first"], sheet=kargs["second"])
+            if mInfo.Info.is_type_interface(kargs[1], "com.sun.star.table.XCellRange"):
+                return cls._get_range_str_cell_rng_sht(cell_range=kargs[1], sheet=kargs[2])
             else:
-                return cls._get_range_str_cr_addr_sht(cr_add=kargs["first"], sheet=kargs["second"])
+                return cls._get_range_str_cr_addr_sht(cr_add=kargs[1], sheet=kargs[2])
         else:
             # def get_range_str(start_col:int, start_row:int, end_col:int, end_row:int)
             return cls._get_range_str_col_row(
-                start_col=kargs["first"], start_row=kargs["second"], end_col=kargs["third"], end_row=kargs["fourth"]
+                start_col=kargs[1], start_row=kargs[2], end_col=kargs[3], end_row=kargs[4]
             )
 
     # endregion get_range_str()
@@ -2538,7 +2519,7 @@ class Calc:
 
     @classmethod
     def _get_cell_str_col_row(cls, col: int, row: int) -> str:
-        if col < 0 or row > 0:
+        if col < 0 or row < 0:
             print("Cell position is negative; using A1")
             return "A1"
         return f"{cls.column_number_str(col)}{row + 1}"
