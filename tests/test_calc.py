@@ -850,6 +850,8 @@ def test_get_str(loader) -> None:
 
 # region set/get values in 2D array
 def test_set_array_by_range(loader) -> None:
+     # set_array(values: Sequence[Sequence[object]], sheet: XSpreadsheet, name: str)
+    # test when name is a range
     from ooodev.utils.lo import Lo
     from ooodev.office.calc import Calc
     from ooodev.utils.gen_util import TableHelper
@@ -875,7 +877,7 @@ def test_set_array_by_range(loader) -> None:
     val = Calc.get_num(sheet,'C3')
     assert val == 9.0
     
-    arr_size = 50
+    arr_size = 25
     arr = TableHelper.to_2d_tuple(TableHelper.make_2d_array(arr_size, arr_size))
     rng = TableHelper.make_column_name(arr_size)
     Calc.set_array(sheet=sheet, name=f"A1:{rng}{arr_size}", values=arr)
@@ -883,10 +885,21 @@ def test_set_array_by_range(loader) -> None:
     val = Calc.get_num(sheet, f"{rng}{arr_size}")
     assert val == 1.0
     
+     # positiona args
+    Calc.set_array(arr, sheet, f"A1:{rng}{arr_size}")
+    val = Calc.get_num(sheet, f"{rng}{arr_size}")
+    assert val == 1.0
+    
     Lo.close(closeable=doc, deliver_ownership=False)
 
 
 def test_set_array_by_cell(loader) -> None:
+    # set_array(values: Sequence[Sequence[object]], sheet: XSpreadsheet, name: str)
+    # test when name is a cell
+    def arr_cb(row:int, col:int, prev_val) -> float:
+        if row == 0 and col == 0:
+            return 1.0
+        return prev_val + 1.0
     from ooodev.utils.lo import Lo
     from ooodev.office.calc import Calc
     # from ooodev.utils.gui import GUI
@@ -903,11 +916,17 @@ def test_set_array_by_cell(loader) -> None:
     assert val == 2.0
     
     arr_size = 12
-    arr = TableHelper.to_2d_tuple(TableHelper.make_2d_array(arr_size, arr_size, 45.7))
+    arr = TableHelper.to_2d_tuple(TableHelper.make_2d_array(arr_size, arr_size, arr_cb))
     rng = TableHelper.make_column_name(arr_size)
-    Calc.set_array(sheet=sheet, name=f"A1:{rng}{arr_size}", values=arr)
+    # keyword args
+    Calc.set_array(sheet=sheet, name=f"A1", values=arr)
     val = Calc.get_num(sheet, f"{rng}{arr_size}")
-    assert val == 45.7
+    assert val == float(arr_size * arr_size)
+    
+    # positiona args
+    Calc.set_array(arr, sheet, f"A1")
+    val = Calc.get_num(sheet, f"{rng}{arr_size}")
+    assert val == float(arr_size * arr_size)
     
     # set as single cell
     arr_size = 12
@@ -916,6 +935,71 @@ def test_set_array_by_cell(loader) -> None:
     Calc.set_array(sheet=sheet, name=f"A1", values=arr)
     val = Calc.get_num(sheet, f"{rng}{arr_size}")
     assert val == 3.14
+    
+    Lo.close(closeable=doc, deliver_ownership=False)
+
+def test_set_array(loader) -> None:
+    def arr_cb(row:int, col:int, prev_val) -> float:
+        if row == 0 and col == 0:
+            return 1.0
+        return prev_val + 1.0
+    from ooodev.utils.lo import Lo
+    from ooodev.office.calc import Calc
+    # from ooodev.utils.gui import GUI
+    from ooodev.utils.gen_util import TableHelper
+    assert loader is not None
+    doc = Calc.create_doc(loader)
+    assert doc is not None
+    arr = TableHelper.to_2d_tuple(TableHelper.to_tuple(2))
+    sheet = Calc.get_active_sheet(doc=doc)
+    Calc.set_array(sheet=sheet, name="B2", values=arr)
+    # GUI.set_visible(is_visible=True, odoc=doc)
+    # Lo.delay(1500)
+    val = Calc.get_num(sheet,'B2')
+    assert val == 2.0
+    
+    arr_size = 12
+    arr = TableHelper.to_2d_tuple(TableHelper.make_2d_array(arr_size, arr_size, arr_cb))
+    rng = TableHelper.make_column_name(arr_size)
+    # test
+    # set_array(values: Sequence[Sequence[object]], sheet: XSpreadsheet, col_start: int, row_start: int, col_end:int, row_end: int)
+    # keyword args
+    col_start = 0
+    row_start = 0
+    col_end = arr_size -1
+    row_end = arr_size -1
+    Calc.set_array(values=arr, sheet=sheet, col_start=col_start, row_start=row_start,col_end=col_end, row_end=row_end)
+    val = Calc.get_num(sheet, f"{rng}{arr_size}")
+    assert val == float(arr_size * arr_size)
+    
+    # positiona args
+    Calc.set_array(arr, sheet, col_start, row_start, col_end, row_end)
+    val = Calc.get_num(sheet, f"{rng}{arr_size}")
+    assert val == float(arr_size * arr_size)
+    
+    # def set_array(values: Sequence[Sequence[object]], cell_range: XCellRange)
+    # keyword args
+    cell_range = Calc.get_cell_range(sheet=sheet, col_start=col_start, row_start=row_start, col_end=col_end, row_end=row_end)
+    Calc.set_array(values=arr, cell_range=cell_range)
+    val = Calc.get_num(sheet, f"{rng}{arr_size}")
+    assert val == float(arr_size * arr_size)
+    # positional args
+    cell_range = Calc.get_cell_range(sheet=sheet, col_start=col_start, row_start=row_start, col_end=col_end, row_end=row_end)
+    Calc.set_array(arr, cell_range)
+    val = Calc.get_num(sheet, f"{rng}{arr_size}")
+    assert val == float(arr_size * arr_size)
+    
+    # set_array(values: Sequence[Sequence[object]], sheet: XSpreadsheet, addr: CellAddress)
+    # keyword args
+    addr = Calc.get_cell_address(sheet=sheet, cell_name="A1")
+    Calc.set_array(values=arr, doc=doc, addr=addr)
+    val = Calc.get_num(sheet, f"{rng}{arr_size}")
+    assert val == float(arr_size * arr_size)
+    
+     # positional args
+    Calc.set_array(arr, doc, addr)
+    val = Calc.get_num(sheet, f"{rng}{arr_size}")
+    assert val == float(arr_size * arr_size)
     
     Lo.close(closeable=doc, deliver_ownership=False)
 
@@ -940,11 +1024,32 @@ def test_get_array(loader) -> None:
     val = Calc.get_num(sheet, f"{rng}{arr_size}")
     assert val == float(arr_size * arr_size)
     
+    # test overloads
+    # get_array(sheet: XSpreadsheet, range_name: str)
+    # by keyword
     rng_name = Calc.get_range_str(start_col=0, start_row=0, end_col= arr_size -1, end_row=arr_size -1)
     result_arr = Calc.get_array(sheet=sheet, range_name=rng_name)
     for row, row_data in enumerate(arr):
         for col, _ in enumerate(row_data):
             assert result_arr[row][col] == arr[row][col]
-    
+    # by position
+    result_arr = Calc.get_array(sheet, rng_name)
+    for row, row_data in enumerate(arr):
+        for col, _ in enumerate(row_data):
+            assert result_arr[row][col] == arr[row][col]
+
+    # get_array(cell_range:XCellRange)
+    # by Keyword
+    cell_range = Calc.get_cell_range(sheet=sheet,range_name=rng_name)
+    result_arr = Calc.get_array(cell_range=cell_range)
+    for row, row_data in enumerate(arr):
+        for col, _ in enumerate(row_data):
+            assert result_arr[row][col] == arr[row][col]
+    # by position
+    result_arr = Calc.get_array(cell_range)
+    for row, row_data in enumerate(arr):
+        for col, _ in enumerate(row_data):
+            assert result_arr[row][col] == arr[row][col]
+
     Lo.close(closeable=doc, deliver_ownership=False)
 # endregion set/get values in 2D array

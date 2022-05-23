@@ -1514,24 +1514,139 @@ class Calc:
 
     # region --------------- set/get values in 2D array ----------------
 
+    # region    set_array()
     @classmethod
-    def set_array(cls, sheet: XSpreadsheet, name: str, values: Sequence[Sequence[object]]) -> None:
+    def _set_array_doc_addr(cls, values: Sequence[Sequence[object]], doc:XSpreadsheetDocument, addr: CellAddress) -> None:
+        v_len = len(values)
+        if v_len == 0:
+            print('Values has not data')
+            return
+        sheet = cls._get_sheet_index(doc=doc, index=addr.Sheet)
+        col_end = addr.Column + (len(values[0]) - 1)
+        row_end = addr.Row + (v_len - 1)
+        cell_range = cls._get_cell_range_col_row(
+            sheet=sheet,
+            col_start=addr.Column,
+            row_start=addr.Row,
+            col_end=col_end,
+            row_end=row_end
+        )
+        cls.set_cell_range_array(cell_range=cell_range, values=values)
+
+    @overload
+    @staticmethod
+    def set_array(values: Sequence[Sequence[object]], cell_range: XCellRange) -> None:
         """
         Inserts array of data into spreadsheet
 
         Args:
+            values (Sequence[Sequence[object]]): An 2-Dimensional array of valuse such as a list of list or tuple of tuples.
+            cell_range (XCellRange): Range in spreadsheet to insert data
+        """
+        ...
+    
+    @overload
+    @staticmethod
+    def set_array(values: Sequence[Sequence[object]], sheet: XSpreadsheet, name: str) -> None:
+        """
+        Inserts array of data into spreadsheet
+
+        Args:
+            values (Sequence[Sequence[object]]): An 2-Dimensional array of valuse such as a list of list or tuple of tuples.
             sheet (XSpreadsheet): Spreadsheet
             name (str): Range name such as 'A1:D4' or cell name such as 'B4'
-            values (Sequence[Sequence[object]]): An 2-Dimensional array of valuse such as a list of list or tuple of tuples.
 
         Notes:
             If ``name`` is a single cell such as ``A1`` then then values are inserter at the named cell
             and expand to the size of the value array.
         """
-        if cls.is_cell_range_name(name):
-            cls.set_array_range(sheet=sheet, range_name=name, values=values)
-        else:
-            cls.set_array_cell(sheet=sheet, cell_name=name, values=values)
+        ...
+    
+    @overload
+    @staticmethod
+    def set_array(values: Sequence[Sequence[object]], doc:XSpreadsheetDocument, addr: CellAddress) -> None:
+        """
+        Inserts array of data into spreadsheet
+
+        Args:
+            values (Sequence[Sequence[object]]): An 2-Dimensional array of valuse such as a list of list or tuple of tuples.
+            doc (XSpreadsheetDocument): Spreadsheet Document
+            addr (CellAddress): Address to insert data.
+        """
+        ...
+   
+    @overload
+    @staticmethod
+    def set_array(values: Sequence[Sequence[object]], sheet: XSpreadsheet, col_start: int, row_start: int, col_end:int, row_end: int) -> None:
+        """
+        Inserts array of data into spreadsheet
+
+        Args:
+            values (Sequence[Sequence[object]]): An 2-Dimensional array of valuse such as a list of list or tuple of tuples.
+            sheet (XSpreadsheet): Spreadsheet
+            col_start (int): Zero-base Start Colum
+            row_start (int): Zero-base Start Row
+            col_end (int): Zero-base End Colum
+            row_end (int): Zero-base End Row
+        """
+        ...
+
+    @classmethod
+    def set_array(cls, *args, **kwargs) -> None:
+        ordered_keys = (1, 2, 3, 4, 5, 6)
+        count = len(args) + len(kwargs)
+
+        def get_kwargs() -> dict:
+            ka = {}
+            ka[1] = kwargs.get("values", None)
+            keys = ("cell_range", "sheet", "doc")
+            for key in keys:
+                if key in kwargs:
+                    ka[2] = kwargs[key]
+                    break
+            if count == 2:
+                return ka
+            keys = ("name", "col_start", "addr")
+            for key in keys:
+                if key in kwargs:
+                    ka[3] = kwargs[key]
+                    break
+            if count == 3:
+                return ka
+            ka[4] = kwargs.get("row_start", None)
+            ka[5] = kwargs.get("col_end", None)
+            ka[6] = kwargs.get("row_end", None)
+            return ka
+
+        if not count in (2, 3, 6):
+            print("invalid number of arguments for set_array()")
+            return
+
+        kargs = get_kwargs()
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
+
+        if count == 2:
+            #  set_array(values: Sequence[Sequence[object]], cell_range: XCellRange)
+            cls.set_cell_range_array(cell_range=kargs[2], values=kargs[1])
+        if count == 3:
+            if isinstance(kargs[3], str):
+                # set_array(values: Sequence[Sequence[object]], sheet: XSpreadsheet, name: str)
+                if cls.is_cell_range_name(kargs[3]):
+                    cls.set_array_range(sheet=kargs[2], range_name=kargs[3], values=kargs[1])
+                    return
+                else:
+                    cls.set_array_cell(sheet=kargs[2], cell_name=kargs[3], values=kargs[1])
+                    return
+            else:
+                cls._set_array_doc_addr(values=kargs[1], doc=kargs[2], addr=kargs[3])
+        if count == 6:
+            #  def set_array(values: Sequence[Sequence[object]], sheet: XSpreadsheet, col_start: int, row_start: int, col_end:int, row_end: int)
+            cell_range = cls._get_cell_range_col_row(sheet=kargs[2], col_start=kargs[3],row_start=kargs[4], col_end=kargs[5],row_end=kargs[6])
+            cls.set_cell_range_array(cell_range=cell_range, values=kargs[1])
+        return
+
+    # endregion set_array()
 
     @classmethod
     def set_array_range(
@@ -1540,11 +1655,19 @@ class Calc:
         range_name: str,
         values: Sequence[Sequence[object]],
     ) -> None:
+        v_len = len(values)
+        if v_len == 0:
+            print('Values has not data')
+            return
         cell_range = cls.get_cell_range(sheet=sheet, range_name=range_name)
         cls.set_cell_range_array(cell_range=cell_range, values=values)
 
     @staticmethod
     def set_cell_range_array(cell_range: XCellRange, values: Sequence[Sequence[object]]) -> None:
+        v_len = len(values)
+        if v_len == 0:
+            print('Values has not data')
+            return
         cr_data = mLo.Lo.qi(XCellRangeData, cell_range)
         if cr_data is None:
             return
@@ -1552,10 +1675,14 @@ class Calc:
 
     @classmethod
     def set_array_cell(cls, sheet: XSpreadsheet, cell_name: str, values: Sequence[Sequence[object]]) -> None:
+        v_len = len(values)
+        if v_len == 0:
+            print('Values has not data')
+            return
         pos = cls.get_cell_position(cell_name)
         col_end = pos.X + (len(values[0]) - 1)
-        row_end = pos.Y + (len(values) - 1)
-        cell_range = cls.get_cell_range(
+        row_end = pos.Y + (v_len - 1)
+        cell_range = cls._get_cell_range_col_row(
             sheet=sheet,
             col_start=pos.X,
             row_start=pos.Y,
@@ -1564,16 +1691,72 @@ class Calc:
         )
         cls.set_cell_range_array(cell_range=cell_range, values=values)
 
+    # region get_array()
+
+    @overload
+    @staticmethod
+    def get_array(cell_range:XCellRange) -> Tuple[Tuple[object, ...], ...]:
+        """
+        Gets Array of data from a spreadsheet.
+
+        Args:
+            cell_range (XCellRange): Cell range that to get data from.
+
+        Returns:
+            Tuple[Tuple[object, ...], ...]: Resulting data array.
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def get_array(sheet: XSpreadsheet, range_name: str) -> Tuple[Tuple[object, ...], ...]:
+        """
+        Gets Array of data from a spreadsheet.
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            range_name (str): Range of data to get such as "A1:E16"
+
+        Returns:
+            Tuple[Tuple[object, ...], ...]: Resulting data array.
+        """
+        ...
+
     @classmethod
-    def get_array(cls, sheet: XSpreadsheet, range_name: str) -> Tuple[Tuple[object, ...], ...]:
-        cell_range = cls.get_cell_range(sheet=sheet, range_name=range_name)
+    def get_array(cls, *args, **kwargs) -> Tuple[Tuple[object, ...], ...]:
+        ordered_keys = (1, 2, 3, 4)
+        count = len(args) + len(kwargs)
+
+        def get_kwargs() -> dict:
+            ka = {}
+            keys = ("cell_range", "sheet")
+            for key in keys:
+                if key in kwargs:
+                    ka[1] = kwargs[key]
+                    break
+            if count == 1:
+                return ka
+            ka[2] = kwargs.get("range_name", None)
+            return ka
+
+        if not count in (1, 2):
+            print("invalid number of arguments for get_array()")
+            return tuple()
+
+        kargs = get_kwargs()
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
+
+        if count == 1:
+            cell_range = cast(XCellRange, kargs[1])
+        else:
+            cell_range = cls.get_cell_range(sheet= kargs[1], range_name= kargs[2])
+
         cr_data = mLo.Lo.qi(XCellRangeData, cell_range)
         return cr_data.getDataArray()
 
-    @staticmethod
-    def get_cell_range_array(cell_range: str) -> Tuple[Tuple[object, ...], ...]:
-        cr_data = mLo.Lo.qi(XCellRangeData, cell_range)
-        return cr_data.getDataArray()
+    # endregion get_array()
+
 
     @staticmethod
     def print_array(vals: Sequence[Sequence[object]]) -> None:
