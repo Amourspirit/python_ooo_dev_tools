@@ -39,10 +39,6 @@ from . import lo as mLo
 from . import file_io as mFileIO
 from . import props as mProps
 
-# if sys.version_info >= (3, 10):
-#     from typing import Union
-# else:
-#     from typing_extensions import Union
 
 _xml_parser = ET.XMLParser(remove_blank_text=True)
 

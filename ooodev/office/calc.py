@@ -108,11 +108,6 @@ from ..utils.color import CommonColor
 from ..utils import view_state as mViewState
 
 NameVal = ArgsHelper.NameValue
-
-# if sys.version_info >= (3, 10):
-#     from typing import Union
-# else:
-#     from typing_extensions import Union
 # endregion Imports
 
 
@@ -1527,7 +1522,7 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet
             name (str): Range name such as 'A1:D4' or cell name such as 'B4'
             values (Sequence[Sequence[object]]): An 2-Dimensional array of valuse such as a list of list or tuple of tuples.
-        
+
         Notes:
             If ``name`` is a single cell such as ``A1`` then then values are inserter at the named cell
             and expand to the size of the value array.

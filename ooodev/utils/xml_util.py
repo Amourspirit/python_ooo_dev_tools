@@ -228,9 +228,7 @@ class XML:
         return ""
 
     @classmethod
-    def get_all_node_values(
-        cls, row_nodes: NodeList, col_ids: Iterable[str]
-    ) -> List[list]:
+    def get_all_node_values(cls, row_nodes: NodeList, col_ids: Iterable[str]) -> List[list]:
         """
         assumes an XML structure like
         ::
@@ -302,9 +300,7 @@ class XML:
             xslt = ET.parse(xls_fnm)
             transform = ET.XSLT(xslt)
             newdom = transform(dom)
-            t_result = ET.tostring(
-                newdom, encoding="unicode"
-            )  # unicode produces string
+            t_result = ET.tostring(newdom, encoding="unicode")  # unicode produces string
             return t_result
         except Exception as e:
             print(f"Unable to transform '{xml_fnm}' with '{xls_fnm}'")
@@ -330,9 +326,7 @@ class XML:
 
             transform = ET.XSLT(xslt)
             newdom = transform(dom)
-            t_result = ET.tostring(
-                newdom, encoding="unicode"
-            )  # unicode produces string
+            t_result = ET.tostring(newdom, encoding="unicode")  # unicode produces string
             return t_result
         except Exception as e:
             print("Unable to transform the string")

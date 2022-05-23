@@ -13,7 +13,7 @@ from .connect import ConnectBase, LoPipeStart, LoSocketStart
 from com.sun.star.beans import XPropertySet
 from com.sun.star.beans import XIntrospection
 from com.sun.star.container import XNamed
-from com.sun.star.document import MacroExecMode # const
+from com.sun.star.document import MacroExecMode  # const
 from com.sun.star.frame import XDesktop
 from com.sun.star.frame import XDispatchHelper
 from com.sun.star.lang import DisposedException
@@ -43,12 +43,6 @@ from . import props as mProps
 from . import file_io as mFileIO
 from . import xml_util as mXML
 from . import info as mInfo
-
-
-# if sys.version_info >= (3, 10):
-#     from typing import Union
-# else:
-#     from typing_extensions import Union
 
 
 class Lo:

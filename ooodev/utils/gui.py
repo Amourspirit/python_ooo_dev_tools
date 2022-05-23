@@ -8,11 +8,11 @@ from enum import IntEnum
 import uno
 
 from com.sun.star.accessibility import XAccessible
-from com.sun.star.awt import PosSize # const
-from com.sun.star.awt import Rectangle # struct
-from com.sun.star.awt import WindowAttribute # const
-from com.sun.star.awt import VclWindowPeerAttribute # const
-from com.sun.star.awt import WindowDescriptor # struct
+from com.sun.star.awt import PosSize  # const
+from com.sun.star.awt import Rectangle  # struct
+from com.sun.star.awt import WindowAttribute  # const
+from com.sun.star.awt import VclWindowPeerAttribute  # const
+from com.sun.star.awt import WindowDescriptor  # struct
 from com.sun.star.awt import XExtendedToolkit
 from com.sun.star.awt import XMenuBar
 from com.sun.star.awt import XMessageBox
@@ -29,12 +29,12 @@ from com.sun.star.frame import XLayoutManager
 from com.sun.star.frame import XFrame
 from com.sun.star.frame import XFramesSupplier
 from com.sun.star.frame import XModel
-from com.sun.star.lang import SystemDependent # const
+from com.sun.star.lang import SystemDependent  # const
 from com.sun.star.lang import XComponent
-from com.sun.star.view import DocumentZoomType # const
+from com.sun.star.view import DocumentZoomType  # const
 from com.sun.star.view import XControlAccess
 from com.sun.star.view import XSelectionSupplier
-from com.sun.star.ui import UIElementType # const
+from com.sun.star.ui import UIElementType  # const
 from com.sun.star.ui import XImageManager
 from com.sun.star.ui import XUIConfigurationManagerSupplier
 from com.sun.star.ui import XUIConfigurationManager
@@ -50,14 +50,10 @@ from ..utils import images as mImages
 from ..utils import props as mProps
 from ..utils import info as mInfo
 from ..utils import sys_info as m_sys_info
+
 # endregion Imports
 
 SysInfo = m_sys_info.SysInfo
-
-# if sys.version_info >= (3, 10):
-#     from typing import Union
-# else:
-#     from typing_extensions import Union
 
 
 class GUI:
@@ -70,6 +66,7 @@ class GUI:
         ENTIRE_PAGE = DocumentZoomType.ENTIRE_PAGE
         BY_VALUE = DocumentZoomType.BY_VALUE
         PAGE_WIDTH_EXACT = DocumentZoomType.PAGE_WIDTH_EXACT
+
     # endregion Class Enums
 
     # region class Constants
@@ -176,9 +173,7 @@ class GUI:
         return None
 
     @classmethod
-    def add_item_to_toolbar(
-        cls, doc: XComponent, toolbar_name: str, item_name: str, im_fnm: str
-    ) -> None:
+    def add_item_to_toolbar(cls, doc: XComponent, toolbar_name: str, item_name: str, im_fnm: str) -> None:
         """
         Add a user-defined icon and command to the start of the specified toolbar.
         """
@@ -213,9 +208,7 @@ class GUI:
     # region ---------------- floating frame, message box --------------
 
     @staticmethod
-    def create_floating_frame(
-        title: str, x: int, y: int, width: int, height: int
-    ) -> XFrame | None:
+    def create_floating_frame(title: str, x: int, y: int, width: int, height: int) -> XFrame | None:
         """create a floating XFrame at the given position and size"""
         xtoolkit = mLo.Lo.create_instance_mcf(XToolkit, "com.sun.star.awt.Toolkit")
         if xtoolkit is None:
@@ -271,11 +264,7 @@ class GUI:
         desc.ParentIndex = -1
         desc.Parent = xpeer
         desc.Bounds = Rectangle(0, 0, 300, 200)
-        desc.WindowAttributes = (
-            WindowAttribute.BORDER
-            | WindowAttribute.MOVEABLE
-            | WindowAttribute.CLOSEABLE
-        )
+        desc.WindowAttributes = WindowAttribute.BORDER | WindowAttribute.MOVEABLE | WindowAttribute.CLOSEABLE
 
         desc_peer = xtoolkit.createWindow(desc)
         if desc_peer is None:
@@ -415,9 +404,7 @@ class GUI:
         xwindow.setPosSize(rect.X, rect.Y, width, height - 30, PosSize.POSSIZE)
 
     @classmethod
-    def set_pos_size(
-        cls, doc: XComponent, x: int, y: int, width: int, height: int
-    ) -> None:
+    def set_pos_size(cls, doc: XComponent, x: int, y: int, width: int, height: int) -> None:
         xwindow = cls.get_window(doc)
         if xwindow is None:
             return
@@ -662,6 +649,7 @@ class GUI:
             print("Cannot create configuration manager")
             return
         cls.print_ui_cmds()
+
     # endregion print_ui_cmds()
 
     # endregion ------------- UI config manager ------------------------
@@ -820,9 +808,7 @@ class GUI:
             print(f"{el_name} made visible")
 
     @staticmethod
-    def hide_except(
-        lm: XLayoutManager, ui_elms: Iterable[XUIElement], show_elms: List[str]
-    ) -> None:
+    def hide_except(lm: XLayoutManager, ui_elms: Iterable[XUIElement], show_elms: List[str]) -> None:
         """
         hide all of uiElems, except ones in show_elms;
         delete any strings that match in show_elms
