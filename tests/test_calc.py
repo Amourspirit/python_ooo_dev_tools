@@ -1425,5 +1425,62 @@ def test_get_cell_range(loader) -> None:
     assert Calc.is_single_cell_range(addr) == False
 
     Lo.close(closeable=doc, deliver_ownership=False)
+
+
+def test_find_used_range(loader) -> None:
+    from ooodev.utils.lo import Lo
+    from ooodev.office.calc import Calc
+    assert loader is not None
+    doc = Calc.create_doc(loader)
+    assert doc is not None
+    sheet = Calc.get_sheet(doc=doc, index=0)
     
+    # find_used_range(sheet: XSpreadsheet)
+    rng = Calc.find_used_range(sheet=sheet)
+    assert rng is not None
+    rng_str =Calc.get_range_str(cell_range=rng)
+    assert rng_str == "A1:A1"
+    
+    rng = Calc.find_used_range(sheet=sheet, cell_name="C2")
+    assert rng is not None
+    rng_str =Calc.get_range_str(cell_range=rng)
+    assert rng_str == "A1:A1"
+    
+    Lo.close(closeable=doc, deliver_ownership=False)
+
+def test_get_col_range(loader) -> None:
+    from ooodev.utils.lo import Lo
+    from ooodev.office.calc import Calc
+    assert loader is not None
+    doc = Calc.create_doc(loader)
+    assert doc is not None
+    sheet = Calc.get_sheet(doc=doc, index=0)
+    test_val = "test"
+    index = 3
+    Calc.set_val(value=test_val, sheet=sheet, column=3, row=0)
+    rng = Calc.get_col_range(sheet=sheet, idx=index)
+    addr = Calc.get_address(cell_range=rng)
+    assert Calc.is_single_cell_range(addr) == False
+    cell = Calc.get_cell(cell_range=rng)
+    val = Calc.get_string(cell)
+    assert val == test_val
+    Lo.close(closeable=doc, deliver_ownership=False)
+
+def test_get_row_range(loader) -> None:
+    from ooodev.utils.lo import Lo
+    from ooodev.office.calc import Calc
+    assert loader is not None
+    doc = Calc.create_doc(loader)
+    assert doc is not None
+    sheet = Calc.get_sheet(doc=doc, index=0)
+    test_val = "test"
+    index = 3
+    Calc.set_val(value=test_val, sheet=sheet, column=0, row=index)
+    rng = Calc.get_row_range(sheet=sheet, idx=index)
+    addr = Calc.get_address(cell_range=rng)
+    assert Calc.is_single_cell_range(addr) == False
+    cell = Calc.get_cell(cell_range=rng)
+    val = Calc.get_string(cell)
+    assert val == test_val
+    Lo.close(closeable=doc, deliver_ownership=False)
 # endregion get XCell and XCellRange methods

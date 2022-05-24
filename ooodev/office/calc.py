@@ -2460,6 +2460,15 @@ class Calc:
     @overload
     @staticmethod
     def find_used_range(sheet: XSpreadsheet) -> XCellRange | None:
+        """
+        Find used range
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet Document
+
+        Returns:
+            XCellRange | None: Cell range on success; Othwrwise, None
+        """
         ...
 
     @overload
@@ -2473,7 +2482,7 @@ class Calc:
             cell_name (str): Cell Name
 
         Returns:
-            XCellRange | None: _description_
+            XCellRange | None: Cell range on success; Othwrwise, None
         """
         ...
 
@@ -2491,6 +2500,15 @@ class Calc:
 
     @staticmethod
     def find_used_cursor(cursor: XSheetCellCursor) -> XCellRange | None:
+        """
+        Find used cursor
+
+        Args:
+            cursor (XSheetCellCursor): Sheet Cursor
+
+        Returns:
+            XCellRange | None: Cell range on success; Othwrwise, None
+        """
         # find the used area
         ua_cursor = mLo.Lo.qi(XUsedAreaCursor, cursor)
         if ua_cursor is None:
@@ -2503,6 +2521,16 @@ class Calc:
 
     @staticmethod
     def get_col_range(sheet: XSpreadsheet, idx: int) -> XCellRange | None:
+        """
+        Get Column by index
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            idx (int): Zero-based column index
+
+        Returns:
+            XCellRange | None: Cell range on success; Othwrwise, None
+        """
         cr_range = mLo.Lo.qi(XColumnRowRange, sheet)
         if cr_range is None:
             return None
@@ -2906,50 +2934,107 @@ class Calc:
     # region    get_range_str()
     @classmethod
     def _get_range_str_cell_rng_sht(cls, cell_range: XCellRange, sheet: XSpreadsheet) -> str:
+        """return as str using the name taken from the sheet works, Sheet1.A1:B2"""
         return cls._get_range_str_cr_addr_sht(cls._get_address_cell(cell_range=cell_range), sheet)
 
     @classmethod
     def _get_range_str_cr_addr_sht(cls, cr_addr: CellRangeAddress, sheet: XSpreadsheet) -> str:
+        """return as str using the name taken from the sheet works, Sheet1.A1:B2"""
         xnamed = mLo.Lo.qi(XNamed, cr_addr)
         return f"{xnamed.getName()}.{cls._get_range_str_cr_addr(cr_addr)}"
 
     @classmethod
     def _get_range_str_cell_rng(cls, cell_range: XCellRange) -> str:
+        """return as str, A1:B2"""
         return cls._get_range_str_cr_addr(cls._get_address_cell(cell_range=cell_range))
 
     @classmethod
     def _get_range_str_cr_addr(cls, cr_addr: CellRangeAddress) -> str:
+        """return as str, A1:B2"""
         result = f"{cls._get_cell_str_col_row(cr_addr.StartColumn, cr_addr.StartRow)}:"
         result += f"{cls._get_cell_str_col_row(cr_addr.EndColumn, cr_addr.EndRow)}"
         return result
 
     @classmethod
     def _get_range_str_col_row(cls, start_col: int, start_row: int, end_col: int, end_row: int) -> str:
+        """return as str, A1:B2"""
         return f"{cls._get_cell_str_col_row(start_col, start_row)}:{cls._get_cell_str_col_row(end_col, end_row)}"
 
     @overload
     @staticmethod
     def get_range_str(cell_range: XCellRange, sheet: XSpreadsheet) -> str:
+        """
+        Gets the range as a string inf format of ``Sheet1.A1:B2``
+
+        Args:
+            cell_range (XCellRange): Cell Range
+            sheet (XSpreadsheet): Spreadsheet
+
+        Returns:
+            str: range a string
+        """
         ...
 
     @overload
     @staticmethod
     def get_range_str(cr_addr: CellRangeAddress, sheet: XSpreadsheet) -> str:
+        """
+        Gets the range as a string inf format of ``Sheet1.A1:B2``
+
+        Args:
+            cr_addr (CellRangeAddress): Cell Range Address
+            sheet (XSpreadsheet): Spreadsheet
+
+        Returns:
+            str: range a string
+        """
         ...
 
     @overload
     @staticmethod
     def get_range_str(cell_range: XCellRange) -> str:
+        """
+        Gets the range as a string inf format of ``A1:B2``
+
+        Args:
+            cell_range (XCellRange): Cell Range
+            sheet (XSpreadsheet): Spreadsheet
+
+        Returns:
+            str: range a string
+        """
         ...
 
     @overload
     @staticmethod
     def get_range_str(cr_addr: CellRangeAddress) -> str:
+        """
+        Gets the range as a string inf format of ``A1:B2``
+
+        Args:
+            cr_addr (CellRangeAddress): Cell Range Address
+            sheet (XSpreadsheet): Spreadsheet
+
+        Returns:
+            str: range a string
+        """
         ...
 
     @overload
     @staticmethod
     def get_range_str(start_col: int, start_row: int, end_col: int, end_row: int) -> str:
+        """
+        Gets the range as a string inf format of ``A1:B2``
+
+        Args:
+            start_col (int): Zero-based start column index
+            start_row (int): Zero-based start row index
+            end_col (int): Zero-based end column index
+            end_row (int): Zero-based end row index
+
+        Returns:
+            str: range a string
+        """
         ...
 
     @classmethod
@@ -2994,11 +3079,11 @@ class Calc:
                 return cls._get_range_str_cr_addr(cr_addr=kargs[1])
 
         elif count == 2:
-            # def get_range_str(cell_range: XCellRange, sheet: XSpreadsheet) or
-            # def get_range_str(cr_addr: CellRangeAddress, sheet: XSpreadsheet)
             if mInfo.Info.is_type_interface(kargs[1], "com.sun.star.table.XCellRange"):
+                # def get_range_str(cell_range: XCellRange, sheet: XSpreadsheet)
                 return cls._get_range_str_cell_rng_sht(cell_range=kargs[1], sheet=kargs[2])
             else:
+                # def get_range_str(cr_addr: CellRangeAddress, sheet: XSpreadsheet)
                 return cls._get_range_str_cr_addr_sht(cr_add=kargs[1], sheet=kargs[2])
         else:
             # def get_range_str(start_col:int, start_row:int, end_col:int, end_row:int)
