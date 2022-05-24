@@ -1120,7 +1120,7 @@ def test_get_float_array(loader) -> None:
 # endregion set/get values in 2D array
 
 # region set/get rows and columns
-def test_set_col(loader) -> None:
+def test_get_set_col(loader) -> None:
     from ooodev.utils.lo import Lo
     from ooodev.office.calc import Calc
 
@@ -1167,7 +1167,7 @@ def test_set_col(loader) -> None:
     Lo.close(closeable=doc, deliver_ownership=False)
 
 
-def test_set_row(loader) -> None:
+def test_get_set_row(loader) -> None:
     from ooodev.utils.lo import Lo
     from ooodev.office.calc import Calc
     # from ooodev.utils.gui import GUI
@@ -1215,3 +1215,117 @@ def test_set_row(loader) -> None:
     # Lo.delay(3000)
     Lo.close(closeable=doc, deliver_ownership=False)
 # endregion set/get rows and columns
+
+# region special cell types
+def test_set_date(loader) -> None:
+    from ooodev.utils.lo import Lo
+    from ooodev.office.calc import Calc
+    # from ooodev.utils.gui import GUI
+
+    assert loader is not None
+    doc = Calc.create_doc(loader)
+    assert doc is not None
+    sheet = Calc.get_sheet(doc=doc, index=0)
+    
+    Calc.set_date(sheet=sheet, cell_name="A1", day=22, month=11, year=2022)
+    
+    cell_str = Calc.get_string(sheet=sheet, cell_name="A1")
+    assert cell_str == '44887.0'
+    # GUI.set_visible(is_visible=True, odoc=doc)
+    # Lo.delay(6000)
+    Lo.close(closeable=doc, deliver_ownership=False)
+
+
+def test_annotation(loader) -> None:
+    from ooodev.utils.lo import Lo
+    from ooodev.office.calc import Calc
+    # from ooodev.utils.gui import GUI
+
+    assert loader is not None
+    doc = Calc.create_doc(loader)
+    assert doc is not None
+    sheet = Calc.get_sheet(doc=doc, index=0)
+    cn = 'B2'
+    msg = "Hello World"
+    ann = Calc.add_annotation(sheet=sheet, cell_name=cn, msg=msg)
+    assert ann is not None
+    ann = Calc.get_annotation(sheet=sheet, cell_name=cn)
+    assert ann is not None
+    ann_str = Calc.get_annotation_str(sheet=sheet, cell_name=cn)
+    assert ann_str == msg
+    # test getting of annotation with no annotation set
+    ann = Calc.get_annotation(sheet=sheet, cell_name="G9")
+    assert ann is not None
+    #  # test getting of annotation string with no annotation set
+    ann_str = Calc.get_annotation_str(sheet=sheet, cell_name="G9")
+    assert ann_str == ''
+    # GUI.set_visible(is_visible=True, odoc=doc)
+    # Lo.delay(6000)
+    Lo.close(closeable=doc, deliver_ownership=False)
+# endregion special cell types
+
+# region    get XCell and XCellRange methods
+def test_get_cell(loader) -> None:
+    from ooodev.utils.lo import Lo
+    from ooodev.office.calc import Calc
+    # from ooodev.utils.gui import GUI
+
+    assert loader is not None
+    doc = Calc.create_doc(loader)
+    assert doc is not None
+    sheet = Calc.get_sheet(doc=doc, index=0)
+    test_val = "test"
+    col = 2 # C
+    row = 4
+    addr = Calc.get_cell_address(sheet=sheet, col=col, row=row)
+    cell_name = Calc.get_cell_str(addr=addr)
+    
+    cell_range = Calc.get_cell_range(sheet=sheet, col_start=col, row_start=row, col_end=col, row_end=row)
+    Calc.set_val(value=test_val, sheet=sheet, cell_name=cell_name)
+    # get_cell(sheet: XSpreadsheet, addr: CellAddress)
+    cell = Calc.get_cell(sheet=sheet, addr=addr)
+    assert cell is not None
+    cell = Calc.get_cell(sheet, addr)
+    assert cell is not None
+    val = Calc.get_string(cell)
+    assert val == test_val
+    
+    # get_cell(sheet: XSpreadsheet, cell_name: str)
+    cell = Calc.get_cell(sheet=sheet, cell_name=cell_name)
+    assert cell is not None
+    cell = Calc.get_cell(sheet, cell_name)
+    assert cell is not None
+    val = Calc.get_string(cell)
+    assert val == test_val
+
+    # get_cell(sheet: XSpreadsheet, column: int, row: int
+    cell = Calc.get_cell(sheet=sheet,column=col, row=row)
+    assert cell is not None
+    val = Calc.get_string(cell)
+    assert val == test_val
+    cell = Calc.get_cell(sheet, col, row)
+    assert cell is not None
+    
+    #  get_cell(cell_range: XCellRange)
+    cell = Calc.get_cell(cell_range=cell_range)
+    val = Calc.get_string(cell)
+    assert cell is not None
+    val = Calc.get_string(cell)
+    assert val == test_val
+    assert val == test_val
+    cell = Calc.get_cell(cell_range)
+    assert cell is not None
+    
+    #  get_cell(cell_range: XCellRange, column: int, row: int)
+    # cell range is relative position.
+    # if a range is C4:E9 then Cell range at col=0 ,row=0 is C4
+    cell = Calc.get_cell(cell_range=cell_range, column=0, row=0)
+    assert cell is not None
+    val = Calc.get_string(cell)
+    assert val == test_val
+    cell = Calc.get_cell(cell_range, 0, 0)
+    assert cell is not None
+
+    Lo.close(closeable=doc, deliver_ownership=False)
+    
+# endregion get XCell and XCellRange methods
