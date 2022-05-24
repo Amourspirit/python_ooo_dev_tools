@@ -1888,12 +1888,29 @@ class Calc:
     # region    set_col()
     @overload
     @staticmethod
-    def set_col(sheet: XSpreadsheet, values: Sequence[Any], cel_name: str) -> None:
+    def set_col(sheet: XSpreadsheet, values: Sequence[Any], cell_name: str) -> None:
+        """
+        Inserts a colum of data into spreadsheet
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            values (Sequence[Any]): Column Data
+            cell_name (str): Name of Cell to begin the insert such as 'A1'
+        """
         ...
 
     @overload
     @staticmethod
     def set_col(sheet: XSpreadsheet, values: Sequence[Any], col_start: int, row_start: int) -> None:
+        """
+        Inserts a colum of data into spreadsheet
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            values (Sequence[Any]):  Column Data as 1-Dimensional Sequence such as a list of values
+            col_start (int): Zero-base column index
+            row_start (int): Zero-base row index
+        """
         ...
 
     @classmethod
@@ -1905,7 +1922,7 @@ class Calc:
             ka = {}
             ka[1] = kwargs.get("sheet", None)
             ka[2] = kwargs.get("values", None)
-            keys = ("cel_name", "col_start")
+            keys = ("cell_name", "col_start")
             for key in keys:
                 if key in kwargs:
                     ka[3] = kwargs[key]
@@ -1935,19 +1952,82 @@ class Calc:
         val_len = len(values)  # values
 
         cell_range = cls.get_cell_range(
-            sheet=kargs["first"], col_start=x, row_start=y, col_end=x, row_end=y + val_len - 1
+            sheet=kargs[1], col_start=x, row_start=y, col_end=x, row_end=y + val_len - 1
         )
         xcell: XCell = None
         for val in range(val_len):
-            xcell = cls.get_cell(cell_range=cell_range, column=0, row=i)
-            cls.set_val(cell=xcell, value=values[i])
+            xcell = cls.get_cell(cell_range=cell_range, column=0, row=val)
+            cls.set_val(cell=xcell, value=values[val])
 
     # endregion set_col()
 
+    # region    set_row()
+    @overload
+    @staticmethod
+    def set_row(sheet: XSpreadsheet, values: Sequence[Any], cell_name: str) -> None:
+        """
+        Inserts a row of data into spreadsheet
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            values (Sequence[Any]): Row Data
+            cell_name (str): Name of Cell to begin the insert such as 'A1'
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def set_row(sheet: XSpreadsheet, values: Sequence[Any], col_start: int, row_start: int) -> None:
+        """
+        Inserts a row of data into spreadsheet
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            values (Sequence[Any]):  Row Data as 1-Dimensional Sequence such as a list of values
+            col_start (int): Zero-base column index
+            row_start (int): Zero-base row index
+        """
+        ...
+
     @classmethod
-    def set_row(cls, sheet: XSpreadsheet, values: Sequence[Any], col_start: int, row_start: int) -> None:
-        cell_range = cls.get_cell_range(
-            sheet=sheet,
+    def set_row(cls, *args, **kwargs) -> None:
+        ordered_keys = (1, 2, 3, 4)
+        count = len(args) + len(kwargs)
+
+        def get_kwargs() -> dict:
+            ka = {}
+            ka[1] = kwargs.get("sheet", None)
+            ka[2] = kwargs.get("values", None)
+            keys = ("cell_name", "col_start")
+            for key in keys:
+                if key in kwargs:
+                    ka[3] = kwargs[key]
+                    break
+            if count == 3:
+                return ka
+            ka[4] = kwargs.get("row_start", None)
+            return ka
+
+        if not count in (3, 4):
+            print("invalid number of arguments for set_row()")
+            return
+
+        kargs = get_kwargs()
+
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
+
+        if count == 3:
+            pos = cls.get_cell_position(kargs[3])
+            col_start = pos.X
+            row_start = pos.Y
+        else:
+            col_start = kargs[3]
+            row_start = kargs[4]
+
+        values = cast(Sequence[Any], kargs[2])
+        cell_range = cls._get_cell_range_col_row(
+            sheet=kargs[1],
             col_start=col_start,
             row_start=row_start,
             col_end=col_start + len(values) - 1,
@@ -1956,11 +2036,23 @@ class Calc:
         cr_data = mLo.Lo.qi(XCellRangeData, cell_range)
         cr_data.setDataArray(TableHelper.to_2d_tuple(values))  #  1-row 2D array
 
+    # endregion set_row()
+
     @classmethod
-    def get_row(cls, sheet: XSpreadsheet, range_name: str) -> Sequence[Any]:
-        """Gets the first row"""
+    def get_row(cls, sheet: XSpreadsheet, range_name: str) -> Sequence[Any] | None:
+        """
+        Gets a row of data from spreadsheet
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            range_name (str): Range such as 'A1:A12'
+
+        Returns:
+            List[Any] | None: 1-Dimensional List of values on success; Otherwise, None
+        """
         vals = cls.get_array(sheet=sheet, range_name=range_name)
         return cls.extract_row(vals=vals, row_idx=0)
+
 
     @staticmethod
     def extract_row(vals: Sequence[Sequence[Any]], row_idx: int) -> Sequence[Any] | None:
@@ -1973,16 +2065,26 @@ class Calc:
 
     @classmethod
     def get_col(cls, sheet: XSpreadsheet, range_name: str) -> List[Any] | None:
-        """Gets the first column"""
+        """
+        Gets a column of data from spreadsheet
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            range_name (str): Range such as 'A1:A12'
+
+        Returns:
+            List[Any] | None: 1-Dimensional List of values on success; Otherwise, None
+        """
         vals = cls.get_array(sheet=sheet, range_name=range_name)
         return cls.extract_col(vals=vals, col_idx=0)
+
 
     @staticmethod
     def extract_col(vals: Sequence[Sequence[Any]], col_idx: int) -> List[Any] | None:
         row_len = len(vals)
         if row_len == 0:
             return None
-        col_len = len(row_len[0])
+        col_len = len(vals[0])
         if col_idx < 0 or col_idx > col_len - 1:
             print("Column index out of range")
             return None
@@ -1992,7 +2094,6 @@ class Calc:
             col_vals.append(row[col_idx])
         return col_vals
 
-   
 
 
     # endregion --------------- set/get rows and columns -----------------
@@ -2800,7 +2901,7 @@ class Calc:
 
     @classmethod
     def get_cell_str(cls, *args, **kwargs) -> str:
-        ordered_keys = ("first", "second")
+        ordered_keys = (1, 2)
         count = len(args) + len(kwargs)
 
         def get_kwargs() -> dict:
@@ -2808,16 +2909,16 @@ class Calc:
             keys = ("addr", "cell", "col")
             for key in keys:
                 if key in kwargs:
-                    ka["first"] = kwargs[key]
+                    ka[1] = kwargs[key]
                     break
 
             if count == 1:
                 return ka
 
-            ka["second"] = kwargs.get["row", None]
+            ka[2] = kwargs.get("row", None)
             return ka
 
-        if count < 1 or count > 2:
+        if not count in (1, 2):
             print("invalid number of arguments for get_cell_str()")
             return None
 
@@ -2829,13 +2930,13 @@ class Calc:
         if count == 1:
             # def get_cell_str(addr: CellAddress) or
             # def get_cell_str(cell: XCell)
-            if mInfo.Info.is_type_interface(kargs["first"], "com.sun.star.table.XCell"):
-                return cls._get_cell_str_cell(kargs["first"])
+            if mInfo.Info.is_type_interface(kargs[1], "com.sun.star.table.XCell"):
+                return cls._get_cell_str_cell(kargs[1])
             else:
-                return cls._get_cell_str_addr(kargs["first"])
+                return cls._get_cell_str_addr(kargs[1])
         else:
             # def get_cell_str(col: int, row: int)
-            return cls._get_cell_str_col_row(col=kargs["first"], row=kargs["second"])
+            return cls._get_cell_str_col_row(col=kargs[1], row=kargs[2])
 
     # endregion get_cell_str()
 
