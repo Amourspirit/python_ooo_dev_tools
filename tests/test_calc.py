@@ -1327,5 +1327,103 @@ def test_get_cell(loader) -> None:
     assert cell is not None
 
     Lo.close(closeable=doc, deliver_ownership=False)
+
+
+def test_is_single_cell_range(loader) -> None:
+    from ooodev.utils.lo import Lo
+    from ooodev.office.calc import Calc
+
+    assert loader is not None
+    doc = Calc.create_doc(loader)
+    assert doc is not None
+    sheet = Calc.get_sheet(doc=doc, index=0)
+    cr_addr = Calc.get_address(sheet=sheet, range_name="A1:A1")
+    assert Calc.is_single_cell_range(cr_addr)
+    cr_addr = Calc.get_address(sheet=sheet, range_name="A1:B1")
+    assert Calc.is_single_cell_range(cr_addr) == False
+    Lo.close(closeable=doc, deliver_ownership=False)
+
+def test_get_cell_range(loader) -> None:
+    from ooodev.utils.lo import Lo
+    from ooodev.office.calc import Calc
+    assert loader is not None
+    doc = Calc.create_doc(loader)
+    assert doc is not None
+    sheet = Calc.get_sheet(doc=doc, index=0)
+    single_col_start = 1
+    single_row_start = 1
+    single_col_end = 1
+    single_row_end = 1
+    
+    multi_row_start = 2
+    multi_col_start = 2
+    multi_col_end = 5
+    multi_row_end = 21
+    
+    rng_single = Calc.get_range_str(
+        start_col=single_col_start,
+        start_row=single_row_start,
+        end_col=single_col_end,
+        end_row=single_row_end
+    )
+
+    rng_multi = Calc.get_range_str(
+        start_col=multi_row_start,
+        start_row=multi_col_start,
+        end_col=multi_col_end,
+        end_row=multi_row_end
+    )
+    cr_addr_single = Calc.get_address(sheet=sheet, range_name=rng_single)
+    cr_addr_muilti = Calc.get_address(sheet=sheet, range_name=rng_multi)
+    
+    # get_cell_range(sheet: XSpreadsheet, cr_addr: CellRangeAddress)
+    rng = Calc.get_cell_range(sheet=sheet, cr_addr=cr_addr_single)
+    assert rng is not None
+    addr = Calc.get_address(cell_range=rng)
+    assert Calc.is_single_cell_range(addr)
+    rng = Calc.get_cell_range(sheet, cr_addr_single)
+    assert rng is not None
+    addr = Calc.get_address(cell_range=rng)
+    assert Calc.is_single_cell_range(addr)
+    rng = Calc.get_cell_range(sheet, cr_addr_muilti)
+    assert rng is not None
+    addr = Calc.get_address(cell_range=rng)
+    assert Calc.is_single_cell_range(addr) == False
+    
+    # get_cell_range(sheet: XSpreadsheet, range_name: str)
+    rng = Calc.get_cell_range(sheet=sheet, range_name=rng_single)
+    assert rng is not None
+    addr = Calc.get_address(cell_range=rng)
+    assert Calc.is_single_cell_range(addr)
+    rng = Calc.get_cell_range(sheet, rng_single)
+    assert rng is not None
+    addr = Calc.get_address(cell_range=rng)
+    assert Calc.is_single_cell_range(addr)
+    rng = Calc.get_cell_range(sheet, rng_multi)
+    assert rng is not None
+    addr = Calc.get_address(cell_range=rng)
+    assert Calc.is_single_cell_range(addr) == False
+    
+    #  get_cell_range(sheet: XSpreadsheet, col_start: int, row_start: int, col_end: int, row_end: int)
+    rng = Calc.get_cell_range(
+        sheet=sheet,
+        col_start=single_col_start,
+        row_start=single_row_start,
+        col_end=single_col_end,
+        row_end=single_row_end
+        )
+    assert rng is not None
+    addr = Calc.get_address(cell_range=rng)
+    assert Calc.is_single_cell_range(addr)
+    rng = Calc.get_cell_range(sheet, single_col_start, single_row_start, single_col_end, single_row_end)
+    assert rng is not None
+    addr = Calc.get_address(cell_range=rng)
+    assert Calc.is_single_cell_range(addr)
+    rng = Calc.get_cell_range(sheet, multi_col_start, multi_row_start, multi_col_end, multi_row_end)
+    assert rng is not None
+    addr = Calc.get_address(cell_range=rng)
+    assert Calc.is_single_cell_range(addr) == False
+
+    Lo.close(closeable=doc, deliver_ownership=False)
     
 # endregion get XCell and XCellRange methods

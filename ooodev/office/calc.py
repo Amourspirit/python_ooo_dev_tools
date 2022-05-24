@@ -2327,8 +2327,8 @@ class Calc:
         return ":" in s
 
     @staticmethod
-    def is_single_cell_range(addr: CellRangeAddress) -> bool:
-        return addr.StartColumn == addr.EndColumn and addr.StartRow == addr.EndRow
+    def is_single_cell_range(cr_addr: CellRangeAddress) -> bool:
+        return cr_addr.StartColumn == cr_addr.EndColumn and cr_addr.StartRow == cr_addr.EndRow
 
     # region    get_cell_range()
     @classmethod
@@ -2438,11 +2438,11 @@ class Calc:
             kargs[ordered_keys[i]] = arg
 
         if count == 2:
-            # get_cell_range(sheet: XSpreadsheet, addr:CellRangeAddress) or
-            # def get_cell_range(sheet: XSpreadsheet, range_name: str)
             if isinstance(kargs[2], str):
+                # def get_cell_range(sheet: XSpreadsheet, range_name: str)
                 return cls._get_cell_range_rng_name(sheet=kargs[1], range_name=kargs[2])
             else:
+                # get_cell_range(sheet: XSpreadsheet, addr:CellRangeAddress)
                 return cls._get_cell_range_addr(sheet=kargs[1], addr=kargs[2])
         else:
             return cls._get_cell_range_col_row(
