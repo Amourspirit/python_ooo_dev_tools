@@ -491,8 +491,7 @@ def test_get_set_view_states(loader) -> None:
 
 # endregion view data methods
 
-
-# region insert/remove rows, columns, cells
+# region    insert/remove rows, columns, cells
 def test_insert_row(loader) -> None:
     from ooodev.utils.lo import Lo
     from ooodev.office.calc import Calc
@@ -639,7 +638,7 @@ def test_delete_cells_left(loader) -> None:
 
 # endregion insert/remove rows, columns, cells
 
-# region set/get values in cells
+# region    set/get values in cells
 def test_set_val(loader) -> None:
     from ooodev.utils.lo import Lo
     from ooodev.office.calc import Calc
@@ -854,7 +853,7 @@ def test_get_str(loader) -> None:
 
 # endregion set/get values in cells
 
-# region set/get values in 2D array
+# region    set/get values in 2D array
 def test_set_array_by_range(loader) -> None:
     # set_array(values: Sequence[Sequence[object]], sheet: XSpreadsheet, name: str)
     # test when name is a range
@@ -1119,7 +1118,7 @@ def test_get_float_array(loader) -> None:
 
 # endregion set/get values in 2D array
 
-# region set/get rows and columns
+# region    set/get rows and columns
 def test_get_set_col(loader) -> None:
     from ooodev.utils.lo import Lo
     from ooodev.office.calc import Calc
@@ -1219,7 +1218,7 @@ def test_get_set_row(loader) -> None:
 
 # endregion set/get rows and columns
 
-# region special cell types
+# region    special cell types
 def test_set_date(loader) -> None:
     from ooodev.utils.lo import Lo
     from ooodev.office.calc import Calc
@@ -1847,6 +1846,9 @@ def test_is_equal_addresses(loader) -> None:
     
     Lo.close(closeable=doc, deliver_ownership=False)
 
+# endregion get cell and cell range addresses
+
+# region    convert cell range address to string
 def test_get_range_str(loader) -> None:
     from ooodev.utils.lo import Lo
     from ooodev.office.calc import Calc
@@ -1939,4 +1941,31 @@ def test_get_cell_str(loader) -> None:
     assert result == name
 
     Lo.close(closeable=doc, deliver_ownership=False)
-# endregion get cell and cell range addresses
+
+# endregion convert cell range address to string
+
+# region    search
+def test_find_all(loader) -> None:
+    from ooodev.utils.lo import Lo
+    from ooodev.office.calc import Calc
+    from com.sun.star.util import XSearchable
+    assert loader is not None
+    doc = Calc.create_doc(loader)
+    assert doc is not None
+    sheet = Calc.get_sheet(doc=doc, index=0)
+    test_val = "test"
+    Calc.set_val(value=test_val, sheet=sheet, cell_name="A1")
+    Calc.set_val(value=test_val, sheet=sheet, cell_name="C3")
+    srch = Lo.qi(XSearchable, sheet)
+    sd = srch.createSearchDescriptor()
+    sd.setSearchString(test_val)
+    results = Calc.find_all(srch=srch, sd=sd)
+    assert len(results) == 2
+    assert Calc.get_range_str(cell_range=results[0]) == "A1:A1"
+    assert Calc.get_range_str(cell_range=results[1]) == "C3:C3"
+
+    sd.setSearchString("hello")
+    results = Calc.find_all(srch=srch, sd=sd)
+    assert results is None 
+    Lo.close(closeable=doc, deliver_ownership=False)
+# endregion search

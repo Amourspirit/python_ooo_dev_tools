@@ -3427,7 +3427,34 @@ class Calc:
     # region --------------- search ------------------------------------
 
     @staticmethod
-    def find_all(srch: XSearchable, sd: XSearchDescriptor) -> Sequence[XCellRange] | None:
+    def find_all(srch: XSearchable, sd: XSearchDescriptor) -> List[XCellRange] | None:
+        """
+        Searches spreadsheet and returns a list of Cell Ranges that match search criteria
+
+        Args:
+            srch (XSearchable): Searchable object
+            sd (XSearchDescriptor): Search descriptro
+
+        Returns:
+            List[XCellRange] | None: A list of cell ranges on success; Otherwise, None
+        
+        Example:
+            .. code-block:: python
+
+                from ooodev.utils.lo import Lo
+                from ooodev.office.calc import Calc
+                from com.sun.star.util import XSearchable
+                
+                doc = Calc.create_doc(loader)
+                sheet = Calc.get_sheet(doc=doc, index=0)
+                Calc.set_val(value='test', sheet=sheet, cell_name="A1")
+                Calc.set_val(value='test', sheet=sheet, cell_name="C3")
+                srch = Lo.qi(XSearchable, sheet)
+                sd = srch.createSearchDescriptor()
+                sd.setSearchString('test')
+                results = Calc.find_all(srch=srch, sd=sd)
+                assert len(results) == 2
+        """
         con = srch.findAll(sd)
         if con is None:
             print("Match result is null")
