@@ -571,7 +571,7 @@ class Info:
 
     @classmethod
     def show_services(cls, obj_name: str, obj: object) -> None:
-        services = cls.get_services()
+        services = cls.get_services(obj=obj)
         if services is None:
             print(f"No supported services found for {obj_name}")
             return

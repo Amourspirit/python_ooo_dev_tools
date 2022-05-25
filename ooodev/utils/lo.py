@@ -6,7 +6,7 @@ from __future__ import annotations
 import sys
 from datetime import datetime
 import time
-from typing import TYPE_CHECKING, Iterable, Optional, List, Tuple, overload, TypeVar, Type
+from typing import TYPE_CHECKING, Iterable, Optional, List, Tuple, cast, overload, TypeVar, Type
 from urllib.parse import urlparse
 import uno
 from .connect import ConnectBase, LoPipeStart, LoSocketStart
@@ -17,6 +17,7 @@ from com.sun.star.document import MacroExecMode  # const
 from com.sun.star.frame import XDesktop
 from com.sun.star.frame import XDispatchHelper
 from com.sun.star.lang import DisposedException
+from com.sun.star.lang import XMultiServiceFactory
 from com.sun.star.io import IOException
 from com.sun.star.util import CloseVetoException
 from com.sun.star.util import XCloseable
@@ -30,7 +31,6 @@ if TYPE_CHECKING:
     from com.sun.star.frame import XStorable
     from com.sun.star.lang import XMultiComponentFactory
     from com.sun.star.lang import XComponent
-    from com.sun.star.lang import XMultiServiceFactory
     from com.sun.star.lang import XTypeProvider
     from com.sun.star.script.provider import XScriptContext
     from com.sun.star.uno import XComponentContext
@@ -162,7 +162,7 @@ class Lo:
         Returns:
             T | None: Return obj if interface is supported: Otherwise, None
         """
-        if uno.isInterface(atype):
+        if uno.isInterface(atype) and hasattr(obj, 'queryInterface'):
             uno_t = uno.getTypeByName(atype.__pyunointerface__)
             q_obj = obj.queryInterface(uno_t)
             if q_obj:
@@ -184,15 +184,6 @@ class Lo:
     @classmethod
     def get_service_factory(cls) -> XMultiServiceFactory:
         return cls.bridge_component
-
-    @classmethod
-    def set_ooo_bean(cls, conn: ConnectBase) -> None:
-        try:
-            cls.xcc = conn.ctx
-            cls.mc_factory = conn.service_manager
-            cls.xdesktop = conn.desktop
-        except Exception as e:
-            print(f"Couldn't initialize LO using OOoBean: {e}")
 
     # region interface object creation
 
@@ -315,7 +306,6 @@ class Lo:
             try:
                 cls.lo_inst = LoPipeStart()
                 cls.lo_inst.connect()
-                cls.xcc = cls.lo_inst.ctx
             except Exception as e:
                 print("Office context could not be created")
                 raise SystemExit(1)
@@ -323,10 +313,11 @@ class Lo:
             try:
                 cls.lo_inst = LoSocketStart()
                 cls.lo_inst.connect()
-                cls.xcc = cls.lo_inst.ctx
             except Exception as e:
                 print("Office context could not be created")
                 raise SystemExit(1)
+        # cls.set_ooo_bean(conn=cls.lo_inst)
+        cls.xcc = cls.lo_inst.ctx
         cls.mc_factory = cls.xcc.getServiceManager()
         if cls.mc_factory is None:
             print("Office Service Manager is unavailable")
@@ -335,7 +326,6 @@ class Lo:
         if cls.xdesktop is None:
             print("Could not create a desktop service")
             raise SystemExit(1)
-
         return cls.xdesktop
 
     @classmethod
@@ -439,6 +429,7 @@ class Lo:
         doc = None
         try:
             doc = loader.loadComponentFromURL(open_file_url, "_blank", 0, props)
+            cls.ms_factory = cls.qi(XMultiServiceFactory, doc)
         except Exception:
             print("Unable to open the document")
         return doc
@@ -500,8 +491,9 @@ class Lo:
     def create_doc(doc_type: str, loader: XComponentLoader, props: Iterable[PropertyValue]) -> XComponent | None:
         ...
 
-    @staticmethod
+    @classmethod
     def create_doc(
+        cls,
         doc_type: str,
         loader: XComponentLoader,
         props: Optional[Iterable[PropertyValue]] = None,
@@ -512,6 +504,7 @@ class Lo:
         doc = None
         try:
             doc = loader.loadComponentFromURL(f"private:factory/{doc_type}", "_blank", 0, props)
+            cls.ms_factory = cls.qi(XMultiServiceFactory, doc)
         except Exception:
             print("Could not create a document")
         return doc
@@ -524,8 +517,8 @@ class Lo:
             props=mProps.Props.make_props(Hidden=False, MacroExecutionMode=MacroExecMode.ALWAYS_EXECUTE),
         )
 
-    @staticmethod
-    def create_doc_from_template(template_path: str, loader: XComponentLoader) -> XComponent | None:
+    @classmethod
+    def create_doc_from_template(cls, template_path: str, loader: XComponentLoader) -> XComponent | None:
         if not mFileIO.FileIO.is_openable(template_path):
             print(f"Template file can not be opened: '{template_path}'")
             return None
@@ -538,6 +531,7 @@ class Lo:
         doc = None
         try:
             doc = loader.loadComponentFromURL(template_url, "_blank", 0, props)
+            cls.ms_factory = cls.qi(XMultiServiceFactory, doc)
         except Exception as e:
             print(f"Could not create document from template: {e}")
         return doc
@@ -836,8 +830,8 @@ class Lo:
 
     # ================= initialization via Addon-supplied context ====================
 
-    @staticmethod
-    def addon_initialize(addon_xcc: XComponentContext) -> XComponent | None:
+    @classmethod
+    def addon_initialize(cls, addon_xcc: XComponentContext) -> XComponent | None:
         xcc = addon_xcc
         if xcc is None:
             print("Could not access component context")
@@ -856,12 +850,13 @@ class Lo:
         if doc is None:
             print("Could not access document")
             return None
+        cls.ms_factory = cls.qi(XMultiServiceFactory, doc)
         return doc
 
     # ============= initialization via script context ======================
 
-    @staticmethod
-    def script_initialize(sc: XScriptContext) -> XComponent | None:
+    @classmethod
+    def script_initialize(cls, sc: XScriptContext) -> XComponent | None:
         if sc is None:
             print("Script Context is null")
             return None
@@ -881,6 +876,7 @@ class Lo:
         if doc is None:
             print("Could not access document")
             return None
+        cls.ms_factory = cls.qi(XMultiServiceFactory, doc)
         return doc
 
     # ==================== dispatch ===============================
