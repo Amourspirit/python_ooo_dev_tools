@@ -2574,7 +2574,7 @@ class Calc:
     def get_cell_range_positions(cls, range_name: str) -> Tuple[Point, Point] | None:
         """
         Gets Cell range as a tuple of Point, Point
-        
+
         First Point.X is start column index, Point.Y is start row index.
         Second Point.X is end column index, Point.Y is end row index.
 
@@ -2597,12 +2597,12 @@ class Calc:
     def get_cell_position(cls, cell_name: str) -> Point | None:
         """
         Gets a cell name as a Point.
-        
+
         Point.X is column index.
         Point.y is row index.
 
         Args:
-            cell_name (str): Cell name suca as 'A1' 
+            cell_name (str): Cell name suca as 'A1'
 
         Returns:
             Point | None: cell name as Point on success; Otherwise, None
@@ -2620,12 +2620,12 @@ class Calc:
     def get_cell_pos(cls, sheet: XSpreadsheet, cell_name: str) -> Point:
         """
         Contains the position of the top left cell of this range in the sheet (in 1/100 mm).
-        
+
         This property contains the absolute position in the whole sheet,
         not the position in the visible area.
 
         Args:
-            cell_name (str):  Cell name suca as 'A1' 
+            cell_name (str):  Cell name suca as 'A1'
             sheet (XSpreadsheet): Spreadsheet
 
         Returns:
@@ -2841,10 +2841,12 @@ class Calc:
             CellRangeAddress | None: Cell Range Address on success; Othwrwise, None
         """
         ...
-    
+
     @overload
     @staticmethod
-    def get_address(sheet: XSpreadsheet, start_col: int, start_row: int, end_col: int, end_row: int) -> CellRangeAddress | None:
+    def get_address(
+        sheet: XSpreadsheet, start_col: int, start_row: int, end_col: int, end_row: int
+    ) -> CellRangeAddress | None:
         """
         Gets Range Address
 
@@ -2897,14 +2899,11 @@ class Calc:
         if count == 1:
             return cls._get_address_cell(cell_range=kargs[1])
         elif count == 2:
-            
+
             return cls._get_address_sht_rng(sheet=kargs[1], range_name=kargs[2])
         else:
             range_name = cls._get_range_str_col_row(
-                start_col=kargs[2],
-                start_row=kargs[3],
-                end_col=kargs[4],
-                end_row=kargs[5]
+                start_col=kargs[2], start_row=kargs[3], end_col=kargs[4], end_row=kargs[5]
             )
             return cls._get_address_sht_rng(sheet=kargs[1], range_name=range_name)
 
@@ -2926,10 +2925,10 @@ class Calc:
     @staticmethod
     def print_cell_address(addr: CellAddress) -> None:
         """
-       Prints Cell to terminal such as ``Cell: Sheet1.D3``
+        Prints Cell to terminal such as ``Cell: Sheet1.D3``
 
-        Args:
-            addr (CellAddress): Cell Address
+         Args:
+             addr (CellAddress): Cell Address
         """
         ...
 
@@ -3169,7 +3168,6 @@ class Calc:
             str: range a string
         """
         ...
-
 
     @overload
     @staticmethod
@@ -3437,14 +3435,14 @@ class Calc:
 
         Returns:
             List[XCellRange] | None: A list of cell ranges on success; Otherwise, None
-        
+
         Example:
             .. code-block:: python
 
                 from ooodev.utils.lo import Lo
                 from ooodev.office.calc import Calc
                 from com.sun.star.util import XSearchable
-                
+
                 doc = Calc.create_doc(loader)
                 sheet = Calc.get_sheet(doc=doc, index=0)
                 Calc.set_val(value='test', sheet=sheet, cell_name="A1")
@@ -3474,7 +3472,7 @@ class Calc:
             except Exception:
                 print(f"Could not access match index {i}")
         if len(crs) == 0:
-            print(f"Found {c_count} matches but unable to acces any match")
+            print(f"Found {c_count} matches but unable to access any match")
             return None
         return crs
 
@@ -3484,10 +3482,20 @@ class Calc:
 
     @staticmethod
     def create_cell_style(doc: XSpreadsheetDocument, style_name: str) -> XStyle | None:
+        """
+        Creates a style
+
+        Args:
+            doc (XSpreadsheetDocument): Spreadsheet Document
+            style_name (str): Style name
+
+        Returns:
+            XStyle | None: Style on success; Otherwise, None
+        """
         comp_doc = mLo.Lo.qi(XComponent, doc)
         style_families = mInfo.Info.get_style_container(doc=comp_doc, family_style_name="CellStyles")
         style = mLo.Lo.create_instance_msf(XStyle, "com.sun.star.style.CellStyle")
-        # "com.sun.star.sheet.TableCellStyle"  crashes insertByName() ??
+        #   "com.sun.star.sheet.TableCellStyle"  result in style == None ??
         try:
             style_families.insertByName(style_name, style)
             return style
@@ -3499,16 +3507,60 @@ class Calc:
 
     @overload
     @staticmethod
-    def change_style(sheet: XSpreadsheet, style_name: str, range_name: str) -> None:
+    def change_style(sheet: XSpreadsheet, style_name: str, cell_range: XCellRange) -> bool:
+        """
+        Changes style fo a range of cells
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            style_name (str): Name of style to apply
+            cell_range (XCellRange): Cell range to apply style to
+
+        Returns:
+            bool: True if style has been changed; Otherwise, False
+        """
         ...
 
     @overload
     @staticmethod
-    def change_style(sheet: XSpreadsheet, style_name: str, x1: int, y1: int, x2: int, y2: int) -> None:
+    def change_style(sheet: XSpreadsheet, style_name: str, range_name: str) -> bool:
+        """
+        Changes style for a range of cells
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            style_name (str) :Name of style to apply
+            range_name (str): Range to apply style to such as 'A1:E23'
+
+        Returns:
+            bool: True if style has been changed; Otherwise, False
+        """
+        ...
+
+
+    @overload
+    @staticmethod
+    def change_style(
+        sheet: XSpreadsheet, style_name: str, start_col: int, start_row: int, end_col: int, end_row: int
+    ) -> bool:
+        """
+        Changes style fo a range of cells
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            style_name (str):  Name of style to apply
+            start_col (int): Zero-base start column index
+            start_row (int): Zero-base start row index
+            end_col (int): Zero-base end column index
+            end_row (int): Zero-base end row index
+
+        Returns:
+            bool: True if style has been changed; Otherwise, False
+        """
         ...
 
     @classmethod
-    def change_style(cls, *args, **kwargs) -> None:
+    def change_style(cls, *args, **kwargs) -> bool:
         ordered_keys = (1, 2, 3, 4, 5, 6)
         count = len(args) + len(kwargs)
 
@@ -3516,7 +3568,7 @@ class Calc:
             ka = {}
             ka[1] = kwargs.get("sheet", None)
             ka[2] = kwargs.get("style_name", None)
-            keys = ("range_name", "x1")
+            keys = ("range_name", "start_col", "cell_range")
             for key in keys:
                 if key in kwargs:
                     ka[3] = kwargs[key]
@@ -3525,37 +3577,36 @@ class Calc:
             if count == 3:
                 return ka
 
-            ka[4] = kwargs.get["y1", None]
-            ka[5] = kwargs.get["x2", None]
-            ka[6] = kwargs.get["y2", None]
+            ka[4] = kwargs.get("start_row", None)
+            ka[5] = kwargs.get("end_col", None)
+            ka[6] = kwargs.get("end_row", None)
             return ka
 
         if not count in (3, 6):
             print("invalid number of arguments for change_style()")
-            return None
+            return False
 
         kargs = get_kwargs()
 
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
         if count == 3:
-            # def change_style(sheet: XSpreadsheet, style_name: str, range_name: str)
-            cell_range = cls._get_cell_range_rng_name(sheet=kargs[1], range_name=kargs[3])  # 1 sheet, 3 range_name
-            if cell_range is None:
-                return
+            if isinstance(kargs[3], str):
+                # change_style(sheet: XSpreadsheet, style_name: str, range_name: str)
+                cell_range = cls._get_cell_range_rng_name(sheet=kargs[1], range_name=kargs[3])  # 1 sheet, 3 range_name
+                if cell_range is None:
+                    return False
+            else:
+                cell_range = kargs[3]
             mProps.Props.set_property(prop_set=cell_range, name="CellStyle", value=kargs[2])  # 2 style_name
-            return
+            return kargs[2] == mProps.Props.get_property(xprops=cell_range, name="CellStyle")
         else:
             # def change_style(sheet: XSpreadsheet, style_name: str, x1: int, y1: int, x2: int, y2:int)
             cell_range = cls._get_cell_range_col_row(
-                sheet=kargs[1],  # sheet
-                start_col=kargs[3],  # x1
-                start_row=kargs[4],  # y1
-                end_col=kargs[5],  # x2
-                end_row=kargs[6],  # y2
+                sheet=kargs[1], start_col=kargs[3], start_row=kargs[4], end_col=kargs[5], end_row=kargs[6]
             )
             mProps.Props.set_property(prop_set=cell_range, name="CellStyle", value=kargs[2])  # 2 style_name
-        return
+            return kargs[2] == mProps.Props.get_property(xprops=cell_range, name="CellStyle")
 
         # endregion change_style()
 

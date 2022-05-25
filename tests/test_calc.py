@@ -1,3 +1,4 @@
+from unittest import result
 import pytest
 import sys
 
@@ -1695,20 +1696,20 @@ def test_print_cell_address(capsys: pytest.CaptureFixture, loader) -> None:
     doc = Calc.create_doc(loader)
     assert doc is not None
     sheet = Calc.get_sheet(doc=doc, index=0)
-    print_result = 'Cell: Sheet1.D3\n'
+    print_result = "Cell: Sheet1.D3\n"
     col = 3
     row = 2
     addr = Calc.get_cell_address(sheet=sheet, col=col, row=row)
     cell = Calc.get_cell(sheet=sheet, addr=addr)
     # print_cell_address(cell: XCell)
-    captured = capsys.readouterr() # clear buffer
+    captured = capsys.readouterr()  # clear buffer
     Calc.print_cell_address(cell=cell)
     captured = capsys.readouterr()
     assert captured.out == print_result
     Calc.print_cell_address(cell)
     captured = capsys.readouterr()
     assert captured.out == print_result
-    
+
     # print_cell_address(addr: CellAddress)
     Calc.print_cell_address(addr=addr)
     captured = capsys.readouterr()
@@ -1716,7 +1717,7 @@ def test_print_cell_address(capsys: pytest.CaptureFixture, loader) -> None:
     Calc.print_cell_address(addr)
     captured = capsys.readouterr()
     assert captured.out == print_result
-    
+
     Lo.close(closeable=doc, deliver_ownership=False)
 
 
@@ -1728,7 +1729,7 @@ def test_print_address(capsys: pytest.CaptureFixture, loader) -> None:
     doc = Calc.create_doc(loader)
     assert doc is not None
     sheet = Calc.get_sheet(doc=doc, index=0)
-    print_result = 'Range: Sheet1.C3:F22\n'
+    print_result = "Range: Sheet1.C3:F22\n"
     start_col = 2
     start_row = 2
     end_col = 5
@@ -1736,16 +1737,16 @@ def test_print_address(capsys: pytest.CaptureFixture, loader) -> None:
 
     rng = Calc.get_cell_range(sheet=sheet, start_col=start_col, start_row=start_row, end_col=end_col, end_row=end_row)
     cr_addr = Calc.get_address(cell_range=rng)
-    
+
     # print_address(cell_range: XCellRange)
-    captured = capsys.readouterr() # clear buffer
+    captured = capsys.readouterr()  # clear buffer
     Calc.print_address(cell_range=rng)
     captured = capsys.readouterr()
     assert captured.out == print_result
     Calc.print_address(rng)
     captured = capsys.readouterr()
     assert captured.out == print_result
-    
+
     # print_address(cr_addr: CellRangeAddress)
     Calc.print_address(cr_addr=cr_addr)
     captured = capsys.readouterr()
@@ -1774,15 +1775,23 @@ Range: Sheet1.B26:J45
     first_start_row = 2
     first_end_col = 5
     first_end_row = 21
-    first_rng = Calc.get_cell_range(sheet=sheet, start_col=first_start_col, start_row=first_start_row, end_col=first_end_col, end_row=first_end_row)
+    first_rng = Calc.get_cell_range(
+        sheet=sheet, start_col=first_start_col, start_row=first_start_row, end_col=first_end_col, end_row=first_end_row
+    )
     first_cr_addr = Calc.get_address(cell_range=first_rng)
     second_start_col = 1
     second_start_row = 25
     second_end_col = 9
     second_end_row = 44
-    second_rng = Calc.get_cell_range(sheet=sheet, start_col=second_start_col, start_row=second_start_row, end_col=second_end_col, end_row=second_end_row)
+    second_rng = Calc.get_cell_range(
+        sheet=sheet,
+        start_col=second_start_col,
+        start_row=second_start_row,
+        end_col=second_end_col,
+        end_row=second_end_row,
+    )
     second_cr_addr = Calc.get_address(cell_range=second_rng)
-    captured = capsys.readouterr() # clear buffer
+    captured = capsys.readouterr()  # clear buffer
     Calc.print_addresses(first_cr_addr, second_cr_addr)
     captured = capsys.readouterr()
     assert captured.out == print_result
@@ -1802,6 +1811,7 @@ def test_get_cell_series(loader) -> None:
     assert Lo.qi(XCellSeries, series) is not None
     Lo.close(closeable=doc, deliver_ownership=False)
 
+
 def test_is_equal_addresses(loader) -> None:
     from ooodev.utils.lo import Lo
     from ooodev.office.calc import Calc
@@ -1815,36 +1825,45 @@ def test_is_equal_addresses(loader) -> None:
     first_start_row = 2
     first_end_col = 5
     first_end_row = 21
-    first_rng = Calc.get_cell_range(sheet=sheet, start_col=first_start_col, start_row=first_start_row, end_col=first_end_col, end_row=first_end_row)
+    first_rng = Calc.get_cell_range(
+        sheet=sheet, start_col=first_start_col, start_row=first_start_row, end_col=first_end_col, end_row=first_end_row
+    )
     first_cr_addr = Calc.get_address(cell_range=first_rng)
     second_start_col = 1
     second_start_row = 25
     second_end_col = 9
     second_end_row = 44
-    second_rng = Calc.get_cell_range(sheet=sheet, start_col=second_start_col, start_row=second_start_row, end_col=second_end_col, end_row=second_end_row)
+    second_rng = Calc.get_cell_range(
+        sheet=sheet,
+        start_col=second_start_col,
+        start_row=second_start_row,
+        end_col=second_end_col,
+        end_row=second_end_row,
+    )
     first_addr = Calc.get_cell_address(sheet=sheet, col=first_start_col, row=first_start_row)
     second_addr = Calc.get_cell_address(sheet=sheet, col=second_start_col, row=second_start_row)
-    
+
     # is_equal_addresses(addr1: CellAddress, addr2: CellAddress)
     assert Calc.is_equal_addresses(addr1=first_addr, addr2=second_addr) == False
     assert Calc.is_equal_addresses(first_addr, second_addr) == False
     assert Calc.is_equal_addresses(addr1=first_addr, addr2=first_addr)
     assert Calc.is_equal_addresses(first_addr, first_addr)
-    
+
     # is_equal_addresses(addr1: CellRangeAddress, addr2: CellRangeAddress)
     assert Calc.is_equal_addresses(addr1=first_cr_addr, addr2=second_rng) == False
     assert Calc.is_equal_addresses(first_cr_addr, second_rng) == False
     assert Calc.is_equal_addresses(addr1=first_cr_addr, addr2=first_cr_addr)
     assert Calc.is_equal_addresses(first_cr_addr, first_cr_addr)
-    
+
     # test missmatched
     assert Calc.is_equal_addresses(addr1=first_cr_addr, addr2=second_addr) == False
     assert Calc.is_equal_addresses(first_cr_addr, second_addr) == False
-    
+
     # test bad input
     assert Calc.is_equal_addresses(first_cr_addr, object()) == False
-    
+
     Lo.close(closeable=doc, deliver_ownership=False)
+
 
 # endregion get cell and cell range addresses
 
@@ -1873,34 +1892,35 @@ def test_get_range_str(loader) -> None:
     assert result == rng_str
     result = Calc.get_range_str(rng)
     assert result == rng_str
-    
+
     # get_range_str(cr_addr: CellRangeAddress)
     result = Calc.get_range_str(cr_addr=cr_addr)
     assert result == rng_str
     result = Calc.get_range_str(cr_addr)
     assert result == rng_str
-    
+
     # get_range_str(cell_range: XCellRange, sheet: XSpreadsheet)
     result = Calc.get_range_str(cell_range=rng, sheet=sheet)
     assert result == sheet_rng_str
     result = Calc.get_range_str(rng, sheet)
     assert result == sheet_rng_str
-    
+
     # get_range_str(cr_addr: CellRangeAddress, sheet: XSpreadsheet)
     result = Calc.get_range_str(cr_addr=cr_addr, sheet=sheet)
     assert result == sheet_rng_str
     result = Calc.get_range_str(cr_addr, sheet)
     assert result == sheet_rng_str
-    
-    
+
     # get_range_str(start_col: int, start_row: int, end_col: int, end_row: int)
     result = Calc.get_range_str(start_col=start_col, start_row=start_row, end_col=end_col, end_row=end_row)
     assert result == rng_str
     result = Calc.get_range_str(start_col, start_row, end_col, end_row)
     assert result == rng_str
-    
+
     # get_range_str(start_col: int, start_row: int, end_col: int, end_row: int, sheet: XSpreadsheet)
-    result = Calc.get_range_str(start_col=start_col, start_row=start_row, end_col=end_col, end_row=end_row, sheet=sheet)
+    result = Calc.get_range_str(
+        start_col=start_col, start_row=start_row, end_col=end_col, end_row=end_row, sheet=sheet
+    )
     assert result == sheet_rng_str
     result = Calc.get_range_str(start_col, start_row, end_col, end_row, sheet)
     assert result == sheet_rng_str
@@ -1921,19 +1941,19 @@ def test_get_cell_str(loader) -> None:
     name = f"{Calc.column_number_str(col=col)}{row+1}"
     addr = Calc.get_cell_address(sheet=sheet, col=col, row=row)
     cell = Calc.get_cell(sheet=sheet, addr=addr)
-    
+
     # get_cell_str(addr: CellAddress)
     result = Calc.get_cell_str(addr=addr)
     assert result == name
     result = Calc.get_cell_str(addr)
     assert result == name
-    
+
     # get_cell_str(cell: XCell)
     result = Calc.get_cell_str(cell=cell)
     assert result == name
     result = Calc.get_cell_str(cell)
     assert result == name
-    
+
     # get_cell_str(col: int, row: int)
     result = Calc.get_cell_str(col=col, row=row)
     assert result == name
@@ -1942,6 +1962,7 @@ def test_get_cell_str(loader) -> None:
 
     Lo.close(closeable=doc, deliver_ownership=False)
 
+
 # endregion convert cell range address to string
 
 # region    search
@@ -1949,6 +1970,7 @@ def test_find_all(loader) -> None:
     from ooodev.utils.lo import Lo
     from ooodev.office.calc import Calc
     from com.sun.star.util import XSearchable
+
     assert loader is not None
     doc = Calc.create_doc(loader)
     assert doc is not None
@@ -1966,6 +1988,65 @@ def test_find_all(loader) -> None:
 
     sd.setSearchString("hello")
     results = Calc.find_all(srch=srch, sd=sd)
-    assert results is None 
+    assert results is None
     Lo.close(closeable=doc, deliver_ownership=False)
+
+
 # endregion search
+
+# region    cell decoration
+def test_create_cell_style(loader) -> None:
+    from ooodev.utils.lo import Lo
+    from ooodev.office.calc import Calc
+
+    assert loader is not None
+    doc = Calc.create_doc(loader)
+    assert doc is not None
+    style = Calc.create_cell_style(doc=doc, style_name="Fancy")
+    assert style is not None
+    assert style.getName() == "Fancy"
+    Lo.close(closeable=doc, deliver_ownership=False)
+
+    from ooodev.utils.lo import Lo
+    from ooodev.office.calc import Calc
+
+    assert loader is not None
+    doc = Calc.create_doc(loader)
+    assert doc is not None
+    sheet = Calc.get_sheet(doc=doc, index=0)
+    start_col = 2
+    start_row = 2
+    end_col = 5
+    end_row = 21
+    rng_str = Calc.get_range_str(start_col=start_col, start_row=start_row, end_col=end_col, end_row=end_row)
+    cell_range = Calc.get_cell_range(
+        sheet=sheet, start_col=start_col, start_row=start_row, end_col=end_col, end_row=end_row
+    )
+    style = "Accent 1"
+    # change_style(sheet: XSpreadsheet, style_name: str, range_name: str)
+    result = Calc.change_style(sheet=sheet, style_name=style, range_name=rng_str)
+    assert result
+    result = Calc.change_style(sheet, style, rng_str)
+    assert result
+    
+    # change_style(sheet: XSpreadsheet, style_name: str, cell_range: XCellRange)
+    result = Calc.change_style(sheet=sheet, style_name=style, cell_range=cell_range)
+    assert result
+    result = Calc.change_style(sheet, style, cell_range)
+    assert result
+
+    # change_style(sheet: XSpreadsheet, style_name: str, start_col: int, start_row: int, end_col: int, end_row: int)
+    result = Calc.change_style(
+        sheet=sheet, style_name=style, start_col=start_col, start_row=start_row, end_col=end_col, end_row=end_row
+    )
+    assert result
+    result = Calc.change_style(sheet, style, start_col, start_row, end_col, end_row)
+    assert result
+
+    style = "Non existing style"
+    # change_style(sheet: XSpreadsheet, style_name: str, range_name: str)
+    result = Calc.change_style(sheet=sheet, style_name=style, range_name=rng_str)
+    assert result == False
+
+
+# endregion cell decoration
