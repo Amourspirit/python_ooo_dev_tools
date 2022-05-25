@@ -1484,3 +1484,80 @@ def test_get_row_range(loader) -> None:
     assert val == test_val
     Lo.close(closeable=doc, deliver_ownership=False)
 # endregion get XCell and XCellRange methods
+
+# region    convert cell/cellrange names to positions
+
+def test_get_cell_range_positions() -> None:
+    from ooodev.office.calc import Calc
+    points = Calc.get_cell_range_positions(range_name="A1:C5")
+    assert len(points) == 2
+    assert points[0].X == 0 # A
+    assert points[0].Y == 0 # 1
+    assert points[1].X == 2 # C
+    assert points[1].Y == 4 # 5
+    
+
+def test_get_cell_position() -> None:
+    from ooodev.office.calc import Calc
+    # get_cell_position(cell_name: str)
+    p = Calc.get_cell_position(cell_name="C5")
+    assert p.X == 2
+    assert p.Y == 4
+    p = Calc.get_cell_position("C5")
+    assert p.X == 2
+    assert p.Y == 4
+
+def test_get_cell_pos(loader) -> None:
+    from ooodev.utils.lo import Lo
+    from ooodev.office.calc import Calc
+    assert loader is not None
+    doc = Calc.create_doc(loader)
+    assert doc is not None
+    sheet = Calc.get_sheet(doc=doc, index=0)
+   
+    p1 = Calc.get_cell_pos(sheet=sheet, cell_name="C5")
+    p2 = Calc.get_cell_pos(sheet=sheet, cell_name="A1")
+    assert p1.X != p2.X
+    assert p1.Y != p2.X
+    Lo.close(closeable=doc, deliver_ownership=False)
+
+def test_column_number_str() -> None:
+    from ooodev.office.calc import Calc
+    s = Calc.column_number_str(0)
+    assert s == "A"
+    
+    s = Calc.column_number_str(99)
+    assert s == "CV"
+
+def test_column_string_to_number() -> None:
+    from ooodev.office.calc import Calc
+    i = Calc.column_string_to_number("A")
+    assert i == 0
+    
+    i = Calc.column_string_to_number("A4")
+    assert i == 0
+    
+    i = Calc.column_string_to_number("CV")
+    assert i == 99
+    
+    i = Calc.column_string_to_number("CV22")
+    assert i == 99
+
+
+def test_row_string_to_number() -> None:
+    from ooodev.office.calc import Calc
+    i = Calc.row_string_to_number("4")
+    assert i == 3
+    
+    i = Calc.row_string_to_number("Bc4")
+    assert i == 3
+    
+    i = Calc.row_string_to_number("Bc4")
+    assert i == 3
+    
+    # negative or invalid is returned as 0
+    i = Calc.row_string_to_number("-4")
+    assert i == 0
+    i = Calc.row_string_to_number("BA-4")
+    assert i == 0
+# endregion convert cell/cellrange names to positions

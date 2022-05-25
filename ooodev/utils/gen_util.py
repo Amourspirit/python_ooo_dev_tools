@@ -1,7 +1,9 @@
 # coding: utf-8
 from __future__ import annotations
+import string
 from typing import Callable, Iterable, Iterator, Sequence, List, NamedTuple, Any, Tuple, overload
 from inspect import isclass
+import string
 
 
 class TableHelper:
@@ -17,12 +19,36 @@ class TableHelper:
         Returns:
             int: One based int representing column name
         """
+        chars = name.rstrip(string.digits)
         pow = 1
         col_num = 0
-        for letter in name[::-1]:
+        for letter in chars[::-1]: # reverse chars
                 col_num += (int(letter, 36) -9) * pow
                 pow *= 26
         return col_num
+
+    @staticmethod
+    def row_name_to_int(name: str) -> int:
+        """
+        Converts a row name into an int.
+        Leading Alpha chars are ignore. ``'4'`` converts to ``4``. ``'C5'`` converts to ``5``
+
+        Args:
+            name (str): row name to convert
+
+        Returns:
+            int: converted name as int.
+        """
+        chars = name.rstrip(string.digits + '-')
+        if chars:
+            s = name[len(chars)] # drop leading chars that are not numbers.
+        else:
+            s = name
+        result = int(s)
+        if result < 0:
+            raise ValueError(f"Cannot parse negative values: {name}")
+        return result
+
 
     @classmethod
     def make_cell_name(cls, row: int, col: int) -> str:

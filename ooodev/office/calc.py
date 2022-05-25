@@ -1013,7 +1013,7 @@ class Calc:
 
     @classmethod
     def _set_val_by_cell_name(cls, value: object, sheet: XSpreadsheet, cell_name: str) -> None:
-        pos = cls.get_cell_position(cell_name)
+        pos = cls._get_cell_position_cell_name(cell_name)
         cls._set_val_by_col_row(value=value, sheet=sheet, column=pos.X, row=pos.Y)
 
     @classmethod
@@ -1170,7 +1170,7 @@ class Calc:
 
     @classmethod
     def _get_val_by_cell_name(cls, sheet: XSpreadsheet, cell_name: str) -> object | None:
-        pos = cls.get_cell_position(cell_name)
+        pos = cls._get_cell_position_cell_name(cell_name)
         return cls._get_val_by_col_row(sheet=sheet, column=pos.X, row=pos.Y)
 
     @classmethod
@@ -1713,7 +1713,7 @@ class Calc:
         if v_len == 0:
             print("Values has not data")
             return
-        pos = cls.get_cell_position(cell_name)
+        pos = cls._get_cell_position_cell_name(cell_name)
         col_end = pos.X + (len(values[0]) - 1)
         row_end = pos.Y + (v_len - 1)
         cell_range = cls._get_cell_range_col_row(
@@ -1952,7 +1952,7 @@ class Calc:
             kargs[ordered_keys[i]] = arg
 
         if count == 3:
-            pos = cls.get_cell_position(kargs[3])
+            pos = cls._get_cell_position_cell_name(kargs[3])
             x = pos.X
             y = pos.Y
         else:
@@ -2026,7 +2026,7 @@ class Calc:
             kargs[ordered_keys[i]] = arg
 
         if count == 3:
-            pos = cls.get_cell_position(kargs[3])
+            pos = cls._get_cell_position_cell_name(kargs[3])
             col_start = pos.X
             row_start = pos.Y
         else:
@@ -2544,6 +2544,16 @@ class Calc:
 
     @staticmethod
     def get_row_range(sheet: XSpreadsheet, idx: int) -> XCellRange | None:
+        """
+        Get Row by index
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            idx (int): Zero-based column index
+
+        Returns:
+            XCellRange | None: Cell range on success; Othwrwise, None
+        """
         cr_range = mLo.Lo.qi(XColumnRowRange, sheet)
         if cr_range is None:
             return None
@@ -2560,17 +2570,42 @@ class Calc:
     # region --------------- convert cell/cellrange names to positions -
 
     @classmethod
-    def get_cell_range_positions(cls, cell_range: str) -> Tuple[Point] | None:
-        cell_names = cell_range.split(":")
+    def get_cell_range_positions(cls, range_name: str) -> Tuple[Point, Point] | None:
+        """
+        Gets Cell range as a tuple of Point, Point
+        
+        First Point.X is start column index, Point.Y is start row index.
+        Second Point.X is end column index, Point.Y is end row index.
+
+        Args:
+            range_name (str): Range name such as 'A1:C8'
+
+        Returns:
+            Tuple[Point, Point] | None: Range as tuple on success; Otherwise, None
+        """
+        cell_names = range_name.split(":")
         if len(cell_names) != 2:
-            print(f"Cell range not found in {cell_range}")
+            print(f"Cell range not found in {range_name}")
             return None
-        start_pos = cls.get_cell_position(cell_names[0])
-        end_pos = cls.get_cell_position(cell_names[1])
+        start_pos = cls._get_cell_position_cell_name(cell_names[0])
+        end_pos = cls._get_cell_position_cell_name(cell_names[1])
         return (start_pos, end_pos)
 
+    # region    get_cell_position()
     @classmethod
     def get_cell_position(cls, cell_name: str) -> Point | None:
+        """
+        Gets a cell name as a Point.
+        
+        Point.X is column index.
+        Point.y is row index.
+
+        Args:
+            cell_name (str): Cell name suca as 'A1' 
+
+        Returns:
+            Point | None: cell name as Point on success; Otherwise, None
+        """
         m = cls._rx_cell.match(cell_name)
         if m:
             ncolumn = cls.column_string_to_number(str(m.group(1)).upper())
@@ -2582,12 +2617,32 @@ class Calc:
 
     @classmethod
     def get_cell_pos(cls, sheet: XSpreadsheet, cell_name: str) -> Point:
+        """
+        Contains the position of the top left cell of this range in the sheet (in 1/100 mm).
+        
+        This property contains the absolute position in the whole sheet,
+        not the position in the visible area.
+
+        Args:
+            cell_name (str):  Cell name suca as 'A1' 
+            sheet (XSpreadsheet): Spreadsheet
+
+        Returns:
+            Point | None: cell name as Point on success; Otherwise, None
+        """
         xcell = cls._get_cell_sheet_cell(sheet=sheet, cell_name=cell_name)
+        if xcell is None:
+            print("No match found")
+            return None
         pos = mProps.Props.get_property(xprops=xcell, name="Position")
         if pos is None:
             print(f"Could not determine position of cell '{cell_name}'")
             pos = cls.CELL_POS
+            # print("No match found")
+            # return None
         return pos
+
+    # endregion get_cell_position()
 
     @staticmethod
     def column_string_to_number(col_str: str) -> int:
@@ -2616,7 +2671,7 @@ class Calc:
             int: Number if conversion succeeds; Othwrwise, 0
         """
         try:
-            return int(row_str) - 1
+            return TableHelper.row_name_to_int(row_str) - 1
         except ValueError:
             print(f"Incorrect format for {row_str}")
         return 0
