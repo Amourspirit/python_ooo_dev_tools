@@ -1687,4 +1687,73 @@ def test_get_address(loader) -> None:
 
     Lo.close(closeable=doc, deliver_ownership=False)
 
+
+def test_print_cell_address(capsys: pytest.CaptureFixture, loader) -> None:
+    from ooodev.utils.lo import Lo
+    from ooodev.office.calc import Calc
+
+    assert loader is not None
+    doc = Calc.create_doc(loader)
+    assert doc is not None
+    sheet = Calc.get_sheet(doc=doc, index=0)
+    print_result = 'Cell: Sheet1.D3\n'
+    col = 3
+    row = 2
+    addr = Calc.get_cell_address(sheet=sheet, col=col, row=row)
+    cell = Calc.get_cell(sheet=sheet, addr=addr)
+    # print_cell_address(cell: XCell)
+    captured = capsys.readouterr() # clear buffer
+    Calc.print_cell_address(cell=cell)
+    captured = capsys.readouterr()
+    assert captured.out == print_result
+    Calc.print_cell_address(cell)
+    captured = capsys.readouterr()
+    assert captured.out == print_result
+    
+    # print_cell_address(addr: CellAddress)
+    Calc.print_cell_address(addr=addr)
+    captured = capsys.readouterr()
+    assert captured.out == print_result
+    Calc.print_cell_address(addr)
+    captured = capsys.readouterr()
+    assert captured.out == print_result
+    
+    Lo.close(closeable=doc, deliver_ownership=False)
+
+
+def test_print_address(capsys: pytest.CaptureFixture, loader) -> None:
+    from ooodev.utils.lo import Lo
+    from ooodev.office.calc import Calc
+
+    assert loader is not None
+    doc = Calc.create_doc(loader)
+    assert doc is not None
+    sheet = Calc.get_sheet(doc=doc, index=0)
+    print_result = 'Range: Sheet1.C3:F22\n'
+    start_col = 2
+    start_row = 2
+    end_col = 5
+    end_row = 21
+
+    rng = Calc.get_cell_range(sheet=sheet, start_col=start_col, start_row=start_row, end_col=end_col, end_row=end_row)
+    cr_addr = Calc.get_address(cell_range=rng)
+    
+    # print_address(cell_range: XCellRange)
+    captured = capsys.readouterr() # clear buffer
+    Calc.print_address(cell_range=rng)
+    captured = capsys.readouterr()
+    assert captured.out == print_result
+    Calc.print_address(rng)
+    captured = capsys.readouterr()
+    assert captured.out == print_result
+    
+    # print_address(cr_addr: CellRangeAddress)
+    Calc.print_address(cr_addr=cr_addr)
+    captured = capsys.readouterr()
+    assert captured.out == print_result
+    Calc.print_address(cr_addr)
+    captured = capsys.readouterr()
+    assert captured.out == print_result
+
+    Lo.close(closeable=doc, deliver_ownership=False)
 # endregion get cell and cell range addresses

@@ -2913,11 +2913,23 @@ class Calc:
     @overload
     @staticmethod
     def print_cell_address(cell: XCell) -> None:
+        """
+        Prints Cell to terminal such as ``Cell: Sheet1.D3``
+
+        Args:
+            cell (XCell): cell
+        """
         ...
 
     @overload
     @staticmethod
     def print_cell_address(addr: CellAddress) -> None:
+        """
+       Prints Cell to terminal such as ``Cell: Sheet1.D3``
+
+        Args:
+            addr (CellAddress): Cell Address
+        """
         ...
 
     @classmethod
@@ -2942,13 +2954,11 @@ class Calc:
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
 
-        for i, arg in enumerate(args):
-            kargs[ordered_keys[i]] = arg
         if mInfo.Info.is_type_interface(obj=kargs[1], type_name="com.sun.star.table.XCell"):
             addr = cls._get_cell_address_cell(cell=kargs[1])
         else:
             addr = kargs[1]
-        print(f"Cell: Sheet{addr.Sheet+1}.{cls.get_cell_str(addr=addr)})")
+        print(f"Cell: Sheet{addr.Sheet+1}.{cls.get_cell_str(addr=addr)}")
 
     # endregion    print_cell_address()
 
@@ -2956,27 +2966,37 @@ class Calc:
     @overload
     @staticmethod
     def print_address(cell_range: XCellRange) -> None:
+        """
+        Prints Cell range to terminal such as ``'Range: Sheet1.C3:F22``
+
+        Args:
+            cell_range (XCellRange): Cell range
+        """
         ...
 
     @overload
     @staticmethod
     def print_address(cr_addr: CellRangeAddress) -> None:
+        """
+        Prints Cell range to terminal such as ``'Range: Sheet1.C3:F22``
+
+        Args:
+            cr_addr (CellRangeAddress): Cell Address
+        """
         ...
 
     @classmethod
     def print_address(cls, *args, **kwargs) -> None:
-        ordered_keys = ("first",)
+        ordered_keys = (1,)
         count = len(args) + len(kwargs)
 
         def get_kwargs() -> dict:
             ka = {}
-            key = "cell_range"
-            if key in kwargs:
-                ka["first"] = kwargs[key]
-
-            key = "cr_addr"
-            if key in kwargs:
-                ka["first"] = kwargs[key]
+            keys = ("cell_range", "cr_addr")
+            for key in keys:
+                if key in kwargs:
+                    ka[1] = kwargs[key]
+                    break
             return ka
 
         if count != 1:
@@ -2988,12 +3008,12 @@ class Calc:
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
 
-        cell_range = mLo.Lo.qi(XCellRange, kargs["first"])
+        cell_range = mLo.Lo.qi(XCellRange, kargs[1])
         if cell_range is None:
             # when cast is used with an import the is not available at runtime must be quoted.
-            cr_addr = cast("CellRangeAddress", kargs["first"])
+            cr_addr = cast("CellRangeAddress", kargs[1])
         else:
-            cr_addr = cls._get_address_cell(cell_range=kargs["first"])
+            cr_addr = cls._get_address_cell(cell_range=kargs[1])
         msg = f"Range: Sheet{cr_addr.Sheet+1}.{cls.get_cell_str(col=cr_addr.StartColumn,row=cr_addr.StartRow)}:"
         msg += f"{cls.get_cell_str(col=cr_addr.EndColumn, row=cr_addr.EndRow)}"
         print(msg)

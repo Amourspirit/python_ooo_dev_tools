@@ -162,7 +162,7 @@ class Lo:
         Returns:
             T | None: Return obj if interface is supported: Otherwise, None
         """
-        if uno.isInterface(atype):
+        if uno.isInterface(atype) and hasattr(obj, 'queryInterface'):
             uno_t = uno.getTypeByName(atype.__pyunointerface__)
             q_obj = obj.queryInterface(uno_t)
             if q_obj:
