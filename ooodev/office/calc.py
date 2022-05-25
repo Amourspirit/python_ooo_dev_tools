@@ -3324,16 +3324,44 @@ class Calc:
     @overload
     @staticmethod
     def get_cell_str(addr: CellAddress) -> str:
+        """
+        Gets the range as a string inf format of ``A1``
+
+        Args:
+            addr (CellAddress): Cell Address
+
+        Returns:
+            str: Cell as str
+        """
         ...
 
     @overload
     @staticmethod
     def get_cell_str(cell: XCell) -> str:
+        """
+        Gets the range as a string inf format of ``A1``
+
+        Args:
+            cell (XCell): Cell
+
+        Returns:
+            str: Cell as str
+        """
         ...
 
     @overload
     @staticmethod
     def get_cell_str(col: int, row: int) -> str:
+        """
+         Gets the range as a string inf format of ``A1``
+
+        Args:
+            col (int): Zero-based column index
+            row (int): Zero-based row index
+
+        Returns:
+            str: Cell as str
+        """
         ...
 
     @classmethod

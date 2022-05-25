@@ -1897,12 +1897,46 @@ def test_get_range_str(loader) -> None:
     result = Calc.get_range_str(start_col, start_row, end_col, end_row)
     assert result == rng_str
     
-    # get_range_str(start_col: int, start_row: int, end_col: int, end_row: int,  sheet: XSpreadsheet)
+    # get_range_str(start_col: int, start_row: int, end_col: int, end_row: int, sheet: XSpreadsheet)
     result = Calc.get_range_str(start_col=start_col, start_row=start_row, end_col=end_col, end_row=end_row, sheet=sheet)
     assert result == sheet_rng_str
     result = Calc.get_range_str(start_col, start_row, end_col, end_row, sheet)
     assert result == sheet_rng_str
 
     Lo.close(closeable=doc, deliver_ownership=False)
+
+
+def test_get_cell_str(loader) -> None:
+    from ooodev.utils.lo import Lo
+    from ooodev.office.calc import Calc
+
+    assert loader is not None
+    doc = Calc.create_doc(loader)
+    assert doc is not None
+    sheet = Calc.get_sheet(doc=doc, index=0)
+    col = 2
+    row = 3
+    name = f"{Calc.column_number_str(col=col)}{row+1}"
+    addr = Calc.get_cell_address(sheet=sheet, col=col, row=row)
+    cell = Calc.get_cell(sheet=sheet, addr=addr)
     
+    # get_cell_str(addr: CellAddress)
+    result = Calc.get_cell_str(addr=addr)
+    assert result == name
+    result = Calc.get_cell_str(addr)
+    assert result == name
+    
+    # get_cell_str(cell: XCell)
+    result = Calc.get_cell_str(cell=cell)
+    assert result == name
+    result = Calc.get_cell_str(cell)
+    assert result == name
+    
+    # get_cell_str(col: int, row: int)
+    result = Calc.get_cell_str(col=col, row=row)
+    assert result == name
+    result = Calc.get_cell_str(col, row)
+    assert result == name
+
+    Lo.close(closeable=doc, deliver_ownership=False)
 # endregion get cell and cell range addresses
