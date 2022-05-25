@@ -1,7 +1,5 @@
 from typing import cast
-from unittest import result
 import pytest
-import sys
 
 # from ooodev.office.write import Write
 if __name__ == "__main__":
@@ -2277,5 +2275,49 @@ def test_highlight_range(loader) -> None:
     result = Calc.get_string(cell=first)
     assert result == headline
     Lo.close(closeable=doc, deliver_ownership=False)
-    
+
+
+def test_set_col_width(loader) -> None:
+    from ooodev.utils.lo import Lo
+    from ooodev.utils.props import Props
+    from ooodev.office.calc import Calc
+
+    assert loader is not None
+    doc = Calc.create_doc(loader)
+    assert doc is not None
+    sheet = Calc.get_sheet(doc=doc, index=0)
+    idx = 3
+    width = 12
+    cell_range = Calc.set_col_width(sheet=sheet, width=width, idx=idx)
+    assert cell_range is not None
+    # convert to decimal and use approx to test with a tolerance value.
+    # https://docs.pytest.org/en/latest/reference/reference.html?highlight=approx#pytest.approx
+    c_width = Props.get_property(xprops=cell_range, name="Width")
+    assert c_width / 10000 == pytest.approx(width / 100, rel=1e-2)
+    Lo.close(closeable=doc, deliver_ownership=False)
+
+def test_set_row_height(loader) -> None:
+    from ooodev.utils.lo import Lo
+    from ooodev.utils.props import Props
+    from ooodev.office.calc import Calc
+
+    assert loader is not None
+    doc = Calc.create_doc(loader)
+    assert doc is not None
+    sheet = Calc.get_sheet(doc=doc, index=0)
+    idx = 3
+    height = 14
+    cell_range = Calc.set_row_height(sheet=sheet, height=height, idx=idx)
+    assert cell_range is not None
+    c_height = Props.get_property(xprops=cell_range, name="Height")
+    assert c_height is not None
+    # assert 0.1401 == 0.14 ± 1.4e-07
+    # E         comparison failed
+    # E         Obtained: 0.1401
+    # E         Expected: 0.14 ± 1.4e-07
+    # height can vary a small amount from set value.
+    # convert to decimal and use approx to test with a tolerance value.
+    # https://docs.pytest.org/en/latest/reference/reference.html?highlight=approx#pytest.approx
+    assert c_height / 10000 == pytest.approx(height / 100, rel=1e-2)
+    Lo.close(closeable=doc, deliver_ownership=False)
 # endregion cell decoration

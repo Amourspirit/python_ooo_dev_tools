@@ -3926,27 +3926,49 @@ class Calc:
         return first_cell
 
     @classmethod
-    def set_col_width(cls, sheet: XSpreadsheet, idx: int, width: int) -> None:
+    def set_col_width(cls, sheet: XSpreadsheet, width: int, idx: int) -> XCellRange | None:
         """
-        Sets column width.
-        width is in mm, e.g. 6
+        Sets column width. width is in ``mm``, e.g. 6
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            width (int): Width in mm
+            idx (int): Index of column
+
+        Returns:
+            XCellRange | None: Column cell range that width is applied to on success; Otherwise, None
         """
+        if width <= 0:
+            print("Width must be greater then 0")
+            return None
         cell_range = cls.get_col_range(sheet=sheet, idx=idx)
         if cell_range is None:
-            return
+            return None
         mProps.Props.set_property(prop_set=cell_range, name="Width", value=(width * 100))
+        return cell_range
 
     @classmethod
-    def set_row_height(cls, sheet: XSpreadsheet, idx: int, height: int) -> None:
+    def set_row_height(cls, sheet: XSpreadsheet, height: int, idx: int,) ->  XCellRange | None:
         """
-        Sets column width.
-        height is in mm, e.g. 6
+        Sets column width. height is in ``mm``, e.g. 6
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            height (int): Width in mm
+            idx (int): Index of Row
+
+        Returns:
+            XCellRange | None: Row cell range that height is applied to on success; Otherwise, None
         """
+        if height <= 0:
+            print("Height must be greater then 0")
+            return None
         cell_range = cls.get_row_range(sheet=sheet, idx=idx)
         if cell_range is None:
             return
-        mInfo.Info.show_services(obj_name="Cell range for a row", obj=cell_range)
+        # mInfo.Info.show_services(obj_name="Cell range for a row", obj=cell_range)
         mProps.Props.set_property(prop_set=cell_range, name="Height", value=(height * 100))
+        return cell_range
 
     # endregion ------------ cell decoration ---------------------------
 
