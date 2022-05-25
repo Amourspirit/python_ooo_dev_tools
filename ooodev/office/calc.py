@@ -3839,19 +3839,77 @@ class Calc:
         return cell_range
 
     # endregion add_border()
-
-    @classmethod
-    def highlight_range(cls, sheet: XSpreadsheet, range_name: str, headline: str) -> None:
+    @overload
+    @staticmethod
+    def highlight_range(sheet: XSpreadsheet,  headline: str, cell_range: XCellRange) ->  XCell | None:
         """
         Draw a colored border around the range and write a headline in the
         top-left cell of the range.
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            headline (str): Headline
+            cell_range (XCellRange): Cell Range
+
+        Returns:
+            XCell | None: First cell of range that headline was applied to on success; Otherwise, None
         """
-        cls._add_border_sht_rng_color(sheet=sheet, range_name=range_name, color=CommonColor.LIGHT_BLUE)
+        ...
+    
+    @overload
+    @staticmethod
+    def highlight_range(sheet: XSpreadsheet,  headline: str, range_name: str) ->  XCell | None:
+        """
+        Draw a colored border around the range and write a headline in the
+        top-left cell of the range.
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            headline (str): Headline
+            range_name (str): Range Name such as 'A1:F9'
+
+        Returns:
+            XCell | None: First cell of range that headline was applied to on success; Otherwise, None            
+        """
+        ...
+
+    @classmethod
+    def highlight_range(cls, *args, **kwargs) -> XCell | None:
+        ordered_keys = (1, 2, 3)
+        count = len(args) + len(kwargs)
+
+        def get_kwargs() -> dict:
+            ka = {}
+            ka[1] = kwargs.get("sheet", None)
+            ka[2] = kwargs.get("headline", None)
+            keys = ("range_name", "cell_range")
+            for key in keys:
+                if key in kwargs:
+                    ka[3] = kwargs[key]
+                    break
+            return ka
+
+        if count != 3:
+            print("invalid number of arguments for highlight_range()")
+            return None
+
+        kargs = get_kwargs()
+
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
+
+        sheet = cast(XSpreadsheet, kargs[1])
+        if isinstance(kargs[3], str):
+            cell_range = sheet.getCellRangeByName(kargs[3])
+        else:
+            cell_range = kargs[3]
+
+        cls._add_border_sht_rng_color(cell_range=cell_range, color=CommonColor.LIGHT_BLUE)
 
         # color the headline
-        addr = cls._get_address_sht_rng(sheet=sheet, range_name=range_name)
+        addr = cls._get_address_cell(cell_range=cell_range)
         if addr is None:
-            return
+            return None
         header_range = cls._get_cell_range_col_row(
             sheet=sheet,
             start_col=addr.StartColumn,
@@ -3860,11 +3918,12 @@ class Calc:
             end_row=addr.StartRow,
         )
         if header_range is None:
-            return
+            return None
         first_cell = cls._get_cell_cell_rng(cell_range=header_range, column=0, row=0)
         if first_cell is None:
-            return
-        cls._set_val_by_cell(value=headline, cell=first_cell)
+            return None
+        cls._set_val_by_cell(value=kargs[2], cell=first_cell)
+        return first_cell
 
     @classmethod
     def set_col_width(cls, sheet: XSpreadsheet, idx: int, width: int) -> None:

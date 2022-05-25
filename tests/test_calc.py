@@ -2056,12 +2056,15 @@ def test_add_border(loader) -> None:
     from ooodev.utils.props import Props
     from ooodev.utils import color
     from com.sun.star.table import TableBorder2
-
+    from ooodev.utils.gui import GUI
+    visible = False
+    delay = 0
     assert loader is not None
     doc = Calc.create_doc(loader)
     assert doc is not None
     sheet = Calc.get_sheet(doc=doc, index=0)
-
+    GUI.set_visible(is_visible=visible, odoc=doc)
+    Lo.delay(delay)
     rng_name = "B1:F8"
     # add_border(sheet: XSpreadsheet, range_name: str)
     rng = Calc.add_border(sheet=sheet, range_name=rng_name)
@@ -2071,6 +2074,7 @@ def test_add_border(loader) -> None:
     assert tbl_border.RightLine.Color == 0
     assert tbl_border.TopLine.Color == 0
     assert tbl_border.BottomLine.Color == 0
+    Lo.delay(delay)
     cell_rng = Calc.add_border(sheet, rng_name)
     assert cell_rng is not None
     tbl_border = cast(TableBorder2, Props.get_property(xprops=cell_rng, name="TableBorder2"))
@@ -2080,6 +2084,7 @@ def test_add_border(loader) -> None:
     assert tbl_border.BottomLine.Color == 0
 
     # add_border(sheet: XSpreadsheet, cell_range: XCellRange)
+    Lo.delay(delay)
     cell_rng = Calc.add_border(sheet=sheet, cell_range=rng)
     assert cell_rng is not None
     tbl_border = cast(TableBorder2, Props.get_property(xprops=cell_rng, name="TableBorder2"))
@@ -2087,6 +2092,7 @@ def test_add_border(loader) -> None:
     assert tbl_border.RightLine.Color == 0
     assert tbl_border.TopLine.Color == 0
     assert tbl_border.BottomLine.Color == 0
+    Lo.delay(delay)
     cell_rng = Calc.add_border(sheet, rng)
     assert cell_rng is not None
     tbl_border = cast(TableBorder2, Props.get_property(xprops=cell_rng, name="TableBorder2"))
@@ -2096,6 +2102,7 @@ def test_add_border(loader) -> None:
     assert tbl_border.BottomLine.Color == 0
     
     # add_border(sheet: XSpreadsheet, cell_range: XCellRange, color: int)
+    Lo.delay(delay)
     cell_rng = Calc.add_border(sheet=sheet, cell_range=rng, color=color.CommonColor.GREEN)
     assert cell_rng is not None
     tbl_border = cast(TableBorder2, Props.get_property(xprops=cell_rng, name="TableBorder2"))
@@ -2103,6 +2110,7 @@ def test_add_border(loader) -> None:
     assert tbl_border.RightLine.Color == color.CommonColor.GREEN
     assert tbl_border.TopLine.Color == color.CommonColor.GREEN
     assert tbl_border.BottomLine.Color == color.CommonColor.GREEN
+    Lo.delay(delay)
     cell_rng = Calc.add_border(sheet, rng, color.CommonColor.DARK_BLUE)
     assert cell_rng is not None
     tbl_border = cast(TableBorder2, Props.get_property(xprops=cell_rng, name="TableBorder2"))
@@ -2111,7 +2119,8 @@ def test_add_border(loader) -> None:
     assert tbl_border.TopLine.Color == color.CommonColor.DARK_BLUE
     assert tbl_border.BottomLine.Color == color.CommonColor.DARK_BLUE
     
-     # add_border(sheet: XSpreadsheet, range_name: str, color: int)
+    # add_border(sheet: XSpreadsheet, range_name: str, color: int)
+    Lo.delay(delay)
     cell_rng = Calc.add_border(sheet=sheet, range_name=rng_name, color=color.CommonColor.GREEN)
     assert cell_rng is not None
     tbl_border = cast(TableBorder2, Props.get_property(xprops=cell_rng, name="TableBorder2"))
@@ -2119,6 +2128,7 @@ def test_add_border(loader) -> None:
     assert tbl_border.RightLine.Color == color.CommonColor.GREEN
     assert tbl_border.TopLine.Color == color.CommonColor.GREEN
     assert tbl_border.BottomLine.Color == color.CommonColor.GREEN
+    Lo.delay(delay)
     cell_rng = Calc.add_border(sheet, rng, color.CommonColor.DARK_BLUE)
     assert cell_rng is not None
     tbl_border = cast(TableBorder2, Props.get_property(xprops=cell_rng, name="TableBorder2"))
@@ -2128,6 +2138,7 @@ def test_add_border(loader) -> None:
     assert tbl_border.BottomLine.Color == color.CommonColor.DARK_BLUE
     
     # add_border(sheet: XSpreadsheet, cell_range: XCellRange, color: int, border_vals: int)
+    Lo.delay(delay)
     bval = Calc.BorderEnum.TOP_BORDER | Calc.BorderEnum.LEFT_BORDER
     cell_rng = Calc.add_border(sheet=sheet, cell_range=rng, color=color.CommonColor.BLACK) # reset colors
     cell_rng = Calc.add_border(sheet=sheet, cell_range=rng, color=color.CommonColor.GREEN, border_vals=int(bval))
@@ -2136,6 +2147,7 @@ def test_add_border(loader) -> None:
     assert tbl_border.LeftLine.Color == color.CommonColor.GREEN
     assert tbl_border.RightLine.Color == color.CommonColor.BLACK
     assert tbl_border.BottomLine.Color == color.CommonColor.BLACK
+    Lo.delay(delay)
     cell_rng = Calc.add_border(sheet=sheet, cell_range=rng, color=color.CommonColor.BLACK) # reset colors
     cell_rng = Calc.add_border(sheet, rng, color.CommonColor.DARK_BLUE, int(bval))
     tbl_border = cast(TableBorder2, Props.get_property(xprops=cell_rng, name="TableBorder2"))
@@ -2145,6 +2157,7 @@ def test_add_border(loader) -> None:
     assert tbl_border.BottomLine.Color == color.CommonColor.BLACK
 
     # add_border(sheet: XSpreadsheet, range_name: str, color: int, border_vals: int)
+    Lo.delay(delay)
     cell_rng = Calc.add_border(sheet=sheet, cell_range=rng, color=color.CommonColor.BLACK) # reset colors
     cell_rng = Calc.add_border(sheet=sheet, range_name=rng_name, color=color.CommonColor.GREEN, border_vals=int(bval))
     tbl_border = cast(TableBorder2, Props.get_property(xprops=cell_rng, name="TableBorder2"))
@@ -2152,6 +2165,7 @@ def test_add_border(loader) -> None:
     assert tbl_border.LeftLine.Color == color.CommonColor.GREEN
     assert tbl_border.RightLine.Color == color.CommonColor.BLACK
     assert tbl_border.BottomLine.Color == color.CommonColor.BLACK
+    Lo.delay(delay)
     cell_rng = Calc.add_border(sheet=sheet, cell_range=rng, color=color.CommonColor.BLACK) # reset colors
     cell_rng = Calc.add_border(sheet, rng_name, color.CommonColor.DARK_BLUE, int(bval))
     tbl_border = cast(TableBorder2, Props.get_property(xprops=cell_rng, name="TableBorder2"))
@@ -2161,6 +2175,7 @@ def test_add_border(loader) -> None:
     assert tbl_border.BottomLine.Color == color.CommonColor.BLACK
 
     # add_border(sheet: XSpreadsheet, cell_range: XCellRange, color: int, border_vals: BorderEnum)
+    Lo.delay(delay)
     cell_rng = Calc.add_border(sheet=sheet, cell_range=rng, color=color.CommonColor.BLACK) # reset colors
     cell_rng = Calc.add_border(sheet=sheet, cell_range=rng, color=color.CommonColor.GREEN, border_vals=bval)
     tbl_border = cast(TableBorder2, Props.get_property(xprops=cell_rng, name="TableBorder2"))
@@ -2168,6 +2183,7 @@ def test_add_border(loader) -> None:
     assert tbl_border.LeftLine.Color == color.CommonColor.GREEN
     assert tbl_border.RightLine.Color == color.CommonColor.BLACK
     assert tbl_border.BottomLine.Color == color.CommonColor.BLACK
+    Lo.delay(delay)
     cell_rng = Calc.add_border(sheet=sheet, cell_range=rng, color=color.CommonColor.BLACK) # reset colors
     cell_rng = Calc.add_border(sheet, rng, color.CommonColor.DARK_BLUE, bval)
     tbl_border = cast(TableBorder2, Props.get_property(xprops=cell_rng, name="TableBorder2"))
@@ -2177,6 +2193,7 @@ def test_add_border(loader) -> None:
     assert tbl_border.BottomLine.Color == color.CommonColor.BLACK
     
     # add_border(sheet: XSpreadsheet, range_name: str, color: int, border_vals: BorderEnum)
+    Lo.delay(delay)
     cell_rng = Calc.add_border(sheet=sheet, cell_range=rng, color=color.CommonColor.BLACK) # reset colors
     cell_rng = Calc.add_border(sheet=sheet, range_name=rng_name, color=color.CommonColor.GREEN, border_vals=bval)
     tbl_border = cast(TableBorder2, Props.get_property(xprops=cell_rng, name="TableBorder2"))
@@ -2184,6 +2201,7 @@ def test_add_border(loader) -> None:
     assert tbl_border.LeftLine.Color == color.CommonColor.GREEN
     assert tbl_border.RightLine.Color == color.CommonColor.BLACK
     assert tbl_border.BottomLine.Color == color.CommonColor.BLACK
+    Lo.delay(delay)
     cell_rng = Calc.add_border(sheet=sheet, cell_range=rng, color=color.CommonColor.BLACK) # reset colors
     cell_rng = Calc.add_border(sheet, rng_name, color.CommonColor.DARK_BLUE, bval)
     tbl_border = cast(TableBorder2, Props.get_property(xprops=cell_rng, name="TableBorder2"))
@@ -2191,7 +2209,73 @@ def test_add_border(loader) -> None:
     assert tbl_border.LeftLine.Color == color.CommonColor.DARK_BLUE
     assert tbl_border.RightLine.Color == color.CommonColor.BLACK
     assert tbl_border.BottomLine.Color == color.CommonColor.BLACK
+    Lo.delay(delay)
 
     Lo.close(closeable=doc, deliver_ownership=False)
 
+def test_highlight_range(loader) -> None:
+    from ooodev.utils.lo import Lo
+    from ooodev.office.calc import Calc
+    from ooodev.utils.gui import GUI
+    visible = False
+    delay = 0 # 3000
+    assert loader is not None
+    doc = Calc.create_doc(loader)
+    assert doc is not None
+    sheet = Calc.get_sheet(doc=doc, index=0)
+    if visible:
+        GUI.set_visible(is_visible=visible, odoc=doc)
+    
+    rng_name = "B3:F8"
+    headline = "Hello World!"
+    rng = sheet.getCellRangeByName(rng_name)
+    first = Calc.highlight_range(sheet=sheet, headline=headline, cell_range=rng)
+    Lo.delay(delay)
+    assert first is not None
+    result = Calc.get_string(cell=first)
+    assert result == headline
+    
+    Lo.close(closeable=doc, deliver_ownership=False)
+    Lo.delay(500)
+    
+    # highlight_range(sheet: XSpreadsheet,  headline: str, cell_range: XCellRange)
+    doc = Calc.create_doc(loader)
+    sheet = Calc.get_sheet(doc=doc, index=0)
+    rng = sheet.getCellRangeByName(rng_name)
+    if visible:
+        GUI.set_visible(is_visible=visible, odoc=doc)
+    first = Calc.highlight_range(sheet, headline, rng)
+    Lo.delay(delay)
+    assert first is not None
+    result = Calc.get_string(cell=first)
+    assert result == headline   
+    Lo.close(closeable=doc, deliver_ownership=False)
+    Lo.delay(500)
+    
+    # highlight_range(sheet: XSpreadsheet,  headline: str, range_name: str)
+    doc = Calc.create_doc(loader)
+    sheet = Calc.get_sheet(doc=doc, index=0)
+    rng = sheet.getCellRangeByName(rng_name)
+    if visible:
+        GUI.set_visible(is_visible=visible, odoc=doc)
+    first = Calc.highlight_range(sheet=sheet, headline=headline, range_name=rng_name)
+    Lo.delay(delay)
+    assert first is not None
+    result = Calc.get_string(cell=first)
+    assert result == headline
+    Lo.close(closeable=doc, deliver_ownership=False)
+    Lo.delay(500)
+    
+    doc = Calc.create_doc(loader)
+    sheet = Calc.get_sheet(doc=doc, index=0)
+    rng = sheet.getCellRangeByName(rng_name)
+    if visible:
+        GUI.set_visible(is_visible=visible, odoc=doc)
+    first = Calc.highlight_range(sheet, headline, rng_name)
+    Lo.delay(delay)
+    assert first is not None
+    result = Calc.get_string(cell=first)
+    assert result == headline
+    Lo.close(closeable=doc, deliver_ownership=False)
+    
 # endregion cell decoration
