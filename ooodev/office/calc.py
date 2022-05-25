@@ -3537,7 +3537,6 @@ class Calc:
         """
         ...
 
-
     @overload
     @staticmethod
     def change_style(
@@ -3612,24 +3611,23 @@ class Calc:
 
     # region    add_border()
     @classmethod
-    def _add_border_sht_rng(cls, sheet: XSpreadsheet, range_name: str) -> None:
-        cls._add_border_sht_rng_color(sheet=sheet, range_name=range_name, color=CommonColor.BLACK)  # color black
+    def _add_border_sht_rng(cls, cell_range: XCellRange) -> None:
+        cls._add_border_sht_rng_color(cell_range=cell_range, color=CommonColor.BLACK)  # color black
 
     @classmethod
-    def _add_border_sht_rng_color(cls, sheet: XSpreadsheet, range_name: str, color: int) -> None:
+    def _add_border_sht_rng_color(cls, cell_range: XCellRange, color: int) -> None:
         vals = (
             cls.BorderEnum.LEFT_BORDER
             | cls.BorderEnum.RIGHT_BORDER
             | cls.BorderEnum.TOP_BORDER
             | cls.BorderEnum.BOTTOM_BORDER
         )
-        cls._add_border_sht_rng_color_vals(sheet=sheet, range_name=range_name, color=color, border_vals=vals)
+        cls._add_border_sht_rng_color_vals(cell_range=cell_range, color=color, border_vals=vals)
 
     @classmethod
     def _add_border_sht_rng_color_vals(
         cls,
-        sheet: XSpreadsheet,
-        range_name: str,
+        cell_range: XCellRange,
         color: int,
         border_vals: int | BorderEnum,
     ) -> None:
@@ -3656,44 +3654,157 @@ class Calc:
         if (bvs & cls.BorderEnum.RIGHT_BORDER) == cls.BorderEnum.RIGHT_BORDER:
             border.RightLine = line
             border.IsRightLineValid = True
-        cell_range = sheet.getCellRangeByName(range_name)
         mProps.Props.set_property(prop_set=cell_range, name="TableBorder2", value=border)
 
     @overload
     @staticmethod
-    def add_border(sheet: XSpreadsheet, range_name: str) -> None:
+    def add_border(sheet: XSpreadsheet, cell_range: XCellRange) -> XCellRange | None:
+        """
+        Adds borders to cell range
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            cell_range (XCellRange):  Cell range
+
+        Returns:
+            XCellRange | None: Range that borders were applied to on success; Otherwise, None
+        """
         ...
 
     @overload
     @staticmethod
-    def add_border(sheet: XSpreadsheet, range_name: str, color: int) -> None:
+    def add_border(sheet: XSpreadsheet, range_name: str) -> XCellRange | None:
+        """
+        Adds borders to cell range
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            range_name (str): Range Name such as 'A1:F9'
+
+        Returns:
+            XCellRange | None: Range that borders were applied to on success; Otherwise, None
+        """
         ...
 
     @overload
     @staticmethod
-    def add_border(sheet: XSpreadsheet, range_name: str, color: int, border_vals: int) -> None:
+    def add_border(sheet: XSpreadsheet, cell_range: XCellRange, color: int) -> XCellRange | None:
+        """
+        Adds borders to cell range
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            cell_range (XCellRange): Cell range
+            color (int): RGB color as integer
+
+        Returns:
+            XCellRange | None: Range that borders were applied to on success; Otherwise, None
+        """
         ...
 
     @overload
     @staticmethod
-    def add_border(sheet: XSpreadsheet, range_name: str, color: int, border_vals: "Calc.BorderEnum") -> None:
+    def add_border(sheet: XSpreadsheet, range_name: str, color: int) -> XCellRange | None:
+        """
+        Adds borders to cell range
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            range_name (str): Range Name such as 'A1:F9'
+            color (int): RGB color as integer
+
+        Returns:
+            XCellRange | None: Range that borders were applied to on success; Otherwise, None
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def add_border(sheet: XSpreadsheet, cell_range: XCellRange, color: int, border_vals: int) -> XCellRange | None:
+        """
+        Adds borders to cell range
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            cell_range (XCellRange): Cell range
+            color (int): RGB color as integer
+            border_vals (int): Determines what borders are applied.
+
+        Returns:
+            XCellRange | None: Range that borders were applied to on success; Otherwise, None
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def add_border(sheet: XSpreadsheet, range_name: str, color: int, border_vals: int) -> XCellRange | None:
+        """
+        Adds borders to cell range
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            range_name (str): Range Name such as 'A1:F9'
+            color (int):  RGB color as integer
+            border_vals (int): Determines what borders are applied.
+
+        Returns:
+            XCellRange | None: Range that borders were applied to on success; Otherwise, None
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def add_border(sheet: XSpreadsheet, cell_range: XCellRange, color: int, border_vals: BorderEnum) -> XCellRange | None:
+        """
+        Adds borders to cell range
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            cell_range (XCellRange): Cell range
+            color (int): RGB color as integer
+            border_vals (BorderEnum): Determines what borders are applied.
+
+        Returns:
+            XCellRange | None: Range that borders were applied to on success; Otherwise, None
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def add_border(sheet: XSpreadsheet, range_name: str, color: int, border_vals: BorderEnum) -> XCellRange | None:
+        """
+        Adds borders to cell range
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            range_name (str): Range Name such as 'A1:F9'
+            color (int): RGB color as integer
+            border_vals (BorderEnum): Determines what borders are applied.
+
+        Returns:
+            XCellRange | None: Range that borders were applied to on success; Otherwise, None
+        """
         ...
 
     @classmethod
-    def add_border(cls, *args, **kwargs) -> None:
+    def add_border(cls, *args, **kwargs) -> XCellRange | None:
         ordered_keys = (1, 2, 3, 4)
         count = len(args) + len(kwargs)
 
         def get_kwargs() -> dict:
             ka = {}
             ka[1] = kwargs.get("sheet", None)
-            ka[2] = kwargs.get("range_name", None)
+            keys = ("range_name", "cell_range")
+            for key in keys:
+                if key in kwargs:
+                    ka[2] = kwargs[key]
+                    break
             if count == 2:
                 return ka
             ka[3] = kwargs.get("color", None)
             if count == 3:
                 return ka
-            ka[4] = kwargs.get["border_vals", None]
+            ka[4] = kwargs.get("border_vals", None)
             return ka
 
         if not count in (2, 3, 4):
@@ -3704,18 +3815,28 @@ class Calc:
 
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
-        if count == 2:
-            # def add_border(sheet: XSpreadsheet, range_name: str)
-            cls._add_border_sht_rng(sheet=kargs[1], range_name=kargs[2])
-        elif count == 3:
-            # def add_border(sheet: XSpreadsheet, range_name: str, color: int)
-            cls._add_border_sht_rng_color(sheet=kargs[1], range_name=kargs[2], color=kargs[3])
+
+        sheet = cast(XSpreadsheet, kargs[1])
+        if isinstance(kargs[2], str):
+            cell_range = sheet.getCellRangeByName(kargs[2])
         else:
-            # def add_border(sheet: XSpreadsheet, range_name: str, color: int, border_vals: int) or
-            # def add_border(sheet: XSpreadsheet, range_name: str, color: int, border_vals: Calc.BorderEnum)
-            cls._add_border_sht_rng_color_vals(
-                sheet=kargs[1], range_name=kargs[2], color=kargs[3], border_vals=kargs[3]
-            )
+            cell_range = kargs[2]
+
+        if count == 2:
+            # add_border(sheet: XSpreadsheet, cell_range: str)
+            # add_border(sheet: XSpreadsheet, range_name: str)
+            cls._add_border_sht_rng(cell_range=cell_range)
+        elif count == 3:
+            # add_border(sheet: XSpreadsheet, cell_range: XCellRange, color: int)
+            #  add_border(sheet: XSpreadsheet, range_name: str, color: int)
+            cls._add_border_sht_rng_color(cell_range=cell_range, color=kargs[3])
+        else:
+            # add_border(sheet: XSpreadsheet, cell_range: XCellRange, color: int, border_vals: int)
+            # add_border(sheet: XSpreadsheet, range_name: str, color: int, border_vals: int)
+            # add_border(sheet: XSpreadsheet, cell_range: XCellRange, color: int, border_vals: Calc.BorderEnum)
+            # add_border(sheet: XSpreadsheet, range_name: str, color: int, border_vals: BorderEnum)
+            cls._add_border_sht_rng_color_vals(cell_range=cell_range, color=kargs[3], border_vals=kargs[4])
+        return cell_range
 
     # endregion add_border()
 
