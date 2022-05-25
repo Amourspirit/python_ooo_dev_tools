@@ -1013,7 +1013,7 @@ class Calc:
 
     @classmethod
     def _set_val_by_cell_name(cls, value: object, sheet: XSpreadsheet, cell_name: str) -> None:
-        pos = cls._get_cell_position_cell_name(cell_name)
+        pos = cls.get_cell_position(cell_name)
         cls._set_val_by_col_row(value=value, sheet=sheet, column=pos.X, row=pos.Y)
 
     @classmethod
@@ -1170,7 +1170,7 @@ class Calc:
 
     @classmethod
     def _get_val_by_cell_name(cls, sheet: XSpreadsheet, cell_name: str) -> object | None:
-        pos = cls._get_cell_position_cell_name(cell_name)
+        pos = cls.get_cell_position(cell_name)
         return cls._get_val_by_col_row(sheet=sheet, column=pos.X, row=pos.Y)
 
     @classmethod
@@ -1531,7 +1531,7 @@ class Calc:
         col_end = addr.Column + (len(values[0]) - 1)
         row_end = addr.Row + (v_len - 1)
         cell_range = cls._get_cell_range_col_row(
-            sheet=sheet, col_start=addr.Column, row_start=addr.Row, col_end=col_end, row_end=row_end
+            sheet=sheet, start_col=addr.Column, start_row=addr.Row, end_col=col_end, end_row=row_end
         )
         cls.set_cell_range_array(cell_range=cell_range, values=values)
 
@@ -1652,7 +1652,7 @@ class Calc:
         if count == 6:
             #  def set_array(values: Sequence[Sequence[object]], sheet: XSpreadsheet, col_start: int, row_start: int, col_end:int, row_end: int)
             cell_range = cls._get_cell_range_col_row(
-                sheet=kargs[2], col_start=kargs[3], row_start=kargs[4], col_end=kargs[5], row_end=kargs[6]
+                sheet=kargs[2], start_col=kargs[3], start_row=kargs[4], end_col=kargs[5], end_row=kargs[6]
             )
             cls.set_cell_range_array(cell_range=cell_range, values=kargs[1])
         return
@@ -1713,15 +1713,15 @@ class Calc:
         if v_len == 0:
             print("Values has not data")
             return
-        pos = cls._get_cell_position_cell_name(cell_name)
+        pos = cls.get_cell_position(cell_name)
         col_end = pos.X + (len(values[0]) - 1)
         row_end = pos.Y + (v_len - 1)
         cell_range = cls._get_cell_range_col_row(
             sheet=sheet,
-            col_start=pos.X,
-            row_start=pos.Y,
-            col_end=col_end,
-            row_end=row_end,
+            start_col=pos.X,
+            start_row=pos.Y,
+            end_col=col_end,
+            end_row=row_end,
         )
         cls.set_cell_range_array(cell_range=cell_range, values=values)
 
@@ -1952,7 +1952,7 @@ class Calc:
             kargs[ordered_keys[i]] = arg
 
         if count == 3:
-            pos = cls._get_cell_position_cell_name(kargs[3])
+            pos = cls.get_cell_position(kargs[3])
             x = pos.X
             y = pos.Y
         else:
@@ -1961,7 +1961,7 @@ class Calc:
         values = cast(Sequence[Any], kargs[2])
         val_len = len(values)  # values
 
-        cell_range = cls.get_cell_range(sheet=kargs[1], col_start=x, row_start=y, col_end=x, row_end=y + val_len - 1)
+        cell_range = cls.get_cell_range(sheet=kargs[1], start_col=x, start_row=y, end_col=x, end_row=y + val_len - 1)
         xcell: XCell = None
         for val in range(val_len):
             xcell = cls.get_cell(cell_range=cell_range, column=0, row=val)
@@ -2026,7 +2026,7 @@ class Calc:
             kargs[ordered_keys[i]] = arg
 
         if count == 3:
-            pos = cls._get_cell_position_cell_name(kargs[3])
+            pos = cls.get_cell_position(kargs[3])
             col_start = pos.X
             row_start = pos.Y
         else:
@@ -2036,10 +2036,10 @@ class Calc:
         values = cast(Sequence[Any], kargs[2])
         cell_range = cls._get_cell_range_col_row(
             sheet=kargs[1],
-            col_start=col_start,
-            row_start=row_start,
-            col_end=col_start + len(values) - 1,
-            row_end=row_start,
+            start_col=col_start,
+            start_row=row_start,
+            end_col=col_start + len(values) - 1,
+            end_row=row_start,
         )
         cr_data = mLo.Lo.qi(XCellRangeData, cell_range)
         cr_data.setDataArray(TableHelper.to_2d_tuple(values))  #  1-row 2D array
@@ -2335,10 +2335,10 @@ class Calc:
     def _get_cell_range_addr(cls, sheet: XSpreadsheet, addr: CellRangeAddress) -> XCellRange | None:
         return cls._get_cell_range_col_row(
             sheet=sheet,
-            col_start=addr.StartColumn,
-            row_start=addr.StartRow,
-            col_end=addr.EndColumn,
-            row_end=addr.EndRow,
+            start_col=addr.StartColumn,
+            start_row=addr.StartRow,
+            end_col=addr.EndColumn,
+            end_row=addr.EndRow,
         )
 
     @staticmethod
@@ -2351,12 +2351,12 @@ class Calc:
 
     @staticmethod
     def _get_cell_range_col_row(
-        sheet: XSpreadsheet, col_start: int, row_start: int, col_end: int, row_end: int
+        sheet: XSpreadsheet, start_col: int, start_row: int, end_col: int, end_row: int
     ) -> XCellRange | None:
         try:
-            return sheet.getCellRangeByPosition(col_start, row_start, col_end, row_end)
+            return sheet.getCellRangeByPosition(start_col, start_row, end_col, end_row)
         except Exception:
-            print(f"Could not access cell range : ({col_start}, {row_start}, {col_end}, {row_end})")
+            print(f"Could not access cell range : ({start_col}, {start_row}, {end_col}, {end_row})")
         return None
 
     @overload
@@ -2392,17 +2392,17 @@ class Calc:
     @overload
     @staticmethod
     def get_cell_range(
-        sheet: XSpreadsheet, col_start: int, row_start: int, col_end: int, row_end: int
+        sheet: XSpreadsheet, start_col: int, start_row: int, end_col: int, end_row: int
     ) -> XCellRange | None:
         """
         Gets a cell range
 
         Args:
             sheet (XSpreadsheet): Spreadsheet Document
-            col_start (int): Start Column
-            row_start (int): Start Row
-            col_end (int): End Column
-            row_end (int): End Row
+            start_col (int): Start Column
+            start_row (int): Start Row
+            end_col (int): End Column
+            end_row (int): End Row
 
         Returns:
             XCellRange | None: Cell range is successful; Otherwise, None
@@ -2417,16 +2417,16 @@ class Calc:
         def get_kwargs() -> dict:
             ka = {}
             ka[1] = kwargs.get("sheet", None)
-            keys = ("cr_addr", "range_name", "col_start")
+            keys = ("cr_addr", "range_name", "start_col")
             for key in keys:
                 if key in kwargs:
                     ka[2] = kwargs[key]
                     break
             if count == 2:
                 return ka
-            ka[3] = kwargs.get("row_start", None)
-            ka[4] = kwargs.get("col_end", None)
-            ka[5] = kwargs.get("row_end", None)
+            ka[3] = kwargs.get("start_row", None)
+            ka[4] = kwargs.get("end_col", None)
+            ka[5] = kwargs.get("end_row", None)
             return ka
 
         if not count in (2, 5):
@@ -2447,10 +2447,10 @@ class Calc:
         else:
             return cls._get_cell_range_col_row(
                 sheet=kargs[1],
-                col_start=kargs[2],
-                row_start=kargs[3],
-                col_end=kargs[4],
-                row_end=kargs[5],
+                start_col=kargs[2],
+                start_row=kargs[3],
+                end_col=kargs[4],
+                end_row=kargs[5],
             )
 
     # endregion get_cell_range()
@@ -2587,8 +2587,8 @@ class Calc:
         if len(cell_names) != 2:
             print(f"Cell range not found in {range_name}")
             return None
-        start_pos = cls._get_cell_position_cell_name(cell_names[0])
-        end_pos = cls._get_cell_position_cell_name(cell_names[1])
+        start_pos = cls.get_cell_position(cell_names[0])
+        end_pos = cls.get_cell_position(cell_names[1])
         return (start_pos, end_pos)
 
     # region    get_cell_position()
@@ -2697,22 +2697,62 @@ class Calc:
 
     @overload
     @staticmethod
+    def get_cell_address(cell: XCell) -> CellAddress | None:
+        """
+        Gets Cell Address
+
+        Args:
+            cell (XCell): Cell
+
+        Returns:
+            CellAddress | None: Cell Address on success; Othwrwise, None
+        """
+        ...
+
+    @overload
+    @staticmethod
     def get_cell_address(sheet: XSpreadsheet, cell_name: str) -> CellAddress | None:
+        """
+        Gets Cell Address
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            cell_name (str): Cell name such as 'A1'
+
+        Returns:
+            CellAddress | None: Cell Address on success; Othwrwise, None
+        """
         ...
 
     @overload
     @staticmethod
     def get_cell_address(sheet: XSpreadsheet, addr: CellAddress) -> CellAddress | None:
-        ...
+        """
+        Gets Cell Address
 
-    @overload
-    @staticmethod
-    def get_cell_address(cell: XCell) -> CellAddress | None:
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            addr (CellAddress): Cell Address
+
+        Returns:
+            CellAddress | None: Cell Address on success; Othwrwise, None
+        """
         ...
 
     @overload
     @staticmethod
     def get_cell_address(sheet: XSpreadsheet, col: int, row: int) -> CellAddress | None:
+        """
+        Gets Cell Address
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            col (int): Zero-base column index
+            row (int): Zero-base row index
+
+        Returns:
+            CellAddress | None: Cell Address on success; Othwrwise, None
+        """
         ...
 
     @classmethod
@@ -2775,16 +2815,48 @@ class Calc:
     @overload
     @staticmethod
     def get_address(cell_range: XCellRange) -> CellRangeAddress | None:
+        """
+        Gets Range Address
+
+        Args:
+            cell_range (XCellRange): Cell Range
+
+        Returns:
+            CellRangeAddress | None: Cell Range Address on success; Othwrwise, None
+        """
         ...
 
     @overload
     @staticmethod
     def get_address(sheet: XSpreadsheet, range_name: str) -> CellRangeAddress | None:
+        """
+        Gets Range Address
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            range_name (str): Range name such as 'A1:D7'
+
+        Returns:
+            CellRangeAddress | None: Cell Range Address on success; Othwrwise, None
+        """
         ...
     
     @overload
     @staticmethod
     def get_address(sheet: XSpreadsheet, start_col: int, start_row: int, end_col: int, end_row: int) -> CellRangeAddress | None:
+        """
+        Gets Range Address
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            start_col (int): Zero-base start column index
+            start_row (int): Zero-base start row index
+            end_col (int): Zero-base end column index
+            end_row (int): Zero-base end row index
+
+        Returns:
+            CellRangeAddress | None: Cell Range Address on success; Othwrwise, None
+        """
         ...
 
     @classmethod
@@ -3337,10 +3409,10 @@ class Calc:
             # def change_style(sheet: XSpreadsheet, style_name: str, x1: int, y1: int, x2: int, y2:int)
             cell_range = cls._get_cell_range_col_row(
                 sheet=kargs[1],  # sheet
-                col_start=kargs[3],  # x1
-                row_start=kargs[4],  # y1
-                col_end=kargs[5],  # x2
-                row_end=kargs[6],  # y2
+                start_col=kargs[3],  # x1
+                start_row=kargs[4],  # y1
+                end_col=kargs[5],  # x2
+                end_row=kargs[6],  # y2
             )
             mProps.Props.set_property(prop_set=cell_range, name="CellStyle", value=kargs[2])  # 2 style_name
         return
@@ -3470,10 +3542,10 @@ class Calc:
             return
         header_range = cls._get_cell_range_col_row(
             sheet=sheet,
-            col_start=addr.StartColumn,
-            row_start=addr.StartRow,
-            col_end=addr.EndColumn,
-            row_end=addr.StartRow,
+            start_col=addr.StartColumn,
+            start_row=addr.StartRow,
+            end_col=addr.EndColumn,
+            end_row=addr.StartRow,
         )
         if header_range is None:
             return

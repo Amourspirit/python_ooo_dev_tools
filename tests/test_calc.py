@@ -16,7 +16,7 @@ def test_get_sheet(loader) -> None:
     assert loader is not None
     doc = Calc.create_doc(loader)
     assert doc is not None
-    # 
+    #
     sheet_names = Calc.get_sheet_names(doc)
     assert len(sheet_names) == 1
     assert sheet_names[0] == "Sheet1"
@@ -990,7 +990,7 @@ def test_set_array(loader) -> None:
     # def set_array(values: Sequence[Sequence[object]], cell_range: XCellRange)
     # keyword args
     cell_range = Calc.get_cell_range(
-        sheet=sheet, col_start=col_start, row_start=row_start, col_end=col_end, row_end=row_end
+        sheet=sheet, start_col=col_start, start_row=row_start, end_col=col_end, end_row=row_end
     )
     Calc.set_array(values=arr, cell_range=cell_range)
     val = Calc.get_num(sheet, f"{rng}{arr_size}")
@@ -1151,7 +1151,7 @@ def test_get_set_col(loader) -> None:
     new_vals = Calc.get_col(sheet=sheet, range_name=range_name)
     for i, val in enumerate(vals):
         assert new_vals[i] == val
-    
+
     # set_col(sheet: XSpreadsheet, values: Sequence[Any], col_start: int, row_start: int)
     # keyword arguments
     Calc.set_col(sheet=sheet, values=vals, col_start=0, row_start=0)
@@ -1170,6 +1170,7 @@ def test_get_set_col(loader) -> None:
 def test_get_set_row(loader) -> None:
     from ooodev.utils.lo import Lo
     from ooodev.office.calc import Calc
+
     # from ooodev.utils.gui import GUI
 
     assert loader is not None
@@ -1182,7 +1183,7 @@ def test_get_set_row(loader) -> None:
     vals = [float(i) for i in range(vals_len)]
     # set_col(sheet: XSpreadsheet, values: Sequence[Any], cell_name: str)
     # keyword arguments
-    col =2
+    col = 2
     row = 2
     c_name = Calc.column_number_str(col)
     # overloads
@@ -1198,7 +1199,7 @@ def test_get_set_row(loader) -> None:
     new_vals = Calc.get_row(sheet=sheet, range_name=range_name)
     for i, val in enumerate(vals):
         assert new_vals[i] == val
-    
+
     # set_row(sheet: XSpreadsheet, values: Sequence[Any], col_start: int, row_start: int)
     # keyword
     Calc.set_row(sheet=sheet, values=vals, col_start=col, row_start=row)
@@ -1210,27 +1211,30 @@ def test_get_set_row(loader) -> None:
     new_vals = Calc.get_row(sheet=sheet, range_name=range_name)
     for i, val in enumerate(vals):
         assert new_vals[i] == val
-    
+
     # GUI.set_visible(is_visible=True, odoc=doc)
     # Lo.delay(3000)
     Lo.close(closeable=doc, deliver_ownership=False)
+
+
 # endregion set/get rows and columns
 
 # region special cell types
 def test_set_date(loader) -> None:
     from ooodev.utils.lo import Lo
     from ooodev.office.calc import Calc
+
     # from ooodev.utils.gui import GUI
 
     assert loader is not None
     doc = Calc.create_doc(loader)
     assert doc is not None
     sheet = Calc.get_sheet(doc=doc, index=0)
-    
+
     Calc.set_date(sheet=sheet, cell_name="A1", day=22, month=11, year=2022)
-    
+
     cell_str = Calc.get_string(sheet=sheet, cell_name="A1")
-    assert cell_str == '44887.0'
+    assert cell_str == "44887.0"
     # GUI.set_visible(is_visible=True, odoc=doc)
     # Lo.delay(6000)
     Lo.close(closeable=doc, deliver_ownership=False)
@@ -1239,13 +1243,14 @@ def test_set_date(loader) -> None:
 def test_annotation(loader) -> None:
     from ooodev.utils.lo import Lo
     from ooodev.office.calc import Calc
+
     # from ooodev.utils.gui import GUI
 
     assert loader is not None
     doc = Calc.create_doc(loader)
     assert doc is not None
     sheet = Calc.get_sheet(doc=doc, index=0)
-    cn = 'B2'
+    cn = "B2"
     msg = "Hello World"
     ann = Calc.add_annotation(sheet=sheet, cell_name=cn, msg=msg)
     assert ann is not None
@@ -1258,16 +1263,19 @@ def test_annotation(loader) -> None:
     assert ann is not None
     #  # test getting of annotation string with no annotation set
     ann_str = Calc.get_annotation_str(sheet=sheet, cell_name="G9")
-    assert ann_str == ''
+    assert ann_str == ""
     # GUI.set_visible(is_visible=True, odoc=doc)
     # Lo.delay(6000)
     Lo.close(closeable=doc, deliver_ownership=False)
+
+
 # endregion special cell types
 
 # region    get XCell and XCellRange methods
 def test_get_cell(loader) -> None:
     from ooodev.utils.lo import Lo
     from ooodev.office.calc import Calc
+
     # from ooodev.utils.gui import GUI
 
     assert loader is not None
@@ -1275,12 +1283,12 @@ def test_get_cell(loader) -> None:
     assert doc is not None
     sheet = Calc.get_sheet(doc=doc, index=0)
     test_val = "test"
-    col = 2 # C
+    col = 2  # C
     row = 4
     addr = Calc.get_cell_address(sheet=sheet, col=col, row=row)
     cell_name = Calc.get_cell_str(addr=addr)
-    
-    cell_range = Calc.get_cell_range(sheet=sheet, col_start=col, row_start=row, col_end=col, row_end=row)
+
+    cell_range = Calc.get_cell_range(sheet=sheet, start_col=col, start_row=row, end_col=col, end_row=row)
     Calc.set_val(value=test_val, sheet=sheet, cell_name=cell_name)
     # get_cell(sheet: XSpreadsheet, addr: CellAddress)
     cell = Calc.get_cell(sheet=sheet, addr=addr)
@@ -1289,7 +1297,7 @@ def test_get_cell(loader) -> None:
     assert cell is not None
     val = Calc.get_string(cell)
     assert val == test_val
-    
+
     # get_cell(sheet: XSpreadsheet, cell_name: str)
     cell = Calc.get_cell(sheet=sheet, cell_name=cell_name)
     assert cell is not None
@@ -1299,13 +1307,13 @@ def test_get_cell(loader) -> None:
     assert val == test_val
 
     # get_cell(sheet: XSpreadsheet, column: int, row: int
-    cell = Calc.get_cell(sheet=sheet,column=col, row=row)
+    cell = Calc.get_cell(sheet=sheet, column=col, row=row)
     assert cell is not None
     val = Calc.get_string(cell)
     assert val == test_val
     cell = Calc.get_cell(sheet, col, row)
     assert cell is not None
-    
+
     #  get_cell(cell_range: XCellRange)
     cell = Calc.get_cell(cell_range=cell_range)
     val = Calc.get_string(cell)
@@ -1315,7 +1323,7 @@ def test_get_cell(loader) -> None:
     assert val == test_val
     cell = Calc.get_cell(cell_range)
     assert cell is not None
-    
+
     #  get_cell(cell_range: XCellRange, column: int, row: int)
     # cell range is relative position.
     # if a range is C4:E9 then Cell range at col=0 ,row=0 is C4
@@ -1343,9 +1351,11 @@ def test_is_single_cell_range(loader) -> None:
     assert Calc.is_single_cell_range(cr_addr) == False
     Lo.close(closeable=doc, deliver_ownership=False)
 
+
 def test_get_cell_range(loader) -> None:
     from ooodev.utils.lo import Lo
     from ooodev.office.calc import Calc
+
     assert loader is not None
     doc = Calc.create_doc(loader)
     assert doc is not None
@@ -1354,28 +1364,22 @@ def test_get_cell_range(loader) -> None:
     single_row_start = 1
     single_col_end = 1
     single_row_end = 1
-    
+
     multi_row_start = 2
     multi_col_start = 2
     multi_col_end = 5
     multi_row_end = 21
-    
+
     rng_single = Calc.get_range_str(
-        start_col=single_col_start,
-        start_row=single_row_start,
-        end_col=single_col_end,
-        end_row=single_row_end
+        start_col=single_col_start, start_row=single_row_start, end_col=single_col_end, end_row=single_row_end
     )
 
     rng_multi = Calc.get_range_str(
-        start_col=multi_row_start,
-        start_row=multi_col_start,
-        end_col=multi_col_end,
-        end_row=multi_row_end
+        start_col=multi_col_start, start_row=multi_row_start, end_col=multi_col_end, end_row=multi_row_end
     )
     cr_addr_single = Calc.get_address(sheet=sheet, range_name=rng_single)
     cr_addr_muilti = Calc.get_address(sheet=sheet, range_name=rng_multi)
-    
+
     # get_cell_range(sheet: XSpreadsheet, cr_addr: CellRangeAddress)
     rng = Calc.get_cell_range(sheet=sheet, cr_addr=cr_addr_single)
     assert rng is not None
@@ -1389,7 +1393,7 @@ def test_get_cell_range(loader) -> None:
     assert rng is not None
     addr = Calc.get_address(cell_range=rng)
     assert Calc.is_single_cell_range(addr) == False
-    
+
     # get_cell_range(sheet: XSpreadsheet, range_name: str)
     rng = Calc.get_cell_range(sheet=sheet, range_name=rng_single)
     assert rng is not None
@@ -1403,15 +1407,15 @@ def test_get_cell_range(loader) -> None:
     assert rng is not None
     addr = Calc.get_address(cell_range=rng)
     assert Calc.is_single_cell_range(addr) == False
-    
+
     #  get_cell_range(sheet: XSpreadsheet, col_start: int, row_start: int, col_end: int, row_end: int)
     rng = Calc.get_cell_range(
         sheet=sheet,
-        col_start=single_col_start,
-        row_start=single_row_start,
-        col_end=single_col_end,
-        row_end=single_row_end
-        )
+        start_col=single_col_start,
+        start_row=single_row_start,
+        end_col=single_col_end,
+        end_row=single_row_end,
+    )
     assert rng is not None
     addr = Calc.get_address(cell_range=rng)
     assert Calc.is_single_cell_range(addr)
@@ -1430,27 +1434,30 @@ def test_get_cell_range(loader) -> None:
 def test_find_used_range(loader) -> None:
     from ooodev.utils.lo import Lo
     from ooodev.office.calc import Calc
+
     assert loader is not None
     doc = Calc.create_doc(loader)
     assert doc is not None
     sheet = Calc.get_sheet(doc=doc, index=0)
-    
+
     # find_used_range(sheet: XSpreadsheet)
     rng = Calc.find_used_range(sheet=sheet)
     assert rng is not None
-    rng_str =Calc.get_range_str(cell_range=rng)
+    rng_str = Calc.get_range_str(cell_range=rng)
     assert rng_str == "A1:A1"
-    
+
     rng = Calc.find_used_range(sheet=sheet, cell_name="C2")
     assert rng is not None
-    rng_str =Calc.get_range_str(cell_range=rng)
+    rng_str = Calc.get_range_str(cell_range=rng)
     assert rng_str == "A1:A1"
-    
+
     Lo.close(closeable=doc, deliver_ownership=False)
+
 
 def test_get_col_range(loader) -> None:
     from ooodev.utils.lo import Lo
     from ooodev.office.calc import Calc
+
     assert loader is not None
     doc = Calc.create_doc(loader)
     assert doc is not None
@@ -1466,9 +1473,11 @@ def test_get_col_range(loader) -> None:
     assert val == test_val
     Lo.close(closeable=doc, deliver_ownership=False)
 
+
 def test_get_row_range(loader) -> None:
     from ooodev.utils.lo import Lo
     from ooodev.office.calc import Calc
+
     assert loader is not None
     doc = Calc.create_doc(loader)
     assert doc is not None
@@ -1483,22 +1492,27 @@ def test_get_row_range(loader) -> None:
     val = Calc.get_string(cell)
     assert val == test_val
     Lo.close(closeable=doc, deliver_ownership=False)
+
+
 # endregion get XCell and XCellRange methods
 
 # region    convert cell/cellrange names to positions
 
+
 def test_get_cell_range_positions() -> None:
     from ooodev.office.calc import Calc
+
     points = Calc.get_cell_range_positions(range_name="A1:C5")
     assert len(points) == 2
-    assert points[0].X == 0 # A
-    assert points[0].Y == 0 # 1
-    assert points[1].X == 2 # C
-    assert points[1].Y == 4 # 5
-    
+    assert points[0].X == 0  # A
+    assert points[0].Y == 0  # 1
+    assert points[1].X == 2  # C
+    assert points[1].Y == 4  # 5
+
 
 def test_get_cell_position() -> None:
     from ooodev.office.calc import Calc
+
     # get_cell_position(cell_name: str)
     p = Calc.get_cell_position(cell_name="C5")
     assert p.X == 2
@@ -1507,57 +1521,170 @@ def test_get_cell_position() -> None:
     assert p.X == 2
     assert p.Y == 4
 
+
 def test_get_cell_pos(loader) -> None:
     from ooodev.utils.lo import Lo
     from ooodev.office.calc import Calc
+
     assert loader is not None
     doc = Calc.create_doc(loader)
     assert doc is not None
     sheet = Calc.get_sheet(doc=doc, index=0)
-   
+
     p1 = Calc.get_cell_pos(sheet=sheet, cell_name="C5")
     p2 = Calc.get_cell_pos(sheet=sheet, cell_name="A1")
     assert p1.X != p2.X
     assert p1.Y != p2.X
     Lo.close(closeable=doc, deliver_ownership=False)
 
+
 def test_column_number_str() -> None:
     from ooodev.office.calc import Calc
+
     s = Calc.column_number_str(0)
     assert s == "A"
-    
+
     s = Calc.column_number_str(99)
     assert s == "CV"
 
+
 def test_column_string_to_number() -> None:
     from ooodev.office.calc import Calc
+
     i = Calc.column_string_to_number("A")
     assert i == 0
-    
+
     i = Calc.column_string_to_number("A4")
     assert i == 0
-    
+
     i = Calc.column_string_to_number("CV")
     assert i == 99
-    
+
     i = Calc.column_string_to_number("CV22")
     assert i == 99
 
 
 def test_row_string_to_number() -> None:
     from ooodev.office.calc import Calc
+
     i = Calc.row_string_to_number("4")
     assert i == 3
-    
+
     i = Calc.row_string_to_number("Bc4")
     assert i == 3
-    
+
     i = Calc.row_string_to_number("Bc4")
     assert i == 3
-    
+
     # negative or invalid is returned as 0
     i = Calc.row_string_to_number("-4")
     assert i == 0
     i = Calc.row_string_to_number("BA-4")
     assert i == 0
+
+
 # endregion convert cell/cellrange names to positions
+
+# region    get cell and cell range addresses
+def test_get_cell_address(loader) -> None:
+    from ooodev.utils.lo import Lo
+    from ooodev.office.calc import Calc
+
+    assert loader is not None
+    doc = Calc.create_doc(loader)
+    assert doc is not None
+    sheet = Calc.get_sheet(doc=doc, index=0)
+
+    cell_name = "C2"
+    cell = Calc.get_cell(sheet=sheet, cell_name=cell_name)
+
+    #  get_cell_address(cell: XCell)
+    addr = Calc.get_cell_address(cell=cell)
+    assert addr.Column == 2
+    assert addr.Row == 1
+    addr = Calc.get_cell_address(cell)
+    assert addr.Column == 2
+    assert addr.Row == 1
+
+    # get_cell_address(sheet: XSpreadsheet, cell_name: str)
+    addr = Calc.get_cell_address(sheet=sheet, cell_name=cell_name)
+    assert addr.Column == 2
+    assert addr.Row == 1
+    addr = Calc.get_cell_address(sheet, cell_name)
+    assert addr.Column == 2
+    assert addr.Row == 1
+
+    # get_cell_address(sheet: XSpreadsheet, col: int, row: int)
+    addr = Calc.get_cell_address(sheet=sheet, col=2, row=1)
+    assert addr.Column == 2
+    assert addr.Row == 1
+    addr = Calc.get_cell_address(sheet, 2, 1)
+    assert addr.Column == 2
+    assert addr.Row == 1
+
+    # get_cell_address(sheet: XSpreadsheet, addr: CellAddress)
+    addr2 = Calc.get_cell_address(sheet=sheet, addr=addr)
+    assert addr2.Column == 2
+    assert addr2.Row == 1
+    addr2 = Calc.get_cell_address(sheet, addr)
+    assert addr2.Column == 2
+    assert addr2.Row == 1
+
+    Lo.close(closeable=doc, deliver_ownership=False)
+
+
+def test_get_address(loader) -> None:
+    from ooodev.utils.lo import Lo
+    from ooodev.office.calc import Calc
+
+    assert loader is not None
+    doc = Calc.create_doc(loader)
+    assert doc is not None
+    sheet = Calc.get_sheet(doc=doc, index=0)
+
+    start_col = 2
+    start_row = 2
+    end_col = 5
+    end_row = 21
+
+    rng = Calc.get_cell_range(sheet=sheet, start_col=start_col, start_row=start_row, end_col=end_col, end_row=end_row)
+    range_name = Calc.get_range_str(cell_range=rng)
+    # get_address(cell_range: XCellRange)
+    cr_addr = Calc.get_address(cell_range=rng)
+    assert cr_addr.StartColumn == start_col
+    assert cr_addr.StartRow == start_row
+    assert cr_addr.EndColumn == end_col
+    assert cr_addr.EndRow == end_row
+    cr_addr = Calc.get_address(rng)
+    assert cr_addr.StartColumn == start_col
+    assert cr_addr.StartRow == start_row
+    assert cr_addr.EndColumn == end_col
+    assert cr_addr.EndRow == end_row
+
+    # get_address(sheet: XSpreadsheet, range_name: str)
+    cr_addr = Calc.get_address(sheet=sheet, range_name=range_name)
+    assert cr_addr.StartColumn == start_col
+    assert cr_addr.StartRow == start_row
+    assert cr_addr.EndColumn == end_col
+    assert cr_addr.EndRow == end_row
+    cr_addr = Calc.get_address(sheet, range_name)
+    assert cr_addr.StartColumn == start_col
+    assert cr_addr.StartRow == start_row
+    assert cr_addr.EndColumn == end_col
+    assert cr_addr.EndRow == end_row
+
+    # get_address(sheet: XSpreadsheet, start_col: int, start_row: int, end_col: int, end_row: int)
+    cr_addr = Calc.get_address(sheet=sheet, start_col=start_col, start_row=start_row, end_col=end_col, end_row=end_row)
+    assert cr_addr.StartColumn == start_col
+    assert cr_addr.StartRow == start_row
+    assert cr_addr.EndColumn == end_col
+    assert cr_addr.EndRow == end_row
+    cr_addr = Calc.get_address(sheet, start_col, start_row, end_col, end_row)
+    assert cr_addr.StartColumn == start_col
+    assert cr_addr.StartRow == start_row
+    assert cr_addr.EndColumn == end_col
+    assert cr_addr.EndRow == end_row
+
+    Lo.close(closeable=doc, deliver_ownership=False)
+
+# endregion get cell and cell range addresses
