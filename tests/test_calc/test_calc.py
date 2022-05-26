@@ -2321,3 +2321,51 @@ def test_set_row_height(loader) -> None:
     assert c_height / 10000 == pytest.approx(height / 100, rel=1e-2)
     Lo.close(closeable=doc, deliver_ownership=False)
 # endregion cell decoration
+
+# region    scenarios
+def test_scenarios(loader) -> None:
+    from ooodev.utils.lo import Lo
+    from ooodev.office.calc import Calc
+    from ooodev.utils.gui import GUI
+    visible = False
+    delay = 0
+    assert loader is not None
+    doc = Calc.create_doc(loader)
+    assert doc is not None
+    sheet = Calc.get_sheet(doc=doc, index=0)
+    if visible:
+        GUI.set_visible(is_visible=visible, odoc=doc)
+    vals = [
+        [11, 12],
+        ["Test13","Test14"]
+    ]
+    scenario1 = Calc.insert_scenario(sheet=sheet, range_str="B10:C11", vals=vals, name="First Scenario", comment="1st scenario.")
+    Lo.delay(delay)
+    assert scenario1 is not None
+    assert scenario1.Name == "First Scenario"
+
+    vals[0][0] = "Test21"
+    vals[0][1] = "Test22"
+    vals[1][0] = 23
+    vals[1][1] = 24
+    scenario2 = Calc.insert_scenario(sheet=sheet, range_str="B10:C11", vals=vals,name="Second Scenario", comment="Visible scenario.")
+    Lo.delay(delay)
+    assert scenario2 is not None
+    assert scenario2.Name == "Second Scenario"
+    
+    vals[0][0] = 31
+    vals[0][1] = 32
+    vals[1][0] = "Test33"
+    vals[1][1] = "Test34"
+    scenario3 = Calc.insert_scenario(sheet=sheet, range_str="B10:C11", vals=vals,name="Third Scenario", comment="Last scenario.")
+    Lo.delay(delay)
+    assert scenario3 is not None
+    assert scenario3.Name == "Third Scenario"
+    
+    scenario_apply = Calc.apply_scenario(sheet=sheet, name="Second Scenario")
+    Lo.delay(delay)
+    assert scenario_apply is not None
+    assert scenario2.Name == "Second Scenario"
+
+    Lo.close(closeable=doc, deliver_ownership=False)
+# endregion scenarios
