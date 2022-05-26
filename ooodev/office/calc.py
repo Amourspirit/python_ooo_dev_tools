@@ -1063,10 +1063,17 @@ class Calc:
     @classmethod
     def set_val(cls, *args, **kwargs) -> None:
         ordered_keys = (1, 2, 3, 4)
-        count = len(args) + len(kwargs)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
 
         def get_kwargs() -> dict:
             ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ('value', 'cell','sheet', 'cell_name', 'column', 'row')
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("set_val() got an unexpected keyword argument")
             ka[1] = kwargs.get("value", None)
             keys = ("cell", "sheet")
             for key in keys:

@@ -16,8 +16,8 @@ from com.sun.star.sheet.DataPilotFieldOrientation import COLUMN as FO_COLUMN, RO
 def test_pivot(loader) -> None:
     doc = Calc.create_doc(loader=loader)
     assert doc is not None, "Could not open create new document"
-    visible = True
-    delay = 10000
+    visible = False
+    delay = 0
     if visible:
         GUI.set_visible(is_visible=visible, odoc=doc)
     sheet = Calc.get_sheet(doc=doc, index=0)
