@@ -187,7 +187,7 @@ class Calc:
 
     @classmethod
     def open_doc(cls, fnm: str, loader: XComponentLoader) -> XSpreadsheetDocument | None:
-        doc = mLo.Lo.open_doc(fnm=fnm, loader=loader)
+        doc = mLo.Lo.open_doc(fnm=str(fnm), loader=loader)
         if doc is None:
             print("Document is null")
             return None
