@@ -11,12 +11,12 @@ from ooodev.office.calc import Calc
 
 from com.sun.star.sheet import XDataPilotTables, XDataPilotTable
 from com.sun.star.sheet import XSpreadsheet
-from com.sun.star.sheet.DataPilotFieldOrientation import COLUMN as FO_COLUMN, ROW as FO_ROW, DATA as FO_DATA
+from com.sun.star.sheet.DataPilotFieldOrientation import COLUMN as FO_COLUMN, ROW as FO_ROW, DATA as FO_DATA, PAGE as FO_PAGE
 
 def test_pivot(copy_fix_calc, loader) -> None:
-    doc_path = copy_fix_calc("pivottable1.ods")
+    doc_path = copy_fix_calc("pivottable2.ods")
     doc = Calc.open_doc(fnm=str(doc_path), loader=loader)
-    assert doc is not None, "Could not open pivottable1.ods"
+    assert doc is not None, "Could not open pivottable2.ods"
     visible = False
     delay = 0
     if visible:
@@ -27,8 +27,8 @@ def test_pivot(copy_fix_calc, loader) -> None:
     assert ptbl is not None
     assert ptbl.Name == 'PivotTableExample'
     Calc.set_active_sheet(doc=doc, sheet=dp_sheet)
-    total = Calc.get_num(sheet=dp_sheet, cell_name="F17")
-    assert total == pytest.approx(123000.0, rel=1e-4)
+    total = Calc.get_num(sheet=dp_sheet, cell_name="E10")
+    assert total == pytest.approx(7844.0, rel=1e-4)
     Lo.save_doc(doc=doc, fnm=str(doc_path))
     Lo.delay(delay)
     Lo.close_doc(doc=doc)
@@ -50,20 +50,25 @@ def create_pivot_table(sheet: XSpreadsheet, dp_sheet: XSpreadsheet) -> XDataPilo
         print(f"  {name}")
     
     # properties defined in DataPilotField
+    # set page field
+    props = Lo.find_container_props(con=fields, nm="Date")
+    Props.set_property(prop_set=props, name="Orientation", value=FO_PAGE)
     
     # set column field
-    props = Lo.find_container_props(con=fields, nm="Category")
+    props = Lo.find_container_props(con=fields, nm="Store")
     Props.set_property(prop_set=props, name="Orientation", value=FO_COLUMN)
     
-    # set row field
-    props = Lo.find_container_props(con=fields, nm="Period")
+    # set 1st row field
+    props = Lo.find_container_props(con=fields, nm="Book")
     Props.set_property(prop_set=props, name="Orientation", value=FO_ROW)
     
     
     # set data field, calculating the sum
-    props = Lo.find_container_props(con=fields, nm="Revenue")
+    props = Lo.find_container_props(con=fields, nm="Units Sold")
     Props.set_property(prop_set=props, name="Orientation", value=FO_DATA)
     Props.set_property(prop_set=props, name="Function", value=Calc.GeneralFunction.SUM)
+    
+    
     
     # place onto sheet
     dest_addr = Calc.get_cell_address(sheet=dp_sheet, cell_name="A1")
