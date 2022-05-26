@@ -410,6 +410,7 @@ class Lo:
         if fnm is None:
             print("Filename is null")
             return None
+        fnm = str(fnm)
 
         if props is None:
             props = mProps.Props.make_props(Hidden=True)

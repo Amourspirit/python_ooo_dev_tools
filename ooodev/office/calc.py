@@ -187,7 +187,7 @@ class Calc:
 
     @classmethod
     def open_doc(cls, fnm: str, loader: XComponentLoader) -> XSpreadsheetDocument | None:
-        doc = mLo.Lo.open_doc(fnm=fnm, loader=loader)
+        doc = mLo.Lo.open_doc(fnm=str(fnm), loader=loader)
         if doc is None:
             print("Document is null")
             return None
@@ -1063,10 +1063,17 @@ class Calc:
     @classmethod
     def set_val(cls, *args, **kwargs) -> None:
         ordered_keys = (1, 2, 3, 4)
-        count = len(args) + len(kwargs)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
 
         def get_kwargs() -> dict:
             ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ('value', 'cell','sheet', 'cell_name', 'column', 'row')
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("set_val() got an unexpected keyword argument")
             ka[1] = kwargs.get("value", None)
             keys = ("cell", "sheet")
             for key in keys:
@@ -3976,8 +3983,8 @@ class Calc:
 
     @staticmethod
     def insert_scenario(
-        sheet: XSpreadsheet, range_str: str, vals: Sequence[Sequence[object]], scen_name: str, comment: str
-    ) -> None:
+        sheet: XSpreadsheet, range_str: str, vals: Sequence[Sequence[object]], name: str, comment: str
+    ) -> XScenario |None:
         # get the cell range with the given address
         cell_range = sheet.getCellRangeByName(range_str)
 
@@ -3990,14 +3997,18 @@ class Calc:
         # create the scenario
         supp = mLo.Lo.qi(XScenariosSupplier, sheet)
         scens = supp.getScenarios()
-        scens.addNewByName(scen_name, cr_addr, comment)
+        scens.addNewByName(name, cr_addr, comment)
 
         # insert the values into the range
         cr_data = mLo.Lo.qi(XCellRangeData, cell_range)
         cr_data.setDataArray(vals)
+        
+        supp = mLo.Lo.qi(XScenariosSupplier, sheet)
+        scenarios = supp.getScenarios()
+        return mLo.Lo.qi(XScenario, scenarios.getByName(name))
 
     @staticmethod
-    def apply_scenario(sheet: XSpreadsheet, name: str) -> None:
+    def apply_scenario(sheet: XSpreadsheet, name: str) -> XScenario | None:
         try:
             # get the scenario set
             supp = mLo.Lo.qi(XScenariosSupplier, sheet)
@@ -4007,6 +4018,7 @@ class Calc:
             scenario = mLo.Lo.qi(XScenario, scenarios.getByName(name))
 
             scenario.apply()
+            return scenario
         except Exception as e:
             print("Scenario could not be applied:")
             print(f"    {e}")
