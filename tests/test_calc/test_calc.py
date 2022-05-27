@@ -683,17 +683,17 @@ def test_set_val(loader) -> None:
     assert val == "one"
 
     # set_val(value: object, sheet: XSpreadsheet, column: int, row: int)
-    Calc.set_val(value="two", sheet=sheet, column=1, row=2)
-    val = Calc.get_val(sheet=sheet, column=1, row=2)
+    Calc.set_val(value="two", sheet=sheet, col=1, row=2)
+    val = Calc.get_val(sheet=sheet, col=1, row=2)
     assert val == "two"
     Calc.set_val("two", sheet, 1, 3)
     val = Calc.get_val(sheet, 1, 3)
     assert val == "two"
 
     # set_val(value: object, cell: XCell)
-    cell = Calc.get_cell(sheet=sheet, column=2, row=4)
+    cell = Calc.get_cell(sheet=sheet, col=2, row=4)
     Calc.set_val(value="three", cell=cell)
-    val = Calc.get_val(sheet=sheet, column=2, row=4)
+    val = Calc.get_val(sheet=sheet, col=2, row=4)
     assert val == "three"
     cell = Calc.get_cell(sheet, 2, 5)
     Calc.set_val("three", cell)
@@ -737,13 +737,13 @@ def test_get_val(loader) -> None:
     assert val == "one"
 
     # get_val(sheet: XSpreadsheet, column: int, row: int)
-    val = Calc.get_val(sheet=sheet, column=0, row=1)
+    val = Calc.get_val(sheet=sheet, col=0, row=1)
     assert val == "one"
     val = Calc.get_val(sheet, 0, 1)
     assert val == "one"
 
     # def get_val(cell: XCell)
-    cell = Calc.get_cell(sheet=sheet, column=0, row=1)
+    cell = Calc.get_cell(sheet=sheet, col=0, row=1)
     val = Calc.get_val(cell=cell)
     assert val == "one"
     cell = Calc.get_cell(sheet, 0, 1)
@@ -752,7 +752,7 @@ def test_get_val(loader) -> None:
 
     with pytest.raises(TypeError):
         # error on unused key
-        Calc.get_val(sheet=sheet, column=0, rew=1)
+        Calc.get_val(sheet=sheet, col=0, rew=1)
     with pytest.raises(TypeError):
         # error on incorrect number of args
         Calc.get_val(sheet, 0, 1, 3)
@@ -774,7 +774,7 @@ def test_get_num(loader) -> None:
     Calc.set_val(value="Not a Number", sheet=sheet, cell_name="A3")
     # test overloads
     # def get_num(cell: XCell)
-    cell = Calc.get_cell(sheet=sheet, column=0, row=0)
+    cell = Calc.get_cell(sheet=sheet, col=0, row=0)
     val = Calc.get_num(cell=cell)
     assert val == 1.0
     cell = Calc.get_cell(sheet, 0, 1)
@@ -812,7 +812,7 @@ def test_get_num(loader) -> None:
     assert val == 0.0
 
     # get_num(sheet: XSpreadsheet, column: int, row: int)
-    val = Calc.get_num(sheet=sheet, column=0, row=0)
+    val = Calc.get_num(sheet=sheet, col=0, row=0)
     assert val == 1.0
     val = Calc.get_num(sheet, 0, 1)
     assert val == 33.87
@@ -823,7 +823,7 @@ def test_get_num(loader) -> None:
 
     with pytest.raises(TypeError):
         # error on unused key
-        Calc.get_num(sheet=sheet, column=0, rew=0)
+        Calc.get_num(sheet=sheet, col=0, rew=0)
     with pytest.raises(TypeError):
         # error on incorrect number of args
         Calc.get_num(sheet, 0, 1, 4)
@@ -845,7 +845,7 @@ def test_get_str(loader) -> None:
     Calc.set_val(value="custom val", sheet=sheet, cell_name="A3")
     # test overloads
     # def get_string(cell: XCell)
-    cell = Calc.get_cell(sheet=sheet, column=0, row=0)
+    cell = Calc.get_cell(sheet=sheet, col=0, row=0)
     val = Calc.get_string(cell=cell)
     assert val == "one"
     cell = Calc.get_cell(sheet, 0, 1)
@@ -883,7 +883,7 @@ def test_get_str(loader) -> None:
     assert val == ""
 
     # get_string(sheet: XSpreadsheet, column: int, row: int)
-    val = Calc.get_string(sheet=sheet, column=0, row=0)
+    val = Calc.get_string(sheet=sheet, col=0, row=0)
     assert val == "one"
     val = Calc.get_string(sheet, 0, 1)
     assert val == "33.87"
@@ -1385,7 +1385,7 @@ def test_get_cell(loader) -> None:
     assert val == test_val
 
     # get_cell(sheet: XSpreadsheet, column: int, row: int
-    cell = Calc.get_cell(sheet=sheet, column=col, row=row)
+    cell = Calc.get_cell(sheet=sheet, col=col, row=row)
     assert cell is not None
     val = Calc.get_string(cell)
     assert val == test_val
@@ -1405,7 +1405,7 @@ def test_get_cell(loader) -> None:
     #  get_cell(cell_range: XCellRange, column: int, row: int)
     # cell range is relative position.
     # if a range is C4:E9 then Cell range at col=0 ,row=0 is C4
-    cell = Calc.get_cell(cell_range=cell_range, column=0, row=0)
+    cell = Calc.get_cell(cell_range=cell_range, col=0, row=0)
     assert cell is not None
     val = Calc.get_string(cell)
     assert val == test_val
@@ -1556,7 +1556,7 @@ def test_get_col_range(loader) -> None:
     sheet = Calc.get_sheet(doc=doc, index=0)
     test_val = "test"
     index = 3
-    Calc.set_val(value=test_val, sheet=sheet, column=3, row=0)
+    Calc.set_val(value=test_val, sheet=sheet, col=3, row=0)
     rng = Calc.get_col_range(sheet=sheet, idx=index)
     addr = Calc.get_address(cell_range=rng)
     assert Calc.is_single_cell_range(addr) == False
@@ -1576,7 +1576,7 @@ def test_get_row_range(loader) -> None:
     sheet = Calc.get_sheet(doc=doc, index=0)
     test_val = "test"
     index = 3
-    Calc.set_val(value=test_val, sheet=sheet, column=0, row=index)
+    Calc.set_val(value=test_val, sheet=sheet, col=0, row=index)
     rng = Calc.get_row_range(sheet=sheet, idx=index)
     addr = Calc.get_address(cell_range=rng)
     assert Calc.is_single_cell_range(addr) == False
