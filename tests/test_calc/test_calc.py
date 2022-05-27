@@ -16,7 +16,6 @@ def test_get_sheet(loader) -> None:
     assert loader is not None
     doc = Calc.create_doc(loader)
     assert doc is not None
-    #
     sheet_names = Calc.get_sheet_names(doc)
     assert len(sheet_names) == 1
     assert sheet_names[0] == "Sheet1"
@@ -41,8 +40,14 @@ def test_get_sheet(loader) -> None:
     name_1_4 = Calc.get_sheet_name(sheet_1_4)
     assert name_1_4 == name_1_1
     # Lo.delay(2000)
+    with pytest.raises(TypeError):
+        # unused keyword
+        Calc.get_sheet(doc=doc, name="Sheet1")
+    with pytest.raises(TypeError):
+        # Incorrect number of params
+        Calc.get_sheet(doc=doc)
+        
     Lo.close_doc(doc=doc, deliver_ownership=False)
-
 
 def test_insert_sheet(loader) -> None:
     from ooodev.utils.lo import Lo
@@ -119,12 +124,18 @@ def test_remove_sheet(loader) -> None:
     assert Calc.remove_sheet(doc, 1) is False
     assert Calc.remove_sheet(doc, sheet_name) is False
 
-    # incorrect number of arguments
-    assert Calc.remove_sheet(doc) is False
-    assert Calc.remove_sheet(doc, 0, "any") is False
-
     # incorrect type
     assert Calc.remove_sheet(doc, 22.3) is False
+    with pytest.raises(TypeError):
+        # unused keyword
+        Calc.remove_sheet(doc=doc, other=1)
+    with pytest.raises(TypeError):
+        # incorrect number of arguments
+        Calc.remove_sheet(doc)
+    with pytest.raises(TypeError):
+        # incorrect number of arguments
+        Calc.remove_sheet(doc, 0, "any")
+
     Lo.close_doc(doc=doc, deliver_ownership=False)
 
 
@@ -341,6 +352,13 @@ def test_goto_cell(loader) -> None:
     cell = Calc.get_selected_cell_addr(doc=doc)
     assert cell.Column == 4
     assert cell.Row == 5
+    
+    with pytest.raises(TypeError):
+        # incorrect number of params
+        Calc.goto_cell(cell_name="D5")
+    with pytest.raises(TypeError):
+        # unused keyword
+        Calc.goto_cell(cell_name="D5", f=frame)
     Lo.close_doc(doc=doc, deliver_ownership=False)
 
 
@@ -410,6 +428,12 @@ def test_get_selected_addr(loader) -> None:
     assert addr.EndColumn == 3
     assert addr.StartRow == 0
     assert addr.EndRow == 3
+    with pytest.raises(TypeError):
+        # incorrect number of args
+        Calc.get_selected_addr()
+    with pytest.raises(TypeError):
+        # unused keyword
+        Calc.get_selected_addr(custom=1)
     Lo.close_doc(doc=doc, deliver_ownership=False)
 
 
@@ -675,6 +699,12 @@ def test_set_val(loader) -> None:
     Calc.set_val("three", cell)
     val = Calc.get_val(sheet, 2, 5)
     assert val == "three"
+    with pytest.raises(TypeError):
+        # error on unused key
+        Calc.set_val(value="one", sheet=sheet, cell_name="A2", other=1)
+    with pytest.raises(TypeError):
+        # error on incorrect number of args
+        Calc.set_val(sheet)
     Lo.close(closeable=doc, deliver_ownership=False)
 
 
@@ -719,6 +749,13 @@ def test_get_val(loader) -> None:
     cell = Calc.get_cell(sheet, 0, 1)
     val = Calc.get_val(cell)
     assert val == "one"
+
+    with pytest.raises(TypeError):
+        # error on unused key
+        Calc.get_val(sheet=sheet, column=0, rew=1)
+    with pytest.raises(TypeError):
+        # error on incorrect number of args
+        Calc.get_val(sheet, 0, 1, 3)
 
     Lo.close(closeable=doc, deliver_ownership=False)
 
@@ -784,6 +821,13 @@ def test_get_num(loader) -> None:
     val = Calc.get_num(sheet, 2, 2)  # empty cell
     assert val == 0.0
 
+    with pytest.raises(TypeError):
+        # error on unused key
+        Calc.get_num(sheet=sheet, column=0, rew=0)
+    with pytest.raises(TypeError):
+        # error on incorrect number of args
+        Calc.get_num(sheet, 0, 1, 4)
+
     Lo.close(closeable=doc, deliver_ownership=False)
 
 
@@ -847,6 +891,13 @@ def test_get_str(loader) -> None:
     assert val == "custom val"
     val = Calc.get_string(sheet, 2, 2)  # empty cell
     assert val == ""
+
+    with pytest.raises(TypeError):
+        # error on unused key
+        Calc.get_string(sheet=sheet, cellName="A1")
+    with pytest.raises(TypeError):
+        # error on incorrect number of args
+        Calc.get_string(sheet, 0, 1, 5)
 
     Lo.close(closeable=doc, deliver_ownership=False)
 
@@ -1012,6 +1063,13 @@ def test_set_array(loader) -> None:
     val = Calc.get_num(sheet, f"{rng}{arr_size}")
     assert val == float(arr_size * arr_size)
 
+    with pytest.raises(TypeError):
+        # error on unused key
+        Calc.set_array(values=arr, cellRange=cell_range)
+    with pytest.raises(TypeError):
+        # error on incorrect number of args
+        Calc.set_array(arr, doc, addr, 3)
+
     Lo.close(closeable=doc, deliver_ownership=False)
 
 
@@ -1065,6 +1123,13 @@ def test_get_array(loader) -> None:
     for row, row_data in enumerate(arr):
         for col, _ in enumerate(row_data):
             assert result_arr[row][col] == arr[row][col]
+
+    with pytest.raises(TypeError):
+        # error on unused key
+        Calc.get_array(sheet=sheet, rangeName=rng_name)
+    with pytest.raises(TypeError):
+        # error on incorrect number of args
+        Calc.get_array(sheet, rng_name, 1)
 
     Lo.close(closeable=doc, deliver_ownership=False)
 
@@ -1163,6 +1228,13 @@ def test_get_set_col(loader) -> None:
     for i, val in enumerate(vals):
         assert new_vals[i] == val
 
+    with pytest.raises(TypeError):
+        # error on unused key
+        Calc.set_col(sheet, vals, cellName="A1")
+    with pytest.raises(TypeError):
+        # error on incorrect number of args
+        Calc.set_col(sheet, vals)
+
     Lo.close(closeable=doc, deliver_ownership=False)
 
 
@@ -1210,6 +1282,13 @@ def test_get_set_row(loader) -> None:
     new_vals = Calc.get_row(sheet=sheet, range_name=range_name)
     for i, val in enumerate(vals):
         assert new_vals[i] == val
+
+    with pytest.raises(TypeError):
+        # error on unused key
+        Calc.set_row(sheet=sheet, values=vals, cellName="test")
+    with pytest.raises(TypeError):
+        # error on incorrect number of args
+        Calc.set_row(sheet, vals)
 
     # GUI.set_visible(is_visible=True, odoc=doc)
     # Lo.delay(3000)
@@ -1333,6 +1412,13 @@ def test_get_cell(loader) -> None:
     cell = Calc.get_cell(cell_range, 0, 0)
     assert cell is not None
 
+    with pytest.raises(TypeError):
+        # error on unused key
+        Calc.get_cell(sheet=sheet, cellName="A2")
+    with pytest.raises(TypeError):
+        # error on incorrect number of args
+        Calc.get_cell()
+
     Lo.close(closeable=doc, deliver_ownership=False)
 
 
@@ -1426,6 +1512,13 @@ def test_get_cell_range(loader) -> None:
     assert rng is not None
     addr = Calc.get_address(cell_range=rng)
     assert Calc.is_single_cell_range(addr) == False
+
+    with pytest.raises(TypeError):
+        # error on unused key
+        Calc.get_cell_range(sheet=sheet, rangeName="A2:B5")
+    with pytest.raises(TypeError):
+        # error on incorrect number of args
+        Calc.get_cell_range(sheet)
 
     Lo.close(closeable=doc, deliver_ownership=False)
 
@@ -1629,6 +1722,13 @@ def test_get_cell_address(loader) -> None:
     assert addr2.Column == 2
     assert addr2.Row == 1
 
+    with pytest.raises(TypeError):
+        # error on unused key
+        Calc.get_cell_address(sheet=sheet, cellName="B4")
+    with pytest.raises(TypeError):
+        # error on incorrect number of args
+        Calc.get_cell_address(sheet, 2, 1, 4)
+
     Lo.close(closeable=doc, deliver_ownership=False)
 
 
@@ -1684,6 +1784,13 @@ def test_get_address(loader) -> None:
     assert cr_addr.EndColumn == end_col
     assert cr_addr.EndRow == end_row
 
+    with pytest.raises(TypeError):
+        # error on unused key
+        Calc.get_address(cellRange=rng)
+    with pytest.raises(TypeError):
+        # error on incorrect number of args
+        Calc.get_address(sheet, start_col, start_row)
+
     Lo.close(closeable=doc, deliver_ownership=False)
 
 
@@ -1717,6 +1824,12 @@ def test_print_cell_address(capsys: pytest.CaptureFixture, loader) -> None:
     captured = capsys.readouterr()
     assert captured.out == print_result
 
+    with pytest.raises(TypeError):
+        # error on unused key
+        Calc.print_cell_address(cel=cell)
+    with pytest.raises(TypeError):
+        # error on incorrect number of args
+        Calc.print_cell_address(1, 2)
     Lo.close(closeable=doc, deliver_ownership=False)
 
 
@@ -1753,6 +1866,13 @@ def test_print_address(capsys: pytest.CaptureFixture, loader) -> None:
     Calc.print_address(cr_addr)
     captured = capsys.readouterr()
     assert captured.out == print_result
+
+    with pytest.raises(TypeError):
+        # error on unused key
+        Calc.print_address(cellRange=rng)
+    with pytest.raises(TypeError):
+        # error on incorrect number of args
+        Calc.print_address(1, 2)
 
     Lo.close(closeable=doc, deliver_ownership=False)
 
@@ -1924,6 +2044,13 @@ def test_get_range_str(loader) -> None:
     result = Calc.get_range_str(start_col, start_row, end_col, end_row, sheet)
     assert result == sheet_rng_str
 
+    with pytest.raises(TypeError):
+        # error on unused key
+        Calc.get_range_str(cellRange="A2:B5")
+    with pytest.raises(TypeError):
+        # error on incorrect number of args
+        Calc.get_range_str(cr_addr, sheet, 2)
+
     Lo.close(closeable=doc, deliver_ownership=False)
 
 
@@ -1958,6 +2085,13 @@ def test_get_cell_str(loader) -> None:
     assert result == name
     result = Calc.get_cell_str(col, row)
     assert result == name
+
+    with pytest.raises(TypeError):
+        # error on unused key
+        Calc.get_cell_str(adr=addr)
+    with pytest.raises(TypeError):
+        # error on incorrect number of args
+        Calc.get_cell_str(addr, sheet)
 
     Lo.close(closeable=doc, deliver_ownership=False)
 
@@ -2045,6 +2179,14 @@ def test_create_cell_style(loader) -> None:
     # change_style(sheet: XSpreadsheet, style_name: str, range_name: str)
     result = Calc.change_style(sheet=sheet, style_name=style, range_name=rng_str)
     assert result == False
+    
+    with pytest.raises(TypeError):
+        # error on unused key
+        Calc.change_style(sheet=sheet, style_name=style, cellRange=cell_range)
+    with pytest.raises(TypeError):
+        # error on incorrect number of args
+        Calc.change_style(sheet, style, cell_range, rng_str)
+
     Lo.close(closeable=doc, deliver_ownership=False)
 
 
@@ -2209,6 +2351,13 @@ def test_add_border(loader) -> None:
     assert tbl_border.RightLine.Color == color.CommonColor.BLACK
     assert tbl_border.BottomLine.Color == color.CommonColor.BLACK
     Lo.delay(delay)
+    
+    with pytest.raises(TypeError):
+        # error on unused key
+        Calc.add_border(sheet=sheet, cellRange=rng, color=color.CommonColor.BLACK)
+    with pytest.raises(TypeError):
+        # error on incorrect number of args
+        Calc.add_border(sheet=sheet)
 
     Lo.close(closeable=doc, deliver_ownership=False)
 
@@ -2277,6 +2426,14 @@ def test_highlight_range(loader) -> None:
     assert first is not None
     result = Calc.get_string(cell=first)
     assert result == headline
+
+    with pytest.raises(TypeError):
+        # error on unused key
+        Calc.highlight_range(sheet=sheet, headline=headline, rangeName=rng_name)
+    with pytest.raises(TypeError):
+        # error on incorrect number of args
+        Calc.highlight_range(sheet, headline)
+
     Lo.close(closeable=doc, deliver_ownership=False)
 
 

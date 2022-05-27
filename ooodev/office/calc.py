@@ -275,10 +275,17 @@ class Calc:
     @classmethod
     def get_sheet(cls, *args, **kwargs) -> XSpreadsheet | None:
         ordered_keys = (1, 2)
-        count = len(args) + len(kwargs)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
 
         def get_kwargs() -> dict:
             ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ('doc','index', 'sheet_name')
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("get_sheet() got an unexpected keyword argument")
             ka[1] = kwargs.get("doc", None)
             keys = ("index", "sheet_name")
             for key in keys:
@@ -288,8 +295,7 @@ class Calc:
             return ka
 
         if count != 2:
-            print("invalid number of arguments for get_sheet()")
-            return None
+            raise TypeError("get_sheet() got an invalid numer of arguments")
 
         kargs = get_kwargs()
 
@@ -385,10 +391,17 @@ class Calc:
     @classmethod
     def remove_sheet(cls, *args, **kwargs) -> bool:
         ordered_keys = (1, 2)
-        count = len(args) + len(kwargs)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
 
         def get_kwargs() -> dict:
             ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ('doc', 'index', 'sheet_name')
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("remove_sheet() got an unexpected keyword argument")
             ka[1] = kwargs.get("doc", None)
             keys = ("index", "sheet_name")
             for key in keys:
@@ -398,8 +411,7 @@ class Calc:
             return ka
 
         if count != 2:
-            print("invalid number of arguments for remove_sheet()")
-            return False
+            raise TypeError("remove_sheet() got an invalid numer of arguments")
 
         kargs = get_kwargs()
 
@@ -645,10 +657,17 @@ class Calc:
     @classmethod
     def goto_cell(cls, *args, **kwargs) -> None:
         ordered_keys = (1, 2)
-        count = len(args) + len(kwargs)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
 
-        def get_kwargs() -> dict:
+        def get_kwargs():
             ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ('cell_name', 'doc', 'frame')
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("goto_cell() got an unexpected keyword argument")
             ka[1] = kwargs.get("cell_name", None)
             keys = ("doc", "frame")
             for key in keys:
@@ -658,8 +677,7 @@ class Calc:
             return ka
 
         if count != 2:
-            print("invalid number of arguments for goto_cell()")
-            return
+            raise TypeError("set_val() got an invalid numer of arguments")
 
         kargs = get_kwargs()
         for i, arg in enumerate(args):
@@ -722,10 +740,17 @@ class Calc:
     @classmethod
     def get_selected_addr(cls, *args, **kwargs) -> CellRangeAddress | None:
         ordered_keys = (1,)
-        count = len(args) + len(kwargs)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
 
         def get_kwargs() -> dict:
             ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ('doc', 'model')
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("get_selected_addr() got an unexpected keyword argument")
             keys = ("doc", "model")
             for key in keys:
                 if key in kwargs:
@@ -734,8 +759,7 @@ class Calc:
             return ka
 
         if count != 1:
-            print("invalid number of arguments for get_selected_addr()")
-            return None
+            raise TypeError("get_selected_addr() got an invalid numer of arguments")
 
         kargs = get_kwargs()
 
@@ -1070,7 +1094,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('value', 'cell','sheet', 'cell_name', 'column', 'row')
+            valid_keys = ('value', 'cell', 'sheet', 'cell_name', 'column', 'row')
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("set_val() got an unexpected keyword argument")
@@ -1094,8 +1118,7 @@ class Calc:
             return ka
 
         if not count in (2, 3, 4):
-            print("invalid number of arguments for set_val()")
-            return
+            raise TypeError("set_val() got an invalid numer of arguments")
 
         kargs = get_kwargs()
 
@@ -1249,10 +1272,17 @@ class Calc:
     @classmethod
     def get_val(cls, *args, **kwargs) -> object | None:
         ordered_keys = (1, 2, 3)
-        count = len(args) + len(kwargs)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
 
         def get_kwargs() -> dict:
             ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ('sheet', 'cell', 'cell_name', 'addr', 'column', 'row')
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("get_val() got an unexpected keyword argument")
             keys = ("sheet", "cell")
             for key in keys:
                 if key in kwargs:
@@ -1271,8 +1301,7 @@ class Calc:
             return ka
 
         if not count in (1, 2, 3):
-            print("invalid number of arguments for get_val()")
-            return None
+            raise TypeError("get_val() got an invalid numer of arguments")
 
         kargs = get_kwargs()
         for i, arg in enumerate(args):
@@ -1366,10 +1395,17 @@ class Calc:
     @classmethod
     def get_num(cls, *args, **kwargs) -> float:
         ordered_keys = (1, 2, 3)
-        count = len(args) + len(kwargs)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
 
         def get_kwargs() -> dict:
             ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ('sheet', 'cell', 'cell_name', 'addr', 'column', 'row')
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("get_num() got an unexpected keyword argument")
             keys = ("sheet", "cell")
             for key in keys:
                 if key in kwargs:
@@ -1388,8 +1424,7 @@ class Calc:
             return ka
 
         if not count in (1, 2, 3):
-            print("invalid number of arguments for get_num()")
-            return 0.0
+            raise TypeError("get_num() got an invalid numer of arguments")
 
         kargs = get_kwargs()
 
@@ -1473,10 +1508,17 @@ class Calc:
     @classmethod
     def get_string(cls, *args, **kwargs) -> str:
         ordered_keys = (1, 2, 3)
-        count = len(args) + len(kwargs)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
 
         def get_kwargs() -> dict:
             ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ('cell', 'sheet', 'cell_name', 'addr', 'column', 'row')
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("get_string() got an unexpected keyword argument")
             keys = ("cell", "sheet")
             for key in keys:
                 if key in kwargs:
@@ -1495,8 +1537,7 @@ class Calc:
             return ka
 
         if not count in (1, 2, 3):
-            print("invalid number of arguments for get_string()")
-            return None
+            raise TypeError("get_string() got an invalid numer of arguments")
 
         kargs = get_kwargs()
 
@@ -1610,10 +1651,17 @@ class Calc:
     @classmethod
     def set_array(cls, *args, **kwargs) -> None:
         ordered_keys = (1, 2, 3, 4, 5, 6)
-        count = len(args) + len(kwargs)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
 
         def get_kwargs() -> dict:
             ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ('values', 'cell_range', 'sheet','doc', 'name', 'col_start', 'addr', 'row_start', 'col_end', 'row_end')
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("set_array() got an unexpected keyword argument")
             ka[1] = kwargs.get("values", None)
             keys = ("cell_range", "sheet", "doc")
             for key in keys:
@@ -1635,8 +1683,7 @@ class Calc:
             return ka
 
         if not count in (2, 3, 6):
-            print("invalid number of arguments for set_array()")
-            return
+            raise TypeError("set_array() got an invalid numer of arguments")
 
         kargs = get_kwargs()
         for i, arg in enumerate(args):
@@ -1766,10 +1813,17 @@ class Calc:
     @classmethod
     def get_array(cls, *args, **kwargs) -> Tuple[Tuple[object, ...], ...]:
         ordered_keys = (1, 2)
-        count = len(args) + len(kwargs)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
 
         def get_kwargs() -> dict:
             ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ('cell_range', 'sheet','range_name')
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("get_array() got an unexpected keyword argument")
             keys = ("cell_range", "sheet")
             for key in keys:
                 if key in kwargs:
@@ -1781,8 +1835,7 @@ class Calc:
             return ka
 
         if not count in (1, 2):
-            print("invalid number of arguments for get_array()")
-            return tuple()
+            raise TypeError("get_array() got an invalid numer of arguments")
 
         kargs = get_kwargs()
         for i, arg in enumerate(args):
@@ -1933,10 +1986,17 @@ class Calc:
     @classmethod
     def set_col(cls, *args, **kwargs) -> None:
         ordered_keys = (1, 2, 3, 4)
-        count = len(args) + len(kwargs)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
 
         def get_kwargs() -> dict:
             ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ('sheet', 'values','cell_name', 'col_start', 'row_start')
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("set_col() got an unexpected keyword argument")
             ka[1] = kwargs.get("sheet", None)
             ka[2] = kwargs.get("values", None)
             keys = ("cell_name", "col_start")
@@ -1950,8 +2010,7 @@ class Calc:
             return ka
 
         if not count in (3, 4):
-            print("invalid number of arguments for set_col()")
-            return
+            raise TypeError("set_col() got an invalid numer of arguments")
 
         kargs = get_kwargs()
 
@@ -2007,10 +2066,17 @@ class Calc:
     @classmethod
     def set_row(cls, *args, **kwargs) -> None:
         ordered_keys = (1, 2, 3, 4)
-        count = len(args) + len(kwargs)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
 
         def get_kwargs() -> dict:
             ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ('sheet', 'values', 'cell_name', 'col_start', 'row_start')
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("set_row() got an unexpected keyword argument")
             ka[1] = kwargs.get("sheet", None)
             ka[2] = kwargs.get("values", None)
             keys = ("cell_name", "col_start")
@@ -2024,8 +2090,7 @@ class Calc:
             return ka
 
         if not count in (3, 4):
-            print("invalid number of arguments for set_row()")
-            return
+            raise TypeError("set_row() got an invalid numer of arguments")
 
         kargs = get_kwargs()
 
@@ -2275,10 +2340,17 @@ class Calc:
     @classmethod
     def get_cell(cls, *args, **kwargs) -> XCell | None:
         ordered_keys = (1, 2, 3)
-        count = len(args) + len(kwargs)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
 
         def get_kwargs() -> dict:
             ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ('sheet', 'cell_range','addr', 'column', 'cell_name', 'row')
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("get_cell() got an unexpected keyword argument")
             keys = ("sheet", "cell_range")
             for key in keys:
                 if key in kwargs:
@@ -2297,8 +2369,7 @@ class Calc:
             return ka
 
         if not count in (1, 2, 3):
-            print("invalid number of arguments for get_cell()")
-            return None
+            raise TypeError("get_cell() got an invalid numer of arguments")
 
         kargs = get_kwargs()
 
@@ -2419,10 +2490,17 @@ class Calc:
     @classmethod
     def get_cell_range(cls, *args, **kwargs) -> XCellRange | None:
         ordered_keys = (1, 2, 3, 4, 5)
-        count = len(args) + len(kwargs)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
 
         def get_kwargs() -> dict:
             ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ('sheet', 'cr_addr','range_name', 'start_col', 'start_row', 'end_col', 'end_row')
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("get_cell_range() got an unexpected keyword argument")
             ka[1] = kwargs.get("sheet", None)
             keys = ("cr_addr", "range_name", "start_col")
             for key in keys:
@@ -2437,8 +2515,7 @@ class Calc:
             return ka
 
         if not count in (2, 5):
-            print("invalid number of arguments for get_cell_range()")
-            return None
+            raise TypeError("get_cell_range() got an invalid numer of arguments")
 
         kargs = get_kwargs()
         for i, arg in enumerate(args):
@@ -2766,10 +2843,17 @@ class Calc:
     @classmethod
     def get_cell_address(cls, *args, **kwargs) -> CellAddress | None:
         ordered_keys = (1, 2, 3)
-        count = len(args) + len(kwargs)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
 
         def get_kwargs() -> dict:
             ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ('cell', 'sheet','cell_name', 'col', 'addr', 'row')
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("get_cell_address() got an unexpected keyword argument")
             keys = ("cell", "sheet")
             for key in keys:
                 if key in kwargs:
@@ -2788,8 +2872,7 @@ class Calc:
             return ka
 
         if not count in (1, 2, 3):
-            print("invalid number of arguments for get_cell_address()")
-            return None
+            raise TypeError("get_cell_address() got an invalid numer of arguments")
 
         kargs = get_kwargs()
         for i, arg in enumerate(args):
@@ -2872,10 +2955,17 @@ class Calc:
     @classmethod
     def get_address(cls, *args, **kwargs) -> CellRangeAddress | None:
         ordered_keys = (1, 2, 3, 4, 5)
-        count = len(args) + len(kwargs)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
 
         def get_kwargs() -> dict:
             ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ('cell_range', 'sheet', 'range_name', 'start_col', 'start_row', 'end_col' , 'end_row')
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("get_address() got an unexpected keyword argument")
             keys = ("cell_range", "sheet")
             for key in keys:
                 if key in kwargs:
@@ -2896,8 +2986,7 @@ class Calc:
             return ka
 
         if not count in (1, 2, 5):
-            print("invalid number of arguments for get_address()")
-            return None
+            raise TypeError("get_address() got an invalid numer of arguments")
 
         kargs = get_kwargs()
         for i, arg in enumerate(args):
@@ -2942,10 +3031,17 @@ class Calc:
     @classmethod
     def print_cell_address(cls, *args, **kwargs) -> None:
         ordered_keys = (1,)
-        count = len(args) + len(kwargs)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
 
         def get_kwargs() -> dict:
             ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ('cell', 'addr')
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("print_cell_address() got an unexpected keyword argument")
             keys = ("cell", "addr")
             for key in keys:
                 if key in kwargs:
@@ -2954,8 +3050,7 @@ class Calc:
             return ka
 
         if count != 1:
-            print("invalid number of arguments for print_cell_address()")
-            return
+            raise TypeError("print_cell_address() got an invalid numer of arguments")
 
         kargs = get_kwargs()
         for i, arg in enumerate(args):
@@ -2995,10 +3090,17 @@ class Calc:
     @classmethod
     def print_address(cls, *args, **kwargs) -> None:
         ordered_keys = (1,)
-        count = len(args) + len(kwargs)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
 
         def get_kwargs() -> dict:
             ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ('cell_range', 'cr_addr')
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("print_address() got an unexpected keyword argument")
             keys = ("cell_range", "cr_addr")
             for key in keys:
                 if key in kwargs:
@@ -3007,8 +3109,7 @@ class Calc:
             return ka
 
         if count != 1:
-            print("invalid number of arguments for print_address()")
-            return None
+            raise TypeError("print_address() got an invalid numer of arguments")
 
         kargs = get_kwargs()
 
@@ -3244,10 +3345,17 @@ class Calc:
     @classmethod
     def get_range_str(cls, *args, **kwargs) -> str:
         ordered_keys = (1, 2, 3, 4, 5)
-        count = len(args) + len(kwargs)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
 
         def get_kwargs() -> dict:
             ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ('cell_range', 'cr_addr', 'sheet', 'start_col', 'start_row', 'end_col', 'end_row')
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("get_range_str() got an unexpected keyword argument")
             keys = ("cell_range", "cr_addr", "start_col")
             for key in keys:
                 if key in kwargs:
@@ -3273,8 +3381,7 @@ class Calc:
             return ka
 
         if not count in (1, 2, 4, 5):
-            print("invalid number of arguments for get_range_str()")
-            return ""
+            raise TypeError("get_range_str() got an invalid numer of arguments")
 
         kargs = get_kwargs()
         for i, arg in enumerate(args):
@@ -3372,10 +3479,17 @@ class Calc:
     @classmethod
     def get_cell_str(cls, *args, **kwargs) -> str:
         ordered_keys = (1, 2)
-        count = len(args) + len(kwargs)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
 
         def get_kwargs() -> dict:
             ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ('addr', 'cell', 'col', 'row')
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("get_cell_str() got an unexpected keyword argument")
             keys = ("addr", "cell", "col")
             for key in keys:
                 if key in kwargs:
@@ -3389,8 +3503,7 @@ class Calc:
             return ka
 
         if not count in (1, 2):
-            print("invalid number of arguments for get_cell_str()")
-            return None
+            raise TypeError("get_cell_str() got an invalid numer of arguments")
 
         kargs = get_kwargs()
 
@@ -3568,10 +3681,17 @@ class Calc:
     @classmethod
     def change_style(cls, *args, **kwargs) -> bool:
         ordered_keys = (1, 2, 3, 4, 5, 6)
-        count = len(args) + len(kwargs)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
 
         def get_kwargs() -> dict:
             ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ('sheet', 'style_name', 'range_name', 'cell_range', 'start_col', 'start_row', 'end_col', 'end_row')
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("change_style() got an unexpected keyword argument")
             ka[1] = kwargs.get("sheet", None)
             ka[2] = kwargs.get("style_name", None)
             keys = ("range_name", "start_col", "cell_range")
@@ -3579,18 +3699,15 @@ class Calc:
                 if key in kwargs:
                     ka[3] = kwargs[key]
                     break
-
             if count == 3:
                 return ka
-
             ka[4] = kwargs.get("start_row", None)
             ka[5] = kwargs.get("end_col", None)
             ka[6] = kwargs.get("end_row", None)
             return ka
 
         if not count in (3, 6):
-            print("invalid number of arguments for change_style()")
-            return False
+            raise TypeError("change_style() got an invalid numer of arguments")
 
         kargs = get_kwargs()
 
@@ -3796,10 +3913,17 @@ class Calc:
     @classmethod
     def add_border(cls, *args, **kwargs) -> XCellRange | None:
         ordered_keys = (1, 2, 3, 4)
-        count = len(args) + len(kwargs)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
 
         def get_kwargs() -> dict:
             ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ('sheet', 'range_name', 'cell_range', 'color', 'border_vals')
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("add_border() got an unexpected keyword argument")
             ka[1] = kwargs.get("sheet", None)
             keys = ("range_name", "cell_range")
             for key in keys:
@@ -3815,8 +3939,7 @@ class Calc:
             return ka
 
         if not count in (2, 3, 4):
-            print("invalid number of arguments for add_border()")
-            return None
+            raise TypeError("add_border() got an invalid numer of arguments")
 
         kargs = get_kwargs()
 
@@ -3883,10 +4006,17 @@ class Calc:
     @classmethod
     def highlight_range(cls, *args, **kwargs) -> XCell | None:
         ordered_keys = (1, 2, 3)
-        count = len(args) + len(kwargs)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
 
         def get_kwargs() -> dict:
             ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ('sheet', 'headline', 'range_name', 'cell_range')
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("highlight_range() got an unexpected keyword argument")
             ka[1] = kwargs.get("sheet", None)
             ka[2] = kwargs.get("headline", None)
             keys = ("range_name", "cell_range")
@@ -3897,8 +4027,7 @@ class Calc:
             return ka
 
         if count != 3:
-            print("invalid number of arguments for highlight_range()")
-            return None
+            raise TypeError("highlight_range() got an invalid numer of arguments")
 
         kargs = get_kwargs()
 
@@ -4096,10 +4225,17 @@ class Calc:
     @staticmethod
     def call_fun(*args, **kwargs) -> object | None:
         ordered_keys = (1, 2)
-        count = len(args) + len(kwargs)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
 
         def get_kwargs() -> dict:
             ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ('func_name', 'arg', 'args')
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("call_fun() got an unexpected keyword argument")
             ka[1] = kwargs.get("func_name", None)
             keys = ("arg", "args")
             for key in keys:
@@ -4109,8 +4245,7 @@ class Calc:
             return ka
 
         if count != 2:
-            print("invalid number of arguments for call_fun()")
-            return None
+            raise TypeError("call_fun() got an invalid numer of arguments")
 
         kargs = get_kwargs()
 
@@ -4206,10 +4341,17 @@ class Calc:
     @classmethod
     def find_function(cls, *args, **kwargs) -> Tuple[PropertyValue] | None:
         ordered_keys = (1,)
-        count = len(args) + len(kwargs)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
 
         def get_kwargs() -> dict:
             ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ('func_nm', 'idx')
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("find_function() got an unexpected keyword argument")
             keys = ("func_nm", "idx")
             for key in keys:
                 if key in kwargs:
@@ -4218,8 +4360,7 @@ class Calc:
             return ka
 
         if count != 1:
-            print("invalid number of arguments for find_function()")
-            return None
+            raise TypeError("find_function() got an invalid numer of arguments")
 
         kargs = get_kwargs()
 
@@ -4363,10 +4504,17 @@ class Calc:
     @classmethod
     def make_constraint(cls, *args, **kwargs) -> SolverConstraint | None:
         ordered_keys = (1, 2, 3, 4)
-        count = len(args) + len(kwargs)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
 
         def get_kwargs() -> dict:
             ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ('num', 'op', 'sheet', 'addr', 'cell_name')
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("make_constraint() got an unexpected keyword argument")
             ka[1] = kwargs.get("num", None)
             ka[2] = kwargs.get("op", None)
             keys = ("sheet", "addr")
@@ -4380,8 +4528,7 @@ class Calc:
             return ka
 
         if not count(3, 4):
-            print("invalid number of arguments for make_constraint()")
-            return None
+            raise TypeError("make_constraint() got an invalid numer of arguments")
 
         kargs = get_kwargs()
 
