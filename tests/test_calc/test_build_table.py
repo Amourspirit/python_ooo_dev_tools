@@ -22,18 +22,18 @@ def test_build_cells(loader) -> None:
 
     header_vals = ("JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC")
     for i, val in enumerate(header_vals):
-        Calc.set_val(sheet=sheet, column=i, row=0, value=val)
+        Calc.set_val(sheet=sheet, col=i, row=0, value=val)
 
     vals = (31.45, 20.9, 117.5, 23.4, 114.5, 115.3, 171.3, 89.5, 41.2, 71.3, 25.4, 38.5)
 
     for i, val in enumerate(vals):
-        Calc.set_val(sheet=sheet, column=i, row=1, value=val)
+        Calc.set_val(sheet=sheet, col=i, row=1, value=val)
     
     for i, val in enumerate(header_vals):
-        assert val == Calc.get_string(sheet=sheet, column=i, row=0)
+        assert val == Calc.get_string(sheet=sheet, col=i, row=0)
     
     for i, val in enumerate(vals):
-        assert val == pytest.approx(Calc.get_num(sheet=sheet, column=i, row=1), rel=1e-4)
+        assert val == pytest.approx(Calc.get_num(sheet=sheet, col=i, row=1), rel=1e-4)
 
     Lo.delay(delay)
     Lo.close(closeable=doc, deliver_ownership=False)
@@ -87,7 +87,7 @@ def test_build_rows(loader) -> None:
 
     Calc.set_row(sheet=sheet, cell_name=cell_name, values=vals)
     Calc.set_val(sheet=sheet, cell_name="N2", value="=SUM(B2:M2)")
-    Calc.set_val(sheet=sheet, column=0, row=2, value="Jones")
+    Calc.set_val(sheet=sheet, col=0, row=2, value="Jones")
     
     sheet_vals = Calc.get_array(cell_range=cell_range)
     assert sheet_vals is not None, 'Unable to get values from sheet'
@@ -114,8 +114,8 @@ def test_build_rows(loader) -> None:
         row_start=row,
         values=vals
     )
-    Calc.set_val(sheet=sheet, column=13, row=2, value="=SUM(B3:M3)")
-    Calc.set_val(sheet=sheet, column=0, row=3, value="Brown")
+    Calc.set_val(sheet=sheet, col=13, row=2, value="=SUM(B3:M3)")
+    Calc.set_val(sheet=sheet, col=0, row=3, value="Brown")
     sheet_vals = Calc.get_array(cell_range=cell_range)
     assert sheet_vals is not None, 'Unable to get values from sheet'
     for i, val in enumerate(sheet_vals[0]):
@@ -140,7 +140,7 @@ def test_build_rows(loader) -> None:
         row_start=row,
         values=vals
     )
-    Calc.set_val(sheet=sheet, column=13, row=3, value="=SUM(A4:L4)")
+    Calc.set_val(sheet=sheet, col=13, row=3, value="=SUM(A4:L4)")
     sheet_vals = Calc.get_array(cell_range=cell_range)
     assert sheet_vals is not None, 'Unable to get values from sheet'
     for i, val in enumerate(sheet_vals[0]):
@@ -162,22 +162,22 @@ def build_cols(sheet: XSpreadsheet) -> None:
         sheet=sheet, cell_name="B2", values=(42, 58.9, -66.5, 43.4, 44.5, 45.3, -67.3, 30.5, 23.2, -97.3, 22.4, 23.5)
     )
     Calc.set_val(sheet=sheet, cell_name="B14", value="=SUM(B2:M2)")
-    Calc.set_val(sheet=sheet, column=2, row=0, value="Jones")
+    Calc.set_val(sheet=sheet, col=2, row=0, value="Jones")
     Calc.set_col(
         sheet=sheet,
         col_start=2,
         row_start=1,
         values=(21, 40.9, -57.5, -23.4, 34.5, 59.3, 27.3, -38.5, 43.2, 57.3, 25.4, 28.5),
     )
-    Calc.set_val(sheet=sheet, column=2, row=13, value="=SUM(B3:M3)")
-    Calc.set_val(sheet=sheet, column=3, row=0, value="Brown")
+    Calc.set_val(sheet=sheet, col=2, row=13, value="=SUM(B3:M3)")
+    Calc.set_val(sheet=sheet, col=3, row=0, value="Brown")
     Calc.set_col(
         sheet=sheet,
         col_start=3,
         row_start=1,
         values=(31.45, -20.9, -117.5, 23.4, -114.5, 115.3, -171.3, 89.5, 41.2, 71.3, 25.4, 38.5),
     )
-    Calc.set_val(sheet=sheet, column=3, row=13, value="=SUM(A4:L4)")
+    Calc.set_val(sheet=sheet, col=3, row=13, value="=SUM(A4:L4)")
 
 
 def build_array(sheet: XSpreadsheet) -> None:
@@ -199,7 +199,7 @@ def convert_addresses(sheet: XSpreadsheet) -> None:
     pos = Calc.get_cell_position(cell_name="AA2")
     print(f"Position of AA2: ({pos.X}, {pos.Y})")
 
-    cell = Calc.get_cell(sheet=sheet, column=pos.X, row=pos.Y)
+    cell = Calc.get_cell(sheet=sheet, col=pos.X, row=pos.Y)
     Calc.print_cell_address(cell=cell)
 
     print(f"AA2: {Calc.get_cell_str(col=pos.X, row=pos.Y)}")
