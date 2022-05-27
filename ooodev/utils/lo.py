@@ -6,7 +6,7 @@ from __future__ import annotations
 import sys
 from datetime import datetime
 import time
-from typing import TYPE_CHECKING, Iterable, Optional, List, Tuple, cast, overload, TypeVar, Type
+from typing import TYPE_CHECKING, Iterable, Optional, List, Tuple, overload, TypeVar, Type
 from urllib.parse import urlparse
 import uno
 from .connect import ConnectBase, LoPipeStart, LoSocketStart
@@ -601,13 +601,30 @@ class Lo:
     @overload
     @staticmethod
     def ext_to_format(ext: str) -> str:
+        """
+        Convert the extension string into a suitable office format string.
+        The formats were chosen based on the fact that they
+        are being used to save (or export) a document.
+
+        Args:
+            ext (str): document extension
+
+        Returns:
+            str: format of ext.
+
+        Note:
+            ``doc_type``is used to distinguish between the various meanings of the PDF ext.
+            This could be a lot more extensive.
+
+            Use ``Info.getFilterNames()`` to get the filter names for your Office.
+        """
         ...
 
     @overload
     @staticmethod
     def ext_to_format(ext: str, doc_type: int) -> str:
         """
-        convert the extension string into a suitable office format string.
+        Convert the extension string into a suitable office format string.
         The formats were chosen based on the fact that they
         are being used to save (or export) a document.
 
@@ -1004,7 +1021,7 @@ class Lo:
     @staticmethod
     def is_null_or_empty(s: str) -> bool:
         """
-        Gets is a string is None or Empyt
+        Gets is a string is None or Empty
 
         Args:
             s (str): String to check.

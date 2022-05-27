@@ -14,6 +14,7 @@ from ..utils import info as mInfo
 from ..utils import file_io as mFileIO
 from ..utils import props as mProps
 from ..utils import images as mImages
+from ..utils.color import CommonColor
 
 from com.sun.star.awt import FontWeight
 from com.sun.star.awt.FontSlant import ITALIC as FS_ITALIC # enum values
@@ -301,38 +302,39 @@ class Write:
     
     @classmethod
     def append(cls, *args, **kwargs) -> int:
-        ordered_keys = ("first", "second")
-        kargs = {}
-        kargs["first"] = kwargs.get("cursor", None)
-        i = 0
-        if 'text' in kwargs:
-            kargs['second'] = kwargs['text']
-            i = 1
-        elif 'ctl_char' in kwargs:
-            kargs['second'] = kwargs['ctl_char']
-            i = 2
-        elif 'text_content' in kwargs:
-            kargs["second"] = kwargs['text_content']
-            i = 3
-        for j, arg in enumerate(args):
-            kargs[ordered_keys[j]] = arg
-        if len(kargs) != 2:
-            print('invalid number of arguments for append()')
-            return
-        if i == 0:
-            # str, int or, XTextContent
-            sec = kargs['second']
-            if isinstance(sec, str):
-                i = 1
-            elif isinstance(sec, int):
-                i = 2
-            else:
-                i = 3
-        if i == 1:
-            return cls._append1(kargs["first"], kargs["second"])
-        if i == 2:
-            return cls._append2(kargs["first"], kargs["second"])
-        return cls._append3(kargs["first"], kargs["second"])
+        ordered_keys = (1, 2)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
+
+        def get_kwargs() -> dict:
+            ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ('cursor', 'text', 'ctl_char', 'text_content')
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("append() got an unexpected keyword argument")
+            ka[1] = kwargs.get("cursor", None)
+            keys = ("text", "ctl_char", "text_content")
+            for key in keys:
+                if key in kwargs:
+                    ka[2] = kwargs[key]
+                    break
+            return ka
+
+        if count != 2:
+            raise TypeError("append() got an invalid numer of arguments")
+
+        kargs = get_kwargs()
+
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
+
+        if isinstance(kargs[2], str):
+            return cls._append1(cursor=kargs[1], text=kargs[2])
+        if isinstance(kargs[2], int):
+            return cls._append2(cursor=kargs[1], ctl_char=kargs[2])
+        return cls._append3(cursor=kargs[1], text_content=kargs[2])
 
     # endregion append()
 
@@ -734,11 +736,11 @@ class Write:
             
             # set table properties
             table_props.setPropertyValue("BackTransparent", False) # not transparent
-            table_props.setPropertyValue("BackColor", 0xCCCCFF) # light blue
+            table_props.setPropertyValue("BackColor", CommonColor.LIGHT_BLUE)
             
             # set color of first row (i.e. the header) to be dark blue
             rows = table.getRows()
-            mProps.Props.set_property(prop_set=rows.getByIndex(0), name="BackColor", value=0x666694) # dark blue
+            mProps.Props.set_property(prop_set=rows.getByIndex(0), name="BackColor", value=CommonColor.DARK_BLUE)
             
             #  write table header
             row_data = rows_list[0]
@@ -779,7 +781,7 @@ class Write:
         if cell_text is None:
             return
         text_cursor = cell_text.createTextCursor()
-        mProps.Props.set_property(prop_set=text_cursor, name="CharColor",value=0xFFFFFF) # use white text
+        mProps.Props.set_property(prop_set=text_cursor, name="CharColor",value=CommonColor.WHITE)
         
         cell_text.setString(str(data))
         
