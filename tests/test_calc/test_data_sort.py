@@ -85,8 +85,8 @@ def test_data_sort(loader) -> None:
     from com.sun.star.util import XSortable
     from com.sun.star.view import XSelectionSupplier
 
-    visible = True
-    delay = 2000
+    visible = False
+    delay = 0 # 2000
 
     def make_sort_asc_tbl(index: int, ascending: bool) -> TableSortField:
         sf = TableSortField()
@@ -129,14 +129,15 @@ def test_data_sort(loader) -> None:
     sort_fields = (make_sort_asc_tbl(1, True), make_sort_asc_tbl(2, True))
 
     # 3. define a sort descriptor
-    props = Props.make_props(
-        SortFields=uno.Any("[]com.sun.star.table.TableSortField", [*sort_fields]), ContainsHeader=True
-    )
+    # props = Props.make_props(
+    #     SortFields=uno.Any("[]com.sun.star.table.TableSortField", [*sort_fields]), ContainsHeader=True
+    # )
+    props = Props.make_props(SortFields=Props.any(*sort_fields), ContainsHeader=True)
 
     Lo.wait(delay)  # wait so user can see original before it is sorted
     # 4. do the sort
-    # xsort.sort(odesc)
     xsort.sort(props)
+
     arr = Calc.get_array(cell_range=source_range)
     Lo.wait(delay)
     Lo.close(closeable=doc, deliver_ownership=False)

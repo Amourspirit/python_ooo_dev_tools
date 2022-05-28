@@ -1061,3 +1061,23 @@ class Info:
         if hasattr(obj, "typeName"):
             return obj.typeName == type_name
         return False
+
+    @classmethod
+    def get_type_name(cls, obj: object) -> str | None:
+        """
+        Gets type name such as ``com.sun.star.table.TableSortField`` from uno object.
+
+        Args:
+            obj (object): Uno object
+
+        Returns:
+            str | None: Full type name if found; Othwrwise; None
+        """
+        if hasattr(obj, "typeName"):
+            return obj.typeName
+        if hasattr(obj, "__ooo_full_ns__"):
+            # ooouno object
+            return obj.__ooo_full_ns__
+        if hasattr(obj, "__pyunointerface__"):
+            return obj.__pyunointerface__
+        return None
