@@ -139,6 +139,9 @@ class Calc:
         TEXT = "TEXT"
         FORMULA = "FORMULA"
         UNKNOWN = "UNKNOWN"
+        
+        def __str__(self) -> str:
+            return self.value
 
     class GeneralFunction:
         __typename__ = "com.sun.star.sheet.GeneralFunction"
@@ -1157,15 +1160,15 @@ class Calc:
     convert_to_double = convert_to_float
 
     @classmethod
-    def get_type_string(cls, cell: XCell) -> CellTypeEnum:
+    def get_type_enum(cls, cell: XCell) -> CellTypeEnum:
         """
-        Gets String representing the Type
+        Gets enum representing the Type
 
         Args:
-            cell (XCell): _description_
+            cell (XCell): Cell to get type of
 
         Returns:
-            str: _description_
+            CellTypeEnum: Enum of cell type
         """
         t = cell.getType()
         if t == CCT_EMPTY:
@@ -1178,6 +1181,20 @@ class Calc:
             return cls.CellTypeEnum.FORMULA
         print("Unknown cell type")
         return cls.CellTypeEnum.UNKNOWN
+    
+    @classmethod
+    def get_type_string(cls, cell: XCell) -> str:
+        """
+        Gets String representing the Type
+
+        Args:
+            cell (XCell): Cell to get type of
+
+        Returns:
+            str: String of cell type
+        """
+        t = cls.get_type_enum(cell=cell)
+        return str(t)
 
     # region    get_val()
 
