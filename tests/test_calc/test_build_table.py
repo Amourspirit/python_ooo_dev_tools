@@ -4,10 +4,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
-from ooodev.utils.props import Props
 from ooodev.office.calc import Calc
-from com.sun.star.sheet import XSpreadsheet
-
 
 
 

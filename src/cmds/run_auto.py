@@ -3,11 +3,10 @@
 import os
 import sys
 import subprocess
-from typing import Any
 from pathlib import Path
 from ..utils import util
 # from ..lib.connect import LoSocketStart
-from ooodev.utils import uno_util
+from ooodev.utils import lo_util
 
 
 def run_lo_py(*args: str) -> None:
@@ -45,7 +44,7 @@ def run_lo_py(*args: str) -> None:
     # print("cmd:", cmd)
     pypath = ''
     if sys.platform == 'win32':
-        p_inst = uno_util.get_soffice_install_path()
+        p_inst = lo_util.get_soffice_install_path()
         pypath = pypath + str(util.get_site_packeges_dir()) + ';'
         pypath = pypath + util.get_root() + ';'
         myenv['URE_BOOTSTRAP'] = f"vnd.sun.star.pathname:{p_inst}\\program\\fundamental.ini"
@@ -92,7 +91,7 @@ def run_py(*args: str) -> None:
     for d in sys.path:
         pypath = pypath + d + p_sep
     if sys.platform == 'win32':
-        p_inst = uno_util.get_soffice_install_path()
+        p_inst = lo_util.get_soffice_install_path()
         pypath = str(Path(p_inst, 'program')) + ';' + pypath
         myenv['URE_BOOTSTRAP'] = f"vnd.sun.star.pathname:{p_inst}\\program\\fundamental.ini"
         myenv['UNO_PATH'] = f"{p_inst}\\program\\"

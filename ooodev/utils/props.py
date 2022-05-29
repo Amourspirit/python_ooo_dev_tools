@@ -4,7 +4,7 @@
 """make/get/set properties in an array"""
 # region Imports
 from __future__ import annotations
-from typing import Iterable, Optional, Sequence, Tuple, Union, TYPE_CHECKING, overload
+from typing import Any, Iterable, Optional, Sequence, Tuple, Union, TYPE_CHECKING, overload
 import uno
 
 from com.sun.star.beans import PropertyAttribute  # const
@@ -94,6 +94,42 @@ class Props:
         return tuple(lst)
 
     # endregion ---------------- make properties -----------------------
+
+    # region ------------------- uno -----------------------------------
+    @staticmethod
+    def any(*elements: object) -> uno.Any | None:
+        """
+        Gets a uno.Any object for elements.
+        
+        The first element determines the type for the uno.Any objec.
+
+        Returns:
+            uno.Any | None: uno.Any Object if type can be determined; Othwrwise, None
+
+        Notes:
+            uno.Any is usually constructed in the following manor.
+
+            ``uno.Any("[]com.sun.star.table.TableSortField", (sort_one, sort_two)``
+
+            This methos is shortcut.
+
+            ``Props.any(sort_one, sort_two)``
+        """
+        if len(elements) == 0:
+            return None
+        obj = elements[0]
+        if isinstance(obj, uno.Type):
+            type_name = obj.typeName
+            return uno.Any(obj, [*elements])
+        if isinstance(obj, str):
+            type_name == obj
+        else:
+            type_name = mInfo.Info.get_type_name(obj)
+        if type_name is None:
+            return None
+        return uno.Any(f"[]{type_name}", [*elements])
+
+    # endregion ---------------- uno -----------------------------------
 
     # region ------------------- set properties ------------------------
     @staticmethod
