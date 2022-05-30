@@ -3,6 +3,7 @@
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 # region Imports
 from __future__ import annotations
+import datetime
 from enum import IntFlag, Enum
 import numbers
 import re

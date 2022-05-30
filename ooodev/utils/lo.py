@@ -3,12 +3,12 @@
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 
 from __future__ import annotations
-import sys
 from datetime import datetime
 import time
 from typing import TYPE_CHECKING, Iterable, Optional, List, Tuple, overload, TypeVar, Type
 from urllib.parse import urlparse
 import uno
+from ..meta.static_meta import StaticProperty, classproperty
 from .connect import ConnectBase, LoPipeStart, LoSocketStart
 from com.sun.star.beans import XPropertySet
 from com.sun.star.beans import XIntrospection
@@ -21,6 +21,7 @@ from com.sun.star.lang import XMultiServiceFactory
 from com.sun.star.io import IOException
 from com.sun.star.util import CloseVetoException
 from com.sun.star.util import XCloseable
+from com.sun.star.util import XNumberFormatsSupplier
 
 if TYPE_CHECKING:
     from com.sun.star.beans import PropertyValue
@@ -45,7 +46,7 @@ from . import xml_util as mXML
 from . import info as mInfo
 
 
-class Lo:
+class Lo(metaclass=StaticProperty):
     class Loader:
         """
         Context Manager for Loader
@@ -137,6 +138,7 @@ class Lo:
     # endregion CLSIDs for Office documents
 
     xcc: XComponentContext = None
+    _doc: XComponent = None
     """remote component context"""
     xdesktop: XDesktop = None
     """remote desktop UNO service"""
@@ -338,6 +340,7 @@ class Lo:
     @classmethod
     def close_office(cls) -> None:
         print("Closing Office")
+        cls._doc = None
         if cls.xdesktop is None:
             print("No office connection found")
             return
@@ -431,6 +434,7 @@ class Lo:
         try:
             doc = loader.loadComponentFromURL(open_file_url, "_blank", 0, props)
             cls.ms_factory = cls.qi(XMultiServiceFactory, doc)
+            cls._doc = doc
         except Exception:
             print("Unable to open the document")
         return doc
@@ -506,6 +510,7 @@ class Lo:
         try:
             doc = loader.loadComponentFromURL(f"private:factory/{doc_type}", "_blank", 0, props)
             cls.ms_factory = cls.qi(XMultiServiceFactory, doc)
+            cls._doc = doc
         except Exception:
             print("Could not create a document")
         return doc
@@ -533,6 +538,7 @@ class Lo:
         try:
             doc = loader.loadComponentFromURL(template_url, "_blank", 0, props)
             cls.ms_factory = cls.qi(XMultiServiceFactory, doc)
+            cls._doc = doc
         except Exception as e:
             print(f"Could not create document from template: {e}")
         return doc
@@ -799,13 +805,14 @@ class Lo:
         """
         ...
 
-    @staticmethod
-    def close(closeable: XCloseable, deliver_ownership=False) -> None:
+    @classmethod
+    def close(cls, closeable: XCloseable, deliver_ownership=False) -> None:
         if closeable is None:
             return
         print("Closing the document")
         try:
             closeable.close(deliver_ownership)
+            cls._doc = None
         except CloseVetoException:
             print("Close was vetoed")
 
@@ -843,6 +850,7 @@ class Lo:
         try:
             closeable = cls.qi(XCloseable, doc)
             cls.close(closeable)
+            cls._doc = None
         except DisposedException:
             print("Document close failed since Office link disposed")
 
@@ -869,6 +877,7 @@ class Lo:
             print("Could not access document")
             return None
         cls.ms_factory = cls.qi(XMultiServiceFactory, doc)
+        cls._doc = doc
         return doc
 
     # ============= initialization via script context ======================
@@ -895,6 +904,7 @@ class Lo:
             print("Could not access document")
             return None
         cls.ms_factory = cls.qi(XMultiServiceFactory, doc)
+        cls._doc = doc
         return doc
 
     # ==================== dispatch ===============================
@@ -1039,10 +1049,6 @@ class Lo:
         input("Press Enter to continue...")
 
     @staticmethod
-    def get_time_stamp() -> str:
-        return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-    @staticmethod
     def is_url(fnm: str) -> bool:
         # https://stackoverflow.com/questions/7160737/how-to-validate-a-url-in-python-malformed-or-not
         try:
@@ -1136,3 +1142,36 @@ class Lo:
                 print(f"Could not access element {i}")
         print(f"Could not find a '{nm}' property set in the container")
         return None
+    
+    # ------------------- date --------------------
+    @staticmethod
+    def get_time_stamp() -> str:
+        return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    
+    @classproperty
+    def null_date(cls) -> datetime:
+        """
+        Get Value of Null Date
+
+        Returns:
+            datetime: Null Date on sucess; Otherwise, None
+
+        Notes:
+            If Lo has no document to determine date from then a
+            default date of 1889/12/30 is returned.
+        """
+        # https://tinyurl.com/2pdrt5z9#NullDate
+        try:
+            return cls.__null_date
+        except AttributeError:
+            if cls._doc is None:
+                print("No document found returning 1889/12/30")
+                return datetime(year=1889, month=12, day=30)
+            n_supplier = cls.qi(XNumberFormatsSupplier, cls._doc)
+            number_settings = n_supplier.getNumberFormatSettings()
+            d = number_settings.getPropertyValue('NullDate')
+            cls.__null_date = datetime(d.Year, d.Month, d.Day)
+        return cls.__null_date
+
+    
+    

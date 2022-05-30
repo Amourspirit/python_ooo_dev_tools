@@ -30,7 +30,7 @@ def test_fill_series(loader) -> None:
     # transpose a matrix
     arr = ((1, 2, 3),(4, 5, 6))
     args = (arr,)
-    result = Calc.call_fun("TRANSPOSE", args)
+    result = Calc.call_fun("TRANSPOSE", list(arr))
     
     assert result is not None
     
