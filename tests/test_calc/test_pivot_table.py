@@ -7,11 +7,11 @@ if __name__ == "__main__":
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.utils.props import Props
+from ooodev.utils.uno_util import UnoEnum
 from ooodev.office.calc import Calc
 
 from com.sun.star.sheet import XDataPilotTable
 from com.sun.star.sheet import XSpreadsheet
-from com.sun.star.sheet.DataPilotFieldOrientation import COLUMN as FO_COLUMN, ROW as FO_ROW, DATA as FO_DATA
 
 def test_pivot(loader) -> None:
     doc = Calc.create_doc(loader=loader)
@@ -58,6 +58,7 @@ def create_table(sheet: XSpreadsheet) -> XDataPilotTable | None:
     Calc.set_array(sheet=sheet, name="A2:C22", values=vals)
 
 def create_pivot_table(sheet: XSpreadsheet) -> XDataPilotTable | None:
+    DPFO = UnoEnum("com.sun.star.sheet.DataPilotFieldOrientation")
     Calc.highlight_range(sheet=sheet, range_name="E1:H1", headline="Pivot Table")
     Calc.set_col_width(sheet=sheet, width=40, idx=4);   # E column; in mm
     
@@ -75,16 +76,16 @@ def create_pivot_table(sheet: XSpreadsheet) -> XDataPilotTable | None:
     # use first column as column field
     
     props = Lo.find_container_props(con=fields, nm="Name")
-    Props.set_property(prop_set=props, name="Orientation", value=FO_COLUMN)
+    Props.set_property(prop_set=props, name="Orientation", value=DPFO.COLUMN)
     
     # use second column as row field
     props = Lo.find_container_props(con=fields, nm="Fruit")
-    Props.set_property(prop_set=props, name="Orientation", value=FO_ROW)
+    Props.set_property(prop_set=props, name="Orientation", value=DPFO.ROW)
     
     
     # use third column as data field, calculating the sum
     props = Lo.find_container_props(con=fields, nm="Quantity")
-    Props.set_property(prop_set=props, name="Orientation", value=FO_DATA)
+    Props.set_property(prop_set=props, name="Orientation", value=DPFO.DATA)
     Props.set_property(prop_set=props, name="Function", value=Calc.GeneralFunction.SUM)
     
     # select output position

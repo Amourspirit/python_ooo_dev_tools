@@ -4,14 +4,17 @@ if __name__ == "__main__":
     pytest.main([__file__])
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
+from ooodev.utils.uno_util import UnoEnum
 from ooodev.office.calc import Calc
 
 
-
 def test_fill_series(loader) -> None:
-    from com.sun.star.sheet.FillDirection import TO_RIGHT, TO_LEFT, TO_TOP
-    from com.sun.star.sheet.FillMode import LINEAR as FM_LINEAR, DATE as FM_DATE, AUTO as FM_AUTO, GROWTH as FM_GROWTH
-    from com.sun.star.sheet.FillDateMode import FILL_DATE_MONTH
+    # from com.sun.star.sheet.FillDirection import TO_RIGHT, TO_LEFT, TO_TOP
+    # from com.sun.star.sheet.FillMode import LINEAR as FM_LINEAR, DATE as FM_DATE, AUTO as FM_AUTO, GROWTH as FM_GROWTH
+    # from com.sun.star.sheet.FillDateMode import FILL_DATE_MONTH
+    FillDirection = UnoEnum(type_name="com.sun.star.sheet.FillDirection")
+    FillMode = UnoEnum(type_name="com.sun.star.sheet.FillMode")
+    FillDateMode = UnoEnum(type_name="com.sun.star.sheet.FillDateMode")
     doc = Calc.create_doc(loader=loader)
     assert doc is not None, "Could not create new document"
     visible = False
@@ -32,7 +35,7 @@ def test_fill_series(loader) -> None:
     Lo.delay(delay)
     #Autofill, using first 2 cells to right to determine progressions
     series = Calc.get_cell_series(sheet=sheet, range_name="A7:G9")
-    series.fillAuto(TO_RIGHT, 2)
+    series.fillAuto(FillDirection.TO_RIGHT, 2)
     arr = Calc.get_array(sheet=sheet, range_name="A7:G9")
     assert arr[0][2] == pytest.approx(3, rel=1e-2)
     assert arr[0][3] == pytest.approx(4, rel=1e-2)
@@ -60,7 +63,7 @@ def test_fill_series(loader) -> None:
     # Fill 2 rows; 2nd row is not filled completely since
     # the end value is reached
     series = Calc.get_cell_series(sheet=sheet, range_name="A2:E3")
-    series.fillSeries(TO_RIGHT, FM_LINEAR, Calc.NO_DATE, 2, 9)
+    series.fillSeries(FillDirection.TO_RIGHT, FillMode.LINEAR, Calc.NO_DATE, 2, 9)
                 #   ignore date mode; step == 2; end at 9
     arr = Calc.get_array(sheet=sheet, range_name="A2:E3")
     assert arr[0][1] == 3.0
@@ -78,7 +81,7 @@ def test_fill_series(loader) -> None:
     Lo.delay(delay)
     # fill by adding one month to date; day is unchanged
     series = Calc.get_cell_series(sheet=sheet, range_name="A4:E4")
-    series.fillSeries(TO_RIGHT, FM_DATE, FILL_DATE_MONTH, 1, Calc.MAX_VALUE)
+    series.fillSeries(FillDirection.TO_RIGHT, FillMode.DATE, FillDateMode.FILL_DATE_MONTH, 1, Calc.MAX_VALUE)
     arr = Calc.get_array(sheet=sheet, range_name="A4:E4")
     assert arr[0][0] == 42328.0
     assert arr[0][1] == 42358.0
@@ -91,7 +94,7 @@ def test_fill_series(loader) -> None:
     Lo.delay(delay)
     # Fill from right to left with text+value in steps of +10
     series = Calc.get_cell_series(sheet=sheet, range_name="A5:E5")
-    series.fillSeries(TO_LEFT, FM_LINEAR, Calc.NO_DATE, 10, Calc.MAX_VALUE)
+    series.fillSeries(FillDirection.TO_LEFT, FillMode.LINEAR, Calc.NO_DATE, 10, Calc.MAX_VALUE)
     arr = Calc.get_array(sheet=sheet, range_name="A5:E5")
     assert arr[0][0] == 'Text 50'
     assert arr[0][1] == 'Text 40'
@@ -104,7 +107,7 @@ def test_fill_series(loader) -> None:
     Lo.delay(delay)
     # Fill with values generated automatically from first entry
     series = Calc.get_cell_series(sheet=sheet, range_name="A6:E6")
-    series.fillSeries(TO_RIGHT, FM_AUTO, Calc.NO_DATE, 1, Calc.MAX_VALUE)
+    series.fillSeries(FillDirection.TO_RIGHT, FillMode.AUTO, Calc.NO_DATE, 1, Calc.MAX_VALUE)
     # series.fillAuto(TO_RIGHT, 1)  # does the same
     arr = Calc.get_array(sheet=sheet, range_name="A6:E6")
     assert arr[0][0] == 'Jan'
@@ -118,7 +121,7 @@ def test_fill_series(loader) -> None:
     
     # Fill from  bottom to top with a geometric series (*2)
     series = Calc.get_cell_series(sheet=sheet, range_name="G2:G6")
-    series.fillSeries(TO_TOP, FM_GROWTH, Calc.NO_DATE, 2, Calc.MAX_VALUE)
+    series.fillSeries(FillDirection.TO_TOP, FillMode.GROWTH, Calc.NO_DATE, 2, Calc.MAX_VALUE)
     arr = Calc.get_array(sheet=sheet, range_name="G2:G6")
     assert arr[0][0] == 160.0
     assert arr[1][0] == 80.0
