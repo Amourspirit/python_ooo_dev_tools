@@ -1151,7 +1151,7 @@ class Lo(metaclass=StaticProperty):
     @classproperty
     def null_date(cls) -> datetime:
         """
-        Get Value of Null Date
+        Gets Value of Null Date
 
         Returns:
             datetime: Null Date on sucess; Otherwise, None
@@ -1173,5 +1173,8 @@ class Lo(metaclass=StaticProperty):
             cls.__null_date = datetime(d.Year, d.Month, d.Day)
         return cls.__null_date
 
-    
+    @null_date.setter
+    def null_date(cls, value) -> None:
+        # raise error on set. Not really neccesary but gives feedback.
+        raise AttributeError("Attempt to modify read-only class property '%s'." % cls.name)    
     
