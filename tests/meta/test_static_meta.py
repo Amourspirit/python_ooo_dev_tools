@@ -62,12 +62,12 @@ class TestClazz(metaclass=StaticProperty):
         cls._class = value
 
     @classinstanceproperty
-    def class_instance(self):
-        return self._class_instance
+    def class_instance(cls):
+        return cls._class_instance
 
     @class_instance.setter
-    def class_instance(self, value):
-        self._class_instance = value
+    def class_instance(cls, value):
+        cls._class_instance = value
 
     @property
     def instance(self):
