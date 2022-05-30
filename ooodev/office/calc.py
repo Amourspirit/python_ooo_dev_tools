@@ -4269,15 +4269,17 @@ class Calc:
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
 
-        if isinstance(kargs[2], tuple):
-            arg = kargs[2]
+        the_arg = kargs[2]
+        if GenUtil.is_iterable(the_arg):
+            arg = the_arg
         else:
-            arg = [kargs[2]]
+            arg = (the_arg,)
         try:
             fa = mLo.Lo.create_instance_mcf(XFunctionAccess, "com.sun.star.sheet.FunctionAccess")
-            return fa.callFunction(kargs[1], kargs[2])
-        except Exception:
+            return fa.callFunction(kargs[1], arg)
+        except Exception as e:
             print(f"Could not invoke function '{kargs[1]}'")
+            print(f"    {e}")
         return None
 
     # endregion call_fun()
