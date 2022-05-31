@@ -8,6 +8,27 @@ from ooodev.utils.props import Props
 from ooodev.office.calc import Calc
 
 
+# Bare bones APSO test
+#
+# import uno
+# smgr = XSCRIPTCONTEXT.ctx.getServiceManager()
+# fa_obj = smgr.createInstanceWithContext("com.sun.star.sheet.FunctionAccess", XSCRIPTCONTEXT.ctx)
+# fa = fa_obj.queryInterface(uno.getTypeByName("com.sun.star.sheet.XFunctionAccess"))
+
+# # test MAX
+# args = (10 ,23, 33)
+# result = fa.callFunction("MAX", args)
+# assert result == 33.0
+
+# # test ABS
+# args = ((-1, 2, 3), (4, -5, 6), (7, 8, -9))
+# result = fa.callFunction("ABS", args)
+# # uno.com.sun.star.lang.IllegalArgumentException
+
+# result = fa.callFunction("ABS", (args,))
+# # uno.com.sun.star.lang.IllegalArgumentException
+
+
 def test_abs_with_sheet(loader) -> None:
     # https://forum.openoffice.org/en/forum/viewtopic.php?f=45&t=31229
     # it seems loading args from array is causing a problem but from a sheet works better.

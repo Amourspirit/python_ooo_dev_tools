@@ -286,15 +286,7 @@ class Props:
         if prop_set is None:
             print(f"no {prop_kind} properties found")
             return
-        try:
-            if obj.supportsService("com.sun.star.beans.XPropertySet"):
-                cls._show_props_str_xpropertyset(prop_kind, prop_set)
-                return
-        except AttributeError:
-            pass
-
-        print(f"No properties found for {prop_kind}")
-
+        cls.show_props(prop_kind=prop_kind, props_set=prop_set)
     # region    show_props()
     @overload
     @staticmethod
@@ -309,10 +301,17 @@ class Props:
     @classmethod
     def show_props(cls, *args, **kwargs) -> None:
         ordered_keys = (1, 2)
-        count = len(args) + len(kwargs)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
 
         def get_kwargs() -> dict:
             ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ('title', 'props', 'prop_kind', 'props_set')
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("show_props() got an unexpected keyword argument")
             keys = ("title", "prop_kind")
             for key in keys:
                 if key in kwargs:
@@ -326,8 +325,7 @@ class Props:
             return ka
 
         if count != 2:
-            print("invalid number of arguments for show_props()")
-            return None
+            raise TypeError("show_props() got an invalid numer of arguments")
 
         kargs = get_kwargs()
 
