@@ -610,6 +610,21 @@ class Calc:
             return
         xfreeze = mLo.Lo.qi(XViewFreezable, ctrl)
         xfreeze.freezeAtPosition(num_cols, num_rows)
+    
+    @classmethod
+    def unfreeze(cls, doc: XSpreadsheetDocument) -> None:
+        """
+        Un-Freezes spreadsheet columns and/or rows
+
+        Args:
+            doc (XSpreadsheetDocument): Spreadsheet Document
+        """
+        ctrl = cls.get_controller(doc)
+        if ctrl is None:
+            return
+        xfreeze = mLo.Lo.qi(XViewFreezable, ctrl)
+        if xfreeze.hasFrozenPanes():
+            cls.freeze(doc=doc, num_cols=0, num_rows=0)
 
     @classmethod
     def freeze_cols(cls, doc: XSpreadsheetDocument, num_cols: int) -> None:
@@ -927,7 +942,7 @@ class Calc:
             return None
 
         vd_new = []
-        for i in range(4):
+        for i in range(3):
             vd_new.append(view_parts[i])
 
         for state in states:
