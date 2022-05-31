@@ -7,11 +7,11 @@ if __name__ == "__main__":
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.utils.props import Props
+from ooodev.utils.uno_util import UnoEnum
 from ooodev.office.calc import Calc
 
 from com.sun.star.sheet import XDataPilotTables, XDataPilotTable
 from com.sun.star.sheet import XSpreadsheet
-from com.sun.star.sheet.DataPilotFieldOrientation import COLUMN as FO_COLUMN, ROW as FO_ROW, DATA as FO_DATA
 
 def test_pivot(copy_fix_calc, loader) -> None:
     doc_path = copy_fix_calc("pivottable1.ods")
@@ -34,6 +34,7 @@ def test_pivot(copy_fix_calc, loader) -> None:
     Lo.close_doc(doc=doc)
 
 def create_pivot_table(sheet: XSpreadsheet, dp_sheet: XSpreadsheet) -> XDataPilotTable | None:
+    DPFO = UnoEnum("com.sun.star.sheet.DataPilotFieldOrientation")
     cell_range = Calc.find_used_range(sheet)
     print(f"The used area is: { Calc.get_range_str(cell_range)}")
     print()
@@ -53,16 +54,16 @@ def create_pivot_table(sheet: XSpreadsheet, dp_sheet: XSpreadsheet) -> XDataPilo
     
     # set column field
     props = Lo.find_container_props(con=fields, nm="Category")
-    Props.set_property(prop_set=props, name="Orientation", value=FO_COLUMN)
+    Props.set_property(prop_set=props, name="Orientation", value=DPFO.COLUMN)
     
     # set row field
     props = Lo.find_container_props(con=fields, nm="Period")
-    Props.set_property(prop_set=props, name="Orientation", value=FO_ROW)
+    Props.set_property(prop_set=props, name="Orientation", value=DPFO.ROW)
     
     
     # set data field, calculating the sum
     props = Lo.find_container_props(con=fields, nm="Revenue")
-    Props.set_property(prop_set=props, name="Orientation", value=FO_DATA)
+    Props.set_property(prop_set=props, name="Orientation", value=DPFO.DATA)
     Props.set_property(prop_set=props, name="Function", value=Calc.GeneralFunction.SUM)
     
     # place onto sheet

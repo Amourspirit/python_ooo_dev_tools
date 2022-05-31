@@ -3,6 +3,7 @@
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 # region Imports
 from __future__ import annotations
+import datetime
 from enum import IntFlag, Enum
 import numbers
 import re
@@ -4227,60 +4228,35 @@ class Calc:
             print(f"    {e}")
         return 0.0
 
-    # region    call_fun()
-
-    @overload
     @staticmethod
-    def call_fun(func_name: str, arg: object) -> object:
-        ...
+    def call_fun(func_name: str, *args:any) -> object:
+        """
+        Execute a Calc function by its (english) name and based on the given arguments
 
-    @overload
-    @staticmethod
-    def call_fun(func_name: str, args: Tuple[object, ...]) -> object:
-        ...
+        Args:
+            func_name (str): the english name of the function to execute
+            args: (any): the arguments of the called function.
+                Each argument must be either a string, a numeric value
+                or a sequence of sequeneces ( tuples  or list ) combining those types.
 
-    @staticmethod
-    def call_fun(*args, **kwargs) -> object | None:
-        ordered_keys = (1, 2)
-        kargs_len = len(kwargs)
-        count = len(args) + kargs_len
-
-        def get_kwargs() -> dict:
-            ka = {}
-            if kargs_len == 0:
-                return ka
-            valid_keys = ('func_name', 'arg', 'args')
-            check = all(key in valid_keys for key in kwargs.keys())
-            if not check:
-                raise TypeError("call_fun() got an unexpected keyword argument")
-            ka[1] = kwargs.get("func_name", None)
-            keys = ("arg", "args")
-            for key in keys:
-                if key in kwargs:
-                    ka[2] = kwargs[key]
-                    break
-            return ka
-
-        if count != 2:
-            raise TypeError("call_fun() got an invalid numer of arguments")
-
-        kargs = get_kwargs()
-
-        for i, arg in enumerate(args):
-            kargs[ordered_keys[i]] = arg
-
-        if isinstance(kargs[2], tuple):
-            arg = kargs[2]
+        Returns:
+            object: The (string or numeric) value or the array of arrays returned by the call to the function
+                When the arguments contain arrays, the function is executed as an array function
+                Wrong arguments generate an error
+        """
+        args_len = len(args)
+        if args_len == 0:
+            arg = ()
         else:
-            arg = [kargs[2]]
+            arg = args
         try:
             fa = mLo.Lo.create_instance_mcf(XFunctionAccess, "com.sun.star.sheet.FunctionAccess")
-            return fa.callFunction(kargs[1], kargs[2])
-        except Exception:
-            print(f"Could not invoke function '{kargs[1]}'")
+            return fa.callFunction(func_name.upper(), arg)
+        except Exception as e:
+            print(f"Could not invoke function '{func_name.upper()}'")
+            print(f"    {e}")
         return None
 
-    # endregion call_fun()
 
     @staticmethod
     def get_function_names() -> List[str] | None:
