@@ -16,7 +16,6 @@ def test_fill_series(loader) -> None:
     FillMode = UnoEnum(type_name="com.sun.star.sheet.FillMode")
     FillDateMode = UnoEnum(type_name="com.sun.star.sheet.FillDateMode")
     doc = Calc.create_doc(loader=loader)
-    assert doc is not None, "Could not create new document"
     visible = False
     delay = 0 # 1000
     if visible:

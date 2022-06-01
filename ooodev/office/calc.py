@@ -4637,16 +4637,33 @@ class Calc:
 
     @classmethod
     def goal_seek(
-        cls, gs: XGoalSeek, sheet: XSpreadsheet, cell_name: str, formula_cell_name: str, result: float
+        cls, gs: XGoalSeek, sheet: XSpreadsheet, cell_name: str, formula_cell_name: str, result: numbers.Number
     ) -> float:
+        """
+        Calculates a value which gives a specified result in a formula. 
+
+        Args:
+            gs (XGoalSeek): Goal seeking value for cell
+            sheet (XSpreadsheet): Spreadsheet
+            cell_name (str): cell name such as 'A1'
+            formula_cell_name (str): formula cell name such as 'A2'
+            result (Number): float or int, result of the goal seek
+
+        Raises:
+            GoalDivergenceError: If goal divergence is greater than 0.1
+
+        Returns:
+            float: result of the goal seek
+        """        
         """find x in formula when it equals result"""
         xpos = cls._get_cell_address_sheet(sheet=sheet, cell_name=cell_name)
         formula_pos = cls._get_cell_address_sheet(sheet=sheet, cell_name=formula_cell_name)
 
-        goal_result = gs.seekGoal(formula_pos, xpos, f"{result}")
+        goal_result = gs.seekGoal(formula_pos, xpos, f"{float(result)}")
         if goal_result.Divergence >= 0.1:
             print(f"NO result; divergence: {goal_result.Divergence}")
-        return goal_result.Divergence
+            raise mEx.GoalDivergenceError(goal_result.Divergence)
+        return goal_result.Result
 
     @staticmethod
     def list_solvers() -> None:
