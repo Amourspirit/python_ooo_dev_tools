@@ -7,7 +7,6 @@ from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.utils.props import Props
 from ooodev.office.calc import Calc
-from ooodev.exceptions.ex import GoalDivergenceError
 
 def test_linear_solver(loader, capsys: pytest.CaptureFixture) -> None:
     from com.sun.star.sheet import XSolver

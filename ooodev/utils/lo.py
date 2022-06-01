@@ -835,6 +835,9 @@ class Lo(metaclass=StaticProperty):
                 False let the ownership at the original one which called the close() method.
                 They must react for possible CloseVetoExceptions such as when document needs saving
                 and try it again at a later time. This can be useful for a generic UI handling.
+
+        Raises:
+            MissingInterfaceError: if doc does not have XCloseable interface
         """
         ...
 
@@ -842,7 +845,9 @@ class Lo(metaclass=StaticProperty):
     def close_doc(cls, doc: object, deliver_ownership=False) -> None:
         try:
             closeable = cls.qi(XCloseable, doc)
-            cls.close(closeable)
+            if closeable is None:
+                raise mEx.MissingInterfaceError(XCloseable)
+            cls.close(closeable=closeable, deliver_ownership=deliver_ownership)
             cls._doc = None
         except DisposedException as e:
             raise Exception("Document close failed since Office link disposed") from e
