@@ -12,3 +12,7 @@ class MissingInterfaceError(Exception):
     
     def __str__(self) -> str:
         return repr(self.args[0])
+
+
+class CellError(Exception):
+    pass

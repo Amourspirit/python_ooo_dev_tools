@@ -44,6 +44,7 @@ from . import props as mProps
 from . import file_io as mFileIO
 from . import xml_util as mXML
 from . import info as mInfo
+from ..exceptions import ex as mEx
 
 
 class Lo(metaclass=StaticProperty):
@@ -226,8 +227,11 @@ class Lo(metaclass=StaticProperty):
         Args:
             service_name (str): Service Name
 
+        Raises:
+            Exception if create instance fails
+
         Returns:
-            XInterface | None: Interface if creation is successful; Otherwise None.
+            XInterface: Interface object
         """
 
     @overload
@@ -240,8 +244,11 @@ class Lo(metaclass=StaticProperty):
             service_name (str): Service Name
             args (Tuple[object, ...]): Args
 
+        Raises:
+            Exception if create instance fails
+
         Returns:
-            XInterface | None: Interface if creation is successful; Otherwise None.
+            XInterface: Interface object
         """
 
     @classmethod
@@ -257,6 +264,8 @@ class Lo(metaclass=StaticProperty):
             else:
                 obj = cls.mc_factory.createInstanceWithContext(service_name, cls.xcc)
             interface_obj = cls.qi(atype=atype, obj=obj)
+            if interface_obj is None:
+                raise mEx.MissingInterfaceError(atype)
         except Exception as e:
             raise Exception(f"Couldn't create interface for '{service_name}'") from e
         return interface_obj

@@ -439,12 +439,12 @@ def test_get_selected_addr(loader) -> None:
 
 def test_get_selected_cell_addr(loader) -> None:
     from ooodev.utils.lo import Lo
+    from ooodev.exceptions.ex import CellError
     from ooodev.office.calc import Calc
     from com.sun.star.view import XSelectionSupplier
 
     assert loader is not None
     doc = Calc.create_doc(loader)
-    assert doc is not None
 
     sheet = Calc.get_active_sheet(doc)
     rng = Calc.get_cell_range(sheet=sheet, range_name="B1:D4")
@@ -455,9 +455,9 @@ def test_get_selected_cell_addr(loader) -> None:
     sel = Lo.qi(XSelectionSupplier, controller)
     if sel:
         sel.select(cursor)
-    # should be None when more then a single cell is selected
-    addr = Calc.get_selected_cell_addr(doc)
-    assert addr is None
+    # should raise error when more then a single cell is selected
+    with pytest.raises(CellError):
+        addr = Calc.get_selected_cell_addr(doc)
 
     Calc.goto_cell(cell_name="B4", doc=doc)
     addr = Calc.get_selected_cell_addr(doc)
