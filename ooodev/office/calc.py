@@ -4667,6 +4667,9 @@ class Calc:
 
     @staticmethod
     def list_solvers() -> None:
+        """
+        Prints solvers
+        """
         print("Services offered by the solver:")
         nms = mInfo.Info.get_service_names(service_name="com.sun.star.sheet.Solver")
         if nms is None:
@@ -4679,6 +4682,17 @@ class Calc:
 
     @classmethod
     def to_constraint_op(cls, op: str) -> SolverConstraintOperator:
+        """
+        Convert string value to SolverConstraintOperator.
+        
+        If ``op`` is not valid then SolverConstraintOperator.EQUAL is returned.
+
+        Args:
+            op (str): Operator such as =, ==, <=, =<, >=, =>
+
+        Returns:
+            SolverConstraintOperator: Operator as enum
+        """
         if op == "=" or op == "==":
             return cls.SolverConstraintOperator.EQUAL
         if (op == "<=") or op == "=<":
@@ -4691,19 +4705,19 @@ class Calc:
     # region    make_constraint()
     @classmethod
     def _make_constraint_op_str_sht_cell_name(
-        cls, num: float, op: str, sheet: XSpreadsheet, cell_name: str
+        cls, num: numbers.Number, op: str, sheet: XSpreadsheet, cell_name: str
     ) -> SolverConstraint:
         return cls._make_constraint_op_str_addr(
             num=num, op=op, addr=cls._get_cell_address_sheet(sheet=sheet, cell_name=cell_name)
         )
 
     @classmethod
-    def _make_constraint_op_str_addr(cls, num: float, op: str, addr: CellAddress) -> SolverConstraint:
+    def _make_constraint_op_str_addr(cls, num: numbers.Number, op: str, addr: CellAddress) -> SolverConstraint:
         return cls._make_constraint_op_sco_addr(num=num, op=cls.to_constraint_op(op), addr=addr)
 
     @classmethod
     def _make_constraint_op_sco_sht_cell_name(
-        cls, num: float, op: SolverConstraintOperator, sheet: XSpreadsheet, cell_name: str
+        cls, num: numbers.Number, op: SolverConstraintOperator, sheet: XSpreadsheet, cell_name: str
     ) -> SolverConstraint:
         return cls._make_constraint_op_sco_addr(
             num=num, op=op, addr=cls._get_cell_address_sheet(sheet=sheet, cell_name=cell_name)
@@ -4711,34 +4725,80 @@ class Calc:
 
     @classmethod
     def _make_constraint_op_sco_addr(
-        cls, num: float, op: SolverConstraintOperator, addr: CellAddress
+        cls, num: numbers.Number, op: SolverConstraintOperator, addr: CellAddress
     ) -> SolverConstraint:
         sc = SolverConstraint()
         sc.Left = addr
         sc.Operator = op
-        sc.Right = num
+        sc.Right = float(num)
         return sc
 
     @overload
     @staticmethod
-    def make_constraint(num: float, op: str, addr: CellAddress) -> SolverConstraint:
+    def make_constraint(num: numbers.Number, op: str, addr: CellAddress) -> SolverConstraint:
+        """
+        Makes a constraint for a solver model. 
+
+        Args:
+            num (Number): Constraint number such as float or int.
+            op (str): Operaton such as '<='
+            addr (CellAddress): Cell Address
+
+        Returns:
+            SolverConstraint: Solver constraint that can be use in a solver model.
+        """
         ...
 
     @overload
     @staticmethod
-    def make_constraint(num: float, op: SolverConstraintOperator, addr: CellAddress) -> SolverConstraint:
+    def make_constraint(num: numbers.Number, op: SolverConstraintOperator, addr: CellAddress) -> SolverConstraint:
+        """
+        Makes a constraint for a solver model. 
+
+        Args:
+            num (Number): Constraint number such as float or int.
+            op (SolverConstraintOperator): Operation value
+            addr (CellAddress): Cell Address
+
+        Returns:
+            SolverConstraint: Solver constraint that can be use in a solver model.
+        """
         ...
 
     @overload
     @staticmethod
-    def make_constraint(num: float, op: str, sheet: XSpreadsheet, cell_name: str) -> SolverConstraint:
+    def make_constraint(num: numbers.Number, op: str, sheet: XSpreadsheet, cell_name: str) -> SolverConstraint:
+        """
+        Makes a constraint for a solver model.
+
+        Args:
+            num (Number): Constraint number such as float or int.
+            op (str): Operaton such as '<='
+            sheet (XSpreadsheet): Spreadsheet
+            cell_name (str): Cell name such as 'A1'
+
+        Returns:
+            SolverConstraint: Solver constraint that can be use in a solver model.
+        """
         ...
 
     @overload
     @staticmethod
     def make_constraint(
-        num: float, op: SolverConstraintOperator, sheet: XSpreadsheet, cell_name: str
+        num: numbers.Number, op: SolverConstraintOperator, sheet: XSpreadsheet, cell_name: str
     ) -> SolverConstraint:
+        """
+        Makes a constraint for a solver model.
+
+        Args:
+            num (Number): Constraint number such as float or int.
+            op (SolverConstraintOperator): _description_
+            sheet (XSpreadsheet): Operation value
+            cell_name (str): _description_
+
+        Returns:
+            SolverConstraint: Solver constraint that can be use in a solver model.
+        """
         ...
 
     @classmethod
@@ -4767,14 +4827,14 @@ class Calc:
             ka[4] = kwargs.get("cell_name", None)
             return ka
 
-        if not count(3, 4):
+        if not count in (3, 4):
             raise TypeError("make_constraint() got an invalid numer of arguments")
 
         kargs = get_kwargs()
 
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
-        if count == 3:
+        if not count in (3, 4) :
             if isinstance(kargs[2], str):
                 # def make_constraint(num: float, op: str, addr: CellAddress)
                 return cls._make_constraint_op_str_addr(num=kargs[1], op=kargs[2], addr=kargs[3])
@@ -4797,6 +4857,12 @@ class Calc:
 
     @classmethod
     def solver_report(cls, solver: XSolver) -> None:
+        """
+        Prints the result of solver
+
+        Args:
+            solver (XSolver): Solver to print result of.
+        """
         # note: in original java it was getSuccess(), getObjective(), getVariables(), getSolution(),
         # These are typedef properties. The types-unopy typings are correct. Typedef are represented as Class Properties.
         is_successful = solver.Success
