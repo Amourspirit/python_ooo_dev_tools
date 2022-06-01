@@ -44,6 +44,7 @@ from . import props as mProps
 from . import file_io as mFileIO
 from . import xml_util as mXML
 from . import info as mInfo
+from ..exceptions import ex as mEx
 
 
 class Lo(metaclass=StaticProperty):
@@ -164,7 +165,7 @@ class Lo(metaclass=StaticProperty):
         Returns:
             T | None: Return obj if interface is supported: Otherwise, None
         """
-        if uno.isInterface(atype) and hasattr(obj, 'queryInterface'):
+        if uno.isInterface(atype) and hasattr(obj, "queryInterface"):
             uno_t = uno.getTypeByName(atype.__pyunointerface__)
             q_obj = obj.queryInterface(uno_t)
             if q_obj:
@@ -192,19 +193,18 @@ class Lo(metaclass=StaticProperty):
     # region    create_instance_msf()
     @overload
     @staticmethod
-    def create_instance_msf(atype: Type[T], service_name: str) -> T | None:
+    def create_instance_msf(atype: Type[T], service_name: str) -> T:
         ...
 
     @overload
     @staticmethod
-    def create_instance_msf(atype: Type[T], service_name: str, msf: XMultiServiceFactory) -> T | None:
+    def create_instance_msf(atype: Type[T], service_name: str, msf: XMultiServiceFactory) -> T:
         ...
 
     @classmethod
-    def create_instance_msf(cls, atype: Type[T], service_name: str, msf: XMultiServiceFactory = None) -> T | None:
+    def create_instance_msf(cls, atype: Type[T], service_name: str, msf: XMultiServiceFactory = None) -> T:
         if cls.ms_factory is None:
-            print("No document found")
-            return None
+            raise Exception("No document found")
         try:
             if msf is None:
                 obj = cls.ms_factory.createInstance(service_name)
@@ -212,8 +212,7 @@ class Lo(metaclass=StaticProperty):
                 msf.createInstance(service_name)
             interface_obj = cls.qi(atype=atype, obj=obj)
         except Exception as e:
-            print(f"Couldn't create interface for '{service_name}': {e}")
-            return None
+            raise Exception(f"Couldn't create interface for '{service_name}'") from e
         return interface_obj
 
     # endregion create_instance_msf()
@@ -221,20 +220,23 @@ class Lo(metaclass=StaticProperty):
     # region    create_instance_mcf()
     @overload
     @staticmethod
-    def create_instance_mcf(atype: Type[T], service_name: str) -> T | None:
+    def create_instance_mcf(atype: Type[T], service_name: str) -> T:
         """
         Create an interface object of class aType from the named service
 
         Args:
             service_name (str): Service Name
 
+        Raises:
+            Exception if create instance fails
+
         Returns:
-            XInterface | None: Interface if creation is successful; Otherwise None.
+            XInterface: Interface object
         """
 
     @overload
     @staticmethod
-    def create_instance_mcf(atype: Type[T], service_name: str, args: Tuple[object, ...]) -> T | None:
+    def create_instance_mcf(atype: Type[T], service_name: str, args: Tuple[object, ...]) -> T:
         """
         Create an interface object of class aType from the named service
 
@@ -242,29 +244,30 @@ class Lo(metaclass=StaticProperty):
             service_name (str): Service Name
             args (Tuple[object, ...]): Args
 
+        Raises:
+            Exception if create instance fails
+
         Returns:
-            XInterface | None: Interface if creation is successful; Otherwise None.
+            XInterface: Interface object
         """
 
     @classmethod
-    def create_instance_mcf(
-        cls, atype: Type[T], service_name: str, args: Optional[Tuple[object, ...]] = None
-    ) -> T | None:
+    def create_instance_mcf(cls, atype: Type[T], service_name: str, args: Optional[Tuple[object, ...]] = None) -> T:
         #  create an interface object of class aType from the named service;
         #  uses XComponentContext and 'new' XMultiComponentFactory
         #  so only a bridge to office is needed
         if cls.xcc is None or cls.mc_factory is None:
-            print("No office connection found")
-            return None
+            raise Exception("No office connection found")
         try:
             if args is not None:
                 obj = cls.mc_factory.createInstanceWithArgumentsAndContext(service_name, args, cls.xcc)
             else:
                 obj = cls.mc_factory.createInstanceWithContext(service_name, cls.xcc)
             interface_obj = cls.qi(atype=atype, obj=obj)
+            if interface_obj is None:
+                raise mEx.MissingInterfaceError(atype)
         except Exception as e:
-            print(f"Couldn't create interface for '{service_name}': {e}")
-            return None
+            raise Exception(f"Couldn't create interface for '{service_name}'") from e
         return interface_obj
 
     # endregion create_instance_mcf()
@@ -382,7 +385,7 @@ class Lo(metaclass=StaticProperty):
             cls.lo_inst.kill_soffice()
             print("Killed Office")
         except Exception as e:
-            print(f"Unbale to kill Office: {e}")
+            raise Exception(f"Unbale to kill Office") from e
 
     # endregion office shutdown
 
@@ -409,10 +412,9 @@ class Lo(metaclass=StaticProperty):
         fnm: str,
         loader: XComponentLoader,
         props: Optional[Iterable[PropertyValue]] = None,
-    ) -> XComponent | None:
+    ) -> XComponent:
         if fnm is None:
-            print("Filename is null")
-            return None
+            raise Exception("Filename is null")
         fnm = str(fnm)
 
         if props is None:
@@ -423,21 +425,18 @@ class Lo(metaclass=StaticProperty):
                 print(f"Will treat filename as a URL: '{fnm}'")
                 open_file_url = fnm
             else:
-                return None
+                raise Exception(f"Unable to get url from file: {fnm}")
         else:
             print(f"Opening {fnm}")
             open_file_url = mFileIO.FileIO.fnm_to_url(fnm)
-            if open_file_url is None:
-                return None
 
-        doc = None
         try:
             doc = loader.loadComponentFromURL(open_file_url, "_blank", 0, props)
             cls.ms_factory = cls.qi(XMultiServiceFactory, doc)
             cls._doc = doc
-        except Exception:
-            print("Unable to open the document")
-        return doc
+            return doc
+        except Exception as e:
+            raise Exception("Unable to open the document") from e
 
     @classmethod
     def open_readonly_doc(cls, fnm: str, loader: XComponentLoader) -> XComponent:
@@ -488,12 +487,12 @@ class Lo(metaclass=StaticProperty):
 
     @overload
     @staticmethod
-    def create_doc(doc_type: str, loader: XComponentLoader) -> XComponent | None:
+    def create_doc(doc_type: str, loader: XComponentLoader) -> XComponent:
         ...
 
     @overload
     @staticmethod
-    def create_doc(doc_type: str, loader: XComponentLoader, props: Iterable[PropertyValue]) -> XComponent | None:
+    def create_doc(doc_type: str, loader: XComponentLoader, props: Iterable[PropertyValue]) -> XComponent:
         ...
 
     @classmethod
@@ -502,21 +501,20 @@ class Lo(metaclass=StaticProperty):
         doc_type: str,
         loader: XComponentLoader,
         props: Optional[Iterable[PropertyValue]] = None,
-    ) -> XComponent | None:
+    ) -> XComponent:
         if props is None:
             props = mProps.Props.make_props(Hidden=True)
         print(f"Creating Office document {doc_type}")
-        doc = None
         try:
             doc = loader.loadComponentFromURL(f"private:factory/{doc_type}", "_blank", 0, props)
             cls.ms_factory = cls.qi(XMultiServiceFactory, doc)
             cls._doc = doc
-        except Exception:
-            print("Could not create a document")
-        return doc
+            return cls._doc
+        except Exception as e:
+            raise Exception("Could not create a document") from e
 
     @classmethod
-    def create_macro_doc(cls, doc_type: str, loader: XComponentLoader) -> XComponent | None:
+    def create_macro_doc(cls, doc_type: str, loader: XComponentLoader) -> XComponent:
         return cls.create_doc(
             doc_type=doc_type,
             loader=loader,
@@ -524,24 +522,20 @@ class Lo(metaclass=StaticProperty):
         )
 
     @classmethod
-    def create_doc_from_template(cls, template_path: str, loader: XComponentLoader) -> XComponent | None:
+    def create_doc_from_template(cls, template_path: str, loader: XComponentLoader) -> XComponent:
         if not mFileIO.FileIO.is_openable(template_path):
-            print(f"Template file can not be opened: '{template_path}'")
-            return None
+            raise Exception(f"Template file can not be opened: '{template_path}'")
         print(f"Opening template: '{template_path}'")
         template_url = mFileIO.FileIO.fnm_to_url(fnm=template_path)
-        if template_url is None:
-            return None
 
         props = mProps.Props.make_props(Hidden=True, AsTemplate=True)
-        doc = None
         try:
             doc = loader.loadComponentFromURL(template_url, "_blank", 0, props)
             cls.ms_factory = cls.qi(XMultiServiceFactory, doc)
             cls._doc = doc
+            return cls._doc
         except Exception as e:
-            print(f"Could not create document from template: {e}")
-        return doc
+            raise Exception(f"Could not create document from template") from e
 
     # ======================== document saving ==============
 
@@ -551,8 +545,7 @@ class Lo(metaclass=StaticProperty):
             doc.store()
             print("Saved the document by overwriting")
         except IOException as e:
-            print(f"Could not save the document")
-            print(f"    {e}")
+            raise Exception(f"Could not save the document") from e
 
     @overload
     @staticmethod
@@ -772,7 +765,7 @@ class Lo(metaclass=StaticProperty):
                 store_props = mProps.Props.make_props(Overwrite=True, FilterName=format, Password=password)
             store.storeToURL(save_file_url, store_props)
         except IOException as e:
-            print(f"Could not save '{fnm}': {e}")
+            raise Exception(f"Could not save '{fnm}'") from e
 
     # ======================== document closing ==============
 
@@ -813,8 +806,8 @@ class Lo(metaclass=StaticProperty):
         try:
             closeable.close(deliver_ownership)
             cls._doc = None
-        except CloseVetoException:
-            print("Close was vetoed")
+        except CloseVetoException as e:
+            raise Exception("Close was vetoed") from e
 
     @overload
     @staticmethod
@@ -851,59 +844,54 @@ class Lo(metaclass=StaticProperty):
             closeable = cls.qi(XCloseable, doc)
             cls.close(closeable)
             cls._doc = None
-        except DisposedException:
-            print("Document close failed since Office link disposed")
+        except DisposedException as e:
+            raise Exception("Document close failed since Office link disposed") from e
 
     # ================= initialization via Addon-supplied context ====================
 
     @classmethod
-    def addon_initialize(cls, addon_xcc: XComponentContext) -> XComponent | None:
+    def addon_initialize(cls, addon_xcc: XComponentContext) -> XComponent:
         xcc = addon_xcc
         if xcc is None:
-            print("Could not access component context")
-            return None
+            raise Exception("'addon_xcc' is null. Could not access component context")
         mc_factory = xcc.getServiceManager()
         if mc_factory is None:
-            print("Office Service Manager is unavailable")
-            return None
+            raise Exception("Office Service Manager is unavailable")
 
         try:
             xdesktop: XDesktop = mc_factory.createInstanceWithContext("com.sun.star.frame.Desktop", xcc)
         except Exception:
-            print("Could not access desktop")
-            return None
+            raise Exception("Could not access desktop")
         doc = xdesktop.getCurrentComponent()
         if doc is None:
-            print("Could not access document")
-            return None
+            raise Exception("Could not access document")
         cls.ms_factory = cls.qi(XMultiServiceFactory, doc)
+        if cls.ms_factory in None:
+            raise Exception("Unable to get XMultiServiceFactory")
         cls._doc = doc
         return doc
 
     # ============= initialization via script context ======================
 
     @classmethod
-    def script_initialize(cls, sc: XScriptContext) -> XComponent | None:
+    def script_initialize(cls, sc: XScriptContext) -> XComponent:
         if sc is None:
-            print("Script Context is null")
-            return None
+            raise Exception("Script Context is null")
         xcc = sc.getComponentContext()
         if xcc is None:
-            print("Could not access component context")
-            return None
+            raise Exception("Could not access component context")
         mc_factory = xcc.getServiceManager()
         if mc_factory is None:
-            print("Office Service Manager is unavailable")
-            return None
+            raise Exception("Office Service Manager is unavailable")
         xdesktop = sc.getDesktop()
         if xdesktop is None:
-            print("Could not access desktop")
-            return None
+            raise Exception("Could not access desktop")
         doc = xdesktop.getCurrentComponent()
         if doc is None:
-            print("Could not access document")
-            return None
+            raise Exception("Could not access document")
         cls.ms_factory = cls.qi(XMultiServiceFactory, doc)
+        if cls.ms_factory in None:
+            raise Exception("Unable to get XMultiServiceFactory")
         cls._doc = doc
         return doc
 
@@ -934,15 +922,12 @@ class Lo(metaclass=StaticProperty):
 
         helper = cls.create_instance_mcf(XDispatchHelper, "com.sun.star.frame.DispatchHelper")
         if helper is None:
-            print(f"Could not create dispatch helper for command {cmd}")
-            return False
+            raise Exception(f"Could not create dispatch helper for command {cmd}")
         try:
             helper.executeDispatch(frame, f".uno:{cmd}", "", 0, props)
             return True
         except Exception as e:
-            print(f"Could not dispatch '{cmd}'")
-            print(f"    {e}")
-        return False
+            raise Exception(f"Could not dispatch '{cmd}'") from e
 
     # ================= Uno cmds =========================
 
@@ -951,17 +936,15 @@ class Lo(metaclass=StaticProperty):
         return f"vnd.sun.star.script:Foo/Foo.{item_name}?language=Java&location=share"
 
     @staticmethod
-    def extract_item_name(uno_cmd: str) -> str | None:
+    def extract_item_name(uno_cmd: str) -> str:
         try:
             foo_pos = uno_cmd.index("Foo.")
         except ValueError:
-            print(f"Could not find Foo header in command: '{uno_cmd}'")
-            return None
+            raise ValueError(f"Could not find Foo header in command: '{uno_cmd}'")
         try:
             lang_pos = uno_cmd.index("?language")
         except ValueError:
-            print(f"Could not find language header in command: '{uno_cmd}'")
-            return None
+            raise ValueError(f"Could not find language header in command: '{uno_cmd}'")
         start = foo_pos + 4
         return uno_cmd[start:lang_pos]
 
@@ -1002,8 +985,7 @@ class Lo(metaclass=StaticProperty):
         #  Forum tutorial: https://forum.openoffice.org/en/forum/viewtopic.php?f=74&t=49294
         xi = cls.create_instance_mcf(XIntrospection, "mytools.Mri")
         if xi is None:
-            print("MRI Inspector Service could not be instantiated")
-            return
+            raise Exception("MRI Inspector Service could not be instantiated")
         print("MRI Inspector Service instantiated")
         xi.inspect(obj)
 
@@ -1060,9 +1042,7 @@ class Lo(metaclass=StaticProperty):
     # endregion document opening
 
     @staticmethod
-    def capitalize(s: str) -> str | None:
-        if s is None or len(s) == 0:
-            return None
+    def capitalize(s: str) -> str:
         return s.capitalize()
 
     @staticmethod
@@ -1130,8 +1110,7 @@ class Lo(metaclass=StaticProperty):
     @classmethod
     def find_container_props(cls, con: XIndexAccess, nm: str) -> XPropertySet | None:
         if con is None:
-            print("Container is null")
-            return None
+            raise Exception("Container is null")
         for i in range(con.getCount()):
             try:
                 el = con.getByIndex(i)
@@ -1142,12 +1121,12 @@ class Lo(metaclass=StaticProperty):
                 print(f"Could not access element {i}")
         print(f"Could not find a '{nm}' property set in the container")
         return None
-    
+
     # ------------------- date --------------------
     @staticmethod
     def get_time_stamp() -> str:
         return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    
+
     @classproperty
     def null_date(cls) -> datetime:
         """
@@ -1169,12 +1148,11 @@ class Lo(metaclass=StaticProperty):
                 return datetime(year=1889, month=12, day=30)
             n_supplier = cls.qi(XNumberFormatsSupplier, cls._doc)
             number_settings = n_supplier.getNumberFormatSettings()
-            d = number_settings.getPropertyValue('NullDate')
+            d = number_settings.getPropertyValue("NullDate")
             cls.__null_date = datetime(d.Year, d.Month, d.Day)
         return cls.__null_date
 
     @null_date.setter
     def null_date(cls, value) -> None:
         # raise error on set. Not really neccesary but gives feedback.
-        raise AttributeError("Attempt to modify read-only class property '%s'." % cls.name)    
-    
+        raise AttributeError("Attempt to modify read-only class property '%s'." % cls.name)

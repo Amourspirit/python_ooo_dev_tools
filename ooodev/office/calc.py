@@ -3,7 +3,6 @@
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 # region Imports
 from __future__ import annotations
-import datetime
 from enum import IntFlag, Enum
 import numbers
 import re
@@ -112,6 +111,7 @@ from ..utils.gen_util import ArgsHelper, TableHelper, Util as GenUtil
 from ..utils import enum_helper
 from ..utils.color import CommonColor
 from ..utils import view_state as mViewState
+from ..exceptions import ex as mEx
 
 NameVal = ArgsHelper.NameValue
 # endregion Imports
@@ -190,32 +190,69 @@ class Calc:
     # region --------------- document methods --------------------------
 
     @classmethod
-    def open_doc(cls, fnm: str, loader: XComponentLoader) -> XSpreadsheetDocument | None:
+    def open_doc(cls, fnm: str, loader: XComponentLoader) -> XSpreadsheetDocument:
+        """
+        Opens spreadsheet document
+
+        Args:
+            fnm (str): Spreadsheet file to open
+            loader (XComponentLoader): Component loader
+
+        Raises:
+            Exception: If document is null
+
+        Returns:
+            XSpreadsheetDocument: Spreadsheet document
+        """
         doc = mLo.Lo.open_doc(fnm=str(fnm), loader=loader)
         if doc is None:
-            print("Document is null")
-            return None
+            raise Exception("Document is null")
         return cls.get_ss_doc(doc)
 
     @staticmethod
-    def get_ss_doc(doc: XComponent) -> XSpreadsheetDocument | None:
+    def get_ss_doc(doc: XComponent) -> XSpreadsheetDocument:
+        """
+        Gets a spreadsheet document
+
+        Args:
+            doc (XComponent): Component to get spreasheeet from
+
+        Raises:
+            Exception: If not a spreadsheet document
+            MissingInterfaceError: If doc does not have XSpreadsheetDocument interface
+
+        Returns:
+            XSpreadsheetDocument: Spreadsheet document
+        """
         if not mInfo.Info.is_doc_type(doc_type=mLo.Lo.CALC_SERVICE, obj=doc):
-            print("Not a spreadsheet doc; closing")
             mLo.Lo.close_doc(doc=doc)
-            return None
+            raise Exception("Not a spreadsheet doc")
 
         ss_doc = mLo.Lo.qi(XSpreadsheetDocument, doc)
         if ss_doc is None:
-            print("Not a spreadsheet doc; closing")
             mLo.Lo.close_doc(doc=doc)
-            return None
-
+            raise mEx.MissingInterfaceError(XSpreadsheetDocument)
         return ss_doc
 
     @staticmethod
-    def create_doc(loader: XComponentLoader) -> XSpreadsheetDocument | None:
+    def create_doc(loader: XComponentLoader) -> XSpreadsheetDocument:
+        """
+        Creates a new spreadsheet document
+
+        Args:
+            loader (XComponentLoader): Component Loader
+
+        Raises:
+            MissingInterfaceError: If doc does not have XSpreadsheetDocument interface
+        Returns:
+            XSpreadsheetDocument: Spreadsheet document
+        """
         doc = mLo.Lo.create_doc(doc_type="scalc", loader=loader)
-        return mLo.Lo.qi(XSpreadsheetDocument, doc)
+        ss_doc = mLo.Lo.qi(XSpreadsheetDocument, doc)
+        if ss_doc is None:
+            raise mEx.MissingInterfaceError(XSpreadsheetDocument)
+        return ss_doc
+        
         # XSpreadsheetDocument does not inherit XComponent!
 
     # endregion ------------ document methods ------------------
@@ -224,31 +261,33 @@ class Calc:
 
     # region    get_sheet()
     @staticmethod
-    def _get_sheet_index(doc: XSpreadsheetDocument, index: int) -> XSpreadsheet | None:
+    def _get_sheet_index(doc: XSpreadsheetDocument, index: int) -> XSpreadsheet:
         """return the spreadsheet with the specified index (0-based)"""
         sheets = doc.getSheets()
-        sheet = None
         try:
             xsheets_idx = mLo.Lo.qi(XIndexAccess, sheets)
             sheet = mLo.Lo.qi(XSpreadsheet, xsheets_idx.getByIndex(index))
-        except Exception:
-            print(f"Could not access spreadsheet: {index}")
-        return sheet
+            if sheet is None:
+                raise mEx.MissingInterfaceError(XSpreadsheet)
+            return sheet
+        except Exception as e:
+            raise Exception(f"Could not access spreadsheet: {index}") from e
 
     @staticmethod
-    def _get_sheet_name(doc: XSpreadsheetDocument, sheet_name: str) -> XSpreadsheet | None:
+    def _get_sheet_name(doc: XSpreadsheetDocument, sheet_name: str) -> XSpreadsheet:
         """return the spreadsheet with the specified index (0-based)"""
         sheets = doc.getSheets()
-        sheet = None
         try:
             sheet = mLo.Lo.qi(XSpreadsheet, sheets.getByName(sheet_name))
-        except Exception:
-            print(f"Could not access spreadsheet: '{sheet_name}'")
-        return sheet
+            if sheet is None:
+                raise mEx.MissingInterfaceError(XSpreadsheet)
+            return sheet
+        except Exception as e:
+            raise Exception(f"Could not access spreadsheet: '{sheet_name}'") from e
 
     @overload
     @staticmethod
-    def get_sheet(doc: XSpreadsheetDocument, index: int) -> XSpreadsheet | None:
+    def get_sheet(doc: XSpreadsheetDocument, index: int) -> XSpreadsheet:
         """
         Gets a sheet of spreadsheet document
 
@@ -257,13 +296,16 @@ class Calc:
             index (int): Zero based index of spreadsheet
 
         Returns:
-            XSpreadsheet | None: Spreadsheet at index if found; Otherwise, False
+            XSpreadsheet: Spreadsheet at index.
+        
+        Raises:
+            Exception: If spreadsheet is not found
         """
         ...
 
     @overload
     @staticmethod
-    def get_sheet(doc: XSpreadsheetDocument, sheet_name: str) -> XSpreadsheet | None:
+    def get_sheet(doc: XSpreadsheetDocument, sheet_name: str) -> XSpreadsheet:
         """
         Gets a sheet of spreadsheet document
 
@@ -272,12 +314,15 @@ class Calc:
             sheet_name (str): Name of spreadsheet
 
         Returns:
-            XSpreadsheet | None: Spreadsheet with matching name if found; Otherwise, False
+            XSpreadsheet: Spreadsheet with matching name.
+
+        Raises:
+            Exception: If spreadsheet is not found
         """
         ...
 
     @classmethod
-    def get_sheet(cls, *args, **kwargs) -> XSpreadsheet | None:
+    def get_sheet(cls, *args, **kwargs) -> XSpreadsheet:
         ordered_keys = (1, 2)
         kargs_len = len(kwargs)
         count = len(args) + kargs_len
@@ -313,7 +358,7 @@ class Calc:
     # endregion get_sheet()
 
     @staticmethod
-    def insert_sheet(doc: XSpreadsheetDocument, name: str, idx: int) -> XSpreadsheet | None:
+    def insert_sheet(doc: XSpreadsheetDocument, name: str, idx: int) -> XSpreadsheet:
         """
         Inserts a spreadsheet into document.
 
@@ -322,18 +367,21 @@ class Calc:
             name (str): Name of sheet to insert
             idx (int): zero-based index position of the sheet to insert
 
+        Raises:
+            Exception: If unable to insert spreadsheet
+
         Returns:
             XSpreadsheet | None: The newly inserted sheet on success; Othwrwise, None
         """
         sheets = doc.getSheets()
-        sheet = None
         try:
             sheets.insertNewByName(name, idx)
             sheet = mLo.Lo.qi(XSpreadsheet, sheets.getByName(name))
+            if sheet is None:
+                raise mEx.MissingInterfaceError(XSpreadsheet)
+            return sheet
         except Exception as e:
-            print("Could not insert sheet:")
-            print(f"    {e}")
-        return sheet
+            raise Exception("Could not insert sheet:") from e
 
     # region    remove_sheet()
 
@@ -464,55 +512,64 @@ class Calc:
         return sheets.getElementNames()
 
     @staticmethod
-    def get_sheet_name(sheet: XSpreadsheet) -> str | None:
+    def get_sheet_name(sheet: XSpreadsheet) -> str:
         """
         Gets the name of a sheet
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
 
+        Raises:
+            MissingInterfaceError: If unable to access spreadsheet named interface
+
         Returns:
             str | None: Name of sheet on success; Otherwise, None
         """
         xnamed = mLo.Lo.qi(XNamed, sheet)
         if xnamed is None:
-            print("Could not access spreadsheet name")
-            return None
+            raise mEx.MissingInterfaceError(XNamed)
         return xnamed.getName()
 
     @staticmethod
-    def set_sheet_name(sheet: XSpreadsheet, name: str) -> None:
+    def set_sheet_name(sheet: XSpreadsheet, name: str) -> bool:
         """
         Sets the name of a spreadsheet.
 
         Args:
             sheet (XSpreadsheet): Spreadsheet to set name of
             name (str): New name for spreadsheet.
+
+        Returns:
+            bool: True on success; Otherwise, False
         """
         xnamed = mLo.Lo.qi(XNamed, sheet)
         if xnamed is None:
             print("Could not access spreadsheet")
-            return
+            return False
         xnamed.setName(name)
+        return True
 
     # endregion --------------------- sheet methods -------------------------
 
     # region --------------- view methods ------------------------------
 
     @staticmethod
-    def get_controller(doc: XSpreadsheetDocument) -> XController | None:
+    def get_controller(doc: XSpreadsheetDocument) -> XController:
         """
         Provides access to the controller which currently controls this model
 
         Args:
             doc (XSpreadsheetDocument): Spreadsheet Document
 
+        Raises:
+            Exception: if unable to access controller
+
         Returns:
             XController | None: Controller for Spreadsheet Document
         """
         model = mLo.Lo.qi(XModel, doc)
         if model is None:
-            return None
+            raise mEx.MissingInterfaceError(XModel, "Could not access controller")
         return model.getCurrentController()
 
     @classmethod
@@ -545,7 +602,7 @@ class Calc:
         mProps.Props.set_property(prop_set=ctrl, name="ZoomType", value=type)
 
     @classmethod
-    def get_view(cls, doc: XSpreadsheetDocument) -> XSpreadsheetView | None:
+    def get_view(cls, doc: XSpreadsheetDocument) -> XSpreadsheetView:
         """
         Is the main interface of a SpreadsheetView.
 
@@ -561,7 +618,10 @@ class Calc:
         Returns:
             XSpreadsheetView | None: XSpreadsheetView on success; Otherwise, None
         """
-        return mLo.Lo.qi(XSpreadsheetView, cls.get_controller(doc))
+        sv = mLo.Lo.qi(XSpreadsheetView, cls.get_controller(doc))
+        if sv is None:
+            raise mEx.MissingInterfaceError(XSpreadsheetView)
+        return sv
 
     @classmethod
     def set_active_sheet(cls, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> None:
@@ -578,7 +638,7 @@ class Calc:
         ss_view.setActiveSheet(sheet)
 
     @classmethod
-    def get_active_sheet(cls, doc: XSpreadsheetDocument) -> XSpreadsheet | None:
+    def get_active_sheet(cls, doc: XSpreadsheetDocument) -> XSpreadsheet:
         """
         Gets the active sheet
 
@@ -589,8 +649,6 @@ class Calc:
             XSpreadsheet | None: Active Sheet if found; Otherwise, None
         """
         ss_view = cls.get_view(doc)
-        if ss_view is None:
-            return
         return ss_view.getActiveSheet()
 
     @classmethod
@@ -730,34 +788,42 @@ class Calc:
 
     @overload
     @staticmethod
-    def get_selected_addr(doc: XSpreadsheetDocument) -> CellRangeAddress | None:
+    def get_selected_addr(doc: XSpreadsheetDocument) -> CellRangeAddress:
         """
         Gets select cell range addresses
 
         Args:
             doc (XSpreadsheetDocument): Spreadsheet Document
 
+        Raises:
+            Exception: if unable to get document model
+            MissingInterfaceError: if unable to get interface XCellRangeAddressable
+
         Returns:
-            CellRangeAddress | None: Cell range adresses on success; Othwrwise, None
+            CellRangeAddress: Cell range adresses on success; Othwrwise, None
         """
         ...
 
     @overload
     @staticmethod
-    def get_selected_addr(model: XModel) -> CellRangeAddress | None:
+    def get_selected_addr(model: XModel) -> CellRangeAddress:
         """
         Gets select cell range addresses
 
         Args:
             model (XModel): model used to access sheet
 
+        Raises:
+            Exception: if unable to get document model
+            MissingInterfaceError: if unable to get interface XCellRangeAddressable
+
         Returns:
-            CellRangeAddress | None: Cell range adresses on success; Othwrwise, None
+            CellRangeAddress: Cell range adresses on success; Othwrwise, None
         """
         ...
 
     @classmethod
-    def get_selected_addr(cls, *args, **kwargs) -> CellRangeAddress | None:
+    def get_selected_addr(cls, *args, **kwargs) -> CellRangeAddress:
         ordered_keys = (1,)
         kargs_len = len(kwargs)
         count = len(args) + kargs_len
@@ -793,26 +859,27 @@ class Calc:
             model = cast(XModel, kargs[1])
 
         if model is None:
-            print("No document model found")
-            return None
+            raise Exception("No document model found")
         ra = mLo.Lo.qi(XCellRangeAddressable, model.getCurrentSelection())
         if ra is None:
-            print("No range address found")
-            return None
+            raise mEx.MissingInterfaceError(XCellRangeAddressable)
         return ra.getRangeAddress()
 
     # endregion  get_selected_addr()
 
     @classmethod
-    def get_selected_cell_addr(cls, doc: XSpreadsheetDocument) -> CellAddress | None:
+    def get_selected_cell_addr(cls, doc: XSpreadsheetDocument) -> CellAddress:
         """
         Gets the cell address of current selected cell of the active sheet.
 
         Args:
             doc (XSpreadsheetDocument): Spreadsheet document
 
+        Raises:
+            CellError: if active selection is not a single cell
+
         Returns:
-            CellAddress | None: CellAddress on success; Otherwise, None
+            CellAddress: CellAddress on success; Otherwise, None
 
         Note:
             If more then a single cell is selected then ``None`` is returned.
@@ -821,12 +888,12 @@ class Calc:
             For instance: Cell ``B4`` has Column value of ``1`` and Row value of ``3``
         """
         cr_addr = cls.get_selected_addr(doc=doc)
-        addr = None
         if cls.is_single_cell_range(cr_addr):
             sheet = cls.get_active_sheet(doc)
             cell = cls.get_cell(sheet=sheet, col=cr_addr.StartColumn, row=cr_addr.StartRow)
-            addr = cls.get_cell_address(cell)
-        return addr
+            return cls.get_cell_address(cell)
+        else:
+            raise mEx.CellError("Selected addres is not a single cell")
 
     # endregion -------------- view methods ----------------------------
 
@@ -839,6 +906,9 @@ class Calc:
 
         Args:
             doc (XSpreadsheetDocument): Spreadsheet Document
+
+        Raises:
+            MissingInterfaceError: if unable access the view pane container
 
         Returns:
             List[XViewPane] | None: List of XViewPane on success; Otherwise, None
@@ -853,11 +923,7 @@ class Calc:
         """
         con = mLo.Lo.qi(XIndexAccess, cls.get_controller(doc))
         if con is None:
-            print("Could not access the view pane container")
-            return None
-        if con.getCount() == 0:
-            print("No view panes found")
-            return None
+            raise mEx.MissingInterfaceError(XIndexAccess, "Could not access the view pane container")
 
         panes = []
         for i in range(con.getCount()):
@@ -865,6 +931,9 @@ class Calc:
                 panes.append(mLo.Lo.qi(XViewPane, con.getByIndex(i)))
             except UnoException:
                 print(f"Could not get view pane {i}")
+        if len(panes) == 0:
+            print("No view panes found")
+            return None
         return panes
 
     @classmethod
@@ -911,8 +980,6 @@ class Calc:
         https://forum.openoffice.org/en/forum/viewtopic.php?f=45&t=29195&p=133202&hilit=getViewData#p133202
         """
         ctrl = cls.get_controller(doc)
-        if ctrl is None:
-            return None
 
         view_data = str(ctrl.getViewData())
         view_parts = view_data.split(";")
@@ -1823,6 +1890,9 @@ class Calc:
         Args:
             cell_range (XCellRange): Cell range that to get data from.
 
+        Raises:
+            MissingInterfaceError: if interface is missing
+
         Returns:
             Tuple[Tuple[object, ...], ...]: Resulting data array.
         """
@@ -1837,6 +1907,9 @@ class Calc:
         Args:
             sheet (XSpreadsheet): Spreadsheet
             range_name (str): Range of data to get such as "A1:E16"
+
+        Raises:
+            MissingInterfaceError: if interface is missing
 
         Returns:
             Tuple[Tuple[object, ...], ...]: Resulting data array.
@@ -1880,6 +1953,8 @@ class Calc:
             cell_range = cls.get_cell_range(sheet=kargs[1], range_name=kargs[2])
 
         cr_data = mLo.Lo.qi(XCellRangeData, cell_range)
+        if cr_data is None:
+            raise mEx.MissingInterfaceError(XCellRangeData)
         return cr_data.getDataArray()
 
     # endregion get_array()
@@ -2075,6 +2150,9 @@ class Calc:
         """
         Inserts a row of data into spreadsheet
 
+        Raises:
+            MissingInterfaceError: if unable to obtain interface
+
         Args:
             sheet (XSpreadsheet): Spreadsheet
             values (Sequence[Any]): Row Data
@@ -2087,6 +2165,9 @@ class Calc:
     def set_row(sheet: XSpreadsheet, values: Sequence[Any], col_start: int, row_start: int) -> None:
         """
         Inserts a row of data into spreadsheet
+
+        Raises:
+            MissingInterfaceError: if unable to obtain interface
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
@@ -2147,6 +2228,8 @@ class Calc:
             end_row=row_start,
         )
         cr_data = mLo.Lo.qi(XCellRangeData, cell_range)
+        if cr_data is None:
+            raise mEx.MissingInterfaceError(XCellRangeData)
         cr_data.setDataArray(TableHelper.to_2d_tuple(values))  #  1-row 2D array
 
     # endregion set_row()
@@ -2232,7 +2315,7 @@ class Calc:
     # region    add_annotation()
     @overload
     @staticmethod
-    def add_annotation(sheet: XSpreadsheet, cell_name: str, msg: str) -> XSheetAnnotation | None:
+    def add_annotation(sheet: XSpreadsheet, cell_name: str, msg: str) -> XSheetAnnotation:
         """
         Adds an annotation to a cell and makes the annotation visible.
 
@@ -2241,14 +2324,17 @@ class Calc:
             cell_name (str): Name of cell to add annotation such as 'A1'
             msg (str): Annotation Text
 
+        Raises:
+            MissingInterfaceError: If interface is missing
+
         Returns:
-            XSheetAnnotation | None: Cell annotation that was addded on success; Othwrwise, None
+            XSheetAnnotation: Cell annotation that was addded on success; Othwrwise, None
         """
         ...
 
     @overload
     @staticmethod
-    def add_annotation(sheet: XSpreadsheet, cell_name: str, msg: str, is_visible: bool) -> XSheetAnnotation | None:
+    def add_annotation(sheet: XSpreadsheet, cell_name: str, msg: str, is_visible: bool) -> XSheetAnnotation:
         """
         Adds an annotation to a cell
 
@@ -2258,18 +2344,21 @@ class Calc:
             msg (str): Annotation Text
             set_visible (bool): Determines if the annaction is set visible
 
+        Raises:
+            MissingInterfaceError: If interface is missing
+
         Returns:
-            XSheetAnnotation | None: Cell annotation that was addded on success; Othwrwise, None
+            XSheetAnnotation: Cell annotation that was addded on success; Othwrwise, None
         """
         ...
 
     @classmethod
-    def add_annotation(cls, sheet: XSpreadsheet, cell_name: str, msg: str, is_visible=True) -> XSheetAnnotation | None:
+    def add_annotation(cls, sheet: XSpreadsheet, cell_name: str, msg: str, is_visible=True) -> XSheetAnnotation:
         # add the annotation
         addr = cls.get_cell_address(sheet=sheet, cell_name=cell_name)
         anns_supp = mLo.Lo.qi(XSheetAnnotationsSupplier, sheet)
         if anns_supp is None:
-            return
+            raise mEx.MissingInterfaceError(XSheetAnnotationsSupplier)
         anns = anns_supp.getAnnotations()
         anns.insertNew(addr, msg)
 
@@ -2283,7 +2372,7 @@ class Calc:
     # endregion add_annotation()
 
     @classmethod
-    def get_annotation(cls, sheet: XSpreadsheet, cell_name: str) -> XSheetAnnotation | None:
+    def get_annotation(cls, sheet: XSpreadsheet, cell_name: str) -> XSheetAnnotation:
         """
         Gets an annotation of a cell
 
@@ -2291,15 +2380,17 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet
             cell_name (str): Name of cell to add annotation such as 'A1'
 
+        Raises:
+            MissingInterfaceError: If interface is missing
+
         Returns:
-            XSheetAnnotation | None: Cell annotation on success; Othwrwise, None
+            XSheetAnnotation: Cell annotation on success; Othwrwise, None
         """
         # get a reference to the annotation
         xcell = cls.get_cell(sheet=sheet, cell_name=cell_name)
         ann_anchor = mLo.Lo.qi(XSheetAnnotationAnchor, xcell)
         if ann_anchor is None:
-            print(f"No XSheetAnnotationAnchor for {cell_name}")
-            return None
+            raise mEx.MissingInterfaceError(XSheetAnnotationAnchor, f"No XSheetAnnotationAnchor for {cell_name}")
         return ann_anchor.getAnnotation()
 
     @classmethod
@@ -2328,50 +2419,101 @@ class Calc:
 
     # region    get_cell()
     @classmethod
-    def _get_cell_sheet_col_row(cls, sheet: XSpreadsheet, col: int, row: int) -> XCell | None:
+    def _get_cell_sheet_col_row(cls, sheet: XSpreadsheet, col: int, row: int) -> XCell:
         return sheet.getCellByPosition(col, row)
 
     @classmethod
-    def _get_cell_sheet_addr(cls, sheet: XSpreadsheet, addr: CellAddress) -> XCell | None:
+    def _get_cell_sheet_addr(cls, sheet: XSpreadsheet, addr: CellAddress) -> XCell:
         # not using Sheet value in addr
         return cls._get_cell_sheet_col_row(sheet=sheet, col=addr.Column, row=addr.Row)
 
     @classmethod
-    def _get_cell_sheet_cell(cls, sheet: XSpreadsheet, cell_name: str) -> XCell | None:
+    def _get_cell_sheet_cell(cls, sheet: XSpreadsheet, cell_name: str) -> XCell:
         cell_range = sheet.getCellRangeByName(cell_name)
         return cls._get_cell_cell_rng(cell_range=cell_range, col=0, row=0)
 
     @classmethod
-    def _get_cell_cell_rng(cls, cell_range: XCellRange, col: int, row: int) -> XCell | None:
+    def _get_cell_cell_rng(cls, cell_range: XCellRange, col: int, row: int) -> XCell:
         return cell_range.getCellByPosition(col, row)
 
     @overload
     @staticmethod
-    def get_cell(sheet: XSpreadsheet, addr: CellAddress) -> XCell | None:
+    def get_cell(sheet: XSpreadsheet, addr: CellAddress) -> XCell:
+        """
+        Gets a cell
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            addr (CellAddress): Cell Address
+
+        Returns:
+            XCell: cell
+        """
         ...
 
     @overload
     @staticmethod
-    def get_cell(sheet: XSpreadsheet, cell_name: str) -> XCell | None:
+    def get_cell(sheet: XSpreadsheet, cell_name: str) -> XCell:
+        """
+        Gets a cell
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            cell_name (str): Cell Name such as 'A1'
+
+        Returns:
+            XCell: Cell
+        """
         ...
 
     @overload
     @staticmethod
-    def get_cell(sheet: XSpreadsheet, col: int, row: int) -> XCell | None:
+    def get_cell(sheet: XSpreadsheet, col: int, row: int) -> XCell:
+        """
+        Gets a cell
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            col (int): Cell column
+            row (int): cell row
+
+        Returns:
+            XCell: Cell
+        """
         ...
 
     @overload
     @staticmethod
-    def get_cell(cell_range: XCellRange) -> XCell | None:
+    def get_cell(cell_range: XCellRange) -> XCell:
+        """
+        Gets a cell
+
+        Args:
+            cell_range (XCellRange): Cell Range
+
+        Returns:
+            XCell: Cell
+        """
         ...
 
     @overload
     @staticmethod
-    def get_cell(cell_range: XCellRange, col: int, row: int) -> XCell | None:
+    def get_cell(cell_range: XCellRange, col: int, row: int) -> XCell:
+        """
+        Gets a cell
+
+        Args:
+            cell_range (XCellRange): Cell Range
+            col (int): Cell column
+            row (int): Cell row
+
+        Returns:
+            XCell: Cell
+        """
         ...
 
     @classmethod
-    def get_cell(cls, *args, **kwargs) -> XCell | None:
+    def get_cell(cls, *args, **kwargs) -> XCell:
         ordered_keys = (1, 2, 3)
         kargs_len = len(kwargs)
         count = len(args) + kargs_len
@@ -2435,15 +2577,33 @@ class Calc:
 
     @staticmethod
     def is_cell_range_name(s: str) -> bool:
+        """
+        Gets if is a cell name or a cell range
+
+        Args:
+            s (str): cell name such as 'A1' or range name such as 'B3:E7'
+
+        Returns:
+            bool: True if range name; Otherwise, False
+        """
         return ":" in s
 
     @staticmethod
     def is_single_cell_range(cr_addr: CellRangeAddress) -> bool:
+        """
+        Gets if a cell address is a single cell or a range
+
+        Args:
+            cr_addr (CellRangeAddress): cell range address
+
+        Returns:
+            bool: True if single cell; Otherwise, False
+        """
         return cr_addr.StartColumn == cr_addr.EndColumn and cr_addr.StartRow == cr_addr.EndRow
 
     # region    get_cell_range()
     @classmethod
-    def _get_cell_range_addr(cls, sheet: XSpreadsheet, addr: CellRangeAddress) -> XCellRange | None:
+    def _get_cell_range_addr(cls, sheet: XSpreadsheet, addr: CellRangeAddress) -> XCellRange:
         return cls._get_cell_range_col_row(
             sheet=sheet,
             start_col=addr.StartColumn,
@@ -2456,23 +2616,24 @@ class Calc:
     def _get_cell_range_rng_name(sheet: XSpreadsheet, range_name: str) -> XCellRange | None:
         cell_range = sheet.getCellRangeByName(range_name)
         if cell_range is None:
-            print(f"Could not access cell range: '{range_name}'")
-            return None
+            raise Exception(f"Could not access cell range: {range_name}")
         return cell_range
 
     @staticmethod
     def _get_cell_range_col_row(
         sheet: XSpreadsheet, start_col: int, start_row: int, end_col: int, end_row: int
-    ) -> XCellRange | None:
+    ) -> XCellRange:
         try:
-            return sheet.getCellRangeByPosition(start_col, start_row, end_col, end_row)
-        except Exception:
-            print(f"Could not access cell range : ({start_col}, {start_row}, {end_col}, {end_row})")
-        return None
+            cell_range = sheet.getCellRangeByPosition(start_col, start_row, end_col, end_row)
+            if cell_range is None:
+                raise Exception
+            return cell_range
+        except Exception as e:
+            raise Exception(f"Could not access cell range : ({start_col}, {start_row}, {end_col}, {end_row})") from e
 
     @overload
     @staticmethod
-    def get_cell_range(sheet: XSpreadsheet, cr_addr: CellRangeAddress) -> XCellRange | None:
+    def get_cell_range(sheet: XSpreadsheet, cr_addr: CellRangeAddress) -> XCellRange :
         """
         Gets a cell range
 
@@ -2480,14 +2641,17 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet Document
             addr (CellRangeAddress): Cell range Address
 
+        Raises:
+            Exception: if unable to access cell range.
+
         Returns:
-            XCellRange | None: Cell range is successful; Otherwise, None
+            XCellRange: Cell range
         """
         ...
 
     @overload
     @staticmethod
-    def get_cell_range(sheet: XSpreadsheet, range_name: str) -> XCellRange | None:
+    def get_cell_range(sheet: XSpreadsheet, range_name: str) -> XCellRange:
         """
         Gets a cell range
 
@@ -2495,8 +2659,11 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet Document
             range_name (str): Range Name such as 'A1:D5'
 
+        Raises:
+            Exception: if unable to access cell range.
+
         Returns:
-            XCellRange | None: Cell range is successful; Otherwise, None
+            XCellRange: Cell range
         """
         ...
 
@@ -2504,7 +2671,7 @@ class Calc:
     @staticmethod
     def get_cell_range(
         sheet: XSpreadsheet, start_col: int, start_row: int, end_col: int, end_row: int
-    ) -> XCellRange | None:
+    ) -> XCellRange:
         """
         Gets a cell range
 
@@ -2515,13 +2682,16 @@ class Calc:
             end_col (int): End Column
             end_row (int): End Row
 
+        Raises:
+            Exception: if unable to access cell range.
+
         Returns:
-            XCellRange | None: Cell range is successful; Otherwise, None
+            XCellRange: Cell range
         """
         ...
 
     @classmethod
-    def get_cell_range(cls, *args, **kwargs) -> XCellRange | None:
+    def get_cell_range(cls, *args, **kwargs) -> XCellRange:
         ordered_keys = (1, 2, 3, 4, 5)
         kargs_len = len(kwargs)
         count = len(args) + kargs_len
@@ -2577,7 +2747,7 @@ class Calc:
 
     @overload
     @staticmethod
-    def find_used_range(sheet: XSpreadsheet) -> XCellRange | None:
+    def find_used_range(sheet: XSpreadsheet) -> XCellRange:
         """
         Find used range
 
@@ -2585,13 +2755,13 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet Document
 
         Returns:
-            XCellRange | None: Cell range on success; Othwrwise, None
+            XCellRange: Cell range
         """
         ...
 
     @overload
     @staticmethod
-    def find_used_range(sheet: XSpreadsheet, cell_name: str) -> XCellRange | None:
+    def find_used_range(sheet: XSpreadsheet, cell_name: str) -> XCellRange:
         """
         Find used range
 
@@ -2600,12 +2770,12 @@ class Calc:
             cell_name (str): Cell Name
 
         Returns:
-            XCellRange | None: Cell range on success; Othwrwise, None
+            XCellRange: Cell range
         """
         ...
 
     @classmethod
-    def find_used_range(cls, sheet: XSpreadsheet, cell_name: str = None) -> XCellRange | None:
+    def find_used_range(cls, sheet: XSpreadsheet, cell_name: str = None) -> XCellRange:
         if cell_name is None:
             cursor = sheet.createCursor()
         else:
@@ -2617,28 +2787,33 @@ class Calc:
     # endregion find_used_range()
 
     @staticmethod
-    def find_used_cursor(cursor: XSheetCellCursor) -> XCellRange | None:
+    def find_used_cursor(cursor: XSheetCellCursor) -> XCellRange:
         """
         Find used cursor
 
         Args:
             cursor (XSheetCellCursor): Sheet Cursor
 
+        Raises:
+            MissingInterfaceError: if unable to find interface
+
         Returns:
-            XCellRange | None: Cell range on success; Othwrwise, None
+            XCellRange: Cell range
         """
         # find the used area
         ua_cursor = mLo.Lo.qi(XUsedAreaCursor, cursor)
         if ua_cursor is None:
-            return None
+            raise mEx.MissingInterfaceError(XUsedAreaCursor)
         ua_cursor.gotoStartOfUsedArea(False)
         ua_cursor.gotoEndOfUsedArea(True)
 
         used_range = mLo.Lo.qi(XCellRange, ua_cursor)
+        if used_range is None:
+            raise mEx.MissingInterfaceError(XCellRange)
         return used_range
 
     @staticmethod
-    def get_col_range(sheet: XSpreadsheet, idx: int) -> XCellRange | None:
+    def get_col_range(sheet: XSpreadsheet, idx: int) -> XCellRange:
         """
         Get Column by index
 
@@ -2646,22 +2821,26 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet
             idx (int): Zero-based column index
 
+        Raises:
+            MissingInterfaceError: if unable to find interface
+
         Returns:
-            XCellRange | None: Cell range on success; Othwrwise, None
+            XCellRange: Cell range
         """
         cr_range = mLo.Lo.qi(XColumnRowRange, sheet)
         if cr_range is None:
-            return None
+            raise mEx.MissingInterfaceError(XColumnRowRange)
         cols = cr_range.getColumns()
         con = mLo.Lo.qi(XIndexAccess, cols)
-        try:
-            return mLo.Lo.qi(XCellRange, con.getByIndex(idx))
-        except Exception:
-            print(f"Could not access range for column position: {idx}")
-        return None
+        if con is None:
+            raise mEx.MissingInterfaceError(XIndexAccess)
+        cell_range = mLo.Lo.qi(XCellRange, con.getByIndex(idx))
+        if cell_range is None:
+            raise mEx.MissingInterfaceError(XCellRange, f"Could not access range for column position: {idx}")
+        return cell_range
 
     @staticmethod
-    def get_row_range(sheet: XSpreadsheet, idx: int) -> XCellRange | None:
+    def get_row_range(sheet: XSpreadsheet, idx: int) -> XCellRange:
         """
         Get Row by index
 
@@ -2669,26 +2848,30 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet
             idx (int): Zero-based column index
 
+        Raises:
+            MissingInterfaceError: if unable to find interface
+
         Returns:
-            XCellRange | None: Cell range on success; Othwrwise, None
+            XCellRange: Cell range
         """
         cr_range = mLo.Lo.qi(XColumnRowRange, sheet)
         if cr_range is None:
-            return None
+            raise mEx.MissingInterfaceError(XColumnRowRange)
         rows = cr_range.getRows()
         con = con = mLo.Lo.qi(XIndexAccess, rows)
-        try:
-            return mLo.Lo.qi(XCellRange, con.getByIndex(idx))
-        except Exception:
-            print(f"Could not access range for row position: {idx}")
-        return None
+        if con is None:
+            raise mEx.MissingInterfaceError(XIndexAccess)
+        cell_range =  mLo.Lo.qi(XCellRange, con.getByIndex(idx))
+        if cell_range is None:
+            raise mEx.MissingInterfaceError(XCellRange, f"Could not access range for row position: {idx}")
+        return cell_range
 
     # endregion ------------ get XCell and XCellRange methods ----------
 
     # region --------------- convert cell/cellrange names to positions -
 
     @classmethod
-    def get_cell_range_positions(cls, range_name: str) -> Tuple[Point, Point] | None:
+    def get_cell_range_positions(cls, range_name: str) -> Tuple[Point, Point]:
         """
         Gets Cell range as a tuple of Point, Point
 
@@ -2698,20 +2881,22 @@ class Calc:
         Args:
             range_name (str): Range name such as 'A1:C8'
 
+        Raises:
+            ValueError: if invalid range name
+
         Returns:
-            Tuple[Point, Point] | None: Range as tuple on success; Otherwise, None
+            Tuple[Point, Point]: Range as tuple
         """
         cell_names = range_name.split(":")
         if len(cell_names) != 2:
-            print(f"Cell range not found in {range_name}")
-            return None
+            raise ValueError(f"Cell range not found in {range_name}")
         start_pos = cls.get_cell_position(cell_names[0])
         end_pos = cls.get_cell_position(cell_names[1])
         return (start_pos, end_pos)
 
     # region    get_cell_position()
     @classmethod
-    def get_cell_position(cls, cell_name: str) -> Point | None:
+    def get_cell_position(cls, cell_name: str) -> Point:
         """
         Gets a cell name as a Point.
 
@@ -2721,8 +2906,11 @@ class Calc:
         Args:
             cell_name (str): Cell name suca as 'A1'
 
+        Raises:
+            ValueError: if cell name is not valid
+
         Returns:
-            Point | None: cell name as Point on success; Otherwise, None
+            Point: cell name as Point with X as col and Y as row
         """
         m = cls._rx_cell.match(cell_name)
         if m:
@@ -2730,8 +2918,7 @@ class Calc:
             nrow = cls.row_string_to_number(m.group(2))
             return Point(ncolumn, nrow)
         else:
-            print("No match found")
-        return None
+            raise ValueError("Not a valid cell name")
 
     @classmethod
     def get_cell_pos(cls, sheet: XSpreadsheet, cell_name: str) -> Point:
@@ -2746,12 +2933,9 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet
 
         Returns:
-            Point | None: cell name as Point on success; Otherwise, None
+            Point: cell name as Point
         """
         xcell = cls._get_cell_sheet_cell(sheet=sheet, cell_name=cell_name)
-        if xcell is None:
-            print("No match found")
-            return None
         pos = mProps.Props.get_property(xprops=xcell, name="Position")
         if pos is None:
             print(f"Could not determine position of cell '{cell_name}'")
@@ -2801,35 +2985,38 @@ class Calc:
     # region    get_cell_address()
 
     @staticmethod
-    def _get_cell_address_cell(cell: XCell) -> CellAddress | None:
+    def _get_cell_address_cell(cell: XCell) -> CellAddress:
         addr = mLo.Lo.qi(XCellAddressable, cell)
         if addr is None:
-            return None
+            raise mEx.MissingInterfaceError(XCellAddressable)
         return addr.getCellAddress()
 
     @classmethod
-    def _get_cell_address_sheet(cls, sheet: XSpreadsheet, cell_name: str) -> CellAddress | None:
+    def _get_cell_address_sheet(cls, sheet: XSpreadsheet, cell_name: str) -> CellAddress:
         cell_range = sheet.getCellRangeByName(cell_name)
         start_cell = cls._get_cell_cell_rng(cell_range=cell_range, col=0, row=0)
         return cls._get_cell_address_cell(start_cell)
 
     @overload
     @staticmethod
-    def get_cell_address(cell: XCell) -> CellAddress | None:
+    def get_cell_address(cell: XCell) -> CellAddress:
         """
         Gets Cell Address
 
         Args:
             cell (XCell): Cell
 
+        Raises:
+            MissingInterfaceError: if unable to obtain interface
+
         Returns:
-            CellAddress | None: Cell Address on success; Othwrwise, None
+            CellAddress: Cell Address
         """
         ...
 
     @overload
     @staticmethod
-    def get_cell_address(sheet: XSpreadsheet, cell_name: str) -> CellAddress | None:
+    def get_cell_address(sheet: XSpreadsheet, cell_name: str) -> CellAddress:
         """
         Gets Cell Address
 
@@ -2837,14 +3024,17 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet
             cell_name (str): Cell name such as 'A1'
 
+        Raises:
+            MissingInterfaceError: if unable to obtain interface
+
         Returns:
-            CellAddress | None: Cell Address on success; Othwrwise, None
+            CellAddress: Cell Address
         """
         ...
 
     @overload
     @staticmethod
-    def get_cell_address(sheet: XSpreadsheet, addr: CellAddress) -> CellAddress | None:
+    def get_cell_address(sheet: XSpreadsheet, addr: CellAddress) -> CellAddress:
         """
         Gets Cell Address
 
@@ -2852,14 +3042,17 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet
             addr (CellAddress): Cell Address
 
+        Raises:
+            MissingInterfaceError: if unable to obtain interface
+
         Returns:
-            CellAddress | None: Cell Address on success; Othwrwise, None
+            CellAddress: Cell Address
         """
         ...
 
     @overload
     @staticmethod
-    def get_cell_address(sheet: XSpreadsheet, col: int, row: int) -> CellAddress | None:
+    def get_cell_address(sheet: XSpreadsheet, col: int, row: int) -> CellAddress:
         """
         Gets Cell Address
 
@@ -2868,13 +3061,16 @@ class Calc:
             col (int): Zero-base column index
             row (int): Zero-base row index
 
+        Raises:
+            MissingInterfaceError: if unable to obtain interface
+
         Returns:
-            CellAddress | None: Cell Address on success; Othwrwise, None
+            CellAddress: Cell Address
         """
         ...
 
     @classmethod
-    def get_cell_address(cls, *args, **kwargs) -> CellAddress | None:
+    def get_cell_address(cls, *args, **kwargs) -> CellAddress:
         ordered_keys = (1, 2, 3)
         kargs_len = len(kwargs)
         count = len(args) + kargs_len
@@ -2926,33 +3122,36 @@ class Calc:
 
     # region    get_address()
     @staticmethod
-    def _get_address_cell(cell_range: XCellRange) -> CellRangeAddress | None:
+    def _get_address_cell(cell_range: XCellRange) -> CellRangeAddress:
         addr = mLo.Lo.qi(XCellRangeAddressable, cell_range)
         if addr is None:
-            return None
+            raise mEx.MissingInterfaceError(XCellRangeAddressable)
         return addr.getRangeAddress()
 
     @classmethod
-    def _get_address_sht_rng(cls, sheet: XSpreadsheet, range_name: str) -> CellRangeAddress | None:
+    def _get_address_sht_rng(cls, sheet: XSpreadsheet, range_name: str) -> CellRangeAddress:
         return cls._get_address_cell(cls._get_cell_range_rng_name(sheet=sheet, range_name=range_name))
 
     @overload
     @staticmethod
-    def get_address(cell_range: XCellRange) -> CellRangeAddress | None:
+    def get_address(cell_range: XCellRange) -> CellRangeAddress:
         """
         Gets Range Address
 
         Args:
             cell_range (XCellRange): Cell Range
 
+        Raises:
+            MissingInterfaceError: if unable to obtain interface
+
         Returns:
-            CellRangeAddress | None: Cell Range Address on success; Othwrwise, None
+            CellRangeAddress: Cell Range Address
         """
         ...
 
     @overload
     @staticmethod
-    def get_address(sheet: XSpreadsheet, range_name: str) -> CellRangeAddress | None:
+    def get_address(sheet: XSpreadsheet, range_name: str) -> CellRangeAddress:
         """
         Gets Range Address
 
@@ -2960,8 +3159,11 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet
             range_name (str): Range name such as 'A1:D7'
 
+        Raises:
+            MissingInterfaceError: if unable to obtain interface
+
         Returns:
-            CellRangeAddress | None: Cell Range Address on success; Othwrwise, None
+            CellRangeAddress: Cell Range Address
         """
         ...
 
@@ -2969,7 +3171,7 @@ class Calc:
     @staticmethod
     def get_address(
         sheet: XSpreadsheet, start_col: int, start_row: int, end_col: int, end_row: int
-    ) -> CellRangeAddress | None:
+    ) -> CellRangeAddress:
         """
         Gets Range Address
 
@@ -2980,13 +3182,16 @@ class Calc:
             end_col (int): Zero-base end column index
             end_row (int): Zero-base end row index
 
+        Raises:
+            MissingInterfaceError: if unable to obtain interface
+
         Returns:
-            CellRangeAddress | None: Cell Range Address on success; Othwrwise, None
+            CellRangeAddress: Cell Range Address
         """
         ...
 
     @classmethod
-    def get_address(cls, *args, **kwargs) -> CellRangeAddress | None:
+    def get_address(cls, *args, **kwargs) -> CellRangeAddress:
         ordered_keys = (1, 2, 3, 4, 5)
         kargs_len = len(kwargs)
         count = len(args) + kargs_len
@@ -3172,7 +3377,7 @@ class Calc:
         print()
 
     @staticmethod
-    def get_cell_series(sheet: XSpreadsheet, range_name: str) -> XCellSeries | None:
+    def get_cell_series(sheet: XSpreadsheet, range_name: str) -> XCellSeries:
         """
         Get cell series for a range
 
@@ -3180,11 +3385,17 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet
             range_name (str): Range name such as 'A1:B7'
 
+        Raises:
+            MissingInterfaceError: if unable to obtain interface
+
         Returns:
-            XCellSeries | None: Cell series on success; Otherwise, None
+            XCellSeries: Cell series
         """
         cell_range = sheet.getCellRangeByName(range_name)
-        return mLo.Lo.qi(XCellSeries, cell_range)
+        series = mLo.Lo.qi(XCellSeries, cell_range)
+        if series is None:
+            raise mEx.MissingInterfaceError(XCellSeries)
+        return series
 
     # region    is_equal_addresses()
 
@@ -3634,7 +3845,7 @@ class Calc:
     # region --------------- cell decoration ---------------------------
 
     @staticmethod
-    def create_cell_style(doc: XSpreadsheetDocument, style_name: str) -> XStyle | None:
+    def create_cell_style(doc: XSpreadsheetDocument, style_name: str) -> XStyle:
         """
         Creates a style
 
@@ -3642,19 +3853,24 @@ class Calc:
             doc (XSpreadsheetDocument): Spreadsheet Document
             style_name (str): Style name
 
+        Raises:
+            Exception: if unable to create style.
+            MissingInterfaceError: if unable to obtain interface
+
         Returns:
-            XStyle | None: Style on success; Otherwise, None
+            XStyle: Newly created style
         """
         comp_doc = mLo.Lo.qi(XComponent, doc)
+        if comp_doc is None:
+            raise mEx.MissingInterfaceError(XComponent)
         style_families = mInfo.Info.get_style_container(doc=comp_doc, family_style_name="CellStyles")
         style = mLo.Lo.create_instance_msf(XStyle, "com.sun.star.style.CellStyle")
         #   "com.sun.star.sheet.TableCellStyle"  result in style == None ??
         try:
             style_families.insertByName(style_name, style)
             return style
-        except Exception:
-            print(f"Unable to create style: {style_name}")
-        return None
+        except Exception as e:
+            raise Exception(f"Unable to create style: {style_name}") from e
 
     # region    change_style()
 
@@ -3815,7 +4031,7 @@ class Calc:
 
     @overload
     @staticmethod
-    def add_border(sheet: XSpreadsheet, cell_range: XCellRange) -> XCellRange | None:
+    def add_border(sheet: XSpreadsheet, cell_range: XCellRange) -> XCellRange:
         """
         Adds borders to cell range
 
@@ -3824,13 +4040,13 @@ class Calc:
             cell_range (XCellRange):  Cell range
 
         Returns:
-            XCellRange | None: Range that borders were applied to on success; Otherwise, None
+            XCellRange: Range borders that are affected
         """
         ...
 
     @overload
     @staticmethod
-    def add_border(sheet: XSpreadsheet, range_name: str) -> XCellRange | None:
+    def add_border(sheet: XSpreadsheet, range_name: str) -> XCellRange:
         """
         Adds borders to cell range
 
@@ -3839,13 +4055,13 @@ class Calc:
             range_name (str): Range Name such as 'A1:F9'
 
         Returns:
-            XCellRange | None: Range that borders were applied to on success; Otherwise, None
+            XCellRange: Range borders that are affected
         """
         ...
 
     @overload
     @staticmethod
-    def add_border(sheet: XSpreadsheet, cell_range: XCellRange, color: int) -> XCellRange | None:
+    def add_border(sheet: XSpreadsheet, cell_range: XCellRange, color: int) -> XCellRange:
         """
         Adds borders to cell range
 
@@ -3855,13 +4071,13 @@ class Calc:
             color (int): RGB color as integer
 
         Returns:
-            XCellRange | None: Range that borders were applied to on success; Otherwise, None
+            XCellRange: Range borders that are affected
         """
         ...
 
     @overload
     @staticmethod
-    def add_border(sheet: XSpreadsheet, range_name: str, color: int) -> XCellRange | None:
+    def add_border(sheet: XSpreadsheet, range_name: str, color: int) -> XCellRange:
         """
         Adds borders to cell range
 
@@ -3871,13 +4087,13 @@ class Calc:
             color (int): RGB color as integer
 
         Returns:
-            XCellRange | None: Range that borders were applied to on success; Otherwise, None
+            XCellRange: Range borders that are affected
         """
         ...
 
     @overload
     @staticmethod
-    def add_border(sheet: XSpreadsheet, cell_range: XCellRange, color: int, border_vals: int) -> XCellRange | None:
+    def add_border(sheet: XSpreadsheet, cell_range: XCellRange, color: int, border_vals: int) -> XCellRange:
         """
         Adds borders to cell range
 
@@ -3888,13 +4104,13 @@ class Calc:
             border_vals (int): Determines what borders are applied.
 
         Returns:
-            XCellRange | None: Range that borders were applied to on success; Otherwise, None
+            XCellRange: Range borders that are affected
         """
         ...
 
     @overload
     @staticmethod
-    def add_border(sheet: XSpreadsheet, range_name: str, color: int, border_vals: int) -> XCellRange | None:
+    def add_border(sheet: XSpreadsheet, range_name: str, color: int, border_vals: int) -> XCellRange:
         """
         Adds borders to cell range
 
@@ -3905,13 +4121,13 @@ class Calc:
             border_vals (int): Determines what borders are applied.
 
         Returns:
-            XCellRange | None: Range that borders were applied to on success; Otherwise, None
+            XCellRange: Range borders that are affected
         """
         ...
 
     @overload
     @staticmethod
-    def add_border(sheet: XSpreadsheet, cell_range: XCellRange, color: int, border_vals: BorderEnum) -> XCellRange | None:
+    def add_border(sheet: XSpreadsheet, cell_range: XCellRange, color: int, border_vals: BorderEnum) -> XCellRange:
         """
         Adds borders to cell range
 
@@ -3922,13 +4138,13 @@ class Calc:
             border_vals (BorderEnum): Determines what borders are applied.
 
         Returns:
-            XCellRange | None: Range that borders were applied to on success; Otherwise, None
+            XCellRange: Range borders that are affected
         """
         ...
 
     @overload
     @staticmethod
-    def add_border(sheet: XSpreadsheet, range_name: str, color: int, border_vals: BorderEnum) -> XCellRange | None:
+    def add_border(sheet: XSpreadsheet, range_name: str, color: int, border_vals: BorderEnum) -> XCellRange:
         """
         Adds borders to cell range
 
@@ -3939,12 +4155,12 @@ class Calc:
             border_vals (BorderEnum): Determines what borders are applied.
 
         Returns:
-            XCellRange | None: Range that borders were applied to on success; Otherwise, None
+            XCellRange: Range borders that are affected
         """
         ...
 
     @classmethod
-    def add_border(cls, *args, **kwargs) -> XCellRange | None:
+    def add_border(cls, *args, **kwargs) -> XCellRange:
         ordered_keys = (1, 2, 3, 4)
         kargs_len = len(kwargs)
         count = len(args) + kargs_len
@@ -4002,9 +4218,11 @@ class Calc:
         return cell_range
 
     # endregion add_border()
+    
+    # region    highlight_range()
     @overload
     @staticmethod
-    def highlight_range(sheet: XSpreadsheet,  headline: str, cell_range: XCellRange) ->  XCell | None:
+    def highlight_range(sheet: XSpreadsheet,  headline: str, cell_range: XCellRange) ->  XCell:
         """
         Draw a colored border around the range and write a headline in the
         top-left cell of the range.
@@ -4015,13 +4233,13 @@ class Calc:
             cell_range (XCellRange): Cell Range
 
         Returns:
-            XCell | None: First cell of range that headline was applied to on success; Otherwise, None
+            XCell: First cell of range that headline ia applied on
         """
         ...
     
     @overload
     @staticmethod
-    def highlight_range(sheet: XSpreadsheet,  headline: str, range_name: str) ->  XCell | None:
+    def highlight_range(sheet: XSpreadsheet,  headline: str, range_name: str) ->  XCell:
         """
         Draw a colored border around the range and write a headline in the
         top-left cell of the range.
@@ -4032,7 +4250,7 @@ class Calc:
             range_name (str): Range Name such as 'A1:F9'
 
         Returns:
-            XCell | None: First cell of range that headline was applied to on success; Otherwise, None            
+            XCell: First cell of range that headline ia applied on
         """
         ...
 
@@ -4077,8 +4295,6 @@ class Calc:
 
         # color the headline
         addr = cls._get_address_cell(cell_range=cell_range)
-        if addr is None:
-            return None
         header_range = cls._get_cell_range_col_row(
             sheet=sheet,
             start_col=addr.StartColumn,
@@ -4086,16 +4302,14 @@ class Calc:
             end_col=addr.EndColumn,
             end_row=addr.StartRow,
         )
-        if header_range is None:
-            return None
         first_cell = cls._get_cell_cell_rng(cell_range=header_range, col=0, row=0)
-        if first_cell is None:
-            return None
         cls._set_val_by_cell(value=kargs[2], cell=first_cell)
         return first_cell
+    # endregion highlight_range()
+
 
     @classmethod
-    def set_col_width(cls, sheet: XSpreadsheet, width: int, idx: int) -> XCellRange | None:
+    def set_col_width(cls, sheet: XSpreadsheet, width: int, idx: int) -> XCellRange:
         """
         Sets column width. width is in ``mm``, e.g. 6
 
@@ -4105,19 +4319,17 @@ class Calc:
             idx (int): Index of column
 
         Returns:
-            XCellRange | None: Column cell range that width is applied to on success; Otherwise, None
+            XCellRange: Column cell range that width is applied on
         """
         if width <= 0:
             print("Width must be greater then 0")
             return None
         cell_range = cls.get_col_range(sheet=sheet, idx=idx)
-        if cell_range is None:
-            return None
         mProps.Props.set_property(prop_set=cell_range, name="Width", value=(width * 100))
         return cell_range
 
     @classmethod
-    def set_row_height(cls, sheet: XSpreadsheet, height: int, idx: int,) ->  XCellRange | None:
+    def set_row_height(cls, sheet: XSpreadsheet, height: int, idx: int,) ->  XCellRange:
         """
         Sets column width. height is in ``mm``, e.g. 6
 
@@ -4127,14 +4339,12 @@ class Calc:
             idx (int): Index of Row
 
         Returns:
-            XCellRange | None: Row cell range that height is applied to on success; Otherwise, None
+            XCellRange: Row cell range that height is applied on
         """
         if height <= 0:
             print("Height must be greater then 0")
             return None
         cell_range = cls.get_row_range(sheet=sheet, idx=idx)
-        if cell_range is None:
-            return
         # mInfo.Info.show_services(obj_name="Cell range for a row", obj=cell_range)
         mProps.Props.set_property(prop_set=cell_range, name="Height", value=(height * 100))
         return cell_range
@@ -4153,67 +4363,74 @@ class Calc:
         # create the range address sequence
         addr = mLo.Lo.qi(XCellRangeAddressable, cell_range)
         if addr is None:
-            return None
+            raise mEx.MissingInterfaceError(XCellRangeAddressable)
         cr_addr = [addr.getRangeAddress()]
 
         # create the scenario
         supp = mLo.Lo.qi(XScenariosSupplier, sheet)
+        if addr is None:
+            raise mEx.MissingInterfaceError(XScenariosSupplier)
         scens = supp.getScenarios()
         scens.addNewByName(name, cr_addr, comment)
 
         # insert the values into the range
         cr_data = mLo.Lo.qi(XCellRangeData, cell_range)
+        if cr_data is None:
+            raise mEx.MissingInterfaceError(XCellRangeData)
         cr_data.setDataArray(vals)
         
         supp = mLo.Lo.qi(XScenariosSupplier, sheet)
+        if supp is None:
+            raise mEx.MissingInterfaceError(XScenariosSupplier)
         scenarios = supp.getScenarios()
-        return mLo.Lo.qi(XScenario, scenarios.getByName(name))
+        result = mLo.Lo.qi(XScenario, scenarios.getByName(name))
+        if result is None:
+            raise mEx.MissingInterfaceError(XScenario)
+        return result
 
     @staticmethod
     def apply_scenario(sheet: XSpreadsheet, name: str) -> XScenario | None:
         try:
             # get the scenario set
             supp = mLo.Lo.qi(XScenariosSupplier, sheet)
+            if supp is None:
+                raise mEx.MissingInterfaceError(XScenariosSupplier)
             scenarios = supp.getScenarios()
 
             # get the scenario and activate it
             scenario = mLo.Lo.qi(XScenario, scenarios.getByName(name))
+            if scenario is None:
+                raise mEx.MissingInterfaceError(XScenario)
 
             scenario.apply()
             return scenario
         except Exception as e:
-            print("Scenario could not be applied:")
-            print(f"    {e}")
+            raise Exception("Scenario could not be applied:") from e
 
     # endregion ------------ scenarios ---------------------------------
 
     # region --------------- data pilot methods ------------------------
 
     @staticmethod
-    def get_pilot_tables(sheet: XSpreadsheet) -> XDataPilotTables | None:
+    def get_pilot_tables(sheet: XSpreadsheet) -> XDataPilotTables:
         db_supp = mLo.Lo.qi(XDataPilotTablesSupplier, sheet)
         if db_supp is None:
-            print("No data pilot supplier found")
-            return None
-        dp_tables = db_supp.getDataPilotTables()
-        if dp_tables is None:
-            print("No data pilot tables found")
-            return None
-        return dp_tables
+            raise mEx.MissingInterfaceError(XDataPilotTablesSupplier)
+        return db_supp.getDataPilotTables()
+
 
     @staticmethod
-    def get_pilot_table(dp_tables: XDataPilotTables, name: str) -> XDataPilotTable | None:
+    def get_pilot_table(dp_tables: XDataPilotTables, name: str) -> XDataPilotTable:
         try:
             otable = dp_tables.getByName(name)
             if otable is None:
-                print(f"Did not find data pilot table '{name}'")
-                return None
-            return mLo.Lo.qi(XDataPilotTable, otable)
+                raise Exception(f"Did not find data pilot table '{name}'")
+            result =  mLo.Lo.qi(XDataPilotTable, otable)
+            if result is None:
+                raise mEx.MissingInterfaceError(XDataPilotTable)
+            return result
         except Exception as e:
-            print(f"Pilot table lookup failed for '{name}'")
-            print(f"    {e}")
-
-        return None
+            raise Exception(f"Pilot table lookup failed for '{name}'") from e
 
     # endregion ------------ data pilot methods ------------------------
 
@@ -4301,12 +4518,11 @@ class Calc:
     @staticmethod
     def _find_function_by_name(func_nm: str) -> Tuple[PropertyValue] | None:
         if not func_nm:
-            print("Please supply a function name to find.")
-            return None
-        func_desc = mLo.Lo.create_instance_mcf(XFunctionDescriptions, "com.sun.star.sheet.FunctionDescriptions")
-        if func_desc is None:
-            print("No function descriptions were found")
-            return None
+            raise ValueError("Invalid arg, please supply a function name to find.")
+        try:
+            func_desc = mLo.Lo.create_instance_mcf(XFunctionDescriptions, "com.sun.star.sheet.FunctionDescriptions")
+        except Exception as e:
+            raise Exception("No function descriptions were found") from e
 
         for i in range(func_desc.getCount()):
             try:
@@ -4322,12 +4538,11 @@ class Calc:
     @staticmethod
     def _find_function_by_idx(idx: int) -> Tuple[PropertyValue] | None:
         if idx < 0:
-            print("Please supply a positive index value to.")
-            return None
-        func_desc = mLo.Lo.create_instance_mcf(XFunctionDescriptions, "com.sun.star.sheet.FunctionDescriptions")
-        if func_desc is None:
-            print("No function descriptions were found")
-            return None
+            raise IndexError("Negative index in not allowed.")
+        try:
+            func_desc = mLo.Lo.create_instance_mcf(XFunctionDescriptions, "com.sun.star.sheet.FunctionDescriptions")
+        except Exception as e:
+            raise Exception("No function descriptions were found") from e
 
         try:
             return tuple(func_desc.getByIndex(idx))
@@ -4460,19 +4675,19 @@ class Calc:
     @classmethod
     def _make_constraint_op_str_sht_cell_name(
         cls, num: float, op: str, sheet: XSpreadsheet, cell_name: str
-    ) -> SolverConstraint | None:
+    ) -> SolverConstraint:
         return cls._make_constraint_op_str_addr(
             num=num, op=op, addr=cls._get_cell_address_sheet(sheet=sheet, cell_name=cell_name)
         )
 
     @classmethod
-    def _make_constraint_op_str_addr(cls, num: float, op: str, addr: CellAddress) -> SolverConstraint | None:
+    def _make_constraint_op_str_addr(cls, num: float, op: str, addr: CellAddress) -> SolverConstraint:
         return cls._make_constraint_op_sco_addr(num=num, op=cls.to_constraint_op(op), addr=addr)
 
     @classmethod
     def _make_constraint_op_sco_sht_cell_name(
         cls, num: float, op: SolverConstraintOperator, sheet: XSpreadsheet, cell_name: str
-    ) -> SolverConstraint | None:
+    ) -> SolverConstraint:
         return cls._make_constraint_op_sco_addr(
             num=num, op=op, addr=cls._get_cell_address_sheet(sheet=sheet, cell_name=cell_name)
         )
@@ -4480,7 +4695,7 @@ class Calc:
     @classmethod
     def _make_constraint_op_sco_addr(
         cls, num: float, op: SolverConstraintOperator, addr: CellAddress
-    ) -> SolverConstraint | None:
+    ) -> SolverConstraint:
         sc = SolverConstraint()
         sc.Left = addr
         sc.Operator = op
@@ -4489,28 +4704,28 @@ class Calc:
 
     @overload
     @staticmethod
-    def make_constraint(num: float, op: str, addr: CellAddress) -> SolverConstraint | None:
+    def make_constraint(num: float, op: str, addr: CellAddress) -> SolverConstraint:
         ...
 
     @overload
     @staticmethod
-    def make_constraint(num: float, op: SolverConstraintOperator, addr: CellAddress) -> SolverConstraint | None:
+    def make_constraint(num: float, op: SolverConstraintOperator, addr: CellAddress) -> SolverConstraint:
         ...
 
     @overload
     @staticmethod
-    def make_constraint(num: float, op: str, sheet: XSpreadsheet, cell_name: str) -> SolverConstraint | None:
+    def make_constraint(num: float, op: str, sheet: XSpreadsheet, cell_name: str) -> SolverConstraint:
         ...
 
     @overload
     @staticmethod
     def make_constraint(
         num: float, op: SolverConstraintOperator, sheet: XSpreadsheet, cell_name: str
-    ) -> SolverConstraint | None:
+    ) -> SolverConstraint:
         ...
 
     @classmethod
-    def make_constraint(cls, *args, **kwargs) -> SolverConstraint | None:
+    def make_constraint(cls, *args, **kwargs) -> SolverConstraint:
         ordered_keys = (1, 2, 3, 4)
         kargs_len = len(kwargs)
         count = len(args) + kargs_len
@@ -4584,8 +4799,11 @@ class Calc:
     # region --------------- headers /footers --------------------------
 
     @staticmethod
-    def get_head_foot(props: XPropertySet, content: str) -> XHeaderFooterContent | None:
-        return mLo.Lo.qi(XHeaderFooterContent, mProps.Props.get_property(xprops=props, name=content))
+    def get_head_foot(props: XPropertySet, content: str) -> XHeaderFooterContent:
+        result = mLo.Lo.qi(XHeaderFooterContent, mProps.Props.get_property(xprops=props, name=content))
+        if result is None:
+            raise mEx.MissingInterfaceError(XHeaderFooterContent)
+        return result
 
     @staticmethod
     def print_head_foot(title: str, hfc: XHeaderFooterContent) -> None:
@@ -4597,8 +4815,7 @@ class Calc:
     @classmethod
     def get_region(cls, hfc: XHeaderFooterContent, region: int) -> XText | None:
         if hfc is None:
-            print("Header/footer content is null")
-            return None
+            raise TypeError("'hfc' is expencted to be XHeaderFooterContent instance")
 
         if region == cls.HeaderFooter.HF_LEFT:
             return hfc.getLeftText()

@@ -60,42 +60,46 @@ class FileIO:
         return os.path.abspath(fnm)
 
     @staticmethod
-    def url_to_path(url: str) -> str | None:
+    def url_to_path(url: str) -> str:
         """
         Converts url to path
 
         Args:
             url (str): url to convert
+        
+        Raises:
+            Exception: If unable to parse url.
 
         Returns:
-            str | None: path as str if conversion is successful; Otherwise, None
+            str: path as string
         """
         try:
             p = urlparse(url)
             final_path = os.path.abspath(os.path.join(p.netloc, p.path))
             return final_path
         except Exception as e:
-            print(f"Could not parse '{url}'")
-        return None
+            raise Exception(f"Could not parse '{url}'")
 
 
     @staticmethod
-    def fnm_to_url(fnm: str) -> str | None:
+    def fnm_to_url(fnm: str) -> str:
         """
         Converts file path to url
 
         Args:
             fnm (str): file path
 
+        Raises:
+            Exception: If unalbe to get url form fnm.
+
         Returns:
-            str | None: Converted path if conversion is successful; Otherwise None.
+            str: Converted path if conversion is successful; Otherwise None.
         """
         try:
             p = Path(fnm)
             return p.as_uri()
         except Exception as e:
-            print("Unable to convert '{fnm}'")
-        return None
+            raise Exception("Unable to convert '{fnm}'") from e
 
     @classmethod
     def uri_to_path(cls, uri_fnm: str) -> str:
@@ -184,58 +188,84 @@ class FileIO:
             Path(dir).mkdir(parents=True, exist_ok=True)
 
     @staticmethod
-    def create_temp_file(im_format: str) -> str | None:
+    def create_temp_file(im_format: str) -> str:
         """
         Creates a temporary file
 
         Args:
             im_format (str): File suffix such as txt or cfg
 
+        Raises:
+            Exception: If creation of temp file fails.
+
         Returns:
-            str | None: Path to temp file.
+            str: Path to temp file.
         """
         try:
             tmp = tempfile.NamedTemporaryFile(prefix="loTemp", sufix=f".{im_format}", delete=True)
             return tmp.name
         except Exception as e:
-            print("Could not create temp file")
-        return None
+            raise Exception("Could not create temp file") from e
 
     @staticmethod
-    def delete_file(fnm: str) -> None:
+    def delete_file(fnm: str) -> bool:
+        """
+        Deletes a file
+
+        Args:
+            fnm (str): file to delete
+
+        Returns:
+            bool: True if delete is successful; Otherwise, False
+        """
         os.remove(fnm)
         if os.path.exists(fnm):
             print(f"'{fnm}' could not be deleted")
+            return False
         else:
             print(f"'{fnm}' deleted")
+        return True
 
     @classmethod
-    def delete_files(cls, db_fnms: Iterable[str]) -> None:
+    def delete_files(cls, *fnms:str) -> bool:
+        """
+        Deletes files
+        
+        Args:
+            fnms (str): one or more files to delete
+
+        Returns:
+            bool: Returns True if all file are deleted; Otherwise, False
+        """
+        if len(fnms) == 0:
+            return False
         print()
-        for s in db_fnms:
-            cls.delete_file(s)
+        result = True
+        for s in fnms:
+            result = result and cls.delete_file(s)
+        return result
 
     @staticmethod
-    def save_string(fnm: str, s: str) -> None:
-        if s is None:
-            print(f"No data to save in '{fnm}'")
+    def save_string(fnm: str, data: str) -> None:
+        if data is None:
+            raise ValueError(f"No data to save in '{fnm}'")
         try:
             with open(fnm, "w") as file:
-                file.write(s)
+                file.write(data)
             print(f"Saved string to file: {fnm}")
         except Exception as e:
-            print(f"Could not save string to file: {fnm}")
+            raise Exception(f"Could not save string to file: {fnm}") from e
 
     @staticmethod
     def save_bytes(fnm: str, b: bytes) -> None:
         if b is None:
-            print(f"No data to save in '{fnm}'")
+            raise ValueError(f"'b' is null. No data to save in '{fnm}'")
         try:
             with open(fnm, "b") as file:
                 file.write(b)
             print(f"Saved bytes to file: {fnm}")
         except Exception as e:
-            print(f"Could not save bytes to file: {fnm}")
+            raise Exception(f"Could not save bytes to file: {fnm}") from e
 
     @staticmethod
     def save_array(fnm: str, arr: List[list]) -> None:
@@ -247,23 +277,20 @@ class FileIO:
             arr (List[list]): 2d array of data.
         """
         if arr is None:
+            raise ValueError("'arr' is null. No data to save in '{fnm}'")
+        num_rows = len(arr)
+        if num_rows == 0:
             print("No data to save in '{fnm}'")
             return
-
         try:
             with open(fnm, "w") as file:
-                if num_rows == 0:
-                    print("No data to save in '{fnm}'")
-                    return
-                num_rows = len(arr)
                 for j in range(num_rows):
                     line = "\t".join([str(v) for v in arr[j]])
                     file.write(line)
                     file.write("\n")
             print(f"Save array to file: {fnm}")
         except Exception as e:
-            print(f"Could not save array to file: {fnm}")
-            print(f"    {e}")
+            raise Exception(f"Could not save array to file: {fnm}") from e
 
     @staticmethod
     def append_to(fnm: str, msg: str) -> None:
@@ -272,8 +299,7 @@ class FileIO:
                 file.write(msg)
                 file.write("\n")
         except Exception as e:
-            print(f"unable to append to '{fnm}'")
-            print(f"    {e}")
+            raise Exception(f"unable to append to '{fnm}'") from e
 
     # endregion ---------- file creation / deletion --------------------
 
@@ -295,6 +321,7 @@ class FileIO:
 
     @staticmethod
     def unzip_file(zfa: XZipFileAccess, fnm: str) -> None:
+        # TODO: implement unzip_file
         raise NotImplementedError
 
     @staticmethod
@@ -322,7 +349,7 @@ class FileIO:
             if lines is not None:
                 return lines[0].strip()
         except UnoException as e:
-            print(e)
+            raise Exception("Unable to get mime type") from e
         print("No mimetype found")
         return None
 

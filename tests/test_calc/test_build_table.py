@@ -38,7 +38,6 @@ def test_build_cells(loader) -> None:
 
 def test_build_rows(loader) -> None:
     doc = Calc.create_doc(loader=loader)
-    assert doc is not None, "Could not create new document"
     visible = False
     delay = 0
     if visible:
