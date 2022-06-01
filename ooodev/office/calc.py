@@ -3,7 +3,6 @@
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 # region Imports
 from __future__ import annotations
-import datetime
 from enum import IntFlag, Enum
 import numbers
 import re
@@ -112,6 +111,7 @@ from ..utils.gen_util import ArgsHelper, TableHelper, Util as GenUtil
 from ..utils import enum_helper
 from ..utils.color import CommonColor
 from ..utils import view_state as mViewState
+from ..exceptions import ex as mEx
 
 NameVal = ArgsHelper.NameValue
 # endregion Imports
@@ -190,32 +190,69 @@ class Calc:
     # region --------------- document methods --------------------------
 
     @classmethod
-    def open_doc(cls, fnm: str, loader: XComponentLoader) -> XSpreadsheetDocument | None:
+    def open_doc(cls, fnm: str, loader: XComponentLoader) -> XSpreadsheetDocument:
+        """
+        Opens spreadsheet document
+
+        Args:
+            fnm (str): Spreadsheet file to open
+            loader (XComponentLoader): Component loader
+
+        Raises:
+            Exception: If document is null
+
+        Returns:
+            XSpreadsheetDocument: Spreadsheet document
+        """
         doc = mLo.Lo.open_doc(fnm=str(fnm), loader=loader)
         if doc is None:
-            print("Document is null")
-            return None
+            raise Exception("Document is null")
         return cls.get_ss_doc(doc)
 
     @staticmethod
-    def get_ss_doc(doc: XComponent) -> XSpreadsheetDocument | None:
+    def get_ss_doc(doc: XComponent) -> XSpreadsheetDocument:
+        """
+        Gets a spreadsheet document
+
+        Args:
+            doc (XComponent): Component to get spreasheeet from
+
+        Raises:
+            Exception: If not a spreadsheet document
+            MissingInterfaceError: If doc does not have XSpreadsheetDocument interface
+
+        Returns:
+            XSpreadsheetDocument: Spreadsheet document
+        """
         if not mInfo.Info.is_doc_type(doc_type=mLo.Lo.CALC_SERVICE, obj=doc):
-            print("Not a spreadsheet doc; closing")
             mLo.Lo.close_doc(doc=doc)
-            return None
+            raise Exception("Not a spreadsheet doc")
 
         ss_doc = mLo.Lo.qi(XSpreadsheetDocument, doc)
         if ss_doc is None:
-            print("Not a spreadsheet doc; closing")
             mLo.Lo.close_doc(doc=doc)
-            return None
-
+            raise mEx.MissingInterfaceError(XSpreadsheetDocument)
         return ss_doc
 
     @staticmethod
-    def create_doc(loader: XComponentLoader) -> XSpreadsheetDocument | None:
+    def create_doc(loader: XComponentLoader) -> XSpreadsheetDocument:
+        """
+        Creates a new spreadsheet document
+
+        Args:
+            loader (XComponentLoader): Component Loader
+
+        Raises:
+            MissingInterfaceError: If doc does not have XSpreadsheetDocument interface
+        Returns:
+            XSpreadsheetDocument: Spreadsheet document
+        """
         doc = mLo.Lo.create_doc(doc_type="scalc", loader=loader)
-        return mLo.Lo.qi(XSpreadsheetDocument, doc)
+        ss_doc = mLo.Lo.qi(XSpreadsheetDocument, doc)
+        if ss_doc is None:
+            raise mEx.MissingInterfaceError(XSpreadsheetDocument)
+        return ss_doc
+        
         # XSpreadsheetDocument does not inherit XComponent!
 
     # endregion ------------ document methods ------------------
@@ -224,31 +261,33 @@ class Calc:
 
     # region    get_sheet()
     @staticmethod
-    def _get_sheet_index(doc: XSpreadsheetDocument, index: int) -> XSpreadsheet | None:
+    def _get_sheet_index(doc: XSpreadsheetDocument, index: int) -> XSpreadsheet:
         """return the spreadsheet with the specified index (0-based)"""
         sheets = doc.getSheets()
-        sheet = None
         try:
             xsheets_idx = mLo.Lo.qi(XIndexAccess, sheets)
             sheet = mLo.Lo.qi(XSpreadsheet, xsheets_idx.getByIndex(index))
-        except Exception:
-            print(f"Could not access spreadsheet: {index}")
-        return sheet
+            if sheet is None:
+                raise mEx.MissingInterfaceError(XSpreadsheet)
+            return sheet
+        except Exception as e:
+            raise Exception(f"Could not access spreadsheet: {index}") from e
 
     @staticmethod
-    def _get_sheet_name(doc: XSpreadsheetDocument, sheet_name: str) -> XSpreadsheet | None:
+    def _get_sheet_name(doc: XSpreadsheetDocument, sheet_name: str) -> XSpreadsheet:
         """return the spreadsheet with the specified index (0-based)"""
         sheets = doc.getSheets()
-        sheet = None
         try:
             sheet = mLo.Lo.qi(XSpreadsheet, sheets.getByName(sheet_name))
-        except Exception:
-            print(f"Could not access spreadsheet: '{sheet_name}'")
-        return sheet
+            if sheet is None:
+                raise mEx.MissingInterfaceError(XSpreadsheet)
+            return sheet
+        except Exception as e:
+            raise Exception(f"Could not access spreadsheet: '{sheet_name}'") from e
 
     @overload
     @staticmethod
-    def get_sheet(doc: XSpreadsheetDocument, index: int) -> XSpreadsheet | None:
+    def get_sheet(doc: XSpreadsheetDocument, index: int) -> XSpreadsheet:
         """
         Gets a sheet of spreadsheet document
 
@@ -257,13 +296,16 @@ class Calc:
             index (int): Zero based index of spreadsheet
 
         Returns:
-            XSpreadsheet | None: Spreadsheet at index if found; Otherwise, False
+            XSpreadsheet: Spreadsheet at index.
+        
+        Raises:
+            Exception: If spreadsheet is not found
         """
         ...
 
     @overload
     @staticmethod
-    def get_sheet(doc: XSpreadsheetDocument, sheet_name: str) -> XSpreadsheet | None:
+    def get_sheet(doc: XSpreadsheetDocument, sheet_name: str) -> XSpreadsheet:
         """
         Gets a sheet of spreadsheet document
 
@@ -272,12 +314,15 @@ class Calc:
             sheet_name (str): Name of spreadsheet
 
         Returns:
-            XSpreadsheet | None: Spreadsheet with matching name if found; Otherwise, False
+            XSpreadsheet: Spreadsheet with matching name.
+
+        Raises:
+            Exception: If spreadsheet is not found
         """
         ...
 
     @classmethod
-    def get_sheet(cls, *args, **kwargs) -> XSpreadsheet | None:
+    def get_sheet(cls, *args, **kwargs) -> XSpreadsheet:
         ordered_keys = (1, 2)
         kargs_len = len(kwargs)
         count = len(args) + kargs_len
@@ -313,7 +358,7 @@ class Calc:
     # endregion get_sheet()
 
     @staticmethod
-    def insert_sheet(doc: XSpreadsheetDocument, name: str, idx: int) -> XSpreadsheet | None:
+    def insert_sheet(doc: XSpreadsheetDocument, name: str, idx: int) -> XSpreadsheet:
         """
         Inserts a spreadsheet into document.
 
@@ -322,18 +367,21 @@ class Calc:
             name (str): Name of sheet to insert
             idx (int): zero-based index position of the sheet to insert
 
+        Raises:
+            Exception: If unable to insert spreadsheet
+
         Returns:
             XSpreadsheet | None: The newly inserted sheet on success; Othwrwise, None
         """
         sheets = doc.getSheets()
-        sheet = None
         try:
             sheets.insertNewByName(name, idx)
             sheet = mLo.Lo.qi(XSpreadsheet, sheets.getByName(name))
+            if sheet is None:
+                raise mEx.MissingInterfaceError(XSpreadsheet)
+            return sheet
         except Exception as e:
-            print("Could not insert sheet:")
-            print(f"    {e}")
-        return sheet
+            raise Exception("Could not insert sheet:") from e
 
     # region    remove_sheet()
 
@@ -464,55 +512,64 @@ class Calc:
         return sheets.getElementNames()
 
     @staticmethod
-    def get_sheet_name(sheet: XSpreadsheet) -> str | None:
+    def get_sheet_name(sheet: XSpreadsheet) -> str:
         """
         Gets the name of a sheet
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
 
+        Raises:
+            MissingInterfaceError: If unable to access spreadsheet named interface
+
         Returns:
             str | None: Name of sheet on success; Otherwise, None
         """
         xnamed = mLo.Lo.qi(XNamed, sheet)
         if xnamed is None:
-            print("Could not access spreadsheet name")
-            return None
+            raise mEx.MissingInterfaceError(XNamed)
         return xnamed.getName()
 
     @staticmethod
-    def set_sheet_name(sheet: XSpreadsheet, name: str) -> None:
+    def set_sheet_name(sheet: XSpreadsheet, name: str) -> bool:
         """
         Sets the name of a spreadsheet.
 
         Args:
             sheet (XSpreadsheet): Spreadsheet to set name of
             name (str): New name for spreadsheet.
+
+        Returns:
+            bool: True on success; Otherwise, False
         """
         xnamed = mLo.Lo.qi(XNamed, sheet)
         if xnamed is None:
             print("Could not access spreadsheet")
-            return
+            return False
         xnamed.setName(name)
+        return True
 
     # endregion --------------------- sheet methods -------------------------
 
     # region --------------- view methods ------------------------------
 
     @staticmethod
-    def get_controller(doc: XSpreadsheetDocument) -> XController | None:
+    def get_controller(doc: XSpreadsheetDocument) -> XController:
         """
         Provides access to the controller which currently controls this model
 
         Args:
             doc (XSpreadsheetDocument): Spreadsheet Document
 
+        Raises:
+            Exception: if unable to access controller
+
         Returns:
             XController | None: Controller for Spreadsheet Document
         """
         model = mLo.Lo.qi(XModel, doc)
         if model is None:
-            return None
+            raise mEx.MissingInterfaceError(XModel, "Could not access controller")
         return model.getCurrentController()
 
     @classmethod
@@ -545,7 +602,7 @@ class Calc:
         mProps.Props.set_property(prop_set=ctrl, name="ZoomType", value=type)
 
     @classmethod
-    def get_view(cls, doc: XSpreadsheetDocument) -> XSpreadsheetView | None:
+    def get_view(cls, doc: XSpreadsheetDocument) -> XSpreadsheetView:
         """
         Is the main interface of a SpreadsheetView.
 
@@ -561,7 +618,10 @@ class Calc:
         Returns:
             XSpreadsheetView | None: XSpreadsheetView on success; Otherwise, None
         """
-        return mLo.Lo.qi(XSpreadsheetView, cls.get_controller(doc))
+        sv = mLo.Lo.qi(XSpreadsheetView, cls.get_controller(doc))
+        if sv is None:
+            raise mEx.MissingInterfaceError(XSpreadsheetView)
+        return sv
 
     @classmethod
     def set_active_sheet(cls, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> None:
@@ -578,7 +638,7 @@ class Calc:
         ss_view.setActiveSheet(sheet)
 
     @classmethod
-    def get_active_sheet(cls, doc: XSpreadsheetDocument) -> XSpreadsheet | None:
+    def get_active_sheet(cls, doc: XSpreadsheetDocument) -> XSpreadsheet:
         """
         Gets the active sheet
 
@@ -589,8 +649,6 @@ class Calc:
             XSpreadsheet | None: Active Sheet if found; Otherwise, None
         """
         ss_view = cls.get_view(doc)
-        if ss_view is None:
-            return
         return ss_view.getActiveSheet()
 
     @classmethod
@@ -730,12 +788,16 @@ class Calc:
 
     @overload
     @staticmethod
-    def get_selected_addr(doc: XSpreadsheetDocument) -> CellRangeAddress | None:
+    def get_selected_addr(doc: XSpreadsheetDocument) -> CellRangeAddress:
         """
         Gets select cell range addresses
 
         Args:
             doc (XSpreadsheetDocument): Spreadsheet Document
+
+        Raises:
+            Exception: if unable to get document model
+            MissingInterfaceError: if unable to get interface XCellRangeAddressable
 
         Returns:
             CellRangeAddress | None: Cell range adresses on success; Othwrwise, None
@@ -744,12 +806,16 @@ class Calc:
 
     @overload
     @staticmethod
-    def get_selected_addr(model: XModel) -> CellRangeAddress | None:
+    def get_selected_addr(model: XModel) -> CellRangeAddress:
         """
         Gets select cell range addresses
 
         Args:
             model (XModel): model used to access sheet
+
+        Raises:
+            Exception: if unable to get document model
+            MissingInterfaceError: if unable to get interface XCellRangeAddressable
 
         Returns:
             CellRangeAddress | None: Cell range adresses on success; Othwrwise, None
@@ -757,7 +823,7 @@ class Calc:
         ...
 
     @classmethod
-    def get_selected_addr(cls, *args, **kwargs) -> CellRangeAddress | None:
+    def get_selected_addr(cls, *args, **kwargs) -> CellRangeAddress:
         ordered_keys = (1,)
         kargs_len = len(kwargs)
         count = len(args) + kargs_len
@@ -793,12 +859,10 @@ class Calc:
             model = cast(XModel, kargs[1])
 
         if model is None:
-            print("No document model found")
-            return None
+            raise Exception("No document model found")
         ra = mLo.Lo.qi(XCellRangeAddressable, model.getCurrentSelection())
         if ra is None:
-            print("No range address found")
-            return None
+            raise mEx.MissingInterfaceError(XCellRangeAddressable)
         return ra.getRangeAddress()
 
     # endregion  get_selected_addr()
