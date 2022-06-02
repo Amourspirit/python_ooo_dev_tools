@@ -72,8 +72,7 @@ Stud. No.  Proj/20  Mid/35  Fin/45  Total%
 24277.0
 
 """
-    ratio = fuzz.ratio(captured.out, expected)
-    assert ratio > 90
+    assert captured.out == expected
     
     projs = Calc.convert_to_floats(Calc.get_col(sheet=sheet, range_name="B2:B7"))
     assert projs[0] == pytest.approx(16.5, rel=1e-2)
