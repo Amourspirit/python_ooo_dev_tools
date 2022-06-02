@@ -167,9 +167,7 @@ class Lo(metaclass=StaticProperty):
         """
         if uno.isInterface(atype) and hasattr(obj, "queryInterface"):
             uno_t = uno.getTypeByName(atype.__pyunointerface__)
-            q_obj = obj.queryInterface(uno_t)
-            if q_obj:
-                return q_obj
+            return obj.queryInterface(uno_t)
         return None
 
     @classmethod
@@ -209,7 +207,7 @@ class Lo(metaclass=StaticProperty):
             if msf is None:
                 obj = cls.ms_factory.createInstance(service_name)
             else:
-                msf.createInstance(service_name)
+                obj = msf.createInstance(service_name)
             interface_obj = cls.qi(atype=atype, obj=obj)
         except Exception as e:
             raise Exception(f"Couldn't create interface for '{service_name}'") from e
