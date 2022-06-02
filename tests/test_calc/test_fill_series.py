@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import cast, TYPE_CHECKING
 import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
@@ -6,15 +7,24 @@ from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.utils.uno_util import UnoEnum
 from ooodev.office.calc import Calc
+if TYPE_CHECKING:
+    # Enums are not valid uno import. Guard with type checking
+    from com.sun.star.sheet import FillDirection as UnoFillDirection # enum
+    from com.sun.star.sheet import FillMode as UnoFillMode # enum
+    from com.sun.star.sheet import FillDateMode as UnoFillDateMode # enum
+
 
 
 def test_fill_series(loader) -> None:
     # from com.sun.star.sheet.FillDirection import TO_RIGHT, TO_LEFT, TO_TOP
     # from com.sun.star.sheet.FillMode import LINEAR as FM_LINEAR, DATE as FM_DATE, AUTO as FM_AUTO, GROWTH as FM_GROWTH
     # from com.sun.star.sheet.FillDateMode import FILL_DATE_MONTH
-    FillDirection = UnoEnum(type_name="com.sun.star.sheet.FillDirection")
-    FillMode = UnoEnum(type_name="com.sun.star.sheet.FillMode")
-    FillDateMode = UnoEnum(type_name="com.sun.star.sheet.FillDateMode")
+    #
+    # Enums are not valid uno imports, for typing support cast and wrap import in quotes
+    FillDirection = cast("UnoFillDirection", UnoEnum(type_name="com.sun.star.sheet.FillDirection"))
+    FillMode = cast("UnoFillMode", UnoEnum(type_name="com.sun.star.sheet.FillMode"))
+    FillDateMode = cast("UnoFillDateMode", UnoEnum(type_name="com.sun.star.sheet.FillDateMode"))
+
     doc = Calc.create_doc(loader=loader)
     visible = False
     delay = 0 # 1000
