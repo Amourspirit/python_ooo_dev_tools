@@ -4,32 +4,32 @@ if __name__ == "__main__":
     pytest.main([__file__])
 import types
 import uno
-import unohelper
-from pathlib import Path
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.calc import Calc
 from ooodev.listeners.x_top_window_adapter import XTopWindowAdapter
+from ooodev.listeners.x_modify_adapter import XModifyAdapter
 
 from com.sun.star.awt import XExtendedToolkit
 from com.sun.star.lang import EventObject
 from com.sun.star.sheet import XSpreadsheetDocument
 from com.sun.star.util import XModifyBroadcaster
-from com.sun.star.util import XModifyListener
 
-class ModifyListener(unohelper.Base, XModifyListener):
+class ModifyListener(XModifyAdapter):
     def __init__(self, loader) -> None:
         visible = False
-        delay = 0
+        delay = 0 # 1000
         self.loader = loader
         self.doc = Calc.create_doc(loader=self.loader)
 
         # region Top Window Listener
-        # currently top window events are not working in a test
-        def windowOpened(event: EventObject) -> None:
+        # windowOpened only fires if visible is true
+        def windowOpened(self, event: EventObject) -> None:
             print("Window Opened")
         
-        def windowClosing(event: EventObject):
+        # currently windowClosing does not fire in test.
+        # most likely because of how test closes office
+        def windowClosing(self, event: EventObject):
             print("Closing")
         
         tk = Lo.create_instance_mcf(XExtendedToolkit, "com.sun.star.awt.Toolkit")
