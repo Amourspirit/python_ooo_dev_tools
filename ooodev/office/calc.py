@@ -214,6 +214,8 @@ class Calc:
         """
         Gets a spreadsheet document
 
+        When using this method in a macro the ``Lo.get_document()`` value should be passed as ``doc`` arg.
+
         Args:
             doc (XComponent): Component to get spreasheeet from
 

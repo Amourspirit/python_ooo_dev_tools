@@ -3,11 +3,11 @@
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 # region Imports
 from __future__ import annotations
-import sys
 from typing import TYPE_CHECKING, Iterable, List, overload, cast
 import uno
 import re
 
+from ..exceptions import ex as mEx
 from ..utils.gen_util import TableHelper
 from ..utils import lo as mLo
 from ..utils import info as mInfo
@@ -102,15 +102,32 @@ class Write:
     def is_text(doc: XComponent) -> bool:
         return mInfo.Info.is_doc_type(obj=doc, doc_type=mLo.Lo.WRITER_SERVICE)
     
-    @staticmethod
-    def get_text_doc(doc: XComponent) -> XTextDocument | None:
+    @classmethod
+    def get_text_doc(cls, doc: XComponent) -> XTextDocument:
+        """
+        Gets a writer document
+
+        When using this method in a macro the ``Lo.get_document()`` value should be passed as ``doc`` arg.
+
+        Args:
+            doc (XComponent): Component to get writer document from
+
+        Raises:
+            Exception: If not able to get docuemnt.
+            MissingInterfaceError: If doc does not have XTextDocument interface
+
+        Returns:
+            XTextDocument: Writer document
+        """
         if doc is None:
-            print("Document is null")
-            return None
+            raise Exception("Document is null")
+        if not cls.is_text(doc=doc):
+            mLo.Lo.close_doc(doc=doc)
+            raise Exception("Not a writer doc")
+
         text_doc = mLo.Lo.qi(XTextDocument, doc)
         if text_doc is None:
-            print("Not a text document")
-            return None
+            raise mEx.MissingInterfaceError(XTextDocument)
         return text_doc
     
     @staticmethod
