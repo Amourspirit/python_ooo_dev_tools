@@ -4460,14 +4460,40 @@ class Calc:
 
     @staticmethod
     def get_pilot_tables(sheet: XSpreadsheet) -> XDataPilotTables:
+        """
+        Gets pivot tables (formerly known as DataPilot) for a sheet.
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+
+        Raises:
+            MissingInterfaceError: If a requied interface is missing.
+
+        Returns:
+            XDataPilotTables: Pivot tables
+        """
         db_supp = mLo.Lo.qi(XDataPilotTablesSupplier, sheet)
         if db_supp is None:
             raise mEx.MissingInterfaceError(XDataPilotTablesSupplier)
         return db_supp.getDataPilotTables()
 
+    get_pivot_tables = get_pilot_tables
 
     @staticmethod
     def get_pilot_table(dp_tables: XDataPilotTables, name: str) -> XDataPilotTable:
+        """
+        Get a pivot table (formerly known as DataPilot) from a XDataPilotTables instance.
+
+        Args:
+            dp_tables (XDataPilotTables): Instance that contains the table
+            name (str): Name of the table to get
+
+        Raises:
+            Exception: If table is not found or other error has occured.
+
+        Returns:
+            XDataPilotTable: Table
+        """
         try:
             otable = dp_tables.getByName(name)
             if otable is None:
@@ -4479,6 +4505,7 @@ class Calc:
         except Exception as e:
             raise Exception(f"Pilot table lookup failed for '{name}'") from e
 
+    get_pivot_table = get_pilot_table
     # endregion ------------ data pilot methods ------------------------
 
     # region --------------- using calc functions ----------------------
