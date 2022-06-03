@@ -187,7 +187,7 @@ class CommonColor:
     PALE_BLUE = 0xD6EBFF
     
 
-class rgb(NamedTuple):
+class RGB(NamedTuple):
     red: int
     """Red color as int"""
     green: int
@@ -228,7 +228,7 @@ class rgb(NamedTuple):
         return result
 
     @staticmethod
-    def from_int(rgb_int: int) -> "rgb":
+    def from_int(rgb_int: int) -> "RGB":
         """
         Gets a color instance from int that represents a rgb color.
 
@@ -241,7 +241,7 @@ class rgb(NamedTuple):
         return int_to_rgb(rgb_int=rgb_int)
 
     @staticmethod
-    def from_hex(rgb_hex: str) -> "rgb":
+    def from_hex(rgb_hex: str) -> "RGB":
         """
         Gets a color instance from int that represents a rgb color.
 
@@ -302,7 +302,7 @@ class rgb(NamedTuple):
         )
 
 
-class hsl(NamedTuple):
+class HSL(NamedTuple):
     hue: float
     saturation: float
     lightness: float
@@ -319,7 +319,7 @@ class hsl(NamedTuple):
         )
 
 
-class hsv(NamedTuple):
+class HSV(NamedTuple):
     hue: float
     saturation: float
     value: float
@@ -344,7 +344,7 @@ def clamp01(value: float) -> float:
     return clamp(value, 0.0, 1.0)
 
 
-def hue_to_rgb(h: float) -> rgb:
+def hue_to_rgb(h: float) -> RGB:
     """
     Conerts a hue to instance of red, gree, blue
 
@@ -357,10 +357,10 @@ def hue_to_rgb(h: float) -> rgb:
     r = abs(h * 6.0 - 3.0) - 1.0
     g = 2.0 - abs(h * 6.0 - 2.0)
     b = 2.0 - abs(h * 6.0 - 4.0)
-    return rgb(red=round(clamp01(r)), green=round(clamp01(g)), blue=round(clamp01(b)))
+    return RGB(red=round(clamp01(r)), green=round(clamp01(g)), blue=round(clamp01(b)))
 
 
-def hsl_to_rgb(c: hsl) -> rgb:
+def hsl_to_rgb(c: HSL) -> RGB:
     """
     Converts hue, saturation, lightness to red, green, blue
 
@@ -375,14 +375,14 @@ def hsl_to_rgb(c: hsl) -> rgb:
     s = c.saturation
 
     t = colorsys.hls_to_rgb(h=h, l=l, s=s)
-    return rgb(
+    return RGB(
         red=round(t[0] * MAX_COLOR),
         green=round(t[1] * MAX_COLOR),
         blue=round(t[2] * MAX_COLOR),
     )
 
 
-def rgb_to_hsv(c: rgb) -> hsv:
+def rgb_to_hsv(c: RGB) -> HSV:
     """
     Converts red, green, blue to hue, saturation, value
 
@@ -396,10 +396,10 @@ def rgb_to_hsv(c: rgb) -> hsv:
     g = float(c.green / MAX_COLOR)
     b = float(c.blue / MAX_COLOR)
     t = colorsys.rgb_to_hsv(r=r, g=g, b=b)
-    return hsv(hue=t[0], saturation=t[1], value=t[2])
+    return HSV(hue=t[0], saturation=t[1], value=t[2])
 
 
-def hsv_to_rgb(c: hsv) -> rgb:
+def hsv_to_rgb(c: HSV) -> RGB:
     """
     Converts hue, saturation, value to red, green, blue
 
@@ -413,14 +413,14 @@ def hsv_to_rgb(c: hsv) -> rgb:
     s = c.saturation
     v = c.value
     t = colorsys.hsv_to_rgb(h=h, s=s, v=v)
-    return rgb(
+    return RGB(
         red=round(t[0] * MAX_COLOR),
         green=round(t[1] * MAX_COLOR),
         blue=round(t[2] * MAX_COLOR),
     )
 
 
-def rgb_to_hsl(c: rgb) -> hsl:
+def rgb_to_hsl(c: RGB) -> HSL:
     """
     Converts red, green, blue to hue, saturation, value
 
@@ -434,10 +434,10 @@ def rgb_to_hsl(c: rgb) -> hsl:
     g = float(c.green / MAX_COLOR)
     b = float(c.blue / MAX_COLOR)
     t = colorsys.rgb_to_hls(r=r, g=g, b=b)
-    return hsl(hue=t[0], saturation=t[2], lightness=t[1])
+    return HSL(hue=t[0], saturation=t[2], lightness=t[1])
 
 
-def hsv_to_hsl(c: hsv) -> hsl:
+def hsv_to_hsl(c: HSV) -> HSL:
     """
     Convert hue, saturation, value to hue, saturation, lightness
 
@@ -452,10 +452,10 @@ def hsv_to_hsl(c: hsv) -> hsl:
     v = c.value
     l = 0.5 * v * (2 - s)
     s = v * s / (1 - math.fabs(2 * l - 1))
-    return hsl(h, s, l)
+    return HSL(h, s, l)
 
 
-def hsl_to_hsv(c: hsl) -> hsv:
+def hsl_to_hsv(c: HSL) -> HSV:
     """
     Convert hue, saturation, lightness to hue, saturation, value
 
@@ -470,10 +470,10 @@ def hsl_to_hsv(c: hsl) -> hsv:
     l = c.lightness
     v = (2 * l + s * (1 - math.fabs(2 * l - 1))) / 2
     s = 2 * (v - l) / v
-    return hsv(h, s, v)
+    return HSV(h, s, v)
 
 
-def rgb_to_hex(rgb: rgb) -> str:
+def rgb_to_hex(rgb: RGB) -> str:
     """
     Converts rgb colors to int
 
@@ -493,7 +493,7 @@ def rgb_to_hex(rgb: rgb) -> str:
     return "%02x%02x%02x" % rgb
 
 
-def rgb_to_int(rgb: rgb) -> int:
+def rgb_to_int(rgb: RGB) -> int:
     """
     Converts rgb colors to int
 
@@ -506,7 +506,7 @@ def rgb_to_int(rgb: rgb) -> int:
     return int(rgb_to_hex(rgb), 16)
 
 
-def int_to_rgb(rgb_int: int) -> rgb:
+def int_to_rgb(rgb_int: int) -> RGB:
     """
     Converts an integer that represents a rgb color into rgb object.
 
@@ -519,30 +519,30 @@ def int_to_rgb(rgb_int: int) -> rgb:
     blue = rgb_int & MAX_COLOR
     green = (rgb_int >> 8) & MAX_COLOR
     red = (rgb_int >> 16) & MAX_COLOR
-    return rgb(red, green, blue)
+    return RGB(red, green, blue)
 
 
 @overload
-def lighten(rgb_color: int, percent: float) -> rgb:
+def lighten(rgb_color: int, percent: float) -> RGB:
     ...
 
 
 @overload
-def lighten(rgb_color: rgb, percent: float) -> rgb:
+def lighten(rgb_color: RGB, percent: float) -> RGB:
     ...
 
 
 @overload
-def lighten(rgb_color: int, percent: int) -> rgb:
+def lighten(rgb_color: int, percent: int) -> RGB:
     ...
 
 
 @overload
-def lighten(rgb_color: rgb, percent: int) -> rgb:
+def lighten(rgb_color: RGB, percent: int) -> RGB:
     ...
 
 
-def lighten(rgb_color: Union[rgb, int], percent: Union[float, int]) -> rgb:
+def lighten(rgb_color: Union[RGB, int], percent: Union[float, int]) -> RGB:
     """
     Lightenes an rgb instance
 
@@ -569,32 +569,32 @@ def lighten(rgb_color: Union[rgb, int], percent: Union[float, int]) -> rgb:
     l = c_hsl.lightness
     l += amt / 100
     increase = clamp(l, 0, 1)
-    c2_hsl = hsl(c_hsl.hue, c_hsl.saturation, increase)
+    c2_hsl = HSL(c_hsl.hue, c_hsl.saturation, increase)
     c_rgb = hsl_to_rgb(c2_hsl)
     return c_rgb
 
 
 @overload
-def darken(rgb_color: int, percent: float) -> rgb:
+def darken(rgb_color: int, percent: float) -> RGB:
     ...
 
 
 @overload
-def darken(rgb_color: rgb, percent: float) -> rgb:
+def darken(rgb_color: RGB, percent: float) -> RGB:
     ...
 
 
 @overload
-def darken(rgb_color: int, percent: int) -> rgb:
+def darken(rgb_color: int, percent: int) -> RGB:
     ...
 
 
 @overload
-def darken(rgb_color: rgb, percent: int) -> rgb:
+def darken(rgb_color: RGB, percent: int) -> RGB:
     ...
 
 
-def darken(rgb_color: Union[rgb, int], percent: Union[float, int]) -> rgb:
+def darken(rgb_color: Union[RGB, int], percent: Union[float, int]) -> RGB:
     """
     Darkens an rgb instance
 
@@ -621,6 +621,6 @@ def darken(rgb_color: Union[rgb, int], percent: Union[float, int]) -> rgb:
     l = c_hsl.lightness
     l -= amt / 100
     decrease = clamp(l, 0, 1)
-    c2_hsl = hsl(c_hsl.hue, c_hsl.saturation, decrease)
+    c2_hsl = HSL(c_hsl.hue, c_hsl.saturation, decrease)
     c_rgb = hsl_to_rgb(c2_hsl)
     return c_rgb
