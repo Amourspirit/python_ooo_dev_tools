@@ -2501,7 +2501,7 @@ def test_scenarios(loader) -> None:
         GUI.set_visible(is_visible=visible, odoc=doc)
     vals = [[11, 12], ["Test13", "Test14"]]
     scenario1 = Calc.insert_scenario(
-        sheet=sheet, range_str="B10:C11", vals=vals, name="First Scenario", comment="1st scenario."
+        sheet=sheet, range_name="B10:C11", vals=vals, name="First Scenario", comment="1st scenario."
     )
     Lo.delay(delay)
     assert scenario1 is not None
@@ -2512,7 +2512,7 @@ def test_scenarios(loader) -> None:
     vals[1][0] = 23
     vals[1][1] = 24
     scenario2 = Calc.insert_scenario(
-        sheet=sheet, range_str="B10:C11", vals=vals, name="Second Scenario", comment="Visible scenario."
+        sheet=sheet, range_name="B10:C11", vals=vals, name="Second Scenario", comment="Visible scenario."
     )
     Lo.delay(delay)
     assert scenario2 is not None
@@ -2523,7 +2523,7 @@ def test_scenarios(loader) -> None:
     vals[1][0] = "Test33"
     vals[1][1] = "Test34"
     scenario3 = Calc.insert_scenario(
-        sheet=sheet, range_str="B10:C11", vals=vals, name="Third Scenario", comment="Last scenario."
+        sheet=sheet, range_name="B10:C11", vals=vals, name="Third Scenario", comment="Last scenario."
     )
     Lo.delay(delay)
     assert scenario3 is not None

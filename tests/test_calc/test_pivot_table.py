@@ -1,5 +1,6 @@
 from __future__ import annotations
 import pytest
+from typing import cast, TYPE_CHECKING
 
 if __name__ == "__main__":
     pytest.main([__file__])
@@ -13,21 +14,28 @@ from ooodev.office.calc import Calc
 from com.sun.star.sheet import XDataPilotTable
 from com.sun.star.sheet import XSpreadsheet
 
+if TYPE_CHECKING:
+    # uno enums are not able to be imported at runtime
+    from com.sun.star.sheet import DataPilotFieldOrientation as UnoDataPilotFieldOrientation  # enum
+
+
 def test_pivot(loader) -> None:
     doc = Calc.create_doc(loader=loader)
-    assert doc is not None, "Could not open create new document"
     visible = False
-    delay = 0
+    delay = 0  # 3_000
     if visible:
         GUI.set_visible(is_visible=visible, odoc=doc)
     sheet = Calc.get_sheet(doc=doc, index=0)
-    create_table(sheet=sheet)
-    create_pivot_table(sheet=sheet)
-    
-    total = Calc.get_num(sheet=sheet, cell_name="H9")
-    assert total == pytest.approx(104.0, rel=1e-4)
-    Lo.delay(delay)
-    Lo.close(closeable=doc, deliver_ownership=False)
+    try:
+        create_table(sheet=sheet)
+        create_pivot_table(sheet=sheet)
+
+        total = Calc.get_num(sheet=sheet, cell_name="H9")
+        assert total == pytest.approx(104.0, rel=1e-4)
+        Lo.delay(delay)
+    finally:
+        Lo.close(closeable=doc, deliver_ownership=False)
+
 
 def create_table(sheet: XSpreadsheet) -> XDataPilotTable | None:
     Calc.highlight_range(sheet=sheet, range_name="A1:C22", headline="Data Used by Pivot Table")
@@ -54,14 +62,17 @@ def create_table(sheet: XSpreadsheet) -> XDataPilotTable | None:
         ("Alice", "Oranges", 4),
         ("Alice", "Apples", 9),
     )
-    
+
     Calc.set_array(sheet=sheet, name="A2:C22", values=vals)
 
+
 def create_pivot_table(sheet: XSpreadsheet) -> XDataPilotTable | None:
-    DPFO = UnoEnum("com.sun.star.sheet.DataPilotFieldOrientation")
+    # cast and wrap in quotes as uno enums can not be imported in this fashion. Give typing support
+    DPFO = cast("UnoDataPilotFieldOrientation", UnoEnum("com.sun.star.sheet.DataPilotFieldOrientation"))
     Calc.highlight_range(sheet=sheet, range_name="E1:H1", headline="Pivot Table")
-    Calc.set_col_width(sheet=sheet, width=40, idx=4);   # E column; in mm
-    
+    Calc.set_col_width(sheet=sheet, width=40, idx=4)
+    # E column; in mm
+
     dp_tables = Calc.get_pilot_tables(sheet)
     dp_desc = dp_tables.createDataPilotDescriptor()
 
@@ -74,20 +85,19 @@ def create_pivot_table(sheet: XSpreadsheet) -> XDataPilotTable | None:
 
     # properties defined in DataPilotField
     # use first column as column field
-    
+
     props = Lo.find_container_props(con=fields, nm="Name")
     Props.set_property(prop_set=props, name="Orientation", value=DPFO.COLUMN)
-    
+
     # use second column as row field
     props = Lo.find_container_props(con=fields, nm="Fruit")
     Props.set_property(prop_set=props, name="Orientation", value=DPFO.ROW)
-    
-    
+
     # use third column as data field, calculating the sum
     props = Lo.find_container_props(con=fields, nm="Quantity")
     Props.set_property(prop_set=props, name="Orientation", value=DPFO.DATA)
     Props.set_property(prop_set=props, name="Function", value=Calc.GeneralFunction.SUM)
-    
+
     # select output position
     dest_addr = Calc.get_cell_address(sheet=sheet, cell_name="E3")
     dp_tables.insertNewByName("DataPilotExample", dest_addr, dp_desc)

@@ -33,8 +33,8 @@ names = ("Alf", "Amy", "Ivy", "Jet", "Ace", "Joe", "Joy",
 
 def test_replace_all(loader) -> None:
     doc = Calc.create_doc(loader=loader)
-    visible = True
-    delay = 1_000
+    visible = False
+    delay = 0 # 500
     if visible:
         GUI.set_visible(is_visible=visible, odoc=doc)
     sheet = Calc.get_sheet(doc=doc, index=0)
