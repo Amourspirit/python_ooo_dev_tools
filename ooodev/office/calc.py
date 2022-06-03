@@ -4355,10 +4355,35 @@ class Calc:
 
     @staticmethod
     def insert_scenario(
-        sheet: XSpreadsheet, range_str: str, vals: Sequence[Sequence[object]], name: str, comment: str
-    ) -> XScenario |None:
+        sheet: XSpreadsheet, range_name: str, vals: Sequence[Sequence[object]], name: str, comment: str
+    ) -> XScenario:
+        """
+        Insert a scenario into sheet
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            range_name (str): Range name such as "A1:B3"
+            vals (Sequence[Sequence[object]]): 2d array of values
+            name (str): Scenario name
+            comment (str): Scenario description
+
+        Raises:
+            MissingInterfaceError: If a requied interface is missing.
+
+        Returns:
+            XScenario: the newly created scenario
+        
+        Notes:
+            A LibreOffice Calc scenario is a set of cell values that can be used within your calculations.
+            You assign a name to every scenario on your sheet. Define several scenarios on the same sheet,
+            each with some different values in the cells. Then you can easily switch the sets of cell values
+            by their name and immediately observe the results. Scenarios are a tool to test out "what-if" questions.
+            
+        See Also:
+            `Using Scenarios <https://help.libreoffice.org/latest/en-US/text/scalc/guide/scenario.html>`_
+        """
         # get the cell range with the given address
-        cell_range = sheet.getCellRangeByName(range_str)
+        cell_range = sheet.getCellRangeByName(range_name)
 
         # create the range address sequence
         addr = mLo.Lo.qi(XCellRangeAddressable, cell_range)
@@ -4389,7 +4414,29 @@ class Calc:
         return result
 
     @staticmethod
-    def apply_scenario(sheet: XSpreadsheet, name: str) -> XScenario | None:
+    def apply_scenario(sheet: XSpreadsheet, name: str) -> XScenario:
+        """
+        Applies scenario
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            name (str): Scenario name to apply
+
+        Raises:
+            Exception: If scenario is not able to be applied.
+
+        Returns:
+            XScenario: the applied scenario
+
+        Notes:
+            A LibreOffice Calc scenario is a set of cell values that can be used within your calculations.
+            You assign a name to every scenario on your sheet. Define several scenarios on the same sheet,
+            each with some different values in the cells. Then you can easily switch the sets of cell values
+            by their name and immediately observe the results. Scenarios are a tool to test out "what-if" questions.
+            
+        See Also:
+            `Using Scenarios <https://help.libreoffice.org/latest/en-US/text/scalc/guide/scenario.html>`_
+        """
         try:
             # get the scenario set
             supp = mLo.Lo.qi(XScenariosSupplier, sheet)
