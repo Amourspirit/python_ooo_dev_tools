@@ -294,6 +294,7 @@ class GUI:
         ToDo:
             Implement the get_password method.
         """
+        # TODO implement get_password
         raise NotImplementedError
         # in original java this was done by creating a input box with a password field
         # this could likely be done with LibreOffice API, create input box and set input as password field

@@ -1,15 +1,10 @@
 from __future__ import annotations
-from typing import List, TYPE_CHECKING, cast
 import pytest
 
 if __name__ == "__main__":
     pytest.main([__file__])
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
-from ooodev.utils.props import Props
-from ooodev.utils.uno_util import UnoEnum
-from ooodev.utils.gen_util import TableHelper
-from ooodev.utils.color import CommonColor
 from ooodev.office.calc import Calc
 
 def test_scenarios(loader) -> None:
