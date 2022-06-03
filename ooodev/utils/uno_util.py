@@ -20,6 +20,33 @@ class UnoEnum:
             
             MyEnum = UNoEnum("com.sun.star.sheet.FillMode")
             assert FillMode is MyEnum # singleton, same instances
+    
+    Notes:
+        Uno enums can not be imported directly in python.
+
+        ``from com.sun.star.sheet import FillMode`` is not a valid import
+        and results in an import error.
+        
+        ``from com.sun.star.sheet.FillMode import LINEAR, SIMPLE, GROWTH`` is valid import but cumbersome.
+        
+        Best of both worlds. using ``typing.TYPE_CHECKING``.
+        ``typing.TYPE_CHECKING`` is always false at runtime. This means anything imported
+        in a ``typing.TYPE_CHECKING`` block is ignored at runtime.
+        
+        .. code-block:: python
+        
+            from typing import cast, TYPE_CHECKING
+            if TYPE_CHECKING:
+                # uno enums are not able to be imported at runtime
+                from com.sun.star.sheet.FillMode as UnoFillMode
+            
+            FillMode = cast("UnoFillMode", UnoEnum("com.sun.star.sheet.FillMode"))
+        
+        In the above example ``FillMode`` will have full typing (intellsense) at design time.
+        At runtime cast simply returns the UnoEnum instance.
+
+        Note that ``"UnoFillMode"`` is wrapped in quotes. This is necessary.
+        Without wrapping in quotes python will look for the import at runtime.
     """
     _loaded = {}
     _initialized = False  # This class var is important. It is always False.
