@@ -22,12 +22,12 @@ from com.sun.star.io import IOException
 from com.sun.star.util import CloseVetoException
 from com.sun.star.util import XCloseable
 from com.sun.star.util import XNumberFormatsSupplier
+from com.sun.star.frame import XComponentLoader
 
 if TYPE_CHECKING:
     from com.sun.star.beans import PropertyValue
     from com.sun.star.container import XChild
     from com.sun.star.container import XIndexAccess
-    from com.sun.star.frame import XComponentLoader
     from com.sun.star.frame import XFrame
     from com.sun.star.frame import XStorable
     from com.sun.star.lang import XMultiComponentFactory
@@ -289,11 +289,35 @@ class Lo(metaclass=StaticProperty):
     @overload
     @staticmethod
     def load_office() -> XComponentLoader:
+        """
+        Loads Office
+        
+        If running outside of office then a bridge is created that connects to office using pipes.
+        
+        If running from inside of office e.g. in a macro, then XSCRIPTCONTEXT is used
+
+        Returns:
+            XDesktop: Desktop object
+        """
         ...
 
     @overload
     @staticmethod
     def load_office(using_pipes: bool) -> XComponentLoader:
+        """
+        Loads Office
+        
+        If running outside of office then a bridge is created that connects to office.
+        
+        If running from inside of office e.g. in a macro, then XSCRIPTCONTEXT is used.
+        ``using_pipes`` is ignored with running inside office.
+
+        Args:
+            using_pipes (bool): determines if bridge connection is made with pipes or host, port.
+
+        Returns:
+            XDesktop: Desktop object.
+        """
         ...
 
     @classmethod
@@ -304,6 +328,8 @@ class Lo(metaclass=StaticProperty):
         #                     component loader (XComponentLoader)
         # Once we have a component loader, we can load a document.
         # xcc, mcFactory, and xDesktop are stored as static globals.
+        if "XSCRIPTCONTEXT" in globals():
+            return cls._load()
         print("Loading Office...")
         if using_pipes:
             try:
@@ -329,12 +355,36 @@ class Lo(metaclass=StaticProperty):
         if cls.xdesktop is None:
             print("Could not create a desktop service")
             raise SystemExit(1)
-        return cls.xdesktop
+        loader = cls.qi(XComponentLoader, cls.xdesktop)
+        if loader is None:
+            raise print("Unable to access XComponentLoader")
+            SystemExit(1)
+        return loader
+        # return cls.xdesktop
 
     @classmethod
     def load_socket_office(cls) -> XComponentLoader:
         return cls.load_office(False)
 
+
+    @classmethod
+    def _load(cls) -> XComponentLoader:
+        if not "XSCRIPTCONTEXT" in globals():
+            raise Exception("XSCRIPTCONTEXT not found")
+        XSCRIPTCONTEXT = globals()['XSCRIPTCONTEXT']
+        cls.xcc = XSCRIPTCONTEXT.ctx
+        cls.mc_factory = cls.xcc.getServiceManager()
+        if cls.mc_factory is None:
+            raise Exception("Office Service Manager is unavailable")
+        cls.xdesktop = XSCRIPTCONTEXT.getDesktop()
+        if cls.xdesktop is None:
+            Exception("Could not create a desktop service")
+        loader = cls.qi(XComponentLoader, cls.xdesktop)
+        if loader is None:
+            raise Exception("Unable to access XComponentLoader")
+        return loader
+
+        
     # endregion Start Office
 
     # region office shutdown
@@ -528,13 +578,32 @@ class Lo(metaclass=StaticProperty):
 
         props = mProps.Props.make_props(Hidden=True, AsTemplate=True)
         try:
-            doc = loader.loadComponentFromURL(template_url, "_blank", 0, props)
-            cls.ms_factory = cls.qi(XMultiServiceFactory, doc)
-            cls._doc = doc
+            cls._doc = loader.loadComponentFromURL(template_url, "_blank", 0, props)
+            cls.ms_factory = cls.qi(XMultiServiceFactory, cls._doc)
             return cls._doc
         except Exception as e:
             raise Exception(f"Could not create document from template") from e
 
+
+    @classmethod
+    def get_document(cls) -> XComponent:
+        """
+        Gets current document from XSCRIPTCONTEXT.
+        
+        This method should be used in macro's
+
+        Raises:
+            Exception: if XSCRIPTCONTEXT is not found
+
+        Returns:
+            XComponent: current document
+        """
+        if not "XSCRIPTCONTEXT" in globals():
+            raise Exception("XSCRIPTCONTEXT not found")
+        XSCRIPTCONTEXT = globals()['XSCRIPTCONTEXT']
+        cls._doc = XSCRIPTCONTEXT.getDocument()
+        cls.ms_factory = cls.qi(XMultiServiceFactory, cls._doc)
+        return cls._doc
     # ======================== document saving ==============
 
     @staticmethod
