@@ -138,20 +138,20 @@ class Lo(metaclass=StaticProperty):
     #        service: com.sun.star.report.ReportDefinition
     # endregion CLSIDs for Office documents
 
-    xcc: XComponentContext = None
+    _xcc: XComponentContext = None
     _doc: XComponent = None
     """remote component context"""
-    xdesktop: XDesktop = None
+    _xdesktop: XDesktop = None
     """remote desktop UNO service"""
 
-    mc_factory: XMultiComponentFactory = None
-    ms_factory: XMultiServiceFactory = None
+    _mc_factory: XMultiComponentFactory = None
+    _ms_factory: XMultiServiceFactory = None
 
-    bridge_component: XComponent = None
+    _bridge_component: XComponent = None
     """this is only set if office is opened via a socket"""
-    is_office_terminated: bool = False
+    _is_office_terminated: bool = False
 
-    lo_inst: ConnectBase = None
+    _lo_inst: ConnectBase = None
 
     @staticmethod
     def qi(atype: Type[T], obj: XTypeProvider) -> T | None:
@@ -172,19 +172,19 @@ class Lo(metaclass=StaticProperty):
 
     @classmethod
     def get_context(cls) -> XComponentContext:
-        return cls.xcc
+        return cls._xcc
 
     @classmethod
     def get_desktop(cls) -> XDesktop:
-        return cls.xdesktop
+        return cls._xdesktop
 
     @classmethod
     def get_component_factory(cls) -> XMultiComponentFactory:
-        return cls.mc_factory
+        return cls._mc_factory
 
     @classmethod
     def get_service_factory(cls) -> XMultiServiceFactory:
-        return cls.bridge_component
+        return cls._bridge_component
 
     # region interface object creation
 
@@ -201,11 +201,11 @@ class Lo(metaclass=StaticProperty):
 
     @classmethod
     def create_instance_msf(cls, atype: Type[T], service_name: str, msf: XMultiServiceFactory = None) -> T:
-        if cls.ms_factory is None:
+        if cls._ms_factory is None:
             raise Exception("No document found")
         try:
             if msf is None:
-                obj = cls.ms_factory.createInstance(service_name)
+                obj = cls._ms_factory.createInstance(service_name)
             else:
                 obj = msf.createInstance(service_name)
             interface_obj = cls.qi(atype=atype, obj=obj)
@@ -254,13 +254,13 @@ class Lo(metaclass=StaticProperty):
         #  create an interface object of class aType from the named service;
         #  uses XComponentContext and 'new' XMultiComponentFactory
         #  so only a bridge to office is needed
-        if cls.xcc is None or cls.mc_factory is None:
+        if cls._xcc is None or cls._mc_factory is None:
             raise Exception("No office connection found")
         try:
             if args is not None:
-                obj = cls.mc_factory.createInstanceWithArgumentsAndContext(service_name, args, cls.xcc)
+                obj = cls._mc_factory.createInstanceWithArgumentsAndContext(service_name, args, cls._xcc)
             else:
-                obj = cls.mc_factory.createInstanceWithContext(service_name, cls.xcc)
+                obj = cls._mc_factory.createInstanceWithContext(service_name, cls._xcc)
             interface_obj = cls.qi(atype=atype, obj=obj)
             if interface_obj is None:
                 raise mEx.MissingInterfaceError(atype)
@@ -273,7 +273,7 @@ class Lo(metaclass=StaticProperty):
     # endregion interface object creation
 
     @classmethod
-    def get_parent(a_component: XChild) -> XInterface:
+    def get_parent(cls, a_component: XChild) -> XInterface:
         """
         Retrieves the parent of the given object
 
@@ -287,8 +287,8 @@ class Lo(metaclass=StaticProperty):
 
     # region Start Office
     @overload
-    @staticmethod
-    def load_office() -> XComponentLoader:
+    @classmethod
+    def load_office(cls) -> XComponentLoader:
         """
         Loads Office
         
@@ -302,8 +302,8 @@ class Lo(metaclass=StaticProperty):
         ...
 
     @overload
-    @staticmethod
-    def load_office(using_pipes: bool) -> XComponentLoader:
+    @classmethod
+    def load_office(cls, using_pipes: bool) -> XComponentLoader:
         """
         Loads Office
         
@@ -322,6 +322,20 @@ class Lo(metaclass=StaticProperty):
 
     @classmethod
     def load_office(cls, using_pipes: bool = True) -> XComponentLoader:
+        """
+        Loads Office
+        
+        If running outside of office then a bridge is created that connects to office.
+        
+        If running from inside of office e.g. in a macro, then XSCRIPTCONTEXT is used.
+        ``using_pipes`` is ignored with running inside office.
+
+        Args:
+            using_pipes (bool): determines if bridge connection is made with pipes or host, port.
+
+        Returns:
+            XDesktop: Desktop object.
+        """
         # Creation sequence: remote component content (xcc) -->
         #                     remote service manager (mcFactory) -->
         #                     remote desktop (xDesktop) -->
@@ -333,29 +347,29 @@ class Lo(metaclass=StaticProperty):
         print("Loading Office...")
         if using_pipes:
             try:
-                cls.lo_inst = LoPipeStart()
-                cls.lo_inst.connect()
+                cls._lo_inst = LoPipeStart()
+                cls._lo_inst.connect()
             except Exception as e:
                 print("Office context could not be created")
                 raise SystemExit(1)
         else:
             try:
-                cls.lo_inst = LoSocketStart()
-                cls.lo_inst.connect()
+                cls._lo_inst = LoSocketStart()
+                cls._lo_inst.connect()
             except Exception as e:
                 print("Office context could not be created")
                 raise SystemExit(1)
         # cls.set_ooo_bean(conn=cls.lo_inst)
-        cls.xcc = cls.lo_inst.ctx
-        cls.mc_factory = cls.xcc.getServiceManager()
-        if cls.mc_factory is None:
+        cls._xcc = cls._lo_inst.ctx
+        cls._mc_factory = cls._xcc.getServiceManager()
+        if cls._mc_factory is None:
             print("Office Service Manager is unavailable")
             raise SystemExit(1)
-        cls.xdesktop = cls.create_instance_mcf(XDesktop, "com.sun.star.frame.Desktop")
-        if cls.xdesktop is None:
+        cls._xdesktop = cls.create_instance_mcf(XDesktop, "com.sun.star.frame.Desktop")
+        if cls._xdesktop is None:
             print("Could not create a desktop service")
             raise SystemExit(1)
-        loader = cls.qi(XComponentLoader, cls.xdesktop)
+        loader = cls.qi(XComponentLoader, cls._xdesktop)
         if loader is None:
             raise print("Unable to access XComponentLoader")
             SystemExit(1)
@@ -372,14 +386,14 @@ class Lo(metaclass=StaticProperty):
         if not "XSCRIPTCONTEXT" in globals():
             raise Exception("XSCRIPTCONTEXT not found")
         XSCRIPTCONTEXT = globals()['XSCRIPTCONTEXT']
-        cls.xcc = XSCRIPTCONTEXT.ctx
-        cls.mc_factory = cls.xcc.getServiceManager()
-        if cls.mc_factory is None:
+        cls._xcc = XSCRIPTCONTEXT.ctx
+        cls._mc_factory = cls._xcc.getServiceManager()
+        if cls._mc_factory is None:
             raise Exception("Office Service Manager is unavailable")
-        cls.xdesktop = XSCRIPTCONTEXT.getDesktop()
-        if cls.xdesktop is None:
+        cls._xdesktop = XSCRIPTCONTEXT.getDesktop()
+        if cls._xdesktop is None:
             Exception("Could not create a desktop service")
-        loader = cls.qi(XComponentLoader, cls.xdesktop)
+        loader = cls.qi(XComponentLoader, cls._xdesktop)
         if loader is None:
             raise Exception("Unable to access XComponentLoader")
         return loader
@@ -392,23 +406,23 @@ class Lo(metaclass=StaticProperty):
     def close_office(cls) -> None:
         print("Closing Office")
         cls._doc = None
-        if cls.xdesktop is None:
+        if cls._xdesktop is None:
             print("No office connection found")
             return
 
-        if cls.is_office_terminated:
+        if cls._is_office_terminated:
             print("Office has already been requested to terminate")
             return
         num_tries = 1
-        while cls.is_office_terminated is False and num_tries < 4:
+        while cls._is_office_terminated is False and num_tries < 4:
             time.sleep(0.2)
-            cls.is_office_terminated = cls.try_to_terminate(num_tries)
+            cls._is_office_terminated = cls.try_to_terminate(num_tries)
             num_tries += 1
 
     @classmethod
     def try_to_terminate(cls, num_tries: int) -> bool:
         try:
-            is_dead = cls.xdesktop.terminate()
+            is_dead = cls._xdesktop.terminate()
             if is_dead:
                 if num_tries > 1:
                     print(f"{num_tries}. Office terminated")
@@ -426,11 +440,11 @@ class Lo(metaclass=StaticProperty):
 
     @classmethod
     def kill_office(cls) -> None:
-        if cls.lo_inst is None:
+        if cls._lo_inst is None:
             print("No instance to kill")
             return
         try:
-            cls.lo_inst.kill_soffice()
+            cls._lo_inst.kill_soffice()
             print("Killed Office")
         except Exception as e:
             raise Exception(f"Unbale to kill Office") from e
@@ -480,7 +494,7 @@ class Lo(metaclass=StaticProperty):
 
         try:
             doc = loader.loadComponentFromURL(open_file_url, "_blank", 0, props)
-            cls.ms_factory = cls.qi(XMultiServiceFactory, doc)
+            cls._ms_factory = cls.qi(XMultiServiceFactory, doc)
             cls._doc = doc
             return doc
         except Exception as e:
@@ -555,7 +569,7 @@ class Lo(metaclass=StaticProperty):
         print(f"Creating Office document {doc_type}")
         try:
             doc = loader.loadComponentFromURL(f"private:factory/{doc_type}", "_blank", 0, props)
-            cls.ms_factory = cls.qi(XMultiServiceFactory, doc)
+            cls._ms_factory = cls.qi(XMultiServiceFactory, doc)
             cls._doc = doc
             return cls._doc
         except Exception as e:
@@ -579,7 +593,7 @@ class Lo(metaclass=StaticProperty):
         props = mProps.Props.make_props(Hidden=True, AsTemplate=True)
         try:
             cls._doc = loader.loadComponentFromURL(template_url, "_blank", 0, props)
-            cls.ms_factory = cls.qi(XMultiServiceFactory, cls._doc)
+            cls._ms_factory = cls.qi(XMultiServiceFactory, cls._doc)
             return cls._doc
         except Exception as e:
             raise Exception(f"Could not create document from template") from e
@@ -602,7 +616,7 @@ class Lo(metaclass=StaticProperty):
             raise Exception("XSCRIPTCONTEXT not found")
         XSCRIPTCONTEXT = globals()['XSCRIPTCONTEXT']
         cls._doc = XSCRIPTCONTEXT.getDocument()
-        cls.ms_factory = cls.qi(XMultiServiceFactory, cls._doc)
+        cls._ms_factory = cls.qi(XMultiServiceFactory, cls._doc)
         return cls._doc
     # ======================== document saving ==============
 
@@ -837,8 +851,8 @@ class Lo(metaclass=StaticProperty):
     # ======================== document closing ==============
 
     @overload
-    @staticmethod
-    def close(closeable: XCloseable) -> None:
+    @classmethod
+    def close(cls, closeable: XCloseable) -> None:
         """
         Closes a document.
 
@@ -848,8 +862,20 @@ class Lo(metaclass=StaticProperty):
         ...
 
     @overload
-    @staticmethod
-    def close(closeable: XCloseable, deliver_ownership: bool) -> None:
+    @classmethod
+    def close(cls, closeable: XCloseable, deliver_ownership: bool) -> None:
+        """
+        Closes a document.
+
+        Args:
+            closeable (XCloseable): Object that implements XCloseable interface.
+            deliver_ownership (bool): True delegates the ownership of this closing object to
+                anyone which throw the CloseVetoException.
+        """
+        ...
+
+    @classmethod
+    def close(cls, closeable: XCloseable, deliver_ownership=False) -> None:
         """
         Closes a document.
 
@@ -863,10 +889,6 @@ class Lo(metaclass=StaticProperty):
                 They must react for possible CloseVetoExceptions such as when document needs saving
                 and try it again at a later time. This can be useful for a generic UI handling.
         """
-        ...
-
-    @classmethod
-    def close(cls, closeable: XCloseable, deliver_ownership=False) -> None:
         if closeable is None:
             return
         print("Closing the document")
@@ -877,8 +899,8 @@ class Lo(metaclass=StaticProperty):
             raise Exception("Close was vetoed") from e
 
     @overload
-    @staticmethod
-    def close_doc(doc: object) -> None:
+    @classmethod
+    def close_doc(cls, doc: object) -> None:
         """
         Closes document.
 
@@ -888,8 +910,23 @@ class Lo(metaclass=StaticProperty):
         ...
 
     @overload
-    @staticmethod
-    def close_doc(doc: object, deliver_ownership: bool) -> None:
+    @classmethod
+    def close_doc(cls, doc: object, deliver_ownership: bool) -> None:
+        """
+        Closes document.
+
+        Args:
+            doc (XCloseable): Closeable doccument
+            deliver_ownership (bool): True delegates the ownership of this closing object to
+                anyone which throw the CloseVetoException.
+
+        Raises:
+            MissingInterfaceError: if doc does not have XCloseable interface
+        """
+        ...
+
+    @classmethod
+    def close_doc(cls, doc: object, deliver_ownership=False) -> None:
         """
         Closes document.
 
@@ -906,10 +943,6 @@ class Lo(metaclass=StaticProperty):
         Raises:
             MissingInterfaceError: if doc does not have XCloseable interface
         """
-        ...
-
-    @classmethod
-    def close_doc(cls, doc: object, deliver_ownership=False) -> None:
         try:
             closeable = cls.qi(XCloseable, doc)
             if closeable is None:
@@ -937,8 +970,8 @@ class Lo(metaclass=StaticProperty):
         doc = xdesktop.getCurrentComponent()
         if doc is None:
             raise Exception("Could not access document")
-        cls.ms_factory = cls.qi(XMultiServiceFactory, doc)
-        if cls.ms_factory in None:
+        cls._ms_factory = cls.qi(XMultiServiceFactory, doc)
+        if cls._ms_factory in None:
             raise Exception("Unable to get XMultiServiceFactory")
         cls._doc = doc
         return doc
@@ -961,8 +994,8 @@ class Lo(metaclass=StaticProperty):
         doc = xdesktop.getCurrentComponent()
         if doc is None:
             raise Exception("Could not access document")
-        cls.ms_factory = cls.qi(XMultiServiceFactory, doc)
-        if cls.ms_factory in None:
+        cls._ms_factory = cls.qi(XMultiServiceFactory, doc)
+        if cls._ms_factory in None:
             raise Exception("Unable to get XMultiServiceFactory")
         cls._doc = doc
         return doc
@@ -990,7 +1023,7 @@ class Lo(metaclass=StaticProperty):
         if props is None:
             props = ()
         if frame is None:
-            frame = cls.xdesktop.getCurrentFrame()
+            frame = cls._xdesktop.getCurrentFrame()
 
         helper = cls.create_instance_mcf(XDispatchHelper, "com.sun.star.frame.DispatchHelper")
         if helper is None:
@@ -1024,7 +1057,7 @@ class Lo(metaclass=StaticProperty):
 
     @classmethod
     def inspect(cls, obj: object) -> None:
-        if cls.xcc is None or cls.mc_factory is None:
+        if cls._xcc is None or cls._mc_factory is None:
             print("No office connection found")
             return
         try:
@@ -1032,7 +1065,7 @@ class Lo(metaclass=StaticProperty):
             title = "Object"
             if ts is not None and len(ts) > 0:
                 title = ts[0].getTypeName() + " " + title
-            inspector = cls.mc_factory.createInstanceWithContext("org.openoffice.InstanceInspector", cls.xcc)
+            inspector = cls._mc_factory.createInstanceWithContext("org.openoffice.InstanceInspector", cls._xcc)
             #       hands on second use
             if inspector is None:
                 print("Inspector Service could not be instantiated")

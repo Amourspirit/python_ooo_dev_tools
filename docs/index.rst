@@ -13,6 +13,7 @@ Welcome to OOO Development Tools's documentation!
    :caption: Contents:
 
    src/office/index
+   src/utils/index
 
 Indices and tables
 ==================
