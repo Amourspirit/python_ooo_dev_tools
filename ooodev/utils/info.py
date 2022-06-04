@@ -408,58 +408,58 @@ class Info:
         return xdetect.queryTypeByDescriptor(media_desc, True)
 
     @classmethod
-    def report_doc_type(cls, doc: object) -> int:
-        doc_type = mLo.Lo.UNKNOWN
-        if cls.is_doc_type(obj=doc, doc_type=mLo.Lo.WRITER_SERVICE):
+    def report_doc_type(cls, doc: object) -> mLo.Lo.DocType:
+        doc_type = mLo.Lo.DocType.UNKNOWN
+        if cls.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.WRITER):
             print("A Writer document")
-            doc_type = mLo.Lo.WRITER
-        elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.IMPRESS_SERVICE):
+            doc_type = mLo.Lo.DocType.WRITER
+        elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.IMPRESS):
             print("A Impress document")
-            doc_type = mLo.Lo.IMPRESS
-        elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.DRAW_SERVICE):
+            doc_type = mLo.Lo.DocType.IMPRESS
+        elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.DRAW):
             print("A Draw document")
-            doc_type = mLo.Lo.DRAW
-        elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.CALC_SERVICE):
+            doc_type = mLo.Lo.DocType.DRAW
+        elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.CALC):
             print("A Calc document")
-            doc_type = mLo.Lo.CALC
-        elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.BASE_SERVICE):
+            doc_type = mLo.Lo.DocType.CALC
+        elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.BASE):
             print("A Base document")
-            doc_type = mLo.Lo.BASE
-        elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.MATH_SERVICE):
+            doc_type = mLo.Lo.DocType.BASE
+        elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.MATH):
             print("A Math document")
-            doc_type = mLo.Lo.MATH
+            doc_type = mLo.Lo.DocType.MATH
         else:
             print("Unknown document")
         return doc_type
 
     @classmethod
-    def doc_type_string(cls, doc: object) -> str:
-        if cls.is_doc_type(obj=doc, doc_type=mLo.Lo.WRITER_SERVICE):
+    def doc_type_string(cls, doc: object) -> mLo.Lo.Service:
+        if cls.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.WRITER):
             print("A Writer document")
-            return mLo.Lo.WRITER_SERVICE
-        elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.IMPRESS_SERVICE):
+            return mLo.Lo.Service.WRITER
+        elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.IMPRESS):
             print("A Impress document")
-            return mLo.Lo.IMPRESS_SERVICE
-        elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.DRAW_SERVICE):
+            return mLo.Lo.Service.IMPRESS
+        elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.DRAW):
             print("A Draw document")
-            return mLo.Lo.DRAW_SERVICE
-        elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.CALC_SERVICE):
+            return mLo.Lo.Service.DRAW
+        elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.CALC):
             print("A Calc document")
-            return mLo.Lo.CALC_SERVICE
-        elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.BASE_SERVICE):
+            return mLo.Lo.Service.CALC
+        elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.BASE):
             print("A Base document")
-            return mLo.Lo.BASE_SERVICE
-        elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.MATH_SERVICE):
+            return mLo.Lo.Service.BASE
+        elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.MATH):
             print("A Math document")
-            return mLo.Lo.MATH_SERVICE
+            return mLo.Lo.Service.MATH
         else:
             print("Unknown document")
-            return mLo.Lo.UNKNOWN_SERVICE
+            return mLo.Lo.Service.UNKNOWN
 
     @staticmethod
-    def is_doc_type(obj: XServiceInfo, doc_type: str) -> bool:
+    def is_doc_type(obj: XServiceInfo, doc_type: mLo.Lo.Service) -> bool:
         try:
-            return obj.supportsService(doc_type)
+            return obj.supportsService(str(doc_type))
         except Exception:
             return False
 
@@ -481,26 +481,26 @@ class Info:
         return str(mt[0])
 
     @staticmethod
-    def mime_doc_type(mime_type: str) -> int:
+    def mime_doc_type(mime_type: str) -> mLo.Lo.DocType:
         if mime_type is None:
-            return mLo.Lo.UNKNOWN
+            return mLo.Lo.DocType.UNKNOWN
         if mime_type.find("vnd.oasis.opendocument.text") >= 0:
-            return mLo.Lo.WRITER
+            return mLo.Lo.DocType.WRITER
         if mime_type.find("vnd.oasis.opendocument.base") >= 0:
-            return mLo.Lo.BASE
+            return mLo.Lo.DocType.BASE
         if mime_type.find("vnd.oasis.opendocument.spreadsheet") >= 0:
-            return mLo.Lo.CALC
+            return mLo.Lo.DocType.CALC
         if (
             mime_type.find("vnd.oasis.opendocument.graphics") >= 0
             or mime_type.find("vnd.oasis.opendocument.image") >= 0
             or mime_type.find("vnd.oasis.opendocument.chart") >= 0
         ):
-            return mLo.Lo.DRAW
+            return mLo.Lo.DocType.DRAW
         if mime_type.find("vnd.oasis.opendocument.presentation") >= 0:
-            return mLo.Lo.IMPRESS
+            return mLo.Lo.DocType.IMPRESS
         if mime_type.find("vnd.oasis.opendocument.formula") >= 0:
-            return mLo.Lo.MATH
-        return mLo.Lo.UNKNOWN
+            return mLo.Lo.DocType.MATH
+        return mLo.Lo.DocType.UNKNOWN
 
     @staticmethod
     def is_image_mime(mime_type: str) -> bool:
@@ -611,6 +611,16 @@ class Info:
 
     @staticmethod
     def support_service(obj: XServiceInfo, service=None) -> bool:
+        """
+        Gets if ``obj`` supports service
+
+        Args:
+            obj (XServiceInfo): Object to check for supported service
+            service (str | XInterface): string of service name or Any UNO interface. Intervaces start with x
+
+        Returns:
+            bool: True if obj supports service; Otherwise; False
+        """
         srv = None
         if isinstance(service, str):
             srv = service

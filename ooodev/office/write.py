@@ -100,7 +100,7 @@ class Write:
     
     @staticmethod
     def is_text(doc: XComponent) -> bool:
-        return mInfo.Info.is_doc_type(obj=doc, doc_type=mLo.Lo.WRITER_SERVICE)
+        return mInfo.Info.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.WRITER)
     
     @classmethod
     def get_text_doc(cls, doc: XComponent) -> XTextDocument:
@@ -132,7 +132,7 @@ class Write:
     
     @staticmethod
     def create_doc(loader: XComponentLoader) -> XTextDocument:
-        return mLo.Lo.create_doc(doc_type=mLo.Lo.WRITER_STR, loader=loader)
+        return mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.WRITER, loader=loader)
     
     @staticmethod
     def create_doc_from_template(template_path: str, loader: XComponentLoader) -> XTextDocument:

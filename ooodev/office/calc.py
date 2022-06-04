@@ -229,7 +229,7 @@ class Calc:
         See Also:
             :py:meth:`~Calc.create_doc`
         """
-        if not mInfo.Info.is_doc_type(doc_type=mLo.Lo.CALC_SERVICE, obj=doc):
+        if not mInfo.Info.is_doc_type(doc_type=mLo.Lo.Service.CALC, obj=doc):
             mLo.Lo.close_doc(doc=doc)
             raise Exception("Not a spreadsheet doc")
 
@@ -255,7 +255,7 @@ class Calc:
         See Also:
             :py:meth:`~Calc.get_ss_doc`
         """
-        doc = mLo.Lo.create_doc(doc_type="scalc", loader=loader)
+        doc = mLo.Lo.create_doc(doc_type= mLo.Lo.DocTypeStr.CALC, loader=loader)
         ss_doc = mLo.Lo.qi(XSpreadsheetDocument, doc)
         if ss_doc is None:
             raise mEx.MissingInterfaceError(XSpreadsheetDocument)

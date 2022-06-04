@@ -8,6 +8,7 @@ import time
 from typing import TYPE_CHECKING, Iterable, Optional, List, Tuple, overload, TypeVar, Type
 from urllib.parse import urlparse
 import uno
+from enum import IntEnum, Enum
 from ..meta.static_meta import StaticProperty, classproperty
 from .connect import ConnectBase, LoPipeStart, LoSocketStart
 from com.sun.star.beans import XPropertySet
@@ -77,33 +78,61 @@ class Lo(metaclass=StaticProperty):
             Lo.close_office()
 
     # region docType ints
-    UNKNOWN = 0
-    WRITER = 1
-    BASE = 2
-    CALC = 3
-    DRAW = 4
-    IMPRESS = 5
-    MATH = 6
+    class DocType(IntEnum):
+        UNKNOWN = 0
+        WRITER = 1
+        BASE = 2
+        CALC = 3
+        DRAW = 4
+        IMPRESS = 5
+        MATH = 6
+        
+        def __str__(self) -> str:
+            return str(self.value)
+
+    # UNKNOWN = DocType.UNKNOWN.value
+    # WRITER = DocType.WRITER.value
+    # BASE = DocType.BASE.value
+    # CALC = DocType.CALC.value
+    # DRAW = DocType.DRAW.value
+    # IMPRESS = DocType.IMPRESS.value
+    # MATH = DocType.MATH.value
     # endregion docType ints
 
     # region docType strings
-    UNKNOWN_STR = "unknown"
-    WRITER_STR = "swriter"
-    BASE_STR = "sbase"
-    CALC_STR = "scalc"
-    DRAW_STR = "sdraw"
-    IMPRESS_STR = "simpress"
-    MATH_STR = "smath"
+    class DocTypeStr(str, Enum):
+        UNKNOWN = "unknown"
+        WRITER = "swriter"
+        BASE = "sbase"
+        CALC = "scalc"
+        DRAW = "sdraw"
+        IMPRESS = "simpress"
+        MATH = "smath"
+    
+        def __str__(self) -> str:
+            return self.value
+    
+    # UNKNOWN_STR = DocTypeStr.UNKNOWN.value
+    # WRITER_STR = DocTypeStr.WRITER.value
+    # BASE_STR = DocTypeStr.BASE.value
+    # CALC_STR = DocTypeStr.CALC.value
+    # DRAW_STR = DocTypeStr.DRAW.value
+    # IMPRESS_STR = DocTypeStr.IMPRESS.value
+    # MATH_STR = DocTypeStr.MATH.value
     # endregion docType strings
 
     # region docType service names
-    UNKNOWN_SERVICE = "com.sun.frame.XModel"
-    WRITER_SERVICE = "com.sun.star.text.TextDocument"
-    BASE_SERVICE = "com.sun.star.sdb.OfficeDatabaseDocument"
-    CALC_SERVICE = "com.sun.star.sheet.SpreadsheetDocument"
-    DRAW_SERVICE = "com.sun.star.drawing.DrawingDocument"
-    IMPRESS_SERVICE = "com.sun.star.presentation.PresentationDocument"
-    MATH_SERVICE = "com.sun.star.formula.FormulaProperties"
+    class Service(str, Enum):
+        UNKNOWN = "com.sun.frame.XModel"
+        WRITER = "com.sun.star.text.TextDocument"
+        BASE = "com.sun.star.sdb.OfficeDatabaseDocument"
+        CALC = "com.sun.star.sheet.SpreadsheetDocument"
+        DRAW = "com.sun.star.drawing.DrawingDocument"
+        IMPRESS = "com.sun.star.presentation.PresentationDocument"
+        MATH = "com.sun.star.formula.FormulaProperties"
+        
+        def __str__(self) -> str:
+            return self.value
     # endregion docType service names
 
     # region port connect to locally running Office via port 8100
@@ -113,12 +142,16 @@ class Lo(metaclass=StaticProperty):
     # region CLSIDs for Office documents
     # defined in https://github.com/LibreOffice/core/blob/master/officecfg/registry/data/org/openoffice/Office/Embedding.xcu
     # https://opengrok.libreoffice.org/xref/core/officecfg/registry/data/org/openoffice/Office/Embedding.xcu
-    WRITER_CLSID = "8BC6B165-B1B2-4EDD-aa47-dae2ee689dd6"
-    CALC_CLSID = "47BBB4CB-CE4C-4E80-a591-42d9ae74950f"
-    DRAW_CLSID = "4BAB8970-8A3B-45B3-991c-cbeeac6bd5e3"
-    IMPRESS_CLSID = "9176E48A-637A-4D1F-803b-99d9bfac1047"
-    MATH_CLSID = "078B7ABA-54FC-457F-8551-6147e776a997"
-    CHART_CLSID = "12DCAE26-281F-416F-a234-c3086127382e"
+    class CLSID(str, Enum):
+        WRITER = "8BC6B165-B1B2-4EDD-aa47-dae2ee689dd6"
+        CALC = "47BBB4CB-CE4C-4E80-a591-42d9ae74950f"
+        DRAW = "4BAB8970-8A3B-45B3-991c-cbeeac6bd5e3"
+        IMPRESS = "9176E48A-637A-4D1F-803b-99d9bfac1047"
+        MATH = "078B7ABA-54FC-457F-8551-6147e776a997"
+        CHART = "12DCAE26-281F-416F-a234-c3086127382e"
+        
+        def __str__(self) -> str:
+            return self.value
 
     # unsure about these:
     #
@@ -481,6 +514,7 @@ class Lo(metaclass=StaticProperty):
     # region office shutdown
     @classmethod
     def close_office(cls) -> None:
+        """Closes the ofice connection."""
         print("Closing Office")
         cls._doc = None
         if cls._xdesktop is None:
@@ -517,6 +551,12 @@ class Lo(metaclass=StaticProperty):
 
     @classmethod
     def kill_office(cls) -> None:
+        """
+        Kills the office connection.
+        
+        See Also:
+            :py:meth:`~Lo.close_office`
+        """
         if cls._lo_inst is None:
             print("No instance to kill")
             return
@@ -670,7 +710,27 @@ class Lo(metaclass=StaticProperty):
 
     @classmethod
     def ext_to_doc_type(cls, ext: str) -> str:
-        e = ext.casefold()
+        """
+        Gets doctype from extension
+
+        Args:
+            ext (str): extension used for lookup
+
+        Returns:
+            str: Doctype as string such as 'odt'. If not match if found defaults to :py:const:`Lo.WRITER_STR`
+
+        Notes:
+            Return type will be one of the following.
+            
+                * :py:const:`Lo.WRITER_STR`
+                * :py:const:`Lo.CALC_STR`
+                * :py:const:`Lo.DRAW_STR`
+                * :py:const:`Lo.IMPRESS_STR`
+                * :py:const:`Lo.BASE_STR`
+                * :py:const:`Lo.MATH_STR`
+
+        """
+        e = ext.casefold().lstrip('.')
         if e == "":
             print("Empty string: Using writer")
             return cls.WRITER_STR
@@ -692,6 +752,34 @@ class Lo(metaclass=StaticProperty):
 
     @classmethod
     def doc_type_str(cls, doc_type_val: int) -> str:
+        """
+        Converts a doc type into a str representation.
+
+        Args:
+            doc_type_val (int): Doc type as int
+
+        Returns:
+            str: doc type as string.
+
+        Notes:
+            ``doc_type`` is expectedd to be one of the folowing.
+
+                * :py:const:`Lo.WRITER`
+                * :py:const:`Lo.CALC`
+                * :py:const:`Lo.DRAW`
+                * :py:const:`Lo.IMPRESS`
+                * :py:const:`Lo.BASE`
+                * :py:const:`Lo.MATH`
+            
+            Return type will be one of the following.
+            
+                * :py:const:`Lo.WRITER_STR`
+                * :py:const:`Lo.CALC_STR`
+                * :py:const:`Lo.DRAW_STR`
+                * :py:const:`Lo.IMPRESS_STR`
+                * :py:const:`Lo.BASE_STR`
+                * :py:const:`Lo.MATH_STR`
+        """
         i = doc_type_val
         if i == cls.WRITER:
             return cls.WRITER_STR
@@ -710,27 +798,42 @@ class Lo(metaclass=StaticProperty):
             return cls.WRITER_STR
 
     @overload
-    @staticmethod
-    def create_doc(doc_type: str, loader: XComponentLoader) -> XComponent:
+    @classmethod
+    def create_doc(csl, doc_type: DocTypeStr, loader: XComponentLoader) -> XComponent:
         ...
 
     @overload
-    @staticmethod
-    def create_doc(doc_type: str, loader: XComponentLoader, props: Iterable[PropertyValue]) -> XComponent:
+    @classmethod
+    def create_doc(cls, doc_type: DocTypeStr, loader: XComponentLoader, props: Iterable[PropertyValue]) -> XComponent:
         ...
 
     @classmethod
     def create_doc(
         cls,
-        doc_type: str,
+        doc_type: DocTypeStr,
         loader: XComponentLoader,
         props: Optional[Iterable[PropertyValue]] = None,
     ) -> XComponent:
+        """
+        Creates a document
+
+        Args:
+            doc_type (str): Document type
+            loader (XComponentLoader): Component Loader
+            props (Iterable[PropertyValue]): Property values
+
+        Raises:
+            Exception: _description_
+
+        Returns:
+            XComponent: document as component.
+        """
+        dtype = cls.DocTypeStr(doc_type)
         if props is None:
             props = mProps.Props.make_props(Hidden=True)
-        print(f"Creating Office document {doc_type}")
+        print(f"Creating Office document {dtype}")
         try:
-            doc = loader.loadComponentFromURL(f"private:factory/{doc_type}", "_blank", 0, props)
+            doc = loader.loadComponentFromURL(f"private:factory/{dtype}", "_blank", 0, props)
             cls._ms_factory = cls.qi(XMultiServiceFactory, doc)
             cls._doc = doc
             return cls._doc
@@ -886,15 +989,15 @@ class Lo(metaclass=StaticProperty):
         ...
 
     @classmethod
-    def ext_to_format(cls, ext: str, doc_type: int = UNKNOWN) -> str:
-        i = doc_type
+    def ext_to_format(cls, ext: str, doc_type: DocType = DocType.UNKNOWN) -> str:
+        dtype = cls.DocType(doc_type)
         s = ext.lower()
         if s == "doc":
             return "MS Word 97"
         elif s == "docx":
             return "Office Open XML Text"  # MS Word 2007 XML
         elif s == "rtf":
-            if i == cls.CALC:
+            if dtype == cls.DocType.CALC:
                 return "Rich Text Format (StarCalc)"
             else:
                 return "Rich Text Format"
@@ -903,15 +1006,15 @@ class Lo(metaclass=StaticProperty):
         elif s == "ott":
             return "writer8_template"
         elif s == "pdf":
-            if i == cls.WRITER:
+            if dtype == cls.DocType.WRITER:
                 return "writer_pdf_Export"
-            elif i == cls.IMPRESS:
+            elif dtype == cls.DocType.IMPRESS:
                 return "impress_pdf_Export"
-            elif i == cls.DRAW:
+            elif dtype == cls.DocType.DRAW:
                 return "draw_pdf_Export"
-            elif i == cls.CALC:
+            elif dtype == cls.DocType.CALC:
                 return "calc_pdf_Export"
-            elif i == cls.MATH:
+            elif dtype == cls.DocType.MATH:
                 return "math_pdf_Export"
             else:
                 return "writer_pdf_Export"  # assume we are saving a writer doc
@@ -926,12 +1029,12 @@ class Lo(metaclass=StaticProperty):
         elif s == "odg":
             return "draw8"
         elif s == "jpg":
-            if i == cls.IMPRESS:
+            if dtype == cls.DocType.IMPRESS:
                 return "impress_jpg_Export"
             else:
                 return "draw_jpg_Export"
         elif s == "png":
-            if i == cls.IMPRESS:
+            if dtype == cls.DocType.IMPRESS:
                 return "impress_png_Export"
             else:
                 return "draw_png_Export"
@@ -946,35 +1049,35 @@ class Lo(metaclass=StaticProperty):
         elif s == "odb":
             return "StarOffice XML (Base)"
         elif s == "htm" or s == "html":
-            if i == cls.WRITER:
+            if dtype == cls.DocType.WRITER:
                 return "HTML (StarWriter)"
-            elif i == cls.IMPRESS:
+            elif dtype == cls.DocType.IMPRESS:
                 return "impress_html_Export"
-            elif i == cls.DRAW:
+            elif dtype == cls.DocType.DRAW:
                 return "draw_html_Export"
-            elif i == cls.CALC:
+            elif dtype == cls.DocType.CALC:
                 return "HTML (StarCalc)"
             else:
                 return "HTML"
         elif s == "xhtml":
-            if i == cls.WRITER:
+            if dtype == cls.DocType.WRITER:
                 return "XHTML Writer File"
-            elif i == cls.IMPRESS:
+            elif dtype == cls.DocType.IMPRESS:
                 return "XHTML Impress File"
-            elif i == cls.DRAW:
+            elif dtype == cls.DocType.DRAW:
                 return "XHTML Draw File"
-            elif i == cls.CALC:
+            elif dtype == cls.DocType.CALC:
                 return "XHTML Calc File"
             else:
                 return "XHTML Writer File"
         elif s == "xml":
-            if i == cls.WRITER:
+            if dtype == cls.DocType.WRITER:
                 return "OpenDocument Text Flat XML"
-            elif i == cls.IMPRESS:
+            elif dtype == cls.DocType.IMPRESS:
                 return "OpenDocument Presentation Flat XML"
-            elif i == cls.DRAW:
+            elif dtype == cls.DocType.DRAW:
                 return "OpenDocument Drawing Flat XML"
-            elif i == cls.CALC:
+            elif dtype == cls.DocType.CALC:
                 return "OpenDocument Spreadsheet Flat XML"
             else:
                 return "OpenDocument Text Flat XML"
