@@ -227,7 +227,7 @@ class Calc:
             XSpreadsheetDocument: Spreadsheet document
 
         See Also:
-            :func:`~Calc.create_doc`
+            :py:meth:`~Calc.create_doc`
         """
         if not mInfo.Info.is_doc_type(doc_type=mLo.Lo.CALC_SERVICE, obj=doc):
             mLo.Lo.close_doc(doc=doc)
@@ -253,7 +253,7 @@ class Calc:
             XSpreadsheetDocument: Spreadsheet document
         
         See Also:
-            :func:`~Calc.get_ss_doc`
+            :py:meth:`~Calc.get_ss_doc`
         """
         doc = mLo.Lo.create_doc(doc_type="scalc", loader=loader)
         ss_doc = mLo.Lo.qi(XSpreadsheetDocument, doc)

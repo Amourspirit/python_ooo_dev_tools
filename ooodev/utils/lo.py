@@ -172,35 +172,93 @@ class Lo(metaclass=StaticProperty):
 
     @classmethod
     def get_context(cls) -> XComponentContext:
+        """
+        Gets current LO Component Context
+        """
         return cls._xcc
 
     @classmethod
     def get_desktop(cls) -> XDesktop:
+        """
+        Gets current LO Desktop
+        """
         return cls._xdesktop
 
     @classmethod
     def get_component_factory(cls) -> XMultiComponentFactory:
+        """Gets current multi component factory"""
         return cls._mc_factory
 
     @classmethod
     def get_service_factory(cls) -> XMultiServiceFactory:
+        """Gets current multi service factory"""
         return cls._bridge_component
 
     # region interface object creation
 
     # region    create_instance_msf()
     @overload
-    @staticmethod
-    def create_instance_msf(atype: Type[T], service_name: str) -> T:
+    @classmethod
+    def create_instance_msf(cls, atype: Type[T], service_name: str) -> T:
+        """
+        Creates in instace of a service using multi service factory.
+
+        Args:
+            atype (Type[T]): Type of interface to return
+            service_name (str): Service name
+
+        Raises:
+            Exception: if unable to create instance
+
+        Returns:
+            T: Instance of interface for the service name.
+        """
         ...
 
     @overload
-    @staticmethod
-    def create_instance_msf(atype: Type[T], service_name: str, msf: XMultiServiceFactory) -> T:
+    @classmethod
+    def create_instance_msf(cls, atype: Type[T], service_name: str, msf: XMultiServiceFactory) -> T:
+        """
+        Creates in instace of a service using multi service factory.
+
+        Args:
+            atype (Type[T]): Type of interface to return
+            service_name (str): Service name
+            msf (XMultiServiceFactory): Multi service factory used to create instance
+
+        Raises:
+            Exception: if unable to create instance
+
+        Returns:
+            T: Instance of interface for the service name.
+        """
         ...
 
     @classmethod
     def create_instance_msf(cls, atype: Type[T], service_name: str, msf: XMultiServiceFactory = None) -> T:
+        """
+        Creates in instace of a service using multi service factory.
+
+        Args:
+            atype (Type[T]): Type of interface to return
+            service_name (str): Service name
+            msf (XMultiServiceFactory): Multi service factory used to create instance
+
+        Raises:
+            Exception: if unable to create instance
+
+        Returns:
+            T: Instance of interface for the service name.
+
+        Example:
+            In the following example ``src_con`` is an instance of ``XSheetCellRangeContainer``
+
+            .. code-block:: python
+
+                from com.sun.star.sheet import XSheetCellRangeContainer
+                src_con = Lo.create_instance_msf(XSheetCellRangeContainer, "com.sun.star.sheet.SheetCellRanges")
+                
+        """
         if cls._ms_factory is None:
             raise Exception("No document found")
         try:
@@ -209,6 +267,8 @@ class Lo(metaclass=StaticProperty):
             else:
                 obj = msf.createInstance(service_name)
             interface_obj = cls.qi(atype=atype, obj=obj)
+            if interface_obj is None:
+                raise mEx.MissingInterfaceError(atype)
         except Exception as e:
             raise Exception(f"Couldn't create interface for '{service_name}'") from e
         return interface_obj
@@ -217,42 +277,64 @@ class Lo(metaclass=StaticProperty):
 
     # region    create_instance_mcf()
     @overload
-    @staticmethod
-    def create_instance_mcf(atype: Type[T], service_name: str) -> T:
+    @classmethod
+    def create_instance_mcf(cls, atype: Type[T], service_name: str) -> T:
         """
-        Create an interface object of class aType from the named service
+        Create an interface object of class atype from the named service
 
         Args:
             service_name (str): Service Name
 
         Raises:
-            Exception if create instance fails
+            Exception: if unable to create instance
 
         Returns:
-            XInterface: Interface object
+            T: Instance of interface for the service name.
         """
 
     @overload
-    @staticmethod
-    def create_instance_mcf(atype: Type[T], service_name: str, args: Tuple[object, ...]) -> T:
+    @classmethod
+    def create_instance_mcf(cls, atype: Type[T], service_name: str, args: Tuple[object, ...]) -> T:
         """
-        Create an interface object of class aType from the named service
+        Create an interface object of class atype from the named service
 
         Args:
             service_name (str): Service Name
             args (Tuple[object, ...]): Args
 
         Raises:
-            Exception if create instance fails
+            Exception: if unable to create instance
 
         Returns:
-            XInterface: Interface object
+            T: Instance of interface for the service name.
         """
 
     @classmethod
     def create_instance_mcf(cls, atype: Type[T], service_name: str, args: Optional[Tuple[object, ...]] = None) -> T:
-        #  create an interface object of class aType from the named service;
-        #  uses XComponentContext and 'new' XMultiComponentFactory
+        """
+        Create an interface object of class atype from the named service
+
+        Args:
+            service_name (str): Service Name
+            args (Tuple[object, ...]): Args
+
+        Raises:
+            Exception: if unable to create instance
+
+        Returns:
+            T: Instance of interface for the service name.
+
+        Example:
+            In the following example ``tk`` is an instance of ``XExtendedToolkit``
+
+            .. code-block:: python
+
+                from com.sun.star.awt import XExtendedToolkit
+                tk = Lo.create_instance_mcf(XExtendedToolkit, "com.sun.star.awt.Toolkit")
+                
+        """
+        #  create an interface object of class atype from the named service;
+        #  uses XComponentContext and XMultiComponentFactory
         #  so only a bridge to office is needed
         if cls._xcc is None or cls._mc_factory is None:
             raise Exception("No office connection found")
@@ -377,11 +459,6 @@ class Lo(metaclass=StaticProperty):
         # return cls.xdesktop
 
     @classmethod
-    def load_socket_office(cls) -> XComponentLoader:
-        return cls.load_office(False)
-
-
-    @classmethod
     def _load(cls) -> XComponentLoader:
         if not "XSCRIPTCONTEXT" in globals():
             raise Exception("XSCRIPTCONTEXT not found")
@@ -416,11 +493,11 @@ class Lo(metaclass=StaticProperty):
         num_tries = 1
         while cls._is_office_terminated is False and num_tries < 4:
             time.sleep(0.2)
-            cls._is_office_terminated = cls.try_to_terminate(num_tries)
+            cls._is_office_terminated = cls._try_to_terminate(num_tries)
             num_tries += 1
 
     @classmethod
-    def try_to_terminate(cls, num_tries: int) -> bool:
+    def _try_to_terminate(cls, num_tries: int) -> bool:
         try:
             is_dead = cls._xdesktop.terminate()
             if is_dead:
@@ -453,19 +530,69 @@ class Lo(metaclass=StaticProperty):
 
     # region document opening
     @classmethod
-    def open_flat_doc(cls, fnm: str, doc_type: str, loader: XComponentLoader) -> XComponent | None:
+    def open_flat_doc(cls, fnm: str, doc_type: str, loader: XComponentLoader) -> XComponent:
+        """
+        Opens a flat document
+
+        Args:
+            fnm (str): path of xml documenet
+            doc_type (str): Type of document to open
+            loader (XComponentLoader): Component loader
+
+        Returns:
+            XComponent: Document
+
+        Notes:
+            ``doc_type`` is expected to be one of the following:
+
+                * :py:const:`Lo.WRITER_STR`
+                * :py:const:`Lo.CALC_STR`
+                * :py:const:`Lo.DRAW_STR`
+                * :py:const:`Lo.IMPRESS_STR`
+
+        See Also:
+            * :py:meth:`~Lo.open_doc`
+            * :py:meth:`~Lo.open_readonly_doc`
+        """
         nn = mXML.XML.get_flat_fiter_name(doc_type=doc_type)
         print(f"Flat filter Name: {nn}")
         return cls.open_doc(fnm, loader, mProps.Props.make_props(Hidden=True))
 
     @overload
     @classmethod
-    def open_doc(cls, fnm: str, loader: XComponentLoader) -> XComponent | None:
+    def open_doc(cls, fnm: str, loader: XComponentLoader) -> XComponent:
+        """
+        Open a office document
+
+        Args:
+            fnm (str): path of document to open
+            loader (XComponentLoader): Component Loader
+
+        Raises:
+            Exception: if unable to open document
+
+        Returns:
+            XComponent: Document
+        """
         ...
 
     @overload
     @classmethod
-    def open_doc(cls, fnm: str, loader: XComponentLoader, props: Iterable[PropertyValue]) -> XComponent | None:
+    def open_doc(cls, fnm: str, loader: XComponentLoader, props: Iterable[PropertyValue]) -> XComponent:
+        """
+        Open a office document
+
+        Args:
+            fnm (str): path of document to open
+            loader (XComponentLoader): Component Loader
+            props (Iterable[PropertyValue]): Properties passed to component loader
+
+        Raises:
+            Exception: if unable to open document
+
+        Returns:
+            XComponent: Document
+        """
         ...
 
     @classmethod
@@ -475,6 +602,24 @@ class Lo(metaclass=StaticProperty):
         loader: XComponentLoader,
         props: Optional[Iterable[PropertyValue]] = None,
     ) -> XComponent:
+        """
+        Open a office document
+
+        Args:
+            fnm (str): path of document to open
+            loader (XComponentLoader): Component Loader
+            props (Iterable[PropertyValue]): Properties passed to component loader
+
+        Raises:
+            Exception: if unable to open document
+
+        Returns:
+            XComponent: Document
+
+        See Also:
+            * :py:meth:`~Lo.open_readonly_doc`
+            * :py:meth:`~Lo.open_flat_doc`
+        """
         if fnm is None:
             raise Exception("Filename is null")
         fnm = str(fnm)
@@ -502,6 +647,23 @@ class Lo(metaclass=StaticProperty):
 
     @classmethod
     def open_readonly_doc(cls, fnm: str, loader: XComponentLoader) -> XComponent:
+        """
+        Open a office document as readonly
+
+        Args:
+            fnm (str): path of document to open
+            loader (XComponentLoader): Component Loader
+
+        Raises:
+            Exception: if unable to open document
+
+        Returns:
+            XComponent: Document
+
+        See Also:
+            * :py:meth:`~Lo.open_doc`
+            * :py:meth:`~Lo.open_flat_doc`
+        """
         return cls.open_doc(fnm, loader, mProps.Props.make_props(Hidden=True, ReadOnly=True))
 
     # ======================== document creation ==============

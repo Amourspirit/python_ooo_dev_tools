@@ -383,6 +383,14 @@ class XML:
 
         Returns:
             str: Flat XML filter name.
+
+        Notes:
+            ``doc_type`` is expected to be one of the following:
+
+                * :py:const:`Lo.WRITER_STR`
+                * :py:const:`Lo.CALC_STR`
+                * :py:const:`Lo.DRAW_STR`
+                * :py:const:`Lo.IMPRESS_STR`
         """
         if doc_type == mLo.Lo.WRITER_STR:
             return "OpenDocument Text Flat XML"
@@ -394,4 +402,4 @@ class XML:
             return "OpenDocument Presentation Flat XML"
         else:
             print("No Flat XML filter for this document type; using Flat text")
-            return "penDocument Text Flat XML"
+            return "OpenDocument Text Flat XML"
