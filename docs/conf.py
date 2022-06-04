@@ -61,8 +61,9 @@ html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
 
 html_css_files = []
+html_css_files.append('css/readthedocs_custom.css')
 if html_theme == 'sphinx_rtd_theme':
-    html_css_files.append('css/readthedocs_custom.css')
+    html_css_files.append('css/readthedocs_dark.css')
 
 # Napoleon settings
 # https://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html

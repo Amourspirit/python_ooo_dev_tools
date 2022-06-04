@@ -118,9 +118,7 @@ class Lo(metaclass=StaticProperty):
             return self.value
     # endregion docType service names
 
-    # region port connect to locally running Office via port 8100
-    SOCKET_PORT = 8100
-    # endregion port
+   
 
     # region CLSIDs for Office documents
     # defined in https://github.com/LibreOffice/core/blob/master/officecfg/registry/data/org/openoffice/Office/Embedding.xcu
@@ -154,6 +152,10 @@ class Lo(metaclass=StaticProperty):
     #        service: com.sun.star.report.ReportDefinition
     # endregion CLSIDs for Office documents
 
+     # region port connect to locally running Office via port 8100
+    _SOCKET_PORT = 8100
+    # endregion port
+
     _xcc: XComponentContext = None
     _doc: XComponent = None
     """remote component context"""
@@ -172,14 +174,24 @@ class Lo(metaclass=StaticProperty):
     @staticmethod
     def qi(atype: Type[T], obj: XTypeProvider) -> T | None:
         """
-        Generic method that test if an object implements an interface.
+        Generic method that get an interface instance from  an object.
 
         Args:
             atype (T): Interface type such as XInterface
-            o (object): Object to test for interface.
+            obj (object): Object that implements interface.
 
         Returns:
-            T | None: Return obj if interface is supported: Otherwise, None
+            T | None: instance of interface if supported; Otherwise, None
+    
+        Example:
+                
+            .. code-block:: python
+                :emphasize-lines: 3
+    
+                from com.sun.star.util import XSearchable
+                cell_range = ...
+                srch = Lo.qi(XSearchable, cell_range)
+                sd = srch.createSearchDescriptor()
         """
         if uno.isInterface(atype) and hasattr(obj, "queryInterface"):
             uno_t = uno.getTypeByName(atype.__pyunointerface__)
@@ -553,25 +565,17 @@ class Lo(metaclass=StaticProperty):
 
     # region document opening
     @classmethod
-    def open_flat_doc(cls, fnm: str, doc_type: str, loader: XComponentLoader) -> XComponent:
+    def open_flat_doc(cls, fnm: str, doc_type: DocType, loader: XComponentLoader) -> XComponent:
         """
         Opens a flat document
 
         Args:
             fnm (str): path of xml documenet
-            doc_type (str): Type of document to open
+            doc_type (DocType): Type of document to open
             loader (XComponentLoader): Component loader
 
         Returns:
             XComponent: Document
-
-        Notes:
-            ``doc_type`` is expected to be one of the following:
-
-                * :py:const:`Lo.WRITER_STR`
-                * :py:const:`Lo.CALC_STR`
-                * :py:const:`Lo.DRAW_STR`
-                * :py:const:`Lo.IMPRESS_STR`
 
         See Also:
             * :py:meth:`~Lo.open_doc`
@@ -692,7 +696,7 @@ class Lo(metaclass=StaticProperty):
     # ======================== document creation ==============
 
     @classmethod
-    def ext_to_doc_type(cls, ext: str) -> str:
+    def ext_to_doc_type(cls, ext: str) -> DocTypeStr:
         """
         Gets doctype from extension
 
@@ -700,94 +704,90 @@ class Lo(metaclass=StaticProperty):
             ext (str): extension used for lookup
 
         Returns:
-            str: Doctype as string such as 'odt'. If not match if found defaults to :py:const:`Lo.WRITER_STR`
-
-        Notes:
-            Return type will be one of the following.
-            
-                * :py:const:`Lo.WRITER_STR`
-                * :py:const:`Lo.CALC_STR`
-                * :py:const:`Lo.DRAW_STR`
-                * :py:const:`Lo.IMPRESS_STR`
-                * :py:const:`Lo.BASE_STR`
-                * :py:const:`Lo.MATH_STR`
-
+            DocTypeStr: DocTypeStr enum. If not match if found defaults to 'DocTypeStr.WRITER'
         """
         e = ext.casefold().lstrip('.')
         if e == "":
             print("Empty string: Using writer")
-            return cls.WRITER_STR
+            return cls.DocTypeStr.WRITER
         if e == "odt":
-            return cls.WRITER_STR
+            return cls.DocTypeStr.WRITER
         elif e == "odp":
-            return cls.IMPRESS_STR
+            return cls.DocTypeStr.IMPRESS
         elif e == "odg":
-            return cls.DRAW_STR
+            return cls.DocTypeStr.DRAW
         elif e == "ods":
-            return cls.CALC_STR
+            return cls.DocTypeStr.CALC
         elif e == "odb":
-            return cls.BASE_STR
+            return cls.DocTypeStr.BASE
         elif e == "odf":
-            return cls.MATH_STR
+            return cls.DocTypeStr.MATH
         else:
             print(f"Do not recognize extension '{ext}'; using writer")
-            return cls.WRITER_STR
+            return cls.DocTypeStr.WRITER
 
     @classmethod
-    def doc_type_str(cls, doc_type_val: int) -> str:
+    def doc_type_str(cls, doc_type_val: DocType) -> DocTypeStr:
         """
-        Converts a doc type into a str representation.
+        Converts a doc type into a :py:class:`~Lo.DocTypeStr` representation.
 
         Args:
-            doc_type_val (int): Doc type as int
+            doc_type_val (DocType): Doc type as int
 
         Returns:
-            str: doc type as string.
-
-        Notes:
-            ``doc_type`` is expectedd to be one of the folowing.
-
-                * :py:const:`Lo.WRITER`
-                * :py:const:`Lo.CALC`
-                * :py:const:`Lo.DRAW`
-                * :py:const:`Lo.IMPRESS`
-                * :py:const:`Lo.BASE`
-                * :py:const:`Lo.MATH`
-            
-            Return type will be one of the following.
-            
-                * :py:const:`Lo.WRITER_STR`
-                * :py:const:`Lo.CALC_STR`
-                * :py:const:`Lo.DRAW_STR`
-                * :py:const:`Lo.IMPRESS_STR`
-                * :py:const:`Lo.BASE_STR`
-                * :py:const:`Lo.MATH_STR`
+            DocTypeStr: doc type as string.
         """
-        i = doc_type_val
-        if i == cls.WRITER:
-            return cls.WRITER_STR
-        elif i == cls.IMPRESS:
-            return cls.IMPRESS_STR
-        elif i == cls.DRAW:
-            return cls.DRAW_STR
-        elif i == cls.CALC:
-            return cls.CALC_STR
-        elif i == cls.BASE:
-            return cls.BASE_STR
-        elif i == cls.MATH:
-            return cls.MATH_STR
+        if doc_type_val == cls.DocType.WRITER:
+            return cls.DocTypeStr.WRITER
+        elif doc_type_val == cls.DocType.IMPRESS:
+            return cls.DocTypeStr.IMPRESS
+        elif doc_type_val == cls.DocType.DRAW:
+            return cls.DocTypeStr.DRAW
+        elif doc_type_val == cls.DocType.CALC:
+            return cls.DocTypeStr.CALC
+        elif doc_type_val == cls.DocType.BASE:
+            return cls.DocTypeStr.BASE
+        elif doc_type_val == cls.DocType.MATH:
+            return cls.DocTypeStr.MATH
         else:
-            print(f"Do not recognize extension '{i}'; using writer")
-            return cls.WRITER_STR
+            print(f"Do not recognize extension '{doc_type_val}'; using writer")
+            return cls.DocTypeStr.WRITER
 
     @overload
     @classmethod
     def create_doc(csl, doc_type: DocTypeStr, loader: XComponentLoader) -> XComponent:
+        """
+        Creates a document
+
+        Args:
+            doc_type (DocTypeStr): Document type
+            loader (XComponentLoader): Component Loader
+
+        Raises:
+            Exception: If unable to create document.
+
+        Returns:
+            XComponent: document as component.
+        """
         ...
 
     @overload
     @classmethod
     def create_doc(cls, doc_type: DocTypeStr, loader: XComponentLoader, props: Iterable[PropertyValue]) -> XComponent:
+        """
+        Creates a document
+
+        Args:
+            doc_type (DocTypeStr): Document type
+            loader (XComponentLoader): Component Loader
+            props (Iterable[PropertyValue]): Property values
+
+        Raises:
+            Exception: If unable to create document.
+
+        Returns:
+            XComponent: document as component.
+        """
         ...
 
     @classmethod
@@ -801,12 +801,12 @@ class Lo(metaclass=StaticProperty):
         Creates a document
 
         Args:
-            doc_type (str): Document type
+            doc_type (DocTypeStr): Document type
             loader (XComponentLoader): Component Loader
             props (Iterable[PropertyValue]): Property values
 
         Raises:
-            Exception: _description_
+            Exception: If unable to create document.
 
         Returns:
             XComponent: document as component.
@@ -818,13 +818,25 @@ class Lo(metaclass=StaticProperty):
         try:
             doc = loader.loadComponentFromURL(f"private:factory/{dtype}", "_blank", 0, props)
             cls._ms_factory = cls.qi(XMultiServiceFactory, doc)
+            if cls._ms_factory is None:
+                raise mEx.MissingInterfaceError(XMultiServiceFactory)
             cls._doc = doc
             return cls._doc
         except Exception as e:
             raise Exception("Could not create a document") from e
 
     @classmethod
-    def create_macro_doc(cls, doc_type: str, loader: XComponentLoader) -> XComponent:
+    def create_macro_doc(cls, doc_type: DocTypeStr, loader: XComponentLoader) -> XComponent:
+        """
+        Create a document that allows executing of macros
+
+        Args:
+            doc_type (DocTypeStr): Document type
+            loader (XComponentLoader): Component Loader
+
+        Returns:
+            XComponent: document as component.
+        """
         return cls.create_doc(
             doc_type=doc_type,
             loader=loader,
@@ -833,6 +845,19 @@ class Lo(metaclass=StaticProperty):
 
     @classmethod
     def create_doc_from_template(cls, template_path: str, loader: XComponentLoader) -> XComponent:
+        """
+        Create a document form a template
+
+        Args:
+            template_path (str): path to template file
+            loader (XComponentLoader): Component Loader
+
+        Raises:
+            Exception: If unable to create document.
+
+        Returns:
+            XComponent: document as component.
+        """
         if not mFileIO.FileIO.is_openable(template_path):
             raise Exception(f"Template file can not be opened: '{template_path}'")
         print(f"Opening template: '{template_path}'")
@@ -842,6 +867,8 @@ class Lo(metaclass=StaticProperty):
         try:
             cls._doc = loader.loadComponentFromURL(template_url, "_blank", 0, props)
             cls._ms_factory = cls.qi(XMultiServiceFactory, cls._doc)
+            if cls._ms_factory is None:
+                raise mEx.MissingInterfaceError(XMultiServiceFactory)
             return cls._doc
         except Exception as e:
             raise Exception(f"Could not create document from template") from e
@@ -850,7 +877,7 @@ class Lo(metaclass=StaticProperty):
     @classmethod
     def get_document(cls) -> XComponent:
         """
-        Gets current document from XSCRIPTCONTEXT.
+        Gets current document from ``XSCRIPTCONTEXT``.
         
         This method should be used in macro's
 
@@ -870,6 +897,15 @@ class Lo(metaclass=StaticProperty):
 
     @staticmethod
     def save(doc: XStorable) -> None:
+        """
+        Save as document
+
+        Args:
+            doc (XStorable): Office document
+
+        Raises:
+            Exception: If unable to save document
+        """
         try:
             doc.store()
             print("Saved the document by overwriting")
@@ -877,22 +913,55 @@ class Lo(metaclass=StaticProperty):
             raise Exception(f"Could not save the document") from e
 
     @overload
-    @staticmethod
-    def save_doc(doc: XStorable, fnm: str) -> None:
+    @classmethod
+    def save_doc(cls, doc: XStorable, fnm: str) -> None:
+        """
+        Save document
+
+        Args:
+            doc (XStorable): Office document
+            fnm (str): file path to save as
+        """
         ...
 
     @overload
-    @staticmethod
-    def save_doc(doc: XStorable, fnm: str, password: str) -> None:
+    @classmethod
+    def save_doc(cls, doc: XStorable, fnm: str, password: str) -> None:
+        """
+        Save document
+
+        Args:
+            doc (XStorable): Office document
+            fnm (str): file path to save as
+            password (str): Optional password
+        """
         ...
 
     @overload
-    @staticmethod
-    def save_doc(doc: XStorable, fnm: str, password: str, format: str) -> None:
+    @classmethod
+    def save_doc(cls, doc: XStorable, fnm: str, password: str, format: str) -> None:
+        """
+        Save document
+
+        Args:
+            doc (XStorable): Office document
+            fnm (str): file path to save as
+            password (str): Optional password
+            format (str): _description_. Defaults to None.
+        """
         ...
 
     @classmethod
     def save_doc(cls, doc: XStorable, fnm: str, password: str = None, format: str = None) -> None:
+        """
+        Save document
+
+        Args:
+            doc (XStorable): Office document
+            fnm (str): file path to save as
+            password (str): password
+            format (str): document format such as 'odt' or 'xml'
+        """
         doc_type = mInfo.Info.report_doc_type(doc)
         kargs = {"fnm": fnm, "store": doc, "doc_type": doc_type}
         if password is not None:
@@ -904,31 +973,57 @@ class Lo(metaclass=StaticProperty):
             cls.store_doc_format(**kargs)
 
     @overload
-    @staticmethod
-    def store_doc(store: XStorable, doc_type: int, fnm: str) -> None:
+    @classmethod
+    def store_doc(cls, store: XStorable, doc_type: DocType, fnm: str) -> None:
+        """
+        Stores/Saves a document
+
+        Args:
+            store (XStorable): instance that implements XStorable interface.
+            doc_type (DocType): Document type
+            fnm (str): Path to save document as. If extension is absent then text (.txt) is assumed.
+        """
         ...
 
     @overload
-    @staticmethod
-    def store_doc(store: XStorable, doc_type: int, fnm: str, password: str) -> None:
+    @classmethod
+    def store_doc(cls, store: XStorable, doc_type: DocType, fnm: str, password: str) -> None:
+        """
+        Stores/Saves a document
+
+        Args:
+            store (XStorable): instance that implements XStorable interface.
+            doc_type (DocType): Document type
+            fnm (str): Path to save document as. If extension is absent then text (.txt) is assumed.
+            password (str): Password for document.
+        """
         ...
 
     @classmethod
-    def store_doc(cls, store: XStorable, doc_type: int, fnm: str, password: Optional[str] = None) -> None:
+    def store_doc(cls, store: XStorable, doc_type: DocType, fnm: str, password: Optional[str] = None) -> None:
+        """
+        Stores/Saves a document
+
+        Args:
+            store (XStorable): instance that implements XStorable interface.
+            doc_type (DocType): Document type
+            fnm (str): Path to save document as. If extension is absent then text (.txt) is assumed.
+            password (str): Password for document.
+        """
         ext = mInfo.Info.get_ext(fnm)
         frmt = "Text"
-        if ext is None:
-            "Assuming a text format"
-        else:
+        if ext is not None:
             frmt = cls.ext_to_format(ext=ext, doc_type=doc_type)
+        else:
+            print("Assuming a text format")
         if password is None:
             cls.store_doc_format(store=store, fnm=fnm, format=frmt)
         else:
             cls.store_doc_format(store=store, fnm=fnm, format=frmt, password=password)
 
     @overload
-    @staticmethod
-    def ext_to_format(ext: str) -> str:
+    @classmethod
+    def ext_to_format(cls, ext: str) -> str:
         """
         Convert the extension string into a suitable office format string.
         The formats were chosen based on the fact that they
@@ -938,19 +1033,14 @@ class Lo(metaclass=StaticProperty):
             ext (str): document extension
 
         Returns:
-            str: format of ext.
-
-        Note:
-            ``doc_type``is used to distinguish between the various meanings of the PDF ext.
-            This could be a lot more extensive.
-
-            Use ``Info.getFilterNames()`` to get the filter names for your Office.
+            str: format of ext such as 'text', 'rtf', 'odt', 'pdf', 'jpg' etc...
+            Defaults to 'text' if conversion is unknown.
         """
         ...
 
     @overload
-    @staticmethod
-    def ext_to_format(ext: str, doc_type: int) -> str:
+    @classmethod
+    def ext_to_format(cls, ext: str, doc_type: DocType) -> str:
         """
         Convert the extension string into a suitable office format string.
         The formats were chosen based on the fact that they
@@ -958,21 +1048,35 @@ class Lo(metaclass=StaticProperty):
 
         Args:
             ext (str): document extension
-            doc_type (int, optional): Type of document.
+            doc_type (DocType): Type of document.
 
         Returns:
-            str: format of ext.
-
-        Note:
-            ``doc_type``is used to distinguish between the various meanings of the PDF ext.
-            This could be a lot more extensive.
-
-            Use ``Info.getFilterNames()`` to get the filter names for your Office.
+            str: format of ext such as 'text', 'rtf', 'odt', 'pdf', 'jpg' etc...
+            Defaults to 'text' if conversion is unknown.
         """
         ...
 
     @classmethod
     def ext_to_format(cls, ext: str, doc_type: DocType = DocType.UNKNOWN) -> str:
+        """
+        Convert the extension string into a suitable office format string.
+        The formats were chosen based on the fact that they
+        are being used to save (or export) a document.
+
+        Args:
+            ext (str): document extension
+            doc_type (DocType): Type of document.
+
+        Returns:
+            str: format of ext such as 'text', 'rtf', 'odt', 'pdf', 'jpg' etc...
+            Defaults to 'text' if conversion is unknown.
+
+        Note:
+            ``doc_type`` is used to distinguish between the various meanings of the PDF ext.
+            This could be a lot more extensive.
+
+            Use :py:meth:`Info.getFilterNames` to get the filter names for your Office.
+        """
         dtype = cls.DocType(doc_type)
         s = ext.lower()
         if s == "doc":
@@ -1072,22 +1176,55 @@ class Lo(metaclass=StaticProperty):
     @overload
     @staticmethod
     def store_doc_format(store: XStorable, fnm: str, format: str) -> None:
+        """
+        Store document as format.
+
+        Args:
+            store (XStorable): instance that implements XStorable interface.
+            fnm (str): Path to save document as.
+            format (str): document format such as 'odt' or 'xml'
+
+        Raises:
+            Exception: If unable to save document
+        """
         ...
 
     @overload
     @staticmethod
     def store_doc_format(store: XStorable, fnm: str, format: str, password: str) -> None:
+        """
+        Store document as format.
+
+        Args:
+            store (XStorable): instance that implements XStorable interface.
+            fnm (str): Path to save document as.
+            format (str): document format such as 'odt' or 'xml'
+            password (str): Password for document.
+
+        Raises:
+            Exception: If unable to save document
+        """
         ...
 
     @staticmethod
     def store_doc_format(store: XStorable, fnm: str, format: str, password: str = None) -> None:
+        """
+        Store document as format.
+
+        Args:
+            store (XStorable): instance that implements XStorable interface.
+            fnm (str): Path to save document as.
+            format (str): document format such as 'odt' or 'xml'
+            password (str): Password for document.
+
+        Raises:
+            Exception: If unable to save document
+        """
         print(f"Saving the document in '{fnm}'")
         print(f"Using format {format}")
 
         try:
             save_file_url = mFileIO.FileIO.fnm_to_url(fnm)
-            if save_file_url is None:
-                return
             if password is None:
                 store_props = mProps.Props.make_props(Overwrite=True, FilterName=format)
             else:
@@ -1204,9 +1341,25 @@ class Lo(metaclass=StaticProperty):
 
     @classmethod
     def addon_initialize(cls, addon_xcc: XComponentContext) -> XComponent:
+        """
+        Initalize and addon
+
+        Args:
+            addon_xcc (XComponentContext): Addon component context
+
+        Raises:
+            TypeError: If addon_xcc is None
+            Exception: If unable to get service manager from addon_xcc 
+            Exception: If unable to access desktop
+            Exception: If unable to access document
+            MissingInterfaceError: if unable to get XMultiServiceFactory interface instance
+
+        Returns:
+            XComponent: addon as component
+        """
         xcc = addon_xcc
         if xcc is None:
-            raise Exception("'addon_xcc' is null. Could not access component context")
+            raise TypeError("'addon_xcc' is null. Could not access component context")
         mc_factory = xcc.getServiceManager()
         if mc_factory is None:
             raise Exception("Office Service Manager is unavailable")
@@ -1220,7 +1373,7 @@ class Lo(metaclass=StaticProperty):
             raise Exception("Could not access document")
         cls._ms_factory = cls.qi(XMultiServiceFactory, doc)
         if cls._ms_factory in None:
-            raise Exception("Unable to get XMultiServiceFactory")
+            raise mEx.MissingInterfaceError(XMultiServiceFactory)
         cls._doc = doc
         return doc
 
@@ -1228,8 +1381,24 @@ class Lo(metaclass=StaticProperty):
 
     @classmethod
     def script_initialize(cls, sc: XScriptContext) -> XComponent:
+        """
+        Initialize script
+
+        Args:
+            sc (XScriptContext): Script context
+
+        Raises:
+            TypeError: If sc is None
+            Exception: if unable to get Component Context from sc
+            Exception: If unable to get service manager
+            Exception: If unable to access desktop
+            Exception: If unable to access document
+            MissingInterfaceError: if unable to get XMultiServiceFactory interface instance
+        Returns:
+            XComponent: script component
+        """
         if sc is None:
-            raise Exception("Script Context is null")
+            raise TypeError("Script Context is null")
         xcc = sc.getComponentContext()
         if xcc is None:
             raise Exception("Could not access component context")
@@ -1244,7 +1413,7 @@ class Lo(metaclass=StaticProperty):
             raise Exception("Could not access document")
         cls._ms_factory = cls.qi(XMultiServiceFactory, doc)
         if cls._ms_factory in None:
-            raise Exception("Unable to get XMultiServiceFactory")
+            raise mEx.MissingInterfaceError(XMultiServiceFactory)
         cls._doc = doc
         return doc
 
@@ -1259,15 +1428,62 @@ class Lo(metaclass=StaticProperty):
     @overload
     @staticmethod
     def dispatch_cmd(cmd: str, props: Iterable[PropertyValue]) -> bool:
+        """
+        Dispacches a LibreOffice command
+
+        Args:
+            cmd (str): Command to dispatch such as 'GoToCell'. Note: cmd does not containd '.uno:' prefix.
+            props (PropertyValue): properties for dispatch
+
+        Raises:
+            MissingInterfaceError: If unable to obtain XDispatchHelper instance.
+            Exception: If error occurs dispacthing command
+
+        Returns:
+            bool: True on success.
+        """
         ...
 
     @overload
     @staticmethod
     def dispatch_cmd(cmd: str, props: Iterable[PropertyValue], frame: XFrame) -> bool:
+        """
+        Dispacches a LibreOffice command
+
+        Args:
+            cmd (str): Command to dispatch such as 'GoToCell'. Note: cmd does not containd '.uno:' prefix.
+            props (PropertyValue): properties for dispatch
+            frame (XFrame): Frame to dispatch to.
+
+        Raises:
+            MissingInterfaceError: If unable to obtain XDispatchHelper instance.
+            Exception: If error occurs dispacthing command
+
+        Returns:
+            bool: True on success.
+        """
         ...
 
     @classmethod
     def dispatch_cmd(cls, cmd: str, props: Iterable[PropertyValue] = None, frame: XFrame = None) -> bool:
+        """
+        Dispacches a LibreOffice command
+
+        Args:
+            cmd (str): Command to dispatch such as 'GoToCell'. Note: cmd does not containd '.uno:' prefix.
+            props (PropertyValue): properties for dispatch
+            frame (XFrame): Frame to dispatch to.
+
+        Raises:
+            MissingInterfaceError: If unable to obtain XDispatchHelper instance.
+            Exception: If error occurs dispacthing command
+
+        Returns:
+            bool: True on success.
+
+        See Also:
+            `LibreOffice Dispatch Commands <https://wiki.documentfoundation.org/Development/DispatchCommands>`_
+        """
         if props is None:
             props = ()
         if frame is None:
@@ -1275,7 +1491,7 @@ class Lo(metaclass=StaticProperty):
 
         helper = cls.create_instance_mcf(XDispatchHelper, "com.sun.star.frame.DispatchHelper")
         if helper is None:
-            raise Exception(f"Could not create dispatch helper for command {cmd}")
+            raise mEx.MissingInterfaceError(XDispatchHelper, f"Could not create dispatch helper for command {cmd}")
         try:
             helper.executeDispatch(frame, f".uno:{cmd}", "", 0, props)
             return True
@@ -1286,10 +1502,31 @@ class Lo(metaclass=StaticProperty):
 
     @staticmethod
     def make_uno_cmd(item_name: str) -> str:
+        """
+        Make a uno command that can be used with :py:meth:`~Lo.extract_item_name`
+
+        Args:
+            item_name (str): command item name
+
+        Returns:
+            str: uno command string
+        """
         return f"vnd.sun.star.script:Foo/Foo.{item_name}?language=Java&location=share"
 
     @staticmethod
     def extract_item_name(uno_cmd: str) -> str:
+        """
+        Extract a uno command from a string that was created with :py:meth:`~Lo.make_uno_cmd`
+
+        Args:
+            uno_cmd (str): uno command
+
+        Raises:
+            ValueError: If unable to extract command
+
+        Returns:
+            str: uno command
+        """
         try:
             foo_pos = uno_cmd.index("Foo.")
         except ValueError:
@@ -1305,6 +1542,12 @@ class Lo(metaclass=StaticProperty):
 
     @classmethod
     def inspect(cls, obj: object) -> None:
+        """
+        Inspects object using ``org.openoffice.InstanceInspector`` inspector.
+
+        Args:
+            obj (object): object to inspect.
+        """
         if cls._xcc is None or cls._mc_factory is None:
             print("No office connection found")
             return
@@ -1331,7 +1574,18 @@ class Lo(metaclass=StaticProperty):
 
     @classmethod
     def mri_inspect(cls, obj: object) -> None:
-        """call MRI's inspect()"""
+        """
+        call MRI's inspect() to inspect obj.
+
+        Args:
+            obj (object): obj to inspect
+
+        Raises:
+            Exception: If MRI serivce could not be instantiated.
+
+        See Also:
+            `MRI - UNO Object Inspection Tool <https://extensions.libreoffice.org/en/extensions/show/mri-uno-object-inspection-tool>`_
+        """
         # Available from http://extensions.libreoffice.org/extension-center/mri-uno-object-inspection-tool
         #               or http://extensions.services.openoffice.org/en/project/MRI
         #  Docs: https://github.com/hanya/MRI/wiki
@@ -1364,7 +1618,7 @@ class Lo(metaclass=StaticProperty):
     wait = delay
 
     @staticmethod
-    def is_null_or_empty(s: str) -> bool:
+    def is_none_or_empty(s: str) -> bool:
         """
         Gets is a string is None or Empty
 
@@ -1376,6 +1630,8 @@ class Lo(metaclass=StaticProperty):
         """
         return s == None or len(s) == 0
 
+    is_null_or_empty = is_none_or_empty
+
     @staticmethod
     def wait_enter() -> None:
         """
@@ -1385,6 +1641,15 @@ class Lo(metaclass=StaticProperty):
 
     @staticmethod
     def is_url(fnm: str) -> bool:
+        """
+        Gets if a string is a url format.
+
+        Args:
+            fnm (str): string to check.
+
+        Returns:
+            bool: True if Url format; Otherwise, False
+        """
         # https://stackoverflow.com/questions/7160737/how-to-validate-a-url-in-python-malformed-or-not
         try:
             result = urlparse(fnm)
@@ -1396,10 +1661,28 @@ class Lo(metaclass=StaticProperty):
 
     @staticmethod
     def capitalize(s: str) -> str:
+        """
+        Capitalizes a string
+
+        Args:
+            s (str): String to capitalize
+
+        Returns:
+            str: string capitalized.
+        """
         return s.capitalize()
 
     @staticmethod
     def parse_int(s: str) -> int:
+        """
+        Convets string into int.
+
+        Args:
+            s (str): string to parse
+
+        Returns:
+            int: String as int. If unable to convert s to int then 0 is returned.
+        """
         if s is None:
             return 0
         try:
@@ -1411,11 +1694,35 @@ class Lo(metaclass=StaticProperty):
     @overload
     @staticmethod
     def print_names(names: Iterable[str]) -> None:
+        """
+        Prints names to console
+
+        Args:
+            names (Iterable[str]): names to print
+        """
         ...
 
     @overload
     @staticmethod
     def print_names(names: Iterable[str], num_per_line: int) -> None:
+        """
+        Prints names to console
+
+        Args:
+            names (Iterable[str]): names to print
+            num_per_line (int): Number of names per line.
+        """
+        ...
+
+    @staticmethod
+    def print_names(names: Iterable[str], num_per_line: int = 0) -> None:
+        """
+        Prints names to console
+
+        Args:
+            names (Iterable[str]): names to print
+            num_per_line (int): Number of names per line.
+        """
         if names is None:
             print("  No names found")
             return
@@ -1434,6 +1741,13 @@ class Lo(metaclass=StaticProperty):
 
     @staticmethod
     def print_table(name: str, table: List[List[str]]) -> None:
+        """
+        Prints table to console
+
+        Args:
+            name (str): Name of table
+            table (List[List[str]]): Table Data
+        """
         print(f"-- {name} ----------------")
         for row in table:
             col_str = "  ".join([str(el) for el in row])
@@ -1442,6 +1756,15 @@ class Lo(metaclass=StaticProperty):
 
     @staticmethod
     def get_container_names(con: XIndexAccess) -> List[str] | None:
+        """
+        Gets container names
+
+        Args:
+            con (XIndexAccess): container
+
+        Returns:
+            List[str] | None: Containor name is found; Otherwise, None
+        """
         if con is None:
             print("Container is null")
             return None
@@ -1462,8 +1785,21 @@ class Lo(metaclass=StaticProperty):
 
     @classmethod
     def find_container_props(cls, con: XIndexAccess, nm: str) -> XPropertySet | None:
+        """
+        Find as Property Set in a container
+
+        Args:
+            con (XIndexAccess): Container to search
+            nm (str): Name of property to searh for
+
+        Raises:
+            TypeError: if con is None
+
+        Returns:
+            XPropertySet | None: Found property set; Otherwise, None
+        """
         if con is None:
-            raise Exception("Container is null")
+            raise TypeError("Container is null")
         for i in range(con.getCount()):
             try:
                 el = con.getByIndex(i)
@@ -1478,6 +1814,7 @@ class Lo(metaclass=StaticProperty):
     # ------------------- date --------------------
     @staticmethod
     def get_time_stamp() -> str:
+        """Gets a time stamp"""
         return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     @classproperty

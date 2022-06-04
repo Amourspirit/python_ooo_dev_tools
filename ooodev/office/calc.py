@@ -214,7 +214,7 @@ class Calc:
         """
         Gets a spreadsheet document
 
-        When using this method in a macro the ``Lo.get_document()`` value should be passed as ``doc`` arg.
+        When using this method in a macro the :py:meth:`Lo.get_document() <.utils.lo.Lo.get_document>` value should be passed as ``doc`` arg.
 
         Args:
             doc (XComponent): Component to get spreasheeet from
@@ -642,8 +642,8 @@ class Calc:
 
         It manages the active sheet within this view.
 
-        The com.sun.star.sheet.SpreadsheetView service is the spreadsheet's extension
-        of the com.sun.star.frame.Controller service and represents a table editing view
+        The ``com.sun.star.sheet.SpreadsheetView`` service is the spreadsheet's extension
+        of the ``com.sun.star.frame.Controller`` service and represents a table editing view
         for a spreadsheet document.
 
         Args:
@@ -994,7 +994,7 @@ class Calc:
     def get_view_data(cls, doc: XSpreadsheetDocument) -> str:
         """
         Gets a set of data that can be used to restore the current view status at
-        later time by using ``set_view_data()``
+        later time by using :py:meth:`~Calc.set_view_data`
 
         Args:
             doc (XSpreadsheetDocument): Spreadsheet Document
@@ -2184,7 +2184,7 @@ class Calc:
     @classmethod
     def convert_to_floats(cls, vals):
         """
-        Converts a 1-Dimensional array into List of float
+        Converts a 1d or 2d array into List of float
 
         Args:
             vals (Sequence[object] | Sequence[Sequence[object]]): List or 2-Dimensional list to convert to floats.
