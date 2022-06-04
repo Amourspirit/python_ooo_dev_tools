@@ -2,7 +2,7 @@
 # Python conversion of Info.java by Andrew Davison, ad@fivedots.coe.psu.ac.th
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 from __future__ import annotations
-import sys
+from enum import IntFlag
 from datetime import datetime
 from pathlib import Path
 import mimetypes
@@ -50,29 +50,49 @@ class Info:
     NODE_L10N = "/org.openoffice.Setup/L10N"
     NODE_OFFICE = "/org.openoffice.Setup/Office"
 
-    NODE_PATHS = [NODE_PRODUCT, NODE_L10N]
+    NODE_PATHS = (NODE_PRODUCT, NODE_L10N)
     # MIME_FNM = "mime.types"
 
     # from https://wiki.openoffice.org/wiki/Documentation/DevGuide/OfficeDev/Properties_of_a_Filter
-    IMPORT = 0x00000001
-    EXPORT = 0x00000002
-    TEMPLATE = 0x00000004
-    INTERNAL = 0x00000008
+    class Filter(IntFlag):
+        """
+        Every filter inside LibreOffice is specified by the properties of this enum. 
+        """
+        IMPORT = 0x00000001
+        """This filter is used only for internal purposes and so can be used only in API calls. Users won't see it ever. """
+        EXPORT = 0x00000002
+        """The filter supports the service com.sun.star.document.ExportFilter. It will be shown in the dialog "File-Export". If the filter also has the "IMPORT" flag set, it will be shown in the dialog "File-Save". This makes sure that a format that a user chooses in the save dialog can be loaded again. The same is not guaranteed for a format chosen in "File-Export". """
+        TEMPLATE = 0x00000004
+        """Filter denotes a template filter (means, by default all documents opened by it become an "untitled" one) """
+        INTERNAL = 0x00000008
+        """This filter is used only for internal purposes and so can be used only in API calls. Users won't see it ever. """
+        TEMPLATEPATH = 0x00000010
+        """Must always be set together with "TEMPLATE" to make this feature flag work; soon becoming deprecated"""
+        OWN = 0x00000020
+        """The filter is a native Apache OpenOffice format (ODF or otherwise)."""
+        ALIEN = 0x00000040
+        """The filter may lose some information upon saving. """
+        DEFAULT = 0x00000100
+        """This is the "best" filter for the document type it works on that is guaranteed not so lose any data on export. By default this filter will be used or suggested for every storing process unless the user has chosen a different default filter in the options dialog."""
+        SUPPORTSSELECTION = 0x00000400
+        """Filter can export only the selected part of a document. This information enables Apache OpenOffice to enable a corresponding check box in the "File-Export" dialog."""
+        NOTINFILEDIALOG = 0x00001000
+        """This filter will not be shown in the file dialog's filter list"""
+        NOTINCHOOSER = 0x00002000
+        """This filter will not be shown in the dialog box for chosing a filter in case Apache OpenOffice was not able to detect one"""
+        READONLY = 0x00010000
+        """All documents imported by this filter will automatically be in read-only state"""
+        PREFERRED = 0x10000000
+        """The filter is preferred in case of multiple filters for the same file type exist in the configuration"""
+        THIRDPARTYFILTER = 0x00080000
+        """
+        The filter is a UNO component filter, as opposed to the internal C++ filters.
+        This is an artefact that will vanish over time.
 
-    TEMPLATEPATH = 0x00000010
-    OWN = 0x00000020
-    ALIEN = 0x00000040
+        AKA: 3RDPARTYFILTER
+        """
+        
 
-    DEFAULT = 0x00000100
-    SUPPORTSSELECTION = 0x00000400
-
-    NOTINFILEDIALOG = 0x00001000
-    NOTINCHOOSER = 0x00002000
-
-    READONLY = 0x00010000
-    THIRDPARTYFILTER = 0x00080000
-
-    PREFERRED = 0x10000000
 
     @staticmethod
     def get_fonts() -> Tuple[FontDescriptor, ...] | None:
@@ -958,60 +978,60 @@ class Info:
         return list(result)
 
     @classmethod
-    def is_import(cls, filter_flags: int) -> bool:
-        return (filter_flags & cls.IMPORT) == cls.IMPORT
+    def is_import(cls, filter_flags: Filter) -> bool:
+        return (filter_flags & cls.Filter.IMPORT) == cls.Filter.IMPORT
 
     @classmethod
-    def is_export(cls, filter_flags: int) -> bool:
-        return (filter_flags & cls.EXPORT) == cls.EXPORT
+    def is_export(cls, filter_flags: Filter) -> bool:
+        return (filter_flags & cls.Filter.EXPORT) == cls.Filter.EXPORT
 
     @classmethod
-    def is_template(cls, filter_flags: int) -> bool:
-        return (filter_flags & cls.TEMPLATE) == cls.TEMPLATE
+    def is_template(cls, filter_flags: Filter) -> bool:
+        return (filter_flags & cls.Filter.TEMPLATE) == cls.Filter.TEMPLATE
 
     @classmethod
-    def is_internal(cls, filter_flags: int) -> bool:
-        return (filter_flags & cls.INTERNAL) == cls.INTERNAL
+    def is_internal(cls, filter_flags: Filter) -> bool:
+        return (filter_flags & cls.Filter.INTERNAL) == cls.Filter.INTERNAL
 
     @classmethod
-    def is_template_path(cls, filter_flags: int) -> bool:
-        return (filter_flags & cls.TEMPLATEPATH) == cls.TEMPLATEPATH
+    def is_template_path(cls, filter_flags: Filter) -> bool:
+        return (filter_flags & cls.Filter.TEMPLATEPATH) == cls.Filter.TEMPLATEPATH
 
     @classmethod
-    def is_own(cls, filter_flags: int) -> bool:
-        return (filter_flags & cls.OWN) == cls.OWN
+    def is_own(cls, filter_flags: Filter) -> bool:
+        return (filter_flags & cls.Filter.OWN) == cls.Filter.OWN
 
     @classmethod
-    def is_alien(cls, filter_flags: int) -> bool:
-        return (filter_flags & cls.ALIEN) == cls.ALIEN
+    def is_alien(cls, filter_flags: Filter) -> bool:
+        return (filter_flags & cls.Filter.ALIEN) == cls.Filter.ALIEN
 
     @classmethod
-    def is_default(cls, filter_flags: int) -> bool:
-        return (filter_flags & cls.DEFAULT) == cls.DEFAULT
+    def is_default(cls, filter_flags: Filter) -> bool:
+        return (filter_flags & cls.Filter.DEFAULT) == cls.Filter.DEFAULT
 
     @classmethod
-    def is_support_selection(cls, filter_flags: int) -> bool:
-        return (filter_flags & cls.SUPPORTSSELECTION) == cls.SUPPORTSSELECTION
+    def is_support_selection(cls, filter_flags: Filter) -> bool:
+        return (filter_flags & cls.Filter.SUPPORTSSELECTION) == cls.Filter.SUPPORTSSELECTION
 
     @classmethod
-    def is_not_in_file_dialog(cls, filter_flags: int) -> bool:
-        return (filter_flags & cls.NOTINFILEDIALOG) == cls.NOTINFILEDIALOG
+    def is_not_in_file_dialog(cls, filter_flags: Filter) -> bool:
+        return (filter_flags & cls.Filter.NOTINFILEDIALOG) == cls.Filter.NOTINFILEDIALOG
 
     @classmethod
-    def is_not_in_chooser(cls, filter_flags: int) -> bool:
-        return (filter_flags & cls.NOTINCHOOSER) == cls.NOTINCHOOSER
+    def is_not_in_chooser(cls, filter_flags: Filter) -> bool:
+        return (filter_flags & cls.Filter.NOTINCHOOSER) == cls.Filter.NOTINCHOOSER
 
     @classmethod
-    def is_read_only(cls, filter_flags: int) -> bool:
-        return (filter_flags & cls.READONLY) == cls.READONLY
+    def is_read_only(cls, filter_flags: Filter) -> bool:
+        return (filter_flags & cls.Filter.READONLY) == cls.Filter.READONLY
 
     @classmethod
-    def is_third_party_filter(cls, filter_flags: int) -> bool:
-        return (filter_flags & cls.THIRDPARTYFILTER) == cls.THIRDPARTYFILTER
+    def is_third_party_filter(cls, filter_flags: Filter) -> bool:
+        return (filter_flags & cls.Filter.THIRDPARTYFILTER) == cls.Filter.THIRDPARTYFILTER
 
     @classmethod
-    def is_preferred(cls, filter_flags: int) -> bool:
-        return (filter_flags & cls.PREFERRED) == cls.PREFERRED
+    def is_preferred(cls, filter_flags: Filter) -> bool:
+        return (filter_flags & cls.Filter.PREFERRED) == cls.Filter.PREFERRED
 
     @staticmethod
     def is_type_struct(obj: object, type_name: str) -> bool:

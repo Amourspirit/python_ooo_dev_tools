@@ -90,14 +90,6 @@ class Lo(metaclass=StaticProperty):
         def __str__(self) -> str:
             return str(self.value)
 
-    # UNKNOWN = DocType.UNKNOWN.value
-    # WRITER = DocType.WRITER.value
-    # BASE = DocType.BASE.value
-    # CALC = DocType.CALC.value
-    # DRAW = DocType.DRAW.value
-    # IMPRESS = DocType.IMPRESS.value
-    # MATH = DocType.MATH.value
-    # endregion docType ints
 
     # region docType strings
     class DocTypeStr(str, Enum):
@@ -112,15 +104,6 @@ class Lo(metaclass=StaticProperty):
         def __str__(self) -> str:
             return self.value
     
-    # UNKNOWN_STR = DocTypeStr.UNKNOWN.value
-    # WRITER_STR = DocTypeStr.WRITER.value
-    # BASE_STR = DocTypeStr.BASE.value
-    # CALC_STR = DocTypeStr.CALC.value
-    # DRAW_STR = DocTypeStr.DRAW.value
-    # IMPRESS_STR = DocTypeStr.IMPRESS.value
-    # MATH_STR = DocTypeStr.MATH.value
-    # endregion docType strings
-
     # region docType service names
     class Service(str, Enum):
         UNKNOWN = "com.sun.frame.XModel"
