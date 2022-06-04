@@ -1,0 +1,20 @@
+.highlight .vm {
+    color: #605dc9;
+}
+
+.highlight .gp {
+    color: #5e5e9d;
+}
+
+.highlight .nf {
+    color: #5151f5;
+}
+
+html.writer-html4 .rst-content dl:not(.docutils) .descclassname,
+html.writer-html4 .rst-content dl:not(.docutils) .descname,
+html.writer-html4 .rst-content dl:not(.docutils) .sig-name,
+html.writer-html5 .rst-content dl[class]:not(.option-list):not(.field-list):not(.footnote):not(.glossary):not(.simple) .descclassname,
+html.writer-html5 .rst-content dl[class]:not(.option-list):not(.field-list):not(.footnote):not(.glossary):not(.simple) .descname,
+html.writer-html5 .rst-content dl[class]:not(.option-list):not(.field-list):not(.footnote):not(.glossary):not(.simple) .sig-name {
+    color: #098f0d;
+}
