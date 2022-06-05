@@ -12,6 +12,7 @@ import uno
 from . sys_info import SysInfo
 
 from com.sun.star.awt import XToolkit
+from com.sun.star.beans import XHierarchicalPropertySet
 from com.sun.star.beans import XPropertySet
 from com.sun.star.container import XContentEnumerationAccess
 from com.sun.star.container import XNameAccess
@@ -24,7 +25,6 @@ from com.sun.star.util import XChangesBatch
 if TYPE_CHECKING:
     from com.sun.star.awt import FontDescriptor
     from com.sun.star.beans import PropertyValue
-    from com.sun.star.beans import XHierarchicalPropertySet
     from com.sun.star.beans import XPropertyContainer
     from com.sun.star.container import XNameContainer
     from com.sun.star.deployment import XPackageInformationProvider
@@ -38,6 +38,7 @@ if TYPE_CHECKING:
 from . import lo as mLo
 from . import file_io as mFileIO
 from . import props as mProps
+from ..exceptions import ex as mEx
 
 
 _xml_parser = ET.XMLParser(remove_blank_text=True)
@@ -96,6 +97,12 @@ class Info:
 
     @staticmethod
     def get_fonts() -> Tuple[FontDescriptor, ...] | None:
+        """
+        Gets fonts
+
+        Returns:
+            Tuple[FontDescriptor, ...] | None: Fonts if found; Othwrwise, None
+        """
         xtoolkit = mLo.Lo.create_instance_mcf(XToolkit, "com.sun.star.awt.Toolkit")
         device = xtoolkit.createScreenCompatibleDevice(0, 0)
         if device is None:
@@ -104,7 +111,13 @@ class Info:
         return device.getFontDescriptors()
 
     @classmethod
-    def get_font_name(cls) -> List[str] | None:
+    def get_font_names(cls) -> List[str] | None:
+        """
+        Gets font names
+
+        Returns:
+            List[str] | None: Font names if found; Othwrwise, None
+        """
         fds = cls.get_fonts()
         if fds is None:
             return None
@@ -125,7 +138,7 @@ class Info:
             str: Font Name
 
         See Also:
-            `Fonts <https://wiki.documentfoundation.org/Fonts>`_ on Document Foundation’s wiki/
+            `Fonts <https://wiki.documentfoundation.org/Fonts>`_ on Document Foundation’s wiki
         """
         pf = SysInfo.get_platform()
         if pf == SysInfo.PlatformEnum.WINDOWS:
@@ -142,7 +155,7 @@ class Info:
             str: Font Name
 
         See Also:
-            `Fonts <https://wiki.documentfoundation.org/Fonts>`_ on Document Foundation’s wiki/
+            `Fonts <https://wiki.documentfoundation.org/Fonts>`_ on Document Foundation’s wiki
         """
         pf = SysInfo.get_platform()
         if pf == SysInfo.PlatformEnum.WINDOWS:
@@ -151,43 +164,80 @@ class Info:
             return "Liberation Serif"  # Metrically compatible with Times New Roman
 
     @classmethod
-    def get_reg_mods_path(cls) -> str | None:
+    def get_reg_mods_path(cls) -> str:
+        """
+        Get registered modifications path
+
+        Returns:
+            str: registered modificatoins path
+        """
         user_cfg_dir = mFileIO.FileIO.url_to_path(cls.get_paths("UserConfig"))
+        parent_path = Path(user_cfg_dir).parent
+        return str(parent_path / cls.REG_MOD_FNM)
 
-        try:
-            parent_path = Path(user_cfg_dir).parent
-            return str(parent_path / cls.REG_MOD_FNM)
-        except Exception as e:
-            print(f"Coul not parse '{user_cfg_dir}'")
-            print(f"    {e}")
-        return None
 
     @overload
     @classmethod
-    def get_reg_item_prop(cls, item: str, prop: str) -> str | None:
+    def get_reg_item_prop(cls, item: str, prop: str) -> str:
+        """
+        Gets value from 'registrymodifications.xcu'
+
+        Args:
+            item (str): item name
+            prop (str): property value
+
+        Raises:
+            ValueError: if unable to get value
+
+        Returns:
+            str: value from 'registrymodifications.xcu'. e.g. "Writer/MailMergeWizard" null, "MailAddress"
+        """
         ...
 
     @overload
     @classmethod
-    def get_reg_item_prop(cls, item: str, prop: str, node: str) -> str | None:
+    def get_reg_item_prop(cls, item: str, prop: str, node: str) -> str:
+        """
+        Gets value from 'registrymodifications.xcu'
+
+        Args:
+            item (str): item name
+            prop (str): property value
+            node (str): node
+
+        Raises:
+            ValueError: if unable to get value
+
+        Returns:
+            str: value from 'registrymodifications.xcu'. e.g. "Writer/MailMergeWizard" null, "MailAddress"
+        """
         ...
 
     @classmethod
-    def get_reg_item_prop(cls, item: str, prop: str, node: Optional[str] = None) -> str | None:
+    def get_reg_item_prop(cls, item: str, prop: str, node: Optional[str] = None) -> str:
+        """
+        Gets value from 'registrymodifications.xcu'
+
+        Args:
+            item (str): item name
+            prop (str): property value
+            node (str): node
+
+        Raises:
+            ValueError: if unable to get value
+
+        Returns:
+            str: value from 'registrymodifications.xcu'. e.g. "Writer/MailMergeWizard" null, "MailAddress"
+        """
         # return value from "registrymodifications.xcu"
         # e.g. "Writer/MailMergeWizard" null, "MailAddress"
         # e.g. "Logging/Settings", "org.openoffice.logging.sdbc.DriverManager", "LogLevel"
         #
         # This xpath doesn't deal with all cases in the XCU file, which sometimes
         # has many node levels between the item and the prop
-        # Returns null if no value is found, or it's only an empty string.
-
-        fnm = cls.get_reg_mods_path()
-        if fnm is None:
-            return None
-        value = None
 
         try:
+            fnm = cls.get_reg_mods_path()
             tree: ET._ElementTree = ET.parse(fnm, parser=_xml_parser)
 
             if node is None:
@@ -195,63 +245,165 @@ class Info:
             else:
                 xpath = f"']/prop[@oor:name='{item}']/node[@oor:name='{node}']/prop[@oor:name='{prop}']"
             value = tree.xpath(xpath)
-            if value is None or value == "":
-                print("Item Property not founc")
-                value = None
+            if value is None:
+                raise Exception("Item Property not found")
             else:
                 value = str(value).strip()
                 if value == "":
-                    print("Item Property is white space (?)")
-                    value = None
+                    raise Exception("Item Property is white space (?)")
+            return value
         except Exception as e:
-            print(e)
-        return value
+            raise ValueError("unable to get value from registrymodifications.xcu") from e
 
     @overload
-    def get_config(node_str: str) -> str | None:
+    @classmethod
+    def get_config(cls, node_str: str) -> object:
+        """
+        Get config
+
+        Args:
+            node_str (str): node string
+
+        Raises:
+            ConfigError: if unable to get config
+
+        Returns:
+            object: config
+        """
         ...
 
     @overload
-    def get_config(node_str: str, node_path: str) -> object | None:
+    @classmethod
+    def get_config(cls, node_str: str, node_path: str) -> object:
+        """
+        Get config
+
+        Args:
+            node_str (str): node string
+            node_path (str): node_path
+
+        Raises:
+            ConfigError: if unable to get config
+
+        Returns:
+            object: config
+        """
         ...
 
     @classmethod
-    def get_config(cls, node_str: str, node_path: Optional[str] = None):
-        if node_path is None:
-            return cls._get_config2(node_str=node_str)
-        return cls._get_config1(node_str=node_str, node_path=node_path)
+    def get_config(cls, node_str: str, node_path: Optional[str] = None) -> object:
+        """
+        Get config
+
+        Args:
+            node_str (str): node string
+            node_path (str): node_path
+
+        Raises:
+            ConfigError: if unable to get config
+
+        Returns:
+            object: config
+        """
+        try:
+            if node_path is None:
+                return cls._get_config2(node_str=node_str)
+            return cls._get_config1(node_str=node_str, node_path=node_path)
+        except Exception as e:
+            msg = f"Unable to get configuration for '{node_str}'"
+            if node_path is not None:
+                msg += f" with path: '{node_path}'"
+            raise mEx.ConfigError(msg) from e
 
     @classmethod
     def _get_config1(cls, node_str: str, node_path: str):
         props = cls.get_config_props(node_path)
-        if props is None:
-            return None
         return mProps.Props.get_property(xprops=props, name=node_str)
 
     @classmethod
-    def _get_config2(cls, node_str: str):
+    def _get_config2(cls, node_str: str) -> object:
         for node_path in cls.NODE_PATHS:
-            info = cls._get_config1(node_str=node_str, node_path=node_path)
-            if info is not None:
-                return info
-        print(f"No configuration info for {node_str}")
-        return None
+            return cls._get_config1(node_str=node_str, node_path=node_path)
+        raise ValueError(f"{node_str} not found")
 
     @staticmethod
-    def get_config_props(node_path: str) -> XPropertySet | None:
-        con_prov = mLo.Lo.create_instance_mcf(XMultiServiceFactory, "com.sun.star.configuration.ConfigurationProvider")
-        if con_prov is None:
-            print("Could not create configuration provider")
-            return None
-        p = mProps.Props.make_props(nodepath=node_path)
+    def get_config_props(node_path: str) -> XPropertySet:
+        """
+        Get config properties
+
+        Args:
+            node_path (str): nod path
+
+        Raises:
+            PropertyError: if unable to get get property set
+
+        Returns:
+            XPropertySet: Property set
+        """
         try:
-            return con_prov.createInstanceWithArguments("com.sun.star.configuration.ConfigurationAccess", p)
+            con_prov = mLo.Lo.create_instance_mcf(XMultiServiceFactory, "com.sun.star.configuration.ConfigurationProvider")
+            if con_prov is None:
+                raise mEx.MissingInterfaceError(XMultiServiceFactory)
+            p = mProps.Props.make_props(nodepath=node_path)
+            ca = con_prov.createInstanceWithArguments("com.sun.star.configuration.ConfigurationAccess", p)
+            ps = mLo.Lo.qi(XPropertySet, ca)
+            if ps is None:
+                raise mEx.MissingInterfaceError(XPropertySet)
+            return ps
         except Exception as e:
-            print(f"Unable to access config properties for\n\n  '{node_path}'")
-        return None
+            raise mEx.PropertyError(node_path, f"Unable to access config properties for\n\n  '{node_path}'") from e
 
     @staticmethod
     def get_paths(setting: str) -> str:
+        """
+        Gets access to LO's prefefined paths.
+
+        Args:
+            setting (str): property value
+
+        Raises:
+            ValueError: if unable to get paths
+
+        Returns:
+            str: paths
+
+        Notes:
+            There are two different groups of properties.
+            One group stores only a single path and the other group stores two or
+            more paths - separated by a semicolon.
+            
+            Some setting values (as listed in the OpenOffice docs for PathSettings)
+
+                - Addin
+                - AutoCorrect
+                - AutoText
+                - Backup
+                - Basic
+                - Bitmap
+                - Config
+                - Dictionary
+                - Favorite
+                - Filter
+                - Gallery
+                - Graphic
+                - Help
+                - Linguistic
+                - Module
+                - Palette
+                - Plugin
+                - Storage
+                - Temp
+                - Template
+                - UIConfig
+                - UserConfig
+                - UserDictionary (deprecated)
+                - Work
+
+        See Also:
+            :py:meth:`Info.get_dirs`
+        
+            `Wiki Path Settings <https://wiki.openoffice.org/w/index.php?title=Documentation/DevGuide/OfficeDev/Path_Settings>`_
+        """
         # access LO's predefined paths. There are two different groups of properties.
         #  One group stores only a single path and the other group stores two or
         #  more paths - separated by a semicolon. See
@@ -265,129 +417,224 @@ class Info:
         #    UserDictionary (deprecated), Work
 
         # Replaced by thePathSetting in LibreOffice 4.3
-        prop_set = mLo.Lo.create_instance_mcf(XPropertySet, "com.sun.star.util.PathSettings")
-        if prop_set is None:
-            print("Could not access office settings")
-            return None
         try:
+            prop_set = mLo.Lo.create_instance_mcf(XPropertySet, "com.sun.star.util.PathSettings")
+            if prop_set is None:
+                raise mEx.MissingInterfaceError(XPropertySet)
             result = prop_set.getPropertyValue(setting)
+            if result is None:
+                raise ValueError(f"getPropertyValue() for {setting} yielded None")
             return str(result)
         except Exception as e:
-            print(f"Could not find setting for: {setting}")
-        return None
+            raise ValueError(f"Could not find paths for: {setting}") from e
 
     @classmethod
     def get_dirs(cls, setting: str) -> List[str] | None:
-        paths = cls.get_paths(setting)
-        if paths is None:
+        """
+        Gets dirs paths from settings
+
+        Args:
+            setting (str): setting
+
+        Returns:
+            List[str] | None: List of paths if found; Otherwise, None
+
+        See Also:
+            :py:meth:`~Info.get_paths`
+        
+            `Wiki Path Settings <https://wiki.openoffice.org/w/index.php?title=Documentation/DevGuide/OfficeDev/Path_Settings>`_
+        """
+        try:
+            paths = cls.get_paths(setting)
+        except ValueError:
             print(f"Cound not find paths for '{setting}'")
             return None
         paths_arr = paths.split(";")
         if len(paths_arr) == 0:
             print(f"Cound not split paths for '{setting}'")
-            return [paths]
+            return [mFileIO.FileIO.uri_to_path(paths)]
         dirs = []
         for el in paths_arr:
             dirs.append(mFileIO.FileIO.uri_to_path(el))
         return dirs
 
     @classmethod
-    def get_office_dir(cls) -> str | None:
+    def get_office_dir(cls) -> str:
         """
-        returns the file path to the office dir
+        Gets file path to the office dir
 
-        e.g.  'C:\Program Files (x86)\LibreOffice 6'
+        e.g.  'C:\Program Files (x86)\LibreOffice 7'
+
+        Raises:
+            ValueError: if unable to obtain office path.
+
+        Returns:
+            str: Path as string
         """
-        addin_dir = cls.get_paths("Addin")
-        if addin_dir is None:
-            print("Cound not find settings information")
-            return None
-        addin_path = mFileIO.FileIO.uri_to_path(addin_dir)
-        #   e.g.  C:\Program Files (x86)\LibreOffice 6\program\addin
         try:
-            idx = addin_path.index("program")
-        except ValueError:
-            print("Cound not extract office path")
-            return addin_path
+            addin_dir = cls.get_paths("Addin")
 
-        p = Path(addin_path[:idx])
-        return str(p)
+            addin_path = mFileIO.FileIO.uri_to_path(addin_dir)
+            #   e.g.  C:\Program Files (x86)\LibreOffice 6\program\addin
+            try:
+                idx = addin_path.index("program")
+            except ValueError:
+                print("Cound not extract office path")
+                return addin_path
+
+            p = Path(addin_path[:idx])
+            return str(p)
+        except Exception as e:
+            raise ValueError("Unable to get office dir") from e
 
     @classmethod
-    def get_gallery_dir(cls) -> str | None:
-        gallery_dirs = cls.get_dirs("Gallery")
-        if gallery_dirs is None:
-            return None
-        return gallery_dirs[0]
+    def get_gallery_dir(cls) -> str:
+        """
+        Get the first directory that contain the Gallery database and multimedia files. 
+
+        Raises:
+            ValueError if unable to obtain gallery dir.
+
+        Returns:
+            str: Gallery Dir
+        """
+        try:
+            gallery_dirs = cls.get_dirs("Gallery")
+            if gallery_dirs is None:
+                raise ValueError("No result from get_dir for Gallery")
+            return gallery_dirs[0]
+        except Exception as e:
+            raise ValueError("Unable to get gallery dir") from e
 
     @classmethod
-    def create_configuration_view(cls, path: str) -> XHierarchicalPropertySet | None:
-        con_prov = mLo.Lo.create_instance_mcf(XMultiServiceFactory, "com.sun.star.configuration.ConfigurationProvider")
-        if con_prov is None:
-            print("Could not create configuration provider")
-            return None
-        _props = mProps.Props.make_props(nodepath=path)
+    def create_configuration_view(cls, path: str) -> XHierarchicalPropertySet:
+        """
+        Create Configuration View
+
+        Args:
+            path (str): path
+
+        Raises:
+            ConfigError: if unable to create configuration view
+
+        Returns:
+            XHierarchicalPropertySet: Property Set
+        """
         try:
+            con_prov = mLo.Lo.create_instance_mcf(XMultiServiceFactory, "com.sun.star.configuration.ConfigurationProvider")
+            if con_prov is None:
+                raise mEx.MissingInterfaceError(XMultiServiceFactory)
+            _props = mProps.Props.make_props(nodepath=path)
             root = con_prov.createInstanceWithArguments(
                 "com.sun.star.configuration.ConfigurationAccess", _props
             )
-            cls.show_services(obj_name="ConfigurationAccess", obj=root)
-            return root
-        except Exception:
-            return None
+            # cls.show_services(obj_name="ConfigurationAccess", obj=root)
+            ps = mLo.Lo.qi(XHierarchicalPropertySet, root)
+            if ps is None:
+                raise mEx.MissingInterfaceError(XHierarchicalPropertySet)
+            return ps
+        except Exception as e:
+            raise mEx.ConfigError(f"Unable to get configuration view for '{path}'") from e
 
     # =================== update configuration settings ================
 
     @staticmethod
-    def set_config_props(node_path: str) -> XPropertySet | None:
-        con_prov = mLo.Lo.create_instance_mcf(XMultiServiceFactory, "com.sun.star.configuration.ConfigurationProvider")
-        if con_prov is None:
-            print("Could not create configuration provider")
-            return None
-        _props = mProps.Props.make_props(nodepath=node_path)
+    def set_config_props(node_path: str) -> XPropertySet:
+        """
+        Get config properties
+
+        Args:
+            node_path (str): Node path of properties
+
+        Raises:
+            mEx.ConfigError: if Unble to get config properties
+
+        Returns:
+            XPropertySet: Property Set
+        """
         try:
-            return con_prov.createInstanceWithArguments("com.sun.star.configuration.ConfigurationAccess", _props)
-        except Exception:
-            print(f"Unable to access config update properties for\n  '{node_path}'")
-        return None
+            con_prov = mLo.Lo.create_instance_mcf(XMultiServiceFactory, "com.sun.star.configuration.ConfigurationProvider")
+            if con_prov is None:
+                raise mEx.MissingInterfaceError(XMultiServiceFactory)
+            _props = mProps.Props.make_props(nodepath=node_path)
+            ca = con_prov.createInstanceWithArguments("com.sun.star.configuration.ConfigurationAccess", _props)
+            ps = mLo.Lo.qi(XPropertySet, ca)
+            if ps is None:
+                raise mEx.MissingInterfaceError(XPropertySet)
+            return ps
+        except Exception as e:
+            raise mEx.ConfigError(f"Unable to set configuration property for '{node_path}'") from e
 
     @classmethod
     def set_config(cls, node_path: str, node_str: str, val: object) -> bool:
-        props = cls.set_config_props(node_path=node_path)
-        if props is None:
-            return False
-        mProps.Props.set_property(prop_set=props, name=node_str, value=val)
-        secure_change = mLo.Lo.qi(XChangesBatch, props)
+        """
+        Sets config
+
+        Args:
+            node_path (str): node path
+            node_str (str): node name
+            val (object): node value
+
+        Returns:
+            bool: True on success; Otherwise, False
+        """
         try:
+            props = cls.set_config_props(node_path=node_path)
+            if props is None:
+                return False
+            mProps.Props.set_property(prop_set=props, name=node_str, value=val)
+            secure_change = mLo.Lo.qi(XChangesBatch, props)
+            if secure_change is None:
+                raise mEx.MissingInterfaceError(XChangesBatch)
             secure_change.commitChanges()
             return True
-        except Exception:
-            print(f"Unable to commit config update for\n  '{node_path}'")
+        except Exception as e:
+            pass
         return False
 
     # =================== getting info about a document ====================
 
     @staticmethod
     def get_name(fnm: str) -> str:
-        """extract the file's name from the supplied string minus the extension"""
+        """
+        Gets the file's name from the supplied string minus the extension
+
+        Args:
+            fnm (str): File path
+
+        Raises:
+            ValueError: If fnm is empty string
+            ValueError: If fnm is not a file
+
+        Returns:
+            str: File name minust extension
+        """
         if fnm == "":
-            print(f"Zero length string")
-            return fnm
+            raise ValueError("Empty string")
         p = Path(fnm)
         if not p.is_file():
-            print(f"Not a file: {fnm}")
-            return fnm
+            raise ValueError(f"Not a file: '{fnm}'")
         if p.suffix == "":
             print(f"No extension found for '{fnm}'")
-            return fnm
+            return p.stem
         return p.stem
 
     @staticmethod
     def get_ext(fnm: str) -> str | None:
-        """return extenson without the ``.``"""
+        """
+        Gets extenson without the ``.``
+
+        Args:
+            fnm (str): _description_
+
+        Raises:
+            ValueError: If fnm is empty string
+
+        Returns:
+            str | None: _description_
+        """
         if fnm == "":
-            print(f"Zero length string")
-            return None
+            raise ValueError("Empty string")
         p = Path(fnm)
         # if not p.is_file():
         #     print(f"Not a file: {fnm}")
@@ -402,6 +649,12 @@ class Info:
         """
         If a file called fnm already exists, then a number
         is added to the name so the filename is unique
+
+        Args:
+            fnm (str): file path
+
+        Returns:
+            str: unique file path
         """
         p = Path(fnm)
         fname = p.stem
@@ -414,21 +667,45 @@ class Info:
         return str(p)
 
     @staticmethod
-    def get_doc_type(fnm: str) -> str | None:
-        xdetect = mLo.Lo.create_instance_mcf(XTypeDetection, "com.sun.star.document.TypeDetection")
-        if xdetect is None:
-            print("No type detector reference")
-            return None
-        if not mFileIO.FileIO.is_openable(fnm):
-            return None
-        url_str = mFileIO.FileIO.fnm_to_url(fnm)
-        if url_str is None:
-            return None
-        media_desc = [[mProps.Props.make_prop_value(name="URL", value=url_str)]]
-        return xdetect.queryTypeByDescriptor(media_desc, True)
+    def get_doc_type(fnm: str) -> str:
+        """
+        Gets doc type from file path
+
+        Args:
+            fnm (str): File Path
+
+        Raises:
+            ValueError: if Unable to get doc type
+
+        Returns:
+            str: Doc Type.
+        """
+        try:
+            xdetect = mLo.Lo.create_instance_mcf(XTypeDetection, "com.sun.star.document.TypeDetection")
+            if xdetect is None:
+                raise mEx.MissingInterfaceError(XTypeDetection)
+            if not mFileIO.FileIO.is_openable(fnm):
+                raise mEx.UnOpenableError(fnm)
+            url_str = mFileIO.FileIO.fnm_to_url(fnm)
+            media_desc = [[mProps.Props.make_prop_value(name="URL", value=url_str)]]
+            result = xdetect.queryTypeByDescriptor(media_desc, True)
+            if result is None:
+                raise mEx.UnKnownError("queryTypeByDescriptor() is an unknow result")
+            return result
+        except Exception as e:
+            raise ValueError(f"unable to get doc type for ''{fnm}") from e
 
     @classmethod
     def report_doc_type(cls, doc: object) -> mLo.Lo.DocType:
+        """
+        Prints doc type to console and return doc type
+
+        Args:
+            doc (object): office document
+
+        Returns:
+            Lo.DocType: Document type.
+        """
         doc_type = mLo.Lo.DocType.UNKNOWN
         if cls.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.WRITER):
             print("A Writer document")
@@ -454,6 +731,15 @@ class Info:
 
     @classmethod
     def doc_type_service(cls, doc: object) -> mLo.Lo.Service:
+        """
+        Prints service type to console and return service type
+
+        Args:
+            doc (object): office document
+
+        Returns:
+            Lo.Service: Serive type
+        """
         if cls.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.WRITER):
             print("A Writer document")
             return mLo.Lo.Service.WRITER
@@ -477,32 +763,80 @@ class Info:
             return mLo.Lo.Service.UNKNOWN
 
     @staticmethod
-    def is_doc_type(obj: XServiceInfo, doc_type: mLo.Lo.Service) -> bool:
+    def is_doc_type(obj: object, doc_type: mLo.Lo.Service) -> bool:
+        """
+        Gets if doc is a particular doc type.
+
+        Args:
+            obj (object): office document
+            doc_type (mLo.Lo.Service): doc type
+
+        Returns:
+            bool: True if obj matches; Otherwise, False
+        """
         try:
-            return obj.supportsService(str(doc_type))
+            si = mLo.Lo.qi(XServiceInfo, obj)
+            if si is None:
+                return False
+            return si.supportsService(str(doc_type))
         except Exception:
             return False
 
     @staticmethod
-    def get_implementation_name(obj: XServiceInfo) -> str | None:
+    def get_implementation_name(obj: object) -> str:
+        """
+        Gets implementaton name
+
+        Args:
+            obj (object): office document
+
+        Raises:
+            ValueError: if unable to get implementation name
+
+        Returns:
+            str: implementation name
+        """
         try:
-            return obj.getImplementationName()
+            si = mLo.Lo.qi(XServiceInfo, obj)
+            if si is None:
+                raise mEx.MissingInterfaceError(XServiceInfo)
+            return si.getImplementationName()
         except Exception as e:
-            print("Could not get service information")
-            print(f"    {e}")
-            return None
+            raise ValueError("Could not get service information") from e
 
     @staticmethod
     def get_mime_type(fnm: str) -> str:
+        """
+        Get mime type for a file path
+
+        Args:
+            fnm (str): file path
+
+        Returns:
+            str: Mime type of file if found. Defaults to 'application/octet-stream'
+        """
+        default = "application/octet-stream"
         mt = mimetypes.guess_type(fnm)
+        if mt is None:
+            print("unable to find mimeypte")
+            return default
         if mt[0] is None:
             print("unable to find mimeypte")
-            return "application/octet-stream"
+            return default
         return str(mt[0])
 
     @staticmethod
     def mime_doc_type(mime_type: str) -> mLo.Lo.DocType:
-        if mime_type is None:
+        """
+        Gets document type from mime type
+
+        Args:
+            mime_type (str): mime type
+
+        Returns:
+            mLo.Lo.DocType: Document type. If mime_type is unknown then 'DocType.UNKNOWN'
+        """
+        if mime_type is None or mime_type == "":
             return mLo.Lo.DocType.UNKNOWN
         if mime_type.find("vnd.oasis.opendocument.text") >= 0:
             return mLo.Lo.DocType.WRITER
@@ -524,6 +858,17 @@ class Info:
 
     @staticmethod
     def is_image_mime(mime_type: str) -> bool:
+        """
+        Gets if mime type is a known image type
+
+        Args:
+            mime_type (str): mime type e.g. 'application/x-openoffice-bitmap'
+
+        Returns:
+            bool: True if known mime type; Otherwise False
+        """
+        if mime_type is None or mime_type == "":
+            return False
         if mime_type.startswith("image/"):
             return True
         if mime_type.startswith("application/x-openoffice-bitmap"):
@@ -534,15 +879,39 @@ class Info:
     @overload
     @classmethod
     def get_service_names(cls) -> List[str] | None:
+        """
+        Gets service names
+
+        Returns:
+            List[str] | None: Service names on success; Othwriwse, None
+        """
         ...
 
     @overload
     @classmethod
     def get_service_names(cls, service_name: str) -> List[str] | None:
+        """
+        Gets service names
+
+        Args:
+            service_name (str): service name
+
+        Returns:
+            List[str] | None: Service names on success; Othwriwse, None
+        """
         ...
 
     @classmethod
     def get_service_names(cls, service_name: Optional[str] = None) -> List[str] | None:
+        """
+        Gets service names
+
+        Args:
+            service_name (str): service name
+
+        Returns:
+            List[str] | None: Service names on success; Othwriwse, None
+        """
         if service_name is None:
             return cls._get_service_names1()
         return cls._get_service_names2(service_name=service_name)
@@ -576,14 +945,24 @@ class Info:
         return names
 
     @staticmethod
-    def get_services(obj: XServiceInfo) -> List[str] | None:
+    def get_services(obj: object) -> List[str] | None:
+        """
+        Gets service names
+
+        Args:
+            obj (object): obj that implements XServiceInfo
+
+        Returns:
+            List[str] | None: service names on success; Othwrwise, None
+        """
         try:
-            names = obj.getSupportedServiceNames()
+            si = mLo.Lo.qi(XServiceInfo, obj)
+            if si is None:
+                raise mEx.MissingInterfaceError(XServiceInfo)
+            names = si.getSupportedServiceNames()
             service_names = list(names)
             service_names.sort()
             return service_names
-        except AttributeError:
-            print("No XServiceInfo interface found")
         except Exception as e:
             print("Unable to get services")
             print(f"    {e}")
@@ -591,6 +970,13 @@ class Info:
 
     @classmethod
     def show_services(cls, obj_name: str, obj: object) -> None:
+        """
+        Prints services to console
+
+        Args:
+            obj_name (str): service name
+            obj (object): obj that implements XServiceInfo
+        """
         services = cls.get_services(obj=obj)
         if services is None:
             print(f"No supported services found for {obj_name}")
@@ -599,62 +985,31 @@ class Info:
         for service in services:
             print(f"'{service}'")
 
-    @overload
     @staticmethod
-    def support_service(obj: XServiceInfo, service: XInterface) -> bool:
+    def support_service(obj: object, service:str) -> bool:
         """
         Gets if ``obj`` supports service
 
         Args:
-            obj (XServiceInfo): Object to check for supported service
-            service (XInterface): Any UNO interface. Intervaces start with x
+            obj (object): Object to check for supported service
+            service (string): Any UNO such as 'com.sun.star.configuration.GroupAccess'
 
         Returns:
             bool: True if obj supports service; Otherwise; False
         """
-        ...
 
-    @overload
-    @staticmethod
-    def support_service(obj: XServiceInfo, service: str) -> bool:
-        """
-        Gets if ``obj`` supports service
-
-        Args:
-            obj (XServiceInfo): Object to check for supported service
-            service (string): Any UNO such as 'com.sun.star.uno.XInterface'
-
-        Returns:
-            bool: True if obj supports service; Otherwise; False
-        """
-        ...
-
-    @staticmethod
-    def support_service(obj: XServiceInfo, service=None) -> bool:
-        """
-        Gets if ``obj`` supports service
-
-        Args:
-            obj (XServiceInfo): Object to check for supported service
-            service (str | XInterface): string of service name or Any UNO interface. Intervaces start with x
-
-        Returns:
-            bool: True if obj supports service; Otherwise; False
-        """
-        srv = None
         if isinstance(service, str):
             srv = service
         else:
-            try:
-                srv = service.__pyunointerface__
-            except AttributeError:
-                print("service does not have __pyunointerface__ attribute")
-                return False
+            raise TypeError(f"service is expected to be a string")
         try:
-            return obj.supportsService(srv)
-        except AttributeError:
-            print("Object does not implement XServiceInfo")
-        except Exception:
+            si = mLo.Lo.qi(XServiceInfo, obj)
+            if si is None:
+                raise mEx.MissingInterfaceError(XServiceInfo)
+            return si.supportsService(srv)
+        except Exception as e:
+            print("Errors ocurred in support_service(). Returning False")
+            print(f"    {e}")
             pass
         return False
 

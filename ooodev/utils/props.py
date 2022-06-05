@@ -27,6 +27,7 @@ if TYPE_CHECKING:
 # https://stackoverflow.com/questions/22187279/python-circular-importing
 from . import lo as mLo
 from . import info as mInfo
+from ..exceptions import ex as mEx
 
 # endregion Imports
 
@@ -185,15 +186,27 @@ class Props:
 
     # region ------------------- get properties ------------------------
     @staticmethod
-    def get_property(xprops: XPropertySet, name: str) -> Union[object, None]:
-        value = None
+    def get_property(xprops: XPropertySet, name: str) -> object:
+        """
+        Gets a property from property set
+
+        Args:
+            xprops (XPropertySet): property set
+            name (str): property name
+
+        Raises:
+            PropertyNotFoundError: If unable to get property
+
+        Returns:
+            object: property values
+        """
         try:
-            value = xprops.getPropertyValue(name)
-        except RuntimeException as e:
-            print(f"Could not get runtime property '{name}': {e}")
+            try:
+                return xprops.getPropertyValue(name)
+            except RuntimeException as e:
+                print(f"Could not get runtime property '{name}': {e}")
         except Exception as e:
-            print(f"Could not get property '{name}': {e}")
-        return value
+            raise mEx.PropertyNotFoundError(prop_name=name) from e
 
     @staticmethod
     def get_properties(prop_set: XPropertySet) -> Tuple[PropertyValue, ...]:
@@ -210,12 +223,24 @@ class Props:
         return tuple(nms)
 
     @staticmethod
-    def get_value(name: str, props: Iterable[PropertyValue]) -> Union[object, None]:
+    def get_value(name: str, props: Iterable[PropertyValue]) -> object:
+        """
+        Get a property value from properties
+
+        Args:
+            name (str): property name
+            props (Iterable[PropertyValue]): Properties to search
+
+        Raises:
+            PropertyError: If property name is not found.
+
+        Returns:
+            object: Property Value
+        """
         for prop in props:
             if prop.Name == name:
                 return prop.Value
-        print(f"{name} not found")
-        return None
+        raise mEx.PropertyNotFoundError(name,)
 
     # endregion ---------------- get properties ------------------------
 

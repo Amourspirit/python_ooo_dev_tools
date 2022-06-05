@@ -6,7 +6,7 @@ html[data-theme='dark'] .highlight .gp {
     color: #5e5e9d;
 }
 
-.highlight .nf {
+html[data-theme='dark'] .highlight .nf {
     color: #5151f5;
 }
 

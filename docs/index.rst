@@ -14,6 +14,7 @@ Welcome to OOO Development Tools's documentation!
 
    src/office/index
    src/utils/index
+   src/exceptions/index
 
 Indices and tables
 ==================
