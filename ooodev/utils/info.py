@@ -453,7 +453,7 @@ class Info:
         return doc_type
 
     @classmethod
-    def doc_type_string(cls, doc: object) -> mLo.Lo.Service:
+    def doc_type_service(cls, doc: object) -> mLo.Lo.Service:
         if cls.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.WRITER):
             print("A Writer document")
             return mLo.Lo.Service.WRITER

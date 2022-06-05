@@ -8,6 +8,7 @@ from enum import IntEnum
 import uno
 
 from com.sun.star.accessibility import XAccessible
+from com.sun.star.accessibility import XAccessibleContext
 from com.sun.star.awt import PosSize  # const
 from com.sun.star.awt import Rectangle  # struct
 from com.sun.star.awt import WindowAttribute  # const
@@ -45,6 +46,7 @@ if TYPE_CHECKING:
     from com.sun.star.awt import XTopWindow
     from com.sun.star.ui import XUIElement
 
+from ..exceptions import ex as mEx
 from ..utils import lo as mLo
 from ..utils import images as mImages
 from ..utils import props as mProps
@@ -184,6 +186,8 @@ class GUI:
             return
         try:
             image_man = mLo.Lo.qi(XImageManager, conf_man.getImageManager())
+            if image_man is None:
+                raise mEx.MissingInterfaceError(XImageManager)
             cmds = (cmd,)
             img = mImages.Images.load_graphic_file(im_fnm)
             if img is None:
@@ -196,7 +200,7 @@ class GUI:
             settings = conf_man.getSettings(toolbar_name, True)
             con_settings = mLo.Lo.qi(XIndexContainer, settings)
             if con_settings is None:
-                raise TypeError("con_settings is None")
+                raise mEx.MissingInterfaceError(XIndexContainer)
             item_props = mProps.Props.make_bar_item(cmd, item_name)
             con_settings.insertByIndex(0, item_props)
             conf_man.replaceSettings(toolbar_name, con_settings)
@@ -253,11 +257,23 @@ class GUI:
 
     @classmethod
     def show_message_box(cls, title: str, message: str) -> None:
+        """
+        Shows a message box
+
+        Args:
+            title (str): Messagebox Title
+            message (str): Message to display
+
+        Raises:
+            mEx.MissingInterfaceError: If required interface is not present.
+        """
         xtoolkit = mLo.Lo.create_instance_mcf(XToolkit, "com.sun.star.awt.Toolkit")
         xwindow = cls.get_window()
         if xtoolkit is None or xwindow is None:
             return None
         xpeer = mLo.Lo.qi(XWindowPeer, xwindow)
+        if xpeer is None:
+            raise mEx.MissingInterfaceError(XWindowPeer)
         desc = WindowDescriptor()
         desc.Type = WC_MODALTOP
         desc.WindowServiceName = "infobox"
@@ -269,10 +285,11 @@ class GUI:
         desc_peer = xtoolkit.createWindow(desc)
         if desc_peer is None:
             msg_box = mLo.Lo.qi(XMessageBox, desc_peer)
-            if msg_box is not None:
-                msg_box.CaptionText = title
-                msg_box.MessageText = message
-                msg_box.execute()
+            if msg_box is None:
+                raise mEx.MissingInterfaceError(XMessageBox)
+            msg_box.CaptionText = title
+            msg_box.MessageText = message
+            msg_box.execute()
 
     @staticmethod
     def get_password(title: str, input_msg: str) -> str:
@@ -290,11 +307,10 @@ class GUI:
 
         Returns:
             str: password as string.
-
-        ToDo:
-            Implement the get_password method.
         """
         # TODO implement get_password
+        # before get_password is implemented the forms module should be build.
+        # forms module would be used to create an imput box.
         raise NotImplementedError
         # in original java this was done by creating a input box with a password field
         # this could likely be done with LibreOffice API, create input box and set input as password field
@@ -304,86 +320,203 @@ class GUI:
     # region ---------------- controller and frame ---------------------
 
     @staticmethod
-    def get_current_controller(odoc: object) -> XController | None:
+    def get_current_controller(odoc: object) -> XController:
+        """
+        Gets controllor from document
+
+        Args:
+            odoc (object): office document
+
+        Raises:
+            mEx.MissingInterfaceError: If required interface is not present.
+
+        Returns:
+            XController: controller
+        """
         doc = mLo.Lo.qi(XComponent, odoc)
+        if doc is None:
+            raise mEx.MissingInterfaceError(XComponent)
         model = mLo.Lo.qi(XModel, doc)
         if model is None:
-            print("Document has no data model")
-            return None
+            raise mEx.MissingInterfaceError(XComponent)
         return model.getCurrentController()
 
     @classmethod
-    def get_frame(cls, doc: XComponent) -> XFrame | None:
+    def get_frame(cls, doc: XComponent) -> XFrame:
+        """
+        Gets frame from doc
+
+        Args:
+            doc (XComponent): office document
+
+        Returns:
+            XFrame: document frame.
+        """
         xcontroler = cls.get_current_controller(doc)
-        if xcontroler is None:
-            return None
         return xcontroler.getFrame()
 
     @staticmethod
-    def get_control_access(doc: XComponent) -> XControlAccess | None:
-        return mLo.Lo.qi(XControlAccess, doc)
+    def get_control_access(doc: XComponent) -> XControlAccess:
+        """
+        Get controll access from office documnet
+
+        Args:
+            doc (XComponent): office document
+
+        Raises:
+            mEx.MissingInterfaceError: If doc does not implement XControlAccess interface.
+
+        Returns:
+            XControlAccess: control access
+        """
+        ca = mLo.Lo.qi(XControlAccess, doc)
+        if ca is None:
+            raise mEx.MissingInterfaceError(XControlAccess)
+        return ca
 
     @staticmethod
-    def get_uii(doc: XComponent) -> XUserInputInterception | None:
-        return mLo.Lo.qi(XUserInputInterception, doc)
+    def get_uii(doc: XComponent) -> XUserInputInterception:
+        """
+        Gets user input interception
+
+        Args:
+            doc (XComponent): office document
+
+        Raises:
+            mEx.MissingInterfaceError: If doc does not implement XUserInputInterception interface.
+
+        Returns:
+            XUserInputInterception: user input interception
+        """
+        result = mLo.Lo.qi(XUserInputInterception, doc)
+        if result is None:
+            raise mEx.MissingInterfaceError(XUserInputInterception)
+        return result
 
     @classmethod
-    def get_selection_supplier(cls, odoc: object) -> XSelectionSupplier | None:
+    def get_selection_supplier(cls, odoc: object) -> XSelectionSupplier:
+        """
+        Gets selection supplier
+
+        Args:
+            odoc (object): office document
+
+        Raises:
+            mEx.MissingInterfaceError: if odoc does not implement XComponent interface.
+            mEx.MissingInterfaceError: if XSelectionSupplier interface instance is not obtained.
+
+        Returns:
+            XSelectionSupplier: Selection supplier
+        """
         doc = mLo.Lo.qi(XComponent, odoc)
         if doc is None:
-            return None
+            raise mEx.MissingInterfaceError(XComponent, "Not an office document")
         xcontroler = cls.get_current_controller(doc)
-        if xcontroler is None:
-            return None
-        return mLo.Lo.qi(XSelectionSupplier, xcontroler)
+        result = mLo.Lo.qi(XSelectionSupplier, xcontroler)
+        if result is None:
+            raise mEx.MissingInterfaceError(XSelectionSupplier)
+        return result
+            
 
     @classmethod
-    def get_dpi(cls, doc: XComponent) -> XDispatchProviderInterception | None:
+    def get_dpi(cls, doc: XComponent) -> XDispatchProviderInterception:
+        """
+        Gets Dispatch provider interception
+
+        Args:
+            doc (XComponent): office document
+
+        Raises:
+            mEx.MissingInterfaceError: if XDispatchProviderInterception interface instance is not obtained.
+
+        Returns:
+            XDispatchProviderInterception: Dispatch provider interception
+        """
         xframe = cls.get_frame(doc)
-        if xframe is None:
-            return None
-        return mLo.Lo.qi(XDispatchProviderInterception, xframe)
+        result =  mLo.Lo.qi(XDispatchProviderInterception, xframe)
+        if result is None:
+            raise mEx.MissingInterfaceError(XDispatchProviderInterception)
+        return result
 
     # endregion ---------------- controller and frame ------------------
 
     # region ---------------- Office container window ------------------
     @overload
-    @staticmethod
-    def get_window() -> XWindow | None:
+    @classmethod
+    def get_window(cls) -> XWindow:
+        """
+        Gets window
+
+        Returns:
+            XWindow: window instance
+        """
         ...
 
     @overload
-    @staticmethod
-    def get_window(doc: XComponent) -> XWindow | None:
+    @classmethod
+    def get_window(cls, doc: XComponent) -> XWindow:
+        """
+        Gets window
+
+        Args:
+            doc (XComponent): Ofice document
+
+        Returns:
+            XWindow: window instance
+        """
         ...
 
     @classmethod
-    def get_window(cls, doc: XComponent = None) -> XWindow | None:
+    def get_window(cls, doc: XComponent = None) -> XWindow:
+        """
+        Gets window
+
+        Args:
+            doc (XComponent): Ofice document
+
+        Returns:
+            XWindow: window instance
+        """
         if doc is None:
             desktop = mLo.Lo.get_desktop()
             frame = desktop.getCurrentFrame()
-            if frame is None:
-                print("No current frame")
-                return None
             return frame.getContainerWindow()
         else:
             xcontroller = cls.get_current_controller(doc)
-            if xcontroller is None:
-                return None
             return xcontroller.getFrame().getContainerWindow()
 
     @overload
-    @staticmethod
-    def set_visible(is_visible: bool) -> None:
+    @classmethod
+    def set_visible(cls, is_visible: bool) -> None:
+        """
+        Set window visibility.
+
+        Args:
+            is_visible (bool): If True window is set visible; Otherwise, window is set invisible.
+        """
         ...
 
     @overload
-    @staticmethod
-    def set_visible(is_visible: bool, odoc: object) -> None:
+    @classmethod
+    def set_visible(cls, is_visible: bool, odoc: object) -> None:
+        """
+        Set window visibility.
+
+        Args:
+            is_visible (bool): If True window is set visible; Otherwise, window is set invisible.
+            odoc (object): office document
+        """
         ...
 
     @classmethod
     def set_visible(cls, is_visible: bool, odoc: object = None) -> None:
+        """
+        Set window visibility.
+
+        Args:
+            is_visible (bool): If True window is set visible; Otherwise, window is set invisible.
+            odoc (object): office document
+        """
         if odoc is None:
             xwindow = cls.get_window()
         else:
@@ -398,56 +531,95 @@ class GUI:
 
     @classmethod
     def set_size_window(cls, doc: XComponent, width: int, height: int) -> None:
+        """
+        Sets window size
+
+        Args:
+            doc (XComponent): office document
+            width (int): Width of window
+            height (int): Height of window
+        """
         xwindow = cls.get_window(doc)
-        if xwindow is None:
-            return
         rect = xwindow.getPosSize()
         xwindow.setPosSize(rect.X, rect.Y, width, height - 30, PosSize.POSSIZE)
 
     @classmethod
     def set_pos_size(cls, doc: XComponent, x: int, y: int, width: int, height: int) -> None:
+        """
+        Sets window position and size
+
+        Args:
+            doc (XComponent): office document
+            x (int): Window X position
+            y (int): Window Y Position
+            width (int): Window Width
+            height (int): Window Height
+        """
         xwindow = cls.get_window(doc)
-        if xwindow is None:
-            return
         xwindow.setPosSize(x, y, width, height, PosSize.POSSIZE)
 
     @classmethod
-    def get_pos_size(cls, doc: XComponent) -> Rectangle | None:
+    def get_pos_size(cls, doc: XComponent) -> Rectangle:
+        """
+        Gets window position and Size
+
+        Args:
+            doc (XComponent): office document
+
+        Returns:
+            Rectangle: Rectangle representing position and size
+        """
         xwindow = cls.get_window(doc)
-        if xwindow is None:
-            return
         return xwindow.getPosSize()
 
     @staticmethod
-    def get_top_window() -> XTopWindow | None:
+    def get_top_window() -> XTopWindow:
+        """
+        Gets top window
+
+        Raises:
+            mEx.MissingInterfaceError: If XExtendedToolkit interface can not be obtained
+            mEx.MissingInterfaceError: If XTopWindow interface can not be obtained
+
+        Returns:
+            XTopWindow: top window
+        """
         tk = mLo.Lo.create_instance_mcf(XExtendedToolkit, "com.sun.star.awt.Toolkit")
         if tk is None:
-            print("Toolkit not found")
-            return None
+            raise mEx.MissingInterfaceError(XExtendedToolkit)
         top_win = tk.getActiveTopWindow()
         if top_win is None:
-            print("Could not find top window")
-            return None
+            raise mEx.MissingInterfaceError(XTopWindow)
         return top_win
 
     @classmethod
-    def get_title_bar(cls) -> str | None:
+    def get_title_bar(cls) -> str:
+        """
+        Gets title bar from top window
+
+        Raises:
+            mEx.MissingInterfaceError: If XAccessible interface can not be obtained
+            mEx.MissingInterfaceError: If XAccessibleContext interface can not be obtained
+
+        Returns:
+            str: title bar text
+        """
         top_win = cls.get_top_window()
-        if top_win is None:
-            return None
         acc = mLo.Lo.qi(XAccessible, top_win)
         if acc is None:
-            print("Top window not accessible")
-            return None
+            raise mEx.MissingInterfaceError(XAccessible, "Top window not accessible")
         acc_content = acc.getAccessibleContext()
         if acc_content is None:
-            return None
+            raise mEx.MissingInterfaceError(XAccessibleContext)
         return acc_content.getAccessibleName()
 
     @staticmethod
     def get_screen_size() -> Rectangle:
         """
         Get the work area as Rectangle
+
+        Raises:
+            mEx.MissingInterfaceError: If XToolkit interface can not be obtained
 
         Returns:
             Rectangle: Work Area.
@@ -458,16 +630,22 @@ class GUI:
 
             This implemention calls Toolkit.getWorkArea().
 
-            See also: `Toolkit <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1Toolkit.html>`_
+        See also:
+            `Toolkit <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1Toolkit.html>`_
         """
         tk = mLo.Lo.create_instance_mcf(XToolkit, "com.sun.star.awt.Toolkit")
         if tk is None:
-            print("Toolkit not found")
-            return None
+            raise mEx.MissingInterfaceError(XToolkit)
         return tk.getWorkArea()
 
     @staticmethod
     def print_rect(r: Rectangle) -> None:
+        """
+        Prints a rectangle to the console
+
+        Args:
+            r (Rectangle): Rectangle to print
+        """
         print(f"Rectangle: ({r.X}, {r.Y}), {r.Width} -- {r.Height}")
 
     @classmethod
@@ -501,6 +679,7 @@ class GUI:
             print("Unable to support, don't know this system.")
             return None
         handel = int(win_peer.getWindowHandle(pid, system_type))
+        return handel
 
     @staticmethod
     def set_look_feel() -> None:
@@ -558,68 +737,125 @@ class GUI:
     # region ---------------- UI config manager ------------------------
 
     @staticmethod
-    def get_ui_config_manager(doc: XComponent) -> XUIConfigurationManager | None:
+    def get_ui_config_manager(doc: XComponent) -> XUIConfigurationManager:
+        """
+        Gets ui config manager
+
+        Args:
+            doc (XComponent): office document
+
+        Raises:
+            mEx.MissingInterfaceError: If XModel interface can not be obtained
+            mEx.MissingInterfaceError: If XUIConfigurationManagerSupplier interface can not be obtained
+
+        Returns:
+            XUIConfigurationManager: ui config manager
+        """
         xmodel = mLo.Lo.qi(XModel, doc)
         if xmodel is None:
-            print("No XModel interface")
-            return None
+            raise mEx.MissingInterfaceError(XModel)
         xsupplier = mLo.Lo.qi(XUIConfigurationManagerSupplier, xmodel)
         if xsupplier is None:
-            print("No XUIConfigurationManagerSupplier interface")
-            return None
+            raise mEx.MissingInterfaceError(XUIConfigurationManagerSupplier)
         return xsupplier.getUIConfigurationManager()
 
     @staticmethod
-    def get_ui_config_manager_doc(doc: XComponent) -> XUIConfigurationManager | None:
-        doc_type = mInfo.Info.doc_type_string(doc)
+    def get_ui_config_manager_doc(doc: XComponent) -> XUIConfigurationManager:
+        """
+        Gets ui config manager base upon doc type reported by :py:meth:`.Info.doc_type_service`.
+
+        Args:
+            doc (XComponent): office document
+
+        Raises:
+            mEx.MissingInterfaceError: If XModel interface can not be obtained
+            mEx.MissingInterfaceError: If XUIConfigurationManagerSupplier interface can not be obtained
+            Exception: If unable to get XUIConfigurationManager from XUIConfigurationManagerSupplier instance.
+
+        Returns:
+            XUIConfigurationManager: ui config manager
+        """
+        doc_type = mInfo.Info.doc_type_service(doc)
 
         xmodel = mLo.Lo.qi(XModel, doc)
         if xmodel is None:
-            print("No XModel interface")
-            return None
+            raise mEx.MissingInterfaceError(XModel)
         xsupplier = mLo.Lo.qi(XUIConfigurationManagerSupplier, xmodel)
         if xsupplier is None:
-            print("No XUIConfigurationManagerSupplier interface")
-            return None
-        config_man = None
+            raise mEx.MissingInterfaceError(XUIConfigurationManagerSupplier)
         try:
-            config_man = xsupplier.getUIConfigurationManager(doc_type)
+            return xsupplier.getUIConfigurationManager(str(doc_type))
         except Exception as e:
-            print(f"Could not create a config manager using '{doc_type}'")
-            print(f"    {e}")
-        return config_man
+            raise Exception(f"Could not create a config manager using '{doc_type}'") from e           
 
     # region print_ui_cmds()
 
     @overload
-    @staticmethod
-    def print_ui_cmds(ui_elem_name: str, config_man: XUIConfigurationManager) -> None:
+    @classmethod
+    def print_ui_cmds(cls, ui_elem_name: str, config_man: XUIConfigurationManager) -> None:
+        """
+        Prints ui elements matching ``ui_elem_name`` to console.
+
+        Args:
+            ui_elem_name (str): Name of ui element
+            config_man (XUIConfigurationManager): configuration manager
+        """
         ...
 
     @overload
-    @staticmethod
-    def print_ui_cmds(ui_elem_name: str, doc: XComponent) -> None:
+    @classmethod
+    def print_ui_cmds(cls, ui_elem_name: str, doc: XComponent) -> None:
+        """
+        Prints ui elements matching ``ui_elem_name`` to console.
+
+        Args:
+            ui_elem_name (str): Name of ui element
+            doc (XComponent): office document
+        """
         ...
 
     @classmethod
     def print_ui_cmds(cls, *args, **kwargs) -> None:
-        ordered_keys = ("first", "second")
-        kargs = {}
-        kargs["first"] = kwargs.get("ui_elem_name", None)
-        if "config_man" in kwargs:
-            kargs["second"] = kwargs["config_man"]
-        elif "doc" in kwargs:
-            kargs["second"] = kargs["doc"]
+        """
+        Prints ui elements matching ``ui_elem_name`` to console.
+
+        Args:
+            ui_elem_name (str): Name of ui element
+            config_man (XUIConfigurationManager): configuration manager
+            doc (XComponent): office document
+        """
+        ordered_keys = (1, 2)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
+
+        def get_kwargs() -> dict:
+            ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ('ui_elem_name', 'config_man', 'doc')
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("print_ui_cmds() got an unexpected keyword argument")
+            ka[1] = kwargs.get("ui_elem_name", None)
+            keys = ("config_man", "doc")
+            for key in keys:
+                if key in kwargs:
+                    ka[2] = kwargs[key]
+                    break
+            return ka
+
+        if count != 2:
+            raise TypeError("print_ui_cmds() got an invalid numer of arguments")
+
+        kargs = get_kwargs()
+
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
-        if len(kargs) != 2:
-            print("invalid number of arguments for print_ui_cmds()")
-            return
-        obj = mLo.Lo.qi(XUIConfigurationManager, kargs["second"])
+        obj = mLo.Lo.qi(XUIConfigurationManager, kargs[2])
         if obj is None:
-            cls._print_ui_cmds2(ui_elem_name=kargs["first"], doc=kargs["second"])
+            cls._print_ui_cmds2(ui_elem_name=kargs[1], doc=kargs[2])
         else:
-            cls._print_ui_cmds1(ui_elem_name=kargs["first"], config_man=kargs["second"])
+            cls._print_ui_cmds1(ui_elem_name=kargs[1], config_man=kargs[2])
 
     @staticmethod
     def _print_ui_cmds1(
