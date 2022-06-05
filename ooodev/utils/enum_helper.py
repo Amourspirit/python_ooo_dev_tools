@@ -1,4 +1,5 @@
 # coding: utf-8
+"""Uno Enum Helper Methods"""
 import uno
 
 def uno_enum_class_new(cls, value):
@@ -42,5 +43,16 @@ def uno_enum_class_new(cls, value):
     raise ValueError("%r is not a valid %s" % (value, cls.__name__))
 
 
-def uno_enum_class_ne(self, other):
+def uno_enum_class_ne(self, other: object) -> bool:
+    """
+    Enum Not equal method.
+    
+    This method is usuall assigned to an enum.
+
+    Args:
+        other (object): Object to compare
+
+    Returns:
+        bool: False if equal; Othherwise, true
+    """
     return not self.__eq__(other)

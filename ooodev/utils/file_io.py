@@ -103,6 +103,15 @@ class FileIO:
 
     @classmethod
     def uri_to_path(cls, uri_fnm: str) -> str:
+        """
+        Convets uri file to path.
+
+        Args:
+            uri_fnm (str): Uri to convert
+
+        Returns:
+            str: Converted uri as path.
+        """
         return cls.url_to_path(url=uri_fnm)
 
     @staticmethod
@@ -294,6 +303,16 @@ class FileIO:
 
     @staticmethod
     def append_to(fnm: str, msg: str) -> None:
+        """
+        Appends text to a file
+
+        Args:
+            fnm (str): File to append text to.
+            msg (str): Text to append.
+
+        Raises:
+            Exception: If unable to append text.
+        """
         try:
             with open(fnm, "a") as file:
                 file.write(msg)
@@ -321,11 +340,30 @@ class FileIO:
 
     @staticmethod
     def unzip_file(zfa: XZipFileAccess, fnm: str) -> None:
+        """
+        Unzip File. Not yet imeplemented
+
+        Args:
+            zfa (XZipFileAccess): Zip File Access
+            fnm (str): File path
+
+        Raises:
+            NotImplementedError:
+        """
         # TODO: implement unzip_file
         raise NotImplementedError
 
     @staticmethod
     def read_lines(in_stream: XInputStream) -> List[str] | None:
+        """
+        Converts a input stream to a list of strings.
+
+        Args:
+            in_stream (XInputStream): Input stream
+
+        Returns:
+            List[str] | None: If text was found in input stream the list of string; Otherwise, None
+        """
         lines = []
         try:
             tis = Util.Lo.create_instance_mcf(XTextInputStream, "com.sun.star.io.TextInputStream")
@@ -343,6 +381,18 @@ class FileIO:
 
     @classmethod
     def get_mime_type(cls, zfa: XZipFileAccess) -> str | None:
+        """
+        Gets mime type for zip file access
+
+        Args:
+            zfa (XZipFileAccess): zip file access
+
+        Raises:
+            Exception: If error getting mimetype
+
+        Returns:
+            str | None: Mimetype if found; Otherwise, None
+        """
         try:
             in_stream = zfa.getStreamByPattern("mimetype")
             lines = cls.read_lines(in_stream)
@@ -359,6 +409,12 @@ class FileIO:
 
     @staticmethod
     def zip_list(fnm: str) -> None:
+        """
+        Prints info to console for a give zip file.
+
+        Args:
+            fnm (str): Path to zip file.
+        """
         try:
             with zipfile.ZipFile(fnm, "r") as zip:
                 for info in zip.getinfo():

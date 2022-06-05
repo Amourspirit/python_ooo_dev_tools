@@ -254,6 +254,12 @@ class RGB(NamedTuple):
         return int_to_rgb(rgb_int=int(rgb_hex, 16))
 
     def get_luminance(self) -> float:
+        """
+        Gets lumiance value for current color
+
+        Returns:
+            float: luminance value
+        """
         # http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef
 
         RsRGB = self.red / 255
@@ -285,9 +291,23 @@ class RGB(NamedTuple):
         return round(((self.red * 299) + (self.green * 587) + (self.blue * 114)) / 1000)
 
     def is_dark(self) -> bool:
+        """
+        Get is current color is dark.
+        If color has a brightness less than ``128`` it is considered dark.
+
+        Returns:
+            bool: True if color is dark; Othwrwise, False
+        """
         return self.get_brightness() < 128
 
     def is_light(self) -> bool:
+        """
+        Get is current color is light.
+        If color has a brightness Greater than ``128`` it is considered light.
+
+        Returns:
+            bool: True if color is light; Othwrwise, False
+        """
         return not self.is_dark()
 
     def __str__(self) -> str:
@@ -337,10 +357,30 @@ class HSV(NamedTuple):
 
 
 def clamp(value: float, min_value: float, max_value: float) -> float:
+    """
+    Constrains a value to a min and an max value
+
+    Args:
+        value (float): Value to constrain
+        min_value (float): Min allowed value
+        max_value (float): Max allowed value
+
+    Returns:
+        float: constrained value if value is outside of min_value or max_value; Otherwise, value.
+    """
     return max(min_value, min(max_value, value))
 
 
 def clamp01(value: float) -> float:
+    """
+    Gets a value that is constrained between 0.0 and 1.0
+
+    Args:
+        value (float): Value
+
+    Returns:
+        float: A value that is no less than 0.0 and no greater then 1.0
+    """
     return clamp(value, 0.0, 1.0)
 
 
