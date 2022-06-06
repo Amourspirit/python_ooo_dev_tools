@@ -22,6 +22,7 @@ from com.sun.star.util import XMergeable
 
 if TYPE_CHECKING:
     from com.sun.star.table import CellHoriJustify as UnoCellHoriJustify
+    from com.sun.star.table import CellVertJustify as UnoCellVertJustify
 
 
 animals = ("ass", "cat", "cow", "cub", "doe", "dog", "elk", 
@@ -152,6 +153,7 @@ def add_label(doc: XSpreadsheetDocument, sheet: XSpreadsheet, empty_row_num: int
     The text is black and bold in a red cell, and is centered.
     """
     CellHoriJustify = cast('UnoCellHoriJustify', UnoEnum("com.sun.star.table.CellHoriJustify"))
+    CellVertJustify = cast('UnoCellVertJustify', UnoEnum("com.sun.star.table.CellVertJustify"))
     Calc.goto_cell(cell_name=Calc.get_cell_str(col=0, row=empty_row_num), doc=doc)
     
     # Merge first few cells of the last row
@@ -166,5 +168,5 @@ def add_label(doc: XSpreadsheetDocument, sheet: XSpreadsheet, empty_row_num: int
     Props.set_property(prop_set=cell, name="CharWeight", value=FontWeight.BOLD)
     Props.set_property(prop_set=cell, name="CharHeight", value=24)
     Props.set_property(prop_set=cell, name="CellBackColor", value=CommonColor.MISTY_ROSE)
-    Props.set_property(prop_set=cell, name="CharHeight", value=CellHoriJustify.CENTER)
-    Props.set_property(prop_set=cell, name="VertJustify", value=CellHoriJustify.CENTER)
+    Props.set_property(prop_set=cell, name="HoriJustify", value=CellHoriJustify.CENTER)
+    Props.set_property(prop_set=cell, name="VertJustify", value=CellVertJustify.CENTER)
