@@ -56,6 +56,12 @@ class PropertyError(Exception):
         return repr(f"Property Error for: {self.args[0]}")
 
 
+class PropertiesError(Exception):
+    """Error for multiple properties"""
+
+    pass
+
+
 class PropertyNotFoundError(PropertyError):
     """Propery Not Found Error"""
 
@@ -84,7 +90,9 @@ class GoalDivergenceError(Exception):
 
 class UnKnownError(Exception):
     """Error for unnown results"""
+
     pass
+
 
 class UnOpenableError(Exception):
     def __init__(self, fnm: str | Path, *args: object) -> None:

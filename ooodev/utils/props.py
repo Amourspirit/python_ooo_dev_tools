@@ -306,7 +306,7 @@ class Props:
     # region ------------------- show properties of an Object ----------
 
     @classmethod
-    def show_obj_props(cls, prop_kind: str, obj: XServiceInfo) -> None:
+    def show_obj_props(cls, prop_kind: str, obj: object) -> None:
         prop_set = mLo.Lo.qi(XPropertySet, obj)
         if prop_set is None:
             print(f"no {prop_kind} properties found")
@@ -314,13 +314,13 @@ class Props:
         cls.show_props(prop_kind=prop_kind, props_set=prop_set)
     # region    show_props()
     @overload
-    @staticmethod
-    def show_props(title: str, props: Sequence[PropertyValue]) -> None:
+    @classmethod
+    def show_props(cls, title: str, props: Sequence[PropertyValue]) -> None:
         ...
 
     @overload
-    @staticmethod
-    def show_props(prop_kind: str, props_set: XPropertySet) -> None:
+    @classmethod
+    def show_props(cls, prop_kind: str, props_set: XPropertySet) -> None:
         ...
 
     @classmethod

@@ -1740,7 +1740,7 @@ class Lo(metaclass=StaticProperty):
     # ------------------- container manipulation --------------------
 
     @staticmethod
-    def print_table(name: str, table: List[List[str]]) -> None:
+    def print_table(name: str, table: Iterable[Iterable[object]]) -> None:
         """
         Prints table to console
 
