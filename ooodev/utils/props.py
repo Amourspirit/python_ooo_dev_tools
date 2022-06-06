@@ -1,7 +1,7 @@
 # coding: utf-8
+"""make/get/set properties in an array"""
 # Python conversion of Props.java by Andrew Davison, ad@fivedots.coe.psu.ac.th
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
-"""make/get/set properties in an array"""
 # region Imports
 from __future__ import annotations
 from typing import Iterable, Optional, Sequence, Tuple, Union, TYPE_CHECKING, cast, overload
@@ -13,8 +13,8 @@ from com.sun.star.container import XNameAccess
 from com.sun.star.document import XTypeDetection
 from com.sun.star.ui import ItemType  # const
 from com.sun.star.ui import ItemStyle  # const
-from com.sun.star.lang import IllegalArgumentException
 from com.sun.star.uno import RuntimeException
+from com.sun.star.beans import PropertyVetoException
 
 
 if TYPE_CHECKING:
@@ -290,34 +290,179 @@ class Props:
         except Exception as e:
             raise Exception(f"Could not set property '{kargs[2]}'") from e
     
-    @staticmethod
-    def _set_property(prop_set: XPropertySet, name: str, value: object) -> None:
-        """
-        Sets the value of the property with the specified name.
-
-        Args:
-            prop_set (XPropertySet): Property set
-            name (str): Name of property to set value of
-            value (object): property value
-
-        Raises:
-            TypeError: if prop_set is None.
-            Exception: If unable to set property value
-        """
-
-        if prop_set is None:
-            raise TypeError(f"Property set is null; cannot set {name}")
-        try:
-            prop_set.setPropertyValue(name, value)
-        except Exception as e:
-            raise Exception(f"Could not set property '{name}'") from e
     # endregion set_property()
 
     # region    set_properties()
-    
+    @overload
+    @classmethod
+    def set_properties(cls, obj: object, names: Sequence[str], vals: Sequence[object]) -> None:
+        """
+        Set Properties
 
+        Args:
+            obj (object): Object that implements XPropertySet interface
+            names (Sequence[str]): Property Names
+            vals (Sequence[object]): Property Values
+
+        Raises:
+            MissingInterfaceError: if obj does not implement XPropertySet interface
+            MultiError: If unable to set a property
+        """
+        ...
+
+    @overload
+    @classmethod
+    def set_properties(cls, prop_set: XPropertySet, names: Sequence[str], vals: Sequence[object]) -> None:
+        """
+        Set Properties
+
+        Args:
+            prop_set (XPropertySet): Property Set
+            names (Sequence[str]): Property Names
+            vals (Sequence[object]): Property Values
+        
+        Raises:
+            MultiError: If unable to set a property
+        """
+        ...
+
+    @overload
+    @classmethod
+    def set_properties(cls, obj: object, from_obj: object) -> None:
+        """
+        Set properties
+        
+        Properties of ``from_obj`` are assigned to ``obj``
+
+        Args:
+            obj (object): Object that implements XPropertySet interface
+            from_obj (object): Other object that implements XPropertySet interface
+
+        Raises:
+            MissingInterfaceError: if obj does not implement XPropertySet interface
+            MissingInterfaceError: if from_obj does not implement XPropertySet interface
+            MultiError: If unable to set a property
+        """
+        ...
+    
+    @overload
     @classmethod
     def set_properties(cls, prop_set: XPropertySet, from_props: XPropertySet) -> None:
+        """
+        Set properties
+        
+        Properties of ``from_props`` are assigned to ``prop_set``
+
+        Args:
+            prop_set (XPropertySet): Property set
+            from_props (XPropertySet): Property set
+
+        Raises:
+            MultiError: If unable to set a property
+        """
+        ...
+
+
+    @classmethod
+    def set_properties(cls, *args, **kwargs) -> None:
+        """
+        Set Properties
+
+        Args:
+            obj (object): Object that implements XPropertySet interface
+            prop_set (XPropertySet): Property set
+            from_props (XPropertySet): Property set
+            from_obj (object): Other object that implements XPropertySet interface
+            names (Sequence[str]): Property Names
+            vals (Sequence[object]): Property Values
+
+        Raises:
+            MissingInterfaceError: if obj does not implement XPropertySet interface
+            MissingInterfaceError: if from_obj does not implement XPropertySet interface
+            MultiError: If unable to set a property
+        """
+        ordered_keys = (1, 2, 3)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
+
+        def get_kwargs() -> dict:
+            ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ('obj', 'prop_set', 'names', 'from_obj', 'from_props', 'vals')
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("set_properties() got an unexpected keyword argument")
+            keys = ("obj", "prop_set")
+            for key in keys:
+                if key in kwargs:
+                    ka[1] = kwargs[key]
+                    break
+            keys = ("names", "from_obj", "from_props")
+            for key in keys:
+                if key in kwargs:
+                    ka[2] = kwargs[key]
+                    break
+            if count ==2:
+                return ka
+            ka[2] = kwargs.get("vals", None)
+            return ka
+
+        if not count in (2, 3):
+            raise TypeError("set_properties() got an invalid numer of arguments")
+
+        kargs = get_kwargs()
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
+        
+        if mInfo.Info.is_type_interface(kargs[1], XPropertySet.__pyunointerface__):
+            # set_properties(cls, prop_set: XPropertySet, names: Sequence[str], vals: Sequence[object]) -> None
+            # set_properties(cls, prop_set: XPropertySet, from_props: XPropertySet) -> None
+            prop_set = cast(XPropertySet, kargs[1])
+        else:
+            # set_properties(cls, obj: object, names: Sequence[str], vals: Sequence[object]) -> None
+            # set_properties(cls, obj: object, from_obj: object) -> None
+            prop_set = mLo.Lo.qi(XPropertySet, kargs[1])
+            if prop_set is None:
+                raise mEx.MissingInterfaceError(XPropertySet)
+    
+        if count == 3:
+            # set_properties(cls, prop_set: XPropertySet, names: Sequence[str], vals: Sequence[object]) -> None
+            # set_properties(cls, obj: object, names: Sequence[str], vals: Sequence[object]) -> None
+            cls._set_properties_by_vals(prop_set=prop_set, names=kargs[2], vals=kargs[3])
+            return
+            
+        elif count == 2:
+            if mInfo.Info.is_type_interface(kargs[2], XPropertySet.__pyunointerface__):
+                # set_properties(cls, prop_set: XPropertySet, from_props: XPropertySet) -> None
+                from_props = cast(XPropertySet, kargs[2])
+            else:
+                # set_properties(cls, obj: object, from_obj: object) -> None
+                from_props = mLo.Lo.qi(XPropertySet, kargs[1])
+                if from_props is None:
+                    raise mEx.MissingInterfaceError(XPropertySet)
+            cls._set_properties_from_props(prop_set=prop_set, from_props=from_props)
+        
+    
+    @classmethod
+    def _set_properties_by_vals(cls, prop_set: XPropertySet, names: Sequence[str], vals: Sequence[object]) -> None:
+        errs = []
+        for i, name in enumerate(names):
+            try:
+                prop_set.setPropertyValue(name, vals[i])
+            except PropertyVetoException as e:
+                errs.append(
+                    mEx.PropertyError(f"Could not set readonly-property {name}: {e}", e)
+                )
+            except Exception as e:
+                errs.append(
+                    Exception(f"Cound ont set property {name}: {e}", e)
+                )
+        if len(errs) > 0:
+            raise mEx.MultiError(errs)
+            
+    @classmethod
+    def _set_properties_from_props(cls, prop_set: XPropertySet, from_props: XPropertySet) -> None:
         if prop_set is None:
             print(f"Property set is null; cannot set properties")
             return

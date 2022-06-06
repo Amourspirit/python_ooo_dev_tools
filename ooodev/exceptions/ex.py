@@ -1,7 +1,7 @@
 # coding: utf-8
 from email import message
 from pathlib import Path
-from typing import Any
+from typing import Any, List
 
 
 class MissingInterfaceError(Exception):
@@ -106,3 +106,18 @@ class UnOpenableError(Exception):
 
     def __str__(self) -> str:
         return repr(f"Un-openable file: '{self.args[0]}'")
+
+class MultiError(Exception):
+    """Handles Multiple errors"""
+    def __init__(self, errors: List[Exception]) -> None:
+        """
+        MultiError Constructor
+
+        Args:
+            errors (List[Exception]): List of errors
+        """
+        self.errors = errors
+        super().__init__(self.errors)
+
+    def __str__(self) -> str:
+        return "\n".join([str(x) for x in self.errors])
