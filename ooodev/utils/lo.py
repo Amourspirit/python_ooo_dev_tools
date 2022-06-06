@@ -1825,7 +1825,7 @@ class Lo(metaclass=StaticProperty):
         Returns:
             datetime: Null Date on sucess; Otherwise, None
 
-        Notes:
+        Note:
             If Lo has no document to determine date from then a
             default date of 1889/12/30 is returned.
         """

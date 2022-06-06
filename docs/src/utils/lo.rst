@@ -1,6 +1,5 @@
-==
-Lo
-==
+Class Lo
+========
 
 .. autoclass:: ooodev.utils.lo.Lo
     :members:

@@ -162,7 +162,7 @@ class ViewState:
         Returns:
             bool: True if move is successfull; Otherwise False
 
-        Notes:
+        Note:
             The 4 posible view panes are numbered like so
             ::
 

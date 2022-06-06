@@ -652,7 +652,7 @@ class GUI:
         Returns:
             Rectangle: Work Area.
 
-        Notes:
+        Note:
             Original java method used java to get area.
             Original method seemed to return effective size. (i.e. without Windows' taskbar)
 
@@ -687,7 +687,7 @@ class GUI:
         Returns:
             int | None: handel as int on success; Otherwise, None.
 
-        Notes:
+        Note:
             This method was part of original java lib but was only set to work with windows.
             An attemp is made to support Linux and Mac; However, not tested at this point.
 

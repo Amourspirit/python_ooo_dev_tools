@@ -967,7 +967,7 @@ class Calc:
         Returns:
             List[XViewPane] | None: List of XViewPane on success; Otherwise, None
 
-        Notes:
+        Note:
             The com.sun.star.sheet.XViewPane interface's getFirstVisibleColumn(), getFirstVisibleRow(),
             setFirstVisibleColumn() and setFirstVisibleRow() methods query and set the start of
             the exposed area. The getVisibleRange() method returns a com.sun.star.table.
@@ -1813,7 +1813,7 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet
             name (str): Range name such as 'A1:D4' or cell name such as 'B4'
 
-        Notes:
+        Note:
             If ``name`` is a single cell such as ``A1`` then then values are inserter at the named cell
             and expand to the size of the value array.
         """
@@ -4731,7 +4731,7 @@ class Calc:
         Returns:
             XScenario: the newly created scenario
         
-        Notes:
+        Note:
             A LibreOffice Calc scenario is a set of cell values that can be used within your calculations.
             You assign a name to every scenario on your sheet. Define several scenarios on the same sheet,
             each with some different values in the cells. Then you can easily switch the sets of cell values
@@ -4786,7 +4786,7 @@ class Calc:
         Returns:
             XScenario: the applied scenario
 
-        Notes:
+        Note:
             A LibreOffice Calc scenario is a set of cell values that can be used within your calculations.
             You assign a name to every scenario on your sheet. Define several scenarios on the same sheet,
             each with some different values in the cells. Then you can easily switch the sets of cell values

@@ -1,6 +1,5 @@
-========
-gen_util
-========
+Module gen util
+===============
 
 .. automodule:: ooodev.utils.gen_util
     :members:

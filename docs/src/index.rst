@@ -3,20 +3,14 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to OOO Development Tools's documentation!
-=================================================
-
-.. include:: ../README.rst
+src
+===
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-   src/index
+   office/index
+   utils/index
+   exceptions/index
 
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

@@ -1,6 +1,6 @@
-Module color
+Module paths
 ============
 
-.. automodule:: ooodev.utils.color
+.. automodule:: ooodev.utils.paths
     :members:
     :undoc-members:

@@ -384,7 +384,7 @@ class XML:
         Returns:
             str: Flat XML filter name.
 
-        Notes:
+        Note:
             ``doc_type`` is expected to be one of the following:
 
                 * :py:const:`Lo.WRITER_STR`

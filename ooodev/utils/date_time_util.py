@@ -84,4 +84,17 @@ class DateUtil:
             # raise TypeError(time)
             return None
         return ((time.second / 60.0 + time.minute) / 60.0 + time.hour) / 24.0
+
+    @staticmethod
+    def date_time_str(dt: datetime.datetime) -> str:
+        """
+        returns a formated date and time as string
+
+        Args:
+            dt (datetime): date time
+
+        Returns:
+            str: formatted date string such as 'Jun 05, 2022 20:15'
+        """
+        return dt.strftime("%b %d, %Y %H:%M")
     # endregion ------------ convert methods ---------------------------

@@ -209,10 +209,7 @@ def mkdirp(dest_dir: Union[str, Path]) -> None:
     Creates path and subpaths not existing.
 
     Args:
-        dest_dir (Union[str, Path]): PathLike object
-
-    Since:
-        Python 3.5
+        dest_dir (str | Path): PathLike object
     """
     # Python ≥ 3.5
     if isinstance(dest_dir, Path):

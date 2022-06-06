@@ -311,9 +311,13 @@ class TableHelper:
 
 
 class ArgsHelper:
+    "Args Helper"
     class NameValue(NamedTuple):
+        "Name Value pair"
         name: str
+        """Name component"""
         value: Any
+        """Value component"""
 
 class Util:
     @classmethod
@@ -336,8 +340,6 @@ class Util:
 
         Example:
             .. code-block:: python
-
-                
 
                 # non-string iterables    
                 assert is_iterable(arg=("f", "f"))       # tuple

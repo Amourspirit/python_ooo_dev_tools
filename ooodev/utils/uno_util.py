@@ -21,7 +21,7 @@ class UnoEnum:
             MyEnum = UNoEnum("com.sun.star.sheet.FillMode")
             assert FillMode is MyEnum # singleton, same instances
     
-    Notes:
+    Note:
         Uno enums can not be imported directly in python.
 
         ``from com.sun.star.sheet import FillMode`` is not a valid import

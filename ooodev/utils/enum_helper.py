@@ -1,5 +1,9 @@
 # coding: utf-8
-"""Uno Enum Helper Methods"""
+"""
+Uno Enum Helper Methods
+
+These methods are used to add custom functionality to enums or enum like classes.
+"""
 import uno
 
 def uno_enum_class_new(cls, value):
@@ -16,7 +20,7 @@ def uno_enum_class_new(cls, value):
         [uno.Enum]: Enum Instance
 
     Example:
-        ..code-block:: python
+        .. code-block:: python
         
             >>> e = HorizontalAlignment("RIGHT")
             >>> print(e.value)

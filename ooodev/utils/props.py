@@ -4,7 +4,7 @@
 """make/get/set properties in an array"""
 # region Imports
 from __future__ import annotations
-from typing import Any, Iterable, Optional, Sequence, Tuple, Union, TYPE_CHECKING, overload
+from typing import Iterable, Optional, Sequence, Tuple, Union, TYPE_CHECKING, cast, overload
 import uno
 
 from com.sun.star.beans import PropertyAttribute  # const
@@ -20,7 +20,6 @@ from com.sun.star.uno import RuntimeException
 if TYPE_CHECKING:
     from com.sun.star.beans import Property, PropertyValue
     from com.sun.star.container import XIndexAccess
-    from com.sun.star.lang import XServiceInfo
     from com.sun.star.beans import XMultiPropertySet
 
 # import module and not module content to avoid circular import issue.
@@ -38,6 +37,19 @@ class Props:
     # region ------------------- make properties -----------------------
     @staticmethod
     def make_prop_value(name: Optional[str] = None, value: Optional[str] = None) -> PropertyValue:
+        """
+        Makes a Uno Property Value and assigns name and value if present.
+
+        Args:
+            name (Optional[str], optional): Property name
+            value (Optional[str], optional): Property value
+
+        Returns:
+            PropertyValue: com.sun.star.beans.PropertyValue
+
+        See Also:
+            `LibreOffice API PropertyValue <https://api.libreoffice.org/docs/idl/ref/structcom_1_1sun_1_1star_1_1beans_1_1PropertyValue.html>`_
+        """
         p: PropertyValue = uno.createUnoStruct("com.sun.star.beans.PropertyValue")
         if name is not None:
             p.Name = name
@@ -53,6 +65,13 @@ class Props:
         propertiees for a toolbar item using a name and an image
 
         problem: image does not appear next to text on toolbar
+
+        Args:
+            cmd (str): Value of CommandURL
+            item_name (str): Label assigned to bar
+
+        Returns:
+            Tuple[PropertyValue, PropertyValue, PropertyValue, PropertyValue, PropertyValue]: Tuple of properties. (CommandURL, Label, Type, Visible, Style)
         """
         p1 = cls.make_prop_value(name="CommandURL", value=cmd)
         p2 = cls.make_prop_value(name="Label", value=item_name)
@@ -68,19 +87,19 @@ class Props:
         """
         Make Properties
 
-        KeyWord Args:
-            kwargs (key, value): Each key, value pair is assigned to a PropertyValue.
+        Keyword Args:
+            kwargs (Dict[str, Any]): Each key, value pair is assigned to a PropertyValue.
 
         Returns:
             Tuple[PropertyValue, ...]: Tuple of Properties
 
-        Notes:
+        Note:
             String properties such as ``Zoom.Value`` can be pass by constructing a dictionary
             and passing dictionary via exapnsion.
 
             Example Expansion
 
-            .. code::
+            .. code-block:: python
 
                 p_dic = {
                     "Zoom.Value": 0,
@@ -98,16 +117,19 @@ class Props:
 
     # region ------------------- uno -----------------------------------
     @staticmethod
-    def any(*elements: object) -> uno.Any | None:
+    def any(*elements: object) -> uno.Any:
         """
         Gets a uno.Any object for elements.
         
         The first element determines the type for the uno.Any objec.
 
-        Returns:
-            uno.Any | None: uno.Any Object if type can be determined; Othwrwise, None
+        Raises:
+            ValueError: if unable to create uno.Any object.
 
-        Notes:
+        Returns:
+            uno.Any: uno.Any Object
+
+        Note:
             uno.Any is usually constructed in the following manor.
 
             ``uno.Any("[]com.sun.star.table.TableSortField", (sort_one, sort_two)``
@@ -117,7 +139,7 @@ class Props:
             ``Props.any(sort_one, sort_two)``
         """
         if len(elements) == 0:
-            return None
+            raise ValueError("No args to create unn.Any object")
         obj = elements[0]
         if isinstance(obj, uno.Type):
             type_name = obj.typeName
@@ -127,45 +149,172 @@ class Props:
         else:
             type_name = mInfo.Info.get_type_name(obj)
         if type_name is None:
-            return None
+            raise ValueError("Unable to get type name to create uno.Any object")
         return uno.Any(f"[]{type_name}", [*elements])
 
     # endregion ---------------- uno -----------------------------------
 
     # region ------------------- set properties ------------------------
     @staticmethod
-    def set_prop(props: Iterable[PropertyValue], name: str, value: object) -> None:
+    def set_prop(props: Iterable[PropertyValue], name: str, value: object) -> bool:
+        """
+        Sets property value for the first property that has matching name.
+
+        Args:
+            props (Iterable[PropertyValue]): Property Values
+            name (str): Property name
+            value (object): Property Value
+
+        Raises:
+            TypeError: if props is None.
+
+        Returns:
+            bool: True if property matching name has been updated; Otherwise, False
+        """
         if props is None:
-            print(f"Property array is null; cannot set {name}")
-            return
+            TypeError(f"Property array is null; cannot set {name}")
         for prop in props:
             if prop.Name == name:
                 prop.Value = value
-                return
-        print("{name} not found")
+                return True
+        print(f"{name} not found")
+        return False
 
     @staticmethod
-    def get_prop(props: Iterable[PropertyValue], name: str) -> Union[object, None]:
+    def get_prop(props: Iterable[PropertyValue], name: str) -> object | None:
+        """
+        Gets property value for property that matches name.
+
+        Args:
+            props (Iterable[PropertyValue]): Properties to search
+            name (str): Property name to find.
+
+        Raises:
+            TypeError: if props is None.
+
+        Returns:
+            object | None: Property value if found; Otherwise; None
+        """
         if props is None:
-            print(f"Property array is null; cannot get {name}")
-            return None
+            TypeError(f"Property array is null; cannot get {name}")
         for prop in props:
             if prop.Name == name:
                 return prop.Value
         print(f"{name} not found")
         return None
 
+    # region    set_property()
+    @overload
+    @staticmethod
+    def set_property(obj: object, name: str, value: object) -> None:
+        """
+        Sets the value of the property with the specified name.
+
+        Args:
+            obj (object): object that implements XPropertySet interface
+            name (str): Name of property to set value of
+            value (object): property value
+
+        Raises:
+            MissingInterfaceError: If required interface cannot be obtained.
+            Exception: If unable to set property value
+        """
+        ...
+    @overload
     @staticmethod
     def set_property(prop_set: XPropertySet, name: str, value: object) -> None:
+        """
+        Sets the value of the property with the specified name.
+
+        Args:
+            prop_set (XPropertySet): Property set
+            name (str): Name of property to set value of
+            value (object): property value
+
+        Raises:
+            Exception: If unable to set property value
+        """
+        ...
+    
+    @staticmethod
+    def set_property(*args, **kwargs) -> None:
+        """
+        Sets the value of the property with the specified name.
+
+        Args:
+            obj (object): object that implements XPropertySet interface
+            prop_set (XPropertySet): Property set
+            name (str): Name of property to set value of
+            value (object): property value
+
+        Raises:
+            MissingInterfaceError: If required interface cannot be obtained.
+            Exception: If unable to set property value
+        """
+        ordered_keys = (1, 2, 3)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
+
+        def get_kwargs() -> dict:
+            ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ('obj', 'prop_set', 'name', 'value')
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("set_property() got an unexpected keyword argument")
+            keys = ("obj", "prop_set")
+            for key in keys:
+                if key in kwargs:
+                    ka[1] = kwargs[key]
+                    break
+            ka[2] = kwargs.get("name", None)
+            ka[3] = kwargs.get("value", None)
+            return ka
+
+        if count != 3:
+            raise TypeError("set_property() got an invalid numer of arguments")
+
+        kargs = get_kwargs()
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
+
+        if mInfo.Info.is_type_interface(kargs[1], XPropertySet.__pyunointerface__):
+            prop_set = cast(XPropertySet, kargs[1])
+        else:
+            prop_set = mLo.Lo.qi(XPropertySet, kargs[1])
+            if prop_set is None:
+                raise mEx.MissingInterfaceError(XPropertySet)
+        try:
+            prop_set.setPropertyValue(kargs[2], kargs[3])
+        except Exception as e:
+            raise Exception(f"Could not set property '{kargs[2]}'") from e
+    
+    @staticmethod
+    def _set_property(prop_set: XPropertySet, name: str, value: object) -> None:
+        """
+        Sets the value of the property with the specified name.
+
+        Args:
+            prop_set (XPropertySet): Property set
+            name (str): Name of property to set value of
+            value (object): property value
+
+        Raises:
+            TypeError: if prop_set is None.
+            Exception: If unable to set property value
+        """
+
         if prop_set is None:
-            print(f"Property set is null; cannot set '{name}'")
-            return
+            raise TypeError(f"Property set is null; cannot set {name}")
         try:
             prop_set.setPropertyValue(name, value)
-        except IllegalArgumentException as e:
-            print(f"Property '{name}' argument is illegal")
         except Exception as e:
-            print(f"Coul not set property '{name}': {e}")
+            raise Exception(f"Could not set property '{name}'") from e
+    # endregion set_property()
+
+    # region    set_properties()
+    
 
     @classmethod
     def set_properties(cls, prop_set: XPropertySet, from_props: XPropertySet) -> None:
@@ -181,7 +330,7 @@ class Props:
                 prop_set.setPropertyValue(itm, cls.get_property(from_props, itm))
             except Exception as e:
                 print(f"Could not set property '{itm}': {e}")
-
+    # endregion set_properties()
     # endregion ---------------- set properties -----------------------
 
     # region ------------------- get properties ------------------------

@@ -37,6 +37,7 @@ if TYPE_CHECKING:
 from . import lo as mLo
 from . import file_io as mFileIO
 from . import props as mProps
+from . import date_time_util as mDate
 from ..exceptions import ex as mEx
 
 
@@ -366,7 +367,7 @@ class Info:
         Returns:
             str: paths
 
-        Notes:
+        Note:
             There are two different groups of properties.
             One group stores only a single path and the other group stores two or
             more paths - separated by a semicolon.
@@ -1369,7 +1370,8 @@ class Info:
         Returns:
             str: formatted date string such as 'Jun 05, 2022 20:15'
         """
-        return dt.strftime("%b %d, %Y %H:%M")
+        return mDate.DateUtil.date_time_str(dt=dt)
+        
 
     @classmethod
     def print_doc_properties(cls, doc: object) -> None:
@@ -1392,8 +1394,8 @@ class Info:
             print(f"    {e}")
         return
 
-    @staticmethod
-    def print_doc_props(dps: XDocumentProperties) -> None:
+    @classmethod
+    def print_doc_props(cls, dps: XDocumentProperties) -> None:
         """
         Prints doc properties to console
 

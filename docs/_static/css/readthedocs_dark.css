@@ -1,13 +1,18 @@
 html[data-theme='dark'] .highlight .vm {
-    color: #605dc9;
+    color: #605dc9 !important;
 }
 
 html[data-theme='dark'] .highlight .gp {
-    color: #5e5e9d;
+    color: #900 !important;
 }
 
-html[data-theme='dark'] .highlight .nf {
-    color: #5151f5;
+html[data-theme='dark'] .highlight .nf,
+.highlight .nc {
+    color: #0cff3e !important;
+}
+
+html[data-theme="dark"] .highlight .nb {
+    color: #2e9d1e !important;
 }
 
 html[data-theme='dark'].writer-html4 .rst-content dl:not(.docutils) .descclassname,

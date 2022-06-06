@@ -1,6 +1,5 @@
-====
-info
-====
+Class Info
+==========
 
 .. autoclass:: ooodev.utils.info.Info
     :members:
