@@ -45,8 +45,9 @@ class UnoEnum:
         In the above example ``FillMode`` will have full typing (intellsense) at design time.
         At runtime cast simply returns the UnoEnum instance.
 
-        Note that ``"UnoFillMode"`` is wrapped in quotes. This is necessary.
-        Without wrapping in quotes python will look for the import at runtime.
+        Note that ``"UnoFillMode"`` is wrapped in quotes. This is necessary for typing reasons.
+        Without wrapping in quotes python will look for the import at runtime
+        which will not be available becuase is in a ``TYPE_CHECKING`` block.
     """
     _loaded = {}
     _initialized = False  # This class var is important. It is always False.

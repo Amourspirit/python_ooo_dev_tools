@@ -11,7 +11,7 @@ from ooodev.utils.lo import Lo
 from ooodev.utils.color import CommonColor
 from ooodev.utils.props import Props
 from ooodev.utils.view_state import ViewState
-from ooodev.utils.uno_util import UnoEnum
+from ooodev.utils.uno_enum import UnoEnum
 from ooodev.office.calc import Calc
 
 from com.sun.star.awt import FontWeight

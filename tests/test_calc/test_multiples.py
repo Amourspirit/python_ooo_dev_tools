@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 
 def test_multiples(loader) -> None:
     from com.sun.star.sheet import XMultipleOperation
-    from ooodev.utils.uno_util import UnoEnum
+    from ooodev.utils.uno_enum import UnoEnum
     FillDirection = cast('UnoFillDirection', UnoEnum("com.sun.star.sheet.FillDirection"))
     TableOperationMode = cast('UnoTableOperationMode', UnoEnum("com.sun.star.sheet.TableOperationMode"))
         # cast using string as uno enum's are not a legal import in python
