@@ -3,7 +3,7 @@ import platform
 from enum import Enum
 
 class SysInfo:
-    
+    """System Info related"""
     class PlatformEnum(str, Enum):
         UNKNOWN = 'Unknown'
         WINDOWS = "Windows"
@@ -12,6 +12,12 @@ class SysInfo:
     
     @staticmethod
     def get_platform() -> 'SysInfo.PlatformEnum':
+        """
+        Gets current platform
+
+        Returns:
+            SysInfo.PlatformEnum: Platform Enum
+        """
         s = platform.system().lower()
         if s == 'windows':
             return SysInfo.PlatformEnum.WINDOWS

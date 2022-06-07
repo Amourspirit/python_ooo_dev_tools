@@ -5,11 +5,13 @@ Various color conversions utilities.
 import math
 import colorsys
 from typing import Union, NamedTuple, overload
-
+import numbers
 # ref: https://gist.github.com/mathebox/e0805f72e7db3269ec22
 
 MAX_COLOR = 255
+"""Max Color Value"""
 MIN_COLOR = 0
+"""Min Color Value"""
 
 class CommonColor:
     # https://en.wikipedia.org/wiki/Web_colors
@@ -518,7 +520,7 @@ def rgb_to_hex(rgb: RGB) -> str:
     Converts rgb colors to int
 
     Args:
-        rgb (color): Tuple of int with values from 0 to MAX_COLOR
+        rgb (color): Tuple of int with values from 0 to 255
 
     Returns:
         str: rgb as hex string
@@ -538,7 +540,7 @@ def rgb_to_int(rgb: RGB) -> int:
     Converts rgb colors to int
 
     Args:
-        rgb (color): Tuple of int with values from 0 to MAX_COLOR
+        rgb (color): Tuple of int with values from 0 to 255
 
     Returns:
         int: rgb as int
@@ -563,32 +565,21 @@ def int_to_rgb(rgb_int: int) -> RGB:
 
 
 @overload
-def lighten(rgb_color: int, percent: float) -> RGB:
+def lighten(rgb_color: int, percent: numbers.Number) -> RGB:
     ...
-
 
 @overload
-def lighten(rgb_color: RGB, percent: float) -> RGB:
+def lighten(rgb_color: RGB, percent: numbers.Number) -> RGB:
     ...
 
 
-@overload
-def lighten(rgb_color: int, percent: int) -> RGB:
-    ...
-
-
-@overload
-def lighten(rgb_color: RGB, percent: int) -> RGB:
-    ...
-
-
-def lighten(rgb_color: Union[RGB, int], percent: Union[float, int]) -> RGB:
+def lighten(rgb_color: Union[RGB, int], percent: numbers.Number) -> RGB:
     """
     Lightenes an rgb instance
 
     Args:
-        rgb_color (Union[rgb, int]): instanct containing data
-        percent (Union[float, int]): Amount between 0 and 100 int lighten rgb by.
+        rgb_color (rgb | int): instanct containing data
+        percent (Number): Amount between 0 and 100 int lighten rgb by.
 
     Raises:
         ValueError: if percent is out of range
@@ -615,32 +606,22 @@ def lighten(rgb_color: Union[RGB, int], percent: Union[float, int]) -> RGB:
 
 
 @overload
-def darken(rgb_color: int, percent: float) -> RGB:
+def darken(rgb_color: int, percent: numbers.Number) -> RGB:
     ...
 
 
 @overload
-def darken(rgb_color: RGB, percent: float) -> RGB:
+def darken(rgb_color: RGB, percent: numbers.Number) -> RGB:
     ...
 
 
-@overload
-def darken(rgb_color: int, percent: int) -> RGB:
-    ...
-
-
-@overload
-def darken(rgb_color: RGB, percent: int) -> RGB:
-    ...
-
-
-def darken(rgb_color: Union[RGB, int], percent: Union[float, int]) -> RGB:
+def darken(rgb_color: Union[RGB, int], percent: numbers.Number) -> RGB:
     """
     Darkens an rgb instance
 
     Args:
-        rgb_color (Union[rgb, int]): instanct containing data
-        percent (Union[float, int]): Amount between 0 and 100 int darken rgb by.
+        rgb_color (rgb | int): instanct containing data
+        percent (Number): Amount between 0 and 100 int darken rgb by.
 
     Raises:
         ValueError: if percent is out of range
