@@ -1834,7 +1834,7 @@ class Info:
         elif hasattr(obj, "queryInterface"):
             uno_t = uno.getTypeByName(type_name)
             q_obj = obj.queryInterface(uno_t)
-            if q_obj:
+            if q_obj is not None:
                 return True
         return False
 

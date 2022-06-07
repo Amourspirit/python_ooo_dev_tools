@@ -4,9 +4,10 @@
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 # region Imports
 from __future__ import annotations
-from typing import Iterable, Optional, Sequence, Tuple, Union, TYPE_CHECKING, cast, overload
+from typing import Iterable, List, Optional, Sequence, Tuple, Union, TYPE_CHECKING, cast, overload
 import uno
 
+from com.sun.star.uno import XInterface
 from com.sun.star.beans import PropertyAttribute  # const
 from com.sun.star.beans import XPropertySet
 from com.sun.star.container import XNameAccess
@@ -15,11 +16,11 @@ from com.sun.star.ui import ItemType  # const
 from com.sun.star.ui import ItemStyle  # const
 from com.sun.star.uno import RuntimeException
 from com.sun.star.beans import PropertyVetoException
+from com.sun.star.container import XIndexAccess
 
 
 if TYPE_CHECKING:
     from com.sun.star.beans import Property, PropertyValue
-    from com.sun.star.container import XIndexAccess
     from com.sun.star.beans import XMultiPropertySet
 
 # import module and not module content to avoid circular import issue.
@@ -405,7 +406,7 @@ class Props:
                     break
             if count ==2:
                 return ka
-            ka[2] = kwargs.get("vals", None)
+            ka[3] = kwargs.get("vals", None)
             return ka
 
         if not count in (2, 3):
@@ -463,6 +464,7 @@ class Props:
             
     @classmethod
     def _set_properties_from_props(cls, prop_set: XPropertySet, from_props: XPropertySet) -> None:
+        errs = []
         if prop_set is None:
             print(f"Property set is null; cannot set properties")
             return
@@ -474,17 +476,43 @@ class Props:
             try:
                 prop_set.setPropertyValue(itm, cls.get_property(from_props, itm))
             except Exception as e:
-                print(f"Could not set property '{itm}': {e}")
+                errs.append(Exception(f"Could not set property '{itm}': {e}", e))
+        if len(errs) > 0:
+            raise mEx.MultiError(errs)
+
     # endregion set_properties()
     # endregion ---------------- set properties -----------------------
 
     # region ------------------- get properties ------------------------
+
+    # region    get_property()
+    @overload
     @staticmethod
-    def get_property(xprops: XPropertySet, name: str) -> object:
+    def get_property(obj: object, name: str) -> object:
         """
-        Gets a property from property set
+        Gets a property value from property set
 
         Args:
+            obj (object): object that implements XPropertySet interface
+            xprops (XPropertySet): property set
+            name (str): property name
+
+        Raises:
+            PropertyNotFoundError: If unable to get property
+            MissingInterfaceError: if obj does not implement XPropertySet interface
+
+        Returns:
+            object: property value
+        """
+        ...
+    @overload
+    @staticmethod
+    def get_property(prop_set: XPropertySet, name: str) -> object:
+        """
+        Gets a property value from property set
+
+        Args:
+            obj (object): object that implements XPropertySet interface
             xprops (XPropertySet): property set
             name (str): property name
 
@@ -492,24 +520,108 @@ class Props:
             PropertyNotFoundError: If unable to get property
 
         Returns:
-            object: property values
+            object: property value
         """
+        ...
+        
+    @staticmethod
+    def get_property(*args, **kwargs) -> object:
+        """
+        Gets a property value from property set
+
+        Args:
+            obj (object): object that implements XPropertySet interface
+            xprops (XPropertySet): property set
+            name (str): property name
+
+        Raises:
+            PropertyNotFoundError: If unable to get property
+            MissingInterfaceError: if obj does not implement XPropertySet interface
+
+        Returns:
+            object: property value
+        """
+        ordered_keys = (1, 2)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
+
+        def get_kwargs() -> dict:
+            ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ('obj', 'prop_set', 'name')
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("get_property() got an unexpected keyword argument")
+            keys = ("obj", "prop_set")
+            for key in keys:
+                if key in kwargs:
+                    ka[1] = kwargs[key]
+                    break
+            ka[2] = kwargs.get("name", None)
+            return ka
+
+        if count != 2:
+            raise TypeError("get_property() got an invalid numer of arguments")
+
+        kargs = get_kwargs()
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
+        
+        if mInfo.Info.is_type_interface(kargs[1], XPropertySet.__pyunointerface__):
+            prop_set = cast(XPropertySet, kargs[1])
+        else:
+            prop_set = mLo.Lo.qi(XPropertySet, kargs[1])
+            if prop_set is None:
+                raise mEx.MissingInterfaceError(XPropertySet)
+        name = kargs[2]
         try:
             try:
-                return xprops.getPropertyValue(name)
+                return prop_set.getPropertyValue(name)
             except RuntimeException as e:
-                print(f"Could not get runtime property '{name}': {e}")
+                mEx.PropertyError(name, f"Could not get runtime property '{name}': {e}")
         except Exception as e:
             raise mEx.PropertyNotFoundError(prop_name=name) from e
+    # endregion    get_property()
 
     @staticmethod
-    def get_properties(prop_set: XPropertySet) -> Tuple[PropertyValue, ...]:
+    def get_properties(obj: object) -> Tuple[Property, ...]:
+        """
+        Get properties
+
+        Args:
+            obj (object): Object that implements XPropertySet interface
+
+        Raises:
+            MissingInterfaceError: if obj dos not implement XPropertySet
+
+        Returns:
+            Tuple[Property, ...]: Properties of obj
+        """
+        prop_set = mLo.Lo.qi(XPropertySet, obj)
+        if prop_set is None:
+            raise mEx.MissingInterfaceError(XPropertySet)
         props = list(prop_set.getPropertySetInfo().getProperties())
         props.sort(key=lambda prop: prop.Name)
         return tuple(props)
 
     @staticmethod
-    def get_prop_names(prop_set: XPropertySet) -> Tuple[str, ...]:
+    def get_prop_names(obj: object) -> Tuple[str, ...]:
+        """
+        Gets property names
+
+        Args:
+            obj (object): Object that implements XPropertySet interface
+
+        Raises:
+            MissingInterfaceError: if obj dos not implement XPropertySet
+
+        Returns:
+            Tuple[str, ...]: Property names of obj
+        """
+        prop_set = mLo.Lo.qi(XPropertySet, obj)
+        if prop_set is None:
+            raise mEx.MissingInterfaceError(XPropertySet)
         props = prop_set.getPropertySetInfo().getProperties()
         nms = []
         for prop in props:
@@ -541,24 +653,118 @@ class Props:
     # region ------------------- show properties array -----------------
 
     @classmethod
-    def show_indexed_props(cls, title: str, obj: XIndexAccess) -> None:
-        if not hasattr(obj, "getCount"):
+    def show_indexed_props(cls, title: str, obj: object) -> None:
+        """
+        Prints objects properties to console
+
+        Args:
+            title (str): Title to print
+            obj (object): object that implements XIndexAccess
+        
+        Example:
+            .. code-block:: python
+
+                >>> from ooodev.office.calc import Calc
+                >>> from ooodev.utils.props import Props
+                >>> from ooodev.utils.lo import Lo
+                >>> loader = Lo.load_office()
+                >>> doc = Calc.create_doc(loader)
+                >>> sheets = Calc.get_sheets(doc)
+                >>> Props.show_indexed_props("Sheets Property", sheets)
+                Indexed Properties for 'Sheets Property':
+                No. of elements: 1
+                Elem 0 Properties
+                  AbsoluteName: $Sheet1.$A$1:$AMJ$1048576
+                  AsianVerticalMode: False
+                  AutomaticPrintArea: True
+                  BorderColor: None
+                  BottomBorder: (com.sun.star.table.BorderLine2){ (com.sun.star.table.BorderLine){ Color = (long)0x0, InnerLineWidth = (short)0x0, OuterLineWidth = (short)0x0, LineDistance = (short)0x0 }, LineStyle = (short)0x0, LineWidth = (unsigned long)0x0 }
+                  BottomBorder2: (com.sun.star.table.BorderLine2){ (com.sun.star.table.BorderLine){ Color = (long)0x0, InnerLineWidth = (short)0x0, OuterLineWidth = (short)0x0, LineDistance = (short)0x0 }, LineStyle = (short)0x0, LineWidth = (unsigned long)0x0 }
+                  CellBackColor: -1
+                  CellProtection: (com.sun.star.util.CellProtection){ IsLocked = (boolean)true, IsFormulaHidden = (boolean)false, IsHidden = (boolean)false, IsPrintHidden = (boolean)false }
+                  CellStyle: Default
+                  CharColor: -1
+                  ...
+        """
+        print(f"Indexed Properties for '{title}':")
+        in_acc = mLo.Lo.qi(XIndexAccess, obj)
+        if in_acc is None:
             print("Could not convert object to an IndexAccess container")
             return
-        num_elems = obj.getCount()
+
+        num_elems = in_acc.getCount()
         print(f"No. of elements: {num_elems}")
         if num_elems == 0:
             return
-        for i in range(num_elems - 1):
+        for i in range(num_elems):
             try:
-                props: Tuple[PropertyValue, ...] = obj.getByIndex(i)
+                # PropertyValue[] props = Lo.qi(PropertyValue[].class, inAcc.getByIndex(i));
+                # above line is original java code.
+                # perhapsh thre is a way to alos include PropertyValue[] queryInterface
+                props = mLo.Lo.qi(XPropertySet, in_acc.getByIndex(i))
+                if props is None:
+                    return
+                
                 cls.show_props(f"Elem {i}", props)
                 print("----")
             except Exception as e:
                 print(f"Could not get elem {i}: {e}")
 
-    @staticmethod
-    def prop_value_to_string(val: Union[Iterable[PropertyValue], Iterable[str], object]) -> str:
+    @classmethod
+    def prop_value_to_string(cls, val: object) -> str:
+        """
+        Gets property values a a string
+
+        Args:
+            val (object): Values such as a Itter of PropertyValue or
+                object that implements XPropertySet or
+                a string
+
+        Returns:
+            str: A string representing properties
+        
+        Example:
+             .. code-block:: python
+
+                >>> from ooodev.office.calc import Calc
+                >>> from ooodev.utils.props import Props
+                >>> from ooodev.utils.lo import Lo
+                >>> loader = Lo.load_office()
+                >>> doc = Calc.create_doc(loader)
+                >>> sheet = Calc.get_sheet(doc=doc, index=0)
+                >>> prop_str = Props.prop_value_to_string(sheet)
+                >>> print(prop_str)
+                [
+                    AbsoluteName = $Sheet1.$A$1:$AMJ$1048576
+                    AsianVerticalMode = False
+                    AutomaticPrintArea = True
+                    BorderColor = None
+                    BottomBorder = (com.sun.star.table.BorderLine2){ (com.sun.star.table.BorderLine){ Color = (long)0x0, InnerLineWidth = (short)0x0, OuterLineWidth = (short)0x0, LineDistance = (short)0x0 }, LineStyle = (short)0x0, LineWidth = (unsigned long)0x0 }
+                    BottomBorder2 = (com.sun.star.table.BorderLine2){ (com.sun.star.table.BorderLine){ Color = (long)0x0, InnerLineWidth = (short)0x0, OuterLineWidth = (short)0x0, LineDistance = (short)0x0 }, LineStyle = (short)0x0, LineWidth = (unsigned long)0x0 }
+                    CellBackColor = -1
+                    CellProtection = (com.sun.star.util.CellProtection){ IsLocked = (boolean)true, IsFormulaHidden = (boolean)false, IsHidden = (boolean)false, IsPrintHidden = (boolean)false }
+                    CellStyle = Default
+                    CharColor = -1
+                    ...
+                ]
+        """
+        def get_pv_str(vals) -> str:
+            lines = []
+            for p in vals:
+                try:
+                    # value = cls.get_property()
+                    lines.append(f"{p.Name} = {p.Value}")
+                except AttributeError:
+                    continue
+            return "[\n    " + "\n    ".join(lines) + "\n]"
+    
+        def get_property_set_str(prop_set, props) -> str:
+            lines = []
+            for p in props:
+                value = cls.get_property(prop_set, p.Name)
+                lines.append(f"{p.Name} = {value}")
+            return "[\n    " + "\n    ".join(lines) + "\n]"
+        
         if val is None:
             return ""
         if isinstance(val, str):
@@ -573,22 +779,32 @@ class Props:
             is_iter = True
         if is_iter:
 
-            if len(val) == 0:
-                return ""
-            if isinstance(val[0], str):
-                # assume Iterable[str]
-                return ", ".join(val)
+            try:
+                if isinstance(val[0], str):
+                    # assume Iterable[str]
+                    return ", ".join(val)
+            except Exception:
+                pass
+            
             # assume Iterable[PropertyValue]
-            s = "["
-            for p in val:
-                s += f"\n    {p.Name} = {p.Value}"
-            s += "\n  ]"
-            return s
+            return get_pv_str(val)
         else:
+            xprops = mLo.Lo.qi(XPropertySet, val)
+            if xprops is not None:
+                lst = list(cls.props_set_to_tuple(xprops))
+                lst.sort(key=lambda prop: prop.Name)
+                return get_property_set_str(xprops, lst)
             return str(val)
 
     @classmethod
     def show_values(cls, name: str, props: Iterable[PropertyValue]) -> None:
+        """
+        Prints property to console
+
+        Args:
+            name (str): Property Name
+            props (Iterable[PropertyValue]): Properties
+        """
         for prop in props:
             if prop.Name == name:
                 print(f"{prop.Name}: {cls.prop_value_to_string(prop.Value)}")
@@ -601,6 +817,13 @@ class Props:
 
     @classmethod
     def show_obj_props(cls, prop_kind: str, obj: object) -> None:
+        """
+        Prints properties for an object to the console
+
+        Args:
+            prop_kind (str): The kind of properties that is displayed in console
+            obj (object): object the implements XPropertySet interface.
+        """
         prop_set = mLo.Lo.qi(XPropertySet, obj)
         if prop_set is None:
             print(f"no {prop_kind} properties found")
@@ -610,15 +833,38 @@ class Props:
     @overload
     @classmethod
     def show_props(cls, title: str, props: Sequence[PropertyValue]) -> None:
+        """
+        Prints properties to console
+
+        Args:
+            title (str): Title to use that is displayed in console
+            props (Sequence[PropertyValue]): Properties to print
+        """
         ...
 
     @overload
     @classmethod
     def show_props(cls, prop_kind: str, props_set: XPropertySet) -> None:
+        """
+        Prints properties to console
+
+        Args:
+            prop_kind (str): The kind of properties that is displayed in console
+            props_set (XPropertySet): object the implements XPropertySet interface.
+        """
         ...
 
     @classmethod
     def show_props(cls, *args, **kwargs) -> None:
+        """
+        Prints properties to console
+
+        Args:
+            title (str): Title to use that is displayed in console
+            props (Sequence[PropertyValue]): Properties to print
+            prop_kind (str): The kind of properties that is displayed in console
+            props_set (XPropertySet): object the implements XPropertySet interface.
+        """
         ordered_keys = (1, 2)
         kargs_len = len(kwargs)
         count = len(args) + kargs_len
@@ -664,7 +910,10 @@ class Props:
         if props is None:
             print("  none found")
             return
-        for prop in props:
+        lst = list(props)
+        lst.sort(key=lambda prop: prop.Name)
+        for prop in lst:
+            
             print(f"  {prop.Name}: {cls.prop_value_to_string(prop.Value)}")
         print()
 
@@ -678,14 +927,23 @@ class Props:
         lst.sort(key=lambda prop: prop.Name)
         print(f"{prop_kind} Properties")
         for prop in lst:
-            prop_value = cls.get_property(xprops=props_set, name=prop.Name)
-            print(f"  {prop.Name} == {prop_value}")
+            prop_value = cls.get_property(props_set, prop.Name)
+            print(f"  {prop.Name}: {prop_value}")
         print()
 
     # endregion  show_props()
 
     @staticmethod
     def props_set_to_tuple(xprops: XPropertySet) -> Tuple[Property, ...]:
+        """
+        Converts Property Set to Tuple of Property
+
+        Args:
+            xprops (XPropertySet): Property set
+
+        Returns:
+            Tuple[Property, ...]: Tuple of Property
+        """
         if xprops is None:
             return ()
         xprops_info = xprops.getPropertySetInfo()
@@ -695,17 +953,45 @@ class Props:
 
     @staticmethod
     def show_property(p: Property) -> str:
+        """
+        Gets a property Name and type as string.
+
+        Args:
+            p (Property): Property to print
+
+        Returns:
+            str: Property inf format of 'Name: TypeName'
+        """
         return f"{p.Name}: {p.Type.getTypeName()}"
 
     # endregion ---------------- show properties of an Object ----------
 
     # region ------------------- others --------------------------------
     @staticmethod
-    def has_property(prop_set: XPropertySet, name: str) -> bool:
+    def has_property(obj: object, name: str) -> bool:
+        """
+        Gets if a object contains a property matching name
+
+        Args:
+            obj (object): An object that implements XPropertySet
+            name (str): Property Name
+
+        Returns:
+            bool: True if obj contains Property that matches name; Otherwise, False
+        """
+        prop_set = mLo.Lo.qi(XPropertySet, obj)
+        if prop_set is None:
+            return False
         return prop_set.getPropertySetInfo().hasPropertyByName(name)
 
     @classmethod
     def show_doc_type_props(cls, type: str) -> None:
+        """
+        Prints doc type info to console
+
+        Args:
+            type (str): doc type
+        """
         if type is None:
             print("type is None")
             return
@@ -723,6 +1009,15 @@ class Props:
 
     @staticmethod
     def get_bound_props(props_set: XMultiPropertySet) -> Tuple[str, ...]:
+        """
+        Gets bound Properties
+
+        Args:
+            props_set (XMultiPropertySet): Multi Property Set
+
+        Returns:
+            Tuple[str, ...]: Bound names
+        """
         props = props_set.getPropertySetInfo().getProperties()
         names = []
         for p in props:
@@ -736,6 +1031,7 @@ class Props:
             print("No suitable properties were found")
             return ()
         print(f"No. of suitable properties: {names_len}")
+        names.sort()
         return tuple(names)
 
     # endregion ---------------- others --------------------------------

@@ -2210,7 +2210,7 @@ def test_add_border(loader) -> None:
     # add_border(sheet: XSpreadsheet, range_name: str)
     rng = Calc.add_border(sheet=sheet, range_name=rng_name)
     assert rng is not None
-    tbl_border = cast(TableBorder2, Props.get_property(xprops=rng, name="TableBorder2"))
+    tbl_border = cast(TableBorder2, Props.get_property(prop_set=rng, name="TableBorder2"))
     assert tbl_border.LeftLine.Color == 0
     assert tbl_border.RightLine.Color == 0
     assert tbl_border.TopLine.Color == 0
@@ -2218,7 +2218,7 @@ def test_add_border(loader) -> None:
     Lo.delay(delay)
     cell_rng = Calc.add_border(sheet, rng_name)
     assert cell_rng is not None
-    tbl_border = cast(TableBorder2, Props.get_property(xprops=cell_rng, name="TableBorder2"))
+    tbl_border = cast(TableBorder2, Props.get_property(prop_set=cell_rng, name="TableBorder2"))
     assert tbl_border.LeftLine.Color == 0
     assert tbl_border.RightLine.Color == 0
     assert tbl_border.TopLine.Color == 0
@@ -2228,7 +2228,7 @@ def test_add_border(loader) -> None:
     Lo.delay(delay)
     cell_rng = Calc.add_border(sheet=sheet, cell_range=rng)
     assert cell_rng is not None
-    tbl_border = cast(TableBorder2, Props.get_property(xprops=cell_rng, name="TableBorder2"))
+    tbl_border = cast(TableBorder2, Props.get_property(prop_set=cell_rng, name="TableBorder2"))
     assert tbl_border.LeftLine.Color == 0
     assert tbl_border.RightLine.Color == 0
     assert tbl_border.TopLine.Color == 0
@@ -2236,7 +2236,7 @@ def test_add_border(loader) -> None:
     Lo.delay(delay)
     cell_rng = Calc.add_border(sheet, rng)
     assert cell_rng is not None
-    tbl_border = cast(TableBorder2, Props.get_property(xprops=cell_rng, name="TableBorder2"))
+    tbl_border = cast(TableBorder2, Props.get_property(prop_set=cell_rng, name="TableBorder2"))
     assert tbl_border.LeftLine.Color == 0
     assert tbl_border.RightLine.Color == 0
     assert tbl_border.TopLine.Color == 0
@@ -2246,7 +2246,7 @@ def test_add_border(loader) -> None:
     Lo.delay(delay)
     cell_rng = Calc.add_border(sheet=sheet, cell_range=rng, color=color.CommonColor.GREEN)
     assert cell_rng is not None
-    tbl_border = cast(TableBorder2, Props.get_property(xprops=cell_rng, name="TableBorder2"))
+    tbl_border = cast(TableBorder2, Props.get_property(prop_set=cell_rng, name="TableBorder2"))
     assert tbl_border.LeftLine.Color == color.CommonColor.GREEN
     assert tbl_border.RightLine.Color == color.CommonColor.GREEN
     assert tbl_border.TopLine.Color == color.CommonColor.GREEN
@@ -2254,7 +2254,7 @@ def test_add_border(loader) -> None:
     Lo.delay(delay)
     cell_rng = Calc.add_border(sheet, rng, color.CommonColor.DARK_BLUE)
     assert cell_rng is not None
-    tbl_border = cast(TableBorder2, Props.get_property(xprops=cell_rng, name="TableBorder2"))
+    tbl_border = cast(TableBorder2, Props.get_property(prop_set=cell_rng, name="TableBorder2"))
     assert tbl_border.LeftLine.Color == color.CommonColor.DARK_BLUE
     assert tbl_border.RightLine.Color == color.CommonColor.DARK_BLUE
     assert tbl_border.TopLine.Color == color.CommonColor.DARK_BLUE
@@ -2264,7 +2264,7 @@ def test_add_border(loader) -> None:
     Lo.delay(delay)
     cell_rng = Calc.add_border(sheet=sheet, range_name=rng_name, color=color.CommonColor.GREEN)
     assert cell_rng is not None
-    tbl_border = cast(TableBorder2, Props.get_property(xprops=cell_rng, name="TableBorder2"))
+    tbl_border = cast(TableBorder2, Props.get_property(prop_set=cell_rng, name="TableBorder2"))
     assert tbl_border.LeftLine.Color == color.CommonColor.GREEN
     assert tbl_border.RightLine.Color == color.CommonColor.GREEN
     assert tbl_border.TopLine.Color == color.CommonColor.GREEN
@@ -2272,7 +2272,7 @@ def test_add_border(loader) -> None:
     Lo.delay(delay)
     cell_rng = Calc.add_border(sheet, rng, color.CommonColor.DARK_BLUE)
     assert cell_rng is not None
-    tbl_border = cast(TableBorder2, Props.get_property(xprops=cell_rng, name="TableBorder2"))
+    tbl_border = cast(TableBorder2, Props.get_property(prop_set=cell_rng, name="TableBorder2"))
     assert tbl_border.LeftLine.Color == color.CommonColor.DARK_BLUE
     assert tbl_border.RightLine.Color == color.CommonColor.DARK_BLUE
     assert tbl_border.TopLine.Color == color.CommonColor.DARK_BLUE
@@ -2283,7 +2283,7 @@ def test_add_border(loader) -> None:
     bval = Calc.BorderEnum.TOP_BORDER | Calc.BorderEnum.LEFT_BORDER
     cell_rng = Calc.add_border(sheet=sheet, cell_range=rng, color=color.CommonColor.BLACK)  # reset colors
     cell_rng = Calc.add_border(sheet=sheet, cell_range=rng, color=color.CommonColor.GREEN, border_vals=int(bval))
-    tbl_border = cast(TableBorder2, Props.get_property(xprops=cell_rng, name="TableBorder2"))
+    tbl_border = cast(TableBorder2, Props.get_property(prop_set=cell_rng, name="TableBorder2"))
     assert tbl_border.TopLine.Color == color.CommonColor.GREEN
     assert tbl_border.LeftLine.Color == color.CommonColor.GREEN
     assert tbl_border.RightLine.Color == color.CommonColor.BLACK
@@ -2291,7 +2291,7 @@ def test_add_border(loader) -> None:
     Lo.delay(delay)
     cell_rng = Calc.add_border(sheet=sheet, cell_range=rng, color=color.CommonColor.BLACK)  # reset colors
     cell_rng = Calc.add_border(sheet, rng, color.CommonColor.DARK_BLUE, int(bval))
-    tbl_border = cast(TableBorder2, Props.get_property(xprops=cell_rng, name="TableBorder2"))
+    tbl_border = cast(TableBorder2, Props.get_property(prop_set=cell_rng, name="TableBorder2"))
     assert tbl_border.TopLine.Color == color.CommonColor.DARK_BLUE
     assert tbl_border.LeftLine.Color == color.CommonColor.DARK_BLUE
     assert tbl_border.RightLine.Color == color.CommonColor.BLACK
@@ -2301,7 +2301,7 @@ def test_add_border(loader) -> None:
     Lo.delay(delay)
     cell_rng = Calc.add_border(sheet=sheet, cell_range=rng, color=color.CommonColor.BLACK)  # reset colors
     cell_rng = Calc.add_border(sheet=sheet, range_name=rng_name, color=color.CommonColor.GREEN, border_vals=int(bval))
-    tbl_border = cast(TableBorder2, Props.get_property(xprops=cell_rng, name="TableBorder2"))
+    tbl_border = cast(TableBorder2, Props.get_property(prop_set=cell_rng, name="TableBorder2"))
     assert tbl_border.TopLine.Color == color.CommonColor.GREEN
     assert tbl_border.LeftLine.Color == color.CommonColor.GREEN
     assert tbl_border.RightLine.Color == color.CommonColor.BLACK
@@ -2309,7 +2309,7 @@ def test_add_border(loader) -> None:
     Lo.delay(delay)
     cell_rng = Calc.add_border(sheet=sheet, cell_range=rng, color=color.CommonColor.BLACK)  # reset colors
     cell_rng = Calc.add_border(sheet, rng_name, color.CommonColor.DARK_BLUE, int(bval))
-    tbl_border = cast(TableBorder2, Props.get_property(xprops=cell_rng, name="TableBorder2"))
+    tbl_border = cast(TableBorder2, Props.get_property(prop_set=cell_rng, name="TableBorder2"))
     assert tbl_border.TopLine.Color == color.CommonColor.DARK_BLUE
     assert tbl_border.LeftLine.Color == color.CommonColor.DARK_BLUE
     assert tbl_border.RightLine.Color == color.CommonColor.BLACK
@@ -2319,7 +2319,7 @@ def test_add_border(loader) -> None:
     Lo.delay(delay)
     cell_rng = Calc.add_border(sheet=sheet, cell_range=rng, color=color.CommonColor.BLACK)  # reset colors
     cell_rng = Calc.add_border(sheet=sheet, cell_range=rng, color=color.CommonColor.GREEN, border_vals=bval)
-    tbl_border = cast(TableBorder2, Props.get_property(xprops=cell_rng, name="TableBorder2"))
+    tbl_border = cast(TableBorder2, Props.get_property(prop_set=cell_rng, name="TableBorder2"))
     assert tbl_border.TopLine.Color == color.CommonColor.GREEN
     assert tbl_border.LeftLine.Color == color.CommonColor.GREEN
     assert tbl_border.RightLine.Color == color.CommonColor.BLACK
@@ -2327,7 +2327,7 @@ def test_add_border(loader) -> None:
     Lo.delay(delay)
     cell_rng = Calc.add_border(sheet=sheet, cell_range=rng, color=color.CommonColor.BLACK)  # reset colors
     cell_rng = Calc.add_border(sheet, rng, color.CommonColor.DARK_BLUE, bval)
-    tbl_border = cast(TableBorder2, Props.get_property(xprops=cell_rng, name="TableBorder2"))
+    tbl_border = cast(TableBorder2, Props.get_property(prop_set=cell_rng, name="TableBorder2"))
     assert tbl_border.TopLine.Color == color.CommonColor.DARK_BLUE
     assert tbl_border.LeftLine.Color == color.CommonColor.DARK_BLUE
     assert tbl_border.RightLine.Color == color.CommonColor.BLACK
@@ -2337,7 +2337,7 @@ def test_add_border(loader) -> None:
     Lo.delay(delay)
     cell_rng = Calc.add_border(sheet=sheet, cell_range=rng, color=color.CommonColor.BLACK)  # reset colors
     cell_rng = Calc.add_border(sheet=sheet, range_name=rng_name, color=color.CommonColor.GREEN, border_vals=bval)
-    tbl_border = cast(TableBorder2, Props.get_property(xprops=cell_rng, name="TableBorder2"))
+    tbl_border = cast(TableBorder2, Props.get_property(prop_set=cell_rng, name="TableBorder2"))
     assert tbl_border.TopLine.Color == color.CommonColor.GREEN
     assert tbl_border.LeftLine.Color == color.CommonColor.GREEN
     assert tbl_border.RightLine.Color == color.CommonColor.BLACK
@@ -2345,7 +2345,7 @@ def test_add_border(loader) -> None:
     Lo.delay(delay)
     cell_rng = Calc.add_border(sheet=sheet, cell_range=rng, color=color.CommonColor.BLACK)  # reset colors
     cell_rng = Calc.add_border(sheet, rng_name, color.CommonColor.DARK_BLUE, bval)
-    tbl_border = cast(TableBorder2, Props.get_property(xprops=cell_rng, name="TableBorder2"))
+    tbl_border = cast(TableBorder2, Props.get_property(prop_set=cell_rng, name="TableBorder2"))
     assert tbl_border.TopLine.Color == color.CommonColor.DARK_BLUE
     assert tbl_border.LeftLine.Color == color.CommonColor.DARK_BLUE
     assert tbl_border.RightLine.Color == color.CommonColor.BLACK
@@ -2452,7 +2452,7 @@ def test_set_col_width(loader) -> None:
     assert cell_range is not None
     # convert to decimal and use approx to test with a tolerance value.
     # https://docs.pytest.org/en/latest/reference/reference.html?highlight=approx#pytest.approx
-    c_width = Props.get_property(xprops=cell_range, name="Width")
+    c_width = Props.get_property(prop_set=cell_range, name="Width")
     assert c_width / 10000 == pytest.approx(width / 100, rel=1e-2)
     Lo.close(closeable=doc, deliver_ownership=False)
 
@@ -2470,7 +2470,7 @@ def test_set_row_height(loader) -> None:
     height = 14
     cell_range = Calc.set_row_height(sheet=sheet, height=height, idx=idx)
     assert cell_range is not None
-    c_height = Props.get_property(xprops=cell_range, name="Height")
+    c_height = Props.get_property(prop_set=cell_range, name="Height")
     assert c_height is not None
     # assert 0.1401 == 0.14 ± 1.4e-07
     # E         comparison failed

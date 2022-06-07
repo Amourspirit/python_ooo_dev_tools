@@ -39,6 +39,8 @@ if TYPE_CHECKING:
     from com.sun.star.uno import XInterface
 
 T = TypeVar("T")
+UnoInterface = TypeVar("UnoInterface")
+
 # import module and not module content to avoid circular import issue.
 # https://stackoverflow.com/questions/22187279/python-circular-importing
 from . import props as mProps
@@ -1810,6 +1812,37 @@ class Lo(metaclass=StaticProperty):
                 print(f"Could not access element {i}")
         print(f"Could not find a '{nm}' property set in the container")
         return None
+
+    @classmethod
+    def is_uno_interfaces(cls, component:object, *args:str | UnoInterface) -> bool:
+        """
+        Gets if an object contains interface(s)
+
+        Args:
+            component (object): object to check for supplied interfaces
+            args (str | UnoInterface): one or more strings such as 'com.sun.star.uno.XInterface'
+                or Any uno interface that Starts with X such has XEnumTypeDescription
+
+        Returns:
+            bool: True if component contains all supplied interfaces; Otherwise, False
+        """
+        if len(args) == 0:
+            return False
+        result = True
+        for arg in args:
+            try:
+                if isinstance(arg, str):
+                    t = uno.getTypeByName(arg)
+                else:
+                    t = arg
+                obj = cls.qi(t, component)
+                if obj is None:
+                    result = False
+                    break
+            except Exception:
+                result = False
+                break
+        return result
 
     # ------------------- date --------------------
     @staticmethod

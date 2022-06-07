@@ -58,6 +58,7 @@ from com.sun.star.sheet import XSheetAnnotationAnchor
 from com.sun.star.sheet import XSheetAnnotationsSupplier
 from com.sun.star.sheet import XSheetCellRange
 from com.sun.star.sheet import XSheetOperation
+from com.sun.star.sheet import XSpreadsheets
 from com.sun.star.sheet import XUsedAreaCursor
 from com.sun.star.sheet import XViewPane
 from com.sun.star.sheet import XViewFreezable
@@ -537,13 +538,26 @@ class Calc:
         Gets names of all existing spreadsheets in the spreadsheet document.
 
         Args:
-            doc (XSpreadsheetDocument): Document to get sheets of
+            doc (XSpreadsheetDocument): Document to get sheets names of
 
         Returns:
             Tuple[str, ...]: Tuple of sheet names.
         """
         sheets = doc.getSheets()
         return sheets.getElementNames()
+    
+    @staticmethod
+    def get_sheets(doc: XSpreadsheetDocument) -> XSpreadsheets:
+        """
+        Gets all existing spreadsheets in the spreadsheet document.
+
+        Args:
+            doc (XSpreadsheetDocument): Document to get sheets of
+
+        Returns:
+            XSpreadsheets: document sheets
+        """
+        return doc.getSheets()
 
     @staticmethod
     def get_sheet_name(sheet: XSpreadsheet) -> str:
@@ -3163,7 +3177,7 @@ class Calc:
             Point: cell name as Point
         """
         xcell = cls._get_cell_sheet_cell(sheet=sheet, cell_name=cell_name)
-        pos = mProps.Props.get_property(xprops=xcell, name="Position")
+        pos = mProps.Props.get_property(prop_set=xcell, name="Position")
         if pos is None:
             print(f"Could not determine position of cell '{cell_name}'")
             pos = cls.CELL_POS
@@ -4303,14 +4317,14 @@ class Calc:
             else:
                 cell_range = kargs[3]
             mProps.Props.set_property(prop_set=cell_range, name="CellStyle", value=kargs[2])  # 2 style_name
-            return kargs[2] == mProps.Props.get_property(xprops=cell_range, name="CellStyle")
+            return kargs[2] == mProps.Props.get_property(prop_set=cell_range, name="CellStyle")
         else:
             # def change_style(sheet: XSpreadsheet, style_name: str, x1: int, y1: int, x2: int, y2:int)
             cell_range = cls._get_cell_range_col_row(
                 sheet=kargs[1], start_col=kargs[3], start_row=kargs[4], end_col=kargs[5], end_row=kargs[6]
             )
             mProps.Props.set_property(prop_set=cell_range, name="CellStyle", value=kargs[2])  # 2 style_name
-            return kargs[2] == mProps.Props.get_property(xprops=cell_range, name="CellStyle")
+            return kargs[2] == mProps.Props.get_property(prop_set=cell_range, name="CellStyle")
 
         # endregion change_style()
 
@@ -5355,7 +5369,7 @@ class Calc:
 
     @staticmethod
     def get_head_foot(props: XPropertySet, content: str) -> XHeaderFooterContent:
-        result = mLo.Lo.qi(XHeaderFooterContent, mProps.Props.get_property(xprops=props, name=content))
+        result = mLo.Lo.qi(XHeaderFooterContent, mProps.Props.get_property(prop_set=props, name=content))
         if result is None:
             raise mEx.MissingInterfaceError(XHeaderFooterContent)
         return result
