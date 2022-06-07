@@ -4,14 +4,13 @@
 # region Imports
 from __future__ import annotations
 import os
-import sys
 import tempfile
 import datetime
 import glob
 import zipfile
 from pathlib import Path
 from urllib.parse import urlparse
-from typing import Iterable, List, TYPE_CHECKING
+from typing import List, TYPE_CHECKING
 import uno
 from com.sun.star.io import XActiveDataSink
 from com.sun.star.io import XTextInputStream
