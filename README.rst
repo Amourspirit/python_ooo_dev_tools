@@ -43,7 +43,7 @@ Installation
 PIP
 +++
 
-**ooouno** `PyPI <https://pypi.org/project/ooo-dev-tools/>`_
+**ooo-dev-tools** `PyPI <https://pypi.org/project/ooo-dev-tools/>`_
 
 .. code-block:: bash
 
@@ -84,6 +84,15 @@ Release Info
 ------------
 
 This is a beta release. Calc is the first module due to its popularity.
+
+Inspiration
+-----------
+
+Much of this project is inspired by the work of Dr. Andrew Davison
+and the work on `Java LibreOffice Programming <http://fivedots.coe.psu.ac.th/~ad/jlop>`_
+
+See Also: `LibreOffice Programming <https://flywire.github.io/lo-p/>`_
+
 
 Other
 -----
