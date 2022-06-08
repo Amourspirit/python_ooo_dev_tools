@@ -22,12 +22,13 @@ setup(
     author_email='bigbytetech@gmail.com',
     license="mit",
     install_requires=[
-        'typing_extensions>=4.2.0;python_version<"3.10"',
-        'types-unopy>=0.1.7'
+        'types-unopy>=0.1.7',
+        'Pillow>=9.1.1',
+        'lxml>=4.8.0'
     ],
     keywords=['libreoffice', 'openoffice' 'macro', 'uno', 'ooouno', 'pyuno'],
     classifiers=[
-        "License :: OSI Approved :: MIT License",
+        "License :: OSI Approved :: Apache Software License",
         "Environment :: Other Environment",
         "Intended Audience :: Developers",
         "Operating System :: OS Independent",
@@ -39,7 +40,7 @@ setup(
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
     ],
-    description="LibreOffice Developer Search Engine",
-    long_description_content_type="text/rst",
+    description="LibreOffice Developer Tools",
+    long_description_content_type="text/x-rst",
     long_description=README
 )
