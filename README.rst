@@ -1,5 +1,5 @@
 OOO Development Tools
-=====================
+---------------------
 
 |lic| |pver| |pwheel| |github|
 
@@ -14,11 +14,11 @@ For example, The Lo class simplifies the steps needed to initialize the API
 (by creating a connection to a LibreOffice process), to open/create a document, save it,
 and close down LibreOffice.
 
-Currently this project has been tested on LibreOffie in Windows and Linux (Ubuntu).
+Currently this project has been tested on LibreOffice in Windows and Linux (Ubuntu).
 
 
 Why Python?
------------
++++++++++++
 
 Macros are pieces of programming code that runs in office suites and helps automate routine tasks.
 Specifically, in LibreOffice API these codes can be written with so many programming languages thanks
@@ -34,19 +34,19 @@ Probably we will have some problems while working with numbers if we choose Java
 For example it has rounding errors ( 0.1 + 0.2 does not equals 0.3 in Javascript).
 So we can eliminate this too.
 But Python is very powerful at numeric computation thanks to its libraries.
-Libraries likeNumpy and Numexpr is excellent for this job.
+Libraries like Numpy and Numexpr is excellent for this job.
 So we should choose Python 3 for macro programming [Ref1]_.
 
 Documentation
--------------
++++++++++++++
 
 Read `documentation <https://python-ooo-dev-tools.readthedocs.io/en/latest/>`_
 
 Installation
-------------
+++++++++++++
 
 PIP
-+++
+***
 
 **ooo-dev-tools** `PyPI <https://pypi.org/project/ooo-dev-tools/>`_
 
@@ -56,7 +56,8 @@ PIP
 
 
 Modules
--------
++++++++
+
 Currently the ``Calc`` Module has been fully tested.
 
 The ``Write`` Module is also in this release but has very limited testing at this point.
@@ -68,10 +69,10 @@ Future releases will add:
     - Clip (clipboard support)
     - Dialogs (Build dialog forms)
     - Draw (LibreOffice Draw)
-    - Forms (Support for bilding forms)
+    - Forms (Support for building forms)
     - Gallery (Methods for accessing and reporting on the Gallery)
     - Mail (Mail service provider)
-    - Print (Print servic provider)
+    - Print (Print service provider)
     - And more ...
 
 Include modules that have not yet been fully tested:
@@ -79,28 +80,28 @@ Include modules that have not yet been fully tested:
     - DateUtil (Date Time utilities)
     - FileIO (File Input and Output for working with LO)
     - GUI (Various Gui methods for manipulating LO Windows)
-    - Images (Various methos for working with Images)
-    - Lo (Variious methods common to LO applications)
+    - Images (Various methods for working with Images)
+    - Lo (Various methods common to LO applications)
     - Props (Various methods for working with the many API properties)
     - XML (Various methods for working with LO xml data)
 
 
 Release Info
-------------
+++++++++++++
 
 This is a beta release. Calc is the first module due to its popularity.
 
 Inspiration
------------
++++++++++++
 
 Much of this project is inspired by the work of Dr. Andrew Davison
 and the work on `Java LibreOffice Programming <http://fivedots.coe.psu.ac.th/~ad/jlop>`_
 
-See Also: `LibreOffice Programming <https://flywire.github.io/lo-p/>`_
+See `LibreOffice Programming <https://flywire.github.io/lo-p/>`_ that aims to gradually explain this content in a python context.
 
 
 Other
------
++++++
 
 **Figure 1:** Calc Automation
 
@@ -109,7 +110,8 @@ Other
 
 
 Related projects
-----------------
+++++++++++++++++
+
 LibreOffice API Typings
 
  * `LibreOffice API Typings <https://github.com/Amourspirit/python-types-unopy>`_
