@@ -1,6 +1,7 @@
 # coding: utf-8
 # Python conversion of XML.java by Andrew Davison, ad@fivedots.coe.psu.ac.th
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
+from __future__ import annotations
 from typing import Iterable, Union, Tuple, List, overload
 from xml.dom import minidom
 import urllib.request
@@ -374,24 +375,24 @@ class XML:
         return None
 
     @staticmethod
-    def get_flat_fiter_name(doc_type: str) -> str:
+    def get_flat_fiter_name(doc_type: mLo.Lo.DocTypeStr) -> str:
         """
         Gts the Flat XML filter name for the doc type.
 
         Args:
-            doc_type (str): Document type.
+            doc_type (Lo.DocTypeStr): Document type.
 
         Returns:
             str: Flat XML filter name.
         """
-        if doc_type == mLo.Lo.WRITER_STR:
+        if doc_type == mLo.Lo.DocTypeStr.WRITER:
             return "OpenDocument Text Flat XML"
-        elif doc_type == mLo.Lo.CALC_STR:
+        elif doc_type == mLo.Lo.DocTypeStr.CALC:
             return "OpenDocument Spreadsheet Flat XML"
-        elif doc_type == mLo.Lo.DRAW_STR:
+        elif doc_type == mLo.Lo.DocTypeStr.DRAW:
             return "OpenDocument Drawing Flat XML"
-        elif doc_type == mLo.Lo.IMPRESS_STR:
+        elif doc_type == mLo.Lo.DocTypeStr.IMPRESS:
             return "OpenDocument Presentation Flat XML"
         else:
             print("No Flat XML filter for this document type; using Flat text")
-            return "penDocument Text Flat XML"
+            return "OpenDocument Text Flat XML"

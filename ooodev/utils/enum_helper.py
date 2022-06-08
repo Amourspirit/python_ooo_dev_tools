@@ -1,4 +1,9 @@
 # coding: utf-8
+"""
+Uno Enum Helper Methods
+
+These methods are used to add custom functionality to enums or enum like classes.
+"""
 import uno
 
 def uno_enum_class_new(cls, value):
@@ -15,7 +20,7 @@ def uno_enum_class_new(cls, value):
         [uno.Enum]: Enum Instance
 
     Example:
-        ..code-block:: python
+        .. code-block:: python
         
             >>> e = HorizontalAlignment("RIGHT")
             >>> print(e.value)
@@ -42,5 +47,16 @@ def uno_enum_class_new(cls, value):
     raise ValueError("%r is not a valid %s" % (value, cls.__name__))
 
 
-def uno_enum_class_ne(self, other):
+def uno_enum_class_ne(self, other: object) -> bool:
+    """
+    Enum Not equal method.
+    
+    This method is usuall assigned to an enum.
+
+    Args:
+        other (object): Object to compare
+
+    Returns:
+        bool: False if equal; Othherwise, true
+    """
     return not self.__eq__(other)

@@ -7,7 +7,7 @@ from ..office import calc as mCalc
 
 
 class ViewState:
-    # for moving he pane focus
+    """for moving the pane focus"""
     class PaneEnum(IntEnum):
         MOVE_UP = 0
         MOVE_DOWN = 1
@@ -15,6 +15,15 @@ class ViewState:
         MOVE_RIGHT = 3
 
     def __init__(self, state: str) -> None:
+        """
+        Constructor
+
+        Args:
+            state (str): State in format of '0/4998/0/1/0/218/2/0/0/4988/4998'
+
+        Raises:
+            ValueError: if state does not containe 10 '/' (11 parts)
+        """
         # The state string has the format:
         #       0/4998/0/1/0/218/2/0/0/4988/4998
 
@@ -54,6 +63,15 @@ class ViewState:
 
     @staticmethod
     def parse_int(s: str) -> int:
+        """
+        Parses int
+
+        Args:
+            s (str): string value that contains int
+
+        Returns:
+            int: string value converted to int on success; Otherwise, 0
+        """
         if not s:
             return 0
         try:
@@ -162,7 +180,7 @@ class ViewState:
         Returns:
             bool: True if move is successfull; Otherwise False
 
-        Notes:
+        Note:
             The 4 posible view panes are numbered like so
             ::
 
@@ -258,7 +276,7 @@ class ViewState:
 
     def report(self) -> None:
         """
-        Prints a report to standard out ( terminal )
+        Prints a report to console
         """
         print("Sheet View State")
         print(
@@ -281,7 +299,13 @@ class ViewState:
         print()
 
     def to_string(self) -> str:
-        """Gets string Representation of object"""
+        """
+        Gets string Representation of object.
+        
+        String representation can also be used to create a new instance of this class.
+        
+        same as str(instance)
+        """
         lst = [
             self.cursor_column,
             self.cursor_row,

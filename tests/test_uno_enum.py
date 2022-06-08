@@ -2,7 +2,7 @@ from __future__ import annotations
 import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
-from ooodev.utils.uno_util import UnoEnum
+from ooodev.utils.uno_enum import UnoEnum
 from typing import TYPE_CHECKING, cast
 
 # uno does not have enum import but rather enum values.

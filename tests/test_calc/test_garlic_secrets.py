@@ -1,16 +1,17 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING, cast
+from pathlib import Path
 import pytest
 
 if __name__ == "__main__":
     pytest.main([__file__])
 
-from pathlib import Path
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.utils.color import CommonColor
 from ooodev.utils.props import Props
 from ooodev.utils.view_state import ViewState
-from ooodev.utils.uno_util import UnoEnum
+from ooodev.utils.uno_enum import UnoEnum
 from ooodev.office.calc import Calc
 
 from com.sun.star.awt import FontWeight
@@ -18,6 +19,11 @@ from com.sun.star.sheet import XCellRangesQuery
 from com.sun.star.sheet import XSpreadsheet
 from com.sun.star.sheet import XSpreadsheetDocument
 from com.sun.star.util import XMergeable
+
+if TYPE_CHECKING:
+    from com.sun.star.table import CellHoriJustify as UnoCellHoriJustify
+    from com.sun.star.table import CellVertJustify as UnoCellVertJustify
+    from com.sun.star.table import CellContentType as UnoCellContentType
 
 FNM = "produceSales.xlsx"
 OUT_FNM = "garlicSecrets.ods"
@@ -29,7 +35,7 @@ def test_garlic_secrets(copy_fix_calc, loader, capsys: pytest.CaptureFixture) ->
         Lo.close_office()
         assert False, f"Could not open {FNM}"
     visible = True
-    delay = 2000
+    delay = 500
     if visible:
         GUI.set_visible(is_visible=visible, odoc=doc)
     sheet = Calc.get_sheet(doc=doc, index=0)
@@ -164,7 +170,9 @@ def increase_garlic_cost(doc:XSpreadsheetDocument, sheet:XSpreadsheet) -> int:
 
     Return the "Produce" row index which is first empty.
     """
-    CellContentType = UnoEnum("com.sun.star.table.CellContentType")
+    
+    CellContentType = cast("UnoCellContentType", UnoEnum("com.sun.star.table.CellContentType"))
+    
     row = 0
     prod_cell = Calc.get_cell(sheet=sheet,col=0, row=row) # produce column
     # iterate down produce column until an empty cell is reached
@@ -213,7 +221,8 @@ def add_garlic_label(doc: XSpreadsheetDocument, sheet: XSpreadsheet, empty_row_n
     in the empty row. Make the cell bigger by merging a few cells, and taller
     The text is black and bold in a red cell, and is centered.
     """
-    CellHoriJustify = UnoEnum("com.sun.star.table.CellHoriJustify")
+    CellHoriJustify = cast('UnoCellHoriJustify', UnoEnum("com.sun.star.table.CellHoriJustify"))
+    CellVertJustify = cast('UnoCellVertJustify', UnoEnum("com.sun.star.table.CellVertJustify"))
     Calc.goto_cell(cell_name=Calc.get_cell_str(col=0, row=empty_row_num), doc=doc)
     
     # Merge first few cells of the last row
@@ -228,7 +237,7 @@ def add_garlic_label(doc: XSpreadsheetDocument, sheet: XSpreadsheet, empty_row_n
     Props.set_property(prop_set=cell, name="CharWeight", value=FontWeight.BOLD)
     Props.set_property(prop_set=cell, name="CharHeight", value=24)
     Props.set_property(prop_set=cell, name="CellBackColor", value=CommonColor.RED)
-    Props.set_property(prop_set=cell, name="CharHeight", value=CellHoriJustify.CENTER)
-    Props.set_property(prop_set=cell, name="VertJustify", value=CellHoriJustify.CENTER)
+    Props.set_property(prop_set=cell, name="HoriJustify", value=CellHoriJustify.CENTER)
+    Props.set_property(prop_set=cell, name="VertJustify", value=CellVertJustify.CENTER)
     
     

@@ -1,0 +1,8 @@
+exceptions
+==========
+
+.. toctree::
+    :titlesonly:
+    :glob:
+
+    *

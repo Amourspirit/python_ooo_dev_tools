@@ -1,0 +1,29 @@
+html[data-theme='dark'] .highlight .vm {
+    color: #605dc9 !important;
+}
+
+html[data-theme='dark'] .highlight .gp {
+    color: #900 !important;
+}
+
+html[data-theme='dark'] .highlight .nf,
+.highlight .nc {
+    color: #0cff3e !important;
+}
+
+html[data-theme="dark"] .highlight .nb {
+    color: #2e9d1e !important;
+}
+
+html[data-theme='dark'].writer-html4 .rst-content dl:not(.docutils) .descclassname,
+html[data-theme='dark'].writer-html4 .rst-content dl:not(.docutils) .descname,
+html[data-theme='dark'].writer-html4 .rst-content dl:not(.docutils) .sig-name,
+html[data-theme='dark'].writer-html5 .rst-content dl[class]:not(.option-list):not(.field-list):not(.footnote):not(.glossary):not(.simple) .descclassname,
+html[data-theme='dark'].writer-html5 .rst-content dl[class]:not(.option-list):not(.field-list):not(.footnote):not(.glossary):not(.simple) .descname,
+html[data-theme='dark'].writer-html5 .rst-content dl[class]:not(.option-list):not(.field-list):not(.footnote):not(.glossary):not(.simple) .sig-name {
+    color: #098f0d;
+}
+
+html[data-theme='dark'] .highlight .hll {
+    background-color: #184836;
+}

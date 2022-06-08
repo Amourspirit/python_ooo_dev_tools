@@ -21,7 +21,7 @@ class UnoEnum:
             MyEnum = UNoEnum("com.sun.star.sheet.FillMode")
             assert FillMode is MyEnum # singleton, same instances
     
-    Notes:
+    Note:
         Uno enums can not be imported directly in python.
 
         ``from com.sun.star.sheet import FillMode`` is not a valid import
@@ -45,8 +45,9 @@ class UnoEnum:
         In the above example ``FillMode`` will have full typing (intellsense) at design time.
         At runtime cast simply returns the UnoEnum instance.
 
-        Note that ``"UnoFillMode"`` is wrapped in quotes. This is necessary.
-        Without wrapping in quotes python will look for the import at runtime.
+        Note that ``"UnoFillMode"`` is wrapped in quotes. This is necessary for typing reasons.
+        Without wrapping in quotes python will look for the import at runtime
+        which will not be available becuase is in a ``TYPE_CHECKING`` block.
     """
     _loaded = {}
     _initialized = False  # This class var is important. It is always False.

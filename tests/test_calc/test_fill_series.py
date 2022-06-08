@@ -5,7 +5,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
-from ooodev.utils.uno_util import UnoEnum
+from ooodev.utils.uno_enum import UnoEnum
 from ooodev.office.calc import Calc
 if TYPE_CHECKING:
     # Enums are not valid uno import. Guard with type checking

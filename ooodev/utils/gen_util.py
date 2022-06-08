@@ -1,4 +1,5 @@
 # coding: utf-8
+"""General Utilities"""
 from __future__ import annotations
 import string
 from typing import Callable, Iterable, Iterator, Sequence, List, NamedTuple, Any, Tuple, overload
@@ -140,6 +141,62 @@ class TableHelper:
 
     @staticmethod
     def make_2d_array(num_rows: int, num_cols: int, val=None) -> List[List[Any]]:
+        """
+        Make a 2-Dimensional List of values
+
+        Args:
+            num_rows (int): Number of rows
+            num_cols (int): Number of Columns in each row.
+            val (Callable[[int, int, Any], Any]): Callable that provide each value.
+                Callback e.g. cb(row: int, col: int, prev_value: None | int) -> int:...
+
+        Returns:
+            List[List[Any]]: 2-Dimensional List of values
+
+        Example:
+            Example of array filled with 1's
+
+
+            
+            .. code-block:: python
+                
+                arr = TableHelper.make_2d_array(num_rows=3, num_cols=4, val=1)
+                # arr
+                # [
+                #   [1, 1, 1, 1],
+                #   [1, 1, 1, 1],
+                #   [1, 1, 1, 1]
+                # ]
+                
+        
+            Example of using call back method.
+
+            The following example creates an array that loops through each animals and addes
+            to array. When end of animials is reached the start with the beginning of animals and
+            continues in this fashion until array is built.
+            
+            .. code-block:: python
+
+                animals = ("ass", "cat", "cow", "cub", "doe", "dog", "elk", 
+                            "ewe", "fox", "gnu", "hog", "kid", "kit", "man",
+                            "orc", "pig", "pup", "ram", "rat", "roe", "sow", "yak")
+                total_rows = 15
+                total_cols = 6
+
+                def cb(row:int, col:int, prev) -> str:
+                    # return animals repeating until all cells are filled
+                    v = (row * total_cols) + col
+
+                    a_len = len(animals)
+                    if v > a_len - 1:
+                        i = (v % a_len)
+                    else:
+                        i = v
+                    return animals[i]
+                
+                arr = TableHelper.make_2d_array(num_rows=total_rows, num_cols=total_cols, val=cb)
+                Calc.set_array(values=arr, sheet=sheet, name="A1")
+        """
         if num_cols == 0 or num_rows == 0:
             return []
         if val is None:
@@ -254,9 +311,13 @@ class TableHelper:
 
 
 class ArgsHelper:
+    "Args Helper"
     class NameValue(NamedTuple):
+        "Name Value pair"
         name: str
+        """Name component"""
         value: Any
+        """Value component"""
 
 class Util:
     @classmethod
@@ -279,8 +340,6 @@ class Util:
 
         Example:
             .. code-block:: python
-
-                
 
                 # non-string iterables    
                 assert is_iterable(arg=("f", "f"))       # tuple
