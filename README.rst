@@ -1,5 +1,5 @@
 OOO Development Tools
-=====================
+---------------------
 
 |lic| |pver| |pwheel| |github|
 
@@ -14,39 +14,37 @@ For example, The Lo class simplifies the steps needed to initialize the API
 (by creating a connection to a LibreOffice process), to open/create a document, save it,
 and close down LibreOffice.
 
-Currently this project has been tested on LibreOffie in Windows and Linux (Ubuntu).
+Currently this project has been tested on LibreOffice in Windows and Linux (Ubuntu).
 
-
-Why Python?
------------
+Advantages of Python
+++++++++++++++++++++
 
 Macros are pieces of programming code that runs in office suites and helps automate routine tasks.
 Specifically, in LibreOffice API these codes can be written with so many programming languages thanks
-to the Universal Network Objects (UNO). Among them are: Open/LibreOffice Basic (Thanks to Foad S Farimani for the correction :) ), Java, C/C++, Javascript, Python.
+to the Universal Network Objects (UNO).
 
-So which language should we use? Since LibreOffice is multi-platform we can use our documents at different
+Since LibreOffice is multi-platform we can use our documents at different
 platforms like Mac, Windows, and Linux. So we need a cross-platform language to run our macros at different
-platforms. We can eliminate Visual Basic because of that.
+platforms.
 
-Java and C/C++ require compilation, are much more complex and verbose. So we can eliminate these too.
+Python has the advantage that it is cross-platform and can run inside the office environment as macros and outside
+office environment on the command line.
 
-Probably we will have some problems while working with numbers if we choose JavaScript.
-For example it has rounding errors ( 0.1 + 0.2 does not equals 0.3 in Javascript).
-So we can eliminate this too.
-But Python is very powerful at numeric computation thanks to its libraries.
-Libraries likeNumpy and Numexpr is excellent for this job.
-So we should choose Python 3 for macro programming [Ref1]_.
+Python has a vast set `libraries <https://pypi.org/>`_ that can be used in a project, including `Numpy <https://numpy.org/>`_ and
+`Numexpr <https://github.com/pydata/numexpr>`_ which are excellent and powerful at numeric computation.
+
+This makes Python and excellent choice with maximum flexability.
 
 Documentation
--------------
++++++++++++++
 
 Read `documentation <https://python-ooo-dev-tools.readthedocs.io/en/latest/>`_
 
 Installation
-------------
+++++++++++++
 
 PIP
-+++
+***
 
 **ooo-dev-tools** `PyPI <https://pypi.org/project/ooo-dev-tools/>`_
 
@@ -56,7 +54,8 @@ PIP
 
 
 Modules
--------
++++++++
+
 Currently the ``Calc`` Module has been fully tested.
 
 The ``Write`` Module is also in this release but has very limited testing at this point.
@@ -68,10 +67,10 @@ Future releases will add:
     - Clip (clipboard support)
     - Dialogs (Build dialog forms)
     - Draw (LibreOffice Draw)
-    - Forms (Support for bilding forms)
+    - Forms (Support for building forms)
     - Gallery (Methods for accessing and reporting on the Gallery)
     - Mail (Mail service provider)
-    - Print (Print servic provider)
+    - Print (Print service provider)
     - And more ...
 
 Include modules that have not yet been fully tested:
@@ -79,37 +78,37 @@ Include modules that have not yet been fully tested:
     - DateUtil (Date Time utilities)
     - FileIO (File Input and Output for working with LO)
     - GUI (Various Gui methods for manipulating LO Windows)
-    - Images (Various methos for working with Images)
-    - Lo (Variious methods common to LO applications)
+    - Images (Various methods for working with Images)
+    - Lo (Various methods common to LO applications)
     - Props (Various methods for working with the many API properties)
     - XML (Various methods for working with LO xml data)
 
 
 Release Info
-------------
+++++++++++++
 
 This is a beta release. Calc is the first module due to its popularity.
 
 Inspiration
------------
++++++++++++
 
 Much of this project is inspired by the work of Dr. Andrew Davison
 and the work on `Java LibreOffice Programming <http://fivedots.coe.psu.ac.th/~ad/jlop>`_
 
-See Also: `LibreOffice Programming <https://flywire.github.io/lo-p/>`_
+See `LibreOffice Programming <https://flywire.github.io/lo-p/>`_ that aims to gradually explain this content in a python context.
 
 
 Other
------
++++++
 
-**Figure 1:** Calc Automation
+**Figure 1:** Calc Find and Replace Automation Example
 
-.. figure:: https://user-images.githubusercontent.com/4193389/172459702-26f87b92-6986-4d8f-b627-0c5e8602b3c5.gif
-   :alt: Calc automation example gif.
-
+.. figure:: https://user-images.githubusercontent.com/4193389/172609472-536a94de-9bf6-4668-ac9f-a55f12dfc817.gif
+    :alt: Calc Find and Replace Automation
 
 Related projects
-----------------
+++++++++++++++++
+
 LibreOffice API Typings
 
  * `LibreOffice API Typings <https://github.com/Amourspirit/python-types-unopy>`_
@@ -120,8 +119,6 @@ LibreOffice API Typings
  * `LibreOffice Python UNO Examples <https://github.com/Amourspirit/python-ooouno-ex>`_
  * `OOOUNO <https://github.com/Amourspirit/python-ooouno>`_
  * `OOO UNO TEMPLATE <https://github.com/Amourspirit/ooo_uno_tmpl>`_
-
-.. [Ref1] `Macro Programming in OpenOffice/LibreOffice with using Python <https://medium.com/analytics-vidhya/macro-programming-in-openoffice-libreoffice-with-using-python-en-a37465e9bfa5>`_
 
 .. _LibreOffice: http://www.libreoffice.org/
 

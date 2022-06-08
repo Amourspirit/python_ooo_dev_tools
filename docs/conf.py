@@ -14,7 +14,7 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('..'))
 from ooodev import __version__
-
+# os.environ["ooouno_ignore_import_error"] = "True"
 
 # -- Project information -----------------------------------------------------
 
