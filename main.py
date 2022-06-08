@@ -5,7 +5,6 @@ import sys
 import os
 from pathlib import Path
 from src.cmds import uno_lnk, run_auto
-from src.build.build import Builder, BuilderArgs
 from src.utils import util
 
 # region parser
@@ -59,42 +58,6 @@ def _args_cmd_auto(parser: argparse.ArgumentParser) -> None:
     )
 
 
-def _args_cmd_build(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument(
-        "-c",
-        "--config",
-        help="Json config file that contains build info.",
-        action="store",
-        dest="config_json",
-        required=True,
-    )
-    parser.add_argument(
-        "-v",
-        "--verbose",
-        help="If True some print statements will be made in the terminal.",
-        action="store_true",
-        dest="verbose",
-        default=False,
-    )
-    embed_grp = parser.add_argument_group()
-    embed_grp.add_argument(
-        "-e",
-        "--embed",
-        help="If True script embeded script will be embed in a doc.",
-        action="store_true",
-        dest="embed",
-        default=False,
-    )
-    embed_grp.add_argument(
-        "-s",
-        "--embed-src",
-        help="Source document to embed script into. If omitted then default to interanl odt file.",
-        action="store",
-        dest="embed_src",
-        default=None,
-    )
-
-
 def _args_action_cmd_link(
     a_parser: argparse.ArgumentParser, args: argparse.Namespace
 ) -> None:
@@ -104,23 +67,6 @@ def _args_action_cmd_link(
         uno_lnk.add_links(args.src_dir)
     elif args.remove:
         uno_lnk.remove_links()
-
-
-def _args_action_cmd_build(
-    a_parser: argparse.ArgumentParser, args: argparse.Namespace
-) -> None:
-    bargs = BuilderArgs(
-        config_json=args.config_json,
-        embed_in_doc=bool(args.embed),
-        embed_doc=args.embed_src,
-        allow_print=bool(args.verbose),
-    )
-    builder = Builder(args=bargs)
-    _valid = builder.build()
-    if _valid == False:
-        print("Build Failed")
-    else:
-        print("Build Success")
 
 
 def _args_action_cmd_auto(
@@ -138,8 +84,6 @@ def _args_process_cmd(
 ) -> None:
     if args.command == "cmd-link":
         _args_action_cmd_link(a_parser=a_parser, args=args)
-    elif args.command == "build":
-        _args_action_cmd_build(a_parser=a_parser, args=args)
     elif args.command == "auto":
         _args_action_cmd_auto(a_parser=a_parser, args=args)
     else:
@@ -172,11 +116,8 @@ def main() -> int:
         )
         _args_cmd_link(parser=cmd_link)
 
-    cmd_build = subparser.add_parser(name="build", help="Build a script")
-
     cmd_auto = subparser.add_parser(name="auto", help="Run an automation script")
 
-    _args_cmd_build(parser=cmd_build)
     _args_cmd_auto(parser=cmd_auto)
 
     # region Read Args

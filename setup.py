@@ -17,13 +17,18 @@ setup(
     # package_data={"": ["*.json"]},
     python_requires='>=3.7.0',
     url="https://github.com/Amourspirit/python_ooo_dev_tools",
-    packages=find_packages(exclude=['src', 'src.*', 'env', 'env.*', 'cmds', 'cmds.*']),
+    packages=find_packages(exclude=['src', 'src.*', 'env', 'env.*', 'cmds', 'cmds.*',"*.tests", "*.tests.*", "tests.*", "tests", "*.tmp", "*.tmp.*", "tmp.*", "tmp"]),
     author=":Barry-Thomas-Paul: Moss",
     author_email='bigbytetech@gmail.com',
     license="mit",
+    install_requires=[
+        'types-unopy>=0.1.7',
+        'Pillow>=9.1.1',
+        'lxml>=4.8.0'
+    ],
     keywords=['libreoffice', 'openoffice' 'macro', 'uno', 'ooouno', 'pyuno'],
     classifiers=[
-        "License :: OSI Approved :: MIT License",
+        "License :: OSI Approved :: Apache Software License",
         "Environment :: Other Environment",
         "Intended Audience :: Developers",
         "Operating System :: OS Independent",
@@ -35,7 +40,7 @@ setup(
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
     ],
-    description="LibreOffice Developer Search Engine",
-    long_description_content_type="text/rst",
+    description="LibreOffice Developer Tools",
+    long_description_content_type="text/x-rst",
     long_description=README
 )

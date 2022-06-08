@@ -1,14 +1,14 @@
 # coding: utf-8
 # Python conversion of XML.java by Andrew Davison, ad@fivedots.coe.psu.ac.th
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
+from __future__ import annotations
 from typing import Iterable, Union, Tuple, List, overload
 from xml.dom import minidom
 import urllib.request
 from xml.dom.minicompat import NodeList
 from lxml import etree as ET
-from . import lo as m_lo
-
-Lo = m_lo.Lo
+from . import lo as mLo
+from .gen_util import TableHelper
 
 _xml_parser = ET.XMLParser(remove_blank_text=True)
 
@@ -229,9 +229,7 @@ class XML:
         return ""
 
     @classmethod
-    def get_all_node_values(
-        cls, row_nodes: NodeList, col_ids: Iterable[str]
-    ) -> List[list]:
+    def get_all_node_values(cls, row_nodes: NodeList, col_ids: Iterable[str]) -> List[list]:
         """
         assumes an XML structure like
         ::
@@ -270,10 +268,11 @@ class XML:
         num_cols = len(col_ids)
         if num_cols == 0 or num_rows == 0:
             return []
-        data = [[1] * num_cols for _ in range(num_rows + 1)]
+        data = TableHelper.make_2d_array(num_rows=num_rows, num_cols=num_cols)
+        # data = [[1] * num_cols for _ in range(num_rows + 1)]
         # put column strings in first row of list
-        for col, col_id in enumerate(col_ids):
-            data[0][col] = Lo.capitalize(col_ids[col])
+        for col, _ in enumerate(col_ids):
+            data[0][col] = mLo.Lo.capitalize(col_ids[col])
 
         for i, node in enumerate(row_nodes):
             # extract all the column strings for ith row
@@ -302,9 +301,7 @@ class XML:
             xslt = ET.parse(xls_fnm)
             transform = ET.XSLT(xslt)
             newdom = transform(dom)
-            t_result = ET.tostring(
-                newdom, encoding="unicode"
-            )  # unicode produces string
+            t_result = ET.tostring(newdom, encoding="unicode")  # unicode produces string
             return t_result
         except Exception as e:
             print(f"Unable to transform '{xml_fnm}' with '{xls_fnm}'")
@@ -330,9 +327,7 @@ class XML:
 
             transform = ET.XSLT(xslt)
             newdom = transform(dom)
-            t_result = ET.tostring(
-                newdom, encoding="unicode"
-            )  # unicode produces string
+            t_result = ET.tostring(newdom, encoding="unicode")  # unicode produces string
             return t_result
         except Exception as e:
             print("Unable to transform the string")
@@ -380,24 +375,24 @@ class XML:
         return None
 
     @staticmethod
-    def get_flat_fiter_name(doc_type: str) -> str:
+    def get_flat_fiter_name(doc_type: mLo.Lo.DocTypeStr) -> str:
         """
         Gts the Flat XML filter name for the doc type.
 
         Args:
-            doc_type (str): Document type.
+            doc_type (Lo.DocTypeStr): Document type.
 
         Returns:
             str: Flat XML filter name.
         """
-        if doc_type == Lo.WRITER_STR:
+        if doc_type == mLo.Lo.DocTypeStr.WRITER:
             return "OpenDocument Text Flat XML"
-        elif doc_type == Lo.CALC_STR:
+        elif doc_type == mLo.Lo.DocTypeStr.CALC:
             return "OpenDocument Spreadsheet Flat XML"
-        elif doc_type == Lo.DRAW_STR:
+        elif doc_type == mLo.Lo.DocTypeStr.DRAW:
             return "OpenDocument Drawing Flat XML"
-        elif doc_type == Lo.IMPRESS_STR:
+        elif doc_type == mLo.Lo.DocTypeStr.IMPRESS:
             return "OpenDocument Presentation Flat XML"
         else:
             print("No Flat XML filter for this document type; using Flat text")
-            return "penDocument Text Flat XML"
+            return "OpenDocument Text Flat XML"

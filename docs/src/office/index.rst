@@ -1,0 +1,8 @@
+office
+======
+
+.. toctree::
+    :titlesonly:
+    :glob:
+
+    *
