@@ -1,6 +1,8 @@
 OOO Development Tools
 =====================
 
+|lic| |pver| |pwheel| |github|
+
 OOO Development Tools (ODEV) is intended for programmers who want to learn and use the
 Python version of the `LibreOffice`_ API.
 
@@ -108,3 +110,16 @@ LibreOffice API Typings
 .. [Ref1] `Macro Programming in OpenOffice/LibreOffice with using Python <https://medium.com/analytics-vidhya/macro-programming-in-openoffice-libreoffice-with-using-python-en-a37465e9bfa5>`_
 
 .. _LibreOffice: http://www.libreoffice.org/
+
+.. |lic| image:: https://img.shields.io/github/license/Amourspirit/python_ooo_dev_tools
+    :alt: License Apache
+
+.. |pver| image:: https://img.shields.io/pypi/pyversions/python_ooo_dev_tools
+    :alt: PyPI - Python Version
+
+.. |pwheel| image:: https://img.shields.io/pypi/wheel/python_ooo_dev_tools
+    :alt: PyPI - Wheel
+
+.. |github| image:: https://img.shields.io/badge/GitHub-100000?style=plastic&logo=github&logoColor=white
+    :target: https://github.com/Amourspirit/python_ooo_dev_tools
+    :alt: Github
