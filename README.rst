@@ -37,6 +37,11 @@ But Python is very powerful at numeric computation thanks to its libraries.
 Libraries likeNumpy and Numexpr is excellent for this job.
 So we should choose Python 3 for macro programming [Ref1]_.
 
+Documentation
+-------------
+
+Read `documentation <https://python-ooo-dev-tools.readthedocs.io/en/latest/>`_
+
 Installation
 ------------
 
