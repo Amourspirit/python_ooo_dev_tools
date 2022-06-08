@@ -12,7 +12,6 @@
 #
 import os
 import sys
-# sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('..'))
 from ooodev import __version__
 
@@ -71,4 +70,9 @@ napoleon_google_docstring = True
 napoleon_include_init_with_doc = True
 
 autodoc_typehints = "both"
-# autodoc_docstring_signature = False
+# see: https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#confval-autodoc_mock_imports
+# see: https://read-the-docs.readthedocs.io/en/latest/faq.html#i-get-import-errors-on-libraries-that-depend-on-c-modules
+# on read the docs I was getting errros WARNING: autodoc: failed to import class - No module named 'uno'
+# solution autodoc_mock_imports, for some reason after adding uno, unohelper I also had to include com.
+# com.sun.star.__init__.py raises an Import error by design.
+autodoc_mock_imports = ['uno', 'unohelper', 'lxml', 'com']
