@@ -40,7 +40,7 @@ def test_transform_pay(loader, copy_fix_xml) -> None:
     pay_import = copy_fix_xml("payImport.xsl")
     pay = copy_fix_xml("pay.xml")
     
-    xml_str = XML.apply_xslt(xml_fnm=str(pay), xls_fnm=str(pay_import))
+    xml_str = XML.apply_xslt(xml_fnm=str(pay), xls_fnm=pay_import)
     assert xml_str is not None
     
     # save flat XML data to temp file
@@ -89,7 +89,7 @@ def test_transform_pay(loader, copy_fix_xml) -> None:
     
     Lo.close(closeable=doc, deliver_ownership=False)
     
-def test_transform_clubs(loader,fix_xml_path, copy_fix_xml) -> None:
+def test_transform_clubs(loader, copy_fix_xml) -> None:
     """
     - Copy clubs.xml and clubsImport.xsl to tmp dir
     - transform clubs.xml using clubsImport.xls and store in xml_str
@@ -106,7 +106,7 @@ def test_transform_clubs(loader,fix_xml_path, copy_fix_xml) -> None:
     clubs_import = copy_fix_xml("clubsImport.xsl")
     clubs = copy_fix_xml("clubs.xml")
     
-    xml_str = XML.apply_xslt(xml_fnm=str(clubs), xls_fnm=str(clubs_import))
+    xml_str = XML.apply_xslt(xml_fnm=clubs, xls_fnm=str(clubs_import))
     assert xml_str is not None
     
     # save flat XML data to temp file

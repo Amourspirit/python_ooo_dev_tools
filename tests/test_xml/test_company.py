@@ -9,7 +9,7 @@ if __name__ == "__main__":
 def test_create_pay(copy_fix_xml) -> None:
     xml_path: Path = copy_fix_xml("company.xml")
     from ooodev.utils.xml_util import XML
-    xdoc = XML.load_doc(str(xml_path))
+    xdoc = XML.load_doc(xml_path)
     root = xdoc.childNodes
     assert root is not None
     comps = XML.get_node(tag_name="Companies", nodes=root)

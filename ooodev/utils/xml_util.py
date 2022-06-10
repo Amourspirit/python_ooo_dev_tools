@@ -1,27 +1,30 @@
 # coding: utf-8
 # Python conversion of XML.java by Andrew Davison, ad@fivedots.coe.psu.ac.th
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
+# region Imports
 from __future__ import annotations
 import os
-from typing import Sequence, Union, Tuple, List, overload
+from typing import Sequence, Tuple, List, overload
 from xml.dom.minidom import Node, parse, Document, parseString
 import urllib.request
 from xml.dom.minicompat import NodeList
 from . import lo as mLo
 from ..exceptions import ex as mEx
 from .gen_util import TableHelper
-
+# endregion Imports
 
 class XML:
     """XML method used for with LibreOffice Dcouemnts"""
 
+     # region --------------- Load / Save ------------------------------
+
     @classmethod
-    def load_doc(cls, fnm: str) -> Document:
+    def load_doc(cls, fnm: str | os.PathLike) -> Document:
         """
         Gets a document from a file
 
         Args:
-            fnm (str): XML file to load.
+            fnm (str | PathLike): XML file to load.
 
         Raises:
             Exception: if unable to open document.
@@ -64,7 +67,7 @@ class XML:
             raise Exception(f"Opening of document failed: '{url}'") from e
 
     @classmethod
-    def str_2_doc(cls, xml_str: str) -> Document:
+    def str_to_doc(cls, xml_str: str) -> Document:
         """
         Gets a XML document from xml string.
 
@@ -87,13 +90,13 @@ class XML:
             raise Exception(f"Error get xml docoument from xml string") from e
 
     @staticmethod
-    def save_doc(doc: Document, xml_fnm: str) -> None:
+    def save_doc(doc: Document, xml_fnm: str | os.PathLike) -> None:
         """
         Save doc to xml file.
 
         Args:
             doc (Document): doc to save.
-            xml_fnm (str): Output file path.
+            xml_fnm (str | PathLike): Output file path.
 
         Raises:
             Exception: If unable to save document
@@ -111,7 +114,9 @@ class XML:
         except Exception as e:
             raise Exception(f"Unable to save document to {xml_fnm}") from e
 
-    # --------------- DOM data extraction -----------------------
+    # endregion ------------ Load / Save ------------------------------
+
+    # region --------------- DOM data extraction -----------------------
 
     @staticmethod
     def get_node(tag_name: str, nodes: NodeList) -> Node | None:
@@ -131,6 +136,7 @@ class XML:
                 return node
         return None
 
+    # region    get_node_value()
     @overload
     @staticmethod
     def get_node_value(node: Node) -> str:
@@ -181,7 +187,7 @@ class XML:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('tag_name', 'nodes', 'node')
+            valid_keys = ("tag_name", "nodes", "node")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("get_node_value() got an unexpected keyword argument")
@@ -228,6 +234,8 @@ class XML:
             if node.nodeName.casefold() == name:
                 return cls._get_node_val(node)
         return ""
+
+    # endregion get_node_value()
 
     @classmethod
     def get_node_values(cls, nodes: NodeList) -> Tuple[str, ...]:
@@ -331,18 +339,20 @@ class XML:
                 data[i][col] = cls.get_node_value(col_ids[col], col_nodes)
         return data
 
-    # ------------------------- XLS transforming ----------------------
+    # endregion ------------ DOM data extraction -----------------------
+
+    # region ---------------- XLS transforming -------------------------
 
     @staticmethod
-    def apply_xslt(xml_fnm: str, xls_fnm: str) -> str:
+    def apply_xslt(xml_fnm: str | os.PathLike, xls_fnm: str | os.PathLike) -> str:
         """
         Transforms xml file using XLST
-        
+
         Not available in macros at this time.
 
         Args:
-            xml_fnm (str): XML source file path.
-            xls_fnm (str): XSL source file path.
+            xml_fnm (str | PathLike): XML source file path.
+            xls_fnm (str | PathLike): XSL source file path.
 
         Raises:
             NotSupportedMacroModeError: If access in a macro
@@ -359,7 +369,7 @@ class XML:
         except ImportError as e:
             raise Exception("apply_xslt requires lxml python package") from e
         _xml_parser = XML_ETREE.XMLParser(remove_blank_text=True)
-        
+
         try:
             print(f"Applying filter '{xls_fnm}' to '{xml_fnm}'")
             dom = XML_ETREE.parse(xml_fnm, parser=_xml_parser)
@@ -372,13 +382,13 @@ class XML:
             raise Exception(f"Unable to transform '{xml_fnm}' with '{xls_fnm}'") from e
 
     @staticmethod
-    def apply_xslt_2_str(xml_str: str, xls_fnm: str) -> str:
+    def apply_xslt_to_str(xml_str: str | os.PathLike, xls_fnm: str | os.PathLike) -> str:
         """
         Transforms xml using XLST
 
         Args:
-            xml_str (str): XML string.
-            xls_fnm (str): XSL source file path.
+            xml_str (str | PathLike): XML string.
+            xls_fnm (str | PathLike): XSL source file path.
 
         Raises:
             NotSupportedMacroModeError: If access in a macro
@@ -408,78 +418,9 @@ class XML:
         except Exception as e:
             raise Exception("Unable to transform the string") from e
 
-    # @classmethod
-    # def _indent(cls, elem, level=0) -> None:
-    #     # pretty print
-    #     # https://stackoverflow.com/questions/749796/pretty-printing-xml-in-python
-    #     i = "\n" + level*"  "
-    #     if len(elem):
-    #         if not elem.text or not elem.text.strip():
-    #             elem.text = i + "  "
-    #         if not elem.tail or not elem.tail.strip():
-    #             elem.tail = i
-    #         for elem in elem:
-    #             cls._indent(elem, level+1)
-    #         if not elem.tail or not elem.tail.strip():
-    #             elem.tail = i
-    #     else:
-    #         if level and (not elem.tail or not elem.tail.strip()):
-    #             elem.tail = i
+    # endregion ------------- XLS transforming -------------------------
 
-    @classmethod
-    def indent(cls, xml_fnm: str) -> Union[str, None]:
-        """
-        Indents xml
-
-        Args:
-            xml_fnm (str): xml file path.
-
-        Raises:
-            Exception: If unable to indent
-
-        Returns:
-            Union[str, None]: Indented xml on success; Otherwise, None
-        """
-        try:
-            with open(xml_fnm ) as file:
-                doc = parse(file)
-            cls._remove_whitespace(doc)
-            doc.normalize()
-            # To parse string instead use: dom = md.parseString(xml_string)
-            pretty_xml = doc.toprettyxml()
-            # remove the weird newline issue:
-            # should not be needes with cls._remove_whitespace(doc)
-            # pretty_xml = os.linesep.join([s for s in pretty_xml.splitlines() if s.strip()])
-            return pretty_xml
-        except Exception as e:
-            raise Exception(f"Unable to indent '{xml_fnm}'") from e
-
-    @classmethod
-    def indent_2_str(cls, xml_str: str) -> Union[str, None]:
-        """
-        Indents xml
-
-        Args:
-            xml_str (str): xml string to indent
-
-         Raises:
-            Exception: If unable to indent
-
-        Returns:
-            Union[str, None]: Indented xml on success; Otherwise, None
-        """
-        try:
-            doc = parseString(xml_str)
-            cls._remove_whitespace(doc)
-            doc.normalize()
-            # To parse string instead use: dom = md.parseString(xml_string)
-            pretty_xml = doc.toprettyxml()
-            # remove the weird newline issue:
-            # should not be needes with cls._remove_whitespace(doc)
-            # pretty_xml = os.linesep.join([s for s in pretty_xml.splitlines() if s.strip()])
-            return pretty_xml
-        except Exception as e:
-             raise Exception("Unable to indent the xml string")
+    # region --------------- Filter ------------------------------------
 
     @staticmethod
     def get_flat_fiter_name(doc_type: mLo.Lo.DocTypeStr) -> str:
@@ -503,6 +444,111 @@ class XML:
         else:
             print("No Flat XML filter for this document type; using Flat text")
             return "OpenDocument Text Flat XML"
+
+    # endregion ------------ Filter ------------------------------------
+
+     # region --------------- Formating --------------------------------
+
+
+    # region    indent()
+    @overload
+    @classmethod
+    def indent(cls, src: str) -> str:
+        """
+        Indents xml
+
+        Args:
+            src (str): raw xml data.
+
+        Raises:
+            TypeError is src is not expected type
+            Exception: If unable to indent
+
+        Returns:
+            str: Indented xml as string.
+        """
+        ...
+    
+    @overload
+    @classmethod
+    def indent(cls, src: os.PathLike) -> str:
+        """
+        Indents xml
+
+        Args:
+            src (PathLike): xml file path.
+
+        Raises:
+            TypeError is src is not expected type
+            Exception: If unable to indent
+
+        Returns:
+            str: Indented xml as string.
+        """
+        ...
+
+    @overload
+    @classmethod
+    def indent(cls, src: Document) -> str:
+        """
+        Indents xml
+
+        Args:
+            src (Document): xml doucment.
+
+        Raises:
+            TypeError is src is not expected type
+            Exception: If unable to indent
+
+        Returns:
+            str: Indented xml as string.
+        """
+        ...
+
+    @classmethod
+    def indent(cls, src: os.PathLike | str | Document) -> str:
+        """
+        Indents xml
+
+        Args:
+            src (str | PathLike | Document): raw xml data or xml file path or xml document.
+
+        Raises:
+            TypeError is src is not expected type
+            Exception: If unable to indent
+
+        Returns:
+            str: Indented xml as string.
+        """
+        try:
+            if isinstance(src,  os.PathLike):
+                with open(src, 'r') as file:
+                    doc = parse(file)
+            elif isinstance(src, str):
+                doc = parseString(src)
+            elif isinstance(src, Document):
+                # don't modify origin document
+                doc = parseString(src.toxml())
+            else:
+                raise TypeError(f"src is not recognized. Expected, str, PathLike or Document. Got {type(src).__name__}")
+            cls._remove_whitespace(doc)
+            doc.normalize()
+            # To parse string instead use: dom = md.parseString(xml_string)
+            pretty_xml = doc.toprettyxml()
+            # remove the weird newline issue:
+            # should not be needes with cls._remove_whitespace(doc)
+            # pretty_xml = os.linesep.join([s for s in pretty_xml.splitlines() if s.strip()])
+            return pretty_xml
+        except TypeError:
+            raise
+        except Exception as e:
+            if isinstance(src, (str, os.PathLike)):
+                msg = f"Unable to indent '{src}'"
+            else:
+                msg = f"Unable to indent document"
+            raise Exception(msg) from e
+    # endregion indent()
+
 
     @classmethod
     def _remove_whitespace(cls, node):
@@ -528,3 +574,23 @@ class XML:
                 node.nodeValue = ""
         for child in node.childNodes:
             cls._remove_whitespace(child)
+
+    # @classmethod
+    # def _indent(cls, elem, level=0) -> None:
+    #     # pretty print
+    #     # https://stackoverflow.com/questions/749796/pretty-printing-xml-in-python
+    #     i = "\n" + level*"  "
+    #     if len(elem):
+    #         if not elem.text or not elem.text.strip():
+    #             elem.text = i + "  "
+    #         if not elem.tail or not elem.tail.strip():
+    #             elem.tail = i
+    #         for elem in elem:
+    #             cls._indent(elem, level+1)
+    #         if not elem.tail or not elem.tail.strip():
+    #             elem.tail = i
+    #     else:
+    #         if level and (not elem.tail or not elem.tail.strip()):
+    #             elem.tail = i
+
+    # endregion ------------- Formating --------------------------------
