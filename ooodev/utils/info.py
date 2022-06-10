@@ -7,7 +7,6 @@ from datetime import datetime
 from pathlib import Path
 import mimetypes
 from typing import TYPE_CHECKING, Tuple, List, cast, overload, Optional
-from lxml import etree as ET
 import uno
 from .sys_info import SysInfo
 
@@ -39,9 +38,6 @@ from . import file_io as mFileIO
 from . import props as mProps
 from . import date_time_util as mDate
 from ..exceptions import ex as mEx
-
-
-_xml_parser = ET.XMLParser(remove_blank_text=True)
 
 
 class Info:
@@ -233,10 +229,16 @@ class Info:
         #
         # This xpath doesn't deal with all cases in the XCU file, which sometimes
         # has many node levels between the item and the prop
+        if mLo.Lo.is_macro_mode:
+            raise mEx.NotSupportedMacroModeError("get_reg_item_prop() is not supported from a macro")
+        try:
+            from lxml import etree as XML_ETREE
+        except ImportError as e:
+            raise Exception("get_reg_item_prop() requires lxml python package") from e
 
         try:
             fnm = cls.get_reg_mods_path()
-            tree: ET._ElementTree = ET.parse(fnm, parser=_xml_parser)
+            tree: XML_ETREE._ElementTree = XML_ETREE.parse(fnm, parser=_xml_parser)
 
             if node is None:
                 xpath = f"//item[@oor:path='/org.openoffice.Office.{item}']/prop[@oor:name='{prop}']"
@@ -1371,7 +1373,6 @@ class Info:
             str: formatted date string such as 'Jun 05, 2022 20:15'
         """
         return mDate.DateUtil.date_time_str(dt=dt)
-        
 
     @classmethod
     def print_doc_properties(cls, doc: object) -> None:
@@ -1513,7 +1514,10 @@ class Info:
             XPackageInformationProvider: Package Information Provider
         """
         ctx = mLo.Lo.get_context()
-        pip = mLo.Lo.qi(XPackageInformationProvider, ctx.getValueByName("/singletons/com.sun.star.deployment.PackageInformationProvider"))
+        pip = mLo.Lo.qi(
+            XPackageInformationProvider,
+            ctx.getValueByName("/singletons/com.sun.star.deployment.PackageInformationProvider"),
+        )
         if pip is None:
             raise mEx.MissingInterfaceError(XPackageInformationProvider)
         return pip

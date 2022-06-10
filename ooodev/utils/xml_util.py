@@ -355,7 +355,7 @@ class XML:
         try:
             from lxml import etree as XML_ETREE
         except ImportError as e:
-            raise Exception("apply_xslt requires lxml python package") from e
+            raise Exception("apply_xslt() requires lxml python package") from e
         _xml_parser = XML_ETREE.XMLParser(remove_blank_text=True)
 
         try:
