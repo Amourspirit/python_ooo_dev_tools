@@ -1,6 +1,7 @@
 # coding: utf-8
 # Python conversion of XML.java by Andrew Davison, ad@fivedots.coe.psu.ac.th
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
+
 # region Imports
 from __future__ import annotations
 import os
@@ -11,12 +12,14 @@ from xml.dom.minicompat import NodeList
 from . import lo as mLo
 from ..exceptions import ex as mEx
 from .gen_util import TableHelper
+
 # endregion Imports
+
 
 class XML:
     """XML method used for with LibreOffice Dcouemnts"""
 
-     # region --------------- Load / Save ------------------------------
+    # region --------------- Load / Save ------------------------------
 
     @classmethod
     def load_doc(cls, fnm: str | os.PathLike) -> Document:
@@ -283,27 +286,8 @@ class XML:
         Gets all node values.
 
         assumes an XML structure like
-        ::
-            <root>
-                <rowID>
-                    <col1ID>str1</col1ID>
-                    <col2ID>str2</col2ID>
-                    <col3ID>str2</col3ID>
-                    <col4ID>str2</col4ID>
-                </rowID>
-                <rowID>
-                    <col1ID>row2-1</col1ID>
-                    <col2ID>row2-2</col2ID>
-                    <col3ID>row2-3</col3ID>
-                    <col4ID>row2-4</col4ID>
-                </rowID>
-                <rowID>
-                    <col1ID>row3-1</col1ID>
-                    <col2ID>row3-2</col2ID>
-                    <col3ID>row3-3</col3ID>
-                    <col4ID>row3-4</col4ID>
-                </rowID>
-            </root>
+
+            .. include:: ../../resources/xml/pay.xml.rst
 
         The data from a sequence of <col> becomes one row in the
         generated 2D array.
@@ -320,7 +304,11 @@ class XML:
         Note:
             col_ids must match the column names:
 
-            colids = ["col1ID", "col2ID", "col3ID", "col4ID"]
+            ``colids = ("purpose", "amount", "tax", "maturity")``
+            
+            Results for example xml:
+            
+            .. include:: ../../resources/xml/pay_all_notes_result.rst
         """
         num_rows = len(row_nodes)
         num_cols = len(col_ids)
@@ -346,7 +334,7 @@ class XML:
     @staticmethod
     def apply_xslt(xml_fnm: str | os.PathLike, xls_fnm: str | os.PathLike) -> str:
         """
-        Transforms xml file using XLST
+        Transforms xml file using XLST.
 
         Not available in macros at this time.
 
@@ -382,12 +370,14 @@ class XML:
             raise Exception(f"Unable to transform '{xml_fnm}' with '{xls_fnm}'") from e
 
     @staticmethod
-    def apply_xslt_to_str(xml_str: str | os.PathLike, xls_fnm: str | os.PathLike) -> str:
+    def apply_xslt_to_str(xml_str: str, xls_fnm: str | os.PathLike) -> str:
         """
-        Transforms xml using XLST
+        Transforms xml using XLST.
+
+        Not available in macros at this time.
 
         Args:
-            xml_str (str | PathLike): XML string.
+            xml_str (str): Raw XML data.
             xls_fnm (str | PathLike): XSL source file path.
 
         Raises:
@@ -447,8 +437,7 @@ class XML:
 
     # endregion ------------ Filter ------------------------------------
 
-     # region --------------- Formating --------------------------------
-
+    # region --------------- Formating --------------------------------
 
     # region    indent()
     @overload
@@ -468,7 +457,7 @@ class XML:
             str: Indented xml as string.
         """
         ...
-    
+
     @overload
     @classmethod
     def indent(cls, src: os.PathLike) -> str:
@@ -521,8 +510,8 @@ class XML:
             str: Indented xml as string.
         """
         try:
-            if isinstance(src,  os.PathLike):
-                with open(src, 'r') as file:
+            if isinstance(src, os.PathLike):
+                with open(src, "r") as file:
                     doc = parse(file)
             elif isinstance(src, str):
                 doc = parseString(src)
@@ -530,7 +519,9 @@ class XML:
                 # don't modify origin document
                 doc = parseString(src.toxml())
             else:
-                raise TypeError(f"src is not recognized. Expected, str, PathLike or Document. Got {type(src).__name__}")
+                raise TypeError(
+                    f"src is not recognized. Expected, str, PathLike or Document. Got {type(src).__name__}"
+                )
             cls._remove_whitespace(doc)
             doc.normalize()
             # To parse string instead use: dom = md.parseString(xml_string)
@@ -547,8 +538,8 @@ class XML:
             else:
                 msg = f"Unable to indent document"
             raise Exception(msg) from e
-    # endregion indent()
 
+    # endregion indent()
 
     @classmethod
     def _remove_whitespace(cls, node):
