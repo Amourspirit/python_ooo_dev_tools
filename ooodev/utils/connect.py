@@ -510,25 +510,7 @@ class LoDirectStart(ConnectBase):
             start_soffice (bool, optional): If True soffice will be started a server that can be connected to. Default True
         """
         super().__init__(**kwargs)
-
-    def _connect(self):
-        """
-        Makes a connection to soffice
-
-        Raises:
-            NoConnectException: if unable to obtain a connection to soffice
-        """
-        self._copy_cache_to_profile()
-        if self._start_soffice:
-            self._popen()
-        try:
-            self._connect()
-        except NoConnectException as e:
-            if self._start_soffice:
-                self.kill_soffice()
-            raise e
-        self._cache_current_profile()
-    
+   
     def connect(self):
         """
         Makes a connection to soffice
@@ -536,5 +518,5 @@ class LoDirectStart(ConnectBase):
         Raises:
             NoConnectException: if unable to obtain a connection to soffice
         """
-        self._script_content = uno.getCurrentContext()
+        self._script_content = uno.getComponentContext()
         

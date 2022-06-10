@@ -438,9 +438,6 @@ class Lo(metaclass=StaticProperty):
         
         host = str(kwargs.get("host", "localhost"))
         port = int(kwargs.get("port", 2002))
-        
-        if cls.is_macro_mode:
-            raise Exception("load_office() is not accessible from a macro")
 
         print("Loading Office...")
         if using_pipes:
@@ -1859,12 +1856,14 @@ class Lo(metaclass=StaticProperty):
         raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
     
     @classproperty
-    def StarDesktop(cls) -> XDesktop:
+    def star_desktop(cls) -> XDesktop:
         """Get current desktop"""
         return cls._xdesktop
     
+    StarDesktop, stardesktop = star_desktop, star_desktop
+    
     @classproperty
-    def ThisComponent(cls) -> XComponent:
+    def this_component(cls) -> XComponent:
         """
         When the current component is the Basic IDE, the ThisComponent object returns
         in Basic the component owning the currently run user script.
@@ -1873,12 +1872,14 @@ class Lo(metaclass=StaticProperty):
         Returns:
             the current component or None when not a document
         """
-        if cls.StarDesktop is None:
+        if cls.star_desktop is None:
             return None
-        comp = cls.StarDesktop.getCurrentComponent()
+        comp = cls.star_desktop.getCurrentComponent()
         if comp is None:
             return None
         impl = comp.ImplementationName
         if impl in ('com.sun.star.comp.basic.BasicIDE', 'com.sun.star.comp.sfx2.BackingComp'):
             return None     # None when Basic IDE or welcome screen
         return comp
+    
+    ThisComponent, thiscomponent = this_component, this_component
