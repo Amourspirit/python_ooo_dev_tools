@@ -1,0 +1,2323 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<club-database>
+  <association id="BAWA">
+    <club id="Q21" charter="2002">
+      <name>Castro Valley Wrestling Club</name>
+      <contact>Ron Maes</contact>
+      <location>Castro Valley</location>
+      <phone>510-555-1491</phone>
+      <email>cvwcron@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Practices every Tuesday and Thursday at 5:00 P.M. at Castro Valley High School mat room.</info>
+    </club>
+    <club id="K28" charter="2002">
+      <name>Coastside Grapplers</name>
+      <contact>Brent Crowley</contact>
+      <location>Pacifica</location>
+      <phone>650-555-7291 (h) 650-555-8163 x7659 (w)</phone>
+      <email/>
+      <age-groups type="KCJW"/>
+      <info/>
+    </club>
+    <club id="E42" charter="2003">
+      <name>Dixon Ram Wrestling</name>
+      <contact>Bill Hull</contact>
+      <location>Dixon</location>
+      <phone>707-555-8833 (home)</phone>
+      <email>luvee@example.com</email>
+      <age-groups type="KCJO"/>
+      <info/>
+    </club>
+    <club id="Q07" charter="2003">
+      <name>East Bay Freestylers</name>
+      <contact>Mike Tringali</contact>
+      <location>Newark</location>
+      <phone>510-555-8294 (home)</phone>
+      <email>Matringali@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Practices three times a week starting mid-February to mid-May 6-8 p.m. Membership: $80.00, includes required USA Wrestling card, club T-shirt.</info>
+    </club>
+    <club id="E27" charter="2004">
+      <name>Fairfield WrestlingClub</name>
+      <contact>Steve Whedbee</contact>
+      <location>Fairfield</location>
+      <phone>707-555-7997 (h)</phone>
+      <email>webwise@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Membership fee is $0.00; this includes a USA Wrestling card. Practice March through August.</info>
+    </club>
+    <club id="H14" charter="2003">
+      <name>Godfather Wrestling Club</name>
+      <contact>Jim Thrall</contact>
+      <location>Menlo Park</location>
+      <phone>650-555-9411 (o)</phone>
+      <email>jthrall@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Club dues are $100.00 per year; siblings get $50.00 off. Includes T-shirt.</info>
+    </club>
+    <club id="Q02" charter="2003">
+      <name>Golden Gate Wrestling Club</name>
+      <contact>Gene Dermody</contact>
+      <location>San Francisco</location>
+      <phone>415-555-6776</phone>
+      <email>gdermody@example.com</email>
+      <age-groups type="OW"/>
+      <info>Practices are Tuesday and Thursday at 7:00 p.m. at Glen Park Rec Center. Annual dues $65 (includes USAW card) and T-shirt.</info>
+    </club>
+    <club id="Q99" charter="2003">
+      <name>Mat Club USA</name>
+      <contact>Clark Conover</contact>
+      <location>Livermore</location>
+      <phone>925-555-8440</phone>
+      <email>matclubusa@example.com</email>
+      <age-groups type="KCJO"/>
+      <info/>
+    </club>
+    <club id="B26" charter="2002">
+      <name>Pirate Wrestling Club</name>
+      <contact>Les Sousa/Ed Shapiro</contact>
+      <location>San Leandro</location>
+      <phone>510-555-1149/510-555-7060</phone>
+      <email>eshapiro@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Meets every Tues/Thurs from 4 to 5:15 p.m. for women and kids/schoolboy and from 5:15-7:15 p.m. for Cadet, Junior, and Open. All wrestling is done in wrestling room at 2200 Bancroft Ave., San Leandro. Cost $50.00 includes USAW membership card and club t-shirt. Club dates are March to October with tournament participation from April to July. Encourages women and kids.</info>
+    </club>
+    <club id="Q17" charter="2004">
+      <name>SF Elite Wrestling</name>
+      <contact>Vic Anastasio</contact>
+      <location>San Francisco</location>
+      <phone>415-555-3884 x223 (w)</phone>
+      <email>vito@example.com</email>
+      <age-groups type="KCJ"/>
+      <info>Kids division frmo 6th grade and up.  Practices are Tuesdays and Thursdays. High School wrestlers practice 3:00 to 5:00 and middle school wrestlers practice from 4:30 to 6:00.  For more information, go to <a href="http://example.com/elite">http://example.com/elite</a></info>
+    </club>
+    <club id="Q01" charter="2004">
+      <name>Titan Wrestling Club</name>
+      <contact>Casey Logwood</contact>
+      <location>Kentfield, Marin County</location>
+      <phone>415-555-2603</phone>
+      <email>titanwrestling@example.com</email>
+      <age-groups type="KCJ"/>
+      <info>Practice for kids under 13 Wed. night 5:00-6:30.  $45.00 fee to join includes USA Wrestling card.</info>
+    </club>
+  </association>
+
+  <association id="CAGWA">
+    <club id="K27" charter="2002">
+      <name>Big Bear Grizzlies Wrestling Club</name>
+      <contact>David Bumstead</contact>
+      <location>Big Bear</location>
+      <phone>909-555-5514 (home)</phone>
+      <email>jimenez@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Practice season March-June, Tuesdays and Wednesdays at 6:00 P.M. at Big Bear High School.</info>
+    </club>
+    <club id="R54" charter="2003" also="SCWA">
+      <name>California Grapplers Youth Wrestling</name>
+      <contact>David Ochoa</contact>
+      <location>Covina</location>
+      <phone>909-555-7805 (h); 9090-555-7037 (cell)</phone>
+      <email>coachochoa@example.com</email>
+      <age-groups type="KCJO"/>
+      <info>CAGWA Practices Nov-March, M-W-Th 6:30-8:00 p.m.; Cadet/Jr/Open practices March-June Tu-Th 6:00-8:00 p.m.</info>
+    </club>
+    <club id="K10" charter="2003">
+      <name>Covina Valley Wrestling Club</name>
+      <contact>Gene Tasse</contact>
+      <location>West Covina</location>
+      <phone>626-555-9928</phone>
+      <email>genet@example.com</email>
+      <age-groups type="K"/>
+      <info>Practices are held at South Hills High School, 645 S. Barranca, West Covina - Wrestling Room (directly behind gym). Tuesdays and Thursdays, 6:30-8:30 p.m.. Sixteen week "Structured Program" for kids 6-14 years old runs from November to March.  Cost for the Fall program is $90, which includes a required $30 USA Wrestling membership;competitors card and a Club T-shirt. The Spring SCWA program begins in March and ends in May, and is open to Kids, High Schol, and Open wrestlers with wrestling experience. Both programs are instructed in Freestyle wrestling by skilled "certified coaches."</info>
+    </club>
+    <club id="C16" charter="2003">
+      <name>Diamondback Youth Wrestling</name>
+      <contact>Brian and Christine Sloat</contact>
+      <location>Phelan</location>
+      <phone>760-555-4997 (home)</phone>
+      <email>jeeptrails@example.com</email>
+      <age-groups type="KC"/>
+      <info>Diamondback wrestling season is from mid-November through mid-March.  Practices are held at Serrano High School on Tuesdays &amp; Thursdays.  Registration fee is $65.00, and this will include your $30.00 USA Wrestling card.</info>
+    </club>
+    <club id="K25" charter="2002">
+      <name>Elsinore Stronghold Wrestling</name>
+      <contact>Damon Broadbent</contact>
+      <location>Elsinore/Wildomar</location>
+      <phone>909-555-6064 (home)</phone>
+      <email>StrongholdWrestling@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Practices will be held at Elsinore High School in Wildomar.
+        Practice will start Nov. 19th and go until May/June. There will
+        be at least four coaches. Club fee is $75, or $55 if you participate
+        in fundraiser. Includes USA/Insurance card &amp; T-shirt. Practice
+        times 6 to 7:30 p.m. Tuesday and Thursday, plus weekend tournaments.</info>
+    </club>
+    <club id="C06" charter="2003">
+      <name>Fontana Boyz Wrestling Club</name>
+      <contact>Maria Aguiniga</contact>
+      <location>Fontana</location>
+      <phone>909-555-3788</phone>
+      <email>maguiniga@example.com</email>
+      <age-groups type="KC"/>
+      <info>Club fees $80.00 per wrestler (includes USA card). Practices begin 10-20-03 at Alta Loma High School at 6:30 p.m. Regitration on 10-17-03 at Alta Loma H.S. at 6:30 p.m. Practices will be Mon, Tues, and Thurs. at Alta Loma H.S; Wed. &amp; Fri. at Kaiser H.S.</info>
+    </club>
+    <club id="C04" charter="2003">
+      <name>Fontana Jr. Rebels</name>
+      <contact>Chuck Loyer</contact>
+      <location>Fontana</location>
+      <phone>909-555-8346</phone>
+      <email>loyers5@example.com</email>
+      <age-groups type="KC"/>
+      <info>Practices at A.B. Miller High School in Fontana. Practices start Monday , Oct. 19. Cost of $80 includes USA card, pictures, trophies, and singlet.</info>
+    </club>
+    <club id="C22" charter="2003">
+      <name>Moreno Valley Wrestling Club</name>
+      <contact>Merita Merval</contact>
+      <location>Moreno Valley</location>
+      <phone>909-555-5133</phone>
+      <email>snoozer@example.com</email>
+      <age-groups type="KC"/>
+      <info>Practices begin Dec 1st and will be held on Tuesday and Thursday from 6:30-8:00 p.m. at Canyon Springs High School. Club fees are as follows: 1st child - $85; 2nd child - $75; 3 or more - $50. Fee includes USA card (insurance), T-shirt, and instruction.</info>
+    </club>
+    <club id="K32" charter="2002">
+      <name>Norco Wrestling Club</name>
+      <contact>Robert Ruffini</contact>
+      <location>Norco</location>
+      <phone>904-555-1416 (home)</phone>
+      <email>rruffini@example.com</email>
+      <age-groups type="K"/>
+      <info>Practice starts in November and will continue until March. We will participate in two tournaments a month.</info>
+    </club>
+    <club id="C03" charter="2003">
+      <name>Outkast Boyz Wrestling</name>
+      <contact>Jackie Juarez</contact>
+      <location>Redlands</location>
+      <phone>909-555-9073</phone>
+      <email>outkastboyz@example.com</email>
+      <age-groups type="KCW"/>
+      <info>Practices are Tuesday and Thursday 6:30-8:00 p.m. November through March.</info>
+    </club>
+    <club id="C07" charter="2004">
+      <name>Riverside Warriors</name>
+      <contact>Michelle Vasquez</contact>
+      <location>Riverside</location>
+      <phone>909-555-1858 (cell) 909-555-1425 (home)</phone>
+      <email>onewickedteammom@example.com</email>
+      <age-groups type="K"/>
+      <info>All practice season will be held at Norte Vista High School.</info>
+    </club>
+    <club id="K25" charter="2003">
+      <name>Stronghold Wrestling</name>
+      <contact>Damon Broadbent</contact>
+      <location>Elsinore/Wildomar</location>
+      <phone>909-555-3482 (home)</phone>
+      <email>StrongholdWrestling@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Season runs November through Inland Empire season. Cost is $70.00. For each additional family member there will be a $5.00 discount. i.e., $70 $65, $60, $55, $50.  Fee includes T-shirt and USA card. Practice times are Tuesdays and Thursdays from 6:00-8:00 p.m.</info>
+    </club>
+    <club id="C13" charter="2003">
+      <name>Terminators Norwalk Youth Wrestling</name>
+      <contact>Angel Molina</contact>
+      <location>Norwalk</location>
+      <phone>562-555-3675</phone>
+      <email>sch596@example.com</email>
+      <email>schavez@example.com</email>
+      <age-groups type="KW"/>
+      <info>TERMINATORS 2003 CAGWA LEAGUE CHAMPIONS. Learn the skills of wrestling to be a champion. Practice starts end of November (date to be announced). Pratice three times a week. Ages: 5-14 boys and girls; copy of birth certificate needed.  Registration fees: $75.00 includes sweatshirt, shirt, shorts, and pictures. Parents need to provide headgear, wrestling shoes, USA card $30.00 and black singlet (team will provide printing oflogo on singlet). "INTENSITY" - WiTH EVERY MOVE IN EVERY MINUTE OF EVERY MATCH WE ARE THE TERMINATORS. See website at <a href="http://example.com/terminatorwrestling">http://example.com/terminatorwrestling</a>.</info>
+    </club>
+    <club id="C08" charter="2003">
+      <name>Rosemead Kids Wrestling (RKW) Club</name>
+      <contact>Dante Galindo</contact>
+      <location>Rosemead</location>
+      <phone>562-555-2262</phone>
+      <email>rkw2002@example.com</email>
+      <age-groups type="KCW"/>
+      <info>Practices are held at Rosemead High School from 6:00 to 8:00 p.m. from November to March.</info>
+    </club>
+    <club id="C02" charter="2003">
+      <name>San Gabriel Valley Kids Wrestling</name>
+      <contact>John Morales</contact>
+      <location>El Monte/South El Monte</location>
+      <phone>626-555-4445 (home)</phone>
+      <email>talkingink@example.com</email>
+      <age-groups type="KCW"/>
+      <info>SGV Kids Wrestling Club is a competition team and is supported by many certified coaches and referees who teach the wrestlers agility, flexibility, strength, balance, self-confidence, sportsmanship, discipline, and how to set and chieve goals on and off the mat as well has having fun in the process.  Season is November through April.  Cost of $85.00 includes a USA card, singlet, picture package, end of year trophy and awards.</info>
+    </club>
+    <club id="C12" charter="2003">
+      <name>Scorpion Wrestling</name>
+      <contact>Gary Smith</contact>
+      <location>Temecula</location>
+      <phone>909-555-5126</phone>
+      <age-groups type="KC"/>
+      <info>Practice Monday and Wednesday 6-8 p.m. at Chaparral High School in Temecula. Season runs approx. Nov-April. Mostly freestyle with some folkstyle and greco.</info>
+    </club>
+    <club id="R55" charter="2003">
+      <name>Team Conquest</name>
+      <contact>Allen Clinton</contact>
+      <location>Orange</location>
+      <phone>714-555-5202 (office)</phone>
+      <email>teamconquest@example.com</email>
+      <age-groups type="K"/>
+      <info>Practices: Freestyle wrestling on Tuesday and Thursday nights 7:00-8:30 pm at El Modena H.S. wrestling room, located next to Pool. Tournaments on Sundays. Cost $90 includes USA Card and T-shirt. Season runs November-March.</info>
+    </club>
+    <club id="K24" charter="2002">
+      <name>Team One Wrestling</name>
+      <contact>Henry W. Provencher</contact>
+      <location>San Dimas</location>
+      <phone>909-555-1986</phone>
+      <email>proshal@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Practices are held at San Dimas High School, 800 West Covina Blvd, San Dimas, CA 91733 - Wrestling Room (next to track on east side of campus).  Tuesdays and Thursdays 6:30-8:30 p.m. beginning 10/23/01. Fall CAGWA program for 5-14 year olds runs from October to March and includes a weekly tournament schedule. Spring IEWA Program for 5 yrs and up begins in March and ends in May with a regular tournament schedule. Post league competition at state/regional/national/world level for all age groups (Kids to Open divisions). Cost for fall program is $90.00, which includes required $30.00 USA Wrestling membership. Spring Program fee is $70.00 (minus $30.00 USA Wrestling membership fee if already purchased). Both program fees include team t-shirt (unless already received in Fall program) and participation award.</info>
+    </club>
+    <club id="R19" charter="2003">
+      <name>Team So Cal Wrestling Club</name>
+      <contact>Pat Cadwallader</contact>
+      <location>Cypress</location>
+      <phone>714-555-3825 (h)</phone>
+      <email>caddy6@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>$175.00 a year includes Team So Cal Spirit Pack, USA Card.</info>
+    </club>
+    <club id="K17" charter="2003">
+      <name>Team Temecula</name>
+      <contact>Larry Meredith</contact>
+      <location>Temecula</location>
+      <phone>909-555-8447</phone>
+      <email>pbjs@example.com</email>
+      <age-groups type="KCJO"/>
+      <info>California State Champs in freestyle/greco schoolboy division, 2 Olympians on Coaching Staff. Kids start Nov. 10th to July. High school age starts after H.S. state. Cost $100.00 includes USA card and T-shirt. Regional training site.</info>
+    </club>
+    <club id="C19" charter="2002">
+      <name>Team Thunder</name>
+      <contact>Robert L. Williams</contact>
+      <location>Santa Ana</location>
+      <phone>714-555-1826</phone>
+      <email>teamthundr@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Our season runs from November to May. We are a Christian wrestlig program. Cost is $3.00 fee for USA card and $30.00 per month (includes team T-shirt). We teach freestyle, greco, and folkstyle (high school style). Practices are Monday and Wednesdays with some Fridays and Saturdays 5:30 to 7:00 p.m.</info>
+    </club>
+  </association>
+
+  <association id="CMWA">
+    <club id="L08a" charter="2003">
+      <name>Adobe Grappling</name>
+      <contact>Joe Sandoval</contact>
+      <location>Petaluma</location>
+      <phone>763-4233</phone>
+      <email>jds747@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info/>
+    </club>
+    <club id="L10" charter="2004">
+      <name>El Molino Wrestling Club</name>
+      <contact>Chris Halpin</contact>
+      <location>Forestville</location>
+      <phone>707-555-8070 (h)</phone>
+      <age-groups type="KCJW"/>
+      <info/>
+    </club>
+    <club id="L01" charter="2003">
+      <name>North Bay Quick Fall</name>
+      <contact>John Sachs</contact>
+      <location>Ellsie Allen High School, Santa Rosa</location>
+      <phone>707-555-7774</phone>
+      <email>jrsachs@example.com</email>
+      <age-groups type="KCJW"/>
+      <info>Limited number of scholarships available.  Active from February to June. Website is <a href="http://example.com/nbqf.html">http://example.com/nbqf.html</a>
+      </info>
+    </club>
+    <club id="L07" charter="2004">
+      <name>Sebastopol Wrestling Club</name>
+      <contact>Edward Cook</contact>
+      <location>Sebastopol</location>
+      <phone>707-555-1399</phone>
+      <email>sebwrestl1@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info/>
+    </club>
+    <club id="L03" charter="2002">
+      <name>Ukiah Freestyle Wrestling</name>
+      <contact>Mona Adams</contact>
+      <location>Ukiah</location>
+      <phone>462-6702</phone>
+      <email>adamsfamily@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Practice February through May, Wednesdays and Thursadays 7:30-9:00 p.m.</info>
+    </club>
+    <club id="L06b" charter="2003">
+      <name>Valley Freestyle Wrestling Club</name>
+      <contact>Chuck Rackerby</contact>
+      <location>Santa Rosa</location>
+      <phone>707-555-7252</phone>
+      <email>crackerby@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Price is $35.00 per person; includes USA card club fee. Start date: March 1, 2004. Practices Mondays and Wednesdays 5:30 to 7:30 at Maria Carrillo High School (Rincon Valley).</info>
+    </club>
+    <club id="L06" charter="2004">
+      <name>Windsor Wrestling Club</name>
+      <contact>Becky Carnation</contact>
+      <location>Windsor</location>
+      <phone>707-555-8937 (w)</phone>
+      <email>carntnfmly@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Signups will be Tuesday Jan 13, 2004 6 pm to 8 pm at Windsor High School Multi-purpose room. Windsor High School is located at 8695 Windsor Rd. Membership fee $65.00 per wrestler. Include membership card, club T-shirt, facilities use fee, trophy. Shorts &amp; T-shirts for practise, wrstling shoes great!! Birth certificate required for registration. Practises Tues &amp; Thursday. Jrs. 6-7 pm. Sr. 7-8 p.m. at Windsor High School Multi-purpose.</info>
+    </club>
+    <club id="L04a" charter="2003">
+      <name>Winters Wrestling Club</name>
+      <contact>Jesse Hellinger</contact>
+      <location>Winters</location>
+      <phone>530-555-1340</phone>
+      <age-groups type="KCJOW"/>
+      <info/>
+    </club>
+  </association>
+
+  <association id="CVWA">
+    <club id="S17" charter="2003">
+      <name>Central Cali Mat Club "Dinuba Dragons"</name>
+      <contact>Brian Ramirez</contact>
+      <location>Dinuba</location>
+      <phone>559-555-3051 or 559-555-8970</phone>
+      <email>emperorwrestling@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Membership is $65; includes USA card and team shirt. Practice is held Monday and Wednesdays 6-8 p.m. at the Dinuba High School wrestling room.</info>
+    </club>
+    <club id="S20" charter="2003">
+      <name>Clovis East Olympic Wrestling Club</name>
+      <contact>Rick McKinney</contact>
+      <location>Clovis</location>
+      <phone>559-555-4414</phone>
+      <email>RickMcKinney@example.com</email>
+      <age-groups type="KCJO"/>
+      <info>$55.00 fee (includes USA card and team shirt). Registration Feb. 17. First pracitce feb. 25, 2004.  Every Tuesday and Wednesday 5:30-7 p.m. in the Clovis East Wrestling Room. Every Thursday 5-6 p.m.  A copy of your birth certificate must be available at registration.</info>
+    </club>
+    <club id="S22" charter="2002">
+      <name>Golden Oak</name>
+      <contact>Kent Lincoln</contact>
+      <location>Oakhurst, CA</location>
+      <phone>683-6194 (h)</phone>
+      <email>battlebadger-2000@example.com</email>
+      <age-groups type="KCJW"/>
+      <info>$60 entry fee convers USA Wrestling Card, club fees, and four tournament entires. Wrestlers must provide their own singlets and headgear.</info>
+    </club>
+    <club id="S19" charter="2002">
+      <name>Grizzly Grapplers Wrestling</name>
+      <contact>Joe Bracamonte</contact>
+      <location>Fresno</location>
+      <phone>559-555-1249 (h)</phone>
+      <email>opneyes</email>
+      <age-groups type="KCJ"/>
+      <info>Practice 5:30-6:30 Tuesdays and Thursdays. Practice begins February 19.</info>
+    </club>
+    <club id="S13" charter="2003">
+      <name>Firebaugh Wrestling Club</name>
+      <contact>Bill Magnusson</contact>
+      <location>Firebaugh</location>
+      <phone>559-555-5592 x505 (work) 559-555-2584 (home)</phone>
+      <email>bmagnusson@example.com</email>
+      <age-groups type="KCJO"/>
+      <info>Coaches Brady Jenkins, Jose Mora, George Moreno, Ramiro Munoz, Blas DeLuna, Bill Magnusson.  Signups are March 1st and 3rd from 3:30-4:30 p.m. Cost to join is $15 club fee + $30 USA card. First practice will be on March 8 2003 3:30-5 p.m. (Mon. &amp; Wed. kids, Tu &amp; Thu Cadet/Junior/Open) Must have medical insurance and doctor's physical exam.</info>
+    </club>
+    <club id="D17" charter="2002">
+      <name>Kingsburg Freestyle</name>
+      <contact>Joe Ruiz</contact>
+      <location>Kingsburg</location>
+      <phone>555-4836 / 555-6229</phone>
+      <email>jlruiz3@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Practices on Tuesday, Wednesday, and Thursday at 6:00 PM</info>
+    </club>
+    <club id="S18" charter="2003">
+      <name>Parlier Freestyle Club</name>
+      <contact>Jim Clifton</contact>
+      <location>Parlier</location>
+      <phone>555-3573 (w) 555-5441 (h)</phone>
+      <email>jimmieclifton@example.com</email>
+      <age-groups type="KCJ"/>
+      <info/>
+    </club>
+    <club id="S04" charter="2003">
+      <name>Ranchos Area Wrestling</name>
+      <contact>Joe Romine</contact>
+      <location>Madera</location>
+      <phone>559-555-9387</phone>
+      <email>jromine@example.com</email>
+      <age-groups type="KCJ"/>
+      <info>Practices are Monday, Tuesday, and Thursday from 3:30-5:00 p.m. at Liberty High School.  Membership is $15 and includes T-shirt.</info>
+    </club>
+    <club id="S12" charter="2003">
+      <name>Roosevelt Force Freestyle Club</name>
+      <contact>Ken Richan - Rick Barrow</contact>
+      <location>Fresno</location>
+      <phone>559-555-6021 (home) 559-555-3113 (cell)</phone>
+      <email>kjrichan@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info/>
+    </club>
+    <club id="S06" charter="2003">
+      <name>Selma Youth Wrestling</name>
+      <contact>Archie Tovar</contact>
+      <location>Selma</location>
+      <phone>559-555-7357</phone>
+      <email>archiet@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>See our website at <a href="http://example.com/">http://example.com/</a>.</info>
+    </club>
+    <club id="S21" charter="2002">
+      <name>Sierra Freestyle Wrestling</name>
+      <contact>Michael R. McGrath</contact>
+      <location>Tollhouse</location>
+      <phone>559-555-7515</phone>
+      <email>mmcgrath@example.com</email>
+      <age-groups type="KCJO"/>
+      <info/>
+    </club>
+    <club id="S02" charter="2003">
+      <name>Team Fujii Wrestling Club</name>
+      <contact>Tim Fujii</contact>
+      <location>Fresno</location>
+      <phone>559-555-9216 (h)</phone>
+      <email>tfujwrcl@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>We don't charge a club fee.  You are responsible for your own USAW card and singlet. Work with all ability levels. Practice will begin Tuesday, Feb. 18, 2003. Practices are Tuesday and Thursdays, 4 to 6 p.m. at Tehipste Middle School (630 N. Adler, Fresno).  Folkstyle, Freestyle, and Greco-Roman.</info>
+    </club>
+    <club id="S15" charter="2004">
+      <name>Tranquillity Spartans</name>
+      <contact>James McDonald</contact>
+      <location>Tranquillity H.S.</location>
+      <phone>559-555-8538 (w) or 559-555-8947 (Cecil Vermonte) or 555-2566 (Ricardo Aguilero)</phone>
+      <email>dylandog123@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Practice held Tuesday, Thursday, Friday 4:30-6:30 p.m. at Tranquillity High School gym.  Anyone is welcome to join. Cost will be nothing; you just have to purchase a USA Wrestling card.</info>
+    </club>
+  </association>
+
+  <association id="IEWA">
+    <club id="K31" charter="2003">
+      <name>Battle Cat Wrestling Club</name>
+      <contact>Mario Moreno</contact>
+      <location>Perris</location>
+      <phone>909-555-7192</phone>
+      <email>mmoreno@example.com</email>
+      <age-groups type="KCJO"/>
+      <info>Battle Cat Wreslting Club seeks to build positive attitudes and good freestyle &amp; greco wrestlers. All are welcome. A USA Wrestling Card is required and may be purchased for $30.00 at the site.</info>
+    </club>
+    <club id="K27" charter="2002">
+      <name>Big Bear Grizzlies Wrestling Club</name>
+      <contact>David Bumstead</contact>
+      <location>Big Bear</location>
+      <phone>909-555-3892 (home)</phone>
+      <email>jimenez@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Practice season March-June, Tuesdays and Wednesdays at 6:00 P.M. at Big Bear High School.</info>
+    </club>
+    <club id="R06" charter="2003">
+      <name>Blackhawk Wrestling Club</name>
+      <contact>Tom Jenkins</contact>
+      <location>La Quinta</location>
+      <phone>760-555-8610 (h) 760-555-3071 x1505 (w)</phone>
+      <email>tomj@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info/>
+    </club>
+    <club id="I24" charter="2002">
+      <name>Black Watch Grapplers</name>
+      <contact>Joe Aragon</contact>
+      <location>Upland</location>
+      <phone>909-555-6597 (home)</phone>
+      <email>centurioninc@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Membership $85.00 includes USA Card, singlet, and team T-shirt. Practices Tuesdays and Thursdays 6:00-8:00 PM at Upland High School.</info>
+    </club>
+    <club id="R13" charter="2003">
+      <name>Dana Point Wrestling Club</name>
+      <contact>Brian Fortenbaugh/Reza Abedi</contact>
+      <location>Dana Point</location>
+      <phone>949-555-4635</phone>
+      <email>reabedi@example.com</email>
+      <age-groups type="KCJ"/>
+      <info>The club is open to everyone at no cost except for the USA card.</info>
+    </club>
+    <club id="K02" charter="2003">
+      <name>Husky Wrestling</name>
+      <contact>Randy Campbell</contact>
+      <location>Corona</location>
+      <phone>909-555-7557</phone>
+      <age-groups type="K"/>
+      <info>Practices Monday-Wed 5:00-6:30 p.m., Dec 1st-March 10th at Centennial High School</info>
+    </club>
+    <club id="R02" charter="2003">
+      <name>Imperial Wrestling Club</name>
+      <contact>Coach Rob Wogner</contact>
+      <location>Diamond Ranch H.S., Pomona</location>
+      <phone>760-555-3597 (home)</phone>
+      <email>imperialwrestling@example.com</email>
+      <age-groups type="KCJW"/>
+      <info/>
+    </club>
+    <club id="K30" charter="2002">
+      <name>Jaguar Wrestling</name>
+      <contact>Bryant Walker</contact>
+      <location>Ontario</location>
+      <phone>909-555-3416</phone>
+      <email>captwalk1@example.com</email>
+      <age-groups type="KCJ"/>
+      <info>Any person wanting to join just needs to purchase a USA Wrestling card.</info>
+    </club>
+    <club id="K32" charter="2002">
+      <name>Norco Wrestling Club</name>
+      <contact>Robert Ruffini</contact>
+      <location>Norco</location>
+      <phone>904-555-5246 (home)</phone>
+      <email>rruffini@example.com</email>
+      <age-groups type="K"/>
+      <info>Practice starts in November and will continue until March. We will participate in two tournaments a month.</info>
+    </club>
+    <club id="R07a" charter="2002">
+      <name>Palm Desert Enforcers (PAL)</name>
+      <contact>Tom Lee</contact>
+      <location>Palm Desert</location>
+      <phone>760-555-9652 (home)</phone>
+      <email>toml1333@example.com</email>
+      <email>tlee@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info/>
+    </club>
+    <club id="K09" charter="2002">
+      <name>Power Masters I.E.</name>
+      <contact>Joe Trevino</contact>
+      <location>Colton</location>
+      <phone>909-555-6509</phone>
+      <email>coachtrev@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Practices are held at Colton High School Tuesdays and Thursdays from 6:00-8:00 p.m. No cost to join. Athletes must provide their USA card and tournament entry fees.</info>
+    </club>
+    <club id="K26" charter="2002">
+      <name>Santiago Sharks</name>
+      <contact>Ronald Horst</contact>
+      <location>Corona</location>
+      <phone>909-555-7099</phone>
+      <email>rhorst1020@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Starts March 11, 2002. Practices are Mondays and Wednesdays from 6:00 PM to 7:30 PM. Price $65 includes USA card and T-shirt.</info>
+    </club>
+    <club id="K25" charter="2003">
+      <name>Stronghold Wrestling</name>
+      <contact>Damon Broadbent</contact>
+      <location>Elsinore/Wildomar</location>
+      <phone>909-555-6346 (home)</phone>
+      <email>StrongholdWrestling@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Season runs November through Inland Empire season. Cost is $70.00. For each additional family member there will be a $5.00 discount. i.e., $70 $65, $60, $55, $50.  Fee includes T-shirt and USA card. Practice times are Tuesdays and Thursdays from 6:00-8:00 p.m.</info>
+    </club>
+    <club id="K17" charter="2003">
+      <name>Team Temecula</name>
+      <contact>Larry Meredith</contact>
+      <location>Temecula</location>
+      <phone>909-555-2759</phone>
+      <email>pbjs@example.com</email>
+      <age-groups type="KCJO"/>
+      <info>California State Champs in freestyle/greco schoolboy division, 2 Olympians on Coaching Staff. Kids start Nov. 10th to July. High school age starts after H.S. state. Cost $100.00 includes USA card and T-shirt. Regional training site.</info>
+    </club>
+    <club id="Kxy" charter="2002">
+      <name>Top Gun Wrestling Club</name>
+      <contact>Brian Sandmark</contact>
+      <location>LaVerne</location>
+      <phone>909-555-4759</phone>
+      <email/>
+      <age-groups type="KCJOW"/>
+      <info>Practices Tuesdays and Thursdays, 5 March through 12 May, from 5:30 p.m - 7:30 p.m. at Bonita High School Gym.</info>
+    </club>
+  </association>
+
+  <association id="KCWA">
+    <club id="N03a" charter="2003">
+      <name>Bakersfield Drillers Wrestling</name>
+      <contact>Andy Varner</contact>
+      <location>Bakersfield</location>
+      <phone>661-555-4058 (home)</phone>
+      <email>andy_varner@example.com</email>
+      <age-groups type="KCJ"/>
+      <info>Practice Mon-Tues-Thurs 6:00 p.m. to 8:00 p.m.</info>
+    </club>
+    <club id="N20" charter="2003">
+      <name>Fightin' Scots</name>
+      <contact>Charles Marquez</contact>
+      <location>Bakersfield</location>
+      <phone>661-555-2625</phone>
+      <email>cmarquez@example.com</email>
+      <age-groups type="KC"/>
+      <info>Cost is $40.00 (includes membership card and t-shirt. Practices are held Tuesdays and Thursdays from 6:30 p.m. to 8:00 p.m. starting Feb. 25th.</info>
+    </club>
+    <club id="N08" charter="2004">
+      <name>Golden Hawk Wrestling Club</name>
+      <contact>Glen Smith / Mike Hicks</contact>
+      <location>?????</location>
+      <phone>661-555-9689 (Glen) / 661-555-3117 (Mike)</phone>
+      <email>weldingsales@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Practices Centennial High School Wrestling Room Tuesdays and Thursdays 5:30 - 7:00 pm for Novice, Midgets, Bantams (6th grade and younger); 7:00 - 8:30 School boy, Cadet, Jr. and Open (Jr. high and older). Registration: $40.00 club dues includes T-Shirt $30.00 USA Wrestling Insurance Card</info>
+    </club>
+    <club id="N26" charter="2003">
+      <name>Jr. Express</name>
+      <contact>Brian Carr</contact>
+      <location>Bakersfield</location>
+      <phone>661-555-4671</phone>
+      <email>carrz5@example.com</email>
+      <age-groups type="KCW"/>
+      <info/>
+    </club>
+    <club id="N11" charter="2004">
+      <name>Jr Stars</name>
+      <contact>Ty Stricker</contact>
+      <location>Bakersfield</location>
+      <phone>661-555-3382 (h)</phone>
+      <email/>
+      <age-groups type="KCJO"/>
+      <info/>
+    </club>
+    <club id="N19" charter="2003">
+      <name>Jr Viking Wrestling Club</name>
+      <contact>Scott DeGough</contact>
+      <location>Bakersfield, WASCO</location>
+      <phone>661-555-6610</phone>
+      <email>degough7@example.com</email>
+      <age-groups type="KCJ"/>
+      <info>Fee $60.00 includes USA card, club dues, and T-shirt.</info>
+    </club>
+    <club id="N16" charter="2003">
+      <name>Los Osos Wrestling Club</name>
+      <contact>Miguel Sanchez</contact>
+      <location>Arvin</location>
+      <phone>661-555-6482</phone>
+      <age-groups type="KCJOW"/>
+      <info>$50.00 to join club.</info>
+    </club>
+    <club id="N05" charter="2003">
+      <name>Noblemen Wrestling Club</name>
+      <contact>Craig Noble</contact>
+      <location>Bakersfield</location>
+      <phone>661-555-4774 (club cell)</phone>
+      <age-groups type="KCJOW"/>
+      <info>The club of champions. Practices held at East high School. Registration fee includes T-shirt and USA Wrestling Card.</info>
+    </club>
+    <club id="N17a" charter="2002">
+      <name>Simba/PAL</name>
+      <contact>Dennis Reed</contact>
+      <location>Bakersfield</location>
+      <phone>601-555-7652</phone>
+      <email>reedde@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Open to anyone; open to promote wrestling and sportsmanship in Kern County.</info>
+    </club>
+    <club id="N18" charter="2003">
+      <name>Taft Panthers</name>
+      <contact>Bill Graham</contact>
+      <location>Taft</location>
+      <phone>661-555-9328</phone>
+      <email>Bil929@example.com</email>
+      <age-groups type="KCJW"/>
+      <info/>
+    </club>
+    <club id="N01" charter="2002">
+      <name>Tehachapi Wrestling Association</name>
+      <contact>Ken Pousson/Dan Rosler</contact>
+      <location>Tehachapi</location>
+      <phone>805-555-1447/805-555-9202</phone>
+      <age-groups type="KCJOW"/>
+      <info>Practices held at Tehachapi High School on Tuesdays and Thursdays from 6-7 PM, Grades K-12 (Coed). Club membership: $60 (Singlet available, T-shirt included)  Our goal: To promote youth wrestling in the community</info>
+    </club>
+  </association>
+
+  <association id="KTWA">
+    <club id="D20" charter="2004">
+      <name>Avenal Pirates</name>
+      <contact>Sheila J. Verdugo / Rolando Sauceda</contact>
+      <location>Avenal</location>
+      <phone>555-5766 (Verdugo); 555-9544 (Sauceda)</phone>
+      <email>verdugofam@example.com</email>
+      <age-groups type="OW"/>
+      <info>The wrestling club reaches out to both genders. Rolando encourages all ages. He will be holding his wrestling training on Monday and Thursday, and weight training on Wednesdays.</info>
+    </club>
+    <club id="D09" charter="2004">
+      <name>Corcoran Freestyle Wrestling Club</name>
+      <contact>Steve V. Bonilla</contact>
+      <location>Corcoran</location>
+      <phone>559-555-1826 (h) 559-555-8268 (fax)</phone>
+      <email/>
+      <age-groups type="KC"/>
+      <info>Cost of joining club: $45.00</info>
+    </club>
+    <club id="D06" charter="2003">
+      <name>Exeter X-Men USA Wrestling</name>
+      <contact>Victor DeLaCruz</contact>
+      <location>Exeter</location>
+      <phone>559-555-7168</phone>
+      <email>vctrdelacruz@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Ages 5-65 served. Cost $50 ($30 USA card; $20 club fee). Practices begin March 3, Mondays, Wednesdays, and Thursdays. Practice for 12 yrs &amp; under from 5-6 p.m.; practice for 13 &amp; above 6:10-7:30 p.m.</info>
+    </club>
+    <club id="D12" charter="2004">
+      <name>Hanford Knights Youth Wrestling</name>
+      <contact>Kevin Austin</contact>
+      <location>Hanford</location>
+      <phone>559-555-3040</phone>
+      <email>eaustin@example.com</email>
+      <age-groups type="K"/>
+      <info>Membership dues $50.00 includes t-shirt. Practice M/W/F 5:00-7:00 p.m.</info>
+    </club>
+    <club id="D13" charter="2003">
+      <name>Hanford Wrestling Club</name>
+      <contact>Michael Wright</contact>
+      <location>Hanford</location>
+      <phone>559-555-1052 x3213 or 559-555-7716</phone>
+      <email>mwright@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Cost of $50 includes team T-shirt. Practices on Tuesday and Thursday from 5-7 p.m.</info>
+    </club>
+    <club id="D16" charter="2003">
+      <name>Maurader Freestyle</name>
+      <contact>Greg Miller</contact>
+      <location>Porterville</location>
+      <phone>559-555-5348 (home) or 559-555-2455 (cell)</phone>
+      <email/>
+      <age-groups type="KCJO"/>
+      <info>Membership cost includes T-shirts</info>
+    </club>
+    <club id="D19" charter="2004">
+      <name>Pioneer Wrestling Club</name>
+      <contact>Jim Bennett</contact>
+      <location>Visalia</location>
+      <phone>559-555-9073 (school)</phone>
+      <email>jbennett@example.com</email>
+      <age-groups type="KCJ"/>
+      <info>Practices Tuesdays and Thursdays in the Mt. Whiteny Wrestling Room. Middle School and High School wrestlers practice from 3:30-5:30 p.m. Elementary School wrestlers practice from 5:30 to 7 p.m.  Tournaments will be held on Saturdays at local high schools in Kings and Tulare counties. A schedule will be available at sign ups.  Sign ups are on Freburary 4, 13, and 19, 2004 from 3:30-5:30 p.m. Cost is $65.  The fee includes your USA Wrestling Card ($30) and a Pioneer Wrestling Club Singlet ($35). Practice starts February 19, 2004.</info>
+    </club>
+    <club id="D99" charter="2004">
+      <name>Porterville K.L.A.W.S.</name>
+      <contact>Tim Vanni</contact>
+      <location/>
+      <phone>559-555-8101</phone>
+      <email>tvanni@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Practice Tuesday &amp; Thursday 3:30-5:00 High School and advanced; beginners 5:00-6:00</info>
+    </club>
+  </association>
+
+  <association id="MDWA">
+    <club id="F15" charter="2002">
+      <name>Antioch Wrestling Alliance</name>
+      <contact>Dan Lovell</contact>
+      <location>Antioch</location>
+      <phone>925-555-2564</phone>
+      <email>dml0158@example.com</email>
+      <age-groups type="KCJW"/>
+      <info/>
+    </club>
+    <club id="F14" charter="2003">
+      <name>Crockett Wrestling Club</name>
+      <contact>Sid Jensen Jr.</contact>
+      <location>Crockett</location>
+      <phone>510-555-4014 (home) 510-555-6984 (voicemail)</phone>
+      <email>www.living4life@example.com</email>
+      <age-groups type="CJOW"/>
+      <info>$30 to join (USA card fee). Practice every Wed. 6:00-8:00 p.m. at John Swett High School wrestling room.</info>
+    </club>
+    <club id="F01" charter="2003">
+      <name>Delta Wrestling Club</name>
+      <contact>Greg Chappel</contact>
+      <location>Brentwood</location>
+      <phone>925-555-8989 (home)</phone>
+      <email>chappel@example.com</email>
+      <age-groups type="KCJO"/>
+      <info>Freestyle practice on Monday and Wednesday. Greco practice Tuesday and Thursday. Feb 1st through June 1st.</info>
+    </club>
+    <club id="F05" charter="2003">
+      <name>Golden State Wrestling Club</name>
+      <contact>Richard Madrigal</contact>
+      <location>Antioch</location>
+      <phone>925-555-7647 (home; evening)</phone>
+      <email>zeplafied@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Practice times to be announced later. Season: September, October, January through May.</info>
+    </club>
+    <club id="F18" charter="2002">
+      <name>Lafayette Wrestling Club</name>
+      <contact>Alan Grana</contact>
+      <location>Lafayette</location>
+      <phone>925-555-7411 (home)</phone>
+      <email>dasta@example.com</email>
+      <age-groups type="KCW"/>
+      <info>Cost $65 to join includes T-shirt and USA Wrestling Card.</info>
+    </club>
+    <club id="F16" charter="2002">
+      <name>Riverview Wrestling Club</name>
+      <contact>Nelson Ahlstrom</contact>
+      <location>Bay Point</location>
+      <phone>925-555-7715 (H) / 925-555-8149 x 5274 (school)</phone>
+      <email/>
+      <age-groups type="K"/>
+      <info>Middle School 6th, 7th, 8th boys.  School wrestling in the fall season, freestyle wrestling in the spring season.  $35 fee includes shirt.</info>
+    </club>
+    <club id="B26" charter="2003">
+      <name>Pirate Wrestling Club</name>
+      <contact>Lester Sousa</contact>
+      <location>San Leandro</location>
+      <phone>510-555-2826</phone>
+      <email>lsouza@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Call for times and dates.</info>
+    </club>
+    <club id="F03" charter="2003">
+      <name>Pleasant Hill/Martinez Wrestling Club</name>
+      <contact>Cory Salmon</contact>
+      <location>Pleasant Hill</location>
+      <phone>925-555-4828 x5046</phone>
+      <email>Salmoncc@example.com</email>
+      <age-groups type="KCJO"/>
+      <info>Cost $50: includes USA card and club shirt. Fall season (collegiate) begins Sept. 8, 2003-Nov. 10, 2003. Spring season (freestyle and Greco/Roman) begins Feb. 17-June 15, 2004.</info>
+    </club>
+    <club id="F20" charter="2002">
+      <name>Tuolumne Grapplers</name>
+      <contact>Dennis Solis</contact>
+      <location>Tuolumne City</location>
+      <phone>209-555-9052 (h) 510-555-2651 (w)</phone>
+      <email/>
+      <age-groups type="KCJO"/>
+      <info>$30 fee includes t-shirt. Purchase or bring own singlet.</info>
+    </club>
+  </association>
+
+  <association id="NAWA">
+    <club id="J18" charter="2002">
+      <name>Burney Wrestling</name>
+      <contact>Jack Strickland</contact>
+      <location>Burney</location>
+      <phone>530-555-6969</phone>
+      <age-groups type="KCJ"/>
+      <info>Practices at Burney High School</info>
+    </club>
+    <club id="J02a" charter="2003">
+      <name>Butte County Wrestling Club</name>
+      <contact>Jason Tamura</contact>
+      <location>Oroville</location>
+      <phone>530-555-3076</phone>
+      <email>jason.tamura@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>We teach all age groups in the disciplines of freestyle and Greco-Roman wrestling. Cost is $5.00 to participate and $10.00 for shirts. Practice starts at 5-6 p.m. for kids, 6-8 pm. for ages 11 and up. Practice is at Las Plumas High School.</info>
+    </club>
+    <club id="J03" charter="2003">
+      <name>Eagles Wrestling Club</name>
+      <contact>Mike &amp; Jessica Dill</contact>
+      <location>Cottonwood</location>
+      <phone>530-555-8728 (home)</phone>
+      <email>eaglesfreestyle@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Visit us on the web at <a href="http://example.com">www.eagleswrestling.50megs.com</a> Cost $45 for first family member, $35. each aditional sibling. Practices Tuesday, Wednesday, Thursday 6:30 to 8:30 at West Valley High School. Price includes T-shirts.</info>
+    </club>
+    <club id="J04" charter="2003">
+      <name>EastSide Cougars</name>
+      <contact>Jerry Vallotton</contact>
+      <location>Palo Cedro</location>
+      <phone>530-555-3034 x13216</phone>
+      <email>jvallotton@example.com</email>	
+      <age-groups type="KCJ"/>
+      <info/>
+    </club>
+    <club id="J07" charter="2003">
+      <name>Legends of Gold</name>
+      <contact>Terry Pack</contact>
+      <location>Quincy</location>
+      <phone>530-555-7315</phone>
+      <email>tpack@example.com</email>
+      <age-groups type="KCJW"/>
+      <info/>
+    </club>
+    <club id="J12" charter="2002">
+      <name>Northern Select</name>
+      <contact>Neal Sternberg/Steve Schenk (Redding) : Keith Rollins/Will Wilson (Chico)</contact>
+      <location>Redding : Chico</location>
+      <phone>530-555-9141 (Redding) : 530-555-5168 (office); 530-555-9110 (cell)</phone>
+      <email>wwilson@example.com</email>
+      <email>krollins41@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Practices Tuesdays and Thursdays during March, April, and May. Beginners/girls: 5:00-6:00 PM. Advanced: 6:30-8:00 PM. Cost $55 includes USA card and T-shirt. The Redding site is at 855 Canyon Road, and practices there are Mondays and Wednesdays 5:00-7:00 p.m.</info>
+    </club>
+    <club id="J21" charter="2003">
+      <name>Northern Xtreme</name>
+      <contact>Keith Rollins</contact>
+      <location>Chico</location>
+      <phone>530-555-3468</phone>
+      <email>krollins41@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Practices Tuesdays and Thursdays. Begining/Intermediate: 5:00 p.m. to 6:00 p.m. Advanced: 6:30 p.m.-8:00 p.m. Signups are March 11 from 5:00 to 8:00 p.m.  First practice is March 13th.  Fee of $55 includes USA card and T-shirt.</info>
+    </club>
+    <club id="J08" charter="2004">
+      <name>Orland Takedown Club</name>
+      <contact>Bob Rinehart</contact>
+      <location>Orland</location>
+      <phone>530-555-8353</phone>
+      <email>brinehart@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Registration fee is $40.00 which includes USA wrestling card and T-shirt. Season runs from march9-April 30. Practices two days a week from 3:30 to 5:00 pm.</info>
+    </club>
+    <club id="J02" charter="2002">
+      <name>Oroville Outlaws</name>
+      <contact>Jason Tamura</contact>
+      <location>Oroville</location>
+      <phone>530-555-3023</phone>
+      <age-groups type="KCJOW"/>
+      <info>Practices at Las Plumas High School in Oroville from March 4-May 15, every Tuesday and THursday. Kids ages 4-12 from 5:00-6:00 p.m.; Ages 13 and up from 6:00-8:00 p.m. $15.00 to join.</info>
+    </club>
+    <club id="J10" charter="2002">
+      <name>Redding Amateur Wrestling Club</name>
+      <contact>Jet Thomas</contact>
+      <location>Redding</location>
+      <phone>530-555-4938</phone>
+      <email>jthomas@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Our season begins the first week of march and ends for most participants at the NAWA championship the last week of April. Those that place go on to the State and Regional Championships; some even go on to Nationals. Our club fee is $45 and includes coaching, facilities, insurance, and singlets (with a deposit). Practices are Tuesday and Thursday.</info>
+    </club>
+    <club id="J01" charter="2003">
+      <name>Trinity Freestyle Wrestling</name>
+      <contact>Tom Burke</contact>
+      <location>Weaverville / Trinity Center</location>
+      <phone>530-555-6160</phone>
+      <email>brymankenbo@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info/>
+    </club>
+    <club id="J20" charter="2004">
+      <name>Yuba-Sutter Wrestling</name>
+      <contact>Jared J. Slack</contact>
+      <location>Yuba City</location>
+      <phone>530-555-5591</phone>
+      <email>sutter4@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Yuba-Sutter USA Provides a place to Learn, practice, and have fun. If you livei n the Yuba-Sutter area, please come and join us.  We charge $30.00 for your USA card and a $10.00 club fee.</info>
+    </club>
+  </association>
+
+  <association id="REWA">
+    <club id="M01" charter="2003">
+      <name>Del Norte Youth Wrestling</name>
+      <contact>Stephen C. Luis</contact>
+      <location>Crescent City</location>
+      <phone>707-555-9812</phone>
+      <email>jcherie@example.com</email>
+      <age-groups type="KCJW"/>
+      <info>We have a folkstyle season Nov-Jan and a freestyle season Feb-April. $50 to join ($30 USA card; $20 club fee).</info>
+    </club>
+    <club id="M07" charter="2003">
+      <name>Eureka Freestyle Wrestling Club</name>
+      <contact>Jeanette Detherage / Keith Adams</contact>
+      <location>Eureka</location>
+      <phone>707-555-4781 or 707-555-5082 (Detherage) / 707-555-5548 or 555-7965 (Adams)</phone>
+      <age-groups type="KCJOW"/>
+      <info>Meets February 1st through May. Cost $50.00 includes team t-shirt.</info>
+    </club>
+    <club id="M04" charter="2003">
+      <name>Ferndale Wrestling Club</name>
+      <contact>Kenny Simpson</contact>
+      <location>Ferndale</location>
+      <phone>707-555-5970</phone>
+      <email>nssulier@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info/>
+    </club>
+    <club id="M03" charter="2003">
+      <name>KTWC</name>
+      <contact>Jason Ownbey</contact>
+      <location>Willow Creek</location>
+      <phone>530-555-9872 (home)</phone>
+      <email>jdownbey@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Freestyle wrestling begins mid February. We have been a chartered club for 25 years. We are the "Bigfoot" Club!! :-)</info>
+    </club>
+  </association>
+
+  <association id="SAWA">
+    <club id="E30" charter="2004">
+      <name>Big Blue Wrestling Club</name>
+      <contact>Rod Hart</contact>
+      <location>Placerville</location>
+      <phone>916-555-6276; 530-555-8201 x1097</phone>
+      <email>RMA/maintenance@example.com</email>
+      <email>crhyan@example.com</email>
+      <age-groups type="KCJ"/>
+      <info>Season: March-June. Practices at El Dorado H.S. wrestling room Tuesdays and Thursdays. K-5 age: 5:30-6:45; middle and high school age 3:45-5:30. Fee $100 includes USA card, singlet, and T-shirt.</info>
+    </club>
+    <!--
+<club id="E12" charter="2003">
+	<name>Bronco Wrestling Club</name>
+	<contact>Mike Lee</contact>
+	<location>Fair Oaks</location>
+	<phone>916-555-1050 (work)</phone>
+	<email>mlee@example.com</email>
+	<age-groups type="KCJOW"/>
+	<info>Our club caters to ages 5-adult. We have three sections of our club: advanced kids, beginning kids, and high school &amp; open.</info>
+</club>
+-->
+    <club id="E99" charter="2004">
+      <name>Citrus Heights Wrestling Club</name>
+      <contact>Coach Soden</contact>
+      <location>Citrus Heights, CA</location>
+      <phone>916-555-8333</phone>
+      <email>rsoden@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Freestyle season begins in March. Cost $50.00 includes USA card, club T-shirt, and use of singlet. Encourages girls &amp; boys to participate. Freestyle, Greco-Roman, Folkstyle.</info>
+    </club>
+    <club id="E31b" charter="2002">
+      <name>Centerline Freestyle</name>
+      <contact>Greg Mattox</contact>
+      <location>Antelope/Sacramento</location>
+      <phone>916-555-3619</phone>
+      <email>maddogwrestler@example.com</email>
+      <age-groups type="KCJ"/>
+      <info/>
+    </club>
+    <club id="E24" charter="2002">
+      <name>Davis Wrestling Club</name>
+      <contact>Joe Cattarin</contact>
+      <location>Davis</location>
+      <phone>530-555-7218</phone>
+      <age-groups type="KCW"/>
+      <info>$25.00 club fee.</info>
+    </club>
+    <club id="E42" charter="2003">
+      <name>Dixon Ram Wrestling</name>
+      <contact>Bill Hull</contact>
+      <location>Dixon</location>
+      <phone>707-555-6956 (home)</phone>
+      <email>luvee@example.com</email>
+      <age-groups type="KCJO"/>
+      <info/>
+    </club>
+    <club id="E10" charter="2004">
+      <name>Eagle Wrestling Club</name>
+      <contact>Laurie Bettencourt</contact>
+      <location>Loomis</location>
+      <phone>916-555-2360</phone>
+      <email>elb@example.com</email>
+      <age-groups type="KCJO"/>
+      <info/>
+    </club>
+    <!--
+<club id="E36" charter="2002">
+	<name>Eagle Wrestling</name>
+	<contact>Chad Gulden</contact>
+	<location>Sacramento</location>
+	<phone>916-555-8420</phone>
+	<age-groups type="K"/>
+	<info> (Formerly Sacramento Gladiators) </info>
+</club>
+-->
+    <club id="E18" charter="2003">
+      <name>El Dorado Hills Wrestling</name>
+      <contact>Benjamin West</contact>
+      <location>El Dorado Hills</location>
+      <phone>916-555-1887</phone>
+      <email>coachbenjamin@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info/>
+    </club>
+    <club id="E49" charter="2003">
+      <name>Firecats Wrestling Club</name>
+      <contact>Phil Kendall</contact>
+      <location>Lodi and Tokay High</location>
+      <phone>209-555-1116</phone>
+      <email>kneenkendall@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Practice is at Tokay High School Mon. and Wed. 5-6:30, and Lodi High Tue.
+        and Thu. 6-7:30. We offer Folkstyle Nov- March for ages 5-14 (not in high
+        school) but encourage high school students to coach. March-??? Freestyle
+        and Greco-Roman. We are no longer registering with parks and rec. Contact Phil Kendall at 209-333-2564 and leave message or e-mail at:<a href="mailto:kneenkendall@aol.com">kneenkendall@aol.com</a>. We are currently requiring USA card to participate. Drop ins welcome but must have card. Chris Nevek has joined coaching staff at Firecats. Former Bulgarian and Samoan National Greco-Roman Coach and FILA official. We will also now be offering official training for USA/FILA officials.</info>
+    </club>
+    <club id="E14" charter="2003">
+      <name>Foothill Wrestling Club</name>
+      <contact>Bill Lum</contact>
+      <location>Sacramento</location>
+      <phone>916-555-2661</phone>
+      <email>coachblum@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info/>
+    </club>
+    <club id="E15" charter="2004">
+      <name>Barbarian Wrestling Club</name>
+      <contact>Casey Tosta</contact>
+      <location>Galt</location>
+      <phone>916-555-1394 (home)</phone>
+      <email>ctosta@example.com</email>
+      <age-groups type="KCJ"/>
+      <info>High School Practices: 4:00-5:30 p.m.; kids 5:30-6:30 p.m. Cost of $45.00 includes T-shirt and card.<!-- <a href="http://example.com/galtbarbarians">http://example.com/galtbarbarians</a>--></info>
+    </club>
+    <club id="E04" charter="2002">
+      <name>Laguna Creek Wrestling Club</name>
+      <contact>Fred Marks</contact>
+      <location>Elk Grove</location>
+      <phone>691-9394</phone>
+      <age-groups type="KCJOW"/>
+      <info>Practices are Tuesday, Thursday 5:30-7:30 p.m. at Laguna Creek High School. Practices start 26 Feburary 2002.</info>
+    </club>
+    <club id="E05" charter="2004">
+      <name>Mad Dawg Wrestling Club</name>
+      <contact>Duane Fidel</contact>
+      <location>Folsom</location>
+      <phone>916-555-5359 (home)</phone>
+      <age-groups type="KCJOW"/>
+      <info>Practice Tuesday &amp; Thursday evenings beginning the week after High School state. 5:00-6:00pm - 12 and under w/ no experience. 6:00-7:00 pm - 12 and over w/ experience. $60.00 membership fee includes club t-shirt. Team singlets extra.</info>
+    </club>
+    <club id="E20" charter="2003">
+      <name>Mark Munoz Technique Clinic</name>
+      <contact>Mark Munoz</contact>
+      <location>Sacramento</location>
+      <phone>916-555-7606</phone>
+      <email>mkmunoz@example.com</email>
+      <age-groups type="KCJW"/>
+      <info>The clinic is held every Saturday in September and October from 12:00-3:00 p.m. at Foothill High School in Sacramento, CA.  Cost per session is $30 plus $30 for insurance (one time).</info>
+    </club>
+    <club id="A03" charter="2003">
+      <name>R.B. Wrestling Club</name>
+      <contact>David Nigh</contact>
+      <location>San Diego</location>
+      <phone>858-555-8068</phone>
+      <email>sdnighs@example.com</email>
+      <age-groups type="K"/>
+      <info/>
+    </club>
+    <club id="E01" charter="2003">
+      <name>RAW (Rio Americano Wrestling) Club</name>
+      <contact>Kelly Lanthier</contact>
+      <location>Sacramento</location>
+      <phone>916-555-7097</phone>
+      <email>lanthier@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Freestyle Season March 3,- April 29th. Practice Tuesday &amp; Thursdays 6:00pm -7:30pm Rio Americano High School Cafeteria, 4540 American River Dr. Wrestling instruction geared for beginner to advanced. Cost $50 includes USA Wrestling Card.</info>
+    </club>
+    <club id="E15b" charter="2002">
+      <name>Roseville Area Wrestling Club</name>
+      <contact>Ron Baldwin</contact>
+      <location>Roseville</location>
+      <phone>916-555-5958</phone>
+      <email>coachrb3@example.com</email>
+      <email>rbaldwin@example.com</email>
+      <age-groups type="KCJW"/>
+      <info>Practices at Oakmont High School in Roseville. Practice season March-May 30. Cost $30 includes T-shirt.</info>
+    </club>
+    <club id="R20" charter="2003">
+      <name>Scots Wrestling Club</name>
+      <contact>Dana Smith</contact>
+      <location>Orangvevale</location>
+      <phone>916-555-7261</phone>
+      <email>dsmith@example.com</email>
+      <age-groups type="CW"/>
+      <info>Open to students of Carnegie Middle School. Elementary students who plan to attend Carnegie will be considered for membership if space is available.</info>
+    </club>
+    <club id="E46" charter="2002">
+      <name>Sierra Wrestling Club</name>
+      <contact>Robert D. Gleason</contact>
+      <location>Manteca</location>
+      <phone>209-555-8128</phone>
+      <email>SierraWrestlingClub@example.com</email>
+      <age-groups type="CJ"/>
+      <info>Cost of joining $25.00 - insurance coverage.</info>
+    </club>
+    <club id="E11" charter="2003">
+      <name>Strikers Wrestling Club</name>
+      <contact>Jay Aliff</contact>
+      <location>El Dorado County</location>
+      <phone>530-555-7363 x 4326 (work)</phone>
+      <email>jaliff@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Practices are Tuesday, Wednesday, and Thursday begining March 11-May 1. 10 and under practice from 5-6 p.m.; 11 and up practice from 6-7:15 p.m.  $60 club fee includes USA card and club T-shirt.</info>
+    </club>
+    <club id="E29" charter="2002">
+      <name>Team Natomas</name>
+      <contact>Don Martinez III</contact>
+      <location>Sacramento</location>
+      <phone>916-555-2403 (office)</phone>
+      <age-groups type="KCJ"/>
+      <info/>
+    </club>
+    <club id="E27b" charter="2003">
+      <name>Team Wolf</name>
+      <contact>Randy Hudson/B. shropshire</contact>
+      <location>Roseville</location>
+      <phone>916-555-8866 (w) / 916-555-9661 (h)</phone>
+      <email>coachhudson@example.com</email>
+      <age-groups type="KCJO"/>
+      <info>Practices at Woodcreek High School in Roseville, CA.</info>
+    </club>
+    <club id="E13b" charter="2003">
+      <name>Tiger Club Wrestling</name>
+      <contact>Rick Randolph</contact>
+      <location>Roseville</location>
+      <phone>916-555-5604 (home)</phone>
+      <email>rsrandolph@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>$45 membership cost covers USA Wrestling Card and T-shirt.</info>
+    </club>
+    <club id="J13" charter="2004">
+      <name>USA Matmen</name>
+      <contact>Kelly or Tom Jolley</contact>
+      <location/>
+      <phone>530-555-4927 (h)</phone>
+      <email>jolleyref@example.com</email>
+      <age-groups type="KCJO"/>
+      <info>Practice season is March 22 through May 1, 2004. Cost of joining club is $75 for the season, which includes T-shirts, USA Wrestling cards, USA Wrestling magazine. Please bring a copy of birth certificate.</info>
+    </club>
+
+    <club id="E02" charter="2003">
+      <name>Vacaville Wrestling Club</name>
+      <contact>Daniel DeLa Garza</contact>
+      <location>Vacaville</location>
+      <phone>707-555-1064 (cell) 925-555-9456 (work)</phone>
+      <email>jddlg7388@example.com</email>
+      <age-groups type="KCJW"/>
+      <info>Practice starts December 1st - end of May. Practices 6:30 to 8:00 p.m. Cost $100.00 plus USA Card. Wrestling shoes required.</info>
+    </club>
+    <club id="E41" charter="2002">
+      <name>Winters USA Wrestling</name>
+      <contact>Jesse Hellinger / Frank Ramos</contact>
+      <location>Winters</location>
+      <phone>530-555-7704 (home) / 530-555-9070 (work)</phone>
+      <email>footballen@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info/>
+    </club>
+    <club id="J20" charter="2003">
+      <name>Yuba-Sutter Wrestling</name>
+      <contact>Jared J. Slack</contact>
+      <location>Yuba City</location>
+      <phone>530-555-3743</phone>
+      <email>sutter4@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>$35 to join club. $30 for USA wrestling card. $5 for club fee.</info>
+    </club>
+  </association>
+
+  <association id="SCVWA">
+    <club id="H16" charter="2004">
+      <name>Bear</name>
+      <contact>Vyacheslav (Slava) Sherman</contact>
+      <location>Saratoga</location>
+      <phone>408-555-5351</phone>
+      <email>slava45@example.com</email>
+      <age-groups type="KCJW"/>
+      <info/>
+    </club>
+    <club id="H32" charter="2002">
+      <name>Cabrillo Grapplers</name>
+      <contact>Ron Scadina</contact>
+      <location>Aptos</location>
+      <phone>888-555-4258 (office)</phone>
+      <email>CabrilloGrapplers@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Club practices year round at Cabrillo Junior College. USA Wrestling Card required.</info>
+    </club>
+    <club id="H11" charter="2003">
+      <name>California Shooters Wrestling Academy</name>
+      <contact>Juan Gutierrez</contact>
+      <location>Overfelt High School</location>
+      <phone>408-555-7968</phone>
+      <email>jgutierrez@example.com</email>
+      <age-groups type="KCJW"/>
+      <info>WYear-round training Sept. 1 to Aug 31. Tues, Wed, Thurs. 5:30-8:00 p.m. $55.00 includes USA card and T-shirt, shorts.  Must have valid USA Wrestling Card to train and compete. Require 90% attendance at all training sessions, a strong commitment on behalf of wrestler and their parents. Be prepared to travel to tournaments.<!-- <a href="http://example.com/cswasj2003">http://example.com/cswasj2003</a>--></info>
+    </club>
+    <club id="H26" charter="2002">
+      <name>Campbell Bulldogs</name>
+      <contact>John Moore / Roger McClaughry</contact>
+      <location>San Jose</location>
+      <phone>408-555-4365 / 408-555-1421 x3251</phone>
+      <email>th4moore@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info/>
+    </club>
+    <club id="H04a" charter="2003">
+      <name>College Park Raslin</name>
+      <contact>Matthew Danna</contact>
+      <location>San Jose</location>
+      <phone>408-555-6575 (office)</phone>
+      <email>mdanna17@example.com</email>
+      <age-groups type="KCJO"/>
+      <info>Membership fee $100. Pays for singlet, T-shirt, USAW card, and <em>all</em> tournament entry fees.</info>
+    </club>
+    <club id="H12b" charter="2003">
+      <name>Cougar Wrestling Club</name>
+      <contact>Ricardo Garcia</contact>
+      <location>San Jose, Saratoga, Palo Alto</location>
+      <phone>408-555-1900</phone>
+      <email>garciari@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>We currently have one female wrestler training with our wrestling club.  Practice season begins in February and ends in June. There is a membership fee to join club; this includes T-shirt, shorts, and insurance.</info>
+    </club>
+    <club id="H14" charter="2003">
+      <name>Godfather Wrestling Club</name>
+      <contact>Jim Thrall</contact>
+      <location>Menlo Park</location>
+      <phone>650-555-2133 (o)</phone>
+      <email>jthrall@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Club dues are $100.00 per year; siblings get $50.00 off. Includes T-shirt.</info>
+    </club>
+    <club id="H99" charter="2004">
+      <name>King of the Mat</name>
+      <contact>Craig Tanabe</contact>
+      <location>Sunnyvale</location>
+      <phone>650-555-1185 (h)</phone>
+      <email>craig_tanabe@example.com</email>
+      <age-groups type="KCJ"/>
+      <info>Club website: <a href="http://example.com/club/club.html">http://example.com/club/club.html</a> Practice schedule beginning March 9, 2004 from 6:00-7:30 p.m. at Fremont High School. Tuesdays-freestyle; Wednesdays-greco; Thursdays-freestyle. Cost of $75 includes USA Wrestling card, t-shirt, and shorts.</info>
+    </club>
+    <club id="H15" charter="2003">
+      <name>No-Cal Wrestling</name>
+      <contact>Joe Domingues</contact>
+      <location>Salinas</location>
+      <phone>831-555-2918</phone>
+      <email>nocalwrestling@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Practices at Salinas High Schol and Washington Jr. High.</info>
+    </club>
+    <club id="F06" charter="2003">
+      <name>Quicksilver Wrestling Club</name>
+      <contact>Jim Coats</contact>
+      <location>San Jose</location>
+      <phone>925-555-6118 (work) 925-555-9526 (cell)</phone>
+      <email>coa118@example.com</email>
+      <age-groups type="KCJO"/>
+      <info/>
+    </club>
+    <club id="H98" charter="2004">
+      <name>Razorback Wrestling</name>
+      <contact>David Salcedo</contact>
+      <location>Hollister</location>
+      <phone>831-555-6138</phone>
+      <email>david.salcedo@example.com</email>
+      <age-groups type="KCJW"/>
+      <info/>
+    </club>
+    <club id="H27" charter="2003">
+      <name>San Jose State Wrestling Club</name>
+      <contact>Jim Lucas</contact>
+      <location>San Jose</location>
+      <phone>831-555-4353 (cell)</phone>
+      <email>coachlucas@example.com</email>
+      <age-groups type="JOW"/>
+      <info>Place: San Jose State University wrestling room (Uchida Hall room 202
+        corner of 4th Street &amp; San Carlos). Divisions: advanced level Juniors, Seniors, Masters/Veterans. Practices: Mondays and Wednesdays 7:30-9:00 PM. Emphasizes technique for advanced wrestlers wanting to wrestle in college or after college. Club is led by SJSU Head Coach and Veterans World Champion Jim Lucas.<!-- Check out web site for additional information. <a href="http://www.sjsuwrestling.com/">www.sjsuwrestling.com</a> -->
+      </info>
+    </club>
+    <club id="H05" charter="2003">
+      <name>San Lorenzo Valley Wrestling Club</name>
+      <contact>Matt Conner</contact>
+      <location>Ben Lomond</location>
+      <phone>831-555-3216</phone>
+      <email>SLVwrestlingclub@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Practice Tuesdays and Thursdays 6-8 p.m. Cost $75.00 includes team shirt and USA Wrestling card, use of team singlets.  Ages 5 and up.</info>
+    </club>
+    <club id="H21" charter="2003">
+      <name>Scotts Valley Wrestling Club</name>
+      <contact>Greg Stevens</contact>
+      <location>Scotts Valley</location>
+      <phone>831-555-9830 (h)</phone>
+      <email>svwrestling@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Practices are Tuesday and Thursday from 6:00-7:30 PM. Practices are at Scotts Valley High School wrestling room, 555 Glenwood Dr. The year-round program emphasis is on technique and having fun. We will teach Folkstyle (school rules), Freestyle &amp; Greco (Olympic rules) moves that are used by both the NCAA Division 1 wrestlers as well as Olympians. Cost is $30 per year for USA Wrestling membership fees. For more information please see <a href="http://example.com/">http://example.com/</a>
+      </info>
+    </club>
+    <club id="H09" charter="2004">
+      <name>Soaring Eagles</name>
+      <contact>Bruce Shelton</contact>
+      <location>San Jose</location>
+      <phone>408-555-6094 (home) 408-555-7234 (office)</phone>
+      <age-groups type="KCJOW"/>
+      <info/>
+    </club>
+    <club id="H10b" charter="2003">
+      <name>Team Jesus</name>
+      <contact>Lewis Mendez</contact>
+      <location>Sunnyvale</location>
+      <phone>408-555-7651</phone>
+      <email>teamjesus316@example.com</email>
+      <age-groups type="KCJO"/>
+      <info>Pracitces Monday and Wednesday 4-6 p.m. at Kings Academy High School. Cost: $100.00 (includes singlet and USA card.)</info>
+    </club>
+    <club id="H25" charter="2003">
+      <name>Viking</name>
+      <contact>David Duran</contact>
+      <location>Palo Alto</location>
+      <phone>408-555-4762 (home)</phone>
+      <email>dduran64@example.com</email>
+      <age-groups type="KCJ"/>
+      <info>We practice Monday 5:45 and Thursday 3:15 through March 20th in the Palo Alto High School wrestling room (schedule sometimes varies -- see website for details), located on Churchill Ave next to the tennis courts, between El Camino and Alma Streets.  We currently have about 35 members between PreK and 8th grade.  Cost is $20 with USA Wrestling Card, $50 without. Website is
+        <a href="http://groups.yahoo.com/group/VikingWrestlingClub">http://groups.yahoo.com/group/VikingWrestlingClub</a>, by invite only. For more information, Jack Moses 650-321-7991, email
+        <a href="mailto:jack-moses@yahoo.com">jack-moses@yahoo.com</a>.</info>
+    </club>
+    <club id="H02" charter="2004">
+      <name>West Santa Cruz Wrestling Club</name>
+      <contact>John C. Corona</contact>
+      <location>Santa Cruz</location>
+      <phone/>
+      <email>jjmcorona@example.com</email>
+      <age-groups type="KCJO"/>
+      <info>Red and blue singlets required; no school uniforms allowed.</info>
+    </club>
+    <club id="H06" charter="2003">
+      <name>West Valley Wrestling</name>
+      <contact>Ricardo Garcia</contact>
+      <location>Saratoga</location>
+      <phone>408-555-3315 (w) 408-555-6973 (h)</phone>
+      <email>garciari@example.com</email>
+      <age-groups type="CJOW"/>
+      <info/>
+    </club>
+    <club id="H31" charter="2002">
+      <name>Wildcat Wrestling Club</name>
+      <contact>Arno Dominguez</contact>
+      <location>Los Gatos</location>
+      <phone>650-555-3324 (w) 831-555-2515 (h)</phone>
+      <age-groups type="KCJO"/>
+      <info/>
+    </club>
+  </association>
+
+  <association id="SCWA">
+    <club id="R44" charter="2004">
+      <name>Beowulf Wrestling Club</name>
+      <contact>Aaron Cross</contact>
+      <location>La Palma</location>
+      <phone>714-555-9156</phone>
+      <email>beowulfwrestling@example.com</email>
+      <age-groups type="KCJ"/>
+      <info>Practices are held 2:45-4:00 p.m. on Tuesdays and Thursdays. Practices begin March 9 and go through May 20.</info>
+    </club>
+    <club id="I24" charter="2003">
+      <name>Black Watch Grapplers</name>
+      <contact>Joe Aragon</contact>
+      <location>Upland</location>
+      <phone>909-555-3658 (home)</phone>
+      <email>centurioninc@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Practices start March 4 and are on Tuesday and Thursday from 6:00 p.m. to 8:00 p.m. New member cost is $90.00 for a singlet, T-shirt, and USA Wrestling card. Optional warm-up suits are $80.00</info>
+    </club>
+    <club id="R09" charter="2003">
+      <name>California Amateur Wrestling Foundation</name>
+      <contact>Bob Lake</contact>
+      <location>Rancho Santa Margarita</location>
+      <phone>949-555-9116 (h)</phone>
+      <email>robert.lake@example.com</email>
+      <age-groups type="KCJO"/>
+      <info>Practices are held at Santa Margarita Catholic High School in Rancho Santa Margarita.</info>
+    </club>
+    <club id="K10b" charter="2003">
+      <name>Covina Valley Wrestling Club</name>
+      <contact>Gene Tasse</contact>
+      <location>West Covina</location>
+      <phone>626-555-8902</phone>
+      <email>genet@example.com</email>
+      <age-groups type="KCJO"/>
+      <info>Practices are held at South Hills High School, 645 S. Barranca, West Covina - Wrestling Room (directly behind gym). Tuesdays and Thursdays, 6:30-8:30 p.m.. Sixteen week "Structured Program" for kids 6-14 years old runs from November to March.  Cost for the Fall program is $90, which includes a required $30 USA Wrestling membership;competitors card and a Club T-shirt. The Spring SCWA program begins in March and ends in May, and is open to Kids, High Schol, and Open wrestlers with wrestling experience. Both programs are instructed in Freestyle wrestling by skilled "certified coaches."</info>
+    </club>
+    <club id="S53" charter="2002">
+      <name>CSUF Titan Wrestling Club</name>
+      <contact>Dan Hicks</contact>
+      <location>Cal State Fullerton</location>
+      <phone>714-555-7318 (office)</phone>
+      <email>dhicks@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Session 1: September-Dec. 15; Session 2: Feb. 1-May 31st. Practices are Tuesday and Thursday 6:30-8:00 p.m.  $35.00 cost includes T-shirt. Current USA card required.</info>
+    </club>
+    <club id="R18" charter="2003">
+      <name>Cypress Olympic Wrestling Club</name>
+      <contact>Jon Lundberg</contact>
+      <location>Cypress</location>
+      <phone>949-555-4149 (home)</phone>
+      <email>trilliuml@example.com</email>
+      <age-groups type="KCJW"/>
+      <info>Practice from 3-5 pm. 9/15/03 to 11/15/03. Spring dates and times wil be announced.</info>
+    </club>
+    <club id="R12b" charter="2003">
+      <name>East L.A. Wrestling Club</name>
+      <contact>Ralph J. Valle</contact>
+      <location>Monterey Park</location>
+      <phone>323-555-9005</phone>
+      <email>vallerj@example.com</email>
+      <age-groups type="CJO"/>
+      <info>Our mission is to provide a solid foundation for high school and collegiate wrestlers and further provide training for the 'veteran' wrestler. Women/girls have alwasy been welcome to be a part of our club, particularly those associated with high school programs.</info>
+    </club>
+    <club id="N14" charter="2003">
+      <name>Freebirds Wrestling Club</name>
+      <contact>Pat Hayhurst</contact>
+      <location>Lancaster</location>
+      <phone>661-555-7241</phone>
+      <email>phayhurst@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Practices at Lancaster H.S.  Cost to join is $35 per year - includes USA card. Practice clothing, singlets, etc. can be ordered when wrestler joins the club. Web site: <a href="http://example.com/">www.freebirdswrestling.i8.com</a>
+      </info>
+    </club>
+    <club id="R57" charter="2002">
+      <name>Future Wrestling Club</name>
+      <contact>Rick Gurrola</contact>
+      <location>Torrance</location>
+      <phone>310-555-1289</phone>
+      <email>team_future@example.com</email>
+      <age-groups type="K"/>
+      <info>Our club is for boys and girls kindergarten through 8th grade.  Practices are held Mondays and Wednesdays from 6 to 8 p.m., November through April 2003 at North Torrance High School.</info>
+    </club>
+    <club id="R22" charter="2002">
+      <name>Hawkeye Wrestling Club</name>
+      <contact>Kevin Roell</contact>
+      <location>Laguna Hills</location>
+      <phone>949-555-6154</phone>
+      <email>kjabg@example.com</email>
+      <age-groups type="KC"/>
+      <info>Practice November to April. All participants receive singlet and T-shirt.</info>
+    </club>
+    <club id="R33" charter="2002">
+      <name>High Desert Wrestling Club</name>
+      <contact>Mike Ball</contact>
+      <location>Palmdale</location>
+      <phone>661-555-7186 (h)</phone>
+      <email>alaplaya@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info/>
+    </club>
+    <club id="R07" charter="2002">
+      <name>Husky Wrestling Club</name>
+      <contact>Randy Campbell</contact>
+      <location>Corona</location>
+      <phone>909-555-5010</phone>
+      <age-groups type="KCJ"/>
+      <info/>
+    </club>
+    <club id="R31" charter="2003">
+      <name>Justice League</name>
+      <contact>Dan Moyer</contact>
+      <location>Orange</location>
+      <phone>714-555-4267</phone>
+      <email>moyer@example.com</email>
+      <age-groups type="KCJO"/>
+      <info>We focus on intense practices to develop freestyle and Greco-Roman skills in our athletes. We discuss faith, character, and academics in the hopes of developing "Champions for Life."</info>
+    </club>
+    <club id="R21" charter="2003">
+      <name>La Habra Cobras Wrestling Club</name>
+      <contact>George Ishak</contact>
+      <location>La Habra</location>
+      <phone>562-555-9148</phone>
+      <email>ishaks@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info/>
+    </club>
+    <club id="R32" charter="2003">
+      <name>La Mirada Wrestling Club</name>
+      <contact>Bob Lipeles</contact>
+      <location>La Mirada</location>
+      <phone>562-555-3736 x3372 (work)</phone>
+      <age-groups type="CJ"/>
+      <info>Practices Monday and Wednesday 6:30-8:00 p.m. from March 9 through June 1.  USA Card mandatory.</info>
+    </club>
+    <club id="R30" charter="2004">
+      <name>Noble Grapplers</name>
+      <contact>Coach Jorge Carrizosa</contact>
+      <location>La Puente, CA</location>
+      <phone>714-555-5694</phone>
+      <email>jorge_carrizosa@example.com</email>
+      <age-groups type="KCJW"/>
+      <info>Practices are Mon &amp; Wed. from 6-8 p.m. at Nogales High School unless otherwise noted on website (coming soon).  High school is at 401 S. Nogales St, La Puente, CA 91744.</info>
+    </club>
+    <club id="R17" charter="2002">
+      <name>RAW</name>
+      <contact>Chad Zaputil</contact>
+      <location>El Segundo</location>
+      <phone>310-555-7814 (office)</phone>
+      <email>rawgroup@example.com</email>
+      <age-groups type="KCJO"/>
+      <info>See our website at <a href="http://example.com/">www.rawtraining.com</a>
+      </info>
+    </club>
+    <club id="R41" charter="2003">
+      <name>Renegades</name>
+      <contact>Trevor Leach</contact>
+      <location>Azusa</location>
+      <phone>818-555-1714 (home)</phone>
+      <email>trevor_leach@example.com</email>
+      <age-groups type="CJOW"/>
+      <info>$20 membership fee includs t-shirt. Practices Tues. and Thurs. 5-7 p.m. aat Azusa High School wrestling room.</info>
+    </club>
+    <club id="R10" charter="2003">
+      <name>Spartak</name>
+      <contact>Mike Timen</contact>
+      <location>West Hollywood</location>
+      <phone>818-555-2831</phone>
+      <email>spartakmt@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Practice 3 times a week. $65.00 monhtly; $30.00 member card (annually)</info>
+    </club>
+    <club id="R27" charter="2004">
+      <name>Tanstaafl Wrestling Club</name>
+      <contact>Jim Bryan</contact>
+      <location>Long Beach</location>
+      <phone>562-555-9004</phone>
+      <email>jimbryan1@example.com</email>
+      <age-groups type="CJO"/>
+      <info>Girls accepted. No contact with boys if girls are over 13.</info>
+    </club>
+    <club id="R49" charter="2002">
+      <name>Team Conqueror</name>
+      <contact>James Donoho</contact>
+      <location>Chino</location>
+      <phone>909-555-9672 (home) 909-555-7460 x4526 (school)</phone>
+      <email/>
+      <age-groups type="KCJOW"/>
+      <info>Practices at Don Lugo High School.</info>
+    </club>
+    <club id="R55" charter="2003">
+      <name>Team Conquest</name>
+      <contact>Allen Clinton</contact>
+      <location>Orange</location>
+      <phone>714-555-5610 (office)</phone>
+      <email>teamconquest@example.com</email>
+      <age-groups type="K"/>
+      <info>Practices: Freestyle wrestling on Tuesday and Thursday nights 7:00-8:30 pm at El Modena H.S. wrestling room, located next to Pool. Tournaments on Sundays. Cost $90 includes USA Card and T-shirt. Season runs November-March.</info>
+    </club>
+    <club id="R45" charter="2003">
+      <name>Team Megalodon</name>
+      <contact>Tad Stricker</contact>
+      <location>Anaheim</location>
+      <phone>949-555-8295 (home) 714-555-3956 (work)</phone>
+      <email>tadstricker@example.com</email>
+      <age-groups type="KCJW"/>
+      <info>Cost $90 includes USA card and T-shirt.</info>
+    </club>
+    <club id="R1669" charter="2003">
+      <name>Team One Wrestling Club</name>
+      <contact>Israel Horcasitas</contact>
+      <location>San Dimas</location>
+      <phone>909-555-3234</phone>
+      <age-groups type="KCJOW"/>
+      <info/>
+    </club>
+    <club id="R19" charter="2003">
+      <name>Team So Cal Wrestling Club</name>
+      <contact>Pat Cadwallader</contact>
+      <location>Cypress</location>
+      <phone>714-555-6307 (h)</phone>
+      <email>caddy6@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>$175.00 a year includes Team So Cal Spirit Pack, USA Card.</info>
+    </club>
+    <club id="R25b" charter="2003">
+      <name>Team TCB</name>
+      <contact>Miguel Soto</contact>
+      <location>Anaheim</location>
+      <phone>972-0607</phone>
+      <email>teamtcb@example.com</email>
+      <age-groups type="KCJO"/>
+      <info>Practices Tuesday and Thursday 6-8 p.m. at Canyon (Anaheim) High School.</info>
+    </club>
+    <club id="C19" charter="2002">
+      <name>Team Thunder</name>
+      <contact>Robert L. Williams</contact>
+      <location>Santa Ana</location>
+      <phone>714-555-3531</phone>
+      <email>teamthundr@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Our season runs from November to May. We are a Christian wrestlig program. Cost is $3.00 fee for USA card and $30.00 per month (includes team T-shirt). We teach freestyle, greco, and folkstyle (high school style). Practices are Monday and Wednesdays with some Fridays and Saturdays 5:30 to 7:00 p.m.</info>
+    </club>
+    <!--
+<club id="R30" charter="2002">
+	<name>Wolf Den</name>
+	<contact>Brian Sosnovsky</contact>
+	<location>Pomona/Claremont</location>
+	<phone>909-555-7321 (h)</phone>
+	<age-groups type="KCJOW"/>
+	<info>Meets in Claremont High School wrestling room. Practices 6:00 p.m. - 8:00 p.m. Tuesday and Thursday evenings.</info>
+</club>
+--></association>
+
+  <association id="SDIKWA">
+    <club id="G12" charter="2003">
+      <name>All Tribes Wrestling</name>
+      <contact>Michelle Parada</contact>
+      <location>Rincon Indian Reservation</location>
+      <phone>760-555-6222 (w)</phone>
+      <email>parada16@example.com</email>
+      <age-groups type="KCJ"/>
+      <info/>
+    </club>
+    <club id="G05" charter="2002">
+      <name>Calexico Kids Jr. Wrestling</name>
+      <contact>Keith Lopez</contact>
+      <location>Calexico</location>
+      <phone>760-555-7650 (home) 760-555-3042 x4522 (office)</phone>
+      <email>lizethglopez@example.com</email>
+      <age-groups type="K"/>
+      <info/>
+    </club>
+    <club id="G27" charter="2003">
+      <name>Calexico Youth Wrestling</name>
+      <contact>Abram Sanchez</contact>
+      <location>Calexico</location>
+      <phone>760-555-5341</phone>
+      <email>AbramSanchez@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info/>
+    </club>
+    <club id="G09" charter="2003">
+      <name>El Centro Jr Wrestling Club</name>
+      <contact>Victoria Smith or Marc Smith</contact>
+      <location>El Centro</location>
+      <phone>760-555-8063</phone>
+      <age-groups type="KW"/>
+      <info>Rewgistration begins Oct. 6, 2003. Practice will be held at Southwest High School beginning Oct. 28 from 6-8 p.m. Tues-Fri. Styles of wrestling: freestyle, folkstyle, and greco-roman.</info>
+    </club>
+    <club id="G08" charter="2002">
+      <name>Holtville Takedown Club</name>
+      <contact>Betty Acosta</contact>
+      <location>Holtville</location>
+      <phone>760-555-4105</phone>
+      <email>rubenandbetty@example.com</email>
+      <age-groups type="KC"/>
+      <info>Registration fee $35.00; season December-March</info>
+    </club>
+    <club id="G01" charter="2003">
+      <name>Imperial Junior Wrestling</name>
+      <contact>Brenda B. Lara</contact>
+      <location>Imperial</location>
+      <phone>760-555-8127 (h) or 760-555-8202 (cell)</phone>
+      <email>lara_air@example.com</email>
+      <age-groups type="KCJW"/>
+      <info/>
+    </club>
+    <club id="G06" charter="2003">
+      <name>Monte Vista Wrestling Club</name>
+      <contact>Steve Bulette</contact>
+      <location>Spring Valley</location>
+      <phone>619-555-5455</phone>
+      <email>sbulette@example.com</email>
+      <age-groups type="KCJ"/>
+      <info>Practices at Monte Vista H.S., 3230 Sweetwater Springs Blvd, SPring Valley.</info>
+    </club>
+    <club id="G19" charter="2002">
+      <name>No Mercy School of Wrestling</name>
+      <contact>Ruben Leon</contact>
+      <location>Vista, Oceanside, Escondido, San Diego County</location>
+      <phone>760-555-2047</phone>
+      <email>datamagic@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Practice Tuesday, Wednesday, Thursday 6 - 8 p.m. at Vista and Rancho Buena Vista High Schools from October to June.  Club travels to all state,  regional and national USA tournaments.  Enrollment open to all elementary, junior and high school ages and senior men and women.  Club has 3 silver applicant coaches, 7 bronze certified coaches, and 13 copper certified coaches. <a href="http://example.com">http://www.nomercy.org</a>
+      </info>
+    </club>
+    <club id="G07" charter="2003">
+      <name>Ramona Wrestlng Club</name>
+      <contact>Lyn Jordan</contact>
+      <location>Ramona, CA</location>
+      <phone>760-555-5822</phone>
+      <age-groups type="KCJOW"/>
+      <info>Practice September through March; $125.00 for season (includes singlet and warmup pullover).</info>
+    </club>
+    <club id="G02" charter="2003">
+      <name>San Diego Mighty Mites</name>
+      <contact>Dale Siscon</contact>
+      <location>San Diego Area High Schools</location>
+      <phone>619-555-3008</phone>
+      <email>sandiegomightymites@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info/>
+      <!--
+	<info>The San Diego Mighty Mites program was started by Dale Siscon in 1973. The Mighty Mites program has been training champions on all levels for thirty years. The coaches are ex-Mighty Mite wrestlers and dads, who are copper and bronze certified. Our program has over 100 kids a season.  We teach freestyle, Greco-Roman, and folkstyle.  The season runs from November to March. We travel to all state, regional, and national tournaments.  Practice is Tuesday and Thursday 6-8 P.M. at Mount Miguel H.S., 8585 Blossom Lane, Spring Valley, CA 91977; and Bonita Vista H.S., 751 Otay Lake Rd, Chula Vista, CA 91913.  Registration cinludes club shirt, shorts, blood rag, six months wrestling, and two practices a week.</info>
+	-->
+    </club>
+    <club id="G03" charter="2003">
+      <name>Sultan Wrestling Club</name>
+      <contact>Ralph Garcia</contact>
+      <location>Santee</location>
+      <phone>619-555-6511</phone>
+      <email>rjgarcia@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Kids practice is from Oct. to Feb. cadets, Juniors, and Open practice Sept. to Oct. and March to May. Cost varies depending on time of year.  Folkstyle, Freestyle, and Greco styles are offered.</info>
+    </club>
+    <club id="A01" charter="2003">
+      <name>Valhalla Wrestling Club</name>
+      <contact>Tim Maguire</contact>
+      <location>El Cajon</location>
+      <phone>619-555-3342</phone>
+      <email>valhallawrestling@example.com</email>
+      <age-groups type="K"/>
+      <info>Practices at Valhalla High School - 1725 Hillsdale Rd. - El Cajon. Practices are Tues. and Thurs. 6pm to 8pm, 2003 fees are $125, includes T-shirt, pictures, plaque, $25.00 refundable singlet deposit and USA card.</info>
+    </club>
+  </association>
+
+  <association id="SDWA">
+    <club id="A04b" charter="2002">
+      <name>California Amateur Wrestling Association</name>
+      <contact>Bob Locke</contact>
+      <location>Rancho Santa Margarita</location>
+      <phone>949-555-1877 (h) 949-555-7281 (w)</phone>
+      <email>robert_lake@example.com</email>
+      <age-groups type="KCJO"/>
+      <info/>
+    </club>
+    <club id="A31" charter="2003">
+      <name>Carlsbad Wrestling / USA</name>
+      <contact>Mark Nelson</contact>
+      <location>Carlsbad</location>
+      <phone>760-555-3237 (home)</phone>
+      <age-groups type="KCJO"/>
+      <info/>
+    </club>
+    <club id="A35" charter="2002">
+      <name>El Cap</name>
+      <contact>Alan Kent</contact>
+      <location>Lakeside</location>
+      <phone>619-555-3863</phone>
+      <email>aldebkent@example.com</email>
+      <age-groups type="KCJW"/>
+      <info>Grossmont Union School District.</info>
+    </club>
+    <club id="A05" charter="2003">
+      <name>Falcon Wrestling</name>
+      <contact>Jesse Mindlin</contact>
+      <location>Del Mar / San Diego</location>
+      <phone>858-555-5838 x2450 (work)</phone>
+      <email/>
+      <age-groups type="KCJ"/>
+      <info/>
+    </club>
+    <club id="A20" charter="2003">
+      <name>Fall Guys Wrestling Club of San Diego</name>
+      <contact>Christopher Hall / Jon Talbott</contact>
+      <location>San Diego Kearny Mesa and Mira Mesa</location>
+      <phone>619-555-6254 / 619-555-8949</phone>
+      <email>edewe1@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>$30 club fees plus USA card. Thursdays 6:30 until 9:00 p.m. at Mira Mesa Wrestling Center, 110510 Reagen Road, San Diego 92126. For more information call 858-566-2262x4227; ask for Jon Talbott</info>
+    </club>
+    <club id="A02" charter="2003">
+      <name>J.F.T.S.</name>
+      <contact>Bob Anderson</contact>
+      <location>Chula Vista</location>
+      <phone>619-555-3998</phone>
+      <email>bobanderson@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info/>
+    </club>
+    <club id="G06" charter="2003">
+      <name>Monte Vista Wrestling Club</name>
+      <contact>Steve Bulette</contact>
+      <location>Spring Valley</location>
+      <phone>619-555-5620</phone>
+      <email>sbulette@example.com</email>
+      <age-groups type="KCJ"/>
+      <info>Practices at Monte Vista H.S., 3230 Sweetwater Springs Blvd, SPring Valley.</info>
+    </club>
+    <club id="G19" charter="2002">
+      <name>No Mercy School of Wrestling</name>
+      <contact>Ruben Leon</contact>
+      <location>Vista, Oceanside, Escondido, San Diego County</location>
+      <phone>760-555-6841</phone>
+      <email>datamagic@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Practice Tuesday, Wednesday, Thursday 6 - 8 p.m. at Vista and Rancho Buena Vista High Schools from October to June.  Club travels to all state,  regional and national USA tournaments.  Enrollment open to all elementary, junior and high school ages and senior men and women.  Club has 3 silver applicant coaches, 7 bronze certified coaches, and 13 copper certified coaches. <a href="http://example.com">http://example.com</a>
+      </info>
+    </club>
+    <club id="A11" charter="2003">
+      <name>San Diego Rebel Wrestling Club</name>
+      <contact>Jon Robell</contact>
+      <location>San Diego</location>
+      <phone>619-555-1735 (work)</phone>
+      <email>jrobell@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info/>
+    </club>
+    <club id="A10" charter="2002">
+      <name>Scripps Ranch Wrestling Club</name>
+      <contact>Matthew Becker</contact>
+      <location>San Diego</location>
+      <phone>858-555-8936 x 6615 work</phone>
+      <email>mbecker3@example.com</email>
+      <age-groups type="KCJ"/>
+      <info>All wrestlers must have or purchase a USA Wrestling Card
+        to wrestle with our club.</info>
+    </club>
+    <club id="A03" charter="2003">
+      <name>Springall Academy</name>
+      <contact>Brian Lamb</contact>
+      <location>La Jolla</location>
+      <phone>6619-555-1670</phone>
+      <email>lambchops6@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info/>
+    </club>
+    <club id="G03" charter="2003">
+      <name>Sultan Wrestling Club</name>
+      <contact>Ralph Garcia</contact>
+      <location>Santee</location>
+      <phone>619-555-7900</phone>
+      <email>rjgarcia@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Kids practice is from Oct. to Feb. cadets, Juniors, and Open practice Sept. to Oct. and March to May. Cost varies depending on time of year.  Folkstyle, Freestyle, and Greco styles are offered.</info>
+    </club>
+    <club id="A01" charter="2003">
+      <name>Valhalla Wrestling Club</name>
+      <contact>Tim Maguire</contact>
+      <location>El Cajon</location>
+      <phone>619-555-1679</phone>
+      <email>valhallawrestling@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Practices at Valhalla High School - 1725 Hillsdale Rd. - El Cajon. Practices are Tues. and Thurs. 6pm to 8pm, 2003 fees are $125, includes T-shirt, pictures, plaque, $25.00 refundable singlet deposit and USA card.</info>
+    </club>
+    <club id="A14" charter="2003">
+      <name>Wildcat Express</name>
+      <contact>Ed Avedissian</contact>
+      <location>Monrovia High School</location>
+      <phone>626-555-1064</phone>
+      <email>batman1971@example.com</email>
+      <age-groups type="KCJ"/>
+      <info/>
+    </club>
+  </association>
+
+  <association id="SJWA">
+    <club id="B33" charter="2002">
+      <name>Atwater Wrestling Club</name>
+      <contact>Paul Bristow</contact>
+      <location>Atwater</location>
+      <phone>209-555-9000</phone>
+      <email>pbristow21@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Practice 6:00-7:30 Tues. and Thurs. Club has four certified coaches. $30.00 membership to join.</info>
+    </club>
+    <!--
+<club id="B13" charter="2002">
+	<name>Bear Creek Wrestling Club</name>
+	<contact>Marc Kellam</contact>
+	<location>Stockton</location>
+	<phone>209-555-5920 (home)</phone>
+	<email>marcs_56@example.com</email>
+	<age-groups type="KCJW"/>
+	<info>Practice Monday and Thursdays 6-8 PM at Bear Creek High School. Cost is $15.00 for club fee; participants must have a USA membership card.</info>
+</club>
+-->
+    <club id="B13" charter="2003">
+      <name>Central Catholic Raiders</name>
+      <contact>Steve Strange</contact>
+      <location>Modesto</location>
+      <phone>209-555-2626</phone>
+      <email>strangejr@example.com</email>
+      <age-groups type="KCJ"/>
+      <info/>
+    </club>
+    <club id="B02" charter="2004">
+      <name>Calaveras Youth Wrestling</name>
+      <contact>Dan Rios</contact>
+      <location>San Andreas</location>
+      <phone>209-555-1010 (work)</phone>
+      <email>drios@example.com</email>
+      <age-groups type="KC"/>
+      <info>Practice begins Jan 5, 2004 (Monday, Wednesday, and Friday 6:00-8:00 p.m.) Cost to join club: $35.00. Calaveras Youth Wrestling hosts the Jim Bennet Classic on February 14, 2004. Location: Calaveras High School, 350 High School street, San Andreas, CA</info>
+    </club>
+    <club id="B32" charter="2002">
+      <name>Crusader Wrestling Club</name>
+      <contact>Joe La Rosa</contact>
+      <location>Modesto</location>
+      <phone>209-555-3472 (home)</phone>
+      <age-groups type="KCJ"/>
+      <info>Practices T-TH 3-4:30 p.m. (high school), T-TH 4:30-5:30 p.m. (kids)</info>
+    </club>
+    <club id="B34" charter="2003">
+      <name>Delhi Wrestling Club</name>
+      <contact>Dan Cuestas</contact>
+      <location>Delhi</location>
+      <phone>209-555-4189</phone>
+      <email>dnetcue@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info/>
+    </club>
+    <club id="B03" charter="2003">
+      <name>Escalon Wrestling Club</name>
+      <contact>Mike Gutierrez</contact>
+      <location>Escalon</location>
+      <phone>209-555-7629</phone>
+      <email>ngutier209@example.com</email>
+      <age-groups type="KCJ"/>
+      <info>Practice season is November 24 up to July. Club fees of $70. include card and shirt.</info>
+    </club>
+    <club id="B25a" charter="2003">
+      <name>Huskies Wrestling Club</name>
+      <contact>Steve Strange</contact>
+      <location>Hughson</location>
+      <phone>209-555-4919</phone>
+      <age-groups type="KCJ"/>
+      <info>Practice at Hughson High School Tuesdays and Thursdays 6:00 p.m.  Price to join is $50; includes USA card and T-shirt.</info>
+    </club>
+    <club id="B07" charter="2003">
+      <name>Linden Grapplers</name>
+      <contact>Randy Holtberg</contact>
+      <location>Linden</location>
+      <phone>209-555-5536 (home)</phone>
+      <age-groups type="KCJ"/>
+      <info>Practices held at Linden HS Tuesday and Thursday 6:00 p.m. to 8:00 p.m.</info>
+    </club>
+    <club id="B29" charter="2003" also="CVWA">
+      <name>Manteca Area Freestyle Club</name>
+      <contact>Kelly Timmins</contact>
+      <location>Manteca</location>
+      <phone>510-555-6111 (mobile)</phone>
+      <email>kelly@example.com</email>
+      <age-groups type="KCJO"/>
+      <info>This club practices on Tuesday and Thursday nights, 6-8 p.m. We prsently have 135 members in the club. During the months of Dec., Jan., and Feb. we attend one tournament a week. We love to compete.</info>
+    </club>
+    <club id="B27" charter="2003">
+      <name>Modesto Panthers Mat Club</name>
+      <contact>Duane Brooks</contact>
+      <location>Modesto</location>
+      <phone>209-555-6793</phone>
+      <email>modestopantherwrestling@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info/>
+    </club>
+    <club id="B15" charter="2003">
+      <name>Oakdale Wrestling</name>
+      <contact>Brian Stevens</contact>
+      <location>Oakdale</location>
+      <phone>209-555-5635</phone>
+      <email>oakdalefreestyle@example.com</email>
+      <age-groups type="KCJO"/>
+      <info>Practice held at Oakdale High School Nov 1-June. Head Coach Brian Stevens. Club fee $50 includes USA card and team membership.</info>
+    </club>
+    <club id="B26" charter="2003">
+      <name>Pirate Wrestling Club</name>
+      <contact>Lee Ehrler</contact>
+      <location>Modesto</location>
+      <phone>209-555-4775</phone>
+      <age-groups type="CJO"/>
+      <info/>
+    </club>
+    <club id="B01" charter="2003">
+      <name>Ripon Tribe Freestyle Wrestling</name>
+      <contact>Tom Owens</contact>
+      <location>Ripon</location>
+      <phone>209-555-7594 (home) 209-555-1054 (work)</phone>
+      <email>tomo@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Membershi costs $45.00 includes USAW card, T-shirt &amp; trophy. We provide team singlets, headgear, kneepads, and bag.</info>
+    </club>
+    <club id="B23" charter="2004">
+      <name>Spartan Wrestling</name>
+      <contact>Mike Cantwell</contact>
+      <location>Modesto</location>
+      <phone>209-555-3201 (cell)</phone>
+      <email>cantwell.m@example.com</email>
+      <age-groups type="CJO"/>
+      <info/>
+    </club>
+    <club id="E47" charter="2003">
+      <name>Stockton Elite Wrestling Club</name>
+      <contact>Ron Davis</contact>
+      <location>Stockton</location>
+      <phone>209-555-7231</phone>
+      <email>rdavis@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>For kids, practice starts Feb. 18th and runs through to May 1. For kids: Tue-Thurs 5:30-6:50. For Cadets &amp; Juniors: Mon-Wed 5:30-6:30, March 11th through May 21st.</info>
+    </club>
+    <club id="B08" charter="2003">
+      <name>Tiger Freestyle</name>
+      <contact>Rick Carganilla</contact>
+      <location>Los Banos</location>
+      <phone>209-555-6595</phone>
+      <email>lbtigerwrestling@example.com</email>
+      <age-groups type="KCJO"/>
+      <info/>
+    </club>
+    <club id="B22" charter="2003">
+      <name>Tracy USA Wrestling</name>
+      <contact>Darryl Rond</contact>
+      <location>Tracy</location>
+      <phone>209-555-1358 x2907 (work); 209-555-6984 (home)</phone>
+      <email>drond@example.com</email>
+      <age-groups type="KCJO"/>
+      <info>
+        <!--Folkstyle practices start in November. Freestyle and Greco start in February. Practices are Tuesdays and Thursdays, 6:00-7:30 p.m.  Cost is $75 plus USA Wrestling Card.  Price includes club t-shirt.-->
+      </info>
+    </club>
+    <club id="B18" charter="2003">
+      <name>Turlock Wrestling Club</name>
+      <contact>Anthony D. Belew</contact>
+      <location>Turlock High School</location>
+      <phone>209-555-8352 (h)</phone>
+      <email>abelew@example.com</email>
+      <age-groups type="KCJ"/>
+      <info>Call or email for dates and times. Be a part of the most competitive state quality team in the area. Turlock Wrestling Club has been State Champions in Freestyle the last five years, and Greco-Roman State Champions the last two years. <a href="http://example.com/ths/belew/turlockyouthwrestling.html">http://example.com/ths/belew/turlockyouthwrestling.html</a>.</info>
+    </club>
+    <club id="E44" charter="2003">
+      <name>USA Stockton Wrestling Club</name>
+      <contact>Greg A. Zavala, Sr.</contact>
+      <location>Stockton</location>
+      <phone>209-555-5254 or 555-2318</phone>
+      <email>zavala1@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Cost $50.00 includes membership and USA Wrestling card. Practices are Tuesday, Wednesday, and Thursday from 3-5 p.m. Members must have their own transportation.</info>
+    </club>
+  </association>
+
+  <association id="TCWA">
+    <club id="I22" charter="2003">
+      <name>Anaconda Wrestling Club</name>
+      <contact>Anthony Califano</contact>
+      <location>Santa Barbara/Goleta</location>
+      <phone>805-555-6872</phone>
+      <email>antcalsb@example.com</email>
+      <age-groups type="KCJ"/>
+      <info/>
+    </club>
+    <club id="I12" charter="2003">
+      <name>Arroyo Grande</name>
+      <contact>Tim Cano</contact>
+      <location>Arroyo Grande</location>
+      <phone>805-555-5030 (home)</phone>
+      <email>tcano@example.com</email>
+      <age-groups type="KCJO"/>
+      <info/>
+    </club>
+    <club id="I02" charter="2003">
+      <name>Bearcat Wrestling Club</name>
+      <contact>Field Gibson</contact>
+      <location>Paso Robles</location>
+      <phone>805-555-7161 (home/work)</phone>
+      <email>fieldgibson@example.com</email>
+      <age-groups type="KCJO"/>
+      <info/>
+    </club>
+    <club id="I09" charter="2002">
+      <name>Buena Freestyle Wrestling Club</name>
+      <contact>Wayne Thomas</contact>
+      <location>Ventura</location>
+      <phone>805-555-6849 (h)</phone>
+      <email>sugarbear@example.com</email>
+      <age-groups type="KCJO"/>
+      <info/>
+    </club>
+    <club id="I99" charter="2004">
+      <name>Buenaventura Wrestling Club</name>
+      <contact>Paul S. Clementi</contact>
+      <location>Ventura</location>
+      <phone>805-555-7051</phone>
+      <email>vhswrest1@example.com</email>
+      <age-groups type="KCJO"/>
+      <info>Club emmbershi $30.00 U.S.A. card plus $20.00 club fee includes use of facility and entry fee for one California state championship.</info>
+    </club>
+    <club id="I14" charter="2002">
+      <name>Chiquita Kids</name>
+      <contact>Dutch Van Patten</contact>
+      <location>Santa Maria</location>
+      <phone>805-555-9548 ext. 2507 (office)</phone>
+      <email>chapvp551@example.com</email>
+      <age-groups type="KCJ"/>
+      <info>Cost for joining club is $75 and this includes a T-shirt.</info>
+    </club>
+    <club id="I21" charter="2004">
+      <name>Conejo Valley Wrestling Club</name>
+      <contact>Kerry Lyne</contact>
+      <location>Thousand Oaks/Agoura</location>
+      <phone>805-555-8676 (cell)</phone>
+      <email>tohswrestling@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>$30.00 USA Membership card required. Practices at Thousand Oaks High School. Mondays 5:30-7:30 for ages 10-19, Thursdays 6:00-8:00 for all ages. Practice at Agoura High School on Wednesdays 6:00-8:00 for all ages.</info>
+    </club>
+    <club id="I07" charter="2003">
+      <name>Gold Medal Wrestling Club</name>
+      <contact>Jeff Barksdale</contact>
+      <location>San Luis Obispo</location>
+      <phone>805-555-2650</phone>
+      <email>barx@example.com</email>
+      <age-groups type="KCJO"/>
+      <info>Club fees: $50.</info>
+    </club>
+    <club id="I20" charter="2004">
+      <name>Lompoc Academy of Wrestling</name>
+      <contact>Steve Greco</contact>
+      <location>Lompoc</location>
+      <phone>805-555-9944 (office)</phone>
+      <email>lompocsportscenter@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info/>
+    </club>
+    <club id="I10b" charter="2002">
+      <name>Lompoc Valley Wrestling Club</name>
+      <contact>Brian J. Wallace</contact>
+      <location>Lompoc</location>
+      <phone>805-555-7672</phone>
+      <age-groups type="KCJOW"/>
+      <info>Club signups are all season long. The cost is $60.00 for t-shirt, USA membership card and any traveling expenses to state tournaments.</info>
+    </club>
+    <club id="I23" charter="2002">
+      <name>Moorpark Wrestling</name>
+      <contact>Travis Lavallee</contact>
+      <location>Moorpark</location>
+      <phone>805-555-2883</phone>
+      <email>cooter426@example.com</email>
+      <age-groups type="KCJO"/>
+      <info>There's no cost to join our club. We only ask that you have
+        a valid USA Wrestling card. A free shirt will be given to any
+        wrestler who shows commitment to the team. Be prepared to train.
+      </info>
+    </club>
+    <club id="I28" charter="2003">
+      <name>Nipomo Youth Wrestling Club</name>
+      <contact>Greg Manosaz</contact>
+      <location>Nipomo</location>
+      <phone>805-555-5882</phone>
+      <age-groups type="KC"/>
+      <info>Season runs from Feb. 16 through May 21. Freestyle and Greco-Roman.  Cost: $60 - 1 child; $110 - 2 children; $160 - 3 children</info>
+    </club>
+    <club id="I03" charter="2004">
+      <name>Senior Bengals</name>
+      <contact>Rob Vieira</contact>
+      <location>Oxnard</location>
+      <phone>805-555-2609 (w); 555-9987 (h)</phone>
+      <email/>
+      <age-groups type="CJOW"/>
+      <info>Learn advanced wrestling techniques, work out, and have fun.</info>
+    </club>
+    <club id="I05" charter="2002">
+      <name>Simi Valley Predators Wrestling Club</name>
+      <contact>Connie Agajanian</contact>
+      <location>Simi Valley</location>
+      <phone>805-555-1625</phone>
+      <email>wrestlingdudes@example.com</email>
+      <age-groups type="KCJW"/>
+      <info/>
+    </club>
+    <club id="I25" charter="2004">
+      <name>South Coast Wrestling Club</name>
+      <contact>Tony Becerra</contact>
+      <location>Santa Barbara</location>
+      <phone>805-555-9549 (w)</phone>
+      <email>scoastwrestling@example.com</email>
+      <age-groups type="KCJOW"/>
+      <info>Season runs from the second week of February to June. Practice locations and times: Wednesday and Friday from 5:00 p.m. to 6:30 p.m. in the San Marcos Hgh School wrestling room. Wednesday and Friday from 3:30 p.m. to 5:00 p.m. at the Koei-Kan Karate Building, 1427 San Andrew St., santa Barbara, CA 93101.  Memberships includes USA Wrestling Card and Club T-shirt.</info>
+    </club>
+    <club id="R43" charter="2003">
+      <name>West Hills Hawks</name>
+      <contact>Terrence Fisher</contact>
+      <location>Woodland Hills</location>
+      <phone>818-555-3366 (home)</phone>
+      <email>coachtlfischer@example.com</email>
+      <age-groups type="KCJ"/>
+      <info>$30 USA Wrestling membership required</info>
+    </club>
+  </association>
+</club-database>
+<!--
+<club id="" charter="2004">
+	<name></name>
+	<contact></contact>
+	<location></location>
+	<phone></phone>
+	<email></email>
+	<age-groups type="KCJOW"/>
+	<info></info>
+</club>
+-->

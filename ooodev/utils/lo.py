@@ -1878,4 +1878,26 @@ class Lo(metaclass=StaticProperty):
     @null_date.setter
     def null_date(cls, value) -> None:
         # raise error on set. Not really neccesary but gives feedback.
-        raise AttributeError("Attempt to modify read-only class property '%s'." % cls.name)
+        raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
+    
+    @classproperty
+    def is_macro_mode(cls) -> bool:
+        """
+        Gets if currently running scripts inside of LO (macro) or standaline
+
+        Returns:
+            bool: True if running as a macro; Otherwise, False
+        """
+        try:
+            return cls._is_macro_mode
+        except AttributeError:
+            if globals().get("XSCRIPTCONTEXT", None) is None:
+                cls._is_macro_mode = False
+            else:
+                cls._is_macro_mode = True
+        return cls._is_macro_mode
+
+    @is_macro_mode.setter
+    def is_macro_mode(cls, value) -> None:
+        # raise error on set. Not really neccesary but gives feedback.
+        raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)

@@ -7,6 +7,7 @@ import pytest
 from tests.fixtures import __test__path__ as fixture_path
 from tests.fixtures.writer import __test__path__ as writer_fixture_path
 from tests.fixtures.calc import __test__path__ as calc_fixture_path
+from tests.fixtures.xml import __test__path__ as xml_fixture_path
 from ooodev.utils.lo import Lo
 
 
@@ -67,5 +68,23 @@ def copy_fix_calc(tmp_path):
 def fix_calc_path():
     def get_res(doc_name: str):
         return Path(calc_fixture_path, doc_name)
+
+    return get_res
+
+@pytest.fixture(scope="session")
+def copy_fix_xml(tmp_path):
+    def copy_res(doc_name: str):
+        src = Path(xml_fixture_path, doc_name)
+        dst = Path(tmp_path, doc_name)
+        shutil.copy2(src=src, dst=dst)
+        return dst
+
+    return copy_res
+
+
+@pytest.fixture(scope="session")
+def fix_xml_path():
+    def get_res(doc_name: str):
+        return Path(xml_fixture_path, doc_name)
 
     return get_res

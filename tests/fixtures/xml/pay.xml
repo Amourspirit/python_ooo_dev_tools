@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<payments>
+  <payment>
+    <purpose>CD</purpose>
+    <amount>12.95</amount>
+    <tax>19.1234</tax>
+    <maturity>2008-03-01</maturity>
+  </payment>
+  <payment>
+    <purpose>DVD</purpose>
+    <amount>19.95</amount>
+    <tax>19.4321</tax>
+    <maturity>2008-03-02</maturity>
+  </payment>
+  <payment>
+    <purpose>Clothes</purpose>
+    <amount>99.95</amount>
+    <tax>18.5678</tax>
+    <maturity>2008-03-03</maturity>
+  </payment>
+  <payment>
+    <purpose>Book</purpose>
+    <amount>9.49</amount>
+    <tax>18.9876</tax>
+    <maturity>2008-03-04</maturity>
+  </payment>
+</payments>
