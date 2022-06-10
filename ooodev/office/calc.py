@@ -231,12 +231,14 @@ class Calc:
             :py:meth:`~Calc.create_doc`
         """
         if not mInfo.Info.is_doc_type(doc_type=mLo.Lo.Service.CALC, obj=doc):
-            mLo.Lo.close_doc(doc=doc)
+            if not mLo.Lo.is_macro_mode:
+                mLo.Lo.close_doc(doc=doc)
             raise Exception("Not a spreadsheet doc")
 
         ss_doc = mLo.Lo.qi(XSpreadsheetDocument, doc)
         if ss_doc is None:
-            mLo.Lo.close_doc(doc=doc)
+            if not mLo.Lo.is_macro_mode:
+                mLo.Lo.close_doc(doc=doc)
             raise mEx.MissingInterfaceError(XSpreadsheetDocument)
         return ss_doc
 

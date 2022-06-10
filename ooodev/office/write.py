@@ -13,7 +13,6 @@ from ..utils import lo as mLo
 from ..utils import info as mInfo
 from ..utils import file_io as mFileIO
 from ..utils import props as mProps
-from ..utils import images as mImages
 from ..utils.color import CommonColor
 
 from com.sun.star.awt import FontWeight
@@ -861,6 +860,9 @@ class Write:
 
     @classmethod
     def add_image_shape(cls, doc: XTextDocument, cursor: XTextCursor, fnm: str, width: int = 0, height: int = 0) -> None:
+        if mLo.Lo.is_macro_mode:
+            raise Exception("get_text_graphics() is not supported in macros")
+        from ..utils import images as mImages
         if width > 0 and height > 0:
             im_size = Size(width, height)
         else:
@@ -923,6 +925,10 @@ class Write:
     
     @classmethod
     def get_text_graphics(cls, text_doc: XTextDocument) -> List[XGraphic] | None:
+        if mLo.Lo.is_macro_mode:
+            raise Exception("get_text_graphics() is not supported in macros")
+        
+        from ..utils import images as mImages
         xname_access = cls.get_graphic_links(text_doc)
         if xname_access is None:
             return None

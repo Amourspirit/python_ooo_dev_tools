@@ -5,12 +5,12 @@
 from __future__ import annotations
 from datetime import datetime
 import time
-from typing import TYPE_CHECKING, Iterable, Optional, List, Tuple, overload, TypeVar, Type
+from typing import TYPE_CHECKING, Iterable, Optional, List, Sequence, Tuple, overload, TypeVar, Type
 from urllib.parse import urlparse
 import uno
 from enum import IntEnum, Enum
 from ..meta.static_meta import StaticProperty, classproperty
-from .connect import ConnectBase, LoPipeStart, LoSocketStart
+from .connect import ConnectBase, LoPipeStart, LoSocketStart, LoDirectStart
 from com.sun.star.beans import XPropertySet
 from com.sun.star.beans import XIntrospection
 from com.sun.star.container import XNamed
@@ -92,7 +92,6 @@ class Lo(metaclass=StaticProperty):
         def __str__(self) -> str:
             return str(self.value)
 
-
     # region docType strings
     class DocTypeStr(str, Enum):
         UNKNOWN = "unknown"
@@ -155,7 +154,6 @@ class Lo(metaclass=StaticProperty):
     # endregion CLSIDs for Office documents
 
      # region port connect to locally running Office via port 8100
-    _SOCKET_PORT = 8100
     # endregion port
 
     _xcc: XComponentContext = None
@@ -398,55 +396,36 @@ class Lo(metaclass=StaticProperty):
         return a_component.getParent()
 
     # region Start Office
-    @overload
+
     @classmethod
-    def load_office(cls) -> XComponentLoader:
+    def load_office(cls, **kwargs) -> XComponentLoader:
         """
         Loads Office
         
-        If running outside of office then a bridge is created that connects to office using pipes.
-        
-        If running from inside of office e.g. in a macro, then XSCRIPTCONTEXT is used
-
-        Returns:
-            XDesktop: Desktop object
-        """
-        ...
-
-    @overload
-    @classmethod
-    def load_office(cls, using_pipes: bool) -> XComponentLoader:
-        """
-        Loads Office
+        Not available in a macro.
         
         If running outside of office then a bridge is created that connects to office.
         
         If running from inside of office e.g. in a macro, then XSCRIPTCONTEXT is used.
         ``using_pipes`` is ignored with running inside office.
 
-        Args:
-            using_pipes (bool): determines if bridge connection is made with pipes or host, port.
+        Keyword Args:
+            pipes (bool): determines if bridge connection is made with pipes. Defalut False
+            host (str): host name such as localhost. host and port must be together. Defalut localhost
+            port (int): port number. host and port must be together. Default 2002
+            direct (bool): No connection is made. Use directly. This is the mode used for macros. Defalut False
+            
+
+        Raises:
+            Exception: If run outside a macro
+            Exception: If unable to get access to XComponentLoader.
 
         Returns:
-            XDesktop: Desktop object.
-        """
-        ...
+            XComponentLoader: component loader
 
-    @classmethod
-    def load_office(cls, using_pipes: bool = True) -> XComponentLoader:
-        """
-        Loads Office
-        
-        If running outside of office then a bridge is created that connects to office.
-        
-        If running from inside of office e.g. in a macro, then XSCRIPTCONTEXT is used.
-        ``using_pipes`` is ignored with running inside office.
-
-        Args:
-            using_pipes (bool): determines if bridge connection is made with pipes or host, port.
-
-        Returns:
-            XDesktop: Desktop object.
+        See Also:
+            * :py:meth:`get_doc`
+            * :py:meth:`open_doc`
         """
         # Creation sequence: remote component content (xcc) -->
         #                     remote service manager (mcFactory) -->
@@ -454,8 +433,15 @@ class Lo(metaclass=StaticProperty):
         #                     component loader (XComponentLoader)
         # Once we have a component loader, we can load a document.
         # xcc, mcFactory, and xDesktop are stored as static globals.
+        using_pipes = bool(kwargs.get("pipes", False))
+        using_direct = bool(kwargs.get("direct", False))
+        
+        host = str(kwargs.get("host", "localhost"))
+        port = int(kwargs.get("port", 2002))
+        
         if cls.is_macro_mode:
-            return cls._load()
+            raise Exception("load_office() is not accessible from a macro")
+
         print("Loading Office...")
         if using_pipes:
             try:
@@ -464,9 +450,12 @@ class Lo(metaclass=StaticProperty):
             except Exception as e:
                 print("Office context could not be created")
                 raise SystemExit(1)
+        elif using_direct:
+            cls._lo_inst = LoDirectStart()
+            cls._lo_inst.connect()
         else:
             try:
-                cls._lo_inst = LoSocketStart()
+                cls._lo_inst = LoSocketStart(host=host, port=port)
                 cls._lo_inst.connect()
             except Exception as e:
                 print("Office context could not be created")
@@ -488,22 +477,6 @@ class Lo(metaclass=StaticProperty):
         return loader
         # return cls.xdesktop
 
-    @classmethod
-    def _load(cls) -> XComponentLoader:
-        if not cls.is_macro_mode:
-            raise Exception("XSCRIPTCONTEXT not found")
-        XSCRIPTCONTEXT = globals()['XSCRIPTCONTEXT']
-        cls._xcc = XSCRIPTCONTEXT.ctx
-        cls._mc_factory = cls._xcc.getServiceManager()
-        if cls._mc_factory is None:
-            raise Exception("Office Service Manager is unavailable")
-        cls._xdesktop = XSCRIPTCONTEXT.getDesktop()
-        if cls._xdesktop is None:
-            Exception("Could not create a desktop service")
-        loader = cls.qi(XComponentLoader, cls._xdesktop)
-        if loader is None:
-            raise Exception("Unable to access XComponentLoader")
-        return loader
 
         
     # endregion Start Office
@@ -648,6 +621,8 @@ class Lo(metaclass=StaticProperty):
         See Also:
             * :py:meth:`~Lo.open_readonly_doc`
             * :py:meth:`~Lo.open_flat_doc`
+            * :py:meth:`get_doc`
+            * :py:meth:`load_office`
         """
         if fnm is None:
             raise Exception("Filename is null")
@@ -875,26 +850,6 @@ class Lo(metaclass=StaticProperty):
         except Exception as e:
             raise Exception(f"Could not create document from template") from e
 
-
-    @classmethod
-    def get_document(cls) -> XComponent:
-        """
-        Gets current document from ``XSCRIPTCONTEXT``.
-        
-        This method should be used in macro's
-
-        Raises:
-            Exception: if XSCRIPTCONTEXT is not found
-
-        Returns:
-            XComponent: current document
-        """
-        if not "XSCRIPTCONTEXT" in globals():
-            raise Exception("XSCRIPTCONTEXT not found")
-        XSCRIPTCONTEXT = globals()['XSCRIPTCONTEXT']
-        cls._doc = XSCRIPTCONTEXT.getDocument()
-        cls._ms_factory = cls.qi(XMultiServiceFactory, cls._doc)
-        return cls._doc
     # ======================== document saving ==============
 
     @staticmethod
@@ -1880,6 +1835,7 @@ class Lo(metaclass=StaticProperty):
         # raise error on set. Not really neccesary but gives feedback.
         raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
     
+    
     @classproperty
     def is_macro_mode(cls) -> bool:
         """
@@ -1888,16 +1844,41 @@ class Lo(metaclass=StaticProperty):
         Returns:
             bool: True if running as a macro; Otherwise, False
         """
+        
         try:
             return cls._is_macro_mode
         except AttributeError:
-            if globals().get("XSCRIPTCONTEXT", None) is None:
-                cls._is_macro_mode = False
-            else:
-                cls._is_macro_mode = True
+            if cls._lo_inst is None:
+                return False
+            cls._is_macro_mode = isinstance(cls._lo_inst, LoDirectStart)
         return cls._is_macro_mode
 
     @is_macro_mode.setter
     def is_macro_mode(cls, value) -> None:
         # raise error on set. Not really neccesary but gives feedback.
         raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
+    
+    @classproperty
+    def StarDesktop(cls) -> XDesktop:
+        """Get current desktop"""
+        return cls._xdesktop
+    
+    @classproperty
+    def ThisComponent(cls) -> XComponent:
+        """
+        When the current component is the Basic IDE, the ThisComponent object returns
+        in Basic the component owning the currently run user script.
+        Above behaviour cannot be reproduced in Python.
+        
+        Returns:
+            the current component or None when not a document
+        """
+        if cls.StarDesktop is None:
+            return None
+        comp = cls.StarDesktop.getCurrentComponent()
+        if comp is None:
+            return None
+        impl = comp.ImplementationName
+        if impl in ('com.sun.star.comp.basic.BasicIDE', 'com.sun.star.comp.sfx2.BackingComp'):
+            return None     # None when Basic IDE or welcome screen
+        return comp

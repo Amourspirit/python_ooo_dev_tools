@@ -13,7 +13,7 @@ from ooodev.utils.lo import Lo
 
 @pytest.fixture(scope="session")
 def loader():
-    loader = Lo.load_office(using_pipes=False)
+    loader = Lo.load_office(host="localhost", port=2002)
     yield loader
     Lo.close_office()
 
