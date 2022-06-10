@@ -1883,7 +1883,7 @@ class Lo(metaclass=StaticProperty):
     @classproperty
     def is_macro_mode(cls) -> bool:
         """
-        Gets if currently running scripts inside of LO (macro) or standaline
+        Gets if currently running scripts inside of LO (macro) or standalone
 
         Returns:
             bool: True if running as a macro; Otherwise, False
