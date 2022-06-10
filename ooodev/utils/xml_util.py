@@ -1,87 +1,108 @@
 # coding: utf-8
 # Python conversion of XML.java by Andrew Davison, ad@fivedots.coe.psu.ac.th
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
+
+# region Imports
 from __future__ import annotations
-from typing import Iterable, Union, Tuple, List, overload
-from xml.dom import minidom
+import os
+from typing import Sequence, Tuple, List, overload
+from xml.dom.minidom import Node, parse, Document, parseString
 import urllib.request
 from xml.dom.minicompat import NodeList
-from lxml import etree as ET
 from . import lo as mLo
+from ..exceptions import ex as mEx
 from .gen_util import TableHelper
 
-_xml_parser = ET.XMLParser(remove_blank_text=True)
+# endregion Imports
 
 
 class XML:
+    """XML method used for with LibreOffice Dcouemnts"""
+
+    # region --------------- Load / Save ------------------------------
+
     @classmethod
-    def load_doc(cls, fnm: str) -> Union[minidom.Document, None]:
+    def load_doc(cls, fnm: str | os.PathLike) -> Document:
         """
         Gets a document from a file
 
         Args:
-            fnm (str): XML file to load.
+            fnm (str | PathLike): XML file to load.
+
+        Raises:
+            Exception: if unable to open document.
 
         Returns:
-            Document | None: XML Document on successful load; Otherwise, None.
+            Document: XML Document.
         """
         try:
             with open(fnm) as file:
-                elem = ET.XML(text=file.read(), parser=_xml_parser)
-            doc = minidom.parseString(string=ET.tostring(elem))
+                doc = parse(file)
+            cls._remove_whitespace(doc)
+            doc.normalize()
             return doc
         except Exception as e:
             print(e)
-        return None
+            raise Exception(f"Opening of document failed: '{fnm}'") from e
 
     @classmethod
-    def url_2_doc(cls, url: str) -> Union[minidom.Document, None]:
+    def url_2_doc(cls, url: str) -> Document:
         """
         Gets a XML Document from remote souce.
 
         Args:
             url (str): Url for a remote XML Document
 
+        Raises:
+            Exception: if unable to open document.
+
         Returns:
-            Document | None: XML Document on successful load; Otherwise, None.
+            Document: XML Document
         """
         try:
             with urllib.request.urlopen(url) as url_data:
-
-                elem = ET.XML(text=url_data.read().decode(), parser=_xml_parser)
-                doc = minidom.parseString(string=ET.tostring(elem))
-                return doc
+                doc = parseString(url_data.read().decode())
+            cls._remove_whitespace(doc)
+            doc.normalize()
+            return doc
         except Exception as e:
             print(e)
-        return None
+            raise Exception(f"Opening of document failed: '{url}'") from e
 
     @classmethod
-    def str_2_doc(cls, xml_str: str) -> Union[minidom.Document, None]:
+    def str_to_doc(cls, xml_str: str) -> Document:
         """
         Gets a XML document from xml string.
 
         Args:
             xml_str (str): XML string.
 
+        Raises:
+            Exception: if unable to create document from xml.
+
         Returns:
-            Document | None: XML Document on successful load; Otherwise, None.
+            Document: XML Document on successful load; Otherwise, None.
         """
         try:
-            elem = ET.XML(text=xml_str, parser=_xml_parser)
-            doc = minidom.parseString(string=ET.tostring(elem))
+            doc = parseString(xml_str)
+            cls._remove_whitespace(doc)
+            doc.normalize()
             return doc
         except Exception as e:
             print(e)
-        return None
+            raise Exception(f"Error get xml docoument from xml string") from e
 
     @staticmethod
-    def save_doc(doc: minidom.Document, xml_fnm: str) -> None:
+    def save_doc(doc: Document, xml_fnm: str | os.PathLike) -> None:
         """
         Save doc to xml file.
 
         Args:
             doc (Document): doc to save.
-            xml_fnm (str): Output file path.
+            xml_fnm (str | PathLike): Output file path.
+
+        Raises:
+            Exception: If unable to save document
         """
         try:
             with open(xml_fnm, "w") as file:
@@ -94,13 +115,14 @@ class XML:
                 file.write(clean_sx)
                 # doc.writexml(writer=file, indent="  ")
         except Exception as e:
-            print(f"Unable to save document to {xml_fnm}")
-            print(f"  {e}")
+            raise Exception(f"Unable to save document to {xml_fnm}") from e
 
-    # --------------- DOM data extraction -----------------------
+    # endregion ------------ Load / Save ------------------------------
+
+    # region --------------- DOM data extraction -----------------------
 
     @staticmethod
-    def get_node(tag_name: str, nodes: NodeList) -> Union[minidom.Node, None]:
+    def get_node(tag_name: str, nodes: NodeList) -> Node | None:
         """
         Gets the fist tag_name found in nodes.
 
@@ -111,15 +133,16 @@ class XML:
         Returns:
             Node | None: First found node; Othwewise, None
         """
-        name = tag_name.lower()
+        name = tag_name.casefold()
         for node in nodes:
-            if node.tagName.lower() == name:
+            if node.nodeType == Node.ELEMENT_NODE and node.tagName.casefold() == name:
                 return node
         return None
 
+    # region    get_node_value()
     @overload
     @staticmethod
-    def get_node_value(node: minidom.Node) -> str:
+    def get_node_value(node: Node) -> str:
         """
         Get the text stored in the node
 
@@ -148,33 +171,60 @@ class XML:
 
     @classmethod
     def get_node_value(cls, *args, **kwargs) -> str:
-        ordered_keys = ("first", "second")
-        kargs = {}
-        if "node" in kwargs:
-            kargs["first"] = kwargs["node"]
-        elif "tag_name" in kwargs:
-            kargs["first"] = kwargs["tag_name"]
-        elif "nodes" in kwargs:
-            kargs["second"] = kwargs["nodes"]
+        """
+        Gets firt tag_name node in the list and returns it text.
+
+        Args:
+            node (Node): Node to get value of.
+            tag_name (str): tag_name to search for.
+            nodes (NodeList): List of nodes to search.
+
+        Returns:
+            str: Node value if found; Otherwise empty str.
+        """
+        ordered_keys = (1, 2)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
+
+        def get_kwargs() -> dict:
+            ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ("tag_name", "nodes", "node")
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("get_node_value() got an unexpected keyword argument")
+            keys = ("tag_name", "node")
+            for key in keys:
+                if key in kwargs:
+                    ka[1] = kwargs[key]
+                    break
+            if count == 1:
+                return ka
+            ka[2] = kwargs.get("nodes", None)
+            return ka
+
+        if not count in (1, 2):
+            raise TypeError("get_node_value() got an invalid numer of arguments")
+
+        kargs = get_kwargs()
+
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
-        k_len = len(kargs)
 
-        if k_len == 1:
-            return cls._get_node_val(kargs["first"])
-        if k_len == 2:
-            return cls._get_node_val2(kargs["first"], kargs["second"])
-        raise ValueError("Incorrect number of prameter supplied:")
+        if count == 1:
+            return cls._get_node_val(kargs[1])
+        return cls._get_node_val2(kargs[1], kargs[2])
 
     @staticmethod
-    def _get_node_val(node: minidom.Node) -> str:
+    def _get_node_val(node: Node) -> str:
         if node is None:
             return ""
         if not node.hasChildNodes():
             return ""
         child_nodes: NodeList = node.childNodes
         for node in child_nodes:
-            if node.nodeType == minidom.Node.TEXT_NODE:
+            if node.nodeType == Node.TEXT_NODE:
                 return str(node.data).strip()
         return ""
 
@@ -182,11 +232,13 @@ class XML:
     def _get_node_val2(cls, tag_name: str, nodes: NodeList) -> str:
         if nodes is None:
             return ""
-        name = tag_name.lower()
+        name = tag_name.casefold()
         for node in nodes:
-            if node.nodeName.lower() == name:
-                return cls.get_node_value(node)
+            if node.nodeName.casefold() == name:
+                return cls._get_node_val(node)
         return ""
+
+    # endregion get_node_value()
 
     @classmethod
     def get_node_values(cls, nodes: NodeList) -> Tuple[str, ...]:
@@ -201,73 +253,67 @@ class XML:
         """
         vals = []
         for node in nodes:
-            val = cls.get_node_value(node)
+            val = cls._get_node_val(node)
             if val != "":
                 vals.append(val)
         return tuple(val)
 
     @staticmethod
-    def get_node_attr(attr_name: str, node: minidom.Node) -> str:
+    def get_node_attr(attr_name: str, node: Node) -> str:
         """
         Get the named attribute value from node
 
         Args:
             attr_name (str): Attribute Name
-            node (minidom.Node): Node to get attribue of.
+            node (Node): Node to get attribue of.
 
         Returns:
             str: Attribute value if found; Othwewise empty str.
         """
-        if node is None:
+        if node.attributes is None:
             return ""
         # attrs is {} if there are no attributes
         attrs = dict(node.attributes.items())
-        name = attr_name.lower()
+        name = attr_name.casefold()
         for k, v in attrs.items():
-            if str(k).lower() == name:
+            if str(k).casefold() == name:
                 return str(v)
         return ""
 
     @classmethod
-    def get_all_node_values(cls, row_nodes: NodeList, col_ids: Iterable[str]) -> List[list]:
+    def get_all_node_values(cls, row_nodes: NodeList, col_ids: Sequence[str]) -> List[list] | None:
         """
-        assumes an XML structure like
-        ::
-            <root>
-                <rowID>
-                    <col1ID>str1</col1ID>
-                    <col2ID>str2</col2ID>
-                    <col3ID>str2</col3ID>
-                    <col4ID>str2</col4ID>
-                </rowID>
-                <rowID>
-                    <col1ID>row2-1</col1ID>
-                    <col2ID>row2-2</col2ID>
-                    <col3ID>row2-3</col3ID>
-                    <col4ID>row2-4</col4ID>
-                </rowID>
-                <rowID>
-                    <col1ID>row3-1</col1ID>
-                    <col2ID>row3-2</col2ID>
-                    <col3ID>row3-3</col3ID>
-                    <col4ID>row3-4</col4ID>
-                </rowID>
-            </root>
+        Gets all node values.
 
-        The data from a sequence of <col>s becomes one row in the
+        assumes an XML structure like
+
+            .. include:: ../../resources/xml/pay.xml.rst
+
+        The data from a sequence of <col> becomes one row in the
         generated 2D array.
 
         The first row of the 2D array contains the col ID strings.
 
+        Args:
+            row_nodes (NodeList): rows
+            col_ids (Sequence[str]): Column ids
+
+        Returns:
+            List[list] | None: 2D-list of values on success; Otherwise, None
+
         Note:
             col_ids must match the column names:
 
-            colids = ["col1ID", "col2ID", "col3ID", "col4ID"]
+            ``colids = ("purpose", "amount", "tax", "maturity")``
+            
+            Results for example xml:
+            
+            .. include:: ../../resources/xml/pay_all_notes_result.rst
         """
         num_rows = len(row_nodes)
         num_cols = len(col_ids)
         if num_cols == 0 or num_rows == 0:
-            return []
+            return None
         data = TableHelper.make_2d_array(num_rows=num_rows, num_cols=num_cols)
         # data = [[1] * num_cols for _ in range(num_rows + 1)]
         # put column strings in first row of list
@@ -278,101 +324,93 @@ class XML:
             # extract all the column strings for ith row
             col_nodes = node.childNodes
             for col in range(num_cols):
-                data[i + 1][col] = cls.get_node_value(col_ids[col], col_nodes)
+                data[i][col] = cls.get_node_value(col_ids[col], col_nodes)
         return data
 
-    # ------------------------- XLS transforming ----------------------
+    # endregion ------------ DOM data extraction -----------------------
+
+    # region ---------------- XLS transforming -------------------------
 
     @staticmethod
-    def apply_xslt(xml_fnm: str, xls_fnm: str) -> Union[str, None]:
+    def apply_xslt(xml_fnm: str | os.PathLike, xls_fnm: str | os.PathLike) -> str:
         """
-        Transforms xml file using XLST
+        Transforms xml file using XLST.
+
+        Not available in macros at this time.
 
         Args:
-            xml_fnm (str): XML source file path.
-            xls_fnm (str): XSL source file path.
+            xml_fnm (str | PathLike): XML source file path.
+            xls_fnm (str | PathLike): XSL source file path.
+
+        Raises:
+            NotSupportedMacroModeError: If access in a macro
+            Exception: If lxml python package is not available
+            Exception: If unable to apply xls
 
         Returns:
-            Union[str, None]: String of XML that has been transformed.
+            str: String of XML that has been transformed.
         """
+        if mLo.Lo.is_macro_mode:
+            raise mEx.NotSupportedMacroModeError("apply_xslt() is not supported from a macro")
+        try:
+            from lxml import etree as XML_ETREE
+        except ImportError as e:
+            raise Exception("apply_xslt requires lxml python package") from e
+        _xml_parser = XML_ETREE.XMLParser(remove_blank_text=True)
+
         try:
             print(f"Applying filter '{xls_fnm}' to '{xml_fnm}'")
-            dom = ET.parse(xml_fnm, parser=_xml_parser)
-            xslt = ET.parse(xls_fnm)
-            transform = ET.XSLT(xslt)
+            dom = XML_ETREE.parse(xml_fnm, parser=_xml_parser)
+            xslt = XML_ETREE.parse(xls_fnm)
+            transform = XML_ETREE.XSLT(xslt)
             newdom = transform(dom)
-            t_result = ET.tostring(newdom, encoding="unicode")  # unicode produces string
+            t_result = XML_ETREE.tostring(newdom, encoding="unicode")  # unicode produces string
             return t_result
         except Exception as e:
-            print(f"Unable to transform '{xml_fnm}' with '{xls_fnm}'")
-            print(f"    {e}")
-        return None
+            raise Exception(f"Unable to transform '{xml_fnm}' with '{xls_fnm}'") from e
 
     @staticmethod
-    def apply_xslt_2_str(xml_str: str, xls_fnm: str) -> Union[str, None]:
+    def apply_xslt_to_str(xml_str: str, xls_fnm: str | os.PathLike) -> str:
         """
-        Transforms xml using XLST
+        Transforms xml using XLST.
+
+        Not available in macros at this time.
 
         Args:
-            xml_str (str): XML string.
-            xls_fnm (str): XSL source file path.
+            xml_str (str): Raw XML data.
+            xls_fnm (str | PathLike): XSL source file path.
+
+        Raises:
+            NotSupportedMacroModeError: If access in a macro
+            Exception: If lxml python package is not available
+            Exception: If unable to apply xls
 
         Returns:
-            Union[str, None]: String of XML that has been transformed.
+            str: String of XML that has been transformed.
         """
+        if mLo.Lo.is_macro_mode:
+            raise mEx.NotSupportedMacroModeError("apply_xslt_2_str() is not supported from a macro")
+        try:
+            from lxml import etree as XML_ETREE
+        except ImportError as e:
+            raise Exception("apply_xslt requires lxml python package") from e
+        _xml_parser = XML_ETREE.XMLParser(remove_blank_text=True)
+
         try:
             print(f"Applying the filter in '{xls_fnm}'")
-            dom = ET.fromstring(xml_str)
-            xslt = ET.parse(xls_fnm, parser=_xml_parser)
+            dom = XML_ETREE.fromstring(xml_str)
+            xslt = XML_ETREE.parse(xls_fnm, parser=_xml_parser)
 
-            transform = ET.XSLT(xslt)
+            transform = XML_ETREE.XSLT(xslt)
             newdom = transform(dom)
-            t_result = ET.tostring(newdom, encoding="unicode")  # unicode produces string
+            t_result = XML_ETREE.tostring(newdom, encoding="unicode")  # unicode produces string
             return t_result
         except Exception as e:
-            print("Unable to transform the string")
-            print(f"    {e}")
-        return None
+            raise Exception("Unable to transform the string") from e
 
-    @staticmethod
-    def indent(xml_fnm: str) -> Union[str, None]:
-        """
-        Indents xml
+    # endregion ------------- XLS transforming -------------------------
 
-        Args:
-            xml_fnm (str): xml file path.
-
-        Returns:
-            Union[str, None]: Indented xml on success; Otherwise, None
-        """
-        try:
-            dom = ET.parse(xml_fnm, parser=_xml_parser)
-            result = ET.tostring(dom, encoding="unicode", pretty_print=True)
-            return result
-        except Exception as e:
-            print(f"Unable to indent '{xml_fnm}'")
-            print(f"    {e}")
-        return None
-
-    @staticmethod
-    def indent_2_str(xml_str: str) -> Union[str, None]:
-        """
-        Indents xml
-
-        Args:
-            xml_str (str): xml string to indent
-
-        Returns:
-            Union[str, None]: Indented xml on success; Otherwise, None
-        """
-        try:
-            dom = ET.fromstring(xml_str, parser=_xml_parser)
-            result = ET.tostring(dom, encoding="unicode", pretty_print=True)
-            return result
-        except Exception as e:
-            print("Unable to indent the xml string")
-            print(f"    {e}")
-        return None
+    # region --------------- Filter ------------------------------------
 
     @staticmethod
     def get_flat_fiter_name(doc_type: mLo.Lo.DocTypeStr) -> str:
@@ -396,3 +434,154 @@ class XML:
         else:
             print("No Flat XML filter for this document type; using Flat text")
             return "OpenDocument Text Flat XML"
+
+    # endregion ------------ Filter ------------------------------------
+
+    # region --------------- Formating --------------------------------
+
+    # region    indent()
+    @overload
+    @classmethod
+    def indent(cls, src: str) -> str:
+        """
+        Indents xml
+
+        Args:
+            src (str): raw xml data.
+
+        Raises:
+            TypeError is src is not expected type
+            Exception: If unable to indent
+
+        Returns:
+            str: Indented xml as string.
+        """
+        ...
+
+    @overload
+    @classmethod
+    def indent(cls, src: os.PathLike) -> str:
+        """
+        Indents xml
+
+        Args:
+            src (PathLike): xml file path.
+
+        Raises:
+            TypeError is src is not expected type
+            Exception: If unable to indent
+
+        Returns:
+            str: Indented xml as string.
+        """
+        ...
+
+    @overload
+    @classmethod
+    def indent(cls, src: Document) -> str:
+        """
+        Indents xml
+
+        Args:
+            src (Document): xml doucment.
+
+        Raises:
+            TypeError is src is not expected type
+            Exception: If unable to indent
+
+        Returns:
+            str: Indented xml as string.
+        """
+        ...
+
+    @classmethod
+    def indent(cls, src: os.PathLike | str | Document) -> str:
+        """
+        Indents xml
+
+        Args:
+            src (str | PathLike | Document): raw xml data or xml file path or xml document.
+
+        Raises:
+            TypeError is src is not expected type
+            Exception: If unable to indent
+
+        Returns:
+            str: Indented xml as string.
+        """
+        try:
+            if isinstance(src, os.PathLike):
+                with open(src, "r") as file:
+                    doc = parse(file)
+            elif isinstance(src, str):
+                doc = parseString(src)
+            elif isinstance(src, Document):
+                # don't modify origin document
+                doc = parseString(src.toxml())
+            else:
+                raise TypeError(
+                    f"src is not recognized. Expected, str, PathLike or Document. Got {type(src).__name__}"
+                )
+            cls._remove_whitespace(doc)
+            doc.normalize()
+            # To parse string instead use: dom = md.parseString(xml_string)
+            pretty_xml = doc.toprettyxml()
+            # remove the weird newline issue:
+            # should not be needes with cls._remove_whitespace(doc)
+            # pretty_xml = os.linesep.join([s for s in pretty_xml.splitlines() if s.strip()])
+            return pretty_xml
+        except TypeError:
+            raise
+        except Exception as e:
+            if isinstance(src, (str, os.PathLike)):
+                msg = f"Unable to indent '{src}'"
+            else:
+                msg = f"Unable to indent document"
+            raise Exception(msg) from e
+
+    # endregion indent()
+
+    @classmethod
+    def _remove_whitespace(cls, node):
+        """
+        Removes whites from xml node
+
+        Args:
+            node (node): xml node, or xml document
+
+        Note:
+            it is necessary .normalize() the document to combine adjacent text nodes.
+            Otherwise, you could end up with a bunch of redundant XML elements with just whitespace.
+            Again, recursion is the only way to visit tree elements since you can’t iterate over the
+            document and its elements with a loop. Finally, this should give you the expected result:
+        """
+        # https://realpython.com/python-xml-parser/
+        # e.g.
+        # document = parse("smiley.svg")
+        # cls._remove_whitespace(document)
+        # document.normalize()
+        if node.nodeType == Node.TEXT_NODE:
+            if node.nodeValue.strip() == "":
+                node.nodeValue = ""
+        for child in node.childNodes:
+            cls._remove_whitespace(child)
+
+    # @classmethod
+    # def _indent(cls, elem, level=0) -> None:
+    #     # pretty print
+    #     # https://stackoverflow.com/questions/749796/pretty-printing-xml-in-python
+    #     i = "\n" + level*"  "
+    #     if len(elem):
+    #         if not elem.text or not elem.text.strip():
+    #             elem.text = i + "  "
+    #         if not elem.tail or not elem.tail.strip():
+    #             elem.tail = i
+    #         for elem in elem:
+    #             cls._indent(elem, level+1)
+    #         if not elem.tail or not elem.tail.strip():
+    #             elem.tail = i
+    #     else:
+    #         if level and (not elem.tail or not elem.tail.strip()):
+    #             elem.tail = i
+
+    # endregion ------------- Formating --------------------------------
