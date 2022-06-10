@@ -454,7 +454,7 @@ class Lo(metaclass=StaticProperty):
         #                     component loader (XComponentLoader)
         # Once we have a component loader, we can load a document.
         # xcc, mcFactory, and xDesktop are stored as static globals.
-        if "XSCRIPTCONTEXT" in globals():
+        if cls.is_macro_mode:
             return cls._load()
         print("Loading Office...")
         if using_pipes:
@@ -490,7 +490,7 @@ class Lo(metaclass=StaticProperty):
 
     @classmethod
     def _load(cls) -> XComponentLoader:
-        if not "XSCRIPTCONTEXT" in globals():
+        if not cls.is_macro_mode:
             raise Exception("XSCRIPTCONTEXT not found")
         XSCRIPTCONTEXT = globals()['XSCRIPTCONTEXT']
         cls._xcc = XSCRIPTCONTEXT.ctx
@@ -585,7 +585,7 @@ class Lo(metaclass=StaticProperty):
         """
         nn = mXML.XML.get_flat_fiter_name(doc_type=doc_type)
         print(f"Flat filter Name: {nn}")
-        return cls.open_doc(fnm, loader, mProps.Props.make_props(Hidden=True))
+        return cls.open_doc(fnm, loader, mProps.Props.make_props(FilterName=nn, Hidden=True))
 
     @overload
     @classmethod

@@ -210,7 +210,7 @@ class FileIO:
             str: Path to temp file.
         """
         try:
-            tmp = tempfile.NamedTemporaryFile(prefix="loTemp", sufix=f".{im_format}", delete=True)
+            tmp = tempfile.NamedTemporaryFile(prefix="loTemp", suffix=f".{im_format}", delete=True)
             return tmp.name
         except Exception as e:
             raise Exception("Could not create temp file") from e
