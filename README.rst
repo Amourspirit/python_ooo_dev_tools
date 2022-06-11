@@ -124,10 +124,10 @@ LibreOffice API Typings
 .. |lic| image:: https://img.shields.io/github/license/Amourspirit/python_ooo_dev_tools
     :alt: License Apache
 
-.. |pver| image:: https://img.shields.io/pypi/pyversions/python_ooo_dev_tools
+.. |pver| image:: https://img.shields.io/pypi/pyversions/ooo-dev-tools
     :alt: PyPI - Python Version
 
-.. |pwheel| image:: https://img.shields.io/pypi/wheel/python_ooo_dev_tools
+.. |pwheel| image:: https://img.shields.io/pypi/wheel/ooo-dev-tools
     :alt: PyPI - Wheel
 
 .. |github| image:: https://img.shields.io/badge/GitHub-100000?style=plastic&logo=github&logoColor=white
