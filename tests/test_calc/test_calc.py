@@ -516,7 +516,7 @@ def test_get_set_view_states(loader) -> None:
 
 # endregion view data methods
 
-# region    insert/remove rows, columns, cells
+# region    insert/remove/clear rows, columns, cells
 def test_insert_row(loader) -> None:
     from ooodev.utils.lo import Lo
     from ooodev.office.calc import Calc
@@ -661,7 +661,153 @@ def test_delete_cells_left(loader) -> None:
     assert val == "hello world"
 
 
-# endregion insert/remove rows, columns, cells
+def test_clear_cells(loader) -> None:
+    from ooodev.utils.lo import Lo
+    from ooodev.office.calc import Calc
+    from ooodev.utils.gui import GUI
+    visible = False
+    delay = 0 # 500
+    doc = Calc.create_doc(loader)
+    sheet = Calc.get_sheet(doc=doc, index=0)
+    vals = (
+        ("Name", "Fruit", "Quantity"),
+        ("Alice", "Apples", 3),
+        ("Alice", "Oranges", 7),
+        ("Bob", "Apples", 3),
+        ("Alice", "Apples", 9),
+        ("Bob", "Apples", 5),
+        ("Bob", "Oranges", 6),
+        ("Alice", "Oranges", 3),
+        ("Alice", "Apples", 8),
+        ("Alice", "Oranges", 1),
+        ("Bob", "Oranges", 2),
+        ("Bob", "Oranges", 7),
+        ("Bob", "Apples", 1),
+        ("Alice", "Apples", 8),
+        ("Alice", "Oranges", 8),
+        ("Alice", "Apples", 7),
+        ("Bob", "Apples", 1),
+        ("Bob", "Oranges", 9),
+        ("Bob", "Oranges", 3),
+        ("Alice", "Oranges", 4),
+        ("Alice", "Apples", 9),
+    )
+    def check_data(arr: list) -> None:
+        assert len(arr) == 21
+        assert arr[20][0] == 'Alice'
+        assert arr[20][1] == 'Apples'
+        assert arr[20][2] == 9.0
+        for i in range(20):
+            row = arr[i]
+            for value in row:
+                assert value == ''
+    try:
+        rng_name = "A3:C23"
+        rng_clear = "A3:C22"
+        rng = Calc.get_cell_range(sheet=sheet, range_name=rng_clear)
+        cr_addr = Calc.get_address(cell_range=rng)
+        if visible:
+            GUI.set_visible(is_visible=visible, odoc=doc)
+        # clear_cells(cls, sheet: XSpreadsheet, cell_range: XCellRange, cell_flags: Calc.CellFlags)
+        Calc.set_array(values=vals, sheet=sheet, name=rng_name)  # or just "A3"
+        Lo.delay(delay)
+        flags = Calc.CellFlags.VALUE | Calc.CellFlags.STRING
+        Calc.clear_cells(sheet=sheet, range_name=rng_clear, cell_flags=flags)
+        data = Calc.get_array(sheet=sheet, range_name=rng_name)
+        check_data(data)
+        Lo.delay(delay)
+        
+        Calc.set_array(values=vals, sheet=sheet, name=rng_name)  # or just "A3"
+        Lo.delay(delay)
+        flags = Calc.CellFlags.VALUE | Calc.CellFlags.STRING
+        Calc.clear_cells(sheet, rng_clear, flags)
+        data = Calc.get_array(sheet=sheet, range_name=rng_name)
+        check_data(data)
+        Lo.delay(delay)
+        
+        
+        # clear_cells(cls, sheet: XSpreadsheet, range_name: str)
+        Calc.set_array(values=vals, sheet=sheet, name=rng_name)  # or just "A3"
+        Lo.delay(delay)
+        Calc.clear_cells(sheet=sheet, range_name=rng_clear)
+        data = Calc.get_array(sheet=sheet, range_name=rng_name)
+        check_data(data)
+        Lo.delay(delay)
+        
+        Calc.set_array(values=vals, sheet=sheet, name=rng_name)  # or just "A3"
+        Lo.delay(delay)
+        Calc.clear_cells(sheet, rng_clear)
+        data = Calc.get_array(sheet=sheet, range_name=rng_name)
+        check_data(data)
+        Lo.delay(delay)
+        
+        # clear_cells(cls, sheet: XSpreadsheet, cell_range: XCellRange, cell_flags: Calc.CellFlags)
+        Calc.set_array(values=vals, sheet=sheet, name=rng_name)  # or just "A3"
+        Lo.delay(delay)
+        flags = Calc.CellFlags.VALUE | Calc.CellFlags.STRING
+        Calc.clear_cells(sheet=sheet, cell_range=rng, cell_flags=flags)
+        data = Calc.get_array(sheet=sheet, range_name=rng_name)
+        check_data(data)
+        Lo.delay(delay)
+        
+        Calc.set_array(values=vals, sheet=sheet, name=rng_name)  # or just "A3"
+        Lo.delay(delay)
+        flags = Calc.CellFlags.VALUE | Calc.CellFlags.STRING
+        Calc.clear_cells(sheet, rng, flags)
+        data = Calc.get_array(sheet=sheet, range_name=rng_name)
+        check_data(data)
+        Lo.delay(delay)
+        
+        # clear_cells(cls, sheet: XSpreadsheet, cell_range: XCellRange)
+        Calc.set_array(values=vals, sheet=sheet, name=rng_name)  # or just "A3"
+        Lo.delay(delay)
+        Calc.clear_cells(sheet=sheet, cell_range=rng)
+        data = Calc.get_array(sheet=sheet, range_name=rng_name)
+        check_data(data)
+        Lo.delay(delay)
+        
+        Calc.set_array(values=vals, sheet=sheet, name=rng_name)  # or just "A3"
+        Lo.delay(delay)
+        Calc.clear_cells(sheet, rng)
+        data = Calc.get_array(sheet=sheet, range_name=rng_name)
+        check_data(data)
+        Lo.delay(delay)
+        
+        # clear_cells(cls, sheet: XSpreadsheet, cr_addr: CellRangeAddress, cell_flags: Calc.CellFlags)
+        Calc.set_array(values=vals, sheet=sheet, name=rng_name)  # or just "A3"
+        Lo.delay(delay)
+        flags = Calc.CellFlags.VALUE | Calc.CellFlags.STRING
+        Calc.clear_cells(sheet=sheet, cr_addr=cr_addr, cell_flags=flags)
+        data = Calc.get_array(sheet=sheet, range_name=rng_name)
+        check_data(data)
+        Lo.delay(delay)
+        
+        Calc.set_array(values=vals, sheet=sheet, name=rng_name)  # or just "A3"
+        Lo.delay(delay)
+        flags = Calc.CellFlags.VALUE | Calc.CellFlags.STRING
+        Calc.clear_cells(sheet, cr_addr, flags)
+        data = Calc.get_array(sheet=sheet, range_name=rng_name)
+        check_data(data)
+        Lo.delay(delay)
+        
+        # clear_cells(cls, sheet: XSpreadsheet, cr_addr: CellRangeAddress)
+        Calc.set_array(values=vals, sheet=sheet, name=rng_name)  # or just "A3"
+        Lo.delay(delay)
+        Calc.clear_cells(sheet=sheet, cr_addr=cr_addr)
+        data = Calc.get_array(sheet=sheet, range_name=rng_name)
+        check_data(data)
+        Lo.delay(delay)
+        
+        Calc.set_array(values=vals, sheet=sheet, name=rng_name)  # or just "A3"
+        Lo.delay(delay)
+        Calc.clear_cells(sheet, cr_addr)
+        data = Calc.get_array(sheet=sheet, range_name=rng_name)
+        check_data(data)
+        Lo.delay(delay)
+        
+    finally:
+        Lo.close(closeable=doc, deliver_ownership=False)
+# endregion insert/remove/clear rows, columns, cells
 
 # region    set/get values in cells
 def test_set_val(loader) -> None:

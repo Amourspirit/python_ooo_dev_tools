@@ -3,7 +3,7 @@
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 # region Imports
 from __future__ import annotations
-from enum import IntFlag, Enum
+from enum import IntFlag, Enum, Flag
 import numbers
 import re
 from typing import Any, List, Tuple, cast, overload, Sequence, TYPE_CHECKING
@@ -15,6 +15,7 @@ from com.sun.star.container import XNamed
 from com.sun.star.frame import XModel
 from com.sun.star.lang import XComponent
 from com.sun.star.lang import Locale
+from com.sun.star.sheet import CellFlags as UnoCellFlags # const
 from com.sun.star.sheet.GeneralFunction import (
     NONE as GF_NONE,
     AUTO as GF_AUTO,
@@ -144,32 +145,101 @@ class Calc:
         
         def __str__(self) -> str:
             return self.value
+    
+    class CellFlags(IntFlag):
+        """
+        Enum of Flags for CellFlags constants.
+        
+        See Also:
+            `LibreOffice API CellFlags <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1sheet_1_1CellFlags.html>`_
+        """
+        VALUE = UnoCellFlags.VALUE
+        """Selects constant numeric values that are not formatted as dates or times."""
+        DATETIME = UnoCellFlags.DATETIME
+        """Selects constant numeric values that have a date or time number format."""
+        STRING = UnoCellFlags.STRING
+        """Selects constant strings."""
+        ANNOTATION = UnoCellFlags.ANNOTATION
+        """Selects cell annotations."""
+        FORMULA = UnoCellFlags.FORMULA
+        """Selects formulas."""
+        HARDATTR = UnoCellFlags.HARDATTR
+        """Selects all explicit formatting, but not the formatting which is applied implicitly through style sheets."""
+        STYLES = UnoCellFlags.STYLES
+        """Selects cell styles."""
+        OBJECTS = UnoCellFlags.OBJECTS
+        """Selects drawing objects."""
+        EDITATTR = UnoCellFlags.EDITATTR
+        """Selects formatting within parts of the cell contents."""
+        FORMATTED = UnoCellFlags.FORMATTED
+        """Selects cells with formatting within the cells or cells with more than one paragraph within the cells."""
 
     class GeneralFunction:
+        """
+        Used to specify a function to be calculated from values. 
+        
+        See Also:
+            `LibreOffice API GeneralFunction <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1sheet.html#ad184d5bd9055f3b4fd57ce72c781758d>`_
+        """
         __typename__ = "com.sun.star.sheet.GeneralFunction"
         NONE = GF_NONE
+        """
+        No cells are moved. Sheet is not linked. New values are used without changes.
+        Nothing is calculated. Nothing is imported. No condition is specified.
+        """
         AUTO = GF_AUTO
+        """Specifies the use of a user-defined list. Function is determined automatically."""
         SUM = GF_SUM
+        """Sum of all numerical values is calculated."""
         COUNT = GF_COUNT
+        """all values, including non-numerical values, are counted."""
         AVERAGE = GF_AVERAGE
+        """Average of all numerical values is calculated."""
         MAX = GF_MAX
+        """Maximum value of all numerical values is calculated."""
         MIN = GF_MIN
+        """Minimum value of all numerical values is calculated."""
         PRODUCT = GF_PRODUCT
+        """Product of all numerical values is calculated."""
         COUNTNUMS = GF_COUNTNUMS
+        """Numerical values are counted."""
         STDEV = GF_STDEV
+        """Standard deviation is calculated based on a sample."""
         STDEVP = GF_STDEVP
+        """Standard deviation is calculated based on the entire population."""
         VAR = GF_VAR
+        """Variance is calculated based on a sample."""
         VARP = GF_VARP
+        """Variance is calculated based on the entire population."""
 
     setattr(GeneralFunction, "__new__", enum_helper.uno_enum_class_new)
 
     class SolverConstraintOperator:
+        """
+        Is used to specify the type of SolverConstraint. 
+        
+        See Also:
+            `LibreOfice API SolverConstraintOperator <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1sheet.html#a491ab8ed5b7b5809e7be869d26b071cf>`_
+        """
         __typename__ = "com.sun.star.sheet.SolverConstraintOperator"
         LESS_EQUAL = SCO_LESS_EQUAL
+        """
+        The value has to be less than or equal to the specified value.
+        The cell value is less or equal to the specified value.
+        Value has to be less than or equal to the specified value.
+        """
         EQUAL = SCO_EQUAL
+        """Value has to be equal to the specified value. The cell value is equal to the specified value."""
         GREATER_EQUAL = SCO_GREATER_EQUAL
+        """
+        The value has to be greater than or equal to the specified value.
+        The cell value is greater or equal to the specified value.
+        Value has to be greater than or equal to the specified value.
+        """
         INTEGER = SCO_INTEGER
+        """The cell value is an integer value."""
         BINARY = SCO_BINARY
+        """The cell value is a binary value (0 or 1)."""
 
     setattr(SolverConstraintOperator, "__new__", enum_helper.uno_enum_class_new)
 
@@ -1177,6 +1247,152 @@ class Calc:
             mover.removeRange(addr, DM_LEFT)
         else:
             mover.removeRange(addr, DM_UP)
+
+    # region    clear_cells()
+    @overload
+    @classmethod
+    def clear_cells(cls, sheet: XSpreadsheet, cell_range: XCellRange) -> None:
+        """
+        Clears the contents of the cell range for cell types ``VALUE``, ``DATETIME`` and ``STRING``
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            cell_range (XCellRange): Cell range
+        """
+        ...
+    @overload
+    @classmethod
+    def clear_cells(cls, sheet: XSpreadsheet, cell_range: XCellRange, cell_flags: Calc.CellFlags) -> None:
+        """
+        Clears the specified contents of the cell range
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            cell_range (XCellRange): Cell range
+            cell_flags (Calc.CellFlags): Flags that determine what to clear
+        """
+        ...
+
+    @overload
+    @classmethod
+    def clear_cells(cls, sheet: XSpreadsheet, range_name: str) -> None:
+        """
+        Clears the contents of the cell range for cell types ``VALUE``, ``DATETIME`` and ``STRING``
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            range_name (str): Range name such as 'A1:G3'
+        """
+        ...
+    @overload
+    @classmethod
+    def clear_cells(cls, sheet: XSpreadsheet, range_name: str, cell_flags: Calc.CellFlags) -> None:
+        """
+        Clears the specified contents of the cell range
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            range_name (str): Range name such as 'A1:G3'
+            cell_flags (Calc.CellFlags): Flags that determine what to clear
+        """
+        ...
+
+    @overload
+    @classmethod
+    def clear_cells(cls, sheet: XSpreadsheet, cr_addr: CellRangeAddress) -> None:
+        """
+        Clears the contents of the cell range for cell types ``VALUE``, ``DATETIME`` and ``STRING``
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            cr_addr (CellRangeAddress): Cell Range Address
+        """
+        ...
+    @overload
+    @classmethod
+    def clear_cells(cls, sheet: XSpreadsheet, cr_addr: CellRangeAddress, cell_flags: Calc.CellFlags) -> None:
+        """
+        Clears the specified contents of the cell range
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            cr_addr (CellRangeAddress): Cell Range Address
+            cell_flags (Calc.CellFlags): Flags that determine what to clear
+        """
+        ...
+
+    @classmethod
+    def clear_cells(cls, *args, **kwargs) -> None:
+        """
+        Clears the specified contents of the cell range
+        
+        If cell_flags is not specified then
+        cell range of types ``VALUE``, ``DATETIME`` and ``STRING`` are cleared
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            cell_range (XCellRange): Cell range
+            range_name (str): Range name such as 'A1:G3'
+            cr_addr (CellRangeAddress): Cell Range Address
+            cell_flags (Calc.CellFlags): Flags that determine what to clear
+
+        Raises:
+            MissingInterfaceError: If XSheetOperation interface cannot be obtained.
+
+        See Also:
+            :py:class:`Calc.CellFlags`
+        """
+        ordered_keys = (1, 2, 3)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
+
+        def get_kwargs() -> dict:
+            ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ('sheet','cell_range', 'range_name', 'cr_addr', 'cell_flags')
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("clear_cells() got an unexpected keyword argument")
+            ka[1] = kwargs.get("sheet", None)
+            keys = ("cell_range", "range_name", "cr_addr")
+            for key in keys:
+                if key in kwargs:
+                    ka[2] = kwargs[key]
+                    break
+            if count == 2:
+                return ka
+            ka[3] = kwargs.get("cell_flags", None)
+            return ka
+
+        if not count in (2, 3):
+            raise TypeError("clear_cells() got an invalid numer of arguments")
+
+        kargs = get_kwargs()
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
+        
+        if count == 2:
+            flags = Calc.CellFlags.VALUE | Calc.CellFlags.DATETIME | Calc.CellFlags.STRING
+        else:
+            if isinstance(kargs[3], int):
+                flags = Calc.CellFlags(kargs[3])
+            else:
+                flags = cast(Calc.CellFlags, kargs[3])
+        rng_value = kargs[2]
+        if isinstance(rng_value, str):
+            rng = Calc.get_cell_range(sheet=kargs[1], range_name=rng_value)
+        elif mInfo.Info.is_type_interface(rng_value, XCellRange.__pyunointerface__):
+            rng = rng_value
+        else:
+            rng = Calc.get_cell_range(sheet=kargs[1], cr_addr=rng_value)
+    
+        sheet_op = mLo.Lo.qi(XSheetOperation, rng)
+        if sheet_op is None:
+            raise mEx.MissingInterfaceError(XSheetOperation)
+        sheet_op.clearContents(flags.value)
+    
+    # endregion clear_cells()
 
     # endregion ------------ insert/remove rows, columns, cells -----
 
@@ -5109,6 +5325,8 @@ class Calc:
         """
         try:
             sheet_op = mLo.Lo.qi(XSheetOperation, cell_range)
+            if sheet_op is None:
+                raise mEx.MissingInterfaceError(XSheetOperation)
             func = cls.GeneralFunction(fn)  # convert to enum value if str
             if not mInfo.Info.is_type_enum(func, cls.GeneralFunction.__typename__):
                 print("Arg fn is invalid, returning 0.0")
