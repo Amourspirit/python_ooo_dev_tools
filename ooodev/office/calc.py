@@ -4353,12 +4353,23 @@ class Calc:
         border_vals: int | BorderEnum,
     ) -> None:
         line = BorderLine2()  # create the border line
+        border = cast(TableBorder2, mProps.Props.get_property(prop_set=cell_range, name="TableBorder2"))
+        inner_line = cast(BorderLine2, mProps.Props.get_property(prop_set=cell_range, name="TopBorder2"))
+        
         line.Color = color
         line.InnerLineWidth = 0
         line.LineDistance = 0
         line.OuterLineWidth = 100
+        
+        # inner_line = BorderLine2()  # create the border line
+        # inner_line.Color = 0
+        # inner_line.LineWidth = 0
+        # inner_line.InnerLineWidth = 0
+        # inner_line.LineDistance = 0
+        # inner_line.LineStyle = 0
+        # inner_line.OuterLineWidth = 0
         bvs = cls.BorderEnum(int(border_vals))
-        border = TableBorder2()
+        # border = TableBorder2()
 
         if (bvs & cls.BorderEnum.TOP_BORDER) == cls.BorderEnum.TOP_BORDER:
             border.TopLine = line
@@ -4375,13 +4386,18 @@ class Calc:
         if (bvs & cls.BorderEnum.RIGHT_BORDER) == cls.BorderEnum.RIGHT_BORDER:
             border.RightLine = line
             border.IsRightLineValid = True
+        mProps.Props.set_property(prop_set=cell_range, name="TopBorder2", value=inner_line)
+        mProps.Props.set_property(prop_set=cell_range, name="RightBorder2", value=inner_line)
+        mProps.Props.set_property(prop_set=cell_range, name="BottomBorder2", value=inner_line)
+        mProps.Props.set_property(prop_set=cell_range, name="LeftBorder2", value=inner_line)
         mProps.Props.set_property(prop_set=cell_range, name="TableBorder2", value=border)
+
 
     @overload
     @classmethod
     def add_border(cls, sheet: XSpreadsheet, cell_range: XCellRange) -> XCellRange:
         """
-        Adds borders to cell range
+        Adds borders to a cell range
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
@@ -4396,7 +4412,7 @@ class Calc:
     @classmethod
     def add_border(cls, sheet: XSpreadsheet, range_name: str) -> XCellRange:
         """
-        Adds borders to cell range
+        Adds borders to a cell range
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
@@ -4411,7 +4427,7 @@ class Calc:
     @classmethod
     def add_border(cls, sheet: XSpreadsheet, cell_range: XCellRange, color: int) -> XCellRange:
         """
-        Adds borders to cell range
+        Adds borders to a cell range
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
@@ -4427,46 +4443,12 @@ class Calc:
     @classmethod
     def add_border(cls, sheet: XSpreadsheet, range_name: str, color: int) -> XCellRange:
         """
-        Adds borders to cell range
+        Adds borders to a cell range
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
             range_name (str): Range Name such as 'A1:F9'
             color (int): RGB color as integer
-
-        Returns:
-            XCellRange: Range borders that are affected
-        """
-        ...
-
-    @overload
-    @classmethod
-    def add_border(cls, sheet: XSpreadsheet, cell_range: XCellRange, color: int, border_vals: int) -> XCellRange:
-        """
-        Adds borders to cell range
-
-        Args:
-            sheet (XSpreadsheet): Spreadsheet
-            cell_range (XCellRange): Cell range
-            color (int): RGB color as integer
-            border_vals (int): Determines what borders are applied.
-
-        Returns:
-            XCellRange: Range borders that are affected
-        """
-        ...
-
-    @overload
-    @classmethod
-    def add_border(cls, sheet: XSpreadsheet, range_name: str, color: int, border_vals: int) -> XCellRange:
-        """
-        Adds borders to cell range
-
-        Args:
-            sheet (XSpreadsheet): Spreadsheet
-            range_name (str): Range Name such as 'A1:F9'
-            color (int):  RGB color as integer
-            border_vals (int): Determines what borders are applied.
 
         Returns:
             XCellRange: Range borders that are affected
@@ -4477,7 +4459,7 @@ class Calc:
     @classmethod
     def add_border(cls, sheet: XSpreadsheet, cell_range: XCellRange, color: int, border_vals: BorderEnum) -> XCellRange:
         """
-        Adds borders to cell range
+        Adds borders to a cell range
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
@@ -4494,7 +4476,7 @@ class Calc:
     @classmethod
     def add_border(cls, sheet: XSpreadsheet, range_name: str, color: int, border_vals: BorderEnum) -> XCellRange:
         """
-        Adds borders to cell range
+        Adds borders to a cell range
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
@@ -4510,14 +4492,14 @@ class Calc:
     @classmethod
     def add_border(cls, *args, **kwargs) -> XCellRange:
         """
-        Adds borders to cell range
+        Adds borders to a cell range
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
             cell_range (XCellRange): Cell range
             range_name (str): Range Name such as 'A1:F9'
             color (int): RGB color as integer
-            border_vals (int | BorderEnum): Determines what borders are applied.
+            border_vals (BorderEnum): Determines what borders are applied.
 
         Returns:
             XCellRange: Range borders that are affected
@@ -4579,7 +4561,192 @@ class Calc:
         return cell_range
 
     # endregion add_border()
-    
+
+    # region    remove_border()
+    @classmethod
+    def _remove_border_sht_rng(cls, cell_range: XCellRange) -> None:
+        vals = (
+            cls.BorderEnum.LEFT_BORDER
+            | cls.BorderEnum.RIGHT_BORDER
+            | cls.BorderEnum.TOP_BORDER
+            | cls.BorderEnum.BOTTOM_BORDER
+        )
+        cls._remove_border_sht_rng_vals(cell_range=cell_range, border_vals=vals)
+
+    @classmethod
+    def _remove_border_sht_rng_vals(
+        cls,
+        cell_range: XCellRange,
+        border_vals: BorderEnum,
+    ) -> None:
+        
+        line = BorderLine2()  # create the border line
+        border = cast(TableBorder2, mProps.Props.get_property(prop_set=cell_range, name="TableBorder2"))
+        line = cast(BorderLine2, mProps.Props.get_property(prop_set=cell_range, name="TopBorder2"))
+        inner_line = cast(BorderLine2, mProps.Props.get_property(prop_set=cell_range, name="TopBorder2"))
+        line.Color = 0
+        line.LineWidth = 0
+        line.InnerLineWidth = 0
+        line.LineDistance = 0
+        line.LineStyle = 0
+        line.OuterLineWidth = 0
+
+        bvs = cls.BorderEnum(int(border_vals))
+        # border = TableBorder2()
+
+        if (bvs & cls.BorderEnum.TOP_BORDER) == cls.BorderEnum.TOP_BORDER:
+            border.TopLine = line
+            border.IsTopLineValid = False
+
+        if (bvs & cls.BorderEnum.BOTTOM_BORDER) == cls.BorderEnum.BOTTOM_BORDER:
+            border.BottomLine = line
+            border.IsBottomLineValid = False
+
+        if (bvs & cls.BorderEnum.LEFT_BORDER) == cls.BorderEnum.LEFT_BORDER:
+            border.LeftLine = line
+            border.IsLeftLineValid = False
+
+        if (bvs & cls.BorderEnum.RIGHT_BORDER) == cls.BorderEnum.RIGHT_BORDER:
+            border.RightLine = line
+            border.IsRightLineValid = False
+
+        mProps.Props.set_property(prop_set=cell_range, name="TableBorder2", value=border)
+        mProps.Props.set_property(prop_set=cell_range, name="TopBorder2", value=inner_line)
+        mProps.Props.set_property(prop_set=cell_range, name="RightBorder2", value=inner_line)
+        mProps.Props.set_property(prop_set=cell_range, name="BottomBorder2", value=inner_line)
+        mProps.Props.set_property(prop_set=cell_range, name="LeftBorder2", value=inner_line)
+
+
+    @overload
+    @classmethod
+    def remove_border(cls, sheet: XSpreadsheet, cell_range: XCellRange) -> XCellRange:
+        """
+        Removes borders of a cell range
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            cell_range (XCellRange): Cell range
+
+        Returns:
+            XCellRange: Range borders that are affected
+        """
+        ...
+
+    @overload
+    @classmethod
+    def remove_border(cls, sheet: XSpreadsheet, range_name: str) -> XCellRange:
+        """
+        Removes borders of a cell range
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            range_name (str): Range Name such as 'A1:F9'
+
+        Returns:
+            XCellRange: Range borders that are affected
+        """
+        ...
+
+
+    @overload
+    @classmethod
+    def remove_border(cls, sheet: XSpreadsheet, cell_range: XCellRange, border_vals: BorderEnum) -> XCellRange:
+        """
+        Removes borders of a cell range
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            cell_range (XCellRange): Cell range
+            color (int): RGB color as integer
+            border_vals (BorderEnum): Determines what borders are applied.
+
+        Returns:
+            XCellRange: Range borders that are affected
+        """
+        ...
+
+    @overload
+    @classmethod
+    def remove_border(cls, sheet: XSpreadsheet, range_name: str, border_vals: BorderEnum) -> XCellRange:
+        """
+        Removes borders of a cell range
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            range_name (str): Range Name such as 'A1:F9'
+            color (int):  RGB color as integer
+            border_vals (BorderEnum): Determines what borders are applied.
+
+        Returns:
+            XCellRange: Range borders that are affected
+        """
+        ...
+
+    @classmethod
+    def remove_border(cls, *args, **kwargs) -> XCellRange:
+        """
+        Removes borders of a cell range
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            cell_range (XCellRange): Cell range
+            range_name (str): Range Name such as 'A1:F9'
+            color (int): RGB color as integer
+            border_vals (BorderEnum): Determines what borders are applied.
+
+        Returns:
+            XCellRange: Range borders that are affected
+        """
+        ordered_keys = (1, 2, 3)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
+
+        def get_kwargs() -> dict:
+            ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ('sheet', 'range_name', 'cell_range', 'border_vals')
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("remove_border() got an unexpected keyword argument")
+            ka[1] = kwargs.get("sheet", None)
+            keys = ("range_name", "cell_range")
+            for key in keys:
+                if key in kwargs:
+                    ka[2] = kwargs[key]
+                    break
+            if count == 2:
+                return ka
+            ka[3] = kwargs.get("border_vals", None)
+            return ka
+
+        if not count in (2, 3):
+            raise TypeError("remove_border() got an invalid numer of arguments")
+
+        kargs = get_kwargs()
+
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
+
+        sheet = cast(XSpreadsheet, kargs[1])
+        if isinstance(kargs[2], str):
+            cell_range = sheet.getCellRangeByName(kargs[2])
+        else:
+            cell_range = kargs[2]
+
+        if count == 2:
+            # remove_border(cls, sheet: XSpreadsheet, cell_range: XCellRange)
+            # remove_border(cls, sheet: XSpreadsheet, range_name: str)
+            cls._remove_border_sht_rng(cell_range=cell_range)
+        else:
+            # remove_border(cls, sheet: XSpreadsheet, cell_range: XCellRange, border_vals: BorderEnum)
+            # remove_border(cls, sheet: XSpreadsheet, range_name: str, border_vals: BorderEnum)
+            cls._remove_border_sht_rng_vals(cell_range=cell_range,  border_vals=kargs[3])
+        
+        return cell_range
+
+    # endregion remove_border()
+
     # region    highlight_range()
     @overload
     @classmethod
@@ -4600,6 +4767,25 @@ class Calc:
     
     @overload
     @classmethod
+    def highlight_range(cls, sheet: XSpreadsheet,  headline: str, cell_range: XCellRange, color: int) ->  XCell:
+        """
+        Draw a colored border around the range and write a headline in the
+        top-left cell of the range.
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            headline (str): Headline
+            cell_range (XCellRange): Cell Range
+            color (int): RGB color as int
+
+        Returns:
+            XCell: First cell of range that headline ia applied on
+        """
+        ...
+    
+    
+    @overload
+    @classmethod
     def highlight_range(cls, sheet: XSpreadsheet,  headline: str, range_name: str) ->  XCell:
         """
         Draw a colored border around the range and write a headline in the
@@ -4609,6 +4795,24 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet
             headline (str): Headline
             range_name (str): Range Name such as 'A1:F9'
+
+        Returns:
+            XCell: First cell of range that headline ia applied on
+        """
+        ...
+    
+    @overload
+    @classmethod
+    def highlight_range(cls, sheet: XSpreadsheet,  headline: str, range_name: str, color:int) ->  XCell:
+        """
+        Draw a colored border around the range and write a headline in the
+        top-left cell of the range.
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            headline (str): Headline
+            range_name (str): Range Name such as 'A1:F9'
+            color (int): RGB color as int
 
         Returns:
             XCell: First cell of range that headline ia applied on
@@ -4630,7 +4834,7 @@ class Calc:
         Returns:
             XCell: First cell of range that headline ia applied on
         """
-        ordered_keys = (1, 2, 3)
+        ordered_keys = (1, 2, 3, 4)
         kargs_len = len(kwargs)
         count = len(args) + kargs_len
 
@@ -4638,7 +4842,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('sheet', 'headline', 'range_name', 'cell_range')
+            valid_keys = ('sheet', 'headline', 'range_name', 'cell_range', 'color')
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("highlight_range() got an unexpected keyword argument")
@@ -4649,9 +4853,12 @@ class Calc:
                 if key in kwargs:
                     ka[3] = kwargs[key]
                     break
+            if count == 3:
+                return ka
+            ka[4] = kwargs.get("color", None)
             return ka
 
-        if count != 3:
+        if not count in (3, 4):
             raise TypeError("highlight_range() got an invalid numer of arguments")
 
         kargs = get_kwargs()
@@ -4665,7 +4872,11 @@ class Calc:
         else:
             cell_range = kargs[3]
 
-        cls._add_border_sht_rng_color(cell_range=cell_range, color=CommonColor.LIGHT_BLUE)
+        if count == 3:
+            color = CommonColor.LIGHT_BLUE
+        else:
+            color = cast(int, kargs[4])
+        cls._add_border_sht_rng_color(cell_range=cell_range, color=color)
 
         # color the headline
         addr = cls._get_address_cell(cell_range=cell_range)

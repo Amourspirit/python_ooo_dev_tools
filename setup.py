@@ -26,7 +26,7 @@ setup(
         'Pillow>=9.1.1',
         'lxml>=4.8.0'
     ],
-    keywords=['libreoffice', 'openoffice' 'macro', 'uno', 'ooouno', 'pyuno'],
+    keywords=['odev', 'libreoffice', 'openoffice' 'macro', 'uno', 'ooouno', 'pyuno'],
     classifiers=[
         "License :: OSI Approved :: Apache Software License",
         "Environment :: Other Environment",
