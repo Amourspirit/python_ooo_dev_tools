@@ -121,3 +121,12 @@ class MultiError(Exception):
 
     def __str__(self) -> str:
         return "\n".join([str(x) for x in self.errors])
+
+class NotSupportedMacroModeError(Exception):
+    """
+    Handles errors of operations that are not allow when running as a macro.
+    
+    This error is largly used for methos that require external imports
+    such as XML.apply_xslt()
+    """
+    pass

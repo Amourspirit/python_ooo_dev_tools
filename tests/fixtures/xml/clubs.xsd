@@ -1,0 +1,116 @@
+
+
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="name" type="xs:string"/>
+  <xs:element name="contact" type="xs:string"/>
+  <xs:element name="location" type="xs:string"/>
+  <xs:element name="phone" type="xs:string"/>
+  <xs:element name="email" type="xs:string"/>
+  <xs:element name="age-groups">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:string">
+          <xs:attribute type="xs:string" name="type" use="optional"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="info">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+        <xs:element ref="a" maxOccurs="unbounded" minOccurs="0"/>
+        <xs:element ref="em" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="a">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:string">
+          <xs:attribute type="xs:string" name="href" use="optional"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="club">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="name"/>
+        <xs:element ref="contact"/>
+        <xs:element ref="location"/>
+        <xs:element ref="phone"/>
+        <xs:element ref="email" maxOccurs="unbounded" minOccurs="0"/>
+        <xs:element ref="age-groups"/>
+        <xs:element ref="info">
+          <xs:annotation>
+            <xs:documentation><![CDATA[<a href="http://example.com/galtbarbarians">http://example.com/galtbarbarians</a> <a href="http://example.com/cswasj2003">http://example.com/cswasj2003</a> Check out web site for additional information. <a href="http://www.sjsuwrestling.com/">www.sjsuwrestling.com</a> Folkstyle practices start in November. Freestyle and Greco start in February. Practices are Tuesdays and Thursdays, 6:00-7:30 p.m.  Cost is $75 plus USA Wrestling Card.  Price includes club t-shirt.]]></xs:documentation>
+          </xs:annotation>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute type="xs:string" name="id" use="optional"/>
+      <xs:attribute type="xs:short" name="charter" use="optional"/>
+      <xs:attribute type="xs:string" name="also" use="optional"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="em" type="xs:string"/>
+  <xs:element name="association">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="club" maxOccurs="unbounded" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation><![CDATA[<club id="E12" charter="2003">
+	<name>Bronco Wrestling Club</name>
+	<contact>Mike Lee</contact>
+	<location>Fair Oaks</location>
+	<phone>916-555-1050 (work)</phone>
+	<email>mlee@example.com</email>
+	<age-groups type="KCJOW"/>
+	<info>Our club caters to ages 5-adult. We have three sections of our club: advanced kids, beginning kids, and high school &amp; open.</info>
+</club>
+
+<club id="E36" charter="2002">
+	<name>Eagle Wrestling</name>
+	<contact>Chad Gulden</contact>
+	<location>Sacramento</location>
+	<phone>916-555-8420</phone>
+	<age-groups type="K"/>
+	<info> (Formerly Sacramento Gladiators) </info>
+</club>
+
+	<info>The San Diego Mighty Mites program was started by Dale Siscon in 1973. The Mighty Mites program has been training champions on all levels for thirty years. The coaches are ex-Mighty Mite wrestlers and dads, who are copper and bronze certified. Our program has over 100 kids a season.  We teach freestyle, Greco-Roman, and folkstyle.  The season runs from November to March. We travel to all state, regional, and national tournaments.  Practice is Tuesday and Thursday 6-8 P.M. at Mount Miguel H.S., 8585 Blossom Lane, Spring Valley, CA 91977; and Bonita Vista H.S., 751 Otay Lake Rd, Chula Vista, CA 91913.  Registration cinludes club shirt, shorts, blood rag, six months wrestling, and two practices a week.</info>
+	
+<club id="B13" charter="2002">
+	<name>Bear Creek Wrestling Club</name>
+	<contact>Marc Kellam</contact>
+	<location>Stockton</location>
+	<phone>209-555-5920 (home)</phone>
+	<email>marcs_56@example.com</email>
+	<age-groups type="KCJW"/>
+	<info>Practice Monday and Thursdays 6-8 PM at Bear Creek High School. Cost is $15.00 for club fee; participants must have a USA membership card.</info>
+</club>]]></xs:documentation>
+          </xs:annotation>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute type="xs:string" name="id" use="optional"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="club-database">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="association" maxOccurs="unbounded" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation><![CDATA[<club id="R30" charter="2002">
+	<name>Wolf Den</name>
+	<contact>Brian Sosnovsky</contact>
+	<location>Pomona/Claremont</location>
+	<phone>909-555-7321 (h)</phone>
+	<age-groups type="KCJOW"/>
+	<info>Meets in Claremont High School wrestling room. Practices 6:00 p.m. - 8:00 p.m. Tuesday and Thursday evenings.</info>
+</club>]]></xs:documentation>
+          </xs:annotation>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
+

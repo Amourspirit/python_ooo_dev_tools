@@ -48,10 +48,10 @@ if TYPE_CHECKING:
 
 from ..exceptions import ex as mEx
 from ..utils import lo as mLo
-from ..utils import images as mImages
 from ..utils import props as mProps
 from ..utils import info as mInfo
 from ..utils import sys_info as m_sys_info
+from ..utils import file_io as mFileIO
 
 # endregion Imports
 
@@ -194,6 +194,18 @@ class GUI:
             im_fnm (str): image file path
 
         """
+        from com.sun.star.graphic import XGraphicProvider
+        def load_graphic_file(im_fnm: str):
+            # this method is also in Images module.
+            # images module currently does not run as macro.
+            # Pillow not needed for this method so make it local
+            gprovider = mLo.Lo.create_instance_mcf(XGraphicProvider, "com.sun.star.graphic.GraphicProvider")
+            if gprovider is None:
+                return None
+
+            file_props = mProps.Props.make_props(URL=mFileIO.FileIO.fnm_to_url(im_fnm))
+            return gprovider.queryGraphic(file_props)
+
         try:
             cmd = mLo.Lo.make_uno_cmd(item_name)
             conf_man: XUIConfigurationManager = cls.get_ui_config_manager_doc(doc)
@@ -201,7 +213,7 @@ class GUI:
             if image_man is None:
                 raise mEx.MissingInterfaceError(XImageManager)
             cmds = (cmd,)
-            img = mImages.Images.load_graphic_file(im_fnm)
+            img = load_graphic_file(im_fnm)
             if img is None:
                 print(f"Unable to load graphics file: '{im_fnm}'")
                 return

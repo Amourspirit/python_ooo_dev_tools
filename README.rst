@@ -81,7 +81,6 @@ Include modules that have not yet been fully tested:
     - Images (Various methods for working with Images)
     - Lo (Various methods common to LO applications)
     - Props (Various methods for working with the many API properties)
-    - XML (Various methods for working with LO xml data)
 
 
 Release Info
