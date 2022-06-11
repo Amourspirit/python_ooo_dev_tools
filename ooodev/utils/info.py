@@ -237,6 +237,7 @@ class Info:
             raise Exception("get_reg_item_prop() requires lxml python package") from e
 
         try:
+            _xml_parser = XML_ETREE.XMLParser(remove_blank_text=True)
             fnm = cls.get_reg_mods_path()
             tree: XML_ETREE._ElementTree = XML_ETREE.parse(fnm, parser=_xml_parser)
 
