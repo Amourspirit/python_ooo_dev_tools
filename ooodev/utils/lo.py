@@ -1881,11 +1881,21 @@ class Lo(metaclass=StaticProperty):
         in Basic the component owning the currently run user script.
         Above behaviour cannot be reproduced in Python.
         
+        When running in a macro this property can be access directly to get the current document.
+        
+        When not in a macro then load_office() must be called first
+        
         Returns:
             the current component or None when not a document
         """
         if cls.star_desktop is None:
-            return None
+            # attempt to connect direct
+            cls.load_office(direct=True)
+        if cls.star_desktop is None:
+            if cls.is_macro_mode:
+                raise Exception("Something went wrong. did try load_office() first?")
+            else:
+                raise Exception("this_component on not available until load_office() is run when not running in a macro.")
         comp = cls.star_desktop.getCurrentComponent()
         if comp is None:
             return None
