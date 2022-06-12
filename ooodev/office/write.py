@@ -8,12 +8,13 @@ import uno
 import re
 
 from ..exceptions import ex as mEx
-from ..utils.gen_util import TableHelper
 from ..utils import lo as mLo
 from ..utils import info as mInfo
 from ..utils import file_io as mFileIO
 from ..utils import props as mProps
+from ..utils.gen_util import TableHelper
 from ..utils.color import CommonColor
+from ..utils.uno_enum import UnoEnum
 
 from com.sun.star.awt import FontWeight
 from com.sun.star.awt.FontSlant import ITALIC as FS_ITALIC # enum values
@@ -30,7 +31,7 @@ from com.sun.star.linguistic2 import XLanguageGuessing
 from com.sun.star.linguistic2 import XLinguProperties
 from com.sun.star.linguistic2 import XLinguServiceManager
 from com.sun.star.linguistic2 import XProofreader
-from com.sun.star.linguistic2.DictionaryType import POSITIVE as DT_POSITIVE, NEGATIVE as DT_NEGATIVE, MIXED as DT_MIXED # enum values
+# from com.sun.star.linguistic2.DictionaryType import POSITIVE as DT_POSITIVE, NEGATIVE as DT_NEGATIVE, MIXED as DT_MIXED # enum values
 from com.sun.star.style import NumberingType # const
 from com.sun.star.style.BreakType import PAGE_AFTER as BT_PAGE_AFTER, COLUMN_AFTER as BT_COLUMN_AFTER # enum values
 from com.sun.star.style.ParagraphAdjust import CENTER as PA_CENTER, RIGHT as PA_RIGHT # enum values
@@ -51,10 +52,6 @@ from com.sun.star.text import XTextFrame
 from com.sun.star.text import XTextTable
 from com.sun.star.text import XTextViewCursor
 from com.sun.star.text import XWordCursor
-from com.sun.star.text.PageNumberType import CURRENT as PN_CURRENT # enum values
-from com.sun.star.view.PaperFormat import A4 as PF_A4 # enum values
-from com.sun.star.text.TextContentAnchorType import AS_CHARACTER # enum value
-from com.sun.star.text.TextContentAnchorType import AT_PAGE # enum value
 from com.sun.star.uno import Exception as UnoException
 
 if TYPE_CHECKING:
@@ -67,19 +64,66 @@ if TYPE_CHECKING:
     from com.sun.star.graphic import XGraphic
     from com.sun.star.frame import XModel
     from com.sun.star.lang import XComponent
+    from com.sun.star.linguistic2 import DictionaryType as UnoDictionaryType # enum
     from com.sun.star.linguistic2 import SingleProofreadingError
     from com.sun.star.linguistic2 import XLinguServiceManager2
     from com.sun.star.linguistic2 import XSearchableDictionaryList
     from com.sun.star.linguistic2 import XSpellChecker
     from com.sun.star.linguistic2 import XThesaurus
+    from com.sun.star.text import PageNumberType as UnoPageNumberType # enum
+    from com.sun.star.text import TextContentAnchorType as UnoTextContentAnchorType
     from com.sun.star.text import XSimpleText
     from com.sun.star.text import XTextCursor
     from com.sun.star.text import XTextViewCursorSupplier
+    from com.sun.star.view import PaperFormat as UnoPaperFormat # enum
     from com.sun.star.view import XPrintable
 
 # endregion Imports
 
 class Write:
+    # region -------------- Enums --------------------------------------
+
+    PageNumberType = cast("UnoPageNumberType", UnoEnum("com.sun.star.text.PageNumberType"))
+    """
+    :py:class:`~.uno_enum.UnoEnum` Enum Values
+
+    Determines which page number is displayed in a page number text field. 
+
+    See Also:
+        `API PageNumberType <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1text.html#aeffd73e249af906f303724f66f1f01c5>`_
+    """
+    
+    DictionaryType = cast("UnoDictionaryType", UnoEnum("com.sun.star.linguistic2.DictionaryType"))
+    """
+    :py:class:`~.uno_enum.UnoEnum` Enum Values
+    
+    Describes the type of a personal dictionary. 
+
+    See Also:
+        `API DictionaryType <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1linguistic2.html#a281c5a7578308b66c77c9e0de51b806a>`_
+    """
+    
+    PaperFormat = cast("UnoPaperFormat", UnoEnum("com.sun.star.view.PaperFormat"))
+    """
+    :py:class:`~.uno_enum.UnoEnum` Enum Values
+    
+    Specifies the format (size) of the paper on a text document.
+
+    See Also:
+        `API PaperFormat <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1view.html#a12ab04987d08416f8347a9790c7abf3e>`_
+    """
+    
+    TextContentAnchorType = cast("UnoTextContentAnchorType", UnoEnum("com.sun.star.text.TextContentAnchorType"))
+    """
+    :py:class:`~.uno_enum.UnoEnum` Enum Values
+    
+    Specify how the text content is attached to its surrounding text. 
+
+    See Also:
+        `API TextContentAnchorType <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1text.html#a470b1caeda4ff15fee438c8ff9e3d834>`_
+    """
+    # endregion ----------- Enums --------------------------------------
+
     # region ------------- doc / open / close /create/ etc -------------
     @classmethod
     def open_doc(cls, fnm: str, loader: XComponentLoader) -> XTextDocument | None:
@@ -512,7 +556,7 @@ class Write:
     
     @staticmethod
     def set_a4_page_format(text_doc: XTextDocument | XPrintable) -> None:
-        printer_desc = mProps.Props.make_props(PaperFormat=PF_A4)
+        printer_desc = mProps.Props.make_props(PaperFormat=Write.PaperFormat.A4)
         
         # Paper Orientation           
         # java
@@ -558,7 +602,7 @@ class Write:
         """return arabic style number showing current page value"""
         num_field = mLo.Lo.create_instance_msf(XTextField, "com.sun.star.text.TextField.PageNumber")
         mProps.Props.set_property(prop_set=num_field, name="NumberingType", value=NumberingType.ARABIC)
-        mProps.Props.set_property(prop_set=num_field, name="SubType", value=PN_CURRENT)
+        mProps.Props.set_property(prop_set=num_field, name="SubType", value=Write.PageNumberType.CURRENT)
         return num_field
     
     @staticmethod
@@ -617,8 +661,8 @@ class Write:
                 return
             # set class ID for type of object being inserted
             props = cast(XPropertySet, embed_content)
-            props.setPropertyValue("CLSID", mLo.Lo.MATH_CLSID)
-            props.setPropertyValue("AnchorType", AS_CHARACTER)
+            props.setPropertyValue("CLSID", mLo.Lo.CLSID.MATH)
+            props.setPropertyValue("AnchorType", Write.TextContentAnchorType.AS_CHARACTER)
             
             # insert object in document
             cls._append3(cursor=cursor, text_content=embed_content)
@@ -691,7 +735,7 @@ class Write:
             frame_props = mLo.Lo.qi(XPropertySet, xframe)
             if frame_props is None:
                 return
-            frame_props.setPropertyValue("AnchorType", AT_PAGE)
+            frame_props.setPropertyValue("AnchorType", Write.TextContentAnchorType.AT_PAGE)
             frame_props.setPropertyValue("FrameIsAutomaticHeight", True) # will grow if necessary
             
             border = BorderLine()
@@ -831,7 +875,7 @@ class Write:
             if props is None:
                 print("Could not create a text graphic object")
                 return
-            props.setPropertyValue("AnchorType", AS_CHARACTER)
+            props.setPropertyValue("AnchorType", Write.TextContentAnchorType.AS_CHARACTER)
             props.setPropertyValue("GraphicURL", mFileIO.FileIO.fnm_to_url(fnm))
             
             # optionally set the width and height
@@ -1073,11 +1117,11 @@ class Write:
     
     @staticmethod
     def get_dict_type(dt:uno.Enum) -> str:
-        if dt == DT_POSITIVE:
+        if dt == Write.DictionaryType.POSITIVE:
             return "positive"
-        if dt == DT_NEGATIVE:
+        if dt == Write.DictionaryType.NEGATIVE:
             return "negative"
-        if dt == DT_MIXED:
+        if dt == Write.DictionaryType.MIXED:
             return "mixed"
         return "??"
     
