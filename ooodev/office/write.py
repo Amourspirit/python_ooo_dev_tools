@@ -17,7 +17,6 @@ from ..utils.color import CommonColor
 from ..utils.uno_enum import UnoEnum
 
 from com.sun.star.awt import FontWeight
-from com.sun.star.awt.FontSlant import ITALIC as FS_ITALIC # enum values
 from com.sun.star.awt import Size # struct
 from com.sun.star.beans import XPropertySet
 from com.sun.star.container import XEnumerationAccess
@@ -31,10 +30,7 @@ from com.sun.star.linguistic2 import XLanguageGuessing
 from com.sun.star.linguistic2 import XLinguProperties
 from com.sun.star.linguistic2 import XLinguServiceManager
 from com.sun.star.linguistic2 import XProofreader
-# from com.sun.star.linguistic2.DictionaryType import POSITIVE as DT_POSITIVE, NEGATIVE as DT_NEGATIVE, MIXED as DT_MIXED # enum values
 from com.sun.star.style import NumberingType # const
-from com.sun.star.style.BreakType import PAGE_AFTER as BT_PAGE_AFTER, COLUMN_AFTER as BT_COLUMN_AFTER # enum values
-from com.sun.star.style.ParagraphAdjust import CENTER as PA_CENTER, RIGHT as PA_RIGHT # enum values
 from com.sun.star.table import BorderLine # struct
 from com.sun.star.text import ControlCharacter
 from com.sun.star.text import HoriOrientation
@@ -55,6 +51,7 @@ from com.sun.star.text import XWordCursor
 from com.sun.star.uno import Exception as UnoException
 
 if TYPE_CHECKING:
+    from com.sun.star.awt import FontSlant as UnoFontSlant # enum
     from com.sun.star.container import XEnumeration
     from com.sun.star.container import XNameAccess
     from com.sun.star.container import XNamed
@@ -70,6 +67,8 @@ if TYPE_CHECKING:
     from com.sun.star.linguistic2 import XSearchableDictionaryList
     from com.sun.star.linguistic2 import XSpellChecker
     from com.sun.star.linguistic2 import XThesaurus
+    from com.sun.star.style import BreakType as UnoBreakType # enum
+    from com.sun.star.style import ParagraphAdjust as UnoParagraphAdjust # enum
     from com.sun.star.text import PageNumberType as UnoPageNumberType # enum
     from com.sun.star.text import TextContentAnchorType as UnoTextContentAnchorType
     from com.sun.star.text import XSimpleText
@@ -82,12 +81,41 @@ if TYPE_CHECKING:
 
 class Write:
     # region -------------- Enums --------------------------------------
+    BreakType = cast("UnoBreakType", UnoEnum("com.sun.star.style.BreakType"))
+    """
+    :py:class:`~.uno_enum.UnoEnum` Enum Values
+
+    Used to specify if and how a page or column break is applied. 
+
+    See Also:
+        `API BreakType <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1style.html#a3ae28cb49c180ec160a0984600b2b925>`_
+    """
+    
+    ParagraphAdjust = cast("UnoParagraphAdjust", UnoEnum("com.sun.star.style.ParagraphAdjust"))
+    """
+    :py:class:`~.uno_enum.UnoEnum` Enum Values
+
+    Used to describe the formatting of a text paragraph. 
+
+    See Also:
+        `API ParagraphAdjust <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1style.html#ab9b2806f97ec4c3b5d4e2d92084948f1>`_
+    """
+    
+    FontSlant = cast("UnoFontSlant", UnoEnum("com.sun.star.awt.FontSlant"))
+    """
+    :py:class:`~.uno_enum.UnoEnum` Enum Values
+
+    Used to specify the slant of a font.
+
+    See Also:
+        `API FontSlant <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1awt.html#a362a86d3ebca4a201d13bc3e7b94340e>`_
+    """
 
     PageNumberType = cast("UnoPageNumberType", UnoEnum("com.sun.star.text.PageNumberType"))
     """
     :py:class:`~.uno_enum.UnoEnum` Enum Values
 
-    Determines which page number is displayed in a page number text field. 
+    Determines which page number is displayed in a page number text field.
 
     See Also:
         `API PageNumberType <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1text.html#aeffd73e249af906f303724f66f1f01c5>`_
@@ -426,12 +454,12 @@ class Write:
     
     @classmethod
     def page_break(cls, cursor: XTextCursor) -> None:
-        mProps.Props.set_property(cursor, "BreakType", BT_PAGE_AFTER)
+        mProps.Props.set_property(cursor, "BreakType", Write.BreakType.PAGE_AFTER)
         cls.end_paragraph(cursor)
     
     @classmethod
     def column_break(cls, cursor: XTextCursor) -> None:
-        mProps.Props.set_property(cursor, "BreakType", BT_COLUMN_AFTER)
+        mProps.Props.set_property(cursor, "BreakType", Write.BreakType.COLUMN_AFTER)
         cls.end_paragraph(cursor)
     
     @classmethod
@@ -472,7 +500,7 @@ class Write:
     
     @classmethod
     def style_left_italic(cls, cursor: XTextCursor, pos: int) -> None:
-        cls.style_left(cursor, pos, "CharPosture", FS_ITALIC)
+        cls.style_left(cursor, pos, "CharPosture", Write.FontSlant.ITALIC)
     
     @classmethod
     def style_left_color(cls, cursor: XTextCursor, pos: int, color: int) -> None:
@@ -588,7 +616,7 @@ class Write:
             
             mProps.Props.set_property(prop_set=footer_cursor, name="CharFontName", value=mInfo.Info.get_font_general_name())
             mProps.Props.set_property(prop_set=footer_cursor, name="CharHeight", value=12.0)
-            mProps.Props.set_property(prop_set=footer_cursor, name="ParaAdjust", value=PA_CENTER)
+            mProps.Props.set_property(prop_set=footer_cursor, name="ParaAdjust", value=Write.ParagraphAdjust.CENTER)
         
             # add text fields to the footer
             cls._append3(cursor=footer_cursor,text_content=cls.get_page_number())
@@ -634,7 +662,7 @@ class Write:
             header_props = mLo.Lo.qi(XPropertySet, header_cursor)
             header_props.setPropertyValue("CharFontName", mInfo.Info.get_font_general_name())
             header_props.setPropertyValue("CharHeight", 10)
-            header_props.setPropertyValue("ParaAdjust", PA_RIGHT)
+            header_props.setPropertyValue("ParaAdjust", Write.ParagraphAdjust.RIGHT)
             
             header_text.setString(f"{h_text}\n")
         except Exception as e:
@@ -956,7 +984,7 @@ class Write:
             cls.end_paragraph(cursor)
             
             # center the previous paragraph
-            cls.style_prev_paragraph(cursor=cursor, prop_val=PA_CENTER, prop_name="ParaAdjust")
+            cls.style_prev_paragraph(cursor=cursor, prop_val=Write.ParagraphAdjust.CENTER, prop_name="ParaAdjust")
             
             cls.end_paragraph(cursor)
         except Exception as e:
