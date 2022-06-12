@@ -154,23 +154,47 @@ class Write:
 
     # region ------------- doc / open / close /create/ etc -------------
     @classmethod
-    def open_doc(cls, fnm: str, loader: XComponentLoader) -> XTextDocument | None:
+    def open_doc(cls, fnm: str, loader: XComponentLoader) -> XTextDocument:
+        """
+        Opens a Text (Writer) document.
+
+        Args:
+            fnm (str): Spreadsheet file to open
+            loader (XComponentLoader): Component loader
+
+        Raises:
+            Exception: If Document is Null
+            Exception: If Not a Text Doucment
+            MissingInterfaceError: If unable to obtain XTextDocument interface
+
+        Returns:
+            XTextDocument: Text Document
+        """
         doc = mLo.Lo.open_doc(fnm=fnm, loader=loader)
         if doc is None:
-            print("Document is null")
-            return None
+            raise Exception("Document is null")
         if not cls.is_text(doc):
             print(f"Not a text document; closing '{fnm}'")
             mLo.Lo.close_doc(doc)
-            return None
+            raise Exception("Not a text document")
         text_doc = mLo.Lo.qi(XTextDocument, doc)
         if text_doc is None:
             print(f"Not a text document; closing '{fnm}'")
             mLo.Lo.close_doc(doc)
+            raise mEx.MissingInterfaceError(XTextDocument)
         return text_doc
     
     @staticmethod
     def is_text(doc: XComponent) -> bool:
+        """
+        Gets if doc is an actual Writer document
+
+        Args:
+            doc (XComponent): Document Component
+
+        Returns:
+            bool: True if doc is Writer Document; Otherwise, False
+        """
         return mInfo.Info.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.WRITER)
     
     @classmethod
@@ -184,17 +208,14 @@ class Write:
             doc (XComponent): Component to get writer document from
 
         Raises:
-            Exception: If not able to get docuemnt.
-            MissingInterfaceError: If doc does not have XTextDocument interface
+            TypeError: doc is None
+            MissingInterfaceError: If doc does not implement XTextDocument interface
 
         Returns:
             XTextDocument: Writer document
         """
         if doc is None:
-            raise Exception("Document is null")
-        if not cls.is_text(doc=doc):
-            mLo.Lo.close_doc(doc=doc)
-            raise Exception("Not a writer doc")
+            raise TypeError("Document is null")
 
         text_doc = mLo.Lo.qi(XTextDocument, doc)
         if text_doc is None:
@@ -203,10 +224,29 @@ class Write:
     
     @staticmethod
     def create_doc(loader: XComponentLoader) -> XTextDocument:
+        """
+        Creates a new Writer Text Document
+
+        Args:
+            loader (XComponentLoader): Component Loader
+
+        Returns:
+            XTextDocument: Text Document
+        """
         return mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.WRITER, loader=loader)
     
     @staticmethod
     def create_doc_from_template(template_path: str, loader: XComponentLoader) -> XTextDocument:
+        """
+        Create a new Writer Text Document from a template
+
+        Args:
+            template_path (str): _description_
+            loader (XComponentLoader): _description_
+
+        Returns:
+            XTextDocument: _description_
+        """
         return mLo.Lo.create_doc_from_template(template_path=template_path, loader=loader)
     
     @staticmethod
