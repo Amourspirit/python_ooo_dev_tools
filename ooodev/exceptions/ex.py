@@ -91,7 +91,6 @@ class GoalDivergenceError(Exception):
 
 class UnKnownError(Exception):
     """Error for unnown results"""
-
     pass
 
 

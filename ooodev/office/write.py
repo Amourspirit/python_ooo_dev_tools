@@ -15,6 +15,7 @@ from ..utils import props as mProps
 from ..utils.gen_util import TableHelper
 from ..utils.color import CommonColor
 from ..utils.uno_enum import UnoEnum
+from ..utils.type_var import PathOrStr
 
 from com.sun.star.awt import FontWeight
 from com.sun.star.awt import Size # struct
@@ -49,6 +50,7 @@ from com.sun.star.text import XTextTable
 from com.sun.star.text import XTextViewCursor
 from com.sun.star.text import XWordCursor
 from com.sun.star.uno import Exception as UnoException
+from com.sun.star.util import XCloseable
 
 if TYPE_CHECKING:
     from com.sun.star.awt import FontSlant as UnoFontSlant # enum
@@ -154,12 +156,12 @@ class Write:
 
     # region ------------- doc / open / close /create/ etc -------------
     @classmethod
-    def open_doc(cls, fnm: str, loader: XComponentLoader) -> XTextDocument:
+    def open_doc(cls, fnm: PathOrStr, loader: XComponentLoader) -> XTextDocument:
         """
         Opens a Text (Writer) document.
 
         Args:
-            fnm (str): Spreadsheet file to open
+            fnm (PathOrStr): Spreadsheet file to open
             loader (XComponentLoader): Component loader
 
         Raises:
@@ -236,29 +238,79 @@ class Write:
         return mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.WRITER, loader=loader)
     
     @staticmethod
-    def create_doc_from_template(template_path: str, loader: XComponentLoader) -> XTextDocument:
+    def create_doc_from_template(template_path: PathOrStr, loader: XComponentLoader) -> XTextDocument:
         """
         Create a new Writer Text Document from a template
 
         Args:
-            template_path (str): _description_
-            loader (XComponentLoader): _description_
+            template_path (PathOrStr): Path to Template
+            loader (XComponentLoader): Component Loader
+
+        Raises:
+            MissingInterfaceError: If Unable to obtain XTextDocument interface
 
         Returns:
-            XTextDocument: _description_
+            XTextDocument: Text Document
         """
-        return mLo.Lo.create_doc_from_template(template_path=template_path, loader=loader)
+        doc = mLo.Lo.create_doc_from_template(template_path=template_path, loader=loader)
+        xdoc = mLo.Lo.qi(XTextDocument, doc)
+        if xdoc is None:
+            raise mEx.MissingInterfaceError(XTextDocument)
+        return xdoc
     
     @staticmethod
     def close_doc(text_doc: XTextDocument) -> None:
-        mLo.Lo.close(text_doc)
+        """
+        Closes text document
+
+        Args:
+            text_doc (XTextDocument): Text Document
+
+        Raises:
+            MissingInterfaceError: If unable to obtain XCloseable from text_doc
+        """
+        closable = mLo.Lo.qi(XCloseable, text_doc)
+        if closable is None:
+            raise mEx.MissingInterfaceError(XCloseable)
+        mLo.Lo.close(closable)
     
     @staticmethod
-    def save_doc(text_doc: XTextDocument, fnm: str) -> None:
-        mLo.Lo.save_doc(doc=text_doc, fnm=fnm)
+    def save_doc(text_doc: XTextDocument, fnm: PathOrStr) -> None:
+        """
+        Saves text document
+
+        Args:
+            text_doc (XTextDocument): Text Document
+            fnm (PathOrStr): Path to save as
+
+        Raises:
+            MissingInterfaceError: If text_doc does not implement XComponent interface
+        """
+        doc = mLo.Lo.qi(XComponent, text_doc)
+        if doc is None:
+            raise mEx.MissingInterfaceError(XComponent)
+        mLo.Lo.save_doc(doc=doc, fnm=fnm)
     
     @classmethod
-    def open_flat_doc_using_text_template(cls, fnm: str, template_path: str, loader: XComponentLoader) -> XTextDocument | None:
+    def open_flat_doc_using_text_template(cls, fnm: PathOrStr, template_path: PathOrStr, loader: XComponentLoader) -> XTextDocument:
+        """
+        Open a new text document applying the template as formatting to the flat XML file
+
+        Args:
+            fnm (PathOrStr): path to file
+            template_path (PathOrStr): Path to template file (ott)
+            loader (XComponentLoader): Component Loader
+
+        Raises:
+            UnOpenableError: If fnm is not openable
+            ValueError: If template_path is not ott file
+            MissingInterfaceError: If template_path document does not implement XTextDocument interface
+            ValueError: If unable to obtain cursor object
+            Exception: Any other errors
+
+        Returns:
+            XTextDocument | None: Text Document
+        """
         if fnm is None:
             print("Filename is null")
             return None
@@ -266,43 +318,38 @@ class Write:
         open_file_url = None
         if not mFileIO.FileIO.is_openable(fnm):
             if mLo.Lo.is_url(fnm):
-                print(f"Will treat filename as a URL: '{fnm}'")
-                open_file_url = fnm
+                print(f"Treating filename as a URL: '{fnm}'")
+                open_file_url = str(fnm)
             else:
-                return None
+                raise mEx.UnOpenableError(fnm)
         else:
             open_file_url = mFileIO.FileIO.fnm_to_url(fnm)
-            if open_file_url is None:
-                return None
         
         template_ext = mInfo.Info.get_ext(template_path)
         if template_ext != 'ott':
-            print("Can only apply a text template as formatting")
-            return None
+            raise ValueError(f"Can only apply a text template as formatting. Not an ott file: {template_path}")
 
-        doc = mLo.Lo.create_doc_from_template(template_path==template_path, loader=loader)
-        if doc is None:
-            return None
+        doc = mLo.Lo.create_doc_from_template(template_path=template_path, loader=loader)
         text_doc = mLo.Lo.qi(XTextDocument, doc)
         if text_doc is None:
-            print(f"Not a text document '{fnm}'")
-            return None
+            raise mEx.MissingInterfaceError(XTextDocument, f"Template is not a text document. Missing: {XTextDocument.__pyunointerface__}")
         
         cursor = cls.get_cursor(text_doc)
         if cursor is None:
-            print(f"Unable to get cursor: '{fnm}'")
-            return None
+            raise ValueError(f"Unable to get cursor: '{fnm}'")
 
         try:
             cursor.gotoEnd(True)
             di = mLo.Lo.qi(XDocumentInsertable, cursor)
+                # XDocumentInsertable only works with text files
             if di is None:
-                print()
+                print("Document inserter could not be created")
             else:
                 di.insertDocumentFromURL(open_file_url, tuple())
+                    # Props.makeProps("FilterName", "OpenDocument Text Flat XML"))
+                    # these props do not work
         except Exception as e:
-            print("Could not insert document")
-            print(f"    {e}")
+            raise Exception("Could not insert document") from e
         return text_doc
     # endregion ---------- doc / open / close /create/ etc -------------
 

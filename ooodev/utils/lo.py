@@ -25,13 +25,13 @@ from com.sun.star.util import CloseVetoException
 from com.sun.star.util import XCloseable
 from com.sun.star.util import XNumberFormatsSupplier
 from com.sun.star.frame import XComponentLoader
+from com.sun.star.frame import XStorable
 
 if TYPE_CHECKING:
     from com.sun.star.beans import PropertyValue
     from com.sun.star.container import XChild
     from com.sun.star.container import XIndexAccess
     from com.sun.star.frame import XFrame
-    from com.sun.star.frame import XStorable
     from com.sun.star.lang import XMultiComponentFactory
     from com.sun.star.lang import XComponent
     from com.sun.star.lang import XTypeProvider
@@ -851,43 +851,47 @@ class Lo(metaclass=StaticProperty):
 
     # ======================== document saving ==============
 
-    @staticmethod
-    def save(doc: XStorable) -> None:
+    @classmethod
+    def save(cls, doc: object) -> None:
         """
         Save as document
 
         Args:
-            doc (XStorable): Office document
+            doc (object): Office document
 
         Raises:
             Exception: If unable to save document
+            MissingInterfaceError: If doc does not implement XStorable interface
         """
+        store = cls.qi(XStorable, doc)
+        if store is None:
+            raise mEx.MissingInterfaceError(XStorable)
         try:
-            doc.store()
+            store.store()
             print("Saved the document by overwriting")
         except IOException as e:
             raise Exception(f"Could not save the document") from e
 
     @overload
     @classmethod
-    def save_doc(cls, doc: XStorable, fnm: PathOrStr) -> None:
+    def save_doc(cls, doc: object, fnm: PathOrStr) -> None:
         """
         Save document
 
         Args:
-            doc (XStorable): Office document
+            doc (object): Office document
             fnm (PathOrStr): file path to save as
         """
         ...
 
     @overload
     @classmethod
-    def save_doc(cls, doc: XStorable, fnm: PathOrStr, password: str) -> None:
+    def save_doc(cls, doc: object, fnm: PathOrStr, password: str) -> None:
         """
         Save document
 
         Args:
-            doc (XStorable): Office document
+            doc (object): Office document
             fnm (PathOrStr): file path to save as
             password (str): Optional password
         """
@@ -895,12 +899,12 @@ class Lo(metaclass=StaticProperty):
 
     @overload
     @classmethod
-    def save_doc(cls, doc: XStorable, fnm: PathOrStr, password: str, format: str) -> None:
+    def save_doc(cls, doc: object, fnm: PathOrStr, password: str, format: str) -> None:
         """
         Save document
 
         Args:
-            doc (XStorable): Office document
+            doc (object): Office document
             fnm (PathOrStr): file path to save as
             password (str): Optional password
             format (str): _description_. Defaults to None.
@@ -908,18 +912,24 @@ class Lo(metaclass=StaticProperty):
         ...
 
     @classmethod
-    def save_doc(cls, doc: XStorable, fnm: PathOrStr, password: str = None, format: str = None) -> None:
+    def save_doc(cls, doc: object, fnm: PathOrStr, password: str = None, format: str = None) -> None:
         """
         Save document
 
         Args:
-            doc (XStorable): Office document
+            doc (object): Office document
             fnm (PathOrStr): file path to save as
             password (str): password
             format (str): document format such as 'odt' or 'xml'
+
+        Raises:
+            MissingInterfaceError: If doc does not implement XStorable interface
         """
+        store = cls.qi(XStorable, doc)
+        if store is None:
+            raise mEx.MissingInterfaceError(XStorable)
         doc_type = mInfo.Info.report_doc_type(doc)
-        kargs = {"fnm": fnm, "store": doc, "doc_type": doc_type}
+        kargs = {"fnm": fnm, "store": store, "doc_type": doc_type}
         if password is not None:
             kargs["password"] = password
         if format is None:
@@ -968,10 +978,10 @@ class Lo(metaclass=StaticProperty):
         """
         ext = mInfo.Info.get_ext(fnm)
         frmt = "Text"
-        if ext is not None:
-            frmt = cls.ext_to_format(ext=ext, doc_type=doc_type)
-        else:
+        if ext is None:
             print("Assuming a text format")
+        else:
+            frmt = cls.ext_to_format(ext=ext, doc_type=doc_type)
         if password is None:
             cls.store_doc_format(store=store, fnm=fnm, format=frmt)
         else:
