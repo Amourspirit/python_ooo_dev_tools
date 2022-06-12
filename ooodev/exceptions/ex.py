@@ -2,6 +2,7 @@
 from __future__ import annotations
 from pathlib import Path
 from typing import Any, List
+from ..utils.type_var import PathOrStr
 
 
 class MissingInterfaceError(Exception):
@@ -95,12 +96,12 @@ class UnKnownError(Exception):
 
 
 class UnOpenableError(Exception):
-    def __init__(self, fnm: str | Path, *args: object) -> None:
+    def __init__(self, fnm: PathOrStr, *args: object) -> None:
         """
         PropertyError Constructor
 
         Args:
-            fnm (str| path): File path that is not openable.
+            fnm (PathOrStr): File path that is not openable.
         """
         super().__init__(fnm, *args)
 
