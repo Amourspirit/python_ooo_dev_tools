@@ -4,8 +4,9 @@
 # region Imports
 from __future__ import annotations
 from typing import TYPE_CHECKING, Iterable, List, overload, cast
-import uno
 import re
+import os
+import uno
 
 from ..exceptions import ex as mEx
 from ..utils import lo as mLo
@@ -17,48 +18,51 @@ from ..utils.color import CommonColor, Color
 from ..utils.uno_enum import UnoEnum
 from ..utils.type_var import PathOrStr, Table
 
-from com.sun.star.awt import FontWeight
-from com.sun.star.awt import Size  # struct
-from com.sun.star.beans import XPropertySet
-from com.sun.star.container import XEnumerationAccess
-from com.sun.star.container import XNamed
-from com.sun.star.document import XDocumentInsertable
-from com.sun.star.document import XEmbeddedObjectSupplier2
-from com.sun.star.drawing import XDrawPageSupplier
-from com.sun.star.drawing import XShape
-from com.sun.star.lang import Locale  # struct class
-from com.sun.star.lang import XComponent
-from com.sun.star.lang import XServiceInfo
-from com.sun.star.frame import XModel
-from com.sun.star.linguistic2 import XConversionDictionaryList
-from com.sun.star.linguistic2 import XLanguageGuessing
-from com.sun.star.linguistic2 import XLinguProperties
-from com.sun.star.linguistic2 import XLinguServiceManager
-from com.sun.star.linguistic2 import XProofreader
-from com.sun.star.linguistic2 import XSearchableDictionaryList
-from com.sun.star.style import NumberingType  # const
-from com.sun.star.table import BorderLine  # struct
-from com.sun.star.text import ControlCharacter
-from com.sun.star.text import HoriOrientation
-from com.sun.star.text import VertOrientation
-from com.sun.star.text import XBookmarksSupplier
-from com.sun.star.text import XPageCursor
-from com.sun.star.text import XParagraphCursor
-from com.sun.star.text import XSentenceCursor
-from com.sun.star.text import XText
-from com.sun.star.text import XTextContent
-from com.sun.star.text import XTextDocument
-from com.sun.star.text import XTextGraphicObjectsSupplier
-from com.sun.star.text import XTextField
-from com.sun.star.text import XTextFrame
-from com.sun.star.text import XTextRange
-from com.sun.star.text import XTextTable
-from com.sun.star.text import XTextViewCursor
-from com.sun.star.text import XTextViewCursorSupplier
-from com.sun.star.text import XWordCursor
-from com.sun.star.uno import Exception as UnoException
-from com.sun.star.util import XCloseable
-from com.sun.star.view import XPrintable
+_DOCS_BUILDING = True if os.environ.get("DOCS_BUILDING", None) in ("True", "true") else False
+
+if not _DOCS_BUILDING:
+    from com.sun.star.awt import FontWeight
+    from com.sun.star.awt import Size  # struct
+    from com.sun.star.beans import XPropertySet
+    from com.sun.star.container import XEnumerationAccess
+    from com.sun.star.container import XNamed
+    from com.sun.star.document import XDocumentInsertable
+    from com.sun.star.document import XEmbeddedObjectSupplier2
+    from com.sun.star.drawing import XDrawPageSupplier
+    from com.sun.star.drawing import XShape
+    from com.sun.star.lang import Locale  # struct class
+    from com.sun.star.lang import XComponent
+    from com.sun.star.lang import XServiceInfo
+    from com.sun.star.frame import XModel
+    from com.sun.star.linguistic2 import XConversionDictionaryList
+    from com.sun.star.linguistic2 import XLanguageGuessing
+    from com.sun.star.linguistic2 import XLinguProperties
+    from com.sun.star.linguistic2 import XLinguServiceManager
+    from com.sun.star.linguistic2 import XProofreader
+    from com.sun.star.linguistic2 import XSearchableDictionaryList
+    from com.sun.star.style import NumberingType  # const
+    from com.sun.star.table import BorderLine  # struct
+    from com.sun.star.text import ControlCharacter
+    from com.sun.star.text import HoriOrientation
+    from com.sun.star.text import VertOrientation
+    from com.sun.star.text import XBookmarksSupplier
+    from com.sun.star.text import XPageCursor
+    from com.sun.star.text import XParagraphCursor
+    from com.sun.star.text import XSentenceCursor
+    from com.sun.star.text import XText
+    from com.sun.star.text import XTextContent
+    from com.sun.star.text import XTextDocument
+    from com.sun.star.text import XTextGraphicObjectsSupplier
+    from com.sun.star.text import XTextField
+    from com.sun.star.text import XTextFrame
+    from com.sun.star.text import XTextRange
+    from com.sun.star.text import XTextTable
+    from com.sun.star.text import XTextViewCursor
+    from com.sun.star.text import XTextViewCursorSupplier
+    from com.sun.star.text import XWordCursor
+    from com.sun.star.uno import Exception as UnoException
+    from com.sun.star.util import XCloseable
+    from com.sun.star.view import XPrintable
 
 if TYPE_CHECKING:
     from com.sun.star.awt import FontSlant as UnoFontSlant  # enum
@@ -134,10 +138,11 @@ class Write:
         `API DictionaryType <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1linguistic2.html#a281c5a7578308b66c77c9e0de51b806a>`_
     """
 
-    PaperFormat = cast("UnoPaperFormat", UnoEnum("com.sun.star.view.PaperFormat"))
+    # PaperFormat = cast("UnoPaperFormat", UnoEnum("com.sun.star.view.PaperFormat"))
+    PaperFormat = UnoEnum("com.sun.star.view.PaperFormat")
     """
     :py:class:`~.uno_enum.UnoEnum` Enum Values
-    
+
     Specifies the format (size) of the paper on a text document.
 
     See Also:
@@ -147,7 +152,7 @@ class Write:
     TextContentAnchorType = cast("UnoTextContentAnchorType", UnoEnum("com.sun.star.text.TextContentAnchorType"))
     """
     :py:class:`~.uno_enum.UnoEnum` Enum Values
-    
+
     Specify how the text content is attached to its surrounding text. 
 
     See Also:
@@ -1017,10 +1022,10 @@ class Write:
     def set_page_format(text_doc: XTextDocument, paper_format: Write.PaperFormat) -> None:
         """
         Set Page Format
-
+        paper_format (:py:attr:`.Write.PaperFormat`): Paper Format.
+        
         Args:
             text_doc (XTextDocument): Text Docuument
-            paper_format (:py:attr:`.Write.PaperFormat`): Paper Format.
 
         Raises:
             MissingInterfaceError: If text_doc does not implement XPrintable interface
