@@ -3,7 +3,7 @@
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 # region Imports
 from __future__ import annotations
-from typing import TYPE_CHECKING, Iterable, List, Sequence, overload, cast
+from typing import TYPE_CHECKING, Iterable, List, overload, cast
 import uno
 import re
 
@@ -15,7 +15,7 @@ from ..utils import props as mProps
 from ..utils.gen_util import TableHelper
 from ..utils.color import CommonColor, Color
 from ..utils.uno_enum import UnoEnum
-from ..utils.type_var import PathOrStr
+from ..utils.type_var import PathOrStr, Table
 
 from com.sun.star.awt import FontWeight
 from com.sun.star.awt import Size  # struct
@@ -26,14 +26,16 @@ from com.sun.star.document import XDocumentInsertable
 from com.sun.star.document import XEmbeddedObjectSupplier2
 from com.sun.star.drawing import XDrawPageSupplier
 from com.sun.star.drawing import XShape
-from com.sun.star.lang import XServiceInfo
 from com.sun.star.lang import Locale  # struct class
+from com.sun.star.lang import XComponent
+from com.sun.star.lang import XServiceInfo
 from com.sun.star.frame import XModel
 from com.sun.star.linguistic2 import XConversionDictionaryList
 from com.sun.star.linguistic2 import XLanguageGuessing
 from com.sun.star.linguistic2 import XLinguProperties
 from com.sun.star.linguistic2 import XLinguServiceManager
 from com.sun.star.linguistic2 import XProofreader
+from com.sun.star.linguistic2 import XSearchableDictionaryList
 from com.sun.star.style import NumberingType  # const
 from com.sun.star.table import BorderLine  # struct
 from com.sun.star.text import ControlCharacter
@@ -65,18 +67,15 @@ if TYPE_CHECKING:
     from com.sun.star.drawing import XDrawPage
     from com.sun.star.frame import XComponentLoader
     from com.sun.star.graphic import XGraphic
-    from com.sun.star.lang import XComponent
     from com.sun.star.linguistic2 import DictionaryType as UnoDictionaryType  # enum
     from com.sun.star.linguistic2 import SingleProofreadingError
     from com.sun.star.linguistic2 import XLinguServiceManager2
-    from com.sun.star.linguistic2 import XSearchableDictionaryList
     from com.sun.star.linguistic2 import XSpellChecker
     from com.sun.star.linguistic2 import XThesaurus
     from com.sun.star.style import BreakType as UnoBreakType  # enum
     from com.sun.star.style import ParagraphAdjust as UnoParagraphAdjust  # enum
     from com.sun.star.text import PageNumberType as UnoPageNumberType  # enum
-    from com.sun.star.text import TextContentAnchorType as UnoTextContentAnchorType
-    from com.sun.star.text import XSimpleText
+    from com.sun.star.text import TextContentAnchorType as UnoTextContentAnchorType # enum
     from com.sun.star.text import XTextCursor
     from com.sun.star.view import PaperFormat as UnoPaperFormat  # enum
 
@@ -1406,7 +1405,7 @@ class Write:
     def add_table(
         cls,
         cursor: XTextCursor,
-        table_data: Sequence[Sequence[str]],
+        table_data: Table,
         header_bg_color: Color | None = CommonColor.DARK_BLUE,
         header_fg_color: Color | None = CommonColor.WHITE,
         tbl_bg_color: Color | None = CommonColor.LIGHT_BLUE,
@@ -1420,7 +1419,7 @@ class Write:
 
         Args:
             cursor (XTextCursor): Text Cursor
-            table_data (Sequence[Sequence[str]]): 2D Table with the the first row containing column names.
+            table_data (Table): 2D Table with the the first row containing column names.
             header_bg_color (Color | None, optional): Table header background color. Set to None to ignore header color. Defaults to CommonColor.DARK_BLUE.
             header_fg_color (Color | None, optional): Table header forground color. Set to None to ignore header color. Defaults to CommonColor.WHITE.
             tbl_bg_color (Color | None, optional): Table background color. Set to None to ignore background color. Defaults to CommonColor.LIGHT_BLUE.
