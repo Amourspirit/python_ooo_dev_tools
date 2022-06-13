@@ -1020,12 +1020,12 @@ class Write:
 
         Args:
             text_doc (XTextDocument): Text Docuument
+            paper_format (:py:attr:`.Write.PaperFormat`): Paper Format.
 
         Raises:
             MissingInterfaceError: If text_doc does not implement XPrintable interface
 
         See Also:
-            - :py:attr:`.Write.PaperFormat`
             - :py:meth:`.set_a4_page_format`
         """
         xprintable = mLo.Lo.qi(XPrintable, text_doc)
@@ -1985,7 +1985,7 @@ class Write:
         Gets dictionary type
 
         Args:
-            dt (DictionaryType): Dictionary Type
+            dt (:py:attr:`.Write.DictionaryType`): Dictionary Type
 
         Returns:
             str: positive, negative, mixed, or ?? if unknown
