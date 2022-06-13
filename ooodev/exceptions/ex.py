@@ -152,6 +152,9 @@ class CreateInstanceError(Exception):
         return f"Unable to create instance for service '{self.args[1]}' with interface of '{interface_name}'.\n{self.args[2]}"
 
 class CreateInstanceMsfError(CreateInstanceError):
-    """Create MFS Instance Error"""
+    """Create MSF Instance Error"""
     pass
-    
+
+class CreateInstanceMcfError(CreateInstanceError):
+    """Create MCF Instance Error"""
+    pass
