@@ -1,11 +1,11 @@
 # coding: utf-8
-from typing import Sequence, TypeVar, Union, TypeAlias, Any, Tuple, List
+from typing import Sequence, TypeVar, Union, Any, Tuple, List
 from os import PathLike
 
-PathOrStr: TypeAlias = Union[str, PathLike]
+PathOrStr = Union[str, PathLike]
 """Path like object or string"""
 
-UnoInterface: TypeAlias = object
+UnoInterface = object
 """Represents a uno interface class. Any uno Class that starts with X"""
 
 T = TypeVar("T")

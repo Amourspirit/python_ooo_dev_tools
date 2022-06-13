@@ -2,6 +2,7 @@
 """
 Various color conversions utilities.
 """
+from __future__ import annotations
 import math
 import colorsys
 from typing import Union, NamedTuple, overload, NewType
