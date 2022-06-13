@@ -59,7 +59,6 @@ class PropertyError(Exception):
 
 class PropertiesError(Exception):
     """Error for multiple properties"""
-
     pass
 
 
@@ -130,3 +129,29 @@ class NotSupportedMacroModeError(Exception):
     such as XML.apply_xslt()
     """
     pass
+
+class CreateInstanceError(Exception):
+    """Create instance Error"""
+    def __init__(self, interface: Any, service: str, message: Any = None, *args) -> None:
+        """
+        constructor
+
+        Args:
+            interface (Any): Interface that failed creation
+            message (Any, optional): Message of error
+        """
+        if message is None:
+            message = f"Unable to create instance of {service}"
+        super().__init__(interface, service, message, *args)
+
+    def __str__(self) -> str:
+        try:
+            interface_name = self.args[0].__pyunointerface__
+        except AttributeError:
+            interface_name = "Unknown Interface"
+        return f"Unable to create instance for service '{self.args[1]}' with interface of '{interface_name}'.\n{self.args[2]}"
+
+class CreateInstanceMsfError(CreateInstanceError):
+    """Create MFS Instance Error"""
+    pass
+    
