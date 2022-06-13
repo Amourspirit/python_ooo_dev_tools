@@ -111,7 +111,7 @@ from ..utils import gui as mGui
 from ..utils import props as mProps
 from ..utils.gen_util import ArgsHelper, TableHelper, Util as GenUtil
 from ..utils import enum_helper
-from ..utils.color import CommonColor
+from ..utils.color import CommonColor, Color
 from ..utils import view_state as mViewState
 from ..exceptions import ex as mEx
 
@@ -4552,7 +4552,7 @@ class Calc:
         cls._add_border_sht_rng_color(cell_range=cell_range, color=CommonColor.BLACK)  # color black
 
     @classmethod
-    def _add_border_sht_rng_color(cls, cell_range: XCellRange, color: int) -> None:
+    def _add_border_sht_rng_color(cls, cell_range: XCellRange, color: Color) -> None:
         vals = (
             cls.BorderEnum.LEFT_BORDER
             | cls.BorderEnum.RIGHT_BORDER
@@ -4565,7 +4565,7 @@ class Calc:
     def _add_border_sht_rng_color_vals(
         cls,
         cell_range: XCellRange,
-        color: int,
+        color: Color,
         border_vals: int | BorderEnum,
     ) -> None:
         line = BorderLine2()  # create the border line
@@ -4641,14 +4641,14 @@ class Calc:
 
     @overload
     @classmethod
-    def add_border(cls, sheet: XSpreadsheet, cell_range: XCellRange, color: int) -> XCellRange:
+    def add_border(cls, sheet: XSpreadsheet, cell_range: XCellRange, color: Color) -> XCellRange:
         """
         Adds borders to a cell range
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
             cell_range (XCellRange): Cell range
-            color (int): RGB color as integer
+            color (Color): RGB color
 
         Returns:
             XCellRange: Range borders that are affected
@@ -4657,14 +4657,14 @@ class Calc:
 
     @overload
     @classmethod
-    def add_border(cls, sheet: XSpreadsheet, range_name: str, color: int) -> XCellRange:
+    def add_border(cls, sheet: XSpreadsheet, range_name: str, color: Color) -> XCellRange:
         """
         Adds borders to a cell range
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
             range_name (str): Range Name such as 'A1:F9'
-            color (int): RGB color as integer
+            color (Color): RGB color
 
         Returns:
             XCellRange: Range borders that are affected
@@ -4673,14 +4673,14 @@ class Calc:
 
     @overload
     @classmethod
-    def add_border(cls, sheet: XSpreadsheet, cell_range: XCellRange, color: int, border_vals: BorderEnum) -> XCellRange:
+    def add_border(cls, sheet: XSpreadsheet, cell_range: XCellRange, color: Color, border_vals: BorderEnum) -> XCellRange:
         """
         Adds borders to a cell range
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
             cell_range (XCellRange): Cell range
-            color (int): RGB color as integer
+            color (Color): RGB color
             border_vals (BorderEnum): Determines what borders are applied.
 
         Returns:
@@ -4690,14 +4690,14 @@ class Calc:
 
     @overload
     @classmethod
-    def add_border(cls, sheet: XSpreadsheet, range_name: str, color: int, border_vals: BorderEnum) -> XCellRange:
+    def add_border(cls, sheet: XSpreadsheet, range_name: str, color: Color, border_vals: BorderEnum) -> XCellRange:
         """
         Adds borders to a cell range
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
             range_name (str): Range Name such as 'A1:F9'
-            color (int): RGB color as integer
+            color (Color): RGB color
             border_vals (BorderEnum): Determines what borders are applied.
 
         Returns:
@@ -4714,7 +4714,7 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet
             cell_range (XCellRange): Cell range
             range_name (str): Range Name such as 'A1:F9'
-            color (int): RGB color as integer
+            color (Color): RGB color
             border_vals (BorderEnum): Determines what borders are applied.
 
         Returns:
@@ -4873,7 +4873,6 @@ class Calc:
         Args:
             sheet (XSpreadsheet): Spreadsheet
             cell_range (XCellRange): Cell range
-            color (int): RGB color as integer
             border_vals (BorderEnum): Determines what borders are applied.
 
         Returns:
@@ -4890,7 +4889,6 @@ class Calc:
         Args:
             sheet (XSpreadsheet): Spreadsheet
             range_name (str): Range Name such as 'A1:F9'
-            color (int):  RGB color as integer
             border_vals (BorderEnum): Determines what borders are applied.
 
         Returns:
@@ -4907,7 +4905,6 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet
             cell_range (XCellRange): Cell range
             range_name (str): Range Name such as 'A1:F9'
-            color (int): RGB color as integer
             border_vals (BorderEnum): Determines what borders are applied.
 
         Returns:
@@ -4983,7 +4980,7 @@ class Calc:
     
     @overload
     @classmethod
-    def highlight_range(cls, sheet: XSpreadsheet,  headline: str, cell_range: XCellRange, color: int) ->  XCell:
+    def highlight_range(cls, sheet: XSpreadsheet,  headline: str, cell_range: XCellRange, color: Color) ->  XCell:
         """
         Draw a colored border around the range and write a headline in the
         top-left cell of the range.
@@ -4992,7 +4989,7 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet
             headline (str): Headline
             cell_range (XCellRange): Cell Range
-            color (int): RGB color as int
+            color (Color): RGB color
 
         Returns:
             XCell: First cell of range that headline ia applied on
@@ -5019,7 +5016,7 @@ class Calc:
     
     @overload
     @classmethod
-    def highlight_range(cls, sheet: XSpreadsheet,  headline: str, range_name: str, color:int) ->  XCell:
+    def highlight_range(cls, sheet: XSpreadsheet,  headline: str, range_name: str, color: Color) ->  XCell:
         """
         Draw a colored border around the range and write a headline in the
         top-left cell of the range.
@@ -5028,7 +5025,7 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet
             headline (str): Headline
             range_name (str): Range Name such as 'A1:F9'
-            color (int): RGB color as int
+            color (Color): RGB color
 
         Returns:
             XCell: First cell of range that headline ia applied on
@@ -5046,6 +5043,7 @@ class Calc:
             headline (str): Headline
             cell_range (XCellRange): Cell Range
             range_name (str): Range Name such as 'A1:F9'
+            color (Color): RGB color
 
         Returns:
             XCell: First cell of range that headline ia applied on
@@ -5091,7 +5089,7 @@ class Calc:
         if count == 3:
             color = CommonColor.LIGHT_BLUE
         else:
-            color = cast(int, kargs[4])
+            color = cast(Color, kargs[4])
         cls._add_border_sht_rng_color(cell_range=cell_range, color=color)
 
         # color the headline
