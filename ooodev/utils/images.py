@@ -18,11 +18,12 @@ if TYPE_CHECKING:
 from ..utils import lo as mLo
 from ..utils import file_io as mFileIO
 from ..utils import props as mProps
+from ..utils.type_var import PathOrStr
 
 
 class Images:
     @staticmethod
-    def get_bitmap(fnm: str) -> str | None:
+    def get_bitmap(fnm: PathOrStr) -> str | None:
         try:
             bitmap_container = mLo.Lo.create_instance_msf(XNameContainer, "com.sun.star.drawing.BitmapTable")
             if not mFileIO.FileIO.is_openable(fnm):
@@ -31,18 +32,18 @@ class Images:
             pic_url = mFileIO.FileIO.fnm_to_url(fnm)
             if pic_url is None:
                 return None
-            bitmap_container.insertByName(fnm, pic_url)
+            bitmap_container.insertByName(str(fnm), pic_url)
             # use the filename as the name of the bitmap
 
             # return the bitmap as a string
-            str(bitmap_container.getByName(fnm))
+            str(bitmap_container.getByName(str(fnm)))
         except Exception as e:
             print(f"Could not create a bitmap container for '{fnm}'")
             print(f"    {e}")
             return None
 
     @staticmethod
-    def load_image(fnm: str) -> Image.Image | None:
+    def load_image(fnm: PathOrStr) -> Image.Image | None:
         img = None
         try:
             img = Image.open(fnm)
@@ -54,7 +55,7 @@ class Images:
         return img
 
     @staticmethod
-    def save_image(im: Image.Image, fnm: str) -> None:
+    def save_image(im: Image.Image, fnm: PathOrStr) -> None:
         if im is None:
             print(f"No data to save in '{fnm}'")
             return
@@ -121,7 +122,7 @@ class Images:
         return graphic
 
     @staticmethod
-    def load_graphic_file(im_fnm: str) -> XGraphic | None:
+    def load_graphic_file(im_fnm: PathOrStr) -> XGraphic | None:
         print(f"Loading XGraphic from '{im_fnm}'")
         gprovider = mLo.Lo.create_instance_mcf(XGraphicProvider, "com.sun.star.graphic.GraphicProvider")
         if gprovider is None:
@@ -137,14 +138,14 @@ class Images:
         return None
 
     @classmethod
-    def get_size_pixels(cls, im_fnm) -> Size | None:
+    def get_size_pixels(cls, im_fnm: PathOrStr) -> Size | None:
         graphic = cls.load_graphic_file(im_fnm)
         if graphic is None:
             return None
         return mProps.Props.get_property(xprops=graphic, name="SizePixel")
 
     @classmethod
-    def get_size_100mm(cls, im_fnm: str) -> Size | None:
+    def get_size_100mm(cls, im_fnm: PathOrStr) -> Size | None:
         graphic = cls.load_graphic_file(im_fnm)
         if graphic is None:
             return None
@@ -183,7 +184,7 @@ class Images:
         return im
 
     @staticmethod
-    def save_graphic(pic: XGraphic, fnm: str, im_format: str) -> None:
+    def save_graphic(pic: XGraphic, fnm: PathOrStr, im_format: str) -> None:
         print(f"Saving graphic in '{fnm}'")
 
         if pic is None:
@@ -220,7 +221,7 @@ class Images:
         return "image/png"
 
     @classmethod
-    def calc_scale(cls, fnm: str, max_width: int, max_height: int) -> Size | None:
+    def calc_scale(cls, fnm: PathOrStr, max_width: int, max_height: int) -> Size | None:
         """
         Calculate a new size for the image in fnm that is no bigger than
         maxWidth x maxHeight mm's

@@ -38,6 +38,7 @@ from . import file_io as mFileIO
 from . import props as mProps
 from . import date_time_util as mDate
 from ..exceptions import ex as mEx
+from .type_var import PathOrStr
 
 
 class Info:
@@ -599,12 +600,12 @@ class Info:
     # =================== getting info about a document ====================
 
     @staticmethod
-    def get_name(fnm: str) -> str:
+    def get_name(fnm: PathOrStr) -> str:
         """
         Gets the file's name from the supplied string minus the extension
 
         Args:
-            fnm (str): File path
+            fnm (PathOrStr): File path
 
         Raises:
             ValueError: If fnm is empty string
@@ -624,12 +625,12 @@ class Info:
         return p.stem
 
     @staticmethod
-    def get_ext(fnm: str) -> str | None:
+    def get_ext(fnm: PathOrStr) -> str | None:
         """
         Gets file extenson without the ``.``
 
         Args:
-            fnm (str): file path
+            fnm (PathOrStr): file path
 
         Raises:
             ValueError: If fnm is empty string
@@ -649,7 +650,7 @@ class Info:
         return p.suffix[1:]
 
     @staticmethod
-    def get_unique_fnm(fnm: str) -> str:
+    def get_unique_fnm(fnm: PathOrStr) -> str:
         """
         If a file called fnm already exists, then a number
         is added to the name so the filename is unique
@@ -665,18 +666,18 @@ class Info:
         ext = p.suffix
         i = 1
         while p.exists():
-            fnm = f"{fname}{i}{ext}"
-            p = p.parent / fnm
+            name = f"{fname}{i}{ext}"
+            p = p.parent / name
             i += 1
         return str(p)
 
     @staticmethod
-    def get_doc_type(fnm: str) -> str:
+    def get_doc_type(fnm: PathOrStr) -> str:
         """
         Gets doc type from file path
 
         Args:
-            fnm (str): File Path
+            fnm (PathOrStr): File Path
 
         Raises:
             ValueError: if Unable to get doc type
@@ -809,12 +810,12 @@ class Info:
             raise ValueError("Could not get service information") from e
 
     @staticmethod
-    def get_mime_type(fnm: str) -> str:
+    def get_mime_type(fnm: PathOrStr) -> str:
         """
         Get mime type for a file path
 
         Args:
-            fnm (str): file path
+            fnm (PathOrStr): file path
 
         Returns:
             str: Mime type of file if found. Defaults to 'application/octet-stream'

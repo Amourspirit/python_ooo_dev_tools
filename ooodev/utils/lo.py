@@ -8,6 +8,7 @@ import time
 from typing import TYPE_CHECKING, Iterable, Optional, List, Sequence, Tuple, overload, TypeVar, Type
 from urllib.parse import urlparse
 import uno
+from os import PathLike
 from enum import IntEnum, Enum
 from ..meta.static_meta import StaticProperty, classproperty
 from .connect import ConnectBase, LoPipeStart, LoSocketStart, LoDirectStart
@@ -24,13 +25,13 @@ from com.sun.star.util import CloseVetoException
 from com.sun.star.util import XCloseable
 from com.sun.star.util import XNumberFormatsSupplier
 from com.sun.star.frame import XComponentLoader
+from com.sun.star.frame import XStorable
 
 if TYPE_CHECKING:
     from com.sun.star.beans import PropertyValue
     from com.sun.star.container import XChild
     from com.sun.star.container import XIndexAccess
     from com.sun.star.frame import XFrame
-    from com.sun.star.frame import XStorable
     from com.sun.star.lang import XMultiComponentFactory
     from com.sun.star.lang import XComponent
     from com.sun.star.lang import XTypeProvider
@@ -38,8 +39,6 @@ if TYPE_CHECKING:
     from com.sun.star.uno import XComponentContext
     from com.sun.star.uno import XInterface
 
-T = TypeVar("T")
-UnoInterface = TypeVar("UnoInterface")
 
 # import module and not module content to avoid circular import issue.
 # https://stackoverflow.com/questions/22187279/python-circular-importing
@@ -48,7 +47,10 @@ from . import file_io as mFileIO
 from . import xml_util as mXML
 from . import info as mInfo
 from ..exceptions import ex as mEx
+from .type_var import PathOrStr, UnoInterface, T
 
+# PathOrStr = type_var.PathOrStr
+# """Path like object or string"""
 
 class Lo(metaclass=StaticProperty):
     class Loader:
@@ -537,12 +539,12 @@ class Lo(metaclass=StaticProperty):
 
     # region document opening
     @classmethod
-    def open_flat_doc(cls, fnm: str, doc_type: DocType, loader: XComponentLoader) -> XComponent:
+    def open_flat_doc(cls, fnm: PathOrStr, doc_type: DocType, loader: XComponentLoader) -> XComponent:
         """
         Opens a flat document
 
         Args:
-            fnm (str): path of xml documenet
+            fnm (PathOrStr): path of xml documenet
             doc_type (DocType): Type of document to open
             loader (XComponentLoader): Component loader
 
@@ -559,12 +561,12 @@ class Lo(metaclass=StaticProperty):
 
     @overload
     @classmethod
-    def open_doc(cls, fnm: str, loader: XComponentLoader) -> XComponent:
+    def open_doc(cls, fnm: PathOrStr, loader: XComponentLoader) -> XComponent:
         """
         Open a office document
 
         Args:
-            fnm (str): path of document to open
+            fnm (PathOrStr): path of document to open
             loader (XComponentLoader): Component Loader
 
         Raises:
@@ -577,12 +579,12 @@ class Lo(metaclass=StaticProperty):
 
     @overload
     @classmethod
-    def open_doc(cls, fnm: str, loader: XComponentLoader, props: Iterable[PropertyValue]) -> XComponent:
+    def open_doc(cls, fnm: PathOrStr, loader: XComponentLoader, props: Iterable[PropertyValue]) -> XComponent:
         """
         Open a office document
 
         Args:
-            fnm (str): path of document to open
+            fnm (PathOrStr): path of document to open
             loader (XComponentLoader): Component Loader
             props (Iterable[PropertyValue]): Properties passed to component loader
 
@@ -597,7 +599,7 @@ class Lo(metaclass=StaticProperty):
     @classmethod
     def open_doc(
         cls,
-        fnm: str,
+        fnm: PathOrStr,
         loader: XComponentLoader,
         props: Optional[Iterable[PropertyValue]] = None,
     ) -> XComponent:
@@ -605,7 +607,7 @@ class Lo(metaclass=StaticProperty):
         Open a office document
 
         Args:
-            fnm (str): path of document to open
+            fnm (PathOrStr): path of document to open
             loader (XComponentLoader): Component Loader
             props (Iterable[PropertyValue]): Properties passed to component loader
 
@@ -647,12 +649,12 @@ class Lo(metaclass=StaticProperty):
             raise Exception("Unable to open the document") from e
 
     @classmethod
-    def open_readonly_doc(cls, fnm: str, loader: XComponentLoader) -> XComponent:
+    def open_readonly_doc(cls, fnm: PathOrStr, loader: XComponentLoader) -> XComponent:
         """
         Open a office document as readonly
 
         Args:
-            fnm (str): path of document to open
+            fnm (PathOrStr): path of document to open
             loader (XComponentLoader): Component Loader
 
         Raises:
@@ -729,7 +731,7 @@ class Lo(metaclass=StaticProperty):
 
     @overload
     @classmethod
-    def create_doc(csl, doc_type: DocTypeStr, loader: XComponentLoader) -> XComponent:
+    def create_doc(cls, doc_type: DocTypeStr, loader: XComponentLoader) -> XComponent:
         """
         Creates a document
 
@@ -818,12 +820,12 @@ class Lo(metaclass=StaticProperty):
         )
 
     @classmethod
-    def create_doc_from_template(cls, template_path: str, loader: XComponentLoader) -> XComponent:
+    def create_doc_from_template(cls, template_path: PathOrStr, loader: XComponentLoader) -> XComponent:
         """
         Create a document form a template
 
         Args:
-            template_path (str): path to template file
+            template_path (PathOrStr): path to template file
             loader (XComponentLoader): Component Loader
 
         Raises:
@@ -849,75 +851,85 @@ class Lo(metaclass=StaticProperty):
 
     # ======================== document saving ==============
 
-    @staticmethod
-    def save(doc: XStorable) -> None:
+    @classmethod
+    def save(cls, doc: object) -> None:
         """
         Save as document
 
         Args:
-            doc (XStorable): Office document
+            doc (object): Office document
 
         Raises:
             Exception: If unable to save document
+            MissingInterfaceError: If doc does not implement XStorable interface
         """
+        store = cls.qi(XStorable, doc)
+        if store is None:
+            raise mEx.MissingInterfaceError(XStorable)
         try:
-            doc.store()
+            store.store()
             print("Saved the document by overwriting")
         except IOException as e:
             raise Exception(f"Could not save the document") from e
 
     @overload
     @classmethod
-    def save_doc(cls, doc: XStorable, fnm: str) -> None:
+    def save_doc(cls, doc: object, fnm: PathOrStr) -> None:
         """
         Save document
 
         Args:
-            doc (XStorable): Office document
-            fnm (str): file path to save as
+            doc (object): Office document
+            fnm (PathOrStr): file path to save as
         """
         ...
 
     @overload
     @classmethod
-    def save_doc(cls, doc: XStorable, fnm: str, password: str) -> None:
+    def save_doc(cls, doc: object, fnm: PathOrStr, password: str) -> None:
         """
         Save document
 
         Args:
-            doc (XStorable): Office document
-            fnm (str): file path to save as
+            doc (object): Office document
+            fnm (PathOrStr): file path to save as
             password (str): Optional password
         """
         ...
 
     @overload
     @classmethod
-    def save_doc(cls, doc: XStorable, fnm: str, password: str, format: str) -> None:
+    def save_doc(cls, doc: object, fnm: PathOrStr, password: str, format: str) -> None:
         """
         Save document
 
         Args:
-            doc (XStorable): Office document
-            fnm (str): file path to save as
+            doc (object): Office document
+            fnm (PathOrStr): file path to save as
             password (str): Optional password
             format (str): _description_. Defaults to None.
         """
         ...
 
     @classmethod
-    def save_doc(cls, doc: XStorable, fnm: str, password: str = None, format: str = None) -> None:
+    def save_doc(cls, doc: object, fnm: PathOrStr, password: str = None, format: str = None) -> None:
         """
         Save document
 
         Args:
-            doc (XStorable): Office document
-            fnm (str): file path to save as
+            doc (object): Office document
+            fnm (PathOrStr): file path to save as
             password (str): password
             format (str): document format such as 'odt' or 'xml'
+
+        Raises:
+            MissingInterfaceError: If doc does not implement XStorable interface
         """
+        store = cls.qi(XStorable, doc)
+        if store is None:
+            raise mEx.MissingInterfaceError(XStorable)
         doc_type = mInfo.Info.report_doc_type(doc)
-        kargs = {"fnm": fnm, "store": doc, "doc_type": doc_type}
+        kargs = {"fnm": fnm, "store": store, "doc_type": doc_type}
         if password is not None:
             kargs["password"] = password
         if format is None:
@@ -928,48 +940,48 @@ class Lo(metaclass=StaticProperty):
 
     @overload
     @classmethod
-    def store_doc(cls, store: XStorable, doc_type: DocType, fnm: str) -> None:
+    def store_doc(cls, store: XStorable, doc_type: DocType, fnm: PathOrStr) -> None:
         """
         Stores/Saves a document
 
         Args:
             store (XStorable): instance that implements XStorable interface.
             doc_type (DocType): Document type
-            fnm (str): Path to save document as. If extension is absent then text (.txt) is assumed.
+            fnm (PathOrStr): Path to save document as. If extension is absent then text (.txt) is assumed.
         """
         ...
 
     @overload
     @classmethod
-    def store_doc(cls, store: XStorable, doc_type: DocType, fnm: str, password: str) -> None:
+    def store_doc(cls, store: XStorable, doc_type: DocType, fnm: PathOrStr, password: str) -> None:
         """
         Stores/Saves a document
 
         Args:
             store (XStorable): instance that implements XStorable interface.
             doc_type (DocType): Document type
-            fnm (str): Path to save document as. If extension is absent then text (.txt) is assumed.
+            fnm (PathOrStr): Path to save document as. If extension is absent then text (.txt) is assumed.
             password (str): Password for document.
         """
         ...
 
     @classmethod
-    def store_doc(cls, store: XStorable, doc_type: DocType, fnm: str, password: Optional[str] = None) -> None:
+    def store_doc(cls, store: XStorable, doc_type: DocType, fnm: PathOrStr, password: Optional[str] = None) -> None:
         """
         Stores/Saves a document
 
         Args:
             store (XStorable): instance that implements XStorable interface.
             doc_type (DocType): Document type
-            fnm (str): Path to save document as. If extension is absent then text (.txt) is assumed.
+            fnm (PathOrStr): Path to save document as. If extension is absent then text (.txt) is assumed.
             password (str): Password for document.
         """
         ext = mInfo.Info.get_ext(fnm)
         frmt = "Text"
-        if ext is not None:
-            frmt = cls.ext_to_format(ext=ext, doc_type=doc_type)
-        else:
+        if ext is None:
             print("Assuming a text format")
+        else:
+            frmt = cls.ext_to_format(ext=ext, doc_type=doc_type)
         if password is None:
             cls.store_doc_format(store=store, fnm=fnm, format=frmt)
         else:
@@ -1129,13 +1141,13 @@ class Lo(metaclass=StaticProperty):
 
     @overload
     @staticmethod
-    def store_doc_format(store: XStorable, fnm: str, format: str) -> None:
+    def store_doc_format(store: XStorable, fnm: PathOrStr, format: str) -> None:
         """
         Store document as format.
 
         Args:
             store (XStorable): instance that implements XStorable interface.
-            fnm (str): Path to save document as.
+            fnm (PathOrStr): Path to save document as.
             format (str): document format such as 'odt' or 'xml'
 
         Raises:
@@ -1145,13 +1157,13 @@ class Lo(metaclass=StaticProperty):
 
     @overload
     @staticmethod
-    def store_doc_format(store: XStorable, fnm: str, format: str, password: str) -> None:
+    def store_doc_format(store: XStorable, fnm: PathOrStr, format: str, password: str) -> None:
         """
         Store document as format.
 
         Args:
             store (XStorable): instance that implements XStorable interface.
-            fnm (str): Path to save document as.
+            fnm (PathOrStr): Path to save document as.
             format (str): document format such as 'odt' or 'xml'
             password (str): Password for document.
 
@@ -1161,13 +1173,13 @@ class Lo(metaclass=StaticProperty):
         ...
 
     @staticmethod
-    def store_doc_format(store: XStorable, fnm: str, format: str, password: str = None) -> None:
+    def store_doc_format(store: XStorable, fnm: PathOrStr, format: str, password: str = None) -> None:
         """
         Store document as format.
 
         Args:
             store (XStorable): instance that implements XStorable interface.
-            fnm (str): Path to save document as.
+            fnm (PathOrStr): Path to save document as.
             format (str): document format such as 'odt' or 'xml'
             password (str): Password for document.
 
@@ -1594,19 +1606,19 @@ class Lo(metaclass=StaticProperty):
         input("Press Enter to continue...")
 
     @staticmethod
-    def is_url(fnm: str) -> bool:
+    def is_url(fnm: PathOrStr) -> bool:
         """
         Gets if a string is a url format.
 
         Args:
-            fnm (str): string to check.
+            fnm (PathOrStr): string to check.
 
         Returns:
             bool: True if Url format; Otherwise, False
         """
         # https://stackoverflow.com/questions/7160737/how-to-validate-a-url-in-python-malformed-or-not
         try:
-            result = urlparse(fnm)
+            result = urlparse(str(fnm))
             return all([result.scheme, result.netloc])
         except ValueError:
             return False
@@ -1869,11 +1881,21 @@ class Lo(metaclass=StaticProperty):
         in Basic the component owning the currently run user script.
         Above behaviour cannot be reproduced in Python.
         
+        When running in a macro this property can be access directly to get the current document.
+        
+        When not in a macro then load_office() must be called first
+        
         Returns:
             the current component or None when not a document
         """
         if cls.star_desktop is None:
-            return None
+            # attempt to connect direct
+            cls.load_office(direct=True)
+        if cls.star_desktop is None:
+            if cls.is_macro_mode:
+                raise Exception("Something went wrong. did try load_office() first?")
+            else:
+                raise Exception("this_component on not available until load_office() is run when not running in a macro.")
         comp = cls.star_desktop.getCurrentComponent()
         if comp is None:
             return None

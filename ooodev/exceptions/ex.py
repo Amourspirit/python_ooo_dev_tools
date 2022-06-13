@@ -2,6 +2,7 @@
 from __future__ import annotations
 from pathlib import Path
 from typing import Any, List
+from ..utils.type_var import PathOrStr
 
 
 class MissingInterfaceError(Exception):
@@ -58,7 +59,6 @@ class PropertyError(Exception):
 
 class PropertiesError(Exception):
     """Error for multiple properties"""
-
     pass
 
 
@@ -90,17 +90,16 @@ class GoalDivergenceError(Exception):
 
 class UnKnownError(Exception):
     """Error for unnown results"""
-
     pass
 
 
 class UnOpenableError(Exception):
-    def __init__(self, fnm: str | Path, *args: object) -> None:
+    def __init__(self, fnm: PathOrStr, *args: object) -> None:
         """
         PropertyError Constructor
 
         Args:
-            fnm (str| path): File path that is not openable.
+            fnm (PathOrStr): File path that is not openable.
         """
         super().__init__(fnm, *args)
 
@@ -129,4 +128,33 @@ class NotSupportedMacroModeError(Exception):
     This error is largly used for methos that require external imports
     such as XML.apply_xslt()
     """
+    pass
+
+class CreateInstanceError(Exception):
+    """Create instance Error"""
+    def __init__(self, interface: Any, service: str, message: Any = None, *args) -> None:
+        """
+        constructor
+
+        Args:
+            interface (Any): Interface that failed creation
+            message (Any, optional): Message of error
+        """
+        if message is None:
+            message = f"Unable to create instance of {service}"
+        super().__init__(interface, service, message, *args)
+
+    def __str__(self) -> str:
+        try:
+            interface_name = self.args[0].__pyunointerface__
+        except AttributeError:
+            interface_name = "Unknown Interface"
+        return f"Unable to create instance for service '{self.args[1]}' with interface of '{interface_name}'.\n{self.args[2]}"
+
+class CreateInstanceMsfError(CreateInstanceError):
+    """Create MSF Instance Error"""
+    pass
+
+class CreateInstanceMcfError(CreateInstanceError):
+    """Create MCF Instance Error"""
     pass

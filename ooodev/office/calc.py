@@ -111,9 +111,10 @@ from ..utils import gui as mGui
 from ..utils import props as mProps
 from ..utils.gen_util import ArgsHelper, TableHelper, Util as GenUtil
 from ..utils import enum_helper
-from ..utils.color import CommonColor
+from ..utils.color import CommonColor, Color
 from ..utils import view_state as mViewState
 from ..exceptions import ex as mEx
+from ..utils.type_var import Row, Column, Table, TupleArray, FloatList, FloatTable
 
 NameVal = ArgsHelper.NameValue
 # endregion Imports
@@ -1518,12 +1519,12 @@ class Calc:
     # endregion    set_val()
 
     @staticmethod
-    def convert_to_float(val: object) -> float:
+    def convert_to_float(val: Any) -> float:
         """
         Converts value to float
 
         Args:
-            val (object): Value to convert
+            val (Any): Value to convert
 
         Returns:
             float: value converted to float. 0.0 is returned if conversion fails.
@@ -1667,7 +1668,7 @@ class Calc:
         ...
 
     @classmethod
-    def get_val(cls, *args, **kwargs) -> object | None:
+    def get_val(cls, *args, **kwargs) -> Any | None:
         """
         Gets cell value
 
@@ -1680,7 +1681,7 @@ class Calc:
             row (int): Cell zero-base row
 
         Returns:
-            object | None: Cell value cell has a value; Otherwise, None
+            Any | None: Cell value cell has a value; Otherwise, None
         """
         ordered_keys = (1, 2, 3)
         kargs_len = len(kwargs)
@@ -2008,7 +2009,7 @@ class Calc:
     # region    set_array()
     @classmethod
     def _set_array_doc_addr(
-        cls, values: Sequence[Sequence[object]], doc: XSpreadsheetDocument, addr: CellAddress
+        cls, values: Table, doc: XSpreadsheetDocument, addr: CellAddress
     ) -> None:
         v_len = len(values)
         if v_len == 0:
@@ -2024,24 +2025,24 @@ class Calc:
 
     @overload
     @classmethod
-    def set_array(cls, values: Sequence[Sequence[object]], cell_range: XCellRange) -> None:
+    def set_array(cls, values: Table, cell_range: XCellRange) -> None:
         """
         Inserts array of data into spreadsheet
 
         Args:
-            values (Sequence[Sequence[object]]): A 2-Dimensional array of value such as a list of list or tuple of tuples.
+            values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
             cell_range (XCellRange): Range in spreadsheet to insert data
         """
         ...
 
     @overload
     @classmethod
-    def set_array(cls, values: Sequence[Sequence[object]], sheet: XSpreadsheet, name: str) -> None:
+    def set_array(cls, values: Table, sheet: XSpreadsheet, name: str) -> None:
         """
         Inserts array of data into spreadsheet
 
         Args:
-            values (Sequence[Sequence[object]]): A 2-Dimensional array of value such as a list of list or tuple of tuples.
+            values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
             sheet (XSpreadsheet): Spreadsheet
             name (str): Range name such as 'A1:D4' or cell name such as 'B4'
 
@@ -2053,12 +2054,12 @@ class Calc:
 
     @overload
     @classmethod
-    def set_array(cls, values: Sequence[Sequence[object]], doc: XSpreadsheetDocument, addr: CellAddress) -> None:
+    def set_array(cls, values: Table, doc: XSpreadsheetDocument, addr: CellAddress) -> None:
         """
         Inserts array of data into spreadsheet
 
         Args:
-            values (Sequence[Sequence[object]]): A 2-Dimensional array of value such as a list of list or tuple of tuples.
+            values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
             doc (XSpreadsheetDocument): Spreadsheet Document
             addr (CellAddress): Address to insert data.
         """
@@ -2068,7 +2069,7 @@ class Calc:
     @classmethod
     def set_array(
         cls,
-        values: Sequence[Sequence[object]],
+        values: Table,
         sheet: XSpreadsheet,
         col_start: int,
         row_start: int,
@@ -2079,7 +2080,7 @@ class Calc:
         Inserts array of data into spreadsheet
 
         Args:
-            values (Sequence[Sequence[object]]): A 2-Dimensional array of value such as a list of list or tuple of tuples.
+            values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
             sheet (XSpreadsheet): Spreadsheet
             col_start (int): Zero-base Start Colum
             row_start (int): Zero-base Start Row
@@ -2094,7 +2095,7 @@ class Calc:
         Inserts array of data into spreadsheet
 
         Args:
-            values (Sequence[Sequence[object]]): A 2-Dimensional array of value such as a list of list or tuple of tuples.
+            values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
             cell_range (XCellRange): Range in spreadsheet to insert data
             sheet (XSpreadsheet): Spreadsheet
             name (str): Range name such as 'A1:D4' or cell name such as 'B4'
@@ -2173,7 +2174,7 @@ class Calc:
         cls,
         sheet: XSpreadsheet,
         range_name: str,
-        values: Sequence[Sequence[object]],
+        values: Table,
     ) -> None:
         """
         Inserts array of data into spreadsheet
@@ -2181,7 +2182,7 @@ class Calc:
         Args:
             sheet (XSpreadsheet): _description_
             range_name (str): Range to insert data such as 'A1:E12'
-            values (Sequence[Sequence[object]]): A 2-Dimensional array of value such as a list of list or tuple of tuples.
+            values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
         """
         v_len = len(values)
         if v_len == 0:
@@ -2191,13 +2192,13 @@ class Calc:
         cls.set_cell_range_array(cell_range=cell_range, values=values)
 
     @staticmethod
-    def set_cell_range_array(cell_range: XCellRange, values: Sequence[Sequence[object]]) -> None:
+    def set_cell_range_array(cell_range: XCellRange, values: Table) -> None:
         """
         Inserts array of data into spreadsheet
 
         Args:
             cell_range (XCellRange): Cell Ranage
-            values (Sequence[Sequence[object]]): A 2-Dimensional array of value such as a list of list or tuple of tuples.
+            values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
         """
         v_len = len(values)
         if v_len == 0:
@@ -2209,14 +2210,14 @@ class Calc:
         cr_data.setDataArray(values)
 
     @classmethod
-    def set_array_cell(cls, sheet: XSpreadsheet, cell_name: str, values: Sequence[Sequence[object]]) -> None:
+    def set_array_cell(cls, sheet: XSpreadsheet, cell_name: str, values: Table) -> None:
         """
         Inserts array of data into spreadsheet
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
             cell_name (str): Cell Name such as 'A1'
-            values (Sequence[Sequence[object]]): A 2-Dimensional array of value such as a list of list or tuple of tuples.
+            values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
         """
         v_len = len(values)
         if v_len == 0:
@@ -2238,7 +2239,7 @@ class Calc:
 
     @overload
     @classmethod
-    def get_array(cls, cell_range: XCellRange) -> Tuple[Tuple[object, ...], ...]:
+    def get_array(cls, cell_range: XCellRange) -> TupleArray:
         """
         Gets Array of data from a spreadsheet.
 
@@ -2249,13 +2250,13 @@ class Calc:
             MissingInterfaceError: if interface is missing
 
         Returns:
-            Tuple[Tuple[object, ...], ...]: Resulting data array.
+            TupleArray: Resulting data array.
         """
         ...
 
     @overload
     @classmethod
-    def get_array(cls, sheet: XSpreadsheet, range_name: str) -> Tuple[Tuple[object, ...], ...]:
+    def get_array(cls, sheet: XSpreadsheet, range_name: str) -> TupleArray:
         """
         Gets Array of data from a spreadsheet.
 
@@ -2267,12 +2268,12 @@ class Calc:
             MissingInterfaceError: if interface is missing
 
         Returns:
-            Tuple[Tuple[object, ...], ...]: Resulting data array.
+            TupleArray: Resulting data array.
         """
         ...
 
     @classmethod
-    def get_array(cls, *args, **kwargs) -> Tuple[Tuple[object, ...], ...]:
+    def get_array(cls, *args, **kwargs) -> TupleArray:
         """
         Gets Array of data from a spreadsheet.
 
@@ -2285,7 +2286,7 @@ class Calc:
             MissingInterfaceError: if interface is missing
 
         Returns:
-            Tuple[Tuple[object, ...], ...]: Resulting data array.
+            TupleArray: Resulting data array.
         """
         ordered_keys = (1, 2)
         kargs_len = len(kwargs)
@@ -2329,7 +2330,7 @@ class Calc:
     # endregion get_array()
 
     @staticmethod
-    def print_array(vals: Sequence[Sequence[object]]) -> None:
+    def print_array(vals: Table) -> None:
         """
         Prints a 2-Dimensional array to terminal
 
@@ -2348,7 +2349,7 @@ class Calc:
         print()
 
     @classmethod
-    def get_float_array(cls, sheet: XSpreadsheet, range_name: str) -> List[List[float]]:
+    def get_float_array(cls, sheet: XSpreadsheet, range_name: str) -> FloatTable:
         """
         Gets a 2-Dimensional List of floats
 
@@ -2357,7 +2358,7 @@ class Calc:
             range_name (str): Range to get array of floats frm such as 'A1:E18'
 
         Returns:
-            List[List[float]]: 2-Dimensional List of floats
+            FloatTable: 2-Dimensional List of floats
         """
         return cls._convert_to_floats_2d(cls.get_array(sheet=sheet, range_name=range_name))
 
@@ -2366,14 +2367,14 @@ class Calc:
     # region    convert_to_floats()
 
     @classmethod
-    def _convert_to_floats_1d(cls, vals: Sequence[object]) -> List[float]:
+    def _convert_to_floats_1d(cls, vals: Sequence[object]) -> FloatList:
         doubles = []
         for val in vals:
             doubles.append(cls.convert_to_float(val))
         return doubles
 
     @classmethod
-    def _convert_to_floats_2d(cls, vals: Sequence[Sequence[object]]) -> List[List[float]]:
+    def _convert_to_floats_2d(cls, vals: Sequence[Sequence[object]]) -> FloatTable:
         row_len = len(vals)
         if row_len == 0:
             return []
@@ -2387,42 +2388,42 @@ class Calc:
 
     @overload
     @classmethod
-    def convert_to_floats(cls, vals: Sequence[object]) -> List[float]:
+    def convert_to_floats(cls, vals: Row) -> FloatList:
         """
         Converts a 1-Dimensional array into List of float
 
         Args:
-            vals (Sequence[object]): List to convert to floats.
+            vals (Row): List to convert to floats.
 
         Returns:
-            List[float]: vals converted to float
+            FloatList: vals converted to float
         """
         ...
 
     @overload
     @classmethod
-    def convert_to_floats(cls, vals: Sequence[Sequence[object]]) -> List[List[float]]:
+    def convert_to_floats(cls, vals: Table) -> FloatTable:
         """
         Converts a 2-Dimensional array into List of float
 
         Args:
-            vals (Sequence[Sequence[object]]): 2-Dimensional list to convert to floats
+            vals (Table): 2-Dimensional list to convert to floats
 
         Returns:
-            List[List[float]]: 2-Dimensional list of floats.
+            FloatTable: 2-Dimensional list of floats.
         """
         ...
 
     @classmethod
-    def convert_to_floats(cls, vals):
+    def convert_to_floats(cls, vals: Row | Table) -> FloatList | FloatTable:
         """
         Converts a 1d or 2d array into List of float
 
         Args:
-            vals (Sequence[object] | Sequence[Sequence[object]]): List or 2-Dimensional list to convert to floats.
+            vals (Row | Table): List or 2-Dimensional list to convert to floats.
 
         Returns:
-            List[float] | List[List[float]]: vals converted to float
+            FloatList | FloatTable: vals converted to float
         """
         v_len = len(vals)
         if v_len == 0:
@@ -2444,26 +2445,26 @@ class Calc:
     # region    set_col()
     @overload
     @classmethod
-    def set_col(cls, sheet: XSpreadsheet, values: Sequence[Any], cell_name: str) -> None:
+    def set_col(cls, sheet: XSpreadsheet, values: Column, cell_name: str) -> None:
         """
         Inserts a colum of data into spreadsheet
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
-            values (Sequence[Any]): Column Data
+            values (Column): Column Data
             cell_name (str): Name of Cell to begin the insert such as 'A1'
         """
         ...
 
     @overload
     @classmethod
-    def set_col(cls, sheet: XSpreadsheet, values: Sequence[Any], col_start: int, row_start: int) -> None:
+    def set_col(cls, sheet: XSpreadsheet, values: Column, col_start: int, row_start: int) -> None:
         """
         Inserts a colum of data into spreadsheet
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
-            values (Sequence[Any]):  Column Data as 1-Dimensional Sequence such as a list of values
+            values (Column):  Column Data as 1-Dimensional Sequence such as a list of values
             col_start (int): Zero-base column index
             row_start (int): Zero-base row index
         """
@@ -2476,7 +2477,7 @@ class Calc:
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
-            values (Sequence[Any]): Column Data
+            values (Column): Column Data
             cell_name (str): Name of Cell to begin the insert such as 'A1'
             col_start (int): Zero-base column index
             row_start (int): Zero-base row index
@@ -2534,7 +2535,7 @@ class Calc:
     # region    set_row()
     @overload
     @classmethod
-    def set_row(cls, sheet: XSpreadsheet, values: Sequence[Any], cell_name: str) -> None:
+    def set_row(cls, sheet: XSpreadsheet, values: Row, cell_name: str) -> None:
         """
         Inserts a row of data into spreadsheet
 
@@ -2543,14 +2544,14 @@ class Calc:
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
-            values (Sequence[Any]): Row Data
+            values (Row): Row Data
             cell_name (str): Name of Cell to begin the insert such as 'A1'
         """
         ...
 
     @overload
     @classmethod
-    def set_row(cls, sheet: XSpreadsheet, values: Sequence[Any], col_start: int, row_start: int) -> None:
+    def set_row(cls, sheet: XSpreadsheet, values: Row, col_start: int, row_start: int) -> None:
         """
         Inserts a row of data into spreadsheet
 
@@ -2559,7 +2560,7 @@ class Calc:
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
-            values (Sequence[Any]):  Row Data as 1-Dimensional Sequence such as a list of values
+            values (Row):  Row Data as 1-Dimensional Sequence such as a list of values
             col_start (int): Zero-base column index
             row_start (int): Zero-base row index
         """
@@ -2575,7 +2576,7 @@ class Calc:
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
-            values (Sequence[Any]): Row Data
+            values (Row): Row Data
             cell_name (str): Name of Cell to begin the insert such as 'A1'
             col_start (int): Zero-base column index
             row_start (int): Zero-base row index
@@ -2636,7 +2637,7 @@ class Calc:
     # endregion set_row()
 
     @classmethod
-    def get_row(cls, sheet: XSpreadsheet, range_name: str) -> Sequence[Any] | None:
+    def get_row(cls, sheet: XSpreadsheet, range_name: str) -> List[Any]:
         """
         Gets a row of data from spreadsheet
 
@@ -2645,17 +2646,29 @@ class Calc:
             range_name (str): Range such as 'A1:A12'
 
         Returns:
-            List[Any] | None: 1-Dimensional List of values on success; Otherwise, None
+            List[Any]: 1-Dimensional List of values on success; Otherwise, None
         """
         vals = cls.get_array(sheet=sheet, range_name=range_name)
         return cls.extract_row(vals=vals, row_idx=0)
 
     @staticmethod
-    def extract_row(vals: Sequence[Sequence[Any]], row_idx: int) -> Sequence[Any] | None:
+    def extract_row(vals: Table, row_idx: int) -> List[Any]:
+        """
+        Extracts a row from a table
+
+        Args:
+            vals (Table): Table of data
+            row_idx (int): Row index to extract
+
+        Raises:
+            IndexError: If row_idx is out of range.
+
+        Returns:
+            List[Any]: Row of data
+        """
         row_len = len(vals)
         if row_idx < 0 or row_idx > row_len - 1:
-            print("Row index out of range")
-            return None
+            raise IndexError("Row index out of range")
 
         return vals[row_idx]
 
@@ -4552,7 +4565,7 @@ class Calc:
         cls._add_border_sht_rng_color(cell_range=cell_range, color=CommonColor.BLACK)  # color black
 
     @classmethod
-    def _add_border_sht_rng_color(cls, cell_range: XCellRange, color: int) -> None:
+    def _add_border_sht_rng_color(cls, cell_range: XCellRange, color: Color) -> None:
         vals = (
             cls.BorderEnum.LEFT_BORDER
             | cls.BorderEnum.RIGHT_BORDER
@@ -4565,7 +4578,7 @@ class Calc:
     def _add_border_sht_rng_color_vals(
         cls,
         cell_range: XCellRange,
-        color: int,
+        color: Color,
         border_vals: int | BorderEnum,
     ) -> None:
         line = BorderLine2()  # create the border line
@@ -4641,14 +4654,14 @@ class Calc:
 
     @overload
     @classmethod
-    def add_border(cls, sheet: XSpreadsheet, cell_range: XCellRange, color: int) -> XCellRange:
+    def add_border(cls, sheet: XSpreadsheet, cell_range: XCellRange, color: Color) -> XCellRange:
         """
         Adds borders to a cell range
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
             cell_range (XCellRange): Cell range
-            color (int): RGB color as integer
+            color (Color): RGB color
 
         Returns:
             XCellRange: Range borders that are affected
@@ -4657,14 +4670,14 @@ class Calc:
 
     @overload
     @classmethod
-    def add_border(cls, sheet: XSpreadsheet, range_name: str, color: int) -> XCellRange:
+    def add_border(cls, sheet: XSpreadsheet, range_name: str, color: Color) -> XCellRange:
         """
         Adds borders to a cell range
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
             range_name (str): Range Name such as 'A1:F9'
-            color (int): RGB color as integer
+            color (Color): RGB color
 
         Returns:
             XCellRange: Range borders that are affected
@@ -4673,14 +4686,14 @@ class Calc:
 
     @overload
     @classmethod
-    def add_border(cls, sheet: XSpreadsheet, cell_range: XCellRange, color: int, border_vals: BorderEnum) -> XCellRange:
+    def add_border(cls, sheet: XSpreadsheet, cell_range: XCellRange, color: Color, border_vals: BorderEnum) -> XCellRange:
         """
         Adds borders to a cell range
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
             cell_range (XCellRange): Cell range
-            color (int): RGB color as integer
+            color (Color): RGB color
             border_vals (BorderEnum): Determines what borders are applied.
 
         Returns:
@@ -4690,14 +4703,14 @@ class Calc:
 
     @overload
     @classmethod
-    def add_border(cls, sheet: XSpreadsheet, range_name: str, color: int, border_vals: BorderEnum) -> XCellRange:
+    def add_border(cls, sheet: XSpreadsheet, range_name: str, color: Color, border_vals: BorderEnum) -> XCellRange:
         """
         Adds borders to a cell range
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
             range_name (str): Range Name such as 'A1:F9'
-            color (int): RGB color as integer
+            color (Color): RGB color
             border_vals (BorderEnum): Determines what borders are applied.
 
         Returns:
@@ -4714,7 +4727,7 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet
             cell_range (XCellRange): Cell range
             range_name (str): Range Name such as 'A1:F9'
-            color (int): RGB color as integer
+            color (Color): RGB color
             border_vals (BorderEnum): Determines what borders are applied.
 
         Returns:
@@ -4873,7 +4886,6 @@ class Calc:
         Args:
             sheet (XSpreadsheet): Spreadsheet
             cell_range (XCellRange): Cell range
-            color (int): RGB color as integer
             border_vals (BorderEnum): Determines what borders are applied.
 
         Returns:
@@ -4890,7 +4902,6 @@ class Calc:
         Args:
             sheet (XSpreadsheet): Spreadsheet
             range_name (str): Range Name such as 'A1:F9'
-            color (int):  RGB color as integer
             border_vals (BorderEnum): Determines what borders are applied.
 
         Returns:
@@ -4907,7 +4918,6 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet
             cell_range (XCellRange): Cell range
             range_name (str): Range Name such as 'A1:F9'
-            color (int): RGB color as integer
             border_vals (BorderEnum): Determines what borders are applied.
 
         Returns:
@@ -4983,7 +4993,7 @@ class Calc:
     
     @overload
     @classmethod
-    def highlight_range(cls, sheet: XSpreadsheet,  headline: str, cell_range: XCellRange, color: int) ->  XCell:
+    def highlight_range(cls, sheet: XSpreadsheet,  headline: str, cell_range: XCellRange, color: Color) ->  XCell:
         """
         Draw a colored border around the range and write a headline in the
         top-left cell of the range.
@@ -4992,7 +5002,7 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet
             headline (str): Headline
             cell_range (XCellRange): Cell Range
-            color (int): RGB color as int
+            color (Color): RGB color
 
         Returns:
             XCell: First cell of range that headline ia applied on
@@ -5019,7 +5029,7 @@ class Calc:
     
     @overload
     @classmethod
-    def highlight_range(cls, sheet: XSpreadsheet,  headline: str, range_name: str, color:int) ->  XCell:
+    def highlight_range(cls, sheet: XSpreadsheet,  headline: str, range_name: str, color: Color) ->  XCell:
         """
         Draw a colored border around the range and write a headline in the
         top-left cell of the range.
@@ -5028,7 +5038,7 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet
             headline (str): Headline
             range_name (str): Range Name such as 'A1:F9'
-            color (int): RGB color as int
+            color (Color): RGB color
 
         Returns:
             XCell: First cell of range that headline ia applied on
@@ -5046,6 +5056,7 @@ class Calc:
             headline (str): Headline
             cell_range (XCellRange): Cell Range
             range_name (str): Range Name such as 'A1:F9'
+            color (Color): RGB color
 
         Returns:
             XCell: First cell of range that headline ia applied on
@@ -5091,7 +5102,7 @@ class Calc:
         if count == 3:
             color = CommonColor.LIGHT_BLUE
         else:
-            color = cast(int, kargs[4])
+            color = cast(Color, kargs[4])
         cls._add_border_sht_rng_color(cell_range=cell_range, color=color)
 
         # color the headline
@@ -5156,7 +5167,7 @@ class Calc:
 
     @staticmethod
     def insert_scenario(
-        sheet: XSpreadsheet, range_name: str, vals: Sequence[Sequence[object]], name: str, comment: str
+        sheet: XSpreadsheet, range_name: str, vals: Table, name: str, comment: str
     ) -> XScenario:
         """
         Insert a scenario into sheet
@@ -5164,7 +5175,7 @@ class Calc:
         Args:
             sheet (XSpreadsheet): Spreadsheet
             range_name (str): Range name such as "A1:B3"
-            vals (Sequence[Sequence[object]]): 2d array of values
+            vals (Table): 2d array of values
             name (str): Scenario name
             comment (str): Scenario description
 

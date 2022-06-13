@@ -1,7 +1,12 @@
 # coding: utf-8
 from __future__ import annotations
-from typing import Any
+import os
+from typing import Any, TYPE_CHECKING
 import uno
+
+_DOCS_BUILDING = True if os.environ.get("DOCS_BUILDING", None) in ("True", "true") else False
+# _DOCS_BUILDING is only true when sphinx is building docs.
+# env var DOCS_BUILDING is set in docs/conf.py
 
 class UnoEnum:
     """
@@ -54,7 +59,12 @@ class UnoEnum:
                           # The instances will override this with their own, 
                           # set to True.
     def __new__(cls, type_name: str):
-        
+        if _DOCS_BUILDING:
+            # provision for sphinx autodoc
+            # sphinx autodoc errors if this class is called
+            # such as when a class instance is assigned to a constant
+            # see Write class
+            return type_name
         if type_name in cls._loaded:
             return cls._loaded[type_name]
         e = super().__new__(cls)
@@ -71,6 +81,9 @@ class UnoEnum:
         Args:
             type_name (str): The name of the enum as a string.
         """
+        if _DOCS_BUILDING:
+            # provision for sphinx autodoc
+            return
         # This instance var overrides the class var.
         self._initialized = True
     
