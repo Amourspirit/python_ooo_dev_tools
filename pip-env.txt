@@ -58,7 +58,7 @@ thefuzz==0.19.0
 twine==4.0.1
 typeguard==2.13.3
 types-uno-script==0.1.1
-types-unopy==0.4.4
+types-unopy==0.4.5
 urllib3==1.26.9
 webencodings==0.5.1
 zipp==3.8.0

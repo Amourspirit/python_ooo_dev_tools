@@ -88,3 +88,35 @@ def fix_xml_path():
         return Path(xml_fixture_path, doc_name)
 
     return get_res
+
+@pytest.fixture(scope="session")
+def props_str_to_dict():
+    """
+    Convets a property string such as produced by
+    Props.show_obj_props() into a key value pair.
+    
+    First line is excpected to be Property Name and
+    is added as Key TEST_NAME
+    
+    Returns:
+        Returns a dictionary of Key value strings
+    """
+    def text_to_dict(props_str: str) -> dict:
+        def get_kv(kv_str:str) -> tuple:
+            parts = kv_str.split(sep=":", maxsplit=1)
+            if len(parts) == 0:
+                return parts[0].strip(), ""
+            return parts[0].strip(), parts[1].strip()
+            
+        lines = props_str.splitlines()
+        dlines = {}
+        frst = lines.pop(0) # first line is name such as Cursor Properties
+        dlines["TEST_NAME"] = frst.strip()
+        for line in lines:
+            try:
+                k, v = get_kv(line)
+                dlines[k] = v
+            except Exception:
+                pass
+        return dlines
+    return text_to_dict
