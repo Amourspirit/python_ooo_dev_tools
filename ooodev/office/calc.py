@@ -6,15 +6,12 @@ from __future__ import annotations
 from enum import IntFlag, Enum, Flag
 import numbers
 import re
+import os
 from typing import Any, List, Tuple, cast, overload, Sequence, TYPE_CHECKING
 import uno
 
-from com.sun.star.awt import Point
-from com.sun.star.container import XIndexAccess
-from com.sun.star.container import XNamed
-from com.sun.star.frame import XModel
-from com.sun.star.lang import XComponent
-from com.sun.star.lang import Locale
+_DOCS_BUILDING = True if os.environ.get("DOCS_BUILDING", None) in ("True", "true") else False
+
 from com.sun.star.sheet import CellFlags as UnoCellFlags # const
 from com.sun.star.sheet.GeneralFunction import (
     NONE as GF_NONE,
@@ -31,7 +28,6 @@ from com.sun.star.sheet.GeneralFunction import (
     VAR as GF_VAR,
     VARP as GF_VARP,
 )
-from com.sun.star.sheet import SolverConstraint  # struct
 from com.sun.star.sheet.SolverConstraintOperator import (
     LESS_EQUAL as SCO_LESS_EQUAL,
     EQUAL as SCO_EQUAL,
@@ -39,6 +35,24 @@ from com.sun.star.sheet.SolverConstraintOperator import (
     INTEGER as SCO_INTEGER,
     BINARY as SCO_BINARY,
 )
+from com.sun.star.table.CellContentType import (
+    EMPTY as CCT_EMPTY,
+    VALUE as CCT_VALUE,
+    TEXT as CCT_TEXT,
+    FORMULA as CCT_FORMULA,
+)
+
+# if not _DOCS_BUILDING:
+from com.sun.star.sheet.CellDeleteMode import LEFT as DM_LEFT, UP as DM_UP
+from com.sun.star.sheet.CellInsertMode import RIGHT as IM_RIGHT, DOWN as IM_DOWN
+# from com.sun.star.sheet.FillDateMode import FILL_DATE_DAY # enum
+from com.sun.star.awt import Point
+from com.sun.star.container import XIndexAccess
+from com.sun.star.container import XNamed
+from com.sun.star.frame import XModel
+from com.sun.star.lang import XComponent
+from com.sun.star.lang import Locale
+from com.sun.star.sheet import SolverConstraint  # struct
 from com.sun.star.sheet import XCellAddressable
 from com.sun.star.sheet import XCellRangeData
 from com.sun.star.sheet import XCellRangeAddressable
@@ -63,20 +77,12 @@ from com.sun.star.sheet import XSpreadsheets
 from com.sun.star.sheet import XUsedAreaCursor
 from com.sun.star.sheet import XViewPane
 from com.sun.star.sheet import XViewFreezable
-from com.sun.star.sheet.CellDeleteMode import LEFT as DM_LEFT, UP as DM_UP
-from com.sun.star.sheet.CellInsertMode import RIGHT as IM_RIGHT, DOWN as IM_DOWN
-from com.sun.star.sheet.FillDateMode import FILL_DATE_DAY
 from com.sun.star.style import XStyle
 from com.sun.star.table import BorderLine2  # struct
 from com.sun.star.table import TableBorder2  # struct
 from com.sun.star.table import XColumnRowRange
 from com.sun.star.table import XCellRange
-from com.sun.star.table.CellContentType import (
-    EMPTY as CCT_EMPTY,
-    VALUE as CCT_VALUE,
-    TEXT as CCT_TEXT,
-    FORMULA as CCT_FORMULA,
-)
+
 from com.sun.star.text import XSimpleText
 from com.sun.star.uno import Exception as UnoException
 from com.sun.star.util import NumberFormat  # const
@@ -103,6 +109,8 @@ if TYPE_CHECKING:
     from com.sun.star.text import XText
     from com.sun.star.util import XSearchable
     from com.sun.star.util import XSearchDescriptor
+    
+    from com.sun.star.sheet import FillDateMode as UnoFillDateMode
 
 
 from ..utils import lo as mLo
@@ -113,6 +121,7 @@ from ..utils.gen_util import ArgsHelper, TableHelper, Util as GenUtil
 from ..utils import enum_helper
 from ..utils.color import CommonColor, Color
 from ..utils import view_state as mViewState
+from ..utils.uno_enum import UnoEnum
 from ..exceptions import ex as mEx
 from ..utils.type_var import Row, Column, Table, TupleArray, FloatList, FloatTable
 
@@ -244,6 +253,9 @@ class Calc:
 
     setattr(SolverConstraintOperator, "__new__", enum_helper.uno_enum_class_new)
 
+
+    FillDateMode = cast("UnoFillDateMode", UnoEnum("com.sun.star.sheet.FillDateMode"))
+
     # endregion classes
 
     # region Constants
@@ -251,7 +263,7 @@ class Calc:
     MAX_VALUE = 0x7FFFFFFF
 
     # use a better name when date mode doesn't matter
-    NO_DATE = FILL_DATE_DAY
+    NO_DATE = FillDateMode.FILL_DATE_DAY
 
     CELL_POS = Point(3, 4)
 
@@ -5323,12 +5335,12 @@ class Calc:
     # region --------------- using calc functions ----------------------
 
     @classmethod
-    def compute_function(cls, fn: GeneralFunction | str, cell_range: XCellRange) -> float:
+    def compute_function(cls, fn: Calc.GeneralFunction | str, cell_range: XCellRange) -> float:
         """
         Compuutes a Calc Function
 
         Args:
-            fn (GeneralFunction | str): Function to calculate, GeneralFunction Enum value or String such as 'SUM' or 'MAX'
+            fn (:py:attr:`.Calc.GeneralFunction` | str): Function to calculate, GeneralFunction Enum value or String such as 'SUM' or 'MAX'
             cell_range (XCellRange): Cell range to apply function on.
 
         Returns:

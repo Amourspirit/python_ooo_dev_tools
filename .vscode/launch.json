@@ -19,6 +19,24 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": false
+        },
+        {
+            "name": "Python: Sphinx Docs",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/env/bin/sphinx-build",
+            "cwd": "${workspaceFolder}/docs",
+            "args": [
+                "-E",
+                "-b",
+                "html",
+                "-d",
+                "_build/doctrees",
+                ".",
+                "_build/html"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
         }
     ]
 }

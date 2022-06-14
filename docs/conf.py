@@ -76,3 +76,4 @@ autodoc_typehints = "both"
 # solution autodoc_mock_imports, for some reason after adding uno, unohelper I also had to include com.
 # com.sun.star.__init__.py raises an Import error by design.
 autodoc_mock_imports = ['uno', 'unohelper', 'lxml', 'com']
+# alos note that object can be mocked. See ooodev/utils/uno_enum.py
