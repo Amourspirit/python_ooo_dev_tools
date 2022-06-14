@@ -15,8 +15,6 @@ from ..utils import file_io as mFileIO
 from ..utils import props as mProps
 from ..utils.gen_util import TableHelper
 from ..utils.color import CommonColor, Color
-from ..utils.uno_enum import UnoEnum
-from ..utils.uno_const import UnoConst
 from ..utils.type_var import PathOrStr, Table
 
 _DOCS_BUILDING = os.environ.get("DOCS_BUILDING", None) == 'True'
@@ -52,7 +50,6 @@ if not _DOCS_BUILDING and not _ON_RTD:
     from com.sun.star.linguistic2 import XSearchableDictionaryList
     from com.sun.star.style import NumberingType  # const
     from com.sun.star.table import BorderLine  # struct
-    from com.sun.star.text import ControlCharacter as UnoControlCharacter
     from com.sun.star.text import HoriOrientation
     from com.sun.star.text import VertOrientation
     from com.sun.star.text import XBookmarksSupplier
@@ -75,102 +72,37 @@ if not _DOCS_BUILDING and not _ON_RTD:
     from com.sun.star.view import XPrintable
 
 if TYPE_CHECKING:
-    from com.sun.star.awt import FontSlant as UnoFontSlant  # enum
     from com.sun.star.container import XEnumeration
     from com.sun.star.container import XNameAccess
     from com.sun.star.drawing import XDrawPage
     from com.sun.star.frame import XComponentLoader
     from com.sun.star.graphic import XGraphic
-    from com.sun.star.linguistic2 import DictionaryType as UnoDictionaryType  # enum
     from com.sun.star.linguistic2 import SingleProofreadingError
     from com.sun.star.linguistic2 import XLinguServiceManager2
     from com.sun.star.linguistic2 import XSpellChecker
     from com.sun.star.linguistic2 import XThesaurus
-    from com.sun.star.style import BreakType as UnoBreakType  # enum
-    from com.sun.star.style import ParagraphAdjust as UnoParagraphAdjust  # enum
-    from com.sun.star.text import PageNumberType as UnoPageNumberType  # enum
-    from com.sun.star.text import TextContentAnchorType as UnoTextContentAnchorType # enum
     from com.sun.star.text import XTextCursor
-    # from com.sun.star.view import PaperFormat as UnoPaperFormat  # enum
+
+
+from ooo.dyn.awt.font_slant import FontSlant
+from ooo.dyn.linguistic2.dictionary_type import DictionaryType as OooDictionaryType
+from ooo.dyn.style.break_type import BreakType
+from ooo.dyn.style.paragraph_adjust import ParagraphAdjust
+from ooo.dyn.text.control_character import ControlCharacterEnum
+from ooo.dyn.text.page_number_type import PageNumberType
+from ooo.dyn.text.text_content_anchor_type import TextContentAnchorType
+from ooo.dyn.view.paper_format import PaperFormat as OooPaperFormat
 
 # endregion Imports
 
-
 class Write:
+    ControlCharacter = ControlCharacterEnum # UnoControlCharacter
     # region -------------- Enums --------------------------------------
-    BreakType = cast("UnoBreakType", UnoEnum("com.sun.star.style.BreakType"))
-    """
-    :py:class:`~.uno_enum.UnoEnum` Enum Values
-
-    Used to specify if and how a page or column break is applied. 
-
-    See Also:
-        `API BreakType <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1style.html#a3ae28cb49c180ec160a0984600b2b925>`_
-    """
     
-    # ControlCharacter = cast(UnoControlCharacter, UnoConst("com.sun.star.text.ControlCharacter"))
-    ControlCharacter = UnoControlCharacter
+    DictionaryType = OooDictionaryType
 
-    ParagraphAdjust = cast("UnoParagraphAdjust", UnoEnum("com.sun.star.style.ParagraphAdjust"))
-    """
-    :py:class:`~.uno_enum.UnoEnum` Enum Values
+    PaperFormat = OooPaperFormat
 
-    Used to describe the formatting of a text paragraph. 
-
-    See Also:
-        `API ParagraphAdjust <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1style.html#ab9b2806f97ec4c3b5d4e2d92084948f1>`_
-    """
-
-    FontSlant = cast("UnoFontSlant", UnoEnum("com.sun.star.awt.FontSlant"))
-    """
-    :py:class:`~.uno_enum.UnoEnum` Enum Values
-
-    Used to specify the slant of a font.
-
-    See Also:
-        `API FontSlant <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1awt.html#a362a86d3ebca4a201d13bc3e7b94340e>`_
-    """
-
-    PageNumberType = cast("UnoPageNumberType", UnoEnum("com.sun.star.text.PageNumberType"))
-    """
-    :py:class:`~.uno_enum.UnoEnum` Enum Values
-
-    Determines which page number is displayed in a page number text field.
-
-    See Also:
-        `API PageNumberType <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1text.html#aeffd73e249af906f303724f66f1f01c5>`_
-    """
-
-    DictionaryType = cast("UnoDictionaryType", UnoEnum("com.sun.star.linguistic2.DictionaryType"))
-    """
-    :py:class:`~.uno_enum.UnoEnum` Enum Values
-    
-    Describes the type of a personal dictionary. 
-
-    See Also:
-        `API DictionaryType <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1linguistic2.html#a281c5a7578308b66c77c9e0de51b806a>`_
-    """
-
-    # PaperFormat = cast("UnoPaperFormat", UnoEnum("com.sun.star.view.PaperFormat"))
-    PaperFormat = UnoEnum("com.sun.star.view.PaperFormat")
-    """
-    :py:class:`~.uno_enum.UnoEnum` Enum Values
-
-    Specifies the format (size) of the paper on a text document.
-
-    See Also:
-        `API PaperFormat <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1view.html#a12ab04987d08416f8347a9790c7abf3e>`_
-    """
-
-    TextContentAnchorType = cast("UnoTextContentAnchorType", UnoEnum("com.sun.star.text.TextContentAnchorType"))
-    """
-    :py:class:`~.uno_enum.UnoEnum` Enum Values
-
-    Specify how the text content is attached to its surrounding text. 
-
-    See Also:
-        `API TextContentAnchorType <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1text.html#a470b1caeda4ff15fee438c8ff9e3d834>`_
-    """
     # endregion ----------- Enums --------------------------------------
 
     # region ------------- doc / open / close /create/ etc -------------
@@ -744,7 +676,7 @@ class Write:
             int: cursor position
         """
         cls._append_text(cursor=cursor, text=text)
-        cls._append_ctl_char(cursor=cursor, ctl_char=UnoControlCharacter.PARAGRAPH_BREAK)
+        cls._append_ctl_char(cursor=cursor, ctl_char=Write.ControlCharacter.PARAGRAPH_BREAK)
         return cls.get_position(cursor)
 
     @classmethod
@@ -755,7 +687,7 @@ class Write:
         Args:
             cursor (XTextCursor): Text Cursor
         """
-        cls._append_ctl_char(cursor=cursor, ctl_char=UnoControlCharacter.LINE_BREAK)
+        cls._append_ctl_char(cursor=cursor, ctl_char=Write.ControlCharacter.LINE_BREAK)
 
     @classmethod
     def end_paragraph(cls, cursor: XTextCursor) -> None:
@@ -765,7 +697,7 @@ class Write:
         Args:
             cursor (XTextCursor): Text Cursor
         """
-        cls._append_ctl_char(cursor=cursor, ctl_char=UnoControlCharacter.PARAGRAPH_BREAK)
+        cls._append_ctl_char(cursor=cursor, ctl_char=Write.ControlCharacter.PARAGRAPH_BREAK)
 
     @classmethod
     def page_break(cls, cursor: XTextCursor) -> None:
@@ -775,7 +707,7 @@ class Write:
         Args:
             cursor (XTextCursor): Text Cursor
         """
-        mProps.Props.set_property(cursor, "BreakType", Write.BreakType.PAGE_AFTER)
+        mProps.Props.set_property(cursor, "BreakType", BreakType.PAGE_AFTER)
         cls.end_paragraph(cursor)
 
     @classmethod
@@ -786,7 +718,7 @@ class Write:
         Args:
             cursor (XTextCursor): Text Cursor
         """
-        mProps.Props.set_property(cursor, "BreakType", Write.BreakType.COLUMN_AFTER)
+        mProps.Props.set_property(cursor, "BreakType", BreakType.COLUMN_AFTER)
         cls.end_paragraph(cursor)
 
     @classmethod
@@ -801,7 +733,7 @@ class Write:
         """
         xtext = cursor.getText()
         xtext.insertString(cursor, para, False)
-        xtext.insertControlCharacter(cursor, UnoControlCharacter.PARAGRAPH_BREAK, False)
+        xtext.insertControlCharacter(cursor, Write.ControlCharacter.PARAGRAPH_BREAK, False)
         cls.style_prev_paragraph(cursor, para_style)
 
     # endregion ---------- text writing methods ------------------------
@@ -868,7 +800,7 @@ class Write:
             cursor (XTextCursor): Text Cursor
             pos (int): Number of postiions to go left
         """
-        cls.style_left(cursor, pos, "CharPosture", Write.FontSlant.ITALIC)
+        cls.style_left(cursor, pos, "CharPosture", FontSlant.ITALIC)
 
     @classmethod
     def style_left_color(cls, cursor: XTextCursor, pos: int, color: Color) -> None:
@@ -961,7 +893,7 @@ class Write:
             .. code-block:: python
 
                 cursor = Write.get_cursor(doc)
-                Write.style_prev_paragraph(cursor=cursor, prop_val=Write.ParagraphAdjust.CENTER, prop_name="ParaAdjust")
+                Write.style_prev_paragraph(cursor=cursor, prop_val=ParagraphAdjust.CENTER, prop_name="ParaAdjust")
         """
         if prop_name is None:
             prop_name = "ParaStyleName"
@@ -1095,7 +1027,7 @@ class Write:
                 prop_set=footer_cursor, name="CharFontName", value=mInfo.Info.get_font_general_name()
             )
             mProps.Props.set_property(prop_set=footer_cursor, name="CharHeight", value=12.0)
-            mProps.Props.set_property(prop_set=footer_cursor, name="ParaAdjust", value=Write.ParagraphAdjust.CENTER)
+            mProps.Props.set_property(prop_set=footer_cursor, name="ParaAdjust", value=ParagraphAdjust.CENTER)
 
             # add text fields to the footer
             pg_number = cls.get_page_number()
@@ -1126,7 +1058,7 @@ class Write:
         """
         num_field = mLo.Lo.create_instance_msf(XTextField, "com.sun.star.text.TextField.PageNumber")
         mProps.Props.set_property(prop_set=num_field, name="NumberingType", value=NumberingType.ARABIC)
-        mProps.Props.set_property(prop_set=num_field, name="SubType", value=Write.PageNumberType.CURRENT)
+        mProps.Props.set_property(prop_set=num_field, name="SubType", value=PageNumberType.CURRENT)
         return num_field
 
     @staticmethod
@@ -1175,7 +1107,7 @@ class Write:
                 raise mEx.MissingInterfaceError(XPropertySet)
             header_props.setPropertyValue("CharFontName", mInfo.Info.get_font_general_name())
             header_props.setPropertyValue("CharHeight", 10)
-            header_props.setPropertyValue("ParaAdjust", Write.ParagraphAdjust.RIGHT)
+            header_props.setPropertyValue("ParaAdjust", ParagraphAdjust.RIGHT)
 
             header_text.setString(f"{text}\n")
         except Exception as e:
@@ -1229,7 +1161,7 @@ class Write:
             if props is None:
                 raise mEx.MissingInterfaceError(XPropertySet)
             props.setPropertyValue("CLSID", mLo.Lo.CLSID.MATH)
-            props.setPropertyValue("AnchorType", Write.TextContentAnchorType.AS_CHARACTER)
+            props.setPropertyValue("AnchorType", TextContentAnchorType.AS_CHARACTER)
 
             # insert object in document
             cls._append_text_content(cursor=cursor, text_content=embed_content)
@@ -1383,7 +1315,7 @@ class Write:
             frame_props = mLo.Lo.qi(XPropertySet, xframe)
             if frame_props is None:
                 raise mEx.MissingInterfaceError(XPropertySet)
-            frame_props.setPropertyValue("AnchorType", Write.TextContentAnchorType.AT_PAGE)
+            frame_props.setPropertyValue("AnchorType", TextContentAnchorType.AT_PAGE)
             frame_props.setPropertyValue("FrameIsAutomaticHeight", True)  # will grow if necessary
 
             # add a red border around all 4 sides
@@ -1579,7 +1511,7 @@ class Write:
             props = mLo.Lo.qi(XPropertySet, tgo)
             if props is None:
                 raise mEx.MissingInterfaceError(XPropertySet)
-            props.setPropertyValue("AnchorType", Write.TextContentAnchorType.AS_CHARACTER)
+            props.setPropertyValue("AnchorType", TextContentAnchorType.AS_CHARACTER)
             props.setPropertyValue("GraphicURL", mFileIO.FileIO.fnm_to_url(fnm))
 
             # optionally set the width and height
@@ -1727,7 +1659,7 @@ class Write:
             cls.end_paragraph(cursor)
 
             # center the previous paragraph
-            cls.style_prev_paragraph(cursor=cursor, prop_val=Write.ParagraphAdjust.CENTER, prop_name="ParaAdjust")
+            cls.style_prev_paragraph(cursor=cursor, prop_val=ParagraphAdjust.CENTER, prop_name="ParaAdjust")
 
             cls.end_paragraph(cursor)
         except mEx.CreateInstanceMsfError:
@@ -1998,12 +1930,12 @@ class Write:
         print()
 
     @staticmethod
-    def get_dict_type(dt: Write.DictionaryType) -> str:
+    def get_dict_type(dt: DictionaryType) -> str:
         """
         Gets dictionary type
 
         Args:
-            dt (:py:attr:`.Write.DictionaryType`): Dictionary Type
+            dt (DictionaryType): Dictionary Type
 
         Returns:
             str: positive, negative, mixed, or ?? if unknown
