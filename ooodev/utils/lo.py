@@ -557,7 +557,11 @@ class Lo(metaclass=StaticProperty):
         """
         nn = mXML.XML.get_flat_fiter_name(doc_type=doc_type)
         print(f"Flat filter Name: {nn}")
-        return cls.open_doc(fnm, loader, mProps.Props.make_props(FilterName=nn, Hidden=True))
+        # do not set Hidden=True property here.
+        # there is a strange error that pops up conditionally and it seems
+        # to be remedied by not seting Hidden=True
+        # see comments in tests.text_xml.test_in_filters.test_transform_clubs()
+        return cls.open_doc(fnm, loader, mProps.Props.make_props(FilterName=nn))
 
     @overload
     @classmethod

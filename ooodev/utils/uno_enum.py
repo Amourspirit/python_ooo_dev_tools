@@ -151,10 +151,7 @@ else:
                 # Provide the caller attributes in whatever ways interest you.
                 try:
                     key = __name
-                    if _DOCS_BUILDING:
-                        e = _MockEnum(self._type_name, __name)
-                    else:
-                        e = uno.Enum(self._type_name, __name)
+                    e = uno.Enum(self._type_name, __name)
                     self.__dict__[key] = e
                     return self.__dict__[key]
                 except Exception:

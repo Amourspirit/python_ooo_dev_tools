@@ -10,7 +10,12 @@ import os
 from typing import Any, List, Tuple, cast, overload, Sequence, TYPE_CHECKING
 import uno
 
-_DOCS_BUILDING = True if os.environ.get("DOCS_BUILDING", None) in ("True", "true") else False
+_DOCS_BUILDING = os.environ.get("DOCS_BUILDING", None) == 'True'
+# _DOCS_BUILDING is only true when sphinx is building docs.
+# env var DOCS_BUILDING is set in docs/conf.py
+_ON_RTD = os.environ.get('READTHEDOCS', None) == 'True'
+# env var READTHEDOCS is true when read the docs is building
+# maybe not needed as _DOCS_BUILDING is set in conf.py
 
 from com.sun.star.sheet import CellFlags as UnoCellFlags # const
 from com.sun.star.sheet.GeneralFunction import (
@@ -41,53 +46,53 @@ from com.sun.star.table.CellContentType import (
     TEXT as CCT_TEXT,
     FORMULA as CCT_FORMULA,
 )
-
-# if not _DOCS_BUILDING:
-from com.sun.star.sheet.CellDeleteMode import LEFT as DM_LEFT, UP as DM_UP
-from com.sun.star.sheet.CellInsertMode import RIGHT as IM_RIGHT, DOWN as IM_DOWN
-# from com.sun.star.sheet.FillDateMode import FILL_DATE_DAY # enum
 from com.sun.star.awt import Point
-from com.sun.star.container import XIndexAccess
-from com.sun.star.container import XNamed
-from com.sun.star.frame import XModel
-from com.sun.star.lang import XComponent
-from com.sun.star.lang import Locale
-from com.sun.star.sheet import SolverConstraint  # struct
-from com.sun.star.sheet import XCellAddressable
-from com.sun.star.sheet import XCellRangeData
-from com.sun.star.sheet import XCellRangeAddressable
-from com.sun.star.sheet import XCellRangeMovement
-from com.sun.star.sheet import XCellSeries
-from com.sun.star.sheet import XDataPilotTable
-from com.sun.star.sheet import XDataPilotTablesSupplier
-from com.sun.star.sheet import XFunctionAccess
-from com.sun.star.sheet import XFunctionDescriptions
-from com.sun.star.sheet import XHeaderFooterContent
-from com.sun.star.sheet import XRecentFunctions
-from com.sun.star.sheet import XScenario
-from com.sun.star.sheet import XScenariosSupplier
-from com.sun.star.sheet import XSpreadsheet
-from com.sun.star.sheet import XSpreadsheetDocument
-from com.sun.star.sheet import XSpreadsheetView
-from com.sun.star.sheet import XSheetAnnotationAnchor
-from com.sun.star.sheet import XSheetAnnotationsSupplier
-from com.sun.star.sheet import XSheetCellRange
-from com.sun.star.sheet import XSheetOperation
-from com.sun.star.sheet import XSpreadsheets
-from com.sun.star.sheet import XUsedAreaCursor
-from com.sun.star.sheet import XViewPane
-from com.sun.star.sheet import XViewFreezable
-from com.sun.star.style import XStyle
-from com.sun.star.table import BorderLine2  # struct
-from com.sun.star.table import TableBorder2  # struct
-from com.sun.star.table import XColumnRowRange
-from com.sun.star.table import XCellRange
 
-from com.sun.star.text import XSimpleText
-from com.sun.star.uno import Exception as UnoException
-from com.sun.star.util import NumberFormat  # const
-from com.sun.star.util import XNumberFormatsSupplier
-from com.sun.star.util import XNumberFormatTypes
+if not _DOCS_BUILDING and not _ON_RTD:
+    # not importing for doc building jus result in short import name for
+    # args that use these.
+    # this is also true becuase docs/conf.py ignores com import for autodoc
+    from com.sun.star.container import XIndexAccess
+    from com.sun.star.container import XNamed
+    from com.sun.star.frame import XModel
+    from com.sun.star.lang import XComponent
+    from com.sun.star.lang import Locale
+    from com.sun.star.sheet import SolverConstraint  # struct
+    from com.sun.star.sheet import XCellAddressable
+    from com.sun.star.sheet import XCellRangeData
+    from com.sun.star.sheet import XCellRangeAddressable
+    from com.sun.star.sheet import XCellRangeMovement
+    from com.sun.star.sheet import XCellSeries
+    from com.sun.star.sheet import XDataPilotTable
+    from com.sun.star.sheet import XDataPilotTablesSupplier
+    from com.sun.star.sheet import XFunctionAccess
+    from com.sun.star.sheet import XFunctionDescriptions
+    from com.sun.star.sheet import XHeaderFooterContent
+    from com.sun.star.sheet import XRecentFunctions
+    from com.sun.star.sheet import XScenario
+    from com.sun.star.sheet import XScenariosSupplier
+    from com.sun.star.sheet import XSpreadsheet
+    from com.sun.star.sheet import XSpreadsheetDocument
+    from com.sun.star.sheet import XSpreadsheetView
+    from com.sun.star.sheet import XSheetAnnotationAnchor
+    from com.sun.star.sheet import XSheetAnnotationsSupplier
+    from com.sun.star.sheet import XSheetCellRange
+    from com.sun.star.sheet import XSheetOperation
+    from com.sun.star.sheet import XSpreadsheets
+    from com.sun.star.sheet import XUsedAreaCursor
+    from com.sun.star.sheet import XViewPane
+    from com.sun.star.sheet import XViewFreezable
+    from com.sun.star.style import XStyle
+    from com.sun.star.table import BorderLine2  # struct
+    from com.sun.star.table import TableBorder2  # struct
+    from com.sun.star.table import XColumnRowRange
+    from com.sun.star.table import XCellRange
+
+    from com.sun.star.text import XSimpleText
+    from com.sun.star.uno import Exception as UnoException
+    from com.sun.star.util import NumberFormat  # const
+    from com.sun.star.util import XNumberFormatsSupplier
+    from com.sun.star.util import XNumberFormatTypes
 
 if TYPE_CHECKING:
     from com.sun.star.beans import PropertyValue
@@ -97,6 +102,8 @@ if TYPE_CHECKING:
     from com.sun.star.frame import XFrame
 
     # from com.sun.star.sheet import CellAnnotation
+    from com.sun.star.sheet import  CellDeleteMode as UnoCellDeleteMode # enum
+    from com.sun.star.sheet import CellInsertMode as UnoCellInsertMode # enum
     from com.sun.star.sheet import FunctionArgument  # struct
     from com.sun.star.sheet import XSheetAnnotation
     from com.sun.star.sheet import XDataPilotTables
@@ -255,7 +262,6 @@ class Calc:
 
 
     FillDateMode = cast("UnoFillDateMode", UnoEnum("com.sun.star.sheet.FillDateMode"))
-
     # endregion classes
 
     # region Constants
@@ -1237,12 +1243,13 @@ class Calc:
             cell_range (XCellRange): Cell range to insert
             is_shift_right (bool): If True then cell are inserted to the right; Otherwise, inserted down.
         """
+        CellInsertMode = cast("UnoCellInsertMode", UnoEnum("com.sun.star.sheet.CellInsertMode"))
         mover = mLo.Lo.qi(XCellRangeMovement, sheet)
         addr = cls.get_address(cell_range)
         if is_shift_right:
-            mover.insertCells(addr, IM_RIGHT)
+            mover.insertCells(addr, CellInsertMode.RIGHT)
         else:
-            mover.insertCells(addr, IM_DOWN)
+            mover.insertCells(addr, CellInsertMode.DOWN)
 
     @classmethod
     def delete_cells(cls, sheet: XSpreadsheet, cell_range: XCellRange, is_shift_left: bool) -> None:
@@ -1254,12 +1261,13 @@ class Calc:
             cell_range (XCellRange): Cell range to delete
             is_shift_left (bool): If True then cell are shifted left; Otherwise, cells are shifted up.
         """
+        CellDeleteMode = cast("UnoCellDeleteMode", UnoEnum("com.sun.star.sheet.CellDeleteMode"))
         mover = mLo.Lo.qi(XCellRangeMovement, sheet)
         addr = cls.get_address(cell_range)
         if is_shift_left:
-            mover.removeRange(addr, DM_LEFT)
+            mover.removeRange(addr, CellDeleteMode.LEFT)
         else:
-            mover.removeRange(addr, DM_UP)
+            mover.removeRange(addr, CellDeleteMode.UP)
 
     # region    clear_cells()
     @overload
