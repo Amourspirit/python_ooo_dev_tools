@@ -20,8 +20,6 @@ from com.sun.star.awt import XToolkit
 from com.sun.star.awt import XUserInputInterception
 from com.sun.star.awt import XWindow
 from com.sun.star.awt import XWindowPeer
-
-# from com.sun.star.awt.WindowClass import TOP as WC_TOP, MODALTOP as WC_MODALTOP
 from com.sun.star.beans import XPropertySet
 from com.sun.star.container import XIndexContainer
 from com.sun.star.frame import XDispatchProviderInterception
@@ -31,7 +29,6 @@ from com.sun.star.frame import XFramesSupplier
 from com.sun.star.frame import XModel
 from com.sun.star.lang import SystemDependent  # const
 from com.sun.star.lang import XComponent
-from com.sun.star.view import DocumentZoomType  # const
 from com.sun.star.view import XControlAccess
 from com.sun.star.view import XSelectionSupplier
 from com.sun.star.ui import UIElementType  # const
@@ -40,7 +37,6 @@ from com.sun.star.ui import XUIConfigurationManagerSupplier
 from com.sun.star.ui import XUIConfigurationManager
 
 if TYPE_CHECKING:
-    # from com.sun.star.awt import Toolkit
     from com.sun.star.frame import XController
     from com.sun.star.awt import XTopWindow
     from com.sun.star.ui import XUIElement
@@ -55,7 +51,7 @@ from ..utils import file_io as mFileIO
 from ooo.dyn.awt.rectangle import Rectangle
 from ooo.dyn.awt.window_descriptor import WindowDescriptor
 from ooo.dyn.awt.window_class import WindowClass
-
+from ooo.dyn.view.document_zoom_type import DocumentZoomTypeEnum
 # endregion Imports
 
 SysInfo = m_sys_info.SysInfo
@@ -65,12 +61,7 @@ class GUI:
 
     # region Class Enums
     # view settings zoom constants
-    class ZoomEnum(IntEnum):
-        OPTIMAL = DocumentZoomType.OPTIMAL
-        PAGE_WIDTH = DocumentZoomType.PAGE_WIDTH
-        ENTIRE_PAGE = DocumentZoomType.ENTIRE_PAGE
-        BY_VALUE = DocumentZoomType.BY_VALUE
-        PAGE_WIDTH_EXACT = DocumentZoomType.PAGE_WIDTH_EXACT
+    ZoomEnum = DocumentZoomTypeEnum
 
     # endregion Class Enums
 

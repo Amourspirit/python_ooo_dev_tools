@@ -22,6 +22,7 @@ setup(
     author_email='bigbytetech@gmail.com',
     license="mit",
     install_requires=[
+        'ooouno>=0.1.15'
         'types-unopy>=0.1.7',
         'Pillow>=9.1.1',
         'lxml>=4.8.0'
