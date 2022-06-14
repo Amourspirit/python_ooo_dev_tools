@@ -5,23 +5,19 @@
 from __future__ import annotations
 from datetime import datetime
 import time
-from typing import TYPE_CHECKING, Iterable, Optional, List, Sequence, Tuple, overload, TypeVar, Type
+from typing import TYPE_CHECKING, Iterable, Optional, List, Tuple, overload, Type
 from urllib.parse import urlparse
 import uno
-from os import PathLike
 from enum import IntEnum, Enum
 from ..meta.static_meta import StaticProperty, classproperty
 from .connect import ConnectBase, LoPipeStart, LoSocketStart, LoDirectStart
 from com.sun.star.beans import XPropertySet
 from com.sun.star.beans import XIntrospection
 from com.sun.star.container import XNamed
-from com.sun.star.document import MacroExecMode  # const
 from com.sun.star.frame import XDesktop
 from com.sun.star.frame import XDispatchHelper
-from com.sun.star.lang import DisposedException
 from com.sun.star.lang import XMultiServiceFactory
 from com.sun.star.io import IOException
-from com.sun.star.util import CloseVetoException
 from com.sun.star.util import XCloseable
 from com.sun.star.util import XNumberFormatsSupplier
 from com.sun.star.frame import XComponentLoader
@@ -39,6 +35,9 @@ if TYPE_CHECKING:
     from com.sun.star.uno import XComponentContext
     from com.sun.star.uno import XInterface
 
+from ooo.dyn.document.macro_exec_mode import MacroExecMode # const
+from ooo.dyn.lang.disposed_exception import DisposedException
+from ooo.dyn.util.close_veto_exception import CloseVetoException
 
 # import module and not module content to avoid circular import issue.
 # https://stackoverflow.com/questions/22187279/python-circular-importing
