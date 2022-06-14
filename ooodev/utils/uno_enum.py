@@ -79,10 +79,10 @@ else:
         
             .. code-block:: python
             
-                FillMode = UNoEnum("com.sun.star.sheet.FillMode")
+                FillMode = UnoEnum("com.sun.star.sheet.FillMode")
                 assert FillMode.LINEAR.value == "LINEAR"
                 
-                MyEnum = UNoEnum("com.sun.star.sheet.FillMode")
+                MyEnum = UnoEnum("com.sun.star.sheet.FillMode")
                 assert FillMode is MyEnum # singleton, same instances
         
         Note:
@@ -112,6 +112,9 @@ else:
             Note that ``"UnoFillMode"`` is wrapped in quotes. This is necessary for typing reasons.
             Without wrapping in quotes python will look for the import at runtime
             which will not be available becuase is in a ``TYPE_CHECKING`` block.
+
+        See Also:
+            :py:class:`~.uno_const.UnoConst`
         """
         _loaded = {}
         _initialized = False  # This class var is important. It is always False.
@@ -138,12 +141,8 @@ else:
             Get access to Uno Enum values without having to directly import them.
 
             Args:
-                type_name (str): The name of the enum as a string.
+                type_name (str): The namespace of the enum as a string.
             """
-            # if _DOCS_BUILDING:
-            #     # provision for sphinx autodoc
-            #     return
-            # This instance var overrides the class var.
             self._initialized = True
         
         def __getattr__(self, __name: str) -> uno.Enum | Any:
@@ -178,4 +177,4 @@ else:
             """
             return self._type_name
 
-    __all__ = (UnoEnum,)
+    __all__ = ("UnoEnum",)

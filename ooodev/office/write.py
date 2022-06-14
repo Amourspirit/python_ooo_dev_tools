@@ -16,6 +16,7 @@ from ..utils import props as mProps
 from ..utils.gen_util import TableHelper
 from ..utils.color import CommonColor, Color
 from ..utils.uno_enum import UnoEnum
+from ..utils.uno_const import UnoConst
 from ..utils.type_var import PathOrStr, Table
 
 _DOCS_BUILDING = os.environ.get("DOCS_BUILDING", None) == 'True'
@@ -51,7 +52,7 @@ if not _DOCS_BUILDING and not _ON_RTD:
     from com.sun.star.linguistic2 import XSearchableDictionaryList
     from com.sun.star.style import NumberingType  # const
     from com.sun.star.table import BorderLine  # struct
-    from com.sun.star.text import ControlCharacter
+    from com.sun.star.text import ControlCharacter as UnoControlCharacter
     from com.sun.star.text import HoriOrientation
     from com.sun.star.text import VertOrientation
     from com.sun.star.text import XBookmarksSupplier
@@ -90,7 +91,7 @@ if TYPE_CHECKING:
     from com.sun.star.text import PageNumberType as UnoPageNumberType  # enum
     from com.sun.star.text import TextContentAnchorType as UnoTextContentAnchorType # enum
     from com.sun.star.text import XTextCursor
-    from com.sun.star.view import PaperFormat as UnoPaperFormat  # enum
+    # from com.sun.star.view import PaperFormat as UnoPaperFormat  # enum
 
 # endregion Imports
 
@@ -106,6 +107,9 @@ class Write:
     See Also:
         `API BreakType <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1style.html#a3ae28cb49c180ec160a0984600b2b925>`_
     """
+    
+    # ControlCharacter = cast(UnoControlCharacter, UnoConst("com.sun.star.text.ControlCharacter"))
+    ControlCharacter = UnoControlCharacter
 
     ParagraphAdjust = cast("UnoParagraphAdjust", UnoEnum("com.sun.star.style.ParagraphAdjust"))
     """
@@ -617,13 +621,13 @@ class Write:
 
     @overload
     @staticmethod
-    def append(cursor: XTextCursor, ctl_char: int) -> int:
+    def append(cursor: XTextCursor, ctl_char: ControlCharacter) -> int:
         """
         Appents a control character (like a paragraph break or a hard space) into the text.
 
         Args:
             cursor (XTextCursor): Text Cursor
-            ctl_char (int): Control Char
+            ctl_char (Write.ControlCharacter): Control Char
 
         Returns:
             int: cursor position
@@ -740,7 +744,7 @@ class Write:
             int: cursor position
         """
         cls._append_text(cursor=cursor, text=text)
-        cls._append_ctl_char(cursor=cursor, ctl_char=ControlCharacter.PARAGRAPH_BREAK)
+        cls._append_ctl_char(cursor=cursor, ctl_char=UnoControlCharacter.PARAGRAPH_BREAK)
         return cls.get_position(cursor)
 
     @classmethod
@@ -751,7 +755,7 @@ class Write:
         Args:
             cursor (XTextCursor): Text Cursor
         """
-        cls._append_ctl_char(cursor=cursor, ctl_char=ControlCharacter.LINE_BREAK)
+        cls._append_ctl_char(cursor=cursor, ctl_char=UnoControlCharacter.LINE_BREAK)
 
     @classmethod
     def end_paragraph(cls, cursor: XTextCursor) -> None:
@@ -761,7 +765,7 @@ class Write:
         Args:
             cursor (XTextCursor): Text Cursor
         """
-        cls._append_ctl_char(cursor=cursor, ctl_char=ControlCharacter.PARAGRAPH_BREAK)
+        cls._append_ctl_char(cursor=cursor, ctl_char=UnoControlCharacter.PARAGRAPH_BREAK)
 
     @classmethod
     def page_break(cls, cursor: XTextCursor) -> None:
@@ -797,7 +801,7 @@ class Write:
         """
         xtext = cursor.getText()
         xtext.insertString(cursor, para, False)
-        xtext.insertControlCharacter(cursor, ControlCharacter.PARAGRAPH_BREAK, False)
+        xtext.insertControlCharacter(cursor, UnoControlCharacter.PARAGRAPH_BREAK, False)
         cls.style_prev_paragraph(cursor, para_style)
 
     # endregion ---------- text writing methods ------------------------
