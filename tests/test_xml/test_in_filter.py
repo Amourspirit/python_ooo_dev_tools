@@ -36,7 +36,7 @@ def test_transform_pay(loader, copy_fix_xml) -> None:
     - get the expected range and test
     """
     visible = False
-    delay = 0 # 2000
+    delay = 0 # 1000
     pay_import = copy_fix_xml("payImport.xsl")
     pay = copy_fix_xml("pay.xml")
     
@@ -55,13 +55,13 @@ def test_transform_pay(loader, copy_fix_xml) -> None:
     assert doc_type == Lo.DocTypeStr.CALC
     doc = Lo.open_flat_doc(fnm=flat_fnm, doc_type=doc_type, loader=loader)
     assert doc is not None
-    if visible:
-        GUI.set_visible(is_visible=visible, odoc=doc)
+    GUI.set_visible(is_visible=visible, odoc=doc)
     
     Lo.delay(delay)
     Lo.save_doc(doc=doc, fnm=ods_fnm)
     Lo.close_doc(doc=doc)
-    
+    Lo.delay(1000)
+
     doc = Calc.open_doc(fnm=ods_fnm, loader=loader)
     sheet = Calc.get_sheet(doc=doc, index=0)
 
@@ -88,6 +88,7 @@ def test_transform_pay(loader, copy_fix_xml) -> None:
     assert arr[4][3] == 39511.0
     
     Lo.close(closeable=doc, deliver_ownership=False)
+    Lo.delay(1000)
     
 def test_transform_clubs(loader, copy_fix_xml) -> None:
     """
@@ -101,8 +102,23 @@ def test_transform_clubs(loader, copy_fix_xml) -> None:
     - Open saved Write doc
     - get lines and test
     """
+    # for unknown reason gettin a strange fail on Ubuntu 20.04. Not tested on other os at this time.
+    # tests/test_xml/test_in_filter.py .terminate called after throwing an instance of 'com::sun::star::lang::DisposedException'
+    # If this test is run via VS Code plugin it passes. If run command line via pytest tests/ then if conditionally fails.
+    # the conditions are as follows:
+    #   Is not giving error in Calc
+    #   Is only erroring if window visibality is false. Setting visibility after document is loaded seems ok.
+    #   Is only erroring when opening a flat doc ( in Write ).
+    #
+    # Solution:
+    # The current working solution is to not have flat docs open hidden. This was the case in the original java code.
+    # changes in Lo.open_flat_doc()
+    #       Changed
+    #       return cls.open_doc(fnm, loader, mProps.Props.make_props(FilterName=nn, Hidden=False))
+    #       To
+    #       return cls.open_doc(fnm, loader, mProps.Props.make_props(FilterName=nn))
     visible = False
-    delay = 0 # 2000
+    delay = 0 # 1000
     clubs_import = copy_fix_xml("clubsImport.xsl")
     clubs = copy_fix_xml("clubs.xml")
     
@@ -121,12 +137,12 @@ def test_transform_clubs(loader, copy_fix_xml) -> None:
     assert doc_type == Lo.DocTypeStr.WRITER
     doc = Lo.open_flat_doc(fnm=flat_fnm, doc_type=doc_type, loader=loader)
     assert doc is not None
-    if visible:
-        GUI.set_visible(is_visible=visible, odoc=doc)
+    GUI.set_visible(is_visible=visible, odoc=doc)
     
     Lo.delay(delay)
     Lo.save_doc(doc=doc, fnm=odt_fnm)
     Lo.close_doc(doc=doc)
+    Lo.delay(1000)
     
     doc = Write.open_doc(fnm=odt_fnm, loader=loader)
 
@@ -148,4 +164,5 @@ def test_transform_clubs(loader, copy_fix_xml) -> None:
     assert lines[1361] == "Contact: Randy Campbell"
     assert lines[1928] == "Nipomo Youth Wrestling Club I28"
     
-    Lo.close(closeable=doc, deliver_ownership=False)
+    Lo.close(closeable=doc, deliver_ownership=True)
+    Lo.delay(1000)
