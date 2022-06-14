@@ -17,37 +17,6 @@ _ON_RTD = os.environ.get('READTHEDOCS', None) == 'True'
 # env var READTHEDOCS is true when read the docs is building
 # maybe not needed as _DOCS_BUILDING is set in conf.py
 
-from com.sun.star.sheet import CellFlags as UnoCellFlags # const
-from com.sun.star.sheet.GeneralFunction import (
-    NONE as GF_NONE,
-    AUTO as GF_AUTO,
-    SUM as GF_SUM,
-    COUNT as GF_COUNT,
-    AVERAGE as GF_AVERAGE,
-    MAX as GF_MAX,
-    MIN as GF_MIN,
-    PRODUCT as GF_PRODUCT,
-    COUNTNUMS as GF_COUNTNUMS,
-    STDEV as GF_STDEV,
-    STDEVP as GF_STDEVP,
-    VAR as GF_VAR,
-    VARP as GF_VARP,
-)
-from com.sun.star.sheet.SolverConstraintOperator import (
-    LESS_EQUAL as SCO_LESS_EQUAL,
-    EQUAL as SCO_EQUAL,
-    GREATER_EQUAL as SCO_GREATER_EQUAL,
-    INTEGER as SCO_INTEGER,
-    BINARY as SCO_BINARY,
-)
-from com.sun.star.table.CellContentType import (
-    EMPTY as CCT_EMPTY,
-    VALUE as CCT_VALUE,
-    TEXT as CCT_TEXT,
-    FORMULA as CCT_FORMULA,
-)
-from com.sun.star.awt import Point
-
 if not _DOCS_BUILDING and not _ON_RTD:
     # not importing for doc building jus result in short import name for
     # args that use these.
@@ -87,7 +56,6 @@ if not _DOCS_BUILDING and not _ON_RTD:
     from com.sun.star.table import TableBorder2  # struct
     from com.sun.star.table import XColumnRowRange
     from com.sun.star.table import XCellRange
-
     from com.sun.star.text import XSimpleText
     from com.sun.star.uno import Exception as UnoException
     from com.sun.star.util import NumberFormat  # const
@@ -100,10 +68,6 @@ if TYPE_CHECKING:
     from com.sun.star.frame import XComponentLoader
     from com.sun.star.frame import XController
     from com.sun.star.frame import XFrame
-
-    # from com.sun.star.sheet import CellAnnotation
-    from com.sun.star.sheet import  CellDeleteMode as UnoCellDeleteMode # enum
-    from com.sun.star.sheet import CellInsertMode as UnoCellInsertMode # enum
     from com.sun.star.sheet import FunctionArgument  # struct
     from com.sun.star.sheet import XSheetAnnotation
     from com.sun.star.sheet import XDataPilotTables
@@ -116,19 +80,23 @@ if TYPE_CHECKING:
     from com.sun.star.text import XText
     from com.sun.star.util import XSearchable
     from com.sun.star.util import XSearchDescriptor
-    
-    from com.sun.star.sheet import FillDateMode as UnoFillDateMode
 
+from ooo.dyn.awt.point import Point
+from ooo.dyn.sheet.cell_delete_mode import CellDeleteMode
+from ooo.dyn.sheet.cell_flags import CellFlagsEnum
+from ooo.dyn.sheet.cell_insert_mode import CellInsertMode
+from ooo.dyn.sheet.general_function import GeneralFunction as OooGeneralFunction
+from ooo.dyn.sheet.fill_date_mode import FillDateMode as OooFillDateMode
+from ooo.dyn.sheet.solver_constraint_operator import SolverConstraintOperator as OooSolverConstraintOperator
+from ooo.dyn.table.cell_content_type import CellContentType
 
 from ..utils import lo as mLo
 from ..utils import info as mInfo
 from ..utils import gui as mGui
 from ..utils import props as mProps
 from ..utils.gen_util import ArgsHelper, TableHelper, Util as GenUtil
-from ..utils import enum_helper
 from ..utils.color import CommonColor, Color
 from ..utils import view_state as mViewState
-from ..utils.uno_enum import UnoEnum
 from ..exceptions import ex as mEx
 from ..utils.type_var import Row, Column, Table, TupleArray, FloatList, FloatTable
 
@@ -163,105 +131,13 @@ class Calc:
         def __str__(self) -> str:
             return self.value
     
-    class CellFlags(IntFlag):
-        """
-        Enum of Flags for CellFlags constants.
-        
-        See Also:
-            `LibreOffice API CellFlags <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1sheet_1_1CellFlags.html>`_
-        """
-        VALUE = UnoCellFlags.VALUE
-        """Selects constant numeric values that are not formatted as dates or times."""
-        DATETIME = UnoCellFlags.DATETIME
-        """Selects constant numeric values that have a date or time number format."""
-        STRING = UnoCellFlags.STRING
-        """Selects constant strings."""
-        ANNOTATION = UnoCellFlags.ANNOTATION
-        """Selects cell annotations."""
-        FORMULA = UnoCellFlags.FORMULA
-        """Selects formulas."""
-        HARDATTR = UnoCellFlags.HARDATTR
-        """Selects all explicit formatting, but not the formatting which is applied implicitly through style sheets."""
-        STYLES = UnoCellFlags.STYLES
-        """Selects cell styles."""
-        OBJECTS = UnoCellFlags.OBJECTS
-        """Selects drawing objects."""
-        EDITATTR = UnoCellFlags.EDITATTR
-        """Selects formatting within parts of the cell contents."""
-        FORMATTED = UnoCellFlags.FORMATTED
-        """Selects cells with formatting within the cells or cells with more than one paragraph within the cells."""
+    CellFlags = CellFlagsEnum
+ 
+    GeneralFunction = OooGeneralFunction
 
-    class GeneralFunction:
-        """
-        Used to specify a function to be calculated from values. 
-        
-        See Also:
-            `LibreOffice API GeneralFunction <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1sheet.html#ad184d5bd9055f3b4fd57ce72c781758d>`_
-        """
-        __typename__ = "com.sun.star.sheet.GeneralFunction"
-        NONE = GF_NONE
-        """
-        No cells are moved. Sheet is not linked. New values are used without changes.
-        Nothing is calculated. Nothing is imported. No condition is specified.
-        """
-        AUTO = GF_AUTO
-        """Specifies the use of a user-defined list. Function is determined automatically."""
-        SUM = GF_SUM
-        """Sum of all numerical values is calculated."""
-        COUNT = GF_COUNT
-        """all values, including non-numerical values, are counted."""
-        AVERAGE = GF_AVERAGE
-        """Average of all numerical values is calculated."""
-        MAX = GF_MAX
-        """Maximum value of all numerical values is calculated."""
-        MIN = GF_MIN
-        """Minimum value of all numerical values is calculated."""
-        PRODUCT = GF_PRODUCT
-        """Product of all numerical values is calculated."""
-        COUNTNUMS = GF_COUNTNUMS
-        """Numerical values are counted."""
-        STDEV = GF_STDEV
-        """Standard deviation is calculated based on a sample."""
-        STDEVP = GF_STDEVP
-        """Standard deviation is calculated based on the entire population."""
-        VAR = GF_VAR
-        """Variance is calculated based on a sample."""
-        VARP = GF_VARP
-        """Variance is calculated based on the entire population."""
+    SolverConstraintOperator = OooSolverConstraintOperator
 
-    setattr(GeneralFunction, "__new__", enum_helper.uno_enum_class_new)
-
-    class SolverConstraintOperator:
-        """
-        Is used to specify the type of SolverConstraint. 
-        
-        See Also:
-            `LibreOfice API SolverConstraintOperator <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1sheet.html#a491ab8ed5b7b5809e7be869d26b071cf>`_
-        """
-        __typename__ = "com.sun.star.sheet.SolverConstraintOperator"
-        LESS_EQUAL = SCO_LESS_EQUAL
-        """
-        The value has to be less than or equal to the specified value.
-        The cell value is less or equal to the specified value.
-        Value has to be less than or equal to the specified value.
-        """
-        EQUAL = SCO_EQUAL
-        """Value has to be equal to the specified value. The cell value is equal to the specified value."""
-        GREATER_EQUAL = SCO_GREATER_EQUAL
-        """
-        The value has to be greater than or equal to the specified value.
-        The cell value is greater or equal to the specified value.
-        Value has to be greater than or equal to the specified value.
-        """
-        INTEGER = SCO_INTEGER
-        """The cell value is an integer value."""
-        BINARY = SCO_BINARY
-        """The cell value is a binary value (0 or 1)."""
-
-    setattr(SolverConstraintOperator, "__new__", enum_helper.uno_enum_class_new)
-
-
-    FillDateMode = cast("UnoFillDateMode", UnoEnum("com.sun.star.sheet.FillDateMode"))
+    FillDateMode = OooFillDateMode
     # endregion classes
 
     # region Constants
@@ -1243,7 +1119,6 @@ class Calc:
             cell_range (XCellRange): Cell range to insert
             is_shift_right (bool): If True then cell are inserted to the right; Otherwise, inserted down.
         """
-        CellInsertMode = cast("UnoCellInsertMode", UnoEnum("com.sun.star.sheet.CellInsertMode"))
         mover = mLo.Lo.qi(XCellRangeMovement, sheet)
         addr = cls.get_address(cell_range)
         if is_shift_right:
@@ -1261,7 +1136,6 @@ class Calc:
             cell_range (XCellRange): Cell range to delete
             is_shift_left (bool): If True then cell are shifted left; Otherwise, cells are shifted up.
         """
-        CellDeleteMode = cast("UnoCellDeleteMode", UnoEnum("com.sun.star.sheet.CellDeleteMode"))
         mover = mLo.Lo.qi(XCellRangeMovement, sheet)
         addr = cls.get_address(cell_range)
         if is_shift_left:
@@ -1283,14 +1157,14 @@ class Calc:
         ...
     @overload
     @classmethod
-    def clear_cells(cls, sheet: XSpreadsheet, cell_range: XCellRange, cell_flags: Calc.CellFlags) -> None:
+    def clear_cells(cls, sheet: XSpreadsheet, cell_range: XCellRange, cell_flags: CellFlags) -> None:
         """
         Clears the specified contents of the cell range
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
             cell_range (XCellRange): Cell range
-            cell_flags (Calc.CellFlags): Flags that determine what to clear
+            cell_flags (CellFlags): Flags that determine what to clear
         """
         ...
 
@@ -1307,14 +1181,14 @@ class Calc:
         ...
     @overload
     @classmethod
-    def clear_cells(cls, sheet: XSpreadsheet, range_name: str, cell_flags: Calc.CellFlags) -> None:
+    def clear_cells(cls, sheet: XSpreadsheet, range_name: str, cell_flags: CellFlags) -> None:
         """
         Clears the specified contents of the cell range
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
             range_name (str): Range name such as 'A1:G3'
-            cell_flags (Calc.CellFlags): Flags that determine what to clear
+            cell_flags (CellFlags): Flags that determine what to clear
         """
         ...
 
@@ -1331,14 +1205,14 @@ class Calc:
         ...
     @overload
     @classmethod
-    def clear_cells(cls, sheet: XSpreadsheet, cr_addr: CellRangeAddress, cell_flags: Calc.CellFlags) -> None:
+    def clear_cells(cls, sheet: XSpreadsheet, cr_addr: CellRangeAddress, cell_flags: CellFlags) -> None:
         """
         Clears the specified contents of the cell range
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
             cr_addr (CellRangeAddress): Cell Range Address
-            cell_flags (Calc.CellFlags): Flags that determine what to clear
+            cell_flags (CellFlags): Flags that determine what to clear
         """
         ...
 
@@ -1355,13 +1229,13 @@ class Calc:
             cell_range (XCellRange): Cell range
             range_name (str): Range name such as 'A1:G3'
             cr_addr (CellRangeAddress): Cell Range Address
-            cell_flags (Calc.CellFlags): Flags that determine what to clear
+            cell_flags (CellFlags): Flags that determine what to clear
 
         Raises:
             MissingInterfaceError: If XSheetOperation interface cannot be obtained.
 
         See Also:
-            :py:class:`Calc.CellFlags`
+            :py:class:`~Calc.CellFlags`
         """
         ordered_keys = (1, 2, 3)
         kargs_len = len(kwargs)
@@ -1572,13 +1446,13 @@ class Calc:
             CellTypeEnum: Enum of cell type
         """
         t = cell.getType()
-        if t == CCT_EMPTY:
+        if t == CellContentType.EMPTY:
             return cls.CellTypeEnum.EMPTY
-        if t == CCT_VALUE:
+        if t == CellContentType.VALUE:
             return cls.CellTypeEnum.VALUE
-        if t == CCT_TEXT:
+        if t == CellContentType.TEXT:
             return cls.CellTypeEnum.TEXT
-        if t == CCT_FORMULA:
+        if t == CellContentType.FORMULA:
             return cls.CellTypeEnum.FORMULA
         print("Unknown cell type")
         return cls.CellTypeEnum.UNKNOWN
@@ -1602,11 +1476,11 @@ class Calc:
     @classmethod
     def _get_val_by_cell(cls, cell: XCell) -> object | None:
         t = cell.getType()
-        if t == CCT_EMPTY:
+        if t == CellContentType.EMPTY:
             return None
-        if t == CCT_VALUE:
+        if t == CellContentType.VALUE:
             return cls.convert_to_float(cell.getValue())
-        if t == CCT_TEXT or t == CCT_FORMULA:
+        if t == CellContentType.TEXT or t == CellContentType.FORMULA:
             return cell.getFormula()
         print("Unknown cell type; returning None")
         return None
@@ -3862,7 +3736,7 @@ class Calc:
     @classmethod
     def print_address(cls, *args, **kwargs) -> None:
         """
-        Prints Cell range to terminal such as ``'Range: Sheet1.C3:F22``
+        Prints Cell range to terminal such as ``Range: Sheet1.C3:F22``
 
         Args:
             cell_range (XCellRange): Cell range
@@ -5343,12 +5217,12 @@ class Calc:
     # region --------------- using calc functions ----------------------
 
     @classmethod
-    def compute_function(cls, fn: Calc.GeneralFunction | str, cell_range: XCellRange) -> float:
+    def compute_function(cls, fn: GeneralFunction | str, cell_range: XCellRange) -> float:
         """
         Compuutes a Calc Function
 
         Args:
-            fn (:py:attr:`.Calc.GeneralFunction` | str): Function to calculate, GeneralFunction Enum value or String such as 'SUM' or 'MAX'
+            fn (GeneralFunction | str): Function to calculate, GeneralFunction Enum value or String such as 'SUM' or 'MAX'
             cell_range (XCellRange): Cell range to apply function on.
 
         Returns:
@@ -5359,7 +5233,7 @@ class Calc:
             if sheet_op is None:
                 raise mEx.MissingInterfaceError(XSheetOperation)
             func = cls.GeneralFunction(fn)  # convert to enum value if str
-            if not mInfo.Info.is_type_enum(func, cls.GeneralFunction.__typename__):
+            if not isinstance(fn, uno.Enum):
                 print("Arg fn is invalid, returning 0.0")
                 return 0.0
             return sheet_op.computeFunction(func)
