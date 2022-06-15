@@ -8,6 +8,7 @@ from tests.fixtures import __test__path__ as fixture_path
 from tests.fixtures.writer import __test__path__ as writer_fixture_path
 from tests.fixtures.calc import __test__path__ as calc_fixture_path
 from tests.fixtures.xml import __test__path__ as xml_fixture_path
+from tests.fixtures.image import __test__path__ as img_fixture_path
 from ooodev.utils.lo import Lo
 
 
@@ -36,9 +37,9 @@ def tmp_path():
 
 @pytest.fixture(scope="session")
 def copy_fix_writer(tmp_path):
-    def copy_res(doc_name: str):
-        src = Path(writer_fixture_path, doc_name)
-        dst = Path(tmp_path, doc_name)
+    def copy_res(fnm):
+        src = Path(writer_fixture_path, fnm)
+        dst = Path(tmp_path, fnm)
         shutil.copy2(src=src, dst=dst)
         return dst
 
@@ -47,17 +48,17 @@ def copy_fix_writer(tmp_path):
 
 @pytest.fixture(scope="session")
 def fix_writer_path():
-    def get_res(doc_name: str):
-        return Path(writer_fixture_path, doc_name)
+    def get_res(fnm):
+        return Path(writer_fixture_path, fnm)
 
     return get_res
 
 
 @pytest.fixture(scope="session")
 def copy_fix_calc(tmp_path):
-    def copy_res(doc_name: str):
-        src = Path(calc_fixture_path, doc_name)
-        dst = Path(tmp_path, doc_name)
+    def copy_res(fnm):
+        src = Path(calc_fixture_path, fnm)
+        dst = Path(tmp_path, fnm)
         shutil.copy2(src=src, dst=dst)
         return dst
 
@@ -66,16 +67,16 @@ def copy_fix_calc(tmp_path):
 
 @pytest.fixture(scope="session")
 def fix_calc_path():
-    def get_res(doc_name: str):
-        return Path(calc_fixture_path, doc_name)
+    def get_res(fnm):
+        return Path(calc_fixture_path, fnm)
 
     return get_res
 
 @pytest.fixture(scope="session")
 def copy_fix_xml(tmp_path):
-    def copy_res(doc_name: str):
-        src = Path(xml_fixture_path, doc_name)
-        dst = Path(tmp_path, doc_name)
+    def copy_res(fnm):
+        src = Path(xml_fixture_path, fnm)
+        dst = Path(tmp_path, fnm)
         shutil.copy2(src=src, dst=dst)
         return dst
 
@@ -84,8 +85,15 @@ def copy_fix_xml(tmp_path):
 
 @pytest.fixture(scope="session")
 def fix_xml_path():
-    def get_res(doc_name: str):
-        return Path(xml_fixture_path, doc_name)
+    def get_res(fnm: str):
+        return Path(xml_fixture_path, fnm)
+
+    return get_res
+
+@pytest.fixture(scope="session")
+def fix_image_path():
+    def get_res(fnm):
+        return Path(img_fixture_path, fnm)
 
     return get_res
 

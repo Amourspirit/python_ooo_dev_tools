@@ -125,7 +125,7 @@ class Info:
         names.sort()
         return names
 
-    @classmethod
+    @staticmethod
     def get_font_mono_name() -> str:
         """
         Gets a general font such as ``Courier New`` (windows) or ``Liberation Mono``
@@ -142,7 +142,7 @@ class Info:
         else:
             return "Liberation Mono"  # Metrically compatible with Courier New
 
-    @classmethod
+    @staticmethod
     def get_font_general_name() -> str:
         """
         Gets a general font such as ``Times New Roman`` (windows) or ``Liberation Serif``

@@ -92,7 +92,7 @@ from ooo.dyn.text.control_character import ControlCharacterEnum
 from ooo.dyn.text.page_number_type import PageNumberType
 from ooo.dyn.text.text_content_anchor_type import TextContentAnchorType
 from ooo.dyn.view.paper_format import PaperFormat as OooPaperFormat
-
+from ooo.dyn.style.paragraph_adjust import ParagraphAdjust
 # endregion Imports
 
 class Write:
@@ -102,6 +102,8 @@ class Write:
     DictionaryType = OooDictionaryType
 
     PaperFormat = OooPaperFormat
+    
+    ParagraphAdjust = ParagraphAdjust
 
     # endregion ----------- Enums --------------------------------------
 
@@ -633,6 +635,22 @@ class Write:
         return cls._append_text_content(cursor=kargs[1], text_content=kargs[2])
 
     # endregion append()
+    
+    @classmethod
+    def append_line(cls, cursor: XTextCursor, text: str | None = None) -> int:
+        """
+        Appends a new Line
+
+        Args:
+            cursor (XTextCursor): Text Cursor
+            text (str, optional): text to append before new line is inserted.
+
+        Returns:
+            int: cursor position
+        """
+        if text is not None:
+            cls._append_text(cursor=cursor, text=text)
+        return cls._append_ctl_char(cursor=cursor, ctl_char=Write.ControlCharacter.LINE_BREAK)
 
     @classmethod
     def append_date_time(cls, cursor: XTextCursor) -> int:
@@ -847,7 +865,7 @@ class Write:
         old_val = mProps.Props.get_property(cursor, prop_name)
 
         curr_pos = cls.get_position(cursor)
-        cursor.goLeft(curr_pos - pos, False)
+        cursor.goLeft(curr_pos - pos, True)
         mProps.Props.set_property(prop_set=cursor, name=prop_name, value=prop_val)
 
         cursor.goRight(curr_pos - pos, False)
@@ -1311,7 +1329,10 @@ class Write:
             if tf_shape is None:
                 raise mEx.MissingInterfaceError(XShape)
 
+            # set dimensions of the text frame
             tf_shape.setSize(Size(width, height))
+            
+            #  anchor the text frame
             frame_props = mLo.Lo.qi(XPropertySet, xframe)
             if frame_props is None:
                 raise mEx.MissingInterfaceError(XPropertySet)
@@ -1337,14 +1358,16 @@ class Write:
             # Set the horizontal and vertical position
             frame_props.setPropertyValue("HoriOrient", HoriOrientation.RIGHT)
             frame_props.setPropertyValue("VertOrient", VertOrientation.NONE)
-            frame_props.setPropertyValue("VertOrientPosition", ypos)
+            frame_props.setPropertyValue("VertOrientPosition", ypos) # down from top
 
+            # insert text frame into document (order is important here)
             cls._append_text_content(cursor, xframe)
             cls.end_paragraph(cursor)
 
             # add text into the text frame
             xframe_text = xframe.getText()
             xtext_range = mLo.Lo.qi(XTextRange, xframe_text.createTextCursor())
+           
             if xtext_range is None:
                 raise mEx.MissingInterfaceError(XTextRange)
             xframe_text.insertString(xtext_range, text, False)

@@ -1,12 +1,11 @@
 # coding: utf-8
 from __future__ import annotations
-from PIL import Image  # LibreOffice has PHL Module.
 import io
 import base64
 from typing import TYPE_CHECKING, Tuple
-import sys
+from pathlib import Path
+from PIL import Image  # LibreOffice has PHL Module.
 import uno
-from com.sun.star.awt import Size
 from com.sun.star.beans import XPropertySet
 from com.sun.star.container import XNameContainer
 from com.sun.star.document import XMimeTypeInfo
@@ -14,36 +13,55 @@ from com.sun.star.graphic import XGraphicProvider
 
 if TYPE_CHECKING:
     from com.sun.star.graphic import XGraphic
+    from com.sun.star.awt import XBitmap
+
+from ooo.dyn.awt.size import Size
 
 from ..utils import lo as mLo
 from ..utils import file_io as mFileIO
 from ..utils import props as mProps
+from ..exceptions import ex as mEx
 from ..utils.type_var import PathOrStr
 
 
 class Images:
     @staticmethod
-    def get_bitmap(fnm: PathOrStr) -> str | None:
+    def get_bitmap(fnm: PathOrStr) -> XBitmap:
+        """
+        Gets an image from path
+
+        Args:
+            fnm (PathOrStr): path to image
+
+        Raises:
+            mEx.UnOpenableError: If image is not able to be opened
+            Exception: If unable to get bitmap
+
+        Returns:
+            XBitmap: Bitmap
+        """
         try:
             bitmap_container = mLo.Lo.create_instance_msf(XNameContainer, "com.sun.star.drawing.BitmapTable")
             if not mFileIO.FileIO.is_openable(fnm):
-                return None
+                raise mEx.UnOpenableError(fnm=fnm)
 
-            pic_url = mFileIO.FileIO.fnm_to_url(fnm)
-            if pic_url is None:
-                return None
-            bitmap_container.insertByName(str(fnm), pic_url)
+            fp = Path(fnm)
+            name = fp.name
+            pic_url = mFileIO.FileIO.fnm_to_url(fp)
+            
             # use the filename as the name of the bitmap
+            bitmap_container.insertByName(name, pic_url)
 
-            # return the bitmap as a string
-            str(bitmap_container.getByName(str(fnm)))
+            bitmap = bitmap_container.getByName(name)
+            # return bitmap.getDIB() # byte sequence
+            return bitmap
+        except mEx.UnOpenableError:
+            raise
         except Exception as e:
-            print(f"Could not create a bitmap container for '{fnm}'")
-            print(f"    {e}")
-            return None
+            raise Exception(f"Could not create a bitmap container for '{fnm}'") from e
 
     @staticmethod
-    def load_image(fnm: PathOrStr) -> Image.Image | None:
+    def load_image(fnm: PathOrStr) -> Image.Image:
         img = None
         try:
             img = Image.open(fnm)
@@ -56,33 +74,61 @@ class Images:
 
     @staticmethod
     def save_image(im: Image.Image, fnm: PathOrStr) -> None:
+        """
+        Saves Image
+
+        Args:
+            im (Image): Image data
+            fnm (PathOrStr): save path
+
+        Raises:
+            TypeError: If im is None
+            Exception: If unable to save image
+        """
         if im is None:
-            print(f"No data to save in '{fnm}'")
-            return
+            raise TypeError("im is None")
         try:
             im.save(fp=fnm, format="png")
             print(f"Saved image to file: {fnm}")
         except Exception as e:
-            print(f"Could not save image to '{fnm}'")
-            print(f"    {e}")
+            raise Exception(f"Could not save image to '{fnm}'") from e
 
     @staticmethod
     def im_to_bytes(im: Image.Image) -> bytes:
+        """
+        Gets Image Bytes
+
+        Args:
+            im (Image): Image
+
+        Returns:
+            bytes: Image bytes
+        """
         buf = io.BytesIO()
         im.save(buf, format="png")
         byte_im = buf.getvalue()
         return byte_im
 
     @classmethod
-    def im_to_string(cls, im: Image.Image) -> str | None:
+    def im_to_string(cls, im: Image.Image) -> str:
+        """
+        Converts image to string
+
+        Args:
+            im (Image): image
+
+        Raises:
+            Exception: If unable to convet to string
+
+        Returns:
+            str: Image as string
+        """
         try:
             b = cls.im_to_bytes(im)
             s = base64.b64encode(b).decode("utf-8")
             return s
         except Exception as e:
-            print("Converting image to string is not possilbe:")
-            print(f"    {e}")
-            return None
+            raise Exception("Converting image to string is not possilbe:") from e
 
     @staticmethod
     def string_to_im(s: str) -> Image.Image:
@@ -142,14 +188,14 @@ class Images:
         graphic = cls.load_graphic_file(im_fnm)
         if graphic is None:
             return None
-        return mProps.Props.get_property(xprops=graphic, name="SizePixel")
+        return mProps.Props.get_property(prop_set=graphic, name="SizePixel")
 
     @classmethod
     def get_size_100mm(cls, im_fnm: PathOrStr) -> Size | None:
         graphic = cls.load_graphic_file(im_fnm)
         if graphic is None:
             return None
-        return mProps.Props.get_property(xprops=graphic, name="Size100thMM")
+        return mProps.Props.get_property(prop_set=graphic, name="Size100thMM")
 
     @staticmethod
     def load_graphic_link(graphic_link: object) -> XGraphic | None:
