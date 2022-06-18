@@ -1232,9 +1232,33 @@ class Info:
             print(f"  {method}")
 
     # -------------------------- style info --------------------------
-
     @staticmethod
-    def get_style_family_names(doc: object) -> List[str] | None:
+    def get_style_families(doc: object) -> XNameAccess:
+        """
+        Gets a list of style family names
+
+        Args:
+            doc (object): office document
+
+        Raises:
+            MissingInterfaceError: If Doc does not implement XStyleFamiliesSupplier interface
+            Exception: If unabale to get style families
+
+        Returns:
+            XNameAccess: Style Famileis
+        """
+        try:
+            xsupplier = mLo.Lo.qi(XStyleFamiliesSupplier, doc)
+            if xsupplier is None:
+                raise mEx.MissingInterfaceError(XStyleFamiliesSupplier)
+            return xsupplier.getStyleFamilies()
+        except  mEx.MissingInterfaceError:
+            raise
+        except Exception as e:
+            raise Exception("Unable to get family style names") from e
+
+    @classmethod
+    def get_style_family_names(cls, doc: object) -> List[str] | None:
         """
         Gets a list of style family names
 
@@ -1245,10 +1269,7 @@ class Info:
             List[str] | None: List of style names on success; Otherwise, None
         """
         try:
-            xsupplier = mLo.Lo.qi(XStyleFamiliesSupplier, doc)
-            if xsupplier is None:
-                raise mEx.MissingInterfaceError(XStyleFamiliesSupplier)
-            name_acc = xsupplier.getStyleFamilies()
+            name_acc = cls.get_style_families()
             names = name_acc.getElementNames()
             lst = list(names)
             lst.sort()
@@ -1258,8 +1279,8 @@ class Info:
             print(f"    {e}")
         return None
 
-    @staticmethod
-    def get_style_container(doc: object, family_style_name: str) -> XNameContainer:
+    @classmethod
+    def get_style_container(cls, doc: object, family_style_name: str) -> XNameContainer:
         """
         Gets style container of document for a family of styles
 
@@ -1268,16 +1289,12 @@ class Info:
             family_style_name (str): Family style name
 
         Raises:
-            MissingInterfaceError: if doc is missing XStyleFamiliesSupplier interface
             MissingInterfaceError: if unable to obtain XNameContainer interface
 
         Returns:
             XNameContainer: Style Family container
         """
-        xsupplier = mLo.Lo.qi(XStyleFamiliesSupplier, doc)
-        if xsupplier is None:
-            raise mEx.MissingInterfaceError(XStyleFamiliesSupplier)
-        name_acc = xsupplier.getStyleFamilies()
+        name_acc = cls.get_style_families(doc)
         xcontianer = mLo.Lo.qi(XNameContainer, name_acc.getByName(family_style_name))
         if xcontianer is None:
             raise mEx.MissingInterfaceError(XNameContainer)

@@ -4,7 +4,7 @@
 # region Imports
 from __future__ import annotations
 from enum import IntEnum
-from typing import TYPE_CHECKING, Any, Iterable, List, overload
+from typing import TYPE_CHECKING, Any, Iterable, List, Tuple, cast, overload
 import re
 import os
 import uno
@@ -34,7 +34,6 @@ if not _DOCS_BUILDING and not _ON_RTD:
     # args that use these.
     # this is also true becuase docs/conf.py ignores com import for autodoc
     from com.sun.star.awt import FontWeight
-    from com.sun.star.awt import Size  # struct
     from com.sun.star.beans import XPropertySet
     from com.sun.star.container import XEnumerationAccess
     from com.sun.star.container import XIndexAccess
@@ -54,6 +53,7 @@ if not _DOCS_BUILDING and not _ON_RTD:
     from com.sun.star.linguistic2 import XProofreader
     from com.sun.star.linguistic2 import XSearchableDictionaryList
     from com.sun.star.style import NumberingType  # const
+    from com.sun.star.style import XStyle
     from com.sun.star.table import BorderLine  # struct
     from com.sun.star.text import HoriOrientation
     from com.sun.star.text import VertOrientation
@@ -88,9 +88,12 @@ if TYPE_CHECKING:
     from com.sun.star.linguistic2 import XSpellChecker
     from com.sun.star.linguistic2 import XThesaurus
     from com.sun.star.text import XTextCursor
+    from com.sun.star.style import ParagraphStyle # service
 
 
 from ooo.dyn.awt.font_slant import FontSlant
+from ooo.dyn.awt.point import Point
+from ooo.dyn.awt.size import Size  # struct
 from ooo.dyn.linguistic2.dictionary_type import DictionaryType as OooDictionaryType
 from ooo.dyn.style.break_type import BreakType
 from ooo.dyn.style.paragraph_adjust import ParagraphAdjust
@@ -119,30 +122,25 @@ class Write(metaclass=StaticProperty):
 
 
     # endregion ----------- Enums --------------------------------------
-    @staticmethod
-    def compare_cursor_starts(o_text: Any, c1: XTextRange, c2: XTextRange) -> CompareEnum:
+    @classmethod
+    def compare_cursor_starts(cls, c1: XTextRange, c2: XTextRange) -> CompareEnum:
         """
         Compares two cursors ranges start position
 
         Args:
-            o_text (object): xText object, usually document text object
             c1 (XTextRange): first cursor range
             c2 (XTextRange): second cursor range
 
         Raises:
-            ValueError: if :paramref:`~.compare_cursor_starts.o_text` is missing or None
-            ValueError: if :paramref:`~.compare_cursor_starts.c1` is missing
-            ValueError: if :paramref:`~.compare_cursor_starts.c2` is missing
             Exception: if comparsion fails
 
         Returns:
-            CompareEnum: | ``CompareEnum.BEFORE`` if :paramref:`~.compare_cursor_starts.c1` start position is before :paramref:`~.compare_cursor_starts.c2` start position
-            | ``CompareEnum.EQUAL`` if :paramref:`~.compare_cursor_starts.c1` start position is equal to :paramref:`~.compare_cursor_starts.c2` start position
-            | ``CompareEnum.AFTER`` if :paramref:`~.compare_cursor_starts.c1` start position is after :paramref:`~.compare_cursor_starts.c2` start position
+            CompareEnum: :py:attr:`.CompareEnum.BEFORE` if ``c1`` start position is before ``c2`` start position.
+                :py:attr:`.CompareEnum.EQUAL` if ``c1`` start position is equal to ``c2`` start position.
+                :py:attr:`.CompareEnum.AFTER` if ``c1`` start position is after ``c2`` start position.
         """
-        range_compare = mLo.Lo.qi(XTextRangeCompare, o_text)
-        if range_compare is None:
-            raise mEx.MissingInterfaceError(XTextRangeCompare)
+
+        range_compare = cast(XTextRangeCompare, cls.text_range_compare)
         i = range_compare.compareRegionStarts(c1, c2)
         if i == 1:
             return Write.CompareEnum.BEFORE
@@ -154,31 +152,24 @@ class Write(metaclass=StaticProperty):
         msg = "get_cursor_compare_starts() unable to get a valid compare result"
         raise Exception(msg)
 
-    @staticmethod
-    def compare_cursor_ends(o_text: Any, c1: XTextRange, c2: XTextRange) -> CompareEnum:
+    @classmethod
+    def compare_cursor_ends(cls, c1: XTextRange, c2: XTextRange) -> CompareEnum:
         """
         Compares two cursors ranges end positons
 
         Args:
-            o_text (XTextRangeCompare): xText object, usually document text object
             c1 (XTextRange): first cursor range
             c2 (XTextRange): second cursor range
 
         Raises:
-            ValueError: if :paramref:`~.compare_cursor_ends.o_text` is missing or None
-            ValueError: if :paramref:`~.compare_cursor_ends.c1` is missing
-            ValueError: if :paramref:`~.compare_cursor_ends.c2` is missing
             Exception: if comparsion fails
 
         Returns:
-            CompareEnum: | ``CompareEnum.BEFORE`` if :paramref:`~.compare_cursor_ends.c1` end position is before :paramref:`~.compare_cursor_ends.c2` end position
-            | ``CompareEnum.EQUAL`` if :paramref:`~.compare_cursor_ends.c1` end position is equal to :paramref:`~.compare_cursor_ends.c2` end position
-            | ``CompareEnum.AFTER`` if :paramref:`~.compare_cursor_ends.c1` end position is after :paramref:`~.compare_cursor_ends.c2` end position
+            CompareEnum: :py:attr`.CompareEnum.BEFORE` if ``c1`` end position is before ``c2`` end position.  
+                :py:attr:`.CompareEnum.EQUAL` if ``c1`` end position is equal to ``c2`` end position.  
+                :py:attr:`.CompareEnum.AFTER` if ``c1`` end position is after ``c2`` end position
         """
-        range_compare = mLo.Lo.qi(XTextRangeCompare, o_text)
-        if range_compare is None:
-            raise mEx.MissingInterfaceError(XTextRangeCompare)
-
+        range_compare = cast(XTextRangeCompare, cls.text_range_compare)
         i = range_compare.compareRegionEnds(c1, c2)
         if i == 1:
             return Write.CompareEnum.BEFORE
@@ -215,8 +206,9 @@ class Write(metaclass=StaticProperty):
             raise mEx.MissingInterfaceError(XText)
         l_cursor = cls._get_left_cursor(o_sel=o_sel, o_text=o_text)
         r_cursor = cls._get_right_cursor(o_sel=o_sel, o_text=o_text)
-        if cls.compare_cursor_ends(o_text=o_text, c1=l_cursor, c2=r_cursor) < cls.CompareEnum.EQUAL:
-            while cls.compare_cursor_ends(o_text=o_text, c1=l_cursor, c2=r_cursor) != cls.CompareEnum.EQUAL:
+        if cls.compare_cursor_ends(c1=l_cursor, c2=r_cursor) < cls.CompareEnum.EQUAL:
+           
+            while cls.compare_cursor_ends(c1=l_cursor, c2=r_cursor) != cls.CompareEnum.EQUAL:
                 l_cursor.goRight(1, False)
                 i += 1
         return i
@@ -576,6 +568,24 @@ class Write(metaclass=StaticProperty):
         Returns:
             int: _description_
         """
+         # def get_near_max(l:XTextCursor, r: XTextCursor, jump=10) -> int:
+        #     imax = 0
+        #     if cls.compare_cursor_ends(l, r) == cls.CompareEnum.BEFORE:
+        #         l.goRight(jump, False)
+        #         imax = imax + jump
+        def get_high(l:XTextCursor, r: XTextCursor, jump=10, total=0) -> int:
+            if jump <= 0:
+                return 0
+            if cls.compare_cursor_ends(l, r) == cls.CompareEnum.BEFORE:
+                j = jump + 10
+                l.goRight(j, False)
+                return get_high(l, r, j, jump)
+            else:
+                l.gotoStart(False)
+                l.goRight(total, False)
+                return total
+            # else:
+            #     return jump, True
 
         xcursor = cursor.getText().createTextCursor()
         xcursor.gotoStart(False)
@@ -584,10 +594,14 @@ class Write(metaclass=StaticProperty):
         l_cursor =cls._get_left_cursor(o_sel=xcursor, o_text=xtext)
         r_cursor=  cls._get_right_cursor(o_sel=xcursor, o_text=xtext)
         i = 0
-        if cls.compare_cursor_ends(o_text=xtext, c1=l_cursor, c2=r_cursor) < cls.CompareEnum.EQUAL:
-            while cls.compare_cursor_ends(o_text=xtext, c1=l_cursor, c2=r_cursor) != cls.CompareEnum.EQUAL:
+        if cls.compare_cursor_ends(c1=l_cursor, c2=r_cursor) < cls.CompareEnum.EQUAL:
+            high = get_high(l_cursor, r_cursor)
+            # l_cursor.gotoStart(False)
+            
+            while cls.compare_cursor_ends(c1=l_cursor, c2=r_cursor) != cls.CompareEnum.EQUAL:
                 l_cursor.goRight(1, False)
                 i += 1
+            i += high
         return i
         
         # return len(cursor.getText().getString())
@@ -598,7 +612,9 @@ class Write(metaclass=StaticProperty):
     @staticmethod
     def get_view_cursor(text_doc: XTextDocument) -> XTextViewCursor:
         """
-        Gets document view cursor
+        Gets document view cursor.
+        
+        Describes a cursor in a text document's view.
 
         Args:
             text_doc (XTextDocument): Text Document
@@ -608,7 +624,11 @@ class Write(metaclass=StaticProperty):
 
         Returns:
             XTextViewCursor: Text View Currsor
+
+         See Also:
+            `LibreOffice API XTextViewCursor <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextViewCursor.html>`_
         """
+        
         # https://wiki.openoffice.org/wiki/Writer/API/Text_cursor
         model = mLo.Lo.qi(XModel, text_doc)
         if model is None:
@@ -618,6 +638,32 @@ class Write(metaclass=StaticProperty):
         if supplier is None:
             raise mEx.MissingInterfaceError(XTextViewCursorSupplier)
         return supplier.getViewCursor()
+
+    @classmethod
+    def get_page_cursor(cls, text_doc: XTextDocument) -> XPageCursor:
+        """
+        Get Page curosor
+        
+        Makes it possible to perform cursor movements between pages.
+
+        Args:
+            text_doc (XTextDocument): Text Document
+
+        Raises:
+            mEx.MissingInterfaceError: If XPageCursor is not obtainable.
+
+        Returns:
+            XPageCursor: Page Cursor
+
+        See Also:
+            `LibreOffice API XPageCursor <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XPageCursor.html>`_
+        """
+        view_cursor = cls.get_view_cursor(text_doc)
+        page_cursor = mLo.Lo.qi(XPageCursor, view_cursor)
+        if page_cursor is None:
+            raise mEx.MissingInterfaceError(XPageCursor)
+        return page_cursor
+    
 
     @staticmethod
     def get_current_page(tv_cursor: XTextViewCursor) -> int:
@@ -635,6 +681,42 @@ class Write(metaclass=StaticProperty):
             print("Could not create a page cursor")
             return -1
         return page_cursor.getPage()
+
+    # @classmethod
+    # def get_coord(cls, text_doc: XTextDocument) -> Point:
+    #     # see section 7.17 Useful Macro Information For OpenOffice By Andrew Pitonyak.pdf
+        
+    #     tvc = cls.get_view_cursor(text_doc)
+    #     if not mInfo.Info.support_service(tvc, "com.sun.star.style.ParagraphStyle"):
+    #         mEx.NotSupportedServiceError("com.sun.star.style.ParagraphStyle")
+    #     ps = cast("ParagraphStyle", tvc)
+    #     props = mInfo.Info.get_style_props(doc=text_doc, family_style_name="PageStyles", prop_set_nm="Standard")
+    #     if props is None:
+    #         raise mEx.PropertiesError("Could not access the standard page style")
+    #     lHeight = int(props.getPropertyValue("Width"))
+    #     lWidth = int(props.getPropertyValue("Height"))
+    #     top_margin = int(props.getPropertyValue("TopMargin"))
+    #     left_margin = int(props.getPropertyValue("LeftMargin"))
+    #     bottom_margin = int(props.getPropertyValue("BottomMargin"))
+        
+    #     char_height = int(props.getPropertyValue("CharHeight"))
+        
+    #     dCharHeight = char_height / 72.0
+    #     page_cursor = mLo.Lo.qi(XPageCursor, tvc)
+    #     if page_cursor is None:
+    #         raise mEx.MissingInterfaceError(XPageCursor)
+    #     iCurPage = page_cursor.getPage()
+    #     v = tvc.getPosition()
+    #     dYCursor = (v.Y + top_margin)/2540.0 + dCharHeight / 2
+    #     dXCursor = (v.X + left_margin)/2540.0
+    #     dXRight = (lWidth - v.X - left_margin)/2540.0
+    #     dYBottom = (lHeight - v.Y - top_margin)/2540.0 - dCharHeight / 2
+        
+    #     dBottomMargin = bottom_margin / 2540.0
+    #     dLeftMargin = left_margin / 2540.0
+        
+        
+        
 
     @staticmethod
     def get_coord_str(tv_cursor: XTextViewCursor) -> str:
@@ -696,72 +778,60 @@ class Write(metaclass=StaticProperty):
 
     # region    append()
     @classmethod
-    def _append_text(cls, cursor: XTextCursor, text: str) -> int:
+    def _append_text(cls, cursor: XTextCursor, text: str) -> None:
         cursor.setString(text)
         cursor.gotoEnd(False)
-        return cls.get_position(cursor)
 
     @classmethod
-    def _append_ctl_char(cls, cursor: XTextCursor, ctl_char: int) -> int:
+    def _append_ctl_char(cls, cursor: XTextCursor, ctl_char: int) -> None:
         xtext = cursor.getText()
         xtext.insertControlCharacter(cursor, ctl_char, False)
         cursor.gotoEnd(False)
-        return cls.get_position(cursor)
 
     @classmethod
-    def _append_text_content(cls, cursor: XTextCursor, text_content: XTextContent) -> int:
+    def _append_text_content(cls, cursor: XTextCursor, text_content: XTextContent) -> None:
         xtext = cursor.getText()
         xtext.insertTextContent(cursor, text_content, False)
         cursor.gotoEnd(False)
-        return cls.get_position(cursor)
 
     @overload
     @staticmethod
-    def append(cursor: XTextCursor, text: str) -> int:
+    def append(cursor: XTextCursor, text: str) -> None:
         """
         Appends text to text cursor
 
         Args:
             cursor (XTextCursor): Text Cursor
             text (str): Text to append
-
-        Returns:
-            int: cursor position
         """
         ...
 
     @overload
     @staticmethod
-    def append(cursor: XTextCursor, ctl_char: ControlCharacter) -> int:
+    def append(cursor: XTextCursor, ctl_char: ControlCharacter) -> None:
         """
         Appents a control character (like a paragraph break or a hard space) into the text.
 
         Args:
             cursor (XTextCursor): Text Cursor
             ctl_char (Write.ControlCharacter): Control Char
-
-        Returns:
-            int: cursor position
         """
         ...
 
     @overload
     @staticmethod
-    def append(cursor: XTextCursor, text_content: XTextContent) -> int:
+    def append(cursor: XTextCursor, text_content: XTextContent) -> None:
         """
         Appends a content, such as a text table, text frame or text field.
 
         Args:
             cursor (XTextCursor): Text Cursor
             text_content (XTextContent): Text Content
-
-        Returns:
-            int: cursor position
         """
         ...
 
     @classmethod
-    def append(cls, *args, **kwargs) -> int:
+    def append(cls, *args, **kwargs) -> None:
         """
         Append content to cursor
 
@@ -770,9 +840,6 @@ class Write(metaclass=StaticProperty):
             text (str): Text to append
             ctl_char (int): Control Char (like a paragraph break or a hard space)
             text_content (XTextContent): Text content, such as a text table, text frame or text field.
-
-        Returns:
-            int: cursor position
 
         See Also:
             `API ControlCharacter <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1text_1_1ControlCharacter.html>`_
@@ -806,31 +873,29 @@ class Write(metaclass=StaticProperty):
             kargs[ordered_keys[i]] = arg
 
         if isinstance(kargs[2], str):
-            return cls._append_text(cursor=kargs[1], text=kargs[2])
-        if isinstance(kargs[2], int):
-            return cls._append_ctl_char(cursor=kargs[1], ctl_char=kargs[2])
-        return cls._append_text_content(cursor=kargs[1], text_content=kargs[2])
+            cls._append_text(cursor=kargs[1], text=kargs[2])
+        elif isinstance(kargs[2], int):
+            cls._append_ctl_char(cursor=kargs[1], ctl_char=kargs[2])
+        else:
+            cls._append_text_content(cursor=kargs[1], text_content=kargs[2])
 
     # endregion append()
     
     @classmethod
-    def append_line(cls, cursor: XTextCursor, text: str | None = None) -> int:
+    def append_line(cls, cursor: XTextCursor, text: str | None = None) -> None:
         """
         Appends a new Line
 
         Args:
             cursor (XTextCursor): Text Cursor
             text (str, optional): text to append before new line is inserted.
-
-        Returns:
-            int: cursor position
         """
         if text is not None:
             cls._append_text(cursor=cursor, text=text)
-        return cls._append_ctl_char(cursor=cursor, ctl_char=Write.ControlCharacter.LINE_BREAK)
+        cls._append_ctl_char(cursor=cursor, ctl_char=Write.ControlCharacter.LINE_BREAK)
 
     @classmethod
-    def append_date_time(cls, cursor: XTextCursor) -> int:
+    def append_date_time(cls, cursor: XTextCursor) -> None:
         """
         Append two DateTime fields, one for the date, one for the time
 
@@ -839,9 +904,6 @@ class Write(metaclass=StaticProperty):
 
         Raises:
             MissingInterfaceError: If required interface cannot be obtained.
-
-        Returns:
-            int: cursor position
         """
         dt_field = mLo.Lo.create_instance_mcf(XTextField, "com.sun.star.text.TextField.DateTime")
         mProps.Props.set_property(dt_field, "IsDate", True)  # so date is reported
@@ -856,23 +918,19 @@ class Write(metaclass=StaticProperty):
         xtext_content = mLo.Lo.qi(XTextContent, dt_field)
         if xtext_content is None:
             raise mEx.MissingInterfaceError(XTextContent)
-        return cls._append_text_content(cursor, xtext_content)
+        cls._append_text_content(cursor, xtext_content)
 
     @classmethod
-    def append_para(cls, cursor: XTextCursor, text: str) -> int:
+    def append_para(cls, cursor: XTextCursor, text: str) -> None:
         """
         Appends text and then a paragraph break.
 
         Args:
             cursor (XTextCursor): Text Cursor
             text (str): Text to append
-
-        Returns:
-            int: cursor position
         """
         cls._append_text(cursor=cursor, text=text)
         cls._append_ctl_char(cursor=cursor, ctl_char=Write.ControlCharacter.PARAGRAPH_BREAK)
-        return cls.get_position(cursor)
 
     @classmethod
     def end_line(cls, cursor: XTextCursor) -> None:
@@ -1473,6 +1531,7 @@ class Write(metaclass=StaticProperty):
         text: str,
         width: int,
         height: int,
+        page_num: int = 1,
         border_color: Color | None = CommonColor.RED,
         background_color: Color | None = CommonColor.LIGHT_BLUE
         ) -> None:
@@ -1537,6 +1596,10 @@ class Write(metaclass=StaticProperty):
             frame_props.setPropertyValue("HoriOrient", HoriOrientation.RIGHT)
             frame_props.setPropertyValue("VertOrient", VertOrientation.NONE)
             frame_props.setPropertyValue("VertOrientPosition", ypos) # down from top
+            
+            # if page number is Not include for TextContentAnchorType.AT_PAGE
+            # then Lo Default so At AT_PARAGRAPH
+            frame_props.setPropertyValue("AnchorPageNo", page_num)
 
             # insert text frame into document (order is important here)
             cls._append_text_content(cursor, xframe)
@@ -2405,6 +2468,21 @@ class Write(metaclass=StaticProperty):
         mLo.Lo.dispatch_cmd("ThesaurusDialog")
 
     # endregion ---------- Linguistics dialogs and menu items ----------
+
+    @classmethod
+    def print_page_size(cls, text_doc: XTextDocument) -> None:
+        """
+        Prints Page size to console
+
+        Args:
+            text_doc (XTextDocument): Text Document
+        """
+        # see section 7.17  of Useful Macro Information For OpenOffice By Andrew Pitonyak.pdf
+        size = cls.get_page_size(text_doc)
+        print("Page Size is:")
+        print(f"  {round(size.Width / 100)} mm by {round(size.Height / 100)} mm")
+        print(f"  {round(size.Width / 2540)} inches by {round(size.Height / 2540)} inches")
+        print(f"  {round((size.Width *72.0) / 2540.0)} picas by {round((size.Height *72.0) / 2540.0)} picas")
 
     @classmethod
     def _get_left_cursor(cls, o_sel: XTextRange, o_text: XText) -> XTextCursor:

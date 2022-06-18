@@ -21,21 +21,21 @@ from com.sun.star.beans import XIntrospection
 from com.sun.star.container import XNamed
 from com.sun.star.frame import XDesktop
 from com.sun.star.frame import XDispatchHelper
+from com.sun.star.lang import XComponent
 from com.sun.star.lang import XMultiServiceFactory
 from com.sun.star.io import IOException
 from com.sun.star.util import XCloseable
 from com.sun.star.util import XNumberFormatsSupplier
 from com.sun.star.frame import XComponentLoader
+from com.sun.star.frame import XModel
 from com.sun.star.frame import XStorable
 
 if TYPE_CHECKING:
     from com.sun.star.beans import PropertyValue
     from com.sun.star.container import XChild
     from com.sun.star.container import XIndexAccess
-    from com.sun.star.frame import XModel
     from com.sun.star.frame import XFrame
     from com.sun.star.lang import XMultiComponentFactory
-    from com.sun.star.lang import XComponent
     from com.sun.star.lang import XTypeProvider
     from com.sun.star.script.provider import XScriptContext
     from com.sun.star.uno import XComponentContext
@@ -1923,7 +1923,60 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
         Returns:
             XModel: Gets model for current LibreOffice instance
         """
-        cls.get_frame().getController().getModel()
+        return cls.qi(XModel, cls._doc)
+
+    @classmethod
+    def lock_controllers(cls) -> None:
+        """
+        Suspends some notifications to the controllers which are used for display updates. 
+        
+        The calls to :py:meth:`~.lo.Lo.lock_controllers` and :py:meth:`~.lo.Lo.unlock_controllers`
+        may be nested and even overlapping, but they must be in pairs.
+        While there is at least one lock remaining, some notifications for
+        display updates are not broadcasted. 
+        
+        """
+        # much faster updates as screen is basically suspended
+        cargs = CancelEventArgs(cls)
+        cls.trigger("locking_controlers", cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
+        xmodel = cls.qi(XModel, cls._doc)
+        xmodel.lockControllers()
+        cls.trigger("locked_controlers", EventArgs(cls))
+        
+    @classmethod
+    def unlock_controllers(cls) -> None:
+        """
+        Resumes the notifications which were suspended by:py:meth:`~.lo.Lo.lock_controllers`.
+        
+        The calls to :py:meth:`~.lo.Lo.lock_controllers` and :py:meth:`~.lo.Lo.unlock_controllers`
+        may be nested and even overlapping, but they must be in pairs.
+        While there is at least one lock remaining, some notifications for
+        display updates are not broadcasted. 
+        """
+        cargs = CancelEventArgs(cls)
+        cls.trigger("unlocking_controlers", cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
+        xmodel = cls.qi(XModel, cls._doc)
+        if xmodel.hasControllersLocked():
+            xmodel.unlockControllers()
+        cls.trigger("unlocked_controlers", EventArgs(cls))
+    
+    @classmethod
+    def has_controllers_locked(cls) -> bool:
+        """
+        Determines if there is at least one lock remaining.
+        
+        While there is at least one lock remaining, some notifications for display
+        updates are not broadcasted to the controllers. 
+
+        Returns:
+            bool: True if any lock exist; Otherwise, False
+        """
+        xmodel = cls.qi(XModel, cls._doc)
+        return xmodel.hasControllersLocked()
 
     @classproperty
     def null_date(cls) -> datetime:
@@ -1983,6 +2036,7 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
         """Get current desktop"""
         return cls._xdesktop
     
+    
     StarDesktop, stardesktop = star_desktop, star_desktop
     
     @classproperty
@@ -2015,7 +2069,7 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
             return cls._this_component
     
     
-    ThisComponent, thiscomponent = this_component, this_component
+    ThisComponent, thiscomponent = cast(XComponent, this_component), cast(XComponent, this_component)
     
 
     @classproperty
