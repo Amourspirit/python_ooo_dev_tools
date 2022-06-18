@@ -1,7 +1,9 @@
 # coding: utf-8
 from __future__ import annotations
-from typing import Any, List
+from typing import Any, List, TYPE_CHECKING
 from ..utils.type_var import PathOrStr
+if TYPE_CHECKING:
+    from ..events.event_args import EventArgs
 
 
 class MissingInterfaceError(Exception):
@@ -157,3 +159,21 @@ class CreateInstanceMsfError(CreateInstanceError):
 class CreateInstanceMcfError(CreateInstanceError):
     """Create MCF Instance Error"""
     pass
+
+class CancelEventError(Exception):
+    """Error when an Event is canceled"""
+
+    def __init__(self, event_args: EventArgs, message: Any = None, *args) -> None:
+        """
+        Cancel Event Error constructor
+
+        Args:
+            event_args (EventArgs): Event args that was canceled
+            message (Any, optional): Message of error
+        """
+        if message is None:
+            message = f"Event '{event_args.event_name}' is canceled!"
+        super().__init__(event_args, message, *args)
+
+    def __str__(self) -> str:
+        return repr(self.args[1])
