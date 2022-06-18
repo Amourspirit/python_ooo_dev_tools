@@ -122,6 +122,23 @@ class MultiError(Exception):
     def __str__(self) -> str:
         return "\n".join([str(x) for x in self.errors])
 
+
+class NotSupportedServiceError(Exception):
+    """
+    Handles errors of service not being supported.
+    """
+    def __init__(self, service_name: str, *args: object) -> None:
+        """
+        NotSupportedServiceError Constructor
+
+        Args:
+            service_name (str): Service name
+        """
+        super().__init__(service_name, *args)
+
+    def __str__(self) -> str:
+        return repr(f"Service not supported: '{self.args[0]}'")
+
 class NotSupportedMacroModeError(Exception):
     """
     Handles errors of operations that are not allow when running as a macro.
