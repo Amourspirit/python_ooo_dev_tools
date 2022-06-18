@@ -3,11 +3,14 @@
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 # region Imports
 from __future__ import annotations
-from typing import TYPE_CHECKING, Iterable, List, overload, cast
+from enum import IntEnum
+from typing import TYPE_CHECKING, Any, Iterable, List, overload
 import re
 import os
 import uno
 
+from ..meta.static_meta import StaticProperty, classproperty
+from ..events.event_args import EventArgs
 from ..exceptions import ex as mEx
 from ..utils import lo as mLo
 from ..utils import info as mInfo
@@ -16,6 +19,7 @@ from ..utils import props as mProps
 from ..utils.gen_util import TableHelper
 from ..utils.color import CommonColor, Color
 from ..utils.type_var import PathOrStr, Table
+from ..utils import images_lo as mImgLo
 
 _DOCS_BUILDING = os.environ.get("DOCS_BUILDING", None) == 'True'
 # _DOCS_BUILDING is only true when sphinx is building docs.
@@ -33,6 +37,7 @@ if not _DOCS_BUILDING and not _ON_RTD:
     from com.sun.star.awt import Size  # struct
     from com.sun.star.beans import XPropertySet
     from com.sun.star.container import XEnumerationAccess
+    from com.sun.star.container import XIndexAccess
     from com.sun.star.container import XNamed
     from com.sun.star.document import XDocumentInsertable
     from com.sun.star.document import XEmbeddedObjectSupplier2
@@ -63,6 +68,7 @@ if not _DOCS_BUILDING and not _ON_RTD:
     from com.sun.star.text import XTextField
     from com.sun.star.text import XTextFrame
     from com.sun.star.text import XTextRange
+    from com.sun.star.text import XTextRangeCompare
     from com.sun.star.text import XTextTable
     from com.sun.star.text import XTextViewCursor
     from com.sun.star.text import XTextViewCursorSupplier
@@ -95,7 +101,7 @@ from ooo.dyn.view.paper_format import PaperFormat as OooPaperFormat
 from ooo.dyn.style.paragraph_adjust import ParagraphAdjust
 # endregion Imports
 
-class Write:
+class Write(metaclass=StaticProperty):
     ControlCharacter = ControlCharacterEnum # UnoControlCharacter
     # region -------------- Enums --------------------------------------
     
@@ -105,7 +111,162 @@ class Write:
     
     ParagraphAdjust = ParagraphAdjust
 
+    class CompareEnum(IntEnum):
+        """Compare Enumeration"""
+        AFTER = 1
+        BEFORE = -1
+        EQUAL= 0
+
+
     # endregion ----------- Enums --------------------------------------
+    @staticmethod
+    def compare_cursor_starts(o_text: Any, c1: XTextRange, c2: XTextRange) -> CompareEnum:
+        """
+        Compares two cursors ranges start position
+
+        Args:
+            o_text (object): xText object, usually document text object
+            c1 (XTextRange): first cursor range
+            c2 (XTextRange): second cursor range
+
+        Raises:
+            ValueError: if :paramref:`~.compare_cursor_starts.o_text` is missing or None
+            ValueError: if :paramref:`~.compare_cursor_starts.c1` is missing
+            ValueError: if :paramref:`~.compare_cursor_starts.c2` is missing
+            Exception: if comparsion fails
+
+        Returns:
+            CompareEnum: | ``CompareEnum.BEFORE`` if :paramref:`~.compare_cursor_starts.c1` start position is before :paramref:`~.compare_cursor_starts.c2` start position
+            | ``CompareEnum.EQUAL`` if :paramref:`~.compare_cursor_starts.c1` start position is equal to :paramref:`~.compare_cursor_starts.c2` start position
+            | ``CompareEnum.AFTER`` if :paramref:`~.compare_cursor_starts.c1` start position is after :paramref:`~.compare_cursor_starts.c2` start position
+        """
+        range_compare = mLo.Lo.qi(XTextRangeCompare, o_text)
+        if range_compare is None:
+            raise mEx.MissingInterfaceError(XTextRangeCompare)
+        i = range_compare.compareRegionStarts(c1, c2)
+        if i == 1:
+            return Write.CompareEnum.BEFORE
+        if i == -1:
+            return Write.CompareEnum.AFTER
+        if i == 0:
+            return Write.CompareEnum.EQUAL
+        # if no valid result raise error
+        msg = "get_cursor_compare_starts() unable to get a valid compare result"
+        raise Exception(msg)
+
+    @staticmethod
+    def compare_cursor_ends(o_text: Any, c1: XTextRange, c2: XTextRange) -> CompareEnum:
+        """
+        Compares two cursors ranges end positons
+
+        Args:
+            o_text (XTextRangeCompare): xText object, usually document text object
+            c1 (XTextRange): first cursor range
+            c2 (XTextRange): second cursor range
+
+        Raises:
+            ValueError: if :paramref:`~.compare_cursor_ends.o_text` is missing or None
+            ValueError: if :paramref:`~.compare_cursor_ends.c1` is missing
+            ValueError: if :paramref:`~.compare_cursor_ends.c2` is missing
+            Exception: if comparsion fails
+
+        Returns:
+            CompareEnum: | ``CompareEnum.BEFORE`` if :paramref:`~.compare_cursor_ends.c1` end position is before :paramref:`~.compare_cursor_ends.c2` end position
+            | ``CompareEnum.EQUAL`` if :paramref:`~.compare_cursor_ends.c1` end position is equal to :paramref:`~.compare_cursor_ends.c2` end position
+            | ``CompareEnum.AFTER`` if :paramref:`~.compare_cursor_ends.c1` end position is after :paramref:`~.compare_cursor_ends.c2` end position
+        """
+        range_compare = mLo.Lo.qi(XTextRangeCompare, o_text)
+        if range_compare is None:
+            raise mEx.MissingInterfaceError(XTextRangeCompare)
+
+        i = range_compare.compareRegionEnds(c1, c2)
+        if i == 1:
+            return Write.CompareEnum.BEFORE
+        if i == -1:
+            return Write.CompareEnum.AFTER
+        if i == 0:
+            return Write.CompareEnum.EQUAL
+        # if no valid result raise error
+        msg = "get_cursor_compare_ends() unable to get a valid compare result"
+        raise Exception(msg)
+
+    @classmethod
+    def range_len(cls, text_doc: XTextDocument, o_sel: XTextRange) -> int:
+        """
+        Gets the distance between range start and range end.
+
+        Args:
+            o_sel (XTextRange): first cursor range
+            o_text (object): xText object, usually document text object
+
+        Returns:
+            int: length of range
+
+        Note:
+            All characters are counted including paragraph breaks.
+            In Writer it will display selected characters however,
+            paragraph breaks are not counted.
+        """
+        i = 0
+        if o_sel.isCollapsed():
+            return i
+        o_text = mLo.Lo.qi(XText, text_doc)
+        if o_text is None:
+            raise mEx.MissingInterfaceError(XText)
+        l_cursor = cls._get_left_cursor(o_sel=o_sel, o_text=o_text)
+        r_cursor = cls._get_right_cursor(o_sel=o_sel, o_text=o_text)
+        if cls.compare_cursor_ends(o_text=o_text, c1=l_cursor, c2=r_cursor) < cls.CompareEnum.EQUAL:
+            while cls.compare_cursor_ends(o_text=o_text, c1=l_cursor, c2=r_cursor) != cls.CompareEnum.EQUAL:
+                l_cursor.goRight(1, False)
+                i += 1
+        return i
+
+    @staticmethod
+    def is_anything_selected(text_doc: XTextDocument) -> bool:
+        """
+        Determine if anything is selected.
+        
+        If Write document is not visible this method returns false.
+
+        Keyword Args:
+            text_doc (XTextDocument): Text Document
+
+        Returns:
+            bool: True if anything in the document is selected: Otherwise, False
+        """
+
+        model = mLo.Lo.qi(XModel, text_doc)
+        if model is None:
+            raise mEx.MissingInterfaceError(XModel)
+        # xcontroller = model.getCurrentController()
+        
+        # print("is_anything_selected Method")
+        o_selections = model.getCurrentSelection()
+        if not o_selections:
+            # print("o_selections was not created from o_doc")
+            return False
+        index_access = mLo.Lo.qi(XIndexAccess, o_selections)
+        if index_access is None:
+            raise mEx.MissingInterfaceError(XIndexAccess)
+        count = int(index_access.getCount())
+        # print("Selections Count:", count)
+        if count == 0:
+            return False
+        elif count > 1:
+            return True
+        else:
+            # There is only one selection so obtain the first selection
+            o_sel = mLo.Lo.qi(XTextRange, index_access.getByIndex(0))
+            o_text = o_sel.getText()
+            # Create a text cursor that covers the range and then see if it is collapsed
+            o_cursor = o_text.createTextCursorByRange(o_sel)  # XTextCursor
+            # print("o_cursor",o_cursor)
+            if not o_cursor.isCollapsed():
+                # print("o_cursor is NOT Collapsed")
+                return True
+
+        return False
+
 
     # region ------------- doc / open / close /create/ etc -------------
     @classmethod
@@ -344,6 +505,7 @@ class Write:
         Returns:
             XTextCursor | None: Cursor if present; Otherwise, None
         """
+        # https://wiki.openoffice.org/wiki/Writer/API/Text_cursor
         if mInfo.Info.is_type_interface(cursor_obj, XTextViewCursor.__pyunointerface__):
             return cursor_obj.getText().createTextCursorByRange(cursor_obj)
         xtext = cursor_obj.getText()
@@ -403,8 +565,8 @@ class Write:
             return None
         return mLo.Lo.qi(XParagraphCursor, text_doc)
 
-    @staticmethod
-    def get_position(cursor: XTextCursor) -> int:
+    @classmethod
+    def get_position(cls, cursor: XTextCursor) -> int:
         """
         Gets position of the cursor
 
@@ -414,7 +576,21 @@ class Write:
         Returns:
             int: _description_
         """
-        return len(cursor.getText().getString())
+
+        xcursor = cursor.getText().createTextCursor()
+        xcursor.gotoStart(False)
+        xcursor.gotoEnd(True)
+        xtext = xcursor.getText()
+        l_cursor =cls._get_left_cursor(o_sel=xcursor, o_text=xtext)
+        r_cursor=  cls._get_right_cursor(o_sel=xcursor, o_text=xtext)
+        i = 0
+        if cls.compare_cursor_ends(o_text=xtext, c1=l_cursor, c2=r_cursor) < cls.CompareEnum.EQUAL:
+            while cls.compare_cursor_ends(o_text=xtext, c1=l_cursor, c2=r_cursor) != cls.CompareEnum.EQUAL:
+                l_cursor.goRight(1, False)
+                i += 1
+        return i
+        
+        # return len(cursor.getText().getString())
 
     # endregion ---------- model cursor methods ------------------------
 
@@ -433,6 +609,7 @@ class Write:
         Returns:
             XTextViewCursor: Text View Currsor
         """
+        # https://wiki.openoffice.org/wiki/Writer/API/Text_cursor
         model = mLo.Lo.qi(XModel, text_doc)
         if model is None:
             raise mEx.MissingInterfaceError(XModel)
@@ -915,6 +1092,7 @@ class Write:
         """
         if prop_name is None:
             prop_name = "ParaStyleName"
+        # raises PropertyNotFoundError if property is not found
         old_val = mProps.Props.get_property(cursor, prop_name)
 
         cursor.gotoPreviousParagraph(True)  # select previous paragraph
@@ -1593,8 +1771,6 @@ class Write:
     ) -> None:
         """
         Add Image Shape
-        
-        Currently this method is only suported in terminal. Not in macros.
 
         Args:
             doc (XTextDocument): Text Document
@@ -1604,21 +1780,17 @@ class Write:
             height (int, optional): Image height
 
         Raises:
-            NotSupportedMacroModeError: If run from a macro
             CreateInstanceMsfError: If unable to create rawing.GraphicObjectShape
             ValueError: If unable to get image
             MissingInterfaceError: If require interface cannot be obtained.
             Exception: If unable to add image shape
         """
-        if mLo.Lo.is_macro_mode:
-            raise mEx.NotSupportedMacroModeError("get_text_graphics() is not supported in macros")
-        from ..utils import images as mImages
 
         try:
             if width > 0 and height > 0:
                 im_size = Size(width, height)
             else:
-                im_size = mImages.Images.get_size_100mm(fnm)  # in 1/100 mm units
+                im_size = mImgLo.ImagesLo.get_size_100mm(fnm)  # in 1/100 mm units
                 if im_size is None:
                     raise ValueError(f"Unable to get image from {fnm}")
 
@@ -1627,7 +1799,7 @@ class Write:
             if gos is None:
                 raise mEx.CreateInstanceMsfError(XTextContent, "com.sun.star.drawing.GraphicObjectShape")
 
-            bitmap = mImages.Images.get_bitmap(fnm)
+            bitmap = mImgLo.ImagesLo.get_bitmap(fnm)
             if bitmap is None:
                 raise ValueError(f"Unable to get bitmap of {fnm}")
             # store the image's bitmap as the graphic shape's URL's value
@@ -1700,14 +1872,11 @@ class Write:
     def get_text_graphics(cls, text_doc: XTextDocument) -> List[XGraphic]:
         """
         Gets text graphics.
-        
-        Currently this method is only suported in terminal. Not in macros.
 
         Args:
             text_doc (XTextDocument): Text Document
 
         Raises:
-            NotSupportedMacroModeError: If run from a macro
             Exception: If unable to get text graphics
 
         Returns:
@@ -1717,11 +1886,6 @@ class Write:
             If there is error getting a graphic link then it is ignored
             and not added to the return value.
         """
-        if mLo.Lo.is_macro_mode:
-            raise mEx.NotSupportedMacroModeError("get_text_graphics() is not supported in macros")
-
-        from ..utils import images as mImages
-
         try:
             xname_access = cls.get_graphic_links(text_doc)
             if xname_access is None:
@@ -1738,11 +1902,12 @@ class Write:
                 if graphic_link is None:
                     print(f"No graphic found for {name}")
                 else:
-                    xgraphic = mImages.Images.load_graphic_link(graphic_link)
-                    if xgraphic is not None:
+                    try:
+                        xgraphic = mImgLo.ImagesLo.load_graphic_link(graphic_link)
                         pics.append(xgraphic)
-                    else:
-                        print(f"{name} could not be accessed")
+                    except Exception as e:                       
+                        print(f"{name} could not be accessed:")
+                        print(f"    {e}")
             if len(pics) == 0:
                 return None
             return pics
@@ -2240,3 +2405,62 @@ class Write:
         mLo.Lo.dispatch_cmd("ThesaurusDialog")
 
     # endregion ---------- Linguistics dialogs and menu items ----------
+
+    @classmethod
+    def _get_left_cursor(cls, o_sel: XTextRange, o_text: XText) -> XTextCursor:
+        range_compare = cls.text_range_compare
+        if range_compare.compareRegionStarts(o_sel.getEnd(), o_sel) >= 0:
+            o_range = o_sel.getEnd()
+        else:
+            o_range = o_sel.getStart()
+        cursor = o_text.createTextCursorByRange(o_range)
+        cursor.goRight(0, False)
+        return cursor
+
+    @classmethod
+    def _get_right_cursor(cls, o_sel: XTextRange, o_text: XText) -> XTextCursor:
+        
+        range_compare = cls.text_range_compare
+        if range_compare.compareRegionStarts(o_sel.getEnd(), o_sel) >= 0:
+            o_range = o_sel.getStart()
+        else:
+            o_range = o_sel.getEnd()
+        cursor = o_text.createTextCursorByRange(o_range)
+        cursor.goLeft(0, False)
+        return cursor
+
+    @classproperty
+    def text_range_compare(cls) -> XTextRangeCompare:
+        """
+        Gets text range for comparion operations
+
+        Returns:
+            XTextRangeCompare: Text Range Compare instance
+        """
+        
+        try:
+            return cls._text_range_compare
+        except AttributeError:
+            doc =  mLo.Lo.XSCRIPTCONTEXT.getDocument()
+            text = doc.getText()
+            cls._text_range_compare = mLo.Lo.qi(XTextRangeCompare, text)
+        return cls._text_range_compare
+
+    @text_range_compare.setter
+    def text_range_compare(cls, value) -> None:
+        # raise error on set. Not really neccesary but gives feedback.
+        raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
+
+def _del_cache_attrs(source: object, e: EventArgs) -> None:
+    # clears Write Attributes that are dynamically created
+    dattrs = ("_text_range_compare",)
+    for attr in dattrs:
+        if hasattr(Write, attr):
+            delattr(Write, attr)
+
+# subscribe to events that warrent clearing cached attribs
+mLo.Lo.on("office_loaded", _del_cache_attrs)
+mLo.Lo.on("doc_opening", _del_cache_attrs)
+mLo.Lo.on("doc_created", _del_cache_attrs)
+
+__all__ = ("Write",)
