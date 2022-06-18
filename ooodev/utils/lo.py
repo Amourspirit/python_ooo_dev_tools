@@ -5,10 +5,15 @@
 from __future__ import annotations
 from datetime import datetime
 import time
-from typing import TYPE_CHECKING, Iterable, Optional, List, Tuple, overload, Type
+from typing import TYPE_CHECKING, Iterable, Optional, List, Tuple, cast, overload, Type
 from urllib.parse import urlparse
 import uno
 from enum import IntEnum, Enum
+
+from ..events.event_args import EventArgs
+from ..events.cancel_event_args import CancelEventArgs
+from ..events.dispatch_event import DispatchEvent
+from ..events.dispatch_cancel_event import DispatchCancelEvent
 from ..meta.static_meta import StaticProperty, classproperty
 from .connect import ConnectBase, LoPipeStart, LoSocketStart, LoDirectStart
 from com.sun.star.beans import XPropertySet
@@ -27,6 +32,7 @@ if TYPE_CHECKING:
     from com.sun.star.beans import PropertyValue
     from com.sun.star.container import XChild
     from com.sun.star.container import XIndexAccess
+    from com.sun.star.frame import XModel
     from com.sun.star.frame import XFrame
     from com.sun.star.lang import XMultiComponentFactory
     from com.sun.star.lang import XComponent
@@ -34,6 +40,7 @@ if TYPE_CHECKING:
     from com.sun.star.script.provider import XScriptContext
     from com.sun.star.uno import XComponentContext
     from com.sun.star.uno import XInterface
+
 
 from ooo.dyn.document.macro_exec_mode import MacroExecMode # const
 from ooo.dyn.lang.disposed_exception import DisposedException
@@ -45,13 +52,15 @@ from . import props as mProps
 from . import file_io as mFileIO
 from . import xml_util as mXML
 from . import info as mInfo
+from . import script_context
+from ..events.static_event_base import StaticEventBase
 from ..exceptions import ex as mEx
 from .type_var import PathOrStr, UnoInterface, T
 
 # PathOrStr = type_var.PathOrStr
 # """Path like object or string"""
 
-class Lo(metaclass=StaticProperty):
+class Lo(StaticEventBase, metaclass=StaticProperty):
     class Loader:
         """
         Context Manager for Loader
@@ -418,6 +427,7 @@ class Lo(metaclass=StaticProperty):
             
 
         Raises:
+            CancelEventError: If office_loading event is canceled
             Exception: If run outside a macro
             Exception: If unable to get access to XComponentLoader.
 
@@ -434,6 +444,10 @@ class Lo(metaclass=StaticProperty):
         #                     component loader (XComponentLoader)
         # Once we have a component loader, we can load a document.
         # xcc, mcFactory, and xDesktop are stored as static globals.
+        cargs = CancelEventArgs(cls)
+        cls.trigger("office_loading", cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
         using_pipes = bool(kwargs.get("pipes", False))
         using_direct = bool(kwargs.get("direct", False))
         
@@ -466,12 +480,14 @@ class Lo(metaclass=StaticProperty):
             raise SystemExit(1)
         cls._xdesktop = cls.create_instance_mcf(XDesktop, "com.sun.star.frame.Desktop")
         if cls._xdesktop is None:
+            # TODO: Perhaps system exit is not the best waht to handle no desktop service
             print("Could not create a desktop service")
             raise SystemExit(1)
         loader = cls.qi(XComponentLoader, cls._xdesktop)
         if loader is None:
             raise print("Unable to access XComponentLoader")
             SystemExit(1)
+        cls.trigger("office_loaded", EventArgs(cls))
         return loader
         # return cls.xdesktop
 
@@ -484,6 +500,12 @@ class Lo(metaclass=StaticProperty):
     def close_office(cls) -> None:
         """Closes the ofice connection."""
         print("Closing Office")
+        
+        cargs = CancelEventArgs(cls)
+        cls.trigger("office_closing", cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
+        
         cls._doc = None
         if cls._xdesktop is None:
             print("No office connection found")
@@ -492,11 +514,14 @@ class Lo(metaclass=StaticProperty):
         if cls._is_office_terminated:
             print("Office has already been requested to terminate")
             return
+        max_tries = 4
         num_tries = 1
-        while cls._is_office_terminated is False and num_tries < 4:
+        while cls._is_office_terminated is False and num_tries < max_tries:
             time.sleep(0.2)
             cls._is_office_terminated = cls._try_to_terminate(num_tries)
             num_tries += 1
+        if num_tries < max_tries:
+            cls.trigger("office_closed", EventArgs(cls))
 
     @classmethod
     def _try_to_terminate(cls, num_tries: int) -> bool:
@@ -525,6 +550,7 @@ class Lo(metaclass=StaticProperty):
         See Also:
             :py:meth:`~Lo.close_office`
         """
+        
         if cls._lo_inst is None:
             print("No instance to kill")
             return
@@ -626,6 +652,10 @@ class Lo(metaclass=StaticProperty):
             * :py:meth:`get_doc`
             * :py:meth:`load_office`
         """
+        cargs = CancelEventArgs(cls)
+        cls.trigger("doc_opening", cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
         if fnm is None:
             raise Exception("Filename is null")
         fnm = str(fnm)
@@ -647,6 +677,7 @@ class Lo(metaclass=StaticProperty):
             doc = loader.loadComponentFromURL(open_file_url, "_blank", 0, props)
             cls._ms_factory = cls.qi(XMultiServiceFactory, doc)
             cls._doc = doc
+            cls.trigger("doc_opened", EventArgs(cls))
             return doc
         except Exception as e:
             raise Exception("Unable to open the document") from e
@@ -790,6 +821,10 @@ class Lo(metaclass=StaticProperty):
         Returns:
             XComponent: document as component.
         """
+        cargs = CancelEventArgs(cls)
+        cls.trigger("doc_creating", cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
         dtype = cls.DocTypeStr(doc_type)
         if props is None:
             props = mProps.Props.make_props(Hidden=True)
@@ -800,6 +835,7 @@ class Lo(metaclass=StaticProperty):
             if cls._ms_factory is None:
                 raise mEx.MissingInterfaceError(XMultiServiceFactory)
             cls._doc = doc
+            cls.trigger("doc_created", EventArgs(cls))
             return cls._doc
         except Exception as e:
             raise Exception("Could not create a document") from e
@@ -837,6 +873,10 @@ class Lo(metaclass=StaticProperty):
         Returns:
             XComponent: document as component.
         """
+        cargs = CancelEventArgs(cls)
+        cls.trigger("doc_creating", cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
         if not mFileIO.FileIO.is_openable(template_path):
             raise Exception(f"Template file can not be opened: '{template_path}'")
         print(f"Opening template: '{template_path}'")
@@ -848,6 +888,7 @@ class Lo(metaclass=StaticProperty):
             cls._ms_factory = cls.qi(XMultiServiceFactory, cls._doc)
             if cls._ms_factory is None:
                 raise mEx.MissingInterfaceError(XMultiServiceFactory)
+            cls.trigger("doc_created", EventArgs(cls))
             return cls._doc
         except Exception as e:
             raise Exception(f"Could not create document from template") from e
@@ -866,12 +907,17 @@ class Lo(metaclass=StaticProperty):
             Exception: If unable to save document
             MissingInterfaceError: If doc does not implement XStorable interface
         """
+        cargs = CancelEventArgs(cls)
+        cls.trigger("doc_saving", cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
         store = cls.qi(XStorable, doc)
         if store is None:
             raise mEx.MissingInterfaceError(XStorable)
         try:
             store.store()
             print("Saved the document by overwriting")
+            cls.trigger("doc_saved", EventArgs(cls))
         except IOException as e:
             raise Exception(f"Could not save the document") from e
 
@@ -928,6 +974,10 @@ class Lo(metaclass=StaticProperty):
         Raises:
             MissingInterfaceError: If doc does not implement XStorable interface
         """
+        cargs = CancelEventArgs(cls)
+        cls.trigger("doc_saving", cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
         store = cls.qi(XStorable, doc)
         if store is None:
             raise mEx.MissingInterfaceError(XStorable)
@@ -940,6 +990,7 @@ class Lo(metaclass=StaticProperty):
         else:
             kargs["format"] = format
             cls.store_doc_format(**kargs)
+        cls.trigger("doc_saved", EventArgs(cls))
 
     @overload
     @classmethod
@@ -979,6 +1030,10 @@ class Lo(metaclass=StaticProperty):
             fnm (PathOrStr): Path to save document as. If extension is absent then text (.txt) is assumed.
             password (str): Password for document.
         """
+        cargs = CancelEventArgs(cls)
+        cls.trigger("doc_saving", cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
         ext = mInfo.Info.get_ext(fnm)
         frmt = "Text"
         if ext is None:
@@ -989,6 +1044,7 @@ class Lo(metaclass=StaticProperty):
             cls.store_doc_format(store=store, fnm=fnm, format=frmt)
         else:
             cls.store_doc_format(store=store, fnm=fnm, format=frmt, password=password)
+        cls.trigger("doc_saved", EventArgs(cls))
 
     @overload
     @classmethod
@@ -1142,9 +1198,11 @@ class Lo(metaclass=StaticProperty):
             print(f"Do not recognize extension '{ext}'; using text")
             return "Text"
 
+    # region    store_doc_format()
+
     @overload
-    @staticmethod
-    def store_doc_format(store: XStorable, fnm: PathOrStr, format: str) -> None:
+    @classmethod
+    def store_doc_format(cls, store: XStorable, fnm: PathOrStr, format: str) -> None:
         """
         Store document as format.
 
@@ -1159,8 +1217,8 @@ class Lo(metaclass=StaticProperty):
         ...
 
     @overload
-    @staticmethod
-    def store_doc_format(store: XStorable, fnm: PathOrStr, format: str, password: str) -> None:
+    @classmethod
+    def store_doc_format(cls, store: XStorable, fnm: PathOrStr, format: str, password: str) -> None:
         """
         Store document as format.
 
@@ -1175,8 +1233,8 @@ class Lo(metaclass=StaticProperty):
         """
         ...
 
-    @staticmethod
-    def store_doc_format(store: XStorable, fnm: PathOrStr, format: str, password: str = None) -> None:
+    @classmethod
+    def store_doc_format(cls, store: XStorable, fnm: PathOrStr, format: str, password: str = None) -> None:
         """
         Store document as format.
 
@@ -1189,6 +1247,10 @@ class Lo(metaclass=StaticProperty):
         Raises:
             Exception: If unable to save document
         """
+        cargs = CancelEventArgs(cls)
+        cls.trigger("doc_saving", cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
         print(f"Saving the document in '{fnm}'")
         print(f"Using format {format}")
 
@@ -1199,8 +1261,11 @@ class Lo(metaclass=StaticProperty):
             else:
                 store_props = mProps.Props.make_props(Overwrite=True, FilterName=format, Password=password)
             store.storeToURL(save_file_url, store_props)
+            cls.trigger("doc_saved", EventArgs(cls))
         except IOException as e:
             raise Exception(f"Could not save '{fnm}'") from e
+
+    # endregion store_doc_format()
 
     # ======================== document closing ==============
 
@@ -1243,12 +1308,17 @@ class Lo(metaclass=StaticProperty):
                 They must react for possible CloseVetoExceptions such as when document needs saving
                 and try it again at a later time. This can be useful for a generic UI handling.
         """
+        cargs = CancelEventArgs(cls)
+        cls.trigger("doc_closing", cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
         if closeable is None:
             return
         print("Closing the document")
         try:
             closeable.close(deliver_ownership)
             cls._doc = None
+            cls.trigger("doc_closed", EventArgs(cls))
         except CloseVetoException as e:
             raise Exception("Close was vetoed") from e
 
@@ -1326,6 +1396,10 @@ class Lo(metaclass=StaticProperty):
         Returns:
             XComponent: addon as component
         """
+        cargs = CancelEventArgs(cls)
+        cls.trigger("doc_opening", cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
         xcc = addon_xcc
         if xcc is None:
             raise TypeError("'addon_xcc' is null. Could not access component context")
@@ -1344,6 +1418,7 @@ class Lo(metaclass=StaticProperty):
         if cls._ms_factory in None:
             raise mEx.MissingInterfaceError(XMultiServiceFactory)
         cls._doc = doc
+        cls.trigger("doc_opened", EventArgs(cls))
         return doc
 
     # ============= initialization via script context ======================
@@ -1366,6 +1441,10 @@ class Lo(metaclass=StaticProperty):
         Returns:
             XComponent: script component
         """
+        cargs = CancelEventArgs(cls)
+        cls.trigger("doc_opening", cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
         if sc is None:
             raise TypeError("Script Context is null")
         xcc = sc.getComponentContext()
@@ -1384,6 +1463,7 @@ class Lo(metaclass=StaticProperty):
         if cls._ms_factory in None:
             raise mEx.MissingInterfaceError(XMultiServiceFactory)
         cls._doc = doc
+        cls.trigger("doc_opened", EventArgs(cls))
         return doc
 
     # ==================== dispatch ===============================
@@ -1453,6 +1533,11 @@ class Lo(metaclass=StaticProperty):
         See Also:
             `LibreOffice Dispatch Commands <https://wiki.documentfoundation.org/Development/DispatchCommands>`_
         """
+        cargs = DispatchCancelEvent(cls, cmd)
+        cls.trigger("dispatching", cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
+
         if props is None:
             props = ()
         if frame is None:
@@ -1463,6 +1548,7 @@ class Lo(metaclass=StaticProperty):
             raise mEx.MissingInterfaceError(XDispatchHelper, f"Could not create dispatch helper for command {cmd}")
         try:
             helper.executeDispatch(frame, f".uno:{cmd}", "", 0, props)
+            cls.trigger("dispatched", DispatchEvent(cls, cmd))
             return True
         except Exception as e:
             raise Exception(f"Could not dispatch '{cmd}'") from e
@@ -1817,6 +1903,28 @@ class Lo(metaclass=StaticProperty):
         """Gets a time stamp"""
         return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
+    @classmethod
+    def get_frame(cls) -> XFrame:
+        """
+        Gets xFrame for current LibreOffice instance
+
+        Returns:
+            XFrame: frame
+        """
+        if cls.star_desktop is None:
+            raise Exception("No desktop found")
+        return cast(XDesktop, cls.star_desktop).getCurrentFrame()
+    
+    @classmethod
+    def get_model(cls) -> XModel:
+        """
+        Gets xModel
+
+        Returns:
+            XModel: Gets model for current LibreOffice instance
+        """
+        cls.get_frame().getController().getModel()
+
     @classproperty
     def null_date(cls) -> datetime:
         """
@@ -1891,20 +1999,50 @@ class Lo(metaclass=StaticProperty):
         Returns:
             the current component or None when not a document
         """
-        if cls.star_desktop is None:
-            # attempt to connect direct
-            cls.load_office(direct=True)
-        if cls.star_desktop is None:
-            if cls.is_macro_mode:
-                raise Exception("Something went wrong. did try load_office() first?")
-            else:
-                raise Exception("this_component on not available until load_office() is run when not running in a macro.")
-        comp = cls.star_desktop.getCurrentComponent()
-        if comp is None:
-            return None
-        impl = comp.ImplementationName
-        if impl in ('com.sun.star.comp.basic.BasicIDE', 'com.sun.star.comp.sfx2.BackingComp'):
-            return None     # None when Basic IDE or welcome screen
-        return comp
+        try:
+            return cls._this_component
+        except AttributeError:
+            if cls._doc is None:
+                # attempt to connect direct
+                cls.load_office(direct=True)
+            # comp = cls.star_desktop.getCurrentComponent()
+            if cls._doc is None:
+                return None
+            impl = cls._doc.ImplementationName
+            if impl in ('com.sun.star.comp.basic.BasicIDE', 'com.sun.star.comp.sfx2.BackingComp'):
+                return None     # None when Basic IDE or welcome screen
+            cls._this_component = cls._doc
+            return cls._this_component
+    
     
     ThisComponent, thiscomponent = this_component, this_component
+    
+
+    @classproperty
+    def xscript_context(cls) -> XScriptContext:
+        """
+        a substitute to `XSCRIPTCONTEXT` (Libre|Open)Office built-in
+
+        Returns:
+            XScriptContext: XScriptContext instance
+        """
+        try:
+            return cls._xscript_context
+        except AttributeError:
+            ctx = cls.get_context()
+            cls._xscript_context = script_context.ScriptContext(ctx)
+        return cls._xscript_context
+    
+    XSCRIPTCONTEXT = cast("XScriptContext", xscript_context)
+
+def _del_cache_attrs(source: object, e: EventArgs) -> None:
+     # clears Lo Attributes that are dynamically created
+    dattrs = ("_xscript_context", "_is_macro_mode", "_this_component")
+    for attr in dattrs:
+        if hasattr(Lo, attr):
+            delattr(Lo, attr)
+
+Lo.on("office_loaded", _del_cache_attrs)
+Lo.on("doc_opening", _del_cache_attrs)
+Lo.on("doc_created", _del_cache_attrs)
+__all__ = ("Lo",)
