@@ -42,7 +42,7 @@ if TYPE_CHECKING:
     from com.sun.star.uno import XInterface
 
 
-from ooo.dyn.document.macro_exec_mode import MacroExecMode # const
+from ooo.dyn.document.macro_exec_mode import MacroExecMode  # const
 from ooo.dyn.lang.disposed_exception import DisposedException
 from ooo.dyn.util.close_veto_exception import CloseVetoException
 
@@ -60,7 +60,42 @@ from .type_var import PathOrStr, UnoInterface, T
 # PathOrStr = type_var.PathOrStr
 # """Path like object or string"""
 
+
 class Lo(StaticEventBase, metaclass=StaticProperty):
+    class ControllerLock:
+        """
+        Context manager for Locking Controller
+
+        In the followin example ControllerLock is called usinsg ``with``.
+
+        All code inside the ``with Lo.ControllerLock() as xdoc`` block is written to **Writer**
+        with controller locked. This means the ui will not update until the block is done.
+        A soon as the block is processed the controller is unlocked and the ui is updated.
+
+        Can be useful for large writes in documnet. Will give a speed improvement.
+
+        Example:
+
+            .. code::
+
+                with Lo.ControllerLock() as xdoc:
+                    cursor = Write.get_cursor(xdoc)
+                    Write.append(cursor=cursor, text="Some examples of simple text ")
+                    # do a bunch or work.
+                    ...
+        """
+
+        def __init__(self):
+            """Constructor."""
+            self.component = Lo.this_component
+            Lo.lock_controllers()
+
+        def __enter__(self) -> XComponent:
+            return self.component
+
+        def __exit__(self, exc_type, exc_val, exc_tb):
+            Lo.unlock_controllers()
+
     class Loader:
         """
         Context Manager for Loader
@@ -98,7 +133,7 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
         DRAW = 4
         IMPRESS = 5
         MATH = 6
-        
+
         def __str__(self) -> str:
             return str(self.value)
 
@@ -111,10 +146,10 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
         DRAW = "sdraw"
         IMPRESS = "simpress"
         MATH = "smath"
-    
+
         def __str__(self) -> str:
             return self.value
-    
+
     # region docType service names
     class Service(str, Enum):
         UNKNOWN = "com.sun.frame.XModel"
@@ -124,12 +159,11 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
         DRAW = "com.sun.star.drawing.DrawingDocument"
         IMPRESS = "com.sun.star.presentation.PresentationDocument"
         MATH = "com.sun.star.formula.FormulaProperties"
-        
+
         def __str__(self) -> str:
             return self.value
-    # endregion docType service names
 
-   
+    # endregion docType service names
 
     # region CLSIDs for Office documents
     # defined in https://github.com/LibreOffice/core/blob/master/officecfg/registry/data/org/openoffice/Office/Embedding.xcu
@@ -141,7 +175,7 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
         IMPRESS = "9176E48A-637A-4D1F-803b-99d9bfac1047"
         MATH = "078B7ABA-54FC-457F-8551-6147e776a997"
         CHART = "12DCAE26-281F-416F-a234-c3086127382e"
-        
+
         def __str__(self) -> str:
             return self.value
 
@@ -163,7 +197,7 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
     #        service: com.sun.star.report.ReportDefinition
     # endregion CLSIDs for Office documents
 
-     # region port connect to locally running Office via port 8100
+    # region port connect to locally running Office via port 8100
     # endregion port
 
     _xcc: XComponentContext = None
@@ -192,12 +226,12 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
 
         Returns:
             T | None: instance of interface if supported; Otherwise, None
-    
+
         Example:
-                
+
             .. code-block:: python
                 :emphasize-lines: 3
-    
+
                 from com.sun.star.util import XSearchable
                 cell_range = ...
                 srch = Lo.qi(XSearchable, cell_range)
@@ -295,7 +329,7 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
 
                 from com.sun.star.sheet import XSheetCellRangeContainer
                 src_con = Lo.create_instance_msf(XSheetCellRangeContainer, "com.sun.star.sheet.SheetCellRanges")
-                
+
         """
         if cls._ms_factory is None:
             raise Exception("No document found")
@@ -369,7 +403,7 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
 
                 from com.sun.star.awt import XExtendedToolkit
                 tk = Lo.create_instance_mcf(XExtendedToolkit, "com.sun.star.awt.Toolkit")
-                
+
         """
         #  create an interface object of class atype from the named service;
         #  uses XComponentContext and XMultiComponentFactory
@@ -411,11 +445,11 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
     def load_office(cls, **kwargs) -> XComponentLoader:
         """
         Loads Office
-        
+
         Not available in a macro.
-        
+
         If running outside of office then a bridge is created that connects to office.
-        
+
         If running from inside of office e.g. in a macro, then XSCRIPTCONTEXT is used.
         ``using_pipes`` is ignored with running inside office.
 
@@ -424,7 +458,7 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
             host (str): host name such as localhost. host and port must be together. Defalut localhost
             port (int): port number. host and port must be together. Default 2002
             direct (bool): No connection is made. Use directly. This is the mode used for macros. Defalut False
-            
+
 
         Raises:
             CancelEventError: If office_loading event is canceled
@@ -450,7 +484,7 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
             raise mEx.CancelEventError(cargs)
         using_pipes = bool(kwargs.get("pipes", False))
         using_direct = bool(kwargs.get("direct", False))
-        
+
         host = str(kwargs.get("host", "localhost"))
         port = int(kwargs.get("port", 2002))
 
@@ -491,8 +525,6 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
         return loader
         # return cls.xdesktop
 
-
-        
     # endregion Start Office
 
     # region office shutdown
@@ -500,12 +532,12 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
     def close_office(cls) -> None:
         """Closes the ofice connection."""
         print("Closing Office")
-        
+
         cargs = CancelEventArgs(cls)
         cls.trigger("office_closing", cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
-        
+
         cls._doc = None
         if cls._xdesktop is None:
             print("No office connection found")
@@ -546,11 +578,11 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
     def kill_office(cls) -> None:
         """
         Kills the office connection.
-        
+
         See Also:
             :py:meth:`~Lo.close_office`
         """
-        
+
         if cls._lo_inst is None:
             print("No instance to kill")
             return
@@ -716,7 +748,7 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
         Returns:
             DocTypeStr: DocTypeStr enum. If not match if found defaults to 'DocTypeStr.WRITER'
         """
-        e = ext.casefold().lstrip('.')
+        e = ext.casefold().lstrip(".")
         if e == "":
             print("Empty string: Using writer")
             return cls.DocTypeStr.WRITER
@@ -1388,7 +1420,7 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
 
         Raises:
             TypeError: If addon_xcc is None
-            Exception: If unable to get service manager from addon_xcc 
+            Exception: If unable to get service manager from addon_xcc
             Exception: If unable to access desktop
             Exception: If unable to access document
             MissingInterfaceError: if unable to get XMultiServiceFactory interface instance
@@ -1867,7 +1899,7 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
         return None
 
     @classmethod
-    def is_uno_interfaces(cls, component:object, *args:str | UnoInterface) -> bool:
+    def is_uno_interfaces(cls, component: object, *args: str | UnoInterface) -> bool:
         """
         Gets if an object contains interface(s)
 
@@ -1914,7 +1946,7 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
         if cls.star_desktop is None:
             raise Exception("No desktop found")
         return cast(XDesktop, cls.star_desktop).getCurrentFrame()
-    
+
     @classmethod
     def get_model(cls) -> XModel:
         """
@@ -1928,13 +1960,15 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
     @classmethod
     def lock_controllers(cls) -> None:
         """
-        Suspends some notifications to the controllers which are used for display updates. 
-        
+        Suspends some notifications to the controllers which are used for display updates.
+
         The calls to :py:meth:`~.lo.Lo.lock_controllers` and :py:meth:`~.lo.Lo.unlock_controllers`
         may be nested and even overlapping, but they must be in pairs.
         While there is at least one lock remaining, some notifications for
-        display updates are not broadcasted. 
-        
+        display updates are not broadcasted.
+
+        See Also:
+            :py:class:`.Lo.ControllerLock`
         """
         # much faster updates as screen is basically suspended
         cargs = CancelEventArgs(cls)
@@ -1944,16 +1978,19 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
         xmodel = cls.qi(XModel, cls._doc)
         xmodel.lockControllers()
         cls.trigger("locked_controlers", EventArgs(cls))
-        
+
     @classmethod
     def unlock_controllers(cls) -> None:
         """
         Resumes the notifications which were suspended by:py:meth:`~.lo.Lo.lock_controllers`.
-        
+
         The calls to :py:meth:`~.lo.Lo.lock_controllers` and :py:meth:`~.lo.Lo.unlock_controllers`
         may be nested and even overlapping, but they must be in pairs.
         While there is at least one lock remaining, some notifications for
-        display updates are not broadcasted. 
+        display updates are not broadcasted.
+
+        See Also:
+            :py:class:`.Lo.ControllerLock`
         """
         cargs = CancelEventArgs(cls)
         cls.trigger("unlocking_controlers", cargs)
@@ -1963,17 +2000,20 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
         if xmodel.hasControllersLocked():
             xmodel.unlockControllers()
         cls.trigger("unlocked_controlers", EventArgs(cls))
-    
+
     @classmethod
     def has_controllers_locked(cls) -> bool:
         """
         Determines if there is at least one lock remaining.
-        
+
         While there is at least one lock remaining, some notifications for display
-        updates are not broadcasted to the controllers. 
+        updates are not broadcasted to the controllers.
 
         Returns:
             bool: True if any lock exist; Otherwise, False
+
+        See Also:
+            :py:class:`.Lo.ControllerLock`
         """
         xmodel = cls.qi(XModel, cls._doc)
         return xmodel.hasControllersLocked()
@@ -2007,8 +2047,7 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
     def null_date(cls, value) -> None:
         # raise error on set. Not really neccesary but gives feedback.
         raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
-    
-    
+
     @classproperty
     def is_macro_mode(cls) -> bool:
         """
@@ -2017,7 +2056,7 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
         Returns:
             bool: True if running as a macro; Otherwise, False
         """
-        
+
         try:
             return cls._is_macro_mode
         except AttributeError:
@@ -2030,26 +2069,25 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
     def is_macro_mode(cls, value) -> None:
         # raise error on set. Not really neccesary but gives feedback.
         raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
-    
+
     @classproperty
     def star_desktop(cls) -> XDesktop:
         """Get current desktop"""
         return cls._xdesktop
-    
-    
+
     StarDesktop, stardesktop = star_desktop, star_desktop
-    
+
     @classproperty
     def this_component(cls) -> XComponent:
         """
         When the current component is the Basic IDE, the ThisComponent object returns
         in Basic the component owning the currently run user script.
         Above behaviour cannot be reproduced in Python.
-        
+
         When running in a macro this property can be access directly to get the current document.
-        
+
         When not in a macro then load_office() must be called first
-        
+
         Returns:
             the current component or None when not a document
         """
@@ -2063,14 +2101,12 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
             if cls._doc is None:
                 return None
             impl = cls._doc.ImplementationName
-            if impl in ('com.sun.star.comp.basic.BasicIDE', 'com.sun.star.comp.sfx2.BackingComp'):
-                return None     # None when Basic IDE or welcome screen
+            if impl in ("com.sun.star.comp.basic.BasicIDE", "com.sun.star.comp.sfx2.BackingComp"):
+                return None  # None when Basic IDE or welcome screen
             cls._this_component = cls._doc
             return cls._this_component
-    
-    
+
     ThisComponent, thiscomponent = cast(XComponent, this_component), cast(XComponent, this_component)
-    
 
     @classproperty
     def xscript_context(cls) -> XScriptContext:
@@ -2086,15 +2122,17 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
             ctx = cls.get_context()
             cls._xscript_context = script_context.ScriptContext(ctx)
         return cls._xscript_context
-    
+
     XSCRIPTCONTEXT = cast("XScriptContext", xscript_context)
 
+
 def _del_cache_attrs(source: object, e: EventArgs) -> None:
-     # clears Lo Attributes that are dynamically created
+    # clears Lo Attributes that are dynamically created
     dattrs = ("_xscript_context", "_is_macro_mode", "_this_component")
     for attr in dattrs:
         if hasattr(Lo, attr):
             delattr(Lo, attr)
+
 
 Lo.on("office_loaded", _del_cache_attrs)
 Lo.on("doc_opening", _del_cache_attrs)

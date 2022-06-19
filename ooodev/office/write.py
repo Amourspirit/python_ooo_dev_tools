@@ -650,7 +650,7 @@ class Write(metaclass=StaticProperty):
             text_doc (XTextDocument): Text Document
 
         Raises:
-            mEx.MissingInterfaceError: If XPageCursor is not obtainable.
+            MissingInterfaceError: If XPageCursor is not obtainable.
 
         Returns:
             XPageCursor: Page Cursor
@@ -663,7 +663,7 @@ class Write(metaclass=StaticProperty):
         if page_cursor is None:
             raise mEx.MissingInterfaceError(XPageCursor)
         return page_cursor
-    
+
 
     @staticmethod
     def get_current_page(tv_cursor: XTextViewCursor) -> int:
@@ -1544,6 +1544,7 @@ class Write(metaclass=StaticProperty):
             text (str): Frame Text
             width (int): Width
             height (int): Height
+            page_num (int): Page Number to add text frame
             border_color (Color): Border Color. Defaluts to CommonColor.RED
             background_color (Color): Background Color. Defaluts to CommonColor.LIGHT_BLUE
 

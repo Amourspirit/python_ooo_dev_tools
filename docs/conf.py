@@ -15,6 +15,7 @@ import sys
 sys.path.insert(0, os.path.abspath('..'))
 from ooodev import __version__
 os.environ["DOCS_BUILDING"] = "True"
+os.environ["ooouno_ignore_runtime"] = "True"
 
 # -- Project information -----------------------------------------------------
 

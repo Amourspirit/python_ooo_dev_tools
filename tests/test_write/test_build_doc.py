@@ -128,12 +128,14 @@ def test_build_doc(loader, props_str_to_dict, fix_image_path, capsys: pytest.Cap
         Write.style_left_code(cursor, pos)
 
         para("A text frame")
-        page_cursor = Write.get_page_cursor(doc)
+        # page_cursor = Write.get_page_cursor(doc)
+        # pg = page_cursor.getPage()
+        pg = Write.get_current_page(tvc)
         Write.add_text_frame(
             cursor=cursor,
             ypos=ypos,
             text="This is a newly created text frame.\nWhich is over on the right of the page, next to the code.",
-            page_num=page_cursor.getPage(),
+            page_num=pg,
             width=4000,
             height=1500,
         )
@@ -148,25 +150,27 @@ def test_build_doc(loader, props_str_to_dict, fix_image_path, capsys: pytest.Cap
 
         Write.page_break(cursor)
 
-        para("Image Example")
-        Write.style_prev_paragraph(cursor, "Heading 2")
+        with Lo.ControllerLock():
+            Lo.delay(delay)
+            para("Image Example")
+            Write.style_prev_paragraph(cursor, "Heading 2")
 
-        para(f"The following image comes from{im_fnm.name}")
-        nl()
+            para(f"The following image comes from{im_fnm.name}")
+            nl()
+            
+            append(f"Image Link is {im_fnm.name}: ")
 
-        append(f"Image Link is {im_fnm.name}: ")
+            img_size = Images.get_size_100mm(im_fnm=im_fnm)
+            assert img_size.Height == 5751
+            assert img_size.Width == 6092
+            # Write.add_image_link(doc, cursor, im_fnm, img_size.Width, img_size.Height)
+            Write.add_image_link(doc, cursor, im_fnm)
 
-        img_size = Images.get_size_100mm(im_fnm=im_fnm)
-        assert img_size.Height == 5751
-        assert img_size.Width == 6092
-        # Write.add_image_link(doc, cursor, im_fnm, img_size.Width, img_size.Height)
-        Write.add_image_link(doc, cursor, im_fnm)
+            # enlarge by 1.5x
+            h = round(img_size.Height * 1.5)
+            w = round(img_size.Width * 1.5)
 
-        # enlarge by 1.5x
-        h = round(img_size.Height * 1.5)
-        w = round(img_size.Width * 1.5)
-
-        Write.add_image_link(doc, cursor, im_fnm, w, h)
+            Write.add_image_link(doc, cursor, im_fnm, w, h)
 
         Write.end_paragraph(cursor)
         Lo.delay(delay)
