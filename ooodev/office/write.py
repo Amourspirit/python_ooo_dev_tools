@@ -489,75 +489,113 @@ class Write(metaclass=StaticProperty):
         return props
 
     @staticmethod
-    def get_cursor(cursor_obj: XTextDocument | XTextViewCursor) -> XTextCursor | None:
+    def get_cursor(cursor_obj: XTextDocument | XTextViewCursor) -> XTextCursor:
         """
         Gets text cursor
 
         Args:
             cursor_obj (XTextDocument | XTextViewCursor): Text Document or Text View Cursor
 
+        Raises:
+            CursorError: If Unable to get cursor
+
         Returns:
-            XTextCursor | None: Cursor if present; Otherwise, None
+            XTextCursor: Cursor if present; Otherwise, None
         """
-        # https://wiki.openoffice.org/wiki/Writer/API/Text_cursor
-        if mInfo.Info.is_type_interface(cursor_obj, XTextViewCursor.__pyunointerface__):
-            return cursor_obj.getText().createTextCursorByRange(cursor_obj)
-        xtext = cursor_obj.getText()
-        if xtext is None:
-            print("Text not found in document")
-            return None
-        return xtext.createTextCursor()
+        try:
+            # https://wiki.openoffice.org/wiki/Writer/API/Text_cursor
+            xview_cursor = mLo.Lo.qi(XTextViewCursor, cursor_obj)
+            if xview_cursor is not None:
+                c = xview_cursor.getText().createTextCursorByRange(xview_cursor)
+                if c is None:
+                    raise Exception("XTextViewCursor.createTextCursorByRange() result is null")
+                return c
+
+            xdoc = mLo.Lo.qi(XTextDocument, cursor_obj)
+            if xdoc is not None:
+                xtext = xdoc.getText()
+                if xtext is None:
+                    return None
+                c = xtext.createTextCursor()
+                if c is None:
+                    raise Exception("XTextDocument, XText failed to create text cursor")
+                return c
+            raise TypeError("cursor_obj is invalid type. Expected XTextDocument or XTextViewCursor")
+        except Exception as e:
+            raise mEx.CursorError(str(e)) from e
+        # XTextViewCursor
 
     @classmethod
-    def get_word_cursor(cls, text_doc: XTextDocument) -> XWordCursor | None:
+    def get_word_cursor(cls, text_doc: XTextDocument) -> XWordCursor:
         """
         Gets document word cursor
 
         Args:
             text_doc (XTextDocument): Text Document
 
+        Raises:
+            WordCursorError: If Unable to get cursor
+
         Returns:
-            XWordCursor | None: Word Cursor if present; Otherwise, None
+            XWordCursor: Word Cursor if present; Otherwise, None
         """
-        cursor = cls.get_cursor(text_doc)
-        if cursor is None:
-            print("Text cursor is null")
-            return None
-        return mLo.Lo.qi(XWordCursor, text_doc)
+        try:
+            cursor = cls.get_cursor(text_doc)
+            wd_cursor = mLo.Lo.qi(XWordCursor, cursor)
+            if wd_cursor is None:
+                raise mEx.MissingInterfaceError(XWordCursor)
+            return wd_cursor
+        except Exception as e:
+            raise mEx.WordCursorError(str(e)) from e
 
     @classmethod
-    def get_sentence_cursor(cls, text_doc: XTextDocument) -> XSentenceCursor | None:
+    def get_sentence_cursor(cls, text_doc: XTextDocument) -> XSentenceCursor:
         """
         Gets document sentence cursor
 
         Args:
             text_doc (XTextDocument): Text Document
 
+        Raises:
+            SentenceCursorError: If Unable to get cursor
+
         Returns:
-            XSentenceCursor | None: Sentence Cursor if present; Otherwise, None
+            XSentenceCursor: Sentence Cursor if present; Otherwise, None
         """
-        cursor = cls.get_cursor(text_doc)
-        if cursor is None:
-            print("Text cursor is null")
-            return None
-        return mLo.Lo.qi(XSentenceCursor, text_doc)
+        try:
+            cursor = cls.get_cursor(text_doc)
+            if cursor is None:
+                print("Text cursor is null")
+                return None
+            sc =  mLo.Lo.qi(XSentenceCursor, cursor)
+            if sc is None:
+                raise mEx.MissingInterfaceError(XSentenceCursor)
+            return sc
+        except Exception as e:
+            raise mEx.SentenceCursorError(str(e)) from e
 
     @classmethod
-    def get_paragraph_cursor(cls, text_doc: XTextDocument) -> XParagraphCursor | None:
+    def get_paragraph_cursor(cls, text_doc: XTextDocument) -> XParagraphCursor:
         """
         Gets document paragraph cursor
 
         Args:
             text_doc (XTextDocument): Text Document
 
+        Raises:
+            ParagraphCursorError: If Unable to get cursor
+
         Returns:
-            XParagraphCursor | None: Paragraph cursor if present; Otherwise, None
+            XParagraphCursor: Paragraph cursor if present; Otherwise, None
         """
-        cursor = cls.get_cursor(text_doc)
-        if cursor is None:
-            print("Text cursor is null")
-            return None
-        return mLo.Lo.qi(XParagraphCursor, text_doc)
+        try:
+            cursor = cls.get_cursor(text_doc)
+            para_cursor = mLo.Lo.qi(XParagraphCursor, cursor)
+            if para_cursor is None:
+                raise mEx.MissingInterfaceError(XParagraphCursor)
+            return para_cursor
+        except Exception as e:
+            raise mEx.ParagraphCursorError(str(e)) from e
 
     @classmethod
     def get_position(cls, cursor: XTextCursor) -> int:
@@ -628,7 +666,7 @@ class Write(metaclass=StaticProperty):
             text_doc (XTextDocument): Text Document
 
         Raises:
-            MissingInterfaceError: If required interface cannot be obtained.
+            ViewCursorError: If Unable to get cursor
 
         Returns:
             XTextViewCursor: Text View Currsor
@@ -638,14 +676,20 @@ class Write(metaclass=StaticProperty):
         """
 
         # https://wiki.openoffice.org/wiki/Writer/API/Text_cursor
-        model = mLo.Lo.qi(XModel, text_doc)
-        if model is None:
-            raise mEx.MissingInterfaceError(XModel)
-        xcontroller = model.getCurrentController()
-        supplier = mLo.Lo.qi(XTextViewCursorSupplier, xcontroller)
-        if supplier is None:
-            raise mEx.MissingInterfaceError(XTextViewCursorSupplier)
-        return supplier.getViewCursor()
+        try:
+            model = mLo.Lo.qi(XModel, text_doc)
+            if model is None:
+                raise mEx.MissingInterfaceError(XModel)
+            xcontroller = model.getCurrentController()
+            supplier = mLo.Lo.qi(XTextViewCursorSupplier, xcontroller)
+            if supplier is None:
+                raise mEx.MissingInterfaceError(XTextViewCursorSupplier)
+            vc = supplier.getViewCursor()
+            if vc is None:
+                raise Exception("Supplier return null view cursor")
+            return vc
+        except Exception as e:
+            raise mEx.ViewCursorError(str(e)) from e
 
     @classmethod
     def get_page_cursor(cls, text_doc: XTextDocument) -> XPageCursor:
@@ -658,7 +702,7 @@ class Write(metaclass=StaticProperty):
             text_doc (XTextDocument): Text Document
 
         Raises:
-            MissingInterfaceError: If XPageCursor is not obtainable.
+            PageCursorError: If Unable to get cursor
 
         Returns:
             XPageCursor: Page Cursor
@@ -666,11 +710,14 @@ class Write(metaclass=StaticProperty):
         See Also:
             `LibreOffice API XPageCursor <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XPageCursor.html>`_
         """
-        view_cursor = cls.get_view_cursor(text_doc)
-        page_cursor = mLo.Lo.qi(XPageCursor, view_cursor)
-        if page_cursor is None:
-            raise mEx.MissingInterfaceError(XPageCursor)
-        return page_cursor
+        try:
+            view_cursor = cls.get_view_cursor(text_doc)
+            page_cursor = mLo.Lo.qi(XPageCursor, view_cursor)
+            if page_cursor is None:
+                raise mEx.MissingInterfaceError(XPageCursor)
+            return page_cursor
+        except Exception as e:
+            raise mEx.PageCursorError(str(e)) from e
 
     @staticmethod
     def get_current_page(tv_cursor: XTextViewCursor) -> int:

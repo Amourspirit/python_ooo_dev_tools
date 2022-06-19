@@ -194,3 +194,31 @@ class CancelEventError(Exception):
 
     def __str__(self) -> str:
         return repr(self.args[1])
+
+class CursorError(Exception):
+    """Handles Cursor errors"""
+    pass
+
+class WordCursorError(CursorError):
+    """Handles Word Cursor errors"""
+    pass
+
+class LineCursorError(CursorError):
+    """Handles Line Cursor errors"""
+    pass
+
+class SentenceCursorError(CursorError):
+    """Handles Sentence Cursor errors"""
+    pass
+
+class ParagraphCursorError(CursorError):
+    """Handles Sentence Cursor errors"""
+    pass
+
+class PageCursorError(Exception):
+    """Handles Page Cursor errors"""
+    pass
+
+class ViewCursorError(CursorError):
+    """Handles View Cursor errors"""
+    pass
