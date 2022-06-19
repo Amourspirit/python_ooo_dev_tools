@@ -7,6 +7,28 @@ from . import lo as mLo
 
 
 class DateUtil:
+    """Date and time utilities"""
+
+    # see also:Talk - Benjamin "Zags" Zagorsky: Handling Timezones in Python
+    # https://www.youtube.com/watch?v=XZlPXLsSU2U&t=1283s
+
+    @staticmethod
+    def time_stamp(tz: datetime.timezone | None = None) -> str:
+        """
+        Gets a time stamp string
+
+        Args:
+            tz (timezone | None, optional): TimeZone
+
+        Returns:
+            str: Formated timestamp such as '2022-06-19 17:12:38'
+        """
+        if tz is not None:
+            dt = datetime.datetime.now(tz)
+        else:
+            dt = datetime.datetime.now()
+        return dt.strftime("%Y-%m-%d %H:%M:%S")
+
     # region --------------- convert methods ---------------------------
     @staticmethod
     def date_from_number(value: numbers.Number) -> datetime.datetime:

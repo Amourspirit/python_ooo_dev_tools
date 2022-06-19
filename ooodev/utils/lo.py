@@ -1928,12 +1928,6 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
                 break
         return result
 
-    # ------------------- date --------------------
-    @staticmethod
-    def get_time_stamp() -> str:
-        """Gets a time stamp"""
-        return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
     @classmethod
     def get_frame(cls) -> XFrame:
         """

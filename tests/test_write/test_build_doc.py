@@ -18,10 +18,11 @@ def test_build_doc(loader, props_str_to_dict, fix_image_path, capsys: pytest.Cap
     from ooodev.utils.info import Info
     from ooodev.exceptions import ex
     from ooodev.utils.color import CommonColor
+    from ooodev.utils.date_time_util import DateUtil
     from functools import partial
 
     visible = False
-    delay = 2000
+    delay = 0 #500
     doc = Write.create_doc(loader)
     try:
         if visible:
@@ -31,7 +32,7 @@ def test_build_doc(loader, props_str_to_dict, fix_image_path, capsys: pytest.Cap
         append = partial(Write.append, cursor)
         para = partial(Write.append_para, cursor)
         nl = partial(Write.append_line, cursor)
-        np = partial(Write.end_paragraph,cursor)
+        np = partial(Write.end_paragraph, cursor)
         get_pos = partial(Write.get_position, cursor)
 
         im_fnm = cast(Path, fix_image_path("skinner.png"))
@@ -76,12 +77,11 @@ def test_build_doc(loader, props_str_to_dict, fix_image_path, capsys: pytest.Cap
         with pytest.raises(ex.PropertyNotFoundError):
             Write.style_prev_paragraph(cursor, "NumberingStyleName", "Numbering 1")
         Write.append_para(cursor, "Have a good dinner")
-        
-        
+
         # Write.style_left(cursor, pos, "NumberingStyleName", "Numbering 1")
         Write.style_left(cursor, pos, "NumberingStyleName", "Numbering 123")
-        #Numbering 123
-        
+        # Numbering 123
+
         tvc = Write.get_view_cursor(doc)
         # tvc.gotoEnd(False)
         # Write.dispatch_cmd_left(vcursor=tvc, pos=pos, cmd="DefaultNumbering", toggle=True)
@@ -97,7 +97,6 @@ def test_build_doc(loader, props_str_to_dict, fix_image_path, capsys: pytest.Cap
         # tvc.gotoEnd(False)
         # Write.dispatch_cmd_left(vcursor=tvc, pos=pos, cmd="DefaultNumbering", toggle=True)
         np()
-        
 
         append("This line ends with a bookmark.")
         Write.add_bookmark(cursor=cursor, name="ad-bookmark")
@@ -136,12 +135,12 @@ def test_build_doc(loader, props_str_to_dict, fix_image_path, capsys: pytest.Cap
             height=1500,
         )
 
-        para("A link to my JLOP website:")
-        url_str = "http://fivedots.coe.psu.ac.th/~ad/jlop/"
+        append("A link to ")
         pos = get_pos()
-        append(url_str)
-
+        append("OOO Development Tools")
+        url_str = "https://github.com/Amourspirit/python_ooo_dev_tools"
         Write.style_left(cursor=cursor, pos=pos, prop_name="HyperLinkURL", prop_val=url_str)
+        append(" Website.")
         Write.end_paragraph(cursor)
 
         Write.page_break(cursor)
@@ -153,7 +152,7 @@ def test_build_doc(loader, props_str_to_dict, fix_image_path, capsys: pytest.Cap
 
             para(f'The following image comes from "{im_fnm.name}":')
             np()
-            
+
             append(f"Image as a link: ")
 
             img_size = ImagesLo.get_size_100mm(im_fnm=im_fnm)
@@ -167,8 +166,8 @@ def test_build_doc(loader, props_str_to_dict, fix_image_path, capsys: pytest.Cap
             w = round(img_size.Width * 1.5)
 
             Write.add_image_link(doc, cursor, im_fnm, w, h)
+            Write.end_paragraph(cursor)
 
-        Write.end_paragraph(cursor)
         Lo.delay(delay)
 
         Write.style_prev_paragraph(cursor=cursor, prop_name="ParaAdjust", prop_val=Write.ParagraphAdjust.CENTER)
@@ -182,6 +181,11 @@ def test_build_doc(loader, props_str_to_dict, fix_image_path, capsys: pytest.Cap
         assert text_width > 0
         Write.add_line_divider(cursor=cursor, line_width=round(text_width * 0.5))
 
+        Write.append_para(cursor, "\nTimestamp: " + DateUtil.time_stamp() + "\n")
+        Write.append(cursor, "Time (according to office): ")
+        Write.append_date_time(cursor=cursor)
+        Write.end_paragraph(cursor)
+
         Info.set_doc_props(doc=doc, subject="Writer Text Example", title="Examples", author=":Barry-Thomas-Paul: Moss")
         Lo.delay(delay)
 
@@ -191,9 +195,10 @@ def test_build_doc(loader, props_str_to_dict, fix_image_path, capsys: pytest.Cap
 
         view_cursor = Write.get_view_cursor(doc)
         view_cursor.gotoRange(bm_range, False)
-        GUI.set_visible(True, doc)
+
+        # GUI.set_visible(True, doc)
         Lo.delay(delay)
-        
+
     finally:
 
         Lo.close_doc(doc, False)

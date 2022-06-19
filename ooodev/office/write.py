@@ -909,7 +909,7 @@ class Write(metaclass=StaticProperty):
         Raises:
             MissingInterfaceError: If required interface cannot be obtained.
         """
-        dt_field = mLo.Lo.create_instance_mcf(XTextField, "com.sun.star.text.TextField.DateTime")
+        dt_field = mLo.Lo.create_instance_msf(XTextField, "com.sun.star.text.TextField.DateTime")
         mProps.Props.set_property(dt_field, "IsDate", True)  # so date is reported
         xtext_content = mLo.Lo.qi(XTextContent, dt_field)
         if xtext_content is None:
@@ -917,7 +917,7 @@ class Write(metaclass=StaticProperty):
         cls._append_text_content(cursor, xtext_content)
         cls.append(cursor, "; ")
 
-        dt_field = mLo.Lo.create_instance_mcf(XTextField, "com.sun.star.text.TextField.DateTime")
+        dt_field = mLo.Lo.create_instance_msf(XTextField, "com.sun.star.text.TextField.DateTime")
         mProps.Props.set_property(dt_field, "IsDate", False)  # so time is reported
         xtext_content = mLo.Lo.qi(XTextContent, dt_field)
         if xtext_content is None:
