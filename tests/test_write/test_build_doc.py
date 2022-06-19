@@ -14,18 +14,16 @@ def test_build_doc(loader, props_str_to_dict, fix_image_path, capsys: pytest.Cap
     from ooodev.utils.gui import GUI
     from ooodev.utils.props import Props
     from ooodev.utils.color import CommonColor
-    from ooodev.utils.images import Images
+    from ooodev.utils.images_lo import ImagesLo
     from ooodev.utils.info import Info
     from ooodev.exceptions import ex
+    from ooodev.utils.color import CommonColor
     from functools import partial
 
-    visible = True
+    visible = False
     delay = 2000
-    lock = False
     doc = Write.create_doc(loader)
     try:
-        if lock:
-            Lo.lock_controllers()
         if visible:
             GUI.set_visible(visible, doc)
 
@@ -33,6 +31,7 @@ def test_build_doc(loader, props_str_to_dict, fix_image_path, capsys: pytest.Cap
         append = partial(Write.append, cursor)
         para = partial(Write.append_para, cursor)
         nl = partial(Write.append_line, cursor)
+        np = partial(Write.end_paragraph,cursor)
         get_pos = partial(Write.get_position, cursor)
 
         im_fnm = cast(Path, fix_image_path("skinner.png"))
@@ -44,6 +43,7 @@ def test_build_doc(loader, props_str_to_dict, fix_image_path, capsys: pytest.Cap
         assert cap_out is not None
         prop_dict: dict = props_str_to_dict(cap_out)
         assert prop_dict["ParaBackTransparent"] == "True"
+        assert prop_dict["ParaBackColor"] == "-1"
         assert prop_dict["Endnote"] == "None"
         assert prop_dict["Footnote"] == "None"
         assert prop_dict["TextField"] == "None"
@@ -76,33 +76,28 @@ def test_build_doc(loader, props_str_to_dict, fix_image_path, capsys: pytest.Cap
         with pytest.raises(ex.PropertyNotFoundError):
             Write.style_prev_paragraph(cursor, "NumberingStyleName", "Numbering 1")
         Write.append_para(cursor, "Have a good dinner")
-        nl()
+        
+        
+        # Write.style_left(cursor, pos, "NumberingStyleName", "Numbering 1")
+        Write.style_left(cursor, pos, "NumberingStyleName", "Numbering 123")
+        #Numbering 123
+        
         tvc = Write.get_view_cursor(doc)
-        tvc.gotoEnd(False)
-        # tvc.goRight(pos, False)
-        # cpos = Write.get_position(cursor)
-        # cp = cpos-pos
-        # cursor.goLeft(cp, True)
-        # cursor.NumberingStyleName = "Numbering 1"
-        # cursor.num
-        # cursor.goRight(cp, False)
-        # cursor.NumberingStyleName = ""
-        Write.style_left(tvc, pos, "NumberingStyleName", "Numbering 1")
-        # numberingLevel
-        # Write.style_left(cursor, pos, "NumberingIsNumber", True)
-        # Write.style_left(cursor, pos, "NumberingLevel", 1)
-        # "23250040901"
+        # tvc.gotoEnd(False)
+        # Write.dispatch_cmd_left(vcursor=tvc, pos=pos, cmd="DefaultNumbering", toggle=True)
+        np()
         # https://www.openoffice.org/api/docs/common/ref/com/sun/star/style/ParagraphProperties.html#NumberingStyleName
 
         para("Breakfast should include:")
-        para("Porridge")
         pos = get_pos()
+        para("Porridge")
         para("Orange Juice")
         para("A Cup of Tea")
-        nl()
+        Write.style_left(cursor, pos, "NumberingStyleName", "Numbering abc")
+        # tvc.gotoEnd(False)
+        # Write.dispatch_cmd_left(vcursor=tvc, pos=pos, cmd="DefaultNumbering", toggle=True)
+        np()
         
-        Write.style_left(cursor, pos, "NumberingStyleName", "Numbering 1")
-        Write.style_left(cursor, pos, "ParaIsNumberingRestart", True)
 
         append("This line ends with a bookmark.")
         Write.add_bookmark(cursor=cursor, name="ad-bookmark")
@@ -117,15 +112,16 @@ def test_build_doc(loader, props_str_to_dict, fix_image_path, capsys: pytest.Cap
         # assert coord == "(25285, 9398)" # "(22412, 9885)"
         ypos = tvc.getPosition().Y
 
-        nl()
-        nl("public class Hello")
+        np()
         pos = get_pos()
+        nl("public class Hello")
         nl("{")
         nl("  public static void main(String args[]")
         nl('  {  System.out.println("Hello World");  }')
         para("}  // end of Hello class")
         nl()
         Write.style_left_code(cursor, pos)
+        Write.style_prev_paragraph(cursor=cursor, prop_name="ParaBackColor", prop_val=CommonColor.LIGHT_GRAY)
 
         para("A text frame")
         # page_cursor = Write.get_page_cursor(doc)
@@ -155,16 +151,16 @@ def test_build_doc(loader, props_str_to_dict, fix_image_path, capsys: pytest.Cap
             para("Image Example")
             Write.style_prev_paragraph(cursor, "Heading 2")
 
-            para(f"The following image comes from{im_fnm.name}")
-            nl()
+            para(f'The following image comes from "{im_fnm.name}":')
+            np()
             
-            append(f"Image Link is {im_fnm.name}: ")
+            append(f"Image as a link: ")
 
-            img_size = Images.get_size_100mm(im_fnm=im_fnm)
+            img_size = ImagesLo.get_size_100mm(im_fnm=im_fnm)
             assert img_size.Height == 5751
             assert img_size.Width == 6092
             # Write.add_image_link(doc, cursor, im_fnm, img_size.Width, img_size.Height)
-            Write.add_image_link(doc, cursor, im_fnm)
+            Write.add_image_link(doc, cursor, im_fnm, img_size.Width, img_size.Height)
 
             # enlarge by 1.5x
             h = round(img_size.Height * 1.5)
@@ -195,8 +191,7 @@ def test_build_doc(loader, props_str_to_dict, fix_image_path, capsys: pytest.Cap
 
         view_cursor = Write.get_view_cursor(doc)
         view_cursor.gotoRange(bm_range, False)
-        if lock:
-            Lo.unlock_controllers()
+        GUI.set_visible(True, doc)
         Lo.delay(delay)
         
     finally:

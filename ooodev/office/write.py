@@ -21,10 +21,10 @@ from ..utils.color import CommonColor, Color
 from ..utils.type_var import PathOrStr, Table
 from ..utils import images_lo as mImgLo
 
-_DOCS_BUILDING = os.environ.get("DOCS_BUILDING", None) == 'True'
+_DOCS_BUILDING = os.environ.get("DOCS_BUILDING", None) == "True"
 # _DOCS_BUILDING is only true when sphinx is building docs.
 # env var DOCS_BUILDING is set in docs/conf.py
-_ON_RTD = os.environ.get('READTHEDOCS', None) == 'True'
+_ON_RTD = os.environ.get("READTHEDOCS", None) == "True"
 # env var READTHEDOCS is true when read the docs is building
 # maybe not needed as _DOCS_BUILDING is set in conf.py
 
@@ -53,7 +53,6 @@ if not _DOCS_BUILDING and not _ON_RTD:
     from com.sun.star.linguistic2 import XProofreader
     from com.sun.star.linguistic2 import XSearchableDictionaryList
     from com.sun.star.style import NumberingType  # const
-    from com.sun.star.style import XStyle
     from com.sun.star.table import BorderLine  # struct
     from com.sun.star.text import HoriOrientation
     from com.sun.star.text import VertOrientation
@@ -78,21 +77,21 @@ if not _DOCS_BUILDING and not _ON_RTD:
     from com.sun.star.view import XPrintable
 
 if TYPE_CHECKING:
+    from com.sun.star.beans import PropertyValue
     from com.sun.star.container import XEnumeration
     from com.sun.star.container import XNameAccess
     from com.sun.star.drawing import XDrawPage
     from com.sun.star.frame import XComponentLoader
+    from com.sun.star.frame import XFrame
     from com.sun.star.graphic import XGraphic
     from com.sun.star.linguistic2 import SingleProofreadingError
     from com.sun.star.linguistic2 import XLinguServiceManager2
     from com.sun.star.linguistic2 import XSpellChecker
     from com.sun.star.linguistic2 import XThesaurus
     from com.sun.star.text import XTextCursor
-    from com.sun.star.style import ParagraphStyle # service
 
 
 from ooo.dyn.awt.font_slant import FontSlant
-from ooo.dyn.awt.point import Point
 from ooo.dyn.awt.size import Size  # struct
 from ooo.dyn.linguistic2.dictionary_type import DictionaryType as OooDictionaryType
 from ooo.dyn.style.break_type import BreakType
@@ -102,24 +101,26 @@ from ooo.dyn.text.page_number_type import PageNumberType
 from ooo.dyn.text.text_content_anchor_type import TextContentAnchorType
 from ooo.dyn.view.paper_format import PaperFormat as OooPaperFormat
 from ooo.dyn.style.paragraph_adjust import ParagraphAdjust
+
 # endregion Imports
 
+
 class Write(metaclass=StaticProperty):
-    ControlCharacter = ControlCharacterEnum # UnoControlCharacter
+    ControlCharacter = ControlCharacterEnum  # UnoControlCharacter
     # region -------------- Enums --------------------------------------
-    
+
     DictionaryType = OooDictionaryType
 
     PaperFormat = OooPaperFormat
-    
+
     ParagraphAdjust = ParagraphAdjust
 
     class CompareEnum(IntEnum):
         """Compare Enumeration"""
+
         AFTER = 1
         BEFORE = -1
-        EQUAL= 0
-
+        EQUAL = 0
 
     # endregion ----------- Enums --------------------------------------
     @classmethod
@@ -209,7 +210,7 @@ class Write(metaclass=StaticProperty):
         l_cursor = cls._get_left_cursor(o_sel=o_sel, o_text=o_text)
         r_cursor = cls._get_right_cursor(o_sel=o_sel, o_text=o_text)
         if cls.compare_cursor_ends(c1=l_cursor, c2=r_cursor) < cls.CompareEnum.EQUAL:
-           
+
             while cls.compare_cursor_ends(c1=l_cursor, c2=r_cursor) != cls.CompareEnum.EQUAL:
                 l_cursor.goRight(1, False)
                 i += 1
@@ -219,7 +220,7 @@ class Write(metaclass=StaticProperty):
     def is_anything_selected(text_doc: XTextDocument) -> bool:
         """
         Determine if anything is selected.
-        
+
         If Write document is not visible this method returns false.
 
         Keyword Args:
@@ -233,7 +234,7 @@ class Write(metaclass=StaticProperty):
         if model is None:
             raise mEx.MissingInterfaceError(XModel)
         # xcontroller = model.getCurrentController()
-        
+
         # print("is_anything_selected Method")
         o_selections = model.getCurrentSelection()
         if not o_selections:
@@ -260,7 +261,6 @@ class Write(metaclass=StaticProperty):
                 return True
 
         return False
-
 
     # region ------------- doc / open / close /create/ etc -------------
     @classmethod
@@ -570,16 +570,22 @@ class Write(metaclass=StaticProperty):
         Returns:
             int: _description_
         """
-         # def get_near_max(l:XTextCursor, r: XTextCursor, jump=10) -> int:
+        # def get_near_max(l:XTextCursor, r: XTextCursor, jump=10) -> int:
         #     imax = 0
         #     if cls.compare_cursor_ends(l, r) == cls.CompareEnum.BEFORE:
         #         l.goRight(jump, False)
         #         imax = imax + jump
-        def get_high(l:XTextCursor, r: XTextCursor, jump=10, total=0) -> int:
+        jmp_amt = 25
+
+        def get_high(l: XTextCursor, r: XTextCursor, jump=jmp_amt, total=0) -> int:
+            # OPTIMIZE: get_position.get_high()
+            # The idea of this function is to cut down on the number if iterations
+            # needed to get the range from cursors left and right positions.
+            # Most likely there is an even more efficent way to do this.
             if jump <= 0:
                 return 0
             if cls.compare_cursor_ends(l, r) == cls.CompareEnum.BEFORE:
-                j = jump + 10
+                j = jump + jmp_amt
                 l.goRight(j, False)
                 return get_high(l, r, j, jump)
             else:
@@ -593,19 +599,19 @@ class Write(metaclass=StaticProperty):
         xcursor.gotoStart(False)
         xcursor.gotoEnd(True)
         xtext = xcursor.getText()
-        l_cursor =cls._get_left_cursor(o_sel=xcursor, o_text=xtext)
-        r_cursor=  cls._get_right_cursor(o_sel=xcursor, o_text=xtext)
+        l_cursor = cls._get_left_cursor(o_sel=xcursor, o_text=xtext)
+        r_cursor = cls._get_right_cursor(o_sel=xcursor, o_text=xtext)
         i = 0
         if cls.compare_cursor_ends(c1=l_cursor, c2=r_cursor) < cls.CompareEnum.EQUAL:
             high = get_high(l_cursor, r_cursor)
             # l_cursor.gotoStart(False)
-            
+
             while cls.compare_cursor_ends(c1=l_cursor, c2=r_cursor) != cls.CompareEnum.EQUAL:
                 l_cursor.goRight(1, False)
                 i += 1
             i += high
         return i
-        
+
         # return len(cursor.getText().getString())
 
     # endregion ---------- model cursor methods ------------------------
@@ -615,7 +621,7 @@ class Write(metaclass=StaticProperty):
     def get_view_cursor(text_doc: XTextDocument) -> XTextViewCursor:
         """
         Gets document view cursor.
-        
+
         Describes a cursor in a text document's view.
 
         Args:
@@ -630,7 +636,7 @@ class Write(metaclass=StaticProperty):
         See Also:
             `LibreOffice API XTextViewCursor <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextViewCursor.html>`_
         """
-        
+
         # https://wiki.openoffice.org/wiki/Writer/API/Text_cursor
         model = mLo.Lo.qi(XModel, text_doc)
         if model is None:
@@ -645,7 +651,7 @@ class Write(metaclass=StaticProperty):
     def get_page_cursor(cls, text_doc: XTextDocument) -> XPageCursor:
         """
         Get Page curosor
-        
+
         Makes it possible to perform cursor movements between pages.
 
         Args:
@@ -665,7 +671,6 @@ class Write(metaclass=StaticProperty):
         if page_cursor is None:
             raise mEx.MissingInterfaceError(XPageCursor)
         return page_cursor
-
 
     @staticmethod
     def get_current_page(tv_cursor: XTextViewCursor) -> int:
@@ -687,7 +692,7 @@ class Write(metaclass=StaticProperty):
     # @classmethod
     # def get_coord(cls, text_doc: XTextDocument) -> Point:
     #     # see section 7.17 Useful Macro Information For OpenOffice By Andrew Pitonyak.pdf
-        
+
     #     tvc = cls.get_view_cursor(text_doc)
     #     if not mInfo.Info.support_service(tvc, "com.sun.star.style.ParagraphStyle"):
     #         mEx.NotSupportedServiceError("com.sun.star.style.ParagraphStyle")
@@ -700,9 +705,9 @@ class Write(metaclass=StaticProperty):
     #     top_margin = int(props.getPropertyValue("TopMargin"))
     #     left_margin = int(props.getPropertyValue("LeftMargin"))
     #     bottom_margin = int(props.getPropertyValue("BottomMargin"))
-        
+
     #     char_height = int(props.getPropertyValue("CharHeight"))
-        
+
     #     dCharHeight = char_height / 72.0
     #     page_cursor = mLo.Lo.qi(XPageCursor, tvc)
     #     if page_cursor is None:
@@ -713,12 +718,9 @@ class Write(metaclass=StaticProperty):
     #     dXCursor = (v.X + left_margin)/2540.0
     #     dXRight = (lWidth - v.X - left_margin)/2540.0
     #     dYBottom = (lHeight - v.Y - top_margin)/2540.0 - dCharHeight / 2
-        
+
     #     dBottomMargin = bottom_margin / 2540.0
     #     dLeftMargin = left_margin / 2540.0
-        
-        
-        
 
     @staticmethod
     def get_coord_str(tv_cursor: XTextViewCursor) -> str:
@@ -882,7 +884,7 @@ class Write(metaclass=StaticProperty):
             cls._append_text_content(cursor=kargs[1], text_content=kargs[2])
 
     # endregion append()
-    
+
     @classmethod
     def append_line(cls, cursor: XTextCursor, text: str | None = None) -> None:
         """
@@ -1108,6 +1110,57 @@ class Write(metaclass=StaticProperty):
         cursor.goRight(curr_pos - pos, False)
         mProps.Props.set_property(prop_set=cursor, name=prop_name, value=old_val)
 
+    @classmethod
+    def dispatch_cmd_left(
+        cls,
+        vcursor: XTextViewCursor,
+        pos: int,
+        cmd: str,
+        props: Iterable[PropertyValue] = None,
+        frame: XFrame = None,
+        toggle: bool = False,
+    ) -> None:
+        """
+        Dispatches a command and applies it to selection based upon position
+
+        Args:
+            vcursor (XTextViewCursor): Text View Cursor
+            pos (int): Positions left to apply dispacch command
+            cmd (str): Dispatach command such as 'DefaultNumbering'
+            props (Iterable[PropertyValue], optional): properties for dispatch
+            frame (XFrame, optional): Frame to dispatch to.
+            toggle (bool, optional): If True then dispatch will be preformed on selection
+                and again when deselected. Defaults to False.
+
+        Note:
+            Some commands such as ``DefaultNumbering`` require toggling. In such cases
+            set arg ``toggle = True``.
+
+            Following Example Sets last three lines to to a numbered list.
+
+            .. code-block:: python
+
+                cursor = Write.get_cursor(doc)
+                Write.append_para(cursor, "The following points are important:")
+                pos = Write.get_position(cursor)
+                Write.append_para(cursor, "Have a good breakfast")
+                Write.append_para(cursor, "Have a good lunch")
+                Write.append_para(cursor, "Have a good dinner")
+
+                tvc = Write.get_view_cursor(doc)
+                tvc.gotoEnd(False)
+                Write.dispatch_cmd_left(vcursor=tvc, pos=pos, cmd="DefaultNumbering", toggle=True)
+
+        See Also:
+            `LibreOffice Dispatch Commands <https://wiki.documentfoundation.org/Development/DispatchCommands>`_
+        """
+        curr_pos = cls.get_position(vcursor)
+        vcursor.goLeft(curr_pos - pos, True)
+        mLo.Lo.dispatch_cmd(cmd=cmd, props=props, frame=frame)
+        vcursor.goRight(curr_pos - pos, False)
+        if toggle is True:
+            mLo.Lo.dispatch_cmd(cmd=cmd, props=props, frame=frame)
+
     # region    style_prev_paragraph()
     @overload
     @staticmethod
@@ -1224,7 +1277,7 @@ class Write(metaclass=StaticProperty):
         """
         Set Page Format
         paper_format (:py:attr:`.Write.PaperFormat`): Paper Format.
-        
+
         Args:
             text_doc (XTextDocument): Text Docuument
 
@@ -1535,8 +1588,8 @@ class Write(metaclass=StaticProperty):
         height: int,
         page_num: int = 1,
         border_color: Color | None = CommonColor.RED,
-        background_color: Color | None = CommonColor.LIGHT_BLUE
-        ) -> None:
+        background_color: Color | None = CommonColor.LIGHT_BLUE,
+    ) -> None:
         """
         Adds a text frame with a red border and light blue back color
 
@@ -1571,7 +1624,7 @@ class Write(metaclass=StaticProperty):
 
             # set dimensions of the text frame
             tf_shape.setSize(Size(width, height))
-            
+
             #  anchor the text frame
             frame_props = mLo.Lo.qi(XPropertySet, xframe)
             if frame_props is None:
@@ -1598,8 +1651,8 @@ class Write(metaclass=StaticProperty):
             # Set the horizontal and vertical position
             frame_props.setPropertyValue("HoriOrient", HoriOrientation.RIGHT)
             frame_props.setPropertyValue("VertOrient", VertOrientation.NONE)
-            frame_props.setPropertyValue("VertOrientPosition", ypos) # down from top
-            
+            frame_props.setPropertyValue("VertOrientPosition", ypos)  # down from top
+
             # if page number is Not include for TextContentAnchorType.AT_PAGE
             # then Lo Default so At AT_PARAGRAPH
             frame_props.setPropertyValue("AnchorPageNo", page_num)
@@ -1611,7 +1664,7 @@ class Write(metaclass=StaticProperty):
             # add text into the text frame
             xframe_text = xframe.getText()
             xtext_range = mLo.Lo.qi(XTextRange, xframe_text.createTextCursor())
-           
+
             if xtext_range is None:
                 raise mEx.MissingInterfaceError(XTextRange)
             xframe_text.insertString(xtext_range, text, False)
@@ -1627,7 +1680,6 @@ class Write(metaclass=StaticProperty):
         header_fg_color: Color | None = CommonColor.WHITE,
         tbl_bg_color: Color | None = CommonColor.LIGHT_BLUE,
         tbl_fg_color: Color | None = CommonColor.BLACK,
-        
     ) -> None:
         """
         Adds a table.
@@ -1650,6 +1702,7 @@ class Write(metaclass=StaticProperty):
         See Also:
             :py:class:`~.utils.color.CommonColor`
         """
+
         def make_cell_name(row: int, col: int) -> str:
             return TableHelper.make_cell_name(row=row + 1, col=col + 1)
 
@@ -1671,7 +1724,6 @@ class Write(metaclass=StaticProperty):
                 text_cursor = cell_text.createTextCursor()
                 mProps.Props.set_property(prop_set=text_cursor, name="CharColor", value=tbl_fg_color)
             cell_text.setString(str(data))
-
 
         num_rows = len(table_data)
         if num_rows == 0:
@@ -1804,7 +1856,7 @@ class Write(metaclass=StaticProperty):
     def add_image_shape(doc: XTextDocument, cursor: XTextCursor, fnm: PathOrStr) -> None:
         """
         Add Image Shape
-        
+
         Currently this method is only suported in terminal. Not in macros.
 
         Args:
@@ -1819,7 +1871,7 @@ class Write(metaclass=StaticProperty):
     def add_image_shape(doc: XTextDocument, cursor: XTextCursor, fnm: PathOrStr, width: int, height: int) -> None:
         """
         Add Image Shape
-        
+
         Currently this method is only suported in terminal. Not in macros.
 
         Args:
@@ -1971,7 +2023,7 @@ class Write(metaclass=StaticProperty):
                     try:
                         xgraphic = mImgLo.ImagesLo.load_graphic_link(graphic_link)
                         pics.append(xgraphic)
-                    except Exception as e:                       
+                    except Exception as e:
                         print(f"{name} could not be accessed:")
                         print(f"    {e}")
             if len(pics) == 0:
@@ -2315,7 +2367,7 @@ class Write(metaclass=StaticProperty):
         """
         lingo_mgr = mLo.Lo.create_instance_mcf(XLinguServiceManager, "com.sun.star.linguistic2.LinguServiceManager")
         if lingo_mgr is None:
-           raise mEx.CreateInstanceMcfError(XLinguServiceManager, "com.sun.star.linguistic2.LinguServiceManager")
+            raise mEx.CreateInstanceMcfError(XLinguServiceManager, "com.sun.star.linguistic2.LinguServiceManager")
         return lingo_mgr.getThesaurus()
 
     @staticmethod
@@ -2500,7 +2552,7 @@ class Write(metaclass=StaticProperty):
 
     @classmethod
     def _get_right_cursor(cls, o_sel: XTextRange, o_text: XText) -> XTextCursor:
-        
+
         range_compare = cls.text_range_compare
         if range_compare.compareRegionStarts(o_sel.getEnd(), o_sel) >= 0:
             o_range = o_sel.getStart()
@@ -2518,11 +2570,11 @@ class Write(metaclass=StaticProperty):
         Returns:
             XTextRangeCompare: Text Range Compare instance
         """
-        
+
         try:
             return cls._text_range_compare
         except AttributeError:
-            doc =  mLo.Lo.XSCRIPTCONTEXT.getDocument()
+            doc = mLo.Lo.XSCRIPTCONTEXT.getDocument()
             text = doc.getText()
             cls._text_range_compare = mLo.Lo.qi(XTextRangeCompare, text)
         return cls._text_range_compare
@@ -2532,12 +2584,14 @@ class Write(metaclass=StaticProperty):
         # raise error on set. Not really neccesary but gives feedback.
         raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
 
+
 def _del_cache_attrs(source: object, e: EventArgs) -> None:
     # clears Write Attributes that are dynamically created
     dattrs = ("_text_range_compare",)
     for attr in dattrs:
         if hasattr(Write, attr):
             delattr(Write, attr)
+
 
 # subscribe to events that warrent clearing cached attribs
 mLo.Lo.on("office_loaded", _del_cache_attrs)

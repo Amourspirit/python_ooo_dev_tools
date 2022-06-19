@@ -513,7 +513,7 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
             raise SystemExit(1)
         cls._xdesktop = cls.create_instance_mcf(XDesktop, "com.sun.star.frame.Desktop")
         if cls._xdesktop is None:
-            # TODO: Perhaps system exit is not the best waht to handle no desktop service
+            # OPTIMIZE: Perhaps system exit is not the best waht to handle no desktop service
             print("Could not create a desktop service")
             raise SystemExit(1)
         loader = cls.qi(XComponentLoader, cls._xdesktop)
@@ -2119,7 +2119,9 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
             return cls._xscript_context
         except AttributeError:
             ctx = cls.get_context()
-            cls._xscript_context = script_context.ScriptContext(ctx)
+            desktop = cls.get_desktop()
+            model = cls.qi(XModel, cls._doc)
+            cls._xscript_context = script_context.ScriptContext(ctx, desktop, model)
         return cls._xscript_context
 
     XSCRIPTCONTEXT = cast("XScriptContext", xscript_context)
