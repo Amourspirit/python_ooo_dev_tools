@@ -86,7 +86,6 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
         """
 
         def __init__(self):
-            """Constructor."""
             self.component = Lo.this_component
             Lo.lock_controllers()
 

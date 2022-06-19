@@ -135,9 +135,10 @@ class Write(metaclass=StaticProperty):
             Exception: if comparsion fails
 
         Returns:
-            CompareEnum: :py:attr:`.CompareEnum.BEFORE` if ``c1`` start position is before ``c2`` start position.
-                :py:attr:`.CompareEnum.EQUAL` if ``c1`` start position is equal to ``c2`` start position.
-                :py:attr:`.CompareEnum.AFTER` if ``c1`` start position is after ``c2`` start position.
+            CompareEnum: Compare Result.
+            :py:attr:`.CompareEnum.BEFORE` if ``c1`` start position is before ``c2`` start position.
+            :py:attr:`.CompareEnum.EQUAL` if ``c1`` start position is equal to ``c2`` start position.
+            :py:attr:`.CompareEnum.AFTER` if ``c1`` start position is after ``c2`` start position.
         """
 
         range_compare = cast(XTextRangeCompare, cls.text_range_compare)
@@ -165,9 +166,10 @@ class Write(metaclass=StaticProperty):
             Exception: if comparsion fails
 
         Returns:
-            CompareEnum: :py:attr`.CompareEnum.BEFORE` if ``c1`` end position is before ``c2`` end position.  
-                :py:attr:`.CompareEnum.EQUAL` if ``c1`` end position is equal to ``c2`` end position.  
-                :py:attr:`.CompareEnum.AFTER` if ``c1`` end position is after ``c2`` end position
+            CompareEnum: Compare result.
+            :py:attr:`.CompareEnum.BEFORE` if ``c1`` end position is before ``c2`` end position.
+            :py:attr:`.CompareEnum.EQUAL` if ``c1`` end position is equal to ``c2`` end position.
+            :py:attr:`.CompareEnum.AFTER` if ``c1`` end position is after ``c2`` end position.
         """
         range_compare = cast(XTextRangeCompare, cls.text_range_compare)
         i = range_compare.compareRegionEnds(c1, c2)
@@ -625,7 +627,7 @@ class Write(metaclass=StaticProperty):
         Returns:
             XTextViewCursor: Text View Currsor
 
-         See Also:
+        See Also:
             `LibreOffice API XTextViewCursor <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextViewCursor.html>`_
         """
         
@@ -1764,8 +1766,8 @@ class Write(metaclass=StaticProperty):
             height (int, optional): Height.
 
         Raises:
-            mEx.CreateInstanceMsfError: If Unable to create text.TextGraphicObject
-            mEx.MissingInterfaceError: If unable to obtain XPropertySet interface
+            CreateInstanceMsfError: If Unable to create text.TextGraphicObject
+            MissingInterfaceError: If unable to obtain XPropertySet interface
             Exception: If unable to add image
         """
         try:
