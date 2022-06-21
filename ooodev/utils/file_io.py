@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     from com.sun.star.container import XNameAccess
     from com.sun.star.io import XInputStream
 
-from . import lo as Util
+from . import lo as mLo
 
 from .type_var import PathOrStr
 
@@ -326,7 +326,7 @@ class FileIO:
     # region ------------- zip access ----------------------------------
     @classmethod
     def zip_access(cls, fnm: PathOrStr) -> XZipFileAccess:
-        return Util.Lo.create_instance_mcf(
+        return mLo.Lo.create_instance_mcf(
             XZipFileAccess, "com.sun.star.packages.zip.ZipFileAccess", (cls.fnm_to_url(fnm),)
         )
 
@@ -337,7 +337,7 @@ class FileIO:
         zfa: XNameAccess = cls.zip_access(fnm)
         names = zfa.getElementNames()
         print(f"\nZippendContents of '{fnm}'")
-        Util.Lo.print_names(names, 1)
+        mLo.Lo.print_names(names, 1)
 
     @staticmethod
     def unzip_file(zfa: XZipFileAccess, fnm: PathOrStr) -> None:
@@ -367,8 +367,8 @@ class FileIO:
         """
         lines = []
         try:
-            tis = Util.Lo.create_instance_mcf(XTextInputStream, "com.sun.star.io.TextInputStream")
-            sink = Util.Lo.qi(XActiveDataSink, tis)
+            tis = mLo.Lo.create_instance_mcf(XTextInputStream, "com.sun.star.io.TextInputStream")
+            sink = mLo.Lo.qi(XActiveDataSink, tis)
             sink.setInputStream(in_stream)
 
             while tis.isEOF() is False:

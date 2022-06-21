@@ -1,7 +1,4 @@
-import os
 import pytest
-from pathlib import Path
-from typing import cast
 
 # from ooodev.office.write import Write
 if __name__ == "__main__":
@@ -15,7 +12,7 @@ def test_numstyle(loader):
     from ooodev.utils.lo import Lo
     from ooodev.office.write import Write
     from ooodev.utils.gui import GUI
-    from ooodev.exceptions import ex
+    from ooodev.utils.info import Info
 
     visible = True
     delay = 300

@@ -9,14 +9,14 @@ from tests.fixtures.writer import __test__path__ as writer_fixture_path
 from tests.fixtures.calc import __test__path__ as calc_fixture_path
 from tests.fixtures.xml import __test__path__ as xml_fixture_path
 from tests.fixtures.image import __test__path__ as img_fixture_path
-from ooodev.utils.lo import Lo
+from ooodev.utils.lo import Lo as mLo
 
 
 @pytest.fixture(scope="session")
 def loader():
-    loader = Lo.load_office(host="localhost", port=2002)
+    loader = mLo.load_office(host="localhost", port=2002)
     yield loader
-    Lo.close_office()
+    mLo.close_office()
 
 
 @pytest.fixture(scope="function")

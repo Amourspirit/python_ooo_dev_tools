@@ -12,11 +12,11 @@ if TYPE_CHECKING:
     from com.sun.star.graphic import XGraphic
     from com.sun.star.awt import XBitmap
 
-from ooo.dyn.awt.size import Size
-
 from ..utils import lo as mLo
 from ..utils import file_io as mFileIO
 from ..utils import props as mProps
+
+from ooo.dyn.awt.size import Size
 from ..exceptions import ex as mEx
 from ..utils.type_var import PathOrStr
 

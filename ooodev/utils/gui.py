@@ -41,12 +41,13 @@ if TYPE_CHECKING:
     from com.sun.star.awt import XTopWindow
     from com.sun.star.ui import XUIElement
 
-from ..exceptions import ex as mEx
 from ..utils import lo as mLo
 from ..utils import props as mProps
 from ..utils import info as mInfo
-from ..utils import sys_info as m_sys_info
 from ..utils import file_io as mFileIO
+
+from ..utils import sys_info as m_sys_info
+from ..exceptions import ex as mEx
 
 from ooo.dyn.awt.rectangle import Rectangle
 from ooo.dyn.awt.window_descriptor import WindowDescriptor

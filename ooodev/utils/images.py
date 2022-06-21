@@ -9,12 +9,13 @@ import uno
 if TYPE_CHECKING:
     from com.sun.star.graphic import XGraphic
 
-from . import images_lo
 from ..utils import file_io as mFileIO
+from . import images_lo as mImgLo
+
 from ..utils.type_var import PathOrStr
 
 
-class Images(images_lo.ImagesLo):
+class Images(mImgLo.ImagesLo):
     @staticmethod
     def load_image(fnm: PathOrStr) -> Image.Image:
         img = None

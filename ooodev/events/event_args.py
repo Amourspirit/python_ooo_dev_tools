@@ -33,3 +33,6 @@ class EventArgs:
     @event_name.setter
     def event_name(self, value: str):
         self._event_name = value
+    
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__}: {self.event_name}>"

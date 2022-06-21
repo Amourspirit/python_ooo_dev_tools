@@ -8,6 +8,8 @@ from pathlib import Path
 import mimetypes
 from typing import TYPE_CHECKING, Tuple, List, cast, overload, Optional
 import uno
+from ..events.event_singleton import Events
+from ..events.named_event import LoNamedEvent
 from .sys_info import SysInfo
 
 from com.sun.star.awt import XToolkit
@@ -36,12 +38,15 @@ if TYPE_CHECKING:
 from . import lo as mLo
 from . import file_io as mFileIO
 from . import props as mProps
+
 from . import date_time_util as mDate
+from ..meta.static_meta import StaticProperty, classproperty
 from ..exceptions import ex as mEx
+from ..events.event_args import EventArgs
 from .type_var import PathOrStr
 
 
-class Info:
+class Info(metaclass=StaticProperty):
 
     REG_MOD_FNM = "registrymodifications.xcu"
     NODE_PRODUCT = "/org.openoffice.Setup/Product"
@@ -1010,7 +1015,7 @@ class Info:
         try:
             si = mLo.Lo.qi(XServiceInfo, obj)
             if si is None:
-                raise mEx.MissingInterfaceError(XServiceInfo)
+                return False
             return si.supportsService(srv)
         except Exception as e:
             print("Errors ocurred in support_service(). Returning False")
@@ -1898,3 +1903,60 @@ class Info:
         if hasattr(obj, "__pyunointerface__"):
             return obj.__pyunointerface__
         return None
+
+
+    @classproperty
+    def language(cls) -> str:
+        """
+        Gets the Current Language of the LibreOffice Instance
+
+        Returns:
+            str: First two chars of languag in lower case such as 'en'
+        """
+
+        try:
+            return cls._language
+        except AttributeError:
+            lang = cls.get_config(node_str="ooLocale")
+            cls._language = str(lang)
+        return cls._language
+
+    @language.setter
+    def language(cls, value) -> None:
+        # raise error on set. Not really neccesary but gives feedback.
+        raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
+    
+    @classproperty
+    def version(cls) -> str:
+        """
+        Gets the running LibreOffice version
+
+        Returns:
+            str: version as string
+        """
+
+        try:
+            return cls._version
+        except AttributeError:
+            lang = cls.get_config(node_str="ooSetupVersion")
+            cls._version = str(lang)
+        return cls._version
+
+    @version.setter
+    def version(cls, value) -> None:
+        # raise error on set. Not really neccesary but gives feedback.
+        raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
+
+
+def _del_cache_attrs(source: object, e: EventArgs) -> None:
+    # clears Write Attributes that are dynamically created
+    dattrs = ("_language", "_version")
+    for attr in dattrs:
+        if hasattr(Info, attr):
+            delattr(Info, attr)
+
+
+# subscribe to events that warrant clearing cached attribs
+Events().on(LoNamedEvent.RESET, _del_cache_attrs)
+
+__all__ = ("Info",)

@@ -2,6 +2,11 @@
 from typing import Sequence, TypeVar, Union, Any, Tuple, List
 from os import PathLike
 
+import uno
+from com.sun.star.text import XText
+from com.sun.star.text import XTextCursor
+from com.sun.star.text import XTextDocument
+
 PathOrStr = Union[str, PathLike]
 """Path like object or string"""
 
@@ -27,3 +32,9 @@ FloatList = List[float]
 
 FloatTable = List[FloatList]
 """Table like array of floats with rows and columns"""
+
+DocOrCursor = Union[XTextDocument, XTextCursor]
+"""Type of Text Dcoument or Cursor"""
+
+DocOrText = Union[XTextDocument, XText]
+"""Type of Text Document of Text"""

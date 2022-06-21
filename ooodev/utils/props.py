@@ -23,10 +23,13 @@ if TYPE_CHECKING:
     from com.sun.star.beans import Property, PropertyValue
     from com.sun.star.beans import XMultiPropertySet
 
-# import module and not module content to avoid circular import issue.
-# https://stackoverflow.com/questions/22187279/python-circular-importing
+    # import module and not module content to avoid circular import issue.
+    # https://stackoverflow.com/questions/22187279/python-circular-importing
+    #
+    # using lazy loading: https://snarky.ca/lazy-importing-in-python-3-7/
 from . import lo as mLo
 from . import info as mInfo
+
 from ..exceptions import ex as mEx
 
 # endregion Imports

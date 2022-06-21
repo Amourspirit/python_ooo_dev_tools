@@ -1,0 +1,632 @@
+# coding: utf-8
+# Python conversion of Info.java by Andrew Davison, ad@fivedots.coe.psu.ac.th
+# See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
+from __future__ import annotations
+import os
+from typing import TYPE_CHECKING, cast, overload
+from enum import IntEnum
+
+_DOCS_BUILDING = os.environ.get("DOCS_BUILDING", None) == "True"
+# _DOCS_BUILDING is only true when sphinx is building docs.
+# env var DOCS_BUILDING is set in docs/conf.py
+_ON_RTD = os.environ.get("READTHEDOCS", None) == "True"
+# env var READTHEDOCS is true when read the docs is building
+# maybe not needed as _DOCS_BUILDING is set in conf.py
+from ..events.event_singleton import Events
+from ..events.named_event import LoNamedEvent
+from ..utils import lo as mLo
+
+from ..meta.static_meta import StaticProperty, classproperty
+from ..utils.type_var import DocOrText, DocOrCursor
+from ..exceptions import ex as mEx
+from ..events.event_args import EventArgs
+
+if not _DOCS_BUILDING and not _ON_RTD:
+    from com.sun.star.beans import XPropertySet
+    from com.sun.star.container import XIndexAccess
+    from com.sun.star.frame import XModel
+    from com.sun.star.text import XParagraphCursor
+    from com.sun.star.text import XSentenceCursor
+    from com.sun.star.text import XText
+    from com.sun.star.text import XTextDocument
+    from com.sun.star.text import XTextRange
+    from com.sun.star.text import XTextRangeCompare
+    from com.sun.star.text import XWordCursor
+
+
+if TYPE_CHECKING:
+    from com.sun.star.text import XTextCursor
+
+
+class Selection(metaclass=StaticProperty):
+    """Selection Framework"""
+
+    class CompareEnum(IntEnum):
+        """Compare Enumeration"""
+
+        AFTER = 1
+        BEFORE = -1
+        EQUAL = 0
+
+    @staticmethod
+    def is_anything_selected(text_doc: XTextDocument) -> bool:
+        """
+        Determine if anything is selected.
+
+        If Write document is not visible this method returns false.
+
+        Args:
+            text_doc (XTextDocument): Text Document
+
+        Returns:
+            bool: True if anything in the document is selected: Otherwise, False
+        """
+
+        model = mLo.Lo.qi(XModel, text_doc)
+        if model is None:
+            raise mEx.MissingInterfaceError(XModel)
+        # xcontroller = model.getCurrentController()
+
+        # print("is_anything_selected Method")
+        o_selections = model.getCurrentSelection()
+        if o_selections is None:
+            # print("o_selections was not created from o_doc")
+            return False
+        index_access = mLo.Lo.qi(XIndexAccess, o_selections)
+        if index_access is None:
+            return False
+        count = int(index_access.getCount())
+        # print("Selections Count:", count)
+        if count == 0:
+            return False
+        elif count > 1:
+            return True
+        else:
+            # There is only one selection so obtain the first selection
+            o_sel = mLo.Lo.qi(XTextRange, index_access.getByIndex(0))
+            if o_sel is None:
+                return False
+            o_text = o_sel.getText()
+            # Create a text cursor that covers the range and then see if it is collapsed
+            o_cursor = o_text.createTextCursorByRange(o_sel)  # XTextCursor
+            # print("o_cursor",o_cursor)
+            if not o_cursor.isCollapsed():
+                # print("o_cursor is NOT Collapsed")
+                return True
+
+        return False
+
+    def get_selected_text(text_doc: XTextDocument) -> XText | None:
+        """
+        Gets the xText for current selection
+
+        Args:
+            text_doc (XTextDocument): Text Document
+
+        Raises:
+            MissingInterfaceError: If unable to obtain required interface.
+
+        Returns:
+            Union[object, None]: If no selection is made then None is returned; Otherwise, xText is returned.
+        """
+        model = mLo.Lo.qi(XModel, text_doc)
+        if model is None:
+            raise mEx.MissingInterfaceError(XModel)
+        
+        o_selections: XIndexAccess = model.getCurrentSelection()
+        if not o_selections:
+            return None
+        count = int(o_selections.getCount())
+        if count == 0:
+            return None
+        o_sel = mLo.Lo.qi(XText, o_selections.getByIndex(0))
+        if o_sel is None:
+            raise mEx.MissingInterfaceError(XModel)
+        return o_sel.getText()
+
+    @classmethod
+    def compare_cursor_ends(cls, c1: XTextRange, c2: XTextRange) -> CompareEnum:
+        """
+        Compares two cursors ranges end positons
+
+        Args:
+            c1 (XTextRange): first cursor range
+            c2 (XTextRange): second cursor range
+
+        Raises:
+            Exception: if comparsion fails
+
+        Returns:
+            CompareEnum: Compare result.
+            :py:attr:`.CompareEnum.BEFORE` if ``c1`` end position is before ``c2`` end position.
+            :py:attr:`.CompareEnum.EQUAL` if ``c1`` end position is equal to ``c2`` end position.
+            :py:attr:`.CompareEnum.AFTER` if ``c1`` end position is after ``c2`` end position.
+        """
+        range_compare = cast(XTextRangeCompare, cls.text_range_compare)
+        i = range_compare.compareRegionEnds(c1, c2)
+        if i == 1:
+            return cls.CompareEnum.BEFORE
+        if i == -1:
+            return cls.CompareEnum.AFTER
+        if i == 0:
+            return cls.CompareEnum.EQUAL
+        # if no valid result raise error
+        msg = "get_cursor_compare_ends() unable to get a valid compare result"
+        raise Exception(msg)
+
+    @classmethod
+    def range_len(cls, text_doc: XTextDocument, o_sel: XTextRange) -> int:
+        """
+        Gets the distance between range start and range end.
+
+        Args:
+            o_sel (XTextRange): first cursor range
+            o_text (object): xText object, usually document text object
+
+        Returns:
+            int: length of range
+
+        Note:
+            All characters are counted including paragraph breaks.
+            In Writer it will display selected characters however,
+            paragraph breaks are not counted.
+        """
+        i = 0
+        if o_sel.isCollapsed():
+            return i
+        o_text = mLo.Lo.qi(XText, text_doc)
+        if o_text is None:
+            raise mEx.MissingInterfaceError(XText)
+        l_cursor = cls.get_left_cursor(o_sel=o_sel, o_text=o_text)
+        r_cursor = cls.get_right_cursor(o_sel=o_sel, o_text=o_text)
+        if cls.compare_cursor_ends(c1=l_cursor, c2=r_cursor) < cls.CompareEnum.EQUAL:
+
+            while cls.compare_cursor_ends(c1=l_cursor, c2=r_cursor) != cls.CompareEnum.EQUAL:
+                l_cursor.goRight(1, False)
+                i += 1
+        return i
+
+    # region ------------- model cursor methods ------------------------
+
+    @classmethod
+    def get_text_cursor_props(cls, text_doc: XTextDocument) -> XPropertySet:
+        """
+        Gets properties for document cursor
+
+        Args:
+            text_doc (XTextDocument): Text Document
+
+        Raises:
+            MissingInterfaceError: If unable to obtain XPropertySet interface from cursor.
+
+        Returns:
+            XPropertySet: Properties
+        """
+        cursor = cls.get_cursor(text_doc)
+        props = mLo.Lo.qi(XPropertySet, cursor)
+        if props is None:
+            raise mEx.MissingInterfaceError(XPropertySet)
+        return props
+
+    # region    get_cursor()
+    @overload
+    @classmethod
+    def get_cursor(cls, cursor_obj: DocOrCursor) -> XTextCursor:
+        """
+        Gets text cursor
+
+        Args:
+            cursor_obj (DocOrCursor): Text Document or Text Cursor
+
+        Returns:
+            XTextCursor: Cursor
+        """
+        ...
+
+    @overload
+    @classmethod
+    def get_cursor(cls, rng: XTextRange, txt: XText) -> XTextCursor:
+        """
+        Gets text cursor
+
+        Args:
+            rng (XTextRange): Text Range Instance
+            txt (XText): Text Instance
+
+        Returns:
+            XTextCursor: Cursor
+        """
+        ...
+
+    @overload
+    @classmethod
+    def get_cursor(cls, rng: XTextRange, text_doc: XTextDocument) -> XTextCursor:
+        """
+        Gets text cursor
+
+        Args:
+            rng (XTextRange): Text Range instance
+            text_doc (XTextDocument): Text Document instance
+
+        Returns:
+            XTextCursor: Cursor
+        """
+        ...
+
+    @classmethod
+    def get_cursor(cls, *args, **kwargs) -> XTextCursor:
+        """
+        Gets text cursor
+
+        Args:
+            cursor_obj (DocOrCursor): Text Document or Text View Cursor
+            rng (XTextRange): Text Range Instance
+            text_doc (XTextDocument): Text Document instance
+
+        Raises:
+            CursorError: If Unable to get cursor
+
+        Returns:
+            XTextCursor: Cursor
+        """
+        ordered_keys = (1, 2)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
+
+        def get_kwargs() -> dict:
+            ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ("cursor_obj", "rng", "txt", "text_doc")
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("get_cursor() got an unexpected keyword argument")
+
+            keys = ("cursor_obj", "rng")
+            for key in keys:
+                if key in kwargs:
+                    ka[1] = kwargs[key]
+                    break
+            if count == 1:
+                return ka
+            keys = ("txt", "text_doc")
+            for key in keys:
+                if key in kwargs:
+                    ka[2] = kwargs[key]
+                    break
+            return ka
+
+        if count != 2:
+            raise TypeError("get_cursor() got an invalid numer of arguments")
+
+        kargs = get_kwargs()
+
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
+
+        if count == 1:
+            return cls._get_cursor_obj(kargs[1])
+        txt_doc = mLo.Lo.qi(XTextDocument, kargs[2])
+        if txt_doc is None:
+            txt = kargs[2]
+        else:
+            txt = txt_doc.getText()
+        return cls._get_cursor_txt(rng=kargs[1], txt=txt)
+
+    @staticmethod
+    def _get_cursor_txt(rng: XTextRange, txt: XText) -> XTextCursor:
+        try:
+            cursor = txt.createTextCursorByRange(rng)
+            if cursor is None:
+                raise Exception("Cursor is None")
+            return cursor
+        except Exception as e:
+            raise mEx.CursorError(str(e)) from e
+
+    @staticmethod
+    def _get_cursor_obj(cursor_obj: DocOrCursor) -> XTextCursor:
+        try:
+            # https://wiki.openoffice.org/wiki/Writer/API/Text_cursor
+            xtxt_cursor = mLo.Lo.qi(XTextCursor, cursor_obj)
+            if xtxt_cursor is not None:
+                c = xtxt_cursor.getText().createTextCursorByRange(xtxt_cursor)
+                if c is None:
+                    raise Exception("XTextViewCursor.createTextCursorByRange() result is null")
+                return c
+
+            xdoc = mLo.Lo.qi(XTextDocument, cursor_obj)
+            if xdoc is not None:
+                xtext = xdoc.getText()
+                if xtext is None:
+                    return None
+                c = xtext.createTextCursor()
+                if c is None:
+                    raise Exception("XTextDocument, XText failed to create text cursor")
+                return c
+            raise TypeError("cursor_obj is invalid type. Expected XTextDocument or XTextViewCursor")
+        except Exception as e:
+            raise mEx.CursorError(str(e)) from e
+        # XTextViewCursor
+
+    # endregion get_cursor()
+
+    @classmethod
+    def get_word_cursor(cls, cursor_obj: DocOrCursor) -> XWordCursor:
+        """
+        Gets document word cursor
+
+        Args:
+            cursor_obj (DocOrCursor): Text Document or Text Cursor
+
+        Raises:
+            WordCursorError: If Unable to get cursor
+
+        Returns:
+            XWordCursor: Word Cursor
+        """
+        try:
+            if mLo.Lo.qi(XTextDocument, cursor_obj) is None:
+                cursor = cursor_obj
+            else:
+                cursor = cls.get_cursor(cursor_obj)
+            wd_cursor = mLo.Lo.qi(XWordCursor, cursor)
+            if wd_cursor is None:
+                raise mEx.MissingInterfaceError(XWordCursor)
+            return wd_cursor
+        except Exception as e:
+            raise mEx.WordCursorError(str(e)) from e
+
+    @classmethod
+    def get_sentence_cursor(cls, cursor_obj: DocOrCursor) -> XSentenceCursor:
+        """
+        Gets document sentence cursor
+
+        Args:
+            cursor_obj (DocOrCursor): Text Document or Text Cursor
+
+        Raises:
+            SentenceCursorError: If Unable to get cursor
+
+        Returns:
+            XSentenceCursor: Sentence Cursor
+        """
+        try:
+            if mLo.Lo.qi(XTextDocument, cursor_obj) is None:
+                cursor = cursor_obj
+            else:
+                cursor = cls.get_cursor(cursor_obj)
+            if cursor is None:
+                print("Text cursor is null")
+                return None
+            sc = mLo.Lo.qi(XSentenceCursor, cursor)
+            if sc is None:
+                raise mEx.MissingInterfaceError(XSentenceCursor)
+            return sc
+        except Exception as e:
+            raise mEx.SentenceCursorError(str(e)) from e
+
+    @classmethod
+    def get_paragraph_cursor(cls, cursor_obj: DocOrCursor) -> XParagraphCursor:
+        """
+        Gets document paragraph cursor
+
+        Args:
+            cursor_obj (DocOrCursor): Text Document or Text Cursor
+
+        Raises:
+            ParagraphCursorError: If Unable to get cursor
+
+        Returns:
+            XParagraphCursor: Paragraph cursor
+        """
+        try:
+            if mLo.Lo.qi(XTextDocument, cursor_obj) is None:
+                cursor = cursor_obj
+            else:
+                cursor = cls.get_cursor(cursor_obj)
+            para_cursor = mLo.Lo.qi(XParagraphCursor, cursor)
+            if para_cursor is None:
+                raise mEx.MissingInterfaceError(XParagraphCursor)
+            return para_cursor
+        except Exception as e:
+            raise mEx.ParagraphCursorError(str(e)) from e
+
+    @classmethod
+    def get_left_cursor(cls, o_sel: XTextRange, o_text: DocOrText) -> XTextCursor:
+        """
+        Creates a new TextCursor with postion left that can travel right
+
+        Args:
+            o_sel (XTextRange): Text Range
+            o_text (DocOrText): Text document or text.
+
+        Returns:
+            XTextCursor: a new instance of a TextCursor which is located at the specified
+            TextRange to travel in the given text context.
+        """
+        doc = mLo.Lo.qi(XTextDocument, o_text)
+        if doc is None:
+            text = o_text
+        else:
+            text = doc.getText()
+
+        range_compare = cls.text_range_compare
+        if range_compare.compareRegionStarts(o_sel.getEnd(), o_sel) >= 0:
+            o_range = o_sel.getEnd()
+        else:
+            o_range = o_sel.getStart()
+        cursor = text.createTextCursorByRange(o_range)
+        cursor.goRight(0, False)
+        return cursor
+
+    @classmethod
+    def get_right_cursor(cls, o_sel: XTextRange, o_text: DocOrText) -> XTextCursor:
+        """
+        Creates a new TextCursor with postion right that can travel left
+
+        Args:
+            o_sel (XTextRange): Text Range
+            o_text (DocOrText): Text document or text.
+
+        Returns:
+            XTextCursor: a new instance of a TextCursor which is located at the specified
+            TextRange to travel in the given text context.
+        """
+        range_compare = cls.text_range_compare
+        if range_compare.compareRegionStarts(o_sel.getEnd(), o_sel) >= 0:
+            o_range = o_sel.getStart()
+        else:
+            o_range = o_sel.getEnd()
+        cursor = o_text.createTextCursorByRange(o_range)
+        cursor.goLeft(0, False)
+        return cursor
+
+    @classmethod
+    def get_position(cls, cursor: XTextCursor) -> int:
+        """
+        Gets position of the cursor
+
+        Args:
+            cursor (XTextCursor): Text Cursor
+
+        Returns:
+            int: Current Cursor Position
+        """
+        # def get_near_max(l:XTextCursor, r: XTextCursor, jump=10) -> int:
+        #     imax = 0
+        #     if cls.compare_cursor_ends(l, r) == cls.CompareEnum.BEFORE:
+        #         l.goRight(jump, False)
+        #         imax = imax + jump
+        jmp_amt = 25
+
+        def get_high(l: XTextCursor, r: XTextCursor, jump=jmp_amt, total=0) -> int:
+            # OPTIMIZE: get_position.get_high()
+            # The idea of this function is to cut down on the number if iterations
+            # needed to get the range from cursors left and right positions.
+            # Most likely there is an even more efficent way to do this.
+            if jump <= 0:
+                return 0
+            if cls.compare_cursor_ends(l, r) == cls.CompareEnum.BEFORE:
+                j = jump + jmp_amt
+                l.goRight(j, False)
+                return get_high(l, r, j, jump)
+            else:
+                l.gotoStart(False)
+                l.goRight(total, False)
+                return total
+            # else:
+            #     return jump, True
+
+        xcursor = cursor.getText().createTextCursor()
+        xcursor.gotoStart(False)
+        xcursor.gotoEnd(True)
+        xtext = xcursor.getText()
+        l_cursor = cls._get_left_cursor(o_sel=xcursor, o_text=xtext)
+        r_cursor = cls._get_right_cursor(o_sel=xcursor, o_text=xtext)
+        i = 0
+        if cls.compare_cursor_ends(c1=l_cursor, c2=r_cursor) < cls.CompareEnum.EQUAL:
+            high = get_high(l_cursor, r_cursor)
+            # l_cursor.gotoStart(False)
+
+            while cls.compare_cursor_ends(c1=l_cursor, c2=r_cursor) != cls.CompareEnum.EQUAL:
+                l_cursor.goRight(1, False)
+                i += 1
+            i += high
+        return i
+
+        # return len(cursor.getText().getString())
+
+    # endregion ---------- model cursor methods ------------------------
+
+    @classproperty
+    def text_range_compare(cls) -> XTextRangeCompare:
+        """
+        Gets text range for comparion operations
+
+        Returns:
+            XTextRangeCompare: Text Range Compare instance
+        """
+
+        try:
+            return cls._text_range_compare
+        except AttributeError:
+            doc = mLo.Lo.XSCRIPTCONTEXT.getDocument()
+            text = doc.getText()
+            cls._text_range_compare = mLo.Lo.qi(XTextRangeCompare, text)
+        return cls._text_range_compare
+
+    @text_range_compare.setter
+    def text_range_compare(cls, value) -> None:
+        # raise error on set. Not really neccesary but gives feedback.
+        raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
+
+
+    # def get_word_count(text: str, word_type: Optional[WordTypeEnum]) -> int:
+    #     """
+    #     Get the number of word in ooo way
+
+    #     Args:
+    #         text (str): string to count the word of
+    #         word_type (Optional[WordTypeEnum]): type of words to count. Default ``WordTypeEnum.WORD_COUNT``
+
+    #     Raises:
+    #         ValueError: if :paramref:`~.ooo_word_count.text` is not type ``str``
+    #         TypeError: if :paramref:`~.ooo_word_count.word_type` in not valid
+
+    #     Returns:
+    #         int: The number of words in :paramref:`~.ooo_word_count.text`
+    #     """
+    #     if not isinstance(text, str):
+    #         raise ValueError(
+    #             "ooo_word_count() text argument is required")
+    #     if word_type is None:
+    #         word_type = WordTypeEnum.WORD_COUNT
+    #     if not isinstance(word_type, WordTypeEnum):
+    #         raise TypeError("ooo_word_count() word_type: got {} but expected \
+    #                 type is WordTypeEnum".format(type(word_type).__name__))
+    #     # https://forum.openoffice.org/en/forum/viewtopic.php?f=20&t=82678
+    #     next_wd = create_uno_struct("com.sun.star.i18n.Boundary")
+    #     local = create_uno_struct("com.sun.star.lang.Locale")
+    #     # local.Language = "en"
+    #     local.Language = mInfo.Info.language
+    #     num_words = 0
+    #     start_pos = 0
+    #     wt = WordType.ANY_WORD
+    #     if word_type > WordTypeEnum.ANY_WORD:
+    #         # intenionally pad the start and end of the string to guarantee we get the first word and clean break on last word
+    #         st = " " + text + " "
+    #     else:
+    #         # ANY_WORD
+    #         # no need to pad. All characters will be counted including whitespaces
+    #         st = text
+
+    #     if word_type == WordTypeEnum.ANYWORD_IGNOREWHITESPACES:
+    #         wt = WordType.ANYWORD_IGNOREWHITESPACES
+    #     elif word_type == WordTypeEnum.DICTIONARY_WORD:
+    #         wt = WordType.DICTIONARY_WORD
+    #     elif word_type == WordTypeEnum.WORD_COUNT:
+    #         wt = WordType.WORD_COUNT
+
+    #     brk = create_uno_service("com.sun.star.i18n.BreakIterator")
+    #     next_wd = brk.nextWord(st, start_pos, local, wt)
+    #     while next_wd.startPos != next_wd.endPos:
+    #         num_words += 1
+    #         nw = next_wd.startPos
+    #         next_wd = brk.nextWord(st, nw, local, wt)
+
+    #     return num_words
+
+
+
+def _del_cache_attrs(source: object, e: EventArgs) -> None:
+    # clears Write Attributes that are dynamically created
+    dattrs = ("_text_range_compare",)
+    for attr in dattrs:
+        if hasattr(Selection, attr):
+            delattr(Selection, attr)
+
+
+# subscribe to events that warrent clearing cached attribs
+Events().on(LoNamedEvent.RESET, _del_cache_attrs)
+
+__all__ = ("Selection",)

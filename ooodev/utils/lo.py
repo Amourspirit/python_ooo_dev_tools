@@ -3,13 +3,15 @@
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 
 from __future__ import annotations
-from datetime import datetime
+from datetime import datetime, timezone
 import time
 from typing import TYPE_CHECKING, Iterable, Optional, List, Tuple, cast, overload, Type
 from urllib.parse import urlparse
 import uno
 from enum import IntEnum, Enum
 
+from ..events.event_singleton import Events
+from ..events.named_event import LoNamedEvent
 from ..events.event_args import EventArgs
 from ..events.cancel_event_args import CancelEventArgs
 from ..events.dispatch_event import DispatchEvent
@@ -48,12 +50,13 @@ from ooo.dyn.util.close_veto_exception import CloseVetoException
 
 # import module and not module content to avoid circular import issue.
 # https://stackoverflow.com/questions/22187279/python-circular-importing
+from . import script_context
+
 from . import props as mProps
 from . import file_io as mFileIO
 from . import xml_util as mXML
 from . import info as mInfo
-from . import script_context
-from ..events.static_event_base import StaticEventBase
+    
 from ..exceptions import ex as mEx
 from .type_var import PathOrStr, UnoInterface, T
 
@@ -61,7 +64,8 @@ from .type_var import PathOrStr, UnoInterface, T
 # """Path like object or string"""
 
 
-class Lo(StaticEventBase, metaclass=StaticProperty):
+class Lo(metaclass=StaticProperty):
+    
     class ControllerLock:
         """
         Context manager for Locking Controller
@@ -477,8 +481,10 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
         #                     component loader (XComponentLoader)
         # Once we have a component loader, we can load a document.
         # xcc, mcFactory, and xDesktop are stored as static globals.
+        eargs = EventArgs(cls)
+        Events().trigger(LoNamedEvent.RESET, eargs)
         cargs = CancelEventArgs(cls)
-        cls.trigger("office_loading", cargs)
+        Events().trigger(LoNamedEvent.OFFICE_LOADING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
         using_pipes = bool(kwargs.get("pipes", False))
@@ -520,7 +526,7 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
         if loader is None:
             raise print("Unable to access XComponentLoader")
             SystemExit(1)
-        cls.trigger("office_loaded", EventArgs(cls))
+        Events().trigger(LoNamedEvent.OFFICE_LOADED, eargs)
         return loader
         # return cls.xdesktop
 
@@ -533,7 +539,7 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
         print("Closing Office")
 
         cargs = CancelEventArgs(cls)
-        cls.trigger("office_closing", cargs)
+        Events().trigger(LoNamedEvent.OFFICE_CLOSING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
 
@@ -552,7 +558,7 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
             cls._is_office_terminated = cls._try_to_terminate(num_tries)
             num_tries += 1
         if num_tries < max_tries:
-            cls.trigger("office_closed", EventArgs(cls))
+            Events().trigger(LoNamedEvent.OFFICE_CLOSED, EventArgs(cls))
 
     @classmethod
     def _try_to_terminate(cls, num_tries: int) -> bool:
@@ -683,10 +689,14 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
             * :py:meth:`get_doc`
             * :py:meth:`load_office`
         """
+        # Props and FileIO are called this method so triger global_reset first.
+        eargs = EventArgs(cls)
+        Events().trigger(LoNamedEvent.RESET, eargs)
         cargs = CancelEventArgs(cls)
-        cls.trigger("doc_opening", cargs)
+        Events().trigger(LoNamedEvent.DOC_OPENING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
+
         if fnm is None:
             raise Exception("Filename is null")
         fnm = str(fnm)
@@ -708,7 +718,7 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
             doc = loader.loadComponentFromURL(open_file_url, "_blank", 0, props)
             cls._ms_factory = cls.qi(XMultiServiceFactory, doc)
             cls._doc = doc
-            cls.trigger("doc_opened", EventArgs(cls))
+            Events().trigger(LoNamedEvent.DOC_OPENED, eargs)
             return doc
         except Exception as e:
             raise Exception("Unable to open the document") from e
@@ -852,8 +862,11 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
         Returns:
             XComponent: document as component.
         """
+        # Props is called in this metod so trigger global_reset first
+        eargs = EventArgs(cls)
+        Events().trigger(LoNamedEvent.RESET, eargs)
         cargs = CancelEventArgs(cls)
-        cls.trigger("doc_creating", cargs)
+        Events().trigger(LoNamedEvent.DOC_CREATING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
         dtype = cls.DocTypeStr(doc_type)
@@ -866,7 +879,7 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
             if cls._ms_factory is None:
                 raise mEx.MissingInterfaceError(XMultiServiceFactory)
             cls._doc = doc
-            cls.trigger("doc_created", EventArgs(cls))
+            Events().trigger(LoNamedEvent.DOC_CREATED, eargs)
             return cls._doc
         except Exception as e:
             raise Exception("Could not create a document") from e
@@ -905,7 +918,7 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
             XComponent: document as component.
         """
         cargs = CancelEventArgs(cls)
-        cls.trigger("doc_creating", cargs)
+        Events().trigger(LoNamedEvent.DOC_CREATING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
         if not mFileIO.FileIO.is_openable(template_path):
@@ -919,7 +932,7 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
             cls._ms_factory = cls.qi(XMultiServiceFactory, cls._doc)
             if cls._ms_factory is None:
                 raise mEx.MissingInterfaceError(XMultiServiceFactory)
-            cls.trigger("doc_created", EventArgs(cls))
+            Events().trigger(LoNamedEvent.DOC_CREATED, EventArgs(cls))
             return cls._doc
         except Exception as e:
             raise Exception(f"Could not create document from template") from e
@@ -939,16 +952,17 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
             MissingInterfaceError: If doc does not implement XStorable interface
         """
         cargs = CancelEventArgs(cls)
-        cls.trigger("doc_saving", cargs)
+        Events().trigger(LoNamedEvent.DOC_SAVING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
+
         store = cls.qi(XStorable, doc)
         if store is None:
             raise mEx.MissingInterfaceError(XStorable)
         try:
             store.store()
             print("Saved the document by overwriting")
-            cls.trigger("doc_saved", EventArgs(cls))
+            Events().trigger(LoNamedEvent.DOC_SAVED, EventArgs(cls))
         except IOException as e:
             raise Exception(f"Could not save the document") from e
 
@@ -1006,7 +1020,7 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
             MissingInterfaceError: If doc does not implement XStorable interface
         """
         cargs = CancelEventArgs(cls)
-        cls.trigger("doc_saving", cargs)
+        Events().trigger(LoNamedEvent.DOC_SAVING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
         store = cls.qi(XStorable, doc)
@@ -1021,7 +1035,7 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
         else:
             kargs["format"] = format
             cls.store_doc_format(**kargs)
-        cls.trigger("doc_saved", EventArgs(cls))
+        Events().trigger(LoNamedEvent.DOC_SAVED, EventArgs(cls))
 
     @overload
     @classmethod
@@ -1062,7 +1076,7 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
             password (str): Password for document.
         """
         cargs = CancelEventArgs(cls)
-        cls.trigger("doc_saving", cargs)
+        Events().trigger(LoNamedEvent.DOC_SAVING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
         ext = mInfo.Info.get_ext(fnm)
@@ -1075,7 +1089,7 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
             cls.store_doc_format(store=store, fnm=fnm, format=frmt)
         else:
             cls.store_doc_format(store=store, fnm=fnm, format=frmt, password=password)
-        cls.trigger("doc_saved", EventArgs(cls))
+        Events().trigger(LoNamedEvent.DOC_SAVED, EventArgs(cls))
 
     @overload
     @classmethod
@@ -1279,7 +1293,7 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
             Exception: If unable to save document
         """
         cargs = CancelEventArgs(cls)
-        cls.trigger("doc_saving", cargs)
+        Events().trigger(LoNamedEvent.DOC_SAVING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
         print(f"Saving the document in '{fnm}'")
@@ -1292,7 +1306,7 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
             else:
                 store_props = mProps.Props.make_props(Overwrite=True, FilterName=format, Password=password)
             store.storeToURL(save_file_url, store_props)
-            cls.trigger("doc_saved", EventArgs(cls))
+            Events().trigger(LoNamedEvent.DOC_SAVED, EventArgs(cls))
         except IOException as e:
             raise Exception(f"Could not save '{fnm}'") from e
 
@@ -1340,7 +1354,7 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
                 and try it again at a later time. This can be useful for a generic UI handling.
         """
         cargs = CancelEventArgs(cls)
-        cls.trigger("doc_closing", cargs)
+        Events().trigger(LoNamedEvent.DOC_CLOSING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
         if closeable is None:
@@ -1349,7 +1363,7 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
         try:
             closeable.close(deliver_ownership)
             cls._doc = None
-            cls.trigger("doc_closed", EventArgs(cls))
+            Events().trigger(LoNamedEvent.DOC_CLOSED, EventArgs(cls))
         except CloseVetoException as e:
             raise Exception("Close was vetoed") from e
 
@@ -1427,8 +1441,10 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
         Returns:
             XComponent: addon as component
         """
+        eargs = EventArgs(cls)
+        Events().trigger(LoNamedEvent.RESET, eargs)
         cargs = CancelEventArgs(cls)
-        cls.trigger("doc_opening", cargs)
+        Events().trigger(LoNamedEvent.DOC_OPENING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
         xcc = addon_xcc
@@ -1449,7 +1465,7 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
         if cls._ms_factory in None:
             raise mEx.MissingInterfaceError(XMultiServiceFactory)
         cls._doc = doc
-        cls.trigger("doc_opened", EventArgs(cls))
+        Events().trigger(LoNamedEvent.DOC_OPENED, eargs)
         return doc
 
     # ============= initialization via script context ======================
@@ -1473,7 +1489,9 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
             XComponent: script component
         """
         cargs = CancelEventArgs(cls)
-        cls.trigger("doc_opening", cargs)
+        eargs = EventArgs(cls)
+        Events().trigger(LoNamedEvent.RESET, eargs)
+        Events().trigger(LoNamedEvent.DOC_OPENING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
         if sc is None:
@@ -1494,7 +1512,7 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
         if cls._ms_factory in None:
             raise mEx.MissingInterfaceError(XMultiServiceFactory)
         cls._doc = doc
-        cls.trigger("doc_opened", EventArgs(cls))
+        Events().trigger(LoNamedEvent.DOC_OPENED, eargs)
         return doc
 
     # ==================== dispatch ===============================
@@ -1565,7 +1583,7 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
             `LibreOffice Dispatch Commands <https://wiki.documentfoundation.org/Development/DispatchCommands>`_
         """
         cargs = DispatchCancelEvent(cls, cmd)
-        cls.trigger("dispatching", cargs)
+        Events().trigger(LoNamedEvent.DISPATCHING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
 
@@ -1579,7 +1597,7 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
             raise mEx.MissingInterfaceError(XDispatchHelper, f"Could not create dispatch helper for command {cmd}")
         try:
             helper.executeDispatch(frame, f".uno:{cmd}", "", 0, props)
-            cls.trigger("dispatched", DispatchEvent(cls, cmd))
+            Events().trigger(LoNamedEvent.DISPATCHED, DispatchEvent(cls, cmd))
             return True
         except Exception as e:
             raise Exception(f"Could not dispatch '{cmd}'") from e
@@ -1916,7 +1934,7 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
         for arg in args:
             try:
                 if isinstance(arg, str):
-                    t = uno.getTypeByName(arg)
+                    t = uno.getClass(arg)
                 else:
                     t = arg
                 obj = cls.qi(t, component)
@@ -1938,7 +1956,8 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
         """
         if cls.star_desktop is None:
             raise Exception("No desktop found")
-        return cast(XDesktop, cls.star_desktop).getCurrentFrame()
+        return cls.XSCRIPTCONTEXT.getDesktop().getCurrentFrame()
+        # return cast(XDesktop, cls.star_desktop).getCurrentFrame()
 
     @classmethod
     def get_model(cls) -> XModel:
@@ -1948,7 +1967,8 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
         Returns:
             XModel: Gets model for current LibreOffice instance
         """
-        return cls.qi(XModel, cls._doc)
+        return cls.XSCRIPTCONTEXT.getDocument()
+        # return cls.qi(XModel, cls._doc)
 
     @classmethod
     def lock_controllers(cls) -> None:
@@ -1965,12 +1985,12 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
         """
         # much faster updates as screen is basically suspended
         cargs = CancelEventArgs(cls)
-        cls.trigger("locking_controlers", cargs)
+        Events().trigger("locking_controlers", cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
         xmodel = cls.qi(XModel, cls._doc)
         xmodel.lockControllers()
-        cls.trigger("locked_controlers", EventArgs(cls))
+        Events().trigger("locked_controlers", EventArgs(cls))
 
     @classmethod
     def unlock_controllers(cls) -> None:
@@ -1986,13 +2006,13 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
             :py:class:`.Lo.ControllerLock`
         """
         cargs = CancelEventArgs(cls)
-        cls.trigger("unlocking_controlers", cargs)
+        Events().trigger("unlocking_controlers", cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
         xmodel = cls.qi(XModel, cls._doc)
         if xmodel.hasControllersLocked():
             xmodel.unlockControllers()
-        cls.trigger("unlocked_controlers", EventArgs(cls))
+        Events().trigger("unlocked_controlers", EventArgs(cls))
 
     @classmethod
     def has_controllers_locked(cls) -> bool:
@@ -2014,7 +2034,7 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
     @classproperty
     def null_date(cls) -> datetime:
         """
-        Gets Value of Null Date
+        Gets Value of Null Date in UTC
 
         Returns:
             datetime: Null Date on sucess; Otherwise, None
@@ -2029,11 +2049,11 @@ class Lo(StaticEventBase, metaclass=StaticProperty):
         except AttributeError:
             if cls._doc is None:
                 print("No document found returning 1889/12/30")
-                return datetime(year=1889, month=12, day=30)
+                return datetime(year=1889, month=12, day=30, tzinfo=timezone.utc)
             n_supplier = cls.qi(XNumberFormatsSupplier, cls._doc)
             number_settings = n_supplier.getNumberFormatSettings()
             d = number_settings.getPropertyValue("NullDate")
-            cls.__null_date = datetime(d.Year, d.Month, d.Day)
+            cls.__null_date = datetime(d.Year, d.Month, d.Day, tzinfo=timezone.utc)
         return cls.__null_date
 
     @null_date.setter
@@ -2129,7 +2149,6 @@ def _del_cache_attrs(source: object, e: EventArgs) -> None:
             delattr(Lo, attr)
 
 
-Lo.on("office_loaded", _del_cache_attrs)
-Lo.on("doc_opening", _del_cache_attrs)
-Lo.on("doc_created", _del_cache_attrs)
+Events().on(LoNamedEvent.RESET, _del_cache_attrs)
+
 __all__ = ("Lo",)
