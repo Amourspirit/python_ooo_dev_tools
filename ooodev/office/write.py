@@ -307,60 +307,6 @@ class Write(mSel.Selection):
 
     # endregion ---------- doc / open / close /create/ etc -------------
 
-    # region ------------- view cursor methods -------------------------
-
-    @classmethod
-    def get_text_view_cursor_prop_set(cls, text_doc: XTextDocument) -> XPropertySet:
-        """
-        Gets properties for document view cursor
-
-        Args:
-            text_doc (XTextDocument): Text Document
-
-        Raises:
-            MissingInterfaceError: If unable to obtain XPropertySet interface from cursor.
-
-        Returns:
-            XPropertySet: Properties
-        """
-        xview_cursor = cls.get_view_cursor(text_doc)
-        props = mLo.Lo.qi(XPropertySet, xview_cursor, True)
-        return props
-
-    @staticmethod
-    def get_view_cursor(text_doc: XTextDocument) -> XTextViewCursor:
-        """
-        Gets document view cursor.
-
-        Describes a cursor in a text document's view.
-
-        Args:
-            text_doc (XTextDocument): Text Document
-
-        Raises:
-            ViewCursorError: If Unable to get cursor
-
-        Returns:
-            XTextViewCursor: Text View Currsor
-
-        See Also:
-            `LibreOffice API XTextViewCursor <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextViewCursor.html>`_
-        """
-
-        # https://wiki.openoffice.org/wiki/Writer/API/Text_cursor
-        try:
-            model = mLo.Lo.qi(XModel, text_doc, True)
-            xcontroller = model.getCurrentController()
-            supplier = mLo.Lo.qi(XTextViewCursorSupplier, xcontroller, True)
-            vc = supplier.getViewCursor()
-            if vc is None:
-                raise Exception("Supplier return null view cursor")
-            return vc
-        except Exception as e:
-            raise mEx.ViewCursorError(str(e)) from e
-
-    # endregion ---------- view cursor methods -------------------------
-
     # region ------------- page methods --------------------------------
     @classmethod
     def get_page_cursor(cls, text_doc: XTextDocument) -> XPageCursor:

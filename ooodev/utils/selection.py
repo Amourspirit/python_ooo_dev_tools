@@ -33,6 +33,8 @@ if not _DOCS_BUILDING and not _ON_RTD:
     from com.sun.star.text import XTextDocument
     from com.sun.star.text import XTextRange
     from com.sun.star.text import XTextRangeCompare
+    from com.sun.star.text import XTextViewCursor
+    from com.sun.star.text import XTextViewCursorSupplier
     from com.sun.star.text import XWordCursor
     from com.sun.star.view import XSelectionSupplier
 
@@ -41,8 +43,9 @@ if TYPE_CHECKING:
     from com.sun.star.text import XTextCursor
 
 from ooo.dyn.i18n.word_type import WordTypeEnum as WordTypeEnum
-from ooo.dyn.i18n.boundary import Boundary # struct
-from ooo.dyn.lang.locale import Locale # struct
+from ooo.dyn.i18n.boundary import Boundary  # struct
+from ooo.dyn.lang.locale import Locale  # struct
+
 
 class Selection(metaclass=StaticProperty):
     """Selection Framework"""
@@ -66,20 +69,20 @@ class Selection(metaclass=StaticProperty):
 
         Returns:
             bool: True if anything in the document is selected: Otherwise, False
+
+         Note:
+            Writer must be visible for this method or ``False`` is always returned.
         """
 
         model = mLo.Lo.qi(XModel, text_doc, True)
 
-        # print("is_anything_selected Method")
         o_selections = model.getCurrentSelection()
         if o_selections is None:
-            # print("o_selections was not created from o_doc")
             return False
         index_access = mLo.Lo.qi(XIndexAccess, o_selections)
         if index_access is None:
             return False
         count = int(index_access.getCount())
-        # print("Selections Count:", count)
         if count == 0:
             return False
         elif count > 1:
@@ -91,17 +94,16 @@ class Selection(metaclass=StaticProperty):
                 return False
             o_text = o_sel.getText()
             # Create a text cursor that covers the range and then see if it is collapsed
-            o_cursor = o_text.createTextCursorByRange(o_sel)  # XTextCursor
-            # print("o_cursor",o_cursor)
+            o_cursor = o_text.createTextCursorByRange(o_sel)
             if not o_cursor.isCollapsed():
-                # print("o_cursor is NOT Collapsed")
                 return True
 
         return False
 
-    def get_selected_text(text_doc: XTextDocument) -> XText | None:
+    @staticmethod
+    def get_selected_text_range(text_doc: XTextDocument) -> XTextRange | None:
         """
-        Gets the xText for current selection
+        Gets the text raange for current selection
 
         Args:
             text_doc (XTextDocument): Text Document
@@ -110,18 +112,39 @@ class Selection(metaclass=StaticProperty):
             MissingInterfaceError: If unable to obtain required interface.
 
         Returns:
-            Union[object, None]: If no selection is made then None is returned; Otherwise, xText is returned.
+            XTextRange | None: If no selection is made then None is returned; Otherwise, Text Range.
+
+        Note:
+            Writer must be visible for this method or ``None`` is returned.
         """
         model = mLo.Lo.qi(XModel, text_doc, True)
-        
+
         o_selections: XIndexAccess = model.getCurrentSelection()
         if not o_selections:
             return None
         count = int(o_selections.getCount())
         if count == 0:
             return None
-        o_sel = mLo.Lo.qi(XText, o_selections.getByIndex(0), True)
-        return o_sel.getText()
+        return mLo.Lo.qi(XTextRange, o_selections.getByIndex(0), True)
+
+    @classmethod
+    def get_selected_text_str(cls, text_doc: XTextDocument) -> str:
+        """
+        Gets the first selection text for document
+
+        Args:
+            text_doc (XTextDocument): Text Docoment
+
+        Returns:
+            str: Selected text or empty string.
+
+        Note:
+            Writer must be visible for this method or empty string is returned.
+        """
+        rng = cls.get_selected_text_range(text_doc=text_doc)
+        if rng is None:
+            return ""
+        return rng.getString()
 
     @classmethod
     def compare_cursor_ends(cls, c1: XTextRange, c2: XTextRange) -> CompareEnum:
@@ -525,6 +548,60 @@ class Selection(metaclass=StaticProperty):
 
         # return len(cursor.getText().getString())
 
+    # region ------------- view cursor methods -------------------------
+
+    @classmethod
+    def get_text_view_cursor_prop_set(cls, text_doc: XTextDocument) -> XPropertySet:
+        """
+        Gets properties for document view cursor
+
+        Args:
+            text_doc (XTextDocument): Text Document
+
+        Raises:
+            MissingInterfaceError: If unable to obtain XPropertySet interface from cursor.
+
+        Returns:
+            XPropertySet: Properties
+        """
+        xview_cursor = cls.get_view_cursor(text_doc)
+        props = mLo.Lo.qi(XPropertySet, xview_cursor, True)
+        return props
+
+    @staticmethod
+    def get_view_cursor(text_doc: XTextDocument) -> XTextViewCursor:
+        """
+        Gets document view cursor.
+
+        Describes a cursor in a text document's view.
+
+        Args:
+            text_doc (XTextDocument): Text Document
+
+        Raises:
+            ViewCursorError: If Unable to get cursor
+
+        Returns:
+            XTextViewCursor: Text View Currsor
+
+        See Also:
+            `LibreOffice API XTextViewCursor <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextViewCursor.html>`_
+        """
+
+        # https://wiki.openoffice.org/wiki/Writer/API/Text_cursor
+        try:
+            model = mLo.Lo.qi(XModel, text_doc, True)
+            xcontroller = model.getCurrentController()
+            supplier = mLo.Lo.qi(XTextViewCursorSupplier, xcontroller, True)
+            vc = supplier.getViewCursor()
+            if vc is None:
+                raise Exception("Supplier return null view cursor")
+            return vc
+        except Exception as e:
+            raise mEx.ViewCursorError(str(e)) from e
+
+    # endregion ---------- view cursor methods -------------------------
+
     # endregion ---------- model cursor methods ------------------------
 
     @classproperty
@@ -553,7 +630,7 @@ class Selection(metaclass=StaticProperty):
     def get_word_count_ooo(text: str, word_type: WordTypeEnum | None = None, locale_lang: str | None = None) -> int:
         """
         Get the number of word in ooo way.
-        
+
         This method takes into account the current Loc
 
         Args:
@@ -610,8 +687,13 @@ class Selection(metaclass=StaticProperty):
         """
         supplier = mLo.Lo.qi(XSelectionSupplier, text_doc.getCurrentController(), True)
 
+        # clear any current selection
+        view_curor = cls.get_view_cursor(text_doc=text_doc)
+        # view_curor.collapseToEnd()
+        view_curor.goRight(0, False)
+
         # see section 7.5.1 of developers' guide
-        index_access = mLo.Lo.qi(XIndexAccess,supplier.getSelection(), True)
+        index_access = mLo.Lo.qi(XIndexAccess, supplier.getSelection(), True)
         range = mLo.Lo.qi(XTextRange, index_access.getByIndex(0), True)
 
         # get the XWordCursor and make a selection!

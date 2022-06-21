@@ -237,7 +237,7 @@ class Lo(metaclass=StaticProperty):
 
     @overload
     @staticmethod
-    def qi(atype: Type[T], obj: XTypeProvider, raise_err: bool = False) -> T | None:
+    def qi(atype: Type[T], obj: XTypeProvider, raise_err: bool) -> T | None:
         """
         Generic method that get an interface instance from  an object.
 
