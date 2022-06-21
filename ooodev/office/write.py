@@ -176,9 +176,7 @@ class Write(mSel.Selection):
         if doc is None:
             raise TypeError("Document is null")
 
-        text_doc = mLo.Lo.qi(XTextDocument, doc)
-        if text_doc is None:
-            raise mEx.MissingInterfaceError(XTextDocument)
+        text_doc = mLo.Lo.qi(XTextDocument, doc, True)
         return text_doc
 
     @staticmethod
@@ -210,9 +208,7 @@ class Write(mSel.Selection):
             XTextDocument: Text Document
         """
         doc = mLo.Lo.create_doc_from_template(template_path=template_path, loader=loader)
-        xdoc = mLo.Lo.qi(XTextDocument, doc)
-        if xdoc is None:
-            raise mEx.MissingInterfaceError(XTextDocument)
+        xdoc = mLo.Lo.qi(XTextDocument, doc, True)
         return xdoc
 
     @staticmethod
@@ -226,9 +222,7 @@ class Write(mSel.Selection):
         Raises:
             MissingInterfaceError: If unable to obtain XCloseable from text_doc
         """
-        closable = mLo.Lo.qi(XCloseable, text_doc)
-        if closable is None:
-            raise mEx.MissingInterfaceError(XCloseable)
+        closable = mLo.Lo.qi(XCloseable, text_doc, True)
         mLo.Lo.close(closable)
 
     @staticmethod
@@ -243,9 +237,7 @@ class Write(mSel.Selection):
         Raises:
             MissingInterfaceError: If text_doc does not implement XComponent interface
         """
-        doc = mLo.Lo.qi(XComponent, text_doc)
-        if doc is None:
-            raise mEx.MissingInterfaceError(XComponent)
+        doc = mLo.Lo.qi(XComponent, text_doc, True)
         mLo.Lo.save_doc(doc=doc, fnm=fnm)
 
     @classmethod
@@ -332,9 +324,7 @@ class Write(mSel.Selection):
             XPropertySet: Properties
         """
         xview_cursor = cls.get_view_cursor(text_doc)
-        props = mLo.Lo.qi(XPropertySet, xview_cursor)
-        if props is None:
-            raise mEx.MissingInterfaceError(XPropertySet)
+        props = mLo.Lo.qi(XPropertySet, xview_cursor, True)
         return props
 
     @staticmethod
@@ -359,13 +349,9 @@ class Write(mSel.Selection):
 
         # https://wiki.openoffice.org/wiki/Writer/API/Text_cursor
         try:
-            model = mLo.Lo.qi(XModel, text_doc)
-            if model is None:
-                raise mEx.MissingInterfaceError(XModel)
+            model = mLo.Lo.qi(XModel, text_doc, True)
             xcontroller = model.getCurrentController()
-            supplier = mLo.Lo.qi(XTextViewCursorSupplier, xcontroller)
-            if supplier is None:
-                raise mEx.MissingInterfaceError(XTextViewCursorSupplier)
+            supplier = mLo.Lo.qi(XTextViewCursorSupplier, xcontroller, True)
             vc = supplier.getViewCursor()
             if vc is None:
                 raise Exception("Supplier return null view cursor")
@@ -397,9 +383,7 @@ class Write(mSel.Selection):
         """
         try:
             view_cursor = cls.get_view_cursor(text_doc)
-            page_cursor = mLo.Lo.qi(XPageCursor, view_cursor)
-            if page_cursor is None:
-                raise mEx.MissingInterfaceError(XPageCursor)
+            page_cursor = mLo.Lo.qi(XPageCursor, view_cursor, True)
             return page_cursor
         except Exception as e:
             raise mEx.PageCursorError(str(e)) from e
@@ -482,9 +466,7 @@ class Write(mSel.Selection):
         Returns:
             int: page count
         """
-        model = mLo.Lo.qi(XModel, text_doc)
-        if model is None:
-            raise mEx.MissingInterfaceError(XModel)
+        model = mLo.Lo.qi(XModel, text_doc, True)
         xcontroller = model.getCurrentController()
         return int(mProps.Props.get_property(xcontroller, "PageCount"))
 
@@ -623,17 +605,13 @@ class Write(mSel.Selection):
         """
         dt_field = mLo.Lo.create_instance_msf(XTextField, "com.sun.star.text.TextField.DateTime")
         mProps.Props.set_property(dt_field, "IsDate", True)  # so date is reported
-        xtext_content = mLo.Lo.qi(XTextContent, dt_field)
-        if xtext_content is None:
-            raise mEx.MissingInterfaceError(XTextContent)
+        xtext_content = mLo.Lo.qi(XTextContent, dt_field, True)
         cls._append_text_content(cursor, xtext_content)
         cls.append(cursor, "; ")
 
         dt_field = mLo.Lo.create_instance_msf(XTextField, "com.sun.star.text.TextField.DateTime")
         mProps.Props.set_property(dt_field, "IsDate", False)  # so time is reported
-        xtext_content = mLo.Lo.qi(XTextContent, dt_field)
-        if xtext_content is None:
-            raise mEx.MissingInterfaceError(XTextContent)
+        xtext_content = mLo.Lo.qi(XTextContent, dt_field, True)
         cls._append_text_content(cursor, xtext_content)
 
     @classmethod
@@ -1009,9 +987,7 @@ class Write(mSel.Selection):
         See Also:
             - :py:meth:`.set_a4_page_format`
         """
-        xprintable = mLo.Lo.qi(XPrintable, text_doc)
-        if xprintable is None:
-            raise mEx.MissingInterfaceError(XPrintable)
+        xprintable = mLo.Lo.qi(XPrintable, text_doc, True)
         printer_desc = mProps.Props.make_props(PaperFormat=paper_format)
         xprintable.setPrinter(printer_desc)
 
@@ -1133,9 +1109,7 @@ class Write(mSel.Selection):
             header_cursor = header_text.createTextCursor()
             header_cursor.gotoEnd(False)
 
-            header_props = mLo.Lo.qi(XPropertySet, header_cursor)
-            if header_props is None:
-                raise mEx.MissingInterfaceError(XPropertySet)
+            header_props = mLo.Lo.qi(XPropertySet, header_cursor, True)
             header_props.setPropertyValue("CharFontName", mInfo.Info.get_font_general_name())
             header_props.setPropertyValue("CharHeight", 10)
             header_props.setPropertyValue("ParaAdjust", ParagraphAdjust.RIGHT)
@@ -1158,9 +1132,7 @@ class Write(mSel.Selection):
         Returns:
             XDrawPage: Draw Page
         """
-        xsupp_page = mLo.Lo.qi(XDrawPageSupplier, text_doc)
-        if xsupp_page is None:
-            raise mEx.MissingInterfaceError(XDrawPageSupplier)
+        xsupp_page = mLo.Lo.qi(XDrawPageSupplier, text_doc, True)
         return xsupp_page.getDrawPage()
 
     # endregion ---------- headers and footers -------------------------
@@ -1188,9 +1160,7 @@ class Write(mSel.Selection):
             raise mEx.CreateInstanceMsfError(XTextContent, "com.sun.star.text.TextEmbeddedObject") from e
         try:
             # set class ID for type of object being inserted
-            props = mLo.Lo.qi(XPropertySet, embed_content)
-            if props is None:
-                raise mEx.MissingInterfaceError(XPropertySet)
+            props = mLo.Lo.qi(XPropertySet, embed_content, True)
             props.setPropertyValue("CLSID", mLo.Lo.CLSID.MATH)
             props.setPropertyValue("AnchorType", TextContentAnchorType.AS_CHARACTER)
 
@@ -1199,14 +1169,10 @@ class Write(mSel.Selection):
             cls.end_line(cursor)
 
             # access object's model
-            embed_obj_supplier = mLo.Lo.qi(XEmbeddedObjectSupplier2, embed_content)
-            if embed_obj_supplier is None:
-                raise mEx.MissingInterfaceError(XEmbeddedObjectSupplier2)
+            embed_obj_supplier = mLo.Lo.qi(XEmbeddedObjectSupplier2, embed_content, True)
             embed_obj_model = embed_obj_supplier.getEmbeddedObject()
 
-            formula_props = mLo.Lo.qi(XPropertySet, embed_obj_model)
-            if formula_props is None:
-                raise mEx.MissingInterfaceError(XPropertySet)
+            formula_props = mLo.Lo.qi(XPropertySet, embed_obj_model, True)
             formula_props.setPropertyValue("Formula", formula)
             print(f'Inserted formula "{formula}"')
         except Exception as e:
@@ -1261,9 +1227,7 @@ class Write(mSel.Selection):
         except Exception as e:
             raise mEx.CreateInstanceMsfError(XTextContent, "com.sun.star.text.Bookmark") from e
         try:
-            bmk_named = mLo.Lo.qi(XNamed, bmk_content)
-            if bmk_named is None:
-                raise mEx.MissingInterfaceError(XNamed)
+            bmk_named = mLo.Lo.qi(XNamed, bmk_content, True)
             bmk_named.setName(name)
 
             cls._append_text_content(cursor, bmk_content)
@@ -1285,10 +1249,7 @@ class Write(mSel.Selection):
         Returns:
             XTextContent | None: Bookmark if found; Otherwise, None
         """
-        supplier = mLo.Lo.qi(XBookmarksSupplier, text_doc)
-
-        if supplier is None:
-            raise mEx.MissingInterfaceError(XBookmarksSupplier)
+        supplier = mLo.Lo.qi(XBookmarksSupplier, text_doc, True)
 
         named_bookmarks = supplier.getBookmarks()
         obookmark = None
@@ -1340,17 +1301,13 @@ class Write(mSel.Selection):
             raise mEx.CreateInstanceMsfError(XTextFrame, "com.sun.star.text.TextFrame") from e
 
         try:
-            tf_shape = mLo.Lo.qi(XShape, xframe)
-            if tf_shape is None:
-                raise mEx.MissingInterfaceError(XShape)
+            tf_shape = mLo.Lo.qi(XShape, xframe, True)
 
             # set dimensions of the text frame
             tf_shape.setSize(Size(width, height))
 
             #  anchor the text frame
-            frame_props = mLo.Lo.qi(XPropertySet, xframe)
-            if frame_props is None:
-                raise mEx.MissingInterfaceError(XPropertySet)
+            frame_props = mLo.Lo.qi(XPropertySet, xframe, True)
             frame_props.setPropertyValue("AnchorType", TextContentAnchorType.AT_PAGE)
             frame_props.setPropertyValue("FrameIsAutomaticHeight", True)  # will grow if necessary
 
@@ -1385,10 +1342,7 @@ class Write(mSel.Selection):
 
             # add text into the text frame
             xframe_text = xframe.getText()
-            xtext_range = mLo.Lo.qi(XTextRange, xframe_text.createTextCursor())
-
-            if xtext_range is None:
-                raise mEx.MissingInterfaceError(XTextRange)
+            xtext_range = mLo.Lo.qi(XTextRange, xframe_text.createTextCursor(), True)
             xframe_text.insertString(xtext_range, text, False)
         except Exception as e:
             raise Exception("Insertion of text frame failed:") from e
@@ -1429,9 +1383,7 @@ class Write(mSel.Selection):
             return TableHelper.make_cell_name(row=row + 1, col=col + 1)
 
         def set_cell_header(cell_name: str, data: str, table: XTextTable) -> None:
-            cell_text = mLo.Lo.qi(XText, table.getCellByName(cell_name))
-            if cell_text is None:
-                raise mEx.MissingInterfaceError(XText)
+            cell_text = mLo.Lo.qi(XText, table.getCellByName(cell_name), True)
             if header_fg_color is not None:
                 text_cursor = cell_text.createTextCursor()
                 mProps.Props.set_property(prop_set=text_cursor, name="CharColor", value=header_fg_color)
@@ -1439,9 +1391,7 @@ class Write(mSel.Selection):
             cell_text.setString(str(data))
 
         def set_cell_text(cell_name: str, data: str, table: XTextTable) -> None:
-            cell_text = mLo.Lo.qi(XText, table.getCellByName(cell_name))
-            if cell_text is None:
-                raise mEx.MissingInterfaceError(XText)
+            cell_text = mLo.Lo.qi(XText, table.getCellByName(cell_name), True)
             if tbl_fg_color is not None:
                 text_cursor = cell_text.createTextCursor()
                 mProps.Props.set_property(prop_set=text_cursor, name="CharColor", value=tbl_fg_color)
@@ -1466,9 +1416,7 @@ class Write(mSel.Selection):
             cls._append_text_content(cursor, table)
             cls.end_paragraph(cursor)
 
-            table_props = mLo.Lo.qi(XPropertySet, table)
-            if table_props is None:
-                raise mEx.MissingInterfaceError(XPropertySet)
+            table_props = mLo.Lo.qi(XPropertySet, table, True)
 
             # set table properties
             if header_bg_color is not None or tbl_bg_color is not None:
@@ -1549,9 +1497,7 @@ class Write(mSel.Selection):
             if tgo is None:
                 raise mEx.CreateInstanceMsfError(XTextContent, "com.sun.star.text.TextGraphicObject")
 
-            props = mLo.Lo.qi(XPropertySet, tgo)
-            if props is None:
-                raise mEx.MissingInterfaceError(XPropertySet)
+            props = mLo.Lo.qi(XPropertySet, tgo, True)
             props.setPropertyValue("AnchorType", TextContentAnchorType.AS_CHARACTER)
             props.setPropertyValue("GraphicURL", mFileIO.FileIO.fnm_to_url(fnm))
 
@@ -1646,9 +1592,7 @@ class Write(mSel.Selection):
             mProps.Props.set_property(prop_set=gos, name="GraphicURL", value=bitmap)
 
             # set the shape's size
-            xdraw_shape = mLo.Lo.qi(XShape, gos)
-            if xdraw_shape is None:
-                raise mEx.MissingInterfaceError(XShape)
+            xdraw_shape = mLo.Lo.qi(XShape, gos, True)
             xdraw_shape.setSize(im_size)
 
             # insert image shape into the document, followed by newline
@@ -1684,9 +1628,7 @@ class Write(mSel.Selection):
             if ls is None:
                 raise mEx.CreateInstanceMsfError(XTextContent, "com.sun.star.drawing.LineShape")
 
-            line_shape = mLo.Lo.qi(XShape, ls)
-            if line_shape is None:
-                raise mEx.MissingInterfaceError(XShape)
+            line_shape = mLo.Lo.qi(XShape, ls, True)
             line_shape.setSize(Size(line_width, 0))
 
             cls.end_paragraph(cursor)
@@ -1768,9 +1710,7 @@ class Write(mSel.Selection):
         Returns:
             XNameAccess | None: Graphic Links on success, Otherwise, None
         """
-        ims_supplier = mLo.Lo.qi(XTextGraphicObjectsSupplier, doc)
-        if ims_supplier is None:
-            raise mEx.MissingInterfaceError(XTextGraphicObjectsSupplier)
+        ims_supplier = mLo.Lo.qi(XTextGraphicObjectsSupplier, doc, True)
 
         xname_access = ims_supplier.getGraphicObjects()
         if xname_access is None:
@@ -1815,9 +1755,7 @@ class Write(mSel.Selection):
         Returns:
             XDrawPage: shapes
         """
-        draw_page_supplier = mLo.Lo.qi(XDrawPageSupplier, text_doc)
-        if draw_page_supplier is None:
-            raise mEx.MissingInterfaceError(XDrawPageSupplier)
+        draw_page_supplier = mLo.Lo.qi(XDrawPageSupplier, text_doc, True)
 
         return draw_page_supplier.getDrawPage()
 

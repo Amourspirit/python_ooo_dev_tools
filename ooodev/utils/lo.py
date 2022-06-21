@@ -218,6 +218,9 @@ class Lo(metaclass=StaticProperty):
 
     _lo_inst: ConnectBase = None
 
+    # region    qi()
+
+    @overload
     @staticmethod
     def qi(atype: Type[T], obj: XTypeProvider) -> T | None:
         """
@@ -226,6 +229,43 @@ class Lo(metaclass=StaticProperty):
         Args:
             atype (T): Interface type such as XInterface
             obj (object): Object that implements interface.
+
+        Returns:
+            T | None: instance of interface if supported; Otherwise, None
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def qi(atype: Type[T], obj: XTypeProvider, raise_err: bool = False) -> T | None:
+        """
+        Generic method that get an interface instance from  an object.
+
+        Args:
+            atype (T): Interface type such as XInterface
+            obj (object): Object that implements interface.
+            raise_err (bool, optional): If True then raises MissingInterfaceError if result is None. Default False
+
+        Raises:
+            MissingInterfaceError: If 'raise_err' is 'True' and result is None
+
+        Returns:
+            T | None: instance of interface if supported; Otherwise, None
+        """
+        ...
+
+    @staticmethod
+    def qi(atype: Type[T], obj: XTypeProvider, raise_err: bool = False) -> T | None:
+        """
+        Generic method that get an interface instance from  an object.
+
+        Args:
+            atype (T): Interface type such as XInterface
+            obj (object): Object that implements interface.
+            raise_err (bool, optional): If True then raises MissingInterfaceError if result is None. Default False
+
+        Raises:
+            MissingInterfaceError: If 'raise_err' is 'True' and result is None
 
         Returns:
             T | None: instance of interface if supported; Otherwise, None
@@ -240,10 +280,15 @@ class Lo(metaclass=StaticProperty):
                 srch = Lo.qi(XSearchable, cell_range)
                 sd = srch.createSearchDescriptor()
         """
+        result = None
         if uno.isInterface(atype) and hasattr(obj, "queryInterface"):
             uno_t = uno.getTypeByName(atype.__pyunointerface__)
-            return obj.queryInterface(uno_t)
-        return None
+            result = obj.queryInterface(uno_t)
+        if raise_err is True and result is None:
+            raise mEx.MissingInterfaceError(atype)
+        return result
+
+    # endregion qi()
 
     @classmethod
     def get_context(cls) -> XComponentContext:
