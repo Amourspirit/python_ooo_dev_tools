@@ -15,6 +15,7 @@ _ON_RTD = os.environ.get("READTHEDOCS", None) == "True"
 from ..events.event_singleton import Events
 from ..events.named_event import LoNamedEvent
 from ..utils import lo as mLo
+from ..utils import info as mInfo
 
 from ..meta.static_meta import StaticProperty, classproperty
 from ..utils.type_var import DocOrText, DocOrCursor
@@ -25,6 +26,7 @@ if not _DOCS_BUILDING and not _ON_RTD:
     from com.sun.star.beans import XPropertySet
     from com.sun.star.container import XIndexAccess
     from com.sun.star.frame import XModel
+    from com.sun.star.i18n import XBreakIterator
     from com.sun.star.text import XParagraphCursor
     from com.sun.star.text import XSentenceCursor
     from com.sun.star.text import XText
@@ -32,11 +34,15 @@ if not _DOCS_BUILDING and not _ON_RTD:
     from com.sun.star.text import XTextRange
     from com.sun.star.text import XTextRangeCompare
     from com.sun.star.text import XWordCursor
+    from com.sun.star.view import XSelectionSupplier
 
 
 if TYPE_CHECKING:
     from com.sun.star.text import XTextCursor
 
+from ooo.dyn.i18n.word_type import WordTypeEnum as WordTypeEnum
+from ooo.dyn.i18n.boundary import Boundary # struct
+from ooo.dyn.lang.locale import Locale # struct
 
 class Selection(metaclass=StaticProperty):
     """Selection Framework"""
@@ -62,10 +68,7 @@ class Selection(metaclass=StaticProperty):
             bool: True if anything in the document is selected: Otherwise, False
         """
 
-        model = mLo.Lo.qi(XModel, text_doc)
-        if model is None:
-            raise mEx.MissingInterfaceError(XModel)
-        # xcontroller = model.getCurrentController()
+        model = mLo.Lo.qi(XModel, text_doc, True)
 
         # print("is_anything_selected Method")
         o_selections = model.getCurrentSelection()
@@ -109,9 +112,7 @@ class Selection(metaclass=StaticProperty):
         Returns:
             Union[object, None]: If no selection is made then None is returned; Otherwise, xText is returned.
         """
-        model = mLo.Lo.qi(XModel, text_doc)
-        if model is None:
-            raise mEx.MissingInterfaceError(XModel)
+        model = mLo.Lo.qi(XModel, text_doc, True)
         
         o_selections: XIndexAccess = model.getCurrentSelection()
         if not o_selections:
@@ -119,9 +120,7 @@ class Selection(metaclass=StaticProperty):
         count = int(o_selections.getCount())
         if count == 0:
             return None
-        o_sel = mLo.Lo.qi(XText, o_selections.getByIndex(0))
-        if o_sel is None:
-            raise mEx.MissingInterfaceError(XModel)
+        o_sel = mLo.Lo.qi(XText, o_selections.getByIndex(0), True)
         return o_sel.getText()
 
     @classmethod
@@ -174,9 +173,7 @@ class Selection(metaclass=StaticProperty):
         i = 0
         if o_sel.isCollapsed():
             return i
-        o_text = mLo.Lo.qi(XText, text_doc)
-        if o_text is None:
-            raise mEx.MissingInterfaceError(XText)
+        o_text = mLo.Lo.qi(XText, text_doc, True)
         l_cursor = cls.get_left_cursor(o_sel=o_sel, o_text=o_text)
         r_cursor = cls.get_right_cursor(o_sel=o_sel, o_text=o_text)
         if cls.compare_cursor_ends(c1=l_cursor, c2=r_cursor) < cls.CompareEnum.EQUAL:
@@ -203,9 +200,7 @@ class Selection(metaclass=StaticProperty):
             XPropertySet: Properties
         """
         cursor = cls.get_cursor(text_doc)
-        props = mLo.Lo.qi(XPropertySet, cursor)
-        if props is None:
-            raise mEx.MissingInterfaceError(XPropertySet)
+        props = mLo.Lo.qi(XPropertySet, cursor, True)
         return props
 
     # region    get_cursor()
@@ -365,13 +360,11 @@ class Selection(metaclass=StaticProperty):
             XWordCursor: Word Cursor
         """
         try:
-            if mLo.Lo.qi(XTextDocument, cursor_obj) is None:
-                cursor = cursor_obj
-            else:
+            if mLo.Lo.is_uno_interfaces(cursor_obj, XTextDocument):
                 cursor = cls.get_cursor(cursor_obj)
-            wd_cursor = mLo.Lo.qi(XWordCursor, cursor)
-            if wd_cursor is None:
-                raise mEx.MissingInterfaceError(XWordCursor)
+            else:
+                cursor = cursor_obj
+            wd_cursor = mLo.Lo.qi(XWordCursor, cursor, True)
             return wd_cursor
         except Exception as e:
             raise mEx.WordCursorError(str(e)) from e
@@ -391,16 +384,14 @@ class Selection(metaclass=StaticProperty):
             XSentenceCursor: Sentence Cursor
         """
         try:
-            if mLo.Lo.qi(XTextDocument, cursor_obj) is None:
-                cursor = cursor_obj
-            else:
+            if mLo.Lo.is_uno_interfaces(cursor_obj, XTextDocument):
                 cursor = cls.get_cursor(cursor_obj)
+            else:
+                cursor = cursor_obj
             if cursor is None:
                 print("Text cursor is null")
                 return None
-            sc = mLo.Lo.qi(XSentenceCursor, cursor)
-            if sc is None:
-                raise mEx.MissingInterfaceError(XSentenceCursor)
+            sc = mLo.Lo.qi(XSentenceCursor, cursor, True)
             return sc
         except Exception as e:
             raise mEx.SentenceCursorError(str(e)) from e
@@ -424,9 +415,7 @@ class Selection(metaclass=StaticProperty):
                 cursor = cursor_obj
             else:
                 cursor = cls.get_cursor(cursor_obj)
-            para_cursor = mLo.Lo.qi(XParagraphCursor, cursor)
-            if para_cursor is None:
-                raise mEx.MissingInterfaceError(XParagraphCursor)
+            para_cursor = mLo.Lo.qi(XParagraphCursor, cursor, True)
             return para_cursor
         except Exception as e:
             raise mEx.ParagraphCursorError(str(e)) from e
@@ -560,62 +549,80 @@ class Selection(metaclass=StaticProperty):
         # raise error on set. Not really neccesary but gives feedback.
         raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
 
+    @staticmethod
+    def get_word_count_ooo(text: str, word_type: WordTypeEnum | None = None, locale_lang: str | None = None) -> int:
+        """
+        Get the number of word in ooo way.
+        
+        This method takes into account the current Loc
 
-    # def get_word_count(text: str, word_type: Optional[WordTypeEnum]) -> int:
-    #     """
-    #     Get the number of word in ooo way
+        Args:
+            text (str): string to count the word of
+            word_type (WordTypeEnum, optional): type of words to count. Default 'WordTypeEnum.WORD_COUNT'
+                Import  line ``from ooodev.utils.selection import WordTypeEnum``
+            locale_lang (str, optional): Language such as 'en-US' used to process word boundaries. Defaluts to LO's current langauge.
 
-    #     Args:
-    #         text (str): string to count the word of
-    #         word_type (Optional[WordTypeEnum]): type of words to count. Default ``WordTypeEnum.WORD_COUNT``
+        Raises:
+            CreateInstanceMsfError: If unable to create i18n.BreakIterator service
 
-    #     Raises:
-    #         ValueError: if :paramref:`~.ooo_word_count.text` is not type ``str``
-    #         TypeError: if :paramref:`~.ooo_word_count.word_type` in not valid
+        Returns:
+            int: The number of words
+        """
+        if word_type is None:
+            word_type = WordTypeEnum.WORD_COUNT
+        # https://forum.openoffice.org/en/forum/viewtopic.php?f=20&t=82678
+        next_wd = Boundary()
+        local = Locale()
+        # local.Language = "en"
+        if locale_lang is None:
+            local.Language = mInfo.Info.language
+        else:
+            local.Language = locale_lang
+        num_words = 0
+        start_pos = 0
+        if word_type > WordTypeEnum.ANY_WORD:
+            # intenionally pad the start and end of the string to guarantee we get the first word and clean break on last word
+            st = f" {text} "
+        else:
+            # ANY_WORD
+            # no need to pad. All characters will be counted including whitespaces
+            st = text
 
-    #     Returns:
-    #         int: The number of words in :paramref:`~.ooo_word_count.text`
-    #     """
-    #     if not isinstance(text, str):
-    #         raise ValueError(
-    #             "ooo_word_count() text argument is required")
-    #     if word_type is None:
-    #         word_type = WordTypeEnum.WORD_COUNT
-    #     if not isinstance(word_type, WordTypeEnum):
-    #         raise TypeError("ooo_word_count() word_type: got {} but expected \
-    #                 type is WordTypeEnum".format(type(word_type).__name__))
-    #     # https://forum.openoffice.org/en/forum/viewtopic.php?f=20&t=82678
-    #     next_wd = create_uno_struct("com.sun.star.i18n.Boundary")
-    #     local = create_uno_struct("com.sun.star.lang.Locale")
-    #     # local.Language = "en"
-    #     local.Language = mInfo.Info.language
-    #     num_words = 0
-    #     start_pos = 0
-    #     wt = WordType.ANY_WORD
-    #     if word_type > WordTypeEnum.ANY_WORD:
-    #         # intenionally pad the start and end of the string to guarantee we get the first word and clean break on last word
-    #         st = " " + text + " "
-    #     else:
-    #         # ANY_WORD
-    #         # no need to pad. All characters will be counted including whitespaces
-    #         st = text
+        brk = mLo.Lo.create_instance_mcf(XBreakIterator, "com.sun.star.i18n.BreakIterator")
+        if brk is None:
+            raise mEx.CreateInstanceMcfError(XBreakIterator, "com.sun.star.i18n.BreakIterator")
 
-    #     if word_type == WordTypeEnum.ANYWORD_IGNOREWHITESPACES:
-    #         wt = WordType.ANYWORD_IGNOREWHITESPACES
-    #     elif word_type == WordTypeEnum.DICTIONARY_WORD:
-    #         wt = WordType.DICTIONARY_WORD
-    #     elif word_type == WordTypeEnum.WORD_COUNT:
-    #         wt = WordType.WORD_COUNT
+        next_wd = brk.nextWord(st, start_pos, local, word_type.value)
+        while next_wd.startPos != next_wd.endPos:
+            num_words += 1
+            nw = next_wd.startPos
+            next_wd = brk.nextWord(st, nw, local, word_type.value)
 
-    #     brk = create_uno_service("com.sun.star.i18n.BreakIterator")
-    #     next_wd = brk.nextWord(st, start_pos, local, wt)
-    #     while next_wd.startPos != next_wd.endPos:
-    #         num_words += 1
-    #         nw = next_wd.startPos
-    #         next_wd = brk.nextWord(st, nw, local, wt)
+        return num_words
 
-    #     return num_words
+    @classmethod
+    def select_next_word(cls, text_doc: XTextDocument) -> None:
+        """
+        Select the word right from the current curor position.
 
+        Args:
+            text_doc (XTextDocument): Text Document
+        """
+        supplier = mLo.Lo.qi(XSelectionSupplier, text_doc.getCurrentController(), True)
+
+        # see section 7.5.1 of developers' guide
+        index_access = mLo.Lo.qi(XIndexAccess,supplier.getSelection(), True)
+        range = mLo.Lo.qi(XTextRange, index_access.getByIndex(0), True)
+
+        # get the XWordCursor and make a selection!
+        xText = range.getText()
+        word_cursor = cls.get_word_cursor(xText.createTextCursorByRange(range))
+
+        if not word_cursor.isStartOfWord():
+            word_cursor.gotoStartOfWord(False)
+
+        word_cursor.gotoNextWord(True)
+        supplier.select(word_cursor)
 
 
 def _del_cache_attrs(source: object, e: EventArgs) -> None:

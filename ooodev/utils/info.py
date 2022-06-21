@@ -325,13 +325,17 @@ class Info(metaclass=StaticProperty):
     @classmethod
     def _get_config1(cls, node_str: str, node_path: str):
         props = cls.get_config_props(node_path)
-        return mProps.Props.get_property(xprops=props, name=node_str)
+        return mProps.Props.get_property(prop_set=props, name=node_str)
 
     @classmethod
     def _get_config2(cls, node_str: str) -> object:
+        
         for node_path in cls.NODE_PATHS:
-            return cls._get_config1(node_str=node_str, node_path=node_path)
-        raise ValueError(f"{node_str} not found")
+            try:
+                return cls._get_config1(node_str=node_str, node_path=node_path)
+            except mEx.PropertyNotFoundError:
+                pass
+        raise mEx.ConfigError(f"{node_str} not found in common node paths")
 
     @staticmethod
     def get_config_props(node_path: str) -> XPropertySet:
@@ -1911,7 +1915,7 @@ class Info(metaclass=StaticProperty):
         Gets the Current Language of the LibreOffice Instance
 
         Returns:
-            str: First two chars of languag in lower case such as 'en'
+            str: First two chars of languag in lower case such as 'en-US'
         """
 
         try:
