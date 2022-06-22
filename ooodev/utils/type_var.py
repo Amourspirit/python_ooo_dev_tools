@@ -1,4 +1,5 @@
 # coding: utf-8
+from __future__ import annotations
 from typing import Sequence, TypeVar, Union, Any, Tuple, List
 from os import PathLike
 

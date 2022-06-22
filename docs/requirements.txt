@@ -1,3 +1,2 @@
 sphinx-rtd-dark-mode
 ooouno
-types-uno-script

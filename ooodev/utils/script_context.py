@@ -4,8 +4,13 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 import uno
-import unohelper
 import os
+_ON_RTD = os.environ.get('READTHEDOCS', None) == 'True'
+if _ON_RTD:
+    from ..mock import unohelper
+else:
+    import unohelper
+
 from com.sun.star.script.provider import XScriptContext
 
 if TYPE_CHECKING:
