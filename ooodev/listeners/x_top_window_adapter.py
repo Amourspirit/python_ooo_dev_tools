@@ -1,10 +1,8 @@
 from __future__ import annotations
-import os
-
 from typing import TYPE_CHECKING
+from ..mock import mock_g
 
-_ON_RTD = os.environ.get('READTHEDOCS', None) == 'True'
-if _ON_RTD:
+if mock_g.DOCS_BUILDING:
     from ..mock import unohelper
 else:
     import unohelper

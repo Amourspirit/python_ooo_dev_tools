@@ -3,22 +3,17 @@
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 # region Imports
 from __future__ import annotations
-from enum import IntFlag, Enum, Flag
+from enum import IntFlag, Enum
 import numbers
 import re
 import os
 from typing import Any, List, Tuple, cast, overload, Sequence, TYPE_CHECKING
 import uno
+from ..mock import mock_g
 
-_DOCS_BUILDING = os.environ.get("DOCS_BUILDING", None) == 'True'
-# _DOCS_BUILDING is only true when sphinx is building docs.
-# env var DOCS_BUILDING is set in docs/conf.py
-_ON_RTD = os.environ.get('READTHEDOCS', None) == 'True'
-# env var READTHEDOCS is true when read the docs is building
-# maybe not needed as _DOCS_BUILDING is set in conf.py
 
-if not _DOCS_BUILDING and not _ON_RTD:
-    # not importing for doc building jus result in short import name for
+if not mock_g.DOCS_BUILDING:
+    # not importing for doc building just result in short import name for
     # args that use these.
     # this is also true becuase docs/conf.py ignores com import for autodoc
     from com.sun.star.container import XIndexAccess

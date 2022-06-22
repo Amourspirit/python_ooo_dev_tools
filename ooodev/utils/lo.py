@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, Iterable, Optional, List, Tuple, cast, overloa
 from urllib.parse import urlparse
 import uno
 from enum import IntEnum, Enum
+from ..mock import mock_g
 
 from ..events.event_singleton import Events
 from ..events.named_event import LoNamedEvent
@@ -18,19 +19,24 @@ from ..events.dispatch_event import DispatchEvent
 from ..events.dispatch_cancel_event import DispatchCancelEvent
 from ..meta.static_meta import StaticProperty, classproperty
 from .connect import ConnectBase, LoPipeStart, LoSocketStart, LoDirectStart
-from com.sun.star.beans import XPropertySet
-from com.sun.star.beans import XIntrospection
-from com.sun.star.container import XNamed
-from com.sun.star.frame import XDesktop
-from com.sun.star.frame import XDispatchHelper
+
 from com.sun.star.lang import XComponent
-from com.sun.star.lang import XMultiServiceFactory
-from com.sun.star.io import IOException
-from com.sun.star.util import XCloseable
-from com.sun.star.util import XNumberFormatsSupplier
-from com.sun.star.frame import XComponentLoader
-from com.sun.star.frame import XModel
-from com.sun.star.frame import XStorable
+if not mock_g.DOCS_BUILDING:
+    # not importing for doc building just result in short import name for
+    # args that use these.
+    # this is also true becuase docs/conf.py ignores com import for autodoc
+    from com.sun.star.beans import XPropertySet
+    from com.sun.star.beans import XIntrospection
+    from com.sun.star.container import XNamed
+    from com.sun.star.frame import XDesktop
+    from com.sun.star.frame import XDispatchHelper
+    from com.sun.star.lang import XMultiServiceFactory
+    from com.sun.star.io import IOException
+    from com.sun.star.util import XCloseable
+    from com.sun.star.util import XNumberFormatsSupplier
+    from com.sun.star.frame import XComponentLoader
+    from com.sun.star.frame import XModel
+    from com.sun.star.frame import XStorable
 
 if TYPE_CHECKING:
     from com.sun.star.beans import PropertyValue
