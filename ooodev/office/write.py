@@ -3,7 +3,7 @@
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 # region Imports
 from __future__ import annotations
-from typing import TYPE_CHECKING, Iterable, List, overload, cast
+from typing import TYPE_CHECKING, Iterable, List, overload
 import re
 import os
 import uno
@@ -15,12 +15,14 @@ from ..utils import file_io as mFileIO
 from ..utils import props as mProps
 from ..utils.gen_util import TableHelper
 from ..utils.color import CommonColor, Color
-from ..utils.type_var import PathOrStr, Table
+from ..utils.type_var import PathOrStr, Table, DocOrCursor
+from ..utils import images_lo as mImgLo
+from ..utils import selection as mSel
 
-_DOCS_BUILDING = os.environ.get("DOCS_BUILDING", None) == 'True'
+_DOCS_BUILDING = os.environ.get("DOCS_BUILDING", None) == "True"
 # _DOCS_BUILDING is only true when sphinx is building docs.
 # env var DOCS_BUILDING is set in docs/conf.py
-_ON_RTD = os.environ.get('READTHEDOCS', None) == 'True'
+_ON_RTD = os.environ.get("READTHEDOCS", None) == "True"
 # env var READTHEDOCS is true when read the docs is building
 # maybe not needed as _DOCS_BUILDING is set in conf.py
 
@@ -30,7 +32,6 @@ if not _DOCS_BUILDING and not _ON_RTD:
     # args that use these.
     # this is also true becuase docs/conf.py ignores com import for autodoc
     from com.sun.star.awt import FontWeight
-    from com.sun.star.awt import Size  # struct
     from com.sun.star.beans import XPropertySet
     from com.sun.star.container import XEnumerationAccess
     from com.sun.star.container import XNamed
@@ -55,7 +56,6 @@ if not _DOCS_BUILDING and not _ON_RTD:
     from com.sun.star.text import XBookmarksSupplier
     from com.sun.star.text import XPageCursor
     from com.sun.star.text import XParagraphCursor
-    from com.sun.star.text import XSentenceCursor
     from com.sun.star.text import XText
     from com.sun.star.text import XTextContent
     from com.sun.star.text import XTextDocument
@@ -66,16 +66,17 @@ if not _DOCS_BUILDING and not _ON_RTD:
     from com.sun.star.text import XTextTable
     from com.sun.star.text import XTextViewCursor
     from com.sun.star.text import XTextViewCursorSupplier
-    from com.sun.star.text import XWordCursor
     from com.sun.star.uno import Exception as UnoException
     from com.sun.star.util import XCloseable
     from com.sun.star.view import XPrintable
 
 if TYPE_CHECKING:
+    from com.sun.star.beans import PropertyValue
     from com.sun.star.container import XEnumeration
     from com.sun.star.container import XNameAccess
     from com.sun.star.drawing import XDrawPage
     from com.sun.star.frame import XComponentLoader
+    from com.sun.star.frame import XFrame
     from com.sun.star.graphic import XGraphic
     from com.sun.star.linguistic2 import SingleProofreadingError
     from com.sun.star.linguistic2 import XLinguServiceManager2
@@ -85,6 +86,7 @@ if TYPE_CHECKING:
 
 
 from ooo.dyn.awt.font_slant import FontSlant
+from ooo.dyn.awt.size import Size  # struct
 from ooo.dyn.linguistic2.dictionary_type import DictionaryType as OooDictionaryType
 from ooo.dyn.style.break_type import BreakType
 from ooo.dyn.style.paragraph_adjust import ParagraphAdjust
@@ -92,16 +94,20 @@ from ooo.dyn.text.control_character import ControlCharacterEnum
 from ooo.dyn.text.page_number_type import PageNumberType
 from ooo.dyn.text.text_content_anchor_type import TextContentAnchorType
 from ooo.dyn.view.paper_format import PaperFormat as OooPaperFormat
+from ooo.dyn.style.paragraph_adjust import ParagraphAdjust
 
 # endregion Imports
 
-class Write:
-    ControlCharacter = ControlCharacterEnum # UnoControlCharacter
+
+class Write(mSel.Selection):
+    ControlCharacter = ControlCharacterEnum  # UnoControlCharacter
     # region -------------- Enums --------------------------------------
-    
+
     DictionaryType = OooDictionaryType
 
     PaperFormat = OooPaperFormat
+
+    ParagraphAdjust = ParagraphAdjust
 
     # endregion ----------- Enums --------------------------------------
 
@@ -170,9 +176,7 @@ class Write:
         if doc is None:
             raise TypeError("Document is null")
 
-        text_doc = mLo.Lo.qi(XTextDocument, doc)
-        if text_doc is None:
-            raise mEx.MissingInterfaceError(XTextDocument)
+        text_doc = mLo.Lo.qi(XTextDocument, doc, True)
         return text_doc
 
     @staticmethod
@@ -204,9 +208,7 @@ class Write:
             XTextDocument: Text Document
         """
         doc = mLo.Lo.create_doc_from_template(template_path=template_path, loader=loader)
-        xdoc = mLo.Lo.qi(XTextDocument, doc)
-        if xdoc is None:
-            raise mEx.MissingInterfaceError(XTextDocument)
+        xdoc = mLo.Lo.qi(XTextDocument, doc, True)
         return xdoc
 
     @staticmethod
@@ -220,9 +222,7 @@ class Write:
         Raises:
             MissingInterfaceError: If unable to obtain XCloseable from text_doc
         """
-        closable = mLo.Lo.qi(XCloseable, text_doc)
-        if closable is None:
-            raise mEx.MissingInterfaceError(XCloseable)
+        closable = mLo.Lo.qi(XCloseable, text_doc, True)
         mLo.Lo.close(closable)
 
     @staticmethod
@@ -237,9 +237,7 @@ class Write:
         Raises:
             MissingInterfaceError: If text_doc does not implement XComponent interface
         """
-        doc = mLo.Lo.qi(XComponent, text_doc)
-        if doc is None:
-            raise mEx.MissingInterfaceError(XComponent)
+        doc = mLo.Lo.qi(XComponent, text_doc, True)
         mLo.Lo.save_doc(doc=doc, fnm=fnm)
 
     @classmethod
@@ -309,136 +307,32 @@ class Write:
 
     # endregion ---------- doc / open / close /create/ etc -------------
 
-    # region ------------- model cursor methods ------------------------
-
+    # region ------------- page methods --------------------------------
     @classmethod
-    def get_text_cursor_props(cls, text_doc: XTextDocument) -> XPropertySet:
+    def get_page_cursor(cls, text_doc: XTextDocument) -> XPageCursor:
         """
-        Gets properties for document cursor
+        Get Page curosor
+
+        Makes it possible to perform cursor movements between pages.
 
         Args:
             text_doc (XTextDocument): Text Document
 
         Raises:
-            MissingInterfaceError: If unable to obtain XPropertySet interface from cursor.
+            PageCursorError: If Unable to get cursor
 
         Returns:
-            XPropertySet: Properties
+            XPageCursor: Page Cursor
+
+        See Also:
+            `LibreOffice API XPageCursor <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XPageCursor.html>`_
         """
-        cursor = cls.get_cursor(text_doc)
-        props = mLo.Lo.qi(XPropertySet, cursor)
-        if props is None:
-            raise mEx.MissingInterfaceError(XPropertySet)
-        return props
-
-    @staticmethod
-    def get_cursor(cursor_obj: XTextDocument | XTextViewCursor) -> XTextCursor | None:
-        """
-        Gets text cursor
-
-        Args:
-            cursor_obj (XTextDocument | XTextViewCursor): Text Document or Text View Cursor
-
-        Returns:
-            XTextCursor | None: Cursor if present; Otherwise, None
-        """
-        if mInfo.Info.is_type_interface(cursor_obj, XTextViewCursor.__pyunointerface__):
-            return cursor_obj.getText().createTextCursorByRange(cursor_obj)
-        xtext = cursor_obj.getText()
-        if xtext is None:
-            print("Text not found in document")
-            return None
-        return xtext.createTextCursor()
-
-    @classmethod
-    def get_word_cursor(cls, text_doc: XTextDocument) -> XWordCursor | None:
-        """
-        Gets document word cursor
-
-        Args:
-            text_doc (XTextDocument): Text Document
-
-        Returns:
-            XWordCursor | None: Word Cursor if present; Otherwise, None
-        """
-        cursor = cls.get_cursor(text_doc)
-        if cursor is None:
-            print("Text cursor is null")
-            return None
-        return mLo.Lo.qi(XWordCursor, text_doc)
-
-    @classmethod
-    def get_sentence_cursor(cls, text_doc: XTextDocument) -> XSentenceCursor | None:
-        """
-        Gets document sentence cursor
-
-        Args:
-            text_doc (XTextDocument): Text Document
-
-        Returns:
-            XSentenceCursor | None: Sentence Cursor if present; Otherwise, None
-        """
-        cursor = cls.get_cursor(text_doc)
-        if cursor is None:
-            print("Text cursor is null")
-            return None
-        return mLo.Lo.qi(XSentenceCursor, text_doc)
-
-    @classmethod
-    def get_paragraph_cursor(cls, text_doc: XTextDocument) -> XParagraphCursor | None:
-        """
-        Gets document paragraph cursor
-
-        Args:
-            text_doc (XTextDocument): Text Document
-
-        Returns:
-            XParagraphCursor | None: Paragraph cursor if present; Otherwise, None
-        """
-        cursor = cls.get_cursor(text_doc)
-        if cursor is None:
-            print("Text cursor is null")
-            return None
-        return mLo.Lo.qi(XParagraphCursor, text_doc)
-
-    @staticmethod
-    def get_position(cursor: XTextCursor) -> int:
-        """
-        Gets position of the cursor
-
-        Args:
-            cursor (XTextCursor): _description_
-
-        Returns:
-            int: _description_
-        """
-        return len(cursor.getText().getString())
-
-    # endregion ---------- model cursor methods ------------------------
-
-    # region ------------- view cursor methods -------------------------
-    @staticmethod
-    def get_view_cursor(text_doc: XTextDocument) -> XTextViewCursor:
-        """
-        Gets document view cursor
-
-        Args:
-            text_doc (XTextDocument): Text Document
-
-        Raises:
-            MissingInterfaceError: If required interface cannot be obtained.
-
-        Returns:
-            XTextViewCursor: Text View Currsor
-        """
-        model = mLo.Lo.qi(XModel, text_doc)
-        if model is None:
-            raise mEx.MissingInterfaceError(XModel)
-        xcontroller = model.getCurrentController()
-        supplier = mLo.Lo.qi(XTextViewCursorSupplier, xcontroller)
-        if supplier is None:
-            raise mEx.MissingInterfaceError(XTextViewCursorSupplier)
-        return supplier.getViewCursor()
+        try:
+            view_cursor = cls.get_view_cursor(text_doc)
+            page_cursor = mLo.Lo.qi(XPageCursor, view_cursor, True)
+            return page_cursor
+        except Exception as e:
+            raise mEx.PageCursorError(str(e)) from e
 
     @staticmethod
     def get_current_page(tv_cursor: XTextViewCursor) -> int:
@@ -456,6 +350,39 @@ class Write:
             print("Could not create a page cursor")
             return -1
         return page_cursor.getPage()
+
+    # @classmethod
+    # def get_coord(cls, text_doc: XTextDocument) -> Point:
+    #     # see section 7.17 Useful Macro Information For OpenOffice By Andrew Pitonyak.pdf
+
+    #     tvc = cls.get_view_cursor(text_doc)
+    #     if not mInfo.Info.support_service(tvc, "com.sun.star.style.ParagraphStyle"):
+    #         mEx.NotSupportedServiceError("com.sun.star.style.ParagraphStyle")
+    #     ps = cast("ParagraphStyle", tvc)
+    #     props = mInfo.Info.get_style_props(doc=text_doc, family_style_name="PageStyles", prop_set_nm="Standard")
+    #     if props is None:
+    #         raise mEx.PropertiesError("Could not access the standard page style")
+    #     lHeight = int(props.getPropertyValue("Width"))
+    #     lWidth = int(props.getPropertyValue("Height"))
+    #     top_margin = int(props.getPropertyValue("TopMargin"))
+    #     left_margin = int(props.getPropertyValue("LeftMargin"))
+    #     bottom_margin = int(props.getPropertyValue("BottomMargin"))
+
+    #     char_height = int(props.getPropertyValue("CharHeight"))
+
+    #     dCharHeight = char_height / 72.0
+    #     page_cursor = mLo.Lo.qi(XPageCursor, tvc)
+    #     if page_cursor is None:
+    #         raise mEx.MissingInterfaceError(XPageCursor)
+    #     iCurPage = page_cursor.getPage()
+    #     v = tvc.getPosition()
+    #     dYCursor = (v.Y + top_margin)/2540.0 + dCharHeight / 2
+    #     dXCursor = (v.X + left_margin)/2540.0
+    #     dXRight = (lWidth - v.X - left_margin)/2540.0
+    #     dYBottom = (lHeight - v.Y - top_margin)/2540.0 - dCharHeight / 2
+
+    #     dBottomMargin = bottom_margin / 2540.0
+    #     dLeftMargin = left_margin / 2540.0
 
     @staticmethod
     def get_coord_str(tv_cursor: XTextViewCursor) -> str:
@@ -485,104 +412,70 @@ class Write:
         Returns:
             int: page count
         """
-        model = mLo.Lo.qi(XModel, text_doc)
-        if model is None:
-            raise mEx.MissingInterfaceError(XModel)
+        model = mLo.Lo.qi(XModel, text_doc, True)
         xcontroller = model.getCurrentController()
         return int(mProps.Props.get_property(xcontroller, "PageCount"))
 
-    @classmethod
-    def get_text_view_cursor_prop_set(cls, text_doc: XTextDocument) -> XPropertySet:
-        """
-        Gets properties for document view cursor
-
-        Args:
-            text_doc (XTextDocument): Text Document
-
-        Raises:
-            MissingInterfaceError: If unable to obtain XPropertySet interface from cursor.
-
-        Returns:
-            XPropertySet: Properties
-        """
-        xview_cursor = cls.get_view_cursor(text_doc)
-        props = mLo.Lo.qi(XPropertySet, xview_cursor)
-        if props is None:
-            raise mEx.MissingInterfaceError(XPropertySet)
-        return props
-
-    # endregion ---------- view cursor methods -------------------------
+    # endregion ---------- page methods --------------------------------
 
     # region ------------- text writing methods ------------------------
 
     # region    append()
     @classmethod
-    def _append_text(cls, cursor: XTextCursor, text: str) -> int:
+    def _append_text(cls, cursor: XTextCursor, text: str) -> None:
         cursor.setString(text)
         cursor.gotoEnd(False)
-        return cls.get_position(cursor)
 
     @classmethod
-    def _append_ctl_char(cls, cursor: XTextCursor, ctl_char: int) -> int:
+    def _append_ctl_char(cls, cursor: XTextCursor, ctl_char: int) -> None:
         xtext = cursor.getText()
         xtext.insertControlCharacter(cursor, ctl_char, False)
         cursor.gotoEnd(False)
-        return cls.get_position(cursor)
 
     @classmethod
-    def _append_text_content(cls, cursor: XTextCursor, text_content: XTextContent) -> int:
+    def _append_text_content(cls, cursor: XTextCursor, text_content: XTextContent) -> None:
         xtext = cursor.getText()
         xtext.insertTextContent(cursor, text_content, False)
         cursor.gotoEnd(False)
-        return cls.get_position(cursor)
 
     @overload
     @staticmethod
-    def append(cursor: XTextCursor, text: str) -> int:
+    def append(cursor: XTextCursor, text: str) -> None:
         """
         Appends text to text cursor
 
         Args:
             cursor (XTextCursor): Text Cursor
             text (str): Text to append
-
-        Returns:
-            int: cursor position
         """
         ...
 
     @overload
     @staticmethod
-    def append(cursor: XTextCursor, ctl_char: ControlCharacter) -> int:
+    def append(cursor: XTextCursor, ctl_char: ControlCharacter) -> None:
         """
         Appents a control character (like a paragraph break or a hard space) into the text.
 
         Args:
             cursor (XTextCursor): Text Cursor
             ctl_char (Write.ControlCharacter): Control Char
-
-        Returns:
-            int: cursor position
         """
         ...
 
     @overload
     @staticmethod
-    def append(cursor: XTextCursor, text_content: XTextContent) -> int:
+    def append(cursor: XTextCursor, text_content: XTextContent) -> None:
         """
         Appends a content, such as a text table, text frame or text field.
 
         Args:
             cursor (XTextCursor): Text Cursor
             text_content (XTextContent): Text Content
-
-        Returns:
-            int: cursor position
         """
         ...
 
     @classmethod
-    def append(cls, *args, **kwargs) -> int:
+    def append(cls, *args, **kwargs) -> None:
         """
         Append content to cursor
 
@@ -591,9 +484,6 @@ class Write:
             text (str): Text to append
             ctl_char (int): Control Char (like a paragraph break or a hard space)
             text_content (XTextContent): Text content, such as a text table, text frame or text field.
-
-        Returns:
-            int: cursor position
 
         See Also:
             `API ControlCharacter <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1text_1_1ControlCharacter.html>`_
@@ -627,15 +517,29 @@ class Write:
             kargs[ordered_keys[i]] = arg
 
         if isinstance(kargs[2], str):
-            return cls._append_text(cursor=kargs[1], text=kargs[2])
-        if isinstance(kargs[2], int):
-            return cls._append_ctl_char(cursor=kargs[1], ctl_char=kargs[2])
-        return cls._append_text_content(cursor=kargs[1], text_content=kargs[2])
+            cls._append_text(cursor=kargs[1], text=kargs[2])
+        elif isinstance(kargs[2], int):
+            cls._append_ctl_char(cursor=kargs[1], ctl_char=kargs[2])
+        else:
+            cls._append_text_content(cursor=kargs[1], text_content=kargs[2])
 
     # endregion append()
 
     @classmethod
-    def append_date_time(cls, cursor: XTextCursor) -> int:
+    def append_line(cls, cursor: XTextCursor, text: str | None = None) -> None:
+        """
+        Appends a new Line
+
+        Args:
+            cursor (XTextCursor): Text Cursor
+            text (str, optional): text to append before new line is inserted.
+        """
+        if text is not None:
+            cls._append_text(cursor=cursor, text=text)
+        cls._append_ctl_char(cursor=cursor, ctl_char=Write.ControlCharacter.LINE_BREAK)
+
+    @classmethod
+    def append_date_time(cls, cursor: XTextCursor) -> None:
         """
         Append two DateTime fields, one for the date, one for the time
 
@@ -644,40 +548,29 @@ class Write:
 
         Raises:
             MissingInterfaceError: If required interface cannot be obtained.
-
-        Returns:
-            int: cursor position
         """
-        dt_field = mLo.Lo.create_instance_mcf(XTextField, "com.sun.star.text.TextField.DateTime")
+        dt_field = mLo.Lo.create_instance_msf(XTextField, "com.sun.star.text.TextField.DateTime")
         mProps.Props.set_property(dt_field, "IsDate", True)  # so date is reported
-        xtext_content = mLo.Lo.qi(XTextContent, dt_field)
-        if xtext_content is None:
-            raise mEx.MissingInterfaceError(XTextContent)
+        xtext_content = mLo.Lo.qi(XTextContent, dt_field, True)
         cls._append_text_content(cursor, xtext_content)
         cls.append(cursor, "; ")
 
-        dt_field = mLo.Lo.create_instance_mcf(XTextField, "com.sun.star.text.TextField.DateTime")
+        dt_field = mLo.Lo.create_instance_msf(XTextField, "com.sun.star.text.TextField.DateTime")
         mProps.Props.set_property(dt_field, "IsDate", False)  # so time is reported
-        xtext_content = mLo.Lo.qi(XTextContent, dt_field)
-        if xtext_content is None:
-            raise mEx.MissingInterfaceError(XTextContent)
-        return cls._append_text_content(cursor, xtext_content)
+        xtext_content = mLo.Lo.qi(XTextContent, dt_field, True)
+        cls._append_text_content(cursor, xtext_content)
 
     @classmethod
-    def append_para(cls, cursor: XTextCursor, text: str) -> int:
+    def append_para(cls, cursor: XTextCursor, text: str) -> None:
         """
         Appends text and then a paragraph break.
 
         Args:
             cursor (XTextCursor): Text Cursor
             text (str): Text to append
-
-        Returns:
-            int: cursor position
         """
         cls._append_text(cursor=cursor, text=text)
         cls._append_ctl_char(cursor=cursor, ctl_char=Write.ControlCharacter.PARAGRAPH_BREAK)
-        return cls.get_position(cursor)
 
     @classmethod
     def end_line(cls, cursor: XTextCursor) -> None:
@@ -762,16 +655,26 @@ class Write:
         """
         Gets Enumeration access from obj
 
+        Used to enumerate objects in a container which contains objects.
+
         Args:
-            obj (object): object that implements XEnumerationAccess
+            obj (object): object that implements XEnumerationAccess or XTextDocument.
 
         Raises:
             MissingInterfaceError: if obj does not implement XEnumerationAccess interface
 
         Returns:
-            XEnumeration: _description_
+            XEnumeration: Enumerator
         """
         enum_access = mLo.Lo.qi(XEnumerationAccess, obj)
+        if enum_access is None:
+            # try for XTextDocument
+            try:
+                xtext = obj.getText()
+                if xtext is not None:
+                    enum_access = mLo.Lo.qi(XEnumerationAccess, xtext)
+            except AttributeError:
+                pass
         if enum_access is None:
             raise mEx.MissingInterfaceError(XEnumerationAccess)
         return enum_access.createEnumeration()
@@ -846,12 +749,63 @@ class Write:
         """
         old_val = mProps.Props.get_property(cursor, prop_name)
 
-        curr_pos = cls.get_position(cursor)
-        cursor.goLeft(curr_pos - pos, False)
+        curr_pos = mSel.Selection.get_position(cursor)
+        cursor.goLeft(curr_pos - pos, True)
         mProps.Props.set_property(prop_set=cursor, name=prop_name, value=prop_val)
 
         cursor.goRight(curr_pos - pos, False)
         mProps.Props.set_property(prop_set=cursor, name=prop_name, value=old_val)
+
+    @classmethod
+    def dispatch_cmd_left(
+        cls,
+        vcursor: XTextViewCursor,
+        pos: int,
+        cmd: str,
+        props: Iterable[PropertyValue] = None,
+        frame: XFrame = None,
+        toggle: bool = False,
+    ) -> None:
+        """
+        Dispatches a command and applies it to selection based upon position
+
+        Args:
+            vcursor (XTextViewCursor): Text View Cursor
+            pos (int): Positions left to apply dispacch command
+            cmd (str): Dispatach command such as 'DefaultNumbering'
+            props (Iterable[PropertyValue], optional): properties for dispatch
+            frame (XFrame, optional): Frame to dispatch to.
+            toggle (bool, optional): If True then dispatch will be preformed on selection
+                and again when deselected. Defaults to False.
+
+        Note:
+            Some commands such as ``DefaultNumbering`` require toggling. In such cases
+            set arg ``toggle = True``.
+
+            Following Example Sets last three lines to to a numbered list.
+
+            .. code-block:: python
+
+                cursor = Write.get_cursor(doc)
+                Write.append_para(cursor, "The following points are important:")
+                pos = Write.get_position(cursor)
+                Write.append_para(cursor, "Have a good breakfast")
+                Write.append_para(cursor, "Have a good lunch")
+                Write.append_para(cursor, "Have a good dinner")
+
+                tvc = Write.get_view_cursor(doc)
+                tvc.gotoEnd(False)
+                Write.dispatch_cmd_left(vcursor=tvc, pos=pos, cmd="DefaultNumbering", toggle=True)
+
+        See Also:
+            `LibreOffice Dispatch Commands <https://wiki.documentfoundation.org/Development/DispatchCommands>`_
+        """
+        curr_pos = mSel.Selection.get_position(vcursor)
+        vcursor.goLeft(curr_pos - pos, True)
+        mLo.Lo.dispatch_cmd(cmd=cmd, props=props, frame=frame)
+        vcursor.goRight(curr_pos - pos, False)
+        if toggle is True:
+            mLo.Lo.dispatch_cmd(cmd=cmd, props=props, frame=frame)
 
     # region    style_prev_paragraph()
     @overload
@@ -897,6 +851,7 @@ class Write:
         """
         if prop_name is None:
             prop_name = "ParaStyleName"
+        # raises PropertyNotFoundError if property is not found
         old_val = mProps.Props.get_property(cursor, prop_name)
 
         cursor.gotoPreviousParagraph(True)  # select previous paragraph
@@ -968,7 +923,7 @@ class Write:
         """
         Set Page Format
         paper_format (:py:attr:`.Write.PaperFormat`): Paper Format.
-        
+
         Args:
             text_doc (XTextDocument): Text Docuument
 
@@ -978,9 +933,7 @@ class Write:
         See Also:
             - :py:meth:`.set_a4_page_format`
         """
-        xprintable = mLo.Lo.qi(XPrintable, text_doc)
-        if xprintable is None:
-            raise mEx.MissingInterfaceError(XPrintable)
+        xprintable = mLo.Lo.qi(XPrintable, text_doc, True)
         printer_desc = mProps.Props.make_props(PaperFormat=paper_format)
         xprintable.setPrinter(printer_desc)
 
@@ -1102,9 +1055,7 @@ class Write:
             header_cursor = header_text.createTextCursor()
             header_cursor.gotoEnd(False)
 
-            header_props = mLo.Lo.qi(XPropertySet, header_cursor)
-            if header_props is None:
-                raise mEx.MissingInterfaceError(XPropertySet)
+            header_props = mLo.Lo.qi(XPropertySet, header_cursor, True)
             header_props.setPropertyValue("CharFontName", mInfo.Info.get_font_general_name())
             header_props.setPropertyValue("CharHeight", 10)
             header_props.setPropertyValue("ParaAdjust", ParagraphAdjust.RIGHT)
@@ -1127,9 +1078,7 @@ class Write:
         Returns:
             XDrawPage: Draw Page
         """
-        xsupp_page = mLo.Lo.qi(XDrawPageSupplier, text_doc)
-        if xsupp_page is None:
-            raise mEx.MissingInterfaceError(XDrawPageSupplier)
+        xsupp_page = mLo.Lo.qi(XDrawPageSupplier, text_doc, True)
         return xsupp_page.getDrawPage()
 
     # endregion ---------- headers and footers -------------------------
@@ -1157,9 +1106,7 @@ class Write:
             raise mEx.CreateInstanceMsfError(XTextContent, "com.sun.star.text.TextEmbeddedObject") from e
         try:
             # set class ID for type of object being inserted
-            props = mLo.Lo.qi(XPropertySet, embed_content)
-            if props is None:
-                raise mEx.MissingInterfaceError(XPropertySet)
+            props = mLo.Lo.qi(XPropertySet, embed_content, True)
             props.setPropertyValue("CLSID", mLo.Lo.CLSID.MATH)
             props.setPropertyValue("AnchorType", TextContentAnchorType.AS_CHARACTER)
 
@@ -1168,14 +1115,10 @@ class Write:
             cls.end_line(cursor)
 
             # access object's model
-            embed_obj_supplier = mLo.Lo.qi(XEmbeddedObjectSupplier2, embed_content)
-            if embed_obj_supplier is None:
-                raise mEx.MissingInterfaceError(XEmbeddedObjectSupplier2)
+            embed_obj_supplier = mLo.Lo.qi(XEmbeddedObjectSupplier2, embed_content, True)
             embed_obj_model = embed_obj_supplier.getEmbeddedObject()
 
-            formula_props = mLo.Lo.qi(XPropertySet, embed_obj_model)
-            if formula_props is None:
-                raise mEx.MissingInterfaceError(XPropertySet)
+            formula_props = mLo.Lo.qi(XPropertySet, embed_obj_model, True)
             formula_props.setPropertyValue("Formula", formula)
             print(f'Inserted formula "{formula}"')
         except Exception as e:
@@ -1230,9 +1173,7 @@ class Write:
         except Exception as e:
             raise mEx.CreateInstanceMsfError(XTextContent, "com.sun.star.text.Bookmark") from e
         try:
-            bmk_named = mLo.Lo.qi(XNamed, bmk_content)
-            if bmk_named is None:
-                raise mEx.MissingInterfaceError(XNamed)
+            bmk_named = mLo.Lo.qi(XNamed, bmk_content, True)
             bmk_named.setName(name)
 
             cls._append_text_content(cursor, bmk_content)
@@ -1254,10 +1195,7 @@ class Write:
         Returns:
             XTextContent | None: Bookmark if found; Otherwise, None
         """
-        supplier = mLo.Lo.qi(XBookmarksSupplier, text_doc)
-
-        if supplier is None:
-            raise mEx.MissingInterfaceError(XBookmarksSupplier)
+        supplier = mLo.Lo.qi(XBookmarksSupplier, text_doc, True)
 
         named_bookmarks = supplier.getBookmarks()
         obookmark = None
@@ -1277,9 +1215,10 @@ class Write:
         text: str,
         width: int,
         height: int,
+        page_num: int = 1,
         border_color: Color | None = CommonColor.RED,
-        background_color: Color | None = CommonColor.LIGHT_BLUE
-        ) -> None:
+        background_color: Color | None = CommonColor.LIGHT_BLUE,
+    ) -> None:
         """
         Adds a text frame with a red border and light blue back color
 
@@ -1289,6 +1228,7 @@ class Write:
             text (str): Frame Text
             width (int): Width
             height (int): Height
+            page_num (int): Page Number to add text frame
             border_color (Color): Border Color. Defaluts to CommonColor.RED
             background_color (Color): Background Color. Defaluts to CommonColor.LIGHT_BLUE
 
@@ -1307,14 +1247,13 @@ class Write:
             raise mEx.CreateInstanceMsfError(XTextFrame, "com.sun.star.text.TextFrame") from e
 
         try:
-            tf_shape = mLo.Lo.qi(XShape, xframe)
-            if tf_shape is None:
-                raise mEx.MissingInterfaceError(XShape)
+            tf_shape = mLo.Lo.qi(XShape, xframe, True)
 
+            # set dimensions of the text frame
             tf_shape.setSize(Size(width, height))
-            frame_props = mLo.Lo.qi(XPropertySet, xframe)
-            if frame_props is None:
-                raise mEx.MissingInterfaceError(XPropertySet)
+
+            #  anchor the text frame
+            frame_props = mLo.Lo.qi(XPropertySet, xframe, True)
             frame_props.setPropertyValue("AnchorType", TextContentAnchorType.AT_PAGE)
             frame_props.setPropertyValue("FrameIsAutomaticHeight", True)  # will grow if necessary
 
@@ -1337,16 +1276,19 @@ class Write:
             # Set the horizontal and vertical position
             frame_props.setPropertyValue("HoriOrient", HoriOrientation.RIGHT)
             frame_props.setPropertyValue("VertOrient", VertOrientation.NONE)
-            frame_props.setPropertyValue("VertOrientPosition", ypos)
+            frame_props.setPropertyValue("VertOrientPosition", ypos)  # down from top
 
+            # if page number is Not include for TextContentAnchorType.AT_PAGE
+            # then Lo Default so At AT_PARAGRAPH
+            frame_props.setPropertyValue("AnchorPageNo", page_num)
+
+            # insert text frame into document (order is important here)
             cls._append_text_content(cursor, xframe)
             cls.end_paragraph(cursor)
 
             # add text into the text frame
             xframe_text = xframe.getText()
-            xtext_range = mLo.Lo.qi(XTextRange, xframe_text.createTextCursor())
-            if xtext_range is None:
-                raise mEx.MissingInterfaceError(XTextRange)
+            xtext_range = mLo.Lo.qi(XTextRange, xframe_text.createTextCursor(), True)
             xframe_text.insertString(xtext_range, text, False)
         except Exception as e:
             raise Exception("Insertion of text frame failed:") from e
@@ -1360,7 +1302,6 @@ class Write:
         header_fg_color: Color | None = CommonColor.WHITE,
         tbl_bg_color: Color | None = CommonColor.LIGHT_BLUE,
         tbl_fg_color: Color | None = CommonColor.BLACK,
-        
     ) -> None:
         """
         Adds a table.
@@ -1383,13 +1324,12 @@ class Write:
         See Also:
             :py:class:`~.utils.color.CommonColor`
         """
+
         def make_cell_name(row: int, col: int) -> str:
             return TableHelper.make_cell_name(row=row + 1, col=col + 1)
 
         def set_cell_header(cell_name: str, data: str, table: XTextTable) -> None:
-            cell_text = mLo.Lo.qi(XText, table.getCellByName(cell_name))
-            if cell_text is None:
-                raise mEx.MissingInterfaceError(XText)
+            cell_text = mLo.Lo.qi(XText, table.getCellByName(cell_name), True)
             if header_fg_color is not None:
                 text_cursor = cell_text.createTextCursor()
                 mProps.Props.set_property(prop_set=text_cursor, name="CharColor", value=header_fg_color)
@@ -1397,14 +1337,11 @@ class Write:
             cell_text.setString(str(data))
 
         def set_cell_text(cell_name: str, data: str, table: XTextTable) -> None:
-            cell_text = mLo.Lo.qi(XText, table.getCellByName(cell_name))
-            if cell_text is None:
-                raise mEx.MissingInterfaceError(XText)
+            cell_text = mLo.Lo.qi(XText, table.getCellByName(cell_name), True)
             if tbl_fg_color is not None:
                 text_cursor = cell_text.createTextCursor()
                 mProps.Props.set_property(prop_set=text_cursor, name="CharColor", value=tbl_fg_color)
             cell_text.setString(str(data))
-
 
         num_rows = len(table_data)
         if num_rows == 0:
@@ -1425,9 +1362,7 @@ class Write:
             cls._append_text_content(cursor, table)
             cls.end_paragraph(cursor)
 
-            table_props = mLo.Lo.qi(XPropertySet, table)
-            if table_props is None:
-                raise mEx.MissingInterfaceError(XPropertySet)
+            table_props = mLo.Lo.qi(XPropertySet, table, True)
 
             # set table properties
             if header_bg_color is not None or tbl_bg_color is not None:
@@ -1499,8 +1434,8 @@ class Write:
             height (int, optional): Height.
 
         Raises:
-            mEx.CreateInstanceMsfError: If Unable to create text.TextGraphicObject
-            mEx.MissingInterfaceError: If unable to obtain XPropertySet interface
+            CreateInstanceMsfError: If Unable to create text.TextGraphicObject
+            MissingInterfaceError: If unable to obtain XPropertySet interface
             Exception: If unable to add image
         """
         try:
@@ -1508,9 +1443,7 @@ class Write:
             if tgo is None:
                 raise mEx.CreateInstanceMsfError(XTextContent, "com.sun.star.text.TextGraphicObject")
 
-            props = mLo.Lo.qi(XPropertySet, tgo)
-            if props is None:
-                raise mEx.MissingInterfaceError(XPropertySet)
+            props = mLo.Lo.qi(XPropertySet, tgo, True)
             props.setPropertyValue("AnchorType", TextContentAnchorType.AS_CHARACTER)
             props.setPropertyValue("GraphicURL", mFileIO.FileIO.fnm_to_url(fnm))
 
@@ -1537,7 +1470,7 @@ class Write:
     def add_image_shape(doc: XTextDocument, cursor: XTextCursor, fnm: PathOrStr) -> None:
         """
         Add Image Shape
-        
+
         Currently this method is only suported in terminal. Not in macros.
 
         Args:
@@ -1552,7 +1485,7 @@ class Write:
     def add_image_shape(doc: XTextDocument, cursor: XTextCursor, fnm: PathOrStr, width: int, height: int) -> None:
         """
         Add Image Shape
-        
+
         Currently this method is only suported in terminal. Not in macros.
 
         Args:
@@ -1570,8 +1503,6 @@ class Write:
     ) -> None:
         """
         Add Image Shape
-        
-        Currently this method is only suported in terminal. Not in macros.
 
         Args:
             doc (XTextDocument): Text Document
@@ -1581,21 +1512,17 @@ class Write:
             height (int, optional): Image height
 
         Raises:
-            NotSupportedMacroModeError: If run from a macro
             CreateInstanceMsfError: If unable to create rawing.GraphicObjectShape
             ValueError: If unable to get image
             MissingInterfaceError: If require interface cannot be obtained.
             Exception: If unable to add image shape
         """
-        if mLo.Lo.is_macro_mode:
-            raise mEx.NotSupportedMacroModeError("get_text_graphics() is not supported in macros")
-        from ..utils import images as mImages
 
         try:
             if width > 0 and height > 0:
                 im_size = Size(width, height)
             else:
-                im_size = mImages.Images.get_size_100mm(fnm)  # in 1/100 mm units
+                im_size = mImgLo.ImagesLo.get_size_100mm(fnm)  # in 1/100 mm units
                 if im_size is None:
                     raise ValueError(f"Unable to get image from {fnm}")
 
@@ -1604,16 +1531,14 @@ class Write:
             if gos is None:
                 raise mEx.CreateInstanceMsfError(XTextContent, "com.sun.star.drawing.GraphicObjectShape")
 
-            bitmap = mImages.Images.get_bitmap(fnm)
+            bitmap = mImgLo.ImagesLo.get_bitmap(fnm)
             if bitmap is None:
                 raise ValueError(f"Unable to get bitmap of {fnm}")
             # store the image's bitmap as the graphic shape's URL's value
             mProps.Props.set_property(prop_set=gos, name="GraphicURL", value=bitmap)
 
             # set the shape's size
-            xdraw_shape = mLo.Lo.qi(XShape, gos)
-            if xdraw_shape is None:
-                raise mEx.MissingInterfaceError(XShape)
+            xdraw_shape = mLo.Lo.qi(XShape, gos, True)
             xdraw_shape.setSize(im_size)
 
             # insert image shape into the document, followed by newline
@@ -1649,9 +1574,7 @@ class Write:
             if ls is None:
                 raise mEx.CreateInstanceMsfError(XTextContent, "com.sun.star.drawing.LineShape")
 
-            line_shape = mLo.Lo.qi(XShape, ls)
-            if line_shape is None:
-                raise mEx.MissingInterfaceError(XShape)
+            line_shape = mLo.Lo.qi(XShape, ls, True)
             line_shape.setSize(Size(line_width, 0))
 
             cls.end_paragraph(cursor)
@@ -1677,14 +1600,11 @@ class Write:
     def get_text_graphics(cls, text_doc: XTextDocument) -> List[XGraphic]:
         """
         Gets text graphics.
-        
-        Currently this method is only suported in terminal. Not in macros.
 
         Args:
             text_doc (XTextDocument): Text Document
 
         Raises:
-            NotSupportedMacroModeError: If run from a macro
             Exception: If unable to get text graphics
 
         Returns:
@@ -1694,11 +1614,6 @@ class Write:
             If there is error getting a graphic link then it is ignored
             and not added to the return value.
         """
-        if mLo.Lo.is_macro_mode:
-            raise mEx.NotSupportedMacroModeError("get_text_graphics() is not supported in macros")
-
-        from ..utils import images as mImages
-
         try:
             xname_access = cls.get_graphic_links(text_doc)
             if xname_access is None:
@@ -1715,11 +1630,12 @@ class Write:
                 if graphic_link is None:
                     print(f"No graphic found for {name}")
                 else:
-                    xgraphic = mImages.Images.load_graphic_link(graphic_link)
-                    if xgraphic is not None:
+                    try:
+                        xgraphic = mImgLo.ImagesLo.load_graphic_link(graphic_link)
                         pics.append(xgraphic)
-                    else:
-                        print(f"{name} could not be accessed")
+                    except Exception as e:
+                        print(f"{name} could not be accessed:")
+                        print(f"    {e}")
             if len(pics) == 0:
                 return None
             return pics
@@ -1740,9 +1656,7 @@ class Write:
         Returns:
             XNameAccess | None: Graphic Links on success, Otherwise, None
         """
-        ims_supplier = mLo.Lo.qi(XTextGraphicObjectsSupplier, doc)
-        if ims_supplier is None:
-            raise mEx.MissingInterfaceError(XTextGraphicObjectsSupplier)
+        ims_supplier = mLo.Lo.qi(XTextGraphicObjectsSupplier, doc, True)
 
         xname_access = ims_supplier.getGraphicObjects()
         if xname_access is None:
@@ -1787,9 +1701,7 @@ class Write:
         Returns:
             XDrawPage: shapes
         """
-        draw_page_supplier = mLo.Lo.qi(XDrawPageSupplier, text_doc)
-        if draw_page_supplier is None:
-            raise mEx.MissingInterfaceError(XDrawPageSupplier)
+        draw_page_supplier = mLo.Lo.qi(XDrawPageSupplier, text_doc, True)
 
         return draw_page_supplier.getDrawPage()
 
@@ -2061,7 +1973,7 @@ class Write:
         """
         lingo_mgr = mLo.Lo.create_instance_mcf(XLinguServiceManager, "com.sun.star.linguistic2.LinguServiceManager")
         if lingo_mgr is None:
-           raise mEx.CreateInstanceMcfError(XLinguServiceManager, "com.sun.star.linguistic2.LinguServiceManager")
+            raise mEx.CreateInstanceMcfError(XLinguServiceManager, "com.sun.star.linguistic2.LinguServiceManager")
         return lingo_mgr.getThesaurus()
 
     @staticmethod
@@ -2217,3 +2129,44 @@ class Write:
         mLo.Lo.dispatch_cmd("ThesaurusDialog")
 
     # endregion ---------- Linguistics dialogs and menu items ----------
+
+    @classmethod
+    def print_page_size(cls, text_doc: XTextDocument) -> None:
+        """
+        Prints Page size to console
+
+        Args:
+            text_doc (XTextDocument): Text Document
+        """
+        # see section 7.17  of Useful Macro Information For OpenOffice By Andrew Pitonyak.pdf
+        size = cls.get_page_size(text_doc)
+        print("Page Size is:")
+        print(f"  {round(size.Width / 100)} mm by {round(size.Height / 100)} mm")
+        print(f"  {round(size.Width / 2540)} inches by {round(size.Height / 2540)} inches")
+        print(f"  {round((size.Width *72.0) / 2540.0)} picas by {round((size.Height *72.0) / 2540.0)} picas")
+
+    @classmethod
+    def _get_left_cursor(cls, o_sel: XTextRange, o_text: XText) -> XTextCursor:
+        range_compare = cls.text_range_compare
+        if range_compare.compareRegionStarts(o_sel.getEnd(), o_sel) >= 0:
+            o_range = o_sel.getEnd()
+        else:
+            o_range = o_sel.getStart()
+        cursor = o_text.createTextCursorByRange(o_range)
+        cursor.goRight(0, False)
+        return cursor
+
+    @classmethod
+    def _get_right_cursor(cls, o_sel: XTextRange, o_text: XText) -> XTextCursor:
+
+        range_compare = cls.text_range_compare
+        if range_compare.compareRegionStarts(o_sel.getEnd(), o_sel) >= 0:
+            o_range = o_sel.getStart()
+        else:
+            o_range = o_sel.getEnd()
+        cursor = o_text.createTextCursorByRange(o_range)
+        cursor.goLeft(0, False)
+        return cursor
+
+
+__all__ = ("Write",)

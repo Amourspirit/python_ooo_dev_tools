@@ -4,14 +4,15 @@
 
 # region Imports
 from __future__ import annotations
+from typing import TYPE_CHECKING
 import os
 from typing import Sequence, Tuple, List, overload
 from xml.dom.minidom import Node, parse, Document, parseString
 import urllib.request
 from xml.dom.minicompat import NodeList
-from . import lo as mLo
 from ..exceptions import ex as mEx
 from .gen_util import TableHelper
+from . import lo as mLo # lazy loading
 
 # endregion Imports
 

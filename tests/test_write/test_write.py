@@ -6,10 +6,9 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 def test_writer_lines(loader, fix_writer_path, tmp_path_fn):
-    from ooodev.utils import lo as m_lo
+    from ooodev.utils.lo import Lo
     from ooodev.office.write import Write
     from ooodev.utils.gui import GUI
-    Lo = m_lo.Lo
     test_doc = fix_writer_path("hello_sunny.odt")
     assert loader is not None
     doc = Write.create_doc(loader)

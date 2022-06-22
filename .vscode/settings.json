@@ -57,6 +57,8 @@
         "**/.*/**",
         "**/env/**",
         "**/_output/**",
+        "**/_build/**",
+        "**/tmp/**",
         "**/bower_components/**",
         "**/build/**",
         "**/dist/**",

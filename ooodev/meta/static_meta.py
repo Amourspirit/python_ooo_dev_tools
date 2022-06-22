@@ -1,6 +1,14 @@
 # coding: utf-8
+from typing import Any
+
 class classproperty(property):
     pass
+
+# def classproperty(f):
+#     @property
+#     def wrapper(self, *args, **kwargs):
+#         return f(self, *args, **kwargs)
+#     return wrapper
 
 class classinstanceproperty(property):
     pass

@@ -3,12 +3,19 @@
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 
 from __future__ import annotations
-from datetime import datetime
+from datetime import datetime, timezone
 import time
-from typing import TYPE_CHECKING, Iterable, Optional, List, Tuple, overload, Type
+from typing import TYPE_CHECKING, Iterable, Optional, List, Tuple, cast, overload, Type
 from urllib.parse import urlparse
 import uno
 from enum import IntEnum, Enum
+
+from ..events.event_singleton import Events
+from ..events.named_event import LoNamedEvent
+from ..events.event_args import EventArgs
+from ..events.cancel_event_args import CancelEventArgs
+from ..events.dispatch_event import DispatchEvent
+from ..events.dispatch_cancel_event import DispatchCancelEvent
 from ..meta.static_meta import StaticProperty, classproperty
 from .connect import ConnectBase, LoPipeStart, LoSocketStart, LoDirectStart
 from com.sun.star.beans import XPropertySet
@@ -16,11 +23,13 @@ from com.sun.star.beans import XIntrospection
 from com.sun.star.container import XNamed
 from com.sun.star.frame import XDesktop
 from com.sun.star.frame import XDispatchHelper
+from com.sun.star.lang import XComponent
 from com.sun.star.lang import XMultiServiceFactory
 from com.sun.star.io import IOException
 from com.sun.star.util import XCloseable
 from com.sun.star.util import XNumberFormatsSupplier
 from com.sun.star.frame import XComponentLoader
+from com.sun.star.frame import XModel
 from com.sun.star.frame import XStorable
 
 if TYPE_CHECKING:
@@ -29,29 +38,67 @@ if TYPE_CHECKING:
     from com.sun.star.container import XIndexAccess
     from com.sun.star.frame import XFrame
     from com.sun.star.lang import XMultiComponentFactory
-    from com.sun.star.lang import XComponent
     from com.sun.star.lang import XTypeProvider
     from com.sun.star.script.provider import XScriptContext
     from com.sun.star.uno import XComponentContext
     from com.sun.star.uno import XInterface
 
-from ooo.dyn.document.macro_exec_mode import MacroExecMode # const
+
+from ooo.dyn.document.macro_exec_mode import MacroExecMode  # const
 from ooo.dyn.lang.disposed_exception import DisposedException
 from ooo.dyn.util.close_veto_exception import CloseVetoException
 
 # import module and not module content to avoid circular import issue.
 # https://stackoverflow.com/questions/22187279/python-circular-importing
+from . import script_context
+
 from . import props as mProps
 from . import file_io as mFileIO
 from . import xml_util as mXML
 from . import info as mInfo
+    
 from ..exceptions import ex as mEx
 from .type_var import PathOrStr, UnoInterface, T
 
 # PathOrStr = type_var.PathOrStr
 # """Path like object or string"""
 
+
 class Lo(metaclass=StaticProperty):
+    
+    class ControllerLock:
+        """
+        Context manager for Locking Controller
+
+        In the followin example ControllerLock is called usinsg ``with``.
+
+        All code inside the ``with Lo.ControllerLock() as xdoc`` block is written to **Writer**
+        with controller locked. This means the ui will not update until the block is done.
+        A soon as the block is processed the controller is unlocked and the ui is updated.
+
+        Can be useful for large writes in documnet. Will give a speed improvement.
+
+        Example:
+
+            .. code::
+
+                with Lo.ControllerLock() as xdoc:
+                    cursor = Write.get_cursor(xdoc)
+                    Write.append(cursor=cursor, text="Some examples of simple text ")
+                    # do a bunch or work.
+                    ...
+        """
+
+        def __init__(self):
+            self.component = Lo.this_component
+            Lo.lock_controllers()
+
+        def __enter__(self) -> XComponent:
+            return self.component
+
+        def __exit__(self, exc_type, exc_val, exc_tb):
+            Lo.unlock_controllers()
+
     class Loader:
         """
         Context Manager for Loader
@@ -89,7 +136,7 @@ class Lo(metaclass=StaticProperty):
         DRAW = 4
         IMPRESS = 5
         MATH = 6
-        
+
         def __str__(self) -> str:
             return str(self.value)
 
@@ -102,10 +149,10 @@ class Lo(metaclass=StaticProperty):
         DRAW = "sdraw"
         IMPRESS = "simpress"
         MATH = "smath"
-    
+
         def __str__(self) -> str:
             return self.value
-    
+
     # region docType service names
     class Service(str, Enum):
         UNKNOWN = "com.sun.frame.XModel"
@@ -115,12 +162,11 @@ class Lo(metaclass=StaticProperty):
         DRAW = "com.sun.star.drawing.DrawingDocument"
         IMPRESS = "com.sun.star.presentation.PresentationDocument"
         MATH = "com.sun.star.formula.FormulaProperties"
-        
+
         def __str__(self) -> str:
             return self.value
-    # endregion docType service names
 
-   
+    # endregion docType service names
 
     # region CLSIDs for Office documents
     # defined in https://github.com/LibreOffice/core/blob/master/officecfg/registry/data/org/openoffice/Office/Embedding.xcu
@@ -132,7 +178,7 @@ class Lo(metaclass=StaticProperty):
         IMPRESS = "9176E48A-637A-4D1F-803b-99d9bfac1047"
         MATH = "078B7ABA-54FC-457F-8551-6147e776a997"
         CHART = "12DCAE26-281F-416F-a234-c3086127382e"
-        
+
         def __str__(self) -> str:
             return self.value
 
@@ -154,7 +200,7 @@ class Lo(metaclass=StaticProperty):
     #        service: com.sun.star.report.ReportDefinition
     # endregion CLSIDs for Office documents
 
-     # region port connect to locally running Office via port 8100
+    # region port connect to locally running Office via port 8100
     # endregion port
 
     _xcc: XComponentContext = None
@@ -172,6 +218,9 @@ class Lo(metaclass=StaticProperty):
 
     _lo_inst: ConnectBase = None
 
+    # region    qi()
+
+    @overload
     @staticmethod
     def qi(atype: Type[T], obj: XTypeProvider) -> T | None:
         """
@@ -183,21 +232,63 @@ class Lo(metaclass=StaticProperty):
 
         Returns:
             T | None: instance of interface if supported; Otherwise, None
-    
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def qi(atype: Type[T], obj: XTypeProvider, raise_err: bool) -> T | None:
+        """
+        Generic method that get an interface instance from  an object.
+
+        Args:
+            atype (T): Interface type such as XInterface
+            obj (object): Object that implements interface.
+            raise_err (bool, optional): If True then raises MissingInterfaceError if result is None. Default False
+
+        Raises:
+            MissingInterfaceError: If 'raise_err' is 'True' and result is None
+
+        Returns:
+            T | None: instance of interface if supported; Otherwise, None
+        """
+        ...
+
+    @staticmethod
+    def qi(atype: Type[T], obj: XTypeProvider, raise_err: bool = False) -> T | None:
+        """
+        Generic method that get an interface instance from  an object.
+
+        Args:
+            atype (T): Interface type such as XInterface
+            obj (object): Object that implements interface.
+            raise_err (bool, optional): If True then raises MissingInterfaceError if result is None. Default False
+
+        Raises:
+            MissingInterfaceError: If 'raise_err' is 'True' and result is None
+
+        Returns:
+            T | None: instance of interface if supported; Otherwise, None
+
         Example:
-                
+
             .. code-block:: python
                 :emphasize-lines: 3
-    
+
                 from com.sun.star.util import XSearchable
                 cell_range = ...
                 srch = Lo.qi(XSearchable, cell_range)
                 sd = srch.createSearchDescriptor()
         """
+        result = None
         if uno.isInterface(atype) and hasattr(obj, "queryInterface"):
             uno_t = uno.getTypeByName(atype.__pyunointerface__)
-            return obj.queryInterface(uno_t)
-        return None
+            result = obj.queryInterface(uno_t)
+        if raise_err is True and result is None:
+            raise mEx.MissingInterfaceError(atype)
+        return result
+
+    # endregion qi()
 
     @classmethod
     def get_context(cls) -> XComponentContext:
@@ -286,7 +377,7 @@ class Lo(metaclass=StaticProperty):
 
                 from com.sun.star.sheet import XSheetCellRangeContainer
                 src_con = Lo.create_instance_msf(XSheetCellRangeContainer, "com.sun.star.sheet.SheetCellRanges")
-                
+
         """
         if cls._ms_factory is None:
             raise Exception("No document found")
@@ -360,7 +451,7 @@ class Lo(metaclass=StaticProperty):
 
                 from com.sun.star.awt import XExtendedToolkit
                 tk = Lo.create_instance_mcf(XExtendedToolkit, "com.sun.star.awt.Toolkit")
-                
+
         """
         #  create an interface object of class atype from the named service;
         #  uses XComponentContext and XMultiComponentFactory
@@ -402,11 +493,11 @@ class Lo(metaclass=StaticProperty):
     def load_office(cls, **kwargs) -> XComponentLoader:
         """
         Loads Office
-        
+
         Not available in a macro.
-        
+
         If running outside of office then a bridge is created that connects to office.
-        
+
         If running from inside of office e.g. in a macro, then XSCRIPTCONTEXT is used.
         ``using_pipes`` is ignored with running inside office.
 
@@ -415,9 +506,10 @@ class Lo(metaclass=StaticProperty):
             host (str): host name such as localhost. host and port must be together. Defalut localhost
             port (int): port number. host and port must be together. Default 2002
             direct (bool): No connection is made. Use directly. This is the mode used for macros. Defalut False
-            
+
 
         Raises:
+            CancelEventError: If office_loading event is canceled
             Exception: If run outside a macro
             Exception: If unable to get access to XComponentLoader.
 
@@ -434,9 +526,15 @@ class Lo(metaclass=StaticProperty):
         #                     component loader (XComponentLoader)
         # Once we have a component loader, we can load a document.
         # xcc, mcFactory, and xDesktop are stored as static globals.
+        eargs = EventArgs(cls)
+        Events().trigger(LoNamedEvent.RESET, eargs)
+        cargs = CancelEventArgs(cls)
+        Events().trigger(LoNamedEvent.OFFICE_LOADING, cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
         using_pipes = bool(kwargs.get("pipes", False))
         using_direct = bool(kwargs.get("direct", False))
-        
+
         host = str(kwargs.get("host", "localhost"))
         port = int(kwargs.get("port", 2002))
 
@@ -466,17 +564,17 @@ class Lo(metaclass=StaticProperty):
             raise SystemExit(1)
         cls._xdesktop = cls.create_instance_mcf(XDesktop, "com.sun.star.frame.Desktop")
         if cls._xdesktop is None:
+            # OPTIMIZE: Perhaps system exit is not the best waht to handle no desktop service
             print("Could not create a desktop service")
             raise SystemExit(1)
         loader = cls.qi(XComponentLoader, cls._xdesktop)
         if loader is None:
             raise print("Unable to access XComponentLoader")
             SystemExit(1)
+        Events().trigger(LoNamedEvent.OFFICE_LOADED, eargs)
         return loader
         # return cls.xdesktop
 
-
-        
     # endregion Start Office
 
     # region office shutdown
@@ -484,6 +582,12 @@ class Lo(metaclass=StaticProperty):
     def close_office(cls) -> None:
         """Closes the ofice connection."""
         print("Closing Office")
+
+        cargs = CancelEventArgs(cls)
+        Events().trigger(LoNamedEvent.OFFICE_CLOSING, cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
+
         cls._doc = None
         if cls._xdesktop is None:
             print("No office connection found")
@@ -492,11 +596,14 @@ class Lo(metaclass=StaticProperty):
         if cls._is_office_terminated:
             print("Office has already been requested to terminate")
             return
+        max_tries = 4
         num_tries = 1
-        while cls._is_office_terminated is False and num_tries < 4:
+        while cls._is_office_terminated is False and num_tries < max_tries:
             time.sleep(0.2)
             cls._is_office_terminated = cls._try_to_terminate(num_tries)
             num_tries += 1
+        if num_tries < max_tries:
+            Events().trigger(LoNamedEvent.OFFICE_CLOSED, EventArgs(cls))
 
     @classmethod
     def _try_to_terminate(cls, num_tries: int) -> bool:
@@ -521,10 +628,11 @@ class Lo(metaclass=StaticProperty):
     def kill_office(cls) -> None:
         """
         Kills the office connection.
-        
+
         See Also:
             :py:meth:`~Lo.close_office`
         """
+
         if cls._lo_inst is None:
             print("No instance to kill")
             return
@@ -626,6 +734,14 @@ class Lo(metaclass=StaticProperty):
             * :py:meth:`get_doc`
             * :py:meth:`load_office`
         """
+        # Props and FileIO are called this method so triger global_reset first.
+        eargs = EventArgs(cls)
+        Events().trigger(LoNamedEvent.RESET, eargs)
+        cargs = CancelEventArgs(cls)
+        Events().trigger(LoNamedEvent.DOC_OPENING, cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
+
         if fnm is None:
             raise Exception("Filename is null")
         fnm = str(fnm)
@@ -647,6 +763,7 @@ class Lo(metaclass=StaticProperty):
             doc = loader.loadComponentFromURL(open_file_url, "_blank", 0, props)
             cls._ms_factory = cls.qi(XMultiServiceFactory, doc)
             cls._doc = doc
+            Events().trigger(LoNamedEvent.DOC_OPENED, eargs)
             return doc
         except Exception as e:
             raise Exception("Unable to open the document") from e
@@ -685,7 +802,7 @@ class Lo(metaclass=StaticProperty):
         Returns:
             DocTypeStr: DocTypeStr enum. If not match if found defaults to 'DocTypeStr.WRITER'
         """
-        e = ext.casefold().lstrip('.')
+        e = ext.casefold().lstrip(".")
         if e == "":
             print("Empty string: Using writer")
             return cls.DocTypeStr.WRITER
@@ -790,6 +907,13 @@ class Lo(metaclass=StaticProperty):
         Returns:
             XComponent: document as component.
         """
+        # Props is called in this metod so trigger global_reset first
+        eargs = EventArgs(cls)
+        Events().trigger(LoNamedEvent.RESET, eargs)
+        cargs = CancelEventArgs(cls)
+        Events().trigger(LoNamedEvent.DOC_CREATING, cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
         dtype = cls.DocTypeStr(doc_type)
         if props is None:
             props = mProps.Props.make_props(Hidden=True)
@@ -800,6 +924,7 @@ class Lo(metaclass=StaticProperty):
             if cls._ms_factory is None:
                 raise mEx.MissingInterfaceError(XMultiServiceFactory)
             cls._doc = doc
+            Events().trigger(LoNamedEvent.DOC_CREATED, eargs)
             return cls._doc
         except Exception as e:
             raise Exception("Could not create a document") from e
@@ -837,6 +962,10 @@ class Lo(metaclass=StaticProperty):
         Returns:
             XComponent: document as component.
         """
+        cargs = CancelEventArgs(cls)
+        Events().trigger(LoNamedEvent.DOC_CREATING, cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
         if not mFileIO.FileIO.is_openable(template_path):
             raise Exception(f"Template file can not be opened: '{template_path}'")
         print(f"Opening template: '{template_path}'")
@@ -848,6 +977,7 @@ class Lo(metaclass=StaticProperty):
             cls._ms_factory = cls.qi(XMultiServiceFactory, cls._doc)
             if cls._ms_factory is None:
                 raise mEx.MissingInterfaceError(XMultiServiceFactory)
+            Events().trigger(LoNamedEvent.DOC_CREATED, EventArgs(cls))
             return cls._doc
         except Exception as e:
             raise Exception(f"Could not create document from template") from e
@@ -866,12 +996,18 @@ class Lo(metaclass=StaticProperty):
             Exception: If unable to save document
             MissingInterfaceError: If doc does not implement XStorable interface
         """
+        cargs = CancelEventArgs(cls)
+        Events().trigger(LoNamedEvent.DOC_SAVING, cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
+
         store = cls.qi(XStorable, doc)
         if store is None:
             raise mEx.MissingInterfaceError(XStorable)
         try:
             store.store()
             print("Saved the document by overwriting")
+            Events().trigger(LoNamedEvent.DOC_SAVED, EventArgs(cls))
         except IOException as e:
             raise Exception(f"Could not save the document") from e
 
@@ -928,6 +1064,10 @@ class Lo(metaclass=StaticProperty):
         Raises:
             MissingInterfaceError: If doc does not implement XStorable interface
         """
+        cargs = CancelEventArgs(cls)
+        Events().trigger(LoNamedEvent.DOC_SAVING, cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
         store = cls.qi(XStorable, doc)
         if store is None:
             raise mEx.MissingInterfaceError(XStorable)
@@ -940,6 +1080,7 @@ class Lo(metaclass=StaticProperty):
         else:
             kargs["format"] = format
             cls.store_doc_format(**kargs)
+        Events().trigger(LoNamedEvent.DOC_SAVED, EventArgs(cls))
 
     @overload
     @classmethod
@@ -979,6 +1120,10 @@ class Lo(metaclass=StaticProperty):
             fnm (PathOrStr): Path to save document as. If extension is absent then text (.txt) is assumed.
             password (str): Password for document.
         """
+        cargs = CancelEventArgs(cls)
+        Events().trigger(LoNamedEvent.DOC_SAVING, cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
         ext = mInfo.Info.get_ext(fnm)
         frmt = "Text"
         if ext is None:
@@ -989,6 +1134,7 @@ class Lo(metaclass=StaticProperty):
             cls.store_doc_format(store=store, fnm=fnm, format=frmt)
         else:
             cls.store_doc_format(store=store, fnm=fnm, format=frmt, password=password)
+        Events().trigger(LoNamedEvent.DOC_SAVED, EventArgs(cls))
 
     @overload
     @classmethod
@@ -1142,9 +1288,11 @@ class Lo(metaclass=StaticProperty):
             print(f"Do not recognize extension '{ext}'; using text")
             return "Text"
 
+    # region    store_doc_format()
+
     @overload
-    @staticmethod
-    def store_doc_format(store: XStorable, fnm: PathOrStr, format: str) -> None:
+    @classmethod
+    def store_doc_format(cls, store: XStorable, fnm: PathOrStr, format: str) -> None:
         """
         Store document as format.
 
@@ -1159,8 +1307,8 @@ class Lo(metaclass=StaticProperty):
         ...
 
     @overload
-    @staticmethod
-    def store_doc_format(store: XStorable, fnm: PathOrStr, format: str, password: str) -> None:
+    @classmethod
+    def store_doc_format(cls, store: XStorable, fnm: PathOrStr, format: str, password: str) -> None:
         """
         Store document as format.
 
@@ -1175,8 +1323,8 @@ class Lo(metaclass=StaticProperty):
         """
         ...
 
-    @staticmethod
-    def store_doc_format(store: XStorable, fnm: PathOrStr, format: str, password: str = None) -> None:
+    @classmethod
+    def store_doc_format(cls, store: XStorable, fnm: PathOrStr, format: str, password: str = None) -> None:
         """
         Store document as format.
 
@@ -1189,6 +1337,10 @@ class Lo(metaclass=StaticProperty):
         Raises:
             Exception: If unable to save document
         """
+        cargs = CancelEventArgs(cls)
+        Events().trigger(LoNamedEvent.DOC_SAVING, cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
         print(f"Saving the document in '{fnm}'")
         print(f"Using format {format}")
 
@@ -1199,8 +1351,11 @@ class Lo(metaclass=StaticProperty):
             else:
                 store_props = mProps.Props.make_props(Overwrite=True, FilterName=format, Password=password)
             store.storeToURL(save_file_url, store_props)
+            Events().trigger(LoNamedEvent.DOC_SAVED, EventArgs(cls))
         except IOException as e:
             raise Exception(f"Could not save '{fnm}'") from e
+
+    # endregion store_doc_format()
 
     # ======================== document closing ==============
 
@@ -1243,12 +1398,17 @@ class Lo(metaclass=StaticProperty):
                 They must react for possible CloseVetoExceptions such as when document needs saving
                 and try it again at a later time. This can be useful for a generic UI handling.
         """
+        cargs = CancelEventArgs(cls)
+        Events().trigger(LoNamedEvent.DOC_CLOSING, cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
         if closeable is None:
             return
         print("Closing the document")
         try:
             closeable.close(deliver_ownership)
             cls._doc = None
+            Events().trigger(LoNamedEvent.DOC_CLOSED, EventArgs(cls))
         except CloseVetoException as e:
             raise Exception("Close was vetoed") from e
 
@@ -1318,7 +1478,7 @@ class Lo(metaclass=StaticProperty):
 
         Raises:
             TypeError: If addon_xcc is None
-            Exception: If unable to get service manager from addon_xcc 
+            Exception: If unable to get service manager from addon_xcc
             Exception: If unable to access desktop
             Exception: If unable to access document
             MissingInterfaceError: if unable to get XMultiServiceFactory interface instance
@@ -1326,6 +1486,12 @@ class Lo(metaclass=StaticProperty):
         Returns:
             XComponent: addon as component
         """
+        eargs = EventArgs(cls)
+        Events().trigger(LoNamedEvent.RESET, eargs)
+        cargs = CancelEventArgs(cls)
+        Events().trigger(LoNamedEvent.DOC_OPENING, cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
         xcc = addon_xcc
         if xcc is None:
             raise TypeError("'addon_xcc' is null. Could not access component context")
@@ -1344,6 +1510,7 @@ class Lo(metaclass=StaticProperty):
         if cls._ms_factory in None:
             raise mEx.MissingInterfaceError(XMultiServiceFactory)
         cls._doc = doc
+        Events().trigger(LoNamedEvent.DOC_OPENED, eargs)
         return doc
 
     # ============= initialization via script context ======================
@@ -1366,6 +1533,12 @@ class Lo(metaclass=StaticProperty):
         Returns:
             XComponent: script component
         """
+        cargs = CancelEventArgs(cls)
+        eargs = EventArgs(cls)
+        Events().trigger(LoNamedEvent.RESET, eargs)
+        Events().trigger(LoNamedEvent.DOC_OPENING, cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
         if sc is None:
             raise TypeError("Script Context is null")
         xcc = sc.getComponentContext()
@@ -1384,6 +1557,7 @@ class Lo(metaclass=StaticProperty):
         if cls._ms_factory in None:
             raise mEx.MissingInterfaceError(XMultiServiceFactory)
         cls._doc = doc
+        Events().trigger(LoNamedEvent.DOC_OPENED, eargs)
         return doc
 
     # ==================== dispatch ===============================
@@ -1453,6 +1627,11 @@ class Lo(metaclass=StaticProperty):
         See Also:
             `LibreOffice Dispatch Commands <https://wiki.documentfoundation.org/Development/DispatchCommands>`_
         """
+        cargs = DispatchCancelEvent(cls, cmd)
+        Events().trigger(LoNamedEvent.DISPATCHING, cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
+
         if props is None:
             props = ()
         if frame is None:
@@ -1463,6 +1642,7 @@ class Lo(metaclass=StaticProperty):
             raise mEx.MissingInterfaceError(XDispatchHelper, f"Could not create dispatch helper for command {cmd}")
         try:
             helper.executeDispatch(frame, f".uno:{cmd}", "", 0, props)
+            Events().trigger(LoNamedEvent.DISPATCHED, DispatchEvent(cls, cmd))
             return True
         except Exception as e:
             raise Exception(f"Could not dispatch '{cmd}'") from e
@@ -1781,7 +1961,7 @@ class Lo(metaclass=StaticProperty):
         return None
 
     @classmethod
-    def is_uno_interfaces(cls, component:object, *args:str | UnoInterface) -> bool:
+    def is_uno_interfaces(cls, component: object, *args: str | UnoInterface) -> bool:
         """
         Gets if an object contains interface(s)
 
@@ -1799,7 +1979,7 @@ class Lo(metaclass=StaticProperty):
         for arg in args:
             try:
                 if isinstance(arg, str):
-                    t = uno.getTypeByName(arg)
+                    t = uno.getClass(arg)
                 else:
                     t = arg
                 obj = cls.qi(t, component)
@@ -1811,16 +1991,95 @@ class Lo(metaclass=StaticProperty):
                 break
         return result
 
-    # ------------------- date --------------------
-    @staticmethod
-    def get_time_stamp() -> str:
-        """Gets a time stamp"""
-        return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    @classmethod
+    def get_frame(cls) -> XFrame:
+        """
+        Gets xFrame for current LibreOffice instance
+
+        Returns:
+            XFrame: frame
+        """
+        if cls.star_desktop is None:
+            raise Exception("No desktop found")
+        return cls.XSCRIPTCONTEXT.getDesktop().getCurrentFrame()
+        # return cast(XDesktop, cls.star_desktop).getCurrentFrame()
+
+    @classmethod
+    def get_model(cls) -> XModel:
+        """
+        Gets xModel
+
+        Returns:
+            XModel: Gets model for current LibreOffice instance
+        """
+        return cls.XSCRIPTCONTEXT.getDocument()
+        # return cls.qi(XModel, cls._doc)
+
+    @classmethod
+    def lock_controllers(cls) -> None:
+        """
+        Suspends some notifications to the controllers which are used for display updates.
+
+        The calls to :py:meth:`~.lo.Lo.lock_controllers` and :py:meth:`~.lo.Lo.unlock_controllers`
+        may be nested and even overlapping, but they must be in pairs.
+        While there is at least one lock remaining, some notifications for
+        display updates are not broadcasted.
+
+        See Also:
+            :py:class:`.Lo.ControllerLock`
+        """
+        # much faster updates as screen is basically suspended
+        cargs = CancelEventArgs(cls)
+        Events().trigger("locking_controlers", cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
+        xmodel = cls.qi(XModel, cls._doc)
+        xmodel.lockControllers()
+        Events().trigger("locked_controlers", EventArgs(cls))
+
+    @classmethod
+    def unlock_controllers(cls) -> None:
+        """
+        Resumes the notifications which were suspended by:py:meth:`~.lo.Lo.lock_controllers`.
+
+        The calls to :py:meth:`~.lo.Lo.lock_controllers` and :py:meth:`~.lo.Lo.unlock_controllers`
+        may be nested and even overlapping, but they must be in pairs.
+        While there is at least one lock remaining, some notifications for
+        display updates are not broadcasted.
+
+        See Also:
+            :py:class:`.Lo.ControllerLock`
+        """
+        cargs = CancelEventArgs(cls)
+        Events().trigger("unlocking_controlers", cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
+        xmodel = cls.qi(XModel, cls._doc)
+        if xmodel.hasControllersLocked():
+            xmodel.unlockControllers()
+        Events().trigger("unlocked_controlers", EventArgs(cls))
+
+    @classmethod
+    def has_controllers_locked(cls) -> bool:
+        """
+        Determines if there is at least one lock remaining.
+
+        While there is at least one lock remaining, some notifications for display
+        updates are not broadcasted to the controllers.
+
+        Returns:
+            bool: True if any lock exist; Otherwise, False
+
+        See Also:
+            :py:class:`.Lo.ControllerLock`
+        """
+        xmodel = cls.qi(XModel, cls._doc)
+        return xmodel.hasControllersLocked()
 
     @classproperty
     def null_date(cls) -> datetime:
         """
-        Gets Value of Null Date
+        Gets Value of Null Date in UTC
 
         Returns:
             datetime: Null Date on sucess; Otherwise, None
@@ -1835,19 +2094,18 @@ class Lo(metaclass=StaticProperty):
         except AttributeError:
             if cls._doc is None:
                 print("No document found returning 1889/12/30")
-                return datetime(year=1889, month=12, day=30)
+                return datetime(year=1889, month=12, day=30, tzinfo=timezone.utc)
             n_supplier = cls.qi(XNumberFormatsSupplier, cls._doc)
             number_settings = n_supplier.getNumberFormatSettings()
             d = number_settings.getPropertyValue("NullDate")
-            cls.__null_date = datetime(d.Year, d.Month, d.Day)
+            cls.__null_date = datetime(d.Year, d.Month, d.Day, tzinfo=timezone.utc)
         return cls.__null_date
 
     @null_date.setter
     def null_date(cls, value) -> None:
         # raise error on set. Not really neccesary but gives feedback.
         raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
-    
-    
+
     @classproperty
     def is_macro_mode(cls) -> bool:
         """
@@ -1856,7 +2114,7 @@ class Lo(metaclass=StaticProperty):
         Returns:
             bool: True if running as a macro; Otherwise, False
         """
-        
+
         try:
             return cls._is_macro_mode
         except AttributeError:
@@ -1869,42 +2127,73 @@ class Lo(metaclass=StaticProperty):
     def is_macro_mode(cls, value) -> None:
         # raise error on set. Not really neccesary but gives feedback.
         raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
-    
+
     @classproperty
     def star_desktop(cls) -> XDesktop:
         """Get current desktop"""
         return cls._xdesktop
-    
+
     StarDesktop, stardesktop = star_desktop, star_desktop
-    
+
     @classproperty
     def this_component(cls) -> XComponent:
         """
         When the current component is the Basic IDE, the ThisComponent object returns
         in Basic the component owning the currently run user script.
         Above behaviour cannot be reproduced in Python.
-        
+
         When running in a macro this property can be access directly to get the current document.
-        
+
         When not in a macro then load_office() must be called first
-        
+
         Returns:
             the current component or None when not a document
         """
-        if cls.star_desktop is None:
-            # attempt to connect direct
-            cls.load_office(direct=True)
-        if cls.star_desktop is None:
-            if cls.is_macro_mode:
-                raise Exception("Something went wrong. did try load_office() first?")
-            else:
-                raise Exception("this_component on not available until load_office() is run when not running in a macro.")
-        comp = cls.star_desktop.getCurrentComponent()
-        if comp is None:
-            return None
-        impl = comp.ImplementationName
-        if impl in ('com.sun.star.comp.basic.BasicIDE', 'com.sun.star.comp.sfx2.BackingComp'):
-            return None     # None when Basic IDE or welcome screen
-        return comp
-    
-    ThisComponent, thiscomponent = this_component, this_component
+        try:
+            return cls._this_component
+        except AttributeError:
+            if cls._doc is None:
+                # attempt to connect direct
+                cls.load_office(direct=True)
+            # comp = cls.star_desktop.getCurrentComponent()
+            if cls._doc is None:
+                return None
+            impl = cls._doc.ImplementationName
+            if impl in ("com.sun.star.comp.basic.BasicIDE", "com.sun.star.comp.sfx2.BackingComp"):
+                return None  # None when Basic IDE or welcome screen
+            cls._this_component = cls._doc
+            return cls._this_component
+
+    ThisComponent, thiscomponent = cast(XComponent, this_component), cast(XComponent, this_component)
+
+    @classproperty
+    def xscript_context(cls) -> XScriptContext:
+        """
+        a substitute to `XSCRIPTCONTEXT` (Libre|Open)Office built-in
+
+        Returns:
+            XScriptContext: XScriptContext instance
+        """
+        try:
+            return cls._xscript_context
+        except AttributeError:
+            ctx = cls.get_context()
+            desktop = cls.get_desktop()
+            model = cls.qi(XModel, cls._doc)
+            cls._xscript_context = script_context.ScriptContext(ctx, desktop, model)
+        return cls._xscript_context
+
+    XSCRIPTCONTEXT = cast("XScriptContext", xscript_context)
+
+
+def _del_cache_attrs(source: object, e: EventArgs) -> None:
+    # clears Lo Attributes that are dynamically created
+    dattrs = ("_xscript_context", "_is_macro_mode", "_this_component")
+    for attr in dattrs:
+        if hasattr(Lo, attr):
+            delattr(Lo, attr)
+
+
+Events().on(LoNamedEvent.RESET, _del_cache_attrs)
+
+__all__ = ("Lo",)

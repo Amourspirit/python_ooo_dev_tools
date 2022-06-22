@@ -1,7 +1,9 @@
 # coding: utf-8
 from __future__ import annotations
-from typing import Any, List
+from typing import Any, List, TYPE_CHECKING
 from ..utils.type_var import PathOrStr
+if TYPE_CHECKING:
+    from ..events.event_args import EventArgs
 
 
 class MissingInterfaceError(Exception):
@@ -120,6 +122,23 @@ class MultiError(Exception):
     def __str__(self) -> str:
         return "\n".join([str(x) for x in self.errors])
 
+
+class NotSupportedServiceError(Exception):
+    """
+    Handles errors of service not being supported.
+    """
+    def __init__(self, service_name: str, *args: object) -> None:
+        """
+        NotSupportedServiceError Constructor
+
+        Args:
+            service_name (str): Service name
+        """
+        super().__init__(service_name, *args)
+
+    def __str__(self) -> str:
+        return repr(f"Service not supported: '{self.args[0]}'")
+
 class NotSupportedMacroModeError(Exception):
     """
     Handles errors of operations that are not allow when running as a macro.
@@ -156,4 +175,50 @@ class CreateInstanceMsfError(CreateInstanceError):
 
 class CreateInstanceMcfError(CreateInstanceError):
     """Create MCF Instance Error"""
+    pass
+
+class CancelEventError(Exception):
+    """Error when an Event is canceled"""
+
+    def __init__(self, event_args: EventArgs, message: Any = None, *args) -> None:
+        """
+        Cancel Event Error constructor
+
+        Args:
+            event_args (EventArgs): Event args that was canceled
+            message (Any, optional): Message of error
+        """
+        if message is None:
+            message = f"Event '{event_args.event_name}' is canceled!"
+        super().__init__(event_args, message, *args)
+
+    def __str__(self) -> str:
+        return repr(self.args[1])
+
+class CursorError(Exception):
+    """Handles Cursor errors"""
+    pass
+
+class WordCursorError(CursorError):
+    """Handles Word Cursor errors"""
+    pass
+
+class LineCursorError(CursorError):
+    """Handles Line Cursor errors"""
+    pass
+
+class SentenceCursorError(CursorError):
+    """Handles Sentence Cursor errors"""
+    pass
+
+class ParagraphCursorError(CursorError):
+    """Handles Sentence Cursor errors"""
+    pass
+
+class PageCursorError(Exception):
+    """Handles Page Cursor errors"""
+    pass
+
+class ViewCursorError(CursorError):
+    """Handles View Cursor errors"""
     pass

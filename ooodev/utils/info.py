@@ -8,6 +8,8 @@ from pathlib import Path
 import mimetypes
 from typing import TYPE_CHECKING, Tuple, List, cast, overload, Optional
 import uno
+from ..events.event_singleton import Events
+from ..events.named_event import LoNamedEvent
 from .sys_info import SysInfo
 
 from com.sun.star.awt import XToolkit
@@ -36,12 +38,15 @@ if TYPE_CHECKING:
 from . import lo as mLo
 from . import file_io as mFileIO
 from . import props as mProps
+
 from . import date_time_util as mDate
+from ..meta.static_meta import StaticProperty, classproperty
 from ..exceptions import ex as mEx
+from ..events.event_args import EventArgs
 from .type_var import PathOrStr
 
 
-class Info:
+class Info(metaclass=StaticProperty):
 
     REG_MOD_FNM = "registrymodifications.xcu"
     NODE_PRODUCT = "/org.openoffice.Setup/Product"
@@ -125,7 +130,7 @@ class Info:
         names.sort()
         return names
 
-    @classmethod
+    @staticmethod
     def get_font_mono_name() -> str:
         """
         Gets a general font such as ``Courier New`` (windows) or ``Liberation Mono``
@@ -142,7 +147,7 @@ class Info:
         else:
             return "Liberation Mono"  # Metrically compatible with Courier New
 
-    @classmethod
+    @staticmethod
     def get_font_general_name() -> str:
         """
         Gets a general font such as ``Times New Roman`` (windows) or ``Liberation Serif``
@@ -320,13 +325,17 @@ class Info:
     @classmethod
     def _get_config1(cls, node_str: str, node_path: str):
         props = cls.get_config_props(node_path)
-        return mProps.Props.get_property(xprops=props, name=node_str)
+        return mProps.Props.get_property(prop_set=props, name=node_str)
 
     @classmethod
     def _get_config2(cls, node_str: str) -> object:
+        
         for node_path in cls.NODE_PATHS:
-            return cls._get_config1(node_str=node_str, node_path=node_path)
-        raise ValueError(f"{node_str} not found")
+            try:
+                return cls._get_config1(node_str=node_str, node_path=node_path)
+            except mEx.PropertyNotFoundError:
+                pass
+        raise mEx.ConfigError(f"{node_str} not found in common node paths")
 
     @staticmethod
     def get_config_props(node_path: str) -> XPropertySet:
@@ -1010,7 +1019,7 @@ class Info:
         try:
             si = mLo.Lo.qi(XServiceInfo, obj)
             if si is None:
-                raise mEx.MissingInterfaceError(XServiceInfo)
+                return False
             return si.supportsService(srv)
         except Exception as e:
             print("Errors ocurred in support_service(). Returning False")
@@ -1232,9 +1241,33 @@ class Info:
             print(f"  {method}")
 
     # -------------------------- style info --------------------------
-
     @staticmethod
-    def get_style_family_names(doc: object) -> List[str] | None:
+    def get_style_families(doc: object) -> XNameAccess:
+        """
+        Gets a list of style family names
+
+        Args:
+            doc (object): office document
+
+        Raises:
+            MissingInterfaceError: If Doc does not implement XStyleFamiliesSupplier interface
+            Exception: If unabale to get style families
+
+        Returns:
+            XNameAccess: Style Famileis
+        """
+        try:
+            xsupplier = mLo.Lo.qi(XStyleFamiliesSupplier, doc)
+            if xsupplier is None:
+                raise mEx.MissingInterfaceError(XStyleFamiliesSupplier)
+            return xsupplier.getStyleFamilies()
+        except  mEx.MissingInterfaceError:
+            raise
+        except Exception as e:
+            raise Exception("Unable to get family style names") from e
+
+    @classmethod
+    def get_style_family_names(cls, doc: object) -> List[str] | None:
         """
         Gets a list of style family names
 
@@ -1245,10 +1278,7 @@ class Info:
             List[str] | None: List of style names on success; Otherwise, None
         """
         try:
-            xsupplier = mLo.Lo.qi(XStyleFamiliesSupplier, doc)
-            if xsupplier is None:
-                raise mEx.MissingInterfaceError(XStyleFamiliesSupplier)
-            name_acc = xsupplier.getStyleFamilies()
+            name_acc = cls.get_style_families()
             names = name_acc.getElementNames()
             lst = list(names)
             lst.sort()
@@ -1258,8 +1288,8 @@ class Info:
             print(f"    {e}")
         return None
 
-    @staticmethod
-    def get_style_container(doc: object, family_style_name: str) -> XNameContainer:
+    @classmethod
+    def get_style_container(cls, doc: object, family_style_name: str) -> XNameContainer:
         """
         Gets style container of document for a family of styles
 
@@ -1268,16 +1298,12 @@ class Info:
             family_style_name (str): Family style name
 
         Raises:
-            MissingInterfaceError: if doc is missing XStyleFamiliesSupplier interface
             MissingInterfaceError: if unable to obtain XNameContainer interface
 
         Returns:
             XNameContainer: Style Family container
         """
-        xsupplier = mLo.Lo.qi(XStyleFamiliesSupplier, doc)
-        if xsupplier is None:
-            raise mEx.MissingInterfaceError(XStyleFamiliesSupplier)
-        name_acc = xsupplier.getStyleFamilies()
+        name_acc = cls.get_style_families(doc)
         xcontianer = mLo.Lo.qi(XNameContainer, name_acc.getByName(family_style_name))
         if xcontianer is None:
             raise mEx.MissingInterfaceError(XNameContainer)
@@ -1881,3 +1907,60 @@ class Info:
         if hasattr(obj, "__pyunointerface__"):
             return obj.__pyunointerface__
         return None
+
+
+    @classproperty
+    def language(cls) -> str:
+        """
+        Gets the Current Language of the LibreOffice Instance
+
+        Returns:
+            str: First two chars of languag in lower case such as 'en-US'
+        """
+
+        try:
+            return cls._language
+        except AttributeError:
+            lang = cls.get_config(node_str="ooLocale")
+            cls._language = str(lang)
+        return cls._language
+
+    @language.setter
+    def language(cls, value) -> None:
+        # raise error on set. Not really neccesary but gives feedback.
+        raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
+    
+    @classproperty
+    def version(cls) -> str:
+        """
+        Gets the running LibreOffice version
+
+        Returns:
+            str: version as string
+        """
+
+        try:
+            return cls._version
+        except AttributeError:
+            lang = cls.get_config(node_str="ooSetupVersion")
+            cls._version = str(lang)
+        return cls._version
+
+    @version.setter
+    def version(cls, value) -> None:
+        # raise error on set. Not really neccesary but gives feedback.
+        raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
+
+
+def _del_cache_attrs(source: object, e: EventArgs) -> None:
+    # clears Write Attributes that are dynamically created
+    dattrs = ("_language", "_version")
+    for attr in dattrs:
+        if hasattr(Info, attr):
+            delattr(Info, attr)
+
+
+# subscribe to events that warrant clearing cached attribs
+Events().on(LoNamedEvent.RESET, _del_cache_attrs)
+
+__all__ = ("Info",)
