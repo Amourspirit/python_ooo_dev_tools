@@ -30,6 +30,7 @@ if not _DOCS_BUILDING and not _ON_RTD:
     from com.sun.star.text import XParagraphCursor
     from com.sun.star.text import XSentenceCursor
     from com.sun.star.text import XText
+    from com.sun.star.text import XTextCursor
     from com.sun.star.text import XTextDocument
     from com.sun.star.text import XTextRange
     from com.sun.star.text import XTextRangeCompare
@@ -39,8 +40,6 @@ if not _DOCS_BUILDING and not _ON_RTD:
     from com.sun.star.view import XSelectionSupplier
 
 
-if TYPE_CHECKING:
-    from com.sun.star.text import XTextCursor
 
 from ooo.dyn.i18n.word_type import WordTypeEnum as WordTypeEnum
 from ooo.dyn.i18n.boundary import Boundary  # struct
@@ -314,7 +313,7 @@ class Selection(metaclass=StaticProperty):
                     break
             return ka
 
-        if count != 2:
+        if not count in (1, 2):
             raise TypeError("get_cursor() got an invalid numer of arguments")
 
         kargs = get_kwargs()
@@ -533,8 +532,8 @@ class Selection(metaclass=StaticProperty):
         xcursor.gotoStart(False)
         xcursor.gotoEnd(True)
         xtext = xcursor.getText()
-        l_cursor = cls._get_left_cursor(o_sel=xcursor, o_text=xtext)
-        r_cursor = cls._get_right_cursor(o_sel=xcursor, o_text=xtext)
+        l_cursor = cls.get_left_cursor(o_sel=xcursor, o_text=xtext)
+        r_cursor = cls.get_right_cursor(o_sel=xcursor, o_text=xtext)
         i = 0
         if cls.compare_cursor_ends(c1=l_cursor, c2=r_cursor) < cls.CompareEnum.EQUAL:
             high = get_high(l_cursor, r_cursor)

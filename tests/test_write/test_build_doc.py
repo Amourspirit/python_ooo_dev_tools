@@ -22,7 +22,7 @@ def test_build_doc(loader, props_str_to_dict, fix_image_path, capsys: pytest.Cap
     from functools import partial
 
     visible = False
-    delay = 0 #500
+    delay = 0 # 500
     doc = Write.create_doc(loader)
     try:
         if visible:
