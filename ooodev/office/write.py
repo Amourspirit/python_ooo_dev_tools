@@ -1379,7 +1379,7 @@ class Write(mSel.Selection):
             for y in range(1, num_rows):  # start in 2nd row
                 row_data = table_data[y]
                 for x in range(num_cols):
-                    set_cell_text(make_cell_name(x + 1, y), row_data[x], table)
+                    set_cell_text( make_cell_name(y, x), row_data[x], table)
         except Exception as e:
             raise Exception("Table insertion failed:") from e
 
