@@ -1884,9 +1884,7 @@ class Write(mSel.Selection):
         Returns:
             XLinguProperties: Properties
         """
-        props = mLo.Lo.create_instance_mcf(XLinguProperties, "com.sun.star.linguistic2.LinguProperties")
-        if props is None:
-            raise mEx.CreateInstanceMcfError(XLinguProperties, "com.sun.star.linguistic2.LinguProperties")
+        props = mLo.Lo.create_instance_mcf(XLinguProperties, "com.sun.star.linguistic2.LinguProperties", raise_err=True)
         return props
 
     # endregion ---------  Linguistic API ------------------------------
@@ -1904,9 +1902,7 @@ class Write(mSel.Selection):
         Returns:
             XSpellChecker: spell checker
         """
-        lingo_mgr = mLo.Lo.create_instance_mcf(XLinguServiceManager, "com.sun.star.linguistic2.LinguServiceManager")
-        if lingo_mgr is None:
-            raise mEx.CreateInstanceMcfError(XLinguServiceManager, "com.sun.star.linguistic2.LinguServiceManager")
+        lingo_mgr = mLo.Lo.create_instance_mcf(XLinguServiceManager, "com.sun.star.linguistic2.LinguServiceManager", raise_err=True)
         return lingo_mgr.getSpellChecker()
 
     @classmethod
@@ -1965,9 +1961,7 @@ class Write(mSel.Selection):
         Returns:
             XThesaurus: Thesaurus
         """
-        lingo_mgr = mLo.Lo.create_instance_mcf(XLinguServiceManager, "com.sun.star.linguistic2.LinguServiceManager")
-        if lingo_mgr is None:
-            raise mEx.CreateInstanceMcfError(XLinguServiceManager, "com.sun.star.linguistic2.LinguServiceManager")
+        lingo_mgr = mLo.Lo.create_instance_mcf(XLinguServiceManager, "com.sun.star.linguistic2.LinguServiceManager", raise_err=True)
         return lingo_mgr.getThesaurus()
 
     @staticmethod
@@ -2015,9 +2009,7 @@ class Write(mSel.Selection):
         Returns:
             XProofreader: Proof Reader
         """
-        proof = mLo.Lo.create_instance_mcf(XProofreader, "com.sun.star.linguistic2.Proofreader")
-        if proof is None:
-            raise mEx.CreateInstanceMcfError(XProofreader, "com.sun.star.linguistic2.Proofreader")
+        proof = mLo.Lo.create_instance_mcf(XProofreader, "com.sun.star.linguistic2.Proofreader", raise_err=True)
         return proof
 
     @classmethod
