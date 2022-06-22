@@ -25,8 +25,7 @@ setup(
         'ooouno>=0.1.15'
         'types-unopy>=0.1.7',
         'Pillow>=9.1.1',
-        'lxml>=4.8.0',
-        'ooouno>=0.2'
+        'lxml>=4.8.0'
     ],
     keywords=['odev', 'libreoffice', 'openoffice' 'macro', 'uno', 'ooouno', 'pyuno'],
     classifiers=[
