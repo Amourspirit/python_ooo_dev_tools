@@ -81,7 +81,7 @@ def test_get_size_pixels(loader, fix_image_path) -> None:
     finally:
         Lo.close_doc(doc, False)
 
-def test_add_image_link(loader, fix_image_path) -> None:
+def _test_add_image_link(loader, fix_image_path) -> None:
     from ooodev.utils.lo import Lo
     from ooodev.office.write import Write
     from ooodev.utils.images_lo import ImagesLo

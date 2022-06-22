@@ -94,7 +94,7 @@ class DateUtil:
         delta = datetime.timedelta(days=value)
         minutes, second = divmod(delta.seconds, 60)
         hour, minute = divmod(minutes, 60)
-        return datetime.time(hour, minute, second)
+        return datetime.time(hour, minute, second, tzinfo=datetime.timezone.utc)
 
     @staticmethod
     def time_to_number(time: datetime.time) -> float:
