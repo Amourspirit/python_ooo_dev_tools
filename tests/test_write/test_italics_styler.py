@@ -21,15 +21,17 @@ from ooodev.utils.color import CommonColor, Color
 
 def test_italic_styler(loader, copy_fix_writer):
     visible = False
-    delay = 0 #3000
+    delay = 0 # 1_000
     test_doc = copy_fix_writer("cicero_dummy.odt")
     doc = Write.open_doc(test_doc, loader)
     try:
         if visible:
             GUI.set_visible(visible, doc)
-        result = italicize_all(doc, "pleasure", CommonColor.RED)
-        assert result == 17
-        
+        # lock screen updates for first test
+        with Lo.ControllerLock():
+            result = italicize_all(doc, "pleasure", CommonColor.RED)
+            assert result == 17
+        Lo.delay(delay)
         result = italicize_all(doc, "pain", CommonColor.GREEN)
         assert result == 15
         Lo.delay(delay)

@@ -4266,6 +4266,9 @@ class Calc:
                 sd.setSearchString('test')
                 results = Calc.find_all(srch=srch, sd=sd)
                 assert len(results) == 2
+
+        See Also:
+            `LibreOffice API SearchDescriptor <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1util_1_1SearchDescriptor.html>`_
         """
         con = srch.findAll(sd)
         if con is None:
