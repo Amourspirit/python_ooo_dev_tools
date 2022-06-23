@@ -76,7 +76,11 @@ if html_theme == "sphinx_rtd_theme":
 napoleon_google_docstring = True
 napoleon_include_init_with_doc = True
 
-# autodoc_typehints = "both"
+# https://fossies.org/linux/Sphinx/doc/usage/extensions/autodoc.rst
+# This value controls how to represent typehints. The setting takes the following values:
+autodoc_typehints = 'description'
+
+
 # see: https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#confval-autodoc_mock_imports
 # see: https://read-the-docs.readthedocs.io/en/latest/faq.html#i-get-import-errors-on-libraries-that-depend-on-c-modules
 # on read the docs I was getting errros WARNING: autodoc: failed to import class - No module named 'uno'
