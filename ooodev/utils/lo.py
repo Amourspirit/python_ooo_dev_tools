@@ -276,6 +276,9 @@ class Lo(metaclass=StaticProperty):
         Returns:
             T | None: instance of interface if supported; Otherwise, None
 
+        Note:
+            When ``raise_err=True`` return value will never be ``None``.
+
         Example:
 
             .. code-block:: python
@@ -346,6 +349,9 @@ class Lo(metaclass=StaticProperty):
         Returns:
             T: Instance of interface for the service name.
 
+        Note:
+            When ``raise_err=True`` return value will never be ``None``.
+
         Example:
             In the following example ``src_con`` is an instance of ``XSheetCellRangeContainer``
 
@@ -397,6 +403,9 @@ class Lo(metaclass=StaticProperty):
             CreateInstanceMcfError: If 'raise_err' is 'True' and no instance was created
             MissingInterfaceError: If 'raise_err' is 'True' and instance was created but does not implement 'atype' interface.
             Exception: if unable to create instance for any other reason
+
+        Note:
+            When ``raise_err=True`` return value will never be ``None``.
 
         Returns:
             T: Instance of interface for the service name.
@@ -2144,7 +2153,7 @@ class Lo(metaclass=StaticProperty):
         except AttributeError:
             ctx = cls.get_context()
             desktop = cls.get_desktop()
-            model = cls.qi(XModel, cls._doc)
+            model = cls.qi(XModel, cls._doc, raise_err=True)
             cls._xscript_context = script_context.ScriptContext(ctx, desktop, model)
         return cls._xscript_context
 
