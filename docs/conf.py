@@ -91,5 +91,7 @@ autodoc_type_aliases = {
     'FloatTable': 'FloatTable',
     'DocOrCursor': 'DocOrCursor',
     'DocOrText': 'DocOrText',
-    'PathOrStr': 'PathOrStr'
+    'PathOrStr': 'PathOrStr',
+    'DictRow': 'DictRow',
+    'DictTable': 'DictTable'
 }

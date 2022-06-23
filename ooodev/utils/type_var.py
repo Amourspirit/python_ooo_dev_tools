@@ -1,6 +1,6 @@
 # coding: utf-8
 from __future__ import annotations
-from typing import Sequence, TypeVar, Union, Any, Tuple, List
+from typing import Sequence, TypeVar, Union, Any, Tuple, List, Dict
 from os import PathLike
 
 import uno
@@ -19,11 +19,24 @@ T = TypeVar("T")
 Row = Sequence[Any]
 """Represents a Row of a Table."""
 
+DictRow = Dict[str, Any]
+"""
+Represents a Row of a Table as a dictionary of Key, value.
+Where the key is the column name.
+"""
+
+DictTable = Sequence[DictRow]
+"""
+Represents a Dictionary table.
+Each Element in the sequence as DictRow (dictionary of key, value)
+with key as column name.
+"""
+
 Column = Sequence[Any]
 """Represents a Column of a Table."""
 
 Table = Sequence[Row]
-"""Represents a Table of Rows and Columns"""
+"""Represents a 2-D Table of Rows and Columns"""
 
 TupleArray = Tuple[Tuple[Any, ...], ...]
 """Table like tuples with rows and columns"""

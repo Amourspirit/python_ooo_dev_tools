@@ -2,9 +2,10 @@
 """General Utilities"""
 from __future__ import annotations
 import string
-from typing import Callable, Iterable, Iterator, Sequence, List, NamedTuple, Any, Tuple, overload
+from typing import Callable, Iterable, Iterator, Sequence, List, NamedTuple, Any, Tuple, cast, overload
 from inspect import isclass
 import string
+from .type_var import DictTable, Table
 
 
 class TableHelper:
@@ -308,7 +309,60 @@ class TableHelper:
         else:
             lst.append(cls.to_tuple(seq_obj))
         return tuple(lst)
+    
+    @staticmethod
+    def table_2d_to_dict(tbl: Table) -> DictTable:
+        """
+        Converts a 2-D table into a Dictionary Table
 
+        Args:
+            tbl (Table): 2-D table
+
+        Raises:
+            ValueError: If tbl does not contain at least two rows
+
+        Returns:
+            DictTable: As List of Dict with each dict key representing column name
+        """
+        if len(tbl) < 2:
+            raise ValueError("Cannot convert Table with less than two rows")
+        # first row is column headers
+        try:
+            cols = [value for value in tbl[0]]
+            data = []
+            for i, row in enumerate(tbl):
+                if i == 0: # col row
+                    continue
+                data.append(dict(zip(cols, row)))
+            return data
+        except Exception as e:
+            raise e
+    
+    @staticmethod
+    def table_dict_to_table(tbl: DictTable) -> Table:
+        """
+        Converts a Dictionary Table to a 2-D table
+
+        Args:
+            tbl (DictTable): Dictionary Table
+
+        Raises:
+            ValueError: If tbl does not contain any rows
+
+        Returns:
+            Table: As 2-D table
+        """
+        if len(tbl) == 0:
+            raise ValueError("Cannot convert table with no rows")
+        try:
+            first =tbl[0]
+            cols = [k for k in first.keys()]
+            data = [cols]
+            for row in tbl:
+                data.append([v for _, v in row.items()])
+            return data
+        except Exception as e:
+            raise e
 
 class ArgsHelper:
     "Args Helper"
@@ -321,7 +375,7 @@ class ArgsHelper:
 
 class Util:
     @classmethod
-    def is_iterable(cls, arg: object, excluded_types: Iterable[type]=(str,)) -> bool:
+    def is_iterable(cls, arg: object, excluded_types: Iterable[type] | None =None) -> bool:
         """
         Gets if ``arg`` is iterable.
 
@@ -366,6 +420,8 @@ class Util:
         """
         # if isinstance(arg, str):
         #     return False
+        if excluded_types is None:
+            excluded_types = (str,)
         result = False
         try:
             result = isinstance(iter(arg), Iterator)
