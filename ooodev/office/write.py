@@ -5,7 +5,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Iterable, List, overload
 import re
-import os
 import uno
 
 from ..exceptions import ex as mEx
@@ -19,7 +18,7 @@ from ..utils.type_var import PathOrStr, Table, DocOrCursor
 from ..utils import images_lo as mImgLo
 from ..utils import selection as mSel
 
-# from ..mock import mock_g
+from ..mock import mock_g
 
 
 # if not mock_g.DOCS_BUILDING:
@@ -94,6 +93,85 @@ from ooo.dyn.style.paragraph_adjust import ParagraphAdjust
 
 
 class Write(mSel.Selection):
+    # region    Selection Overloads
+    
+    # for unknown reason Sphinx docs is not including overloads from inherited class.
+    # At least not for static methods. My curent work around is to implement the same
+    # methods in this class.
+
+    if mock_g.DOCS_BUILDING:
+        # This code block will only ever import when doc are building.
+        # In Short this code block is not seen by Write
+
+
+        # region    get_cursor()
+        # https://tinyurl.com/2dlclzqf
+        @overload
+        @classmethod
+        def get_cursor(cls, cursor_obj: DocOrCursor) -> XTextCursor:
+            """
+            Gets text cursor
+
+            Args:
+                cursor_obj (DocOrCursor): Text Document or Text Cursor
+
+            Returns:
+                XTextCursor: Cursor
+            """
+            ...
+
+        @overload
+        @classmethod
+        def get_cursor(cls, rng: XTextRange, txt: XText) -> XTextCursor:
+            """
+            Gets text cursor
+
+            Args:
+                rng (XTextRange): Text Range Instance
+                txt (XText): Text Instance
+
+            Returns:
+                XTextCursor: Cursor
+            """
+            ...
+
+        @overload
+        @classmethod
+        def get_cursor(cls, rng: XTextRange, text_doc: XTextDocument) -> XTextCursor:
+            """
+            Gets text cursor
+
+            Args:
+                rng (XTextRange): Text Range instance
+                text_doc (XTextDocument): Text Document instance
+
+            Returns:
+                XTextCursor: Cursor
+            """
+            ...
+        @classmethod
+        def get_cursor(cls, *args, **kwargs) -> XTextCursor:
+            """
+            Gets text cursor
+            
+            Inherited from :py:class:`~.selection.Selection`
+
+            Args:
+                cursor_obj (DocOrCursor): Text Document or Text View Cursor
+                rng (XTextRange): Text Range Instance
+                text_doc (XTextDocument): Text Document instance
+
+            Raises:
+                CursorError: If Unable to get cursor
+
+            Returns:
+                XTextCursor: Cursor
+            """
+            return super(Write, cls).get_cursor(*args, **kwargs)
+        # endregion get_cursor()
+
+    # endregion Selection Overloads
+
     ControlCharacter = ControlCharacterEnum  # UnoControlCharacter
     # region -------------- Enums --------------------------------------
 
@@ -1226,8 +1304,8 @@ class Write(mSel.Selection):
             width (int): Width
             height (int): Height
             page_num (int): Page Number to add text frame
-            border_color (Color): Border Color. Defaluts to CommonColor.RED
-            background_color (Color): Background Color. Defaluts to CommonColor.LIGHT_BLUE
+            border_color (Color, optional): Border Color. Defaluts to CommonColor.RED
+            background_color (Color, optional): Background Color. Defaluts to CommonColor.LIGHT_BLUE
 
         Raises:
             CreateInstanceMsfError: If unable to create text.TextFrame
