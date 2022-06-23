@@ -336,7 +336,7 @@ class Lo(metaclass=StaticProperty):
                 Any Uno class that starts with 'X' such as XInterface
             service_name (str): Service name
             msf (XMultiServiceFactory, optional): Multi service factory used to create instance
-            raise_err (bool, optional): If True then raises MissingInterfaceError if result is None. Default False
+            raise_err (bool, optional): If True then can raise CreateInstanceMsfError or MissingInterfaceError
 
         Raises:
             CreateInstanceMsfError: If 'raise_err' is 'True' and no instance was created
@@ -391,7 +391,7 @@ class Lo(metaclass=StaticProperty):
                 Any Uno class that starts with 'X' such as XInterface
             service_name (str): Service Name
             args (Tuple[object, ...], Optional): Args
-            raise_err (bool, optional): If True then raises MissingInterfaceError if result is None. Default False
+            raise_err (bool, optional): If True then can raise CreateInstanceMcfError or MissingInterfaceError
 
         Raises:
             CreateInstanceMcfError: If 'raise_err' is 'True' and no instance was created

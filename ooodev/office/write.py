@@ -1089,15 +1089,10 @@ class Write(mSel.Selection):
             formula (str): formula
 
         Raises:
-            CreateInstanceMsfError: If unable to create TextEmbeddedObject
+            CreateInstanceMsfError: If unable to create text.TextEmbeddedObject
             Exception: If unable to add formula
         """
-        try:
-            embed_content = mLo.Lo.create_instance_msf(XTextContent, "com.sun.star.text.TextEmbeddedObject")
-            if embed_content is None:
-                raise ValueError("Null result")
-        except Exception as e:
-            raise mEx.CreateInstanceMsfError(XTextContent, "com.sun.star.text.TextEmbeddedObject") from e
+        embed_content = mLo.Lo.create_instance_msf(XTextContent, "com.sun.star.text.TextEmbeddedObject", raise_err=True)
         try:
             # set class ID for type of object being inserted
             props = mLo.Lo.qi(XPropertySet, embed_content, True)

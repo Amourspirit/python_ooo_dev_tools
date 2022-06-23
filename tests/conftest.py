@@ -26,7 +26,7 @@ def tmp_path_fn():
     result = Path(tempfile.mkdtemp())
     yield result
     if os.path.exists(result):
-        shutil.rmtree(result)
+        shutil.rmtree(result, ignore_errors=True)
 
 
 @pytest.fixture(scope="session")
@@ -34,7 +34,7 @@ def tmp_path():
     result = Path(tempfile.mkdtemp())
     yield result
     if os.path.exists(result):
-        shutil.rmtree(result)
+        shutil.rmtree(result,  ignore_errors=True)
 
 
 @pytest.fixture(scope="session")
