@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Iterable, Optional, List, Tuple, cast, overloa
 from urllib.parse import urlparse
 import uno
 from enum import IntEnum, Enum
-from ..mock import mock_g
+# from ..mock import mock_g
 
 from ..events.event_singleton import Events
 from ..events.named_event import LoNamedEvent
@@ -21,22 +21,22 @@ from ..meta.static_meta import StaticProperty, classproperty
 from .connect import ConnectBase, LoPipeStart, LoSocketStart, LoDirectStart
 
 from com.sun.star.lang import XComponent
-if not mock_g.DOCS_BUILDING:
+# if not mock_g.DOCS_BUILDING:
     # not importing for doc building just result in short import name for
     # args that use these.
     # this is also true becuase docs/conf.py ignores com import for autodoc
-    from com.sun.star.beans import XPropertySet
-    from com.sun.star.beans import XIntrospection
-    from com.sun.star.container import XNamed
-    from com.sun.star.frame import XDesktop
-    from com.sun.star.frame import XDispatchHelper
-    from com.sun.star.lang import XMultiServiceFactory
-    from com.sun.star.io import IOException
-    from com.sun.star.util import XCloseable
-    from com.sun.star.util import XNumberFormatsSupplier
-    from com.sun.star.frame import XComponentLoader
-    from com.sun.star.frame import XModel
-    from com.sun.star.frame import XStorable
+from com.sun.star.beans import XPropertySet
+from com.sun.star.beans import XIntrospection
+from com.sun.star.container import XNamed
+from com.sun.star.frame import XDesktop
+from com.sun.star.frame import XDispatchHelper
+from com.sun.star.lang import XMultiServiceFactory
+from com.sun.star.io import IOException
+from com.sun.star.util import XCloseable
+from com.sun.star.util import XNumberFormatsSupplier
+from com.sun.star.frame import XComponentLoader
+from com.sun.star.frame import XModel
+from com.sun.star.frame import XStorable
 
 if TYPE_CHECKING:
     from com.sun.star.beans import PropertyValue
@@ -620,7 +620,7 @@ class Lo(metaclass=StaticProperty):
 
     # region document opening
     @classmethod
-    def open_flat_doc(cls, fnm: PathOrStr, doc_type: DocType, loader: XComponentLoader) -> XComponent:
+    def open_flat_doc(cls, fnm: PathOrStr, doc_type: Lo.DocType, loader: XComponentLoader) -> XComponent:
         """
         Opens a flat document
 
@@ -766,7 +766,7 @@ class Lo(metaclass=StaticProperty):
     # ======================== document creation ==============
 
     @classmethod
-    def ext_to_doc_type(cls, ext: str) -> DocTypeStr:
+    def ext_to_doc_type(cls, ext: str) -> Lo.DocTypeStr:
         """
         Gets doctype from extension
 
@@ -797,7 +797,7 @@ class Lo(metaclass=StaticProperty):
             return cls.DocTypeStr.WRITER
 
     @classmethod
-    def doc_type_str(cls, doc_type_val: DocType) -> DocTypeStr:
+    def doc_type_str(cls, doc_type_val: Lo.DocType) -> Lo.DocTypeStr:
         """
         Converts a doc type into a :py:class:`~Lo.DocTypeStr` representation.
 
@@ -863,7 +863,7 @@ class Lo(metaclass=StaticProperty):
     @classmethod
     def create_doc(
         cls,
-        doc_type: DocTypeStr,
+        doc_type: Lo.DocTypeStr,
         loader: XComponentLoader,
         props: Optional[Iterable[PropertyValue]] = None,
     ) -> XComponent:
@@ -904,7 +904,7 @@ class Lo(metaclass=StaticProperty):
             raise Exception("Could not create a document") from e
 
     @classmethod
-    def create_macro_doc(cls, doc_type: DocTypeStr, loader: XComponentLoader) -> XComponent:
+    def create_macro_doc(cls, doc_type: Lo.DocTypeStr, loader: XComponentLoader) -> XComponent:
         """
         Create a document that allows executing of macros
 
@@ -1084,7 +1084,7 @@ class Lo(metaclass=StaticProperty):
         ...
 
     @classmethod
-    def store_doc(cls, store: XStorable, doc_type: DocType, fnm: PathOrStr, password: Optional[str] = None) -> None:
+    def store_doc(cls, store: XStorable, doc_type: Lo.DocType, fnm: PathOrStr, password: Optional[str] = None) -> None:
         """
         Stores/Saves a document
 
@@ -1146,7 +1146,7 @@ class Lo(metaclass=StaticProperty):
         ...
 
     @classmethod
-    def ext_to_format(cls, ext: str, doc_type: DocType = DocType.UNKNOWN) -> str:
+    def ext_to_format(cls, ext: str, doc_type: Lo.DocType = DocType.UNKNOWN) -> str:
         """
         Convert the extension string into a suitable office format string.
         The formats were chosen based on the fact that they

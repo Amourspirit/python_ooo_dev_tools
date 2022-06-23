@@ -163,7 +163,7 @@ class GUI:
     # region ---------------- toolbar addition -------------------------
 
     @classmethod
-    def get_toobar_resource(cls, name: ToolBarName) -> str:
+    def get_toobar_resource(cls, name: GUI.ToolBarName) -> str:
         """
         Get toolbar resource for name
 
@@ -728,7 +728,7 @@ class GUI:
     # region ---------------- zooming ----------------------------------
 
     @classmethod
-    def zoom(cls, view: ZoomEnum) -> None:
+    def zoom(cls, view: GUI.ZoomEnum) -> None:
         """
         Sets document zoom level.
 
@@ -759,7 +759,7 @@ class GUI:
 
     @overload
     @classmethod
-    def zoom_value(cls, value: int, view: ZoomEnum) -> None:
+    def zoom_value(cls, value: int, view: GUI.ZoomEnum) -> None:
         """
         Sets document custom zoom.
 
@@ -770,7 +770,7 @@ class GUI:
         ...
 
     @classmethod
-    def zoom_value(cls, value: int, view: ZoomEnum = ZoomEnum.BY_VALUE) -> None:
+    def zoom_value(cls, value: int, view: GUI.ZoomEnum = ZoomEnum.BY_VALUE) -> None:
         """
         Sets document custom zoom.
 

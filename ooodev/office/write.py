@@ -13,56 +13,56 @@ from ..utils import lo as mLo
 from ..utils import info as mInfo
 from ..utils import file_io as mFileIO
 from ..utils import props as mProps
-from ..utils.gen_util import TableHelper
+from ..utils.table_helper import TableHelper
 from ..utils.color import CommonColor, Color
 from ..utils.type_var import PathOrStr, Table, DocOrCursor
 from ..utils import images_lo as mImgLo
 from ..utils import selection as mSel
-from ..mock import mock_g
+
+# from ..mock import mock_g
 
 
-if not mock_g.DOCS_BUILDING:
-    # not importing for doc building just result in short import name for
-    # args that use these.
-    # this is also true becuase docs/conf.py ignores com import for autodoc
-    from com.sun.star.awt import FontWeight
-    from com.sun.star.beans import XPropertySet
-    from com.sun.star.container import XEnumerationAccess
-    from com.sun.star.container import XNamed
-    from com.sun.star.document import XDocumentInsertable
-    from com.sun.star.document import XEmbeddedObjectSupplier2
-    from com.sun.star.drawing import XDrawPageSupplier
-    from com.sun.star.drawing import XShape
-    from com.sun.star.lang import Locale  # struct class
-    from com.sun.star.lang import XComponent
-    from com.sun.star.lang import XServiceInfo
-    from com.sun.star.frame import XModel
-    from com.sun.star.linguistic2 import XConversionDictionaryList
-    from com.sun.star.linguistic2 import XLanguageGuessing
-    from com.sun.star.linguistic2 import XLinguProperties
-    from com.sun.star.linguistic2 import XLinguServiceManager
-    from com.sun.star.linguistic2 import XProofreader
-    from com.sun.star.linguistic2 import XSearchableDictionaryList
-    from com.sun.star.style import NumberingType  # const
-    from com.sun.star.table import BorderLine  # struct
-    from com.sun.star.text import HoriOrientation
-    from com.sun.star.text import VertOrientation
-    from com.sun.star.text import XBookmarksSupplier
-    from com.sun.star.text import XPageCursor
-    from com.sun.star.text import XParagraphCursor
-    from com.sun.star.text import XText
-    from com.sun.star.text import XTextContent
-    from com.sun.star.text import XTextDocument
-    from com.sun.star.text import XTextGraphicObjectsSupplier
-    from com.sun.star.text import XTextField
-    from com.sun.star.text import XTextFrame
-    from com.sun.star.text import XTextRange
-    from com.sun.star.text import XTextTable
-    from com.sun.star.text import XTextViewCursor
-    from com.sun.star.text import XTextViewCursorSupplier
-    from com.sun.star.uno import Exception as UnoException
-    from com.sun.star.util import XCloseable
-    from com.sun.star.view import XPrintable
+# if not mock_g.DOCS_BUILDING:
+# not importing for doc building just result in short import name for
+# args that use these.
+# this is also true becuase docs/conf.py ignores com import for autodoc
+from com.sun.star.awt import FontWeight
+from com.sun.star.beans import XPropertySet
+from com.sun.star.container import XEnumerationAccess
+from com.sun.star.container import XNamed
+from com.sun.star.document import XDocumentInsertable
+from com.sun.star.document import XEmbeddedObjectSupplier2
+from com.sun.star.drawing import XDrawPageSupplier
+from com.sun.star.drawing import XShape
+from com.sun.star.lang import Locale  # struct class
+from com.sun.star.lang import XComponent
+from com.sun.star.lang import XServiceInfo
+from com.sun.star.frame import XModel
+from com.sun.star.linguistic2 import XConversionDictionaryList
+from com.sun.star.linguistic2 import XLanguageGuessing
+from com.sun.star.linguistic2 import XLinguProperties
+from com.sun.star.linguistic2 import XLinguServiceManager
+from com.sun.star.linguistic2 import XProofreader
+from com.sun.star.linguistic2 import XSearchableDictionaryList
+from com.sun.star.style import NumberingType  # const
+from com.sun.star.table import BorderLine  # struct
+from com.sun.star.text import HoriOrientation
+from com.sun.star.text import VertOrientation
+from com.sun.star.text import XBookmarksSupplier
+from com.sun.star.text import XPageCursor
+from com.sun.star.text import XParagraphCursor
+from com.sun.star.text import XText
+from com.sun.star.text import XTextContent
+from com.sun.star.text import XTextDocument
+from com.sun.star.text import XTextGraphicObjectsSupplier
+from com.sun.star.text import XTextField
+from com.sun.star.text import XTextFrame
+from com.sun.star.text import XTextRange
+from com.sun.star.text import XTextTable
+from com.sun.star.text import XTextViewCursor
+from com.sun.star.uno import Exception as UnoException
+from com.sun.star.util import XCloseable
+from com.sun.star.view import XPrintable
 
 if TYPE_CHECKING:
     from com.sun.star.beans import PropertyValue
@@ -338,6 +338,9 @@ class Write(mSel.Selection):
 
         Returns:
             int: Page number if present; Otherwise, -1
+
+        See Also:
+            :py:meth:`~.Write.get_page_number`
         """
         page_cursor = mLo.Lo.qi(XPageCursor, tv_cursor)
         if page_cursor is None:
@@ -1002,6 +1005,9 @@ class Write(mSel.Selection):
 
         Returns:
             XTextField: Page Number as Text Field
+
+        See Also:
+            :py:meth:`~.Write.get_current_page`
         """
         num_field = mLo.Lo.create_instance_msf(XTextField, "com.sun.star.text.TextField.PageNumber")
         mProps.Props.set_property(prop_set=num_field, name="NumberingType", value=NumberingType.ARABIC)
@@ -1092,7 +1098,9 @@ class Write(mSel.Selection):
             CreateInstanceMsfError: If unable to create text.TextEmbeddedObject
             Exception: If unable to add formula
         """
-        embed_content = mLo.Lo.create_instance_msf(XTextContent, "com.sun.star.text.TextEmbeddedObject", raise_err=True)
+        embed_content = mLo.Lo.create_instance_msf(
+            XTextContent, "com.sun.star.text.TextEmbeddedObject", raise_err=True
+        )
         try:
             # set class ID for type of object being inserted
             props = mLo.Lo.qi(XPropertySet, embed_content, True)
@@ -1374,7 +1382,7 @@ class Write(mSel.Selection):
             for y in range(1, num_rows):  # start in 2nd row
                 row_data = table_data[y]
                 for x in range(num_cols):
-                    set_cell_text( make_cell_name(y, x), row_data[x], table)
+                    set_cell_text(make_cell_name(y, x), row_data[x], table)
         except Exception as e:
             raise Exception("Table insertion failed:") from e
 
@@ -1831,7 +1839,7 @@ class Write(mSel.Selection):
         print()
 
     @staticmethod
-    def get_dict_type(dt: DictionaryType) -> str:
+    def get_dict_type(dt: Write.DictionaryType) -> str:
         """
         Gets dictionary type
 
@@ -1879,7 +1887,9 @@ class Write(mSel.Selection):
         Returns:
             XLinguProperties: Properties
         """
-        props = mLo.Lo.create_instance_mcf(XLinguProperties, "com.sun.star.linguistic2.LinguProperties", raise_err=True)
+        props = mLo.Lo.create_instance_mcf(
+            XLinguProperties, "com.sun.star.linguistic2.LinguProperties", raise_err=True
+        )
         return props
 
     # endregion ---------  Linguistic API ------------------------------
@@ -1897,7 +1907,9 @@ class Write(mSel.Selection):
         Returns:
             XSpellChecker: spell checker
         """
-        lingo_mgr = mLo.Lo.create_instance_mcf(XLinguServiceManager, "com.sun.star.linguistic2.LinguServiceManager", raise_err=True)
+        lingo_mgr = mLo.Lo.create_instance_mcf(
+            XLinguServiceManager, "com.sun.star.linguistic2.LinguServiceManager", raise_err=True
+        )
         return lingo_mgr.getSpellChecker()
 
     @classmethod
@@ -1956,7 +1968,9 @@ class Write(mSel.Selection):
         Returns:
             XThesaurus: Thesaurus
         """
-        lingo_mgr = mLo.Lo.create_instance_mcf(XLinguServiceManager, "com.sun.star.linguistic2.LinguServiceManager", raise_err=True)
+        lingo_mgr = mLo.Lo.create_instance_mcf(
+            XLinguServiceManager, "com.sun.star.linguistic2.LinguServiceManager", raise_err=True
+        )
         return lingo_mgr.getThesaurus()
 
     @staticmethod

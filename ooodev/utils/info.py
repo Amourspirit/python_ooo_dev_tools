@@ -1648,7 +1648,7 @@ class Info(metaclass=StaticProperty):
         return list(result)
 
     @classmethod
-    def is_import(cls, filter_flags: Filter) -> bool:
+    def is_import(cls, filter_flags: Info.Filter) -> bool:
         """
         Gets if filter flags has ``Filter.IMPORT`` flag set
 
@@ -1661,7 +1661,7 @@ class Info(metaclass=StaticProperty):
         return (filter_flags & cls.Filter.IMPORT) == cls.Filter.IMPORT
 
     @classmethod
-    def is_export(cls, filter_flags: Filter) -> bool:
+    def is_export(cls, filter_flags: Info.Filter) -> bool:
         """
         Gets if filter flags has ``Filter.EXPORT`` flag set
 
@@ -1674,7 +1674,7 @@ class Info(metaclass=StaticProperty):
         return (filter_flags & cls.Filter.EXPORT) == cls.Filter.EXPORT
 
     @classmethod
-    def is_template(cls, filter_flags: Filter) -> bool:
+    def is_template(cls, filter_flags: Info.Filter) -> bool:
         """
         Gets if filter flags has ``Filter.TEMPLATE`` flag set
 
@@ -1687,7 +1687,7 @@ class Info(metaclass=StaticProperty):
         return (filter_flags & cls.Filter.TEMPLATE) == cls.Filter.TEMPLATE
 
     @classmethod
-    def is_internal(cls, filter_flags: Filter) -> bool:
+    def is_internal(cls, filter_flags: Info.Filter) -> bool:
         """
         Gets if filter flags has ``Filter.INTERNAL`` flag set
 
@@ -1700,7 +1700,7 @@ class Info(metaclass=StaticProperty):
         return (filter_flags & cls.Filter.INTERNAL) == cls.Filter.INTERNAL
 
     @classmethod
-    def is_template_path(cls, filter_flags: Filter) -> bool:
+    def is_template_path(cls, filter_flags: Info.Filter) -> bool:
         """
         Gets if filter flags has ``Filter.TEMPLATEPATH`` flag set
 
@@ -1713,7 +1713,7 @@ class Info(metaclass=StaticProperty):
         return (filter_flags & cls.Filter.TEMPLATEPATH) == cls.Filter.TEMPLATEPATH
 
     @classmethod
-    def is_own(cls, filter_flags: Filter) -> bool:
+    def is_own(cls, filter_flags: Info.Filter) -> bool:
         """
         Gets if filter flags has ``Filter.OWN`` flag set
 
@@ -1726,7 +1726,7 @@ class Info(metaclass=StaticProperty):
         return (filter_flags & cls.Filter.OWN) == cls.Filter.OWN
 
     @classmethod
-    def is_alien(cls, filter_flags: Filter) -> bool:
+    def is_alien(cls, filter_flags: Info.Filter) -> bool:
         """
         Gets if filter flags has ``Filter.ALIEN`` flag set
 
@@ -1739,7 +1739,7 @@ class Info(metaclass=StaticProperty):
         return (filter_flags & cls.Filter.ALIEN) == cls.Filter.ALIEN
 
     @classmethod
-    def is_default(cls, filter_flags: Filter) -> bool:
+    def is_default(cls, filter_flags: Info.Filter) -> bool:
         """
         Gets if filter flags has ``Filter.DEFAULT`` flag set
 
@@ -1752,7 +1752,7 @@ class Info(metaclass=StaticProperty):
         return (filter_flags & cls.Filter.DEFAULT) == cls.Filter.DEFAULT
 
     @classmethod
-    def is_support_selection(cls, filter_flags: Filter) -> bool:
+    def is_support_selection(cls, filter_flags: Info.Filter) -> bool:
         """
         Gets if filter flags has ``Filter.SUPPORTSSELECTION`` flag set
 
@@ -1765,7 +1765,7 @@ class Info(metaclass=StaticProperty):
         return (filter_flags & cls.Filter.SUPPORTSSELECTION) == cls.Filter.SUPPORTSSELECTION
 
     @classmethod
-    def is_not_in_file_dialog(cls, filter_flags: Filter) -> bool:
+    def is_not_in_file_dialog(cls, filter_flags: Info.Filter) -> bool:
         """
         Gets if filter flags has ``Filter.NOTINFILEDIALOG`` flag set
 
@@ -1778,7 +1778,7 @@ class Info(metaclass=StaticProperty):
         return (filter_flags & cls.Filter.NOTINFILEDIALOG) == cls.Filter.NOTINFILEDIALOG
 
     @classmethod
-    def is_not_in_chooser(cls, filter_flags: Filter) -> bool:
+    def is_not_in_chooser(cls, filter_flags: Info.Filter) -> bool:
         """
         Gets if filter flags has ``Filter.NOTINCHOOSER`` flag set
 
@@ -1791,7 +1791,7 @@ class Info(metaclass=StaticProperty):
         return (filter_flags & cls.Filter.NOTINCHOOSER) == cls.Filter.NOTINCHOOSER
 
     @classmethod
-    def is_read_only(cls, filter_flags: Filter) -> bool:
+    def is_read_only(cls, filter_flags: Info.Filter) -> bool:
         """
         Gets if filter flags has ``Filter.READONLY`` flag set
 
@@ -1804,7 +1804,7 @@ class Info(metaclass=StaticProperty):
         return (filter_flags & cls.Filter.READONLY) == cls.Filter.READONLY
 
     @classmethod
-    def is_third_party_filter(cls, filter_flags: Filter) -> bool:
+    def is_third_party_filter(cls, filter_flags: Info.Filter) -> bool:
         """
         Gets if filter flags has ``Filter.THIRDPARTYFILTER`` flag set
 
@@ -1817,7 +1817,7 @@ class Info(metaclass=StaticProperty):
         return (filter_flags & cls.Filter.THIRDPARTYFILTER) == cls.Filter.THIRDPARTYFILTER
 
     @classmethod
-    def is_preferred(cls, filter_flags: Filter) -> bool:
+    def is_preferred(cls, filter_flags: Info.Filter) -> bool:
         """
         Gets if filter flags has ``Filter.PREFERRED`` flag set
 

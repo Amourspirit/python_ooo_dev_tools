@@ -3,59 +3,59 @@
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 # region Imports
 from __future__ import annotations
-from enum import IntFlag, Enum
+from enum import IntEnum, IntFlag, Enum
 import numbers
 import re
 import os
 from typing import Any, List, Tuple, cast, overload, Sequence, TYPE_CHECKING
 import uno
-from ..mock import mock_g
 
+# from ..mock import mock_g
 
-if not mock_g.DOCS_BUILDING:
-    # not importing for doc building just result in short import name for
-    # args that use these.
-    # this is also true becuase docs/conf.py ignores com import for autodoc
-    from com.sun.star.container import XIndexAccess
-    from com.sun.star.container import XNamed
-    from com.sun.star.frame import XModel
-    from com.sun.star.lang import XComponent
-    from com.sun.star.lang import Locale
-    from com.sun.star.sheet import SolverConstraint  # struct
-    from com.sun.star.sheet import XCellAddressable
-    from com.sun.star.sheet import XCellRangeData
-    from com.sun.star.sheet import XCellRangeAddressable
-    from com.sun.star.sheet import XCellRangeMovement
-    from com.sun.star.sheet import XCellSeries
-    from com.sun.star.sheet import XDataPilotTable
-    from com.sun.star.sheet import XDataPilotTablesSupplier
-    from com.sun.star.sheet import XFunctionAccess
-    from com.sun.star.sheet import XFunctionDescriptions
-    from com.sun.star.sheet import XHeaderFooterContent
-    from com.sun.star.sheet import XRecentFunctions
-    from com.sun.star.sheet import XScenario
-    from com.sun.star.sheet import XScenariosSupplier
-    from com.sun.star.sheet import XSpreadsheet
-    from com.sun.star.sheet import XSpreadsheetDocument
-    from com.sun.star.sheet import XSpreadsheetView
-    from com.sun.star.sheet import XSheetAnnotationAnchor
-    from com.sun.star.sheet import XSheetAnnotationsSupplier
-    from com.sun.star.sheet import XSheetCellRange
-    from com.sun.star.sheet import XSheetOperation
-    from com.sun.star.sheet import XSpreadsheets
-    from com.sun.star.sheet import XUsedAreaCursor
-    from com.sun.star.sheet import XViewPane
-    from com.sun.star.sheet import XViewFreezable
-    from com.sun.star.style import XStyle
-    from com.sun.star.table import BorderLine2  # struct
-    from com.sun.star.table import TableBorder2  # struct
-    from com.sun.star.table import XColumnRowRange
-    from com.sun.star.table import XCellRange
-    from com.sun.star.text import XSimpleText
-    from com.sun.star.uno import Exception as UnoException
-    from com.sun.star.util import NumberFormat  # const
-    from com.sun.star.util import XNumberFormatsSupplier
-    from com.sun.star.util import XNumberFormatTypes
+# if not mock_g.DOCS_BUILDING:
+# not importing for doc building just result in short import name for
+# args that use these.
+# this is also true becuase docs/conf.py ignores com import for autodoc
+from com.sun.star.container import XIndexAccess
+from com.sun.star.container import XNamed
+from com.sun.star.frame import XModel
+from com.sun.star.lang import XComponent
+from com.sun.star.lang import Locale
+from com.sun.star.sheet import SolverConstraint  # struct
+from com.sun.star.sheet import XCellAddressable
+from com.sun.star.sheet import XCellRangeData
+from com.sun.star.sheet import XCellRangeAddressable
+from com.sun.star.sheet import XCellRangeMovement
+from com.sun.star.sheet import XCellSeries
+from com.sun.star.sheet import XDataPilotTable
+from com.sun.star.sheet import XDataPilotTablesSupplier
+from com.sun.star.sheet import XFunctionAccess
+from com.sun.star.sheet import XFunctionDescriptions
+from com.sun.star.sheet import XHeaderFooterContent
+from com.sun.star.sheet import XRecentFunctions
+from com.sun.star.sheet import XScenario
+from com.sun.star.sheet import XScenariosSupplier
+from com.sun.star.sheet import XSpreadsheet
+from com.sun.star.sheet import XSpreadsheetDocument
+from com.sun.star.sheet import XSpreadsheetView
+from com.sun.star.sheet import XSheetAnnotationAnchor
+from com.sun.star.sheet import XSheetAnnotationsSupplier
+from com.sun.star.sheet import XSheetCellRange
+from com.sun.star.sheet import XSheetOperation
+from com.sun.star.sheet import XSpreadsheets
+from com.sun.star.sheet import XUsedAreaCursor
+from com.sun.star.sheet import XViewPane
+from com.sun.star.sheet import XViewFreezable
+from com.sun.star.style import XStyle
+from com.sun.star.table import BorderLine2  # struct
+from com.sun.star.table import TableBorder2  # struct
+from com.sun.star.table import XColumnRowRange
+from com.sun.star.table import XCellRange
+from com.sun.star.text import XSimpleText
+from com.sun.star.uno import Exception as UnoException
+from com.sun.star.util import NumberFormat  # const
+from com.sun.star.util import XNumberFormatsSupplier
+from com.sun.star.util import XNumberFormatTypes
 
 if TYPE_CHECKING:
     from com.sun.star.beans import PropertyValue
@@ -89,7 +89,8 @@ from ..utils import lo as mLo
 from ..utils import info as mInfo
 from ..utils import gui as mGui
 from ..utils import props as mProps
-from ..utils.gen_util import ArgsHelper, TableHelper, Util as GenUtil
+from ..utils.gen_util import ArgsHelper, Util as GenUtil
+from ..utils.table_helper import TableHelper
 from ..utils.color import CommonColor, Color
 from ..utils import view_state as mViewState
 from ..exceptions import ex as mEx
@@ -102,7 +103,7 @@ NameVal = ArgsHelper.NameValue
 class Calc:
     # region classes
     # for headers and footers
-    class HeaderFooter:
+    class HeaderFooter(IntEnum):
         HF_LEFT = 0
         HF_CENTER = 1
         HF_RIGHT = 2
@@ -1432,8 +1433,8 @@ class Calc:
 
     convert_to_double = convert_to_float
 
-    @classmethod
-    def get_type_enum(cls, cell: XCell) -> CellTypeEnum:
+    @staticmethod
+    def get_type_enum(cell: XCell) -> Calc.CellTypeEnum:
         """
         Gets enum representing the Type
 
@@ -1445,15 +1446,15 @@ class Calc:
         """
         t = cell.getType()
         if t == CellContentType.EMPTY:
-            return cls.CellTypeEnum.EMPTY
+            return Calc.CellTypeEnum.EMPTY
         if t == CellContentType.VALUE:
-            return cls.CellTypeEnum.VALUE
+            return Calc.CellTypeEnum.VALUE
         if t == CellContentType.TEXT:
-            return cls.CellTypeEnum.TEXT
+            return Calc.CellTypeEnum.TEXT
         if t == CellContentType.FORMULA:
-            return cls.CellTypeEnum.FORMULA
+            return Calc.CellTypeEnum.FORMULA
         print("Unknown cell type")
-        return cls.CellTypeEnum.UNKNOWN
+        return Calc.CellTypeEnum.UNKNOWN
 
     @classmethod
     def get_type_string(cls, cell: XCell) -> str:
@@ -5236,7 +5237,7 @@ class Calc:
     # region --------------- using calc functions ----------------------
 
     @classmethod
-    def compute_function(cls, fn: GeneralFunction | str, cell_range: XCellRange) -> float:
+    def compute_function(cls, fn: Calc.GeneralFunction | str, cell_range: XCellRange) -> float:
         """
         Compuutes a Calc Function
 
@@ -5512,8 +5513,8 @@ class Calc:
             print(f"  {service}")
         print()
 
-    @classmethod
-    def to_constraint_op(cls, op: str) -> SolverConstraintOperator:
+    @staticmethod
+    def to_constraint_op(op: str) -> Calc.SolverConstraintOperator:
         """
         Convert string value to SolverConstraintOperator.
 
@@ -5526,13 +5527,13 @@ class Calc:
             SolverConstraintOperator: Operator as enum
         """
         if op == "=" or op == "==":
-            return cls.SolverConstraintOperator.EQUAL
+            return Calc.SolverConstraintOperator.EQUAL
         if (op == "<=") or op == "=<":
-            return cls.SolverConstraintOperator.LESS_EQUAL
+            return Calc.SolverConstraintOperator.LESS_EQUAL
         if (op == ">=") or op == "=>":
-            return cls.SolverConstraintOperator.GREATER_EQUAL
+            return Calc.SolverConstraintOperator.GREATER_EQUAL
         print(f"Do not recognise op: {op}; using EQUAL")
-        return cls.SolverConstraintOperator.EQUAL
+        return Calc.SolverConstraintOperator.EQUAL
 
     # region    make_constraint()
     @classmethod
@@ -5727,20 +5728,54 @@ class Calc:
 
     @staticmethod
     def get_head_foot(props: XPropertySet, content: str) -> XHeaderFooterContent:
-        result = mLo.Lo.qi(XHeaderFooterContent, mProps.Props.get_property(prop_set=props, name=content))
-        if result is None:
-            raise mEx.MissingInterfaceError(XHeaderFooterContent)
+        """
+        Gets header footer content
+
+        Args:
+            props (XPropertySet): Properties
+            content (str): content
+
+        Raises:
+            MissingInterfaceError: If unable to obtain XHeaderFooterContent interface
+
+        Returns:
+            XHeaderFooterContent: Header Footer Content
+
+        See Also:
+            `LibreOffice API XHeaderFooterContent <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1sheet_1_1XHeaderFooterContent.html>`_
+        """
+        result = mLo.Lo.qi(XHeaderFooterContent, mProps.Props.get_property(prop_set=props, name=content), raise_err=True)
         return result
 
     @staticmethod
     def print_head_foot(title: str, hfc: XHeaderFooterContent) -> None:
+        """
+        Prints header, footer to console
+
+        Args:
+            title (str): Title printed to console
+            hfc (XHeaderFooterContent): Content
+        """
         left = hfc.getLeftText()
         center = hfc.getCenterText()
         right = hfc.getRightText()
         print(f"{title}: '{left.getString()}' : '{center.getString()}' : '{right.getString()}'")
 
     @classmethod
-    def get_region(cls, hfc: XHeaderFooterContent, region: int) -> XText | None:
+    def get_region(cls, hfc: XHeaderFooterContent, region: Calc.HeaderFooter) -> XText:
+        """
+        Get region for Header-Footer-Content.
+
+        Args:
+            hfc (XHeaderFooterContent): Content
+            region (HeaderFooter): Region to get
+
+        Raises:
+            TypeError: If hfc or region is not a valid type.
+
+        Returns:
+            XText: interface instance
+        """
         if hfc is None:
             raise TypeError("'hfc' is expencted to be XHeaderFooterContent instance")
 
@@ -5750,11 +5785,18 @@ class Calc:
             return hfc.getCenterText()
         if region == cls.HeaderFooter.HF_RIGHT:
             return hfc.getRightText()
-        print("Unknown header/footer region")
-        return None
+        raise TypeError("region is not a valid type")
 
     @classmethod
-    def set_head_foot(cls, hfc: XHeaderFooterContent, region: int, text: str) -> None:
+    def set_head_foot(cls, hfc: XHeaderFooterContent, region: Calc.HeaderFooter, text: str) -> None:
+        """
+        Sets the Header-Footer-Content
+
+        Args:
+            hfc (XHeaderFooterContent): Content
+            region (HeaderFooter): Region to set
+            text (str): Text to set
+        """
         xtext = cls.get_region(hfc=hfc, region=region)
         if xtext is None:
             print("Could not set text")

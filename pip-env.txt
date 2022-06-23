@@ -47,6 +47,7 @@ SecretStorage==3.3.2
 six==1.16.0
 snowballstemmer==2.2.0
 Sphinx==5.0.1
+sphinx-autodoc-typehints==1.18.3
 sphinx-rtd-dark-mode==1.2.4
 sphinx-rtd-theme==1.0.0
 sphinxcontrib-applehelp==1.0.2

@@ -6,12 +6,7 @@ import os
 from typing import TYPE_CHECKING, cast, overload
 from enum import IntEnum
 
-_DOCS_BUILDING = os.environ.get("DOCS_BUILDING", None) == "True"
-# _DOCS_BUILDING is only true when sphinx is building docs.
-# env var DOCS_BUILDING is set in docs/conf.py
-_ON_RTD = os.environ.get("READTHEDOCS", None) == "True"
-# env var READTHEDOCS is true when read the docs is building
-# maybe not needed as _DOCS_BUILDING is set in conf.py
+
 from ..events.event_singleton import Events
 from ..events.named_event import LoNamedEvent
 from ..utils import lo as mLo
@@ -22,22 +17,22 @@ from ..utils.type_var import DocOrText, DocOrCursor
 from ..exceptions import ex as mEx
 from ..events.event_args import EventArgs
 
-if not _DOCS_BUILDING and not _ON_RTD:
-    from com.sun.star.beans import XPropertySet
-    from com.sun.star.container import XIndexAccess
-    from com.sun.star.frame import XModel
-    from com.sun.star.i18n import XBreakIterator
-    from com.sun.star.text import XParagraphCursor
-    from com.sun.star.text import XSentenceCursor
-    from com.sun.star.text import XText
-    from com.sun.star.text import XTextCursor
-    from com.sun.star.text import XTextDocument
-    from com.sun.star.text import XTextRange
-    from com.sun.star.text import XTextRangeCompare
-    from com.sun.star.text import XTextViewCursor
-    from com.sun.star.text import XTextViewCursorSupplier
-    from com.sun.star.text import XWordCursor
-    from com.sun.star.view import XSelectionSupplier
+# if not _DOCS_BUILDING and not _ON_RTD:
+from com.sun.star.beans import XPropertySet
+from com.sun.star.container import XIndexAccess
+from com.sun.star.frame import XModel
+from com.sun.star.i18n import XBreakIterator
+from com.sun.star.text import XParagraphCursor
+from com.sun.star.text import XSentenceCursor
+from com.sun.star.text import XText
+from com.sun.star.text import XTextCursor
+from com.sun.star.text import XTextDocument
+from com.sun.star.text import XTextRange
+from com.sun.star.text import XTextRangeCompare
+from com.sun.star.text import XTextViewCursor
+from com.sun.star.text import XTextViewCursorSupplier
+from com.sun.star.text import XWordCursor
+from com.sun.star.view import XSelectionSupplier
 
 
 
@@ -69,7 +64,7 @@ class Selection(metaclass=StaticProperty):
         Returns:
             bool: True if anything in the document is selected: Otherwise, False
 
-         Note:
+        Note:
             Writer must be visible for this method or ``False`` is always returned.
         """
 
@@ -146,7 +141,7 @@ class Selection(metaclass=StaticProperty):
         return rng.getString()
 
     @classmethod
-    def compare_cursor_ends(cls, c1: XTextRange, c2: XTextRange) -> CompareEnum:
+    def compare_cursor_ends(cls, c1: XTextRange, c2: XTextRange) -> Selection.CompareEnum:
         """
         Compares two cursors ranges end positons
 
