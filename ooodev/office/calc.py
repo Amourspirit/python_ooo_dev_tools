@@ -3,22 +3,17 @@
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 # region Imports
 from __future__ import annotations
-from enum import IntFlag, Enum, Flag
+from enum import IntFlag, Enum
 import numbers
 import re
 import os
 from typing import Any, List, Tuple, cast, overload, Sequence, TYPE_CHECKING
 import uno
+from ..mock import mock_g
 
-_DOCS_BUILDING = os.environ.get("DOCS_BUILDING", None) == 'True'
-# _DOCS_BUILDING is only true when sphinx is building docs.
-# env var DOCS_BUILDING is set in docs/conf.py
-_ON_RTD = os.environ.get('READTHEDOCS', None) == 'True'
-# env var READTHEDOCS is true when read the docs is building
-# maybe not needed as _DOCS_BUILDING is set in conf.py
 
-if not _DOCS_BUILDING and not _ON_RTD:
-    # not importing for doc building jus result in short import name for
+if not mock_g.DOCS_BUILDING:
+    # not importing for doc building just result in short import name for
     # args that use these.
     # this is also true becuase docs/conf.py ignores com import for autodoc
     from com.sun.star.container import XIndexAccess
@@ -127,12 +122,12 @@ class Calc:
         TEXT = "TEXT"
         FORMULA = "FORMULA"
         UNKNOWN = "UNKNOWN"
-        
+
         def __str__(self) -> str:
             return self.value
-    
+
     CellFlags = CellFlagsEnum
- 
+
     GeneralFunction = OooGeneralFunction
 
     SolverConstraintOperator = OooSolverConstraintOperator
@@ -219,16 +214,16 @@ class Calc:
             MissingInterfaceError: If doc does not have XSpreadsheetDocument interface
         Returns:
             XSpreadsheetDocument: Spreadsheet document
-        
+
         See Also:
             :py:meth:`~Calc.get_ss_doc`
         """
-        doc = mLo.Lo.create_doc(doc_type= mLo.Lo.DocTypeStr.CALC, loader=loader)
+        doc = mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.CALC, loader=loader)
         ss_doc = mLo.Lo.qi(XSpreadsheetDocument, doc)
         if ss_doc is None:
             raise mEx.MissingInterfaceError(XSpreadsheetDocument)
         return ss_doc
-        
+
         # XSpreadsheetDocument does not inherit XComponent!
 
     # endregion ------------ document methods ------------------
@@ -273,7 +268,7 @@ class Calc:
 
         Returns:
             XSpreadsheet: Spreadsheet at index.
-        
+
         Raises:
             Exception: If spreadsheet is not found
         """
@@ -321,7 +316,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('doc','index', 'sheet_name')
+            valid_keys = ("doc", "index", "sheet_name")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("get_sheet() got an unexpected keyword argument")
@@ -439,7 +434,7 @@ class Calc:
             doc (XSpreadsheetDocument): Spreadsheet document
             sheet_name (str): Name of sheet to remove
             index (int): Zero based index of sheet to remove.
-            
+
 
         Returns:
             bool: True of sheet was removed; Otherwise, False
@@ -452,7 +447,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('doc', 'index', 'sheet_name')
+            valid_keys = ("doc", "index", "sheet_name")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("remove_sheet() got an unexpected keyword argument")
@@ -512,7 +507,7 @@ class Calc:
         """
         sheets = doc.getSheets()
         return sheets.getElementNames()
-    
+
     @staticmethod
     def get_sheets(doc: XSpreadsheetDocument) -> XSpreadsheets:
         """
@@ -683,7 +678,7 @@ class Calc:
             return
         xfreeze = mLo.Lo.qi(XViewFreezable, ctrl)
         xfreeze.freezeAtPosition(num_cols, num_rows)
-    
+
     @classmethod
     def unfreeze(cls, doc: XSpreadsheetDocument) -> None:
         """
@@ -764,7 +759,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('cell_name', 'doc', 'frame')
+            valid_keys = ("cell_name", "doc", "frame")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("goto_cell() got an unexpected keyword argument")
@@ -869,7 +864,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('doc', 'model')
+            valid_keys = ("doc", "model")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("get_selected_addr() got an unexpected keyword argument")
@@ -1155,6 +1150,7 @@ class Calc:
             cell_range (XCellRange): Cell range
         """
         ...
+
     @overload
     @classmethod
     def clear_cells(cls, sheet: XSpreadsheet, cell_range: XCellRange, cell_flags: CellFlags) -> None:
@@ -1179,6 +1175,7 @@ class Calc:
             range_name (str): Range name such as 'A1:G3'
         """
         ...
+
     @overload
     @classmethod
     def clear_cells(cls, sheet: XSpreadsheet, range_name: str, cell_flags: CellFlags) -> None:
@@ -1203,6 +1200,7 @@ class Calc:
             cr_addr (CellRangeAddress): Cell Range Address
         """
         ...
+
     @overload
     @classmethod
     def clear_cells(cls, sheet: XSpreadsheet, cr_addr: CellRangeAddress, cell_flags: CellFlags) -> None:
@@ -1220,7 +1218,7 @@ class Calc:
     def clear_cells(cls, *args, **kwargs) -> None:
         """
         Clears the specified contents of the cell range
-        
+
         If cell_flags is not specified then
         cell range of types ``VALUE``, ``DATETIME`` and ``STRING`` are cleared
 
@@ -1245,7 +1243,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('sheet','cell_range', 'range_name', 'cr_addr', 'cell_flags')
+            valid_keys = ("sheet", "cell_range", "range_name", "cr_addr", "cell_flags")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("clear_cells() got an unexpected keyword argument")
@@ -1266,7 +1264,7 @@ class Calc:
         kargs = get_kwargs()
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
-        
+
         if count == 2:
             flags = Calc.CellFlags.VALUE | Calc.CellFlags.DATETIME | Calc.CellFlags.STRING
         else:
@@ -1281,12 +1279,12 @@ class Calc:
             rng = rng_value
         else:
             rng = Calc.get_cell_range(sheet=kargs[1], cr_addr=rng_value)
-    
+
         sheet_op = mLo.Lo.qi(XSheetOperation, rng)
         if sheet_op is None:
             raise mEx.MissingInterfaceError(XSheetOperation)
         sheet_op.clearContents(flags.value)
-    
+
     # endregion clear_cells()
 
     # endregion ------------ insert/remove rows, columns, cells -----
@@ -1372,7 +1370,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('value', 'cell', 'sheet', 'cell_name', 'col', 'row')
+            valid_keys = ("value", "cell", "sheet", "cell_name", "col", "row")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("set_val() got an unexpected keyword argument")
@@ -1456,7 +1454,7 @@ class Calc:
             return cls.CellTypeEnum.FORMULA
         print("Unknown cell type")
         return cls.CellTypeEnum.UNKNOWN
-    
+
     @classmethod
     def get_type_string(cls, cell: XCell) -> str:
         """
@@ -1585,7 +1583,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('sheet', 'cell', 'cell_name', 'addr', 'col', 'row')
+            valid_keys = ("sheet", "cell", "cell_name", "addr", "col", "row")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("get_val() got an unexpected keyword argument")
@@ -1722,7 +1720,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('sheet', 'cell', 'cell_name', 'addr', 'col', 'row')
+            valid_keys = ("sheet", "cell", "cell_name", "addr", "col", "row")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("get_num() got an unexpected keyword argument")
@@ -1849,7 +1847,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('cell', 'sheet', 'cell_name', 'addr', 'col', 'row')
+            valid_keys = ("cell", "sheet", "cell_name", "addr", "col", "row")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("get_string() got an unexpected keyword argument")
@@ -1902,9 +1900,7 @@ class Calc:
 
     # region    set_array()
     @classmethod
-    def _set_array_doc_addr(
-        cls, values: Table, doc: XSpreadsheetDocument, addr: CellAddress
-    ) -> None:
+    def _set_array_doc_addr(cls, values: Table, doc: XSpreadsheetDocument, addr: CellAddress) -> None:
         v_len = len(values)
         if v_len == 0:
             print("Values has not data")
@@ -2008,7 +2004,18 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('values', 'cell_range', 'sheet','doc', 'name', 'col_start', 'addr', 'row_start', 'col_end', 'row_end')
+            valid_keys = (
+                "values",
+                "cell_range",
+                "sheet",
+                "doc",
+                "name",
+                "col_start",
+                "addr",
+                "row_start",
+                "col_end",
+                "row_end",
+            )
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("set_array() got an unexpected keyword argument")
@@ -2190,7 +2197,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('cell_range', 'sheet','range_name')
+            valid_keys = ("cell_range", "sheet", "range_name")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("get_array() got an unexpected keyword argument")
@@ -2384,7 +2391,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('sheet', 'values','cell_name', 'col_start', 'row_start')
+            valid_keys = ("sheet", "values", "cell_name", "col_start", "row_start")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("set_col() got an unexpected keyword argument")
@@ -2483,7 +2490,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('sheet', 'values', 'cell_name', 'col_start', 'row_start')
+            valid_keys = ("sheet", "values", "cell_name", "col_start", "row_start")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("set_row() got an unexpected keyword argument")
@@ -2859,7 +2866,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('sheet', 'cell_range','addr', 'col', 'cell_name', 'row')
+            valid_keys = ("sheet", "cell_range", "addr", "col", "cell_name", "row")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("get_cell() got an unexpected keyword argument")
@@ -2970,7 +2977,7 @@ class Calc:
 
     @overload
     @classmethod
-    def get_cell_range(cls, sheet: XSpreadsheet, cr_addr: CellRangeAddress) -> XCellRange :
+    def get_cell_range(cls, sheet: XSpreadsheet, cr_addr: CellRangeAddress) -> XCellRange:
         """
         Gets a cell range
 
@@ -3056,7 +3063,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('sheet', 'cr_addr','range_name', 'start_col', 'start_row', 'end_col', 'end_row')
+            valid_keys = ("sheet", "cr_addr", "range_name", "start_col", "start_row", "end_col", "end_row")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("get_cell_range() got an unexpected keyword argument")
@@ -3227,7 +3234,7 @@ class Calc:
         con = con = mLo.Lo.qi(XIndexAccess, rows)
         if con is None:
             raise mEx.MissingInterfaceError(XIndexAccess)
-        cell_range =  mLo.Lo.qi(XCellRange, con.getByIndex(idx))
+        cell_range = mLo.Lo.qi(XCellRange, con.getByIndex(idx))
         if cell_range is None:
             raise mEx.MissingInterfaceError(XCellRange, f"Could not access range for row position: {idx}")
         return cell_range
@@ -3462,7 +3469,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('cell', 'sheet','cell_name', 'col', 'addr', 'row')
+            valid_keys = ("cell", "sheet", "cell_name", "col", "addr", "row")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("get_cell_address() got an unexpected keyword argument")
@@ -3601,7 +3608,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('cell_range', 'sheet', 'range_name', 'start_col', 'start_row', 'end_col' , 'end_row')
+            valid_keys = ("cell_range", "sheet", "range_name", "start_col", "start_row", "end_col", "end_row")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("get_address() got an unexpected keyword argument")
@@ -3684,7 +3691,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('cell', 'addr')
+            valid_keys = ("cell", "addr")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("print_cell_address() got an unexpected keyword argument")
@@ -3750,7 +3757,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('cell_range', 'cr_addr')
+            valid_keys = ("cell_range", "cr_addr")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("print_address() got an unexpected keyword argument")
@@ -3842,7 +3849,6 @@ class Calc:
             bool: True if equal; Otherwise, False
         """
         ...
-
 
     @staticmethod
     def is_equal_addresses(addr1: object, addr2: object) -> bool:
@@ -4015,7 +4021,7 @@ class Calc:
     def get_range_str(cls, *args, **kwargs) -> str:
         """
         Gets the range as a string inf format of ``A1:B2`` or ``Sheet1.A1:B2``
-        
+
         If ``sheet`` is included the format ``Sheet1.A1:B2`` is returned; Otherwise,
         ``A1:B2`` format is returned.
 
@@ -4039,7 +4045,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('cell_range', 'cr_addr', 'sheet', 'start_col', 'start_row', 'end_col', 'end_row')
+            valid_keys = ("cell_range", "cr_addr", "sheet", "start_col", "start_row", "end_col", "end_row")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("get_range_str() got an unexpected keyword argument")
@@ -4185,7 +4191,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('addr', 'cell', 'col', 'row')
+            valid_keys = ("addr", "cell", "col", "row")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("get_cell_str() got an unexpected keyword argument")
@@ -4271,6 +4277,9 @@ class Calc:
                 sd.setSearchString('test')
                 results = Calc.find_all(srch=srch, sd=sd)
                 assert len(results) == 2
+
+        See Also:
+            `LibreOffice API SearchDescriptor <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1util_1_1SearchDescriptor.html>`_
         """
         con = srch.findAll(sd)
         if con is None:
@@ -4408,7 +4417,16 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('sheet', 'style_name', 'range_name', 'cell_range', 'start_col', 'start_row', 'end_col', 'end_row')
+            valid_keys = (
+                "sheet",
+                "style_name",
+                "range_name",
+                "cell_range",
+                "start_col",
+                "start_row",
+                "end_col",
+                "end_row",
+            )
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("change_style() got an unexpected keyword argument")
@@ -4478,12 +4496,12 @@ class Calc:
         line = BorderLine2()  # create the border line
         border = cast(TableBorder2, mProps.Props.get_property(prop_set=cell_range, name="TableBorder2"))
         inner_line = cast(BorderLine2, mProps.Props.get_property(prop_set=cell_range, name="TopBorder2"))
-        
+
         line.Color = color
         line.InnerLineWidth = 0
         line.LineDistance = 0
         line.OuterLineWidth = 100
-        
+
         # inner_line = BorderLine2()  # create the border line
         # inner_line.Color = 0
         # inner_line.LineWidth = 0
@@ -4514,7 +4532,6 @@ class Calc:
         mProps.Props.set_property(prop_set=cell_range, name="BottomBorder2", value=inner_line)
         mProps.Props.set_property(prop_set=cell_range, name="LeftBorder2", value=inner_line)
         mProps.Props.set_property(prop_set=cell_range, name="TableBorder2", value=border)
-
 
     @overload
     @classmethod
@@ -4580,7 +4597,9 @@ class Calc:
 
     @overload
     @classmethod
-    def add_border(cls, sheet: XSpreadsheet, cell_range: XCellRange, color: Color, border_vals: BorderEnum) -> XCellRange:
+    def add_border(
+        cls, sheet: XSpreadsheet, cell_range: XCellRange, color: Color, border_vals: BorderEnum
+    ) -> XCellRange:
         """
         Adds borders to a cell range
 
@@ -4635,7 +4654,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('sheet', 'range_name', 'cell_range', 'color', 'border_vals')
+            valid_keys = ("sheet", "range_name", "cell_range", "color", "border_vals")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("add_border() got an unexpected keyword argument")
@@ -4702,7 +4721,7 @@ class Calc:
         cell_range: XCellRange,
         border_vals: BorderEnum,
     ) -> None:
-        
+
         line = BorderLine2()  # create the border line
         border = cast(TableBorder2, mProps.Props.get_property(prop_set=cell_range, name="TableBorder2"))
         line = cast(BorderLine2, mProps.Props.get_property(prop_set=cell_range, name="TopBorder2"))
@@ -4739,7 +4758,6 @@ class Calc:
         mProps.Props.set_property(prop_set=cell_range, name="BottomBorder2", value=inner_line)
         mProps.Props.set_property(prop_set=cell_range, name="LeftBorder2", value=inner_line)
 
-
     @overload
     @classmethod
     def remove_border(cls, sheet: XSpreadsheet, cell_range: XCellRange) -> XCellRange:
@@ -4769,7 +4787,6 @@ class Calc:
             XCellRange: Range borders that are affected
         """
         ...
-
 
     @overload
     @classmethod
@@ -4825,7 +4842,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('sheet', 'range_name', 'cell_range', 'border_vals')
+            valid_keys = ("sheet", "range_name", "cell_range", "border_vals")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("remove_border() got an unexpected keyword argument")
@@ -4861,8 +4878,8 @@ class Calc:
         else:
             # remove_border(cls, sheet: XSpreadsheet, cell_range: XCellRange, border_vals: BorderEnum)
             # remove_border(cls, sheet: XSpreadsheet, range_name: str, border_vals: BorderEnum)
-            cls._remove_border_sht_rng_vals(cell_range=cell_range,  border_vals=kargs[3])
-        
+            cls._remove_border_sht_rng_vals(cell_range=cell_range, border_vals=kargs[3])
+
         return cell_range
 
     # endregion remove_border()
@@ -4870,7 +4887,7 @@ class Calc:
     # region    highlight_range()
     @overload
     @classmethod
-    def highlight_range(cls, sheet: XSpreadsheet,  headline: str, cell_range: XCellRange) ->  XCell:
+    def highlight_range(cls, sheet: XSpreadsheet, headline: str, cell_range: XCellRange) -> XCell:
         """
         Draw a colored border around the range and write a headline in the
         top-left cell of the range.
@@ -4884,10 +4901,10 @@ class Calc:
             XCell: First cell of range that headline ia applied on
         """
         ...
-    
+
     @overload
     @classmethod
-    def highlight_range(cls, sheet: XSpreadsheet,  headline: str, cell_range: XCellRange, color: Color) ->  XCell:
+    def highlight_range(cls, sheet: XSpreadsheet, headline: str, cell_range: XCellRange, color: Color) -> XCell:
         """
         Draw a colored border around the range and write a headline in the
         top-left cell of the range.
@@ -4902,11 +4919,10 @@ class Calc:
             XCell: First cell of range that headline ia applied on
         """
         ...
-    
-    
+
     @overload
     @classmethod
-    def highlight_range(cls, sheet: XSpreadsheet,  headline: str, range_name: str) ->  XCell:
+    def highlight_range(cls, sheet: XSpreadsheet, headline: str, range_name: str) -> XCell:
         """
         Draw a colored border around the range and write a headline in the
         top-left cell of the range.
@@ -4920,10 +4936,10 @@ class Calc:
             XCell: First cell of range that headline ia applied on
         """
         ...
-    
+
     @overload
     @classmethod
-    def highlight_range(cls, sheet: XSpreadsheet,  headline: str, range_name: str, color: Color) ->  XCell:
+    def highlight_range(cls, sheet: XSpreadsheet, headline: str, range_name: str, color: Color) -> XCell:
         """
         Draw a colored border around the range and write a headline in the
         top-left cell of the range.
@@ -4963,7 +4979,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('sheet', 'headline', 'range_name', 'cell_range', 'color')
+            valid_keys = ("sheet", "headline", "range_name", "cell_range", "color")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("highlight_range() got an unexpected keyword argument")
@@ -5011,8 +5027,8 @@ class Calc:
         first_cell = cls._get_cell_cell_rng(cell_range=header_range, col=0, row=0)
         cls._set_val_by_cell(value=kargs[2], cell=first_cell)
         return first_cell
-    # endregion highlight_range()
 
+    # endregion highlight_range()
 
     @classmethod
     def set_col_width(cls, sheet: XSpreadsheet, width: int, idx: int) -> XCellRange:
@@ -5035,7 +5051,12 @@ class Calc:
         return cell_range
 
     @classmethod
-    def set_row_height(cls, sheet: XSpreadsheet, height: int, idx: int,) ->  XCellRange:
+    def set_row_height(
+        cls,
+        sheet: XSpreadsheet,
+        height: int,
+        idx: int,
+    ) -> XCellRange:
         """
         Sets column width. height is in ``mm``, e.g. 6
 
@@ -5060,9 +5081,7 @@ class Calc:
     # region --------------- scenarios ---------------------------------
 
     @staticmethod
-    def insert_scenario(
-        sheet: XSpreadsheet, range_name: str, vals: Table, name: str, comment: str
-    ) -> XScenario:
+    def insert_scenario(sheet: XSpreadsheet, range_name: str, vals: Table, name: str, comment: str) -> XScenario:
         """
         Insert a scenario into sheet
 
@@ -5078,13 +5097,13 @@ class Calc:
 
         Returns:
             XScenario: the newly created scenario
-        
+
         Note:
             A LibreOffice Calc scenario is a set of cell values that can be used within your calculations.
             You assign a name to every scenario on your sheet. Define several scenarios on the same sheet,
             each with some different values in the cells. Then you can easily switch the sets of cell values
             by their name and immediately observe the results. Scenarios are a tool to test out "what-if" questions.
-            
+
         See Also:
             `Using Scenarios <https://help.libreoffice.org/latest/en-US/text/scalc/guide/scenario.html>`_
         """
@@ -5109,7 +5128,7 @@ class Calc:
         if cr_data is None:
             raise mEx.MissingInterfaceError(XCellRangeData)
         cr_data.setDataArray(vals)
-        
+
         supp = mLo.Lo.qi(XScenariosSupplier, sheet)
         if supp is None:
             raise mEx.MissingInterfaceError(XScenariosSupplier)
@@ -5139,7 +5158,7 @@ class Calc:
             You assign a name to every scenario on your sheet. Define several scenarios on the same sheet,
             each with some different values in the cells. Then you can easily switch the sets of cell values
             by their name and immediately observe the results. Scenarios are a tool to test out "what-if" questions.
-            
+
         See Also:
             `Using Scenarios <https://help.libreoffice.org/latest/en-US/text/scalc/guide/scenario.html>`_
         """
@@ -5204,7 +5223,7 @@ class Calc:
             otable = dp_tables.getByName(name)
             if otable is None:
                 raise Exception(f"Did not find data pilot table '{name}'")
-            result =  mLo.Lo.qi(XDataPilotTable, otable)
+            result = mLo.Lo.qi(XDataPilotTable, otable)
             if result is None:
                 raise mEx.MissingInterfaceError(XDataPilotTable)
             return result
@@ -5243,7 +5262,7 @@ class Calc:
         return 0.0
 
     @staticmethod
-    def call_fun(func_name: str, *args:any) -> object:
+    def call_fun(func_name: str, *args: any) -> object:
         """
         Execute a Calc function by its (english) name and based on the given arguments
 
@@ -5264,13 +5283,12 @@ class Calc:
         else:
             arg = args
         try:
-            fa = mLo.Lo.create_instance_mcf(XFunctionAccess, "com.sun.star.sheet.FunctionAccess")
+            fa = mLo.Lo.create_instance_mcf(XFunctionAccess, "com.sun.star.sheet.FunctionAccess", raise_err=True)
             return fa.callFunction(func_name.upper(), arg)
         except Exception as e:
             print(f"Could not invoke function '{func_name.upper()}'")
             print(f"    {e}")
         return None
-
 
     @staticmethod
     def get_function_names() -> List[str] | None:
@@ -5302,7 +5320,9 @@ class Calc:
         if not func_nm:
             raise ValueError("Invalid arg, please supply a function name to find.")
         try:
-            func_desc = mLo.Lo.create_instance_mcf(XFunctionDescriptions, "com.sun.star.sheet.FunctionDescriptions")
+            func_desc = mLo.Lo.create_instance_mcf(
+                XFunctionDescriptions, "com.sun.star.sheet.FunctionDescriptions", raise_err=True
+            )
         except Exception as e:
             raise Exception("No function descriptions were found") from e
 
@@ -5322,7 +5342,9 @@ class Calc:
         if idx < 0:
             raise IndexError("Negative index in not allowed.")
         try:
-            func_desc = mLo.Lo.create_instance_mcf(XFunctionDescriptions, "com.sun.star.sheet.FunctionDescriptions")
+            func_desc = mLo.Lo.create_instance_mcf(
+                XFunctionDescriptions, "com.sun.star.sheet.FunctionDescriptions", raise_err=True
+            )
         except Exception as e:
             raise Exception("No function descriptions were found") from e
 
@@ -5381,7 +5403,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('func_nm', 'idx')
+            valid_keys = ("func_nm", "idx")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("find_function() got an unexpected keyword argument")
@@ -5450,7 +5472,7 @@ class Calc:
         cls, gs: XGoalSeek, sheet: XSpreadsheet, cell_name: str, formula_cell_name: str, result: numbers.Number
     ) -> float:
         """
-        Calculates a value which gives a specified result in a formula. 
+        Calculates a value which gives a specified result in a formula.
 
         Args:
             gs (XGoalSeek): Goal seeking value for cell
@@ -5464,7 +5486,7 @@ class Calc:
 
         Returns:
             float: result of the goal seek
-        """        
+        """
         """find x in formula when it equals result"""
         xpos = cls._get_cell_address_sheet(sheet=sheet, cell_name=cell_name)
         formula_pos = cls._get_cell_address_sheet(sheet=sheet, cell_name=formula_cell_name)
@@ -5494,7 +5516,7 @@ class Calc:
     def to_constraint_op(cls, op: str) -> SolverConstraintOperator:
         """
         Convert string value to SolverConstraintOperator.
-        
+
         If ``op`` is not valid then SolverConstraintOperator.EQUAL is returned.
 
         Args:
@@ -5547,7 +5569,7 @@ class Calc:
     @classmethod
     def make_constraint(cls, num: numbers.Number, op: str, addr: CellAddress) -> SolverConstraint:
         """
-        Makes a constraint for a solver model. 
+        Makes a constraint for a solver model.
 
         Args:
             num (Number): Constraint number such as float or int.
@@ -5563,7 +5585,7 @@ class Calc:
     @classmethod
     def make_constraint(cls, num: numbers.Number, op: SolverConstraintOperator, addr: CellAddress) -> SolverConstraint:
         """
-        Makes a constraint for a solver model. 
+        Makes a constraint for a solver model.
 
         Args:
             num (Number): Constraint number such as float or int.
@@ -5614,7 +5636,7 @@ class Calc:
     @classmethod
     def make_constraint(cls, *args, **kwargs) -> SolverConstraint:
         """
-        Makes a constraint for a solver model. 
+        Makes a constraint for a solver model.
 
         Args:
             num (Number): Constraint number such as float or int.
@@ -5633,7 +5655,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('num', 'op', 'sheet', 'addr', 'cell_name')
+            valid_keys = ("num", "op", "sheet", "addr", "cell_name")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("make_constraint() got an unexpected keyword argument")
@@ -5656,7 +5678,7 @@ class Calc:
 
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
-        if not count in (3, 4) :
+        if not count in (3, 4):
             if isinstance(kargs[2], str):
                 # def make_constraint(num: float, op: str, addr: CellAddress)
                 return cls._make_constraint_op_str_addr(num=kargs[1], op=kargs[2], addr=kargs[3])

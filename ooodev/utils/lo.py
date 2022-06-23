@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, Iterable, Optional, List, Tuple, cast, overloa
 from urllib.parse import urlparse
 import uno
 from enum import IntEnum, Enum
+from ..mock import mock_g
 
 from ..events.event_singleton import Events
 from ..events.named_event import LoNamedEvent
@@ -18,19 +19,24 @@ from ..events.dispatch_event import DispatchEvent
 from ..events.dispatch_cancel_event import DispatchCancelEvent
 from ..meta.static_meta import StaticProperty, classproperty
 from .connect import ConnectBase, LoPipeStart, LoSocketStart, LoDirectStart
-from com.sun.star.beans import XPropertySet
-from com.sun.star.beans import XIntrospection
-from com.sun.star.container import XNamed
-from com.sun.star.frame import XDesktop
-from com.sun.star.frame import XDispatchHelper
+
 from com.sun.star.lang import XComponent
-from com.sun.star.lang import XMultiServiceFactory
-from com.sun.star.io import IOException
-from com.sun.star.util import XCloseable
-from com.sun.star.util import XNumberFormatsSupplier
-from com.sun.star.frame import XComponentLoader
-from com.sun.star.frame import XModel
-from com.sun.star.frame import XStorable
+if not mock_g.DOCS_BUILDING:
+    # not importing for doc building just result in short import name for
+    # args that use these.
+    # this is also true becuase docs/conf.py ignores com import for autodoc
+    from com.sun.star.beans import XPropertySet
+    from com.sun.star.beans import XIntrospection
+    from com.sun.star.container import XNamed
+    from com.sun.star.frame import XDesktop
+    from com.sun.star.frame import XDispatchHelper
+    from com.sun.star.lang import XMultiServiceFactory
+    from com.sun.star.io import IOException
+    from com.sun.star.util import XCloseable
+    from com.sun.star.util import XNumberFormatsSupplier
+    from com.sun.star.frame import XComponentLoader
+    from com.sun.star.frame import XModel
+    from com.sun.star.frame import XStorable
 
 if TYPE_CHECKING:
     from com.sun.star.beans import PropertyValue
@@ -260,7 +266,7 @@ class Lo(metaclass=StaticProperty):
         Generic method that get an interface instance from  an object.
 
         Args:
-            atype (T): Interface type such as XInterface
+            atype (T): Interface type to query obj for. Any Uno class that starts with 'X' such as XInterface
             obj (object): Object that implements interface.
             raise_err (bool, optional): If True then raises MissingInterfaceError if result is None. Default False
 
@@ -269,6 +275,9 @@ class Lo(metaclass=StaticProperty):
 
         Returns:
             T | None: instance of interface if supported; Otherwise, None
+
+        Note:
+            When ``raise_err=True`` return value will never be ``None``.
 
         Example:
 
@@ -317,58 +326,31 @@ class Lo(metaclass=StaticProperty):
     # region interface object creation
 
     # region    create_instance_msf()
-    @overload
     @classmethod
-    def create_instance_msf(cls, atype: Type[T], service_name: str) -> T:
+    def create_instance_msf(cls, atype: Type[T], service_name: str, msf: XMultiServiceFactory = None, raise_err: bool = False) -> T:
         """
-        Creates in instace of a service using multi service factory.
+        Creates an instance classified by the specified service name and
+        optionally passes arguments to that instance.
+        
+        The interface specified by ``atype`` is returned from created instance.
 
         Args:
-            atype (Type[T]): Type of interface to return
+            atype (Type[T]): Type of interface to return from created service.
+                Any Uno class that starts with 'X' such as XInterface
             service_name (str): Service name
+            msf (XMultiServiceFactory, optional): Multi service factory used to create instance
+            raise_err (bool, optional): If True then can raise CreateInstanceMsfError or MissingInterfaceError
 
         Raises:
-            Exception: if unable to create instance
+            CreateInstanceMsfError: If 'raise_err' is 'True' and no instance was created
+            MissingInterfaceError: If 'raise_err' is 'True' and instance was created but does not implement 'atype' interface.
+            Exception: if unable to create instance for any other reason
 
         Returns:
             T: Instance of interface for the service name.
-        """
-        ...
 
-    @overload
-    @classmethod
-    def create_instance_msf(cls, atype: Type[T], service_name: str, msf: XMultiServiceFactory) -> T:
-        """
-        Creates in instace of a service using multi service factory.
-
-        Args:
-            atype (Type[T]): Type of interface to return
-            service_name (str): Service name
-            msf (XMultiServiceFactory): Multi service factory used to create instance
-
-        Raises:
-            Exception: if unable to create instance
-
-        Returns:
-            T: Instance of interface for the service name.
-        """
-        ...
-
-    @classmethod
-    def create_instance_msf(cls, atype: Type[T], service_name: str, msf: XMultiServiceFactory = None) -> T:
-        """
-        Creates in instace of a service using multi service factory.
-
-        Args:
-            atype (Type[T]): Type of interface to return
-            service_name (str): Service name
-            msf (XMultiServiceFactory): Multi service factory used to create instance
-
-        Raises:
-            Exception: if unable to create instance
-
-        Returns:
-            T: Instance of interface for the service name.
+        Note:
+            When ``raise_err=True`` return value will never be ``None``.
 
         Example:
             In the following example ``src_con`` is an instance of ``XSheetCellRangeContainer``
@@ -386,60 +368,44 @@ class Lo(metaclass=StaticProperty):
                 obj = cls._ms_factory.createInstance(service_name)
             else:
                 obj = msf.createInstance(service_name)
+            if raise_err is True and obj is None:
+                mEx.CreateInstanceMsfError(atype, service_name)
             interface_obj = cls.qi(atype=atype, obj=obj)
-            if interface_obj is None:
+            if raise_err is True and interface_obj is None:
                 raise mEx.MissingInterfaceError(atype)
+            return interface_obj
+        except mEx.CreateInstanceMsfError:
+            raise
+        except mEx.MissingInterfaceError:
+            raise
         except Exception as e:
             raise Exception(f"Couldn't create interface for '{service_name}'") from e
-        return interface_obj
 
     # endregion create_instance_msf()
 
     # region    create_instance_mcf()
-    @overload
     @classmethod
-    def create_instance_mcf(cls, atype: Type[T], service_name: str) -> T:
+    def create_instance_mcf(cls, atype: Type[T], service_name: str, args: Tuple[object, ...] | None = None, raise_err: bool = False) -> T:
         """
-        Create an interface object of class atype from the named service
+        Creates an instance of a component which supports the services specified by the factory,
+        and optionally initializes the new instance with the given arguments and context.
+        
+        The interface specified by ``atype`` is returned from created instance.
 
         Args:
+            atype (Type[T]): Type of interface to return from created instance.
+                Any Uno class that starts with 'X' such as XInterface
             service_name (str): Service Name
+            args (Tuple[object, ...], Optional): Args
+            raise_err (bool, optional): If True then can raise CreateInstanceMcfError or MissingInterfaceError
 
         Raises:
-            Exception: if unable to create instance
+            CreateInstanceMcfError: If 'raise_err' is 'True' and no instance was created
+            MissingInterfaceError: If 'raise_err' is 'True' and instance was created but does not implement 'atype' interface.
+            Exception: if unable to create instance for any other reason
 
-        Returns:
-            T: Instance of interface for the service name.
-        """
-
-    @overload
-    @classmethod
-    def create_instance_mcf(cls, atype: Type[T], service_name: str, args: Tuple[object, ...]) -> T:
-        """
-        Create an interface object of class atype from the named service
-
-        Args:
-            service_name (str): Service Name
-            args (Tuple[object, ...]): Args
-
-        Raises:
-            Exception: if unable to create instance
-
-        Returns:
-            T: Instance of interface for the service name.
-        """
-
-    @classmethod
-    def create_instance_mcf(cls, atype: Type[T], service_name: str, args: Optional[Tuple[object, ...]] = None) -> T:
-        """
-        Create an interface object of class atype from the named service
-
-        Args:
-            service_name (str): Service Name
-            args (Tuple[object, ...]): Args
-
-        Raises:
-            Exception: if unable to create instance
+        Note:
+            When ``raise_err=True`` return value will never be ``None``.
 
         Returns:
             T: Instance of interface for the service name.
@@ -463,12 +429,20 @@ class Lo(metaclass=StaticProperty):
                 obj = cls._mc_factory.createInstanceWithArgumentsAndContext(service_name, args, cls._xcc)
             else:
                 obj = cls._mc_factory.createInstanceWithContext(service_name, cls._xcc)
+            if raise_err is True and obj is None:
+                mEx.CreateInstanceMcfError(atype, service_name)
             interface_obj = cls.qi(atype=atype, obj=obj)
+            if raise_err is True and interface_obj is None:
+                raise mEx.MissingInterfaceError(atype)
             if interface_obj is None:
                 raise mEx.MissingInterfaceError(atype)
+            return interface_obj
+        except mEx.CreateInstanceMcfError:
+            raise
+        except mEx.MissingInterfaceError:
+            raise
         except Exception as e:
             raise Exception(f"Couldn't create interface for '{service_name}'") from e
-        return interface_obj
 
     # endregion create_instance_mcf()
 
@@ -2179,7 +2153,7 @@ class Lo(metaclass=StaticProperty):
         except AttributeError:
             ctx = cls.get_context()
             desktop = cls.get_desktop()
-            model = cls.qi(XModel, cls._doc)
+            model = cls.qi(XModel, cls._doc, raise_err=True)
             cls._xscript_context = script_context.ScriptContext(ctx, desktop, model)
         return cls._xscript_context
 

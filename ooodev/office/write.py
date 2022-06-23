@@ -18,17 +18,11 @@ from ..utils.color import CommonColor, Color
 from ..utils.type_var import PathOrStr, Table, DocOrCursor
 from ..utils import images_lo as mImgLo
 from ..utils import selection as mSel
-
-_DOCS_BUILDING = os.environ.get("DOCS_BUILDING", None) == "True"
-# _DOCS_BUILDING is only true when sphinx is building docs.
-# env var DOCS_BUILDING is set in docs/conf.py
-_ON_RTD = os.environ.get("READTHEDOCS", None) == "True"
-# env var READTHEDOCS is true when read the docs is building
-# maybe not needed as _DOCS_BUILDING is set in conf.py
+from ..mock import mock_g
 
 
-if not _DOCS_BUILDING and not _ON_RTD:
-    # not importing for doc building jus result in short import name for
+if not mock_g.DOCS_BUILDING:
+    # not importing for doc building just result in short import name for
     # args that use these.
     # this is also true becuase docs/conf.py ignores com import for autodoc
     from com.sun.star.awt import FontWeight
@@ -1095,15 +1089,10 @@ class Write(mSel.Selection):
             formula (str): formula
 
         Raises:
-            CreateInstanceMsfError: If unable to create TextEmbeddedObject
+            CreateInstanceMsfError: If unable to create text.TextEmbeddedObject
             Exception: If unable to add formula
         """
-        try:
-            embed_content = mLo.Lo.create_instance_msf(XTextContent, "com.sun.star.text.TextEmbeddedObject")
-            if embed_content is None:
-                raise ValueError("Null result")
-        except Exception as e:
-            raise mEx.CreateInstanceMsfError(XTextContent, "com.sun.star.text.TextEmbeddedObject") from e
+        embed_content = mLo.Lo.create_instance_msf(XTextContent, "com.sun.star.text.TextEmbeddedObject", raise_err=True)
         try:
             # set class ID for type of object being inserted
             props = mLo.Lo.qi(XPropertySet, embed_content, True)
@@ -1385,7 +1374,7 @@ class Write(mSel.Selection):
             for y in range(1, num_rows):  # start in 2nd row
                 row_data = table_data[y]
                 for x in range(num_cols):
-                    set_cell_text(make_cell_name(x + 1, y), row_data[x], table)
+                    set_cell_text( make_cell_name(y, x), row_data[x], table)
         except Exception as e:
             raise Exception("Table insertion failed:") from e
 
@@ -1890,9 +1879,7 @@ class Write(mSel.Selection):
         Returns:
             XLinguProperties: Properties
         """
-        props = mLo.Lo.create_instance_mcf(XLinguProperties, "com.sun.star.linguistic2.LinguProperties")
-        if props is None:
-            raise mEx.CreateInstanceMcfError(XLinguProperties, "com.sun.star.linguistic2.LinguProperties")
+        props = mLo.Lo.create_instance_mcf(XLinguProperties, "com.sun.star.linguistic2.LinguProperties", raise_err=True)
         return props
 
     # endregion ---------  Linguistic API ------------------------------
@@ -1910,9 +1897,7 @@ class Write(mSel.Selection):
         Returns:
             XSpellChecker: spell checker
         """
-        lingo_mgr = mLo.Lo.create_instance_mcf(XLinguServiceManager, "com.sun.star.linguistic2.LinguServiceManager")
-        if lingo_mgr is None:
-            raise mEx.CreateInstanceMcfError(XLinguServiceManager, "com.sun.star.linguistic2.LinguServiceManager")
+        lingo_mgr = mLo.Lo.create_instance_mcf(XLinguServiceManager, "com.sun.star.linguistic2.LinguServiceManager", raise_err=True)
         return lingo_mgr.getSpellChecker()
 
     @classmethod
@@ -1971,9 +1956,7 @@ class Write(mSel.Selection):
         Returns:
             XThesaurus: Thesaurus
         """
-        lingo_mgr = mLo.Lo.create_instance_mcf(XLinguServiceManager, "com.sun.star.linguistic2.LinguServiceManager")
-        if lingo_mgr is None:
-            raise mEx.CreateInstanceMcfError(XLinguServiceManager, "com.sun.star.linguistic2.LinguServiceManager")
+        lingo_mgr = mLo.Lo.create_instance_mcf(XLinguServiceManager, "com.sun.star.linguistic2.LinguServiceManager", raise_err=True)
         return lingo_mgr.getThesaurus()
 
     @staticmethod
@@ -2021,9 +2004,7 @@ class Write(mSel.Selection):
         Returns:
             XProofreader: Proof Reader
         """
-        proof = mLo.Lo.create_instance_mcf(XProofreader, "com.sun.star.linguistic2.Proofreader")
-        if proof is None:
-            raise mEx.CreateInstanceMcfError(XProofreader, "com.sun.star.linguistic2.Proofreader")
+        proof = mLo.Lo.create_instance_mcf(XProofreader, "com.sun.star.linguistic2.Proofreader", raise_err=True)
         return proof
 
     @classmethod

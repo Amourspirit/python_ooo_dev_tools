@@ -1,8 +1,10 @@
 # coding: utf-8
+import csv
 import os
 from pathlib import Path
 import shutil
 import tempfile
+from typing import List
 import pytest
 from tests.fixtures import __test__path__ as fixture_path
 from tests.fixtures.writer import __test__path__ as writer_fixture_path
@@ -24,7 +26,7 @@ def tmp_path_fn():
     result = Path(tempfile.mkdtemp())
     yield result
     if os.path.exists(result):
-        shutil.rmtree(result)
+        shutil.rmtree(result, ignore_errors=True)
 
 
 @pytest.fixture(scope="session")
@@ -32,7 +34,7 @@ def tmp_path():
     result = Path(tempfile.mkdtemp())
     yield result
     if os.path.exists(result):
-        shutil.rmtree(result)
+        shutil.rmtree(result,  ignore_errors=True)
 
 
 @pytest.fixture(scope="session")
@@ -128,3 +130,38 @@ def props_str_to_dict():
                 pass
         return dlines
     return text_to_dict
+
+@pytest.fixture(scope="session")
+def bond_movies_lst_dict(fix_writer_path) -> List[dict]:
+    csv_file = Path(writer_fixture_path, "bondMovies.txt")
+    results = []
+    with open(csv_file, 'r', newline='') as csv_file:
+        csv_reader = csv.reader(csv_file, delimiter="\t")
+        line_count = 0
+        cols = []
+        for row in csv_reader:
+            if line_count in (0, 1, 2, 4): # not csv lines
+                line_count += 1
+                continue
+            if line_count == 3: # column headers
+                cols.extend(row)
+            else:
+                results.append(dict(zip(cols, row)))
+            line_count += 1
+    return results
+
+@pytest.fixture(scope="session")
+def bond_movies_table(fix_writer_path) -> List[dict]:
+    csv_file = Path(writer_fixture_path, "bondMovies.txt")
+    results = []
+    with open(csv_file, 'r', newline='') as csv_file:
+        csv_reader = csv.reader(csv_file, delimiter="\t")
+        line_count = 0
+        for row in csv_reader:
+            if line_count in (0, 1, 2, 4): # not csv lines
+                line_count += 1
+                continue
+            # first row will be column names
+            results.append(row)
+            line_count += 1
+    return results
