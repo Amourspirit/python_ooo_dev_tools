@@ -18,6 +18,7 @@ from ooodev import __version__
 
 os.environ["DOCS_BUILDING"] = "True"
 os.environ["ooouno_ignore_runtime"] = "True"
+# os.environ["ooouno_ignore_import_error"] = "True"
 
 # -- Project information -----------------------------------------------------
 
@@ -75,7 +76,7 @@ if html_theme == "sphinx_rtd_theme":
 napoleon_google_docstring = True
 napoleon_include_init_with_doc = True
 
-autodoc_typehints = "both"
+# autodoc_typehints = "both"
 # see: https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#confval-autodoc_mock_imports
 # see: https://read-the-docs.readthedocs.io/en/latest/faq.html#i-get-import-errors-on-libraries-that-depend-on-c-modules
 # on read the docs I was getting errros WARNING: autodoc: failed to import class - No module named 'uno'
@@ -98,16 +99,33 @@ autodoc_type_aliases = {
     "DocOrText": "DocOrText",
     "PathOrStr": "PathOrStr",
     "DictRow": "DictRow",
-    "DictTable": "DictTable",
-    "CellAddress": "com.sun.star.table.CellAddress",
-    "CellRangeAddress": "com.sun.star.table.CellRangeAddress",
-    "PropertyValue": "com.sun.star.beans.PropertyValue",
-    "XCell": "com.sun.star.table.XCell",
-    "XCellRange": "com.sun.star.table.XCellRange",
-    "XFrame": "com.sun.star.frame.XFrame",
-    "XModel": "com.sun.star.frame.XModel",
-    "XSpreadsheet": "com.sun.star.sheet.XSpreadsheet",
-    "XSpreadsheetDocument": "com.sun.star.sheet.XSpreadsheetDocument",
-    "XTextCursor": "com.sun.star.text.XTextCursor",
-    "XTextDocument": "com.sun.star.text.XTextDocument",
+    # "DictTable": "DictTable",
+    # "CellAddress": "com.sun.star.table.CellAddress",
+    # "CellRangeAddress": "com.sun.star.table.CellRangeAddress",
+    # "PropertyValue": "com.sun.star.beans.PropertyValue",
+    # "XCell": "com.sun.star.table.XCell",
+    # "XCellRange": "com.sun.star.table.XCellRange",
+    # "XFrame": "com.sun.star.frame.XFrame",
+    # "XModel": "com.sun.star.frame.XModel",
+    # "XSpreadsheet": "com.sun.star.sheet.XSpreadsheet",
+    # "XSpreadsheetDocument": "com.sun.star.sheet.XSpreadsheetDocument",
+    # "XTextCursor": "com.sun.star.text.XTextCursor",
+    # "XTextDocument": "com.sun.star.text.XTextDocument",
+    # "XTextRange": "com.sun.star.text.XTextRange",
+    
+    "CellAddress": "CellAddress",
+    "CellRangeAddress": "CellRangeAddress",
+    "PropertyValue": "PropertyValue",
+    "XCell": "XCell",
+    "XCellRange": "XCellRange",
+    "XFrame": "XFrame",
+    "XModel": "XModel",
+    "XSpreadsheet": "XSpreadsheet",
+    "XSpreadsheetDocument": "XSpreadsheetDocument",
+    "XTextCursor": "XTextCursor",
+    "XTextDocument": "XTextDocument",
+    "XTextRange": "XTextRange",
 }
+
+
+autodoc_typehints_format = 'short'
