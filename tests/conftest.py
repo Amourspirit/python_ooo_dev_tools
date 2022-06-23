@@ -151,7 +151,7 @@ def bond_movies_lst_dict(fix_writer_path) -> List[dict]:
     return results
 
 @pytest.fixture(scope="session")
-def bond_movies_table(fix_writer_path) -> List[dict]:
+def bond_movies_table(fix_writer_path) -> List[list]:
     csv_file = Path(writer_fixture_path, "bondMovies.txt")
     results = []
     with open(csv_file, 'r', newline='') as csv_file:
