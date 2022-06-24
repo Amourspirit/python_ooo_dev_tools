@@ -94,7 +94,7 @@ from ooo.dyn.style.paragraph_adjust import ParagraphAdjust
 
 class Write(mSel.Selection):
     # region    Selection Overloads
-    
+
     # for unknown reason Sphinx docs is not including overloads from inherited class.
     # At least not for static methods. My curent work around is to implement the same
     # methods in this class.
@@ -102,7 +102,6 @@ class Write(mSel.Selection):
     if mock_g.DOCS_BUILDING:
         # This code block will only ever import when doc are building.
         # In Short this code block is not seen by Write
-
 
         # region    get_cursor()
         # https://tinyurl.com/2dlclzqf
@@ -149,12 +148,11 @@ class Write(mSel.Selection):
                 XTextCursor: Cursor
             """
             ...
+
         @classmethod
         def get_cursor(cls, *args, **kwargs) -> XTextCursor:
             """
             Gets text cursor
-            
-            Inherited from :py:class:`~.selection.Selection`
 
             Args:
                 cursor_obj (DocOrCursor): Text Document or Text View Cursor
@@ -168,6 +166,7 @@ class Write(mSel.Selection):
                 XTextCursor: Cursor
             """
             return super(Write, cls).get_cursor(*args, **kwargs)
+
         # endregion get_cursor()
 
     # endregion Selection Overloads
@@ -1067,7 +1066,7 @@ class Write(mSel.Selection):
             cls._append_text_content(cursor=footer_cursor, text_content=pg_xcontent)
             cls._append_text(cursor=footer_cursor, text=" of ")
             pg_count = cls.get_page_count()
-            pg_count_xcontent = mLo.Lo.qi(XTextContent, pg_number)
+            pg_count_xcontent = mLo.Lo.qi(XTextContent, pg_count)
             if pg_count_xcontent is None:
                 raise mEx.MissingInterfaceError(
                     XTextContent, f"Missing interface for page count. {XTextContent.__pyunointerface__}"

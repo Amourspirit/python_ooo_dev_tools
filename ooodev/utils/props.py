@@ -283,7 +283,7 @@ class Props:
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
 
-        if mInfo.Info.is_type_interface(kargs[1], XPropertySet.__pyunointerface__):
+        if mLo.Lo.is_uno_interfaces(kargs[1], XPropertySet):
             prop_set = cast(XPropertySet, kargs[1])
         else:
             prop_set = mLo.Lo.qi(XPropertySet, kargs[1])
