@@ -12,7 +12,6 @@ import uno
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
 from ooodev.utils.gui import GUI
-from ooodev.utils.date_time_util import DateUtil
 
 from com.sun.star.text import XTextDocument
 
