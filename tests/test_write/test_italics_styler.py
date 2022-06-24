@@ -21,7 +21,7 @@ from ooodev.utils.color import CommonColor, Color
 
 def test_italic_styler(loader, copy_fix_writer):
     visible = False
-    delay = 0 # 1_000
+    delay = 0 #, 1_000
     test_doc = copy_fix_writer("cicero_dummy.odt")
     doc = Write.open_doc(test_doc, loader)
     try:

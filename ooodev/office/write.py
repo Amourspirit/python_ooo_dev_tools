@@ -400,7 +400,7 @@ class Write(mSel.Selection):
         """
         try:
             view_cursor = mLo.Lo.qi(XTextViewCursor, view_cursor_obj)
-            if view_cursor_obj is None:
+            if view_cursor is None:
                 view_cursor = cls.get_view_cursor(view_cursor_obj)
             page_cursor = mLo.Lo.qi(XPageCursor, view_cursor, True)
             return page_cursor
