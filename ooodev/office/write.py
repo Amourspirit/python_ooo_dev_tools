@@ -380,14 +380,14 @@ class Write(mSel.Selection):
 
     # region ------------- page methods --------------------------------
     @classmethod
-    def get_page_cursor(cls, text_doc: XTextDocument) -> XPageCursor:
+    def get_page_cursor(cls, view_cursor_obj: XTextDocument | XTextViewCursor) -> XPageCursor:
         """
-        Get Page curosor
+        Get Page cursor
 
         Makes it possible to perform cursor movements between pages.
 
         Args:
-            text_doc (XTextDocument): Text Document
+            text_doc (XTextDocument | XTextViewCursor): Text Document or View Cursor
 
         Raises:
             PageCursorError: If Unable to get cursor
@@ -399,7 +399,9 @@ class Write(mSel.Selection):
             `LibreOffice API XPageCursor <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XPageCursor.html>`_
         """
         try:
-            view_cursor = cls.get_view_cursor(text_doc)
+            view_cursor = mLo.Lo.qi(XTextViewCursor, view_cursor_obj)
+            if view_cursor_obj is None:
+                view_cursor = cls.get_view_cursor(view_cursor_obj)
             page_cursor = mLo.Lo.qi(XPageCursor, view_cursor, True)
             return page_cursor
         except Exception as e:
