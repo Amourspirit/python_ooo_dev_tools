@@ -1304,9 +1304,7 @@ class Info(metaclass=StaticProperty):
             XNameContainer: Style Family container
         """
         name_acc = cls.get_style_families(doc)
-        xcontianer = mLo.Lo.qi(XNameContainer, name_acc.getByName(family_style_name))
-        if xcontianer is None:
-            raise mEx.MissingInterfaceError(XNameContainer)
+        xcontianer = mLo.Lo.qi(XNameContainer, name_acc.getByName(family_style_name), raise_err=True)
         return xcontianer
 
     @classmethod
