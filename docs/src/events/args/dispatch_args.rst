@@ -1,7 +1,7 @@
 Class DispatchEvent
 ===================
 
-.. autoclass:: ooodev.events.dispatch_event.DispatchEvent
+.. autoclass:: ooodev.events.args.dispatch_args.DispatchArgs
     :members:
     :undoc-members:
     :inherited-members:

@@ -13,10 +13,10 @@ from enum import IntEnum, Enum
 
 from ..events.event_singleton import Events
 from ..events.lo_named_event import LoNamedEvent
-from ..events.event_args import EventArgs
-from ..events.cancel_event_args import CancelEventArgs
-from ..events.dispatch_event import DispatchEvent
-from ..events.dispatch_cancel_event import DispatchCancelEvent
+from ..events.args.event_args import EventArgs
+from ..events.args.cancel_event_args import CancelEventArgs
+from ..events.args.dispatch_args import DispatchArgs
+from ..events.args.dispatch_cancel_args import DispatchCancelArgs
 from ..meta.static_meta import StaticProperty, classproperty
 from .connect import ConnectBase, LoPipeStart, LoSocketStart, LoDirectStart
 
@@ -1601,7 +1601,7 @@ class Lo(metaclass=StaticProperty):
         See Also:
             `LibreOffice Dispatch Commands <https://wiki.documentfoundation.org/Development/DispatchCommands>`_
         """
-        cargs = DispatchCancelEvent(cls, cmd)
+        cargs = DispatchCancelArgs(cls, cmd)
         Events().trigger(LoNamedEvent.DISPATCHING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
@@ -1616,7 +1616,7 @@ class Lo(metaclass=StaticProperty):
             raise mEx.MissingInterfaceError(XDispatchHelper, f"Could not create dispatch helper for command {cmd}")
         try:
             helper.executeDispatch(frame, f".uno:{cmd}", "", 0, props)
-            Events().trigger(LoNamedEvent.DISPATCHED, DispatchEvent(cls, cmd))
+            Events().trigger(LoNamedEvent.DISPATCHED, DispatchArgs(cls, cmd))
             return True
         except Exception as e:
             raise Exception(f"Could not dispatch '{cmd}'") from e

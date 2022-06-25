@@ -42,7 +42,7 @@ from . import props as mProps
 from . import date_time_util as mDate
 from ..meta.static_meta import StaticProperty, classproperty
 from ..exceptions import ex as mEx
-from ..events.event_args import EventArgs
+from ..events.args.event_args import EventArgs
 from .type_var import PathOrStr
 
 

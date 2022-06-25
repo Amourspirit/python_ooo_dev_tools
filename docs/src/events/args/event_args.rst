@@ -1,6 +1,6 @@
 Class EventArgs
 ===============
 
-.. autoclass:: ooodev.events.event_args.EventArgs
+.. autoclass:: ooodev.events.args.event_args.EventArgs
     :members:
     :undoc-members:

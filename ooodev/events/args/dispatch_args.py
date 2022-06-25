@@ -2,7 +2,7 @@
 from typing import Any
 from .event_args import EventArgs
 
-class DispatchEvent(EventArgs):
+class DispatchArgs(EventArgs):
     def __init__(self, source: Any, cmd: str) -> None:
         """
         Constructor

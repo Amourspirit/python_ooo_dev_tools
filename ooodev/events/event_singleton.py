@@ -5,7 +5,7 @@ Internal Module only! DO NOT use this module/class!
 This module is for the purpose of sharing events between classes internally
 """
 from typing import Callable
-from .event_args import EventArgs
+from .args.event_args import EventArgs
 
 class Events(object):
     """Static Class for sharing events among internal classes. DO NOT USE!"""

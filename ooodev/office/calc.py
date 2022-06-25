@@ -97,9 +97,11 @@ from ..exceptions import ex as mEx
 from ..utils.type_var import Row, Column, Table, TupleArray, FloatList, FloatTable
 
 from ..events.event_singleton import Events
-from ..events.event_args import EventArgs
-from ..events.cancel_event_args import CancelEventArgs
+from ..events.args.event_args import EventArgs
+from ..events.args.cancel_event_args import CancelEventArgs
 from ..events.calc_named_event import CalcNamedEvent
+from ..events.args.calc.sheet_args import SheetArgs
+from ..events.args.calc.sheet_cancel_args import SheetCancelArgs
 
 NameVal = ArgsHelper.NameValue
 # endregion Imports
@@ -204,6 +206,11 @@ class Calc:
         Returns:
             XSpreadsheetDocument: Spreadsheet document
 
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.DOC_SS` :event:`../../src_docs/event/event`
+
         See Also:
             :py:meth:`~Calc.create_doc`
         """
@@ -217,6 +224,7 @@ class Calc:
             if not mLo.Lo.is_macro_mode:
                 mLo.Lo.close_doc(doc=doc)
             raise mEx.MissingInterfaceError(XSpreadsheetDocument)
+        Events().trigger(CalcNamedEvent.DOC_SS, EventArgs(Calc))
         return ss_doc
 
     @staticmethod
@@ -229,16 +237,28 @@ class Calc:
 
         Raises:
             MissingInterfaceError: If doc does not have XSpreadsheetDocument interface
+
         Returns:
             XSpreadsheetDocument: Spreadsheet document
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.DOC_CREATING` :event:`../../src_docs/event/cancel_event`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.DOC_CREATED` :event:`../../src_docs/event/event`
 
         See Also:
             :py:meth:`~Calc.get_ss_doc`
         """
+        cargs = CancelEventArgs(Calc)
+        Events().trigger(CalcNamedEvent.DOC_CREATING, cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
         doc = mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.CALC, loader=loader)
         ss_doc = mLo.Lo.qi(XSpreadsheetDocument, doc)
         if ss_doc is None:
             raise mEx.MissingInterfaceError(XSpreadsheetDocument)
+        Events().trigger(CalcNamedEvent.DOC_CREATED, EventArgs(Calc))
         return ss_doc
 
         # XSpreadsheetDocument does not inherit XComponent!
@@ -324,6 +344,12 @@ class Calc:
 
         Returns:
             XSpreadsheet: Spreadsheet at index.
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_GETTING` :event:`../../src_docs/event/cancel_event`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_GET` :event:`../../src_docs/event/event`
         """
         ordered_keys = (1, 2)
         kargs_len = len(kwargs)
@@ -353,9 +379,18 @@ class Calc:
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
 
+        cargs = SheetCancelArgs(cls, kargs[2])
+        Events().trigger(CalcNamedEvent.SHEET_GETTING, cargs)
+        if cargs.cancel:
+            mEx.CancelEventError(cargs)
+
         if isinstance(kargs[2], int):
-            return cls._get_sheet_index(kargs[1], kargs[2])
-        return cls._get_sheet_name(kargs[1], kargs[2])
+            sht = cls._get_sheet_index(kargs[1], kargs[2])
+        else:
+            sht = cls._get_sheet_name(kargs[1], kargs[2])
+
+        Events().trigger(CalcNamedEvent.SHEET_GET, EventArgs(cls))
+        return sht
 
     # endregion get_sheet()
 

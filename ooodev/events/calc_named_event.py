@@ -11,3 +11,8 @@ class CalcNamedEvent(NamedTuple):
     """
     DOC_OPENING = "calc_doc_opening"
     DOC_OPENED = "calc_doc_opened"
+    DOC_SS = "calc_doc_ss"
+    DOC_CREATING = "calc_doc_creating"
+    DOC_CREATED = "calc_doc_created"
+    SHEET_GETTING = "calc_sheet_getting"
+    SHEET_GET = "calc_sheet_get"

@@ -3,7 +3,7 @@
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 from __future__ import annotations
 import os
-from typing import TYPE_CHECKING, cast, overload
+from typing import cast, overload
 from enum import IntEnum
 
 
@@ -15,7 +15,7 @@ from ..utils import info as mInfo
 from ..meta.static_meta import StaticProperty, classproperty
 from ..utils.type_var import DocOrText, DocOrCursor
 from ..exceptions import ex as mEx
-from ..events.event_args import EventArgs
+from ..events.args.event_args import EventArgs
 
 # if not _DOCS_BUILDING and not _ON_RTD:
 from com.sun.star.beans import XPropertySet

@@ -1,9 +1,9 @@
-events
-======
+Event args
+==========
 
 .. toctree::
     :titlesonly:
     :glob:
 
     *
-    args/index
+    calc/index

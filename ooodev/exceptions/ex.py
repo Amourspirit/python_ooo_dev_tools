@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any, List, TYPE_CHECKING
 from ..utils.type_var import PathOrStr
 if TYPE_CHECKING:
-    from ..events.event_args import EventArgs
+    from ..events.args.event_args import EventArgs
 
 
 class MissingInterfaceError(Exception):
