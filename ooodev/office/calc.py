@@ -96,12 +96,15 @@ from ..utils import view_state as mViewState
 from ..exceptions import ex as mEx
 from ..utils.type_var import Row, Column, Table, TupleArray, FloatList, FloatTable
 
+from ..events.calc_named_event import CalcNamedEvent
+from ..events.gbl_named_event import GblNamedEvent
 from ..events.event_singleton import Events
 from ..events.args.event_args import EventArgs
 from ..events.args.cancel_event_args import CancelEventArgs
-from ..events.calc_named_event import CalcNamedEvent
 from ..events.args.calc.sheet_args import SheetArgs
 from ..events.args.calc.sheet_cancel_args import SheetCancelArgs
+from ..events.args.calc.cell_args import CellArgs
+from ..events.args.calc.cell_cancel_args import CellCancelArgs
 
 NameVal = ArgsHelper.NameValue
 # endregion Imports
@@ -169,6 +172,7 @@ class Calc:
 
         Raises:
             Exception: If document is null
+            CancelEventError: If DOC_OPENING is canceled
 
         Returns:
             XSpreadsheetDocument: Spreadsheet document
@@ -176,8 +180,8 @@ class Calc:
         :events:
             .. cssclass:: lo_event
 
-                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.DOC_OPENING` :event:`../../src_docs/event/cancel_event`
-                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.DOC_OPENED` :event:`../../src_docs/event/event`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.DOC_OPENING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.DOC_OPENED` :eventref:`src-docs-event`
         """
         cargs = CancelEventArgs(cls)
         Events().trigger(CalcNamedEvent.DOC_OPENING, cargs)
@@ -194,7 +198,7 @@ class Calc:
         """
         Gets a spreadsheet document
 
-        When using this method in a macro the :py:meth:`Lo.get_document() <.utils.lo.Lo.get_document>` value should be passed as ``doc`` arg.
+        When using this method in a macro the :py:attr:`Lo.this_component <.utils.lo.Lo.this_component>` value should be passed as ``doc`` arg.
 
         Args:
             doc (XComponent): Component to get spreasheeet from
@@ -209,7 +213,7 @@ class Calc:
         :events:
             .. cssclass:: lo_event
 
-                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.DOC_SS` :event:`../../src_docs/event/event`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.DOC_SS` :eventref:`src-docs-event`
 
         See Also:
             :py:meth:`~Calc.create_doc`
@@ -237,6 +241,7 @@ class Calc:
 
         Raises:
             MissingInterfaceError: If doc does not have XSpreadsheetDocument interface
+            CancelEventError: If DOC_CREATING event is canceled
 
         Returns:
             XSpreadsheetDocument: Spreadsheet document
@@ -244,8 +249,8 @@ class Calc:
         :events:
             .. cssclass:: lo_event
 
-                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.DOC_CREATING` :event:`../../src_docs/event/cancel_event`
-                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.DOC_CREATED` :event:`../../src_docs/event/event`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.DOC_CREATING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.DOC_CREATED` :eventref:`src-docs-event`
 
         See Also:
             :py:meth:`~Calc.get_ss_doc`
@@ -271,12 +276,20 @@ class Calc:
     @staticmethod
     def _get_sheet_index(doc: XSpreadsheetDocument, index: int) -> XSpreadsheet:
         """return the spreadsheet with the specified index (0-based)"""
+        cargs = SheetCancelArgs(Calc)
+        cargs.index = index
+        cargs.doc = doc
+        Events().trigger(CalcNamedEvent.SHEET_GETTING, cargs)
+        if cargs.cancel:
+            mEx.CancelEventError(cargs)
         sheets = doc.getSheets()
         try:
             xsheets_idx = mLo.Lo.qi(XIndexAccess, sheets)
-            sheet = mLo.Lo.qi(XSpreadsheet, xsheets_idx.getByIndex(index))
-            if sheet is None:
-                raise mEx.MissingInterfaceError(XSpreadsheet)
+            sheet = mLo.Lo.qi(XSpreadsheet, xsheets_idx.getByIndex(index), raise_err=True)
+            eargs = SheetArgs(Calc)
+            eargs.index = index
+            eargs.doc = doc
+            Events().trigger(CalcNamedEvent.SHEET_GET, eargs)
             return sheet
         except Exception as e:
             raise Exception(f"Could not access spreadsheet: {index}") from e
@@ -284,11 +297,19 @@ class Calc:
     @staticmethod
     def _get_sheet_name(doc: XSpreadsheetDocument, sheet_name: str) -> XSpreadsheet:
         """return the spreadsheet with the specified index (0-based)"""
+        cargs = SheetCancelArgs(Calc)
+        cargs.name = sheet_name
+        cargs.doc = doc
+        Events().trigger(CalcNamedEvent.SHEET_GETTING, cargs)
+        if cargs.cancel:
+            mEx.CancelEventError(cargs)
         sheets = doc.getSheets()
         try:
-            sheet = mLo.Lo.qi(XSpreadsheet, sheets.getByName(sheet_name))
-            if sheet is None:
-                raise mEx.MissingInterfaceError(XSpreadsheet)
+            sheet = mLo.Lo.qi(XSpreadsheet, sheets.getByName(sheet_name), raise_err=True)
+            eargs = SheetArgs(Calc)
+            eargs.name = sheet_name
+            eargs.doc = doc
+            Events().trigger(CalcNamedEvent.SHEET_GET, eargs)
             return sheet
         except Exception as e:
             raise Exception(f"Could not access spreadsheet: '{sheet_name}'") from e
@@ -341,6 +362,7 @@ class Calc:
 
         Raises:
             Exception: If spreadsheet is not found
+            CancelEventError: If SHEET_GETTING event is canceled
 
         Returns:
             XSpreadsheet: Spreadsheet at index.
@@ -348,8 +370,8 @@ class Calc:
         :events:
             .. cssclass:: lo_event
 
-                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_GETTING` :event:`../../src_docs/event/cancel_event`
-                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_GET` :event:`../../src_docs/event/event`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_GETTING` :eventref:`src-docs-sheet-event-getting`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_GET` :eventref:`src-docs-sheet-event-get`
         """
         ordered_keys = (1, 2)
         kargs_len = len(kwargs)
@@ -379,17 +401,10 @@ class Calc:
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
 
-        cargs = SheetCancelArgs(cls, kargs[2])
-        Events().trigger(CalcNamedEvent.SHEET_GETTING, cargs)
-        if cargs.cancel:
-            mEx.CancelEventError(cargs)
-
         if isinstance(kargs[2], int):
             sht = cls._get_sheet_index(kargs[1], kargs[2])
         else:
             sht = cls._get_sheet_name(kargs[1], kargs[2])
-
-        Events().trigger(CalcNamedEvent.SHEET_GET, EventArgs(cls))
         return sht
 
     # endregion get_sheet()
@@ -406,16 +421,33 @@ class Calc:
 
         Raises:
             Exception: If unable to insert spreadsheet
+            CancelEventError: If SHEET_INSERTING event is canceled
 
         Returns:
             XSpreadsheet | None: The newly inserted sheet on success; Othwrwise, None
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_INSERTING` :eventref:`src-docs-sheet-event-inserting`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_INSERTED` :eventref:`src-docs-sheet-event-inserted`
         """
+        cargs = SheetCancelArgs(Calc)
+        cargs.name = name
+        cargs.index = idx
+        cargs.doc = doc
+        Events().trigger(CalcNamedEvent.SHEET_INSERTING, cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
         sheets = doc.getSheets()
         try:
             sheets.insertNewByName(name, idx)
-            sheet = mLo.Lo.qi(XSpreadsheet, sheets.getByName(name))
-            if sheet is None:
-                raise mEx.MissingInterfaceError(XSpreadsheet)
+            sheet = mLo.Lo.qi(XSpreadsheet, sheets.getByName(name), raise_err=True)
+            eargs = SheetArgs(Calc)
+            eargs.index = idx
+            eargs.name = name
+            eargs.doc = doc
+            Events().trigger(CalcNamedEvent.SHEET_INSERTED, eargs)
             return sheet
         except Exception as e:
             raise Exception("Could not insert sheet:") from e
@@ -424,17 +456,36 @@ class Calc:
 
     @staticmethod
     def _remove_sheet_name(doc: XSpreadsheetDocument, sheet_name: str) -> bool:
+        cargs = SheetCancelArgs(Calc)
+        cargs.doc = doc
+        cargs.name = sheet_name
+        Events().trigger(CalcNamedEvent.SHEET_REMOVING, cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
         sheets = doc.getSheets()
+        result = False
         try:
             sheets.removeByName(sheet_name)
-            return True
+            result = True
         except Exception:
-            print(f"Could not remove sheet: {sheet_name}")
-        return False
+            mLo.Lo.print(f"Could not remove sheet: {sheet_name}")
+        if result is True:
+            eargs = SheetArgs(Calc)
+            eargs.doc = doc
+            eargs.name = sheet_name
+            Events().trigger(CalcNamedEvent.SHEET_REMOVED, eargs)
+        return result
 
     @classmethod
     def _remove_sheet_index(cls, doc: XSpreadsheetDocument, index: int) -> bool:
+        cargs = SheetCancelArgs(Calc)
+        cargs.doc = doc
+        cargs.index = index
+        Events().trigger(CalcNamedEvent.SHEET_REMOVING, cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
         sheets = doc.getSheets()
+        result = False
         try:
             xsheets_idx = mLo.Lo.qi(XIndexAccess, sheets)
             sheet = mLo.Lo.qi(XSpreadsheet, xsheets_idx.getByIndex(index))
@@ -442,10 +493,15 @@ class Calc:
             if sheet_name is None:
                 return False
             sheets.removeByName(sheet_name)
-            return True
+            result = True
         except Exception:
-            print(f"Could not remove sheet at index: {index}")
-        return False
+            mLo.Lo.print(f"Could not remove sheet at index: {index}")
+        if result is True:
+            eargs = SheetArgs(Calc)
+            eargs.doc = doc
+            eargs.index = index
+            Events().trigger(CalcNamedEvent.SHEET_REMOVED, eargs)
+        return result
 
     @overload
     @classmethod
@@ -487,9 +543,17 @@ class Calc:
             sheet_name (str): Name of sheet to remove
             index (int): Zero based index of sheet to remove.
 
+        Raises:
+            CancelEventError: If SHEET_REMOVING event is canceled.
 
         Returns:
             bool: True of sheet was removed; Otherwise, False
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_REMOVING` :eventref:`src-docs-sheet-event-removing`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_REMOVED` :eventref:`src-docs-sheet-event-removed`
         """
         ordered_keys = (1, 2)
         kargs_len = len(kwargs)
@@ -535,16 +599,39 @@ class Calc:
             name (str): Name of sheet to move
             idx (int): The zero based index to move sheet into.
 
+        Raises:
+            CancelEventError: If SHEET_MOVING event is canceled
+
         Returns:
             bool: True on success; Otherwise, False
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_MOVING` :eventref:`src-docs-sheet-event-moving`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_MOVED` :eventref:`src-docs-sheet-event-moved`
         """
+        cargs = SheetCancelArgs(Calc)
+        cargs.doc = doc
+        cargs.name = name
+        cargs.index = idx
+        Events().trigger(CalcNamedEvent.SHEET_MOVING, cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
         sheets = doc.getSheets()
         num_sheets = len(sheets.getElementNames())
+        result = False
         if idx < 0 or idx >= num_sheets:
-            print(f"Index {idx} is out of range.")
-            return False
-        sheets.moveByName(name, idx)
-        return True
+            mLo.Lo.print(f"Index {idx} is out of range.")
+        else:
+            sheets.moveByName(name, idx)
+            result = True
+        if result is True:
+            eargs = SheetArgs(Calc)
+            eargs.doc = doc
+            eargs.index = idx
+            Events().trigger(CalcNamedEvent.SHEET_MOVED, eargs)
+        return result
 
     @staticmethod
     def get_sheet_names(doc: XSpreadsheetDocument) -> Tuple[str, ...]:
@@ -606,7 +693,7 @@ class Calc:
         """
         xnamed = mLo.Lo.qi(XNamed, sheet)
         if xnamed is None:
-            print("Could not access spreadsheet")
+            mLo.Lo.print("Could not access spreadsheet")
             return False
         xnamed.setName(name)
         return True
@@ -693,11 +780,30 @@ class Calc:
         Args:
             doc (XSpreadsheetDocument): Spreadsheet Document
             sheet (XSpreadsheet): Sheet to set active
+
+        Raises:
+            CancelEventError: If SHEET_ACTIVATING event is canceled.
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_ACTIVATING` :eventref:`src-docs-sheet-event-activating`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_ACTIVATED` :eventref:`src-docs-sheet-event-activated`
         """
+        cargs = SheetCancelArgs(cls)
+        cargs.doc = doc
+        cargs.sheet = sheet
+        Events().trigger(CalcNamedEvent.SHEET_ACTIVATING, cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
         ss_view = cls.get_view(doc)
         if ss_view is None:
             return
         ss_view.setActiveSheet(sheet)
+        eargs = SheetArgs(cls)
+        eargs.doc = doc
+        eargs.sheet = sheet
+        Events().trigger(CalcNamedEvent.SHEET_ACTIVATED, eargs)
 
     @classmethod
     def get_active_sheet(cls, doc: XSpreadsheetDocument) -> XSpreadsheet:
@@ -1012,9 +1118,9 @@ class Calc:
             try:
                 panes.append(mLo.Lo.qi(XViewPane, con.getByIndex(i)))
             except UnoException:
-                print(f"Could not get view pane {i}")
+                mLo.Lo.print(f"Could not get view pane {i}")
         if len(panes) == 0:
-            print("No view panes found")
+            mLo.Lo.print("No view panes found")
             return None
         return panes
 
@@ -1060,6 +1166,9 @@ class Calc:
 
         Based on a post by user Hanya to:
         `openoffice forum <https://forum.openoffice.org/en/forum/viewtopic.php?f=45&t=29195&p=133202&hilit=getViewData#p133202>`_
+
+        Args:
+            doc (XSpreadsheetDocument): Spreadsheet Document
         """
         ctrl = cls.get_controller(doc)
 
@@ -1067,7 +1176,7 @@ class Calc:
         view_parts = view_data.split(";")
         p_len = len(view_parts)
         if p_len < 4:
-            print("No sheet view states found in view data")
+            mLo.Lo.print("No sheet view states found in view data")
             return None
         states = []
         for i in range(3, p_len):
@@ -1087,7 +1196,7 @@ class Calc:
         view_parts = view_data.split(";")
         p_len = len(view_parts)
         if p_len < 4:
-            print("No sheet view states found in view data")
+            mLo.Lo.print("No sheet view states found in view data")
             return None
 
         vd_new = []
@@ -1097,7 +1206,7 @@ class Calc:
         for state in states:
             vd_new.append(str(state))
         s_data = ";".join(vd_new)
-        print(s_data)
+        mLo.Lo.print(s_data)
         ctrl.restoreViewData(s_data)
 
     # endregion ----------------- view data methods ---------------------------------
@@ -1112,10 +1221,29 @@ class Calc:
         Args:
             sheet (XSpreadsheet): Spreadsheet
             idx (int): Zero base index of row to insert.
+
+        Raises:
+            CancelEventError: If SHEET_ROW_INSERTING event is canceled
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_ROW_INSERTING` :eventref:`src-docs-sheet-event-row-inserting`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_INSERTED` :eventref:`src-docs-sheet-event-row-inserted`
         """
-        cr_range = mLo.Lo.qi(XColumnRowRange, sheet)
+        cargs = SheetCancelArgs(Calc)
+        cargs.sheet = sheet
+        cargs.index = idx
+        Events().trigger(CalcNamedEvent.SHEET_ROW_INSERTING, cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
+        cr_range = mLo.Lo.qi(XColumnRowRange, sheet, raise_err=True)
         rows = cr_range.getRows()
         rows.insertByIndex(idx, 1)  # add 1 row at idx position
+        eargs = SheetArgs(Calc)
+        eargs.sheet = sheet
+        eargs.index = idx
+        Events().trigger(CalcNamedEvent.SHEET_INSERTED, eargs)
 
     @staticmethod
     def delete_row(sheet: XSpreadsheet, idx: int) -> None:
@@ -1125,10 +1253,29 @@ class Calc:
         Args:
             sheet (XSpreadsheet): Spreadsheet
             idx (int): Zero based index of row to delete
+
+        Raises:
+            CancelEventError: If SHEET_ROW_DELETING event is canceled
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_ROW_DELETING` :eventref:`src-docs-sheet-event-row-deleting`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_ROW_DELETED` :eventref:`src-docs-sheet-event-row-deleted`
         """
+        cargs = SheetCancelArgs(Calc)
+        cargs.sheet = sheet
+        cargs.index = idx
+        Events().trigger(CalcNamedEvent.SHEET_ROW_DELETING, cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
         cr_range = mLo.Lo.qi(XColumnRowRange, sheet)
         rows = cr_range.getRows()
         rows.removeByIndex(idx, 1)  # remove 1 row at idx position
+        eargs = SheetArgs(Calc)
+        eargs.sheet = sheet
+        eargs.index = idx
+        Events().trigger(CalcNamedEvent.SHEET_ROW_DELETED, eargs)
 
     @staticmethod
     def insert_column(sheet: XSpreadsheet, idx: int) -> None:
@@ -1138,10 +1285,29 @@ class Calc:
         Args:
             sheet (XSpreadsheet): Spreadsheet
             idx (int): Zero base index of column to insert.
+
+        Raises:
+            CancelEventError: If SHEET_COL_INSERTING event is canceled
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_COL_INSERTING` :eventref:`src-docs-sheet-event-col-inserting`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_COL_INSERTED` :eventref:`src-docs-sheet-event-col-inserted`
         """
+        cargs = SheetCancelArgs(Calc)
+        cargs.sheet = sheet
+        cargs.index = idx
+        Events().trigger(CalcNamedEvent.SHEET_COL_INSERTING, cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
         cr_range = mLo.Lo.qi(XColumnRowRange, sheet)
         cols = cr_range.getColumns()
         cols.insertByIndex(idx, 1)  # add 1 column at idx position
+        eargs = SheetArgs(Calc)
+        eargs.sheet = sheet
+        eargs.index = idx
+        Events().trigger(CalcNamedEvent.SHEET_COL_INSERTED, eargs)
 
     @staticmethod
     def delete_column(sheet: XSpreadsheet, idx: int) -> None:
@@ -1151,10 +1317,29 @@ class Calc:
         Args:
             sheet (XSpreadsheet): Spreadsheet
             idx (int): Zero base of index of column to delete
+
+        Raises:
+            CancelEventError: If SHEET_COL_DELETING event is canceled
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_COL_DELETING` :eventref:`src-docs-sheet-event-col-deleting`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_COL_DELETED` :eventref:`src-docs-sheet-event-col-deleted`
         """
+        cargs = SheetCancelArgs(Calc)
+        cargs.sheet = sheet
+        cargs.index = idx
+        Events().trigger(CalcNamedEvent.SHEET_COL_DELETING, cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
         cr_range = mLo.Lo.qi(XColumnRowRange, sheet)
         cols = cr_range.getColumns()
         cols.removeByIndex(idx, 1)  # remove 1 row at idx position
+        eargs = SheetArgs(Calc)
+        eargs.sheet = sheet
+        eargs.index = idx
+        Events().trigger(CalcNamedEvent.SHEET_COL_DELETED, eargs)
 
     @classmethod
     def insert_cells(cls, sheet: XSpreadsheet, cell_range: XCellRange, is_shift_right: bool) -> None:
@@ -1165,13 +1350,35 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet
             cell_range (XCellRange): Cell range to insert
             is_shift_right (bool): If True then cell are inserted to the right; Otherwise, inserted down.
+
+        Raises:
+            CancelEventError: If CELLS_INSERTING event is canceled
+        
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.CELLS_INSERTING` :eventref:`src-docs-cell-event-inserting`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.CELLS_INSERTED` :eventref:`src-docs-cell-event-inserted`
+
+        Note:
+            Events args for this method have a ``cell`` type of ``XCellRange``
         """
+        cargs = CellCancelArgs(cls)
+        cargs.sheet = sheet
+        cargs.cells = cell_range
+        Events().trigger(CalcNamedEvent.CELLS_INSERTING, cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
         mover = mLo.Lo.qi(XCellRangeMovement, sheet)
         addr = cls.get_address(cell_range)
         if is_shift_right:
             mover.insertCells(addr, CellInsertMode.RIGHT)
         else:
             mover.insertCells(addr, CellInsertMode.DOWN)
+        eargs = CellArgs(cls)
+        eargs.sheet = sheet
+        eargs.cells = cell_range
+        Events().trigger(CalcNamedEvent.CELLS_INSERTED, eargs)
 
     @classmethod
     def delete_cells(cls, sheet: XSpreadsheet, cell_range: XCellRange, is_shift_left: bool) -> None:
@@ -1182,13 +1389,35 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet
             cell_range (XCellRange): Cell range to delete
             is_shift_left (bool): If True then cell are shifted left; Otherwise, cells are shifted up.
+
+        Raises:
+            CancelEventError: If CELLS_DELETING event is canceled
+        
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.CELLS_DELETING` :eventref:`src-docs-cell-event-deleting`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.CELLS_DELETED` :eventref:`src-docs-cell-event-deleted`
+
+        Note:
+            Events args for this method have a ``cell`` type of ``XCellRange``
         """
+        cargs = CellCancelArgs(cls)
+        cargs.sheet = sheet
+        cargs.cells = cell_range
+        Events().trigger(CalcNamedEvent.CELLS_DELETING, cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
         mover = mLo.Lo.qi(XCellRangeMovement, sheet)
         addr = cls.get_address(cell_range)
         if is_shift_left:
             mover.removeRange(addr, CellDeleteMode.LEFT)
         else:
             mover.removeRange(addr, CellDeleteMode.UP)
+        eargs = CellArgs(cls)
+        eargs.sheet = sheet
+        eargs.cells = cell_range
+        Events().trigger(CalcNamedEvent.CELLS_DELETED, eargs)
 
     # region    clear_cells()
     @overload
@@ -1283,6 +1512,16 @@ class Calc:
 
         Raises:
             MissingInterfaceError: If XSheetOperation interface cannot be obtained.
+            CancelEventError: If CELLS_CLEARING event is canceled.
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.CELLS_CLEARING` :eventref:`src-docs-cell-event-clearing`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.CELLS_CLEARED` :eventref:`src-docs-cell-event-cleared`
+
+        Note:
+            Events args for this method have a ``cell`` type of ``XCellRange``
 
         See Also:
             :py:class:`~Calc.CellFlags`
@@ -1324,18 +1563,28 @@ class Calc:
                 flags = Calc.CellFlags(kargs[3])
             else:
                 flags = cast(Calc.CellFlags, kargs[3])
+        sht = cast(XSpreadsheet, kargs[1])
         rng_value = kargs[2]
         if isinstance(rng_value, str):
-            rng = Calc.get_cell_range(sheet=kargs[1], range_name=rng_value)
-        elif mInfo.Info.is_type_interface(rng_value, XCellRange.__pyunointerface__):
+            rng = Calc.get_cell_range(sheet=sht, range_name=rng_value)
+        elif mLo.Lo.is_uno_interfaces(rng_value, XCellRange):
             rng = rng_value
         else:
-            rng = Calc.get_cell_range(sheet=kargs[1], cr_addr=rng_value)
+            rng = Calc.get_cell_range(sheet=sht, cr_addr=rng_value)
 
-        sheet_op = mLo.Lo.qi(XSheetOperation, rng)
-        if sheet_op is None:
-            raise mEx.MissingInterfaceError(XSheetOperation)
+        cargs = CellCancelArgs(cls)
+        cargs.cell = rng
+        cargs.sheet = sht
+        Events().trigger(CalcNamedEvent.CELLS_CLEARING, cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
+
+        sheet_op = mLo.Lo.qi(XSheetOperation, rng, raise_err=True)
         sheet_op.clearContents(flags.value)
+        eargs = CellArgs(cls)
+        eargs.cell = rng
+        eargs.sheet = sht
+        Events().trigger(CalcNamedEvent.CELLS_CLEARED, eargs)
 
     # endregion clear_cells()
 
@@ -1350,7 +1599,7 @@ class Calc:
         elif isinstance(value, str):
             cell.setFormula(str(value))
         else:
-            print(f"Value is not a number or string: {value}")
+            mLo.Lo.print(f"Value is not a number or string: {value}")
 
     @classmethod
     def _set_val_by_cell_name(cls, value: object, sheet: XSpreadsheet, cell_name: str) -> None:
@@ -1474,12 +1723,12 @@ class Calc:
             float: value converted to float. 0.0 is returned if conversion fails.
         """
         if val is None:
-            print("Value is null; using 0")
+            mLo.Lo.print("Value is null; using 0")
             return 0.0
         try:
             return float(val)
         except ValueError:
-            print(f"Could not convert {val} to double; using 0")
+            mLo.Lo.print(f"Could not convert {val} to double; using 0")
             return 0.0
 
     convert_to_double = convert_to_float
@@ -1504,7 +1753,7 @@ class Calc:
             return Calc.CellTypeEnum.TEXT
         if t == CellContentType.FORMULA:
             return Calc.CellTypeEnum.FORMULA
-        print("Unknown cell type")
+        mLo.Lo.print("Unknown cell type")
         return Calc.CellTypeEnum.UNKNOWN
 
     @classmethod
@@ -1532,7 +1781,7 @@ class Calc:
             return cls.convert_to_float(cell.getValue())
         if t == CellContentType.TEXT or t == CellContentType.FORMULA:
             return cell.getFormula()
-        print("Unknown cell type; returning None")
+        mLo.Lo.print("Unknown cell type; returning None")
         return None
 
     @classmethod
@@ -1955,7 +2204,7 @@ class Calc:
     def _set_array_doc_addr(cls, values: Table, doc: XSpreadsheetDocument, addr: CellAddress) -> None:
         v_len = len(values)
         if v_len == 0:
-            print("Values has not data")
+            mLo.Lo.print("Values has not data")
             return
         sheet = cls._get_sheet_index(doc=doc, index=addr.Sheet)
         col_end = addr.Column + (len(values[0]) - 1)
@@ -2139,7 +2388,7 @@ class Calc:
         """
         v_len = len(values)
         if v_len == 0:
-            print("Values has not data")
+            mLo.Lo.print("Values has not data")
             return
         cell_range = cls.get_cell_range(sheet=sheet, range_name=range_name)
         cls.set_cell_range_array(cell_range=cell_range, values=values)
@@ -2155,7 +2404,7 @@ class Calc:
         """
         v_len = len(values)
         if v_len == 0:
-            print("Values has not data")
+            mLo.Lo.print("Values has not data")
             return
         cr_data = mLo.Lo.qi(XCellRangeData, cell_range)
         if cr_data is None:
@@ -2174,7 +2423,7 @@ class Calc:
         """
         v_len = len(values)
         if v_len == 0:
-            print("Values has not data")
+            mLo.Lo.print("Values has not data")
             return
         pos = cls.get_cell_position(cell_name)
         col_end = pos.X + (len(values[0]) - 1)
@@ -2289,7 +2538,17 @@ class Calc:
 
         Args:
             vals (Sequence[Sequence[object]]): A 2-Dimensional array of value such as a list of list or tuple of tuples.
+        
+        :events:
+           .. include:: ../../resources/global/printing_events.rst
+        
+        Note:
+            .. include:: ../../resources/global/printing_note.rst
         """
+        cargs = CancelEventArgs(Calc)
+        Events().trigger(GblNamedEvent.PRINTING, cargs)
+        if cargs.cancel:
+            return
         row_len = len(vals)
         if row_len == 0:
             print("No data in array to print")
@@ -2647,7 +2906,7 @@ class Calc:
             return None
         col_len = len(vals[0])
         if col_idx < 0 or col_idx > col_len - 1:
-            print("Column index out of range")
+            mLo.Lo.print("Column index out of range")
             return None
 
         col_vals = []
@@ -3363,7 +3622,7 @@ class Calc:
         xcell = cls._get_cell_sheet_cell(sheet=sheet, cell_name=cell_name)
         pos = mProps.Props.get_property(prop_set=xcell, name="Position")
         if pos is None:
-            print(f"Could not determine position of cell '{cell_name}'")
+            mLo.Lo.print(f"Could not determine position of cell '{cell_name}'")
             pos = cls.CELL_POS
             # print("No match found")
             # return None
@@ -3400,7 +3659,7 @@ class Calc:
         try:
             return TableHelper.row_name_to_int(row_str) - 1
         except ValueError:
-            print(f"Incorrect format for {row_str}")
+            mLo.Lo.print(f"Incorrect format for {row_str}")
         return 0
 
     # endregion ----------- convert cell/cellrange names to positions --
@@ -3734,7 +3993,17 @@ class Calc:
         Args:
             cell (XCell): cell
             addr (CellAddress): Cell Address
+
+        :events:
+           .. include:: ../../resources/global/printing_events.rst
+        
+        Note:
+            .. include:: ../../resources/global/printing_note.rst
         """
+        cargs = CancelEventArgs(Calc)
+        Events().trigger(GblNamedEvent.PRINTING, cargs)
+        if cargs.cancel:
+            return
         ordered_keys = (1,)
         kargs_len = len(kwargs)
         count = len(args) + kargs_len
@@ -3800,7 +4069,17 @@ class Calc:
         Args:
             cell_range (XCellRange): Cell range
             cr_addr (CellRangeAddress): Cell Address
+
+        :events:
+           .. include:: ../../resources/global/printing_events.rst
+        
+        Note:
+            .. include:: ../../resources/global/printing_note.rst
         """
+        cargs = CancelEventArgs(Calc)
+        Events().trigger(GblNamedEvent.PRINTING, cargs)
+        if cargs.cancel:
+            return
         ordered_keys = (1,)
         kargs_len = len(kwargs)
         count = len(args) + kargs_len
@@ -3844,7 +4123,17 @@ class Calc:
     def print_addresses(cls, *cr_addrs: CellRangeAddress) -> None:
         """
         Prints Address for one or more CellRangeAddress
+
+        :events:
+           .. include:: ../../resources/global/printing_events.rst
+        
+        Note:
+            .. include:: ../../resources/global/printing_note.rst
         """
+        cargs = CancelEventArgs(Calc)
+        Events().trigger(GblNamedEvent.PRINTING, cargs)
+        if cargs.cancel:
+            return
         print(f"No of cellrange addresses: {len(cr_addrs)}")
         for cr_addr in cr_addrs:
             cls.print_address(cr_addr=cr_addr)
@@ -4170,7 +4459,7 @@ class Calc:
     @classmethod
     def _get_cell_str_col_row(cls, col: int, row: int) -> str:
         if col < 0 or row < 0:
-            print("Cell position is negative; using A1")
+            mLo.Lo.print("Cell position is negative; using A1")
             return "A1"
         return f"{cls.column_number_str(col)}{row + 1}"
 
@@ -4335,11 +4624,11 @@ class Calc:
         """
         con = srch.findAll(sd)
         if con is None:
-            print("Match result is null")
+            mLo.Lo.print("Match result is null")
             return None
         c_count = con.getCount()
         if c_count == 0:
-            print("No matches found")
+            mLo.Lo.print("No matches found")
             return None
 
         crs = []
@@ -4350,9 +4639,9 @@ class Calc:
                     continue
                 crs.append(cr)
             except Exception:
-                print(f"Could not access match index {i}")
+                mLo.Lo.print(f"Could not access match index {i}")
         if len(crs) == 0:
-            print(f"Found {c_count} matches but unable to access any match")
+            mLo.Lo.print(f"Found {c_count} matches but unable to access any match")
             return None
         return crs
 
@@ -5092,14 +5381,38 @@ class Calc:
             width (int): Width in mm
             idx (int): Index of column
 
+        Raises:
+            CancelEventError: If SHEET_COL_WIDTH_SETTING event is canceled.
+
         Returns:
             XCellRange: Column cell range that width is applied on
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_COL_WIDTH_SETTING` :eventref:`src-docs-sheet-event-col-width-setting`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_COL_WIDTH_SET` :eventref:`src-docs-sheet-event-col-width-set`
+
+        Note:
+            Event args ``index`` is set to ``idx`` value, ``event_data`` is set to ``width`` value.
         """
+        cargs = SheetCancelArgs(cls)
+        cargs.sheet = sheet
+        cargs.index = idx
+        cargs.event_data = width
+        Events().trigger(CalcNamedEvent.SHEET_COL_WIDTH_SETTING, cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
         if width <= 0:
-            print("Width must be greater then 0")
+            mLo.Lo.print("Width must be greater then 0")
             return None
         cell_range = cls.get_col_range(sheet=sheet, idx=idx)
         mProps.Props.set_property(prop_set=cell_range, name="Width", value=(width * 100))
+        eargs = SheetArgs(cls)
+        eargs.sheet = sheet
+        eargs.index = idx
+        eargs.event_data = width
+        Events().trigger(CalcNamedEvent.SHEET_COL_WIDTH_SET, eargs)
         return cell_range
 
     @classmethod
@@ -5117,15 +5430,39 @@ class Calc:
             height (int): Width in mm
             idx (int): Index of Row
 
+        Raises:
+            CancelEventError: If SHEET_ROW_HEIGHT_SETTING event is canceled.
+
         Returns:
             XCellRange: Row cell range that height is applied on
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_ROW_HEIGHT_SETTING` :eventref:`src-docs-sheet-event-row-height-setting`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_ROW_HEIGHT_SET` :eventref:`src-docs-sheet-event-row-height-set`
+
+        Note:
+            Event args ``index`` is set to ``idx`` value, ``event_data`` is set to ``height`` value.
         """
+        cargs = SheetCancelArgs(cls)
+        cargs.sheet = sheet
+        cargs.index = idx
+        cargs.event_data = height
+        Events().trigger(CalcNamedEvent.SHEET_ROW_HEIGHT_SETTING, cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
         if height <= 0:
-            print("Height must be greater then 0")
+            mLo.Lo.print("Height must be greater then 0")
             return None
         cell_range = cls.get_row_range(sheet=sheet, idx=idx)
         # mInfo.Info.show_services(obj_name="Cell range for a row", obj=cell_range)
         mProps.Props.set_property(prop_set=cell_range, name="Height", value=(height * 100))
+        eargs = SheetArgs(cls)
+        eargs.sheet = sheet
+        eargs.index = idx
+        eargs.event_data = height
+        Events().trigger(CalcNamedEvent.SHEET_ROW_HEIGHT_SET, eargs)
         return cell_range
 
     # endregion ------------ cell decoration ---------------------------
@@ -5300,17 +5637,15 @@ class Calc:
             float: result of function if successful. If there is an errro then 0.0 is returned.
         """
         try:
-            sheet_op = mLo.Lo.qi(XSheetOperation, cell_range)
-            if sheet_op is None:
-                raise mEx.MissingInterfaceError(XSheetOperation)
+            sheet_op = mLo.Lo.qi(XSheetOperation, cell_range, raise_err=True)
             func = cls.GeneralFunction(fn)  # convert to enum value if str
             if not isinstance(fn, uno.Enum):
-                print("Arg fn is invalid, returning 0.0")
+                mLo.Lo.print("Arg fn is invalid, returning 0.0")
                 return 0.0
             return sheet_op.computeFunction(func)
         except Exception as e:
-            print("Compute function failed. Returning 0.0")
-            print(f"    {e}")
+            mLo.Lo.print("Compute function failed. Returning 0.0")
+            mLo.Lo.print(f"    {e}")
         return 0.0
 
     @staticmethod
@@ -5338,15 +5673,15 @@ class Calc:
             fa = mLo.Lo.create_instance_mcf(XFunctionAccess, "com.sun.star.sheet.FunctionAccess", raise_err=True)
             return fa.callFunction(func_name.upper(), arg)
         except Exception as e:
-            print(f"Could not invoke function '{func_name.upper()}'")
-            print(f"    {e}")
+            mLo.Lo.print(f"Could not invoke function '{func_name.upper()}'")
+            mLo.Lo.print(f"    {e}")
         return None
 
     @staticmethod
     def get_function_names() -> List[str] | None:
         funcs_desc = mLo.Lo.create_instance_mcf(XFunctionDescriptions, "com.sun.star.sheet.FunctionDescriptions")
         if funcs_desc is None:
-            print("No function descriptions were found")
+            mLo.Lo.print("No function descriptions were found")
             return None
 
         nms: List[str] = []
@@ -5360,7 +5695,7 @@ class Calc:
             except Exception:
                 continue
         if len(nms) == 0:
-            print("No function names were found")
+            mLo.Lo.print("No function names were found")
             return None
         nms.sort()
         return nms
@@ -5386,7 +5721,7 @@ class Calc:
                         return tuple(props)
             except Exception:
                 continue
-        print(f"Function '{func_nm}' not found")
+        mLo.Lo.print(f"Function '{func_nm}' not found")
         return None
 
     @staticmethod
@@ -5403,8 +5738,8 @@ class Calc:
         try:
             return tuple(func_desc.getByIndex(idx))
         except Exception as e:
-            print(f"Could not access function description {idx}")
-            print(f"    {e}")
+            mLo.Lo.print(f"Could not access function description {idx}")
+            mLo.Lo.print(f"    {e}")
         return None
 
     @overload
@@ -5481,6 +5816,22 @@ class Calc:
 
     @classmethod
     def print_function_info(cls, func_name: str) -> None:
+        """
+        Prints Function Info to console.
+
+        Args:
+            func_name (str): Function name
+
+        :events:
+           .. include:: ../../resources/global/printing_events.rst
+        
+        Note:
+            .. include:: ../../resources/global/printing_note.rst
+        """
+        cargs = CancelEventArgs(Calc)
+        Events().trigger(GblNamedEvent.PRINTING, cargs)
+        if cargs.cancel:
+            return
         prop_vals = cls._find_function_by_name(func_nm=func_name)
         if prop_vals is None:
             return
@@ -5490,6 +5841,22 @@ class Calc:
 
     @classmethod
     def print_fun_arguments(cls, prop_vals: Sequence[PropertyValue]) -> None:
+        """
+        Prints Function Arguments to console
+
+        Args:
+            prop_vals (Sequence[PropertyValue]): Property values
+
+        :events:
+           .. include:: ../../resources/global/printing_events.rst
+        
+        Note:
+            .. include:: ../../resources/global/printing_note.rst
+        """
+        cargs = CancelEventArgs(Calc)
+        Events().trigger(GblNamedEvent.PRINTING, cargs)
+        if cargs.cancel:
+            return
         fargs: Sequence[FunctionArgument] = mProps.Props.get_value(name="Arguments", props=prop_vals)
         if fargs is None:
             print("No arguments found")
@@ -5497,10 +5864,10 @@ class Calc:
 
         print(f"No. of arguments: {len(fargs)}")
         for i, arg in enumerate(fargs):
-            cls.print_fun_argument(i, arg)
+            cls._print_fun_argument(i, arg)
 
     @staticmethod
-    def print_fun_argument(i: int, fa: FunctionArgument) -> None:
+    def _print_fun_argument(i: int, fa: FunctionArgument) -> None:
         print(f"{i+1}. Argument name: {fa.Name}")
         print(f"  Description: '{fa.Description}'")
         print(f"  Is optional?: {fa.IsOptional}")
@@ -5508,9 +5875,15 @@ class Calc:
 
     @staticmethod
     def get_recent_functions() -> Tuple[int, ...] | None:
+        """
+        Gets recent functions
+
+        Returns:
+            Tuple[int, ...] | None: Tuple of ints that point to functions
+        """
         recent_funcs = mLo.Lo.create_instance_mcf(XRecentFunctions, "com.sun.star.sheet.RecentFunctions")
         if recent_funcs is None:
-            print("No recent functions found")
+            mLo.Lo.print("No recent functions found")
             return None
 
         return recent_funcs.getRecentFunctionIds()
@@ -5545,7 +5918,7 @@ class Calc:
 
         goal_result = gs.seekGoal(formula_pos, xpos, f"{float(result)}")
         if goal_result.Divergence >= 0.1:
-            print(f"NO result; divergence: {goal_result.Divergence}")
+            mLo.Lo.print(f"NO result; divergence: {goal_result.Divergence}")
             raise mEx.GoalDivergenceError(goal_result.Divergence)
         return goal_result.Result
 
@@ -5554,15 +5927,15 @@ class Calc:
         """
         Prints solvers
         """
-        print("Services offered by the solver:")
+        mLo.Lo.print("Services offered by the solver:")
         nms = mInfo.Info.get_service_names(service_name="com.sun.star.sheet.Solver")
         if nms is None:
-            print("  none")
+            mLo.Lo.print("  none")
             return
 
         for service in nms:
-            print(f"  {service}")
-        print()
+            mLo.Lo.print(f"  {service}")
+        mLo.Lo.print()
 
     @staticmethod
     def to_constraint_op(op: str) -> Calc.SolverConstraintOperator:
@@ -5583,7 +5956,7 @@ class Calc:
             return Calc.SolverConstraintOperator.LESS_EQUAL
         if (op == ">=") or op == "=>":
             return Calc.SolverConstraintOperator.GREATER_EQUAL
-        print(f"Do not recognise op: {op}; using EQUAL")
+        mLo.Lo.print(f"Do not recognise op: {op}; using EQUAL")
         return Calc.SolverConstraintOperator.EQUAL
 
     # region    make_constraint()
@@ -5763,15 +6136,15 @@ class Calc:
         # These are typedef properties. The types-unopy typings are correct. Typedef are represented as Class Properties.
         is_successful = solver.Success
         cell_name = cls._get_cell_str_addr(solver.Objective)
-        print("Solver result: ")
-        print(f"  {cell_name} == {solver.ResultValue:.4f}")
+        mLo.Lo.print("Solver result: ")
+        mLo.Lo.print(f"  {cell_name} == {solver.ResultValue:.4f}")
         addrs = solver.Variables
         solns = solver.Solution
-        print("Solver variables: ")
+        mLo.Lo.print("Solver variables: ")
         for i, num in enumerate(solns):
             cell_name = cls._get_cell_str_addr(addrs[i])
-            print(f"  {cell_name} == {num:.4f}")
-        print()
+            mLo.Lo.print(f"  {cell_name} == {num:.4f}")
+        mLo.Lo.print()
 
     # endregion ------------ solver methods ----------------------------
 
@@ -5795,7 +6168,9 @@ class Calc:
         See Also:
             `LibreOffice API XHeaderFooterContent <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1sheet_1_1XHeaderFooterContent.html>`_
         """
-        result = mLo.Lo.qi(XHeaderFooterContent, mProps.Props.get_property(prop_set=props, name=content), raise_err=True)
+        result = mLo.Lo.qi(
+            XHeaderFooterContent, mProps.Props.get_property(prop_set=props, name=content), raise_err=True
+        )
         return result
 
     @staticmethod
@@ -5806,7 +6181,17 @@ class Calc:
         Args:
             title (str): Title printed to console
             hfc (XHeaderFooterContent): Content
+
+        :events:
+           .. include:: ../../resources/global/printing_events.rst
+        
+        Note:
+            .. include:: ../../resources/global/printing_note.rst
         """
+        cargs = CancelEventArgs(Calc)
+        Events().trigger(GblNamedEvent.PRINTING, cargs)
+        if cargs.cancel:
+            return
         left = hfc.getLeftText()
         center = hfc.getCenterText()
         right = hfc.getRightText()
@@ -5850,7 +6235,7 @@ class Calc:
         """
         xtext = cls.get_region(hfc=hfc, region=region)
         if xtext is None:
-            print("Could not set text")
+            mLo.Lo.print("Could not set text")
             return
         header_cursor = xtext.createTextCursor()
         header_cursor.gotoStart(False)

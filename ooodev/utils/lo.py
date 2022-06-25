@@ -13,6 +13,7 @@ from enum import IntEnum, Enum
 
 from ..events.event_singleton import Events
 from ..events.lo_named_event import LoNamedEvent
+from ..events.gbl_named_event import GblNamedEvent
 from ..events.args.event_args import EventArgs
 from ..events.args.cancel_event_args import CancelEventArgs
 from ..events.args.dispatch_args import DispatchArgs
@@ -2048,6 +2049,26 @@ class Lo(metaclass=StaticProperty):
         xmodel = cls.qi(XModel, cls._doc)
         return xmodel.hasControllersLocked()
 
+    @staticmethod
+    def print(*args, **kwargs) -> None:
+        """
+        Utility function that passes to actual print.
+        
+        If :py:attr:`GblNamedEvent.PRINTING <.events.gbl_named_event.GblNamedEvent.PRINTING>`
+        event is canceled the this method will not print.
+        
+        :events:
+           .. include:: ../../resources/global/printing_events.rst
+        
+        Note:
+            .. include:: ../../resources/global/printing_note.rst
+        """
+        cargs = CancelEventArgs(Lo)
+        Events().trigger(GblNamedEvent.PRINTING, cargs)
+        if cargs.cancel:
+            return
+        print(*args, **kwargs)
+
     @classproperty
     def null_date(cls) -> datetime:
         """
@@ -2121,6 +2142,7 @@ class Lo(metaclass=StaticProperty):
         Returns:
             the current component or None when not a document
         """
+        # TODO: autodoc is ignoring classproperty this_component
         try:
             return cls._this_component
         except AttributeError:
@@ -2146,9 +2168,13 @@ class Lo(metaclass=StaticProperty):
         Returns:
             XScriptContext: XScriptContext instance
         """
+        # TODO: autodoc is ignoring classproperty xscript_context
         try:
             return cls._xscript_context
         except AttributeError:
+            # use this_component to autoload
+            if cls.this_component is None:
+                return None
             ctx = cls.get_context()
             desktop = cls.get_desktop()
             model = cls.qi(XModel, cls._doc, raise_err=True)

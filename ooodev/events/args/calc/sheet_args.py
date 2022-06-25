@@ -1,27 +1,75 @@
 # coding: utf-8
 from __future__ import annotations
-from typing import Any
+from typing import Any, TYPE_CHECKING
 from ..event_args import EventArgs
 
+if TYPE_CHECKING:
+    from com.sun.star.sheet import XSpreadsheetDocument
+    from com.sun.star.sheet import XSpreadsheet
+
 class SheetArgs(EventArgs):
-    def __init__(self, source: Any, sheet_arg: str | int) -> None:
+    def __init__(self, source: Any) -> None:
         """
         Constructor
 
         Args:
             source (Any): Event Source
-            sheet_arg (str): Sheet index or name
         """
         super().__init__(source)
-        self._sheet_arg = sheet_arg
 
     @property
-    def sheet_arg(self) -> str:
+    def index(self) -> int | None:
         """
-        Gets/Sets the dispatch cmd of the event
+        Gets/Sets the index of the event
         """
-        return self._sheet_arg
+        try:
+            return self._index
+        except AttributeError:
+            return None
 
-    @sheet_arg.setter
-    def sheet_arg(self, value: str):
-        self._sheet_arg = value
+    @index.setter
+    def index(self, value: int):
+        self._index = value
+    
+    @property
+    def name(self) -> str | None:
+        """
+        Gets/Sets name of the event
+        """
+        try:
+            return self._name
+        except AttributeError:
+            return None
+
+    @name.setter
+    def name(self, value: str):
+        self._name = value
+    
+    
+    @property
+    def doc(self) -> XSpreadsheetDocument | None:
+        """
+        Gets/Sets document of the event
+        """
+        try:
+            return self._doc
+        except AttributeError:
+            return None
+
+    @doc.setter
+    def doc(self, value: XSpreadsheetDocument):
+        self._doc = value
+    
+    @property
+    def sheet(self) -> XSpreadsheet | None:
+        """
+        Gets/Sets spreadsheet of the event
+        """
+        try:
+            return self._sheet
+        except AttributeError:
+            return None
+
+    @sheet.setter
+    def sheet(self, value: XSpreadsheet):
+        self._sheet = value

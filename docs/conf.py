@@ -125,5 +125,7 @@ autodoc_typehints_format = 'short'
 # custom global roles or any other rst to include
 rst_prolog = """
 .. role:: event(doc)
+
+.. role:: eventref(ref)
 """
 

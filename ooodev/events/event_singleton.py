@@ -8,6 +8,8 @@ from __future__ import annotations
 from typing import Callable
 from .args.event_args import EventArgs
 
+from . import lo_events as mLoEvents
+
 class Events(object):
     """Static Class for sharing events among internal classes. DO NOT USE!"""
     _instance = None
@@ -19,7 +21,7 @@ class Events(object):
 
     def on(self, event_name: str, callback:Callable[[object, EventArgs], None]):
         """
-        Registers Events
+        Registers an event
 
         Args:
             event_name (str): Uniquie event name
@@ -46,3 +48,6 @@ class Events(object):
                 if event_args is not None:
                     event_args.event_name = event_name
                 callback(event_args.source, event_args)
+        # Trigger events on class that is designed for end users to use.
+        # LoEventsis the class that end users will subscripe to an not this Events() class.
+        mLoEvents.LoEvents().trigger(event_name=event_name, event_args=event_args)

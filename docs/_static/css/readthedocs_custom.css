@@ -27,6 +27,7 @@ a.reference.external::before {
     margin-right: 5px;
 }
 
+.lo-event a.reference.internal span.std-ref, 
 .lo-event a.reference.internal span.doc {
     /* color: chartreuse; */
     transition: all 0.2s ease-in-out;
@@ -40,6 +41,7 @@ a.reference.external::before {
     font-size: 75%;
 }
 
+.lo-event a.reference.internal span.std-ref::before,
 .lo-event a.reference.internal span.doc::before {
     /* using style CSS custom property */
     font: var(--fa-font-solid);

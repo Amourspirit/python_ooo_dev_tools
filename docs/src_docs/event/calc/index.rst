@@ -1,9 +1,8 @@
-Events
-======
+Calc Events
+===========
 
 .. toctree::
     :titlesonly:
     :glob:
 
     *
-    calc/index

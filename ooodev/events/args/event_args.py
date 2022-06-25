@@ -12,6 +12,7 @@ class EventArgs:
             source (Any): Event Source
         """
         self._source = source
+        self._event_name = ""
 
     @property
     def source(self) -> Any:
@@ -34,6 +35,21 @@ class EventArgs:
     @event_name.setter
     def event_name(self, value: str):
         self._event_name = value
+    
+
+    @property
+    def event_data(self) -> Any:
+        """
+        Gets/Sets any extra data associated with the event
+        """
+        try:
+            return self._event_data
+        except AttributeError:
+            return None
+
+    @event_data.setter
+    def event_data(self, value: Any):
+        self._event_data = value
     
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__}: {self.event_name}>"

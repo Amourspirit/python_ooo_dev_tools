@@ -1,4 +1,0 @@
-Event
-=====
-
-Simple Event arg.

@@ -1,10 +1,10 @@
 # coding: utf-8
 from __future__ import annotations
 from typing import Any
-from .sheet_args import SheetArgs
+from .cell_args import CellArgs
 from ..cancel_event_args import CancelEventArgs
 
-class SheetCancelArgs(CancelEventArgs, SheetArgs):
+class CellCancelArgs(CancelEventArgs, CellArgs):
     """
     Sheet Cancel Event Args
     """
