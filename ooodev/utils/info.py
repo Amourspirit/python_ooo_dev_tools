@@ -9,7 +9,7 @@ import mimetypes
 from typing import TYPE_CHECKING, Tuple, List, cast, overload, Optional
 import uno
 from ..events.event_singleton import Events
-from ..events.named_event import LoNamedEvent
+from ..events.lo_named_event import LoNamedEvent
 from .sys_info import SysInfo
 
 from com.sun.star.awt import XToolkit

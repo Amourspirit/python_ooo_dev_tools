@@ -16,6 +16,7 @@ Source Code Dcoumentation
    :caption: Contents:
 
    src/index
+   src_docs/event/index
 
 Indices and tables
 ==================

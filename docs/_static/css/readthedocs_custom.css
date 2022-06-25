@@ -1,4 +1,39 @@
+/* New Simplified Version 6 CSS */
+/* Step 1: Common Properties: All required to make icons render reliably */
+.icon::before {
+    /* removed font- based rules */
+    display: inline-block;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+}
+
+
 html.writer-html4 .rst-content dl:not(.docutils) .property,
 html.writer-html5 .rst-content dl[class]:not(.option-list):not(.field-list):not(.footnote):not(.glossary):not(.simple) .property {
     display: inline;
+}
+
+
+/* dl.py.class dd dl.py.method dd dl.field-list.simple ul.simple li p a.reference.internal:before {
+    
+} */
+
+.lo-event a.reference.internal span.doc {
+    /* color: chartreuse; */
+    transition: all 0.2s ease-in-out;
+    font-weight: 700;
+    color: #404040;
+    white-space: normal;
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, Courier, monospace;
+    padding: 2px 5px;
+    background: #fff;
+    border: 1px solid #e1e4e5;
+    font-size: 75%;
+}
+
+.lo-event a.reference.internal span.doc::before {
+    /* using style CSS custom property */
+    font: var(--fa-font-solid);
+    content: "\e0b7";
+    margin-right: 5px;
 }

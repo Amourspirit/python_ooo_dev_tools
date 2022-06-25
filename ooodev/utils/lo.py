@@ -12,7 +12,7 @@ from enum import IntEnum, Enum
 # from ..mock import mock_g
 
 from ..events.event_singleton import Events
-from ..events.named_event import LoNamedEvent
+from ..events.lo_named_event import LoNamedEvent
 from ..events.event_args import EventArgs
 from ..events.cancel_event_args import CancelEventArgs
 from ..events.dispatch_event import DispatchEvent

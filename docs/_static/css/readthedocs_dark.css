@@ -1,3 +1,13 @@
+/* New Simplified Version 6 CSS */
+/* Step 1: Common Properties: All required to make icons render reliably */
+.icon::before {
+    /* removed font- based rules */
+    display: inline-block;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+}
+
+
 html[data-theme='dark'] .highlight .vm {
     color: #605dc9 !important;
 }
@@ -26,4 +36,29 @@ html[data-theme='dark'].writer-html5 .rst-content dl[class]:not(.option-list):no
 
 html[data-theme='dark'] .highlight .hll {
     background-color: #184836;
+}
+
+
+html[data-theme='dark'] dl.py.class dd dl.py.method dd dl.field-list.simple dd.field-odd ul.simple li p a.reference.internal a:visited {
+    color: chartreuse;
+}
+
+html[data-theme='dark'] .lo-event a.reference.internal span.doc {
+    /* color: chartreuse; */
+    transition: all 0.2s ease-in-out;
+    font-weight: 700;
+    color: #cecece;
+    white-space: normal;
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, Courier, monospace;
+    padding: 2px 5px;
+    background-color: #2d2d2d;
+    border: 1px solid #1c1c1c;
+    font-size: 75%;
+}
+
+html[data-theme='dark'] .lo-event a.reference.internal span.doc::before {
+    /* using style CSS custom property */
+    font: var(--fa-font-solid);
+    content: "\e0b7";
+    margin-right: 5px;
 }

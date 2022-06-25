@@ -66,7 +66,7 @@ html_theme = "sphinx_rtd_theme"
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
 
-html_css_files = []
+html_css_files = ["https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"]
 html_css_files.append("css/readthedocs_custom.css")
 if html_theme == "sphinx_rtd_theme":
     html_css_files.append("css/readthedocs_dark.css")
@@ -120,3 +120,10 @@ autodoc_type_aliases = {
 
 
 autodoc_typehints_format = 'short'
+
+# https://stackoverflow.com/questions/9698702/how-do-i-create-a-global-role-roles-in-sphinx
+# custom global roles or any other rst to include
+rst_prolog = """
+.. role:: event(doc)
+"""
+

@@ -8,7 +8,7 @@ from enum import IntEnum
 
 
 from ..events.event_singleton import Events
-from ..events.named_event import LoNamedEvent
+from ..events.lo_named_event import LoNamedEvent
 from ..utils import lo as mLo
 from ..utils import info as mInfo
 

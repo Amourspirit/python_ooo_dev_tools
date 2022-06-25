@@ -1,0 +1,8 @@
+Events
+======
+
+.. toctree::
+    :titlesonly:
+    :glob:
+
+    *

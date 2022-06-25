@@ -96,6 +96,11 @@ from ..utils import view_state as mViewState
 from ..exceptions import ex as mEx
 from ..utils.type_var import Row, Column, Table, TupleArray, FloatList, FloatTable
 
+from ..events.event_singleton import Events
+from ..events.event_args import EventArgs
+from ..events.cancel_event_args import CancelEventArgs
+from ..events.calc_named_event import CalcNamedEvent
+
 NameVal = ArgsHelper.NameValue
 # endregion Imports
 
@@ -165,10 +170,21 @@ class Calc:
 
         Returns:
             XSpreadsheetDocument: Spreadsheet document
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.DOC_OPENING` :event:`../../src_docs/event/cancel_event`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.DOC_OPENED` :event:`../../src_docs/event/event`
         """
+        cargs = CancelEventArgs(cls)
+        Events().trigger(CalcNamedEvent.DOC_OPENING, cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
         doc = mLo.Lo.open_doc(fnm=str(fnm), loader=loader)
         if doc is None:
             raise Exception("Document is null")
+        Events().trigger(CalcNamedEvent.DOC_OPENED, EventArgs(cls))
         return cls.get_ss_doc(doc)
 
     @staticmethod

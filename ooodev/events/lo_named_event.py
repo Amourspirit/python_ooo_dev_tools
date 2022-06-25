@@ -1,6 +1,6 @@
 # coding: utf-8
 """
-Named Events.
+Lo Named Events.
 """
 from typing import NamedTuple
 
