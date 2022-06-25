@@ -1,4 +1,5 @@
 # coding: utf-8
+from __future__ import annotations
 from typing import Any
 from .dispatch_args import DispatchArgs
 from .cancel_event_args import CancelEventArgs

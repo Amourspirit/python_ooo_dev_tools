@@ -4,6 +4,7 @@ Internal Module only! DO NOT use this module/class!
 
 This module is for the purpose of sharing events between classes internally
 """
+from __future__ import annotations
 from typing import Callable
 from .args.event_args import EventArgs
 
