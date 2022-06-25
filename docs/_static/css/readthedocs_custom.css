@@ -13,10 +13,12 @@ html.writer-html5 .rst-content dl[class]:not(.option-list):not(.field-list):not(
     display: inline;
 }
 
-
-/* dl.py.class dd dl.py.method dd dl.field-list.simple ul.simple li p a.reference.internal:before {
-    
-} */
+a.reference.internal > code > span::before {
+    /* using style CSS custom property */
+    font: var(--fa-font-solid);
+    content: "\f0c1";
+    margin-right: 5px;
+}
 
 .lo-event a.reference.internal span.doc {
     /* color: chartreuse; */
