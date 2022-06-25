@@ -491,8 +491,7 @@ class Lo(metaclass=StaticProperty):
             XComponentLoader: component loader
 
         See Also:
-            * :py:meth:`get_doc`
-            * :py:meth:`open_doc`
+            :py:meth:`open_doc`
         """
         # Creation sequence: remote component content (xcc) -->
         #                     remote service manager (mcFactory) -->
@@ -705,7 +704,6 @@ class Lo(metaclass=StaticProperty):
         See Also:
             * :py:meth:`~Lo.open_readonly_doc`
             * :py:meth:`~Lo.open_flat_doc`
-            * :py:meth:`get_doc`
             * :py:meth:`load_office`
         """
         # Props and FileIO are called this method so triger global_reset first.

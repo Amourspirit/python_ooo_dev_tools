@@ -1392,13 +1392,15 @@ class Write(mSel.Selection):
             tbl_bg_color (Color | None, optional): Table background color. Set to None to ignore background color. Defaults to CommonColor.LIGHT_BLUE.
             tbl_fg_color (Color | None, optional): Table background color. Set to None to ignore background color. Defaults to CommonColor.BLACK.
 
-         Raises:
+        Raises:
             ValueError: If table_data is empty
             CreateInstanceMsfError: If unable to create instance of text.TextTable
             Exception: If unable to add table
 
         See Also:
-            :py:class:`~.utils.color.CommonColor`
+            - :py:class:`~.utils.color.CommonColor`
+            - :py:meth:`~.utils.table_helper.TableHelper.table_2d_to_dict`
+            - :py:meth:`~.utils.table_helper.TableHelper.table_dict_to_table`
         """
 
         def make_cell_name(row: int, col: int) -> str:
@@ -2062,7 +2064,7 @@ class Write(mSel.Selection):
             thesaurus (XThesaurus): thesaurus instance
 
         Returns:
-            int: _description_
+            int: Number of meanings found
         """
         loc = Locale("en", "US", "")
         meanings = thesaurus.queryMeanings(word, loc, tuple())
