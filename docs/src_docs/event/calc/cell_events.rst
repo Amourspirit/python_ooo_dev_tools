@@ -103,7 +103,7 @@ Event that is raised after removing cell borders.
 Cells Adding Borders Event
 --------------------------
 
-Event that is raised before removing cell borders.
+Event that is raised before adding cell borders.
 
 .. seealso::
 
@@ -115,9 +115,34 @@ Event that is raised before removing cell borders.
 Cells Added Borders Event
 -------------------------
 
-Event that is raised after removing cell borders.
+Event that is raised after adding cell borders.
 
 .. seealso::
 
     - :py:class:`~.events.args.calc.cell_args.CellArgs`
     - :py:meth:`Calc.add_border() <.office.calc.Calc.add_border>`
+
+
+.. _src-docs-cell-event-highlighting:
+
+Cells Highlighting Event
+------------------------
+
+Event that is raised before highlighting cells.
+
+.. seealso::
+
+    - :py:class:`~.events.args.calc.cell_cancel_args.CellCancelArgs`
+    - :py:meth:`Calc.highlight_range() <.office.calc.Calc.highlight_range>`
+
+.. _src-docs-cell-event-highlighted:
+
+Cells Highlighted Event
+-----------------------
+
+Event that is raised after highlighting cells.
+
+.. seealso::
+
+    - :py:class:`~.events.args.calc.cell_args.CellArgs`
+    - :py:meth:`Calc.highlight_range() <.office.calc.Calc.highlight_range>`

@@ -95,11 +95,16 @@ class CalcNamedEvent(NamedTuple):
     """Cells Cleared see :py:meth:`Calc.clear_cells() <.office.calc.Calc.clear_cells>`"""
 
     CELLS_BORDER_REMOVING = "calc_cells_border_removing"
-    """Cells Cleared see :py:meth:`Calc.remove_border() <.office.calc.Calc.remove_border>`"""
+    """Cells Border Removing see :py:meth:`Calc.remove_border() <.office.calc.Calc.remove_border>`"""
     CELLS_BORDER_REMOVED = "calc_cells_border_removed"
-    """Cells Border Remvoe see :py:meth:`Calc.remove_border() <.office.calc.Calc.remove_border>`"""
+    """Cells Border Removed see :py:meth:`Calc.remove_border() <.office.calc.Calc.remove_border>`"""
 
     CELLS_BORDER_ADDING = "calc_cells_border_adding"
-    """Cells Cleared see :py:meth:`Calc.add_border() <.office.calc.Calc.add_border>`"""
+    """Cells Border Adding see :py:meth:`Calc.add_border() <.office.calc.Calc.add_border>`"""
     CELLS_BORDER_ADDED = "calc_cells_border_added"
-    """Cells Border Remvoe see :py:meth:`Calc.add_border() <.office.calc.Calc.add_border>`"""
+    """Cells Border Added see :py:meth:`Calc.add_border() <.office.calc.Calc.add_border>`"""
+
+    CELLS_HIGH_LIGHTING = "calc_cells_high_lighting"
+    """Cells Highlighting see :py:meth:`Calc.highlight_range() <.office.calc.Calc.highlight_range>`"""
+    CELLS_HIGH_LIGHTED = "calc_cells_high_lighted"
+    """Cells Highlighted see :py:meth:`Calc.highlight_range() <.office.calc.Calc.highlight_range>`"""

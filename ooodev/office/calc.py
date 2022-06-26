@@ -5080,6 +5080,7 @@ class Calc:
         
         See Also:
             :py:meth:`~.calc.Calc.remove_border`
+            :py:meth:`~.calc.Calc.highlight_range`
         """
         ordered_keys = (1, 2, 3, 4)
         kargs_len = len(kwargs)
@@ -5438,6 +5439,22 @@ class Calc:
 
         Returns:
             XCell: First cell of range that headline ia applied on
+        
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.CELLS_HIGH_LIGHTING` :eventref:`src-docs-cell-event-highlighting`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.CELLS_HIGH_LIGHTED` :eventref:`src-docs-cell-event-highlighted`
+
+        Note:
+            Event args ``cells`` is of type ``XCellRange``.
+            
+            Event args ``event_data`` is a dictionary containing ``color`` and ``headline``.
+            
+            Event arg properties modified on CELLS_HIGH_LIGHTING it is reflected in this method.
+        
+        See Also:
+            :py:meth:`~.calc.Calc.add_border`
         """
         ordered_keys = (1, 2, 3, 4)
         kargs_len = len(kwargs)
@@ -5475,18 +5492,29 @@ class Calc:
         if isinstance(kargs[3], str):
             cell_range = sheet.getCellRangeByName(kargs[3])
         else:
-            cell_range = kargs[3]
+            cell_range = cast(XCellRange, kargs[3])
 
         if count == 3:
             color = CommonColor.LIGHT_BLUE
         else:
             color = cast(Color, kargs[4])
-        cls._add_border_sht_rng_color(cell_range=cell_range, color=color)
+        
+        cargs = CellCancelArgs(cls)
+        cargs.cells = cell_range
+        cargs.sheet = sheet
+        cargs.event_data = {
+            "color": color,
+            "headline": kargs[2]
+            }
+        Events().trigger(CalcNamedEvent.CELLS_HIGH_LIGHTING, cargs)
+        if cargs.cancel:
+            return
+        cls._add_border_sht_rng_color(cargs)
 
         # color the headline
-        addr = cls._get_address_cell(cell_range=cell_range)
+        addr = cls._get_address_cell(cell_range=cargs.cells)
         header_range = cls._get_cell_range_col_row(
-            sheet=sheet,
+            sheet=cargs.sheet,
             start_col=addr.StartColumn,
             start_row=addr.StartRow,
             end_col=addr.EndColumn,
@@ -5494,6 +5522,7 @@ class Calc:
         )
         first_cell = cls._get_cell_cell_rng(cell_range=header_range, col=0, row=0)
         cls._set_val_by_cell(value=kargs[2], cell=first_cell)
+        Events().trigger(CalcNamedEvent.CELLS_HIGH_LIGHTED)
         return first_cell
 
     # endregion highlight_range()
