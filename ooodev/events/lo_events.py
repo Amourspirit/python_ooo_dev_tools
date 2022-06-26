@@ -67,5 +67,5 @@ class LoEvents(object):
         if self._callbacks is not None and event_name in self._callbacks:
             for callback in self._callbacks[event_name]:
                 if event_args is not None:
-                    event_args.event_name = event_name
+                    event_args._event_name = event_name
                 callback(event_args.source, event_args)

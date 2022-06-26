@@ -6,6 +6,7 @@ from ..event_args import EventArgs
 if TYPE_CHECKING:
     from com.sun.star.sheet import XSpreadsheet
 
+
 class CellArgs(EventArgs):
     def __init__(self, source: Any) -> None:
         """
@@ -29,12 +30,12 @@ class CellArgs(EventArgs):
     @sheet.setter
     def sheet(self, value: XSpreadsheet):
         self._sheet = value
-    
+
     @property
     def cells(self) -> Any:
         """
         Gets/Sets the cells for the event.
-        
+
         Depending on the event can be any cell value such as a cell name, range, XCell, XCellRange etc.
         """
         return self._cells
@@ -42,3 +43,20 @@ class CellArgs(EventArgs):
     @cells.setter
     def cells(self, value: Any):
         self._cells = value
+
+    @staticmethod
+    def from_args(args: CellArgs) -> CellArgs:
+        """
+        Gets a new instance from existing instance
+
+        Args:
+            args (CellArgs): Existing Instance
+
+        Returns:
+            CellArgs: args
+        """
+        eargs = CellArgs(source=args.source)
+        eargs.sheet = args.sheet
+        eargs.cells = args.cells
+        eargs.event_data = args.event_data
+        return args

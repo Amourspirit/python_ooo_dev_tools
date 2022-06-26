@@ -46,7 +46,7 @@ class Events(object):
         if self.callbacks is not None and event_name in self.callbacks:
             for callback in self.callbacks[event_name]:
                 if event_args is not None:
-                    event_args.event_name = event_name
+                    event_args._event_name = event_name
                 callback(event_args.source, event_args)
         # Trigger events on class that is designed for end users to use.
         # LoEventsis the class that end users will subscripe to an not this Events() class.

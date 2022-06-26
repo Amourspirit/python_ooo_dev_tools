@@ -1,9 +1,11 @@
 # coding: utf-8
 from __future__ import annotations
-from typing  import Any
+from typing import Any
+
 
 class EventArgs:
     """Event Arguments Class"""
+
     def __init__(self, source: Any) -> None:
         """
         Constructor
@@ -28,14 +30,9 @@ class EventArgs:
     @property
     def event_name(self) -> str:
         """
-        Gets/Sets Event that raised these args
+        Gets the event name for these args
         """
         return self._event_name
-
-    @event_name.setter
-    def event_name(self, value: str):
-        self._event_name = value
-    
 
     @property
     def event_data(self) -> Any:
@@ -50,6 +47,21 @@ class EventArgs:
     @event_data.setter
     def event_data(self, value: Any):
         self._event_data = value
-    
+
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__}: {self.event_name}>"
+
+    @staticmethod
+    def from_args(args: EventArgs) -> EventArgs:
+        """
+        Gets a new instance from existing instance
+
+        Args:
+            args (EventArgs): Existing Instance
+
+        Returns:
+            EventArgs: args
+        """
+        eargs = EventArgs(source=args.source)
+        eargs.event_data = args.event_data
+        return args

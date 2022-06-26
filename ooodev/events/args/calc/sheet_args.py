@@ -7,6 +7,7 @@ if TYPE_CHECKING:
     from com.sun.star.sheet import XSpreadsheetDocument
     from com.sun.star.sheet import XSpreadsheet
 
+
 class SheetArgs(EventArgs):
     def __init__(self, source: Any) -> None:
         """
@@ -30,7 +31,7 @@ class SheetArgs(EventArgs):
     @index.setter
     def index(self, value: int):
         self._index = value
-    
+
     @property
     def name(self) -> str | None:
         """
@@ -44,8 +45,7 @@ class SheetArgs(EventArgs):
     @name.setter
     def name(self, value: str):
         self._name = value
-    
-    
+
     @property
     def doc(self) -> XSpreadsheetDocument | None:
         """
@@ -59,7 +59,7 @@ class SheetArgs(EventArgs):
     @doc.setter
     def doc(self, value: XSpreadsheetDocument):
         self._doc = value
-    
+
     @property
     def sheet(self) -> XSpreadsheet | None:
         """
@@ -73,3 +73,22 @@ class SheetArgs(EventArgs):
     @sheet.setter
     def sheet(self, value: XSpreadsheet):
         self._sheet = value
+
+    @staticmethod
+    def from_args(args: SheetArgs) -> SheetArgs:
+        """
+        Gets a new instance from existing instance
+
+        Args:
+            args (SheetArgs): Existing Instance
+
+        Returns:
+            SheetArgs: args
+        """
+        eargs = SheetArgs(source=args.source)
+        eargs.doc = args.doc
+        eargs.event_data = args.event_data
+        eargs.index = args.index
+        eargs.name = args.name
+        eargs.sheet = args.sheet
+        return args

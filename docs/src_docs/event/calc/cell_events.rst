@@ -73,4 +73,51 @@ Event that is raised after clearing cells.
     - :py:class:`~.events.args.calc.cell_args.CellArgs`
     - :py:meth:`Calc.clear_cells() <.office.calc.Calc.clear_cells>`
 
+.. _src-docs-cell-event-border-removing:
 
+Cells Removing Borders Event
+----------------------------
+
+Event that is raised before removing cell borders.
+
+.. seealso::
+
+    - :py:class:`~.events.args.calc.cell_cancel_args.CellCancelArgs`
+    - :py:meth:`Calc.remove_border() <.office.calc.Calc.remove_border>`
+
+.. _src-docs-cell-event-border-removed:
+
+Cells Removed Borders Event
+---------------------------
+
+Event that is raised after removing cell borders.
+
+.. seealso::
+
+    - :py:class:`~.events.args.calc.cell_args.CellArgs`
+    - :py:meth:`Calc.remove_border() <.office.calc.Calc.remove_border>`
+
+
+.. _src-docs-cell-event-border-adding:
+
+Cells Adding Borders Event
+--------------------------
+
+Event that is raised before removing cell borders.
+
+.. seealso::
+
+    - :py:class:`~.events.args.calc.cell_cancel_args.CellCancelArgs`
+    - :py:meth:`Calc.add_border() <.office.calc.Calc.add_border>`
+
+.. _src-docs-cell-event-border-added:
+
+Cells Added Borders Event
+-------------------------
+
+Event that is raised after removing cell borders.
+
+.. seealso::
+
+    - :py:class:`~.events.args.calc.cell_args.CellArgs`
+    - :py:meth:`Calc.add_border() <.office.calc.Calc.add_border>`
