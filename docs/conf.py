@@ -41,6 +41,10 @@ extensions = [
     "sphinx_rtd_theme",
     "sphinx_rtd_dark_mode",
     "sphinx.ext.autodoc",
+    "sphinx_toolbox.collapse",
+    "sphinx_toolbox.more_autodoc.autonamedtuple",
+    "sphinx_toolbox.more_autodoc.typevars",
+    "sphinx_toolbox.more_autodoc.autoprotocol",
     "sphinx.ext.napoleon",
     "sphinx_autodoc_typehints",
 ]

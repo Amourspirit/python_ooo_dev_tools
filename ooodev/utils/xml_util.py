@@ -11,7 +11,7 @@ from xml.dom.minidom import Node, parse, Document, parseString
 import urllib.request
 from xml.dom.minicompat import NodeList
 from ..exceptions import ex as mEx
-from .gen_util import TableHelper
+from .table_helper import TableHelper
 from . import lo as mLo # lazy loading
 
 # endregion Imports
@@ -286,9 +286,11 @@ class XML:
         """
         Gets all node values.
 
-        assumes an XML structure like
+        .. collapse:: Example XML
+        
+            XML is assumed to have structure that is similar
 
-            .. include:: ../../resources/xml/pay.xml.rst
+                .. include:: ../../resources/xml/pay.xml.rst
 
         The data from a sequence of <col> becomes one row in the
         generated 2D array.

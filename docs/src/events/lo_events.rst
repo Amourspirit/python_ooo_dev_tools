@@ -1,6 +1,9 @@
-Class LoEvents
-==============
+Module Lo Events
+================
 
-.. autoclass:: ooodev.events.lo_events.LoEvents
+.. automodule:: ooodev.events.lo_events
     :members:
-    :undoc-members:
+    :inherited-members:
+    :exclude-members: EventArg
+
+    .. autonamedtuple:: ooodev.events.lo_events.EventArg

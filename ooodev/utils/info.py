@@ -8,7 +8,7 @@ from pathlib import Path
 import mimetypes
 from typing import TYPE_CHECKING, Tuple, List, cast, overload, Optional
 import uno
-from ..events.event_singleton import Events
+from ..events.event_singleton import _Events
 from ..events.lo_named_event import LoNamedEvent
 from .sys_info import SysInfo
 
@@ -1959,6 +1959,6 @@ def _del_cache_attrs(source: object, e: EventArgs) -> None:
 
 
 # subscribe to events that warrant clearing cached attribs
-Events().on(LoNamedEvent.RESET, _del_cache_attrs)
+_Events().on(LoNamedEvent.RESET, _del_cache_attrs)
 
 __all__ = ("Info",)

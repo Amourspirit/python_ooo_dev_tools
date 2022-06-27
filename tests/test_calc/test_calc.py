@@ -1,4 +1,4 @@
-from typing import cast
+from typing import Any, cast
 import pytest
 
 # from ooodev.office.write import Write
@@ -665,8 +665,9 @@ def test_clear_cells(loader) -> None:
     from ooodev.utils.lo import Lo
     from ooodev.office.calc import Calc
     from ooodev.utils.gui import GUI
+
     visible = False
-    delay = 0 # 500
+    delay = 0  # 500
     doc = Calc.create_doc(loader)
     sheet = Calc.get_sheet(doc=doc, index=0)
     vals = (
@@ -692,15 +693,17 @@ def test_clear_cells(loader) -> None:
         ("Alice", "Oranges", 4),
         ("Alice", "Apples", 9),
     )
+
     def check_data(arr: list) -> None:
         assert len(arr) == 21
-        assert arr[20][0] == 'Alice'
-        assert arr[20][1] == 'Apples'
+        assert arr[20][0] == "Alice"
+        assert arr[20][1] == "Apples"
         assert arr[20][2] == 9.0
         for i in range(20):
             row = arr[i]
             for value in row:
-                assert value == ''
+                assert value == ""
+
     try:
         rng_name = "A3:C23"
         rng_clear = "A3:C22"
@@ -716,7 +719,7 @@ def test_clear_cells(loader) -> None:
         data = Calc.get_array(sheet=sheet, range_name=rng_name)
         check_data(data)
         Lo.delay(delay)
-        
+
         Calc.set_array(values=vals, sheet=sheet, name=rng_name)  # or just "A3"
         Lo.delay(delay)
         flags = Calc.CellFlags.VALUE | Calc.CellFlags.STRING
@@ -724,8 +727,7 @@ def test_clear_cells(loader) -> None:
         data = Calc.get_array(sheet=sheet, range_name=rng_name)
         check_data(data)
         Lo.delay(delay)
-        
-        
+
         # clear_cells(cls, sheet: XSpreadsheet, range_name: str)
         Calc.set_array(values=vals, sheet=sheet, name=rng_name)  # or just "A3"
         Lo.delay(delay)
@@ -733,14 +735,14 @@ def test_clear_cells(loader) -> None:
         data = Calc.get_array(sheet=sheet, range_name=rng_name)
         check_data(data)
         Lo.delay(delay)
-        
+
         Calc.set_array(values=vals, sheet=sheet, name=rng_name)  # or just "A3"
         Lo.delay(delay)
         Calc.clear_cells(sheet, rng_clear)
         data = Calc.get_array(sheet=sheet, range_name=rng_name)
         check_data(data)
         Lo.delay(delay)
-        
+
         # clear_cells(cls, sheet: XSpreadsheet, cell_range: XCellRange, cell_flags: Calc.CellFlags)
         Calc.set_array(values=vals, sheet=sheet, name=rng_name)  # or just "A3"
         Lo.delay(delay)
@@ -749,7 +751,7 @@ def test_clear_cells(loader) -> None:
         data = Calc.get_array(sheet=sheet, range_name=rng_name)
         check_data(data)
         Lo.delay(delay)
-        
+
         Calc.set_array(values=vals, sheet=sheet, name=rng_name)  # or just "A3"
         Lo.delay(delay)
         flags = Calc.CellFlags.VALUE | Calc.CellFlags.STRING
@@ -757,7 +759,7 @@ def test_clear_cells(loader) -> None:
         data = Calc.get_array(sheet=sheet, range_name=rng_name)
         check_data(data)
         Lo.delay(delay)
-        
+
         # clear_cells(cls, sheet: XSpreadsheet, cell_range: XCellRange)
         Calc.set_array(values=vals, sheet=sheet, name=rng_name)  # or just "A3"
         Lo.delay(delay)
@@ -765,14 +767,14 @@ def test_clear_cells(loader) -> None:
         data = Calc.get_array(sheet=sheet, range_name=rng_name)
         check_data(data)
         Lo.delay(delay)
-        
+
         Calc.set_array(values=vals, sheet=sheet, name=rng_name)  # or just "A3"
         Lo.delay(delay)
         Calc.clear_cells(sheet, rng)
         data = Calc.get_array(sheet=sheet, range_name=rng_name)
         check_data(data)
         Lo.delay(delay)
-        
+
         # clear_cells(cls, sheet: XSpreadsheet, cr_addr: CellRangeAddress, cell_flags: Calc.CellFlags)
         Calc.set_array(values=vals, sheet=sheet, name=rng_name)  # or just "A3"
         Lo.delay(delay)
@@ -781,7 +783,7 @@ def test_clear_cells(loader) -> None:
         data = Calc.get_array(sheet=sheet, range_name=rng_name)
         check_data(data)
         Lo.delay(delay)
-        
+
         Calc.set_array(values=vals, sheet=sheet, name=rng_name)  # or just "A3"
         Lo.delay(delay)
         flags = Calc.CellFlags.VALUE | Calc.CellFlags.STRING
@@ -789,7 +791,7 @@ def test_clear_cells(loader) -> None:
         data = Calc.get_array(sheet=sheet, range_name=rng_name)
         check_data(data)
         Lo.delay(delay)
-        
+
         # clear_cells(cls, sheet: XSpreadsheet, cr_addr: CellRangeAddress)
         Calc.set_array(values=vals, sheet=sheet, name=rng_name)  # or just "A3"
         Lo.delay(delay)
@@ -797,16 +799,18 @@ def test_clear_cells(loader) -> None:
         data = Calc.get_array(sheet=sheet, range_name=rng_name)
         check_data(data)
         Lo.delay(delay)
-        
+
         Calc.set_array(values=vals, sheet=sheet, name=rng_name)  # or just "A3"
         Lo.delay(delay)
         Calc.clear_cells(sheet, cr_addr)
         data = Calc.get_array(sheet=sheet, range_name=rng_name)
         check_data(data)
         Lo.delay(delay)
-        
+
     finally:
         Lo.close(closeable=doc, deliver_ownership=False)
+
+
 # endregion insert/remove/clear rows, columns, cells
 
 # region    set/get values in cells
@@ -2346,7 +2350,7 @@ def test_add_remove_border(loader) -> None:
     from ooodev.utils.gui import GUI
 
     visible = False
-    delay = 0 # 300
+    delay = 0  # 300
     assert loader is not None
     doc = Calc.create_doc(loader)
     assert doc is not None
@@ -2627,9 +2631,29 @@ def test_highlight_range(loader) -> None:
     from ooodev.office.calc import Calc
     from ooodev.utils.gui import GUI
     from ooodev.utils.color import CommonColor
+    from ooodev.events.lo_events import event_ctx, EventArg
+    from ooodev.events.calc_named_event import CalcNamedEvent
+    from ooodev.events.args.calc.cell_args import CellArgs
+    from ooodev.events.args.calc.cell_cancel_args import CellCancelArgs
 
-    visible = False
-    delay = 0 # 3000
+    is_adding_border = False
+    is_highlighted = False
+
+    def highlighting(source: Any, args: CellCancelArgs):
+        args.event_data["color"] = CommonColor.GREEN
+        args.event_data["headline"] = "Modified from callback"
+    
+    def highlighted(source: Any, args: CellArgs):
+        nonlocal is_highlighted
+        assert args.event_data["color"] == CommonColor.GREEN
+        is_highlighted = True
+
+    def adding_border(source: Any, args: CellCancelArgs):
+        nonlocal is_adding_border
+        is_adding_border = True
+
+    visible = True
+    delay = 3000
     assert loader is not None
     doc = Calc.create_doc(loader)
     assert doc is not None
@@ -2653,19 +2677,28 @@ def test_highlight_range(loader) -> None:
     # highlight_range(sheet: XSpreadsheet,  headline: str, cell_range: XCellRange)
     doc = Calc.create_doc(loader)
     try:
-        sheet = Calc.get_sheet(doc=doc, index=0)
-        rng = sheet.getCellRangeByName(rng_name)
-        if visible:
-            GUI.set_visible(is_visible=visible, odoc=doc)
-        first = Calc.highlight_range(sheet, headline, rng)
-        Lo.delay(delay)
-        assert first is not None
-        result = Calc.get_string(cell=first)
-        assert result == headline
+
+        with event_ctx(
+            EventArg(CalcNamedEvent.CELLS_HIGH_LIGHTING, highlighting),
+            EventArg(CalcNamedEvent.CELLS_HIGH_LIGHTED, highlighted),
+            EventArg(CalcNamedEvent.CELLS_BORDER_ADDING, adding_border),
+        ):
+
+            sheet = Calc.get_sheet(doc=doc, index=0)
+            rng = sheet.getCellRangeByName(rng_name)
+            if visible:
+                GUI.set_visible(is_visible=visible, odoc=doc)
+            first = Calc.highlight_range(sheet, headline, rng)
+            Lo.delay(delay)
+            assert first is not None
+            result = Calc.get_string(cell=first)
+            assert result == "Modified from callback"
+            assert is_adding_border
+            assert is_highlighted
     finally:
         Lo.close(closeable=doc, deliver_ownership=False)
     Lo.delay(500)
-    
+
     doc = Calc.create_doc(loader)
     try:
         sheet = Calc.get_sheet(doc=doc, index=0)
@@ -2675,7 +2708,9 @@ def test_highlight_range(loader) -> None:
         rng_name = "B3:F8"
         headline = "Hello World!"
         rng = sheet.getCellRangeByName(rng_name)
-        first = Calc.highlight_range(sheet=sheet, headline=headline, cell_range=rng, color=CommonColor.LIGHT_GOLDENROD_YELLOW)
+        first = Calc.highlight_range(
+            sheet=sheet, headline=headline, cell_range=rng, color=CommonColor.LIGHT_GOLDENROD_YELLOW
+        )
         Lo.delay(delay)
         assert first is not None
         result = Calc.get_string(cell=first)
@@ -2683,7 +2718,6 @@ def test_highlight_range(loader) -> None:
     finally:
         Lo.close(closeable=doc, deliver_ownership=False)
     Lo.delay(500)
-
 
     # highlight_range(sheet: XSpreadsheet,  headline: str, range_name: str)
     doc = Calc.create_doc(loader)

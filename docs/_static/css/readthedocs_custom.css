@@ -61,3 +61,16 @@ a .rst-content .admonition tt {
     color: #05548e;
 }
 /* End Color for code */
+
+/* summary-example is '.. collapse:: example' directive */
+/* Add a bottom margin only when collapsed */
+.summary-example:not([open]) {
+    margin-bottom: 24px;
+}
+/* Set a code icon after Example word. */
+.summary-example > summary::after {
+    /* using style CSS custom property */
+    font: var(--fa-font-solid);
+    content: "\f121";
+    margin-left: 5px;
+}

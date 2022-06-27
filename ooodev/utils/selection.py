@@ -7,7 +7,7 @@ from typing import cast, overload
 from enum import IntEnum
 
 
-from ..events.event_singleton import Events
+from ..events.event_singleton import _Events
 from ..events.lo_named_event import LoNamedEvent
 from ..utils import lo as mLo
 from ..utils import info as mInfo
@@ -710,6 +710,6 @@ def _del_cache_attrs(source: object, e: EventArgs) -> None:
 
 
 # subscribe to events that warrent clearing cached attribs
-Events().on(LoNamedEvent.RESET, _del_cache_attrs)
+_Events().on(LoNamedEvent.RESET, _del_cache_attrs)
 
 __all__ = ("Selection",)

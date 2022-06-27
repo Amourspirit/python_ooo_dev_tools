@@ -919,7 +919,11 @@ class Write(mSel.Selection):
             prop_val (object): Property value
             prop_name (str): Property Name
 
-        Example:
+        Returns:
+            None:
+
+        .. collapse:: Example
+
             .. code-block:: python
 
                 cursor = Write.get_cursor(doc)

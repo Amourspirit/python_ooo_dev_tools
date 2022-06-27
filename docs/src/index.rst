@@ -15,4 +15,5 @@ src
    exceptions/index
    events/index
    listeners/index
+   proto/index
 

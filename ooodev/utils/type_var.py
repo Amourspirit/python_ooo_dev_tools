@@ -1,12 +1,14 @@
 # coding: utf-8
 from __future__ import annotations
-from typing import Sequence, TypeVar, Union, Any, Tuple, List, Dict
+from typing import Callable, Sequence, TypeVar, Union, Any, Tuple, List, Dict
 from os import PathLike
 
 import uno
 from com.sun.star.text import XText
 from com.sun.star.text import XTextCursor
 from com.sun.star.text import XTextDocument
+
+from ..events.args import event_args
 
 PathOrStr = Union[str, PathLike]
 """Path like object or string"""
@@ -52,3 +54,7 @@ DocOrCursor = Union[XTextDocument, XTextCursor]
 
 DocOrText = Union[XTextDocument, XText]
 """Type of Text Document of Text"""
+
+
+EventCallback = Callable[[object, event_args.EventArgs], None]
+"""Event Callback"""

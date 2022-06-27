@@ -6,7 +6,7 @@ from typing import Callable, Iterable, Iterator, Sequence, List, NamedTuple, Any
 from inspect import isclass
 import string
 from .type_var import DictTable, Table
-from . import  gen_util as gUtil
+from . import gen_util as gUtil
 
 
 class TableHelper:
@@ -25,9 +25,9 @@ class TableHelper:
         chars = name.rstrip(string.digits)
         pow = 1
         col_num = 0
-        for letter in chars[::-1]: # reverse chars
-                col_num += (int(letter, 36) -9) * pow
-                pow *= 26
+        for letter in chars[::-1]:  # reverse chars
+            col_num += (int(letter, 36) - 9) * pow
+            pow *= 26
         return col_num
 
     @staticmethod
@@ -42,16 +42,15 @@ class TableHelper:
         Returns:
             int: converted name as int.
         """
-        chars = name.rstrip(string.digits + '-')
+        chars = name.rstrip(string.digits + "-")
         if chars:
-            s = name[len(chars)] # drop leading chars that are not numbers.
+            s = name[len(chars)]  # drop leading chars that are not numbers.
         else:
             s = name
         result = int(s)
         if result < 0:
             raise ValueError(f"Cannot parse negative values: {name}")
         return result
-
 
     @classmethod
     def make_cell_name(cls, row: int, col: int) -> str:
@@ -125,6 +124,7 @@ class TableHelper:
             List[List[Any]]: 2-Dimensional List of values
         """
         ...
+
     @overload
     @staticmethod
     def make_2d_array(num_rows: int, num_cols: int, val: Callable[[int, int, Any], Any]) -> List[List[Any]]:
@@ -155,13 +155,14 @@ class TableHelper:
         Returns:
             List[List[Any]]: 2-Dimensional List of values
 
-        Example:
+        .. collapse:: Example
+
             Example of array filled with 1's
 
 
-            
+
             .. code-block:: python
-                
+
                 arr = TableHelper.make_2d_array(num_rows=3, num_cols=4, val=1)
                 # arr
                 # [
@@ -169,17 +170,17 @@ class TableHelper:
                 #   [1, 1, 1, 1],
                 #   [1, 1, 1, 1]
                 # ]
-                
-        
+
+
             Example of using call back method.
 
             The following example creates an array that loops through each animals and addes
             to array. When end of animials is reached the start with the beginning of animals and
             continues in this fashion until array is built.
-            
+
             .. code-block:: python
 
-                animals = ("ass", "cat", "cow", "cub", "doe", "dog", "elk", 
+                animals = ("ass", "cat", "cow", "cub", "doe", "dog", "elk",
                             "ewe", "fox", "gnu", "hog", "kid", "kit", "man",
                             "orc", "pig", "pup", "ram", "rat", "roe", "sow", "yak")
                 total_rows = 15
@@ -195,7 +196,7 @@ class TableHelper:
                     else:
                         i = v
                     return animals[i]
-                
+
                 arr = TableHelper.make_2d_array(num_rows=total_rows, num_cols=total_cols, val=cb)
                 Calc.set_array(values=arr, sheet=sheet, name="A1")
         """
@@ -222,7 +223,7 @@ class TableHelper:
     def to_list(iter_obj: Iterable[Any] | object) -> List[Any]:
         """
         Converts an iterable of objects into a list of objects
-        
+
         If ``iter_obj`` is not iterable it will be return as a tuple containing ``iter_obj``
 
         Args:
@@ -239,7 +240,7 @@ class TableHelper:
     def to_tuple(iter_obj: Iterable[Any] | object) -> Tuple[Any]:
         """
         Converts an iterable of objects or object into a tuple of objects
-        
+
         If ``iter_obj`` is not iterable it will be return as a tuple containing ``iter_obj``
 
         Args:
@@ -310,7 +311,7 @@ class TableHelper:
         else:
             lst.append(cls.to_tuple(seq_obj))
         return tuple(lst)
-    
+
     @staticmethod
     def table_2d_to_dict(tbl: Table) -> DictTable:
         """
@@ -335,13 +336,13 @@ class TableHelper:
             cols = [value for value in tbl[0]]
             data = []
             for i, row in enumerate(tbl):
-                if i == 0: # col row
+                if i == 0:  # col row
                     continue
                 data.append(dict(zip(cols, row)))
             return data
         except Exception as e:
             raise e
-    
+
     @staticmethod
     def table_dict_to_table(tbl: DictTable) -> Table:
         """
@@ -362,7 +363,7 @@ class TableHelper:
         if len(tbl) == 0:
             raise ValueError("Cannot convert table with no rows")
         try:
-            first =tbl[0]
+            first = tbl[0]
             cols = [k for k in first.keys()]
             data = [cols]
             for row in tbl:
