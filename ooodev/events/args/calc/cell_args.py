@@ -38,6 +38,10 @@ class CellArgs(EventArgs):
 
         Depending on the event can be any cell value such as a cell name, range, XCell, XCellRange etc.
         """
+        try:
+            return self._cells
+        except AttributeError:
+            self._cells = None
         return self._cells
 
     @cells.setter

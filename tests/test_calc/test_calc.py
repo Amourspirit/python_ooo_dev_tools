@@ -1061,7 +1061,7 @@ def test_set_array_by_range(loader) -> None:
     # test when name is a range
     from ooodev.utils.lo import Lo
     from ooodev.office.calc import Calc
-    from ooodev.utils.gen_util import TableHelper
+    from ooodev.utils.table_helper import TableHelper
 
     # from ooodev.utils.gui import GUI
 
@@ -1109,7 +1109,7 @@ def test_set_array_by_cell(loader) -> None:
     from ooodev.office.calc import Calc
 
     # from ooodev.utils.gui import GUI
-    from ooodev.utils.gen_util import TableHelper
+    from ooodev.utils.table_helper import TableHelper
 
     assert loader is not None
     doc = Calc.create_doc(loader)
@@ -1156,7 +1156,7 @@ def test_set_array(loader) -> None:
     from ooodev.office.calc import Calc
 
     # from ooodev.utils.gui import GUI
-    from ooodev.utils.gen_util import TableHelper
+    from ooodev.utils.table_helper import TableHelper
 
     assert loader is not None
     doc = Calc.create_doc(loader)
@@ -1234,7 +1234,7 @@ def test_get_array(loader) -> None:
     from ooodev.office.calc import Calc
 
     # from ooodev.utils.gui import GUI
-    from ooodev.utils.gen_util import TableHelper
+    from ooodev.utils.table_helper import TableHelper
 
     assert loader is not None
     doc = Calc.create_doc(loader)
@@ -1316,7 +1316,7 @@ def test_get_float_array(loader) -> None:
     from ooodev.office.calc import Calc
 
     # from ooodev.utils.gui import GUI
-    from ooodev.utils.gen_util import TableHelper
+    from ooodev.utils.table_helper import TableHelper
 
     assert loader is not None
     doc = Calc.create_doc(loader)

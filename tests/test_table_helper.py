@@ -2,7 +2,7 @@ import pytest
 
 if __name__ == "__main__":
     pytest.main([__file__])
-from ooodev.utils.gen_util import TableHelper
+from ooodev.utils.table_helper import TableHelper
 
 
 def test_create_2d():
