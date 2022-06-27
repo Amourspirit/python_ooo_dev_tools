@@ -22,6 +22,7 @@ setup(
     author_email='bigbytetech@gmail.com',
     license="mit",
     install_requires=[
+        'typing_extensions>=4.2.0 ;python_version<"3.8"',
         'ooouno>=0.1.15'
         'types-unopy>=0.1.7',
         'Pillow>=9.1.1',

@@ -1,5 +1,10 @@
+# coding: utf-8
+import sys
+if sys.version_info < (3, 8):
+    from typing_extensions import Protocol
+else:
+    from typing import Protocol
 
-from typing import Protocol
 from ..utils import type_var
 from ..events.args import event_args
 

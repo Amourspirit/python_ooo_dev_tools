@@ -2,4 +2,5 @@ sphinx==4.5.0
 sphinx-rtd-dark-mode
 sphinx-autodoc-typehints
 sphinx-toolbox
+typing_extensions
 ooouno
