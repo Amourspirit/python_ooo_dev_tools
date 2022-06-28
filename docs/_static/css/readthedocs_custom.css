@@ -49,10 +49,14 @@ a.reference.external::before {
     margin-right: 5px;
 }
 /* Color for code in an admonition such as a Note or See Also */
-.rst-content .admonition code {
-    background: #d2e8f9;
+.rst-content .admonition.seealso code,
+.rst-content .admonition.note code {
+     background: #d2e8f9;
 }
 
+.rst-content .admonition.attention code {
+    background: #f0b37e;
+}
 
 .rst-content .admonition code.xref,
 .rst-content .admonition tt.xref,

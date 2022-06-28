@@ -17,6 +17,11 @@ from ..utils.color import CommonColor, Color
 from ..utils.type_var import PathOrStr, Table, DocOrCursor
 from ..utils import images_lo as mImgLo
 from ..utils import selection as mSel
+from ..events.event_singleton import _Events
+from ..events.args.event_args import EventArgs
+from ..events.args.cancel_event_args import CancelEventArgs
+from ..events.write_named_event import WriteNamedEvent
+from ..events.gbl_named_event import GblNamedEvent
 
 from ..mock import mock_g
 
@@ -196,22 +201,39 @@ class Write(mSel.Selection):
             Exception: If Document is Null
             Exception: If Not a Text Doucment
             MissingInterfaceError: If unable to obtain XTextDocument interface
+            CancelEventError: if DOC_OPENING event is canceled.
 
         Returns:
             XTextDocument: Text Document
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.DOC_OPENING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.DOC_OPENED` :eventref:`src-docs-event`
+
+        Note:
+            Event args ``event_data`` is set to ``fnm``.
         """
+        cargs = CancelEventArgs(cls)
+        cargs.event_data = fnm
+        _Events().trigger(WriteNamedEvent.DOC_OPENING, cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
         doc = mLo.Lo.open_doc(fnm=fnm, loader=loader)
         if doc is None:
             raise Exception("Document is null")
+
         if not cls.is_text(doc):
-            print(f"Not a text document; closing '{fnm}'")
+            mLo.Lo.print(f"Not a text document; closing '{fnm}'")
             mLo.Lo.close_doc(doc)
             raise Exception("Not a text document")
         text_doc = mLo.Lo.qi(XTextDocument, doc)
         if text_doc is None:
-            print(f"Not a text document; closing '{fnm}'")
+            mLo.Lo.print(f"Not a text document; closing '{fnm}'")
             mLo.Lo.close_doc(doc)
             raise mEx.MissingInterfaceError(XTextDocument)
+        _Events().trigger(WriteNamedEvent.DOC_OPENED, EventArgs.from_args(cargs))
         return text_doc
 
     @staticmethod
@@ -243,11 +265,17 @@ class Write(mSel.Selection):
 
         Returns:
             XTextDocument: Writer document
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.DOC_TEXT` :eventref:`src-docs-event`
         """
         if doc is None:
             raise TypeError("Document is null")
 
         text_doc = mLo.Lo.qi(XTextDocument, doc, True)
+        _Events().trigger(WriteNamedEvent.DOC_TEXT, EventArgs(cls))
         return text_doc
 
     @staticmethod
@@ -260,8 +288,27 @@ class Write(mSel.Selection):
 
         Returns:
             XTextDocument: Text Document
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.DOC_CREATING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.DOC_CREATED` :eventref:`src-docs-event`
+
+        Note:
+            Event args ``event_data`` is set to ``loader``.
+        
+        Attention:
+            :py:meth:`Lo.create_doc <.utils.lo.Lo.create_doc>` method is called along with any of its events.
         """
-        return mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.WRITER, loader=loader)
+        cargs = CancelEventArgs(Write)
+        cargs.event_data = loader
+        _Events().trigger(WriteNamedEvent.DOC_CREATING, cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
+        doc = mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.WRITER, loader=loader)
+        _Events().trigger(WriteNamedEvent.DOC_CREATED, EventArgs.from_args(cargs))
+        return doc
 
     @staticmethod
     def create_doc_from_template(template_path: PathOrStr, loader: XComponentLoader) -> XTextDocument:
@@ -277,13 +324,41 @@ class Write(mSel.Selection):
 
         Returns:
             XTextDocument: Text Document
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.DOC_CREATING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.DOC_TMPL_CREATING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.DOC_CREATED` :eventref:`src-docs-event`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.DOC_TMPL_CREATED` :eventref:`src-docs-event`
+
+        Note:
+            Event args ``event_data`` is set to ``template_path``.
+        
+        Attention:
+            :py:meth:`Lo.create_doc_from_template <.utils.lo.Lo.create_doc_from_template>` method is called along with any of its events.
         """
+        cargs = CancelEventArgs(Write)
+        cargs.event_data = template_path
+        _Events().trigger(WriteNamedEvent.DOC_CREATING, cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
+
+        _Events().trigger(WriteNamedEvent.DOC_TMPL_CREATING, cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
+
         doc = mLo.Lo.create_doc_from_template(template_path=template_path, loader=loader)
-        xdoc = mLo.Lo.qi(XTextDocument, doc, True)
+        xdoc = mLo.Lo.qi(XTextDocument, doc, raise_err=True)
+
+        eargs = EventArgs.from_args(cargs)
+        _Events().trigger(WriteNamedEvent.DOC_CREATED, eargs)
+        _Events().trigger(WriteNamedEvent.DOC_TMPL_CREATED, eargs)
         return xdoc
 
     @staticmethod
-    def close_doc(text_doc: XTextDocument) -> None:
+    def close_doc(text_doc: XTextDocument) -> bool:
         """
         Closes text document
 
@@ -292,12 +367,34 @@ class Write(mSel.Selection):
 
         Raises:
             MissingInterfaceError: If unable to obtain XCloseable from text_doc
+        
+        Returns:
+            bool: False if DOC_CLOSING event is canceled, Other
+        
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.DOC_CLOSING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.DOC_CLOSED` :eventref:`src-docs-event`
+        
+        Note:
+            Event args ``event_data`` is set to ``text_doc``.
+        
+        Attention:
+            :py:meth:`Lo.close <.utils.lo.Lo.close>` method is called along with any of its events.
         """
+        cargs = CancelEventArgs(Write)
+        cargs.event_data = text_doc
+        _Events().trigger(WriteNamedEvent.DOC_CLOSING, cargs)
+        if cargs.cancel:
+            return False
         closable = mLo.Lo.qi(XCloseable, text_doc, True)
-        mLo.Lo.close(closable)
+        result = mLo.Lo.close(closable)
+        _Events().trigger(WriteNamedEvent.DOC_CLOSED, EventArgs.from_args(cargs))
+        return result
 
     @staticmethod
-    def save_doc(text_doc: XTextDocument, fnm: PathOrStr) -> None:
+    def save_doc(text_doc: XTextDocument, fnm: PathOrStr) -> bool:
         """
         Saves text document
 
@@ -307,7 +404,24 @@ class Write(mSel.Selection):
 
         Raises:
             MissingInterfaceError: If text_doc does not implement XComponent interface
+        
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.DOC_CREATING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.DOC_CREATED` :eventref:`src-docs-event`
+        
+        Note:
+            Event args ``event_data`` is set to ``fnm``.
+        
+        Attention:
+            :py:meth:`Lo.save_doc <.utils.lo.Lo.save_doc>` method is called along with any of its events.
         """
+        cargs = CancelEventArgs(Write)
+        cargs.event_data = text_doc
+        _Events().trigger(WriteNamedEvent.DOC_CLOSING, cargs)
+        if cargs.cancel:
+            return False
         doc = mLo.Lo.qi(XComponent, text_doc, True)
         mLo.Lo.save_doc(doc=doc, fnm=fnm)
 
@@ -334,13 +448,13 @@ class Write(mSel.Selection):
             XTextDocument | None: Text Document
         """
         if fnm is None:
-            print("Filename is null")
+            mLo.Lo.print("Filename is null")
             return None
 
         open_file_url = None
         if not mFileIO.FileIO.is_openable(fnm):
             if mLo.Lo.is_url(fnm):
-                print(f"Treating filename as a URL: '{fnm}'")
+                mLo.Lo.print(f"Treating filename as a URL: '{fnm}'")
                 open_file_url = str(fnm)
             else:
                 raise mEx.UnOpenableError(fnm)
@@ -367,7 +481,7 @@ class Write(mSel.Selection):
             di = mLo.Lo.qi(XDocumentInsertable, cursor)
             # XDocumentInsertable only works with text files
             if di is None:
-                print("Document inserter could not be created")
+                mLo.Lo.print("Document inserter could not be created")
             else:
                 di.insertDocumentFromURL(open_file_url, tuple())
                 # Props.makeProps("FilterName", "OpenDocument Text Flat XML"))
@@ -423,7 +537,7 @@ class Write(mSel.Selection):
         """
         page_cursor = mLo.Lo.qi(XPageCursor, tv_cursor)
         if page_cursor is None:
-            print("Could not create a page cursor")
+            mLo.Lo.print("Could not create a page cursor")
             return -1
         return page_cursor.getPage()
 
@@ -960,7 +1074,7 @@ class Write(mSel.Selection):
         """
         props = mInfo.Info.get_style_props(doc=text_doc, family_style_name="PageStyles", prop_set_nm="Standard")
         if props is None:
-            print("Could not access the standard page style")
+            mLo.Lo.print("Could not access the standard page style")
             return 0
 
         try:
@@ -969,8 +1083,8 @@ class Write(mSel.Selection):
             right_margin = int(props.getPropertyValue("RightMargin"))
             return width - (left_margin + right_margin)
         except Exception as e:
-            print("Could not access standard page style dimensions")
-            print(f"    {e}")
+            mLo.Lo.print("Could not access standard page style dimensions")
+            mLo.Lo.print(f"    {e}")
             return 0
 
     @staticmethod
@@ -1200,7 +1314,7 @@ class Write(mSel.Selection):
 
             formula_props = mLo.Lo.qi(XPropertySet, embed_obj_model, True)
             formula_props.setPropertyValue("Formula", formula)
-            print(f'Inserted formula "{formula}"')
+            mLo.Lo.print(f'Inserted formula "{formula}"')
         except Exception as e:
             raise Exception(f'Insertion fo formula "{formula}" failed:') from e
 
@@ -1229,7 +1343,7 @@ class Write(mSel.Selection):
             mProps.Props.set_property(prop_set=link, name="Representation", value=label)
 
             cls._append_text_content(cursor, link)
-            print("Added hyperlink")
+            mLo.Lo.print("Added hyperlink")
         except Exception as e:
             raise Exception("Unable to add hyperlink") from e
 
@@ -1283,7 +1397,7 @@ class Write(mSel.Selection):
         try:
             obookmark = named_bookmarks.getByName(bm_name)
         except Exception:
-            print(f"Bookmark '{bm_name}' not found")
+            mLo.Lo.print(f"Bookmark '{bm_name}' not found")
             return None
         return mLo.Lo.qi(XTextContent, obookmark)
 
@@ -1437,7 +1551,7 @@ class Write(mSel.Selection):
 
         try:
             num_cols = len(table_data[0])
-            print(f"Creating table rows: {num_rows}, cols: {num_cols}")
+            mLo.Lo.print(f"Creating table rows: {num_rows}, cols: {num_cols}")
             table.initialize(num_rows, num_cols)
 
             # insert the table into the document
@@ -1710,14 +1824,14 @@ class Write(mSel.Selection):
                 except UnoException:
                     pass
                 if graphic_link is None:
-                    print(f"No graphic found for {name}")
+                    mLo.Lo.print(f"No graphic found for {name}")
                 else:
                     try:
                         xgraphic = mImgLo.ImagesLo.load_graphic_link(graphic_link)
                         pics.append(xgraphic)
                     except Exception as e:
-                        print(f"{name} could not be accessed:")
-                        print(f"    {e}")
+                        mLo.Lo.print(f"{name} could not be accessed:")
+                        mLo.Lo.print(f"    {e}")
             if len(pics) == 0:
                 return None
             return pics
@@ -1742,11 +1856,11 @@ class Write(mSel.Selection):
 
         xname_access = ims_supplier.getGraphicObjects()
         if xname_access is None:
-            print("Name access to graphics not possible")
+            mLo.Lo.print("Name access to graphics not possible")
             return None
 
         if not xname_access.hasElements():
-            print("No graphics elements found")
+            mLo.Lo.print("No graphics elements found")
             return None
 
         return xname_access
@@ -1799,6 +1913,10 @@ class Write(mSel.Selection):
         Args:
             lingo_mgr (XLinguServiceManager2): Serivice manager
         """
+        cargs = CancelEventArgs(Write)
+        _Events().trigger(GblNamedEvent.PRINTING, cargs)
+        if cargs.cancel:
+            return
         loc = Locale("en", "US", "")
         print("Available Services:")
         cls.print_avail_service_info(lingo_mgr, "SpellChecker", loc)
@@ -1829,6 +1947,10 @@ class Write(mSel.Selection):
             service (str): Service Name
             loc (Locale): Locale
         """
+        cargs = CancelEventArgs(Write)
+        _Events().trigger(GblNamedEvent.PRINTING, cargs)
+        if cargs.cancel:
+            return
         service_names = lingo_mgr.getAvailableServices(f"com.sun.star.linguistic2.{service}", loc)
         print(f"{service} ({len(service_names)}):")
         for name in service_names:
@@ -1844,6 +1966,10 @@ class Write(mSel.Selection):
             service (str): Service Name
             loc (Locale): Locale
         """
+        cargs = CancelEventArgs(Write)
+        _Events().trigger(GblNamedEvent.PRINTING, cargs)
+        if cargs.cancel:
+            return
         service_names = lingo_mgr.getAvailableServices(f"com.sun.star.linguistic2.{service}", loc)
         print(f"{service} ({len(service_names)}):")
         for name in service_names:
@@ -1858,6 +1984,10 @@ class Write(mSel.Selection):
             service (str): Service
             loc (Iterable[Locale]): Locale's
         """
+        cargs = CancelEventArgs(Write)
+        _Events().trigger(GblNamedEvent.PRINTING, cargs)
+        if cargs.cancel:
+            return
         countries: List[str] = []
         for l in loc:
             countries.append(l.Country)
@@ -1892,7 +2022,7 @@ class Write(mSel.Selection):
         """
         dict_lst = mLo.Lo.create_instance_mcf(XSearchableDictionaryList, "com.sun.star.linguistic2.DictionaryList")
         if not dict_lst:
-            print("No list of dictionaries found")
+            mLo.Lo.print("No list of dictionaries found")
             return
         cls.print_dicts_info(dict_lst)
 
@@ -1900,7 +2030,7 @@ class Write(mSel.Selection):
             XConversionDictionaryList, "com.sun.star.linguistic2.ConversionDictionaryList"
         )
         if cd_list is None:
-            print("No list of conversion dictionaries found")
+            mLo.Lo.print("No list of conversion dictionaries found")
             return
         cls.print_con_dicts_info(cd_list)
 
@@ -1912,6 +2042,10 @@ class Write(mSel.Selection):
         Args:
             dict_list (XSearchableDictionaryList): dictionary list
         """
+        cargs = CancelEventArgs(Write)
+        _Events().trigger(GblNamedEvent.PRINTING, cargs)
+        if cargs.cancel:
+            return
         if dict_list is None:
             print("Dictionary list is null")
             return
@@ -1950,6 +2084,10 @@ class Write(mSel.Selection):
         Args:
             cd_lst (XConversionDictionaryList): conversion dictionary list
         """
+        cargs = CancelEventArgs(Write)
+        _Events().trigger(GblNamedEvent.PRINTING, cargs)
+        if cargs.cancel:
+            return
         if cd_lst is None:
             print("Conversion Dictionary list is null")
             return
@@ -2032,7 +2170,7 @@ class Write(mSel.Selection):
         loc = Locale("en", "US", "")
         alts = speller.spell(word, loc, tuple())
         if alts is not None:
-            print(f"* '{word}' is unknown. Try:")
+            mLo.Lo.print(f"* '{word}' is unknown. Try:")
             alt_words = alts.getAlternatives()
             mLo.Lo.print_names(alt_words)
             return False
@@ -2070,6 +2208,10 @@ class Write(mSel.Selection):
         Returns:
             int: Number of meanings found
         """
+        cargs = CancelEventArgs(Write)
+        _Events().trigger(GblNamedEvent.PRINTING, cargs)
+        if cargs.cancel:
+            return 0
         loc = Locale("en", "US", "")
         meanings = thesaurus.queryMeanings(word, loc, tuple())
         if meanings is None:
@@ -2138,6 +2280,10 @@ class Write(mSel.Selection):
             string (str): error string
             err (SingleProofreadingError): Single proof reading error
         """
+        cargs = CancelEventArgs(Write)
+        _Events().trigger(GblNamedEvent.PRINTING, cargs)
+        if cargs.cancel:
+            return
         e_end = err.nErrorStart + err.nErrorLength
         err_txt = string[err.nErrorStart : e_end]
         print(f"G* {err.aShortComment} in: '{err_txt}'")
@@ -2162,7 +2308,7 @@ class Write(mSel.Selection):
         """
         guesser = mLo.Lo.create_instance_mcf(XLanguageGuessing, "com.sun.star.linguistic2.LanguageGuessing")
         if guesser is None:
-            print("No language guesser found")
+            mLo.Lo.print("No language guesser found")
             return None
         return guesser.guessPrimaryLanguage(test_str, 0, len(test_str))
 
@@ -2174,6 +2320,10 @@ class Write(mSel.Selection):
         Args:
             loc (Locale): Locale to print
         """
+        cargs = CancelEventArgs(Write)
+        _Events().trigger(GblNamedEvent.PRINTING, cargs)
+        if cargs.cancel:
+            return
         if loc is not None:
             print(f"Locale lang: '{loc.Language}'; country: '{loc.Country}'; variant: '{loc.Variant}'")
 
@@ -2186,7 +2336,7 @@ class Write(mSel.Selection):
         """open Options - Language Settings - English sentence checking"""
         pip = mInfo.Info.get_pip()
         lang_ext = pip.getPackageLocation("org.openoffice.en.hunspell.dictionaries")
-        print(f"Lang Ext: {lang_ext}")
+        mLo.Lo.print(f"Lang Ext: {lang_ext}")
         url = f"{lang_ext}/dialog/en.xdl"
         props = mProps.Props.make_props(OptionsPageURL=url)
         mLo.Lo.dispatch_cmd(cmd="OptionsTreeDialog", props=props)
@@ -2218,6 +2368,10 @@ class Write(mSel.Selection):
         Args:
             text_doc (XTextDocument): Text Document
         """
+        cargs = CancelEventArgs(Write)
+        _Events().trigger(GblNamedEvent.PRINTING, cargs)
+        if cargs.cancel:
+            return
         # see section 7.17  of Useful Macro Information For OpenOffice By Andrew Pitonyak.pdf
         size = cls.get_page_size(text_doc)
         print("Page Size is:")

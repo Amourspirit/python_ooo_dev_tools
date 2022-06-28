@@ -8,15 +8,24 @@ Welcome to OOO Development Tools's documentation!
 
 .. include:: ../README.rst
 
-Source Code Dcoumentation
-=========================
+Documentation
+=============
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-   src/index
    src_docs/event/index
+
+Source Code Documentation
+=========================
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Source:
+
+   src/index
+
 
 Indices and tables
 ==================

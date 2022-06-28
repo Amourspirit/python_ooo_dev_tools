@@ -7,3 +7,4 @@ Events
 
     *
     calc/index
+    write/index

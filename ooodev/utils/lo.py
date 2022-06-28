@@ -1334,18 +1334,21 @@ class Lo(metaclass=StaticProperty):
 
     @overload
     @classmethod
-    def close(cls, closeable: XCloseable) -> None:
+    def close(cls, closeable: XCloseable) -> bool:
         """
         Closes a document.
 
         Args:
             closeable (XCloseable): Object that implements XCloseable interface.
+        
+        Returns:
+            bool: True if Closed; Otherwise, False
         """
         ...
 
     @overload
     @classmethod
-    def close(cls, closeable: XCloseable, deliver_ownership: bool) -> None:
+    def close(cls, closeable: XCloseable, deliver_ownership: bool) -> bool:
         """
         Closes a document.
 
@@ -1353,11 +1356,14 @@ class Lo(metaclass=StaticProperty):
             closeable (XCloseable): Object that implements XCloseable interface.
             deliver_ownership (bool): True delegates the ownership of this closing object to
                 anyone which throw the CloseVetoException.
+        
+        Returns:
+            bool: True if Closed; Otherwise, False
         """
         ...
 
     @classmethod
-    def close(cls, closeable: XCloseable, deliver_ownership=False) -> None:
+    def close(cls, closeable: XCloseable, deliver_ownership=False) -> bool:
         """
         Closes a document.
 
@@ -1370,18 +1376,28 @@ class Lo(metaclass=StaticProperty):
                 False let the ownership at the original one which called the close() method.
                 They must react for possible CloseVetoExceptions such as when document needs saving
                 and try it again at a later time. This can be useful for a generic UI handling.
+        
+        Returns:
+            bool: True if Closed; Otherwise, False
+        
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.lo_named_event.LoNamedEvent.DOC_CLOSING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.lo_named_event.LoNamedEvent.DOC_CLOSED` :eventref:`src-docs-event`
         """
         cargs = CancelEventArgs(cls)
+        cargs.event_data = deliver_ownership
         _Events().trigger(LoNamedEvent.DOC_CLOSING, cargs)
         if cargs.cancel:
-            raise mEx.CancelEventError(cargs)
+            return False
         if closeable is None:
             return
-        print("Closing the document")
+        cls.print("Closing the document")
         try:
-            closeable.close(deliver_ownership)
+            closeable.close(cargs.event_data)
             cls._doc = None
-            _Events().trigger(LoNamedEvent.DOC_CLOSED, EventArgs(cls))
+            _Events().trigger(LoNamedEvent.DOC_CLOSED, EventArgs.from_args(cargs))
         except CloseVetoException as e:
             raise Exception("Close was vetoed") from e
 

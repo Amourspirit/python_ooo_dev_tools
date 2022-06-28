@@ -15,7 +15,11 @@ from ..utils import info as mInfo
 from ..meta.static_meta import StaticProperty, classproperty
 from ..utils.type_var import DocOrText, DocOrCursor
 from ..exceptions import ex as mEx
+from ..events.event_singleton import _Events
 from ..events.args.event_args import EventArgs
+from ..events.args.cancel_event_args import CancelEventArgs
+from ..events.write_named_event import WriteNamedEvent
+
 
 # if not _DOCS_BUILDING and not _ON_RTD:
 from com.sun.star.beans import XPropertySet
@@ -33,8 +37,6 @@ from com.sun.star.text import XTextViewCursor
 from com.sun.star.text import XTextViewCursorSupplier
 from com.sun.star.text import XWordCursor
 from com.sun.star.view import XSelectionSupplier
-
-
 
 from ooo.dyn.i18n.word_type import WordTypeEnum as WordTypeEnum
 from ooo.dyn.i18n.boundary import Boundary  # struct
@@ -672,13 +674,32 @@ class Selection(metaclass=StaticProperty):
         return num_words
 
     @classmethod
-    def select_next_word(cls, text_doc: XTextDocument) -> None:
+    def select_next_word(cls, text_doc: XTextDocument) -> bool:
         """
         Select the word right from the current curor position.
 
         Args:
             text_doc (XTextDocument): Text Document
+
+        Returns:
+            bool: True if go to next word succeeds; Otherwise, False.
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.WORD_SELECTING` :eventref:`write_word_selecting`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.WORD_SELECTED` :eventref:`write_word_selected`
+
+        Note:
+            The method returning ``True`` does not necessarily mean that the cursor is located at
+            the next word, or any word at all! This may happen for example if it travels over empty paragraphs.
         """
+
+        cargs = CancelEventArgs(cls)
+        _Events().trigger(WriteNamedEvent.WORD_SELECTING, cargs)
+        if cargs.cancel:
+            return False
+
         supplier = mLo.Lo.qi(XSelectionSupplier, text_doc.getCurrentController(), True)
 
         # clear any current selection
@@ -697,8 +718,10 @@ class Selection(metaclass=StaticProperty):
         if not word_cursor.isStartOfWord():
             word_cursor.gotoStartOfWord(False)
 
-        word_cursor.gotoNextWord(True)
+        result = word_cursor.gotoNextWord(True)
         supplier.select(word_cursor)
+        _Events().trigger(WriteNamedEvent.WORD_SELECTED, EventArgs.from_args(cargs))
+        return result
 
 
 def _del_cache_attrs(source: object, e: EventArgs) -> None:

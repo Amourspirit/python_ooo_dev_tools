@@ -6,7 +6,6 @@ from __future__ import annotations
 from enum import IntEnum, IntFlag, Enum
 import numbers
 import re
-import os
 from typing import Any, List, Tuple, cast, overload, Sequence, TYPE_CHECKING
 import uno
 
@@ -190,7 +189,7 @@ class Calc:
         doc = mLo.Lo.open_doc(fnm=str(fnm), loader=loader)
         if doc is None:
             raise Exception("Document is null")
-        _Events().trigger(CalcNamedEvent.DOC_OPENED, EventArgs(cls))
+        _Events().trigger(CalcNamedEvent.DOC_OPENED, EventArgs.from_args(cargs))
         return cls.get_ss_doc(doc)
 
     @staticmethod
@@ -265,9 +264,7 @@ class Calc:
             raise mEx.CancelEventError(cargs)
         doc = mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.CALC, loader=loader)
         ss_doc = mLo.Lo.qi(XSpreadsheetDocument, doc, raise_err=True)
-        eargs = EventArgs(Calc)
-        eargs.event_data = loader
-        _Events().trigger(CalcNamedEvent.DOC_CREATED, eargs)
+        _Events().trigger(CalcNamedEvent.DOC_CREATED, EventArgs.from_args(cargs))
         return ss_doc
 
         # XSpreadsheetDocument does not inherit XComponent!

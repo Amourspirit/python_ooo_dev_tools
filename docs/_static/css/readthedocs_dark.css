@@ -49,10 +49,14 @@ html[data-theme='dark'] .lo-event a.reference.internal span.std-ref,
 
 
 /* Color for code in an admonition such as a Note or See Also */
-html[data-theme='dark'] .rst-content .admonition code {
+html[data-theme='dark'] .rst-content .admonition.seealso code,
+html[data-theme='dark'] .rst-content .admonition.note code {
      background: #004a7b;
 }
 
+html[data-theme='dark'] .rst-content .admonition.attention code {
+    background: #803b00;
+}
 
 html[data-theme='dark'] .rst-content .admonition code.xref,
 html[data-theme='dark'] .rst-content .admonition tt.xref,
