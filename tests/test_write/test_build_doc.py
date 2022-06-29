@@ -173,7 +173,7 @@ def test_build_doc(loader, props_str_to_dict, fix_image_path, capsys: pytest.Cap
         Write.style_prev_paragraph(cursor=cursor, prop_name="ParaAdjust", prop_val=Write.ParagraphAdjust.CENTER)
 
         append("Image as a shape: ")
-        Write.add_image_shape(doc=doc, cursor=cursor, fnm=im_fnm)
+        Write.add_image_shape(cursor=cursor, fnm=im_fnm)
         Write.end_paragraph(cursor)
         Lo.delay(delay)
 

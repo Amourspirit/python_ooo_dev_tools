@@ -1165,7 +1165,7 @@ class Write(mSel.Selection):
         """
         cargs = CancelEventArgs(Write.set_page_format)
         cargs.event_data = {"paper_format": paper_format}
-        _Events().trigger(WriteNamedEvent.PAGE_FORRMAT_SETTING)
+        _Events().trigger(WriteNamedEvent.PAGE_FORRMAT_SETTING, cargs)
         if cargs.cancel:
             return False
         xprintable = mLo.Lo.qi(XPrintable, text_doc, True)
@@ -1882,14 +1882,13 @@ class Write(mSel.Selection):
     # region    add_image_shape()
     @overload
     @staticmethod
-    def add_image_shape(doc: XTextDocument, cursor: XTextCursor, fnm: PathOrStr) -> bool:
+    def add_image_shape(cursor: XTextCursor, fnm: PathOrStr) -> bool:
         """
         Add Image Shape
 
         Currently this method is only suported in terminal. Not in macros.
 
         Args:
-            doc (XTextDocument): Text Document
             cursor (XTextCursor): Text Cursor
             fnm (PathOrStr): Image path
 
@@ -1900,14 +1899,13 @@ class Write(mSel.Selection):
 
     @overload
     @staticmethod
-    def add_image_shape(doc: XTextDocument, cursor: XTextCursor, fnm: PathOrStr, width: int, height: int) -> bool:
+    def add_image_shape(cursor: XTextCursor, fnm: PathOrStr, width: int, height: int) -> bool:
         """
         Add Image Shape
 
         Currently this method is only suported in terminal. Not in macros.
 
         Args:
-            doc (XTextDocument): Text Document
             cursor (XTextCursor): Text Cursor
             fnm (PathOrStr): Image path
             width (int, optional): Image width
@@ -1920,13 +1918,12 @@ class Write(mSel.Selection):
 
     @classmethod
     def add_image_shape(
-        cls, doc: XTextDocument, cursor: XTextCursor, fnm: PathOrStr, width: int = 0, height: int = 0
+        cls, cursor: XTextCursor, fnm: PathOrStr, width: int = 0, height: int = 0
     ) -> bool:
         """
         Add Image Shape
 
         Args:
-            doc (XTextDocument): Text Document
             cursor (XTextCursor): Text Cursor
             fnm (PathOrStr): Image path
             width (int, optional): Image width
