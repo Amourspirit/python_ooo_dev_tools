@@ -10,7 +10,7 @@ from ..events.args import event_args
 
 class EventObserver(Protocol):
     """
-    Protocol Class for Event Oberver.
+    Protocol Class for Event Observer.
     
     See Also:
         :py:mod:`~.events.lo_events`

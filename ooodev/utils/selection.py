@@ -695,7 +695,7 @@ class Selection(metaclass=StaticProperty):
             the next word, or any word at all! This may happen for example if it travels over empty paragraphs.
         """
 
-        cargs = CancelEventArgs(cls)
+        cargs = CancelEventArgs(Selection.select_next_word)
         _Events().trigger(WriteNamedEvent.WORD_SELECTING, cargs)
         if cargs.cancel:
             return False

@@ -213,16 +213,18 @@ class Write(mSel.Selection):
                 - :py:attr:`~.events.write_named_event.WriteNamedEvent.DOC_OPENED` :eventref:`src-docs-event`
 
         Note:
-            Event args ``event_data`` is set to ``fnm``.
+            Event args ``event_data`` is a dictionary containing ``fnm`` and ``loader``.
+
+        Attention:
+            :py:meth:`Lo.open_doc <.utils.lo.Lo.open_doc>` method is called along with any of its events.
         """
-        cargs = CancelEventArgs(cls)
-        cargs.event_data = fnm
+        cargs = CancelEventArgs(Write.open_doc)
+        cargs.event_data = {"fnm": fnm, "loader": loader}
         _Events().trigger(WriteNamedEvent.DOC_OPENING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
-        doc = mLo.Lo.open_doc(fnm=fnm, loader=loader)
-        if doc is None:
-            raise Exception("Document is null")
+        fnm = cargs.event_data["fnm"]
+        doc = mLo.Lo.open_doc(fnm=fnm, loader=cargs.event_data["loader"])
 
         if not cls.is_text(doc):
             mLo.Lo.print(f"Not a text document; closing '{fnm}'")
@@ -296,17 +298,17 @@ class Write(mSel.Selection):
                 - :py:attr:`~.events.write_named_event.WriteNamedEvent.DOC_CREATED` :eventref:`src-docs-event`
 
         Note:
-            Event args ``event_data`` is set to ``loader``.
-        
+           Event args ``event_data`` is a dictionary containing ``loader``.
+
         Attention:
             :py:meth:`Lo.create_doc <.utils.lo.Lo.create_doc>` method is called along with any of its events.
         """
-        cargs = CancelEventArgs(Write)
-        cargs.event_data = loader
+        cargs = CancelEventArgs(Write.create_doc)
+        cargs.event_data = {"loader": loader}
         _Events().trigger(WriteNamedEvent.DOC_CREATING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
-        doc = mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.WRITER, loader=loader)
+        doc = mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.WRITER, loader=cargs.event_data["loader"])
         _Events().trigger(WriteNamedEvent.DOC_CREATED, EventArgs.from_args(cargs))
         return doc
 
@@ -334,22 +336,23 @@ class Write(mSel.Selection):
                 - :py:attr:`~.events.write_named_event.WriteNamedEvent.DOC_TMPL_CREATED` :eventref:`src-docs-event`
 
         Note:
-            Event args ``event_data`` is set to ``template_path``.
-        
+            Event args ``event_data`` is a dictionary containing ``template_path`` and ``loader``.
+
         Attention:
             :py:meth:`Lo.create_doc_from_template <.utils.lo.Lo.create_doc_from_template>` method is called along with any of its events.
         """
-        cargs = CancelEventArgs(Write)
-        cargs.event_data = template_path
+        cargs = CancelEventArgs(Write.create_doc_from_template)
+        cargs.event_data = {"template_path": template_path, "loader": loader}
         _Events().trigger(WriteNamedEvent.DOC_CREATING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
 
+        template_path = cargs.event_data["template_path"]
         _Events().trigger(WriteNamedEvent.DOC_TMPL_CREATING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
 
-        doc = mLo.Lo.create_doc_from_template(template_path=template_path, loader=loader)
+        doc = mLo.Lo.create_doc_from_template(template_path=template_path, loader=cargs.event_data["loader"])
         xdoc = mLo.Lo.qi(XTextDocument, doc, raise_err=True)
 
         eargs = EventArgs.from_args(cargs)
@@ -367,28 +370,28 @@ class Write(mSel.Selection):
 
         Raises:
             MissingInterfaceError: If unable to obtain XCloseable from text_doc
-        
+
         Returns:
             bool: False if DOC_CLOSING event is canceled, Other
-        
+
         :events:
             .. cssclass:: lo_event
 
                 - :py:attr:`~.events.write_named_event.WriteNamedEvent.DOC_CLOSING` :eventref:`src-docs-event-cancel`
                 - :py:attr:`~.events.write_named_event.WriteNamedEvent.DOC_CLOSED` :eventref:`src-docs-event`
-        
+
         Note:
-            Event args ``event_data`` is set to ``text_doc``.
-        
+             Event args ``event_data`` is a dictionary containing ``text_doc``.
+
         Attention:
             :py:meth:`Lo.close <.utils.lo.Lo.close>` method is called along with any of its events.
         """
-        cargs = CancelEventArgs(Write)
-        cargs.event_data = text_doc
+        cargs = CancelEventArgs(Write.close_doc)
+        cargs.event_data = {"text_doc": text_doc}
         _Events().trigger(WriteNamedEvent.DOC_CLOSING, cargs)
         if cargs.cancel:
             return False
-        closable = mLo.Lo.qi(XCloseable, text_doc, True)
+        closable = mLo.Lo.qi(XCloseable, cargs.event_data["text_doc"], True)
         result = mLo.Lo.close(closable)
         _Events().trigger(WriteNamedEvent.DOC_CLOSED, EventArgs.from_args(cargs))
         return result
@@ -404,25 +407,26 @@ class Write(mSel.Selection):
 
         Raises:
             MissingInterfaceError: If text_doc does not implement XComponent interface
-        
+
         :events:
             .. cssclass:: lo_event
 
                 - :py:attr:`~.events.write_named_event.WriteNamedEvent.DOC_CREATING` :eventref:`src-docs-event-cancel`
                 - :py:attr:`~.events.write_named_event.WriteNamedEvent.DOC_CREATED` :eventref:`src-docs-event`
-        
+
         Note:
             Event args ``event_data`` is set to ``fnm``.
-        
+
         Attention:
             :py:meth:`Lo.save_doc <.utils.lo.Lo.save_doc>` method is called along with any of its events.
         """
-        cargs = CancelEventArgs(Write)
-        cargs.event_data = text_doc
+        cargs = CancelEventArgs(Write.save_doc)
+        cargs.event_data = {"text_doc": text_doc, "fnm": fnm}
         _Events().trigger(WriteNamedEvent.DOC_CLOSING, cargs)
         if cargs.cancel:
             return False
-        doc = mLo.Lo.qi(XComponent, text_doc, True)
+        fnm = cargs.event_data["fnm"]
+        doc = mLo.Lo.qi(XComponent, cargs.event_data["text_doc"], True)
         mLo.Lo.save_doc(doc=doc, fnm=fnm)
 
     @classmethod
@@ -446,7 +450,26 @@ class Write(mSel.Selection):
 
         Returns:
             XTextDocument | None: Text Document
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.DOC_OPENING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.DOC_OPENED` :eventref:`src-docs-event`
+
+        Note:
+            Event args ``event_data`` is a dictionary containing ``fnm``, ``template_path`` and ``loader``.
+
+        Attention:
+            :py:meth:`Lo.create_doc_from_template <.utils.lo.Lo.create_doc_from_template>` method is called along with any of its events.
         """
+        cargs = CancelEventArgs(Write.open_flat_doc_using_text_template)
+        cargs.event_data = {"fnm": fnm, "template_path": template_path, "loader": loader}
+        _Events().trigger(WriteNamedEvent.DOC_OPENING, cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
+        fnm = cargs.event_data["fnm"]
+        template_path = cargs.event_data["template_path"]
         if fnm is None:
             mLo.Lo.print("Filename is null")
             return None
@@ -465,7 +488,7 @@ class Write(mSel.Selection):
         if template_ext != "ott":
             raise ValueError(f"Can only apply a text template as formatting. Not an ott file: {template_path}")
 
-        doc = mLo.Lo.create_doc_from_template(template_path=template_path, loader=loader)
+        doc = mLo.Lo.create_doc_from_template(template_path=template_path, loader=cargs.event_data["loader"])
         text_doc = mLo.Lo.qi(XTextDocument, doc)
         if text_doc is None:
             raise mEx.MissingInterfaceError(
@@ -478,16 +501,14 @@ class Write(mSel.Selection):
 
         try:
             cursor.gotoEnd(True)
-            di = mLo.Lo.qi(XDocumentInsertable, cursor)
+            di = mLo.Lo.qi(XDocumentInsertable, cursor, True)
             # XDocumentInsertable only works with text files
-            if di is None:
-                mLo.Lo.print("Document inserter could not be created")
-            else:
-                di.insertDocumentFromURL(open_file_url, tuple())
-                # Props.makeProps("FilterName", "OpenDocument Text Flat XML"))
-                # these props do not work
+            di.insertDocumentFromURL(open_file_url, tuple())
+            # Props.makeProps("FilterName", "OpenDocument Text Flat XML"))
+            # these props do not work
         except Exception as e:
             raise Exception("Could not insert document") from e
+        _Events().trigger(WriteNamedEvent.DOC_OPENED, EventArgs.from_args(cargs))
         return text_doc
 
     # endregion ---------- doc / open / close /create/ etc -------------
@@ -501,7 +522,7 @@ class Write(mSel.Selection):
         Makes it possible to perform cursor movements between pages.
 
         Args:
-            text_doc (XTextDocument | XTextViewCursor): Text Document or View Cursor
+            text_doc (XTextDocument | XTextViewCursor): Text Document or View Curskor
 
         Raises:
             PageCursorError: If Unable to get cursor
@@ -989,6 +1010,9 @@ class Write(mSel.Selection):
 
         See Also:
             `LibreOffice Dispatch Commands <https://wiki.documentfoundation.org/Development/DispatchCommands>`_
+
+        Attention:
+            :py:meth:`Lo.dispatch_cmd <.utils.lo.Lo.dispatch_cmd>` method is called along with any of its events.
         """
         curr_pos = mSel.Selection.get_position(vcursor)
         vcursor.goLeft(curr_pos - pos, True)
@@ -1113,7 +1137,7 @@ class Write(mSel.Selection):
             raise Exception("Could not access standard page style dimensions") from e
 
     @staticmethod
-    def set_page_format(text_doc: XTextDocument, paper_format: Write.PaperFormat) -> None:
+    def set_page_format(text_doc: XTextDocument, paper_format: Write.PaperFormat) -> bool:
         """
         Set Page Format
         paper_format (:py:attr:`.Write.PaperFormat`): Paper Format.
@@ -1124,25 +1148,50 @@ class Write(mSel.Selection):
         Raises:
             MissingInterfaceError: If text_doc does not implement XPrintable interface
 
+        Returns:
+            bool: True if page format is set; Otherwise, False
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.PAGE_FORRMAT_SETTING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.PAGE_FORRMAT_SET` :eventref:`src-docs-event`
+
+        Note:
+            Event args ``event_data`` is a dictionary containing ``fnm``.
+
         See Also:
             - :py:meth:`.set_a4_page_format`
         """
+        cargs = CancelEventArgs(Write.set_page_format)
+        cargs.event_data = {"paper_format": paper_format}
+        _Events().trigger(WriteNamedEvent.PAGE_FORRMAT_SETTING)
+        if cargs.cancel:
+            return False
         xprintable = mLo.Lo.qi(XPrintable, text_doc, True)
         printer_desc = mProps.Props.make_props(PaperFormat=paper_format)
         xprintable.setPrinter(printer_desc)
+        _Events().trigger(WriteNamedEvent.PAGE_FORRMAT_SET, EventArgs.from_args(cargs))
+        return True
 
     @classmethod
-    def set_a4_page_format(cls, text_doc: XTextDocument) -> None:
+    def set_a4_page_format(cls, text_doc: XTextDocument) -> bool:
         """
         Set Page Format to A4
 
         Args:
             text_doc (XTextDocument): Text Docuument
 
+        Returns:
+            bool: True if page format is set; Otherwise, False
+
         See Also:
             :py:meth:`set_page_format`
+
+        Attention:
+            :py:meth:`~.Write.set_page_format` method is called along with any of its events.
         """
-        cls.set_page_format(text_doc=text_doc, paper_format=Write.PaperFormat.A4)
+        return cls.set_page_format(text_doc=text_doc, paper_format=Write.PaperFormat.A4)
 
     # endregion ---------- style methods -------------------------------
 
@@ -1283,7 +1332,7 @@ class Write(mSel.Selection):
     # region ------------- adding elements -----------------------------
 
     @classmethod
-    def add_formula(cls, cursor: XTextCursor, formula: str) -> None:
+    def add_formula(cls, cursor: XTextCursor, formula: str) -> bool:
         """
         Adds a formula
 
@@ -1294,7 +1343,25 @@ class Write(mSel.Selection):
         Raises:
             CreateInstanceMsfError: If unable to create text.TextEmbeddedObject
             Exception: If unable to add formula
+
+        Returns:
+            bool: True if formula is added; Otherwise, False
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.FORMULA_ADDING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.FORMULA_ADDED` :eventref:`src-docs-event`
+
+        Note:
+           Event args ``event_data`` is a dictionary containing ``formula`` and ``cursor``.
         """
+        cargs = CancelEventArgs(Write.add_formula)
+        cargs.event_data = {"cursor": cursor, "formula": formula}
+        _Events().trigger(WriteNamedEvent.FORMULA_ADDING, cargs)
+        if cargs.cancel:
+            return False
+        formula = cargs.event_data["formula"]
         embed_content = mLo.Lo.create_instance_msf(
             XTextContent, "com.sun.star.text.TextEmbeddedObject", raise_err=True
         )
@@ -1317,9 +1384,11 @@ class Write(mSel.Selection):
             mLo.Lo.print(f'Inserted formula "{formula}"')
         except Exception as e:
             raise Exception(f'Insertion fo formula "{formula}" failed:') from e
+        _Events().trigger(WriteNamedEvent.FORMULA_ADDED, EventArgs.from_args(cargs))
+        return True
 
     @classmethod
-    def add_hyperlink(cls, cursor: XTextCursor, label: str, url_str: str) -> None:
+    def add_hyperlink(cls, cursor: XTextCursor, label: str, url_str: str) -> bool:
         """
         Add a hyperlink
 
@@ -1331,7 +1400,28 @@ class Write(mSel.Selection):
         Raises:
             CreateInstanceMsfError: If unable to create TextField.URL instance
             Exception: If unable to create hyperlink
+
+        Returns:
+            bool: True if hyperlink is added; Otherwise, False
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.HYPER_LINK_ADDING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.HYPER_LINK_ADDED` :eventref:`src-docs-event`
+
+        Note:
+           Event args ``event_data`` is a dictionary containing ``label``, ``url_str`` and ``cursor``.
         """
+        cargs = CancelEventArgs(Write.add_hyperlink)
+        cargs.event_data = {"cursor": cursor, "label": label, "url_str": url_str}
+        _Events().trigger(WriteNamedEvent.HYPER_LINK_ADDING, cargs)
+        if cargs.cancel:
+            return False
+
+        label = cargs.event_data["label"]
+        url_str = cargs.event_data["url_str"]
+
         try:
             link = mLo.Lo.create_instance_msf(XTextContent, "com.sun.star.text.TextField.URL")
             if link is None:
@@ -1346,6 +1436,8 @@ class Write(mSel.Selection):
             mLo.Lo.print("Added hyperlink")
         except Exception as e:
             raise Exception("Unable to add hyperlink") from e
+        _Events().trigger(WriteNamedEvent.HYPER_LINK_ADDED, EventArgs.from_args(cargs))
+        return True
 
     @classmethod
     def add_bookmark(cls, cursor: XTextCursor, name: str) -> None:
@@ -1359,7 +1451,27 @@ class Write(mSel.Selection):
         Raises:
             CreateInstanceMsfError: If Unable to create Bookmark instance
             Exception: If unable to add bookmark
+
+        Returns:
+            bool: True if bookmark is added; Otherwise, False
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.BOOKMARK_ADDING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.BOOKMARK_ADDIED` :eventref:`src-docs-event`
+
+        Note:
+           Event args ``event_data`` is a dictionary containing ``name`` and ``cursor``.
         """
+        cargs = CancelEventArgs(Write.add_bookmark)
+        cargs.event_data = {"cursor": cursor, "name": name}
+        _Events().trigger(WriteNamedEvent.BOOKMARK_ADDING, cargs)
+        if cargs.cancel:
+            return False
+
+        name = cargs.event_data["name"]
+
         try:
             bmk_content = mLo.Lo.create_instance_msf(XTextContent, "com.sun.star.text.Bookmark")
             if bmk_content is None:
@@ -1373,6 +1485,8 @@ class Write(mSel.Selection):
             cls._append_text_content(cursor, bmk_content)
         except Exception as e:
             raise Exception("Unable to add bookmark") from e
+        _Events().trigger(WriteNamedEvent.BOOKMARK_ADDIED, EventArgs.from_args(cargs))
+        return True
 
     @staticmethod
     def find_bookmark(text_doc: XTextDocument, bm_name: str) -> XTextContent | None:
@@ -1412,7 +1526,7 @@ class Write(mSel.Selection):
         page_num: int = 1,
         border_color: Color | None = CommonColor.RED,
         background_color: Color | None = CommonColor.LIGHT_BLUE,
-    ) -> None:
+    ) -> bool:
         """
         Adds a text frame with a red border and light blue back color
 
@@ -1430,9 +1544,44 @@ class Write(mSel.Selection):
             CreateInstanceMsfError: If unable to create text.TextFrame
             Exception: If unable to add text frame
 
+        Returns:
+            bool: True if Text frame is added; Otherwise, False
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.TEXT_FRAME_ADDING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.TEXT_FRAME_ADDED` :eventref:`src-docs-event`
+
+        Note:
+           Event args ``event_data`` is a dictionary containing all method args.
+
         See Also:
             :py:class:`~.utils.color.CommonColor`
         """
+        cargs = CancelEventArgs(Write.add_text_frame)
+        cargs.event_data = {
+            "cursor": cursor,
+            "ypos": ypos,
+            "text": text,
+            "width": width,
+            "height": height,
+            "page_num": page_num,
+            "border_color": border_color,
+            "background_color": background_color,
+        }
+        _Events().trigger(WriteNamedEvent.BOOKMARK_ADDING, cargs)
+        if cargs.cancel:
+            return False
+
+        ypos = cargs.event_data["ypos"]
+        text = cargs.event_data["text"]
+        width = cargs.event_data["width"]
+        height = cargs.event_data["height"]
+        page_num = cargs.event_data["page_num"]
+        border_color = cargs.event_data["border_color"]
+        background_color = cargs.event_data["background_color"]
+
         try:
             xframe = mLo.Lo.create_instance_msf(XTextFrame, "com.sun.star.text.TextFrame")
             if xframe is None:
@@ -1486,6 +1635,8 @@ class Write(mSel.Selection):
             xframe_text.insertString(xtext_range, text, False)
         except Exception as e:
             raise Exception("Insertion of text frame failed:") from e
+        _Events().trigger(WriteNamedEvent.TEXT_FRAME_ADDED, EventArgs.from_args(cargs))
+        return True
 
     @classmethod
     def add_table(
@@ -1496,7 +1647,7 @@ class Write(mSel.Selection):
         header_fg_color: Color | None = CommonColor.WHITE,
         tbl_bg_color: Color | None = CommonColor.LIGHT_BLUE,
         tbl_fg_color: Color | None = CommonColor.BLACK,
-    ) -> None:
+    ) -> bool:
         """
         Adds a table.
 
@@ -1515,11 +1666,41 @@ class Write(mSel.Selection):
             CreateInstanceMsfError: If unable to create instance of text.TextTable
             Exception: If unable to add table
 
+        Returns:
+            bool: True if table is added; Otherwise, False
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.TABLE_ADDING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.TABLE_ADDED` :eventref:`src-docs-event`
+
+        Note:
+           Event args ``event_data`` is a dictionary containing all method args.
+
         See Also:
             - :py:class:`~.utils.color.CommonColor`
             - :py:meth:`~.utils.table_helper.TableHelper.table_2d_to_dict`
             - :py:meth:`~.utils.table_helper.TableHelper.table_dict_to_table`
         """
+
+        cargs = CancelEventArgs(Write.add_table)
+        cargs.event_data = {
+            "cursor": cursor,
+            "table_data": table_data,
+            "header_bg_color": header_bg_color,
+            "header_fg_color": header_fg_color,
+            "tbl_bg_color": tbl_bg_color,
+            "tbl_fg_color": tbl_fg_color,
+        }
+        _Events().trigger(WriteNamedEvent.TABLE_ADDING, cargs)
+        if cargs.cancel:
+            return False
+
+        header_bg_color = cargs.event_data["header_bg_color"]
+        header_fg_color = cargs.event_data["header_fg_color"]
+        tbl_bg_color = cargs.event_data["tbl_bg_color"]
+        tbl_fg_color = cargs.event_data["tbl_fg_color"]
 
         def make_cell_name(row: int, col: int) -> str:
             return TableHelper.make_cell_name(row=row + 1, col=col + 1)
@@ -1584,12 +1765,14 @@ class Write(mSel.Selection):
                     set_cell_text(make_cell_name(y, x), row_data[x], table)
         except Exception as e:
             raise Exception("Table insertion failed:") from e
+        _Events().trigger(WriteNamedEvent.TABLE_ADDED, EventArgs.from_args(cargs))
+        return True
 
     # region    add_image_link()
 
     @overload
     @classmethod
-    def add_image_link(cls, doc: XTextDocument, cursor: XTextCursor, fnm: PathOrStr) -> None:
+    def add_image_link(cls, doc: XTextDocument, cursor: XTextCursor, fnm: PathOrStr) -> bool:
         """
         Add Image Link
 
@@ -1597,12 +1780,15 @@ class Write(mSel.Selection):
             doc (XTextDocument): Text Document
             cursor (XTextCursor): Text Cursor
             fnm (PathOrStr): Image path
+
+        Returns:
+            bool: True if image link is added; Otherwise, False
         """
         ...
 
     @overload
     @classmethod
-    def add_image_link(cls, doc: XTextDocument, cursor: XTextCursor, fnm: PathOrStr, width: int, height: int) -> None:
+    def add_image_link(cls, doc: XTextDocument, cursor: XTextCursor, fnm: PathOrStr, width: int, height: int) -> bool:
         """
         Add Image Link
 
@@ -1612,13 +1798,16 @@ class Write(mSel.Selection):
             fnm (PathOrStr): Image path
             width (int, optional): Width.
             height (int, optional): Height.
+
+        Returns:
+            bool: True if image link is added; Otherwise, False
         """
         ...
 
     @classmethod
     def add_image_link(
         cls, doc: XTextDocument, cursor: XTextCursor, fnm: PathOrStr, width: int = 0, height: int = 0
-    ) -> None:
+    ) -> bool:
         """
         Add Image Link
 
@@ -1633,7 +1822,35 @@ class Write(mSel.Selection):
             CreateInstanceMsfError: If Unable to create text.TextGraphicObject
             MissingInterfaceError: If unable to obtain XPropertySet interface
             Exception: If unable to add image
+
+        Returns:
+            bool: True if image link is added; Otherwise, False
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.IMAGE_LNIK_ADDING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.IMAGE_LNIK_ADDED` :eventref:`src-docs-event`
+
+        Note:
+           Event args ``event_data`` is a dictionary containing ``doc``, ``cursor``, ``fnm``, ``width`` and ``height``.
         """
+        cargs = CancelEventArgs(Write.add_image_link)
+        cargs.event_data = {
+            "doc": doc,
+            "cursor": cursor,
+            "fnm": fnm,
+            "width": width,
+            "height": height,
+        }
+        _Events().trigger(WriteNamedEvent.IMAGE_LNIK_ADDING, cargs)
+        if cargs.cancel:
+            return False
+
+        fnm = cargs.event_data["fnm"]
+        width = cargs.event_data["width"]
+        height = cargs.event_data["height"]
+
         try:
             tgo = mLo.Lo.create_instance_msf(XTextContent, "com.sun.star.text.TextGraphicObject")
             if tgo is None:
@@ -1657,13 +1874,15 @@ class Write(mSel.Selection):
             raise
         except Exception as e:
             raise Exception(f"Insertion of graphic in '{fnm}' failed:") from e
+        _Events().trigger(WriteNamedEvent.IMAGE_LNIK_ADDED, EventArgs.from_args(cargs))
+        return True
 
     # endregion add_image_link()
 
     # region    add_image_shape()
     @overload
     @staticmethod
-    def add_image_shape(doc: XTextDocument, cursor: XTextCursor, fnm: PathOrStr) -> None:
+    def add_image_shape(doc: XTextDocument, cursor: XTextCursor, fnm: PathOrStr) -> bool:
         """
         Add Image Shape
 
@@ -1673,12 +1892,15 @@ class Write(mSel.Selection):
             doc (XTextDocument): Text Document
             cursor (XTextCursor): Text Cursor
             fnm (PathOrStr): Image path
+
+        Returns:
+            bool: True if image shape is added; Otherwise, False
         """
         ...
 
     @overload
     @staticmethod
-    def add_image_shape(doc: XTextDocument, cursor: XTextCursor, fnm: PathOrStr, width: int, height: int) -> None:
+    def add_image_shape(doc: XTextDocument, cursor: XTextCursor, fnm: PathOrStr, width: int, height: int) -> bool:
         """
         Add Image Shape
 
@@ -1690,13 +1912,16 @@ class Write(mSel.Selection):
             fnm (PathOrStr): Image path
             width (int, optional): Image width
             height (int, optional): Image height
+
+        Returns:
+            bool: True if image shape is added; Otherwise, False
         """
         ...
 
     @classmethod
     def add_image_shape(
         cls, doc: XTextDocument, cursor: XTextCursor, fnm: PathOrStr, width: int = 0, height: int = 0
-    ) -> None:
+    ) -> bool:
         """
         Add Image Shape
 
@@ -1712,7 +1937,33 @@ class Write(mSel.Selection):
             ValueError: If unable to get image
             MissingInterfaceError: If require interface cannot be obtained.
             Exception: If unable to add image shape
+
+        Returns:
+            bool: True if image shape is added; Otherwise, False
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.IMAGE_SHAPE_ADDING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.IMAGE_SHAPE_ADDED` :eventref:`src-docs-event`
+
+        Note:
+           Event args ``event_data`` is a dictionary containing ``doc``, ``cursor``, ``fnm``, ``width`` and ``height``.
         """
+        cargs = CancelEventArgs(Write.add_image_shape)
+        cargs.event_data = {
+            "cursor": cursor,
+            "fnm": fnm,
+            "width": width,
+            "height": height,
+        }
+        _Events().trigger(WriteNamedEvent.IMAGE_SHAPE_ADDING, cargs)
+        if cargs.cancel:
+            return False
+
+        fnm = cargs.event_data["fnm"]
+        width = cargs.event_data["width"]
+        height = cargs.event_data["height"]
 
         try:
             if width > 0 and height > 0:
@@ -1748,6 +1999,8 @@ class Write(mSel.Selection):
             raise
         except Exception as e:
             raise Exception(f"Insertion of graphic in '{fnm}' failed:") from e
+        _Events().trigger(WriteNamedEvent.IMAGE_SHAPE_ADDED, EventArgs.from_args(cargs))
+        return True
 
     # endregion add_image_shape()
 
