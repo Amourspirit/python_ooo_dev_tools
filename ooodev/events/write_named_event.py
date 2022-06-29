@@ -26,6 +26,11 @@ class WriteNamedEvent(NamedTuple):
     DOC_CLOSED = "write_doc_closed"
     """Doc Closed Write document see :py:meth:`Write.close_doc() <.office.write.Write.close_doc>`"""
 
+    DOC_SAVING = "write_doc_saving"
+    """Doc Closing Write document see :py:meth:`Write.save_doc() <.office.write.Write.save_doc>`"""
+    DOC_SAVED = "write_doc_saved"
+    """Doc Closed Write document see :py:meth:`Write.save_doc() <.office.write.Write.save_doc>`"""
+
     DOC_TMPL_CREATING = "write_doc_tmpl_creating"
     """Doc Creating Write document see :py:meth:`Write.create_doc_from_template() <.office.write.Write.create_doc_from_template>`"""
     DOC_TMPL_CREATED = "write_doc_tmpl_created"

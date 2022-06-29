@@ -408,26 +408,34 @@ class Write(mSel.Selection):
         Raises:
             MissingInterfaceError: If text_doc does not implement XComponent interface
 
+        Returns:
+            bool: True if doc is saved; Othwrwise, False
+
         :events:
             .. cssclass:: lo_event
 
-                - :py:attr:`~.events.write_named_event.WriteNamedEvent.DOC_CREATING` :eventref:`src-docs-event-cancel`
-                - :py:attr:`~.events.write_named_event.WriteNamedEvent.DOC_CREATED` :eventref:`src-docs-event`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.DOC_SAVING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.DOC_SAVED` :eventref:`src-docs-event`
 
         Note:
-            Event args ``event_data`` is set to ``fnm``.
+            Event args ``event_data`` is a dictionary containing ``text_doc`` and ``fnm``.
 
         Attention:
             :py:meth:`Lo.save_doc <.utils.lo.Lo.save_doc>` method is called along with any of its events.
         """
         cargs = CancelEventArgs(Write.save_doc)
         cargs.event_data = {"text_doc": text_doc, "fnm": fnm}
-        _Events().trigger(WriteNamedEvent.DOC_CLOSING, cargs)
+        _Events().trigger(WriteNamedEvent.DOC_SAVING, cargs)
+
         if cargs.cancel:
             return False
         fnm = cargs.event_data["fnm"]
-        doc = mLo.Lo.qi(XComponent, cargs.event_data["text_doc"], True)
-        mLo.Lo.save_doc(doc=doc, fnm=fnm)
+
+        doc = mLo.Lo.qi(XComponent, text_doc, True)
+        result = mLo.Lo.save_doc(doc=doc, fnm=fnm)
+
+        _Events().trigger(WriteNamedEvent.DOC_SAVED, EventArgs.from_args(cargs))
+        return result
 
     @classmethod
     def open_flat_doc_using_text_template(
