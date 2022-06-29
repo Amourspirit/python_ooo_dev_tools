@@ -1,10 +1,18 @@
 # coding: utf-8
 from __future__ import annotations
 from typing import Any
+from abc import ABC
+
+class AbstractEvent(ABC):
+    # https://stackoverflow.com/questions/472000/usage-of-slots
+    __slots__ = ()
 
 
-class EventArgs:
-    """Event Arguments Class"""
+class EventArgs(AbstractEvent):
+    """
+    Event Arguments Class
+    """
+    __slots__ = ("source","_event_name", "event_data" )
 
     def __init__(self, source: Any) -> None:
         """
@@ -13,19 +21,14 @@ class EventArgs:
         Args:
             source (Any): Event Source
         """
-        self._source = source
+        self.source = source
         self._event_name = ""
+        self.event_data = None
 
-    @property
-    def source(self) -> Any:
-        """
-        Gets/Sets Event source
-        """
-        return self._source
-
-    @source.setter
-    def source(self, value: Any):
-        self._source = value
+    source: Any
+    """Gets/Sets Event source"""
+    event_data: Any
+    """Gets/Sets any extra data associated with the event"""
 
     @property
     def event_name(self) -> str:
@@ -33,20 +36,6 @@ class EventArgs:
         Gets the event name for these args
         """
         return self._event_name
-
-    @property
-    def event_data(self) -> Any:
-        """
-        Gets/Sets any extra data associated with the event
-        """
-        try:
-            return self._event_data
-        except AttributeError:
-            return None
-
-    @event_data.setter
-    def event_data(self, value: Any):
-        self._event_data = value
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__}: {self.event_name}>"
@@ -65,3 +54,5 @@ class EventArgs:
         eargs = EventArgs(source=args.source)
         eargs.event_data = args.event_data
         return args
+
+e = EventArgs(None)

@@ -6,6 +6,8 @@ from .event_args import EventArgs
 
 class CancelEventArgs(EventArgs):
     """Cancel Event Arguments"""
+    __slots__ = ("cancel")
+
 
     def __init__(self, source: Any, cancel=False) -> None:
         """
@@ -16,18 +18,10 @@ class CancelEventArgs(EventArgs):
             cancel (bool, optional): Cancel value. Defaults to False.
         """
         super().__init__(source)
-        self._cancel = cancel
+        self.cancel = cancel
 
-    @property
-    def cancel(self) -> bool:
-        """
-        Gets/Sets cancel value
-        """
-        return self._cancel
-
-    @cancel.setter
-    def cancel(self, value: bool):
-        self._cancel = value
+    cancel: bool
+    """Gets/Sets cancel value"""
 
     @staticmethod
     def from_args(args: CancelEventArgs) -> CancelEventArgs:
