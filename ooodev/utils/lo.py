@@ -583,10 +583,10 @@ class Lo(metaclass=StaticProperty):
         """
         Closes the ofice connection.
         
-        Returs:
+        Returns:
             bool: True if office is closed; Otherwise, False
         
-        events:
+        "events:
             .. cssclass:: lo_event
 
                 - :py:attr:`~.events.lo_named_event.LoNamedEvent.OFFICE_CLOSING` :eventref:`src-docs-event-cancel`
