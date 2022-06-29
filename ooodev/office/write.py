@@ -627,6 +627,25 @@ class Write(mSel.Selection):
         xcontroller = model.getCurrentController()
         return int(mProps.Props.get_property(xcontroller, "PageCount"))
 
+    @classmethod
+    def print_page_size(cls, text_doc: XTextDocument) -> None:
+        """
+        Prints Page size to console
+
+        Args:
+            text_doc (XTextDocument): Text Document
+        """
+        cargs = CancelEventArgs(Write)
+        _Events().trigger(GblNamedEvent.PRINTING, cargs)
+        if cargs.cancel:
+            return
+        # see section 7.17  of Useful Macro Information For OpenOffice By Andrew Pitonyak.pdf
+        size = cls.get_page_size(text_doc)
+        print("Page Size is:")
+        print(f"  {round(size.Width / 100)} mm by {round(size.Height / 100)} mm")
+        print(f"  {round(size.Width / 2540)} inches by {round(size.Height / 2540)} inches")
+        print(f"  {round((size.Width *72.0) / 2540.0)} picas by {round((size.Height *72.0) / 2540.0)} picas")
+
     # endregion ---------- page methods --------------------------------
 
     # region ------------- text writing methods ------------------------
@@ -1917,9 +1936,7 @@ class Write(mSel.Selection):
         ...
 
     @classmethod
-    def add_image_shape(
-        cls, cursor: XTextCursor, fnm: PathOrStr, width: int = 0, height: int = 0
-    ) -> bool:
+    def add_image_shape(cls, cursor: XTextCursor, fnm: PathOrStr, width: int = 0, height: int = 0) -> bool:
         """
         Add Image Shape
 
@@ -2252,7 +2269,7 @@ class Write(mSel.Selection):
         print()
 
     @staticmethod
-    def set_configured_services(lingo_mgr: XLinguServiceManager2, service: str, impl_name: str) -> None:
+    def set_configured_services(lingo_mgr: XLinguServiceManager2, service: str, impl_name: str) -> bool:
         """
         Set configured Services
 
@@ -2260,10 +2277,36 @@ class Write(mSel.Selection):
             lingo_mgr (XLinguServiceManager2): Service Manager
             service (str): Service Name
             impl_name (str): Service implementation name
+
+        Returns:
+            bool: True if CONFIGURED_SERVICES_SETTING event is not canceled; Otherwise, False
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.CONFIGURED_SERVICES_SETTING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.CONFIGURED_SERVICES_SET` :eventref:`src-docs-event`
+
+        Note:
+           Event args ``event_data`` is a dictionary containing all method parameters.
         """
+        cargs = CancelEventArgs(Write.set_configured_services)
+        cargs.event_data = {
+            "lingo_mgr": lingo_mgr,
+            "service": service,
+            "impl_name": impl_name,
+        }
+        _Events().trigger(WriteNamedEvent.CONFIGURED_SERVICES_SETTING, cargs)
+        if cargs.cancel:
+            return False
+        service = cargs.event_data["service"]
+        impl_name = cargs.event_data["impl_name"]
+
         loc = Locale("en", "US", "")
         impl_names = (impl_name,)
         lingo_mgr.setConfiguredServices(f"com.sun.star.linguistic2.{service}", loc, impl_names)
+        _Events().trigger(WriteNamedEvent.CONFIGURED_SERVICES_SET, EventArgs.from_args(cargs))
+        return True
 
     @classmethod
     def dicts_info(cls) -> None:
@@ -2583,7 +2626,12 @@ class Write(mSel.Selection):
 
     @staticmethod
     def open_sent_check_options() -> None:
-        """open Options - Language Settings - English sentence checking"""
+        """
+        open Options - Language Settings - English sentence checking
+
+        Attention:
+            :py:meth:`Lo.dispatch_cmd <.utils.lo.Lo.dispatch_cmd>` method is called along with any of its events.
+        """
         pip = mInfo.Info.get_pip()
         lang_ext = pip.getPackageLocation("org.openoffice.en.hunspell.dictionaries")
         mLo.Lo.print(f"Lang Ext: {lang_ext}")
@@ -2594,63 +2642,36 @@ class Write(mSel.Selection):
 
     @staticmethod
     def open_spell_grammar_dialog() -> None:
-        """activate dialog in  Tools > Speling and Grammar..."""
+        """
+        Activate dialog in  Tools > Speling and Grammar...
+
+        Attention:
+            :py:meth:`Lo.dispatch_cmd <.utils.lo.Lo.dispatch_cmd>` method is called along with any of its events.
+        """
         mLo.Lo.dispatch_cmd("SpellingAndGrammarDialog")
         mLo.Lo.wait(2000)
 
     @staticmethod
     def toggle_auto_spell_check() -> None:
-        """Toggles spell check on and off"""
+        """
+        Toggles spell check on and off
+
+        Attention:
+            :py:meth:`Lo.dispatch_cmd <.utils.lo.Lo.dispatch_cmd>` method is called along with any of its events.
+        """
         mLo.Lo.dispatch_cmd("SpellOnline")
 
     @staticmethod
     def open_thesaurus_dialog() -> None:
-        """Opens LibreOffice Thesaurus Dialog"""
+        """
+        Opens LibreOffice Thesaurus Dialog
+
+        Attention:
+            :py:meth:`Lo.dispatch_cmd <.utils.lo.Lo.dispatch_cmd>` method is called along with any of its events.
+        """
         mLo.Lo.dispatch_cmd("ThesaurusDialog")
 
     # endregion ---------- Linguistics dialogs and menu items ----------
-
-    @classmethod
-    def print_page_size(cls, text_doc: XTextDocument) -> None:
-        """
-        Prints Page size to console
-
-        Args:
-            text_doc (XTextDocument): Text Document
-        """
-        cargs = CancelEventArgs(Write)
-        _Events().trigger(GblNamedEvent.PRINTING, cargs)
-        if cargs.cancel:
-            return
-        # see section 7.17  of Useful Macro Information For OpenOffice By Andrew Pitonyak.pdf
-        size = cls.get_page_size(text_doc)
-        print("Page Size is:")
-        print(f"  {round(size.Width / 100)} mm by {round(size.Height / 100)} mm")
-        print(f"  {round(size.Width / 2540)} inches by {round(size.Height / 2540)} inches")
-        print(f"  {round((size.Width *72.0) / 2540.0)} picas by {round((size.Height *72.0) / 2540.0)} picas")
-
-    @classmethod
-    def _get_left_cursor(cls, o_sel: XTextRange, o_text: XText) -> XTextCursor:
-        range_compare = cls.text_range_compare
-        if range_compare.compareRegionStarts(o_sel.getEnd(), o_sel) >= 0:
-            o_range = o_sel.getEnd()
-        else:
-            o_range = o_sel.getStart()
-        cursor = o_text.createTextCursorByRange(o_range)
-        cursor.goRight(0, False)
-        return cursor
-
-    @classmethod
-    def _get_right_cursor(cls, o_sel: XTextRange, o_text: XText) -> XTextCursor:
-
-        range_compare = cls.text_range_compare
-        if range_compare.compareRegionStarts(o_sel.getEnd(), o_sel) >= 0:
-            o_range = o_sel.getStart()
-        else:
-            o_range = o_sel.getEnd()
-        cursor = o_text.createTextCursorByRange(o_range)
-        cursor.goLeft(0, False)
-        return cursor
 
 
 __all__ = ("Write",)

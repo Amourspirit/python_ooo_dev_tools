@@ -693,9 +693,13 @@ class Selection(metaclass=StaticProperty):
         Note:
             The method returning ``True`` does not necessarily mean that the cursor is located at
             the next word, or any word at all! This may happen for example if it travels over empty paragraphs.
+
+        Note:
+           Event args ``event_data`` is a dictionary containing ``text_doc``.
         """
 
         cargs = CancelEventArgs(Selection.select_next_word)
+        cargs.event_data = {"text_doc": text_doc}
         _Events().trigger(WriteNamedEvent.WORD_SELECTING, cargs)
         if cargs.cancel:
             return False
