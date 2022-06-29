@@ -1,14 +1,16 @@
 # coding: utf-8
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
-from ..event_args import EventArgs
+from ..event_args import AbstractEvent
 
 if TYPE_CHECKING:
     from com.sun.star.sheet import XSpreadsheetDocument
     from com.sun.star.sheet import XSpreadsheet
 
 
-class SheetArgs(EventArgs):
+class AbstractSheetArgs(AbstractEvent):
+    __slots__ = ()
+
     def __init__(self, source: Any) -> None:
         """
         Constructor
@@ -17,62 +19,23 @@ class SheetArgs(EventArgs):
             source (Any): Event Source
         """
         super().__init__(source)
+        self.index = None
+        self.name = None
+        self.doc = None
+        self.sheet = None
 
-    @property
-    def index(self) -> int | None:
-        """
-        Gets/Sets the index of the event
-        """
-        try:
-            return self._index
-        except AttributeError:
-            return None
+    index: int | None
+    """Gets/Sets the index of the event"""
+    name: str | None
+    """Gets/Sets name of the event"""
+    doc: XSpreadsheetDocument | None
+    """Gets/Sets document of the event"""
+    sheet: XSpreadsheet | None
+    """Gets/Sets spreadsheet of the event"""
 
-    @index.setter
-    def index(self, value: int):
-        self._index = value
 
-    @property
-    def name(self) -> str | None:
-        """
-        Gets/Sets name of the event
-        """
-        try:
-            return self._name
-        except AttributeError:
-            return None
-
-    @name.setter
-    def name(self, value: str):
-        self._name = value
-
-    @property
-    def doc(self) -> XSpreadsheetDocument | None:
-        """
-        Gets/Sets document of the event
-        """
-        try:
-            return self._doc
-        except AttributeError:
-            return None
-
-    @doc.setter
-    def doc(self, value: XSpreadsheetDocument):
-        self._doc = value
-
-    @property
-    def sheet(self) -> XSpreadsheet | None:
-        """
-        Gets/Sets spreadsheet of the event
-        """
-        try:
-            return self._sheet
-        except AttributeError:
-            return None
-
-    @sheet.setter
-    def sheet(self, value: XSpreadsheet):
-        self._sheet = value
+class SheetArgs(AbstractSheetArgs):
+    __slots__ = ("source", "_event_name", "event_data", "name", "index", "doc", "sheet")
 
     @staticmethod
     def from_args(args: SheetArgs) -> SheetArgs:

@@ -1,13 +1,16 @@
 # coding: utf-8
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
-from ..event_args import EventArgs
+from ..event_args import AbstractEvent
+
 
 if TYPE_CHECKING:
     from com.sun.star.sheet import XSpreadsheet
 
 
-class CellArgs(EventArgs):
+class AbstractCellArgs(AbstractEvent):
+    __slots__ = ()
+
     def __init__(self, source: Any) -> None:
         """
         Constructor
@@ -16,37 +19,21 @@ class CellArgs(EventArgs):
             source (Any): Event Source
         """
         super().__init__(source)
+        self.sheet = None
+        self.cells = None
 
-    @property
-    def sheet(self) -> XSpreadsheet | None:
-        """
-        Gets/Sets spreadsheet of the event
-        """
-        try:
-            return self._sheet
-        except AttributeError:
-            return None
+    sheet: XSpreadsheet | None
+    """Gets/Sets spreadsheet of the event"""
+    cells: Any
+    """
+    Gets/Sets the cells for the event.
 
-    @sheet.setter
-    def sheet(self, value: XSpreadsheet):
-        self._sheet = value
+    Depending on the event can be any cell value such as a cell name, range, XCell, XCellRange etc.
+    """
 
-    @property
-    def cells(self) -> Any:
-        """
-        Gets/Sets the cells for the event.
 
-        Depending on the event can be any cell value such as a cell name, range, XCell, XCellRange etc.
-        """
-        try:
-            return self._cells
-        except AttributeError:
-            self._cells = None
-        return self._cells
-
-    @cells.setter
-    def cells(self, value: Any):
-        self._cells = value
+class CellArgs(AbstractCellArgs):
+    __slots__ = ("source", "_event_name", "event_data", "sheet", "cells")
 
     @staticmethod
     def from_args(args: CellArgs) -> CellArgs:

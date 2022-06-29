@@ -1,14 +1,12 @@
 # coding: utf-8
 from __future__ import annotations
 from typing import Any
-from .dispatch_args import DispatchArgs
-from .cancel_event_args import CancelEventArgs
+from .dispatch_args import AbstractDispacthArgs
+from .cancel_event_args import AbstractCancelEventArgs
 
 
-class DispatchCancelArgs(DispatchArgs, CancelEventArgs):
-    """
-    Dispatch Cancel Args
-    """
+class AbstractDispatchCancelArgs(AbstractDispacthArgs, AbstractCancelEventArgs):
+    __slots__ = ()
 
     def __init__(self, source: Any, cmd: str, cancel=False) -> None:
         """
@@ -21,6 +19,14 @@ class DispatchCancelArgs(DispatchArgs, CancelEventArgs):
         """
         super().__init__(source=source, cmd=cmd)
         self.cancel = cancel
+
+
+class DispatchCancelArgs(AbstractDispatchCancelArgs):
+    """
+    Dispatch Cancel Args
+    """
+
+    __slots__ = ("cmd", "source", "_event_name", "event_data", "cancel")
 
     @staticmethod
     def from_args(args: DispatchCancelArgs) -> DispatchCancelArgs:

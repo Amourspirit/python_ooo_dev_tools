@@ -1,13 +1,12 @@
 # coding: utf-8
 from __future__ import annotations
 from typing import Any
-from .event_args import EventArgs
+from .event_args import AbstractEvent
 
 
-class CancelEventArgs(EventArgs):
-    """Cancel Event Arguments"""
-    __slots__ = ("cancel")
-
+class AbstractCancelEventArgs(AbstractEvent):
+    # https://stackoverflow.com/questions/472000/usage-of-slots
+    __slots__ = ()
 
     def __init__(self, source: Any, cancel=False) -> None:
         """
@@ -22,6 +21,12 @@ class CancelEventArgs(EventArgs):
 
     cancel: bool
     """Gets/Sets cancel value"""
+
+
+class CancelEventArgs(AbstractCancelEventArgs):
+    """Cancel Event Arguments"""
+
+    __slots__ = ("source", "_event_name", "event_data", "cancel")
 
     @staticmethod
     def from_args(args: CancelEventArgs) -> CancelEventArgs:

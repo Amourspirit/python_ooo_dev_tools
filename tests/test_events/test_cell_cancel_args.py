@@ -4,22 +4,6 @@ from hypothesis import given, example, settings
 from hypothesis.strategies import text, characters, integers
 
 
-@given(text(max_size=25))
-@example("")
-@settings(max_examples=25)
-def test_event_name(test_str: str):
-    from ooodev.events.args.cancel_event_args import CancelEventArgs
-    e = CancelEventArgs(test_event_name)
-    e._event_name = test_str
-    assert e.event_name == test_str
-
-
-def test_source():
-    from ooodev.events.args.cancel_event_args import CancelEventArgs
-    e = CancelEventArgs(test_source)
-    assert e.source is test_source
-
-
 @given(
     text(
         alphabet=characters(min_codepoint=95, max_codepoint=122, blacklist_characters=("`",)), min_size=3, max_size=25
@@ -28,13 +12,16 @@ def test_source():
 )
 @settings(max_examples=50)
 def test_trigger_event(event_name_str: str, value: int):
-    from ooodev.events.args.cancel_event_args import CancelEventArgs
+    from ooodev.events.args.calc.cell_cancel_args import CellCancelArgs
     from ooodev.events.lo_events import Events
 
-    cargs = CancelEventArgs(test_trigger_event)
+    cargs = CellCancelArgs(test_trigger_event)
     cargs.event_data = value
+    cargs.sheet = None
 
-    def triggered(source: Any, args: CancelEventArgs):
+    def triggered(source: Any, args: CellCancelArgs):
+        args.cells = value
+        assert source is test_trigger_event
         assert args.event_data == value
         assert args.source is test_trigger_event
 
@@ -43,6 +30,8 @@ def test_trigger_event(event_name_str: str, value: int):
     events.trigger(event_name_str, cargs)
     assert cargs.event_name == event_name_str
     assert cargs.cancel is False
+    assert cargs.cells == value
+    assert cargs.sheet is None
 
 
 @given(
@@ -53,13 +42,16 @@ def test_trigger_event(event_name_str: str, value: int):
 )
 @settings(max_examples=50)
 def test_trigger_event_canceled(event_name_str: str, value: int):
-    from ooodev.events.args.cancel_event_args import CancelEventArgs
+    from ooodev.events.args.calc.cell_cancel_args import CellCancelArgs
     from ooodev.events.lo_events import Events
 
-    cargs = CancelEventArgs(test_trigger_event_canceled)
+    cargs = CellCancelArgs(test_trigger_event_canceled)
     cargs.event_data = value
+    cargs.sheet = None
 
-    def triggered(source: Any, args: CancelEventArgs):
+    def triggered(source: Any, args: CellCancelArgs):
+        args.cells = value
+        assert source is test_trigger_event_canceled
         assert args.event_data == value
         assert args.source is test_trigger_event_canceled
         args.cancel = True
@@ -70,6 +62,9 @@ def test_trigger_event_canceled(event_name_str: str, value: int):
     events.trigger(event_name_str, cargs)
     assert cargs.event_name == event_name_str
     assert cargs.cancel
+    assert cargs.cells == value
+    assert cargs.sheet is None
+
 
 
 @given(
@@ -80,18 +75,25 @@ def test_trigger_event_canceled(event_name_str: str, value: int):
 )
 @settings(max_examples=10)
 def test_from_args(event_name_str:str, value: int):
-    from ooodev.events.args.cancel_event_args import CancelEventArgs
-    cargs = CancelEventArgs(test_from_args)
+    from ooodev.events.args.calc.cell_cancel_args import CellCancelArgs
+    cargs = CellCancelArgs(test_from_args)
     cargs.event_data = value
     cargs._event_name = event_name_str
+    cargs.sheet = None
+    cargs.cells = value
     
     assert cargs.event_name == event_name_str
     assert cargs.event_data == value
     assert cargs.source is test_from_args
     assert cargs.cancel is False
+    assert cargs.cells == value
+    assert cargs.sheet is None
 
-    e = CancelEventArgs.from_args(cargs)
+
+    e = CellCancelArgs.from_args(cargs)
     assert e.event_data == cargs.event_data
     assert e.source is cargs.source
     assert e.event_name == cargs.event_name
     assert e.cancel == cargs.cancel
+    assert e.cells == cargs.cells
+    assert e.sheet is cargs.sheet

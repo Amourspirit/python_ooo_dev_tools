@@ -3,16 +3,10 @@ from __future__ import annotations
 from typing import Any
 from abc import ABC
 
+
 class AbstractEvent(ABC):
     # https://stackoverflow.com/questions/472000/usage-of-slots
     __slots__ = ()
-
-
-class EventArgs(AbstractEvent):
-    """
-    Event Arguments Class
-    """
-    __slots__ = ("source","_event_name", "event_data" )
 
     def __init__(self, source: Any) -> None:
         """
@@ -40,6 +34,14 @@ class EventArgs(AbstractEvent):
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__}: {self.event_name}>"
 
+
+class EventArgs(AbstractEvent):
+    """
+    Event Arguments Class
+    """
+
+    __slots__ = ("source", "_event_name", "event_data")
+
     @staticmethod
     def from_args(args: EventArgs) -> EventArgs:
         """
@@ -54,5 +56,6 @@ class EventArgs(AbstractEvent):
         eargs = EventArgs(source=args.source)
         eargs.event_data = args.event_data
         return args
+
 
 e = EventArgs(None)

@@ -1,14 +1,12 @@
 # coding: utf-8
 from __future__ import annotations
 from typing import Any
-from .cell_args import CellArgs
-from ..cancel_event_args import CancelEventArgs
+from .cell_args import AbstractCellArgs
+from ..cancel_event_args import AbstractCancelEventArgs
 
 
-class CellCancelArgs(CancelEventArgs, CellArgs):
-    """
-    Sheet Cancel Event Args
-    """
+class AbstractCellCancelArgs(AbstractCancelEventArgs, AbstractCellArgs):
+    __slots__ = ()
 
     def __init__(self, source: Any, cancel=False) -> None:
         """
@@ -19,6 +17,14 @@ class CellCancelArgs(CancelEventArgs, CellArgs):
             cancel (bool, optional): Cancel value. Defaults to False.
         """
         super().__init__(source=source, cancel=cancel)
+
+
+class CellCancelArgs(AbstractCellCancelArgs):
+    """
+    Sheet Cancel Event Args
+    """
+
+    __slots__ = ("source", "_event_name", "event_data", "sheet", "cells", "cancel")
 
     @staticmethod
     def from_args(args: CellCancelArgs) -> CellCancelArgs:

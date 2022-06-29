@@ -288,11 +288,7 @@ class Calc:
         try:
             xsheets_idx = mLo.Lo.qi(XIndexAccess, sheets)
             sheet = mLo.Lo.qi(XSpreadsheet, xsheets_idx.getByIndex(cargs.index), raise_err=True)
-            eargs = SheetArgs(Calc)
-            eargs.index = cargs.index
-            eargs.doc = cargs.doc
-            eargs.event_data = cargs.event_data
-            _Events().trigger(CalcNamedEvent.SHEET_GET, eargs)
+            _Events().trigger(CalcNamedEvent.SHEET_GET, SheetArgs.from_args(cargs))
             return sheet
         except Exception as e:
             raise Exception(f"Could not access spreadsheet: {cargs.index}") from e
@@ -310,11 +306,7 @@ class Calc:
         sheets = cargs.doc.getSheets()
         try:
             sheet = mLo.Lo.qi(XSpreadsheet, sheets.getByName(cargs.name), raise_err=True)
-            eargs = SheetArgs(Calc)
-            eargs.name = cargs.name
-            eargs.doc = doc
-            eargs.event_data = "name"
-            _Events().trigger(CalcNamedEvent.SHEET_GET, eargs)
+            _Events().trigger(CalcNamedEvent.SHEET_GET, SheetArgs.from_args(cargs))
             return sheet
         except Exception as e:
             raise Exception(f"Could not access spreadsheet: '{sheet_name}'") from e
@@ -1598,13 +1590,13 @@ class Calc:
             rng = Calc.get_cell_range(sheet=sht, cr_addr=rng_value)
 
         cargs = CellCancelArgs(cls)
-        cargs.cell = rng
+        cargs.cells = rng
         cargs.sheet = sht
         _Events().trigger(CalcNamedEvent.CELLS_CLEARING, cargs)
         if cargs.cancel:
             return False
 
-        sheet_op = mLo.Lo.qi(XSheetOperation, cargs.cell, raise_err=True)
+        sheet_op = mLo.Lo.qi(XSheetOperation, cargs.cells, raise_err=True)
         sheet_op.clearContents(flags.value)
         _Events().trigger(CalcNamedEvent.CELLS_CLEARED, CellArgs.from_args(cargs))
         return True

@@ -1,10 +1,13 @@
 # coding: utf-8
 from __future__ import annotations
 from typing import Any
-from .event_args import EventArgs
+from .event_args import AbstractEvent
 
 
-class DispatchArgs(EventArgs):
+class AbstractDispacthArgs(AbstractEvent):
+    # https://stackoverflow.com/questions/472000/usage-of-slots
+    __slots__ = ()
+
     def __init__(self, source: Any, cmd: str) -> None:
         """
         Constructor
@@ -14,18 +17,14 @@ class DispatchArgs(EventArgs):
             cmd (str): Event Dispatch Command
         """
         super().__init__(source)
-        self._cmd = cmd
+        self.cmd = cmd
 
-    @property
-    def cmd(self) -> str:
-        """
-        Gets/Sets the dispatch cmd of the event
-        """
-        return self._cmd
+    cmd: str
+    """Gets/Sets the dispatch cmd of the event"""
 
-    @cmd.setter
-    def cmd(self, value: str):
-        self._cmd = value
+
+class DispatchArgs(AbstractDispacthArgs):
+    __slots__ = ("source", "_event_name", "event_data", "cmd")
 
     @staticmethod
     def from_args(args: DispatchArgs) -> DispatchArgs:
