@@ -380,8 +380,6 @@ class Calc:
 
         Note:
            For Event args, if ``index`` is available then ``name`` is ``None`` and if ``sheet_name`` is available then ``index`` is ``None``.
-
-           Event arg properties modified on SHEET_GETTING it is reflected in this method.
         """
         ordered_keys = (1, 2)
         kargs_len = len(kwargs)
@@ -496,7 +494,7 @@ class Calc:
         _Events().trigger(CalcNamedEvent.SHEET_REMOVING, cargs)
         if cargs.cancel:
             return False
-        
+
         index = cargs.index
         sheets = cargs.doc.getSheets()
         result = False
@@ -619,9 +617,6 @@ class Calc:
 
                 - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_MOVING` :eventref:`src-docs-sheet-event-moving`
                 - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_MOVED` :eventref:`src-docs-sheet-event-moved`
-
-        Note:
-            Event arg properties modified on SHEET_MOVING it is reflected in this method.
         """
         cargs = SheetCancelArgs(Calc.move_sheet.__qualname__)
         cargs.doc = doc
@@ -917,7 +912,7 @@ class Calc:
 
         Attention:
             :py:meth:`~.utils.lo.Lo.dispatch_cmd` method is called along with any of its events.
-            
+
             Dispatch command is ``GoToCell``.
         """
         ordered_keys = (1, 2)
@@ -1239,9 +1234,6 @@ class Calc:
 
         Returns:
             bool: True if row has been inserted; Otherwise, False
-
-        Note:
-            Event arg properties modified on SHEET_ROW_INSERTING it is reflected in this method.
         """
         cargs = SheetCancelArgs(Calc.insert_row.__qualname__)
         cargs.sheet = sheet
@@ -1273,9 +1265,6 @@ class Calc:
 
         Returns:
             bool: True if row is deleted; Otherwise, False
-
-        Note:
-            Event arg properties modified on SHEET_ROW_DELETING it is reflected in this method.
         """
         cargs = SheetCancelArgs(Calc.delete_row.__qualname__)
         cargs.sheet = sheet
@@ -1305,9 +1294,6 @@ class Calc:
 
                 - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_COL_INSERTING` :eventref:`src-docs-sheet-event-col-inserting`
                 - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_COL_INSERTED` :eventref:`src-docs-sheet-event-col-inserted`
-
-        Note:
-            Event arg properties modified on SHEET_COL_INSERTING it is reflected in this method.
         """
         cargs = SheetCancelArgs(Calc.insert_column.__qualname__)
         cargs.sheet = sheet
@@ -1339,9 +1325,6 @@ class Calc:
 
         Returns:
             bool: True if column is deleted; Otherwise, False
-
-        Note:
-            Event arg properties modified on SHEET_COL_DELETING it is reflected in this method.
         """
         cargs = SheetCancelArgs(Calc.delete_column.__qualname__)
         cargs.sheet = sheet
@@ -1378,7 +1361,6 @@ class Calc:
         Note:
             Events args for this method have a ``cell`` type of ``XCellRange``
 
-        Note:
             Event args ``event_data`` is a dictionary containing ``is_shift_right``.
         """
         cargs = CellCancelArgs(Calc.insert_cells.__qualname__)
@@ -1421,8 +1403,6 @@ class Calc:
 
         Note:
             Event args ``event_data`` is a dictionary containing ``is_shift_left``.
-
-            Event arg properties modified on CELLS_DELETING it is reflected in this method.
         """
         cargs = CellCancelArgs(Calc.delete_cells.__qualname__)
         cargs.sheet = sheet
@@ -1545,7 +1525,7 @@ class Calc:
 
         Note:
             Events arg for this method have a ``cell`` type of ``XCellRange``.
-            
+
             Events arg ``event_data`` is a dictionary containing ``cell_flags``.
 
         See Also:
@@ -2560,6 +2540,9 @@ class Calc:
 
         Args:
             vals (Sequence[Sequence[object]]): A 2-Dimensional array of value such as a list of list or tuple of tuples.
+
+        Returns:
+            None:
 
         :events:
            .. include:: ../../resources/global/printing_events.rst
@@ -4034,6 +4017,9 @@ class Calc:
             cell (XCell): cell
             addr (CellAddress): Cell Address
 
+        Returns:
+            None:
+
         :events:
            .. include:: ../../resources/global/printing_events.rst
 
@@ -4110,6 +4096,9 @@ class Calc:
             cell_range (XCellRange): Cell range
             cr_addr (CellRangeAddress): Cell Address
 
+        Returns:
+            None:
+
         :events:
            .. include:: ../../resources/global/printing_events.rst
 
@@ -4163,6 +4152,9 @@ class Calc:
     def print_addresses(cls, *cr_addrs: CellRangeAddress) -> None:
         """
         Prints Address for one or more CellRangeAddress
+
+        Returns:
+            None:
 
         :events:
            .. include:: ../../resources/global/printing_events.rst
@@ -5047,8 +5039,6 @@ class Calc:
 
             Event args ``event_data`` is a dictionary containing ``color`` and ``border_vals``.
 
-            Event arg properties modified on CELLS_BORDER_ADDING it is reflected in this method.
-
         See Also:
             :py:meth:`~.calc.Calc.remove_border`
             :py:meth:`~.calc.Calc.highlight_range`
@@ -5428,8 +5418,6 @@ class Calc:
 
             Event args ``event_data`` is a dictionary containing ``color`` and ``headline``.
 
-            Event arg properties modified on CELLS_HIGH_LIGHTING it is reflected in this method.
-
         See Also:
             :py:meth:`~.calc.Calc.add_border`
         """
@@ -5525,8 +5513,6 @@ class Calc:
 
         Note:
             Event args ``index`` is set to ``idx`` value, ``event_data`` is set to ``width`` value.
-
-            Event arg properties modified on SHEET_COL_WIDTH_SETTING it is reflected in this method.
         """
         cargs = SheetCancelArgs(Calc.set_col_width.__qualname__)
         cargs.sheet = sheet
@@ -5572,8 +5558,6 @@ class Calc:
 
         Note:
             Event args ``index`` is set to ``idx`` value, ``event_data`` is set to ``height`` value.
-
-            Event arg properties modified on SHEET_ROW_HEIGHT_SETTING it is reflected in this method.
         """
         cargs = SheetCancelArgs(Calc.set_row_height.__qualname__)
         cargs.sheet = sheet
@@ -5932,6 +5916,9 @@ class Calc:
         Args:
             func_name (str): Function name
 
+        Returns:
+            None:
+
         :events:
            .. include:: ../../resources/global/printing_events.rst
 
@@ -5956,6 +5943,9 @@ class Calc:
 
         Args:
             prop_vals (Sequence[PropertyValue]): Property values
+
+        Returns:
+            None:
 
         :events:
            .. include:: ../../resources/global/printing_events.rst
@@ -6296,8 +6286,12 @@ class Calc:
             title (str): Title printed to console
             hfc (XHeaderFooterContent): Content
 
+        Returns:
+            None:
+
         :events:
            .. include:: ../../resources/global/printing_events.rst
+
 
         Note:
             .. include:: ../../resources/global/printing_note.rst

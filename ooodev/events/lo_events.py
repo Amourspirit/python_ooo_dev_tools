@@ -12,6 +12,7 @@ from ..utils.type_var import EventCallback as EventCallback
 from ..proto import event_observer
 from . import event_singleton
 
+
 class EventArg(NamedTuple):
     """
     Event Arg for passing event to :py:func:`~.event_ctx`
@@ -23,6 +24,7 @@ class EventArg(NamedTuple):
     """
     Event Callback
     """
+
 
 class _event_base(object):
     """Base events class"""
@@ -77,7 +79,7 @@ class _event_base(object):
         Args:
             event_name (str): Name of event to trigger
             event_args (EventArgs): Event args passed to the callback for trigger.
-        
+
         Note:
             Events are removed automatically when they are out of scope.
         """
@@ -135,9 +137,12 @@ class LoEvents(_event_base):
     def add_observer(self, *args: event_observer.EventObserver) -> None:
         """
         Adds observers that gets their ``trigger`` method called when this class ``trigger`` method is called.
-        
+
         Parameters:
             args (EventObserver): One or more observers to add.
+
+        Returns:
+            None:
 
         Note:
             Observers are removed automatically when they are out of scope.
@@ -168,7 +173,6 @@ class LoEvents(_event_base):
                     self._observers.pop(i)
 
 
-
 @contextlib.contextmanager
 def event_ctx(*args: EventArg) -> Generator[event_observer.EventObserver, None, None]:
     """
@@ -195,13 +199,14 @@ def event_ctx(*args: EventArg) -> Generator[event_observer.EventObserver, None, 
         e_obj = None
         _ = None  # just to make sure _ is not a ref to e_obj
 
+
 def is_meth_event(source: str, meth: callable) -> bool:
     """
     Gets if event source is the same as meth.
     This method for for core events.
 
     Args:
-        event (str): source as str
+        source (str): source as str
         meth (callable): method to test.
 
     Returns:

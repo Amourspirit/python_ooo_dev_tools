@@ -12,13 +12,18 @@
 #
 import os
 import sys
+from pathlib import Path
 
-sys.path.insert(0, os.path.abspath(".."))
+_ROOT_PATH = os.path.abspath("..")
+
+sys.path.insert(0, _ROOT_PATH)
 from ooodev import __version__
 
 os.environ["DOCS_BUILDING"] = "True"
 os.environ["ooouno_ignore_runtime"] = "True"
 # os.environ["ooouno_ignore_import_error"] = "True"
+
+
 
 # -- Project information -----------------------------------------------------
 
@@ -41,6 +46,7 @@ extensions = [
     "sphinx_rtd_theme",
     "sphinx_rtd_dark_mode",
     "sphinx.ext.autodoc",
+    "sphinx.ext.viewcode",
     "sphinx_toolbox.collapse",
     "sphinx_toolbox.more_autodoc.autonamedtuple",
     "sphinx_toolbox.more_autodoc.typevars",
@@ -48,6 +54,9 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx_autodoc_typehints",
 ]
+    # "sphinx.ext.linkcode",
+    
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 
@@ -133,3 +142,17 @@ rst_prolog = """
 .. role:: eventref(ref)
 """
 
+# region Not currently Used
+
+# Add external links to source code
+
+def get_active_branch_name():
+
+    head_dir = Path(_ROOT_PATH) / ".git" / "HEAD"
+    with head_dir.open("r") as f: content = f.read().splitlines()
+
+    for line in content:
+        if line[0:4] == "ref:":
+            return line.partition("refs/heads/")[2]
+
+# endregion Not currently Used

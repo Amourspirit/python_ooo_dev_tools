@@ -953,6 +953,9 @@ class Write(mSel.Selection):
             pos (int): Number of postiions to go left
             color (Color): RGB color as int to apply
 
+        Returns:
+            None:
+
         See Also:
             :py:class:`~.utils.color.CommonColor`
         """
@@ -967,6 +970,9 @@ class Write(mSel.Selection):
         Args:
             cursor (XTextCursor): Text Cursor
             pos (int): Number of postiions to go left
+
+        Returns:
+            None:
 
         Note:
             The font applied is determined by :py:meth:`.Info.get_font_mono_name`
@@ -1015,6 +1021,9 @@ class Write(mSel.Selection):
             frame (XFrame, optional): Frame to dispatch to.
             toggle (bool, optional): If True then dispatch will be preformed on selection
                 and again when deselected. Defaults to False.
+
+        Returns:
+            None:
 
         Note:
             Some commands such as ``DefaultNumbering`` require toggling. In such cases
