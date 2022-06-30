@@ -2385,7 +2385,7 @@ class Write(mSel.Selection):
         Args:
             cd_lst (XConversionDictionaryList): conversion dictionary list
         """
-        cargs = CancelEventArgs(Write)
+        cargs = CancelEventArgs(Write.print_con_dicts_info)
         _Events().trigger(GblNamedEvent.PRINTING, cargs)
         if cargs.cancel:
             return

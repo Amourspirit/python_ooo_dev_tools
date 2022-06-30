@@ -501,7 +501,7 @@ class Lo(metaclass=StaticProperty):
 
                 - :py:attr:`~.events.lo_named_event.LoNamedEvent.OFFICE_LOADING` :eventref:`src-docs-event-cancel`
                 - :py:attr:`~.events.lo_named_event.LoNamedEvent.OFFICE_LOADED` :eventref:`src-docs-event`
-        
+
         Note:
            Event args ``event_data`` is a dictionary containing all method parameters.
 
@@ -514,9 +514,9 @@ class Lo(metaclass=StaticProperty):
         #                     component loader (XComponentLoader)
         # Once we have a component loader, we can load a document.
         # xcc, mcFactory, and xDesktop are stored as static globals.
-        
+
         cargs = CancelEventArgs(Lo.load_office)
-        
+
         cargs.event_data = {
             "host": "localhost",
             "port": 2002,
@@ -534,7 +534,7 @@ class Lo(metaclass=StaticProperty):
 
         using_pipes = bool(cargs.event_data["pipes"])
         using_direct = bool(cargs.event_data["direct"])
-        
+
         host = str(cargs.event_data["host"])
         port = int(cargs.event_data["port"])
 
@@ -582,17 +582,17 @@ class Lo(metaclass=StaticProperty):
     def close_office(cls) -> bool:
         """
         Closes the ofice connection.
-        
+
         Returns:
             bool: True if office is closed; Otherwise, False
-        
-        "events:
+
+        :events:
             .. cssclass:: lo_event
 
                 - :py:attr:`~.events.lo_named_event.LoNamedEvent.OFFICE_CLOSING` :eventref:`src-docs-event-cancel`
                 - :py:attr:`~.events.lo_named_event.LoNamedEvent.OFFICE_CLOSED` :eventref:`src-docs-event`
         """
-        print("Closing Office")
+        Lo.print("Closing Office")
 
         cargs = CancelEventArgs(Lo.close_office)
         _Events().trigger(LoNamedEvent.OFFICE_CLOSING, cargs)
@@ -677,12 +677,12 @@ class Lo(metaclass=StaticProperty):
         See Also:
             - :py:meth:`~Lo.open_doc`
             - :py:meth:`~Lo.open_readonly_doc`
-        
+
         Attention:
             :py:meth:`~.utils.lo.Lo.open_doc` method is called along with any of its events.
         """
         nn = mXML.XML.get_flat_fiter_name(doc_type=doc_type)
-        print(f"Flat filter Name: {nn}")
+        Lo.print(f"Flat filter Name: {nn}")
         # do not set Hidden=True property here.
         # there is a strange error that pops up conditionally and it seems
         # to be remedied by not seting Hidden=True
@@ -753,7 +753,7 @@ class Lo(metaclass=StaticProperty):
 
                 - :py:attr:`~.events.lo_named_event.LoNamedEvent.DOC_OPENING` :eventref:`src-docs-event-cancel`
                 - :py:attr:`~.events.lo_named_event.LoNamedEvent.DOC_OPENED` :eventref:`src-docs-event`
-        
+
         Note:
            Event args ``event_data`` is a dictionary containing all method parameters.
 
@@ -761,12 +761,12 @@ class Lo(metaclass=StaticProperty):
             * :py:meth:`~Lo.open_readonly_doc`
             * :py:meth:`~Lo.open_flat_doc`
             * :py:meth:`load_office`
-        
+
         Example:
             .. code-block:: python
-            
+
                 from ooodev.utils.lo import Lo
-                
+
                 # connect to office
                 with Lo.Loader() as loader:
                     doc = Lo.open_doc("/home/user/fancy.odt", loader)
@@ -796,12 +796,12 @@ class Lo(metaclass=StaticProperty):
         open_file_url = None
         if not mFileIO.FileIO.is_openable(fnm):
             if cls.is_url(fnm):
-                print(f"Will treat filename as a URL: '{fnm}'")
+                Lo.print(f"Will treat filename as a URL: '{fnm}'")
                 open_file_url = fnm
             else:
                 raise Exception(f"Unable to get url from file: {fnm}")
         else:
-            print(f"Opening {fnm}")
+            Lo.print(f"Opening {fnm}")
             open_file_url = mFileIO.FileIO.fnm_to_url(fnm)
 
         try:
@@ -831,7 +831,7 @@ class Lo(metaclass=StaticProperty):
         See Also:
             * :py:meth:`~Lo.open_doc`
             * :py:meth:`~Lo.open_flat_doc`
-        
+
         Attention:
             :py:meth:`~.utils.lo.Lo.open_doc` method is called along with any of its events.
         """
@@ -852,7 +852,7 @@ class Lo(metaclass=StaticProperty):
         """
         e = ext.casefold().lstrip(".")
         if e == "":
-            print("Empty string: Using writer")
+            Lo.print("Empty string: Using writer")
             return cls.DocTypeStr.WRITER
         if e == "odt":
             return cls.DocTypeStr.WRITER
@@ -867,7 +867,7 @@ class Lo(metaclass=StaticProperty):
         elif e == "odf":
             return cls.DocTypeStr.MATH
         else:
-            print(f"Do not recognize extension '{ext}'; using writer")
+            Lo.print(f"Do not recognize extension '{ext}'; using writer")
             return cls.DocTypeStr.WRITER
 
     @classmethod
@@ -894,7 +894,7 @@ class Lo(metaclass=StaticProperty):
         elif doc_type_val == cls.DocType.MATH:
             return cls.DocTypeStr.MATH
         else:
-            print(f"Do not recognize extension '{doc_type_val}'; using writer")
+            Lo.print(f"Do not recognize extension '{doc_type_val}'; using writer")
             return cls.DocTypeStr.WRITER
 
     @overload
@@ -954,13 +954,13 @@ class Lo(metaclass=StaticProperty):
 
         Returns:
             XComponent: document as component.
-        
+
         :events:
             .. cssclass:: lo_event
 
                 - :py:attr:`~.events.lo_named_event.LoNamedEvent.DOC_CREATING` :eventref:`src-docs-event-cancel`
                 - :py:attr:`~.events.lo_named_event.LoNamedEvent.DOC_CREATED` :eventref:`src-docs-event`
-        
+
         Note:
            Event args ``event_data`` is a dictionary containing all method parameters.
         """
@@ -968,7 +968,7 @@ class Lo(metaclass=StaticProperty):
         cargs = CancelEventArgs(Lo.create_doc)
         cargs.event_data = {
             "doc_type": doc_type,
-            "loader": loader, 
+            "loader": loader,
             "props": props,
         }
         eargs = EventArgs.from_args(cargs)
@@ -976,11 +976,11 @@ class Lo(metaclass=StaticProperty):
         _Events().trigger(LoNamedEvent.DOC_CREATING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
-        
+
         dtype = Lo.DocTypeStr(cargs.event_data["doc_type"])
         if props is None:
             props = mProps.Props.make_props(Hidden=True)
-        print(f"Creating Office document {dtype}")
+        Lo.print(f"Creating Office document {dtype}")
         try:
             doc = loader.loadComponentFromURL(f"private:factory/{dtype}", "_blank", 0, props)
             cls._ms_factory = cls.qi(XMultiServiceFactory, doc)
@@ -1003,7 +1003,7 @@ class Lo(metaclass=StaticProperty):
 
         Returns:
             XComponent: document as component.
-        
+
         Attention:
             :py:meth:`~.utils.lo.Lo.create_doc` method is called along with any of its events.
         """
@@ -1028,13 +1028,13 @@ class Lo(metaclass=StaticProperty):
         Returns:
             XComponent: document as component.
         """
-        cargs = CancelEventArgs(cls)
+        cargs = CancelEventArgs(Lo.create_doc_from_template)
         _Events().trigger(LoNamedEvent.DOC_CREATING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
         if not mFileIO.FileIO.is_openable(template_path):
             raise Exception(f"Template file can not be opened: '{template_path}'")
-        print(f"Opening template: '{template_path}'")
+        Lo.print(f"Opening template: '{template_path}'")
         template_url = mFileIO.FileIO.fnm_to_url(fnm=template_path)
 
         props = mProps.Props.make_props(Hidden=True, AsTemplate=True)
@@ -1043,7 +1043,7 @@ class Lo(metaclass=StaticProperty):
             cls._ms_factory = cls.qi(XMultiServiceFactory, cls._doc)
             if cls._ms_factory is None:
                 raise mEx.MissingInterfaceError(XMultiServiceFactory)
-            _Events().trigger(LoNamedEvent.DOC_CREATED, EventArgs(cls))
+            _Events().trigger(LoNamedEvent.DOC_CREATED, EventArgs.from_args(cargs))
             return cls._doc
         except Exception as e:
             raise Exception(f"Could not create document from template") from e
@@ -1078,19 +1078,19 @@ class Lo(metaclass=StaticProperty):
         cargs.event_data = {"doc": doc}
         _Events().trigger(LoNamedEvent.DOC_SAVING, cargs)
         if cargs.cancel:
-            raise mEx.CancelEventError(cargs)
+            return False
 
-        store = cls.qi(XStorable, doc)
-        if store is None:
-            raise mEx.MissingInterfaceError(XStorable)
+        store = cls.qi(XStorable, doc, True)
         try:
             store.store()
             cls.print("Saved the document by overwriting")
         except IOException as e:
             raise Exception(f"Could not save the document") from e
-        
-        _Events().trigger(LoNamedEvent.DOC_SAVED, EventArgs(cls))
+
+        _Events().trigger(LoNamedEvent.DOC_SAVED, EventArgs.from_args(cargs))
         return True
+
+    # region    save_doc()
 
     @overload
     @classmethod
@@ -1101,7 +1101,7 @@ class Lo(metaclass=StaticProperty):
         Args:
             doc (object): Office document
             fnm (PathOrStr): file path to save as
-        
+
         Returns:
             bool: False if DOC_SAVING event is canceled; Otherwise, True
         """
@@ -1117,8 +1117,8 @@ class Lo(metaclass=StaticProperty):
             doc (object): Office document
             fnm (PathOrStr): file path to save as
             password (str): Optional password
-        
-        
+
+
         Returns:
             bool: False if DOC_SAVING event is canceled; Otherwise, True
         """
@@ -1135,7 +1135,7 @@ class Lo(metaclass=StaticProperty):
             fnm (PathOrStr): file path to save as
             password (str): Optional password
             format (str): _description_. Defaults to None.
-        
+
         Returns:
             bool: False if DOC_SAVING event is canceled; Otherwise, True
         """
@@ -1154,18 +1154,21 @@ class Lo(metaclass=StaticProperty):
 
         Raises:
             MissingInterfaceError: If doc does not implement XStorable interface
-        
+
         Returns:
             bool: False if DOC_SAVING event is canceled; Otherwise, True
-        
+
         :events:
             .. cssclass:: lo_event
 
                 - :py:attr:`~.events.lo_named_event.LoNamedEvent.DOC_SAVING` :eventref:`src-docs-event-cancel`
                 - :py:attr:`~.events.lo_named_event.LoNamedEvent.DOC_SAVED` :eventref:`src-docs-event`
-        
+
         Note:
            Event args ``event_data`` is a dictionary containing all method parameters.
+
+        Attention:
+            :py:meth:`~.utils.lo.Lo.store_doc` method is called along with any of its events.
         """
         cargs = CancelEventArgs(Lo.save_doc)
         cargs.event_data = {
@@ -1173,13 +1176,12 @@ class Lo(metaclass=StaticProperty):
             "fnm": fnm,
             "password": password,
             "format": format,
-            }
-        
+        }
+
         fnm = cargs.event_data["fnm"]
         password = cargs.event_data["password"]
         format = cargs.event_data["format"]
-        
-        
+
         _Events().trigger(LoNamedEvent.DOC_SAVING, cargs)
         if cargs.cancel:
             return False
@@ -1191,16 +1193,21 @@ class Lo(metaclass=StaticProperty):
         if password is not None:
             kargs["password"] = password
         if format is None:
-            cls.store_doc(**kargs)
+            result = cls.store_doc(**kargs)
         else:
             kargs["format"] = format
-            cls.store_doc_format(**kargs)
-        _Events().trigger(LoNamedEvent.DOC_SAVED, EventArgs(cls))
-        return True
+            result = cls.store_doc_format(**kargs)
+        if result:
+            _Events().trigger(LoNamedEvent.DOC_SAVED, EventArgs.from_args(cargs))
+        return result
+
+    # endregion save_doc()
+
+    # region    store_doc()
 
     @overload
     @classmethod
-    def store_doc(cls, store: XStorable, doc_type: DocType, fnm: PathOrStr) -> None:
+    def store_doc(cls, store: XStorable, doc_type: DocType, fnm: PathOrStr) -> bool:
         """
         Stores/Saves a document
 
@@ -1208,12 +1215,15 @@ class Lo(metaclass=StaticProperty):
             store (XStorable): instance that implements XStorable interface.
             doc_type (DocType): Document type
             fnm (PathOrStr): Path to save document as. If extension is absent then text (.txt) is assumed.
+
+        Returns:
+            bool: True if document is saved; Otherwise False
         """
         ...
 
     @overload
     @classmethod
-    def store_doc(cls, store: XStorable, doc_type: DocType, fnm: PathOrStr, password: str) -> None:
+    def store_doc(cls, store: XStorable, doc_type: DocType, fnm: PathOrStr, password: str) -> bool:
         """
         Stores/Saves a document
 
@@ -1222,11 +1232,14 @@ class Lo(metaclass=StaticProperty):
             doc_type (DocType): Document type
             fnm (PathOrStr): Path to save document as. If extension is absent then text (.txt) is assumed.
             password (str): Password for document.
+
+        Returns:
+            bool: True if document is saved; Otherwise False
         """
         ...
 
     @classmethod
-    def store_doc(cls, store: XStorable, doc_type: Lo.DocType, fnm: PathOrStr, password: Optional[str] = None) -> None:
+    def store_doc(cls, store: XStorable, doc_type: Lo.DocType, fnm: PathOrStr, password: Optional[str] = None) -> bool:
         """
         Stores/Saves a document
 
@@ -1235,22 +1248,46 @@ class Lo(metaclass=StaticProperty):
             doc_type (DocType): Document type
             fnm (PathOrStr): Path to save document as. If extension is absent then text (.txt) is assumed.
             password (str): Password for document.
+
+        Returns:
+            bool: True if document is saved; Otherwise False
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.lo_named_event.LoNamedEvent.DOC_STORING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.lo_named_event.LoNamedEvent.DOC_STORED` :eventref:`src-docs-event`
+
+        Note:
+           Event args ``event_data`` is a dictionary containing all method parameters.
+
+        See Also:
+            :py:meth:`~.Lo.store_doc_format`
         """
-        cargs = CancelEventArgs(cls)
-        _Events().trigger(LoNamedEvent.DOC_SAVING, cargs)
+        cargs = CancelEventArgs(Lo.store_doc)
+        cargs.event_data = {
+            "store": store,
+            "doc_type": doc_type,
+            "fnm": fnm,
+            "password": password,
+        }
+        _Events().trigger(LoNamedEvent.DOC_STORING, cargs)
         if cargs.cancel:
-            raise mEx.CancelEventError(cargs)
+            return False
         ext = mInfo.Info.get_ext(fnm)
         frmt = "Text"
         if ext is None:
-            print("Assuming a text format")
+            Lo.print("Assuming a text format")
         else:
             frmt = cls.ext_to_format(ext=ext, doc_type=doc_type)
         if password is None:
             cls.store_doc_format(store=store, fnm=fnm, format=frmt)
         else:
             cls.store_doc_format(store=store, fnm=fnm, format=frmt, password=password)
-        _Events().trigger(LoNamedEvent.DOC_SAVED, EventArgs(cls))
+        _Events().trigger(LoNamedEvent.DOC_STORED, EventArgs.from_args(cargs))
+        return True
+
+    # endregion  store_doc()
 
     @overload
     @classmethod
@@ -1401,14 +1438,14 @@ class Lo(metaclass=StaticProperty):
                 return "OpenDocument Text Flat XML"
 
         else:
-            print(f"Do not recognize extension '{ext}'; using text")
+            Lo.print(f"Do not recognize extension '{ext}'; using text")
             return "Text"
 
     # region    store_doc_format()
 
     @overload
     @classmethod
-    def store_doc_format(cls, store: XStorable, fnm: PathOrStr, format: str) -> None:
+    def store_doc_format(cls, store: XStorable, fnm: PathOrStr, format: str) -> bool:
         """
         Store document as format.
 
@@ -1419,12 +1456,15 @@ class Lo(metaclass=StaticProperty):
 
         Raises:
             Exception: If unable to save document
+
+        Returns:
+            bool: True if document is stored; Otherwise False
         """
         ...
 
     @overload
     @classmethod
-    def store_doc_format(cls, store: XStorable, fnm: PathOrStr, format: str, password: str) -> None:
+    def store_doc_format(cls, store: XStorable, fnm: PathOrStr, format: str, password: str) -> bool:
         """
         Store document as format.
 
@@ -1436,11 +1476,14 @@ class Lo(metaclass=StaticProperty):
 
         Raises:
             Exception: If unable to save document
+
+        Returns:
+            bool: True if document is stored; Otherwise False
         """
         ...
 
     @classmethod
-    def store_doc_format(cls, store: XStorable, fnm: PathOrStr, format: str, password: str = None) -> None:
+    def store_doc_format(cls, store: XStorable, fnm: PathOrStr, format: str, password: str = None) -> bool:
         """
         Store document as format.
 
@@ -1452,13 +1495,34 @@ class Lo(metaclass=StaticProperty):
 
         Raises:
             Exception: If unable to save document
+
+        Returns:
+            bool: True if document is stored; Otherwise False
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.lo_named_event.LoNamedEvent.DOC_STORING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.lo_named_event.LoNamedEvent.DOC_STORED` :eventref:`src-docs-event`
+
+        Note:
+           Event args ``event_data`` is a dictionary containing all method parameters.
+
+        See Also:
+            :py:meth:`~.Lo.store_doc`
         """
-        cargs = CancelEventArgs(cls)
-        _Events().trigger(LoNamedEvent.DOC_SAVING, cargs)
+        cargs = CancelEventArgs(Lo.store_doc_format)
+        cargs.event_data = {
+            "store": store,
+            "format": format,
+            "fnm": fnm,
+            "password": password,
+        }
+        _Events().trigger(LoNamedEvent.DOC_STORING, cargs)
         if cargs.cancel:
-            raise mEx.CancelEventError(cargs)
-        print(f"Saving the document in '{fnm}'")
-        print(f"Using format {format}")
+            return False
+        Lo.print(f"Saving the document in '{fnm}'")
+        Lo.print(f"Using format {format}")
 
         try:
             save_file_url = mFileIO.FileIO.fnm_to_url(fnm)
@@ -1467,9 +1531,10 @@ class Lo(metaclass=StaticProperty):
             else:
                 store_props = mProps.Props.make_props(Overwrite=True, FilterName=format, Password=password)
             store.storeToURL(save_file_url, store_props)
-            _Events().trigger(LoNamedEvent.DOC_SAVED, EventArgs(cls))
         except IOException as e:
             raise Exception(f"Could not save '{fnm}'") from e
+        _Events().trigger(LoNamedEvent.DOC_STORED, EventArgs.from_args(cargs))
+        return True
 
     # endregion store_doc_format()
 
@@ -1529,7 +1594,7 @@ class Lo(metaclass=StaticProperty):
                 - :py:attr:`~.events.lo_named_event.LoNamedEvent.DOC_CLOSING` :eventref:`src-docs-event-cancel`
                 - :py:attr:`~.events.lo_named_event.LoNamedEvent.DOC_CLOSED` :eventref:`src-docs-event`
         """
-        cargs = CancelEventArgs(cls)
+        cargs = CancelEventArgs(Lo.close)
         cargs.event_data = deliver_ownership
         _Events().trigger(LoNamedEvent.DOC_CLOSING, cargs)
         if cargs.cancel:
@@ -1588,6 +1653,9 @@ class Lo(metaclass=StaticProperty):
 
         Raises:
             MissingInterfaceError: if doc does not have XCloseable interface
+
+         Attention:
+            :py:meth:`~.utils.lo.Lo.close` method is called along with any of its events.
         """
         try:
             closeable = cls.qi(XCloseable, doc)
@@ -1613,14 +1681,25 @@ class Lo(metaclass=StaticProperty):
             Exception: If unable to get service manager from addon_xcc
             Exception: If unable to access desktop
             Exception: If unable to access document
-            MissingInterfaceError: if unable to get XMultiServiceFactory interface instance
+            MissingInterfaceError: If unable to get XMultiServiceFactory interface instance
+            CancelEventError: If DOC_OPENING is canceled
 
         Returns:
             XComponent: addon as component
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.lo_named_event.LoNamedEvent.DOC_OPENING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.lo_named_event.LoNamedEvent.DOC_OPENED` :eventref:`src-docs-event`
+
+        Note:
+           Event args ``event_data`` is a dictionary containing all method parameters.
         """
-        eargs = EventArgs(cls)
+        cargs = CancelEventArgs(Lo.addon_initialize)
+        cargs.event_data = {"addon_xcc": addon_xcc}
+        eargs = EventArgs.from_args(cargs)
         _Events().trigger(LoNamedEvent.RESET, eargs)
-        cargs = CancelEventArgs(cls)
         _Events().trigger(LoNamedEvent.DOC_OPENING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
@@ -1662,11 +1741,22 @@ class Lo(metaclass=StaticProperty):
             Exception: If unable to access desktop
             Exception: If unable to access document
             MissingInterfaceError: if unable to get XMultiServiceFactory interface instance
+
         Returns:
             XComponent: script component
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.lo_named_event.LoNamedEvent.DOC_OPENING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.lo_named_event.LoNamedEvent.DOC_OPENED` :eventref:`src-docs-event`
+
+        Note:
+           Event args ``event_data`` is a dictionary containing all method parameters.
         """
-        cargs = CancelEventArgs(cls)
-        eargs = EventArgs(cls)
+        cargs = CancelEventArgs(Lo.script_initialize)
+        cargs.event_data = {"sc": sc}
+        eargs = EventArgs.from_args(cargs)
         _Events().trigger(LoNamedEvent.RESET, eargs)
         _Events().trigger(LoNamedEvent.DOC_OPENING, cargs)
         if cargs.cancel:
@@ -1756,13 +1846,19 @@ class Lo(metaclass=StaticProperty):
         Returns:
             bool: True on success.
 
+         :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.lo_named_event.LoNamedEvent.DISPATCHING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.lo_named_event.LoNamedEvent.DISPATCHED` :eventref:`src-docs-event`
+
         See Also:
             `LibreOffice Dispatch Commands <https://wiki.documentfoundation.org/Development/DispatchCommands>`_
         """
-        cargs = DispatchCancelArgs(cls, cmd)
+        cargs = DispatchCancelArgs(Lo.dispatch_cmd, cmd)
         _Events().trigger(LoNamedEvent.DISPATCHING, cargs)
         if cargs.cancel:
-            raise mEx.CancelEventError(cargs)
+            return False
 
         if props is None:
             props = ()
@@ -1774,7 +1870,7 @@ class Lo(metaclass=StaticProperty):
             raise mEx.MissingInterfaceError(XDispatchHelper, f"Could not create dispatch helper for command {cmd}")
         try:
             helper.executeDispatch(frame, f".uno:{cmd}", "", 0, props)
-            _Events().trigger(LoNamedEvent.DISPATCHED, DispatchArgs(cls, cmd))
+            _Events().trigger(LoNamedEvent.DISPATCHED, DispatchArgs.from_args(cargs))
             return True
         except Exception as e:
             raise Exception(f"Could not dispatch '{cmd}'") from e
@@ -1830,7 +1926,7 @@ class Lo(metaclass=StaticProperty):
             obj (object): object to inspect.
         """
         if cls._xcc is None or cls._mc_factory is None:
-            print("No office connection found")
+            Lo.print("No office connection found")
             return
         try:
             ts = mInfo.Info.get_interface_types(obj)
@@ -1840,18 +1936,18 @@ class Lo(metaclass=StaticProperty):
             inspector = cls._mc_factory.createInstanceWithContext("org.openoffice.InstanceInspector", cls._xcc)
             #       hands on second use
             if inspector is None:
-                print("Inspector Service could not be instantiated")
+                Lo.print("Inspector Service could not be instantiated")
                 return
-            print("Inspector Service instantiated")
+            Lo.print("Inspector Service instantiated")
             intro = cls.create_instance_mcf(XIntrospection, "com.sun.star.beans.Introspection")
             intro_acc = intro.inspect(inspector)
             method = intro_acc.getMethod("inspect", -1)
-            print(f"inspect() method was found: {method is not None}")
+            Lo.print(f"inspect() method was found: {method is not None}")
             params = [[obj, title]]
             method.invoke(inspector, params)
         except Exception as e:
-            print("Could not access Inspector:")
-            print(f"    {e}")
+            Lo.print("Could not access Inspector:")
+            Lo.print(f"    {e}")
 
     @classmethod
     def mri_inspect(cls, obj: object) -> None:
@@ -1874,7 +1970,7 @@ class Lo(metaclass=StaticProperty):
         xi = cls.create_instance_mcf(XIntrospection, "mytools.Mri")
         if xi is None:
             raise Exception("MRI Inspector Service could not be instantiated")
-        print("MRI Inspector Service instantiated")
+        Lo.print("MRI Inspector Service instantiated")
         xi.inspect(obj)
 
     # ------------------ color methods ---------------------
@@ -1891,7 +1987,7 @@ class Lo(metaclass=StaticProperty):
             ms (int): Number of milli-seconds to delay
         """
         if ms <= 0:
-            print("Ms must be greater then zero")
+            Lo.print("Ms must be greater then zero")
             return
         sec = ms / 1000
         time.sleep(sec)
@@ -1969,7 +2065,7 @@ class Lo(metaclass=StaticProperty):
         try:
             return int(s)
         except ValueError:
-            print(f"{s} could not be parsed as an int; using 0")
+            Lo.print(f"{s} could not be parsed as an int; using 0")
         return 0
 
     @overload
@@ -2004,6 +2100,10 @@ class Lo(metaclass=StaticProperty):
             names (Iterable[str]): names to print
             num_per_line (int): Number of names per line.
         """
+        cargs = CancelEventArgs(Lo.print_names)
+        _Events().trigger(GblNamedEvent.PRINTING, cargs)
+        if cargs.cancel:
+            return
         if names is None:
             print("  No names found")
             return
@@ -2029,6 +2129,10 @@ class Lo(metaclass=StaticProperty):
             name (str): Name of table
             table (List[List[str]]): Table Data
         """
+        cargs = CancelEventArgs(Lo.print_table)
+        _Events().trigger(GblNamedEvent.PRINTING, cargs)
+        if cargs.cancel:
+            return
         print(f"-- {name} ----------------")
         for row in table:
             col_str = "  ".join([str(el) for el in row])
@@ -2047,11 +2151,11 @@ class Lo(metaclass=StaticProperty):
             List[str] | None: Containor name is found; Otherwise, None
         """
         if con is None:
-            print("Container is null")
+            Lo.print("Container is null")
             return None
         num_el = con.getCount()
         if num_el == 0:
-            print("No elements in the container")
+            Lo.print("No elements in the container")
             return None
 
         names_list = []
@@ -2060,7 +2164,7 @@ class Lo(metaclass=StaticProperty):
             names_list.append(named.getName())
 
         if len(names_list) == 0:
-            print("No element names found in the container")
+            Lo.print("No element names found in the container")
             return None
         return names_list
 
@@ -2088,8 +2192,8 @@ class Lo(metaclass=StaticProperty):
                 if named and named.getName() == nm:
                     return cls.qi(XPropertySet, el)
             except Exception:
-                print(f"Could not access element {i}")
-        print(f"Could not find a '{nm}' property set in the container")
+                cls.print(f"Could not access element {i}")
+        cls.print(f"Could not find a '{nm}' property set in the container")
         return None
 
     @classmethod
@@ -2148,7 +2252,7 @@ class Lo(metaclass=StaticProperty):
         # return cls.qi(XModel, cls._doc)
 
     @classmethod
-    def lock_controllers(cls) -> None:
+    def lock_controllers(cls) -> bool:
         """
         Suspends some notifications to the controllers which are used for display updates.
 
@@ -2157,20 +2261,34 @@ class Lo(metaclass=StaticProperty):
         While there is at least one lock remaining, some notifications for
         display updates are not broadcasted.
 
+        Raises:
+            MissingInterfaceError: If unable to obtain XModel interface.
+
+        Returns:
+            bool: False if CONTROLERS_LOCKING event is canceled; Otherwise, True
+
+         :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.lo_named_event.LoNamedEvent.CONTROLERS_LOCKING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.lo_named_event.LoNamedEvent.CONTROLERS_LOCKED` :eventref:`src-docs-event`
+
         See Also:
             :py:class:`.Lo.ControllerLock`
+
         """
         # much faster updates as screen is basically suspended
-        cargs = CancelEventArgs(cls)
-        _Events().trigger("locking_controlers", cargs)
+        cargs = CancelEventArgs(Lo.lock_controllers)
+        _Events().trigger(LoNamedEvent.CONTROLERS_LOCKING, cargs)
         if cargs.cancel:
-            raise mEx.CancelEventError(cargs)
-        xmodel = cls.qi(XModel, cls._doc)
+            return False
+        xmodel = cls.qi(XModel, cls._doc, True)
         xmodel.lockControllers()
-        _Events().trigger("locked_controlers", EventArgs(cls))
+        _Events().trigger(LoNamedEvent.CONTROLERS_LOCKED, EventArgs(cls))
+        return True
 
     @classmethod
-    def unlock_controllers(cls) -> None:
+    def unlock_controllers(cls) -> uno.Bool:
         """
         Resumes the notifications which were suspended by:py:meth:`~.lo.Lo.lock_controllers`.
 
@@ -2179,17 +2297,30 @@ class Lo(metaclass=StaticProperty):
         While there is at least one lock remaining, some notifications for
         display updates are not broadcasted.
 
+        Raises:
+            MissingInterfaceError: If unable to obtain XModel interface.
+
+        Returns:
+            bool: False if CONTROLERS_UNLOCKING event is canceled; Otherwise, True
+
+         :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.lo_named_event.LoNamedEvent.CONTROLERS_UNLOCKING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.lo_named_event.LoNamedEvent.CONTROLERS_UNLOCKED` :eventref:`src-docs-event`
+
         See Also:
             :py:class:`.Lo.ControllerLock`
         """
-        cargs = CancelEventArgs(cls)
-        _Events().trigger("unlocking_controlers", cargs)
+        cargs = CancelEventArgs(Lo.unlock_controllers)
+        _Events().trigger(LoNamedEvent.CONTROLERS_UNLOCKING, cargs)
         if cargs.cancel:
-            raise mEx.CancelEventError(cargs)
-        xmodel = cls.qi(XModel, cls._doc)
+            return False
+        xmodel = cls.qi(XModel, cls._doc, True)
         if xmodel.hasControllersLocked():
             xmodel.unlockControllers()
-        _Events().trigger("unlocked_controlers", EventArgs(cls))
+        _Events().trigger(LoNamedEvent.CONTROLERS_UNLOCKED, EventArgs.from_args(cargs))
+        return True
 
     @classmethod
     def has_controllers_locked(cls) -> bool:
@@ -2222,7 +2353,7 @@ class Lo(metaclass=StaticProperty):
         Note:
             .. include:: ../../resources/global/printing_note.rst
         """
-        cargs = CancelEventArgs(Lo)
+        cargs = CancelEventArgs(Lo.print)
         _Events().trigger(GblNamedEvent.PRINTING, cargs)
         if cargs.cancel:
             return
@@ -2245,7 +2376,7 @@ class Lo(metaclass=StaticProperty):
             return cls.__null_date
         except AttributeError:
             if cls._doc is None:
-                print("No document found returning 1889/12/30")
+                Lo.print("No document found returning 1889/12/30")
                 return datetime(year=1889, month=12, day=30, tzinfo=timezone.utc)
             n_supplier = cls.qi(XNumberFormatsSupplier, cls._doc)
             number_settings = n_supplier.getNumberFormatSettings()

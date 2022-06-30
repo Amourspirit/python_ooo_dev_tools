@@ -42,6 +42,16 @@ class LoNamedEvent(NamedTuple):
     :py:meth:`Lo.save_doc() <.utils.lo.Lo.save_doc>`,
     """
     
+    DOC_STORING = "lo_doc_storing"
+    """Lo Storing document see
+    :py:meth:`Lo.store_doc() <.utils.lo.Lo.store_doc>`,
+    :py:meth:`Lo.store_doc_format() <.utils.lo.Lo.store_doc_format>`"""
+    DOC_STORED = "lo_doc_stored"
+    """Lo Stored document see
+    :py:meth:`Lo.store_doc() <.utils.lo.Lo.store_doc>`,
+    :py:meth:`Lo.store_doc_format() <.utils.lo.Lo.store_doc_format>`
+    """
+    
     OFFICE_LOADING = "lo_office_loading"
     """Lo loading see :py:meth:`Lo.load_office() <.utils.lo.Lo.load_office>`"""
     OFFICE_LOADED = "lo_office_loaded"
@@ -51,5 +61,15 @@ class LoNamedEvent(NamedTuple):
     """Lo closing office see :py:meth:`Lo.close_office() <.utils.lo.Lo.close_office>`"""
     OFFICE_CLOSED = "lo_office_closed"
     """Lo closed office see :py:meth:`Lo.close_office() <.utils.lo.Lo.close_office>`"""
+    
+    CONTROLERS_LOCKING = "lo_controllers_locking"
+    """Controllers Locking see :py:meth:`Lo.lock_controllers() <.utils.lo.Lo.lock_controllers>`"""
+    CONTROLERS_LOCKED = "lo_controllers_locked"
+    """Controlers Locked see :py:meth:`Lo.lock_controllers() <.utils.lo.Lo.lock_controllers>`"""
+    
+    CONTROLERS_UNLOCKING = "lo_controllers_unlocking"
+    """Controllers UnLocking see :py:meth:`Lo.unlock_controllers() <.utils.lo.Lo.unlock_controllers>`"""
+    CONTROLERS_UNLOCKED = "lo_controllers_unlocked"
+    """Controlers UnLocked see :py:meth:`Lo.unlock_controllers() <.utils.lo.Lo.unlock_controllers>`"""
     
     RESET = "lo_reset"

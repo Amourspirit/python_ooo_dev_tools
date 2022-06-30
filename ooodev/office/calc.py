@@ -181,8 +181,12 @@ class Calc:
 
                 - :py:attr:`~.events.calc_named_event.CalcNamedEvent.DOC_OPENING` :eventref:`src-docs-event-cancel`
                 - :py:attr:`~.events.calc_named_event.CalcNamedEvent.DOC_OPENED` :eventref:`src-docs-event`
+        
+        Note:
+           Event args ``event_data`` is a dictionary containing all method parameters.
         """
-        cargs = CancelEventArgs(cls)
+        cargs = CancelEventArgs(Calc.open_doc)
+        cargs.event_data = {"fnm": fnm, "loader": loader}
         _Events().trigger(CalcNamedEvent.DOC_OPENING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
@@ -255,10 +259,10 @@ class Calc:
             :py:meth:`~Calc.get_ss_doc`
 
         Note:
-            Event args ``event_data`` is set to ``loader``
+            Event args ``event_data`` is a dictionary containing ``loader``
         """
-        cargs = CancelEventArgs(Calc)
-        cargs.event_data = loader
+        cargs = CancelEventArgs(Calc.create_doc)
+        cargs.event_data = {"loader": loader}
         _Events().trigger(CalcNamedEvent.DOC_CREATING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
@@ -277,16 +281,21 @@ class Calc:
     @staticmethod
     def _get_sheet_index(doc: XSpreadsheetDocument, index: int) -> XSpreadsheet:
         """return the spreadsheet with the specified index (0-based)"""
-        cargs = SheetCancelArgs(Calc)
+        cargs = SheetCancelArgs(Calc.get_sheet)
         cargs.index = index
         cargs.doc = doc
-        cargs.event_data = "index"
+        cargs.event_data = {
+            "index": index,
+            "sheet_name": None
+            }
         _Events().trigger(CalcNamedEvent.SHEET_GETTING, cargs)
         if cargs.cancel:
             mEx.CancelEventError(cargs)
+
+        index = cargs.event_data["index"]
         sheets = cargs.doc.getSheets()
         try:
-            xsheets_idx = mLo.Lo.qi(XIndexAccess, sheets)
+            xsheets_idx = mLo.Lo.qi(XIndexAccess, sheets, True)
             sheet = mLo.Lo.qi(XSpreadsheet, xsheets_idx.getByIndex(cargs.index), raise_err=True)
             _Events().trigger(CalcNamedEvent.SHEET_GET, SheetArgs.from_args(cargs))
             return sheet
@@ -296,13 +305,17 @@ class Calc:
     @staticmethod
     def _get_sheet_name(doc: XSpreadsheetDocument, sheet_name: str) -> XSpreadsheet:
         """return the spreadsheet with the specified index (0-based)"""
-        cargs = SheetCancelArgs(Calc)
-        cargs.name = sheet_name
+        cargs = SheetCancelArgs(Calc.get_sheet)
+        cargs.event_data = {
+            "index": None,
+            "sheet_name": sheet_name
+            }
         cargs.doc = doc
-        cargs.event_data = "name"
         _Events().trigger(CalcNamedEvent.SHEET_GETTING, cargs)
         if cargs.cancel:
             mEx.CancelEventError(cargs)
+
+        sheet_name = cargs.event_data["sheet_name"]
         sheets = cargs.doc.getSheets()
         try:
             sheet = mLo.Lo.qi(XSpreadsheet, sheets.getByName(cargs.name), raise_err=True)
@@ -371,7 +384,8 @@ class Calc:
                 - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_GET` :eventref:`src-docs-sheet-event-get`
 
         Note:
-           If ``index`` is available then args ``event_data`` is set to a value of *"index"*; Otherwise, set to a value of *"name"*.
+           Event args ``event_data`` is a dictionary containing ``index`` and ``sheet_name``.
+           If ``index`` is available then ``sheet_name`` is none and if ``sheet_name`` is available then ``index`` is none.
 
            Event arg properties modified on SHEET_GETTING it is reflected in this method.
         """
@@ -437,22 +451,20 @@ class Calc:
         Note:
             Event arg properties modified on SHEET_INSERTING it is reflected in this method.
         """
-        cargs = SheetCancelArgs(Calc)
+        cargs = SheetCancelArgs(Calc.insert_sheet)
         cargs.name = name
         cargs.index = idx
         cargs.doc = doc
         _Events().trigger(CalcNamedEvent.SHEET_INSERTING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
+        name = cargs.name
+        idx = cargs.index
         sheets = cargs.doc.getSheets()
         try:
-            sheets.insertNewByName(cargs.name, cargs.index)
+            sheets.insertNewByName(name, idx)
             sheet = mLo.Lo.qi(XSpreadsheet, sheets.getByName(name), raise_err=True)
-            eargs = SheetArgs(Calc)
-            eargs.index = cargs.index
-            eargs.name = cargs.name
-            eargs.doc = cargs.doc
-            _Events().trigger(CalcNamedEvent.SHEET_INSERTED, eargs)
+            _Events().trigger(CalcNamedEvent.SHEET_INSERTED, SheetArgs.from_args(cargs))
             return sheet
         except Exception as e:
             raise Exception("Could not insert sheet:") from e
@@ -629,13 +641,15 @@ class Calc:
         _Events().trigger(CalcNamedEvent.SHEET_MOVING, cargs)
         if cargs.cancel:
             return False
+        name = cargs.name
+        idx = cargs.index
         sheets = cargs.doc.getSheets()
         num_sheets = len(sheets.getElementNames())
         result = False
-        if cargs.index < 0 or cargs.index >= num_sheets:
-            mLo.Lo.print(f"Index {cargs.index} is out of range.")
+        if idx < 0 or idx >= num_sheets:
+            mLo.Lo.print(f"Index {idx} is out of range.")
         else:
-            sheets.moveByName(cargs.name, cargs.index)
+            sheets.moveByName(name, idx)
             result = True
         if result is True:
             _Events().trigger(CalcNamedEvent.SHEET_MOVED, SheetArgs.from_args(cargs))
@@ -798,7 +812,7 @@ class Calc:
         Note:
             Event arg properties modified on SHEET_ACTIVATING it is reflected in this method.
         """
-        cargs = SheetCancelArgs(cls)
+        cargs = SheetCancelArgs(Calc.set_active_sheet)
         cargs.doc = doc
         cargs.sheet = sheet
         _Events().trigger(CalcNamedEvent.SHEET_ACTIVATING, cargs)
@@ -913,6 +927,9 @@ class Calc:
             cell_name (str): Cell Name such as 'B4'
             doc (XSpreadsheetDocument): Spreadsheet Document
             frame (XFrame): Spreadsheet frame.
+        
+        Attention:
+            :py:meth:`~.utils.lo.Lo.dispatch_cmd` method is called along with any of its events.
         """
         ordered_keys = (1, 2)
         kargs_len = len(kwargs)
@@ -1237,15 +1254,16 @@ class Calc:
         Note:
             Event arg properties modified on SHEET_ROW_INSERTING it is reflected in this method.
         """
-        cargs = SheetCancelArgs(Calc)
+        cargs = SheetCancelArgs(Calc.insert_row)
         cargs.sheet = sheet
         cargs.index = idx
         _Events().trigger(CalcNamedEvent.SHEET_ROW_INSERTING, cargs)
         if cargs.cancel:
             return False
+        idx = cargs.index
         cr_range = mLo.Lo.qi(XColumnRowRange, cargs.sheet, raise_err=True)
         rows = cr_range.getRows()
-        rows.insertByIndex(cargs.index, 1)  # add 1 row at idx position
+        rows.insertByIndex(idx, 1)  # add 1 row at idx position
         _Events().trigger(CalcNamedEvent.SHEET_INSERTED, SheetArgs.from_args(cargs))
         return True
 
@@ -1270,15 +1288,16 @@ class Calc:
         Note:
             Event arg properties modified on SHEET_ROW_DELETING it is reflected in this method.
         """
-        cargs = SheetCancelArgs(Calc)
+        cargs = SheetCancelArgs(Calc.delete_row)
         cargs.sheet = sheet
         cargs.index = idx
         _Events().trigger(CalcNamedEvent.SHEET_ROW_DELETING, cargs)
         if cargs.cancel:
             return False
+        idx = cargs.idx
         cr_range = mLo.Lo.qi(XColumnRowRange, cargs.sheet)
         rows = cr_range.getRows()
-        rows.removeByIndex(cargs.index, 1)  # remove 1 row at idx position
+        rows.removeByIndex(idx, 1)  # remove 1 row at idx position
         _Events().trigger(CalcNamedEvent.SHEET_ROW_DELETED, SheetArgs.from_args(cargs))
         return True
 
@@ -1300,15 +1319,16 @@ class Calc:
         Note:
             Event arg properties modified on SHEET_COL_INSERTING it is reflected in this method.
         """
-        cargs = SheetCancelArgs(Calc)
+        cargs = SheetCancelArgs(Calc.insert_column)
         cargs.sheet = sheet
         cargs.index = idx
         _Events().trigger(CalcNamedEvent.SHEET_COL_INSERTING, cargs)
         if cargs.cancel:
             return False
+        idx = cargs.index
         cr_range = mLo.Lo.qi(XColumnRowRange, cargs.sheet)
         cols = cr_range.getColumns()
-        cols.insertByIndex(cargs.index, 1)  # add 1 column at idx position
+        cols.insertByIndex(idx, 1)  # add 1 column at idx position
         _Events().trigger(CalcNamedEvent.SHEET_COL_INSERTED, SheetArgs.from_args(cargs))
         return True
 
@@ -1333,15 +1353,16 @@ class Calc:
         Note:
             Event arg properties modified on SHEET_COL_DELETING it is reflected in this method.
         """
-        cargs = SheetCancelArgs(Calc)
+        cargs = SheetCancelArgs(Calc.delete_column)
         cargs.sheet = sheet
         cargs.index = idx
         _Events().trigger(CalcNamedEvent.SHEET_COL_DELETING, cargs)
         if cargs.cancel:
             return False
+        idx = cargs.index
         cr_range = mLo.Lo.qi(XColumnRowRange, cargs.sheet)
         cols = cr_range.getColumns()
-        cols.removeByIndex(cargs.index, 1)  # remove 1 row at idx position
+        cols.removeByIndex(idx, 1)  # remove 1 row at idx position
         _Events().trigger(CalcNamedEvent.SHEET_COL_DELETED, SheetArgs.from_args(cargs))
         return True
 
@@ -1372,7 +1393,7 @@ class Calc:
 
             Event arg properties modified on CELLS_INSERTING it is reflected in this method.
         """
-        cargs = CellCancelArgs(cls)
+        cargs = CellCancelArgs(Calc.insert_cells)
         cargs.sheet = sheet
         cargs.cells = cell_range
         cargs.event_data = {"is_shift_right": is_shift_right}
@@ -1415,7 +1436,7 @@ class Calc:
 
             Event arg properties modified on CELLS_DELETING it is reflected in this method.
         """
-        cargs = CellCancelArgs(cls)
+        cargs = CellCancelArgs(Calc.delete_cells)
         cargs.sheet = sheet
         cargs.cells = cell_range
         cargs.event_data = {"is_shift_left": is_shift_left}
@@ -2559,6 +2580,7 @@ class Calc:
             .. include:: ../../resources/global/printing_note.rst
         """
         cargs = CancelEventArgs(Calc)
+        cargs.event_data = {"vals": vals}
         _Events().trigger(GblNamedEvent.PRINTING, cargs)
         if cargs.cancel:
             return
@@ -4059,6 +4081,7 @@ class Calc:
         kargs = get_kwargs()
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
+        
 
         if mInfo.Info.is_type_interface(obj=kargs[1], type_name="com.sun.star.table.XCell"):
             addr = cls._get_cell_address_cell(cell=kargs[1])
@@ -4106,7 +4129,7 @@ class Calc:
         Note:
             .. include:: ../../resources/global/printing_note.rst
         """
-        cargs = CancelEventArgs(Calc)
+        cargs = CancelEventArgs(Calc.print_address)
         _Events().trigger(GblNamedEvent.PRINTING, cargs)
         if cargs.cancel:
             return
@@ -4160,7 +4183,7 @@ class Calc:
         Note:
             .. include:: ../../resources/global/printing_note.rst
         """
-        cargs = CancelEventArgs(Calc)
+        cargs = CancelEventArgs(Calc.print_addresses)
         _Events().trigger(GblNamedEvent.PRINTING, cargs)
         if cargs.cancel:
             return
@@ -5565,17 +5588,19 @@ class Calc:
 
             Event arg properties modified on SHEET_ROW_HEIGHT_SETTING it is reflected in this method.
         """
-        cargs = SheetCancelArgs(cls)
+        cargs = SheetCancelArgs(Calc.set_row_height)
         cargs.sheet = sheet
         cargs.index = idx
         cargs.event_data = height
         _Events().trigger(CalcNamedEvent.SHEET_ROW_HEIGHT_SETTING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
+        idx = cargs.index
+        height = cargs.event_data
         if height <= 0:
             mLo.Lo.print("Height must be greater then 0")
             return None
-        cell_range = cls.get_row_range(sheet=cargs.sheet, idx=cargs.index)
+        cell_range = cls.get_row_range(sheet=cargs.sheet, idx=idx)
         # mInfo.Info.show_services(obj_name="Cell range for a row", obj=cell_range)
         mProps.Props.set_property(prop_set=cell_range, name="Height", value=(height * 100))
         _Events().trigger(CalcNamedEvent.SHEET_ROW_HEIGHT_SET, SheetArgs.from_args(cargs))
@@ -5926,7 +5951,7 @@ class Calc:
         Note:
             .. include:: ../../resources/global/printing_note.rst
         """
-        cargs = CancelEventArgs(Calc)
+        cargs = CancelEventArgs(Calc.print_function_info)
         _Events().trigger(GblNamedEvent.PRINTING, cargs)
         if cargs.cancel:
             return
@@ -5950,8 +5975,12 @@ class Calc:
 
         Note:
             .. include:: ../../resources/global/printing_note.rst
+        
+        Note:
+            Event args ``event_data`` is set to ``prop_vals``
         """
-        cargs = CancelEventArgs(Calc)
+        cargs = CancelEventArgs(Calc.print_fun_arguments)
+        cargs.event_data = prop_vals
         _Events().trigger(GblNamedEvent.PRINTING, cargs)
         if cargs.cancel:
             return
@@ -6285,8 +6314,12 @@ class Calc:
 
         Note:
             .. include:: ../../resources/global/printing_note.rst
+        
+        Note:
+           Event args ``event_data`` is a dictionary containing all method parameters.
         """
-        cargs = CancelEventArgs(Calc)
+        cargs = CancelEventArgs(Calc.print_head_foot)
+        cargs.event_data = {"title": title, "hfc": hfc}
         _Events().trigger(GblNamedEvent.PRINTING, cargs)
         if cargs.cancel:
             return
