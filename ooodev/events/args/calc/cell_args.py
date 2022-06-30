@@ -50,4 +50,4 @@ class CellArgs(AbstractCellArgs):
         eargs.sheet = args.sheet
         eargs.cells = args.cells
         eargs.event_data = args.event_data
-        return args
+        return eargs

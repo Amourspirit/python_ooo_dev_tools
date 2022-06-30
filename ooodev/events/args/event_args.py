@@ -55,7 +55,7 @@ class EventArgs(AbstractEvent):
         """
         eargs = EventArgs(source=args.source)
         eargs.event_data = args.event_data
-        return args
+        return eargs
 
 
 e = EventArgs(None)

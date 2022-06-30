@@ -218,7 +218,7 @@ class Write(mSel.Selection):
         Attention:
             :py:meth:`Lo.open_doc <.utils.lo.Lo.open_doc>` method is called along with any of its events.
         """
-        cargs = CancelEventArgs(Write.open_doc)
+        cargs = CancelEventArgs(Write.open_doc.__qualname__)
         cargs.event_data = {"fnm": fnm, "loader": loader}
         _Events().trigger(WriteNamedEvent.DOC_OPENING, cargs)
         if cargs.cancel:
@@ -277,7 +277,7 @@ class Write(mSel.Selection):
             raise TypeError("Document is null")
 
         text_doc = mLo.Lo.qi(XTextDocument, doc, True)
-        _Events().trigger(WriteNamedEvent.DOC_TEXT, EventArgs(cls))
+        _Events().trigger(WriteNamedEvent.DOC_TEXT, EventArgs(Write.get_text_doc.__qualname__))
         return text_doc
 
     @staticmethod
@@ -303,7 +303,7 @@ class Write(mSel.Selection):
         Attention:
             :py:meth:`Lo.create_doc <.utils.lo.Lo.create_doc>` method is called along with any of its events.
         """
-        cargs = CancelEventArgs(Write.create_doc)
+        cargs = CancelEventArgs(Write.create_doc.__qualname__)
         cargs.event_data = {"loader": loader}
         _Events().trigger(WriteNamedEvent.DOC_CREATING, cargs)
         if cargs.cancel:
@@ -341,7 +341,7 @@ class Write(mSel.Selection):
         Attention:
             :py:meth:`Lo.create_doc_from_template <.utils.lo.Lo.create_doc_from_template>` method is called along with any of its events.
         """
-        cargs = CancelEventArgs(Write.create_doc_from_template)
+        cargs = CancelEventArgs(Write.create_doc_from_template.__qualname__)
         cargs.event_data = {"template_path": template_path, "loader": loader}
         _Events().trigger(WriteNamedEvent.DOC_CREATING, cargs)
         if cargs.cancel:
@@ -386,7 +386,7 @@ class Write(mSel.Selection):
         Attention:
             :py:meth:`Lo.close <.utils.lo.Lo.close>` method is called along with any of its events.
         """
-        cargs = CancelEventArgs(Write.close_doc)
+        cargs = CancelEventArgs(Write.close_doc.__qualname__)
         cargs.event_data = {"text_doc": text_doc}
         _Events().trigger(WriteNamedEvent.DOC_CLOSING, cargs)
         if cargs.cancel:
@@ -423,7 +423,7 @@ class Write(mSel.Selection):
         Attention:
             :py:meth:`Lo.save_doc <.utils.lo.Lo.save_doc>` method is called along with any of its events.
         """
-        cargs = CancelEventArgs(Write.save_doc)
+        cargs = CancelEventArgs(Write.save_doc.__qualname__)
         cargs.event_data = {"text_doc": text_doc, "fnm": fnm}
         _Events().trigger(WriteNamedEvent.DOC_SAVING, cargs)
 
@@ -471,7 +471,7 @@ class Write(mSel.Selection):
         Attention:
             :py:meth:`Lo.create_doc_from_template <.utils.lo.Lo.create_doc_from_template>` method is called along with any of its events.
         """
-        cargs = CancelEventArgs(Write.open_flat_doc_using_text_template)
+        cargs = CancelEventArgs(Write.open_flat_doc_using_text_template.__qualname__)
         cargs.event_data = {"fnm": fnm, "template_path": template_path, "loader": loader}
         _Events().trigger(WriteNamedEvent.DOC_OPENING, cargs)
         if cargs.cancel:
@@ -643,7 +643,7 @@ class Write(mSel.Selection):
         Args:
             text_doc (XTextDocument): Text Document
         """
-        cargs = CancelEventArgs(Write)
+        cargs = CancelEventArgs(Write.print_page_size.__qualname__)
         _Events().trigger(GblNamedEvent.PRINTING, cargs)
         if cargs.cancel:
             return
@@ -1190,7 +1190,7 @@ class Write(mSel.Selection):
         See Also:
             - :py:meth:`.set_a4_page_format`
         """
-        cargs = CancelEventArgs(Write.set_page_format)
+        cargs = CancelEventArgs(Write.set_page_format.__qualname__)
         cargs.event_data = {"paper_format": paper_format}
         _Events().trigger(WriteNamedEvent.PAGE_FORRMAT_SETTING, cargs)
         if cargs.cancel:
@@ -1383,7 +1383,7 @@ class Write(mSel.Selection):
         Note:
            Event args ``event_data`` is a dictionary containing ``formula`` and ``cursor``.
         """
-        cargs = CancelEventArgs(Write.add_formula)
+        cargs = CancelEventArgs(Write.add_formula.__qualname__)
         cargs.event_data = {"cursor": cursor, "formula": formula}
         _Events().trigger(WriteNamedEvent.FORMULA_ADDING, cargs)
         if cargs.cancel:
@@ -1440,7 +1440,7 @@ class Write(mSel.Selection):
         Note:
            Event args ``event_data`` is a dictionary containing ``label``, ``url_str`` and ``cursor``.
         """
-        cargs = CancelEventArgs(Write.add_hyperlink)
+        cargs = CancelEventArgs(Write.add_hyperlink.__qualname__)
         cargs.event_data = {"cursor": cursor, "label": label, "url_str": url_str}
         _Events().trigger(WriteNamedEvent.HYPER_LINK_ADDING, cargs)
         if cargs.cancel:
@@ -1491,7 +1491,7 @@ class Write(mSel.Selection):
         Note:
            Event args ``event_data`` is a dictionary containing ``name`` and ``cursor``.
         """
-        cargs = CancelEventArgs(Write.add_bookmark)
+        cargs = CancelEventArgs(Write.add_bookmark.__qualname__)
         cargs.event_data = {"cursor": cursor, "name": name}
         _Events().trigger(WriteNamedEvent.BOOKMARK_ADDING, cargs)
         if cargs.cancel:
@@ -1586,7 +1586,7 @@ class Write(mSel.Selection):
         See Also:
             :py:class:`~.utils.color.CommonColor`
         """
-        cargs = CancelEventArgs(Write.add_text_frame)
+        cargs = CancelEventArgs(Write.add_text_frame.__qualname__)
         cargs.event_data = {
             "cursor": cursor,
             "ypos": ypos,
@@ -1711,7 +1711,7 @@ class Write(mSel.Selection):
             - :py:meth:`~.utils.table_helper.TableHelper.table_dict_to_table`
         """
 
-        cargs = CancelEventArgs(Write.add_table)
+        cargs = CancelEventArgs(Write.add_table.__qualname__)
         cargs.event_data = {
             "cursor": cursor,
             "table_data": table_data,
@@ -1862,7 +1862,7 @@ class Write(mSel.Selection):
         Note:
            Event args ``event_data`` is a dictionary containing ``doc``, ``cursor``, ``fnm``, ``width`` and ``height``.
         """
-        cargs = CancelEventArgs(Write.add_image_link)
+        cargs = CancelEventArgs(Write.add_image_link.__qualname__)
         cargs.event_data = {
             "doc": doc,
             "cursor": cursor,
@@ -1972,7 +1972,7 @@ class Write(mSel.Selection):
         Note:
            Event args ``event_data`` is a dictionary containing ``doc``, ``cursor``, ``fnm``, ``width`` and ``height``.
         """
-        cargs = CancelEventArgs(Write.add_image_shape)
+        cargs = CancelEventArgs(Write.add_image_shape.__qualname__)
         cargs.event_data = {
             "cursor": cursor,
             "fnm": fnm,
@@ -2188,7 +2188,7 @@ class Write(mSel.Selection):
         Args:
             lingo_mgr (XLinguServiceManager2): Serivice manager
         """
-        cargs = CancelEventArgs(Write)
+        cargs = CancelEventArgs(Write.print_services_info.__qualname__)
         _Events().trigger(GblNamedEvent.PRINTING, cargs)
         if cargs.cancel:
             return
@@ -2222,7 +2222,7 @@ class Write(mSel.Selection):
             service (str): Service Name
             loc (Locale): Locale
         """
-        cargs = CancelEventArgs(Write)
+        cargs = CancelEventArgs(Write.print_avail_service_info.__qualname__)
         _Events().trigger(GblNamedEvent.PRINTING, cargs)
         if cargs.cancel:
             return
@@ -2241,7 +2241,7 @@ class Write(mSel.Selection):
             service (str): Service Name
             loc (Locale): Locale
         """
-        cargs = CancelEventArgs(Write)
+        cargs = CancelEventArgs(Write.print_config_service_info.__qualname__)
         _Events().trigger(GblNamedEvent.PRINTING, cargs)
         if cargs.cancel:
             return
@@ -2259,7 +2259,7 @@ class Write(mSel.Selection):
             service (str): Service
             loc (Iterable[Locale]): Locale's
         """
-        cargs = CancelEventArgs(Write)
+        cargs = CancelEventArgs(Write.print_locales.__qualname__)
         _Events().trigger(GblNamedEvent.PRINTING, cargs)
         if cargs.cancel:
             return
@@ -2298,7 +2298,7 @@ class Write(mSel.Selection):
         Note:
            Event args ``event_data`` is a dictionary containing all method parameters.
         """
-        cargs = CancelEventArgs(Write.set_configured_services)
+        cargs = CancelEventArgs(Write.set_configured_services.__qualname__)
         cargs.event_data = {
             "lingo_mgr": lingo_mgr,
             "service": service,
@@ -2343,7 +2343,7 @@ class Write(mSel.Selection):
         Args:
             dict_list (XSearchableDictionaryList): dictionary list
         """
-        cargs = CancelEventArgs(Write)
+        cargs = CancelEventArgs(Write.print_dicts_info.__qualname__)
         _Events().trigger(GblNamedEvent.PRINTING, cargs)
         if cargs.cancel:
             return
@@ -2385,7 +2385,7 @@ class Write(mSel.Selection):
         Args:
             cd_lst (XConversionDictionaryList): conversion dictionary list
         """
-        cargs = CancelEventArgs(Write.print_con_dicts_info)
+        cargs = CancelEventArgs(Write.print_con_dicts_info.__qualname__)
         _Events().trigger(GblNamedEvent.PRINTING, cargs)
         if cargs.cancel:
             return
@@ -2509,7 +2509,7 @@ class Write(mSel.Selection):
         Returns:
             int: Number of meanings found
         """
-        cargs = CancelEventArgs(Write)
+        cargs = CancelEventArgs(Write.print_meaning.__qualname__)
         _Events().trigger(GblNamedEvent.PRINTING, cargs)
         if cargs.cancel:
             return 0
@@ -2581,7 +2581,7 @@ class Write(mSel.Selection):
             string (str): error string
             err (SingleProofreadingError): Single proof reading error
         """
-        cargs = CancelEventArgs(Write)
+        cargs = CancelEventArgs(Write.print_proof_error.__qualname__)
         _Events().trigger(GblNamedEvent.PRINTING, cargs)
         if cargs.cancel:
             return
@@ -2621,7 +2621,7 @@ class Write(mSel.Selection):
         Args:
             loc (Locale): Locale to print
         """
-        cargs = CancelEventArgs(Write)
+        cargs = CancelEventArgs(Write.print_locale.__qualname__)
         _Events().trigger(GblNamedEvent.PRINTING, cargs)
         if cargs.cancel:
             return

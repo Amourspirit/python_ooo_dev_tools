@@ -181,11 +181,11 @@ class Calc:
 
                 - :py:attr:`~.events.calc_named_event.CalcNamedEvent.DOC_OPENING` :eventref:`src-docs-event-cancel`
                 - :py:attr:`~.events.calc_named_event.CalcNamedEvent.DOC_OPENED` :eventref:`src-docs-event`
-        
+
         Note:
            Event args ``event_data`` is a dictionary containing all method parameters.
         """
-        cargs = CancelEventArgs(Calc.open_doc)
+        cargs = CancelEventArgs(Calc.open_doc.__qualname__)
         cargs.event_data = {"fnm": fnm, "loader": loader}
         _Events().trigger(CalcNamedEvent.DOC_OPENING, cargs)
         if cargs.cancel:
@@ -231,7 +231,7 @@ class Calc:
             if not mLo.Lo.is_macro_mode:
                 mLo.Lo.close_doc(doc=doc)
             raise mEx.MissingInterfaceError(XSpreadsheetDocument)
-        _Events().trigger(CalcNamedEvent.DOC_SS, EventArgs(Calc))
+        _Events().trigger(CalcNamedEvent.DOC_SS, EventArgs(Calc.get_ss_doc.__qualname__))
         return ss_doc
 
     @staticmethod
@@ -261,7 +261,7 @@ class Calc:
         Note:
             Event args ``event_data`` is a dictionary containing ``loader``
         """
-        cargs = CancelEventArgs(Calc.create_doc)
+        cargs = CancelEventArgs(Calc.create_doc.__qualname__)
         cargs.event_data = {"loader": loader}
         _Events().trigger(CalcNamedEvent.DOC_CREATING, cargs)
         if cargs.cancel:
@@ -281,44 +281,39 @@ class Calc:
     @staticmethod
     def _get_sheet_index(doc: XSpreadsheetDocument, index: int) -> XSpreadsheet:
         """return the spreadsheet with the specified index (0-based)"""
-        cargs = SheetCancelArgs(Calc.get_sheet)
+        cargs = SheetCancelArgs(Calc.get_sheet.__qualname__)
         cargs.index = index
+        cargs.name = None
         cargs.doc = doc
-        cargs.event_data = {
-            "index": index,
-            "sheet_name": None
-            }
+
         _Events().trigger(CalcNamedEvent.SHEET_GETTING, cargs)
         if cargs.cancel:
             mEx.CancelEventError(cargs)
 
-        index = cargs.event_data["index"]
+        index = cargs.index
         sheets = cargs.doc.getSheets()
         try:
             xsheets_idx = mLo.Lo.qi(XIndexAccess, sheets, True)
-            sheet = mLo.Lo.qi(XSpreadsheet, xsheets_idx.getByIndex(cargs.index), raise_err=True)
+            sheet = mLo.Lo.qi(XSpreadsheet, xsheets_idx.getByIndex(index), raise_err=True)
             _Events().trigger(CalcNamedEvent.SHEET_GET, SheetArgs.from_args(cargs))
             return sheet
         except Exception as e:
-            raise Exception(f"Could not access spreadsheet: {cargs.index}") from e
+            raise Exception(f"Could not access spreadsheet: {index}") from e
 
     @staticmethod
     def _get_sheet_name(doc: XSpreadsheetDocument, sheet_name: str) -> XSpreadsheet:
         """return the spreadsheet with the specified index (0-based)"""
-        cargs = SheetCancelArgs(Calc.get_sheet)
-        cargs.event_data = {
-            "index": None,
-            "sheet_name": sheet_name
-            }
+        cargs = SheetCancelArgs(Calc.get_sheet.__qualname__)
+        cargs.name = sheet_name
+        cargs.index = None
         cargs.doc = doc
         _Events().trigger(CalcNamedEvent.SHEET_GETTING, cargs)
         if cargs.cancel:
             mEx.CancelEventError(cargs)
-
-        sheet_name = cargs.event_data["sheet_name"]
+        sheet_name = cargs.name
         sheets = cargs.doc.getSheets()
         try:
-            sheet = mLo.Lo.qi(XSpreadsheet, sheets.getByName(cargs.name), raise_err=True)
+            sheet = mLo.Lo.qi(XSpreadsheet, sheets.getByName(sheet_name), raise_err=True)
             _Events().trigger(CalcNamedEvent.SHEET_GET, SheetArgs.from_args(cargs))
             return sheet
         except Exception as e:
@@ -384,8 +379,7 @@ class Calc:
                 - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_GET` :eventref:`src-docs-sheet-event-get`
 
         Note:
-           Event args ``event_data`` is a dictionary containing ``index`` and ``sheet_name``.
-           If ``index`` is available then ``sheet_name`` is none and if ``sheet_name`` is available then ``index`` is none.
+           For Event args, if ``index`` is available then ``name`` is ``None`` and if ``sheet_name`` is available then ``index`` is ``None``.
 
            Event arg properties modified on SHEET_GETTING it is reflected in this method.
         """
@@ -447,11 +441,8 @@ class Calc:
 
                 - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_INSERTING` :eventref:`src-docs-sheet-event-inserting`
                 - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_INSERTED` :eventref:`src-docs-sheet-event-inserted`
-
-        Note:
-            Event arg properties modified on SHEET_INSERTING it is reflected in this method.
         """
-        cargs = SheetCancelArgs(Calc.insert_sheet)
+        cargs = SheetCancelArgs(Calc.insert_sheet.__qualname__)
         cargs.name = name
         cargs.index = idx
         cargs.doc = doc
@@ -473,55 +464,54 @@ class Calc:
 
     @staticmethod
     def _remove_sheet_name(doc: XSpreadsheetDocument, sheet_name: str) -> bool:
-        cargs = SheetCancelArgs(Calc)
+        cargs = SheetCancelArgs(Calc.remove_sheet.__qualname__)
+        # cargs.source = Calc.remove_sheet
         cargs.doc = doc
         cargs.name = sheet_name
-        cargs.event_data = "name"
+        cargs.index = None
+        cargs.event_data = {"fn_type": "name"}
         _Events().trigger(CalcNamedEvent.SHEET_REMOVING, cargs)
         if cargs.cancel:
             return False
+
+        sheet_name = cargs.name
         sheets = cargs.doc.getSheets()
         result = False
         try:
-            sheets.removeByName(cargs.name)
+            sheets.removeByName(sheet_name)
             result = True
         except Exception:
-            mLo.Lo.print(f"Could not remove sheet: {cargs.name}")
+            mLo.Lo.print(f"Could not remove sheet: {sheet_name}")
         if result is True:
-            eargs = SheetArgs(Calc)
-            eargs.doc = cargs.doc
-            eargs.name = cargs.name
-            eargs.event_data = cargs.event_data
-            _Events().trigger(CalcNamedEvent.SHEET_REMOVED, eargs)
+            _Events().trigger(CalcNamedEvent.SHEET_REMOVED, SheetArgs.from_args(cargs))
         return result
 
     @classmethod
     def _remove_sheet_index(cls, doc: XSpreadsheetDocument, index: int) -> bool:
-        cargs = SheetCancelArgs(Calc)
+        cargs = SheetCancelArgs(Calc.remove_sheet.__qualname__)
         cargs.doc = doc
         cargs.index = index
-        cargs.event_data = "index"
+        cargs.name = None
+        cargs.event_data = {"fn_type": "index"}
         _Events().trigger(CalcNamedEvent.SHEET_REMOVING, cargs)
         if cargs.cancel:
             return False
+        
+        index = cargs.index
         sheets = cargs.doc.getSheets()
         result = False
         try:
             xsheets_idx = mLo.Lo.qi(XIndexAccess, sheets)
-            sheet = mLo.Lo.qi(XSpreadsheet, xsheets_idx.getByIndex(cargs.index))
+            sheet = mLo.Lo.qi(XSpreadsheet, xsheets_idx.getByIndex(index))
             sheet_name = cls.get_sheet_name(sheet)
             if sheet_name is None:
                 return False
             sheets.removeByName(sheet_name)
             result = True
         except Exception:
-            mLo.Lo.print(f"Could not remove sheet at index: {cargs.index}")
+            mLo.Lo.print(f"Could not remove sheet at index: {index}")
         if result is True:
-            eargs = SheetArgs(Calc)
-            eargs.doc = cargs.doc
-            eargs.index = cargs.index
-            eargs.event_data = cargs.event_data
-            _Events().trigger(CalcNamedEvent.SHEET_REMOVED, eargs)
+            _Events().trigger(CalcNamedEvent.SHEET_REMOVED, SheetArgs.from_args(cargs))
         return result
 
     @overload
@@ -574,9 +564,8 @@ class Calc:
                 - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_REMOVED` :eventref:`src-docs-sheet-event-removed`
 
         Note:
-           If ``index`` is available then args ``event_data`` is set to a value of *"index"*; Otherwise, set to a value of *"name"*.
-
-           Event arg properties modified on SHEET_REMOVING it is reflected in this method.
+            Event args ``event_data`` is set to a dictionary.
+            If ``index`` is available then args ``event_data["fn_type"]`` is set to a value *"index"*; Otherwise, set to a value *"name"*.
         """
         ordered_keys = (1, 2)
         kargs_len = len(kwargs)
@@ -634,7 +623,7 @@ class Calc:
         Note:
             Event arg properties modified on SHEET_MOVING it is reflected in this method.
         """
-        cargs = SheetCancelArgs(Calc)
+        cargs = SheetCancelArgs(Calc.move_sheet.__qualname__)
         cargs.doc = doc
         cargs.name = name
         cargs.index = idx
@@ -696,9 +685,7 @@ class Calc:
         Returns:
             str: Name of sheet
         """
-        xnamed = mLo.Lo.qi(XNamed, sheet)
-        if xnamed is None:
-            raise mEx.MissingInterfaceError(XNamed)
+        xnamed = mLo.Lo.qi(XNamed, sheet, True)
         return xnamed.getName()
 
     @staticmethod
@@ -812,7 +799,7 @@ class Calc:
         Note:
             Event arg properties modified on SHEET_ACTIVATING it is reflected in this method.
         """
-        cargs = SheetCancelArgs(Calc.set_active_sheet)
+        cargs = SheetCancelArgs(Calc.set_active_sheet.__qualname__)
         cargs.doc = doc
         cargs.sheet = sheet
         _Events().trigger(CalcNamedEvent.SHEET_ACTIVATING, cargs)
@@ -927,9 +914,11 @@ class Calc:
             cell_name (str): Cell Name such as 'B4'
             doc (XSpreadsheetDocument): Spreadsheet Document
             frame (XFrame): Spreadsheet frame.
-        
+
         Attention:
             :py:meth:`~.utils.lo.Lo.dispatch_cmd` method is called along with any of its events.
+            
+            Dispatch command is ``GoToCell``.
         """
         ordered_keys = (1, 2)
         kargs_len = len(kwargs)
@@ -1254,7 +1243,7 @@ class Calc:
         Note:
             Event arg properties modified on SHEET_ROW_INSERTING it is reflected in this method.
         """
-        cargs = SheetCancelArgs(Calc.insert_row)
+        cargs = SheetCancelArgs(Calc.insert_row.__qualname__)
         cargs.sheet = sheet
         cargs.index = idx
         _Events().trigger(CalcNamedEvent.SHEET_ROW_INSERTING, cargs)
@@ -1264,7 +1253,7 @@ class Calc:
         cr_range = mLo.Lo.qi(XColumnRowRange, cargs.sheet, raise_err=True)
         rows = cr_range.getRows()
         rows.insertByIndex(idx, 1)  # add 1 row at idx position
-        _Events().trigger(CalcNamedEvent.SHEET_INSERTED, SheetArgs.from_args(cargs))
+        _Events().trigger(CalcNamedEvent.SHEET_ROW_INSERTED, SheetArgs.from_args(cargs))
         return True
 
     @staticmethod
@@ -1288,13 +1277,14 @@ class Calc:
         Note:
             Event arg properties modified on SHEET_ROW_DELETING it is reflected in this method.
         """
-        cargs = SheetCancelArgs(Calc.delete_row)
+        cargs = SheetCancelArgs(Calc.delete_row.__qualname__)
         cargs.sheet = sheet
         cargs.index = idx
+        cargs.name = None
         _Events().trigger(CalcNamedEvent.SHEET_ROW_DELETING, cargs)
         if cargs.cancel:
             return False
-        idx = cargs.idx
+        idx = cargs.index
         cr_range = mLo.Lo.qi(XColumnRowRange, cargs.sheet)
         rows = cr_range.getRows()
         rows.removeByIndex(idx, 1)  # remove 1 row at idx position
@@ -1319,7 +1309,7 @@ class Calc:
         Note:
             Event arg properties modified on SHEET_COL_INSERTING it is reflected in this method.
         """
-        cargs = SheetCancelArgs(Calc.insert_column)
+        cargs = SheetCancelArgs(Calc.insert_column.__qualname__)
         cargs.sheet = sheet
         cargs.index = idx
         _Events().trigger(CalcNamedEvent.SHEET_COL_INSERTING, cargs)
@@ -1353,7 +1343,7 @@ class Calc:
         Note:
             Event arg properties modified on SHEET_COL_DELETING it is reflected in this method.
         """
-        cargs = SheetCancelArgs(Calc.delete_column)
+        cargs = SheetCancelArgs(Calc.delete_column.__qualname__)
         cargs.sheet = sheet
         cargs.index = idx
         _Events().trigger(CalcNamedEvent.SHEET_COL_DELETING, cargs)
@@ -1390,10 +1380,8 @@ class Calc:
 
         Note:
             Event args ``event_data`` is a dictionary containing ``is_shift_right``.
-
-            Event arg properties modified on CELLS_INSERTING it is reflected in this method.
         """
-        cargs = CellCancelArgs(Calc.insert_cells)
+        cargs = CellCancelArgs(Calc.insert_cells.__qualname__)
         cargs.sheet = sheet
         cargs.cells = cell_range
         cargs.event_data = {"is_shift_right": is_shift_right}
@@ -1436,7 +1424,7 @@ class Calc:
 
             Event arg properties modified on CELLS_DELETING it is reflected in this method.
         """
-        cargs = CellCancelArgs(Calc.delete_cells)
+        cargs = CellCancelArgs(Calc.delete_cells.__qualname__)
         cargs.sheet = sheet
         cargs.cells = cell_range
         cargs.event_data = {"is_shift_left": is_shift_left}
@@ -1556,10 +1544,9 @@ class Calc:
             bool: True if cells are cleared; Otherwise, False
 
         Note:
-            Events args for this method have a ``cell`` type of ``XCellRange``
-
-        Note:
-            If event arg ``cell`` is modified on CELLS_CLEARING it is reflected in this method.
+            Events arg for this method have a ``cell`` type of ``XCellRange``.
+            
+            Events arg ``event_data`` is a dictionary containing ``cell_flags``.
 
         See Also:
             :py:class:`~Calc.CellFlags`
@@ -1610,14 +1597,15 @@ class Calc:
         else:
             rng = Calc.get_cell_range(sheet=sht, cr_addr=rng_value)
 
-        cargs = CellCancelArgs(cls)
+        cargs = CellCancelArgs(Calc.clear_cells.__qualname__)
         cargs.cells = rng
         cargs.sheet = sht
+        cargs.event_data = {"cell_flags": flags}
         _Events().trigger(CalcNamedEvent.CELLS_CLEARING, cargs)
         if cargs.cancel:
             return False
-
-        sheet_op = mLo.Lo.qi(XSheetOperation, cargs.cells, raise_err=True)
+        flags = cargs.event_data["cell_flags"]
+        sheet_op = mLo.Lo.qi(XSheetOperation, cargs.cells, True)
         sheet_op.clearContents(flags.value)
         _Events().trigger(CalcNamedEvent.CELLS_CLEARED, CellArgs.from_args(cargs))
         return True
@@ -2579,7 +2567,7 @@ class Calc:
         Note:
             .. include:: ../../resources/global/printing_note.rst
         """
-        cargs = CancelEventArgs(Calc)
+        cargs = CancelEventArgs(Calc.print_array.__qualname__)
         cargs.event_data = {"vals": vals}
         _Events().trigger(GblNamedEvent.PRINTING, cargs)
         if cargs.cancel:
@@ -4052,7 +4040,7 @@ class Calc:
         Note:
             .. include:: ../../resources/global/printing_note.rst
         """
-        cargs = CancelEventArgs(Calc)
+        cargs = CancelEventArgs(Calc.print_cell_address.__qualname__)
         _Events().trigger(GblNamedEvent.PRINTING, cargs)
         if cargs.cancel:
             return
@@ -4081,7 +4069,6 @@ class Calc:
         kargs = get_kwargs()
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
-        
 
         if mInfo.Info.is_type_interface(obj=kargs[1], type_name="com.sun.star.table.XCell"):
             addr = cls._get_cell_address_cell(cell=kargs[1])
@@ -4129,7 +4116,7 @@ class Calc:
         Note:
             .. include:: ../../resources/global/printing_note.rst
         """
-        cargs = CancelEventArgs(Calc.print_address)
+        cargs = CancelEventArgs(Calc.print_address.__qualname__)
         _Events().trigger(GblNamedEvent.PRINTING, cargs)
         if cargs.cancel:
             return
@@ -4183,7 +4170,7 @@ class Calc:
         Note:
             .. include:: ../../resources/global/printing_note.rst
         """
-        cargs = CancelEventArgs(Calc.print_addresses)
+        cargs = CancelEventArgs(Calc.print_addresses.__qualname__)
         _Events().trigger(GblNamedEvent.PRINTING, cargs)
         if cargs.cancel:
             return
@@ -5489,7 +5476,7 @@ class Calc:
         else:
             color = cast(Color, kargs[4])
 
-        cargs = CellCancelArgs(cls)
+        cargs = CellCancelArgs(Calc.highlight_range.__qualname__)
         cargs.cells = cell_range
         cargs.sheet = sheet
         cargs.event_data = {"color": color, "headline": kargs[2]}
@@ -5541,7 +5528,7 @@ class Calc:
 
             Event arg properties modified on SHEET_COL_WIDTH_SETTING it is reflected in this method.
         """
-        cargs = SheetCancelArgs(cls)
+        cargs = SheetCancelArgs(Calc.set_col_width.__qualname__)
         cargs.sheet = sheet
         cargs.index = idx
         cargs.event_data = width
@@ -5588,7 +5575,7 @@ class Calc:
 
             Event arg properties modified on SHEET_ROW_HEIGHT_SETTING it is reflected in this method.
         """
-        cargs = SheetCancelArgs(Calc.set_row_height)
+        cargs = SheetCancelArgs(Calc.set_row_height.__qualname__)
         cargs.sheet = sheet
         cargs.index = idx
         cargs.event_data = height
@@ -5951,7 +5938,7 @@ class Calc:
         Note:
             .. include:: ../../resources/global/printing_note.rst
         """
-        cargs = CancelEventArgs(Calc.print_function_info)
+        cargs = CancelEventArgs(Calc.print_function_info.__qualname__)
         _Events().trigger(GblNamedEvent.PRINTING, cargs)
         if cargs.cancel:
             return
@@ -5975,11 +5962,11 @@ class Calc:
 
         Note:
             .. include:: ../../resources/global/printing_note.rst
-        
+
         Note:
             Event args ``event_data`` is set to ``prop_vals``
         """
-        cargs = CancelEventArgs(Calc.print_fun_arguments)
+        cargs = CancelEventArgs(Calc.print_fun_arguments.__qualname__)
         cargs.event_data = prop_vals
         _Events().trigger(GblNamedEvent.PRINTING, cargs)
         if cargs.cancel:
@@ -6314,11 +6301,11 @@ class Calc:
 
         Note:
             .. include:: ../../resources/global/printing_note.rst
-        
+
         Note:
            Event args ``event_data`` is a dictionary containing all method parameters.
         """
-        cargs = CancelEventArgs(Calc.print_head_foot)
+        cargs = CancelEventArgs(Calc.print_head_foot.__qualname__)
         cargs.event_data = {"title": title, "hfc": hfc}
         _Events().trigger(GblNamedEvent.PRINTING, cargs)
         if cargs.cancel:

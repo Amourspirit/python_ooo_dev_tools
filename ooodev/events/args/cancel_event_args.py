@@ -42,4 +42,4 @@ class CancelEventArgs(AbstractCancelEventArgs):
         eargs = CancelEventArgs(source=args.source)
         eargs.event_data = args.event_data
         eargs.cancel = args.cancel
-        return args
+        return eargs

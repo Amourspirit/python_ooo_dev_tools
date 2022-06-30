@@ -42,4 +42,4 @@ class DispatchCancelArgs(AbstractDispatchCancelArgs):
         eargs = DispatchCancelArgs(source=args.source, cmd=args.cmd)
         eargs.event_data = args.event_data
         eargs.cancel = args.cancel
-        return args
+        return eargs

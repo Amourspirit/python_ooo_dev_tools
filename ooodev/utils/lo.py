@@ -515,7 +515,7 @@ class Lo(metaclass=StaticProperty):
         # Once we have a component loader, we can load a document.
         # xcc, mcFactory, and xDesktop are stored as static globals.
 
-        cargs = CancelEventArgs(Lo.load_office)
+        cargs = CancelEventArgs(Lo.load_office.__qualname__)
 
         cargs.event_data = {
             "host": "localhost",
@@ -594,7 +594,7 @@ class Lo(metaclass=StaticProperty):
         """
         Lo.print("Closing Office")
 
-        cargs = CancelEventArgs(Lo.close_office)
+        cargs = CancelEventArgs(Lo.close_office.__qualname__)
         _Events().trigger(LoNamedEvent.OFFICE_CLOSING, cargs)
         if cargs.cancel:
             return False
@@ -773,7 +773,7 @@ class Lo(metaclass=StaticProperty):
                     ...
         """
         # Props and FileIO are called this method so triger global_reset first.
-        cargs = CancelEventArgs(Lo.open_doc)
+        cargs = CancelEventArgs(Lo.open_doc.__qualname__)
         cargs.event_data = {
             "fnm": fnm,
             "loader": loader,
@@ -965,7 +965,7 @@ class Lo(metaclass=StaticProperty):
            Event args ``event_data`` is a dictionary containing all method parameters.
         """
         # Props is called in this metod so trigger global_reset first
-        cargs = CancelEventArgs(Lo.create_doc)
+        cargs = CancelEventArgs(Lo.create_doc.__qualname__)
         cargs.event_data = {
             "doc_type": doc_type,
             "loader": loader,
@@ -1028,7 +1028,7 @@ class Lo(metaclass=StaticProperty):
         Returns:
             XComponent: document as component.
         """
-        cargs = CancelEventArgs(Lo.create_doc_from_template)
+        cargs = CancelEventArgs(Lo.create_doc_from_template.__qualname__)
         _Events().trigger(LoNamedEvent.DOC_CREATING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
@@ -1074,7 +1074,7 @@ class Lo(metaclass=StaticProperty):
         Note:
            Event args ``event_data`` is a dictionary containing ``doc``.
         """
-        cargs = CancelEventArgs(Lo.save)
+        cargs = CancelEventArgs(Lo.save.__qualname__)
         cargs.event_data = {"doc": doc}
         _Events().trigger(LoNamedEvent.DOC_SAVING, cargs)
         if cargs.cancel:
@@ -1170,7 +1170,7 @@ class Lo(metaclass=StaticProperty):
         Attention:
             :py:meth:`~.utils.lo.Lo.store_doc` method is called along with any of its events.
         """
-        cargs = CancelEventArgs(Lo.save_doc)
+        cargs = CancelEventArgs(Lo.save_doc.__qualname__)
         cargs.event_data = {
             "doc": doc,
             "fnm": fnm,
@@ -1264,7 +1264,7 @@ class Lo(metaclass=StaticProperty):
         See Also:
             :py:meth:`~.Lo.store_doc_format`
         """
-        cargs = CancelEventArgs(Lo.store_doc)
+        cargs = CancelEventArgs(Lo.store_doc.__qualname__)
         cargs.event_data = {
             "store": store,
             "doc_type": doc_type,
@@ -1511,7 +1511,7 @@ class Lo(metaclass=StaticProperty):
         See Also:
             :py:meth:`~.Lo.store_doc`
         """
-        cargs = CancelEventArgs(Lo.store_doc_format)
+        cargs = CancelEventArgs(Lo.store_doc_format.__qualname__)
         cargs.event_data = {
             "store": store,
             "format": format,
@@ -1594,7 +1594,7 @@ class Lo(metaclass=StaticProperty):
                 - :py:attr:`~.events.lo_named_event.LoNamedEvent.DOC_CLOSING` :eventref:`src-docs-event-cancel`
                 - :py:attr:`~.events.lo_named_event.LoNamedEvent.DOC_CLOSED` :eventref:`src-docs-event`
         """
-        cargs = CancelEventArgs(Lo.close)
+        cargs = CancelEventArgs(Lo.close.__qualname__)
         cargs.event_data = deliver_ownership
         _Events().trigger(LoNamedEvent.DOC_CLOSING, cargs)
         if cargs.cancel:
@@ -1696,7 +1696,7 @@ class Lo(metaclass=StaticProperty):
         Note:
            Event args ``event_data`` is a dictionary containing all method parameters.
         """
-        cargs = CancelEventArgs(Lo.addon_initialize)
+        cargs = CancelEventArgs(Lo.addon_initialize.__qualname__)
         cargs.event_data = {"addon_xcc": addon_xcc}
         eargs = EventArgs.from_args(cargs)
         _Events().trigger(LoNamedEvent.RESET, eargs)
@@ -1754,7 +1754,7 @@ class Lo(metaclass=StaticProperty):
         Note:
            Event args ``event_data`` is a dictionary containing all method parameters.
         """
-        cargs = CancelEventArgs(Lo.script_initialize)
+        cargs = CancelEventArgs(Lo.script_initialize.__qualname__)
         cargs.event_data = {"sc": sc}
         eargs = EventArgs.from_args(cargs)
         _Events().trigger(LoNamedEvent.RESET, eargs)
@@ -1855,7 +1855,7 @@ class Lo(metaclass=StaticProperty):
         See Also:
             `LibreOffice Dispatch Commands <https://wiki.documentfoundation.org/Development/DispatchCommands>`_
         """
-        cargs = DispatchCancelArgs(Lo.dispatch_cmd, cmd)
+        cargs = DispatchCancelArgs(Lo.dispatch_cmd.__qualname__, cmd)
         _Events().trigger(LoNamedEvent.DISPATCHING, cargs)
         if cargs.cancel:
             return False
@@ -2100,7 +2100,7 @@ class Lo(metaclass=StaticProperty):
             names (Iterable[str]): names to print
             num_per_line (int): Number of names per line.
         """
-        cargs = CancelEventArgs(Lo.print_names)
+        cargs = CancelEventArgs(Lo.print_names.__qualname__)
         _Events().trigger(GblNamedEvent.PRINTING, cargs)
         if cargs.cancel:
             return
@@ -2129,7 +2129,7 @@ class Lo(metaclass=StaticProperty):
             name (str): Name of table
             table (List[List[str]]): Table Data
         """
-        cargs = CancelEventArgs(Lo.print_table)
+        cargs = CancelEventArgs(Lo.print_table.__qualname__)
         _Events().trigger(GblNamedEvent.PRINTING, cargs)
         if cargs.cancel:
             return
@@ -2278,7 +2278,7 @@ class Lo(metaclass=StaticProperty):
 
         """
         # much faster updates as screen is basically suspended
-        cargs = CancelEventArgs(Lo.lock_controllers)
+        cargs = CancelEventArgs(Lo.lock_controllers.__qualname__)
         _Events().trigger(LoNamedEvent.CONTROLERS_LOCKING, cargs)
         if cargs.cancel:
             return False
@@ -2312,7 +2312,7 @@ class Lo(metaclass=StaticProperty):
         See Also:
             :py:class:`.Lo.ControllerLock`
         """
-        cargs = CancelEventArgs(Lo.unlock_controllers)
+        cargs = CancelEventArgs(Lo.unlock_controllers.__qualname__)
         _Events().trigger(LoNamedEvent.CONTROLERS_UNLOCKING, cargs)
         if cargs.cancel:
             return False
@@ -2353,7 +2353,7 @@ class Lo(metaclass=StaticProperty):
         Note:
             .. include:: ../../resources/global/printing_note.rst
         """
-        cargs = CancelEventArgs(Lo.print)
+        cargs = CancelEventArgs(Lo.print.__qualname__)
         _Events().trigger(GblNamedEvent.PRINTING, cargs)
         if cargs.cancel:
             return

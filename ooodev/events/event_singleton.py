@@ -51,9 +51,11 @@ class _Events(object):
             event_args (EventArgs): Event args passed to the callback for trigger.
         """
         if self._callbacks is not None and event_name in self._callbacks:
-            cleanup = []
+            cleanup = None
             for i, callback in enumerate(self._callbacks[event_name]):
                 if callback() is None:
+                    if cleanup is None:
+                        cleanup = []
                     cleanup.append(i)
                     continue
                 if event_args is not None:
@@ -64,7 +66,7 @@ class _Events(object):
                     except AttributeError:
                         # event_arg is None
                         callback()(self, None)
-            if len(cleanup) > 0:
+            if cleanup is not None and len(cleanup) > 0:
                 # reverse list to allow removing form highest to lowest to avoid errors
                 cleanup.reverse()
                 for i in cleanup:
@@ -75,13 +77,15 @@ class _Events(object):
 
     def _update_observers(self, event_name: str, event_args: EventArgs) -> None:
         if self._observers is not None:
-            cleanup = []
+            cleanup = None
             for i, observer in enumerate(self._observers):
                 if observer() is None:
+                    if cleanup is None:
+                        cleanup = []
                     cleanup.append(i)
                     continue
                 observer().trigger(event_name=event_name, event_args=event_args)
-            if len(cleanup) > 0:
+            if cleanup is not None and len(cleanup) > 0:
                 # reverse list to allow removing form highest to lowest to avoid errors
                 cleanup.reverse()
                 for i in cleanup:

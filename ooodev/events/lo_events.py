@@ -83,9 +83,11 @@ class _event_base(object):
         """
 
         if self._callbacks is not None and event_name in self._callbacks:
-            cleanup = []
+            cleanup = None
             for i, callback in enumerate(self._callbacks[event_name]):
                 if callback() is None:
+                    if cleanup is None:
+                        cleanup = []
                     cleanup.append(i)
                     continue
                 if event_args is not None:
@@ -96,7 +98,7 @@ class _event_base(object):
                     except AttributeError:
                         # event_arg is None
                         callback()(self, None)
-            if len(cleanup) > 0:
+            if cleanup is not None and len(cleanup) > 0:
                 cleanup.reverse()
                 for i in cleanup:
                     self._callbacks[event_name].pop(i)
@@ -151,13 +153,15 @@ class LoEvents(_event_base):
 
     def _update_observers(self, event_name: str, event_args: EventArgs) -> None:
         if self._observers is not None:
-            cleanup = []
+            cleanup = None
             for i, observer in enumerate(self._observers):
                 if observer() is None:
+                    if cleanup is None:
+                        cleanup = []
                     cleanup.append(i)
                     continue
                 observer().trigger(event_name=event_name, event_args=event_args)
-            if len(cleanup) > 0:
+            if cleanup is not None and len(cleanup) > 0:
                 # reverse list to allow removing form highest to lowest to avoid errors
                 cleanup.reverse()
                 for i in cleanup:
@@ -190,3 +194,21 @@ def event_ctx(*args: EventArg) -> Generator[event_observer.EventObserver, None, 
     finally:
         e_obj = None
         _ = None  # just to make sure _ is not a ref to e_obj
+
+def is_meth_event(source: str, meth: callable) -> bool:
+    """
+    Gets if event source is the same as meth.
+    This method for for core events.
+
+    Args:
+        event (str): source as str
+        meth (callable): method to test.
+
+    Returns:
+        bool: True if event is rased by meth; Otherwise; False
+    """
+    try:
+        return source == meth.__qualname__
+    except Exception:
+        pass
+    return False

@@ -44,4 +44,4 @@ class SheetCancelArgs(AbstractSheetCancelArgs):
         eargs.name = args.name
         eargs.sheet = args.sheet
         eargs.cancel = args.cancel
-        return args
+        return eargs

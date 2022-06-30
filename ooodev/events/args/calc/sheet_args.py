@@ -54,4 +54,4 @@ class SheetArgs(AbstractSheetArgs):
         eargs.index = args.index
         eargs.name = args.name
         eargs.sheet = args.sheet
-        return args
+        return eargs

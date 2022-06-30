@@ -39,4 +39,4 @@ class DispatchArgs(AbstractDispacthArgs):
         """
         eargs = DispatchArgs(source=args.source, cmd=args.cmd)
         eargs.event_data = args.event_data
-        return args
+        return eargs

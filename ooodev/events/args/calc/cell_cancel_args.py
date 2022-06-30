@@ -42,4 +42,4 @@ class CellCancelArgs(AbstractCellCancelArgs):
         eargs.cells = args.cells
         eargs.event_data = args.event_data
         eargs.cancel = args.cancel
-        return args
+        return eargs
