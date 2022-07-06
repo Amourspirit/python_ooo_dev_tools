@@ -52,7 +52,8 @@ extensions = [
     "sphinx_toolbox.more_autodoc.typevars",
     "sphinx_toolbox.more_autodoc.autoprotocol",
     "sphinx.ext.napoleon",
-    "sphinx_autodoc_typehints",
+    "sphinx.ext.todo",
+    "sphinx_autodoc_typehints"
 ]
     # "sphinx.ext.linkcode",
     
@@ -134,13 +135,33 @@ autodoc_type_aliases = {
 
 autodoc_typehints_format = 'short'
 
+
 # https://stackoverflow.com/questions/9698702/how-do-i-create-a-global-role-roles-in-sphinx
 # custom global roles or any other rst to include
-rst_prolog = """
-.. role:: event(doc)
 
-.. role:: eventref(ref)
-"""
+rst_prolog_lst = []
+rst_prolog_lst.append(".. role:: event(doc)")
+rst_prolog_lst.append("")
+rst_prolog_lst.append(".. role:: eventref(ref)")
+rst_prolog_lst.append("")
+rst_prolog_lst.append(".. |app_name| replace:: OOO Development Tools")
+rst_prolog_lst.append("")
+rst_prolog_lst.append(".. |app_name_bold| replace:: **OOO Development Tools**")
+rst_prolog_lst.append("")
+rst_prolog_lst.append(".. |app_name_short| replace:: ODEV")
+rst_prolog_lst.append("")
+rst_prolog_lst.append(f".. |app_ver| replace:: {__version__}")
+
+
+rst_prolog = "\n".join(rst_prolog_lst)
+
+# set if figures can be referenced as numers. Defalut is False
+numfig = True
+
+# set is todo's will show up.
+# a master list of todo's will be on bottome of main page.
+# https://www.sphinx-doc.org/en/master/usage/extensions/todo.html#module-sphinx.ext.todo
+todo_include_todos = False
 
 # region Not currently Used
 
