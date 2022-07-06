@@ -1,4 +1,93 @@
+/* New Simplified Version 6 CSS */
+/* Step 1: Common Properties: All required to make icons render reliably */
+.icon::before {
+    /* removed font- based rules */
+    display: inline-block;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+}
+
+
 html.writer-html4 .rst-content dl:not(.docutils) .property,
 html.writer-html5 .rst-content dl[class]:not(.option-list):not(.field-list):not(.footnote):not(.glossary):not(.simple) .property {
     display: inline;
 }
+
+a.reference.internal > code > span::before {
+    /* using style CSS custom property */
+    font: var(--fa-font-solid);
+    content: "\f0c1";
+    margin-right: 5px;
+}
+
+a.reference.external::before {
+    /* using style CSS custom property */
+    font: var(--fa-font-solid);
+    content: "\f08e";
+    margin-right: 5px;
+}
+
+.lo-event a.reference.internal span.std-ref, 
+.lo-event a.reference.internal span.doc {
+    /* color: chartreuse; */
+    transition: all 0.2s ease-in-out;
+    font-weight: 700;
+    color: #404040;
+    white-space: normal;
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, Courier, monospace;
+    padding: 2px 5px;
+    background: #fff;
+    border: 1px solid #e1e4e5;
+    font-size: 75%;
+}
+
+.lo-event a.reference.internal span.std-ref::before,
+.lo-event a.reference.internal span.doc::before {
+    /* using style CSS custom property */
+    font: var(--fa-font-solid);
+    content: "\e0b7";
+    margin-right: 5px;
+}
+/* Color for code in an admonition such as a Note or See Also */
+.rst-content .admonition.seealso code,
+.rst-content .admonition.note code {
+     background: #d2e8f9;
+}
+
+.rst-content .admonition.attention code {
+    background: #f0b37e;
+}
+
+.rst-content .admonition code.xref,
+.rst-content .admonition tt.xref,
+a .rst-content .admonition code,
+a .rst-content .admonition tt {
+    color: #05548e;
+}
+/* End Color for code */
+
+/* summary-example is '.. collapse:: example' directive */
+/* Add a bottom margin only when collapsed */
+
+/* Start Summary Example for .. collapse Example sections */
+
+.summary-example {
+    padding: 3px;
+}
+.summary-example:not([open]) {
+    margin-bottom: 24px;
+}
+.summary-example[open] {
+    margin-bottom: 24px;
+    background-color: #f0f5ff;
+    ;
+}
+
+/* Set a code icon after Example word. */
+.summary-example > summary::after {
+    /* using style CSS custom property */
+    font: var(--fa-font-solid);
+    content: "\f121";
+    margin-left: 5px;
+}
+/* End Summary Example for .. collapse Example sections */

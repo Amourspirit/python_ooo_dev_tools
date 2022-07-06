@@ -1,0 +1,2 @@
+When global :py:attr:`GblNamedEvent.PRINTING <.events.gbl_named_event.GblNamedEvent.PRINTING>` event is canceled it will silently exits method.
+See :py:class:`~.events.args.cancel_event_args.CancelEventArgs`

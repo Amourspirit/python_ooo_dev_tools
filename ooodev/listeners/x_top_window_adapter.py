@@ -1,7 +1,12 @@
 from __future__ import annotations
-import unohelper
-
 from typing import TYPE_CHECKING
+from ..mock import mock_g
+
+if mock_g.DOCS_BUILDING:
+    from ..mock import unohelper
+else:
+    import unohelper
+
 from com.sun.star.awt import XTopWindowListener
 
 if TYPE_CHECKING:

@@ -3,17 +3,15 @@
 from __future__ import annotations
 from logging import exception
 import sys
-from typing import TYPE_CHECKING, Iterable, List, Tuple, cast, overload
+from typing import TYPE_CHECKING, Iterable, overload
 from enum import IntEnum, Enum
 import uno
 
 from com.sun.star.accessibility import XAccessible
 from com.sun.star.accessibility import XAccessibleContext
 from com.sun.star.awt import PosSize  # const
-from com.sun.star.awt import Rectangle  # struct
 from com.sun.star.awt import WindowAttribute  # const
 from com.sun.star.awt import VclWindowPeerAttribute  # const
-from com.sun.star.awt import WindowDescriptor  # struct
 from com.sun.star.awt import XExtendedToolkit
 from com.sun.star.awt import XMenuBar
 from com.sun.star.awt import XMessageBox
@@ -22,7 +20,6 @@ from com.sun.star.awt import XToolkit
 from com.sun.star.awt import XUserInputInterception
 from com.sun.star.awt import XWindow
 from com.sun.star.awt import XWindowPeer
-from com.sun.star.awt.WindowClass import TOP as WC_TOP, MODALTOP as WC_MODALTOP
 from com.sun.star.beans import XPropertySet
 from com.sun.star.container import XIndexContainer
 from com.sun.star.frame import XDispatchProviderInterception
@@ -32,7 +29,6 @@ from com.sun.star.frame import XFramesSupplier
 from com.sun.star.frame import XModel
 from com.sun.star.lang import SystemDependent  # const
 from com.sun.star.lang import XComponent
-from com.sun.star.view import DocumentZoomType  # const
 from com.sun.star.view import XControlAccess
 from com.sun.star.view import XSelectionSupplier
 from com.sun.star.ui import UIElementType  # const
@@ -41,18 +37,22 @@ from com.sun.star.ui import XUIConfigurationManagerSupplier
 from com.sun.star.ui import XUIConfigurationManager
 
 if TYPE_CHECKING:
-    # from com.sun.star.awt import Toolkit
     from com.sun.star.frame import XController
     from com.sun.star.awt import XTopWindow
     from com.sun.star.ui import XUIElement
 
-from ..exceptions import ex as mEx
 from ..utils import lo as mLo
 from ..utils import props as mProps
 from ..utils import info as mInfo
-from ..utils import sys_info as m_sys_info
 from ..utils import file_io as mFileIO
 
+from ..utils import sys_info as m_sys_info
+from ..exceptions import ex as mEx
+
+from ooo.dyn.awt.rectangle import Rectangle
+from ooo.dyn.awt.window_descriptor import WindowDescriptor
+from ooo.dyn.awt.window_class import WindowClass
+from ooo.dyn.view.document_zoom_type import DocumentZoomTypeEnum
 # endregion Imports
 
 SysInfo = m_sys_info.SysInfo
@@ -62,12 +62,7 @@ class GUI:
 
     # region Class Enums
     # view settings zoom constants
-    class ZoomEnum(IntEnum):
-        OPTIMAL = DocumentZoomType.OPTIMAL
-        PAGE_WIDTH = DocumentZoomType.PAGE_WIDTH
-        ENTIRE_PAGE = DocumentZoomType.ENTIRE_PAGE
-        BY_VALUE = DocumentZoomType.BY_VALUE
-        PAGE_WIDTH_EXACT = DocumentZoomType.PAGE_WIDTH_EXACT
+    ZoomEnum = DocumentZoomTypeEnum
 
     # endregion Class Enums
 
@@ -159,7 +154,7 @@ class GUI:
         TRANSLATION_BAR = "translationbar"
         VIEWER_BAR = "viewerbar"
         ZOOM_BAR = "zoombar"
-        
+
         def __str__(self) -> str:
             return self.value
 
@@ -168,10 +163,10 @@ class GUI:
     # region ---------------- toolbar addition -------------------------
 
     @classmethod
-    def get_toobar_resource(cls, name: ToolBarName) -> str:
+    def get_toobar_resource(cls, name: GUI.ToolBarName) -> str:
         """
         Get toolbar resource for name
-        
+
         Args:
             name (ToolBarName): Name of resource
 
@@ -180,7 +175,6 @@ class GUI:
         """
         resource = f"private:resource/toolbar/{name}"
         return resource
-
 
     @classmethod
     def add_item_to_toolbar(cls, doc: XComponent, toolbar_name: str, item_name: str, im_fnm: str) -> None:
@@ -195,6 +189,7 @@ class GUI:
 
         """
         from com.sun.star.graphic import XGraphicProvider
+
         def load_graphic_file(im_fnm: str):
             # this method is also in Images module.
             # images module currently does not run as macro.
@@ -256,10 +251,7 @@ class GUI:
         xtoolkit = mLo.Lo.create_instance_mcf(XToolkit, "com.sun.star.awt.Toolkit")
         if xtoolkit is None:
             raise mEx.MissingInterfaceError(XToolkit)
-        desc = WindowDescriptor()
-        desc.Type = WC_TOP
-        desc.WindowServiceName = "modelessdialog"
-        desc.ParentIndex = -1
+        desc = WindowDescriptor(Type=WindowClass.TOP, WindowServiceName="modelessdialog", ParentIndex=-1)
 
         desc.Bounds = Rectangle(x, y, width, height)
         desc.WindowAttributes = (
@@ -314,13 +306,14 @@ class GUI:
         xpeer = mLo.Lo.qi(XWindowPeer, xwindow)
         if xpeer is None:
             raise mEx.MissingInterfaceError(XWindowPeer)
-        desc = WindowDescriptor()
-        desc.Type = WC_MODALTOP
-        desc.WindowServiceName = "infobox"
-        desc.ParentIndex = -1
-        desc.Parent = xpeer
-        desc.Bounds = Rectangle(0, 0, 300, 200)
-        desc.WindowAttributes = WindowAttribute.BORDER | WindowAttribute.MOVEABLE | WindowAttribute.CLOSEABLE
+        desc = WindowDescriptor(
+            Type=WindowClass.MODALTOP,
+            WindowServiceName="infobox",
+            ParentIndex=-1,
+            Parent=xpeer,
+            Bounds=Rectangle(0, 0, 300, 200),
+            WindowAttributes=WindowAttribute.BORDER | WindowAttribute.MOVEABLE | WindowAttribute.CLOSEABLE,
+        )
 
         desc_peer = xtoolkit.createWindow(desc)
         if desc_peer is None:
@@ -456,7 +449,6 @@ class GUI:
         if result is None:
             raise mEx.MissingInterfaceError(XSelectionSupplier)
         return result
-            
 
     @classmethod
     def get_dpi(cls, doc: XComponent) -> XDispatchProviderInterception:
@@ -473,7 +465,7 @@ class GUI:
             XDispatchProviderInterception: Dispatch provider interception
         """
         xframe = cls.get_frame(doc)
-        result =  mLo.Lo.qi(XDispatchProviderInterception, xframe)
+        result = mLo.Lo.qi(XDispatchProviderInterception, xframe)
         if result is None:
             raise mEx.MissingInterfaceError(XDispatchProviderInterception)
         return result
@@ -736,7 +728,7 @@ class GUI:
     # region ---------------- zooming ----------------------------------
 
     @classmethod
-    def zoom(cls, view: ZoomEnum) -> None:
+    def zoom(cls, view: GUI.ZoomEnum) -> None:
         """
         Sets document zoom level.
 
@@ -767,7 +759,7 @@ class GUI:
 
     @overload
     @classmethod
-    def zoom_value(cls, value: int, view: ZoomEnum) -> None:
+    def zoom_value(cls, value: int, view: GUI.ZoomEnum) -> None:
         """
         Sets document custom zoom.
 
@@ -778,7 +770,7 @@ class GUI:
         ...
 
     @classmethod
-    def zoom_value(cls, value: int, view: ZoomEnum = ZoomEnum.BY_VALUE) -> None:
+    def zoom_value(cls, value: int, view: GUI.ZoomEnum = ZoomEnum.BY_VALUE) -> None:
         """
         Sets document custom zoom.
 
@@ -849,7 +841,7 @@ class GUI:
         try:
             return xsupplier.getUIConfigurationManager(str(doc_type))
         except Exception as e:
-            raise Exception(f"Could not create a config manager using '{doc_type}'") from e           
+            raise Exception(f"Could not create a config manager using '{doc_type}'") from e
 
     # region print_ui_cmds()
 
@@ -895,7 +887,7 @@ class GUI:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('ui_elem_name', 'config_man', 'doc')
+            valid_keys = ("ui_elem_name", "config_man", "doc")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("print_ui_cmds() got an unexpected keyword argument")
@@ -1019,7 +1011,7 @@ class GUI:
                 raise mEx.MissingInterfaceError(XLayoutManager)
             return lm
         except Exception as e:
-                raise Exception("Could not access layout manager") from e
+            raise Exception("Could not access layout manager") from e
 
     # endregion    get_layout_manager()
 
@@ -1096,7 +1088,7 @@ class GUI:
     def get_ui_element_type_str(t: int) -> str:
         """
         Converts const value to element type string
-        
+
         `UIElementType <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1ui_1_1UIElementType.html>`_
         determines the type of a user interface element which is controlled by a layout manager.
 
@@ -1267,7 +1259,6 @@ class GUI:
         # the XMenuBar reference is a property of the menubar UI
         if bar is None:
             raise mEx.MissingInterfaceError(XMenuBar)
-       
 
     @classmethod
     def get_menu_max_id(cls, bar: XMenuBar) -> int:

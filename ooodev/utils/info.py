@@ -8,6 +8,8 @@ from pathlib import Path
 import mimetypes
 from typing import TYPE_CHECKING, Tuple, List, cast, overload, Optional
 import uno
+from ..events.event_singleton import _Events
+from ..events.lo_named_event import LoNamedEvent
 from .sys_info import SysInfo
 
 from com.sun.star.awt import XToolkit
@@ -36,11 +38,15 @@ if TYPE_CHECKING:
 from . import lo as mLo
 from . import file_io as mFileIO
 from . import props as mProps
+
 from . import date_time_util as mDate
+from ..meta.static_meta import StaticProperty, classproperty
 from ..exceptions import ex as mEx
+from ..events.args.event_args import EventArgs
+from .type_var import PathOrStr
 
 
-class Info:
+class Info(metaclass=StaticProperty):
 
     REG_MOD_FNM = "registrymodifications.xcu"
     NODE_PRODUCT = "/org.openoffice.Setup/Product"
@@ -124,7 +130,7 @@ class Info:
         names.sort()
         return names
 
-    @classmethod
+    @staticmethod
     def get_font_mono_name() -> str:
         """
         Gets a general font such as ``Courier New`` (windows) or ``Liberation Mono``
@@ -141,7 +147,7 @@ class Info:
         else:
             return "Liberation Mono"  # Metrically compatible with Courier New
 
-    @classmethod
+    @staticmethod
     def get_font_general_name() -> str:
         """
         Gets a general font such as ``Times New Roman`` (windows) or ``Liberation Serif``
@@ -319,13 +325,17 @@ class Info:
     @classmethod
     def _get_config1(cls, node_str: str, node_path: str):
         props = cls.get_config_props(node_path)
-        return mProps.Props.get_property(xprops=props, name=node_str)
+        return mProps.Props.get_property(prop_set=props, name=node_str)
 
     @classmethod
     def _get_config2(cls, node_str: str) -> object:
+        
         for node_path in cls.NODE_PATHS:
-            return cls._get_config1(node_str=node_str, node_path=node_path)
-        raise ValueError(f"{node_str} not found")
+            try:
+                return cls._get_config1(node_str=node_str, node_path=node_path)
+            except mEx.PropertyNotFoundError:
+                pass
+        raise mEx.ConfigError(f"{node_str} not found in common node paths")
 
     @staticmethod
     def get_config_props(node_path: str) -> XPropertySet:
@@ -599,12 +609,12 @@ class Info:
     # =================== getting info about a document ====================
 
     @staticmethod
-    def get_name(fnm: str) -> str:
+    def get_name(fnm: PathOrStr) -> str:
         """
         Gets the file's name from the supplied string minus the extension
 
         Args:
-            fnm (str): File path
+            fnm (PathOrStr): File path
 
         Raises:
             ValueError: If fnm is empty string
@@ -624,12 +634,12 @@ class Info:
         return p.stem
 
     @staticmethod
-    def get_ext(fnm: str) -> str | None:
+    def get_ext(fnm: PathOrStr) -> str | None:
         """
         Gets file extenson without the ``.``
 
         Args:
-            fnm (str): file path
+            fnm (PathOrStr): file path
 
         Raises:
             ValueError: If fnm is empty string
@@ -649,7 +659,7 @@ class Info:
         return p.suffix[1:]
 
     @staticmethod
-    def get_unique_fnm(fnm: str) -> str:
+    def get_unique_fnm(fnm: PathOrStr) -> str:
         """
         If a file called fnm already exists, then a number
         is added to the name so the filename is unique
@@ -665,18 +675,18 @@ class Info:
         ext = p.suffix
         i = 1
         while p.exists():
-            fnm = f"{fname}{i}{ext}"
-            p = p.parent / fnm
+            name = f"{fname}{i}{ext}"
+            p = p.parent / name
             i += 1
         return str(p)
 
     @staticmethod
-    def get_doc_type(fnm: str) -> str:
+    def get_doc_type(fnm: PathOrStr) -> str:
         """
         Gets doc type from file path
 
         Args:
-            fnm (str): File Path
+            fnm (PathOrStr): File Path
 
         Raises:
             ValueError: if Unable to get doc type
@@ -809,12 +819,12 @@ class Info:
             raise ValueError("Could not get service information") from e
 
     @staticmethod
-    def get_mime_type(fnm: str) -> str:
+    def get_mime_type(fnm: PathOrStr) -> str:
         """
         Get mime type for a file path
 
         Args:
-            fnm (str): file path
+            fnm (PathOrStr): file path
 
         Returns:
             str: Mime type of file if found. Defaults to 'application/octet-stream'
@@ -1009,7 +1019,7 @@ class Info:
         try:
             si = mLo.Lo.qi(XServiceInfo, obj)
             if si is None:
-                raise mEx.MissingInterfaceError(XServiceInfo)
+                return False
             return si.supportsService(srv)
         except Exception as e:
             print("Errors ocurred in support_service(). Returning False")
@@ -1231,9 +1241,33 @@ class Info:
             print(f"  {method}")
 
     # -------------------------- style info --------------------------
-
     @staticmethod
-    def get_style_family_names(doc: object) -> List[str] | None:
+    def get_style_families(doc: object) -> XNameAccess:
+        """
+        Gets a list of style family names
+
+        Args:
+            doc (object): office document
+
+        Raises:
+            MissingInterfaceError: If Doc does not implement XStyleFamiliesSupplier interface
+            Exception: If unabale to get style families
+
+        Returns:
+            XNameAccess: Style Famileis
+        """
+        try:
+            xsupplier = mLo.Lo.qi(XStyleFamiliesSupplier, doc)
+            if xsupplier is None:
+                raise mEx.MissingInterfaceError(XStyleFamiliesSupplier)
+            return xsupplier.getStyleFamilies()
+        except  mEx.MissingInterfaceError:
+            raise
+        except Exception as e:
+            raise Exception("Unable to get family style names") from e
+
+    @classmethod
+    def get_style_family_names(cls, doc: object) -> List[str] | None:
         """
         Gets a list of style family names
 
@@ -1244,10 +1278,7 @@ class Info:
             List[str] | None: List of style names on success; Otherwise, None
         """
         try:
-            xsupplier = mLo.Lo.qi(XStyleFamiliesSupplier, doc)
-            if xsupplier is None:
-                raise mEx.MissingInterfaceError(XStyleFamiliesSupplier)
-            name_acc = xsupplier.getStyleFamilies()
+            name_acc = cls.get_style_families()
             names = name_acc.getElementNames()
             lst = list(names)
             lst.sort()
@@ -1257,8 +1288,8 @@ class Info:
             print(f"    {e}")
         return None
 
-    @staticmethod
-    def get_style_container(doc: object, family_style_name: str) -> XNameContainer:
+    @classmethod
+    def get_style_container(cls, doc: object, family_style_name: str) -> XNameContainer:
         """
         Gets style container of document for a family of styles
 
@@ -1267,19 +1298,13 @@ class Info:
             family_style_name (str): Family style name
 
         Raises:
-            MissingInterfaceError: if doc is missing XStyleFamiliesSupplier interface
             MissingInterfaceError: if unable to obtain XNameContainer interface
 
         Returns:
             XNameContainer: Style Family container
         """
-        xsupplier = mLo.Lo.qi(XStyleFamiliesSupplier, doc)
-        if xsupplier is None:
-            raise mEx.MissingInterfaceError(XStyleFamiliesSupplier)
-        name_acc = xsupplier.getStyleFamilies()
-        xcontianer = mLo.Lo.qi(XNameContainer, name_acc.getByName(family_style_name))
-        if xcontianer is None:
-            raise mEx.MissingInterfaceError(XNameContainer)
+        name_acc = cls.get_style_families(doc)
+        xcontianer = mLo.Lo.qi(XNameContainer, name_acc.getByName(family_style_name), raise_err=True)
         return xcontianer
 
     @classmethod
@@ -1621,7 +1646,7 @@ class Info:
         return list(result)
 
     @classmethod
-    def is_import(cls, filter_flags: Filter) -> bool:
+    def is_import(cls, filter_flags: Info.Filter) -> bool:
         """
         Gets if filter flags has ``Filter.IMPORT`` flag set
 
@@ -1634,7 +1659,7 @@ class Info:
         return (filter_flags & cls.Filter.IMPORT) == cls.Filter.IMPORT
 
     @classmethod
-    def is_export(cls, filter_flags: Filter) -> bool:
+    def is_export(cls, filter_flags: Info.Filter) -> bool:
         """
         Gets if filter flags has ``Filter.EXPORT`` flag set
 
@@ -1647,7 +1672,7 @@ class Info:
         return (filter_flags & cls.Filter.EXPORT) == cls.Filter.EXPORT
 
     @classmethod
-    def is_template(cls, filter_flags: Filter) -> bool:
+    def is_template(cls, filter_flags: Info.Filter) -> bool:
         """
         Gets if filter flags has ``Filter.TEMPLATE`` flag set
 
@@ -1660,7 +1685,7 @@ class Info:
         return (filter_flags & cls.Filter.TEMPLATE) == cls.Filter.TEMPLATE
 
     @classmethod
-    def is_internal(cls, filter_flags: Filter) -> bool:
+    def is_internal(cls, filter_flags: Info.Filter) -> bool:
         """
         Gets if filter flags has ``Filter.INTERNAL`` flag set
 
@@ -1673,7 +1698,7 @@ class Info:
         return (filter_flags & cls.Filter.INTERNAL) == cls.Filter.INTERNAL
 
     @classmethod
-    def is_template_path(cls, filter_flags: Filter) -> bool:
+    def is_template_path(cls, filter_flags: Info.Filter) -> bool:
         """
         Gets if filter flags has ``Filter.TEMPLATEPATH`` flag set
 
@@ -1686,7 +1711,7 @@ class Info:
         return (filter_flags & cls.Filter.TEMPLATEPATH) == cls.Filter.TEMPLATEPATH
 
     @classmethod
-    def is_own(cls, filter_flags: Filter) -> bool:
+    def is_own(cls, filter_flags: Info.Filter) -> bool:
         """
         Gets if filter flags has ``Filter.OWN`` flag set
 
@@ -1699,7 +1724,7 @@ class Info:
         return (filter_flags & cls.Filter.OWN) == cls.Filter.OWN
 
     @classmethod
-    def is_alien(cls, filter_flags: Filter) -> bool:
+    def is_alien(cls, filter_flags: Info.Filter) -> bool:
         """
         Gets if filter flags has ``Filter.ALIEN`` flag set
 
@@ -1712,7 +1737,7 @@ class Info:
         return (filter_flags & cls.Filter.ALIEN) == cls.Filter.ALIEN
 
     @classmethod
-    def is_default(cls, filter_flags: Filter) -> bool:
+    def is_default(cls, filter_flags: Info.Filter) -> bool:
         """
         Gets if filter flags has ``Filter.DEFAULT`` flag set
 
@@ -1725,7 +1750,7 @@ class Info:
         return (filter_flags & cls.Filter.DEFAULT) == cls.Filter.DEFAULT
 
     @classmethod
-    def is_support_selection(cls, filter_flags: Filter) -> bool:
+    def is_support_selection(cls, filter_flags: Info.Filter) -> bool:
         """
         Gets if filter flags has ``Filter.SUPPORTSSELECTION`` flag set
 
@@ -1738,7 +1763,7 @@ class Info:
         return (filter_flags & cls.Filter.SUPPORTSSELECTION) == cls.Filter.SUPPORTSSELECTION
 
     @classmethod
-    def is_not_in_file_dialog(cls, filter_flags: Filter) -> bool:
+    def is_not_in_file_dialog(cls, filter_flags: Info.Filter) -> bool:
         """
         Gets if filter flags has ``Filter.NOTINFILEDIALOG`` flag set
 
@@ -1751,7 +1776,7 @@ class Info:
         return (filter_flags & cls.Filter.NOTINFILEDIALOG) == cls.Filter.NOTINFILEDIALOG
 
     @classmethod
-    def is_not_in_chooser(cls, filter_flags: Filter) -> bool:
+    def is_not_in_chooser(cls, filter_flags: Info.Filter) -> bool:
         """
         Gets if filter flags has ``Filter.NOTINCHOOSER`` flag set
 
@@ -1764,7 +1789,7 @@ class Info:
         return (filter_flags & cls.Filter.NOTINCHOOSER) == cls.Filter.NOTINCHOOSER
 
     @classmethod
-    def is_read_only(cls, filter_flags: Filter) -> bool:
+    def is_read_only(cls, filter_flags: Info.Filter) -> bool:
         """
         Gets if filter flags has ``Filter.READONLY`` flag set
 
@@ -1777,7 +1802,7 @@ class Info:
         return (filter_flags & cls.Filter.READONLY) == cls.Filter.READONLY
 
     @classmethod
-    def is_third_party_filter(cls, filter_flags: Filter) -> bool:
+    def is_third_party_filter(cls, filter_flags: Info.Filter) -> bool:
         """
         Gets if filter flags has ``Filter.THIRDPARTYFILTER`` flag set
 
@@ -1790,7 +1815,7 @@ class Info:
         return (filter_flags & cls.Filter.THIRDPARTYFILTER) == cls.Filter.THIRDPARTYFILTER
 
     @classmethod
-    def is_preferred(cls, filter_flags: Filter) -> bool:
+    def is_preferred(cls, filter_flags: Info.Filter) -> bool:
         """
         Gets if filter flags has ``Filter.PREFERRED`` flag set
 
@@ -1880,3 +1905,60 @@ class Info:
         if hasattr(obj, "__pyunointerface__"):
             return obj.__pyunointerface__
         return None
+
+
+    @classproperty
+    def language(cls) -> str:
+        """
+        Gets the Current Language of the LibreOffice Instance
+
+        Returns:
+            str: First two chars of languag in lower case such as 'en-US'
+        """
+
+        try:
+            return cls._language
+        except AttributeError:
+            lang = cls.get_config(node_str="ooLocale")
+            cls._language = str(lang)
+        return cls._language
+
+    @language.setter
+    def language(cls, value) -> None:
+        # raise error on set. Not really neccesary but gives feedback.
+        raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
+    
+    @classproperty
+    def version(cls) -> str:
+        """
+        Gets the running LibreOffice version
+
+        Returns:
+            str: version as string
+        """
+
+        try:
+            return cls._version
+        except AttributeError:
+            lang = cls.get_config(node_str="ooSetupVersion")
+            cls._version = str(lang)
+        return cls._version
+
+    @version.setter
+    def version(cls, value) -> None:
+        # raise error on set. Not really neccesary but gives feedback.
+        raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
+
+
+def _del_cache_attrs(source: object, e: EventArgs) -> None:
+    # clears Write Attributes that are dynamically created
+    dattrs = ("_language", "_version")
+    for attr in dattrs:
+        if hasattr(Info, attr):
+            delattr(Info, attr)
+
+
+# subscribe to events that warrant clearing cached attribs
+_Events().on(LoNamedEvent.RESET, _del_cache_attrs)
+
+__all__ = ("Info",)

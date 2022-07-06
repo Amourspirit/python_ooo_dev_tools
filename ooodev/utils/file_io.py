@@ -21,7 +21,9 @@ if TYPE_CHECKING:
     from com.sun.star.container import XNameAccess
     from com.sun.star.io import XInputStream
 
-from . import lo as Util
+from . import lo as mLo
+
+from .type_var import PathOrStr
 
 # if sys.version_info >= (3, 10):
 #     from typing import Union
@@ -46,17 +48,17 @@ class FileIO:
         return _UTIL_PATH
 
     @staticmethod
-    def get_absolute_path(fnm: str) -> str:
+    def get_absolute_path(fnm: PathOrStr) -> str:
         """
         Gets Absolute path
 
         Args:
-            fnm (str): path as string
+            fnm (PathOrStr): path as string
 
         Returns:
             str: absolute path
         """
-        return os.path.abspath(fnm)
+        return os.path.abspath(Path(fnm))
 
     @staticmethod
     def url_to_path(url: str) -> str:
@@ -81,12 +83,12 @@ class FileIO:
 
 
     @staticmethod
-    def fnm_to_url(fnm: str) -> str:
+    def fnm_to_url(fnm: PathOrStr) -> str:
         """
         Converts file path to url
 
         Args:
-            fnm (str): file path
+            fnm (PathOrStr): file path
 
         Raises:
             Exception: If unalbe to get url form fnm.
@@ -114,12 +116,12 @@ class FileIO:
         return cls.url_to_path(url=uri_fnm)
 
     @staticmethod
-    def get_file_names(dir: str) -> List[str]:
+    def get_file_names(dir: PathOrStr) -> List[str]:
         """
         Gets a list of filenames in a folder
 
         Args:
-            dir (str): Folder path
+            dir (PathOrStr): Folder path
 
         Returns:
             List[str]: List of files.
@@ -129,12 +131,12 @@ class FileIO:
         return files
 
     @staticmethod
-    def get_fnm(path: str) -> str:
+    def get_fnm(path: PathOrStr) -> str:
         """
         Gets last part of a file or dir such as myfile.txt
 
         Args:
-            path (str): file path
+            path (PathOrStr): file path
 
         Returns:
             str: file name portion
@@ -155,12 +157,12 @@ class FileIO:
     # region ------------- file creation / deletion --------------------
 
     @staticmethod
-    def is_openable(fnm: str) -> bool:
+    def is_openable(fnm: PathOrStr) -> bool:
         """
         Gets if a file can be opened
 
         Args:
-            fnm (str): file path
+            fnm (PathOrStr): file path
 
         Returns:
             bool: True if file can be opened; Otherwise, False
@@ -182,15 +184,15 @@ class FileIO:
         return False
 
     @staticmethod
-    def make_directory(dir: str | Path) -> None:
+    def make_directory(dir: PathOrStr) -> None:
         """
         Creates path and subpaths not existing.
 
         Args:
-            dest_dir (str | Path): PathLike object
+            dest_dir (PathOrStr): PathLike object
         """
         # Python ≥ 3.5
-        if isinstance(dir, Path):
+        if isinstance(dir, os.PathLike):
             dir.mkdir(parents=True, exist_ok=True)
         else:
             Path(dir).mkdir(parents=True, exist_ok=True)
@@ -216,12 +218,12 @@ class FileIO:
             raise Exception("Could not create temp file") from e
 
     @staticmethod
-    def delete_file(fnm: str) -> bool:
+    def delete_file(fnm: PathOrStr) -> bool:
         """
         Deletes a file
 
         Args:
-            fnm (str): file to delete
+            fnm (PathOrStr): file to delete
 
         Returns:
             bool: True if delete is successful; Otherwise, False
@@ -235,7 +237,7 @@ class FileIO:
         return True
 
     @classmethod
-    def delete_files(cls, *fnms:str) -> bool:
+    def delete_files(cls, *fnms:PathOrStr) -> bool:
         """
         Deletes files
         
@@ -254,7 +256,7 @@ class FileIO:
         return result
 
     @staticmethod
-    def save_string(fnm: str, data: str) -> None:
+    def save_string(fnm: PathOrStr, data: str) -> None:
         if data is None:
             raise ValueError(f"No data to save in '{fnm}'")
         try:
@@ -265,7 +267,7 @@ class FileIO:
             raise Exception(f"Could not save string to file: {fnm}") from e
 
     @staticmethod
-    def save_bytes(fnm: str, b: bytes) -> None:
+    def save_bytes(fnm: PathOrStr, b: bytes) -> None:
         if b is None:
             raise ValueError(f"'b' is null. No data to save in '{fnm}'")
         try:
@@ -276,12 +278,12 @@ class FileIO:
             raise Exception(f"Could not save bytes to file: {fnm}") from e
 
     @staticmethod
-    def save_array(fnm: str, arr: List[list]) -> None:
+    def save_array(fnm: PathOrStr, arr: List[list]) -> None:
         """
         Saves a 2d array to a file as tab delimited data.
 
         Args:
-            fnm (str): file to save data to
+            fnm (PathOrStr): file to save data to
             arr (List[list]): 2d array of data.
         """
         if arr is None:
@@ -301,12 +303,12 @@ class FileIO:
             raise Exception(f"Could not save array to file: {fnm}") from e
 
     @staticmethod
-    def append_to(fnm: str, msg: str) -> None:
+    def append_to(fnm: PathOrStr, msg: str) -> None:
         """
         Appends text to a file
 
         Args:
-            fnm (str): File to append text to.
+            fnm (PathOrStr): File to append text to.
             msg (str): Text to append.
 
         Raises:
@@ -323,28 +325,28 @@ class FileIO:
 
     # region ------------- zip access ----------------------------------
     @classmethod
-    def zip_access(cls, fnm: str) -> XZipFileAccess:
-        return Util.Lo.create_instance_mcf(
+    def zip_access(cls, fnm: PathOrStr) -> XZipFileAccess:
+        return mLo.Lo.create_instance_mcf(
             XZipFileAccess, "com.sun.star.packages.zip.ZipFileAccess", (cls.fnm_to_url(fnm),)
         )
 
     @classmethod
-    def zip_list_uno(cls, fnm: str) -> None:
+    def zip_list_uno(cls, fnm: PathOrStr) -> None:
         """Use zip_list method"""
         # replaced by more detailed Java version; see below
         zfa: XNameAccess = cls.zip_access(fnm)
         names = zfa.getElementNames()
         print(f"\nZippendContents of '{fnm}'")
-        Util.Lo.print_names(names, 1)
+        mLo.Lo.print_names(names, 1)
 
     @staticmethod
-    def unzip_file(zfa: XZipFileAccess, fnm: str) -> None:
+    def unzip_file(zfa: XZipFileAccess, fnm: PathOrStr) -> None:
         """
         Unzip File. Not yet imeplemented
 
         Args:
             zfa (XZipFileAccess): Zip File Access
-            fnm (str): File path
+            fnm (PathOrStr): File path
 
         Raises:
             NotImplementedError:
@@ -365,8 +367,8 @@ class FileIO:
         """
         lines = []
         try:
-            tis = Util.Lo.create_instance_mcf(XTextInputStream, "com.sun.star.io.TextInputStream")
-            sink = Util.Lo.qi(XActiveDataSink, tis)
+            tis = mLo.Lo.create_instance_mcf(XTextInputStream, "com.sun.star.io.TextInputStream")
+            sink = mLo.Lo.qi(XActiveDataSink, tis)
             sink.setInputStream(in_stream)
 
             while tis.isEOF() is False:
@@ -407,12 +409,12 @@ class FileIO:
     # region ------------- switch to Python's zip APIs -----------------
 
     @staticmethod
-    def zip_list(fnm: str) -> None:
+    def zip_list(fnm: PathOrStr) -> None:
         """
         Prints info to console for a give zip file.
 
         Args:
-            fnm (str): Path to zip file.
+            fnm (PathOrStr): Path to zip file.
         """
         try:
             with zipfile.ZipFile(fnm, "r") as zip:

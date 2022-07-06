@@ -167,7 +167,7 @@ class ViewState:
             raise ValueError("No vertical split, so focus number must be 0 or 1")
         self._pane_focus_num = value
 
-    def move_pane_focus(self, dir: int | PaneEnum) -> bool:
+    def move_pane_focus(self, dir: int | ViewState.PaneEnum) -> bool:
         """
         Moves pane focus
 

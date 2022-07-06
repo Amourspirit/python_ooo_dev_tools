@@ -1,7 +1,8 @@
 import pytest
+
 if __name__ == "__main__":
     pytest.main([__file__])
-from ooodev.utils.gen_util import TableHelper
+from ooodev.utils.table_helper import TableHelper
 
 
 def test_create_2d():
@@ -125,14 +126,15 @@ def test_to_2d_list():
     assert lst[0][2] == "three"
     assert lst[1][1] == "b"
     assert lst[2][0] == 1
-    
+
     #  1-row 2D array
-    obj = ("one", 'two', 'three')
+    obj = ("one", "two", "three")
     tpl = TableHelper.to_2d_list(obj)
     assert isinstance(tpl, list)
     assert len(tpl) == 1
     assert isinstance(tpl[0], list)
     assert tpl[0][0] == "one"
+
 
 def test_to_2d_tuple():
     obj = [["one"]]
@@ -141,7 +143,7 @@ def test_to_2d_tuple():
     assert len(tpl) == 1
     assert isinstance(tpl[0], tuple)
     assert tpl[0][0] == "one"
-    
+
     obj = [["one", "two", "three"], ["a", "b", "c"], [1, 2, 3]]
     tpl = TableHelper.to_2d_tuple(obj)
     assert isinstance(tpl, tuple)
@@ -151,7 +153,7 @@ def test_to_2d_tuple():
     assert tpl[0][2] == "three"
     assert tpl[1][1] == "b"
     assert tpl[2][0] == 1
-    
+
     obj = [("one", "two", "three"), ["a", "b", "c"], (1, 2, 3)]
     tpl = TableHelper.to_2d_tuple(obj)
     assert isinstance(tpl, tuple)
@@ -161,36 +163,86 @@ def test_to_2d_tuple():
     assert tpl[0][2] == "three"
     assert tpl[1][1] == "b"
     assert tpl[2][0] == 1
-    
+
     #  1-row 2D array
-    obj = ["one", 'two', 'three']
+    obj = ["one", "two", "three"]
     tpl = TableHelper.to_2d_tuple(obj)
     assert isinstance(tpl, tuple)
     assert len(tpl) == 1
     assert isinstance(tpl[0], tuple)
     assert tpl[0][0] == "one"
 
+
 def test_col_name_to_int():
-    name = 'a'
+    name = "a"
     i = TableHelper.col_name_to_int(name)
     assert i == 1
-    
-    name = 'A'
+
+    name = "A"
     i = TableHelper.col_name_to_int(name)
     assert i == 1
-    
-    name = 'Z'
+
+    name = "Z"
     i = TableHelper.col_name_to_int(name)
     assert i == 26
-    
-    name = 'AA'
+
+    name = "AA"
     i = TableHelper.col_name_to_int(name)
     assert i == 27
-    
-    name = 'ABC'
+
+    name = "ABC"
     i = TableHelper.col_name_to_int(name)
     assert i == 731
-    
+
     col_name = TableHelper.make_column_name(473)
     i = TableHelper.col_name_to_int(col_name)
     assert i == 473
+
+
+def test_table_2d_to_dict(bond_movies_table) -> None:
+    dt = TableHelper.table_2d_to_dict(bond_movies_table)
+    assert len(dt) == 24
+    row = dt[0]
+    assert row["Title"] == "Dr. No"
+    assert row["Year"] == "1962"
+    assert row["Actor"] == "Sean Connery"
+    assert row["Director"] == "Terence Young"
+    
+    row = dt[11]
+    
+    assert row["Title"] == "For Your Eyes Only"
+    assert row["Year"] == "1981"
+    assert row["Actor"] == "Roger Moore"
+    assert row["Director"] == "John Glen"
+    
+    row = dt[23]
+    
+    assert row["Title"] == "Spectre"
+    assert row["Year"] == "2015"
+    assert row["Actor"] == "Daniel Craig"
+    assert row["Director"] == "Sam Mendes"
+    
+    with pytest.raises(ValueError):
+        TableHelper.table_2d_to_dict([])
+
+def test_table_dict_to_table(bond_movies_lst_dict) -> None:
+    tbl = TableHelper.table_dict_to_table(bond_movies_lst_dict)
+    assert len(tbl) == 25
+    cols = tbl[0]
+    assert cols[0] == "Title"
+    assert cols[1] == "Year"
+    assert cols[2] == "Actor"
+    assert cols[3] == "Director"
+    
+    tbl[12][0] == "For Your Eyes Only"
+    tbl[12][1] == "1981"
+    tbl[12][2] == "Roger Moore"
+    tbl[12][3] == "John Glen"
+    
+    tbl[24][0] == "Spectre"
+    tbl[24][1] == "2015"
+    tbl[24][2] == "Daniel Craig"
+    tbl[24][3] == "Sam Mendes"
+    
+    with pytest.raises(ValueError):
+        TableHelper.table_dict_to_table([])

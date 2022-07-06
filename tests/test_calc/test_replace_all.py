@@ -8,7 +8,7 @@ from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.utils.props import Props
 from ooodev.utils.uno_enum import UnoEnum
-from ooodev.utils.gen_util import TableHelper
+from ooodev.utils.table_helper import TableHelper
 from ooodev.utils.color import CommonColor
 from ooodev.office.calc import Calc
 

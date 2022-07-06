@@ -3,42 +3,24 @@
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 # region Imports
 from __future__ import annotations
-from enum import IntFlag, Enum, Flag
+from enum import IntEnum, IntFlag, Enum
 import numbers
 import re
 from typing import Any, List, Tuple, cast, overload, Sequence, TYPE_CHECKING
 import uno
 
-from com.sun.star.awt import Point
+# from ..mock import mock_g
+
+# if not mock_g.DOCS_BUILDING:
+# not importing for doc building just result in short import name for
+# args that use these.
+# this is also true becuase docs/conf.py ignores com import for autodoc
 from com.sun.star.container import XIndexAccess
 from com.sun.star.container import XNamed
 from com.sun.star.frame import XModel
 from com.sun.star.lang import XComponent
 from com.sun.star.lang import Locale
-from com.sun.star.sheet import CellFlags as UnoCellFlags # const
-from com.sun.star.sheet.GeneralFunction import (
-    NONE as GF_NONE,
-    AUTO as GF_AUTO,
-    SUM as GF_SUM,
-    COUNT as GF_COUNT,
-    AVERAGE as GF_AVERAGE,
-    MAX as GF_MAX,
-    MIN as GF_MIN,
-    PRODUCT as GF_PRODUCT,
-    COUNTNUMS as GF_COUNTNUMS,
-    STDEV as GF_STDEV,
-    STDEVP as GF_STDEVP,
-    VAR as GF_VAR,
-    VARP as GF_VARP,
-)
 from com.sun.star.sheet import SolverConstraint  # struct
-from com.sun.star.sheet.SolverConstraintOperator import (
-    LESS_EQUAL as SCO_LESS_EQUAL,
-    EQUAL as SCO_EQUAL,
-    GREATER_EQUAL as SCO_GREATER_EQUAL,
-    INTEGER as SCO_INTEGER,
-    BINARY as SCO_BINARY,
-)
 from com.sun.star.sheet import XCellAddressable
 from com.sun.star.sheet import XCellRangeData
 from com.sun.star.sheet import XCellRangeAddressable
@@ -63,20 +45,11 @@ from com.sun.star.sheet import XSpreadsheets
 from com.sun.star.sheet import XUsedAreaCursor
 from com.sun.star.sheet import XViewPane
 from com.sun.star.sheet import XViewFreezable
-from com.sun.star.sheet.CellDeleteMode import LEFT as DM_LEFT, UP as DM_UP
-from com.sun.star.sheet.CellInsertMode import RIGHT as IM_RIGHT, DOWN as IM_DOWN
-from com.sun.star.sheet.FillDateMode import FILL_DATE_DAY
 from com.sun.star.style import XStyle
 from com.sun.star.table import BorderLine2  # struct
 from com.sun.star.table import TableBorder2  # struct
 from com.sun.star.table import XColumnRowRange
 from com.sun.star.table import XCellRange
-from com.sun.star.table.CellContentType import (
-    EMPTY as CCT_EMPTY,
-    VALUE as CCT_VALUE,
-    TEXT as CCT_TEXT,
-    FORMULA as CCT_FORMULA,
-)
 from com.sun.star.text import XSimpleText
 from com.sun.star.uno import Exception as UnoException
 from com.sun.star.util import NumberFormat  # const
@@ -89,8 +62,6 @@ if TYPE_CHECKING:
     from com.sun.star.frame import XComponentLoader
     from com.sun.star.frame import XController
     from com.sun.star.frame import XFrame
-
-    # from com.sun.star.sheet import CellAnnotation
     from com.sun.star.sheet import FunctionArgument  # struct
     from com.sun.star.sheet import XSheetAnnotation
     from com.sun.star.sheet import XDataPilotTables
@@ -104,16 +75,35 @@ if TYPE_CHECKING:
     from com.sun.star.util import XSearchable
     from com.sun.star.util import XSearchDescriptor
 
+from ooo.dyn.awt.point import Point
+from ooo.dyn.sheet.cell_delete_mode import CellDeleteMode
+from ooo.dyn.sheet.cell_flags import CellFlagsEnum
+from ooo.dyn.sheet.cell_insert_mode import CellInsertMode
+from ooo.dyn.sheet.general_function import GeneralFunction as OooGeneralFunction
+from ooo.dyn.sheet.fill_date_mode import FillDateMode as OooFillDateMode
+from ooo.dyn.sheet.solver_constraint_operator import SolverConstraintOperator as OooSolverConstraintOperator
+from ooo.dyn.table.cell_content_type import CellContentType
 
 from ..utils import lo as mLo
 from ..utils import info as mInfo
 from ..utils import gui as mGui
 from ..utils import props as mProps
-from ..utils.gen_util import ArgsHelper, TableHelper, Util as GenUtil
-from ..utils import enum_helper
-from ..utils.color import CommonColor
+from ..utils.gen_util import ArgsHelper, Util as GenUtil
+from ..utils.table_helper import TableHelper
+from ..utils.color import CommonColor, Color
 from ..utils import view_state as mViewState
 from ..exceptions import ex as mEx
+from ..utils.type_var import Row, Column, Table, TupleArray, FloatList, FloatTable
+
+from ..events.calc_named_event import CalcNamedEvent
+from ..events.gbl_named_event import GblNamedEvent
+from ..events.event_singleton import _Events
+from ..events.args.event_args import EventArgs
+from ..events.args.cancel_event_args import CancelEventArgs
+from ..events.args.calc.sheet_args import SheetArgs
+from ..events.args.calc.sheet_cancel_args import SheetCancelArgs
+from ..events.args.calc.cell_args import CellArgs
+from ..events.args.calc.cell_cancel_args import CellCancelArgs
 
 NameVal = ArgsHelper.NameValue
 # endregion Imports
@@ -122,7 +112,7 @@ NameVal = ArgsHelper.NameValue
 class Calc:
     # region classes
     # for headers and footers
-    class HeaderFooter:
+    class HeaderFooter(IntEnum):
         HF_LEFT = 0
         HF_CENTER = 1
         HF_RIGHT = 2
@@ -142,107 +132,17 @@ class Calc:
         TEXT = "TEXT"
         FORMULA = "FORMULA"
         UNKNOWN = "UNKNOWN"
-        
+
         def __str__(self) -> str:
             return self.value
-    
-    class CellFlags(IntFlag):
-        """
-        Enum of Flags for CellFlags constants.
-        
-        See Also:
-            `LibreOffice API CellFlags <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1sheet_1_1CellFlags.html>`_
-        """
-        VALUE = UnoCellFlags.VALUE
-        """Selects constant numeric values that are not formatted as dates or times."""
-        DATETIME = UnoCellFlags.DATETIME
-        """Selects constant numeric values that have a date or time number format."""
-        STRING = UnoCellFlags.STRING
-        """Selects constant strings."""
-        ANNOTATION = UnoCellFlags.ANNOTATION
-        """Selects cell annotations."""
-        FORMULA = UnoCellFlags.FORMULA
-        """Selects formulas."""
-        HARDATTR = UnoCellFlags.HARDATTR
-        """Selects all explicit formatting, but not the formatting which is applied implicitly through style sheets."""
-        STYLES = UnoCellFlags.STYLES
-        """Selects cell styles."""
-        OBJECTS = UnoCellFlags.OBJECTS
-        """Selects drawing objects."""
-        EDITATTR = UnoCellFlags.EDITATTR
-        """Selects formatting within parts of the cell contents."""
-        FORMATTED = UnoCellFlags.FORMATTED
-        """Selects cells with formatting within the cells or cells with more than one paragraph within the cells."""
 
-    class GeneralFunction:
-        """
-        Used to specify a function to be calculated from values. 
-        
-        See Also:
-            `LibreOffice API GeneralFunction <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1sheet.html#ad184d5bd9055f3b4fd57ce72c781758d>`_
-        """
-        __typename__ = "com.sun.star.sheet.GeneralFunction"
-        NONE = GF_NONE
-        """
-        No cells are moved. Sheet is not linked. New values are used without changes.
-        Nothing is calculated. Nothing is imported. No condition is specified.
-        """
-        AUTO = GF_AUTO
-        """Specifies the use of a user-defined list. Function is determined automatically."""
-        SUM = GF_SUM
-        """Sum of all numerical values is calculated."""
-        COUNT = GF_COUNT
-        """all values, including non-numerical values, are counted."""
-        AVERAGE = GF_AVERAGE
-        """Average of all numerical values is calculated."""
-        MAX = GF_MAX
-        """Maximum value of all numerical values is calculated."""
-        MIN = GF_MIN
-        """Minimum value of all numerical values is calculated."""
-        PRODUCT = GF_PRODUCT
-        """Product of all numerical values is calculated."""
-        COUNTNUMS = GF_COUNTNUMS
-        """Numerical values are counted."""
-        STDEV = GF_STDEV
-        """Standard deviation is calculated based on a sample."""
-        STDEVP = GF_STDEVP
-        """Standard deviation is calculated based on the entire population."""
-        VAR = GF_VAR
-        """Variance is calculated based on a sample."""
-        VARP = GF_VARP
-        """Variance is calculated based on the entire population."""
+    CellFlags = CellFlagsEnum
 
-    setattr(GeneralFunction, "__new__", enum_helper.uno_enum_class_new)
+    GeneralFunction = OooGeneralFunction
 
-    class SolverConstraintOperator:
-        """
-        Is used to specify the type of SolverConstraint. 
-        
-        See Also:
-            `LibreOfice API SolverConstraintOperator <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1sheet.html#a491ab8ed5b7b5809e7be869d26b071cf>`_
-        """
-        __typename__ = "com.sun.star.sheet.SolverConstraintOperator"
-        LESS_EQUAL = SCO_LESS_EQUAL
-        """
-        The value has to be less than or equal to the specified value.
-        The cell value is less or equal to the specified value.
-        Value has to be less than or equal to the specified value.
-        """
-        EQUAL = SCO_EQUAL
-        """Value has to be equal to the specified value. The cell value is equal to the specified value."""
-        GREATER_EQUAL = SCO_GREATER_EQUAL
-        """
-        The value has to be greater than or equal to the specified value.
-        The cell value is greater or equal to the specified value.
-        Value has to be greater than or equal to the specified value.
-        """
-        INTEGER = SCO_INTEGER
-        """The cell value is an integer value."""
-        BINARY = SCO_BINARY
-        """The cell value is a binary value (0 or 1)."""
+    SolverConstraintOperator = OooSolverConstraintOperator
 
-    setattr(SolverConstraintOperator, "__new__", enum_helper.uno_enum_class_new)
-
+    FillDateMode = OooFillDateMode
     # endregion classes
 
     # region Constants
@@ -250,7 +150,7 @@ class Calc:
     MAX_VALUE = 0x7FFFFFFF
 
     # use a better name when date mode doesn't matter
-    NO_DATE = FILL_DATE_DAY
+    NO_DATE = FillDateMode.FILL_DATE_DAY
 
     CELL_POS = Point(3, 4)
 
@@ -271,13 +171,29 @@ class Calc:
 
         Raises:
             Exception: If document is null
+            CancelEventError: If DOC_OPENING is canceled
 
         Returns:
             XSpreadsheetDocument: Spreadsheet document
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.DOC_OPENING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.DOC_OPENED` :eventref:`src-docs-event`
+
+        Note:
+           Event args ``event_data`` is a dictionary containing all method parameters.
         """
+        cargs = CancelEventArgs(Calc.open_doc.__qualname__)
+        cargs.event_data = {"fnm": fnm, "loader": loader}
+        _Events().trigger(CalcNamedEvent.DOC_OPENING, cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
         doc = mLo.Lo.open_doc(fnm=str(fnm), loader=loader)
         if doc is None:
             raise Exception("Document is null")
+        _Events().trigger(CalcNamedEvent.DOC_OPENED, EventArgs.from_args(cargs))
         return cls.get_ss_doc(doc)
 
     @staticmethod
@@ -285,7 +201,7 @@ class Calc:
         """
         Gets a spreadsheet document
 
-        When using this method in a macro the :py:meth:`Lo.get_document() <.utils.lo.Lo.get_document>` value should be passed as ``doc`` arg.
+        When using this method in a macro the :py:attr:`Lo.this_component <.utils.lo.Lo.this_component>` value should be passed as ``doc`` arg.
 
         Args:
             doc (XComponent): Component to get spreasheeet from
@@ -296,6 +212,11 @@ class Calc:
 
         Returns:
             XSpreadsheetDocument: Spreadsheet document
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.DOC_SS` :eventref:`src-docs-event`
 
         See Also:
             :py:meth:`~Calc.create_doc`
@@ -310,6 +231,7 @@ class Calc:
             if not mLo.Lo.is_macro_mode:
                 mLo.Lo.close_doc(doc=doc)
             raise mEx.MissingInterfaceError(XSpreadsheetDocument)
+        _Events().trigger(CalcNamedEvent.DOC_SS, EventArgs(Calc.get_ss_doc.__qualname__))
         return ss_doc
 
     @staticmethod
@@ -322,18 +244,33 @@ class Calc:
 
         Raises:
             MissingInterfaceError: If doc does not have XSpreadsheetDocument interface
+            CancelEventError: If DOC_CREATING event is canceled
+
         Returns:
             XSpreadsheetDocument: Spreadsheet document
-        
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.DOC_CREATING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.DOC_CREATED` :eventref:`src-docs-event`
+
         See Also:
             :py:meth:`~Calc.get_ss_doc`
+
+        Note:
+            Event args ``event_data`` is a dictionary containing ``loader``
         """
-        doc = mLo.Lo.create_doc(doc_type= mLo.Lo.DocTypeStr.CALC, loader=loader)
-        ss_doc = mLo.Lo.qi(XSpreadsheetDocument, doc)
-        if ss_doc is None:
-            raise mEx.MissingInterfaceError(XSpreadsheetDocument)
+        cargs = CancelEventArgs(Calc.create_doc.__qualname__)
+        cargs.event_data = {"loader": loader}
+        _Events().trigger(CalcNamedEvent.DOC_CREATING, cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
+        doc = mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.CALC, loader=loader)
+        ss_doc = mLo.Lo.qi(XSpreadsheetDocument, doc, raise_err=True)
+        _Events().trigger(CalcNamedEvent.DOC_CREATED, EventArgs.from_args(cargs))
         return ss_doc
-        
+
         # XSpreadsheetDocument does not inherit XComponent!
 
     # endregion ------------ document methods ------------------
@@ -344,12 +281,21 @@ class Calc:
     @staticmethod
     def _get_sheet_index(doc: XSpreadsheetDocument, index: int) -> XSpreadsheet:
         """return the spreadsheet with the specified index (0-based)"""
-        sheets = doc.getSheets()
+        cargs = SheetCancelArgs(Calc.get_sheet.__qualname__)
+        cargs.index = index
+        cargs.name = None
+        cargs.doc = doc
+
+        _Events().trigger(CalcNamedEvent.SHEET_GETTING, cargs)
+        if cargs.cancel:
+            mEx.CancelEventError(cargs)
+
+        index = cargs.index
+        sheets = cargs.doc.getSheets()
         try:
-            xsheets_idx = mLo.Lo.qi(XIndexAccess, sheets)
-            sheet = mLo.Lo.qi(XSpreadsheet, xsheets_idx.getByIndex(index))
-            if sheet is None:
-                raise mEx.MissingInterfaceError(XSpreadsheet)
+            xsheets_idx = mLo.Lo.qi(XIndexAccess, sheets, True)
+            sheet = mLo.Lo.qi(XSpreadsheet, xsheets_idx.getByIndex(index), raise_err=True)
+            _Events().trigger(CalcNamedEvent.SHEET_GET, SheetArgs.from_args(cargs))
             return sheet
         except Exception as e:
             raise Exception(f"Could not access spreadsheet: {index}") from e
@@ -357,11 +303,18 @@ class Calc:
     @staticmethod
     def _get_sheet_name(doc: XSpreadsheetDocument, sheet_name: str) -> XSpreadsheet:
         """return the spreadsheet with the specified index (0-based)"""
-        sheets = doc.getSheets()
+        cargs = SheetCancelArgs(Calc.get_sheet.__qualname__)
+        cargs.name = sheet_name
+        cargs.index = None
+        cargs.doc = doc
+        _Events().trigger(CalcNamedEvent.SHEET_GETTING, cargs)
+        if cargs.cancel:
+            mEx.CancelEventError(cargs)
+        sheet_name = cargs.name
+        sheets = cargs.doc.getSheets()
         try:
-            sheet = mLo.Lo.qi(XSpreadsheet, sheets.getByName(sheet_name))
-            if sheet is None:
-                raise mEx.MissingInterfaceError(XSpreadsheet)
+            sheet = mLo.Lo.qi(XSpreadsheet, sheets.getByName(sheet_name), raise_err=True)
+            _Events().trigger(CalcNamedEvent.SHEET_GET, SheetArgs.from_args(cargs))
             return sheet
         except Exception as e:
             raise Exception(f"Could not access spreadsheet: '{sheet_name}'") from e
@@ -378,7 +331,7 @@ class Calc:
 
         Returns:
             XSpreadsheet: Spreadsheet at index.
-        
+
         Raises:
             Exception: If spreadsheet is not found
         """
@@ -414,9 +367,19 @@ class Calc:
 
         Raises:
             Exception: If spreadsheet is not found
+            CancelEventError: If SHEET_GETTING event is canceled
 
         Returns:
             XSpreadsheet: Spreadsheet at index.
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_GETTING` :eventref:`src-docs-sheet-event-getting`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_GET` :eventref:`src-docs-sheet-event-get`
+
+        Note:
+           For Event args, if ``index`` is available then ``name`` is ``None`` and if ``sheet_name`` is available then ``index`` is ``None``.
         """
         ordered_keys = (1, 2)
         kargs_len = len(kwargs)
@@ -426,7 +389,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('doc','index', 'sheet_name')
+            valid_keys = ("doc", "index", "sheet_name")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("get_sheet() got an unexpected keyword argument")
@@ -447,8 +410,10 @@ class Calc:
             kargs[ordered_keys[i]] = arg
 
         if isinstance(kargs[2], int):
-            return cls._get_sheet_index(kargs[1], kargs[2])
-        return cls._get_sheet_name(kargs[1], kargs[2])
+            sht = cls._get_sheet_index(kargs[1], kargs[2])
+        else:
+            sht = cls._get_sheet_name(kargs[1], kargs[2])
+        return sht
 
     # endregion get_sheet()
 
@@ -464,16 +429,31 @@ class Calc:
 
         Raises:
             Exception: If unable to insert spreadsheet
+            CancelEventError: If SHEET_INSERTING event is canceled
 
         Returns:
             XSpreadsheet | None: The newly inserted sheet on success; Othwrwise, None
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_INSERTING` :eventref:`src-docs-sheet-event-inserting`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_INSERTED` :eventref:`src-docs-sheet-event-inserted`
         """
-        sheets = doc.getSheets()
+        cargs = SheetCancelArgs(Calc.insert_sheet.__qualname__)
+        cargs.name = name
+        cargs.index = idx
+        cargs.doc = doc
+        _Events().trigger(CalcNamedEvent.SHEET_INSERTING, cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
+        name = cargs.name
+        idx = cargs.index
+        sheets = cargs.doc.getSheets()
         try:
             sheets.insertNewByName(name, idx)
-            sheet = mLo.Lo.qi(XSpreadsheet, sheets.getByName(name))
-            if sheet is None:
-                raise mEx.MissingInterfaceError(XSpreadsheet)
+            sheet = mLo.Lo.qi(XSpreadsheet, sheets.getByName(name), raise_err=True)
+            _Events().trigger(CalcNamedEvent.SHEET_INSERTED, SheetArgs.from_args(cargs))
             return sheet
         except Exception as e:
             raise Exception("Could not insert sheet:") from e
@@ -482,17 +462,42 @@ class Calc:
 
     @staticmethod
     def _remove_sheet_name(doc: XSpreadsheetDocument, sheet_name: str) -> bool:
-        sheets = doc.getSheets()
+        cargs = SheetCancelArgs(Calc.remove_sheet.__qualname__)
+        # cargs.source = Calc.remove_sheet
+        cargs.doc = doc
+        cargs.name = sheet_name
+        cargs.index = None
+        cargs.event_data = {"fn_type": "name"}
+        _Events().trigger(CalcNamedEvent.SHEET_REMOVING, cargs)
+        if cargs.cancel:
+            return False
+
+        sheet_name = cargs.name
+        sheets = cargs.doc.getSheets()
+        result = False
         try:
             sheets.removeByName(sheet_name)
-            return True
+            result = True
         except Exception:
-            print(f"Could not remove sheet: {sheet_name}")
-        return False
+            mLo.Lo.print(f"Could not remove sheet: {sheet_name}")
+        if result is True:
+            _Events().trigger(CalcNamedEvent.SHEET_REMOVED, SheetArgs.from_args(cargs))
+        return result
 
     @classmethod
     def _remove_sheet_index(cls, doc: XSpreadsheetDocument, index: int) -> bool:
-        sheets = doc.getSheets()
+        cargs = SheetCancelArgs(Calc.remove_sheet.__qualname__)
+        cargs.doc = doc
+        cargs.index = index
+        cargs.name = None
+        cargs.event_data = {"fn_type": "index"}
+        _Events().trigger(CalcNamedEvent.SHEET_REMOVING, cargs)
+        if cargs.cancel:
+            return False
+
+        index = cargs.index
+        sheets = cargs.doc.getSheets()
+        result = False
         try:
             xsheets_idx = mLo.Lo.qi(XIndexAccess, sheets)
             sheet = mLo.Lo.qi(XSpreadsheet, xsheets_idx.getByIndex(index))
@@ -500,10 +505,12 @@ class Calc:
             if sheet_name is None:
                 return False
             sheets.removeByName(sheet_name)
-            return True
+            result = True
         except Exception:
-            print(f"Could not remove sheet at index: {index}")
-        return False
+            mLo.Lo.print(f"Could not remove sheet at index: {index}")
+        if result is True:
+            _Events().trigger(CalcNamedEvent.SHEET_REMOVED, SheetArgs.from_args(cargs))
+        return result
 
     @overload
     @classmethod
@@ -544,10 +551,19 @@ class Calc:
             doc (XSpreadsheetDocument): Spreadsheet document
             sheet_name (str): Name of sheet to remove
             index (int): Zero based index of sheet to remove.
-            
 
         Returns:
             bool: True of sheet was removed; Otherwise, False
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_REMOVING` :eventref:`src-docs-sheet-event-removing`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_REMOVED` :eventref:`src-docs-sheet-event-removed`
+
+        Note:
+            Event args ``event_data`` is set to a dictionary.
+            If ``index`` is available then args ``event_data["fn_type"]`` is set to a value *"index"*; Otherwise, set to a value *"name"*.
         """
         ordered_keys = (1, 2)
         kargs_len = len(kwargs)
@@ -557,7 +573,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('doc', 'index', 'sheet_name')
+            valid_keys = ("doc", "index", "sheet_name")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("remove_sheet() got an unexpected keyword argument")
@@ -595,14 +611,33 @@ class Calc:
 
         Returns:
             bool: True on success; Otherwise, False
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_MOVING` :eventref:`src-docs-sheet-event-moving`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_MOVED` :eventref:`src-docs-sheet-event-moved`
         """
-        sheets = doc.getSheets()
-        num_sheets = len(sheets.getElementNames())
-        if idx < 0 or idx >= num_sheets:
-            print(f"Index {idx} is out of range.")
+        cargs = SheetCancelArgs(Calc.move_sheet.__qualname__)
+        cargs.doc = doc
+        cargs.name = name
+        cargs.index = idx
+        _Events().trigger(CalcNamedEvent.SHEET_MOVING, cargs)
+        if cargs.cancel:
             return False
-        sheets.moveByName(name, idx)
-        return True
+        name = cargs.name
+        idx = cargs.index
+        sheets = cargs.doc.getSheets()
+        num_sheets = len(sheets.getElementNames())
+        result = False
+        if idx < 0 or idx >= num_sheets:
+            mLo.Lo.print(f"Index {idx} is out of range.")
+        else:
+            sheets.moveByName(name, idx)
+            result = True
+        if result is True:
+            _Events().trigger(CalcNamedEvent.SHEET_MOVED, SheetArgs.from_args(cargs))
+        return result
 
     @staticmethod
     def get_sheet_names(doc: XSpreadsheetDocument) -> Tuple[str, ...]:
@@ -617,7 +652,7 @@ class Calc:
         """
         sheets = doc.getSheets()
         return sheets.getElementNames()
-    
+
     @staticmethod
     def get_sheets(doc: XSpreadsheetDocument) -> XSpreadsheets:
         """
@@ -645,9 +680,7 @@ class Calc:
         Returns:
             str: Name of sheet
         """
-        xnamed = mLo.Lo.qi(XNamed, sheet)
-        if xnamed is None:
-            raise mEx.MissingInterfaceError(XNamed)
+        xnamed = mLo.Lo.qi(XNamed, sheet, True)
         return xnamed.getName()
 
     @staticmethod
@@ -664,7 +697,7 @@ class Calc:
         """
         xnamed = mLo.Lo.qi(XNamed, sheet)
         if xnamed is None:
-            print("Could not access spreadsheet")
+            mLo.Lo.print("Could not access spreadsheet")
             return False
         xnamed.setName(name)
         return True
@@ -751,11 +784,27 @@ class Calc:
         Args:
             doc (XSpreadsheetDocument): Spreadsheet Document
             sheet (XSpreadsheet): Sheet to set active
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_ACTIVATING` :eventref:`src-docs-sheet-event-activating`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_ACTIVATED` :eventref:`src-docs-sheet-event-activated`
+
+        Note:
+            Event arg properties modified on SHEET_ACTIVATING it is reflected in this method.
         """
-        ss_view = cls.get_view(doc)
+        cargs = SheetCancelArgs(Calc.set_active_sheet.__qualname__)
+        cargs.doc = doc
+        cargs.sheet = sheet
+        _Events().trigger(CalcNamedEvent.SHEET_ACTIVATING, cargs)
+        if cargs.cancel:
+            return
+        ss_view = cls.get_view(cargs.doc)
         if ss_view is None:
             return
-        ss_view.setActiveSheet(sheet)
+        ss_view.setActiveSheet(cargs.sheet)
+        _Events().trigger(CalcNamedEvent.SHEET_ACTIVATED, SheetArgs.from_args(cargs))
 
     @classmethod
     def get_active_sheet(cls, doc: XSpreadsheetDocument) -> XSpreadsheet:
@@ -788,7 +837,7 @@ class Calc:
             return
         xfreeze = mLo.Lo.qi(XViewFreezable, ctrl)
         xfreeze.freezeAtPosition(num_cols, num_rows)
-    
+
     @classmethod
     def unfreeze(cls, doc: XSpreadsheetDocument) -> None:
         """
@@ -860,6 +909,11 @@ class Calc:
             cell_name (str): Cell Name such as 'B4'
             doc (XSpreadsheetDocument): Spreadsheet Document
             frame (XFrame): Spreadsheet frame.
+
+        Attention:
+            :py:meth:`~.utils.lo.Lo.dispatch_cmd` method is called along with any of its events.
+
+            Dispatch command is ``GoToCell``.
         """
         ordered_keys = (1, 2)
         kargs_len = len(kwargs)
@@ -869,7 +923,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('cell_name', 'doc', 'frame')
+            valid_keys = ("cell_name", "doc", "frame")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("goto_cell() got an unexpected keyword argument")
@@ -974,7 +1028,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('doc', 'model')
+            valid_keys = ("doc", "model")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("get_selected_addr() got an unexpected keyword argument")
@@ -994,7 +1048,7 @@ class Calc:
             kargs[ordered_keys[i]] = arg
 
         doc = mLo.Lo.qi(XSpreadsheetDocument, kargs[1])
-        if doc:
+        if doc is not None:
             model = mLo.Lo.qi(XModel, doc)
         else:
             # def get_selected_addr(model: XModel)
@@ -1002,9 +1056,7 @@ class Calc:
 
         if model is None:
             raise Exception("No document model found")
-        ra = mLo.Lo.qi(XCellRangeAddressable, model.getCurrentSelection())
-        if ra is None:
-            raise mEx.MissingInterfaceError(XCellRangeAddressable)
+        ra = mLo.Lo.qi(XCellRangeAddressable, model.getCurrentSelection(), raise_err=True)
         return ra.getRangeAddress()
 
     # endregion  get_selected_addr()
@@ -1070,9 +1122,9 @@ class Calc:
             try:
                 panes.append(mLo.Lo.qi(XViewPane, con.getByIndex(i)))
             except UnoException:
-                print(f"Could not get view pane {i}")
+                mLo.Lo.print(f"Could not get view pane {i}")
         if len(panes) == 0:
-            print("No view panes found")
+            mLo.Lo.print("No view panes found")
             return None
         return panes
 
@@ -1118,6 +1170,9 @@ class Calc:
 
         Based on a post by user Hanya to:
         `openoffice forum <https://forum.openoffice.org/en/forum/viewtopic.php?f=45&t=29195&p=133202&hilit=getViewData#p133202>`_
+
+        Args:
+            doc (XSpreadsheetDocument): Spreadsheet Document
         """
         ctrl = cls.get_controller(doc)
 
@@ -1125,7 +1180,7 @@ class Calc:
         view_parts = view_data.split(";")
         p_len = len(view_parts)
         if p_len < 4:
-            print("No sheet view states found in view data")
+            mLo.Lo.print("No sheet view states found in view data")
             return None
         states = []
         for i in range(3, p_len):
@@ -1145,7 +1200,7 @@ class Calc:
         view_parts = view_data.split(";")
         p_len = len(view_parts)
         if p_len < 4:
-            print("No sheet view states found in view data")
+            mLo.Lo.print("No sheet view states found in view data")
             return None
 
         vd_new = []
@@ -1155,7 +1210,7 @@ class Calc:
         for state in states:
             vd_new.append(str(state))
         s_data = ";".join(vd_new)
-        print(s_data)
+        mLo.Lo.print(s_data)
         ctrl.restoreViewData(s_data)
 
     # endregion ----------------- view data methods ---------------------------------
@@ -1163,59 +1218,129 @@ class Calc:
     # region --------------- insert/remove rows, columns, cells --------
 
     @staticmethod
-    def insert_row(sheet: XSpreadsheet, idx: int) -> None:
+    def insert_row(sheet: XSpreadsheet, idx: int) -> bool:
         """
         Inserts a row in spreadsheet
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
             idx (int): Zero base index of row to insert.
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_ROW_INSERTING` :eventref:`src-docs-sheet-event-row-inserting`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_INSERTED` :eventref:`src-docs-sheet-event-row-inserted`
+
+        Returns:
+            bool: True if row has been inserted; Otherwise, False
         """
-        cr_range = mLo.Lo.qi(XColumnRowRange, sheet)
+        cargs = SheetCancelArgs(Calc.insert_row.__qualname__)
+        cargs.sheet = sheet
+        cargs.index = idx
+        _Events().trigger(CalcNamedEvent.SHEET_ROW_INSERTING, cargs)
+        if cargs.cancel:
+            return False
+        idx = cargs.index
+        cr_range = mLo.Lo.qi(XColumnRowRange, cargs.sheet, raise_err=True)
         rows = cr_range.getRows()
         rows.insertByIndex(idx, 1)  # add 1 row at idx position
+        _Events().trigger(CalcNamedEvent.SHEET_ROW_INSERTED, SheetArgs.from_args(cargs))
+        return True
 
     @staticmethod
-    def delete_row(sheet: XSpreadsheet, idx: int) -> None:
+    def delete_row(sheet: XSpreadsheet, idx: int) -> bool:
         """
         Deletes a row from spreadsheet
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
             idx (int): Zero based index of row to delete
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_ROW_DELETING` :eventref:`src-docs-sheet-event-row-deleting`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_ROW_DELETED` :eventref:`src-docs-sheet-event-row-deleted`
+
+        Returns:
+            bool: True if row is deleted; Otherwise, False
         """
-        cr_range = mLo.Lo.qi(XColumnRowRange, sheet)
+        cargs = SheetCancelArgs(Calc.delete_row.__qualname__)
+        cargs.sheet = sheet
+        cargs.index = idx
+        cargs.name = None
+        _Events().trigger(CalcNamedEvent.SHEET_ROW_DELETING, cargs)
+        if cargs.cancel:
+            return False
+        idx = cargs.index
+        cr_range = mLo.Lo.qi(XColumnRowRange, cargs.sheet)
         rows = cr_range.getRows()
         rows.removeByIndex(idx, 1)  # remove 1 row at idx position
+        _Events().trigger(CalcNamedEvent.SHEET_ROW_DELETED, SheetArgs.from_args(cargs))
+        return True
 
     @staticmethod
-    def insert_column(sheet: XSpreadsheet, idx: int) -> None:
+    def insert_column(sheet: XSpreadsheet, idx: int) -> bool:
         """
         Inserts a column in a spreadsheet.
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
             idx (int): Zero base index of column to insert.
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_COL_INSERTING` :eventref:`src-docs-sheet-event-col-inserting`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_COL_INSERTED` :eventref:`src-docs-sheet-event-col-inserted`
         """
-        cr_range = mLo.Lo.qi(XColumnRowRange, sheet)
+        cargs = SheetCancelArgs(Calc.insert_column.__qualname__)
+        cargs.sheet = sheet
+        cargs.index = idx
+        _Events().trigger(CalcNamedEvent.SHEET_COL_INSERTING, cargs)
+        if cargs.cancel:
+            return False
+        idx = cargs.index
+        cr_range = mLo.Lo.qi(XColumnRowRange, cargs.sheet)
         cols = cr_range.getColumns()
         cols.insertByIndex(idx, 1)  # add 1 column at idx position
+        _Events().trigger(CalcNamedEvent.SHEET_COL_INSERTED, SheetArgs.from_args(cargs))
+        return True
 
     @staticmethod
-    def delete_column(sheet: XSpreadsheet, idx: int) -> None:
+    def delete_column(sheet: XSpreadsheet, idx: int) -> bool:
         """
         Delete a column from a spreadsheet
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
             idx (int): Zero base of index of column to delete
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_COL_DELETING` :eventref:`src-docs-sheet-event-col-deleting`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_COL_DELETED` :eventref:`src-docs-sheet-event-col-deleted`
+
+        Returns:
+            bool: True if column is deleted; Otherwise, False
         """
-        cr_range = mLo.Lo.qi(XColumnRowRange, sheet)
+        cargs = SheetCancelArgs(Calc.delete_column.__qualname__)
+        cargs.sheet = sheet
+        cargs.index = idx
+        _Events().trigger(CalcNamedEvent.SHEET_COL_DELETING, cargs)
+        if cargs.cancel:
+            return False
+        idx = cargs.index
+        cr_range = mLo.Lo.qi(XColumnRowRange, cargs.sheet)
         cols = cr_range.getColumns()
         cols.removeByIndex(idx, 1)  # remove 1 row at idx position
+        _Events().trigger(CalcNamedEvent.SHEET_COL_DELETED, SheetArgs.from_args(cargs))
+        return True
 
     @classmethod
-    def insert_cells(cls, sheet: XSpreadsheet, cell_range: XCellRange, is_shift_right: bool) -> None:
+    def insert_cells(cls, sheet: XSpreadsheet, cell_range: XCellRange, is_shift_right: bool) -> bool:
         """
         Inserts Cells into a spreadsheet
 
@@ -1223,16 +1348,39 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet
             cell_range (XCellRange): Cell range to insert
             is_shift_right (bool): If True then cell are inserted to the right; Otherwise, inserted down.
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.CELLS_INSERTING` :eventref:`src-docs-cell-event-inserting`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.CELLS_INSERTED` :eventref:`src-docs-cell-event-inserted`
+
+        Returns:
+            bool: True if cells are inserted; Otherwise, False
+
+        Note:
+            Events args for this method have a ``cell`` type of ``XCellRange``
+
+            Event args ``event_data`` is a dictionary containing ``is_shift_right``.
         """
-        mover = mLo.Lo.qi(XCellRangeMovement, sheet)
-        addr = cls.get_address(cell_range)
-        if is_shift_right:
-            mover.insertCells(addr, IM_RIGHT)
+        cargs = CellCancelArgs(Calc.insert_cells.__qualname__)
+        cargs.sheet = sheet
+        cargs.cells = cell_range
+        cargs.event_data = {"is_shift_right": is_shift_right}
+        _Events().trigger(CalcNamedEvent.CELLS_INSERTING, cargs)
+        if cargs.cancel:
+            return False
+        mover = mLo.Lo.qi(XCellRangeMovement, cargs.sheet)
+        addr = cls.get_address(cargs.cells)
+        if cargs.event_data["is_shift_right"]:
+            mover.insertCells(addr, CellInsertMode.RIGHT)
         else:
-            mover.insertCells(addr, IM_DOWN)
+            mover.insertCells(addr, CellInsertMode.DOWN)
+        _Events().trigger(CalcNamedEvent.CELLS_INSERTED, CellArgs.from_args(cargs))
+        return True
 
     @classmethod
-    def delete_cells(cls, sheet: XSpreadsheet, cell_range: XCellRange, is_shift_left: bool) -> None:
+    def delete_cells(cls, sheet: XSpreadsheet, cell_range: XCellRange, is_shift_left: bool) -> bool:
         """
         Deletes cell in a spreadsheet
 
@@ -1240,13 +1388,37 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet
             cell_range (XCellRange): Cell range to delete
             is_shift_left (bool): If True then cell are shifted left; Otherwise, cells are shifted up.
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.CELLS_DELETING` :eventref:`src-docs-cell-event-deleting`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.CELLS_DELETED` :eventref:`src-docs-cell-event-deleted`
+
+        Returns:
+            bool: True if cells are deleted; Otherwise, False
+
+        Note:
+            Events args for this method have a ``cell`` type of ``XCellRange``
+
+        Note:
+            Event args ``event_data`` is a dictionary containing ``is_shift_left``.
         """
-        mover = mLo.Lo.qi(XCellRangeMovement, sheet)
-        addr = cls.get_address(cell_range)
-        if is_shift_left:
-            mover.removeRange(addr, DM_LEFT)
+        cargs = CellCancelArgs(Calc.delete_cells.__qualname__)
+        cargs.sheet = sheet
+        cargs.cells = cell_range
+        cargs.event_data = {"is_shift_left": is_shift_left}
+        _Events().trigger(CalcNamedEvent.CELLS_DELETING, cargs)
+        if cargs.cancel:
+            return False
+        mover = mLo.Lo.qi(XCellRangeMovement, cargs.sheet)
+        addr = cls.get_address(cargs.cells)
+        if cargs.event_data["is_shift_left"]:
+            mover.removeRange(addr, CellDeleteMode.LEFT)
         else:
-            mover.removeRange(addr, DM_UP)
+            mover.removeRange(addr, CellDeleteMode.UP)
+        _Events().trigger(CalcNamedEvent.CELLS_DELETED, CellArgs.from_args(cargs))
+        return True
 
     # region    clear_cells()
     @overload
@@ -1260,16 +1432,17 @@ class Calc:
             cell_range (XCellRange): Cell range
         """
         ...
+
     @overload
     @classmethod
-    def clear_cells(cls, sheet: XSpreadsheet, cell_range: XCellRange, cell_flags: Calc.CellFlags) -> None:
+    def clear_cells(cls, sheet: XSpreadsheet, cell_range: XCellRange, cell_flags: CellFlags) -> None:
         """
         Clears the specified contents of the cell range
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
             cell_range (XCellRange): Cell range
-            cell_flags (Calc.CellFlags): Flags that determine what to clear
+            cell_flags (CellFlags): Flags that determine what to clear
         """
         ...
 
@@ -1284,16 +1457,17 @@ class Calc:
             range_name (str): Range name such as 'A1:G3'
         """
         ...
+
     @overload
     @classmethod
-    def clear_cells(cls, sheet: XSpreadsheet, range_name: str, cell_flags: Calc.CellFlags) -> None:
+    def clear_cells(cls, sheet: XSpreadsheet, range_name: str, cell_flags: CellFlags) -> None:
         """
         Clears the specified contents of the cell range
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
             range_name (str): Range name such as 'A1:G3'
-            cell_flags (Calc.CellFlags): Flags that determine what to clear
+            cell_flags (CellFlags): Flags that determine what to clear
         """
         ...
 
@@ -1308,24 +1482,25 @@ class Calc:
             cr_addr (CellRangeAddress): Cell Range Address
         """
         ...
+
     @overload
     @classmethod
-    def clear_cells(cls, sheet: XSpreadsheet, cr_addr: CellRangeAddress, cell_flags: Calc.CellFlags) -> None:
+    def clear_cells(cls, sheet: XSpreadsheet, cr_addr: CellRangeAddress, cell_flags: CellFlags) -> None:
         """
         Clears the specified contents of the cell range
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
             cr_addr (CellRangeAddress): Cell Range Address
-            cell_flags (Calc.CellFlags): Flags that determine what to clear
+            cell_flags (CellFlags): Flags that determine what to clear
         """
         ...
 
     @classmethod
-    def clear_cells(cls, *args, **kwargs) -> None:
+    def clear_cells(cls, *args, **kwargs) -> bool:
         """
         Clears the specified contents of the cell range
-        
+
         If cell_flags is not specified then
         cell range of types ``VALUE``, ``DATETIME`` and ``STRING`` are cleared
 
@@ -1334,13 +1509,27 @@ class Calc:
             cell_range (XCellRange): Cell range
             range_name (str): Range name such as 'A1:G3'
             cr_addr (CellRangeAddress): Cell Range Address
-            cell_flags (Calc.CellFlags): Flags that determine what to clear
+            cell_flags (CellFlags): Flags that determine what to clear
 
         Raises:
             MissingInterfaceError: If XSheetOperation interface cannot be obtained.
 
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.CELLS_CLEARING` :eventref:`src-docs-cell-event-clearing`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.CELLS_CLEARED` :eventref:`src-docs-cell-event-cleared`
+
+        Returns:
+            bool: True if cells are cleared; Otherwise, False
+
+        Note:
+            Events arg for this method have a ``cell`` type of ``XCellRange``.
+
+            Events arg ``event_data`` is a dictionary containing ``cell_flags``.
+
         See Also:
-            :py:class:`Calc.CellFlags`
+            :py:class:`~Calc.CellFlags`
         """
         ordered_keys = (1, 2, 3)
         kargs_len = len(kwargs)
@@ -1350,7 +1539,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('sheet','cell_range', 'range_name', 'cr_addr', 'cell_flags')
+            valid_keys = ("sheet", "cell_range", "range_name", "cr_addr", "cell_flags")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("clear_cells() got an unexpected keyword argument")
@@ -1371,7 +1560,7 @@ class Calc:
         kargs = get_kwargs()
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
-        
+
         if count == 2:
             flags = Calc.CellFlags.VALUE | Calc.CellFlags.DATETIME | Calc.CellFlags.STRING
         else:
@@ -1379,19 +1568,28 @@ class Calc:
                 flags = Calc.CellFlags(kargs[3])
             else:
                 flags = cast(Calc.CellFlags, kargs[3])
+        sht = cast(XSpreadsheet, kargs[1])
         rng_value = kargs[2]
         if isinstance(rng_value, str):
-            rng = Calc.get_cell_range(sheet=kargs[1], range_name=rng_value)
-        elif mInfo.Info.is_type_interface(rng_value, XCellRange.__pyunointerface__):
+            rng = Calc.get_cell_range(sheet=sht, range_name=rng_value)
+        elif mLo.Lo.is_uno_interfaces(rng_value, XCellRange):
             rng = rng_value
         else:
-            rng = Calc.get_cell_range(sheet=kargs[1], cr_addr=rng_value)
-    
-        sheet_op = mLo.Lo.qi(XSheetOperation, rng)
-        if sheet_op is None:
-            raise mEx.MissingInterfaceError(XSheetOperation)
+            rng = Calc.get_cell_range(sheet=sht, cr_addr=rng_value)
+
+        cargs = CellCancelArgs(Calc.clear_cells.__qualname__)
+        cargs.cells = rng
+        cargs.sheet = sht
+        cargs.event_data = {"cell_flags": flags}
+        _Events().trigger(CalcNamedEvent.CELLS_CLEARING, cargs)
+        if cargs.cancel:
+            return False
+        flags = cargs.event_data["cell_flags"]
+        sheet_op = mLo.Lo.qi(XSheetOperation, cargs.cells, True)
         sheet_op.clearContents(flags.value)
-    
+        _Events().trigger(CalcNamedEvent.CELLS_CLEARED, CellArgs.from_args(cargs))
+        return True
+
     # endregion clear_cells()
 
     # endregion ------------ insert/remove rows, columns, cells -----
@@ -1405,7 +1603,7 @@ class Calc:
         elif isinstance(value, str):
             cell.setFormula(str(value))
         else:
-            print(f"Value is not a number or string: {value}")
+            mLo.Lo.print(f"Value is not a number or string: {value}")
 
     @classmethod
     def _set_val_by_cell_name(cls, value: object, sheet: XSpreadsheet, cell_name: str) -> None:
@@ -1477,7 +1675,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('value', 'cell', 'sheet', 'cell_name', 'col', 'row')
+            valid_keys = ("value", "cell", "sheet", "cell_name", "col", "row")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("set_val() got an unexpected keyword argument")
@@ -1518,29 +1716,29 @@ class Calc:
     # endregion    set_val()
 
     @staticmethod
-    def convert_to_float(val: object) -> float:
+    def convert_to_float(val: Any) -> float:
         """
         Converts value to float
 
         Args:
-            val (object): Value to convert
+            val (Any): Value to convert
 
         Returns:
             float: value converted to float. 0.0 is returned if conversion fails.
         """
         if val is None:
-            print("Value is null; using 0")
+            mLo.Lo.print("Value is null; using 0")
             return 0.0
         try:
             return float(val)
         except ValueError:
-            print(f"Could not convert {val} to double; using 0")
+            mLo.Lo.print(f"Could not convert {val} to double; using 0")
             return 0.0
 
     convert_to_double = convert_to_float
 
-    @classmethod
-    def get_type_enum(cls, cell: XCell) -> CellTypeEnum:
+    @staticmethod
+    def get_type_enum(cell: XCell) -> Calc.CellTypeEnum:
         """
         Gets enum representing the Type
 
@@ -1551,17 +1749,17 @@ class Calc:
             CellTypeEnum: Enum of cell type
         """
         t = cell.getType()
-        if t == CCT_EMPTY:
-            return cls.CellTypeEnum.EMPTY
-        if t == CCT_VALUE:
-            return cls.CellTypeEnum.VALUE
-        if t == CCT_TEXT:
-            return cls.CellTypeEnum.TEXT
-        if t == CCT_FORMULA:
-            return cls.CellTypeEnum.FORMULA
-        print("Unknown cell type")
-        return cls.CellTypeEnum.UNKNOWN
-    
+        if t == CellContentType.EMPTY:
+            return Calc.CellTypeEnum.EMPTY
+        if t == CellContentType.VALUE:
+            return Calc.CellTypeEnum.VALUE
+        if t == CellContentType.TEXT:
+            return Calc.CellTypeEnum.TEXT
+        if t == CellContentType.FORMULA:
+            return Calc.CellTypeEnum.FORMULA
+        mLo.Lo.print("Unknown cell type")
+        return Calc.CellTypeEnum.UNKNOWN
+
     @classmethod
     def get_type_string(cls, cell: XCell) -> str:
         """
@@ -1581,13 +1779,13 @@ class Calc:
     @classmethod
     def _get_val_by_cell(cls, cell: XCell) -> object | None:
         t = cell.getType()
-        if t == CCT_EMPTY:
+        if t == CellContentType.EMPTY:
             return None
-        if t == CCT_VALUE:
+        if t == CellContentType.VALUE:
             return cls.convert_to_float(cell.getValue())
-        if t == CCT_TEXT or t == CCT_FORMULA:
+        if t == CellContentType.TEXT or t == CellContentType.FORMULA:
             return cell.getFormula()
-        print("Unknown cell type; returning None")
+        mLo.Lo.print("Unknown cell type; returning None")
         return None
 
     @classmethod
@@ -1667,7 +1865,7 @@ class Calc:
         ...
 
     @classmethod
-    def get_val(cls, *args, **kwargs) -> object | None:
+    def get_val(cls, *args, **kwargs) -> Any | None:
         """
         Gets cell value
 
@@ -1680,7 +1878,7 @@ class Calc:
             row (int): Cell zero-base row
 
         Returns:
-            object | None: Cell value cell has a value; Otherwise, None
+            Any | None: Cell value cell has a value; Otherwise, None
         """
         ordered_keys = (1, 2, 3)
         kargs_len = len(kwargs)
@@ -1690,7 +1888,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('sheet', 'cell', 'cell_name', 'addr', 'col', 'row')
+            valid_keys = ("sheet", "cell", "cell_name", "addr", "col", "row")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("get_val() got an unexpected keyword argument")
@@ -1827,7 +2025,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('sheet', 'cell', 'cell_name', 'addr', 'col', 'row')
+            valid_keys = ("sheet", "cell", "cell_name", "addr", "col", "row")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("get_num() got an unexpected keyword argument")
@@ -1954,7 +2152,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('cell', 'sheet', 'cell_name', 'addr', 'col', 'row')
+            valid_keys = ("cell", "sheet", "cell_name", "addr", "col", "row")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("get_string() got an unexpected keyword argument")
@@ -2007,12 +2205,10 @@ class Calc:
 
     # region    set_array()
     @classmethod
-    def _set_array_doc_addr(
-        cls, values: Sequence[Sequence[object]], doc: XSpreadsheetDocument, addr: CellAddress
-    ) -> None:
+    def _set_array_doc_addr(cls, values: Table, doc: XSpreadsheetDocument, addr: CellAddress) -> None:
         v_len = len(values)
         if v_len == 0:
-            print("Values has not data")
+            mLo.Lo.print("Values has not data")
             return
         sheet = cls._get_sheet_index(doc=doc, index=addr.Sheet)
         col_end = addr.Column + (len(values[0]) - 1)
@@ -2024,24 +2220,24 @@ class Calc:
 
     @overload
     @classmethod
-    def set_array(cls, values: Sequence[Sequence[object]], cell_range: XCellRange) -> None:
+    def set_array(cls, values: Table, cell_range: XCellRange) -> None:
         """
         Inserts array of data into spreadsheet
 
         Args:
-            values (Sequence[Sequence[object]]): A 2-Dimensional array of value such as a list of list or tuple of tuples.
+            values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
             cell_range (XCellRange): Range in spreadsheet to insert data
         """
         ...
 
     @overload
     @classmethod
-    def set_array(cls, values: Sequence[Sequence[object]], sheet: XSpreadsheet, name: str) -> None:
+    def set_array(cls, values: Table, sheet: XSpreadsheet, name: str) -> None:
         """
         Inserts array of data into spreadsheet
 
         Args:
-            values (Sequence[Sequence[object]]): A 2-Dimensional array of value such as a list of list or tuple of tuples.
+            values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
             sheet (XSpreadsheet): Spreadsheet
             name (str): Range name such as 'A1:D4' or cell name such as 'B4'
 
@@ -2053,12 +2249,12 @@ class Calc:
 
     @overload
     @classmethod
-    def set_array(cls, values: Sequence[Sequence[object]], doc: XSpreadsheetDocument, addr: CellAddress) -> None:
+    def set_array(cls, values: Table, doc: XSpreadsheetDocument, addr: CellAddress) -> None:
         """
         Inserts array of data into spreadsheet
 
         Args:
-            values (Sequence[Sequence[object]]): A 2-Dimensional array of value such as a list of list or tuple of tuples.
+            values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
             doc (XSpreadsheetDocument): Spreadsheet Document
             addr (CellAddress): Address to insert data.
         """
@@ -2068,7 +2264,7 @@ class Calc:
     @classmethod
     def set_array(
         cls,
-        values: Sequence[Sequence[object]],
+        values: Table,
         sheet: XSpreadsheet,
         col_start: int,
         row_start: int,
@@ -2079,7 +2275,7 @@ class Calc:
         Inserts array of data into spreadsheet
 
         Args:
-            values (Sequence[Sequence[object]]): A 2-Dimensional array of value such as a list of list or tuple of tuples.
+            values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
             sheet (XSpreadsheet): Spreadsheet
             col_start (int): Zero-base Start Colum
             row_start (int): Zero-base Start Row
@@ -2094,7 +2290,7 @@ class Calc:
         Inserts array of data into spreadsheet
 
         Args:
-            values (Sequence[Sequence[object]]): A 2-Dimensional array of value such as a list of list or tuple of tuples.
+            values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
             cell_range (XCellRange): Range in spreadsheet to insert data
             sheet (XSpreadsheet): Spreadsheet
             name (str): Range name such as 'A1:D4' or cell name such as 'B4'
@@ -2113,7 +2309,18 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('values', 'cell_range', 'sheet','doc', 'name', 'col_start', 'addr', 'row_start', 'col_end', 'row_end')
+            valid_keys = (
+                "values",
+                "cell_range",
+                "sheet",
+                "doc",
+                "name",
+                "col_start",
+                "addr",
+                "row_start",
+                "col_end",
+                "row_end",
+            )
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("set_array() got an unexpected keyword argument")
@@ -2173,7 +2380,7 @@ class Calc:
         cls,
         sheet: XSpreadsheet,
         range_name: str,
-        values: Sequence[Sequence[object]],
+        values: Table,
     ) -> None:
         """
         Inserts array of data into spreadsheet
@@ -2181,27 +2388,27 @@ class Calc:
         Args:
             sheet (XSpreadsheet): _description_
             range_name (str): Range to insert data such as 'A1:E12'
-            values (Sequence[Sequence[object]]): A 2-Dimensional array of value such as a list of list or tuple of tuples.
+            values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
         """
         v_len = len(values)
         if v_len == 0:
-            print("Values has not data")
+            mLo.Lo.print("Values has not data")
             return
         cell_range = cls.get_cell_range(sheet=sheet, range_name=range_name)
         cls.set_cell_range_array(cell_range=cell_range, values=values)
 
     @staticmethod
-    def set_cell_range_array(cell_range: XCellRange, values: Sequence[Sequence[object]]) -> None:
+    def set_cell_range_array(cell_range: XCellRange, values: Table) -> None:
         """
         Inserts array of data into spreadsheet
 
         Args:
             cell_range (XCellRange): Cell Ranage
-            values (Sequence[Sequence[object]]): A 2-Dimensional array of value such as a list of list or tuple of tuples.
+            values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
         """
         v_len = len(values)
         if v_len == 0:
-            print("Values has not data")
+            mLo.Lo.print("Values has not data")
             return
         cr_data = mLo.Lo.qi(XCellRangeData, cell_range)
         if cr_data is None:
@@ -2209,18 +2416,18 @@ class Calc:
         cr_data.setDataArray(values)
 
     @classmethod
-    def set_array_cell(cls, sheet: XSpreadsheet, cell_name: str, values: Sequence[Sequence[object]]) -> None:
+    def set_array_cell(cls, sheet: XSpreadsheet, cell_name: str, values: Table) -> None:
         """
         Inserts array of data into spreadsheet
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
             cell_name (str): Cell Name such as 'A1'
-            values (Sequence[Sequence[object]]): A 2-Dimensional array of value such as a list of list or tuple of tuples.
+            values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
         """
         v_len = len(values)
         if v_len == 0:
-            print("Values has not data")
+            mLo.Lo.print("Values has not data")
             return
         pos = cls.get_cell_position(cell_name)
         col_end = pos.X + (len(values[0]) - 1)
@@ -2238,7 +2445,7 @@ class Calc:
 
     @overload
     @classmethod
-    def get_array(cls, cell_range: XCellRange) -> Tuple[Tuple[object, ...], ...]:
+    def get_array(cls, cell_range: XCellRange) -> TupleArray:
         """
         Gets Array of data from a spreadsheet.
 
@@ -2249,13 +2456,13 @@ class Calc:
             MissingInterfaceError: if interface is missing
 
         Returns:
-            Tuple[Tuple[object, ...], ...]: Resulting data array.
+            TupleArray: Resulting data array.
         """
         ...
 
     @overload
     @classmethod
-    def get_array(cls, sheet: XSpreadsheet, range_name: str) -> Tuple[Tuple[object, ...], ...]:
+    def get_array(cls, sheet: XSpreadsheet, range_name: str) -> TupleArray:
         """
         Gets Array of data from a spreadsheet.
 
@@ -2267,12 +2474,12 @@ class Calc:
             MissingInterfaceError: if interface is missing
 
         Returns:
-            Tuple[Tuple[object, ...], ...]: Resulting data array.
+            TupleArray: Resulting data array.
         """
         ...
 
     @classmethod
-    def get_array(cls, *args, **kwargs) -> Tuple[Tuple[object, ...], ...]:
+    def get_array(cls, *args, **kwargs) -> TupleArray:
         """
         Gets Array of data from a spreadsheet.
 
@@ -2285,7 +2492,7 @@ class Calc:
             MissingInterfaceError: if interface is missing
 
         Returns:
-            Tuple[Tuple[object, ...], ...]: Resulting data array.
+            TupleArray: Resulting data array.
         """
         ordered_keys = (1, 2)
         kargs_len = len(kwargs)
@@ -2295,7 +2502,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('cell_range', 'sheet','range_name')
+            valid_keys = ("cell_range", "sheet", "range_name")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("get_array() got an unexpected keyword argument")
@@ -2321,21 +2528,33 @@ class Calc:
         else:
             cell_range = cls.get_cell_range(sheet=kargs[1], range_name=kargs[2])
 
-        cr_data = mLo.Lo.qi(XCellRangeData, cell_range)
-        if cr_data is None:
-            raise mEx.MissingInterfaceError(XCellRangeData)
+        cr_data = mLo.Lo.qi(XCellRangeData, cell_range, raise_err=True)
         return cr_data.getDataArray()
 
     # endregion get_array()
 
     @staticmethod
-    def print_array(vals: Sequence[Sequence[object]]) -> None:
+    def print_array(vals: Table) -> None:
         """
         Prints a 2-Dimensional array to terminal
 
         Args:
             vals (Sequence[Sequence[object]]): A 2-Dimensional array of value such as a list of list or tuple of tuples.
+
+        Returns:
+            None:
+
+        :events:
+           .. include:: ../../resources/global/printing_events.rst
+
+        Note:
+            .. include:: ../../resources/global/printing_note.rst
         """
+        cargs = CancelEventArgs(Calc.print_array.__qualname__)
+        cargs.event_data = {"vals": vals}
+        _Events().trigger(GblNamedEvent.PRINTING, cargs)
+        if cargs.cancel:
+            return
         row_len = len(vals)
         if row_len == 0:
             print("No data in array to print")
@@ -2348,7 +2567,7 @@ class Calc:
         print()
 
     @classmethod
-    def get_float_array(cls, sheet: XSpreadsheet, range_name: str) -> List[List[float]]:
+    def get_float_array(cls, sheet: XSpreadsheet, range_name: str) -> FloatTable:
         """
         Gets a 2-Dimensional List of floats
 
@@ -2357,7 +2576,7 @@ class Calc:
             range_name (str): Range to get array of floats frm such as 'A1:E18'
 
         Returns:
-            List[List[float]]: 2-Dimensional List of floats
+            FloatTable: 2-Dimensional List of floats
         """
         return cls._convert_to_floats_2d(cls.get_array(sheet=sheet, range_name=range_name))
 
@@ -2366,14 +2585,14 @@ class Calc:
     # region    convert_to_floats()
 
     @classmethod
-    def _convert_to_floats_1d(cls, vals: Sequence[object]) -> List[float]:
+    def _convert_to_floats_1d(cls, vals: Sequence[object]) -> FloatList:
         doubles = []
         for val in vals:
             doubles.append(cls.convert_to_float(val))
         return doubles
 
     @classmethod
-    def _convert_to_floats_2d(cls, vals: Sequence[Sequence[object]]) -> List[List[float]]:
+    def _convert_to_floats_2d(cls, vals: Sequence[Sequence[object]]) -> FloatTable:
         row_len = len(vals)
         if row_len == 0:
             return []
@@ -2387,42 +2606,42 @@ class Calc:
 
     @overload
     @classmethod
-    def convert_to_floats(cls, vals: Sequence[object]) -> List[float]:
+    def convert_to_floats(cls, vals: Row) -> FloatList:
         """
         Converts a 1-Dimensional array into List of float
 
         Args:
-            vals (Sequence[object]): List to convert to floats.
+            vals (Row): List to convert to floats.
 
         Returns:
-            List[float]: vals converted to float
+            FloatList: vals converted to float
         """
         ...
 
     @overload
     @classmethod
-    def convert_to_floats(cls, vals: Sequence[Sequence[object]]) -> List[List[float]]:
+    def convert_to_floats(cls, vals: Table) -> FloatTable:
         """
         Converts a 2-Dimensional array into List of float
 
         Args:
-            vals (Sequence[Sequence[object]]): 2-Dimensional list to convert to floats
+            vals (Table): 2-Dimensional list to convert to floats
 
         Returns:
-            List[List[float]]: 2-Dimensional list of floats.
+            FloatTable: 2-Dimensional list of floats.
         """
         ...
 
     @classmethod
-    def convert_to_floats(cls, vals):
+    def convert_to_floats(cls, vals: Row | Table) -> FloatList | FloatTable:
         """
         Converts a 1d or 2d array into List of float
 
         Args:
-            vals (Sequence[object] | Sequence[Sequence[object]]): List or 2-Dimensional list to convert to floats.
+            vals (Row | Table): List or 2-Dimensional list to convert to floats.
 
         Returns:
-            List[float] | List[List[float]]: vals converted to float
+            FloatList | FloatTable: vals converted to float
         """
         v_len = len(vals)
         if v_len == 0:
@@ -2444,26 +2663,26 @@ class Calc:
     # region    set_col()
     @overload
     @classmethod
-    def set_col(cls, sheet: XSpreadsheet, values: Sequence[Any], cell_name: str) -> None:
+    def set_col(cls, sheet: XSpreadsheet, values: Column, cell_name: str) -> None:
         """
         Inserts a colum of data into spreadsheet
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
-            values (Sequence[Any]): Column Data
+            values (Column): Column Data
             cell_name (str): Name of Cell to begin the insert such as 'A1'
         """
         ...
 
     @overload
     @classmethod
-    def set_col(cls, sheet: XSpreadsheet, values: Sequence[Any], col_start: int, row_start: int) -> None:
+    def set_col(cls, sheet: XSpreadsheet, values: Column, col_start: int, row_start: int) -> None:
         """
         Inserts a colum of data into spreadsheet
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
-            values (Sequence[Any]):  Column Data as 1-Dimensional Sequence such as a list of values
+            values (Column):  Column Data as 1-Dimensional Sequence such as a list of values
             col_start (int): Zero-base column index
             row_start (int): Zero-base row index
         """
@@ -2476,7 +2695,7 @@ class Calc:
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
-            values (Sequence[Any]): Column Data
+            values (Column): Column Data
             cell_name (str): Name of Cell to begin the insert such as 'A1'
             col_start (int): Zero-base column index
             row_start (int): Zero-base row index
@@ -2489,7 +2708,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('sheet', 'values','cell_name', 'col_start', 'row_start')
+            valid_keys = ("sheet", "values", "cell_name", "col_start", "row_start")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("set_col() got an unexpected keyword argument")
@@ -2534,7 +2753,7 @@ class Calc:
     # region    set_row()
     @overload
     @classmethod
-    def set_row(cls, sheet: XSpreadsheet, values: Sequence[Any], cell_name: str) -> None:
+    def set_row(cls, sheet: XSpreadsheet, values: Row, cell_name: str) -> None:
         """
         Inserts a row of data into spreadsheet
 
@@ -2543,14 +2762,14 @@ class Calc:
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
-            values (Sequence[Any]): Row Data
+            values (Row): Row Data
             cell_name (str): Name of Cell to begin the insert such as 'A1'
         """
         ...
 
     @overload
     @classmethod
-    def set_row(cls, sheet: XSpreadsheet, values: Sequence[Any], col_start: int, row_start: int) -> None:
+    def set_row(cls, sheet: XSpreadsheet, values: Row, col_start: int, row_start: int) -> None:
         """
         Inserts a row of data into spreadsheet
 
@@ -2559,7 +2778,7 @@ class Calc:
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
-            values (Sequence[Any]):  Row Data as 1-Dimensional Sequence such as a list of values
+            values (Row):  Row Data as 1-Dimensional Sequence such as a list of values
             col_start (int): Zero-base column index
             row_start (int): Zero-base row index
         """
@@ -2575,7 +2794,7 @@ class Calc:
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
-            values (Sequence[Any]): Row Data
+            values (Row): Row Data
             cell_name (str): Name of Cell to begin the insert such as 'A1'
             col_start (int): Zero-base column index
             row_start (int): Zero-base row index
@@ -2588,7 +2807,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('sheet', 'values', 'cell_name', 'col_start', 'row_start')
+            valid_keys = ("sheet", "values", "cell_name", "col_start", "row_start")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("set_row() got an unexpected keyword argument")
@@ -2628,15 +2847,13 @@ class Calc:
             end_col=col_start + len(values) - 1,
             end_row=row_start,
         )
-        cr_data = mLo.Lo.qi(XCellRangeData, cell_range)
-        if cr_data is None:
-            raise mEx.MissingInterfaceError(XCellRangeData)
+        cr_data = mLo.Lo.qi(XCellRangeData, cell_range, raise_err=True)
         cr_data.setDataArray(TableHelper.to_2d_tuple(values))  #  1-row 2D array
 
     # endregion set_row()
 
     @classmethod
-    def get_row(cls, sheet: XSpreadsheet, range_name: str) -> Sequence[Any] | None:
+    def get_row(cls, sheet: XSpreadsheet, range_name: str) -> List[Any]:
         """
         Gets a row of data from spreadsheet
 
@@ -2645,17 +2862,29 @@ class Calc:
             range_name (str): Range such as 'A1:A12'
 
         Returns:
-            List[Any] | None: 1-Dimensional List of values on success; Otherwise, None
+            List[Any]: 1-Dimensional List of values on success; Otherwise, None
         """
         vals = cls.get_array(sheet=sheet, range_name=range_name)
         return cls.extract_row(vals=vals, row_idx=0)
 
     @staticmethod
-    def extract_row(vals: Sequence[Sequence[Any]], row_idx: int) -> Sequence[Any] | None:
+    def extract_row(vals: Table, row_idx: int) -> List[Any]:
+        """
+        Extracts a row from a table
+
+        Args:
+            vals (Table): Table of data
+            row_idx (int): Row index to extract
+
+        Raises:
+            IndexError: If row_idx is out of range.
+
+        Returns:
+            List[Any]: Row of data
+        """
         row_len = len(vals)
         if row_idx < 0 or row_idx > row_len - 1:
-            print("Row index out of range")
-            return None
+            raise IndexError("Row index out of range")
 
         return vals[row_idx]
 
@@ -2675,13 +2904,23 @@ class Calc:
         return cls.extract_col(vals=vals, col_idx=0)
 
     @staticmethod
-    def extract_col(vals: Sequence[Sequence[Any]], col_idx: int) -> List[Any] | None:
+    def extract_col(vals: Table, col_idx: int) -> List[Any] | None:
+        """
+        Extract column data and returns as a list
+
+        Args:
+            vals (Table): 2-d table of data
+            col_idx (int): column index to extract
+
+        Returns:
+            List[Any] | None: Column data if found; Otherwise, None.
+        """
         row_len = len(vals)
         if row_len == 0:
             return None
         col_len = len(vals[0])
         if col_idx < 0 or col_idx > col_len - 1:
-            print("Column index out of range")
+            mLo.Lo.print("Column index out of range")
             return None
 
         col_vals = []
@@ -2695,7 +2934,16 @@ class Calc:
 
     @classmethod
     def set_date(cls, sheet: XSpreadsheet, cell_name: str, day: int, month: int, year: int) -> None:
-        """Writes a date with standard date format into a spreadsheet"""
+        """
+        Writes a date with standard date format into a spreadsheet
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            cell_name (str): Cell name
+            day (int): Date day part
+            month (int): Date month part
+            year (int): Date yeart part
+        """
         xcell = cls._get_cell_sheet_cell(sheet=sheet, cell_name=cell_name)
         xcell.setFormula(f"{month}/{day}/{year}")
 
@@ -2952,7 +3200,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('sheet', 'cell_range','addr', 'col', 'cell_name', 'row')
+            valid_keys = ("sheet", "cell_range", "addr", "col", "cell_name", "row")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("get_cell() got an unexpected keyword argument")
@@ -3063,7 +3311,7 @@ class Calc:
 
     @overload
     @classmethod
-    def get_cell_range(cls, sheet: XSpreadsheet, cr_addr: CellRangeAddress) -> XCellRange :
+    def get_cell_range(cls, sheet: XSpreadsheet, cr_addr: CellRangeAddress) -> XCellRange:
         """
         Gets a cell range
 
@@ -3149,7 +3397,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('sheet', 'cr_addr','range_name', 'start_col', 'start_row', 'end_col', 'end_row')
+            valid_keys = ("sheet", "cr_addr", "range_name", "start_col", "start_row", "end_col", "end_row")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("get_cell_range() got an unexpected keyword argument")
@@ -3320,7 +3568,7 @@ class Calc:
         con = con = mLo.Lo.qi(XIndexAccess, rows)
         if con is None:
             raise mEx.MissingInterfaceError(XIndexAccess)
-        cell_range =  mLo.Lo.qi(XCellRange, con.getByIndex(idx))
+        cell_range = mLo.Lo.qi(XCellRange, con.getByIndex(idx))
         if cell_range is None:
             raise mEx.MissingInterfaceError(XCellRange, f"Could not access range for row position: {idx}")
         return cell_range
@@ -3397,7 +3645,7 @@ class Calc:
         xcell = cls._get_cell_sheet_cell(sheet=sheet, cell_name=cell_name)
         pos = mProps.Props.get_property(prop_set=xcell, name="Position")
         if pos is None:
-            print(f"Could not determine position of cell '{cell_name}'")
+            mLo.Lo.print(f"Could not determine position of cell '{cell_name}'")
             pos = cls.CELL_POS
             # print("No match found")
             # return None
@@ -3434,7 +3682,7 @@ class Calc:
         try:
             return TableHelper.row_name_to_int(row_str) - 1
         except ValueError:
-            print(f"Incorrect format for {row_str}")
+            mLo.Lo.print(f"Incorrect format for {row_str}")
         return 0
 
     # endregion ----------- convert cell/cellrange names to positions --
@@ -3555,7 +3803,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('cell', 'sheet','cell_name', 'col', 'addr', 'row')
+            valid_keys = ("cell", "sheet", "cell_name", "col", "addr", "row")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("get_cell_address() got an unexpected keyword argument")
@@ -3694,7 +3942,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('cell_range', 'sheet', 'range_name', 'start_col', 'start_row', 'end_col' , 'end_row')
+            valid_keys = ("cell_range", "sheet", "range_name", "start_col", "start_row", "end_col", "end_row")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("get_address() got an unexpected keyword argument")
@@ -3768,7 +4016,20 @@ class Calc:
         Args:
             cell (XCell): cell
             addr (CellAddress): Cell Address
+
+        Returns:
+            None:
+
+        :events:
+           .. include:: ../../resources/global/printing_events.rst
+
+        Note:
+            .. include:: ../../resources/global/printing_note.rst
         """
+        cargs = CancelEventArgs(Calc.print_cell_address.__qualname__)
+        _Events().trigger(GblNamedEvent.PRINTING, cargs)
+        if cargs.cancel:
+            return
         ordered_keys = (1,)
         kargs_len = len(kwargs)
         count = len(args) + kargs_len
@@ -3777,7 +4038,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('cell', 'addr')
+            valid_keys = ("cell", "addr")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("print_cell_address() got an unexpected keyword argument")
@@ -3829,12 +4090,25 @@ class Calc:
     @classmethod
     def print_address(cls, *args, **kwargs) -> None:
         """
-        Prints Cell range to terminal such as ``'Range: Sheet1.C3:F22``
+        Prints Cell range to terminal such as ``Range: Sheet1.C3:F22``
 
         Args:
             cell_range (XCellRange): Cell range
             cr_addr (CellRangeAddress): Cell Address
+
+        Returns:
+            None:
+
+        :events:
+           .. include:: ../../resources/global/printing_events.rst
+
+        Note:
+            .. include:: ../../resources/global/printing_note.rst
         """
+        cargs = CancelEventArgs(Calc.print_address.__qualname__)
+        _Events().trigger(GblNamedEvent.PRINTING, cargs)
+        if cargs.cancel:
+            return
         ordered_keys = (1,)
         kargs_len = len(kwargs)
         count = len(args) + kargs_len
@@ -3843,7 +4117,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('cell_range', 'cr_addr')
+            valid_keys = ("cell_range", "cr_addr")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("print_address() got an unexpected keyword argument")
@@ -3878,7 +4152,20 @@ class Calc:
     def print_addresses(cls, *cr_addrs: CellRangeAddress) -> None:
         """
         Prints Address for one or more CellRangeAddress
+
+        Returns:
+            None:
+
+        :events:
+           .. include:: ../../resources/global/printing_events.rst
+
+        Note:
+            .. include:: ../../resources/global/printing_note.rst
         """
+        cargs = CancelEventArgs(Calc.print_addresses.__qualname__)
+        _Events().trigger(GblNamedEvent.PRINTING, cargs)
+        if cargs.cancel:
+            return
         print(f"No of cellrange addresses: {len(cr_addrs)}")
         for cr_addr in cr_addrs:
             cls.print_address(cr_addr=cr_addr)
@@ -3935,7 +4222,6 @@ class Calc:
             bool: True if equal; Otherwise, False
         """
         ...
-
 
     @staticmethod
     def is_equal_addresses(addr1: object, addr2: object) -> bool:
@@ -4108,7 +4394,7 @@ class Calc:
     def get_range_str(cls, *args, **kwargs) -> str:
         """
         Gets the range as a string inf format of ``A1:B2`` or ``Sheet1.A1:B2``
-        
+
         If ``sheet`` is included the format ``Sheet1.A1:B2`` is returned; Otherwise,
         ``A1:B2`` format is returned.
 
@@ -4132,7 +4418,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('cell_range', 'cr_addr', 'sheet', 'start_col', 'start_row', 'end_col', 'end_row')
+            valid_keys = ("cell_range", "cr_addr", "sheet", "start_col", "start_row", "end_col", "end_row")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("get_range_str() got an unexpected keyword argument")
@@ -4205,7 +4491,7 @@ class Calc:
     @classmethod
     def _get_cell_str_col_row(cls, col: int, row: int) -> str:
         if col < 0 or row < 0:
-            print("Cell position is negative; using A1")
+            mLo.Lo.print("Cell position is negative; using A1")
             return "A1"
         return f"{cls.column_number_str(col)}{row + 1}"
 
@@ -4278,7 +4564,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('addr', 'cell', 'col', 'row')
+            valid_keys = ("addr", "cell", "col", "row")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("get_cell_str() got an unexpected keyword argument")
@@ -4348,7 +4634,9 @@ class Calc:
         Returns:
             List[XCellRange] | None: A list of cell ranges on success; Otherwise, None
 
-        Example:
+
+        .. collapse:: Example
+
             .. code-block:: python
 
                 from ooodev.utils.lo import Lo
@@ -4364,14 +4652,17 @@ class Calc:
                 sd.setSearchString('test')
                 results = Calc.find_all(srch=srch, sd=sd)
                 assert len(results) == 2
+
+        See Also:
+            `LibreOffice API SearchDescriptor <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1util_1_1SearchDescriptor.html>`_
         """
         con = srch.findAll(sd)
         if con is None:
-            print("Match result is null")
+            mLo.Lo.print("Match result is null")
             return None
         c_count = con.getCount()
         if c_count == 0:
-            print("No matches found")
+            mLo.Lo.print("No matches found")
             return None
 
         crs = []
@@ -4382,9 +4673,9 @@ class Calc:
                     continue
                 crs.append(cr)
             except Exception:
-                print(f"Could not access match index {i}")
+                mLo.Lo.print(f"Could not access match index {i}")
         if len(crs) == 0:
-            print(f"Found {c_count} matches but unable to access any match")
+            mLo.Lo.print(f"Found {c_count} matches but unable to access any match")
             return None
         return crs
 
@@ -4408,11 +4699,9 @@ class Calc:
         Returns:
             XStyle: Newly created style
         """
-        comp_doc = mLo.Lo.qi(XComponent, doc)
-        if comp_doc is None:
-            raise mEx.MissingInterfaceError(XComponent)
+        comp_doc = mLo.Lo.qi(XComponent, doc, raise_err=True)
         style_families = mInfo.Info.get_style_container(doc=comp_doc, family_style_name="CellStyles")
-        style = mLo.Lo.create_instance_msf(XStyle, "com.sun.star.style.CellStyle")
+        style = mLo.Lo.create_instance_msf(XStyle, "com.sun.star.style.CellStyle", raise_err=True)
         #   "com.sun.star.sheet.TableCellStyle"  result in style == None ??
         try:
             style_families.insertByName(style_name, style)
@@ -4501,7 +4790,16 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('sheet', 'style_name', 'range_name', 'cell_range', 'start_col', 'start_row', 'end_col', 'end_row')
+            valid_keys = (
+                "sheet",
+                "style_name",
+                "range_name",
+                "cell_range",
+                "start_col",
+                "start_row",
+                "end_col",
+                "end_row",
+            )
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("change_style() got an unexpected keyword argument")
@@ -4548,35 +4846,42 @@ class Calc:
 
     # region    add_border()
     @classmethod
-    def _add_border_sht_rng(cls, cell_range: XCellRange) -> None:
-        cls._add_border_sht_rng_color(cell_range=cell_range, color=CommonColor.BLACK)  # color black
+    def _add_border_sht_rng(cls, cargs: CellCancelArgs) -> None:
+
+        cargs.event_data["color"] = CommonColor.BLACK
+        cls._add_border_sht_rng_color(cargs)  # color black
 
     @classmethod
-    def _add_border_sht_rng_color(cls, cell_range: XCellRange, color: int) -> None:
+    def _add_border_sht_rng_color(cls, cargs: CellCancelArgs) -> None:
         vals = (
             cls.BorderEnum.LEFT_BORDER
             | cls.BorderEnum.RIGHT_BORDER
             | cls.BorderEnum.TOP_BORDER
             | cls.BorderEnum.BOTTOM_BORDER
         )
-        cls._add_border_sht_rng_color_vals(cell_range=cell_range, color=color, border_vals=vals)
+        cargs.event_data["border_vals"] = vals
+        cls._add_border_sht_rng_color_vals(cargs)
 
     @classmethod
     def _add_border_sht_rng_color_vals(
         cls,
-        cell_range: XCellRange,
-        color: int,
-        border_vals: int | BorderEnum,
+        cargs: CellCancelArgs,
     ) -> None:
+        _Events().trigger(CalcNamedEvent.CELLS_BORDER_ADDING, cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
+        cell_range = cast(XCellRange, cargs.cells)
+        color = int(cargs.event_data["color"])
+        bvs = cls.BorderEnum(int(cargs.event_data["border_vals"]))
         line = BorderLine2()  # create the border line
         border = cast(TableBorder2, mProps.Props.get_property(prop_set=cell_range, name="TableBorder2"))
         inner_line = cast(BorderLine2, mProps.Props.get_property(prop_set=cell_range, name="TopBorder2"))
-        
+
         line.Color = color
         line.InnerLineWidth = 0
         line.LineDistance = 0
         line.OuterLineWidth = 100
-        
+
         # inner_line = BorderLine2()  # create the border line
         # inner_line.Color = 0
         # inner_line.LineWidth = 0
@@ -4584,7 +4889,6 @@ class Calc:
         # inner_line.LineDistance = 0
         # inner_line.LineStyle = 0
         # inner_line.OuterLineWidth = 0
-        bvs = cls.BorderEnum(int(border_vals))
         # border = TableBorder2()
 
         if (bvs & cls.BorderEnum.TOP_BORDER) == cls.BorderEnum.TOP_BORDER:
@@ -4607,7 +4911,6 @@ class Calc:
         mProps.Props.set_property(prop_set=cell_range, name="BottomBorder2", value=inner_line)
         mProps.Props.set_property(prop_set=cell_range, name="LeftBorder2", value=inner_line)
         mProps.Props.set_property(prop_set=cell_range, name="TableBorder2", value=border)
-
 
     @overload
     @classmethod
@@ -4641,14 +4944,14 @@ class Calc:
 
     @overload
     @classmethod
-    def add_border(cls, sheet: XSpreadsheet, cell_range: XCellRange, color: int) -> XCellRange:
+    def add_border(cls, sheet: XSpreadsheet, cell_range: XCellRange, color: Color) -> XCellRange:
         """
         Adds borders to a cell range
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
             cell_range (XCellRange): Cell range
-            color (int): RGB color as integer
+            color (Color): RGB color
 
         Returns:
             XCellRange: Range borders that are affected
@@ -4657,14 +4960,14 @@ class Calc:
 
     @overload
     @classmethod
-    def add_border(cls, sheet: XSpreadsheet, range_name: str, color: int) -> XCellRange:
+    def add_border(cls, sheet: XSpreadsheet, range_name: str, color: Color) -> XCellRange:
         """
         Adds borders to a cell range
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
             range_name (str): Range Name such as 'A1:F9'
-            color (int): RGB color as integer
+            color (Color): RGB color
 
         Returns:
             XCellRange: Range borders that are affected
@@ -4673,14 +4976,16 @@ class Calc:
 
     @overload
     @classmethod
-    def add_border(cls, sheet: XSpreadsheet, cell_range: XCellRange, color: int, border_vals: BorderEnum) -> XCellRange:
+    def add_border(
+        cls, sheet: XSpreadsheet, cell_range: XCellRange, color: Color, border_vals: BorderEnum
+    ) -> XCellRange:
         """
         Adds borders to a cell range
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
             cell_range (XCellRange): Cell range
-            color (int): RGB color as integer
+            color (Color): RGB color
             border_vals (BorderEnum): Determines what borders are applied.
 
         Returns:
@@ -4690,14 +4995,14 @@ class Calc:
 
     @overload
     @classmethod
-    def add_border(cls, sheet: XSpreadsheet, range_name: str, color: int, border_vals: BorderEnum) -> XCellRange:
+    def add_border(cls, sheet: XSpreadsheet, range_name: str, color: Color, border_vals: BorderEnum) -> XCellRange:
         """
         Adds borders to a cell range
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
             range_name (str): Range Name such as 'A1:F9'
-            color (int): RGB color as integer
+            color (Color): RGB color
             border_vals (BorderEnum): Determines what borders are applied.
 
         Returns:
@@ -4714,11 +5019,29 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet
             cell_range (XCellRange): Cell range
             range_name (str): Range Name such as 'A1:F9'
-            color (int): RGB color as integer
+            color (Color): RGB color
             border_vals (BorderEnum): Determines what borders are applied.
+
+        Raises:
+            CancelEventError: If CELLS_BORDER_ADDING event is canceled.
 
         Returns:
             XCellRange: Range borders that are affected
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.CELLS_BORDER_ADDING` :eventref:`src-docs-cell-event-border-adding`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.CELLS_BORDER_ADDED` :eventref:`src-docs-cell-event-border-added`
+
+        Note:
+            Event args ``cells`` is of type ``XCellRange``.
+
+            Event args ``event_data`` is a dictionary containing ``color`` and ``border_vals``.
+
+        See Also:
+            :py:meth:`~.calc.Calc.remove_border`
+            :py:meth:`~.calc.Calc.highlight_range`
         """
         ordered_keys = (1, 2, 3, 4)
         kargs_len = len(kwargs)
@@ -4728,7 +5051,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('sheet', 'range_name', 'cell_range', 'color', 'border_vals')
+            valid_keys = ("sheet", "range_name", "cell_range", "color", "border_vals")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("add_border() got an unexpected keyword argument")
@@ -4758,44 +5081,57 @@ class Calc:
         if isinstance(kargs[2], str):
             cell_range = sheet.getCellRangeByName(kargs[2])
         else:
-            cell_range = kargs[2]
+            cell_range = cast(XCellRange, kargs[2])
 
+        cargs = CellCancelArgs(cls)
+        cargs.sheet = sheet
+        cargs.cells = cell_range
+        cargs.event_data = {}
         if count == 2:
             # add_border(sheet: XSpreadsheet, cell_range: str)
             # add_border(sheet: XSpreadsheet, range_name: str)
-            cls._add_border_sht_rng(cell_range=cell_range)
+            cls._add_border_sht_rng(cargs)
         elif count == 3:
             # add_border(sheet: XSpreadsheet, cell_range: XCellRange, color: int)
             #  add_border(sheet: XSpreadsheet, range_name: str, color: int)
-            cls._add_border_sht_rng_color(cell_range=cell_range, color=kargs[3])
+            cargs.event_data["color"] = kargs[3]
+            cls._add_border_sht_rng_color(cargs)
         else:
             # add_border(sheet: XSpreadsheet, cell_range: XCellRange, color: int, border_vals: int)
             # add_border(sheet: XSpreadsheet, range_name: str, color: int, border_vals: int)
             # add_border(sheet: XSpreadsheet, cell_range: XCellRange, color: int, border_vals: Calc.BorderEnum)
             # add_border(sheet: XSpreadsheet, range_name: str, color: int, border_vals: BorderEnum)
-            cls._add_border_sht_rng_color_vals(cell_range=cell_range, color=kargs[3], border_vals=kargs[4])
+            cargs.event_data["color"] = kargs[3]
+            cargs.event_data["border_vals"] = kargs[4]
+
+            cls._add_border_sht_rng_color_vals(cargs)
+        _Events().trigger(CalcNamedEvent.CELLS_BORDER_ADDED, CellArgs.from_args(cargs))
         return cell_range
 
     # endregion add_border()
 
     # region    remove_border()
     @classmethod
-    def _remove_border_sht_rng(cls, cell_range: XCellRange) -> None:
+    def _remove_border_sht_rng(cls, cargs: CellCancelArgs) -> None:
         vals = (
             cls.BorderEnum.LEFT_BORDER
             | cls.BorderEnum.RIGHT_BORDER
             | cls.BorderEnum.TOP_BORDER
             | cls.BorderEnum.BOTTOM_BORDER
         )
-        cls._remove_border_sht_rng_vals(cell_range=cell_range, border_vals=vals)
+        cargs.event_data = vals
+        cls._remove_border_sht_rng_vals(cargs)
 
     @classmethod
     def _remove_border_sht_rng_vals(
         cls,
-        cell_range: XCellRange,
-        border_vals: BorderEnum,
+        cargs: CellCancelArgs,
     ) -> None:
-        
+        _Events().trigger(CalcNamedEvent.CELLS_BORDER_REMOVING, cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
+        border_vals = cast(Calc.BorderEnum, cargs.event_data)
+        cell_range = cast(XCellRange, cargs.cells)
         line = BorderLine2()  # create the border line
         border = cast(TableBorder2, mProps.Props.get_property(prop_set=cell_range, name="TableBorder2"))
         line = cast(BorderLine2, mProps.Props.get_property(prop_set=cell_range, name="TopBorder2"))
@@ -4832,7 +5168,6 @@ class Calc:
         mProps.Props.set_property(prop_set=cell_range, name="BottomBorder2", value=inner_line)
         mProps.Props.set_property(prop_set=cell_range, name="LeftBorder2", value=inner_line)
 
-
     @overload
     @classmethod
     def remove_border(cls, sheet: XSpreadsheet, cell_range: XCellRange) -> XCellRange:
@@ -4863,7 +5198,6 @@ class Calc:
         """
         ...
 
-
     @overload
     @classmethod
     def remove_border(cls, sheet: XSpreadsheet, cell_range: XCellRange, border_vals: BorderEnum) -> XCellRange:
@@ -4873,7 +5207,6 @@ class Calc:
         Args:
             sheet (XSpreadsheet): Spreadsheet
             cell_range (XCellRange): Cell range
-            color (int): RGB color as integer
             border_vals (BorderEnum): Determines what borders are applied.
 
         Returns:
@@ -4890,7 +5223,6 @@ class Calc:
         Args:
             sheet (XSpreadsheet): Spreadsheet
             range_name (str): Range Name such as 'A1:F9'
-            color (int):  RGB color as integer
             border_vals (BorderEnum): Determines what borders are applied.
 
         Returns:
@@ -4907,11 +5239,27 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet
             cell_range (XCellRange): Cell range
             range_name (str): Range Name such as 'A1:F9'
-            color (int): RGB color as integer
             border_vals (BorderEnum): Determines what borders are applied.
+
+        Raises:
+            CancelEventError: If CELLS_BORDER_REMOVING event is canceled
 
         Returns:
             XCellRange: Range borders that are affected
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.CELLS_BORDER_REMOVING` :eventref:`src-docs-cell-event-border-removing`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.CELLS_BORDER_REMOVED` :eventref:`src-docs-cell-event-border-removed`
+
+        Note:
+            Event args ``cells`` is of type ``XCellRange``.
+
+            Event arg properties modified on CELLS_BORDER_REMOVING it is reflected in this method.
+
+        See Also:
+            :py:meth:`~.calc.Calc.add_border`
         """
         ordered_keys = (1, 2, 3)
         kargs_len = len(kwargs)
@@ -4921,7 +5269,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('sheet', 'range_name', 'cell_range', 'border_vals')
+            valid_keys = ("sheet", "range_name", "cell_range", "border_vals")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("remove_border() got an unexpected keyword argument")
@@ -4948,17 +5296,23 @@ class Calc:
         if isinstance(kargs[2], str):
             cell_range = sheet.getCellRangeByName(kargs[2])
         else:
-            cell_range = kargs[2]
+            cell_range = cast(XCellRange, kargs[2])
+
+        cargs = CellCancelArgs(cls)
+        cargs.sheet = sheet
+        cargs.cells = cell_range
 
         if count == 2:
             # remove_border(cls, sheet: XSpreadsheet, cell_range: XCellRange)
             # remove_border(cls, sheet: XSpreadsheet, range_name: str)
-            cls._remove_border_sht_rng(cell_range=cell_range)
+            cls._remove_border_sht_rng(cargs)
         else:
             # remove_border(cls, sheet: XSpreadsheet, cell_range: XCellRange, border_vals: BorderEnum)
             # remove_border(cls, sheet: XSpreadsheet, range_name: str, border_vals: BorderEnum)
-            cls._remove_border_sht_rng_vals(cell_range=cell_range,  border_vals=kargs[3])
-        
+            cargs.event_data = kargs[3]
+            cls._remove_border_sht_rng_vals(cargs)
+
+        _Events().trigger(CalcNamedEvent.CELLS_BORDER_REMOVED, CellArgs.from_args(cargs))
         return cell_range
 
     # endregion remove_border()
@@ -4966,7 +5320,7 @@ class Calc:
     # region    highlight_range()
     @overload
     @classmethod
-    def highlight_range(cls, sheet: XSpreadsheet,  headline: str, cell_range: XCellRange) ->  XCell:
+    def highlight_range(cls, sheet: XSpreadsheet, headline: str, cell_range: XCellRange) -> XCell:
         """
         Draw a colored border around the range and write a headline in the
         top-left cell of the range.
@@ -4980,10 +5334,10 @@ class Calc:
             XCell: First cell of range that headline ia applied on
         """
         ...
-    
+
     @overload
     @classmethod
-    def highlight_range(cls, sheet: XSpreadsheet,  headline: str, cell_range: XCellRange, color: int) ->  XCell:
+    def highlight_range(cls, sheet: XSpreadsheet, headline: str, cell_range: XCellRange, color: Color) -> XCell:
         """
         Draw a colored border around the range and write a headline in the
         top-left cell of the range.
@@ -4992,17 +5346,16 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet
             headline (str): Headline
             cell_range (XCellRange): Cell Range
-            color (int): RGB color as int
+            color (Color): RGB color
 
         Returns:
             XCell: First cell of range that headline ia applied on
         """
         ...
-    
-    
+
     @overload
     @classmethod
-    def highlight_range(cls, sheet: XSpreadsheet,  headline: str, range_name: str) ->  XCell:
+    def highlight_range(cls, sheet: XSpreadsheet, headline: str, range_name: str) -> XCell:
         """
         Draw a colored border around the range and write a headline in the
         top-left cell of the range.
@@ -5016,10 +5369,10 @@ class Calc:
             XCell: First cell of range that headline ia applied on
         """
         ...
-    
+
     @overload
     @classmethod
-    def highlight_range(cls, sheet: XSpreadsheet,  headline: str, range_name: str, color:int) ->  XCell:
+    def highlight_range(cls, sheet: XSpreadsheet, headline: str, range_name: str, color: Color) -> XCell:
         """
         Draw a colored border around the range and write a headline in the
         top-left cell of the range.
@@ -5028,7 +5381,7 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet
             headline (str): Headline
             range_name (str): Range Name such as 'A1:F9'
-            color (int): RGB color as int
+            color (Color): RGB color
 
         Returns:
             XCell: First cell of range that headline ia applied on
@@ -5046,9 +5399,27 @@ class Calc:
             headline (str): Headline
             cell_range (XCellRange): Cell Range
             range_name (str): Range Name such as 'A1:F9'
+            color (Color): RGB color
+
+        Raises:
+            CancelEventError: If CELLS_HIGH_LIGHTING event is canceled
 
         Returns:
             XCell: First cell of range that headline ia applied on
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.CELLS_HIGH_LIGHTING` :eventref:`src-docs-cell-event-highlighting`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.CELLS_HIGH_LIGHTED` :eventref:`src-docs-cell-event-highlighted`
+
+        Note:
+            Event args ``cells`` is of type ``XCellRange``.
+
+            Event args ``event_data`` is a dictionary containing ``color`` and ``headline``.
+
+        See Also:
+            :py:meth:`~.calc.Calc.add_border`
         """
         ordered_keys = (1, 2, 3, 4)
         kargs_len = len(kwargs)
@@ -5058,7 +5429,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('sheet', 'headline', 'range_name', 'cell_range', 'color')
+            valid_keys = ("sheet", "headline", "range_name", "cell_range", "color")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("highlight_range() got an unexpected keyword argument")
@@ -5086,28 +5457,37 @@ class Calc:
         if isinstance(kargs[3], str):
             cell_range = sheet.getCellRangeByName(kargs[3])
         else:
-            cell_range = kargs[3]
+            cell_range = cast(XCellRange, kargs[3])
 
         if count == 3:
             color = CommonColor.LIGHT_BLUE
         else:
-            color = cast(int, kargs[4])
-        cls._add_border_sht_rng_color(cell_range=cell_range, color=color)
+            color = cast(Color, kargs[4])
+
+        cargs = CellCancelArgs(Calc.highlight_range.__qualname__)
+        cargs.cells = cell_range
+        cargs.sheet = sheet
+        cargs.event_data = {"color": color, "headline": kargs[2]}
+        _Events().trigger(CalcNamedEvent.CELLS_HIGH_LIGHTING, cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
+        cls._add_border_sht_rng_color(cargs)
 
         # color the headline
-        addr = cls._get_address_cell(cell_range=cell_range)
+        addr = cls._get_address_cell(cell_range=cargs.cells)
         header_range = cls._get_cell_range_col_row(
-            sheet=sheet,
+            sheet=cargs.sheet,
             start_col=addr.StartColumn,
             start_row=addr.StartRow,
             end_col=addr.EndColumn,
             end_row=addr.StartRow,
         )
         first_cell = cls._get_cell_cell_rng(cell_range=header_range, col=0, row=0)
-        cls._set_val_by_cell(value=kargs[2], cell=first_cell)
+        cls._set_val_by_cell(value=cargs.event_data["headline"], cell=first_cell)
+        _Events().trigger(CalcNamedEvent.CELLS_HIGH_LIGHTED, CellArgs.from_args(cargs))
         return first_cell
-    # endregion highlight_range()
 
+    # endregion highlight_range()
 
     @classmethod
     def set_col_width(cls, sheet: XSpreadsheet, width: int, idx: int) -> XCellRange:
@@ -5119,18 +5499,43 @@ class Calc:
             width (int): Width in mm
             idx (int): Index of column
 
+        Raises:
+            CancelEventError: If SHEET_COL_WIDTH_SETTING event is canceled.
+
         Returns:
             XCellRange: Column cell range that width is applied on
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_COL_WIDTH_SETTING` :eventref:`src-docs-sheet-event-col-width-setting`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_COL_WIDTH_SET` :eventref:`src-docs-sheet-event-col-width-set`
+
+        Note:
+            Event args ``index`` is set to ``idx`` value, ``event_data`` is set to ``width`` value.
         """
+        cargs = SheetCancelArgs(Calc.set_col_width.__qualname__)
+        cargs.sheet = sheet
+        cargs.index = idx
+        cargs.event_data = width
+        _Events().trigger(CalcNamedEvent.SHEET_COL_WIDTH_SETTING, cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
         if width <= 0:
-            print("Width must be greater then 0")
+            mLo.Lo.print("Width must be greater then 0")
             return None
-        cell_range = cls.get_col_range(sheet=sheet, idx=idx)
+        cell_range = cls.get_col_range(sheet=cargs.sheet, idx=cargs.index)
         mProps.Props.set_property(prop_set=cell_range, name="Width", value=(width * 100))
+        _Events().trigger(CalcNamedEvent.SHEET_COL_WIDTH_SET, SheetArgs.from_args(cargs))
         return cell_range
 
     @classmethod
-    def set_row_height(cls, sheet: XSpreadsheet, height: int, idx: int,) ->  XCellRange:
+    def set_row_height(
+        cls,
+        sheet: XSpreadsheet,
+        height: int,
+        idx: int,
+    ) -> XCellRange:
         """
         Sets column width. height is in ``mm``, e.g. 6
 
@@ -5139,15 +5544,37 @@ class Calc:
             height (int): Width in mm
             idx (int): Index of Row
 
+        Raises:
+            CancelEventError: If SHEET_ROW_HEIGHT_SETTING event is canceled.
+
         Returns:
             XCellRange: Row cell range that height is applied on
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_ROW_HEIGHT_SETTING` :eventref:`src-docs-sheet-event-row-height-setting`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_ROW_HEIGHT_SET` :eventref:`src-docs-sheet-event-row-height-set`
+
+        Note:
+            Event args ``index`` is set to ``idx`` value, ``event_data`` is set to ``height`` value.
         """
+        cargs = SheetCancelArgs(Calc.set_row_height.__qualname__)
+        cargs.sheet = sheet
+        cargs.index = idx
+        cargs.event_data = height
+        _Events().trigger(CalcNamedEvent.SHEET_ROW_HEIGHT_SETTING, cargs)
+        if cargs.cancel:
+            raise mEx.CancelEventError(cargs)
+        idx = cargs.index
+        height = cargs.event_data
         if height <= 0:
-            print("Height must be greater then 0")
+            mLo.Lo.print("Height must be greater then 0")
             return None
-        cell_range = cls.get_row_range(sheet=sheet, idx=idx)
+        cell_range = cls.get_row_range(sheet=cargs.sheet, idx=idx)
         # mInfo.Info.show_services(obj_name="Cell range for a row", obj=cell_range)
         mProps.Props.set_property(prop_set=cell_range, name="Height", value=(height * 100))
+        _Events().trigger(CalcNamedEvent.SHEET_ROW_HEIGHT_SET, SheetArgs.from_args(cargs))
         return cell_range
 
     # endregion ------------ cell decoration ---------------------------
@@ -5155,16 +5582,14 @@ class Calc:
     # region --------------- scenarios ---------------------------------
 
     @staticmethod
-    def insert_scenario(
-        sheet: XSpreadsheet, range_name: str, vals: Sequence[Sequence[object]], name: str, comment: str
-    ) -> XScenario:
+    def insert_scenario(sheet: XSpreadsheet, range_name: str, vals: Table, name: str, comment: str) -> XScenario:
         """
         Insert a scenario into sheet
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
             range_name (str): Range name such as "A1:B3"
-            vals (Sequence[Sequence[object]]): 2d array of values
+            vals (Table): 2d array of values
             name (str): Scenario name
             comment (str): Scenario description
 
@@ -5173,13 +5598,13 @@ class Calc:
 
         Returns:
             XScenario: the newly created scenario
-        
+
         Note:
             A LibreOffice Calc scenario is a set of cell values that can be used within your calculations.
             You assign a name to every scenario on your sheet. Define several scenarios on the same sheet,
             each with some different values in the cells. Then you can easily switch the sets of cell values
             by their name and immediately observe the results. Scenarios are a tool to test out "what-if" questions.
-            
+
         See Also:
             `Using Scenarios <https://help.libreoffice.org/latest/en-US/text/scalc/guide/scenario.html>`_
         """
@@ -5187,31 +5612,21 @@ class Calc:
         cell_range = sheet.getCellRangeByName(range_name)
 
         # create the range address sequence
-        addr = mLo.Lo.qi(XCellRangeAddressable, cell_range)
-        if addr is None:
-            raise mEx.MissingInterfaceError(XCellRangeAddressable)
+        addr = mLo.Lo.qi(XCellRangeAddressable, cell_range, raise_err=True)
         cr_addr = [addr.getRangeAddress()]
 
         # create the scenario
-        supp = mLo.Lo.qi(XScenariosSupplier, sheet)
-        if addr is None:
-            raise mEx.MissingInterfaceError(XScenariosSupplier)
+        supp = mLo.Lo.qi(XScenariosSupplier, sheet, raise_err=True)
         scens = supp.getScenarios()
         scens.addNewByName(name, cr_addr, comment)
 
         # insert the values into the range
-        cr_data = mLo.Lo.qi(XCellRangeData, cell_range)
-        if cr_data is None:
-            raise mEx.MissingInterfaceError(XCellRangeData)
+        cr_data = mLo.Lo.qi(XCellRangeData, cell_range, raise_err=True)
         cr_data.setDataArray(vals)
-        
-        supp = mLo.Lo.qi(XScenariosSupplier, sheet)
-        if supp is None:
-            raise mEx.MissingInterfaceError(XScenariosSupplier)
+
+        supp = mLo.Lo.qi(XScenariosSupplier, sheet, raise_err=True)
         scenarios = supp.getScenarios()
-        result = mLo.Lo.qi(XScenario, scenarios.getByName(name))
-        if result is None:
-            raise mEx.MissingInterfaceError(XScenario)
+        result = mLo.Lo.qi(XScenario, scenarios.getByName(name), raise_err=True)
         return result
 
     @staticmethod
@@ -5234,21 +5649,17 @@ class Calc:
             You assign a name to every scenario on your sheet. Define several scenarios on the same sheet,
             each with some different values in the cells. Then you can easily switch the sets of cell values
             by their name and immediately observe the results. Scenarios are a tool to test out "what-if" questions.
-            
+
         See Also:
             `Using Scenarios <https://help.libreoffice.org/latest/en-US/text/scalc/guide/scenario.html>`_
         """
         try:
             # get the scenario set
-            supp = mLo.Lo.qi(XScenariosSupplier, sheet)
-            if supp is None:
-                raise mEx.MissingInterfaceError(XScenariosSupplier)
+            supp = mLo.Lo.qi(XScenariosSupplier, sheet, raise_err=True)
             scenarios = supp.getScenarios()
 
             # get the scenario and activate it
-            scenario = mLo.Lo.qi(XScenario, scenarios.getByName(name))
-            if scenario is None:
-                raise mEx.MissingInterfaceError(XScenario)
+            scenario = mLo.Lo.qi(XScenario, scenarios.getByName(name), raise_err=True)
 
             scenario.apply()
             return scenario
@@ -5273,9 +5684,7 @@ class Calc:
         Returns:
             XDataPilotTables: Pivot tables
         """
-        db_supp = mLo.Lo.qi(XDataPilotTablesSupplier, sheet)
-        if db_supp is None:
-            raise mEx.MissingInterfaceError(XDataPilotTablesSupplier)
+        db_supp = mLo.Lo.qi(XDataPilotTablesSupplier, sheet, raise_err=True)
         return db_supp.getDataPilotTables()
 
     get_pivot_tables = get_pilot_tables
@@ -5299,9 +5708,7 @@ class Calc:
             otable = dp_tables.getByName(name)
             if otable is None:
                 raise Exception(f"Did not find data pilot table '{name}'")
-            result =  mLo.Lo.qi(XDataPilotTable, otable)
-            if result is None:
-                raise mEx.MissingInterfaceError(XDataPilotTable)
+            result = mLo.Lo.qi(XDataPilotTable, otable, raise_err=True)
             return result
         except Exception as e:
             raise Exception(f"Pilot table lookup failed for '{name}'") from e
@@ -5312,7 +5719,7 @@ class Calc:
     # region --------------- using calc functions ----------------------
 
     @classmethod
-    def compute_function(cls, fn: GeneralFunction | str, cell_range: XCellRange) -> float:
+    def compute_function(cls, fn: Calc.GeneralFunction | str, cell_range: XCellRange) -> float:
         """
         Compuutes a Calc Function
 
@@ -5324,21 +5731,19 @@ class Calc:
             float: result of function if successful. If there is an errro then 0.0 is returned.
         """
         try:
-            sheet_op = mLo.Lo.qi(XSheetOperation, cell_range)
-            if sheet_op is None:
-                raise mEx.MissingInterfaceError(XSheetOperation)
+            sheet_op = mLo.Lo.qi(XSheetOperation, cell_range, raise_err=True)
             func = cls.GeneralFunction(fn)  # convert to enum value if str
-            if not mInfo.Info.is_type_enum(func, cls.GeneralFunction.__typename__):
-                print("Arg fn is invalid, returning 0.0")
+            if not isinstance(fn, uno.Enum):
+                mLo.Lo.print("Arg fn is invalid, returning 0.0")
                 return 0.0
             return sheet_op.computeFunction(func)
         except Exception as e:
-            print("Compute function failed. Returning 0.0")
-            print(f"    {e}")
+            mLo.Lo.print("Compute function failed. Returning 0.0")
+            mLo.Lo.print(f"    {e}")
         return 0.0
 
     @staticmethod
-    def call_fun(func_name: str, *args:any) -> object:
+    def call_fun(func_name: str, *args: any) -> object:
         """
         Execute a Calc function by its (english) name and based on the given arguments
 
@@ -5359,19 +5764,18 @@ class Calc:
         else:
             arg = args
         try:
-            fa = mLo.Lo.create_instance_mcf(XFunctionAccess, "com.sun.star.sheet.FunctionAccess")
+            fa = mLo.Lo.create_instance_mcf(XFunctionAccess, "com.sun.star.sheet.FunctionAccess", raise_err=True)
             return fa.callFunction(func_name.upper(), arg)
         except Exception as e:
-            print(f"Could not invoke function '{func_name.upper()}'")
-            print(f"    {e}")
+            mLo.Lo.print(f"Could not invoke function '{func_name.upper()}'")
+            mLo.Lo.print(f"    {e}")
         return None
-
 
     @staticmethod
     def get_function_names() -> List[str] | None:
         funcs_desc = mLo.Lo.create_instance_mcf(XFunctionDescriptions, "com.sun.star.sheet.FunctionDescriptions")
         if funcs_desc is None:
-            print("No function descriptions were found")
+            mLo.Lo.print("No function descriptions were found")
             return None
 
         nms: List[str] = []
@@ -5385,7 +5789,7 @@ class Calc:
             except Exception:
                 continue
         if len(nms) == 0:
-            print("No function names were found")
+            mLo.Lo.print("No function names were found")
             return None
         nms.sort()
         return nms
@@ -5397,7 +5801,9 @@ class Calc:
         if not func_nm:
             raise ValueError("Invalid arg, please supply a function name to find.")
         try:
-            func_desc = mLo.Lo.create_instance_mcf(XFunctionDescriptions, "com.sun.star.sheet.FunctionDescriptions")
+            func_desc = mLo.Lo.create_instance_mcf(
+                XFunctionDescriptions, "com.sun.star.sheet.FunctionDescriptions", raise_err=True
+            )
         except Exception as e:
             raise Exception("No function descriptions were found") from e
 
@@ -5409,7 +5815,7 @@ class Calc:
                         return tuple(props)
             except Exception:
                 continue
-        print(f"Function '{func_nm}' not found")
+        mLo.Lo.print(f"Function '{func_nm}' not found")
         return None
 
     @staticmethod
@@ -5417,15 +5823,17 @@ class Calc:
         if idx < 0:
             raise IndexError("Negative index in not allowed.")
         try:
-            func_desc = mLo.Lo.create_instance_mcf(XFunctionDescriptions, "com.sun.star.sheet.FunctionDescriptions")
+            func_desc = mLo.Lo.create_instance_mcf(
+                XFunctionDescriptions, "com.sun.star.sheet.FunctionDescriptions", raise_err=True
+            )
         except Exception as e:
             raise Exception("No function descriptions were found") from e
 
         try:
             return tuple(func_desc.getByIndex(idx))
         except Exception as e:
-            print(f"Could not access function description {idx}")
-            print(f"    {e}")
+            mLo.Lo.print(f"Could not access function description {idx}")
+            mLo.Lo.print(f"    {e}")
         return None
 
     @overload
@@ -5476,7 +5884,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('func_nm', 'idx')
+            valid_keys = ("func_nm", "idx")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("find_function() got an unexpected keyword argument")
@@ -5502,6 +5910,25 @@ class Calc:
 
     @classmethod
     def print_function_info(cls, func_name: str) -> None:
+        """
+        Prints Function Info to console.
+
+        Args:
+            func_name (str): Function name
+
+        Returns:
+            None:
+
+        :events:
+           .. include:: ../../resources/global/printing_events.rst
+
+        Note:
+            .. include:: ../../resources/global/printing_note.rst
+        """
+        cargs = CancelEventArgs(Calc.print_function_info.__qualname__)
+        _Events().trigger(GblNamedEvent.PRINTING, cargs)
+        if cargs.cancel:
+            return
         prop_vals = cls._find_function_by_name(func_nm=func_name)
         if prop_vals is None:
             return
@@ -5511,6 +5938,29 @@ class Calc:
 
     @classmethod
     def print_fun_arguments(cls, prop_vals: Sequence[PropertyValue]) -> None:
+        """
+        Prints Function Arguments to console
+
+        Args:
+            prop_vals (Sequence[PropertyValue]): Property values
+
+        Returns:
+            None:
+
+        :events:
+           .. include:: ../../resources/global/printing_events.rst
+
+        Note:
+            .. include:: ../../resources/global/printing_note.rst
+
+        Note:
+            Event args ``event_data`` is set to ``prop_vals``
+        """
+        cargs = CancelEventArgs(Calc.print_fun_arguments.__qualname__)
+        cargs.event_data = prop_vals
+        _Events().trigger(GblNamedEvent.PRINTING, cargs)
+        if cargs.cancel:
+            return
         fargs: Sequence[FunctionArgument] = mProps.Props.get_value(name="Arguments", props=prop_vals)
         if fargs is None:
             print("No arguments found")
@@ -5518,10 +5968,10 @@ class Calc:
 
         print(f"No. of arguments: {len(fargs)}")
         for i, arg in enumerate(fargs):
-            cls.print_fun_argument(i, arg)
+            cls._print_fun_argument(i, arg)
 
     @staticmethod
-    def print_fun_argument(i: int, fa: FunctionArgument) -> None:
+    def _print_fun_argument(i: int, fa: FunctionArgument) -> None:
         print(f"{i+1}. Argument name: {fa.Name}")
         print(f"  Description: '{fa.Description}'")
         print(f"  Is optional?: {fa.IsOptional}")
@@ -5529,9 +5979,15 @@ class Calc:
 
     @staticmethod
     def get_recent_functions() -> Tuple[int, ...] | None:
+        """
+        Gets recent functions
+
+        Returns:
+            Tuple[int, ...] | None: Tuple of ints that point to functions
+        """
         recent_funcs = mLo.Lo.create_instance_mcf(XRecentFunctions, "com.sun.star.sheet.RecentFunctions")
         if recent_funcs is None:
-            print("No recent functions found")
+            mLo.Lo.print("No recent functions found")
             return None
 
         return recent_funcs.getRecentFunctionIds()
@@ -5545,7 +6001,7 @@ class Calc:
         cls, gs: XGoalSeek, sheet: XSpreadsheet, cell_name: str, formula_cell_name: str, result: numbers.Number
     ) -> float:
         """
-        Calculates a value which gives a specified result in a formula. 
+        Calculates a value which gives a specified result in a formula.
 
         Args:
             gs (XGoalSeek): Goal seeking value for cell
@@ -5559,14 +6015,14 @@ class Calc:
 
         Returns:
             float: result of the goal seek
-        """        
+        """
         """find x in formula when it equals result"""
         xpos = cls._get_cell_address_sheet(sheet=sheet, cell_name=cell_name)
         formula_pos = cls._get_cell_address_sheet(sheet=sheet, cell_name=formula_cell_name)
 
         goal_result = gs.seekGoal(formula_pos, xpos, f"{float(result)}")
         if goal_result.Divergence >= 0.1:
-            print(f"NO result; divergence: {goal_result.Divergence}")
+            mLo.Lo.print(f"NO result; divergence: {goal_result.Divergence}")
             raise mEx.GoalDivergenceError(goal_result.Divergence)
         return goal_result.Result
 
@@ -5575,21 +6031,21 @@ class Calc:
         """
         Prints solvers
         """
-        print("Services offered by the solver:")
+        mLo.Lo.print("Services offered by the solver:")
         nms = mInfo.Info.get_service_names(service_name="com.sun.star.sheet.Solver")
         if nms is None:
-            print("  none")
+            mLo.Lo.print("  none")
             return
 
         for service in nms:
-            print(f"  {service}")
-        print()
+            mLo.Lo.print(f"  {service}")
+        mLo.Lo.print()
 
-    @classmethod
-    def to_constraint_op(cls, op: str) -> SolverConstraintOperator:
+    @staticmethod
+    def to_constraint_op(op: str) -> Calc.SolverConstraintOperator:
         """
         Convert string value to SolverConstraintOperator.
-        
+
         If ``op`` is not valid then SolverConstraintOperator.EQUAL is returned.
 
         Args:
@@ -5599,13 +6055,13 @@ class Calc:
             SolverConstraintOperator: Operator as enum
         """
         if op == "=" or op == "==":
-            return cls.SolverConstraintOperator.EQUAL
+            return Calc.SolverConstraintOperator.EQUAL
         if (op == "<=") or op == "=<":
-            return cls.SolverConstraintOperator.LESS_EQUAL
+            return Calc.SolverConstraintOperator.LESS_EQUAL
         if (op == ">=") or op == "=>":
-            return cls.SolverConstraintOperator.GREATER_EQUAL
-        print(f"Do not recognise op: {op}; using EQUAL")
-        return cls.SolverConstraintOperator.EQUAL
+            return Calc.SolverConstraintOperator.GREATER_EQUAL
+        mLo.Lo.print(f"Do not recognise op: {op}; using EQUAL")
+        return Calc.SolverConstraintOperator.EQUAL
 
     # region    make_constraint()
     @classmethod
@@ -5642,7 +6098,7 @@ class Calc:
     @classmethod
     def make_constraint(cls, num: numbers.Number, op: str, addr: CellAddress) -> SolverConstraint:
         """
-        Makes a constraint for a solver model. 
+        Makes a constraint for a solver model.
 
         Args:
             num (Number): Constraint number such as float or int.
@@ -5658,7 +6114,7 @@ class Calc:
     @classmethod
     def make_constraint(cls, num: numbers.Number, op: SolverConstraintOperator, addr: CellAddress) -> SolverConstraint:
         """
-        Makes a constraint for a solver model. 
+        Makes a constraint for a solver model.
 
         Args:
             num (Number): Constraint number such as float or int.
@@ -5709,7 +6165,7 @@ class Calc:
     @classmethod
     def make_constraint(cls, *args, **kwargs) -> SolverConstraint:
         """
-        Makes a constraint for a solver model. 
+        Makes a constraint for a solver model.
 
         Args:
             num (Number): Constraint number such as float or int.
@@ -5728,7 +6184,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('num', 'op', 'sheet', 'addr', 'cell_name')
+            valid_keys = ("num", "op", "sheet", "addr", "cell_name")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("make_constraint() got an unexpected keyword argument")
@@ -5751,7 +6207,7 @@ class Calc:
 
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
-        if not count in (3, 4) :
+        if not count in (3, 4):
             if isinstance(kargs[2], str):
                 # def make_constraint(num: float, op: str, addr: CellAddress)
                 return cls._make_constraint_op_str_addr(num=kargs[1], op=kargs[2], addr=kargs[3])
@@ -5784,15 +6240,15 @@ class Calc:
         # These are typedef properties. The types-unopy typings are correct. Typedef are represented as Class Properties.
         is_successful = solver.Success
         cell_name = cls._get_cell_str_addr(solver.Objective)
-        print("Solver result: ")
-        print(f"  {cell_name} == {solver.ResultValue:.4f}")
+        mLo.Lo.print("Solver result: ")
+        mLo.Lo.print(f"  {cell_name} == {solver.ResultValue:.4f}")
         addrs = solver.Variables
         solns = solver.Solution
-        print("Solver variables: ")
+        mLo.Lo.print("Solver variables: ")
         for i, num in enumerate(solns):
             cell_name = cls._get_cell_str_addr(addrs[i])
-            print(f"  {cell_name} == {num:.4f}")
-        print()
+            mLo.Lo.print(f"  {cell_name} == {num:.4f}")
+        mLo.Lo.print()
 
     # endregion ------------ solver methods ----------------------------
 
@@ -5800,20 +6256,74 @@ class Calc:
 
     @staticmethod
     def get_head_foot(props: XPropertySet, content: str) -> XHeaderFooterContent:
-        result = mLo.Lo.qi(XHeaderFooterContent, mProps.Props.get_property(prop_set=props, name=content))
-        if result is None:
-            raise mEx.MissingInterfaceError(XHeaderFooterContent)
+        """
+        Gets header footer content
+
+        Args:
+            props (XPropertySet): Properties
+            content (str): content
+
+        Raises:
+            MissingInterfaceError: If unable to obtain XHeaderFooterContent interface
+
+        Returns:
+            XHeaderFooterContent: Header Footer Content
+
+        See Also:
+            `LibreOffice API XHeaderFooterContent <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1sheet_1_1XHeaderFooterContent.html>`_
+        """
+        result = mLo.Lo.qi(
+            XHeaderFooterContent, mProps.Props.get_property(prop_set=props, name=content), raise_err=True
+        )
         return result
 
     @staticmethod
     def print_head_foot(title: str, hfc: XHeaderFooterContent) -> None:
+        """
+        Prints header, footer to console
+
+        Args:
+            title (str): Title printed to console
+            hfc (XHeaderFooterContent): Content
+
+        Returns:
+            None:
+
+        :events:
+           .. include:: ../../resources/global/printing_events.rst
+
+
+        Note:
+            .. include:: ../../resources/global/printing_note.rst
+
+        Note:
+           Event args ``event_data`` is a dictionary containing all method parameters.
+        """
+        cargs = CancelEventArgs(Calc.print_head_foot.__qualname__)
+        cargs.event_data = {"title": title, "hfc": hfc}
+        _Events().trigger(GblNamedEvent.PRINTING, cargs)
+        if cargs.cancel:
+            return
         left = hfc.getLeftText()
         center = hfc.getCenterText()
         right = hfc.getRightText()
         print(f"{title}: '{left.getString()}' : '{center.getString()}' : '{right.getString()}'")
 
     @classmethod
-    def get_region(cls, hfc: XHeaderFooterContent, region: int) -> XText | None:
+    def get_region(cls, hfc: XHeaderFooterContent, region: Calc.HeaderFooter) -> XText:
+        """
+        Get region for Header-Footer-Content.
+
+        Args:
+            hfc (XHeaderFooterContent): Content
+            region (HeaderFooter): Region to get
+
+        Raises:
+            TypeError: If hfc or region is not a valid type.
+
+        Returns:
+            XText: interface instance
+        """
         if hfc is None:
             raise TypeError("'hfc' is expencted to be XHeaderFooterContent instance")
 
@@ -5823,14 +6333,21 @@ class Calc:
             return hfc.getCenterText()
         if region == cls.HeaderFooter.HF_RIGHT:
             return hfc.getRightText()
-        print("Unknown header/footer region")
-        return None
+        raise TypeError("region is not a valid type")
 
     @classmethod
-    def set_head_foot(cls, hfc: XHeaderFooterContent, region: int, text: str) -> None:
+    def set_head_foot(cls, hfc: XHeaderFooterContent, region: Calc.HeaderFooter, text: str) -> None:
+        """
+        Sets the Header-Footer-Content
+
+        Args:
+            hfc (XHeaderFooterContent): Content
+            region (HeaderFooter): Region to set
+            text (str): Text to set
+        """
         xtext = cls.get_region(hfc=hfc, region=region)
         if xtext is None:
-            print("Could not set text")
+            mLo.Lo.print("Could not set text")
             return
         header_cursor = xtext.createTextCursor()
         header_cursor.gotoStart(False)

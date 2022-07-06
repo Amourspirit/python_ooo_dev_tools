@@ -39,7 +39,13 @@ class ConnectBase(ABC):
             NoConnectException: if unable to obtain a connection to soffice
         """
         ...
-   
+
+    def kill_soffice(self) -> None:
+        """
+        Attempts to kill instance of soffice created by this instance
+        """
+        raise NotImplementedError("kill_soffice is not implemented in this child class")
+
     @property
     def desktop(self):
         try:

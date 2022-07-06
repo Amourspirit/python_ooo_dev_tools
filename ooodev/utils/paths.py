@@ -5,8 +5,10 @@ import shutil
 import __main__
 from pathlib import Path
 from typing import Union, overload
+from .sys_info import SysInfo
 
-if sys.platform == "win32":
+PLATFORM = SysInfo.get_platform()
+if PLATFORM == SysInfo.PlatformEnum.WINDOWS:
     import winreg
 
 _INSTALL_PATH = None
@@ -25,7 +27,7 @@ def get_soffice_install_path() -> Path:
     global _INSTALL_PATH
     if _INSTALL_PATH is not None:
         return _INSTALL_PATH
-    if sys.platform == "win32":
+    if PLATFORM == SysInfo.PlatformEnum.WINDOWS:
         # get the path location from registery
         value = ""
         for _key in (
@@ -59,6 +61,9 @@ def get_soffice_install_path() -> Path:
         _INSTALL_PATH = p_sf.parent.parent
         return _INSTALL_PATH
 
+    elif PLATFORM == SysInfo.PlatformEnum.MAC:
+        _INSTALL_PATH = Path('/Applications/LibreOffice.app/Contents/MacOS')
+        return _INSTALL_PATH
     else:
         # unix
         soffice = "soffice"
@@ -101,7 +106,7 @@ def get_uno_path() -> Path:
     Returns:
         Path: First found path.
     """
-    if os.name == "nt":
+    if PLATFORM == SysInfo.PlatformEnum.WINDOWS:
 
         p_uno = Path(os.environ["PROGRAMFILES"], "LibreOffice", "program")
         if p_uno.exists() is False or p_uno.is_dir() is False:
@@ -111,6 +116,8 @@ def get_uno_path() -> Path:
         if not p_uno.is_dir():
             raise NotADirectoryError("UNO source is not a Directory")
         return p_uno
+    elif PLATFORM == SysInfo.PlatformEnum.MAC:
+        return Path("/Applications/LibreOffice.app/Contents/MacOS/soffice")
     else:
         p_uno = Path("/usr/lib/python3/dist-packages")
         if not p_uno.exists():
@@ -135,7 +142,7 @@ def get_lo_path() -> Path:
     Returns:
         Path: First found path.
     """
-    if os.name == "nt":
+    if PLATFORM == SysInfo.PlatformEnum.WINDOWS:
 
         p_uno = Path(os.environ["PROGRAMFILES"], "LibreOffice", "program")
         if p_uno.exists() is False or p_uno.is_dir() is False:
@@ -145,6 +152,8 @@ def get_lo_path() -> Path:
         if not p_uno.is_dir():
             raise NotADirectoryError("LibreOffice source is not a Directory")
         return p_uno
+    elif PLATFORM == SysInfo.PlatformEnum.MAC:
+        return Path("/Applications/LibreOffice.app/Contents/MacOS/soffice")
     else:
         # search system path
         s = shutil.which("soffice")
@@ -182,7 +191,7 @@ def get_lo_python_ex() -> str:
     Returns:
         str: file location of python executable.
     """
-    if os.name == "nt":
+    if PLATFORM == SysInfo.PlatformEnum.WINDOWS:
         p = Path(get_lo_path(), "python.exe")
 
         if not p.exists():

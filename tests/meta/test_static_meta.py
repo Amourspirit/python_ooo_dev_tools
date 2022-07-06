@@ -1,5 +1,4 @@
 from __future__ import annotations
-from attr import attributes
 import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
