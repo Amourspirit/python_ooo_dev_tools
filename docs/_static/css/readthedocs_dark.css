@@ -28,6 +28,9 @@ html[data-theme='dark'] .highlight .hll {
     background-color: #184836;
 }
 
+html[data-theme='dark'] .highlight .nv {
+    color: #3a84f9;
+}
 
 html[data-theme='dark'] dl.py.class dd dl.py.method dd dl.field-list.simple dd.field-odd ul.simple li p a.reference.internal a:visited {
     color: chartreuse;
@@ -72,3 +75,29 @@ html[data-theme='dark'] .rst-content .diagram.invert img {
      -webkit-filter: invert(80%);
     filter: invert(80%);
 }
+/* Start Summary Example for .. collapse Example sections */
+
+html[data-theme='dark'] .summary-example[open] {
+    background-color: #1c1c1c;
+}
+
+/* End Summary Example for .. collapse Example sections */
+
+/* Start Summary Example for .. tabs sections */
+html[data-theme='dark'] .sphinx-tabs-panel {
+    border: 1px solid #42449f;
+    border-top-color: #1c1c1c;
+    background: #1c1c1c;
+}
+
+html[data-theme='dark'] .sphinx-tabs-tab[aria-selected="true"] {
+    border: 1px solid #42449f;
+    border-bottom-color: #1c1c1c;
+    border-bottom: 1px solid #1c1c1c;
+    background-color: #1c1c1c;
+}
+
+html[data-theme='dark'] [role="tablist"] {
+    border-bottom: 1px solid #42449f;
+}
+/* End Summary Example for .. tabs sections */

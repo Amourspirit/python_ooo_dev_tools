@@ -53,7 +53,8 @@ extensions = [
     "sphinx_toolbox.more_autodoc.autoprotocol",
     "sphinx.ext.napoleon",
     "sphinx.ext.todo",
-    "sphinx_autodoc_typehints"
+    "sphinx_autodoc_typehints",
+    "sphinx_tabs.tabs"
 ]
     # "sphinx.ext.linkcode",
     

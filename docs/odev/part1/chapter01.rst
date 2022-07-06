@@ -501,12 +501,240 @@ Python is flexable, can run outside of LibreOffice and connect via bridge, and o
 Python also has an advangage of using the many package on `PYPI <https://pypi.org/>`_.
 Python has an advantage in the area of source control and larger projects.
 
+This is understandable since Office (both LibreOffice and OpenOffice) includes an IDE for editing and debugging Basic macros.
+Also, there's a lot of good resources on how to utilize these tools
+(e.g. start browsing the LibreOffice wiki page `LibreOffice Basic Help <https://help.libreoffice.org/Basic/Basic_Help>`_).
+The few books that have been written about programming the Office API have all used Basic
+(e.g. Pitonyak's `OpenOffice.org Macros Explained <https://pitonyak.org/book/>`_).
+
+There are two styles of Basic macro programming – scripts can be attached to specific documents, or to the Office application.
+In a document, a macro can respond to Office events, such as the loading of the document, or its modification.
+The macro can monitor the user's key presses or menu button presses, and can utilize Office dialogs.
+
+This isn't the place for a language war between Python and Basic, but it's fair to say that the Basic Office API is more widely used than the Python version!
+
+Unlike Java, Python API and Basic API do not need to use interfaces.
+A Python/Basic service directly contains all the interfaces, properties, and methods.
+This means that an Office service can be understood as a plain-old object containing methods
+and data. One downside of this is no inherent typing_ support.
+Well in Basic there is no typing_ support at all; However, this is not the case for Python.
+
+In Python it is possible to cast a to a service go gain typing_ support; However it is tricky because services are not classes
+even though ooouno_ and types-unopy_ allow service to be imported as classes. At design time this is fine but at runtime result in an error.
+Using ``typing.TYPE_CHECKING`` and ``typing.cast`` we can work around this limitation as show in the following example.
+
+.. collapse:: Example
+    :open:
+
+    In this example ``typing.TYPE_CHECKING`` (always ``False`` during runtime) is used
+    to ensure the service class is available during design time but not runtime.
+    types-unopy_ is require for this example (installs with |app_name_short|)
+    This allows for getting full typing support for services.
+
+    .. code-block:: python
+
+        from typing import cast, TYPE_CHECKING
+        from ooodev.utils.info import Info
+        from ooodev.utils.images_lo import ImagesLo
+
+        if TYPE_CHECKING:
+            # only import if design time, will error if runtime.
+            from com.sun.star.graphic import Graphic
+
+        def insert_graphic(file_name: str) -> None
+            graphic = ImagesLo.load_graphic_file(file_name)
+            if Info.support_service(graphic, "com.sun.star.graphic.Graphic")
+                # cast type as string as it will not be available during runtime
+                img = cast("Graphic", graphic)
+                # img now has full typing support in code editor
+            else:
+                raise ValueError(f"Unable to get service for {file_name}")
+
+            # do work with image here
+            ...
+
+The recommended way in |app_name_short| is to use :py:meth:`Lo.qi() <.utils.lo.Lo.qi>` to get access to the desired interface.
+This ensures the service has the desired interface and avoids the need for ``typing.cast``.
+
+.. collapse:: Example
+    :open:
+
+    Example of querying for interface.
+
+    In this example ``srch`` will automaticlly have typing support for all the properies and methos XSearchable_ 
+
+    .. code-block:: python
+        :emphasize-lines: 3
+
+        from com.sun.star.util import XSearchable
+        cell_range = ...
+        srch = Lo.qi(XSearchable, cell_range)
+        sd = srch.createSearchDescriptor()
+
+Using the basic IDE has has some advantages for simple scripts; However, new tools have emerged and are emerging to make the experiece in python desirable in many cases.
+
+types-unopy_ that gives typing_ support for the entire |lo_api|_.
+
+ooouno_ that also contains all |lo_api|_ components in different namespaces. ooouno_ dynamic namespaces automaticlly gets the appropriate ``uno`` object at runtime, see :numref:`ch01fig12`.
+The dynamic namespaces give eaiser access to |lo_api|_ components with full typing_ support and is a real time saver.
+
+.. collapse:: Example
+
+    ooouno_ Example
+
+    At runtime ``ooo.dyn.awt.rectangle.Rectangle`` is acutally ``uno.com.sun.star.awt.Rectangle``
+
+    .. code-block:: python
+
+        >>> from ooo.dyn.awt.rectangle import Rectangle
+        >>> r = Rectangle(2, 10, 12, 18)
+        >>> print(type(r))
+        <class 'uno.com.sun.star.awt.Rectangle'>
+
+
+For ScriptForge there is types-scriptforge_ and for Access2Base there is types-access2base_.
+
+For quicker developer searching there is |dsearch|_.
+
+Then there is this library (|app_name_short|) that takes advantage of some of the aforementioned libraries types-unopy_ and  ooouno_.
+
+Many of these libraries are possible because of `OOO UNO TEMPLATE <https://github.com/Amourspirit/ooo_uno_tmpl>`_ that converts the
+entire |lo_api|_ into templates that are converted into ooouno_ and types-unopy_.
+
+
+.. cssclass:: a_gif
+
+    .. _ch01fig12:
+    .. figure:: https://user-images.githubusercontent.com/4193389/177604603-55660d5d-2aef-4746-a8fe-4365a0dcdaa6.gif
+        :alt: ooo Rectangle Demo
+
+        :ooo Rectangle demo
+
+
+In the Basic API, there's no remote component context since the macros run inside Office or inside a document that is loaded into Office.
+In |app_name_short| there is a remote bridge and ``Lo.XSCRIPTCONTEXT`` which implements XScriptContext_.
+
+.. tabs::
+
+    .. tab:: Basic
+
+        .. code-block:: vbscript
+
+            Dim oSM, oDesk, oDoc As Object
+            Set oSM = CreateObject("com.sun.star.ServiceManager")
+            Set oDesk = oSM.createInstance("com.sun.star.frame.Desktop")
+            Set oDoc = oDesk.loadComponentFromURL(
+            "file:///C:/tmp/testdoc.odt", "_blank", 0, noArgs())
+    
+    .. tab:: Python
+
+        .. code-block:: python
+            
+            from ooodev.utils.lo import Lo
+            from ooodev.office.write import Write
+
+            loader = Lo.load_office(direct=True)
+            doc = Write.open_doc(fnm="file:///C:/tmp/testdoc.odt", loader=loader)
+
+
+However, if the script is part of a loaded document, then the call to loadComponentFromURL() isn't needed, reducing the code to:
+
+.. tabs::
+
+    .. tab:: Basic
+
+        .. code-block:: vbscript
+
+            Set oSM = CreateObject("com.sun.star.ServiceManager")
+            Set oDesk = oSM.createInstance("com.sun.star.frame.Desktop")
+            Set oDoc = oDesk.CurrentComponent
+    
+    .. tab:: Python
+
+        .. code-block:: python
+            
+            from ooodev.utils.lo import Lo
+            from ooodev.office.write import Write
+
+            _ = Lo.load_office(direct=True)
+            doc = Write.get_text_doc(Lo.ThisComponent)
+
+Also, Office's Basic runtime environment automatically creates a service manager and Desktop object, so it's unnecessary to create them explicitly.
+This reduces the code:
+
+.. tabs::
+
+    .. tab:: Basic
+
+        .. code-block:: vbscript
+
+            Set oDoc = StarDesktop.CurrentComponent
+    
+    .. tab:: Python
+
+        .. code-block:: python
+            
+            from ooodev.utils.lo import Lo
+
+            _ = Lo.load_office(direct=True)
+            doc = Lo.ThisComponent
+
+
+or even:
+
+.. tabs::
+
+    .. tab:: Basic
+
+        .. code-block:: vbscript
+
+            Set oDoc = ThisComponent
+    
+    .. tab:: Python
+
+        .. code-block:: python
+            
+            from ooodev.utils.lo import Lo
+            doc = Lo.ThisComponent
+
+
+If other services are needed, Basic programmers call the createUnoService() function which
+transparently requests the named service from the service manager.
+Python programmers can call :py:meth:`Lo.create_instance_msf() <.utils.lo.Lo.create_instance_msf>`
+For instance:
+
+.. tabs::
+
+    .. tab:: Basic
+
+        .. code-block:: vbscript
+
+            set sfAcc = CreateUnoService("com.sun.star.ucb.SimpleFileAccess")
+            sfAcc.CreateFolder(dirName)
+    
+    .. tab:: Python
+
+        .. code-block:: python
+            
+            from com.sun.star.ucb import XSimpleFileAccess
+
+            sf_acc = Lo.create_instance_msf(XSimpleFileAccess, "com.sun.star.ucb.SimpleFileAccess")
+            sf_acc.CreateFolder(dir_name)
+
+One of the aims of |app_name_short| is to hide as much of the complexity of Office as the Basic version of the API.
+
 |app_name_short| aims to show how and why python may be a more powerful in many cases.
-
-
 
 .. |dsearch| replace:: **LibreOffice Developer Search**
 .. _dsearch: https://pypi.org/project/lo-dev-search/
+.. |lo_api| replace:: LibreOffice API
+.. _lo_api: https://api.libreoffice.org/
+
+.. _types-access2base: https://pypi.org/project/types-access2base/
+.. _types-unopy: https://pypi.org/project/types-unopy/
+.. _types-scriptforge: https://pypi.org/project/types-scriptforge/
+.. _ooouno: https://pypi.org/project/ooouno/
+.. _typing: https://docs.python.org/3/library/typing.html
 
 .. _Controller: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1frame_1_1Controller.html
 .. _TextDocumentView: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1TextDocumentView.html
@@ -519,3 +747,5 @@ Python has an advantage in the area of source control and larger projects.
 .. _XModel: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1frame_1_1XModel.html
 .. _XWindow: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1awt_1_1XWindow.html
 .. _XPropertySet: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1beans_1_1XPropertySet.html
+.. _XSearchable: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1util_1_1XSearchable.html
+.. _XScriptContext: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1script_1_1provider_1_1XScriptContext.html

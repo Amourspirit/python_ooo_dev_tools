@@ -1,4 +1,5 @@
 sphinx==4.5.0
+sphinx-tabs==3.3.1
 sphinx-rtd-dark-mode
 sphinx-autodoc-typehints
 sphinx-toolbox

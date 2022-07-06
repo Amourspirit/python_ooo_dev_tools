@@ -68,9 +68,21 @@ a .rst-content .admonition tt {
 
 /* summary-example is '.. collapse:: example' directive */
 /* Add a bottom margin only when collapsed */
+
+/* Start Summary Example for .. collapse Example sections */
+
+.summary-example {
+    padding: 3px;
+}
 .summary-example:not([open]) {
     margin-bottom: 24px;
 }
+.summary-example[open] {
+    margin-bottom: 24px;
+    background-color: #f0f5ff;
+    ;
+}
+
 /* Set a code icon after Example word. */
 .summary-example > summary::after {
     /* using style CSS custom property */
@@ -78,3 +90,4 @@ a .rst-content .admonition tt {
     content: "\f121";
     margin-left: 5px;
 }
+/* End Summary Example for .. collapse Example sections */
