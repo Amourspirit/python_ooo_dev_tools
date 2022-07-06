@@ -56,9 +56,8 @@ PIP
 Modules
 +++++++
 
-Currently the ``Calc`` Module has been fully tested.
+Currently the ``Calc`` Module and the ``Write`` module are relaesed.
 
-The ``Write`` Module is also in this release but has very limited testing at this point.
 
 Future releases will add:
     - Base (LibreOffice Base)
@@ -73,20 +72,15 @@ Future releases will add:
     - Print (Print service provider)
     - And more ...
 
-Include modules that have not yet been fully tested:
+Include modules still in beta:
     - Color (Various color utils)
     - DateUtil (Date Time utilities)
     - FileIO (File Input and Output for working with LO)
     - GUI (Various Gui methods for manipulating LO Windows)
-    - Images (Various methods for working with Images)
+    - ImagesLo (Various methods for working with Images)
     - Lo (Various methods common to LO applications)
     - Props (Various methods for working with the many API properties)
 
-
-Release Info
-++++++++++++
-
-This is a beta release. Calc is the first module due to its popularity.
 
 Inspiration
 +++++++++++

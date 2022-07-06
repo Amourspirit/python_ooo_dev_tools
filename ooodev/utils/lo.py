@@ -148,6 +148,8 @@ class Lo(metaclass=StaticProperty):
         def __str__(self) -> str:
             return str(self.value)
 
+    # endregion docType ints
+
     # region docType strings
     class DocTypeStr(str, Enum):
         UNKNOWN = "unknown"
@@ -160,6 +162,8 @@ class Lo(metaclass=StaticProperty):
 
         def __str__(self) -> str:
             return self.value
+
+    # endregion docType strings
 
     # region docType service names
     class Service(str, Enum):

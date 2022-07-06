@@ -15,14 +15,16 @@ Documentation
    :maxdepth: 2
    :caption: Contents:
 
+   odev/index
    src_docs/event/index
+   version/version_hist
 
-Source Code Documentation
-=========================
+API
+===
 
 .. toctree::
    :maxdepth: 4
-   :caption: Source:
+   :caption: DEVELOPER API:
 
    src/index
 
@@ -32,3 +34,6 @@ Indices and tables
 
 * :ref:`genindex`
 * :ref:`modindex`
+
+
+.. todolist::
