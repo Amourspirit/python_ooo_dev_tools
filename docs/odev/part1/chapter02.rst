@@ -14,4 +14,6 @@ are programmed in |app_name_bold| (|app_name_short|) API.
 This chapter will focus on the most fundamental tasks: starting Office,
 loading (or creating) a document, saving and closing the document, and shutting down Office.
 
-The DocConverter.java example at the end pulls these together to show how to convert a document into another format.
+...
+
+Work in progress.
