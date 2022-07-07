@@ -561,7 +561,7 @@ This ensures the service has the desired interface and avoids the need for ``typ
 
     Example of querying for interface.
 
-    In this example ``srch`` will automaticlly have typing support for all the properies and methos XSearchable_ 
+    In this example ``srch`` will automaticlly have typing support for all the properies and methods XSearchable_ 
 
     .. code-block:: python
         :emphasize-lines: 3
