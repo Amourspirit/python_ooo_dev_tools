@@ -16,15 +16,15 @@ def test_trigger_event(name: str, value: int):
     from ooodev.events.args.calc.cell_args import CellArgs
     from ooodev.events.lo_events import Events
 
-    cell_args = CellArgs(test_trigger_event)
+    cell_args = CellArgs(test_trigger_event.__qualname__)
     cell_args.sheet = None
 
     def triggered(source: Any, args: CellArgs):
-        assert source is test_trigger_event
+        assert source is test_trigger_event.__qualname__
         cell_args.event_data = value
         cell_args.cells = value
         assert args.event_data == value
-        assert args.source is test_trigger_event
+        assert args.source == test_trigger_event.__qualname__
 
     events = Events()
     events.on(name, triggered)
@@ -43,7 +43,7 @@ def test_trigger_event(name: str, value: int):
 @settings(max_examples=10)
 def test_from_args(name:str, value: int):
     from ooodev.events.args.calc.cell_args import CellArgs
-    eargs = CellArgs(test_from_args)
+    eargs = CellArgs(test_from_args.__qualname__)
     eargs.event_data = value
     eargs._event_name = name
     eargs.cells = value
@@ -52,7 +52,7 @@ def test_from_args(name:str, value: int):
     assert eargs.event_name == name
     assert eargs.event_data == value
     assert eargs.cells == value
-    assert eargs.source is test_from_args
+    assert eargs.source == test_from_args.__qualname__
 
     e = CellArgs.from_args(eargs)
     assert e.event_data == eargs.event_data
