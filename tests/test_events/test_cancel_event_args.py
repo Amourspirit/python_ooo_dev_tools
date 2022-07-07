@@ -81,13 +81,13 @@ def test_trigger_event_canceled(event_name_str: str, value: int):
 @settings(max_examples=10)
 def test_from_args(event_name_str:str, value: int):
     from ooodev.events.args.cancel_event_args import CancelEventArgs
-    cargs = CancelEventArgs(test_from_args)
+    cargs = CancelEventArgs(test_from_args.__qualname__)
     cargs.event_data = value
     cargs._event_name = event_name_str
     
     assert cargs.event_name == event_name_str
     assert cargs.event_data == value
-    assert cargs.source is test_from_args
+    assert cargs.source is test_from_args.__qualname__
     assert cargs.cancel is False
 
     e = CancelEventArgs.from_args(cargs)
