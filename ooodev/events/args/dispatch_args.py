@@ -38,5 +38,6 @@ class DispatchArgs(AbstractDispacthArgs):
             DispatchArgs: args
         """
         eargs = DispatchArgs(source=args.source, cmd=args.cmd)
+        eargs._event_name = args.event_name
         eargs.event_data = args.event_data
         return eargs

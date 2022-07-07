@@ -40,6 +40,7 @@ class CancelEventArgs(AbstractCancelEventArgs):
             CancelEventArgs: args
         """
         eargs = CancelEventArgs(source=args.source)
+        eargs._event_name = args.event_name
         eargs.event_data = args.event_data
         eargs.cancel = args.cancel
         return eargs

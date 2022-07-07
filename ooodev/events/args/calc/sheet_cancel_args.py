@@ -38,6 +38,7 @@ class SheetCancelArgs(AbstractSheetCancelArgs):
             SheetCancelArgs: args
         """
         eargs = SheetCancelArgs(source=args.source)
+        eargs._event_name = args.event_name
         eargs.doc = args.doc
         eargs.event_data = args.event_data
         eargs.index = args.index

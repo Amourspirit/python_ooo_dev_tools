@@ -47,6 +47,7 @@ class CellArgs(AbstractCellArgs):
             CellArgs: args
         """
         eargs = CellArgs(source=args.source)
+        eargs._event_name = args.event_name
         eargs.sheet = args.sheet
         eargs.cells = args.cells
         eargs.event_data = args.event_data
