@@ -14,7 +14,7 @@ def test_copy(loader) -> None:
     doc = Calc.create_doc(loader=loader)
     assert doc is not None, "Could not create new document"
     visible = False
-    delay = 0
+    delay = 0 # 1_000
     if visible:
         GUI.set_visible(is_visible=visible, odoc=doc)
     sheet = Calc.insert_sheet(doc=doc, name="A new sheet", idx=0x7FFF)
