@@ -1,10 +1,8 @@
-events
-======
+Module lo_events
+================
 
 .. toctree::
     :titlesonly:
     :glob:
 
     *
-    args/index
-    lo_events/index
