@@ -6,7 +6,7 @@ import shutil
 import tempfile
 from typing import List
 import pytest
-from tests.fixtures import __test__path__ as fixture_path
+from tests.fixtures import __test__path__ as test_fixture_path
 from tests.fixtures.writer import __test__path__ as writer_fixture_path
 from tests.fixtures.calc import __test__path__ as calc_fixture_path
 from tests.fixtures.xml import __test__path__ as xml_fixture_path
@@ -48,6 +48,11 @@ def copy_fix_writer(tmp_path):
         return dst
 
     return copy_res
+
+
+@pytest.fixture(scope="session")
+def fixture_path():
+    return Path(test_fixture_path)
 
 
 @pytest.fixture(scope="session")

@@ -7,6 +7,7 @@ import shutil
 import tempfile
 from ..utils.type_var import PathOrStr
 from ..utils import sys_info
+from ..cfg import config
 
 
 class Cache:
@@ -26,7 +27,6 @@ class Cache:
         self._use_cache = bool(kwargs.get("use_cache", True))
         self._profile_dir_name = "profile"
         self._profile_cached = False
-        self._copy_cache_to_profile_called = False
         cache_path = kwargs.get("cache_path", None)
         if cache_path is not None:
             self.cache_path = cache_path
@@ -35,21 +35,36 @@ class Cache:
             self.working_dir = working_dir
 
     def _get_cache_path(self) -> Path | None:
+        # this method is only ever called the user does not provide a cache_path
         # see: https://www.howtogeek.com/289587/how-to-find-your-libreoffice-profile-folder-in-windows-macos-and-linux/
-        # TODO: the profile paths should be stored in a more global way, at least the 4.
         cache_path = None
         platform = sys_info.SysInfo.get_platform()
-        if platform == sys_info.SysInfo.PlatformEnum.LINUX:
-            cache_path = Path("~/.config/libreoffice/4").expanduser()
-        elif platform == sys_info.SysInfo.PlatformEnum.WINDOWS:
-            cache_path = Path(os.getenv("APPDATA"), "LibreOffice", "4")
-        elif platform == sys_info.SysInfo.PlatformEnum.MAC:
-            cache_path = Path("~/Library/Application Support/LibreOffice/4").expanduser()
+        def get_path(ver: str):
+            result = None
+            if platform == sys_info.SysInfo.PlatformEnum.LINUX:
+                result = Path("~/.config/libreoffice", ver).expanduser()
+            elif platform == sys_info.SysInfo.PlatformEnum.WINDOWS:
+                result = Path(os.getenv("APPDATA"), "LibreOffice", ver)
+            elif platform == sys_info.SysInfo.PlatformEnum.MAC:
+                result = Path("~/Library/Application Support/LibreOffice/", ver).expanduser()
+            if result is not None:
+                if result.exists() is False or result.is_dir() is False:
+                    result = None
+            if result is None:
+                return False, None
+            return True, result
+
+        # lookup profile versions from config
+        for s_ver in config.Config().profile_versions:
+            is_valid, cache_path = get_path(s_ver)
+            if is_valid:
+                break
+
         return cache_path
 
     def cache_profile(self) -> None:
         """
-        Copies user profile into cache path.
+        Copies user profile into cache path if it has not already been cached.
 
         Ignored if :py:attr:`~Cache.use_cache` is ``False``
         """
@@ -58,8 +73,6 @@ class Cache:
             return
         if self.cache_path is None:
             return
-        if self._copy_cache_to_profile_called is False:
-            raise Exception("copy_cache_to_profile() must be called before cache_profile()")
         if self._profile_cached is False:
             copytree(self.user_profile, self.cache_path)
         return
@@ -72,7 +85,6 @@ class Cache:
         Ignored if :py:attr:`~Cache.use_cache` is ``False``
         """
         # this method is called before cache_profile.
-        self._copy_cache_to_profile_called = True
         if self.use_cache is False:
             return
         if self.cache_path is None:
