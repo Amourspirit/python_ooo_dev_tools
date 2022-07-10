@@ -822,20 +822,20 @@ class Lo(metaclass=StaticProperty):
 
         if fnm is None:
             raise Exception("Filename is null")
-        fnm = str(fnm)
+        pth = mFileIO.FileIO.get_absolute_path(fnm)
 
         if props is None:
             props = mProps.Props.make_props(Hidden=True)
         open_file_url = None
-        if not mFileIO.FileIO.is_openable(fnm):
-            if cls.is_url(fnm):
-                Lo.print(f"Will treat filename as a URL: '{fnm}'")
-                open_file_url = fnm
+        if not mFileIO.FileIO.is_openable(pth):
+            if cls.is_url(pth):
+                Lo.print(f"Will treat filename as a URL: '{pth}'")
+                open_file_url = pth
             else:
-                raise Exception(f"Unable to get url from file: {fnm}")
+                raise Exception(f"Unable to get url from file: {pth}")
         else:
-            Lo.print(f"Opening {fnm}")
-            open_file_url = mFileIO.FileIO.fnm_to_url(fnm)
+            Lo.print(f"Opening {pth}")
+            open_file_url = mFileIO.FileIO.fnm_to_url(pth)
 
         try:
             doc = loader.loadComponentFromURL(open_file_url, "_blank", 0, props)
@@ -1554,18 +1554,20 @@ class Lo(metaclass=StaticProperty):
         _Events().trigger(LoNamedEvent.DOC_STORING, cargs)
         if cargs.cancel:
             return False
-        Lo.print(f"Saving the document in '{fnm}'")
-        Lo.print(f"Using format {format}")
+        pth = mFileIO.FileIO.get_absolute_path(cargs.event_data['fnm'])
+        fmt = str(cargs.event_data['format'])
+        Lo.print(f"Saving the document in '{pth}'")
+        Lo.print(f"Using format {fmt}")
 
         try:
-            save_file_url = mFileIO.FileIO.fnm_to_url(fnm)
+            save_file_url = mFileIO.FileIO.fnm_to_url(pth)
             if password is None:
-                store_props = mProps.Props.make_props(Overwrite=True, FilterName=format)
+                store_props = mProps.Props.make_props(Overwrite=True, FilterName=fmt)
             else:
-                store_props = mProps.Props.make_props(Overwrite=True, FilterName=format, Password=password)
+                store_props = mProps.Props.make_props(Overwrite=True, FilterName=fmt, Password=password)
             store.storeToURL(save_file_url, store_props)
         except IOException as e:
-            raise Exception(f"Could not save '{fnm}'") from e
+            raise Exception(f"Could not save '{pth}'") from e
         _Events().trigger(LoNamedEvent.DOC_STORED, EventArgs.from_args(cargs))
         return True
 
@@ -2062,7 +2064,8 @@ class Lo(metaclass=StaticProperty):
         """
         # https://stackoverflow.com/questions/7160737/how-to-validate-a-url-in-python-malformed-or-not
         try:
-            result = urlparse(str(fnm))
+            pth = mFileIO.FileIO.get_absolute_path(fnm)
+            result = urlparse(str(pth))
             return all([result.scheme, result.netloc])
         except ValueError:
             return False

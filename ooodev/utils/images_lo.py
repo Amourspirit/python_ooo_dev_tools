@@ -38,11 +38,11 @@ class ImagesLo:
             XBitmap: Bitmap
         """
         try:
+            fp = mFileIO.FileIO.get_absolute_path(fnm)
             bitmap_container = mLo.Lo.create_instance_msf(XNameContainer, "com.sun.star.drawing.BitmapTable")
-            if not mFileIO.FileIO.is_openable(fnm):
-                raise mEx.UnOpenableError(fnm=fnm)
+            if not mFileIO.FileIO.is_openable(fp):
+                raise mEx.UnOpenableError(fnm=fp)
 
-            fp = Path(fnm)
             name = fp.name
             pic_url = mFileIO.FileIO.fnm_to_url(fp)
 

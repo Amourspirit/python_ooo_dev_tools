@@ -1,11 +1,13 @@
 # coding: utf-8
+from __future__ import annotations
 import os
 import sys
 import shutil
 import __main__
 from pathlib import Path
-from typing import Union, overload
+from typing import overload
 from .sys_info import SysInfo
+from .type_var import PathOrStr
 
 # python path on mac:  /Applications/LibreOffice.app/Contents/Resources/python
 #   https://ask.libreoffice.org/t/where-is-the-python-executable-embedded-in-libreoffice-on-macos/50042
@@ -226,15 +228,15 @@ def mkdirp(dest_dir: Path) -> None:
     ...
 
 
-def mkdirp(dest_dir: Union[str, Path]) -> None:
+def mkdirp(dest_dir:PathOrStr) -> None:
     """
     Creates path and subpaths not existing.
 
     Args:
-        dest_dir (str | Path): PathLike object
+        dest_dir (PathOrStr): PathLike object
     """
     # Python ≥ 3.5
-    if isinstance(dest_dir, Path):
-        dest_dir.mkdir(parents=True, exist_ok=True)
-    else:
-        Path(dest_dir).mkdir(parents=True, exist_ok=True)
+    pth = Path(dest_dir)
+    if not pth.is_absolute():
+        pth = pth.resolve()
+    pth.mkdir(parents=True, exist_ok=True)

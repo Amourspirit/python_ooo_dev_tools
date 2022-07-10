@@ -210,7 +210,7 @@ class GUI:
             cmds = (cmd,)
             img = load_graphic_file(im_fnm)
             if img is None:
-                print(f"Unable to load graphics file: '{im_fnm}'")
+                mLo.Lo.print(f"Unable to load graphics file: '{im_fnm}'")
                 return
             pics = (img,)
             image_man.insertImages(0, cmds, pics)
@@ -224,7 +224,7 @@ class GUI:
             con_settings.insertByIndex(0, item_props)
             conf_man.replaceSettings(toolbar_name, con_settings)
         except Exception as e:
-            print(e)
+            mLo.Lo.print(e)
 
     # endregion ------------- toolbar addition -------------------------
 
@@ -678,7 +678,7 @@ class GUI:
         Args:
             r (Rectangle): Rectangle to print
         """
-        print(f"Rectangle: ({r.X}, {r.Y}), {r.Width} -- {r.Height}")
+        mLo.Lo.print(f"Rectangle: ({r.X}, {r.Y}), {r.Width} -- {r.Height}")
 
     @classmethod
     def get_window_handle(cls, doc: XComponent) -> int | None:
@@ -708,7 +708,7 @@ class GUI:
         elif info == SysInfo.PlatformEnum.LINUX:
             system_type = SystemDependent.SYSTEM_XWINDOW
         else:
-            print("Unable to support, don't know this system.")
+            mLo.Lo.print("Unable to support, don't know this system.")
             return None
         handel = int(win_peer.getWindowHandle(pid, system_type))
         return handel
@@ -742,7 +742,7 @@ class GUI:
         elif view == cls.ZoomEnum.ENTIRE_PAGE:
             mLo.Lo.dispatch_cmd("ZoomPage")
         else:
-            print(f"Did not recognize zoom view: {view}; using optimal")
+            mLo.Lo.print(f"Did not recognize zoom view: {view}; using optimal")
             mLo.Lo.dispatch_cmd("ZoomOptimal")
         mLo.Lo.delay(500)
 
@@ -1181,7 +1181,7 @@ class GUI:
         for el_name in show_elems:  # these elems are not in lm
             lm.createElement(el_name)  # so need to be created & shown
             lm.showElement(el_name)
-            print(f"{el_name} made visible")
+            mLo.Lo.print(f"{el_name} made visible")
 
     @staticmethod
     def hide_except(lm: XLayoutManager, ui_elms: Iterable[XUIElement], show_elms: Iterable[str]) -> None:
@@ -1205,7 +1205,7 @@ class GUI:
                     break
             if to_hide:
                 lm.hideElement(el_name)
-                print(f"{el_name} hidden")
+                mLo.Lo.print(f"{el_name} hidden")
 
     @classmethod
     def show_none(cls, doc: XComponent) -> None:
@@ -1220,13 +1220,13 @@ class GUI:
         """
         lm = cls.get_layout_manager(doc)
         if lm is None:
-            print("No layout manager found")
+            mLo.Lo.print("No layout manager found")
             return
         ui_elms = lm.getElements()
         for ui_elm in ui_elms:
             elem_name = ui_elm.ResourceURL
             lm.hideElement(elem_name)
-            print(f"{elem_name} hidden")
+            mLo.Lo.print(f"{elem_name} hidden")
 
     # endregion ------------- layout manager ---------------------------
 

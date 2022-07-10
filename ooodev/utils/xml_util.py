@@ -12,7 +12,9 @@ import urllib.request
 from xml.dom.minicompat import NodeList
 from ..exceptions import ex as mEx
 from .table_helper import TableHelper
-from . import lo as mLo # lazy loading
+from . import lo as mLo  # lazy loading
+from . import file_io as mFileIO
+from .type_var import PathOrStr
 
 # endregion Imports
 
@@ -23,12 +25,12 @@ class XML:
     # region --------------- Load / Save ------------------------------
 
     @classmethod
-    def load_doc(cls, fnm: str | os.PathLike) -> Document:
+    def load_doc(cls, fnm: PathOrStr) -> Document:
         """
         Gets a document from a file
 
         Args:
-            fnm (str | PathLike): XML file to load.
+            fnm (PathOrStr): XML file to load.
 
         Raises:
             Exception: if unable to open document.
@@ -37,7 +39,8 @@ class XML:
             Document: XML Document.
         """
         try:
-            with open(fnm) as file:
+            pth = mFileIO.FileIO.get_absolute_path(fnm)
+            with open(pth) as file:
                 doc = parse(file)
             cls._remove_whitespace(doc)
             doc.normalize()
@@ -94,19 +97,20 @@ class XML:
             raise Exception(f"Error get xml docoument from xml string") from e
 
     @staticmethod
-    def save_doc(doc: Document, xml_fnm: str | os.PathLike) -> None:
+    def save_doc(doc: Document, xml_fnm: PathOrStr) -> None:
         """
         Save doc to xml file.
 
         Args:
             doc (Document): doc to save.
-            xml_fnm (str | PathLike): Output file path.
+            xml_fnm (PathOrStr): Output file path.
 
         Raises:
             Exception: If unable to save document
         """
         try:
-            with open(xml_fnm, "w") as file:
+            pth = mFileIO.FileIO.get_absolute_path(xml_fnm)
+            with open(pth, "w") as file:
 
                 sx: str = doc.toprettyxml(indent="  ")
                 # remove any empty lines, there if often a lot with toprettyxml()
@@ -287,7 +291,7 @@ class XML:
         Gets all node values.
 
         .. collapse:: Example XML
-        
+
             XML is assumed to have structure that is similar
 
                 .. include:: ../../resources/xml/pay.xml.rst
@@ -308,9 +312,9 @@ class XML:
             col_ids must match the column names:
 
             ``colids = ("purpose", "amount", "tax", "maturity")``
-            
+
             Results for example xml:
-            
+
             .. include:: ../../resources/xml/pay_all_notes_result.rst
         """
         num_rows = len(row_nodes)
@@ -335,15 +339,15 @@ class XML:
     # region ---------------- XLS transforming -------------------------
 
     @staticmethod
-    def apply_xslt(xml_fnm: str | os.PathLike, xls_fnm: str | os.PathLike) -> str:
+    def apply_xslt(xml_fnm: PathOrStr, xls_fnm: PathOrStr) -> str:
         """
         Transforms xml file using XLST.
 
         Not available in macros at this time.
 
         Args:
-            xml_fnm (str | PathLike): XML source file path.
-            xls_fnm (str | PathLike): XSL source file path.
+            xml_fnm (PathOrStr): XML source file path.
+            xls_fnm (PathOrStr): XSL source file path.
 
         Raises:
             NotSupportedMacroModeError: If access in a macro
@@ -362,9 +366,11 @@ class XML:
         _xml_parser = XML_ETREE.XMLParser(remove_blank_text=True)
 
         try:
+            pth_xml = mFileIO.FileIO.get_absolute_path(xml_fnm)
+            pth_xls = mFileIO.FileIO.get_absolute_path(xls_fnm)
             print(f"Applying filter '{xls_fnm}' to '{xml_fnm}'")
-            dom = XML_ETREE.parse(xml_fnm, parser=_xml_parser)
-            xslt = XML_ETREE.parse(xls_fnm)
+            dom = XML_ETREE.parse(pth_xml, parser=_xml_parser)
+            xslt = XML_ETREE.parse(pth_xls)
             transform = XML_ETREE.XSLT(xslt)
             newdom = transform(dom)
             t_result = XML_ETREE.tostring(newdom, encoding="unicode")  # unicode produces string
@@ -373,7 +379,7 @@ class XML:
             raise Exception(f"Unable to transform '{xml_fnm}' with '{xls_fnm}'") from e
 
     @staticmethod
-    def apply_xslt_to_str(xml_str: str, xls_fnm: str | os.PathLike) -> str:
+    def apply_xslt_to_str(xml_str: str, xls_fnm: PathOrStr) -> str:
         """
         Transforms xml using XLST.
 
@@ -381,7 +387,7 @@ class XML:
 
         Args:
             xml_str (str): Raw XML data.
-            xls_fnm (str | PathLike): XSL source file path.
+            xls_fnm (PathOrStr): XSL source file path.
 
         Raises:
             NotSupportedMacroModeError: If access in a macro
@@ -400,9 +406,10 @@ class XML:
         _xml_parser = XML_ETREE.XMLParser(remove_blank_text=True)
 
         try:
+            pth = mFileIO.FileIO.get_absolute_path(xls_fnm)
             print(f"Applying the filter in '{xls_fnm}'")
             dom = XML_ETREE.fromstring(xml_str)
-            xslt = XML_ETREE.parse(xls_fnm, parser=_xml_parser)
+            xslt = XML_ETREE.parse(pth, parser=_xml_parser)
 
             transform = XML_ETREE.XSLT(xslt)
             newdom = transform(dom)
@@ -514,7 +521,7 @@ class XML:
         """
         try:
             if isinstance(src, os.PathLike):
-                with open(src, "r") as file:
+                with open(mFileIO.FileIO.get_absolute_path(src), "r") as file:
                     doc = parse(file)
             elif isinstance(src, str):
                 doc = parseString(src)

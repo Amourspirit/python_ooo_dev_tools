@@ -24,6 +24,11 @@ class CalcNamedEvent(NamedTuple):
     DOC_CREATED = "calc_doc_created"
     """Doc Created see :py:meth:`Calc.create_doc() <.office.calc.Calc.create_doc>`"""
 
+    DOC_SAVING = "calc_doc_saving"
+    """Doc Saving Spreadsheet document see :py:meth:`Calc.save_doc() <.office.calc.Calc.save_doc>`"""
+    DOC_SAVED = "calc_doc_saved"
+    """Doc Saving Spreadsheet document see :py:meth:`Calc.save_doc() <.office.calc.Calc.save_doc>`"""
+
     SHEET_GETTING = "calc_sheet_getting"
     """Sheet Getting see :py:meth:`Calc.get_sheet() <.office.calc.Calc.get_sheet>`"""
     SHEET_GET = "calc_sheet_get"
