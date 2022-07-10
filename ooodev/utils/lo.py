@@ -488,7 +488,7 @@ class Lo(metaclass=StaticProperty):
 
     @classmethod
     def load_office(
-        cls, connector: connectors.ConnectPipe | connectors.ConnectSocket | None, cache_obj: mCache.Cache | None = None
+        cls, connector: connectors.ConnectPipe | connectors.ConnectSocket | None = None, cache_obj: mCache.Cache | None = None
     ) -> XComponentLoader:
         """
         Loads Office
@@ -2476,6 +2476,10 @@ class Lo(metaclass=StaticProperty):
                 # attempt to connect direct
                 cls.load_office()
             # comp = cls.star_desktop.getCurrentComponent()
+            if cls._xdesktop is None:
+                return None
+            if cls._doc is None:
+                cls._doc = cls._xdesktop.getCurrentComponent()
             if cls._doc is None:
                 return None
             impl = cls._doc.ImplementationName
