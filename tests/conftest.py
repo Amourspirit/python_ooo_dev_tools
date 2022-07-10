@@ -6,17 +6,27 @@ import shutil
 import tempfile
 from typing import List
 import pytest
-from tests.fixtures import __test__path__ as fixture_path
+from tests.fixtures import __test__path__ as test_fixture_path
 from tests.fixtures.writer import __test__path__ as writer_fixture_path
 from tests.fixtures.calc import __test__path__ as calc_fixture_path
 from tests.fixtures.xml import __test__path__ as xml_fixture_path
 from tests.fixtures.image import __test__path__ as img_fixture_path
 from ooodev.utils.lo import Lo as mLo
+# from ooodev.connect import connectors as mConnectors
+from ooodev.conn import cache as mCache
+
+@pytest.fixture(scope="session")
+def tmp_path():
+    result = Path(tempfile.mkdtemp())
+    yield result
+    if os.path.exists(result):
+        shutil.rmtree(result,  ignore_errors=True)
 
 
 @pytest.fixture(scope="session")
-def loader():
-    loader = mLo.load_office(host="localhost", port=2002)
+def loader(tmp_path):
+    loader = mLo.load_office(connector=mLo.ConnectPipe(), cache_obj=mCache.Cache(working_dir=tmp_path))
+    # loader = mLo.load_office(connector=mConnectors.ConnectSocket(), cache_obj=mCache.Cache())
     yield loader
     mLo.close_office()
 
@@ -30,14 +40,6 @@ def tmp_path_fn():
 
 
 @pytest.fixture(scope="session")
-def tmp_path():
-    result = Path(tempfile.mkdtemp())
-    yield result
-    if os.path.exists(result):
-        shutil.rmtree(result,  ignore_errors=True)
-
-
-@pytest.fixture(scope="session")
 def copy_fix_writer(tmp_path):
     def copy_res(fnm):
         src = Path(writer_fixture_path, fnm)
@@ -46,6 +48,11 @@ def copy_fix_writer(tmp_path):
         return dst
 
     return copy_res
+
+
+@pytest.fixture(scope="session")
+def fixture_path():
+    return Path(test_fixture_path)
 
 
 @pytest.fixture(scope="session")

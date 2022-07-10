@@ -1,11 +1,17 @@
 # coding: utf-8
+from __future__ import annotations
 import os
 import sys
 import shutil
 import __main__
 from pathlib import Path
-from typing import Union, overload
+from typing import overload
 from .sys_info import SysInfo
+from .type_var import PathOrStr
+
+# python path on mac:  /Applications/LibreOffice.app/Contents/Resources/python
+#   https://ask.libreoffice.org/t/where-is-the-python-executable-embedded-in-libreoffice-on-macos/50042
+
 
 PLATFORM = SysInfo.get_platform()
 if PLATFORM == SysInfo.PlatformEnum.WINDOWS:
@@ -19,7 +25,7 @@ def get_soffice_install_path() -> Path:
     Gets the Soffice install path.
 
     For windows this will be something like: ``C:\Program Files\LibreOffice``.
-    For Linux this will be somethon like: ``/usr/lib/libreoffice``
+    For Linux this will be something like: ``/usr/lib/libreoffice``
 
     Returns:
         Path: install as Path.
@@ -62,7 +68,7 @@ def get_soffice_install_path() -> Path:
         return _INSTALL_PATH
 
     elif PLATFORM == SysInfo.PlatformEnum.MAC:
-        _INSTALL_PATH = Path('/Applications/LibreOffice.app/Contents/MacOS')
+        _INSTALL_PATH = Path("/Applications/LibreOffice.app/Contents/MacOS")
         return _INSTALL_PATH
     else:
         # unix
@@ -73,15 +79,15 @@ def get_soffice_install_path() -> Path:
         if s is not None:
             # expect '/usr/bin/soffice'
             if os.path.islink(s):
-                p_sf = Path(os.path.realpath(s))
+                p_sf = Path(os.path.realpath(s)).parent
             else:
-                p_sf = Path(s)
+                p_sf = Path(s).parent
         if p_sf is None:
             s = "/usr/bin/soffice"
             if os.path.islink(s):
-                p_sf = Path(os.path.realpath(s))
+                p_sf = Path(os.path.realpath(s)).parent
             else:
-                p_sf = Path(s)
+                p_sf = Path(s).parent
         if not p_sf.exists():
             raise FileNotFoundError(f"LibreOffice '{p_sf}' not found.")
         if not p_sf.is_file():
@@ -90,6 +96,17 @@ def get_soffice_install_path() -> Path:
         _INSTALL_PATH = p_sf.parent.parent
         return _INSTALL_PATH
 
+def get_soffice_path() -> Path:
+    """
+    Gets path to soffice
+
+    Returns:
+        Path: path to soffice
+    """
+    if PLATFORM == SysInfo.PlatformEnum.WINDOWS:
+        return Path(get_lo_path(), "soffice.exe")
+    return Path(get_lo_path(), "soffice")
+    
 
 def get_uno_path() -> Path:
     """
@@ -133,7 +150,7 @@ def get_lo_path() -> Path:
 
     This path is different for windows and linux.
     Typically for Windows ``C:\Program Files\LibreOffice\program``
-    Typically for Linux `/usr/bin/soffice``
+    Typically for Linux ``/usr/bin/soffice``
 
     Raises:
         FileNotFoundError: if path is not found
@@ -143,17 +160,10 @@ def get_lo_path() -> Path:
         Path: First found path.
     """
     if PLATFORM == SysInfo.PlatformEnum.WINDOWS:
+        return Path(get_soffice_install_path(), "program")
 
-        p_uno = Path(os.environ["PROGRAMFILES"], "LibreOffice", "program")
-        if p_uno.exists() is False or p_uno.is_dir() is False:
-            p_uno = Path(os.environ["PROGRAMFILES(X86)"], "LibreOffice", "program")
-        if not p_uno.exists():
-            raise FileNotFoundError("LibreOffice Source Dir not found.")
-        if not p_uno.is_dir():
-            raise NotADirectoryError("LibreOffice source is not a Directory")
-        return p_uno
     elif PLATFORM == SysInfo.PlatformEnum.MAC:
-        return Path("/Applications/LibreOffice.app/Contents/MacOS/soffice")
+        return Path("/Applications/LibreOffice.app/Contents/MacOS")
     else:
         # search system path
         s = shutil.which("soffice")
@@ -161,11 +171,16 @@ def get_lo_path() -> Path:
         if s is not None:
             # expect '/usr/bin/soffice'
             if os.path.islink(s):
+                # follow link
                 p_sf = Path(os.path.realpath(s)).parent
             else:
                 p_sf = Path(s).parent
         if p_sf is None:
             p_sf = Path("/usr/bin/soffice")
+            if p_sf.exists() is False or p_sf.is_file() is False:
+                raise FileNotFoundError("LibreOffice Source Dir not found.")
+            p_sf = p_sf.parent
+
         if not p_sf.exists():
             raise FileNotFoundError("LibreOffice Source Dir not found.")
         if not p_sf.is_dir():
@@ -213,15 +228,15 @@ def mkdirp(dest_dir: Path) -> None:
     ...
 
 
-def mkdirp(dest_dir: Union[str, Path]) -> None:
+def mkdirp(dest_dir:PathOrStr) -> None:
     """
     Creates path and subpaths not existing.
 
     Args:
-        dest_dir (str | Path): PathLike object
+        dest_dir (PathOrStr): PathLike object
     """
     # Python ≥ 3.5
-    if isinstance(dest_dir, Path):
-        dest_dir.mkdir(parents=True, exist_ok=True)
-    else:
-        Path(dest_dir).mkdir(parents=True, exist_ok=True)
+    pth = Path(dest_dir)
+    if not pth.is_absolute():
+        pth = pth.resolve()
+    pth.mkdir(parents=True, exist_ok=True)

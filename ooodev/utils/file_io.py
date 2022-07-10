@@ -48,7 +48,7 @@ class FileIO:
         return _UTIL_PATH
 
     @staticmethod
-    def get_absolute_path(fnm: PathOrStr) -> str:
+    def get_absolute_path(fnm: PathOrStr) -> Path:
         """
         Gets Absolute path
 
@@ -56,12 +56,15 @@ class FileIO:
             fnm (PathOrStr): path as string
 
         Returns:
-            str: absolute path
+            Path: absolute path
         """
-        return os.path.abspath(Path(fnm))
+        p = Path(fnm)
+        if p.is_absolute():
+            return p
+        return p.resolve()
 
-    @staticmethod
-    def url_to_path(url: str) -> str:
+    @classmethod
+    def url_to_path(cls, url: str) -> Path:
         """
         Converts url to path
 
@@ -72,18 +75,18 @@ class FileIO:
             Exception: If unable to parse url.
 
         Returns:
-            str: path as string
+            Path: path as string
         """
         try:
             p = urlparse(url)
-            final_path = os.path.abspath(os.path.join(p.netloc, p.path))
+            final_path = cls.get_absolute_path(os.path.join(p.netloc, p.path))
             return final_path
         except Exception as e:
             raise Exception(f"Could not parse '{url}'")
 
 
-    @staticmethod
-    def fnm_to_url(fnm: PathOrStr) -> str:
+    @classmethod
+    def fnm_to_url(cls, fnm: PathOrStr) -> str:
         """
         Converts file path to url
 
@@ -97,13 +100,13 @@ class FileIO:
             str: Converted path if conversion is successful; Otherwise None.
         """
         try:
-            p = Path(fnm)
+            p =  cls.get_absolute_path(fnm)
             return p.as_uri()
         except Exception as e:
             raise Exception("Unable to convert '{fnm}'") from e
 
     @classmethod
-    def uri_to_path(cls, uri_fnm: str) -> str:
+    def uri_to_path(cls, uri_fnm: str) -> Path:
         """
         Convets uri file to path.
 
@@ -111,7 +114,7 @@ class FileIO:
             uri_fnm (str): Uri to convert
 
         Returns:
-            str: Converted uri as path.
+            Path: Converted uri as path.
         """
         return cls.url_to_path(url=uri_fnm)
 
@@ -142,22 +145,22 @@ class FileIO:
             str: file name portion
         """
         if path == "":
-            print("path is an empty string")
+            mLo.Lo.print("path is an empty string")
             return ""
         try:
             p = Path(path)
             return p.name
         except Exception as e:
-            print(f"Unable to get name for '{path}'")
-            print(f"    {e}")
+            mLo.Lo.print(f"Unable to get name for '{path}'")
+            mLo.Lo.print(f"    {e}")
         return ""
     
     # endregion ---------- file path methods ---------------------------
 
     # region ------------- file creation / deletion --------------------
 
-    @staticmethod
-    def is_openable(fnm: PathOrStr) -> bool:
+    @classmethod
+    def is_openable(cls, fnm: PathOrStr) -> bool:
         """
         Gets if a file can be opened
 
@@ -168,34 +171,31 @@ class FileIO:
             bool: True if file can be opened; Otherwise, False
         """
         try:
-            p = Path(fnm)
+            p = cls.get_absolute_path(fnm)
             if not p.exists():
-                print(f"'{fnm}' does not exist")
+                mLo.Lo.print(f"'{fnm}' does not exist")
                 return False
             if not p.is_file():
-                print(f"'{fnm}' does is not a file")
+                mLo.Lo.print(f"'{fnm}' does is not a file")
                 return False
             if not os.access(fnm, os.R_OK):
-                print(f"'{fnm}' is not readable")
+                mLo.Lo.print(f"'{fnm}' is not readable")
                 return False
             return True
         except Exception as e:
-            print(f"File is not openable: {e}")
+            mLo.Lo.print(f"File is not openable: {e}")
         return False
 
-    @staticmethod
-    def make_directory(dir: PathOrStr) -> None:
+    @classmethod
+    def make_directory(cls, dir: PathOrStr) -> None:
         """
         Creates path and subpaths not existing.
 
         Args:
             dest_dir (PathOrStr): PathLike object
         """
-        # Python ≥ 3.5
-        if isinstance(dir, os.PathLike):
-            dir.mkdir(parents=True, exist_ok=True)
-        else:
-            Path(dir).mkdir(parents=True, exist_ok=True)
+        p = cls.get_absolute_path(dir)
+        p.mkdir(parents=True, exist_ok=True)
 
     @staticmethod
     def create_temp_file(im_format: str) -> str:
@@ -217,8 +217,8 @@ class FileIO:
         except Exception as e:
             raise Exception("Could not create temp file") from e
 
-    @staticmethod
-    def delete_file(fnm: PathOrStr) -> bool:
+    @classmethod
+    def delete_file(cls, fnm: PathOrStr) -> bool:
         """
         Deletes a file
 
@@ -228,12 +228,13 @@ class FileIO:
         Returns:
             bool: True if delete is successful; Otherwise, False
         """
-        os.remove(fnm)
-        if os.path.exists(fnm):
-            print(f"'{fnm}' could not be deleted")
+        p = cls.get_absolute_path(fnm)
+        os.remove(p)
+        if p.exists():
+            mLo.Lo.print(f"'{p}' could not be deleted")
             return False
         else:
-            print(f"'{fnm}' deleted")
+            mLo.Lo.print(f"'{p}' deleted")
         return True
 
     @classmethod
@@ -249,36 +250,38 @@ class FileIO:
         """
         if len(fnms) == 0:
             return False
-        print()
+        mLo.Lo.print()
         result = True
         for s in fnms:
             result = result and cls.delete_file(s)
         return result
 
-    @staticmethod
-    def save_string(fnm: PathOrStr, data: str) -> None:
+    @classmethod
+    def save_string(cls, fnm: PathOrStr, data: str) -> None:
         if data is None:
             raise ValueError(f"No data to save in '{fnm}'")
         try:
-            with open(fnm, "w") as file:
+            p = cls.get_absolute_path(fnm)
+            with open(p, "w") as file:
                 file.write(data)
-            print(f"Saved string to file: {fnm}")
+            mLo.Lo.print(f"Saved string to file: {p}")
         except Exception as e:
-            raise Exception(f"Could not save string to file: {fnm}") from e
+            raise Exception(f"Could not save string to file: {p}") from e
 
-    @staticmethod
-    def save_bytes(fnm: PathOrStr, b: bytes) -> None:
+    @classmethod
+    def save_bytes(cls, fnm: PathOrStr, b: bytes) -> None:
         if b is None:
             raise ValueError(f"'b' is null. No data to save in '{fnm}'")
         try:
-            with open(fnm, "b") as file:
+            p = cls.get_absolute_path(fnm)
+            with open(p, "b") as file:
                 file.write(b)
-            print(f"Saved bytes to file: {fnm}")
+            mLo.Lo.print(f"Saved bytes to file: {p}")
         except Exception as e:
             raise Exception(f"Could not save bytes to file: {fnm}") from e
 
-    @staticmethod
-    def save_array(fnm: PathOrStr, arr: List[list]) -> None:
+    @classmethod
+    def save_array(cls, fnm: PathOrStr, arr: List[list]) -> None:
         """
         Saves a 2d array to a file as tab delimited data.
 
@@ -290,20 +293,21 @@ class FileIO:
             raise ValueError("'arr' is null. No data to save in '{fnm}'")
         num_rows = len(arr)
         if num_rows == 0:
-            print("No data to save in '{fnm}'")
+            mLo.Lo.print("No data to save in '{fnm}'")
             return
         try:
-            with open(fnm, "w") as file:
+            p = cls.get_absolute_path(fnm)
+            with open(p, "w") as file:
                 for j in range(num_rows):
                     line = "\t".join([str(v) for v in arr[j]])
                     file.write(line)
                     file.write("\n")
-            print(f"Save array to file: {fnm}")
+            mLo.Lo.print(f"Save array to file: {p}")
         except Exception as e:
             raise Exception(f"Could not save array to file: {fnm}") from e
 
-    @staticmethod
-    def append_to(fnm: PathOrStr, msg: str) -> None:
+    @classmethod
+    def append_to(cls, fnm: PathOrStr, msg: str) -> None:
         """
         Appends text to a file
 
@@ -315,7 +319,8 @@ class FileIO:
             Exception: If unable to append text.
         """
         try:
-            with open(fnm, "a") as file:
+            p = cls.get_absolute_path(fnm)
+            with open(p, "a") as file:
                 file.write(msg)
                 file.write("\n")
         except Exception as e:
@@ -336,7 +341,7 @@ class FileIO:
         # replaced by more detailed Java version; see below
         zfa: XNameAccess = cls.zip_access(fnm)
         names = zfa.getElementNames()
-        print(f"\nZippendContents of '{fnm}'")
+        mLo.Lo.print(f"\nZippendContents of '{fnm}'")
         mLo.Lo.print_names(names, 1)
 
     @staticmethod
@@ -375,7 +380,7 @@ class FileIO:
                 lines.append(tis.readLine())
             tis.closeInput()
         except Exception as e:
-            print(e)
+            mLo.Lo.print(e)
         if len(lines) == 0:
             return None
         return lines
@@ -401,15 +406,15 @@ class FileIO:
                 return lines[0].strip()
         except UnoException as e:
             raise Exception("Unable to get mime type") from e
-        print("No mimetype found")
+        mLo.Lo.print("No mimetype found")
         return None
 
     # endregion ------------- zip access -------------------------------
 
     # region ------------- switch to Python's zip APIs -----------------
 
-    @staticmethod
-    def zip_list(fnm: PathOrStr) -> None:
+    @classmethod
+    def zip_list(cls, fnm: PathOrStr) -> None:
         """
         Prints info to console for a give zip file.
 
@@ -417,15 +422,16 @@ class FileIO:
             fnm (PathOrStr): Path to zip file.
         """
         try:
-            with zipfile.ZipFile(fnm, "r") as zip:
+            p = cls.get_absolute_path(fnm)
+            with zipfile.ZipFile(p, "r") as zip:
                 for info in zip.getinfo():
-                    print(info.filename)
-                    print("\tModified:\t" + str(datetime.datetime(*info.date_time)))
-                    print("\tSystem:\t\t" + str(info.create_system) + "(0 = Windows, 3 = Unix)")
-                    print("\tZIP version:\t" + str(info.create_version))
-                    print("\tCompressed:\t" + str(info.compress_size) + " bytes")
-                    print("\tUncompressed:\t" + str(info.file_size) + " bytes")
-            print()
+                    mLo.Lo.print(info.filename)
+                    mLo.Lo.print("\tModified:\t" + str(datetime.datetime(*info.date_time)))
+                    mLo.Lo.print("\tSystem:\t\t" + str(info.create_system) + "(0 = Windows, 3 = Unix)")
+                    mLo.Lo.print("\tZIP version:\t" + str(info.create_version))
+                    mLo.Lo.print("\tCompressed:\t" + str(info.compress_size) + " bytes")
+                    mLo.Lo.print("\tUncompressed:\t" + str(info.file_size) + " bytes")
+            mLo.Lo.print()
         except Exception as e:
-            print(e)
+            mLo.Lo.print(e)
     # endregion ---------- switch to Python's zip APIs -----------------

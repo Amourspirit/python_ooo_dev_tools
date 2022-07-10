@@ -7,3 +7,4 @@ events
 
     *
     args/index
+    lo_events/index

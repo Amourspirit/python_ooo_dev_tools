@@ -601,14 +601,16 @@ Then there is this library (|app_name_short|) that takes advantage of some of th
 Many of these libraries are possible because of `OOO UNO TEMPLATE <https://github.com/Amourspirit/ooo_uno_tmpl>`_ that converts the
 entire |lo_api|_ into templates that are converted into ooouno_ and types-unopy_.
 
+.. collapse:: Demo
+    :open:
 
-.. cssclass:: a_gif
+    .. cssclass:: a_gif
 
-    .. _ch01fig12:
-    .. figure:: https://user-images.githubusercontent.com/4193389/177604603-55660d5d-2aef-4746-a8fe-4365a0dcdaa6.gif
-        :alt: ooo Rectangle Demo
+        .. _ch01fig12:
+        .. figure:: https://user-images.githubusercontent.com/4193389/177604603-55660d5d-2aef-4746-a8fe-4365a0dcdaa6.gif
+            :alt: ooo Rectangle Demo
 
-        :ooo Rectangle demo
+            :ooo Rectangle demo
 
 
 In the Basic API, there's no remote component context since the macros run inside Office or inside a document that is loaded into Office.
@@ -633,7 +635,7 @@ In |app_name_short| there is a remote bridge and ``Lo.XSCRIPTCONTEXT`` which imp
             from ooodev.utils.lo import Lo
             from ooodev.office.write import Write
 
-            loader = Lo.load_office(direct=True)
+            loader = Lo.load_office()
             doc = Write.open_doc(fnm="file:///C:/tmp/testdoc.odt", loader=loader)
 
 
@@ -656,7 +658,7 @@ However, if the script is part of a loaded document, then the call to loadCompon
             from ooodev.utils.lo import Lo
             from ooodev.office.write import Write
 
-            _ = Lo.load_office(direct=True)
+            _ = Lo.load_office()
             doc = Write.get_text_doc(Lo.ThisComponent)
 
 Also, Office's Basic runtime environment automatically creates a service manager and Desktop object, so it's unnecessary to create them explicitly.
@@ -676,7 +678,7 @@ This reduces the code:
             
             from ooodev.utils.lo import Lo
 
-            _ = Lo.load_office(direct=True)
+            _ = Lo.load_office()
             doc = Lo.ThisComponent
 
 

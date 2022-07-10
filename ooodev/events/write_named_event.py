@@ -75,16 +75,16 @@ class WriteNamedEvent(NamedTuple):
     """Table Added see :py:meth:`Write.add_table() <.office.write.Write.add_table>`"""
 
     IMAGE_LNIK_ADDING = "write_image_link_adding"
-    """Table Adding see :py:meth:`Write.add_image_link() <.office.write.Write.add_image_link>`"""
+    """Image Link Adding see :py:meth:`Write.add_image_link() <.office.write.Write.add_image_link>`"""
     IMAGE_LNIK_ADDED = "write_image_link_added"
-    """Table Added see :py:meth:`Write.add_image_link() <.office.write.Write.add_image_link>`"""
+    """Image Link Added see :py:meth:`Write.add_image_link() <.office.write.Write.add_image_link>`"""
 
     IMAGE_SHAPE_ADDING = "write_image_shape_adding"
-    """Table Adding see :py:meth:`Write.add_image_shape() <.office.write.Write.add_image_shape>`"""
+    """Image Shape Adding see :py:meth:`Write.add_image_shape() <.office.write.Write.add_image_shape>`"""
     IMAGE_SHAPE_ADDED = "write_image_shape_added"
-    """Table Added see :py:meth:`Write.add_image_shape() <.office.write.Write.add_image_shape>`"""
+    """Image Shape Added see :py:meth:`Write.add_image_shape() <.office.write.Write.add_image_shape>`"""
 
     CONFIGURED_SERVICES_SETTING = "write_configure_services_setting"
-    """Table Adding see :py:meth:`Write.set_configured_services() <.office.write.Write.set_configured_services>`"""
+    """Services configuration setting see :py:meth:`Write.set_configured_services() <.office.write.Write.set_configured_services>`"""
     CONFIGURED_SERVICES_SET = "write_configure_services_set"
-    """Table Added see :py:meth:`Write.set_configured_services() <.office.write.Write.set_configured_services>`"""
+    """Services configuration set see :py:meth:`Write.set_configured_services() <.office.write.Write.set_configured_services>`"""

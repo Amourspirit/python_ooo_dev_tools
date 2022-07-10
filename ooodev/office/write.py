@@ -481,16 +481,17 @@ class Write(mSel.Selection):
         if fnm is None:
             mLo.Lo.print("Filename is null")
             return None
+        pth = mFileIO.FileIO.get_absolute_path(fnm)
 
         open_file_url = None
-        if not mFileIO.FileIO.is_openable(fnm):
-            if mLo.Lo.is_url(fnm):
-                mLo.Lo.print(f"Treating filename as a URL: '{fnm}'")
-                open_file_url = str(fnm)
+        if not mFileIO.FileIO.is_openable(pth):
+            if mLo.Lo.is_url(pth):
+                mLo.Lo.print(f"Treating filename as a URL: '{pth}'")
+                open_file_url = str(pth)
             else:
-                raise mEx.UnOpenableError(fnm)
+                raise mEx.UnOpenableError(pth)
         else:
-            open_file_url = mFileIO.FileIO.fnm_to_url(fnm)
+            open_file_url = mFileIO.FileIO.fnm_to_url(pth)
 
         template_ext = mInfo.Info.get_ext(template_path)
         if template_ext != "ott":
@@ -505,7 +506,7 @@ class Write(mSel.Selection):
 
         cursor = cls.get_cursor(text_doc)
         if cursor is None:
-            raise ValueError(f"Unable to get cursor: '{fnm}'")
+            raise ValueError(f"Unable to get cursor: '{pth}'")
 
         try:
             cursor.gotoEnd(True)
@@ -1996,22 +1997,24 @@ class Write(mSel.Selection):
         width = cargs.event_data["width"]
         height = cargs.event_data["height"]
 
+        pth = mFileIO.FileIO.get_absolute_path(fnm)
+
         try:
             if width > 0 and height > 0:
                 im_size = Size(width, height)
             else:
-                im_size = mImgLo.ImagesLo.get_size_100mm(fnm)  # in 1/100 mm units
+                im_size = mImgLo.ImagesLo.get_size_100mm(pth)  # in 1/100 mm units
                 if im_size is None:
-                    raise ValueError(f"Unable to get image from {fnm}")
+                    raise ValueError(f"Unable to get image from {pth}")
 
             # create TextContent for an empty graphic
             gos = mLo.Lo.create_instance_msf(XTextContent, "com.sun.star.drawing.GraphicObjectShape")
             if gos is None:
                 raise mEx.CreateInstanceMsfError(XTextContent, "com.sun.star.drawing.GraphicObjectShape")
 
-            bitmap = mImgLo.ImagesLo.get_bitmap(fnm)
+            bitmap = mImgLo.ImagesLo.get_bitmap(pth)
             if bitmap is None:
-                raise ValueError(f"Unable to get bitmap of {fnm}")
+                raise ValueError(f"Unable to get bitmap of {pth}")
             # store the image's bitmap as the graphic shape's URL's value
             mProps.Props.set_property(prop_set=gos, name="GraphicURL", value=bitmap)
 

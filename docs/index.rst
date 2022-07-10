@@ -8,19 +8,20 @@ Welcome to OOO Development Tools's documentation!
 
 .. include:: ../README.rst
 
-Documentation
-=============
+.. toctree::
+   :maxdepth: 2
+   :caption: BOOK:
+
+   odev/index
+
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-   odev/index
    src_docs/event/index
    version/version_hist
 
-API
-===
 
 .. toctree::
    :maxdepth: 4

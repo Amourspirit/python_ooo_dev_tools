@@ -14,10 +14,10 @@ with open(HERE / "README.rst") as fh:
 setup(
     name=PKG_NAME,
     version=VERSION,
-    # package_data={"": ["*.json"]},
     python_requires='>=3.7.0',
     url="https://github.com/Amourspirit/python_ooo_dev_tools",
     packages=find_packages(exclude=['src', 'src.*', 'env', 'env.*', 'cmds', 'cmds.*',"*.tests", "*.tests.*", "tests.*", "tests", "*.tmp", "*.tmp.*", "tmp.*", "tmp"]),
+    data_files=[('cfg', ['ooodev/cfg/config.json'])],
     author=":Barry-Thomas-Paul: Moss",
     author_email='bigbytetech@gmail.com',
     license="mit",

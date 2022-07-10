@@ -20,7 +20,9 @@ from ..events.args.cancel_event_args import CancelEventArgs
 from ..events.args.dispatch_args import DispatchArgs
 from ..events.args.dispatch_cancel_args import DispatchCancelArgs
 from ..meta.static_meta import StaticProperty, classproperty
-from .connect import ConnectBase, LoPipeStart, LoSocketStart, LoDirectStart
+from ..conn.connect import ConnectBase, LoPipeStart, LoSocketStart, LoDirectStart
+from ..conn import connectors
+from ..conn import cache as mCache
 
 from com.sun.star.lang import XComponent
 
@@ -115,19 +117,25 @@ class Lo(metaclass=StaticProperty):
 
             .. code::
 
-                with Lo.Loader() as loader:
+                with Lo.Loader(Lo.ConnectSocket()) as loader:
                     doc = Write.create_doc(loader)
                     ...
         """
 
-        def __init__(self, using_pipes=False):
+        def __init__(
+            self,
+            connector: connectors.ConnectPipe | connectors.ConnectSocket | None,
+            cache_obj: mCache.Cache | None = None,
+        ):
             """
             Create a connection to office
 
             Args:
-                using_pipes (bool, optional): If True the pipes are used to connect to office; Otherwise, connection is made with 'host' and 'port'. Defaults to False.
+                connector (connectors.ConnectPipe | connectors.ConnectSocket | None): Connection information. Ignore for macros.
+                cache_obj (mCache.Cache | None, optional): Cache instance that determinse of LibreOffice profile is to be copied and cached
+                    Ignore for macros. Defaults to None.
             """
-            self.loader = Lo.load_office(using_pipes=using_pipes)
+            self.loader = Lo.load_office(connector=connector, cache_obj=cache_obj)
 
         def __enter__(self) -> XComponentLoader:
             return self.loader
@@ -214,6 +222,11 @@ class Lo(metaclass=StaticProperty):
 
     # region port connect to locally running Office via port 8100
     # endregion port
+
+    ConnectPipe = connectors.ConnectPipe
+    """Alias of connectors.ConnectPipe"""
+    ConnectSocket = connectors.ConnectSocket
+    """Alias of connectors.ConnectSocket"""
 
     _xcc: XComponentContext = None
     _doc: XComponent = None
@@ -474,7 +487,9 @@ class Lo(metaclass=StaticProperty):
     # region Start Office
 
     @classmethod
-    def load_office(cls, **kwargs) -> XComponentLoader:
+    def load_office(
+        cls, connector: connectors.ConnectPipe | connectors.ConnectSocket | None = None, cache_obj: mCache.Cache | None = None
+    ) -> XComponentLoader:
         """
         Loads Office
 
@@ -482,14 +497,13 @@ class Lo(metaclass=StaticProperty):
 
         If running outside of office then a bridge is created that connects to office.
 
-        If running from inside of office e.g. in a macro, then XSCRIPTCONTEXT is used.
+        If running from inside of office e.g. in a macro, then Lo.XSCRIPTCONTEXT is used.
         ``using_pipes`` is ignored with running inside office.
 
-        Keyword Args:
-            pipes (bool): determines if bridge connection is made with pipes. Defalut False
-            host (str): host name such as localhost. host and port must be together. Defalut localhost
-            port (int): port number. host and port must be together. Default 2002
-            direct (bool): No connection is made. Use directly. This is the mode used for macros. Defalut False
+        Args:
+            connector (connectors.ConnectPipe | connectors.ConnectSocket | None): Connection information. Ignore for macros.
+            cache_obj (Cache | None, optional): Cache instance that determinse of LibreOffice profile is to be copied and cached
+                Ignore for macros. Defaults to None.
 
 
         Raises:
@@ -510,7 +524,16 @@ class Lo(metaclass=StaticProperty):
            Event args ``event_data`` is a dictionary containing all method parameters.
 
         See Also:
-            :py:meth:`open_doc`
+            :py:meth:`open_doc`,
+            :py:class:`.Lo.Loader`
+
+        Example:
+
+            .. code::
+
+                loader =  Lo.Loader(Lo.ConnectSocket()):
+                doc = Write.create_doc(loader)
+                ...
         """
         # Creation sequence: remote component content (xcc) -->
         #                     remote service manager (mcFactory) -->
@@ -522,12 +545,8 @@ class Lo(metaclass=StaticProperty):
         cargs = CancelEventArgs(Lo.load_office.__qualname__)
 
         cargs.event_data = {
-            "host": "localhost",
-            "port": 2002,
-            "pipes": False,
-            "direct": False,
+            "connector": connector,
         }
-        cargs.event_data.update(kwargs)
 
         eargs = EventArgs.from_args(cargs)
         _Events().trigger(LoNamedEvent.RESET, eargs)
@@ -536,30 +555,38 @@ class Lo(metaclass=StaticProperty):
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
 
-        using_pipes = bool(cargs.event_data["pipes"])
-        using_direct = bool(cargs.event_data["direct"])
-
-        host = str(cargs.event_data["host"])
-        port = int(cargs.event_data["port"])
+        b_connector = cargs.event_data["connector"]
 
         Lo.print("Loading Office...")
-        if using_pipes:
+        if b_connector is None:
             try:
-                cls._lo_inst = LoPipeStart()
+                cls._lo_inst = LoDirectStart()
+                cls._lo_inst.connect()
+            except Exception as e:
+                Lo.print("Office context could not be created. A connector must be supplied if not running as a macro")
+                Lo.print(f"    {e}")
+                raise SystemExit(1)
+        elif isinstance(b_connector, connectors.ConnectPipe):
+            try:
+                # cls._lo_inst = LoPipeStart(connector=Lo.ConnectPipe(), cache_obj=mCache.Cache())
+                cls._lo_inst = LoPipeStart(connector=b_connector, cache_obj=cache_obj)
                 cls._lo_inst.connect()
             except Exception as e:
                 Lo.print("Office context could not be created")
+                Lo.print(f"    {e}")
                 raise SystemExit(1)
-        elif using_direct:
-            cls._lo_inst = LoDirectStart()
-            cls._lo_inst.connect()
-        else:
+        elif isinstance(b_connector, connectors.ConnectSocket):
             try:
-                cls._lo_inst = LoSocketStart(host=host, port=port)
+                cls._lo_inst = LoSocketStart(connector=b_connector, cache_obj=cache_obj)
                 cls._lo_inst.connect()
-            except Exception:
+            except Exception as e:
                 Lo.print("Office context could not be created")
+                Lo.print(f"    {e}")
                 raise SystemExit(1)
+        else:
+            Lo.print("Invalid Connector type. Fatal Error.")
+            raise SystemExit(1)
+
         # cls.set_ooo_bean(conn=cls.lo_inst)
         cls._xcc = cls._lo_inst.ctx
         cls._mc_factory = cls._xcc.getServiceManager()
@@ -658,6 +685,8 @@ class Lo(metaclass=StaticProperty):
         try:
             # raised a NotImplementedError when cls._lo_inst is direct (macro mode)
             cls._lo_inst.kill_soffice()
+            cls._is_office_terminated = True
+            _Events().trigger(LoNamedEvent.OFFICE_CLOSED, EventArgs(Lo.kill_office.__qualname__))
             cls.print("Killed Office")
         except Exception as e:
             raise Exception(f"Unbale to kill Office") from e
@@ -793,20 +822,20 @@ class Lo(metaclass=StaticProperty):
 
         if fnm is None:
             raise Exception("Filename is null")
-        fnm = str(fnm)
+        pth = mFileIO.FileIO.get_absolute_path(fnm)
 
         if props is None:
             props = mProps.Props.make_props(Hidden=True)
         open_file_url = None
-        if not mFileIO.FileIO.is_openable(fnm):
-            if cls.is_url(fnm):
-                Lo.print(f"Will treat filename as a URL: '{fnm}'")
-                open_file_url = fnm
+        if not mFileIO.FileIO.is_openable(pth):
+            if cls.is_url(pth):
+                Lo.print(f"Will treat filename as a URL: '{pth}'")
+                open_file_url = pth
             else:
-                raise Exception(f"Unable to get url from file: {fnm}")
+                raise Exception(f"Unable to get url from file: {pth}")
         else:
-            Lo.print(f"Opening {fnm}")
-            open_file_url = mFileIO.FileIO.fnm_to_url(fnm)
+            Lo.print(f"Opening {pth}")
+            open_file_url = mFileIO.FileIO.fnm_to_url(pth)
 
         try:
             doc = loader.loadComponentFromURL(open_file_url, "_blank", 0, props)
@@ -1525,18 +1554,20 @@ class Lo(metaclass=StaticProperty):
         _Events().trigger(LoNamedEvent.DOC_STORING, cargs)
         if cargs.cancel:
             return False
-        Lo.print(f"Saving the document in '{fnm}'")
-        Lo.print(f"Using format {format}")
+        pth = mFileIO.FileIO.get_absolute_path(cargs.event_data['fnm'])
+        fmt = str(cargs.event_data['format'])
+        Lo.print(f"Saving the document in '{pth}'")
+        Lo.print(f"Using format {fmt}")
 
         try:
-            save_file_url = mFileIO.FileIO.fnm_to_url(fnm)
+            save_file_url = mFileIO.FileIO.fnm_to_url(pth)
             if password is None:
-                store_props = mProps.Props.make_props(Overwrite=True, FilterName=format)
+                store_props = mProps.Props.make_props(Overwrite=True, FilterName=fmt)
             else:
-                store_props = mProps.Props.make_props(Overwrite=True, FilterName=format, Password=password)
+                store_props = mProps.Props.make_props(Overwrite=True, FilterName=fmt, Password=password)
             store.storeToURL(save_file_url, store_props)
         except IOException as e:
-            raise Exception(f"Could not save '{fnm}'") from e
+            raise Exception(f"Could not save '{pth}'") from e
         _Events().trigger(LoNamedEvent.DOC_STORED, EventArgs.from_args(cargs))
         return True
 
@@ -1658,7 +1689,7 @@ class Lo(metaclass=StaticProperty):
         Raises:
             MissingInterfaceError: if doc does not have XCloseable interface
 
-         Attention:
+        Attention:
             :py:meth:`~.utils.lo.Lo.close` method is called along with any of its events.
         """
         try:
@@ -2033,7 +2064,8 @@ class Lo(metaclass=StaticProperty):
         """
         # https://stackoverflow.com/questions/7160737/how-to-validate-a-url-in-python-malformed-or-not
         try:
-            result = urlparse(str(fnm))
+            pth = mFileIO.FileIO.get_absolute_path(fnm)
+            result = urlparse(str(pth))
             return all([result.scheme, result.netloc])
         except ValueError:
             return False
@@ -2442,8 +2474,12 @@ class Lo(metaclass=StaticProperty):
         except AttributeError:
             if cls._doc is None:
                 # attempt to connect direct
-                cls.load_office(direct=True)
+                cls.load_office()
             # comp = cls.star_desktop.getCurrentComponent()
+            if cls._xdesktop is None:
+                return None
+            if cls._doc is None:
+                cls._doc = cls._xdesktop.getCurrentComponent()
             if cls._doc is None:
                 return None
             impl = cls._doc.ImplementationName
