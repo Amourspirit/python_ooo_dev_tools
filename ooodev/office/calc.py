@@ -93,7 +93,7 @@ from ..utils.table_helper import TableHelper
 from ..utils.color import CommonColor, Color
 from ..utils import view_state as mViewState
 from ..exceptions import ex as mEx
-from ..utils.type_var import Row, Column, Table, TupleArray, FloatList, FloatTable
+from ..utils.type_var import PathOrStr, Row, Column, Table, TupleArray, FloatList, FloatTable
 
 from ..events.calc_named_event import CalcNamedEvent
 from ..events.gbl_named_event import GblNamedEvent
@@ -161,7 +161,7 @@ class Calc:
     # region --------------- document methods --------------------------
 
     @classmethod
-    def open_doc(cls, fnm: str, loader: XComponentLoader) -> XSpreadsheetDocument:
+    def open_doc(cls, fnm: PathOrStr, loader: XComponentLoader) -> XSpreadsheetDocument:
         """
         Opens spreadsheet document
 
@@ -190,11 +190,52 @@ class Calc:
         _Events().trigger(CalcNamedEvent.DOC_OPENING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
-        doc = mLo.Lo.open_doc(fnm=str(fnm), loader=loader)
+        doc = mLo.Lo.open_doc(fnm=fnm, loader=loader)
         if doc is None:
             raise Exception("Document is null")
         _Events().trigger(CalcNamedEvent.DOC_OPENED, EventArgs.from_args(cargs))
         return cls.get_ss_doc(doc)
+
+    @staticmethod
+    def save_doc(doc: XSpreadsheetDocument, fnm: PathOrStr) -> bool:
+        """
+        Saves text document
+
+        Args:
+            text_doc (XSpreadsheetDocument): Text Document
+            fnm (PathOrStr): Path to save as
+
+        Raises:
+            MissingInterfaceError: If doc does not implement XComponent interface
+
+        Returns:
+            bool: True if doc is saved; Othwrwise, False
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.DOC_SAVING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.DOC_SAVED` :eventref:`src-docs-event`
+
+        Note:
+            Event args ``event_data`` is a dictionary containing ``text_doc`` and ``fnm``.
+
+        Attention:
+            :py:meth:`Lo.save_doc <.utils.lo.Lo.save_doc>` method is called along with any of its events.
+        """
+        cargs = CancelEventArgs(Calc.save_doc.__qualname__)
+        cargs.event_data = {"doc": doc, "fnm": fnm}
+        _Events().trigger(CalcNamedEvent.DOC_SAVING, cargs)
+
+        if cargs.cancel:
+            return False
+        fnm = cargs.event_data["fnm"]
+
+        doc = mLo.Lo.qi(XComponent, doc, True)
+        result = mLo.Lo.save_doc(doc=doc, fnm=fnm)
+
+        _Events().trigger(CalcNamedEvent.DOC_SAVED, EventArgs.from_args(cargs))
+        return result
 
     @staticmethod
     def get_ss_doc(doc: XComponent) -> XSpreadsheetDocument:
