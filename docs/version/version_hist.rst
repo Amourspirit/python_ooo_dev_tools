@@ -1,6 +1,13 @@
 Version History
 ===============
 
+Version 0.4.0
+-------------
+
+New more flexable and robust way of connecting to office.
+
+This update change :py:meth:`.Lo.load_office` method
+
 Version 0.3.0
 -------------
 

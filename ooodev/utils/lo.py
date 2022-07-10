@@ -497,12 +497,12 @@ class Lo(metaclass=StaticProperty):
 
         If running outside of office then a bridge is created that connects to office.
 
-        If running from inside of office e.g. in a macro, then XSCRIPTCONTEXT is used.
+        If running from inside of office e.g. in a macro, then Lo.XSCRIPTCONTEXT is used.
         ``using_pipes`` is ignored with running inside office.
 
         Args:
             connector (connectors.ConnectPipe | connectors.ConnectSocket | None): Connection information. Ignore for macros.
-            cache_obj (mCache.Cache | None, optional): Cache instance that determinse of LibreOffice profile is to be copied and cached
+            cache_obj (Cache | None, optional): Cache instance that determinse of LibreOffice profile is to be copied and cached
                 Ignore for macros. Defaults to None.
 
 
