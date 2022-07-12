@@ -1,5 +1,5 @@
-Class File IO
-=============
+Class FileIO
+============
 
 .. autoclass:: ooodev.utils.file_io.FileIO
     :members:

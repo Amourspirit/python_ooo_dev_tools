@@ -107,7 +107,7 @@ class Info(metaclass=StaticProperty):
         xtoolkit = mLo.Lo.create_instance_mcf(XToolkit, "com.sun.star.awt.Toolkit")
         device = xtoolkit.createScreenCompatibleDevice(0, 0)
         if device is None:
-            print("Could not access graphical output device")
+            mLo.Lo.print("Could not access graphical output device")
             return None
         return device.getFontDescriptors()
 
@@ -460,11 +460,11 @@ class Info(metaclass=StaticProperty):
         try:
             paths = cls.get_paths(setting)
         except ValueError:
-            print(f"Cound not find paths for '{setting}'")
+            mLo.Lo.print(f"Cound not find paths for '{setting}'")
             return None
         paths_arr = paths.split(";")
         if len(paths_arr) == 0:
-            print(f"Cound not split paths for '{setting}'")
+            mLo.Lo.print(f"Cound not split paths for '{setting}'")
             return [mFileIO.FileIO.uri_to_path(paths)]
         dirs = []
         for el in paths_arr:
@@ -491,7 +491,7 @@ class Info(metaclass=StaticProperty):
             try:
                 idx = addin_path.index("program")
             except ValueError:
-                print("Cound not extract office path")
+                mLo.Lo.print("Cound not extract office path")
                 return addin_path
 
             p = Path(addin_path[:idx])
@@ -629,7 +629,7 @@ class Info(metaclass=StaticProperty):
         if not p.is_file():
             raise ValueError(f"Not a file: '{fnm}'")
         if p.suffix == "":
-            print(f"No extension found for '{fnm}'")
+            mLo.Lo.print(f"No extension found for '{fnm}'")
             return p.stem
         return p.stem
 
@@ -651,10 +651,10 @@ class Info(metaclass=StaticProperty):
             raise ValueError("Empty string")
         p = Path(fnm)
         # if not p.is_file():
-        #     print(f"Not a file: {fnm}")
+        #     mLo.Lo.print(f"Not a file: {fnm}")
         #     return None
         if p.suffix == "":
-            print(f"No extension found for '{fnm}'")
+            mLo.Lo.print(f"No extension found for '{fnm}'")
             return None
         return p.suffix[1:]
 
@@ -722,25 +722,25 @@ class Info(metaclass=StaticProperty):
         """
         doc_type = mLo.Lo.DocType.UNKNOWN
         if cls.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.WRITER):
-            print("A Writer document")
+            mLo.Lo.print("A Writer document")
             doc_type = mLo.Lo.DocType.WRITER
         elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.IMPRESS):
-            print("A Impress document")
+            mLo.Lo.print("A Impress document")
             doc_type = mLo.Lo.DocType.IMPRESS
         elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.DRAW):
-            print("A Draw document")
+            mLo.Lo.print("A Draw document")
             doc_type = mLo.Lo.DocType.DRAW
         elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.CALC):
-            print("A Calc document")
+            mLo.Lo.print("A Calc document")
             doc_type = mLo.Lo.DocType.CALC
         elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.BASE):
-            print("A Base document")
+            mLo.Lo.print("A Base document")
             doc_type = mLo.Lo.DocType.BASE
         elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.MATH):
-            print("A Math document")
+            mLo.Lo.print("A Math document")
             doc_type = mLo.Lo.DocType.MATH
         else:
-            print("Unknown document")
+            mLo.Lo.print("Unknown document")
         return doc_type
 
     @classmethod
@@ -752,28 +752,28 @@ class Info(metaclass=StaticProperty):
             doc (object): office document
 
         Returns:
-            Lo.Service: Serive type
+            Lo.Service: Service type
         """
         if cls.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.WRITER):
-            print("A Writer document")
+            mLo.Lo.print("A Writer document")
             return mLo.Lo.Service.WRITER
         elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.IMPRESS):
-            print("A Impress document")
+            mLo.Lo.print("A Impress document")
             return mLo.Lo.Service.IMPRESS
         elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.DRAW):
-            print("A Draw document")
+            mLo.Lo.print("A Draw document")
             return mLo.Lo.Service.DRAW
         elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.CALC):
-            print("A Calc document")
+            mLo.Lo.print("A Calc document")
             return mLo.Lo.Service.CALC
         elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.BASE):
-            print("A Base document")
+            mLo.Lo.print("A Base document")
             return mLo.Lo.Service.BASE
         elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.MATH):
-            print("A Math document")
+            mLo.Lo.print("A Math document")
             return mLo.Lo.Service.MATH
         else:
-            print("Unknown document")
+            mLo.Lo.print("Unknown document")
             return mLo.Lo.Service.UNKNOWN
 
     @staticmethod
@@ -832,10 +832,10 @@ class Info(metaclass=StaticProperty):
         default = "application/octet-stream"
         mt = mimetypes.guess_type(fnm)
         if mt is None:
-            print("unable to find mimeypte")
+            mLo.Lo.print("unable to find mimeypte")
             return default
         if mt[0] is None:
-            print("unable to find mimeypte")
+            mLo.Lo.print("unable to find mimeypte")
             return default
         return str(mt[0])
 
@@ -949,10 +949,10 @@ class Info(metaclass=StaticProperty):
                 si = mLo.Lo.qi(XServiceInfo, x_enum.nextElement())
                 names.append(si.getImplementationName())
         except Exception:
-            print(f"Could not collect service names for: {service_name}")
+            mLo.Lo.print(f"Could not collect service names for: {service_name}")
             return None
         if len(names) == 0:
-            print(f"No service names found for: {service_name}")
+            mLo.Lo.print(f"No service names found for: {service_name}")
             return None
 
         names.sort()
@@ -978,8 +978,8 @@ class Info(metaclass=StaticProperty):
             service_names.sort()
             return service_names
         except Exception as e:
-            print("Unable to get services")
-            print(f"    {e}")
+            mLo.Lo.print("Unable to get services")
+            mLo.Lo.print(f"    {e}")
         return None
 
     @classmethod
@@ -1022,8 +1022,8 @@ class Info(metaclass=StaticProperty):
                 return False
             return si.supportsService(srv)
         except Exception as e:
-            print("Errors ocurred in support_service(). Returning False")
-            print(f"    {e}")
+            mLo.Lo.print("Errors ocurred in support_service(). Returning False")
+            mLo.Lo.print(f"    {e}")
             pass
         return False
 
@@ -1047,7 +1047,7 @@ class Info(metaclass=StaticProperty):
             services.extend(service_names)
             services.sort()
         except Exception as e:
-            print(e)
+            mLo.Lo.print(e)
         if len(services) == 0:
             return None
         return services
@@ -1070,8 +1070,8 @@ class Info(metaclass=StaticProperty):
             types = tp.getTypes()
             return types
         except Exception as e:
-            print("Unable to get interface types")
-            print(f"    {e}")
+            mLo.Lo.print("Unable to get interface types")
+            mLo.Lo.print(f"    {e}")
         return None
 
     @overload
@@ -1158,8 +1158,8 @@ class Info(metaclass=StaticProperty):
             type_names.sort()
             return type_names
         except Exception as e:
-            print("Unable to get interfaces")
-            print(f"    {e}")
+            mLo.Lo.print("Unable to get interfaces")
+            mLo.Lo.print(f"    {e}")
         return None
 
     @classmethod
@@ -1211,7 +1211,7 @@ class Info(metaclass=StaticProperty):
         fname = reflection.forName(interface_name)
 
         if fname is None:
-            print(f"Could not find the interface name: {interface_name}")
+            mLo.Lo.print(f"Could not find the interface name: {interface_name}")
             return None
         try:
             methods: Tuple[XIdlMethod, ...] = fname.getMethods()
@@ -1221,8 +1221,8 @@ class Info(metaclass=StaticProperty):
             lst.sort()
             return lst
         except Exception as e:
-            print(f"Could not get Methods for: {interface_name}")
-            print(f"    {e}")
+            mLo.Lo.print(f"Could not get Methods for: {interface_name}")
+            mLo.Lo.print(f"    {e}")
         return None
 
     @classmethod
@@ -1284,8 +1284,8 @@ class Info(metaclass=StaticProperty):
             lst.sort()
             return lst
         except Exception as e:
-            print("Unable to get family style names")
-            print(f"    {e}")
+            mLo.Lo.print("Unable to get family style names")
+            mLo.Lo.print(f"    {e}")
         return None
 
     @classmethod
@@ -1326,8 +1326,8 @@ class Info(metaclass=StaticProperty):
             lst.sort()
             return lst
         except Exception as e:
-            print("Could not access style names")
-            print(f"    {e}")
+            mLo.Lo.print("Could not access style names")
+            mLo.Lo.print(f"    {e}")
         return None
 
     @classmethod
@@ -1581,7 +1581,7 @@ class Info(metaclass=StaticProperty):
         try:
             pip = cls.get_pip()
         except mEx.MissingInterfaceError:
-            print("No package info provider found")
+            mLo.Lo.print("No package info provider found")
             return
         exts_tbl = pip.getExtensionList()
         mLo.Lo.print_table("Extension", exts_tbl)
@@ -1589,7 +1589,7 @@ class Info(metaclass=StaticProperty):
             if el[0] == id:
                 return el
 
-        print(f"Extension {id} is not found")
+        mLo.Lo.print(f"Extension {id} is not found")
         return None
 
     @classmethod
@@ -1606,7 +1606,7 @@ class Info(metaclass=StaticProperty):
         try:
             pip = cls.get_pip()
         except mEx.MissingInterfaceError:
-            print("No package info provider found")
+            mLo.Lo.print("No package info provider found")
             return None
         return pip.getPackageLocation(id)
 
@@ -1620,7 +1620,7 @@ class Info(metaclass=StaticProperty):
         """
         na = mLo.Lo.create_instance_mcf(XNameAccess, "com.sun.star.document.FilterFactory")
         if na is None:
-            print("No Filter factory found")
+            mLo.Lo.print("No Filter factory found")
             return None
         return na.getElementNames()
 
@@ -1637,11 +1637,11 @@ class Info(metaclass=StaticProperty):
         """
         na = mLo.Lo.create_instance_mcf(XNameAccess, "com.sun.star.document.FilterFactory")
         if na is None:
-            print("No Filter factory found")
+            mLo.Lo.print("No Filter factory found")
             return None
         result = na.getByName(filter_nm)
         if result is None:
-            print(f"No props for filter: {filter_nm}")
+            mLo.Lo.print(f"No props for filter: {filter_nm}")
             return None
         return list(result)
 

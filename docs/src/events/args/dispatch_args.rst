@@ -1,5 +1,5 @@
-Class DispatchEvent
-===================
+Class DispatchArgs
+==================
 
 .. autoclass:: ooodev.events.args.dispatch_args.DispatchArgs
     :members:

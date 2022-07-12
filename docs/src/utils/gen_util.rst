@@ -1,4 +1,4 @@
-Module gen util
+Module gen_util
 ===============
 
 .. automodule:: ooodev.utils.gen_util

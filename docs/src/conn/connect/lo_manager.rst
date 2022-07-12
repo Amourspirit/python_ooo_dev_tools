@@ -19,7 +19,9 @@ Example
 
 .. seealso::
 
-    :py:class:`.Lo.Loader`
+    - :py:class:`.Lo.Loader`
+    - :ref:`ch02`
+
 
 .. autoclass:: ooodev.conn.connect.LoManager
     :members:

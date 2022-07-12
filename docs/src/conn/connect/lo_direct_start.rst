@@ -16,6 +16,10 @@ Lo macro Example:
     When script is running in macro is is not necessary to call :py:meth:`.Lo.load_office`.
     In a macro use ``Lo.XSCRIPTCONTEXT`` and/or ``Lo.ThisComponent``
 
+.. seealso:: 
+
+    - :ref:`ch02`
+
 .. autoclass:: ooodev.conn.connect.LoDirectStart
     :members:
     :inherited-members:

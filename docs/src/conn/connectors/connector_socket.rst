@@ -14,6 +14,11 @@ Example:
 
         loader = Lo.load_office(Lo.ConnectSocket())
 
+.. seealso:: 
+
+    - :ref:`ch02`
+    - `Starting the LibreOffice Software With Parameters <https://help.libreoffice.org/Common/Starting_the_Software_With_Parameters>`_
+
 .. autoclass:: ooodev.conn.connectors.ConnectSocket
     :members:
     :inherited-members:
