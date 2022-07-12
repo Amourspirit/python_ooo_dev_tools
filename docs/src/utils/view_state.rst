@@ -1,5 +1,5 @@
-Class View State
-================
+Class ViewState
+===============
 
 .. autoclass:: ooodev.utils.view_state.ViewState
     :members:

@@ -1,5 +1,5 @@
-Class Sys Info
-==============
+Class SysInfo
+=============
 
 .. autoclass:: ooodev.utils.sys_info.SysInfo
     :members:

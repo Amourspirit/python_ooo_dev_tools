@@ -1,4 +1,4 @@
-Module enum helper
+Module enum_helper
 ==================
 
 .. automodule:: ooodev.utils.enum_helper

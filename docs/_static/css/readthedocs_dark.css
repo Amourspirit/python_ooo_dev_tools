@@ -70,7 +70,7 @@ html[data-theme='dark'] a .rst-content .admonition tt {
 
 /* End Color for code */
 
-html[data-theme='dark'] .rst-content .diagram.invert img {
+html[data-theme='dark'] .rst-content .invert img {
      transition: all 0.2s ease-in-out;
      -webkit-filter: invert(80%);
     filter: invert(80%);

@@ -120,6 +120,9 @@ class Lo(metaclass=StaticProperty):
                 with Lo.Loader(Lo.ConnectSocket()) as loader:
                     doc = Write.create_doc(loader)
                     ...
+
+        See Also:
+            :ref:`ch02`
         """
 
         def __init__(
@@ -488,7 +491,9 @@ class Lo(metaclass=StaticProperty):
 
     @classmethod
     def load_office(
-        cls, connector: connectors.ConnectPipe | connectors.ConnectSocket | None = None, cache_obj: mCache.Cache | None = None
+        cls,
+        connector: connectors.ConnectPipe | connectors.ConnectSocket | None = None,
+        cache_obj: mCache.Cache | None = None,
     ) -> XComponentLoader:
         """
         Loads Office
@@ -524,8 +529,9 @@ class Lo(metaclass=StaticProperty):
            Event args ``event_data`` is a dictionary containing all method parameters.
 
         See Also:
-            :py:meth:`open_doc`,
-            :py:class:`.Lo.Loader`
+            - :py:meth:`open_doc`
+            - :py:class:`.Lo.Loader`
+            - :ref:`ch02`
 
         Example:
 
@@ -568,7 +574,6 @@ class Lo(metaclass=StaticProperty):
                 raise SystemExit(1)
         elif isinstance(b_connector, connectors.ConnectPipe):
             try:
-                # cls._lo_inst = LoPipeStart(connector=Lo.ConnectPipe(), cache_obj=mCache.Cache())
                 cls._lo_inst = LoPipeStart(connector=b_connector, cache_obj=cache_obj)
                 cls._lo_inst.connect()
             except Exception as e:
@@ -587,7 +592,6 @@ class Lo(metaclass=StaticProperty):
             Lo.print("Invalid Connector type. Fatal Error.")
             raise SystemExit(1)
 
-        # cls.set_ooo_bean(conn=cls.lo_inst)
         cls._xcc = cls._lo_inst.ctx
         cls._mc_factory = cls._xcc.getServiceManager()
         if cls._mc_factory is None:
@@ -595,7 +599,7 @@ class Lo(metaclass=StaticProperty):
             raise SystemExit(1)
         cls._xdesktop = cls.create_instance_mcf(XDesktop, "com.sun.star.frame.Desktop")
         if cls._xdesktop is None:
-            # OPTIMIZE: Perhaps system exit is not the best waht to handle no desktop service
+            # OPTIMIZE: Perhaps system exit is not the best what to handle no desktop service
             Lo.print("Could not create a desktop service")
             raise SystemExit(1)
         loader = cls.qi(XComponentLoader, cls._xdesktop)
@@ -710,6 +714,7 @@ class Lo(metaclass=StaticProperty):
         See Also:
             - :py:meth:`~Lo.open_doc`
             - :py:meth:`~Lo.open_readonly_doc`
+            - :ref:`ch02sec03`
 
         Attention:
             :py:meth:`~.utils.lo.Lo.open_doc` method is called along with any of its events.
@@ -791,9 +796,10 @@ class Lo(metaclass=StaticProperty):
            Event args ``event_data`` is a dictionary containing all method parameters.
 
         See Also:
-            * :py:meth:`~Lo.open_readonly_doc`
-            * :py:meth:`~Lo.open_flat_doc`
-            * :py:meth:`load_office`
+            - :py:meth:`~Lo.open_readonly_doc`
+            - :py:meth:`~Lo.open_flat_doc`
+            - :py:meth:`load_office`
+            - :ref:`ch02sec03`
 
         Example:
             .. code-block:: python
@@ -862,8 +868,9 @@ class Lo(metaclass=StaticProperty):
             XComponent: Document
 
         See Also:
-            * :py:meth:`~Lo.open_doc`
-            * :py:meth:`~Lo.open_flat_doc`
+            - :py:meth:`~Lo.open_doc`
+            - :py:meth:`~Lo.open_flat_doc`
+            - :ref:`ch02sec03`
 
         Attention:
             :py:meth:`~.utils.lo.Lo.open_doc` method is called along with any of its events.
@@ -882,6 +889,9 @@ class Lo(metaclass=StaticProperty):
 
         Returns:
             DocTypeStr: DocTypeStr enum. If not match if found defaults to 'DocTypeStr.WRITER'
+
+        See Also:
+            :ref:`ch02sec05`
         """
         e = ext.casefold().lstrip(".")
         if e == "":
@@ -996,6 +1006,9 @@ class Lo(metaclass=StaticProperty):
 
         Note:
            Event args ``event_data`` is a dictionary containing all method parameters.
+
+        See Also:
+            :ref:`ch02sec04`
         """
         # Props is called in this metod so trigger global_reset first
         cargs = CancelEventArgs(Lo.create_doc.__qualname__)
@@ -1039,6 +1052,9 @@ class Lo(metaclass=StaticProperty):
 
         Attention:
             :py:meth:`~.utils.lo.Lo.create_doc` method is called along with any of its events.
+
+        See Also:
+            :ref:`ch02sec04`
         """
         return cls.create_doc(
             doc_type=doc_type,
@@ -1202,6 +1218,9 @@ class Lo(metaclass=StaticProperty):
 
         Attention:
             :py:meth:`~.utils.lo.Lo.store_doc` method is called along with any of its events.
+
+        See Also:
+            :ref:`ch02sec05`
         """
         cargs = CancelEventArgs(Lo.save_doc.__qualname__)
         cargs.event_data = {
@@ -1218,9 +1237,7 @@ class Lo(metaclass=StaticProperty):
         _Events().trigger(LoNamedEvent.DOC_SAVING, cargs)
         if cargs.cancel:
             return False
-        store = cls.qi(XStorable, doc)
-        if store is None:
-            raise mEx.MissingInterfaceError(XStorable)
+        store = cls.qi(XStorable, doc, True)
         doc_type = mInfo.Info.report_doc_type(doc)
         kargs = {"fnm": fnm, "store": store, "doc_type": doc_type}
         if password is not None:
@@ -1295,7 +1312,8 @@ class Lo(metaclass=StaticProperty):
            Event args ``event_data`` is a dictionary containing all method parameters.
 
         See Also:
-            :py:meth:`~.Lo.store_doc_format`
+            - :py:meth:`~.Lo.store_doc_format`
+            - :ref:`ch02sec05`
         """
         cargs = CancelEventArgs(Lo.store_doc.__qualname__)
         cargs.event_data = {
@@ -1377,6 +1395,9 @@ class Lo(metaclass=StaticProperty):
             This could be a lot more extensive.
 
             Use :py:meth:`Info.getFilterNames` to get the filter names for your Office.
+
+        See Also:
+            - :ref:`ch02sec05`
         """
         dtype = cls.DocType(doc_type)
         s = ext.lower()
@@ -1554,8 +1575,8 @@ class Lo(metaclass=StaticProperty):
         _Events().trigger(LoNamedEvent.DOC_STORING, cargs)
         if cargs.cancel:
             return False
-        pth = mFileIO.FileIO.get_absolute_path(cargs.event_data['fnm'])
-        fmt = str(cargs.event_data['format'])
+        pth = mFileIO.FileIO.get_absolute_path(cargs.event_data["fnm"])
+        fmt = str(cargs.event_data["format"])
         Lo.print(f"Saving the document in '{pth}'")
         Lo.print(f"Using format {fmt}")
 
@@ -1693,9 +1714,7 @@ class Lo(metaclass=StaticProperty):
             :py:meth:`~.utils.lo.Lo.close` method is called along with any of its events.
         """
         try:
-            closeable = cls.qi(XCloseable, doc)
-            if closeable is None:
-                raise mEx.MissingInterfaceError(XCloseable)
+            closeable = cls.qi(XCloseable, doc, True)
             cls.close(closeable=closeable, deliver_ownership=deliver_ownership)
             cls._doc = None
         except DisposedException as e:

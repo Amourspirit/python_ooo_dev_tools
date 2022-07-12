@@ -21,6 +21,10 @@ Lo Connect Example:
 
     .. include:: ../../../resources/utils/lo_connect_socket_ex.rst
 
+.. seealso:: 
+
+    - :ref:`ch02`
+
 .. autoclass:: ooodev.conn.connect.LoSocketStart
     :members:
     :inherited-members:

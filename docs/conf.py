@@ -57,7 +57,7 @@ extensions = [
     "sphinx_tabs.tabs"
 ]
     # "sphinx.ext.linkcode",
-    
+    # sphinx_tabs.tabs docs: https://sphinx-tabs.readthedocs.io/en/latest/
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -85,6 +85,10 @@ html_css_files = ["https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css
 html_css_files.append("css/readthedocs_custom.css")
 if html_theme == "sphinx_rtd_theme":
     html_css_files.append("css/readthedocs_dark.css")
+    
+html_js_files = [
+    'js/custom.js',
+]
 
 # Napoleon settings
 # https://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html

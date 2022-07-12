@@ -10,7 +10,6 @@ Welcome to OOO Development Tools's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: BOOK:
 
    odev/index
 
@@ -24,7 +23,7 @@ Welcome to OOO Development Tools's documentation!
 
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 2
    :caption: DEVELOPER API:
 
    src/index
