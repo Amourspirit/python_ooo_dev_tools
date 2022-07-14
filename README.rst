@@ -36,6 +36,7 @@ Python has a vast set `libraries <https://pypi.org/>`_ that can be used in a pro
 `Numexpr <https://github.com/pydata/numexpr>`_ which are excellent and powerful at numeric computation.
 
 This makes Python and excellent choice with maximum flexability.
+
 *************
 Documentation
 *************
