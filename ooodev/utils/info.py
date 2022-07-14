@@ -311,6 +311,9 @@ class Info(metaclass=StaticProperty):
 
         Returns:
             object: config
+
+        See Also:
+            :ref:`ch03`
         """
         try:
             if node_path is None:
@@ -329,7 +332,7 @@ class Info(metaclass=StaticProperty):
 
     @classmethod
     def _get_config2(cls, node_str: str) -> object:
-        
+
         for node_path in cls.NODE_PATHS:
             try:
                 return cls._get_config1(node_str=node_str, node_path=node_path)
@@ -413,9 +416,9 @@ class Info(metaclass=StaticProperty):
                 - Work
 
         See Also:
-            :py:meth:`Info.get_dirs`
-
-            `Wiki Path Settings <https://wiki.openoffice.org/w/index.php?title=Documentation/DevGuide/OfficeDev/Path_Settings>`_
+            - :py:meth:`Info.get_dirs`
+            - :ref:`ch03`
+            - `Wiki Path Settings <https://wiki.openoffice.org/w/index.php?title=Documentation/DevGuide/OfficeDev/Path_Settings>`_
         """
         # access LO's predefined paths. There are two different groups of properties.
         #  One group stores only a single path and the other group stores two or
@@ -482,6 +485,9 @@ class Info(metaclass=StaticProperty):
 
         Returns:
             str: Path as string
+
+        See Also:
+            :ref:`ch03`
         """
         try:
             addin_dir = cls.get_paths("Addin")
@@ -509,6 +515,9 @@ class Info(metaclass=StaticProperty):
 
         Returns:
             str: Gallery Dir
+
+        See Also:
+            :ref:`ch03`
         """
         try:
             gallery_dirs = cls.get_dirs("Gallery")
@@ -1261,7 +1270,7 @@ class Info(metaclass=StaticProperty):
             if xsupplier is None:
                 raise mEx.MissingInterfaceError(XStyleFamiliesSupplier)
             return xsupplier.getStyleFamilies()
-        except  mEx.MissingInterfaceError:
+        except mEx.MissingInterfaceError:
             raise
         except Exception as e:
             raise Exception("Unable to get family style names") from e
@@ -1906,7 +1915,6 @@ class Info(metaclass=StaticProperty):
             return obj.__pyunointerface__
         return None
 
-
     @classproperty
     def language(cls) -> str:
         """
@@ -1927,7 +1935,7 @@ class Info(metaclass=StaticProperty):
     def language(cls, value) -> None:
         # raise error on set. Not really neccesary but gives feedback.
         raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
-    
+
     @classproperty
     def version(cls) -> str:
         """
