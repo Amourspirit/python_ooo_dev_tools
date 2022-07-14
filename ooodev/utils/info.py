@@ -173,7 +173,7 @@ class Info(metaclass=StaticProperty):
             str: registered modificatoins path
         """
         user_cfg_dir = mFileIO.FileIO.url_to_path(cls.get_paths("UserConfig"))
-        parent_path = Path(user_cfg_dir).parent
+        parent_path = user_cfg_dir.parent
         return str(parent_path / cls.REG_MOD_FNM)
 
     @overload
@@ -465,10 +465,10 @@ class Info(metaclass=StaticProperty):
         paths_arr = paths.split(";")
         if len(paths_arr) == 0:
             mLo.Lo.print(f"Cound not split paths for '{setting}'")
-            return [mFileIO.FileIO.uri_to_path(paths)]
+            return [str(mFileIO.FileIO.uri_to_path(paths))]
         dirs = []
         for el in paths_arr:
-            dirs.append(mFileIO.FileIO.uri_to_path(el))
+            dirs.append(str(mFileIO.FileIO.uri_to_path(el)))
         return dirs
 
     @classmethod
@@ -486,7 +486,7 @@ class Info(metaclass=StaticProperty):
         try:
             addin_dir = cls.get_paths("Addin")
 
-            addin_path = mFileIO.FileIO.uri_to_path(addin_dir)
+            addin_path = str(mFileIO.FileIO.uri_to_path(addin_dir))
             #   e.g.  C:\Program Files (x86)\LibreOffice 6\program\addin
             try:
                 idx = addin_path.index("program")
@@ -700,7 +700,7 @@ class Info(metaclass=StaticProperty):
                 raise mEx.MissingInterfaceError(XTypeDetection)
             if not mFileIO.FileIO.is_openable(fnm):
                 raise mEx.UnOpenableError(fnm)
-            url_str = mFileIO.FileIO.fnm_to_url(fnm)
+            url_str = str(mFileIO.FileIO.fnm_to_url(fnm))
             media_desc = [[mProps.Props.make_prop_value(name="URL", value=url_str)]]
             result = xdetect.queryTypeByDescriptor(media_desc, True)
             if result is None:

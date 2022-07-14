@@ -1,6 +1,12 @@
 Version History
 ===============
 
+Version 0.4.1
+-------------
+
+Fix bug in :py:class:`~.utils.info.Info`.
+Some methods were expecting string but got Path object.
+
 Version 0.4.0
 -------------
 
