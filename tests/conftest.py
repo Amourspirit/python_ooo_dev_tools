@@ -25,7 +25,7 @@ def tmp_path():
 
 @pytest.fixture(scope="session")
 def loader(tmp_path):
-    loader = mLo.load_office(connector=mLo.ConnectPipe(), cache_obj=mCache.Cache(working_dir=tmp_path))
+    loader = mLo.load_office(connector=mLo.ConnectPipe(headless=True), cache_obj=mCache.Cache(working_dir=tmp_path))
     # loader = mLo.load_office(connector=mConnectors.ConnectSocket(), cache_obj=mCache.Cache())
     yield loader
     mLo.close_office()

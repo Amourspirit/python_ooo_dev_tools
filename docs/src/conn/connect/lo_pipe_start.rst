@@ -21,6 +21,9 @@ Lo Connect Example:
 
     .. include:: ../../../resources/utils/lo_connect_pipe_ex.rst
 
+.. seealso:: 
+
+    - :ref:`ch02`
 
 .. autoclass:: ooodev.conn.connect.LoPipeStart
     :members:

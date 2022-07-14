@@ -1,3 +1,5 @@
+.. _ch01:
+
 ***********************************
 Chapter 1. LibreOffice API Concepts
 ***********************************
@@ -33,17 +35,17 @@ and traces of this heritage are visible in many parts of its API.
 
         :Office's Timeline.
 
-These documents are not about how to use LibreOffice's GUI (e.g. where to find the menu item for italicizing text).
+This book is not about how to use LibreOffice's GUI (e.g. where to find the menu item for italicizing text).
 I'm also not going to discuss how to compile the LibreOffice source, which is a focus of LibreOffice's development
 `webpage <https://wiki.documentfoundation.org/Development>`_.
 The intention is ot explain how |app_name_bold| (|app_name_short|) can be used to interact with LibreOffice via a console or via macros using python.
 
 .. _ch01sec01:
 
-1. Sources for API Information
-==============================
+1.1 Sources for API Information
+===============================
 
-These document are an attempt to write a more gradual, modern introduction to the API.
+This book is an attempt to write a more gradual, modern introduction to the API.
 
 These documents aim to make the more esoteric materials in the developer's guide easier to understand in a python way.
 One of the ways will be flattening the learning curve is by hiding parts of the API behind my own collection of utility classes.
@@ -205,8 +207,8 @@ Option ``4`` would open to https://api.libreoffice.org/docs/idl/ref/namespacecom
 
 .. _ch01sec02:
 
-2. Office as a Process
-======================
+1.2 Office as a Process
+=======================
 
 Office is started as an OS process, and a Python program communicates with it via a socket or named pipe.
 This necessarily complicates the Pyton/Office link, which is illustrated in :numref:`ch01fig02`.
@@ -259,8 +261,8 @@ this detail is hidden by the :py:class:`~.utils.lo.Lo` util class.
 
 .. _ch01sec03:
 
-3. API Data Structures: interface, property, service, and component
-===================================================================
+1.3 API Data Structures: interface, property, service, and component
+====================================================================
 
 There are four main data structures used by the API: **interface**, **property**, **service**, and **component**.
 
@@ -361,8 +363,8 @@ Each box in the diagram can be clicked upon to jump to the documentation for tha
 
 .. _ch01sec04:
 
-4. Two Inheritance Hierarchies for Services and interfaces
-==========================================================
+1.4 Two Inheritance Hierarchies for Services and interfaces
+===========================================================
 
 Services and interfaces both use inheritance, as shown by the UML diagram in :numref:`ch01fig08`.
 
@@ -405,8 +407,8 @@ rather than as lines with circles as in the developer's guide (e.g. see :numref:
 
 .. _ch01sec05:
 
-5. The FCM Relationship
-=======================
+1.5 The FCM Relationship
+========================
 
 The Frame-Controller-Model (FCM) relationship (or design pattern) is a part of Office
 which programmers will encounter frequently.
@@ -451,8 +453,8 @@ For example, `XDesktop`_ provides ``getCurrentFrame()`` to access the currently 
 
 .. _ch01sec06:
 
-6. Components Again
-===================
+1.6 Components Again
+====================
 
 A knowledge of the FCM relationship, and its XFrame, XController, and `XModel`_ interfaces,
 lets me give a more detailed definition of a component.
@@ -468,8 +470,8 @@ In particular, the component loader is used in the remote component context to l
 
 .. _ch01sec07:
 
-7. What's an Extension?
-=======================
+1.7 What's an Extension?
+========================
 
 .. todo::
 
@@ -490,8 +492,8 @@ An add-in or, to use its full name, a Calc Add-in, is an extension that adds a n
 
 .. _ch01sec08:
 
-8. A Comparison with the Basic API
-==================================
+1.8 A Comparison with the Basic API
+===================================
 
 If you start searching the forums, newsgroups, blogs, and web sites for Office examples, it soon becomes clear that
 Python is not the language of choice for most Office programmers.
@@ -618,86 +620,72 @@ In |app_name_short| there is a remote bridge and ``Lo.XSCRIPTCONTEXT`` which imp
 
 .. tabs::
 
-    .. tab:: Basic
+    .. code-tab:: vbscript Basic
 
-        .. code-block:: vbscript
+        Dim oSM, oDesk, oDoc As Object
+        Set oSM = CreateObject("com.sun.star.ServiceManager")
+        Set oDesk = oSM.createInstance("com.sun.star.frame.Desktop")
+        Set oDoc = oDesk.loadComponentFromURL(
+        "file:///C:/tmp/testdoc.odt", "_blank", 0, noArgs())
 
-            Dim oSM, oDesk, oDoc As Object
-            Set oSM = CreateObject("com.sun.star.ServiceManager")
-            Set oDesk = oSM.createInstance("com.sun.star.frame.Desktop")
-            Set oDoc = oDesk.loadComponentFromURL(
-            "file:///C:/tmp/testdoc.odt", "_blank", 0, noArgs())
-    
-    .. tab:: Python
+    .. code-tab:: python
+        
+        from ooodev.utils.lo import Lo
+        from ooodev.office.write import Write
 
-        .. code-block:: python
-            
-            from ooodev.utils.lo import Lo
-            from ooodev.office.write import Write
-
-            loader = Lo.load_office()
-            doc = Write.open_doc(fnm="file:///C:/tmp/testdoc.odt", loader=loader)
+        loader = Lo.load_office()
+        doc = Write.open_doc(fnm="file:///C:/tmp/testdoc.odt", loader=loader)
 
 
 However, if the script is part of a loaded document, then the call to loadComponentFromURL() isn't needed, reducing the code to:
 
 .. tabs::
 
-    .. tab:: Basic
+    .. code-tab:: vbscript Basic
 
-        .. code-block:: vbscript
+        Set oSM = CreateObject("com.sun.star.ServiceManager")
+        Set oDesk = oSM.createInstance("com.sun.star.frame.Desktop")
+        Set oDoc = oDesk.CurrentComponent
 
-            Set oSM = CreateObject("com.sun.star.ServiceManager")
-            Set oDesk = oSM.createInstance("com.sun.star.frame.Desktop")
-            Set oDoc = oDesk.CurrentComponent
-    
-    .. tab:: Python
+    .. code-tab:: python
+        
+        from ooodev.utils.lo import Lo
+        from ooodev.office.write import Write
 
-        .. code-block:: python
-            
-            from ooodev.utils.lo import Lo
-            from ooodev.office.write import Write
-
-            _ = Lo.load_office()
-            doc = Write.get_text_doc(Lo.ThisComponent)
+        _ = Lo.load_office()
+        doc = Write.get_text_doc(Lo.ThisComponent)
 
 Also, Office's Basic runtime environment automatically creates a service manager and Desktop object, so it's unnecessary to create them explicitly.
 This reduces the code:
 
 .. tabs::
 
-    .. tab:: Basic
+    .. code-tab:: vbscript Basic
 
-        .. code-block:: vbscript
+        Set oDoc = StarDesktop.CurrentComponent
 
-            Set oDoc = StarDesktop.CurrentComponent
-    
-    .. tab:: Python
 
-        .. code-block:: python
-            
-            from ooodev.utils.lo import Lo
+    .. code-tab:: python
+        
+        from ooodev.utils.lo import Lo
 
-            _ = Lo.load_office()
-            doc = Lo.ThisComponent
+        _ = Lo.load_office()
+        doc = Lo.ThisComponent
 
 
 or even:
 
 .. tabs::
 
-    .. tab:: Basic
+    .. code-tab:: vbscript Basic
 
-        .. code-block:: vbscript
+        Set oDoc = ThisComponent
 
-            Set oDoc = ThisComponent
-    
-    .. tab:: Python
 
-        .. code-block:: python
-            
-            from ooodev.utils.lo import Lo
-            doc = Lo.ThisComponent
+    .. code-tab:: python
+        
+        from ooodev.utils.lo import Lo
+        doc = Lo.ThisComponent
 
 
 If other services are needed, Basic programmers call the createUnoService() function which
@@ -707,21 +695,17 @@ For instance:
 
 .. tabs::
 
-    .. tab:: Basic
+    .. code-tab:: vbscript Basic
 
-        .. code-block:: vbscript
-
-            set sfAcc = CreateUnoService("com.sun.star.ucb.SimpleFileAccess")
-            sfAcc.CreateFolder(dirName)
+        set sfAcc = CreateUnoService("com.sun.star.ucb.SimpleFileAccess")
+        sfAcc.CreateFolder(dirName)
     
-    .. tab:: Python
+    .. code-tab:: python
+        
+        from com.sun.star.ucb import XSimpleFileAccess
 
-        .. code-block:: python
-            
-            from com.sun.star.ucb import XSimpleFileAccess
-
-            sf_acc = Lo.create_instance_msf(XSimpleFileAccess, "com.sun.star.ucb.SimpleFileAccess")
-            sf_acc.CreateFolder(dir_name)
+        sf_acc = Lo.create_instance_msf(XSimpleFileAccess, "com.sun.star.ucb.SimpleFileAccess")
+        sf_acc.CreateFolder(dir_name)
 
 One of the aims of |app_name_short| is to hide as much of the complexity of Office as the Basic version of the API.
 
@@ -729,6 +713,7 @@ One of the aims of |app_name_short| is to hide as much of the complexity of Offi
 
 .. |dsearch| replace:: **LibreOffice Developer Search**
 .. _dsearch: https://pypi.org/project/lo-dev-search/
+
 .. |lo_api| replace:: LibreOffice API
 .. _lo_api: https://api.libreoffice.org/
 

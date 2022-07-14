@@ -1,6 +1,6 @@
-#####################
-OOO Development Tools
-#####################
+##############################
+Python LibreOffice Programming
+##############################
 
 .. toctree::
     :titlesonly:

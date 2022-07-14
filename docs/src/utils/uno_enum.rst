@@ -1,5 +1,5 @@
-Class Uno Enum
-==============
+Class UnoEnum
+=============
 
 .. autoclass:: ooodev.utils.uno_enum.UnoEnum
     :members:

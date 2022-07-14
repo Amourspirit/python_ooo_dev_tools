@@ -1,5 +1,5 @@
-ex
-===
+module ex
+=========
 
 .. automodule:: ooodev.exceptions.ex
     :members:

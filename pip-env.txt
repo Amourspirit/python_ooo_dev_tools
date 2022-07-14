@@ -31,7 +31,7 @@ jeepney==0.8.0
 Jinja2==3.0.3
 keyring==23.5.1
 Levenshtein==0.18.1
-lo-dev-search==1.1.1
+lo-dev-search==1.2.1
 lockfile==0.12.2
 lxml==4.8.0
 MarkupSafe==2.1.1
