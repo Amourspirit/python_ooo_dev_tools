@@ -303,6 +303,10 @@ but some of the important ones are listed in :numref:`ch02tbl01`
 2.4 Creating a Document
 =======================
 
+The general format of a program that creates a new document, manipulates it in some way, and then saves it, is:
+
+.. include:: ../../resources/odev/02/create_save_tab.rst
+
 A new document is created by calling ``XComponentLoader.loadComponentFromURL()`` with a special URL string for the document type.
 The possible strings are listed in :numref:`ch02tbl02`.
 
@@ -375,6 +379,10 @@ while the XMultiServiceFactory_ manager is initialized only when a document is l
 
 2.5 Saving a Document
 =====================
+
+The general format of a program that creates a new document, manipulates it in some way, and then saves it, is:
+
+.. include:: ../../resources/odev/02/create_save_tab.rst
 
 One of the great strengths of Office is that it can export a document in a vast number of formats,
 but the programmer must specify the output format (which is called a filter in the Office documentation).
@@ -627,9 +635,6 @@ for searching the gigantic code base. :numref:`ch02fig06` shows the results for 
 
 The function's code is in EnvStack.cxx, which can be examined by clicking on the linked function name shown at the bottom of :numref:`ch02fig06`.
 
-If you're interested in exploring the code base more widely, there are some very good blog posts about it by Eilidh McAdam:
-"Exploring the LibreOffice code base" (https://lanedo.com/exploring-the-libreoffice-code-base/) and
-"LibreOffice Development Howto" (https://lanedo.com/libreoffice-development-howto/).
 
 .. |dsearch| replace:: **LibreOffice Developer Search**
 .. _dsearch: https://pypi.org/project/lo-dev-search/

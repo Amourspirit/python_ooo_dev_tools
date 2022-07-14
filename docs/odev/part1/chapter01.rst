@@ -35,7 +35,7 @@ and traces of this heritage are visible in many parts of its API.
 
         :Office's Timeline.
 
-These documents are not about how to use LibreOffice's GUI (e.g. where to find the menu item for italicizing text).
+This book is not about how to use LibreOffice's GUI (e.g. where to find the menu item for italicizing text).
 I'm also not going to discuss how to compile the LibreOffice source, which is a focus of LibreOffice's development
 `webpage <https://wiki.documentfoundation.org/Development>`_.
 The intention is ot explain how |app_name_bold| (|app_name_short|) can be used to interact with LibreOffice via a console or via macros using python.
@@ -45,7 +45,7 @@ The intention is ot explain how |app_name_bold| (|app_name_short|) can be used t
 1.1 Sources for API Information
 ===============================
 
-These document are an attempt to write a more gradual, modern introduction to the API.
+This book is an attempt to write a more gradual, modern introduction to the API.
 
 These documents aim to make the more esoteric materials in the developer's guide easier to understand in a python way.
 One of the ways will be flattening the learning curve is by hiding parts of the API behind my own collection of utility classes.

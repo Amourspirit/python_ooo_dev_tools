@@ -1,5 +1,5 @@
-Part 1
-######
+Part 1: Basics
+##############
 
 .. toctree::
     :titlesonly:
