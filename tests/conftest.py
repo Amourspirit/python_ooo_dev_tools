@@ -11,6 +11,7 @@ from tests.fixtures.writer import __test__path__ as writer_fixture_path
 from tests.fixtures.calc import __test__path__ as calc_fixture_path
 from tests.fixtures.xml import __test__path__ as xml_fixture_path
 from tests.fixtures.image import __test__path__ as img_fixture_path
+from tests.fixtures.presentation import __test__path__ as pres_fixture_path
 from ooodev.utils.lo import Lo as mLo
 # from ooodev.connect import connectors as mConnectors
 from ooodev.conn import cache as mCache
@@ -49,6 +50,15 @@ def copy_fix_writer(tmp_path):
 
     return copy_res
 
+@pytest.fixture(scope="session")
+def copy_fix_presentation(tmp_path):
+    def copy_res(fnm):
+        src = Path(pres_fixture_path, fnm)
+        dst = Path(tmp_path, fnm)
+        shutil.copy2(src=src, dst=dst)
+        return dst
+
+    return copy_res
 
 @pytest.fixture(scope="session")
 def fixture_path():

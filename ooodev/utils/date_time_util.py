@@ -4,6 +4,7 @@ import datetime
 import numbers
 from typing import cast
 from . import lo as mLo
+from com.sun.star.util import DateTime as UnoDateTime
 
 
 class DateUtil:
@@ -128,5 +129,47 @@ class DateUtil:
             str: formatted date string such as 'Jun 05, 2022 20:15'
         """
         return dt.strftime("%b %d, %Y %H:%M")
+
+    @staticmethod
+    def uno_dt_to_dt(uno_dt: UnoDateTime) -> datetime.datetime:
+        """
+        Converts a uno DateTime struct to a datetime instance
+
+        Args:
+            uno_dt (UnoDateTime): Uno Datetime struct
+
+        Returns:
+            datetime.datetime: Python DateTime
+        """
+        if uno_dt.Year <= 0 or uno_dt.Month <= 0 or uno_dt.Day <= 0:
+            return mLo.Lo.null_date
+        td = datetime.datetime(
+            year=uno_dt.Year,
+            month=uno_dt.Month,
+            day=uno_dt.Day,
+            hour=uno_dt.Hours,
+            minute=uno_dt.Minutes,
+            second=uno_dt.Seconds,
+            microsecond=0 if uno_dt.NanoSeconds == 0 else int(uno_dt.NanoSeconds / 1000),
+            tzinfo=datetime.timezone.utc if uno_dt.IsUTC else None,
+        )
+        return td
+
+    @classmethod
+    def str_date_time(cls, uno_dt: UnoDateTime) -> str:
+        """
+        returns a formated date and time as string
+
+        Args:
+            dt (datetime): date time
+
+        Returns:
+            str: formatted date string such as 'Jun 05, 2022 20:15'
+            or empty string if uno_dt is null.
+        """
+        dt = cls.uno_dt_to_dt(uno_dt)
+        if dt == mLo.Lo.null_date:
+            return ""
+        return cls.date_time_str(dt)
 
     # endregion ------------ convert methods ---------------------------

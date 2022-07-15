@@ -3,7 +3,6 @@
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 from __future__ import annotations
 from enum import IntFlag
-from datetime import datetime
 from pathlib import Path
 import mimetypes
 from typing import TYPE_CHECKING, Tuple, List, cast, overload, Optional
@@ -311,6 +310,9 @@ class Info(metaclass=StaticProperty):
 
         Returns:
             object: config
+
+        See Also:
+            :ref:`ch03`
         """
         try:
             if node_path is None:
@@ -329,7 +331,7 @@ class Info(metaclass=StaticProperty):
 
     @classmethod
     def _get_config2(cls, node_str: str) -> object:
-        
+
         for node_path in cls.NODE_PATHS:
             try:
                 return cls._get_config1(node_str=node_str, node_path=node_path)
@@ -413,9 +415,9 @@ class Info(metaclass=StaticProperty):
                 - Work
 
         See Also:
-            :py:meth:`Info.get_dirs`
-
-            `Wiki Path Settings <https://wiki.openoffice.org/w/index.php?title=Documentation/DevGuide/OfficeDev/Path_Settings>`_
+            - :py:meth:`Info.get_dirs`
+            - :ref:`ch03`
+            - `Wiki Path Settings <https://wiki.openoffice.org/w/index.php?title=Documentation/DevGuide/OfficeDev/Path_Settings>`_
         """
         # access LO's predefined paths. There are two different groups of properties.
         #  One group stores only a single path and the other group stores two or
@@ -482,12 +484,16 @@ class Info(metaclass=StaticProperty):
 
         Returns:
             str: Path as string
+
+        See Also:
+            :ref:`ch03`
         """
         try:
             addin_dir = cls.get_paths("Addin")
+            # e.g. 'file:///C:/Program%20Files/LibreOffice/program/../program/addin
 
             addin_path = str(mFileIO.FileIO.uri_to_path(addin_dir))
-            #   e.g.  C:\Program Files (x86)\LibreOffice 6\program\addin
+            #   e.g.  C:\Program%20Files\LibreOffice\program\addin
             try:
                 idx = addin_path.index("program")
             except ValueError:
@@ -495,6 +501,7 @@ class Info(metaclass=StaticProperty):
                 return addin_path
 
             p = Path(addin_path[:idx])
+            # e.g.  'C:\Program%20Files\LibreOffice\
             return str(p)
         except Exception as e:
             raise ValueError("Unable to get office dir") from e
@@ -509,6 +516,9 @@ class Info(metaclass=StaticProperty):
 
         Returns:
             str: Gallery Dir
+
+        See Also:
+            :ref:`ch03`
         """
         try:
             gallery_dirs = cls.get_dirs("Gallery")
@@ -1261,7 +1271,7 @@ class Info(metaclass=StaticProperty):
             if xsupplier is None:
                 raise mEx.MissingInterfaceError(XStyleFamiliesSupplier)
             return xsupplier.getStyleFamilies()
-        except  mEx.MissingInterfaceError:
+        except mEx.MissingInterfaceError:
             raise
         except Exception as e:
             raise Exception("Unable to get family style names") from e
@@ -1387,19 +1397,6 @@ class Info(metaclass=StaticProperty):
 
     # ----------------------------- document properties ----------------------
 
-    @staticmethod
-    def str_date_time(dt: datetime) -> str:
-        """
-        returns a formated date and time as string
-
-        Args:
-            dt (datetime): date time
-
-        Returns:
-            str: formatted date string such as 'Jun 05, 2022 20:15'
-        """
-        return mDate.DateUtil.date_time_str(dt=dt)
-
     @classmethod
     def print_doc_properties(cls, doc: object) -> None:
         """
@@ -1439,7 +1436,7 @@ class Info(metaclass=StaticProperty):
         print("  Description: " + dps.Description)
         print("  Generator: " + dps.Generator)
 
-        keys: List[str] = dps.getKeywords()
+        keys = dps.Keywords
         print("  Keywords: ")
         for keyword in keys:
             print(f"  {keyword}")
@@ -1452,12 +1449,16 @@ class Info(metaclass=StaticProperty):
         print("  Default Target: " + dps.DefaultTarget)
 
         l = dps.Language
-        print(f"  Locale: {l.Language}; {l.Country}; {l.Variant}")
+        loc = []
+        loc.append("unknown" if len(l.Language) == 0 else l.Language)
+        loc.append("unknown" if len(l.Country) == 0 else l.Country)
+        loc.append("unknown" if len(l.Variant) == 0 else l.Variant)
+        print(f"  Locale: {'; '.join(loc)}")
 
-        print("  Modification Date: " + cls.str_date_time(dps.ModificationDate))
-        print("  Creation Date: " + cls.str_date_time(dps.CreationDate))
-        print("  Print Date: " + cls.str_date_time(dps.PrintDate))
-        print("  Template Date: " + cls.str_date_time(dps.TemplateDate))
+        print("  Modification Date: " + mDate.DateUtil.str_date_time(dps.ModificationDate))
+        print("  Creation Date: " + mDate.DateUtil.str_date_time(dps.CreationDate))
+        print("  Print Date: " + mDate.DateUtil.str_date_time(dps.PrintDate))
+        print("  Template Date: " + mDate.DateUtil.str_date_time(dps.TemplateDate))
 
         doc_stats = dps.DocumentStatistics
         print("  Document statistics:")
@@ -1906,7 +1907,6 @@ class Info(metaclass=StaticProperty):
             return obj.__pyunointerface__
         return None
 
-
     @classproperty
     def language(cls) -> str:
         """
@@ -1927,7 +1927,7 @@ class Info(metaclass=StaticProperty):
     def language(cls, value) -> None:
         # raise error on set. Not really neccesary but gives feedback.
         raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
-    
+
     @classproperty
     def version(cls) -> str:
         """

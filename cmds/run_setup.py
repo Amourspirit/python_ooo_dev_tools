@@ -26,7 +26,11 @@ def main():
         print(res.stdout)
     if res.stderr:
         print(res.stderr)
-    cmd_str = '-m twine check dist/*'
+    cmd_str = '-m twine check'
+    if os.name == 'nt':
+        cmd_str += ' .\dist\*'
+    else:
+        cmd_str += ' dist/*'
     cmd = [sys.executable] + cmd_str.split()
     res = run(cmd, env=myenv)
     if res.stdout:

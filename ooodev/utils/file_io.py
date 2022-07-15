@@ -116,7 +116,12 @@ class FileIO:
         Returns:
             Path: Converted uri as path.
         """
-        return cls.url_to_path(url=uri_fnm)
+        # converts 'file:///C:/Program%20Files/LibreOffice/program/../program/addin'
+        # into: 'C:\\Program%20Files\\LibreOffice\\program\\addin'
+        p = Path(uri_fnm)
+        if p.is_absolute():
+            return p
+        return p.absolute().resolve()
 
     @staticmethod
     def get_file_names(dir: PathOrStr) -> List[str]:

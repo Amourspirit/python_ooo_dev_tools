@@ -12,17 +12,23 @@ At three o'clock precisely I was at Baker Street, but Holmes had not yet returne
 """
 
 def test_select_next_word(loader, copy_fix_writer):
+
+    # text file opens with each new line being considered a paragraph break.
+
     # test require Writer be visible
     visible = True
     delay = 300
-
-    # text file opens with each new line being considered a paragraph break.
     test_doc = copy_fix_writer("scandalStart.odt")
     doc = Write.open_doc(test_doc, loader)
     try:
         if visible:
             GUI.set_visible(visible, doc)
-       
+    
+        # make sure when doc opens cursor is set to start
+        vc = Write.get_view_cursor(doc)
+        vc.gotoStart(False)
+        vc.collapseToStart()
+    
         assert Write.is_anything_selected(doc) == False
         Write.select_next_word(doc)
         assert Write.is_anything_selected(doc)
@@ -42,7 +48,6 @@ def test_select_next_word(loader, copy_fix_writer):
         assert s == 'Scandal '
         Lo.delay(delay)
         
-        vc = Write.get_view_cursor(doc)
         
         # jump to last paragraph
         vc.goRight(554, False)
@@ -53,7 +58,7 @@ def test_select_next_word(loader, copy_fix_writer):
             assert s == words[i]
             Lo.delay(100)
         # vc.goRight(10, True)
-       
+    
         Lo.delay(delay)
     finally:
         Lo.close_doc(doc, False)
