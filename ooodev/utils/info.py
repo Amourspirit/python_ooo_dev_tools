@@ -3,7 +3,6 @@
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 from __future__ import annotations
 from enum import IntFlag
-from datetime import datetime
 from pathlib import Path
 import mimetypes
 from typing import TYPE_CHECKING, Tuple, List, cast, overload, Optional
@@ -1398,19 +1397,6 @@ class Info(metaclass=StaticProperty):
 
     # ----------------------------- document properties ----------------------
 
-    @staticmethod
-    def str_date_time(dt: datetime) -> str:
-        """
-        returns a formated date and time as string
-
-        Args:
-            dt (datetime): date time
-
-        Returns:
-            str: formatted date string such as 'Jun 05, 2022 20:15'
-        """
-        return mDate.DateUtil.date_time_str(dt=dt)
-
     @classmethod
     def print_doc_properties(cls, doc: object) -> None:
         """
@@ -1450,7 +1436,7 @@ class Info(metaclass=StaticProperty):
         print("  Description: " + dps.Description)
         print("  Generator: " + dps.Generator)
 
-        keys: List[str] = dps.getKeywords()
+        keys = dps.Keywords
         print("  Keywords: ")
         for keyword in keys:
             print(f"  {keyword}")
@@ -1463,12 +1449,16 @@ class Info(metaclass=StaticProperty):
         print("  Default Target: " + dps.DefaultTarget)
 
         l = dps.Language
-        print(f"  Locale: {l.Language}; {l.Country}; {l.Variant}")
+        loc = []
+        loc.append("unknown" if len(l.Language) == 0 else l.Language)
+        loc.append("unknown" if len(l.Country) == 0 else l.Country)
+        loc.append("unknown" if len(l.Variant) == 0 else l.Variant)
+        print(f"  Locale: {'; '.join(loc)}")
 
-        print("  Modification Date: " + cls.str_date_time(dps.ModificationDate))
-        print("  Creation Date: " + cls.str_date_time(dps.CreationDate))
-        print("  Print Date: " + cls.str_date_time(dps.PrintDate))
-        print("  Template Date: " + cls.str_date_time(dps.TemplateDate))
+        print("  Modification Date: " + mDate.DateUtil.str_date_time(dps.ModificationDate))
+        print("  Creation Date: " + mDate.DateUtil.str_date_time(dps.CreationDate))
+        print("  Print Date: " + mDate.DateUtil.str_date_time(dps.PrintDate))
+        print("  Template Date: " + mDate.DateUtil.str_date_time(dps.TemplateDate))
 
         doc_stats = dps.DocumentStatistics
         print("  Document statistics:")

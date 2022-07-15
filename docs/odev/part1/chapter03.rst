@@ -144,17 +144,17 @@ Document properties is the information that's displayed when you right-click on 
 .. cssclass:: screen_shot invert
 
     .. _ch03fig01:
-    .. figure:: https://user-images.githubusercontent.com/4193389/179066659-ba2cc123-3010-4fd5-860f-4d4fcddc32f7.png
-        :alt: A Properties Dialog in Windows 7 for algs.odp
+    .. figure:: https://user-images.githubusercontent.com/4193389/179297650-0343ec1e-efb3-4625-9c81-a0589ff9a81f.png
+        :alt: A Properties Dialog in Windows 10 for algs.odp
 
-        :A Properties Dialog in Windows 7 for "algs.odp".
+        :A Properties Dialog in Windows 10 for "algs.odp".
 
 If you select the "Details" tab, a list of properties appears like those in :numref:`ch03fig02`.
 
 .. cssclass:: screen_shot invert
 
     .. _ch03fig02:
-    .. figure:: https://user-images.githubusercontent.com/4193389/179068066-79603393-cb90-4970-9bad-100b2aa317e6.png
+    .. figure:: https://user-images.githubusercontent.com/4193389/179298066-7acaa668-7b0b-4a59-bbb8-407ba354bf8a.png
         :alt: Details Properties List for algs.odp
 
         :Details Properties List for "algs.odp".
