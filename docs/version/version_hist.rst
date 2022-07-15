@@ -3,6 +3,12 @@ Version History
 ###############
 
 *************
+Version 0.4.2
+*************
+
+Fix bug in windows connections
+
+*************
 Version 0.4.1
 *************
 
