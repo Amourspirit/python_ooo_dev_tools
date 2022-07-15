@@ -8,3 +8,10 @@ Headings:
     -, for subsections
     ^, for subsubsections
     “, for paragraphs
+
+
+Image Classes
+    screen_shot: any still image that is a screen shot type image
+    invert: any image that can can have color inverted such as jpeg, png for dark theme.
+    diagram: diagram classes
+    a_gif: animated gif images

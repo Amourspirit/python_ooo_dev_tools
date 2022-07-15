@@ -11,7 +11,11 @@ def main():
     for d in sys.path:
         pypath = pypath + d + p_sep
     myenv['PYTHONPATH'] = pypath
-    cmd_str = 'twine upload --repository-url https://test.pypi.org/legacy/ dist/*'
+    cmd_str = 'twine upload --repository-url https://test.pypi.org/legacy/'
+    if os.name == 'nt':
+        cmd_str += ' .\dist\*'
+    else:
+        cmd_str += ' dist/*'
     res = subprocess.run(cmd_str.split(), env=myenv)
     if res and res.returncode != 0:
         print(res)

@@ -269,7 +269,7 @@ class LoPipeStart(LoBridgeCommon):
         try:
             self._connect()
         except NoConnectException as e:
-            if self._start_soffice:
+            if self._connector.start_office:
                 self.kill_soffice()
             raise e
         self._cache.cache_profile()
@@ -286,7 +286,7 @@ class LoPipeStart(LoBridgeCommon):
         else:
             prefix = "--accept="
 
-        args = [str(self._connector.soffice)]
+        args = [f'"{self._connector.soffice}"']
         self._connector.update_startup_args(args)
 
         if self._cache.use_cache:
@@ -333,7 +333,7 @@ class LoSocketStart(LoBridgeCommon):
         try:
             self._connect()
         except NoConnectException as e:
-            if self._start_soffice:
+            if self._connector.start_office:
                 self.kill_soffice()
             raise e
         self._cache.cache_profile()
@@ -350,7 +350,7 @@ class LoSocketStart(LoBridgeCommon):
         else:
             prefix = "--accept="
 
-        args = [str(self._connector.soffice)]
+        args = [f'"{self._connector.soffice}"']
         self._connector.update_startup_args(args)
 
         if self._cache.use_cache:
