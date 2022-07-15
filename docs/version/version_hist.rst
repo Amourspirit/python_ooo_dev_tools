@@ -3,6 +3,12 @@ Version History
 ###############
 
 *************
+Version 0.4.4
+*************
+
+Bug fix reading document properties.
+
+*************
 Version 0.4.2
 *************
 
