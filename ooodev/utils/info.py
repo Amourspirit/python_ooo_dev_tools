@@ -491,9 +491,10 @@ class Info(metaclass=StaticProperty):
         """
         try:
             addin_dir = cls.get_paths("Addin")
+            # e.g. 'file:///C:/Program%20Files/LibreOffice/program/../program/addin
 
             addin_path = str(mFileIO.FileIO.uri_to_path(addin_dir))
-            #   e.g.  C:\Program Files (x86)\LibreOffice 6\program\addin
+            #   e.g.  C:\Program%20Files\LibreOffice\program\addin
             try:
                 idx = addin_path.index("program")
             except ValueError:
@@ -501,6 +502,7 @@ class Info(metaclass=StaticProperty):
                 return addin_path
 
             p = Path(addin_path[:idx])
+            # e.g.  'C:\Program%20Files\LibreOffice\
             return str(p)
         except Exception as e:
             raise ValueError("Unable to get office dir") from e
