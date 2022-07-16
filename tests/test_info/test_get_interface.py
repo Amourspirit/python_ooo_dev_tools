@@ -6,14 +6,14 @@ if __name__ == "__main__":
 
 
 
-def test_doc_info(loader, copy_fix_presentation) -> None:
+def test_get_interfaces(loader, copy_fix_writer) -> None:
     
     from ooodev.utils.lo import Lo
     from ooodev.utils.info import Info
-    test_doc = copy_fix_presentation("algs.odp")
+    test_doc = copy_fix_writer("story.odt")
     doc = Lo.open_doc(fnm=test_doc, loader=loader)
     try:
-        Info.print_doc_properties(doc)
+        interfaces = Info.get_interfaces(doc)
+        assert len(interfaces) == 72
     finally:
         Lo.close_doc(doc, False)
-    
