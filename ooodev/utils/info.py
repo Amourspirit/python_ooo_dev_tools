@@ -17,22 +17,26 @@ from com.sun.star.beans import XPropertySet
 from com.sun.star.container import XContentEnumerationAccess
 from com.sun.star.container import XNameAccess
 from com.sun.star.container import XNameContainer
+from com.sun.star.deployment import XPackageInformationProvider
 from com.sun.star.document import XDocumentPropertiesSupplier
 from com.sun.star.document import XTypeDetection
 from com.sun.star.lang import XMultiServiceFactory
 from com.sun.star.lang import XServiceInfo
+from com.sun.star.lang import XTypeProvider
 from com.sun.star.reflection import XIdlReflection
 from com.sun.star.style import XStyleFamiliesSupplier
 from com.sun.star.util import XChangesBatch
 
 if TYPE_CHECKING:
     from com.sun.star.awt import FontDescriptor
-    from com.sun.star.beans import PropertyValue
     from com.sun.star.beans import XPropertyContainer
-    from com.sun.star.deployment import XPackageInformationProvider
     from com.sun.star.document import XDocumentProperties
-    from com.sun.star.lang import XTypeProvider
     from com.sun.star.reflection import XIdlMethod
+
+
+from ooo.dyn.beans.property_value import PropertyValue
+from ooo.dyn.beans.property_concept import PropertyConceptEnum
+from ooo.dyn.beans.the_introspection import theIntrospection
 
 from . import lo as mLo
 from . import file_io as mFileIO
@@ -96,31 +100,31 @@ class Info(metaclass=StaticProperty):
         """
 
     @staticmethod
-    def get_fonts() -> Tuple[FontDescriptor, ...] | None:
+    def get_fonts() -> Tuple[FontDescriptor, ...]:
         """
         Gets fonts
 
         Returns:
-            Tuple[FontDescriptor, ...] | None: Fonts if found; Othwrwise, None
+            Tuple[FontDescriptor, ...]: Fonts Discriptors
         """
         xtoolkit = mLo.Lo.create_instance_mcf(XToolkit, "com.sun.star.awt.Toolkit")
         device = xtoolkit.createScreenCompatibleDevice(0, 0)
         if device is None:
             mLo.Lo.print("Could not access graphical output device")
-            return None
+            return ()
         return device.getFontDescriptors()
 
     @classmethod
-    def get_font_names(cls) -> List[str] | None:
+    def get_font_names(cls) -> List[str]:
         """
         Gets font names
 
         Returns:
-            List[str] | None: Font names if found; Othwrwise, None
+            List[str]: Font names
         """
         fds = cls.get_fonts()
         if fds is None:
-            return None
+            return []
 
         names_set = set()
         for name in fds:
@@ -429,9 +433,7 @@ class Info(metaclass=StaticProperty):
 
         # Replaced by thePathSetting in LibreOffice 4.3
         try:
-            prop_set = mLo.Lo.create_instance_mcf(XPropertySet, "com.sun.star.util.PathSettings")
-            if prop_set is None:
-                raise mEx.MissingInterfaceError(XPropertySet)
+            prop_set = mLo.Lo.create_instance_mcf(XPropertySet, "com.sun.star.util.PathSettings", raise_err=True)
             result = prop_set.getPropertyValue(setting)
             if result is None:
                 raise ValueError(f"getPropertyValue() for {setting} yielded None")
@@ -440,7 +442,7 @@ class Info(metaclass=StaticProperty):
             raise ValueError(f"Could not find paths for: {setting}") from e
 
     @classmethod
-    def get_dirs(cls, setting: str) -> List[str] | None:
+    def get_dirs(cls, setting: str) -> List[str]:
         """
         Gets dirs paths from settings
 
@@ -448,7 +450,7 @@ class Info(metaclass=StaticProperty):
             setting (str): setting
 
         Returns:
-            List[str] | None: List of paths if found; Otherwise, None
+            List[str]: List of paths
 
         See Also:
             :py:meth:`~Info.get_paths`
@@ -459,7 +461,7 @@ class Info(metaclass=StaticProperty):
             paths = cls.get_paths(setting)
         except ValueError:
             mLo.Lo.print(f"Cound not find paths for '{setting}'")
-            return None
+            return []
         paths_arr = paths.split(";")
         if len(paths_arr) == 0:
             mLo.Lo.print(f"Cound not split paths for '{setting}'")
@@ -701,19 +703,22 @@ class Info(metaclass=StaticProperty):
             str: Doc Type.
         """
         try:
-            xdetect = mLo.Lo.create_instance_mcf(XTypeDetection, "com.sun.star.document.TypeDetection")
-            if xdetect is None:
-                raise mEx.MissingInterfaceError(XTypeDetection)
+            xdetect = mLo.Lo.create_instance_mcf(XTypeDetection, "com.sun.star.document.TypeDetection", raise_err=True)
             if not mFileIO.FileIO.is_openable(fnm):
                 raise mEx.UnOpenableError(fnm)
             url_str = str(mFileIO.FileIO.fnm_to_url(fnm))
-            media_desc = [[mProps.Props.make_prop_value(name="URL", value=url_str)]]
+            media_desc = (mProps.Props.make_prop_value(name="URL", value=url_str),)
+
+            # even thought queryTypeByDescriptor reports to return a string
+            # for some reason I am getting a tuple with the first value as the expected result.
             result = xdetect.queryTypeByDescriptor(media_desc, True)
             if result is None:
-                raise mEx.UnKnownError("queryTypeByDescriptor() is an unknow result")
-            return result
+                raise mEx.UnKnownError("queryTypeByDescriptor() is an unknown result")
+            if isinstance(result, str):
+                return result
+            return result[0]
         except Exception as e:
-            raise ValueError(f"unable to get doc type for ''{fnm}") from e
+            raise ValueError(f"unable to get doc type for '{fnm}'") from e
 
     @classmethod
     def report_doc_type(cls, doc: object) -> mLo.Lo.DocType:
@@ -898,18 +903,18 @@ class Info(metaclass=StaticProperty):
     # ------------------------ services, interfaces, methods info ----------------------
     @overload
     @classmethod
-    def get_service_names(cls) -> List[str] | None:
+    def get_service_names(cls) -> List[str]:
         """
         Gets service names
 
         Returns:
-            List[str] | None: Service names on success; Othwriwse, None
+            List[str]: List of service names.
         """
         ...
 
     @overload
     @classmethod
-    def get_service_names(cls, service_name: str) -> List[str] | None:
+    def get_service_names(cls, service_name: str) -> List[str]:
         """
         Gets service names
 
@@ -917,55 +922,58 @@ class Info(metaclass=StaticProperty):
             service_name (str): service name
 
         Returns:
-            List[str] | None: Service names on success; Othwriwse, None
+             List[str]: List of service names.
         """
         ...
 
     @classmethod
-    def get_service_names(cls, service_name: Optional[str] = None) -> List[str] | None:
+    def get_service_names(cls, service_name: Optional[str] = None) -> List[str]:
         """
         Gets service names
 
         Args:
             service_name (str): service name
 
+        Raises:
+            Exception: If error occurs
+
         Returns:
-            List[str] | None: Service names on success; Othwriwse, None
+             List[str]: List of service names.
         """
         if service_name is None:
             return cls._get_service_names1()
         return cls._get_service_names2(service_name=service_name)
 
     @staticmethod
-    def _get_service_names1() -> List[str] | None:
+    def _get_service_names1() -> List[str]:
         mc_factory = mLo.Lo.get_component_factory()
         if mc_factory is None:
-            return None
+            return []
         service_names = list(mc_factory.getAvailableServiceNames())
         service_names.sort()
         return service_names
 
     @staticmethod
-    def _get_service_names2(service_name: str) -> List[str] | None:
+    def _get_service_names2(service_name: str) -> List[str]:
         names: List[str] = []
         try:
-            enum_access = mLo.Lo.qi(XContentEnumerationAccess, mLo.Lo.get_component_factory())
+            enum_access = mLo.Lo.qi(XContentEnumerationAccess, mLo.Lo.get_component_factory(), True)
             x_enum = enum_access.createContentEnumeration(service_name)
             while x_enum.hasMoreElements():
                 si = mLo.Lo.qi(XServiceInfo, x_enum.nextElement())
                 names.append(si.getImplementationName())
-        except Exception:
+        except Exception as e:
             mLo.Lo.print(f"Could not collect service names for: {service_name}")
-            return None
+            raise e
         if len(names) == 0:
             mLo.Lo.print(f"No service names found for: {service_name}")
-            return None
+            return names
 
         names.sort()
         return names
 
     @staticmethod
-    def get_services(obj: object) -> List[str] | None:
+    def get_services(obj: object) -> List[str]:
         """
         Gets service names
 
@@ -973,12 +981,10 @@ class Info(metaclass=StaticProperty):
             obj (object): obj that implements XServiceInfo
 
         Returns:
-            List[str] | None: service names on success; Othwrwise, None
+            List[str]: service names
         """
         try:
-            si = mLo.Lo.qi(XServiceInfo, obj)
-            if si is None:
-                raise mEx.MissingInterfaceError(XServiceInfo)
+            si = mLo.Lo.qi(XServiceInfo, obj, True)
             names = si.getSupportedServiceNames()
             service_names = list(names)
             service_names.sort()
@@ -986,7 +992,7 @@ class Info(metaclass=StaticProperty):
         except Exception as e:
             mLo.Lo.print("Unable to get services")
             mLo.Lo.print(f"    {e}")
-        return None
+            raise e
 
     @classmethod
     def show_services(cls, obj_name: str, obj: object) -> None:
@@ -1034,55 +1040,56 @@ class Info(metaclass=StaticProperty):
         return False
 
     @staticmethod
-    def get_available_services(obj: object) -> List[str] | None:
+    def get_available_services(obj: object) -> List[str]:
         """
         Gets available services for obj
 
         Args:
             obj (object): obj that implements XMultiServiceFactory interface
 
+        Raises:
+            Exception: If unable to get services
+
         Returns:
-            List[str] | None: List of services on success; Otherwise, None
+            List[str]: List of services
         """
         services: List[str] = []
         try:
-            sf = mLo.Lo.qi(XMultiServiceFactory, obj)
-            if sf is None:
-                raise mEx.MissingInterfaceError(XMultiServiceFactory)
+            sf = mLo.Lo.qi(XMultiServiceFactory, obj, True)
             service_names = sf.getAvailableServiceNames()
             services.extend(service_names)
             services.sort()
         except Exception as e:
             mLo.Lo.print(e)
-        if len(services) == 0:
-            return None
+            raise Exception() from e
         return services
 
     @staticmethod
-    def get_interface_types(target: object) -> Tuple[object, ...] | None:
+    def get_interface_types(target: object) -> Tuple[object, ...]:
         """
         Get interface types
 
         Args:
             target (object): object that implements XTypeProvider interface
 
+        Raises:
+            Exception: If unable to get services
+
         Returns:
-            Tuple[object, ...] | None: Tuple of interfaces on success; Othwrwise, None
+            Tuple[object, ...]: Tuple of interfaces
         """
         try:
-            tp = mLo.Lo.qi(XTypeProvider, target)
-            if tp is None:
-                raise mEx.MissingInterfaceError(XTypeProvider)
+            tp = mLo.Lo.qi(XTypeProvider, target, True)
             types = tp.getTypes()
             return types
         except Exception as e:
             mLo.Lo.print("Unable to get interface types")
             mLo.Lo.print(f"    {e}")
-        return None
+            raise Exception() from e
 
     @overload
     @classmethod
-    def get_interfaces(cls, target: object) -> List[str] | None:
+    def get_interfaces(cls, target: object) -> List[str]:
         """
         Gets interfaces
 
@@ -1090,13 +1097,13 @@ class Info(metaclass=StaticProperty):
             target: (object): object that implements XTypeProvider
 
         Returns:
-            List[str] | None: List of interfaces on success; Otherwise, None
+            List[str]: List of interfaces
         """
         ...
 
     @overload
     @classmethod
-    def get_interfaces(cls, type_provider: XTypeProvider) -> List[str] | None:
+    def get_interfaces(cls, type_provider: XTypeProvider) -> List[str]:
         """
         Gets interfaces
 
@@ -1104,12 +1111,12 @@ class Info(metaclass=StaticProperty):
             type_provider (XTypeProvider): type provider
 
         Returns:
-            List[str] | None: List of interfaces on success; Otherwise, None
+            List[str]: List of interfaces
         """
         ...
 
     @classmethod
-    def get_interfaces(cls, *args, **kwargs) -> List[str] | None:
+    def get_interfaces(cls, *args, **kwargs) -> List[str]:
         """
         Gets interfaces
 
@@ -1117,8 +1124,11 @@ class Info(metaclass=StaticProperty):
             target: (object): object that implements XTypeProvider
             type_provider (XTypeProvider): type provider
 
+        Raises:
+            Exception: If unable to get interfaces
+
         Returns:
-            List[str] | None: List of interfaces on success; Otherwise, None
+            List[str]: List of interfaces
         """
         ordered_keys = (1,)
         kargs_len = len(kwargs)
@@ -1148,25 +1158,25 @@ class Info(metaclass=StaticProperty):
             kargs[ordered_keys[i]] = arg
 
         try:
-            if cls.is_type_interface(kargs[0], XTypeProvider.__pyunointerface__):
-                type_provider = cast(XTypeProvider, kargs[0])
+            if mLo.Lo.is_uno_interfaces(kargs[1], XTypeProvider):
+                type_provider = cast(XTypeProvider, kargs[1])
             else:
-                type_provider = mLo.Lo.qi(XTypeProvider, kargs[0])
+                type_provider = mLo.Lo.qi(XTypeProvider, kargs[1])
                 if type_provider is None:
                     raise mEx.MissingInterfaceError(XTypeProvider)
 
-            types = type_provider.getTypes()
+            types = cast(Tuple[uno.Type, ...], type_provider.getTypes())
             # use a set to exclude duplicate names
             names_set = set()
             for t in types:
-                names_set.add(t.getTypeName())
+                names_set.add(t.typeName)
             type_names = list(names_set)
             type_names.sort()
             return type_names
         except Exception as e:
             mLo.Lo.print("Unable to get interfaces")
             mLo.Lo.print(f"    {e}")
-        return None
+            raise Exception() from e
 
     @classmethod
     def show_interfaces(cls, obj_name: str, obj: object) -> None:
@@ -1186,7 +1196,37 @@ class Info(metaclass=StaticProperty):
             print(f"  {s}")
 
     @staticmethod
-    def get_methods(interface_name: str) -> List[str] | None:
+    def get_methods_obj(obj: object, property_concept: PropertyConceptEnum | None = None) -> List[str]:
+        """
+        Get Methods of an object such as a doc.
+
+        Args:
+            obj (object): Object to get methods of.
+            property_concept (PropertyConceptEnum | None, optional): Type of method to get. Defaults to PropertyConceptEnum.ALL.
+
+        Raises:
+            Exception: If unable to get Methods
+
+        Returns:
+            List[str]: List of method names found for obj
+        """
+        if property_concept is None:
+            property_concept = PropertyConceptEnum.ALL
+        
+        try:
+            intro = theIntrospection()
+            result = intro.inspect(obj)
+            methods = result.getMethods(int(property_concept))
+            lst = []
+            for meth in methods:
+                lst.append(meth.getName())
+            lst.sort()
+            return lst
+        except Exception as e:
+            raise Exception(f"Could not get object Methods") from e
+
+    @staticmethod
+    def get_methods(interface_name: str) -> List[str]:
         """
         Get Interface Methods
 
@@ -1194,7 +1234,7 @@ class Info(metaclass=StaticProperty):
             interface_name (str): name of interface
 
         Returns:
-            List[str] | None: List of methods on success; Otherwise, None
+            List[str]: List of methods
         """
         # from com.sun.star.beans.PropertyConcept import ALL
         # ctx = XSCRIPTCONTEXT.getComponentContext()
@@ -1213,12 +1253,15 @@ class Info(metaclass=StaticProperty):
         # See Also: https://github.com/hanya/MRI/wiki/RunMRI#Python
         # See Also: https://tinyurl.com/y3m4tx9r#L268
 
-        reflection = mLo.Lo.create_instance_mcf(XIdlReflection, "com.sun.star.reflection.CoreReflection")
-        fname = reflection.forName(interface_name)
+        reflection = mLo.Lo.create_instance_mcf(
+            XIdlReflection, "com.sun.star.reflection.CoreReflection", raise_err=True
+        )
+        
+        fname = reflection.forName(interface_name) # returns type from name.
 
         if fname is None:
             mLo.Lo.print(f"Could not find the interface name: {interface_name}")
-            return None
+            return []
         try:
             methods: Tuple[XIdlMethod, ...] = fname.getMethods()
             lst = []
@@ -1227,9 +1270,7 @@ class Info(metaclass=StaticProperty):
             lst.sort()
             return lst
         except Exception as e:
-            mLo.Lo.print(f"Could not get Methods for: {interface_name}")
-            mLo.Lo.print(f"    {e}")
-        return None
+            raise Exception(f"Could not get Methods for: {interface_name}") from e
 
     @classmethod
     def show_methods(cls, interfce_name: str) -> None:
@@ -1240,12 +1281,30 @@ class Info(metaclass=StaticProperty):
             interfce_name (str): name of interface
         """
         methods = cls.get_methods(interface_name=interfce_name)
-        if methods is None:
+        if len(methods) == 0:
+            print(f"No methods found for '{interfce_name}'")
             return
-        print(f"{interfce_name} Methods{len(methods)}")
+        print(f"{interfce_name} Methods: {len(methods)}")
         for method in methods:
             print(f"  {method}")
 
+    @classmethod
+    def show_methods_obj(cls, obj: object, property_concept: PropertyConceptEnum | None = None) -> None:
+        """
+        Prints method to console for an object such as a doc.
+
+        Args:
+            obj (object): Object to get methods of.
+            property_concept (PropertyConceptEnum | None, optional): Type of method to get. Defaults to PropertyConceptEnum.ALL.
+        """
+        methods = cls.get_methods_obj(obj=obj, property_concept=property_concept)
+        if len(methods) == 0:
+            print(f"No Object methods found")
+            return
+        print(f"Object Methods: {len(methods)}")
+        for method in methods:
+            print(f"  {method}")
+            
     # -------------------------- style info --------------------------
     @staticmethod
     def get_style_families(doc: object) -> XNameAccess:
@@ -1273,26 +1332,27 @@ class Info(metaclass=StaticProperty):
             raise Exception("Unable to get family style names") from e
 
     @classmethod
-    def get_style_family_names(cls, doc: object) -> List[str] | None:
+    def get_style_family_names(cls, doc: object) -> List[str]:
         """
         Gets a list of style family names
 
         Args:
             doc (object): office document
 
+        Raises:
+            Exception: If unable to names.
+
         Returns:
-            List[str] | None: List of style names on success; Otherwise, None
+            List[str]: List of style names
         """
         try:
-            name_acc = cls.get_style_families()
+            name_acc = cls.get_style_families(doc)
             names = name_acc.getElementNames()
             lst = list(names)
             lst.sort()
             return lst
         except Exception as e:
-            mLo.Lo.print("Unable to get family style names")
-            mLo.Lo.print(f"    {e}")
-        return None
+            raise Exception("Unable to get family style names") from e
 
     @classmethod
     def get_style_container(cls, doc: object, family_style_name: str) -> XNameContainer:
@@ -1314,7 +1374,7 @@ class Info(metaclass=StaticProperty):
         return xcontianer
 
     @classmethod
-    def get_style_names(cls, doc: object, family_style_name: str) -> List[str] | None:
+    def get_style_names(cls, doc: object, family_style_name: str) -> List[str]:
         """
         Gets a list of style names
 
@@ -1322,8 +1382,11 @@ class Info(metaclass=StaticProperty):
             doc (object): office document
             family_style_name (str): name of family style
 
+        Raises:
+            Exception: If unable to access Style names
+
         Returns:
-            List[str] | None: List of style names on success; Otherwise, None
+            List[str]: List of style names
         """
         try:
             style_container = cls.get_style_container(doc=doc, family_style_name=family_style_name)
@@ -1332,9 +1395,7 @@ class Info(metaclass=StaticProperty):
             lst.sort()
             return lst
         except Exception as e:
-            mLo.Lo.print("Could not access style names")
-            mLo.Lo.print(f"    {e}")
-        return None
+            raise Exception("Could not access style names") from e
 
     @classmethod
     def get_style_props(cls, doc: object, family_style_name: str, prop_set_nm: str) -> XPropertySet:
@@ -1536,9 +1597,8 @@ class Info(metaclass=StaticProperty):
         pip = mLo.Lo.qi(
             XPackageInformationProvider,
             ctx.getValueByName("/singletons/com.sun.star.deployment.PackageInformationProvider"),
+            True,
         )
-        if pip is None:
-            raise mEx.MissingInterfaceError(XPackageInformationProvider)
         return pip
         # return pip.get(mLo.Lo.get_context())
 
@@ -1561,7 +1621,7 @@ class Info(metaclass=StaticProperty):
             print()
 
     @classmethod
-    def get_extension_info(cls, id: str) -> Tuple[str, ...] | None:
+    def get_extension_info(cls, id: str) -> Tuple[str, ...]:
         """
         Gets infor for an installed extension in LibreOffice.
 
@@ -1569,13 +1629,13 @@ class Info(metaclass=StaticProperty):
             id (str): Extension id
 
         Returns:
-            Tuple[str, ...] | None: Extension info on success; Otherwise, None
+            Tuple[str, ...]: Extension info
         """
         try:
             pip = cls.get_pip()
         except mEx.MissingInterfaceError:
             mLo.Lo.print("No package info provider found")
-            return
+            return ()
         exts_tbl = pip.getExtensionList()
         mLo.Lo.print_table("Extension", exts_tbl)
         for el in exts_tbl:
@@ -1583,7 +1643,7 @@ class Info(metaclass=StaticProperty):
                 return el
 
         mLo.Lo.print(f"Extension {id} is not found")
-        return None
+        return ()
 
     @classmethod
     def get_extension_loc(cls, id: str) -> str | None:
@@ -1604,21 +1664,21 @@ class Info(metaclass=StaticProperty):
         return pip.getPackageLocation(id)
 
     @staticmethod
-    def get_filter_names() -> Tuple[str, ...] | None:
+    def get_filter_names() -> Tuple[str, ...]:
         """
         Gets filter names
 
         Returns:
-            Tuple[str, ...] | None: Filter names on success; Otherwise, None
+            Tuple[str, ...]: Filter names
         """
         na = mLo.Lo.create_instance_mcf(XNameAccess, "com.sun.star.document.FilterFactory")
         if na is None:
             mLo.Lo.print("No Filter factory found")
-            return None
+            return ()
         return na.getElementNames()
 
     @staticmethod
-    def get_filter_props(filter_nm: str) -> List[PropertyValue] | None:
+    def get_filter_props(filter_nm: str) -> List[PropertyValue]:
         """
         Gets filter properties
 
@@ -1626,16 +1686,16 @@ class Info(metaclass=StaticProperty):
             filter_nm (str): Filter Name
 
         Returns:
-            List[PropertyValue] | None: List of Properties on success; Otherwise, None
+            List[PropertyValue]: List of PropertValue
         """
         na = mLo.Lo.create_instance_mcf(XNameAccess, "com.sun.star.document.FilterFactory")
         if na is None:
             mLo.Lo.print("No Filter factory found")
-            return None
+            return []
         result = na.getByName(filter_nm)
         if result is None:
             mLo.Lo.print(f"No props for filter: {filter_nm}")
-            return None
+            return []
         return list(result)
 
     @classmethod
@@ -1850,16 +1910,17 @@ class Info(metaclass=StaticProperty):
         Returns:
             bool: True if 'obj' is interface and 'obj' matches 'type_name'; Otherwise, False
         """
-        if obj is None:
-            return False
-        if hasattr(obj, "__pyunointerface__"):
-            return obj.__pyunointerface__ == type_name
-        elif hasattr(obj, "queryInterface"):
-            uno_t = uno.getTypeByName(type_name)
-            q_obj = obj.queryInterface(uno_t)
-            if q_obj is not None:
-                return True
-        return False
+        return mLo.Lo.is_uno_interfaces(obj, type_name)
+        # if obj is None:
+        #     return False
+        # if hasattr(obj, "__pyunointerface__"):
+        #     return obj.__pyunointerface__ == type_name
+        # elif hasattr(obj, "queryInterface"):
+        #     uno_t = uno.getTypeByName(type_name)
+        #     q_obj = obj.queryInterface(uno_t)
+        #     if q_obj is not None:
+        #         return True
+        # return False
 
     @staticmethod
     def is_type_enum(obj: uno.Enum, type_name: str) -> bool:
@@ -1899,6 +1960,7 @@ class Info(metaclass=StaticProperty):
             return obj.__pyunointerface__
         return None
 
+    # TODO: Class Property language does not have doc genereated.
     @classproperty
     def language(cls) -> str:
         """
@@ -1920,6 +1982,7 @@ class Info(metaclass=StaticProperty):
         # raise error on set. Not really neccesary but gives feedback.
         raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
 
+    # TODO: Class Property version does not have doc genereated.
     @classproperty
     def version(cls) -> str:
         """

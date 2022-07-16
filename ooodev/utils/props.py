@@ -965,7 +965,8 @@ class Props:
         Returns:
             str: Property inf format of 'Name: TypeName'
         """
-        return f"{p.Name}: {p.Type.getTypeName()}"
+        # p.Type is uno.Type
+        return f"{p.Name}: {p.Type.typeName}"
 
     # endregion ---------------- show properties of an Object ----------
 
