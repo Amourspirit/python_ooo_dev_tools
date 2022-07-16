@@ -3,6 +3,12 @@ Version History
 ###############
 
 *************
+Version 0.4.5
+*************
+
+Added :py:class:`~.break_context.BreakContext` class.
+
+*************
 Version 0.4.4
 *************
 

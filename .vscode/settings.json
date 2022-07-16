@@ -22,7 +22,7 @@
         }
     },
     "workbench.colorTheme": "Monokai",
-    "esbonio.sphinx.confDir": "",
+    "esbonio.sphinx.confDir": "${workspaceFolder}\\docs",
     "python.testing.pytestArgs": [
         "tests"
     ],

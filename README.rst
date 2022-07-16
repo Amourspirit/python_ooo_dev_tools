@@ -1,6 +1,5 @@
-#####################
 OOO Development Tools
-#####################
+=====================
 
 |lic| |pver| |pwheel| |github|
 
@@ -17,9 +16,8 @@ and close down LibreOffice.
 
 Currently this project has been tested on LibreOffice in Windows and Linux (Ubuntu).
 
-********************
 Advantages of Python
-********************
+--------------------
 
 Macros are pieces of programming code that runs in office suites and helps automate routine tasks.
 Specifically, in LibreOffice API these codes can be written with so many programming languages thanks
@@ -37,18 +35,18 @@ Python has a vast set `libraries <https://pypi.org/>`_ that can be used in a pro
 
 This makes Python and excellent choice with maximum flexability.
 
-*************
+
 Documentation
-*************
+-------------
 
 Read `documentation <https://python-ooo-dev-tools.readthedocs.io/en/latest/>`_
 
-************
+
 Installation
-************
+------------
 
 PIP
-===
+^^^
 
 **ooo-dev-tools** `PyPI <https://pypi.org/project/ooo-dev-tools/>`_
 
@@ -56,9 +54,9 @@ PIP
 
     $ pip install ooo-dev-tools
 
-*******
+
 Modules
-*******
+-------
 
 Currently the ``Calc`` Module and the ``Write`` module are relaesed.
 
@@ -86,27 +84,27 @@ Include modules still in beta:
     - Props (Various methods for working with the many API properties)
 
 
-***********
+
 Inspiration
-***********
+-----------
 
 Much of this project is inspired by the work of Dr. Andrew Davison
 and the work on `Java LibreOffice Programming <http://fivedots.coe.psu.ac.th/~ad/jlop>`_
 
 See `LibreOffice Programming <https://flywire.github.io/lo-p/>`_ that aims to gradually explain this content in a python context.
 
-*****
+
 Other
-*****
+-----
 
 **Figure 1:** Calc Find and Replace Automation Example
 
 .. figure:: https://user-images.githubusercontent.com/4193389/172609472-536a94de-9bf6-4668-ac9f-a55f12dfc817.gif
     :alt: Calc Find and Replace Automation
 
-****************
+
 Related projects
-****************
+----------------
 
 LibreOffice API Typings
 

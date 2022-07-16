@@ -2430,15 +2430,10 @@ class Lo(metaclass=StaticProperty):
         try:
             return cls.__null_date
         except AttributeError:
-            n_date =  datetime(year=1889, month=12, day=30, tzinfo=timezone.utc)
             if cls._doc is None:
                 Lo.print("No document found returning 1889/12/30")
-                return n_date
+                return datetime(year=1889, month=12, day=30, tzinfo=timezone.utc)
             n_supplier = cls.qi(XNumberFormatsSupplier, cls._doc)
-            if n_supplier is None:
-                # XNumberFormatsSupplier is not for certain.
-                # for instance .odp doc does not supply
-                return n_date
             number_settings = n_supplier.getNumberFormatSettings()
             d = number_settings.getPropertyValue("NullDate")
             cls.__null_date = datetime(d.Year, d.Month, d.Day, tzinfo=timezone.utc)

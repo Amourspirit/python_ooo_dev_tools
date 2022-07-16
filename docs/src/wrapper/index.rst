@@ -1,0 +1,8 @@
+wrapper
+=======
+
+.. toctree::
+    :titlesonly:
+    :glob:
+
+    *

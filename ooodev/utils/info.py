@@ -355,15 +355,11 @@ class Info(metaclass=StaticProperty):
         """
         try:
             con_prov = mLo.Lo.create_instance_mcf(
-                XMultiServiceFactory, "com.sun.star.configuration.ConfigurationProvider"
+                XMultiServiceFactory, "com.sun.star.configuration.ConfigurationProvider", raise_err=True
             )
-            if con_prov is None:
-                raise mEx.MissingInterfaceError(XMultiServiceFactory)
             p = mProps.Props.make_props(nodepath=node_path)
             ca = con_prov.createInstanceWithArguments("com.sun.star.configuration.ConfigurationAccess", p)
-            ps = mLo.Lo.qi(XPropertySet, ca)
-            if ps is None:
-                raise mEx.MissingInterfaceError(XPropertySet)
+            ps = mLo.Lo.qi(XPropertySet, ca, True)
             return ps
         except Exception as e:
             raise mEx.PropertyError(node_path, f"Unable to access config properties for\n\n  '{node_path}'") from e
@@ -1406,16 +1402,14 @@ class Info(metaclass=StaticProperty):
             doc (object): office document
         """
         try:
-            doc_props_supp = mLo.Lo.qi(XDocumentPropertiesSupplier, doc)
-            if doc_props_supp is None:
-                raise mEx.MissingInterfaceError(XDocumentPropertiesSupplier)
+            doc_props_supp = mLo.Lo.qi(XDocumentPropertiesSupplier, doc, True)
             dps = doc_props_supp.getDocumentProperties()
             cls.print_doc_props(dps=dps)
             ud_props = dps.getUserDefinedProperties()
             mProps.Props.show_obj_props("UserDefined Info", ud_props)
         except Exception as e:
-            print("Unable to get doc properties")
-            print(f"    {e}")
+            mLo.Lo.print("Unable to get doc properties")
+            mLo.Lo.print(f"    {e}")
         return
 
     @classmethod
@@ -1494,9 +1488,7 @@ class Info(metaclass=StaticProperty):
             PropertiesError: If unable to set properties
         """
         try:
-            dp_supplier = mLo.Lo.qi(XDocumentPropertiesSupplier, doc)
-            if dp_supplier is None:
-                raise mEx.MissingInterfaceError(XDocumentPropertiesSupplier)
+            dp_supplier = mLo.Lo.qi(XDocumentPropertiesSupplier, doc, True)
             doc_props = dp_supplier.getDocumentProperties()
             doc_props.Subject = subject
             doc_props.Title = title
