@@ -6,7 +6,7 @@ if __name__ == "__main__":
 
 
 
-def test_doc_info(loader, copy_fix_presentation) -> None:
+def test_print_doc_properties(loader, copy_fix_presentation) -> None:
     
     from ooodev.utils.lo import Lo
     from ooodev.utils.info import Info
@@ -16,4 +16,3 @@ def test_doc_info(loader, copy_fix_presentation) -> None:
         Info.print_doc_properties(doc)
     finally:
         Lo.close_doc(doc, False)
-    
