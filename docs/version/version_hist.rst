@@ -3,6 +3,13 @@ Version History
 ###############
 
 *************
+Version 0.4.6
+*************
+
+Updates and fixes for :py:class:`~.utils.info.Info` class.
+
+
+*************
 Version 0.4.5
 *************
 

@@ -1,6 +1,6 @@
 Headings:
     https://thomas-cokelaer.info/tutorials/sphinx/rest_syntax.html#headings
-
+    https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html#sections
 
     # with overline, for parts
     * with overline, for chapters
