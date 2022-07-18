@@ -11,7 +11,8 @@ Chapter 3. Examining
 This chapter looks at ways to examine the state of the Office application and a document.
 A document will be examined in three different ways: the first retrieves properties about the file, such as its author, keywords,
 and when it was last modified. The second and third approaches extract API details, such as what services and interfaces it uses.
-This can be done by calling functions in my Utils class or by utilizing the |devtools|_ built into Office.
+This can be done by calling functions in |app_name_short| Util classes or by utilizing the |devtools|_ built into Office.
+See :numref:`ch03fig06`.
 
 .. _ch03sec01:
 
@@ -47,7 +48,7 @@ The two most useful paths seem to be ``/org.openoffice.Setup/Product`` and ``/or
 which are hardwired as constants in the :py:class:`~.utils.info.Info` class. The simplest version of :py:meth:`~.utils.info.Info.get_config`
 looks along both paths by default so the programmer only has to supply a property name when calling the method
 
-This is illustrated in the OfficeInfo.java example in the |oinfo|_:
+This is illustrated in the |oinfo|_ example:
 
 Many other property names, which don't seem that useful, are documented with the :py:class:`~.info.Info` class.
 One way of finding the most current list is to browse `main.xcd` in ``\share\registry``.
@@ -77,8 +78,9 @@ One way of finding the most current list is to browse `main.xcd` in ``\share\reg
             print(f"\nTemplates Dirs: {Info.get_paths('Template')}")
             print(f"\nGallery Dir: {Info.get_paths('Gallery')}")
 
-Example output
-    ::
+Example output:
+
+    .. code-block:: text
 
         OS Platform: Linux-5.15.0-41-generic-x86_64-with-debian-bookworm-sid
         OS Version: #44-Ubuntu SMP Wed Jun 22 14:20:53 UTC 2022
@@ -196,7 +198,7 @@ LibreOffice has removed them.
 
 Although the XDocumentProperties_ interface belongs to a DocumentProperties_ service, that service does not contain any properties/attributes.
 Instead its data is stored inside XDocumentProperties_ and accessed and changed with get/set methods based on the attribute names.
-For example, the Author attribute is obtained by calling ``XDocumentProperties.getAuthor()``.
+For example, the Author attribute is obtained by calling ``XDocumentProperties.Author``.
 
 As a consequence, :py:meth:`~.info.Info.print_doc_props` consists of a long list of get method calls inside print statements:
 
@@ -274,11 +276,12 @@ The changed properties appear in the "Document Statistics" list shown in :numref
 
 After programming with the Office API for a while, you may start to notice that two coding questions keep coming up.
 They are:
-1. For the service I'm using at the moment, what are its properties?
-2. 2. When I need to do something to a document (e.g. close an XComponent instance), which interface should I cast XComponent to by calling :py:meth:`.Lo.qi`?
 
-The first question arose in :ref:`Chapter 2 <ch02>` when set properties in loadComponentFromURL() and storeToURL() were needed.
-Unfortunately the LibreOffice documentation for OfficeDocument doesn't list all the properties associated with the service.
+    1. For the service I'm using at the moment, what are its properties?
+    2. When I need to do something to a document (e.g. close an XComponent instance), which interface should I cast XComponent to by calling :py:meth:`.Lo.qi`?
+
+The first question arose in :ref:`Chapter 2 <ch02>` when set properties in ``loadComponentFromURL()`` and ``storeToURL()`` were needed.
+Unfortunately the LibreOffice documentation or OfficeDocument doesn't list all the properties associated with the service.
 Have a look for yourself by typing ``lodoc OfficeDocument service``, which takes you to its IDL Page unfortunately.
 You'll then need to click on the OfficeDocument_ link in the "Classes" section to reach the documentation. OfficeDocument's "Public Attributes" section only lists three properties.
 Thre is a |odoc_member_list|_ which is a little more helpful but can be challengeing decipher.
@@ -290,7 +293,9 @@ But the diagrams don't make a distinction between “contains” relationships (
 These complaints have appeared frequently in the Office forums.
 Two approaches for easing matters are often suggested. One is to write code to print out details about a loaded document,
 which is my approach in the next subsection.
-A second technique is to install an Office extension for browsing a document's structure. I'll look at one such extension, MRI, in :ref:`ch03sec03prt02`.
+A second technique is to install an Office extension for browsing a document's structure.
+Since LibreOffice 7.2 there is also |devtools|_.
+:ref:`ch03sec03prt02` looks at options.
 
 .. _ch03sec03prt01:
 
@@ -303,13 +308,150 @@ The five main methods for retrieving details can be understood by considering th
 .. cssclass:: diagram invert
 
     .. _ch03fig04:
-    .. figure:: https://user-images.githubusercontent.com/4193389/179312606-5628bef3-09e7-4016-be86-545953ed02b8.png
+    .. figure:: https://user-images.githubusercontent.com/4193389/179381798-efcb4f4a-a877-469f-9c6e-033e9cf7fe6b.png
         :alt: Methods to Investigate the Service and Interface Relationships and Hierarchies
 
         :Methods to Investigate the Service and Interface Relationships and Hierarchies.
 
-The methods are shown in action in the |doc_props|_ example, which loads a document and prints information about its services, interfaces, methods, and properties.
+The methods are shown in action in the |doc_info|_ example, which loads a document and prints information about its services, interfaces, methods, and properties.
 The relevant code fragment:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        with BreakContext(Lo.Loader(Lo.ConnectSocket(headless=True))) as loader:
+            fnm = args.fnm_doc
+            doc_type = Info.get_doc_type(fnm=fnm)
+            print(f"Doc type: {doc_type}")
+            Props.show_doc_type_props(doc_type)
+
+            try:
+                doc = Lo.open_doc(fnm=fnm, loader=loader)
+            except Exception:
+                print(f"Could not open '{fnm}'")
+                raise BreakContext.Break
+
+            if args.service is True:
+                print()
+                print(" Services for this document: ".center(80, "-"))
+                for service in Info.get_services(doc):
+                    print(f"  {service}")
+                print()
+                print(f"{Lo.Service.WRITER} is supported: {Info.is_doc_type(doc, Lo.Service.WRITER)}")
+                print()
+
+                print("  Available Services for this document: ".center(80, "-"))
+                for i, service in enumerate(Info.get_available_services(doc)):
+                    print(f"  {service}")
+                print(f"No. available services: {i}")
+
+            if args.interface is True:
+                print()
+                print(" Interfaces for this document: ".center(80, "-"))
+                for i, intfs in enumerate(Info.get_interfaces(doc)):
+                    print(f"  {intfs}")
+                print(f"No. interfaces: {i}")
+
+            if args.xdoc is True:
+                print()
+                print(f" Method for interface: com.sun.star.text.XTextDocument ".center(80, "-"))
+
+                for i, meth in enumerate(Info.get_methods("com.sun.star.text.XTextDocument")):
+                    print(f"  {meth}()")
+                print(f"No. methods: {i}")
+
+            if args.property is True:
+                print()
+                print(" Properties for this document: ".center(80, "-"))
+                for i, prop in enumerate(Props.get_properties(doc)):
+                    print(f"  {Props.show_property(prop)}")
+                print(f"No. properties: {i}")
+
+            if args.doc_meth is True:
+                print()
+                print(f" Method for entire document ".center(80, "-"))
+
+                for i, meth in enumerate(Info.get_methods_obj(doc)):
+                    print(f"  {meth}()")
+                print(f"No. methods: {i}")
+
+            print()
+
+            prop_name = "CharacterCount"
+            print(f"Value of {prop_name}: {Props.get_property(doc, prop_name)}")
+
+            Lo.close_doc(doc)
+
+When a word file is examined this program, only three services were found: OfficeDocument_, GenericTextDocument_, and TextDocument_,
+which correspond to the text document part of the hierarchy in :ref:`Chapter 1 <ch01>`, :numref:`ch01fig09`.
+That doesn't seem so bad until you look at the output from the other Info.getXXX() methods: the document can call 206 other available services, 69 interfaces, and manipulate 40 properties.
+
+In the code above only the methods available to XTextDocument_ are printed:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        for i, meth in enumerate(Info.get_methods("com.sun.star.text.XTextDocument")):
+            print(f"  {meth}()")
+        print(f"No. methods: {i}")
+
+Nineteen methods are listed, collectively inherited from the interfaces in XTextDocument_'s inheritance hierarchy shown in :numref:`ch03fig05`.
+
+.. cssclass:: diagram invert
+
+    .. _ch03fig05:
+    .. figure:: https://user-images.githubusercontent.com/4193389/179375619-1ac1d4ea-b8f2-4ad5-899d-dd712b0d8476.png
+        :alt: Inheritance Hierarchy for XTextDocument.
+
+        : Inheritance Hierarchy for XTextDocument.
+
+A similar diagram appears on the XTextDocument_ documentation webpage, but is complicated by also including the inheritance hierarchy
+for the TextDocument service. Note, the interface hierarchy is also textually represented in the "List all members" section of the documentation.
+
+The last part of the code fragment prints all the document's property names and types by calling :py:meth:`.Props.show_property`.
+If you only want to know about one specific property then use :py:meth:`.Props.get_property`, which requires a reference to the document and the property name:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        prop_name = "CharacterCount"
+        print(f"Value of {prop_name}: {Props.get_property(doc, prop_name)}")
+
+
+File Types Another group of utility methods let a programmer investigate a file's document type.
+:py:meth:`.Info.get_doc_type` get the document type from the file path and  :py:meth:`.Props.show_doc_type_props` show the doc type information.
+
+.. tabs::
+
+    .. code-tab:: python
+
+        with BreakContext(Lo.Loader(Lo.ConnectSocket(headless=True))) as loader:
+            fnm = args.fnm_doc
+            doc_type = Info.get_doc_type(fnm=fnm)
+            print(f"Doc type: {doc_type}")
+            Props.show_doc_type_props(doc_type)
+
+.. code-block:: text
+
+    Doc type: writer8
+    Properties for 'writer8':
+    ClipboardFormat: Writer 8
+    DetectService: com.sun.star.comp.filters.StorageFilterDetect
+    Extensions: odt
+    Finalized: False
+    Mandatory: False
+    MediaType: application/vnd.oasis.opendocument.text
+    Name: writer8
+    Preferred: True
+    PreferredFilter: writer8
+    UIName: Writer 8
+    UINames: [
+        en-US = Writer 8
+    ]
+    URLPattern: private:factory/swriter
 
 
 .. _ch03sec03prt02:
@@ -317,7 +459,20 @@ The relevant code fragment:
 3.3.2 Examining a Document Using Development Tools
 ==================================================
 
-Work in progress ...
+It's hardly surprising that Office developers have wanted to make the investigation of services, interfaces, and properties associated with documents and other objects easier.
+There are several extension which do this, such as |mri_tool|_ and |apso|_.
+
+Sincd `LibreOffice 7.2` we have the advantage of using |devtools|_,
+that inspects objects in LibreOffice documents and shows supported UNO services, as well as available methods,
+properties and implemented interfaces. This feature as seen in :numref:`ch03fig06` also allows to explore the document structure using the Document Object Model (DOM).
+
+.. cssclass:: screen_shot invert
+
+    .. _ch03fig06:
+    .. figure:: https://user-images.githubusercontent.com/4193389/179380392-fd7180e9-6adf-4046-9485-5b777b925471.png
+        :alt: LibreOffice Develop Tools screenshot
+
+        : LibreOffice Develop Tools
 
 .. |devtools| replace:: Development Tools
 .. _devtools: https://help.libreoffice.org/latest/ro/text/shared/guide/dev_tools.html
@@ -334,10 +489,23 @@ Work in progress ...
 .. |doc_props| replace:: Doc Properties
 .. _doc_props: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/general/odev_doc_prop
 
+.. |doc_info| replace:: Doc Info
+.. _doc_info: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/general/odev_doc_info
+
 .. _OfficeDocument: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1document_1_1OfficeDocument.html
 
 .. |odoc_member_list| replace:: OfficeDocument Member List
 .. _odoc_member_list: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1document_1_1OfficeDocument-members.html
+
+.. |mri_tool| replace:: MRI - UNO Object Inspection Tool
+.. _mri_tool: https://extensions.libreoffice.org/en/extensions/show/mri-uno-object-inspection-tool
+
+.. |apso| replace:: APSO - Alternative Script Organizer for Python
+.. _apso: https://extensions.libreoffice.org/en/extensions/show/apso-alternative-script-organizer-for-python
+
+.. _OfficeDocument: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1document_1_1OfficeDocument.html
+.. _GenericTextDocument: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1GenericTextDocument.html
+.. _TextDocument: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1TextDocument.html
 
 .. _DocumentProperties: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1document_1_1DocumentProperties.html
 .. _XDocumentProperties: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1document_1_1XDocumentProperties.html
@@ -346,3 +514,5 @@ Work in progress ...
 .. _XDocumentInfoSupplier: https://www.openoffice.org/api/docs/common/ref/com/sun/star/document/XDocumentInfoSupplier.html
 
 .. _XDocumentInfo: https://www.openoffice.org/api/docs/common/ref/com/sun/star/document/XDocumentInfo.html
+
+.. _XTextDocument: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextDocument.html
