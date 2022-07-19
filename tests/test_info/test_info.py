@@ -1,3 +1,4 @@
+from sys import implementation
 import pytest
 
 # from ooodev.office.write import Write
@@ -66,5 +67,22 @@ def test_get_methods_obj(loader) -> None:
         assert len(attrs) > 10 # 34 on Windows 10, LO 7.3
         methods = Info.get_methods_obj(obj=doc, property_concept=PropertyConceptEnum.METHODS)
         assert len(methods) == 0
+    finally:
+        Lo.close_doc(doc=doc, deliver_ownership=False)
+
+
+def test_identify(loader) -> None:
+
+    from ooodev.utils.lo import Lo
+    from ooodev.utils.info import Info
+    from ooodev.office.write import Write
+
+    doc = Write.create_doc(loader=loader)
+    try:
+        identifier = Info.get_identifier(obj=doc)
+        assert identifier == 'com.sun.star.text.TextDocument'
+        
+        implementation = Info.get_implementation_name(obj=doc)
+        assert implementation == 'SwXTextDocument'
     finally:
         Lo.close_doc(doc=doc, deliver_ownership=False)

@@ -58,10 +58,11 @@ class FileIO:
         Returns:
             Path: absolute path
         """
+        # windows path has no resolve method
         p = Path(fnm)
         if p.is_absolute():
             return p
-        return p.resolve()
+        return p.absolute().resolve()
 
     @classmethod
     def url_to_path(cls, url: str) -> Path:
@@ -122,6 +123,7 @@ class FileIO:
         if p.is_absolute():
             return p
         return p.absolute().resolve()
+        
 
     @staticmethod
     def get_file_names(dir: PathOrStr) -> List[str]:

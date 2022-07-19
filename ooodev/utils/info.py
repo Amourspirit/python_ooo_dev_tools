@@ -20,6 +20,7 @@ from com.sun.star.container import XNameContainer
 from com.sun.star.deployment import XPackageInformationProvider
 from com.sun.star.document import XDocumentPropertiesSupplier
 from com.sun.star.document import XTypeDetection
+from com.sun.star.frame import XModule
 from com.sun.star.lang import XMultiServiceFactory
 from com.sun.star.lang import XServiceInfo
 from com.sun.star.lang import XTypeProvider
@@ -822,10 +823,28 @@ class Info(metaclass=StaticProperty):
             str: implementation name
         """
         try:
-            si = mLo.Lo.qi(XServiceInfo, obj)
-            if si is None:
-                raise mEx.MissingInterfaceError(XServiceInfo)
+            si = mLo.Lo.qi(XServiceInfo, obj, True)
             return si.getImplementationName()
+        except Exception as e:
+            raise ValueError("Could not get service information") from e
+    
+    @staticmethod
+    def get_identifier(obj: object) -> str:
+        """
+        Gets identifier name such as ``com.sun.star.text.TextDocument``
+
+        Args:
+            obj (object): uno object that implements XModule
+
+        Raises:
+            ValueError: if unable to get identifier name
+
+        Returns:
+            str: identifier name
+        """
+        try:
+            xmod = mLo.Lo.qi(XModule, obj, True)
+            return xmod.getIdentifier()
         except Exception as e:
             raise ValueError("Could not get service information") from e
 
