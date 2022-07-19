@@ -2,9 +2,8 @@
 # region Imports
 from __future__ import annotations
 from logging import exception
-import sys
-from typing import TYPE_CHECKING, Iterable, overload
-from enum import IntEnum, Enum
+from typing import TYPE_CHECKING, Iterable, overload, Any
+from enum import Enum
 import uno
 
 from com.sun.star.accessibility import XAccessible
@@ -17,8 +16,11 @@ from com.sun.star.awt import XMenuBar
 from com.sun.star.awt import XMessageBox
 from com.sun.star.awt import XSystemDependentWindowPeer
 from com.sun.star.awt import XToolkit
+from com.sun.star.awt import XTopWindow
+from com.sun.star.awt import XTopWindow2
 from com.sun.star.awt import XUserInputInterception
 from com.sun.star.awt import XWindow
+from com.sun.star.awt import XWindow2
 from com.sun.star.awt import XWindowPeer
 from com.sun.star.beans import XPropertySet
 from com.sun.star.container import XIndexContainer
@@ -38,7 +40,6 @@ from com.sun.star.ui import XUIConfigurationManager
 
 if TYPE_CHECKING:
     from com.sun.star.frame import XController
-    from com.sun.star.awt import XTopWindow
     from com.sun.star.ui import XUIElement
 
 from ..utils import lo as mLo
@@ -53,6 +54,7 @@ from ooo.dyn.awt.rectangle import Rectangle
 from ooo.dyn.awt.window_descriptor import WindowDescriptor
 from ooo.dyn.awt.window_class import WindowClass
 from ooo.dyn.view.document_zoom_type import DocumentZoomTypeEnum
+
 # endregion Imports
 
 SysInfo = m_sys_info.SysInfo
@@ -157,6 +159,41 @@ class GUI:
 
         def __str__(self) -> str:
             return self.value
+
+    class SpecialWindows(str, Enum):
+        BASIC_IDE = "BASICIDE"
+        WELCOME_SCREEN = "WELCOMESCREEN"
+
+        def __str__(self) -> str:
+            return self.value
+
+    class WindowSubtypes(str, Enum):
+        BASE_TABLE = "BASETABLE"
+        BASE_QUERY = "BASEQUERY"
+        BASE_REPORT = "BASEREPORT"
+        BASE_DIAGRAM = "BASEDIAGRAM"
+
+        def __str__(self) -> str:
+            return self.value
+
+    class WindowInfo:
+        __slots__ = (
+            "component",
+            "component",
+            "frame",
+            "window_name",
+            "window_title",
+            "window_file_name",
+            "document_type",
+        )
+
+        def __init__(self) -> None:
+            self.component: XComponent | None = None  # com.sun.star.lang.XComponent
+            self.frame: XFrame | None = None  # com.sun.star.comp.framework.Frame
+            self.window_name: str = ""  # Object Name
+            self.window_title: str = ""  # Only mean to identify new documents
+            self.window_file_name: str = ""  # URL of file name
+            self.document_type: mLo.Lo.DocType = mLo.Lo.DocType.UNKNOWN  # Writer, Calc, ...
 
     # endregion class Constants
 
@@ -473,6 +510,148 @@ class GUI:
     # endregion ---------------- controller and frame ------------------
 
     # region ---------------- Office container window ------------------
+    @staticmethod
+    def get_window_idenity(obj: Any) -> GUI.WindowInfo:
+        """
+        Gets Identity Info for window of an object
+
+        Args:
+            obj (Any): object that implements XComponent
+
+        Returns:
+            GUI.Window: Window Info
+        """
+        # Credits to Scriptforge for the inspiration of this method.
+        win = GUI.WindowInfo()
+        component = mLo.Lo.qi(XComponent, obj)
+        if component is None:
+            return win
+        win.component = component
+        try:
+            implementation = mInfo.Info.get_implementation_name(obj=obj)
+        except Exception as e:
+            mLo.Lo.print("Unable to get implementation name:")
+            mLo.Lo.print(f"  {e}")
+            return win
+        try:
+            identifier = mInfo.Info.get_identifier(obj)
+        except Exception as e:
+            mLo.Lo.print(f"Unable to get identity for implementation: {implementation}")
+            mLo.Lo.print(f"  {e}")
+            return win
+        if implementation == "com.sun.star.comp.basic.BasicIDE":
+            win.window_name = str(GUI.SpecialWindows.BASIC_IDE)
+        elif implementation == "com.sun.star.comp.dba.ODatabaseDocument":  # No identifier
+            model = mLo.Lo.qi(XModel, obj, True)
+            win.window_file_name = str(mProps.Props.get_value(name="URL", props=model.getArgs()))
+            if len(win.window_file_name) > 0:
+                win.window_name = str(mFileIO.FileIO.url_to_path(win.window_file_name))
+            win.document_type = mLo.Lo.DocType.BASE
+        elif implementation in (
+            "org.openoffice.comp.dbu.ODatasourceBrowser",
+            "org.openoffice.comp.dbu.OTableDesign",
+            "org.openoffice.comp.dbu.OQueryDesign",
+            "org.openoffice.comp.dbu.ORelationDesign",
+            "com.sun.star.comp.sfx2.BackingComp",
+        ):
+            win.frame = component.Frame
+            win.window_name = str(GUI.SpecialWindows.WELCOME_SCREEN)
+        else:
+            if len(identifier) > 0:
+                # Do not use URL : it contains the TemplateFile when new documents are created from a template
+                win.window_file_name = component.Location
+                if len(win.window_file_name) > 0:
+                    win.window_name = str(mFileIO.FileIO.url_to_path(win.window_file_name))
+                if hasattr(obj, "Title"):
+                    win.window_title = obj.Title
+                if identifier in (
+                    "com.sun.star.sdb.FormDesign",
+                    "com.sun.star.sdb.TextReportDesign",
+                    "com.sun.star.text.TextDocument",
+                ):
+                    win.document_type = mLo.Lo.DocType.WRITER
+                elif identifier == "com.sun.star.sheet.SpreadsheetDocument":
+                    win.document_type = mLo.Lo.DocType.CALC
+                elif identifier == "com.sun.star.presentation.PresentationDocument":
+                    win.document_type = mLo.Lo.DocType.IMPRESS
+                elif identifier == "com.sun.star.drawing.DrawingDocument":
+                    win.document_type = mLo.Lo.DocType.DRAW
+                elif identifier == "com.sun.star.formula.FormulaProperties":
+                    win.document_type = mLo.Lo.DocType.MATH
+        if win.frame is None:
+            if hasattr(obj, "CurrentController"):
+                win.frame = obj.CurrentController.Frame
+
+        return win
+
+    @classmethod
+    def get_active_window(cls, obj: Any) -> str:
+        """
+        Gets Active window as string
+
+        Args:
+            obj (Any): doc like object
+
+        Returns:
+            str: Active window as string of found; Otherwise, an empty string.
+
+        See Also:
+            :py:meth:`~.gui.GUI.get_active_window`
+        """
+        win = cls.get_window_idenity(obj)
+        if len(win.window_file_name) > 0:
+            return str(mFileIO.FileIO.url_to_path(win.window_file_name))
+        if len(win.window_name) > 0:
+            return win.window_name
+        if len(win.window_title) > 0:
+            return win.window_title
+        return ""
+
+    @classmethod
+    def activate(cls, window: str | XComponent) -> None:
+        """
+        Activates window
+
+        Args:
+            window (str | XComponent): Window name as str or doc as XComponent
+
+        See Also:
+            - :py:meth:`~.gui.GUI.get_active_window`
+            - :py:meth:`~.gui.GUI.minimize`
+            - :py:meth:`~.gui.GUI.maximize`
+        """
+        if not isinstance(window, str):
+            swin = cls.get_active_window(window)
+        else:
+            swin = window
+        desktop = mLo.Lo.XSCRIPTCONTEXT.getDesktop()
+        enm = desktop.getComponents().createEnumeration()
+        while enm.hasMoreElements():
+            o_comp = enm.nextElement()
+            win = cls.get_window_idenity(o_comp)
+            if (
+                (len(win.window_file_name) > 0 and win.window_file_name == mFileIO.FileIO.fnm_to_url(swin))
+                or (len(win.window_name) > 0 and win.window_name == swin)
+                or (len(win.window_title) > 0 and win.window_title == swin)
+            ):
+                if win.frame is None:
+                    break
+                container = win.frame.getContainerWindow()
+                if container is None:
+                    break
+                xwin2 = mLo.Lo.qi(XWindow2, container)
+                if xwin2 is None:
+                    break
+                top2 = mLo.Lo.qi(XTopWindow2, container)
+                if top2 is None:
+                    break
+                if not xwin2.isVisible():
+                    xwin2.setVisible(True)
+                top2.IsMinimized = False
+                xwin2.setFocus()
+                top2.toFront()
+                break
+
     @overload
     @classmethod
     def get_window(cls) -> XWindow:
@@ -499,7 +678,7 @@ class GUI:
         ...
 
     @classmethod
-    def get_window(cls, doc: XComponent = None) -> XWindow:
+    def get_window(cls, doc: XComponent = None) -> XWindow | None:
         """
         Gets window
 
@@ -511,7 +690,11 @@ class GUI:
         """
         if doc is None:
             desktop = mLo.Lo.get_desktop()
+            if desktop is None:
+                return None
             frame = desktop.getCurrentFrame()
+            if frame is None:
+                return None
             return frame.getContainerWindow()
         else:
             xcontroller = cls.get_current_controller(doc)
@@ -724,6 +907,62 @@ class GUI:
         raise NotImplementedError
 
     # endregion ------------- Office container window ------------------
+
+    # region ---------------- min/max ----------------------------------
+    @classmethod
+    def maximize(cls, odoc: object) -> None:
+        """
+        Maximizes Office window
+
+        Args:
+            odoc (object): Office document
+
+        See Also:
+            - :py:meth:`~.gui.GUI.minimize`
+            - :py:meth:`~.gui.GUI.activate`
+            - :py:meth:`~.gui.GUI.get_active_window`
+        """
+        try:
+            cls.activate(odoc)
+            top_win = cls.get_top_window()
+        except mEx.MissingInterfaceError as e:
+            mLo.Lo.print("Unable to get top window")
+            print(f"  {e}")
+            return
+        top2 = mLo.Lo.qi(XTopWindow2, top_win)
+        if top2 is None:
+            mLo.Lo.print("Unable to get top window (2)")
+            return
+        top2.IsMaximized = True
+
+    @classmethod
+    def minimize(cls, odoc: object) -> None:
+        """
+        Minimizes Office windwo
+
+        Args:
+            odoc (object): Office document
+        
+        See Also:
+            - :py:meth:`~.gui.GUI.maximize`
+            - :py:meth:`~.gui.GUI.activate`
+            - :py:meth:`~.gui.GUI.get_active_window`
+        """
+        try:
+            top_win = cls.get_top_window()
+        except mEx.MissingInterfaceError as e:
+            mLo.Lo.print("Unable to get top window")
+            print(f"  {e}")
+            return
+        top2 = mLo.Lo.qi(XTopWindow2, top_win)
+        if top2 is None:
+            mLo.Lo.print("Unable to get top window (2)")
+            return
+        if top2.IsMinimized == False:
+            cls.set_visible(is_visible=True, odoc=odoc)
+            top2.IsMinimized = True
+
+    # endregion ------------- min/max ----------------------------------
 
     # region ---------------- zooming ----------------------------------
 
