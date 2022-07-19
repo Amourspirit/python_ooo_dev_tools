@@ -95,7 +95,7 @@ class FileIO:
             fnm (PathOrStr): file path
 
         Raises:
-            Exception: If unalbe to get url form fnm.
+            Exception: If unable to get url form fnm.
 
         Returns:
             str: Converted path if conversion is successful; Otherwise None.
@@ -109,7 +109,7 @@ class FileIO:
     @classmethod
     def uri_to_path(cls, uri_fnm: str) -> Path:
         """
-        Convets uri file to path.
+        Converts uri file to path.
 
         Args:
             uri_fnm (str): Uri to convert
@@ -354,7 +354,7 @@ class FileIO:
     @staticmethod
     def unzip_file(zfa: XZipFileAccess, fnm: PathOrStr) -> None:
         """
-        Unzip File. Not yet imeplemented
+        Unzip File. Not yet implemented
 
         Args:
             zfa (XZipFileAccess): Zip File Access

@@ -284,7 +284,7 @@ The first question arose in :ref:`Chapter 2 <ch02>` when set properties in ``loa
 Unfortunately the LibreOffice documentation or OfficeDocument doesn't list all the properties associated with the service.
 Have a look for yourself by typing ``lodoc OfficeDocument service``, which takes you to its IDL Page unfortunately.
 You'll then need to click on the OfficeDocument_ link in the "Classes" section to reach the documentation. OfficeDocument's "Public Attributes" section only lists three properties.
-Thre is a |odoc_member_list|_ which is a little more helpful but can be challengeing decipher.
+There is a |odoc_member_list|_ which is a little more helpful but can be challenging decipher.
 
 The second problem is also only partly addressed by the LibreOffice documentation.
 The pages helpfully includes inheritance tree diagrams that can be clicked on to jump to the documentation about other services and interfaces.
@@ -462,7 +462,7 @@ File Types Another group of utility methods let a programmer investigate a file'
 It's hardly surprising that Office developers have wanted to make the investigation of services, interfaces, and properties associated with documents and other objects easier.
 There are several extension which do this, such as |mri_tool|_ and |apso|_.
 
-Sincd `LibreOffice 7.2` we have the advantage of using |devtools|_,
+Since `LibreOffice 7.2` we have the advantage of using |devtools|_,
 that inspects objects in LibreOffice documents and shows supported UNO services, as well as available methods,
 properties and implemented interfaces. This feature as seen in :numref:`ch03fig06` also allows to explore the document structure using the Document Object Model (DOM).
 

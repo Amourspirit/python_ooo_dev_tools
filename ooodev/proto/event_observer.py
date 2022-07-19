@@ -20,7 +20,7 @@ class EventObserver(Protocol):
         Registers an event
 
         Args:
-            event_name (str): Uniquie event name
+            event_name (str): Unique event name
             callback (Callable[[object, EventArgs], None]): Callback function
         """
         ...
@@ -30,7 +30,7 @@ class EventObserver(Protocol):
         Removes an event callback
 
         Args:
-            event_name (str): Uniquie event name
+            event_name (str): Unique event name
             callback (Callable[[object, EventArgs], None]): Callback function
 
         Returns:

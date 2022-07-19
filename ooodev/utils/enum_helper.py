@@ -51,12 +51,12 @@ def uno_enum_class_ne(self, other: object) -> bool:
     """
     Enum Not equal method.
     
-    This method is usuall assigned to an enum.
+    This method is usually assigned to an enum.
 
     Args:
         other (object): Object to compare
 
     Returns:
-        bool: False if equal; Othherwise, true
+        bool: False if equal; Otherwise, true
     """
     return not self.__eq__(other)

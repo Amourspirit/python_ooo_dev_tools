@@ -1,7 +1,7 @@
 Class ConnectPipe
 =================
 
-Configuraton class for connecting to LibreOffice via pipe.
+Configuration class for connecting to LibreOffice via pipe.
 By default no configuration is required.
 
 :py:class:`.Lo.ConnectPipe` is an alias of this class.

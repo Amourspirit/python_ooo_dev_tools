@@ -22,7 +22,7 @@ class ViewState:
             state (str): State in format of '0/4998/0/1/0/218/2/0/0/4988/4998'
 
         Raises:
-            ValueError: if state does not containe 10 '/' (11 parts)
+            ValueError: if state does not contains 10 '/' (11 parts)
         """
         # The state string has the format:
         #       0/4998/0/1/0/218/2/0/0/4988/4998
@@ -175,13 +175,13 @@ class ViewState:
             dir (int | PaneEnum): Direction to move
 
         Raises:
-            ValueError: If dir is unnknown
+            ValueError: If dir is unknown
 
         Returns:
-            bool: True if move is successfull; Otherwise False
+            bool: True if move is successful; Otherwise False
 
         Note:
-            The 4 posible view panes are numbered like so
+            The 4 possible view panes are numbered like so
             ::
 
                 0  |  1

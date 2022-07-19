@@ -1041,7 +1041,7 @@ class Calc:
             MissingInterfaceError: if unable to get interface XCellRangeAddressable
 
         Returns:
-            CellRangeAddress: Cell range adresses on success; Othwrwise, None
+            CellRangeAddress: Cell range addresses on success; Otherwise, None
         """
         ...
 
@@ -1059,7 +1059,7 @@ class Calc:
             MissingInterfaceError: if unable to get interface XCellRangeAddressable
 
         Returns:
-            CellRangeAddress: Cell range adresses on success; Othwrwise, None
+            CellRangeAddress: Cell range addressees on success; Otherwise, None
         """
         ordered_keys = (1,)
         kargs_len = len(kwargs)
@@ -1081,7 +1081,7 @@ class Calc:
             return ka
 
         if count != 1:
-            raise TypeError("get_selected_addr() got an invalid numer of arguments")
+            raise TypeError("get_selected_addr() got an invalid number of arguments")
 
         kargs = get_kwargs()
 
@@ -1126,7 +1126,7 @@ class Calc:
             cell = cls.get_cell(sheet=sheet, col=cr_addr.StartColumn, row=cr_addr.StartRow)
             return cls.get_cell_address(cell)
         else:
-            raise mEx.CellError("Selected addres is not a single cell")
+            raise mEx.CellError("Selected address is not a single cell")
 
     # endregion -------------- view methods ----------------------------
 
@@ -1596,7 +1596,7 @@ class Calc:
             return ka
 
         if not count in (2, 3):
-            raise TypeError("clear_cells() got an invalid numer of arguments")
+            raise TypeError("clear_cells() got an invalid number of arguments")
 
         kargs = get_kwargs()
         for i, arg in enumerate(args):
@@ -2706,7 +2706,7 @@ class Calc:
     @classmethod
     def set_col(cls, sheet: XSpreadsheet, values: Column, cell_name: str) -> None:
         """
-        Inserts a colum of data into spreadsheet
+        Inserts a column of data into spreadsheet
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
@@ -2719,7 +2719,7 @@ class Calc:
     @classmethod
     def set_col(cls, sheet: XSpreadsheet, values: Column, col_start: int, row_start: int) -> None:
         """
-        Inserts a colum of data into spreadsheet
+        Inserts a column of data into spreadsheet
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
@@ -2732,7 +2732,7 @@ class Calc:
     @classmethod
     def set_col(cls, *args, **kwargs) -> None:
         """
-        Inserts a colum of data into spreadsheet
+        Inserts a column of data into spreadsheet
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
@@ -2983,7 +2983,7 @@ class Calc:
             cell_name (str): Cell name
             day (int): Date day part
             month (int): Date month part
-            year (int): Date yeart part
+            year (int): Date year part
         """
         xcell = cls._get_cell_sheet_cell(sheet=sheet, cell_name=cell_name)
         xcell.setFormula(f"{month}/{day}/{year}")
@@ -3018,7 +3018,7 @@ class Calc:
             MissingInterfaceError: If interface is missing
 
         Returns:
-            XSheetAnnotation: Cell annotation that was addded
+            XSheetAnnotation: Cell annotation that was added
         """
         ...
 
@@ -3032,13 +3032,13 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet
             cell_name (str): Name of cell to add annotation such as 'A1'
             msg (str): Annotation Text
-            set_visible (bool): Determines if the annaction is set visible
+            set_visible (bool): Determines if the annotation is set visible
 
         Raises:
             MissingInterfaceError: If interface is missing
 
         Returns:
-            XSheetAnnotation: Cell annotation that was addded
+            XSheetAnnotation: Cell annotation that was added
         """
         ...
 
@@ -3051,13 +3051,13 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet
             cell_name (str): Name of cell to add annotation such as 'A1'
             msg (str): Annotation Text
-            set_visible (bool): Determines if the annaction is set visible
+            set_visible (bool): Determines if the annotation is set visible
 
         Raises:
             MissingInterfaceError: If interface is missing
 
         Returns:
-            XSheetAnnotation: Cell annotation that was addded
+            XSheetAnnotation: Cell annotation that was added
         """
         # add the annotation
         addr = cls.get_cell_address(sheet=sheet, cell_name=cell_name)
@@ -3089,7 +3089,7 @@ class Calc:
             MissingInterfaceError: If interface is missing
 
         Returns:
-            XSheetAnnotation: Cell annotation on success; Othwrwise, None
+            XSheetAnnotation: Cell annotation on success; Otherwise, None
         """
         # get a reference to the annotation
         xcell = cls.get_cell(sheet=sheet, cell_name=cell_name)
@@ -3718,7 +3718,7 @@ class Calc:
             row_str (str): string to convert
 
         Returns:
-            int: Number if conversion succeeds; Othwrwise, 0
+            int: Number if conversion succeeds; Otherwise, 0
         """
         try:
             return TableHelper.row_name_to_int(row_str) - 1
@@ -3866,7 +3866,7 @@ class Calc:
             return ka
 
         if not count in (1, 2, 3):
-            raise TypeError("get_cell_address() got an invalid numer of arguments")
+            raise TypeError("get_cell_address() got an invalid number of arguments")
 
         kargs = get_kwargs()
         for i, arg in enumerate(args):
@@ -4007,7 +4007,7 @@ class Calc:
             return ka
 
         if not count in (1, 2, 5):
-            raise TypeError("get_address() got an invalid numer of arguments")
+            raise TypeError("get_address() got an invalid number of arguments")
 
         kargs = get_kwargs()
         for i, arg in enumerate(args):
@@ -4170,7 +4170,7 @@ class Calc:
             return ka
 
         if count != 1:
-            raise TypeError("print_address() got an invalid numer of arguments")
+            raise TypeError("print_address() got an invalid number of arguments")
 
         kargs = get_kwargs()
 
@@ -4670,7 +4670,7 @@ class Calc:
 
         Args:
             srch (XSearchable): Searchable object
-            sd (XSearchDescriptor): Search descriptro
+            sd (XSearchDescriptor): Search description
 
         Returns:
             List[XCellRange] | None: A list of cell ranges on success; Otherwise, None
@@ -4859,7 +4859,7 @@ class Calc:
             return ka
 
         if not count in (3, 6):
-            raise TypeError("change_style() got an invalid numer of arguments")
+            raise TypeError("change_style() got an invalid number of arguments")
 
         kargs = get_kwargs()
 
@@ -5487,7 +5487,7 @@ class Calc:
             return ka
 
         if not count in (3, 4):
-            raise TypeError("highlight_range() got an invalid numer of arguments")
+            raise TypeError("highlight_range() got an invalid number of arguments")
 
         kargs = get_kwargs()
 
@@ -5635,7 +5635,7 @@ class Calc:
             comment (str): Scenario description
 
         Raises:
-            MissingInterfaceError: If a requied interface is missing.
+            MissingInterfaceError: If a required interface is missing.
 
         Returns:
             XScenario: the newly created scenario
@@ -5786,13 +5786,13 @@ class Calc:
     @staticmethod
     def call_fun(func_name: str, *args: any) -> object:
         """
-        Execute a Calc function by its (english) name and based on the given arguments
+        Execute a Calc function by its (English) name and based on the given arguments
 
         Args:
-            func_name (str): the english name of the function to execute
+            func_name (str): the English name of the function to execute
             args: (any): the arguments of the called function.
                 Each argument must be either a string, a numeric value
-                or a sequence of sequeneces ( tuples  or list ) combining those types.
+                or a sequence of sequences ( tuples or list ) combining those types.
 
         Returns:
             object: The (string or numeric) value or the array of arrays returned by the call to the function
@@ -6175,7 +6175,7 @@ class Calc:
 
         Args:
             num (Number): Constraint number such as float or int.
-            op (str): Operaton such as '<='
+            op (str): Operation such as '<='
             sheet (XSpreadsheet): Spreadsheet
             cell_name (str): Cell name such as 'A1'
 
@@ -6366,7 +6366,7 @@ class Calc:
             XText: interface instance
         """
         if hfc is None:
-            raise TypeError("'hfc' is expencted to be XHeaderFooterContent instance")
+            raise TypeError("'hfc' is expected to be XHeaderFooterContent instance")
 
         if region == cls.HeaderFooter.HF_LEFT:
             return hfc.getLeftText()

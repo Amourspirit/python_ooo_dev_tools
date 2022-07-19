@@ -123,7 +123,7 @@ There is also :py:class:`.Lo.Loader` context manager that allows for automatic c
 See |convert_doc|_ for an example.
 
 
-It is also simple to start LibreOffice from the command line automate tasks and leavel the open for user imput.
+It is also simple to start LibreOffice from the command line automate tasks and leave it open for user input.
 See `Calc Add Range of Data Automation <https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/calc/odev_add_range_data>`_ for an example.
 
 .. todo::
@@ -473,7 +473,7 @@ We encountered these service names back in :ref:`Chapter 1 <ch01>`, :numref:`ch0
 subclasses of the OfficeDocument service.
 
 
-A third problem is incompletness; :py:meth:`~.Lo.save_doc` via :py:meth:`~.Lo.ext_to_format` mappings only implemets a small subset
+A third problem is incompleteness; :py:meth:`~.Lo.save_doc` via :py:meth:`~.Lo.ext_to_format` mappings only implements a small subset
 of Office's 250+ filter names, so if you try to save a file with an exotic extension then the code will most likely break.
 :py:meth:`~.Lo.save_doc` has an overload that takes format as option, that is a filter name.
 This overload can be used to if a filter is not implements by :py:meth:`~.Lo.ext_to_format`.

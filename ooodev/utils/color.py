@@ -311,7 +311,7 @@ class RGB(NamedTuple):
         If color has a brightness less than ``128`` it is considered dark.
 
         Returns:
-            bool: True if color is dark; Othwrwise, False
+            bool: True if color is dark; Otherwise, False
         """
         return self.get_brightness() < 128
 
@@ -321,7 +321,7 @@ class RGB(NamedTuple):
         If color has a brightness Greater than ``128`` it is considered light.
 
         Returns:
-            bool: True if color is light; Othwrwise, False
+            bool: True if color is light; Otherwise, False
         """
         return not self.is_dark()
 
@@ -401,7 +401,7 @@ def clamp01(value: float) -> float:
 
 def hue_to_rgb(h: float) -> RGB:
     """
-    Conerts a hue to instance of red, gree, blue
+    Converts a hue to instance of red, green, blue
 
     Args:
         h (float): hue to convert
@@ -591,7 +591,7 @@ def lighten(rgb_color: Union[RGB, int], percent: numbers.Number) -> RGB:
     Lightenes an rgb instance
 
     Args:
-        rgb_color (rgb | int): instanct containing data
+        rgb_color (rgb | int): instance containing data
         percent (Number): Amount between 0 and 100 int lighten rgb by.
 
     Raises:
@@ -633,7 +633,7 @@ def darken(rgb_color: Union[RGB, int], percent: numbers.Number) -> RGB:
     Darkens an rgb instance
 
     Args:
-        rgb_color (rgb | int): instanct containing data
+        rgb_color (rgb | int): instance containing data
         percent (Number): Amount between 0 and 100 int darken rgb by.
 
     Raises:

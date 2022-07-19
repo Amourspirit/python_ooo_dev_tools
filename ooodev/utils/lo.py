@@ -80,13 +80,13 @@ class Lo(metaclass=StaticProperty):
         """
         Context manager for Locking Controller
 
-        In the followin example ControllerLock is called usinsg ``with``.
+        In the following example ControllerLock is called using ``with``.
 
         All code inside the ``with Lo.ControllerLock() as xdoc`` block is written to **Writer**
         with controller locked. This means the ui will not update until the block is done.
         A soon as the block is processed the controller is unlocked and the ui is updated.
 
-        Can be useful for large writes in documnet. Will give a speed improvement.
+        Can be useful for large writes in document. Will give a speed improvement.
 
         Example:
 
@@ -135,7 +135,7 @@ class Lo(metaclass=StaticProperty):
 
             Args:
                 connector (connectors.ConnectPipe | connectors.ConnectSocket | None): Connection information. Ignore for macros.
-                cache_obj (mCache.Cache | None, optional): Cache instance that determinse of LibreOffice profile is to be copied and cached
+                cache_obj (mCache.Cache | None, optional): Cache instance that determines if LibreOffice profile is to be copied and cached
                     Ignore for macros. Defaults to None.
             """
             self.loader = Lo.load_office(connector=connector, cache_obj=cache_obj)
@@ -1010,7 +1010,7 @@ class Lo(metaclass=StaticProperty):
         See Also:
             :ref:`ch02sec04`
         """
-        # Props is called in this metod so trigger global_reset first
+        # Props is called in this method so trigger global_reset first
         cargs = CancelEventArgs(Lo.create_doc.__qualname__)
         cargs.event_data = {
             "doc_type": doc_type,
@@ -1672,7 +1672,7 @@ class Lo(metaclass=StaticProperty):
         Closes document.
 
         Args:
-            doc (XCloseable): Closeable doccument
+            doc (XCloseable): Closeable document
         """
         ...
 
@@ -1683,7 +1683,7 @@ class Lo(metaclass=StaticProperty):
         Closes document.
 
         Args:
-            doc (XCloseable): Closeable doccument
+            doc (XCloseable): Closeable document
             deliver_ownership (bool): True delegates the ownership of this closing object to
                 anyone which throw the CloseVetoException.
 
@@ -1848,15 +1848,15 @@ class Lo(metaclass=StaticProperty):
     @staticmethod
     def dispatch_cmd(cmd: str, props: Iterable[PropertyValue]) -> bool:
         """
-        Dispacches a LibreOffice command
+        Dispatches a LibreOffice command
 
         Args:
-            cmd (str): Command to dispatch such as 'GoToCell'. Note: cmd does not containd '.uno:' prefix.
+            cmd (str): Command to dispatch such as 'GoToCell'. Note: cmd does not contains '.uno:' prefix.
             props (PropertyValue): properties for dispatch
 
         Raises:
             MissingInterfaceError: If unable to obtain XDispatchHelper instance.
-            Exception: If error occurs dispacthing command
+            Exception: If error occurs dispatching command
 
         Returns:
             bool: True on success.
@@ -1876,7 +1876,7 @@ class Lo(metaclass=StaticProperty):
 
         Raises:
             MissingInterfaceError: If unable to obtain XDispatchHelper instance.
-            Exception: If error occurs dispacthing command
+            Exception: If error occurs dispatching command
 
         Returns:
             bool: True on success.
@@ -1895,7 +1895,7 @@ class Lo(metaclass=StaticProperty):
 
         Raises:
             MissingInterfaceError: If unable to obtain XDispatchHelper instance.
-            Exception: If error occurs dispacthing command
+            Exception: If error occurs dispatching command
 
         Returns:
             bool: True on success.
@@ -2012,7 +2012,7 @@ class Lo(metaclass=StaticProperty):
             obj (object): obj to inspect
 
         Raises:
-            Exception: If MRI serivce could not be instantiated.
+            Exception: If MRI service could not be instantiated.
 
         See Also:
             `MRI - UNO Object Inspection Tool <https://extensions.libreoffice.org/en/extensions/show/mri-uno-object-inspection-tool>`_
@@ -2203,7 +2203,7 @@ class Lo(metaclass=StaticProperty):
             con (XIndexAccess): container
 
         Returns:
-            List[str] | None: Containor name is found; Otherwise, None
+            List[str] | None: Container name is found; Otherwise, None
         """
         if con is None:
             Lo.print("Container is null")
@@ -2230,7 +2230,7 @@ class Lo(metaclass=StaticProperty):
 
         Args:
             con (XIndexAccess): Container to search
-            nm (str): Name of property to searh for
+            nm (str): Name of property to search for
 
         Raises:
             TypeError: if con is None
@@ -2420,7 +2420,7 @@ class Lo(metaclass=StaticProperty):
         Gets Value of Null Date in UTC
 
         Returns:
-            datetime: Null Date on sucess; Otherwise, None
+            datetime: Null Date on success; Otherwise, None
 
         Note:
             If Lo has no document to determine date from then a
@@ -2444,7 +2444,7 @@ class Lo(metaclass=StaticProperty):
 
     @null_date.setter
     def null_date(cls, value) -> None:
-        # raise error on set. Not really neccesary but gives feedback.
+        # raise error on set. Not really necessary but gives feedback.
         raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
 
     @classproperty
@@ -2466,7 +2466,7 @@ class Lo(metaclass=StaticProperty):
 
     @is_macro_mode.setter
     def is_macro_mode(cls, value) -> None:
-        # raise error on set. Not really neccesary but gives feedback.
+        # raise error on set. Not really necessary but gives feedback.
         raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
 
     @classproperty

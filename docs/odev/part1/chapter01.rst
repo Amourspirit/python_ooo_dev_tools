@@ -563,7 +563,7 @@ This ensures the service has the desired interface and avoids the need for ``typ
 
     Example of querying for interface.
 
-    In this example ``srch`` will automaticlly have typing support for all the properies and methods XSearchable_ 
+    In this example ``srch`` will automatically have typing support for all the properties and methods XSearchable_ 
 
     .. code-block:: python
         :emphasize-lines: 3
@@ -573,18 +573,18 @@ This ensures the service has the desired interface and avoids the need for ``typ
         srch = Lo.qi(XSearchable, cell_range)
         sd = srch.createSearchDescriptor()
 
-Using the basic IDE has has some advantages for simple scripts; However, new tools have emerged and are emerging to make the experiece in python desirable in many cases.
+Using the basic IDE has has some advantages for simple scripts; However, new tools have emerged and are emerging to make the experience in python desirable in many cases.
 
 types-unopy_ that gives typing_ support for the entire |lo_api|_.
 
-ooouno_ that also contains all |lo_api|_ components in different namespaces. ooouno_ dynamic namespaces automaticlly gets the appropriate ``uno`` object at runtime, see :numref:`ch01fig12`.
-The dynamic namespaces give eaiser access to |lo_api|_ components with full typing_ support and is a real time saver.
+ooouno_ that also contains all |lo_api|_ components in different namespaces. ooouno_ dynamic namespaces automatically gets the appropriate ``uno`` object at runtime, see :numref:`ch01fig12`.
+The dynamic namespaces give easier access to |lo_api|_ components with full typing_ support and is a real time saver.
 
 .. collapse:: Example
 
     ooouno_ Example
 
-    At runtime ``ooo.dyn.awt.rectangle.Rectangle`` is acutally ``uno.com.sun.star.awt.Rectangle``
+    At runtime ``ooo.dyn.awt.rectangle.Rectangle`` is actually ``uno.com.sun.star.awt.Rectangle``
 
     .. code-block:: python
 
