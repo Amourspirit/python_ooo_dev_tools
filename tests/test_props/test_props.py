@@ -47,3 +47,18 @@ def test_prop_value_to_string(loader) -> None:
         assert prop_lst[1].startswith('AbsoluteName = $Sheet1.$A$1')
     finally:
         Lo.close_doc(doc=doc, deliver_ownership=False)
+
+
+def test_prop_url(loader, fix_writer_path):
+    from ooodev.utils.props import Props
+    from ooodev.utils.lo import Lo
+    from com.sun.star.frame import XModel
+    test_doc = fix_writer_path("scandalStart.odt")
+    doc = Lo.open_doc(fnm=test_doc, loader=loader)
+    try:
+        model = Lo.qi(XModel, doc)
+        args = model.getArgs()
+        url = str(Props.get_value(name='URL', props=args))
+        assert url.endswith("scandalStart.odt")
+    finally:
+        Lo.close_doc(doc, False)

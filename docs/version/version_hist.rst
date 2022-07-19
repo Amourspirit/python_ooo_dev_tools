@@ -3,6 +3,12 @@ Version History
 ###############
 
 *************
+Version 0.4.7
+*************
+
+Added ``minimize()``, ``maximize()`` and ``activate()`` methods to :py:class:`~.gui.GUI` class.
+
+*************
 Version 0.4.6
 *************
 
