@@ -2494,14 +2494,18 @@ class Lo(metaclass=StaticProperty):
         try:
             return cls._this_component
         except AttributeError:
-            if cls._doc is None:
+            ctx = cls.get_context()
+            if ctx is None:
                 # attempt to connect direct
+                # failure will result in script error and then exit
                 cls.load_office()
+
             # comp = cls.star_desktop.getCurrentComponent()
-            if cls._xdesktop is None:
+            desktop = cls.get_desktop()
+            if desktop is None:
                 return None
             if cls._doc is None:
-                cls._doc = cls._xdesktop.getCurrentComponent()
+                cls._doc = desktop.getCurrentComponent()
             if cls._doc is None:
                 return None
             impl = cls._doc.ImplementationName
@@ -2524,13 +2528,16 @@ class Lo(metaclass=StaticProperty):
         try:
             return cls._xscript_context
         except AttributeError:
-            # use this_component to autoload
-            if cls.this_component is None:
-                return None
             ctx = cls.get_context()
+            if ctx is None:
+                # attempt to connect direct
+                # failure will result in script error and then exit
+                cls.load_office()
+                ctx = cls.get_context()
+
             desktop = cls.get_desktop()
-            model = cls.qi(XModel, cls._doc, raise_err=True)
-            cls._xscript_context = script_context.ScriptContext(ctx, desktop, model)
+            model = cls.qi(XModel, cls._doc)
+            cls._xscript_context = script_context.ScriptContext(ctx=ctx, desktop=desktop, doc=model)
         return cls._xscript_context
 
     XSCRIPTCONTEXT = cast("XScriptContext", xscript_context)
