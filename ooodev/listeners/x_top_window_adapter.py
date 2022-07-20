@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 class XTopWindowAdapter(unohelper.Base, XTopWindowListener):
     """
     makes it possible to receive window events.
-    
+
     This class is meant a parent class.
     """
 

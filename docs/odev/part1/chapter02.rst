@@ -636,19 +636,11 @@ for searching the gigantic code base. :numref:`ch02fig06` shows the results for 
 The function's code is in EnvStack.cxx, which can be examined by clicking on the linked function name shown at the bottom of :numref:`ch02fig06`.
 
 
-.. |dsearch| replace:: **LibreOffice Developer Search**
-.. _dsearch: https://pypi.org/project/lo-dev-search/
-
-.. |unoex| replace:: **LibreOffice Python UNO Examples**
-.. _unoex: https://github.com/Amourspirit/python-ooouno-ex
-
 .. |convert_doc| replace:: Write Convert Document Format
 .. _convert_doc: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_doc_convert
 
 .. |convert_doc_src| replace:: Write Convert Document Format Source
 .. _convert_doc_src: https://github.com/Amourspirit/python-ooouno-ex/blob/main/ex/auto/writer/odev_doc_convert/start.py
-
-.. _types-unopy: https://pypi.org/project/types-unopy/
 
 .. _NirSoft: https://www.nirsoft.net/
 
@@ -667,3 +659,5 @@ The function's code is in EnvStack.cxx, which can be examined by clicking on the
 
 .. |storeToURL| replace:: XStorable.storeToURL()
 .. _storeToURL: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1frame_1_1XStorable.html#af48930bc64a00251aa50915bf087f274
+
+.. include:: ../../resources/odev/links.rst

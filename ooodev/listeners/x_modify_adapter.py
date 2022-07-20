@@ -8,26 +8,28 @@ else:
     import unohelper
 
 from com.sun.star.util import XModifyListener
+
 if TYPE_CHECKING:
     from com.sun.star.lang import EventObject
+
 
 class XModifyAdapter(unohelper.Base, XModifyListener):
     """
     makes it possible to receive events when a model object changes.
-    
+
     This class is meant a parent class.
     """
-    def modified(self,  event: EventObject) -> None:
+
+    def modified(self, event: EventObject) -> None:
         """
         is called when something changes in the object.
-        
+
         Due to such an event, it may be necessary to update views or controllers.
-        
+
         The source of the event may be the content of the object to which the listener
         is registered.
         """
         pass
-
 
     def disposing(self, event: EventObject) -> None:
         """

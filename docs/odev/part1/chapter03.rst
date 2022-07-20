@@ -516,3 +516,5 @@ properties and implemented interfaces. This feature as seen in :numref:`ch03fig0
 .. _XDocumentInfo: https://www.openoffice.org/api/docs/common/ref/com/sun/star/document/XDocumentInfo.html
 
 .. _XTextDocument: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextDocument.html
+
+.. include:: ../../resources/odev/links.rst
