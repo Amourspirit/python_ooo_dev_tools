@@ -53,6 +53,7 @@ if TYPE_CHECKING:
     from com.sun.star.script.provider import XScriptContext
     from com.sun.star.uno import XComponentContext
     from com.sun.star.uno import XInterface
+    from com.sun.star.lang import XComponent
 
 
 from ooo.dyn.document.macro_exec_mode import MacroExecMode  # const
@@ -2541,11 +2542,29 @@ class Lo(metaclass=StaticProperty):
         return cls._xscript_context
 
     XSCRIPTCONTEXT = cast("XScriptContext", xscript_context)
+    
+    @classproperty
+    def bridge_component(cls) -> XComponent:
+        """
+        Gets connection bridge component
+
+        Returns:
+            XComponent: bridge component
+        """
+        try:
+            return cls._bridge_component
+        except AttributeError:
+            try:
+                # when running as macro cls._lo_inst will not have bridge_component
+                cls._bridge_component = cls._lo_inst.bridge_component
+            except AttributeError:
+                cls._bridge_component = None
+            return cls._bridge_component
 
 
 def _del_cache_attrs(source: object, e: EventArgs) -> None:
     # clears Lo Attributes that are dynamically created
-    dattrs = ("_xscript_context", "_is_macro_mode", "_this_component")
+    dattrs = ("_xscript_context", "_is_macro_mode", "_this_component", "_bridge_component")
     for attr in dattrs:
         if hasattr(Lo, attr):
             delattr(Lo, attr)
