@@ -10,8 +10,8 @@ Chapter 4. Listening, and Other Techniques
 
 This chapter concludes the general introduction to Office programming by looking at several techniques that will reappear periodically in later chapters: the use of window listeners.
 
-1. Listening to a Window
-========================
+4.1 Listening to a Window
+=========================
 
 There are many Listeners in office `(near 140 or so)`.
 Using |dsearch|_ and running ``loapi comp -a -m 150 -t interface -s Listener`` shows 139 listeners.
@@ -178,15 +178,84 @@ There are other python libraries that can handel mouse and keyboard enulation su
 4.3 Detecting Office Termination
 ================================
 
+Office termination is most easily observed by attaching a listener to the Desktop object,
+as seen in |exmonitor|_ exmaple.
 
+.. tabs::
+
+    .. code-tab:: python
+
+        class DocMonitor:
+
+            def __init__(self) -> None:
+                super().__init__()
+                self.closed = False
+                loader = Lo.load_office(Lo.ConnectPipe())
+                xdesktop = Lo.XSCRIPTCONTEXT.getDesktop()
+                
+                # create a new instance of adapter. Note that adapter methods all pass.
+                term_adapter = XTerminateAdapter()
+                
+                # reassign the method we want to use from XTerminateAdapter instance in a pythonic way.
+                term_adapter.notifyTermination = types.MethodType(self.notify_termination, term_adapter)
+                term_adapter.queryTermination = types.MethodType(self.query_termination, term_adapter)
+                term_adapter.disposing = types.MethodType(self.disposing, term_adapter)
+                xdesktop.addTerminateListener(term_adapter)
+                
+                self.doc = Calc.create_doc(loader=loader)
+
+                GUI.set_visible(True, self.doc)
+
+
+            def notify_termination(self, src: XTerminateAdapter, event: EventObject) -> None:
+                """
+                is called when the master environment is finally terminated.
+                """
+                print("TL: Finished Closing")
+                self.closed = True
+            
+            def query_termination(self, src: XTerminateAdapter, event: EventObject) -> None:
+                """
+                is called when the master environment (e.g., desktop) is about to terminate.
+                """
+                print("TL: Starting Closing")
+                
+                
+            def disposing(self, src: XTerminateAdapter, event: EventObject) -> None:
+                """
+                gets called when the broadcaster is about to be disposed.
+                """
+                print("TL: Disposing")
+
+An XTerminateListener is attached to the XDesktop instance. The program's output is:
+
+.. code-block:: text
+
+    PS D:\Users\user\Python\python-ooouno-ex> python -m main auto --process "ex/auto/general/odev_monitor/start.py True"
+    Press 'ctl+c' to exit script early.
+    Loading Office...
+    Creating Office document scalc
+    Closing Office
+    TL: Starting Closing
+    TL: Finished Closing
+    Office terminated
+
+    Exiting by document close.
+
+XTerminateListener_’s ``queryTermination()`` and ``notifyTermination()`` are called at the start and end of the Office closing sequence.
+As in the |exlisten|_ example, ``disposing()`` is never triggered.
 
 Work in Progress...
 
 .. |exlisten| replace:: Office Window Listener
 .. _exlisten: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/general/odev_listen
 
+.. |exmonitor| replace:: Office Window Monitor
+.. _exmonitor: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/general/odev_monitor
+
 .. _XEventListener: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1lang_1_1XEventListener.html
 .. _XTopWindowListener: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1awt_1_1XTopWindowListener.html
+.. _XTerminateListener: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1frame_1_1XTerminateListener.html
 .. _XExtendedToolkit: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1awt_1_1XExtendedToolkit.html
 .. _XFocusListener: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1awt_1_1XFocusListener.html
 .. _XKeyHandler: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1awt_1_1XKeyHandler.html

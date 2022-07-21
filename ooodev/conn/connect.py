@@ -5,7 +5,7 @@ import time
 from abc import ABC, abstractmethod
 import subprocess
 import signal
-from typing import List, TYPE_CHECKING
+from typing import List, TYPE_CHECKING, cast
 import time
 import shutil
 import uno
@@ -14,7 +14,14 @@ from . import connectors
 from . import cache
 from ..utils.sys_info import SysInfo
 
+
 if TYPE_CHECKING:
+    from com.sun.star.beans import XPropertySet
+    from com.sun.star.bridge import XBridgeFactory
+    from com.sun.star.bridge import XBridge
+    from com.sun.star.connection import XConnector
+    from com.sun.star.lang import XComponent
+    from com.sun.star.lang import XMultiComponentFactory
     from com.sun.star.uno import XComponentContext
 
 
@@ -56,6 +63,7 @@ class LoBridgeCommon(ConnectBase):
     def __init__(self, cache_obj: cache.Cache | None):
         super().__init__()
         self._soffice_process = None
+        self._bridge_component = None
         self._platform = SysInfo.get_platform()
         self._environment = os.environ
         self._timeout = 30.0
@@ -71,6 +79,10 @@ class LoBridgeCommon(ConnectBase):
     def _get_connection_str(self) -> str:
         ...
 
+    @abstractmethod
+    def _get_bridge(self, local_factory: XMultiComponentFactory, local_ctx: XComponentContext) -> XBridge:
+        ...
+
     def _connect(self):
         conn_str = self._get_connection_str()
 
@@ -78,12 +90,27 @@ class LoBridgeCommon(ConnectBase):
         last_ex = None
         while end_time > time.time():
             try:
-                localContext = uno.getComponentContext()
-                resolver = localContext.ServiceManager.createInstanceWithContext(
-                    "com.sun.star.bridge.UnoUrlResolver", localContext
+                localContext = cast("XComponentContext", uno.getComponentContext())
+                # resolver = cast("XMultiComponentFactory",localContext.ServiceManager.createInstanceWithContext(
+                #     "com.sun.star.bridge.UnoUrlResolver", localContext
+                # ))
+
+                localFactory = localContext.getServiceManager()
+
+                bridge = self._get_bridge(local_factory=localFactory, local_ctx=localContext)
+
+                self._bridge_component = bridge.queryInterface(uno.getTypeByName("com.sun.star.lang.XComponent"))
+
+                # smgr = resolver.resolve(conn_str)
+                smgr = cast(
+                    "XMultiComponentFactory",
+                    bridge.getInstance("StarOffice.ServiceManager").queryInterface(
+                        uno.getTypeByName("com.sun.star.lang.XMultiComponentFactory")
+                    ),
                 )
-                smgr = resolver.resolve(conn_str)
-                self._ctx = smgr.getPropertyValue("DefaultContext")
+                props = cast("XPropertySet", smgr.queryInterface(uno.getTypeByName("com.sun.star.beans.XPropertySet")))
+
+                self._ctx = props.getPropertyValue("DefaultContext")
                 last_ex = None
                 break
             except NoConnectException as e:
@@ -132,7 +159,7 @@ class LoBridgeCommon(ConnectBase):
         This is only applied when caching is used.
         """
         self._cache.del_working_dir()
-        
+
     def get_soffice_pid(self) -> int | None:
         """
         Gets the pid of soffice
@@ -209,6 +236,10 @@ class LoBridgeCommon(ConnectBase):
         """
         return self._cache
     
+    @property
+    def bridge_component(self) -> XComponent:
+        return self._bridge_component
+
     def __del__(self) -> None:
         try:
             self._cache.del_working_dir()
@@ -274,6 +305,23 @@ class LoPipeStart(LoBridgeCommon):
             raise e
         self._cache.cache_profile()
 
+    def _get_bridge(self, local_factory: XMultiComponentFactory, local_ctx: XComponentContext) -> XBridge:
+        connector = cast(
+            "XConnector",
+            local_factory.createInstanceWithContext("com.sun.star.connection.Connector", local_ctx).queryInterface(
+                uno.getTypeByName("com.sun.star.connection.XConnector")
+            ),
+        )
+        bridgeFactory = cast(
+            "XBridgeFactory",
+            local_factory.createInstanceWithContext("com.sun.star.bridge.BridgeFactory", local_ctx).queryInterface(
+                uno.getTypeByName("com.sun.star.bridge.XBridgeFactory")
+            ),
+        )
+        xconn = connector.connect(f"pipe,name={self.connector.pipe}")
+        bridge = bridgeFactory.createBridge("PipeBridgeAD", "urp", xconn, None)
+        return bridge
+
     def _popen(self, shutdown=False) -> None:
         # it is important that quotes be placed in the correct place.
         # linux is not fussy on this but in windows it breaks things and you
@@ -337,6 +385,23 @@ class LoSocketStart(LoBridgeCommon):
                 self.kill_soffice()
             raise e
         self._cache.cache_profile()
+
+    def _get_bridge(self, local_factory: XMultiComponentFactory, local_ctx: XComponentContext) -> XBridge:
+        connector = cast(
+            "XConnector",
+            local_factory.createInstanceWithContext("com.sun.star.connection.Connector", local_ctx).queryInterface(
+                uno.getTypeByName("com.sun.star.connection.XConnector")
+            ),
+        )
+        bridgeFactory = cast(
+            "XBridgeFactory",
+            local_factory.createInstanceWithContext("com.sun.star.bridge.BridgeFactory", local_ctx).queryInterface(
+                uno.getTypeByName("com.sun.star.bridge.XBridgeFactory")
+            ),
+        )
+        xconn = connector.connect(f"socket,host={self.connector.host},port={self.connector.port},tcpNoDelay=1")
+        bridge = bridgeFactory.createBridge("socketBridgeAD", "urp", xconn, None)
+        return bridge
 
     def _popen(self, shutdown=False) -> None:
         # it is important that quotes be placed in the correct place.
