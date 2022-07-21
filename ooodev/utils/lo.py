@@ -2544,7 +2544,7 @@ class Lo(metaclass=StaticProperty):
     XSCRIPTCONTEXT = cast("XScriptContext", xscript_context)
     
     @classproperty
-    def bridge_component(cls) -> XComponent:
+    def bridge(cls) -> XComponent:
         """
         Gets connection bridge component
 
