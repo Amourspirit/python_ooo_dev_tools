@@ -53,6 +53,7 @@ if TYPE_CHECKING:
     from com.sun.star.script.provider import XScriptContext
     from com.sun.star.uno import XComponentContext
     from com.sun.star.uno import XInterface
+    from com.sun.star.lang import XComponent
 
 
 from ooo.dyn.document.macro_exec_mode import MacroExecMode  # const
@@ -2432,11 +2433,11 @@ class Lo(metaclass=StaticProperty):
         except AttributeError:
             cls.__null_date = datetime(year=1889, month=12, day=30, tzinfo=timezone.utc)
             if cls._doc is None:
-                return  cls.__null_date
+                return cls.__null_date
             n_supplier = cls.qi(XNumberFormatsSupplier, cls._doc)
             if n_supplier is None:
                 # this is not always a XNumberFormatsSupplier such as *.odp documents
-                return  cls.__null_date
+                return cls.__null_date
             number_settings = n_supplier.getNumberFormatSettings()
             d = number_settings.getPropertyValue("NullDate")
             cls.__null_date = datetime(d.Year, d.Month, d.Day, tzinfo=timezone.utc)
@@ -2490,18 +2491,21 @@ class Lo(metaclass=StaticProperty):
         Returns:
             the current component or None when not a document
         """
-        # TODO: autodoc is ignoring classproperty this_component
         try:
             return cls._this_component
         except AttributeError:
-            if cls._doc is None:
+            ctx = cls.get_context()
+            if ctx is None:
                 # attempt to connect direct
+                # failure will result in script error and then exit
                 cls.load_office()
+
             # comp = cls.star_desktop.getCurrentComponent()
-            if cls._xdesktop is None:
+            desktop = cls.get_desktop()
+            if desktop is None:
                 return None
             if cls._doc is None:
-                cls._doc = cls._xdesktop.getCurrentComponent()
+                cls._doc = desktop.getCurrentComponent()
             if cls._doc is None:
                 return None
             impl = cls._doc.ImplementationName
@@ -2510,7 +2514,7 @@ class Lo(metaclass=StaticProperty):
             cls._this_component = cls._doc
             return cls._this_component
 
-    ThisComponent, thiscomponent = cast(XComponent, this_component), cast(XComponent, this_component)
+    ThisComponent, thiscomponent = this_component, this_component
 
     @classproperty
     def xscript_context(cls) -> XScriptContext:
@@ -2520,29 +2524,48 @@ class Lo(metaclass=StaticProperty):
         Returns:
             XScriptContext: XScriptContext instance
         """
-        # TODO: autodoc is ignoring classproperty xscript_context
         try:
             return cls._xscript_context
         except AttributeError:
-            # use this_component to autoload
-            if cls.this_component is None:
-                return None
             ctx = cls.get_context()
+            if ctx is None:
+                # attempt to connect direct
+                # failure will result in script error and then exit
+                cls.load_office()
+                ctx = cls.get_context()
+
             desktop = cls.get_desktop()
-            model = cls.qi(XModel, cls._doc, raise_err=True)
-            cls._xscript_context = script_context.ScriptContext(ctx, desktop, model)
+            model = cls.qi(XModel, cls._doc)
+            cls._xscript_context = script_context.ScriptContext(ctx=ctx, desktop=desktop, doc=model)
         return cls._xscript_context
 
-    XSCRIPTCONTEXT = cast("XScriptContext", xscript_context)
+    XSCRIPTCONTEXT = xscript_context
+
+    @classproperty
+    def bridge(cls) -> XComponent:
+        """
+        Gets connection bridge component
+
+        Returns:
+            XComponent: bridge component
+        """
+        try:
+            return cls._bridge_component
+        except AttributeError:
+            try:
+                # when running as macro cls._lo_inst will not have bridge_component
+                cls._bridge_component = cls._lo_inst.bridge_component
+            except AttributeError:
+                cls._bridge_component = None
+            return cls._bridge_component
 
 
 def _del_cache_attrs(source: object, e: EventArgs) -> None:
     # clears Lo Attributes that are dynamically created
-    dattrs = ("_xscript_context", "_is_macro_mode", "_this_component")
+    dattrs = ("_xscript_context", "_is_macro_mode", "_this_component", "_bridge_component")
     for attr in dattrs:
         if hasattr(Lo, attr):
             delattr(Lo, attr)
-
 
 _Events().on(LoNamedEvent.RESET, _del_cache_attrs)
 

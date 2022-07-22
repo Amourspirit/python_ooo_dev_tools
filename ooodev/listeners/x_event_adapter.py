@@ -7,26 +7,19 @@ if mock_g.DOCS_BUILDING:
 else:
     import unohelper
 
-from com.sun.star.view import XSelectionChangeListener
+from com.sun.star.lang import XEventListener
 
 if TYPE_CHECKING:
     from com.sun.star.lang import EventObject
 
 
-class XSelectionChangeAdapter(unohelper.Base, XSelectionChangeListener):
+class XEventAdapter(unohelper.Base, XEventListener):
     """
-    makes it possible to receive an event when the current selection changes.
+    XEventListener implementation
 
-    This class is meant a parent class.
+    See Also:
+        `API XEventListener <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1lang_1_1XEventListener.html>`_
     """
-
-    def selectionChanged(self, event: EventObject) -> None:
-        """
-        is called when the selection changes.
-
-        You can get the new selection via XSelectionSupplier from com.sun.star.lang.EventObject.Source.
-        """
-        pass
 
     def disposing(self, event: EventObject) -> None:
         """

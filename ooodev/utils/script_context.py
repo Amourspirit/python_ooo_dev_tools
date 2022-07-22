@@ -14,9 +14,9 @@ else:
 from com.sun.star.script.provider import XScriptContext
 
 if TYPE_CHECKING:
+    from com.sun.star.frame import XDesktop
     from com.sun.star.frame import XModel
     from com.sun.star.uno import XComponentContext
-    from com.sun.star.frame import XDesktop
 
 
 class ScriptContext(unohelper.Base, XScriptContext):
@@ -38,10 +38,20 @@ class ScriptContext(unohelper.Base, XScriptContext):
 
     def getDesktop(self) -> XDesktop:
         # return self.ctx.getServiceManager().createInstanceWithContext("com.sun.star.frame.Desktop", self.ctx)
+        if self.desktop is None:
+            try:
+                self.desktop = self.ctx.getServiceManager().createInstanceWithContext("com.sun.star.frame.Desktop", self.ctx)
+            except Exception:
+                self.desktop = None
         return self.desktop
 
     def getDocument(self) -> XModel:
         # return self.getDesktop().getCurrentComponent()
+        if self.doc is None:
+            try:
+                self.doc =self.getDesktop().getCurrentComponent()
+            except Exception:
+                self.doc = None
         return self.doc
 
     def getInvocationContext(self):

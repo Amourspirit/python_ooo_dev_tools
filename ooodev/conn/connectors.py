@@ -6,8 +6,6 @@ import uuid
 from abc import ABC, abstractmethod
 
 from ..utils import paths
-from ..utils.type_var import PathOrStr
-from ..utils.sys_info import SysInfo
 
 
 class ConnectorBase(ABC):

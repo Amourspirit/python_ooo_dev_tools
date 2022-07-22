@@ -3,6 +3,14 @@ Version History
 ###############
 
 *************
+Version 0.4.8
+*************
+
+New listeners in ooodev.listeners namespace
+
+Fix For Lo.XSCRIPTCONTEXT
+
+*************
 Version 0.4.7
 *************
 

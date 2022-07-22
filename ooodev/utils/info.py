@@ -1979,7 +1979,6 @@ class Info(metaclass=StaticProperty):
             return obj.__pyunointerface__
         return None
 
-    # TODO: Class Property language does not have doc generated.
     @classproperty
     def language(cls) -> str:
         """
@@ -2001,7 +2000,6 @@ class Info(metaclass=StaticProperty):
         # raise error on set. Not really necessary but gives feedback.
         raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
 
-    # TODO: Class Property version does not have doc greatened.
     @classproperty
     def version(cls) -> str:
         """
