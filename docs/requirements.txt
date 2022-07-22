@@ -5,3 +5,4 @@ sphinx-autodoc-typehints
 sphinx-toolbox
 typing_extensions
 ooouno
+sphinxcontrib-spelling

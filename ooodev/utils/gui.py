@@ -275,7 +275,7 @@ class GUI:
         Args:
             title (str): Floating frame title
             x (int): Frame x position
-            y (int): Frame y postition
+            y (int): Frame y position
             width (int): Frame width
             height (int): Frame Height
 
@@ -392,7 +392,7 @@ class GUI:
     @staticmethod
     def get_current_controller(odoc: object) -> XController:
         """
-        Gets controllor from document
+        Gets controller from document
 
         Args:
             odoc (object): office document
@@ -428,7 +428,7 @@ class GUI:
     @staticmethod
     def get_control_access(doc: XComponent) -> XControlAccess:
         """
-        Get controll access from office documnet
+        Get control access from office document
 
         Args:
             doc (XComponent): office document
@@ -683,7 +683,7 @@ class GUI:
         Gets window
 
         Args:
-            doc (XComponent): Ofice document
+            doc (XComponent): Office document
 
         Returns:
             XWindow: window instance
@@ -1139,7 +1139,7 @@ class GUI:
             return ka
 
         if count != 2:
-            raise TypeError("print_ui_cmds() got an invalid numer of arguments")
+            raise TypeError("print_ui_cmds() got an invalid number of arguments")
 
         kargs = get_kwargs()
 

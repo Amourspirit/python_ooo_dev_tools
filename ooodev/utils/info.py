@@ -372,7 +372,7 @@ class Info(metaclass=StaticProperty):
     @staticmethod
     def get_paths(setting: str) -> str:
         """
-        Gets access to LO's prefefined paths.
+        Gets access to LO's predefined paths.
 
         Args:
             setting (str): property value
@@ -568,7 +568,7 @@ class Info(metaclass=StaticProperty):
             node_path (str): Node path of properties
 
         Raises:
-            mEx.ConfigError: if Unble to get config properties
+            mEx.ConfigError: if Unable to get config properties
 
         Returns:
             XPropertySet: Property Set
@@ -811,7 +811,7 @@ class Info(metaclass=StaticProperty):
     @staticmethod
     def get_implementation_name(obj: object) -> str:
         """
-        Gets implementaton name such as ``com.sun.star.comp.deployment.PackageInformationProvider``
+        Gets implementation name such as ``com.sun.star.comp.deployment.PackageInformationProvider``
 
         Args:
             obj (object): uno object that implements XServiceInfo
@@ -1968,7 +1968,7 @@ class Info(metaclass=StaticProperty):
             obj (object): Uno object
 
         Returns:
-            str | None: Full type name if found; Othwrwise; None
+            str | None: Full type name if found; Otherwise; None
         """
         if hasattr(obj, "typeName"):
             return obj.typeName
@@ -1985,7 +1985,7 @@ class Info(metaclass=StaticProperty):
         Gets the Current Language of the LibreOffice Instance
 
         Returns:
-            str: First two chars of languag in lower case such as 'en-US'
+            str: First two chars of language in lower case such as 'en-US'
         """
 
         try:
@@ -1997,7 +1997,7 @@ class Info(metaclass=StaticProperty):
 
     @language.setter
     def language(cls, value) -> None:
-        # raise error on set. Not really neccesary but gives feedback.
+        # raise error on set. Not really necessary but gives feedback.
         raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
 
     @classproperty
@@ -2018,7 +2018,7 @@ class Info(metaclass=StaticProperty):
 
     @version.setter
     def version(cls, value) -> None:
-        # raise error on set. Not really neccesary but gives feedback.
+        # raise error on set. Not really necessary but gives feedback.
         raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
 
 

@@ -1,7 +1,7 @@
 Class ConnectSocket
 ===================
 
-Configuraton class for connecting to LibreOffice via socket.
+Configuration class for connecting to LibreOffice via socket.
 By default no configuration is required.
 
 :py:class:`.Lo.ConnectSocket` is an alias of this class.

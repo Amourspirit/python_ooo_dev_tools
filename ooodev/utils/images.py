@@ -84,7 +84,7 @@ class Images(mImgLo.ImagesLo):
             s = base64.b64encode(b).decode("utf-8")
             return s
         except Exception as e:
-            raise Exception("Converting image to string is not possilbe:") from e
+            raise Exception("Converting image to string is not possible:") from e
 
     @staticmethod
     def string_to_im(s: str) -> Image.Image:
@@ -93,7 +93,7 @@ class Images(mImgLo.ImagesLo):
             image = Image.open(io.BytesIO(imgdata))
             return image
         except Exception as e:
-            print("Converting string to image is not possilbe:")
+            print("Converting string to image is not possible:")
             print(f"    {e}")
             return None
 
@@ -103,7 +103,7 @@ class Images(mImgLo.ImagesLo):
             image = Image.open(io.BytesIO(b))
             return image
         except Exception as e:
-            print("Converting bytes to image is not possilbe:")
+            print("Converting bytes to image is not possible:")
             print(f"    {e}")
             return None
 

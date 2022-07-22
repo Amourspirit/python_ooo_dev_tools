@@ -31,7 +31,7 @@ class _Events(object):
         Registers an event
 
         Args:
-            event_name (str): Uniquie event name
+            event_name (str): Unique event name
             callback (Callable[[object, EventArgs], None]): Callback function
         """
         if self._callbacks is None:

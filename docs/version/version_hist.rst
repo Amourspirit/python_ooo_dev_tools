@@ -56,7 +56,7 @@ New more flexable and robust way of connecting to office.
 
 This update change :py:meth:`.Lo.load_office` method
 
-Paths used internally now automaticlly resolve to absolute paths.
+Paths used internally now automatically resolve to absolute paths.
 
 *************
 Version 0.3.0
@@ -68,4 +68,4 @@ Write module released
 Version 0.2.0
 *************
 
-Initial realease with full support for calc.
+Initial release with full support for calc.

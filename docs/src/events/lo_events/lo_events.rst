@@ -14,7 +14,7 @@ Perhaps a better solution to subscribe to event is the :py:class:`~.events.lo_ev
 
 .. warning::
 
-    Subscribing to events on this class can have unexcected side effects.
+    Subscribing to events on this class can have unexpected side effects.
     Such as subscribed events being triggered when you thought you code was finished running.
 
 Each time |app_name_short| internally runs a print command a event is raised with :py:class:`~.events.args.cancel_event_args.CancelEventArgs` as the args parameter.

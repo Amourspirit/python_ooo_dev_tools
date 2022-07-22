@@ -101,7 +101,7 @@ class Write(mSel.Selection):
     # region    Selection Overloads
 
     # for unknown reason Sphinx docs is not including overloads from inherited class.
-    # At least not for static methods. My curent work around is to implement the same
+    # At least not for static methods. My current work around is to implement the same
     # methods in this class.
 
     if mock_g.DOCS_BUILDING:
@@ -199,7 +199,7 @@ class Write(mSel.Selection):
 
         Raises:
             Exception: If Document is Null
-            Exception: If Not a Text Doucment
+            Exception: If Not a Text Document
             MissingInterfaceError: If unable to obtain XTextDocument interface
             CancelEventError: if DOC_OPENING event is canceled.
 
@@ -409,7 +409,7 @@ class Write(mSel.Selection):
             MissingInterfaceError: If text_doc does not implement XComponent interface
 
         Returns:
-            bool: True if doc is saved; Othwrwise, False
+            bool: True if doc is saved; Otherwise, False
 
         :events:
             .. cssclass:: lo_event
@@ -450,7 +450,7 @@ class Write(mSel.Selection):
             loader (XComponentLoader): Component Loader
 
         Raises:
-            UnOpenableError: If fnm is not openable
+            # UnOpenableError: If fnm is not openable
             ValueError: If template_path is not ott file
             MissingInterfaceError: If template_path document does not implement XTextDocument interface
             ValueError: If unable to obtain cursor object
@@ -925,33 +925,33 @@ class Write(mSel.Selection):
     @classmethod
     def style_left_bold(cls, cursor: XTextCursor, pos: int) -> None:
         """
-        Styles bold from current cursor postiion left by pos amount.
+        Styles bold from current cursor position left by pos amount.
 
         Args:
             cursor (XTextCursor): Text Cursor
-            pos (int): Number of postiions to go left
+            pos (int): Number of positions to go left
         """
         cls.style_left(cursor, pos, "CharWeight", FontWeight.BOLD)
 
     @classmethod
     def style_left_italic(cls, cursor: XTextCursor, pos: int) -> None:
         """
-        Styles italic from current cursor postiion left by pos amount.
+        Styles italic from current cursor position left by pos amount.
 
         Args:
             cursor (XTextCursor): Text Cursor
-            pos (int): Number of postiions to go left
+            pos (int): Number of positions to go left
         """
         cls.style_left(cursor, pos, "CharPosture", FontSlant.ITALIC)
 
     @classmethod
     def style_left_color(cls, cursor: XTextCursor, pos: int, color: Color) -> None:
         """
-        Styles color from current cursor postiion left by pos amount.
+        Styles color from current cursor position left by pos amount.
 
         Args:
             cursor (XTextCursor): Text Cursor
-            pos (int): Number of postiions to go left
+            pos (int): Number of positions to go left
             color (Color): RGB color as int to apply
 
         Returns:
@@ -965,12 +965,12 @@ class Write(mSel.Selection):
     @classmethod
     def style_left_code(cls, cursor: XTextCursor, pos: int) -> None:
         """
-        Styles using a Mono font from current cursor postiion left by pos amount.
+        Styles using a Mono font from current cursor position left by pos amount.
         Font Char Height is set to ``10``
 
         Args:
             cursor (XTextCursor): Text Cursor
-            pos (int): Number of postiions to go left
+            pos (int): Number of positions to go left
 
         Returns:
             None:
@@ -984,11 +984,11 @@ class Write(mSel.Selection):
     @classmethod
     def style_left(cls, cursor: XTextCursor, pos: int, prop_name: str, prop_val: object) -> None:
         """
-        Styles left. From current cursor postiion to left by pos amount.
+        Styles left. From current cursor position to left by pos amount.
 
         Args:
             cursor (XTextCursor): Text Cursor
-            pos (int): Postiions to style left
+            pos (int): Positions to style left
             prop_name (str): Property Name such as 'CharHeight
             prop_val (object): Property Value such as 10
         """
@@ -1016,8 +1016,8 @@ class Write(mSel.Selection):
 
         Args:
             vcursor (XTextViewCursor): Text View Cursor
-            pos (int): Positions left to apply dispacch command
-            cmd (str): Dispatach command such as 'DefaultNumbering'
+            pos (int): Positions left to apply dispatch command
+            cmd (str): Dispatch command such as 'DefaultNumbering'
             props (Iterable[PropertyValue], optional): properties for dispatch
             frame (XFrame, optional): Frame to dispatch to.
             toggle (bool, optional): If True then dispatch will be preformed on selection
@@ -1180,7 +1180,7 @@ class Write(mSel.Selection):
         paper_format (:py:attr:`.Write.PaperFormat`): Paper Format.
 
         Args:
-            text_doc (XTextDocument): Text Docuument
+            text_doc (XTextDocument): Text Document
 
         Raises:
             MissingInterfaceError: If text_doc does not implement XPrintable interface
@@ -1574,8 +1574,8 @@ class Write(mSel.Selection):
             width (int): Width
             height (int): Height
             page_num (int): Page Number to add text frame
-            border_color (Color, optional): Border Color. Defaluts to CommonColor.RED
-            background_color (Color, optional): Background Color. Defaluts to CommonColor.LIGHT_BLUE
+            border_color (Color, optional): Border Color. Defaults to CommonColor.RED
+            background_color (Color, optional): Background Color. Defaults to CommonColor.LIGHT_BLUE
 
         Raises:
             CreateInstanceMsfError: If unable to create text.TextFrame
@@ -1923,7 +1923,7 @@ class Write(mSel.Selection):
         """
         Add Image Shape
 
-        Currently this method is only suported in terminal. Not in macros.
+        Currently this method is only supported in terminal. Not in macros.
 
         Args:
             cursor (XTextCursor): Text Cursor
@@ -2198,7 +2198,7 @@ class Write(mSel.Selection):
         Prints service info to console
 
         Args:
-            lingo_mgr (XLinguServiceManager2): Serivice manager
+            lingo_mgr (XLinguServiceManager2): Service manager
         """
         cargs = CancelEventArgs(Write.print_services_info.__qualname__)
         _Events().trigger(GblNamedEvent.PRINTING, cargs)
@@ -2454,7 +2454,7 @@ class Write(mSel.Selection):
         Spell Check sentence for en US
 
         Args:
-            sent (str): Setence to spell check
+            sent (str): Sentence to spell check
             speller (XSpellChecker): spell checker instance
 
         Returns:
@@ -2663,7 +2663,7 @@ class Write(mSel.Selection):
     @staticmethod
     def open_spell_grammar_dialog() -> None:
         """
-        Activate dialog in  Tools > Speling and Grammar...
+        Activate dialog in  Tools > Spelling and Grammar...
 
         Attention:
             :py:meth:`Lo.dispatch_cmd <.utils.lo.Lo.dispatch_cmd>` method is called along with any of its events.

@@ -99,7 +99,7 @@ class Props:
 
         Note:
             String properties such as ``Zoom.Value`` can be pass by constructing a dictionary
-            and passing dictionary via exapnsion.
+            and passing dictionary via expansion.
 
             Example Expansion
 
@@ -125,7 +125,7 @@ class Props:
         """
         Gets a uno.Any object for elements.
         
-        The first element determines the type for the uno.Any objec.
+        The first element determines the type for the uno.Any object.
 
         Raises:
             ValueError: if unable to create uno.Any object.
@@ -138,7 +138,7 @@ class Props:
 
             ``uno.Any("[]com.sun.star.table.TableSortField", (sort_one, sort_two)``
 
-            This methos is shortcut.
+            This method is a shortcut.
 
             ``Props.any(sort_one, sort_two)``
         """

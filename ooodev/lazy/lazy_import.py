@@ -30,7 +30,7 @@ def lazy_import(importer_name: str, to_import: str):
             message = f'module {importer_name!r} has no attribute {name!r}'
             raise AttributeError(message)
         importing = import_mapping[name]
-        # imortlib.import_module() implicitly sets submodules on this module as
+        # importlib.import_module() implicitly sets submodules on this module as
         # appropriate for direct imports.
         imported = importlib.import_module(importing,
                                            module.__spec__.parent)

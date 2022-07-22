@@ -20,7 +20,7 @@ from .type_var import PathOrStr
 
 
 class XML:
-    """XML method used for with LibreOffice Dcouemnts"""
+    """XML method used for with LibreOffice Documents"""
 
     # region --------------- Load / Save ------------------------------
 
@@ -52,7 +52,7 @@ class XML:
     @classmethod
     def url_2_doc(cls, url: str) -> Document:
         """
-        Gets a XML Document from remote souce.
+        Gets a XML Document from remote source.
 
         Args:
             url (str): Url for a remote XML Document
@@ -136,7 +136,7 @@ class XML:
             nodes (NodeList): Nodes to search
 
         Returns:
-            Node | None: First found node; Othwewise, None
+            Node | None: First found node; Otherwise, None
         """
         name = tag_name.casefold()
         for node in nodes:
@@ -270,10 +270,10 @@ class XML:
 
         Args:
             attr_name (str): Attribute Name
-            node (Node): Node to get attribue of.
+            node (Node): Node to get attribute of.
 
         Returns:
-            str: Attribute value if found; Othwewise empty str.
+            str: Attribute value if found; Otherwise empty str.
         """
         if node.attributes is None:
             return ""
