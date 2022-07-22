@@ -2433,11 +2433,11 @@ class Lo(metaclass=StaticProperty):
         except AttributeError:
             cls.__null_date = datetime(year=1889, month=12, day=30, tzinfo=timezone.utc)
             if cls._doc is None:
-                return  cls.__null_date
+                return cls.__null_date
             n_supplier = cls.qi(XNumberFormatsSupplier, cls._doc)
             if n_supplier is None:
                 # this is not always a XNumberFormatsSupplier such as *.odp documents
-                return  cls.__null_date
+                return cls.__null_date
             number_settings = n_supplier.getNumberFormatSettings()
             d = number_settings.getPropertyValue("NullDate")
             cls.__null_date = datetime(d.Year, d.Month, d.Day, tzinfo=timezone.utc)
@@ -2491,7 +2491,6 @@ class Lo(metaclass=StaticProperty):
         Returns:
             the current component or None when not a document
         """
-        # TODO: autodoc is ignoring classproperty this_component
         try:
             return cls._this_component
         except AttributeError:
@@ -2515,7 +2514,7 @@ class Lo(metaclass=StaticProperty):
             cls._this_component = cls._doc
             return cls._this_component
 
-    ThisComponent, thiscomponent = cast(XComponent, this_component), cast(XComponent, this_component)
+    ThisComponent, thiscomponent = this_component, this_component
 
     @classproperty
     def xscript_context(cls) -> XScriptContext:
@@ -2525,7 +2524,6 @@ class Lo(metaclass=StaticProperty):
         Returns:
             XScriptContext: XScriptContext instance
         """
-        # TODO: autodoc is ignoring classproperty xscript_context
         try:
             return cls._xscript_context
         except AttributeError:
@@ -2541,8 +2539,8 @@ class Lo(metaclass=StaticProperty):
             cls._xscript_context = script_context.ScriptContext(ctx=ctx, desktop=desktop, doc=model)
         return cls._xscript_context
 
-    XSCRIPTCONTEXT = cast("XScriptContext", xscript_context)
-    
+    XSCRIPTCONTEXT = xscript_context
+
     @classproperty
     def bridge(cls) -> XComponent:
         """
@@ -2568,7 +2566,6 @@ def _del_cache_attrs(source: object, e: EventArgs) -> None:
     for attr in dattrs:
         if hasattr(Lo, attr):
             delattr(Lo, attr)
-
 
 _Events().on(LoNamedEvent.RESET, _del_cache_attrs)
 
