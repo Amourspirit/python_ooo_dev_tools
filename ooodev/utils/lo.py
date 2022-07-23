@@ -3,8 +3,10 @@
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 
 from __future__ import annotations
+from ast import Not
 from datetime import datetime, timezone
 import time
+import types
 from typing import TYPE_CHECKING, Iterable, Optional, List, Tuple, cast, overload, Type
 from urllib.parse import urlparse
 import uno
@@ -23,6 +25,7 @@ from ..meta.static_meta import StaticProperty, classproperty
 from ..conn.connect import ConnectBase, LoPipeStart, LoSocketStart, LoDirectStart
 from ..conn import connectors
 from ..conn import cache as mCache
+from ..listeners.x_event_adapter import XEventAdapter
 
 from com.sun.star.lang import XComponent
 
@@ -48,12 +51,13 @@ if TYPE_CHECKING:
     from com.sun.star.container import XChild
     from com.sun.star.container import XIndexAccess
     from com.sun.star.frame import XFrame
+    from com.sun.star.lang import EventObject
     from com.sun.star.lang import XMultiComponentFactory
     from com.sun.star.lang import XTypeProvider
+    from com.sun.star.lang import XComponent
     from com.sun.star.script.provider import XScriptContext
     from com.sun.star.uno import XComponentContext
     from com.sun.star.uno import XInterface
-    from com.sun.star.lang import XComponent
 
 
 from ooo.dyn.document.macro_exec_mode import MacroExecMode  # const
@@ -241,8 +245,6 @@ class Lo(metaclass=StaticProperty):
     _mc_factory: XMultiComponentFactory = None
     _ms_factory: XMultiServiceFactory = None
 
-    _bridge_component: XComponent = None
-    """this is only set if office is opened via a socket"""
     _is_office_terminated: bool = False
 
     _lo_inst: ConnectBase = None
@@ -653,7 +655,9 @@ class Lo(metaclass=StaticProperty):
             time.sleep(0.5)
             num_tries += 1
         if cls._is_office_terminated:
-            _Events().trigger(LoNamedEvent.OFFICE_CLOSED, EventArgs.from_args(cargs))
+            eargs = EventArgs.from_args(cargs)
+            _Events().trigger(LoNamedEvent.OFFICE_CLOSED, eargs)
+            _Events().trigger(LoNamedEvent.RESET, eargs)
         return cls._is_office_terminated
 
     @classmethod
@@ -691,7 +695,9 @@ class Lo(metaclass=StaticProperty):
             # raised a NotImplementedError when cls._lo_inst is direct (macro mode)
             cls._lo_inst.kill_soffice()
             cls._is_office_terminated = True
-            _Events().trigger(LoNamedEvent.OFFICE_CLOSED, EventArgs(Lo.kill_office.__qualname__))
+            eargs = EventArgs(Lo.kill_office.__qualname__)
+            _Events().trigger(LoNamedEvent.OFFICE_CLOSED, eargs)
+            _Events().trigger(LoNamedEvent.RESET, eargs)
             cls.print("Killed Office")
         except Exception as e:
             raise Exception(f"Unbale to kill Office") from e
@@ -2449,6 +2455,22 @@ class Lo(metaclass=StaticProperty):
         raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
 
     @classproperty
+    def is_loaded(cls) -> bool:
+        """
+        Gets office is currently loaded
+
+        Returns:
+            bool: True if load_office has been called; Othwriwse, False
+        """
+
+        return not cls._lo_inst is None
+
+    @is_loaded.setter
+    def is_loaded(cls, value) -> None:
+        # raise error on set. Not really necessary but gives feedback.
+        raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
+
+    @classproperty
     def is_macro_mode(cls) -> bool:
         """
         Gets if currently running scripts inside of LO (macro) or standalone
@@ -2494,8 +2516,7 @@ class Lo(metaclass=StaticProperty):
         try:
             return cls._this_component
         except AttributeError:
-            ctx = cls.get_context()
-            if ctx is None:
+            if cls.is_loaded is False:
                 # attempt to connect direct
                 # failure will result in script error and then exit
                 cls.load_office()
@@ -2559,14 +2580,54 @@ class Lo(metaclass=StaticProperty):
                 cls._bridge_component = None
             return cls._bridge_component
 
+class _LoManager(metaclass=StaticProperty):
+    """Manages clearing and resetting for Lo static class"""
+    @staticmethod
+    def del_cache_attrs(source: object, event: EventArgs) -> None:
+        # clears Lo Attributes that are dynamically created
+        dattrs = ("_xscript_context", "_is_macro_mode", "_this_component", "_bridge_component", "__null_date")
+        for attr in dattrs:
+            if hasattr(Lo, attr):
+                delattr(Lo, attr)
 
-def _del_cache_attrs(source: object, e: EventArgs) -> None:
-    # clears Lo Attributes that are dynamically created
-    dattrs = ("_xscript_context", "_is_macro_mode", "_this_component", "_bridge_component")
-    for attr in dattrs:
-        if hasattr(Lo, attr):
-            delattr(Lo, attr)
+    @staticmethod
+    def disposing_bridge(src: XEventAdapter, event: EventObject) -> None:
+        # do not try and exit script here.
+        # for some reason when office triggers this method calls such as:
+        # raise SystemExit(1)
+        # does not exit the script
+        Lo.print("Office bridge has gone!!")
+        dattrs = ("_xcc", "_doc", "_mc_factory", "_ms_factory", "_lo_inst", "_xdesktop")
+        dvals = (None, None, None, None, None, None)
+        for attr, val in zip(dattrs, dvals):
+            setattr(Lo, attr, val)
 
-_Events().on(LoNamedEvent.RESET, _del_cache_attrs)
+    @staticmethod
+    def on_loading( source: object, event: CancelEventArgs) -> None:
+        try:
+            bridge = cast(XComponent, Lo._lo_inst.bridge_component)
+            bridge.removeEventListener(_LoManager.event_adapter)
+        except Exception:
+            pass
+
+    @staticmethod
+    def on_loaded(source: object, event: EventObject) -> None:
+        if Lo.bridge is not None:
+            Lo.bridge.addEventListener(_LoManager.event_adapter)
+
+    @classproperty
+    def event_adapter(cls) -> XEventAdapter:
+        try:
+            return cls._event_adapter
+        except AttributeError:
+            bridge_listen = XEventAdapter()
+            bridge_listen.disposing = types.MethodType(cls.disposing_bridge, bridge_listen)
+            cls._event_adapter = bridge_listen
+        return cls._event_adapter
+
+_Events().on(LoNamedEvent.RESET, _LoManager.del_cache_attrs)
+_Events().on(LoNamedEvent.OFFICE_LOADING, _LoManager.on_loading)
+_Events().on(LoNamedEvent.OFFICE_LOADED, _LoManager.on_loaded)
+
 
 __all__ = ("Lo",)
