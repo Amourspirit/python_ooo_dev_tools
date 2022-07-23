@@ -222,3 +222,7 @@ class PageCursorError(Exception):
 class ViewCursorError(CursorError):
     """Handles View Cursor errors"""
     pass
+
+class LoNotLoadedError(Exception):
+    """Error when accessing Lo before Lo.load_office is called"""
+    pass

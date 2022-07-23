@@ -173,7 +173,7 @@ rst_prolog = "\n".join(rst_prolog_lst)
 numfig = True
 
 # set is todo's will show up.
-# a master list of todo's will be on bottome of main page.
+# a master list of todo's will be on bottom of main page.
 # https://www.sphinx-doc.org/en/master/usage/extensions/todo.html#module-sphinx.ext.todo
 todo_include_todos = False
 
