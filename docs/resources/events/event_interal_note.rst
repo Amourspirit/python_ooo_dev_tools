@@ -5,4 +5,4 @@
     For instance |app_name_short| can capture when are row is being removed from a spreadsheet
     internally; However, |app_name_short| is not aware when other methods are used such as user input.
 
-    For more indepth Events look into LibreOffice Listeners.
+    For more indepth Events look into LibreOffice Listeners and :ref:`ch04`.

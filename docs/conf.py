@@ -60,6 +60,7 @@ extensions = [
     # "sphinx.ext.linkcode",
     # sphinx_tabs.tabs docs: https://sphinx-tabs.readthedocs.io/en/latest/
 
+# https://sphinxcontrib-spelling.readthedocs.io/en/latest/
 spelling_word_list_filename = [
     'spelling_wordlist.txt',
 ]
