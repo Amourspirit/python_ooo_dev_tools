@@ -11,7 +11,7 @@ Chapter 3. Examining
 This chapter looks at ways to examine the state of the Office application and a document.
 A document will be examined in three different ways: the first retrieves properties about the file, such as its author, keywords,
 and when it was last modified. The second and third approaches extract API details, such as what services and interfaces it uses.
-This can be done by calling functions in |app_name_short| Util classes or by utilizing the |devtools|_ built into Office.
+This can be done by calling functions in |app_name_short| Utility classes or by utilizing the |devtools|_ built into Office.
 See :numref:`ch03fig06`.
 
 .. _ch03sec01:
@@ -35,8 +35,8 @@ Configuration management is a complex area, which is explained reasonably well i
 OpenOffice |ooconfigmanage|_; Only basics are explained here.
 The easiest way of accessing the relevant online section is by typing: ``loguide "Configuration Management"``.
 
-Office stores a large assortment of XML configuration data as ".xcd" files in the \\share \\registry directory.
-They can be programatically accessed in three steps: first a ConfigurationProvider service is created, which represents the configuration database tree.
+Office stores a large assortment of XML configuration data as ``.xcd`` files in the ``\share`` ``\registry`` directory.
+They can be programmatically accessed in three steps: first a ConfigurationProvider service is created, which represents the configuration database tree.
 The tree is examined with a ConfigurationAccess service which is supplied with the path to the node of interest.
 Configuration properties can be accessed by name with the XNameAccess interface.
 
@@ -122,7 +122,7 @@ One issue is that path settings comes in two forms: a string holding a single di
 
 Probably the most common Office forum question about paths is how to determine Office's installation directory.
 Unfortunately, that isn't one of the paths stored in the PathSettings service, but the information is accessible
-via one of the other paths. It's possible to retrieve the path for AddIns (which is \\program\\addin), and move up
+via one of the other paths. It's possible to retrieve the path for Add-ins (which is ``\program\addin``), and move up
 the directory hierarchy two levels. This trick is implemented by :py:meth:`.Info.get_office_dir`.
 
 Examples of using :py:meth:`.Info.get_office_dir` and :py:meth:`.Info.get_paths` appear in |oinfo|_:
@@ -150,7 +150,7 @@ Document properties is the information that's displayed when you right-click on 
     .. figure:: https://user-images.githubusercontent.com/4193389/179297650-0343ec1e-efb3-4625-9c81-a0589ff9a81f.png
         :alt: A Properties Dialog in Windows 10 for algs.odp
 
-        :A Properties Dialog in Windows 10 for "algs.odp".
+        :A Properties Dialog in Windows 10 for ``algs.odp``.
 
 If you select the "Details" tab, a list of properties appears like those in :numref:`ch03fig02`.
 
@@ -160,7 +160,7 @@ If you select the "Details" tab, a list of properties appears like those in :num
     .. figure:: https://user-images.githubusercontent.com/4193389/179298066-7acaa668-7b0b-4a59-bbb8-407ba354bf8a.png
         :alt: Details Properties List for algs.odp
 
-        :Details Properties List for "algs.odp".
+        :Details Properties List for ``algs.odp``.
 
 An issue with document properties is that the Office API for manipulating them has changed.
 The old interfaces were XDocumentInfoSupplier_ and XDocumentInfo_, but these have been deprecated, and replaced by
@@ -268,7 +268,7 @@ The changed properties appear in the "Document Statistics" list shown in :numref
     .. figure:: https://user-images.githubusercontent.com/4193389/179302791-d8373bd0-7b72-41a3-86b8-dcbd5bac6feb.png
         :alt: "Document Statistics" Properties List for "algs.odp"
 
-        :"Document Statistics" Properties List for "algs.odp".
+        :"Document Statistics" Properties List for ``algs.odp``.
 
 
 3.3 Examining a Document for API Information
@@ -385,7 +385,7 @@ The relevant code fragment:
 
 When a word file is examined this program, only three services were found: OfficeDocument_, GenericTextDocument_, and TextDocument_,
 which correspond to the text document part of the hierarchy in :ref:`Chapter 1 <ch01>`, :numref:`ch01fig09`.
-That doesn't seem so bad until you look at the output from the other Info.getXXX() methods: the document can call 206 other available services, 69 interfaces, and manipulate 40 properties.
+That doesn't seem so bad until you look at the output from the other ``Info.getXXX()`` methods: the document can call 206 other available services, 69 interfaces, and manipulate 40 properties.
 
 In the code above only the methods available to XTextDocument_ are printed:
 

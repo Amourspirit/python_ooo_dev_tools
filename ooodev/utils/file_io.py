@@ -112,10 +112,10 @@ class FileIO:
         Converts uri file to path.
 
         Args:
-            uri_fnm (str): Uri to convert
+            uri_fnm (str): URI to convert
 
         Returns:
-            Path: Converted uri as path.
+            Path: Converted URI as path.
         """
         # converts 'file:///C:/Program%20Files/LibreOffice/program/../program/addin'
         # into: 'C:\\Program%20Files\\LibreOffice\\program\\addin'
@@ -143,7 +143,7 @@ class FileIO:
     @staticmethod
     def get_fnm(path: PathOrStr) -> str:
         """
-        Gets last part of a file or dir such as myfile.txt
+        Gets last part of a file or dir such as ``myfile.txt``
 
         Args:
             path (PathOrStr): file path
@@ -395,16 +395,16 @@ class FileIO:
     @classmethod
     def get_mime_type(cls, zfa: XZipFileAccess) -> str | None:
         """
-        Gets mime type for zip file access
+        Gets Mime-type for zip file access
 
         Args:
             zfa (XZipFileAccess): zip file access
 
         Raises:
-            Exception: If error getting mimetype
+            Exception: If error getting Mime-type
 
         Returns:
-            str | None: Mimetype if found; Otherwise, None
+            str | None: Mime-type if found; Otherwise, None
         """
         try:
             in_stream = zfa.getStreamByPattern("mimetype")

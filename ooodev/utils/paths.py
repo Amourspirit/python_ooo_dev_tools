@@ -194,14 +194,14 @@ def get_lo_python_ex() -> str:
 
     In Linux this is the current python executable.
     If a virtual environment is activated then that will be the
-    python exceutable that is returned.
+    python executable that is returned.
 
-    In Windows this is the python.exe file in LibreOffice.
+    In Windows this is the ``python.exe`` file in LibreOffice.
     Typically for Windows ``C:\Program Files\LibreOffice\program\python.exe``
 
     Raises:
-        FileNotFoundError: In Windows if python.exe is not found.
-        NotADirectoryError: In Windows if python.exe is not a file.
+        FileNotFoundError: In Windows if ``python.exe`` is not found.
+        NotADirectoryError: In Windows if ``python.exe`` is not a file.
 
     Returns:
         str: file location of python executable.

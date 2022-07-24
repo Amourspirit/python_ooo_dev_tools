@@ -7,16 +7,16 @@ Class Info
 
     .. py:property:: Info.language
 
-        Static readonly property
+        Static read-only property
 
         Gets the Current Language of the LibreOffice Instance
 
-        :return: First two chars of languag in lower case such as ``en-US``
+        :return: First two chars of language in lower case such as ``en-US``
         :rtype: str
     
     .. py:property:: Info.version
 
-        Static readonly property
+        Static read-only property
 
         Gets the running LibreOffice version
 

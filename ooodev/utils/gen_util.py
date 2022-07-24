@@ -24,7 +24,7 @@ class Util:
 
         Args:
             arg (object): object to test
-            excluded_types (Iterable[type], optional): Iterable of type to exlcude.
+            excluded_types (Iterable[type], optional): Iterable of type to exclude.
                 If ``arg`` matches any type in ``excluded_types`` then ``False`` will be returned.
                 Default ``(str,)``
 

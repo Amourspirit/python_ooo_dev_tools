@@ -33,7 +33,7 @@ office environment on the command line.
 Python has a vast set `libraries <https://pypi.org/>`_ that can be used in a project, including `Numpy <https://numpy.org/>`_ and
 `Numexpr <https://github.com/pydata/numexpr>`_ which are excellent and powerful at numeric computation.
 
-This makes Python and excellent choice with maximum flexability.
+This makes Python and excellent choice with maximum flexibility.
 
 
 Documentation
@@ -58,7 +58,7 @@ PIP
 Modules
 -------
 
-Currently the ``Calc`` Module and the ``Write`` module are relaesed.
+Currently the ``Calc`` Module and the ``Write`` module are released.
 
 
 Future releases will add:
@@ -78,7 +78,7 @@ Include modules still in beta:
     - Color (Various color utils)
     - DateUtil (Date Time utilities)
     - FileIO (File Input and Output for working with LO)
-    - GUI (Various Gui methods for manipulating LO Windows)
+    - GUI (Various GUI methods for manipulating LO Windows)
     - ImagesLo (Various methods for working with Images)
     - Lo (Various methods common to LO applications)
     - Props (Various methods for working with the many API properties)
@@ -106,7 +106,7 @@ Other
 Related projects
 ----------------
 
-LibreOffice API Typings
+LibreOffice API Typing's
 
  * `LibreOffice API Typings <https://github.com/Amourspirit/python-types-unopy>`_
  * `ScriptForge Typings <https://github.com/Amourspirit/python-types-scriptforge>`_

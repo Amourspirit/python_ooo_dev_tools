@@ -168,14 +168,14 @@ Rather confusingly, both these methods are called twice.
 4.2 Office Manipulation
 =======================
 
-Although XTopWindowListener_ can detect the minimization and re-activation of the document window, it cant't trigger events.
+Although XTopWindowListener_ can detect the minimization and re-activation of the document window, it can't trigger events.
 Listeners Listen for events but can not trigger events.
 
 I the :py:class:`~.gui.GUI` class there are a few methods for basic window manipulation.
 For instance to activate a window use :py:meth:`~.gui.GUI.activate`, for min and max there is :py:meth:`~.gui.GUI.minimize` and :py:meth:`~.gui.GUI.maximize`,
-:py:meth:`get_pos_size` for size and postiion.
+:py:meth:`get_pos_size` for size and position.
 
-There are other python libraries that can handel mouse and keyboard enulation such as `PyAutoGUI <https://pypi.org/project/PyAutoGUI/>`_ and `keyboard <https://pypi.org/project/keyboard/>`_.
+There are other python libraries that can handle mouse and keyboard emulation such as `PyAutoGUI <https://pypi.org/project/PyAutoGUI/>`_ and `keyboard <https://pypi.org/project/keyboard/>`_.
 |app_name_short| will leave it up to developers to implement window manipulation for their own use.
 
 .. _ch04sec03:
@@ -184,7 +184,7 @@ There are other python libraries that can handel mouse and keyboard enulation su
 ================================
 
 Office termination is most easily observed by attaching a listener to the Desktop object,
-as seen in |exmonitor|_ exmaple.
+as seen in |exmonitor|_ example.
 
 .. tabs::
 
@@ -299,7 +299,7 @@ The modified parts of |exmonitor|_ are:
                     raise SystemExit(1)
                 time.sleep(0.1)
 
-Since the disappearance of the Office bridge is a fatal event, in ``main_loop()``  ``raise SystemExit(1)`` is clalled to kill python.
+Since the disappearance of the Office bridge is a fatal event, in ``main_loop()``  ``raise SystemExit(1)`` is called to kill python.
 
 .. note::
 

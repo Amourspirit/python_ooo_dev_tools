@@ -5,7 +5,8 @@ Preface
 .. image:: https://user-images.githubusercontent.com/4193389/177222844-cf92599a-2fca-4d67-931b-e237f04a3817.png
     :alt: Header Image
 
-Star Basic is the native language of Star Office which has been incorporated by Open Office and Libre Office. This means that all other supported languages must negotiate a basic bridge.
+Star Basic is the native language of Star Office which has been incorporated by OpenOffice and LibreOffice.
+This means that all other supported languages must negotiate a basic bridge.
 
 This `comment <https://stackoverflow.com/a/64517979/>`_ from Dan Dascalescu offers a challenge to the community:
 
@@ -20,7 +21,7 @@ The starting point is `Java LibreOffice Programming <https://fivedots.coe.psu.ac
 Andrew Davison for kindly making available provided his work is acknowledged.
 
 Changes required are reformatting for this media since the scripts have missed a lot of detail including code,
-generalising the content so it is more widely applicable to supported languages and complementing Python examples with examples of other language.
+generalizing the content so it is more widely applicable to supported languages and complementing Python examples with examples of other language.
 Please contribute where you can.
 
 .. include:: ../resources/odev/authors.rst

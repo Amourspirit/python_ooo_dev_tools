@@ -7,16 +7,16 @@ Class Session
 
     .. py:property:: Session.path_sub
 
-        Static readonly property
+        Static read-only property
 
-        Gets com.sun.star.util.PathSubstitution instance
+        Gets ``com.sun.star.util.PathSubstitution`` instance
 
         :return: PathSubstitution
         :rtype: str
 
     .. py:property:: Session.share
 
-        Static readonly property
+        Static read-only property
 
         Gets Program Share dir,
         such as ``C:\Program Files\LibreOffice\share``
@@ -26,7 +26,7 @@ Class Session
 
     .. py:property:: Session.shared_scripts
 
-        Static readonly property
+        Static read-only property
 
         Gets Program Share scripts dir,
         such as ``C:\Program Files\LibreOffice\share\Scripts``
@@ -36,7 +36,7 @@ Class Session
 
     .. py:property:: Session.shared_py_scripts
 
-        Static readonly property
+        Static read-only property
 
         Gets Program Share python dir,
         such as ``C:\Program Files\LibreOffice\share\Scripts\python``
@@ -46,7 +46,7 @@ Class Session
 
     .. py:property:: Session.user_name
 
-        Static readonly property
+        Static read-only property
 
         Get the username from the environment or password database.
 
@@ -58,7 +58,7 @@ Class Session
 
     .. py:property:: Session.user_profile
 
-        Static readonly property
+        Static read-only property
 
         Gets path to user profile such as,
         ``C:\Users\user\AppData\Roaming\LibreOffice\4\user``
@@ -68,7 +68,7 @@ Class Session
 
     .. py:property:: Session.user_scripts
 
-        Static readonly property
+        Static read-only property
 
         Gets path to user profile scripts such as,
         ``C:\Users\user\AppData\Roaming\LibreOffice\4\user\Scripts``
@@ -78,7 +78,7 @@ Class Session
 
     .. py:property:: Session.user_py_scripts
 
-        Static readonly property
+        Static read-only property
 
         Gets path to user profile python such as,
         ``C:\Users\user\AppData\Roaming\LibreOffice\4\user\Scripts\python``

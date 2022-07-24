@@ -65,11 +65,11 @@ class LoNamedEvent(NamedTuple):
     CONTROLERS_LOCKING = "lo_controllers_locking"
     """Controllers Locking see :py:meth:`Lo.lock_controllers() <.utils.lo.Lo.lock_controllers>`"""
     CONTROLERS_LOCKED = "lo_controllers_locked"
-    """Controlers Locked see :py:meth:`Lo.lock_controllers() <.utils.lo.Lo.lock_controllers>`"""
+    """Controllers Locked see :py:meth:`Lo.lock_controllers() <.utils.lo.Lo.lock_controllers>`"""
     
     CONTROLERS_UNLOCKING = "lo_controllers_unlocking"
     """Controllers UnLocking see :py:meth:`Lo.unlock_controllers() <.utils.lo.Lo.unlock_controllers>`"""
     CONTROLERS_UNLOCKED = "lo_controllers_unlocked"
-    """Controlers UnLocked see :py:meth:`Lo.unlock_controllers() <.utils.lo.Lo.unlock_controllers>`"""
+    """Controllers UnLocked see :py:meth:`Lo.unlock_controllers() <.utils.lo.Lo.unlock_controllers>`"""
     
     RESET = "lo_reset"

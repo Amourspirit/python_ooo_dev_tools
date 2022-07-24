@@ -150,7 +150,7 @@ class TableHelper:
             num_rows (int): Number of rows
             num_cols (int): Number of Columns in each row.
             val (Callable[[int, int, Any], Any]): Callable that provide each value.
-                Callback e.g. cb(row: int, col: int, prev_value: None | int) -> int:...
+                Callback e.g. ``cb(row: int, col: int, prev_value: None | int) -> int:...``
 
         Returns:
             List[List[Any]]: 2-Dimensional List of values
@@ -158,8 +158,6 @@ class TableHelper:
         .. collapse:: Example
 
             Example of array filled with 1's
-
-
 
             .. code-block:: python
 
@@ -230,7 +228,7 @@ class TableHelper:
             iter_obj (Iterable[Any] | object): iterable object or object.
 
         Returns:
-            List[Any]: List containing same elements of itter_obj
+            List[Any]: List containing same elements of ``itter_obj``
         """
         if gUtil.Util.is_iterable(iter_obj):
             return list(iter_obj)
@@ -247,7 +245,7 @@ class TableHelper:
             iter_obj (Iterable[Any] | object): iterable object or object.
 
         Returns:
-            Tuple[Any]: Tuple containing same elements of itter_obj
+            Tuple[Any]: Tuple containing same elements of ``itter_obj``
         """
         if gUtil.Util.is_iterable(iter_obj):
             return tuple(iter_obj)

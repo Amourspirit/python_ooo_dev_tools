@@ -1,4 +1,7 @@
-Modlue lo_util
+.. spelling::
+    util
+
+Module lo_util
 ==============
 
 .. automodule:: ooodev.utils.lo_util

@@ -1,3 +1,6 @@
+.. spelling::
+    util
+
 Module gen_util
 ===============
 

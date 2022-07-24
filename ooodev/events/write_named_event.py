@@ -65,9 +65,9 @@ class WriteNamedEvent(NamedTuple):
     """Bookmark Added see :py:meth:`Write.add_bookmark() <.office.write.Write.add_bookmark>`"""
 
     TEXT_FRAME_ADDING = "write_text_frame_adding"
-    """Textframe Adding see :py:meth:`Write.add_text_frame() <.office.write.Write.add_text_frame>`"""
+    """Text frame Adding see :py:meth:`Write.add_text_frame() <.office.write.Write.add_text_frame>`"""
     TEXT_FRAME_ADDED = "write_text_frame_added"
-    """Textframe Added see :py:meth:`Write.add_text_frame() <.office.write.Write.add_text_frame>`"""
+    """Text frame Added see :py:meth:`Write.add_text_frame() <.office.write.Write.add_text_frame>`"""
 
     TABLE_ADDING = "write_tabel_adding"
     """Table Adding see :py:meth:`Write.add_table() <.office.write.Write.add_table>`"""

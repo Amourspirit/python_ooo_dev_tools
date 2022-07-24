@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 
 class Session(metaclass=StaticProperty):
     """
-    Session Class for handeling user paths within the LibreOffice environment.
+    Session Class for handling user paths within the LibreOffice environment.
     
     See Also:
         - `Importing Python Modules <https://help.libreoffice.org/latest/lo/text/sbasic/python/python_import.html>`_
@@ -144,7 +144,7 @@ class Session(metaclass=StaticProperty):
     @classmethod
     def register_path(cls, path: Session.PathEnum) -> None:
         """
-        Registers a path into sys.path if it does not exist
+        Registers a path into ``sys.path`` if it does not exist
 
         Args:
             path (PathEnum): Type of path to register.
