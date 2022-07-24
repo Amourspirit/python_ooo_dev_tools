@@ -12,7 +12,7 @@ This chapter looks at ways to examine the state of the Office application and a 
 A document will be examined in three different ways: the first retrieves properties about the file, such as its author, keywords,
 and when it was last modified. The second and third approaches extract API details, such as what services and interfaces it uses.
 This can be done by calling functions in |app_name_short| Utility classes or by utilizing the |devtools|_ built into Office.
-See :numref:`ch03fig06`.
+See :numref:`ch03fig_lo_devolp_tools`.
 
 .. _ch03_examine_office:
 
@@ -142,21 +142,21 @@ Examples of using :py:meth:`.Info.get_office_dir` and :py:meth:`.Info.get_paths`
 3.2 Getting and Setting Document Properties
 ===========================================
 
-Document properties is the information that's displayed when you right-click on a file icon, and select "Properties" from the menu, as in :numref:`ch03fig01`.
+Document properties is the information that's displayed when you right-click on a file icon, and select "Properties" from the menu, as in :numref:`ch03fig_prop_dialog`.
 
 .. cssclass:: screen_shot invert
 
-    .. _ch03fig01:
+    .. _ch03fig_prop_dialog:
     .. figure:: https://user-images.githubusercontent.com/4193389/179297650-0343ec1e-efb3-4625-9c81-a0589ff9a81f.png
         :alt: A Properties Dialog in Windows 10 for algs.odp
 
         :A Properties Dialog in Windows 10 for ``algs.odp``.
 
-If you select the "Details" tab, a list of properties appears like those in :numref:`ch03fig02`.
+If you select the "Details" tab, a list of properties appears like those in :numref:`ch03fig_detail_prop_lst`.
 
 .. cssclass:: screen_shot invert
 
-    .. _ch03fig02:
+    .. _ch03fig_detail_prop_lst:
     .. figure:: https://user-images.githubusercontent.com/4193389/179298066-7acaa668-7b0b-4a59-bbb8-407ba354bf8a.png
         :alt: Details Properties List for algs.odp
 
@@ -260,11 +260,11 @@ This method is called at the end of |doc_props|_:
 
 After the properties are changed, the document must be saved otherwise the changes will be lost when the document is closed.
 
-The changed properties appear in the "Document Statistics" list shown in :numref:`ch03fig03`.
+The changed properties appear in the "Document Statistics" list shown in :numref:`ch03fig_doc_statistics_algs`.
 
 .. cssclass:: screen_shot invert
 
-    .. _ch03fig03:
+    .. _ch03fig_doc_statistics_algs:
     .. figure:: https://user-images.githubusercontent.com/4193389/179302791-d8373bd0-7b72-41a3-86b8-dcbd5bac6feb.png
         :alt: "Document Statistics" Properties List for "algs.odp"
 
@@ -304,11 +304,11 @@ Since LibreOffice 7.2 there is also |devtools|_.
 ===================================================
 
 The messy job is hidden, the job of collecting service, interface, property, and method information about a document inside the Info and Props utility classes.
-The five main methods for retrieving details can be understood by considering their position in :numref:`ch03fig04` Service and Interface Relationship diagram.
+The five main methods for retrieving details can be understood by considering their position in :numref:`ch03fig_peek_services_interface` Service and Interface Relationship diagram.
 
 .. cssclass:: diagram invert
 
-    .. _ch03fig04:
+    .. _ch03fig_peek_services_interface:
     .. figure:: https://user-images.githubusercontent.com/4193389/179381798-efcb4f4a-a877-469f-9c6e-033e9cf7fe6b.png
         :alt: Methods to Investigate the Service and Interface Relationships and Hierarchies
 
@@ -398,11 +398,11 @@ In the code above only the methods available to XTextDocument_ are printed:
             print(f"  {meth}()")
         print(f"No. methods: {i}")
 
-Nineteen methods are listed, collectively inherited from the interfaces in XTextDocument_'s inheritance hierarchy shown in :numref:`ch03fig05`.
+Nineteen methods are listed, collectively inherited from the interfaces in XTextDocument_'s inheritance hierarchy shown in :numref:`ch03fig_xtextdocument_inherit`.
 
 .. cssclass:: diagram invert
 
-    .. _ch03fig05:
+    .. _ch03fig_xtextdocument_inherit:
     .. figure:: https://user-images.githubusercontent.com/4193389/179375619-1ac1d4ea-b8f2-4ad5-899d-dd712b0d8476.png
         :alt: Inheritance Hierarchy for XTextDocument.
 
@@ -465,11 +465,11 @@ There are several extension which do this, such as |mri_tool|_ and |apso|_.
 
 Since `LibreOffice 7.2` we have the advantage of using |devtools|_,
 that inspects objects in LibreOffice documents and shows supported UNO services, as well as available methods,
-properties and implemented interfaces. This feature as seen in :numref:`ch03fig06` also allows to explore the document structure using the Document Object Model (DOM).
+properties and implemented interfaces. This feature as seen in :numref:`ch03fig_lo_devolp_tools` also allows to explore the document structure using the Document Object Model (DOM).
 
 .. cssclass:: screen_shot invert
 
-    .. _ch03fig06:
+    .. _ch03fig_lo_devolp_tools:
     .. figure:: https://user-images.githubusercontent.com/4193389/179380392-fd7180e9-6adf-4046-9485-5b777b925471.png
         :alt: LibreOffice Develop Tools screenshot
 
