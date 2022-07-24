@@ -1,0 +1,5 @@
+This project will not run with https://pre-commit.com/ on windows.
+This is becuase on windows installing pre-commit required sqlite
+and this project is set up to run local LibreOffice python.exe.
+
+LibreOffice contains distributed python which does not include sqlite.
