@@ -721,7 +721,7 @@ class Lo(metaclass=StaticProperty):
         See Also:
             - :py:meth:`~Lo.open_doc`
             - :py:meth:`~Lo.open_readonly_doc`
-            - :ref:`ch02sec03`
+            - :ref:`ch02_open_doc`
 
         Attention:
             :py:meth:`~.utils.lo.Lo.open_doc` method is called along with any of its events.
@@ -806,7 +806,7 @@ class Lo(metaclass=StaticProperty):
             - :py:meth:`~Lo.open_readonly_doc`
             - :py:meth:`~Lo.open_flat_doc`
             - :py:meth:`load_office`
-            - :ref:`ch02sec03`
+            - :ref:`ch02_open_doc`
 
         Example:
             .. code-block:: python
@@ -877,7 +877,7 @@ class Lo(metaclass=StaticProperty):
         See Also:
             - :py:meth:`~Lo.open_doc`
             - :py:meth:`~Lo.open_flat_doc`
-            - :ref:`ch02sec03`
+            - :ref:`ch02_open_doc`
 
         Attention:
             :py:meth:`~.utils.lo.Lo.open_doc` method is called along with any of its events.
@@ -1015,7 +1015,7 @@ class Lo(metaclass=StaticProperty):
            Event args ``event_data`` is a dictionary containing all method parameters.
 
         See Also:
-            :ref:`ch02sec04`
+            :ref:`ch02_create_doc`
         """
         # Props is called in this method so trigger global_reset first
         cargs = CancelEventArgs(Lo.create_doc.__qualname__)
@@ -1061,7 +1061,7 @@ class Lo(metaclass=StaticProperty):
             :py:meth:`~.utils.lo.Lo.create_doc` method is called along with any of its events.
 
         See Also:
-            :ref:`ch02sec04`
+            :ref:`ch02_create_doc`
         """
         return cls.create_doc(
             doc_type=doc_type,

@@ -40,7 +40,7 @@ I'm also not going to discuss how to compile the LibreOffice source, which is a 
 `webpage <https://wiki.documentfoundation.org/Development>`_.
 The intention is ot explain how |app_name_bold| (|app_name_short|) can be used to interact with LibreOffice via a console or via macros using python.
 
-.. _ch01sec01:
+.. _ch01_sources_for_api_information:
 
 1.1 Sources for API Information
 ===============================
@@ -205,7 +205,7 @@ Option ``4`` would open to https://api.libreoffice.org/docs/idl/ref/namespacecom
     ``loapi`` can be handy when you are writing code and you have to import LibreOffice components.
     If you know part the name you can quickly find the full import name.
 
-.. _ch01sec02:
+.. _ch01_office_as_process:
 
 1.2 Office as a Process
 =======================
@@ -259,7 +259,7 @@ For example, for historical reasons, Office supports two slightly different serv
 Both are added to the component context, as a convenience to the programmer;
 this detail is hidden by the :py:class:`~.utils.lo.Lo` util class.
 
-.. _ch01sec03:
+.. _ch01_api_data_structures:
 
 1.3 API Data Structures: interface, property, service, and component
 ====================================================================
@@ -361,7 +361,7 @@ is shown in :numref:`ch01fig07`.
 
 Each box in the diagram can be clicked upon to jump to the documentation for that subclass or superclass.
 
-.. _ch01sec04:
+.. _ch01_two_inheritance_hierarchies:
 
 1.4 Two Inheritance Hierarchies for Services and interfaces
 ===========================================================
@@ -405,7 +405,7 @@ but makes no visual distinction between the service and interface hierarchies.
 It also represents the "contains" relationship between services and interfaces as inheritance,
 rather than as lines with circles as in the developer's guide (e.g. see :numref:`ch01fig05` and :numref:`ch01fig06`).
 
-.. _ch01sec05:
+.. _ch01_fcm_relationship:
 
 1.5 The FCM Relationship
 ========================
@@ -451,14 +451,14 @@ from the loaded document, or from the root frame referred to from `XDesktop`_.
 
 For example, `XDesktop`_ provides ``getCurrentFrame()`` to access the currently active frame.
 
-.. _ch01sec06:
+.. _ch01_components_again:
 
 1.6 Components Again
 ====================
 
 A knowledge of the FCM relationship, and its XFrame, XController, and `XModel`_ interfaces,
 lets me give a more detailed definition of a component.
-Back in :ref:`Section 3 <ch01sec03>` section 3 (and in :numref:`ch01fig04`), I said a component was an implemented service. Another way of understanding a component is in terms of how much of the FCM relationship it supports, which allows the 'component' idea to be divided into three:
+Back in :ref:`Section 3 <ch01_api_data_structures>` section 3 (and in :numref:`ch01fig04`), I said a component was an implemented service. Another way of understanding a component is in terms of how much of the FCM relationship it supports, which allows the 'component' idea to be divided into three:
 
 
 1. A component that supports both the `XModel`_ and `XController`_ interfaces is usually an Office document.
@@ -468,7 +468,7 @@ Back in :ref:`Section 3 <ch01sec03>` section 3 (and in :numref:`ch01fig04`), I s
 Of these three types, the component-as-document (number 1) is the most important for our needs.
 In particular, the component loader is used in the remote component context to load Office documents.
 
-.. _ch01sec07:
+.. _ch01_what_is_extension:
 
 1.7 What's an Extension?
 ========================
@@ -490,7 +490,7 @@ An add-on is rendered in Office's GUI in the same way as standard Office element
 
 An add-in or, to use its full name, a Calc Add-in, is an extension that adds a new function to Calc.
 
-.. _ch01sec08:
+.. _ch01_compare_basic_api:
 
 1.8 A Comparison with the Basic API
 ===================================
