@@ -385,7 +385,7 @@ The relevant code fragment:
             Lo.close_doc(doc)
 
 When a word file is examined this program, only three services were found: OfficeDocument_, GenericTextDocument_, and TextDocument_,
-which correspond to the text document part of the hierarchy in :ref:`Chapter 1 <ch01>`, :numref:`ch01fig09`.
+which correspond to the text document part of the hierarchy in :ref:`Chapter 1 <ch01>`, :numref:`ch01fig_office_doc_super`.
 That doesn't seem so bad until you look at the output from the other ``Info.getXXX()`` methods: the document can call 206 other available services, 69 interfaces, and manipulate 40 properties.
 
 In the code above only the methods available to XTextDocument_ are printed:

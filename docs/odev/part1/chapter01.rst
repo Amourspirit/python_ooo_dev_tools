@@ -25,11 +25,11 @@ including Microsoft Office documents, PDF, HTML, SWF (Flash), and SQL databases.
 LibreOffice is managed and developed by `The Document Foundation <https://libreoffice.org>`_,
 and was first released in 2010. However, earlier Office versions date back to the 1980's,
 and traces of this heritage are visible in many parts of its API.
-:numref:`ch01fig01` shows a simplified timeline of how StarOffice begat OpenOffice, and so on to LibreOffice.
+:numref:`ch01fig_timeline` shows a simplified timeline of how StarOffice begat OpenOffice, and so on to LibreOffice.
 
 .. cssclass:: diagram invert
 
-    .. _ch01fig01:
+    .. _ch01fig_timeline:
     .. figure:: https://user-images.githubusercontent.com/4193389/177227955-f91f2454-486e-4222-9360-0734b3e50cdf.png
         :alt: OpenOffice Timeline Image
 
@@ -211,11 +211,11 @@ Option ``4`` would open to https://api.libreoffice.org/docs/idl/ref/namespacecom
 =======================
 
 Office is started as an OS process, and a Python program communicates with it via a socket or named pipe.
-This necessarily complicates the Python/Office link, which is illustrated in :numref:`ch01fig02`.
+This necessarily complicates the Python/Office link, which is illustrated in :numref:`ch01fig_python_using_office`.
 
 .. cssclass:: diagram invert
 
-    .. _ch01fig02:
+    .. _ch01fig_python_using_office:
     .. figure:: https://user-images.githubusercontent.com/4193389/177416327-bb02c050-e7ee-40cd-b1c5-b5b88e9dae78.png
         :alt: Diagram of Python Program Using Office
 
@@ -227,7 +227,7 @@ A call starts the Office executable with several command line arguments, the mos
 which specifies the use of pipes or sockets for the inter-process link.
 
 A call to `XUnoUrlResolver.resolve() <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1bridge_1_1XUnoUrlResolver.html#abaac8ead87dd0ec6dfc1357792cdda3f>`_
-creates a remote component context, which acts as proxy for the 'real' component context over in the Office process (see :numref:`ch01fig02`).
+creates a remote component context, which acts as proxy for the 'real' component context over in the Office process (see :numref:`ch01fig_python_using_office`).
 The context is a container/environment for components and UNO objects which I'll explain below.
 When a Python program refers to components and UNO objects in the remote component context, the inter-process bridge maps
 those references across the process boundaries to the corresponding components and objects on the Office side.
@@ -275,11 +275,11 @@ A property is a name-value pair, used to store data.
 
 A service comprises a set of interfaces and properties needed to support an Office feature.
 
-:numref:`ch01fig03` illustrates how interface, property, and service are related.
+:numref:`ch01fig_service_interface_prop` illustrates how interface, property, and service are related.
 
 .. cssclass:: diagram invert
 
-    .. _ch01fig03:
+    .. _ch01fig_service_interface_prop:
     .. figure:: https://user-images.githubusercontent.com/4193389/177419384-0591cdf2-9d4f-4272-8028-4786bed9fc7a.png
         :alt: Diagram of Services, Interfaces, Properties
 
@@ -291,31 +291,31 @@ Since interfaces contain no code, a service is a specification for an Office fea
 
 When a service is implemented (i.e. its interfaces are implemented), it becomes a component.
 This distinction means that the Office API can be implemented in different languages (as components)
-but always employs the same specifications (services), as represented in :numref:`ch01fig04`.
+but always employs the same specifications (services), as represented in :numref:`ch01fig_component_service`.
 
 .. cssclass:: diagram invert
 
-    .. _ch01fig04:
+    .. _ch01fig_component_service:
     .. figure:: https://user-images.githubusercontent.com/4193389/177419958-db1061b5-cb33-4056-a7cb-482c72826e0c.png
         :alt: Diagram of Components and Services.
 
         :Components and Services.
 
-The developer's guide uses a notation like that shown in :numref:`ch01fig05` to draw a service and its interfaces.
+The developer's guide uses a notation like that shown in :numref:`ch01fig_office_doc_serv` to draw a service and its interfaces.
 
 .. cssclass:: diagram invert
 
-    .. _ch01fig05:
+    .. _ch01fig_office_doc_serv:
     .. figure:: https://user-images.githubusercontent.com/4193389/177420337-eb786095-1c09-4088-bebb-a4e43d918abe.png
         :alt: Diagram of Office Document service.
 
-        The OfficeDocument service.
+        The ``OfficeDocument`` service.
 
-The developer's guide drawing for the SpellChecker service is shown in :numref:`ch01fig06`.
+The developer's guide drawing for the SpellChecker service is shown in :numref:`ch01fig_spell_chk_srv`.
 
 .. cssclass:: diagram invert
 
-    .. _ch01fig06:
+    .. _ch01fig_spell_chk_srv:
     .. figure:: https://user-images.githubusercontent.com/4193389/177420575-08b3122d-1f18-4f97-b4d8-a0807f461c8e.png
         :alt: Diagram of Spell Checker service.
 
@@ -344,16 +344,16 @@ and
 
 The LibreOffice service web pages usually list properties, but sometimes refer to them as 'attributes'.
 If the service documentation doesn't describe the properties, then they're probably being managed by a separate “Supplier” interface
-(e.g. `XDocumentPropertiesSupplier`_ for OfficeDocument in :numref:`ch01fig05`).
+(e.g. `XDocumentPropertiesSupplier`_ for OfficeDocument in :numref:`ch01fig_office_doc_serv`).
 The supplier will include methods for accessing the properties as an `XPropertySet`_ object.
 
 One great feature of the LibreOffice web pages is the inheritance diagrams on each service and interface page.
 Part of the diagram for the `OfficeDocument service <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1document_1_1OfficeDocument.html>`_
-is shown in :numref:`ch01fig07`.
+is shown in :numref:`ch01fig_inherit_diagram_office_doc`.
 
 .. cssclass:: diagram transparent
 
-    .. _ch01fig07:
+    .. _ch01fig_inherit_diagram_office_doc:
     .. figure:: https://user-images.githubusercontent.com/4193389/177428410-a5793eec-3e98-4fc3-ba28-02f9508d5261.png
         :alt: Example Inheritance Diagram for the Office Document
 
@@ -366,44 +366,44 @@ Each box in the diagram can be clicked upon to jump to the documentation for tha
 1.4 Two Inheritance Hierarchies for Services and interfaces
 ===========================================================
 
-Services and interfaces both use inheritance, as shown by the UML diagram in :numref:`ch01fig08`.
+Services and interfaces both use inheritance, as shown by the UML diagram in :numref:`ch01fig_service_interface_relations`.
 
 .. cssclass:: diagram invert
 
-    .. _ch01fig08:
+    .. _ch01fig_service_interface_relations:
     .. figure:: https://user-images.githubusercontent.com/4193389/177429003-eec1bdd0-dadc-4577-9ffa-999570874339.png
         :alt: Diagram of Service and Interface Relationships and Hierarchies.
 
         :Service and Interface Relationships and Hierarchies.
 
-For example, OfficeDocument is the superclass service of all other document formats, as illustrated in :numref:`ch01fig09`.
+For example, OfficeDocument is the superclass service of all other document formats, as illustrated in :numref:`ch01fig_office_doc_super`.
 
 .. cssclass:: diagram invert
 
-    .. _ch01fig09:
+    .. _ch01fig_office_doc_super:
     .. figure:: https://user-images.githubusercontent.com/4193389/177429219-5cb80ff9-a272-4c9e-a0f9-b8548771384d.png
         :alt: Diagram of Office Document as a Super class Service.
 
-        :Office-Document as a Superclass Service.
+        : ``OfficeDocument`` as a Superclass Service.
 
-Part of this hierarchy can also be seen in :numref:`ch01fig07`.
+Part of this hierarchy can also be seen in :numref:`ch01fig_inherit_diagram_office_doc`.
 
 An interface can also be part of an inheritance hierarchy.
-For instance, the `XModel`_ interface inherits XComponent and XInterface, as in :numref:`ch01fig10`.
+For instance, the `XModel`_ interface inherits XComponent and XInterface, as in :numref:`ch01fig_super_xmodel`.
 
 .. cssclass:: diagram invert
 
-    .. _ch01fig10:
+    .. _ch01fig_super_xmodel:
     .. figure:: https://user-images.githubusercontent.com/4193389/177429428-e022d6a0-3302-4f69-bb1d-44379a6aa146.png
         :alt: Diagram of The Super classes of XModel
 
         :The Superclasses of XModel.
 
 
-The LibreOffice documentation graphically displays these hierarchies (e.g. see :numref:`ch01fig07`),
+The LibreOffice documentation graphically displays these hierarchies (e.g. see :numref:`ch01fig_inherit_diagram_office_doc`),
 but makes no visual distinction between the service and interface hierarchies.
 It also represents the "contains" relationship between services and interfaces as inheritance,
-rather than as lines with circles as in the developer's guide (e.g. see :numref:`ch01fig05` and :numref:`ch01fig06`).
+rather than as lines with circles as in the developer's guide (e.g. see :numref:`ch01fig_office_doc_serv` and :numref:`ch01fig_spell_chk_srv`).
 
 .. _ch01_fcm_relationship:
 
@@ -413,18 +413,18 @@ rather than as lines with circles as in the developer's guide (e.g. see :numref:
 The Frame-Controller-Model (FCM) relationship (or design pattern) is a part of Office
 which programmers will encounter frequently.
 It appears in the API as connections between the `XFrame`_, `XController`_, and `XModel`_ interfaces,
-as shown in :numref:`ch01fig11`.
+as shown in :numref:`ch01fig_fcm_relation`.
 
 .. cssclass:: diagram invert
 
-    .. _ch01fig11:
+    .. _ch01fig_fcm_relation:
     .. figure:: https://user-images.githubusercontent.com/4193389/177430903-43850d01-c0b5-4352-821b-ca38dfbf9afc.png
         :alt: Diagram of The FCM Relationship
 
         :The FCM Relationship.
 
-Every Office document inherits the OfficeDocument service (see :numref:`ch01fig09`),
-and :numref:`ch01fig05` shows that OfficeDocument supports the `XModel`_ interface.
+Every Office document inherits the OfficeDocument service (see :numref:`ch01fig_office_doc_super`),
+and :numref:`ch01fig_office_doc_serv` shows that OfficeDocument supports the `XModel`_ interface.
 This means that every document will include `XModel`_ methods for accessing the document's resources,
 such as its URL, file name, type, and meta information.
 Via `XModel.getCurrentController() <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1frame_1_1XModel.html#a44c3b26a1116ab41654d60357ccda9e1>`_
@@ -458,7 +458,7 @@ For example, `XDesktop`_ provides ``getCurrentFrame()`` to access the currently 
 
 A knowledge of the FCM relationship, and its XFrame, XController, and `XModel`_ interfaces,
 lets me give a more detailed definition of a component.
-Back in :ref:`Section 3 <ch01_api_data_structures>` section 3 (and in :numref:`ch01fig04`), I said a component was an implemented service. Another way of understanding a component is in terms of how much of the FCM relationship it supports, which allows the 'component' idea to be divided into three:
+Back in :ref:`Section 3 <ch01_api_data_structures>` section 3 (and in :numref:`ch01fig_component_service`), I said a component was an implemented service. Another way of understanding a component is in terms of how much of the FCM relationship it supports, which allows the 'component' idea to be divided into three:
 
 
 1. A component that supports both the `XModel`_ and `XController`_ interfaces is usually an Office document.
@@ -577,7 +577,7 @@ Using the basic IDE has has some advantages for simple scripts; However, new too
 
 types-unopy_ that gives typing_ support for the entire |lo_api|_.
 
-ooouno_ that also contains all |lo_api|_ components in different namespaces. ooouno_ dynamic namespaces automatically gets the appropriate ``uno`` object at runtime, see :numref:`ch01fig12`.
+ooouno_ that also contains all |lo_api|_ components in different namespaces. ooouno_ dynamic namespaces automatically gets the appropriate ``uno`` object at runtime, see :numref:`ch01fig_rect_demo`.
 The dynamic namespaces give easier access to |lo_api|_ components with full typing_ support and is a real time saver.
 
 .. collapse:: Example
@@ -608,7 +608,7 @@ entire |lo_api|_ into templates that are converted into ooouno_ and types-unopy_
 
     .. cssclass:: a_gif
 
-        .. _ch01fig12:
+        .. _ch01fig_rect_demo:
         .. figure:: https://user-images.githubusercontent.com/4193389/177604603-55660d5d-2aef-4746-a8fe-4365a0dcdaa6.gif
             :alt: OOO Rectangle Demo
 

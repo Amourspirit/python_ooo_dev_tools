@@ -61,7 +61,7 @@ There is also a ``Lo.ConnectSocket``, ``Lo.load_office(Lo.ConnectPipes(headless=
 For convenience ``Lo.ConnectPipe`` is an alias of :py:class:`~.conn.connectors.ConnectPipe`
 and ``Lo.ConnectSocket`` is an alias of :py:class:`~.conn.connectors.ConnectSocket`
 
-In both cases, a remote component context is created (see Chapter 1, :numref:`ch01fig02`) and then a service manager,
+In both cases, a remote component context is created (see Chapter 1, :numref:`ch01fig_python_using_office`) and then a service manager,
 Desktop object, and component loader are initialized.
 Below is a simplified version of :py:meth:`.Lo.load_office`, that show the principle of connecting to LibreOffice.
 See :py:meth:`.Lo.load_office` Source code for the full version which also includes events.
@@ -409,7 +409,7 @@ The steps in saving a file are:
 If you don't want a password, then the third property should be left out.
 :py:meth:`.Lo.qi` is used again to cast an interface, this time from XComponent_ to |XStorable|_.
 
-:numref:`ch01fig05` in :ref:`Chapter 1 <ch01>` shows that |XStorable|_ is part of the OfficeDocument service,
+:numref:`ch01fig_office_doc_serv` in :ref:`Chapter 1 <ch01>` shows that |XStorable|_ is part of the OfficeDocument service,
 which means that it's inherited by all Office document types.
 
 What's a Filter Name?
@@ -469,7 +469,7 @@ For quick access in your scripts use :py:class:`.Lo.Service` where applicable.
     =========== ==================================================
 
 
-We encountered these service names back in :ref:`Chapter 1 <ch01>`, :numref:`ch01fig09` – they're
+We encountered these service names back in :ref:`Chapter 1 <ch01>`, :numref:`ch01fig_office_doc_super` – they're
 subclasses of the OfficeDocument service.
 
 
