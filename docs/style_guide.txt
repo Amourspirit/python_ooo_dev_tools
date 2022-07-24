@@ -1,3 +1,39 @@
+Book Naming conventions:
+    references:
+        Chapter, ch01
+            ch followed by two digit capter nmber
+            rst example:
+                .. _ch01:
+
+            Sub Secion:
+                ch followed by two digits folowed by _ followed by section short name.
+                rst example:
+                    .. _ch03_examine_office:
+            
+                sub, sub section:
+                    sub section followed by _ followed by sub section short name
+                    rst example:
+                        .. _ch03_examine_office_cofig_prop:
+
+            chapter figures:
+                chapter name followed by fig followed by _ followed by short name
+                rst example:
+                    .. _ch03fig_prop_dialog:
+            
+            chapter tables:
+                chapter name followed by tbl followed by _ followed by short name
+                rst example:
+                    .. _ch02tbl_some_doc_prop:
+            
+            Note:
+                To reference a chapter or section use ref
+                    eg: :ref:`ch01`
+                        :ref:`ch03_examine_office`
+
+                To reference figures and tables use numref
+                    eg: :numref:`ch03fig_detail_prop_lst`
+
+
 Headings:
     https://thomas-cokelaer.info/tutorials/sphinx/rest_syntax.html#headings
     https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html#sections
@@ -15,3 +51,37 @@ Image Classes
     invert: any image that can can have color inverted such as jpeg, png for dark theme.
     diagram: diagram classes
     a_gif: animated gif images
+
+    Notes:
+        the cssclass directive is use to assign classes to images.
+        Screen shots typically have class screen_shot, invert
+            eg:
+                .. cssclass:: screen_shot invert
+    
+                    .. _ch03fig_detail_prop_lst:
+                    .. figure:: https://user-images.githubusercontent.com/4193389/179298066-7acaa668-7b0b-4a59-bbb8-407ba354bf8a.png
+                        :alt: Details Properties List for algs.odp
+
+                        :Details Properties List for ``algs.odp``.
+        
+        diagrams typically have class diagram, invert
+            eg:
+                .. cssclass:: diagram invert
+
+                    .. _ch03fig_peek_services_interface:
+                    .. figure:: https://user-images.githubusercontent.com/4193389/179381798-efcb4f4a-a877-469f-9c6e-033e9cf7fe6b.png
+                        :alt: Methods to Investigate the Service and Interface Relationships and Hierarchies
+
+                        :Methods to Investigate the Service and Interface Relationships and Hierarchies.
+        
+        Animated gif typically have class a_gif
+        Note that animated gif does not invert class.
+        animated gif is not to be darkened using css styles
+            eg:
+                .. cssclass:: a_gif
+
+                    .. _ch02fig_lo_qi_auto_demo:
+                    .. figure:: https://user-images.githubusercontent.com/4193389/178285134-70b9aa56-5eaa-43c8-aa59-c19f2b495336.gif
+                        :alt: Lo.qi autocomplete demo image
+
+                        :Lo.qi autocomplete demo

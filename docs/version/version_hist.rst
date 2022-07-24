@@ -7,7 +7,7 @@ Version 0.4.9
 *************
 
 | Added a Bridge Connector :py:attr:`.Lo.bridge`
-| See also: :ref:`ch04sec04`
+| See also: :ref:`ch04_bridge_stop`
 | See example: `Office Window Monitor <https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/general/odev_monitor>`_
 
 Added Session class for registering and importing.

@@ -1,0 +1,57 @@
+#!/bin/sh
+#
+# This pre-push hook that
+#	- ensure not pushing to branch that is not allowed
+#	- runs unit test for all available tests
+#	- test the documentation builds correctly.
+
+branch="$(git rev-parse --abbrev-ref HEAD)"
+
+# get computer name to append in Chime message
+username=$USER
+
+# a branch name where you want to prevent git push. In this case, it's "main" or "develop"
+if [ "$branch" = "main" ] || [ "$branch" = "develop" ]; then
+  echo "You can't commit directly to '"${branch}"' branch"
+  exit 1
+fi
+
+echo "Wait a few minutes... running pytest..."
+# fail on first error
+pytest --maxfail=1 tests/
+if [ $? -ne 0 ]; then
+	echo "unit tests failed"
+	exit 1
+else
+	echo "unit testing passed"
+fi
+
+# get current working dir. expected same as project root
+CWD=$(pwd)
+
+# change directory into docs dir
+cd ./docs
+
+echo "Hang on a minute... checking documentation build..."
+DOCS_LOG="docs_error.log"
+# ensure docs are building without errors
+sphinx-build -E -q -w $DOCS_LOG -b html -d _build/doctrees . _build/html 2> /dev/null
+if test -s $DOCS_LOG; then  # if errors.log exists and isn't empty, then there's some errors
+	echo "[error]  Blocking commit, found errors while building documentation:"
+	cat $DOCS_LOG
+	rm -f $DOCS_LOG
+	exit 1
+else
+	echo "[success] Documentation built without error."
+fi
+rm -f $DOCS_LOG
+# restore current working directory
+cd $CWD
+
+if git rev-parse --verify HEAD >/dev/null 2>&1
+then
+	against=HEAD
+else
+	# Initial commit: diff against an empty tree object
+	against=$(git hash-object -t tree /dev/null)
+fi

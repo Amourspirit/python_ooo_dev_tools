@@ -28,7 +28,7 @@ Here, only explaining functions that illustrate Office ideas, such as service ma
 
 This is the first chapter with code, and so the first where programs could crash! Section 8 gives a few tips on bug detection and reporting.
 
-.. _ch02sec01:
+.. _ch02_starting_office:
 
 2.1 Starting Office
 ===================
@@ -61,7 +61,7 @@ There is also a ``Lo.ConnectSocket``, ``Lo.load_office(Lo.ConnectPipes(headless=
 For convenience ``Lo.ConnectPipe`` is an alias of :py:class:`~.conn.connectors.ConnectPipe`
 and ``Lo.ConnectSocket`` is an alias of :py:class:`~.conn.connectors.ConnectSocket`
 
-In both cases, a remote component context is created (see Chapter 1, :numref:`ch01fig02`) and then a service manager,
+In both cases, a remote component context is created (see Chapter 1, :numref:`ch01fig_python_using_office`) and then a service manager,
 Desktop object, and component loader are initialized.
 Below is a simplified version of :py:meth:`.Lo.load_office`, that show the principle of connecting to LibreOffice.
 See :py:meth:`.Lo.load_office` Source code for the full version which also includes events.
@@ -199,14 +199,14 @@ asks the service manager (``_mc_factory``) to create a service object inside the
 via :py:meth:`.Lo.qi` looks inside the service instance for the specified interface (``atype``), returning an instance of the interface as its result.
 
 The :py:meth:`.Lo.qi` function's reduces programmer typing, since calls to ``uno_obj.queryInterface()`` are very common in this frame work.
-Querying for the interface has the huge advantage of providing typing :numref:`ch02fig01` (autocomplete, static type checking) support thanks to types-unopy_.
+Querying for the interface has the huge advantage of providing typing :numref:`ch02fig_lo_qi_auto_demo` (autocomplete, static type checking) support thanks to types-unopy_.
 
 .. collapse:: Demo
     :open:
 
     .. cssclass:: a_gif
 
-        .. _ch02fig01:
+        .. _ch02fig_lo_qi_auto_demo:
         .. figure:: https://user-images.githubusercontent.com/4193389/178285134-70b9aa56-5eaa-43c8-aa59-c19f2b495336.gif
             :alt: Lo.qi autocomplete demo image
 
@@ -216,7 +216,7 @@ Querying for the interface has the huge advantage of providing typing :numref:`c
 The use of generics makes :py:meth:`.Lo.create_instance_mcf` useful for creating any type of interface object.
 Unfortunately, generics aren't utilized in the Office API, which relies instead on Object, Office's Any class, or the XInterface class which is inherited by all interfaces.
 
-.. _ch02sec02:
+.. _ch02_clossing_office:
 
 2.2 Closing Down/Killing Office
 ===============================
@@ -232,7 +232,7 @@ In the worst case, this can cause your program to exit without calling :py:meth:
 This will leave an extraneous Office process running in the OS, which should be killed. The easiest way is with |dsearch|_
 ``loproc --kill``.
 
-.. _ch02sec03:
+.. _ch02_open_doc:
 
 2.3 Opening a Document
 ======================
@@ -282,9 +282,9 @@ The search flags are usually set to 0, and document properties are stored in the
 :py:meth:`.Props.make_props` takes a property name and value and returns a PropertyValue_ tuple; there are several variants which accept different numbers of property name - value pairs.
 
 A complete list of document properties can be found in the MediaDescriptor documentation (accessed with ``lodoc MediaDescriptor service``),
-but some of the important ones are listed in :numref:`ch02tbl01`
+but some of the important ones are listed in :numref:`ch02tbl_some_doc_prop`
 
-.. _ch02tbl01:
+.. _ch02tbl_some_doc_prop:
 
 .. table:: Some Document Properties.
     :name: md_common_srv
@@ -298,7 +298,7 @@ but some of the important ones are listed in :numref:`ch02tbl01`
     StartPresentation    Starts showing a slide presentation immediately after loading the document   
     ==================== =============================================================================
 
-.. _ch02sec04:
+.. _ch02_create_doc:
 
 2.4 Creating a Document
 =======================
@@ -308,9 +308,9 @@ The general format of a program that creates a new document, manipulates it in s
 .. include:: ../../resources/odev/02/create_save_tab.rst
 
 A new document is created by calling ``XComponentLoader.loadComponentFromURL()`` with a special URL string for the document type.
-The possible strings are listed in :numref:`ch02tbl02`.
+The possible strings are listed in :numref:`ch02tbl_new_doc_url`.
 
-.. _ch02tbl02:
+.. _ch02tbl_new_doc_url:
 
 .. table:: URLs for Creating New Documents.
     :name: new_doc_type
@@ -375,7 +375,7 @@ A lot of older code still uses the XMultiServiceFactory_ service manager, so bot
 Another difference between the managers is that the XMultiComponentFactory_ manager is available as soon as Office is loaded,
 while the XMultiServiceFactory_ manager is initialized only when a document is loaded or created.
 
-.. _ch02sec05:
+.. _ch02_save_doc:
 
 2.5 Saving a Document
 =====================
@@ -409,7 +409,7 @@ The steps in saving a file are:
 If you don't want a password, then the third property should be left out.
 :py:meth:`.Lo.qi` is used again to cast an interface, this time from XComponent_ to |XStorable|_.
 
-:numref:`ch01fig05` in :ref:`Chapter 1 <ch01>` shows that |XStorable|_ is part of the OfficeDocument service,
+:numref:`ch01fig_office_doc_serv` in :ref:`Chapter 1 <ch01>` shows that |XStorable|_ is part of the OfficeDocument service,
 which means that it's inherited by all Office document types.
 
 What's a Filter Name?
@@ -421,7 +421,7 @@ What's a Filter Name?
 
 Rather than force a programmer to search through this list for the correct name, :py:meth:`.Lo.save_doc`
 allows him to supply just the name and extension of the output file. For example,
-in :ref:`section 3 <ch02sec03>`, :py:meth:`.Lo.save_doc` was called like so:
+in :ref:`section 3 <ch02_open_doc>`, :py:meth:`.Lo.save_doc` was called like so:
 
 .. tabs::
 
@@ -450,10 +450,10 @@ to examine the document's service name which is accessed via the XServiceInfo_ i
 
 Then :py:meth:`~.Lo.save_doc` utilizes :py:meth:`~.Lo.ext_to_format` to get document extension.
 
-The main document service names are listed in :numref:`ch02tbl03`.
+The main document service names are listed in :numref:`ch02tbl_doc_service_names`.
 For quick access in your scripts use :py:class:`.Lo.Service` where applicable.
 
-.. _ch02tbl03:
+.. _ch02tbl_doc_service_names:
 
 .. table:: Document Service Names.
     :name: doc_service_names
@@ -469,7 +469,7 @@ For quick access in your scripts use :py:class:`.Lo.Service` where applicable.
     =========== ==================================================
 
 
-We encountered these service names back in :ref:`Chapter 1 <ch01>`, :numref:`ch01fig09` – they're
+We encountered these service names back in :ref:`Chapter 1 <ch01>`, :numref:`ch01fig_office_doc_super` – they're
 subclasses of the OfficeDocument service.
 
 
@@ -480,7 +480,7 @@ This overload can be used to if a filter is not implements by :py:meth:`~.Lo.ext
 
 If you want to study the details, start with :py:meth:`~.Lo.save_doc`, and burrow down; the trickiest part is :py:meth:`~.Lo.ext_to_format`.
 
-.. _ch02sec06:
+.. _ch02_close_doc:
 
 2.6 Closing a Document
 ======================
@@ -498,7 +498,7 @@ The code for closing employs :py:meth:`.Lo.qi` to cast the document's XComponent
         closeable =  Lo.qi(XCloseable.class, doc)
         closeable.close(false)  # doc. closed without saving
 
-.. _ch02sec07:
+.. _ch02_gen_purpose_convert:
 
 2.7 A General Purpose Converter
 ===============================
@@ -545,7 +545,7 @@ The following converts a JPEG image into PNG:
 
         print(f"All done! converted file: {p_save}")
 
-.. _ch02sec08:
+.. _ch02_bug_detection:
 
 2.8 Bug Detection and Reporting
 ===============================
@@ -561,11 +561,11 @@ o see if the problem has been reported previously (it probably has). Various typ
 If you want to report a new bug, then you'll need to set up an account, which is quite simple, and also explained by the documentation.
 
 Often when people report bugs they don't include enough information, perhaps because the error window displayed by Windows is somewhat lacking.
-For example, a typical crash report window is show in :numref:`ch02fig02`.
+For example, a typical crash report window is show in :numref:`ch02fig_crash_report`.
 
 .. cssclass:: screen_shot invert
 
-    .. _ch02fig02:
+    .. _ch02fig_crash_report:
     .. figure:: https://user-images.githubusercontent.com/4193389/178563937-ce136961-4d80-4abf-9a61-f936d30a727b.png
         :alt: The LibreOffice Crash Reported by Windows 7.
 
@@ -580,27 +580,27 @@ A much easier alternative is the `WinCrashReport <https://www.nirsoft.net/utils/
 
 It presents the Windows Error Reporting (WER) data generated by a crash in a readable form.
 
-When a crash window appears (like the one in :numref:`ch02fig02`), start WinCrashReport to examine the automatically-generated error report, as in :numref:`ch02fig03`.
+When a crash window appears (like the one in :numref:`ch02fig_crash_report`), start WinCrashReport to examine the automatically-generated error report, as in :numref:`ch02fig_win_crash_rpt_gui`.
 
 .. cssclass:: screen_shot invert
 
-    .. _ch02fig03:
+    .. _ch02fig_win_crash_rpt_gui:
     .. figure:: https://user-images.githubusercontent.com/4193389/178566048-95c4d2f5-76c5-4ec5-9ba8-bc7d880b35ef.png
         :alt: Win Crash Report GUI
 
         :Win Crash Report GUI
 
-:numref:`ch02fig03` indicates that the problem lies inside ``mergedlo.dll``, an access violation (the exception code ``0xC0000005``) to a memory address.
+:numref:`ch02fig_win_crash_rpt_gui` indicates that the problem lies inside ``mergedlo.dll``, an access violation (the exception code ``0xC0000005``) to a memory address.
 
 `mergedlo.dll` is part of LibreOffice which probably means that you can find the DLL in /program.
 Most Office DLLs are located in that directory.
 
 ``WinCrashReport`` generates two alternative call stacks, with slightly more information in the second in this case.
-``mergedlo.dll`` is called by the ``uno_getCurrentEnvironment()`` function in ``cppu3.dll``, as indicated in :numref:`ch02fig04`.
+``mergedlo.dll`` is called by the ``uno_getCurrentEnvironment()`` function in ``cppu3.dll``, as indicated in :numref:`ch02fig_sec_call_stack_rpt`.
 
 .. cssclass:: screen_shot invert
 
-    .. _ch02fig04:
+    .. _ch02fig_sec_call_stack_rpt:
     .. figure:: https://user-images.githubusercontent.com/4193389/178566993-99c82ab5-ca0b-483b-b42f-8527673aeb09.png
         :alt: The Second Call Stack in WinCrashReport
 
@@ -610,11 +610,11 @@ Most Office DLLs are located in that directory.
 This narrows the problem to a specific function and two DLLs, which is very helpful.
 
 If you want to better understand the DLLs, they can be examined using `DLL Export Viewer <https://www.nirsoft.net/utils/dll_export_viewer.html>`_
-, another NirSoft_ tool, which lists a DLL's exported functions. Running it on `mergedlo.dll` turns up nothing, but the details for `cppu3.dll` are shown in :numref:`ch02fig05`.
+, another NirSoft_ tool, which lists a DLL's exported functions. Running it on `mergedlo.dll` turns up nothing, but the details for `cppu3.dll` are shown in :numref:`ch02fig_dll_export_view`.
 
 .. cssclass:: screen_shot invert
 
-    .. _ch02fig05:
+    .. _ch02fig_dll_export_view:
     .. figure:: https://user-images.githubusercontent.com/4193389/178568452-ac8bf39f-a026-4260-bd32-a66ffb6deded.png
         :alt: DLL Export Viewer's view of cppu3.dll
 
@@ -623,17 +623,17 @@ If you want to better understand the DLLs, they can be examined using `DLL Expor
 ``mergedlo.dll`` appears to be empty inside DLL Export Viewer because it exports no functions.
 That probably means it's being used as a store for resources, such as icons, cursors, and images.
 There's another NirSoft_ tool for looking at DLL resources, called `ResourcesExtract <https://www.nirsoft.net/utils/resources_extract.html>`_
-for searching the gigantic code base. :numref:`ch02fig06` shows the results for an ``uno_getCurrentEnvironment`` search.
+for searching the gigantic code base. :numref:`ch02fig_open_grok_result` shows the results for an ``uno_getCurrentEnvironment`` search.
 
 .. cssclass:: screen_shot invert
 
-    .. _ch02fig06:
+    .. _ch02fig_open_grok_result:
     .. figure:: https://user-images.githubusercontent.com/4193389/178569089-5d836f83-458a-49ca-bd90-1614ffc4a86b.png
         :alt: OpenGrok Results for "uno_getCurrentEnvironment"
 
         : ``OpenGrok`` Results for ``uno_getCurrentEnvironment``
 
-The function's code is in EnvStack.cxx, which can be examined by clicking on the linked function name shown at the bottom of :numref:`ch02fig06`.
+The function's code is in EnvStack.cxx, which can be examined by clicking on the linked function name shown at the bottom of :numref:`ch02fig_open_grok_result`.
 
 
 .. |convert_doc| replace:: Write Convert Document Format
