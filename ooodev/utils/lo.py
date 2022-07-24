@@ -898,7 +898,7 @@ class Lo(metaclass=StaticProperty):
             DocTypeStr: DocTypeStr enum. If not match if found defaults to ``DocTypeStr.WRITER``
 
         See Also:
-            :ref:`ch02sec05`
+            :ref:`ch02_save_doc`
         """
         e = ext.casefold().lstrip(".")
         if e == "":
@@ -1227,7 +1227,7 @@ class Lo(metaclass=StaticProperty):
             :py:meth:`~.utils.lo.Lo.store_doc` method is called along with any of its events.
 
         See Also:
-            :ref:`ch02sec05`
+            :ref:`ch02_save_doc`
         """
         cargs = CancelEventArgs(Lo.save_doc.__qualname__)
         cargs.event_data = {
@@ -1320,7 +1320,7 @@ class Lo(metaclass=StaticProperty):
 
         See Also:
             - :py:meth:`~.Lo.store_doc_format`
-            - :ref:`ch02sec05`
+            - :ref:`ch02_save_doc`
         """
         cargs = CancelEventArgs(Lo.store_doc.__qualname__)
         cargs.event_data = {
@@ -1404,7 +1404,7 @@ class Lo(metaclass=StaticProperty):
             Use :py:meth:`Info.getFilterNames` to get the filter names for your Office.
 
         See Also:
-            - :ref:`ch02sec05`
+            - :ref:`ch02_save_doc`
         """
         dtype = cls.DocType(doc_type)
         s = ext.lower()

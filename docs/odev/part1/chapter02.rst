@@ -28,7 +28,7 @@ Here, only explaining functions that illustrate Office ideas, such as service ma
 
 This is the first chapter with code, and so the first where programs could crash! Section 8 gives a few tips on bug detection and reporting.
 
-.. _ch02sec01:
+.. _ch02_starting_office:
 
 2.1 Starting Office
 ===================
@@ -216,7 +216,7 @@ Querying for the interface has the huge advantage of providing typing :numref:`c
 The use of generics makes :py:meth:`.Lo.create_instance_mcf` useful for creating any type of interface object.
 Unfortunately, generics aren't utilized in the Office API, which relies instead on Object, Office's Any class, or the XInterface class which is inherited by all interfaces.
 
-.. _ch02sec02:
+.. _ch02_clossing_office:
 
 2.2 Closing Down/Killing Office
 ===============================
@@ -232,7 +232,7 @@ In the worst case, this can cause your program to exit without calling :py:meth:
 This will leave an extraneous Office process running in the OS, which should be killed. The easiest way is with |dsearch|_
 ``loproc --kill``.
 
-.. _ch02sec03:
+.. _ch02_open_doc:
 
 2.3 Opening a Document
 ======================
@@ -298,7 +298,7 @@ but some of the important ones are listed in :numref:`ch02tbl01`
     StartPresentation    Starts showing a slide presentation immediately after loading the document   
     ==================== =============================================================================
 
-.. _ch02sec04:
+.. _ch02_create_doc:
 
 2.4 Creating a Document
 =======================
@@ -375,7 +375,7 @@ A lot of older code still uses the XMultiServiceFactory_ service manager, so bot
 Another difference between the managers is that the XMultiComponentFactory_ manager is available as soon as Office is loaded,
 while the XMultiServiceFactory_ manager is initialized only when a document is loaded or created.
 
-.. _ch02sec05:
+.. _ch02_save_doc:
 
 2.5 Saving a Document
 =====================
@@ -421,7 +421,7 @@ What's a Filter Name?
 
 Rather than force a programmer to search through this list for the correct name, :py:meth:`.Lo.save_doc`
 allows him to supply just the name and extension of the output file. For example,
-in :ref:`section 3 <ch02sec03>`, :py:meth:`.Lo.save_doc` was called like so:
+in :ref:`section 3 <ch02_open_doc>`, :py:meth:`.Lo.save_doc` was called like so:
 
 .. tabs::
 
@@ -480,7 +480,7 @@ This overload can be used to if a filter is not implements by :py:meth:`~.Lo.ext
 
 If you want to study the details, start with :py:meth:`~.Lo.save_doc`, and burrow down; the trickiest part is :py:meth:`~.Lo.ext_to_format`.
 
-.. _ch02sec06:
+.. _ch02_close_doc:
 
 2.6 Closing a Document
 ======================
@@ -498,7 +498,7 @@ The code for closing employs :py:meth:`.Lo.qi` to cast the document's XComponent
         closeable =  Lo.qi(XCloseable.class, doc)
         closeable.close(false)  # doc. closed without saving
 
-.. _ch02sec07:
+.. _ch02_gen_purpose_convert:
 
 2.7 A General Purpose Converter
 ===============================
@@ -545,7 +545,7 @@ The following converts a JPEG image into PNG:
 
         print(f"All done! converted file: {p_save}")
 
-.. _ch02sec08:
+.. _ch02_bug_detection:
 
 2.8 Bug Detection and Reporting
 ===============================
