@@ -126,10 +126,10 @@ class Selection(metaclass=StaticProperty):
     @classmethod
     def get_selected_text_str(cls, text_doc: XTextDocument) -> str:
         """
-        Gets the first selection text for document
+        Gets the first selection text for Document
 
         Args:
-            text_doc (XTextDocument): Text Docoment
+            text_doc (XTextDocument): Text Document
 
         Returns:
             str: Selected text or empty string.
@@ -179,7 +179,7 @@ class Selection(metaclass=StaticProperty):
 
         Args:
             o_sel (XTextRange): first cursor range
-            o_text (object): xText object, usually document text object
+            o_text (object): XText object, usually document text object
 
         Returns:
             int: length of range
@@ -627,16 +627,16 @@ class Selection(metaclass=StaticProperty):
         """
         Get the number of word in ooo way.
 
-        This method takes into account the current Loc
+        This method takes into account the current Locale
 
         Args:
             text (str): string to count the word of
-            word_type (WordTypeEnum, optional): type of words to count. Default 'WordTypeEnum.WORD_COUNT'
+            word_type (WordTypeEnum, optional): type of words to count. Default ``WordTypeEnum.WORD_COUNT``
                 Import  line ``from ooodev.utils.selection import WordTypeEnum``
             locale_lang (str, optional): Language such as 'en-US' used to process word boundaries. Defaults to LO's current language.
 
         Raises:
-            CreateInstanceMsfError: If unable to create i18n.BreakIterator service
+            CreateInstanceMsfError: If unable to create ``i18n.BreakIterator service``
 
         Returns:
             int: The number of words

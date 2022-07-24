@@ -55,7 +55,7 @@ class XML:
         Gets a XML Document from remote source.
 
         Args:
-            url (str): Url for a remote XML Document
+            url (str): URL for a remote XML Document
 
         Raises:
             Exception: if unable to open document.
@@ -177,11 +177,11 @@ class XML:
     @classmethod
     def get_node_value(cls, *args, **kwargs) -> str:
         """
-        Gets firt tag_name node in the list and returns it text.
+        Gets first ``tag_name`` node in the list and returns it text.
 
         Args:
             node (Node): Node to get value of.
-            tag_name (str): tag_name to search for.
+            tag_name (str): ``tag_name`` to search for.
             nodes (NodeList): List of nodes to search.
 
         Returns:
@@ -425,7 +425,7 @@ class XML:
     @staticmethod
     def get_flat_fiter_name(doc_type: mLo.Lo.DocTypeStr) -> str:
         """
-        Gts the Flat XML filter name for the doc type.
+        Gets the Flat XML filter name for the doc type.
 
         Args:
             doc_type (Lo.DocTypeStr): Document type.

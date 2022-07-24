@@ -7,7 +7,7 @@ Class Lo
 
     .. py:property:: Lo.bridge
 
-        Static readonly property
+        Static read-only property
 
         Gets connection bridge component
 
@@ -15,7 +15,7 @@ Class Lo
 
     .. py:property:: Lo.is_macro_mode
 
-        Static readonly property
+        Static read-only property
 
         Gets if currently running scripts inside of LO (macro) or standalone
 
@@ -23,7 +23,7 @@ Class Lo
 
     .. py:property:: Lo.null_date
 
-        Static readonly property
+        Static read-only property
 
         Gets Value of Null Date in UTC
 
@@ -36,7 +36,7 @@ Class Lo
 
     .. py:property:: Lo.star_desktop
 
-        Static readonly property
+        Static read-only property
 
         Get current desktop
 
@@ -44,11 +44,11 @@ Class Lo
 
     .. py:property:: Lo.this_component
 
-        Static readonly property
+        Static read-only property
 
         When the current component is the Basic IDE, the ThisComponent object returns
         in Basic the component owning the currently run user script.
-        Above behaviour cannot be reproduced in Python.
+        Above behavior cannot be reproduced in Python.
 
         When running in a macro this property can be access directly to get the current document.
 
@@ -58,8 +58,8 @@ Class Lo
 
     .. py:property:: Lo.xscript_context
 
-        Static readonly property
+        Static read-only property
 
-        a substitute to `XSCRIPTCONTEXT` (Libre|Open)Office built-in
+        a substitute to `XSCRIPTCONTEXT` LibreOffice/OpenOffice built-in
 
         :rtype: XScriptContext

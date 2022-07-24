@@ -60,13 +60,27 @@ extensions = [
     # "sphinx.ext.linkcode",
     # sphinx_tabs.tabs docs: https://sphinx-tabs.readthedocs.io/en/latest/
 
+# region spelling
+# https://sphinxcontrib-spelling.readthedocs.io/en/latest/
 spelling_word_list_filename = [
-    'spelling_wordlist.txt',
+    "spelling_code.txt",
+    "spelling_book.txt",
 ]
 
 spelling_show_suggestions = True
 spelling_ignore_pypi_package_names = True
 spelling_ignore_contributor_names = True
+spelling_ignore_acronyms=True
+
+# spell checking;
+#   run sphinx-build -b spelling . _build
+#       this will checkfor any spelling and create folders with *.spelling files if there are errors.
+#       open each *.spelling file and find any spelling errors and fix them in corrsponding files.
+#
+# spelling_book.txt contains all spelling exceptions related to book in /docs/odev
+# spelling_code.txt contains all spelling exceptions related to python doc strings.
+
+# endregion spelling
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]

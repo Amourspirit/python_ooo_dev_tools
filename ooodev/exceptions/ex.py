@@ -64,7 +64,7 @@ class PropertiesError(Exception):
 
 
 class PropertyNotFoundError(PropertyError):
-    """Propery Not Found Error"""
+    """Property Not Found Error"""
 
     def __str__(self) -> str:
         return repr(f"Property not found for: {self.args[0]}")
@@ -90,7 +90,7 @@ class GoalDivergenceError(Exception):
 
 
 class UnKnownError(Exception):
-    """Error for unnown results"""
+    """Error for unknown results"""
     pass
 
 
@@ -100,7 +100,7 @@ class UnOpenableError(Exception):
         PropertyError Constructor
 
         Args:
-            fnm (PathOrStr): File path that is not openable.
+            fnm (PathOrStr): File path that is not able to be opened.
         """
         super().__init__(fnm, *args)
 
@@ -143,7 +143,7 @@ class NotSupportedMacroModeError(Exception):
     """
     Handles errors of operations that are not allow when running as a macro.
     
-    This error is largly used for methos that require external imports
+    This error is largely used for methods that require external imports
     such as XML.apply_xslt()
     """
     pass

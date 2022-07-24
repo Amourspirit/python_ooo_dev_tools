@@ -1,6 +1,6 @@
 # coding: utf-8
 """
-Uno Enum Helper Methods
+uno Enum Helper Methods
 
 These methods are used to add custom functionality to enums or enum like classes.
 """
@@ -8,10 +8,10 @@ import uno
 
 def uno_enum_class_new(cls, value):
     """
-    New (__new__) method for dynamically created uno.enum classes
+    New (__new__) method for dynamically created ``uno.Enum`` classes
 
     Args:
-        value (object): Can be Uno.Enum, uno.Enum.value, str
+        value (object): Can be ``uno.Enum``, ``uno.Enum.value``, ``str``
 
     Raises:
         ValueError: if unable to match enum instance

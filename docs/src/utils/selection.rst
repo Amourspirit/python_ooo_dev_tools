@@ -7,9 +7,9 @@ Class Selection
 
     .. py:property:: Selection.text_range_compare
 
-        Static readonly property
+        Static read-only property
 
-        Gets text range for comparion operations
+        Gets text range for comparison operations
 
         :return: Text Range Compare instance
         :rtype: XTextRangeCompare
