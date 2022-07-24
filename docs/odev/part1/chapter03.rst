@@ -14,7 +14,7 @@ and when it was last modified. The second and third approaches extract API detai
 This can be done by calling functions in |app_name_short| Utility classes or by utilizing the |devtools|_ built into Office.
 See :numref:`ch03fig06`.
 
-.. _ch03sec01:
+.. _ch03_examine_office:
 
 3.1 Examining Office
 ====================
@@ -22,7 +22,7 @@ See :numref:`ch03fig06`.
 It's sometimes necessary to examine the state of the Office application, for example to determine its version number or installation directory.
 There are two main ways of finding this information, using configuration properties and path settings.
 
-.. _ch03sec01prt01:
+.. _ch03_examine_office_cofig_prop:
 
 3.1.1 Examining Configuration Properties
 ----------------------------------------
@@ -104,7 +104,7 @@ Example output:
         Filters Dir: file:///usr/lib/libreoffice/program/filter
         ...
 
-.. _ch03sec01prt02:
+.. _ch03_examine_office_pth_set:
 
 3.1.2 Examining Path Settings
 -----------------------------
@@ -137,7 +137,7 @@ Examples of using :py:meth:`.Info.get_office_dir` and :py:meth:`.Info.get_paths`
         print(f"\nTemplates Dirs: {Info.get_paths('Template')}")
         print(f"\nGallery Dir: {Info.get_paths('Gallery')}")
 
-.. _ch03sec02:
+.. _ch03_get_set_prop:
 
 3.2 Getting and Setting Document Properties
 ===========================================
@@ -167,7 +167,7 @@ The old interfaces were XDocumentInfoSupplier_ and XDocumentInfo_, but these hav
 XDocumentPropertiesSupplier_ and XDocumentProperties_. This wouldn't really matter except that while OpenOffice retains those deprecated interfaces,
 LibreOffice has removed them.
 
-.. _ch03sec02prt01:
+.. _ch03_get_set_prop_file_prop:
 
 3.2.1 Reporting OS File Properties
 ----------------------------------
@@ -228,7 +228,7 @@ As a consequence, :py:meth:`~.info.Info.print_doc_props` consists of a long list
 
 However, user-defined file properties are accessed with an XPropertyContainer, as can be seen back in :ref:`print_doc_properties() <ch03_print_doc_properties>`.
 
-.. _ch03sec02prt02:
+.. _ch03_get_set_prop_doc_prop:
 
 3.2.2 Setting Document Properties
 =================================
@@ -270,6 +270,7 @@ The changed properties appear in the "Document Statistics" list shown in :numref
 
         :"Document Statistics" Properties List for ``algs.odp``.
 
+.. _ch03_find_api_info:
 
 3.3 Examining a Document for API Information
 ============================================
@@ -295,9 +296,9 @@ Two approaches for easing matters are often suggested. One is to write code to p
 which is my approach in the next subsection.
 A second technique is to install an Office extension for browsing a document's structure.
 Since LibreOffice 7.2 there is also |devtools|_.
-:ref:`ch03sec03prt02` looks at options.
+:ref:`ch03_find_api_info_dev_tools` looks at options.
 
-.. _ch03sec03prt01:
+.. _ch03_find_api_info_print:
 
 3.3.1 Printing Programming Details about a Document
 ===================================================
@@ -454,7 +455,7 @@ File Types Another group of utility methods let a programmer investigate a file'
     URLPattern: private:factory/swriter
 
 
-.. _ch03sec03prt02:
+.. _ch03_find_api_info_dev_tools:
 
 3.3.2 Examining a Document Using Development Tools
 ==================================================
