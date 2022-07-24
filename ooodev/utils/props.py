@@ -66,7 +66,7 @@ class Props:
         cls, cmd: str, item_name: str
     ) -> Tuple[PropertyValue, PropertyValue, PropertyValue, PropertyValue, PropertyValue]:
         """
-        propertiees for a toolbar item using a name and an image
+        Properties for a toolbar item using a name and an image
 
         problem: image does not appear next to text on toolbar
 
@@ -99,7 +99,7 @@ class Props:
 
         Note:
             String properties such as ``Zoom.Value`` can be pass by constructing a dictionary
-            and passing dictionary via exapnsion.
+            and passing dictionary via expansion.
 
             Example Expansion
 
@@ -125,7 +125,7 @@ class Props:
         """
         Gets a uno.Any object for elements.
         
-        The first element determines the type for the uno.Any objec.
+        The first element determines the type for the uno.Any object.
 
         Raises:
             ValueError: if unable to create uno.Any object.
@@ -138,7 +138,7 @@ class Props:
 
             ``uno.Any("[]com.sun.star.table.TableSortField", (sort_one, sort_two)``
 
-            This methos is shortcut.
+            This method is a shortcut.
 
             ``Props.any(sort_one, sort_two)``
         """
@@ -719,7 +719,7 @@ class Props:
         Gets property values a a string
 
         Args:
-            val (object): Values such as a Itter of PropertyValue or
+            val (object): Values such as a iterable of iterable or
                 object that implements XPropertySet or
                 a string
 

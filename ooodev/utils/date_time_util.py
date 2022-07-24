@@ -22,7 +22,7 @@ class DateUtil:
             tz (timezone | None, optional): TimeZone
 
         Returns:
-            str: Formated timestamp such as '2022-06-19 17:12:38'
+            str: Formatted timestamp such as ``2022-06-19 17:12:38``
         """
         if tz is not None:
             dt = datetime.datetime.now(tz)
@@ -120,13 +120,13 @@ class DateUtil:
     @staticmethod
     def date_time_str(dt: datetime.datetime) -> str:
         """
-        returns a formated date and time as string
+        returns a formatted date and time as string
 
         Args:
             dt (datetime): date time
 
         Returns:
-            str: formatted date string such as 'Jun 05, 2022 20:15'
+            str: formatted date string such as ``Jun 05, 2022 20:15``
         """
         return dt.strftime("%b %d, %Y %H:%M")
 
@@ -136,7 +136,7 @@ class DateUtil:
         Converts a uno DateTime struct to a datetime instance
 
         Args:
-            uno_dt (UnoDateTime): Uno Datetime struct
+            uno_dt (UnoDateTime): uno Datetime struct
 
         Returns:
             datetime.datetime: Python DateTime
@@ -158,14 +158,14 @@ class DateUtil:
     @classmethod
     def str_date_time(cls, uno_dt: UnoDateTime) -> str:
         """
-        returns a formated date and time as string
+        returns a formatted date and time as string
 
         Args:
-            dt (datetime): date time
+            uno_dt (datetime): date time
 
         Returns:
-            str: formatted date string such as 'Jun 05, 2022 20:15'
-            or empty string if uno_dt is null.
+            str: formatted date string such as ``Jun 05, 2022 20:15``
+            or empty string if ``uno_dt`` is null.
         """
         dt = cls.uno_dt_to_dt(uno_dt)
         if dt == mLo.Lo.null_date:

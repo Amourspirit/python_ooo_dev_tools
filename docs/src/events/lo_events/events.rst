@@ -57,6 +57,10 @@ Once an instance of ``Events`` is created it can be used to subscribe to any int
 
 .. include:: ../../../resources/events/event_interal_note.rst
 
+.. seealso::
+
+    :ref:`Chapter 4 - Dispatching <ch04sec05>`
+
 .. autoclass:: ooodev.events.lo_events.Events
     :members:
     :inherited-members:

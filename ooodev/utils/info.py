@@ -87,7 +87,7 @@ class Info(metaclass=StaticProperty):
         NOTINFILEDIALOG = 0x00001000
         """This filter will not be shown in the file dialog's filter list"""
         NOTINCHOOSER = 0x00002000
-        """This filter will not be shown in the dialog box for chosing a filter in case Apache OpenOffice was not able to detect one"""
+        """This filter will not be shown in the dialog box for choosing a filter in case Apache OpenOffice was not able to detect one"""
         READONLY = 0x00010000
         """All documents imported by this filter will automatically be in read-only state"""
         PREFERRED = 0x10000000
@@ -95,7 +95,7 @@ class Info(metaclass=StaticProperty):
         THIRDPARTYFILTER = 0x00080000
         """
         The filter is a UNO component filter, as opposed to the internal C++ filters.
-        This is an artefact that will vanish over time.
+        This is an artifact that will vanish over time.
 
         AKA: 3RDPARTYFILTER
         """
@@ -106,7 +106,7 @@ class Info(metaclass=StaticProperty):
         Gets fonts
 
         Returns:
-            Tuple[FontDescriptor, ...]: Fonts Discriptors
+            Tuple[FontDescriptor, ...]: Font Descriptors
         """
         xtoolkit = mLo.Lo.create_instance_mcf(XToolkit, "com.sun.star.awt.Toolkit")
         device = xtoolkit.createScreenCompatibleDevice(0, 0)
@@ -174,7 +174,7 @@ class Info(metaclass=StaticProperty):
         Get registered modifications path
 
         Returns:
-            str: registered modificatoins path
+            str: registered modifications path
         """
         user_cfg_dir = mFileIO.FileIO.url_to_path(cls.get_paths("UserConfig"))
         parent_path = user_cfg_dir.parent
@@ -220,7 +220,7 @@ class Info(metaclass=StaticProperty):
     @classmethod
     def get_reg_item_prop(cls, item: str, prop: str, node: Optional[str] = None) -> str:
         """
-        Gets value from 'registrymodifications.xcu'
+        Gets value from ``registrymodifications.xcu``
 
         Args:
             item (str): item name
@@ -231,7 +231,7 @@ class Info(metaclass=StaticProperty):
             ValueError: if unable to get value
 
         Returns:
-            str: value from 'registrymodifications.xcu'. e.g. "Writer/MailMergeWizard" null, "MailAddress"
+            str: value from ``registrymodifications.xcu``. e.g. ``Writer/MailMergeWizard``, ``None``, ``MailAddress``
         """
         # return value from "registrymodifications.xcu"
         # e.g. "Writer/MailMergeWizard" null, "MailAddress"
@@ -372,7 +372,7 @@ class Info(metaclass=StaticProperty):
     @staticmethod
     def get_paths(setting: str) -> str:
         """
-        Gets access to LO's prefefined paths.
+        Gets access to LO's predefined paths.
 
         Args:
             setting (str): property value
@@ -568,7 +568,7 @@ class Info(metaclass=StaticProperty):
             node_path (str): Node path of properties
 
         Raises:
-            mEx.ConfigError: if Unble to get config properties
+            mEx.ConfigError: if Unable to get config properties
 
         Returns:
             XPropertySet: Property Set
@@ -645,7 +645,7 @@ class Info(metaclass=StaticProperty):
     @staticmethod
     def get_ext(fnm: PathOrStr) -> str | None:
         """
-        Gets file extenson without the ``.``
+        Gets file extension without the ``.``
 
         Args:
             fnm (PathOrStr): file path
@@ -811,7 +811,7 @@ class Info(metaclass=StaticProperty):
     @staticmethod
     def get_implementation_name(obj: object) -> str:
         """
-        Gets implementaton name such as ``com.sun.star.comp.deployment.PackageInformationProvider``
+        Gets implementation name such as ``com.sun.star.comp.deployment.PackageInformationProvider``
 
         Args:
             obj (object): uno object that implements XServiceInfo
@@ -903,13 +903,13 @@ class Info(metaclass=StaticProperty):
     @staticmethod
     def is_image_mime(mime_type: str) -> bool:
         """
-        Gets if mime type is a known image type
+        Gets if mime-type is a known image type
 
         Args:
-            mime_type (str): mime type e.g. 'application/x-openoffice-bitmap'
+            mime_type (str): mime type e.g. ``application/x-openoffice-bitmap``
 
         Returns:
-            bool: True if known mime type; Otherwise False
+            bool: True if known mime-type; Otherwise False
         """
         if mime_type is None or mime_type == "":
             return False
@@ -1037,7 +1037,7 @@ class Info(metaclass=StaticProperty):
 
         Args:
             obj (object): Object to check for supported service
-            service (string): Any UNO such as 'com.sun.star.configuration.GroupAccess'
+            service (string): Any UNO such as ``com.sun.star.configuration.GroupAccess``
 
         Returns:
             bool: True if obj supports service; Otherwise; False
@@ -1335,10 +1335,10 @@ class Info(metaclass=StaticProperty):
 
         Raises:
             MissingInterfaceError: If Doc does not implement XStyleFamiliesSupplier interface
-            Exception: If unabale to get style families
+            Exception: If unable to get style Families
 
         Returns:
-            XNameAccess: Style Famileis
+            XNameAccess: Style Families
         """
         try:
             xsupplier = mLo.Lo.qi(XStyleFamiliesSupplier, doc)
@@ -1948,10 +1948,10 @@ class Info(metaclass=StaticProperty):
 
         Args:
             obj (object): Object to test if is uno enum
-            type_name (str): Type string such as 'com.sun.star.sheet.GeneralFunction'
+            type_name (str): Type string such as ``com.sun.star.sheet.GeneralFunction``
 
         Returns:
-            bool: True if 'obj' is uno enum and 'obj' matches 'type_name'; Otherwise, False
+            bool: True if ``obj`` is uno enum and ``obj`` matches ``type_name``; Otherwise, False
         """
         if obj is None:
             return False
@@ -1968,7 +1968,7 @@ class Info(metaclass=StaticProperty):
             obj (object): Uno object
 
         Returns:
-            str | None: Full type name if found; Othwrwise; None
+            str | None: Full type name if found; Otherwise; None
         """
         if hasattr(obj, "typeName"):
             return obj.typeName
@@ -1979,14 +1979,13 @@ class Info(metaclass=StaticProperty):
             return obj.__pyunointerface__
         return None
 
-    # TODO: Class Property language does not have doc genereated.
     @classproperty
     def language(cls) -> str:
         """
         Gets the Current Language of the LibreOffice Instance
 
         Returns:
-            str: First two chars of languag in lower case such as 'en-US'
+            str: First two chars of language in lower case such as 'en-US'
         """
 
         try:
@@ -1998,10 +1997,9 @@ class Info(metaclass=StaticProperty):
 
     @language.setter
     def language(cls, value) -> None:
-        # raise error on set. Not really neccesary but gives feedback.
+        # raise error on set. Not really necessary but gives feedback.
         raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
 
-    # TODO: Class Property version does not have doc genereated.
     @classproperty
     def version(cls) -> str:
         """
@@ -2020,7 +2018,7 @@ class Info(metaclass=StaticProperty):
 
     @version.setter
     def version(cls, value) -> None:
-        # raise error on set. Not really neccesary but gives feedback.
+        # raise error on set. Not really necessary but gives feedback.
         raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
 
 

@@ -3,6 +3,17 @@ Version History
 ###############
 
 *************
+Version 0.4.9
+*************
+
+| Added a Bridge Connector :py:attr:`.Lo.bridge`
+| See also: :ref:`ch04sec04`
+| See example: `Office Window Monitor <https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/general/odev_monitor>`_
+
+Added Session class for registering and importing.
+See example: `Shared Library Access <https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/general/odev_share_lib>`_
+
+*************
 Version 0.4.8
 *************
 
@@ -56,7 +67,7 @@ New more flexable and robust way of connecting to office.
 
 This update change :py:meth:`.Lo.load_office` method
 
-Paths used internally now automaticlly resolve to absolute paths.
+Paths used internally now automatically resolve to absolute paths.
 
 *************
 Version 0.3.0
@@ -68,4 +79,4 @@ Write module released
 Version 0.2.0
 *************
 
-Initial realease with full support for calc.
+Initial release with full support for calc.

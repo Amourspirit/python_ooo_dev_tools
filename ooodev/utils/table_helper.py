@@ -150,7 +150,7 @@ class TableHelper:
             num_rows (int): Number of rows
             num_cols (int): Number of Columns in each row.
             val (Callable[[int, int, Any], Any]): Callable that provide each value.
-                Callback e.g. cb(row: int, col: int, prev_value: None | int) -> int:...
+                Callback e.g. ``cb(row: int, col: int, prev_value: None | int) -> int:...``
 
         Returns:
             List[List[Any]]: 2-Dimensional List of values
@@ -158,8 +158,6 @@ class TableHelper:
         .. collapse:: Example
 
             Example of array filled with 1's
-
-
 
             .. code-block:: python
 
@@ -174,8 +172,8 @@ class TableHelper:
 
             Example of using call back method.
 
-            The following example creates an array that loops through each animals and addes
-            to array. When end of animials is reached the start with the beginning of animals and
+            The following example creates an array that loops through each animals and adds
+            to array. When end of animals is reached the start with the beginning of animals and
             continues in this fashion until array is built.
 
             .. code-block:: python
@@ -230,7 +228,7 @@ class TableHelper:
             iter_obj (Iterable[Any] | object): iterable object or object.
 
         Returns:
-            List[Any]: List containing same elements of itter_obj
+            List[Any]: List containing same elements of ``itter_obj``
         """
         if gUtil.Util.is_iterable(iter_obj):
             return list(iter_obj)
@@ -247,7 +245,7 @@ class TableHelper:
             iter_obj (Iterable[Any] | object): iterable object or object.
 
         Returns:
-            Tuple[Any]: Tuple containing same elements of itter_obj
+            Tuple[Any]: Tuple containing same elements of ``itter_obj``
         """
         if gUtil.Util.is_iterable(iter_obj):
             return tuple(iter_obj)
@@ -256,11 +254,11 @@ class TableHelper:
     @classmethod
     def to_2d_list(cls, seq_obj: Sequence[Any]) -> List[List[Any]]:
         """
-        Converts a sequene of sequenc to a list.
+        Converts a sequence of sequence to a list.
 
         Converts 1-Dimensional or 2-Dimensional array such as a Tuple or a Tuple of Tuple's into a List of List.
 
-        An array of tuples is immutable and can not add or remove elemetns whereas a list is mutable.
+        An array of tuples is immutable and can not add or remove elements whereas a list is mutable.
 
         Args:
             seq_obj (Sequence[Any]): 1-Dimensional or 2-Dimensional List
@@ -287,7 +285,7 @@ class TableHelper:
     @classmethod
     def to_2d_tuple(cls, seq_obj: Sequence[Any]) -> Tuple[Tuple[Any, ...], ...]:
         """
-        Converts a sequene of sequenc to a list.
+        Converts a sequence of sequence to a list.
 
         Converts 1-Dimensional or 2-Dimensional array such as a List or List of list's into a Tuple of Tuple.
 

@@ -29,4 +29,4 @@ class Config(metaclass=ConfigMeta):
     """
 
     profile_versions: List[str]
-    """LibreOffice Prifile versions. Currently expect ["4"]"""
+    """LibreOffice Profile versions. Currently expect ["4"]"""

@@ -99,7 +99,7 @@ class Selection(metaclass=StaticProperty):
     @staticmethod
     def get_selected_text_range(text_doc: XTextDocument) -> XTextRange | None:
         """
-        Gets the text raange for current selection
+        Gets the text range for current selection
 
         Args:
             text_doc (XTextDocument): Text Document
@@ -126,10 +126,10 @@ class Selection(metaclass=StaticProperty):
     @classmethod
     def get_selected_text_str(cls, text_doc: XTextDocument) -> str:
         """
-        Gets the first selection text for document
+        Gets the first selection text for Document
 
         Args:
-            text_doc (XTextDocument): Text Docoment
+            text_doc (XTextDocument): Text Document
 
         Returns:
             str: Selected text or empty string.
@@ -145,14 +145,14 @@ class Selection(metaclass=StaticProperty):
     @classmethod
     def compare_cursor_ends(cls, c1: XTextRange, c2: XTextRange) -> Selection.CompareEnum:
         """
-        Compares two cursors ranges end positons
+        Compares two cursors ranges end positions
 
         Args:
             c1 (XTextRange): first cursor range
             c2 (XTextRange): second cursor range
 
         Raises:
-            Exception: if comparsion fails
+            Exception: if comparison fails
 
         Returns:
             CompareEnum: Compare result.
@@ -179,7 +179,7 @@ class Selection(metaclass=StaticProperty):
 
         Args:
             o_sel (XTextRange): first cursor range
-            o_text (object): xText object, usually document text object
+            o_text (object): XText object, usually document text object
 
         Returns:
             int: length of range
@@ -311,7 +311,7 @@ class Selection(metaclass=StaticProperty):
             return ka
 
         if not count in (1, 2):
-            raise TypeError("get_cursor() got an invalid numer of arguments")
+            raise TypeError("get_cursor() got an invalid number of arguments")
 
         kargs = get_kwargs()
 
@@ -442,7 +442,7 @@ class Selection(metaclass=StaticProperty):
     @classmethod
     def get_left_cursor(cls, o_sel: XTextRange, o_text: DocOrText) -> XTextCursor:
         """
-        Creates a new TextCursor with postion left that can travel right
+        Creates a new TextCursor with position left that can travel right
 
         Args:
             o_sel (XTextRange): Text Range
@@ -470,7 +470,7 @@ class Selection(metaclass=StaticProperty):
     @classmethod
     def get_right_cursor(cls, o_sel: XTextRange, o_text: DocOrText) -> XTextCursor:
         """
-        Creates a new TextCursor with postion right that can travel left
+        Creates a new TextCursor with position right that can travel left
 
         Args:
             o_sel (XTextRange): Text Range
@@ -511,7 +511,7 @@ class Selection(metaclass=StaticProperty):
             # OPTIMIZE: get_position.get_high()
             # The idea of this function is to cut down on the number if iterations
             # needed to get the range from cursors left and right positions.
-            # Most likely there is an even more efficent way to do this.
+            # Most likely there is an even more efficient way to do this.
             if jump <= 0:
                 return 0
             if cls.compare_cursor_ends(l, r) == cls.CompareEnum.BEFORE:
@@ -578,7 +578,7 @@ class Selection(metaclass=StaticProperty):
             ViewCursorError: If Unable to get cursor
 
         Returns:
-            XTextViewCursor: Text View Currsor
+            XTextViewCursor: Text View Cursor
 
         See Also:
             `LibreOffice API XTextViewCursor <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextViewCursor.html>`_
@@ -603,7 +603,7 @@ class Selection(metaclass=StaticProperty):
     @classproperty
     def text_range_compare(cls) -> XTextRangeCompare:
         """
-        Gets text range for comparion operations
+        Gets text range for comparison operations
 
         Returns:
             XTextRangeCompare: Text Range Compare instance
@@ -619,7 +619,7 @@ class Selection(metaclass=StaticProperty):
 
     @text_range_compare.setter
     def text_range_compare(cls, value) -> None:
-        # raise error on set. Not really neccesary but gives feedback.
+        # raise error on set. Not really necessary but gives feedback.
         raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
 
     @staticmethod
@@ -627,16 +627,16 @@ class Selection(metaclass=StaticProperty):
         """
         Get the number of word in ooo way.
 
-        This method takes into account the current Loc
+        This method takes into account the current Locale
 
         Args:
             text (str): string to count the word of
-            word_type (WordTypeEnum, optional): type of words to count. Default 'WordTypeEnum.WORD_COUNT'
+            word_type (WordTypeEnum, optional): type of words to count. Default ``WordTypeEnum.WORD_COUNT``
                 Import  line ``from ooodev.utils.selection import WordTypeEnum``
-            locale_lang (str, optional): Language such as 'en-US' used to process word boundaries. Defaluts to LO's current langauge.
+            locale_lang (str, optional): Language such as 'en-US' used to process word boundaries. Defaults to LO's current language.
 
         Raises:
-            CreateInstanceMsfError: If unable to create i18n.BreakIterator service
+            CreateInstanceMsfError: If unable to create ``i18n.BreakIterator service``
 
         Returns:
             int: The number of words
@@ -654,7 +654,7 @@ class Selection(metaclass=StaticProperty):
         num_words = 0
         start_pos = 0
         if word_type > WordTypeEnum.ANY_WORD:
-            # intenionally pad the start and end of the string to guarantee we get the first word and clean break on last word
+            # intensionally pad the start and end of the string to guarantee we get the first word and clean break on last word
             st = f" {text} "
         else:
             # ANY_WORD
@@ -676,7 +676,7 @@ class Selection(metaclass=StaticProperty):
     @classmethod
     def select_next_word(cls, text_doc: XTextDocument) -> bool:
         """
-        Select the word right from the current curor position.
+        Select the word right from the current cursor position.
 
         Args:
             text_doc (XTextDocument): Text Document
@@ -736,7 +736,7 @@ def _del_cache_attrs(source: object, e: EventArgs) -> None:
             delattr(Selection, attr)
 
 
-# subscribe to events that warrent clearing cached attribs
+# subscribe to events that warrant clearing cached attribs
 _Events().on(LoNamedEvent.RESET, _del_cache_attrs)
 
 __all__ = ("Selection",)

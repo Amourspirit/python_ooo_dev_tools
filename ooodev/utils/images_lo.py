@@ -102,7 +102,7 @@ class ImagesLo:
     @classmethod
     def get_size_100mm(cls, im_fnm: PathOrStr) -> Size:
         """
-        The Size of the graphic in 100th mm.
+        The Size of the graphic in ``100th mm``.
 
         This property may not be available in case of pixel graphics or
         if the logical size can not be determined correctly for some formats

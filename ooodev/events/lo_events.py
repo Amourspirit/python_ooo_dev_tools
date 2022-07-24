@@ -37,7 +37,7 @@ class _event_base(object):
         Registers an event
 
         Args:
-            event_name (str): Uniquie event name
+            event_name (str): Unique event name
             callback (Callable[[object, EventArgs], None]): Callback function
         """
         if self._callbacks is None:
@@ -53,7 +53,7 @@ class _event_base(object):
         Removes an event callback
 
         Args:
-            event_name (str): Uniquie event name
+            event_name (str): Unique event name
             callback (Callable[[object, EventArgs], None]): Callback function
 
         Returns:
@@ -210,7 +210,7 @@ def is_meth_event(source: str, meth: callable) -> bool:
         meth (callable): method to test.
 
     Returns:
-        bool: True if event is rased by meth; Otherwise; False
+        bool: True if event is raised by meth; Otherwise; False
     """
     try:
         return source == meth.__qualname__

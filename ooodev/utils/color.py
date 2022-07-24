@@ -270,7 +270,7 @@ class RGB(NamedTuple):
 
     def get_luminance(self) -> float:
         """
-        Gets lumiance value for current color
+        Gets luminance value for current color
 
         Returns:
             float: luminance value
@@ -297,7 +297,7 @@ class RGB(NamedTuple):
 
     def get_brightness(self) -> int:
         """
-        Gets brightnes from 0 (dark) to 255 (light)
+        Gets brightness from 0 (dark) to 255 (light)
 
         Returns:
             int: brightness level
@@ -311,7 +311,7 @@ class RGB(NamedTuple):
         If color has a brightness less than ``128`` it is considered dark.
 
         Returns:
-            bool: True if color is dark; Othwrwise, False
+            bool: True if color is dark; Otherwise, False
         """
         return self.get_brightness() < 128
 
@@ -321,7 +321,7 @@ class RGB(NamedTuple):
         If color has a brightness Greater than ``128`` it is considered light.
 
         Returns:
-            bool: True if color is light; Othwrwise, False
+            bool: True if color is light; Otherwise, False
         """
         return not self.is_dark()
 
@@ -401,7 +401,7 @@ def clamp01(value: float) -> float:
 
 def hue_to_rgb(h: float) -> RGB:
     """
-    Conerts a hue to instance of red, gree, blue
+    Converts a hue to instance of red, green, blue
 
     Args:
         h (float): hue to convert
@@ -442,10 +442,10 @@ def rgb_to_hsv(c: RGB) -> HSV:
     Converts red, green, blue to hue, saturation, value
 
     Args:
-        c (rgb): instance containing red, green, blue
+        c (RGB): instance containing red, green, blue
 
     Returns:
-        hsv: instance containing hue, saturation, value
+        HSV: instance containing hue, saturation, value
     """
     r = float(c.red / MAX_COLOR)
     g = float(c.green / MAX_COLOR)
@@ -480,10 +480,10 @@ def rgb_to_hsl(c: RGB) -> HSL:
     Converts red, green, blue to hue, saturation, value
 
     Args:
-        c (rgb): instance containing red, green, blue
+        c (RGB): instance containing red, green, blue
 
     Returns:
-        hsl: instance containing hue, saturation, lightness
+        HSL: instance containing hue, saturation, lightness
     """
     r = float(c.red / MAX_COLOR)
     g = float(c.green / MAX_COLOR)
@@ -497,10 +497,10 @@ def hsv_to_hsl(c: HSV) -> HSL:
     Convert hue, saturation, value to hue, saturation, lightness
 
     Args:
-        c (hsv): instance containing hue, saturation, value
+        c (HSV): instance containing hue, saturation, value
 
     Returns:
-        hsl: instance containing hue, saturation, lightness
+        HSL: instance containing hue, saturation, lightness
     """
     h = c.hue
     s = c.saturation
@@ -515,10 +515,10 @@ def hsl_to_hsv(c: HSL) -> HSV:
     Convert hue, saturation, lightness to hue, saturation, value
 
     Args:
-        c (hsl): instance containing hue, saturation, lightness
+        c (HSL): instance containing hue, saturation, lightness
 
     Returns:
-        hsv: instance containing hue, saturation, value
+        HSV: instance containing hue, saturation, value
     """
     h = c.hue
     s = c.saturation
@@ -588,17 +588,17 @@ def lighten(rgb_color: RGB, percent: numbers.Number) -> RGB:
 
 def lighten(rgb_color: Union[RGB, int], percent: numbers.Number) -> RGB:
     """
-    Lightenes an rgb instance
+    Lightens an RGB instance
 
     Args:
-        rgb_color (rgb | int): instanct containing data
+        rgb_color (RGB | int): instance containing data
         percent (Number): Amount between 0 and 100 int lighten rgb by.
 
     Raises:
         ValueError: if percent is out of range
 
     Returns:
-        rgb: rgb instance with lightened values applied.
+        RGB: RGB instance with lightened values applied.
     """
     if percent < 0 or percent > 100:
         raise ValueError("percent is expected to be between 0 and 100")
@@ -633,7 +633,7 @@ def darken(rgb_color: Union[RGB, int], percent: numbers.Number) -> RGB:
     Darkens an rgb instance
 
     Args:
-        rgb_color (rgb | int): instanct containing data
+        rgb_color (rgb | int): instance containing data
         percent (Number): Amount between 0 and 100 int darken rgb by.
 
     Raises:

@@ -3,8 +3,10 @@
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 
 from __future__ import annotations
+from ast import Not
 from datetime import datetime, timezone
 import time
+import types
 from typing import TYPE_CHECKING, Iterable, Optional, List, Tuple, cast, overload, Type
 from urllib.parse import urlparse
 import uno
@@ -23,6 +25,7 @@ from ..meta.static_meta import StaticProperty, classproperty
 from ..conn.connect import ConnectBase, LoPipeStart, LoSocketStart, LoDirectStart
 from ..conn import connectors
 from ..conn import cache as mCache
+from ..listeners.x_event_adapter import XEventAdapter
 
 from com.sun.star.lang import XComponent
 
@@ -48,8 +51,10 @@ if TYPE_CHECKING:
     from com.sun.star.container import XChild
     from com.sun.star.container import XIndexAccess
     from com.sun.star.frame import XFrame
+    from com.sun.star.lang import EventObject
     from com.sun.star.lang import XMultiComponentFactory
     from com.sun.star.lang import XTypeProvider
+    from com.sun.star.lang import XComponent
     from com.sun.star.script.provider import XScriptContext
     from com.sun.star.uno import XComponentContext
     from com.sun.star.uno import XInterface
@@ -80,13 +85,13 @@ class Lo(metaclass=StaticProperty):
         """
         Context manager for Locking Controller
 
-        In the followin example ControllerLock is called usinsg ``with``.
+        In the following example ControllerLock is called using ``with``.
 
         All code inside the ``with Lo.ControllerLock() as xdoc`` block is written to **Writer**
         with controller locked. This means the ui will not update until the block is done.
         A soon as the block is processed the controller is unlocked and the ui is updated.
 
-        Can be useful for large writes in documnet. Will give a speed improvement.
+        Can be useful for large writes in document. Will give a speed improvement.
 
         Example:
 
@@ -135,7 +140,7 @@ class Lo(metaclass=StaticProperty):
 
             Args:
                 connector (connectors.ConnectPipe | connectors.ConnectSocket | None): Connection information. Ignore for macros.
-                cache_obj (mCache.Cache | None, optional): Cache instance that determinse of LibreOffice profile is to be copied and cached
+                cache_obj (mCache.Cache | None, optional): Cache instance that determines if LibreOffice profile is to be copied and cached
                     Ignore for macros. Defaults to None.
             """
             self.loader = Lo.load_office(connector=connector, cache_obj=cache_obj)
@@ -240,8 +245,6 @@ class Lo(metaclass=StaticProperty):
     _mc_factory: XMultiComponentFactory = None
     _ms_factory: XMultiServiceFactory = None
 
-    _bridge_component: XComponent = None
-    """this is only set if office is opened via a socket"""
     _is_office_terminated: bool = False
 
     _lo_inst: ConnectBase = None
@@ -366,8 +369,8 @@ class Lo(metaclass=StaticProperty):
             raise_err (bool, optional): If True then can raise CreateInstanceMsfError or MissingInterfaceError
 
         Raises:
-            CreateInstanceMsfError: If 'raise_err' is 'True' and no instance was created
-            MissingInterfaceError: If 'raise_err' is 'True' and instance was created but does not implement 'atype' interface.
+            CreateInstanceMsfError: If ``raise_err`` is ``True`` and no instance was created
+            MissingInterfaceError: If ``raise_err`` is ``True`` and instance was created but does not implement ``atype`` interface.
             Exception: if unable to create instance for any other reason
 
         Returns:
@@ -420,14 +423,14 @@ class Lo(metaclass=StaticProperty):
 
         Args:
             atype (Type[T]): Type of interface to return from created instance.
-                Any Uno class that starts with 'X' such as XInterface
+                Any Uno class that starts with ``X`` such as ``XInterface``
             service_name (str): Service Name
             args (Tuple[object, ...], Optional): Args
             raise_err (bool, optional): If True then can raise CreateInstanceMcfError or MissingInterfaceError
 
         Raises:
-            CreateInstanceMcfError: If 'raise_err' is 'True' and no instance was created
-            MissingInterfaceError: If 'raise_err' is 'True' and instance was created but does not implement 'atype' interface.
+            CreateInstanceMcfError: If ``raise_err`` is ``True`` and no instance was created
+            MissingInterfaceError: If ``raise_err`` is ``True`` and instance was created but does not implement ``atype`` interface.
             Exception: if unable to create instance for any other reason
 
         Note:
@@ -502,12 +505,12 @@ class Lo(metaclass=StaticProperty):
 
         If running outside of office then a bridge is created that connects to office.
 
-        If running from inside of office e.g. in a macro, then Lo.XSCRIPTCONTEXT is used.
+        If running from inside of office e.g. in a macro, then ``Lo.XSCRIPTCONTEXT`` is used.
         ``using_pipes`` is ignored with running inside office.
 
         Args:
             connector (connectors.ConnectPipe | connectors.ConnectSocket | None): Connection information. Ignore for macros.
-            cache_obj (Cache | None, optional): Cache instance that determinse of LibreOffice profile is to be copied and cached
+            cache_obj (Cache | None, optional): Cache instance that determines of LibreOffice profile is to be copied and cached
                 Ignore for macros. Defaults to None.
 
 
@@ -616,7 +619,7 @@ class Lo(metaclass=StaticProperty):
     @classmethod
     def close_office(cls) -> bool:
         """
-        Closes the ofice connection.
+        Closes the office connection.
 
         Returns:
             bool: True if office is closed; Otherwise, False
@@ -652,7 +655,9 @@ class Lo(metaclass=StaticProperty):
             time.sleep(0.5)
             num_tries += 1
         if cls._is_office_terminated:
-            _Events().trigger(LoNamedEvent.OFFICE_CLOSED, EventArgs.from_args(cargs))
+            eargs = EventArgs.from_args(cargs)
+            _Events().trigger(LoNamedEvent.OFFICE_CLOSED, eargs)
+            _Events().trigger(LoNamedEvent.RESET, eargs)
         return cls._is_office_terminated
 
     @classmethod
@@ -690,7 +695,9 @@ class Lo(metaclass=StaticProperty):
             # raised a NotImplementedError when cls._lo_inst is direct (macro mode)
             cls._lo_inst.kill_soffice()
             cls._is_office_terminated = True
-            _Events().trigger(LoNamedEvent.OFFICE_CLOSED, EventArgs(Lo.kill_office.__qualname__))
+            eargs = EventArgs(Lo.kill_office.__qualname__)
+            _Events().trigger(LoNamedEvent.OFFICE_CLOSED, eargs)
+            _Events().trigger(LoNamedEvent.RESET, eargs)
             cls.print("Killed Office")
         except Exception as e:
             raise Exception(f"Unbale to kill Office") from e
@@ -704,7 +711,7 @@ class Lo(metaclass=StaticProperty):
         Opens a flat document
 
         Args:
-            fnm (PathOrStr): path of xml documenet
+            fnm (PathOrStr): path of XML document
             doc_type (DocType): Type of document to open
             loader (XComponentLoader): Component loader
 
@@ -855,7 +862,7 @@ class Lo(metaclass=StaticProperty):
     @classmethod
     def open_readonly_doc(cls, fnm: PathOrStr, loader: XComponentLoader) -> XComponent:
         """
-        Open a office document as readonly
+        Open a office document as read-only
 
         Args:
             fnm (PathOrStr): path of document to open
@@ -882,13 +889,13 @@ class Lo(metaclass=StaticProperty):
     @classmethod
     def ext_to_doc_type(cls, ext: str) -> Lo.DocTypeStr:
         """
-        Gets doctype from extension
+        Gets document type from extension
 
         Args:
             ext (str): extension used for lookup
 
         Returns:
-            DocTypeStr: DocTypeStr enum. If not match if found defaults to 'DocTypeStr.WRITER'
+            DocTypeStr: DocTypeStr enum. If not match if found defaults to ``DocTypeStr.WRITER``
 
         See Also:
             :ref:`ch02sec05`
@@ -1010,7 +1017,7 @@ class Lo(metaclass=StaticProperty):
         See Also:
             :ref:`ch02sec04`
         """
-        # Props is called in this metod so trigger global_reset first
+        # Props is called in this method so trigger global_reset first
         cargs = CancelEventArgs(Lo.create_doc.__qualname__)
         cargs.event_data = {
             "doc_type": doc_type,
@@ -1112,7 +1119,7 @@ class Lo(metaclass=StaticProperty):
             MissingInterfaceError: If doc does not implement XStorable interface
 
         Returns:
-            bool: False if DOC_SAVING event is canceled; Othwerwise, True
+            bool: False if DOC_SAVING event is canceled; Otherwise, True
 
         :events:
             .. cssclass:: lo_event
@@ -1296,7 +1303,7 @@ class Lo(metaclass=StaticProperty):
         Args:
             store (XStorable): instance that implements XStorable interface.
             doc_type (DocType): Document type
-            fnm (PathOrStr): Path to save document as. If extension is absent then text (.txt) is assumed.
+            fnm (PathOrStr): Path to save document as. If extension is absent then text ``.txt`` is assumed.
             password (str): Password for document.
 
         Returns:
@@ -1387,11 +1394,11 @@ class Lo(metaclass=StaticProperty):
             doc_type (DocType): Type of document.
 
         Returns:
-            str: format of ext such as 'text', 'rtf', 'odt', 'pdf', 'jpg' etc...
-            Defaults to 'text' if conversion is unknown.
+            str: format of ext such as ``text``, ``rtf``, ``odt``, ``pdf``, ``jpg`` etc...
+            Defaults to ``text`` if conversion is unknown.
 
         Note:
-            ``doc_type`` is used to distinguish between the various meanings of the PDF ext.
+            ``doc_type`` is used to distinguish between the various meanings of the ``PDF`` ext.
             This could be a lot more extensive.
 
             Use :py:meth:`Info.getFilterNames` to get the filter names for your Office.
@@ -1672,7 +1679,7 @@ class Lo(metaclass=StaticProperty):
         Closes document.
 
         Args:
-            doc (XCloseable): Closeable doccument
+            doc (XCloseable): Closeable document
         """
         ...
 
@@ -1683,7 +1690,7 @@ class Lo(metaclass=StaticProperty):
         Closes document.
 
         Args:
-            doc (XCloseable): Closeable doccument
+            doc (XCloseable): Closeable document
             deliver_ownership (bool): True delegates the ownership of this closing object to
                 anyone which throw the CloseVetoException.
 
@@ -1698,7 +1705,7 @@ class Lo(metaclass=StaticProperty):
         Closes document.
 
         Args:
-            doc (XCloseable): Closeable doccument
+            doc (XCloseable): Close-able document
             deliver_ownership (bool): True delegates the ownership of this closing object to
                 anyone which throw the CloseVetoException.
                 This new owner has to close the closing object again if his still running
@@ -1725,21 +1732,21 @@ class Lo(metaclass=StaticProperty):
     @classmethod
     def addon_initialize(cls, addon_xcc: XComponentContext) -> XComponent:
         """
-        Initalize and addon
+        Initialize and ad-don
 
         Args:
-            addon_xcc (XComponentContext): Addon component context
+            addon_xcc (XComponentContext): Add-on component context
 
         Raises:
-            TypeError: If addon_xcc is None
-            Exception: If unable to get service manager from addon_xcc
+            TypeError: If ``addon_xcc`` is None
+            Exception: If unable to get service manager from ``addon_xcc``
             Exception: If unable to access desktop
             Exception: If unable to access document
-            MissingInterfaceError: If unable to get XMultiServiceFactory interface instance
-            CancelEventError: If DOC_OPENING is canceled
+            MissingInterfaceError: If unable to get ``XMultiServiceFactory`` interface instance
+            CancelEventError: If ``DOC_OPENING`` is canceled
 
         Returns:
-            XComponent: addon as component
+            XComponent: add-on as component
 
         :events:
             .. cssclass:: lo_event
@@ -1848,15 +1855,15 @@ class Lo(metaclass=StaticProperty):
     @staticmethod
     def dispatch_cmd(cmd: str, props: Iterable[PropertyValue]) -> bool:
         """
-        Dispacches a LibreOffice command
+        Dispatches a LibreOffice command
 
         Args:
-            cmd (str): Command to dispatch such as 'GoToCell'. Note: cmd does not containd '.uno:' prefix.
+            cmd (str): Command to dispatch such as ``GoToCell``. Note: cmd does not contain ``.uno:`` prefix.
             props (PropertyValue): properties for dispatch
 
         Raises:
             MissingInterfaceError: If unable to obtain XDispatchHelper instance.
-            Exception: If error occurs dispacthing command
+            Exception: If error occurs dispatching command
 
         Returns:
             bool: True on success.
@@ -1867,16 +1874,16 @@ class Lo(metaclass=StaticProperty):
     @staticmethod
     def dispatch_cmd(cmd: str, props: Iterable[PropertyValue], frame: XFrame) -> bool:
         """
-        Dispacches a LibreOffice command
+        Dispatches a LibreOffice command
 
         Args:
-            cmd (str): Command to dispatch such as 'GoToCell'. Note: cmd does not containd '.uno:' prefix.
+            cmd (str): Command to dispatch such as ``GoToCell``. Note: cmd does not contain ``.uno:`` prefix.
             props (PropertyValue): properties for dispatch
             frame (XFrame): Frame to dispatch to.
 
         Raises:
             MissingInterfaceError: If unable to obtain XDispatchHelper instance.
-            Exception: If error occurs dispacthing command
+            Exception: If error occurs dispatching command
 
         Returns:
             bool: True on success.
@@ -1886,16 +1893,16 @@ class Lo(metaclass=StaticProperty):
     @classmethod
     def dispatch_cmd(cls, cmd: str, props: Iterable[PropertyValue] = None, frame: XFrame = None) -> bool:
         """
-        Dispacches a LibreOffice command
+        Dispatches a LibreOffice command
 
         Args:
-            cmd (str): Command to dispatch such as 'GoToCell'. Note: cmd does not containd '.uno:' prefix.
+            cmd (str): Command to dispatch such as ``GoToCell``. Note: cmd does not contain ``.uno:`` prefix.
             props (PropertyValue): properties for dispatch
             frame (XFrame): Frame to dispatch to.
 
         Raises:
             MissingInterfaceError: If unable to obtain XDispatchHelper instance.
-            Exception: If error occurs dispacthing command
+            Exception: If error occurs dispatching command
 
         Returns:
             bool: True on success.
@@ -2012,7 +2019,7 @@ class Lo(metaclass=StaticProperty):
             obj (object): obj to inspect
 
         Raises:
-            Exception: If MRI serivce could not be instantiated.
+            Exception: If MRI service could not be instantiated.
 
         See Also:
             `MRI - UNO Object Inspection Tool <https://extensions.libreoffice.org/en/extensions/show/mri-uno-object-inspection-tool>`_
@@ -2035,10 +2042,10 @@ class Lo(metaclass=StaticProperty):
     @staticmethod
     def delay(ms: int) -> None:
         """
-        Delay execution for a given number of milli-seconds.
+        Delay execution for a given number of milliseconds.
 
         Args:
-            ms (int): Number of milli-seconds to delay
+            ms (int): Number of milliseconds to delay
         """
         if ms <= 0:
             Lo.print("Ms must be greater then zero")
@@ -2066,20 +2073,20 @@ class Lo(metaclass=StaticProperty):
     @staticmethod
     def wait_enter() -> None:
         """
-        Terminal dispalays Press Enter to continue...
+        Console displays Press Enter to continue...
         """
         input("Press Enter to continue...")
 
     @staticmethod
     def is_url(fnm: PathOrStr) -> bool:
         """
-        Gets if a string is a url format.
+        Gets if a string is a URL format.
 
         Args:
             fnm (PathOrStr): string to check.
 
         Returns:
-            bool: True if Url format; Otherwise, False
+            bool: True if URL format; Otherwise, False
         """
         # https://stackoverflow.com/questions/7160737/how-to-validate-a-url-in-python-malformed-or-not
         try:
@@ -2107,7 +2114,7 @@ class Lo(metaclass=StaticProperty):
     @staticmethod
     def parse_int(s: str) -> int:
         """
-        Convets string into int.
+        Converts string into int.
 
         Args:
             s (str): string to parse
@@ -2203,7 +2210,7 @@ class Lo(metaclass=StaticProperty):
             con (XIndexAccess): container
 
         Returns:
-            List[str] | None: Containor name is found; Otherwise, None
+            List[str] | None: Container name is found; Otherwise, None
         """
         if con is None:
             Lo.print("Container is null")
@@ -2230,7 +2237,7 @@ class Lo(metaclass=StaticProperty):
 
         Args:
             con (XIndexAccess): Container to search
-            nm (str): Name of property to searh for
+            nm (str): Name of property to search for
 
         Raises:
             TypeError: if con is None
@@ -2285,7 +2292,7 @@ class Lo(metaclass=StaticProperty):
     @classmethod
     def get_frame(cls) -> XFrame:
         """
-        Gets xFrame for current LibreOffice instance
+        Gets XFrame for current LibreOffice instance
 
         Returns:
             XFrame: frame
@@ -2298,7 +2305,7 @@ class Lo(metaclass=StaticProperty):
     @classmethod
     def get_model(cls) -> XModel:
         """
-        Gets xModel
+        Gets XModel
 
         Returns:
             XModel: Gets model for current LibreOffice instance
@@ -2314,13 +2321,13 @@ class Lo(metaclass=StaticProperty):
         The calls to :py:meth:`~.lo.Lo.lock_controllers` and :py:meth:`~.lo.Lo.unlock_controllers`
         may be nested and even overlapping, but they must be in pairs.
         While there is at least one lock remaining, some notifications for
-        display updates are not broadcasted.
+        display updates are not broadcast.
 
         Raises:
             MissingInterfaceError: If unable to obtain XModel interface.
 
         Returns:
-            bool: False if CONTROLERS_LOCKING event is canceled; Otherwise, True
+            bool: False if ``CONTROLERS_LOCKING`` event is canceled; Otherwise, True
 
          :events:
             .. cssclass:: lo_event
@@ -2345,12 +2352,12 @@ class Lo(metaclass=StaticProperty):
     @classmethod
     def unlock_controllers(cls) -> uno.Bool:
         """
-        Resumes the notifications which were suspended by:py:meth:`~.lo.Lo.lock_controllers`.
+        Resumes the notifications which were suspended by :py:meth:`~.lo.Lo.lock_controllers`.
 
         The calls to :py:meth:`~.lo.Lo.lock_controllers` and :py:meth:`~.lo.Lo.unlock_controllers`
         may be nested and even overlapping, but they must be in pairs.
         While there is at least one lock remaining, some notifications for
-        display updates are not broadcasted.
+        display updates are not broadcast.
 
         Raises:
             MissingInterfaceError: If unable to obtain XModel interface.
@@ -2358,7 +2365,7 @@ class Lo(metaclass=StaticProperty):
         Returns:
             bool: False if CONTROLERS_UNLOCKING event is canceled; Otherwise, True
 
-         :events:
+        :events:
             .. cssclass:: lo_event
 
                 - :py:attr:`~.events.lo_named_event.LoNamedEvent.CONTROLERS_UNLOCKING` :eventref:`src-docs-event-cancel`
@@ -2383,7 +2390,7 @@ class Lo(metaclass=StaticProperty):
         Determines if there is at least one lock remaining.
 
         While there is at least one lock remaining, some notifications for display
-        updates are not broadcasted to the controllers.
+        updates are not broadcast to the controllers.
 
         Returns:
             bool: True if any lock exist; Otherwise, False
@@ -2420,7 +2427,7 @@ class Lo(metaclass=StaticProperty):
         Gets Value of Null Date in UTC
 
         Returns:
-            datetime: Null Date on sucess; Otherwise, None
+            datetime: Null Date on success; Otherwise, None
 
         Note:
             If Lo has no document to determine date from then a
@@ -2432,11 +2439,11 @@ class Lo(metaclass=StaticProperty):
         except AttributeError:
             cls.__null_date = datetime(year=1889, month=12, day=30, tzinfo=timezone.utc)
             if cls._doc is None:
-                return  cls.__null_date
+                return cls.__null_date
             n_supplier = cls.qi(XNumberFormatsSupplier, cls._doc)
             if n_supplier is None:
                 # this is not always a XNumberFormatsSupplier such as *.odp documents
-                return  cls.__null_date
+                return cls.__null_date
             number_settings = n_supplier.getNumberFormatSettings()
             d = number_settings.getPropertyValue("NullDate")
             cls.__null_date = datetime(d.Year, d.Month, d.Day, tzinfo=timezone.utc)
@@ -2444,7 +2451,23 @@ class Lo(metaclass=StaticProperty):
 
     @null_date.setter
     def null_date(cls, value) -> None:
-        # raise error on set. Not really neccesary but gives feedback.
+        # raise error on set. Not really necessary but gives feedback.
+        raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
+
+    @classproperty
+    def is_loaded(cls) -> bool:
+        """
+        Gets office is currently loaded
+
+        Returns:
+            bool: True if load_office has been called; Othwriwse, False
+        """
+
+        return not cls._lo_inst is None
+
+    @is_loaded.setter
+    def is_loaded(cls, value) -> None:
+        # raise error on set. Not really necessary but gives feedback.
         raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
 
     @classproperty
@@ -2466,7 +2489,7 @@ class Lo(metaclass=StaticProperty):
 
     @is_macro_mode.setter
     def is_macro_mode(cls, value) -> None:
-        # raise error on set. Not really neccesary but gives feedback.
+        # raise error on set. Not really necessary but gives feedback.
         raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
 
     @classproperty
@@ -2481,7 +2504,7 @@ class Lo(metaclass=StaticProperty):
         """
         When the current component is the Basic IDE, the ThisComponent object returns
         in Basic the component owning the currently run user script.
-        Above behaviour cannot be reproduced in Python.
+        Above behavior cannot be reproduced in Python.
 
         When running in a macro this property can be access directly to get the current document.
 
@@ -2490,12 +2513,10 @@ class Lo(metaclass=StaticProperty):
         Returns:
             the current component or None when not a document
         """
-        # TODO: autodoc is ignoring classproperty this_component
         try:
             return cls._this_component
         except AttributeError:
-            ctx = cls.get_context()
-            if ctx is None:
+            if cls.is_loaded is False:
                 # attempt to connect direct
                 # failure will result in script error and then exit
                 cls.load_office()
@@ -2514,7 +2535,7 @@ class Lo(metaclass=StaticProperty):
             cls._this_component = cls._doc
             return cls._this_component
 
-    ThisComponent, thiscomponent = cast(XComponent, this_component), cast(XComponent, this_component)
+    ThisComponent, thiscomponent = this_component, this_component
 
     @classproperty
     def xscript_context(cls) -> XScriptContext:
@@ -2524,7 +2545,6 @@ class Lo(metaclass=StaticProperty):
         Returns:
             XScriptContext: XScriptContext instance
         """
-        # TODO: autodoc is ignoring classproperty xscript_context
         try:
             return cls._xscript_context
         except AttributeError:
@@ -2540,17 +2560,74 @@ class Lo(metaclass=StaticProperty):
             cls._xscript_context = script_context.ScriptContext(ctx=ctx, desktop=desktop, doc=model)
         return cls._xscript_context
 
-    XSCRIPTCONTEXT = cast("XScriptContext", xscript_context)
+    XSCRIPTCONTEXT = xscript_context
 
+    @classproperty
+    def bridge(cls) -> XComponent:
+        """
+        Gets connection bridge component
 
-def _del_cache_attrs(source: object, e: EventArgs) -> None:
-    # clears Lo Attributes that are dynamically created
-    dattrs = ("_xscript_context", "_is_macro_mode", "_this_component")
-    for attr in dattrs:
-        if hasattr(Lo, attr):
-            delattr(Lo, attr)
+        Returns:
+            XComponent: bridge component
+        """
+        try:
+            return cls._bridge_component
+        except AttributeError:
+            try:
+                # when running as macro cls._lo_inst will not have bridge_component
+                cls._bridge_component = cls._lo_inst.bridge_component
+            except AttributeError:
+                cls._bridge_component = None
+            return cls._bridge_component
 
+class _LoManager(metaclass=StaticProperty):
+    """Manages clearing and resetting for Lo static class"""
+    @staticmethod
+    def del_cache_attrs(source: object, event: EventArgs) -> None:
+        # clears Lo Attributes that are dynamically created
+        dattrs = ("_xscript_context", "_is_macro_mode", "_this_component", "_bridge_component", "__null_date")
+        for attr in dattrs:
+            if hasattr(Lo, attr):
+                delattr(Lo, attr)
 
-_Events().on(LoNamedEvent.RESET, _del_cache_attrs)
+    @staticmethod
+    def disposing_bridge(src: XEventAdapter, event: EventObject) -> None:
+        # do not try and exit script here.
+        # for some reason when office triggers this method calls such as:
+        # raise SystemExit(1)
+        # does not exit the script
+        Lo.print("Office bridge has gone!!")
+        dattrs = ("_xcc", "_doc", "_mc_factory", "_ms_factory", "_lo_inst", "_xdesktop")
+        dvals = (None, None, None, None, None, None)
+        for attr, val in zip(dattrs, dvals):
+            setattr(Lo, attr, val)
+
+    @staticmethod
+    def on_loading( source: object, event: CancelEventArgs) -> None:
+        try:
+            bridge = cast(XComponent, Lo._lo_inst.bridge_component)
+            bridge.removeEventListener(_LoManager.event_adapter)
+        except Exception:
+            pass
+
+    @staticmethod
+    def on_loaded(source: object, event: EventObject) -> None:
+        if Lo.bridge is not None:
+            Lo.bridge.addEventListener(_LoManager.event_adapter)
+
+    @classproperty
+    def event_adapter(cls) -> XEventAdapter:
+        try:
+            return cls._event_adapter
+        except AttributeError:
+            bridge_listen = XEventAdapter()
+            bridge_listen.disposing = types.MethodType(cls.disposing_bridge, bridge_listen)
+            cls._event_adapter = bridge_listen
+        return cls._event_adapter
+
+_Events().on(LoNamedEvent.RESET, _LoManager.del_cache_attrs)
+_Events().on(LoNamedEvent.OFFICE_LOADING, _LoManager.on_loading)
+_Events().on(LoNamedEvent.OFFICE_LOADED, _LoManager.on_loaded)
+
 
 __all__ = ("Lo",)

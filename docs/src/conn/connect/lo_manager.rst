@@ -1,7 +1,7 @@
 Class LoManager
 ===============
 
-LoManager is low level contenxt manager that connects to LibreOffice and then disconnects
+LoManager is low level content manager that connects to LibreOffice and then disconnects
 when the block has been executed.
 
 Generally speaking this Manager is not needed when using |app_name_short|.

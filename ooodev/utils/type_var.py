@@ -50,7 +50,7 @@ FloatTable = List[FloatList]
 """Table like array of floats with rows and columns"""
 
 DocOrCursor = Union[XTextDocument, XTextCursor]
-"""Type of Text Dcoument or Cursor"""
+"""Type of Text Document or Cursor"""
 
 DocOrText = Union[XTextDocument, XText]
 """Type of Text Document of Text"""

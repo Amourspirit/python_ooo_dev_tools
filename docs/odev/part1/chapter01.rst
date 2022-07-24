@@ -6,7 +6,7 @@ Chapter 1. LibreOffice API Concepts
 
 .. topic:: History
 
-    Some History; Help and Examples for the LibreOffice SDK (lodoc, loguide);
+    Some History; Help and Examples for the LibreOffice SDK (``lodoc``, ``loguide``);
     Office as a Process; Common Structures (Interface, Property, Service, and Component);
     Service and Interface Inheritance Hierarchies; the Frame- Controller-Model (FCM) Relationship; Extensions; Comparison with Basic
 
@@ -211,7 +211,7 @@ Option ``4`` would open to https://api.libreoffice.org/docs/idl/ref/namespacecom
 =======================
 
 Office is started as an OS process, and a Python program communicates with it via a socket or named pipe.
-This necessarily complicates the Pyton/Office link, which is illustrated in :numref:`ch01fig02`.
+This necessarily complicates the Python/Office link, which is illustrated in :numref:`ch01fig02`.
 
 .. cssclass:: diagram invert
 
@@ -222,14 +222,14 @@ This necessarily complicates the Pyton/Office link, which is illustrated in :num
         :A Python Program Using Office
 
 The invocation of Office and the setup of a named pipe link can be achieved with a single call to the
-soffice binary (soffice.exe,  soffice.bin).
-A call starts the Office executable with several command line arguments, the most important being "-accept"
-which specifies the use of pipes or sockets for the interprocess link.
+soffice binary ( ``soffice.exe,  ``soffice.bin`` ).
+A call starts the Office executable with several command line arguments, the most important being ``-accept``
+which specifies the use of pipes or sockets for the inter-process link.
 
 A call to `XUnoUrlResolver.resolve() <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1bridge_1_1XUnoUrlResolver.html#abaac8ead87dd0ec6dfc1357792cdda3f>`_
 creates a remote component context, which acts as proxy for the 'real' component context over in the Office process (see :numref:`ch01fig02`).
 The context is a container/environment for components and UNO objects which I'll explain below.
-When a Python program refers to components and UNO objects in the remote component context, the interprocess bridge maps
+When a Python program refers to components and UNO objects in the remote component context, the inter-process bridge maps
 those references across the process boundaries to the corresponding components and objects on the Office side.
 
 Underpinning this mapping is the Universal Network Object (UNO) model which links objects in different environments using the UNO remote protocol (URP).
@@ -250,7 +250,7 @@ Typically, at least three UNO objects are needed over on the Python side for mos
 a service manager, a Desktop object, and a component loader.
 
 The service manager is used to load additional services into Office at runtime.
-The Desktop object has nothing to do with the OS'es desktop – it refers to the top-level of the Office application,
+The Desktop object has nothing to do with the OS's desktop – it refers to the top-level of the Office application,
 particularly to its GUI. The component loader is used to load or create Office documents.
 
 Other UNO objects might be more useful depending on your programming task.
@@ -324,7 +324,7 @@ The developer's guide drawing for the SpellChecker service is shown in :numref:`
 The two figures illustrate a useful naming convention: all interface names start with the letter "X".
 
 The developer's guide notation leaves out information about the properties managed by the services.
-Also, the services webpages at the LibreOffice site don't use the guide’s notation.
+Also, the services web pages at the LibreOffice site don't use the guide’s notation.
 
 The URLs for these pages are somewhat difficult to remember.
 The best thing is to use my |dsearch|_ tool to find them.
@@ -339,15 +339,15 @@ and
 
 .. note::
 
-    The "officedocument" search result isn't ideal – it takes you to the IDL page for the service.
-    You need to click on the "OfficeDocument" link under the "Classes" heading to get to the actual service details.
+    The "office-document" search result isn't ideal – it takes you to the IDL page for the service.
+    You need to click on the "Office-Document" link under the "Classes" heading to get to the actual service details.
 
-The LibreOffice service webpages usually list properties, but sometimes refer to them as 'attributes'.
+The LibreOffice service web pages usually list properties, but sometimes refer to them as 'attributes'.
 If the service documentation doesn't describe the properties, then they're probably being managed by a separate “Supplier” interface
 (e.g. `XDocumentPropertiesSupplier`_ for OfficeDocument in :numref:`ch01fig05`).
 The supplier will include methods for accessing the properties as an `XPropertySet`_ object.
 
-One great feature of the LibreOffice webpages is the inheritance diagrams on each service and interface page.
+One great feature of the LibreOffice web pages is the inheritance diagrams on each service and interface page.
 Part of the diagram for the `OfficeDocument service <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1document_1_1OfficeDocument.html>`_
 is shown in :numref:`ch01fig07`.
 
@@ -359,7 +359,7 @@ is shown in :numref:`ch01fig07`.
 
         :Part of the Inheritance Diagram for the OfficeDocument Service.
 
-Each box in the diagram can be clicked upon to jump to the documentation for that subclass or supercl
+Each box in the diagram can be clicked upon to jump to the documentation for that subclass or superclass.
 
 .. _ch01sec04:
 
@@ -384,7 +384,7 @@ For example, OfficeDocument is the superclass service of all other document form
     .. figure:: https://user-images.githubusercontent.com/4193389/177429219-5cb80ff9-a272-4c9e-a0f9-b8548771384d.png
         :alt: Diagram of Office Document as a Super class Service.
 
-        :OfficeDocument as a Superclass Service.
+        :Office-Document as a Superclass Service.
 
 Part of this hierarchy can also be seen in :numref:`ch01fig07`.
 
@@ -475,7 +475,7 @@ In particular, the component loader is used in the remote component context to l
 
 .. todo::
 
-    Update crossref for part 8
+    Update cross reference for part 8
 
 The Office developer's guide often uses the words 'extension', 'add-on', and 'add-in'.
 There are four chapters on these features in Part 8 (along with macro programming in Python),
@@ -500,7 +500,7 @@ Python is not the language of choice for most Office programmers.
 Basic (sometimes called StarBasic, OpenOffice.org Basic, LibreOffice Basic, or even Visual Basic or VB by mistake) is the darling of the coding crowd.
 
 Python is flexable, can run outside of LibreOffice and connect via bridge, and or can be used as a macro.
-Python also has an advangage of using the many package on `PYPI <https://pypi.org/>`_.
+Python also has an advantage of using the many package on `PYPI <https://pypi.org/>`_.
 Python has an advantage in the area of source control and larger projects.
 
 This is understandable since Office (both LibreOffice and OpenOffice) includes an IDE for editing and debugging Basic macros.
@@ -511,7 +511,7 @@ The few books that have been written about programming the Office API have all u
 
 There are two styles of Basic macro programming – scripts can be attached to specific documents, or to the Office application.
 In a document, a macro can respond to Office events, such as the loading of the document, or its modification.
-The macro can monitor the user's key presses or menu button presses, and can utilize Office dialogs.
+The macro can monitor the user's key presses or menu button presses, and can utilize Office dialog.
 
 This isn't the place for a language war between Python and Basic, but it's fair to say that the Basic Office API is more widely used than the Python version!
 
@@ -563,7 +563,7 @@ This ensures the service has the desired interface and avoids the need for ``typ
 
     Example of querying for interface.
 
-    In this example ``srch`` will automaticlly have typing support for all the properies and methods XSearchable_ 
+    In this example ``srch`` will automatically have typing support for all the properties and methods XSearchable_ 
 
     .. code-block:: python
         :emphasize-lines: 3
@@ -573,18 +573,18 @@ This ensures the service has the desired interface and avoids the need for ``typ
         srch = Lo.qi(XSearchable, cell_range)
         sd = srch.createSearchDescriptor()
 
-Using the basic IDE has has some advantages for simple scripts; However, new tools have emerged and are emerging to make the experiece in python desirable in many cases.
+Using the basic IDE has has some advantages for simple scripts; However, new tools have emerged and are emerging to make the experience in python desirable in many cases.
 
 types-unopy_ that gives typing_ support for the entire |lo_api|_.
 
-ooouno_ that also contains all |lo_api|_ components in different namespaces. ooouno_ dynamic namespaces automaticlly gets the appropriate ``uno`` object at runtime, see :numref:`ch01fig12`.
-The dynamic namespaces give eaiser access to |lo_api|_ components with full typing_ support and is a real time saver.
+ooouno_ that also contains all |lo_api|_ components in different namespaces. ooouno_ dynamic namespaces automatically gets the appropriate ``uno`` object at runtime, see :numref:`ch01fig12`.
+The dynamic namespaces give easier access to |lo_api|_ components with full typing_ support and is a real time saver.
 
 .. collapse:: Example
 
     ooouno_ Example
 
-    At runtime ``ooo.dyn.awt.rectangle.Rectangle`` is acutally ``uno.com.sun.star.awt.Rectangle``
+    At runtime ``ooo.dyn.awt.rectangle.Rectangle`` is actually ``uno.com.sun.star.awt.Rectangle``
 
     .. code-block:: python
 
@@ -610,9 +610,9 @@ entire |lo_api|_ into templates that are converted into ooouno_ and types-unopy_
 
         .. _ch01fig12:
         .. figure:: https://user-images.githubusercontent.com/4193389/177604603-55660d5d-2aef-4746-a8fe-4365a0dcdaa6.gif
-            :alt: ooo Rectangle Demo
+            :alt: OOO Rectangle Demo
 
-            :ooo Rectangle demo
+            :OOO Rectangle demo
 
 
 In the Basic API, there's no remote component context since the macros run inside Office or inside a document that is loaded into Office.
@@ -637,7 +637,7 @@ In |app_name_short| there is a remote bridge and ``Lo.XSCRIPTCONTEXT`` which imp
         doc = Write.open_doc(fnm="file:///C:/tmp/testdoc.odt", loader=loader)
 
 
-However, if the script is part of a loaded document, then the call to loadComponentFromURL() isn't needed, reducing the code to:
+However, if the script is part of a loaded document, then the call to ``loadComponentFromURL()`` isn't needed, reducing the code to:
 
 .. tabs::
 
@@ -688,7 +688,7 @@ or even:
         doc = Lo.ThisComponent
 
 
-If other services are needed, Basic programmers call the createUnoService() function which
+If other services are needed, Basic programmers call the ``createUnoService()`` function which
 transparently requests the named service from the service manager.
 Python programmers can call :py:meth:`Lo.create_instance_msf() <.utils.lo.Lo.create_instance_msf>`
 For instance:

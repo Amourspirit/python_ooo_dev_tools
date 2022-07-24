@@ -59,7 +59,7 @@ def test_activate_new_doc() -> None:
     from ooodev.utils.gui import GUI
 
     # for a manual test remove loader arg from test_activate and uncomment the next line.
-    loader = Lo.load_office(Lo.ConnectPipe())
+    loader = Lo.load_office(Lo.ConnectPipe(headless=True))
     delay = 100 # 1_000
     #
     # does not assert anything.

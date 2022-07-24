@@ -18,7 +18,7 @@ Event that is raised before getting a sheet.
 Sheet Get Event
 ---------------
 
-Event that is raised after geting a sheet.
+Event that is raised after getting a sheet.
 
 .. seealso::
 

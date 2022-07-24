@@ -6,8 +6,6 @@ import uuid
 from abc import ABC, abstractmethod
 
 from ..utils import paths
-from ..utils.type_var import PathOrStr
-from ..utils.sys_info import SysInfo
 
 
 class ConnectorBase(ABC):
@@ -46,7 +44,7 @@ class ConnectorBridgeBase(ConnectorBase):
     @property
     def soffice(self) -> Path:
         """
-        Get/Sets Path to LibreOffice soffice. Defult is auto discovered.
+        Get/Sets Path to LibreOffice soffice. Default is auto discovered.
         """
         try:
             return self._soffice
@@ -57,7 +55,7 @@ class ConnectorBridgeBase(ConnectorBase):
     # region startup flags
     @property
     def start_office(self) -> bool:
-        """Gets/Sets if office is to be started. Defalut is True"""
+        """Gets/Sets if office is to be started. Default is True"""
         return self._start_office
 
     @start_office.setter
@@ -66,7 +64,7 @@ class ConnectorBridgeBase(ConnectorBase):
 
     @property
     def no_restore(self) -> bool:
-        """Gets/Sets if office is startted with norestore Option. Default is True"""
+        """Gets/Sets if office is started with norestore Option. Default is True"""
         return self._no_restore
 
     @no_restore.setter
@@ -134,7 +132,7 @@ class ConnectSocket(ConnectorBridgeBase):
             host (str, optional): Connection host. Defaults to "localhost".
             port (int, optional): Connection port. Defaults to 2002.
         
-        Any property value can be set by passing it into consturctor.
+        Any property value can be set by passing it into constructor.
         e.g. ``ConnectSocket(no_logo=True)``
         """
         super().__init__(**kwargs)
@@ -178,7 +176,7 @@ class ConnectPipe(ConnectorBridgeBase):
         Args:
             pipe (str | None, optional): name of pipe. Auto generated if None. Defaults to None.
         
-        Any property value can be set by passing it into consturctor.
+        Any property value can be set by passing it into constructor.
         e.g. ``ConnectPipe(no_logo=True)``
         """
         super().__init__(**kwargs)
@@ -195,7 +193,7 @@ class ConnectPipe(ConnectorBridgeBase):
     @property
     def pipe(self) -> str:
         """
-        Gets/Sets pipe used to connect. Defalut is autogeneraged hex value
+        Gets/Sets pipe used to connect. Default is auto generated hex value
         """
         return self._pipe
 

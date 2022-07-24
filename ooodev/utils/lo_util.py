@@ -15,7 +15,7 @@ def get_soffice_install_path() -> Path:
     Gets the Soffice install path.
 
     For windows this will be something like: ``C:\Program Files\LibreOffice``.
-    For Linux this will be somethon like: ``/usr/lib/libreoffice``
+    For Linux this will be something like: ``/usr/lib/libreoffice``
 
     Returns:
         Path: install as Path.
@@ -24,7 +24,7 @@ def get_soffice_install_path() -> Path:
     if _INSTALL_PATH is not None:
         return _INSTALL_PATH
     if sys.platform == "win32":
-        # get the path location from registery
+        # get the path location from registry
         value = ""
         for _key in (
             # LibreOffice 3.4.5,6,7 on Windows
@@ -43,7 +43,7 @@ def get_soffice_install_path() -> Path:
             _INSTALL_PATH = Path("\\".join(value.split("\\")[:-1]))  # drop the program
             return _INSTALL_PATH
 
-        # failed to get path from registery. Going Manual
+        # failed to get path from registry. Going Manual
         soffice = "soffice.exe"
         p_sf = Path(os.environ["PROGRAMFILES"], "LibreOffice", "program", soffice)
         if p_sf.exists() is False or p_sf.is_file() is False:

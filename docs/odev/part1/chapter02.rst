@@ -123,7 +123,7 @@ There is also :py:class:`.Lo.Loader` context manager that allows for automatic c
 See |convert_doc|_ for an example.
 
 
-It is also simple to start LibreOffice from the command line automate tasks and leavel the open for user imput.
+It is also simple to start LibreOffice from the command line automate tasks and leave it open for user input.
 See `Calc Add Range of Data Automation <https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/calc/odev_add_range_data>`_ for an example.
 
 .. todo::
@@ -195,10 +195,10 @@ The creation of the XDesktop_ interface object uses :py:meth:`.Lo.create_instanc
 
 If you ignore the error-checking, :py:meth:`.Lo.create_instance_mcf` does two things.
 The call to `XMultiComponentFactory.createInstanceWithContext() <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1lang_1_1XMultiComponentFactory.html#ac62a80213fcf269e7a881abc6fa3e6d2>`_
-asks the service manager (`_mc_factory`) to create a service object inside the remote component context (`_xcc`). Then the call to `uno_obj`.queryInterface()
-via :py:meth:`.Lo.qi` looks inside the service instance for the specified interface (`atype`), returning an instance of the interface as its result.
+asks the service manager (``_mc_factory``) to create a service object inside the remote component context (``_xcc``). Then the call to ``uno_obj.queryInterface()``
+via :py:meth:`.Lo.qi` looks inside the service instance for the specified interface (``atype``), returning an instance of the interface as its result.
 
-The :py:meth:`.Lo.qi` function's reduces programmer typing, since calls to `uno_obj`.queryInterface() are very common in this frame work.
+The :py:meth:`.Lo.qi` function's reduces programmer typing, since calls to ``uno_obj.queryInterface()`` are very common in this frame work.
 Querying for the interface has the huge advantage of providing typing :numref:`ch02fig01` (autocomplete, static type checking) support thanks to types-unopy_.
 
 .. collapse:: Demo
@@ -318,21 +318,21 @@ The possible strings are listed in :numref:`ch02tbl02`.
     =========================================== ============================== 
     URL String                                  Document Type                 
     =========================================== ============================== 
-    "private:factory/swriter"                   Writer                        
-    "private:factory/sdraw"                     Draw                          
-    "private:factory/simpress"                  Impress                       
-    "private:factory/scalc"                     Calc                          
-    "private:factory/sdatabase"                 Base                          
-    "private:factory/swriter/web"               HTML document in Writer       
-    "private:factory/swriter/GlobalDocument"    A Master document in Writer   
-    "private:factory/schart"                    Chart                         
-    "private:factory/smath"                     Math Formulae                 
-    ".component:Bibliography/View1"             Bibliography Entries          
-    ".component:DB/QueryDesign"                 Database User Interfaces      
-    ".component:DB/TableDesign"                                               
-    ".component:DB/RelationDesign"                                            
-    ".component:DB/DataSourceBrowser"                                         
-    ".component:DB/FormGridView"                                              
+    ``private:factory/swriter``                 Writer                        
+    ``private:factory/sdraw``                   Draw                          
+    ``private:factory/simpress``                Impress                       
+    ``private:factory/scalc``                   Calc                          
+    ``private:factory/sdatabase``               Base                          
+    ``private:factory/swriter/web``             HTML document in Writer       
+    ``private:factory/swriter/GlobalDocument``  A Master document in Writer   
+    ``private:factory/schart``                  Chart                         
+    ``private:factory/smath``                   Math Formulae                 
+    ``.component:Bibliography/View1``           Bibliography Entries          
+    ``.component:DB/QueryDesign``               Database User Interfaces      
+    ``.component:DB/TableDesign``                                             
+    ``.component:DB/RelationDesign``                                          
+    ``.component:DB/DataSourceBrowser``                                       
+    ``.component:DB/FormGridView``                                            
     =========================================== ============================== 
 
 
@@ -432,11 +432,11 @@ in :ref:`section 3 <ch02sec03>`, :py:meth:`.Lo.save_doc` was called like so:
 :py:meth:`~.Lo.save_doc` extracts the file extension (i.e. "docx") and maps it to a corresponding filter name in Office
 (in this case, "Office Open XML Text"). One concern is that it's not always clear which extension-to-filter mapping should be utilized.
 For instance, another suitable filter name for "docx" is "MS Word 2007 XML".
-This problem is essentially ignored, by hardwiring a fixed selection into :py:meth:`~.Lo.save_doc`.
+This problem is essentially ignored, by hard wiring a fixed selection into :py:meth:`~.Lo.save_doc`.
 
 Another issue is that the choice of filter sometimes depends on the extension and the document type.
-For example, a Writer document saved as a PDF file should use the filter "writer_pdf_Export",
-but if the document is a spreadsheet then "calc_pdf_Export" is the correct choice.
+For example, a Writer document saved as a PDF file should use the filter ``writer_pdf_Export``,
+but if the document is a spreadsheet then ``calc_pdf_Export`` is the correct choice.
 
 :py:meth:`~.Lo.save_doc` get document type from :py:meth:`.Info.report_doc_type` that calls :py:meth:`.Info.is_doc_type`
 to examine the document's service name which is accessed via the XServiceInfo_ interface:
@@ -458,22 +458,22 @@ For quick access in your scripts use :py:class:`.Lo.Service` where applicable.
 .. table:: Document Service Names.
     :name: doc_service_names
 
-    =========== =================================================
-    Document    Type Service Name                                
-    =========== =================================================
-    Writer      com.sun.star.text.TextDocument                   
-    Draw        com.sun.star.drawing.DrawingDocument             
-    Impress     com.sun.star.presentation.PresentationDocument   
-    Calc        com.sun.star.sheet.SpreadsheetDocument           
-    Base        com.sun.star.sdb.OfficeDatabaseDocument          
-    =========== =================================================
+    =========== ==================================================
+    Document    Type Service Name                                 
+    =========== ==================================================
+    Writer      ``com.sun.star.text.TextDocument``                
+    Draw        ``com.sun.star.drawing.DrawingDocument``          
+    Impress     ``com.sun.star.presentation.PresentationDocument``
+    Calc        ``com.sun.star.sheet.SpreadsheetDocument``        
+    Base        ``com.sun.star.sdb.OfficeDatabaseDocument``       
+    =========== ==================================================
 
 
 We encountered these service names back in :ref:`Chapter 1 <ch01>`, :numref:`ch01fig09` – they're
 subclasses of the OfficeDocument service.
 
 
-A third problem is incompletness; :py:meth:`~.Lo.save_doc` via :py:meth:`~.Lo.ext_to_format` mappings only implemets a small subset
+A third problem is incompleteness; :py:meth:`~.Lo.save_doc` via :py:meth:`~.Lo.ext_to_format` mappings only implements a small subset
 of Office's 250+ filter names, so if you try to save a file with an exotic extension then the code will most likely break.
 :py:meth:`~.Lo.save_doc` has an overload that takes format as option, that is a filter name.
 This overload can be used to if a filter is not implements by :py:meth:`~.Lo.ext_to_format`.
@@ -586,17 +586,17 @@ When a crash window appears (like the one in :numref:`ch02fig02`), start WinCras
 
     .. _ch02fig03:
     .. figure:: https://user-images.githubusercontent.com/4193389/178566048-95c4d2f5-76c5-4ec5-9ba8-bc7d880b35ef.png
-        :alt: WinCrashReport GUI
+        :alt: Win Crash Report GUI
 
-        :WinCrashReport GUI
+        :Win Crash Report GUI
 
-:numref:`ch02fig03` indicates that the problem lies inside `mergedlo.dll`, an access violation (the exception code 0xC0000005) to a memory address.
+:numref:`ch02fig03` indicates that the problem lies inside ``mergedlo.dll``, an access violation (the exception code ``0xC0000005``) to a memory address.
 
 `mergedlo.dll` is part of LibreOffice which probably means that you can find the DLL in /program.
 Most Office DLLs are located in that directory.
 
-WinCrashReport generates two alternative call stacks, with slightly more information in the second in this case.
-`mergedlo.dll` is called by the uno_getCurrentEnvironment() function in `cppu3.dll`, as indicated in :numref:`ch02fig04`.
+``WinCrashReport`` generates two alternative call stacks, with slightly more information in the second in this case.
+``mergedlo.dll`` is called by the ``uno_getCurrentEnvironment()`` function in ``cppu3.dll``, as indicated in :numref:`ch02fig04`.
 
 .. cssclass:: screen_shot invert
 
@@ -618,12 +618,12 @@ If you want to better understand the DLLs, they can be examined using `DLL Expor
     .. figure:: https://user-images.githubusercontent.com/4193389/178568452-ac8bf39f-a026-4260-bd32-a66ffb6deded.png
         :alt: DLL Export Viewer's view of cppu3.dll
 
-        :DLL Export Viewer's view of cppu3.dll
+        :DLL Export Viewer's view of ``cppu3.dll``
 
-`mergedlo.dll` appears to be empty inside DLL Export Viewer because it exports no functions.
+``mergedlo.dll`` appears to be empty inside DLL Export Viewer because it exports no functions.
 That probably means it's being used as a store for resources, such as icons, cursors, and images.
 There's another NirSoft_ tool for looking at DLL resources, called `ResourcesExtract <https://www.nirsoft.net/utils/resources_extract.html>`_
-for searching the gigantic code base. :numref:`ch02fig06` shows the results for an "uno_getCurrentEnvironment" search.
+for searching the gigantic code base. :numref:`ch02fig06` shows the results for an ``uno_getCurrentEnvironment`` search.
 
 .. cssclass:: screen_shot invert
 
@@ -631,7 +631,7 @@ for searching the gigantic code base. :numref:`ch02fig06` shows the results for 
     .. figure:: https://user-images.githubusercontent.com/4193389/178569089-5d836f83-458a-49ca-bd90-1614ffc4a86b.png
         :alt: OpenGrok Results for "uno_getCurrentEnvironment"
 
-        :OpenGrok Results for "uno_getCurrentEnvironment"
+        : ``OpenGrok`` Results for ``uno_getCurrentEnvironment``
 
 The function's code is in EnvStack.cxx, which can be examined by clicking on the linked function name shown at the bottom of :numref:`ch02fig06`.
 

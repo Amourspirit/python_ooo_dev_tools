@@ -208,7 +208,7 @@ class GUI:
             name (ToolBarName): Name of resource
 
         Returns:
-            str: A formated resouors string such as 'private:resource/toolbar/zoombar'
+            str: A formatted resource string such as ``private:resource/toolbar/zoombar``
         """
         resource = f"private:resource/toolbar/{name}"
         return resource
@@ -275,7 +275,7 @@ class GUI:
         Args:
             title (str): Floating frame title
             x (int): Frame x position
-            y (int): Frame y postition
+            y (int): Frame y position
             width (int): Frame width
             height (int): Frame Height
 
@@ -392,7 +392,7 @@ class GUI:
     @staticmethod
     def get_current_controller(odoc: object) -> XController:
         """
-        Gets controllor from document
+        Gets controller from document
 
         Args:
             odoc (object): office document
@@ -428,7 +428,7 @@ class GUI:
     @staticmethod
     def get_control_access(doc: XComponent) -> XControlAccess:
         """
-        Get controll access from office documnet
+        Get control access from office document
 
         Args:
             doc (XComponent): office document
@@ -683,7 +683,7 @@ class GUI:
         Gets window
 
         Args:
-            doc (XComponent): Ofice document
+            doc (XComponent): Office document
 
         Returns:
             XWindow: window instance
@@ -843,7 +843,7 @@ class GUI:
             Original java method used java to get area.
             Original method seemed to return effective size. (i.e. without Windows' taskbar)
 
-            This implemention calls Toolkit.getWorkArea().
+            This implementation calls ``Toolkit.getWorkArea()``.
 
         See also:
             `Toolkit <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1Toolkit.html>`_
@@ -866,17 +866,17 @@ class GUI:
     @classmethod
     def get_window_handle(cls, doc: XComponent) -> int | None:
         """
-        Gets Handel to a window
+        Gets handle to a window
 
         Args:
-            doc (XComponent): document to get window handel for.
+            doc (XComponent): document to get window handle for.
 
         Returns:
-            int | None: handel as int on success; Otherwise, None.
+            int | None: handle as int on success; Otherwise, None.
 
         Note:
             This method was part of original java lib but was only set to work with windows.
-            An attemp is made to support Linux and Mac; However, not tested at this point.
+            An attempt is made to support Linux and Mac; However, not tested at this point.
 
             Use this method at your own risk.
         """
@@ -938,7 +938,7 @@ class GUI:
     @classmethod
     def minimize(cls, odoc: object) -> None:
         """
-        Minimizes Office windwo
+        Minimizes Office window
 
         Args:
             odoc (object): Office document
@@ -1139,7 +1139,7 @@ class GUI:
             return ka
 
         if count != 2:
-            raise TypeError("print_ui_cmds() got an invalid numer of arguments")
+            raise TypeError("print_ui_cmds() got an invalid number of arguments")
 
         kargs = get_kwargs()
 
@@ -1326,13 +1326,13 @@ class GUI:
     @staticmethod
     def get_ui_element_type_str(t: int) -> str:
         """
-        Converts const value to element type string
+        Converts constant value to element type string
 
         `UIElementType <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1ui_1_1UIElementType.html>`_
         determines the type of a user interface element which is controlled by a layout manager.
 
         Args:
-            t (int): UIElementType const Value from 0 to 8
+            t (int): UIElementType constant Value from 0 to 8
 
         Raises:
             TypeError: If t is not a int
@@ -1425,8 +1425,8 @@ class GUI:
     @staticmethod
     def hide_except(lm: XLayoutManager, ui_elms: Iterable[XUIElement], show_elms: Iterable[str]) -> None:
         """
-        Hide all of uiElems, except ones in show_elms;
-        delete any strings that match in show_elms
+        Hide all of ``ui_elms``, except ones in ``show_elms``;
+        delete any strings that match in ``show_elms``.
 
         Args:
             lm (XLayoutManager): Layout Manager
