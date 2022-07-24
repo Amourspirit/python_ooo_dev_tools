@@ -1,28 +1,36 @@
 Book Naming conventions:
     references:
         Chapter, ch01
-            rst example: .. _ch01:
             ch followed by two digit capter nmber
+            rst example:
+                .. _ch01:
 
             Sub Secion:
-                ch01_short_section_name
-                rst example: .. _ch03_examine_office:
                 ch followed by two digits folowed by _ followed by section short name.
+                rst example:
+                    .. _ch03_examine_office:
             
                 sub, sub section:
-                    rst example: .. _ch03_examine_office_cofig_prop:
                     sub section followed by _ followed by sub section short name
+                    rst example:
+                        .. _ch03_examine_office_cofig_prop:
 
             chapter figures:
-                rst example: .. _ch03fig_prop_dialog:
-                chapter naem followed by fig followed by _ followed by short name
+                chapter name followed by fig followed by _ followed by short name
+                rst example:
+                    .. _ch03fig_prop_dialog:
+            
+            chapter tables:
+                chapter name followed by tbl followed by _ followed by short name
+                rst example:
+                    .. _ch02tbl_some_doc_prop:
             
             Note:
                 To reference a chapter or section use ref
                     eg: :ref:`ch01`
                         :ref:`ch03_examine_office`
 
-                To reference figures use numref
+                To reference figures and tables use numref
                     eg: :numref:`ch03fig_detail_prop_lst`
 
 

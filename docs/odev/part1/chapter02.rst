@@ -282,9 +282,9 @@ The search flags are usually set to 0, and document properties are stored in the
 :py:meth:`.Props.make_props` takes a property name and value and returns a PropertyValue_ tuple; there are several variants which accept different numbers of property name - value pairs.
 
 A complete list of document properties can be found in the MediaDescriptor documentation (accessed with ``lodoc MediaDescriptor service``),
-but some of the important ones are listed in :numref:`ch02tbl01`
+but some of the important ones are listed in :numref:`ch02tbl_some_doc_prop`
 
-.. _ch02tbl01:
+.. _ch02tbl_some_doc_prop:
 
 .. table:: Some Document Properties.
     :name: md_common_srv
@@ -308,9 +308,9 @@ The general format of a program that creates a new document, manipulates it in s
 .. include:: ../../resources/odev/02/create_save_tab.rst
 
 A new document is created by calling ``XComponentLoader.loadComponentFromURL()`` with a special URL string for the document type.
-The possible strings are listed in :numref:`ch02tbl02`.
+The possible strings are listed in :numref:`ch02tbl_new_doc_url`.
 
-.. _ch02tbl02:
+.. _ch02tbl_new_doc_url:
 
 .. table:: URLs for Creating New Documents.
     :name: new_doc_type
@@ -450,10 +450,10 @@ to examine the document's service name which is accessed via the XServiceInfo_ i
 
 Then :py:meth:`~.Lo.save_doc` utilizes :py:meth:`~.Lo.ext_to_format` to get document extension.
 
-The main document service names are listed in :numref:`ch02tbl03`.
+The main document service names are listed in :numref:`ch02tbl_doc_service_names`.
 For quick access in your scripts use :py:class:`.Lo.Service` where applicable.
 
-.. _ch02tbl03:
+.. _ch02tbl_doc_service_names:
 
 .. table:: Document Service Names.
     :name: doc_service_names
