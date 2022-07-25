@@ -18,6 +18,7 @@ SPELL_LOG="spell_error.log"
 sphinx-build -E -q -w $SPELL_LOG -b spelling . _build 2> /dev/null
 if test -s $SPELL_LOG; then  # if errors.log exists and isn't empty, then there's some errors
     echo "[error]  Blocking commit, found spelling errors in documentation:"
+	echo "See 'docs/_build/**/*.spelling' files"
     cat $SPELL_LOG
     rm -f $SPELL_LOG
     exit 1

@@ -21,7 +21,7 @@ Set up virtual environment if not existing.
 
     $ python -m venv ./env
 
-Activate vritual environment and install development requirements.
+Activate virtual environment and install development requirements.
 
 .. code-block:: text
 
@@ -38,7 +38,7 @@ On Linux what is required to communicate with LibreOffice API it a copy of, or l
 
 After virtual environment is set up and **activated**, running the above command on Linux will search in known paths for ``uno.py`` and ``unohelper.py``
 and create links to files in the current virtual environment.
-Thats it! Now should be ready for development.
+That's it! Now should be ready for development.
 
 For other options try:
 
@@ -51,8 +51,8 @@ For other options try:
 Windows
 ^^^^^^^
 
-Windows is a litte tricker. Creating a link to ``uno.py`` and importing it will not work as it does in Linux.
-This is due to the how LibreOffice implements the python enivronment on Windows.
+Windows is a little tricker. Creating a link to ``uno.py`` and importing it will not work as it does in Linux.
+This is due to the how LibreOffice implements the python environment on Windows.
 
 The way |app_name_short| works on Windows is a slight hack to the virtual environment.
 
