@@ -38,7 +38,7 @@ and traces of this heritage are visible in many parts of its API.
 This book is not about how to use LibreOffice's GUI (e.g. where to find the menu item for italicizing text).
 I'm also not going to discuss how to compile the LibreOffice source, which is a focus of LibreOffice's development
 `webpage <https://wiki.documentfoundation.org/Development>`_.
-The intention is ot explain how |app_name_bold| (|app_name_short|) can be used to interact with LibreOffice via a console or via macros using python.
+The intention is ot explain how |app_name_bold| (|odev|) can be used to interact with LibreOffice via a console or via macros using python.
 
 .. _ch01_sources_for_api_information:
 
@@ -530,7 +530,7 @@ Using ``typing.TYPE_CHECKING`` and ``typing.cast`` we can work around this limit
 
     In this example ``typing.TYPE_CHECKING`` (always ``False`` during runtime) is used
     to ensure the service class is available during design time but not runtime.
-    types-unopy_ is require for this example (installs with |app_name_short|)
+    types-unopy_ is require for this example (installs with |odev|)
     This allows for getting full typing support for services.
 
     .. code-block:: python
@@ -555,7 +555,7 @@ Using ``typing.TYPE_CHECKING`` and ``typing.cast`` we can work around this limit
             # do work with image here
             ...
 
-The recommended way in |app_name_short| is to use :py:meth:`Lo.qi() <.utils.lo.Lo.qi>` to get access to the desired interface.
+The recommended way in |odev| is to use :py:meth:`Lo.qi() <.utils.lo.Lo.qi>` to get access to the desired interface.
 This ensures the service has the desired interface and avoids the need for ``typing.cast``.
 
 .. collapse:: Example
@@ -598,7 +598,7 @@ For ScriptForge there is types-scriptforge_ and for Access2Base there is types-a
 
 For quicker developer searching there is |dsearch|_.
 
-Then there is this library (|app_name_short|) that takes advantage of some of the aforementioned libraries types-unopy_ and  ooouno_.
+Then there is this library (|odev|) that takes advantage of some of the aforementioned libraries types-unopy_ and  ooouno_.
 
 Many of these libraries are possible because of `OOO UNO TEMPLATE <https://github.com/Amourspirit/ooo_uno_tmpl>`_ that converts the
 entire |lo_api|_ into templates that are converted into ooouno_ and types-unopy_.
@@ -616,7 +616,7 @@ entire |lo_api|_ into templates that are converted into ooouno_ and types-unopy_
 
 
 In the Basic API, there's no remote component context since the macros run inside Office or inside a document that is loaded into Office.
-In |app_name_short| there is a remote bridge and ``Lo.XSCRIPTCONTEXT`` which implements XScriptContext_.
+In |odev| there is a remote bridge and ``Lo.XSCRIPTCONTEXT`` which implements XScriptContext_.
 
 .. tabs::
 
@@ -707,9 +707,9 @@ For instance:
         sf_acc = Lo.create_instance_msf(XSimpleFileAccess, "com.sun.star.ucb.SimpleFileAccess")
         sf_acc.CreateFolder(dir_name)
 
-One of the aims of |app_name_short| is to hide as much of the complexity of Office as the Basic version of the API.
+One of the aims of |odev| is to hide as much of the complexity of Office as the Basic version of the API.
 
-|app_name_short| aims to show how and why python may be a more powerful in many cases.
+|odev| aims to show how and why python may be a more powerful in many cases.
 
 .. _Controller: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1frame_1_1Controller.html
 .. _TextDocumentView: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1TextDocumentView.html

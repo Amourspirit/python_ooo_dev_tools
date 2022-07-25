@@ -11,7 +11,7 @@ Chapter 3. Examining
 This chapter looks at ways to examine the state of the Office application and a document.
 A document will be examined in three different ways: the first retrieves properties about the file, such as its author, keywords,
 and when it was last modified. The second and third approaches extract API details, such as what services and interfaces it uses.
-This can be done by calling functions in |app_name_short| Utility classes or by utilizing the |devtools|_ built into Office.
+This can be done by calling functions in |odev| Utility classes or by utilizing the |devtools|_ built into Office.
 See :numref:`ch03fig_lo_devolp_tools`.
 
 .. _ch03_examine_office:

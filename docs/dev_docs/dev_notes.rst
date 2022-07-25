@@ -4,7 +4,7 @@ Dev Docs
 Virtual Environment
 -------------------
 
-|app_name_short| use a virtual environment for development purposes.
+|odev| use a virtual environment for development purposes.
 
 
 
@@ -30,7 +30,7 @@ Activate virtual environment and install development requirements.
 On Linux what is required to communicate with LibreOffice API it a copy of, or link to ``uno.py`` and ``unohelper.py`` in the virtual environment.
 ``uno.py`` sets up the necessary code that makes importing from LibraOffice API possible.
 
-|app_name_short| has a command to accomplish this in the virtual environment on Linux.
+|odev| has a command to accomplish this in the virtual environment on Linux.
 
 .. code-block:: text
 
@@ -54,7 +54,7 @@ Windows
 Windows is a little tricker. Creating a link to ``uno.py`` and importing it will not work as it does in Linux.
 This is due to the how LibreOffice implements the python environment on Windows.
 
-The way |app_name_short| works on Windows is a slight hack to the virtual environment.
+The way |odev| works on Windows is a slight hack to the virtual environment.
 
 Start by using terminal to create a ``venv`` environment in the projects root folder
 
@@ -111,11 +111,11 @@ For a quick test of environment import ``uno`` If there is no import  error you 
 Hooks
 -----
 
-|app_name_short| uses git hooks to ensure document and test are building.
+|odev| uses git hooks to ensure document and test are building.
 
 Pointing git to hooks is required for actions to run.
 
-After virtual environment for |app_name_short| is activated, run the following one time command.
+After virtual environment for |odev| is activated, run the following one time command.
 
 .. code-block:: shell
 
@@ -156,7 +156,7 @@ Viewing docs
 |online_docs|_ are available.
 Viewing local docs can be done by starting a local webserver.
 
-|app_name_short| has a script tho make this easier. In a separate terminal window run:
+|odev| has a script tho make this easier. In a separate terminal window run:
 
 .. code-block:: text
     :caption: Linux
