@@ -421,7 +421,7 @@ What's a Filter Name?
 
 Rather than force a programmer to search through this list for the correct name, :py:meth:`.Lo.save_doc`
 allows him to supply just the name and extension of the output file. For example,
-in :ref:`section 3 <ch02_open_doc>`, :py:meth:`.Lo.save_doc` was called like so:
+in :ref:`ch02_open_doc`, :py:meth:`.Lo.save_doc` was called like so:
 
 .. tabs::
 
@@ -637,10 +637,10 @@ The function's code is in EnvStack.cxx, which can be examined by clicking on the
 
 
 .. |convert_doc| replace:: Write Convert Document Format
-.. _convert_doc: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_doc_convert
+.. _convert_doc: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/general/odev_doc_convert
 
 .. |convert_doc_src| replace:: Write Convert Document Format Source
-.. _convert_doc_src: https://github.com/Amourspirit/python-ooouno-ex/blob/main/ex/auto/writer/odev_doc_convert/start.py
+.. _convert_doc_src: https://github.com/Amourspirit/python-ooouno-ex/blob/main/ex/auto/general/odev_doc_convert/start.py
 
 .. _NirSoft: https://www.nirsoft.net/
 

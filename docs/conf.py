@@ -14,9 +14,10 @@ import os
 import sys
 from pathlib import Path
 
-_ROOT_PATH = os.path.abspath("..")
+_DOCS_PATH = Path(__file__).parent
+_ROOT_PATH = _DOCS_PATH.parent
 
-sys.path.insert(0, _ROOT_PATH)
+sys.path.insert(0, str(_ROOT_PATH))
 from ooodev import __version__
 
 os.environ["DOCS_BUILDING"] = "True"
@@ -62,10 +63,15 @@ extensions = [
 
 # region spelling
 # https://sphinxcontrib-spelling.readthedocs.io/en/latest/
-spelling_word_list_filename = [
-    "spelling_code.txt",
-    "spelling_book.txt",
-]
+
+
+def get_spell_dictionaries() -> list:
+
+    p = _DOCS_PATH.absolute().resolve() / "internal" / "dict"
+    dict_gen = p.glob('spelling_*.*')
+    return [str(d) for d in dict_gen if d.is_file()]
+
+spelling_word_list_filename = get_spell_dictionaries()
 
 spelling_show_suggestions = True
 spelling_ignore_pypi_package_names = True
@@ -197,7 +203,7 @@ todo_include_todos = False
 
 def get_active_branch_name():
 
-    head_dir = Path(_ROOT_PATH) / ".git" / "HEAD"
+    head_dir = _ROOT_PATH / ".git" / "HEAD"
     with head_dir.open("r") as f: content = f.read().splitlines()
 
     for line in content:
