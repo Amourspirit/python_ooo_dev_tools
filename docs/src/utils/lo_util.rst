@@ -1,4 +1,4 @@
-.. spelling::
+.. spelling:word-list::
     util
 
 Module lo_util
