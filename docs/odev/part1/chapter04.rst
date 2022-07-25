@@ -176,7 +176,7 @@ For instance to activate a window use :py:meth:`~.gui.GUI.activate`, for min and
 :py:meth:`get_pos_size` for size and position.
 
 There are other python libraries that can handle mouse and keyboard emulation such as `PyAutoGUI <https://pypi.org/project/PyAutoGUI/>`_ and `keyboard <https://pypi.org/project/keyboard/>`_.
-|app_name_short| will leave it up to developers to implement window manipulation for their own use.
+|odev| will leave it up to developers to implement window manipulation for their own use.
 
 .. _ch04_detect_end:
 
@@ -442,7 +442,7 @@ The code is wrapped up in :py:meth:`.Lo.dispatch_cmd`, which is called twice in 
             # endregion main
 
 
-It is also possible in |app_name_short| to hook events. These events are specific to |app_name_short| and not
+It is also possible in |odev| to hook events. These events are specific to |odev| and not
 part of LibreOffice.
 
 Here is the updated example that hooks DISPATCHING and DISPATCHED events.

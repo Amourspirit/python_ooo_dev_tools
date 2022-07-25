@@ -182,7 +182,7 @@ rst_prolog_lst.append(".. |app_name| replace:: OOO Development Tools")
 rst_prolog_lst.append("")
 rst_prolog_lst.append(".. |app_name_bold| replace:: **OOO Development Tools**")
 rst_prolog_lst.append("")
-rst_prolog_lst.append(".. |app_name_short| replace:: ODEV")
+rst_prolog_lst.append(".. |odev| replace:: ODEV")
 rst_prolog_lst.append("")
 rst_prolog_lst.append(f".. |app_ver| replace:: {__version__}")
 

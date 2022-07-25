@@ -8,7 +8,7 @@ Because this is a singleton class it will continue to fire events as long as you
 Think of ``LoEvents`` as being global scoped.
 
 Events can be removed via the :py:meth:`~.events.lo_events.LoEvents.remove` method.
-It is not possible to remove |app_name_short| built in events.
+It is not possible to remove |odev| built in events.
 
 Perhaps a better solution to subscribe to event is the :py:class:`~.events.lo_events.Events` class as it has a local scope.
 
@@ -17,10 +17,10 @@ Perhaps a better solution to subscribe to event is the :py:class:`~.events.lo_ev
     Subscribing to events on this class can have unexpected side effects.
     Such as subscribed events being triggered when you thought you code was finished running.
 
-Each time |app_name_short| internally runs a print command a event is raised with :py:class:`~.events.args.cancel_event_args.CancelEventArgs` as the args parameter.
+Each time |odev| internally runs a print command a event is raised with :py:class:`~.events.args.cancel_event_args.CancelEventArgs` as the args parameter.
 If that event is hooked then the print can be canceled.
 
-In the following example all |app_name_short| internal print commands are canceled.
+In the following example all |odev| internal print commands are canceled.
 
 .. collapse:: Example
 

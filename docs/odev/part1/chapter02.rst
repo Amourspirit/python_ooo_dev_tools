@@ -11,14 +11,14 @@ Chapter 2. Starting and Stopping
 
 Chapter 1 introduced some of the core ideas of Office.
 Now it's time to show how these data structures and relationships (e.g. service, interfaces, FCM, inheritance)
-are programmed in |app_name_bold| (|app_name_short|) API.
+are programmed in |app_name_bold| (|odev|) API.
 
 This chapter will focus on the most fundamental tasks: starting Office,
 loading (or creating) a document, saving and closing the document, and shutting down Office.
 
 Some the examples come from the `LibreOffice Python UNO Examples <https://github.com/Amourspirit/python-ooouno-ex>`_ project.
 
-The aim with these |app_name_short| is to hide some of the verbiage of Office.
+The aim with these |odev| is to hide some of the verbiage of Office.
 When (if?) a programmer feels ready for more detail, then my code is documented.
 Here, only explaining functions that illustrate Office ideas, such as service managers and components.
 
@@ -131,9 +131,9 @@ See `Calc Add Range of Data Automation <https://github.com/Amourspirit/python-oo
     Update info on building macro scripts
 
 There is of course running as a macro as well.
-Currently there is not of ways to pack |app_name_short| scripts for usage as a macro.
+Currently there is not of ways to pack |odev| scripts for usage as a macro.
 The |unoex|_ project is one way to compile scripts into a single script, and uses stickytape_ under the hood.
-Efforts are on the way to make this a much simpler process for macros. If not using |app_name_short| for macros
+Efforts are on the way to make this a much simpler process for macros. If not using |odev| for macros
 then this is not a issue.
 See `Calc Add Range of Data Example <https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/calc/odev_add_range_data>`_
 for a macro example in |unoex|_.
@@ -486,7 +486,7 @@ If you want to study the details, start with :py:meth:`~.Lo.save_doc`, and burro
 ======================
 
 Closing a document is a pain if you want to check with the user beforehand: should a modified file be saved, thereby overwriting the old version?
-|app_name_short|'s solution is not to bother the user, so the file is closed without saving, irrespective of any modifications.
+|odev|'s solution is not to bother the user, so the file is closed without saving, irrespective of any modifications.
 In other words, it's essential to explicitly save a changed document with :py:meth:`.Lo.save_doc` before calling :py:meth:`.Lo.close_doc`.
 
 The code for closing employs :py:meth:`.Lo.qi` to cast the document's XComponent_ interface to XCloseable_:
@@ -551,7 +551,7 @@ The following converts a JPEG image into PNG:
 ===============================
 
 This chapter began our coding with the Office API, and so the possibility of bugs also becomes an issue.
-If you find a problem with |app_name_short| classes then please `submit an issue <https://github.com/Amourspirit/python_ooo_dev_tools/issues>`_.
+If you find a problem with |odev| classes then please `submit an issue <https://github.com/Amourspirit/python_ooo_dev_tools/issues>`_.
 supplying as much detail as possible.
 
 Another source of bugs is the LibreOffice API itself, which is hardly a surprise considering its complexity and age.

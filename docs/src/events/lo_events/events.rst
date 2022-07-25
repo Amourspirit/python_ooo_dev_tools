@@ -6,7 +6,7 @@ Class Events
 
 ``Events`` class is a locally scoped class.
 
-Once an instance of ``Events`` is created it can be used to subscribe to any internal event of |app_name_short|.
+Once an instance of ``Events`` is created it can be used to subscribe to any internal event of |odev|.
 
 .. collapse:: Example
     :open:
