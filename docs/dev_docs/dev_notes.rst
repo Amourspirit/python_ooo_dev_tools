@@ -28,7 +28,7 @@ Activate virtual environment and install development requirements.
     (env) $ pip install -r requirements.txt
 
 On Linux what is required to communicate with LibreOffice API it a copy of, or link to ``uno.py`` and ``unohelper.py`` in the virtual environment.
-``uno.py`` sets up the necessary code that makes importing from LibraOffice API possible.
+``uno.py`` sets up the necessary code that makes importing from LibreOffice API possible.
 
 |odev| has a command to accomplish this in the virtual environment on Linux.
 
