@@ -24,7 +24,7 @@ class SheetCancelArgs(AbstractSheetCancelArgs):
     Sheet Cancel Event Args
     """
 
-    __slots__ = ("source", "_event_name", "event_data", "name", "index", "doc", "sheet", "cancel")
+    __slots__ = ("source", "_event_name", "event_data", "name", "index", "doc", "sheet", "cancel", "_event_source")
 
     @staticmethod
     def from_args(args: SheetCancelArgs) -> SheetCancelArgs:
@@ -39,6 +39,7 @@ class SheetCancelArgs(AbstractSheetCancelArgs):
         """
         eargs = SheetCancelArgs(source=args.source)
         eargs._event_name = args.event_name
+        eargs._event_source = args.event_source
         eargs.doc = args.doc
         eargs.event_data = args.event_data
         eargs.index = args.index
