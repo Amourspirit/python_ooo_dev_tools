@@ -15,10 +15,12 @@ from ..proto import event_observer
 class _Events(object):
     """
     Singleton Class for sharing events among internal classes. DO NOT USE!
-    
+
     Use: lo_events.LoEvents for global events. Use lo_events.Events for locally scoped events.
     """
+
     _instance = None
+
     def __new__(cls, *args, **kwargs):
         if not cls._instance:
             cls._instance = super(_Events, cls).__new__(cls, *args, **kwargs)
@@ -42,13 +44,15 @@ class _Events(object):
         else:
             self._callbacks[event_name].append(ref(callback))
 
-    def trigger(self, event_name: str, event_args: EventArgs) -> None:
+    def trigger(self, event_name: str, event_args: EventArgs, *args, **kwargs) -> None:
         """
         Trigger event(s) for a given name.
 
         Args:
             event_name (str): Name of event to trigger/
             event_args (EventArgs): Event args passed to the callback for trigger.
+            args (Any, optional): Optional positional args to pass to callback
+            kwargs (Any, optional): Optional keyword args to pass to callback
         """
         if self._callbacks is not None and event_name in self._callbacks:
             cleanup = None
@@ -60,9 +64,11 @@ class _Events(object):
                     continue
                 if event_args is not None:
                     event_args._event_name = event_name
+                    if event_args.event_source is None:
+                        event_args._event_source = self
                 if callable(callback()):
                     try:
-                        callback()(event_args.source, event_args)
+                        callback()(event_args.source, event_args, *args, **kwargs)
                     except AttributeError:
                         # event_arg is None
                         callback()(self, None)
@@ -90,7 +96,7 @@ class _Events(object):
                 cleanup.reverse()
                 for i in cleanup:
                     self._observers.pop(i)
-    
+
     def add_observer(self, *args: event_observer.EventObserver) -> None:
         """
         Adds observers that gets their ``trigger`` method called when this class ``trigger`` method is called.
@@ -99,4 +105,3 @@ class _Events(object):
             self._observers = []
         for observer in args:
             self._observers.append(ref(observer))
-        

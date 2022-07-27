@@ -6,7 +6,7 @@ Chapter 4. Listening, and Other Techniques
 
 .. topic:: Window Listeners;
 
-    Window Listeners;
+    Window Listeners; |odev| Events
 
 This chapter concludes the general introduction to Office programming by looking at several techniques that will reappear periodically in later chapters: the use of window listeners.
 
@@ -255,6 +255,9 @@ As in the |exlisten|_ example, ``disposing()`` is never triggered.
 4.4 Bridge Shutdown Detection
 =============================
 
+4.4.1 Detecting Shutdown via Listener
+-------------------------------------
+
 There's another way to detect Office closure: by listening for the shutdown of the UNO bridge between the Python and Office processes.
 This can be useful if Office crashes independently of your Python code.
 This approach works for both socket and pipe connections using python.
@@ -338,6 +341,19 @@ However, if I make Office crash while DocMonitor is running, then the output bec
 Office was killed while the python program was still running, so it never reached its :py:meth:`.Lo.close_office` call which triggers the XTerminateListener_ methods.
 However, the XEventListener_ attached to the bridge did fire.
 (If you're wondering, office was killed Office by running ``loproc -k``, which stopped the soffice process. See: |dsearch|_)
+
+
+4.4.1 Detecting Shutdown via Event
+----------------------------------
+
+And finally it is possible use an |odev| event to shutdown.
+|odev| listens to bridge connection internally and raise an event when the bridge goes away.
+
+In this simplified example of |exmonitor|_ an instance of :ref:`events_lo_events_Events` is used to
+respond to bridge going away.
+
+.. include:: ../../resources/events/events_in_class_ex.rst
+
 
 .. _ch04_dispatching:
 

@@ -7,7 +7,7 @@ from ast import Not
 from datetime import datetime, timezone
 import time
 import types
-from typing import TYPE_CHECKING, Iterable, Optional, List, Tuple, cast, overload, Type
+from typing import TYPE_CHECKING, Any, Iterable, Optional, List, Tuple, cast, overload, Type
 from urllib.parse import urlparse
 import uno
 from enum import IntEnum, Enum
@@ -2580,8 +2580,10 @@ class Lo(metaclass=StaticProperty):
                 cls._bridge_component = None
             return cls._bridge_component
 
+
 class _LoManager(metaclass=StaticProperty):
     """Manages clearing and resetting for Lo static class"""
+
     @staticmethod
     def del_cache_attrs(source: object, event: EventArgs) -> None:
         # clears Lo Attributes that are dynamically created
@@ -2596,6 +2598,10 @@ class _LoManager(metaclass=StaticProperty):
         # for some reason when office triggers this method calls such as:
         # raise SystemExit(1)
         # does not exit the script
+        _Events().trigger(LoNamedEvent.BRIDGE_DISPOSED, EventArgs(_LoManager.disposing_bridge.__qualname__))
+
+    @staticmethod
+    def on_disposed(source: Any, event: EventObject) -> None:
         Lo.print("Office bridge has gone!!")
         dattrs = ("_xcc", "_doc", "_mc_factory", "_ms_factory", "_lo_inst", "_xdesktop")
         dvals = (None, None, None, None, None, None)
@@ -2603,7 +2609,7 @@ class _LoManager(metaclass=StaticProperty):
             setattr(Lo, attr, val)
 
     @staticmethod
-    def on_loading( source: object, event: CancelEventArgs) -> None:
+    def on_loading(source: Any, event: CancelEventArgs) -> None:
         try:
             bridge = cast(XComponent, Lo._lo_inst.bridge_component)
             bridge.removeEventListener(_LoManager.event_adapter)
@@ -2611,7 +2617,7 @@ class _LoManager(metaclass=StaticProperty):
             pass
 
     @staticmethod
-    def on_loaded(source: object, event: EventObject) -> None:
+    def on_loaded(source: Any, event: EventObject) -> None:
         if Lo.bridge is not None:
             Lo.bridge.addEventListener(_LoManager.event_adapter)
 
@@ -2625,9 +2631,11 @@ class _LoManager(metaclass=StaticProperty):
             cls._event_adapter = bridge_listen
         return cls._event_adapter
 
+
 _Events().on(LoNamedEvent.RESET, _LoManager.del_cache_attrs)
 _Events().on(LoNamedEvent.OFFICE_LOADING, _LoManager.on_loading)
 _Events().on(LoNamedEvent.OFFICE_LOADED, _LoManager.on_loaded)
+_Events().on(LoNamedEvent.BRIDGE_DISPOSED, _LoManager.on_disposed)
 
 
 __all__ = ("Lo",)
