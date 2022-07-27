@@ -5,7 +5,7 @@ This module is for the purpose of sharing events between classes.
 from __future__ import annotations
 import contextlib
 from weakref import ref, ReferenceType, proxy
-from typing import Dict, List, NamedTuple, Generator
+from typing import Any, Dict, List, NamedTuple, Generator
 from .args.event_args import EventArgs
 
 from ..utils.type_var import EventCallback as EventCallback
@@ -72,13 +72,21 @@ class _event_base(object):
                 pass
         return result
 
-    def trigger(self, event_name: str, event_args: EventArgs):
+    def _set_event_args(self, event_name: str, event_args: EventArgs) -> None:
+        if event_args is None:
+            return
+        event_args._event_name = event_name
+        event_args._event_source = self
+
+    def trigger(self, event_name: str, event_args: EventArgs, *args, **kwargs):
         """
         Trigger event(s) for a given name.
 
         Args:
             event_name (str): Name of event to trigger
             event_args (EventArgs): Event args passed to the callback for trigger.
+            args (Any, optional): Optional positional args to pass to callback
+            kwargs (Any, optional): Optional keyword args to pass to callback
 
         Note:
             Events are removed automatically when they are out of scope.
@@ -92,11 +100,10 @@ class _event_base(object):
                         cleanup = []
                     cleanup.append(i)
                     continue
-                if event_args is not None:
-                    event_args._event_name = event_name
+                self._set_event_args(event_name=event_name, event_args=event_args)
                 if callable(callback()):
                     try:
-                        callback()(event_args.source, event_args)
+                        callback()(event_args.source, event_args, *args, **kwargs)
                     except AttributeError:
                         # event_arg is None
                         callback()(self, None)
@@ -109,13 +116,40 @@ class _event_base(object):
 
 
 class Events(_event_base):
-    """Static Class for sharing events among classes and functions."""
+    """Class for sharing events among classes and functions."""
 
-    def __init__(self) -> None:
+    # Dev Notes:
+    # Event callbacks are assigned to this class as a weak ref.
+    # This is necessary; Howerver, a side effect is class method cannot be assigned
+    # as an event from class __init__. It is possible to assign a class static method from
+    # __init__ but not a class method. Attempting to assign class method result with method
+    # being out of scope before trigger is called on it.
+    # Making an Events class with strong ref ( no weak ref ) and then assigning a class method
+    # as a callback result in the class method being triggered even after the class instance is set
+    # to none. In other words python does not realease the object or callback because the strong ref Events class
+    # is still holding on to it.
+    # In short, do not change this class!
+
+    def __init__(self, source: Any | None = None) -> None:
+        """
+        Construct for Events
+
+        Args:
+            source (Any | None, optional): Source can be class or any object.
+                The value of ``source`` is the value assigned to the ``EventArgs.event_source`` property.
+                Defaults to current instance of this class.
+        """
         super().__init__()
+        self._source = source
         # register wih LoEvents so this instance get triggered when LoEvents() are triggered.
         LoEvents().add_observer(self)
 
+
+    def _set_event_args(self, event_name: str, event_args: EventArgs) -> None:
+        if event_args is None:
+            return
+        event_args._event_name = event_name
+        event_args._event_source = self if self._source is None else self._source
 
 class LoEvents(_event_base):
     """Singleton Class for ODEV global events."""

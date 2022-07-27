@@ -6,11 +6,11 @@ Chapter 4. Listening, and Other Techniques
 
 .. topic:: Window Listeners;
 
-    Window Listeners;
+    Window Listeners; |odev| Events
 
 This chapter concludes the general introduction to Office programming by looking at several techniques that will reappear periodically in later chapters: the use of window listeners.
 
-.. _ch04sec01:
+.. _ch04_listen_win:
 
 4.1 Listening to a Window
 =========================
@@ -163,7 +163,7 @@ Rather confusingly, both these methods are called twice.
     Consequently, there's a single call to ``windowDeactivated()`` and two to ``windowClosed()``.
     Strangely, there's no window closing event trigger of ``windowClosing()``, and :py:meth:`.Lo.close` doesn't cause ``disposing()`` to fire.
 
-.. _ch04sec02:
+.. _ch04_office_manipulate:
 
 4.2 Office Manipulation
 =======================
@@ -176,9 +176,9 @@ For instance to activate a window use :py:meth:`~.gui.GUI.activate`, for min and
 :py:meth:`get_pos_size` for size and position.
 
 There are other python libraries that can handle mouse and keyboard emulation such as `PyAutoGUI <https://pypi.org/project/PyAutoGUI/>`_ and `keyboard <https://pypi.org/project/keyboard/>`_.
-|app_name_short| will leave it up to developers to implement window manipulation for their own use.
+|odev| will leave it up to developers to implement window manipulation for their own use.
 
-.. _ch04sec03:
+.. _ch04_detect_end:
 
 4.3 Detecting Office Termination
 ================================
@@ -250,10 +250,13 @@ An XTerminateListener is attached to the XDesktop instance. The program's output
 XTerminateListener_’s ``queryTermination()`` and ``notifyTermination()`` are called at the start and end of the Office closing sequence.
 As in the |exlisten|_ example, ``disposing()`` is never triggered.
 
-.. _ch04sec04:
+.. _ch04_bridge_stop:
 
 4.4 Bridge Shutdown Detection
 =============================
+
+4.4.1 Detecting Shutdown via Listener
+-------------------------------------
 
 There's another way to detect Office closure: by listening for the shutdown of the UNO bridge between the Python and Office processes.
 This can be useful if Office crashes independently of your Python code.
@@ -339,7 +342,20 @@ Office was killed while the python program was still running, so it never reache
 However, the XEventListener_ attached to the bridge did fire.
 (If you're wondering, office was killed Office by running ``loproc -k``, which stopped the soffice process. See: |dsearch|_)
 
-.. _ch04sec05:
+
+4.4.1 Detecting Shutdown via Event
+----------------------------------
+
+And finally it is possible use an |odev| event to shutdown.
+|odev| listens to bridge connection internally and raise an event when the bridge goes away.
+
+In this simplified example of |exmonitor|_ an instance of :ref:`events_lo_events_Events` is used to
+respond to bridge going away.
+
+.. include:: ../../resources/events/events_in_class_ex.rst
+
+
+.. _ch04_dispatching:
 
 4.5 Dispatching
 ===============
@@ -442,7 +458,7 @@ The code is wrapped up in :py:meth:`.Lo.dispatch_cmd`, which is called twice in 
             # endregion main
 
 
-It is also possible in |app_name_short| to hook events. These events are specific to |app_name_short| and not
+It is also possible in |odev| to hook events. These events are specific to |odev| and not
 part of LibreOffice.
 
 Here is the updated example that hooks DISPATCHING and DISPATCHED events.

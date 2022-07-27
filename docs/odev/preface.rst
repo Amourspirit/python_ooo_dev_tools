@@ -16,7 +16,7 @@ This `comment <https://stackoverflow.com/a/64517979/>`_ from Dan Dascalescu offe
     , or `completely missing <https://ask.libreoffice.org/en/question/98257/javascript-macro-reference>`_.
     The LibreOffice macro IDE is also extremely unhelpful.
 
-|app_name_bold| (|app_name_short|) offers a python framework for the community to take another step to change this.
+|app_name_bold| (|odev|) offers a python framework for the community to take another step to change this.
 The starting point is `Java LibreOffice Programming <https://fivedots.coe.psu.ac.th/~ad/jlop/>`_ which we thank
 Andrew Davison for kindly making available provided his work is acknowledged.
 

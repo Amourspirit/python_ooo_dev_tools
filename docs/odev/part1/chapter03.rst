@@ -11,10 +11,10 @@ Chapter 3. Examining
 This chapter looks at ways to examine the state of the Office application and a document.
 A document will be examined in three different ways: the first retrieves properties about the file, such as its author, keywords,
 and when it was last modified. The second and third approaches extract API details, such as what services and interfaces it uses.
-This can be done by calling functions in |app_name_short| Utility classes or by utilizing the |devtools|_ built into Office.
-See :numref:`ch03fig06`.
+This can be done by calling functions in |odev| Utility classes or by utilizing the |devtools|_ built into Office.
+See :numref:`ch03fig_lo_devolp_tools`.
 
-.. _ch03sec01:
+.. _ch03_examine_office:
 
 3.1 Examining Office
 ====================
@@ -22,7 +22,7 @@ See :numref:`ch03fig06`.
 It's sometimes necessary to examine the state of the Office application, for example to determine its version number or installation directory.
 There are two main ways of finding this information, using configuration properties and path settings.
 
-.. _ch03sec01prt01:
+.. _ch03_examine_office_cofig_prop:
 
 3.1.1 Examining Configuration Properties
 ----------------------------------------
@@ -104,7 +104,7 @@ Example output:
         Filters Dir: file:///usr/lib/libreoffice/program/filter
         ...
 
-.. _ch03sec01prt02:
+.. _ch03_examine_office_pth_set:
 
 3.1.2 Examining Path Settings
 -----------------------------
@@ -137,26 +137,26 @@ Examples of using :py:meth:`.Info.get_office_dir` and :py:meth:`.Info.get_paths`
         print(f"\nTemplates Dirs: {Info.get_paths('Template')}")
         print(f"\nGallery Dir: {Info.get_paths('Gallery')}")
 
-.. _ch03sec02:
+.. _ch03_get_set_prop:
 
 3.2 Getting and Setting Document Properties
 ===========================================
 
-Document properties is the information that's displayed when you right-click on a file icon, and select "Properties" from the menu, as in :numref:`ch03fig01`.
+Document properties is the information that's displayed when you right-click on a file icon, and select "Properties" from the menu, as in :numref:`ch03fig_prop_dialog`.
 
 .. cssclass:: screen_shot invert
 
-    .. _ch03fig01:
+    .. _ch03fig_prop_dialog:
     .. figure:: https://user-images.githubusercontent.com/4193389/179297650-0343ec1e-efb3-4625-9c81-a0589ff9a81f.png
         :alt: A Properties Dialog in Windows 10 for algs.odp
 
         :A Properties Dialog in Windows 10 for ``algs.odp``.
 
-If you select the "Details" tab, a list of properties appears like those in :numref:`ch03fig02`.
+If you select the "Details" tab, a list of properties appears like those in :numref:`ch03fig_detail_prop_lst`.
 
 .. cssclass:: screen_shot invert
 
-    .. _ch03fig02:
+    .. _ch03fig_detail_prop_lst:
     .. figure:: https://user-images.githubusercontent.com/4193389/179298066-7acaa668-7b0b-4a59-bbb8-407ba354bf8a.png
         :alt: Details Properties List for algs.odp
 
@@ -167,7 +167,7 @@ The old interfaces were XDocumentInfoSupplier_ and XDocumentInfo_, but these hav
 XDocumentPropertiesSupplier_ and XDocumentProperties_. This wouldn't really matter except that while OpenOffice retains those deprecated interfaces,
 LibreOffice has removed them.
 
-.. _ch03sec02prt01:
+.. _ch03_get_set_prop_file_prop:
 
 3.2.1 Reporting OS File Properties
 ----------------------------------
@@ -228,7 +228,7 @@ As a consequence, :py:meth:`~.info.Info.print_doc_props` consists of a long list
 
 However, user-defined file properties are accessed with an XPropertyContainer, as can be seen back in :ref:`print_doc_properties() <ch03_print_doc_properties>`.
 
-.. _ch03sec02prt02:
+.. _ch03_get_set_prop_doc_prop:
 
 3.2.2 Setting Document Properties
 =================================
@@ -260,16 +260,17 @@ This method is called at the end of |doc_props|_:
 
 After the properties are changed, the document must be saved otherwise the changes will be lost when the document is closed.
 
-The changed properties appear in the "Document Statistics" list shown in :numref:`ch03fig03`.
+The changed properties appear in the "Document Statistics" list shown in :numref:`ch03fig_doc_statistics_algs`.
 
 .. cssclass:: screen_shot invert
 
-    .. _ch03fig03:
+    .. _ch03fig_doc_statistics_algs:
     .. figure:: https://user-images.githubusercontent.com/4193389/179302791-d8373bd0-7b72-41a3-86b8-dcbd5bac6feb.png
         :alt: "Document Statistics" Properties List for "algs.odp"
 
         :"Document Statistics" Properties List for ``algs.odp``.
 
+.. _ch03_find_api_info:
 
 3.3 Examining a Document for API Information
 ============================================
@@ -295,19 +296,19 @@ Two approaches for easing matters are often suggested. One is to write code to p
 which is my approach in the next subsection.
 A second technique is to install an Office extension for browsing a document's structure.
 Since LibreOffice 7.2 there is also |devtools|_.
-:ref:`ch03sec03prt02` looks at options.
+:ref:`ch03_find_api_info_dev_tools` looks at options.
 
-.. _ch03sec03prt01:
+.. _ch03_find_api_info_print:
 
 3.3.1 Printing Programming Details about a Document
 ===================================================
 
 The messy job is hidden, the job of collecting service, interface, property, and method information about a document inside the Info and Props utility classes.
-The five main methods for retrieving details can be understood by considering their position in :numref:`ch03fig04` Service and Interface Relationship diagram.
+The five main methods for retrieving details can be understood by considering their position in :numref:`ch03fig_peek_services_interface` Service and Interface Relationship diagram.
 
 .. cssclass:: diagram invert
 
-    .. _ch03fig04:
+    .. _ch03fig_peek_services_interface:
     .. figure:: https://user-images.githubusercontent.com/4193389/179381798-efcb4f4a-a877-469f-9c6e-033e9cf7fe6b.png
         :alt: Methods to Investigate the Service and Interface Relationships and Hierarchies
 
@@ -384,7 +385,7 @@ The relevant code fragment:
             Lo.close_doc(doc)
 
 When a word file is examined this program, only three services were found: OfficeDocument_, GenericTextDocument_, and TextDocument_,
-which correspond to the text document part of the hierarchy in :ref:`Chapter 1 <ch01>`, :numref:`ch01fig09`.
+which correspond to the text document part of the hierarchy in :ref:`Chapter 1 <ch01>`, :numref:`ch01fig_office_doc_super`.
 That doesn't seem so bad until you look at the output from the other ``Info.getXXX()`` methods: the document can call 206 other available services, 69 interfaces, and manipulate 40 properties.
 
 In the code above only the methods available to XTextDocument_ are printed:
@@ -397,11 +398,11 @@ In the code above only the methods available to XTextDocument_ are printed:
             print(f"  {meth}()")
         print(f"No. methods: {i}")
 
-Nineteen methods are listed, collectively inherited from the interfaces in XTextDocument_'s inheritance hierarchy shown in :numref:`ch03fig05`.
+Nineteen methods are listed, collectively inherited from the interfaces in XTextDocument_'s inheritance hierarchy shown in :numref:`ch03fig_xtextdocument_inherit`.
 
 .. cssclass:: diagram invert
 
-    .. _ch03fig05:
+    .. _ch03fig_xtextdocument_inherit:
     .. figure:: https://user-images.githubusercontent.com/4193389/179375619-1ac1d4ea-b8f2-4ad5-899d-dd712b0d8476.png
         :alt: Inheritance Hierarchy for XTextDocument.
 
@@ -454,7 +455,7 @@ File Types Another group of utility methods let a programmer investigate a file'
     URLPattern: private:factory/swriter
 
 
-.. _ch03sec03prt02:
+.. _ch03_find_api_info_dev_tools:
 
 3.3.2 Examining a Document Using Development Tools
 ==================================================
@@ -464,11 +465,11 @@ There are several extension which do this, such as |mri_tool|_ and |apso|_.
 
 Since `LibreOffice 7.2` we have the advantage of using |devtools|_,
 that inspects objects in LibreOffice documents and shows supported UNO services, as well as available methods,
-properties and implemented interfaces. This feature as seen in :numref:`ch03fig06` also allows to explore the document structure using the Document Object Model (DOM).
+properties and implemented interfaces. This feature as seen in :numref:`ch03fig_lo_devolp_tools` also allows to explore the document structure using the Document Object Model (DOM).
 
 .. cssclass:: screen_shot invert
 
-    .. _ch03fig06:
+    .. _ch03fig_lo_devolp_tools:
     .. figure:: https://user-images.githubusercontent.com/4193389/179380392-fd7180e9-6adf-4046-9485-5b777b925471.png
         :alt: LibreOffice Develop Tools screenshot
 

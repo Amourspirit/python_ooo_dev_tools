@@ -1,0 +1,72 @@
+#!/bin/sh
+#
+# This pre-commit hook that
+#	- test the documentation has no spelling errors.
+#	- test the documentation builds correctly.
+# It can be disabled by using the "-n" option with "git commit".
+#
+# See http://git-scm.com/book/en/Customizing-Git-Git-Hooks for details.
+
+# get current working dir. expected same as project root
+CWD=$(pwd)
+
+# change directory into docs dir
+cd ./docs
+echo "Hang on a minute... checking documentation for spelling errors..."
+SPELL_LOG="spell_error.log"
+# Do a spell check on docs
+sphinx-build -E -q -w $SPELL_LOG -b spelling . _build 2> /dev/null
+if test -s $SPELL_LOG; then  # if errors.log exists and isn't empty, then there's some errors
+    echo "[error]  Blocking commit, found spelling errors in documentation:"
+	echo "See 'docs/_build/**/*.spelling' files"
+    cat $SPELL_LOG
+    rm -f $SPELL_LOG
+    exit 1
+else
+    echo "[success] Documentation spell check passed without error."
+fi
+rm -f $SPELL_LOG
+# restore current working directory
+cd $CWD
+
+
+if git rev-parse --verify HEAD >/dev/null 2>&1
+then
+	against=HEAD
+else
+	# Initial commit: diff against an empty tree object
+	against=$(git hash-object -t tree /dev/null)
+fi
+
+# If you want to allow non-ASCII filenames set this variable to true.
+allownonascii=$(git config --type=bool hooks.allownonascii)
+
+# Redirect output to stderr.
+exec 1>&2
+
+# Cross platform projects tend to avoid non-ASCII filenames; prevent
+# them from being added to the repository. We exploit the fact that the
+# printable range starts at the space character and ends with tilde.
+if [ "$allownonascii" != "true" ] &&
+	# Note that the use of brackets around a tr range is ok here, (it's
+	# even required, for portability to Solaris 10's /usr/bin/tr), since
+	# the square bracket bytes happen to fall in the designated range.
+	test $(git diff --cached --name-only --diff-filter=A -z $against |
+	  LC_ALL=C tr -d '[ -~]\0' | wc -c) != 0
+then
+	cat <<\EOF
+Error: Attempt to add a non-ASCII file name.
+
+This can cause problems if you want to work with people on other platforms.
+
+To be portable it is advisable to rename the file.
+
+If you know what you are doing you can disable this check using:
+
+  git config hooks.allownonascii true
+EOF
+	exit 1
+fi
+
+# If there are whitespace errors, print the offending file names and fail.
+exec git diff-index --check --cached $against --

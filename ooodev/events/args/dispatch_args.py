@@ -24,7 +24,7 @@ class AbstractDispacthArgs(AbstractEvent):
 
 
 class DispatchArgs(AbstractDispacthArgs):
-    __slots__ = ("source", "_event_name", "event_data", "cmd")
+    __slots__ = ("source", "_event_name", "event_data", "cmd", "_event_source")
 
     @staticmethod
     def from_args(args: DispatchArgs) -> DispatchArgs:
@@ -39,5 +39,6 @@ class DispatchArgs(AbstractDispacthArgs):
         """
         eargs = DispatchArgs(source=args.source, cmd=args.cmd)
         eargs._event_name = args.event_name
+        eargs._event_source = args.event_source
         eargs.event_data = args.event_data
         return eargs
