@@ -159,7 +159,7 @@ Rather confusingly, both these methods are called twice.
 
 .. note::
 
-    If :py:meth:`.Lo.close_doc` were to be called, a single de-activated event is fired, but two closed events are issued.
+    If :py:meth:`.Lo.close_doc` were to be called, a single deactivated event is fired, but two closed events are issued.
     Consequently, there's a single call to ``windowDeactivated()`` and two to ``windowClosed()``.
     Strangely, there's no window closing event trigger of ``windowClosing()``, and :py:meth:`.Lo.close` doesn't cause ``disposing()`` to fire.
 

@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 class XSelectionChangeAdapter(unohelper.Base, XSelectionChangeListener):
     """
-    makes it possible to receive an event when the current selection changes.
+    Makes it possible to receive an event when the current selection changes.
 
     This class is meant a parent class.
     """
@@ -24,7 +24,7 @@ class XSelectionChangeAdapter(unohelper.Base, XSelectionChangeListener):
         """
         is called when the selection changes.
 
-        You can get the new selection via XSelectionSupplier from com.sun.star.lang.EventObject.Source.
+        You can get the new selection via XSelectionSupplier from ``com.sun.star.lang.EventObject.Source``.
         """
         pass
 
@@ -34,7 +34,7 @@ class XSelectionChangeAdapter(unohelper.Base, XSelectionChangeListener):
 
         All listeners and all other objects, which reference the broadcaster
         should release the reference to the source. No method should be invoked
-        anymore on this object ( including XComponent.removeEventListener() ).
+        anymore on this object ( including ``XComponent.removeEventListener()`` ).
 
         This method is called for every listener registration of derived listener
         interfaced, not only for registrations at XComponent.

@@ -1796,8 +1796,8 @@ class Lo(metaclass=StaticProperty):
             sc (XScriptContext): Script context
 
         Raises:
-            TypeError: If sc is None
-            Exception: if unable to get Component Context from sc
+            TypeError: If ``sc`` is None
+            Exception: if unable to get Component Context from ``sc``
             Exception: If unable to get service manager
             Exception: If unable to access desktop
             Exception: If unable to access document

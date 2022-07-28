@@ -51,7 +51,7 @@ For other options try:
 Windows
 ^^^^^^^
 
-Windows is a little tricker. Creating a link to ``uno.py`` and importing it will not work as it does in Linux.
+Windows is a little trickery. Creating a link to ``uno.py`` and importing it will not work as it does in Linux.
 This is due to the how LibreOffice implements the python environment on Windows.
 
 The way |odev| works on Windows is a slight hack to the virtual environment.

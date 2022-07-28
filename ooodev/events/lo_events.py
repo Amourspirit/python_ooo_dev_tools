@@ -15,7 +15,7 @@ from . import event_singleton
 
 class EventArg(NamedTuple):
     """
-    Event Arg for passing event to :py:func:`~.event_ctx`
+    Event Args for passing event to :py:func:`~.event_ctx`
     """
 
     name: str

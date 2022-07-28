@@ -86,3 +86,16 @@ Image Classes
                         :alt: Lo.qi autocomplete demo image
 
                         :Lo.qi autocomplete demo
+
+
+Spelling
+    In some case accepted spelling of words need to added to a single rst file.
+    This can be done using spelling:word-list:: directive. as shown below. See src/conn/index.rst as an example
+
+    .. spelling:word-list::
+        conn
+
+Abbreviations
+    Abbreviations are handled by the :abbreviation: role.
+
+    :abbreviation:`eg:`

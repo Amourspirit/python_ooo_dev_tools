@@ -992,7 +992,7 @@ class GUI:
         Sets document custom zoom.
 
         Args:
-            value (int): The amount to zoom. Eg: 160 zooms 160%
+            value (int): The amount to zoom. :abbreviation:`eg:` 160 zooms 160%
         """
         ...
 
@@ -1003,8 +1003,8 @@ class GUI:
         Sets document custom zoom.
 
         Args:
-            value (int): The amount to zoom. Eg: 160 zooms 160%
-            view (ZoomEnum): Type of zoom. If 'view' is not 'ZoomEnum.BY_VALUE' then 'value' is ignored. Defaults to ZoomEnum.BY_VALUE.
+            value (int): The amount to zoom. :abbreviation:`eg:` 160 zooms 160%
+            view (ZoomEnum): Type of zoom. If ``view`` is not ``ZoomEnum.BY_VALUE`` then ``value`` is ignored. Defaults to ``ZoomEnum.BY_VALUE``.
         """
         ...
 
@@ -1014,8 +1014,8 @@ class GUI:
         Sets document custom zoom.
 
         Args:
-            value (int): The amount to zoom. Eg: 160 zooms 160%
-            view (ZoomEnum): Type of zoom. If 'view' is not 'ZoomEnum.BY_VALUE' then 'value' is ignored. Defaults to ZoomEnum.BY_VALUE.
+            value (int): The amount to zoom. :abbreviation:`eg:` 160 zooms 160%
+            view (ZoomEnum): Type of zoom. If ``view`` is not ``ZoomEnum.BY_VALUE`` then ``value`` is ignored. Defaults to ``ZoomEnum.BY_VALUE``.
         """
         # https://wiki.openoffice.org/wiki/Documentation/DevGuide/Drawings/Zooming
         p_dic = {"Zoom.Value": 0, "Zoom.ValueSet": 28703, "Zoom.Type": int(view)}
