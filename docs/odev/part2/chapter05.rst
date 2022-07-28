@@ -115,6 +115,11 @@ which allows it to move in terms of lines, pages, or screens.
 A cursor's location is specified using a text range, which can be the currently selected text, or a position in the document.
 A text position is a text range that begins and ends at the same point.
 
+5.2 Extracting Text from a Document
+===================================
+
+
+
 Work in progress ...
 
 .. |txt_java| replace:: TextDocuments.java
