@@ -8,3 +8,4 @@ Python LibreOffice Programming
 
     *
     part1/index
+    part2/index
