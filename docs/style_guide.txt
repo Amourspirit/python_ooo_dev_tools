@@ -9,7 +9,7 @@ Book Naming conventions:
                 ch followed by two digits folowed by _ followed by section short name.
                 rst example:
                     .. _ch03_examine_office:
-            
+
                 sub, sub section:
                     sub section followed by _ followed by sub section short name
                     rst example:
@@ -24,7 +24,7 @@ Book Naming conventions:
                 chapter name followed by tbl followed by _ followed by short name
                 rst example:
                     .. _ch02tbl_some_doc_prop:
-            
+
             Note:
                 To reference a chapter or section use ref
                     eg: :ref:`ch01`
@@ -58,7 +58,7 @@ Image Classes
         Screen shots typically have class screen_shot, invert
             eg:
                 .. cssclass:: screen_shot invert
-    
+
                     .. _ch03fig_detail_prop_lst:
                     .. figure:: https://user-images.githubusercontent.com/4193389/179298066-7acaa668-7b0b-4a59-bbb8-407ba354bf8a.png
                         :alt: Details Properties List for algs.odp
@@ -74,7 +74,7 @@ Image Classes
                         :alt: Methods to Investigate the Service and Interface Relationships and Hierarchies
 
                         :Methods to Investigate the Service and Interface Relationships and Hierarchies.
-        
+
         Animated gif typically have class a_gif
         Note that animated gif does not invert class.
         animated gif is not to be darkened using css styles
@@ -86,3 +86,27 @@ Image Classes
                         :alt: Lo.qi autocomplete demo image
 
                         :Lo.qi autocomplete demo
+
+
+Spelling
+    In some case accepted spelling of words need to added to a single rst file.
+    This can be done using spelling:word-list:: directive. as shown below. See src/conn/index.rst as an example
+
+    .. spelling:word-list::
+        conn
+
+Abbreviations
+    Abbreviations are handled by the :abbreviation: role.
+
+    :abbreviation:`eg:`
+
+TODO
+    Docs that still need work such linking to chapter not yet created are to use the following directive.
+
+        .. todo::
+
+            | Chapte 5, Add link to chapters 7
+            | Chapte 5, Add link to chapters 8
+
+    When 'todo_include_todos = True' is set in conf.py the main page will list all todo's for across a documents.
+    Also each document that contains a todo will disply it on its doc page.

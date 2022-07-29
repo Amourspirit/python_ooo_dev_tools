@@ -21,6 +21,7 @@ class BreakContext(object):
 
     class Break(Exception):
         """Break out of the with statement"""
+
         ...
         # https://stackoverflow.com/questions/11195140/break-or-exit-out-of-with-statement
 

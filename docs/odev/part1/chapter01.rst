@@ -359,7 +359,7 @@ is shown in :numref:`ch01fig_inherit_diagram_office_doc`.
 
         :Part of the Inheritance Diagram for the OfficeDocument Service.
 
-Each box in the diagram can be clicked upon to jump to the documentation for that subclass or superclass.
+Each box in the diagram can be clicked upon to jump to the documentation for that sub-class or super-class.
 
 .. _ch01_two_inheritance_hierarchies:
 
@@ -376,7 +376,7 @@ Services and interfaces both use inheritance, as shown by the UML diagram in :nu
 
         :Service and Interface Relationships and Hierarchies.
 
-For example, OfficeDocument is the superclass service of all other document formats, as illustrated in :numref:`ch01fig_office_doc_super`.
+For example, OfficeDocument is the super-class service of all other document formats, as illustrated in :numref:`ch01fig_office_doc_super`.
 
 .. cssclass:: diagram invert
 
@@ -384,7 +384,7 @@ For example, OfficeDocument is the superclass service of all other document form
     .. figure:: https://user-images.githubusercontent.com/4193389/177429219-5cb80ff9-a272-4c9e-a0f9-b8548771384d.png
         :alt: Diagram of Office Document as a Super class Service.
 
-        : ``OfficeDocument`` as a Superclass Service.
+        : ``OfficeDocument`` as a Super-class Service.
 
 Part of this hierarchy can also be seen in :numref:`ch01fig_inherit_diagram_office_doc`.
 
@@ -397,7 +397,7 @@ For instance, the `XModel`_ interface inherits XComponent and XInterface, as in 
     .. figure:: https://user-images.githubusercontent.com/4193389/177429428-e022d6a0-3302-4f69-bb1d-44379a6aa146.png
         :alt: Diagram of The Super classes of XModel
 
-        :The Superclasses of XModel.
+        :The Super-classes of XModel.
 
 
 The LibreOffice documentation graphically displays these hierarchies (e.g. see :numref:`ch01fig_inherit_diagram_office_doc`),
@@ -433,8 +433,8 @@ Via `XModel.getCurrentController() <https://api.libreoffice.org/docs/idl/ref/int
 A controller manages the visual presentation of a document.
 For instance, the Office GUI interacts with the controller to position the cursor in a document,
 to control which page is displayed, and to highlight selections.
-The `XController`_ interface belongs to the `Controller`_ service, which is a superclass for viewing documents;
-subclasses include `TextDocumentView`_, `DrawingDocumentDrawView`_, and `PresentationView`_.
+The `XController`_ interface belongs to the `Controller`_ service, which is a super-class for viewing documents;
+sub-classes include `TextDocumentView`_, `DrawingDocumentDrawView`_, and `PresentationView`_.
 
 From `XController`_, it's possible to reach `XFrame`_,
 which contains information about the document's display window.

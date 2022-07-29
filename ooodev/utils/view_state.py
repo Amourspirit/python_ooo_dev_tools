@@ -304,7 +304,7 @@ class ViewState:
         
         String representation can also be used to create a new instance of this class.
         
-        same as str(instance)
+        same as ``str(instance)``
         """
         lst = [
             self.cursor_column,

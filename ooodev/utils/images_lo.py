@@ -193,7 +193,7 @@ class ImagesLo:
         """
         Calculate a new size for the image in fnm that is no bigger than
         maxWidth x maxHeight mm's
-        This involves a rescaling of the image so it is not distorted.
+        This involves a re-scaling of the image so it is not distorted.
         The new size is returned in mm units
         """
         im_size = cls.get_size_100mm(fnm)  # in 1/100 mm units

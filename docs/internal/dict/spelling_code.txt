@@ -4,9 +4,9 @@ Calc
 CellRangeAddress
 Config
 ctx
-Dev
 datetime
 deiconified
+Dev
 enum
 Enum
 EventObject
@@ -27,6 +27,7 @@ iterable
 LineShape
 Lingu
 localhost
+luminance
 maxHeight
 maxWidth
 Messagebox
