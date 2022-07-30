@@ -621,6 +621,113 @@ At the end of the loop, ``goRight()`` tries to move the cursor one character to 
 If ``goRight()`` succeeds then the cursor is shifted one position to the first character of the next line. When the loop repeats, this line will be selected.
 If ``goRight()`` fails, then there are no more characters to be read from the document, and the loop finishes.
 
+5.5 Creating a Document
+=======================
+
+All the examples so far have involved the manipulation of an existing document.
+The |hello_save|_ example creates a new text document, containing two short paragraphs, and saves it as "hello.odt".
+The main() function is:
+
+
+.. tabs::
+
+    .. code-tab:: python
+
+        def main() -> int:
+
+            with Lo.Loader(Lo.ConnectSocket()) as loader:
+
+                doc = Write.create_doc(loader)
+
+                GUI.set_visible(is_visible=True, odoc=doc)
+
+                cursor = Write.get_cursor(doc)
+                cursor.gotoEnd(False)  # make sure at end of doc before appending
+                Write.append_para(cursor=cursor, text="Hello LibreOffice.\n")
+                Lo.delay(1_000)  # Slow things down so user can see
+
+                Write.append_para(cursor=cursor, text="How are you?")
+                Lo.delay(2_000)
+                Write.save_doc(text_doc=doc, fnm="hello.odt")
+                Lo.close_doc(doc)
+
+            return 0
+
+:py:meth:`.Write.create_doc` calls :py:meth:`.Lo.create_doc` with the text document service name (the ``Lo.DocTypeStr.WRITER`` enum value is ``swriter``).
+Office creates a TextDocument_ service with an XComponent_ interface, which is cast to the XTextDocument_ interface, and returned:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # simplified version of Write.create_doc
+        @staticmethod
+        def create_doc(loader: XComponentLoader) -> XTextDocument:
+            doc = Lo.qi(
+                XTextDocument,
+                Lo.create_doc(doc_type=Lo.DocTypeStr.WRITER, loader=loader),
+                True,
+            )
+            return doc
+
+Text documents are saved using :py:meth:`.Write.save_doc` that calls :py:meth:`.Lo.save_doc` which was described in :ref:`ch02_save_doc`.
+``save_doc()`` examines the filename's extension to determine its type.
+The known extensions include ``doc``, ``docx``, ``rtf``, ``odt``, ``pdf``, and ``txt``.
+
+Back in |hello_save|_, a cursor is needed before text can be added; one is created by calling :py:meth:`.Write.get_cursor`.
+
+The call to ``XTextCursor.gotoEnd()`` isn't really necessary because the new cursor is pointing to an empty document so is already at its end.
+It's included to emphasize the assumption by :py:meth:`.Write.append_para` (and other ``Write.appendXXX()`` functions) that the cursor is
+positioned at the end of the document before new text is added.
+
+:py:meth:`.Write.append_para` calls :py:meth:`.Write.append` methods:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # simplified version of Write.append_para
+        @classmethod
+        def append_para(cls, cursor: XTextCursor, text: str) -> None:
+            cls.append(cursor=cursor, text=text)
+            cls.append(cursor=cursor, ctl_char=Write.ControlCharacter.PARAGRAPH_BREAK)
+
+The :py:meth:`~.Write.append` name is utilized several times in Write via it overloads:
+
+    - ``append(cursor: XTextCursor, text: str)``
+    - ``append(cursor: XTextCursor, ctl_char: ControlCharacter)``
+    - ``append(cursor: XTextCursor, text_content: com.sun.star.text.XTextContent)``
+
+``append(cursor: XTextCursor, text: str)`` appends text using ``XTextCursor.setString()`` to add the user-supplied string.
+
+``append(cursor: XTextCursor, ctl_char: ControlCharacter)`` uses ``XTextCursor.insertControlCharacter()``.
+After the addition of the text or character, the cursor is moved to the end of the document.
+
+``append(cursor: XTextCursor, text_content: com.sun.star.text.XTextContent)`` appends an object
+that is a sub-class of XTextContent_
+
+``ControlCharacter`` is an enumeration of API ControlCharacter_.
+Thanks to ooouno_ library that among other things automatically creates enums for LibreOffice Constants.
+
+``Write.ControlCharacter`` is an alias for convenience.
+
+.. tabs::
+
+    .. code-tab:: python
+
+        from ooo.dyn.text.control_character import ControlCharacterEnum
+
+        class Write(Selection):
+            ControlCharacter = ControlCharacterEnum
+
+:py:meth:`.Selection.get_position` (inherited by Write) gets the current position if the cursor from the start of the document.
+This method is not full optimized and may not be robust on large files.
+
+Office deals with this size issue by using XTextRange_ instances, which encapsulate text ranges and
+positions. :py:meth:`.Selection.get_position` returns an integer because its easier to understand when you're first learning to program with Office.
+It's better style to use and compare XTextRange_ objects rather than integer positions, an approach demonstrated in the next section.
+
+
 Work in progress ...
 
 .. |txt_java| replace:: TextDocuments.java
@@ -635,8 +742,13 @@ Work in progress ...
 .. |walk_text| replace:: Walk Text
 .. _walk_text: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_walk_text
 
+.. |hello_save| replace:: Hello Save
+.. _hello_save: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_hello_save
+
+.. _ControlCharacter: https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1text_1_1ControlCharacter.html
 .. _GenericTextDocument: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1GenericTextDocument.html
 .. _OfficeDocument: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1document_1_1OfficeDocument.html
+.. _TextDocument: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1TextDocument.html
 .. _TextDocument: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1TextDocument.html
 .. _XComponent: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1lang_1_1XComponent.html
 .. _XLineCursor: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1view_1_1XLineCursor.html
@@ -646,8 +758,10 @@ Work in progress ...
 .. _XSimpleText: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XSimpleText.html
 .. _XStyleFamiliesSupplier: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1style_1_1XStyleFamiliesSupplier.html
 .. _XText: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XText.html
+.. _XTextContent: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextContent.html
 .. _XTextCursor: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextCursor.html
 .. _XTextDocument: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextDocument.html
+.. _XTextRange: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextRange.html
 .. _XTextRange: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextRange.html
 .. _XTextViewCursor: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextViewCursor.html
 .. _XWordCursor: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XWordCursor.html

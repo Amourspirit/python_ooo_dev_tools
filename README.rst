@@ -114,7 +114,7 @@ LibreOffice API Typing's
  * `LibreOffice UNO Typings <https://github.com/Amourspirit/python-types-uno-script>`_
  * `LibreOffice Developer Search <https://github.com/Amourspirit/python_lo_dev_search>`_
  * `LibreOffice Python UNO Examples <https://github.com/Amourspirit/python-ooouno-ex>`_
- * `OOOUNO <https://github.com/Amourspirit/python-ooouno>`_
+ * `OOOUNO Project <https://github.com/Amourspirit/python-ooouno>`_
  * `OOO UNO TEMPLATE <https://github.com/Amourspirit/ooo_uno_tmpl>`_
 
 .. _LibreOffice: http://www.libreoffice.org/
