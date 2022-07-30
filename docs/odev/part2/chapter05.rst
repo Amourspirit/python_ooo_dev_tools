@@ -498,6 +498,128 @@ This only means that XTextViewCursor supports the same character-based movement 
 
         :The ``XTextViewCursor`` Inheritance Hierarchy.
 
+5.4 Creating Cursors
+====================
+
+An XTextCursor_ is created by calling :py:meth:`.Write.get_cursor`, which can then be converted into a paragraph, sentence, or word cursor by using
+:py:meth:`.Lo.qi`. For example, the :py:class:`~.selection.Selection` utility class defines :py:meth:`~.selection.Selection.get_paragraph_cursor` as:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        @classmethod
+        def get_paragraph_cursor(cls, cursor_obj: DocOrCursor) -> XParagraphCursor:
+            try:
+                if Lo.qi(XTextDocument, cursor_obj) is None:
+                    cursor = cursor_obj
+                else:
+                    cursor = cls.get_cursor(cursor_obj)
+                para_cursor = Lo.qi(XParagraphCursor, cursor, True)
+                return para_cursor
+            except Exception as e:
+                raise ParagraphCursorError(str(e)) from e
+
+Obtaining the view cursor is a little more tricky since it's only accessible via the document's controller.
+
+As described in :ref:`ch01_fcm_relationship`, the controller is reached via the document's model, as shown in the first three lines of
+:py:meth:`.Selection.get_view_cursor`:
+
+.. tabs::
+
+    .. code-tab:: python
+
+            @staticmethod
+            def get_view_cursor(text_doc: XTextDocument) -> XTextViewCursor:
+                try:
+                    model = Lo.qi(XModel, text_doc, True)
+                    xcontroller = model.getCurrentController()
+                    supplier = Lo.qi(XTextViewCursorSupplier, xcontroller, True)
+                    vc = supplier.getViewCursor()
+                    if vc is None:
+                        raise Exception("Supplier return null view cursor")
+                    return vc
+                except Exception as e:
+                    raise ViewCursorError(str(e)) from e
+
+The view cursor isn't directly accessible from the controller; a supplier must be queried,
+even though there's only one view cursor per document.
+
+5.4.1 Counting Words
+--------------------
+
+``count_words()`` in |walk_text|_ shows how to iterate over the document using a word cursor:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        def count_words(doc: XTextDocument) -> int:
+            word_cursor = Write.get_word_cursor(doc)
+            word_cursor.gotoStart(False)  # go to start of text
+
+            word_count = 0
+            while 1:
+                word_cursor.gotoEndOfWord(True)
+                curr_word = word_cursor.getString()
+                if len(curr_word) > 0:
+                    word_count += 1
+                if word_cursor.gotoNextWord(False) is False:
+                    break
+            return word_count
+
+This uses the same kind of while loop as ``show_paragraphs()`` except that the XWordCursor_ methods
+``gotoEndOfWord()`` and ``gotoNextWord()`` control the iteration.
+Also, there's no need for an XTextViewCursor_ instance since the selected words aren't shown on the screen.
+
+5.4.2 Displaying Lines
+----------------------
+
+``show_lines()`` in |walk_text|_ iterates over the document highlighting a line at a time.
+Don't confuse this with sentence selection because a sentence may consist of several lines on the screen.
+A sentence is part of the text's organization (:abbreviation:`eg:` in terms of words, sentences, and paragraphs)
+while a line is part of the document view (:abbreviation:`eg:` line, page, screen).
+This means that XLineCursor_ is a view cursor, which is obtained by converting XTextViewCursor_ with :py:meth:`.Lo.qi`:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        line_cursor = Lo.qi(XLineCursor, tvc, True)
+        tvc = Write.get_view_cursor(doc)
+
+The line cursor has limited functionality compared to the model cursors (paragraph, sentence, word).
+In particular, there's no "next' function for moving to the next line (unlike ``gotoNextParagraph()`` or ``gotoNextWord()``).
+The screen cursor also lacks this ability, but the page cursor offers ``jumpToNextPage()``.
+
+One way of getting around the absence of a 'next' operation is shown in ``show_lines()``:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        def show_lines(doc: XTextDocument) -> None:
+            tvc = Write.get_view_cursor(doc)
+            tvc.gotoStart(False)  # go to start of text
+
+            line_cursor = Lo.qi(XLineCursor, tvc, True)
+            have_text = True
+            while have_text is True:
+                line_cursor.gotoStartOfLine(False)
+                line_cursor.gotoEndOfLine(True)
+                print(f"L<{tvc.getString()}>")
+                Lo.delay(500)  # delay half a second
+                tvc.collapseToEnd()
+                have_text = tvc.goRight(1, True)
+
+The view cursor is manipulated using the XTextViewCursor_ object and the XLineCursor_ line cursor.
+This is possible since the two references point to the same on-screen cursor. Either one can move it around the display.
+
+Inside the loop, ``XLineCursor's`` ``gotoStartOfLine()`` and ``gotoEndOfLine()`` highlight a single line.
+Then the XTextViewCursor_ instance deselects the line, by moving the cursor to the end of the selection with ``collapseToEnd()``.
+At the end of the loop, ``goRight()`` tries to move the cursor one character to the right.
+If ``goRight()`` succeeds then the cursor is shifted one position to the first character of the next line. When the loop repeats, this line will be selected.
+If ``goRight()`` fails, then there are no more characters to be read from the document, and the loop finishes.
 
 Work in progress ...
 
@@ -517,6 +639,7 @@ Work in progress ...
 .. _OfficeDocument: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1document_1_1OfficeDocument.html
 .. _TextDocument: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1TextDocument.html
 .. _XComponent: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1lang_1_1XComponent.html
+.. _XLineCursor: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1view_1_1XLineCursor.html
 .. _XParagraphCursor: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XParagraphCursor.html
 .. _XSentenceCursor: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XSentenceCursor.html
 .. _XServiceInfo: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1lang_1_1XServiceInfo.html
