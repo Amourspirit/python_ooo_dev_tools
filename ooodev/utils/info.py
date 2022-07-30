@@ -795,7 +795,7 @@ class Info(metaclass=StaticProperty):
 
         Args:
             obj (object): office document
-            doc_type (mLo.Lo.Service): doc type
+            doc_type (Lo.Service): doc type
 
         Returns:
             bool: True if obj matches; Otherwise, False

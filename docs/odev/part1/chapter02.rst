@@ -210,7 +210,7 @@ Querying for the interface has the huge advantage of providing typing :numref:`c
         .. figure:: https://user-images.githubusercontent.com/4193389/178285134-70b9aa56-5eaa-43c8-aa59-c19f2b495336.gif
             :alt: Lo.qi autocomplete demo image
 
-            :Lo.qi autocomplete demo
+            : ``Lo.qi`` autocomplete demo
 
 
 The use of generics makes :py:meth:`.Lo.create_instance_mcf` useful for creating any type of interface object.
@@ -470,7 +470,7 @@ For quick access in your scripts use :py:class:`.Lo.Service` where applicable.
 
 
 We encountered these service names back in :ref:`Chapter 1 <ch01>`, :numref:`ch01fig_office_doc_super` – they're
-subclasses of the OfficeDocument service.
+sub-classes of the ``OfficeDocument`` service.
 
 
 A third problem is incompleteness; :py:meth:`~.Lo.save_doc` via :py:meth:`~.Lo.ext_to_format` mappings only implements a small subset

@@ -85,7 +85,7 @@ The way ``Events`` enables class instance to be sent to a method is by way of ``
 
     .. include:: ../../../resources/events/events_in_class_ex.rst
 
-.. include:: ../../../resources/events/event_interal_note.rst
+.. include:: ../../../resources/events/event_internal_note.rst
 
 .. seealso::
 

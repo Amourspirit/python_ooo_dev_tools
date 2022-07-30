@@ -184,6 +184,8 @@ rst_prolog_lst.append(".. |app_name_bold| replace:: **OOO Development Tools**")
 rst_prolog_lst.append("")
 rst_prolog_lst.append(".. |odev| replace:: ODEV")
 rst_prolog_lst.append("")
+rst_prolog_lst.append(".. _ooouno: https://pypi.org/project/ooouno/")
+rst_prolog_lst.append("")
 rst_prolog_lst.append(f".. |app_ver| replace:: {__version__}")
 
 

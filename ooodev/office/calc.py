@@ -307,10 +307,9 @@ class Calc:
         _Events().trigger(CalcNamedEvent.DOC_CREATING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
-        doc = mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.CALC, loader=loader)
-        ss_doc = mLo.Lo.qi(XSpreadsheetDocument, doc, raise_err=True)
+        doc = mLo.Lo.qi(XSpreadsheetDocument, mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.CALC, loader=loader), True)
         _Events().trigger(CalcNamedEvent.DOC_CREATED, EventArgs.from_args(cargs))
-        return ss_doc
+        return doc
 
         # XSpreadsheetDocument does not inherit XComponent!
 
@@ -2321,9 +2320,9 @@ class Calc:
         Args:
             values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
             sheet (XSpreadsheet): Spreadsheet
-            col_start (int): Zero-base Start Colum
+            col_start (int): Zero-base Start Column
             row_start (int): Zero-base Start Row
-            col_end (int): Zero-base End Colum
+            col_end (int): Zero-base End Column
             row_end (int): Zero-base End Row
         """
         ...
@@ -2340,9 +2339,9 @@ class Calc:
             name (str): Range name such as 'A1:D4' or cell name such as 'B4'
             doc (XSpreadsheetDocument): Spreadsheet Document
             addr (CellAddress): Address to insert data.
-            col_start (int): Zero-base Start Colum
+            col_start (int): Zero-base Start Column
             row_start (int): Zero-base Start Row
-            col_end (int): Zero-base End Colum
+            col_end (int): Zero-base End Column
             row_end (int): Zero-base End Row
         """
         ordered_keys = (1, 2, 3, 4, 5, 6)

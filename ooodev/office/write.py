@@ -308,7 +308,11 @@ class Write(mSel.Selection):
         _Events().trigger(WriteNamedEvent.DOC_CREATING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
-        doc = mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.WRITER, loader=cargs.event_data["loader"])
+        doc = mLo.Lo.qi(
+            XTextDocument,
+            mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.WRITER, loader=cargs.event_data["loader"]),
+            True,
+        )
         _Events().trigger(WriteNamedEvent.DOC_CREATED, EventArgs.from_args(cargs))
         return doc
 
@@ -352,13 +356,16 @@ class Write(mSel.Selection):
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
 
-        doc = mLo.Lo.create_doc_from_template(template_path=template_path, loader=cargs.event_data["loader"])
-        xdoc = mLo.Lo.qi(XTextDocument, doc, raise_err=True)
+        doc = mLo.Lo.qi(
+            XTextDocument,
+            mLo.Lo.create_doc_from_template(template_path=template_path, loader=cargs.event_data["loader"]),
+            True,
+        )
 
         eargs = EventArgs.from_args(cargs)
         _Events().trigger(WriteNamedEvent.DOC_CREATED, eargs)
         _Events().trigger(WriteNamedEvent.DOC_TMPL_CREATED, eargs)
-        return xdoc
+        return doc
 
     @staticmethod
     def close_doc(text_doc: XTextDocument) -> bool:
@@ -678,8 +685,8 @@ class Write(mSel.Selection):
         cursor.gotoEnd(False)
 
     @overload
-    @staticmethod
-    def append(cursor: XTextCursor, text: str) -> None:
+    @classmethod
+    def append(cls, cursor: XTextCursor, text: str) -> None:
         """
         Appends text to text cursor
 
@@ -690,8 +697,8 @@ class Write(mSel.Selection):
         ...
 
     @overload
-    @staticmethod
-    def append(cursor: XTextCursor, ctl_char: ControlCharacter) -> None:
+    @classmethod
+    def append(cls, cursor: XTextCursor, ctl_char: ControlCharacter) -> None:
         """
         Appents a control character (like a paragraph break or a hard space) into the text.
 
@@ -702,8 +709,8 @@ class Write(mSel.Selection):
         ...
 
     @overload
-    @staticmethod
-    def append(cursor: XTextCursor, text_content: XTextContent) -> None:
+    @classmethod
+    def append(cls, cursor: XTextCursor, text_content: XTextContent) -> None:
         """
         Appends a content, such as a text table, text frame or text field.
 
