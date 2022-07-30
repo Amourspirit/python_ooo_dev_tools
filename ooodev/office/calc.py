@@ -307,10 +307,9 @@ class Calc:
         _Events().trigger(CalcNamedEvent.DOC_CREATING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
-        doc = mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.CALC, loader=loader)
-        ss_doc = mLo.Lo.qi(XSpreadsheetDocument, doc, raise_err=True)
+        doc = mLo.Lo.qi(XSpreadsheetDocument, mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.CALC, loader=loader), True)
         _Events().trigger(CalcNamedEvent.DOC_CREATED, EventArgs.from_args(cargs))
-        return ss_doc
+        return doc
 
         # XSpreadsheetDocument does not inherit XComponent!
 
