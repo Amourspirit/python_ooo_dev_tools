@@ -354,6 +354,151 @@ A Problem with Write.get_all_text()
 For that reason, it's better to iterate over large documents returning a paragraph of text at a time.
 These iteration techniques are described next.
 
+5.3 Cursor Iteration
+====================
+
+In the |walk_text|_ example it uses paragraph and word cursors
+(:abbreviation:`eg:` the XParagraphCursor_ and XWordCursor_ interfaces in :numref:`ch05fig_cursor_types`).
+It also employs the view cursor, an XTextViewCursor_ instance, to control the Writer application's visible cursor.
+
+.. tabs::
+
+    .. code-tab:: python
+
+        def main() -> int:
+            parser = argparse.ArgumentParser(description="main")
+            args_add(parser=parser)
+            args = parser.parse_args()
+
+            with BreakContext(Lo.Loader(Lo.ConnectSocket())) as loader:
+
+                fnm = cast(str, args.file_path)
+
+                try:
+                    doc = Write.open_doc(fnm=fnm, loader=loader)
+                except Exception:
+                    print(f"Could not open '{fnm}'")
+                    # office will close and with statement is exited
+                    raise BreakContext.Break
+
+                try:
+                    GUI.set_visible(is_visible=True, odoc=doc)
+
+                    show_paragraphs(doc)
+                    print(f"Word count: {count_words(doc)}")
+                    show_lines(doc)
+                finally:
+                    Lo.close_doc(doc)
+
+            return 0
+
+``main()`` calls :py:meth:`.Write.open_doc` to return the opened document as an XTextDocument_ instance.
+If you recall, the previous |extract_ex|_ example started with an XComponent_ instance by calling
+:py:meth:`.Lo.open_doc`, and then converted it to XTextDocument_. :py:meth:`.Write.open_doc` returns the XTextDocument_ reference in one go.
+
+``show_paragraphs()`` moves the visible on-screen cursor through the document, highlighting a paragraph at a time.
+This requires two cursors – an instance of XTextViewCursor_ and a separate XParagraphCursor_.
+The paragraph cursor is capable of moving through the document paragraph-by-paragraph, but it's a model cursor, so invisible to the user
+looking at the document on-screen. ``show_paragraphs()`` extracts the start and end positions of each paragraph and uses them to move the view cursor, which is visible.
+
+The code for ``show_paragraphs()``:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        def show_paragraphs(doc: XTextDocument) -> None:
+            tvc = Write.get_view_cursor(doc)
+            para_cursor = Write.get_paragraph_cursor(doc)
+            para_cursor.gotoStart(False)  # go to start test; no selection
+
+            while 1:
+                para_cursor.gotoEndOfParagraph(True)  # select all of paragraph
+                curr_para = para_cursor.getString()
+                if len(curr_para) > 0:
+                    tvc.gotoRange(para_cursor.getStart(), False)
+                    tvc.gotoRange(para_cursor.getEnd(), True)
+
+                    print(f"P<{curr_para}>")
+                    Lo.delay(500)  # delay half a second
+
+                if para_cursor.gotoNextParagraph(False) is False:
+                    break
+
+The code utilizes two Write utility functions (:py:meth:`.Write.get_view_cursor` and :py:meth:`.Write.get_paragraph_cursor`) to create the cursors.
+The subsequent while loop is a common coding pattern for iterating over a text document:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        para_cursor.gotoStart(False)  # go to start test; no selection
+
+        while 1:
+            para_cursor.gotoEndOfParagraph(True)  # select one paragraph
+            curr_para = para_cursor.getString()
+            # do something with selected text range.
+
+            if para_cursor.gotoNextParagraph(False) is False:
+                break
+
+``gotoNextParagraph()`` tries to move the cursor to the beginning of the next paragraph.
+
+If the moves fails (i.e. when the cursor has reached the end of the document), the function returns False, and the loop terminates.
+
+The call to ``gotoEndOfParagraph()`` at the beginning of the loop moves the cursor to the end of the paragraph and selects its text.
+Since the cursor was originally at the start of the paragraph, the selection will span that paragraph.
+
+XParagraphCursor_ and the sentence and word cursors inherit XTextCursor_, as shown in :numref:`ch05fig_model_cursor_inherit`.
+
+.. cssclass:: diagram invert
+
+    .. _ch05fig_model_cursor_inherit:
+    .. figure:: https://user-images.githubusercontent.com/4193389/181936175-f6086152-0231-4872-a40e-4ade46c63fa6.png
+        :alt: Diagram of The Model Cursors Inheritance Hierarchy
+
+        :The Model Cursors Inheritance Hierarchy.
+
+Since all these cursors also inherit XTextRange_, they can easily access and change their text selections/positions.
+In the ``show_paragraphs()`` method above, the two ends of the paragraph are obtained by calling the inherited
+``XTextRange.getStart()`` and ``XTextRange.getEnd()``, and the positions are used to move the view cursor:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        para_cursor = Write.get_paragraph_cursor(doc)
+        ...
+            tvc.gotoRange(para_cursor.getStart(), False)
+            tvc.gotoRange(para_cursor.getEnd(), True)
+
+``gotoRange()`` sets the text range/position of the view cursor: the first call moves the cursor to the paragraph's starting position
+without selecting anything, and the second moves it to the end position, selecting all the text in between.
+Since this is a view cursor, the selection is visible on-screen, as illustrated in :numref:`ch05fig_ss_sel_para`.
+
+.. cssclass:: screen_shot invert
+
+    .. _ch05fig_ss_sel_para:
+    .. figure:: https://user-images.githubusercontent.com/4193389/181936346-a4a74a1a-8cce-4e16-88a9-a4a806dce53c.png
+        :alt: Screen shot of A Selected Paragraph.
+
+        :A Selected Paragraph.
+
+Note that ``getStart()`` and ``getEnd()`` do not return integers but collapsed text ranges,
+which is Office-lingo for a range that starts and ends at the same cursor position.
+
+Somewhat confusingly, the XTextViewCursor_ interface inherits XTextCursor_ (as shown in :numref:`ch05fig_xtxt_view_inherit`).
+This only means that XTextViewCursor supports the same character-based movement and text range operations as the model-based cursor.
+
+.. cssclass:: diagram invert
+
+    .. _ch05fig_xtxt_view_inherit:
+    .. figure:: https://user-images.githubusercontent.com/4193389/181936545-b0d970d4-6853-4adb-910c-d2a75150f053.png
+        :alt: Diagram of The X Text View Cursor Inheritance Hierarchy.
+
+        :The ``XTextViewCursor`` Inheritance Hierarchy.
+
+
 Work in progress ...
 
 .. |txt_java| replace:: TextDocuments.java
@@ -364,6 +509,9 @@ Work in progress ...
 
 .. |extract_ex| replace:: Extract Writer Text
 .. _extract_ex: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_doc_print_console
+
+.. |walk_text| replace:: Walk Text
+.. _walk_text: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_walk_text
 
 .. _GenericTextDocument: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1GenericTextDocument.html
 .. _OfficeDocument: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1document_1_1OfficeDocument.html
@@ -378,4 +526,5 @@ Work in progress ...
 .. _XTextCursor: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextCursor.html
 .. _XTextDocument: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextDocument.html
 .. _XTextRange: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextRange.html
+.. _XTextViewCursor: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextViewCursor.html
 .. _XWordCursor: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XWordCursor.html
