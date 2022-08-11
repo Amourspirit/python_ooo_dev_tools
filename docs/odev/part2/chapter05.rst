@@ -851,6 +851,83 @@ If the sentence ends after the end of the paragraph then ``compare_cursor_ends()
 Since there's no string being created by the comparer, there's no way that the instantiating can fail due to the size of the text.
 
 
+5.7 Inserting/Changing Text in a Document
+=========================================
+
+The |shuffle_words|_ example searches a document and changes the words it encounters.
+:numref:`ch05fig_word_shuffle` shows the program output. Words longer than three characters are scrambled.
+
+.. cssclass:: screen_shot invert
+
+    .. _ch05fig_word_shuffle:
+    .. figure:: https://user-images.githubusercontent.com/4193389/184255719-a3f8a75c-dba3-41b0-bcb4-631fb7b92c0a.png
+        :alt: screenshot, Shuffling of Words
+
+        :Shuffling of Words.
+
+A word shuffle is applied to every word of four letters or more, but only involves the random exchange of the middle letters without changing the first and last characters.
+
+The ``apply_shuffle()`` function which iterates through the words in the input file is similar to ``count_words()`` in |walk_text|_.
+One difference is the use of ``XText.insertString()``:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        def apply_shuffle(doc: XTextDocument, delay: int, visible: bool) -> None:
+            doc_text = doc.getText()
+            if visible:
+                cursor = Write.get_view_cursor(doc)
+            else:
+                cursor = Write.get_cursor(doc)
+
+            word_cursor = Write.get_word_cursor(doc)
+            word_cursor.gotoStart(False)  # go to start of text
+
+            while True:
+                word_cursor.gotoNextWord(True)
+
+                # move the text view cursor, and highlight the current word
+                cursor.gotoRange(word_cursor.getStart(), False)
+                cursor.gotoRange(word_cursor.getEnd(), True)
+                curr_word = word_cursor.getString()
+
+                # get whitespace padding amounts
+                c_len = len(curr_word)
+                curr_word = curr_word.lstrip()
+                l_pad = c_len - len(curr_word)  # left whitespace padding amount
+                curr_word = curr_word.rstrip()
+                r_pad = c_len - len(curr_word) - l_pad  # right whitespace padding ammount
+                if len(curr_word) > 0:
+                    pad_l = " " * l_pad  # recreate left padding
+                    pad_r = " " * r_pad  # recreate right padding
+                    Lo.delay(delay)
+                    mid_shuff = mid_shuffle(curr_word)
+                    doc_text.insertString(word_cursor, f"{pad_l}{mid_shuff}{pad_r}", True)
+
+                if word_cursor.gotoNextWord(False) is False:
+                    break
+
+            word_cursor.gotoStart(False)  # go to start of text
+            cursor.gotoStart(False)
+
+``insertString()`` is located in XSimpleText_:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        def insertString(xRange: XTextRange, aString: str, bAbsorb: bool) -> None:
+
+    .. code-tab:: java
+
+        void insertString(XTextRange xRange, String aString, boolean bAbsorb)
+
+The string s is inserted at the cursor's text range position.
+If ``bAbsorb`` is true then the string replaces the current selection (which is the case in ``apply_shuffle()``).
+
+``mid_shuffle()`` shuffles the string in ``curr_word``, returning a new word. It doesn't use the Office API, so no explanation here.
+
 Work in progress ...
 
 .. |txt_java| replace:: TextDocuments.java
@@ -871,6 +948,9 @@ Work in progress ...
 .. |speak_text| replace:: Speak Text
 .. _speak_text: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_speak
 
+
+.. |shuffle_words| replace:: Shuffle Words
+.. _shuffle_words: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_shuffle
 
 .. _text-to-speech: https://pypi.org/project/text-to-speech/
 
