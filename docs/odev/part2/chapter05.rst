@@ -727,6 +727,129 @@ Office deals with this size issue by using XTextRange_ instances, which encapsul
 positions. :py:meth:`.Selection.get_position` returns an integer because its easier to understand when you're first learning to program with Office.
 It's better style to use and compare XTextRange_ objects rather than integer positions, an approach demonstrated in the next section.
 
+5.6 Using and Comparing Text Cursors
+====================================
+
+|speak_text|_ example utilizes the third-party library text-to-speech_ to convert text into speech.
+The inner workings aren't relevant here, so are hidden inside a single method ``speak()``.
+
+|speak_text|_ employs two text cursors: a paragraph cursor that iterates over the paragraphs in the document,
+and a sentence cursor that iterates over all the sentences in the current paragraph and passes each sentence to ``speak()``.
+text-to-speech_  is capable of speaking long or short sequences of text, but |speak_text|_ processes a sentence at a time since this sounds more natural when spoken.
+
+The crucial function in |speak_text|_ is ``speak_sentences()``:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        def speak_sentences(doc: XTextDocument) -> None:
+            tvc = Write.get_view_cursor(doc)
+            para_cursor = Write.get_paragraph_cursor(doc)
+            para_cursor.gotoStart(False)  # go to start test; no selection
+
+            while 1:
+                para_cursor.gotoEndOfParagraph(True)  # select all of paragraph
+                end_para = para_cursor.getEnd()
+                curr_para_str = para_cursor.getString()
+                print(f"P<{curr_para_str}>")
+
+                if len(curr_para_str) > 0:
+                    # set sentence cursor pointing to start of this paragraph
+                    cursor = para_cursor.getText().createTextCursorByRange(para_cursor.getStart())
+                    sc = Lo.qi(XSentenceCursor, cursor)
+                    sc.gotoStartOfSentence(False)
+                    while 1:
+                        sc.gotoEndOfSentence(True)  # select all of sentence
+
+                        # move the text view cursor to highlight the current sentence
+                        tvc.gotoRange(sc.getStart(), False)
+                        tvc.gotoRange(sc.getEnd(), True)
+                        curr_sent_str = strip_non_word_chars(sc.getString())
+                        print(f"S<{curr_sent_str}>")
+                        if len(curr_sent_str) > 0:
+                            speak(
+                                curr_sent_str,
+                            )
+                        if Write.compare_cursor_ends(sc.getEnd(), end_para) >= Write.CompareEnum.EQUAL:
+                            print("Sentence cursor passed end of current paragraph")
+                            break
+
+                        if sc.gotoNextSentence(False) is False:
+                            print("# No next sentence")
+                            break
+
+                if para_cursor.gotoNextParagraph(False) is False:
+                    break
+
+``speak_sentences()`` comprises two nested loops: the outer loop iterates through the paragraphs, and the inner loop through the sentences in the current paragraph.
+
+The sentence cursor is created like so:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        cursor = para_cursor.getText().createTextCursorByRange(para_cursor.getStart())
+
+        sc = Lo.qi(XSentenceCursor, cursor)
+
+The XText_ reference is returned by ``para_cursor.getText()``, and a text cursor is created.
+
+``createTextCursorByRange()`` allows the start position of the cursor to be specified. The text cursor is converted into a sentence cursor with :py:meth:`.Lo.qi`.
+
+The tricky aspect of this code is the meaning of ``para_cursor.getText()`` which is the XText_ object that ``para_cursor`` utilizes.
+This is not a single paragraph but the entire text document.
+Remember that the paragraph cursor is created with: ``para_cursor = Write.get_paragraph_cursor(doc)`` This corresponds to:
+
+| ``xtext = doc.getText()``
+| ``text_cursor = xtext.createTextCursor()``
+| ``para_cursor = Lo.qi(XParagraphCursor, text_cursor)``
+
+Both the paragraph and sentence cursors refer to the entire text document.
+This means that it is not possible to code the inner loop using the coding pattern from before.That would result in something like the following:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # set sentence cursor to point to start of this paragraph
+        cursor = para_cursor.getText().createTextCursorByRange(para_cursor.getStart())
+        sc = Lo.qi(XSentenceCursor, cursor)
+        sc.gotoStartOfSentence(False) # goto start
+
+        while 1:
+            sc.gotoEndOfSentence(True) #select 1 sentence
+
+            if sc.gotoNextSentence(False) is False:
+                break
+
+.. note::
+
+    To further confuse matters, a ``XText`` object does not always correspond to the entire text document.
+    For example, a text frame (e.g. like this one) can return an ``XText`` object for the text only inside the frame.
+
+The problem with the above code fragment is that ``XSentenceCursor.gotoNextSentence()`` will keep moving to the next sentence until it reaches the end of the text document.
+This is not the desired behavior – what is needed for the loop to terminate when the last sentence of the current paragraph has been processed.
+
+We need to compare text ranges, in this case the end of the current sentence with the end of the current paragraph.
+This capability is handled by the XTextRangeCompare_ interface. A comparer object is created at the beginning of ``speak_sentence()``,
+initialized to compare ranges that can span the entire document:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        if Write.compare_cursor_ends(sc.getEnd(), end_para) >= Write.CompareEnum.EQUAL:
+            print("Sentence cursor passed end of current paragraph")
+            break
+
+:py:meth:`.Selection.compare_cursor_ends` compares cursors ends and returns an enum value.
+
+If the sentence ends after the end of the paragraph then ``compare_cursor_ends()`` returns a value greater or equal to ``Write.CompareEnum.EQUAL``, and the inner loop terminates.
+
+Since there's no string being created by the comparer, there's no way that the instantiating can fail due to the size of the text.
+
 
 Work in progress ...
 
@@ -744,6 +867,12 @@ Work in progress ...
 
 .. |hello_save| replace:: Hello Save
 .. _hello_save: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_hello_save
+
+.. |speak_text| replace:: Speak Text
+.. _speak_text: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_speak
+
+
+.. _text-to-speech: https://pypi.org/project/text-to-speech/
 
 .. _ControlCharacter: https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1text_1_1ControlCharacter.html
 .. _GenericTextDocument: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1GenericTextDocument.html
@@ -763,5 +892,6 @@ Work in progress ...
 .. _XTextDocument: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextDocument.html
 .. _XTextRange: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextRange.html
 .. _XTextRange: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextRange.html
+.. _XTextRangeCompare: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextRangeCompare.html
 .. _XTextViewCursor: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextViewCursor.html
 .. _XWordCursor: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XWordCursor.html
