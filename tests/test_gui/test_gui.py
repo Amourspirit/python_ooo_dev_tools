@@ -54,12 +54,12 @@ def test_activate(copy_fix_writer, loader) -> None:
         Lo.close_doc(doc, False)
         # pass
 
-def test_activate_new_doc() -> None:
+def test_activate_new_doc(loader) -> None:
     from ooodev.utils.lo import Lo
     from ooodev.utils.gui import GUI
 
     # for a manual test remove loader arg from test_activate and uncomment the next line.
-    loader = Lo.load_office(Lo.ConnectPipe(headless=True))
+    # loader = Lo.load_office(Lo.ConnectPipe(headless=True))
     delay = 100 # 1_000
     #
     # does not assert anything.
