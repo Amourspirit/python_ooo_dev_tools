@@ -1029,7 +1029,42 @@ These code fragments are combined together in the |show_book|_ example.
 
 More details on enumerators and text portions are given in the Developers Guide at https://wiki.openoffice.org/wiki/Documentation/DevGuide/Text/Iterating_over_Text
 
-Work in progress ...
+5.9 Appending Documents Together
+================================
+
+If you need to write a large multi-part document (e.g. a thesis with chapters, appendices, contents page, and an index)
+then you should utilize a master document, which acts as a repository of links to documents representing the component parts.
+You can find out about master documents in Chapter 13 of the Writers Guide, at https://wiki.documentfoundation.org/Documentation/Publications.
+
+However, the complexity of master documents isn't always needed.
+Often the aim is simply to append one document to the end of another.
+In that case, the XDocumentInsertable_ interface, and its ``insertDocumentFromURL()`` method is more suitable.
+
+|docs_append|_ example uses ``XDocumentInsertable.insertDocumentFromURL()``.
+A list of filenames is read from the command line; the first file is opened, and the other files appended to it by ``append_text_files()``:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # part of Docs Append example
+        def append_text_files(doc: XTextDocument, *args: str) -> None:
+            cursor = Write.get_cursor(doc)
+            for arg in args:
+                try:
+                    cursor.gotoEnd(False)
+                    print(f"Appending {arg}")
+                    inserter = Lo.qi(XDocumentInsertable, cursor)
+                    if inserter is None:
+                        print("Document inserter could not be created")
+                    else:
+                        inserter.insertDocumentFromURL(FileIO.fnm_to_url(arg), ())
+                except Exception as e:
+                    print(f"Could not append {arg} : {e}")
+
+A XDocumentInsertable_ instance is obtained by converting the text cursor with :py:meth:`.Lo.qi`.
+
+``XDocumentInsertable.insertDocumentFromURL()`` requires two arguments – the URL of the file that's being appended, and an empty property value array.
 
 .. |txt_java| replace:: TextDocuments.java
 .. _txt_java: https://api.libreoffice.org/examples/DevelopersGuide/examples.html#Text
@@ -1056,6 +1091,9 @@ Work in progress ...
 .. |show_book| replace:: Show Book
 .. _show_book: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_show_book
 
+.. |docs_append| replace:: Docs Append
+.. _docs_append: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_docs_append
+
 .. _text-to-speech: https://pypi.org/project/text-to-speech/
 
 .. _ControlCharacter: https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1text_1_1ControlCharacter.html
@@ -1067,6 +1105,7 @@ Work in progress ...
 .. _TextRange: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextRange.html
 .. _TextTable: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1TextTable.html
 .. _XComponent: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1lang_1_1XComponent.html
+.. _XDocumentInsertable: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1document_1_1XDocumentInsertable.html
 .. _XEnumeration: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1container_1_1XEnumeration.html
 .. _XEnumerationAccess: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1container_1_1XEnumerationAccess.html
 .. _XLineCursor: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1view_1_1XLineCursor.html
