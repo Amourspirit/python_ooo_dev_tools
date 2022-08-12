@@ -928,6 +928,107 @@ If ``bAbsorb`` is true then the string replaces the current selection (which is 
 
 ``mid_shuffle()`` shuffles the string in ``curr_word``, returning a new word. It doesn't use the Office API, so no explanation here.
 
+
+5.8 Treating a Document as Paragraphs and Text Portions
+=======================================================
+
+Another approach for moving around a document involves the XEnumerationAccess_ interface which treats the document as a series of Paragraph text contents.
+
+XEnumerationAccess_ is an interface in the Text service, which means that an XText_ reference can be converted into it by using :py:meth:`.Lo.qi`.
+These relationships are shown in :numref:`ch05fig_text_service`.
+
+.. cssclass:: diagram invert
+
+    .. _ch05fig_text_service:
+    .. figure:: https://user-images.githubusercontent.com/4193389/184417050-ebb948ad-6a4f-4bdd-bc32-cbe90b82b1ab.png
+        :alt: Diagram of Text Service and its Interfaces
+
+        :The Text Service and its Interfaces.
+
+The following code fragment utilizes this technique:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        xtext = doc.getText()
+        enum_access = Lo.qi(XEnumerationAccess, xtext);
+
+XEnumerationAccess_ contains a single method, ``createEnumeration()`` which creates an enumerator (an instance of XEnumeration_).
+Each element returned from this iterator is a Paragraph text content:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # create enumerator over the document text
+        enum_access = Lo.qi(XEnumerationAccess, doc.getText())
+        text_enum = enum_access.createEnumeration()
+
+        while text_enum.hasMoreElements():
+            text_con = Lo.qi(XTextContent, text_enum.nextElement())
+            # use the Paragraph text content (text_con) in some way...
+
+Paragraph doesn't support its own interface (i.e. there's no ``XParagraph``), so :py:meth:`.Lo.qi` is used to access its XTextContent_ interface,
+which belongs to the TextContent_ subclass. The hierarchy is shown in :numref:`ch05fig_text_context_hierarchy`.
+
+.. cssclass:: diagram invert
+
+    .. _ch05fig_text_context_hierarchy:
+    .. figure:: https://user-images.githubusercontent.com/4193389/184431023-3a34228a-1e07-4d25-ab3f-a00fc5030085.png
+        :alt: Diagram of The Paragraph Text Content Hierarchy
+
+        :The Paragraph Text Content Hierarchy.
+
+Iterating over a document to access Paragraph text contents doesn't seem much different from iterating over a document using a paragraph cursor,
+except that the Paragraph service offers a more structured view of a paragraph.
+
+In particular, you can use another XEnumerationAccess_ instance to iterate over a single paragraph, viewing it as a sequence of text portions.
+
+The following code illustrates the notion, using the ``text_con`` text content from the previous piece of code:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        if not Info.support_service(text_con, "com.sun.star.text.TextTable"):
+            para_enum = Write.get_enumeration(text_con)
+            while para_enum.hasMoreElements():
+                txt_range = Lo.qi(XTextRange, para_enum.nextElement())
+                # use the text portion (txt_range) in some way...
+
+The TextTable_ service is a subclass of Paragraph, and cannot be enumerated.
+
+Therefore, the paragraph enumerator is surrounded with an if-test to skip a paragraph if it's really a table.
+
+The paragraph enumerator returns text portions, represented by the TextPortion_ service.
+TextPortion_ contains a lot of useful properties which describe the paragraph, but it doesn't have its own interface (such as ``XTextPortion``).
+However, TextPortion_ inherits the TextRange_ service, so :py:meth:`.Lo.qi` can be used to obtain its XTextRange_ interface.
+This hierarchy is shown in :numref:`ch05fig_text_portion_hierarchy`.
+
+.. cssclass:: diagram invert
+
+    .. _ch05fig_text_portion_hierarchy:
+    .. figure:: https://user-images.githubusercontent.com/4193389/184432816-452d8189-652d-4bb8-947e-6147e7754545.png
+        :alt: Diagram of The TextPortion Service Hierarchy
+
+        :The TextPortion Service Hierarchy.
+
+TextPortion_ includes a ``TextPortionType`` property which identifies the type of the portion.
+Other properties access different kinds of portion data, such as a text field or footnote.
+
+For instance, the following prints the text portion type and the string inside the ``txt_range`` text portion (``txt_range`` comes from the previous code fragment):
+
+.. tabs::
+
+    .. code-tab:: python
+
+        print(f'  {Props.get_property(txt_range, "TextPortionType")} = "{txt_range.getString()}"')
+
+These code fragments are combined together in the |show_book|_ example.
+
+More details on enumerators and text portions are given in the Developers Guide at https://wiki.openoffice.org/wiki/Documentation/DevGuide/Text/Iterating_over_Text
+
 Work in progress ...
 
 .. |txt_java| replace:: TextDocuments.java
@@ -952,14 +1053,22 @@ Work in progress ...
 .. |shuffle_words| replace:: Shuffle Words
 .. _shuffle_words: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_shuffle
 
+.. |show_book| replace:: Show Book
+.. _show_book: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_show_book
+
 .. _text-to-speech: https://pypi.org/project/text-to-speech/
 
 .. _ControlCharacter: https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1text_1_1ControlCharacter.html
 .. _GenericTextDocument: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1GenericTextDocument.html
 .. _OfficeDocument: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1document_1_1OfficeDocument.html
+.. _TextContent: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1TextContent.html
 .. _TextDocument: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1TextDocument.html
-.. _TextDocument: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1TextDocument.html
+.. _TextPortion: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1TextPortion.html
+.. _TextRange: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextRange.html
+.. _TextTable: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1TextTable.html
 .. _XComponent: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1lang_1_1XComponent.html
+.. _XEnumeration: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1container_1_1XEnumeration.html
+.. _XEnumerationAccess: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1container_1_1XEnumerationAccess.html
 .. _XLineCursor: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1view_1_1XLineCursor.html
 .. _XParagraphCursor: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XParagraphCursor.html
 .. _XSentenceCursor: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XSentenceCursor.html
