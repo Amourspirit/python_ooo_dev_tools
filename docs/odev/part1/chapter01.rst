@@ -38,7 +38,7 @@ and traces of this heritage are visible in many parts of its API.
 This book is not about how to use LibreOffice's GUI (e.g. where to find the menu item for italicizing text).
 I'm also not going to discuss how to compile the LibreOffice source, which is a focus of LibreOffice's development
 `webpage <https://wiki.documentfoundation.org/Development>`_.
-The intention is ot explain how |app_name_bold| (|odev|) can be used to interact with LibreOffice via a console or via macros using python.
+The intention is to explain how |app_name_bold| (|odev|) can be used to interact with LibreOffice via a console or via macros using python.
 
 .. _ch01_sources_for_api_information:
 
