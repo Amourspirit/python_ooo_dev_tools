@@ -38,7 +38,7 @@ and traces of this heritage are visible in many parts of its API.
 This book is not about how to use LibreOffice's GUI (e.g. where to find the menu item for italicizing text).
 I'm also not going to discuss how to compile the LibreOffice source, which is a focus of LibreOffice's development
 `webpage <https://wiki.documentfoundation.org/Development>`_.
-The intention is ot explain how |app_name_bold| (|odev|) can be used to interact with LibreOffice via a console or via macros using python.
+The intention is to explain how |app_name_bold| (|odev|) can be used to interact with LibreOffice via a console or via macros using python.
 
 .. _ch01_sources_for_api_information:
 
@@ -499,13 +499,13 @@ If you start searching the forums, newsgroups, blogs, and web sites for Office e
 Python is not the language of choice for most Office programmers.
 Basic (sometimes called StarBasic, OpenOffice.org Basic, LibreOffice Basic, or even Visual Basic or VB by mistake) is the darling of the coding crowd.
 
-Python is flexable, can run outside of LibreOffice and connect via bridge, and or can be used as a macro.
+Python is flexible, can run outside of LibreOffice and connect via bridge, and or can be used as a macro.
 Python also has an advantage of using the many package on `PYPI <https://pypi.org/>`_.
 Python has an advantage in the area of source control and larger projects.
 
 This is understandable since Office (both LibreOffice and OpenOffice) includes an IDE for editing and debugging Basic macros.
 Also, there's a lot of good resources on how to utilize these tools
-(e.g. start browsing the LibreOffice wiki page `LibreOffice Basic Help <https://help.libreoffice.org/Basic/Basic_Help>`_).
+(e.g. start browsing the LibreOffice wiki page `LibreOffice Basic Help <https://help.libreoffice.org/latest/en-US/text/sbasic/shared/main0601.html?DbPAR=BASIC>`_).
 The few books that have been written about programming the Office API have all used Basic
 (e.g. Pitonyak's `OpenOffice.org Macros Explained <https://pitonyak.org/book/>`_).
 
