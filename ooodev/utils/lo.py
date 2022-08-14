@@ -2154,18 +2154,14 @@ class Lo(metaclass=StaticProperty):
         ...
 
     @staticmethod
-    def print_names(names: Iterable[str], num_per_line: int = 0) -> None:
+    def print_names(names: Iterable[str], num_per_line: int = 4) -> None:
         """
         Prints names to console
 
         Args:
             names (Iterable[str]): names to print
-            num_per_line (int): Number of names per line.
+            num_per_line (int): Number of names per line. Default 4
         """
-        cargs = CancelEventArgs(Lo.print_names.__qualname__)
-        _Events().trigger(GblNamedEvent.PRINTING, cargs)
-        if cargs.cancel:
-            return
         if names is None:
             print("  No names found")
             return
@@ -2173,11 +2169,14 @@ class Lo(metaclass=StaticProperty):
         print(f"No. of names: {len(sorted_list)}")
         nl_count = 0
         for name in sorted_list:
-            print(f"  '{name}'")
+            print(f"  '{name}'", end="")
+            if num_per_line <= 0:
+                print()
+                continue
             nl_count += 1
-        if nl_count % num_per_line == 0:
-            print()
-            nl_count = 0
+            if nl_count % num_per_line == 0:
+                print()
+                nl_count = 0
         print("\n\n")
 
     # ------------------- container manipulation --------------------
@@ -2191,10 +2190,6 @@ class Lo(metaclass=StaticProperty):
             name (str): Name of table
             table (List[List[str]]): Table Data
         """
-        cargs = CancelEventArgs(Lo.print_table.__qualname__)
-        _Events().trigger(GblNamedEvent.PRINTING, cargs)
-        if cargs.cancel:
-            return
         print(f"-- {name} ----------------")
         for row in table:
             col_str = "  ".join([str(el) for el in row])

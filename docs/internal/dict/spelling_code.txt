@@ -2,6 +2,7 @@ Addin
 Args
 Calc
 CellRangeAddress
+config
 Config
 ctx
 datetime
@@ -24,6 +25,7 @@ HSV
 iconified
 idx
 iterable
+json
 LineShape
 Lingu
 localhost
