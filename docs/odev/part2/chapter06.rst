@@ -179,11 +179,254 @@ ParagraphStyle appears to inherits three services: Style, ParagraphCharacter, an
 For more information of the styles API, start in the development guide in the "Overall Document Features" section,
 online at: https://wiki.openoffice.org/wiki/Documentation/DevGuide/Text/Overall_Document_Features
 
+6.2 Listing Styles Information
+==============================
 
+The |styles_info|_ example illustrates some of the Writer and Info utility functions for examining style families and their property sets.
+The ``show_styles()`` function starts by listing the style families names:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        def show_styles(doc: XTextDocument) -> None:
+            # get all the style families for this document
+            style_families = Info.get_style_family_names(doc)
+            print(f"No. of Style Family Names: {len(style_families)}")
+            for style_family in style_families:
+                print(f"  {style_family}")
+            print()
+
+            # list all the style names for each style family
+            for i, style_family in enumerate(style_families):
+                print(f'{i} "{style_family}" Style Family contains containers:')
+                style_names = Info.get_style_names(doc, style_family)
+                Lo.print_names(style_names)
+
+            # Report the properties for the paragraph styles family under the "Standard" name
+            Props.show_props('ParagraphStyles "Standard"', Info.get_style_props(doc, "ParagraphStyles", "Header"))
+            print()
+
+Partial output lists the seven family names:
+
+::
+
+    No. of Style Family Names: 7
+        CellStyles
+        CharacterStyles
+        FrameStyles
+        NumberingStyles
+        PageStyles
+        ParagraphStyles
+        TableStyles
+
+:py:meth:`.Info.get_style_names` starts by calling :py:meth:`.Info.get_style_container` which in turn calls
+:py:meth:`.Info.get_style_families`.
+``get_style_families()`` gets XStyleFamiliesSupplier_ that is passed to ``get_style_container()``
+which in turn gets XNameContainer_ that is passed to ``get_style_names()``.
+The family names in that collection are extracted with ``style_container.getElementNames()``:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        @staticmethod
+        def get_style_families(doc: object) -> XNameAccess:
+            try:
+                xsupplier = Lo.qi(XStyleFamiliesSupplier, doc, True)
+                return xsupplier.getStyleFamilies()
+            except MissingInterfaceError:
+                raise
+            except Exception as e:
+                raise Exception("Unable to get family style names") from e
+
+        @classmethod
+        def get_style_container(cls, doc: object, family_style_name: str) -> XNameContainer:
+            name_acc = cls.get_style_families(doc)
+            xcontianer = Lo.qi(XNameContainer, name_acc.getByName(family_style_name), True)
+            return xcontianer
+
+        @classmethod
+        def get_style_names(cls, doc: object, family_style_name: str) -> List[str]:
+            try:
+                style_container = cls.get_style_container(doc=doc, family_style_name=family_style_name)
+                names = style_container.getElementNames()
+                lst = list(names)
+                lst.sort()
+                return lst
+            except Exception as e:
+                raise Exception("Could not access style names") from e
+
+|styles_info|_ example, the ``show_styles()`` function continues by looping through the list of style family names,
+printing all the style (property set) names in each family:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # list all the style names for each style family
+        for i, style_family in enumerate(style_families):
+            print(f'{i} "{style_family}" Style Family contains containers:')
+            style_names = Info.get_style_names(doc, style_family)
+            Lo.print_names(style_names)
+
+The output is lengthy, but informative:
+
+::
+
+    0 "CellStyles" Style Family contains containers:
+    No. of names: 0
+
+
+    1 "CharacterStyles" Style Family contains containers:
+    No. of names: 27
+      'Bullet Symbols'  'Caption characters'  'Citation'  'Definition'
+      'Drop Caps'  'Emphasis'  'Endnote anchor'  'Endnote Symbol'
+      'Example'  'Footnote anchor'  'Footnote Symbol'  'Index Link'
+      'Internet link'  'Line numbering'  'Main index entry'  'Numbering Symbols'
+      'Page Number'  'Placeholder'  'Rubies'  'Source Text'
+      'Standard'  'Strong Emphasis'  'Teletype'  'User Entry'
+      'Variable'  'Vertical Numbering Symbols'  'Visited Internet Link'
+
+    2 "FrameStyles" Style Family contains containers:
+    No. of names: 7
+      'Formula'  'Frame'  'Graphics'  'Labels'
+      'Marginalia'  'OLE'  'Watermark'
+
+    3 "NumberingStyles" Style Family contains containers:
+    No. of names: 11
+      'List 1'  'List 2'  'List 3'  'List 4'
+      'List 5'  'No List'  'Numbering 123'  'Numbering ABC'
+      'Numbering abc'  'Numbering IVX'  'Numbering ivx'
+
+    4 "PageStyles" Style Family contains containers:
+    No. of names: 10
+      'Endnote'  'Envelope'  'First Page'  'Footnote'
+      'HTML'  'Index'  'Landscape'  'Left Page'
+      'Right Page'  'Standard'
+
+    5 "ParagraphStyles" Style Family contains containers:
+    No. of names: 125
+      'Addressee'  'Appendix'  'Bibliography 1'  'Bibliography Heading'
+      'Caption'  'Contents 1'  'Contents 10'  'Contents 2'
+      'Contents 3'  'Contents 4'  'Contents 5'  'Contents 6'
+      'Contents 7'  'Contents 8'  'Contents 9'  'Contents Heading'
+      'Drawing'  'Endnote'  'Figure'  'Figure Index 1'
+      'Figure Index Heading'  'First line indent'  'Footer'  'Footer left'
+      'Footer right'  'Footnote'  'Frame contents'  'Hanging indent'
+      'Header'  'Header and Footer'  'Header left'  'Header right'
+      'Heading'  'Heading 1'  'Heading 10'  'Heading 2'
+      'Heading 3'  'Heading 4'  'Heading 5'  'Heading 6'
+      'Heading 7'  'Heading 8'  'Heading 9'  'Horizontal Line'
+      'Illustration'  'Index'  'Index 1'  'Index 2'
+      'Index 3'  'Index Heading'  'Index Separator'  'List'
+      'List 1'  'List 1 Cont.'  'List 1 End'  'List 1 Start'
+      'List 2'  'List 2 Cont.'  'List 2 End'  'List 2 Start'
+      'List 3'  'List 3 Cont.'  'List 3 End'  'List 3 Start'
+      'List 4'  'List 4 Cont.'  'List 4 End'  'List 4 Start'
+      'List 5'  'List 5 Cont.'  'List 5 End'  'List 5 Start'
+      'List Contents'  'List Heading'  'List Indent'  'Marginalia'
+      'Numbering 1'  'Numbering 1 Cont.'  'Numbering 1 End'  'Numbering 1 Start'
+      'Numbering 2'  'Numbering 2 Cont.'  'Numbering 2 End'  'Numbering 2 Start'
+      'Numbering 3'  'Numbering 3 Cont.'  'Numbering 3 End'  'Numbering 3 Start'
+      'Numbering 4'  'Numbering 4 Cont.'  'Numbering 4 End'  'Numbering 4 Start'
+      'Numbering 5'  'Numbering 5 Cont.'  'Numbering 5 End'  'Numbering 5 Start'
+      'Object index 1'  'Object index heading'  'Preformatted Text'  'Quotations'
+      'Salutation'  'Sender'  'Signature'  'Standard'
+      'Subtitle'  'Table'  'Table Contents'  'Table Heading'
+      'Table index 1'  'Table index heading'  'Text'  'Text body'
+      'Text body indent'  'Title'  'User Index 1'  'User Index 10'
+      'User Index 2'  'User Index 3'  'User Index 4'  'User Index 5'
+      'User Index 6'  'User Index 7'  'User Index 8'  'User Index 9'
+      'User Index Heading'
+
+    6 "TableStyles" Style Family contains containers:
+    No. of names: 11
+      'Academic'  'Box List Blue'  'Box List Green'  'Box List Red'
+      'Box List Yellow'  'Default Style'  'Elegant'  'Financial'
+      'Simple Grid Columns'  'Simple Grid Rows'  'Simple List Shaded'
+
+:py:meth:`.Info.get_style_names` retrieves the XNameContainer_ object for each style family,
+and extracts its style (property set) names using ``getElementNames()``:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        @classmethod
+        def get_style_names(cls, doc: object, family_style_name: str) -> List[str]:
+            try:
+                style_container = cls.get_style_container(doc=doc, family_style_name=family_style_name)
+                names = style_container.getElementNames()
+                lst = list(names)
+                lst.sort()
+                return lst
+            except Exception as e:
+                raise Exception("Could not access style names") from e
+
+The last part of |styles_info|_ lists the properties for a specific property set. :py:meth:`.Info.get_style_props` does that:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        @classmethod
+        def get_style_props(cls, doc: object, family_style_name: str, prop_set_nm: str) -> XPropertySet:
+            style_container = cls.get_style_container(doc, family_style_name)
+            name_props = Lo.qi(XPropertySet, style_container.getByName(prop_set_nm), True)
+            return name_props
+
+Its arguments are the document, the style family name, and style (property set) name.
+
+A reference to the property set is returned. Accessing the "Standard" style (property set) of the "ParagraphStyle" family would require:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        props = Info.get_style_props(doc, "ParagraphStyles", "Standard")
+
+The property set can be nicely printed by calling :py:meth:`.Props.show_props`:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        Props.show_props('ParagraphStyles "Standard"', props)
+
+The output is long, but begins and ends like so:
+
+::
+
+    ParagraphStyles "Standard" Properties
+        BorderDistance: 0
+        BottomBorder: (com.sun.star.table.BorderLine2){ (com.sun.star.table.BorderLine){ Color = (long)0x0, InnerLineWidth = (short)0x0, OuterLineWidth = (short)0x0, LineDistance = (short)0x0 }, LineStyle = (short)0x0, LineWidth = (unsigned long)0x0 }
+        BottomBorderDistance: 0
+        BreakType: <Enum instance com.sun.star.style.BreakType ('NONE')>
+        Category: 4
+        CharAutoKerning: True
+        CharBackColor: -1
+        CharBackTransparent: True
+            :
+        Rsid: 0
+        SnapToGrid: True
+        StyleInteropGrabBag: ()
+        TopBorder: (com.sun.star.table.BorderLine2){ (com.sun.star.table.BorderLine){ Color = (long)0x0, InnerLineWidth = (short)0x0, OuterLineWidth = (short)0x0, LineDistance = (short)0x0 }, LineStyle = (short)0x0, LineWidth = (unsigned long)0x0 }
+        TopBorderDistance: 0
+        WritingMode: 4
+
+This listing, and in fact any listing of a style from "ParagraphStyles",
+shows that the properties are a mixture of those defined in the Style,
+ParagraphProperties_, and CharacterProperties_ services.
 
 Work in Progress...
 
+.. |styles_info| replace:: Styles Info
+.. _styles_info: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_styles_info
+
+.. _CharacterProperties: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1CharacterProperties.html
 .. _GenericTextDocument: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1GenericTextDocument.html
+.. _ParagraphProperties: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1ParagraphProperties.html
 .. _XIndexAccess: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1container_1_1XIndexAccess.html
 .. _XIndexContainer: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1container_1_1XIndexContainer.html
 .. _XNameAccess: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1container_1_1XNameAccess.html

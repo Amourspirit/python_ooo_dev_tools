@@ -209,6 +209,7 @@ Querying for the interface has the huge advantage of providing typing :numref:`c
         .. _ch02fig_lo_qi_auto_demo:
         .. figure:: https://user-images.githubusercontent.com/4193389/178285134-70b9aa56-5eaa-43c8-aa59-c19f2b495336.gif
             :alt: Lo.qi autocomplete demo image
+            :figclass: align-center
 
             : ``Lo.qi`` autocomplete demo
 
@@ -568,6 +569,7 @@ For example, a typical crash report window is show in :numref:`ch02fig_crash_rep
     .. _ch02fig_crash_report:
     .. figure:: https://user-images.githubusercontent.com/4193389/178563937-ce136961-4d80-4abf-9a61-f936d30a727b.png
         :alt: The LibreOffice Crash Reported by Windows 7.
+        :figclass: align-center
 
         :The LibreOffice Crash Reported by Windows 7.
 
@@ -587,6 +589,7 @@ When a crash window appears (like the one in :numref:`ch02fig_crash_report`), st
     .. _ch02fig_win_crash_rpt_gui:
     .. figure:: https://user-images.githubusercontent.com/4193389/178566048-95c4d2f5-76c5-4ec5-9ba8-bc7d880b35ef.png
         :alt: Win Crash Report GUI
+        :figclass: align-center
 
         :Win Crash Report GUI
 
@@ -603,6 +606,7 @@ Most Office DLLs are located in that directory.
     .. _ch02fig_sec_call_stack_rpt:
     .. figure:: https://user-images.githubusercontent.com/4193389/178566993-99c82ab5-ca0b-483b-b42f-8527673aeb09.png
         :alt: The Second Call Stack in WinCrashReport
+        :figclass: align-center
 
         :The Second Call Stack in WinCrashReport.
 
@@ -617,6 +621,7 @@ If you want to better understand the DLLs, they can be examined using `DLL Expor
     .. _ch02fig_dll_export_view:
     .. figure:: https://user-images.githubusercontent.com/4193389/178568452-ac8bf39f-a026-4260-bd32-a66ffb6deded.png
         :alt: DLL Export Viewer's view of cppu3.dll
+        :figclass: align-center
 
         :DLL Export Viewer's view of ``cppu3.dll``
 
@@ -630,6 +635,7 @@ for searching the gigantic code base. :numref:`ch02fig_open_grok_result` shows t
     .. _ch02fig_open_grok_result:
     .. figure:: https://user-images.githubusercontent.com/4193389/178569089-5d836f83-458a-49ca-bd90-1614ffc4a86b.png
         :alt: OpenGrok Results for "uno_getCurrentEnvironment"
+        :figclass: align-center
 
         : ``OpenGrok`` Results for ``uno_getCurrentEnvironment``
 

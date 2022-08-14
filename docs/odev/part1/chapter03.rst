@@ -149,6 +149,7 @@ Document properties is the information that's displayed when you right-click on 
     .. _ch03fig_prop_dialog:
     .. figure:: https://user-images.githubusercontent.com/4193389/179297650-0343ec1e-efb3-4625-9c81-a0589ff9a81f.png
         :alt: A Properties Dialog in Windows 10 for algs.odp
+        :figclass: align-center
 
         :A Properties Dialog in Windows 10 for ``algs.odp``.
 
@@ -159,6 +160,7 @@ If you select the "Details" tab, a list of properties appears like those in :num
     .. _ch03fig_detail_prop_lst:
     .. figure:: https://user-images.githubusercontent.com/4193389/179298066-7acaa668-7b0b-4a59-bbb8-407ba354bf8a.png
         :alt: Details Properties List for algs.odp
+        :figclass: align-center
 
         :Details Properties List for ``algs.odp``.
 
@@ -267,6 +269,7 @@ The changed properties appear in the "Document Statistics" list shown in :numref
     .. _ch03fig_doc_statistics_algs:
     .. figure:: https://user-images.githubusercontent.com/4193389/179302791-d8373bd0-7b72-41a3-86b8-dcbd5bac6feb.png
         :alt: "Document Statistics" Properties List for "algs.odp"
+        :figclass: align-center
 
         :"Document Statistics" Properties List for ``algs.odp``.
 
@@ -311,6 +314,7 @@ The five main methods for retrieving details can be understood by considering th
     .. _ch03fig_peek_services_interface:
     .. figure:: https://user-images.githubusercontent.com/4193389/179381798-efcb4f4a-a877-469f-9c6e-033e9cf7fe6b.png
         :alt: Methods to Investigate the Service and Interface Relationships and Hierarchies
+        :figclass: align-center
 
         :Methods to Investigate the Service and Interface Relationships and Hierarchies.
 
@@ -405,6 +409,7 @@ Nineteen methods are listed, collectively inherited from the interfaces in XText
     .. _ch03fig_xtextdocument_inherit:
     .. figure:: https://user-images.githubusercontent.com/4193389/179375619-1ac1d4ea-b8f2-4ad5-899d-dd712b0d8476.png
         :alt: Inheritance Hierarchy for XTextDocument.
+        :figclass: align-center
 
         : Inheritance Hierarchy for XTextDocument.
 
@@ -472,6 +477,7 @@ properties and implemented interfaces. This feature as seen in :numref:`ch03fig_
     .. _ch03fig_lo_devolp_tools:
     .. figure:: https://user-images.githubusercontent.com/4193389/179380392-fd7180e9-6adf-4046-9485-5b777b925471.png
         :alt: LibreOffice Develop Tools screenshot
+        :figclass: align-center
 
         : LibreOffice Develop Tools
 

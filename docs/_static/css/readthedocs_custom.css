@@ -13,18 +13,20 @@ html.writer-html5 .rst-content dl[class]:not(.option-list):not(.field-list):not(
     display: inline;
 }
 
-a.reference.internal > code > span::before {
+a.reference.internal > code > span::after {
     /* using style CSS custom property */
     font: var(--fa-font-solid);
     content: "\f0c1";
-    margin-right: 5px;
+    /* margin-right: 5px; */
+    margin-left: 3px;
 }
 
-a.reference.external::before {
+a.reference.external::after {
     /* using style CSS custom property */
     font: var(--fa-font-solid);
     content: "\f08e";
-    margin-right: 5px;
+    /* margin-right: 5px; */
+    margin-left: 3px;
 }
 
 .lo-event a.reference.internal span.std-ref, 
