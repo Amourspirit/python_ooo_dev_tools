@@ -3,6 +3,12 @@ Version History
 ###############
 
 **************
+Version 0.4.12
+**************
+
+Add defaults for cfg in case config.json is not available.
+
+**************
 Version 0.4.11
 **************
 

@@ -36,7 +36,7 @@ setup(
         ]
     ),
     include_package_data = True,
-    package_data={'': ['VERSION'], 'cfg': ['cfg/*.json']},
+    package_data={'cfg': ['cfg/*.json']},
     author=":Barry-Thomas-Paul: Moss",
     author_email="bigbytetech@gmail.com",
     license="Apache Software License",

@@ -12,9 +12,14 @@ class ConfigMeta(type):
         if cls._instance is None:
             root = Path(__file__).parent
             config_file = Path(root, "config.json")
-            with open(config_file, "r") as file:
-                data = json.load(file)
-                cls._instance = super().__call__(**data)
+            if config_file.exists():
+                with open(config_file, "r") as file:
+                    data = json.load(file)
+            else:
+                # provide defaults because at this time stickytape
+                # does not include non *.py files when it packages scripts
+                data = {"profile_versions": ["4"]}
+            cls._instance = super().__call__(**data)
         return cls._instance
 
 
