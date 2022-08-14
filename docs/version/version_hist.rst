@@ -2,6 +2,22 @@
 Version History
 ###############
 
+**************
+Version 0.4.11
+**************
+
+Fix bug in ``Lo.print_names()``
+
+Remove internal events from some print functions that should not have had them.
+
+Fix bug that did copy config.json during setup.
+
+**************
+Version 0.4.10
+**************
+
+Add new event_source property to internal event classes.
+
 *************
 Version 0.4.9
 *************

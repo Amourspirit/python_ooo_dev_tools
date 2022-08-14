@@ -56,7 +56,7 @@ A typical program will look like the following:
 ``Lo.load_office(Lo.ConnectSocket(headless=True))`` invokes Office and sets up a UNO bridge using named pipes with a headless connection.
 If not using the Graphic User Interface (GUI) of LibreOffice then ``headless=True`` is recommended.
 
-There is also a ``Lo.ConnectSocket``, ``Lo.load_office(Lo.ConnectPipes(headless=True))`` which uses which uses sockets instead of pipes.
+There is also ``Lo.load_office(Lo.ConnectPipes(headless=True))`` which uses which uses pipes instead of sockets.
 
 For convenience ``Lo.ConnectPipe`` is an alias of :py:class:`~.conn.connectors.ConnectPipe`
 and ``Lo.ConnectSocket`` is an alias of :py:class:`~.conn.connectors.ConnectSocket`
@@ -556,7 +556,7 @@ supplying as much detail as possible.
 
 Another source of bugs is the LibreOffice API itself, which is hardly a surprise considering its complexity and age.
 If you find a problem, then you should first search LibreOffice's `Bugzilla site <https://bugs.documentfoundation.org/>`_
-o see if the problem has been reported previously (it probably has). Various types of search are explained in the
+to see if the problem has been reported previously (it probably has). Various types of search are explained in the
 `Bugzilla documentation <https://bugs.documentfoundation.org/docs/en/html/using/>`_.
 If you want to report a new bug, then you'll need to set up an account, which is quite simple, and also explained by the documentation.
 
