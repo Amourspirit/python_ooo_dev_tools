@@ -62,6 +62,7 @@ Image Classes
                     .. _ch03fig_detail_prop_lst:
                     .. figure:: https://user-images.githubusercontent.com/4193389/179298066-7acaa668-7b0b-4a59-bbb8-407ba354bf8a.png
                         :alt: Details Properties List for algs.odp
+                        :figclass: align-center
 
                         :Details Properties List for ``algs.odp``.
         
@@ -72,6 +73,7 @@ Image Classes
                     .. _ch03fig_peek_services_interface:
                     .. figure:: https://user-images.githubusercontent.com/4193389/179381798-efcb4f4a-a877-469f-9c6e-033e9cf7fe6b.png
                         :alt: Methods to Investigate the Service and Interface Relationships and Hierarchies
+                        :figclass: align-center
 
                         :Methods to Investigate the Service and Interface Relationships and Hierarchies.
 
@@ -84,6 +86,7 @@ Image Classes
                     .. _ch02fig_lo_qi_auto_demo:
                     .. figure:: https://user-images.githubusercontent.com/4193389/178285134-70b9aa56-5eaa-43c8-aa59-c19f2b495336.gif
                         :alt: Lo.qi autocomplete demo image
+                        :figclass: align-center
 
                         :Lo.qi autocomplete demo
 

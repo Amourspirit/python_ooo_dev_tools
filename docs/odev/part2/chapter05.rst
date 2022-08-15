@@ -40,6 +40,7 @@ The API is centered around four text document services which sub-class ``OfficeD
     .. _ch05fig_txt_doc_service:
     .. figure:: https://user-images.githubusercontent.com/4193389/181572774-7b5899f5-182c-4fc6-8221-25a2d2ae2b58.png
         :alt: Diagram of The Text Document Services
+        :figclass: align-center
 
         :The Text Document Services.
 
@@ -60,6 +61,7 @@ The ``GenericTextDocument`` service is where the action takes place, as summariz
     .. _ch05fig_txt_doc_serv_interfaces:
     .. figure:: https://user-images.githubusercontent.com/4193389/181575340-96fb7e21-4e0f-4662-8ed9-92edfb036b0c.png
         :alt: Diagram of The Text Document Services, and some Interfaces
+        :figclass: align-center
 
         :The Text Document Services, and some Interfaces.
 
@@ -79,6 +81,7 @@ It inherits ``XSimpleText`` and ``XTextRange``, as indicated in :numref:`ch05fig
     .. _ch05fig_xtext_supers:
     .. figure:: https://user-images.githubusercontent.com/4193389/181577210-0054e815-2a45-4a86-a782-bd703b1e442a.png
         :alt: Diagram of XText and its Super-classes
+        :figclass: align-center
 
         : ``XText`` and its Super-classes.
 
@@ -100,6 +103,7 @@ A text document can utilize eight different cursors, which fall into two groups,
     .. _ch05fig_cursor_types:
     .. figure:: https://user-images.githubusercontent.com/4193389/181580982-4a4c7210-efc2-43a6-b21c-5b9e626d2ff8.png
         :alt: Diagram of Types of Cursor
+        :figclass: align-center
 
         :Types of Cursor.
 
@@ -456,6 +460,7 @@ XParagraphCursor_ and the sentence and word cursors inherit XTextCursor_, as sho
     .. _ch05fig_model_cursor_inherit:
     .. figure:: https://user-images.githubusercontent.com/4193389/181936175-f6086152-0231-4872-a40e-4ade46c63fa6.png
         :alt: Diagram of The Model Cursors Inheritance Hierarchy
+        :figclass: align-center
 
         :The Model Cursors Inheritance Hierarchy.
 
@@ -481,6 +486,7 @@ Since this is a view cursor, the selection is visible on-screen, as illustrated 
     .. _ch05fig_ss_sel_para:
     .. figure:: https://user-images.githubusercontent.com/4193389/181936346-a4a74a1a-8cce-4e16-88a9-a4a806dce53c.png
         :alt: Screen shot of A Selected Paragraph.
+        :figclass: align-center
 
         :A Selected Paragraph.
 
@@ -495,6 +501,7 @@ This only means that XTextViewCursor supports the same character-based movement 
     .. _ch05fig_xtxt_view_inherit:
     .. figure:: https://user-images.githubusercontent.com/4193389/181936545-b0d970d4-6853-4adb-910c-d2a75150f053.png
         :alt: Diagram of The X Text View Cursor Inheritance Hierarchy.
+        :figclass: align-center
 
         :The ``XTextViewCursor`` Inheritance Hierarchy.
 
@@ -862,6 +869,7 @@ The |shuffle_words|_ example searches a document and changes the words it encoun
     .. _ch05fig_word_shuffle:
     .. figure:: https://user-images.githubusercontent.com/4193389/184255719-a3f8a75c-dba3-41b0-bcb4-631fb7b92c0a.png
         :alt: screenshot, Shuffling of Words
+        :figclass: align-center
 
         :Shuffling of Words.
 
@@ -942,6 +950,7 @@ These relationships are shown in :numref:`ch05fig_text_service`.
     .. _ch05fig_text_service:
     .. figure:: https://user-images.githubusercontent.com/4193389/184417050-ebb948ad-6a4f-4bdd-bc32-cbe90b82b1ab.png
         :alt: Diagram of Text Service and its Interfaces
+        :figclass: align-center
 
         :The Text Service and its Interfaces.
 
@@ -977,6 +986,7 @@ which belongs to the TextContent_ subclass. The hierarchy is shown in :numref:`c
     .. _ch05fig_text_context_hierarchy:
     .. figure:: https://user-images.githubusercontent.com/4193389/184431023-3a34228a-1e07-4d25-ab3f-a00fc5030085.png
         :alt: Diagram of The Paragraph Text Content Hierarchy
+        :figclass: align-center
 
         :The Paragraph Text Content Hierarchy.
 
@@ -1011,6 +1021,7 @@ This hierarchy is shown in :numref:`ch05fig_text_portion_hierarchy`.
     .. _ch05fig_text_portion_hierarchy:
     .. figure:: https://user-images.githubusercontent.com/4193389/184432816-452d8189-652d-4bb8-947e-6147e7754545.png
         :alt: Diagram of The TextPortion Service Hierarchy
+        :figclass: align-center
 
         :The TextPortion Service Hierarchy.
 

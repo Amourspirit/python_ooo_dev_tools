@@ -32,6 +32,7 @@ and traces of this heritage are visible in many parts of its API.
     .. _ch01fig_timeline:
     .. figure:: https://user-images.githubusercontent.com/4193389/177227955-f91f2454-486e-4222-9360-0734b3e50cdf.png
         :alt: OpenOffice Timeline Image
+        :figclass: align-center
 
         :Office's Timeline.
 
@@ -218,12 +219,13 @@ This necessarily complicates the Python/Office link, which is illustrated in :nu
     .. _ch01fig_python_using_office:
     .. figure:: https://user-images.githubusercontent.com/4193389/177416327-bb02c050-e7ee-40cd-b1c5-b5b88e9dae78.png
         :alt: Diagram of Python Program Using Office
+        :figclass: align-center
 
         :A Python Program Using Office
 
 The invocation of Office and the setup of a named pipe link can be achieved with a single call to the
-soffice binary ( ``soffice.exe,  ``soffice.bin`` ).
-A call starts the Office executable with several command line arguments, the most important being ``-accept``
+soffice binary ( ``soffice.exe``,  ``soffice.bin`` ).
+A call starts the Office executable with several command line arguments, the most important being ``--accept``
 which specifies the use of pipes or sockets for the inter-process link.
 
 A call to `XUnoUrlResolver.resolve() <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1bridge_1_1XUnoUrlResolver.html#abaac8ead87dd0ec6dfc1357792cdda3f>`_
@@ -282,6 +284,7 @@ A service comprises a set of interfaces and properties needed to support an Offi
     .. _ch01fig_service_interface_prop:
     .. figure:: https://user-images.githubusercontent.com/4193389/177419384-0591cdf2-9d4f-4272-8028-4786bed9fc7a.png
         :alt: Diagram of Services, Interfaces, Properties
+        :figclass: align-center
 
         :Services, Interfaces, Properties
 
@@ -298,6 +301,7 @@ but always employs the same specifications (services), as represented in :numref
     .. _ch01fig_component_service:
     .. figure:: https://user-images.githubusercontent.com/4193389/177419958-db1061b5-cb33-4056-a7cb-482c72826e0c.png
         :alt: Diagram of Components and Services.
+        :figclass: align-center
 
         :Components and Services.
 
@@ -308,6 +312,7 @@ The developer's guide uses a notation like that shown in :numref:`ch01fig_office
     .. _ch01fig_office_doc_serv:
     .. figure:: https://user-images.githubusercontent.com/4193389/177420337-eb786095-1c09-4088-bebb-a4e43d918abe.png
         :alt: Diagram of Office Document service.
+        :figclass: align-center
 
         The ``OfficeDocument`` service.
 
@@ -318,6 +323,7 @@ The developer's guide drawing for the SpellChecker service is shown in :numref:`
     .. _ch01fig_spell_chk_srv:
     .. figure:: https://user-images.githubusercontent.com/4193389/177420575-08b3122d-1f18-4f97-b4d8-a0807f461c8e.png
         :alt: Diagram of Spell Checker service.
+        :figclass: align-center
 
         :The SpellChecker service.
 
@@ -355,6 +361,8 @@ is shown in :numref:`ch01fig_inherit_diagram_office_doc`.
 
     .. _ch01fig_inherit_diagram_office_doc:
     .. figure:: https://user-images.githubusercontent.com/4193389/177428410-a5793eec-3e98-4fc3-ba28-02f9508d5261.png
+        :width: 696px
+        :figclass: align-center
         :alt: Example Inheritance Diagram for the Office Document
 
         :Part of the Inheritance Diagram for the OfficeDocument Service.
@@ -373,6 +381,7 @@ Services and interfaces both use inheritance, as shown by the UML diagram in :nu
     .. _ch01fig_service_interface_relations:
     .. figure:: https://user-images.githubusercontent.com/4193389/177429003-eec1bdd0-dadc-4577-9ffa-999570874339.png
         :alt: Diagram of Service and Interface Relationships and Hierarchies.
+        :figclass: align-center
 
         :Service and Interface Relationships and Hierarchies.
 
@@ -383,6 +392,7 @@ For example, OfficeDocument is the super-class service of all other document for
     .. _ch01fig_office_doc_super:
     .. figure:: https://user-images.githubusercontent.com/4193389/177429219-5cb80ff9-a272-4c9e-a0f9-b8548771384d.png
         :alt: Diagram of Office Document as a Super class Service.
+        :figclass: align-center
 
         : ``OfficeDocument`` as a Super-class Service.
 
@@ -396,6 +406,7 @@ For instance, the `XModel`_ interface inherits XComponent and XInterface, as in 
     .. _ch01fig_super_xmodel:
     .. figure:: https://user-images.githubusercontent.com/4193389/177429428-e022d6a0-3302-4f69-bb1d-44379a6aa146.png
         :alt: Diagram of The Super classes of XModel
+        :figclass: align-center
 
         :The Super-classes of XModel.
 
@@ -420,6 +431,7 @@ as shown in :numref:`ch01fig_fcm_relation`.
     .. _ch01fig_fcm_relation:
     .. figure:: https://user-images.githubusercontent.com/4193389/177430903-43850d01-c0b5-4352-821b-ca38dfbf9afc.png
         :alt: Diagram of The FCM Relationship
+        :figclass: align-center
 
         :The FCM Relationship.
 
@@ -611,6 +623,7 @@ entire |lo_api|_ into templates that are converted into ooouno_ and types-unopy_
         .. _ch01fig_rect_demo:
         .. figure:: https://user-images.githubusercontent.com/4193389/177604603-55660d5d-2aef-4746-a8fe-4365a0dcdaa6.gif
             :alt: OOO Rectangle Demo
+            :figclass: align-center
 
             :OOO Rectangle demo
 
