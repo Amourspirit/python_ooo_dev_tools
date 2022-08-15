@@ -863,13 +863,49 @@ The following fragment from |build_doc|_ applies a 'code' styling to several lin
 
     .. _ch06fig_styled_text_code_ss:
     .. figure:: https://user-images.githubusercontent.com/4193389/184730866-6a39e2fd-76a3-4afe-8c32-ccaa8e13633b.png
-        :alt: Screen Shot Text with Code Styling
+        :alt: Screen Shot of Text with Code Styling
         :figclass: align-center
 
         :Text with Code Styling.
 
 Unfortunately, :py:meth:`~.Write.style_left` depend on integer character positions, which are calculated using :py:meth:`.Write.get_position`.
 As previously mentioned, this method could fail if asked to generate too large a string, and this would cause :py:meth:`~.Write.style_left` to die.
+
+6.8 Hyperlink Styling
+=====================
+
+Text hyperlinks are implemented as styles, using ``HyperLinkURL``, and perhaps ``HyperLinkName``, and ``HyperLinkTarget``.
+|build_doc|_ shows how the ``HyperLinkURL`` property is set:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # Create text that contains a hyperlink
+        append("A link to ")
+
+        pos = get_pos()
+        append("OOO Development Tools")
+
+        url_str = "https://github.com/Amourspirit/python_ooo_dev_tools"
+        Write.style_left(cursor=cursor, pos=pos, prop_name="HyperLinkURL", prop_val=url_str)
+
+        append(" Website.")
+        Write.end_paragraph(cursor)
+
+.. cssclass:: screen_shot invert
+
+    .. _ch06fig_text_hyperlink_ss:
+    .. figure:: https://user-images.githubusercontent.com/4193389/184732547-33adc6b0-7d4a-4d41-9558-1b9f6ae188ea.png
+        :alt: Screen Shot of Text Containing a Hypertext Link.
+        :figclass: align-center
+
+        :Text Containing a Hypertext Link.
+
+If the user control-clicks on the link, then the URL value of ``HyperLinkURL`` will be loaded into the browser.
+
+The ``HyperLinkName`` property specifies a link name, which can be used when searching a document.
+``HyperLinkTarget`` corresponds to the HTML hypertext target attribute, and has a default value of "_self".
 
 Work in Progress...
 
