@@ -966,7 +966,69 @@ Instead of being accessed via XStyleFamiliesSupplier_, they employ XChapterNumbe
 
 For more details, see the development guide: https://wiki.openoffice.org/wiki/Documentation/DevGuide/Text/Line_Numbering_and_Outline_Numbering
 
-Work in Progress...
+6.10 Other Style Changes
+========================
+
+|story_creator|_ example illustrates three other styling effects: the creation of a header, setting the page to A4 format, and employing page numbers in the footer.
+The relevant calls are:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # fragment from story creator
+        Write.set_header(text_doc=doc, text=f"From: {fnm.name}")
+        Write.set_a4_page_format(doc)
+        Write.set_page_numbers(doc)
+
+.. todo::
+
+    Chapter 6.10 Add link to chapter 7
+
+:py:meth:`.Write.set_a4_page_format` sets the page formatting.
+:py:meth:`.Write.set_page_numbers` utilizes text fields, which is examined in the "Text Fields" section in Chapter 7.
+
+Changing the header in :py:meth:`.Write.set_header` requires the setting of the ``HeaderIsOn`` boolean in the ``Standard`` page style.
+Adding text to the header is done via an XText_ reference.
+The code for :py:meth:`.Write.set_header`:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        @staticmethod
+        def set_header(text_doc: XTextDocument, text: str) -> None:
+            props = Info.get_style_props(doc=text_doc, family_style_name="PageStyles", prop_set_nm="Standard")
+            if props is None:
+                raise PropertiesError("Could not access the standard page style container")
+            try:
+                props.setPropertyValue("HeaderIsOn", True)
+                # header must be turned on in the document
+                # props.setPropertyValue("TopMargin", 2200)
+                header_text = Lo.qi(XText, props.getPropertyValue("HeaderText"))
+                header_cursor = header_text.createTextCursor()
+                header_cursor.gotoEnd(False)
+
+                header_props = Lo.qi(XPropertySet, header_cursor, True)
+                header_props.setPropertyValue("CharFontName", Info.get_font_general_name())
+                header_props.setPropertyValue("CharHeight", 10)
+                header_props.setPropertyValue("ParaAdjust", ParagraphAdjust.RIGHT)
+
+                header_text.setString(f"{text}\n")
+            except Exception as e:
+                raise Exception("Unable to set header text") from e
+
+The header's XText_ reference is retrieved via the page style's ``HeaderText`` property, and a cursor is created local to the header:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        header_cursor = header_text.createTextCursor()
+
+This cursor can only move around inside the header not the entire document.
+
+The properties of the header's XText_ are changed using the cursor, and then the text is added.
 
 .. |styles_info| replace:: Styles Info
 .. _styles_info: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_styles_info
@@ -994,5 +1056,6 @@ Work in Progress...
 .. _XPropertySet: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1beans_1_1XPropertySet.html
 .. _XStyle: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1style_1_1XStyle.html
 .. _XStyleFamiliesSupplier: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1style_1_1XStyleFamiliesSupplier.html
+.. _XText: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XText.html
 .. _XTextCursor: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextCursor.html
 .. _XTextRange: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextRange.html
