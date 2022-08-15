@@ -431,6 +431,199 @@ style services support it (as shown in :numref:`ch06fig_style_inheritance`).
 
     .. code-tab:: python
 
+        para_style = Lo.create_instance_msf(XStyle, "com.sun.star.style.ParagraphStyle", raise_err=True)
+
+:py:meth:`.Lo.create_instance_msf`'s second argument is the full name of the service, and the first argument is the interface,
+the third argument determines if a error should be raised if unable to obtain interface.
+All the style services are located in the "com.sun.star.style" package.
+
+Since the desired result is to change property in this new style, It is cast the XStyle_ interface to XPropertySet_:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        props = Lo.qi(XPropertySet, para_style, raise_err=True)
+
+A property is modified using ``setPropertyValue()``.
+
+.. tabs::
+
+    .. code-tab:: python
+
+        props.setPropertyValue("CharFontName", "Times New Roman")
+        props.setPropertyValue("CharHeight", 12.0)
+        props.setPropertyValue("ParaBottomMargin", 400) # 4mm, in 100th mm
+
+These three properties are defined in one of the 'Properties' classes inherited by ``ParagraphStyle`` (as shown in :numref:`ch06fig_style_inheritance`).
+"ParaBottomMargin" appears in ``ParagraphProperties``, while "CharFontName" and "CharHeight" come from ``CharacterProperties``.
+
+After setting the style's properties, the new style added to the document's paragraph style family:
+
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # access the paragraph style family
+        para_styles = Info.get_style_container(doc, "ParagraphStyles");
+        # store the style in the style family with the name "Foo"
+        para_styles.insertByName("Foo", props);
+
+The style is stored with the name "Foo", but any unique name would be good (perhaps one a little more descriptive than "Foo" would be better).
+
+The style creation code in |story_creator|_  is located in ``create_para_style()`` and follows the code fragment sequence described above:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        def create_para_style(doc: XTextDocument, style_name: str) -> bool:
+            try:
+                para_styles = Info.get_style_container(doc=doc, family_style_name="ParagraphStyles")
+
+                # create new paragraph style properties set
+                para_style = Lo.create_instance_msf(XStyle, "com.sun.star.style.ParagraphStyle", raise_err=True)
+                props = Lo.qi(XPropertySet, para_style, raise_err=True)
+
+                # set some properties
+                props.setPropertyValue("CharFontName", Info.get_font_general_name())
+                props.setPropertyValue("CharHeight", 12.0)
+                props.setPropertyValue("ParaBottomMargin", 400) # 4mm, in 100th mm
+
+                line_spacing = LineSpacing(Mode=LineSpacingMode.FIX, Height=600)
+                props.setPropertyValue("ParaLineSpacing", line_spacing)
+
+                para_styles.insertByName(style_name, props)
+                return True
+            except Exception as e:
+                print("Could not set paragraph style")
+                print(f"  {e}")
+            return False
+
+The ``ParaLineSpacing`` property is a little more complex than the others since its value isn't a basic type, but a LineSpacing_ struct.
+
+The ParagraphProperties_ documentation for "ParaLineSpacing" is shown in :numref:`ch06fig_para_line_spc_ss`.
+
+.. cssclass:: screen_shot invert
+
+    .. _ch06fig_para_line_spc_ss:
+    .. figure:: https://user-images.githubusercontent.com/4193389/184714150-2017f356-38c7-48ab-b7b0-e3a2fd2e47e4.png
+        :alt: Screen Shot of The ParaLineSpacing Property in the ParagraphProperties Documentation
+        :figclass: align-center
+
+        :The ``ParaLineSpacing`` Property in the ``ParagraphProperties`` Documentation.
+
+Clicking on the ``com::sun:star:style::LineSpacing`` return type will load the LineSpacing_ documentation page into the browser.
+
+In |story_creator|_, ``create_para_style()`` is called like so:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        doc = Write.create_doc(loader=loader)
+        if not create_para_style(doc, "adParagraph"):
+            print("Could not create new paragraph style")
+            # office will close and with statement is exited
+            raise BreakContext.Break
+
+A new style called ``adParagraph`` is added to the paragraph style family.
+It uses os dependent font determined by :py:meth:`.Info.get_font_general_name` such as "Liberation Serif" 12pt font, and leaves a 4mm space between paragraphs.
+
+6.4 Applying Styles to Paragraphs (and Characters)
+==================================================
+
+An ``adParagraph`` style is added to the paragraph style family, but how to apply that style to some paragraphs in the document?
+The easiest way is through the document's XTextRange_ interface.
+XTextRange_ is supported by the TextRange service, which inherits ParagraphProperties_ and CharacterProperties_ (and several other property classes), as illustrated in :numref:`ch06fig_txt_rng_srvc`.
+
+.. cssclass:: diagram invert
+
+    .. _ch06fig_txt_rng_srvc:
+    .. figure:: https://user-images.githubusercontent.com/4193389/184718158-9d8a414c-5682-4df4-9a0f-962f3b360351.png
+        :alt: Diagrom of The TextRange Service.
+        :figclass: align-center
+
+        :The TextRange Service.
+
+XTextRange_ can be cast to XPropertySet_ to make the properties in ParagraphProperties_ and CharacterProperties_ accessible.
+An existing (or new) paragraph style is applied to a text range by setting its ``ParaStyleName`` property:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        xtext_range = doc.getText().getStart()
+        props = Lo.qi(XPropertySet, xtext_range);
+        props.setProperty("ParaStyleName", "adParagraph")
+
+Using :py:meth:`.Props.set_property`, simplifies this to:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        xtext_range = doc.getText().getStart()
+        Props.set_property(xtext_range, "ParaStyleName", "adParagraph")
+
+The code above obtains the text range at the start of the document, and set its paragraph style to ``adParagraph``.
+Any text added from this position onward will use that style.
+
+This approach is used in |story_creator|_: the style is set first, then text is added.
+
+6.5 Cursors and Text Ranges
+===========================
+
+Another technique for applying styles uses a cursor to select a text range.
+Then the text's properties are accessed through the cursor.
+
+All the different kinds of model and view cursor belong to the TextCursor_ service, and this inherits TextRange_.
+This allows us to extend :numref:`ch06fig_txt_rng_srvc` to become :numref:`ch06fig_txt_rng_srvc_cursor`.
+
+.. cssclass:: diagram invert
+
+    .. _ch06fig_txt_rng_srvc_cursor:
+    .. figure:: https://user-images.githubusercontent.com/4193389/184720203-8147f173-596c-4aae-b7ce-c1e8a3b0e674.png
+        :alt: Diagrom of Cursor Access to Text Properties
+        :figclass: align-center
+
+        :Cursor Access to Text Properties.
+
+This hierarchy means that a cursor can access the TextRange_ service and its text properties.
+The following code fragment demonstrates the idea:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        cursor = Write.get_cursor(doc)
+        cursor.gotoEnd(True) # select the entire document
+
+        props = Lo.qi(XPropertySet, cursor)
+        props.setProperty("ParaStyleName", "adParagraph")
+
+Using :py:meth:`.Props.set_property`, simplifies this to:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        cursor = Write.get_cursor(doc)
+        cursor.gotoEnd(True)
+        Props.set_property(cursor, "ParaStyleName", "adParagraph")
+
+This approach is employed in |story_creator|_ when some paragraphs (such as section headers) need to use a paragraph style other than ``adParagraph``.
+
+6.6 Building a Story Document
+=============================
+
+|story_creator|_  example starts by setting the ``adParagraph`` style, then employs ``read_text()`` to read text from a file and add it to the document:
+
+.. tabs::
+
+    .. code-tab:: python
+
         xtext_range = doc.getText().getStart()
         Props.set_property(xtext_range, "ParaStyleName", "adParagraph")
 
@@ -550,6 +743,9 @@ Afterwards, that style name is applied back to the cursor.
 ``read_text()`` calls :py:meth:`~.Write.style_prev_paragraph` with three style names ("Title", "Subtitle", and "Heading").
 Those names come from looking at the "Paragraph Styles" dialog window in :numref:`ch06fig_writer_style_ss`.
 
+6.7 Style Changes to Words and Phrases
+======================================
+
 Work in Progress...
 
 .. |styles_info| replace:: Styles Info
@@ -560,12 +756,18 @@ Work in Progress...
 
 .. _CharacterProperties: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1CharacterProperties.html
 .. _GenericTextDocument: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1GenericTextDocument.html
+.. _LineSpacing: https://api.libreoffice.org/docs/idl/ref/structcom_1_1sun_1_1star_1_1style_1_1LineSpacing.html
+.. _ParagraphProperties: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1ParagraphProperties.html
 .. _ParagraphProperties: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1ParagraphProperties.html
 .. _ParagraphStyle: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1ParagraphStyle.html
+.. _TextCursor: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1TextCursor.html
+.. _TextRange: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1TextRange.html
 .. _XIndexAccess: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1container_1_1XIndexAccess.html
 .. _XIndexContainer: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1container_1_1XIndexContainer.html
 .. _XNameAccess: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1container_1_1XNameAccess.html
 .. _XNameContainer: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1container_1_1XNameContainer.html
+.. _XPropertySet: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1beans_1_1XPropertySet.html
 .. _XStyle: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1style_1_1XStyle.html
 .. _XStyleFamiliesSupplier: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1style_1_1XStyleFamiliesSupplier.html
 .. _XTextCursor: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextCursor.html
+.. _XTextRange: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextRange.html
