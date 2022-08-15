@@ -726,14 +726,14 @@ Text appended after this line should use ``adParagraph`` styling.
         def style_prev_paragraph(cursor: XTextCursor | XParagraphCursor, prop_val: object, prop_name: str = None) -> None:
             if prop_name is None:
                 prop_name = "ParaStyleName"
-            old_val = mProps.Props.get_property(cursor, prop_name)
+            old_val = Props.get_property(cursor, prop_name)
 
             cursor.gotoPreviousParagraph(True)  # select previous paragraph
-            mProps.Props.set_property(prop_set=cursor, name=prop_name, value=prop_val)
+            Props.set_property(prop_set=cursor, name=prop_name, value=prop_val)
 
             # reset the cursor and property
             cursor.gotoNextParagraph(False)
-            mProps.Props.set_property(prop_set=cursor, name=prop_name, value=old_val)
+            Props.set_property(prop_set=cursor, name=prop_name, value=old_val)
 
 The current ``ParaStyleName`` value is stored before changing its value in the selected range.
 Afterwards, that style name is applied back to the cursor.
@@ -746,6 +746,131 @@ Those names come from looking at the "Paragraph Styles" dialog window in :numref
 6.7 Style Changes to Words and Phrases
 ======================================
 
+Aside from changing paragraph styles, it's useful to apply style changes to words or strings inside a paragraph.
+For example, to highlight a word in bold, or write several words in red italics for emphasis.
+
+This is implemented by :py:meth:`.Write.style_left` using a similar approach to :py:meth:`.Write.style_prev_pragraph`.
+:py:meth:`~.Write.style_left` is passed an integer position which lies to the left of the current cursor position.
+Character style changes are applied to the text range defined by that distance:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        def style_left(cursor: XTextCursor, pos: int, prop_name: str, prop_val: object) -> None:
+            old_val = Props.get_property(cursor, prop_name)
+
+            curr_pos = Selection.get_position(cursor)
+            cursor.goLeft(curr_pos - pos, True)
+            Props.set_property(prop_set=cursor, name=prop_name, value=prop_val)
+
+            cursor.goRight(curr_pos - pos, False)
+            Props.set_property(prop_set=cursor, name=prop_name, value=old_val)
+
+A XTextCursor_ is used to select the range, and the new style is set.
+Then the cursor is moved back to its old position, and the previous style reapplied.
+
+The Write class contain a few support functions that set common styles using :py:meth:`~.Write.style_left`:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        @classmethod
+        def style_left_bold(cls, cursor: XTextCursor, pos: int) -> None:
+            cls.style_left(cursor, pos, "CharWeight", FontWeight.BOLD)
+
+        @classmethod
+        def style_left_italic(cls, cursor: XTextCursor, pos: int) -> None:
+            cls.style_left(cursor, pos, "CharPosture", FontSlant.ITALIC)
+
+        @classmethod
+        def style_left_color(cls, cursor: XTextCursor, pos: int, color: Color) -> None:
+            cls.style_left(cursor, pos, "CharColor", color)
+
+        @classmethod
+        def style_left_code(cls, cursor: XTextCursor, pos: int) -> None:
+            cls.style_left(cursor, pos, "CharFontName", Info.get_font_mono_name())
+            cls.style_left(cursor, pos, "CharHeight", 10)
+
+The position (the pos value) passed to :py:meth:`~.Write.style_left` can be obtained from :py:meth:`.Write.get_position`.
+
+The |build_doc|_ example takes advantage of a few python partial methods to cut down on typing.
+
+.. tabs::
+
+    .. code-tab:: python
+
+        cursor = Write.get_cursor(doc)
+
+        # take advantage of a few partial functions
+        append = partial(Write.append, cursor)
+        para = partial(Write.append_para, cursor)
+        nl = partial(Write.append_line, cursor)
+        np = partial(Write.end_paragraph, cursor)
+        get_pos = partial(Write.get_position, cursor)
+
+
+The |build_doc|_ example contains several examples of how to use :py:meth:`~.Write.style_left`:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        cursor = Write.get_cursor(doc)
+        append(text="Some examples of simple text ")
+        pos = get_pos()
+        append("styles.")
+        append(ctl_char=Write.ControlCharacter.LINE_BREAK)
+        Write.style_left_bold(cursor=cursor, pos=pos)
+
+        pos = get_pos()
+        para("This line is written in red italics.")
+        Write.style_left_color(cursor=cursor, pos=pos, color=CommonColor.DARK_RED) # red
+        Write.style_left_italic(cursor=cursor, pos=pos) # italic
+
+The resulting text in the document looks like :numref:`ch06fig_styled_text_ss`.
+
+.. cssclass:: screen_shot
+
+    .. _ch06fig_styled_text_ss:
+    .. figure:: https://user-images.githubusercontent.com/4193389/184726710-b7b94880-723f-4e93-b15d-74477bd7c752.png
+        :alt: Screen Shot of Styled Text
+        :figclass: align-center
+
+        :Styled Text.
+
+The following fragment from |build_doc|_ applies a 'code' styling to several lines:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        para("Here's some code:")
+
+        np()
+        pos = get_pos()
+        nl("public class Hello")
+        nl("{")
+        nl("  public static void main(String args[]")
+        nl('  {  System.out.println("Hello World");  }')
+        para("}  // end of Hello class")
+        Write.style_left_code(cursor, pos)
+
+:numref:`ch06fig_styled_text_code_ss` shows the generated document text.
+
+.. cssclass:: screen_shot invert
+
+    .. _ch06fig_styled_text_code_ss:
+    .. figure:: https://user-images.githubusercontent.com/4193389/184730866-6a39e2fd-76a3-4afe-8c32-ccaa8e13633b.png
+        :alt: Screen Shot Text with Code Styling
+        :figclass: align-center
+
+        :Text with Code Styling.
+
+Unfortunately, :py:meth:`~.Write.style_left` depend on integer character positions, which are calculated using :py:meth:`.Write.get_position`.
+As previously mentioned, this method could fail if asked to generate too large a string, and this would cause :py:meth:`~.Write.style_left` to die.
+
 Work in Progress...
 
 .. |styles_info| replace:: Styles Info
@@ -753,6 +878,9 @@ Work in Progress...
 
 .. |story_creator| replace:: Story Creator
 .. _story_creator: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_story_creator
+
+.. |build_doc| replace:: Build Doc
+.. _build_doc: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_build_doc
 
 .. _CharacterProperties: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1CharacterProperties.html
 .. _GenericTextDocument: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1GenericTextDocument.html
