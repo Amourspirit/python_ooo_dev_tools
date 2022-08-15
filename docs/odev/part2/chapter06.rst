@@ -419,16 +419,153 @@ This listing, and in fact any listing of a style from "ParagraphStyles",
 shows that the properties are a mixture of those defined in the Style,
 ParagraphProperties_, and CharacterProperties_ services.
 
+6.3 Creating a New Style
+========================
+
+The |story_creator|_ example adds a new style to the paragraph style family, and uses it to format the document's paragraphs.
+
+The new ParagraphStyle_ service is referenced using one of its interfaces, the usual one being XStyle_ since all the different
+style services support it (as shown in :numref:`ch06fig_style_inheritance`).
+
+.. tabs::
+
+    .. code-tab:: python
+
+        xtext_range = doc.getText().getStart()
+        Props.set_property(xtext_range, "ParaStyleName", "adParagraph")
+
+        Write.set_header(text_doc=doc, text=f"From: {fnm.name}")
+        Write.set_a4_page_format(doc)
+        Write.set_page_numbers(doc)
+
+        cursor = Write.get_cursor(doc)
+
+        read_text(fnm=fnm, cursor=cursor)
+        Write.end_paragraph(cursor)
+
+``read_text()`` assumes the text file has a certain format. For example, ``scandal.txt`` begins like so:
+
+::
+
+    Title: A Scandal in Bohemia
+    Author: Sir Arthur Conan Doyle
+
+    Part I.
+
+
+    To Sherlock Holmes she is always THE woman. I have seldom heard
+    him mention her under any other name. In his eyes she eclipses
+    and predominates the whole of her sex.
+
+
+    It was not that he felt any emotion akin to love for Irene Adler.
+
+    All emotions, and that one particularly, were abhorrent to his
+    cold, precise but admirably balanced mind.
+
+A paragraph is a series of text lines followed by a blank line. But there are exceptions: lines that starts with "Title: ", "Author: " or "Part "
+are treated as headings, and styled differently. When the text above is processed, the resulting document looks like :numref:`ch06fig_story_creator_out_ss`.
+
+.. cssclass:: screen_shot invert
+
+    .. _ch06fig_story_creator_out_ss:
+    .. figure:: https://user-images.githubusercontent.com/4193389/184560774-db82b140-3f9e-4f10-abd1-031c649bbac8.png
+        :alt: Screen Shot of The Output of Story Creator Example
+        :figclass: align-center
+
+        :The Output of Story Creator Example.
+
+``read_text()`` is implemented using python's ``with open(fnm, 'r') as file:`` context manager:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        def read_text(fnm: Path, cursor: XTextCursor) -> None:
+            sb: List[str] = []
+            with open(fnm, 'r') as file:
+                i = 0
+                for ln in file:
+                    line = ln.rstrip() # remove new line \n
+                    if len(line) == 0:
+                        if len(sb) > 0:
+                            Write.append_para(cursor, ' '.join(sb))
+                        sb.clear()
+                    elif line.startswith("Title: "):
+                        Write.append_para(cursor, line[7:])
+                        Write.style_prev_paragraph(cursor, "Title")
+                    elif line.startswith("Author: "):
+                        Write.append_para(cursor, line[8:])
+                        Write.style_prev_paragraph(cursor, "Subtitle")
+                    elif line.startswith("Part "):
+                        Write.append_para(cursor, line)
+                        Write.style_prev_paragraph(cursor, "Heading")
+                    else:
+                        sb.append(line)
+                    i += 1
+                    # if i > 20:
+                    #     break
+                if len(sb) > 0:
+                    Write.append_para(cursor, ' '.join(sb))
+
+The interesting bits are the calls to :py:meth:`.Write.append_para` and :py:meth:`.Write.style_prev_paragraph` which add a paragraph to the document and apply a style to it.
+For instance:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        elif line.startswith("Author: "):
+            Write.append_para(cursor, line[8:])
+            Write.style_prev_paragraph(cursor, "Subtitle")
+
+:py:meth:`~.Write.append_para` writes the string into the document as a paragraph (the input line without the "Author: " substring).
+:py:meth:`~.Write.style_prev_paragraph` changes the paragraph style from ``adParagraph`` to ``Subtitle``.
+
+The hard part of :py:meth:`~.Write.style_prev_paragraph` is making sure that the style change only affects the previous paragraph.
+Text appended after this line should use ``adParagraph`` styling.
+
+.. tabs::
+
+    .. code-tab:: python
+
+        @staticmethod
+        def style_prev_paragraph(cursor: XTextCursor | XParagraphCursor, prop_val: object, prop_name: str = None) -> None:
+            if prop_name is None:
+                prop_name = "ParaStyleName"
+            old_val = mProps.Props.get_property(cursor, prop_name)
+
+            cursor.gotoPreviousParagraph(True)  # select previous paragraph
+            mProps.Props.set_property(prop_set=cursor, name=prop_name, value=prop_val)
+
+            # reset the cursor and property
+            cursor.gotoNextParagraph(False)
+            mProps.Props.set_property(prop_set=cursor, name=prop_name, value=old_val)
+
+The current ``ParaStyleName`` value is stored before changing its value in the selected range.
+Afterwards, that style name is applied back to the cursor.
+
+:py:meth:`~.Write.style_prev_paragraph` changes the XTextCursor_ into a paragraph cursor so that it's easier to move around across paragraphs.
+
+``read_text()`` calls :py:meth:`~.Write.style_prev_paragraph` with three style names ("Title", "Subtitle", and "Heading").
+Those names come from looking at the "Paragraph Styles" dialog window in :numref:`ch06fig_writer_style_ss`.
+
 Work in Progress...
 
 .. |styles_info| replace:: Styles Info
 .. _styles_info: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_styles_info
 
+.. |story_creator| replace:: Story Creator
+.. _story_creator: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_story_creator
+
 .. _CharacterProperties: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1CharacterProperties.html
 .. _GenericTextDocument: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1GenericTextDocument.html
 .. _ParagraphProperties: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1ParagraphProperties.html
+.. _ParagraphStyle: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1ParagraphStyle.html
 .. _XIndexAccess: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1container_1_1XIndexAccess.html
 .. _XIndexContainer: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1container_1_1XIndexContainer.html
 .. _XNameAccess: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1container_1_1XNameAccess.html
 .. _XNameContainer: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1container_1_1XNameContainer.html
+.. _XStyle: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1style_1_1XStyle.html
 .. _XStyleFamiliesSupplier: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1style_1_1XStyleFamiliesSupplier.html
+.. _XTextCursor: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextCursor.html
