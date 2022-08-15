@@ -907,6 +907,65 @@ If the user control-clicks on the link, then the URL value of ``HyperLinkURL`` w
 The ``HyperLinkName`` property specifies a link name, which can be used when searching a document.
 ``HyperLinkTarget`` corresponds to the HTML hypertext target attribute, and has a default value of "_self".
 
+6.9 Text Numbering
+==================
+
+It's straightforward to number paragraphs by using :py:meth:`~.Write.style_left` and the ``NumberingStyleName`` property.
+The following code from |build_doc|_ , numbers three paragraphs:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        Write.append_para(cursor, "The following points are important:")
+
+        pos = get_pos()
+        Write.append_para(cursor, "Have a good breakfast")
+        Write.append_para(cursor, "Have a good lunch")
+        Write.append_para(cursor, "Have a good dinner")
+        Write.style_left(cursor, pos, "NumberingStyleName", "Numbering 123")
+
+The result is shown in :numref:`ch06fig_text_num_para_ss`.
+
+.. cssclass:: screen_shot invert
+
+    .. _ch06fig_text_num_para_ss:
+    .. figure:: https://user-images.githubusercontent.com/4193389/184733566-ce060993-022e-4071-9f6e-b1db5dc3e8b9.png
+        :alt: Screen Shot of Numbered Paragraphs.
+        :figclass: align-center
+
+        :Numbered Paragraphs.
+
+``NumberingStyleName`` is a property in ParagraphProperties_, and the "Numbering 123" style is from the "Paragraph Styles" dialog window in :numref:`ch06fig_writer_style_ss`.
+
+Letters are drawn instead of numbers by changing the style name to "Numbering abc" (see :numref:`ch06fig_text_letter_para_ss`).
+
+.. cssclass:: screen_shot invert
+
+    .. _ch06fig_text_letter_para_ss:
+    .. figure:: https://user-images.githubusercontent.com/4193389/184734264-458598cc-ca43-4e7b-b080-2a5c74b945e5.png
+        :alt: Screen Shot of Lettered Paragraphs.
+        :figclass: align-center
+
+        :Letter Paragraphs.
+
+One issue with numbered paragraphs is that their default behavior retains the current count when numbering another group of text.
+For example, a second group of numbered paragraphs appearing in the document after :numref:`ch06fig_text_num_para_ss` would start at '4'.
+This is fixed by setting the ``ParaIsNumberingRestart`` property to true:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        Write.style_left(cursor, pos, "ParaIsNumberingRestart", True)
+
+One large topic that is not covered in this document is numbering.
+This includes the numbering of chapter headings and lines.
+Chapter and line numbering are dealt with differently from most document styles.
+Instead of being accessed via XStyleFamiliesSupplier_, they employ XChapterNumberingSupplier_ and XNumberFormatsSupplier_.
+
+For more details, see the development guide: https://wiki.openoffice.org/wiki/Documentation/DevGuide/Text/Line_Numbering_and_Outline_Numbering
+
 Work in Progress...
 
 .. |styles_info| replace:: Styles Info
@@ -926,10 +985,12 @@ Work in Progress...
 .. _ParagraphStyle: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1ParagraphStyle.html
 .. _TextCursor: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1TextCursor.html
 .. _TextRange: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1TextRange.html
+.. _XChapterNumberingSupplier: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XChapterNumberingSupplier.html
 .. _XIndexAccess: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1container_1_1XIndexAccess.html
 .. _XIndexContainer: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1container_1_1XIndexContainer.html
 .. _XNameAccess: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1container_1_1XNameAccess.html
 .. _XNameContainer: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1container_1_1XNameContainer.html
+.. _XNumberFormatsSupplier: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1util_1_1XNumberFormatsSupplier.html
 .. _XPropertySet: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1beans_1_1XPropertySet.html
 .. _XStyle: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1style_1_1XStyle.html
 .. _XStyleFamiliesSupplier: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1style_1_1XStyleFamiliesSupplier.html
