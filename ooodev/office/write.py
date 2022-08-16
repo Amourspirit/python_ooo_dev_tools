@@ -1260,7 +1260,7 @@ class Write(mSel.Selection):
         try:
             props.setPropertyValue("FooterIsOn", True)
             #   footer must be turned on in the document
-            footer_text: XText = props.getPropertyValue("FooterText")
+            footer_text = mLo.Lo.qi(XText, props.getPropertyValue("FooterText"), True)
             footer_cursor = footer_text.createTextCursor()
 
             mProps.Props.set_property(

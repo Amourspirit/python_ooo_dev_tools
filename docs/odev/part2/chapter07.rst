@@ -597,6 +597,189 @@ Ten formulae are added to the document, which is saved as ``mathQuestions.pdf``.
 
         :Math Formulae in a Text Document.
 
+7.4 Text Fields
+===============
+
+A text field differs from other text content in that its data is generated dynamically by the document, or by an external source such as a database.
+Document-generated text fields include text showing the current date, the page number, the total number of pages in the document, and cross-references to other areas in the text.
+We'll look at three examples: the ``DateTime``, ``PageNumber``, and ``PageCount`` text fields.
+
+When a text field depends on an external source, there are two fields to initialize:
+the master field representing the external source, and the dependent field for the data used in the document; only the dependent field is visible.
+Here we won't be giving any dependent/master field examples, but there's one in the Development Guide section on text fields,
+at: https://wiki.openoffice.org/wiki/Documentation/DevGuide/Text/Text_Fields (or type ``loguide Text Fields``).
+
+It utilizes the User master field, which allows the external source to be user-defined data.
+The code appears in the TextDocuments.java example at https://api.libreoffice.org/examples/DevelopersGuide/examples.html#Text.
+
+Different kinds of text field are implemented as sub-classes of the TextField_ service.
+You can see the complete hierarchy in the online documentation for TextField_.
+:numref:`ch07fig_simple_text_field_hiearchy` presents a simplified version.
+
+.. cssclass:: diagram invert
+
+    .. _ch07fig_simple_text_field_hiearchy:
+    .. figure:: https://user-images.githubusercontent.com/4193389/184990923-2c7db8e2-5a5d-4a34-be07-a0ff20e0b35e.png
+        :alt: Diagram of Simplified Hierarchy for the TextField Service
+        :figclass: align-center
+
+        :Simplified Hierarchy for the TextField Service.
+
+7.4.1 The DateTime TextField
+----------------------------
+
+The build_doc|_ example ends with a few lines that appear to do the same thing twice:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # code fragment from build doc
+        Write.append_para(cursor, "\nTimestamp: " + DateUtil.time_stamp() + "\n")
+        Write.append(cursor, "Time (according to office): ")
+        Write.append_date_time(cursor=cursor)
+        Write.end_paragraph(cursor)
+
+:py:meth:`.DateUtil.time_stamp` inserts a timestamp (which includes the date and time), and then :py:meth:`.Write.append_date_time` inserts the date and time.
+Although these may seem to be the same, :py:meth:`~.DateUtil.time_stamp` adds a string while :py:meth:`~.Write.append_date_time` creates a text field.
+The difference becomes apparent if you open the file some time after it was created.
+
+:numref:`ch07fig_time_stamps_ss` shows two screenshots of the time-stamped parts of the document taken after it was first generated, and nearly 50 minutes later.
+
+.. cssclass:: screen_shot invert
+
+    .. _ch07fig_time_stamps_ss:
+    .. figure:: https://user-images.githubusercontent.com/4193389/184992086-499fcafc-e1ad-45ed-b005-f02fccf55339.png
+        :alt: Screen shot of the document Timestamps.
+        :figclass: align-center
+
+        :Screenshots of the Timestamps.
+
+The text field timestamp is updated each time the file is opened in edit mode (which is the default in Writer).
+
+This dynamic updating occurs in all text fields.
+For example, if you add some pages to a document, all the places in the document that use the PageCount text field will be updated to show the new length.
+
+:py:meth:`.Write.append_date_time` creates a DateTime_ service, and returns its XTextField_ interface (see :numref:`ch07fig_simple_text_field_hiearchy`).
+The TextField_ service only contains two properties, with most being in the subclass (DateTime in this case).
+
+.. tabs::
+
+    .. code-tab:: python
+
+        @classmethod
+        def append_date_time(cls, cursor: XTextCursor) -> None:
+            dt_field = Lo.create_instance_msf(XTextField, "com.sun.star.text.TextField.DateTime")
+            Props.set_property(dt_field, "IsDate", True)  # so date is reported
+            xtext_content = Lo.qi(XTextContent, dt_field, True)
+            cls._append_text_content(cursor, xtext_content)
+            cls.append(cursor, "; ")
+
+            dt_field = Lo.create_instance_msf(XTextField, "com.sun.star.text.TextField.DateTime")
+            Props.set_property(dt_field, "IsDate", False)  # so time is reported
+            xtext_content = Lo.qi(XTextContent, dt_field, True)
+            cls._append_text_content(cursor, xtext_content)
+
+The method adds two DateTime text fields to the document.
+The first has its "IsDate" property set to true, so that the current date is inserted; the second sets "IsDate" to false so the current time is shown.
+
+7.4.2 The PageNumber and PageCount Text Fields
+----------------------------------------------
+
+As discussed most of |story_creator|_ in :ref:`ch06`, but skipped over how page numbers were added to the document's page footer. The footer is shown in :numref:`ch07fig_footer_text_fields_ss`.
+
+.. cssclass:: screen_shot invert
+
+    .. _ch07fig_footer_text_fields_ss:
+    .. figure:: https://user-images.githubusercontent.com/4193389/184993404-97a2d903-9aee-4198-9695-a94b938768b5.png
+        :alt: Screen shot of Page Footer using Text Fields
+        :figclass: align-center
+
+        :Page Footer using Text Fields.
+
+:py:meth:`.Write.set_page_numbers` inserts the ``PageNumber`` and ``PageCount`` text fields into the footer's text area:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        @classmethod
+        def set_page_numbers(cls, text_doc: XTextDocument) -> None:
+            props = Info.get_style_props(doc=text_doc, family_style_name="PageStyles", prop_set_nm="Standard")
+            if props is None:
+                raise PropertiesError("Could not access the standard page style")
+
+            try:
+                props.setPropertyValue("FooterIsOn", True)
+                #   footer must be turned on in the document
+                footer_text = Lo.qi(XText, props.getPropertyValue("FooterText"), True)
+                footer_cursor = footer_text.createTextCursor()
+
+                Props.set_property(
+                    prop_set=footer_cursor, name="CharFontName", value=Info.get_font_general_name()
+                )
+                Props.set_property(prop_set=footer_cursor, name="CharHeight", value=12.0)
+                Props.set_property(prop_set=footer_cursor, name="ParaAdjust", value=ParagraphAdjust.CENTER)
+
+                # add text fields to the footer
+                pg_number = cls.get_page_number()
+                pg_xcontent = Lo.qi(XTextContent, pg_number)
+                if pg_xcontent is None:
+                    raise MissingInterfaceError(
+                        XTextContent, f"Missing interface for page number. {XTextContent.__pyunointerface__}"
+                    )
+                cls._append_text_content(cursor=footer_cursor, text_content=pg_xcontent)
+                cls._append_text(cursor=footer_cursor, text=" of ")
+                pg_count = cls.get_page_count()
+                pg_count_xcontent = Lo.qi(XTextContent, pg_count)
+                if pg_count_xcontent is None:
+                    raise MissingInterfaceError(
+                        XTextContent, f"Missing interface for page count. {XTextContent.__pyunointerface__}"
+                    )
+                cls._append_text_content(cursor=footer_cursor, text_content=pg_count_xcontent)
+            except Exception as e:
+                raise Exception("Unable to set page numbers") from e
+
+        @staticmethod
+        def get_page_number() -> XTextField:
+            num_field = Lo.create_instance_msf(XTextField, "com.sun.star.text.TextField.PageNumber")
+            Props.set_property(prop_set=num_field, name="NumberingType", value=NumberingType.ARABIC)
+            Props.set_property(prop_set=num_field, name="SubType", value=PageNumberType.CURRENT)
+            return num_field
+
+        @staticmethod
+        def get_page_count() -> XTextField:
+            pc_field = Lo.create_instance_msf(XTextField, "com.sun.star.text.TextField.PageCount")
+            Props.set_property(prop_set=pc_field, name="NumberingType", value=NumberingType.ARABIC)
+            return pc_field
+
+:py:meth:`.Write.set_page_numbers` starts by accessing the "Standard" property set (style) for the page style family.
+Via its properties, the method turns on footer functionality and accesses the footer text area as an XText_ object.
+
+An XTextCursor_ is created for the footer text area, and properties are configured:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        footer_text = Lo.qi(XText, props.getPropertyValue("FooterText"), True)
+        footer_cursor = footer_text.createTextCursor()
+        Props.set_property(
+            prop_set=footer_cursor, name="CharFontName", value=Info.get_font_general_name()
+        )
+
+These properties will be applied to the text and text fields added afterwards:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        Write.append(footer_cursor, Write.get_page_number())
+        Wirte.append(footer_cursor, " of ")
+        Write.append(footer_cursor, Write.get_page_count())
+
+:py:meth:`~.Write.get_page_number` and :py:meth:`~.Write.get_page_count` deal with the properties for the PageNumber and PageCount fields.
+
 Work in progress ...
 
 .. |build_doc| replace:: Build Doc
@@ -605,13 +788,18 @@ Work in progress ...
 .. |math_ques| replace:: Math Questions
 .. _math_ques: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_math_quesions
 
+.. |story_creator| replace:: Story Creator
+.. _story_creator: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_story_creator
+
 .. _BaseFrameProperties: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1BaseFrameProperties.html
+.. _DateTime: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1presentation_1_1textfield_1_1DateTime.html
 .. _GenericTextDocument: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1GenericTextDocument.html
 .. _GraphicObjectShape: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1drawing_1_1GraphicObjectShape.html
 .. _OfficeDocument: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1document_1_1OfficeDocument.html
 .. _TextContent: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1TextContent.html
 .. _TextContentAnchorType: https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1text.html#a470b1caeda4ff15fee438c8ff9e3d834
 .. _TextEmbeddedObject: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1TextEmbeddedObject.html
+.. _TextField: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1TextField.html
 .. _TextFrame: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1TextFrame.html
 .. _TextGraphicObject: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1TextGraphicObject.html
 .. _XEmbeddedObjectSupplier2: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1document_1_1XEmbeddedObjectSupplier2.html
@@ -620,4 +808,6 @@ Work in progress ...
 .. _XShape: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1drawing_1_1XShape.html
 .. _XText: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XText.html
 .. _XTextContent: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextContent.html
+.. _XTextCursor: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextCursor.html
+.. _XTextField: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextField.html
 .. _XTextFrame: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextFrame.html
