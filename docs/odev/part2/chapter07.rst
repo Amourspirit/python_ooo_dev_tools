@@ -409,20 +409,212 @@ This means that all the text manipulations possible in a document are also possi
 The ordering of the tasks at the end of :py:meth:`~.Write.add_text_frame` is important.
 Office prefers that an empty text content be added to the document, and the data inserted afterwards.
 
+7.3 Adding a Text Embedded Object to a Document
+===============================================
+
+.. todo::
+
+    Chapter 7.3. Create a link to chapter 33
+
+Text embedded object content support OLE (Microsoft's Object Linking and Embedding), and is typically used to create a frame linked to an external Office document.
+Probably, its most popular use is to link to a chart, but we'll delay looking at that until Chapter 33.
+
+The best way of getting an idea of what OLE objects are available is to go to the Writer application's Insert menu, Object, "OLE Object" dialog.
+In my version of Office, it lists Office spreadsheet, chart, drawing, presentation, and formula documents, and a range of Microsoft and PDF types.
+
+Note that text embedded objects aren't utilized for adding graphics to a document.
+
+That's easier to do using the TextGraphicObject_ or GraphicObjectShape_ services, which is described next.
+
+In this section we look at how to insert mathematical formulae into a text document.
+
+The example code is in |math_ques|_, but most of the formula embedding is performed by :py:meth:`.Write.add_formula`:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        @classmethod
+        def add_formula(cls, cursor: XTextCursor, formula: str) -> bool:
+            cargs = CancelEventArgs(Write.add_formula.__qualname__)
+            cargs.event_data = {"cursor": cursor, "formula": formula}
+            _Events().trigger(WriteNamedEvent.FORMULA_ADDING, cargs)
+            if cargs.cancel:
+                return False
+            formula = cargs.event_data["formula"]
+            embed_content = Lo.create_instance_msf(
+                XTextContent, "com.sun.star.text.TextEmbeddedObject", raise_err=True
+            )
+            try:
+                # set class ID for type of object being inserted
+                props = Lo.qi(XPropertySet, embed_content, True)
+                props.setPropertyValue("CLSID", Lo.CLSID.MATH)
+                props.setPropertyValue("AnchorType", TextContentAnchorType.AS_CHARACTER)
+
+                # insert object in document
+                cls._append_text_content(cursor=cursor, text_content=embed_content)
+                cls.end_line(cursor)
+
+                # access object's model
+                embed_obj_supplier = Lo.qi(XEmbeddedObjectSupplier2, embed_content, True)
+                embed_obj_model = embed_obj_supplier.getEmbeddedObject()
+
+                formula_props = Lo.qi(XPropertySet, embed_obj_model, True)
+                formula_props.setPropertyValue("Formula", formula)
+                Lo.print(f'Inserted formula "{formula}"')
+            except Exception as e:
+                raise Exception(f'Insertion fo formula "{formula}" failed:') from e
+            _Events().trigger(WriteNamedEvent.FORMULA_ADDED, EventArgs.from_args(cargs))
+            return True
+
+A math formula is passed to :py:meth:`~.Write.add_formula` as a string in a format this is explained shortly.
+
+The method begins by creating a TextEmbeddedObject_ service, and referring to it using the XTextContent_ interface:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        embed_content = Lo.create_instance_msf(
+                XTextContent, "com.sun.star.text.TextEmbeddedObject", raise_err=True
+            )
+
+Details about embedded objects are given in row 2 of :numref:`ch07tbl_create_access_text_content`.
+
+Unlike TextFrame_ which has an XTextFrame_ interface, there's no ``XTextEmbeddedObject`` interface for TextEmbeddedObject_.
+This can be confirmed by looking at the TextFrame_ inheritance hierarchy in :numref:`ch07fig_text_content_super_classes`.
+There is an ``XEmbeddedObjectSuppler``, but that's for accessing objects, not creating them.
+Instead XTextContent_ interface is utilized in :py:meth:`.Lo.create_instance_msf` because it's the most specific interface available.
+
+The XTextContent_ interface is converted to XPropertySet_ so the "CLSID" and "AnchorType" properties can be set.
+"CLSID" is specific to ``TextEmbeddedObject`` – its value is the OLE class ID for the embedded document.
+The :py:class:`.Lo.CLSID` contains the class ID constants for Office's documents.
+
+The "AnchorType" property is set to ``AS_CHARACTER`` so the formula string will be anchored in the document in the same way as a string of characters.
+
+As with the text frame in :py:meth:`.Write.add_text_frame`, an empty text content is added to the document first, then filled with the formula.
+
+The embedded object's content is accessed via the XEmbeddedObjectSupplier2_ interface which has a get method for obtaining the object:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # access object's model
+        embed_obj_supplier = Lo.qi(XEmbeddedObjectSupplier2, embed_content, True)
+        embed_obj_model = embed_obj_supplier.getEmbeddedObject()
+
+The properties for this empty object (embed_obj_model) are accessed, and the formula string is assigned to the "Formula" property:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        formula_props = Lo.qi(XPropertySet, embed_obj_model, True)
+        formula_props.setPropertyValue("Formula", formula)
+
+7.3.1 What's a Formula String?
+------------------------------
+
+Although the working of :py:meth:`.Write.add_formula` has been explained, the format of the formula string that's passed to it has not been explained.
+There's a good overview of the notation in the "Commands Reference" appendix of Office's "Math Guide", available at https://libreoffice.org/get-help/documentation
+For example, the formula string: "1 {5}over{9} + 3 {5}over{9} = 5 {1}over{9}" is rendered as:
+
+.. math::
+
+   1 \frac{5}{9} + 3 \frac{5}{9} = 5 \frac{1}{9}
+
+7.3.2 Building Formulae
+-----------------------
+
+|math_ques|_ is mainly a for-loop for randomly generating numbers and constructing simple formulae strings.
+Ten formulae are added to the document, which is saved as ``mathQuestions.pdf``. The ``main()`` function:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        def main() -> int:
+
+            delay = 2_000  # delay so users can see changes.
+
+            with Lo.Loader(Lo.ConnectSocket()) as loader:
+
+                doc = Write.create_doc(loader=loader)
+
+                try:
+                    GUI.set_visible(is_visible=True, odoc=doc)
+
+                    cursor = Write.get_cursor(doc)
+                    Write.append_para(cursor, "Math Questions")
+                    Write.style_prev_paragraph(cursor, "Heading 1")
+
+                    Write.append_para(cursor, "Solve the following formulae for x:\n")
+
+                    # lock screen updating and add formulas
+                    # locking screen is not strictly necessary but is faster when add lost of input.
+                    with Lo.ControllerLock():
+                        for _ in range(10):  # generate 10 random formulae
+                            iA = random.randint(0, 7) + 2
+                            iB = random.randint(0, 7) + 2
+                            iC = random.randint(0, 8) + 1
+                            iD = random.randint(0, 7) + 2
+                            iE = random.randint(0, 8) + 1
+                            iF1 = random.randint(0, 7) + 2
+
+                            choice = random.randint(0, 2)
+
+                            # formulas should be wrapped in {} but for fromatting reasons it is easier to work with [] and replace later.
+                            if choice == 0:
+                                formula = f"[[[sqrt[{iA}x]] over {iB}] + [{iC} over {iD}]=[{iE} over {iF1} ]]"
+                            elif choice == 1:
+                                formula = f"[[[{iA}x] over {iB}] + [{iC} over {iD}]=[{iE} over {iF1}]]"
+                            else:
+                                formula = f"[{iA}x + {iB} = {iC}]"
+
+                            # replace [] with {}
+                            Write.add_formula(cursor, formula.replace("[", "{").replace("]", "}"))
+                            Write.end_paragraph(cursor)
+
+                    Write.append_para(cursor, f"Timestamp: {DateUtil.time_stamp()}")
+
+                    Lo.delay(delay)
+                    Lo.save_doc(doc, "mathQuestions.pdf")
+
+                finally:
+                    Lo.close_doc(doc)
+
+            return 0
+
+:numref:`ch07fig_math_formula_ss` shows a screenshot of part of ``mathQuestions.pdf``.
+
+.. cssclass:: screen_shot invert
+
+    .. _ch07fig_math_formula_ss:
+    .. figure:: https://user-images.githubusercontent.com/4193389/184988764-6c2891eb-bf2d-4fc5-bc38-1a99b08f06dc.png
+        :alt: Screen shot of Math Formulae in a Text Document
+        :figclass: align-center
+
+        :Math Formulae in a Text Document.
+
 Work in progress ...
 
 .. |build_doc| replace:: Build Doc
 .. _build_doc: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_build_doc
 
+.. |math_ques| replace:: Math Questions
+.. _math_ques: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_math_quesions
+
 .. _BaseFrameProperties: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1BaseFrameProperties.html
 .. _GenericTextDocument: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1GenericTextDocument.html
+.. _GraphicObjectShape: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1drawing_1_1GraphicObjectShape.html
 .. _OfficeDocument: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1document_1_1OfficeDocument.html
 .. _TextContent: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1TextContent.html
 .. _TextContentAnchorType: https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1text.html#a470b1caeda4ff15fee438c8ff9e3d834
 .. _TextEmbeddedObject: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1TextEmbeddedObject.html
 .. _TextFrame: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1TextFrame.html
 .. _TextGraphicObject: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1TextGraphicObject.html
-.. _TextGraphicObject: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1TextGraphicObject.html
+.. _XEmbeddedObjectSupplier2: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1document_1_1XEmbeddedObjectSupplier2.html
 .. _XNameAccess: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1container_1_1XNameAccess.html
 .. _XPropertySet: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1beans_1_1XPropertySet.html
 .. _XShape: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1drawing_1_1XShape.html
