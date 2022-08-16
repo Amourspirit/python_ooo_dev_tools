@@ -1,8 +1,12 @@
 Dascalescu
 Davison
+endnote
+endnotes
 loapi
 lodoc
 loguide
 Pitonyak
 programmatically
+Redline
+Redlines
 todo
