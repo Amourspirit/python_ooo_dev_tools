@@ -1614,7 +1614,7 @@ class Write(mSel.Selection):
             "border_color": border_color,
             "background_color": background_color,
         }
-        _Events().trigger(WriteNamedEvent.BOOKMARK_ADDING, cargs)
+        _Events().trigger(WriteNamedEvent.TEXT_FRAME_ADDING, cargs)
         if cargs.cancel:
             return False
 

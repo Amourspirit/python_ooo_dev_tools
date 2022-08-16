@@ -202,12 +202,230 @@ For information, see: https://wiki.openoffice.org/wiki/Documentation/DevGuide/Te
 Each of the changes is saved as a text fragment (also called a text portion) inside a redline object.
 See: https://wiki.openoffice.org/wiki/Documentation/DevGuide/Text/Redline (or type ``loguide Redline``).
 
+7.2 Adding a Text Frame to a Document
+=====================================
+
+The TextFrame_ service inherits many of its properties and interfaces, so its inheritance hierarchy is shown in detail in :numref:`ch07fig_text_frame_hiearchy`.
+
+.. cssclass:: diagram invert
+
+    .. _ch07fig_text_frame_hiearchy:
+    .. figure:: https://user-images.githubusercontent.com/4193389/184963740-aa2692d1-c7fe-4594-8697-bfb3539d2ea0.png
+        :alt: Diagram of The TextFrame Service Hierarchy
+        :figclass: align-center
+
+        :The TextFrame Service Hierarchy.
+
+:numref:`ch07fig_text_frame_hiearchy` includes two sibling services of TextFrame_: TextEmbeddedObject_ and TextGraphicObject_,
+which is discussed a bit later; in fact, we will only get around to TextGraphicObject_ in the next chapter.
+
+The BaseFrameProperties_ service contains most of the frame size and positional properties, such as "Width", "Height", and margin and border distance settings.
+
+A TextFrame_ interface can be converted into a text content (i.e. XTextContent_) or a shape (i.e. XShape_).
+Typically, the former is used when adding text to the frame, the latter when manipulating the shape of the frame.
+
+In the |build_doc|_ example, text frame creation is done by :py:meth:`.Write.add_text_frame`, with |build_doc|_ supplying the frame's y-axis coordinate position for its anchor:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # code fragment from build doc
+        tvc = Write.get_view_cursor(doc)
+        ypos = tvc.getPosition().Y
+
+        Write.add_text_frame(
+                cursor=cursor,
+                ypos=ypos,
+                text="This is a newly created text frame.\nWhich is over on the right of the page, next to the code.",
+                page_num=pg,
+                width=4000,
+                height=1500,
+            )
+
+An anchor specifies how the text content is positioned relative to the ordinary text around it.
+Anchoring can be relative to a character, paragraph, page, or another frame.
+
+:py:meth:`.Write.add_text_frame` uses page anchoring, which means that |build_doc|_ must obtain a view cursor, so that an on-screen page position can be calculated.
+As :numref:`ch07fig_build_doc_frame_ss` shows, the text frame is located on the right of the page, with its top edge level with the start of the code listing.
+
+.. cssclass:: screen_shot
+
+    .. _ch07fig_build_doc_frame_ss:
+    .. figure:: https://user-images.githubusercontent.com/4193389/184966954-1f3e8e9f-2694-4fc1-8589-a6042912e879.png
+        :alt: Screen shot of Text Frame Position in the Document
+        :figclass: align-center
+
+        :Text Frame Position in the Document.
+
+In the code fragment above, :py:meth:`.Write.get_view_cursor` creates the view cursor,
+and ``XTextViewCursor.getPosition()`` returns its (x, y) coordinate on the page.
+The y-coordinate is stored in ``yPos`` until after the code listing has been inserted into the document, and then passed to :py:meth:`.Write.add_text_frame`.
+
+:py:meth:`.Write.add_text_frame` is defined as:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        @classmethod
+        def add_text_frame(
+            cls,
+            cursor: XTextCursor,
+            ypos: int,
+            text: str,
+            width: int,
+            height: int,
+            page_num: int = 1,
+            border_color: Color | None = CommonColor.RED,
+            background_color: Color | None = CommonColor.LIGHT_BLUE,
+        ) -> bool:
+            cargs = CancelEventArgs(Write.add_text_frame.__qualname__)
+            cargs.event_data = {
+                "cursor": cursor,
+                "ypos": ypos,
+                "text": text,
+                "width": width,
+                "height": height,
+                "page_num": page_num,
+                "border_color": border_color,
+                "background_color": background_color,
+            }
+            _Events().trigger(WriteNamedEvent.TEXT_FRAME_ADDING, cargs)
+            if cargs.cancel:
+                return False
+
+            ypos = cargs.event_data["ypos"]
+            text = cargs.event_data["text"]
+            width = cargs.event_data["width"]
+            height = cargs.event_data["height"]
+            page_num = cargs.event_data["page_num"]
+            border_color = cargs.event_data["border_color"]
+            background_color = cargs.event_data["background_color"]
+
+            try:
+                xframe = Lo.create_instance_msf(XTextFrame, "com.sun.star.text.TextFrame")
+                if xframe is None:
+                    raise ValueError("Null value")
+            except Exception as e:
+                raise CreateInstanceMsfError(XTextFrame, "com.sun.star.text.TextFrame") from e
+
+            try:
+                tf_shape = Lo.qi(XShape, xframe, True)
+
+                # set dimensions of the text frame
+                tf_shape.setSize(Size(width, height))
+
+                #  anchor the text frame
+                frame_props = Lo.qi(XPropertySet, xframe, True)
+                frame_props.setPropertyValue("AnchorType", TextContentAnchorType.AT_PAGE)
+                frame_props.setPropertyValue("FrameIsAutomaticHeight", True)  # will grow if necessary
+
+                # add a red border around all 4 sides
+                border = BorderLine()
+                border.OuterLineWidth = 1
+                if border_color is not None:
+                    border.Color = border_color
+
+                frame_props.setPropertyValue("TopBorder", border)
+                frame_props.setPropertyValue("BottomBorder", border)
+                frame_props.setPropertyValue("LeftBorder", border)
+                frame_props.setPropertyValue("RightBorder", border)
+
+                # make the text frame blue
+                if background_color is not None:
+                    frame_props.setPropertyValue("BackTransparent", False)  # not transparent
+                    frame_props.setPropertyValue("BackColor", background_color)  # light blue
+
+                # Set the horizontal and vertical position
+                frame_props.setPropertyValue("HoriOrient", HoriOrientation.RIGHT)
+                frame_props.setPropertyValue("VertOrient", VertOrientation.NONE)
+                frame_props.setPropertyValue("VertOrientPosition", ypos)  # down from top
+
+                # if page number is Not include for TextContentAnchorType.AT_PAGE
+                # then Lo Default so At AT_PARAGRAPH
+                frame_props.setPropertyValue("AnchorPageNo", page_num)
+
+                # insert text frame into document (order is important here)
+                cls._append_text_content(cursor, xframe)
+                cls.end_paragraph(cursor)
+
+                # add text into the text frame
+                xframe_text = xframe.getText()
+                xtext_range = Lo.qi(XTextRange, xframe_text.createTextCursor(), True)
+                xframe_text.insertString(xtext_range, text, False)
+            except Exception as e:
+                raise Exception("Insertion of text frame failed:") from e
+            _Events().trigger(WriteNamedEvent.TEXT_FRAME_ADDED, EventArgs.from_args(cargs))
+            return True
+
+:py:meth:`~.Write.add_text_frame` starts by creating a TextFrame_ service, and accessing its XTextFrame_ interface:
+
+
+.. tabs::
+
+    .. code-tab:: python
+
+        xframe = Lo.create_instance_msf(XTextFrame, "com.sun.star.text.TextFrame")
+
+The service name for a text frame is listed as "TextFrame" in row 1 of :numref:`ch07tbl_create_access_text_content`, but :py:meth:`.Lo.create_instance_msf` requires a fully qualified name.
+Almost all the text content services, including TextFrame_, are in the ``com.sun.star.text package``.
+
+The XTextFrame_ interface is converted into XShape_ so the frame's dimensions can be set.
+The interface is also cast to XPropertySet_ so that various frame properties can be initialized;
+these properties are defined in the TextFrame_ and BaseFrameProperties_ services (see :numref:`ch07fig_text_content_super_classes`).
+
+The "AnchorType" property uses the ``AT_PAGE`` anchor constant to tie the frame to the page.
+There are five anchor constants: ``AT_PARAGRAPH``, ``AT_CHARACTER``, ``AS_CHARACTER``, ``AT_PAGE``, and ``AT_FRAME``, which are defined in the TextContentAnchorType_ enumeration.
+
+The difference between ``AT_CHARACTER`` and ``AS_CHARACTER`` relates to how the surrounding text is wrapped around the text content.
+"AS" means that the text content is treated as a single (perhaps very large) character inside the text,
+while "AT" means that the text frame's upper-left corner is positioned at that character location.
+
+The frame's page position is dealt with a few lines later by the ``HoriOrient`` and ``VertOrient`` properties.
+The ``HoriOrientation`` and ``VertOrientation`` constants are a convenient way of positioning a frame at the corners or edges of the page.
+However, ``VertOrientPosition`` is used to set the vertical position using the ``yPos`` coordinate, and switch off the ``VertOrient`` vertical orientation.
+
+Towards the end of :py:meth:`.Write.add_text_frame`, the frame is added to the document by calling a version of :py:meth:`.Write.append` that expects an XTextContent_ object:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # internal method call by Write.append() when adding text
+        @classmethod
+        def _append_text_content(cls, cursor: XTextCursor, text_content: XTextContent) -> None:
+            xtext = cursor.getText()
+            xtext.insertTextContent(cursor, text_content, False)
+            cursor.gotoEnd(False)
+
+It utilizes the ``XText.insertTextContent()`` method.
+
+The last task of :py:meth:`.Write.add_text_frame`, is to insert some text into the frame.
+
+XTextFrame_ inherits XTextContent_, and so has access to the ``getText()`` method (see :numref:`ch07fig_text_frame_hiearchy`).
+This means that all the text manipulations possible in a document are also possible inside a frame.
+
+The ordering of the tasks at the end of :py:meth:`~.Write.add_text_frame` is important.
+Office prefers that an empty text content be added to the document, and the data inserted afterwards.
+
 Work in progress ...
 
+.. |build_doc| replace:: Build Doc
+.. _build_doc: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_build_doc
+
+.. _BaseFrameProperties: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1BaseFrameProperties.html
 .. _GenericTextDocument: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1GenericTextDocument.html
 .. _OfficeDocument: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1document_1_1OfficeDocument.html
 .. _TextContent: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1TextContent.html
+.. _TextContentAnchorType: https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1text.html#a470b1caeda4ff15fee438c8ff9e3d834
+.. _TextEmbeddedObject: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1TextEmbeddedObject.html
+.. _TextFrame: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1TextFrame.html
+.. _TextGraphicObject: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1TextGraphicObject.html
+.. _TextGraphicObject: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1TextGraphicObject.html
+.. _XNameAccess: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1container_1_1XNameAccess.html
+.. _XPropertySet: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1beans_1_1XPropertySet.html
+.. _XShape: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1drawing_1_1XShape.html
 .. _XText: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XText.html
 .. _XTextContent: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextContent.html
-.. _XNameAccess: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1container_1_1XNameAccess.html
-.. _TextGraphicObject: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1TextGraphicObject.html
+.. _XTextFrame: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextFrame.html
