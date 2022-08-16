@@ -3,6 +3,12 @@ Version History
 ###############
 
 **************
+Version 0.4.13
+**************
+
+Fix for  ``Write.add_text_frame()`` events.
+
+**************
 Version 0.4.12
 **************
 

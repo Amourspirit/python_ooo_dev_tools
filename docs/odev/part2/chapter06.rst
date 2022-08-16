@@ -23,7 +23,7 @@ This revolves around the XStyleFamiliesSupplier_ interface in GenericTextDocumen
         :The Text Document Services, and some Interfaces.
 
 XStyleFamiliesSupplier_ has a ``getStyleFamilies()`` method for returning text style families.
-All these families are stored in an XNameAccess object, as depicted in :numref:`ch06fig_txt_doc_serv_interfaces`.
+All these families are stored in an XNameAccess_ object, as depicted in :numref:`ch06fig_txt_doc_serv_interfaces`.
 
 XNameAccess_ is one of Office's collection types, and employed when the objects in a collection have names.
 There's also an XIndexAccess_ for collections in index order.
@@ -536,7 +536,7 @@ It uses os dependent font determined by :py:meth:`.Info.get_font_general_name` s
 
 An ``adParagraph`` style is added to the paragraph style family, but how to apply that style to some paragraphs in the document?
 The easiest way is through the document's XTextRange_ interface.
-XTextRange_ is supported by the TextRange service, which inherits ParagraphProperties_ and CharacterProperties_ (and several other property classes), as illustrated in :numref:`ch06fig_txt_rng_srvc`.
+XTextRange_ is supported by the TextRange_ service, which inherits ParagraphProperties_ and CharacterProperties_ (and several other property classes), as illustrated in :numref:`ch06fig_txt_rng_srvc`.
 
 .. cssclass:: diagram invert
 
@@ -981,12 +981,8 @@ The relevant calls are:
         Write.set_a4_page_format(doc)
         Write.set_page_numbers(doc)
 
-.. todo::
-
-    Chapter 6.10 Add link to chapter 7
-
 :py:meth:`.Write.set_a4_page_format` sets the page formatting.
-:py:meth:`.Write.set_page_numbers` utilizes text fields, which is examined in the "Text Fields" section in Chapter 7.
+:py:meth:`.Write.set_page_numbers` utilizes text fields, which is examined in the "Text Fields" section in :ref:`ch07`.
 
 Changing the header in :py:meth:`.Write.set_header` requires the setting of the ``HeaderIsOn`` boolean in the ``Standard`` page style.
 Adding text to the header is done via an XText_ reference.
