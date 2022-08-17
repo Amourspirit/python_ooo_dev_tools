@@ -38,9 +38,9 @@ As :numref:`ch07fig_text_content_super_classes` indicates, that service is the p
 
 A more complete hierarchy can be found in the documentation for TextContent_ (``lodoc TextContent service``).
 
-The two services highlighted in orange relate to graphical content, which is explained in the next chapter.
+The two services highlighted relate to graphical content, which is explained in the next chapter.
 
-Table 1 summarizes content types in terms of their services and access methods.
+:numref:`ch07tbl_create_access_text_content` summarizes content types in terms of their services and access methods.
 Most of the methods are in Supplier interfaces which are part of the GenericTextDocument_ or OfficeDocument_ services in :numref:`ch05fig_txt_doc_serv_interfaces`.
 
 .. _ch07tbl_create_access_text_content:
@@ -564,7 +564,7 @@ Ten formulae are added to the document, which is saved as ``mathQuestions.pdf``.
 
                             choice = random.randint(0, 2)
 
-                            # formulas should be wrapped in {} but for fromatting reasons it is easier to work with [] and replace later.
+                            # formulas should be wrapped in {} but for formatting reasons it is easier to work with [] and replace later.
                             if choice == 0:
                                 formula = f"[[[sqrt[{iA}x]] over {iB}] + [{iC} over {iD}]=[{iE} over {iF1} ]]"
                             elif choice == 1:
@@ -628,7 +628,7 @@ You can see the complete hierarchy in the online documentation for TextField_.
 7.4.1 The DateTime TextField
 ----------------------------
 
-The build_doc|_ example ends with a few lines that appear to do the same thing twice:
+The |build_doc|_ example ends with a few lines that appear to do the same thing twice:
 
 .. tabs::
 
@@ -780,7 +780,440 @@ These properties will be applied to the text and text fields added afterwards:
 
 :py:meth:`~.Write.get_page_number` and :py:meth:`~.Write.get_page_count` deal with the properties for the PageNumber and PageCount fields.
 
-Work in progress ...
+7.5 Adding a Text Table to a Document
+=====================================
+
+The |make_table|_ example reads in data about James Bond movies from ``bondMovies.txt`` and stores it as a text table in ``table.odt``.
+The first few rows are shown in :numref:`ch07fig_bond_movie_ss`.
+
+.. cssclass:: screen_shot
+
+    .. _ch07fig_bond_movie_ss:
+    .. figure:: https://user-images.githubusercontent.com/4193389/185215630-734ba335-870e-4f43-8c42-d181be221f06.png
+        :alt: Screen shot of A Bond Movies Table
+        :figclass: align-center
+
+        :A Bond Movies Table.
+
+The ``bondMovies.txt`` file is read by ``read_table()`` utilizing  Python file processing with pythons ``csv.reader``. It returns a 2D-list:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # example partial result from read_table()
+        [
+            ["Title",  "Year", "Actor", "Director"],
+            ["Dr. No", "1962", "Sean Connery", "Terence Young"],
+            ["From Russia with Love", "1963", "Sean Connery", "Terence Young"],
+        ]
+
+Each line in ``bondMovies.txt`` is converted into a string array by pulling out the sub-strings delimited by tab characters.
+
+``read_table()`` ignores lines in the file that are know not to be csv lines. First valid row in the list contains the table's header text.
+
+The first few lines of ``bondMovies.txt`` are:
+
+.. code-block:: text
+
+    // http://en.wikipedia.org/wiki/James_Bond#Ian_Fleming_novels
+
+    Title Year Actor Director
+
+    Dr. No 1962 Sean Connery Terence Young
+    From Russia with Love 1963 Sean Connery Terence Young
+    Goldfinger 1964 Sean Connery Guy Hamilton
+    Thunderball 1965 Sean Connery Terence Young
+    You Only Live Twice 1967 Sean Connery Lewis Gilbert
+    On Her Majesty's Secret Service 1969 George Lazenby Peter R. Hunt
+    Diamonds Are Forever 1971 Sean Connery Guy Hamilton
+    Live and Let Die 1973 Roger Moore Guy Hamilton
+    The Man with the Golden Gun 1974 Roger Moore Guy Hamilton
+    The Spy Who Loved Me 1977 Roger Moore Lewis Gilbert
+        :
+
+The ``main()`` function for |make_table|_ is:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        def main() -> int:
+
+            fnm = FileIO.get_absolute_path("../../../../resources/txt/bondMovies.txt")  # source csv file
+            if not fnm.exists():
+                print("resource image 'bondMovies.txt' not found.")
+                print("Unable to continue.")
+                return 1
+
+            tbl_data = read_table(fnm)
+
+            delay = 2_000  # delay so users can see changes.
+
+            with Lo.Loader(Lo.ConnectSocket()) as loader:
+
+                doc = Write.create_doc(loader=loader)
+
+                try:
+                    GUI.set_visible(is_visible=True, odoc=doc)
+
+                    cursor = Write.get_cursor(doc)
+
+                    Write.append_para(cursor, "Table of Bond Movies")
+                    Write.style_prev_paragraph(cursor, "Heading 1")
+                    Write.append_para(cursor, 'The following table comes form "bondMovies.txt"\n')
+
+                    # Lock display updating for faster writing of table into document.
+                    with Lo.ControllerLock():
+                        Write.add_table(cursor=cursor, table_data=tbl_data)
+                        Write.end_paragraph(cursor)
+
+                    Lo.delay(delay)
+                    Write.append(cursor, f"Timestamp: {DateUtil.time_stamp()}")
+                    Lo.delay(delay)
+                    Lo.save_doc(doc, "table.odt")
+
+                finally:
+                    Lo.close_doc(doc)
+
+            return 0
+
+
+        if __name__ == "__main__":
+            raise SystemExit(main())
+
+:py:meth:`.Write.add_table` does the work of converting the list of rows into a text table.
+
+:numref:`ch07fig_text_tabls_hiearchy` shows the hierarchy for the TextTable_ service: it's a subclass of TextContent_ and supports the XTextTable_ interface.
+
+.. cssclass:: diagram invert
+
+    .. _ch07fig_text_tabls_hiearchy:
+    .. figure:: https://user-images.githubusercontent.com/4193389/185219547-87a5789e-f06c-40e2-b182-664fec13d8f4.png
+        :alt: Diagram of The Text Table Hierarchy
+        :figclass: align-center
+
+        :The TextTable Hierarchy.
+
+XTextTable_ contains methods for accessing a table in terms of its rows, columns, and cells.
+The cells are referred to using names, based on letters for columns and integers for rows, as in :numref:`ch07fig_cell_name_tbl_ss`.
+
+.. cssclass:: screen_shot invert
+
+    .. _ch07fig_cell_name_tbl_ss:
+    .. figure:: https://user-images.githubusercontent.com/4193389/185220105-77768947-c6e5-43c5-86d6-b7a3c9ac3f3c.png
+        :alt: Screen shot of he Cell Names in a Table
+        :figclass: align-center
+
+        :The Cell Names in a Table.
+
+:py:meth:`.Write.add_table` uses this naming scheme in the ``XTextTable.getCellByName()`` method to assign data to cells:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        @classmethod
+        def add_table(
+            cls,
+            cursor: XTextCursor,
+            table_data: Table,
+            header_bg_color: Color | None = CommonColor.DARK_BLUE,
+            header_fg_color: Color | None = CommonColor.WHITE,
+            tbl_bg_color: Color | None = CommonColor.LIGHT_BLUE,
+            tbl_fg_color: Color | None = CommonColor.BLACK,
+        ) -> bool:
+
+            cargs = CancelEventArgs(Write.add_table.__qualname__)
+            cargs.event_data = {
+                "cursor": cursor,
+                "table_data": table_data,
+                "header_bg_color": header_bg_color,
+                "header_fg_color": header_fg_color,
+                "tbl_bg_color": tbl_bg_color,
+                "tbl_fg_color": tbl_fg_color,
+            }
+            _Events().trigger(WriteNamedEvent.TABLE_ADDING, cargs)
+            if cargs.cancel:
+                return False
+
+            # capture any changes that may of been made from result of raising
+            # WriteNamedEvent.TABLE_ADDING event
+            header_bg_color = cargs.event_data["header_bg_color"]
+            header_fg_color = cargs.event_data["header_fg_color"]
+            tbl_bg_color = cargs.event_data["tbl_bg_color"]
+            tbl_fg_color = cargs.event_data["tbl_fg_color"]
+
+            def make_cell_name(row: int, col: int) -> str:
+                return TableHelper.make_cell_name(row=row + 1, col=col + 1)
+
+            def set_cell_header(cell_name: str, data: str, table: XTextTable) -> None:
+                cell_text = Lo.qi(XText, table.getCellByName(cell_name), True)
+                if header_fg_color is not None:
+                    text_cursor = cell_text.createTextCursor()
+                    Props.set_property(prop_set=text_cursor, name="CharColor", value=header_fg_color)
+
+                cell_text.setString(str(data))
+
+            def set_cell_text(cell_name: str, data: str, table: XTextTable) -> None:
+                cell_text = Lo.qi(XText, table.getCellByName(cell_name), True)
+                if tbl_fg_color is not None:
+                    text_cursor = cell_text.createTextCursor()
+                    Props.set_property(prop_set=text_cursor, name="CharColor", value=tbl_fg_color)
+                cell_text.setString(str(data))
+
+            num_rows = len(table_data)
+            if num_rows == 0:
+                raise ValueError("table_data has no values")
+            try:
+                table = Lo.create_instance_msf(XTextTable, "com.sun.star.text.TextTable")
+                if table is None:
+                    raise ValueError("Null Value")
+            except Exception as e:
+                raise CreateInstanceMsfError(XTextTable, "com.sun.star.text.TextTable")
+
+            try:
+                num_cols = len(table_data[0])
+                Lo.print(f"Creating table rows: {num_rows}, cols: {num_cols}")
+                table.initialize(num_rows, num_cols)
+
+                # insert the table into the document
+                cls._append_text_content(cursor, table)
+                cls.end_paragraph(cursor)
+
+                table_props = Lo.qi(XPropertySet, table, True)
+
+                # set table properties
+                if header_bg_color is not None or tbl_bg_color is not None:
+                    table_props.setPropertyValue("BackTransparent", False)  # not transparent
+                if tbl_bg_color is not None:
+                    table_props.setPropertyValue("BackColor", tbl_bg_color)
+
+                # set color of first row (i.e. the header)
+                if header_bg_color is not None:
+                    rows = table.getRows()
+                    Props.set_property(prop_set=rows.getByIndex(0), name="BackColor", value=header_bg_color)
+
+                #  write table header
+                row_data = table_data[0]
+                for x in range(num_cols):
+                    set_cell_header(make_cell_name(0, x), row_data[x], table)
+                    # e.g. "A1", "B1", "C1", etc
+
+                # insert table body
+                for y in range(1, num_rows):  # start in 2nd row
+                    row_data = table_data[y]
+                    for x in range(num_cols):
+                        set_cell_text(make_cell_name(y, x), row_data[x], table)
+            except Exception as e:
+                raise Exception("Table insertion failed:") from e
+            _Events().trigger(WriteNamedEvent.TABLE_ADDED, EventArgs.from_args(cargs))
+            return True
+
+A TextTable_ service with an XTextTable_ interface is created at the start of :py:meth:`~.Write.add_table`.
+Then the required number of rows and columns is calculated so that ``XTextTable.initialize()`` can be called to specify the table's dimensions.
+
+.. tabs::
+
+    .. code-tab:: python
+
+        num_rows = len(table_data)
+        ...
+
+        # use the first row to get the number of column
+        num_cols = len(table_data[0])
+        Lo.print(f"Creating table rows: {num_rows}, cols: {num_cols}")
+        table.initialize(num_rows, num_cols)
+
+Table-wide properties are set (properties are listed in the TextTable_ documentation).
+Note that if "BackTransparent" isn't set to false then Office crashes when the program tries to save the document.
+
+The color property of the header row is set to dark blue (:py:attr:`.CommonColor.DARK_BLUE`) by default.
+This requires a call to ``XTextTable.getRows()`` to return an XTableRows_ object representing all the rows.
+This object inherits XIndexAccess_, so the first row is accessed with index 0.
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # set color of first row (i.e. the header)
+        if header_bg_color is not None:
+            rows = table.getRows()
+            Props.set_property(prop_set=rows.getByIndex(0), name="BackColor", value=header_bg_color)
+
+The filling of the table with data is performed by two loops.
+The first deals with adding text to the header row, the second deals with all the other rows.
+
+``make_cell_name()`` converts an (x, y) integer pair into a cell name like those in :numref:`ch07fig_cell_name_tbl_ss`:
+
+``make_cell_name()`` uses :py:class:`~.table_helper.TableHelper` methods to make the conversion.
+
+.. todo::
+
+    Chapter 7.5, Add link to Part 4
+
+:py:meth:`.Write.set_cell_header` uses ``TextTable.getCellByName()`` to access a cell, which is of type XCell_.
+We'll study XCell_ in Part 4 because it's used for representing cells in a spreadsheet.
+
+The Cell service supports both the XCell_ and XText_ interfaces, as in :numref:`ch07fig_cell_service`.
+
+.. cssclass:: diagram invert
+
+    .. _ch07fig_cell_service:
+    .. figure:: https://user-images.githubusercontent.com/4193389/185226758-28d3b90c-32d4-498b-92e7-31a63194c0f2.png
+        :alt: Diagram of The Cell Service
+        :figclass: align-center
+
+        :The Cell Service.
+
+This means that :py:meth:`.Lo.qi` can convert an XCell_ instance into XText_,
+which makes the cell's text and properties accessible to a text cursor.
+``set_cell_header()`` implements these features:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        def set_cell_header(cell_name: str, data: str, table: XTextTable) -> None:
+            cell_text = Lo.qi(XText, table.getCellByName(cell_name), True)
+            if header_fg_color is not None:
+                text_cursor = cell_text.createTextCursor()
+                Props.set_property(prop_set=text_cursor, name="CharColor", value=header_fg_color)
+
+            cell_text.setString(str(data))
+
+The cell's ``CharColor`` property is changed so the inserted text in the header row is white (:py:attr:`.CommonColor.WHITE`) by default, as in :numref:`ch07fig_bond_movie_ss`.
+
+``set_cell_text()`` like ``set_cell_header()`` optionally changes the text's color:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        def set_cell_text(cell_name: str, data: str, table: XTextTable) -> None:
+            cell_text = Lo.qi(XText, table.getCellByName(cell_name), True)
+            if tbl_fg_color is not None:
+                text_cursor = cell_text.createTextCursor()
+                Props.set_property(prop_set=text_cursor, name="CharColor", value=tbl_fg_color)
+            cell_text.setString(str(data))
+
+7.6 Adding a Bookmark to the Document
+=====================================
+
+:py:meth:`.Write.add_bookmark` adds a named bookmark at the current cursor position:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        @classmethod
+        def add_bookmark(cls, cursor: XTextCursor, name: str) -> None:
+            cargs = CancelEventArgs(Write.add_bookmark.__qualname__)
+            cargs.event_data = {"cursor": cursor, "name": name}
+            _Events().trigger(WriteNamedEvent.BOOKMARK_ADDING, cargs)
+            if cargs.cancel:
+                return False
+
+            # get name from event args in case it has been changed.
+            name = cargs.event_data["name"]
+
+            try:
+                bmk_content = Lo.create_instance_msf(XTextContent, "com.sun.star.text.Bookmark")
+                if bmk_content is None:
+                    raise ValueError("Null Value")
+            except Exception as e:
+                raise CreateInstanceMsfError(XTextContent, "com.sun.star.text.Bookmark") from e
+            try:
+                bmk_named = Lo.qi(XNamed, bmk_content, True)
+                bmk_named.setName(name)
+
+                cls._append_text_content(cursor, bmk_content)
+            except Exception as e:
+                raise Exception("Unable to add bookmark") from e
+            _Events().trigger(WriteNamedEvent.BOOKMARK_ADDIED, EventArgs.from_args(cargs))
+            return True
+
+The Bookmark_ service doesn't have a specific interface (such as ``XBookmark``), so :py:meth:`.Lo.create_instance_msf` returns an XTextContent_ interface.
+These services and interfaces are summarized by :numref:`ch07fig_bookmark_service`.
+
+.. cssclass:: diagram invert
+
+    .. _ch07fig_bookmark_service:
+    .. figure:: https://user-images.githubusercontent.com/4193389/185230953-72690b77-d5eb-4c89-80f7-2ddf6be56b5a.png
+        :alt: Diagram of The Bookmark Service and Interfaces
+        :figclass: align-center
+
+        :The Bookmark Service and Interfaces.
+
+Bookmark_ supports XNamed_, which allows it to be viewed as a named collection of bookmarks (note the plural).
+This is useful when searching for a bookmark or adding one, as in the |build_doc|_ example.
+It calls :py:meth:`.Write.add_bookmark` to add a bookmark called ``ad-Bookmark`` to the document:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # code fragment from build doc
+        append("This line ends with a bookmark.")
+        Write.add_bookmark(cursor=cursor, name="ad-bookmark")
+
+Bookmarks, such as ``ad-bookmark``, are not rendered when the document is opened,
+which means that nothing appears after the "The line ends with a bookmark." string in "build.odt".
+
+However, bookmarks are listed in Writer's "Navigator" window (press F5), as in :numref:`ch07fig_writer_nav_ss`.
+
+.. cssclass:: screen_shot invert
+
+    .. _ch07fig_writer_nav_ss:
+    .. figure:: https://user-images.githubusercontent.com/4193389/185232660-d80c79e0-1992-4b45-84d1-e0766f2c6817.png
+        :alt: Screen shot The Writer Navigator Window
+        :figclass: align-center
+
+        :The Writer Navigator Window.
+
+Clicking on the bookmark causes Writer to jump to its location in the document.
+
+Using Bookmarks; One programming use of bookmarks is for moving a cursor around a document.
+Just as with real-world bookmarks, you can add one at some important location in a document and jump to that position at a later time.
+
+:py:meth:`.Write.find_bookmark` finds a bookmark by name, returning it as an XTextContent_ instance:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        @staticmethod
+        def find_bookmark(text_doc: XTextDocument, bm_name: str) -> XTextContent | None:
+            supplier = Lo.qi(XBookmarksSupplier, text_doc, True)
+
+            named_bookmarks = supplier.getBookmarks()
+            obookmark = None
+
+            try:
+                obookmark = named_bookmarks.getByName(bm_name)
+            except Exception:
+                Lo.print(f"Bookmark '{bm_name}' not found")
+                return None
+            return Lo.qi(XTextContent, obookmark)
+
+:py:meth:`~.Write.find_bookmark` can't return an ``XBookmark`` object since there's no such interface (see :numref:`ch07fig_bookmark_service`),
+but XTextContent_ is a good alternative. XTextContent_ has a ``getAnchor()`` method which returns an XTextRange_ that can be used for positioning a cursor.
+The following code fragment from |build_doc|_ illustrates the idea:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # code fragment form build doc
+        # move view cursor to bookmark position
+        bookmark = Write.find_bookmark(doc, "ad-bookmark")
+        bm_range = bookmark.getAnchor()
+
+        view_cursor = Write.get_view_cursor(doc)
+        view_cursor.gotoRange(bm_range, False)
+
+The call to ``gotoRange()`` moves the view cursor to the ``ad-bookmark`` position, which causes an on-screen change.
+``gotoRange()`` can be employed with any type of cursor.
 
 .. |build_doc| replace:: Build Doc
 .. _build_doc: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_build_doc
@@ -791,7 +1224,11 @@ Work in progress ...
 .. |story_creator| replace:: Story Creator
 .. _story_creator: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_story_creator
 
+.. |make_table| replace:: Make Table
+.. _make_table: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_make_table
+
 .. _BaseFrameProperties: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1BaseFrameProperties.html
+.. _Bookmark: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1Bookmark.html
 .. _DateTime: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1presentation_1_1textfield_1_1DateTime.html
 .. _GenericTextDocument: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1GenericTextDocument.html
 .. _GraphicObjectShape: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1drawing_1_1GraphicObjectShape.html
@@ -802,12 +1239,19 @@ Work in progress ...
 .. _TextField: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1TextField.html
 .. _TextFrame: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1TextFrame.html
 .. _TextGraphicObject: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1TextGraphicObject.html
+.. _TextTable: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1TextTable.html
+.. _XCell: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1table_1_1XCell.html
 .. _XEmbeddedObjectSupplier2: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1document_1_1XEmbeddedObjectSupplier2.html
+.. _XIndexAccess: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1container_1_1XIndexAccess.html
 .. _XNameAccess: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1container_1_1XNameAccess.html
+.. _XNamed: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1container_1_1XNamed.html
 .. _XPropertySet: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1beans_1_1XPropertySet.html
 .. _XShape: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1drawing_1_1XShape.html
+.. _XTableRows: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1table_1_1XTableRows.html
 .. _XText: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XText.html
 .. _XTextContent: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextContent.html
 .. _XTextCursor: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextCursor.html
 .. _XTextField: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextField.html
 .. _XTextFrame: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextFrame.html
+.. _XTextRange: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextRange.html
+.. _XTextTable: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextTable.html
