@@ -1053,7 +1053,7 @@ The first deals with adding text to the header row, the second deals with all th
     Chapter 7.5, Add link to Part 4
 
 :py:meth:`.Write.set_cell_header` uses ``TextTable.getCellByName()`` to access a cell, which is of type XCell_.
-We'll study XCell in Part 4 because it's used for representing cells in a spreadsheet.
+We'll study XCell_ in Part 4 because it's used for representing cells in a spreadsheet.
 
 The Cell service supports both the XCell_ and XText_ interfaces, as in :numref:`ch07fig_cell_service`.
 
@@ -1198,7 +1198,7 @@ Just as with real-world bookmarks, you can add one at some important location in
 
 :py:meth:`~.Write.find_bookmark` can't return an ``XBookmark`` object since there's no such interface (see :numref:`ch07fig_bookmark_service`),
 but XTextContent_ is a good alternative. XTextContent_ has a ``getAnchor()`` method which returns an XTextRange_ that can be used for positioning a cursor.
-The following code fragment from |build_doc| illustrates the idea:
+The following code fragment from |build_doc|_ illustrates the idea:
 
 .. tabs::
 
