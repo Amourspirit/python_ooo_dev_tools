@@ -38,9 +38,9 @@ As :numref:`ch07fig_text_content_super_classes` indicates, that service is the p
 
 A more complete hierarchy can be found in the documentation for TextContent_ (``lodoc TextContent service``).
 
-The two services highlighted in orange relate to graphical content, which is explained in the next chapter.
+The two services highlighted relate to graphical content, which is explained in the next chapter.
 
-Table 1 summarizes content types in terms of their services and access methods.
+:numref:`ch07tbl_create_access_text_content` summarizes content types in terms of their services and access methods.
 Most of the methods are in Supplier interfaces which are part of the GenericTextDocument_ or OfficeDocument_ services in :numref:`ch05fig_txt_doc_serv_interfaces`.
 
 .. _ch07tbl_create_access_text_content:
@@ -905,7 +905,7 @@ The cells are referred to using names, based on letters for columns and integers
         :alt: Screen shot of he Cell Names in a Table
         :figclass: align-center
 
-        :The Cell Names in a Table..
+        :The Cell Names in a Table.
 
 :py:meth:`.Write.add_table` uses this naming scheme in the ``XTextTable.getCellByName()`` method to assign data to cells:
 
@@ -1097,8 +1097,123 @@ The cell's ``CharColor`` property is changed so the inserted text in the header 
                 Props.set_property(prop_set=text_cursor, name="CharColor", value=tbl_fg_color)
             cell_text.setString(str(data))
 
+7.6 Adding a Bookmark to the Document
+=====================================
 
-Work in progress ...
+:py:meth:`.Write.add_bookmark` adds a named bookmark at the current cursor position:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        @classmethod
+        def add_bookmark(cls, cursor: XTextCursor, name: str) -> None:
+            cargs = CancelEventArgs(Write.add_bookmark.__qualname__)
+            cargs.event_data = {"cursor": cursor, "name": name}
+            _Events().trigger(WriteNamedEvent.BOOKMARK_ADDING, cargs)
+            if cargs.cancel:
+                return False
+
+            # get name from event args in case it has been changed.
+            name = cargs.event_data["name"]
+
+            try:
+                bmk_content = Lo.create_instance_msf(XTextContent, "com.sun.star.text.Bookmark")
+                if bmk_content is None:
+                    raise ValueError("Null Value")
+            except Exception as e:
+                raise CreateInstanceMsfError(XTextContent, "com.sun.star.text.Bookmark") from e
+            try:
+                bmk_named = Lo.qi(XNamed, bmk_content, True)
+                bmk_named.setName(name)
+
+                cls._append_text_content(cursor, bmk_content)
+            except Exception as e:
+                raise Exception("Unable to add bookmark") from e
+            _Events().trigger(WriteNamedEvent.BOOKMARK_ADDIED, EventArgs.from_args(cargs))
+            return True
+
+The Bookmark_ service doesn't have a specific interface (such as ``XBookmark``), so :py:meth:`.Lo.create_instance_msf` returns an XTextContent_ interface.
+These services and interfaces are summarized by :numref:`ch07fig_bookmark_service`.
+
+.. cssclass:: diagram invert
+
+    .. _ch07fig_bookmark_service:
+    .. figure:: https://user-images.githubusercontent.com/4193389/185230953-72690b77-d5eb-4c89-80f7-2ddf6be56b5a.png
+        :alt: Diagram of The Bookmark Service and Interfaces
+        :figclass: align-center
+
+        :The Bookmark Service and Interfaces.
+
+Bookmark_ supports XNamed_, which allows it to be viewed as a named collection of bookmarks (note the plural).
+This is useful when searching for a bookmark or adding one, as in the |build_doc|_ example.
+It calls :py:meth:`.Write.add_bookmark` to add a bookmark called ``ad-Bookmark`` to the document:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # code fragment from build doc
+        append("This line ends with a bookmark.")
+        Write.add_bookmark(cursor=cursor, name="ad-bookmark")
+
+Bookmarks, such as ``ad-bookmark``, are not rendered when the document is opened,
+which means that nothing appears after the "The line ends with a bookmark." string in "build.odt".
+
+However, bookmarks are listed in Writer's "Navigator" window (press F5), as in :numref:`ch07fig_writer_nav_ss`.
+
+.. cssclass:: screen_shot invert
+
+    .. _ch07fig_writer_nav_ss:
+    .. figure:: https://user-images.githubusercontent.com/4193389/185232660-d80c79e0-1992-4b45-84d1-e0766f2c6817.png
+        :alt: Screen shot The Writer Navigator Window
+        :figclass: align-center
+
+        :The Writer Navigator Window.
+
+Clicking on the bookmark causes Writer to jump to its location in the document.
+
+Using Bookmarks; One programming use of bookmarks is for moving a cursor around a document.
+Just as with real-world bookmarks, you can add one at some important location in a document and jump to that position at a later time.
+
+:py:meth:`.Write.find_bookmark` finds a bookmark by name, returning it as an XTextContent_ instance:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        @staticmethod
+        def find_bookmark(text_doc: XTextDocument, bm_name: str) -> XTextContent | None:
+            supplier = Lo.qi(XBookmarksSupplier, text_doc, True)
+
+            named_bookmarks = supplier.getBookmarks()
+            obookmark = None
+
+            try:
+                obookmark = named_bookmarks.getByName(bm_name)
+            except Exception:
+                Lo.print(f"Bookmark '{bm_name}' not found")
+                return None
+            return Lo.qi(XTextContent, obookmark)
+
+:py:meth:`~.Write.find_bookmark` can't return an ``XBookmark`` object since there's no such interface (see :numref:`ch07fig_bookmark_service`),
+but XTextContent_ is a good alternative. XTextContent_ has a ``getAnchor()`` method which returns an XTextRange_ that can be used for positioning a cursor.
+The following code fragment from |build_doc| illustrates the idea:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # code fragment form build doc
+        # move view cursor to bookmark position
+        bookmark = Write.find_bookmark(doc, "ad-bookmark")
+        bm_range = bookmark.getAnchor()
+
+        view_cursor = Write.get_view_cursor(doc)
+        view_cursor.gotoRange(bm_range, False)
+
+The call to ``gotoRange()`` moves the view cursor to the ``ad-bookmark`` position, which causes an on-screen change.
+``gotoRange()`` can be employed with any type of cursor.
 
 .. |build_doc| replace:: Build Doc
 .. _build_doc: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_build_doc
@@ -1113,6 +1228,7 @@ Work in progress ...
 .. _make_table: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_make_table
 
 .. _BaseFrameProperties: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1BaseFrameProperties.html
+.. _Bookmark: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1Bookmark.html
 .. _DateTime: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1presentation_1_1textfield_1_1DateTime.html
 .. _GenericTextDocument: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1GenericTextDocument.html
 .. _GraphicObjectShape: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1drawing_1_1GraphicObjectShape.html
@@ -1128,6 +1244,7 @@ Work in progress ...
 .. _XEmbeddedObjectSupplier2: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1document_1_1XEmbeddedObjectSupplier2.html
 .. _XIndexAccess: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1container_1_1XIndexAccess.html
 .. _XNameAccess: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1container_1_1XNameAccess.html
+.. _XNamed: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1container_1_1XNamed.html
 .. _XPropertySet: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1beans_1_1XPropertySet.html
 .. _XShape: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1drawing_1_1XShape.html
 .. _XTableRows: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1table_1_1XTableRows.html
@@ -1136,4 +1253,5 @@ Work in progress ...
 .. _XTextCursor: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextCursor.html
 .. _XTextField: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextField.html
 .. _XTextFrame: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextFrame.html
+.. _XTextRange: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextRange.html
 .. _XTextTable: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextTable.html
