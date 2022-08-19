@@ -20,6 +20,8 @@ from ooo.dyn.awt.size import Size
 from ..exceptions import ex as mEx
 from ..utils.type_var import PathOrStr
 
+# see Also: https://ask.libreoffice.org/t/graphicurl-no-longer-works-in-6-1-0-3/35459/3
+# see Also: https://tomazvajngerl.blogspot.com/2018/03/improving-image-handling-in-libreoffice.html
 
 class ImagesLo:
     @staticmethod
@@ -43,7 +45,7 @@ class ImagesLo:
             if not mFileIO.FileIO.is_openable(fp):
                 raise mEx.UnOpenableError(fnm=fp)
 
-            name = fp.name
+            name = str(fp)
             pic_url = mFileIO.FileIO.fnm_to_url(fp)
 
             # use the filename as the name of the bitmap
@@ -137,17 +139,13 @@ class ImagesLo:
         Returns:
             XGraphic: Graphic
         """
-        gprovider = mLo.Lo.create_instance_mcf(XGraphicProvider, "com.sun.star.graphic.GraphicProvider")
-        if gprovider is None:
-            raise mEx.CreateInstanceMcfError(XGraphicProvider, "com.sun.star.graphic.GraphicProvider")
-
-        xprops = mLo.Lo.qi(XPropertySet, graphic_link)
-        if xprops is None:
-            raise mEx.MissingInterfaceError(XPropertySet)
+        xprops = mLo.Lo.qi(XPropertySet, graphic_link, True)
 
         try:
-            gprops = mProps.Props.make_props(URL=str(xprops.getPropertyValue("GraphicURL")))
-            return gprovider.queryGraphic(gprops)
+            graphic = xprops.getPropertyValue("Graphic")
+            if graphic is None:
+                raise Exception("Grapich is None")
+            return graphic
         except Exception as e:
             raise Exception(f"Unable to retrieve graphic") from e
 
@@ -167,7 +165,7 @@ class ImagesLo:
         png_props = mProps.Props.make_props(URL=mFileIO.FileIO.fnm_to_url(fnm), MimeType=f"image/{im_format}")
 
         try:
-            gprovider.storeGraphic(png_props)
+            gprovider.storeGraphic(pic, png_props)
         except Exception as e:
             print("Unable to save graphic")
             print(f"    {e}")

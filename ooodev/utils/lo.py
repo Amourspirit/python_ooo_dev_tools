@@ -463,8 +463,6 @@ class Lo(metaclass=StaticProperty):
             interface_obj = cls.qi(atype=atype, obj=obj)
             if raise_err is True and interface_obj is None:
                 raise mEx.MissingInterfaceError(atype)
-            if interface_obj is None:
-                raise mEx.MissingInterfaceError(atype)
             return interface_obj
         except mEx.CreateInstanceMcfError:
             raise

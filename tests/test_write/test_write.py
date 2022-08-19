@@ -23,7 +23,7 @@ def test_writer_lines(loader, fix_writer_path, tmp_path_fn):
     cursor = Write.get_cursor(doc)
     for line in lines:
         Write.append_para(cursor=cursor, text=line)
-    Lo.delay(1000)
+    Lo.delay(100)
     fnm = Path(tmp_path_fn, 'example.odt')
     Write.save_doc(text_doc=doc, fnm=str(fnm))
     Lo.close_doc(doc, False)
