@@ -2119,7 +2119,8 @@ class Write(mSel.Selection):
                 else:
                     try:
                         xgraphic = mImgLo.ImagesLo.load_graphic_link(graphic_link)
-                        pics.append(xgraphic)
+                        if xgraphic is not None:
+                            pics.append(xgraphic)
                     except Exception as e:
                         mLo.Lo.print(f"{name} could not be accessed:")
                         mLo.Lo.print(f"    {e}")
