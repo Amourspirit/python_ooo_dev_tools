@@ -1879,6 +1879,8 @@ class Write(mSel.Selection):
         Note:
            Event args ``event_data`` is a dictionary containing ``doc``, ``cursor``, ``fnm``, ``width`` and ``height``.
         """
+        # see Also: https://ask.libreoffice.org/t/graphicurl-no-longer-works-in-6-1-0-3/35459/3
+        # see Also: https://tomazvajngerl.blogspot.com/2018/03/improving-image-handling-in-libreoffice.html
         cargs = CancelEventArgs(Write.add_image_link.__qualname__)
         cargs.event_data = {
             "doc": doc,
@@ -1895,14 +1897,13 @@ class Write(mSel.Selection):
         width = cargs.event_data["width"]
         height = cargs.event_data["height"]
 
-        try:
-            tgo = mLo.Lo.create_instance_msf(XTextContent, "com.sun.star.text.TextGraphicObject")
-            if tgo is None:
-                raise mEx.CreateInstanceMsfError(XTextContent, "com.sun.star.text.TextGraphicObject")
+        tgo = mLo.Lo.create_instance_msf(XTextContent, "com.sun.star.text.TextGraphicObject", raise_err=True)
+        props = mLo.Lo.qi(XPropertySet, tgo, True)
 
-            props = mLo.Lo.qi(XPropertySet, tgo, True)
+        try:
+            graphic = mImgLo.ImagesLo.load_graphic_file(fnm)
             props.setPropertyValue("AnchorType", TextContentAnchorType.AS_CHARACTER)
-            props.setPropertyValue("GraphicURL", mFileIO.FileIO.fnm_to_url(fnm))
+            props.setPropertyValue("Graphic", graphic)
 
             # optionally set the width and height
             if width > 0 and height > 0:
@@ -1912,10 +1913,6 @@ class Write(mSel.Selection):
             # append image to document, followed by a newline
             cls._append_text_content(cursor, tgo)
             cls.end_line(cursor)
-        except mEx.CreateInstanceMsfError:
-            raise
-        except mEx.MissingInterfaceError:
-            raise
         except Exception as e:
             raise Exception(f"Insertion of graphic in '{fnm}' failed:") from e
         _Events().trigger(WriteNamedEvent.IMAGE_LNIK_ADDED, EventArgs.from_args(cargs))
@@ -2126,8 +2123,6 @@ class Write(mSel.Selection):
                     except Exception as e:
                         mLo.Lo.print(f"{name} could not be accessed:")
                         mLo.Lo.print(f"    {e}")
-            if len(pics) == 0:
-                return None
             return pics
         except Exception as e:
             raise Exception(f"Get text graphics failed:") from e
