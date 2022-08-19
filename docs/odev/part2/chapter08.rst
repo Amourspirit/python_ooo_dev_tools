@@ -362,6 +362,9 @@ This is converted to XShape_ so its ``setSize()`` method can be passed the line 
 
 The centering of the line is achieved by placing the shape in its own paragraph, then using :py:meth:`.Write.style_prev_paragraph` to center it.
 
+8.3 Accessing Linked Images and Shapes
+======================================
+
 Work in Progress ...
 
 .. |build_doc| replace:: Build Doc
