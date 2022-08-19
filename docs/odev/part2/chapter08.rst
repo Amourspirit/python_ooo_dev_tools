@@ -362,16 +362,253 @@ This is converted to XShape_ so its ``setSize()`` method can be passed the line 
 
 The centering of the line is achieved by placing the shape in its own paragraph, then using :py:meth:`.Write.style_prev_paragraph` to center it.
 
-Work in Progress ...
+8.3 Accessing Linked Images and Shapes
+======================================
+
+The outcome of running|build_doc|_ is a ``build.odt`` file containing four graphics – two are linked images, one is an image shape, and the other a line shape.
+
+The |save_graphics|_ example extracts linked graphics from a document, saving them as PNG files.
+
+.. code-block:: text
+
+    Num. of text graphics: 2
+    Saving graphic in graphics1.png
+    Image size in pixels: 319 x 274
+    Saving graphic in graphics2.png
+    Image size in pixels: 319 x 274
+
+.. todo::
+
+    chapter 8.3, implement getting shapes info when ``Draw`` module is created.
+
+In a future revision it will include drawing shape info as well.
+
+.. code-block:: text
+
+    Num. of draw shapes: 3
+      Shape service: FrameShape; z-order: 0
+      Shape service: com.sun.star.drawing.GraphicObjectShape; z-order: 1
+      Shape service: com.sun.star.drawing.LineShape; z-order: 2
+
+A user who looked at ``build.odt`` for themselves might say that it contains three images not the two reported by |save_graphics|_.
+Why the discrepancy? |save_graphics|_ only saves linked graphics, and only two were added by :py:meth:`.Write.add_image_link`.
+The other image was inserted using :py:meth:`.Write.add_image_shape` which creates an image shape.
+
+The number of shapes reported by|save_graphics|_ may also confuse the user – why are there three rather than two?
+The only shapes added to the document were an image and a line.
+
+The names of the services gives a clue: the second and third shapes are the expected GraphicObjectShape_ and LineShape_, but the first is a
+text frame (``FrameShape``) added by :py:meth:`.Write.add_text_frame`. Although this frame is an instance of the TextFrame_ service, it's reported as a ``FrameShape``.
+That's a bit mysterious because there's no ``FrameShape`` service in the Office documentation.
+
+8.3.1 Finding and Saving Text Graphics in a Document
+----------------------------------------------------
+
+:py:meth:`.Write.get_text_graphics` returns a list of XGraphic_ objects:
+first it retrieves a collection of the graphic links in the document, then iterates through them creating an XGraphic_ object for each one:
+
+
+.. tabs::
+
+    .. code-tab:: python
+
+        @classmethod
+        def get_text_graphics(cls, text_doc: XTextDocument) -> List[XGraphic]:
+            try:
+                xname_access = cls.get_graphic_links(text_doc)
+                if xname_access is None:
+                    raise ValueError("Unable to get Graphic Links")
+                names = xname_access.getElementNames()
+
+                pics: List[XGraphic] = []
+                for name in names:
+                    graphic_link = None
+                    try:
+                        graphic_link = xname_access.getByName(name)
+                    except UnoException:
+                        pass
+                    if graphic_link is None:
+                        Lo.print(f"No graphic found for {name}")
+                    else:
+                        try:
+                            xgraphic = ImagesLo.load_graphic_link(graphic_link)
+                            if xgraphic is not None:
+                                pics.append(xgraphic)
+                        except Exception as e:
+                            Lo.print(f"{name} could not be accessed:")
+                            Lo.print(f"    {e}")
+                return pics
+            except Exception as e:
+                raise Exception(f"Get text graphics failed:") from e
+
+Graphic objects are accessed with XTextGraphicObjectsSupplier_, as implemented by :py:meth:`.Write.get_graphic_links`:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        @staticmethod
+        def get_graphic_links(doc: XComponent) -> XNameAccess | None:
+            ims_supplier = Lo.qi(XTextGraphicObjectsSupplier, doc, True)
+
+            xname_access = ims_supplier.getGraphicObjects()
+            if xname_access is None:
+                Lo.print("Name access to graphics not possible")
+                return None
+
+            if not xname_access.hasElements():
+                Lo.print("No graphics elements found")
+                return None
+
+            return xname_access
+
+Back in :py:meth:`.Write.get_text_graphics`, each graphic is loaded by calling :py:meth:`.ImagesLo.load_graphic_link`. It loads an image from the URL associated with a link:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        @staticmethod
+        def load_graphic_link(graphic_link: object) -> XGraphic:
+            xprops = Lo.qi(XPropertySet, graphic_link, True)
+
+            try:
+                graphic = xprops.getPropertyValue("Graphic")
+                if graphic is None:
+                    raise Exception("Grapich is None")
+                return graphic
+            except Exception as e:
+                raise Exception(f"Unable to retrieve graphic") from e
+
+Note that the XGraphic **ARE** extracted from the document instead of loaded from a URL.
+:py:meth:`.ImagesLo.load_graphic_file` can be used to load a graphic from a file.
+
+.. note::
+
+    See Tomaz's development blog `Part 1 <https://tomazvajngerl.blogspot.com/2018/01/improving-image-handling-in-libreoffice.html>`_ and `Part 2 <https://tomazvajngerl.blogspot.com/2018/03/improving-image-handling-in-libreoffice.html>`_
+    for more information on why "GraphicURL" is no longer recommended.
+
+    And `.GraphicURL no longer works in 6.1.0.3 <https://ask.libreoffice.org/t/graphicurl-no-longer-works-in-6-1-0-3/35459>`_
+
+Back in |save_graphics|_, the XGraphic_ objects are saved as PNG files, and their pixel sizes reported:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        pics = Write.get_text_graphics(doc)
+        print(f"Num. of text graphics: {len(pics)}")
+
+        # save text graphics to files
+        for i, pic in enumerate(pics):
+            fnm = Path(f"graphic{i + 1}.png")
+            ImagesLo.save_graphic(pic, fnm, "png")  # ".gif", "gif")
+            sz = cast(Size, Props.get_property(pic, "SizePixel"))
+            print(f"Image size in pixels: {sz.Width} x {sz.Height}")
+        print()
+
+:py:meth:`.ImagesLo.save_graphic` utilizes the graphic provider's ``XGraphicProvider.storeGraphic()`` method:
+
+
+.. tabs::
+
+    .. code-tab:: python
+
+        gprovider.storeGraphic(pic, png_props)
+
+Its second argument is an array of PropertyValue_ objects, not a PropertySet_.
+:py:class:`~.props.Props` utility class provides several functions for creating PropertyValue_ instances,
+which are a variant of the ``{name=value}`` pair idea, but with extra data fields. One such function is:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        png_props = Props.make_props(URL=FileIO.fnm_to_url(fnm), MimeType=f"image/{im_format}")
+
+It's passed an array of names and values, which are paired up as PropertyValue_ objects, and returned in a tuple of PropertyValue_.
+
+In :py:meth:`~.ImagesLo.save_graphic`, these methods are used like so:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        gprovider = mLo.Lo.create_instance_mcf(XGraphicProvider, "com.sun.star.graphic.GraphicProvider")
+
+        # set up properties for storing the graphic
+        png_props = mProps.Props.make_props(URL=FileIO.fnm_to_url(fnm), MimeType=f"image/{im_format}")
+
+        gprovider.storeGraphic(pic, png_props)
+
+The idea is to call ``XGraphicProvider.saveGraphics()`` with the ``URL`` and ``MimeType`` properties set – the URL is for the image file, and the ``mimetype`` is an image type (e.g. ``image/png``).
+
+:py:meth:`~.ImagesLo.save_graphic` is coded as:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        @staticmethod
+        def save_graphic(pic: XGraphic, fnm: PathOrStr, im_format: str) -> None:
+            print(f"Saving graphic in '{fnm}'")
+
+            if pic is None:
+                print("Supplied image is null")
+                return
+
+            gprovider = Lo.create_instance_mcf(XGraphicProvider, "com.sun.star.graphic.GraphicProvider")
+            if gprovider is None:
+                print("Graphic Provider could not be found")
+                return
+
+            png_props = Props.make_props(URL=FileIO.fnm_to_url(fnm), MimeType=f"image/{im_format}")
+
+            try:
+                gprovider.storeGraphic(pic, png_props)
+            except Exception as e:
+                print("Unable to save graphic")
+                print(f"    {e}")
+
+Other possible image MIME types include ``gif``, ``jpeg``, ``wmf``, and ``bmp``.
+For instance, this call will save the image as a GIF: ``ImagesLO.save_graphic(pic, f"graphics{i}.gif", "gif")``
+The printed output from :py:meth:`~.ImagesLo.save_graphic` contains another surprise:
+
+.. code-block:: text
+
+    Num. of text graphics: 2
+    Saving graphic in graphics1.png
+    Image size in pixels: 319 x 274
+    Saving graphic in graphics2.png
+    Image size in pixels: 319 x 274
+
+The two saved graphics are the same size, but the second image is bigger inside the document.
+The discrepancy is because the rendering of the image in the document is bigger, scaled up to fit the enclosing frame; the original image is unchanged.
+
+8.3.2 Finding the Shapes in a Document
+--------------------------------------
+
+.. todo::
+
+    chapter 8.3.2 needs to be written after ``Draw`` module is written.
+
+This section is not yet ready and will be published at a later date.
+
 
 .. |build_doc| replace:: Build Doc
 .. _build_doc: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_build_doc
+
+.. |save_graphics| replace:: Save Graphics
+.. _save_graphics: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_save_graphics
 
 .. _BitmapTable: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1drawing_1_1BitmapTable.html
 .. _com.sun.star.drawing.Shape: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1drawing_1_1Shape.html
 .. _com.sun.star.text.Shape: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1Shape.html
 .. _GraphicObjectShape: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1drawing_1_1GraphicObjectShape.html
 .. _LineShape: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1drawing_1_1LineShape.html
+.. _PropertySet: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1beans_1_1PropertySet.html
+.. _PropertyValue: https://api.libreoffice.org/docs/idl/ref/structcom_1_1sun_1_1star_1_1beans_1_1PropertyValue.html
+.. _TextFrame: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1TextFrame.html
 .. _TextGraphicObject: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1TextGraphicObject.html
 .. _XBitmap: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1awt_1_1XBitmap.html
 .. _XGraphic: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1graphic_1_1XGraphic.html
@@ -380,3 +617,4 @@ Work in Progress ...
 .. _XShape: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1drawing_1_1XShape.html
 .. _XShapeDescriptor: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1drawing_1_1XShapeDescriptor.html
 .. _XTextContent: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextContent.html
+.. _XTextGraphicObjectsSupplier: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextGraphicObjectsSupplier.html
