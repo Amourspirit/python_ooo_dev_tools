@@ -542,7 +542,7 @@ class Lo(metaclass=StaticProperty):
                 doc = Write.create_doc(loader)
                 ...
         """
-        if mock_g:
+        if mock_g.DOCS_BUILDING:
             # some component call this method and are triggered during docs building.
             # by adding this block this method will be exited if docs are building.
             return None
