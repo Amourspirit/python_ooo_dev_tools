@@ -2,6 +2,13 @@
 Version History
 ***************
 
+Version 0.4.15
+==============
+
+Update Graphic methods to move away from ``GraphicURL``
+
+Other minor bug fixes.
+
 Version 0.4.14
 ==============
 

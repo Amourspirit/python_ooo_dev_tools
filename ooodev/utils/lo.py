@@ -12,7 +12,7 @@ from urllib.parse import urlparse
 import uno
 from enum import IntEnum, Enum
 
-# from ..mock import mock_g
+from ..mock import mock_g
 
 from ..events.event_singleton import _Events
 from ..events.lo_named_event import LoNamedEvent
@@ -463,8 +463,6 @@ class Lo(metaclass=StaticProperty):
             interface_obj = cls.qi(atype=atype, obj=obj)
             if raise_err is True and interface_obj is None:
                 raise mEx.MissingInterfaceError(atype)
-            if interface_obj is None:
-                raise mEx.MissingInterfaceError(atype)
             return interface_obj
         except mEx.CreateInstanceMcfError:
             raise
@@ -544,6 +542,11 @@ class Lo(metaclass=StaticProperty):
                 doc = Write.create_doc(loader)
                 ...
         """
+        if mock_g.DOCS_BUILDING:
+            # some component call this method and are triggered during docs building.
+            # by adding this block this method will be exited if docs are building.
+            return None
+
         # Creation sequence: remote component content (xcc) -->
         #                     remote service manager (mcFactory) -->
         #                     remote desktop (xDesktop) -->
@@ -2511,6 +2514,9 @@ class Lo(metaclass=StaticProperty):
         try:
             return cls._this_component
         except AttributeError:
+            if mock_g.DOCS_BUILDING:
+                cls._this_component = None
+                return cls._this_component
             if cls.is_loaded is False:
                 # attempt to connect direct
                 # failure will result in script error and then exit
