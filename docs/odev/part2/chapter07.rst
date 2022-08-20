@@ -1219,7 +1219,7 @@ The call to ``gotoRange()`` moves the view cursor to the ``ad-bookmark`` positio
 .. _build_doc: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_build_doc
 
 .. |math_ques| replace:: Math Questions
-.. _math_ques: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_math_quesions
+.. _math_ques: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_math_questions
 
 .. |story_creator| replace:: Story Creator
 .. _story_creator: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_story_creator
