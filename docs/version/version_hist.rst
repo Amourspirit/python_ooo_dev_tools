@@ -2,6 +2,12 @@
 Version History
 ***************
 
+Version 0.4.16
+==============
+
+Fixes for Write spell checking
+
+
 Version 0.4.15
 ==============
 
