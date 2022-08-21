@@ -38,10 +38,10 @@ from com.sun.star.document import XDocumentInsertable
 from com.sun.star.document import XEmbeddedObjectSupplier2
 from com.sun.star.drawing import XDrawPageSupplier
 from com.sun.star.drawing import XShape
+from com.sun.star.frame import XModel
 from com.sun.star.lang import Locale  # struct class
 from com.sun.star.lang import XComponent
 from com.sun.star.lang import XServiceInfo
-from com.sun.star.frame import XModel
 from com.sun.star.linguistic2 import XConversionDictionaryList
 from com.sun.star.linguistic2 import XLanguageGuessing
 from com.sun.star.linguistic2 import XLinguProperties
@@ -58,9 +58,9 @@ from com.sun.star.text import XParagraphCursor
 from com.sun.star.text import XText
 from com.sun.star.text import XTextContent
 from com.sun.star.text import XTextDocument
-from com.sun.star.text import XTextGraphicObjectsSupplier
 from com.sun.star.text import XTextField
 from com.sun.star.text import XTextFrame
+from com.sun.star.text import XTextGraphicObjectsSupplier
 from com.sun.star.text import XTextRange
 from com.sun.star.text import XTextTable
 from com.sun.star.text import XTextViewCursor
@@ -69,7 +69,7 @@ from com.sun.star.util import XCloseable
 from com.sun.star.view import XPrintable
 
 if TYPE_CHECKING:
-    from com.sun.star.beans import PropertyValue
+    # from com.sun.star.beans import PropertyValue
     from com.sun.star.container import XEnumeration
     from com.sun.star.container import XNameAccess
     from com.sun.star.drawing import XDrawPage
@@ -82,17 +82,17 @@ if TYPE_CHECKING:
     from com.sun.star.linguistic2 import XThesaurus
     from com.sun.star.text import XTextCursor
 
-
+from ooo.dyn.beans.property_value import PropertyValue
 from ooo.dyn.awt.font_slant import FontSlant
 from ooo.dyn.awt.size import Size  # struct
 from ooo.dyn.linguistic2.dictionary_type import DictionaryType as OooDictionaryType
 from ooo.dyn.style.break_type import BreakType
 from ooo.dyn.style.paragraph_adjust import ParagraphAdjust
+from ooo.dyn.style.paragraph_adjust import ParagraphAdjust
 from ooo.dyn.text.control_character import ControlCharacterEnum
 from ooo.dyn.text.page_number_type import PageNumberType
 from ooo.dyn.text.text_content_anchor_type import TextContentAnchorType
 from ooo.dyn.view.paper_format import PaperFormat as OooPaperFormat
-from ooo.dyn.style.paragraph_adjust import ParagraphAdjust
 
 # endregion Imports
 
@@ -2285,9 +2285,10 @@ class Write(mSel.Selection):
 
         print(f"Locales for {service} ({len(countries)})")
         for i, country in enumerate(countries):
-            if (i % 0) == 0:
+            # print 10 per line
+            if (i % 10) == 0:
                 print()
-            print(f"  {country}")
+            print(f"  {country}", end="")
         print()
         print()
 
@@ -2484,7 +2485,7 @@ class Write(mSel.Selection):
             bool: True if no spelling errors are detected; Otherwise, False
         """
         loc = Locale("en", "US", "")
-        alts = speller.spell(word, loc, tuple())
+        alts = speller.spell(word, loc, ())
         if alts is not None:
             mLo.Lo.print(f"* '{word}' is unknown. Try:")
             alt_words = alts.getAlternatives()
@@ -2583,7 +2584,7 @@ class Write(mSel.Selection):
             errs = pr_res.aErrors
             if len(errs) > 0:
                 for err in errs:
-                    cls.print_proof_error(err)
+                    cls.print_proof_error(sent, err)
                     num_errs += 1
         return num_errs
 
@@ -2603,7 +2604,7 @@ class Write(mSel.Selection):
         e_end = err.nErrorStart + err.nErrorLength
         err_txt = string[err.nErrorStart : e_end]
         print(f"G* {err.aShortComment} in: '{err_txt}'")
-        if err.aSuggestions > 0:
+        if len(err.aSuggestions) > 0:
             print(f"  Suggested change: '{err.aSuggestions[0]}'")
         print()
 
