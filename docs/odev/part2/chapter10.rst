@@ -629,6 +629,104 @@ The ``XXX`` name will be Office's locale language, which in this case is "en".
 
 The URL required by the ``OptionsTreeDialog`` dispatch is constructed by appending ``/dialog/en.xdl`` to the installation folder string.
 
+10.3 Using the Thesaurus
+========================
+
+Lingo_ contains two examples of how to use the thesaurus:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in lingo exmaple
+        lingo_mgr = Lo.create_instance_mcf(
+            XLinguServiceManager2,
+            "com.sun.star.linguistic2.LinguServiceManager"
+            )
+        if lingo_mgr is None:
+            print("No linguistics manager found")
+            return 0
+
+        # load thesaurus
+        thesaurus = lingo_mgr.getThesaurus()
+        Write.spell_word("magisian", speller)
+        Write.spell_word("ellucidate", speller)
+
+The output from the first call to :py:meth:`.Write.print_meaning` is:
+
+.. code-block:: text
+
+    "magician" found in thesaurus; number of meanings: 2
+    1.  Meaning: (noun) prestidigitator
+
+      No. of synonyms: 6
+        prestidigitator
+        conjurer
+        conjuror
+        illusionist
+        performer (generic term)
+        performing artist (generic term)
+
+    2.  Meaning: (noun) sorcerer
+
+      No. of synonyms: 6
+        sorcerer
+        wizard
+        necromancer
+        thaumaturge
+        thaumaturgist
+        occultist (generic term)
+
+``XLinguServiceManager2.getThesaurus()`` returns an instance of XThesaurus_ whose service and main interfaces are shown in :numref:`ch10fig_thesaurus_serv_interface`.
+
+.. cssclass:: diagram invert
+
+    .. _ch10fig_thesaurus_serv_interface:
+    .. figure:: https://user-images.githubusercontent.com/4193389/186267659-aca316ae-f069-4a4a-8d52-b94b2f805027.png
+        :alt: Diagram of The Thesaurus Service and Interfaces.
+        :figclass: align-center
+
+        :The Thesaurus_ Service and Interfaces.
+
+:py:meth:`.Write.print_meaning` calls ``XThesaurus.queryMeanings()``, and prints the array of results:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        @staticmethod
+        def print_meaning(word: str, thesaurus: XThesaurus, loc: Locale | None = None) -> int:
+            if loc is None:
+                loc = Locale("en", "US", "")
+            meanings = thesaurus.queryMeanings(word, loc, tuple())
+            if meanings is None:
+                print(f"'{word}' NOT found int thesaurus")
+                print()
+                return 0
+            m_len = len(meanings)
+            print(f"'{word}' found in thesaurus; number of meanings: {m_len}")
+
+            for i, meaning in enumerate(meanings):
+                print(f"{i+1}. Meaning: {meaning.getMeaning()}")
+                synonyms = meaning.querySynonyms()
+                print(f" No. of  synonyms: {len(synonyms)}")
+                for synonym in synonyms:
+                    print(f"    {synonym}")
+                print()
+            return m_len
+
+In a similar way to ``XSpellChecker.spell()``, ``XThesaurus.queryMeanings()`` requires a locale and an optional tuple of properties.
+:py:meth:`~.Write.print_meaning` utilizes a default of  **American English**, and no properties.
+
+If you need a non-English thesaurus which isn't part of Office, then look through the dictionary extensions at https://extensions.libreoffice.org/?Tags%5B%5D=50;
+many include a thesaurus with the dictionary.
+
+The files are built from WordNet data (https://wordnet.princeton.edu/), but use a text-based format explained very briefly in
+Daniel Naber's slides about the ``Lingucomponent`` Project (at http://danielnaber.de/publications/ooocon2005-lingucomponent.pdf).
+Also, the ``Lingucomponent`` website has some C++ code for reading ``.idx`` and ``.dat`` files (in https://openoffice.org/lingucomponent/MyThes-1.zip).
+
+However, if you want to write code using a thesaurus independently of Office,
+then consider programming with one of the many APIs for WordNet; listed at https://wordnet.princeton.edu/related-projects#Python.
 
 Work in progress ...
 
@@ -648,9 +746,11 @@ Work in progress ...
 .. _LinguServiceManager: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1linguistic2_1_1LinguServiceManager.html
 .. _Proofreader: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1linguistic2_1_1Proofreader.html
 .. _SpellChecker: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1linguistic2_1_1SpellChecker.html
+.. _Thesaurus: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1linguistic2_1_1Thesaurus.html
 .. _XConversionDictionary: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1linguistic2_1_1XConversionDictionary.html
 .. _XConversionPropertyType: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1linguistic2_1_1XConversionPropertyType.html
 .. _XDictionary: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1linguistic2_1_1XDictionary.html
 .. _XLinguProperties: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1linguistic2_1_1XLinguProperties.html
 .. _XNameContainer: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1container_1_1XNameContainer.html
 .. _XPackageInformationProvider: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1deployment_1_1XPackageInformationProvider.html
+.. _XThesaurus: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1linguistic2_1_1XThesaurus.html
