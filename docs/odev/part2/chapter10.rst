@@ -156,7 +156,7 @@ Each dictionary in the list has an XDictionary_ interface which contains methods
                 return
             print(f"No. of dictionaries: {dict_list.getCount()}")
             dicts = dict_list.getDictionaries()
-            for d in dicts:
+            for d in dicts:ch10fig_convert_dicts_services
                 print(
                     f"  {d.getName()} ({d.getCount()}); ({'active' if d.isActive() else 'na'}); '{d.getLocale().Country}'; {cls.get_dict_type(d.getDictionaryType())}"
                 )
@@ -173,12 +173,12 @@ Each dictionary in the list has an XDictionary_ interface which contains methods
             return "??"
 
 Conversion dictionaries map words in one language/dialect to corresponding words in another language/dialect.
-:numref:`ch09fig_convert_dicts_services` shows that conversion dictionaries are organized in a similar way to ordinary ones.
+:numref:`ch10fig_convert_dicts_services` shows that conversion dictionaries are organized in a similar way to ordinary ones.
 The interfaces for manipulating a conversion dictionary are XConversionDictionary_ and XConversionPropertyType_.
 
 .. cssclass:: diagram invert
 
-    .. _ch09fig_convert_dicts_services:
+    .. _ch10fig_convert_dicts_services:
     .. figure:: https://user-images.githubusercontent.com/4193389/186044163-06e65425-a158-4a1e-a28c-17faad1b8e84.png
         :alt: Diagram of the The Conversion Dictionary List and Conversion Dictionary Services.
         :figclass: align-center
@@ -352,7 +352,286 @@ The code for :py:meth:`.Info.list_extensions`:
 
 Extensions are accessed via the XPackageInformationProvider_ interface.
 
+10.1.4 Examining the Lingu Services
+-----------------------------------
+
+The LinguServiceManager_ provides access to three of the four main linguistic services: the spell checker, the hyphenator, and thesaurus.
+The proof reader (:abbreviation:`ex:` the grammar checker) is managed by a separate Proofreader_ service, which is explained later.
+
+:numref:`ch10fig_longu_serv_interface` shows the interfaces accessible from the LinguServiceManager service.
+
+.. cssclass:: diagram invert
+
+    .. _ch10fig_longu_serv_interface:
+    .. figure:: https://user-images.githubusercontent.com/4193389/186255983-5ed8f694-3bcc-4fce-874b-a860b1deef9d.png
+        :alt: Diagram of The Lingu Service Manager Service and Interfaces.
+        :figclass: align-center
+
+        :The LinguServiceManager_ Service and Interfaces.
+
+In Lingo_ example, the LinguServiceManager_ is instantiated and then :py:meth:`.Write.print_services_info` reports details about its services:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in lingo example
+
+        # get lingo manager
+        lingo_mgr = Lo.create_instance_mcf(XLinguServiceManager2, "com.sun.star.linguistic2.LinguServiceManager")
+        if lingo_mgr is None:
+            print("No linguistics manager found")
+            return 0
+
+        Write.print_services_info(lingo_mgr)
+
+Typical output from :py:meth:`.Write.print_services_info`:
+
+.. code-block:: text
+
+    Available Services:
+    SpellChecker (1):
+      org.openoffice.lingu.MySpellSpellChecker
+    Thesaurus (1):
+      org.openoffice.lingu.new.Thesaurus
+    Hyphenator (1):
+      org.openoffice.lingu.LibHnjHyphenator
+    Proofreader (2):
+      org.languagetool.openoffice.Main
+      org.libreoffice.comp.pyuno.Lightproof.en
+
+    Configured Services:
+    SpellChecker (1):
+      org.openoffice.lingu.MySpellSpellChecker
+    Thesaurus (1):
+      org.openoffice.lingu.new.Thesaurus
+    Hyphenator (1):
+      org.openoffice.lingu.LibHnjHyphenator
+    Proofreader (1):
+      org.languagetool.openoffice.Main
+
+    Locales for SpellChecker (43):
+      AR  AU  BE  BO  BS  BZ  CA  CA  CH  CL
+      CO  CR  CU  DO  EC  ES  FR  GB  GH  GT
+      HN  IE  IN  JM  LU  MC  MW  MX  NA  NI
+      NZ  PA  PE  PH  PR  PY  SV  TT  US  UY
+      VE  ZA  ZW
+
+    Locales for Thesaurus (43):
+      AR  AU  BE  BO  BS  BZ  CA  CA  CH  CL
+      CO  CR  CU  DO  EC  ES  FR  GB  GH  GT
+      HN  IE  IN  JM  LU  MC  MW  MX  NA  NI
+      NZ  PA  PE  PH  PR  PY  SV  TT  US  UY
+      VE  ZA  ZW
+
+    Locales for Hyphenator (43):
+      AR  AU  BE  BO  BS  BZ  CA  CA  CH  CL
+      CO  CR  CU  DO  EC  ES  FR  GB  GH  GT
+      HN  IE  IN  JM  LU  MC  MW  MX  NA  NI
+      NZ  PA  PE  PH  PR  PY  SV  TT  US  UY
+      VE  ZA  ZW
+
+    Locales for Proofreader (94):
+            AF  AO  AR  AT  AU  BE  BE
+      BE  BO  BR  BS  BY  BZ  CA  CA  CD  CH
+      CH  CH  CI  CL  CM  CN  CR  CU  DE  DE
+      DK  DO  EC  ES  ES  ES  ES  ES  FI  FR
+      FR  GB  GH  GR  GT  HN  HT  IE  IN  IN
+      IN  IR  IS  IT  JM  JP  KH  LI  LT  LU
+      LU  MA  MC  ML  MX  MZ  NA  NI  NL  NZ
+      PA  PE  PH  PH  PL  PR  PT  PY  RE  RO
+      RU  SE  SI  SK  SN  SV  TT  UA  US  US
+      UY  VE  ZA  ZW
+
+The print-out contains three lists: a list of available services, a list of configured services (i.e. ones that are activated inside Office),
+and a list of the locales available to each service.
+
+:numref:`ch10fig_longu_serv_interface` shows that LinguServiceManager_ only manages the spell checker, hyphenator, and thesaurus, and yet :py:meth:`.Write.print_services_info`
+includes information about the proof reader. Somewhat confusingly, although LinguServiceManager_ cannot instantiate a proof reader it can print information about it.
+
+10.2 Using the Spell Checker
+============================
+
+There's a few examples in Lingo_ example of applying the spell checker to individual words:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in lingo example
+        # use spell checker
+        Write.spell_word("horseback", speller)
+        Write.spell_word("ceurse", speller)
+        Write.spell_word("magisian", speller)
+        Write.spell_word("ellucidate", speller)
+
+``XLinguServiceManager.getSpellChecker()`` returns a reference to the spell checker, and :py:meth:`.Write.spell_word` checks the supplied word.
+For the code above, the following is printed:
+
+.. code-block:: text
+
+    * "ceurse" is unknown. Try:
+    No. of names: 8
+      "curse"  "course"  "secateurs"  "cerise"
+      "surcease"  "secure"  "cease"  "Ceausescu"
+
+    * "magisian" is unknown. Try:
+    No. of names: 7
+      "magician"  "magnesia"  "Malaysian"  "mismanage"
+      "imagining"  "mastication"  "fumigation"
+
+    * "ellucidate" is unknown. Try:
+    No. of names: 7
+      "elucidate"  "elucidation"  "hallucinate"  "pellucid"
+      "fluoridate"  "elasticated"  "illustrated"
+
+Nothing is reported for ``horseback`` because that's correctly spelled, and :py:meth:`~.Write.spell_word` returns the boolean true.
+
+The SpellChecker_ service and its important interfaces are shown in :numref:`ch10fig_spellcheck_serv_interface`.
+
+.. cssclass:: diagram invert
+
+    .. _ch10fig_spellcheck_serv_interface:
+    .. figure:: https://user-images.githubusercontent.com/4193389/186258999-3a05d7ff-87fc-49d4-a662-8a5d43fe6f66.png
+        :alt: Diagram of The Spell Checker Service and Interfaces.
+        :figclass: align-center
+
+        :The SpellChecker_ Service and Interfaces.
+
+:py:meth:`.Write.spell_word` utilizes ``XSpellChecker.spell()`` to find a spelling mistake, then prints the alternative spellings:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in the Write class
+        @staticmethod
+        def spell_word(word: str, speller: XSpellChecker, loc: Locale | None = None) -> bool:
+            if loc is None:
+                loc = Locale("en", "US", "")
+            alts = speller.spell(word, loc, ())
+            if alts is not None:
+                print(f"* '{word}' is unknown. Try:")
+                alt_words = alts.getAlternatives()
+                mLo.Lo.print_names(alt_words)
+                return False
+            return True
+
+``XSpellChecker.spell()`` requires a tuple and an array of properties, which is left empty.
+The properties are those associated with XLinguProperties_, which were listed above using :py:meth:`.Write.get_lingu_properties`.
+Its output shows that ``IsSpellCapitalization`` is presently ``True``, which means that words in all-caps will be checked.
+The property can be changed to false inside the ``PropertyValue`` tuple passed to ``XSpellChecker.spell()``. For example:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        props = Props.make_props(IsSpellCapitalization=False)
+        alts = speller.spell(word, loc, props);
+
+Now an incorrectly spelled word in all-caps, such as ``CEURSE`` will be skipped over.
+This means that ``Write.spellWord("CEURSE", speller)`` should return ``True``.
+
+Unfortunately, ``XSpellChecker.spell()`` seems to ignore the property array, and still reports ``CEURSE`` as incorrectly spelled.
+
+Even a property change performed through the XLinguProperties_ interface, such as:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        lingu_props = Write.get_lingu_properties()
+        Props.set_property(lingu_props, "IsSpellCapitalization", False)
+
+fails to change ``XSpellChecker.spell()``'s behavior.
+The only way to make a change to the linguistic properties that is acted upon is through the "Options" pane in the "Writing Aids" dialog, as in :numref:`ch10fig_change_cap_ss`.
+
+.. cssclass:: screen_shot invert
+
+    .. _ch10fig_change_cap_ss:
+    .. figure:: https://user-images.githubusercontent.com/4193389/186261366-3e73934b-f9f2-48bd-a827-67a39a299864.png
+        :alt: Screen shot of Changing the Capitalization Property
+        :figclass: align-center
+
+        :Changing the Capitalization Property.
+
+Office's default spell checker is Hunspell (from https://hunspell.github.io/), and has been part of OpenOffice since v.2, when it replaced
+``MySpell``, adding several features such as support for Unicode. The ``MySpell`` name lives on in a few places, such as in the spelling service (``org.openoffice.lingu.MySpellSpellChecker``).
+
+Hunspell offers extra properties in addition to those in the "Options" pane of the "Writing Aids" dialog.
+They can be accessed through the Tools, Options, Language Settings, "English sentence checking" dialog shown in :numref:`ch10fig_eng_sentence_dialog_ss`.
+
+.. cssclass:: screen_shot invert
+
+    .. _ch10fig_eng_sentence_dialog_ss:
+    .. figure:: https://user-images.githubusercontent.com/4193389/186263152-0bbbb570-4b81-4866-916d-5c27dfb63954.png
+        :alt: Screen shot of The English Sentence Checking Dialog
+        :figclass: align-center
+
+        :The English Sentence Checking Dialog.
+
+The same dialog can also be reached through the Extension Manager window shown back in :numref:`ch10fig_eng_opt_btn_ss`.
+Click on the "English Spelling dictionaries" extension, and then press the "Options" button which appears as in Figure 11.
+
+.. cssclass:: screen_shot
+
+    .. _ch10fig_eng_opt_btn_ss:
+    .. figure:: https://user-images.githubusercontent.com/4193389/186263754-47983f47-c568-4231-b39a-a60564b55769.png
+        :alt: Screen shot of The English Spelling Options Button
+        :figclass: align-center
+
+        :The English Spelling Options Button.
+
+Unfortunately, there appears to be no API for accessing these Hunspell options.
+The best that can be done is to use a dispatch message to open the "English Sentence Checking" dialog in :numref:`ch10fig_eng_sentence_dialog_ss`.
+This done by calling :py:meth:`.Write.open_sent_check_options`:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        GUI.set_visible(True, doc) # Office must be visible...
+        Lo.delay(2000)
+        Write.open_sent_check_options() # for the dialog to appear
+
+:py:meth:`.Write.open_sent_check_options` uses an ``.uno:OptionsTreeDialog`` dispatch along with an URL argument for the dialog's XML definition file:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        @staticmethod
+        def open_sent_check_options() -> None:
+            pip = Info.get_pip()
+            lang_ext = pip.getPackageLocation("org.openoffice.en.hunspell.dictionaries")
+            Lo.print(f"Lang Ext: {lang_ext}")
+            url = f"{lang_ext}/dialog/en.xdl"
+            props = Props.make_props(OptionsPageURL=url)
+            Lo.dispatch_cmd(cmd="OptionsTreeDialog", props=props)
+            Lo.wait(2000)
+
+The XML file's location is obtained in two steps.
+First the ID of the Hunspell service (``org.openoffice.en.hunspell.dictionaries``) is passed to ``XPackageInformationProvider.getPackageLocation()``
+to obtain the spell checker's installation folder.
+:numref:`ch10fig_hunspell_instal_dir_ss` shows a hunspell install directory.
+
+.. cssclass:: screen_shot invert
+
+    .. _ch10fig_hunspell_instal_dir_ss:
+    .. figure:: https://user-images.githubusercontent.com/4193389/186265651-c4c5b862-ea33-47fd-a708-80b9291049e5.png
+        :alt: Screen shot of The English Spelling Options Button
+        :figclass: align-center
+
+        :The Hunspell Installation Folder.
+
+The directory contains a dialog sub-directory, which holds an ``XXX.xdl`` file that defines the dialog's XML structure and data.
+The ``XXX`` name will be Office's locale language, which in this case is "en".
+
+The URL required by the ``OptionsTreeDialog`` dispatch is constructed by appending ``/dialog/en.xdl`` to the installation folder string.
+
+
 Work in progress ...
+
 
 .. |lingo_file| replace:: Lingo File
 .. _lingo_file: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_lingo_file
@@ -366,6 +645,9 @@ Work in progress ...
 .. _ConversionDictionaryList: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1linguistic2_1_1ConversionDictionaryList.html
 .. _Dictionary: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1linguistic2_1_1Dictionary.html
 .. _DictionaryList: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1linguistic2_1_1DictionaryList.html
+.. _LinguServiceManager: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1linguistic2_1_1LinguServiceManager.html
+.. _Proofreader: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1linguistic2_1_1Proofreader.html
+.. _SpellChecker: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1linguistic2_1_1SpellChecker.html
 .. _XConversionDictionary: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1linguistic2_1_1XConversionDictionary.html
 .. _XConversionPropertyType: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1linguistic2_1_1XConversionPropertyType.html
 .. _XDictionary: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1linguistic2_1_1XDictionary.html
