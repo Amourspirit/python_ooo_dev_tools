@@ -48,6 +48,7 @@ from com.sun.star.linguistic2 import XLinguProperties
 from com.sun.star.linguistic2 import XLinguServiceManager
 from com.sun.star.linguistic2 import XProofreader
 from com.sun.star.linguistic2 import XSearchableDictionaryList
+from com.sun.star.linguistic2 import XSpellChecker
 from com.sun.star.style import NumberingType  # const
 from com.sun.star.table import BorderLine  # struct
 from com.sun.star.text import HoriOrientation
@@ -78,7 +79,6 @@ if TYPE_CHECKING:
     from com.sun.star.graphic import XGraphic
     from com.sun.star.linguistic2 import SingleProofreadingError
     from com.sun.star.linguistic2 import XLinguServiceManager2
-    from com.sun.star.linguistic2 import XSpellChecker
     from com.sun.star.linguistic2 import XThesaurus
     from com.sun.star.text import XTextCursor
 
@@ -878,6 +878,32 @@ class Write(mSel.Selection):
     # endregion ---------- text writing methods ------------------------
 
     # region ------------- extract text from document ------------------
+
+    @staticmethod
+    def split_paragraph_into_sentences(paragraph: str) -> List[str]:
+        """
+        Alternative method for breaking a paragraph into sentences and return a list
+
+        ``XSentenceCursor`` occasionally does not divide a paragraph into the correct number of sentences; sometimes two sentences were treated as one.
+
+        Args:
+            paragraph (str): input string
+
+        Returns:
+            List[str]: List of string
+
+        See Also:
+            `split paragraph into sentences with regular expressions <https://pythonicprose.blogspot.com/2009/09/python-split-paragraph-into-sentences.html>`_
+        """
+
+        # https://pythonicprose.blogspot.com/2009/09/python-split-paragraph-into-sentences.html
+        # abbreviations are fairly common.
+        # To try and handle that scenario I would change my regular expression to
+        # read: '[.!?][\s]{1,2}(?=[A-Z])'
+        #   regular expressions are easiest (and fastest)
+        sentence_enders = re.compile("[.!?][\s]{1,2}")
+        sentence_list = sentence_enders.split(paragraph)
+        return sentence_list
 
     @staticmethod
     def get_all_text(cursor: XTextCursor) -> str:
@@ -2195,6 +2221,7 @@ class Write(mSel.Selection):
 
     # region ------------  Linguistic API ------------------------------
 
+    @overload
     @classmethod
     def print_services_info(cls, lingo_mgr: XLinguServiceManager2) -> None:
         """
@@ -2203,11 +2230,31 @@ class Write(mSel.Selection):
         Args:
             lingo_mgr (XLinguServiceManager2): Service manager
         """
-        cargs = CancelEventArgs(Write.print_services_info.__qualname__)
-        _Events().trigger(GblNamedEvent.PRINTING, cargs)
-        if cargs.cancel:
-            return
-        loc = Locale("en", "US", "")
+        ...
+
+    @overload
+    @classmethod
+    def print_services_info(cls, lingo_mgr: XLinguServiceManager2, loc: Locale) -> None:
+        """
+        Prints service info to console
+
+        Args:
+            lingo_mgr (XLinguServiceManager2): Service manager
+            loc (Locale) : Locale
+        """
+        ...
+
+    @classmethod
+    def print_services_info(cls, lingo_mgr: XLinguServiceManager2, loc: Locale | None = None) -> None:
+        """
+        Prints service info to console
+
+        Args:
+            lingo_mgr (XLinguServiceManager2): Service manager
+            loc (Locale | None, Optional) : Locale. Default ``Locale("en", "US", "")``
+        """
+        if loc is None:
+            loc = Locale("en", "US", "")
         print("Available Services:")
         cls.print_avail_service_info(lingo_mgr, "SpellChecker", loc)
         cls.print_avail_service_info(lingo_mgr, "Thesaurus", loc)
@@ -2237,10 +2284,6 @@ class Write(mSel.Selection):
             service (str): Service Name
             loc (Locale): Locale
         """
-        cargs = CancelEventArgs(Write.print_avail_service_info.__qualname__)
-        _Events().trigger(GblNamedEvent.PRINTING, cargs)
-        if cargs.cancel:
-            return
         service_names = lingo_mgr.getAvailableServices(f"com.sun.star.linguistic2.{service}", loc)
         print(f"{service} ({len(service_names)}):")
         for name in service_names:
@@ -2256,10 +2299,6 @@ class Write(mSel.Selection):
             service (str): Service Name
             loc (Locale): Locale
         """
-        cargs = CancelEventArgs(Write.print_config_service_info.__qualname__)
-        _Events().trigger(GblNamedEvent.PRINTING, cargs)
-        if cargs.cancel:
-            return
         service_names = lingo_mgr.getAvailableServices(f"com.sun.star.linguistic2.{service}", loc)
         print(f"{service} ({len(service_names)}):")
         for name in service_names:
@@ -2274,10 +2313,6 @@ class Write(mSel.Selection):
             service (str): Service
             loc (Iterable[Locale]): Locale's
         """
-        cargs = CancelEventArgs(Write.print_locales.__qualname__)
-        _Events().trigger(GblNamedEvent.PRINTING, cargs)
-        if cargs.cancel:
-            return
         countries: List[str] = []
         for l in loc:
             countries.append(l.Country)
@@ -2339,7 +2374,7 @@ class Write(mSel.Selection):
         """
         dict_lst = mLo.Lo.create_instance_mcf(XSearchableDictionaryList, "com.sun.star.linguistic2.DictionaryList")
         if not dict_lst:
-            mLo.Lo.print("No list of dictionaries found")
+            print("No list of dictionaries found")
             return
         cls.print_dicts_info(dict_lst)
 
@@ -2347,7 +2382,7 @@ class Write(mSel.Selection):
             XConversionDictionaryList, "com.sun.star.linguistic2.ConversionDictionaryList"
         )
         if cd_list is None:
-            mLo.Lo.print("No list of conversion dictionaries found")
+            print("No list of conversion dictionaries found")
             return
         cls.print_con_dicts_info(cd_list)
 
@@ -2359,10 +2394,6 @@ class Write(mSel.Selection):
         Args:
             dict_list (XSearchableDictionaryList): dictionary list
         """
-        cargs = CancelEventArgs(Write.print_dicts_info.__qualname__)
-        _Events().trigger(GblNamedEvent.PRINTING, cargs)
-        if cargs.cancel:
-            return
         if dict_list is None:
             print("Dictionary list is null")
             return
@@ -2401,10 +2432,6 @@ class Write(mSel.Selection):
         Args:
             cd_lst (XConversionDictionaryList): conversion dictionary list
         """
-        cargs = CancelEventArgs(Write.print_con_dicts_info.__qualname__)
-        _Events().trigger(GblNamedEvent.PRINTING, cargs)
-        if cargs.cancel:
-            return
         if cd_lst is None:
             print("Conversion Dictionary list is null")
             return
@@ -2447,11 +2474,14 @@ class Write(mSel.Selection):
         Returns:
             XSpellChecker: spell checker
         """
-        lingo_mgr = mLo.Lo.create_instance_mcf(
-            XLinguServiceManager, "com.sun.star.linguistic2.LinguServiceManager", raise_err=True
-        )
-        return lingo_mgr.getSpellChecker()
+        # lingo_mgr = mLo.Lo.create_instance_mcf(
+        #     XLinguServiceManager, "com.sun.star.linguistic2.LinguServiceManager", raise_err=True
+        # )
+        # return lingo_mgr.getSpellChecker()
+        speller = mLo.Lo.create_instance_mcf(XSpellChecker, "com.sun.star.linguistic2.SpellChecker", raise_err=True)
+        return speller
 
+    @overload
     @classmethod
     def spell_sentence(cls, sent: str, speller: XSpellChecker) -> int:
         """
@@ -2464,14 +2494,46 @@ class Write(mSel.Selection):
         Returns:
             int: Number of words spelled incorrectly
         """
+        ...
+
+    @overload
+    @classmethod
+    def spell_sentence(cls, sent: str, speller: XSpellChecker, loc: Locale) -> int:
+        """
+        Spell Check sentence for en US
+
+        Args:
+            sent (str): Sentence to spell check
+            speller (XSpellChecker): spell checker instance
+            loc (Locale): Local used to spell words.
+
+        Returns:
+            int: Number of words spelled incorrectly
+        """
+        ...
+
+    @classmethod
+    def spell_sentence(cls, sent: str, speller: XSpellChecker, loc: Locale | None = None) -> int:
+        """
+        Spell Check sentence for en US
+
+        Args:
+            sent (str): Sentence to spell check
+            speller (XSpellChecker): spell checker instance
+            loc (Locale | None, optional): Local used to spell words. Default ``Locale("en", "US", "")``
+
+        Returns:
+            int: Number of words spelled incorrectly
+        """
         # https://tinyurl.com/y6o8doh2
         words = re.split("\W+", sent)
         count = 0
         for word in words:
-            is_correct = cls.spell_word(word, speller)
+            is_correct = cls.spell_word(word=word, speller=speller, loc=loc)
             count = count + (0 if is_correct else 1)
         return count
 
+    @overload
     @staticmethod
     def spell_word(word: str, speller: XSpellChecker) -> bool:
         """
@@ -2484,10 +2546,42 @@ class Write(mSel.Selection):
         Returns:
             bool: True if no spelling errors are detected; Otherwise, False
         """
-        loc = Locale("en", "US", "")
+        ...
+
+    @overload
+    @staticmethod
+    def spell_word(word: str, speller: XSpellChecker, loc: Locale) -> bool:
+        """
+        Spell Check a word for en US
+
+        Args:
+            word (str): word to spell check
+            speller (XSpellChecker): spell checker instance
+            loc (Locale | None): Local used to spell word.
+
+        Returns:
+            bool: True if no spelling errors are detected; Otherwise, False
+        """
+        ...
+
+    @staticmethod
+    def spell_word(word: str, speller: XSpellChecker, loc: Locale | None = None) -> bool:
+        """
+        Spell Check a word for en US
+
+        Args:
+            word (str): word to spell check
+            speller (XSpellChecker): spell checker instance
+            loc (Locale | None, optional): Local used to spell word. Default ``Locale("en", "US", "")``
+
+        Returns:
+            bool: True if no spelling errors are detected; Otherwise, False
+        """
+        if loc is None:
+            loc = Locale("en", "US", "")
         alts = speller.spell(word, loc, ())
         if alts is not None:
-            mLo.Lo.print(f"* '{word}' is unknown. Try:")
+            print(f"* '{word}' is unknown. Try:")
             alt_words = alts.getAlternatives()
             mLo.Lo.print_names(alt_words)
             return False
@@ -2513,6 +2607,7 @@ class Write(mSel.Selection):
         )
         return lingo_mgr.getThesaurus()
 
+    @overload
     @staticmethod
     def print_meaning(word: str, thesaurus: XThesaurus) -> int:
         """
@@ -2525,11 +2620,39 @@ class Write(mSel.Selection):
         Returns:
             int: Number of meanings found
         """
-        cargs = CancelEventArgs(Write.print_meaning.__qualname__)
-        _Events().trigger(GblNamedEvent.PRINTING, cargs)
-        if cargs.cancel:
-            return 0
-        loc = Locale("en", "US", "")
+        ...
+
+    @overload
+    @staticmethod
+    def print_meaning(word: str, thesaurus: XThesaurus, loc: Locale) -> int:
+        """
+        Prints word meanings found in thesaurus to console
+
+        Args:
+            word (str): Word to print meanings of
+            thesaurus (XThesaurus): thesaurus instance
+            loc (Locale | None): Local used to query meanings.
+
+        Returns:
+            int: Number of meanings found
+        """
+        ...
+
+    @staticmethod
+    def print_meaning(word: str, thesaurus: XThesaurus, loc: Locale | None = None) -> int:
+        """
+        Prints word meanings found in thesaurus to console
+
+        Args:
+            word (str): Word to print meanings of
+            thesaurus (XThesaurus): thesaurus instance
+            loc (Locale | None, optional): Local used to query meanings. Default ``Locale("en", "US", "")``
+
+        Returns:
+            int: Number of meanings found
+        """
+        if loc is None:
+            loc = Locale("en", "US", "")
         meanings = thesaurus.queryMeanings(word, loc, tuple())
         if meanings is None:
             print(f"'{word}' NOT found int thesaurus")
@@ -2565,6 +2688,7 @@ class Write(mSel.Selection):
         proof = mLo.Lo.create_instance_mcf(XProofreader, "com.sun.star.linguistic2.Proofreader", raise_err=True)
         return proof
 
+    @overload
     @classmethod
     def proof_sentence(cls, sent: str, proofreader: XProofreader) -> int:
         """
@@ -2577,8 +2701,40 @@ class Write(mSel.Selection):
         Returns:
             int: Number of word of sentence that did not pass proof reading.
         """
-        loc = Locale("en", "US", "")
-        pr_res = proofreader.doProofreading("1", sent, loc, 0, len(sent), tuple())
+        ...
+
+    @overload
+    @classmethod
+    def proof_sentence(cls, sent: str, proofreader: XProofreader, loc: Locale) -> int:
+        """
+        Proofs a sentence for en US
+
+        Args:
+            sent (str): sentence to proof
+            proofreader (XProofreader): Proof reader instance
+            loc (Locale | None): Local used to do proof reading.
+
+        Returns:
+            int: Number of word of sentence that did not pass proof reading.
+        """
+        ...
+
+    @classmethod
+    def proof_sentence(cls, sent: str, proofreader: XProofreader, loc: Locale | None = None) -> int:
+        """
+        Proofs a sentence for en US
+
+        Args:
+            sent (str): sentence to proof
+            proofreader (XProofreader): Proof reader instance
+            loc (Locale | None, optional): Local used to do proof reading. Default ``Locale("en", "US", "")``
+
+        Returns:
+            int: Number of word of sentence that did not pass proof reading.
+        """
+        if loc is None:
+            loc = Locale("en", "US", "")
+        pr_res = proofreader.doProofreading("1", sent, loc, 0, len(sent), ())
         num_errs = 0
         if pr_res is not None:
             errs = pr_res.aErrors
@@ -2597,10 +2753,6 @@ class Write(mSel.Selection):
             string (str): error string
             err (SingleProofreadingError): Single proof reading error
         """
-        cargs = CancelEventArgs(Write.print_proof_error.__qualname__)
-        _Events().trigger(GblNamedEvent.PRINTING, cargs)
-        if cargs.cancel:
-            return
         e_end = err.nErrorStart + err.nErrorLength
         err_txt = string[err.nErrorStart : e_end]
         print(f"G* {err.aShortComment} in: '{err_txt}'")
@@ -2637,10 +2789,6 @@ class Write(mSel.Selection):
         Args:
             loc (Locale): Locale to print
         """
-        cargs = CancelEventArgs(Write.print_locale.__qualname__)
-        _Events().trigger(GblNamedEvent.PRINTING, cargs)
-        if cargs.cancel:
-            return
         if loc is not None:
             print(f"Locale lang: '{loc.Language}'; country: '{loc.Country}'; variant: '{loc.Variant}'")
 
@@ -2685,6 +2833,8 @@ class Write(mSel.Selection):
         """
         mLo.Lo.dispatch_cmd("SpellOnline")
 
+    # endregion -- it seemse is end region comes after last methos in a class it is not being reconized by VS.Code
+
     @staticmethod
     def open_thesaurus_dialog() -> None:
         """
@@ -2694,8 +2844,6 @@ class Write(mSel.Selection):
             :py:meth:`Lo.dispatch_cmd <.utils.lo.Lo.dispatch_cmd>` method is called along with any of its events.
         """
         mLo.Lo.dispatch_cmd("ThesaurusDialog")
-
-    # endregion ---------- Linguistics dialogs and menu items ----------
 
 
 __all__ = ("Write",)
