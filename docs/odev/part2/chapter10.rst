@@ -728,6 +728,9 @@ Also, the ``Lingucomponent`` website has some C++ code for reading ``.idx`` and 
 However, if you want to write code using a thesaurus independently of Office,
 then consider programming with one of the many APIs for WordNet; listed at https://wordnet.princeton.edu/related-projects#Python.
 
+10.4 Grammar Checking
+=====================
+
 Work in progress ...
 
 
