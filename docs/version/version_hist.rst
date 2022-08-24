@@ -2,6 +2,26 @@
 Version History
 ***************
 
+Version 0.4.17
+==============
+
+Update to Write:
+
+- new method ``split_paragraph_into_sentences``
+- new overloads for ``print_meaning``
+- new overloads for ``print_services_info``
+- new overloads for ``proof_sentence``
+- new overloads for ``spell_sentence``
+- new overloads for ``spell_word``
+- ``load_spell_checker`` now load spell checker from ``com.sun.star.linguistic2.SpellChecker``
+
+
+Version 0.4.16
+==============
+
+Fixes for Write spell checking
+
+
 Version 0.4.15
 ==============
 

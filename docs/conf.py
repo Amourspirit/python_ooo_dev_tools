@@ -114,7 +114,7 @@ html_css_files = ["https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css
 html_css_files.append("css/readthedocs_custom.css")
 if html_theme == "sphinx_rtd_theme":
     html_css_files.append("css/readthedocs_dark.css")
-    
+
 html_js_files = [
     'js/custom.js',
 ]
@@ -141,19 +141,20 @@ autodoc_mock_imports = ["uno", "unohelper", "lxml", "com"]
 # The key of each entry is the type hint as written in the source,
 # the value is how it will be written in the generated documentation.
 autodoc_type_aliases = {
-    "Row": "Row",
     "Column": "Column",
-    "Table": "Table",
-    "TupleArray": "TupleArray",
-    "FloatList": "FloatList",
-    "FloatTable": "FloatTable",
+    "DictRow": "DictRow",
     "DocOrCursor": "DocOrCursor",
     "DocOrText": "DocOrText",
+    "FloatList": "FloatList",
+    "FloatTable": "FloatTable",
     "PathOrStr": "PathOrStr",
-    "DictRow": "DictRow",   
+    "Row": "Row",
+    "Table": "Table",
+    "TupleArray": "TupleArray",
     # Uno Types
     "CellAddress": "CellAddress",
     "CellRangeAddress": "CellRangeAddress",
+    "Locale": "Locale",
     "PropertyValue": "PropertyValue",
     "XCell": "XCell",
     "XCellRange": "XCellRange",
