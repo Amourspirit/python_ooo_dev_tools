@@ -2260,14 +2260,15 @@ class Write(mSel.Selection):
         cls.print_avail_service_info(lingo_mgr, "Thesaurus", loc)
         cls.print_avail_service_info(lingo_mgr, "Hyphenator", loc)
         cls.print_avail_service_info(lingo_mgr, "Proofreader", loc)
+        print()
 
         print("Configured Services:")
         cls.print_config_service_info(lingo_mgr, "SpellChecker", loc)
         cls.print_config_service_info(lingo_mgr, "Thesaurus", loc)
         cls.print_config_service_info(lingo_mgr, "Hyphenator", loc)
         cls.print_config_service_info(lingo_mgr, "Proofreader", loc)
-
         print()
+
         cls.print_locales("SpellChecker", lingo_mgr.getAvailableLocales("com.sun.star.linguistic2.SpellChecker"))
         cls.print_locales("Thesaurus", lingo_mgr.getAvailableLocales("com.sun.star.linguistic2.Thesaurus"))
         cls.print_locales("Hyphenator", lingo_mgr.getAvailableLocales("com.sun.star.linguistic2.Hyphenator"))
@@ -2299,7 +2300,7 @@ class Write(mSel.Selection):
             service (str): Service Name
             loc (Locale): Locale
         """
-        service_names = lingo_mgr.getAvailableServices(f"com.sun.star.linguistic2.{service}", loc)
+        service_names = lingo_mgr.getConfiguredServices(f"com.sun.star.linguistic2.{service}", loc)
         print(f"{service} ({len(service_names)}):")
         for name in service_names:
             print(f"  {name}")
@@ -2315,20 +2316,57 @@ class Write(mSel.Selection):
         """
         countries: List[str] = []
         for l in loc:
-            countries.append(l.Country)
+            c_str = l.Country.strip()
+            if c_str:
+                countries.append(c_str)
         countries.sort()
 
         print(f"Locales for {service} ({len(countries)})")
         for i, country in enumerate(countries):
             # print 10 per line
-            if (i % 10) == 0:
+            if (i > 9) and (i % 10) == 0:
                 print()
             print(f"  {country}", end="")
         print()
         print()
 
+    @overload
     @staticmethod
     def set_configured_services(lingo_mgr: XLinguServiceManager2, service: str, impl_name: str) -> bool:
+        """
+        Set configured Services
+
+        Args:
+             lingo_mgr (XLinguServiceManager2): Service Manager
+            service (str): Service Name
+            impl_name (str): Service implementation name
+
+        Returns:
+            bool: True if CONFIGURED_SERVICES_SETTING event is not canceled; Otherwise, False
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def set_configured_services(lingo_mgr: XLinguServiceManager2, service: str, impl_name: str, loc: Locale) -> bool:
+        """
+        Set configured Services
+
+        Args:
+             lingo_mgr (XLinguServiceManager2): Service Manager
+            service (str): Service Name
+            impl_name (str): Service implementation name
+             loc (Locale): Local used to spell words.
+
+        Returns:
+            bool: True if CONFIGURED_SERVICES_SETTING event is not canceled; Otherwise, False
+        """
+        ...
+
+    @staticmethod
+    def set_configured_services(
+        lingo_mgr: XLinguServiceManager2, service: str, impl_name: str, loc: Locale | None = None
+    ) -> bool:
         """
         Set configured Services
 
@@ -2336,6 +2374,7 @@ class Write(mSel.Selection):
             lingo_mgr (XLinguServiceManager2): Service Manager
             service (str): Service Name
             impl_name (str): Service implementation name
+            loc (Locale | None, optional): Local used to spell words. Default ``Locale("en", "US", "")``
 
         Returns:
             bool: True if CONFIGURED_SERVICES_SETTING event is not canceled; Otherwise, False
@@ -2360,8 +2399,8 @@ class Write(mSel.Selection):
             return False
         service = cargs.event_data["service"]
         impl_name = cargs.event_data["impl_name"]
-
-        loc = Locale("en", "US", "")
+        if loc is None:
+            loc = Locale("en", "US", "")
         impl_names = (impl_name,)
         lingo_mgr.setConfiguredServices(f"com.sun.star.linguistic2.{service}", loc, impl_names)
         _Events().trigger(WriteNamedEvent.CONFIGURED_SERVICES_SET, EventArgs.from_args(cargs))

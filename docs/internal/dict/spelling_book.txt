@@ -2,6 +2,8 @@ Dascalescu
 Davison
 endnote
 endnotes
+LanguageTool
+Lightproof
 loapi
 lodoc
 loguide

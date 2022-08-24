@@ -98,7 +98,7 @@ The Office locale can be set via the Tools, Options, Language Settings, "Languag
 .. cssclass:: screen_shot invert
 
     .. _ch10fig_lang_dial_ss:
-    .. figure:: https://user-images.githubusercontent.com/4193389/186042384-13763979-562a-497b-9d86-54e1e7200b89.png
+    .. figure:: https://user-images.githubusercontent.com/4193389/186284804-cc04946a-ac3f-4581-b295-2b71491763af.png
         :alt: Screen shot of The Languages Dialog
         :figclass: align-center
 
@@ -210,7 +210,7 @@ Output similar to :py:meth:`.Write.dicts_info` can be viewed via Office's Tools,
 .. cssclass:: screen_shot invert
 
     .. _ch10fig_writing_aids_ss:
-    .. figure:: https://user-images.githubusercontent.com/4193389/186045267-11db8569-cbb2-4b6d-bb3f-abe69c7f8073.png
+    .. figure:: https://user-images.githubusercontent.com/4193389/186285125-c619c721-2491-4c67-82fe-5c5af400f173.png
         :alt: Screen shot of The Writing Aids Dialog
         :figclass: align-center
 
@@ -263,7 +263,7 @@ The output:
       IsHyphAuto: False
       IsHyphSpecial: True
       IsIgnoreControlCharacters: True
-      IsSpellAuto: False
+      IsSpellAuto: True
       IsSpellCapitalization: True
       IsSpellHide: None
       IsSpellInAllLanguages: None
@@ -289,32 +289,32 @@ The output on one of my test machine is:
 
     Extensions:
     1. ID: apso.python.script.organizer
-       Version: 1.2.8
-       Loc: file:///home/user/.config/libreoffice/4/user/uno_packages/cache/uno_packages/lu59147xjqms4.tmp_/apso-v2.oxt
+       Version: 1.3.0
+       Loc: file:///C:/Users/bigby/AppData/Roaming/LibreOffice/4/user/uno_packages/cache/uno_packages/lu1271241oyk.tmp_/apso.oxt
 
-    2. ID: French.linguistic.resources.from.Dicollecte.by.OlivierR
-       Version: 5.7
-       Loc: file:///home/user/.config/libreoffice/4/user/uno_packages/cache/uno_packages/lu287421qavj.tmp_/lo-oo-ressources-linguistiques-fr-v5-7.oxt
+    2. ID: org.openoffice.en.hunspell.dictionaries
+       Version: 2021.11.01
+       Loc: file:///C:/Program%20Files/LibreOffice/program/../share/extensions/dict-en
 
-    3. ID: org.openoffice.languagetool.oxt
+    3. ID: French.linguistic.resources.from.Dicollecte.by.OlivierR
+       Version: 7.0
+       Loc: file:///C:/Program%20Files/LibreOffice/program/../share/extensions/dict-fr
+
+    4. ID: org.openoffice.languagetool.oxt
        Version: 5.8
-       Loc: file:///home/user/.config/libreoffice/4/user/uno_packages/cache/uno_packages/lu14553844wbl51.tmp_/LanguageTool-stable.oxt
+       Loc: file:///C:/Users/bigby/AppData/Roaming/LibreOffice/4/user/uno_packages/cache/uno_packages/lu107803j3h0.tmp_/LanguageTool-stable.oxt
 
-    4. ID: mytools.mri
-       Version: 1.3.3
-       Loc: file:///home/user/.config/libreoffice/4/user/uno_packages/cache/uno_packages/lu1050215332vj9.tmp_/MRI-1.3.3.oxt
+    5. ID: com.sun.star.comp.Calc.NLPSolver
+       Version: 0.9
+       Loc: file:///C:/Program%20Files/LibreOffice/program/../share/extensions/nlpsolver
 
-    5. ID: spanish.es.dicts.from.rla-es
-       Version: 2.6
-       Loc: file:///home/user/.config/libreoffice/4/user/uno_packages/cache/uno_packages/lu305561ujwy.tmp_/es.oxt
+    6. ID: spanish.es.dicts.from.rla-es
+       Version: __VERSION__
+       Loc: file:///C:/Program%20Files/LibreOffice/program/../share/extensions/dict-es
 
-    6. ID: org.openoffice.legacy.nlpsolver
-       Version:
-       Loc: file:///usr/lib/libreoffice/share/extensions/nlpsolver
-
-    7. ID: org.openoffice.legacy.wiki-publisher
-       Version:
-       Loc: file:///usr/lib/libreoffice/share/extensions/wiki-publisher
+    7. ID: com.sun.wiki-publisher
+       Version: 1.2.0
+       Loc: file:///C:/Program%20Files/LibreOffice/program/../share/extensions/wiki-publisher
 
 The ``Loc`` entries are the directories or OXT files containing the extensions. Most extensions are placed in the share extensions folder on Windows.
 
@@ -323,7 +323,7 @@ Office can display similar information via its Tools, "Extension Manager" dialog
 .. cssclass:: screen_shot invert
 
     .. _ch10fig_ext_dial_ss:
-    .. figure:: https://user-images.githubusercontent.com/4193389/186047591-8a85daa8-e637-410b-b37f-a5151908961c.png
+    .. figure:: https://user-images.githubusercontent.com/4193389/186285373-d9375dc6-c544-476c-bdb1-72754810546f.png
         :alt: Screen shot of The Extension Manager Dialog.
         :figclass: align-center
 
@@ -408,46 +408,90 @@ Typical output from :py:meth:`.Write.print_services_info`:
     Hyphenator (1):
       org.openoffice.lingu.LibHnjHyphenator
     Proofreader (1):
-      org.languagetool.openoffice.Main
+      org.libreoffice.comp.pyuno.Lightproof.en
 
-    Locales for SpellChecker (43):
+    Locales for SpellChecker (46)
       AR  AU  BE  BO  BS  BZ  CA  CA  CH  CL
-      CO  CR  CU  DO  EC  ES  FR  GB  GH  GT
-      HN  IE  IN  JM  LU  MC  MW  MX  NA  NI
-      NZ  PA  PE  PH  PR  PY  SV  TT  US  UY
-      VE  ZA  ZW
+      CO  CR  CU  DO  EC  ES  FR  GB  GH  GQ
+      GT  HN  IE  IN  JM  LU  MC  MW  MX  NA
+      NI  NZ  PA  PE  PH  PH  PR  PY  SV  TT
+      US  US  UY  VE  ZA  ZW
 
-    Locales for Thesaurus (43):
+    Locales for Thesaurus (46)
       AR  AU  BE  BO  BS  BZ  CA  CA  CH  CL
-      CO  CR  CU  DO  EC  ES  FR  GB  GH  GT
-      HN  IE  IN  JM  LU  MC  MW  MX  NA  NI
-      NZ  PA  PE  PH  PR  PY  SV  TT  US  UY
-      VE  ZA  ZW
+      CO  CR  CU  DO  EC  ES  FR  GB  GH  GQ
+      GT  HN  IE  IN  JM  LU  MC  MW  MX  NA
+      NI  NZ  PA  PE  PH  PH  PR  PY  SV  TT
+      US  US  UY  VE  ZA  ZW
 
-    Locales for Hyphenator (43):
+    Locales for Hyphenator (46)
       AR  AU  BE  BO  BS  BZ  CA  CA  CH  CL
-      CO  CR  CU  DO  EC  ES  FR  GB  GH  GT
-      HN  IE  IN  JM  LU  MC  MW  MX  NA  NI
-      NZ  PA  PE  PH  PR  PY  SV  TT  US  UY
-      VE  ZA  ZW
+      CO  CR  CU  DO  EC  ES  FR  GB  GH  GQ
+      GT  HN  IE  IN  JM  LU  MC  MW  MX  NA
+      NI  NZ  PA  PE  PH  PH  PR  PY  SV  TT
+      US  US  UY  VE  ZA  ZW
 
-    Locales for Proofreader (94):
-            AF  AO  AR  AT  AU  BE  BE
-      BE  BO  BR  BS  BY  BZ  CA  CA  CD  CH
-      CH  CH  CI  CL  CM  CN  CR  CU  DE  DE
-      DK  DO  EC  ES  ES  ES  ES  ES  FI  FR
-      FR  GB  GH  GR  GT  HN  HT  IE  IN  IN
-      IN  IR  IS  IT  JM  JP  KH  LI  LT  LU
-      LU  MA  MC  ML  MX  MZ  NA  NI  NL  NZ
-      PA  PE  PH  PH  PL  PR  PT  PY  RE  RO
-      RU  SE  SI  SK  SN  SV  TT  UA  US  US
-      UY  VE  ZA  ZW
+    Locales for Proofreader (111)
+      AE  AF  AO  AR  AT  AU  BE  BE  BE  BH
+      BO  BR  BS  BY  BZ  CA  CA  CD  CH  CH
+      CH  CI  CL  CM  CN  CR  CU  CV  DE  DE
+      DK  DO  DZ  EC  EG  ES  ES  ES  ES  ES
+      FI  FR  FR  GB  GH  GR  GT  GW  HN  HT
+      IE  IE  IN  IN  IQ  IR  IT  JM  JO  JP
+      KH  KW  LB  LI  LU  LU  LY  MA  MA  MC
+      ML  MO  MX  MZ  NA  NI  NL  NZ  OM  PA
+      PE  PH  PH  PL  PR  PT  PY  QA  RE  RO
+      RU  SA  SD  SE  SI  SK  SN  ST  SV  SY
+      TL  TN  TT  UA  US  US  UY  VE  YE  ZA
+      ZW
 
 The print-out contains three lists: a list of available services, a list of configured services (i.e. ones that are activated inside Office),
 and a list of the locales available to each service.
 
 :numref:`ch10fig_longu_serv_interface` shows that LinguServiceManager_ only manages the spell checker, hyphenator, and thesaurus, and yet :py:meth:`.Write.print_services_info`
 includes information about the proof reader. Somewhat confusingly, although LinguServiceManager_ cannot instantiate a proof reader it can print information about it.
+
+The output shows that two ``proofreader`` services are available (``org.languagetool.openoffice.Main`` and ``org.libreoffice.comp.pyuno.Lightproof.en``), but only one is configured (i.e. active).
+This setup is explained  when we talk about the proof reader later.
+
+The three lists are generated by :py:meth:`.Write.print_services_info` calling :py:meth:`.Write.print_avail_service_info`, :py:meth:`.Write.print_config_service_info`, and :py:meth:`.Write.print_locales`:
+
+
+.. tabs::
+
+    .. code-tab:: python
+
+        @classmethod
+        def print_services_info(cls, lingo_mgr: XLinguServiceManager2, loc: Locale | None = None) -> None:
+            if loc is None:
+                loc = Locale("en", "US", "")
+            print("Available Services:")
+            cls.print_avail_service_info(lingo_mgr, "SpellChecker", loc)
+            cls.print_avail_service_info(lingo_mgr, "Thesaurus", loc)
+            cls.print_avail_service_info(lingo_mgr, "Hyphenator", loc)
+            cls.print_avail_service_info(lingo_mgr, "Proofreader", loc)
+            print()
+
+            print("Configured Services:")
+            cls.print_config_service_info(lingo_mgr, "SpellChecker", loc)
+            cls.print_config_service_info(lingo_mgr, "Thesaurus", loc)
+            cls.print_config_service_info(lingo_mgr, "Hyphenator", loc)
+            cls.print_config_service_info(lingo_mgr, "Proofreader", loc)
+            print()
+
+            cls.print_locales("SpellChecker", lingo_mgr.getAvailableLocales("com.sun.star.linguistic2.SpellChecker"))
+            cls.print_locales("Thesaurus", lingo_mgr.getAvailableLocales("com.sun.star.linguistic2.Thesaurus"))
+            cls.print_locales("Hyphenator", lingo_mgr.getAvailableLocales("com.sun.star.linguistic2.Hyphenator"))
+            cls.print_locales("Proofreader", lingo_mgr.getAvailableLocales("com.sun.star.linguistic2.Proofreader"))
+            print()
+
+The choice of services depends on the current locale by default, so :py:meth:`.Write.print_services_info` begins by creating an American English locale, which matches my version of Office.
+:py:meth:`.Write.print_services_info` can also take a Locale as an option.
+
+:py:meth:`.Write.print_avail_service_info` utilizes ``XLinguServiceManager.getAvailableServices()`` to retrieve a list of the available services.
+In a similar way, :py:meth:`.Write.print_config_service_info` calls ``XLinguServiceManager.getConfiguredServices()``,
+and :py:meth:`.Write.print_locales` gets a sequence of Locale objects from ``XLinguServiceManager.getAvailableLocales()``.
+
 
 10.2 Using the Spell Checker
 ============================
@@ -564,7 +608,7 @@ They can be accessed through the Tools, Options, Language Settings, "English sen
 .. cssclass:: screen_shot invert
 
     .. _ch10fig_eng_sentence_dialog_ss:
-    .. figure:: https://user-images.githubusercontent.com/4193389/186263152-0bbbb570-4b81-4866-916d-5c27dfb63954.png
+    .. figure:: https://user-images.githubusercontent.com/4193389/186285751-c995b0ed-6a96-4fe0-9f96-471f4f7325ae.png
         :alt: Screen shot of The English Sentence Checking Dialog
         :figclass: align-center
 
@@ -576,7 +620,7 @@ Click on the "English Spelling dictionaries" extension, and then press the "Opti
 .. cssclass:: screen_shot
 
     .. _ch10fig_eng_opt_btn_ss:
-    .. figure:: https://user-images.githubusercontent.com/4193389/186263754-47983f47-c568-4231-b39a-a60564b55769.png
+    .. figure:: https://user-images.githubusercontent.com/4193389/186286211-37b8fa64-d7dc-477c-add4-2a07a9e7758b.png
         :alt: Screen shot of The English Spelling Options Button
         :figclass: align-center
 
@@ -618,7 +662,7 @@ to obtain the spell checker's installation folder.
 .. cssclass:: screen_shot invert
 
     .. _ch10fig_hunspell_instal_dir_ss:
-    .. figure:: https://user-images.githubusercontent.com/4193389/186265651-c4c5b862-ea33-47fd-a708-80b9291049e5.png
+    .. figure:: https://user-images.githubusercontent.com/4193389/186286838-8c6deeb3-dfb2-4314-9ab8-74b584d5770a.png
         :alt: Screen shot of The English Spelling Options Button
         :figclass: align-center
 
@@ -731,6 +775,235 @@ then consider programming with one of the many APIs for WordNet; listed at https
 10.4 Grammar Checking
 =====================
 
+Office's default grammar checker (or proof reader) is **Lightproof**, a Python application developed by :spelling:word:`László` :spelling:word:`Németh`.
+``Lightproof.py``, and its support files, are installed in the same folder as the spell checker and thesaurus; on my machine that's ``\share\extensions\dict-en``.
+
+Older versions of **Lightproof** are available from OpenOffice's extensions website at https://extensions.services.openoffice.org/project/lightproof.
+One reason for downloading the old version is that it contains documentation on adding new grammar rules missing from the version installed in Office.
+
+Another way to modify **Lightproof's** grammar rules is with its editor, which can be obtained from https://extensions.libreoffice.org/extension-center/lightproof-editor.
+
+There are a number of alternative grammar checkers for Office, such as LanguageTool_ which are easily added to Office as extensions via the "Language Tools"
+
+When these examples were first coded, by default the default Lightproof for grammar checking, but it doesn't have a very extensive set of built-in
+grammar rules (it seems best at catching punctuation mistakes).
+A switch to LanguageTool_ was made because of its larger set of rules, and its support for many languages.
+It also can be used as a standalone Java library, separate from Office, and that its site includes lots of documentation.
+Perhaps its biggest drawback is that it requires Java 8 or later.
+
+Another issue is that LanguageTool and Lightproof cannot happily coexist inside Office.
+**Lightproof** must be disabled and **LanguageTool** enabled via the Options, Language Settings, Writing aids, "Available language modules" pane at the top of :numref:`ch10fig_language_tool_on_ss`.
+
+.. cssclass:: screen_shot invert
+
+    .. _ch10fig_language_tool_on_ss:
+    .. figure:: https://user-images.githubusercontent.com/4193389/186289065-dcf825b2-caac-4b90-a1e1-954e116c6a9d.png
+        :alt: Screen shot of Goodbye Lightproof, hello LanguageTool
+        :figclass: align-center
+
+        :Goodbye Lightproof, hello LanguageTool
+
+:py:meth:`.Write.print_services_info` was used earlier to list the available and configured services.
+
+.. code-block:: text
+
+    Available Services:
+        :
+    Proofreader (2):
+      org.languagetool.openoffice.Main
+      org.libreoffice.comp.pyuno.Lightproof.en
+
+    Configured Services:
+        :
+    Proofreader (1):
+      org.languagetool.openoffice.Main
+
+``org.languagetool.openoffice.Main`` refers to the LanguageTool extension, while ``org.libreoffice.comp.pyuno.Lightproof.en`` is the English version of Lightproof.
+
+This information can be used to set the proof reader. LanguageTool is made the default by calling :py:meth:`.Write.set_configured_services` like so:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        from ooodev.utils.lo import Lo
+        from com.sun.star.linguistic2 import XLinguServiceManager2
+
+        with Lo.Loader(Lo.ConnectSocket(headless=True)) as loader:
+            lingo_mgr = Lo.create_instance_mcf(XLinguServiceManager2, "com.sun.star.linguistic2.LinguServiceManager")
+            Write.set_configured_services(lingo_mgr, "Proofreader", "org.languagetool.openoffice.Main")
+
+Alternatively, Lightproof can be enabled with:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        from ooodev.utils.lo import Lo
+        from com.sun.star.linguistic2 import XLinguServiceManager2
+
+        with Lo.Loader(Lo.ConnectSocket(headless=True)) as loader:
+            lingo_mgr = Lo.create_instance_mcf(XLinguServiceManager2, "com.sun.star.linguistic2.LinguServiceManager")
+            Write.set_configured_services(lingo_mgr, "Proofreader", "org.libreoffice.comp.pyuno.Lightproof.en")
+
+The code for :py:meth:`.Write.set_configured_services` is:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        @staticmethod
+        def set_configured_services(
+            lingo_mgr: XLinguServiceManager2, service: str, impl_name: str, loc: Locale | None = None
+        ) -> bool:
+            cargs = CancelEventArgs(Write.set_configured_services.__qualname__)
+            cargs.event_data = {
+                "lingo_mgr": lingo_mgr,
+                "service": service,
+                "impl_name": impl_name,
+            }
+            _Events().trigger(WriteNamedEvent.CONFIGURED_SERVICES_SETTING, cargs)
+            if cargs.cancel:
+                return False
+            service = cargs.event_data["service"]
+            impl_name = cargs.event_data["impl_name"]
+            if loc is None:
+                loc = Locale("en", "US", "")
+            impl_names = (impl_name,)
+            lingo_mgr.setConfiguredServices(f"com.sun.star.linguistic2.{service}", loc, impl_names)
+            _Events().trigger(WriteNamedEvent.CONFIGURED_SERVICES_SET, EventArgs.from_args(cargs))
+            return True
+
+The method utilizes ``XLinguServiceManager.setConfiguredServices()`` to attach a particular implementation service
+(:abbreviation:`eg:` LanguageTool) to a specified linguistic service (:abbreviation:`eg:` the Proofreader).
+
+10.4.1 Error Reporting Options
+------------------------------
+
+The kinds of errors reported by the proof reader can be adjusted through Office's GUI.
+
+One configuration pane, used by both Lightproof and LanguageTool, is in the "English Sentence Checking" dialog shown back in :numref:`ch10fig_eng_sentence_dialog_ss`.
+If you look closely, the first group of check boxes are titled "Grammar checking".
+
+If you install LanguageTool, Office's Tools menu will be modified to contain a new "LanguageTool" sub-menu shown in :numref:`ch10fig_language_tool_sub_menu_ss`.
+
+.. cssclass:: screen_shot invert
+
+    .. _ch10fig_language_tool_sub_menu_ss:
+    .. figure:: https://user-images.githubusercontent.com/4193389/186451641-3559589a-5433-4639-8934-f2588a954df5.png
+        :alt: Screen shot of The LanguageTool Submenu.
+        :figclass: align-center
+
+        :The LanguageTool Sub-menu.
+
+The "Options" menu item in the ``LanguageTool`` sub-menu brings up an extensive set of options, reflecting the greater number of grammar rules in the checker (see :numref:`ch10fig_language_opt_dialog_ss`).
+
+.. cssclass:: screen_shot invert
+
+    .. _ch10fig_language_opt_dialog_ss:
+    .. figure:: https://user-images.githubusercontent.com/4193389/186452371-ebd994b8-2f3b-4eca-9c0d-a254bd7efef6.png
+        :alt: Screen shot of:The LanguageTool Options Dialog.
+        :figclass: align-center
+
+        :The LanguageTool Options Dialog.
+
+Unfortunately, there seems to be no way to modify these options through Office's Proofreader API.
+
+10.4.2 Using the Proof Reader
+-----------------------------
+
+In Lingo_ the proof reader is loaded and called like so:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # load & use proof reader (Lightproof or LanguageTool)
+        proofreader = Write.load_proofreader()
+        print("Proofing...")
+        num_errs = Write.proof_sentence("i dont have one one dogs.", proofreader)
+        print(f"No. of proofing errors: {num_errs}")
+
+The output is:
+
+.. code-block:: text
+
+    Proofing...
+    G* This sentence does not start with an uppercase letter. in: 'i'
+      Suggested change: 'I'
+
+    G* Spelling mistake in: 'dont'
+      Suggested change: 'don't'
+
+    G* Word repetition in: 'one one'
+      Suggested change: 'one'
+
+    No. of proofing errors: 3
+
+The proof reader isn't accessed through the linguistics manager; instead a Proofreader_ service is created, and its interfaces employed.
+A simplified view of the services and interfaces are shown in :numref:`ch10fig_proofreader_serv_interface`.
+
+.. cssclass:: diagram invert
+
+    .. _ch10fig_proofreader_serv_interface:
+    .. figure:: https://user-images.githubusercontent.com/4193389/186455013-38f47842-e1b0-448a-b5ba-6b46c7abb883.png
+        :alt: Diagram of The Proof reader Service and Interfaces..
+        :figclass: align-center
+
+        :The Proofreader_ Service and Interfaces.
+
+:py:meth:`.Write.load_proofreader` creates the service:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        @staticmethod
+        def load_proofreader() -> XProofreader:
+            proof = mLo.Lo.create_instance_mcf(XProofreader, "com.sun.star.linguistic2.Proofreader", raise_err=True)
+            return proof
+
+:py:meth:`.Write.proof_sentence` passes a sentence to ``XProofreader.doProofreading()``, prints the errors inside the :py:meth:`~.Write.print_proof_error` and returns number of errors:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        @classmethod
+        def proof_sentence(cls, sent: str, proofreader: XProofreader, loc: Locale | None = None) -> int:
+            if loc is None:
+                loc = Locale("en", "US", "")
+            pr_res = proofreader.doProofreading("1", sent, loc, 0, len(sent), ())
+            num_errs = 0
+            if pr_res is not None:
+                errs = pr_res.aErrors
+                if len(errs) > 0:
+                    for err in errs:
+                        cls.print_proof_error(sent, err)
+                        num_errs += 1
+            return num_errs
+
+        @staticmethod
+        def print_proof_error(string: str, err: SingleProofreadingError) -> None:
+            e_end = err.nErrorStart + err.nErrorLength
+            err_txt = string[err.nErrorStart : e_end]
+            print(f"G* {err.aShortComment} in: '{err_txt}'")
+            if len(err.aSuggestions) > 0:
+                print(f"  Suggested change: '{err.aSuggestions[0]}'")
+            print()
+
+``XProofreader.doProofreading()`` requires a locale and properties in the same way as the earlier spell checking and thesaurus methods.
+It also needs two indices for the start and end of the sentence being checked, and a document ID which is used in the error results.
+
+The results are returned as an array of SingleProofreadingError_ objects, one for each detected error.
+It's worth having a look at the documentation for the SingleProofreadingError_ class (use ``lodoc SingleProofreadingError``),
+since the object contains more information than is used in :py:meth:`.Write.print_proof_error`;
+for example, the ID of the grammar rule that was 'broken', a full comment string, and multiple suggestions in a String array.
+
+Grammar rule IDs are one area where the proof reader API could be improved.
+The XProofreader_ interface includes methods for switching on and off rules based on their IDs,
+but there's no way to find out what these IDs are except by looking at SingleProofreadingError_ objects.
+
 Work in progress ...
 
 
@@ -741,6 +1014,7 @@ Work in progress ...
 .. _lingustic_ex: https://api.libreoffice.org/examples/DevelopersGuide/OfficeDev/Linguistic/LinguisticExamples.java
 
 .. _Lingo: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_lingo
+.. _LanguageTool: https://extensions.libreoffice.org/en/extensions/show/languagetool
 
 .. _ConversionDictionary: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1linguistic2_1_1ConversionDictionary.html
 .. _ConversionDictionaryList: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1linguistic2_1_1ConversionDictionaryList.html
@@ -748,6 +1022,8 @@ Work in progress ...
 .. _DictionaryList: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1linguistic2_1_1DictionaryList.html
 .. _LinguServiceManager: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1linguistic2_1_1LinguServiceManager.html
 .. _Proofreader: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1linguistic2_1_1Proofreader.html
+.. _Proofreader: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1linguistic2_1_1Proofreader.html
+.. _SingleProofreadingError: https://api.libreoffice.org/docs/idl/ref/structcom_1_1sun_1_1star_1_1linguistic2_1_1SingleProofreadingError.html
 .. _SpellChecker: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1linguistic2_1_1SpellChecker.html
 .. _Thesaurus: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1linguistic2_1_1Thesaurus.html
 .. _XConversionDictionary: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1linguistic2_1_1XConversionDictionary.html
@@ -756,4 +1032,5 @@ Work in progress ...
 .. _XLinguProperties: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1linguistic2_1_1XLinguProperties.html
 .. _XNameContainer: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1container_1_1XNameContainer.html
 .. _XPackageInformationProvider: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1deployment_1_1XPackageInformationProvider.html
+.. _XProofreader: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1linguistic2_1_1XProofreader.html
 .. _XThesaurus: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1linguistic2_1_1XThesaurus.html
