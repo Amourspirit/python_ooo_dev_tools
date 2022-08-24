@@ -734,6 +734,8 @@ Office deals with this size issue by using XTextRange_ instances, which encapsul
 positions. :py:meth:`.Selection.get_position` returns an integer because its easier to understand when you're first learning to program with Office.
 It's better style to use and compare XTextRange_ objects rather than integer positions, an approach demonstrated in the next section.
 
+.. _ch05_txt_cursors:
+
 5.6 Using and Comparing Text Cursors
 ====================================
 
