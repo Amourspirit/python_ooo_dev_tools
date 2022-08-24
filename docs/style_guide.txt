@@ -93,6 +93,9 @@ Image Classes
 
 Spelling
     In some case accepted spelling of words need to added to a single rst file.
+    For one off words :spelling:word can be use for example: :spelling:word:`László` :spelling:word:`Németh`
+
+    Adding a list or words to an rst file:
     This can be done using spelling:word-list:: directive. as shown below. See src/conn/index.rst as an example
 
     .. spelling:word-list::

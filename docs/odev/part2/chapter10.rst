@@ -902,7 +902,7 @@ The "Options" menu item in the ``LanguageTool`` sub-menu brings up an extensive 
 
     .. _ch10fig_language_opt_dialog_ss:
     .. figure:: https://user-images.githubusercontent.com/4193389/186452371-ebd994b8-2f3b-4eca-9c0d-a254bd7efef6.png
-        :alt: Screen shot of:The LanguageTool Options Dialog.
+        :alt: Screen shot of The Language Tool Options Dialog.
         :figclass: align-center
 
         :The LanguageTool Options Dialog.
@@ -1004,8 +1004,215 @@ Grammar rule IDs are one area where the proof reader API could be improved.
 The XProofreader_ interface includes methods for switching on and off rules based on their IDs,
 but there's no way to find out what these IDs are except by looking at SingleProofreadingError_ objects.
 
-Work in progress ...
+10.5 Guessing the Language used in a String
+===========================================
 
+An oft overlooked linguistics API feature is the ability to guess the language used in a string,
+which is implemented by one service, LanguageGuessing_, and a single interface, XLanguageGuessing_.
+The documentation for XLanguageGuessing_ includes a long list of supported languages, including Irish Gaelic, Scots Gaelic, and Manx Gaelic.
+
+There are two examples of language guessing in Lingo_:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # from lingo example
+        # guess the language
+        loc = Write.guess_locale("The rain in Spain stays mainly on the plain.")
+        Write.print_locale(loc)
+
+        if loc is not None:
+            print("Guessed language: " + loc.Language)
+
+        loc = Write.guess_locale("A vaincre sans p�ril, on triomphe sans gloire.")
+
+        if loc is not None:
+            print("Guessed language: " + loc.Language)
+
+
+The output is:
+
+.. code-block:: text
+
+    Locale lang: 'en'; country: ''; variant: ''
+    Guessed language: en
+    Guessed language: fr
+
+:py:meth:`.Write.guess_locale` creates the service, its interface, and calls ``XLanguageGuessing.guessPrimaryLanguage()``:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in the Writer class
+        @staticmethod
+        def guess_locale(test_str: str) -> Locale | None:
+            guesser = Lo.create_instance_mcf(XLanguageGuessing, "com.sun.star.linguistic2.LanguageGuessing")
+            if guesser is None:
+                Lo.print("No language guesser found")
+                return None
+            return guesser.guessPrimaryLanguage(test_str, 0, len(test_str))
+
+XLanguageGuessing_ actually guesses a Locale_ rather than a language, and it includes information about the language, country and a variant BCP 47 language label.
+
+10.6 Spell Checking and Grammar Checking a Document
+===================================================
+
+Lingo_ only spell checks individual words, and grammar checks a single sentence.
+
+The |lingo_file|_ example shows how these features can be applied to an entire document.
+
+One way to scan every sentence in a document is to combine XParagraphCursor_ and XSentenceCursor_,
+as in the |speak_text|_ example from :ref:`ch05_txt_cursors`. An outer loop iterates over every paragraph using XParagraphCursor_,
+and an inner loop splits each paragraph into sentences with the help of XSentenceCursor_.
+Initially, |lingo_file|_ was coded in this way, but it was found that XSentenceCursor_ occasionally didn't divide a paragraph into the correct number of sentences;
+sometimes two sentences were treated as one.
+
+So there was a switch to a combined Office/python approach – the outer loop in |lingo_file|_ still utilizes XParagraphCursor_ to scan the paragraphs,
+but the sentences in a paragraph are extracted using :py:meth:`.Write.split_paragraph_into_sentences` that splits sentences into a list of strings.
+
+The ``check_sentences()`` function of |lingo_file|_:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        def check_sentences(doc: XTextDocument) -> None:
+            # load spell checker, proof reader
+            speller = Write.load_spell_checker()
+            proofreader = Write.load_proofreader()
+
+            para_cursor = Write.get_paragraph_cursor(doc)
+            para_cursor.gotoStart(False)  # go to start test; no selection
+
+            while 1:
+                para_cursor.gotoEndOfParagraph(True)  # select all of paragraph
+                curr_para_str = para_cursor.getString()
+
+                if len(curr_para_str) > 0:
+                    print(f"\n>> {curr_para_str}")
+
+                    sentences = Write.split_paragraph_into_sentences(curr_para_str)
+                    for sentence in sentences:
+                        # print(f'S <{sentence}>')
+                        Write.proof_sentence(sentence, proofreader)
+                        Write.spell_sentence(sentence, speller)
+
+                if para_cursor.gotoNextParagraph(False) is False:
+                    break
+
+:py:meth:`Write.load_spell_checker` does not use LinguServiceManager_ manager to create SpellChecker_.
+For a yet unknown reason when speller comes from ``lingo_mgr.getSpellChecker()`` it errors when passed to methods such as :py:meth:`.Write.spell_word`.
+For this reason ``com.sun.star.linguistic2.SpellChecker`` is used to get a instance of XSpellChecker_,
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in the Write class
+        @staticmethod
+        def load_spell_checker() -> XSpellChecker:
+            # lingo_mgr = Lo.create_instance_mcf(
+            #     XLinguServiceManager, "com.sun.star.linguistic2.LinguServiceManager", raise_err=True
+            # )
+            # return lingo_mgr.getSpellChecker()
+            speller = Lo.create_instance_mcf(
+                XSpellChecker,
+                "com.sun.star.linguistic2.SpellChecker",
+                raise_err=True
+                )
+            return speller
+
+        @classmethod
+        def spell_sentence(cls, sent: str, speller: XSpellChecker, loc: Locale | None = None) -> int:
+            words = re.split("\W+", sent)
+            count = 0
+            for word in words:
+                is_correct = cls.spell_word(word=word, speller=speller, loc=loc)
+                count = count + (0 if is_correct else 1)
+            return count
+
+The poorly written ``badGrammar.odt`` is shown in :numref:`ch10fig_poor_writing_ss`.
+
+.. cssclass:: screen_shot invert
+
+    .. _ch10fig_poor_writing_ss:
+    .. figure:: https://user-images.githubusercontent.com/4193389/186493075-c061f4f7-4599-45ca-8d16-83ff3a171f0d.png
+        :alt: Screen shot of poor writeing
+        :figclass: align-center
+
+        :Poor writing.
+
+The output from |lingo_file|_ when given ``badGrammar.odt``:
+
+.. code-block:: text
+
+    >> I have a dogs. I have one dogs.
+
+    G* Possible agreement error in: "a dogs"
+       Suggested change: "a dog"
+
+
+    >> I allow of of go home.  i dogs. John don’t like dogs. So recieve
+    no cats also.
+
+    G* Word repetition in: "of of"
+       Suggested change: "of"
+
+    G* This sentence does not start with an uppercase letter in: "i"
+       Suggested change: "I"
+
+    G* Grammatical problem in: "dogs"
+       Suggested change: "dog"
+
+    G* 'Also' at the end of sentence in: "also"
+       Suggested change: "as well"
+
+    * "recieve" is unknown. Try:
+    No. of names: 8
+      "receive"  "relieve"  "retrieve"  "reprieve"
+      "reverie"  "recitative"  "Recife"  "reserve"
+
+    The grammar errors (those starting with "G*") are produced  by the LanguageTool
+    proof checker. If the default Lightproof checker is utilized instead, then less errors are
+    found:
+
+    >> I have a dogs. I have one dogs.
+
+
+    >> I allow of of go home.  i dogs. John don’t like dogs. So recieve
+    no cats also.
+
+    G* Word duplication? in: "of of"
+       Suggested change: "of"
+
+    G* Missing capitalization? in: "i"
+       Suggested change: "I"
+
+    * "recieve" is unknown. Try:
+    No. of names: 8
+      "receive"  "relieve"  "retrieve"  "reprieve"
+      "reverie"  "recitative"  "Recife"  "reserve"
+
+On larger documents, it's a good idea to redirect the voluminous output to a temporary file so it can be examined easily.
+
+The output can be considerably reduced if LanguageTool's unpaired rule is disabled, via the Options dialog in :numref:`ch10fig_language_opt_dialog_ss`.
+:numref:`ch10fig_lang_tool_inparied_desel_ss` shows the dialog with the "Unpaired" checkbox deselected in the Punctuation section.
+
+.. cssclass:: screen_shot invert
+
+    .. _ch10fig_lang_tool_inparied_desel_ss:
+    .. figure:: https://user-images.githubusercontent.com/4193389/186496075-81cbf885-8c78-46a1-94f9-7b7313ca2589.png
+        :alt: Screen shot ofThe Language Tool Options Dialog with the Unpaired Rule Deselected.
+        :figclass: align-center
+
+        :The LanguageTool Options Dialog with the Unpaired Rule Deselected.
+
+The majority of the remaining errors are words unknown to the spell checker, such as names and places, and British English spellings.
+
+Most of the grammar errors relate to how direct speech is written.
+The grammar checker mistakenly reports an error if the direct speech ends with a question mark or exclamation mark without a comma after the quoted text.
 
 .. |lingo_file| replace:: Lingo File
 .. _lingo_file: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_lingo_file
@@ -1016,11 +1223,16 @@ Work in progress ...
 .. _Lingo: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_lingo
 .. _LanguageTool: https://extensions.libreoffice.org/en/extensions/show/languagetool
 
+.. |speak_text| replace:: Speak Text
+.. _speak_text: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_speak
+
 .. _ConversionDictionary: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1linguistic2_1_1ConversionDictionary.html
 .. _ConversionDictionaryList: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1linguistic2_1_1ConversionDictionaryList.html
 .. _Dictionary: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1linguistic2_1_1Dictionary.html
 .. _DictionaryList: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1linguistic2_1_1DictionaryList.html
+.. _LanguageGuessing: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1linguistic2_1_1LanguageGuessing.html
 .. _LinguServiceManager: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1linguistic2_1_1LinguServiceManager.html
+.. _Locale: https://api.libreoffice.org/docs/idl/ref/structcom_1_1sun_1_1star_1_1lang_1_1Locale.html
 .. _Proofreader: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1linguistic2_1_1Proofreader.html
 .. _Proofreader: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1linguistic2_1_1Proofreader.html
 .. _SingleProofreadingError: https://api.libreoffice.org/docs/idl/ref/structcom_1_1sun_1_1star_1_1linguistic2_1_1SingleProofreadingError.html
@@ -1029,8 +1241,12 @@ Work in progress ...
 .. _XConversionDictionary: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1linguistic2_1_1XConversionDictionary.html
 .. _XConversionPropertyType: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1linguistic2_1_1XConversionPropertyType.html
 .. _XDictionary: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1linguistic2_1_1XDictionary.html
+.. _XLanguageGuessing: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1linguistic2_1_1XLanguageGuessing.html
 .. _XLinguProperties: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1linguistic2_1_1XLinguProperties.html
 .. _XNameContainer: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1container_1_1XNameContainer.html
 .. _XPackageInformationProvider: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1deployment_1_1XPackageInformationProvider.html
+.. _XParagraphCursor: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XParagraphCursor.html
 .. _XProofreader: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1linguistic2_1_1XProofreader.html
+.. _XSentenceCursor: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XSentenceCursor.html
+.. _XSpellChecker: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1linguistic2_1_1XSpellChecker.html
 .. _XThesaurus: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1linguistic2_1_1XThesaurus.html
