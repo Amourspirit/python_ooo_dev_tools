@@ -172,10 +172,44 @@ For instance ``(=\)A$1*3)`` stops the ``A`` and ``1`` from being changed by a mo
 The :py:class:`~.calc.Calc` support class includes methods for converting between simple cell names and positions;
 they don't handle ``~``, ``!``, or absolute references using ``$``.
 
+19.4 The Spreadsheet Service
+============================
+
+The Spreadsheet_ service is a subclass of SheetCellRange_, as shown in :numref:`ch19_spreadsheet_service`, which means that a sheet can be treated as a very big cell range.
+
+.. cssclass:: diagram invert
+
+    .. _ch19_spreadsheet_service:
+    .. figure:: https://user-images.githubusercontent.com/4193389/186772291-17097766-8fae-42b4-bde3-5e5184ce108d.png
+        :alt: Diagram of The Spreadsheet Service
+        :figclass: align-center
+
+        :The Spreadsheet Service.
+
+A great deal of spreadsheet-related functionality is implemented as interfaces belonging to the Spreadsheet_ service.
+The most important is probably XSpreadsheet_ (see ``lodoc xspreadsheet reference`` ), which gives the programmer access
+to a sheet's cells and cell ranges via ``getCellByPosition()``, ``getCellRangeByPosition()``, and ``getCellRangeByName()``. For example:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        sheet = Calc.get_sheet(doc, 0)
+        cell = sheet.getCellByPosition(2, 4) # (column,row)
+
+        # startColumn, startRow, endColumn, endRow
+        cellRange1 = sheet.getCellRangeByPosition(1, 1, 3, 2)
+
+        cellRange2 = sheet.getCellRangeByName("B2:D3")
+
+Oddly enough there's no ``getCellByName()`` method, but the :py:meth:`.Calc.get_cell` has an overload that takes a name.
+
 Work in progress ...
 
+.. _SheetCellRange: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1sheet_1_1SheetCellRange.html
+.. _Spreadsheet: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1sheet_1_1Spreadsheet.html
 .. _Spreadsheets: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1sheet_1_1Spreadsheets.html
 .. _XComponent: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1lang_1_1XComponent.html
+.. _XSpreadsheet: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1sheet_1_1XSpreadsheet.html
 .. _XSpreadsheetDocument: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1sheet_1_1XSpreadsheetDocument.html
 .. _XTextDocument: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextDocument.html
-.. _XSpreadsheet: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1sheet_1_1XSpreadsheet.html
