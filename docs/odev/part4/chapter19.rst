@@ -204,12 +204,114 @@ to a sheet's cells and cell ranges via ``getCellByPosition()``, ``getCellRangeBy
 
 Oddly enough there's no ``getCellByName()`` method, but the :py:meth:`.Calc.get_cell` has an overload that takes a name.
 
+19.5 Cell Range Services
+========================
+
+The main service for cell ranges is SheetCellRange_, which inherits the CellRange_ service from the table
+module and several property-based classes, as indicated in :numref:`ch19_cell_range_service`.
+
+.. cssclass:: diagram invert
+
+    .. _ch19_cell_range_service:
+    .. figure:: https://user-images.githubusercontent.com/4193389/186776296-3d499331-ded9-4232-bc73-e0eaad08ae33.png
+        :alt: Diagram of The Cell Range Services
+        :figclass: align-center
+
+        :The Cell Range Services.
+
+SheetCellRange_ supports an XSheetCellRange_ interface, but that interface gets most of its functionality by inheriting XSheetCellRange_ from the table module.
+Most programs that manipulate cell ranges tend to use XCellRange_ rather than XSheetCellRange_.
+
+XCellRange_ is where the useful cell and cell range access methods are defined, as shown in the class diagram in :numref:`ch19_cell_range_class`.
+
+.. cssclass:: screen_shot invert
+
+    .. _ch19_cell_range_class:
+    .. figure:: https://user-images.githubusercontent.com/4193389/186776991-7e4433fb-aee5-4ea8-996f-cae1ec212756.png
+        :alt: Screen shot of The Cell Range Class Diagram
+        :figclass: align-center
+
+        :The CellRange_ Class Diagram.
+
+You can access the documentation using ``lodoc XCellRange``.
+
+What's missing from XCellRange_ is a way to set the values in a cell range.
+This is supported by the XCellRangeData_ interface (see :numref:`ch19_cell_range_service`) which offers a ``setDataArray()`` method (and a ``getDataArray()``).
+
+``CellProperties`` in the table module is frequently accessed to adjust cell styling, such as color, borders, and the justification and
+orientation of data inside a cell. However, styling for a cell's text is handled by properties in the ``CharacterProperties`` or ``ParagraphProperties``
+classes (see :numref:`ch19_cell_range_service`).
+
+Rows and columns of cells can be accessed using the TableRows_ and TableColumns_ services
+(and their corresponding XTableRows_ and XTableColumns_ interfaces).
+They're accessed through the XColumnRowRange_ interface shown in :numref:`ch19_cell_range_service`.
+Code for obtaining the first row of a sheet is:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # get the XColumnRowRange interface for the sheet
+        cr_range = Lo.qi(XColumnRowRange, sheet)
+
+        # get all the rows
+        rows = cr_range.getRows()
+
+        # treat the rows as an indexed container
+        con = Lo.qi(XIndexAccess, rows)
+
+        # access the first row as a cell range
+        row_range = Lo.qi(XCellRange, con.getByIndex(0));
+
+XTableRows_ is an indexed container containing a sequence of XCellRange_ objects.
+The TableRow_ services and interfaces are shown in :numref:`ch19_tbl_row_services`:
+
+.. cssclass:: diagram invert
+
+    .. _ch19_tbl_row_services:
+    .. figure:: https://user-images.githubusercontent.com/4193389/186781411-de179a21-62d6-4e3d-9484-6b4f57a1fd34.png
+        :alt: Diagram of The TableRow Services and Interfaces
+        :figclass: align-center
+
+        :The TableRow_ Services and Interfaces.
+
+Similar coding is used to retrieve a column: ``XColumnRowRange.getColumns()`` gets all the columns.
+:numref:`ch19_tbl_col_services` shows the TableColumn_ services and interfaces.
+
+.. cssclass:: diagram invert
+
+    .. _ch19_tbl_col_services:
+    .. figure:: https://user-images.githubusercontent.com/4193389/186781802-3180fcea-6c72-483e-89b6-eff0257dd8e2.png
+        :alt: Diagram of The TableColumn Services and Interfaces.
+        :figclass: align-center
+
+        :The TableColumn_ Services and Interfaces.
+
+:py:class:`~.calc.Calc` class includes methods that hide these details, so the accessing the first row of the sheet becomes:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        row_range = Calc.get_row_range(sheet, 0);
+
 Work in progress ...
 
+.. _CellRange: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1table_1_1CellRange.html
 .. _SheetCellRange: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1sheet_1_1SheetCellRange.html
 .. _Spreadsheet: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1sheet_1_1Spreadsheet.html
 .. _Spreadsheets: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1sheet_1_1Spreadsheets.html
+.. _TableColumn: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1table_1_1TableColumn.html
+.. _TableColumns: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1table_1_1TableColumns.html
+.. _TableRow: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1table_1_1TableRow.html
+.. _TableRows: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1table_1_1TableRows.html
+.. _XCellRange: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1table_1_1XCellRange.html
+.. _XCellRangeData: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1sheet_1_1XCellRangeData.html
+.. _XColumnRowRange: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1table_1_1XColumnRowRange.html
 .. _XComponent: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1lang_1_1XComponent.html
+.. _XSheetCellRange: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1sheet_1_1XSheetCellRange.html
 .. _XSpreadsheet: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1sheet_1_1XSpreadsheet.html
 .. _XSpreadsheetDocument: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1sheet_1_1XSpreadsheetDocument.html
+.. _XTableColumns: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1table_1_1XTableColumns.html
+.. _XTableRows: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1table_1_1XTableRows.html
 .. _XTextDocument: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextDocument.html
