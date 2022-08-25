@@ -295,9 +295,79 @@ Similar coding is used to retrieve a column: ``XColumnRowRange.getColumns()`` ge
 
         row_range = Calc.get_row_range(sheet, 0);
 
+19.6 Cell Services
+==================
+
+``XCellRange.getCellByPosition()`` returns a single cell from a given cell range.
+However, this method can also be applied to a sheet because the API considers a sheet to be a very big cell range.
+For example:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        cell = sheet.getCellByPosition(2, 4)
+
+The SheetCell_ service manages properties related to cell formulae and cell input validation.
+However, most cell functionality comes from inheriting the Cell service in the table module, and its XCell_ interface.
+This arrangement is shown in :numref:`ch19_sheet_cell_services`.
+
+.. cssclass:: diagram invert
+
+    .. _ch19_sheet_cell_services:
+    .. figure:: https://user-images.githubusercontent.com/4193389/186782922-85e8d39a-bdf9-4dc9-91dc-8623fff1b417.png
+        :alt: Diagram of The The SheetCell Services and Interfaces.
+        :figclass: align-center
+
+        :The SheetCell_ Services and Interfaces.
+
+SheetCell_ doesn't support an ``XSheetCell`` interface; instead most programming is done using XCell_.
+``XCell`` contains useful methods for getting and setting the values in a cell (which may be numbers, text, or formulae).
+For example, the following stores the number 9 in the cell at coordinate ``(2, 4)`` (the ``C5`` cell):
+
+.. tabs::
+
+    .. code-tab:: python
+
+        sheet = Calc.get_sheet(doc, 0)
+        cell = sheet.getCellByPosition(2, 4) # (column,row)
+        cell.setValue(9)
+
+SheetCell_ inherits the same properties as SheetCellRange_.
+For example, ``CellProperties`` stores cell formatting properties, while text styling properties are supported by
+``CharacterProperties`` and ``ParagraphProperties`` (see :numref:`ch19_sheet_cell_services`).
+
+The Cell_ service supports both the XCell_ and XText_ interfaces.
+Via the XText_ interface, it's possible to manipulate cell text in the same way that text is handled in a text document.
+However, for most purposes, it’s enough to use ``XCell's`` ``setFormula()`` which, despite its name,
+can be used to assign plain text to a cell. For instance:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        cell.setFormula("hello") # put "hello" text in the cell
+
+Calc differentiates between ordinary text and formulae by expecting a formula to begin with ``=``.
+
+The XCell_ class diagram is shown in :numref:`ch19_xcell_class`.
+
+.. cssclass:: diagram invert
+
+    .. _ch19_xcell_class:
+    .. figure:: https://user-images.githubusercontent.com/4193389/186784216-ab5cdd95-df13-4714-960a-83a3102664f3.png
+        :alt: Diagram of The XCell Class
+        :figclass: align-center
+
+        :The XCell_ Class Diagram.
+
+The documentation for XCell can be found using ``lodoc xcell``.
+
 Work in progress ...
 
+.. _Cell: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1table_1_1Cell.html
 .. _CellRange: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1table_1_1CellRange.html
+.. _SheetCell: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1sheet_1_1SheetCell.html
 .. _SheetCellRange: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1sheet_1_1SheetCellRange.html
 .. _Spreadsheet: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1sheet_1_1Spreadsheet.html
 .. _Spreadsheets: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1sheet_1_1Spreadsheets.html
@@ -305,6 +375,7 @@ Work in progress ...
 .. _TableColumns: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1table_1_1TableColumns.html
 .. _TableRow: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1table_1_1TableRow.html
 .. _TableRows: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1table_1_1TableRows.html
+.. _XCell: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1table_1_1XCell.html
 .. _XCellRange: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1table_1_1XCellRange.html
 .. _XCellRangeData: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1sheet_1_1XCellRangeData.html
 .. _XColumnRowRange: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1table_1_1XColumnRowRange.html
@@ -315,3 +386,4 @@ Work in progress ...
 .. _XTableColumns: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1table_1_1XTableColumns.html
 .. _XTableRows: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1table_1_1XTableRows.html
 .. _XTextDocument: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextDocument.html
+.. _XText: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XText.html
