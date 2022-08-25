@@ -65,8 +65,8 @@ The following code fragment shows how the first sheet in the ``test.odt`` docume
         compdoc = Lo.open_doc("test.odt", loader)
         doc = Lo.qi(XSpreadsheetDocument, compdoc)
         sheets = doc.getSheets()
-        sheetsIdx = Lo.qi(XIndexAccess, sheets)
-        sheet = Lo.qi(XSpreadsheet, sheetsIdx.getByIndex(0))
+        sheets_idx = Lo.qi(XIndexAccess, sheets)
+        sheet = Lo.qi(XSpreadsheet, sheets_idx.getByIndex(0))
 
 These steps are hidden by methods in the :py:class:`~.calc.Calc` utility class, so the programmer can write:
 
@@ -198,9 +198,9 @@ to a sheet's cells and cell ranges via ``getCellByPosition()``, ``getCellRangeBy
         cell = sheet.getCellByPosition(2, 4) # (column,row)
 
         # startColumn, startRow, endColumn, endRow
-        cellRange1 = sheet.getCellRangeByPosition(1, 1, 3, 2)
+        cell_range1 = sheet.getCellRangeByPosition(1, 1, 3, 2)
 
-        cellRange2 = sheet.getCellRangeByName("B2:D3")
+        cell_range2 = sheet.getCellRangeByName("B2:D3")
 
 Oddly enough there's no ``getCellByName()`` method, but the :py:meth:`.Calc.get_cell` has an overload that takes a name.
 
@@ -363,12 +363,34 @@ The XCell_ class diagram is shown in :numref:`ch19_xcell_class`.
 
 The documentation for XCell can be found using ``lodoc xcell``.
 
-Work in progress ...
+19.7 Sheet Cell Ranges
+======================
+
+A collection of cell ranges has its own service, SheetCellRanges_, shown in :numref:`ch19_sheet_cell_ranges_service`.
+
+.. cssclass:: diagram invert
+
+    .. _ch19_sheet_cell_ranges_service:
+    .. figure:: https://user-images.githubusercontent.com/4193389/186784624-04ce1f9a-4366-4881-9cb8-ca34cd5405d5.png
+        :alt: Diagram of The SheetCellRanges Services and Interfaces.
+        :figclass: align-center
+
+        :The SheetCellRanges_ Services and Interfaces.
+
+SheetCellRanges_ doesn't turn up much when programming since it's easy to access multiple cell ranges by accessing them one at a time inside a loop.
+
+.. todo::
+
+    Chapter 19.7, add link to chapter 26.
+
+One major use for SheetCellRanges_ are in sheet searches which return the matching cell ranges in a
+XSheetCellRangeContainer_ object. There are examples in Chapter 26.
 
 .. _Cell: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1table_1_1Cell.html
 .. _CellRange: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1table_1_1CellRange.html
 .. _SheetCell: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1sheet_1_1SheetCell.html
 .. _SheetCellRange: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1sheet_1_1SheetCellRange.html
+.. _SheetCellRanges: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1sheet_1_1SheetCellRanges.html
 .. _Spreadsheet: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1sheet_1_1Spreadsheet.html
 .. _Spreadsheets: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1sheet_1_1Spreadsheets.html
 .. _TableColumn: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1table_1_1TableColumn.html
@@ -381,9 +403,10 @@ Work in progress ...
 .. _XColumnRowRange: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1table_1_1XColumnRowRange.html
 .. _XComponent: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1lang_1_1XComponent.html
 .. _XSheetCellRange: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1sheet_1_1XSheetCellRange.html
+.. _XSheetCellRangeContainer: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1sheet_1_1XSheetCellRangeContainer.html
 .. _XSpreadsheet: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1sheet_1_1XSpreadsheet.html
 .. _XSpreadsheetDocument: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1sheet_1_1XSpreadsheetDocument.html
 .. _XTableColumns: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1table_1_1XTableColumns.html
 .. _XTableRows: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1table_1_1XTableRows.html
-.. _XTextDocument: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextDocument.html
 .. _XText: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XText.html
+.. _XTextDocument: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextDocument.html
