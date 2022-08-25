@@ -2,6 +2,7 @@ Dascalescu
 Davison
 endnote
 endnotes
+formulae
 LanguageTool
 Lightproof
 loapi
