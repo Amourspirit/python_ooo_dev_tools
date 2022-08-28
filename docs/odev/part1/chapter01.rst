@@ -8,7 +8,7 @@ Chapter 1. LibreOffice API Concepts
 
     Some History; Help and Examples for the LibreOffice SDK (``lodoc``, ``loguide``);
     Office as a Process; Common Structures (Interface, Property, Service, and Component);
-    Service and Interface Inheritance Hierarchies; the Frame- Controller-Model (FCM) Relationship; Extensions; Comparison with Basic
+    Service and Interface Inheritance Hierarchies; the Frame-Controller-Model (FCM) Relationship; Extensions; Comparison with Basic
 
 This chapter describes LibreOffice API concepts without resorting to code (that comes along in the next chapter).
 These concepts include Office as a (possibly networked) process, the interface, property, service,
@@ -16,8 +16,8 @@ and component structures, the two API inheritance hierarchies, and the Frame-Con
 
 LibreOffice is an open source, cross-platform, office suite, made up of six main applications, and lots of other useful stuff.
 The applications are: Writer (a word processor), Draw (vector graphics drawing), Impress (for slide presentations), Calc (spreadsheets),
-Base (a database front- end), and Math (for writing formulae).
-Some of the lesser- known features include a charting library, spell checker, forms designer, thesaurus, e- mail package,
+Base (a database front-end), and Math (for writing formulae).
+Some of the lesser-known features include a charting library, spell checker, forms designer, thesaurus, e-mail package,
 and support for extensions (e.g. new menu items and libraries). Aside from Open Document Format (ODF) files,
 LibreOffice can import, convert, and export a vast number of text, graphic, and other formats,
 including Microsoft Office documents, PDF, HTML, SWF (Flash), and SQL databases.
@@ -54,7 +54,7 @@ This is far from being a novel idea, as it seems that every programmer who has e
 Much gratitude to all the intrepid programmers who contributed to this mission in one way or another.
 
 Perhaps the best place for learning about Office macro programming is Andrew Pitonyak's
-`website <https://pitonyak.org/>`_, which includes an excellent free-to- download book:
+`website <https://pitonyak.org/>`_, which includes an excellent free-to-download book:
 "OpenOffice.org Macros Explained", a macros cookbook, and a document focusing on database macros.
 
 Finding API Documentation Online
