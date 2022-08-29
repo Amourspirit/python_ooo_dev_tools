@@ -89,7 +89,7 @@ def test_garlic_secrets(copy_fix_calc, loader, capsys: pytest.CaptureFixture) ->
     presult: str = cresult.out
     assert presult is not None
     ex_lst = presult.splitlines()
-    assert len(ex_lst) == 30
+    assert len(ex_lst) == 30 or 31
 
     #show view data 
     print(f"View Data: {Calc.get_view_data(doc=doc)}")
