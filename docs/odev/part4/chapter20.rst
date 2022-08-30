@@ -6,7 +6,7 @@ Chapter 20. Spreadsheet Displaying and Creation
 
 .. todo::
 
-    Chapter 20, Add "Adding a Picture and a Chart" to topic overiew when Drawing Module is complete.
+    Chapter 20, Add "Adding a Picture and a Chart" to topic overview when Drawing Module is complete.
 
 .. topic:: Overview
 

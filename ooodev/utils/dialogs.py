@@ -1,9 +1,9 @@
 # coding: utf-8
 # region Imports
 from __future__ import annotations
-from typing import TYPE_CHECKING, Any, Iterable, List, Tuple, cast, overload
-import gen_util as gUtil
-import lo as mLo
+from typing import TYPE_CHECKING, Any, Iterable, Tuple, cast
+from enum import IntEnum
+from . import lo as mLo
 
 from com.sun.star.awt import XControl
 from com.sun.star.awt import XControlContainer
@@ -32,6 +32,13 @@ if TYPE_CHECKING:
 
 
 class Dialogs:
+    class StateEnum(IntEnum):
+        NOT_CHECKED = 0
+        """State not checked"""
+        CHECKED = 1
+        """State checked"""
+        DONT_KNOW = 2
+        """State don't know"""
 
     # region    load & execute a dialog
     @staticmethod
@@ -125,10 +132,10 @@ class Dialogs:
     @staticmethod
     def get_control_props(control_model: Any) -> XPropertySet:
         """
-        Gets propery set for a control model
+        Gets property set for a control model
 
         Args:
-            control_model (Any): contol model
+            control_model (Any): control model
 
         Returns:
             XPropertySet: Property set
@@ -242,7 +249,7 @@ class Dialogs:
         width: int,
         height: int,
         title: str,
-        props: Iterable[gUtil.ArgsHelper.NameValue] | None = None,
+        **props: Any,
     ) -> XControl:
         """
         Creates a dialog control
@@ -253,13 +260,16 @@ class Dialogs:
             width (int): Width
             height (int): Height
             title (str): title
-            props (Iterable[gUtil.ArgsHelper.NameValue] | None, optional): Extra properties to set for control.
+            props (dict, optional): Extra properties to set for control.
 
         Raises:
             Exception: If unable to create dialog.
 
         Returns:
             XControl: Control
+
+        See Also:
+            `API UnoControlDialogModel Service <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlDialogModel.html>`_
         """
         try:
             dialog_ctrl = mLo.Lo.create_instance_mcf(XControl, "com.sun.star.awt.UnoControlDialog", raise_err=True)
@@ -283,9 +293,8 @@ class Dialogs:
             cprops.setPropertyValue("TabIndex", 0)
 
             # set any extra user properties
-            if props is not None:
-                for prop in props:
-                    cprops.setPropertyValue(prop.name, prop.value)
+            for k, v in props.items():
+                cprops.setPropertyValue(k, v)
 
             return dialog_ctrl
         except Exception as e:
@@ -332,10 +341,10 @@ class Dialogs:
         y: int,
         width: int,
         height: int = 8,
-        props: Iterable[gUtil.ArgsHelper.NameValue] | None = None,
+        **props: Any,
     ) -> XControl:
         """
-        Insert a lable into a control
+        Insert a label into a control
 
         Args:
             dialog_ctrl (XControl): Control
@@ -344,13 +353,16 @@ class Dialogs:
             y (int): Y coordinate
             width (int): Width
             height (int, optional): Height. Default 8
-            props (Iterable[gUtil.ArgsHelper.NameValue] | None, optional): Extra properties to set for control.
+            props (dict, optional): Extra properties to set for control.
 
         Raises:
             Exception: If unable to create label
 
         Returns:
             XControl: control
+
+        See Also:
+            `API UnoControlFixedTextModel Service <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlFixedTextModel.html>`_
         """
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl, True)
@@ -369,9 +381,8 @@ class Dialogs:
             cprops.setPropertyValue("Name", nm)
 
             # set any extra user properties
-            if props is not None:
-                for prop in props:
-                    cprops.setPropertyValue(prop.name, prop.value)
+            for k, v in props.items():
+                cprops.setPropertyValue(k, v)
 
             # Add the model to the dialog
             name_con.insertByName(nm, model)
@@ -429,7 +440,7 @@ class Dialogs:
         width: int,
         height: int = 14,
         btn_type: PushButtonType | None = None,
-        props: Iterable[gUtil.ArgsHelper.NameValue] | None = None,
+        **props: Any,
     ) -> XControl:
         """
         Insert Button Control
@@ -442,13 +453,16 @@ class Dialogs:
             width (int): width
             height (int, optional): Height. Defaults to 14.
             btn_type (PushButtonType | None, optional): Type of Button.
-            props (Iterable[gUtil.ArgsHelper.NameValue] | None, optional): Extra properties to set for control.
+            props (dict, optional): Extra properties to set for control.
 
         Raises:
             Exception: If unable to create button control
 
         Returns:
             XControl: Button control
+
+        See Also:
+            `API UnoControlButtonModel Service <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlButtonModel.html>`_
         """
         if btn_type is None:
             btn_type = PushButtonType.STANDARD
@@ -473,9 +487,8 @@ class Dialogs:
             cprops.setPropertyValue("Name", nm)
 
             # set any extra user properties
-            if props is not None:
-                for prop in props:
-                    cprops.setPropertyValue(prop.name, prop.value)
+            for k, v in props.items():
+                cprops.setPropertyValue(k, v)
 
             # Add the model to the dialog
             name_con.insertByName(nm, model)
@@ -498,7 +511,7 @@ class Dialogs:
         width: int,
         height=12,
         echo_char: str = "",
-        props: Iterable[gUtil.ArgsHelper.NameValue] | None = None,
+        **props: Any,
     ) -> XControl:
         """
         Inserts a text Field
@@ -511,13 +524,16 @@ class Dialogs:
             width (int): Width
             height (int, optional): Height. Defaults to 12.
             echo_char (str, optional): Character used for masking. Must be a single character.
-            props (Iterable[gUtil.ArgsHelper.NameValue] | None, optional): Extra properties to set for control.
+            props (dict, optional): Extra properties to set for control.
 
         Raises:
             Exception: If unable to create text field
 
         Returns:
             XControl: Text Field Control
+
+        See Also:
+            `API UnoControlEditModel  Service <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlEditModel.html>`_
         """
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
@@ -537,9 +553,8 @@ class Dialogs:
             cprops.setPropertyValue("Name", nm)
 
             # set any extra user properties
-            if props is not None:
-                for prop in props:
-                    cprops.setPropertyValue(prop.name, prop.value)
+            for k, v in props.items():
+                cprops.setPropertyValue(k, v)
 
             if len(echo_char) == 1:  # for password fields
                 cprops.setPropertyValue("EchoChar", ord(echo_char))
@@ -557,7 +572,7 @@ class Dialogs:
 
     @classmethod
     def insert_password_field(
-        cls, dialog_ctrl: XControl, text: str, x: int, y: int, width: int, height=12
+        cls, dialog_ctrl: XControl, text: str, x: int, y: int, width: int, height=12, **props: Any
     ) -> XControl:
         """
         Inserts a password field.
@@ -569,14 +584,20 @@ class Dialogs:
             y (int): Y coordinate
             width (int): Width
             height (int, optional): Height. Defaults to 12.
+            props (dict, optional): Extra properties to set for control.
 
         Raises:
             Exception: If unable to create text field
 
         Returns:
             XControl: Text Field Control
+
+        See Also:
+            :py:meth:`~.dialogs.Dialogs.insert_text_field`
         """
-        cls.insert_text_field(dialog_ctrl=dialog_ctrl, text=text, x=x, y=y, width=width, height=height, echo_char="*")
+        cls.insert_text_field(
+            dialog_ctrl=dialog_ctrl, text=text, x=x, y=y, width=width, height=height, echo_char="*", **props
+        )
 
     @classmethod
     def insert_combo_box(
@@ -590,7 +611,7 @@ class Dialogs:
         max_text_len: int = 0,
         drop_down: bool = True,
         read_only: bool = False,
-        props: Iterable[gUtil.ArgsHelper.NameValue] | None = None,
+        **props: Any,
     ) -> XControl:
         """
         Insert a combo box control
@@ -598,20 +619,23 @@ class Dialogs:
         Args:
             dialog_ctrl (XControl): Control
             entries (Iterable[str]): Combo box entries
-            x (int): _description_
-            y (int): _description_
+            x (int): X coordinate
+            y (int): Y coordinate
             width (int): Width
             height (int, optional): Height. Defaults to 12.
             max_text_len (int, optional): Specifies the maximum character count, There's no limitation, if set to 0. Defaults to 0.
-            drop_down (bool, optional): Specifies if the control has a drop down button.. Defaults to True.
+            drop_down (bool, optional): Specifies if the control has a drop down button. Defaults to True.
             read_only (bool, optional): Specifies that the content of the control cannot be modified by the user. Defaults to False.
-            props (Iterable[gUtil.ArgsHelper.NameValue] | None, optional): Extra properties to set for control.
+            props (dict, optional): Extra properties to set for control.
 
         Raises:
-            Exception: _description_
+            Exception: If unable to create combo box control
 
         Returns:
-            XControl: _description_
+            XControl: Combo box control
+
+        See Also:
+            `API UnoControlComboBoxModel Service <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlComboBoxModel.html>`_
         """
         try:
             if max_text_len < 0:
@@ -636,9 +660,8 @@ class Dialogs:
             cprops.setPropertyValue("ReadOnly", read_only)
 
             # set any extra user properties
-            if props is not None:
-                for prop in props:
-                    cprops.setPropertyValue(prop.name, prop.value)
+            for k, v in props.items():
+                cprops.setPropertyValue(k, v)
 
             # Add the model to the dialog
             name_con.insertByName(nm, model)
@@ -649,7 +672,7 @@ class Dialogs:
             # use the model's name to get its view inside the dialog
             return ctrl_con.getControl(nm)
         except Exception as e:
-            raise Exception(f"Could not create text field control: {e}") from e
+            raise Exception(f"Could not create combo box control: {e}") from e
 
     @classmethod
     def insert_check_box(
@@ -661,28 +684,31 @@ class Dialogs:
         width: int,
         height: int = 8,
         tri_state: bool = True,
-        state: int = 1,
-        props: Iterable[gUtil.ArgsHelper.NameValue] | None = None,
+        state: Dialogs.StateEnum = StateEnum.CHECKED,
+        **props: Any,
     ) -> XControl:
         """
-        _summary_
+        Inserts a check box control
 
         Args:
-            dialog_ctrl (XControl): _description_
-            label (str): _description_
-            x (int): _description_
-            y (int): _description_
-            width (int): _description_
-            height (int, optional): _description_. Defaults to 8.
-            tri_state (bool, optional): _description_. Defaults to True.
-            state (int, optional): _description_. Defaults to 1.
-            props (Iterable[gUtil.ArgsHelper.NameValue] | None, optional): _description_. Defaults to None.
+            dialog_ctrl (XControl): Control
+            label (str): Checkbox label text
+            x (int): X coordinate
+            y (int): Y coordinate
+            width (int): Width
+            height (int, optional): Height. Defaults to 8.
+            tri_state (StateEnum, optional): Specifies that the control may have the state "don't know". Defaults to ``StateEnum.CHECKED``.
+            state (int, optional): specifies the state of the control. Defaults to 1.
+            props (dict, optional): Extra properties to set for control.
 
         Raises:
-            Exception: _description_
+            Exception: If unable to create checkbox control.
 
         Returns:
-            XControl: _description_
+            XControl: Check box control
+
+        See Also:
+            `API UnoControlCheckBoxModel Service <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlCheckBoxModel.html>`_
         """
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
@@ -704,9 +730,8 @@ class Dialogs:
             cprops.setPropertyValue("State", int(state))
 
             # set any extra user properties
-            if props is not None:
-                for prop in props:
-                    cprops.setPropertyValue(prop.name, prop.value)
+            for k, v in props.items():
+                cprops.setPropertyValue(k, v)
 
             # Add the model to the dialog
             name_con.insertByName(nm, model)
@@ -717,6 +742,6 @@ class Dialogs:
             # use the model's name to get its view inside the dialog
             return ctrl_con.getControl(nm)
         except Exception as e:
-            raise Exception(f"Could not create text field control: {e}") from e
+            raise Exception(f"Could not create check box control: {e}") from e
 
     # endregion    add components to a dialog
