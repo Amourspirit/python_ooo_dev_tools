@@ -4,10 +4,9 @@
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 # region Imports
 from __future__ import annotations
-from typing import Iterable, List, Optional, Sequence, Tuple, Union, TYPE_CHECKING, cast, overload
+from typing import Iterable, List, Optional, Sequence, Tuple, TYPE_CHECKING, cast, overload
 import uno
 
-from com.sun.star.uno import XInterface
 from com.sun.star.beans import PropertyAttribute  # const
 from com.sun.star.beans import XPropertySet
 from com.sun.star.container import XNameAccess
@@ -124,7 +123,7 @@ class Props:
     def any(*elements: object) -> uno.Any:
         """
         Gets a uno.Any object for elements.
-        
+
         The first element determines the type for the uno.Any object.
 
         Raises:
@@ -224,6 +223,7 @@ class Props:
             Exception: If unable to set property value
         """
         ...
+
     @overload
     @staticmethod
     def set_property(prop_set: XPropertySet, name: str, value: object) -> None:
@@ -239,7 +239,7 @@ class Props:
             Exception: If unable to set property value
         """
         ...
-    
+
     @staticmethod
     def set_property(*args, **kwargs) -> None:
         """
@@ -263,7 +263,7 @@ class Props:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('obj', 'prop_set', 'name', 'value')
+            valid_keys = ("obj", "prop_set", "name", "value")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("set_property() got an unexpected keyword argument")
@@ -293,7 +293,7 @@ class Props:
             prop_set.setPropertyValue(kargs[2], kargs[3])
         except Exception as e:
             raise Exception(f"Could not set property '{kargs[2]}'") from e
-    
+
     # endregion set_property()
 
     # region    set_properties()
@@ -324,7 +324,7 @@ class Props:
             prop_set (XPropertySet): Property Set
             names (Sequence[str]): Property Names
             vals (Sequence[object]): Property Values
-        
+
         Raises:
             MultiError: If unable to set a property
         """
@@ -335,7 +335,7 @@ class Props:
     def set_properties(cls, obj: object, from_obj: object) -> None:
         """
         Set properties
-        
+
         Properties of ``from_obj`` are assigned to ``obj``
 
         Args:
@@ -348,13 +348,13 @@ class Props:
             MultiError: If unable to set a property
         """
         ...
-    
+
     @overload
     @classmethod
     def set_properties(cls, prop_set: XPropertySet, from_props: XPropertySet) -> None:
         """
         Set properties
-        
+
         Properties of ``from_props`` are assigned to ``prop_set``
 
         Args:
@@ -365,7 +365,6 @@ class Props:
             MultiError: If unable to set a property
         """
         ...
-
 
     @classmethod
     def set_properties(cls, *args, **kwargs) -> None:
@@ -393,7 +392,7 @@ class Props:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('obj', 'prop_set', 'names', 'from_obj', 'from_props', 'vals')
+            valid_keys = ("obj", "prop_set", "names", "from_obj", "from_props", "vals")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("set_properties() got an unexpected keyword argument")
@@ -407,7 +406,7 @@ class Props:
                 if key in kwargs:
                     ka[2] = kwargs[key]
                     break
-            if count ==2:
+            if count == 2:
                 return ka
             ka[3] = kwargs.get("vals", None)
             return ka
@@ -418,7 +417,7 @@ class Props:
         kargs = get_kwargs()
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
-        
+
         if mInfo.Info.is_type_interface(kargs[1], XPropertySet.__pyunointerface__):
             # set_properties(cls, prop_set: XPropertySet, names: Sequence[str], vals: Sequence[object]) -> None
             # set_properties(cls, prop_set: XPropertySet, from_props: XPropertySet) -> None
@@ -429,13 +428,13 @@ class Props:
             prop_set = mLo.Lo.qi(XPropertySet, kargs[1])
             if prop_set is None:
                 raise mEx.MissingInterfaceError(XPropertySet)
-    
+
         if count == 3:
             # set_properties(cls, prop_set: XPropertySet, names: Sequence[str], vals: Sequence[object]) -> None
             # set_properties(cls, obj: object, names: Sequence[str], vals: Sequence[object]) -> None
             cls._set_properties_by_vals(prop_set=prop_set, names=kargs[2], vals=kargs[3])
             return
-            
+
         elif count == 2:
             if mInfo.Info.is_type_interface(kargs[2], XPropertySet.__pyunointerface__):
                 # set_properties(cls, prop_set: XPropertySet, from_props: XPropertySet) -> None
@@ -446,8 +445,7 @@ class Props:
                 if from_props is None:
                     raise mEx.MissingInterfaceError(XPropertySet)
             cls._set_properties_from_props(prop_set=prop_set, from_props=from_props)
-        
-    
+
     @classmethod
     def _set_properties_by_vals(cls, prop_set: XPropertySet, names: Sequence[str], vals: Sequence[object]) -> None:
         errs = []
@@ -455,16 +453,12 @@ class Props:
             try:
                 prop_set.setPropertyValue(name, vals[i])
             except PropertyVetoException as e:
-                errs.append(
-                    mEx.PropertyError(f"Could not set readonly-property {name}: {e}", e)
-                )
+                errs.append(mEx.PropertyError(f"Could not set readonly-property {name}: {e}", e))
             except Exception as e:
-                errs.append(
-                    Exception(f"Cound ont set property {name}: {e}", e)
-                )
+                errs.append(Exception(f"Cound ont set property {name}: {e}", e))
         if len(errs) > 0:
             raise mEx.MultiError(errs)
-            
+
     @classmethod
     def _set_properties_from_props(cls, prop_set: XPropertySet, from_props: XPropertySet) -> None:
         errs = []
@@ -508,6 +502,7 @@ class Props:
             object: property value
         """
         ...
+
     @overload
     @staticmethod
     def get_property(prop_set: XPropertySet, name: str) -> object:
@@ -526,7 +521,7 @@ class Props:
             object: property value
         """
         ...
-        
+
     @staticmethod
     def get_property(*args, **kwargs) -> object:
         """
@@ -552,7 +547,7 @@ class Props:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('obj', 'prop_set', 'name')
+            valid_keys = ("obj", "prop_set", "name")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("get_property() got an unexpected keyword argument")
@@ -570,7 +565,7 @@ class Props:
         kargs = get_kwargs()
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
-        
+
         if mInfo.Info.is_type_interface(kargs[1], XPropertySet.__pyunointerface__):
             prop_set = cast(XPropertySet, kargs[1])
         else:
@@ -585,6 +580,7 @@ class Props:
                 mEx.PropertyError(name, f"Could not get runtime property '{name}': {e}")
         except Exception as e:
             raise mEx.PropertyNotFoundError(prop_name=name) from e
+
     # endregion    get_property()
 
     @staticmethod
@@ -649,7 +645,9 @@ class Props:
         for prop in props:
             if prop.Name == name:
                 return prop.Value
-        raise mEx.PropertyNotFoundError(name,)
+        raise mEx.PropertyNotFoundError(
+            name,
+        )
 
     # endregion ---------------- get properties ------------------------
 
@@ -663,7 +661,7 @@ class Props:
         Args:
             title (str): Title to print
             obj (object): object that implements XIndexAccess
-        
+
         Example:
             .. code-block:: python
 
@@ -707,7 +705,7 @@ class Props:
                 props = mLo.Lo.qi(XPropertySet, in_acc.getByIndex(i))
                 if props is None:
                     return
-                
+
                 cls.show_props(f"Elem {i}", props)
                 print("----")
             except Exception as e:
@@ -725,7 +723,7 @@ class Props:
 
         Returns:
             str: A string representing properties
-        
+
         Example:
              .. code-block:: python
 
@@ -751,6 +749,7 @@ class Props:
                     ...
                 ]
         """
+
         def get_pv_str(vals) -> str:
             lines = []
             for p in vals:
@@ -760,14 +759,14 @@ class Props:
                 except AttributeError:
                     continue
             return "[\n    " + "\n    ".join(lines) + "\n]"
-    
+
         def get_property_set_str(prop_set, props) -> str:
             lines = []
             for p in props:
                 value = cls.get_property(prop_set, p.Name)
                 lines.append(f"{p.Name} = {value}")
             return "[\n    " + "\n    ".join(lines) + "\n]"
-        
+
         if val is None:
             return ""
         if isinstance(val, str):
@@ -788,7 +787,7 @@ class Props:
                     return ", ".join(val)
             except Exception:
                 pass
-            
+
             # assume Iterable[PropertyValue]
             return get_pv_str(val)
         else:
@@ -832,6 +831,7 @@ class Props:
             print(f"no {prop_kind} properties found")
             return
         cls.show_props(prop_kind=prop_kind, props_set=prop_set)
+
     # region    show_props()
     @overload
     @classmethod
@@ -876,7 +876,7 @@ class Props:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ('title', 'props', 'prop_kind', 'props_set')
+            valid_keys = ("title", "props", "prop_kind", "props_set")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("show_props() got an unexpected keyword argument")
@@ -916,7 +916,7 @@ class Props:
         lst = list(props)
         lst.sort(key=lambda prop: prop.Name)
         for prop in lst:
-            
+
             print(f"  {prop.Name}: {cls.prop_value_to_string(prop.Value)}")
         print()
 
