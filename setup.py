@@ -35,14 +35,15 @@ setup(
             "tmp",
         ]
     ),
-    include_package_data = True,
-    package_data={'cfg': ['cfg/*.json']},
+    include_package_data=True,
+    package_data={"cfg": ["cfg/*.json"]},
     author=":Barry-Thomas-Paul: Moss",
     author_email="bigbytetech@gmail.com",
     license="Apache Software License",
     install_requires=[
         'typing_extensions>=4.2.0 ;python_version<"3.8"',
-        "ooouno>=0.1.15" "types-unopy>=0.1.7",
+        "ooouno>=0.1.15",
+        "types-unopy>=0.1.7",
         "Pillow>=9.1.1",
         "lxml>=4.8.0",
     ],

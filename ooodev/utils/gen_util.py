@@ -1,14 +1,13 @@
 # coding: utf-8
 """General Utilities"""
 from __future__ import annotations
-import string
-from typing import Callable, Iterable, Iterator, Sequence, List, NamedTuple, Any, Tuple, cast, overload
+from typing import Iterable, Iterator, NamedTuple, Any
 from inspect import isclass
-import string
-from .type_var import DictTable, Table
+
 
 class ArgsHelper:
     "Args Helper"
+
     class NameValue(NamedTuple):
         "Name Value pair"
         name: str
@@ -16,9 +15,10 @@ class ArgsHelper:
         value: Any
         """Value component"""
 
+
 class Util:
     @classmethod
-    def is_iterable(cls, arg: object, excluded_types: Iterable[type] | None =None) -> bool:
+    def is_iterable(cls, arg: object, excluded_types: Iterable[type] | None = None) -> bool:
         """
         Gets if ``arg`` is iterable.
 
@@ -39,7 +39,7 @@ class Util:
 
             .. code-block:: python
 
-                # non-string iterables    
+                # non-string iterables
                 assert is_iterable(arg=("f", "f"))       # tuple
                 assert is_iterable(arg=["f", "f"])       # list
                 assert is_iterable(arg=iter("ff"))       # iterator
@@ -50,7 +50,7 @@ class Util:
                 assert not is_iterable(arg=u"ff")        # string
                 assert not is_iterable(arg=44)           # integer
                 assert not is_iterable(arg=is_iterable)  # function
-                
+
                 # excluded_types, optionally exlcude types
                 from enum import Enum, auto
 
@@ -58,7 +58,7 @@ class Util:
                     RED = auto()
                     GREEN = auto()
                     BLUE = auto()
-                
+
                 assert is_iterable(arg=Color)             # Enum
                 assert not is_iterable(arg=Color, excluded_types=(Enum, str)) # Enum
         """
@@ -95,6 +95,7 @@ class Util:
             except TypeError:
                 pass
             return True
+
         ex_types = excluded_types if isinstance(excluded_types, tuple) else tuple(excluded_types)
         arg_instance = _is_instance(arg)
         if arg_instance is True:
