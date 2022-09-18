@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.4.19
+==============
+
+Fix bug in setup.py
+
 Version 0.4.17
 ==============
 
