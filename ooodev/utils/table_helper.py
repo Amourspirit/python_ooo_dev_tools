@@ -140,6 +140,7 @@ class TableHelper:
         Returns:
             List[List[Any]]: 2-Dimensional List of values
         """
+        ...
 
     @staticmethod
     def make_2d_array(num_rows: int, num_cols: int, val=None) -> List[List[Any]]:
