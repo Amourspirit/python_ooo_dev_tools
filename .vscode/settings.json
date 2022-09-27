@@ -82,5 +82,19 @@
     "git.branchProtection": [
         "main",
         "develop"
-    ]
+    ],
+    "files.watcherExclude": {
+        "**/.git/objects/**": true,
+        "**/.git/subtree-cache/**": true,
+        "**/node_modules/*/**": true,
+        "**/.hg/store/**": true,
+        "**/build/**": true,
+        "**/dist/**": true,
+        "**/env/**": true,
+        "**/tmp/**": true,
+        "**/.pytest_cache/**": true,
+        "**/.idea/**": true,
+        "**/__pycache__/**": true,
+        "**/.hypothesis/**": true
+    }
 }
