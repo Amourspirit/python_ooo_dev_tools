@@ -1,17 +1,13 @@
 # coding: utf-8
 from __future__ import annotations
 import os
-from typing import Any, TYPE_CHECKING
+from typing import Any
 import uno
 
-_DOCS_BUILDING = os.environ.get("DOCS_BUILDING", None) == 'True'
-# _DOCS_BUILDING is only true when sphinx is building docs.
-# env var DOCS_BUILDING is set in docs/conf.py
-_ON_RTD = os.environ.get('READTHEDOCS', None) == 'True'
-# env var READTHEDOCS is true when read the docs is building
-# maybe not needed as _DOCS_BUILDING is set in conf.py
+from ..mock import mock_g
 
-if _DOCS_BUILDING or _ON_RTD:
+if mock_g.DOCS_BUILDING:
+
     # mock class
     from sphinx.ext.autodoc.mock import _MockObject
     class UnoEnum(_MockObject):

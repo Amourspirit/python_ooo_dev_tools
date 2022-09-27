@@ -3,7 +3,6 @@
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 
 from __future__ import annotations
-from ast import Not
 from datetime import datetime, timezone
 import time
 import types
