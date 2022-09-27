@@ -28,13 +28,13 @@ if TYPE_CHECKING:
 FNM = "produceSales.xlsx"
 OUT_FNM = "garlicSecrets.ods"
 
-def test_garlic_secrets(copy_fix_calc, loader, capsys: pytest.CaptureFixture) -> None:
+def test_garlic_secrets(copy_fix_calc, loader, test_headless, capsys: pytest.CaptureFixture) -> None:
     doc_path: Path = copy_fix_calc(FNM)
     doc = Calc.open_doc(fnm=str(doc_path), loader=loader)
     if doc is None:
         Lo.close_office()
         assert False, f"Could not open {FNM}"
-    visible = True
+    visible = not test_headless
     delay = 500
     if visible:
         GUI.set_visible(is_visible=visible, odoc=doc)
@@ -142,7 +142,8 @@ def test_garlic_secrets(copy_fix_calc, loader, capsys: pytest.CaptureFixture) ->
     orig_state = ViewState(str_state)
     
     assert orig_state.pane_focus_num == 2
-    assert rev_state.pane_focus_num == 0
+    if not test_headless:
+        assert rev_state.pane_focus_num == 0
     Lo.delay(delay)
     
     Calc.insert_row(sheet=sheet, idx=0)

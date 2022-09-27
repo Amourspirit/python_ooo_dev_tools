@@ -23,10 +23,13 @@ def tmp_path():
     if os.path.exists(result):
         shutil.rmtree(result,  ignore_errors=True)
 
+@pytest.fixture(scope="session")
+def test_headless():
+    return True
 
 @pytest.fixture(scope="session")
-def loader(tmp_path):
-    loader = mLo.load_office(connector=mLo.ConnectPipe(headless=True), cache_obj=mCache.Cache(working_dir=tmp_path))
+def loader(tmp_path, test_headless):
+    loader = mLo.load_office(connector=mLo.ConnectPipe(headless=test_headless), cache_obj=mCache.Cache(working_dir=tmp_path))
     # loader = mLo.load_office(connector=mLo.ConnectSocket(headless=True), cache_obj=mCache.Cache(working_dir=tmp_path))
     yield loader
     mLo.close_office()
