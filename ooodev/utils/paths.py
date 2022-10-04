@@ -24,7 +24,7 @@ def get_soffice_install_path() -> Path:
     """
     Gets the Soffice install path.
 
-    For windows this will be something like: ``C:\Program Files\LibreOffice``.
+    For windows this will be something like: ``C:\\Program Files\\LibreOffice``.
     For Linux this will be something like: ``/usr/lib/libreoffice``
 
     Returns:
@@ -113,7 +113,7 @@ def get_uno_path() -> Path:
     Searches known paths for path that contains uno.py
 
     This path is different for windows and linux.
-    Typically for Windows ``C:\Program Files\LibreOffice\program``
+    Typically for Windows ``C:\\Program Files\\LibreOffice\\program``
     Typically for Linux ``/usr/lib/python3/dist-packages``
 
     Raises:
@@ -149,7 +149,7 @@ def get_lo_path() -> Path:
     Searches known paths for path that contains LibreOffice ``soffice``.
 
     This path is different for windows and linux.
-    Typically for Windows ``C:\Program Files\LibreOffice\program``
+    Typically for Windows ``C:\\Program Files\\LibreOffice\\program``
     Typically for Linux ``/usr/bin/soffice``
 
     Raises:
@@ -197,7 +197,7 @@ def get_lo_python_ex() -> str:
     python executable that is returned.
 
     In Windows this is the ``python.exe`` file in LibreOffice.
-    Typically for Windows ``C:\Program Files\LibreOffice\program\python.exe``
+    Typically for Windows ``C:\\Program Files\\LibreOffice\\program\\python.exe``
 
     Raises:
         FileNotFoundError: In Windows if ``python.exe`` is not found.
