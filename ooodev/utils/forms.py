@@ -1,0 +1,724 @@
+# coding: utf-8
+# region Imports
+from __future__ import annotations
+from typing import TYPE_CHECKING, Any, Iterable, List, Tuple, cast, overload
+from . import lo as mLo
+from . import info as mInfo
+from . import props as mProps
+from . import gui as mGui
+from ..exceptions import ex as mEx
+from . import dialogs as mDl
+
+from com.sun.star.container import XIndexContainer
+from com.sun.star.container import XNameAccess
+from com.sun.star.container import XNameContainer
+from com.sun.star.drawing import XDrawPage
+from com.sun.star.drawing import XDrawPagesSupplier
+from com.sun.star.drawing import XDrawPageSupplier
+from com.sun.star.form import XForm
+from com.sun.star.form import XFormsSupplier
+from com.sun.star.lang import XComponent
+from com.sun.star.lang import XServiceInfo
+from com.sun.star.awt import XControlModel
+from com.sun.star.drawing import XControlShape
+from com.sun.star.awt import XControl
+from com.sun.star.container import XChild
+from com.sun.star.container import XNamed
+
+from ooo.dyn.form.form_component_type import FormComponentType
+
+if TYPE_CHECKING:
+    from com.sun.star.awt import UnoControlButtonModel  # service
+    from com.sun.star.awt import UnoControlCheckBoxModel  # service
+    from com.sun.star.awt import UnoControlComboBoxModel  # service
+    from com.sun.star.awt import UnoControlEditModel  # service
+    from com.sun.star.awt import UnoControlFixedTextModel  # service
+    from com.sun.star.container import XNameAccess
+    from com.sun.star.lang import EventObject
+# endregion Imports
+
+
+class Forms:
+    # region    access forms in document
+    # region        get_forms()
+    @overload
+    @classmethod
+    def get_forms(cls, obj: XComponent) -> XNameContainer:
+        ...
+
+    @overload
+    @classmethod
+    def get_forms(cls, obj: XDrawPage) -> XNameContainer:
+        ...
+
+    @classmethod
+    def get_forms(cls, obj: XComponent | XDrawPage) -> XNameContainer:
+        """
+        Gets Forms
+
+        Args:
+            obj (XComponent | XDrawPage): component or draw page
+
+        Returns:
+            XNameContainer: name container
+        """
+        if mLo.Lo.is_uno_interfaces(obj, XDrawPage):
+            draw_page = obj
+        else:
+            draw_page = cls.get_draw_page(obj)
+
+        forms_supp = mLo.Lo.qi(XFormsSupplier, draw_page, True)
+
+        return forms_supp.getForms()
+
+    # endregion     get_forms()
+
+    @staticmethod
+    def get_draw_page(doc: XComponent) -> XDrawPage:
+        """
+        Gets draw page
+
+        Args:
+            doc (XComponent): Component
+
+        Raises:
+            Exception: If unable to get draw page
+
+        Returns:
+            XDrawPage: Draw Page
+        """
+        try:
+            xsupp_page = mLo.Lo.qi(XDrawPageSupplier, doc)
+            if xsupp_page is not None:
+                return xsupp_page.getDrawPage()
+
+            # doc supports multiple DrawPages
+            xsupp_pages = mLo.Lo.qi(XDrawPagesSupplier, doc)
+
+            xpages = xsupp_pages.getDrawPages()
+            return mLo.Lo.qi(XDrawPage, xpages.getByIndex(0))
+        except Exception as e:
+            raise Exception(f"Unable to get draw page: {e}") from e
+
+    # region        get_form()
+    @overload
+    @classmethod
+    def get_form(cls, obj: XComponent) -> XNameContainer:
+        ...
+
+    @overload
+    @classmethod
+    def get_form(cls, obj: XComponent, for_name: str) -> XNameContainer:
+        ...
+
+    @overload
+    @classmethod
+    def get_form(cls, obj: XDrawPage) -> XNameContainer:
+        ...
+
+    @classmethod
+    def get_form(cls, obj: XComponent | XDrawPage, form_name: str | None = None) -> XNameContainer:
+        """
+        Gets form as name container
+
+        Args:
+            obj (XComponent | XDrawPage): Component or draw apge
+            for_name (str, optional): the name of form to get.
+
+        Raises:
+            Exception: If unable to get form
+
+        Returns:
+            XNameContainer: Name container
+        """
+        if form_name is not None:
+            # get_form(cls, obj: XComponent, for_name: str)
+            try:
+                named_forms = cls.get_forms(obj)
+                con = cls.get_form_by_name(form_name, named_forms)
+                return mLo.Lo.qi(XForm, con, True)
+            except Exception as e:
+                raise Exception(f"Unabel to get form: {e}") from e
+        try:
+            if mLo.Lo.is_uno_interfaces(obj, XDrawPage):
+                draw_page = obj
+            else:
+                draw_page = cls.get_draw_page(obj)
+
+            idx_forms = cls.get_indexed_forms(draw_page)
+        except Exception as e:
+            raise Exception(f"Unabel to get form: {e}") from e
+
+        try:
+            return mLo.Lo.qi(XNameContainer, idx_forms.getByIndex(0))
+        except Exception as e:
+            raise Exception(f"Could not find default form: {e}") from e
+
+    # endregion     get_form()
+
+    @staticmethod
+    def get_form_by_name(form_name: str, named_forms: XNameContainer) -> XNameContainer:
+        """
+        Get a form by name
+
+        Args:
+            form_name (str): form name
+            named_forms (XNameContainer): name container
+
+        Raises:
+            Exception: If not able to find form
+
+        Returns:
+            XNameContainer: Name Container
+        """
+        try:
+            return mLo.Lo.qi(XNameContainer, named_forms.getByName(form_name))
+        except Exception as e:
+            raise Exception(f'Could not find the form "{form_name}"') from e
+
+    @staticmethod
+    def get_indexed_forms(draw_page: XDrawPage) -> XIndexContainer:
+        """
+        Get index forms
+
+        Args:
+            draw_page (XDrawPage): Draw page
+
+        Returns:
+            XIndexContainer: Index container
+        """
+        form_supp = mLo.Lo.qi(XFormsSupplier, draw_page)
+        return mLo.Lo.qi(XIndexContainer, form_supp.getForms())
+
+    # region        insert_form()
+    @classmethod
+    def _insert_form_name_comp(cls, form_name: str, doc: XComponent) -> XNameContainer:
+        doc_forms = cls.get_forms(doc)
+        cls._insert_form_namecontainer("GridForm", doc_forms)
+
+    @classmethod
+    def _insert_form_namecontainer(cls, form_name: str, named_forms: XNameContainer) -> XNameContainer:
+        if named_forms.hasByName(form_name):
+            mLo.Lo.print(f'"{form_name}" already exists')
+            return cls.get_form_by_name(form_name=form_name, named_forms=named_forms)
+
+        try:
+            xnamed_forms = mLo.Lo.create_instance_msf(
+                XNameContainer, "com.sun.star.form.component.DataForm", raise_err=True
+            )
+            xnamed_forms.insertByName(form_name, xnamed_forms)
+            return xnamed_forms
+        except Exception as e:
+            raise Exception(f'Could not insert the form "{form_name}": {e}') from e
+
+    @overload
+    @classmethod
+    def insert_form(cls, form_name: str, doc: XComponent) -> XNameContainer:
+        """
+        Insert form
+
+        Args:
+            form_name (str): Form name
+            doc (XComponent): Component
+
+        Returns:
+            XNameContainer: Name Container
+        """
+        ...
+
+    @overload
+    @classmethod
+    def insert_form(cls, form_name: str, named_forms: XNameContainer) -> XNameContainer:
+        """
+        Insert form
+
+        Args:
+            form_name (str): Form name
+            named_forms (XNameContainer): Name Container
+
+        Returns:
+            XNameContainer: Name Container
+        """
+        ...
+
+    @classmethod
+    def insert_form(cls, *args, **kwargs) -> XNameContainer:
+        """
+        Insert form
+
+        Args:
+            form_name (str): Form name
+            doc (XComponent): Component
+            named_forms (XNameContainer): Name Container
+
+        Returns:
+            XNameContainer: Name Container
+        """
+        ordered_keys = (1, 2)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
+
+        def get_kwargs() -> dict:
+            ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ("form_name", "doc", "named_forms")
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("insert_form() got an unexpected keyword argument")
+            ka[1] = kwargs.get("form_name", None)
+            keys = ("doc", "named_forms")
+            for key in keys:
+                if key in kwargs:
+                    ka[2] = kwargs[key]
+                    break
+            return ka
+
+        if count != 2:
+            raise TypeError("insert_form() got an invalid number of arguments")
+
+        kargs = get_kwargs()
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
+
+        if mLo.Lo.is_uno_interfaces(kargs[2], XNameContainer):
+            return cls._insert_form_namecontainer(form_name=kargs[1], named_forms=kargs[2])
+
+        return cls._insert_form_name_comp(form_name=kargs[1], doc=kargs[2])
+        # endregion     insert_form()
+
+    @classmethod
+    def has_form(cls, doc: XComponent, form_name: str) -> bool:
+        """
+        Gets if component has form by name
+
+        Args:
+            doc (XComponent): Component
+            form_name (str): Form name
+
+        Returns:
+            bool: ``True`` if has form, Otherwise ``False``
+        """
+        try:
+            draw_page = cls.get_draw_page(doc)
+        except Exception:
+            return False
+        try:
+            named_forms_container = cls.get_forms(draw_page)
+            if named_forms_container is None:
+                mLo.Lo.print("No forms found on page")
+                return False
+            xnamed_forms = mLo.Lo.qi(XNameAccess, named_forms_container, True)
+            return xnamed_forms.hasByName(form_name)
+        except Exception:
+            return False
+
+    @classmethod
+    def show_form_names(cls, doc: XComponent) -> None:
+        """
+        Prints form names to console.
+
+        Args:
+            doc (XComponent): Component
+        """
+        form_names_con = cls.get_forms(doc)
+        form_names = form_names_con.getElementNames()
+        print(f"No. of forms found: {len(form_names)}")
+        for name in form_names:
+            print(f"  {name}")
+        print()
+
+    @classmethod
+    def list_forms(cls, obj: XComponent | XNameAccess, tab_str: str = "  ") -> None:
+        """
+        Prints forms information to console.
+
+        Args:
+            obj (XComponent | XNameAccess): Component or Name Access
+            tab_str (str, optional): tab string
+        """
+        if mLo.Lo.is_uno_interfaces(obj, XComponent):
+            xcontainer = cls.get_forms(obj)
+        else:
+            xcontainer = cast(XNameContainer, obj)
+        nms = xcontainer.getElementNames()
+        for name in nms:
+            try:
+                serv_info = mLo.Lo.qi(XServiceInfo, xcontainer.getByName(name), True)
+                if serv_info.supportsService("com.sun.star.form.FormComponents"):
+                    # this means that the form has been found
+                    if mInfo.Info.support_service(serv_info, "com.sun.star.form.component.DataForm"):
+                        print(f'{tab_str}Data From "{name}"')
+                    else:
+                        print(f'{tab_str}Form "{name}"')
+                        # mInfo.Info.show_services("Form", serv_info)
+                        # mInfo.Info.show_interfaces("Form", serv_info)
+                    child_con = mLo.Lo.qi(XNameAccess, serv_info, True)
+                    # recursively list form components
+                    cls.list_forms(child_con, tab_str=f"{tab_str}  ")
+                elif serv_info.supportsService("com.sun.star.form.FormComponent"):
+                    model = mLo.Lo.qi(XControlModel, serv_info)
+                    print(f'{tab_str}"{name}":{cls.get_type_str(model)}')
+                    #  mProps.Props.show_obj_props("Model", model)
+                else:
+                    print(f'{tab_str}unknown: "{name}"')
+            except Exception:
+                print(f'{tab_str}Could not access "{name}"')
+
+    # endregion access forms in document
+
+    # region    get form models
+    @overload
+    @classmethod
+    def get_models(cls, obj: XComponent) -> List[XControlModel]:
+        ...
+
+    @overload
+    @classmethod
+    def get_models(cls, obj: XNameAccess) -> List[XControlModel]:
+        ...
+
+    @classmethod
+    def get_models(cls, obj: XComponent | XNameAccess) -> List[XControlModel]:
+        """
+        Gets models from obj
+
+        Args:
+            obj (XComponent | XNameAccess): Component or Name Access
+
+        Returns:
+            List[XControlModel]: List of found models
+
+        See Also:
+            :py:meth:`~.forms.Forms.get_models2`
+        """
+        if mLo.Lo.is_uno_interfaces(obj, XComponent):
+            xcontainer = cls.get_forms(obj)
+        else:
+            xcontainer = cast(XNameContainer, obj)
+        models: List[XControlModel] = []
+        nms = xcontainer.getElementNames()
+        for name in nms:
+            try:
+                serv_info = mLo.Lo.qi(XServiceInfo, xcontainer.getByName(name))
+                if serv_info.supportsService("com.sun.star.form.FormComponents"):
+                    # this means that a form has been found
+                    child_con = mLo.Lo.qi(XNameAccess, serv_info, True)
+                    # recursively search
+                    models.extend(cls.get_models(child_con))
+                elif serv_info.supportsService("com.sun.star.form.FormComponent"):
+                    model = mLo.Lo.qi(XControlModel, serv_info, True)
+                    models.append(model)
+
+            except Exception as e:
+                mLo.Lo.print(f'Could not access "{name}"')
+        return models
+
+    @classmethod
+    def get_models2(cls, doc: XComponent, form_name: str) -> List[XControlModel]:
+        """
+        Gets models from doc
+
+        Args:
+            doc (XComponent): Component
+            form_name (str): form name.
+
+        Returns:
+            List[XControlModel]: List of found models
+
+        See Also:
+            :py:meth:`~.forms.Forms.get_models`
+        """
+        # another way to obtain models, via the control shapes in the DrawPage
+        models: List[XControlModel] = []
+        try:
+            xdraw_page = cls.get_draw_page(doc)
+            if xdraw_page is None:
+                return models
+        except Exception:
+            mLo.Lo.print("No draw page found")
+            return models
+        try:
+            for i in range(xdraw_page.getCount()):
+                cshape = mLo.Lo.qi(XControlShape, xdraw_page.getByIndex(i))
+                model = cshape.getControl()
+                if cls.belongs_to_form(model, form_name):
+                    models.append(model)
+        except Exception as e:
+            mLo.Lo.print(f"Could not collect control model: {e}")
+        mLo.Lo.print(f"No. of control models found: {len(models)}")
+        return models
+
+    @classmethod
+    def get_event_source_name(cls, event: EventObject) -> str:
+        """
+        Gets event source name
+
+        Args:
+            event (EventObject): event object
+
+        Returns:
+            str: event source name
+        """
+        control = mLo.Lo.qi(XControl, event.Source, True)
+        return cls.get_name(control)
+
+    @classmethod
+    def get_event_control_model(event: EventObject) -> XControlModel:
+        """
+        Gets event control model
+
+        Args:
+            event (EventObject): event object
+
+        Returns:
+            XControlModel: Event control model
+        """
+        control = mLo.Lo.qi(XControl, event.Source, True)
+        return control.getModel()
+
+    @staticmethod
+    def get_form_name(ctl_model: XControlModel) -> str:
+        """
+        Gets form name
+
+        Args:
+            ctl_model (XControlModel): control model
+
+        Returns:
+            str: form name
+        """
+        child = mLo.Lo.qi(XChild, ctl_model)
+        named = mLo.Lo.qi(XNamed, child.getParent())
+        return named.getName()
+
+    @classmethod
+    def belongs_to_form(cls, ctl_model: XControlModel, form_name: str) -> bool:
+        """
+        Get if a control belongs to a form
+
+        Args:
+            ctl_model (XControlModel): Control Model
+            form_name (str): Form name
+
+        Returns:
+            bool: ``True`` if belongs to form; Otherwise, ``False``
+        """
+        return cls.get_form_name(ctl_model) == form_name
+
+    @staticmethod
+    def get_name(ctl_model: XControlModel) -> str:
+        """
+        Gets name of a given form component
+
+        Args:
+            ctl_model (XControlModel): Control Model
+
+        Returns:
+            str: Name of component
+        """
+        return str(mProps.Props.get_property(obj=ctl_model, name="Name"))
+
+    @staticmethod
+    def get_label(ctl_model: XControlModel) -> str:
+        """
+        Gets label of a given form component
+
+        Args:
+            ctl_model (XControlModel): Control Model
+
+        Returns:
+            str: Label of component
+        """
+        return str(mProps.Props.get_property(obj=ctl_model, name="Label"))
+
+    @classmethod
+    def get_type_str(cls, ctl_model: XControlModel) -> str | None:
+        """
+        Gets type as string
+
+        Args:
+            ctl_model (XControlModel): Control Model
+
+        Returns:
+            str | None: Type as string if found; Otherwise, ``None``
+        """
+        id = cls.get_id(ctl_model)
+        if id == -1:
+            return None
+
+        serv_info = mLo.Lo.qi(XServiceInfo, ctl_model)
+        if id == FormComponentType.COMMANDBUTTON:
+            return "Command button"
+        elif id == FormComponentType.RADIOBUTTON:
+            return "Radio button"
+        elif id == FormComponentType.IMAGEBUTTON:
+            return "Image button"
+        elif id == FormComponentType.CHECKBOX:
+            return "Check Box"
+        elif id == FormComponentType.LISTBOX:
+            return "List Box"
+        elif id == FormComponentType.COMBOBOX:
+            return "Combo Box"
+        elif id == FormComponentType.GROUPBOX:
+            return "Group Box"
+        elif id == FormComponentType.FIXEDTEXT:
+            return "Fixed Text"
+        elif id == FormComponentType.GRIDCONTROL:
+            return "Grid Control"
+        elif id == FormComponentType.FILECONTROL:
+            return "File Control"
+        elif id == FormComponentType.HIDDENCONTROL:
+            return "Hidden Control"
+        elif id == FormComponentType.IMAGECONTROL:
+            return "Image Control"
+        elif id == FormComponentType.DATEFIELD:
+            return "Date Field"
+        elif id == FormComponentType.TIMEFIELD:
+            return "Time Field"
+        elif id == FormComponentType.NUMERICFIELD:
+            return "Numeric Field"
+        elif id == FormComponentType.CURRENCYFIELD:
+            return "Currency Field"
+        elif id == FormComponentType.PATTERNFIELD:
+            return "Pattern Field"
+        elif id == FormComponentType.TEXTFIELD:
+            # two services with this class id: text field and formatted field
+            if serv_info is not None and serv_info.supportsService("com.sun.star.form.component.FormattedField"):
+                return "Formatted Field"
+            else:
+                return "Text Field"
+        else:
+            mLo.Lo.print(f"Unknown class ID: {id}")
+            return None
+
+    @staticmethod
+    def get_id(ctl_model: XControlModel) -> int:
+        """
+        Gets class id for a form component
+
+        Args:
+            ctl_model (XControlModel): Control Model
+
+        Returns:
+            int: Class Id if found, Otherwise ``-1``
+        """
+        class_id = mProps.Props.get_property(ctl_model, "ClassId")
+        if class_id is None:
+            mLo.Lo.print("No class ID found for form component")
+            return -1
+        return int(class_id)
+
+    @classmethod
+    def is_button(cls, ctl_model: XControlModel) -> bool:
+        """
+        Gets if component is a command button or a image button
+
+        Args:
+            ctl_model (XControlModel): Control Model
+
+        Returns:
+            bool: ``True`` if is button; Otherwise, ``False``
+        """
+        id = cls.get_id(ctl_model)
+        if id == -1:
+            return False
+
+        return id == FormComponentType.COMMANDBUTTON or id == FormComponentType.IMAGEBUTTON
+
+    @classmethod
+    def is_text_field(cls, ctl_model: XControlModel) -> bool:
+        """
+        Gets if component is a text field
+
+        Args:
+            ctl_model (XControlModel): Control Model
+
+        Returns:
+            bool: ``True`` if is text field; Otherwise, ``False``
+        """
+        id = cls.get_id(ctl_model)
+        if id == -1:
+            return False
+
+        return (
+            id == FormComponentType.DATEFIELD
+            or id == FormComponentType.TIMEFIELD
+            or id == FormComponentType.NUMERICFIELD
+            or id == FormComponentType.CURRENCYFIELD
+            or id == FormComponentType.PATTERNFIELD
+            or id == FormComponentType.TEXTFIELD
+        )
+
+    @classmethod
+    def is_box(cls, ctl_model: XControlModel) -> bool:
+        """
+        Gets if component is a box
+
+        Args:
+            ctl_model (XControlModel): Control Model
+
+        Returns:
+            bool: ``True`` if is box; Otherwise, ``False``
+        """
+        id = cls.get_id(ctl_model)
+        if id == -1:
+            return False
+
+        return id == FormComponentType.RADIOBUTTON or id == FormComponentType.CHECKBOX
+
+    @classmethod
+    def is_list(cls, ctl_model: XControlModel) -> bool:
+        """
+        Gets if component is a list
+
+        Args:
+            ctl_model (XControlModel): Control Model
+
+        Returns:
+            bool: ``True`` if is list; Otherwise, ``False``
+        """
+        id = cls.get_id(ctl_model)
+        if id == -1:
+            return False
+
+        return id == FormComponentType.LISTBOX or id == FormComponentType.COMBOBOX
+    
+    # Other control types
+    # FormComponentType.GROUPBOX
+    # FormComponentType.FIXEDTEXT
+    # FormComponentType.GRIDCONTROL
+    # FormComponentType.FILECONTROL
+    # FormComponentType.HIDDENCONTROL
+    # FormComponentType.IMAGECONTROL
+    # FormComponentType.SCROLLBAR 
+    # FormComponentType.SPINBUTTON  
+    # FormComponentType.NAVIGATIONBAR
+
+    # endregion get form models
+
+    # region    get control for a model
+    @staticmethod
+    def get_control(doc: XComponent, ctl_model: XControlModel) -> XControl:
+        """
+        Gets the control from the specified control model. 
+
+        Args:
+            doc (XComponent): Component
+            ctl_model (XControlModel): Control Model
+
+        Raises:
+            Exception: If unable to get control
+
+        Returns:
+            XControl: Control
+        """
+        try:
+            control_access = mGui.GUI.get_control_access(doc)
+            if control_access is None:
+                raise Exception("Could not obtain controls access in document")
+            return control_access.getControl(ctl_model)
+        except Exception as e:
+            raise Exception(f'Could not access control: {e}') from e
+        
+    # endregion get control for a model
