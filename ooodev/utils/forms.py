@@ -1,44 +1,94 @@
 # coding: utf-8
 # region Imports
 from __future__ import annotations
-from typing import TYPE_CHECKING, Any, Iterable, List, Tuple, cast, overload
+from typing import TYPE_CHECKING, Any, Iterable, List,cast, overload
+from enum import Enum
+
 from . import lo as mLo
 from . import info as mInfo
 from . import props as mProps
 from . import gui as mGui
-from ..exceptions import ex as mEx
-from . import dialogs as mDl
+from . import runtime as mRuntime
 
+from com.sun.star.awt import XControl
+from com.sun.star.awt import XControlModel
+from com.sun.star.beans import XPropertySet
+from com.sun.star.container import XChild
 from com.sun.star.container import XIndexContainer
 from com.sun.star.container import XNameAccess
+from com.sun.star.container import XNameAccess
 from com.sun.star.container import XNameContainer
+from com.sun.star.container import XNamed
+from com.sun.star.drawing import XControlShape
 from com.sun.star.drawing import XDrawPage
 from com.sun.star.drawing import XDrawPagesSupplier
 from com.sun.star.drawing import XDrawPageSupplier
+from com.sun.star.drawing import XShapes
 from com.sun.star.form import XForm
 from com.sun.star.form import XFormsSupplier
+from com.sun.star.form import XGridColumnFactory
 from com.sun.star.lang import XComponent
 from com.sun.star.lang import XServiceInfo
-from com.sun.star.awt import XControlModel
-from com.sun.star.drawing import XControlShape
-from com.sun.star.awt import XControl
-from com.sun.star.container import XChild
-from com.sun.star.container import XNamed
+from com.sun.star.script import XEventAttacherManager
 
+from ooo.dyn.awt.point import Point
+from ooo.dyn.awt.size import Size
 from ooo.dyn.form.form_component_type import FormComponentType
+from ooo.dyn.form.list_source_type import ListSourceType
+from ooo.dyn.script.script_event_descriptor import ScriptEventDescriptor
+from ooo.dyn.sdb.command_type import CommandType
+from ooo.dyn.text.text_content_anchor_type import TextContentAnchorType
 
 if TYPE_CHECKING:
-    from com.sun.star.awt import UnoControlButtonModel  # service
-    from com.sun.star.awt import UnoControlCheckBoxModel  # service
-    from com.sun.star.awt import UnoControlComboBoxModel  # service
-    from com.sun.star.awt import UnoControlEditModel  # service
-    from com.sun.star.awt import UnoControlFixedTextModel  # service
-    from com.sun.star.container import XNameAccess
     from com.sun.star.lang import EventObject
 # endregion Imports
 
 
 class Forms:
+    # region ComponentKind
+    class CompenentKind(str, Enum):
+        CheckBox = "CheckBox"
+        ComboBox = "ComboBox"
+        CommandButton = "CommandButton"
+        CurrencyField = "CurrencyField"
+        DatabaseCheckBox = "DatabaseCheckBox"
+        DatabaseComboBox = "DatabaseComboBox"
+        DatabaseCurrencyField = "DatabaseCurrencyField"
+        DatabaseDateField = "DatabaseDateField"
+        DatabaseFormattedField = "DatabaseFormattedField"
+        DatabaseImageControl = "DatabaseImageControl"
+        DatabaseListBox = "DatabaseListBox"
+        DatabaseNumericField = "DatabaseNumericField"
+        DatabasePatternField = "DatabasePatternField"
+        DatabaseRadioButton = "DatabaseRadioButton"
+        DatabaseTextField = "DatabaseTextField"
+        DatabaseTimeField = "DatabaseTimeField"
+        DateField = "DateField"
+        FileControl = "FileControl"
+        FixedText = "FixedText"
+        FormattedField = "FormattedField"
+        GridControl = "GridControl"
+        GroupBox = "GroupBox"
+        HiddenControl = "HiddenControl"
+        HTMLForm = "HTMLForm"
+        ImageButton = "ImageButton"
+        ListBox = "ListBox"
+        NavigationToolBar = "NavigationToolBar"
+        NumericField = "NumericField"
+        PatternField = "PatternField"
+        RadioButton = "RadioButton"
+        RichTextControl = "RichTextControl"
+        ScrollBar = "ScrollBar"
+        SpinButton = "SpinButton"
+        SubmitButton = "SubmitButton"
+        TextField = "TextField"
+        TimeField = "TimeField"
+
+        def __str__(self) -> str:
+            return self._value_
+
+    # endregion ComponentKind
+
     # region    access forms in document
     # region        get_forms()
     @overload
@@ -683,7 +733,7 @@ class Forms:
             return False
 
         return id == FormComponentType.LISTBOX or id == FormComponentType.COMBOBOX
-    
+
     # Other control types
     # FormComponentType.GROUPBOX
     # FormComponentType.FIXEDTEXT
@@ -691,8 +741,8 @@ class Forms:
     # FormComponentType.FILECONTROL
     # FormComponentType.HIDDENCONTROL
     # FormComponentType.IMAGECONTROL
-    # FormComponentType.SCROLLBAR 
-    # FormComponentType.SPINBUTTON  
+    # FormComponentType.SCROLLBAR
+    # FormComponentType.SPINBUTTON
     # FormComponentType.NAVIGATIONBAR
 
     # endregion get form models
@@ -701,7 +751,7 @@ class Forms:
     @staticmethod
     def get_control(doc: XComponent, ctl_model: XControlModel) -> XControl:
         """
-        Gets the control from the specified control model. 
+        Gets the control from the specified control model.
 
         Args:
             doc (XComponent): Component
@@ -719,6 +769,532 @@ class Forms:
                 raise Exception("Could not obtain controls access in document")
             return control_access.getControl(ctl_model)
         except Exception as e:
-            raise Exception(f'Could not access control: {e}') from e
-        
+            raise Exception(f"Could not access control: {e}") from e
+
+    @classmethod
+    def get_named_control(cls, doc: XComponent, ctl_name: str) -> XControl | None:
+        """
+        Gets a named control.
+
+        Args:
+            doc (XComponent): Component
+            ctl_name (str): Name of control
+
+        Returns:
+            XControl | None: Control if found; Otherwise, None
+        """
+        models = cls.get_models(doc)
+        ctl = None
+        for model in models:
+            if cls.get_name(model) == ctl_name:
+                mLo.Lo.print(f"Found: {ctl_name}")
+                try:
+                    ctl = cls.get_control(doc, model)
+                except Exception as e:
+                    mLo.Lo.print("Error getting control.")
+                    mLo.Lo.print(f"  {e}")
+                    ctl = None
+                finally:
+                    break
+        return ctl
+
+    @classmethod
+    def get_control_model(cls, doc: XComponent, ctl_name) -> XControlModel | None:
+        """
+        Gets Control Model by Name
+
+        Args:
+            doc (XComponent): Component
+            ctl_name (str): Name of control
+
+        Returns:
+            XControlModel | None: Control Model if found; Otherwise, None
+        """
+        control = cls.get_named_control(doc, ctl_name)
+        if control is None:
+            return None
+        return control.getModel()
+
     # endregion get control for a model
+
+    # region create controls
+
+    # region    add_control
+    @overload
+    @classmethod
+    def add_control(
+        cls,
+        doc: XComponent,
+        name: str,
+        label: str | None,
+        comp_kind: Forms.CompenentKind | str,
+        x: int,
+        y: int,
+        width: int,
+        height: int,
+    ) -> XPropertySet:
+        ...
+
+    @overload
+    @classmethod
+    def add_control(
+        cls,
+        doc: XComponent,
+        name: str,
+        label: str | None,
+        comp_kind: Forms.CompenentKind | str,
+        x: int,
+        y: int,
+        width: int,
+        height: int,
+        anchor_type: TextContentAnchorType | None = None,
+        parent_form: XNameContainer | None = None,
+        **props: Any,
+    ) -> XPropertySet:
+        ...
+
+    @classmethod
+    def add_control(
+        cls,
+        doc: XComponent,
+        name: str,
+        label: str | None,
+        comp_kind: Forms.CompenentKind | str,
+        x: int,
+        y: int,
+        width: int,
+        height: int,
+        anchor_type: TextContentAnchorType | None = None,
+        parent_form: XNameContainer | None = None,
+        **props: Any,
+    ) -> XPropertySet:
+        """
+        Add a control
+
+        Args:
+            doc (XComponent): Component
+            name (str): Control Name
+            label (str | None): Label to assign to control
+            comp_kind (Forms.CompenentKind | str): Kind of control such as ``CheckBox``.
+            x (int): Control X position
+            y (int): Control Y Position
+            width (int): Control width#
+            height (int): control height
+            anchor_type (TextContentAnchorType | None): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            parent_form (XNameContainer | None): Parent form in which to add control.
+            props (Any, optional): Extra key value properties that are applied to control.
+
+        Returns:
+            XPropertySet: Control Property Set
+
+        See Also:
+            For ``comp_kind`` `API component Module Namespace <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1form_1_1component.html>`_
+        """
+        try:
+            # create a shape to represent the control's view
+            cshape = mLo.Lo.create_instance_mcf(XControlShape, "com.sun.star.drawing.ControlShape", True)
+
+            # position and size of the shape
+            cshape.setSize(Size(width * 100, height * 100))
+            cshape.setPosition(Point(x * 100, y * 100))
+
+            # adjust the anchor so that the control is tied to the page
+            shape_props = mLo.Lo.qi(XPropertySet, cshape, True)
+
+            if anchor_type is None:
+                shape_props.setPropertyValue("AnchorType", TextContentAnchorType.AT_PARAGRAPH)
+            else:
+                shape_props.setPropertyValue("AnchorType", TextContentAnchorType(anchor_type))
+
+            # create the control's model, this is a service
+            # see: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1form_1_1FormControlModel.html
+            cmodel = mLo.Lo.create_instance_mcf(XControlModel, f"com.sun.star.form.component.{comp_kind}")
+
+            # insert the model into the form (or default to "Form")
+            if parent_form is not None:
+                parent_form.insertByName(name, cmodel)
+
+            # link model to the shape
+            cshape.setControl(cmodel)
+
+            # add the shape to the shapes on the doc's draw page
+            draw_page = cls.get_draw_page(doc)
+            form_shapes = mLo.Lo.qi(XShapes, draw_page)
+            form_shapes.add(cshape)
+
+            # set Name and Label properties for the model
+            model_props = mLo.Lo.qi(XPropertySet, cmodel, True)
+            model_props.setPropertyValue("Name", name)
+            if label is not None:
+                model_props.setPropertyValue("Label", label)
+            # set any extra user properties
+            for k, v in props.items():
+                model_props.setPropertyValue(k, v)
+            return model_props
+        except Exception:
+            raise
+        # endregion add_control
+
+    # region    add_labelled_control
+
+    @overload
+    @classmethod
+    def add_labelled_control(
+        cls, doc: XComponent, label: str, comp_kind: Forms.CompenentKind | str, y: int
+    ) -> XPropertySet:
+        ...
+
+    @overload
+    @classmethod
+    def add_labelled_control(
+        cls, doc: XComponent, label: str, comp_kind: Forms.CompenentKind | str, x: int, y: int, height: int
+    ) -> XPropertySet:
+        ...
+
+    @classmethod
+    def add_labelled_control(cls, *args, **kwargs) -> None:
+        """
+        Create a label and data field control, with the label preceding the control
+
+        Args:
+            doc (XComponent): Component
+            label (str): Label to assign to control
+            comp_kind (Forms.CompenentKind | str): Kind of control such as ``CheckBox``.
+            x (int): Control X position
+            y (int): Control Y Position
+            height (int): control height
+
+        Returns:
+            XPropertySet: DataField Control Property Set
+        """
+        ordered_keys = (1, 2, 3, 4, 5, 6)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
+
+        def get_kwargs() -> dict:
+            ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ("doc", "label", "comp_kind", "x", "y", "height")
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("addLabelledControl() got an unexpected keyword argument")
+            ka[1] = kwargs.get("doc", None)
+            ka[2] = kwargs.get("label", None)
+            ka[3] = kwargs.get("comp_kind", None)
+            keys = ("x", "y")
+            for key in keys:
+                if key in kwargs:
+                    ka[4] = kwargs[key]
+                    break
+            if count == 4:
+                return ka
+            ka[5] = kwargs.get("y", None)
+            ka[6] = kwargs.get("height", None)
+            return ka
+
+        if not count in (4, 6):
+            raise TypeError("addLabelledControl() got an invalid numer of arguments")
+
+        kargs = get_kwargs()
+
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
+
+        if count == 4:
+            return cls._add_labelled_control(
+                doc=kargs[1], label=kargs[2], comp_kind=kargs[3], x=2, y=kargs[4], height=6
+            )
+        else:
+            return cls._add_labelled_control(
+                doc=kargs[1], label=kargs[2], comp_kind=kargs[3], x=kargs[4], y=kargs[5], height=kargs[6]
+            )
+
+    @classmethod
+    def _add_labelled_control(
+        cls, doc: XComponent, label: str, comp_kind: Forms.CompenentKind | str, x: int, y: int, height: int
+    ) -> XPropertySet:
+        try:
+            name = f"{label}_label"
+            # create label (fixed text) control
+            label_props = cls.add_control(
+                doc=doc,
+                name=name,
+                label=label,
+                comp_kind=Forms.CompenentKind.FixedText,
+                x=x,
+                y=y,
+                width=40,
+                height=height,
+            )
+
+            # create data field control
+            ctl_props = cls.add_control(
+                doc=doc,
+                name=label,
+                label=None,
+                comp_kind=comp_kind,
+                x=x + 26,
+                y=y,
+                width=40,
+                height=height,
+            )
+            ctl_props.setPropertyValue("DataField", label)
+
+            # add label props to the control
+            ctl_props.setPropertyValue("LabelControl", label_props)
+            return ctl_props
+        except Exception:
+            raise
+
+    # endregion add_labelled_control
+
+    # region    add_button
+    @overload
+    @classmethod
+    def add_button(cls, doc: XComponent, name: str, label: str | None, x: int, y: int, height: int) -> XPropertySet:
+        ...
+
+    @overload
+    @classmethod
+    def add_button(
+        cls, doc: XComponent, name: str, label: str | None, x: int, y: int, height: int, width: int
+    ) -> XPropertySet:
+        ...
+
+    @classmethod
+    def add_button(
+        cls, doc: XComponent, name: str, label: str | None, x: int, y: int, height: int, width: int = 6
+    ) -> XPropertySet:
+        """
+        Adds a button control.
+
+        By Default the button has no tabstop and does not focus on click.
+
+        Args:
+            doc (XComponent): Component
+            name (str): Button name
+            label (str | None): Button Label
+            x (int): Button X position
+            y (int): Button Y position
+            height (int): Button Height
+            width (int, optional): Button Height. Defaults to 6.
+
+        Returns:
+            XPropertySet: Button Property Set
+        """
+        try:
+            btn_props = cls.add_control(
+                doc=doc,
+                name=name,
+                label=label,
+                comp_kind=Forms.CompenentKind.CommandButton,
+                x=x,
+                y=y,
+                width=width,
+                height=height,
+            )
+            # don't want button to be accessible by the "tab" key
+            btn_props.setPropertyValue("Tabstop", False)
+
+            # the button should not steal focus when clicked
+            btn_props.setPropertyValue("FocusOnClick", False)
+
+            return btn_props
+        except Exception:
+            raise
+
+    # endregion add_button
+
+    @classmethod
+    def add_list(
+        cls, doc: XComponent, name: str, entries: Iterable[str], x: int, y: int, width: int, height: int
+    ) -> XPropertySet:
+        """
+        Adds a list
+
+        Args:
+            doc (XComponent): Component
+            name (str): List Name
+            entries (Iterable[str]): List Entries
+            x (int): List X position
+            y (int): List Y Position
+            width (int): List Width
+            height (int): List Height
+
+        Returns:
+            XPropertySet: List property set
+        """
+        try:
+            lst_props = cls.add_control(
+                doc=doc,
+                name=name,
+                label=None,
+                comp_kind=Forms.CompenentKind.ListBox,
+                x=x,
+                y=y,
+                width=width,
+                height=height,
+            )
+            items = tuple([s for s in entries])
+            lst_props.setPropertyValue("DefaultSelection", (0,))
+            lst_props.setPropertyValue("ListSource", items)
+            lst_props.setPropertyValue("Dropdown", True)
+            lst_props.setPropertyValue("MultiSelection", False)
+            lst_props.setPropertyValue("StringItemList", items)
+            lst_props.setPropertyValue("SelectedItems", (0,))
+            return lst_props
+        except Exception:
+            raise
+
+    @classmethod
+    def add_database_list(
+        cls, doc: XComponent, name: str, sql_cmd: str, x: int, y: int, width: int, height: int
+    ) -> XPropertySet:
+        """
+        Add a list with a sql command as it data source
+
+        Args:
+            doc (XComponent): Component
+            name (str): List Name
+            sql_cmd (str): Sql Command
+            x (int): List X position
+            y (int): List Y Position
+            width (int): List Width
+            height (int): List Height
+
+        Returns:
+            XPropertySet: List property set
+        """
+        try:
+            lst_props = cls.add_control(
+                doc=doc,
+                name=name,
+                label=None,
+                comp_kind=Forms.CompenentKind.DatabaseListBox,
+                x=x,
+                y=y,
+                width=width,
+                height=height,
+            )
+            lst_props.setPropertyValue("Dropdown", True)
+            lst_props.setPropertyValue("MultiSelection", True)
+            lst_props.setPropertyValue("BoundColumn", 0)
+
+            # data-aware properties
+            lst_props.setPropertyValue("ListSourceType", ListSourceType.SQL)
+            lst_props.setPropertyValue("ListSource", (sql_cmd,))
+            return lst_props
+        except Exception:
+            raise
+
+    @staticmethod
+    def create_grid_column(grid_model: XControlModel, data_field: str, col_kind: str, width: int) -> None:
+        """
+        Adds a column to a gird
+
+        Args:
+            grid_model (XControlModel): Grid control Model
+            data_field (str): the database field to which the column should be bound
+            col_kind (str):  the column type such as "NumericField"
+            width (int): the column width (in mm). If 0, no width is set.
+        """
+        # column container and factory
+        col_container = mLo.Lo.qi(XIndexContainer, grid_model)
+        col_factory = mLo.Lo.qi(XGridColumnFactory, grid_model)
+
+        # create the column
+        col_props = col_factory.createColumn(col_kind)
+        col_props.setPropertyValue("DataField", data_field)
+        col_props.setPropertyValue("Label", data_field)
+        col_props.setPropertyValue("Name", data_field)
+        if width > 0:
+            col_props.setPropertyValue("Width", width * 10)
+
+        # add properties column to container
+        col_container.insertByIndex(col_container.getCount(), col_props)
+
+    # endregion create controls
+
+    # region  bind form to database
+    @staticmethod
+    def bind_form_to_table(xform: XForm, src_name: str, tbl_name: str) -> None:
+        """
+        Bind the form to the database in the src_name URL
+
+        Args:
+            xform (XForm): Form
+            src_name (str): Source Name URL
+            tbl_name (str): Table Name
+        """
+        mProps.Props.set_property(obj=xform, name="DataSourceName", value=src_name)
+        mProps.Props.set_property(obj=xform, name="Command", value=tbl_name)
+        mProps.Props.set_property(obj=xform, name="CommandType", value=CommandType.TABLE)
+
+    @staticmethod
+    def bind_form_to_sql(xform: XForm, src_name: str, cmd: str) -> None:
+        """
+        Bind the form to the database in the sourceName URL, and send a SQL cmd
+
+        Args:
+            xform (XForm): Form
+            src_name (str): Source Name URL
+            cmd (str): Command
+        """
+        mProps.Props.set_property(obj=xform, name="DataSourceName", value=src_name)
+        mProps.Props.set_property(obj=xform, name="Command", value=cmd)
+        mProps.Props.set_property(obj=xform, name="CommandType", value=CommandType.COMMAND)
+        # cannot use CommandType.TABLE for the SELECT cmd
+
+    # endregion  bind form to database
+
+    # region  bind a macro to a form control
+    @staticmethod
+    def assign_script(
+        ctl_props: XPropertySet, interface_name: str, method_name: str, script_name: str, loc: str
+    ) -> None:
+        """
+        Binds a macro to a form control
+
+        Args:
+            ctl_props (XPropertySet): Properties of control
+            interface_name (str): Interface Name
+            method_name (str): Method Name
+            script_name (str): Script Name
+            loc (str): can be user, share, document, and extensions
+        
+        See Also:
+            `Scripting Framework URI Specification <https://wiki.openoffice.org/wiki/Documentation/DevGuide/Scripting/Scripting_Framework_URI_Specification>`_
+        """
+        # https://wiki.openoffice.org/wiki/Documentation/DevGuide/WritingUNO/XInterface
+        # In C++, two objects are the same if their XInterface are the same. The queryInterface() for XInterface will have to
+        # be called on both. In Java, check for the identity by calling the runtime function
+        # com.sun.star.uni.UnoRuntime.areSame().
+        try:
+            props_child = mLo.Lo.qi(XChild, ctl_props, True)
+            parent_form = mLo.Lo.qi(XIndexContainer, props_child.getParent(), True)
+
+            pos = -1
+            for i in range(parent_form.getCount()):
+                child = mLo.Lo.qi(XPropertySet, parent_form.getByIndex(i))
+                if mRuntime.Runtime.are_same(child, ctl_props):
+                    pos = i
+                    break
+
+            if pos == -1:
+                mLo.Lo.print("Could not find contol's position in form")
+            else:
+                mgr = mLo.Lo.qi(XEventAttacherManager, parent_form, True)
+                ed = ScriptEventDescriptor(
+                    interface_name,
+                    method_name,
+                    "",
+                    "Script",
+                    f"vnd.sun.star.script:{script_name}?language=Java&location={loc}",
+                )
+
+                mgr.registerScriptEvent(pos, ed)
+        except Exception:
+            raise
+
+    # endregion  bind a macro to a form control
