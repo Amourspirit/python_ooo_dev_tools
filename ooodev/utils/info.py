@@ -5,7 +5,7 @@ from __future__ import annotations
 from enum import IntFlag
 from pathlib import Path
 import mimetypes
-from typing import TYPE_CHECKING, Tuple, List, cast, overload, Optional
+from typing import TYPE_CHECKING, Any, Tuple, List, cast, overload, Optional
 import uno
 from ..events.event_singleton import _Events
 from ..events.lo_named_event import LoNamedEvent
@@ -827,7 +827,7 @@ class Info(metaclass=StaticProperty):
             return si.getImplementationName()
         except Exception as e:
             raise ValueError("Could not get service information") from e
-    
+
     @staticmethod
     def get_identifier(obj: object) -> str:
         """
@@ -1198,6 +1198,81 @@ class Info(metaclass=StaticProperty):
             raise Exception() from e
 
     @classmethod
+    def is_interface_obj(cls, obj: Any) -> bool:
+        """
+        Gets is an object contains interfaces
+
+        Args:
+            obj (Any): Object to check
+
+        Returns:
+            bool: True if obj contains interface; Otherwise, False
+        """
+        result = False
+        if obj is None:
+            return result
+        try:
+            interfaces = cls.get_interfaces(obj)
+            result = len(interfaces) > 0
+        except mEx.MissingInterfaceError:
+            pass
+        return result
+
+    @staticmethod
+    def is_struct(obj: Any) -> bool:
+        """
+        Gets if an object is a UNO Struct
+
+        Args:
+            obj (Any): Object to check
+
+        Returns:
+            bool: True if obj is Struct; Otherwise, False
+        """
+        if obj is None:
+            return False
+        if not hasattr(obj, "typeName"):
+            return False
+        try:
+            t = uno.getTypeByName(obj.typeName)
+            return t.typeClass.value == "STRUCT"
+        except Exception:
+            pass
+        return False
+
+    @classmethod
+    def is_same(cls, obj1: Any, obj2: Any) -> bool:
+        """
+        Determines if two Uno object are the same.
+
+        Args:
+            obj1 (Any): First Uno object
+            obj2 (Any): Second Uno Object
+
+        Returns:
+            bool: True if objects are the same; Otherwise False.
+        """
+        # https://wiki.openoffice.org/wiki/Documentation/DevGuide/WritingUNO/XInterface
+        # In C++, two objects are the same if their XInterface are the same. The queryInterface() for XInterface will have to
+        # be called on both. In Java, check for the identity by calling the runtime function
+        # com.sun.star.uni.UnoRuntime.areSame().
+        if cls.is_struct(obj1) and cls.is_struct(obj2):
+            # types and attribue values must match
+            if obj1.typeName != obj2.typeName:
+                return False
+            obj1_attrs = [s for s in dir(obj1.value) if not s.startswith("_")]
+            for atr in obj1_attrs:
+                if getattr(obj1, atr) != getattr(obj2, atr):
+                    return False
+            return True
+        elif cls.is_interface_obj(obj1) and cls.is_interface_obj(obj2):
+            # must be same object in memory
+            id1 = id(obj1)
+            id2 = id(obj2)
+            return id1 == id2
+        return obj1 == obj2
+
+    @classmethod
     def show_interfaces(cls, obj_name: str, obj: object) -> None:
         """
         prints interfaces in obj to console
@@ -1207,7 +1282,7 @@ class Info(metaclass=StaticProperty):
             obj (object): obj that contains interfaces.
         """
         intfs = cls.get_interfaces(obj)
-        if intfs is None:
+        if not intfs:
             print(f"No interfaces found for {obj_name}")
             return
         print(f"{obj_name} Interfaces ({len(intfs)})")
@@ -1231,7 +1306,7 @@ class Info(metaclass=StaticProperty):
         """
         if property_concept is None:
             property_concept = PropertyConceptEnum.ALL
-        
+
         try:
             intro = theIntrospection()
             result = intro.inspect(obj)
@@ -1275,8 +1350,8 @@ class Info(metaclass=StaticProperty):
         reflection = mLo.Lo.create_instance_mcf(
             XIdlReflection, "com.sun.star.reflection.CoreReflection", raise_err=True
         )
-        
-        fname = reflection.forName(interface_name) # returns type from name.
+
+        fname = reflection.forName(interface_name)  # returns type from name.
 
         if fname is None:
             mLo.Lo.print(f"Could not find the interface name: {interface_name}")
@@ -1323,7 +1398,7 @@ class Info(metaclass=StaticProperty):
         print(f"Object Methods: {len(methods)}")
         for method in methods:
             print(f"  {method}")
-            
+
     # -------------------------- style info --------------------------
     @staticmethod
     def get_style_families(doc: object) -> XNameAccess:

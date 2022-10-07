@@ -1,14 +1,15 @@
 # coding: utf-8
 # region Imports
 from __future__ import annotations
-from typing import TYPE_CHECKING, Any, Iterable, List,cast, overload
+from typing import TYPE_CHECKING, Any, Iterable, List, cast, overload
 from enum import Enum
+
+import uno
 
 from . import lo as mLo
 from . import info as mInfo
 from . import props as mProps
 from . import gui as mGui
-from . import runtime as mRuntime
 
 from com.sun.star.awt import XControl
 from com.sun.star.awt import XControlModel
@@ -172,8 +173,8 @@ class Forms:
         Gets form as name container
 
         Args:
-            obj (XComponent | XDrawPage): Component or draw apge
-            for_name (str, optional): the name of form to get.
+            obj (XComponent | XDrawPage): Component or draw page
+            form_name (str, optional): the name of form to get.
 
         Raises:
             Exception: If unable to get form
@@ -242,9 +243,9 @@ class Forms:
 
     # region        insert_form()
     @classmethod
-    def _insert_form_name_comp(cls, form_name: str, doc: XComponent) -> XNameContainer:
+    def _insert_form_name_comp(cls, doc: XComponent) -> XNameContainer:
         doc_forms = cls.get_forms(doc)
-        cls._insert_form_namecontainer("GridForm", doc_forms)
+        return cls._insert_form_namecontainer("GridForm", doc_forms)
 
     @classmethod
     def _insert_form_namecontainer(cls, form_name: str, named_forms: XNameContainer) -> XNameContainer:
@@ -256,14 +257,14 @@ class Forms:
             xnamed_forms = mLo.Lo.create_instance_msf(
                 XNameContainer, "com.sun.star.form.component.DataForm", raise_err=True
             )
-            xnamed_forms.insertByName(form_name, xnamed_forms)
+            named_forms.insertByName(form_name, xnamed_forms)
             return xnamed_forms
         except Exception as e:
             raise Exception(f'Could not insert the form "{form_name}": {e}') from e
 
     @overload
     @classmethod
-    def insert_form(cls, form_name: str, doc: XComponent) -> XNameContainer:
+    def insert_form(cls, doc: XComponent) -> XNameContainer:
         """
         Insert form
 
@@ -316,25 +317,27 @@ class Forms:
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("insert_form() got an unexpected keyword argument")
-            ka[1] = kwargs.get("form_name", None)
-            keys = ("doc", "named_forms")
+            keys = ("doc", "form_name")
             for key in keys:
                 if key in kwargs:
-                    ka[2] = kwargs[key]
+                    ka[1] = kwargs[key]
                     break
+            if count == 1:
+                return ka
+            ka[2] = ka.get("named_forms", None)
             return ka
 
-        if count != 2:
+        if not count in (1, 2):
             raise TypeError("insert_form() got an invalid number of arguments")
 
         kargs = get_kwargs()
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
 
-        if mLo.Lo.is_uno_interfaces(kargs[2], XNameContainer):
-            return cls._insert_form_namecontainer(form_name=kargs[1], named_forms=kargs[2])
+        if count == 1:
+            return cls._insert_form_name_comp(kargs[1])
 
-        return cls._insert_form_name_comp(form_name=kargs[1], doc=kargs[2])
+        return cls._insert_form_namecontainer(form_name=kargs[1], named_forms=kargs[2])
         # endregion     insert_form()
 
     @classmethod
@@ -513,7 +516,7 @@ class Forms:
         control = mLo.Lo.qi(XControl, event.Source, True)
         return cls.get_name(control)
 
-    @classmethod
+    @staticmethod
     def get_event_control_model(event: EventObject) -> XControlModel:
         """
         Gets event control model
@@ -892,7 +895,15 @@ class Forms:
         """
         try:
             # create a shape to represent the control's view
-            cshape = mLo.Lo.create_instance_mcf(XControlShape, "com.sun.star.drawing.ControlShape", True)
+            #     xDocAsFactory = mLo.Lo.qi(XMultiServiceFactory, doc, True)
+            #     cshpae =
+            #     XMultiServiceFactory xDocAsFactory = (XMultiServiceFactory)UnoRuntime.queryInterface(
+            #   XMultiServiceFactory.class, s_aDocument);
+
+            #     XControlShape xShape = (XControlShape)UnoRuntime.queryInterface(XControlShape.class,
+            #   xDocAsFactory.createInstance("com.sun.star.drawing.ControlShape"));
+
+            cshape = mLo.Lo.create_instance_msf(XControlShape, "com.sun.star.drawing.ControlShape", raise_err=True)
 
             # position and size of the shape
             cshape.setSize(Size(width * 100, height * 100))
@@ -1052,24 +1063,24 @@ class Forms:
     # region    add_button
     @overload
     @classmethod
-    def add_button(cls, doc: XComponent, name: str, label: str | None, x: int, y: int, height: int) -> XPropertySet:
+    def add_button(cls, doc: XComponent, name: str, label: str | None, x: int, y: int, width: int) -> XPropertySet:
         ...
 
     @overload
     @classmethod
     def add_button(
-        cls, doc: XComponent, name: str, label: str | None, x: int, y: int, height: int, width: int
+        cls, doc: XComponent, name: str, label: str | None, x: int, y: int, width: int, height: int
     ) -> XPropertySet:
         ...
 
     @classmethod
     def add_button(
-        cls, doc: XComponent, name: str, label: str | None, x: int, y: int, height: int, width: int = 6
+        cls, doc: XComponent, name: str, label: str | None, x: int, y: int, width: int, height: int = 6
     ) -> XPropertySet:
         """
         Adds a button control.
 
-        By Default the button has no tabstop and does not focus on click.
+        By Default the button has no tab stop and does not focus on click.
 
         Args:
             doc (XComponent): Component
@@ -1136,13 +1147,14 @@ class Forms:
                 width=width,
                 height=height,
             )
-            items = tuple([s for s in entries])
-            lst_props.setPropertyValue("DefaultSelection", (0,))
-            lst_props.setPropertyValue("ListSource", items)
+            items = mProps.Props.any(*[s for s in entries])
+            # lst_props.setPropertyValue("DefaultSelection", 0)
+            uno.invoke(lst_props, 'setPropertyValue', ("ListSource", items))
+            uno.invoke(lst_props, "setPropertyValue", ("DefaultSelection", mProps.Props.any(0)))
             lst_props.setPropertyValue("Dropdown", True)
             lst_props.setPropertyValue("MultiSelection", False)
-            lst_props.setPropertyValue("StringItemList", items)
-            lst_props.setPropertyValue("SelectedItems", (0,))
+            uno.invoke(lst_props, 'setPropertyValue', ("StringItemList", items))
+            uno.invoke(lst_props, "setPropertyValue", ("SelectedItems", mProps.Props.any(0)))
             return lst_props
         except Exception:
             raise
@@ -1152,12 +1164,12 @@ class Forms:
         cls, doc: XComponent, name: str, sql_cmd: str, x: int, y: int, width: int, height: int
     ) -> XPropertySet:
         """
-        Add a list with a sql command as it data source
+        Add a list with a SQL command as it data source
 
         Args:
             doc (XComponent): Component
             name (str): List Name
-            sql_cmd (str): Sql Command
+            sql_cmd (str): SQL Command
             x (int): List X position
             y (int): List Y Position
             width (int): List Width
@@ -1178,12 +1190,12 @@ class Forms:
                 height=height,
             )
             lst_props.setPropertyValue("Dropdown", True)
-            lst_props.setPropertyValue("MultiSelection", True)
+            lst_props.setPropertyValue("MultiSelection", False)
             lst_props.setPropertyValue("BoundColumn", 0)
 
             # data-aware properties
             lst_props.setPropertyValue("ListSourceType", ListSourceType.SQL)
-            lst_props.setPropertyValue("ListSource", (sql_cmd,))
+            uno.invoke(lst_props, "setPropertyValue", ("ListSource", mProps.Props.any(sql_cmd)))
             return lst_props
         except Exception:
             raise
@@ -1234,7 +1246,7 @@ class Forms:
     @staticmethod
     def bind_form_to_sql(xform: XForm, src_name: str, cmd: str) -> None:
         """
-        Bind the form to the database in the sourceName URL, and send a SQL cmd
+        Bind the form to the database in the ``src_name`` URL, and send a SQL cmd
 
         Args:
             xform (XForm): Form
@@ -1262,7 +1274,7 @@ class Forms:
             method_name (str): Method Name
             script_name (str): Script Name
             loc (str): can be user, share, document, and extensions
-        
+
         See Also:
             `Scripting Framework URI Specification <https://wiki.openoffice.org/wiki/Documentation/DevGuide/Scripting/Scripting_Framework_URI_Specification>`_
         """
@@ -1277,7 +1289,7 @@ class Forms:
             pos = -1
             for i in range(parent_form.getCount()):
                 child = mLo.Lo.qi(XPropertySet, parent_form.getByIndex(i))
-                if mRuntime.Runtime.are_same(child, ctl_props):
+                if mInfo.Info.is_same(child, ctl_props):
                     pos = i
                     break
 

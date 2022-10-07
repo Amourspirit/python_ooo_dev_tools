@@ -425,8 +425,8 @@ class GUI:
         xcontroler = cls.get_current_controller(doc)
         return xcontroler.getFrame()
 
-    @staticmethod
-    def get_control_access(doc: XComponent) -> XControlAccess:
+    @classmethod
+    def get_control_access(cls, doc: XComponent) -> XControlAccess:
         """
         Get control access from office document
 
@@ -439,7 +439,7 @@ class GUI:
         Returns:
             XControlAccess: control access
         """
-        ca = mLo.Lo.qi(XControlAccess, doc)
+        ca = mLo.Lo.qi(XControlAccess,  cls.get_current_controller(doc))
         if ca is None:
             raise mEx.MissingInterfaceError(XControlAccess)
         return ca
