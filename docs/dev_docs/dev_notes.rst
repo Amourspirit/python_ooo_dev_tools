@@ -66,7 +66,7 @@ Get LibreOffice python version.
 
 .. code-block:: text
 
-    PS C:\python_ooo_dev_tools> & 'C:\Program Files\LibreOffice\program\python.exe'
+    PS C:\python_ooo_dev_tools> "C:\Program Files\LibreOffice\program\python.exe"
     Python 3.8.10 (default, Mar 23 2022, 15:43:48) [MSC v.1928 64 bit (AMD64)] on win32
     Type "help", "copyright", "credits" or "license" for more information.
     >>>
