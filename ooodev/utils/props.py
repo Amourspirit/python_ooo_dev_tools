@@ -147,8 +147,10 @@ class Props:
         if isinstance(obj, uno.Type):
             type_name = obj.typeName
             return uno.Any(obj, [*elements])
-        if isinstance(obj, str):
-            type_name == obj
+        elif isinstance(obj, str):
+            type_name = "string"
+        elif isinstance(obj, int):
+            type_name = "short"
         else:
             type_name = mInfo.Info.get_type_name(obj)
         if type_name is None:
