@@ -1,7 +1,6 @@
 # coding: utf-8
 import os
 import sys
-import shutil
 import __main__
 from pathlib import Path
 from typing import List, Union, overload
