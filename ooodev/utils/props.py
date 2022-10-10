@@ -288,9 +288,7 @@ class Props:
         if mLo.Lo.is_uno_interfaces(kargs[1], XPropertySet):
             prop_set = cast(XPropertySet, kargs[1])
         else:
-            prop_set = mLo.Lo.qi(XPropertySet, kargs[1])
-            if prop_set is None:
-                raise mEx.MissingInterfaceError(XPropertySet)
+            prop_set = mLo.Lo.qi(XPropertySet, kargs[1], raise_err=True)
         try:
             prop_set.setPropertyValue(kargs[2], kargs[3])
         except Exception as e:
