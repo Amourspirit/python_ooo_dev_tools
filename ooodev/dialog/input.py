@@ -29,7 +29,7 @@ class Input:
             title (str): Title for the dialog
             msg (str): Message to display such as "Input your Name"
             input_value (str, optional): Value of input box when first displayed.
-            ok_lbl (str, optional): Ok button Label. Defaults to "OK".
+            ok_lbl (str, optional): OK button Label. Defaults to "OK".
             cancel_lbl (str, optional): Cancel Button Label. Defaults to "Cancel".
             is_password (bool, optional): Determines if the input box is masked for password input. Defaults to False.
 

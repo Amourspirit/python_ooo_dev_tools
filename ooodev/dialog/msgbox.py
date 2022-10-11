@@ -23,15 +23,15 @@ class MsgBox:
         title: str = "Message",
         boxtype: MsgBox.Type = Type.MESSAGEBOX,
         buttons: MsgBox.Buttons | int = Buttons.BUTTONS_OK,
-    ) -> Results:
+    ) -> MsgBox.Results:
         """
         Simple message box.
 
         Args:
             msg (str): the message for display
-            title (str, optional):  the title of the message box. Defaults to "Message".
-            boxtype (MessageBoxType, optional): determins the type of message box to display. Defaults to ``Type.MESSAGEBOX``.
-            buttons (Buttons, int, optional): determins what buttons to display. Defaults to ``Buttons.BUTTONS_OK``.
+            title (str, optional): the title of the message box. Defaults to "Message".
+            boxtype (MessageBoxType, optional): determines the type of message box to display. Defaults to ``Type.MESSAGEBOX``.
+            buttons (Buttons, int, optional): determines what buttons to display. Defaults to ``Buttons.BUTTONS_OK``.
 
         Returns:
             Results: MsgBox.Results Enum

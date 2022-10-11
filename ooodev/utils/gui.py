@@ -366,14 +366,24 @@ class GUI:
         """
         Prompts for a password.
 
-        Currently Not Implemented.
+        If inside of a Office window then an Office Dialog is displayed prompting  for a password.
+        If no Office window is available and attempt is made to create a ``tkinter`` dialog window for password input.
+
+        ``tkinter`` does not ship with integrated python in LibreOffice. For this reason it may not be possible to display a ``tkinter`` dialog.
+        It will depend on how your virtual environment is set up. In most cases this will work on Linux but not on windows.
 
         Args:
             title (str): Title of input box
             input_msg (str): Message to display
 
+        Raises:
+            Exception if unable to build a dialog password input.
+
         Returns:
-            str: password as string.
+            str: password as string or empty string if password is not given.
+
+        See Also:
+            :py:class:`~.input.Input`
         """
         try:
             result = mInput.Input.get_input(title=title, msg=input_msg, is_password=True)
@@ -389,7 +399,7 @@ class GUI:
             from ..dialog.tk_input import Window
 
             pass_inst = Window(title=title, input_msg=input_msg, is_password=True)
-            return pass_inst.get_password()
+            return pass_inst.get_input()
         except ImportError:
             pass
         raise Exception("Unable to access a GUI to create a password dialog box")
