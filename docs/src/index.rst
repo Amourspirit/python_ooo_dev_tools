@@ -13,6 +13,7 @@ ooodev
    conn/index
    office/index
    utils/index
+   dialog/index
    exceptions/index
    events/index
    listeners/index

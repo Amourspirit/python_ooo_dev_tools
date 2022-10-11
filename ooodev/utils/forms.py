@@ -851,8 +851,7 @@ class Forms:
         width: int,
         height: int,
         anchor_type: TextContentAnchorType | None = None,
-        parent_form: XNameContainer | None = None,
-        **props: Any,
+        parent_form: XNameContainer | None = None
     ) -> XPropertySet:
         ...
 
@@ -868,8 +867,7 @@ class Forms:
         width: int,
         height: int,
         anchor_type: TextContentAnchorType | None = None,
-        parent_form: XNameContainer | None = None,
-        **props: Any,
+        parent_form: XNameContainer | None = None
     ) -> XPropertySet:
         """
         Add a control
@@ -885,7 +883,6 @@ class Forms:
             height (int): control height
             anchor_type (TextContentAnchorType | None): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             parent_form (XNameContainer | None): Parent form in which to add control.
-            props (Any, optional): Extra key value properties that are applied to control.
 
         Returns:
             XPropertySet: Control Property Set
@@ -938,9 +935,6 @@ class Forms:
             model_props.setPropertyValue("Name", name)
             if label is not None:
                 model_props.setPropertyValue("Label", label)
-            # set any extra user properties
-            for k, v in props.items():
-                model_props.setPropertyValue(k, v)
             return model_props
         except Exception:
             raise
