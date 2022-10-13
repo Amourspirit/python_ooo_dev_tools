@@ -199,12 +199,13 @@ class Lo(metaclass=StaticProperty):
     # defined in https://github.com/LibreOffice/core/blob/master/officecfg/registry/data/org/openoffice/Office/Embedding.xcu
     # https://opengrok.libreoffice.org/xref/core/officecfg/registry/data/org/openoffice/Office/Embedding.xcu
     class CLSID(str, Enum):
-        WRITER = "8BC6B165-B1B2-4EDD-aa47-dae2ee689dd6"
-        CALC = "47BBB4CB-CE4C-4E80-a591-42d9ae74950f"
-        DRAW = "4BAB8970-8A3B-45B3-991c-cbeeac6bd5e3"
-        IMPRESS = "9176E48A-637A-4D1F-803b-99d9bfac1047"
-        MATH = "078B7ABA-54FC-457F-8551-6147e776a997"
-        CHART = "12DCAE26-281F-416F-a234-c3086127382e"
+        # in lower case by design.
+        WRITER = "8bc6b165-b1b2-4edd-aa47-dae2ee689dd6"
+        CALC = "47bbb4cb-ce4c-4e80-a591-42d9ae74950f"
+        DRAW = "4bab8970-8a3b-45b3-991c-cbeeac6bd5e3"
+        IMPRESS = "9176e48a-637a-4d1f-803b-99d9bfac1047"
+        MATH = "078b7aba-54fc-457f-8551-6147e776a997"
+        CHART = "12dcae26-281f-416f-a234-c3086127382e"
 
         def __str__(self) -> str:
             return self.value

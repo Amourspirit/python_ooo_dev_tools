@@ -16,9 +16,12 @@ class ConfigMeta(type):
                 with open(config_file, "r") as file:
                     data = json.load(file)
             else:
-                # provide defaults because at this time stickytape
+                # provide defaults because at this time scriptmerge
                 # does not include non *.py files when it packages scripts
-                data = {"profile_versions": ["4"]}
+                data = {
+                    "profile_versions": ["4"],
+                    "slide_template_path": "share/template/common/layout/"
+                    }
             cls._instance = super().__call__(**data)
         return cls._instance
 
@@ -35,3 +38,5 @@ class Config(metaclass=ConfigMeta):
 
     profile_versions: List[str]
     """LibreOffice Profile versions. Currently expect ["4"]"""
+    slide_template_path: str
+    """String path such as 'share/template/common/layout/'"""

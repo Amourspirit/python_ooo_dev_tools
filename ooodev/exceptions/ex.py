@@ -2,6 +2,7 @@
 from __future__ import annotations
 from typing import Any, List, TYPE_CHECKING
 from ..utils.type_var import PathOrStr
+
 if TYPE_CHECKING:
     from ..events.args.event_args import EventArgs
 
@@ -60,6 +61,7 @@ class PropertyError(Exception):
 
 class PropertiesError(Exception):
     """Error for multiple properties"""
+
     pass
 
 
@@ -91,6 +93,7 @@ class GoalDivergenceError(Exception):
 
 class UnKnownError(Exception):
     """Error for unknown results"""
+
     pass
 
 
@@ -107,8 +110,10 @@ class UnOpenableError(Exception):
     def __str__(self) -> str:
         return repr(f"Un-openable file: '{self.args[0]}'")
 
+
 class MultiError(Exception):
     """Handles Multiple errors"""
+
     def __init__(self, errors: List[Exception]) -> None:
         """
         MultiError Constructor
@@ -127,6 +132,7 @@ class NotSupportedServiceError(Exception):
     """
     Handles errors of service not being supported.
     """
+
     def __init__(self, service_name: str, *args: object) -> None:
         """
         NotSupportedServiceError Constructor
@@ -139,17 +145,21 @@ class NotSupportedServiceError(Exception):
     def __str__(self) -> str:
         return repr(f"Service not supported: '{self.args[0]}'")
 
+
 class NotSupportedMacroModeError(Exception):
     """
     Handles errors of operations that are not allow when running as a macro.
-    
+
     This error is largely used for methods that require external imports
     such as XML.apply_xslt()
     """
+
     pass
+
 
 class CreateInstanceError(Exception):
     """Create instance Error"""
+
     def __init__(self, interface: Any, service: str, message: Any = None, *args) -> None:
         """
         constructor
@@ -169,13 +179,18 @@ class CreateInstanceError(Exception):
             interface_name = "Unknown Interface"
         return f"Unable to create instance for service '{self.args[1]}' with interface of '{interface_name}'.\n{self.args[2]}"
 
+
 class CreateInstanceMsfError(CreateInstanceError):
     """Create MSF Instance Error"""
+
     pass
+
 
 class CreateInstanceMcfError(CreateInstanceError):
     """Create MCF Instance Error"""
+
     pass
+
 
 class CancelEventError(Exception):
     """Error when an Event is canceled"""
@@ -195,34 +210,74 @@ class CancelEventError(Exception):
     def __str__(self) -> str:
         return repr(self.args[1])
 
+
 class CursorError(Exception):
     """Handles Cursor errors"""
+
     pass
+
 
 class WordCursorError(CursorError):
     """Handles Word Cursor errors"""
+
     pass
+
 
 class LineCursorError(CursorError):
     """Handles Line Cursor errors"""
+
     pass
+
 
 class SentenceCursorError(CursorError):
     """Handles Sentence Cursor errors"""
+
     pass
+
 
 class ParagraphCursorError(CursorError):
     """Handles Sentence Cursor errors"""
+
     pass
+
 
 class PageCursorError(Exception):
     """Handles Page Cursor errors"""
+
     pass
+
 
 class ViewCursorError(CursorError):
     """Handles View Cursor errors"""
+
     pass
+
 
 class LoNotLoadedError(Exception):
     """Error when accessing Lo before Lo.load_office is called"""
+
+    pass
+
+
+class ChartError(Exception):
+    """Generic Chart Error"""
+
+    pass
+
+
+class ChartNoAccessError(ChartError):
+    """No Access to Chart"""
+
+    pass
+
+
+class ChartExistingError(ChartError):
+    """Chart already exist Error"""
+
+    pass
+
+
+class ChartNotExistingError(ChartError):
+    """Chart does not exist"""
+
     pass
