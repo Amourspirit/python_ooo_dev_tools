@@ -42,6 +42,7 @@ from . import file_io as mFileIO
 from . import gui as mGui
 from . import props as mProps
 from . import color as mColor
+from . import images_lo as mImgLo
 from ..cfg.config import Config  # singleton class.
 from .type_var import PathOrStr
 from . import table_helper as mTblHelper
@@ -53,6 +54,7 @@ from .kind.drawing_gradient import DrawingGradientKind
 from .kind.drawing_hatching_kind import DrawingHatchingKind
 from .kind.drawing_bitmap_kind import DrawingBitmapKind
 from .data_type.intensity import Intensity
+from .data_type.image_offset import ImageOffset
 from .data_type.angle import Angle
 
 from ooo.dyn.awt.point import Point
@@ -2883,6 +2885,190 @@ class Draw:
         print()
 
     # endregion get/set drawing properties
+
+    # region draw an image
+    # region draw_image()
+    @classmethod
+    def _draw_image_path(cls, slide: XDrawPage, fnm: PathOrStr) -> XShape | None:
+        slide_size = cls.get_slide_size(slide)
+        if slide_size is None:
+            mLo.Lo.print("Unable to get slide size")
+            return None
+        try:
+            im_size = mImgLo.ImagesLo.get_size_100mm(fnm)
+        except Exception as e:
+            mLo.Lo.print(f'Could not calculate size of "{fnm}"')
+            return None
+        im_width = round(im_size.Width / 100)  # in mm units
+        im_height = round(im_size.Height / 100)
+        x = round((slide_size.Width - im_width) / 2)
+        y = round((slide_size.Height - im_height) / 2)
+        return cls._draw_image_path_x_y_w_h(slide=slide, fnm=fnm, x=x, y=y, width=im_width, height=im_height)
+
+    @classmethod
+    def _draw_image_path_x_y(cls, slide: XDrawPage, fnm: PathOrStr, x: int, y: int) -> XShape | None:
+        try:
+            im_size = mImgLo.ImagesLo.get_size_100mm(fnm)
+        except Exception as e:
+            mLo.Lo.print(f'Could not calculate size of "{fnm}"')
+            return None
+        return cls._draw_image_path_x_y_w_h(
+            slide=slide, fnm=fnm, x=x, y=y, width=round(im_size.Width / 100), height=round(im_size.Height / 100)
+        )
+
+    @classmethod
+    def _draw_image_path_x_y_w_h(
+        cls, slide: XDrawPage, fnm: PathOrStr, x: int, y: int, width: int, height: int
+    ) -> XShape | None:
+        # units in mm's
+        mLo.Lo.print(f'Adding the picture "{fnm}"')
+        im_shape = cls.add_shape(
+            slide=slide, shape_type=DrawingShapeKind.GRAPHIC_OBJECT_SHAPE, x=x, y=y, width=width, height=height
+        )
+        if im_shape is None:
+            mLo.Lo.print("Unable to add shape")
+            return None
+        cls.set_image(im_shape, fnm)
+        cls.set_line_style(shape=im_shape, style=LineStyle.NONE)
+        return im_shape
+
+    @overload
+    @classmethod
+    def draw_image(cls, slide: XDrawPage, fnm: PathOrStr) -> XShape | None:
+        ...
+
+    @overload
+    @classmethod
+    def draw_image(cls, slide: XDrawPage, fnm: PathOrStr, x: int, y: int) -> XShape | None:
+        ...
+
+    @overload
+    @classmethod
+    def draw_image(cls, slide: XDrawPage, fnm: PathOrStr, x: int, y: int, width: int, height: int) -> XShape | None:
+        ...
+
+    @classmethod
+    def draw_image(cls, *args, **kwargs) -> XShape | None:
+        """
+        Draws an image
+
+        Args:
+            slide (XDrawPage): Slide
+            fnm (PathOrStr): Path to image
+            x (int): Shape X position
+            y (int): Shape Y position
+            width (int): Shape width
+            height (int): Shape height
+
+        Returns:
+            XShape | None: Shape on success; Otherwise, ``None``
+        """
+        ordered_keys = (1, 2, 3, 4, 5, 6)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
+
+        def get_kwargs() -> dict:
+            ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ("slide", "fnm", "x", "y", "width", "height")
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("draw_image() got an unexpected keyword argument")
+            ka[1] = kwargs.get("slide", None)
+            ka[2] = kwargs.get("fnm", None)
+            if count == 2:
+                return ka
+            ka[3] = kwargs.get("x", None)
+            ka[4] = kwargs.get("y", None)
+            if count == 4:
+                return ka
+            ka[5] = kwargs.get("width", None)
+            ka[6] = kwargs.get("height", None)
+            return ka
+
+        if not count in (2, 4, 6):
+            raise TypeError("draw_image() got an invalid number of arguments")
+
+        kargs = get_kwargs()
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
+
+        if count == 2:
+            return cls._draw_image_path(slide=kargs[1], fnm=kargs[2])
+        if count == 4:
+            return cls._draw_image_path_x_y(slide=kargs[1], fnm=kargs[2], x=kargs[3], y=kargs[4])
+        return cls._draw_image_path_x_y_w_h(
+            slide=kargs[1], fnm=kargs[2], x=kargs[3], y=kargs[4], width=kargs[5], height=kargs[6]
+        )
+
+    # endregion draw_image()
+
+    @staticmethod
+    def set_image(shape: XShape, fnm: PathOrStr) -> None:
+        """
+        Sets the image of a shape
+
+        Args:
+            shape (XShape): Shape
+            fnm (PathOrStr): Path to image.
+        """
+        # GraphicURL is Deprecated using Graphic instead.
+        # https://tinyurl.com/2qaqs2nr#a6312a2da62e2c67c90d5576502117906
+        graphic = mImgLo.ImagesLo.load_graphic_file(fnm)
+
+        mProps.Props.set_property(shape, "Graphic", graphic)
+
+    @classmethod
+    def draw_image_offset(
+        cls, slide: XDrawPage, fnm: PathOrStr, xoffset: ImageOffset, yoffset: ImageOffset
+    ) -> XShape | None:
+        """
+        Insert the specified picture onto the slide page in the doc
+        presentation document. Use the supplied (x, y) offsets to locate the
+        top-left of the image.
+
+        Args:
+            slide (XDrawPage): Slide
+            fnm (PathOrStr): Path to image.
+            xoffset (ImageOffset): X Offset
+            yoffset (ImageOffset): Y Offset
+
+        Returns:
+            XShape | None: Shape on success; Otherwise, ``None``.
+        """
+        slide_size = cls.get_slide_size(slide)
+        if slide_size is None:
+            mLo.Lo.print("Unalble to get slide size")
+            return None
+        x = round(slide_size.Width * xoffset.Value)  # in mm units
+        y = round(slide_size.Height * yoffset.Value)
+
+        max_width = slide_size.Width - x
+        max_height = slide_size.Height - y
+
+        im_size = mImgLo.ImagesLo.calc_scale(fnm=fnm, max_width=max_width, max_height=max_height)
+        if im_size is None:
+            mLo.Lo.print(f'Unalbe to calc image size for "{fnm}"')
+            return None
+        return cls._draw_image_path_x_y_w_h(slide=slide, fnm=fnm, x=x, y=y, width=im_size.Width, height=im_size.Height)
+
+    @staticmethod
+    def is_image(shape: XShape) -> bool:
+        """
+        Gets if a shape is an image (GraphicObjectShape).
+
+        Args:
+            shape (XShape): Shape
+
+        Returns:
+            bool: ``True`` if shape is image; Otherwise, ``False``.
+        """
+        if shape is None:
+            return False
+        return shape.getShapeType() == "com.sun.star.drawing.GraphicObjectShape"
+
+    # endregion draw an image
 
     # region helper
     @staticmethod

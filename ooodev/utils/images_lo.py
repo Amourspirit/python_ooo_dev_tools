@@ -23,6 +23,7 @@ from ..utils.type_var import PathOrStr
 # see Also: https://ask.libreoffice.org/t/graphicurl-no-longer-works-in-6-1-0-3/35459/3
 # see Also: https://tomazvajngerl.blogspot.com/2018/03/improving-image-handling-in-libreoffice.html
 
+
 class ImagesLo:
     @staticmethod
     def get_bitmap(fnm: PathOrStr) -> XBitmap:
@@ -76,10 +77,9 @@ class ImagesLo:
         """
         print(f"Loading XGraphic from '{im_fnm}'")
         try:
-            gprovider = mLo.Lo.create_instance_mcf(XGraphicProvider, "com.sun.star.graphic.GraphicProvider")
-            if gprovider is None:
-                raise mEx.CreateInstanceMcfError(XGraphicProvider, "com.sun.star.graphic.GraphicProvider")
-
+            gprovider = mLo.Lo.create_instance_mcf(
+                XGraphicProvider, "com.sun.star.graphic.GraphicProvider", raise_err=True
+            )
             file_props = mProps.Props.make_props(URL=mFileIO.FileIO.fnm_to_url(im_fnm))
             return gprovider.queryGraphic(file_props)
         except mEx.CreateInstanceMcfError:
