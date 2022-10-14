@@ -1,8 +1,7 @@
 # coding: utf-8
 # region Imports
 from __future__ import annotations
-from typing import TYPE_CHECKING, Any, Iterable, List, cast, overload
-from enum import Enum
+from typing import TYPE_CHECKING, Iterable, List, cast, overload
 
 import uno
 
@@ -10,6 +9,7 @@ from . import lo as mLo
 from . import info as mInfo
 from . import props as mProps
 from . import gui as mGui
+from .kind.form_component_kind import FormComponentKind
 
 from com.sun.star.awt import XControl
 from com.sun.star.awt import XControlModel
@@ -46,50 +46,6 @@ if TYPE_CHECKING:
 
 
 class Forms:
-    # region ComponentKind
-    class CompenentKind(str, Enum):
-        CheckBox = "CheckBox"
-        ComboBox = "ComboBox"
-        CommandButton = "CommandButton"
-        CurrencyField = "CurrencyField"
-        DatabaseCheckBox = "DatabaseCheckBox"
-        DatabaseComboBox = "DatabaseComboBox"
-        DatabaseCurrencyField = "DatabaseCurrencyField"
-        DatabaseDateField = "DatabaseDateField"
-        DatabaseFormattedField = "DatabaseFormattedField"
-        DatabaseImageControl = "DatabaseImageControl"
-        DatabaseListBox = "DatabaseListBox"
-        DatabaseNumericField = "DatabaseNumericField"
-        DatabasePatternField = "DatabasePatternField"
-        DatabaseRadioButton = "DatabaseRadioButton"
-        DatabaseTextField = "DatabaseTextField"
-        DatabaseTimeField = "DatabaseTimeField"
-        DateField = "DateField"
-        FileControl = "FileControl"
-        FixedText = "FixedText"
-        FormattedField = "FormattedField"
-        GridControl = "GridControl"
-        GroupBox = "GroupBox"
-        HiddenControl = "HiddenControl"
-        HTMLForm = "HTMLForm"
-        ImageButton = "ImageButton"
-        ListBox = "ListBox"
-        NavigationToolBar = "NavigationToolBar"
-        NumericField = "NumericField"
-        PatternField = "PatternField"
-        RadioButton = "RadioButton"
-        RichTextControl = "RichTextControl"
-        ScrollBar = "ScrollBar"
-        SpinButton = "SpinButton"
-        SubmitButton = "SubmitButton"
-        TextField = "TextField"
-        TimeField = "TimeField"
-
-        def __str__(self) -> str:
-            return self._value_
-
-    # endregion ComponentKind
-
     # region    access forms in document
     # region        get_forms()
     @overload
@@ -830,7 +786,7 @@ class Forms:
         doc: XComponent,
         name: str,
         label: str | None,
-        comp_kind: Forms.CompenentKind | str,
+        comp_kind: FormComponentKind | str,
         x: int,
         y: int,
         width: int,
@@ -845,7 +801,7 @@ class Forms:
         doc: XComponent,
         name: str,
         label: str | None,
-        comp_kind: Forms.CompenentKind | str,
+        comp_kind: FormComponentKind | str,
         x: int,
         y: int,
         width: int,
@@ -861,7 +817,7 @@ class Forms:
         doc: XComponent,
         name: str,
         label: str | None,
-        comp_kind: Forms.CompenentKind | str,
+        comp_kind: FormComponentKind | str,
         x: int,
         y: int,
         width: int,
@@ -876,7 +832,7 @@ class Forms:
             doc (XComponent): Component
             name (str): Control Name
             label (str | None): Label to assign to control
-            comp_kind (Forms.CompenentKind | str): Kind of control such as ``CheckBox``.
+            comp_kind (FormComponentKind | str): Kind of control such as ``CheckBox``.
             x (int): Control X position
             y (int): Control Y Position
             width (int): Control width#
@@ -945,14 +901,14 @@ class Forms:
     @overload
     @classmethod
     def add_labelled_control(
-        cls, doc: XComponent, label: str, comp_kind: Forms.CompenentKind | str, y: int
+        cls, doc: XComponent, label: str, comp_kind: FormComponentKind | str, y: int
     ) -> XPropertySet:
         ...
 
     @overload
     @classmethod
     def add_labelled_control(
-        cls, doc: XComponent, label: str, comp_kind: Forms.CompenentKind | str, x: int, y: int, height: int
+        cls, doc: XComponent, label: str, comp_kind: FormComponentKind | str, x: int, y: int, height: int
     ) -> XPropertySet:
         ...
 
@@ -964,7 +920,7 @@ class Forms:
         Args:
             doc (XComponent): Component
             label (str): Label to assign to control
-            comp_kind (Forms.CompenentKind | str): Kind of control such as ``CheckBox``.
+            comp_kind (FormComponentKind | str): Kind of control such as ``CheckBox``.
             x (int): Control X position
             y (int): Control Y Position
             height (int): control height
@@ -1017,7 +973,7 @@ class Forms:
 
     @classmethod
     def _add_labelled_control(
-        cls, doc: XComponent, label: str, comp_kind: Forms.CompenentKind | str, x: int, y: int, height: int
+        cls, doc: XComponent, label: str, comp_kind: FormComponentKind | str, x: int, y: int, height: int
     ) -> XPropertySet:
         try:
             name = f"{label}_label"
@@ -1026,7 +982,7 @@ class Forms:
                 doc=doc,
                 name=name,
                 label=label,
-                comp_kind=Forms.CompenentKind.FixedText,
+                comp_kind=FormComponentKind.FIXED_TEXT,
                 x=x,
                 y=y,
                 width=40,
@@ -1093,7 +1049,7 @@ class Forms:
                 doc=doc,
                 name=name,
                 label=label,
-                comp_kind=Forms.CompenentKind.CommandButton,
+                comp_kind=FormComponentKind.COMMAND_BUTTON,
                 x=x,
                 y=y,
                 width=width,
@@ -1135,7 +1091,7 @@ class Forms:
                 doc=doc,
                 name=name,
                 label=None,
-                comp_kind=Forms.CompenentKind.ListBox,
+                comp_kind=FormComponentKind.LIST_BOX,
                 x=x,
                 y=y,
                 width=width,
@@ -1177,7 +1133,7 @@ class Forms:
                 doc=doc,
                 name=name,
                 label=None,
-                comp_kind=Forms.CompenentKind.DatabaseListBox,
+                comp_kind=FormComponentKind.DATABASE_LIST_BOX,
                 x=x,
                 y=y,
                 width=width,

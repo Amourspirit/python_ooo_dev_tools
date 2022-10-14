@@ -2,11 +2,14 @@
 from __future__ import annotations
 from enum import IntEnum, Enum
 from pathlib import Path
-from typing import Iterable, List, Sequence, Tuple, overload
+from typing import Iterable, List, Sequence, Tuple, cast, overload
 import math
 
+from com.sun.star.awt import XButton
+from com.sun.star.awt import XControlModel
 from com.sun.star.beans import XPropertySet
 from com.sun.star.container import XNamed
+from com.sun.star.drawing import XControlShape
 from com.sun.star.drawing import XDrawPage
 from com.sun.star.drawing import XDrawPageDuplicator
 from com.sun.star.drawing import XDrawPages
@@ -30,6 +33,8 @@ from com.sun.star.presentation import XPresentationPage
 from com.sun.star.text import XText
 from com.sun.star.text import XTextRange
 from com.sun.star.view import XSelectionSupplier
+from com.sun.star.container import XNameContainer
+from com.sun.star.style import XStyle
 
 from . import lo as mLo
 from . import info as mInfo
@@ -39,6 +44,10 @@ from . import props as mProps
 from ..cfg.config import Config  # singleton class.
 from .type_var import PathOrStr
 from . import table_helper as mTblHelper
+from .kind.drawing_shape_kind import DrawingShapeKind
+from .kind.form_control_kind import FormControlKind
+from .kind.presentation_kind import PresentationKind
+from .kind.graphic_style import GraphicStyleKind
 
 from ooo.dyn.awt.point import Point
 from ooo.dyn.awt.size import Size
@@ -89,11 +98,12 @@ class Draw:
         TITLE_6CONTENT = 34
 
     class NameSpaceKind(str, Enum):
-        TITLE_TEXT = "com.sun.star.presentation.TitleTextShape"
-        SUBTITLE_TEXT = "com.sun.star.presentation.SubtitleShape"
         BULLETS_TEXT = "com.sun.star.presentation.OutlinerShape"
+        SHAPE_TYPE_FOOTER = "com.sun.star.presentation.FooterShape"
         SHAPE_TYPE_NOTES = "com.sun.star.presentation.NotesShape"
         SHAPE_TYPE_PAGE = "com.sun.star.presentation.PageShape"
+        SUBTITLE_TEXT = "com.sun.star.presentation.SubtitleShape"
+        TITLE_TEXT = "com.sun.star.presentation.TitleTextShape"
 
         def __str__(self) -> str:
             return self.value
@@ -113,39 +123,6 @@ class Draw:
         """everything (page change, animation effects) is automatic"""
         CLICK_PAGE_CHANGE = 2
         """animation effects run automatically, but the user must click on the page to change it"""
-
-    class DrawingShapeKind(str, Enum):
-        APPLET_SHAPE = "AppletShape"
-        CAPTION_SHAPE = "CaptionShape"
-        CHART_LEGEND = "ChartLegend"
-        CHART_TITLE = "ChartTitle"
-        CLOSED_BEZIER_SHAPE = "ClosedBezierShape"
-        CONNECTOR_SHAPE = "ConnectorShape"
-        CONTROL_SHAPE = "ControlShape"
-        CUSTOM_SHAPE = "CustomShape"
-        ELLIPSE_SHAPE = "EllipseShape"
-        GRAPHIC_OBJECT_SHAPE = "GraphicObjectShape"
-        GROUP_SHAPE = "GroupShape"
-        LINE_SHAPE = "LineShape"
-        MEASURE_SHAPE = "MeasureShape"
-        MEDIA_SHAPE = "MediaShape"
-        OLE2_SHAPE = "OLE2Shape"
-        OPEN_BEZIER_SHAPE = "OpenBezierShape"
-        PAGE_SHAPE = "PageShape"
-        PLUGIN_SHAPE = "PluginShape"
-        POLY_LINE_SHAPE = "PolyLineShape"
-        POLY_POLYGON_BEZIER_SHAPE = "PolyPolygonBezierShape"
-        POLY_POLYGON_SHAPE = "PolyPolygonShape"
-        RECTANGLE_SHAPE = "RectangleShape"
-        TEXT_SHAPE = "TextShape"
-
-        # could not find MediaShape in api.
-        # https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1drawing.html
-        # however it can be found in examples.
-        # https://ask.libreoffice.org/t/how-to-add-video-to-impress-with-python/33050/2?u=vib
-
-        def __str__(self) -> str:
-            return self.value
 
     # endregion Enums
 
@@ -1536,7 +1513,7 @@ class Draw:
 
     # region draw/add shape to a page
     @staticmethod
-    def make_shape(shape_type: Draw.DrawingShapeKind | str, x: int, y: int, width: int, height: int) -> XShape | None:
+    def make_shape(shape_type: DrawingShapeKind | str, x: int, y: int, width: int, height: int) -> XShape | None:
         """
         Creates a shape
 
@@ -1598,7 +1575,7 @@ class Draw:
 
     @classmethod
     def add_shape(
-        cls, slide: XDrawPage, shape_type: Draw.DrawingShapeKind | str, x: int, y: int, width: int, height: int
+        cls, slide: XDrawPage, shape_type: DrawingShapeKind | str, x: int, y: int, width: int, height: int
     ) -> XShape | None:
         """
         Adds a shape to a slide.
@@ -1641,7 +1618,7 @@ class Draw:
             XShape | None: Shape on success; Otherwise, ``None``
         """
         return cls.add_shape(
-            slide=slide, shape_type=Draw.DrawingShapeKind.RECTANGLE_SHAPE, x=x, y=y, width=width, height=height
+            slide=slide, shape_type=DrawingShapeKind.RECTANGLE_SHAPE, x=x, y=y, width=width, height=height
         )
 
     @classmethod
@@ -1660,7 +1637,7 @@ class Draw:
         """
         return cls.add_shape(
             slide=slide,
-            shape_type=Draw.DrawingShapeKind.ELLIPSE_SHAPE,
+            shape_type=DrawingShapeKind.ELLIPSE_SHAPE,
             x=x - radius,
             y=y - radius,
             width=radius * 2,
@@ -1683,7 +1660,7 @@ class Draw:
             XShape | None: Shape on success; Otherwise, ``None``
         """
         return cls.add_shape(
-            slide=slide, shape_type=Draw.DrawingShapeKind.ELLIPSE_SHAPE, x=x, y=y, width=width, height=height
+            slide=slide, shape_type=DrawingShapeKind.ELLIPSE_SHAPE, x=x, y=y, width=width, height=height
         )
 
     @classmethod
@@ -1704,7 +1681,7 @@ class Draw:
             radius = Draw.POLY_RADIUS
         polygon = cls.add_shape(
             slide=slide,
-            shape_type=Draw.DrawingShapeKind.POLY_POLYGON_SHAPE,
+            shape_type=DrawingShapeKind.POLY_POLYGON_SHAPE,
             x=0,
             y=0,
             width=0,
@@ -1810,7 +1787,7 @@ class Draw:
         height = y2 - y1  # may be negative
         return cls.add_shape(
             slide=slide,
-            shape_type=Draw.DrawingShapeKind.LINE_SHAPE,
+            shape_type=DrawingShapeKind.LINE_SHAPE,
             x=x1,
             y=y1,
             width=width,
@@ -1868,7 +1845,7 @@ class Draw:
 
         # for a shape formed by from multiple connected lines
         poly_line = cls.add_shape(
-            slide=slide, shape_type=Draw.DrawingShapeKind.POLY_LINE_SHAPE, x=0, y=0, width=0, height=0
+            slide=slide, shape_type=DrawingShapeKind.POLY_LINE_SHAPE, x=0, y=0, width=0, height=0
         )
         if poly_line is None:
             mLo.Lo.print("Failed to create PolyLineShape")
@@ -1909,7 +1886,7 @@ class Draw:
             XShape | None: Shape on success; Otherwise, ``None``.
         """
         shape = cls.add_shape(
-            slide=slide, shape_type=Draw.DrawingShapeKind.TEXT_SHAPE, x=x, y=y, width=width, height=height
+            slide=slide, shape_type=DrawingShapeKind.TEXT_SHAPE, x=x, y=y, width=width, height=height
         )
         if shape is None:
             mLo.Lo.print("Failed to create TextShape")
@@ -1980,7 +1957,7 @@ class Draw:
             end_conn = Draw.GluePointsKind.LEFT
 
         xconnector = cls.add_shape(
-            slide=slide, shape_type=Draw.DrawingShapeKind.CONNECTOR_SHAPE, x=0, y=0, width=0, height=0
+            slide=slide, shape_type=DrawingShapeKind.CONNECTOR_SHAPE, x=0, y=0, width=0, height=0
         )
         if xconnector is None:
             mLo.Lo.print("Failed to create ConnectorShape")
@@ -2050,7 +2027,7 @@ class Draw:
             XShape | None: Shape on success; Otherwise, ``None``.
         """
         shape = cls.add_shape(
-            slide=slide, shape_type=Draw.DrawingShapeKind.OLE2_SHAPE, x=x, y=y, width=width, height=height
+            slide=slide, shape_type=DrawingShapeKind.OLE2_SHAPE, x=x, y=y, width=width, height=height
         )
         if shape is None:
             mLo.Lo.print("Error getting shape for OLE2Shape")
@@ -2075,7 +2052,7 @@ class Draw:
             XShape | None: Shape on success; Otherwise, ``None``.
         """
         shape = cls.add_shape(
-            slide=slide, shape_type=Draw.DrawingShapeKind.OLE2_SHAPE, x=x, y=y, width=width, height=height
+            slide=slide, shape_type=DrawingShapeKind.OLE2_SHAPE, x=x, y=y, width=width, height=height
         )
         if shape is None:
             mLo.Lo.print("Error getting shape for OLE2Shape")
@@ -2090,7 +2067,7 @@ class Draw:
     @classmethod
     def draw_media(cls, slide: XDrawPage, fnm: PathOrStr, x: int, y: int, width: int, height: int) -> XShape | None:
         shape = cls.add_shape(
-            slide=slide, shape_type=Draw.DrawingShapeKind.MEDIA_SHAPE, x=x, y=y, width=width, height=height
+            slide=slide, shape_type=DrawingShapeKind.MEDIA_SHAPE, x=x, y=y, width=width, height=height
         )
 
         # mProps.Props.show_obj_props(prop_kind="Shape", obj=shape)
@@ -2113,7 +2090,6 @@ class Draw:
             return False
         return shape.getShapeType() == "com.sun.star.drawing.GroupShape"
 
-
     @staticmethod
     def combine_shape(doc: XComponent, shapes: XShapes, combine_op: Draw.ShapeCompKind) -> XShape | None:
         """
@@ -2130,28 +2106,369 @@ class Draw:
         # select the shapes for the dispatches to apply to
         sel_supp = mLo.Lo.qi(XSelectionSupplier, mGui.GUI.get_current_controller(doc), True)
         sel_supp.select(shapes)
-        
+
         if combine_op == Draw.ShapeCompKind.INTERSECT:
             mLo.Lo.dispatch_cmd("Intersect")
         elif combine_op == Draw.ShapeCompKind.SUBTRACT:
-            mLo.Lo.dispatch_cmd("Substract")
+            mLo.Lo.dispatch_cmd("Substract")  # misspelt!
         elif combine_op == Draw.ShapeCompKind.COMBINE:
             mLo.Lo.dispatch_cmd("Combine")
         else:
             mLo.Lo.dispatch_cmd("Merge")
-        
-        mLo.Lo.delay(500) # give time for dispatches to arrive and be processed
-        
+
+        mLo.Lo.delay(500)  # give time for dispatches to arrive and be processed
+
         # extract the new single shape from the modified selection
         xs = mLo.Lo.qi(XShapes, sel_supp.getSelection(), True)
         try:
             combined_shape = mLo.Lo.qi(XShapes, xs.getByIndex(0))
         except Exception as e:
             mLo.Lo.print("Could not get combined shape")
-            mLo.Lo.print(f'  {e}')
+            mLo.Lo.print(f"  {e}")
             return None
         return combined_shape
+
+    @staticmethod
+    def create_control_shape(
+        label: str, x: int, y: int, width: int, height: int, shape_kind: FormControlKind | str, **props
+    ) -> XControlShape:
+        """
+        Creates a control shape
+
+        Args:
+            label (str): Label to apply.
+            x (int): Shape X position in mm units.
+            y (int): Shape Y position in mm units.
+            width (int): Shape width in mm units.
+            height (int): Shape height in mm units.
+            shape_kind (FormControlKind | str): The kind of control to create
+            props (Any, optional): Any extra key value options to set on the Model of the control being created
+                such as ``FontHeight=18.0, Name="BLA"``
+
+        Returns:
+            XControlShape: _description_
+        """
+        cshape = mLo.Lo.create_instance_msf(XControlShape, "com.sun.star.drawing.ControlShape", raise_err=True)
+        cshape.setSize(Size(width * 100, height * 100))
+        cshape.setPosition(Point(x * 100, y * 100))
+
+        cmodel = mLo.Lo.create_instance_msf(XControlModel, f"com.sun.star.form.control.{shape_kind}")
+
+        prop_set = mLo.Lo.qi(XPropertySet, cmodel, True)
+        prop_set.setPropertyValue("DefaultControl", f"com.sun.star.form.control.{shape_kind}")
+        prop_set.setPropertyValue("Name", "XXX")
+        prop_set.setPropertyValue("Label", label)
+
+        prop_set.setPropertyValue("FontHeight", 18.0)
+        prop_set.setPropertyValue("FontName", mInfo.Info.get_font_general_name())
+
+        for k, v in props.items():
+            prop_set.setPropertyValue(k, v)
+
+        cshape.setControl(cmodel)
+
+        xbtn = mLo.Lo.qi(XButton, cmodel)
+        if xbtn is None:
+            mLo.Lo.print("XButton is None")
+
+        # mProps.Props.show_props(title="Control model props", props=props)
+        return cshape
+
     # endregion draw/add shape to a page
+
+    # region custom shape addition using dispatch and JNA
+
+    # Two methods not include here from java. addDispatchShape and createDispatchShape
+    # These were omitted because the require third party Libs that all for automatic screen click and screen moused selecting
+
+    # endregion
+
+    # region presentation shapes
+    @classmethod
+    def set_master_footer(cls, master: XDrawPage, text: str) -> None:
+        """
+        Sets master footer text
+
+        Args:
+            master (XDrawPage): Master Draw Page
+            text (str): Footer text
+        """
+        footer_shape = cls.find_shape_by_type(slide=master, shape_type=Draw.NameSpaceKind.SHAPE_TYPE_FOOTER)
+        if footer_shape is None:
+            mLo.Lo.print(f'Unable to find "{Draw.NameSpaceKind.SHAPE_TYPE_FOOTER}"')
+            return
+        txt_field = mLo.Lo.qi(XText, footer_shape, True)
+        txt_field.setString(text)
+
+    @classmethod
+    def add_slide_number(cls, slide: XDrawPage) -> XShape | None:
+        """
+        Adds slide number to a slide
+
+        Args:
+            slide (XDrawPage): Slide
+
+        Returns:
+            XShape | None: Shape on success; Otherwise, ``None``
+        """
+        sz = cls.get_slide_size(slide)
+        if sz is None:
+            mLo.Lo.print("Unable to get slide size")
+            return None
+        width = 60
+        height = 15
+        return cls.add_pres_shape(
+            slide=slide,
+            shape_type=PresentationKind.SLIDE_NUMBER_SHAPE,
+            x=sz.Width - width - 12,
+            y=sz.Height - height - 4,
+            width=width,
+            height=height,
+        )
+
+    @classmethod
+    def add_pres_shape(
+        cls, slide: XDrawPage, shape_type: PresentationKind, x: int, y: int, width: int, height: int
+    ) -> XShape | None:
+        """
+        Creates a shape from the "com.sun.star.presentation" package:
+
+        Args:
+            slide (XDrawPage): Slide
+            shape_type (PresentationKind): Kind of presentation package to create.
+            x (int): Shape X position in mm units.
+            y (int): Shape Y position in mm units.
+            width (int): Shape width in mm units.
+            height (int): Shape height in mm units.
+
+        Returns:
+            XShape | None: Shape on success; Otherwise, ``None``
+        """
+        cls.warns_position(slide=slide, x=x, y=y)
+        shape = mLo.Lo.create_instance_msf(XShape, shape_type.to_namespace())
+        if shape is not None:
+            slide.add(shape)
+            cls.set_position(shape, x, y)
+            cls.set_size(shape, width, height)
+        return shape
+
+    # endregion presentation shapes
+
+    # region get/set drawing properties
+    @staticmethod
+    def get_position(shape: XShape) -> Point:
+        """
+        Gets position in mm units
+
+        Args:
+            shape (XShape): Shape
+
+        Returns:
+            Point: Position as Point in mm units
+        """
+        pt = shape.getPosition()
+        # convert to mm
+        return Point(round(pt.X / 100, round(pt.Y / 100)))
+
+    @staticmethod
+    def get_size(shape: XShape) -> Size:
+        """
+        Gets Size in mm units
+
+        Args:
+            shape (XShape): Shape
+
+        Returns:
+            Size: Size in mm units
+        """
+        sz = shape.getSize()
+        # convert to mm
+        return Size(round(sz.Width / 100), round(sz.Height / 100))
+
+    @staticmethod
+    def print_point(pt: Point) -> None:
+        """
+        Prints point to console in mm units
+
+        Args:
+            pt (Point): Point object
+        """
+        print(f"  Point (mm): [{round(pt.X/100)}, {round(pt.Y/100)}]")
+
+    @staticmethod
+    def print_size(sz: Size) -> None:
+        """
+        Prints size to console in mm units
+
+        Args:
+            sz (Size): Size object
+        """
+        print(f"  Size (mm): [{round(sz.Width/100)}, {round(sz.Height/100)}]")
+
+    @classmethod
+    def report_pos_size(cls, shape: XShape) -> None:
+        """
+        Prints shape information to the console
+
+        Args:
+            shape (XShape): Shape
+        """
+        if shape is None:
+            print("The shape is null")
+            return
+        print(f'Shape Name: {mProps.Props.get_property(obj=shape, name="Name")}')
+        print(f"  Type: {shape.getShapeType()}")
+        cls.print_point(shape.getPosition())
+        cls.print_size(shape.getSize())
+
+    # region set_position()
+
+    @overload
+    @staticmethod
+    def set_position(shape: XShape, pt: Point) -> None:
+        ...
+
+    @overload
+    @staticmethod
+    def set_position(shape: XShape, x: int, y: int) -> None:
+        ...
+
+    @staticmethod
+    def set_position(*args, **kwargs) -> None:
+        """
+        Sets Position of shape
+
+        Args:
+            shape (XShape): Shape
+            pt (point): Point that contains x and y positions.
+            x (int): X position
+            y (int): Y Position
+
+        Note:
+            Positions are NOT in mm units when passed into this method.
+        """
+        ordered_keys = (1, 2, 3)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
+
+        def get_kwargs() -> dict:
+            ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ("shape", "pt", "x", "y")
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("set_position() got an unexpected keyword argument")
+            ka[1] = kwargs.get("shape", None)
+            keys = ("pt", "x")
+            for key in keys:
+                if key in kwargs:
+                    ka[2] = kwargs[key]
+                    break
+            if count == 2:
+                return ka
+            ka[3] = ka.get("y", None)
+            return ka
+
+        if not count in (2, 3):
+            raise TypeError("set_position() got an invalid number of arguments")
+
+        kargs = get_kwargs()
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
+        if count == 2:
+            # def set_position(shape: XShape, pt: Point)
+            pt_in = cast(Point, kargs[2])
+            pt = Point(pt_in.X * 100, pt_in.Y * 100)
+        else:
+            # def set_position(shape: XShape, x:int, y: int)
+            pt = Point(kargs[2] * 100, kargs[3] * 100)
+        cast(XShape, kargs[1]).setPosition(pt)
+
+    # endregion set_position()
+
+    # region set_size()
+
+    @overload
+    @staticmethod
+    def set_size(shape: XShape, sz: Size) -> None:
+        ...
+
+    @overload
+    @staticmethod
+    def set_size(shape: XShape, width: int, height: int) -> None:
+        ...
+
+    @staticmethod
+    def set_size(*args, **kwargs) -> None:
+        """
+        Sets set_size of shape
+
+        Args:
+            shape (XShape): Shape
+            sz (Size): Size that contains width and height positions.
+            width (int): Width position
+            height (int): Height Position
+
+        Note:
+            Positions are NOT in mm units when passed into this method.
+        """
+        ordered_keys = (1, 2, 3)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
+
+        def get_kwargs() -> dict:
+            ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ("shape", "sz", "width", "height")
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("set_size() got an unexpected keyword argument")
+            ka[1] = kwargs.get("shape", None)
+            keys = ("sz", "width")
+            for key in keys:
+                if key in kwargs:
+                    ka[2] = kwargs[key]
+                    break
+            if count == 2:
+                return ka
+            ka[3] = ka.get("height", None)
+            return ka
+
+        if not count in (2, 3):
+            raise TypeError("set_size() got an invalid number of arguments")
+
+        kargs = get_kwargs()
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
+        if count == 2:
+            # def set_size(shape: XShape, sz: Size)
+            sz_in = cast(Size, kargs[2])
+            sz = Size(sz_in.Width * 100, sz_in.Height * 100)
+        else:
+            # def set_size(shape: XShape, width:int, height: int)
+            sz = Size(kargs[2] * 100, kargs[3] * 100)
+        cast(XShape, kargs[1]).setSize(sz)
+
+    # endregion set_size()
+    
+    @staticmethod
+    def set_style(shape: XShape, graphic_styles: XNameContainer, style_name: GraphicStyleKind | str) -> None:
+        """
+        Set the graphic style for a shape
+
+        Args:
+            shape (XShape): Shape
+            graphic_styles (XNameContainer): Graphic styles
+            style_name (GraphicStyleKind | str): Graphic Style Name
+        """
+        try:
+            style = mLo.Lo.qi(XStyle, graphic_styles.getByName(str(style_name)), True)
+            mProps.Props.set_property(obj=shape, name="Style", value=style)
+        except Exception as e:
+            mLo.Lo.print(f'Could not set the style to "{style_name}"')
+    # endregion get/set drawing properties
 
     # region helper
     @staticmethod
