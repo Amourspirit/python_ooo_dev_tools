@@ -18,6 +18,13 @@ Color = NewType('Color', int)
 """Color Type. Int RGB Value"""
 
 class CommonColor:
+    """
+    Named Colors.
+    
+    See Also:
+        - `Wikipedia Web colors <https://en.wikipedia.org/wiki/Web_colors>`_
+        - `Hex Color Chart <https://www.quackit.com/css/color/charts/hex_color_chart.cfm>`_
+    """
     # https://en.wikipedia.org/wiki/Web_colors
     # https://www.quackit.com/css/color/charts/hex_color_chart.cfm
     # some hex values for commonly used colors
@@ -251,9 +258,22 @@ class RGB(NamedTuple):
             rgb_int (int): int that contains rgb color data.
 
         Returns:
-            color: color struct.
+            RGB: Color information as RGB struct.
         """
         return int_to_rgb(rgb_int=rgb_int)
+    
+    @classmethod
+    def from_color(cls, c: Color) -> "RGB":
+        """
+        Gets a color instance from input color that represents a rgb color.
+
+        Args:
+            c (Color): Color that contains rgb color data.
+
+        Returns:
+            RGB: Color information as RGB struct.
+        """
+        return cls.from_int(int(c))
 
     @staticmethod
     def from_hex(rgb_hex: str) -> "RGB":
@@ -264,7 +284,7 @@ class RGB(NamedTuple):
             rgb_int (int): int that contains rgb color data.
 
         Returns:
-            color: color struct.
+            RGB: Color information as RGB struct.
         """
         return int_to_rgb(rgb_int=int(rgb_hex, 16))
 

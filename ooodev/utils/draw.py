@@ -41,21 +41,33 @@ from . import info as mInfo
 from . import file_io as mFileIO
 from . import gui as mGui
 from . import props as mProps
+from . import color as mColor
 from ..cfg.config import Config  # singleton class.
 from .type_var import PathOrStr
 from . import table_helper as mTblHelper
 from .kind.drawing_shape_kind import DrawingShapeKind
 from .kind.form_control_kind import FormControlKind
 from .kind.presentation_kind import PresentationKind
-from .kind.graphic_style import GraphicStyleKind
+from .kind.graphic_style_kind import GraphicStyleKind
+from .kind.drawing_gradient import DrawingGradientKind
+from .kind.drawing_hatching_kind import DrawingHatchingKind
+from .kind.drawing_bitmap_kind import DrawingBitmapKind
+from .data_type.intensity import Intensity
+from .data_type.angle import Angle
 
 from ooo.dyn.awt.point import Point
 from ooo.dyn.awt.size import Size
-from ooo.dyn.drawing.polygon_flags import PolygonFlags
-from ooo.dyn.drawing.poly_polygon_bezier_coords import PolyPolygonBezierCoords
 from ooo.dyn.drawing.connector_type import ConnectorType
+from ooo.dyn.drawing.fill_style import FillStyle
 from ooo.dyn.drawing.glue_point2 import GluePoint2
-
+from ooo.dyn.drawing.line_dash import LineDash
+from ooo.dyn.drawing.line_style import LineStyle
+from ooo.dyn.drawing.poly_polygon_bezier_coords import PolyPolygonBezierCoords
+from ooo.dyn.drawing.polygon_flags import PolygonFlags
+from ooo.dyn.lang.illegal_argument_exception import IllegalArgumentException
+from ooo.dyn.awt.gradient import Gradient
+from ooo.dyn.awt.gradient_style import GradientStyle
+from ooo.dyn.drawing.homogen_matrix3 import HomogenMatrix3
 
 # endregion Imports
 
@@ -2452,7 +2464,7 @@ class Draw:
         cast(XShape, kargs[1]).setSize(sz)
 
     # endregion set_size()
-    
+
     @staticmethod
     def set_style(shape: XShape, graphic_styles: XNameContainer, style_name: GraphicStyleKind | str) -> None:
         """
@@ -2468,6 +2480,408 @@ class Draw:
             mProps.Props.set_property(obj=shape, name="Style", value=style)
         except Exception as e:
             mLo.Lo.print(f'Could not set the style to "{style_name}"')
+
+    @staticmethod
+    def get_text_properties(shape: XShape) -> XPropertySet:
+        """
+        Gets the properties associated with the text area inside the shape.
+
+        Args:
+            shape (XShape): Shape
+
+        Returns:
+            XPropertySet: Property Set
+        """
+        xtxt = mLo.Lo.qi(XText, shape, True)
+        cursor = xtxt.createTextCursor()
+        cursor.gotoStart(False)
+        cursor.gotoEnd(True)
+        xrng = mLo.Lo.qi(XTextRange, cursor, True)
+        return mLo.Lo.qi(XPropertySet, xrng, True)
+
+    @staticmethod
+    def get_line_color(shape: XShape) -> mColor.Color | None:
+        """
+        Gets the line color of a shpae.
+
+        Args:
+            shape (XShape): Shape
+
+        Returns:
+            mColor.Color | None: Color on success; Otherwise, ``None``.
+        """
+        props = mLo.Lo.qi(XPropertySet, shape, True)
+        try:
+            c = mColor.Color(int(props.getPropertyValue("LineColor")))
+            return c
+        except Exception as e:
+            mLo.Lo.print("Could not access line color")
+            mLo.Lo.print(f"  {e}")
+        return None
+
+    @staticmethod
+    def set_dashed_line(shape: XShape, is_dashed: bool) -> None:
+        """
+        Set a dashed line
+
+        Args:
+            shape (XShape): Shape
+            is_dashed (bool): Determines if line is to be dashed or solid.
+        """
+        props = mLo.Lo.qi(XPropertySet, shape, True)
+        try:
+            if is_dashed:
+                ld = LineDash()
+                ld.Dots = 0
+                ld.DotLen = 100
+                ld.Dashes = 5
+                ld.DashLen = 200
+                ld.Distance = 200
+                props.setPropertyValue("LineStyle", LineStyle.DASH)
+                props.setPropertyValue("LineDash", ld)
+            else:
+                # switch to solid line
+                props.setPropertyValue("LineStyle", LineStyle.SOLID)
+        except Exception as e:
+            mLo.Lo.print("Could not set dashed line property")
+            mLo.Lo.print(f"  {e}")
+
+    @staticmethod
+    def get_line_thickness(shape: XShape) -> int:
+        """
+        Gets line thickness of a shape.
+
+        Args:
+            shape (XShape): Shape
+
+        Returns:
+            int: Line Thickness on success; Otherwise, ``0``.
+        """
+        props = mLo.Lo.qi(XPropertySet, shape, True)
+        try:
+            return int(props.getPropertyValue("LineWidth"))
+        except Exception as e:
+            mLo.Lo.print("Could not access line thickness")
+            mLo.Lo.print(f"  {e}")
+        return 0
+
+    @staticmethod
+    def get_fill_color(shape: XShape) -> mColor.Color | None:
+        """
+        Gets the fill color of a shpae.
+
+        Args:
+            shape (XShape): Shape
+
+        Returns:
+            mColor.Color | None: Color on success; Otherwise, ``None``.
+        """
+        props = mLo.Lo.qi(XPropertySet, shape, True)
+        try:
+            c = mColor.Color(int(props.getPropertyValue("FillColor")))
+            return c
+        except Exception as e:
+            mLo.Lo.print("Could not access fill color")
+            mLo.Lo.print(f"  {e}")
+        return None
+
+    @staticmethod
+    def set_transparency(shape: XShape, level: Intensity) -> None:
+        """
+        Sets the transparency level for the shape.
+        Higher level means more transparent.
+
+        Args:
+            shape (XShape): Shape
+            level (Intensity): Transparency value
+        """
+        mProps.Props.set_property(obj=shape, name="FillTransparence", value=level.Value)
+
+    # region set_gradient_color()
+
+    @staticmethod
+    def _set_gradient_color_name(shape: XShape, name: DrawingGradientKind | str) -> None:
+        props = mLo.Lo.qi(XPropertySet, shape, True)
+        try:
+            props.setPropertyValue("FillStyle", FillStyle.GRADIENT)
+            props.setPropertyValue("FillGradientName", str(name))
+        except IllegalArgumentException:
+            mLo.Lo.print(f'"{name}" is not a recognized gradient color name')
+        except Exception as e:
+            mLo.Lo.print(f'Could not set gradient color to "{name}"')
+            mLo.Lo.print(f"  {e}")
+
+    @staticmethod
+    def _set_gradient_color_colors(
+        shape: XShape, start_color: mColor.Color, end_color: mColor.Color, angle: Angle
+    ) -> None:
+        props = mLo.Lo.qi(XPropertySet, shape, True)
+
+        grad = Gradient()
+        grad.Style = GradientStyle.LINEAR
+        grad.StartColor = start_color
+        grad.EndColor = end_color
+
+        grad.Angle = angle.Value * 10  # in 1/10 degree units
+        grad.Border = 0
+        grad.XOffset = 0
+        grad.YOffset = 0
+        grad.StartIntensity = 100
+        grad.EndIntensity = 100
+        grad.StepCount = 10
+
+        try:
+            props.setPropertyValue("FillStyle", FillStyle.GRADIENT)
+            props.setPropertyValue("FillGradient", grad)
+        except Exception as e:
+            mLo.Lo.print("Could not set gradient colors")
+            mLo.Lo.print(f"  {e}")
+
+    @overload
+    @classmethod
+    def set_gradient_color(cls, shape: XShape, name: DrawingGradientKind | str) -> None:
+        ...
+
+    @overload
+    @classmethod
+    def set_gradient_color(cls, shape: XShape, start_color: mColor.Color, end_color: mColor.Color) -> None:
+        ...
+
+    @overload
+    @classmethod
+    def set_gradient_color(
+        cls, shape: XShape, start_color: mColor.Color, end_color: mColor.Color, angle: Angle
+    ) -> None:
+        ...
+
+    @classmethod
+    def set_gradient_color(cls, *args, **kwargs) -> None:
+        """
+        Set the gradient color of the shape
+
+        Args:
+            shape (XShape): Shape
+            name (DrawingGradientKind | str): Gradient color name.
+            start_color (mColor.Color): Start Color
+            end_color (mColor.Color): End Color
+            angle (Angle): Angle
+
+        Note:
+            When using Graident Name.
+
+            Getting the gradient color name can be a bit challenging.
+            ``DrawingGradientKind`` contains name displayed in the Graident color menu of Draw.
+
+            The Easies way to get the colors is to open Draw and see what gradient color names are available
+            on your system.
+        """
+        ordered_keys = (1, 2, 3, 4)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
+
+        def get_kwargs() -> dict:
+            ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ("shape", "name", "start_color", "end_color", "angle")
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("set_gradient_color() got an unexpected keyword argument")
+            ka[1] = kwargs.get("shape", None)
+            keys = ("name", "start_color")
+            for key in keys:
+                if key in kwargs:
+                    ka[2] = kwargs[key]
+                    break
+            if count == 2:
+                return ka
+            ka[3] = ka.get("end_color", None)
+            if count == 3:
+                return ka
+            ka[4] = ka.get("angle", None)
+            return ka
+
+        if not count in (2, 3, 4):
+            raise TypeError("set_gradient_color() got an invalid number of arguments")
+
+        kargs = get_kwargs()
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
+
+        if count == 2:
+            cls._set_gradient_color_name(kargs[1], kargs[2])
+            return
+
+        if count == 3:
+            angle = Angle(0)
+        else:
+            angle = cast(Angle, kargs[4])
+        cls._set_gradient_color_colors(shape=kargs[1], start_color=kargs[2], end_color=kargs[3], angle=angle)
+
+    # endregion set_gradient_color()
+
+    @staticmethod
+    def set_hatch_color(shape: XShape, name: DrawingHatchingKind | str) -> None:
+        """
+        Set hatching color of a shape.
+
+        Args:
+            shape (XShape): Shape
+            name (DrawingHatchingKind | str): Hatching Name
+
+        Note:
+            Getting the hatching color name can be a bit challenging.
+            ``DrawingHatchingKind`` contains name displayed in the Hatching color menu of Draw.
+
+            The Easies way to get the colors is to open Draw and see what gradient color names are available
+            on your system.
+        """
+        props = mLo.Lo.qi(XPropertySet, shape, True)
+        try:
+            props.setPropertyValue("FillStyle", FillStyle.HATCH)
+            props.setPropertyValue("FillHatchName", str(name))
+        except IllegalArgumentException:
+            mLo.Lo.print(f'"{name}" is not a recognized hatching name')
+        except Exception as e:
+            mLo.Lo.print(f'Could not set hatching color to "{name}"')
+            mLo.Lo.print(f"  {e}")
+        return None
+
+    @staticmethod
+    def set_bitmap_color(shape: XShape, name: DrawingBitmapKind | str) -> None:
+        """
+        Set bitmap color of a shape.
+
+        Args:
+            shape (XShape): Shape
+            name (DrawingBitmapKind | str): Bitmap Name
+
+        Note:
+            Getting the bitmap color name can be a bit challenging.
+            ``DrawingBitmapKind`` contains name displayed in the Bitmap color menu of Draw.
+
+            The Easies way to get the colors is to open Draw and see what bitmap color names are available
+            on your system.
+        """
+        props = mLo.Lo.qi(XPropertySet, shape, True)
+        try:
+            props.setPropertyValue("FillStyle", FillStyle.BITMAP)
+            props.setPropertyValue("FillBitmapName", str(name))
+        except IllegalArgumentException:
+            mLo.Lo.print(f'"{name}" is not a recognized bitmap name')
+        except Exception as e:
+            mLo.Lo.print(f'Could not set bitmap color to "{name}"')
+            mLo.Lo.print(f"  {e}")
+        return None
+
+    @staticmethod
+    def set_bitmap_file_color(shape: XShape, fnm: PathOrStr) -> None:
+        """
+        Set bitmap color from file.
+
+        Args:
+            shape (XShape): Shape
+            fnm (PathOrStr): path to file.
+        """
+        props = mLo.Lo.qi(XPropertySet, shape, True)
+        try:
+            props.setPropertyValue("FillStyle", FillStyle.BITMAP)
+            props.setPropertyValue("FillBitmapURL", mFileIO.FileIO.fnm_to_url(fnm))
+        except Exception as e:
+            mLo.Lo.print(f'Could not set bitmap color using  "{fnm}"')
+            mLo.Lo.print(f"  {e}")
+        return None
+
+    @classmethod
+    def set_line_style(cls, shape: XShape, style: LineStyle) -> None:
+        """
+        Set the line style for a shape
+
+        Args:
+            shape (XShape): Shape
+            style (LineStyle): Line Style
+        """
+        cls.set_shape_props(shape=shape, LineStyle=style)
+
+    @classmethod
+    def set_visible(cls, shape: XShape, is_visible: bool) -> None:
+        """
+        Set the line style for a shape
+
+        Args:
+            shape (XShape): Shape
+            is_visible (bool): Set is shape is visible or not.
+        """
+        cls.set_shape_props(shape=shape, Visible=is_visible)
+
+    # "RotateAngle" is deprecated but is much simpler
+    # than the matrix approach, and works correctly
+    # for rotations around the center
+
+    @classmethod
+    def set_angle(cls, shape: XShape, angle: Angle) -> None:
+        """
+        Set the line style for a shape
+
+        Args:
+            shape (XShape): Shape
+            is_visible (bool): Set is shape is visibel or not.
+        """
+        cls.set_shape_props(shape=shape, RotateAngle=angle.Value * 100)
+
+    @staticmethod
+    def get_rotation(shape: XShape) -> Angle:
+        """
+        Gets the rotation of a shape
+
+        Args:
+            shape (XShape): Shape
+
+        Returns:
+            Angle: Rotation angle.
+        """
+        r_angle = int(mProps.Props.get_property(shape, "RotateAngle"))
+        return Angle(round(r_angle / 100))
+
+    @staticmethod
+    def get_transformation(shape: XShape) -> HomogenMatrix3:
+        """
+        Gets a transformation matrix which seems to represent a clockwise rotation.
+
+        Homogeneous matrix has three homogeneous lines
+
+        Args:
+            shape (XShape): Shape
+
+        Returns:
+            HomogenMatrix3: Matrix
+        """
+        #     Returns a transformation matrix, which seems to
+        #     represent a clockwise rotation:
+        #     cos(t)  sin(t) x
+        #    -sin(t)  cos(t) y
+        #       0       0    1
+        return mProps.Props.get_property(shape, "Transformation")
+
+    @staticmethod
+    def print_matrix(mat: HomogenMatrix3) -> None:
+        """
+        Prints matrix to console
+
+        Args:
+            mat (HomogenMatrix3): Matrix
+        """
+        print("Transformation Matrix:")
+        print(f"\t{mat.Line1.Column1:10.2f}\t{mat.Line1.Column2:10.2f}\t{mat.Line1.Column3:10.2f}")
+        print(f"\t{mat.Line2.Column1:10.2f}\t{mat.Line2.Column2:10.2f}\t{mat.Line2.Column3:10.2f}")
+        print(f"\t{mat.Line3.Column1:10.2f}\t{mat.Line3.Column2:10.2f}\t{mat.Line3.Column3:10.2f}")
+
+        rad_angle = math.atan2(mat.Line2.Column1, mat.Line1.Column1)
+        #       sin(t), cos(t)
+        curr_angle = round(math.degrees(rad_angle))
+        print(f"  Current angle: {curr_angle}")
+        print()
+
     # endregion get/set drawing properties
 
     # region helper
