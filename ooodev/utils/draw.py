@@ -70,7 +70,7 @@ from .type_var import PathOrStr
 from ooo.dyn.awt.gradient import Gradient
 from ooo.dyn.awt.gradient_style import GradientStyle
 from ooo.dyn.awt.point import Point as PointStruct
-from ooo.dyn.awt.size import Size
+from ooo.dyn.awt.size import Size as SizeStruct
 from ooo.dyn.drawing.connector_type import ConnectorType
 from ooo.dyn.drawing.fill_style import FillStyle
 from ooo.dyn.drawing.glue_point2 import GluePoint2
@@ -94,6 +94,7 @@ class Draw:
     
     # region uno struct
     Point = PointStruct
+    Size = SizeStruct
     # endregion uno struct
     
     # region Enums
@@ -1085,7 +1086,7 @@ class Draw:
         return cls._get_shape_text_shape(shape)
 
     @staticmethod
-    def get_slide_size(slide: XDrawPage) -> Size | None:
+    def get_slide_size(slide: XDrawPage) -> Draw.Size | None:
         """
         Gets slide size
 
@@ -1102,7 +1103,7 @@ class Draw:
                 return None
             width = int(props.getPropertyValue("Width"))
             height = int(props.getPropertyValue("Height"))
-            return Size(width, height)
+            return Draw.Size(width, height)
         except Exception as e:
             mLo.Lo.print("Could not get page dimensions")
             mLo.Lo.print(f"  {e}")
@@ -1570,7 +1571,7 @@ class Draw:
         try:
             shape = mLo.Lo.create_instance_msf(XShape, f"com.sun.star.drawing.{shape_type}", raise_err=True)
             shape.setPosition(Draw.Point(x * 100, y * 100))
-            shape.setSize(Size(width * 100, height * 100))
+            shape.setSize(Draw.Size(width * 100, height * 100))
         except Exception as e:
             mLo.Lo.print(f'Unable to create shape "{shape_type}"')
             mLo.Lo.print(f"  {e}")
@@ -2184,7 +2185,7 @@ class Draw:
             XControlShape: _description_
         """
         cshape = mLo.Lo.create_instance_msf(XControlShape, "com.sun.star.drawing.ControlShape", raise_err=True)
-        cshape.setSize(Size(width * 100, height * 100))
+        cshape.setSize(Draw.Size(width * 100, height * 100))
         cshape.setPosition(Draw.Point(x * 100, y * 100))
 
         cmodel = mLo.Lo.create_instance_msf(XControlModel, f"com.sun.star.form.control.{shape_kind}")
@@ -2306,7 +2307,7 @@ class Draw:
         return Draw.Point(round(pt.X / 100, round(pt.Y / 100)))
 
     @staticmethod
-    def get_size(shape: XShape) -> Size:
+    def get_size(shape: XShape) -> Draw.Size:
         """
         Gets Size in mm units
 
@@ -2318,7 +2319,7 @@ class Draw:
         """
         sz = shape.getSize()
         # convert to mm
-        return Size(round(sz.Width / 100), round(sz.Height / 100))
+        return Draw.Size(round(sz.Width / 100), round(sz.Height / 100))
 
     @staticmethod
     def print_point(pt: Draw.Point) -> None:
@@ -2331,7 +2332,7 @@ class Draw:
         print(f"  Point (mm): [{round(pt.X/100)}, {round(pt.Y/100)}]")
 
     @staticmethod
-    def print_size(sz: Size) -> None:
+    def print_size(sz: Draw.Size) -> None:
         """
         Prints size to console in mm units
 
@@ -2426,7 +2427,7 @@ class Draw:
 
     @overload
     @staticmethod
-    def set_size(shape: XShape, sz: Size) -> None:
+    def set_size(shape: XShape, sz: Draw.Size) -> None:
         ...
 
     @overload
@@ -2478,12 +2479,12 @@ class Draw:
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
         if count == 2:
-            # def set_size(shape: XShape, sz: Size)
-            sz_in = cast(Size, kargs[2])
-            sz = Size(sz_in.Width * 100, sz_in.Height * 100)
+            # def set_size(shape: XShape, sz: Draw.Size)
+            sz_in = cast(Draw.Size, kargs[2])
+            sz = Draw.Size(sz_in.Width * 100, sz_in.Height * 100)
         else:
             # def set_size(shape: XShape, width:int, height: int)
-            sz = Size(kargs[2] * 100, kargs[3] * 100)
+            sz = Draw.Size(kargs[2] * 100, kargs[3] * 100)
         cast(XShape, kargs[1]).setSize(sz)
 
     # endregion set_size()
