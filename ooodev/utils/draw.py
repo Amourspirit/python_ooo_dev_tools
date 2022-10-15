@@ -76,9 +76,9 @@ from ooo.dyn.drawing.fill_style import FillStyle
 from ooo.dyn.drawing.glue_point2 import GluePoint2
 from ooo.dyn.drawing.homogen_matrix3 import HomogenMatrix3
 from ooo.dyn.drawing.line_dash import LineDash
-from ooo.dyn.drawing.line_style import LineStyle
+from ooo.dyn.drawing.line_style import LineStyle as LineStyleEnum
 from ooo.dyn.drawing.poly_polygon_bezier_coords import PolyPolygonBezierCoords
-from ooo.dyn.drawing.polygon_flags import PolygonFlags
+from ooo.dyn.drawing.polygon_flags import PolygonFlags as PolygonFlagsEnum
 from ooo.dyn.lang.illegal_argument_exception import IllegalArgumentException
 from ooo.dyn.presentation.animation_speed import AnimationSpeed as AnimationSpeedEnum
 from ooo.dyn.presentation.fade_effect import FadeEffect as FadeEffectEnum
@@ -90,13 +90,15 @@ class Draw:
     # region uno enums
     AnimationSpeed = AnimationSpeedEnum
     FadeEffect = FadeEffectEnum
+    LineStyle = LineStyleEnum
+    PolygonFlags = PolygonFlagsEnum
     # endregion uno enums
-    
+
     # region uno struct
     Point = PointStruct
     Size = SizeStruct
     # endregion uno struct
-    
+
     # region Enums
     class GluePointsKind(IntEnum):
         TOP = 0
@@ -1761,7 +1763,7 @@ class Draw:
 
     @classmethod
     def draw_bezier(
-        cls, slide: XDrawPage, pts: Sequence[Draw.Point], flags: Sequence[PolygonFlags], is_open: bool
+        cls, slide: XDrawPage, pts: Sequence[Draw.Point], flags: Sequence[Draw.PolygonFlags], is_open: bool
     ) -> XShape | None:
         """
         Draws a bezier curve.
@@ -1790,7 +1792,7 @@ class Draw:
         coords = PolyPolygonBezierCoords()
         #       for shapes formed by one *or more* bezier polygons
         coords.Coordinates = mTblHelper.TableHelper.make_2d_array(1, 1, Draw.Point())
-        coords.Flags = mTblHelper.TableHelper.make_2d_array(1, 1, PolygonFlags())
+        coords.Flags = mTblHelper.TableHelper.make_2d_array(1, 1, Draw.PolygonFlags())
         coords.Coordinates[0] = pts
         coords.Flags[0] = flags
 
@@ -2561,11 +2563,11 @@ class Draw:
                 ld.Dashes = 5
                 ld.DashLen = 200
                 ld.Distance = 200
-                props.setPropertyValue("LineStyle", LineStyle.DASH)
+                props.setPropertyValue("LineStyle", Draw.LineStyle.DASH)
                 props.setPropertyValue("LineDash", ld)
             else:
                 # switch to solid line
-                props.setPropertyValue("LineStyle", LineStyle.SOLID)
+                props.setPropertyValue("LineStyle", Draw.LineStyle.SOLID)
         except Exception as e:
             mLo.Lo.print("Could not set dashed line property")
             mLo.Lo.print(f"  {e}")
@@ -2817,7 +2819,7 @@ class Draw:
         return None
 
     @classmethod
-    def set_line_style(cls, shape: XShape, style: LineStyle) -> None:
+    def set_line_style(cls, shape: XShape, style: Draw.LineStyle) -> None:
         """
         Set the line style for a shape
 
@@ -2951,7 +2953,7 @@ class Draw:
             mLo.Lo.print("Unable to add shape")
             return None
         cls.set_image(im_shape, fnm)
-        cls.set_line_style(shape=im_shape, style=LineStyle.NONE)
+        cls.set_line_style(shape=im_shape, style=Draw.LineStyle.NONE)
         return im_shape
 
     @overload
@@ -3200,15 +3202,21 @@ class Draw:
         """
         wait = int(delay)
         num_slides = sc.getSlideCount()
-        
-        while (sc.getCurrentSlideIndex() < num_slides -1):
+
+        while sc.getCurrentSlideIndex() < num_slides - 1:
             mLo.Lo.delay(500)
 
         if wait > 0:
             mLo.Lo.delay(wait)
-    
+
     @staticmethod
-    def set_transition(slide: XDrawPage, fade_effect:Draw.FadeEffect, speed: Draw.AnimationSpeed, change: SlideShowKind, duration: int) -> None:
+    def set_transition(
+        slide: XDrawPage,
+        fade_effect: Draw.FadeEffect,
+        speed: Draw.AnimationSpeed,
+        change: SlideShowKind,
+        duration: int,
+    ) -> None:
         """
         Sets the transition for a slide.
 
@@ -3220,7 +3228,7 @@ class Draw:
             duration (int): Duration of slide. Only used when ``change=Draw.SlideShowKind.AUTO_CHANGE``
         """
         # https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1presentation_1_1DrawPage-members.html
-        
+
         try:
             ps = mLo.Lo.qi(XPropertySet, slide, True)
             ps.setPropertyValue("Effect", fade_effect)
@@ -3228,11 +3236,11 @@ class Draw:
             ps.setPropertyValue("Change", int(change))
             # if change is Draw.SlideShowKind.AUTO_CHANGE
             # then Duration is used
-            ps.setPropertyValue("Duration", abs(duration)) # in seconds
+            ps.setPropertyValue("Duration", abs(duration))  # in seconds
         except Exception as e:
             mLo.Lo.print("Could not set slide transition")
-            mLo.Lo.print(f'  {e}')
-    
+            mLo.Lo.print(f"  {e}")
+
     @staticmethod
     def get_play_list(doc: XComponent) -> XNameContainer:
         """
@@ -3246,9 +3254,9 @@ class Draw:
         """
         cp_supp = mLo.Lo.qi(XCustomPresentationSupplier, doc, True)
         return cp_supp.getCustomPresentations()
-    
+
     @classmethod
-    def build_play_list(cls, doc: XComponent, custom_name: str, *slide_idxs:int) -> XNameContainer | None:
+    def build_play_list(cls, doc: XComponent, custom_name: str, *slide_idxs: int) -> XNameContainer | None:
         """
         build a named play list container of  slides from doc.
         The name of the play list is ``custom_name``.
@@ -3267,7 +3275,7 @@ class Draw:
             # create an indexed container for the play list
             xfactory = mLo.Lo.qi(XSingleServiceFactory, play_list, True)
             slides_con = mLo.Lo.qi(XIndexContainer, xfactory.createInstance(), True)
-            
+
             # container holds slide references whose indicies come from slideIdxs
             mLo.Lo.print("Building play list using:")
             j = 0
@@ -3277,17 +3285,17 @@ class Draw:
                     continue
                 slides_con.insertByIndex(j, slide)
                 j += 1
-                mLo.Lo.print(f'  Slide {i}')
-            
+                mLo.Lo.print(f"  Slide {i}")
+
             # store the play list under the custom name
             play_list.insertByName(custom_name, slides_con)
             mLo.Lo.print(f'lay list stored under the name: "{custom_name}"')
             return play_list
         except Exception as e:
-            mLo.Lo.print('Unable to build play list.')
-            mLo.Lo.print(f'  {e}')
+            mLo.Lo.print("Unable to build play list.")
+            mLo.Lo.print(f"  {e}")
         return None
-    
+
     @staticmethod
     def get_animation_node(slide: XDrawPage) -> XAnimationNode:
         """
@@ -3301,6 +3309,7 @@ class Draw:
         """
         node_supp = mLo.Lo.qi(XAnimationNodeSupplier, slide, True)
         return node_supp.getAnimationNode()
+
     # endregion slide show related
 
     # region helper
