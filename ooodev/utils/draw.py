@@ -69,7 +69,7 @@ from .type_var import PathOrStr
 
 from ooo.dyn.awt.gradient import Gradient
 from ooo.dyn.awt.gradient_style import GradientStyle
-from ooo.dyn.awt.point import Point
+from ooo.dyn.awt.point import Point as PointStruct
 from ooo.dyn.awt.size import Size
 from ooo.dyn.drawing.connector_type import ConnectorType
 from ooo.dyn.drawing.fill_style import FillStyle
@@ -91,6 +91,10 @@ class Draw:
     AnimationSpeed = AnimationSpeedEnum
     FadeEffect = FadeEffectEnum
     # endregion uno enums
+    
+    # region uno struct
+    Point = PointStruct
+    # endregion uno struct
     
     # region Enums
     class GluePointsKind(IntEnum):
@@ -1565,7 +1569,7 @@ class Draw:
         shape = None
         try:
             shape = mLo.Lo.create_instance_msf(XShape, f"com.sun.star.drawing.{shape_type}", raise_err=True)
-            shape.setPosition(Point(x * 100, y * 100))
+            shape.setPosition(Draw.Point(x * 100, y * 100))
             shape.setSize(Size(width * 100, height * 100))
         except Exception as e:
             mLo.Lo.print(f'Unable to create shape "{shape_type}"')
@@ -1724,7 +1728,7 @@ class Draw:
         mProps.Props.set_property(polygon, name="PolyPolygon", value=polys)
 
     @staticmethod
-    def gen_polygon_points(x: int, y: int, radius: int, sides: int) -> Tuple[Point, ...]:
+    def gen_polygon_points(x: int, y: int, radius: int, sides: int) -> Tuple[Draw.Point, ...]:
         """
         Generates a list of polygon points
 
@@ -1744,10 +1748,10 @@ class Draw:
             mLo.Lo.print("Too many sides; must be 30 or less. Setting to 30")
             sides = 30
 
-        pts: List[Point] = []
+        pts: List[Draw.Point] = []
         angle_step = math.pi / sides
         for i in range(sides):
-            pt = Point(
+            pt = Draw.Point(
                 int(round(((x * 100) + (radius * 100)) * math.cos(i * 2 * angle_step))),
                 int(round(((y * 100) + (radius * 100)) * math.sin(i * 2 * angle_step))),
             )
@@ -1756,15 +1760,15 @@ class Draw:
 
     @classmethod
     def draw_bezier(
-        cls, slide: XDrawPage, pts: List[Point], flags: List[PolygonFlags], is_open: bool
+        cls, slide: XDrawPage, pts: Sequence[Draw.Point], flags: Sequence[PolygonFlags], is_open: bool
     ) -> XShape | None:
         """
         Draws a bezier curve.
 
         Args:
             slide (XDrawPage): Slide
-            pts (List[Point]): Points
-            flags (List[PolygonFlags]): Falgs
+            pts (Sequence[Point]): Points
+            flags (Sequence[PolygonFlags]): Falgs
             is_open (bool): Determines if an open or closed bezier is drawn.
 
         Raises:
@@ -1784,7 +1788,7 @@ class Draw:
         # create space for one bezier shape
         coords = PolyPolygonBezierCoords()
         #       for shapes formed by one *or more* bezier polygons
-        coords.Coordinates = mTblHelper.TableHelper.make_2d_array(1, 1, Point())
+        coords.Coordinates = mTblHelper.TableHelper.make_2d_array(1, 1, Draw.Point())
         coords.Flags = mTblHelper.TableHelper.make_2d_array(1, 1, PolygonFlags())
         coords.Coordinates[0] = pts
         coords.Flags[0] = flags
@@ -1865,10 +1869,10 @@ class Draw:
         if num_points != len(ys):
             raise IndexError("xs and ys must be the same length")
 
-        pts: List[Point] = []
+        pts: List[Draw.Point] = []
         for x, y in zip(xs, ys):
             # in 1/100 mm units
-            pts.append(Point(x * 100, y * 100))
+            pts.append(Draw.Point(x * 100, y * 100))
 
         # an array of Point arrays, one Point array for each line path
         line_paths = mTblHelper.TableHelper.make_2d_array(1, 1)
@@ -2181,7 +2185,7 @@ class Draw:
         """
         cshape = mLo.Lo.create_instance_msf(XControlShape, "com.sun.star.drawing.ControlShape", raise_err=True)
         cshape.setSize(Size(width * 100, height * 100))
-        cshape.setPosition(Point(x * 100, y * 100))
+        cshape.setPosition(Draw.Point(x * 100, y * 100))
 
         cmodel = mLo.Lo.create_instance_msf(XControlModel, f"com.sun.star.form.control.{shape_kind}")
 
@@ -2287,7 +2291,7 @@ class Draw:
 
     # region get/set drawing properties
     @staticmethod
-    def get_position(shape: XShape) -> Point:
+    def get_position(shape: XShape) -> Draw.Point:
         """
         Gets position in mm units
 
@@ -2299,7 +2303,7 @@ class Draw:
         """
         pt = shape.getPosition()
         # convert to mm
-        return Point(round(pt.X / 100, round(pt.Y / 100)))
+        return Draw.Point(round(pt.X / 100, round(pt.Y / 100)))
 
     @staticmethod
     def get_size(shape: XShape) -> Size:
@@ -2317,7 +2321,7 @@ class Draw:
         return Size(round(sz.Width / 100), round(sz.Height / 100))
 
     @staticmethod
-    def print_point(pt: Point) -> None:
+    def print_point(pt: Draw.Point) -> None:
         """
         Prints point to console in mm units
 
@@ -2356,7 +2360,7 @@ class Draw:
 
     @overload
     @staticmethod
-    def set_position(shape: XShape, pt: Point) -> None:
+    def set_position(shape: XShape, pt: Draw.Point) -> None:
         ...
 
     @overload
@@ -2408,12 +2412,12 @@ class Draw:
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
         if count == 2:
-            # def set_position(shape: XShape, pt: Point)
-            pt_in = cast(Point, kargs[2])
-            pt = Point(pt_in.X * 100, pt_in.Y * 100)
+            # def set_position(shape: XShape, pt: Draw.Point)
+            pt_in = cast(Draw.Point, kargs[2])
+            pt = Draw.Point(pt_in.X * 100, pt_in.Y * 100)
         else:
             # def set_position(shape: XShape, x:int, y: int)
-            pt = Point(kargs[2] * 100, kargs[3] * 100)
+            pt = Draw.Point(kargs[2] * 100, kargs[3] * 100)
         cast(XShape, kargs[1]).setPosition(pt)
 
     # endregion set_position()
