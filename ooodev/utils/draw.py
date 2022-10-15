@@ -1162,11 +1162,6 @@ class Draw:
         Returns:
             XText: Text Object
         """
-        # Add text to the slide page by treating it as a bullet page, which
-        # has two text shapes: one for the title, the other for a sequence of
-        # bullet points; add the title text but return a reference to the bullet
-        # text area
-
         mProps.Props.set_property(obj=slide, name="Layout", value=int(Draw.LayoutKind.TITLE_BULLETS))
 
         # add the title text to the title shape
@@ -1474,7 +1469,7 @@ class Draw:
         Returns:
             int: Z-Order
         """
-        return int(mProps.Props.get_property(obj=shape, name="ZOrder"))
+        return int(mProps.Props.get_property(shape, "ZOrder"))
 
     @classmethod
     def move_to_top(cls, slide: XDrawPage, shape: XShape) -> None:
@@ -1502,15 +1497,15 @@ class Draw:
         return cls.get_zorder(cls.find_top_shape(slide))
 
     @classmethod
-    def find_top(cls, slide: XDrawPage) -> XShape | None:
+    def find_top_shape(cls, slide: XDrawPage) -> XShape | None:
         """
-        Gets the topmost shape of a slide.
+        Gets the top most shape of a slide.
 
         Args:
             slide (XDrawPage): Slide
 
         Returns:
-            XShape | None: Topmost shape if found; Otherwise; ``None``
+            XShape | None: Top most shape if found; Otherwise; ``None``
         """
         shapes = cls.get_shapes(slide)
         if not shapes:
@@ -3214,7 +3209,7 @@ class Draw:
         slide: XDrawPage,
         fade_effect: Draw.FadeEffect,
         speed: Draw.AnimationSpeed,
-        change: SlideShowKind,
+        change: Draw.SlideShowKind,
         duration: int,
     ) -> None:
         """
@@ -3222,8 +3217,8 @@ class Draw:
 
         Args:
             slide (XDrawPage): Slide
-            fade_effect (Draw.FadeEffect): Fade Effect
-            speed (Draw.AnimationSpeed): Animation Speed
+            fade_effect (FadeEffect): Fade Effect
+            speed (AnimationSpeed): Animation Speed
             change (SlideShowKind): Slide show kind
             duration (int): Duration of slide. Only used when ``change=Draw.SlideShowKind.AUTO_CHANGE``
         """
