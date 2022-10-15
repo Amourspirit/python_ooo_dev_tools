@@ -2,12 +2,17 @@
 from __future__ import annotations
 from enum import IntEnum, Enum
 from pathlib import Path
-from typing import Iterable, List, Sequence, Tuple, cast, overload
+import time
+from typing import List, Sequence, Tuple, cast, overload
 import math
 
+from com.sun.star.animations import XAnimationNode
+from com.sun.star.animations import XAnimationNodeSupplier
 from com.sun.star.awt import XButton
 from com.sun.star.awt import XControlModel
 from com.sun.star.beans import XPropertySet
+from com.sun.star.container import XIndexContainer
+from com.sun.star.container import XNameContainer
 from com.sun.star.container import XNamed
 from com.sun.star.drawing import XControlShape
 from com.sun.star.drawing import XDrawPage
@@ -24,57 +29,69 @@ from com.sun.star.drawing import XMasterPagesSupplier
 from com.sun.star.drawing import XMasterPageTarget
 from com.sun.star.drawing import XShape
 from com.sun.star.drawing import XShapes
+from com.sun.star.form import XFormsSupplier
 from com.sun.star.frame import XComponentLoader
 from com.sun.star.frame import XController
 from com.sun.star.frame import XModel
 from com.sun.star.lang import XComponent
+from com.sun.star.lang import XSingleServiceFactory
+from com.sun.star.presentation import XCustomPresentationSupplier
 from com.sun.star.presentation import XHandoutMasterSupplier
+from com.sun.star.presentation import XPresentation2
 from com.sun.star.presentation import XPresentationPage
+from com.sun.star.presentation import XPresentationSupplier
+from com.sun.star.presentation import XSlideShowController
+from com.sun.star.style import XStyle
 from com.sun.star.text import XText
 from com.sun.star.text import XTextRange
 from com.sun.star.view import XSelectionSupplier
-from com.sun.star.container import XNameContainer
-from com.sun.star.style import XStyle
 
-from . import lo as mLo
-from . import info as mInfo
+from . import color as mColor
 from . import file_io as mFileIO
 from . import gui as mGui
-from . import props as mProps
-from . import color as mColor
 from . import images_lo as mImgLo
-from ..cfg.config import Config  # singleton class.
-from .type_var import PathOrStr
+from . import info as mInfo
+from . import lo as mLo
+from . import props as mProps
 from . import table_helper as mTblHelper
-from .kind.drawing_shape_kind import DrawingShapeKind
-from .kind.form_control_kind import FormControlKind
-from .kind.presentation_kind import PresentationKind
-from .kind.graphic_style_kind import GraphicStyleKind
+from ..cfg.config import Config  # singleton class.
+from .data_type.angle import Angle
+from .data_type.image_offset import ImageOffset
+from .data_type.intensity import Intensity
+from .kind.drawing_bitmap_kind import DrawingBitmapKind
 from .kind.drawing_gradient import DrawingGradientKind
 from .kind.drawing_hatching_kind import DrawingHatchingKind
-from .kind.drawing_bitmap_kind import DrawingBitmapKind
-from .data_type.intensity import Intensity
-from .data_type.image_offset import ImageOffset
-from .data_type.angle import Angle
+from .kind.drawing_shape_kind import DrawingShapeKind
+from .kind.form_control_kind import FormControlKind
+from .kind.graphic_style_kind import GraphicStyleKind
+from .kind.presentation_kind import PresentationKind
+from .type_var import PathOrStr
 
+from ooo.dyn.awt.gradient import Gradient
+from ooo.dyn.awt.gradient_style import GradientStyle
 from ooo.dyn.awt.point import Point
 from ooo.dyn.awt.size import Size
 from ooo.dyn.drawing.connector_type import ConnectorType
 from ooo.dyn.drawing.fill_style import FillStyle
 from ooo.dyn.drawing.glue_point2 import GluePoint2
+from ooo.dyn.drawing.homogen_matrix3 import HomogenMatrix3
 from ooo.dyn.drawing.line_dash import LineDash
 from ooo.dyn.drawing.line_style import LineStyle
 from ooo.dyn.drawing.poly_polygon_bezier_coords import PolyPolygonBezierCoords
 from ooo.dyn.drawing.polygon_flags import PolygonFlags
 from ooo.dyn.lang.illegal_argument_exception import IllegalArgumentException
-from ooo.dyn.awt.gradient import Gradient
-from ooo.dyn.awt.gradient_style import GradientStyle
-from ooo.dyn.drawing.homogen_matrix3 import HomogenMatrix3
+from ooo.dyn.presentation.animation_speed import AnimationSpeed as AnimationSpeedEnum
+from ooo.dyn.presentation.fade_effect import FadeEffect as FadeEffectEnum
 
 # endregion Imports
 
 
 class Draw:
+    # region uno enums
+    AnimationSpeed = AnimationSpeedEnum
+    FadeEffect = FadeEffectEnum
+    # endregion uno enums
+    
     # region Enums
     class GluePointsKind(IntEnum):
         TOP = 0
@@ -131,12 +148,12 @@ class Draw:
     class SlideShowKind(IntEnum):
         """DrawPage slide show change constants"""
 
-        CLICK_ALL_CHANGE = 0
-        """a mouse-click triggers the next animation effect or page change"""
         AUTO_CHANGE = 1
-        """everything (page change, animation effects) is automatic"""
+        """Everything (page change, animation effects) is automatic"""
+        CLICK_ALL_CHANGE = 0
+        """A mouse-click triggers the next animation effect or page change"""
         CLICK_PAGE_CHANGE = 2
-        """animation effects run automatically, but the user must click on the page to change it"""
+        """Animation effects run automatically, but the user must click on the page to change it"""
 
     # endregion Enums
 
@@ -3069,6 +3086,217 @@ class Draw:
         return shape.getShapeType() == "com.sun.star.drawing.GraphicObjectShape"
 
     # endregion draw an image
+
+    # region form manipulation
+    @staticmethod
+    def get_form_container(slide: XDrawPage) -> XIndexContainer | None:
+        """
+        Gets form container.
+        The first form in slide is returned if found.
+
+        Args:
+            slide (XDrawPage): Slide
+
+        Returns:
+            XIndexContainer | None: Form Container on success; Otherwise, ``None``.
+        """
+        try:
+            xsupp_forms = mLo.Lo.qi(XFormsSupplier, slide)
+            if xsupp_forms is None:
+                mLo.Lo.print("Could not access forms supplier")
+                return None
+
+            xforms_con = xsupp_forms.getForms()
+            if xforms_con is None:
+                mLo.Lo.print("Could not access forms container")
+                return None
+
+            xforms = mLo.Lo.qi(XIndexContainer, xforms_con, True)
+            xform = mLo.Lo.qi(XIndexContainer, xforms.getByIndex(0), True)
+            return xform
+        except Exception as e:
+            mLo.Lo.print("Could not find a form")
+            mLo.Lo.print(f"  {e}")
+        return None
+
+    # endregion form manipulation
+
+    # region slide show related
+    @staticmethod
+    def get_show(doc: XComponent) -> XPresentation2 | None:
+        """
+        Gets Slide show Presentation
+
+        Args:
+            doc (XComponent): Document
+
+        Returns:
+            XPresentation2 | None: Slide Show Presentation on success; Otherwise, ``None``.
+        """
+        try:
+            ps = mLo.Lo.qi(XPresentationSupplier, doc)
+            return mLo.Lo.qi(XPresentation2, ps.getPresentation(), True)
+        except Exception as e:
+            mLo.Lo.print("Unable to get Presentation")
+            mLo.Lo.print(f"  {e}")
+        return None
+
+    @staticmethod
+    def get_show_controller(show: XPresentation2) -> XSlideShowController | None:
+        """
+        Gets slide show controller
+
+        Args:
+            show (XPresentation2): Slide Show Presentation
+
+        Returns:
+            XSlideShowController | None: Slide Show Controller on success; Otherwise, ``None``.
+
+        Note:
+            It may take a little bit for the slides show to start.
+            For this reason this method will wait up to five seconds.
+        """
+        sc = show.getController()
+        # may return None if executed too quickly after start of show
+        if sc is not None:
+            return sc
+        timeout = 5.0  # wait time in seconds
+        try_sleep = 0.5
+        end_time = time.time() + timeout
+        while end_time > time.time():
+            time.sleep(try_sleep)  # give slide show time to start
+            sc = show.getController()
+            if sc is not None:
+                break
+        if sc is None:
+            mLo.Lo.print(f"Could obtain slide show controller after {timeout:.1f} seconds")
+        return sc
+
+    @staticmethod
+    def wait_ended(sc: XSlideShowController) -> None:
+        """
+        Wait for until the slide is ended, which occurs when he user exits the slide show.
+
+        Args:
+            sc (XSlideShowController): Slide Show Controller
+        """
+        while sc.getCurrentSlideIndex() != -1:
+            mLo.Lo.delay(1000)
+        mLo.Lo.print("End of presentation detected")
+
+    @staticmethod
+    def wait_last(sc: XSlideShowController, delay: int) -> None:
+        """
+        Wait for delay milli-seconds when the last slide is shown before returning.
+
+        Args:
+            sc (XSlideShowController): Slide Show Controller
+            delay (int): Delay in milli-seconds
+        """
+        wait = int(delay)
+        num_slides = sc.getSlideCount()
+        
+        while (sc.getCurrentSlideIndex() < num_slides -1):
+            mLo.Lo.delay(500)
+
+        if wait > 0:
+            mLo.Lo.delay(wait)
+    
+    @staticmethod
+    def set_transition(slide: XDrawPage, fade_effect:Draw.FadeEffect, speed: Draw.AnimationSpeed, change: SlideShowKind, duration: int) -> None:
+        """
+        Sets the transition for a slide.
+
+        Args:
+            slide (XDrawPage): Slide
+            fade_effect (Draw.FadeEffect): Fade Effect
+            speed (Draw.AnimationSpeed): Animation Speed
+            change (SlideShowKind): Slide show kind
+            duration (int): Duration of slide. Only used when ``change=Draw.SlideShowKind.AUTO_CHANGE``
+        """
+        # https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1presentation_1_1DrawPage-members.html
+        
+        try:
+            ps = mLo.Lo.qi(XPropertySet, slide, True)
+            ps.setPropertyValue("Effect", fade_effect)
+            ps.setPropertyValue("Speed", speed)
+            ps.setPropertyValue("Change", int(change))
+            # if change is Draw.SlideShowKind.AUTO_CHANGE
+            # then Duration is used
+            ps.setPropertyValue("Duration", abs(duration)) # in seconds
+        except Exception as e:
+            mLo.Lo.print("Could not set slide transition")
+            mLo.Lo.print(f'  {e}')
+    
+    @staticmethod
+    def get_play_list(doc: XComponent) -> XNameContainer:
+        """
+        Gets Play list
+
+        Args:
+            doc (XComponent): Document
+
+        Returns:
+            XNameContainer: Name Container
+        """
+        cp_supp = mLo.Lo.qi(XCustomPresentationSupplier, doc, True)
+        return cp_supp.getCustomPresentations()
+    
+    @classmethod
+    def build_play_list(cls, doc: XComponent, custom_name: str, *slide_idxs:int) -> XNameContainer | None:
+        """
+        build a named play list container of  slides from doc.
+        The name of the play list is ``custom_name``.
+
+        Args:
+            doc (XComponent): Document
+            custom_name (str): Name for play list
+            slide_idxs (int): One or more index's of existing slides to add to play list.
+
+        Returns:
+            XNameContainer | None: Name Container on success; Otherwise, ``None``
+        """
+        # get a named container for holding the custom play list
+        play_list = cls.get_play_list(doc)
+        try:
+            # create an indexed container for the play list
+            xfactory = mLo.Lo.qi(XSingleServiceFactory, play_list, True)
+            slides_con = mLo.Lo.qi(XIndexContainer, xfactory.createInstance(), True)
+            
+            # container holds slide references whose indicies come from slideIdxs
+            mLo.Lo.print("Building play list using:")
+            j = 0
+            for i in slide_idxs:
+                slide = cls._get_slide_doc(doc, i)
+                if slide is None:
+                    continue
+                slides_con.insertByIndex(j, slide)
+                j += 1
+                mLo.Lo.print(f'  Slide {i}')
+            
+            # store the play list under the custom name
+            play_list.insertByName(custom_name, slides_con)
+            mLo.Lo.print(f'lay list stored under the name: "{custom_name}"')
+            return play_list
+        except Exception as e:
+            mLo.Lo.print('Unable to build play list.')
+            mLo.Lo.print(f'  {e}')
+        return None
+    
+    @staticmethod
+    def get_animation_node(slide: XDrawPage) -> XAnimationNode:
+        """
+        Gets Animation Node
+
+        Args:
+            slide (XDrawPage): Slide
+
+        Returns:
+            XAnimationNode: Animation Node
+        """
+        node_supp = mLo.Lo.qi(XAnimationNodeSupplier, slide, True)
+        return node_supp.getAnimationNode()
+    # endregion slide show related
 
     # region helper
     @staticmethod
