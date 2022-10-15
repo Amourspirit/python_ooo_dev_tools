@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 from datetime import datetime, timezone
+from re import X
 import time
 import types
 from typing import TYPE_CHECKING, Any, Iterable, Optional, List, Tuple, cast, overload, Type
@@ -346,7 +347,8 @@ class Lo(metaclass=StaticProperty):
     @classmethod
     def get_service_factory(cls) -> XMultiServiceFactory:
         """Gets current multi service factory"""
-        return cls._bridge_component
+        # return cls._bridge_component
+        return cls._ms_factory
 
     # region interface object creation
 

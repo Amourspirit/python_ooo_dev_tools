@@ -14,12 +14,21 @@ from com.sun.star.lang import XMultiServiceFactory
 from com.sun.star.chart import XDiagram
 from com.sun.star.drawing import XDrawPageSupplier
 from com.sun.star.drawing import XShape
+from com.sun.star.drawing import XDrawPage
+from com.sun.star.beans import XPropertySet
+from com.sun.star.text import XTextDocument
+from com.sun.star.text import XTextContent
+
+from .kind.drawing_shape_kind import DrawingShapeKind
 
 from ooo.dyn.table.cell_range_address import CellRangeAddress
 from ooo.dyn.awt.rectangle import Rectangle
+from ooo.dyn.text.vert_orientation import VertOrientation
+from ooo.dyn.text.hori_orientation import HoriOrientation
 
 from . import lo as mLo
 from . import props as mProps
+from . import draw as mDraw
 from ..exceptions import ex as mEx
 
 # endregion Imports
@@ -33,7 +42,7 @@ class Chart:
     # public static final int SHOW_CATEGORY = 4
     # public static final int CHECK_LEGEND = 16
 
-    class DiagramEnum(str, Enum):
+    class DiagramKind(str, Enum):
         AREA_DIAGRAM = "AreaDiagram"
         BAR_DIAGRAM = "BarDiagram"
         BUBBLE_DIAGRAM = "BubbleDiagram"
@@ -48,16 +57,18 @@ class Chart:
         def __str__(self) -> str:
             return self._value_
 
+    # region insert_chart()
     @overload
     @classmethod
     def insert_chart(
-        cls,
-        sheet: XSpreadsheet,
-        chart_name: str,
-        cells_range: CellRangeAddress,
-        width: int,
-        height: int,
-        diagram_name: str | None,
+        cls, slide: XDrawPage, x: int, y: int, width: int, height: int, diagram_name: Chart.DiagramKind | str
+    ) -> XChartDocument:
+        ...
+
+    @overload
+    @classmethod
+    def insert_chart(
+        cls, doc: XTextDocument, x: int, y: int, width: int, height: int, diagram_name: Chart.DiagramKind | str
     ) -> XChartDocument:
         ...
 
@@ -70,51 +81,55 @@ class Chart:
         cells_range: CellRangeAddress,
         width: int,
         height: int,
-        diagram_name: str | None,
+        diagram_name: Chart.DiagramKind | str,
+    ) -> XChartDocument:
+        ...
+
+    @overload
+    @classmethod
+    def insert_chart(
+        cls,
+        sheet: XSpreadsheet,
+        chart_name: str,
+        cells_range: CellRangeAddress,
         x: int,
         y: int,
+        width: int,
+        height: int,
+        diagram_name: Chart.DiagramKind | str,
     ) -> XChartDocument:
         ...
 
     @classmethod
-    def insert_chart(
+    def _insert_chart_slide(
+        cls, slide: XDrawPage, x: int, y: int, width: int, height: int, diagram_name: Chart.DiagramKind | str
+    ) -> XChartDocument | None:
+        ashape = mDraw.Draw.add_shape(
+            slide=slide,
+            shape_type=DrawingShapeKind.OLE2_SHAPE,
+            x=x,
+            y=y,
+            width=width,
+            height=height,
+        )
+        if ashape is None:
+            return None
+        chart_doc = cls._get_chart_doc_shape(ashape)
+        cls.set_chart_type(chart_doc=chart_doc, diagram_name=diagram_name)
+        return chart_doc
+
+    @classmethod
+    def _insert_chart_sheet(
         cls,
         sheet: XSpreadsheet,
         chart_name: str,
         cells_range: CellRangeAddress,
+        x: int,
+        y: int,
         width: int,
         height: int,
-        diagram_name: str | None,
-        x: int = 1,
-        y: int = 1,
+        diagram_name: Chart.DiagramKind | str,
     ) -> XChartDocument:
-        """
-        Insert a chart using the given name as name of the OLE object and
-        the range as corresponding
-        range of data to be used for rendering.  The chart is placed in the sheet
-        for charts at position (1,1) extending as large as given in chartSize.
-
-        The diagram name must be the name of a diagram service (i.e one
-        in "com.sun.star.chart.") that can be
-        instantiated via the factory of the chart document
-
-        Args:
-            sheet (XSpreadsheet): Spreadsheet
-            chart_name (str): Name of chart
-            cells_range (CellRangeAddress): Cells range
-            width (int): Width
-            height (int): Height
-            diagram_name (str | None): Diagram Name
-            x (int, optional): Chart X position. Defaults to 1.
-            y (int, optional): Chart y Position. Defaults to 1.
-
-        Raises:
-            ChartNoAccessError: If unable to get access to chart table.
-            ChartExistingError: If chart already exist.
-
-        Returns:
-            XChartDocument: _description_
-        """
         tbl_charts = cls.get_table_charts(sheet)
         tc_access = mLo.Lo.qi(XNameAccess, tbl_charts)
         if tc_access is None:
@@ -139,6 +154,181 @@ class Chart:
         if diagram_name is not None:
             cls.set_chart_type(chart_doc, diagram_name)
         return chart_doc
+
+    @classmethod
+    def _insert_chart_doc(
+        cls, doc: XTextDocument, x: int, y: int, width: int, height: int, diagram_name: Chart.DiagramKind | str
+    ) -> XChartDocument:
+        try:
+            tc = mLo.Lo.create_instance_msf(XTextContent, "com.sun.star.text.TextEmbeddedObject", raise_err=True)
+            ps = mLo.Lo.qi(XPropertySet, tc, True)
+            ps.setPropertyValue("CLSID", str(mLo.Lo.CLSID.CHART))
+
+            xtext = doc.getText()
+            cursor = xtext.createTextCursor()
+
+            # insert embedded object in text -> object will be created
+            xtext.insertTextContent(cursor, tc, True)
+
+            # set size and position
+            shape = mLo.Lo.qi(XShape, tc, True)
+            shape.setSize(mDraw.Draw.Size(width * 1_000, height * 1_000))
+
+            ps.setPropertyValue("VertOrient", VertOrientation.NONE)
+            ps.setPropertyValue("HoriOrient", HoriOrientation.NONE)
+            ps.setPropertyValue("VertOrientPosition", y * 1_000)
+            ps.setPropertyValue("HoriOrientPosition", x * 1_000)
+
+            # retrieve the chart document as model of the OLE shape
+            chart_doc = mLo.Lo.qi(XChartDocument, ps.getPropertyValue("Model"))
+            if chart_doc is not None:
+                cls.set_chart_type(chart_doc=chart_doc, diagram_name=diagram_name)
+        except Exception as e:
+            raise mEx.ChartError("Unable to insert chart") from e
+
+    @classmethod
+    def insert_chart(cls, *args, **kwargs) -> XChartDocument:
+        """
+        Insert a chart using the given name as name of the OLE object and
+        the range as corresponding
+        range of data to be used for rendering.  The chart is placed in the sheet
+        for charts at position (1,1) extending as large as given in chartSize.
+
+        The diagram name must be the name of a diagram service (i.e one
+        in "com.sun.star.chart.") that can be
+        instantiated via the factory of the chart document
+
+        Args:
+            slide (XDrawPage): Draw page
+            doc (XTextDocument): Document
+            sheet (XSpreadsheet): Spreadsheet
+            chart_name (str): Name of chart
+            cells_range (CellRangeAddress): Cells range
+            width (int): Width
+            height (int): Height
+            diagram_name (DiagramKind | str): Diagram Name
+            x (int, optional): Chart X position. Defaults to 1.
+            y (int, optional): Chart y Position. Defaults to 1.
+
+        Raises:
+            ChartNoAccessError: If unable to get access to chart table.
+            ChartExistingError: If chart already exist.
+            ChartError: If unable to insert chart.
+
+        Returns:
+            XChartDocument: Chart Document
+        """
+        ordered_keys = (1, 2, 3, 4)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
+
+        def get_kwargs() -> dict:
+            ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = (
+                "slide",
+                "sheet",
+                "doc",
+                "chart_name",
+                "cells_range",
+                "diagram_name",
+                "x",
+                "y",
+                "width",
+                "height",
+            )
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("insert_chart() got an unexpected keyword argument")
+            keys = ("slide", "sheet", "doc")
+            for key in keys:
+                if key in kwargs:
+                    ka[1] = kwargs[key]
+                    break
+            keys = ("x", "chart_name")
+            for key in keys:
+                if key in kwargs:
+                    ka[2] = kwargs[key]
+                    break
+            keys = ("y", "cells_range")
+            for key in keys:
+                if key in kwargs:
+                    ka[3] = kwargs[key]
+                    break
+            keys = ("width", "x")
+            for key in keys:
+                if key in kwargs:
+                    ka[4] = kwargs[key]
+                    break
+            keys = ("height", "y")
+            for key in keys:
+                if key in kwargs:
+                    ka[5] = kwargs[key]
+                    break
+            keys = ("diagram_name", "width")
+            for key in keys:
+                if key in kwargs:
+                    ka[6] = kwargs[key]
+                    break
+            if count == 6:
+                return ka
+            ka[7] = ka.get("height", None)
+            ka[8] = ka.get("diagram_name", None)
+            return ka
+
+        if not count in (6, 8):
+            raise TypeError("insert_chart() got an invalid number of arguments")
+
+        kargs = get_kwargs()
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
+
+        if count == 6:
+            obj2 = kargs[2]  # must be int or str
+            if isinstance(obj2, str):
+                return cls._insert_chart_sheet(
+                    sheet=kargs[1],
+                    chart_name=obj2,
+                    cells_range=kargs[3],
+                    x=1,
+                    y=1,
+                    width=kargs[4],
+                    height=kargs[5],
+                    diagram_name=kargs[6],
+                )
+            slide = mLo.Lo.qi(XDrawPage, kargs[1])
+            if slide is None:
+                return cls._insert_chart_doc(
+                    doc=kargs[1],
+                    x=obj2,
+                    y=kargs[3],
+                    width=kargs[4],
+                    height=kargs[5],
+                    diagram_name=kargs[6],
+                )
+            else:
+                return cls._insert_chart_slide(
+                    slide=slide,
+                    x=obj2,
+                    y=kargs[3],
+                    width=kargs[4],
+                    height=kargs[5],
+                    diagram_name=kargs[6],
+                )
+        else:
+            return cls._insert_chart_sheet(
+                sheet=kargs[1],
+                chart_name=kargs[2],
+                cells_range=kargs[3],
+                x=kargs[4],
+                y=kargs[5],
+                width=kargs[6],
+                height=kargs[7],
+                diagram_name=kargs[8],
+            )
+
+    # endregion insert_chart()
 
     @classmethod
     def get_table_chart_access(cls, sheet: XSpreadsheet) -> XNameAccess:
@@ -226,9 +416,12 @@ class Chart:
         Returns:
             XChartDocument: Chart Document Interface
         """
-        eos = mLo.Lo.qi(XEmbeddedObjectSupplier, tbl_chart, True)
-        intf = eos.getEmbeddedObject()
-        return mLo.Lo.qi(XChartDocument, intf, True)
+        try:
+            eos = mLo.Lo.qi(XEmbeddedObjectSupplier, tbl_chart, True)
+            intf = eos.getEmbeddedObject()
+            return mLo.Lo.qi(XChartDocument, intf, True)
+        except Exception as e:
+            raise mEx.ChartError("Unable to get chart.") from e
 
     @classmethod
     def _get_chart_doc_sheet_chart_name(cls, sheet: XSpreadsheet, chart_name: str) -> XChartDocument:
@@ -246,6 +439,28 @@ class Chart:
             raise mEx.ChartError("Unable to get name access to chart table") from e
         return cls._get_chart_doc_tbl_chart(tbl_chart)
 
+    @staticmethod
+    def _get_chart_doc_shape(shape: XShape) -> XChartDocument:
+        try:
+            # change the LOL shape into a chart
+            shape_props = mLo.Lo.qi(XPropertySet, shape)
+            if shape_props is None:
+                mLo.Lo.print("Unable to access shape properties")
+                return None
+            # set the class id for charts
+            # shape_props.setPropertyValue("CLSID", str(mLo.Lo.CLSID.CHART))
+
+            # retrieve the chart document as model of the OLE shape
+            chart_doc = mLo.Lo.qi(XChartDocument, shape_props.getPropertyValue("Model"), True)
+            return chart_doc
+        except Exception as e:
+            raise mEx.ChartError("Couldn't change the OLE shape into a chart.") from e
+
+    @overload
+    @classmethod
+    def get_chart_doc(cls, shape: XShape) -> XChartDocument:
+        ...
+
     @overload
     @classmethod
     def get_chart_doc(cls, tbl_chart: XTableChart) -> XChartDocument:
@@ -262,9 +477,14 @@ class Chart:
         Gets chart document
 
         Args:
+            shape (XShape): Shape object
             tbl_chart (XTableChart): Table Chart
             sheet: SpreadSheet
             chart_name (str): Chart Name
+
+        Raises:
+            ChartNotExistingError: If chart is not existing.
+            ChartError: If chart error occurs.
 
         Returns:
             XChartDocument: Chart Document Interface
@@ -277,11 +497,11 @@ class Chart:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ("tbl_chart", "sheet", "chart_name")
+            valid_keys = ("tbl_chart", "shape", "sheet", "chart_name")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("get_chart_doc() got an unexpected keyword argument")
-            keys = ("tbl_chart", "sheet")
+            keys = ("tbl_chart", "sheet", "shape")
             for key in keys:
                 if key in kwargs:
                     ka[1] = kwargs[key]
@@ -299,14 +519,20 @@ class Chart:
             kargs[ordered_keys[i]] = arg
 
         if count == 1:
-            return cls._get_chart_doc_tbl_chart(kargs[1])
+            # def get_chart_doc(cls, shape: XShape)
+            # def get_chart_doc(cls, tbl_chart: XTableChart)
+            shape = mLo.Lo.qi(XShape, kargs[1])
+            if shape is None:
+                return cls._get_chart_doc_tbl_chart(kargs[1])
+            else:
+                return cls._get_chart_doc_shape(shape)
 
         return cls._get_chart_doc_sheet_chart_name(kargs[1], kargs[2])
 
     # endregion get_chart_doc()
 
     @staticmethod
-    def set_chart_type(chart_doc: XChartDocument, diagram_name: Chart.DiagramEnum | str) -> None:
+    def set_chart_type(chart_doc: XChartDocument, diagram_name: Chart.DiagramKind | str) -> None:
         """
         Sets chart diagram name
 
@@ -420,7 +646,5 @@ class Chart:
         return shape
 
     # region Chart inside Draw
-
-    # work in progress. Need to create Draw class
 
     # endregion Chart inside Draw
