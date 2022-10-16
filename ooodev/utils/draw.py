@@ -6,9 +6,9 @@ import time
 from typing import List, Sequence, Tuple, cast, overload
 import math
 
+# from com.sun.star.awt import XButton
 from com.sun.star.animations import XAnimationNode
 from com.sun.star.animations import XAnimationNodeSupplier
-from com.sun.star.awt import XButton
 from com.sun.star.awt import XControlModel
 from com.sun.star.beans import XPropertySet
 from com.sun.star.container import XIndexContainer
@@ -55,9 +55,11 @@ from . import lo as mLo
 from . import props as mProps
 from . import table_helper as mTblHelper
 from ..cfg.config import Config  # singleton class.
+from ..exceptions import ex as mEx
 from .data_type.angle import Angle
 from .data_type.image_offset import ImageOffset
 from .data_type.intensity import Intensity
+from .data_type.poly_sides import PolySides
 from .kind.drawing_bitmap_kind import DrawingBitmapKind
 from .kind.drawing_gradient import DrawingGradientKind
 from .kind.drawing_hatching_kind import DrawingHatchingKind
@@ -82,6 +84,8 @@ from ooo.dyn.drawing.polygon_flags import PolygonFlags as PolygonFlagsEnum
 from ooo.dyn.lang.illegal_argument_exception import IllegalArgumentException
 from ooo.dyn.presentation.animation_speed import AnimationSpeed as AnimationSpeedEnum
 from ooo.dyn.presentation.fade_effect import FadeEffect as FadeEffectEnum
+from ooo.dyn.container.no_such_element_exception import NoSuchElementException
+from ooo.dyn.lang.index_out_of_bounds_exception import IndexOutOfBoundsException
 
 # endregion Imports
 
@@ -334,30 +338,30 @@ class Draw:
     # region get_slide()
 
     @classmethod
-    def _get_slide_doc(cls, doc: XComponent, idx: int) -> XDrawPage | None:
+    def _get_slide_doc(cls, doc: XComponent, idx: int) -> XDrawPage:
         return cls._get_slide_slides(cls.get_slides(doc), idx)
 
     @staticmethod
-    def _get_slide_slides(slides: XDrawPages, idx: int) -> XDrawPage | None:
+    def _get_slide_slides(slides: XDrawPages, idx: int) -> XDrawPage:
         slide = None
         try:
             slide = mLo.Lo.qi(XDrawPage, slides.getByIndex(idx))
-        except Exception:
-            mLo.Lo.print(f"Could not get slide: {idx}")
+        except Exception as e:
+            raise mEx.DrawError(f"Could not get slide: {idx}") from e
         return slide
 
     @overload
     @classmethod
-    def get_slide(cls, doc: XComponent, idx: int) -> XDrawPage | None:
+    def get_slide(cls, doc: XComponent, idx: int) -> XDrawPage:
         ...
 
     @overload
     @classmethod
-    def get_slide(cls, slides: XDrawPages, idx: int) -> XDrawPage | None:
+    def get_slide(cls, slides: XDrawPages, idx: int) -> XDrawPage:
         ...
 
     @classmethod
-    def get_slide(cls, *args, **kwargs) -> XDrawPage | None:
+    def get_slide(cls, *args, **kwargs) -> XDrawPage:
         """
         Gets slide by page index
 
@@ -366,8 +370,11 @@ class Draw:
             slides (XDrawPages): Draw Pages
             idx (int): Index of slide
 
+        Raises:
+            DrawError: If unable to get slide
+
         Returns:
-            XDrawPage | None: Slide if found; Otherwise ``None``.
+            XDrawPage: Slide as Draw Page.
         """
         ordered_keys = (1, 2)
         kargs_len = len(kwargs)
@@ -659,7 +666,7 @@ class Draw:
         return True
 
     @classmethod
-    def duplicate(cls, doc: XComponent, idx: int) -> XDrawPage | None:
+    def duplicate(cls, doc: XComponent, idx: int) -> XDrawPage:
         """
         Duplicates a slide
 
@@ -667,21 +674,25 @@ class Draw:
             doc (XComponent): Document
             idx (int): Index of slide to duplicate.
 
+        Raises:
+            DrawError If unable to create duplicate.
+
         Returns:
-            XDrawPage | None: Duplicated slide if created; Otherwise, ``None``
+            XDrawPage: Duplicated slide if created; Otherwise, ``None``
         """
         dup = mLo.Lo.qi(XDrawPageDuplicator, doc, True)
         from_slide = cls._get_slide_doc(doc, idx)
-        if from_slide is None:
-            return None
         # places copy after original
-        return dup.duplicate(from_slide)
+        duplicate = dup.duplicate(from_slide)
+        if duplicate is None:
+            raise mEx.DrawError("Unable to create duplicate")
+        return duplicate
 
     # endregion methods related to document/multiple slides/pages
 
     # region Layer Management
     @staticmethod
-    def get_layer(doc: XComponent, layer_name: str) -> XLayer | None:
+    def get_layer(doc: XComponent, layer_name: str) -> XLayer:
         """
         Gets layer from layer name
 
@@ -689,20 +700,24 @@ class Draw:
             doc (XComponent): Document
             layer_name (str): Layer Name
 
+        Raises:
+            DrawError: If unable to get layer
+            NoSuchElementException: If ``layer_name`` does not exist.
+
         Returns:
-            XLayer | None: Layer if found; Otherwise, ``None``
+            XLayer: Found Layer
         """
         layer_supplier = mLo.Lo.qi(XLayerSupplier, doc, True)
         xname_access = layer_supplier.getLayerManager()
         try:
             return mLo.Lo.qi(XLayer, xname_access.getByName(layer_name), True)
+        except NoSuchElementException:
+            raise
         except Exception as e:
-            mLo.Lo.print(f'Could not find the layer "{layer_name}"')
-            mLo.Lo.print(f"  {e}")
-        return None
+            raise mEx.DrawError(f'Could not find the layer "{layer_name}"') from e
 
     @staticmethod
-    def add_layer(lm: XLayerManager, layer_name: str) -> XLayer | None:
+    def add_layer(lm: XLayerManager, layer_name: str) -> XLayer:
         """
         Adds a layer
 
@@ -711,7 +726,7 @@ class Draw:
             layer_name (str): Layer Name
 
         Returns:
-            XLayer | None: Newly added layer on success; Otherwise, ``None``
+            XLayer: Newly added layer.
         """
         layer = None
         try:
@@ -721,8 +736,7 @@ class Draw:
             props.setPropertyValue("IsVisible", True)
             props.setPropertyValue("IsLocked", False)
         except Exception as e:
-            mLo.Lo.print(f'Could not add the layer "{layer_name}"')
-            mLo.Lo.print(f"  {e}")
+            raise mEx.DrawError(f'Could not add the layer "{layer_name}"') from e
         return layer
 
     # endregion Layer Management
@@ -907,32 +921,36 @@ class Draw:
 
     # region get_master_page()
     @staticmethod
-    def _get_master_page_idx(doc: XComponent, idx: int) -> XDrawPage | None:
+    def _get_master_page_idx(doc: XComponent, idx: int) -> XDrawPage:
         try:
             mp_supp = mLo.Lo.qi(XMasterPagesSupplier, doc)
             pgs = mp_supp.getMasterPages()
             return mLo.Lo.qi(XDrawPage, pgs.getByIndex(idx), True)
+        except IndexOutOfBoundsException:
+            raise IndexError(f'Index "{idx}" is out of range')
         except Exception:
-            mLo.Lo.print(f"Could not find master slide for index: {idx}")
-        return None
+            raise mEx.DrawPageError(f"Could not find master slide for index: {idx}")
 
     @staticmethod
-    def _get_master_page_slide(slide: XDrawPage) -> XDrawPage | None:
-        mp_target = mLo.Lo.qi(XMasterPageTarget, slide)
-        return mp_target.getMasterPage()
+    def _get_master_page_slide(slide: XDrawPage) -> XDrawPage:
+        try:
+            mp_target = mLo.Lo.qi(XMasterPageTarget, slide, True)
+            return mp_target.getMasterPage()
+        except Exception as e:
+            raise mEx.DrawPageError("Unable to get master page") from e
 
     @overload
     @classmethod
-    def get_master_page(cls, doc: XComponent, idx: int) -> XDrawPage | None:
+    def get_master_page(cls, doc: XComponent, idx: int) -> XDrawPage:
         ...
 
     @overload
     @classmethod
-    def get_master_page(cls, slide: XDrawPage) -> XDrawPage | None:
+    def get_master_page(cls, slide: XDrawPage) -> XDrawPage:
         ...
 
     @classmethod
-    def get_master_page(cls, *args, **kwargs) -> XDrawPage | None:
+    def get_master_page(cls, *args, **kwargs) -> XDrawPage:
         """
         Gets master page
 
@@ -941,8 +959,12 @@ class Draw:
             idx (int): Index of page
             slide (XDrawPage): Slide to get master page from.
 
+        Raises:
+            DrawPageError: if unable to get master page.
+            IndexError: if ``idx`` is out of bounds.
+
         Returns:
-            XDrawPage | None: Draw page if found; Otherwise ``None``
+            XDrawPage: Draw page if found; Otherwise ``None``
         """
         ordered_keys = (1, 2)
         kargs_len = len(kwargs)
@@ -989,12 +1011,18 @@ class Draw:
             doc (XComponent): Document
             idx (int): Index used to insert page
 
+        Raises:
+            DrawPageError: If unable to insert master page.
+
         Returns:
             XDrawPage: The newly inserted draw page.
         """
-        mp_supp = mLo.Lo.qi(XMasterPagesSupplier, doc, True)
-        pgs = mp_supp.getMasterPages()
-        pgs.insertNewByIndex(idx)
+        try:
+            mp_supp = mLo.Lo.qi(XMasterPagesSupplier, doc, True)
+            pgs = mp_supp.getMasterPages()
+            pgs.insertNewByIndex(idx)
+        except Exception as e:
+            raise mEx.DrawPageError("Unable to insert master page") from e
 
     @staticmethod
     def remove_master_page(doc: XComponent, slide: XDrawPage) -> None:
@@ -1004,10 +1032,16 @@ class Draw:
         Args:
             doc (XComponent): Document
             slide (XDrawPage): Draw page to remove
+
+        Raises:
+            DrawError: If unable to remove master page/
         """
-        mp_supp = mLo.Lo.qi(XMasterPagesSupplier, doc, True)
-        pgs = mp_supp.getMasterPages()
-        pgs.remove(slide)
+        try:
+            mp_supp = mLo.Lo.qi(XMasterPagesSupplier, doc, True)
+            pgs = mp_supp.getMasterPages()
+            pgs.remove(slide)
+        except Exception as e:
+            raise mEx.DrawError("Unable to remove master page") from e
 
     @staticmethod
     def set_master_page(slide: XDrawPage, page: XDrawPage) -> None:
@@ -1017,9 +1051,15 @@ class Draw:
         Args:
             slide (XDrawPage): Slide
             page (XDrawPage): Page to set as master
+
+        Raises:
+            DrawError: If unable to set master page.
         """
-        mp_target = mLo.Lo.qi(XMasterPageTarget, slide, True)
-        mp_target.setMasterPage(page)
+        try:
+            mp_target = mLo.Lo.qi(XMasterPageTarget, slide, True)
+            mp_target.setMasterPage(page)
+        except Exception as e:
+            raise mEx.DrawError("Unable to set master page") from e
 
     @staticmethod
     def get_handout_master_page(doc: XComponent) -> XDrawPage:
@@ -1029,14 +1069,24 @@ class Draw:
         Args:
             doc (XComponent): Document
 
+        Raises:
+            DrawError: If unable to get hand-out master page.
+            DrawPageMissingError: If Draw Page is ``None``.
+
         Returns:
             XDrawPage: Draw Page
         """
-        hm_supp = mLo.Lo.qi(XHandoutMasterSupplier, doc, True)
-        return hm_supp.getHandoutMasterPage()
+        try:
+            hm_supp = mLo.Lo.qi(XHandoutMasterSupplier, doc, True)
+            result = hm_supp.getHandoutMasterPage()
+        except Exception as e:
+            raise mEx.DrawError("Unable to get hand-out master page") from e
+        if result is None:
+            raise mEx.DrawPageMissingError("Unable to get hand-out master page")
+        return result
 
     @staticmethod
-    def find_master_page(doc: XComponent, style: str) -> XDrawPage | None:
+    def find_master_page(doc: XComponent, style: str) -> XDrawPage:
         """
         Finds master page
 
@@ -1044,8 +1094,12 @@ class Draw:
             doc (XComponent): Document
             style (str): Style of master page
 
+        Raises:
+            DrawPageMissingError: If unable to match ``style``.
+            DrawPageError: if any other error occurs.
+
         Returns:
-            XDrawPage | None: Master page as Draw Page if found; Otherwise, ``None``.
+            XDrawPage: Master page as Draw Page if found.
         """
         try:
             mp_supp = mLo.Lo.qi(XMasterPagesSupplier, doc, True)
@@ -1056,13 +1110,11 @@ class Draw:
                 nm = str(mProps.Props.get_property(obj=pg, name="LinkDisplayName"))
                 if style == nm:
                     return pg
-            mLo.Lo.print(f'Could not find master slide with style of: "{style}"')
-            return None
+            raise mEx.DrawPageMissingError(f'Could not find master slide with style of: "{style}"')
+        except mEx.DrawPageMissingError:
+            raise
         except Exception as e:
-            mLo.Lo.print("Could not find master slide")
-            mLo.Lo.print(f"  {e}")
-
-        return None
+            raise mEx.DrawPageError("Could not find master slide") from e
 
     # endregion master page methods
 
@@ -1082,34 +1134,43 @@ class Draw:
 
     @classmethod
     def get_slide_title(cls, slide: XDrawPage) -> str | None:
+        """
+        Gets slide title if it exist.
+
+        Args:
+            slide (XDrawPage): Slide
+
+        Returns:
+            str | None: Slide Title on success; Otherwise, ``None``.
+        """
         shape = cls.find_shape_by_type(slide=slide, shape_type=str(Draw.NameSpaceKind.TITLE_TEXT))
         if shape is None:
             return None
         return cls._get_shape_text_shape(shape)
 
     @staticmethod
-    def get_slide_size(slide: XDrawPage) -> Draw.Size | None:
+    def get_slide_size(slide: XDrawPage) -> Draw.Size:
         """
         Gets slide size
 
         Args:
             slide (XDrawPage): Slide
 
+        Raises:
+            SizeError: If unable to get size.
+
         Returns:
-            Size | None: Size object on success; Otherwise, ``None``.
+            Size: Size struct.
         """
         try:
             props = mLo.Lo.qi(XPropertySet, slide)
             if props is None:
-                mLo.Lo.print("No slide properties found")
-                return None
+                raise mEx.PropertySetMissingError("No slide properties found")
             width = int(props.getPropertyValue("Width"))
             height = int(props.getPropertyValue("Height"))
             return Draw.Size(width, height)
         except Exception as e:
-            mLo.Lo.print("Could not get page dimensions")
-            mLo.Lo.print(f"  {e}")
-        return None
+            raise mEx.SizeError("Could not get page dimensions") from e
 
     @staticmethod
     def set_name(slide: XDrawPage, name: str) -> None:
@@ -1119,9 +1180,15 @@ class Draw:
         Args:
             slide (XDrawPage): Slide
             name (str): Name
+
+        Raises:
+            DrawError: If error occurs setting name.
         """
-        xpage_name = mLo.Lo.qi(XNamed, slide, True)
-        xpage_name.setName(name)
+        try:
+            xpage_name = mLo.Lo.qi(XNamed, slide, True)
+            xpage_name.setName(name)
+        except Exception as e:
+            raise mEx.DrawError("Unalbe to set Name") from e
 
     @classmethod
     def title_slide(cls, slide: XDrawPage, title: str, sub_title: str) -> None:
@@ -1132,20 +1199,26 @@ class Draw:
             slide (XDrawPage): Slide
             title (str): Title
             sub_title (str): Sub Title
+
+        Raises:
+            DrawError: If error setting Slide
         """
-        # Add text to the slide page by treating it as a title page, which
-        # has two text shapes: one for the title, the other for a subtitle
-        mProps.Props.set_property(obj=slide, name="Layout", value=int(Draw.LayoutKind.TITLE_SUB))
+        try:
+            # Add text to the slide page by treating it as a title page, which
+            # has two text shapes: one for the title, the other for a subtitle
+            mProps.Props.set_property(obj=slide, name="Layout", value=int(Draw.LayoutKind.TITLE_SUB))
 
-        # add the title text to the title shape
-        xs = cls.find_shape_by_type(slide=slide, shape_type=Draw.NameSpaceKind.TITLE_TEXT)
-        txt_field = mLo.Lo.qi(XText, xs, True)
-        txt_field.setString(title)
+            # add the title text to the title shape
+            xs = cls.find_shape_by_type(slide=slide, shape_type=Draw.NameSpaceKind.TITLE_TEXT)
+            txt_field = mLo.Lo.qi(XText, xs, True)
+            txt_field.setString(title)
 
-        # add the subtitle text to the subtitle shape
-        xs = cls.find_shape_by_type(slide=slide, shape_type=Draw.NameSpaceKind.SUBTITLE_TEXT)
-        txt_field = mLo.Lo.qi(XText, xs, True)
-        txt_field.setString(sub_title)
+            # add the subtitle text to the subtitle shape
+            xs = cls.find_shape_by_type(slide=slide, shape_type=Draw.NameSpaceKind.SUBTITLE_TEXT)
+            txt_field = mLo.Lo.qi(XText, xs, True)
+            txt_field.setString(sub_title)
+        except Exception as e:
+            raise mEx.DrawError("Eror setting Slide") from e
 
     @classmethod
     def bullets_slide(cls, slide: XDrawPage, title: str) -> XText:
@@ -1159,19 +1232,25 @@ class Draw:
             slide (XDrawPage): Slide
             title (str): Title
 
+        Raises:
+            DrawError: If error setting slide.
+
         Returns:
             XText: Text Object
         """
-        mProps.Props.set_property(obj=slide, name="Layout", value=int(Draw.LayoutKind.TITLE_BULLETS))
+        try:
+            mProps.Props.set_property(obj=slide, name="Layout", value=int(Draw.LayoutKind.TITLE_BULLETS))
 
-        # add the title text to the title shape
-        xs = cls.find_shape_by_type(slide=slide, shape_type=Draw.NameSpaceKind.TITLE_TEXT)
-        txt_field = mLo.Lo.qi(XText, xs, True)
-        txt_field.setString(title)
+            # add the title text to the title shape
+            xs = cls.find_shape_by_type(slide=slide, shape_type=Draw.NameSpaceKind.TITLE_TEXT)
+            txt_field = mLo.Lo.qi(XText, xs, True)
+            txt_field.setString(title)
 
-        # return a reference to the bullet text area
-        xs = cls.find_shape_by_type(slide=slide, shape_type=Draw.NameSpaceKind.BULLETS_TEXT)
-        return mLo.Lo.qi(XText, xs, True)
+            # return a reference to the bullet text area
+            xs = cls.find_shape_by_type(slide=slide, shape_type=Draw.NameSpaceKind.BULLETS_TEXT)
+            return mLo.Lo.qi(XText, xs, True)
+        except Exception as e:
+            raise mEx.DrawError("Error occured setting bullets slide")
 
     @staticmethod
     def add_bullet(bulls_txt: XText, level: int, text: str) -> None:
@@ -1184,15 +1263,21 @@ class Draw:
             bulls_txt (XText): Text object
             level (int): Bullet Level
             text (str): Bullet Text
+
+        Raises:
+            DrawError: If error adding bullet.
         """
-        # access the end of the bullets text
-        bulls_txt_end = mLo.Lo.qi(XTextRange, bulls_txt, True).getEnd()
+        try:
+            # access the end of the bullets text
+            bulls_txt_end = mLo.Lo.qi(XTextRange, bulls_txt, True).getEnd()
 
-        # set the bullet's level
-        mProps.Props.set_property(obj=bulls_txt_end, name="NumberingLevel", value=level)
+            # set the bullet's level
+            mProps.Props.set_property(obj=bulls_txt_end, name="NumberingLevel", value=level)
 
-        # add the text
-        bulls_txt_end.setString(f"{text}\n")
+            # add the text
+            bulls_txt_end.setString(f"{text}\n")
+        except Exception as e:
+            raise mEx.DrawError("Error adding bullet") from e
 
     @classmethod
     def title_only_slide(cls, slide: XDrawPage, header: str) -> None:
@@ -1202,13 +1287,19 @@ class Draw:
         Args:
             slide (XDrawPage): Slide
             header (str): Header text.
-        """
-        mProps.Props.set_property(obj=slide, name="Layout", value=int(Draw.LayoutKind.TITLE_ONLY))
 
-        # add the text to the title shape
-        xs = cls.find_shape_by_type(slide=slide, shape_type=Draw.NameSpaceKind.TITLE_TEXT)
-        txt_field = mLo.Lo.qi(XText, xs, True)
-        txt_field.setString(header)
+        Raises:
+            DrawError: If error occurs
+        """
+        try:
+            mProps.Props.set_property(obj=slide, name="Layout", value=int(Draw.LayoutKind.TITLE_ONLY))
+
+            # add the text to the title shape
+            xs = cls.find_shape_by_type(slide=slide, shape_type=Draw.NameSpaceKind.TITLE_TEXT)
+            txt_field = mLo.Lo.qi(XText, xs, True)
+            txt_field.setString(header)
+        except Exception as e:
+            raise mEx.DrawError("Error creating title only slide") from e
 
     @staticmethod
     def blank_slide(slide: XDrawPage) -> None:
@@ -1217,11 +1308,17 @@ class Draw:
 
         Args:
             slide (XDrawPage): Slide
+
+        Raises:
+            DrawError: If error occurs
         """
-        mProps.Props.set_property(obj=slide, name="Layout", value=str(Draw.LayoutKind.BLANK))
+        try:
+            mProps.Props.set_property(obj=slide, name="Layout", value=str(Draw.LayoutKind.BLANK))
+        except Exception as e:
+            raise mEx.DrawError("Error inserting blank slide") from e
 
     @staticmethod
-    def get_notes_page(slide: XDrawPage) -> XDrawPage | None:
+    def get_notes_page(slide: XDrawPage) -> XDrawPage:
         """
         Gets the notes page of a slide.
 
@@ -1230,20 +1327,34 @@ class Draw:
         Args:
             slide (XDrawPage): Slide
 
+        Raises:
+            DrawPageMissingError: If notes page is ``None``.
+            DrawPageError: If any other error occurs.
+
         Returns:
-            XDrawPage | None: Notes Page if found; Otherwise, ``None``.
+            XDrawPage: Notes Page.
 
         See Also:
             :py:meth:`~.draw.Draw.get_notes_page_by_index`
         """
-        pres_page = mLo.Lo.qi(XPresentationPage, slide)
-        if pres_page is None:
-            mLo.Lo.print("This is not a presentation slide, so no notes page is available")
-            return None
-        return pres_page.getNotesPage()
+        try:
+            pres_page = mLo.Lo.qi(XPresentationPage, slide)
+            if pres_page is None:
+                raise mEx.MissingInterfaceError(
+                    XPresentationPage, "This is not a presentation slide, so no notes page is available"
+                )
+
+            result = pres_page.getNotesPage()
+            if result is None:
+                raise mEx.DrawPageMissingError("Unable to get notes page")
+            return result
+        except mEx.DrawPageMissingError:
+            raise
+        except Exception as e:
+            raise mEx.DrawPageError("An error occured getting notes page") from e
 
     @classmethod
-    def get_notes_page_by_index(cls, doc: XComponent, idx: int) -> XDrawPage | None:
+    def get_notes_page_by_index(cls, doc: XComponent, idx: int) -> XDrawPage:
         """
         Gets notes page by index.
 
@@ -1253,14 +1364,22 @@ class Draw:
             doc (XComponent): Document
             idx (int): Index
 
+        Raises:
+            DrawPageError: If error occurs.
+
         Returns:
-            XDrawPage | None: Notes Page if found; Otherwise, ``None``.
+            XDrawPage: Notes Page.
 
         See Also:
             :py:meth:`~.draw.Draw.get_notes_page`
         """
-        slide = cls._get_slide_doc(doc, idx)
-        return cls.get_notes_page(slide)
+        try:
+            slide = cls._get_slide_doc(doc, idx)
+            return cls.get_notes_page(slide)
+        except mEx.DrawPageError:
+            raise
+        except Exception as e:
+            raise mEx.DrawPageError(f"Error get notes page from index: {idx}") from e
 
     # endregion slide/page methods
 
@@ -1278,21 +1397,27 @@ class Draw:
     # region get_shape_text()
     @classmethod
     def _get_shape_text_shape(cls, shape: XShape) -> str:
-        xtext = mLo.Lo.qi(XText, shape, True)
+        try:
+            xtext = mLo.Lo.qi(XText, shape, True)
 
-        xtext_cursor = xtext.createTextCursor()
-        xtext_rng = mLo.Lo.qi(XTextRange, xtext_cursor, True)
-        text = xtext_rng.getString()
-        return text
+            xtext_cursor = xtext.createTextCursor()
+            xtext_rng = mLo.Lo.qi(XTextRange, xtext_cursor, True)
+            text = xtext_rng.getString()
+            return text
+        except Exception as e:
+            raise mEx.DrawError("Error getting shape text from shape") from e
 
     @classmethod
     def _get_shape_text_slide(cls, slide: XDrawPage) -> str:
-        sb = List[str] = []
-        shapes = cls._get_ordered_shapes_slide(slide)
-        for shape in shapes:
-            text = cls._get_shape_text_shape(shape)
-            sb.append(text)
-        return "\n".join(sb)
+        try:
+            sb = List[str] = []
+            shapes = cls._get_ordered_shapes_slide(slide)
+            for shape in shapes:
+                text = cls._get_shape_text_shape(shape)
+                sb.append(text)
+            return "\n".join(sb)
+        except Exception as e:
+            raise mEx.DrawError("Error getting shape text from slide") from e
 
     @overload
     @classmethod
@@ -1312,6 +1437,9 @@ class Draw:
         Args:
             shape (XShape): Shape
             slide (XDrawPage): Slide
+
+        Raises:
+            DrawError: If error occurs getting shape text.
 
         Returns:
             str: Shape text
@@ -1351,7 +1479,7 @@ class Draw:
     # endregion get_shape_text()
 
     @classmethod
-    def find_shape_by_type(cls, slide: XDrawPage, shape_type: Draw.NameSpaceKind | str) -> XShape | None:
+    def find_shape_by_type(cls, slide: XDrawPage, shape_type: Draw.NameSpaceKind | str) -> XShape:
         """
         Finds a shape by its type
 
@@ -1359,24 +1487,31 @@ class Draw:
             slide (XDrawPage): Slide
             shape_type (str): Shape Type
 
+        Raise:
+            ShapeMissingError: If shape is not found.
+            ShapeError: If any other error occurs.
+
         Returns:
-            XShape | None: Shape if Found; Otherwise, ``None``
+            XShape: Shape
         """
-        shapes = cls.get_shapes(slide)
-        if not shapes:
-            mLo.Lo.print("No shapes were found in the draw page")
-            return None
+        try:
+            shapes = cls.get_shapes(slide)
+            if not shapes:
+                raise mEx.ShapeMissingError("No shapes were found in the draw page")
 
-        st = str(shape_type)
+            st = str(shape_type)
 
-        for shape in shapes:
-            if st == shape.getShapeType():
-                return shape
-        mLo.Lo.print(f'No shape found for "{st}"')
-        return None
+            for shape in shapes:
+                if st == shape.getShapeType():
+                    return shape
+            raise mEx.ShapeMissingError(f'No shape found for "{st}"')
+        except mEx.ShapeMissingError:
+            raise
+        except Exception as e:
+            raise mEx.ShapeError("Error occured while looking for shape") from e
 
     @classmethod
-    def find_shape_by_name(cls, slide: XDrawPage, shape_name: str) -> XShape | None:
+    def find_shape_by_name(cls, slide: XDrawPage, shape_name: str) -> XShape:
         """
         Finds a shape by its name.
 
@@ -1384,22 +1519,29 @@ class Draw:
             slide (XDrawPage): Slide
             shape_name (str): Shape Name
 
+        Raise:
+            ShapeMissingError: If shape is not found.
+            ShapeError: If any other error occurs.
+
         Returns:
-            XShape | None: Shape if Found; Otherwise, ``None``
+            XShape: Shape
         """
-        shapes = cls.get_shapes(slide)
-        sn = shape_name.casefold()
-        if not shapes:
-            mLo.Lo.print("No shapes were found in the draw page")
-            return None
+        try:
+            shapes = cls.get_shapes(slide)
+            sn = shape_name.casefold()
+            if not shapes:
+                raise mEx.ShapeMissingError("No shapes were found in the draw page")
 
-        for shape in shapes:
-            nm = str(mProps.Props.get_property(obj=shape, name="Name")).casefold()
-            if nm == sn:
-                return shape
+            for shape in shapes:
+                nm = str(mProps.Props.get_property(obj=shape, name="Name")).casefold()
+                if nm == sn:
+                    return shape
 
-        mLo.Lo.print(f'No shape named "{shape_name}"')
-        return None
+            raise mEx.ShapeMissingError(f'No shape named "{shape_name}"')
+        except mEx.ShapeMissingError:
+            raise
+        except Exception as e:
+            raise mEx.ShapeError("Error occured while looking for shape") from e
 
     @classmethod
     def copy_shape_contents(cls, slide: XDrawPage, old_shape: XShape) -> XShape:
@@ -1410,17 +1552,24 @@ class Draw:
             slide (XDrawPage): Slide
             old_shape (XShape): Old shape
 
+        Raises:
+            ShapeError: If unable to copy shpe contents.
+
         Returns:
             XShape: New shape with contents of old shpae copied.
         """
-        shape = cls.copy_shape(slide, old_shape)
-        mLo.Lo.print(f'Shape type: "{old_shape.getShapeType()}"')
-        cls.add_text(shape, cls.get_shape_text(old_shape))
-
-        return shape
+        try:
+            shape = cls.copy_shape(slide, old_shape)
+            mLo.Lo.print(f'Shape type: "{old_shape.getShapeType()}"')
+            cls.add_text(shape, cls.get_shape_text(old_shape))
+            return shape
+        except mEx.ShapeError:
+            raise
+        except Exception as e:
+            raise mEx.ShapeError("Unable to copy shape contents") from e
 
     @classmethod
-    def copy_shape(slide: XDrawPage, old_shape: XShape) -> XShape | None:
+    def copy_shape(slide: XDrawPage, old_shape: XShape) -> XShape:
         """
         Copies a shape
 
@@ -1428,24 +1577,24 @@ class Draw:
             slide (XDrawPage): Slide
             old_shape (XShape): Old Shape
 
+        Raises:
+            ShapeError: If unable to copy shape.
+
         Returns:
             XShape: Newly Copied shape if can be copied; Otherwise, ``None``
         """
-        # parameters are in 1/100 mm units
-        pt = old_shape.getPosition()
-        sz = old_shape.getSize()
-
-        shape = None
         try:
+            # parameters are in 1/100 mm units
+            pt = old_shape.getPosition()
+            sz = old_shape.getSize()
             shape = mLo.Lo.create_instance_msf(XShape, old_shape.getShapeType(), raise_err=True)
             mLo.Lo.print(f"Copying: {old_shape.getShapeType()}")
             shape.setPosition(pt)
             shape.setSize(sz)
             slide.add(shape)
-        except Exception:
-            mLo.Lo.print("Unable to copy shape")
-            pass
-        return shape
+            return shape
+        except Exception as ex:
+            raise mEx.ShapeError("Unable to copy Shape") from ex
 
     @staticmethod
     def set_zorder(shape: XShape, order: int) -> None:
@@ -1455,8 +1604,14 @@ class Draw:
         Args:
             shape (XShape): Shape
             order (int): Z-Order
+
+        Raises:
+            DrawError: If unable to set z-order.
         """
-        mProps.Props.set_property(obj=shape, name="ZOrder", value=order)
+        try:
+            mProps.Props.set_property(obj=shape, name="ZOrder", value=order)
+        except Exception as e:
+            raise mEx.DrawError("Failed to set z-order") from e
 
     @staticmethod
     def get_zorder(shape: XShape) -> int:
@@ -1466,10 +1621,16 @@ class Draw:
         Args:
             shape (XShape): Shape
 
+        Raises:
+            DrawError: If unable to get z-order.
+
         Returns:
             int: Z-Order
         """
-        return int(mProps.Props.get_property(shape, "ZOrder"))
+        try:
+            return int(mProps.Props.get_property(shape, "ZOrder"))
+        except Exception as e:
+            raise mEx.DrawError("Failed to get z-order") from e
 
     @classmethod
     def move_to_top(cls, slide: XDrawPage, shape: XShape) -> None:
@@ -1479,46 +1640,72 @@ class Draw:
         Args:
             slide (XDrawPage): Slide
             shape (XShape): Shape
+
+        Raises:
+            DrawError: If unable to move shape to top.
         """
-        max_zo = cls.find_biggest_zorder(slide)
-        cls.set_zorder(shape, max_zo + 1)
+        try:
+            max_zo = cls.find_biggest_zorder(slide)
+            cls.set_zorder(shape, max_zo + 1)
+        except mEx.DrawError:
+            raise
+        except Exception as e:
+            raise mEx.DrawError("Error moving shape to top.") from e
 
     @classmethod
     def find_biggest_zorder(cls, slide: XDrawPage) -> int:
         """
-        Findes the shape with the largest z-order.
+        Finds the shape with the largest z-order.
 
         Args:
             slide (XDrawPage): Slide
 
+        Raises:
+            DrawError: If unable to find biggest z-order.
+
         Returns:
             int: Z-Order
         """
-        return cls.get_zorder(cls.find_top_shape(slide))
+        try:
+            return cls.get_zorder(cls.find_top_shape(slide))
+        except mEx.DrawError:
+            raise
+        except Exception as e:
+            raise mEx.DrawError("Error finding biggest z-order") from e
 
     @classmethod
-    def find_top_shape(cls, slide: XDrawPage) -> XShape | None:
+    def find_top_shape(cls, slide: XDrawPage) -> XShape:
         """
         Gets the top most shape of a slide.
 
         Args:
             slide (XDrawPage): Slide
 
+        Raises:
+            ShapeMissingError: If there are no shapes for slide or unable to find top shape.
+            ShapeError: If any other error occurs.
+
         Returns:
-            XShape | None: Top most shape if found; Otherwise; ``None``
+            XShape: Top most shape.
         """
-        shapes = cls.get_shapes(slide)
-        if not shapes:
-            mLo.Lo.print("No shapes found")
-            return None
-        max_zorder = 0
-        top = None
-        for shape in shapes:
-            zo = cls.get_zorder(shape)
-            if zo > max_zorder:
-                max_zorder = zo
-                top = shape
-        return top
+        try:
+            shapes = cls.get_shapes(slide)
+            if not shapes:
+                raise mEx.ShapeMissingError("No shapes found")
+            max_zorder = 0
+            top = None
+            for shape in shapes:
+                zo = cls.get_zorder(shape)
+                if zo > max_zorder:
+                    max_zorder = zo
+                    top = shape
+            if top is None:
+                raise mEx.ShapeMissingError("Top shape not found")
+            return top
+        except mEx.ShapeMissingError:
+            raise
+        except Exception as e:
+            raise mEx.ShapeError("Error finding top shape") from e
 
     @classmethod
     def move_to_bottom(cls, slide: XDrawPage, shape: XShape) -> None:
@@ -1528,25 +1715,33 @@ class Draw:
         Args:
             slide (XDrawPage): Slide
             shape (XShape): Shape
-        """
-        shapes = cls.get_shapes(slide)
-        if not shapes:
-            mLo.Lo.print("No shapes found")
-            return None
 
-        min_zorder = 999
-        for sh in shapes:
-            zo = cls.get_zorder(sh)
-            if zo < min_zorder:
-                min_zorder = zo
-            cls.set_zorder(sh, zo + 1)
-        cls.set_zorder(shape, min_zorder)
+        Raises:
+            ShapeMissingError: If unable to find shapes for slide.
+            ShapeError: If any other error occurs.
+        """
+        try:
+            shapes = cls.get_shapes(slide)
+            if not shapes:
+                raise mEx.ShapeMissingError("No shapes found")
+
+            min_zorder = 999
+            for sh in shapes:
+                zo = cls.get_zorder(sh)
+                if zo < min_zorder:
+                    min_zorder = zo
+                cls.set_zorder(sh, zo + 1)
+            cls.set_zorder(shape, min_zorder)
+        except mEx.ShapeMissingError:
+            raise
+        except Exception as e:
+            raise mEx.ShapeError("Error moving shape to bottom") from e
 
     # endregion shape methods
 
     # region draw/add shape to a page
     @staticmethod
-    def make_shape(shape_type: DrawingShapeKind | str, x: int, y: int, width: int, height: int) -> XShape | None:
+    def make_shape(shape_type: DrawingShapeKind | str, x: int, y: int, width: int, height: int) -> XShape:
         """
         Creates a shape
 
@@ -1557,23 +1752,23 @@ class Draw:
             width (int): Shape width in mm units.
             height (int): Shape height in mm units.
 
+        Raises:
+            ShapeError: If error occurs.
+
         Returns:
-            XShape | None: Shape on success; Otherwise, ``None``
+            XShape: New Shape
 
         See Also:
             :py:meth:`~.draw.Draw.add_shape`
         """
         # parameters are in mm units
-        shape = None
         try:
             shape = mLo.Lo.create_instance_msf(XShape, f"com.sun.star.drawing.{shape_type}", raise_err=True)
             shape.setPosition(Draw.Point(x * 100, y * 100))
             shape.setSize(Draw.Size(width * 100, height * 100))
+            return shape
         except Exception as e:
-            mLo.Lo.print(f'Unable to create shape "{shape_type}"')
-            mLo.Lo.print(f"  {e}")
-            return None
-        return shape
+            raise mEx.ShapeError(f'Unable to create shape "{shape_type}"') from e
 
     @classmethod
     def warns_position(cls, slide: XDrawPage, x: int, y: int) -> None:
@@ -1609,7 +1804,7 @@ class Draw:
     @classmethod
     def add_shape(
         cls, slide: XDrawPage, shape_type: DrawingShapeKind | str, x: int, y: int, width: int, height: int
-    ) -> XShape | None:
+    ) -> XShape:
         """
         Adds a shape to a slide.
 
@@ -1621,22 +1816,30 @@ class Draw:
             width (int): Shape width in mm units.
             height (int): Shape height in mm units.
 
+        Raises:
+            ShapeError: If error occurs.
+
         Returns:
-            XShape | None: Shape on success; Otherwise, ``None``
+            XShape: New addes Shape.
 
         See Also:
             - :py:meth:`~.draw.Draw.warns_position`
             - :py:meth:`~.draw.Draw.make_shape`
         """
-        cls.warns_position(slide=slide, x=x, y=y)
-        shape = cls.make_shape(shape_type=shape_type, x=x, y=y, width=width, height=height)
-        if shape is None:
-            return None
-        slide.add(shape)
-        return shape
+        try:
+            cls.warns_position(slide=slide, x=x, y=y)
+            shape = cls.make_shape(shape_type=shape_type, x=x, y=y, width=width, height=height)
+            if shape is None:
+                return None
+            slide.add(shape)
+            return shape
+        except mEx.ShapeError:
+            raise
+        except Exception as e:
+            raise mEx.ShapeError("Error adding shape") from e
 
     @classmethod
-    def draw_rectangle(cls, slide: XDrawPage, x: int, y: int, width: int, height: int) -> XShape | None:
+    def draw_rectangle(cls, slide: XDrawPage, x: int, y: int, width: int, height: int) -> XShape:
         """
         Gets a rectangle
 
@@ -1647,15 +1850,18 @@ class Draw:
             width (int): Shape width in mm units.
             height (int): Shape height in mm units.
 
+        Raises:
+            ShapeError: If error occurs.
+
         Returns:
-            XShape | None: Shape on success; Otherwise, ``None``
+            XShape: Rectangle Shape.
         """
         return cls.add_shape(
             slide=slide, shape_type=DrawingShapeKind.RECTANGLE_SHAPE, x=x, y=y, width=width, height=height
         )
 
     @classmethod
-    def draw_circle(cls, slide: XDrawPage, x: int, y: int, radius: int) -> XShape | None:
+    def draw_circle(cls, slide: XDrawPage, x: int, y: int, radius: int) -> XShape:
         """
         Gets a rectangle
 
@@ -1665,8 +1871,11 @@ class Draw:
             y (int): Shape Y position in mm units.
             radius (int): Shape radius in mm units.
 
+        Raises:
+            ShapeError: If error occurs.
+
         Returns:
-            XShape | None: Shape on success; Otherwise, ``None``
+            XShape: Circle Shape.
         """
         return cls.add_shape(
             slide=slide,
@@ -1678,7 +1887,7 @@ class Draw:
         )
 
     @classmethod
-    def draw_ellipse(cls, slide: XDrawPage, x: int, y: int, width: int, height: int) -> XShape | None:
+    def draw_ellipse(cls, slide: XDrawPage, x: int, y: int, width: int, height: int) -> XShape:
         """
         Gets a rectangle
 
@@ -1689,15 +1898,18 @@ class Draw:
             width (int): Shape width in mm units.
             height (int): Shape height in mm units.
 
+        Raises:
+            ShapeError: If error occurs.
+
         Returns:
-            XShape | None: Shape on success; Otherwise, ``None``
+            XShape: Ellipse Shape.
         """
         return cls.add_shape(
             slide=slide, shape_type=DrawingShapeKind.ELLIPSE_SHAPE, x=x, y=y, width=width, height=height
         )
 
     @classmethod
-    def draw_polygon(cls, slide: XDrawPage, x: int, y: int, sides: int, radius: int | None = None) -> XShape | None:
+    def draw_polygon(cls, slide: XDrawPage, x: int, y: int, sides: PolySides, radius: int | None = None) -> XShape:
         """
         Gets a rectangle
 
@@ -1705,28 +1917,36 @@ class Draw:
             slide (XDrawPage): Slide
             x (int): Shape X position in mm units.
             y (int): Shape Y position in mm units.
-            radius (int): Shape radius in mm units.
+            radius (int): Shape radius in mm units. Defaluts to the value of ``Draw.POLY_RADIUS``
+
+        Raises:
+            ShapeError: If error occurs.
 
         Returns:
             XShape | None: Shape on success; Otherwise, ``None``
         """
-        if radius is None:
-            radius = Draw.POLY_RADIUS
-        polygon = cls.add_shape(
-            slide=slide,
-            shape_type=DrawingShapeKind.POLY_POLYGON_SHAPE,
-            x=0,
-            y=0,
-            width=0,
-            height=0,
-        )
-        pts = cls.gen_polygon_points(x=x, y=y, radius=radius, sides=sides)
-        # could be many polygons pts in this 2D array
-        polys = [pts]
-        mProps.Props.set_property(polygon, name="PolyPolygon", value=polys)
+        try:
+            if radius is None:
+                radius = Draw.POLY_RADIUS
+            polygon = cls.add_shape(
+                slide=slide,
+                shape_type=DrawingShapeKind.POLY_POLYGON_SHAPE,
+                x=0,
+                y=0,
+                width=0,
+                height=0,
+            )
+            pts = cls.gen_polygon_points(x=x, y=y, radius=radius, sides=sides)
+            # could be many polygons pts in this 2D array
+            polys = [pts]
+            mProps.Props.set_property(polygon, name="PolyPolygon", value=polys)
+        except mEx.ShapeError:
+            raise
+        except Exception as e:
+            raise mEx.ShapeError("Error drawing polygon shape") from e
 
     @staticmethod
-    def gen_polygon_points(x: int, y: int, radius: int, sides: int) -> Tuple[Draw.Point, ...]:
+    def gen_polygon_points(x: int, y: int, radius: int, sides: PolySides) -> Tuple[Draw.Point, ...]:
         """
         Generates a list of polygon points
 
@@ -1736,30 +1956,29 @@ class Draw:
             radius (int): Shape radius in mm units.
             sides (int): Number of Polygon sides from 3 to 30.
 
-        Returns:
-            List[Point]: List of points.
-        """
-        if sides < 3:
-            mLo.Lo.print("Too few sides; must be 3 or more. Setting to 3")
-            sides = 3
-        elif sides > 30:
-            mLo.Lo.print("Too many sides; must be 30 or less. Setting to 30")
-            sides = 30
+        Raises:
+            DrawError: If Error occurs
 
-        pts: List[Draw.Point] = []
-        angle_step = math.pi / sides
-        for i in range(sides):
-            pt = Draw.Point(
-                int(round(((x * 100) + (radius * 100)) * math.cos(i * 2 * angle_step))),
-                int(round(((y * 100) + (radius * 100)) * math.sin(i * 2 * angle_step))),
-            )
-            pts.append(pt)
-        return tuple(pts)
+        Returns:
+            Tuple[Point, ...]: List of points.
+        """
+        try:
+            pts: List[Draw.Point] = []
+            angle_step = math.pi / sides.Value
+            for i in range(sides.Value):
+                pt = Draw.Point(
+                    int(round(((x * 100) + (radius * 100)) * math.cos(i * 2 * angle_step))),
+                    int(round(((y * 100) + (radius * 100)) * math.sin(i * 2 * angle_step))),
+                )
+                pts.append(pt)
+            return tuple(pts)
+        except Exception as e:
+            raise mEx.DrawError("Unable to generate polygon points") from e
 
     @classmethod
     def draw_bezier(
         cls, slide: XDrawPage, pts: Sequence[Draw.Point], flags: Sequence[Draw.PolygonFlags], is_open: bool
-    ) -> XShape | None:
+    ) -> XShape:
         """
         Draws a bezier curve.
 
@@ -1771,31 +1990,34 @@ class Draw:
 
         Raises:
             IndexError: If ``pts`` and ``flags`` do not have the same number of elements.
+            ShapeError: If unable to create Bezier Shape.
 
         Returns:
-            XShape | None: Shape on success; Otherwise, ``None``.
+            XShape: Bezier Shape.
         """
         if len(pts) != len(flags):
             raise IndexError("pts and flags must be the same length")
 
-        bezier_type = "OpenBezierShape" if is_open else "ClosedBezierShape"
-        bezier_poly = cls.add_shape(slide=slide, shape_type=bezier_type, x=0, y=0, width=0, height=0)
-        if bezier_poly is None:
-            mLo.Lo.print("Failded to create bezier")
-            return None
-        # create space for one bezier shape
-        coords = PolyPolygonBezierCoords()
-        #       for shapes formed by one *or more* bezier polygons
-        coords.Coordinates = mTblHelper.TableHelper.make_2d_array(1, 1, Draw.Point())
-        coords.Flags = mTblHelper.TableHelper.make_2d_array(1, 1, Draw.PolygonFlags())
-        coords.Coordinates[0] = pts
-        coords.Flags[0] = flags
+        try:
+            bezier_type = "OpenBezierShape" if is_open else "ClosedBezierShape"
+            bezier_poly = cls.add_shape(slide=slide, shape_type=bezier_type, x=0, y=0, width=0, height=0)
+            # create space for one bezier shape
+            coords = PolyPolygonBezierCoords()
+            #       for shapes formed by one *or more* bezier polygons
+            coords.Coordinates = mTblHelper.TableHelper.make_2d_array(1, 1, Draw.Point())
+            coords.Flags = mTblHelper.TableHelper.make_2d_array(1, 1, Draw.PolygonFlags())
+            coords.Coordinates[0] = pts
+            coords.Flags[0] = flags
 
-        mProps.Props.set_property(obj=bezier_poly, name="PolyPolygonBezier", value=coords)
-        return bezier_poly
+            mProps.Props.set_property(obj=bezier_poly, name="PolyPolygonBezier", value=coords)
+            return bezier_poly
+        except mEx.ShapeError:
+            raise
+        except Exception as e:
+            raise mEx.ShapeError("Unable to create bezier shape.") from e
 
     @classmethod
-    def draw_line(cls, slide: XDrawPage, x1: int, y1: int, x2: int, y2: int) -> XShape | None:
+    def draw_line(cls, slide: XDrawPage, x1: int, y1: int, x2: int, y2: int) -> XShape:
         """
         Draws a line
 
@@ -1807,10 +2029,11 @@ class Draw:
             y2 (int): Line end Y position
 
         Raises:
-            ValueError: IF is a point and not a line.
+            ValueError: If x values and y values are a point and not a line.
+            ShapeError: If unable to create Line.
 
         Returns:
-            XShape | None: Shape on success; Otherwise, ``None``.
+            XShape: Line Shape.
         """
         # make sure size is non-zero
         if (x1 == x2) and (y1 == y2):
@@ -1828,7 +2051,7 @@ class Draw:
         )
 
     @classmethod
-    def draw_polar_line(cls, slide: XDrawPage, x: int, y: int, degrees: int, distance: int) -> XShape | None:
+    def draw_polar_line(cls, slide: XDrawPage, x: int, y: int, degrees: int, distance: int) -> XShape:
         """
         Draw a line from ``x``, ``y`` in the direction of degrees, for the specified distance
         degrees is measured clockwise from x-axis
@@ -1840,15 +2063,23 @@ class Draw:
             degrees (int): Direction of degrees
             distance (int): Distance of line.
 
+        Raises:
+            ShapeError: If unable to create Polar Line Shape
+
         Returns:
-            XShape | None: Shape on success; Otherwise, ``None``.
+            XShape: Polar Line Shape
         """
-        xdist = round(math.cos(math.radians(degrees)) * distance)
-        ydist = round(math.sin(math.radians(degrees)) * distance) * -1  # convert to negative
-        return cls.draw_line(slide=slide, x1=x, y1=y, x2=x + xdist, y2=y + ydist)
+        try:
+            xdist = round(math.cos(math.radians(degrees)) * distance)
+            ydist = round(math.sin(math.radians(degrees)) * distance) * -1  # convert to negative
+            return cls.draw_line(slide=slide, x1=x, y1=y, x2=x + xdist, y2=y + ydist)
+        except mEx.ShapeError:
+            raise
+        except Exception as e:
+            raise mEx.ShapeError("Unable to create polar line shape.") from e
 
     @classmethod
-    def draw_lines(cls, slide: XDrawPage, xs: Sequence[int], ys: Sequence[int]) -> XShape | None:
+    def draw_lines(cls, slide: XDrawPage, xs: Sequence[int], ys: Sequence[int]) -> XShape:
         """
         Draw lines
 
@@ -1859,50 +2090,51 @@ class Draw:
 
         Raises:
             IndexError: If ``xs`` and ``xy`` do not have the same number of elements.
+            ShapeError: If any other error occurs.
 
         Returns:
-            XShape | None: Shape on success; Otherwise, ``None``.
+            XShape: Lines Shape.
         """
         num_points = len(xs)
         if num_points != len(ys):
             raise IndexError("xs and ys must be the same length")
 
-        pts: List[Draw.Point] = []
-        for x, y in zip(xs, ys):
-            # in 1/100 mm units
-            pts.append(Draw.Point(x * 100, y * 100))
+        try:
+            pts: List[Draw.Point] = []
+            for x, y in zip(xs, ys):
+                # in 1/100 mm units
+                pts.append(Draw.Point(x * 100, y * 100))
 
-        # an array of Point arrays, one Point array for each line path
-        line_paths = mTblHelper.TableHelper.make_2d_array(1, 1)
-        line_paths[0] = pts
+            # an array of Point arrays, one Point array for each line path
+            line_paths = mTblHelper.TableHelper.make_2d_array(1, 1)
+            line_paths[0] = pts
 
-        # for a shape formed by from multiple connected lines
-        poly_line = cls.add_shape(
-            slide=slide, shape_type=DrawingShapeKind.POLY_LINE_SHAPE, x=0, y=0, width=0, height=0
-        )
-        if poly_line is None:
-            mLo.Lo.print("Failed to create PolyLineShape")
-            return None
-        mProps.Props.set_property(obj=poly_line, name="PolyPolygon", value=line_paths)
-        return poly_line
+            # for a shape formed by from multiple connected lines
+            poly_line = cls.add_shape(
+                slide=slide, shape_type=DrawingShapeKind.POLY_LINE_SHAPE, x=0, y=0, width=0, height=0
+            )
+            mProps.Props.set_property(obj=poly_line, name="PolyPolygon", value=line_paths)
+            return poly_line
+        except mEx.ShapeError:
+            raise
+        except Exception as e:
+            raise mEx.ShapeError("Error occured while drawing lines.") from e
 
     # region draw_text()
     @overload
     @classmethod
-    def draw_text(cls, slide: XDrawPage, msg: str, x: int, y: int, width: int, height: int) -> XShape | None:
+    def draw_text(cls, slide: XDrawPage, msg: str, x: int, y: int, width: int, height: int) -> XShape:
         ...
 
     @overload
     @classmethod
-    def draw_text(
-        cls, slide: XDrawPage, msg: str, x: int, y: int, width: int, height: int, font_size: int
-    ) -> XShape | None:
+    def draw_text(cls, slide: XDrawPage, msg: str, x: int, y: int, width: int, height: int, font_size: int) -> XShape:
         ...
 
     @classmethod
     def draw_text(
         cls, slide: XDrawPage, msg: str, x: int, y: int, width: int, height: int, font_size: int = 0
-    ) -> XShape | None:
+    ) -> XShape:
         """
         Draws Text
 
@@ -1915,17 +2147,22 @@ class Draw:
             height (int): Shape height in mm units.
             font_size (int, optional): Font size of text.
 
+        Raises:
+            ShapeError: If error occurs.
+
         Returns:
-            XShape | None: Shape on success; Otherwise, ``None``.
+            XShape: Shape
         """
-        shape = cls.add_shape(
-            slide=slide, shape_type=DrawingShapeKind.TEXT_SHAPE, x=x, y=y, width=width, height=height
-        )
-        if shape is None:
-            mLo.Lo.print("Failed to create TextShape")
-            return None
-        cls.add_text(shape=shape, msg=msg, font_size=font_size)
-        return shape
+        try:
+            shape = cls.add_shape(
+                slide=slide, shape_type=DrawingShapeKind.TEXT_SHAPE, x=x, y=y, width=width, height=height
+            )
+            cls.add_text(shape=shape, msg=msg, font_size=font_size)
+            return shape
+        except mEx.ShapeError:
+            raise
+        except Exception as e:
+            raise mEx.ShapeError("Error occured while drawing text.") from e
 
     # endregion draw_text()
 
@@ -1939,18 +2176,24 @@ class Draw:
             msg (str): Text to add
             font_size (int, optional): Font size.
             props (Any, optional): Any extra properties that will be applied to cursor (font) such as ``CharUnderline=1``
+
+        Raises:
+            ShapeError: If error occurs.
         """
-        txt = mLo.Lo.qi(XText, shape, True)
-        cursor = txt.createTextCursor()
-        cursor.gotoEnd(False)
-        if font_size > 0:
-            mProps.Props.set_property(obj=cursor, name="CharHeight", value=font_size)
+        try:
+            txt = mLo.Lo.qi(XText, shape, True)
+            cursor = txt.createTextCursor()
+            cursor.gotoEnd(False)
+            if font_size > 0:
+                mProps.Props.set_property(obj=cursor, name="CharHeight", value=font_size)
 
-        for k, v in props.items():
-            mProps.Props.set_property(obj=cursor, name=k, value=v)
+            for k, v in props.items():
+                mProps.Props.set_property(obj=cursor, name=k, value=v)
 
-        rng = mLo.Lo.qi(XTextRange, cursor, True)
-        rng.setString(msg)
+            rng = mLo.Lo.qi(XTextRange, cursor, True)
+            rng.setString(msg)
+        except Exception as e:
+            raise mEx.ShapeError("Error occured while adding text to shape.") from e
 
     @classmethod
     def add_connector(
@@ -1960,7 +2203,7 @@ class Draw:
         shape2: XShape,
         start_conn: Draw.GluePointsKind | None = None,
         end_conn: Draw.GluePointsKind | None = None,
-    ) -> XShape | None:
+    ) -> XShape:
         """
         Add connector
 
@@ -1971,8 +2214,11 @@ class Draw:
             start_conn (GluePointsKind | None, optional): Start connector kind. Defaluts to right.
             end_conn (GluePointsKind | None, optional): End connector kind. Defaults to left.
 
+        Raises:
+            ShapeError: If error occurs.
+
         Returns:
-            XShape | None: Shape on success; Otherwise, ``None``.
+            XShape: Connector Shape.
 
         Note:
             Properties for shape can be added or changed by using :py:meth"~.draw.Draw.set_shape_props`.
@@ -1989,15 +2235,11 @@ class Draw:
         if end_conn is None:
             end_conn = Draw.GluePointsKind.LEFT
 
-        xconnector = cls.add_shape(
-            slide=slide, shape_type=DrawingShapeKind.CONNECTOR_SHAPE, x=0, y=0, width=0, height=0
-        )
-        if xconnector is None:
-            mLo.Lo.print("Failed to create ConnectorShape")
-            return None
-
-        prop_set = mLo.Lo.qi(XPropertySet, xconnector, True)
         try:
+            xconnector = cls.add_shape(
+                slide=slide, shape_type=DrawingShapeKind.CONNECTOR_SHAPE, x=0, y=0, width=0, height=0
+            )
+            prop_set = mLo.Lo.qi(XPropertySet, xconnector, True)
             prop_set.setPropertyValue("StartShape", shape1)
             prop_set.setPropertyValue("StartGluePointIndex", int(start_conn))
 
@@ -2005,47 +2247,56 @@ class Draw:
             prop_set.setPropertyValue("EndGluePointIndex", int(end_conn))
 
             prop_set.setPropertyValue("EndShape", ConnectorType.STANDARD)
+            return xconnector
+        except mEx.ShapeError:
+            raise
         except Exception as e:
-            mLo.Lo.print("Could not connect the shapes")
-            mLo.Lo.print(f"  {e}")
-
-        return xconnector
+            raise mEx.ShapeError("Could not connect the shapes") from e
 
     @staticmethod
-    def get_glue_points(shape: XShape) -> Tuple[GluePoint2, ...] | None:
+    def get_glue_points(shape: XShape) -> Tuple[GluePoint2, ...]:
         """
         Gets Glue Points
 
         Args:
             shape (XShape): Shape
 
+        Raises:
+            DrawError: If error occurs
+
         Returns:
-            Tuple[GluePoint2, ...] | None: Glue Points on success; Otherwise, ``None``.
+            Tuple[GluePoint2, ...]: Glue Points.
+
+        Note:
+            If a glue point can not be accessed then it is ignored.
         """
-        gp_supp = mLo.Lo.qi(XGluePointsSupplier, shape, True)
-        glue_pts = gp_supp.getGluePoints()
+        try:
+            gp_supp = mLo.Lo.qi(XGluePointsSupplier, shape, True)
+            glue_pts = gp_supp.getGluePoints()
 
-        num_gps = glue_pts.getCount()  # should be 4 by default
-        if num_gps == 0:
-            mLo.Lo.print("No glue points for this shape")
-            return None
+            num_gps = glue_pts.getCount()  # should be 4 by default
+            if num_gps == 0:
+                mLo.Lo.print("No glue points for this shape")
+                return ()
 
-        gps: List[GluePoint2] = []
-        for i in range(num_gps):
-            try:
-                # the original java was using qi for some unknown reason.
-                # this makes no sense here because you can not query a struct for an interface
-                # gps.append(mLo.Lo.qi(GluePoint2, glue_pts.getByIndex(i), True))
+            gps: List[GluePoint2] = []
+            for i in range(num_gps):
+                try:
+                    # the original java was using qi for some unknown reason.
+                    # this makes no sense here because you can not query a struct for an interface
+                    # gps.append(mLo.Lo.qi(GluePoint2, glue_pts.getByIndex(i), True))
 
-                gps.append(glue_pts.getByIndex(i))
-            except Exception as e:
-                mLo.Lo.print(f"Could not access glue point: {i}")
-                mLo.Lo.print(f"  {e}")
+                    gps.append(glue_pts.getByIndex(i))
+                except Exception as e:
+                    mLo.Lo.print(f"Could not access glue point: {i}")
+                    mLo.Lo.print(f"  {e}")
 
-        return tuple(gps)
+            return tuple(gps)
+        except Exception as e:
+            raise mEx.DrawError("Error getting glue points.") from e
 
     @classmethod
-    def get_chart_shape(cls, slide: XDrawPage, x: int, y: int, width: int, height: int) -> XShape | None:
+    def get_chart_shape(cls, slide: XDrawPage, x: int, y: int, width: int, height: int) -> XShape:
         """
         Gets a chart shape
 
@@ -2056,20 +2307,25 @@ class Draw:
             width (int): Shape width in mm units.
             height (int): Shape height in mm units.
 
+        Raises:
+            ShapeError: If Error occurs.
+
         Returns:
-            XShape | None: Shape on success; Otherwise, ``None``.
+            XShape: Chart Shape.
         """
-        shape = cls.add_shape(
-            slide=slide, shape_type=DrawingShapeKind.OLE2_SHAPE, x=x, y=y, width=width, height=height
-        )
-        if shape is None:
-            mLo.Lo.print("Error getting shape for OLE2Shape")
-            return None
-        mProps.Props.set_property(obj=shape, name="CLSID", value=str(mLo.Lo.CLSID.CHART))  # a chart
-        return shape
+        try:
+            shape = cls.add_shape(
+                slide=slide, shape_type=DrawingShapeKind.OLE2_SHAPE, x=x, y=y, width=width, height=height
+            )
+            mProps.Props.set_property(obj=shape, name="CLSID", value=str(mLo.Lo.CLSID.CHART))  # a chart
+            return shape
+        except mEx.ShapeError:
+            raise
+        except Exception as e:
+            raise mEx.ShapeError("Unable to get chart shape") from e
 
     @classmethod
-    def draw_formula(cls, slide: XDrawPage, formula: str, x: int, y: int, width: int, height: int) -> XShape | None:
+    def draw_formula(cls, slide: XDrawPage, formula: str, x: int, y: int, width: int, height: int) -> XShape:
         """
         Draws a formula
 
@@ -2081,31 +2337,58 @@ class Draw:
             width (int): Shape width in mm units.
             height (int): Shape height in mm units.
 
-        Returns:
-            XShape | None: Shape on success; Otherwise, ``None``.
-        """
-        shape = cls.add_shape(
-            slide=slide, shape_type=DrawingShapeKind.OLE2_SHAPE, x=x, y=y, width=width, height=height
-        )
-        if shape is None:
-            mLo.Lo.print("Error getting shape for OLE2Shape")
-            return None
-        cls.set_shape_props(shape, name="CLSID", value=str(mLo.Lo.CLSID.MATH))  # a formula
+        Raises:
+            ShapeError: If error occurs.
 
-        model = mLo.Lo.qi(XModel, mProps.Props.get_property(shape, "Model"), True)
-        # mInfo.Info.show_services(obj_name="OLE2Shape Model", obj=model)
-        mProps.Props.set_property(obj=model, name="Formula", value=formula)
-        return shape
+        Returns:
+            XShape: Formula Shape.
+        """
+        try:
+            shape = cls.add_shape(
+                slide=slide, shape_type=DrawingShapeKind.OLE2_SHAPE, x=x, y=y, width=width, height=height
+            )
+            cls.set_shape_props(shape, name="CLSID", value=str(mLo.Lo.CLSID.MATH))  # a formula
+
+            model = mLo.Lo.qi(XModel, mProps.Props.get_property(shape, "Model"), True)
+            # mInfo.Info.show_services(obj_name="OLE2Shape Model", obj=model)
+            mProps.Props.set_property(obj=model, name="Formula", value=formula)
+            return shape
+        except mEx.ShapeError:
+            raise
+        except Exception as e:
+            raise mEx.ShapeError("Unable to get Draw formula") from e
 
     @classmethod
-    def draw_media(cls, slide: XDrawPage, fnm: PathOrStr, x: int, y: int, width: int, height: int) -> XShape | None:
-        shape = cls.add_shape(
-            slide=slide, shape_type=DrawingShapeKind.MEDIA_SHAPE, x=x, y=y, width=width, height=height
-        )
+    def draw_media(cls, slide: XDrawPage, fnm: PathOrStr, x: int, y: int, width: int, height: int) -> XShape:
+        """
+        Draws media
 
-        # mProps.Props.show_obj_props(prop_kind="Shape", obj=shape)
-        mLo.Lo.print(f'Loading media: "{fnm}"')
-        cls.set_shape_props(shape, Loop=True, MediaURL=mFileIO.FileIO.fnm_to_url(fnm))
+        Args:
+            slide (XDrawPage): Slide
+            fnm (PathOrStr): Path to Media file.
+            x (int): Shape X position in mm units.
+            y (int): Shape Y position in mm units.
+            width (int): Shape width in mm units.
+            height (int): Shape height in mm units.
+
+        Raises:
+            ShapeError: If error occurs
+
+        Returns:
+            XShape: Media shape
+        """
+        try:
+            shape = cls.add_shape(
+                slide=slide, shape_type=DrawingShapeKind.MEDIA_SHAPE, x=x, y=y, width=width, height=height
+            )
+
+            # mProps.Props.show_obj_props(prop_kind="Shape", obj=shape)
+            mLo.Lo.print(f'Loading media: "{fnm}"')
+            cls.set_shape_props(shape, Loop=True, MediaURL=mFileIO.FileIO.fnm_to_url(fnm))
+        except mEx.ShapeError:
+            raise
+        except Exception as e:
+            raise mEx.ShapeError("Unable to get Draw media") from e
 
     @staticmethod
     def is_group(shape: XShape) -> bool:
@@ -2119,12 +2402,12 @@ class Draw:
             bool: ``True`` if shape is a group; Otherwise; ``False``.
         """
         if shape is None:
-            mLo.Lo.print("Shape is none. Not able to check for group")
+            mLo.Lo.print("Shape is None. Not able to check for group")
             return False
         return shape.getShapeType() == "com.sun.star.drawing.GroupShape"
 
     @staticmethod
-    def combine_shape(doc: XComponent, shapes: XShapes, combine_op: Draw.ShapeCompKind) -> XShape | None:
+    def combine_shape(doc: XComponent, shapes: XShapes, combine_op: Draw.ShapeCompKind) -> XShape:
         """
         Combines one or more shapes.
 
@@ -2133,33 +2416,34 @@ class Draw:
             shapes (XShapes): Shapes to combine
             combine_op (ShapeCompKind): Combine Operation.
 
+        Raises:
+            ShapeError: If error occurs.
+
         Returns:
-            XShape | None: New combined shape on success; Otherwise, ``None``.
+            XShape: New combined shape.
         """
         # select the shapes for the dispatches to apply to
-        sel_supp = mLo.Lo.qi(XSelectionSupplier, mGui.GUI.get_current_controller(doc), True)
-        sel_supp.select(shapes)
-
-        if combine_op == Draw.ShapeCompKind.INTERSECT:
-            mLo.Lo.dispatch_cmd("Intersect")
-        elif combine_op == Draw.ShapeCompKind.SUBTRACT:
-            mLo.Lo.dispatch_cmd("Substract")  # misspelt!
-        elif combine_op == Draw.ShapeCompKind.COMBINE:
-            mLo.Lo.dispatch_cmd("Combine")
-        else:
-            mLo.Lo.dispatch_cmd("Merge")
-
-        mLo.Lo.delay(500)  # give time for dispatches to arrive and be processed
-
-        # extract the new single shape from the modified selection
-        xs = mLo.Lo.qi(XShapes, sel_supp.getSelection(), True)
         try:
-            combined_shape = mLo.Lo.qi(XShapes, xs.getByIndex(0))
+            sel_supp = mLo.Lo.qi(XSelectionSupplier, mGui.GUI.get_current_controller(doc), True)
+            sel_supp.select(shapes)
+
+            if combine_op == Draw.ShapeCompKind.INTERSECT:
+                mLo.Lo.dispatch_cmd("Intersect")
+            elif combine_op == Draw.ShapeCompKind.SUBTRACT:
+                mLo.Lo.dispatch_cmd("Substract")  # misspelt!
+            elif combine_op == Draw.ShapeCompKind.COMBINE:
+                mLo.Lo.dispatch_cmd("Combine")
+            else:
+                mLo.Lo.dispatch_cmd("Merge")
+
+            mLo.Lo.delay(500)  # give time for dispatches to arrive and be processed
+
+            # extract the new single shape from the modified selection
+            xs = mLo.Lo.qi(XShapes, sel_supp.getSelection(), True)
+            combined_shape = mLo.Lo.qi(XShapes, xs.getByIndex(0), True)
+            return combined_shape
         except Exception as e:
-            mLo.Lo.print("Could not get combined shape")
-            mLo.Lo.print(f"  {e}")
-            return None
-        return combined_shape
+            raise mEx.ShapeError("Unable to combine shapes") from e
 
     @staticmethod
     def create_control_shape(
@@ -2178,34 +2462,42 @@ class Draw:
             props (Any, optional): Any extra key value options to set on the Model of the control being created
                 such as ``FontHeight=18.0, Name="BLA"``
 
+        Raises:
+            ShapeError: If error occurs.
+
         Returns:
-            XControlShape: _description_
+            XControlShape: Control Shape.
         """
-        cshape = mLo.Lo.create_instance_msf(XControlShape, "com.sun.star.drawing.ControlShape", raise_err=True)
-        cshape.setSize(Draw.Size(width * 100, height * 100))
-        cshape.setPosition(Draw.Point(x * 100, y * 100))
+        try:
+            cshape = mLo.Lo.create_instance_msf(XControlShape, "com.sun.star.drawing.ControlShape", raise_err=True)
+            cshape.setSize(Draw.Size(width * 100, height * 100))
+            cshape.setPosition(Draw.Point(x * 100, y * 100))
 
-        cmodel = mLo.Lo.create_instance_msf(XControlModel, f"com.sun.star.form.control.{shape_kind}")
+            cmodel = mLo.Lo.create_instance_msf(
+                XControlModel, f"com.sun.star.form.control.{shape_kind}", raise_err=True
+            )
 
-        prop_set = mLo.Lo.qi(XPropertySet, cmodel, True)
-        prop_set.setPropertyValue("DefaultControl", f"com.sun.star.form.control.{shape_kind}")
-        prop_set.setPropertyValue("Name", "XXX")
-        prop_set.setPropertyValue("Label", label)
+            prop_set = mLo.Lo.qi(XPropertySet, cmodel, True)
+            prop_set.setPropertyValue("DefaultControl", f"com.sun.star.form.control.{shape_kind}")
+            prop_set.setPropertyValue("Name", "XXX")
+            prop_set.setPropertyValue("Label", label)
 
-        prop_set.setPropertyValue("FontHeight", 18.0)
-        prop_set.setPropertyValue("FontName", mInfo.Info.get_font_general_name())
+            prop_set.setPropertyValue("FontHeight", 18.0)
+            prop_set.setPropertyValue("FontName", mInfo.Info.get_font_general_name())
 
-        for k, v in props.items():
-            prop_set.setPropertyValue(k, v)
+            for k, v in props.items():
+                prop_set.setPropertyValue(k, v)
 
-        cshape.setControl(cmodel)
+            cshape.setControl(cmodel)
 
-        xbtn = mLo.Lo.qi(XButton, cmodel)
-        if xbtn is None:
-            mLo.Lo.print("XButton is None")
+            # xbtn = mLo.Lo.qi(XButton, cmodel)
+            # if xbtn is None:
+            #     mLo.Lo.print("XButton is None")
 
-        # mProps.Props.show_props(title="Control model props", props=props)
-        return cshape
+            # mProps.Props.show_props(title="Control model props", props=props)
+            return cshape
+        except Exception as e:
+            raise mEx.ShapeError("Unable to create control shape") from e
 
     # endregion draw/add shape to a page
 
@@ -2225,44 +2517,55 @@ class Draw:
         Args:
             master (XDrawPage): Master Draw Page
             text (str): Footer text
+
+        Raises:
+            ShapeMissingError: If unable to find footer shape.
+            DrawPageError: If any other error occurs.
         """
-        footer_shape = cls.find_shape_by_type(slide=master, shape_type=Draw.NameSpaceKind.SHAPE_TYPE_FOOTER)
-        if footer_shape is None:
-            mLo.Lo.print(f'Unable to find "{Draw.NameSpaceKind.SHAPE_TYPE_FOOTER}"')
-            return
-        txt_field = mLo.Lo.qi(XText, footer_shape, True)
-        txt_field.setString(text)
+        try:
+            footer_shape = cls.find_shape_by_type(slide=master, shape_type=Draw.NameSpaceKind.SHAPE_TYPE_FOOTER)
+            txt_field = mLo.Lo.qi(XText, footer_shape, True)
+            txt_field.setString(text)
+        except mEx.ShapeMissingError:
+            raise
+        except Exception as e:
+            raise mEx.DrawPageError("Unable to set master footer") from e
 
     @classmethod
-    def add_slide_number(cls, slide: XDrawPage) -> XShape | None:
+    def add_slide_number(cls, slide: XDrawPage) -> XShape:
         """
         Adds slide number to a slide
 
         Args:
             slide (XDrawPage): Slide
 
+        Raises:
+            ShapeError: If error occurs.
+
         Returns:
-            XShape | None: Shape on success; Otherwise, ``None``
+            XShape: Slide number shape.
         """
-        sz = cls.get_slide_size(slide)
-        if sz is None:
-            mLo.Lo.print("Unable to get slide size")
-            return None
-        width = 60
-        height = 15
-        return cls.add_pres_shape(
-            slide=slide,
-            shape_type=PresentationKind.SLIDE_NUMBER_SHAPE,
-            x=sz.Width - width - 12,
-            y=sz.Height - height - 4,
-            width=width,
-            height=height,
-        )
+        try:
+            sz = cls.get_slide_size(slide)
+            width = 60
+            height = 15
+            return cls.add_pres_shape(
+                slide=slide,
+                shape_type=PresentationKind.SLIDE_NUMBER_SHAPE,
+                x=sz.Width - width - 12,
+                y=sz.Height - height - 4,
+                width=width,
+                height=height,
+            )
+        except mEx.ShapeError:
+            raise
+        except Exception as e:
+            raise mEx.ShapeError("Unable to add slide number") from e
 
     @classmethod
     def add_pres_shape(
         cls, slide: XDrawPage, shape_type: PresentationKind, x: int, y: int, width: int, height: int
-    ) -> XShape | None:
+    ) -> XShape:
         """
         Creates a shape from the "com.sun.star.presentation" package:
 
@@ -2274,16 +2577,22 @@ class Draw:
             width (int): Shape width in mm units.
             height (int): Shape height in mm units.
 
+        Raises:
+            ShapeError: If error occurs.
+
         Returns:
             XShape | None: Shape on success; Otherwise, ``None``
         """
-        cls.warns_position(slide=slide, x=x, y=y)
-        shape = mLo.Lo.create_instance_msf(XShape, shape_type.to_namespace())
-        if shape is not None:
-            slide.add(shape)
-            cls.set_position(shape, x, y)
-            cls.set_size(shape, width, height)
-        return shape
+        try:
+            cls.warns_position(slide=slide, x=x, y=y)
+            shape = mLo.Lo.create_instance_msf(XShape, shape_type.to_namespace(), raise_err=True)
+            if shape is not None:
+                slide.add(shape)
+                cls.set_position(shape, x, y)
+                cls.set_size(shape, width, height)
+            return shape
+        except Exception as e:
+            raise mEx.ShapeError("Unable to add slide number") from e
 
     # endregion presentation shapes
 
@@ -2296,12 +2605,18 @@ class Draw:
         Args:
             shape (XShape): Shape
 
+        Raises:
+            PointError: If error occurs.
+
         Returns:
             Point: Position as Point in mm units
         """
-        pt = shape.getPosition()
-        # convert to mm
-        return Draw.Point(round(pt.X / 100, round(pt.Y / 100)))
+        try:
+            pt = shape.getPosition()
+            # convert to mm
+            return Draw.Point(round(pt.X / 100, round(pt.Y / 100)))
+        except Exception as e:
+            raise mEx.PointError("Error getting position") from e
 
     @staticmethod
     def get_size(shape: XShape) -> Draw.Size:
@@ -2311,12 +2626,18 @@ class Draw:
         Args:
             shape (XShape): Shape
 
+        Raises:
+            SizeError: If error occurs.
+
         Returns:
             Size: Size in mm units
         """
-        sz = shape.getSize()
-        # convert to mm
-        return Draw.Size(round(sz.Width / 100), round(sz.Height / 100))
+        try:
+            sz = shape.getSize()
+            # convert to mm
+            return Draw.Size(round(sz.Width / 100), round(sz.Height / 100))
+        except Exception as e:
+            raise mEx.SizeError("Error getting Size") from e
 
     @staticmethod
     def print_point(pt: Draw.Point) -> None:
@@ -2377,6 +2698,9 @@ class Draw:
             x (int): X position
             y (int): Y Position
 
+        Raises:
+            ShapeError: If error occurs.
+
         Note:
             Positions are NOT in mm units when passed into this method.
         """
@@ -2409,14 +2733,18 @@ class Draw:
         kargs = get_kwargs()
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
-        if count == 2:
-            # def set_position(shape: XShape, pt: Draw.Point)
-            pt_in = cast(Draw.Point, kargs[2])
-            pt = Draw.Point(pt_in.X * 100, pt_in.Y * 100)
-        else:
-            # def set_position(shape: XShape, x:int, y: int)
-            pt = Draw.Point(kargs[2] * 100, kargs[3] * 100)
-        cast(XShape, kargs[1]).setPosition(pt)
+
+        try:
+            if count == 2:
+                # def set_position(shape: XShape, pt: Draw.Point)
+                pt_in = cast(Draw.Point, kargs[2])
+                pt = Draw.Point(pt_in.X * 100, pt_in.Y * 100)
+            else:
+                # def set_position(shape: XShape, x:int, y: int)
+                pt = Draw.Point(kargs[2] * 100, kargs[3] * 100)
+            cast(XShape, kargs[1]).setPosition(pt)
+        except Exception as e:
+            raise mEx.ShapeError("Error setting position") from e
 
     # endregion set_position()
 
@@ -2442,6 +2770,9 @@ class Draw:
             sz (Size): Size that contains width and height positions.
             width (int): Width position
             height (int): Height Position
+
+        Raises:
+            ShapeError: If error occurs.
 
         Note:
             Positions are NOT in mm units when passed into this method.
@@ -2475,14 +2806,17 @@ class Draw:
         kargs = get_kwargs()
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
-        if count == 2:
-            # def set_size(shape: XShape, sz: Draw.Size)
-            sz_in = cast(Draw.Size, kargs[2])
-            sz = Draw.Size(sz_in.Width * 100, sz_in.Height * 100)
-        else:
-            # def set_size(shape: XShape, width:int, height: int)
-            sz = Draw.Size(kargs[2] * 100, kargs[3] * 100)
-        cast(XShape, kargs[1]).setSize(sz)
+        try:
+            if count == 2:
+                # def set_size(shape: XShape, sz: Draw.Size)
+                sz_in = cast(Draw.Size, kargs[2])
+                sz = Draw.Size(sz_in.Width * 100, sz_in.Height * 100)
+            else:
+                # def set_size(shape: XShape, width:int, height: int)
+                sz = Draw.Size(kargs[2] * 100, kargs[3] * 100)
+            cast(XShape, kargs[1]).setSize(sz)
+        except Exception as e:
+            raise mEx.ShapeError("Error setting size") from e
 
     # endregion set_size()
 
@@ -2495,12 +2829,15 @@ class Draw:
             shape (XShape): Shape
             graphic_styles (XNameContainer): Graphic styles
             style_name (GraphicStyleKind | str): Graphic Style Name
+
+        Raises:
+            DrawError: If error occurs.
         """
         try:
             style = mLo.Lo.qi(XStyle, graphic_styles.getByName(str(style_name)), True)
-            mProps.Props.set_property(obj=shape, name="Style", value=style)
+            mProps.Props.set_property(shape, "Style", style)
         except Exception as e:
-            mLo.Lo.print(f'Could not set the style to "{style_name}"')
+            raise mEx.DrawError(f'Could not set the style to "{style_name}"') from e
 
     @staticmethod
     def get_text_properties(shape: XShape) -> XPropertySet:
@@ -2510,35 +2847,42 @@ class Draw:
         Args:
             shape (XShape): Shape
 
+        Raises:
+            PropertySetError: If error occurs.
+
         Returns:
             XPropertySet: Property Set
         """
-        xtxt = mLo.Lo.qi(XText, shape, True)
-        cursor = xtxt.createTextCursor()
-        cursor.gotoStart(False)
-        cursor.gotoEnd(True)
-        xrng = mLo.Lo.qi(XTextRange, cursor, True)
-        return mLo.Lo.qi(XPropertySet, xrng, True)
+        try:
+            xtxt = mLo.Lo.qi(XText, shape, True)
+            cursor = xtxt.createTextCursor()
+            cursor.gotoStart(False)
+            cursor.gotoEnd(True)
+            xrng = mLo.Lo.qi(XTextRange, cursor, True)
+            return mLo.Lo.qi(XPropertySet, xrng, True)
+        except Exception as e:
+            raise mEx.PropertySetError("Error getting text properties") from e
 
     @staticmethod
-    def get_line_color(shape: XShape) -> mColor.Color | None:
+    def get_line_color(shape: XShape) -> mColor.Color:
         """
         Gets the line color of a shpae.
 
         Args:
             shape (XShape): Shape
 
+        Raises:
+            ColorError: If error occurs.
+
         Returns:
-            mColor.Color | None: Color on success; Otherwise, ``None``.
+            mColor.Color: Color
         """
-        props = mLo.Lo.qi(XPropertySet, shape, True)
         try:
+            props = mLo.Lo.qi(XPropertySet, shape, True)
             c = mColor.Color(int(props.getPropertyValue("LineColor")))
             return c
         except Exception as e:
-            mLo.Lo.print("Could not access line color")
-            mLo.Lo.print(f"  {e}")
-        return None
+            raise mEx.ColorError("Error getting line color") from e
 
     @staticmethod
     def set_dashed_line(shape: XShape, is_dashed: bool) -> None:
@@ -2548,9 +2892,12 @@ class Draw:
         Args:
             shape (XShape): Shape
             is_dashed (bool): Determines if line is to be dashed or solid.
+
+        Raises:
+            ShapeError: If error occurs.
         """
-        props = mLo.Lo.qi(XPropertySet, shape, True)
         try:
+            props = mLo.Lo.qi(XPropertySet, shape, True)
             if is_dashed:
                 ld = LineDash()
                 ld.Dots = 0
@@ -2564,8 +2911,7 @@ class Draw:
                 # switch to solid line
                 props.setPropertyValue("LineStyle", Draw.LineStyle.SOLID)
         except Exception as e:
-            mLo.Lo.print("Could not set dashed line property")
-            mLo.Lo.print(f"  {e}")
+            raise mEx.ShapeError("Error setting dashed line property") from e
 
     @staticmethod
     def get_line_thickness(shape: XShape) -> int:
@@ -2578,8 +2924,8 @@ class Draw:
         Returns:
             int: Line Thickness on success; Otherwise, ``0``.
         """
-        props = mLo.Lo.qi(XPropertySet, shape, True)
         try:
+            props = mLo.Lo.qi(XPropertySet, shape, True)
             return int(props.getPropertyValue("LineWidth"))
         except Exception as e:
             mLo.Lo.print("Could not access line thickness")
@@ -2587,24 +2933,25 @@ class Draw:
         return 0
 
     @staticmethod
-    def get_fill_color(shape: XShape) -> mColor.Color | None:
+    def get_fill_color(shape: XShape) -> mColor.Color:
         """
         Gets the fill color of a shpae.
 
         Args:
             shape (XShape): Shape
 
+        Raises:
+            ColorError: If error occurs.
+
         Returns:
-            mColor.Color | None: Color on success; Otherwise, ``None``.
+            mColor.Color: Color
         """
-        props = mLo.Lo.qi(XPropertySet, shape, True)
         try:
+            props = mLo.Lo.qi(XPropertySet, shape, True)
             c = mColor.Color(int(props.getPropertyValue("FillColor")))
             return c
         except Exception as e:
-            mLo.Lo.print("Could not access fill color")
-            mLo.Lo.print(f"  {e}")
-        return None
+            raise mEx.ColorError("Error getting fill color") from e
 
     @staticmethod
     def set_transparency(shape: XShape, level: Intensity) -> None:
@@ -2615,48 +2962,55 @@ class Draw:
         Args:
             shape (XShape): Shape
             level (Intensity): Transparency value
+
+        Raises:
+            ShapeError: If error occurs.
         """
-        mProps.Props.set_property(obj=shape, name="FillTransparence", value=level.Value)
+        try:
+            mProps.Props.set_property(shape, "FillTransparence", level.Value)
+        except Exception as e:
+            raise mEx.ShapeError("Error setting transparency") from e
 
     # region set_gradient_color()
 
     @staticmethod
     def _set_gradient_color_name(shape: XShape, name: DrawingGradientKind | str) -> None:
-        props = mLo.Lo.qi(XPropertySet, shape, True)
         try:
+            props = mLo.Lo.qi(XPropertySet, shape, True)
             props.setPropertyValue("FillStyle", FillStyle.GRADIENT)
             props.setPropertyValue("FillGradientName", str(name))
         except IllegalArgumentException:
-            mLo.Lo.print(f'"{name}" is not a recognized gradient color name')
+            raise NameError(f'"{name}" is not a recognized gradient name')
         except Exception as e:
-            mLo.Lo.print(f'Could not set gradient color to "{name}"')
-            mLo.Lo.print(f"  {e}")
+            raise mEx.ShapeError(f"Unable to set shape gradient color: {name}") from e
 
     @staticmethod
     def _set_gradient_color_colors(
         shape: XShape, start_color: mColor.Color, end_color: mColor.Color, angle: Angle
     ) -> None:
-        props = mLo.Lo.qi(XPropertySet, shape, True)
-
-        grad = Gradient()
-        grad.Style = GradientStyle.LINEAR
-        grad.StartColor = start_color
-        grad.EndColor = end_color
-
-        grad.Angle = angle.Value * 10  # in 1/10 degree units
-        grad.Border = 0
-        grad.XOffset = 0
-        grad.YOffset = 0
-        grad.StartIntensity = 100
-        grad.EndIntensity = 100
-        grad.StepCount = 10
-
         try:
+            props = mLo.Lo.qi(XPropertySet, shape, True)
+
+            grad = Gradient()
+            grad.Style = GradientStyle.LINEAR
+            grad.StartColor = start_color
+            grad.EndColor = end_color
+
+            grad.Angle = angle.Value * 10  # in 1/10 degree units
+            grad.Border = 0
+            grad.XOffset = 0
+            grad.YOffset = 0
+            grad.StartIntensity = 100
+            grad.EndIntensity = 100
+            grad.StepCount = 10
+
             props.setPropertyValue("FillStyle", FillStyle.GRADIENT)
             props.setPropertyValue("FillGradient", grad)
         except Exception as e:
-            mLo.Lo.print("Could not set gradient colors")
-            mLo.Lo.print(f"  {e}")
+            # f-string = is pyton >= 3.8
+            raise mEx.ShapeError(
+                f"Unable to set shape gradient color: start_color={start_color}, end_color={end_color}, {angle}"
+            ) from e
 
     @overload
     @classmethod
@@ -2686,6 +3040,10 @@ class Draw:
             start_color (mColor.Color): Start Color
             end_color (mColor.Color): End Color
             angle (Angle): Angle
+
+        Raises:
+            NameError: If ``name`` is not reconized.
+            ShapeError: If any other error occurs.
 
         Note:
             When using Graident Name.
@@ -2750,6 +3108,10 @@ class Draw:
             shape (XShape): Shape
             name (DrawingHatchingKind | str): Hatching Name
 
+        Raises:
+            NameError: If ``name`` is not reconized.
+            ShapeError: If any other error occurs.
+
         Note:
             Getting the hatching color name can be a bit challenging.
             ``DrawingHatchingKind`` contains name displayed in the Hatching color menu of Draw.
@@ -2757,15 +3119,14 @@ class Draw:
             The Easies way to get the colors is to open Draw and see what gradient color names are available
             on your system.
         """
-        props = mLo.Lo.qi(XPropertySet, shape, True)
         try:
+            props = mLo.Lo.qi(XPropertySet, shape, True)
             props.setPropertyValue("FillStyle", FillStyle.HATCH)
             props.setPropertyValue("FillHatchName", str(name))
         except IllegalArgumentException:
-            mLo.Lo.print(f'"{name}" is not a recognized hatching name')
+            raise NameError(f'"{name}" is not a recognized hatching name')
         except Exception as e:
-            mLo.Lo.print(f'Could not set hatching color to "{name}"')
-            mLo.Lo.print(f"  {e}")
+            raise mEx.ShapeError("Error setting hatch color") from e
         return None
 
     @staticmethod
@@ -2776,6 +3137,10 @@ class Draw:
         Args:
             shape (XShape): Shape
             name (DrawingBitmapKind | str): Bitmap Name
+
+        Raises:
+            NameError: If ``name`` is not reconized.
+            ShapeError: If any other error occurs.
 
         Note:
             Getting the bitmap color name can be a bit challenging.
@@ -2789,11 +3154,9 @@ class Draw:
             props.setPropertyValue("FillStyle", FillStyle.BITMAP)
             props.setPropertyValue("FillBitmapName", str(name))
         except IllegalArgumentException:
-            mLo.Lo.print(f'"{name}" is not a recognized bitmap name')
+            raise NameError(f'"{name}" is not a recognized bitmap name')
         except Exception as e:
-            mLo.Lo.print(f'Could not set bitmap color to "{name}"')
-            mLo.Lo.print(f"  {e}")
-        return None
+            raise mEx.ShapeError(f'Error setting bitmap color  to "{name}"') from e
 
     @staticmethod
     def set_bitmap_file_color(shape: XShape, fnm: PathOrStr) -> None:
@@ -2803,15 +3166,16 @@ class Draw:
         Args:
             shape (XShape): Shape
             fnm (PathOrStr): path to file.
+
+        Raises:
+            ShapeError: If error occurs.
         """
-        props = mLo.Lo.qi(XPropertySet, shape, True)
         try:
+            props = mLo.Lo.qi(XPropertySet, shape, True)
             props.setPropertyValue("FillStyle", FillStyle.BITMAP)
             props.setPropertyValue("FillBitmapURL", mFileIO.FileIO.fnm_to_url(fnm))
         except Exception as e:
-            mLo.Lo.print(f'Could not set bitmap color using  "{fnm}"')
-            mLo.Lo.print(f"  {e}")
-        return None
+            raise mEx.ShapeError(f'Could not set bitmap color using  "{fnm}"') from e
 
     @classmethod
     def set_line_style(cls, shape: XShape, style: Draw.LineStyle) -> None:
@@ -2821,8 +3185,14 @@ class Draw:
         Args:
             shape (XShape): Shape
             style (LineStyle): Line Style
+
+        Raises:
+            ShapeError: If error occurs.
         """
-        cls.set_shape_props(shape=shape, LineStyle=style)
+        try:
+            cls.set_shape_props(shape=shape, LineStyle=style)
+        except Exception as e:
+            raise mEx.ShapeError("Error setting line style") from e
 
     @classmethod
     def set_visible(cls, shape: XShape, is_visible: bool) -> None:
@@ -2832,8 +3202,14 @@ class Draw:
         Args:
             shape (XShape): Shape
             is_visible (bool): Set is shape is visible or not.
+
+        Raises:
+            ShapeError: If error occurs.
         """
-        cls.set_shape_props(shape=shape, Visible=is_visible)
+        try:
+            cls.set_shape_props(shape=shape, Visible=is_visible)
+        except Exception as e:
+            raise mEx.ShapeError("Error setting shape visibility") from e
 
     # "RotateAngle" is deprecated but is much simpler
     # than the matrix approach, and works correctly
@@ -2847,8 +3223,14 @@ class Draw:
         Args:
             shape (XShape): Shape
             is_visible (bool): Set is shape is visibel or not.
+
+        Raises:
+            ShapeError: If error occurs.
         """
-        cls.set_shape_props(shape=shape, RotateAngle=angle.Value * 100)
+        try:
+            cls.set_shape_props(shape=shape, RotateAngle=angle.Value * 100)
+        except Exception as e:
+            raise mEx.ShapeError(f"Error setting shape angle: {angle}") from e
 
     @staticmethod
     def get_rotation(shape: XShape) -> Angle:
@@ -2858,11 +3240,17 @@ class Draw:
         Args:
             shape (XShape): Shape
 
+        Raises:
+            ShapeError: If error occurs.
+
         Returns:
             Angle: Rotation angle.
         """
-        r_angle = int(mProps.Props.get_property(shape, "RotateAngle"))
-        return Angle(round(r_angle / 100))
+        try:
+            r_angle = int(mProps.Props.get_property(shape, "RotateAngle"))
+            return Angle(round(r_angle / 100))
+        except Exception as e:
+            raise mEx.ShapeError("Error getting shape rotation") from e
 
     @staticmethod
     def get_transformation(shape: XShape) -> HomogenMatrix3:
@@ -2874,6 +3262,9 @@ class Draw:
         Args:
             shape (XShape): Shape
 
+        Raises:
+            ShapeError: If error occurs.
+
         Returns:
             HomogenMatrix3: Matrix
         """
@@ -2882,7 +3273,10 @@ class Draw:
         #     cos(t)  sin(t) x
         #    -sin(t)  cos(t) y
         #       0       0    1
-        return mProps.Props.get_property(shape, "Transformation")
+        try:
+            return mProps.Props.get_property(shape, "Transformation")
+        except Exception as e:
+            raise mEx.ShapeError("Error getting shape transformation") from e
 
     @staticmethod
     def print_matrix(mat: HomogenMatrix3) -> None:
@@ -2908,66 +3302,73 @@ class Draw:
     # region draw an image
     # region draw_image()
     @classmethod
-    def _draw_image_path(cls, slide: XDrawPage, fnm: PathOrStr) -> XShape | None:
-        slide_size = cls.get_slide_size(slide)
-        if slide_size is None:
-            mLo.Lo.print("Unable to get slide size")
-            return None
+    def _draw_image_path(cls, slide: XDrawPage, fnm: PathOrStr) -> XShape:
         try:
-            im_size = mImgLo.ImagesLo.get_size_100mm(fnm)
+            slide_size = cls.get_slide_size(slide)
+            try:
+                im_size = mImgLo.ImagesLo.get_size_100mm(fnm)
+            except Exception as ex:
+                raise RuntimeError(f'Could not calculate size of "{fnm}"') from ex
+            im_width = round(im_size.Width / 100)  # in mm units
+            im_height = round(im_size.Height / 100)
+            x = round((slide_size.Width - im_width) / 2)
+            y = round((slide_size.Height - im_height) / 2)
+            return cls._draw_image_path_x_y_w_h(slide=slide, fnm=fnm, x=x, y=y, width=im_width, height=im_height)
+        except mEx.ShapeError:
+            raise
         except Exception as e:
-            mLo.Lo.print(f'Could not calculate size of "{fnm}"')
-            return None
-        im_width = round(im_size.Width / 100)  # in mm units
-        im_height = round(im_size.Height / 100)
-        x = round((slide_size.Width - im_width) / 2)
-        y = round((slide_size.Height - im_height) / 2)
-        return cls._draw_image_path_x_y_w_h(slide=slide, fnm=fnm, x=x, y=y, width=im_width, height=im_height)
+            raise mEx.ShapeError(f'Error getting shape for draw image for file: "{fnm}"')
 
     @classmethod
-    def _draw_image_path_x_y(cls, slide: XDrawPage, fnm: PathOrStr, x: int, y: int) -> XShape | None:
+    def _draw_image_path_x_y(cls, slide: XDrawPage, fnm: PathOrStr, x: int, y: int) -> XShape:
         try:
-            im_size = mImgLo.ImagesLo.get_size_100mm(fnm)
+            try:
+                im_size = mImgLo.ImagesLo.get_size_100mm(fnm)
+            except Exception as ex:
+                raise RuntimeError(f'Could not calculate size of "{fnm}"') from ex
+            return cls._draw_image_path_x_y_w_h(
+                slide=slide, fnm=fnm, x=x, y=y, width=round(im_size.Width / 100), height=round(im_size.Height / 100)
+            )
+        except mEx.ShapeError:
+            raise
         except Exception as e:
-            mLo.Lo.print(f'Could not calculate size of "{fnm}"')
-            return None
-        return cls._draw_image_path_x_y_w_h(
-            slide=slide, fnm=fnm, x=x, y=y, width=round(im_size.Width / 100), height=round(im_size.Height / 100)
-        )
+            raise mEx.ShapeError(f'Error getting shape for draw image for file: "{fnm}"') from e
 
     @classmethod
     def _draw_image_path_x_y_w_h(
         cls, slide: XDrawPage, fnm: PathOrStr, x: int, y: int, width: int, height: int
-    ) -> XShape | None:
+    ) -> XShape:
         # units in mm's
         mLo.Lo.print(f'Adding the picture "{fnm}"')
-        im_shape = cls.add_shape(
-            slide=slide, shape_type=DrawingShapeKind.GRAPHIC_OBJECT_SHAPE, x=x, y=y, width=width, height=height
-        )
-        if im_shape is None:
-            mLo.Lo.print("Unable to add shape")
-            return None
-        cls.set_image(im_shape, fnm)
-        cls.set_line_style(shape=im_shape, style=Draw.LineStyle.NONE)
-        return im_shape
+        try:
+            im_shape = cls.add_shape(
+                slide=slide, shape_type=DrawingShapeKind.GRAPHIC_OBJECT_SHAPE, x=x, y=y, width=width, height=height
+            )
+            cls.set_image(im_shape, fnm)
+            cls.set_line_style(shape=im_shape, style=Draw.LineStyle.NONE)
+            return im_shape
+        except mEx.ShapeError:
+            raise
+        except Exception as e:
+            raise mEx.ShapeError(f'Error getting shape for draw image for file: "{fnm}"') from e
 
     @overload
     @classmethod
-    def draw_image(cls, slide: XDrawPage, fnm: PathOrStr) -> XShape | None:
+    def draw_image(cls, slide: XDrawPage, fnm: PathOrStr) -> XShape:
         ...
 
     @overload
     @classmethod
-    def draw_image(cls, slide: XDrawPage, fnm: PathOrStr, x: int, y: int) -> XShape | None:
+    def draw_image(cls, slide: XDrawPage, fnm: PathOrStr, x: int, y: int) -> XShape:
         ...
 
     @overload
     @classmethod
-    def draw_image(cls, slide: XDrawPage, fnm: PathOrStr, x: int, y: int, width: int, height: int) -> XShape | None:
+    def draw_image(cls, slide: XDrawPage, fnm: PathOrStr, x: int, y: int, width: int, height: int) -> XShape:
         ...
 
     @classmethod
-    def draw_image(cls, *args, **kwargs) -> XShape | None:
+    def draw_image(cls, *args, **kwargs) -> XShape:
         """
         Draws an image
 
@@ -2979,8 +3380,11 @@ class Draw:
             width (int): Shape width
             height (int): Shape height
 
+        Raises:
+            ShapeError: If error occurs.
+
         Returns:
-            XShape | None: Shape on success; Otherwise, ``None``
+            XShape: Shape
         """
         ordered_keys = (1, 2, 3, 4, 5, 6)
         kargs_len = len(kwargs)
@@ -3031,17 +3435,21 @@ class Draw:
         Args:
             shape (XShape): Shape
             fnm (PathOrStr): Path to image.
+
+        Raises:
+            ShapeError: If error occurs.
         """
         # GraphicURL is Deprecated using Graphic instead.
         # https://tinyurl.com/2qaqs2nr#a6312a2da62e2c67c90d5576502117906
-        graphic = mImgLo.ImagesLo.load_graphic_file(fnm)
+        try:
+            graphic = mImgLo.ImagesLo.load_graphic_file(fnm)
 
-        mProps.Props.set_property(shape, "Graphic", graphic)
+            mProps.Props.set_property(shape, "Graphic", graphic)
+        except Exception as e:
+            raise mEx.ShapeError(f'Error setting shape image to: "{fnm}"') from e
 
     @classmethod
-    def draw_image_offset(
-        cls, slide: XDrawPage, fnm: PathOrStr, xoffset: ImageOffset, yoffset: ImageOffset
-    ) -> XShape | None:
+    def draw_image_offset(cls, slide: XDrawPage, fnm: PathOrStr, xoffset: ImageOffset, yoffset: ImageOffset) -> XShape:
         """
         Insert the specified picture onto the slide page in the doc
         presentation document. Use the supplied (x, y) offsets to locate the
@@ -3050,27 +3458,31 @@ class Draw:
         Args:
             slide (XDrawPage): Slide
             fnm (PathOrStr): Path to image.
-            xoffset (ImageOffset): X Offset
-            yoffset (ImageOffset): Y Offset
+            xoffset (ImageOffset): X Offset with value between ``0.0`` and ``1.0``
+            yoffset (ImageOffset): Y Offset with value between ``0.0`` and ``1.0``
 
         Returns:
-            XShape | None: Shape on success; Otherwise, ``None``.
+            XShape: Shape
         """
-        slide_size = cls.get_slide_size(slide)
-        if slide_size is None:
-            mLo.Lo.print("Unalble to get slide size")
-            return None
-        x = round(slide_size.Width * xoffset.Value)  # in mm units
-        y = round(slide_size.Height * yoffset.Value)
+        try:
+            slide_size = cls.get_slide_size(slide)
+            x = round(slide_size.Width * xoffset.Value)  # in mm units
+            y = round(slide_size.Height * yoffset.Value)
 
-        max_width = slide_size.Width - x
-        max_height = slide_size.Height - y
+            max_width = slide_size.Width - x
+            max_height = slide_size.Height - y
 
-        im_size = mImgLo.ImagesLo.calc_scale(fnm=fnm, max_width=max_width, max_height=max_height)
-        if im_size is None:
-            mLo.Lo.print(f'Unalbe to calc image size for "{fnm}"')
-            return None
-        return cls._draw_image_path_x_y_w_h(slide=slide, fnm=fnm, x=x, y=y, width=im_size.Width, height=im_size.Height)
+            im_size = mImgLo.ImagesLo.calc_scale(fnm=fnm, max_width=max_width, max_height=max_height)
+            if im_size is None:
+                mLo.Lo.print(f'Unalbe to calc image size for "{fnm}"')
+                return None
+            return cls._draw_image_path_x_y_w_h(
+                slide=slide, fnm=fnm, x=x, y=y, width=im_size.Width, height=im_size.Height
+            )
+        except mEx.ShapeError:
+            raise
+        except Exception as e:
+            raise mEx.ShapeError("Error in draw image offset") from e
 
     @staticmethod
     def is_image(shape: XShape) -> bool:
@@ -3091,7 +3503,7 @@ class Draw:
 
     # region form manipulation
     @staticmethod
-    def get_form_container(slide: XDrawPage) -> XIndexContainer | None:
+    def get_form_container(slide: XDrawPage) -> XIndexContainer:
         """
         Gets form container.
         The first form in slide is returned if found.
@@ -3099,14 +3511,16 @@ class Draw:
         Args:
             slide (XDrawPage): Slide
 
+        Raises:
+            DrawError: If error occurs.
+
         Returns:
-            XIndexContainer | None: Form Container on success; Otherwise, ``None``.
+            XIndexContainer: Form Container.
         """
         try:
             xsupp_forms = mLo.Lo.qi(XFormsSupplier, slide)
             if xsupp_forms is None:
-                mLo.Lo.print("Could not access forms supplier")
-                return None
+                raise mEx.MissingInterfaceError(XFormsSupplier, "Could not access forms supplier")
 
             xforms_con = xsupp_forms.getForms()
             if xforms_con is None:
@@ -3117,61 +3531,66 @@ class Draw:
             xform = mLo.Lo.qi(XIndexContainer, xforms.getByIndex(0), True)
             return xform
         except Exception as e:
-            mLo.Lo.print("Could not find a form")
-            mLo.Lo.print(f"  {e}")
-        return None
+            raise mEx.DrawError("Could not find a form") from e
 
     # endregion form manipulation
 
     # region slide show related
     @staticmethod
-    def get_show(doc: XComponent) -> XPresentation2 | None:
+    def get_show(doc: XComponent) -> XPresentation2:
         """
         Gets Slide show Presentation
 
         Args:
             doc (XComponent): Document
 
+        Raises:
+            DrawError: If error occurs
+
         Returns:
-            XPresentation2 | None: Slide Show Presentation on success; Otherwise, ``None``.
+            XPresentation2: Slide Show Presentation.
         """
         try:
-            ps = mLo.Lo.qi(XPresentationSupplier, doc)
+            ps = mLo.Lo.qi(XPresentationSupplier, doc, True)
             return mLo.Lo.qi(XPresentation2, ps.getPresentation(), True)
         except Exception as e:
-            mLo.Lo.print("Unable to get Presentation")
-            mLo.Lo.print(f"  {e}")
-        return None
+            raise mEx.DrawError("Unable to get Presentation") from e
 
     @staticmethod
-    def get_show_controller(show: XPresentation2) -> XSlideShowController | None:
+    def get_show_controller(show: XPresentation2) -> XSlideShowController:
         """
         Gets slide show controller
 
         Args:
             show (XPresentation2): Slide Show Presentation
 
+        Raises:
+            DrawError: If error occurs.
+
         Returns:
-            XSlideShowController | None: Slide Show Controller on success; Otherwise, ``None``.
+            XSlideShowController: Slide Show Controller.
 
         Note:
             It may take a little bit for the slides show to start.
             For this reason this method will wait up to five seconds.
         """
-        sc = show.getController()
-        # may return None if executed too quickly after start of show
-        if sc is not None:
-            return sc
-        timeout = 5.0  # wait time in seconds
-        try_sleep = 0.5
-        end_time = time.time() + timeout
-        while end_time > time.time():
-            time.sleep(try_sleep)  # give slide show time to start
+        try:
             sc = show.getController()
+            # may return None if executed too quickly after start of show
             if sc is not None:
-                break
+                return sc
+            timeout = 5.0  # wait time in seconds
+            try_sleep = 0.5
+            end_time = time.time() + timeout
+            while end_time > time.time():
+                time.sleep(try_sleep)  # give slide show time to start
+                sc = show.getController()
+                if sc is not None:
+                    break
+        except Exception as e:
+            raise mEx.DrawError("Error getting slide show controller") from e
         if sc is None:
-            mLo.Lo.print(f"Could obtain slide show controller after {timeout:.1f} seconds")
+            raise mEx.DrawError(f"Could obtain slide show controller after {timeout:.1f} seconds")
         return sc
 
     @staticmethod
@@ -3221,6 +3640,9 @@ class Draw:
             speed (AnimationSpeed): Animation Speed
             change (SlideShowKind): Slide show kind
             duration (int): Duration of slide. Only used when ``change=Draw.SlideShowKind.AUTO_CHANGE``
+
+        Raises:
+            DrawPageError: If error occurs.
         """
         # https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1presentation_1_1DrawPage-members.html
 
@@ -3233,8 +3655,7 @@ class Draw:
             # then Duration is used
             ps.setPropertyValue("Duration", abs(duration))  # in seconds
         except Exception as e:
-            mLo.Lo.print("Could not set slide transition")
-            mLo.Lo.print(f"  {e}")
+            raise mEx.DrawPageError("Could not set slide transition") from e
 
     @staticmethod
     def get_play_list(doc: XComponent) -> XNameContainer:
@@ -3244,14 +3665,20 @@ class Draw:
         Args:
             doc (XComponent): Document
 
+        Raises:
+            DrawError: If error occurs.
+
         Returns:
             XNameContainer: Name Container
         """
-        cp_supp = mLo.Lo.qi(XCustomPresentationSupplier, doc, True)
-        return cp_supp.getCustomPresentations()
+        try:
+            cp_supp = mLo.Lo.qi(XCustomPresentationSupplier, doc, True)
+            return cp_supp.getCustomPresentations()
+        except Exception as e:
+            raise mEx.DrawError("Error getting play list") from e
 
     @classmethod
-    def build_play_list(cls, doc: XComponent, custom_name: str, *slide_idxs: int) -> XNameContainer | None:
+    def build_play_list(cls, doc: XComponent, custom_name: str, *slide_idxs: int) -> XNameContainer:
         """
         build a named play list container of  slides from doc.
         The name of the play list is ``custom_name``.
@@ -3260,6 +3687,9 @@ class Draw:
             doc (XComponent): Document
             custom_name (str): Name for play list
             slide_idxs (int): One or more index's of existing slides to add to play list.
+
+        Raises:
+            DrawError: If error occurs.
 
         Returns:
             XNameContainer | None: Name Container on success; Otherwise, ``None``
@@ -3287,9 +3717,7 @@ class Draw:
             mLo.Lo.print(f'lay list stored under the name: "{custom_name}"')
             return play_list
         except Exception as e:
-            mLo.Lo.print("Unable to build play list.")
-            mLo.Lo.print(f"  {e}")
-        return None
+            raise mEx.DrawError("Unable to build play list.") from e
 
     @staticmethod
     def get_animation_node(slide: XDrawPage) -> XAnimationNode:
@@ -3299,11 +3727,17 @@ class Draw:
         Args:
             slide (XDrawPage): Slide
 
+        Raises:
+            DrawPageError: If error occurs.
+
         Returns:
             XAnimationNode: Animation Node
         """
-        node_supp = mLo.Lo.qi(XAnimationNodeSupplier, slide, True)
-        return node_supp.getAnimationNode()
+        try:
+            node_supp = mLo.Lo.qi(XAnimationNodeSupplier, slide, True)
+            return node_supp.getAnimationNode()
+        except Exception as e:
+            raise mEx.DrawPageError("Error getting animation node") from e
 
     # endregion slide show related
 
@@ -3317,14 +3751,18 @@ class Draw:
             shape (XShape): Shape object
             props (Any): Key value pairs of property name and property value
 
+        Raises:
+            PropertySetError: If error occurs setting a property
+
         Example:
             .. code-block:: python
 
                 Draw.set_shape_props(shape, Loop=True, MediaURL=FileIO.fnm_to_url(fnm))
         """
-        if shape is None:
-            return
         for k, v in props.items():
-            mProps.Props.set_property(obj=shape, name=k, value=v)
+            try:
+                mProps.Props.set_property(shape, k, v)
+            except Exception as e:
+                raise mEx.PropertySetError(f'Error setting shape property for "{k}"') from e
 
     # endregion helper

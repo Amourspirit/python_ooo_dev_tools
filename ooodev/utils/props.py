@@ -255,7 +255,7 @@ class Props:
 
         Raises:
             MissingInterfaceError: If required interface cannot be obtained.
-            Exception: If unable to set property value
+            PropertySetError: If unable to set property value
         """
         ordered_keys = (1, 2, 3)
         kargs_len = len(kwargs)
@@ -292,7 +292,7 @@ class Props:
         try:
             prop_set.setPropertyValue(kargs[2], kargs[3])
         except Exception as e:
-            raise Exception(f"Could not set property '{kargs[2]}'") from e
+            raise mEx.PropertySetError(f"Could not set property '{kargs[2]}'") from e
 
     # endregion set_property()
 

@@ -1,5 +1,6 @@
 # coding: utf-8
 from __future__ import annotations
+from ast import Pass
 from typing import Any, List, TYPE_CHECKING
 from ..utils.type_var import PathOrStr
 
@@ -37,6 +38,18 @@ class CellError(Exception):
 
 class ConfigError(Exception):
     """Config Error"""
+
+    pass
+
+
+class PropertySetError(Exception):
+    """Generic Property Set Error"""
+
+    pass
+
+
+class PropertySetMissingError(PropertySetError):
+    """Error for missing property set"""
 
     pass
 
@@ -279,5 +292,52 @@ class ChartExistingError(ChartError):
 
 class ChartNotExistingError(ChartError):
     """Chart does not exist"""
+
+    pass
+
+
+class DrawError(Exception):
+    """Generic Draw Error"""
+
+    pass
+
+
+class DrawPageError(DrawError):
+    """Generic Draw Page Error"""
+
+    pass
+
+
+class DrawPageMissingError(DrawPageError):
+    """Draw page Missing Error"""
+
+    pass
+
+
+class ShapeError(Exception):
+    """Generic Shape Error"""
+
+    pass
+
+
+class ShapeMissingError(ShapeError):
+    """Missing Shape Error"""
+
+    pass
+
+
+class SizeError(Exception):
+    """Generic Size Error"""
+
+    pass
+
+
+class PointError(Exception):
+    """Generic Point Error"""
+
+    pass
+
+class ColorError(Exception):
+    """Generic Color Error"""
 
     pass
