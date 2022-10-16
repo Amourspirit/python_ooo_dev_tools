@@ -1,6 +1,7 @@
 Addin
 Addon
 Args
+bezier
 Calc
 CellRangeAddress
 config
@@ -72,9 +73,11 @@ XDialog
 XEnumeration
 XFrame
 XInterface
+XLayer
 XModel
 XModule
 XMultiServiceFactory
+XPresentation
 XPrintable
 XProofreader
 XScenario

@@ -6,7 +6,7 @@ from ..decorator import enforce
 @enforce.enforce_types
 @dataclass(frozen=True)
 class ImageOffset:
-    """Represents a Impage Offset value between ``0.0`` and ``1.0``"""
+    """Represents a Image Offset value between ``0.0`` and ``1.0``"""
 
     Value: float
     """Offset value."""

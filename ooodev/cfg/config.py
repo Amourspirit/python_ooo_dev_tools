@@ -38,9 +38,7 @@ class Config(metaclass=ConfigMeta):
     """
     Singleton Configuration Class
 
-    This is an internal class and not meant to be used otherwise.
-
-    Never used in macros
+    Generally speaking this class is only used internally.
     """
 
     profile_versions: List[str]
@@ -49,7 +47,7 @@ class Config(metaclass=ConfigMeta):
 
     The value for this property can be set using ``os.environ`` with ``OOODEV_CONFIG_PROFILE_VERSION``.
 
-    `OOODEV_CONFIG_PROFILE_VERSION`` is a comma seperated string such as ``"4"`` or ``"4, 5"``
+    ``OOODEV_CONFIG_PROFILE_VERSION`` is a comma separated string such as ``"4"`` or ``"4, 5"``
     """
     slide_template_path: str
     """
@@ -57,5 +55,5 @@ class Config(metaclass=ConfigMeta):
 
     The value for this property can be set using ``os.environ`` with ``OOODEV_CONFIG_SLIDE_TEMPLATE_PATH``.
 
-    `OOODEV_CONFIG_SLIDE_TEMPLATE_PATH`` is a string such as ``"share/template/common/layout/"``
+    ``OOODEV_CONFIG_SLIDE_TEMPLATE_PATH`` is a string such as ``"share/template/common/layout/"``
     """

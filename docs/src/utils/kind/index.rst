@@ -1,10 +1,8 @@
-utils
-=====
+kind
+====
 
 .. toctree::
     :titlesonly:
     :glob:
 
-    data_type/index
-    kind/index
     *

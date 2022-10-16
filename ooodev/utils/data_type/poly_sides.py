@@ -6,7 +6,7 @@ from ..decorator import enforce
 @enforce.enforce_types
 @dataclass(frozen=True)
 class PolySides:
-    """Represents Pologon Sides value from ``3`` to ``30``."""
+    """Represents Polygon Sides value from ``3`` to ``30``."""
 
     Value: int
     """Poly Sides value."""

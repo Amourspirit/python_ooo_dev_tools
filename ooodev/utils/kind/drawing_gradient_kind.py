@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class DrawingGradientKind(str, Enum):
     """
     Drawing (some) Gradient Values.
@@ -8,7 +9,8 @@ class DrawingGradientKind(str, Enum):
 
     These are just quick suggestion that show up in Draw Gradient colors.
     """
-    BLANK_WITH_GRAY= "Blank with Gray"
+
+    BLANK_WITH_GRAY = "Blank with Gray"
     BLUE_TOUCH = "Blue Touch"
     DEEP_OCEAN = "Deep Ocean"
     GREEN_GRASS = "Green Grass"
@@ -23,6 +25,6 @@ class DrawingGradientKind(str, Enum):
     SUBMARINE = "Submarine"
     SUNSHINE = "Sunshine"
     TEAL_TO_BLUE = "Teal to Blue"
-    
+
     def __str__(self) -> str:
         return self.value

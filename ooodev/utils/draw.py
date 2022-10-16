@@ -6,6 +6,8 @@ import time
 from typing import List, Sequence, Tuple, cast, overload
 import math
 
+import uno
+
 # from com.sun.star.awt import XButton
 from com.sun.star.animations import XAnimationNode
 from com.sun.star.animations import XAnimationNodeSupplier
@@ -46,6 +48,7 @@ from com.sun.star.text import XText
 from com.sun.star.text import XTextRange
 from com.sun.star.view import XSelectionSupplier
 
+
 from . import color as mColor
 from . import file_io as mFileIO
 from . import gui as mGui
@@ -55,13 +58,16 @@ from . import lo as mLo
 from . import props as mProps
 from . import table_helper as mTblHelper
 from ..cfg.config import Config  # singleton class.
+from ..events.event_singleton import _Events
+from ..events.draw_named_event import DrawNamedEvent
+from ..events.args.cancel_event_args import CancelEventArgs
 from ..exceptions import ex as mEx
 from .data_type.angle import Angle
 from .data_type.image_offset import ImageOffset
 from .data_type.intensity import Intensity
 from .data_type.poly_sides import PolySides
 from .kind.drawing_bitmap_kind import DrawingBitmapKind
-from .kind.drawing_gradient import DrawingGradientKind
+from .kind.drawing_gradient_kind import DrawingGradientKind
 from .kind.drawing_hatching_kind import DrawingHatchingKind
 from .kind.drawing_shape_kind import DrawingShapeKind
 from .kind.form_control_kind import FormControlKind
@@ -176,7 +182,7 @@ class Draw:
     @staticmethod
     def is_shapes_based(doc: XComponent) -> bool:
         """
-        Gets if the document is suipports Draw or Impress
+        Gets if the document is supports Draw or Impress
 
         Args:
             doc (XComponent): Document
@@ -247,6 +253,9 @@ class Draw:
 
         Returns:
             str: Path as string
+
+        See Also:
+            :py:class:`~.cfg.config.Config`
         """
         p = Path(mInfo.Info.get_office_dir(), Config().slide_template_path)
         return str(p)
@@ -260,25 +269,34 @@ class Draw:
             page (XDrawPage): Page to save
             fnm (PathOrStr): Path to save page as
             mime_type (str): Mime Type of page to save as
+
+        Raises:
+            DrawError: If error occurs.
+
+        Returns:
+            None:
         """
-        save_file_url = mFileIO.FileIO.fnm_to_url(fnm)
-        mLo.Lo.print(f'Saving page in "{fnm}"')
+        try:
+            save_file_url = mFileIO.FileIO.fnm_to_url(fnm)
+            mLo.Lo.print(f'Saving page in "{fnm}"')
 
-        # create graphics exporter
-        gef = mLo.Lo.create_instance_mcf(
-            XGraphicExportFilter, "com.sun.star.drawing.GraphicExportFilter", raise_err=True
-        )
+            # create graphics exporter
+            gef = mLo.Lo.create_instance_mcf(
+                XGraphicExportFilter, "com.sun.star.drawing.GraphicExportFilter", raise_err=True
+            )
 
-        # set the output 'document' to be specified page
-        doc = mLo.Lo.qi(XComponent, page, True)
-        # link exporter to the document
-        gef.setSourceDocument(doc)
+            # set the output 'document' to be specified page
+            doc = mLo.Lo.qi(XComponent, page, True)
+            # link exporter to the document
+            gef.setSourceDocument(doc)
 
-        # export the page by converting to the specified mime type
-        props = mProps.Props.make_props(MediaType=mime_type, URL=save_file_url)
+            # export the page by converting to the specified mime type
+            props = mProps.Props.make_props(MediaType=mime_type, URL=save_file_url)
 
-        gef.filter(props)
-        mLo.Lo.print("Export Complete")
+            gef.filter(props)
+            mLo.Lo.print("Export Complete")
+        except Exception as e:
+            raise mEx.DrawError("Error saving page") from e
 
     # endregion open, create, save draw/impress doc
 
@@ -291,13 +309,22 @@ class Draw:
         Args:
             doc (XComponent): Document
 
+        Raises:
+            DrawPageMissingError: If there are no draw pages.
+            DrawPageError: If any other error occurs
+
         Returns:
-            XDrawPages | None: Draw Pages if found; Otherwise, ``None``.
+            XDrawPages: Draw Pages.
         """
-        supplier = mLo.Lo.qi(XDrawPagesSupplier, doc)
-        if supplier is None:
-            return None
-        return supplier.getDrawPages()
+        try:
+            supplier = mLo.Lo.qi(XDrawPagesSupplier, doc, True)
+            pages = supplier.getDrawPages()
+            if pages is None:
+                raise mEx.DrawPageMissingError("Draw page supplier returned no pages")
+        except mEx.DrawPageMissingError:
+            raise
+        except Exception as e:
+            raise mEx.DrawPageError("Error getting slides") from e
 
     @classmethod
     def get_slides_count(cls, doc: XComponent) -> int:
@@ -343,12 +370,11 @@ class Draw:
 
     @staticmethod
     def _get_slide_slides(slides: XDrawPages, idx: int) -> XDrawPage:
-        slide = None
         try:
             slide = mLo.Lo.qi(XDrawPage, slides.getByIndex(idx))
+            return slide
         except Exception as e:
             raise mEx.DrawError(f"Could not get slide: {idx}") from e
-        return slide
 
     @overload
     @classmethod
@@ -444,21 +470,28 @@ class Draw:
 
     @classmethod
     def _get_shapes_slide(cls, slide: XDrawPage) -> List[XShape]:
-        if slide is None:
-            mLo.Lo.print("Slide is nulll")
-            return []
         if slide.getCount() == 0:
             mLo.Lo.print("Slide does not contain any shapes")
             return []
 
         shapes: List[XShape] = []
-        try:
-            for i in range(slide.getCount()):
+        for i in range(slide.getCount()):
+            try:
                 shapes.append(mLo.Lo.qi(XShape, slide.getByIndex(i), True))
-        except Exception as e:
-            mLo.Lo.print("Shapes extraction error in slide")
-            mLo.Lo.print(f"  {e}")
-
+            except Exception as e:
+                cargs = CancelEventArgs(Draw.get_shapes.__qualname__)
+                cargs.event_data = {"index": i, "raise_error": False}
+                mLo.Lo.print("Shapes extraction error in slide")
+                mLo.Lo.print(f"  {e}")
+                mLo.Lo.print(f"Raising Event: {DrawNamedEvent.GET_SHAPES_ERROR}")
+                _Events().trigger(DrawNamedEvent.GET_SHAPES_ERROR, cargs)
+                if cargs.event_data.get("raise_error", False):
+                    raise mEx.ShapeError(f"Error getting slide shape for index: {i}") from e
+                if cargs.cancel:
+                    mLo.Lo.print("Breaking from getting shapes due to event cancel")
+                    break
+                else:
+                    continue
         return shapes
 
     @overload
@@ -480,8 +513,43 @@ class Draw:
             doc (XComponent): Document
             slide (XDrawPage): Slide
 
+        Raises:
+            ShapeError: Conditionally if event :py:attr:`.DrawNamedEvent.GET_SHAPES_ERROR` is subscribe to. See Note.
+
         Returns:
-            List[XShape]: List of shpaes
+            List[XShape]: List of shapes
+
+        Note:
+            By default ``get_shapes`` will ignore shapes that fail to load.
+            This behavior can be overriden by subscribing to :py:attr:`.DrawNamedEvent.GET_SHAPES_ERROR`
+            event.
+
+            The event is called with :py:class:`~.cancel_event_args.CancelEventArgs`.
+
+            If ``event.cancel`` is ``True`` then a list of shapes is returned containing all shapes
+            that were added before first error occurred.
+
+            If ``Event.event_data["raise_error] = True`` then a ``ShapeError`` is raised.
+
+            .. code-block:: python
+
+                from ooodev.events.args.cancel_event_args import CancelEventArgs
+                from ooodev.events.lo_events import LoEvents
+                from ooodev.events.draw_named_event import DrawNamedEvent
+                from ooodev.exceptions.ex import ShapeError
+
+                def on_shapes_error(source: Any, e: CancelEventArgs) -> None:
+                    e.event_data["raise_error] = True
+
+                LoEvents().on(DrawNamedEvent.GET_SHAPES_ERROR, on_shapes_error)
+
+                def do_something(doc: XComponent) -> None:
+                    try:
+                        shapes = Draw.get_shapes(doc)
+                    except ShapeError:
+                        # this error only occcured because event raise_error was set in on_shapes_error
+                        # handle error
+                        ...
         """
         ordered_keys = (1,)
         kargs_len = len(kwargs)
@@ -613,7 +681,7 @@ class Draw:
     @classmethod
     def add_slide(cls, doc: XComponent) -> XDrawPage:
         """
-        Add a slede to the end of the document.
+        Add a slide to the end of the document.
 
         Args:
             doc (XComponent): Document
@@ -648,7 +716,7 @@ class Draw:
         Deletes a slide
 
         Args:
-            doc (XComponent): Docuent
+            doc (XComponent): Document
             idx (int): Index
 
         Returns:
@@ -725,6 +793,9 @@ class Draw:
             lm (XLayerManager): Layer Manager
             layer_name (str): Layer Name
 
+        Raises:
+            mEx.DrawError: _description_
+
         Returns:
             XLayer: Newly added layer.
         """
@@ -767,7 +838,7 @@ class Draw:
     @classmethod
     def goto_page(cls, *args, **kwargs) -> None:
         """
-        Goto page
+        Go to page
 
         Args:
             doc (XComponent): Document
@@ -1035,6 +1106,9 @@ class Draw:
 
         Raises:
             DrawError: If unable to remove master page/
+
+        Returns:
+            None:
         """
         try:
             mp_supp = mLo.Lo.qi(XMasterPagesSupplier, doc, True)
@@ -1054,6 +1128,9 @@ class Draw:
 
         Raises:
             DrawError: If unable to set master page.
+
+        Returns:
+            None:
         """
         try:
             mp_target = mLo.Lo.qi(XMasterPageTarget, slide, True)
@@ -1126,6 +1203,9 @@ class Draw:
 
         Args:
             slide (XDrawPage): Slide
+
+        Returns:
+            None:
         """
         print("Draw Page shapes:")
         shapes = cls._get_shapes_slide(slide)
@@ -1183,6 +1263,9 @@ class Draw:
 
         Raises:
             DrawError: If error occurs setting name.
+
+        Returns:
+            None:
         """
         try:
             xpage_name = mLo.Lo.qi(XNamed, slide, True)
@@ -1201,7 +1284,10 @@ class Draw:
             sub_title (str): Sub Title
 
         Raises:
-            DrawError: If error setting Slide
+            DrawError: If error setting Slide.
+
+        Returns:
+            None:
         """
         try:
             # Add text to the slide page by treating it as a title page, which
@@ -1266,6 +1352,9 @@ class Draw:
 
         Raises:
             DrawError: If error adding bullet.
+
+        Returns:
+            None:
         """
         try:
             # access the end of the bullets text
@@ -1289,7 +1378,10 @@ class Draw:
             header (str): Header text.
 
         Raises:
-            DrawError: If error occurs
+            DrawError: If error occurs.
+
+        Returns:
+            None:
         """
         try:
             mProps.Props.set_property(obj=slide, name="Layout", value=int(Draw.LayoutKind.TITLE_ONLY))
@@ -1311,6 +1403,9 @@ class Draw:
 
         Raises:
             DrawError: If error occurs
+
+        Returns:
+            None:
         """
         try:
             mProps.Props.set_property(obj=slide, name="Layout", value=str(Draw.LayoutKind.BLANK))
@@ -1391,6 +1486,9 @@ class Draw:
 
         Args:
             shape (XShape): Shape
+
+        Returns:
+            None:
         """
         print(f"  Shape service: {shape.getShapeType()}; z-order: {cls.get_zorder(shape)}")
 
@@ -1553,10 +1651,10 @@ class Draw:
             old_shape (XShape): Old shape
 
         Raises:
-            ShapeError: If unable to copy shpe contents.
+            ShapeError: If unable to copy shape contents.
 
         Returns:
-            XShape: New shape with contents of old shpae copied.
+            XShape: New shape with contents of old shape copied.
         """
         try:
             shape = cls.copy_shape(slide, old_shape)
@@ -1581,7 +1679,7 @@ class Draw:
             ShapeError: If unable to copy shape.
 
         Returns:
-            XShape: Newly Copied shape if can be copied; Otherwise, ``None``
+            XShape: Newly Copied shape.
         """
         try:
             # parameters are in 1/100 mm units
@@ -1607,6 +1705,9 @@ class Draw:
 
         Raises:
             DrawError: If unable to set z-order.
+
+        Returns:
+            None:
         """
         try:
             mProps.Props.set_property(obj=shape, name="ZOrder", value=order)
@@ -1643,6 +1744,9 @@ class Draw:
 
         Raises:
             DrawError: If unable to move shape to top.
+
+        Returns:
+            None:
         """
         try:
             max_zo = cls.find_biggest_zorder(slide)
@@ -1719,6 +1823,9 @@ class Draw:
         Raises:
             ShapeMissingError: If unable to find shapes for slide.
             ShapeError: If any other error occurs.
+
+        Returns:
+            None:
         """
         try:
             shapes = cls.get_shapes(slide)
@@ -1780,8 +1887,11 @@ class Draw:
             x (int): X Position
             y (int): Y Position
 
+        Returns:
+            None:
+
         Note:
-            This method uses :py:meth:`.LO.print`. and if those ``print()`` commands are
+            This method uses :py:meth:`.Lo.print`. and if those ``print()`` commands are
             suppressed then this method will not be effective.
         """
         slide_size = cls.get_slide_size(slide)
@@ -1820,7 +1930,7 @@ class Draw:
             ShapeError: If error occurs.
 
         Returns:
-            XShape: New addes Shape.
+            XShape: Newly added Shape.
 
         See Also:
             - :py:meth:`~.draw.Draw.warns_position`
@@ -1863,7 +1973,7 @@ class Draw:
     @classmethod
     def draw_circle(cls, slide: XDrawPage, x: int, y: int, radius: int) -> XShape:
         """
-        Gets a rectangle
+        Gets a circle
 
         Args:
             slide (XDrawPage): Slide
@@ -1889,7 +1999,7 @@ class Draw:
     @classmethod
     def draw_ellipse(cls, slide: XDrawPage, x: int, y: int, width: int, height: int) -> XShape:
         """
-        Gets a rectangle
+        Gets an ellipse
 
         Args:
             slide (XDrawPage): Slide
@@ -1911,19 +2021,19 @@ class Draw:
     @classmethod
     def draw_polygon(cls, slide: XDrawPage, x: int, y: int, sides: PolySides, radius: int | None = None) -> XShape:
         """
-        Gets a rectangle
+        Gets a polygon
 
         Args:
             slide (XDrawPage): Slide
             x (int): Shape X position in mm units.
             y (int): Shape Y position in mm units.
-            radius (int): Shape radius in mm units. Defaluts to the value of ``Draw.POLY_RADIUS``
+            radius (int): Shape radius in mm units. Defaults to the value of ``Draw.POLY_RADIUS``
 
         Raises:
             ShapeError: If error occurs.
 
         Returns:
-            XShape | None: Shape on success; Otherwise, ``None``
+            XShape: Polygon Shape.
         """
         try:
             if radius is None:
@@ -1985,7 +2095,7 @@ class Draw:
         Args:
             slide (XDrawPage): Slide
             pts (Sequence[Point]): Points
-            flags (Sequence[PolygonFlags]): Falgs
+            flags (Sequence[PolygonFlags]): Flags
             is_open (bool): Determines if an open or closed bezier is drawn.
 
         Raises:
@@ -2179,6 +2289,9 @@ class Draw:
 
         Raises:
             ShapeError: If error occurs.
+
+        Returns:
+            None:
         """
         try:
             txt = mLo.Lo.qi(XText, shape, True)
@@ -2211,7 +2324,7 @@ class Draw:
             slide (XDrawPage): Slide
             shape1 (XShape): First Shape to add connector to.
             shape2 (XShape): Second Shape to add connector to.
-            start_conn (GluePointsKind | None, optional): Start connector kind. Defaluts to right.
+            start_conn (GluePointsKind | None, optional): Start connector kind. Defaults to right.
             end_conn (GluePointsKind | None, optional): End connector kind. Defaults to left.
 
         Raises:
@@ -2221,12 +2334,12 @@ class Draw:
             XShape: Connector Shape.
 
         Note:
-            Properties for shape can be added or changed by using :py:meth"~.draw.Draw.set_shape_props`.
+            Properties for shape can be added or changed by using :py:meth:`~.draw.Draw.set_shape_props`.
 
             For instance the default value is ``EndShape=ConnectorType.STANDARD``.
             This could be changed.
 
-            ..code-block:: python
+            .. code-block:: python
 
                 Draw.set_shape_props(shape, EndShape=ConnectorType.CURVE)
         """
@@ -2521,6 +2634,9 @@ class Draw:
         Raises:
             ShapeMissingError: If unable to find footer shape.
             DrawPageError: If any other error occurs.
+
+        Returns:
+            None:
         """
         try:
             footer_shape = cls.find_shape_by_type(slide=master, shape_type=Draw.NameSpaceKind.SHAPE_TYPE_FOOTER)
@@ -2581,7 +2697,7 @@ class Draw:
             ShapeError: If error occurs.
 
         Returns:
-            XShape | None: Shape on success; Otherwise, ``None``
+            XShape: Presentation Shape.
         """
         try:
             cls.warns_position(slide=slide, x=x, y=y)
@@ -2646,6 +2762,9 @@ class Draw:
 
         Args:
             pt (Point): Point object
+
+        Returns:
+            None:
         """
         print(f"  Point (mm): [{round(pt.X/100)}, {round(pt.Y/100)}]")
 
@@ -2656,6 +2775,9 @@ class Draw:
 
         Args:
             sz (Size): Size object
+
+        Returns:
+            None:
         """
         print(f"  Size (mm): [{round(sz.Width/100)}, {round(sz.Height/100)}]")
 
@@ -2666,6 +2788,9 @@ class Draw:
 
         Args:
             shape (XShape): Shape
+
+        Returns:
+            None:
         """
         if shape is None:
             print("The shape is null")
@@ -2700,6 +2825,9 @@ class Draw:
 
         Raises:
             ShapeError: If error occurs.
+
+        Returns:
+            None:
 
         Note:
             Positions are NOT in mm units when passed into this method.
@@ -2774,6 +2902,9 @@ class Draw:
         Raises:
             ShapeError: If error occurs.
 
+        Returns:
+            None:
+
         Note:
             Positions are NOT in mm units when passed into this method.
         """
@@ -2832,6 +2963,9 @@ class Draw:
 
         Raises:
             DrawError: If error occurs.
+
+        Returns:
+            None:
         """
         try:
             style = mLo.Lo.qi(XStyle, graphic_styles.getByName(str(style_name)), True)
@@ -2866,7 +3000,7 @@ class Draw:
     @staticmethod
     def get_line_color(shape: XShape) -> mColor.Color:
         """
-        Gets the line color of a shpae.
+        Gets the line color of a shape.
 
         Args:
             shape (XShape): Shape
@@ -2875,7 +3009,7 @@ class Draw:
             ColorError: If error occurs.
 
         Returns:
-            mColor.Color: Color
+            Color: Color
         """
         try:
             props = mLo.Lo.qi(XPropertySet, shape, True)
@@ -2895,6 +3029,9 @@ class Draw:
 
         Raises:
             ShapeError: If error occurs.
+
+        Returns:
+            None:
         """
         try:
             props = mLo.Lo.qi(XPropertySet, shape, True)
@@ -2935,7 +3072,7 @@ class Draw:
     @staticmethod
     def get_fill_color(shape: XShape) -> mColor.Color:
         """
-        Gets the fill color of a shpae.
+        Gets the fill color of a shape.
 
         Args:
             shape (XShape): Shape
@@ -2944,7 +3081,7 @@ class Draw:
             ColorError: If error occurs.
 
         Returns:
-            mColor.Color: Color
+            Color: Color
         """
         try:
             props = mLo.Lo.qi(XPropertySet, shape, True)
@@ -2965,6 +3102,9 @@ class Draw:
 
         Raises:
             ShapeError: If error occurs.
+
+        Returns:
+            None:
         """
         try:
             mProps.Props.set_property(shape, "FillTransparence", level.Value)
@@ -3042,16 +3182,19 @@ class Draw:
             angle (Angle): Angle
 
         Raises:
-            NameError: If ``name`` is not reconized.
+            NameError: If ``name`` is not recognized.
             ShapeError: If any other error occurs.
 
+        Returns:
+            None:
+
         Note:
-            When using Graident Name.
+            When using Gradient Name.
 
             Getting the gradient color name can be a bit challenging.
-            ``DrawingGradientKind`` contains name displayed in the Graident color menu of Draw.
+            ``DrawingGradientKind`` contains name displayed in the Gradient color menu of Draw.
 
-            The Easies way to get the colors is to open Draw and see what gradient color names are available
+            The Easiest way to get the colors is to open Draw and see what gradient color names are available
             on your system.
         """
         ordered_keys = (1, 2, 3, 4)
@@ -3109,14 +3252,17 @@ class Draw:
             name (DrawingHatchingKind | str): Hatching Name
 
         Raises:
-            NameError: If ``name`` is not reconized.
+            NameError: If ``name`` is not recognized.
             ShapeError: If any other error occurs.
+
+        Returns:
+            None:
 
         Note:
             Getting the hatching color name can be a bit challenging.
             ``DrawingHatchingKind`` contains name displayed in the Hatching color menu of Draw.
 
-            The Easies way to get the colors is to open Draw and see what gradient color names are available
+            The Easiest way to get the colors is to open Draw and see what gradient color names are available
             on your system.
         """
         try:
@@ -3139,14 +3285,17 @@ class Draw:
             name (DrawingBitmapKind | str): Bitmap Name
 
         Raises:
-            NameError: If ``name`` is not reconized.
+            NameError: If ``name`` is not recognized.
             ShapeError: If any other error occurs.
+
+        Returns:
+            None:
 
         Note:
             Getting the bitmap color name can be a bit challenging.
             ``DrawingBitmapKind`` contains name displayed in the Bitmap color menu of Draw.
 
-            The Easies way to get the colors is to open Draw and see what bitmap color names are available
+            The Easiest way to get the colors is to open Draw and see what bitmap color names are available
             on your system.
         """
         props = mLo.Lo.qi(XPropertySet, shape, True)
@@ -3169,6 +3318,9 @@ class Draw:
 
         Raises:
             ShapeError: If error occurs.
+
+        Returns:
+            None:
         """
         try:
             props = mLo.Lo.qi(XPropertySet, shape, True)
@@ -3188,6 +3340,9 @@ class Draw:
 
         Raises:
             ShapeError: If error occurs.
+
+        Returns:
+            None:
         """
         try:
             cls.set_shape_props(shape=shape, LineStyle=style)
@@ -3205,6 +3360,9 @@ class Draw:
 
         Raises:
             ShapeError: If error occurs.
+
+        Returns:
+            None:
         """
         try:
             cls.set_shape_props(shape=shape, Visible=is_visible)
@@ -3222,10 +3380,13 @@ class Draw:
 
         Args:
             shape (XShape): Shape
-            is_visible (bool): Set is shape is visibel or not.
+            angle (Angle): Angle to set.
 
         Raises:
             ShapeError: If error occurs.
+
+        Returns:
+            None:
         """
         try:
             cls.set_shape_props(shape=shape, RotateAngle=angle.Value * 100)
@@ -3285,6 +3446,9 @@ class Draw:
 
         Args:
             mat (HomogenMatrix3): Matrix
+
+        Returns:
+            None:
         """
         print("Transformation Matrix:")
         print(f"\t{mat.Line1.Column1:10.2f}\t{mat.Line1.Column2:10.2f}\t{mat.Line1.Column3:10.2f}")
@@ -3438,6 +3602,9 @@ class Draw:
 
         Raises:
             ShapeError: If error occurs.
+
+        Returns:
+            None:
         """
         # GraphicURL is Deprecated using Graphic instead.
         # https://tinyurl.com/2qaqs2nr#a6312a2da62e2c67c90d5576502117906
@@ -3600,6 +3767,9 @@ class Draw:
 
         Args:
             sc (XSlideShowController): Slide Show Controller
+
+        Returns:
+            None:
         """
         while sc.getCurrentSlideIndex() != -1:
             mLo.Lo.delay(1000)
@@ -3608,11 +3778,14 @@ class Draw:
     @staticmethod
     def wait_last(sc: XSlideShowController, delay: int) -> None:
         """
-        Wait for delay milli-seconds when the last slide is shown before returning.
+        Wait for delay milliseconds when the last slide is shown before returning.
 
         Args:
             sc (XSlideShowController): Slide Show Controller
-            delay (int): Delay in milli-seconds
+            delay (int): Delay in milliseconds
+
+        Returns:
+            None:
         """
         wait = int(delay)
         num_slides = sc.getSlideCount()
@@ -3643,6 +3816,9 @@ class Draw:
 
         Raises:
             DrawPageError: If error occurs.
+
+        Returns:
+            None:
         """
         # https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1presentation_1_1DrawPage-members.html
 
@@ -3753,6 +3929,9 @@ class Draw:
 
         Raises:
             PropertySetError: If error occurs setting a property
+
+        Returns:
+            None:
 
         Example:
             .. code-block:: python

@@ -329,6 +329,9 @@ class Forms:
 
         Args:
             doc (XComponent): Component
+
+        Returns:
+            None:
         """
         form_names_con = cls.get_forms(doc)
         form_names = form_names_con.getElementNames()
@@ -345,6 +348,9 @@ class Forms:
         Args:
             obj (XComponent | XNameAccess): Component or Name Access
             tab_str (str, optional): tab string
+
+        Returns:
+            None:
         """
         if mLo.Lo.is_uno_interfaces(obj, XComponent):
             xcontainer = cls.get_forms(obj)
@@ -807,7 +813,7 @@ class Forms:
         width: int,
         height: int,
         anchor_type: TextContentAnchorType | None = None,
-        parent_form: XNameContainer | None = None
+        parent_form: XNameContainer | None = None,
     ) -> XPropertySet:
         ...
 
@@ -823,7 +829,7 @@ class Forms:
         width: int,
         height: int,
         anchor_type: TextContentAnchorType | None = None,
-        parent_form: XNameContainer | None = None
+        parent_form: XNameContainer | None = None,
     ) -> XPropertySet:
         """
         Add a control
@@ -1099,11 +1105,11 @@ class Forms:
             )
             items = mProps.Props.any(*[s for s in entries])
             # lst_props.setPropertyValue("DefaultSelection", 0)
-            uno.invoke(lst_props, 'setPropertyValue', ("ListSource", items))
+            uno.invoke(lst_props, "setPropertyValue", ("ListSource", items))
             uno.invoke(lst_props, "setPropertyValue", ("DefaultSelection", mProps.Props.any(0)))
             lst_props.setPropertyValue("Dropdown", True)
             lst_props.setPropertyValue("MultiSelection", False)
-            uno.invoke(lst_props, 'setPropertyValue', ("StringItemList", items))
+            uno.invoke(lst_props, "setPropertyValue", ("StringItemList", items))
             uno.invoke(lst_props, "setPropertyValue", ("SelectedItems", mProps.Props.any(0)))
             return lst_props
         except Exception:
@@ -1160,6 +1166,9 @@ class Forms:
             data_field (str): the database field to which the column should be bound
             col_kind (str):  the column type such as "NumericField"
             width (int): the column width (in mm). If 0, no width is set.
+
+        Returns:
+            None:
         """
         # column container and factory
         col_container = mLo.Lo.qi(XIndexContainer, grid_model)
@@ -1188,6 +1197,9 @@ class Forms:
             xform (XForm): Form
             src_name (str): Source Name URL
             tbl_name (str): Table Name
+
+        Returns:
+            None:
         """
         mProps.Props.set_property(obj=xform, name="DataSourceName", value=src_name)
         mProps.Props.set_property(obj=xform, name="Command", value=tbl_name)
@@ -1202,6 +1214,9 @@ class Forms:
             xform (XForm): Form
             src_name (str): Source Name URL
             cmd (str): Command
+
+        Returns:
+            None:
         """
         mProps.Props.set_property(obj=xform, name="DataSourceName", value=src_name)
         mProps.Props.set_property(obj=xform, name="Command", value=cmd)
@@ -1224,6 +1239,9 @@ class Forms:
             method_name (str): Method Name
             script_name (str): Script Name
             loc (str): can be user, share, document, and extensions
+
+        Returns:
+            None:
 
         See Also:
             `Scripting Framework URI Specification <https://wiki.openoffice.org/wiki/Documentation/DevGuide/Scripting/Scripting_Framework_URI_Specification>`_
