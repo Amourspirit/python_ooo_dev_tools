@@ -626,6 +626,9 @@ class Draw:
 
         Returns:
             List[XShape]: List of Ordered Shapes.
+
+        See Also:
+            :py:meth:`~.draw.Draw.get_shapes`
         """
         ordered_keys = (1,)
         kargs_len = len(kwargs)
@@ -666,10 +669,14 @@ class Draw:
         Gets the text from inside all the document shapes
 
         Args:
-            doc (XComponent): _description_
+            doc (XComponent): Document
 
         Returns:
-            str: _description_
+            str: Shapes text.
+
+        See Also:
+            - :py:meth:`~.draw.Draw.get_shapes`
+            - :py:meth:`~.draw.Draw.get_ordered_shapes`
         """
         sb: List[str] = []
         shapes = cls._get_ordered_shapes_doc(doc)
@@ -686,13 +693,24 @@ class Draw:
         Args:
             doc (XComponent): Document
 
+        Raises:
+            DrawPageMissingError: If unable to get pages.
+            DrawPageError: If any other error occurs.
+
         Returns:
             XDrawPage: The slide that was inserted at the end of the document.
         """
-        mLo.Lo.print("Adding a slide")
-        slides = cls.get_slides(doc)
-        num_slides = slides.getCount()
-        return slides.insertNewByIndex(num_slides)
+        try:
+            mLo.Lo.print("Adding a slide")
+            slides = cls.get_slides(doc)
+            num_slides = slides.getCount()
+            return slides.insertNewByIndex(num_slides)
+        except mEx.DrawPageMissingError:
+            raise
+        except mEx.DrawPageError:
+            raise
+        except Exception as e:
+            raise mEx.DrawPageError("Error adding slide to document") from e
 
     @classmethod
     def insert_slide(cls, doc: XComponent, idx: int) -> XDrawPage:
@@ -703,12 +721,23 @@ class Draw:
             doc (XComponent): Document
             idx (int): Index
 
+        Raises:
+            DrawPageMissingError: If unable to get pages.
+            DrawPageError: If any other error occurs.
+
         Returns:
             XDrawPage: New slide that was inserted.
         """
-        mLo.Lo.print(f"Inserting a slide at postion: {idx}")
-        slides = cls.get_slides(doc)
-        return slides.insertNewByIndex(idx)
+        try:
+            mLo.Lo.print(f"Inserting a slide at postion: {idx}")
+            slides = cls.get_slides(doc)
+            return slides.insertNewByIndex(idx)
+        except mEx.DrawPageMissingError:
+            raise
+        except mEx.DrawPageError:
+            raise
+        except Exception as e:
+            raise mEx.DrawPageError("Error inserting slide in document") from e
 
     @classmethod
     def delete_slide(cls, doc: XComponent, idx: int) -> bool:
@@ -769,8 +798,8 @@ class Draw:
             layer_name (str): Layer Name
 
         Raises:
+            NameError: If ``layer_name`` does not exist.
             DrawError: If unable to get layer
-            NoSuchElementException: If ``layer_name`` does not exist.
 
         Returns:
             XLayer: Found Layer
@@ -780,7 +809,7 @@ class Draw:
         try:
             return mLo.Lo.qi(XLayer, xname_access.getByName(layer_name), True)
         except NoSuchElementException:
-            raise
+            raise NameError(f'"{layer_name}" does not exist')
         except Exception as e:
             raise mEx.DrawError(f'Could not find the layer "{layer_name}"') from e
 
@@ -817,13 +846,21 @@ class Draw:
     # region goto_page()
     @classmethod
     def _goto_page_doc(cls, doc: XComponent, page: XDrawPage) -> None:
-        ctl = mGui.GUI.get_current_controller(doc)
-        cls._goto_page_ctl(ctl, page)
+        try:
+            ctl = mGui.GUI.get_current_controller(doc)
+            cls._goto_page_ctl(ctl, page)
+        except mEx.DrawError:
+            raise
+        except Exception as e:
+            raise mEx.DrawError("Error while trying to go to page") from e
 
     @staticmethod
     def _goto_page_ctl(ctl: XController, page: XDrawPage) -> None:
-        xdraw_view = mLo.Lo.qi(XDrawView, ctl)
-        xdraw_view.setCurrentPage(page)
+        try:
+            xdraw_view = mLo.Lo.qi(XDrawView, ctl)
+            xdraw_view.setCurrentPage(page)
+        except Exception as e:
+            raise mEx.DrawError("Error while trying to go to page") from e
 
     @overload
     @classmethod
@@ -844,6 +881,12 @@ class Draw:
             doc (XComponent): Document
             ctl (XController): Controller
             page (XDrawPage): Page
+
+        Raises:
+            DrawError: If error occurs.
+
+        Returns:
+            None:
         """
         ordered_keys = (1, 2)
         kargs_len = len(kwargs)
@@ -882,19 +925,25 @@ class Draw:
     # endregion goto_page()
 
     @staticmethod
-    def get_viewd_page(doc: XComponent) -> XDrawPage:
+    def get_viewed_page(doc: XComponent) -> XDrawPage:
         """
         Gets viewed page
 
         Args:
             doc (XComponent): Document
 
+        Raises:
+            DrawPageError: If error occurs.
+
         Returns:
             XDrawPage: Draw Page
         """
-        ctl = mGui.GUI.get_current_controller(doc)
-        xdraw_view = mLo.Lo.qi(XDrawView, ctl, True)
-        return xdraw_view.getCurrentPage()
+        try:
+            ctl = mGui.GUI.get_current_controller(doc)
+            xdraw_view = mLo.Lo.qi(XDrawView, ctl, True)
+            return xdraw_view.getCurrentPage()
+        except Exception as e:
+            raise mEx.DrawPageError("Error geting Viewed page") from e
 
     # region get_slide_number()
 
@@ -906,15 +955,38 @@ class Draw:
         Args:
             xdraw_view (XDrawView): Draw View
 
-        Returns:
-            int: Draw View page number.
-        """
-        curr_page = xdraw_view.getCurrentPage()
-        return cls.get_slide_number(curr_page)
+        Raises:
+            DrawError: If error occurs.
 
-    @classmethod
-    def _get_slide_number_draw_page(cls, slide: XDrawPage) -> int:
-        return int(mProps.Props.get_property(obj=slide, name="Number"))
+        Returns:
+            int: page number.
+        """
+        try:
+            curr_page = xdraw_view.getCurrentPage()
+            return cls._get_slide_number_draw_page(curr_page)
+        except mEx.DrawError:
+            raise
+        except Exception as e:
+            raise mEx.DrawError("Error getting slide number") from e
+
+    @staticmethod
+    def _get_slide_number_draw_page(slide: XDrawPage) -> int:
+        """
+        Gets slide page number
+
+        Args:
+            slide (XDrawPage): Slide
+
+        Raises:
+            DrawError: If error occurs.
+
+        Returns:
+            int: Page number
+        """
+        try:
+            return int(mProps.Props.get_property(slide, "Number"))
+        except Exception as e:
+            raise mEx.DrawError("Error getting slide number") from e
 
     @overload
     @classmethod
@@ -934,6 +1006,9 @@ class Draw:
         Args:
             xdraw_view (XDrawView): Draw View
             slide (XDrawPage): Slide
+
+        Raises:
+            DrawError: If error occurs.
 
         Returns:
             int: Slide Number
@@ -983,12 +1058,18 @@ class Draw:
         Args:
             doc (XComponent): Document
 
+        Raises:
+            DrawError: If error occurs.
+
         Returns:
             int: Master Page Count.
         """
-        mp_supp = mLo.Lo.qi(XMasterPagesSupplier, doc)
-        pgs = mp_supp.getMasterPages()
-        return pgs.getCount()
+        try:
+            mp_supp = mLo.Lo.qi(XMasterPagesSupplier, doc, True)
+            pgs = mp_supp.getMasterPages()
+            return pgs.getCount()
+        except Exception as e:
+            raise mEx.DrawError("Error getting master page count") from e
 
     # region get_master_page()
     @staticmethod
@@ -1220,13 +1301,21 @@ class Draw:
         Args:
             slide (XDrawPage): Slide
 
+        Raises:
+            DrawError: If error occurs.
+
         Returns:
             str | None: Slide Title on success; Otherwise, ``None``.
         """
-        shape = cls.find_shape_by_type(slide=slide, shape_type=str(Draw.NameSpaceKind.TITLE_TEXT))
-        if shape is None:
-            return None
-        return cls._get_shape_text_shape(shape)
+        try:
+            shape = cls.find_shape_by_type(slide=slide, shape_type=str(Draw.NameSpaceKind.TITLE_TEXT))
+            if shape is None:
+                return None
+            return cls._get_shape_text_shape(shape)
+        except mEx.DrawError:
+            raise
+        except Exception as e:
+            raise mEx.DrawError("Error getting slide title") from e
 
     @staticmethod
     def get_slide_size(slide: XDrawPage) -> Draw.Size:
