@@ -103,20 +103,25 @@ class Chart:
     @classmethod
     def _insert_chart_slide(
         cls, slide: XDrawPage, x: int, y: int, width: int, height: int, diagram_name: Chart.DiagramKind | str
-    ) -> XChartDocument | None:
-        ashape = mDraw.Draw.add_shape(
-            slide=slide,
-            shape_type=DrawingShapeKind.OLE2_SHAPE,
-            x=x,
-            y=y,
-            width=width,
-            height=height,
-        )
-        if ashape is None:
-            return None
-        chart_doc = cls._get_chart_doc_shape(ashape)
-        cls.set_chart_type(chart_doc=chart_doc, diagram_name=diagram_name)
-        return chart_doc
+    ) -> XChartDocument:
+        try:
+            ashape = mDraw.Draw.add_shape(
+                slide=slide,
+                shape_type=DrawingShapeKind.OLE2_SHAPE,
+                x=x,
+                y=y,
+                width=width,
+                height=height,
+            )
+            if ashape is None:
+                return None
+            chart_doc = cls._get_chart_doc_shape(ashape)
+            cls.set_chart_type(chart_doc=chart_doc, diagram_name=diagram_name)
+            return chart_doc
+        except mEx.ChartError:
+            raise
+        except Exception as e:
+            raise mEx.ChartError("Error inserting chart slide") from e
 
     @classmethod
     def _insert_chart_sheet(
@@ -130,30 +135,39 @@ class Chart:
         height: int,
         diagram_name: Chart.DiagramKind | str,
     ) -> XChartDocument:
-        tbl_charts = cls.get_table_charts(sheet)
-        tc_access = mLo.Lo.qi(XNameAccess, tbl_charts)
-        if tc_access is None:
-            raise mEx.ChartNoAccessError("Unable to get name access to chart table")
+        try:
+            tbl_charts = cls.get_table_charts(sheet)
+            tc_access = mLo.Lo.qi(XNameAccess, tbl_charts)
+            if tc_access is None:
+                raise mEx.ChartNoAccessError("Unable to get name access to chart table")
 
-        if tc_access.hasByName(chart_name):
-            raise mEx.ChartExistingError(f"A chart table called {chart_name} already exist")
+            if tc_access.hasByName(chart_name):
+                raise mEx.ChartExistingError(f"A chart table called {chart_name} already exist")
 
-        rect = Rectangle(x * 1000, y * 1000, width * 1000, height * 1000)
+            rect = Rectangle(x * 1000, y * 1000, width * 1000, height * 1000)
 
-        addrs = [cells_range]
-        # first boolean: has column headers?; second boolean: has row headers?
-        tbl_charts.addNewByName(chart_name, rect, addrs, True, True)
-        # 2nd last arg: whether the topmost row of the source data will be used
-        # to set labels for the category axis or the legend.
-        # last arg: whether the leftmost column of the source data will be
-        # used to set labels for the category axis or the legend.
+            addrs = [cells_range]
+            # first boolean: has column headers?; second boolean: has row headers?
+            tbl_charts.addNewByName(chart_name, rect, addrs, True, True)
+            # 2nd last arg: whether the topmost row of the source data will be used
+            # to set labels for the category axis or the legend.
+            # last arg: whether the leftmost column of the source data will be
+            # used to set labels for the category axis or the legend.
 
-        tbl_chart = cls.get_table_chart(tc_access, chart_name)
-        chart_doc = cls.get_chart_doc(tbl_chart)
+            tbl_chart = cls.get_table_chart(tc_access, chart_name)
+            chart_doc = cls.get_chart_doc(tbl_chart)
 
-        if diagram_name is not None:
-            cls.set_chart_type(chart_doc, diagram_name)
-        return chart_doc
+            if diagram_name is not None:
+                cls.set_chart_type(chart_doc, diagram_name)
+            return chart_doc
+        except mEx.ChartNoAccessError:
+            raise
+        except mEx.ChartExistingError:
+            raise
+        except mEx.ChartError:
+            raise
+        except Exception as e:
+            raise mEx.ChartError(f'Error inserting "{chart_name}" into sheet') from e
 
     @classmethod
     def _insert_chart_doc(
