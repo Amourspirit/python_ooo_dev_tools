@@ -1031,32 +1031,31 @@ class Info(metaclass=StaticProperty):
             print(f"'{service}'")
 
     @staticmethod
-    def support_service(obj: object, service: str) -> bool:
+    def support_service(obj: object, *service: str) -> bool:
         """
-        Gets if ``obj`` supports service
+        Gets if ``obj`` supports a service.
 
         Args:
             obj (object): Object to check for supported service
-            service (string): Any UNO such as ``com.sun.star.configuration.GroupAccess``
+            *service (str): Variable length argument list of UNO namespace strings such as ``com.sun.star.configuration.GroupAccess``
 
         Returns:
-            bool: True if obj supports service; Otherwise; False
+            bool: ``True`` if ``obj`` supports any passed in service; Otherwise, ``False``
         """
 
-        if isinstance(service, str):
-            srv = service
-        else:
-            raise TypeError(f"service is expected to be a string")
+        result = False
         try:
             si = mLo.Lo.qi(XServiceInfo, obj)
             if si is None:
-                return False
-            return si.supportsService(srv)
+                return result
+            for srv in service:
+                result = si.supportsService(srv)
+                if result:
+                    break
         except Exception as e:
             mLo.Lo.print("Errors ocurred in support_service(). Returning False")
             mLo.Lo.print(f"    {e}")
-            pass
-        return False
+        return result
 
     @staticmethod
     def get_available_services(obj: object) -> List[str]:

@@ -516,7 +516,7 @@ class Lo(metaclass=StaticProperty):
                 Any Uno class that starts with ``X`` such as ``XInterface``
             service_name (str): Service Name
             args (Tuple[Any, ...], Optional): Args
-            raise_err (bool, optional): If ``True`` then can raise CreateInstanceMcfError or MissingInterfaceError. Defalut is ``False``
+            raise_err (bool, optional): If ``True`` then can raise CreateInstanceMcfError or MissingInterfaceError. Default is ``False``
 
         Raises:
             CreateInstanceMcfError: If ``raise_err`` is ``True`` and no instance was created

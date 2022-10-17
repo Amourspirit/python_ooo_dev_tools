@@ -296,6 +296,18 @@ class ChartNotExistingError(ChartError):
     pass
 
 
+class DiagramError(Exception):
+    """Generic Diagram Error"""
+
+    pass
+
+
+class DiagramNotExistingError(DiagramError):
+    """Diagram  does not exist Error"""
+
+    pass
+
+
 class DrawError(Exception):
     """Generic Draw Error"""
 
@@ -337,7 +349,50 @@ class PointError(Exception):
 
     pass
 
+
 class ColorError(Exception):
     """Generic Color Error"""
 
     pass
+
+
+class ServiceError(Exception):
+    """Generic Service Error"""
+
+    pass
+
+
+class ServiceNotSupported(ServiceError):
+    """
+    Service not supported error
+    """
+
+    def __init__(self, *service: str, message="") -> None:
+        """
+        Constructor
+
+        Args:
+            message (str, optional): Extra error message.
+            *service (str): Variable length argument list of UNO namespace strings such as ``com.sun.star.configuration.GroupAccess``
+        """
+        self.service = service
+        self.message = message
+        super().__init__(self.message)
+
+    def __str__(self) -> str:
+        msg = ""
+        serv_len = len(self.service)
+        if serv_len == 1:
+            msg = f"Service not supported for: {self.service[0]}"
+        elif serv_len > 1:
+            msg = "Services not supported for: "
+            msg += ", ".join(self.service)
+
+        if self.message:
+            return f"{self.message} -> {msg}"
+
+        return msg
+
+    def __repr__(self) -> str:
+        service_str = ", ".join([f'"{s}"' for s in self.service])
+        return f'ServiceNotSupported({service_str}, message="{self.message}")'
