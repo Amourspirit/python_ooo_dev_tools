@@ -4,7 +4,6 @@
 
 from __future__ import annotations
 from datetime import datetime, timezone
-from re import X
 import time
 import types
 from typing import TYPE_CHECKING, Any, Iterable, Optional, List, Tuple, cast, overload, Type
@@ -47,6 +46,10 @@ from com.sun.star.frame import XModel
 from com.sun.star.frame import XStorable
 
 if TYPE_CHECKING:
+    try:
+        from typing import Literal  # Py >= 3.8
+    except ImportError:
+        from typing_extensions import Literal
     from com.sun.star.beans import PropertyValue
     from com.sun.star.container import XChild
     from com.sun.star.container import XIndexAccess
@@ -254,7 +257,7 @@ class Lo(metaclass=StaticProperty):
 
     @overload
     @staticmethod
-    def qi(atype: Type[T], obj: XTypeProvider) -> T | None:
+    def qi(atype: Type[T], obj: Any) -> T | None:
         """
         Generic method that get an interface instance from  an object.
 
@@ -269,7 +272,26 @@ class Lo(metaclass=StaticProperty):
 
     @overload
     @staticmethod
-    def qi(atype: Type[T], obj: XTypeProvider, raise_err: bool) -> T | None:
+    def qi(atype: Type[T], obj: Any, raise_err: Literal[True]) -> T:
+        """
+        Generic method that get an interface instance from  an object.
+
+        Args:
+            atype (T): Interface type such as XInterface
+            obj (object): Object that implements interface.
+            raise_err (bool, optional): If True then raises MissingInterfaceError if result is None. Default False
+
+        Raises:
+            MissingInterfaceError: If 'raise_err' is 'True' and result is None
+
+        Returns:
+            T: instance of interface.
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def qi(atype: Type[T], obj: Any, raise_err: Literal[False]) -> T | None:
         """
         Generic method that get an interface instance from  an object.
 
@@ -353,6 +375,38 @@ class Lo(metaclass=StaticProperty):
     # region interface object creation
 
     # region    create_instance_msf()
+    @overload
+    @classmethod
+    def create_instance_msf(cls, atype: Type[T], service_name: str) -> T | None:
+        ...
+
+    @overload
+    @classmethod
+    def create_instance_msf(cls, atype: Type[T], service_name: str, msf: Any | None) -> T | None:
+        ...
+
+    @overload
+    @classmethod
+    def create_instance_msf(cls, atype: Type[T], service_name: str, *, raise_err: Literal[True]) -> T:
+        ...
+
+    @overload
+    @classmethod
+    def create_instance_msf(cls, atype: Type[T], service_name: str, *, raise_err: Literal[False]) -> T | None:
+        ...
+
+    @overload
+    @classmethod
+    def create_instance_msf(cls, atype: Type[T], service_name: str, msf: Any | None, raise_err: Literal[True]) -> T:
+        ...
+
+    @overload
+    @classmethod
+    def create_instance_msf(
+        cls, atype: Type[T], service_name: str, msf: Any | None, raise_err: Literal[False]
+    ) -> T | None:
+        ...
+
     @classmethod
     def create_instance_msf(
         cls, atype: Type[T], service_name: str, msf: XMultiServiceFactory = None, raise_err: bool = False
@@ -368,7 +422,7 @@ class Lo(metaclass=StaticProperty):
                 Any Uno class that starts with 'X' such as XInterface
             service_name (str): Service name
             msf (XMultiServiceFactory, optional): Multi service factory used to create instance
-            raise_err (bool, optional): If True then can raise CreateInstanceMsfError or MissingInterfaceError
+            raise_err (bool, optional): If ``True`` then can raise CreateInstanceMsfError or MissingInterfaceError. Default is ``False``
 
         Raises:
             CreateInstanceMsfError: If ``raise_err`` is ``True`` and no instance was created
@@ -376,7 +430,7 @@ class Lo(metaclass=StaticProperty):
             Exception: if unable to create instance for any other reason
 
         Returns:
-            T: Instance of interface for the service name.
+            T: Instance of interface for the service name or possibly ``None`` if ``raise_err`` is False.
 
         Note:
             When ``raise_err=True`` return value will never be ``None``.
@@ -413,10 +467,44 @@ class Lo(metaclass=StaticProperty):
     # endregion create_instance_msf()
 
     # region    create_instance_mcf()
+    @overload
+    @classmethod
+    def create_instance_mcf(cls, atype: Type[T], service_name: str) -> T | None:
+        ...
+
+    @overload
+    @classmethod
+    def create_instance_mcf(cls, atype: Type[T], service_name: str, args: Tuple[Any, ...] | None) -> T | None:
+        ...
+
+    @overload
+    @classmethod
+    def create_instance_mcf(cls, atype: Type[T], service_name: str, *, raise_err: Literal[True]) -> T:
+        ...
+
+    @overload
+    @classmethod
+    def create_instance_mcf(cls, atype: Type[T], service_name: str, *, raise_err: Literal[False]) -> T | None:
+        ...
+
+    @overload
     @classmethod
     def create_instance_mcf(
-        cls, atype: Type[T], service_name: str, args: Tuple[object, ...] | None = None, raise_err: bool = False
+        cls, atype: Type[T], service_name: str, args: Tuple[Any, ...] | None, raise_err: Literal[True]
     ) -> T:
+        ...
+
+    @overload
+    @classmethod
+    def create_instance_mcf(
+        cls, atype: Type[T], service_name: str, args: Tuple[Any, ...] | None, raise_err: Literal[False]
+    ) -> T | None:
+        ...
+
+    @classmethod
+    def create_instance_mcf(
+        cls, atype: Type[T], service_name: str, args: Tuple[Any, ...] | None = None, raise_err: bool = False
+    ) -> T | None:
         """
         Creates an instance of a component which supports the services specified by the factory,
         and optionally initializes the new instance with the given arguments and context.
@@ -427,8 +515,8 @@ class Lo(metaclass=StaticProperty):
             atype (Type[T]): Type of interface to return from created instance.
                 Any Uno class that starts with ``X`` such as ``XInterface``
             service_name (str): Service Name
-            args (Tuple[object, ...], Optional): Args
-            raise_err (bool, optional): If True then can raise CreateInstanceMcfError or MissingInterfaceError
+            args (Tuple[Any, ...], Optional): Args
+            raise_err (bool, optional): If ``True`` then can raise CreateInstanceMcfError or MissingInterfaceError. Defalut is ``False``
 
         Raises:
             CreateInstanceMcfError: If ``raise_err`` is ``True`` and no instance was created
@@ -439,7 +527,7 @@ class Lo(metaclass=StaticProperty):
             When ``raise_err=True`` return value will never be ``None``.
 
         Returns:
-            T: Instance of interface for the service name.
+            T | None: Instance of interface for the service name or possibly ``None`` if ``raise_err`` is False.
 
         Example:
             In the following example ``tk`` is an instance of ``XExtendedToolkit``
