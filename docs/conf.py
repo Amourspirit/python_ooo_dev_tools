@@ -158,6 +158,7 @@ autodoc_type_aliases = {
     "PropertyValue": "PropertyValue",
     "XCell": "XCell",
     "XCellRange": "XCellRange",
+    "XChartDocument": "XChartDocument",
     "XComponent": "XComponent",
     "XDrawPage": "XDrawPage",
     "XDrawPages": "XDrawPages",

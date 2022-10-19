@@ -8,7 +8,13 @@ if TYPE_CHECKING:
     from ..events.args.event_args import EventArgs
 
 
-class MissingInterfaceError(Exception):
+class NotFoundError(Exception):
+    """Generic Not Found Error"""
+
+    pass
+
+
+class MissingInterfaceError(NotFoundError):
     """Error when a interface is not found for a uno object"""
 
     def __init__(self, interface: Any, message: Any = None, *args) -> None:
@@ -141,7 +147,13 @@ class MultiError(Exception):
         return "\n".join([str(x) for x in self.errors])
 
 
-class NotSupportedServiceError(Exception):
+class NotSupportedError(Exception):
+    """Generic Not Supported Error"""
+
+    pass
+
+
+class NotSupportedServiceError(NotSupportedError):
     """
     Handles errors of service not being supported.
     """
@@ -159,7 +171,7 @@ class NotSupportedServiceError(Exception):
         return repr(f"Service not supported: '{self.args[0]}'")
 
 
-class NotSupportedMacroModeError(Exception):
+class NotSupportedMacroModeError(NotSupportedError):
     """
     Handles errors of operations that are not allow when running as a macro.
 

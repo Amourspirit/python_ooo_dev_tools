@@ -74,7 +74,7 @@ class Chart:
         XY = "XYDiagram"
 
         def __str__(self) -> str:
-            return self._value_
+            return self.value
 
     # region insert_chart()
     @overload
@@ -1314,7 +1314,7 @@ class Chart:
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            *desc (str): Variable length argument list of descriptions. Must match the same number of descriptions in the chart.
+            *descs (str): Variable length argument list of descriptions. Must match the same number of descriptions in the chart.
 
         Raises:
             ValueError: If wrong number of descriptions are provided.
