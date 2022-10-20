@@ -99,6 +99,8 @@ from ooo.dyn.lang.index_out_of_bounds_exception import IndexOutOfBoundsException
 
 
 class Draw:
+    """Draw Class"""
+
     # region Constants
     POLY_RADIUS: int = 20
     """Defalult Poly Radius"""

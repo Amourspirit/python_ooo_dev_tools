@@ -30,11 +30,11 @@ from ooo.dyn.table.cell_range_address import CellRangeAddress
 from ooo.dyn.awt.rectangle import Rectangle
 from ooo.dyn.text.vert_orientation import VertOrientation
 from ooo.dyn.text.hori_orientation import HoriOrientation
-from ooo.dyn.chart.chart_data_caption import ChartDataCaptionEnum
-from ooo.dyn.chart.data_label_placement import DataLabelPlacementEnum
-from ooo.dyn.chart.chart_solid_type import ChartSolidTypeEnum
-from ooo.dyn.chart.chart_symbol_type import ChartSymbolType
-from ooo.dyn.chart.chart_regression_curve_type import ChartRegressionCurveType as ChartRegressionCurveTypeEnum
+from ooo.dyn.chart.chart_data_caption import ChartDataCaptionEnum as ChartDataCaptionEnum
+from ooo.dyn.chart.data_label_placement import DataLabelPlacementEnum as DataLabelPlacementEnum
+from ooo.dyn.chart.chart_solid_type import ChartSolidTypeEnum as ChartSolidTypeEnum
+from ooo.dyn.chart.chart_symbol_type import ChartSymbolType as ChartSymbolType
+from ooo.dyn.chart.chart_regression_curve_type import ChartRegressionCurveType as ChartRegressionCurveType
 
 from ..utils import lo as mLo
 from ..utils import props as mProps
@@ -45,21 +45,7 @@ from ..utils.data_type.intensity import Intensity
 
 # endregion Imports
 class Chart:
-    # region uno enums
-    ChartDataCaption = ChartDataCaptionEnum
-    DataLabelPlacement = DataLabelPlacementEnum
-    ChartSolidType = ChartSolidTypeEnum
-    ChartRegressionCurveType = ChartRegressionCurveTypeEnum
-    # endregion uno enums
-
-    # private static final String CHART_CLASSID = "12dcae26-281f-416f-a234-c3086127382e";
-
-    # hart label type
-    # public static final int NO_LABEL = 0
-    # public static final int SHOW_NUMBER = 1
-    # public static final int SHOW_PERCENT = 2
-    # public static final int SHOW_CATEGORY = 4
-    # public static final int CHECK_LEGEND = 16
+    """Chart Class"""
 
     class DiagramKind(str, Enum):
         AREA = "AreaDiagram"
@@ -1024,13 +1010,13 @@ class Chart:
             raise mEx.ChartError("Error setting use lines chart document.") from e
 
     @staticmethod
-    def set_data_caption(chart_doc: XChartDocument, label_types: Chart.ChartDataCaption) -> None:
+    def set_data_caption(chart_doc: XChartDocument, label_types: ChartDataCaptionEnum) -> None:
         """
         Sets how the caption of data points is displayed.
 
         Args:
             chart_doc (XChartDocument): Chart Document
-            label_types (Chart.ChartDataCaption): Flags, specifies how the caption of data points is displayed.
+            label_types (ChartDataCaptionEnum): Flags, specifies how the caption of data points is displayed.
 
         Raises:
             DiagramNotExistingError: If ``chart_doc`` diagram does not exist
@@ -1040,7 +1026,7 @@ class Chart:
         Returns:
             None:
         """
-        # Chart.ChartDataCaption is IntFlags enum.
+        # ChartDataCaptionEnum is IntFlags enum.
         try:
             diagram = chart_doc.getDiagram()
             if diagram is None:
@@ -1059,13 +1045,13 @@ class Chart:
             raise mEx.ChartError("Error setting data caption of chart document.") from e
 
     @staticmethod
-    def set_data_placement(chart_doc: XChartDocument, placement: Chart.DataLabelPlacement) -> None:
+    def set_data_placement(chart_doc: XChartDocument, placement: DataLabelPlacementEnum) -> None:
         """
         Sets the relative position for the data label.
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            placement (Chart.DataLabelPlacement): Specifies a relative position for the data label.
+            placement (DataLabelPlacementEnum): Specifies a relative position for the data label.
 
         Raises:
             DiagramNotExistingError: If ``chart_doc`` diagram does not exist
@@ -1176,18 +1162,18 @@ class Chart:
 
     @overload
     @staticmethod
-    def set_3d(chart_doc: XChartDocument, is_3d: bool, solid_type: Chart.ChartSolidType) -> None:
+    def set_3d(chart_doc: XChartDocument, is_3d: bool, solid_type: ChartSolidTypeEnum) -> None:
         ...
 
     @staticmethod
-    def set_3d(chart_doc: XChartDocument, is_3d: bool, solid_type: Chart.ChartSolidType | None = None) -> None:
+    def set_3d(chart_doc: XChartDocument, is_3d: bool, solid_type: ChartSolidTypeEnum | None = None) -> None:
         """
         Sets chart 3d option.
 
         Args:
             chart_doc (XChartDocument): Chart Document.
             is_3d (bool): Specifies if chart is 3d.
-            solid_type (Chart.ChartSolidType): Chart Solid Type. Defaults to ``Chart.ChartSolidType.CYLINDER``.
+            solid_type (ChartSolidTypeEnum): Chart Solid Type. Defaults to ``ChartSolidTypeEnum.CYLINDER``.
 
         Raises:
             DiagramNotExistingError: If ``chart_doc`` diagram does not exist
@@ -1203,7 +1189,7 @@ class Chart:
 
             is_vert = bool(mProps.Props.get_property(diagram, "Vertical"))
             if solid_type is None:
-                solid_type = Chart.ChartSolidType.CYLINDER
+                solid_type = ChartSolidTypeEnum.CYLINDER
             mProps.Props.set_property(diagram, "Dim3D", is_3d)
             mProps.Props.set_property(diagram, "SolidType", int(solid_type))
             #  reapply Vertical
@@ -1260,13 +1246,13 @@ class Chart:
             raise mEx.ChartError("Error setting chart symbol.") from e
 
     @staticmethod
-    def set_trend(chart_doc: XChartDocument, curve_type: Chart.ChartRegressionCurveType) -> None:
+    def set_trend(chart_doc: XChartDocument, curve_type: ChartRegressionCurveType) -> None:
         """
         Sets chart trend
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            curve_type (Chart.ChartRegressionCurveType): determines a type of regression for the data row values.
+            curve_type (ChartRegressionCurveType): determines a type of regression for the data row values.
 
         Raises:
             DiagramNotExistingError: If ``chart_doc`` diagram does not exist
@@ -1290,11 +1276,11 @@ class Chart:
             # num_points = len(data)
 
             if (
-                curve_type == Chart.ChartRegressionCurveType.NONE
-                or curve_type == Chart.ChartRegressionCurveType.LINEAR
-                or curve_type == Chart.ChartRegressionCurveType.LOGARITHM
-                or curve_type == Chart.ChartRegressionCurveType.EXPONENTIAL
-                or curve_type == Chart.ChartRegressionCurveType.POWER
+                curve_type == ChartRegressionCurveType.NONE
+                or curve_type == ChartRegressionCurveType.LINEAR
+                or curve_type == ChartRegressionCurveType.LOGARITHM
+                or curve_type == ChartRegressionCurveType.EXPONENTIAL
+                or curve_type == ChartRegressionCurveType.POWER
             ):
                 mProps.Props.set_property(diagram, "RegressionCurves", curve_type)
             else:

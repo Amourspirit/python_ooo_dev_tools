@@ -76,6 +76,8 @@ from ooo.dyn.table.cell_range_address import CellRangeAddress
 
 
 class Chart2:
+    """Chart 2 Class"""
+
     _CHART_NAME = "chart$$_"
 
     # region insert a chart
