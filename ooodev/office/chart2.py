@@ -51,49 +51,32 @@ from ..utils import lo as mLo
 from ..utils import props as mProps
 from ..exceptions import ex as mEx
 from . import calc as mCalc
-from ..utils.data_type.angle import Angle as AngleType
-from ..utils.kind.axis_kind import AxisKind as AxisKindEnum
-from ..utils.kind.chart2_types import ChartTemplateBase, ChartTypes, ChartTypeNameBase
-from ..utils.kind.curve_kind import CurveKind as CurveKindEnum
-from ..utils.kind.data_point_label_type_kind import DataPointLabelTypeKind as DataPointLabelTypeKindEnum
-from ..utils.kind.data_point_lable_placement_kind import DataPointLabelPlacementKind as DataPointLabelPlacementKindEnum
-from ..utils.kind.line_style_name_kind import LineStyleNameKind
-from ..utils.kind.chart2_data_role_kind import DataRoleKind as DataRoleKind
+from ..utils.data_type.angle import Angle as Angle
+from ..utils.kind.axis_kind import AxisKind as AxisKind
+from ..utils.kind.chart2_types import ChartTemplateBase, ChartTypeNameBase, ChartTypes as ChartTypes
+from ..utils.kind.curve_kind import CurveKind as CurveKind
+from ..utils.kind.data_point_label_type_kind import DataPointLabelTypeKind as DataPointLabelTypeKind
 
+from ..utils.kind.line_style_name_kind import LineStyleNameKind as LineStyleNameKind
+from ..utils.kind.chart2_data_role_kind import DataRoleKind as DataRoleKind
 
 from ooo.dyn.awt.rectangle import Rectangle
 from ooo.dyn.chart.chart_data_row_source import ChartDataRowSource
 from ooo.dyn.chart.error_bar_style import ErrorBarStyle
 from ooo.dyn.chart2.axis_orientation import AxisOrientation
-from ooo.dyn.chart2.axis_type import AxisTypeEnum
-from ooo.dyn.chart2.data_point_geometry3_d import DataPointGeometry3DEnum
+from ooo.dyn.chart2.axis_type import AxisTypeEnum as AxisTypeKind
+from ooo.dyn.chart2.data_point_geometry3_d import DataPointGeometry3DEnum as DataPointGeometry3DEnum
 from ooo.dyn.chart2.data_point_label import DataPointLabel
-from ooo.dyn.drawing.fill_style import FillStyle as FillStyleEnum
-from ooo.dyn.drawing.line_style import LineStyle as LineStyleEnum
+from ooo.dyn.drawing.fill_style import FillStyle as FillStyle
+from ooo.dyn.drawing.line_style import LineStyle as LineStyle
 from ooo.dyn.lang.locale import Locale
 from ooo.dyn.table.cell_range_address import CellRangeAddress
-
-# from ooo.dyn.chart2.data.data_sequence_role import DataSequenceRole
 
 # endregion Imports
 
 
 class Chart2:
     _CHART_NAME = "chart$$_"
-
-    # region Type Alias
-    Angle = AngleType
-    AxisKind = AxisKindEnum
-    AxisType = AxisTypeEnum
-    CurveKind = CurveKindEnum
-    DataPointGeometry3D = DataPointGeometry3DEnum
-    DataPointLabelPlacementKind = DataPointLabelPlacementKindEnum
-    DataPointLabelTypeKind = DataPointLabelTypeKindEnum
-    ChartLookup = ChartTypes
-    FillStyle = FillStyleEnum
-    LineStyle = LineStyleEnum
-    LineStyleName = LineStyleNameKind
-    # endregion Type Alias
 
     # region insert a chart
     @classmethod
@@ -174,7 +157,7 @@ class Chart2:
             cls.set_background_colors(chart_doc, color_bg, color_wall)
 
             if has_cats:
-                cls.set_data_point_labels(chart_doc, Chart2.DataPointLabelTypeKind.NUMBER)
+                cls.set_data_point_labels(chart_doc, DataPointLabelTypeKind.NUMBER)
 
             return chart_doc
         except mEx.ChartError:
@@ -239,7 +222,7 @@ class Chart2:
 
         Note:
             If unable to create template from ``diagram_name`` for any reason then
-            ``Chart2.ChartLookup.Column.TEMPLATE_STACKED.COLUMN`` (``"Column"``) is used as a fallback.
+            ``ChartTypes.Column.TEMPLATE_STACKED.COLUMN`` (``"Column"``) is used as a fallback.
 
         Hint:
             .. include:: ../../resources/utils/chart2_lookup_chart_tmpl.rst
@@ -536,13 +519,13 @@ class Chart2:
 
     # region Axis
     @classmethod
-    def get_axis(cls, chart_doc: XChartDocument, axis_val: Chart2.AxisKind, idx: int) -> XAxis:
+    def get_axis(cls, chart_doc: XChartDocument, axis_val: AxisKind, idx: int) -> XAxis:
         """
         Gets axis
 
         Args:
             chart_doc (XChartDocument): Chart Document
-            axis_val (Chart2.AxisKind): Axis Kind
+            axis_val (AxisKind): Axis Kind
             idx (int): Axis index
 
         Raises:
@@ -578,7 +561,7 @@ class Chart2:
         See Also:
             :py:meth:`~.Chart2.get_axis`
         """
-        return cls.get_axis(chart_doc=chart_doc, axis_val=Chart2.AxisKind.X, idx=0)
+        return cls.get_axis(chart_doc=chart_doc, axis_val=AxisKind.X, idx=0)
 
     @classmethod
     def get_y_axis(cls, chart_doc: XChartDocument) -> XAxis:
@@ -597,7 +580,7 @@ class Chart2:
         See Also:
             :py:meth:`~.Chart2.get_axis`
         """
-        return cls.get_axis(chart_doc=chart_doc, axis_val=Chart2.AxisKind.Y, idx=0)
+        return cls.get_axis(chart_doc=chart_doc, axis_val=AxisKind.Y, idx=0)
 
     @classmethod
     def get_x_axis2(cls, chart_doc: XChartDocument) -> XAxis:
@@ -616,7 +599,7 @@ class Chart2:
         See Also:
             :py:meth:`~.Chart2.get_axis`
         """
-        return cls.get_axis(chart_doc=chart_doc, axis_val=Chart2.AxisKind.X, idx=1)
+        return cls.get_axis(chart_doc=chart_doc, axis_val=AxisKind.X, idx=1)
 
     @classmethod
     def get_y_axis2(cls, chart_doc: XChartDocument) -> XAxis:
@@ -635,17 +618,17 @@ class Chart2:
         See Also:
             :py:meth:`~.Chart2.get_axis`
         """
-        return cls.get_axis(chart_doc=chart_doc, axis_val=Chart2.AxisKind.Y, idx=1)
+        return cls.get_axis(chart_doc=chart_doc, axis_val=AxisKind.Y, idx=1)
 
     @classmethod
-    def set_axis_title(cls, chart_doc: XChartDocument, title: str, axis_val: Chart2.AxisKind, idx: int) -> XTitle:
+    def set_axis_title(cls, chart_doc: XChartDocument, title: str, axis_val: AxisKind, idx: int) -> XTitle:
         """
         Sets axis title.
 
         Args:
             chart_doc (XChartDocument): Chart Document.
             title (str): Title text.
-            axis_val (Chart2.AxisKind): Axis kind.
+            axis_val (AxisKind): Axis kind.
             idx (int): Index
 
         Raises:
@@ -693,7 +676,7 @@ class Chart2:
         See Also:
             :py:meth:`~.Chart2.set_axis_title`
         """
-        return cls.set_axis_title(chart_doc=chart_doc, title=title, axis_val=Chart2.AxisKind.X, idx=0)
+        return cls.set_axis_title(chart_doc=chart_doc, title=title, axis_val=AxisKind.X, idx=0)
 
     @classmethod
     def set_y_axis_title(cls, chart_doc: XChartDocument, title: str) -> XTitle:
@@ -710,7 +693,7 @@ class Chart2:
         See Also:
             :py:meth:`~.Chart2.set_axis_title`
         """
-        return cls.set_axis_title(chart_doc=chart_doc, title=title, axis_val=Chart2.AxisKind.Y, idx=0)
+        return cls.set_axis_title(chart_doc=chart_doc, title=title, axis_val=AxisKind.Y, idx=0)
 
     @classmethod
     def set_x_axis2_title(cls, chart_doc: XChartDocument, title: str) -> XTitle:
@@ -727,7 +710,7 @@ class Chart2:
         See Also:
             :py:meth:`~.Chart2.set_axis_title`
         """
-        return cls.set_axis_title(chart_doc=chart_doc, title=title, axis_val=Chart2.AxisKind.X, idx=1)
+        return cls.set_axis_title(chart_doc=chart_doc, title=title, axis_val=AxisKind.X, idx=1)
 
     @classmethod
     def set_y_axis2_title(cls, chart_doc: XChartDocument, title: str) -> XTitle:
@@ -744,16 +727,16 @@ class Chart2:
         See Also:
             :py:meth:`~.Chart2.set_axis_title`
         """
-        return cls.set_axis_title(chart_doc=chart_doc, title=title, axis_val=Chart2.AxisKind.Y, idx=1)
+        return cls.set_axis_title(chart_doc=chart_doc, title=title, axis_val=AxisKind.Y, idx=1)
 
     @classmethod
-    def get_axis_title(cls, chart_doc: XChartDocument, axis_val: Chart2.AxisKind, idx: int) -> XTitle:
+    def get_axis_title(cls, chart_doc: XChartDocument, axis_val: AxisKind, idx: int) -> XTitle:
         """
         Gets axis Title
 
         Args:
             chart_doc (XChartDocument): Chart Document
-            axis_val (Chart2.AxisKind): Asix Kind.
+            axis_val (AxisKind): Asix Kind.
             idx (int): Index
 
         Raises:
@@ -794,7 +777,7 @@ class Chart2:
         See Also:
             :py:meth:`~.Chart2.get_axis_title`
         """
-        return cls.get_axis_title(chart_doc=chart_doc, axis_val=Chart2.AxisKind.X, idx=0)
+        return cls.get_axis_title(chart_doc=chart_doc, axis_val=AxisKind.X, idx=0)
 
     @classmethod
     def get_y_axis_title(cls, chart_doc: XChartDocument) -> XTitle:
@@ -813,7 +796,7 @@ class Chart2:
         See Also:
             :py:meth:`~.Chart2.get_axis_title`
         """
-        return cls.get_axis_title(chart_doc=chart_doc, axis_val=Chart2.AxisKind.Y, idx=0)
+        return cls.get_axis_title(chart_doc=chart_doc, axis_val=AxisKind.Y, idx=0)
 
     @classmethod
     def get_x_axis2_title(cls, chart_doc: XChartDocument) -> XTitle:
@@ -832,7 +815,7 @@ class Chart2:
         See Also:
             :py:meth:`~.Chart2.get_axis_title`
         """
-        return cls.get_axis_title(chart_doc=chart_doc, axis_val=Chart2.AxisKind.X, idx=1)
+        return cls.get_axis_title(chart_doc=chart_doc, axis_val=AxisKind.X, idx=1)
 
     @classmethod
     def get_y_axis2_title(cls, chart_doc: XChartDocument) -> XTitle:
@@ -851,20 +834,18 @@ class Chart2:
         See Also:
             :py:meth:`~.Chart2.get_axis_title`
         """
-        return cls.get_axis_title(chart_doc=chart_doc, axis_val=Chart2.AxisKind.Y, idx=1)
+        return cls.get_axis_title(chart_doc=chart_doc, axis_val=AxisKind.Y, idx=1)
 
     @classmethod
-    def rotate_axis_title(
-        cls, chart_doc: XChartDocument, axis_val: Chart2.AxisKind, idx: int, angle: Chart2.Angle
-    ) -> None:
+    def rotate_axis_title(cls, chart_doc: XChartDocument, axis_val: AxisKind, idx: int, angle: Angle) -> None:
         """
         Rotates axis title.
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            axis_val (Chart2.AxisKind): Axis kind.
+            axis_val (AxisKind): Axis kind.
             idx (int): Index
-            angle (Chart2.Angle): Angle
+            angle (Angle): Angle
 
         Raises:
             ChartError: If error occurs.
@@ -881,13 +862,13 @@ class Chart2:
             raise mEx.ChartError("Error while trying to rotate axis title") from e
 
     @classmethod
-    def rotate_x_axis_title(cls, chart_doc: XChartDocument, angle: Chart2.Angle) -> None:
+    def rotate_x_axis_title(cls, chart_doc: XChartDocument, angle: Angle) -> None:
         """
         Rotates X axis title.
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            angle (Chart2.Angle): Angle
+            angle (Angle): Angle
 
         Raises:
             ChartError: If error occurs.
@@ -898,16 +879,16 @@ class Chart2:
         See Also:
             :py:meth:`~.Chart2.rotate_axis_title`
         """
-        cls.rotate_axis_title(chart_doc=chart_doc, axis_val=Chart2.AxisKind.X, idx=0, angle=angle)
+        cls.rotate_axis_title(chart_doc=chart_doc, axis_val=AxisKind.X, idx=0, angle=angle)
 
     @classmethod
-    def rotate_y_axis_title(cls, chart_doc: XChartDocument, angle: Chart2.Angle) -> None:
+    def rotate_y_axis_title(cls, chart_doc: XChartDocument, angle: Angle) -> None:
         """
         Rotates Y axis title.
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            angle (Chart2.Angle): Angle
+            angle (Angle): Angle
 
         Raises:
             ChartError: If error occurs.
@@ -918,16 +899,16 @@ class Chart2:
         See Also:
             :py:meth:`~.Chart2.rotate_axis_title`
         """
-        cls.rotate_axis_title(chart_doc=chart_doc, axis_val=Chart2.AxisKind.Y, idx=0, angle=angle)
+        cls.rotate_axis_title(chart_doc=chart_doc, axis_val=AxisKind.Y, idx=0, angle=angle)
 
     @classmethod
-    def rotate_x_axis2_title(cls, chart_doc: XChartDocument, angle: Chart2.Angle) -> None:
+    def rotate_x_axis2_title(cls, chart_doc: XChartDocument, angle: Angle) -> None:
         """
         Rotates X axis2 title.
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            angle (Chart2.Angle): Angle
+            angle (Angle): Angle
 
         Raises:
             ChartError: If error occurs.
@@ -938,16 +919,16 @@ class Chart2:
         See Also:
             :py:meth:`~.Chart2.rotate_axis_title`
         """
-        cls.rotate_axis_title(chart_doc=chart_doc, axis_val=Chart2.AxisKind.X, idx=1, angle=angle)
+        cls.rotate_axis_title(chart_doc=chart_doc, axis_val=AxisKind.X, idx=1, angle=angle)
 
     @classmethod
-    def rotate_y_axis2_title(cls, chart_doc: XChartDocument, angle: Chart2.Angle) -> None:
+    def rotate_y_axis2_title(cls, chart_doc: XChartDocument, angle: Angle) -> None:
         """
         Rotates Y axis2 title.
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            angle (Chart2.Angle): Angle
+            angle (Angle): Angle
 
         Raises:
             ChartError: If error occurs.
@@ -958,16 +939,16 @@ class Chart2:
         See Also:
             :py:meth:`~.Chart2.rotate_axis_title`
         """
-        cls.rotate_axis_title(chart_doc=chart_doc, axis_val=Chart2.AxisKind.Y, idx=1, angle=angle)
+        cls.rotate_axis_title(chart_doc=chart_doc, axis_val=AxisKind.Y, idx=1, angle=angle)
 
     @classmethod
-    def show_axis_label(cls, chart_doc: XChartDocument, axis_val: Chart2.AxisKind, idx: int, is_visible: bool) -> None:
+    def show_axis_label(cls, chart_doc: XChartDocument, axis_val: AxisKind, idx: int, is_visible: bool) -> None:
         """
         Sets the visibility for chart axis label.
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            axis_val (Chart2.AxisKind): Axis kind.
+            axis_val (AxisKind): Axis kind.
             idx (int): Index
             is_visible (bool): Visible state
 
@@ -1003,7 +984,7 @@ class Chart2:
         See Also:
             :py:meth:`~.Chart2.show_axis_label`
         """
-        cls.show_axis_label(chart_doc=chart_doc, axis_val=Chart2.AxisKind.X, idx=0, is_visible=is_visible)
+        cls.show_axis_label(chart_doc=chart_doc, axis_val=AxisKind.X, idx=0, is_visible=is_visible)
 
     @classmethod
     def show_y_axis_label(cls, chart_doc: XChartDocument, is_visible: bool) -> None:
@@ -1023,7 +1004,7 @@ class Chart2:
         See Also:
             :py:meth:`~.Chart2.show_axis_label`
         """
-        cls.show_axis_label(chart_doc=chart_doc, axis_val=Chart2.AxisKind.Y, idx=0, is_visible=is_visible)
+        cls.show_axis_label(chart_doc=chart_doc, axis_val=AxisKind.Y, idx=0, is_visible=is_visible)
 
     @classmethod
     def show_x_axis2_label(cls, chart_doc: XChartDocument, is_visible: bool) -> None:
@@ -1043,7 +1024,7 @@ class Chart2:
         See Also:
             :py:meth:`~.Chart2.show_axis_label`
         """
-        cls.show_axis_label(chart_doc=chart_doc, axis_val=Chart2.AxisKind.X, idx=1, is_visible=is_visible)
+        cls.show_axis_label(chart_doc=chart_doc, axis_val=AxisKind.X, idx=1, is_visible=is_visible)
 
     @classmethod
     def show_y_axis2_label(cls, chart_doc: XChartDocument, is_visible: bool) -> None:
@@ -1063,20 +1044,18 @@ class Chart2:
         See Also:
             :py:meth:`~.Chart2.show_axis_label`
         """
-        cls.show_axis_label(chart_doc=chart_doc, axis_val=Chart2.AxisKind.Y, idx=1, is_visible=is_visible)
+        cls.show_axis_label(chart_doc=chart_doc, axis_val=AxisKind.Y, idx=1, is_visible=is_visible)
 
     @classmethod
-    def scale_axis(
-        cls, chart_doc: XChartDocument, axis_val: Chart2.AxisKind, idx: int, scale_type: Chart2.CurveKind
-    ) -> XAxis:
+    def scale_axis(cls, chart_doc: XChartDocument, axis_val: AxisKind, idx: int, scale_type: CurveKind) -> XAxis:
         """
         Scales the chart axis.
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            axis_val (Chart2.AxisKind): Asix kind.
+            axis_val (AxisKind): Asix kind.
             idx (int): Index
-            scale_type (Chart2.CurveKind): Scale kind
+            scale_type (CurveKind): Scale kind
 
         Raises:
             ChartError: If error occurs.
@@ -1092,13 +1071,13 @@ class Chart2:
             axis = cls.get_axis(chart_doc=chart_doc, axis_val=axis_val, idx=idx)
             sd = axis.getScaleData()
             s = None
-            if scale_type == Chart2.CurveKind.LINEAR:
+            if scale_type == CurveKind.LINEAR:
                 s = "LinearScaling"
-            elif scale_type == Chart2.CurveKind.LOGARITHMIC:
+            elif scale_type == CurveKind.LOGARITHMIC:
                 s = "LogarithmicScaling"
-            elif scale_type == Chart2.CurveKind.EXPONENTIAL:
+            elif scale_type == CurveKind.EXPONENTIAL:
                 s = "ExponentialScaling"
-            elif scale_type == Chart2.CurveKind.POWER:
+            elif scale_type == CurveKind.POWER:
                 s = "PowerScaling"
             if s is None:
                 mLo.Lo.print(f'Did not reconize scaling type: "{scale_type}"')
@@ -1112,13 +1091,13 @@ class Chart2:
             raise mEx.ChartError("Error setting axis scale") from e
 
     @classmethod
-    def scale_x_axis(cls, chart_doc: XChartDocument, scale_type: Chart2.CurveKind) -> XAxis:
+    def scale_x_axis(cls, chart_doc: XChartDocument, scale_type: CurveKind) -> XAxis:
         """
         Scales the chart X axis.
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            scale_type (Chart2.CurveKind): Scale kind
+            scale_type (CurveKind): Scale kind
 
         Raises:
             ChartError: If error occurs.
@@ -1133,16 +1112,16 @@ class Chart2:
         See Also:
             :py:meth:`~.Chart2.scale_axis`
         """
-        return cls.scale_axis(chart_doc=chart_doc, axis_val=Chart2.AxisKind.X, idx=0, scale_type=scale_type)
+        return cls.scale_axis(chart_doc=chart_doc, axis_val=AxisKind.X, idx=0, scale_type=scale_type)
 
     @classmethod
-    def scale_y_axis(cls, chart_doc: XChartDocument, scale_type: Chart2.CurveKind) -> XAxis:
+    def scale_y_axis(cls, chart_doc: XChartDocument, scale_type: CurveKind) -> XAxis:
         """
         Scales the chart Y axis.
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            scale_type (Chart2.CurveKind): Scale kind
+            scale_type (CurveKind): Scale kind
 
         Raises:
             ChartError: If error occurs.
@@ -1157,7 +1136,7 @@ class Chart2:
         See Also:
             :py:meth:`~.Chart2.scale_axis`
         """
-        return cls.scale_axis(chart_doc=chart_doc, axis_val=Chart2.AxisKind.Y, idx=0, scale_type=scale_type)
+        return cls.scale_axis(chart_doc=chart_doc, axis_val=AxisKind.Y, idx=0, scale_type=scale_type)
 
     @classmethod
     def print_scale_data(cls, axis_name: str, axis: XAxis) -> None:
@@ -1179,19 +1158,19 @@ class Chart2:
         else:
             print("  Orientation: reverse")
         print(f"  Scaling: {mInfo.Info.get_implementation_name(sd.Scaling)}")
-        print(f"  AxisType: {cls.get_axis_type_string(Chart2.AxisType(sd.AxisType))}")
+        print(f"  AxisType: {cls.get_axis_type_string(AxisTypeKind(sd.AxisType))}")
         print(f"  AutoDateAxis: {sd.AutoDateAxis}")
         print(f"  ShiftedCategoryPosition: {sd.ShiftedCategoryPosition}")
         print(f"  IncrementData: {sd.IncrementData}")
         print(f"  TimeIncrement: {sd.TimeIncrement}")
 
     @staticmethod
-    def get_axis_type_string(axis_type: Chart2.AxisType) -> str:
+    def get_axis_type_string(axis_type: AxisTypeKind) -> str:
         """
         Gets axis type as string.
 
         Args:
-            axis_type (Chart2.AxisType): Axis Type
+            axis_type (AxisTypeKind): Axis Type
 
         Raises:
             UnKnownError: If unable to determine ``axis_type``
@@ -1199,15 +1178,15 @@ class Chart2:
         Returns:
             str: Axis type as string.
         """
-        if axis_type == Chart2.AxisType.REALNUMBER:
+        if axis_type == AxisTypeKind.REALNUMBER:
             return "real numbers"
-        elif axis_type == Chart2.AxisType.PERCENT:
+        elif axis_type == AxisTypeKind.PERCENT:
             return "percentages"
-        elif axis_type == Chart2.AxisType.CATEGORY:
+        elif axis_type == AxisTypeKind.CATEGORY:
             return "categories"
-        elif axis_type == Chart2.AxisType.SERIES:
+        elif axis_type == AxisTypeKind.SERIES:
             return "series names"
-        elif axis_type == Chart2.AxisType.DATE:
+        elif axis_type == AxisTypeKind.DATE:
             return "dates"
         else:
             raise mEx.UnKnownError("axis_type is of unknow type")
@@ -1218,22 +1197,22 @@ class Chart2:
     # region set_grid_lines()
     @overload
     @classmethod
-    def set_grid_lines(cls, chart_doc: XChartDocument, axis_val: Chart2.AxisKind) -> XPropertySet:
+    def set_grid_lines(cls, chart_doc: XChartDocument, axis_val: AxisKind) -> XPropertySet:
         ...
 
     @overload
     @classmethod
-    def set_grid_lines(cls, chart_doc: XChartDocument, axis_val: Chart2.AxisKind, idx: int) -> XPropertySet:
+    def set_grid_lines(cls, chart_doc: XChartDocument, axis_val: AxisKind, idx: int) -> XPropertySet:
         ...
 
     @classmethod
-    def set_grid_lines(cls, chart_doc: XChartDocument, axis_val: Chart2.AxisKind, idx: int = 0) -> XPropertySet:
+    def set_grid_lines(cls, chart_doc: XChartDocument, axis_val: AxisKind, idx: int = 0) -> XPropertySet:
         """
         Set the grid lines for a chart.
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            axis_val (Chart2.AxisKind): Axis kind.
+            axis_val (AxisKind): Axis kind.
             idx (int, optional): Index. Defaults to 0.
 
         Raises:
@@ -1245,8 +1224,8 @@ class Chart2:
         try:
             axis = cls.get_axis(chart_doc=chart_doc, axis_val=axis_val, idx=idx)
             props = axis.getGridProperties()
-            mProps.Props.set_property(props, "LineStyle", Chart2.LineStyle.DASH)
-            mProps.Props.set_property(props, "LineDashName", str(Chart2.LineStyleName.FINE_DOTTED))
+            mProps.Props.set_property(props, "LineStyle", LineStyle.DASH)
+            mProps.Props.set_property(props, "LineDashName", str(LineStyleNameKind.FINE_DOTTED))
             return props
         except mEx.ChartError:
             raise
@@ -1278,8 +1257,8 @@ class Chart2:
             legend = diagram.getLegend()
             if is_visible and legend is None:
                 leg = mLo.Lo.create_instance_mcf(XLegend, "com.sun.star.chart2.Legend", raise_err=True)
-                mProps.Props.set_property(leg, "LineStyle", Chart2.LineStyle.NONE)
-                mProps.Props.set_property(leg, "FillStyle", Chart2.FillStyle.SOLID)
+                mProps.Props.set_property(leg, "LineStyle", LineStyle.NONE)
+                mProps.Props.set_property(leg, "FillStyle", FillStyle.SOLID)
                 mProps.Props.set_property(leg, "FillTransparence", 100)
                 diagram.setLegend(leg)
 
@@ -1314,7 +1293,7 @@ class Chart2:
                 bg_ps = chart_doc.getPageBackground()
                 # mProps.Props.show_props("Background", bg_ps)
                 mProps.Props.set_property(bg_ps, "FillBackground", True)
-                mProps.Props.set_property(bg_ps, "FillStyle", Chart2.FillStyle.SOLID)
+                mProps.Props.set_property(bg_ps, "FillStyle", FillStyle.SOLID)
                 mProps.Props.set_property(bg_ps, "FillColor", int(bg_color))
 
             if int(wall_color) > 0:
@@ -1322,7 +1301,7 @@ class Chart2:
                 wall_ps = diagram.getWall()
                 # mProps.Props.show_props("Wall", wall_ps)
                 mProps.Props.set_property(wall_ps, "FillBackground", True)
-                mProps.Props.set_property(wall_ps, "FillStyle", Chart2.FillStyle.SOLID)
+                mProps.Props.set_property(wall_ps, "FillStyle", FillStyle.SOLID)
                 mProps.Props.set_property(wall_ps, "FillColor", int(wall_color))
         except Exception as e:
             raise mEx.ChartError("Error setting background colors") from e
@@ -1554,6 +1533,10 @@ class Chart2:
         Hint:
             .. include:: ../../resources/utils/chart2_lookup_chart_name.rst
         """
+        # Ensure chart_type is ChartTypeNameBase | str
+        mInfo.Info.is_type_enum_multi(
+            alt_type="str", enum_type=ChartTypeNameBase, enum_val=chart_type, arg_name="chart_type"
+        )
         try:
             srch_name = f"com.sun.star.chart2.{str(chart_type).lower()}"
             chart_types = cls.get_chart_types(chart_doc)
@@ -1611,6 +1594,9 @@ class Chart2:
         Hint:
             .. include:: ../../resources/utils/chart2_lookup_chart_name.rst
         """
+        mInfo.Info.is_type_enum_multi(
+            alt_type="str", enum_type=ChartTypeNameBase, enum_val=chart_type, arg_name="chart_type"
+        )
         try:
             ct = mLo.Lo.create_instance_mcf(XChartType, f"com.sun.star.chart2.{chart_type}", raise_err=True)
             coord_sys = cls.get_coord_system(chart_doc)
@@ -1769,13 +1755,13 @@ class Chart2:
         return props[idx]
 
     @classmethod
-    def set_data_point_labels(cls, chart_doc: XChartDocument, label_type: Chart2.DataPointLabelTypeKind) -> None:
+    def set_data_point_labels(cls, chart_doc: XChartDocument, label_type: DataPointLabelTypeKind) -> None:
         """
         Sets the data point label of a chart
 
         Args:
             chart_doc (XChartDocument): Chart Document
-            label_type (Chart2.DataPointLabelTypeKind): Label Type
+            label_type (DataPointLabelTypeKind): Label Type
 
         Raises:
             ChartError: If error occurs.
@@ -1790,16 +1776,16 @@ class Chart2:
                 dp_label.ShowNumber = False
                 dp_label.ShowCategoryName = False
                 dp_label.ShowLegendSymbol = False
-                if label_type == Chart2.DataPointLabelTypeKind.NUMBER:
+                if label_type == DataPointLabelTypeKind.NUMBER:
                     dp_label.ShowNumber = True
-                elif label_type == Chart2.DataPointLabelTypeKind.PERCENT:
+                elif label_type == DataPointLabelTypeKind.PERCENT:
                     dp_label.ShowNumber = True
                     dp_label.ShowNumberInPercent = True
-                elif label_type == Chart2.DataPointLabelTypeKind.CATEGORY:
+                elif label_type == DataPointLabelTypeKind.CATEGORY:
                     dp_label.ShowCategoryName = True
-                elif label_type == Chart2.DataPointLabelTypeKind.SYMBOL:
+                elif label_type == DataPointLabelTypeKind.SYMBOL:
                     dp_label.ShowLegendSymbol = True
-                elif label_type == Chart2.DataPointLabelTypeKind.NONE:
+                elif label_type == DataPointLabelTypeKind.NONE:
                     pass
                 else:
                     raise mEx.UnKnownError("label_type is of unknow type")
@@ -1811,13 +1797,13 @@ class Chart2:
             raise mEx.ChartError("Error setting data point labels") from e
 
     @classmethod
-    def set_chart_shape_3d(cls, chart_doc: XChartDocument, shape: Chart2.DataPointGeometry3D) -> None:
+    def set_chart_shape_3d(cls, chart_doc: XChartDocument, shape: DataPointGeometry3DEnum) -> None:
         """
         Sets chart 3d shape
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            shape (Chart2.DataPointGeometry3D): Shape kind
+            shape (DataPointGeometry3DEnum): Shape kind
 
         Raises:
             ChartError: If an error occurs.
@@ -1851,8 +1837,8 @@ class Chart2:
         try:
             data_series_arr = cls.get_data_series(chart_doc=chart_doc)
             for data_series in data_series_arr:
-                mProps.Props.set_property(data_series, "LineStyle", Chart2.LineStyle.DASH)
-                mProps.Props.set_property(data_series, "LineDashName", str(Chart2.LineStyleName.FINE_DASHED))
+                mProps.Props.set_property(data_series, "LineStyle", LineStyle.DASH)
+                mProps.Props.set_property(data_series, "LineDashName", str(LineStyleNameKind.FINE_DASHED))
         except mEx.ChartError:
             raise
         except Exception as e:
@@ -1898,14 +1884,14 @@ class Chart2:
 
     # region regression
     @staticmethod
-    def create_curve(curve_kind: Chart2.CurveKind) -> XRegressionCurve:
+    def create_curve(curve_kind: CurveKind) -> XRegressionCurve:
         """
         Creates a regression curve.
 
         Matches the regression constants defined in ``curve_kind`` to regression services offered by the API:
 
         Args:
-            curve_kind (Chart2.CurveKind): Curve kind.
+            curve_kind (CurveKind): Curve kind.
 
         Raises:
             ChartError: If error occurs.
@@ -1920,13 +1906,13 @@ class Chart2:
             raise mEx.ChartError("Error creating curve") from e
 
     @classmethod
-    def draw_regression_curve(cls, chart_doc: XChartDocument, curve_kind: Chart2.CurveKind) -> None:
+    def draw_regression_curve(cls, chart_doc: XChartDocument, curve_kind: CurveKind) -> None:
         """
         Draws a regression curve.
 
         Args:
             chart_doc (XChartDocument): Chart Document
-            curve_kind (Chart2.CurveKind): Curve kind.
+            curve_kind (CurveKind): Curve kind.
 
         Raises:
             ChartError: If error occurs.
@@ -1984,7 +1970,7 @@ class Chart2:
             raise mEx.ChartError("Error getting number format key") from e
 
     @staticmethod
-    def get_curve_type(curve: XRegressionCurve) -> Chart2.CurveKind:
+    def get_curve_type(curve: XRegressionCurve) -> CurveKind:
         """
         Gets curve kind from regression object.
 
@@ -1995,21 +1981,21 @@ class Chart2:
             NotFoundError: If unable to detect curve kind.
 
         Returns:
-            Chart2.CurveKind: Curve Kind
+            CurveKind: Curve Kind
         """
         services = set(mInfo.Info.get_services(curve))
-        if Chart2.CurveKind.LINEAR.to_namespace() in services:
-            return Chart2.CurveKind.LINEAR
-        elif Chart2.CurveKind.LOGARITHMIC.to_namespace() in services:
-            return Chart2.CurveKind.LOGARITHMIC
-        elif Chart2.CurveKind.EXPONENTIAL.to_namespace() in services:
-            return Chart2.CurveKind.EXPONENTIAL
-        elif Chart2.CurveKind.POWER.to_namespace() in services:
-            return Chart2.CurveKind.POWER
-        elif Chart2.CurveKind.POLYNOMIAL.to_namespace() in services:
-            return Chart2.CurveKind.POLYNOMIAL
-        elif Chart2.CurveKind.MOVING_AVERAGE.to_namespace() in services:
-            return Chart2.CurveKind.MOVING_AVERAGE
+        if CurveKind.LINEAR.to_namespace() in services:
+            return CurveKind.LINEAR
+        elif CurveKind.LOGARITHMIC.to_namespace() in services:
+            return CurveKind.LOGARITHMIC
+        elif CurveKind.EXPONENTIAL.to_namespace() in services:
+            return CurveKind.EXPONENTIAL
+        elif CurveKind.POWER.to_namespace() in services:
+            return CurveKind.POWER
+        elif CurveKind.POLYNOMIAL.to_namespace() in services:
+            return CurveKind.POLYNOMIAL
+        elif CurveKind.MOVING_AVERAGE.to_namespace() in services:
+            return CurveKind.MOVING_AVERAGE
         else:
             raise mEx.NotFoundError("Could not identify trend type of curve")
 
@@ -2026,7 +2012,7 @@ class Chart2:
         curve_calc = curve.getCalculator()
         degree = 1
         ct = cls.get_curve_type(curve)
-        if ct != Chart2.CurveKind.LINEAR:
+        if ct != CurveKind.LINEAR:
             degree = 2  # assumes POLYNOMIAL trend has degree == 2
 
         # degree, forceIntercept, interceptValue, period (for moving average)
@@ -2053,18 +2039,18 @@ class Chart2:
             chart_doc (XChartDocument): Chart Document
         """
 
-        def curve_info(curve_kind: Chart2.CurveKind) -> None:
+        def curve_info(curve_kind: CurveKind) -> None:
             curve = cls.create_curve(curve_kind=curve_kind)
             print(f"{curve_kind.label} regression curve:")
             cls.eval_curve(chart_doc=chart_doc, curve=curve)
             print()
 
-        curve_info(Chart2.CurveKind.LINEAR)
-        curve_info(Chart2.CurveKind.LOGARITHMIC)
-        curve_info(Chart2.CurveKind.EXPONENTIAL)
-        curve_info(Chart2.CurveKind.POWER)
-        curve_info(Chart2.CurveKind.POLYNOMIAL)
-        curve_info(Chart2.CurveKind.MOVING_AVERAGE)
+        curve_info(CurveKind.LINEAR)
+        curve_info(CurveKind.LOGARITHMIC)
+        curve_info(CurveKind.EXPONENTIAL)
+        curve_info(CurveKind.POWER)
+        curve_info(CurveKind.POLYNOMIAL)
+        curve_info(CurveKind.MOVING_AVERAGE)
 
     # endregion regression
 
@@ -2191,7 +2177,7 @@ class Chart2:
         """
         try:
             # add (empty) line chart to the doc
-            ct = cls.add_chart_type(chart_doc=chart_doc, chart_type=Chart2.ChartLookup.Line.NAMED.LINE_CHART)
+            ct = cls.add_chart_type(chart_doc=chart_doc, chart_type=ChartTypes.Line.NAMED.LINE_CHART)
             data_series_cnt = mLo.Lo.qi(XDataSeriesContainer, ct, True)
 
             # create (empty) data series in the line chart
@@ -2235,13 +2221,13 @@ class Chart2:
                 dp=dp, role=DataRoleKind.CATEGORIES, data_label=data_label, data_range=data_range
             )
 
-            axis = cls.get_axis(chart_doc=chart_doc, axis_val=Chart2.AxisKind.X, idx=0)
+            axis = cls.get_axis(chart_doc=chart_doc, axis_val=AxisKind.X, idx=0)
             sd = axis.getScaleData()
             sd.Categories = dl_seq
             axis.setScaleData(sd)
 
             # abel the data points with these category values
-            cls.set_data_point_labels(chart_doc=chart_doc, label_type=Chart2.DataPointLabelTypeKind.CATEGORY)
+            cls.set_data_point_labels(chart_doc=chart_doc, label_type=DataPointLabelTypeKind.CATEGORY)
         except mEx.ChartError:
             raise
         except Exception as e:
