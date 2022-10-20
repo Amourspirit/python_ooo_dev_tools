@@ -1,6 +1,5 @@
 # coding: utf-8
 from __future__ import annotations
-from ast import Pass
 from typing import Any, List, TYPE_CHECKING
 from ..utils.type_var import PathOrStr
 

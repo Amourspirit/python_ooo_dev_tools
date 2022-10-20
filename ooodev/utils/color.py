@@ -7,6 +7,7 @@ import math
 import colorsys
 from typing import Union, NamedTuple, overload, NewType
 import numbers
+
 # ref: https://gist.github.com/mathebox/e0805f72e7db3269ec22
 
 MAX_COLOR = 255
@@ -14,17 +15,27 @@ MAX_COLOR = 255
 MIN_COLOR = 0
 """Min Color Value"""
 
-Color = NewType('Color', int)
+Color = NewType("Color", int)
 """Color Type. Int RGB Value"""
+
 
 class CommonColor:
     """
     Named Colors.
-    
+
     See Also:
         - `Wikipedia Web colors <https://en.wikipedia.org/wiki/Web_colors>`_
         - `Hex Color Chart <https://www.quackit.com/css/color/charts/hex_color_chart.cfm>`_
+
+    Example:
+
+        .. code-block:: python
+
+            def set_chart(sheet: XSpreadsheet, range_addr: CellRangeAddress) -> None:
+                chart = Chart2.insert_chart(sheet, range_addr, "A22", 20, 11, Chart2.ChartLookup.Column.TEMPLATE_PERCENT.COLUMN_DEEP_3D)
+                Chart2.set_background_colors(chart, CommonColor.LIGHT_GREEN, CommonColor.BROWN)
     """
+
     # https://en.wikipedia.org/wiki/Web_colors
     # https://www.quackit.com/css/color/charts/hex_color_chart.cfm
     # some hex values for commonly used colors
@@ -35,7 +46,7 @@ class CommonColor:
     HOT_PINK = Color(0xFF69B4)
     LIGHT_PINK = Color(0xFFB6C1)
     PINK = Color(0xFFC0CB)
-    
+
     # red colors
     INDIAN_RED = Color(0xCD5C5C)
     LIGHT_CORAL = Color(0xF08080)
@@ -46,14 +57,14 @@ class CommonColor:
     RED = Color(0xFF0000)
     FIRE_BRICK = Color(0xB22222)
     DARK_RED = Color(0x8B0000)
-    
+
     # Oranges
     CORAL = Color(0xFF7F50)
     TOMATO = Color(0xFF6347)
     ORANGE_RED = Color(0xFF4500)
     DARK_ORANGE = Color(0xFF8C00)
     ORANGE = Color(0xFFA500)
-    
+
     # Yellow colors
     GOLD = Color(0xFFD700)
     YELLOW = Color(0xFFFF00)
@@ -66,7 +77,7 @@ class CommonColor:
     PALE_GOLDENROD = Color(0xEEE8AA)
     KHAKI = Color(0xF0E68C)
     DARK_KHAKI = Color(0xBDB76B)
-    
+
     # Purples
     LAVENDER = Color(0xE6E6FA)
     THISTLE = Color(0xD8BFD8)
@@ -87,7 +98,7 @@ class CommonColor:
     MEDIUM_SLATE_BLUE = Color(0x7B68EE)
     SLATE_BLUE = Color(0x6A5ACD)
     DARK_SLATE_BLUE = Color(0x483D8B)
-    
+
     # Greens
     GREEN_YELLOW = Color(0xADFF2F)
     CHARTREUSE = Color(0x7FFF00)
@@ -112,7 +123,7 @@ class CommonColor:
     LIGHT_SEA_GREEN = Color(0x20B2AA)
     DARK_CYAN = Color(0x008B8B)
     TEAL = Color(0x008080)
-    
+
     # Blues/Cyans
     AQUA = Color(0x00FFFF)
     CYAN = Color(0x00FFFF)
@@ -138,7 +149,7 @@ class CommonColor:
     DARK_BLUE = Color(0x00008B)
     NAVY = Color(0x000080)
     MIDNIGHT_BLUE = Color(0x191970)
-    
+
     # Browns
     CORNSILK = Color(0xFFF8DC)
     BLANCHED_ALMOND = Color(0xFFEBCD)
@@ -176,7 +187,7 @@ class CommonColor:
     LINEN = Color(0xFAF0E6)
     LAVENDER_BLUSH = Color(0xFFF0F5)
     MISTY_ROSE = Color(0xFFE4E1)
-    
+
     # Greys
     GAINSBORO = Color(0xDCDCDC)
     LIGHT_GRAY = Color(0xD3D3D3)
@@ -198,7 +209,7 @@ class CommonColor:
 
     # other
     PALE_BLUE = Color(0xD6EBFF)
-    
+
 
 class RGB(NamedTuple):
     red: int
@@ -216,7 +227,7 @@ class RGB(NamedTuple):
             int: red, green, blue encoded as int.
         """
         return rgb_to_int(self)
-    
+
     def to_color(self) -> Color:
         """
         Gets instance as rgb Color
@@ -261,7 +272,7 @@ class RGB(NamedTuple):
             RGB: Color information as RGB struct.
         """
         return int_to_rgb(rgb_int=rgb_int)
-    
+
     @classmethod
     def from_color(cls, c: Color) -> "RGB":
         """
@@ -346,15 +357,7 @@ class RGB(NamedTuple):
         return not self.is_dark()
 
     def __str__(self) -> str:
-        return (
-            "rgb("
-            + round(self.red)
-            + ", "
-            + round(self.green)
-            + ", "
-            + round(self.blue)
-            + ")"
-        )
+        return "rgb(" + round(self.red) + ", " + round(self.green) + ", " + round(self.blue) + ")"
 
 
 class HSL(NamedTuple):
@@ -363,15 +366,7 @@ class HSL(NamedTuple):
     lightness: float
 
     def __str__(self) -> str:
-        return (
-            "hls("
-            + f"{self.hue:.6f}"
-            + ", "
-            + f"{self.saturation:.6f}"
-            + ", "
-            + f"{self.lightness:.6f}"
-            + ")"
-        )
+        return "hls(" + f"{self.hue:.6f}" + ", " + f"{self.saturation:.6f}" + ", " + f"{self.lightness:.6f}" + ")"
 
 
 class HSV(NamedTuple):
@@ -380,15 +375,7 @@ class HSV(NamedTuple):
     value: float
 
     def __str__(self) -> str:
-        return (
-            "hlv("
-            + f"{self.hue:.6f}"
-            + ", "
-            + f"{self.saturation:.6f}"
-            + ", "
-            + f"{self.value:.6f}"
-            + ")"
-        )
+        return "hlv(" + f"{self.hue:.6f}" + ", " + f"{self.saturation:.6f}" + ", " + f"{self.value:.6f}" + ")"
 
 
 def clamp(value: float, min_value: float, max_value: float) -> float:
@@ -600,6 +587,7 @@ def int_to_rgb(rgb_int: int) -> RGB:
 @overload
 def lighten(rgb_color: int, percent: numbers.Number) -> RGB:
     ...
+
 
 @overload
 def lighten(rgb_color: RGB, percent: numbers.Number) -> RGB:

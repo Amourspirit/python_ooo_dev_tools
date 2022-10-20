@@ -2,10 +2,10 @@
 # Python conversion of Info.java by Andrew Davison, ad@fivedots.coe.psu.ac.th
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 from __future__ import annotations
-from enum import IntFlag
+from enum import Enum, IntFlag
 from pathlib import Path
 import mimetypes
-from typing import TYPE_CHECKING, Any, Tuple, List, cast, overload, Optional
+from typing import TYPE_CHECKING, Any, Tuple, List, Type, cast, overload, Optional
 import uno
 from ..events.event_singleton import _Events
 from ..events.lo_named_event import LoNamedEvent
@@ -2032,6 +2032,58 @@ class Info(metaclass=StaticProperty):
         if hasattr(obj, "typeName"):
             return obj.typeName == type_name
         return False
+
+    # region is_type_enum_multi()
+    @overload
+    @staticmethod
+    def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: Enum) -> bool:
+        ...
+
+    @overload
+    @staticmethod
+    def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: Enum, arg_name: str) -> bool:
+        ...
+
+    @staticmethod
+    def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: Enum, arg_name: str = "") -> bool:
+        """
+        Gets if an multiple inheritance enum, such as a ``str, Enum`` is of expected type.
+
+        Args:
+            alt_type (str): Alternative Type, In the case of a ``str, Enum`` this would be ``str``
+            enum_type (Type[Enum]): Expecte Enum Type
+            enum_val (Enum): Actual Enum Value
+            arg_name (str, optional): Arg Name used to pass enum value into method.
+
+        Raises:
+            TypeError: If ``arg_name`` is passed into this method and the type check fails.
+
+        Returns:
+            bool: ``True`` if ``enum_val`` is valid ``alt_type`` or ``enum_type``; Otherwise, ``False``
+
+        Example:
+            .. code-block:: python
+
+                >>> from ooodev.utils.kind import chart2_types as ct
+
+                >>> val = ct.Area3dKind.PERCENT_STACKED_AREA_3D
+                >>> print(is_enum_type("str", ct.ChartTemplateBase, val))
+                True
+                >>> print(is_enum_type("str", ct.ChartTypeNameBase, val))
+                False
+                >>> print(is_enum_type("str", ct.ChartTypeNameBase, val, "input_enum"))
+                TypeError: Parameter "input_enum" must be of type "str" or "ChartTypeNameBase"
+        """
+        if type(enum_val).__name__ != alt_type:
+            if not isinstance(enum_val, enum_type):
+                if arg_name:
+                    name = enum_type.__name__
+                    raise TypeError(f'Parameter "{arg_name}" must be of type "{alt_type}" or "{name}"')
+                else:
+                    return False
+        return True
+
+    # endregion is_type_enum_multi()
 
     @classmethod
     def get_type_name(cls, obj: object) -> str | None:
