@@ -1,9 +1,9 @@
 # region Imports
 from __future__ import annotations
-from tkinter import E
-from typing import List, Tuple, overload
+from typing import Tuple, overload
 from enum import Enum
 
+import uno
 from com.sun.star.chart import XChartDocument
 from com.sun.star.container import XNameAccess
 from com.sun.star.sheet import XSpreadsheet
@@ -24,7 +24,7 @@ from com.sun.star.chart import XAxisYSupplier
 from com.sun.star.chart import XTwoAxisYSupplier
 from com.sun.star.chart import XChartDataArray
 
-from .kind.drawing_shape_kind import DrawingShapeKind
+from ..utils.kind.drawing_shape_kind import DrawingShapeKind
 
 from ooo.dyn.table.cell_range_address import CellRangeAddress
 from ooo.dyn.awt.rectangle import Rectangle
@@ -36,12 +36,12 @@ from ooo.dyn.chart.chart_solid_type import ChartSolidTypeEnum
 from ooo.dyn.chart.chart_symbol_type import ChartSymbolType
 from ooo.dyn.chart.chart_regression_curve_type import ChartRegressionCurveType as ChartRegressionCurveTypeEnum
 
-from . import lo as mLo
-from . import props as mProps
+from ..utils import lo as mLo
+from ..utils import props as mProps
 from . import draw as mDraw
-from . import info as mInfo
+from ..utils import info as mInfo
 from ..exceptions import ex as mEx
-from .data_type.intensity import Intensity
+from ..utils.data_type.intensity import Intensity
 
 # endregion Imports
 class Chart:

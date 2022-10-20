@@ -1,6 +1,6 @@
 Class Chart
 ===========
 
-.. autoclass:: ooodev.utils.chart.Chart
+.. autoclass:: ooodev.office.chart.Chart
     :members:
     :undoc-members:

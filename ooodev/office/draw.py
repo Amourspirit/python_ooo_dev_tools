@@ -7,7 +7,6 @@ from typing import List, Sequence, Tuple, cast, overload
 import math
 
 import uno
-
 # from com.sun.star.awt import XButton
 from com.sun.star.animations import XAnimationNode
 from com.sun.star.animations import XAnimationNodeSupplier
@@ -49,31 +48,31 @@ from com.sun.star.text import XTextRange
 from com.sun.star.view import XSelectionSupplier
 
 
-from . import color as mColor
-from . import file_io as mFileIO
-from . import gui as mGui
-from . import images_lo as mImgLo
-from . import info as mInfo
-from . import lo as mLo
-from . import props as mProps
-from . import table_helper as mTblHelper
+from ..utils import color as mColor
+from ..utils import file_io as mFileIO
+from ..utils import gui as mGui
+from ..utils import images_lo as mImgLo
+from ..utils import info as mInfo
+from ..utils import lo as mLo
+from ..utils import props as mProps
+from ..utils import table_helper as mTblHelper
 from ..cfg.config import Config  # singleton class.
 from ..events.event_singleton import _Events
 from ..events.draw_named_event import DrawNamedEvent
 from ..events.args.cancel_event_args import CancelEventArgs
 from ..exceptions import ex as mEx
-from .data_type.angle import Angle
-from .data_type.image_offset import ImageOffset
-from .data_type.intensity import Intensity
-from .data_type.poly_sides import PolySides
-from .kind.drawing_bitmap_kind import DrawingBitmapKind
-from .kind.drawing_gradient_kind import DrawingGradientKind
-from .kind.drawing_hatching_kind import DrawingHatchingKind
-from .kind.drawing_shape_kind import DrawingShapeKind
-from .kind.form_control_kind import FormControlKind
-from .kind.graphic_style_kind import GraphicStyleKind
-from .kind.presentation_kind import PresentationKind
-from .type_var import PathOrStr
+from ..utils.data_type.angle import Angle
+from ..utils.data_type.image_offset import ImageOffset
+from ..utils.data_type.intensity import Intensity
+from ..utils.data_type.poly_sides import PolySides
+from ..utils.kind.drawing_bitmap_kind import DrawingBitmapKind
+from ..utils.kind.drawing_gradient_kind import DrawingGradientKind
+from ..utils.kind.drawing_hatching_kind import DrawingHatchingKind
+from ..utils.kind.drawing_shape_kind import DrawingShapeKind
+from ..utils.kind.form_control_kind import FormControlKind
+from ..utils.kind.graphic_style_kind import GraphicStyleKind
+from ..utils.kind.presentation_kind import PresentationKind
+from ..utils.type_var import PathOrStr
 
 from ooo.dyn.awt.gradient import Gradient
 from ooo.dyn.awt.gradient_style import GradientStyle

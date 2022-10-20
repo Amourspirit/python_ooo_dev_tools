@@ -3,6 +3,7 @@ from __future__ import annotations
 from random import random
 from typing import List, Tuple, cast, overload
 
+import uno
 from com.sun.star.beans import XPropertySet
 from com.sun.star.chart2 import XAxis
 from com.sun.star.chart2 import XChartDocument
@@ -41,23 +42,23 @@ from com.sun.star.table import XTableChart
 from com.sun.star.table import XTableChartsSupplier
 from com.sun.star.util import XNumberFormatsSupplier
 
-from . import color as mColor
-from . import file_io as mFileIo
-from . import gui as mGui
-from . import images_lo as mImgLo
-from . import info as mInfo
-from . import lo as mLo
-from . import props as mProps
+from ..utils import color as mColor
+from ..utils import file_io as mFileIo
+from ..utils import gui as mGui
+from ..utils import images_lo as mImgLo
+from ..utils import info as mInfo
+from ..utils import lo as mLo
+from ..utils import props as mProps
 from ..exceptions import ex as mEx
-from ..office import calc as mCalc
-from .data_type.angle import Angle as AngleType
-from .kind.axis_kind import AxisKind as AxisKindEnum
-from .kind.chart2_types import ChartTemplateBase, ChartTypes, ChartTypeNameBase
-from .kind.curve_kind import CurveKind as CurveKindEnum
-from .kind.data_point_label_type_kind import DataPointLabelTypeKind as DataPointLabelTypeKindEnum
-from .kind.data_point_lable_placement_kind import DataPointLabelPlacementKind as DataPointLabelPlacementKindEnum
-from .kind.line_style_name_kind import LineStyleNameKind
-from .kind.chart2_data_role_kind import DataRoleKind as DataRoleKind
+from . import calc as mCalc
+from ..utils.data_type.angle import Angle as AngleType
+from ..utils.kind.axis_kind import AxisKind as AxisKindEnum
+from ..utils.kind.chart2_types import ChartTemplateBase, ChartTypes, ChartTypeNameBase
+from ..utils.kind.curve_kind import CurveKind as CurveKindEnum
+from ..utils.kind.data_point_label_type_kind import DataPointLabelTypeKind as DataPointLabelTypeKindEnum
+from ..utils.kind.data_point_lable_placement_kind import DataPointLabelPlacementKind as DataPointLabelPlacementKindEnum
+from ..utils.kind.line_style_name_kind import LineStyleNameKind
+from ..utils.kind.chart2_data_role_kind import DataRoleKind as DataRoleKind
 
 
 from ooo.dyn.awt.rectangle import Rectangle
