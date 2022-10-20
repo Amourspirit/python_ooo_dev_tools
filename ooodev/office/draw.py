@@ -7,6 +7,7 @@ from typing import List, Sequence, Tuple, cast, overload
 import math
 
 import uno
+
 # from com.sun.star.awt import XButton
 from com.sun.star.animations import XAnimationNode
 from com.sun.star.animations import XAnimationNodeSupplier
@@ -48,6 +49,11 @@ from com.sun.star.text import XTextRange
 from com.sun.star.view import XSelectionSupplier
 
 
+from ..cfg.config import Config  # singleton class.
+from ..events.args.cancel_event_args import CancelEventArgs
+from ..events.draw_named_event import DrawNamedEvent
+from ..events.event_singleton import _Events
+from ..exceptions import ex as mEx
 from ..utils import color as mColor
 from ..utils import file_io as mFileIO
 from ..utils import gui as mGui
@@ -56,39 +62,36 @@ from ..utils import info as mInfo
 from ..utils import lo as mLo
 from ..utils import props as mProps
 from ..utils import table_helper as mTblHelper
-from ..cfg.config import Config  # singleton class.
-from ..events.event_singleton import _Events
-from ..events.draw_named_event import DrawNamedEvent
-from ..events.args.cancel_event_args import CancelEventArgs
-from ..exceptions import ex as mEx
-from ..utils.data_type.angle import Angle
-from ..utils.data_type.image_offset import ImageOffset
-from ..utils.data_type.intensity import Intensity
-from ..utils.data_type.poly_sides import PolySides
-from ..utils.kind.drawing_bitmap_kind import DrawingBitmapKind
-from ..utils.kind.drawing_gradient_kind import DrawingGradientKind
-from ..utils.kind.drawing_hatching_kind import DrawingHatchingKind
-from ..utils.kind.drawing_shape_kind import DrawingShapeKind
-from ..utils.kind.form_control_kind import FormControlKind
-from ..utils.kind.graphic_style_kind import GraphicStyleKind
-from ..utils.kind.presentation_kind import PresentationKind
+from ..utils.data_type.angle import Angle as Angle
+from ..utils.data_type.image_offset import ImageOffset as ImageOffset
+from ..utils.data_type.intensity import Intensity as Intensity
+from ..utils.data_type.poly_sides import PolySides as PolySides
+from ..utils.kind.drawing_bitmap_kind import DrawingBitmapKind as DrawingBitmapKind
+from ..utils.kind.drawing_gradient_kind import DrawingGradientKind as DrawingGradientKind
+from ..utils.kind.drawing_hatching_kind import DrawingHatchingKind as DrawingHatchingKind
+from ..utils.kind.drawing_shape_kind import DrawingShapeKind as DrawingShapeKind
+from ..utils.kind.form_control_kind import FormControlKind as FormControlKind
+from ..utils.kind.glue_points_kind import GluePointsKind as GluePointsKind
+from ..utils.kind.graphic_style_kind import GraphicStyleKind as GraphicStyleKind
+from ..utils.kind.presentation_kind import PresentationKind as PresentationKind
+from ..utils.kind.shape_comb_kind import ShapeCombKind as ShapeCombKind
 from ..utils.type_var import PathOrStr
 
-from ooo.dyn.awt.gradient import Gradient
-from ooo.dyn.awt.gradient_style import GradientStyle
-from ooo.dyn.awt.point import Point as PointStruct
-from ooo.dyn.awt.size import Size as SizeStruct
-from ooo.dyn.drawing.connector_type import ConnectorType
-from ooo.dyn.drawing.fill_style import FillStyle
-from ooo.dyn.drawing.glue_point2 import GluePoint2
-from ooo.dyn.drawing.homogen_matrix3 import HomogenMatrix3
-from ooo.dyn.drawing.line_dash import LineDash
-from ooo.dyn.drawing.line_style import LineStyle as LineStyleEnum
-from ooo.dyn.drawing.poly_polygon_bezier_coords import PolyPolygonBezierCoords
-from ooo.dyn.drawing.polygon_flags import PolygonFlags as PolygonFlagsEnum
+from ooo.dyn.awt.gradient import Gradient as Gradient
+from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
+from ooo.dyn.awt.point import Point as Point
+from ooo.dyn.awt.size import Size as Size
+from ooo.dyn.drawing.connector_type import ConnectorType as ConnectorType
+from ooo.dyn.drawing.fill_style import FillStyle as FillStyle
+from ooo.dyn.drawing.glue_point2 import GluePoint2 as GluePoint2
+from ooo.dyn.drawing.homogen_matrix3 import HomogenMatrix3 as HomogenMatrix3
+from ooo.dyn.drawing.line_dash import LineDash as LineDash
+from ooo.dyn.drawing.line_style import LineStyle as LineStyle
+from ooo.dyn.drawing.poly_polygon_bezier_coords import PolyPolygonBezierCoords as PolyPolygonBezierCoords
+from ooo.dyn.drawing.polygon_flags import PolygonFlags as PolygonFlags
 from ooo.dyn.lang.illegal_argument_exception import IllegalArgumentException
-from ooo.dyn.presentation.animation_speed import AnimationSpeed as AnimationSpeedEnum
-from ooo.dyn.presentation.fade_effect import FadeEffect as FadeEffectEnum
+from ooo.dyn.presentation.animation_speed import AnimationSpeed as AnimationSpeed
+from ooo.dyn.presentation.fade_effect import FadeEffect as FadeEffect
 from ooo.dyn.container.no_such_element_exception import NoSuchElementException
 from ooo.dyn.lang.index_out_of_bounds_exception import IndexOutOfBoundsException
 
@@ -96,25 +99,10 @@ from ooo.dyn.lang.index_out_of_bounds_exception import IndexOutOfBoundsException
 
 
 class Draw:
-    # region uno enums
-    AnimationSpeed = AnimationSpeedEnum
-    FadeEffect = FadeEffectEnum
-    LineStyle = LineStyleEnum
-    PolygonFlags = PolygonFlagsEnum
-    # endregion uno enums
-
-    # region uno struct
-    Point = PointStruct
-    Size = SizeStruct
-    # endregion uno struct
-
-    # region Enums
-    class GluePointsKind(IntEnum):
-        TOP = 0
-        RIGHT = 1
-        BOTTOM = 2
-        LEFT = 3
-
+    # region Constants
+    POLY_RADIUS: int = 20
+    """Defalult Poly Radius"""
+    # endregion Constants
     class LayoutKind(IntEnum):
         TITLE_SUB = 0
         TITLE_BULLETS = 1
@@ -155,12 +143,6 @@ class Draw:
         def __str__(self) -> str:
             return self.value
 
-    class ShapeCompKind(IntEnum):
-        MERGE = 0
-        INTERSECT = 1
-        SUBTRACT = 2
-        COMBINE = 3
-
     class SlideShowKind(IntEnum):
         """DrawPage slide show change constants"""
 
@@ -172,10 +154,6 @@ class Draw:
         """Animation effects run automatically, but the user must click on the page to change it"""
 
     # endregion Enums
-
-    # region Constants
-    POLY_RADIUS = 20
-    # endregion Constants
 
     # region open, create, save draw/impress doc
     @staticmethod
@@ -1317,7 +1295,7 @@ class Draw:
             raise mEx.DrawError("Error getting slide title") from e
 
     @staticmethod
-    def get_slide_size(slide: XDrawPage) -> Draw.Size:
+    def get_slide_size(slide: XDrawPage) -> Size:
         """
         Gets slide size
 
@@ -1336,7 +1314,7 @@ class Draw:
                 raise mEx.PropertySetMissingError("No slide properties found")
             width = int(props.getPropertyValue("Width"))
             height = int(props.getPropertyValue("Height"))
-            return Draw.Size(width, height)
+            return Size(width, height)
         except Exception as e:
             raise mEx.SizeError("Could not get page dimensions") from e
 
@@ -1959,8 +1937,8 @@ class Draw:
         # parameters are in mm units
         try:
             shape = mLo.Lo.create_instance_msf(XShape, f"com.sun.star.drawing.{shape_type}", raise_err=True)
-            shape.setPosition(Draw.Point(x * 100, y * 100))
-            shape.setSize(Draw.Size(width * 100, height * 100))
+            shape.setPosition(Point(x * 100, y * 100))
+            shape.setSize(Size(width * 100, height * 100))
             return shape
         except Exception as e:
             raise mEx.ShapeError(f'Unable to create shape "{shape_type}"') from e
@@ -2107,7 +2085,7 @@ class Draw:
         )
 
     @classmethod
-    def draw_polygon(cls, slide: XDrawPage, x: int, y: int, sides: PolySides, radius: int | None = None) -> XShape:
+    def draw_polygon(cls, slide: XDrawPage, x: int, y: int, sides: PolySides, radius: int = POLY_RADIUS) -> XShape:
         """
         Gets a polygon
 
@@ -2115,7 +2093,8 @@ class Draw:
             slide (XDrawPage): Slide
             x (int): Shape X position in mm units.
             y (int): Shape Y position in mm units.
-            radius (int): Shape radius in mm units. Defaults to the value of ``Draw.POLY_RADIUS``
+            sides (PolySides): Polygon Sides value from ``3`` to ``30``.
+            radius (int, optional): Shape radius in mm units. Defaults to the value of :py:attr:`.Draw.POLY_RADIUS`
 
         Raises:
             ShapeError: If error occurs.
@@ -2144,7 +2123,7 @@ class Draw:
             raise mEx.ShapeError("Error drawing polygon shape") from e
 
     @staticmethod
-    def gen_polygon_points(x: int, y: int, radius: int, sides: PolySides) -> Tuple[Draw.Point, ...]:
+    def gen_polygon_points(x: int, y: int, radius: int, sides: PolySides) -> Tuple[Point, ...]:
         """
         Generates a list of polygon points
 
@@ -2161,10 +2140,10 @@ class Draw:
             Tuple[Point, ...]: List of points.
         """
         try:
-            pts: List[Draw.Point] = []
+            pts: List[Point] = []
             angle_step = math.pi / sides.Value
             for i in range(sides.Value):
-                pt = Draw.Point(
+                pt = Point(
                     int(round(((x * 100) + (radius * 100)) * math.cos(i * 2 * angle_step))),
                     int(round(((y * 100) + (radius * 100)) * math.sin(i * 2 * angle_step))),
                 )
@@ -2175,7 +2154,7 @@ class Draw:
 
     @classmethod
     def draw_bezier(
-        cls, slide: XDrawPage, pts: Sequence[Draw.Point], flags: Sequence[Draw.PolygonFlags], is_open: bool
+        cls, slide: XDrawPage, pts: Sequence[Point], flags: Sequence[PolygonFlags], is_open: bool
     ) -> XShape:
         """
         Draws a bezier curve.
@@ -2202,8 +2181,8 @@ class Draw:
             # create space for one bezier shape
             coords = PolyPolygonBezierCoords()
             #       for shapes formed by one *or more* bezier polygons
-            coords.Coordinates = mTblHelper.TableHelper.make_2d_array(1, 1, Draw.Point())
-            coords.Flags = mTblHelper.TableHelper.make_2d_array(1, 1, Draw.PolygonFlags())
+            coords.Coordinates = mTblHelper.TableHelper.make_2d_array(1, 1, Point())
+            coords.Flags = mTblHelper.TableHelper.make_2d_array(1, 1)
             coords.Coordinates[0] = pts
             coords.Flags[0] = flags
 
@@ -2298,10 +2277,10 @@ class Draw:
             raise IndexError("xs and ys must be the same length")
 
         try:
-            pts: List[Draw.Point] = []
+            pts: List[Point] = []
             for x, y in zip(xs, ys):
                 # in 1/100 mm units
-                pts.append(Draw.Point(x * 100, y * 100))
+                pts.append(Point(x * 100, y * 100))
 
             # an array of Point arrays, one Point array for each line path
             line_paths = mTblHelper.TableHelper.make_2d_array(1, 1)
@@ -2402,8 +2381,8 @@ class Draw:
         slide: XDrawPage,
         shape1: XShape,
         shape2: XShape,
-        start_conn: Draw.GluePointsKind | None = None,
-        end_conn: Draw.GluePointsKind | None = None,
+        start_conn: GluePointsKind | None = None,
+        end_conn: GluePointsKind | None = None,
     ) -> XShape:
         """
         Add connector
@@ -2432,9 +2411,9 @@ class Draw:
                 Draw.set_shape_props(shape, EndShape=ConnectorType.CURVE)
         """
         if start_conn is None:
-            start_conn = Draw.GluePointsKind.RIGHT
+            start_conn = GluePointsKind.RIGHT
         if end_conn is None:
-            end_conn = Draw.GluePointsKind.LEFT
+            end_conn = GluePointsKind.LEFT
 
         try:
             xconnector = cls.add_shape(
@@ -2608,7 +2587,7 @@ class Draw:
         return shape.getShapeType() == "com.sun.star.drawing.GroupShape"
 
     @staticmethod
-    def combine_shape(doc: XComponent, shapes: XShapes, combine_op: Draw.ShapeCompKind) -> XShape:
+    def combine_shape(doc: XComponent, shapes: XShapes, combine_op: ShapeCombKind) -> XShape:
         """
         Combines one or more shapes.
 
@@ -2628,11 +2607,11 @@ class Draw:
             sel_supp = mLo.Lo.qi(XSelectionSupplier, mGui.GUI.get_current_controller(doc), True)
             sel_supp.select(shapes)
 
-            if combine_op == Draw.ShapeCompKind.INTERSECT:
+            if combine_op == ShapeCombKind.INTERSECT:
                 mLo.Lo.dispatch_cmd("Intersect")
-            elif combine_op == Draw.ShapeCompKind.SUBTRACT:
+            elif combine_op == ShapeCombKind.SUBTRACT:
                 mLo.Lo.dispatch_cmd("Substract")  # misspelt!
-            elif combine_op == Draw.ShapeCompKind.COMBINE:
+            elif combine_op == ShapeCombKind.COMBINE:
                 mLo.Lo.dispatch_cmd("Combine")
             else:
                 mLo.Lo.dispatch_cmd("Merge")
@@ -2671,8 +2650,8 @@ class Draw:
         """
         try:
             cshape = mLo.Lo.create_instance_msf(XControlShape, "com.sun.star.drawing.ControlShape", raise_err=True)
-            cshape.setSize(Draw.Size(width * 100, height * 100))
-            cshape.setPosition(Draw.Point(x * 100, y * 100))
+            cshape.setSize(Size(width * 100, height * 100))
+            cshape.setPosition(Point(x * 100, y * 100))
 
             cmodel = mLo.Lo.create_instance_msf(
                 XControlModel, f"com.sun.star.form.control.{shape_kind}", raise_err=True
@@ -2802,7 +2781,7 @@ class Draw:
 
     # region get/set drawing properties
     @staticmethod
-    def get_position(shape: XShape) -> Draw.Point:
+    def get_position(shape: XShape) -> Point:
         """
         Gets position in mm units
 
@@ -2818,12 +2797,12 @@ class Draw:
         try:
             pt = shape.getPosition()
             # convert to mm
-            return Draw.Point(round(pt.X / 100, round(pt.Y / 100)))
+            return Point(round(pt.X / 100, round(pt.Y / 100)))
         except Exception as e:
             raise mEx.PointError("Error getting position") from e
 
     @staticmethod
-    def get_size(shape: XShape) -> Draw.Size:
+    def get_size(shape: XShape) -> Size:
         """
         Gets Size in mm units
 
@@ -2839,12 +2818,12 @@ class Draw:
         try:
             sz = shape.getSize()
             # convert to mm
-            return Draw.Size(round(sz.Width / 100), round(sz.Height / 100))
+            return Size(round(sz.Width / 100), round(sz.Height / 100))
         except Exception as e:
             raise mEx.SizeError("Error getting Size") from e
 
     @staticmethod
-    def print_point(pt: Draw.Point) -> None:
+    def print_point(pt: Point) -> None:
         """
         Prints point to console in mm units
 
@@ -2857,7 +2836,7 @@ class Draw:
         print(f"  Point (mm): [{round(pt.X/100)}, {round(pt.Y/100)}]")
 
     @staticmethod
-    def print_size(sz: Draw.Size) -> None:
+    def print_size(sz: Size) -> None:
         """
         Prints size to console in mm units
 
@@ -2892,7 +2871,7 @@ class Draw:
 
     @overload
     @staticmethod
-    def set_position(shape: XShape, pt: Draw.Point) -> None:
+    def set_position(shape: XShape, pt: Point) -> None:
         ...
 
     @overload
@@ -2952,12 +2931,12 @@ class Draw:
 
         try:
             if count == 2:
-                # def set_position(shape: XShape, pt: Draw.Point)
-                pt_in = cast(Draw.Point, kargs[2])
-                pt = Draw.Point(pt_in.X * 100, pt_in.Y * 100)
+                # def set_position(shape: XShape, pt: Point)
+                pt_in = cast(Point, kargs[2])
+                pt = Point(pt_in.X * 100, pt_in.Y * 100)
             else:
                 # def set_position(shape: XShape, x:int, y: int)
-                pt = Draw.Point(kargs[2] * 100, kargs[3] * 100)
+                pt = Point(kargs[2] * 100, kargs[3] * 100)
             cast(XShape, kargs[1]).setPosition(pt)
         except Exception as e:
             raise mEx.ShapeError("Error setting position") from e
@@ -2968,7 +2947,7 @@ class Draw:
 
     @overload
     @staticmethod
-    def set_size(shape: XShape, sz: Draw.Size) -> None:
+    def set_size(shape: XShape, sz: Size) -> None:
         ...
 
     @overload
@@ -3027,12 +3006,12 @@ class Draw:
             kargs[ordered_keys[i]] = arg
         try:
             if count == 2:
-                # def set_size(shape: XShape, sz: Draw.Size)
-                sz_in = cast(Draw.Size, kargs[2])
-                sz = Draw.Size(sz_in.Width * 100, sz_in.Height * 100)
+                # def set_size(shape: XShape, sz: Size)
+                sz_in = cast(Size, kargs[2])
+                sz = Size(sz_in.Width * 100, sz_in.Height * 100)
             else:
                 # def set_size(shape: XShape, width:int, height: int)
-                sz = Draw.Size(kargs[2] * 100, kargs[3] * 100)
+                sz = Size(kargs[2] * 100, kargs[3] * 100)
             cast(XShape, kargs[1]).setSize(sz)
         except Exception as e:
             raise mEx.ShapeError("Error setting size") from e
@@ -3130,11 +3109,11 @@ class Draw:
                 ld.Dashes = 5
                 ld.DashLen = 200
                 ld.Distance = 200
-                props.setPropertyValue("LineStyle", Draw.LineStyle.DASH)
+                props.setPropertyValue("LineStyle", LineStyle.DASH)
                 props.setPropertyValue("LineDash", ld)
             else:
                 # switch to solid line
-                props.setPropertyValue("LineStyle", Draw.LineStyle.SOLID)
+                props.setPropertyValue("LineStyle", LineStyle.SOLID)
         except Exception as e:
             raise mEx.ShapeError("Error setting dashed line property") from e
 
@@ -3418,7 +3397,7 @@ class Draw:
             raise mEx.ShapeError(f'Could not set bitmap color using  "{fnm}"') from e
 
     @classmethod
-    def set_line_style(cls, shape: XShape, style: Draw.LineStyle) -> None:
+    def set_line_style(cls, shape: XShape, style: LineStyle) -> None:
         """
         Set the line style for a shape
 
@@ -3597,7 +3576,7 @@ class Draw:
                 slide=slide, shape_type=DrawingShapeKind.GRAPHIC_OBJECT_SHAPE, x=x, y=y, width=width, height=height
             )
             cls.set_image(im_shape, fnm)
-            cls.set_line_style(shape=im_shape, style=Draw.LineStyle.NONE)
+            cls.set_line_style(shape=im_shape, style=LineStyle.NONE)
             return im_shape
         except mEx.ShapeError:
             raise
@@ -3887,8 +3866,8 @@ class Draw:
     @staticmethod
     def set_transition(
         slide: XDrawPage,
-        fade_effect: Draw.FadeEffect,
-        speed: Draw.AnimationSpeed,
+        fade_effect: FadeEffect,
+        speed: AnimationSpeed,
         change: Draw.SlideShowKind,
         duration: int,
     ) -> None:
