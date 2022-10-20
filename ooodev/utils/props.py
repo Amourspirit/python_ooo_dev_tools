@@ -4,7 +4,7 @@
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 # region Imports
 from __future__ import annotations
-from typing import Iterable, List, Optional, Sequence, Tuple, TYPE_CHECKING, cast, overload
+from typing import Any, Iterable, List, Optional, Sequence, Tuple, TYPE_CHECKING, cast, overload
 import uno
 
 from com.sun.star.beans import PropertyAttribute  # const
@@ -383,6 +383,13 @@ class Props:
             MissingInterfaceError: if obj does not implement XPropertySet interface
             MissingInterfaceError: if from_obj does not implement XPropertySet interface
             MultiError: If unable to set a property
+
+        Returns:
+            None:
+
+        Note:
+            If ``MultiError`` occurs only the properties that errored are part of the error object.
+            The remainding properties will still be set.
         """
         ordered_keys = (1, 2, 3)
         kargs_len = len(kwargs)
@@ -418,7 +425,7 @@ class Props:
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
 
-        if mInfo.Info.is_type_interface(kargs[1], XPropertySet.__pyunointerface__):
+        if mInfo.Info.is_type_interface(kargs[1], "com.sun.star.beans.XPropertySet"):
             # set_properties(cls, prop_set: XPropertySet, names: Sequence[str], vals: Sequence[object]) -> None
             # set_properties(cls, prop_set: XPropertySet, from_props: XPropertySet) -> None
             prop_set = cast(XPropertySet, kargs[1])
@@ -436,14 +443,12 @@ class Props:
             return
 
         elif count == 2:
-            if mInfo.Info.is_type_interface(kargs[2], XPropertySet.__pyunointerface__):
+            if mInfo.Info.is_type_interface(kargs[2], "com.sun.star.beans.XPropertySet"):
                 # set_properties(cls, prop_set: XPropertySet, from_props: XPropertySet) -> None
                 from_props = cast(XPropertySet, kargs[2])
             else:
                 # set_properties(cls, obj: object, from_obj: object) -> None
-                from_props = mLo.Lo.qi(XPropertySet, kargs[1])
-                if from_props is None:
-                    raise mEx.MissingInterfaceError(XPropertySet)
+                from_props = mLo.Lo.qi(XPropertySet, kargs[1], True)
             cls._set_properties_from_props(prop_set=prop_set, from_props=from_props)
 
     @classmethod
@@ -453,7 +458,7 @@ class Props:
             try:
                 prop_set.setPropertyValue(name, vals[i])
             except PropertyVetoException as e:
-                errs.append(mEx.PropertyError(f"Could not set readonly-property {name}: {e}", e))
+                errs.append(mEx.PropertySetError(f"Could not set readonly-property {name}: {e}", e))
             except Exception as e:
                 errs.append(Exception(f"Cound ont set property {name}: {e}", e))
         if len(errs) > 0:
@@ -478,6 +483,73 @@ class Props:
             raise mEx.MultiError(errs)
 
     # endregion set_properties()
+
+    @staticmethod
+    def set(obj: object, **kwargs) -> None:
+        """
+        Set one or more properties.
+
+        Args:
+            obj (object): object to set properties for. Must support ``XPropertySet``
+            **kwargs: Variable length Key value pairs used to set properties.
+
+        Raises:
+            MissingInterfaceError: if obj does not implement XPropertySet interface
+            MultiError: If unable to set a property
+
+        Returns:
+            None:
+
+        Note:
+            If ``MultiError`` occurs only the properties that errored are part of the error object.
+            The remainding properties will still be set.
+        """
+        if mInfo.Info.is_type_interface(obj, XPropertySet.__pyunointerface__):
+            ps = cast(XPropertySet, obj)
+        else:
+            ps = mLo.Lo.qi(XPropertySet, obj, True)
+        errs = []
+        for key, value in kwargs.items():
+            try:
+                ps.setPropertyValue(key, value)
+            except PropertyVetoException as e:
+                errs.append(mEx.PropertySetError(f"Could not set readonly-property {key}: {e}", e))
+            except Exception as e:
+                errs.append(Exception(f"Cound ont set property {key}: {e}", e))
+        if len(errs) > 0:
+            raise mEx.MultiError(errs)
+
+    @staticmethod
+    def get(obj: object, name: str) -> Any:
+        """
+        Gets a property value from an object.
+        ``obj`` must support ``XPropertySet`` interface
+
+        Args:
+            obj (object): Object to get property from.
+            name (str): Property Name.
+
+        Raises:
+            PropertyNotFoundError: If Property is not found
+            PropertyError: If any other error occurs.
+
+        Returns:
+            Any: Property value
+        """
+        try:
+            if mInfo.Info.is_type_interface(obj, "com.sun.star.beans.XPropertySet"):
+                ps = cast(XPropertySet, obj)
+            else:
+                ps = mLo.Lo.qi(XPropertySet, obj, True)
+            val = ps.getPropertyValue(name)
+            if val is None:
+                raise mEx.PropertyNotFoundError(name)
+            return val
+        except mEx.PropertyNotFoundError:
+            raise
+        except Exception as e:
+            raise mEx.PropertyError(f'Error getting property: "{name}"') from e
+
     # endregion ---------------- set properties -----------------------
 
     # region ------------------- get properties ------------------------
