@@ -255,8 +255,8 @@ class Gallery(metaclass=StaticProperty):
             print(f"  Path: {path}")
         except mEx.PropertyNotFoundError:
             print("  URL: Property NOT Found")
-            print("  Fnm: Unable to compute to do no URL Property")
-            print("  Path: Unable to compute to do no URL Property")
+            print("  Fnm: Unable to compute due to no URL Property")
+            print("  Path: Unable to compute due do no URL Property")
         try:
             print(f'  Title: "{mProps.Props.get(item, "Title")}"')
         except mEx.PropertyNotFoundError:
@@ -315,12 +315,13 @@ class Gallery(metaclass=StaticProperty):
         return cls._gallery_dir
 
 
-class _GalleryManager(metaclass=StaticProperty):
+class _GalleryManager:
     """Manages clearing and resetting for Gallery static class"""
 
     @staticmethod
     def on_disposed(source: Any, event: EventObject) -> None:
         # Clean up static properties that may have been dynamically created.
+        # print("Gallery Static Property Cleanup")
         dattrs = ("_gallery_dir",)
         for attr in dattrs:
             if hasattr(Gallery, attr):
