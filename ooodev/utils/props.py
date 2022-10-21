@@ -15,6 +15,7 @@ from com.sun.star.ui import ItemType  # const
 from com.sun.star.ui import ItemStyle  # const
 from com.sun.star.uno import RuntimeException
 from com.sun.star.beans import PropertyVetoException
+from com.sun.star.beans import UnknownPropertyException
 from com.sun.star.container import XIndexAccess
 
 
@@ -458,9 +459,11 @@ class Props:
             try:
                 prop_set.setPropertyValue(name, vals[i])
             except PropertyVetoException as e:
-                errs.append(mEx.PropertySetError(f"Could not set readonly-property {name}: {e}", e))
+                errs.append(mEx.PropertySetError(f'Could not set readonly-property "{name}"', e))
+            except UnknownPropertyException as e:
+                errs.append(mEx.PropertyNotFoundError(name, e))
             except Exception as e:
-                errs.append(Exception(f"Cound ont set property {name}: {e}", e))
+                errs.append(Exception(f'Could not set property "{name}"', e))
         if len(errs) > 0:
             raise mEx.MultiError(errs)
 
@@ -477,8 +480,12 @@ class Props:
         for itm in nms:
             try:
                 prop_set.setPropertyValue(itm, cls.get_property(from_props, itm))
+            except PropertyVetoException as e:
+                errs.append(mEx.PropertySetError(f'Could not set readonly-property "{itm}"', e))
+            except UnknownPropertyException as e:
+                errs.append(mEx.PropertyNotFoundError(itm, e))
             except Exception as e:
-                errs.append(Exception(f"Could not set property '{itm}': {e}", e))
+                errs.append(Exception(f'Could not set property "{itm}"', e))
         if len(errs) > 0:
             raise mEx.MultiError(errs)
 
@@ -504,7 +511,9 @@ class Props:
             If ``MultiError`` occurs only the properties that errored are part of the error object.
             The remainding properties will still be set.
         """
-        if mInfo.Info.is_type_interface(obj, XPropertySet.__pyunointerface__):
+        if len(kwargs) == 0:
+            return
+        if mInfo.Info.is_type_interface(obj, "com.sun.star.beans.XPropertySet"):
             ps = cast(XPropertySet, obj)
         else:
             ps = mLo.Lo.qi(XPropertySet, obj, True)
@@ -513,9 +522,11 @@ class Props:
             try:
                 ps.setPropertyValue(key, value)
             except PropertyVetoException as e:
-                errs.append(mEx.PropertySetError(f"Could not set readonly-property {key}: {e}", e))
+                errs.append(mEx.PropertySetError(f'Could not set readonly-property "{key}"', e))
+            except UnknownPropertyException as e:
+                errs.append(mEx.PropertyNotFoundError(key, e))
             except Exception as e:
-                errs.append(Exception(f"Cound ont set property {key}: {e}", e))
+                errs.append(Exception(f'Could not set property "{key}"', e))
         if len(errs) > 0:
             raise mEx.MultiError(errs)
 

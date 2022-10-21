@@ -300,6 +300,7 @@ class Draw:
             pages = supplier.getDrawPages()
             if pages is None:
                 raise mEx.DrawPageMissingError("Draw page supplier returned no pages")
+            return pages
         except mEx.DrawPageMissingError:
             raise
         except Exception as e:
@@ -350,7 +351,7 @@ class Draw:
     @staticmethod
     def _get_slide_slides(slides: XDrawPages, idx: int) -> XDrawPage:
         try:
-            slide = mLo.Lo.qi(XDrawPage, slides.getByIndex(idx))
+            slide = mLo.Lo.qi(XDrawPage, slides.getByIndex(idx), True)
             return slide
         except Exception as e:
             raise mEx.DrawError(f"Could not get slide: {idx}") from e
@@ -398,7 +399,7 @@ class Draw:
                 if key in kwargs:
                     ka[1] = kwargs[key]
                     break
-            ka[2] = ka.get("idx", None)
+            ka[2] = kwargs.get("idx", None)
             return ka
 
         if count != 2:
@@ -430,7 +431,7 @@ class Draw:
         num_slides = cls.get_slides_count
         for i in range(num_slides):
             slide = cls.get_slide(doc, i)
-            nm = str(mProps.Props.get_property(obj=slide, name="LinkDisplayName")).casefold()
+            nm = str(mProps.Props.get(slide, "LinkDisplayName")).casefold()
             if nm == slide_name:
                 return i
         return -1
@@ -963,7 +964,7 @@ class Draw:
             int: Page number
         """
         try:
-            return int(mProps.Props.get_property(slide, "Number"))
+            return int(mProps.Props.get(slide, "Number"))
         except Exception as e:
             raise mEx.DrawError("Error getting slide number") from e
 
@@ -1244,7 +1245,7 @@ class Draw:
 
             for i in range(master_pgs.getCount()):
                 pg = mLo.Lo.qi(XDrawPage, master_pgs.getByIndex(i), True)
-                nm = str(mProps.Props.get_property(obj=pg, name="LinkDisplayName"))
+                nm = str(mProps.Props.get(pg, "LinkDisplayName"))
                 if style == nm:
                     return pg
             raise mEx.DrawPageMissingError(f'Could not find master slide with style of: "{style}"')
@@ -1360,7 +1361,7 @@ class Draw:
         try:
             # Add text to the slide page by treating it as a title page, which
             # has two text shapes: one for the title, the other for a subtitle
-            mProps.Props.set_property(obj=slide, name="Layout", value=int(Draw.LayoutKind.TITLE_SUB))
+            mProps.Props.set(slide, Layout=int(Draw.LayoutKind.TITLE_SUB))
 
             # add the title text to the title shape
             xs = cls.find_shape_by_type(slide=slide, shape_type=Draw.NameSpaceKind.TITLE_TEXT)
@@ -1393,7 +1394,7 @@ class Draw:
             XText: Text Object
         """
         try:
-            mProps.Props.set_property(obj=slide, name="Layout", value=int(Draw.LayoutKind.TITLE_BULLETS))
+            mProps.Props.set(slide, Layout=Draw.LayoutKind.TITLE_BULLETS.value)
 
             # add the title text to the title shape
             xs = cls.find_shape_by_type(slide=slide, shape_type=Draw.NameSpaceKind.TITLE_TEXT)
@@ -1429,7 +1430,7 @@ class Draw:
             bulls_txt_end = mLo.Lo.qi(XTextRange, bulls_txt, True).getEnd()
 
             # set the bullet's level
-            mProps.Props.set_property(obj=bulls_txt_end, name="NumberingLevel", value=level)
+            mProps.Props.set(bulls_txt_end, NumberingLevel=level)
 
             # add the text
             bulls_txt_end.setString(f"{text}\n")
@@ -1452,7 +1453,7 @@ class Draw:
             None:
         """
         try:
-            mProps.Props.set_property(obj=slide, name="Layout", value=int(Draw.LayoutKind.TITLE_ONLY))
+            mProps.Props.set(slide, Layout=Draw.LayoutKind.TITLE_ONLY.value)
 
             # add the text to the title shape
             xs = cls.find_shape_by_type(slide=slide, shape_type=Draw.NameSpaceKind.TITLE_TEXT)
@@ -1476,7 +1477,7 @@ class Draw:
             None:
         """
         try:
-            mProps.Props.set_property(obj=slide, name="Layout", value=str(Draw.LayoutKind.BLANK))
+            mProps.Props.set(slide, Layout=Draw.LayoutKind.BLANK.value)
         except Exception as e:
             raise mEx.DrawError("Error inserting blank slide") from e
 
@@ -1699,7 +1700,7 @@ class Draw:
                 raise mEx.ShapeMissingError("No shapes were found in the draw page")
 
             for shape in shapes:
-                nm = str(mProps.Props.get_property(obj=shape, name="Name")).casefold()
+                nm = str(mProps.Props.get(shape, "Name")).casefold()
                 if nm == sn:
                     return shape
 
@@ -1778,7 +1779,7 @@ class Draw:
             None:
         """
         try:
-            mProps.Props.set_property(obj=shape, name="ZOrder", value=order)
+            mProps.Props.set(shape, ZOrder=order)
         except Exception as e:
             raise mEx.DrawError("Failed to set z-order") from e
 
@@ -1797,7 +1798,7 @@ class Draw:
             int: Z-Order
         """
         try:
-            return int(mProps.Props.get_property(shape, "ZOrder"))
+            return int(mProps.Props.get(shape, "ZOrder"))
         except Exception as e:
             raise mEx.DrawError("Failed to get z-order") from e
 
@@ -2007,8 +2008,6 @@ class Draw:
         try:
             cls.warns_position(slide=slide, x=x, y=y)
             shape = cls.make_shape(shape_type=shape_type, x=x, y=y, width=width, height=height)
-            if shape is None:
-                return None
             slide.add(shape)
             return shape
         except mEx.ShapeError:
@@ -2118,7 +2117,7 @@ class Draw:
             pts = cls.gen_polygon_points(x=x, y=y, radius=radius, sides=sides)
             # could be many polygons pts in this 2D array
             polys = [pts]
-            mProps.Props.set_property(polygon, name="PolyPolygon", value=polys)
+            mProps.Props.set(polygon, PolyPolygon=polys)
         except mEx.ShapeError:
             raise
         except Exception as e:
@@ -2188,7 +2187,7 @@ class Draw:
             coords.Coordinates[0] = pts
             coords.Flags[0] = flags
 
-            mProps.Props.set_property(obj=bezier_poly, name="PolyPolygonBezier", value=coords)
+            mProps.Props.set(bezier_poly, PolyPolygonBezier=coords)
             return bezier_poly
         except mEx.ShapeError:
             raise
@@ -2292,7 +2291,7 @@ class Draw:
             poly_line = cls.add_shape(
                 slide=slide, shape_type=DrawingShapeKind.POLY_LINE_SHAPE, x=0, y=0, width=0, height=0
             )
-            mProps.Props.set_property(obj=poly_line, name="PolyPolygon", value=line_paths)
+            mProps.Props.set(poly_line, PolyPolygon=line_paths)
             return poly_line
         except mEx.ShapeError:
             raise
@@ -2367,10 +2366,9 @@ class Draw:
             cursor = txt.createTextCursor()
             cursor.gotoEnd(False)
             if font_size > 0:
-                mProps.Props.set_property(obj=cursor, name="CharHeight", value=font_size)
+                mProps.Props.set(cursor, CharHeight=font_size)
 
-            for k, v in props.items():
-                mProps.Props.set_property(obj=cursor, name=k, value=v)
+            mProps.Props.set(cursor, **props)
 
             rng = mLo.Lo.qi(XTextRange, cursor, True)
             rng.setString(msg)
@@ -2499,7 +2497,7 @@ class Draw:
             shape = cls.add_shape(
                 slide=slide, shape_type=DrawingShapeKind.OLE2_SHAPE, x=x, y=y, width=width, height=height
             )
-            mProps.Props.set_property(obj=shape, name="CLSID", value=str(mLo.Lo.CLSID.CHART))  # a chart
+            mProps.Props.set(shape, CLSID=mLo.Lo.CLSID.CHART.value)  # a chart
             return shape
         except mEx.ShapeError:
             raise
@@ -2529,11 +2527,16 @@ class Draw:
             shape = cls.add_shape(
                 slide=slide, shape_type=DrawingShapeKind.OLE2_SHAPE, x=x, y=y, width=width, height=height
             )
-            cls.set_shape_props(shape, name="CLSID", value=str(mLo.Lo.CLSID.MATH))  # a formula
+            cls.set_shape_props(shape, CLSID=str(mLo.Lo.CLSID.MATH))  # a formula
 
-            model = mLo.Lo.qi(XModel, mProps.Props.get_property(shape, "Model"), True)
+            model = mLo.Lo.qi(XModel, mProps.Props.get(shape, "Model"), True)
             # mInfo.Info.show_services(obj_name="OLE2Shape Model", obj=model)
-            mProps.Props.set_property(obj=model, name="Formula", value=formula)
+            mProps.Props.set(model, Formula=formula)
+
+            # for some reason setting model Formula here cause the shape size to be blown out.
+            # resetting size and positon corrects the issue.
+            cls.set_size(shape, Size(width, height))
+            cls.set_position(shape, Point(x, y))
             return shape
         except mEx.ShapeError:
             raise
@@ -2864,7 +2867,7 @@ class Draw:
         if shape is None:
             print("The shape is null")
             return
-        print(f'Shape Name: {mProps.Props.get_property(obj=shape, name="Name")}')
+        print(f'Shape Name: {mProps.Props.get(shape, "Name")}')
         print(f"  Type: {shape.getShapeType()}")
         cls.print_point(shape.getPosition())
         cls.print_size(shape.getSize())
@@ -3038,7 +3041,7 @@ class Draw:
         """
         try:
             style = mLo.Lo.qi(XStyle, graphic_styles.getByName(str(style_name)), True)
-            mProps.Props.set_property(shape, "Style", style)
+            mProps.Props.set(shape, Style=style)
         except Exception as e:
             raise mEx.DrawError(f'Could not set the style to "{style_name}"') from e
 
@@ -3176,7 +3179,7 @@ class Draw:
             None:
         """
         try:
-            mProps.Props.set_property(shape, "FillTransparence", level.Value)
+            mProps.Props.set(shape, FillTransparence=level.Value)
         except Exception as e:
             raise mEx.ShapeError("Error setting transparency") from e
 
@@ -3477,7 +3480,7 @@ class Draw:
             Angle: Rotation angle.
         """
         try:
-            r_angle = int(mProps.Props.get_property(shape, "RotateAngle"))
+            r_angle = int(mProps.Props.get(shape, "RotateAngle"))
             return Angle(round(r_angle / 100))
         except Exception as e:
             raise mEx.ShapeError("Error getting shape rotation") from e
@@ -3504,7 +3507,7 @@ class Draw:
         #    -sin(t)  cos(t) y
         #       0       0    1
         try:
-            return mProps.Props.get_property(shape, "Transformation")
+            return mProps.Props.get(shape, "Transformation")
         except Exception as e:
             raise mEx.ShapeError("Error getting shape transformation") from e
 
@@ -3680,7 +3683,7 @@ class Draw:
         try:
             graphic = mImgLo.ImagesLo.load_graphic_file(fnm)
 
-            mProps.Props.set_property(shape, "Graphic", graphic)
+            mProps.Props.set(shape, Graphic=graphic)
         except Exception as e:
             raise mEx.ShapeError(f'Error setting shape image to: "{fnm}"') from e
 
@@ -3980,7 +3983,10 @@ class Draw:
         """
         try:
             node_supp = mLo.Lo.qi(XAnimationNodeSupplier, slide, True)
-            return node_supp.getAnimationNode()
+            result = node_supp.getAnimationNode()
+            if result is None:
+                raise mEx.UnKnownError("None Value: getAnimationNode() returned None Value")
+            return result
         except Exception as e:
             raise mEx.DrawPageError("Error getting animation node") from e
 
@@ -3997,7 +4003,8 @@ class Draw:
             props (Any): Key value pairs of property name and property value
 
         Raises:
-            PropertySetError: If error occurs setting a property
+            MissingInterfaceError: if obj does not implement XPropertySet interface
+            MultiError: If unable to set a property
 
         Returns:
             None:
@@ -4007,10 +4014,6 @@ class Draw:
 
                 Draw.set_shape_props(shape, Loop=True, MediaURL=FileIO.fnm_to_url(fnm))
         """
-        for k, v in props.items():
-            try:
-                mProps.Props.set_property(shape, k, v)
-            except Exception as e:
-                raise mEx.PropertySetError(f'Error setting shape property for "{k}"') from e
+        mProps.Props.set(shape, **props)
 
     # endregion helper

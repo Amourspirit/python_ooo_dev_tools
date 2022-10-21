@@ -443,7 +443,7 @@ class Info(metaclass=StaticProperty):
             raise ValueError(f"Could not find paths for: {setting}") from e
 
     @classmethod
-    def get_dirs(cls, setting: str) -> List[str]:
+    def get_dirs(cls, setting: str) -> List[Path]:
         """
         Gets dirs paths from settings
 
@@ -454,7 +454,7 @@ class Info(metaclass=StaticProperty):
             List[str]: List of paths
 
         See Also:
-            :py:meth:`~Info.get_paths`
+            :py:meth:`~.Info.get_paths`
 
             `Wiki Path Settings <https://wiki.openoffice.org/w/index.php?title=Documentation/DevGuide/OfficeDev/Path_Settings>`_
         """
@@ -466,10 +466,10 @@ class Info(metaclass=StaticProperty):
         paths_arr = paths.split(";")
         if len(paths_arr) == 0:
             mLo.Lo.print(f"Cound not split paths for '{setting}'")
-            return [str(mFileIO.FileIO.uri_to_path(paths))]
+            return [mFileIO.FileIO.uri_to_path(paths)]
         dirs = []
         for el in paths_arr:
-            dirs.append(str(mFileIO.FileIO.uri_to_path(el)))
+            dirs.append(mFileIO.FileIO.uri_to_path(el))
         return dirs
 
     @classmethod
@@ -506,7 +506,7 @@ class Info(metaclass=StaticProperty):
             raise ValueError("Unable to get office dir") from e
 
     @classmethod
-    def get_gallery_dir(cls) -> str:
+    def get_gallery_dir(cls) -> Path:
         """
         Get the first directory that contain the Gallery database and multimedia files.
 
@@ -514,7 +514,7 @@ class Info(metaclass=StaticProperty):
             ValueError if unable to obtain gallery dir.
 
         Returns:
-            str: Gallery Dir
+            Path: Gallery Dir
 
         See Also:
             :ref:`ch03`

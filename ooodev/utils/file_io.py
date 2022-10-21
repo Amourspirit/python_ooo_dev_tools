@@ -35,7 +35,7 @@ _UTIL_PATH = str(Path(__file__).parent)
 
 
 class FileIO:
-    
+
     # region ------------- file path methods ---------------------------
     @staticmethod
     def get_utils_folder() -> str:
@@ -71,7 +71,7 @@ class FileIO:
 
         Args:
             url (str): url to convert
-        
+
         Raises:
             Exception: If unable to parse url.
 
@@ -84,7 +84,6 @@ class FileIO:
             return final_path
         except Exception as e:
             raise Exception(f"Could not parse '{url}'")
-
 
     @classmethod
     def fnm_to_url(cls, fnm: PathOrStr) -> str:
@@ -101,7 +100,7 @@ class FileIO:
             str: Converted path if conversion is successful; Otherwise None.
         """
         try:
-            p =  cls.get_absolute_path(fnm)
+            p = cls.get_absolute_path(fnm)
             return p.as_uri()
         except Exception as e:
             raise Exception("Unable to convert '{fnm}'") from e
@@ -119,11 +118,11 @@ class FileIO:
         """
         # converts 'file:///C:/Program%20Files/LibreOffice/program/../program/addin'
         # into: 'C:\\Program%20Files\\LibreOffice\\program\\addin'
-        p = Path(uri_fnm)
+        pr = urlparse(str(uri_fnm))
+        p = Path(pr.path)
         if p.is_absolute():
             return p
         return p.absolute().resolve()
-        
 
     @staticmethod
     def get_file_names(dir: PathOrStr) -> List[str]:
@@ -161,7 +160,7 @@ class FileIO:
             mLo.Lo.print(f"Unable to get name for '{path}'")
             mLo.Lo.print(f"    {e}")
         return ""
-    
+
     # endregion ---------- file path methods ---------------------------
 
     # region ------------- file creation / deletion --------------------
@@ -245,10 +244,10 @@ class FileIO:
         return True
 
     @classmethod
-    def delete_files(cls, *fnms:PathOrStr) -> bool:
+    def delete_files(cls, *fnms: PathOrStr) -> bool:
         """
         Deletes files
-        
+
         Args:
             fnms (str): one or more files to delete
 
@@ -441,4 +440,5 @@ class FileIO:
             mLo.Lo.print()
         except Exception as e:
             mLo.Lo.print(e)
+
     # endregion ---------- switch to Python's zip APIs -----------------

@@ -1765,31 +1765,15 @@ class Lo(metaclass=StaticProperty):
         except CloseVetoException as e:
             raise Exception("Close was vetoed") from e
 
+    # region close_doc()
     @overload
     @classmethod
     def close_doc(cls, doc: object) -> None:
-        """
-        Closes document.
-
-        Args:
-            doc (XCloseable): Closeable document
-        """
         ...
 
     @overload
     @classmethod
     def close_doc(cls, doc: object, deliver_ownership: bool) -> None:
-        """
-        Closes document.
-
-        Args:
-            doc (XCloseable): Closeable document
-            deliver_ownership (bool): True delegates the ownership of this closing object to
-                anyone which throw the CloseVetoException.
-
-        Raises:
-            MissingInterfaceError: if doc does not have XCloseable interface
-        """
         ...
 
     @classmethod
@@ -1799,16 +1783,22 @@ class Lo(metaclass=StaticProperty):
 
         Args:
             doc (XCloseable): Close-able document
-            deliver_ownership (bool): True delegates the ownership of this closing object to
-                anyone which throw the CloseVetoException.
-                This new owner has to close the closing object again if his still running
-                processes will be finished.
-                False let the ownership at the original one which called the close() method.
-                They must react for possible CloseVetoExceptions such as when document needs saving
-                and try it again at a later time. This can be useful for a generic UI handling.
+            deliver_ownership (bool): If ``True`` delegates the ownership of this closing object to
+                anyone which throw the CloseVetoException. Default is ``False``.
 
         Raises:
             MissingInterfaceError: if doc does not have XCloseable interface
+
+        Returns:
+            None:
+
+        Note:
+            If ``deliver_ownership`` is ``True`` then new owner has to close the closing object again if his still running
+            processes will be finished.
+
+            ``False`` let the ownership at the original one which called the close() method.
+            They must react for possible CloseVetoExceptions such as when document needs saving
+            and try it again at a later time. This can be useful for a generic UI handling.
 
         Attention:
             :py:meth:`~.utils.lo.Lo.close` method is called along with any of its events.
@@ -1819,6 +1809,8 @@ class Lo(metaclass=StaticProperty):
             cls._doc = None
         except DisposedException as e:
             raise Exception("Document close failed since Office link disposed") from e
+
+    # endregion close_doc()
 
     # ================= initialization via Addon-supplied context ====================
 
