@@ -10,7 +10,7 @@ import glob
 import zipfile
 from pathlib import Path
 from urllib.parse import urlparse
-from typing import List, TYPE_CHECKING
+from typing import List, TYPE_CHECKING, overload
 import uno
 from com.sun.star.io import XActiveDataSink
 from com.sun.star.io import XTextInputStream
@@ -105,13 +105,25 @@ class FileIO:
         except Exception as e:
             raise Exception("Unable to convert '{fnm}'") from e
 
+    # region uri_to_path()
+    @overload
     @classmethod
     def uri_to_path(cls, uri_fnm: str) -> Path:
+        ...
+
+    @overload
+    @classmethod
+    def uri_to_path(cls, uri_fnm: str, ensure_absolute: bool) -> Path:
+        ...
+
+    @classmethod
+    def uri_to_path(cls, uri_fnm: str, ensure_absolute: bool = True) -> Path:
         """
         Converts uri file to path.
 
         Args:
             uri_fnm (str): URI to convert
+            ensure_absolute (bool): If ``True`` then ensures that the return path is absolute. Default is ``True``
 
         Returns:
             Path: Converted URI as path.
@@ -120,9 +132,13 @@ class FileIO:
         # into: 'C:\\Program%20Files\\LibreOffice\\program\\addin'
         pr = urlparse(str(uri_fnm))
         p = Path(pr.path)
+        if not ensure_absolute:
+            return p
         if p.is_absolute():
             return p
         return p.absolute().resolve()
+
+    # endregion uri_to_path()
 
     @staticmethod
     def get_file_names(dir: PathOrStr) -> List[str]:

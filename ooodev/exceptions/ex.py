@@ -407,3 +407,25 @@ class ServiceNotSupported(ServiceError):
     def __repr__(self) -> str:
         service_str = ", ".join([f'"{s}"' for s in self.service])
         return f'ServiceNotSupported({service_str}, message="{self.message}")'
+
+
+class GalleryError(Exception):
+    """Generic Gallery Error"""
+
+    pass
+
+
+class GalleryTypeError(GalleryError):
+    """
+    Error when wrong gallery type is used.
+
+    Such as when trying to extract a ``XGraphic`` from a ``XGalleryItem`` that is not a graphic.
+    """
+
+    pass
+
+
+class GalleryNotFoundError(GalleryError):
+    """Error when Gallery Item is not found"""
+
+    pass
