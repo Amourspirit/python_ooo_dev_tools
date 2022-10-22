@@ -1,6 +1,6 @@
 from ooodev.utils.file_io import FileIO
 from pathlib import Path
-from basic_show import BasicShow
+from auto_show import AutoShow, FadeEffect
 
 # region maind()
 def main() -> int:
@@ -11,8 +11,11 @@ def main() -> int:
         p = FileIO.get_absolute_path(fnm)
     if not p.exists():
         raise FileNotFoundError("Unable to find path to algs.odp")
-    basic_show = BasicShow(fnm)
-    basic_show.show()
+    auto_show = AutoShow(fnm)
+    # auto_show.duration = 2
+    # auto_show.fade_effect = FadeEffect.MOVE_FROM_LEFT
+    # auto_show.end_delay = 3
+    auto_show.show()
     return 0
 
 

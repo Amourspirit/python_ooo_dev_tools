@@ -290,8 +290,8 @@ class Chart:
                     break
             if count == 6:
                 return ka
-            ka[7] = ka.get("height", None)
-            ka[8] = ka.get("diagram_name", None)
+            ka[7] = kwargs.get("height", None)
+            ka[8] = kwargs.get("diagram_name", None)
             return ka
 
         if not count in (6, 8):
@@ -527,7 +527,7 @@ class Chart:
                     break
             if count == 1:
                 return ka
-            ka[2] = ka.get("chart_name", None)
+            ka[2] = kwargs.get("chart_name", None)
             return ka
 
         if not count in (1, 2):

@@ -885,7 +885,7 @@ class Draw:
                 if key in kwargs:
                     ka[1] = kwargs[key]
                     break
-            ka[2] = ka.get("page", None)
+            ka[2] = kwargs.get("page", None)
             return ka
 
         if count != 2:
@@ -1117,7 +1117,7 @@ class Draw:
                     break
             if count == 1:
                 return ka
-            ka[2] = ka.get("idx", None)
+            ka[2] = kwargs.get("idx", None)
             return ka
 
         if count not in (1, 2):
@@ -1300,7 +1300,7 @@ class Draw:
     @staticmethod
     def get_slide_size(slide: XDrawPage) -> Size:
         """
-        Gets slide size
+        Gets size of the given slide page (in mm units)
 
         Args:
             slide (XDrawPage): Slide
@@ -1317,7 +1317,7 @@ class Draw:
                 raise mEx.PropertySetMissingError("No slide properties found")
             width = int(props.getPropertyValue("Width"))
             height = int(props.getPropertyValue("Height"))
-            return Size(width, height)
+            return Size(round(width / 100), round(height / 100))
         except Exception as e:
             raise mEx.SizeError("Could not get page dimensions") from e
 
@@ -2085,6 +2085,17 @@ class Draw:
             slide=slide, shape_type=DrawingShapeKind.ELLIPSE_SHAPE, x=x, y=y, width=width, height=height
         )
 
+    # region draw_polygon()
+    @overload
+    @classmethod
+    def draw_polygon(cls, slide: XDrawPage, x: int, y: int, sides: PolySides) -> XShape:
+        ...
+
+    @overload
+    @classmethod
+    def draw_polygon(cls, slide: XDrawPage, x: int, y: int, sides: PolySides, radius: int) -> XShape:
+        ...
+
     @classmethod
     def draw_polygon(cls, slide: XDrawPage, x: int, y: int, sides: PolySides, radius: int = POLY_RADIUS) -> XShape:
         """
@@ -2116,12 +2127,17 @@ class Draw:
             )
             pts = cls.gen_polygon_points(x=x, y=y, radius=radius, sides=sides)
             # could be many polygons pts in this 2D array
-            polys = [pts]
-            mProps.Props.set(polygon, PolyPolygon=polys)
+            polys = (pts,)
+            prop_set = mLo.Lo.qi(XPropertySet, polygon, raise_err=True)
+            polyseq = uno.Any("[][]com.sun.star.awt.Point", polys)
+            uno.invoke(prop_set, "setPropertyValue", ("PolyPolygon", polyseq))
+            return polygon
         except mEx.ShapeError:
             raise
         except Exception as e:
             raise mEx.ShapeError("Error drawing polygon shape") from e
+
+    # endregion draw_polygon()
 
     @staticmethod
     def gen_polygon_points(x: int, y: int, radius: int, sides: PolySides) -> Tuple[Point, ...]:
@@ -2138,15 +2154,15 @@ class Draw:
             DrawError: If Error occurs
 
         Returns:
-            Tuple[Point, ...]: List of points.
+            Tuple[Point, ...]: Tuple of points.
         """
         try:
             pts: List[Point] = []
             angle_step = math.pi / sides.Value
             for i in range(sides.Value):
                 pt = Point(
-                    int(round(((x * 100) + (radius * 100)) * math.cos(i * 2 * angle_step))),
-                    int(round(((y * 100) + (radius * 100)) * math.sin(i * 2 * angle_step))),
+                    int(round(((x * 100) + ((radius * 100)) * math.cos(i * 2 * angle_step)))),
+                    int(round(((y * 100) + ((radius * 100)) * math.sin(i * 2 * angle_step)))),
                 )
                 pts.append(pt)
             return tuple(pts)
@@ -2284,14 +2300,15 @@ class Draw:
                 pts.append(Point(x * 100, y * 100))
 
             # an array of Point arrays, one Point array for each line path
-            line_paths = mTblHelper.TableHelper.make_2d_array(1, 1)
-            line_paths[0] = pts
+            line_paths = (tuple(pts),)
 
             # for a shape formed by from multiple connected lines
             poly_line = cls.add_shape(
                 slide=slide, shape_type=DrawingShapeKind.POLY_LINE_SHAPE, x=0, y=0, width=0, height=0
             )
-            mProps.Props.set(poly_line, PolyPolygon=line_paths)
+            prop_set = mLo.Lo.qi(XPropertySet, poly_line, raise_err=True)
+            seq = uno.Any("[][]com.sun.star.awt.Point", line_paths)
+            uno.invoke(prop_set, "setPropertyValue", ("PolyPolygon", seq))
             return poly_line
         except mEx.ShapeError:
             raise
@@ -2802,7 +2819,7 @@ class Draw:
         try:
             pt = shape.getPosition()
             # convert to mm
-            return Point(round(pt.X / 100, round(pt.Y / 100)))
+            return Point(round(pt.X / 100), round(pt.Y / 100))
         except Exception as e:
             raise mEx.PointError("Error getting position") from e
 
@@ -2924,7 +2941,7 @@ class Draw:
                     break
             if count == 2:
                 return ka
-            ka[3] = ka.get("y", None)
+            ka[3] = kwargs.get("y", None)
             return ka
 
         if not count in (2, 3):
@@ -3000,7 +3017,7 @@ class Draw:
                     break
             if count == 2:
                 return ka
-            ka[3] = ka.get("height", None)
+            ka[3] = kwargs.get("height", None)
             return ka
 
         if not count in (2, 3):
@@ -3289,10 +3306,10 @@ class Draw:
                     break
             if count == 2:
                 return ka
-            ka[3] = ka.get("end_color", None)
+            ka[3] = kwargs.get("end_color", None)
             if count == 3:
                 return ka
-            ka[4] = ka.get("angle", None)
+            ka[4] = kwargs.get("angle", None)
             return ka
 
         if not count in (2, 3, 4):
@@ -3484,6 +3501,26 @@ class Draw:
             return Angle(round(r_angle / 100))
         except Exception as e:
             raise mEx.ShapeError("Error getting shape rotation") from e
+
+    @staticmethod
+    def set_rotation(shape: XShape, angle: Angle) -> None:
+        """
+        Set the rotation of a shape
+
+        Args:
+            shape (XShape): Shape
+            angle (Angle): _description_
+
+        Raises:
+            mEx.ShapeError: If error occurs.
+
+        Returns:
+            None:
+        """
+        try:
+            mProps.Props.set(shape, RotateAngle=angle.Value * 100)
+        except Exception as e:
+            raise mEx.ShapeError("Error setting shape rotation") from e
 
     @staticmethod
     def get_transformation(shape: XShape) -> HomogenMatrix3:
@@ -3843,8 +3880,12 @@ class Draw:
         Returns:
             None:
         """
-        while sc.getCurrentSlideIndex() != -1:
-            mLo.Lo.delay(1000)
+        while True:
+            curr_index = sc.getCurrentSlideIndex()
+            if curr_index == -1:
+                break
+            mLo.Lo.delay(500)
+
         mLo.Lo.print("End of presentation detected")
 
     @staticmethod
@@ -3861,8 +3902,14 @@ class Draw:
         """
         wait = int(delay)
         num_slides = sc.getSlideCount()
-
-        while sc.getCurrentSlideIndex() < num_slides - 1:
+        # print(f"Number of slides: {num_slides}")
+        while True:
+            curr_index = sc.getCurrentSlideIndex()
+            # print(f"Current index: {curr_index}")
+            if curr_index == -1:
+                break
+            if curr_index >= num_slides - 1:
+                break
             mLo.Lo.delay(500)
 
         if wait > 0:

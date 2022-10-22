@@ -58,7 +58,7 @@ class Gallery(metaclass=StaticProperty):
         except Exception as e:
             raise mEx.GalleryError(f'Error occured getting gallery for "{name}"') from e
 
-    # region get_gallery()
+    # endregion get_gallery()
 
     @staticmethod
     def get_item_type_str(item_type: GalleryItemTypeEnum) -> str:

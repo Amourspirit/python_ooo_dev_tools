@@ -68,19 +68,28 @@ class ImagesLo:
             im_fnm (PathOrStr): Graphic file path
 
         Raises:
+            FileNotFoundError: If ``im_fnm`` does not exist.
             CreateInstanceMcfError: If unable to create graphic.GraphicProvider
             Exception: If unable to load graphic
 
         Returns:
             XGraphic: Graphic
         """
-        print(f"Loading XGraphic from '{im_fnm}'")
+        mLo.Lo.print(f"Loading XGraphic from '{im_fnm}'")
         try:
+            fnm = mFileIO.FileIO.get_absolute_path(im_fnm)
+            if not fnm.exists():
+                raise FileNotFoundError(fnm)
             gprovider = mLo.Lo.create_instance_mcf(
                 XGraphicProvider, "com.sun.star.graphic.GraphicProvider", raise_err=True
             )
-            file_props = mProps.Props.make_props(URL=mFileIO.FileIO.fnm_to_url(im_fnm))
-            return gprovider.queryGraphic(file_props)
+            file_props = mProps.Props.make_props(URL=mFileIO.FileIO.fnm_to_url(fnm))
+            result = gprovider.queryGraphic(file_props)
+            if result is None:
+                raise mEx.UnKnownError("None Value: queryGraphic() returned None")
+            return result
+        except FileNotFoundError:
+            raise
         except mEx.CreateInstanceMcfError:
             raise
         except Exception as e:

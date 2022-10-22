@@ -280,7 +280,7 @@ class Forms:
                     break
             if count == 1:
                 return ka
-            ka[2] = ka.get("named_forms", None)
+            ka[2] = kwargs.get("named_forms", None)
             return ka
 
         if not count in (1, 2):
