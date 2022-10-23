@@ -352,6 +352,8 @@ class Draw:
         try:
             slide = mLo.Lo.qi(XDrawPage, slides.getByIndex(idx), True)
             return slide
+        except IndexOutOfBoundsException:
+            raise IndexError(f"Index out of bounds: {idx}")
         except Exception as e:
             raise mEx.DrawError(f"Could not get slide: {idx}") from e
 
@@ -376,7 +378,8 @@ class Draw:
             idx (int): Index of slide
 
         Raises:
-            DrawError: If unable to get slide
+            IndexError: If ``idx`` is out of bounds
+            DrawError: If any other error occurs.
 
         Returns:
             XDrawPage: Slide as Draw Page.
@@ -429,7 +432,7 @@ class Draw:
         slide_name = name.casefold()
         num_slides = cls.get_slides_count
         for i in range(num_slides):
-            slide = cls.get_slide(doc, i)
+            slide = cls._get_slide_doc(doc, i)
             nm = str(mProps.Props.get(slide, "LinkDisplayName")).casefold()
             if nm == slide_name:
                 return i
@@ -3996,16 +3999,19 @@ class Draw:
             mLo.Lo.print("Building play list using:")
             j = 0
             for i in slide_idxs:
-                slide = cls._get_slide_doc(doc, i)
-                if slide is None:
+                try:
+                    slide = cls._get_slide_doc(doc, i)
+                except IndexError as ex:
+                    mLo.Lo.print(f"  Error getting slide for playlist. Skipping index {i}")
+                    mLo.Lo.print(f"    {ex}")
                     continue
                 slides_con.insertByIndex(j, slide)
                 j += 1
-                mLo.Lo.print(f"  Slide {i}")
+                mLo.Lo.print(f"  Slide No. {i+1}, index: {i}")
 
             # store the play list under the custom name
             play_list.insertByName(custom_name, slides_con)
-            mLo.Lo.print(f'lay list stored under the name: "{custom_name}"')
+            mLo.Lo.print(f'Play list stored under the name: "{custom_name}"')
             return play_list
         except Exception as e:
             raise mEx.DrawError("Unable to build play list.") from e
