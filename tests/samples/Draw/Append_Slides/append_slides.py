@@ -101,8 +101,8 @@ class AppendSlides:
         except mEx.DrawPageMissingError:
             print("- No Slides Found")
 
-        # change back to norrmal slide view (does not work)
-        Lo.dispatch_cmd(cmd="PageMode", frame=from_frame)
+        # Lo.dispatchCmd("PageMode");  // back to normal mode (not working)
+        Lo.dispatch_cmd(cmd="DrawingMode")
         Lo.close_doc(doc)
         print()
 

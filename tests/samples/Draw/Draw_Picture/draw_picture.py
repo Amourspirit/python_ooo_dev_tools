@@ -1,15 +1,19 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING
 
 import uno
-from com.sun.star.drawing import XDrawPage
 
 from ooodev.dialog.msgbox import MsgBox, MessageBoxType, MessageBoxButtonsEnum, MessageBoxResultsEnum
-from ooodev.exceptions.ex import ShapeError
 from ooodev.office.draw import Draw, Intensity
 from ooodev.utils.color import CommonColor
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.utils.props import Props
+
+if TYPE_CHECKING:
+    # the following is only needed for typings.
+    # from __future__ import annotations takes care of the rest
+    from com.sun.star.drawing import XDrawPage
 
 
 class DrawPicture:
