@@ -12,18 +12,13 @@ from ooo.dyn.awt.message_box_type import MessageBoxType as MessageBoxType
 
 
 class MsgBox:
-
-    Results = MessageBoxResultsEnum
-    Buttons = MessageBoxButtonsEnum
-    Type = MessageBoxType
-
     @staticmethod
     def msgbox(
         msg: str,
         title: str = "Message",
-        boxtype: MsgBox.Type = Type.MESSAGEBOX,
-        buttons: MsgBox.Buttons | int = Buttons.BUTTONS_OK,
-    ) -> MsgBox.Results:
+        boxtype: MessageBoxType = MessageBoxType.MESSAGEBOX,
+        buttons: MessageBoxButtonsEnum | int = MessageBoxButtonsEnum.BUTTONS_OK,
+    ) -> MessageBoxResultsEnum:
         """
         Simple message box.
 
@@ -31,18 +26,18 @@ class MsgBox:
             msg (str): the message for display
             title (str, optional): the title of the message box. Defaults to "Message".
             boxtype (MessageBoxType, optional): determines the type of message box to display. Defaults to ``Type.MESSAGEBOX``.
-            buttons (Buttons, int, optional): determines what buttons to display. Defaults to ``Buttons.BUTTONS_OK``.
+            buttons (MessageBoxButtonsEnum, int, optional): determines what buttons to display. Defaults to ``Buttons.BUTTONS_OK``.
 
         Returns:
-            Results: MsgBox.Results Enum
+            Results: MessageBoxResultsEnum
 
-            * Button press ``Abort`` return ``Results.CANCEL``
-            * Button press ``Cancel`` return ``Results.CANCEL``
-            * Button press ``Ignore`` returns ``Results.IGNORE``
-            * Button press ``No`` returns ``Results.NO``
-            * Button press ``OK`` returns ``Results.OK``
-            * Button press ``Retry`` returns ``Results.RETRY``
-            * Button press ``Yes`` returns ``Results.YES``
+            * Button press ``Abort`` return ``MessageBoxResultsEnum.CANCEL``
+            * Button press ``Cancel`` return ``MessageBoxResultsEnum.CANCEL``
+            * Button press ``Ignore`` returns ``MessageBoxResultsEnum.IGNORE``
+            * Button press ``No`` returns ``MessageBoxResultsEnum.NO``
+            * Button press ``OK`` returns ``MessageBoxResultsEnum.OK``
+            * Button press ``Retry`` returns ``MessageBoxResultsEnum.RETRY``
+            * Button press ``Yes`` returns ``MessageBoxResultsEnum.YES``
         """
         if boxtype == MessageBoxType.INFOBOX:
             # this is the default behaviour anyways. So assigning ok to make it official here

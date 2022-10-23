@@ -208,6 +208,23 @@ class FileIO:
             mLo.Lo.print(f"File is not openable: {e}")
         return False
 
+    @staticmethod
+    def is_valid_path_or_str(fnm: PathOrStr) -> bool:
+        """
+        Checks ``fnm`` it make sure it is a valid path or string.
+
+        Args:
+            fnm (PathOrStr): Input path
+
+        Returns:
+            bool: ``False`` if ``fnm`` is ``None`` or empty string; Otherwise; ``True``
+        """
+        # note when path is converted from empty string it becomes current dir such as PosixPath('.')
+        if not fnm:
+            # takes care of "" string and None
+            return False
+        return True
+
     @classmethod
     def make_directory(cls, dir: PathOrStr) -> None:
         """

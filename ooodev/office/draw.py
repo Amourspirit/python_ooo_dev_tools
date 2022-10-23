@@ -61,7 +61,6 @@ from ..utils import images_lo as mImgLo
 from ..utils import info as mInfo
 from ..utils import lo as mLo
 from ..utils import props as mProps
-from ..utils import table_helper as mTblHelper
 from ..utils.data_type.angle import Angle as Angle
 from ..utils.data_type.image_offset import ImageOffset as ImageOffset
 from ..utils.data_type.intensity import Intensity as Intensity
@@ -2197,11 +2196,8 @@ class Draw:
             bezier_poly = cls.add_shape(slide=slide, shape_type=bezier_type, x=0, y=0, width=0, height=0)
             # create space for one bezier shape
             coords = PolyPolygonBezierCoords()
-            #       for shapes formed by one *or more* bezier polygons
-            coords.Coordinates = mTblHelper.TableHelper.make_2d_array(1, 1, Point())
-            coords.Flags = mTblHelper.TableHelper.make_2d_array(1, 1)
-            coords.Coordinates[0] = pts
-            coords.Flags[0] = flags
+            coords.Coordinates = (pts,)
+            coords.Flags = (flags,)
 
             mProps.Props.set(bezier_poly, PolyPolygonBezier=coords)
             return bezier_poly
