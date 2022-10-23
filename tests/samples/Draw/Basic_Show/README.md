@@ -1,0 +1,27 @@
+# Impress Basic Slide Show
+
+Demonstrates displaying a slide show using default `algs.odp` file.
+
+A message box is display once the slide show has ended asking if you want to close the document.
+
+## Automate
+
+### Cross Platform
+
+From current example folder.
+
+```sh
+python -m start
+```
+
+### Linux
+
+```sh
+python ./tests/samples/Draw/Basic_Show/start.py
+```
+
+### Windows
+
+```ps
+python .\tests\samples\Draw\Basic_Show\start.py
+```

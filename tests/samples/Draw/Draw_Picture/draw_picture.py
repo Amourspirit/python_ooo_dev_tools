@@ -3,6 +3,7 @@ from __future__ import annotations
 import uno
 from com.sun.star.drawing import XDrawPage
 
+from ooodev.dialog.msgbox import MsgBox, MessageBoxType, MessageBoxButtonsEnum, MessageBoxResultsEnum
 from ooodev.exceptions.ex import ShapeError
 from ooodev.office.draw import Draw, Intensity
 from ooodev.utils.color import CommonColor
@@ -13,8 +14,15 @@ from ooodev.utils.props import Props
 
 class DrawPicture:
     def show(self) -> None:
-        with Lo.Loader(Lo.ConnectPipe()) as loader:
-            doc = Draw.create_draw_doc(loader)
+        try:
+            loader = Lo.load_office(Lo.ConnectPipe())
+        except Exception:
+            Lo.close_office()
+            raise
+
+        doc = Draw.create_draw_doc(loader)
+
+        try:
             GUI.set_visible(is_visible=True, odoc=doc)
             Lo.delay(1_000)  # need delay or zoom may not occur
             GUI.zoom(GUI.ZoomEnum.ENTIRE_PAGE)
@@ -30,8 +38,20 @@ class DrawPicture:
             s = Draw.find_shape_by_name(curr_slide, "text1")
             Draw.report_pos_size(s)
 
-            Lo.wait_enter()
-            Lo.close_doc(doc=doc, deliver_ownership=True)
+            Lo.delay(2000)
+            msg_result = MsgBox.msgbox(
+                "Do you wish to close document?",
+                "All done",
+                boxtype=MessageBoxType.QUERYBOX,
+                buttons=MessageBoxButtonsEnum.BUTTONS_YES_NO,
+            )
+            if msg_result == MessageBoxResultsEnum.YES:
+                Lo.close_doc(doc=doc)
+            else:
+                print("Keeping document open")
+        except Exception:
+            Lo.close_doc(doc=doc)
+            raise
 
     def _draw_shapes(self, curr_slide: XDrawPage) -> None:
         line1 = Draw.draw_line(slide=curr_slide, x1=50, y1=50, x2=200, y2=200)

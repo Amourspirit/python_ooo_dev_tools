@@ -7,7 +7,7 @@ def main() -> int:
     fnm = Path("tests/fixtures/presentation/algs.odp")
     p = FileIO.get_absolute_path(fnm)
     if not p.exists():
-        fnm = Path("../../../../../tests/fixtures/presentation/algs.odp")
+        fnm = Path("../../../../tests/fixtures/presentation/algs.odp")
         p = FileIO.get_absolute_path(fnm)
     if not p.exists():
         raise FileNotFoundError("Unable to find path to algs.odp")

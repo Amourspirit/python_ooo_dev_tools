@@ -802,7 +802,7 @@ class Draw:
             layer_name (str): Layer Name
 
         Raises:
-            mEx.DrawError: _description_
+            DrawError: If error occurs.
 
         Returns:
             XLayer: Newly added layer.
@@ -3508,7 +3508,7 @@ class Draw:
             angle (Angle): _description_
 
         Raises:
-            mEx.ShapeError: If error occurs.
+            ShapeError: If error occurs.
 
         Returns:
             None:

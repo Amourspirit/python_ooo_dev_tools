@@ -24,8 +24,7 @@ class AnimationDemo:
         pass
 
     def show(self) -> None:
-        loader = Lo.load_office(Lo.ConnectSocket())
-        try:
+        with Lo.Loader(Lo.ConnectPipe()) as loader:
             doc = Draw.create_impress_doc(loader)
             try:
                 slide = Draw.get_slide(doc=doc, idx=0)  # access first page
@@ -72,10 +71,13 @@ class AnimationDemo:
 
                     # create audio playing in parallel
                     fnm = Info.get_gallery_dir() / "sounds" / "applause.wav"
-                    audio = Lo.create_instance_mcf(XAudio, "com.sun.star.animations.Audio", raise_err=True)
-                    audio.Source = FileIO.fnm_to_url(fnm)
-                    audio.Volume = 1.0
-                    par_time.appendChild(audio)
+                    if fnm.exists() and fnm.is_file():
+                        audio = Lo.create_instance_mcf(XAudio, "com.sun.star.animations.Audio", raise_err=True)
+                        audio.Source = FileIO.fnm_to_url(fnm)
+                        audio.Volume = 1.0
+                        par_time.appendChild(audio)
+                    else:
+                        print(f'Unable to load audio file: "{fnm}"')
                 except Exception as e:
                     print(e)
 
@@ -88,8 +90,6 @@ class AnimationDemo:
                 Draw.wait_ended(sc)
             finally:
                 Lo.close_doc(doc)
-        finally:
-            Lo.close_office()
 
     def _set_user_data(
         self,

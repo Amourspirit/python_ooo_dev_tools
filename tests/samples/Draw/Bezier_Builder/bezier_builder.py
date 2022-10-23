@@ -23,7 +23,12 @@ class BezierBuilder:
 
     def show(self) -> None:
         # with Lo.Loader(Lo.ConnectPipe()) as loader:
-        loader = Lo.load_office(Lo.ConnectPipe())
+        try:
+            loader = Lo.load_office(Lo.ConnectPipe())
+        except Exception:
+            Lo.close_office()
+            raise
+
         if not FileIO.is_valid_path_or_str(self._fnm_point):
             MsgBox.msgbox(
                 "Input file is not a valid Path or string file.", "File Error", boxtype=MessageBoxType.ERRORBOX
@@ -43,25 +48,31 @@ class BezierBuilder:
 
         # create Impress page or Draw slide
         doc = Draw.create_draw_doc(loader)
+        try:
+            slide = Draw.get_slide(doc=doc, idx=0)
 
-        slide = Draw.get_slide(doc=doc, idx=0)
+            GUI.set_visible(is_visible=True, odoc=doc)
 
-        GUI.set_visible(is_visible=True, odoc=doc)
+            # self._draw_curve(slide) # same as bpts3.txt
 
-        # self._draw_curve(slide) # same as bpts3.txt
+            start_pt = Point()
+            curve_pts: List[Point] = []
+            is_open = self._read_points(fnm=fnm, start_pt=start_pt, curve_pts=curve_pts)
+            _ = self._create_bezier(slide=slide, start_pt=start_pt, curve_pts=curve_pts, is_open=is_open)
 
-        start_pt = Point()
-        curve_pts: List[Point] = []
-        is_open = self._read_points(fnm=fnm, start_pt=start_pt, curve_pts=curve_pts)
-        _ = self._create_bezier(slide=slide, start_pt=start_pt, curve_pts=curve_pts, is_open=is_open)
-        msg_result = MsgBox.msgbox(
-            "Do you wish to close document?",
-            "All done",
-            boxtype=MessageBoxType.QUERYBOX,
-            buttons=MessageBoxButtonsEnum.BUTTONS_YES_NO,
-        )
-        if msg_result == MessageBoxResultsEnum.YES:
+            Lo.delay(2000)
+
+            msg_result = MsgBox.msgbox(
+                "Do you wish to close document?",
+                "All done",
+                boxtype=MessageBoxType.QUERYBOX,
+                buttons=MessageBoxButtonsEnum.BUTTONS_YES_NO,
+            )
+            if msg_result == MessageBoxResultsEnum.YES:
+                Lo.close_doc(doc=doc)
+        except Exception:
             Lo.close_doc(doc=doc)
+            raise
 
     def _read_points(self, fnm: PathOrStr, start_pt: Point, curve_pts: List[Point]) -> bool:
         is_open = True
