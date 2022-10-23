@@ -1931,6 +1931,7 @@ class Lo(metaclass=StaticProperty):
     # ==================== dispatch ===============================
     # see https://wiki.documentfoundation.org/Development/DispatchCommands
 
+    # region dispatch_cmd()
     @overload
     @staticmethod
     def dispatch_cmd(cmd: str) -> bool:
@@ -1939,40 +1940,16 @@ class Lo(metaclass=StaticProperty):
     @overload
     @staticmethod
     def dispatch_cmd(cmd: str, props: Iterable[PropertyValue]) -> bool:
-        """
-        Dispatches a LibreOffice command
-
-        Args:
-            cmd (str): Command to dispatch such as ``GoToCell``. Note: cmd does not contain ``.uno:`` prefix.
-            props (PropertyValue): properties for dispatch
-
-        Raises:
-            MissingInterfaceError: If unable to obtain XDispatchHelper instance.
-            Exception: If error occurs dispatching command
-
-        Returns:
-            bool: True on success.
-        """
         ...
 
     @overload
     @staticmethod
     def dispatch_cmd(cmd: str, props: Iterable[PropertyValue], frame: XFrame) -> bool:
-        """
-        Dispatches a LibreOffice command
+        ...
 
-        Args:
-            cmd (str): Command to dispatch such as ``GoToCell``. Note: cmd does not contain ``.uno:`` prefix.
-            props (PropertyValue): properties for dispatch
-            frame (XFrame): Frame to dispatch to.
-
-        Raises:
-            MissingInterfaceError: If unable to obtain XDispatchHelper instance.
-            Exception: If error occurs dispatching command
-
-        Returns:
-            bool: True on success.
-        """
+    @overload
+    @staticmethod
+    def dispatch_cmd(cmd: str, *, frame: XFrame) -> bool:
         ...
 
     @classmethod
@@ -1982,8 +1959,8 @@ class Lo(metaclass=StaticProperty):
 
         Args:
             cmd (str): Command to dispatch such as ``GoToCell``. Note: cmd does not contain ``.uno:`` prefix.
-            props (PropertyValue): properties for dispatch
-            frame (XFrame): Frame to dispatch to.
+            props (PropertyValue, optional): properties for dispatch
+            frame (XFrame, optonal): Frame to dispatch to.
 
         Raises:
             MissingInterfaceError: If unable to obtain XDispatchHelper instance.
@@ -2020,6 +1997,8 @@ class Lo(metaclass=StaticProperty):
             return True
         except Exception as e:
             raise Exception(f"Could not dispatch '{cmd}'") from e
+
+    # endregion dispatch_cmd()
 
     # ================= Uno cmds =========================
 

@@ -408,7 +408,7 @@ class Draw:
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
 
-        if mLo.Lo.is_uno_interfaces(kargs[1], XDrawPage):
+        if mLo.Lo.is_uno_interfaces(kargs[1], XDrawPages):
             return cls._get_slide_slides(kargs[1], kargs[2])
         return cls._get_slide_doc(kargs[1], kargs[2])
 
@@ -894,7 +894,7 @@ class Draw:
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
 
-        obj = kwargs[1]
+        obj = kargs[1]
         ctl = mLo.Lo.qi(XController, obj)
         if ctl is None:
             cls._goto_page_doc(obj, kargs[2])
