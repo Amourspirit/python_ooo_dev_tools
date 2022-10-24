@@ -1321,7 +1321,7 @@ class Draw:
             height = int(props.getPropertyValue("Height"))
             return Size(round(width / 100), round(height / 100))
         except Exception as e:
-            raise mEx.SizeError("Could not get page dimensions") from e
+            raise mEx.SizeError("Could not get shape size") from e
 
     @staticmethod
     def set_name(slide: XDrawPage, name: str) -> None:
