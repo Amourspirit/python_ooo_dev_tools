@@ -2442,7 +2442,7 @@ class Draw:
             prop_set.setPropertyValue("EndShape", shape2)
             prop_set.setPropertyValue("EndGluePointIndex", int(end_conn))
 
-            prop_set.setPropertyValue("EndShape", ConnectorType.STANDARD)
+            prop_set.setPropertyValue("EdgeKind", ConnectorType.STANDARD)
             return xconnector
         except mEx.ShapeError:
             raise
@@ -2641,7 +2641,7 @@ class Draw:
 
             # extract the new single shape from the modified selection
             xs = mLo.Lo.qi(XShapes, sel_supp.getSelection(), True)
-            combined_shape = mLo.Lo.qi(XShapes, xs.getByIndex(0), True)
+            combined_shape = mLo.Lo.qi(XShape, xs.getByIndex(0), True)
             return combined_shape
         except Exception as e:
             raise mEx.ShapeError("Unable to combine shapes") from e

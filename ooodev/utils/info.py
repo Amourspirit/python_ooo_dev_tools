@@ -1271,6 +1271,24 @@ class Info(metaclass=StaticProperty):
             return id1 == id2
         return obj1 == obj2
 
+    @staticmethod
+    def show_container_names(print_name: str, nc: XNameContainer):
+        """
+        Prints Name Container elements to console
+
+        Args:
+            print_name (str): Name to display. Can be empty string.
+            nc (XNameContainer): Name Container to print element names of.
+        """
+        names = nc.getElementNames()
+        if print_name:
+            print(f"No. of Names in {print_name}: {len(names)}")
+        else:
+            print(f"No. of Names in Name Container: {len(names)}")
+        for name in names:
+            print(f"  {name}")
+        print()
+
     @classmethod
     def show_interfaces(cls, obj_name: str, obj: object) -> None:
         """

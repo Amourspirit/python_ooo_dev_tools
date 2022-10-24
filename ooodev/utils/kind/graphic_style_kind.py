@@ -1,32 +1,47 @@
 from enum import Enum
 
+# these are helper lookups
+# Example Usage:
+#   Draw.set_style(shape=conn_shape, graphic_styles=g_styles, style_name=GraphicStyleKind.ARROW_LINE)
+#
+# see the Grouper Sample.
+# value can be obtaind in the follow mannor.
+# g_styles = Info.get_style_container(doc=doc, family_style_name="graphics")
+# Info.show_container_names("Graphic styles", g_styles)
+
 
 class GraphicStyleKind(str, Enum):
     """
     Graphic Styles
-
-    See Also:
-        `Developers Guide Styles <https://wiki.openoffice.org/wiki/Documentation/DevGuide/Drawings/Overall_Document_Features>`_
     """
 
-    DEFAULT = "standard"
+    STANDARD = "standard"
     """The style Default (standard) is used for newly inserted filled rectangles, filled ellipses, lines, connectors, text boxes, and 3D objects."""
-    DIMENSION_LINE = "measure"
-    """Used for newly inserted dimension lines."""
-    FIRST_LINE_INDENT = "textbodyindent"
-    HEADING = "headline"
-    HEADING1 = "headline1"
-    HEADING2 = "headline2"
-    OBJECT_WITH_ARROW = "objectwitharrow"
-    OBJECT_WITH_SHADOW = "objectwithshadow"
     OBJECT_WITHOUT_FILL = "objectwithoutfill"
-    TEXT = "text"
-    """Newly inserted text boxes do not use this style. They use Default and remove the fill settings for Default."""
-    TEXT_BODY = "textbody"
-    TEXT_BODY_JUSTIFIED = "textbodyjustfied"
-    TITLE = "title"
-    TITLE1 = "title1"
-    TITLE2 = "title2"
+    OBJECT_WITH_NO_FILL_AND_NO_LINE = "Object with no fill and no line"
+    TEXT = "Text"
+    A4 = "A4"
+    TITLE_A4 = "Title A4"
+    HEADING_A4 = "Heading A4"
+    TEXT_A4 = "Text A4"
+    TITLE_A0 = "Title A0"
+    HEADING_A0 = "Heading A0"
+    TEXT_A0 = "Text A0"
+    GRAPHIC = "Graphic"
+    SHAPES = "Shapes"
+    FILLED = "Filled"
+    FILLED_BLUE = "Filled Blue"
+    FILLED_GREEN = "Filled Green"
+    FILLED_RED = "Filled Red"
+    FILLED_YELLOW = "Filled Yellow"
+    OUTLINED = "Outlined"
+    OUTLINED_BLUE = "Outlined Blue"
+    OUTLINED_GREEN = "Outlined Green"
+    OUTLINED_RED = "Outlined Red"
+    OUTLINED_YELLOW = "Outlined Yellow"
+    LINES = "Lines"
+    ARROW_LINE = "Arrow Line"
+    ARROW_DASHED = "Arrow Dashed"
 
     def __str__(self) -> str:
         return self.value
