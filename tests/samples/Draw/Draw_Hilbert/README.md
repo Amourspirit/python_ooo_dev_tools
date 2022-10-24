@@ -23,7 +23,7 @@ An integer value the determines the levels to draw [Hilbert curve]. The default 
 **Example:**
 
 ```sh
-python -m start 1
+python -m start 4
 ```
 
 ### Cross Platform

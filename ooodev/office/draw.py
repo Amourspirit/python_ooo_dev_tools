@@ -1579,7 +1579,7 @@ class Draw:
     @classmethod
     def _get_shape_text_slide(cls, slide: XDrawPage) -> str:
         try:
-            sb = List[str] = []
+            sb: List[str] = []
             shapes = cls._get_ordered_shapes_slide(slide)
             for shape in shapes:
                 text = cls._get_shape_text_shape(shape)
