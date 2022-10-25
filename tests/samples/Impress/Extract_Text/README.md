@@ -1,4 +1,4 @@
-# Extract Text
+# Impress Extract Text
 
 Attempts to extract the text from the slide deck.
 

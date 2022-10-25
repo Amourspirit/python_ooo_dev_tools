@@ -1,4 +1,4 @@
-# Custom Slide Show
+# Impress Custom Slide Show
 
 Demonstrates opening a presentation file in Impress starting a slide show with only the slide indexes passes in.
 

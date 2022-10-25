@@ -1,4 +1,4 @@
-# Append Slides to existing slide show
+# Impress append Slides to existing slide show
 
 This example demonstrates how to combine Slide show documents using Impress.
 

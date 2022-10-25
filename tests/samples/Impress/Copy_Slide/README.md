@@ -1,4 +1,4 @@
-# Copy Slide
+# Impress copy Slide
 
 Demonstrates opening a presentation file in Impress and copying a slide from a given index to after another given index.
 

@@ -1,4 +1,4 @@
-# Impress Basic Slide Show
+# Impress Auto Slide Show
 
 Demonstrates displaying a slide show that automatically plays using default `algs.odp` file.
 
