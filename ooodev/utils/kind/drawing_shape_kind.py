@@ -6,7 +6,8 @@ class DrawingShapeKind(KindBase):
     Values used with ``com.sun.star.drawing.*``
 
     See Also:
-        `Drawing API <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1drawing.html>`_
+        - `Drawing API <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1drawing.html>`_
+        - `OpenOffice Shape Types <https://wiki.openoffice.org/wiki/Documentation/DevGuide/Drawings/Shape_Types>`_
     """
 
     APPLET_SHAPE = "AppletShape"

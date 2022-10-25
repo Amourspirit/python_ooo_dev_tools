@@ -15,7 +15,7 @@ From current example folder.
 python -m start
 ```
 
-### Linux
+### Linux/Mac
 
 ```sh
 python ./tests/samples/Draw/Draw_Picture/start.py

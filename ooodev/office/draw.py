@@ -35,6 +35,7 @@ from com.sun.star.form import XFormsSupplier
 from com.sun.star.frame import XComponentLoader
 from com.sun.star.frame import XController
 from com.sun.star.frame import XModel
+from com.sun.star.graphic import XGraphic
 from com.sun.star.lang import XComponent
 from com.sun.star.lang import XSingleServiceFactory
 from com.sun.star.presentation import XCustomPresentationSupplier
@@ -1154,7 +1155,10 @@ class Draw:
         try:
             mp_supp = mLo.Lo.qi(XMasterPagesSupplier, doc, True)
             pgs = mp_supp.getMasterPages()
-            pgs.insertNewByIndex(idx)
+            result = pgs.insertNewByIndex(idx)
+            if result is None:
+                raise mEx.NoneError("None Value: insertNewByIndex() return None")
+            return result
         except Exception as e:
             raise mEx.DrawPageError("Unable to insert master page") from e
 
@@ -1344,8 +1348,19 @@ class Draw:
         except Exception as e:
             raise mEx.DrawError("Unalbe to set Name") from e
 
+    # region title_slide()
+    @overload
+    @classmethod
+    def title_slide(cls, slide: XDrawPage, title: str) -> None:
+        ...
+
+    @overload
     @classmethod
     def title_slide(cls, slide: XDrawPage, title: str, sub_title: str) -> None:
+        ...
+
+    @classmethod
+    def title_slide(cls, slide: XDrawPage, title: str, sub_title: str = "") -> None:
         """
         Set a slides title and sub title
 
@@ -1371,11 +1386,14 @@ class Draw:
             txt_field.setString(title)
 
             # add the subtitle text to the subtitle shape
-            xs = cls.find_shape_by_type(slide=slide, shape_type=Draw.NameSpaceKind.SUBTITLE_TEXT)
-            txt_field = mLo.Lo.qi(XText, xs, True)
-            txt_field.setString(sub_title)
+            if sub_title:
+                xs = cls.find_shape_by_type(slide=slide, shape_type=Draw.NameSpaceKind.SUBTITLE_TEXT)
+                txt_field = mLo.Lo.qi(XText, xs, True)
+                txt_field.setString(sub_title)
         except Exception as e:
             raise mEx.DrawError("Eror setting Slide") from e
+
+    # endregion title_slide()
 
     @classmethod
     def bullets_slide(cls, slide: XDrawPage, title: str) -> XText:
@@ -3722,6 +3740,28 @@ class Draw:
             mProps.Props.set(shape, Graphic=graphic)
         except Exception as e:
             raise mEx.ShapeError(f'Error setting shape image to: "{fnm}"') from e
+
+    @staticmethod
+    def set_image_graphic(shape: XShape, graphic: XGraphic) -> None:
+        """
+        Sets the image of a shape
+
+        Args:
+            shape (XShape): Shape
+            graphic (XGraphic): Graphic.
+
+        Raises:
+            ShapeError: If error occurs.
+
+        Returns:
+            None:
+        """
+        # GraphicURL is Deprecated using Graphic instead.
+        # https://tinyurl.com/2qaqs2nr#a6312a2da62e2c67c90d5576502117906
+        try:
+            mProps.Props.set(shape, Graphic=graphic)
+        except Exception as e:
+            raise mEx.ShapeError("Error setting shape graphic") from e
 
     @classmethod
     def draw_image_offset(cls, slide: XDrawPage, fnm: PathOrStr, xoffset: ImageOffset, yoffset: ImageOffset) -> XShape:

@@ -7,6 +7,12 @@ if TYPE_CHECKING:
     from ..events.args.event_args import EventArgs
 
 
+class NoneError(Exception):
+    """Generic None Error. Usually means object is None"""
+
+    pass
+
+
 class NotFoundError(Exception):
     """Generic Not Found Error"""
 

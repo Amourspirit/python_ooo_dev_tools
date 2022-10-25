@@ -1,3 +1,17 @@
+# PM - Notes, Oct 25, 2022
+#
+# this module has issues.
+# find_gallery_item() returns XGalleryItem which in may have properties such as Graphic (XGraphic).
+# the issues is as soon as the XGalleryItem is returned from find_gallery_item() it has already lost its properties.
+# see my post: https://ask.libreoffice.org/t/libreoffice-wiping-object-properties-issue-with-gallerythemeprovider/83182
+#
+# Checking the reference count inside of find_gallery_item() show there is only 1 ref could. Which means 0 references
+# becuase sys.getrefcount() add 1 reference to the object that is being checked.
+# find_gallery_graphic() has been added which duplicates the code of find_gallery_item() due to these issues.
+# find_gallery_graphic() does successfully return XGraphic object, However I am not sure if this graphic can be used
+# as it is. I tried inserting the XGraphic into a Draw XShape and putting it on the document, however it appears to
+# always be the same graphic even though the criteria is change for find_gallery_graphic()
+
 from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 from pathlib import Path
@@ -239,6 +253,107 @@ class Gallery(metaclass=StaticProperty):
         return result
 
     # endregion find_gallery_item()
+
+    # region find_gallery_graphic()
+    @overload
+    @classmethod
+    def find_gallery_graphic(cls, name: str) -> XGraphic:
+        ...
+
+    @overload
+    @classmethod
+    def find_gallery_graphic(cls, name: str, search_match: SearchMatchKind) -> XGraphic:
+        ...
+
+    @overload
+    @classmethod
+    def find_gallery_graphic(cls, name: str, *, search_kind: SearchByKind) -> XGraphic:
+        ...
+
+    @overload
+    @classmethod
+    def find_gallery_graphic(cls, name: str, search_match: SearchMatchKind, search_kind: SearchByKind) -> XGraphic:
+        ...
+
+    @classmethod
+    def find_gallery_graphic(
+        cls,
+        name: str,
+        search_match: SearchMatchKind = SearchMatchKind.PARTIAL_IGNORE_CASE,
+        search_kind: SearchByKind = SearchByKind.TITLE,
+    ) -> XGraphic:
+
+        result = None
+        try:
+            if search_match == SearchMatchKind.FULL_IGNORE_CASE or search_kind == SearchMatchKind.PARTIAL_IGNORE_CASE:
+                nm = name.casefold()
+                case_sensitive = False
+            else:
+                nm = name
+                case_sensitive = True
+
+            if search_match == SearchMatchKind.PARTIAL or search_match == SearchMatchKind.PARTIAL_IGNORE_CASE:
+                partial = True
+            else:
+                partial = False
+
+            gallery = cls.get_gallery(GalleryKind.SHAPES)
+            num_pics = gallery.getCount()
+            mLo.Lo.print(f'Searching gallery "{gallery.getName()}" for "{name}"')
+            if case_sensitive:
+                mLo.Lo.print("  Search is case sensitive")
+            else:
+                mLo.Lo.print("  Search is ignoring case")
+            if partial:
+                mLo.Lo.print("  Searching for a partial match")
+            else:
+                mLo.Lo.print("  Searching for a full match")
+            mLo.Lo.print()
+
+            for i in range(num_pics):
+                item = mLo.Lo.qi(XGalleryItem, gallery.getByIndex(i), True)
+                if search_kind == SearchByKind.FILE_NAME:
+                    url = str(mProps.Props.get(item, "URL"))
+                    fnm = mFileIo.FileIO.get_fnm((mFileIo.FileIO.url_to_path(url)))
+                    match_str = fnm if case_sensitive else fnm.casefold()
+                    if partial and match_str in nm:
+                        mLo.Lo.print(f"Found matching item: {fnm}")
+                        result = item
+                        break
+                    else:
+                        if match_str == nm:
+                            mLo.Lo.print(f"Found matching item: {fnm}")
+                            result = item
+                            break
+                elif search_kind == SearchByKind.TITLE:
+                    title = str(mProps.Props.get(item, "Title"))
+                    match_str = title if case_sensitive else title.casefold()
+                    if partial and match_str in nm:
+                        mLo.Lo.print(f"Found matching item: {title}")
+                        result = item
+                        break
+                    else:
+                        if match_str == nm:
+                            mLo.Lo.print(f"Found matching item: {title}")
+                            result = item
+                            break
+
+        except Exception as e:
+            raise mEx.GalleryError(
+                f'Error occured trying to find in gallery: "{GalleryKind.SHAPES}" for item: "{name}"'
+            ) from e
+        # Gallery._TMP_FIND = result.Graphic
+        if result is None:
+            raise mEx.GalleryNotFoundError(
+                f'Not found. Tried to find in gallery: "{GalleryKind.SHAPES}" for item: "{name}"'
+            )
+        try:
+            graphic = mProps.Props.get(result, "Graphic")
+        except mEx.PropertyNotFoundError as e:
+            raise mEx.GalleryNotFoundError("Error getting Graphic Property") from e
+        return graphic
+
+    # endregion find_gallery_graphic()
 
     @classmethod
     def report_gallery_item(cls, item: XGalleryItem) -> None:

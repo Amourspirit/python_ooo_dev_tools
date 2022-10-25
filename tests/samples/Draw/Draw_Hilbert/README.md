@@ -34,7 +34,7 @@ From current example folder.
 python -m start 4
 ```
 
-### Linux
+### Linux/Mac
 
 ```sh
 python ./tests/samples/Draw/Draw_Hilbert/start.py 4
