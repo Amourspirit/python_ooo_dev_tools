@@ -1,5 +1,4 @@
 from __future__ import annotations
-from pathlib import Path
 from ooodev.utils.file_io import FileIO
 from modify_slides import ModifySlides
 import sys
