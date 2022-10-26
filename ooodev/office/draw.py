@@ -75,6 +75,7 @@ from ..utils.kind.glue_points_kind import GluePointsKind as GluePointsKind
 from ..utils.kind.graphic_style_kind import GraphicStyleKind as GraphicStyleKind
 from ..utils.kind.presentation_kind import PresentationKind as PresentationKind
 from ..utils.kind.shape_comb_kind import ShapeCombKind as ShapeCombKind
+from ..utils.kind.drawing_layer_kind import DrawingLayerKind as DrawingLayerKind
 from ..utils.type_var import PathOrStr
 
 from ooo.dyn.awt.gradient import Gradient as Gradient
@@ -772,7 +773,28 @@ class Draw:
 
     # region Layer Management
     @staticmethod
-    def get_layer(doc: XComponent, layer_name: str) -> XLayer:
+    def get_layer_manager(doc: XComponent) -> XLayerManager:
+        """
+        Gets Layer manager for document.
+
+        Args:
+            doc (XComponent): Document
+
+        Raises:
+            DrawError: If error occurs.
+
+        Returns:
+            XLayerManager: Layer Manager
+        """
+        try:
+            xlayer_supp = mLo.Lo.qi(XLayerSupplier, doc, True)
+            xname_acc = xlayer_supp.getLayerManager()
+            return mLo.Lo.qi(XLayerManager, xname_acc, True)
+        except Exception as e:
+            raise mEx.DrawError("Error getting XLayerManager") from e
+
+    @staticmethod
+    def get_layer(doc: XComponent, layer_name: DrawingLayerKind | str) -> XLayer:
         """
         Gets layer from layer name
 
@@ -790,7 +812,7 @@ class Draw:
         layer_supplier = mLo.Lo.qi(XLayerSupplier, doc, True)
         xname_access = layer_supplier.getLayerManager()
         try:
-            return mLo.Lo.qi(XLayer, xname_access.getByName(layer_name), True)
+            return mLo.Lo.qi(XLayer, xname_access.getByName(str(layer_name)), True)
         except NoSuchElementException:
             raise NameError(f'"{layer_name}" does not exist')
         except Exception as e:
