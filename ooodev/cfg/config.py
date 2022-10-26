@@ -19,7 +19,7 @@ class ConfigMeta(type):
             else:
                 # provide defaults because at this time scriptmerge
                 # does not include non *.py files when it packages scripts
-                data = {"profile_versions": ["4"], "slide_template_path": "share/template/common/layout/"}
+                data = {"profile_versions": ["4"], "slide_template_path": "share/template/common/presnt/"}
 
             # get any override values from os.environ
             profile_ver = os.environ.get("OOODEV_CONFIG_PROFILE_VERSION", "")

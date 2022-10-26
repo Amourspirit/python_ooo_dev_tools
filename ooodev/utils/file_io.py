@@ -10,7 +10,7 @@ import glob
 import zipfile
 from pathlib import Path
 from urllib.parse import urlparse
-from typing import List, TYPE_CHECKING, overload
+from typing import Generator, List, TYPE_CHECKING, overload
 import uno
 from com.sun.star.io import XActiveDataSink
 from com.sun.star.io import XTextInputStream
@@ -140,8 +140,8 @@ class FileIO:
 
     # endregion uri_to_path()
 
-    @staticmethod
-    def get_file_names(dir: PathOrStr) -> List[str]:
+    @classmethod
+    def get_file_names(cls, dir: PathOrStr) -> List[str]:
         """
         Gets a list of filenames in a folder
 
@@ -150,10 +150,30 @@ class FileIO:
 
         Returns:
             List[str]: List of files.
+
+        See Also:
+            :py:meth:`~.file_io.FileIO.get_file_paths`
         """
         # pattern .* includes hidden files whereas * does not.
-        files = glob.glob(f"{dir}/.*", recursive=False)
-        return files
+        return [str(f) for f in cls.get_file_paths(dir)]
+
+    @classmethod
+    def get_file_paths(cls, dir: PathOrStr) -> Generator[Path, None, None]:
+        """
+        Gets a generator of file paths in a folder
+
+        Args:
+            dir (PathOrStr): Folder path
+
+        Yields:
+            Generator[Path, None, None]: Generator of Path objects
+
+        See Also:
+            :py:meth:`~.file_io.FileIO.get_file_paths`
+        """
+        # pattern .* includes hidden files whereas * does not.
+        p = cls.get_absolute_path(dir)
+        return p.glob("*.*")
 
     @staticmethod
     def get_fnm(path: PathOrStr) -> str:
