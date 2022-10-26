@@ -2069,9 +2069,9 @@ class Info(metaclass=StaticProperty):
 
         Args:
             alt_type (str): Alternative Type, In the case of a ``str, Enum`` this would be ``str``
-            enum_type (Type[Enum]): Expecte Enum Type
+            enum_type (Type[Enum]): Expected Enum Type
             enum_val (Enum): Actual Enum Value
-            arg_name (str, optional): Arg Name used to pass enum value into method.
+            arg_name (str, optional): Argument name used to pass enum value into method.
 
         Raises:
             TypeError: If ``arg_name`` is passed into this method and the type check fails.

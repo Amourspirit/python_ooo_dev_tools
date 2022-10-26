@@ -54,7 +54,7 @@ class DrawViewDispatch:
     OUTPUT_QUALITY_CONTRAST = "OutputQualityContrast"
     """High Contrast"""
     OUTPUT_QUALITY_GRAYSCALE = "OutputQualityGrayscale"
-    """Grayscale"""
+    """Gray scale"""
     PAGE_MODE = "PageMode"
     """
     Normal
@@ -96,7 +96,7 @@ class DrawViewDispatch:
     TOGGLE_TAB_BAR_VISIBILITY  = "ToggleTabBarVisibility"
     """Toggle Views Tab Bar Visibility"""
     ZOOM_MODE = "ZoomMode"
-    """Zoom & Pan (Ctrl to Zoom Out, Shift to Pan)"""
+    """Zoom & Pan (Control to Zoom Out, Shift to Pan)"""
     ZOOM_PANNING = "ZoomPanning"
     """Shift"""
     

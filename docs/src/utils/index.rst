@@ -6,6 +6,6 @@ utils
     :glob:
 
     data_type/index
-    dispathc/index
+    dispatch/index
     kind/index
     *

@@ -32,11 +32,11 @@ class DataRoleKind(str, Enum):
     VALUES_MIN = "values-min"
     """``Candle-stick`` chart - the minimum value of a series of values. In a stock-chart this would be the lowest course that occurred during trading."""
     VALUES_X = "values-x"
-    """Values are used as x-values in an XY- or bubble diagram."""
+    """Values are used as x-values in an ``XY`` - or bubble diagram."""
     VALUES_Y = "values-y"
-    """Values are used as y-values in an XY-Diagram or as values in a bar, line, etc. chart."""
+    """Values are used as y-values in an ``XY-Diagram`` or as values in a bar, line, etc. chart."""
     VALUES_Z = "values-z"
-    """Values may be used as z-values in a three-dimensional XYZ-Diagram or a surface-chart."""
+    """Values may be used as z-values in a three-dimensional ``XYZ-Diagram`` or a surface-chart."""
 
     def __str__(self) -> str:
         return str(self.value)

@@ -218,7 +218,7 @@ class NamedStockKind(ChartTypeNameBase):
 
 class ChartTypes:
     """
-    Class for convienent lookup of chart type names.
+    Class for convenient lookup of chart type names.
     """
 
     class Column:

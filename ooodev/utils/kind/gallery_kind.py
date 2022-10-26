@@ -8,7 +8,7 @@ class GalleryKind(str, Enum):
     Used to encapsulate Gallery names.
 
     Note:
-        Not all gallerny name are necessarily lister in this enum.
+        Not all gallery name are necessarily lister in this enum.
         Different system and version may have a some different values.
 
     See Also:

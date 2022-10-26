@@ -104,7 +104,7 @@ class Draw:
 
     # region Constants
     POLY_RADIUS: int = 20
-    """Defalult Poly Radius"""
+    """Default Poly Radius"""
     # endregion Constants
     class LayoutKind(IntEnum):
         TITLE_SUB = 0

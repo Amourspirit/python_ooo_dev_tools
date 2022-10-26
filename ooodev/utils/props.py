@@ -389,8 +389,8 @@ class Props:
             None:
 
         Note:
-            If ``MultiError`` occurs only the properties that errored are part of the error object.
-            The remainding properties will still be set.
+            If ``MultiError`` occurs only the properties that raised an error is part of the error object.
+            The remaining properties will still be set.
         """
         ordered_keys = (1, 2, 3)
         kargs_len = len(kwargs)
@@ -508,8 +508,8 @@ class Props:
             None:
 
         Note:
-            If ``MultiError`` occurs only the properties that errored are part of the error object.
-            The remainding properties will still be set.
+            If ``MultiError`` occurs only the properties that raised an error is part of the error object.
+            The remaining properties will still be set.
         """
         if len(kwargs) == 0:
             return

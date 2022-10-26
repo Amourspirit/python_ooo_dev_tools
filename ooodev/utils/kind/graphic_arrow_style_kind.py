@@ -5,10 +5,10 @@ from enum import Enum
 
 class GraphicArrowStyleKind(str, Enum):
     """
-    Graphic Arrow Styles Lookups
+    Graphic Arrow Styles Lookup Values
 
     The values here are sourced from LibreOffice 7.4
-    Draw, Graphic Sytles: Arrow Line dialog box.
+    Draw, Graphic Styles: Arrow Line dialog box.
 
     Example:
 

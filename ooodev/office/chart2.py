@@ -214,7 +214,7 @@ class Chart2:
         Args:
             chart_doc (XChartDocument): Chart Document
             diagram (XDiagram): diagram
-            diagram_name (ChartTemplateBase | str): Diagrame template name
+            diagram_name (ChartTemplateBase | str): Diagram template name
 
         Raises:
             ChartError: If error occurs.
@@ -499,7 +499,7 @@ class Chart2:
     @staticmethod
     def get_subtitle(chart_doc: XChartDocument) -> XTitle:
         """
-        Gets subtile from chart
+        Gets subtitle from chart
 
         Args:
             chart_doc (XChartDocument): Chart Document.
@@ -738,7 +738,7 @@ class Chart2:
 
         Args:
             chart_doc (XChartDocument): Chart Document
-            axis_val (AxisKind): Asix Kind.
+            axis_val (AxisKind): Axis Kind.
             idx (int): Index
 
         Raises:
@@ -1055,7 +1055,7 @@ class Chart2:
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            axis_val (AxisKind): Asix kind.
+            axis_val (AxisKind): Axis kind.
             idx (int): Index
             scale_type (CurveKind): Scale kind
 
@@ -1147,7 +1147,7 @@ class Chart2:
 
         Args:
             axis_name (str): Axis Name
-            axis (XAxis): Asix
+            axis (XAxis): Axis
         """
         sd = axis.getScaleData()
         print(f"Scaled Data for: {axis_name}")
@@ -1632,9 +1632,9 @@ class Chart2:
         mProps.Props.show_props("Data Source arguments", ps)
 
     @staticmethod
-    def print_labled_seqs(data_source: XDataSource) -> None:
+    def print_labeled_seqs(data_source: XDataSource) -> None:
         """
-        Prints labled sequence information to console.
+        Prints labeled sequence information to console.
 
         A diagnostic function for printing all the labeled data sequences stored in an XDataSource:
 
@@ -1730,7 +1730,7 @@ class Chart2:
     @classmethod
     def get_data_point_props(cls, chart_doc: XChartDocument, series_idx: int, idx: int) -> XPropertySet:
         """
-        Get the propreties for a specific index within the data points.
+        Get the proprieties for a specific index within the data points.
 
         Args:
             chart_doc (XChartDocument): Chart Document.
@@ -2204,7 +2204,7 @@ class Chart2:
     @classmethod
     def add_cat_labels(cls, chart_doc: XChartDocument, data_label: str, data_range: str) -> None:
         """
-        Add Cateogry Lables
+        Add Category Labels
 
         Args:
             chart_doc (XChartDocument): Chart Document

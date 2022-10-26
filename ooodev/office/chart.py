@@ -207,12 +207,12 @@ class Chart:
     def insert_chart(cls, *args, **kwargs) -> XChartDocument:
         """
         Insert a chart using the given name as name of the OLE object and
-        the range as corresponding
-        range of data to be used for rendering.  The chart is placed in the sheet
-        for charts at position (1,1) extending as large as given in chartSize.
+        the range as corresponding range of data to be used for rendering.
+        The chart is placed in the sheet for charts at position (1,1)
+        extending as large as given in chart size.
 
         The diagram name must be the name of a diagram service (i.e one
-        in "com.sun.star.chart.") that can be
+        in ``com.sun.star.chart``) that can be
         instantiated via the factory of the chart document
 
         Args:
@@ -397,7 +397,7 @@ class Chart:
             sheet (XSpreadsheet): Spreadsheet
 
         Returns:
-            Tuple[str]: Tuple of strings or empyty tuple if no charts are found
+            Tuple[str]: Tuple of strings or empty tuple if no charts are found
         """
         try:
             tbl_charts = cls.get_table_charts(sheet)
@@ -945,7 +945,7 @@ class Chart:
 
         Args:
             chart_doc (XChartDocument): Bar Diagram chart document
-            is_vertical (bool, optional): Determins if chart is drawn vertically or horizontally. Defalut ``True``.
+            is_vertical (bool, optional): Determines if chart is drawn vertically or horizontally. Default ``True``.
 
         Raises:
             DiagramNotExistingError: If ``chart_doc`` diagram does not exist
@@ -1141,7 +1141,7 @@ class Chart:
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            val (Intensity): Transparency intenesity, Higher values is more transparent.
+            val (Intensity): Transparency intensity, Higher values is more transparent.
 
         Raises:
             ChartError: If error occurs.
@@ -1296,7 +1296,7 @@ class Chart:
     @staticmethod
     def set_data_row_descriptions(chart_doc: XChartDocument, *descs: str) -> None:
         """
-        Set data row descriptons for chart.
+        Set data row descriptions for chart.
 
         Args:
             chart_doc (XChartDocument): Chart Document.
