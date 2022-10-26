@@ -3,6 +3,7 @@ from __future__ import annotations
 import uno
 from ooodev.dialog.msgbox import MsgBox, MessageBoxType, MessageBoxButtonsEnum, MessageBoxResultsEnum
 from ooodev.office.draw import Draw
+from ooodev.utils.dispatch.draw_view_dispatch import DrawViewDispatch
 from ooodev.utils.file_io import FileIO
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
@@ -48,7 +49,10 @@ class AutoShow:
             self._set_show_prop(show)
             # Props.set(show, IsEndless=True, Pause=0)
 
-            show.start()
+            Lo.dispatch_cmd(DrawViewDispatch.PRESENTATION)
+            Lo.delay(500)
+            # show.start() starts slideshow but not necessarily in 100% full screen
+            # show.start()
 
             sc = Draw.get_show_controller(show)
             Draw.wait_last(sc=sc, delay=self._end_delay)

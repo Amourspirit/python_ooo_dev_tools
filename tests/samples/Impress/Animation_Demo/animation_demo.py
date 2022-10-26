@@ -1,7 +1,9 @@
 from __future__ import annotations
 from typing import List
 
+import uno
 from ooodev.office.draw import Draw
+from ooodev.utils.dispatch.draw_view_dispatch import DrawViewDispatch
 from ooodev.utils.file_io import FileIO
 from ooodev.utils.gui import GUI
 from ooodev.utils.info import Info
@@ -85,7 +87,10 @@ class AnimationDemo:
                 GUI.set_visible(is_visible=True, odoc=doc)
 
                 show = Draw.get_show(doc)
-                show.start()
+                Lo.dispatch_cmd(DrawViewDispatch.PRESENTATION)
+                Lo.delay(500)
+                # show.start() starts slideshow but not necessarily in 100% full screen
+                # show.start()
                 sc = Draw.get_show_controller(show)
                 Draw.wait_ended(sc)
             finally:
