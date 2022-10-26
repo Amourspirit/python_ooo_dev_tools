@@ -11,7 +11,7 @@ Slide index numbers can be passed in.
 **Example:**
 
 ```sh
-python tests/samples/Draw/Custom_Show/start.py 5 6 7 8
+python tests/samples/Impress/Custom_Show/start.py 5 6 7 8
 ```
 
 If no parameters are passed then the script is run with the above parameters.
@@ -27,11 +27,11 @@ python -m start
 ### Linux/Mac
 
 ```sh
-python ./tests/samples/Draw/Custom_Show/start.py
+python ./tests/samples/Impress/Custom_Show/start.py
 ```
 
 ### Windows
 
 ```ps
-python .\tests\samples\Draw\Custom_Show\start.py
+python .\tests\samples\Impress\Custom_Show\start.py
 ```

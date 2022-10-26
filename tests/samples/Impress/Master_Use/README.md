@@ -24,11 +24,11 @@ python -m start
 ### Linux/Mac
 
 ```sh
-python ./tests/samples/Draw/Master_Use/start.py
+python ./tests/samples/Impress/Master_Use/start.py
 ```
 
 ### Windows
 
 ```ps
-python .\tests\samples\Draw\Master_Use\start.py
+python .\tests\samples\Impress\Master_Use\start.py
 ```

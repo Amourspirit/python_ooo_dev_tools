@@ -3,7 +3,7 @@
 This example demonstrates how to combine Slide show documents using Impress.
 
 There is one limitation at this time.
-For every slide that is appended the user is forced to click a **yes** in a dialog prompt.
+For every slide that is appended the user is forced to click a **yes** ( five time when adding `points.odp` ) in a dialog prompt.
 
 There is a remedy for this but it is outside of the scope for this demo, mainly
 due to the many variations it will be up to end user to make a custom implementation
@@ -24,7 +24,7 @@ All successive files are append to the first.
 **Example:**
 
 ```sh
-python -m start "tests/fixtures/presentation/algs.odp" "tests/fixtures/presentation/points.odp"
+python ./tests/samples/Impress/Append_Slides/start.py "tests/fixtures/presentation/algs.odp" "tests/fixtures/presentation/points.odp"
 ```
 
 If no args are passed in then the `points.odp` is appended to `algs.odp`.
@@ -44,11 +44,11 @@ python -m start
 ### Linux/Mac
 
 ```sh
-python ./tests/samples/Draw/Append_Slides/start.py
+python ./tests/samples/Impress/Append_Slides/start.py
 ```
 
 ### Windows
 
 ```ps
-python .\tests\samples\Draw\Append_Slides\start.py
+python .\tests\samples\Impress\Append_Slides\start.py
 ```

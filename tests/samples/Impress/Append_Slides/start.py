@@ -8,7 +8,7 @@ import sys
 def main() -> int:
     fnm_lst = []
     if len(sys.argv) > 1:
-        fnm_lst.extend(Path(sys.argv[1:]))
+        fnm_lst.extend(sys.argv[1:])
     else:
 
         files = ("algs.odp", "points.odp")

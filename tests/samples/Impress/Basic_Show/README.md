@@ -6,6 +6,16 @@ A message box is display once the slide show has ended asking if you want to clo
 
 ## Automate
 
+A single parameters can be passed in which is the slide show document to display:
+
+**Example:**
+
+```sh
+python ./tests/samples/Impress/Basic_Show/start.py "tests/fixtures/presentation/algs.odp"
+```
+
+If no parameters are passed then the script is run with the above parameters.
+
 ### Cross Platform
 
 From current example folder.
@@ -17,11 +27,11 @@ python -m start
 ### Linux/Mac
 
 ```sh
-python ./tests/samples/Draw/Basic_Show/start.py
+python ./tests/samples/Impress/Basic_Show/start.py
 ```
 
 ### Windows
 
 ```ps
-python .\tests\samples\Draw\Basic_Show\start.py
+python .\tests\samples\Impress\Basic_Show\start.py
 ```

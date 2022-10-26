@@ -17,11 +17,11 @@ python -m start
 ### Linux/Mac
 
 ```sh
-python ./tests/samples/Draw/Animation_Demo/start.py
+python ./tests/samples/Impress/Animation_Demo/start.py
 ```
 
 ### Windows
 
 ```ps
-python .\tests\samples\Draw\Animation_Demo\start.py
+python .\tests\samples\Impress\Animation_Demo\start.py
 ```

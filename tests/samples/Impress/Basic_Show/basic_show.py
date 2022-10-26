@@ -10,14 +10,8 @@ from ooodev.utils.type_var import PathOrStr
 
 class BasicShow:
     def __init__(self, fnm: PathOrStr) -> None:
-        if not FileIO.is_valid_path_or_str(fnm):
-            raise ValueError(f'fnm is not a valid format for PathOrStr: "{fnm}"')
-        p_fnm = FileIO.get_absolute_path(fnm)
-        if not p_fnm.exists():
-            raise FileNotFoundError(f"File fnm does not exist: {p_fnm}")
-        if not p_fnm.is_file():
-            raise ValueError(f'fnm is not a file: "{p_fnm}"')
-        self._fnm = p_fnm
+        _ = FileIO.is_exist_file(fnm=fnm, raise_err=True)
+        self._fnm = FileIO.get_absolute_path(fnm)
 
     def show(self) -> None:
         with Lo.Loader(Lo.ConnectPipe()) as loader:

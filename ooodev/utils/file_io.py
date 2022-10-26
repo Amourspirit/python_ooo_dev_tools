@@ -225,6 +225,104 @@ class FileIO:
             return False
         return True
 
+    # region is_exist_file()
+    @overload
+    @classmethod
+    def is_exist_file(cls, fnm: PathOrStr) -> bool:
+        ...
+
+    @overload
+    @classmethod
+    def is_exist_file(cls, fnm: PathOrStr, raise_err: bool) -> bool:
+        ...
+
+    @classmethod
+    def is_exist_file(cls, fnm: PathOrStr, raise_err: bool = False) -> bool:
+        """
+        Gets is a file actually exist.
+
+        Ensures that ``fnm`` is a valid ``PathOrStr`` format.
+
+        Ensures that ``fnm`` is an existing file.
+
+        Args:
+            fnm (PathOrStr): File to check. Relative paths are accepted
+            raise_err (bool, optional): Determines if an error is raised. Defaults to ``False``.
+
+        Raises:
+            ValueError: If ``raise_err`` is ``True`` and ``fnm`` is not a valid ``PathOrStr`` format.
+            ValueError: If ``raise_err`` is ``True`` and ``fnm`` is not a file.
+            FileNotFoundError: If ``raise_err`` is ``True`` and file is not found
+
+        Returns:
+            bool: ``True`` if file is valid; Otherwise, ``False``.
+        """
+        if not cls.is_valid_path_or_str(fnm):
+            if not raise_err:
+                return False
+            raise ValueError(f'fnm is not a valid format for PathOrStr: "{fnm}"')
+        p_fnm = cls.get_absolute_path(fnm)
+        if not p_fnm.exists():
+            if not raise_err:
+                return False
+            raise FileNotFoundError(f"File fnm does not exist: {p_fnm}")
+        if not p_fnm.is_file():
+            if not raise_err:
+                return False
+            raise ValueError(f'fnm is not a file: "{p_fnm}"')
+        return True
+
+    # endregion is_exist_file()
+
+    # region is_exist_dir()
+    @overload
+    @classmethod
+    def is_exist_dir(cls, dnm: PathOrStr) -> bool:
+        ...
+
+    @overload
+    @classmethod
+    def is_exist_dir(cls, dnm: PathOrStr, raise_err: bool) -> bool:
+        ...
+
+    @classmethod
+    def is_exist_dir(cls, dnm: PathOrStr, raise_err: bool = False) -> bool:
+        """
+        Gets is a directory actually exist.
+
+        Ensures that ``dnm`` is a valid ``PathOrStr`` format.
+
+        Ensures that ``dnm`` is an existing directory.
+
+        Args:
+            dnm (PathOrStr): directory to check. Relative paths are accepted
+            raise_err (bool, optional): Determines if an error is raised. Defaults to ``False``.
+
+        Raises:
+            ValueError: If ``raise_err`` is ``True`` and ``dnm`` is not a valid ``PathOrStr`` format.
+            FileNotFoundError: If ``raise_err`` is ``True`` and dir is not found.
+            NotADirectoryError: If ``raise_err`` is ``True`` and ``dnm`` is not a directory.
+
+        Returns:
+            bool: ``True`` if file is valid; Otherwise, ``False``.
+        """
+        if not cls.is_valid_path_or_str(dnm):
+            if not raise_err:
+                return False
+            raise ValueError(f'fnm is not a valid format for PathOrStr: "{dnm}"')
+        p_fnm = cls.get_absolute_path(dnm)
+        if not p_fnm.exists():
+            if not raise_err:
+                return False
+            raise FileNotFoundError(f"Dir fnm does not exist: {p_fnm}")
+        if not p_fnm.is_dir():
+            if not raise_err:
+                return False
+            raise NotADirectoryError(f'fnm is not a directory: "{p_fnm}"')
+        return True
+
+    # endregion is_exist_dir()
+
     @classmethod
     def make_directory(cls, dir: PathOrStr) -> None:
         """

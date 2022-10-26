@@ -26,13 +26,7 @@ class AppendSlides:
         if len(fnms) == 0:
             raise ValueError("At lease one file is required. fnms has no values.")
         for fnm in fnms:
-            if not FileIO.is_valid_path_or_str(fnm):
-                raise ValueError(f'File is not a valid path or str format: "{fnm}"')
-            p = FileIO.get_absolute_path(fnm)
-            if not p.exists():
-                raise FileNotFoundError(f'File not found: "{p}"')
-            if not p.is_file():
-                raise ValueError(f'Not a file: "{p}"')
+            FileIO.is_exist_file(fnm, True)
 
         self._fnms = fnms
 

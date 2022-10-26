@@ -15,7 +15,7 @@ Three parameters can be passed in:
 **Example:**
 
 ```sh
-python ./tests/samples/Draw/Copy_Slide/start.py "tests/fixtures/presentation/algs.odp" 0 2
+python ./tests/samples/Impress/Copy_Slide/start.py "tests/fixtures/presentation/algs.odp" 0 2
 ```
 
 If no parameters are passed then the script is run with the above parameters.
@@ -31,11 +31,11 @@ python -m start
 ### Linux/Mac
 
 ```sh
-python ./tests/samples/Draw/Bezier_Builder/start.py
+python ./tests/samples/Impress/Bezier_Builder/start.py
 ```
 
 ### Windows
 
 ```ps
-python .\tests\samples\Draw\Bezier_Builder\start.py
+python .\tests\samples\Impress\Bezier_Builder\start.py
 ```

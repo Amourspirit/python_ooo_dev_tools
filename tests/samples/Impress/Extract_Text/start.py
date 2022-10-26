@@ -8,13 +8,11 @@ def main() -> int:
     if len(sys.argv) == 2:
         fnm = sys.argv[1]
     else:
+        fnm = "tests/fixtures/presentation/algs.odp"
+        if not FileIO.is_exist_file(fnm):
+            fnm = "../../../../tests/fixtures/presentation/algs.odp"
+            FileIO.is_exist_file(fnm, True)
         fnm = Path("tests/fixtures/presentation/algs.odp")
-        p = FileIO.get_absolute_path(fnm)
-        if not p.exists():
-            fnm = Path("../../../../tests/fixtures/presentation/algs.odp")
-            p = FileIO.get_absolute_path(fnm)
-        if not p.exists():
-            raise FileNotFoundError("Unable to find path to algs.odp")
     et = ExtractText(fnm)
     et.extract()
     return 0

@@ -16,7 +16,7 @@ A single parameters can be passed in which is the slide show document to read fr
 **Example:**
 
 ```sh
-python ./tests/samples/Draw/Extract_Text/start.py "tests/fixtures/presentation/algs.odp"
+python ./tests/samples/Impress/Extract_Text/start.py "tests/fixtures/presentation/algs.odp"
 ```
 
 If no parameters are passed then the script is run with the above parameters.
@@ -32,13 +32,13 @@ python -m start
 ### Linux/Mac
 
 ```sh
-python ./tests/samples/Draw/Extract_Text/start.py
+python ./tests/samples/Impress/Extract_Text/start.py
 ```
 
 ### Windows
 
 ```ps
-python .\tests\samples\Draw\Extract_Text\start.py
+python .\tests\samples\Impress\Extract_Text\start.py
 ```
 
 ## OUTPUT
