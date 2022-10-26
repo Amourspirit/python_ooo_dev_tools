@@ -90,15 +90,6 @@ def test_mul_offset_to_offset(start: float, val: float) -> None:
     assert a3.Value == result
 
 
-@pytest.mark.parametrize("start,val", [(0.4, 0.2), (0.1, 0.002), (0.99, 0.33)])
-def test_div_aoffset_to_offset(start: float, val: float) -> None:
-    a1 = ImageOffset(start)
-    a2 = ImageOffset(val)
-    a3 = a1 / a2
-    result = round(start / val)
-    assert a3.Value == result
-
-
 @pytest.mark.parametrize("start,val", [(0.1, 0.9), (0.02, 0.3)])
 def test_lt_offset(start: float, val: float) -> None:
     a1 = ImageOffset(start)

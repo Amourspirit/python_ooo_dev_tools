@@ -2,6 +2,7 @@ from __future__ import annotations
 from abc import abstractmethod
 from typing import TYPE_CHECKING
 from dataclasses import dataclass
+import math
 
 if TYPE_CHECKING:
     try:
@@ -56,7 +57,7 @@ class BaseFloatValue:
         # for example, the truth of (x<y or x==y) does not imply x<=y.
         try:
             i = float(other)
-            return i == self.Value
+            return math.isclose(i, self.Value)
         except Exception as e:
             return False
 
@@ -96,6 +97,8 @@ class BaseFloatValue:
     def __lt__(self, other: object) -> bool:
         try:
             i = float(other)
+            if math.isclose(i, self.Value):
+                return False
             return self.Value < i
         except Exception:
             return NotImplemented
@@ -103,6 +106,8 @@ class BaseFloatValue:
     def __le__(self, other: object) -> bool:
         try:
             i = float(other)
+            if math.isclose(i, self.Value):
+                return True
             return self.Value <= i
         except Exception:
             return NotImplemented
@@ -110,6 +115,8 @@ class BaseFloatValue:
     def __gt__(self, other: object) -> bool:
         try:
             i = float(other)
+            if math.isclose(i, self.Value):
+                return False
             return self.Value > i
         except Exception:
             return NotImplemented
@@ -117,23 +124,11 @@ class BaseFloatValue:
     def __ge__(self, other: object) -> bool:
         try:
             i = float(other)
+            if math.isclose(i, self.Value):
+                return True
             return self.Value >= i
         except Exception:
             return NotImplemented
 
     def __abs__(self) -> int:
         return abs(self.Value)
-
-    def __truediv__(self, other):
-        try:
-            i = float(other)
-            return self._from_float(round(self.Value / i))
-        except Exception:
-            return NotImplemented
-
-    def __rtruediv__(self, other):
-        try:
-            i = float(other)
-            return self._from_float(round(i / self.Value))
-        except Exception:
-            return NotImplemented

@@ -25,7 +25,7 @@ def tmp_path():
 
 @pytest.fixture(scope="session")
 def test_headless():
-    return False
+    return True
 
 @pytest.fixture(scope="session")
 def loader(tmp_path, test_headless):
