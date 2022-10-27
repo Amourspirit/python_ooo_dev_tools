@@ -6,11 +6,11 @@ from __future__ import annotations
 import os
 import tempfile
 import datetime
-import glob
 import zipfile
 from pathlib import Path
-from urllib.parse import urlparse
+import urllib.parse
 from typing import Generator, List, TYPE_CHECKING, overload
+
 import uno
 from com.sun.star.io import XActiveDataSink
 from com.sun.star.io import XTextInputStream
@@ -79,8 +79,8 @@ class FileIO:
             Path: path as string
         """
         try:
-            p = urlparse(url)
-            final_path = cls.get_absolute_path(os.path.join(p.netloc, p.path))
+            p = urllib.parse.urlparse(url)
+            final_path = cls.get_absolute_path(os.path.join(p.netloc, urllib.parse.unquote(p.path)))
             return final_path
         except Exception as e:
             raise Exception(f"Could not parse '{url}'")
@@ -129,9 +129,9 @@ class FileIO:
             Path: Converted URI as path.
         """
         # converts 'file:///C:/Program%20Files/LibreOffice/program/../program/addin'
-        # into: 'C:\\Program%20Files\\LibreOffice\\program\\addin'
-        pr = urlparse(str(uri_fnm))
-        p = Path(pr.path)
+        # into: 'C:\\Program Files\\LibreOffice\\program\\addin'
+        pr = urllib.parse.urlparse(str(uri_fnm))
+        p = Path(urllib.parse.unquote(pr.path))
         if not ensure_absolute:
             return p
         if p.is_absolute():
