@@ -1,10 +1,12 @@
 class DrawViewDispatch:
     """
     Draw View Dispatch Commands
-    
+
     See Also:
-        `Draw Dispatch commands <https://wiki.documentfoundation.org/Development/DispatchCommands#Draw_.2F_Impress>`_
+        - :py:meth:`.Lo.dispatch_cmd`
+        - `Draw Dispatch commands <https://wiki.documentfoundation.org/Development/DispatchCommands#Draw_.2F_Impress>`_
     """
+
     CLEAR_UNDO_STACK = "ClearUndoStack"
     COLOR_VIEW = "ColorView"
     """Black & White View"""
@@ -20,7 +22,7 @@ class DrawViewDispatch:
     """Snap to Snap Guides"""
     HELPLINES_VISIBLE = "HelplinesVisible"
     """Display Snap Guides"""
-    LAYER_MODE  = "LayerMode"
+    LAYER_MODE = "LayerMode"
     """
     Layer
     
@@ -67,13 +69,13 @@ class DrawViewDispatch:
     """Slide/Layer"""
     PRESENTATION = "Presentation"
     """Start from First Slide"""
-    PRESENTATION_CURRENT_SLIDE  = "PresentationCurrentSlide"
+    PRESENTATION_CURRENT_SLIDE = "PresentationCurrentSlide"
     """Start from Current Slide"""
     PRESENTATION_END = "PresentationEnd"
     PREVIEW_STATE = "PreviewState"
     PREVIOUS_ANNOTATION = "PreviousAnnotation"
     SCALE = "Scale"
-    SLIDE_MASTER_PAGE  = "SlideMasterPage"
+    SLIDE_MASTER_PAGE = "SlideMasterPage"
     """Master Slide"""
     SNAP_BORDER = "SnapBorder"
     """Snap to Page Margins"""
@@ -93,10 +95,9 @@ class DrawViewDispatch:
         - WhatPage (int)
         - WhatKind (int)
     """
-    TOGGLE_TAB_BAR_VISIBILITY  = "ToggleTabBarVisibility"
+    TOGGLE_TAB_BAR_VISIBILITY = "ToggleTabBarVisibility"
     """Toggle Views Tab Bar Visibility"""
     ZOOM_MODE = "ZoomMode"
     """Zoom & Pan (Control to Zoom Out, Shift to Pan)"""
     ZOOM_PANNING = "ZoomPanning"
     """Shift"""
-    
