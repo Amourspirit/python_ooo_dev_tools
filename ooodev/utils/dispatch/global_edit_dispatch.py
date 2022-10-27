@@ -16,7 +16,7 @@ class GlobalEditDispatch:
         - ``FilterName (str)``
         - ``Password (str)``
         - ``FilterOptions (str)``
-        - ``Version (int)
+        - ``Version (int)``
         - ``NoAcceptDialog (bool)``
     """
     COPY = "Copy"
