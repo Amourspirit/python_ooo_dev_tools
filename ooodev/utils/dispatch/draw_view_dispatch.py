@@ -26,7 +26,7 @@ class DrawViewDispatch:
     """
     Layer
     
-    Args:
+    Args
         - IsActive (bool)
         - WhatLayer (int)
     """
@@ -36,7 +36,7 @@ class DrawViewDispatch:
     """
     Master
     
-    Args:
+    Args
         - IsActive (bool)
     """
     NEXT_ANNOTATION = "NextAnnotation"
@@ -61,7 +61,7 @@ class DrawViewDispatch:
     """
     Normal
     
-    Args:
+    Args
         - IsActive (bool)
         - WhatKind (int)
     """
@@ -86,12 +86,12 @@ class DrawViewDispatch:
     """Modify Object with Attributes"""
     SWITCH_LAYER = "SwitchLayer"
     """
-    Args:
+    Args
         - WhatLayer (int)
     """
     SWITCH_PAGE = "SwitchPage"
     """
-    Args:
+    Args
         - WhatPage (int)
         - WhatKind (int)
     """

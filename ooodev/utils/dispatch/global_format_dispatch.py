@@ -1,6 +1,6 @@
 class GlobalFormatDispatch:
     """
-    Glaobal Format Dispatch Commands
+    Global Format Dispatch Commands
 
     See Also:
         - :py:meth:`.Lo.dispatch_cmd`
@@ -19,14 +19,14 @@ class GlobalFormatDispatch:
     """
     Auto-Format Styles
 
-    Args:
+    Args
         - ``aFormatName (str)``
     """
     BACKGROUND_COLOR = "BackgroundColor"
     """
     Background Color
 
-    Args:
+    Args
         - ``Color (str)``
         - ``BackgroundColor  (color)``
     """
@@ -63,7 +63,7 @@ class GlobalFormatDispatch:
     """``UPPERCASE``"""
     CHAR_BACK_COLOR = "CharBackColor"
     """
-    Args:
+    Args
         - ``Color (str)``
         - ``CharBackColor (color)``
     """
@@ -76,7 +76,7 @@ class GlobalFormatDispatch:
     """
     Font Color
 
-    Args:
+    Args
         - ``Color (str)``
         - ``Color (color)``
         - ``ColorThemeIndex (int)``
@@ -112,7 +112,7 @@ class GlobalFormatDispatch:
     """
     Fill Color
 
-    Args:
+    Args
         - ``Color (str)``
         - ``FillColor (xfillcolor)``
         - ``ColorThemeIndex (int)``
@@ -159,7 +159,7 @@ class GlobalFormatDispatch:
     FORMAT_TEXT_MENU = "FormatTextMenu"
     """Text"""
     FORMAT_UNGROUP = "FormatUngroup"
-    """Un-group"""
+    """``Un-group``"""
     GRAF_BLUE = "GrafBlue"
     """Blue"""
     GRAF_CONTRAST = "GrafContrast"
@@ -196,7 +196,7 @@ class GlobalFormatDispatch:
     """
     Select start and end arrowheads for lines.
 
-    Args:
+    Args
         - ``LineStart (xlinestart)``
         - ``LineEnd (xlineend)``
         - ``StartWidth (int)``
@@ -212,7 +212,7 @@ class GlobalFormatDispatch:
     """
     Line Width
 
-    Args:
+    Args
         - ``Width (float)``
         - ``LineWidth (LineWidth)``
     """
@@ -224,7 +224,7 @@ class GlobalFormatDispatch:
     """Show Formatting"""
     OVERLINE = "Overline"
     PARA_LEFT_TO_RIGHT = "ParaLeftToRight"
-    """Left-To-Righ"""
+    """Left-To-Right"""
     PARA_RIGHT_TO_LEFT = "ParaRightToLeft"
     """Right-To-Left"""
     PARAGRAPH_DIALOG = "ParagraphDialog"
@@ -271,7 +271,7 @@ class GlobalFormatDispatch:
     """
     Apply Suggestion
 
-    Args:
+    Args
         - ``ApplyRule (str)``
     """
     SPELL_CHECK_IGNORE = "SpellCheckIgnore"
@@ -284,7 +284,7 @@ class GlobalFormatDispatch:
     """Table Design"""
     TABLE_STYLE_SETTINGS = "TableStyleSettings"
     """
-    Args:
+    Args
         - ``UseFirstRowStyle (bool)``
         - ``UseLastRowStyle (bool)``
         - ``UseBandingRowStyle (bool)``
@@ -300,7 +300,7 @@ class GlobalFormatDispatch:
     """
     Position and Size
 
-    Args:
+    Args
         - `TransformPosX (int)``
         - ``TransformPosY (int)``
         - ``TransformWidth (int)``
@@ -329,7 +329,7 @@ class GlobalFormatDispatch:
     """
     Line Color
 
-    Args:
+    Args
         - `Color (str)``
         - ``XLineColor (xlinecolor)``
     """

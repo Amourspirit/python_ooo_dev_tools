@@ -11,7 +11,7 @@ class GlobalEditDispatch:
     """
     Compare Non-Track Changed Document
     
-    Args:
+    Args
         - ``URL (str)``
         - ``FilterName (str)``
         - ``Password (str)``
@@ -35,14 +35,14 @@ class GlobalEditDispatch:
     """
     Delete Comment
 
-    Args:
+    Args
         - ``ID (postitid)``
     """
     DELETE_COMMENT_THREAD = "DeleteCommentThread"
     """
     Delete Comment Thread
 
-    Args:
+    Args
         - ``ID (postitid)``
     """
     DELETE_FRAME = "DeleteFrame"
@@ -53,7 +53,7 @@ class GlobalEditDispatch:
     """
     Edit
 
-    Args:
+    Args
         - ``Param (str)``
         - ``Family (int)``
     """
@@ -70,7 +70,7 @@ class GlobalEditDispatch:
     """
     Merge Track Changed Document
 
-    Args:
+    Args
         - ``URL (str)``
         - ``Version (int)``
     """
@@ -82,7 +82,7 @@ class GlobalEditDispatch:
     """Smart Tags"""
     PASTE = "Paste"
     PASTE_UNFORMATTED = "PasteUnformatted"
-    """Unformatted Text"""
+    """``Un-formatted`` Text"""
     PROTECT_TRACE_CHANGE_MODE = "ProtectTraceChangeMode"
     """Protect Track Changes"""
     REDO = "Redo"
