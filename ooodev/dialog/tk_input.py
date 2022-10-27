@@ -1,9 +1,14 @@
-# from tkinter import *
+from ooodev.mock import mock_g
+from ..mock import mock_g
+
 try:
     import tkinter as tk
 except ImportError:
-    # ignoring simply because windows and sphinx don't see tkinter when python interpreter is pointed to LibreOffice python.exe
-    pass
+    if mock_g.DOCS_BUILDING:
+        # ignoring simply because windows and sphinx don't see tkinter when python interpreter is pointed to LibreOffice python.exe
+        pass
+    else:
+        raise
 
 
 class Window:
