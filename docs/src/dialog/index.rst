@@ -1,0 +1,8 @@
+dialog
+======
+
+.. toctree::
+    :titlesonly:
+    :glob:
+
+    *

@@ -1,4 +1,3 @@
-import os
 import pytest
 from pathlib import Path
 from typing import cast, TYPE_CHECKING
@@ -8,11 +7,12 @@ from typing import cast, TYPE_CHECKING
 if __name__ == "__main__":
     pytest.main([__file__])
 
+
 def test_get_bitmap(loader, fix_image_path) -> None:
     from ooodev.utils.lo import Lo
     from ooodev.office.write import Write
     from ooodev.utils.images_lo import ImagesLo
-    
+
     im_fnm = cast(Path, fix_image_path("skinner.png"))
     # needs an office document to use get_bitmap
     doc = Write.create_doc(loader)
@@ -28,6 +28,7 @@ def test_get_bitmap(loader, fix_image_path) -> None:
     finally:
         Lo.close_doc(doc, False)
 
+
 def test_load_graphic(loader, fix_image_path) -> None:
     from ooodev.utils.lo import Lo
     from ooodev.office.write import Write
@@ -35,6 +36,7 @@ def test_load_graphic(loader, fix_image_path) -> None:
     from ooodev.utils.props import Props
     from ooodev.utils.info import Info
     from functools import partial
+
     if TYPE_CHECKING:
         from com.sun.star.graphic import Graphic
     im_fnm = cast(Path, fix_image_path("skinner.png"))
@@ -66,11 +68,12 @@ def test_load_graphic(loader, fix_image_path) -> None:
     finally:
         Lo.close_doc(doc, False)
 
+
 def test_get_size_pixels(loader, fix_image_path) -> None:
     from ooodev.utils.lo import Lo
     from ooodev.office.write import Write
     from ooodev.utils.images_lo import ImagesLo
-    
+
     im_fnm = cast(Path, fix_image_path("skinner.png"))
     # needs an office document to use get_bitmap
     doc = Write.create_doc(loader)
@@ -81,11 +84,13 @@ def test_get_size_pixels(loader, fix_image_path) -> None:
     finally:
         Lo.close_doc(doc, False)
 
+
 def _test_add_image_link(loader, fix_image_path) -> None:
     from ooodev.utils.lo import Lo
     from ooodev.office.write import Write
     from ooodev.utils.images_lo import ImagesLo
     from ooodev.utils.gui import GUI
+
     visible = True
     delay = 2000
     im_fnm = cast(Path, fix_image_path("skinner.png"))
@@ -99,13 +104,13 @@ def _test_add_image_link(loader, fix_image_path) -> None:
         graphics = Write.get_text_graphics(doc)
         assert graphics is None
         Lo.delay(delay)
-        
+
         Write.append(cursor, "Image as a shape: ")
         Write.add_image_shape(doc=doc, cursor=cursor, fnm=im_fnm)
         graphics = Write.get_text_graphics(doc)
         assert graphics is None
         Lo.delay(delay)
-        
+
         graphic = ImagesLo.load_graphic_file(im_fnm)
         gl = ImagesLo.load_graphic_link(graphic)
         assert gl is not None

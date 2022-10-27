@@ -2,10 +2,10 @@
 # Python conversion of Info.java by Andrew Davison, ad@fivedots.coe.psu.ac.th
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 from __future__ import annotations
-from enum import IntFlag
+from enum import Enum, IntFlag
 from pathlib import Path
 import mimetypes
-from typing import TYPE_CHECKING, Any, Tuple, List, cast, overload, Optional
+from typing import TYPE_CHECKING, Any, Tuple, List, Type, cast, overload, Optional
 import uno
 from ..events.event_singleton import _Events
 from ..events.lo_named_event import LoNamedEvent
@@ -443,7 +443,7 @@ class Info(metaclass=StaticProperty):
             raise ValueError(f"Could not find paths for: {setting}") from e
 
     @classmethod
-    def get_dirs(cls, setting: str) -> List[str]:
+    def get_dirs(cls, setting: str) -> List[Path]:
         """
         Gets dirs paths from settings
 
@@ -454,7 +454,7 @@ class Info(metaclass=StaticProperty):
             List[str]: List of paths
 
         See Also:
-            :py:meth:`~Info.get_paths`
+            :py:meth:`~.Info.get_paths`
 
             `Wiki Path Settings <https://wiki.openoffice.org/w/index.php?title=Documentation/DevGuide/OfficeDev/Path_Settings>`_
         """
@@ -466,10 +466,10 @@ class Info(metaclass=StaticProperty):
         paths_arr = paths.split(";")
         if len(paths_arr) == 0:
             mLo.Lo.print(f"Cound not split paths for '{setting}'")
-            return [str(mFileIO.FileIO.uri_to_path(paths))]
+            return [mFileIO.FileIO.uri_to_path(paths)]
         dirs = []
         for el in paths_arr:
-            dirs.append(str(mFileIO.FileIO.uri_to_path(el)))
+            dirs.append(mFileIO.FileIO.uri_to_path(el))
         return dirs
 
     @classmethod
@@ -506,7 +506,7 @@ class Info(metaclass=StaticProperty):
             raise ValueError("Unable to get office dir") from e
 
     @classmethod
-    def get_gallery_dir(cls) -> str:
+    def get_gallery_dir(cls) -> Path:
         """
         Get the first directory that contain the Gallery database and multimedia files.
 
@@ -514,7 +514,7 @@ class Info(metaclass=StaticProperty):
             ValueError if unable to obtain gallery dir.
 
         Returns:
-            str: Gallery Dir
+            Path: Gallery Dir
 
         See Also:
             :ref:`ch03`
@@ -1031,32 +1031,31 @@ class Info(metaclass=StaticProperty):
             print(f"'{service}'")
 
     @staticmethod
-    def support_service(obj: object, service: str) -> bool:
+    def support_service(obj: object, *service: str) -> bool:
         """
-        Gets if ``obj`` supports service
+        Gets if ``obj`` supports a service.
 
         Args:
             obj (object): Object to check for supported service
-            service (string): Any UNO such as ``com.sun.star.configuration.GroupAccess``
+            *service (str): Variable length argument list of UNO namespace strings such as ``com.sun.star.configuration.GroupAccess``
 
         Returns:
-            bool: True if obj supports service; Otherwise; False
+            bool: ``True`` if ``obj`` supports any passed in service; Otherwise, ``False``
         """
 
-        if isinstance(service, str):
-            srv = service
-        else:
-            raise TypeError(f"service is expected to be a string")
+        result = False
         try:
             si = mLo.Lo.qi(XServiceInfo, obj)
             if si is None:
-                return False
-            return si.supportsService(srv)
+                return result
+            for srv in service:
+                result = si.supportsService(srv)
+                if result:
+                    break
         except Exception as e:
             mLo.Lo.print("Errors ocurred in support_service(). Returning False")
             mLo.Lo.print(f"    {e}")
-            pass
-        return False
+        return result
 
     @staticmethod
     def get_available_services(obj: object) -> List[str]:
@@ -1271,6 +1270,24 @@ class Info(metaclass=StaticProperty):
             id2 = id(obj2)
             return id1 == id2
         return obj1 == obj2
+
+    @staticmethod
+    def show_container_names(print_name: str, nc: XNameContainer):
+        """
+        Prints Name Container elements to console
+
+        Args:
+            print_name (str): Name to display. Can be empty string.
+            nc (XNameContainer): Name Container to print element names of.
+        """
+        names = nc.getElementNames()
+        if print_name:
+            print(f"No. of Names in {print_name}: {len(names)}")
+        else:
+            print(f"No. of Names in Name Container: {len(names)}")
+        for name in names:
+            print(f"  {name}")
+        print()
 
     @classmethod
     def show_interfaces(cls, obj_name: str, obj: object) -> None:
@@ -2033,6 +2050,58 @@ class Info(metaclass=StaticProperty):
         if hasattr(obj, "typeName"):
             return obj.typeName == type_name
         return False
+
+    # region is_type_enum_multi()
+    @overload
+    @staticmethod
+    def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: Enum) -> bool:
+        ...
+
+    @overload
+    @staticmethod
+    def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: Enum, arg_name: str) -> bool:
+        ...
+
+    @staticmethod
+    def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: Enum, arg_name: str = "") -> bool:
+        """
+        Gets if an multiple inheritance enum, such as a ``str, Enum`` is of expected type.
+
+        Args:
+            alt_type (str): Alternative Type, In the case of a ``str, Enum`` this would be ``str``
+            enum_type (Type[Enum]): Expected Enum Type
+            enum_val (Enum): Actual Enum Value
+            arg_name (str, optional): Argument name used to pass enum value into method.
+
+        Raises:
+            TypeError: If ``arg_name`` is passed into this method and the type check fails.
+
+        Returns:
+            bool: ``True`` if ``enum_val`` is valid ``alt_type`` or ``enum_type``; Otherwise, ``False``
+
+        Example:
+            .. code-block:: python
+
+                >>> from ooodev.utils.kind import chart2_types as ct
+
+                >>> val = ct.Area3dKind.PERCENT_STACKED_AREA_3D
+                >>> print(is_enum_type("str", ct.ChartTemplateBase, val))
+                True
+                >>> print(is_enum_type("str", ct.ChartTypeNameBase, val))
+                False
+                >>> print(is_enum_type("str", ct.ChartTypeNameBase, val, "input_enum"))
+                TypeError: Parameter "input_enum" must be of type "str" or "ChartTypeNameBase"
+        """
+        if type(enum_val).__name__ != alt_type:
+            if not isinstance(enum_val, enum_type):
+                if arg_name:
+                    name = enum_type.__name__
+                    raise TypeError(f'Parameter "{arg_name}" must be of type "{alt_type}" or "{name}"')
+                else:
+                    return False
+        return True
+
+    # endregion is_type_enum_multi()
 
     @classmethod
     def get_type_name(cls, obj: object) -> str | None:

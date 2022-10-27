@@ -1,8 +1,7 @@
 # coding: utf-8
 # region Imports
 from __future__ import annotations
-from typing import TYPE_CHECKING, Any, Iterable, List, cast, overload
-from enum import Enum
+from typing import TYPE_CHECKING, Iterable, List, cast, overload
 
 import uno
 
@@ -10,6 +9,7 @@ from . import lo as mLo
 from . import info as mInfo
 from . import props as mProps
 from . import gui as mGui
+from .kind.form_component_kind import FormComponentKind
 
 from com.sun.star.awt import XControl
 from com.sun.star.awt import XControlModel
@@ -46,50 +46,6 @@ if TYPE_CHECKING:
 
 
 class Forms:
-    # region ComponentKind
-    class CompenentKind(str, Enum):
-        CheckBox = "CheckBox"
-        ComboBox = "ComboBox"
-        CommandButton = "CommandButton"
-        CurrencyField = "CurrencyField"
-        DatabaseCheckBox = "DatabaseCheckBox"
-        DatabaseComboBox = "DatabaseComboBox"
-        DatabaseCurrencyField = "DatabaseCurrencyField"
-        DatabaseDateField = "DatabaseDateField"
-        DatabaseFormattedField = "DatabaseFormattedField"
-        DatabaseImageControl = "DatabaseImageControl"
-        DatabaseListBox = "DatabaseListBox"
-        DatabaseNumericField = "DatabaseNumericField"
-        DatabasePatternField = "DatabasePatternField"
-        DatabaseRadioButton = "DatabaseRadioButton"
-        DatabaseTextField = "DatabaseTextField"
-        DatabaseTimeField = "DatabaseTimeField"
-        DateField = "DateField"
-        FileControl = "FileControl"
-        FixedText = "FixedText"
-        FormattedField = "FormattedField"
-        GridControl = "GridControl"
-        GroupBox = "GroupBox"
-        HiddenControl = "HiddenControl"
-        HTMLForm = "HTMLForm"
-        ImageButton = "ImageButton"
-        ListBox = "ListBox"
-        NavigationToolBar = "NavigationToolBar"
-        NumericField = "NumericField"
-        PatternField = "PatternField"
-        RadioButton = "RadioButton"
-        RichTextControl = "RichTextControl"
-        ScrollBar = "ScrollBar"
-        SpinButton = "SpinButton"
-        SubmitButton = "SubmitButton"
-        TextField = "TextField"
-        TimeField = "TimeField"
-
-        def __str__(self) -> str:
-            return self._value_
-
-    # endregion ComponentKind
-
     # region    access forms in document
     # region        get_forms()
     @overload
@@ -324,7 +280,7 @@ class Forms:
                     break
             if count == 1:
                 return ka
-            ka[2] = ka.get("named_forms", None)
+            ka[2] = kwargs.get("named_forms", None)
             return ka
 
         if not count in (1, 2):
@@ -373,6 +329,9 @@ class Forms:
 
         Args:
             doc (XComponent): Component
+
+        Returns:
+            None:
         """
         form_names_con = cls.get_forms(doc)
         form_names = form_names_con.getElementNames()
@@ -389,6 +348,9 @@ class Forms:
         Args:
             obj (XComponent | XNameAccess): Component or Name Access
             tab_str (str, optional): tab string
+
+        Returns:
+            None:
         """
         if mLo.Lo.is_uno_interfaces(obj, XComponent):
             xcontainer = cls.get_forms(obj)
@@ -830,7 +792,7 @@ class Forms:
         doc: XComponent,
         name: str,
         label: str | None,
-        comp_kind: Forms.CompenentKind | str,
+        comp_kind: FormComponentKind | str,
         x: int,
         y: int,
         width: int,
@@ -845,14 +807,13 @@ class Forms:
         doc: XComponent,
         name: str,
         label: str | None,
-        comp_kind: Forms.CompenentKind | str,
+        comp_kind: FormComponentKind | str,
         x: int,
         y: int,
         width: int,
         height: int,
         anchor_type: TextContentAnchorType | None = None,
         parent_form: XNameContainer | None = None,
-        **props: Any,
     ) -> XPropertySet:
         ...
 
@@ -862,14 +823,13 @@ class Forms:
         doc: XComponent,
         name: str,
         label: str | None,
-        comp_kind: Forms.CompenentKind | str,
+        comp_kind: FormComponentKind | str,
         x: int,
         y: int,
         width: int,
         height: int,
         anchor_type: TextContentAnchorType | None = None,
         parent_form: XNameContainer | None = None,
-        **props: Any,
     ) -> XPropertySet:
         """
         Add a control
@@ -878,14 +838,13 @@ class Forms:
             doc (XComponent): Component
             name (str): Control Name
             label (str | None): Label to assign to control
-            comp_kind (Forms.CompenentKind | str): Kind of control such as ``CheckBox``.
+            comp_kind (FormComponentKind | str): Kind of control such as ``CheckBox``.
             x (int): Control X position
             y (int): Control Y Position
             width (int): Control width#
             height (int): control height
             anchor_type (TextContentAnchorType | None): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             parent_form (XNameContainer | None): Parent form in which to add control.
-            props (Any, optional): Extra key value properties that are applied to control.
 
         Returns:
             XPropertySet: Control Property Set
@@ -938,9 +897,6 @@ class Forms:
             model_props.setPropertyValue("Name", name)
             if label is not None:
                 model_props.setPropertyValue("Label", label)
-            # set any extra user properties
-            for k, v in props.items():
-                model_props.setPropertyValue(k, v)
             return model_props
         except Exception:
             raise
@@ -951,14 +907,14 @@ class Forms:
     @overload
     @classmethod
     def add_labelled_control(
-        cls, doc: XComponent, label: str, comp_kind: Forms.CompenentKind | str, y: int
+        cls, doc: XComponent, label: str, comp_kind: FormComponentKind | str, y: int
     ) -> XPropertySet:
         ...
 
     @overload
     @classmethod
     def add_labelled_control(
-        cls, doc: XComponent, label: str, comp_kind: Forms.CompenentKind | str, x: int, y: int, height: int
+        cls, doc: XComponent, label: str, comp_kind: FormComponentKind | str, x: int, y: int, height: int
     ) -> XPropertySet:
         ...
 
@@ -970,7 +926,7 @@ class Forms:
         Args:
             doc (XComponent): Component
             label (str): Label to assign to control
-            comp_kind (Forms.CompenentKind | str): Kind of control such as ``CheckBox``.
+            comp_kind (FormComponentKind | str): Kind of control such as ``CheckBox``.
             x (int): Control X position
             y (int): Control Y Position
             height (int): control height
@@ -1023,7 +979,7 @@ class Forms:
 
     @classmethod
     def _add_labelled_control(
-        cls, doc: XComponent, label: str, comp_kind: Forms.CompenentKind | str, x: int, y: int, height: int
+        cls, doc: XComponent, label: str, comp_kind: FormComponentKind | str, x: int, y: int, height: int
     ) -> XPropertySet:
         try:
             name = f"{label}_label"
@@ -1032,7 +988,7 @@ class Forms:
                 doc=doc,
                 name=name,
                 label=label,
-                comp_kind=Forms.CompenentKind.FixedText,
+                comp_kind=FormComponentKind.FIXED_TEXT,
                 x=x,
                 y=y,
                 width=40,
@@ -1099,7 +1055,7 @@ class Forms:
                 doc=doc,
                 name=name,
                 label=label,
-                comp_kind=Forms.CompenentKind.CommandButton,
+                comp_kind=FormComponentKind.COMMAND_BUTTON,
                 x=x,
                 y=y,
                 width=width,
@@ -1141,7 +1097,7 @@ class Forms:
                 doc=doc,
                 name=name,
                 label=None,
-                comp_kind=Forms.CompenentKind.ListBox,
+                comp_kind=FormComponentKind.LIST_BOX,
                 x=x,
                 y=y,
                 width=width,
@@ -1149,11 +1105,11 @@ class Forms:
             )
             items = mProps.Props.any(*[s for s in entries])
             # lst_props.setPropertyValue("DefaultSelection", 0)
-            uno.invoke(lst_props, 'setPropertyValue', ("ListSource", items))
+            uno.invoke(lst_props, "setPropertyValue", ("ListSource", items))
             uno.invoke(lst_props, "setPropertyValue", ("DefaultSelection", mProps.Props.any(0)))
             lst_props.setPropertyValue("Dropdown", True)
             lst_props.setPropertyValue("MultiSelection", False)
-            uno.invoke(lst_props, 'setPropertyValue', ("StringItemList", items))
+            uno.invoke(lst_props, "setPropertyValue", ("StringItemList", items))
             uno.invoke(lst_props, "setPropertyValue", ("SelectedItems", mProps.Props.any(0)))
             return lst_props
         except Exception:
@@ -1183,7 +1139,7 @@ class Forms:
                 doc=doc,
                 name=name,
                 label=None,
-                comp_kind=Forms.CompenentKind.DatabaseListBox,
+                comp_kind=FormComponentKind.DATABASE_LIST_BOX,
                 x=x,
                 y=y,
                 width=width,
@@ -1210,6 +1166,9 @@ class Forms:
             data_field (str): the database field to which the column should be bound
             col_kind (str):  the column type such as "NumericField"
             width (int): the column width (in mm). If 0, no width is set.
+
+        Returns:
+            None:
         """
         # column container and factory
         col_container = mLo.Lo.qi(XIndexContainer, grid_model)
@@ -1238,6 +1197,9 @@ class Forms:
             xform (XForm): Form
             src_name (str): Source Name URL
             tbl_name (str): Table Name
+
+        Returns:
+            None:
         """
         mProps.Props.set_property(obj=xform, name="DataSourceName", value=src_name)
         mProps.Props.set_property(obj=xform, name="Command", value=tbl_name)
@@ -1252,6 +1214,9 @@ class Forms:
             xform (XForm): Form
             src_name (str): Source Name URL
             cmd (str): Command
+
+        Returns:
+            None:
         """
         mProps.Props.set_property(obj=xform, name="DataSourceName", value=src_name)
         mProps.Props.set_property(obj=xform, name="Command", value=cmd)
@@ -1274,6 +1239,9 @@ class Forms:
             method_name (str): Method Name
             script_name (str): Script Name
             loc (str): can be user, share, document, and extensions
+
+        Returns:
+            None:
 
         See Also:
             `Scripting Framework URI Specification <https://wiki.openoffice.org/wiki/Documentation/DevGuide/Scripting/Scripting_Framework_URI_Specification>`_

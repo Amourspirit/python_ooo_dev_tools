@@ -1,0 +1,46 @@
+
+What is a Algorithm? 
+
+> An algorithm is a finite set of unambiguous instructions for solving a problem.
+
+>> An algorithm is correct if on all legitimate inputs, it outputs the right answer in a finite amount of time
+
+> Can be expressed as
+>>pseudocode
+>>flow charts
+>>text in a natural language (e.g. English)
+>>computer code
+
+// ======================================================
+
+Algorithm Design
+
+> The theoretical  study of how to solve  computational problems
+>>sorting a list of numbers
+>>   finding a shortest route on a map
+>> scheduling when to work on homework
+>> answering web search queries
+>> and so on...
+
+// ======================================================
+
+The Importance of Algorithms
+
+> Their impact is broad and far-reaching.
+>> Internet. Web search, packet routing, ...
+>> Computers. Circuit layout, file system, compilers, ...
+>> Computer graphics. Movies, virtual reality, ...
+>> Security. Cell phones, e-commerce, ...
+>> Multimedia. MP3, JPG, DivX, HDTV, ...
+>> Social networks.  Recommendations, news feeds, ads, ...
+
+// ======================================================
+
+Top Ten Algorithms of the Century
+
+> Ten algorithms having "the greatest influence on the development and practice of science and engineering in the 20th century".
+
+>> Dongarra and Sullivan, "Computing in Science and Engineering", January/February 2000
+
+>> Barry Cipra, "The Best of the 20th Century: Editors Name Top 10 Algorithms", SIAM News, Volume 33, Number 4, May 2000
+>>> http://www.siam.org/pdf/news/637.pdf

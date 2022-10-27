@@ -3,7 +3,7 @@
 from __future__ import annotations
 from logging import exception
 from typing import TYPE_CHECKING, Iterable, overload, Any
-from enum import Enum
+from enum import Enum, IntEnum
 import uno
 
 from com.sun.star.accessibility import XAccessible
@@ -42,11 +42,11 @@ if TYPE_CHECKING:
     from com.sun.star.frame import XController
     from com.sun.star.ui import XUIElement
 
+from ..dialog import input as mInput
 from ..utils import lo as mLo
 from ..utils import props as mProps
 from ..utils import info as mInfo
 from ..utils import file_io as mFileIO
-
 from ..utils import sys_info as m_sys_info
 from ..exceptions import ex as mEx
 
@@ -64,7 +64,38 @@ class GUI:
 
     # region Class Enums
     # view settings zoom constants
-    ZoomEnum = DocumentZoomTypeEnum
+    # ZoomEnum = DocumentZoomTypeEnum
+    class ZoomEnum(IntEnum):
+        OPTIMAL = 0
+        """
+        The page content width (excluding margins) at the current selection is fit into the view.
+        """
+        PAGE_WIDTH = 1
+        """
+        The page width at the current selection is fit into the view.
+        """
+        ENTIRE_PAGE = 2
+        """
+        A complete page of the document is fit into the view.
+        """
+        BY_VALUE = 3
+        """
+        The zoom is relative and is to be set via the property ViewSettings.ZoomValue.
+        """
+        PAGE_WIDTH_EXACT = 4
+        """
+        The page width at the current selection is fit into the view, with the view ends exactly at the end of the page.
+        """
+        ZOOM_50_PERCENT = 1000
+        """Zoom 50%"""
+        ZOOM_75_PERCENT = 1001
+        """Zoom 75%"""
+        ZOOM_100_PERCENT = 1002
+        """Zoom 100%"""
+        ZOOM_150_PERCENT = 1003
+        """Zoom 150%"""
+        ZOOM_200_PERCENT = 1004
+        """Zoom 2000%"""
 
     # endregion Class Enums
 
@@ -366,24 +397,43 @@ class GUI:
         """
         Prompts for a password.
 
-        Currently Not Implemented.
+        If inside of a Office window then an Office Dialog is displayed prompting  for a password.
+        If no Office window is available and attempt is made to create a ``tkinter`` dialog window for password input.
+
+        ``tkinter`` does not ship with integrated python in LibreOffice. For this reason it may not be possible to display a ``tkinter`` dialog.
+        It will depend on how your virtual environment is set up. In most cases this will work on Linux but not on windows.
 
         Args:
             title (str): Title of input box
             input_msg (str): Message to display
 
         Raises:
-            NotImplementedError: Not yet implemented
+            Exception if unable to build a dialog password input.
 
         Returns:
-            str: password as string.
+            str: password as string or empty string if password is not given.
+
+        See Also:
+            :py:class:`~.input.Input`
         """
-        # TODO implement get_password
-        # before get_password is implemented the forms module should be build.
-        # forms module would be used to create an imput box.
-        raise NotImplementedError
-        # in original java this was done by creating a input box with a password field
-        # this could likely be done with LibreOffice API, create input box and set input as password field
+        try:
+            result = mInput.Input.get_input(title=title, msg=input_msg, is_password=True)
+            return result
+        except Exception:
+            # may not be in a LibreOffice window
+            pass
+
+        # try a tkinter dialog. Not available in macro mode.
+        # this also means may not work on windows when virtual environment
+        # is set to LibreOffice python.exe
+        try:
+            from ..dialog.tk_input import Window
+
+            pass_inst = Window(title=title, input_msg=input_msg, is_password=True)
+            return pass_inst.get_input()
+        except ImportError:
+            pass
+        raise Exception("Unable to access a GUI to create a password dialog box")
 
     # endregion ------------- floating frame, message box --------------
 
@@ -439,7 +489,7 @@ class GUI:
         Returns:
             XControlAccess: control access
         """
-        ca = mLo.Lo.qi(XControlAccess,  cls.get_current_controller(doc))
+        ca = mLo.Lo.qi(XControlAccess, cls.get_current_controller(doc))
         if ca is None:
             raise mEx.MissingInterfaceError(XControlAccess)
         return ca
@@ -942,7 +992,7 @@ class GUI:
 
         Args:
             odoc (object): Office document
-        
+
         See Also:
             - :py:meth:`~.gui.GUI.maximize`
             - :py:meth:`~.gui.GUI.activate`
@@ -1004,6 +1054,7 @@ class GUI:
 
         Args:
             value (int): The amount to zoom. :abbreviation:`eg:` 160 zooms 160%
+                value has a min value of 1 and a max value of 3000. If value is out of range then 100% is used.
             view (ZoomEnum): Type of zoom. If ``view`` is not ``ZoomEnum.BY_VALUE`` then ``value`` is ignored. Defaults to ``ZoomEnum.BY_VALUE``.
         """
         ...
@@ -1017,13 +1068,33 @@ class GUI:
             value (int): The amount to zoom. :abbreviation:`eg:` 160 zooms 160%
             view (ZoomEnum): Type of zoom. If ``view`` is not ``ZoomEnum.BY_VALUE`` then ``value`` is ignored. Defaults to ``ZoomEnum.BY_VALUE``.
         """
+        if view == GUI.ZoomEnum.OPTIMAL:
+            mLo.Lo.dispatch_cmd("ZoomOptimal")
+        elif view == GUI.ZoomEnum.PAGE_WIDTH or view == GUI.ZoomEnum.PAGE_WIDTH_EXACT:
+            mLo.Lo.dispatch_cmd("ZoomPageWidth")
+        elif view == GUI.ZoomEnum.ENTIRE_PAGE:
+            mLo.Lo.dispatch_cmd("ZoomPage")
+        elif view == GUI.ZoomEnum.ZOOM_50_PERCENT:
+            mLo.Lo.dispatch_cmd("Zoom50Percent")
+        elif view == GUI.ZoomEnum.ZOOM_75_PERCENT:
+            mLo.Lo.dispatch_cmd("Zoom75Percent")
+        elif view == GUI.ZoomEnum.ZOOM_100_PERCENT:
+            mLo.Lo.dispatch_cmd("Zoom100Percent")
+        elif view == GUI.ZoomEnum.ZOOM_150_PERCENT:
+            mLo.Lo.dispatch_cmd("Zoom150Percent")
+        elif view == GUI.ZoomEnum.ZOOM_200_PERCENT:
+            mLo.Lo.dispatch_cmd("Zoom200Percent")
+        elif view == GUI.ZoomEnum.BY_VALUE:
+            if value <= 0 or value > 3000:
+                value = 100
+            p_dic = {"Zoom.Value": value, "Zoom.ValueSet": 28703, "Zoom.Type": 0}
+            props = mProps.Props.make_props(**p_dic)
+            mLo.Lo.dispatch_cmd(cmd="Zoom", props=props)
+        else:
+            mLo.Lo.print("Zoom not reconized. Aborting zoom.")
+            return
         # https://wiki.openoffice.org/wiki/Documentation/DevGuide/Drawings/Zooming
-        p_dic = {"Zoom.Value": 0, "Zoom.ValueSet": 28703, "Zoom.Type": int(view)}
-        if view == cls.ZoomEnum.BY_VALUE:
-            p_dic["Zoom.Value"] = value
 
-        props = mProps.Props.make_props(**p_dic)
-        mLo.Lo.dispatch_cmd(cmd="Zoom", props=props)
         mLo.Lo.delay(500)
 
     # endregion ------------- zooming ----------------------------------

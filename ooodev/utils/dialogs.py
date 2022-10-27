@@ -5,6 +5,8 @@ from typing import TYPE_CHECKING, Any, Iterable, Tuple, cast
 from enum import IntEnum
 from . import lo as mLo
 
+import uno
+
 from com.sun.star.awt import XControl
 from com.sun.star.awt import XControlContainer
 from com.sun.star.awt import XControlModel
@@ -107,6 +109,9 @@ class Dialogs:
 
         Args:
             dialog_ctrl (XControl): Control
+
+        Returns:
+            None:
         """
         controls = cls.get_dialog_controls_arr(dialog_ctrl)
         print(f"No of controls: {len(controls)}")
@@ -365,7 +370,7 @@ class Dialogs:
             `API UnoControlFixedTextModel Service <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlFixedTextModel.html>`_
         """
         try:
-            msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl, True)
+            msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
 
             model = cast("UnoControlFixedTextModel", msf.createInstance("com.sun.star.awt.UnoControlFixedTextModel"))
 
@@ -404,7 +409,7 @@ class Dialogs:
         Returns:
             XNameContainer: Name Container
         """
-        return mLo.Lo.qi(XNameContainer, dialog_ctrl, True)
+        return mLo.Lo.qi(XNameContainer, dialog_ctrl.getModel(), True)
 
     @staticmethod
     def create_name(elem_container: XNameAccess, name: str) -> str:
@@ -483,7 +488,9 @@ class Dialogs:
             cprops.setPropertyValue("Height", height)
             cprops.setPropertyValue("Width", width)
             cprops.setPropertyValue("Label", label)
-            cprops.setPropertyValue("PushButtonType", btn_type)
+            # cprops.setPropertyValue("PushButtonType", btn_type)
+            uany = uno.Any("short", btn_type)
+            uno.invoke(cprops, "setPropertyValue", ("PushButtonType", uany))
             cprops.setPropertyValue("Name", nm)
 
             # set any extra user properties
@@ -595,7 +602,7 @@ class Dialogs:
         See Also:
             :py:meth:`~.dialogs.Dialogs.insert_text_field`
         """
-        cls.insert_text_field(
+        return cls.insert_text_field(
             dialog_ctrl=dialog_ctrl, text=text, x=x, y=y, width=width, height=height, echo_char="*", **props
         )
 

@@ -48,7 +48,8 @@ def test_get_methods(loader) -> None:
     from ooodev.utils.info import Info
 
     methods = Info.get_methods("com.sun.star.text.XTextDocument")
-    assert len(methods) > 10 # 19 on Windows 10, LO 7.3
+    assert len(methods) > 10  # 19 on Windows 10, LO 7.3
+
 
 def test_get_methods_obj(loader) -> None:
 
@@ -60,11 +61,11 @@ def test_get_methods_obj(loader) -> None:
     doc = Write.create_doc(loader=loader)
     try:
         methods_all = Info.get_methods_obj(obj=doc)
-        assert len(methods_all) > 10 # 199 on Windows 10, LO 7.3
+        assert len(methods_all) > 10  # 199 on Windows 10, LO 7.3
         properties = Info.get_methods_obj(obj=doc, property_concept=PropertyConceptEnum.PROPERTYSET)
-        assert len(properties) > 10 # 68 on Windows 10, LO 7.3
+        assert len(properties) > 10  # 68 on Windows 10, LO 7.3
         attrs = Info.get_methods_obj(obj=doc, property_concept=PropertyConceptEnum.ATTRIBUTES)
-        assert len(attrs) > 10 # 34 on Windows 10, LO 7.3
+        assert len(attrs) > 10  # 34 on Windows 10, LO 7.3
         methods = Info.get_methods_obj(obj=doc, property_concept=PropertyConceptEnum.METHODS)
         assert len(methods) == 0
     finally:
@@ -80,9 +81,18 @@ def test_identify(loader) -> None:
     doc = Write.create_doc(loader=loader)
     try:
         identifier = Info.get_identifier(obj=doc)
-        assert identifier == 'com.sun.star.text.TextDocument'
-        
+        assert identifier == "com.sun.star.text.TextDocument"
+
         implementation = Info.get_implementation_name(obj=doc)
-        assert implementation == 'SwXTextDocument'
+        assert implementation == "SwXTextDocument"
     finally:
         Lo.close_doc(doc=doc, deliver_ownership=False)
+
+
+def test_gallery_dir(loader) -> None:
+    # ensure Info.get_gallery_dir() is getting the correct location.
+    from ooodev.utils.info import Info
+
+    # Gallery file.
+    fnm = Info.get_gallery_dir() / "sounds" / "applause.wav"
+    assert fnm.exists()

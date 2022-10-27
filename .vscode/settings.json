@@ -3,7 +3,8 @@
     "python.formatting.provider": "black",
     "[python]": {
         "editor.formatOnPaste": false,
-        "editor.formatOnSaveMode": "file"
+        "editor.formatOnSaveMode": "file",
+        "editor.formatOnSave": true
     },
     "python.defaultInterpreterPath": "${workspaceRoot}/env/bin/python",
     "autoDocstring.docstringFormat": "google",
@@ -96,5 +97,51 @@
         "**/.idea/**": true,
         "**/__pycache__/**": true,
         "**/.hypothesis/**": true
-    }
+    },
+    "vsicons.associations.folders":[
+        {
+            "icon": "src",
+            "extensions": [
+                "src", "ooodev"
+            ],
+            "format": "svg",
+            "overrides": "src"
+        },
+        {
+            "icon": "python",
+            "extensions": [
+                ".venv",
+                ".virtualenv",
+                "env"
+            ],
+            "format": "svg",
+            "overrides": "python"
+        },
+        {
+            "icon": "config",
+            "extensions": [
+                "conf",
+                ".conf",
+                "config",
+                ".config",
+                "configs",
+                ".configs",
+                "configuration",
+                ".configuration",
+                "configurations",
+                ".configurations",
+                "setting",
+                ".setting",
+                "settings",
+                ".settings",
+                "ini",
+                ".ini",
+                "initializers",
+                ".initializers",
+                "cfg"
+            ],
+            "format": "svg",
+            "overrides": "config"
+        }
+    ]
 }
