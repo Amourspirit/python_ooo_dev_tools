@@ -72,7 +72,7 @@ Include modules:
     - ImagesLo (Various methods for working with Images)
     - Props (Various methods for working with the many API properties)
     - Chart (charting) in beta.
-    - Chart2 (charging) in beta.
+    - Chart2 (charting) in beta.
 
 Future releases will add:
     - Base (LibreOffice Base)
