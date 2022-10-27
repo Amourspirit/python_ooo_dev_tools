@@ -79,7 +79,7 @@ class FileIO:
             Path: path as string
         """
         try:
-            p = urllib.parse.urlparse(url)
+            p = urllib.parse.urlsplit(url)
             final_path = cls.get_absolute_path(os.path.join(p.netloc, urllib.parse.unquote(p.path)))
             return final_path
         except Exception as e:
@@ -130,7 +130,7 @@ class FileIO:
         """
         # converts 'file:///C:/Program%20Files/LibreOffice/program/../program/addin'
         # into: 'C:\\Program Files\\LibreOffice\\program\\addin'
-        pr = urllib.parse.urlparse(str(uri_fnm))
+        pr = urllib.parse.urlsplit(str(uri_fnm))
         p = Path(urllib.parse.unquote(pr.path))
         if not ensure_absolute:
             return p

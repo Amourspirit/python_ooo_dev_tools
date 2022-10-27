@@ -69,13 +69,15 @@ from ..utils.data_type.poly_sides import PolySides as PolySides
 from ..utils.kind.drawing_bitmap_kind import DrawingBitmapKind as DrawingBitmapKind
 from ..utils.kind.drawing_gradient_kind import DrawingGradientKind as DrawingGradientKind
 from ..utils.kind.drawing_hatching_kind import DrawingHatchingKind as DrawingHatchingKind
+from ..utils.kind.drawing_layer_kind import DrawingLayerKind as DrawingLayerKind
+from ..utils.kind.drawing_name_space_kind import DrawingNameSpaceKind as DrawingNameSpaceKind
 from ..utils.kind.drawing_shape_kind import DrawingShapeKind as DrawingShapeKind
+from ..utils.kind.drawing_slide_show_kind import DrawingSlideShowKind as DrawingSlideShowKind
 from ..utils.kind.form_control_kind import FormControlKind as FormControlKind
 from ..utils.kind.glue_points_kind import GluePointsKind as GluePointsKind
 from ..utils.kind.graphic_style_kind import GraphicStyleKind as GraphicStyleKind
 from ..utils.kind.presentation_kind import PresentationKind as PresentationKind
 from ..utils.kind.shape_comb_kind import ShapeCombKind as ShapeCombKind
-from ..utils.kind.drawing_layer_kind import DrawingLayerKind as DrawingLayerKind
 from ..utils.type_var import PathOrStr
 
 from ooo.dyn.awt.gradient import Gradient as Gradient
@@ -98,6 +100,39 @@ from ooo.dyn.lang.index_out_of_bounds_exception import IndexOutOfBoundsException
 
 # endregion Imports
 
+# region Enums
+class _LayoutKind(IntEnum):
+    TITLE_SUB = 0
+    TITLE_BULLETS = 1
+    TITLE_CHART = 2
+    TITLE_2CONTENT = 3
+    TITLE_CONTENT_CHART = 4
+    TITLE_CONTENT_CLIP = 6
+    TITLE_CHART_CONTENT = 7
+    TITLE_TABLE = 8
+    TITLE_CLIP_CONTENT = 9
+    TITLE_CONTENT_OBJECT = 10
+    TITLE_OBJECT = 11
+    TITLE_CONTENT_2CONTENT = 12
+    TITLE_OBJECT_CONTENT = 13
+    TITLE_CONTENT_OVER_CONTENT = 14
+    TITLE_2CONTENT_CONTENT = 15
+    TITLE_2CONTENT_OVER_CONTENT = 16
+    TITLE_CONTENT_OVER_OBJECT = 17
+    TITLE_4OBJECT = 18
+    TITLE_ONLY = 19
+    BLANK = 20
+    VTITLE_VTEXT_CHART = 27
+    VTITLE_VTEXT = 28
+    TITLE_VTEXT = 29
+    TITLE_VTEXT_CLIP = 30
+    CENTERED_TEXT = 32
+    TITLE_4CONTENT = 33
+    TITLE_6CONTENT = 34
+
+
+# endregion Enums
+
 
 class Draw:
     """Draw Class"""
@@ -106,57 +141,6 @@ class Draw:
     POLY_RADIUS: int = 20
     """Default Poly Radius"""
     # endregion Constants
-    class LayoutKind(IntEnum):
-        TITLE_SUB = 0
-        TITLE_BULLETS = 1
-        TITLE_CHART = 2
-        TITLE_2CONTENT = 3
-        TITLE_CONTENT_CHART = 4
-        TITLE_CONTENT_CLIP = 6
-        TITLE_CHART_CONTENT = 7
-        TITLE_TABLE = 8
-        TITLE_CLIP_CONTENT = 9
-        TITLE_CONTENT_OBJECT = 10
-        TITLE_OBJECT = 11
-        TITLE_CONTENT_2CONTENT = 12
-        TITLE_OBJECT_CONTENT = 13
-        TITLE_CONTENT_OVER_CONTENT = 14
-        TITLE_2CONTENT_CONTENT = 15
-        TITLE_2CONTENT_OVER_CONTENT = 16
-        TITLE_CONTENT_OVER_OBJECT = 17
-        TITLE_4OBJECT = 18
-        TITLE_ONLY = 19
-        BLANK = 20
-        VTITLE_VTEXT_CHART = 27
-        VTITLE_VTEXT = 28
-        TITLE_VTEXT = 29
-        TITLE_VTEXT_CLIP = 30
-        CENTERED_TEXT = 32
-        TITLE_4CONTENT = 33
-        TITLE_6CONTENT = 34
-
-    class NameSpaceKind(str, Enum):
-        BULLETS_TEXT = "com.sun.star.presentation.OutlinerShape"
-        SHAPE_TYPE_FOOTER = "com.sun.star.presentation.FooterShape"
-        SHAPE_TYPE_NOTES = "com.sun.star.presentation.NotesShape"
-        SHAPE_TYPE_PAGE = "com.sun.star.presentation.PageShape"
-        SUBTITLE_TEXT = "com.sun.star.presentation.SubtitleShape"
-        TITLE_TEXT = "com.sun.star.presentation.TitleTextShape"
-
-        def __str__(self) -> str:
-            return self.value
-
-    class SlideShowKind(IntEnum):
-        """DrawPage slide show change constants"""
-
-        AUTO_CHANGE = 1
-        """Everything (page change, animation effects) is automatic"""
-        CLICK_ALL_CHANGE = 0
-        """A mouse-click triggers the next animation effect or page change"""
-        CLICK_PAGE_CHANGE = 2
-        """Animation effects run automatically, but the user must click on the page to change it"""
-
-    # endregion Enums
 
     # region open, create, save draw/impress doc
     @staticmethod
@@ -1316,7 +1300,7 @@ class Draw:
             str | None: Slide Title on success; Otherwise, ``None``.
         """
         try:
-            shape = cls.find_shape_by_type(slide=slide, shape_type=str(Draw.NameSpaceKind.TITLE_TEXT))
+            shape = cls.find_shape_by_type(slide=slide, shape_type=str(DrawingNameSpaceKind.TITLE_TEXT))
             if shape is None:
                 return None
             return cls._get_shape_text_shape(shape)
@@ -1400,16 +1384,16 @@ class Draw:
         try:
             # Add text to the slide page by treating it as a title page, which
             # has two text shapes: one for the title, the other for a subtitle
-            mProps.Props.set(slide, Layout=int(Draw.LayoutKind.TITLE_SUB))
+            mProps.Props.set(slide, Layout=int(_LayoutKind.TITLE_SUB))
 
             # add the title text to the title shape
-            xs = cls.find_shape_by_type(slide=slide, shape_type=Draw.NameSpaceKind.TITLE_TEXT)
+            xs = cls.find_shape_by_type(slide=slide, shape_type=DrawingNameSpaceKind.TITLE_TEXT)
             txt_field = mLo.Lo.qi(XText, xs, True)
             txt_field.setString(title)
 
             # add the subtitle text to the subtitle shape
             if sub_title:
-                xs = cls.find_shape_by_type(slide=slide, shape_type=Draw.NameSpaceKind.SUBTITLE_TEXT)
+                xs = cls.find_shape_by_type(slide=slide, shape_type=DrawingNameSpaceKind.SUBTITLE_TEXT)
                 txt_field = mLo.Lo.qi(XText, xs, True)
                 txt_field.setString(sub_title)
         except Exception as e:
@@ -1436,15 +1420,15 @@ class Draw:
             XText: Text Object
         """
         try:
-            mProps.Props.set(slide, Layout=Draw.LayoutKind.TITLE_BULLETS.value)
+            mProps.Props.set(slide, Layout=_LayoutKind.TITLE_BULLETS.value)
 
             # add the title text to the title shape
-            xs = cls.find_shape_by_type(slide=slide, shape_type=Draw.NameSpaceKind.TITLE_TEXT)
+            xs = cls.find_shape_by_type(slide=slide, shape_type=DrawingNameSpaceKind.TITLE_TEXT)
             txt_field = mLo.Lo.qi(XText, xs, True)
             txt_field.setString(title)
 
             # return a reference to the bullet text area
-            xs = cls.find_shape_by_type(slide=slide, shape_type=Draw.NameSpaceKind.BULLETS_TEXT)
+            xs = cls.find_shape_by_type(slide=slide, shape_type=DrawingNameSpaceKind.BULLETS_TEXT)
             return mLo.Lo.qi(XText, xs, True)
         except Exception as e:
             raise mEx.DrawError("Error occured setting bullets slide")
@@ -1495,10 +1479,10 @@ class Draw:
             None:
         """
         try:
-            mProps.Props.set(slide, Layout=Draw.LayoutKind.TITLE_ONLY.value)
+            mProps.Props.set(slide, Layout=_LayoutKind.TITLE_ONLY.value)
 
             # add the text to the title shape
-            xs = cls.find_shape_by_type(slide=slide, shape_type=Draw.NameSpaceKind.TITLE_TEXT)
+            xs = cls.find_shape_by_type(slide=slide, shape_type=DrawingNameSpaceKind.TITLE_TEXT)
             txt_field = mLo.Lo.qi(XText, xs, True)
             txt_field.setString(header)
         except Exception as e:
@@ -1519,7 +1503,7 @@ class Draw:
             None:
         """
         try:
-            mProps.Props.set(slide, Layout=Draw.LayoutKind.BLANK.value)
+            mProps.Props.set(slide, Layout=_LayoutKind.BLANK.value)
         except Exception as e:
             raise mEx.DrawError("Error inserting blank slide") from e
 
@@ -1688,13 +1672,13 @@ class Draw:
     # endregion get_shape_text()
 
     @classmethod
-    def find_shape_by_type(cls, slide: XDrawPage, shape_type: Draw.NameSpaceKind | str) -> XShape:
+    def find_shape_by_type(cls, slide: XDrawPage, shape_type: DrawingNameSpaceKind | str) -> XShape:
         """
         Finds a shape by its type
 
         Args:
             slide (XDrawPage): Slide
-            shape_type (str): Shape Type
+            shape_type (DrawingNameSpaceKind | str): Shape Type
 
         Raise:
             ShapeMissingError: If shape is not found.
@@ -2767,7 +2751,7 @@ class Draw:
             None:
         """
         try:
-            footer_shape = cls.find_shape_by_type(slide=master, shape_type=Draw.NameSpaceKind.SHAPE_TYPE_FOOTER)
+            footer_shape = cls.find_shape_by_type(slide=master, shape_type=DrawingNameSpaceKind.SHAPE_TYPE_FOOTER)
             txt_field = mLo.Lo.qi(XText, footer_shape, True)
             txt_field.setString(text)
         except mEx.ShapeMissingError:
@@ -3981,7 +3965,7 @@ class Draw:
         slide: XDrawPage,
         fade_effect: FadeEffect,
         speed: AnimationSpeed,
-        change: Draw.SlideShowKind,
+        change: DrawingSlideShowKind,
         duration: int,
     ) -> None:
         """
@@ -3992,7 +3976,7 @@ class Draw:
             fade_effect (FadeEffect): Fade Effect
             speed (AnimationSpeed): Animation Speed
             change (SlideShowKind): Slide show kind
-            duration (int): Duration of slide. Only used when ``change=Draw.SlideShowKind.AUTO_CHANGE``
+            duration (int): Duration of slide. Only used when ``change=SlideShowKind.AUTO_CHANGE``
 
         Raises:
             DrawPageError: If error occurs.
@@ -4007,7 +3991,7 @@ class Draw:
             ps.setPropertyValue("Effect", fade_effect)
             ps.setPropertyValue("Speed", speed)
             ps.setPropertyValue("Change", int(change))
-            # if change is Draw.SlideShowKind.AUTO_CHANGE
+            # if change is SlideShowKind.AUTO_CHANGE
             # then Duration is used
             ps.setPropertyValue("Duration", abs(duration))  # in seconds
         except Exception as e:
@@ -4128,3 +4112,6 @@ class Draw:
         mProps.Props.set(shape, **props)
 
     # endregion helper
+
+
+__all__ = ("Draw",)
