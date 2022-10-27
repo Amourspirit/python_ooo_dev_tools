@@ -4,6 +4,9 @@ from typing import TYPE_CHECKING
 
 import uno
 from ooodev.dialog.msgbox import MsgBox, MessageBoxType, MessageBoxButtonsEnum, MessageBoxResultsEnum
+from ooodev.utils.dispatch.draw_view_dispatch import DrawViewDispatch
+from ooodev.utils.dispatch.draw_drawing_dispatch import DrawDrawingDispatch
+from ooodev.utils.dispatch.global_edit_dispatch import GlobalEditDispatch
 from ooodev.office.draw import Draw
 from ooodev.utils.file_io import FileIO
 from ooodev.utils.gui import GUI
@@ -30,14 +33,10 @@ class CopySlide:
         self._fnm = FileIO.get_absolute_path(fnm)
 
     def copy(self) -> None:
-        try:
-            loader = Lo.load_office(Lo.ConnectPipe())
-        except Exception:
-            Lo.close_office()
-            raise
+        loader = Lo.load_office(Lo.ConnectPipe())
 
-        doc = Lo.open_doc(fnm=self._fnm, loader=loader)
         try:
+            doc = Lo.open_doc(fnm=self._fnm, loader=loader)
             num_slides = Draw.get_slides_count(doc)
             if self._from_idx >= num_slides or self._to_idx >= num_slides:
                 Lo.close_office()
@@ -61,7 +60,7 @@ class CopySlide:
         except IndexError:
             raise
         except Exception:
-            Lo.close_doc(doc=doc)
+            Lo.close_office()
             raise
 
     def _copy_to(self, doc: XComponent) -> None:
@@ -71,22 +70,27 @@ class CopySlide:
         ctrl = GUI.get_current_controller(doc)
 
         # Switch to slide sorter view so that slides can be pasted
-        Lo.dispatch_cmd(cmd="DiaMode")
+        Lo.delay(1000)
+        Lo.dispatch_cmd(cmd=DrawViewDispatch.DIA_MODE)
 
-        # give Office 5 seconds of time to do it
-        Lo.delay(5000)
+        # give Office a few seconds of time to do it
+        Lo.delay(3000)
 
         from_slide = Draw.get_slide(doc, self._from_idx)
         to_slide = Draw.get_slide(doc, self._to_idx)
 
         Draw.goto_page(ctrl, from_slide)
-        Lo.dispatch_cmd(cmd="Copy")
+        Lo.dispatch_cmd(cmd=GlobalEditDispatch.COPY)
+        Lo.delay(500)
         print(f"Copied {self._from_idx}")
 
         # elect this slide; 'doc' version of gotoPage() pastes incorrectly
         Draw.goto_page(ctrl, to_slide)
-        Lo.dispatch_cmd("Paste")
+        Lo.delay(500)
+        Lo.dispatch_cmd(GlobalEditDispatch.PASTE)
+        Lo.delay(500)
         print(f"Paste to after {self._to_idx}")
 
         # Lo.dispatchCmd("PageMode");  // back to normal mode (not working)
-        Lo.dispatch_cmd(cmd="DrawingMode")
+        Lo.dispatch_cmd(cmd=DrawDrawingDispatch.DRAWING_MODE)
+        Lo.delay(500)

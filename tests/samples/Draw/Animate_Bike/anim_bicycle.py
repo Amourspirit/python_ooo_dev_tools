@@ -1,5 +1,4 @@
 from __future__ import annotations
-from turtle import delay
 
 import uno
 from com.sun.star.drawing import XDrawPage

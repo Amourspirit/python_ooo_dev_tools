@@ -1,13 +1,13 @@
 from master_use import MasterUse
 
-# region maind()
+# region main()
 def main() -> int:
     use = MasterUse()
     use.main()
     return 0
 
 
-# endregion maind()
+# endregion main()
 
 if __name__ == "__main__":
     SystemExit(main())

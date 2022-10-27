@@ -86,9 +86,9 @@ class AnimationDemo:
                 # slideshow start() crashes if the doc is not visible
                 GUI.set_visible(is_visible=True, odoc=doc)
 
-                show = Draw.get_show(doc)
-                Lo.dispatch_cmd(DrawViewDispatch.PRESENTATION)
                 Lo.delay(500)
+                Lo.dispatch_cmd(DrawViewDispatch.PRESENTATION)
+                show = Draw.get_show(doc)
                 # show.start() starts slideshow but not necessarily in 100% full screen
                 # show.start()
                 sc = Draw.get_show_controller(show)

@@ -18,6 +18,7 @@ def main() -> int:
         if not FileIO.is_exist_file(fnm):
             fnm = "../../../../tests/fixtures/presentation/algs.odp"
             FileIO.is_exist_file(fnm, True)
+        p = Path(fnm)
     # slide indexes are zero based indexes.
     cs = CopySlide(fnm=p, from_idx=from_idx, to_idx=to_idx)
     cs.copy()

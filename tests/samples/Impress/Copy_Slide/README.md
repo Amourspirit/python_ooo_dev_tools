@@ -31,11 +31,11 @@ python -m start
 ### Linux/Mac
 
 ```sh
-python ./tests/samples/Impress/Bezier_Builder/start.py
+python ./tests/samples/Impress/Copy_Slide/start.py
 ```
 
 ### Windows
 
 ```ps
-python .\tests\samples\Impress\Bezier_Builder\start.py
+python .\tests\samples\Impress\Copy_Slide\start.py
 ```

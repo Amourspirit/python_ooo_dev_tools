@@ -1,13 +1,13 @@
 from grouper import Grouper
 
-# region maind()
+# region main()
 def main() -> int:
     g = Grouper()
     g.main()
     return 0
 
 
-# endregion maind()
+# endregion main()
 
 if __name__ == "__main__":
     SystemExit(main())

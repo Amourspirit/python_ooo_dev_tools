@@ -25,8 +25,8 @@ class BasicShow:
                 show = Draw.get_show(doc=doc)
                 Props.show_obj_props("Slide show", show)
 
-                Lo.dispatch_cmd(DrawViewDispatch.PRESENTATION)
                 Lo.delay(500)
+                Lo.dispatch_cmd(DrawViewDispatch.PRESENTATION)
                 # show.start() starts slideshow but not necessarily in 100% full screen
                 # show.start()
 

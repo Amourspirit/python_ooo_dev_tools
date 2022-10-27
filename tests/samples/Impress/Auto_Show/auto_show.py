@@ -49,8 +49,8 @@ class AutoShow:
             self._set_show_prop(show)
             # Props.set(show, IsEndless=True, Pause=0)
 
-            Lo.dispatch_cmd(DrawViewDispatch.PRESENTATION)
             Lo.delay(500)
+            Lo.dispatch_cmd(DrawViewDispatch.PRESENTATION)
             # show.start() starts slideshow but not necessarily in 100% full screen
             # show.start()
 
