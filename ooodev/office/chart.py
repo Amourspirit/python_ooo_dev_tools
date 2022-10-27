@@ -24,9 +24,10 @@ from com.sun.star.chart import XAxisYSupplier
 from com.sun.star.chart import XTwoAxisYSupplier
 from com.sun.star.chart import XChartDataArray
 
-from ..utils.kind.drawing_shape_kind import DrawingShapeKind
+from ..utils.kind.chart_diagram_kind import ChartDiagramKind as ChartDiagramKind
+from ..utils.kind.drawing_shape_kind import DrawingShapeKind as DrawingShapeKind
 
-from ooo.dyn.table.cell_range_address import CellRangeAddress
+from ooo.dyn.table.cell_range_address import CellRangeAddress as CellRangeAddress
 from ooo.dyn.awt.rectangle import Rectangle
 from ooo.dyn.text.vert_orientation import VertOrientation
 from ooo.dyn.text.hori_orientation import HoriOrientation
@@ -47,33 +48,18 @@ from ..utils.data_type.intensity import Intensity
 class Chart:
     """Chart Class"""
 
-    class DiagramKind(str, Enum):
-        AREA = "AreaDiagram"
-        BAR_DIAGRAM = "BarDiagram"
-        BUBBLE = "BubbleDiagram"
-        DONUT = "DonutDiagram"
-        FILLED_NET = "FilledNetDiagram"
-        LINE = "LineDiagram"
-        NET = "NetDiagram"
-        PIE = "PieDiagram"
-        STOCK = "StockDiagram"
-        XY = "XYDiagram"
-
-        def __str__(self) -> str:
-            return self.value
-
     # region insert_chart()
     @overload
     @classmethod
     def insert_chart(
-        cls, slide: XDrawPage, x: int, y: int, width: int, height: int, diagram_name: Chart.DiagramKind | str
+        cls, slide: XDrawPage, x: int, y: int, width: int, height: int, diagram_name: ChartDiagramKind | str
     ) -> XChartDocument:
         ...
 
     @overload
     @classmethod
     def insert_chart(
-        cls, doc: XTextDocument, x: int, y: int, width: int, height: int, diagram_name: Chart.DiagramKind | str
+        cls, doc: XTextDocument, x: int, y: int, width: int, height: int, diagram_name: ChartDiagramKind | str
     ) -> XChartDocument:
         ...
 
@@ -86,7 +72,7 @@ class Chart:
         cells_range: CellRangeAddress,
         width: int,
         height: int,
-        diagram_name: Chart.DiagramKind | str,
+        diagram_name: ChartDiagramKind | str,
     ) -> XChartDocument:
         ...
 
@@ -101,13 +87,13 @@ class Chart:
         y: int,
         width: int,
         height: int,
-        diagram_name: Chart.DiagramKind | str,
+        diagram_name: ChartDiagramKind | str,
     ) -> XChartDocument:
         ...
 
     @classmethod
     def _insert_chart_slide(
-        cls, slide: XDrawPage, x: int, y: int, width: int, height: int, diagram_name: Chart.DiagramKind | str
+        cls, slide: XDrawPage, x: int, y: int, width: int, height: int, diagram_name: ChartDiagramKind | str
     ) -> XChartDocument:
         try:
             ashape = mDraw.Draw.add_shape(
@@ -136,7 +122,7 @@ class Chart:
         y: int,
         width: int,
         height: int,
-        diagram_name: Chart.DiagramKind | str,
+        diagram_name: ChartDiagramKind | str,
     ) -> XChartDocument:
         try:
             tbl_charts = cls.get_table_charts(sheet)
@@ -174,7 +160,7 @@ class Chart:
 
     @classmethod
     def _insert_chart_doc(
-        cls, doc: XTextDocument, x: int, y: int, width: int, height: int, diagram_name: Chart.DiagramKind | str
+        cls, doc: XTextDocument, x: int, y: int, width: int, height: int, diagram_name: ChartDiagramKind | str
     ) -> XChartDocument:
         try:
             tc = mLo.Lo.create_instance_msf(XTextContent, "com.sun.star.text.TextEmbeddedObject", raise_err=True)
@@ -551,7 +537,7 @@ class Chart:
     # endregion get_chart_doc()
 
     @staticmethod
-    def set_chart_type(chart_doc: XChartDocument, diagram_name: Chart.DiagramKind | str) -> None:
+    def set_chart_type(chart_doc: XChartDocument, diagram_name: ChartDiagramKind | str) -> None:
         """
         Sets chart diagram name
 
@@ -1363,3 +1349,6 @@ class Chart:
             print(f"  {e}")
 
     # endregion adjust properties
+
+
+__all__ = ("Chart",)

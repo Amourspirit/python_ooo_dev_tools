@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import uno
 from ooodev.dialog.msgbox import MsgBox, MessageBoxType, MessageBoxButtonsEnum, MessageBoxResultsEnum
-from ooodev.office.draw import Draw, FadeEffect, AnimationSpeed, DrawingGradientKind
+from ooodev.office.draw import Draw, FadeEffect, AnimationSpeed, DrawingGradientKind, DrawingSlideShowKind
 from ooodev.utils.dispatch.draw_view_dispatch import DrawViewDispatch
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
@@ -29,7 +29,7 @@ class SlideShow:
                 slide=slide,
                 fade_effect=FadeEffect.FADE_FROM_RIGHT,
                 speed=AnimationSpeed.FAST,
-                change=Draw.SlideShowKind.AUTO_CHANGE,
+                change=DrawingSlideShowKind.AUTO_CHANGE,
                 duration=1,
             )
             # draw a square at the top left of the page; and text
@@ -44,7 +44,7 @@ class SlideShow:
                 slide=slide,
                 fade_effect=FadeEffect.FADE_FROM_RIGHT,
                 speed=AnimationSpeed.FAST,
-                change=Draw.SlideShowKind.AUTO_CHANGE,
+                change=DrawingSlideShowKind.AUTO_CHANGE,
                 duration=1,
             )
             # draw a circle at the bottom right of second page; and text
@@ -63,7 +63,7 @@ class SlideShow:
                 slide=slide,
                 fade_effect=FadeEffect.ROLL_FROM_LEFT,
                 speed=AnimationSpeed.MEDIUM,
-                change=Draw.SlideShowKind.AUTO_CHANGE,
+                change=DrawingSlideShowKind.AUTO_CHANGE,
                 duration=2,
             )
             _ = Draw.draw_text(slide=slide, msg="Page 3", x=120, y=75, width=60, height=30, font_size=24)

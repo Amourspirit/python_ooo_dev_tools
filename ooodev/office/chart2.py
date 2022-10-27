@@ -2353,3 +2353,5 @@ class Chart2:
             raise mEx.ChartError("Error getting chart image") from e
 
     # endregion chart shape and image
+
+__all__ = ("Chart2",)

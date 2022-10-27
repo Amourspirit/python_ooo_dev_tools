@@ -1,13 +1,13 @@
 from slide_show import SlideShow
 
-# region maind()
+# region main()
 def main() -> int:
     show = SlideShow()
     show.show()
     return 0
 
 
-# endregion maind()
+# endregion main()
 
 if __name__ == "__main__":
     SystemExit(main())
