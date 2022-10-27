@@ -46,6 +46,10 @@ from com.sun.star.frame import XModel
 from com.sun.star.frame import XStorable
 
 if TYPE_CHECKING:
+    try:
+        from typing import Literal  # Py >= 3.8
+    except ImportError:
+        from typing_extensions import Literal
     from com.sun.star.beans import PropertyValue
     from com.sun.star.container import XChild
     from com.sun.star.container import XIndexAccess
@@ -199,12 +203,13 @@ class Lo(metaclass=StaticProperty):
     # defined in https://github.com/LibreOffice/core/blob/master/officecfg/registry/data/org/openoffice/Office/Embedding.xcu
     # https://opengrok.libreoffice.org/xref/core/officecfg/registry/data/org/openoffice/Office/Embedding.xcu
     class CLSID(str, Enum):
-        WRITER = "8BC6B165-B1B2-4EDD-aa47-dae2ee689dd6"
-        CALC = "47BBB4CB-CE4C-4E80-a591-42d9ae74950f"
-        DRAW = "4BAB8970-8A3B-45B3-991c-cbeeac6bd5e3"
-        IMPRESS = "9176E48A-637A-4D1F-803b-99d9bfac1047"
-        MATH = "078B7ABA-54FC-457F-8551-6147e776a997"
-        CHART = "12DCAE26-281F-416F-a234-c3086127382e"
+        # in lower case by design.
+        WRITER = "8bc6b165-b1b2-4edd-aa47-dae2ee689dd6"
+        CALC = "47bbb4cb-ce4c-4e80-a591-42d9ae74950f"
+        DRAW = "4bab8970-8a3b-45b3-991c-cbeeac6bd5e3"
+        IMPRESS = "9176e48a-637a-4d1f-803b-99d9bfac1047"
+        MATH = "078b7aba-54fc-457f-8551-6147e776a997"
+        CHART = "12dcae26-281f-416f-a234-c3086127382e"
 
         def __str__(self) -> str:
             return self.value
@@ -252,7 +257,7 @@ class Lo(metaclass=StaticProperty):
 
     @overload
     @staticmethod
-    def qi(atype: Type[T], obj: XTypeProvider) -> T | None:
+    def qi(atype: Type[T], obj: Any) -> T | None:
         """
         Generic method that get an interface instance from  an object.
 
@@ -267,7 +272,26 @@ class Lo(metaclass=StaticProperty):
 
     @overload
     @staticmethod
-    def qi(atype: Type[T], obj: XTypeProvider, raise_err: bool) -> T | None:
+    def qi(atype: Type[T], obj: Any, raise_err: Literal[True]) -> T:
+        """
+        Generic method that get an interface instance from  an object.
+
+        Args:
+            atype (T): Interface type such as XInterface
+            obj (object): Object that implements interface.
+            raise_err (bool, optional): If True then raises MissingInterfaceError if result is None. Default False
+
+        Raises:
+            MissingInterfaceError: If 'raise_err' is 'True' and result is None
+
+        Returns:
+            T: instance of interface.
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def qi(atype: Type[T], obj: Any, raise_err: Literal[False]) -> T | None:
         """
         Generic method that get an interface instance from  an object.
 
@@ -345,11 +369,44 @@ class Lo(metaclass=StaticProperty):
     @classmethod
     def get_service_factory(cls) -> XMultiServiceFactory:
         """Gets current multi service factory"""
-        return cls._bridge_component
+        # return cls._bridge_component
+        return cls._ms_factory
 
     # region interface object creation
 
     # region    create_instance_msf()
+    @overload
+    @classmethod
+    def create_instance_msf(cls, atype: Type[T], service_name: str) -> T | None:
+        ...
+
+    @overload
+    @classmethod
+    def create_instance_msf(cls, atype: Type[T], service_name: str, msf: Any | None) -> T | None:
+        ...
+
+    @overload
+    @classmethod
+    def create_instance_msf(cls, atype: Type[T], service_name: str, *, raise_err: Literal[True]) -> T:
+        ...
+
+    @overload
+    @classmethod
+    def create_instance_msf(cls, atype: Type[T], service_name: str, *, raise_err: Literal[False]) -> T | None:
+        ...
+
+    @overload
+    @classmethod
+    def create_instance_msf(cls, atype: Type[T], service_name: str, msf: Any | None, raise_err: Literal[True]) -> T:
+        ...
+
+    @overload
+    @classmethod
+    def create_instance_msf(
+        cls, atype: Type[T], service_name: str, msf: Any | None, raise_err: Literal[False]
+    ) -> T | None:
+        ...
+
     @classmethod
     def create_instance_msf(
         cls, atype: Type[T], service_name: str, msf: XMultiServiceFactory = None, raise_err: bool = False
@@ -365,7 +422,7 @@ class Lo(metaclass=StaticProperty):
                 Any Uno class that starts with 'X' such as XInterface
             service_name (str): Service name
             msf (XMultiServiceFactory, optional): Multi service factory used to create instance
-            raise_err (bool, optional): If True then can raise CreateInstanceMsfError or MissingInterfaceError
+            raise_err (bool, optional): If ``True`` then can raise CreateInstanceMsfError or MissingInterfaceError. Default is ``False``
 
         Raises:
             CreateInstanceMsfError: If ``raise_err`` is ``True`` and no instance was created
@@ -373,7 +430,7 @@ class Lo(metaclass=StaticProperty):
             Exception: if unable to create instance for any other reason
 
         Returns:
-            T: Instance of interface for the service name.
+            T: Instance of interface for the service name or possibly ``None`` if ``raise_err`` is False.
 
         Note:
             When ``raise_err=True`` return value will never be ``None``.
@@ -410,10 +467,44 @@ class Lo(metaclass=StaticProperty):
     # endregion create_instance_msf()
 
     # region    create_instance_mcf()
+    @overload
+    @classmethod
+    def create_instance_mcf(cls, atype: Type[T], service_name: str) -> T | None:
+        ...
+
+    @overload
+    @classmethod
+    def create_instance_mcf(cls, atype: Type[T], service_name: str, args: Tuple[Any, ...] | None) -> T | None:
+        ...
+
+    @overload
+    @classmethod
+    def create_instance_mcf(cls, atype: Type[T], service_name: str, *, raise_err: Literal[True]) -> T:
+        ...
+
+    @overload
+    @classmethod
+    def create_instance_mcf(cls, atype: Type[T], service_name: str, *, raise_err: Literal[False]) -> T | None:
+        ...
+
+    @overload
     @classmethod
     def create_instance_mcf(
-        cls, atype: Type[T], service_name: str, args: Tuple[object, ...] | None = None, raise_err: bool = False
+        cls, atype: Type[T], service_name: str, args: Tuple[Any, ...] | None, raise_err: Literal[True]
     ) -> T:
+        ...
+
+    @overload
+    @classmethod
+    def create_instance_mcf(
+        cls, atype: Type[T], service_name: str, args: Tuple[Any, ...] | None, raise_err: Literal[False]
+    ) -> T | None:
+        ...
+
+    @classmethod
+    def create_instance_mcf(
+        cls, atype: Type[T], service_name: str, args: Tuple[Any, ...] | None = None, raise_err: bool = False
+    ) -> T | None:
         """
         Creates an instance of a component which supports the services specified by the factory,
         and optionally initializes the new instance with the given arguments and context.
@@ -424,8 +515,8 @@ class Lo(metaclass=StaticProperty):
             atype (Type[T]): Type of interface to return from created instance.
                 Any Uno class that starts with ``X`` such as ``XInterface``
             service_name (str): Service Name
-            args (Tuple[object, ...], Optional): Args
-            raise_err (bool, optional): If True then can raise CreateInstanceMcfError or MissingInterfaceError
+            args (Tuple[Any, ...], Optional): Args
+            raise_err (bool, optional): If ``True`` then can raise CreateInstanceMcfError or MissingInterfaceError. Default is ``False``
 
         Raises:
             CreateInstanceMcfError: If ``raise_err`` is ``True`` and no instance was created
@@ -436,7 +527,7 @@ class Lo(metaclass=StaticProperty):
             When ``raise_err=True`` return value will never be ``None``.
 
         Returns:
-            T: Instance of interface for the service name.
+            T | None: Instance of interface for the service name or possibly ``None`` if ``raise_err`` is False.
 
         Example:
             In the following example ``tk`` is an instance of ``XExtendedToolkit``
@@ -1674,31 +1765,15 @@ class Lo(metaclass=StaticProperty):
         except CloseVetoException as e:
             raise Exception("Close was vetoed") from e
 
+    # region close_doc()
     @overload
     @classmethod
     def close_doc(cls, doc: object) -> None:
-        """
-        Closes document.
-
-        Args:
-            doc (XCloseable): Closeable document
-        """
         ...
 
     @overload
     @classmethod
     def close_doc(cls, doc: object, deliver_ownership: bool) -> None:
-        """
-        Closes document.
-
-        Args:
-            doc (XCloseable): Closeable document
-            deliver_ownership (bool): True delegates the ownership of this closing object to
-                anyone which throw the CloseVetoException.
-
-        Raises:
-            MissingInterfaceError: if doc does not have XCloseable interface
-        """
         ...
 
     @classmethod
@@ -1708,16 +1783,22 @@ class Lo(metaclass=StaticProperty):
 
         Args:
             doc (XCloseable): Close-able document
-            deliver_ownership (bool): True delegates the ownership of this closing object to
-                anyone which throw the CloseVetoException.
-                This new owner has to close the closing object again if his still running
-                processes will be finished.
-                False let the ownership at the original one which called the close() method.
-                They must react for possible CloseVetoExceptions such as when document needs saving
-                and try it again at a later time. This can be useful for a generic UI handling.
+            deliver_ownership (bool): If ``True`` delegates the ownership of this closing object to
+                anyone which throw the CloseVetoException. Default is ``False``.
 
         Raises:
             MissingInterfaceError: if doc does not have XCloseable interface
+
+        Returns:
+            None:
+
+        Note:
+            If ``deliver_ownership`` is ``True`` then new owner has to close the closing object again if his still running
+            processes will be finished.
+
+            ``False`` let the ownership at the original one which called the close() method.
+            They must react for possible CloseVetoExceptions such as when document needs saving
+            and try it again at a later time. This can be useful for a generic UI handling.
 
         Attention:
             :py:meth:`~.utils.lo.Lo.close` method is called along with any of its events.
@@ -1728,6 +1809,8 @@ class Lo(metaclass=StaticProperty):
             cls._doc = None
         except DisposedException as e:
             raise Exception("Document close failed since Office link disposed") from e
+
+    # endregion close_doc()
 
     # ================= initialization via Addon-supplied context ====================
 
@@ -1848,6 +1931,7 @@ class Lo(metaclass=StaticProperty):
     # ==================== dispatch ===============================
     # see https://wiki.documentfoundation.org/Development/DispatchCommands
 
+    # region dispatch_cmd()
     @overload
     @staticmethod
     def dispatch_cmd(cmd: str) -> bool:
@@ -1856,40 +1940,16 @@ class Lo(metaclass=StaticProperty):
     @overload
     @staticmethod
     def dispatch_cmd(cmd: str, props: Iterable[PropertyValue]) -> bool:
-        """
-        Dispatches a LibreOffice command
-
-        Args:
-            cmd (str): Command to dispatch such as ``GoToCell``. Note: cmd does not contain ``.uno:`` prefix.
-            props (PropertyValue): properties for dispatch
-
-        Raises:
-            MissingInterfaceError: If unable to obtain XDispatchHelper instance.
-            Exception: If error occurs dispatching command
-
-        Returns:
-            bool: True on success.
-        """
         ...
 
     @overload
     @staticmethod
     def dispatch_cmd(cmd: str, props: Iterable[PropertyValue], frame: XFrame) -> bool:
-        """
-        Dispatches a LibreOffice command
+        ...
 
-        Args:
-            cmd (str): Command to dispatch such as ``GoToCell``. Note: cmd does not contain ``.uno:`` prefix.
-            props (PropertyValue): properties for dispatch
-            frame (XFrame): Frame to dispatch to.
-
-        Raises:
-            MissingInterfaceError: If unable to obtain XDispatchHelper instance.
-            Exception: If error occurs dispatching command
-
-        Returns:
-            bool: True on success.
-        """
+    @overload
+    @staticmethod
+    def dispatch_cmd(cmd: str, *, frame: XFrame) -> bool:
         ...
 
     @classmethod
@@ -1899,8 +1959,8 @@ class Lo(metaclass=StaticProperty):
 
         Args:
             cmd (str): Command to dispatch such as ``GoToCell``. Note: cmd does not contain ``.uno:`` prefix.
-            props (PropertyValue): properties for dispatch
-            frame (XFrame): Frame to dispatch to.
+            props (PropertyValue, optional): properties for dispatch
+            frame (XFrame, optonal): Frame to dispatch to.
 
         Raises:
             MissingInterfaceError: If unable to obtain XDispatchHelper instance.
@@ -1937,6 +1997,8 @@ class Lo(metaclass=StaticProperty):
             return True
         except Exception as e:
             raise Exception(f"Could not dispatch '{cmd}'") from e
+
+    # endregion dispatch_cmd()
 
     # ================= Uno cmds =========================
 

@@ -1,7 +1,6 @@
 # coding: utf-8
 from __future__ import annotations
 from typing import TYPE_CHECKING, Tuple
-from pathlib import Path
 import uno
 from com.sun.star.beans import XPropertySet
 from com.sun.star.container import XNameContainer
@@ -12,16 +11,17 @@ if TYPE_CHECKING:
     from com.sun.star.graphic import XGraphic
     from com.sun.star.awt import XBitmap
 
+from ooo.dyn.awt.size import Size
+
 from ..utils import lo as mLo
 from ..utils import file_io as mFileIO
 from ..utils import props as mProps
-
-from ooo.dyn.awt.size import Size
 from ..exceptions import ex as mEx
 from ..utils.type_var import PathOrStr
 
 # see Also: https://ask.libreoffice.org/t/graphicurl-no-longer-works-in-6-1-0-3/35459/3
 # see Also: https://tomazvajngerl.blogspot.com/2018/03/improving-image-handling-in-libreoffice.html
+
 
 class ImagesLo:
     @staticmethod
@@ -68,20 +68,28 @@ class ImagesLo:
             im_fnm (PathOrStr): Graphic file path
 
         Raises:
+            FileNotFoundError: If ``im_fnm`` does not exist.
             CreateInstanceMcfError: If unable to create graphic.GraphicProvider
             Exception: If unable to load graphic
 
         Returns:
             XGraphic: Graphic
         """
-        print(f"Loading XGraphic from '{im_fnm}'")
+        mLo.Lo.print(f"Loading XGraphic from '{im_fnm}'")
         try:
-            gprovider = mLo.Lo.create_instance_mcf(XGraphicProvider, "com.sun.star.graphic.GraphicProvider")
-            if gprovider is None:
-                raise mEx.CreateInstanceMcfError(XGraphicProvider, "com.sun.star.graphic.GraphicProvider")
-
-            file_props = mProps.Props.make_props(URL=mFileIO.FileIO.fnm_to_url(im_fnm))
-            return gprovider.queryGraphic(file_props)
+            fnm = mFileIO.FileIO.get_absolute_path(im_fnm)
+            if not fnm.exists():
+                raise FileNotFoundError(fnm)
+            gprovider = mLo.Lo.create_instance_mcf(
+                XGraphicProvider, "com.sun.star.graphic.GraphicProvider", raise_err=True
+            )
+            file_props = mProps.Props.make_props(URL=mFileIO.FileIO.fnm_to_url(fnm))
+            result = gprovider.queryGraphic(file_props)
+            if result is None:
+                raise mEx.UnKnownError("None Value: queryGraphic() returned None")
+            return result
+        except FileNotFoundError:
+            raise
         except mEx.CreateInstanceMcfError:
             raise
         except Exception as e:

@@ -11,6 +11,7 @@ ooodev
    :caption: Contents:
 
    conn/index
+   cfg/index
    office/index
    utils/index
    dialog/index

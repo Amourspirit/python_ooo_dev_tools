@@ -124,16 +124,23 @@ class ConnectorBridgeBase(ConnectorBase):
 
 class ConnectSocket(ConnectorBridgeBase):
     """Connect to LO via socket"""
+
     def __init__(self, host="localhost", port=2002, **kwargs) -> None:
         """
         Constructor
 
         Args:
-            host (str, optional): Connection host. Defaults to "localhost".
-            port (int, optional): Connection port. Defaults to 2002.
-        
-        Any property value can be set by passing it into constructor.
-        e.g. ``ConnectSocket(no_logo=True)``
+            host (str, optional): Connection host. Defaults to ``localhost``.
+            port (int, optional): Connection port. Defaults to ``2002``.
+
+        Keyword Arguments:
+            no_restore (bool, optional): Default ``True``
+            no_first_start_wizard (bool, optional): Default ``True``
+            no_logo (bool, optional): Default ``True``
+            invisible (bool, optional): Default ``True``
+            headless (bool, optional): Default ``False``
+            start_as_service (bool, optional): Default ``False``
+            start_office (bool, optional): Default ``True``
         """
         super().__init__(**kwargs)
         self._host = host
@@ -169,15 +176,22 @@ class ConnectSocket(ConnectorBridgeBase):
 
 class ConnectPipe(ConnectorBridgeBase):
     """Connect to LO via pipe"""
+
     def __init__(self, pipe: str | None = None, **kwargs) -> None:
         """
         Constructor
 
         Args:
-            pipe (str | None, optional): name of pipe. Auto generated if None. Defaults to None.
-        
-        Any property value can be set by passing it into constructor.
-        e.g. ``ConnectPipe(no_logo=True)``
+            pipe (str | None, optional): Name of pipe. Auto generated if None. Defaults to ``None``.
+
+        Keyword Arguments:
+            no_restore (bool, optional): Default ``True``
+            no_first_start_wizard (bool, optional): Default ``True``
+            no_logo (bool, optional): Default ``True``
+            invisible (bool, optional): Default ``True``
+            headless (bool, optional): Default ``False``
+            start_as_service (bool, optional): Default ``False``
+            start_office (bool, optional): Default ``True``
         """
         super().__init__(**kwargs)
         if pipe is None:

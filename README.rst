@@ -58,32 +58,29 @@ PIP
 Modules
 -------
 
-Currently the ``Calc`` Module and the ``Write`` module are released.
-
+Include modules:
+    - Calc (Calc)
+    - Write (Write)
+    - Draw (LibreOffice Draw/Impress)
+    - Forms (Support for building forms)
+    - Dialogs (Build dialog forms)
+    - Lo (Various methods common to LO applications)
+    - GUI (Various GUI methods for manipulating LO Windows)
+    - FileIO (File Input and Output for working with LO)
+    - Color (Various color utils)
+    - DateUtil (Date Time utilities)
+    - ImagesLo (Various methods for working with Images)
+    - Props (Various methods for working with the many API properties)
+    - Chart (charting) in beta.
+    - Chart2 (charging) in beta.
 
 Future releases will add:
     - Base (LibreOffice Base)
-    - Chart (charting)
-    - Chart2 (charging)
     - Clip (clipboard support)
-    - Dialogs (Build dialog forms)
-    - Draw (LibreOffice Draw)
-    - Forms (Support for building forms)
     - Gallery (Methods for accessing and reporting on the Gallery)
     - Mail (Mail service provider)
     - Print (Print service provider)
     - And more ...
-
-Include modules still in beta:
-    - Color (Various color utils)
-    - DateUtil (Date Time utilities)
-    - FileIO (File Input and Output for working with LO)
-    - GUI (Various GUI methods for manipulating LO Windows)
-    - ImagesLo (Various methods for working with Images)
-    - Lo (Various methods common to LO applications)
-    - Props (Various methods for working with the many API properties)
-
-
 
 Inspiration
 -----------

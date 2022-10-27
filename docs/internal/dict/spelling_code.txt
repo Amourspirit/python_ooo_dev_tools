@@ -1,6 +1,7 @@
 Addin
 Addon
 Args
+bezier
 Calc
 CellRangeAddress
 config
@@ -60,6 +61,7 @@ uno
 utils
 ViewState
 XAccessible
+XAxis
 XBitmap
 XCell
 XCloseable
@@ -72,9 +74,11 @@ XDialog
 XEnumeration
 XFrame
 XInterface
+XLayer
 XModel
 XModule
 XMultiServiceFactory
+XPresentation
 XPrintable
 XProofreader
 XScenario
@@ -88,6 +92,7 @@ XStyle
 XStyleFamiliesSupplier
 XText
 XThesaurus
+XTitle
 XToolkit
 XViewPane
 XWindow

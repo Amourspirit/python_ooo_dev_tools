@@ -1,0 +1,8 @@
+dispatch
+========
+
+.. toctree::
+    :titlesonly:
+    :glob:
+
+    *

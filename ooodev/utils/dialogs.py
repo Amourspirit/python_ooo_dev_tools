@@ -109,6 +109,9 @@ class Dialogs:
 
         Args:
             dialog_ctrl (XControl): Control
+
+        Returns:
+            None:
         """
         controls = cls.get_dialog_controls_arr(dialog_ctrl)
         print(f"No of controls: {len(controls)}")

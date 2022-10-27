@@ -6,11 +6,11 @@ from __future__ import annotations
 import os
 import tempfile
 import datetime
-import glob
 import zipfile
 from pathlib import Path
-from urllib.parse import urlparse
-from typing import List, TYPE_CHECKING
+import urllib.parse
+from typing import Generator, List, TYPE_CHECKING, overload
+
 import uno
 from com.sun.star.io import XActiveDataSink
 from com.sun.star.io import XTextInputStream
@@ -35,7 +35,7 @@ _UTIL_PATH = str(Path(__file__).parent)
 
 
 class FileIO:
-    
+
     # region ------------- file path methods ---------------------------
     @staticmethod
     def get_utils_folder() -> str:
@@ -71,7 +71,7 @@ class FileIO:
 
         Args:
             url (str): url to convert
-        
+
         Raises:
             Exception: If unable to parse url.
 
@@ -79,12 +79,11 @@ class FileIO:
             Path: path as string
         """
         try:
-            p = urlparse(url)
-            final_path = cls.get_absolute_path(os.path.join(p.netloc, p.path))
+            p = urllib.parse.urlparse(url)
+            final_path = cls.get_absolute_path(os.path.join(p.netloc, urllib.parse.unquote(p.path)))
             return final_path
         except Exception as e:
             raise Exception(f"Could not parse '{url}'")
-
 
     @classmethod
     def fnm_to_url(cls, fnm: PathOrStr) -> str:
@@ -101,32 +100,48 @@ class FileIO:
             str: Converted path if conversion is successful; Otherwise None.
         """
         try:
-            p =  cls.get_absolute_path(fnm)
+            p = cls.get_absolute_path(fnm)
             return p.as_uri()
         except Exception as e:
             raise Exception("Unable to convert '{fnm}'") from e
 
+    # region uri_to_path()
+    @overload
     @classmethod
     def uri_to_path(cls, uri_fnm: str) -> Path:
+        ...
+
+    @overload
+    @classmethod
+    def uri_to_path(cls, uri_fnm: str, ensure_absolute: bool) -> Path:
+        ...
+
+    @classmethod
+    def uri_to_path(cls, uri_fnm: str, ensure_absolute: bool = True) -> Path:
         """
         Converts uri file to path.
 
         Args:
             uri_fnm (str): URI to convert
+            ensure_absolute (bool): If ``True`` then ensures that the return path is absolute. Default is ``True``
 
         Returns:
             Path: Converted URI as path.
         """
         # converts 'file:///C:/Program%20Files/LibreOffice/program/../program/addin'
-        # into: 'C:\\Program%20Files\\LibreOffice\\program\\addin'
-        p = Path(uri_fnm)
+        # into: 'C:\\Program Files\\LibreOffice\\program\\addin'
+        pr = urllib.parse.urlparse(str(uri_fnm))
+        p = Path(urllib.parse.unquote(pr.path))
+        if not ensure_absolute:
+            return p
         if p.is_absolute():
             return p
         return p.absolute().resolve()
-        
 
-    @staticmethod
-    def get_file_names(dir: PathOrStr) -> List[str]:
+    # endregion uri_to_path()
+
+    @classmethod
+    def get_file_names(cls, dir: PathOrStr) -> List[str]:
         """
         Gets a list of filenames in a folder
 
@@ -135,10 +150,30 @@ class FileIO:
 
         Returns:
             List[str]: List of files.
+
+        See Also:
+            :py:meth:`~.file_io.FileIO.get_file_paths`
         """
         # pattern .* includes hidden files whereas * does not.
-        files = glob.glob(f"{dir}/.*", recursive=False)
-        return files
+        return [str(f) for f in cls.get_file_paths(dir)]
+
+    @classmethod
+    def get_file_paths(cls, dir: PathOrStr) -> Generator[Path, None, None]:
+        """
+        Gets a generator of file paths in a folder
+
+        Args:
+            dir (PathOrStr): Folder path
+
+        Yields:
+            Generator[Path, None, None]: Generator of Path objects
+
+        See Also:
+            :py:meth:`~.file_io.FileIO.get_file_paths`
+        """
+        # pattern .* includes hidden files whereas * does not.
+        p = cls.get_absolute_path(dir)
+        return p.glob("*.*")
 
     @staticmethod
     def get_fnm(path: PathOrStr) -> str:
@@ -161,7 +196,7 @@ class FileIO:
             mLo.Lo.print(f"Unable to get name for '{path}'")
             mLo.Lo.print(f"    {e}")
         return ""
-    
+
     # endregion ---------- file path methods ---------------------------
 
     # region ------------- file creation / deletion --------------------
@@ -192,6 +227,121 @@ class FileIO:
         except Exception as e:
             mLo.Lo.print(f"File is not openable: {e}")
         return False
+
+    @staticmethod
+    def is_valid_path_or_str(fnm: PathOrStr) -> bool:
+        """
+        Checks ``fnm`` it make sure it is a valid path or string.
+
+        Args:
+            fnm (PathOrStr): Input path
+
+        Returns:
+            bool: ``False`` if ``fnm`` is ``None`` or empty string; Otherwise; ``True``
+        """
+        # note when path is converted from empty string it becomes current dir such as PosixPath('.')
+        if not fnm:
+            # takes care of "" string and None
+            return False
+        return True
+
+    # region is_exist_file()
+    @overload
+    @classmethod
+    def is_exist_file(cls, fnm: PathOrStr) -> bool:
+        ...
+
+    @overload
+    @classmethod
+    def is_exist_file(cls, fnm: PathOrStr, raise_err: bool) -> bool:
+        ...
+
+    @classmethod
+    def is_exist_file(cls, fnm: PathOrStr, raise_err: bool = False) -> bool:
+        """
+        Gets is a file actually exist.
+
+        Ensures that ``fnm`` is a valid ``PathOrStr`` format.
+
+        Ensures that ``fnm`` is an existing file.
+
+        Args:
+            fnm (PathOrStr): File to check. Relative paths are accepted
+            raise_err (bool, optional): Determines if an error is raised. Defaults to ``False``.
+
+        Raises:
+            ValueError: If ``raise_err`` is ``True`` and ``fnm`` is not a valid ``PathOrStr`` format.
+            ValueError: If ``raise_err`` is ``True`` and ``fnm`` is not a file.
+            FileNotFoundError: If ``raise_err`` is ``True`` and file is not found
+
+        Returns:
+            bool: ``True`` if file is valid; Otherwise, ``False``.
+        """
+        if not cls.is_valid_path_or_str(fnm):
+            if not raise_err:
+                return False
+            raise ValueError(f'fnm is not a valid format for PathOrStr: "{fnm}"')
+        p_fnm = cls.get_absolute_path(fnm)
+        if not p_fnm.exists():
+            if not raise_err:
+                return False
+            raise FileNotFoundError(f"File fnm does not exist: {p_fnm}")
+        if not p_fnm.is_file():
+            if not raise_err:
+                return False
+            raise ValueError(f'fnm is not a file: "{p_fnm}"')
+        return True
+
+    # endregion is_exist_file()
+
+    # region is_exist_dir()
+    @overload
+    @classmethod
+    def is_exist_dir(cls, dnm: PathOrStr) -> bool:
+        ...
+
+    @overload
+    @classmethod
+    def is_exist_dir(cls, dnm: PathOrStr, raise_err: bool) -> bool:
+        ...
+
+    @classmethod
+    def is_exist_dir(cls, dnm: PathOrStr, raise_err: bool = False) -> bool:
+        """
+        Gets is a directory actually exist.
+
+        Ensures that ``dnm`` is a valid ``PathOrStr`` format.
+
+        Ensures that ``dnm`` is an existing directory.
+
+        Args:
+            dnm (PathOrStr): directory to check. Relative paths are accepted
+            raise_err (bool, optional): Determines if an error is raised. Defaults to ``False``.
+
+        Raises:
+            ValueError: If ``raise_err`` is ``True`` and ``dnm`` is not a valid ``PathOrStr`` format.
+            FileNotFoundError: If ``raise_err`` is ``True`` and dir is not found.
+            NotADirectoryError: If ``raise_err`` is ``True`` and ``dnm`` is not a directory.
+
+        Returns:
+            bool: ``True`` if file is valid; Otherwise, ``False``.
+        """
+        if not cls.is_valid_path_or_str(dnm):
+            if not raise_err:
+                return False
+            raise ValueError(f'fnm is not a valid format for PathOrStr: "{dnm}"')
+        p_fnm = cls.get_absolute_path(dnm)
+        if not p_fnm.exists():
+            if not raise_err:
+                return False
+            raise FileNotFoundError(f"Dir fnm does not exist: {p_fnm}")
+        if not p_fnm.is_dir():
+            if not raise_err:
+                return False
+            raise NotADirectoryError(f'fnm is not a directory: "{p_fnm}"')
+        return True
+
+    # endregion is_exist_dir()
 
     @classmethod
     def make_directory(cls, dir: PathOrStr) -> None:
@@ -245,10 +395,10 @@ class FileIO:
         return True
 
     @classmethod
-    def delete_files(cls, *fnms:PathOrStr) -> bool:
+    def delete_files(cls, *fnms: PathOrStr) -> bool:
         """
         Deletes files
-        
+
         Args:
             fnms (str): one or more files to delete
 
@@ -441,4 +591,5 @@ class FileIO:
             mLo.Lo.print()
         except Exception as e:
             mLo.Lo.print(e)
+
     # endregion ---------- switch to Python's zip APIs -----------------
