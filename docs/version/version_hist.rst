@@ -2,6 +2,18 @@
 Version History
 ***************
 
+Version 0.5.0
+=============
+
+New modules
+ - Draw
+ - Chart
+ - Chart2
+
+Added ``utils.dispatch`` which as several new classes for looking up dispatch values.
+
+Misc bug fixes.
+
 Version 0.4.19
 ==============
 

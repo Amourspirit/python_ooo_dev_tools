@@ -36,6 +36,7 @@ maxHeight
 maxWidth
 Messagebox
 mViewState
+namespace
 nofirststartwizard
 nologo
 norestore
