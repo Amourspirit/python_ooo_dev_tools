@@ -3,7 +3,7 @@ from ooodev.utils.file_io import FileIO
 from slides_info import SlidesInfo
 
 
-# region maind()
+# region main()
 def main() -> int:
     if len(sys.argv) > 1:
         fnm = sys.argv[1]
@@ -19,7 +19,7 @@ def main() -> int:
     return 0
 
 
-# endregion maind()
+# endregion main()
 
 if __name__ == "__main__":
     SystemExit(main())

@@ -1,5 +1,7 @@
 # Draw Animate
 
+![Screen_shot](https://user-images.githubusercontent.com/4193389/198350301-84347872-6e16-4ebb-9fb2-72cc8a963310.png)
+
 Demonstrates Loading a graphic from file and animating it in Draw.
 Also demonstrates drawing shapes in a Draw document.
 

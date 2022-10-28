@@ -18,15 +18,10 @@ if TYPE_CHECKING:
 
 class DrawPicture:
     def show(self) -> None:
-        try:
-            loader = Lo.load_office(Lo.ConnectPipe())
-        except Exception:
-            Lo.close_office()
-            raise
-
-        doc = Draw.create_draw_doc(loader)
+        loader = Lo.load_office(Lo.ConnectPipe())
 
         try:
+            doc = Draw.create_draw_doc(loader)
             GUI.set_visible(is_visible=True, odoc=doc)
             Lo.delay(1_000)  # need delay or zoom may not occur
             GUI.zoom(GUI.ZoomEnum.ENTIRE_PAGE)
@@ -50,11 +45,12 @@ class DrawPicture:
                 buttons=MessageBoxButtonsEnum.BUTTONS_YES_NO,
             )
             if msg_result == MessageBoxResultsEnum.YES:
-                Lo.close_doc(doc=doc)
+                Lo.close_doc(doc=doc, deliver_ownership=True)
+                Lo.close_office()
             else:
                 print("Keeping document open")
         except Exception:
-            Lo.close_doc(doc=doc)
+            Lo.close_office()
             raise
 
     def _draw_shapes(self, curr_slide: XDrawPage) -> None:

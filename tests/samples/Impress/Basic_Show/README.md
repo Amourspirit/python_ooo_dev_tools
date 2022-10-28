@@ -1,5 +1,9 @@
 # Impress Basic Slide Show
 
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/4193389/198407936-7865b1c2-75b7-4530-8598-a1ce52821752.png" width="448" height="448">
+</p>
+
 Demonstrates displaying a slide show using default `algs.odp` file.
 
 A message box is display once the slide show has ended asking if you want to close the document.

@@ -12,12 +12,12 @@ def main() -> int:
 
     if len(sys.argv) > 1:
         fnm = sys.argv[1]
-        FileIO.is_exist_file(fnm, True)
+        _ = FileIO.is_exist_file(fnm, True)
     else:
         fnm = "tests/fixtures/presentation/algsSmall.ppt"
         if not FileIO.is_exist_file(fnm):
             fnm = "../../../../tests/fixtures/presentation/algsSmall.ppt"
-            FileIO.is_exist_file(fnm, True)
+            _ = FileIO.is_exist_file(fnm, True)
 
     modify = ModifySlides(fnm=fnm, im_fnm=im_fnm)
     modify.main()

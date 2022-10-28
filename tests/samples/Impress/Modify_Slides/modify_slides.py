@@ -7,11 +7,7 @@ from ooodev.utils.file_io import FileIO
 from ooodev.utils.gui import GUI
 from ooodev.utils.info import Info
 from ooodev.utils.lo import Lo
-from ooodev.utils.props import Props
 from ooodev.utils.type_var import PathOrStr
-
-from ooo.dyn.presentation.animation_speed import AnimationSpeed as AnimationSpeed
-from ooo.dyn.presentation.fade_effect import FadeEffect as FadeEffect
 
 
 class ModifySlides:
@@ -56,7 +52,8 @@ class ModifySlides:
                 buttons=MessageBoxButtonsEnum.BUTTONS_YES_NO,
             )
             if msg_result == MessageBoxResultsEnum.YES:
-                Lo.close_doc(doc=doc)
+                Lo.close_doc(doc=doc, deliver_ownership=True)
+                Lo.close_office()
             else:
                 print("Keeping document open")
         except Exception:

@@ -37,13 +37,9 @@ class DrawHilbert:
         self._level_str = str(level)
 
     def draw(self) -> None:
+        loader = Lo.load_office(Lo.ConnectPipe())
         try:
-            loader = Lo.load_office(Lo.ConnectPipe())
-        except Exception:
-            Lo.close_office()
-            raise
-        doc = Draw.create_draw_doc(loader)
-        try:
+            doc = Draw.create_draw_doc(loader)
             rect = GUI.get_screen_size()
             GUI.set_pos_size(doc=doc, x=0, y=0, width=round(rect.Width / 2), height=round(rect.Height - 40))
             GUI.set_visible(is_visible=True, odoc=doc)
@@ -62,12 +58,13 @@ class DrawHilbert:
                 buttons=MessageBoxButtonsEnum.BUTTONS_YES_NO,
             )
             if msg_result == MessageBoxResultsEnum.YES:
-                Lo.close_doc(doc=doc)
+                Lo.close_doc(doc=doc, deliver_ownership=True)
+                Lo.close_office()
             else:
                 print("Keeping document open")
 
         except Exception:
-            Lo.close_doc(doc=doc)
+            Lo.close_office()
             raise
 
     def _start_hilbert(self, level_str: str, slide_size: Size) -> None:

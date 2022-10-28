@@ -1,5 +1,9 @@
 # Impress Master Pages
 
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/4193389/198416768-3e0c76af-51bf-4844-9081-f11e2fe82a28.jpg" width="384" height="384">
+</p>
+
 Demonstrates the following:
 
 - list the shapes on the default master page.

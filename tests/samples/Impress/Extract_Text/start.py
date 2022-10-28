@@ -12,7 +12,7 @@ def main() -> int:
         if not FileIO.is_exist_file(fnm):
             fnm = "../../../../tests/fixtures/presentation/algs.odp"
             FileIO.is_exist_file(fnm, True)
-        fnm = Path("tests/fixtures/presentation/algs.odp")
+
     et = ExtractText(fnm)
     et.extract()
     return 0
