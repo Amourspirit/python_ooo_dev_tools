@@ -1,5 +1,9 @@
 # Impress copy Slide
 
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/4193389/198409975-eb50eb6a-3216-4cbb-a315-2ebc4a5d9bf7.png" width="253" height="313">
+</p>
+
 Demonstrates opening a presentation file in Impress and copying a slide from a given index to after another given index.
 
 A message box is display once the document has been created asking if you want to close the document.

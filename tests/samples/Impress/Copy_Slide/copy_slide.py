@@ -54,7 +54,8 @@ class CopySlide:
                 buttons=MessageBoxButtonsEnum.BUTTONS_YES_NO,
             )
             if msg_result == MessageBoxResultsEnum.YES:
-                Lo.close_doc(doc=doc)
+                Lo.close_doc(doc=doc, deliver_ownership=True)
+                Lo.close_office()
             else:
                 print("Keeping document open")
         except IndexError:
@@ -84,7 +85,6 @@ class CopySlide:
         Lo.delay(500)
         print(f"Copied {self._from_idx}")
 
-        # elect this slide; 'doc' version of gotoPage() pastes incorrectly
         Draw.goto_page(ctrl, to_slide)
         Lo.delay(500)
         Lo.dispatch_cmd(GlobalEditDispatch.PASTE)

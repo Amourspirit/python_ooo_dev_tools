@@ -19,36 +19,16 @@ from ooo.dyn.drawing.polygon_flags import PolygonFlags
 
 class BezierBuilder:
     def __init__(self, fnm_point: PathOrStr) -> None:
-        self._fnm_point = fnm_point
+        _ = FileIO.is_exist_file(fnm_point, True)
+        self._fnm_point = FileIO.get_absolute_path(fnm_point)
 
     def show(self) -> None:
         # with Lo.Loader(Lo.ConnectPipe()) as loader:
+        loader = Lo.load_office(Lo.ConnectPipe())
+
         try:
-            loader = Lo.load_office(Lo.ConnectPipe())
-        except Exception:
-            Lo.close_office()
-            raise
-
-        if not FileIO.is_valid_path_or_str(self._fnm_point):
-            MsgBox.msgbox(
-                "Input file is not a valid Path or string file.", "File Error", boxtype=MessageBoxType.ERRORBOX
-            )
-            Lo.close_office()
-            return
-
-        fnm = FileIO.get_absolute_path(self._fnm_point)
-        if not fnm.exists():
-            MsgBox.msgbox(f'File Not existing: "{self._fnm_point}"', "File Error", boxtype=MessageBoxType.ERRORBOX)
-            Lo.close_office()
-            return
-        if not fnm.is_file():
-            MsgBox.msgbox(f'Path is not a file: "{self._fnm_point}"', "File Error", boxtype=MessageBoxType.ERRORBOX)
-            Lo.close_office()
-            return
-
-        # create Impress page or Draw slide
-        doc = Draw.create_draw_doc(loader)
-        try:
+            # create Impress page or Draw slide
+            doc = Draw.create_draw_doc(loader)
             slide = Draw.get_slide(doc=doc, idx=0)
 
             GUI.set_visible(is_visible=True, odoc=doc)
@@ -57,7 +37,7 @@ class BezierBuilder:
 
             start_pt = Point()
             curve_pts: List[Point] = []
-            is_open = self._read_points(fnm=fnm, start_pt=start_pt, curve_pts=curve_pts)
+            is_open = self._read_points(fnm=self._fnm_point, start_pt=start_pt, curve_pts=curve_pts)
             _ = self._create_bezier(slide=slide, start_pt=start_pt, curve_pts=curve_pts, is_open=is_open)
 
             Lo.delay(2000)
@@ -69,9 +49,10 @@ class BezierBuilder:
                 buttons=MessageBoxButtonsEnum.BUTTONS_YES_NO,
             )
             if msg_result == MessageBoxResultsEnum.YES:
-                Lo.close_doc(doc=doc)
+                Lo.close_doc(doc=doc, deliver_ownership=True)
+                Lo.close_office()
         except Exception:
-            Lo.close_doc(doc=doc)
+            Lo.close_office()
             raise
 
     def _read_points(self, fnm: PathOrStr, start_pt: Point, curve_pts: List[Point]) -> bool:

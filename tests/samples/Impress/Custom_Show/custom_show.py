@@ -21,13 +21,10 @@ class CustomShow:
         self._idxs = slide_idx
 
     def show(self) -> None:
+        loader = Lo.load_office(Lo.ConnectPipe())
+
         try:
-            loader = Lo.load_office(Lo.ConnectPipe())
-        except Exception:
-            Lo.close_office()
-            raise
-        doc = Lo.open_doc(fnm=self._fnm, loader=loader)
-        try:
+            doc = Lo.open_doc(fnm=self._fnm, loader=loader)
             # slideshow start() crashes if the doc is not visible
             GUI.set_visible(is_visible=True, odoc=doc)
 
@@ -51,7 +48,8 @@ class CustomShow:
                     buttons=MessageBoxButtonsEnum.BUTTONS_YES_NO,
                 )
                 if msg_result == MessageBoxResultsEnum.YES:
-                    Lo.close_doc(doc=doc)
+                    Lo.close_doc(doc=doc, deliver_ownership=True)
+                    Lo.close_office()
                 else:
                     print("Keeping document open")
             else:
@@ -62,5 +60,5 @@ class CustomShow:
                 )
 
         except Exception:
-            Lo.close_doc(doc=doc)
+            Lo.close_office()
             raise

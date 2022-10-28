@@ -1,5 +1,9 @@
 # Impress Slide to Image
 
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/4193389/198423388-f8845bec-781a-42ef-b8cf-20bb13b9cb43.png">
+</p>
+
 Saves a given page of a slide presentation (e.g. ppt, odp) as an image file (e.g. "gif", "png", "jpeg", "wmf", "bmp", "svg")
 
 

@@ -1,5 +1,9 @@
 # Impress Create Slide Show
 
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/4193389/198421871-f61c210a-62ff-4096-9653-c6c58f70d118.png">
+</p>
+
 Creates a slide show.
 
 Three slides are created which use slide transitions and animation effects on some of the shapes.

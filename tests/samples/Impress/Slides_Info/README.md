@@ -1,10 +1,15 @@
 # Impress Get Info
 
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/4193389/198415603-a7ea1593-06a7-482f-b245-0933d0f5950d.png" width="396" height="314">
+</p>
+
+
 Demonstrates get info using default `algs.odp` file.
 
 - open a draw/slides document
 - report on layers
-- report style information: familiies, styles, properties
+- report style information: families, styles, properties
 - show no. of slides and slide size
 
 ## Automate

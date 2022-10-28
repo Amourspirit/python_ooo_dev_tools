@@ -1,5 +1,9 @@
 # Impress Extract Text
 
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/4193389/198415603-a7ea1593-06a7-482f-b245-0933d0f5950d.png" width="396" height="314">
+</p>
+
 Attempts to extract the text from the slide deck.
 
 The order of the text extracted may not be the same as the order

@@ -16,8 +16,6 @@ def main() -> int:
         fnm = "../../../../tests/fixtures/presentation/algs.odp"
         FileIO.is_exist_file(fnm, True)
 
-    fnm = Path("tests/fixtures/presentation/algs.odp")
-
     custom_show = CustomShow(fnm, *idxs)  # 56 is too high
     custom_show.show()
     return 0
