@@ -1,5 +1,6 @@
 # coding: utf-8
 from __future__ import annotations
+from typing import Union
 import os
 import sys
 import shutil
@@ -7,7 +8,10 @@ import __main__
 from pathlib import Path
 from typing import overload
 from .sys_info import SysInfo
-from .type_var import PathOrStr
+
+# do not import from type_var here.
+# this module is used by uno_lnk.py and type_var imports uno
+# PathOrStr = Union[str, os.PathLike]
 
 # python path on mac:  /Applications/LibreOffice.app/Contents/Resources/python
 #   https://ask.libreoffice.org/t/where-is-the-python-executable-embedded-in-libreoffice-on-macos/50042
@@ -96,6 +100,7 @@ def get_soffice_install_path() -> Path:
         _INSTALL_PATH = p_sf.parent.parent
         return _INSTALL_PATH
 
+
 def get_soffice_path() -> Path:
     """
     Gets path to soffice
@@ -106,7 +111,7 @@ def get_soffice_path() -> Path:
     if PLATFORM == SysInfo.PlatformEnum.WINDOWS:
         return Path(get_lo_path(), "soffice.exe")
     return Path(get_lo_path(), "soffice")
-    
+
 
 def get_uno_path() -> Path:
     """
@@ -228,12 +233,12 @@ def mkdirp(dest_dir: Path) -> None:
     ...
 
 
-def mkdirp(dest_dir:PathOrStr) -> None:
+def mkdirp(dest_dir: Union[str, os.PathLike]) -> None:
     """
     Creates path and subpaths not existing.
 
     Args:
-        dest_dir (PathOrStr): PathLike object
+        dest_dir (str | PathLike]): PathLike object
     """
     # Python ≥ 3.5
     pth = Path(dest_dir)
