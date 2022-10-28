@@ -1,5 +1,7 @@
 # Draw Bezier Curve
 
+![Screen_shot](https://user-images.githubusercontent.com/4193389/198354784-e14025b0-67a5-4d63-b95a-543a414384fa.png)
+
 Demonstrates reading a text file contains Bezier curve data that is recreated in a Draw document.
 
 A message box is display once the document has been created asking if you want to close the document.

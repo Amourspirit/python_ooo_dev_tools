@@ -4,7 +4,7 @@ Demonstrates get info using default `algs.odp` file.
 
 - open a draw/slides document
 - report on layers
-- report style information: familiies, styles, properties
+- report style information: families, styles, properties
 - show no. of slides and slide size
 
 ## Automate

@@ -1,5 +1,9 @@
 # Impress append Slides to existing slide show
 
+<p align="center">
+  <img width="435" height="448" src="https://user-images.githubusercontent.com/4193389/198401485-94062f29-6a24-40f7-8873-fce8abaff481.png">
+</p>
+
 This example demonstrates how to combine Slide show documents using Impress.
 
 There is one limitation at this time.

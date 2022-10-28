@@ -7,6 +7,8 @@ from com.sun.star.lang import XComponent
 
 from ooodev.dialog.msgbox import MsgBox, MessageBoxType, MessageBoxButtonsEnum, MessageBoxResultsEnum
 from ooodev.office.draw import Draw, mEx
+from ooodev.utils.dispatch.draw_view_dispatch import DrawViewDispatch
+from ooodev.utils.dispatch.global_edit_dispatch import GlobalEditDispatch
 from ooodev.utils.file_io import FileIO
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
@@ -26,19 +28,15 @@ class AppendSlides:
         if len(fnms) == 0:
             raise ValueError("At lease one file is required. fnms has no values.")
         for fnm in fnms:
-            FileIO.is_exist_file(fnm, True)
+            _ = FileIO.is_exist_file(fnm, True)
 
         self._fnms = fnms
 
     def append(self) -> None:
-        try:
-            loader = Lo.load_office(Lo.ConnectPipe())
-        except Exception:
-            Lo.close_office()
-            raise
-        doc = Lo.open_doc(fnm=self._fnms[0], loader=loader)
+        loader = Lo.load_office(Lo.ConnectPipe())
 
         try:
+            doc = Lo.open_doc(fnm=self._fnms[0], loader=loader)
 
             GUI.set_visible(is_visible=True, odoc=doc)
 
@@ -46,7 +44,8 @@ class AppendSlides:
             self._to_frame = GUI.get_frame(doc)
 
             # Switch to slide sorter view so that slides can be pasted
-            Lo.dispatch_cmd(cmd="DiaMode", frame=self._to_frame)
+            Lo.delay(500)
+            Lo.dispatch_cmd(cmd=DrawViewDispatch.DIA_MODE, frame=self._to_frame)
 
             to_slides = Draw.get_slides(doc)
 
@@ -60,8 +59,9 @@ class AppendSlides:
 
                 self._append_doc(to_slides=to_slides, doc=app_doc)
 
-            Lo.delay(1000)
-            Lo.dispatch_cmd(cmd="PageMode", frame=self._to_frame)  # does not work
+            Lo.delay(500)
+            Lo.dispatch_cmd(cmd=DrawViewDispatch.PAGE_MODE, frame=self._to_frame)  # does not work
+
             Lo.delay(1000)
             msg_result = MsgBox.msgbox(
                 "Do you wish to close document?",
@@ -70,11 +70,12 @@ class AppendSlides:
                 buttons=MessageBoxButtonsEnum.BUTTONS_YES_NO,
             )
             if msg_result == MessageBoxResultsEnum.YES:
-                Lo.close_doc(doc=doc)
+                Lo.close_doc(doc=doc, deliver_ownership=True)
+                Lo.close_office()
             else:
                 print("Keeping document open")
         except Exception:
-            Lo.close_doc(doc=doc)
+            Lo.close_office()
             raise
 
     def _append_doc(self, to_slides: XDrawPages, doc: XComponent) -> None:
@@ -135,7 +136,7 @@ class AppendSlides:
 
         Draw.goto_page(from_ctrl, from_slide)  # select this slide
         print("-- Copy -->")
-        Lo.dispatch_cmd(cmd="Copy", frame=from_frame)
+        Lo.dispatch_cmd(cmd=GlobalEditDispatch.COPY, frame=from_frame)
         Lo.delay(1000)
 
         Draw.goto_page(to_ctrl, to_slide)
@@ -156,7 +157,7 @@ class AppendSlides:
         # };
         # monitorThread.start();
 
-        Lo.dispatch_cmd(cmd="Paste", frame=to_frame)
+        Lo.dispatch_cmd(cmd=GlobalEditDispatch.PASTE, frame=to_frame)
 
     # Java implementation of clickWindow
 

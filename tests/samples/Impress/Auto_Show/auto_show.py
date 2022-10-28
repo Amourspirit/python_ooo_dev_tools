@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import uno
 from ooodev.dialog.msgbox import MsgBox, MessageBoxType, MessageBoxButtonsEnum, MessageBoxResultsEnum
-from ooodev.office.draw import Draw
+from ooodev.office.draw import Draw, DrawingSlideShowKind
 from ooodev.utils.dispatch.draw_view_dispatch import DrawViewDispatch
 from ooodev.utils.file_io import FileIO
 from ooodev.utils.gui import GUI
@@ -40,7 +40,7 @@ class AutoShow:
                     slide=slide,
                     fade_effect=self._fade_effect,
                     speed=AnimationSpeed.FAST,
-                    change=Draw.SlideShowKind.AUTO_CHANGE,
+                    change=DrawingSlideShowKind.AUTO_CHANGE,
                     duration=self._duration,
                 )
 
@@ -56,6 +56,8 @@ class AutoShow:
 
             sc = Draw.get_show_controller(show)
             Draw.wait_last(sc=sc, delay=self._end_delay)
+            Lo.dispatch_cmd(DrawViewDispatch.PRESENTATION_END)
+            Lo.delay(500)
 
             msg_result = MsgBox.msgbox(
                 "Do you wish to close document?",
@@ -65,8 +67,8 @@ class AutoShow:
             )
             if msg_result == MessageBoxResultsEnum.YES:
                 print("Ending the slide show")
-                sc.deactivate()
-                Lo.close_doc(doc=doc)
+                Lo.close_doc(doc=doc, deliver_ownership=True)
+                Lo.close_office()
             else:
                 print("Keeping document open")
         except Exception:
