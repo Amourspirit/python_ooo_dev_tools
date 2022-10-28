@@ -10,6 +10,9 @@ Virtual Environment
 
 Set up virtual environment if not existing.
 
+Linux
+^^^^^
+
 .. code-block:: text
 
     $ python -m venv ./.venv
@@ -30,8 +33,6 @@ In order to run test it is essential that ``uno.py`` and ``unohelper.py`` can be
 These files are part of the LibreOffice installation.
 The location of these files vary depending on OS and other factors.
 
-Linux
-^^^^^
 
 On Linux what is required to communicate with LibreOffice API it a copy of, or link to ``uno.py`` and ``unohelper.py`` in the virtual environment.
 ``uno.py`` sets up the necessary code that makes importing from LibreOffice API possible.
@@ -62,6 +63,7 @@ This is due to the how LibreOffice implements the python environment on Windows.
 The way |odev| works on Windows is a slight hack to the virtual environment.
 
 Start by using terminal to create a ``.venv`` environment in the projects root folder
+
 
 .. code-block:: text
 
@@ -98,6 +100,18 @@ Change to: With the version that is the same as current LibreOffice Version
     home = C:\Program Files\LibreOffice\program
     include-system-site-packages = false
     version = 3.8.10
+
+Activate Virtual environment.
+
+.. code-block:: text
+
+     PS C:\python_ooo_dev_tools> .\.venv\Scripts\Activate
+
+Install requirements using Poetry.
+
+.. code-block:: text
+
+    (.venv) PS C:\python_ooo_dev_tools> poetry install
 
 Testing Virtual Environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
