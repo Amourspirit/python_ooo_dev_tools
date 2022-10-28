@@ -1,0 +1,67 @@
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "ooo-dev-tools"
+version = "0.5.0"
+description = "LibreOffice Developer Tools"
+license = "Apache Software License"
+readme = "README.rst"
+authors = [
+    ":Barry-Thomas-Paul: Moss <bigbytetech@gmail.com>"
+]
+keywords = ["odev", "libreoffice", "openoffice", "macro", "uno", "ooouno", "pyuno"]
+homepage = "https://github.com/Amourspirit/python_ooo_dev_tools"
+documentation = "https://python-ooo-dev-tools.readthedocs.io/en/latest/index.html"
+repository = "https://github.com/Amourspirit/python-ooouno-ex"
+packages = [
+    { include = "ooodev" }
+]
+classifiers = [
+    "Topic :: Office/Business",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+ooouno = "^0.2.4"
+lxml = "^4.9.1"
+Pillow = "^9.2.0"
+typing-extensions = {version = "^4.4.0", python = "<3.8"}
+
+[[tool.poetry.source]]
+name = "pypi-test"
+url = "https://test.pypi.org/legacy/"
+default = false
+secondary = false
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^22.10.0"
+pytest = "^7.2.0"
+esbonio = "^0.14.1"
+hypothesis = "^6.56.4"
+thefuzz = "^0.19.0"
+python-Levenshtein = "^0.20.7"
+
+
+[tool.poetry.group.docs.dependencies]
+sphinx-toolbox = "^3.2.0"
+sphinx-tabs = "^3.4.1"
+sphinx-rtd-dark-mode = "^1.2.4"
+sphinx-autodoc-typehints = "^1.19.4"
+sphinxcontrib-spelling = "^7.6.2"
+
+[tool.pytest.ini_options]
+testpaths = [
+    "tests",
+]
