@@ -1,7 +1,7 @@
 # region Imports
 from __future__ import annotations
 from random import random
-from typing import List, Tuple, cast, overload
+from typing import List, Tuple, cast, overload, TYPE_CHECKING
 
 import uno
 
@@ -42,7 +42,6 @@ from com.sun.star.sheet import XSpreadsheet
 from com.sun.star.sheet import XSpreadsheetDocument
 from com.sun.star.table import XTableChart
 from com.sun.star.table import XTableChartsSupplier
-from com.sun.star.uno import XInterface
 from com.sun.star.util import XNumberFormatsSupplier
 
 from . import calc as mCalc
@@ -73,6 +72,9 @@ from ooo.dyn.drawing.fill_style import FillStyle as FillStyle
 from ooo.dyn.drawing.line_style import LineStyle as LineStyle
 from ooo.dyn.lang.locale import Locale
 from ooo.dyn.table.cell_range_address import CellRangeAddress
+
+if TYPE_CHECKING:
+    from ooo.lo.chart2.data_point_properties import DataPointProperties
 
 # endregion Imports
 
@@ -242,6 +244,8 @@ class Chart2:
         # com.sun.star.lang.XTypeProvider
         # com.sun.star.style.XStyleSupplier
         # com.sun.star.uno.XWeak
+
+        # in LO 7.3 com.sun.star.chart2.XChartTypeTemplate is included
 
         # ensure diagram_name is ChartTemplateBase | str
         mInfo.Info.is_type_enum_multi(
@@ -555,6 +559,7 @@ class Chart2:
             result = coord_sys.getAxisByDimension(int(axis_val), idx)
             if result is None:
                 raise mEx.UnKnownError("None Value: getAxisByDimension() returned None")
+            return result
         except mEx.ChartError:
             raise
         except Exception as e:
@@ -1307,18 +1312,34 @@ class Chart2:
         try:
             if int(bg_color) > 0:
                 bg_ps = chart_doc.getPageBackground()
+                # bg_dpp = cast("DataPointProperties", bg_ps)
+                # bg_dpp.FillBackground = True
+                # bg_dpp.FillStyle = FillStyle.SOLID
+                # bg_dpp.FillColor = int(bg_color)
+                #
+                # there is a bug with chart_doc.getPageBackground()
+                # it is suppose to return XProperySet, which it does but
+                # XProperySet methods such as  setPropertyValue and getPropertySetInfo are missing.
+                # see also: Props._set_by_attribute()
+                #
                 # mProps.Props.show_props("Background", bg_ps)
-                mProps.Props.set_property(bg_ps, "FillBackground", True)
-                mProps.Props.set_property(bg_ps, "FillStyle", FillStyle.SOLID)
-                mProps.Props.set_property(bg_ps, "FillColor", int(bg_color))
+                mProps.Props.set(bg_ps, FillBackground=True, FillStyle=FillStyle.SOLID, FillColor=int(bg_color))
 
             if int(wall_color) > 0:
                 diagram = chart_doc.getFirstDiagram()
                 wall_ps = diagram.getWall()
+                # wall_dpp = cast("DataPointProperties", wall_ps)
+                # wall_dpp.FillBackground = True
+                # wall_dpp.FillStyle = FillStyle.SOLID
+                # wall_dpp.FillColor = int(wall_color)
+                #
+                # there is a bug with diagram.getWall()
+                # it is suppose to return XProperySet, which it does but
+                # XProperySet methods such as  setPropertyValue and getPropertySetInfo are missing.
+                # see also: Props._set_by_attribute()
+                #
                 # mProps.Props.show_props("Wall", wall_ps)
-                mProps.Props.set_property(wall_ps, "FillBackground", True)
-                mProps.Props.set_property(wall_ps, "FillStyle", FillStyle.SOLID)
-                mProps.Props.set_property(wall_ps, "FillColor", int(wall_color))
+                mProps.Props.set(wall_ps, FillBackground=True, FillStyle=FillStyle.SOLID, FillColor=int(wall_color))
         except Exception as e:
             raise mEx.ChartError("Error setting background colors") from e
 
@@ -1882,11 +1903,19 @@ class Chart2:
         """
         try:
             if ct.getChartType() == "com.sun.star.chart2.CandleStickChartType":
-                ps = mLo.Lo.qi(XPropertySet, mProps.Props.get_property(ct, "WhiteDay"), True)
-                mProps.Props.set_property(ps, "FillColor", int(w_day_color))
+                # there is a bug with white_day_ps and black_day_ps
+                # they are suppose br XProperySet, which they are but
+                # XProperySet methods such as  setPropertyValue and getPropertySetInfo are missing.
+                # see also: Props._set_by_attribute()
+                white_day_ps = mLo.Lo.qi(XPropertySet, mProps.Props.get(ct, "WhiteDay"), True)
+                white_day_dpp = cast("DataPointProperties", white_day_ps)
+                white_day_dpp.FillColor = int(w_day_color)
+                # mProps.Props.set_property(white_day_ps, "FillColor", int(w_day_color))
 
-                ps = mLo.Lo.qi(XPropertySet, mProps.Props.get_property(ct, "BlackDay"), True)
-                mProps.Props.set_property(ps, "FillColor", int(b_day_color))
+                black_day_ps = mLo.Lo.qi(XPropertySet, mProps.Props.get(ct, "BlackDay"), True)
+                black_day_dpp = cast("DataPointProperties", black_day_ps)
+                black_day_dpp.FillColor = int(b_day_color)
+                # mProps.Props.set_property(black_day_ps, "FillColor", int(b_day_color))
             else:
                 raise mEx.NotSupportedError(
                     f'Only candel stick charts supported. "{ct.getChartType()}" not supported.'
@@ -2138,9 +2167,9 @@ class Chart2:
         """
         try:
             error_bars_ps = mLo.Lo.create_instance_mcf(XPropertySet, "com.sun.star.chart2.ErrorBar", raise_err=True)
-            mProps.Props.set_property(error_bars_ps, "ShowPositiveError", True)
-            mProps.Props.set_property(error_bars_ps, "ShowNegativeError", True)
-            mProps.Props.set_property(error_bars_ps, "ErrorBarStyle", ErrorBarStyle.FROM_DATA)
+            mProps.Props.set(
+                error_bars_ps, ShowPositiveError=True, ShowNegativeError=True, ErrorBarStyle=ErrorBarStyle.FROM_DATA
+            )
 
             # convert into data sink
             data_sink = mLo.Lo.qi(XDataSink, error_bars_ps, True)
@@ -2169,7 +2198,7 @@ class Chart2:
             # print(f'No. of data serice: {len(data_series_arr)}')
             data_series = data_series_arr[0]
             # mProps.Props.show_obj_props("Data Series 0", data_series)
-            mProps.Props.set_property(data_series, "ErrorBarY", error_bars_ps)
+            mProps.Props.set(data_series, ErrorBarY=error_bars_ps)
         except mEx.ChartError:
             raise
         except Exception as e:
