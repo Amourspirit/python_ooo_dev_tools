@@ -71,8 +71,8 @@ Include modules:
     - DateUtil (Date Time utilities)
     - ImagesLo (Various methods for working with Images)
     - Props (Various methods for working with the many API properties)
+    - Chart2 (charting)
     - Chart (charting) in beta.
-    - Chart2 (charting) in beta.
 
 Future releases will add:
     - Base (LibreOffice Base)
