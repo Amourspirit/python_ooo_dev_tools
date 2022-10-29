@@ -96,3 +96,20 @@ def test_gallery_dir(loader) -> None:
     # Gallery file.
     fnm = Info.get_gallery_dir() / "sounds" / "applause.wav"
     assert fnm.exists()
+
+
+def test_version_str(loader) -> None:
+    from ooodev.utils.info import Info
+
+    ver = Info.version
+    assert isinstance(ver, str)
+
+
+def test_version_info(loader) -> None:
+    from ooodev.utils.info import Info
+
+    ver = Info.version_info
+    assert isinstance(ver, tuple)
+    assert len(ver) >= 2
+    assert isinstance(ver[0], int)
+    assert isinstance(ver[1], int)

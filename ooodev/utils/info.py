@@ -2150,13 +2150,18 @@ class Info(metaclass=StaticProperty):
         Gets the running LibreOffice version
 
         Returns:
-            str: version as string
+            str: version as string such as ``"7.3.4.2"``
+
+        Note:
+            This property only works after Office is Loaded.
         """
 
         try:
             return cls._version
         except AttributeError:
-            lang = cls.get_config(node_str="ooSetupVersion")
+            # ooSetupVersionAboutBox long "7.3.4.2"
+            # ooSetupVersion short "7.3"
+            lang = cls.get_config(node_str="ooSetupVersionAboutBox")
             cls._version = str(lang)
         return cls._version
 
@@ -2165,10 +2170,33 @@ class Info(metaclass=StaticProperty):
         # raise error on set. Not really necessary but gives feedback.
         raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
 
+    @classproperty
+    def version_info(cls) -> Tuple[int, ...]:
+        """
+        Gets the running LibreOffice version
+
+        Returns:
+            tuple: version as tuple such as ``(7, 3, 4, 2)``
+
+        Note:
+            This property only works after Office is Loaded.
+        """
+
+        try:
+            return cls._version_info
+        except AttributeError:
+            cls._version_info = tuple([int(s) for s in cls.version.split(".")])
+        return cls._version_info
+
+    @version_info.setter
+    def version_info(cls, value) -> None:
+        # raise error on set. Not really necessary but gives feedback.
+        raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
+
 
 def _del_cache_attrs(source: object, e: EventArgs) -> None:
     # clears Write Attributes that are dynamically created
-    dattrs = ("_language", "_version")
+    dattrs = ("_language", "_version", "_version_info")
     for attr in dattrs:
         if hasattr(Info, attr):
             delattr(Info, attr)
