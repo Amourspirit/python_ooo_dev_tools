@@ -1,15 +1,17 @@
 # region Imports
 from __future__ import annotations
 from random import random
-from typing import List, Tuple, cast, overload
+from typing import List, Tuple, cast, overload, TYPE_CHECKING
 
 import uno
+
+# XChartTypeTemplate import error in LO >+ 7.4
+from com.sun.star.chart2 import XChartTypeTemplate
 from com.sun.star.beans import XPropertySet
 from com.sun.star.chart2 import XAxis
 from com.sun.star.chart2 import XChartDocument
 from com.sun.star.chart2 import XChartType
 from com.sun.star.chart2 import XChartTypeContainer
-from com.sun.star.chart2 import XChartTypeTemplate
 from com.sun.star.chart2 import XCoordinateSystem
 from com.sun.star.chart2 import XCoordinateSystemContainer
 from com.sun.star.chart2 import XDataSeries
@@ -42,6 +44,8 @@ from com.sun.star.table import XTableChart
 from com.sun.star.table import XTableChartsSupplier
 from com.sun.star.util import XNumberFormatsSupplier
 
+from . import calc as mCalc
+from ..exceptions import ex as mEx
 from ..utils import color as mColor
 from ..utils import file_io as mFileIo
 from ..utils import gui as mGui
@@ -49,16 +53,13 @@ from ..utils import images_lo as mImgLo
 from ..utils import info as mInfo
 from ..utils import lo as mLo
 from ..utils import props as mProps
-from ..exceptions import ex as mEx
-from . import calc as mCalc
 from ..utils.data_type.angle import Angle as Angle
 from ..utils.kind.axis_kind import AxisKind as AxisKind
+from ..utils.kind.chart2_data_role_kind import DataRoleKind as DataRoleKind
 from ..utils.kind.chart2_types import ChartTemplateBase, ChartTypeNameBase, ChartTypes as ChartTypes
 from ..utils.kind.curve_kind import CurveKind as CurveKind
 from ..utils.kind.data_point_label_type_kind import DataPointLabelTypeKind as DataPointLabelTypeKind
-
 from ..utils.kind.line_style_name_kind import LineStyleNameKind as LineStyleNameKind
-from ..utils.kind.chart2_data_role_kind import DataRoleKind as DataRoleKind
 
 from ooo.dyn.awt.rectangle import Rectangle
 from ooo.dyn.chart.chart_data_row_source import ChartDataRowSource
@@ -71,6 +72,9 @@ from ooo.dyn.drawing.fill_style import FillStyle as FillStyle
 from ooo.dyn.drawing.line_style import LineStyle as LineStyle
 from ooo.dyn.lang.locale import Locale
 from ooo.dyn.table.cell_range_address import CellRangeAddress
+
+if TYPE_CHECKING:
+    from ooo.lo.chart2.data_point_properties import DataPointProperties
 
 # endregion Imports
 
@@ -136,7 +140,7 @@ class Chart2:
 
             # assign chart template to the chart's diagram
             diagram = chart_doc.getFirstDiagram()
-            ct_template = cls.set_templeate(chart_doc=chart_doc, diagram=diagram, diagram_name=diagram_name)
+            ct_template = cls.set_template(chart_doc=chart_doc, diagram=diagram, diagram_name=diagram_name)
 
             has_cats = cls.has_categories(diagram_name)
 
@@ -220,7 +224,7 @@ class Chart2:
             ChartError: If error occurs.
 
         Returns:
-            XChartTypeTemplate: Chart Template
+            XInterface: Chart Template
 
         Note:
             If unable to create template from ``diagram_name`` for any reason then
@@ -229,6 +233,20 @@ class Chart2:
         Hint:
             .. include:: ../../resources/utils/chart2_lookup_chart_tmpl.rst
         """
+        # XChartTypeTemplate does not seem to be supported by LO 7.4 ( gets import error )
+        # Available interfaces com.sun.star.chart2.template.Column: (also XInterface)
+        # com.sun.star.beans.XFastPropertySet
+        # com.sun.star.beans.XMultiPropertySet
+        # com.sun.star.beans.XMultiPropertyStates
+        # com.sun.star.beans.XPropertySet
+        # com.sun.star.beans.XPropertyState
+        # com.sun.star.lang.XServiceName
+        # com.sun.star.lang.XTypeProvider
+        # com.sun.star.style.XStyleSupplier
+        # com.sun.star.uno.XWeak
+
+        # in LO 7.3 com.sun.star.chart2.XChartTypeTemplate is included
+
         # ensure diagram_name is ChartTemplateBase | str
         mInfo.Info.is_type_enum_multi(
             alt_type=str, enum_type=ChartTemplateBase, enum_val=diagram_name, arg_name="diagram_name"
@@ -242,7 +260,7 @@ class Chart2:
             if ct_template is None:
                 mLo.Lo.print(f'Could not create chart template "{diagram_name}"; using a column chart instead')
                 ct_template = mLo.Lo.qi(
-                    XChartTypeTemplate, msf.createInstance("com.sun.star.chart2.template.Column", True)
+                    XChartTypeTemplate, msf.createInstance("com.sun.star.chart2.template.Column"), True
                 )
 
             ct_template.changeDiagram(diagram)
@@ -541,6 +559,7 @@ class Chart2:
             result = coord_sys.getAxisByDimension(int(axis_val), idx)
             if result is None:
                 raise mEx.UnKnownError("None Value: getAxisByDimension() returned None")
+            return result
         except mEx.ChartError:
             raise
         except Exception as e:
@@ -1084,7 +1103,7 @@ class Chart2:
             if s is None:
                 mLo.Lo.print(f'Did not reconize scaling type: "{scale_type}"')
             else:
-                sd.Scaling = mLo.Lo.create_instance_mcf(XScaling, f"com.sun.star.chart2.{s}", True)
+                sd.Scaling = mLo.Lo.create_instance_mcf(XScaling, f"com.sun.star.chart2.{s}", raise_err=True)
             axis.setScaleData(sd)
             return axis
         except mEx.ChartError:
@@ -1293,18 +1312,34 @@ class Chart2:
         try:
             if int(bg_color) > 0:
                 bg_ps = chart_doc.getPageBackground()
+                # bg_dpp = cast("DataPointProperties", bg_ps)
+                # bg_dpp.FillBackground = True
+                # bg_dpp.FillStyle = FillStyle.SOLID
+                # bg_dpp.FillColor = int(bg_color)
+                #
+                # there is a bug with chart_doc.getPageBackground()
+                # it is suppose to return XProperySet, which it does but
+                # XProperySet methods such as  setPropertyValue and getPropertySetInfo are missing.
+                # see also: Props._set_by_attribute()
+                #
                 # mProps.Props.show_props("Background", bg_ps)
-                mProps.Props.set_property(bg_ps, "FillBackground", True)
-                mProps.Props.set_property(bg_ps, "FillStyle", FillStyle.SOLID)
-                mProps.Props.set_property(bg_ps, "FillColor", int(bg_color))
+                mProps.Props.set(bg_ps, FillBackground=True, FillStyle=FillStyle.SOLID, FillColor=int(bg_color))
 
             if int(wall_color) > 0:
                 diagram = chart_doc.getFirstDiagram()
                 wall_ps = diagram.getWall()
+                # wall_dpp = cast("DataPointProperties", wall_ps)
+                # wall_dpp.FillBackground = True
+                # wall_dpp.FillStyle = FillStyle.SOLID
+                # wall_dpp.FillColor = int(wall_color)
+                #
+                # there is a bug with diagram.getWall()
+                # it is suppose to return XProperySet, which it does but
+                # XProperySet methods such as  setPropertyValue and getPropertySetInfo are missing.
+                # see also: Props._set_by_attribute()
+                #
                 # mProps.Props.show_props("Wall", wall_ps)
-                mProps.Props.set_property(wall_ps, "FillBackground", True)
-                mProps.Props.set_property(wall_ps, "FillStyle", FillStyle.SOLID)
-                mProps.Props.set_property(wall_ps, "FillColor", int(wall_color))
+                mProps.Props.set(wall_ps, FillBackground=True, FillStyle=FillStyle.SOLID, FillColor=int(wall_color))
         except Exception as e:
             raise mEx.ChartError("Error setting background colors") from e
 
@@ -1868,11 +1903,19 @@ class Chart2:
         """
         try:
             if ct.getChartType() == "com.sun.star.chart2.CandleStickChartType":
-                ps = mLo.Lo.qi(XPropertySet, mProps.Props.get_property(ct, "WhiteDay"), True)
-                mProps.Props.set_property(ps, "FillColor", int(w_day_color))
+                # there is a bug with white_day_ps and black_day_ps
+                # they are suppose br XProperySet, which they are but
+                # XProperySet methods such as  setPropertyValue and getPropertySetInfo are missing.
+                # see also: Props._set_by_attribute()
+                white_day_ps = mLo.Lo.qi(XPropertySet, mProps.Props.get(ct, "WhiteDay"), True)
+                white_day_dpp = cast("DataPointProperties", white_day_ps)
+                white_day_dpp.FillColor = int(w_day_color)
+                # mProps.Props.set_property(white_day_ps, "FillColor", int(w_day_color))
 
-                ps = mLo.Lo.qi(XPropertySet, mProps.Props.get_property(ct, "BlackDay"), True)
-                mProps.Props.set_property(ps, "FillColor", int(b_day_color))
+                black_day_ps = mLo.Lo.qi(XPropertySet, mProps.Props.get(ct, "BlackDay"), True)
+                black_day_dpp = cast("DataPointProperties", black_day_ps)
+                black_day_dpp.FillColor = int(b_day_color)
+                # mProps.Props.set_property(black_day_ps, "FillColor", int(b_day_color))
             else:
                 raise mEx.NotSupportedError(
                     f'Only candel stick charts supported. "{ct.getChartType()}" not supported.'
@@ -2018,7 +2061,12 @@ class Chart2:
             degree = 2  # assumes POLYNOMIAL trend has degree == 2
 
         # degree, forceIntercept, interceptValue, period (for moving average)
-        curve_calc.setRegressionProperties(degree, False, 0.0, 2)
+        # the last are for setRegressionProperties is movingType
+        #   See: https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1chart2_1_1MovingAverageType.html
+        # movingType Only if regression type is "Moving Average" 1, 3 or 3
+        #   see: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1chart2_1_1XRegressionCurveCalculator.html#ae65112de1214e140d9ce7b28ffb09292
+        # Because thi sis not a Moving Average setting to 0
+        curve_calc.setRegressionProperties(degree, False, 0.0, 2, 0)
 
         data_source = cls.get_data_source(chart_doc)
         # cls.print_labled_seqs(data_source)
@@ -2124,9 +2172,9 @@ class Chart2:
         """
         try:
             error_bars_ps = mLo.Lo.create_instance_mcf(XPropertySet, "com.sun.star.chart2.ErrorBar", raise_err=True)
-            mProps.Props.set_property(error_bars_ps, "ShowPositiveError", True)
-            mProps.Props.set_property(error_bars_ps, "ShowNegativeError", True)
-            mProps.Props.set_property(error_bars_ps, "ErrorBarStyle", ErrorBarStyle.FROM_DATA)
+            mProps.Props.set(
+                error_bars_ps, ShowPositiveError=True, ShowNegativeError=True, ErrorBarStyle=ErrorBarStyle.FROM_DATA
+            )
 
             # convert into data sink
             data_sink = mLo.Lo.qi(XDataSink, error_bars_ps, True)
@@ -2155,7 +2203,7 @@ class Chart2:
             # print(f'No. of data serice: {len(data_series_arr)}')
             data_series = data_series_arr[0]
             # mProps.Props.show_obj_props("Data Series 0", data_series)
-            mProps.Props.set_property(data_series, "ErrorBarY", error_bars_ps)
+            mProps.Props.set(data_series, ErrorBarY=error_bars_ps)
         except mEx.ChartError:
             raise
         except Exception as e:
@@ -2353,5 +2401,6 @@ class Chart2:
             raise mEx.ChartError("Error getting chart image") from e
 
     # endregion chart shape and image
+
 
 __all__ = ("Chart2",)

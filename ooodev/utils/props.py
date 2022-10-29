@@ -13,7 +13,6 @@ from com.sun.star.container import XNameAccess
 from com.sun.star.document import XTypeDetection
 from com.sun.star.ui import ItemType  # const
 from com.sun.star.ui import ItemStyle  # const
-from com.sun.star.uno import RuntimeException
 from com.sun.star.beans import PropertyVetoException
 from com.sun.star.beans import UnknownPropertyException
 from com.sun.star.container import XIndexAccess
@@ -211,8 +210,8 @@ class Props:
 
     # region    set_property()
     @overload
-    @staticmethod
-    def set_property(obj: object, name: str, value: object) -> None:
+    @classmethod
+    def set_property(cls, obj: object, name: str, value: object) -> None:
         """
         Sets the value of the property with the specified name.
 
@@ -227,9 +226,9 @@ class Props:
         """
         ...
 
-    @overload
+    @classmethod
     @staticmethod
-    def set_property(prop_set: XPropertySet, name: str, value: object) -> None:
+    def set_property(cls, prop_set: XPropertySet, name: str, value: object) -> None:
         """
         Sets the value of the property with the specified name.
 
@@ -243,8 +242,8 @@ class Props:
         """
         ...
 
-    @staticmethod
-    def set_property(*args, **kwargs) -> None:
+    @classmethod
+    def set_property(cls, *args, **kwargs) -> None:
         """
         Sets the value of the property with the specified name.
 
@@ -286,14 +285,24 @@ class Props:
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
 
-        if mLo.Lo.is_uno_interfaces(kargs[1], XPropertySet):
-            prop_set = cast(XPropertySet, kargs[1])
-        else:
-            prop_set = mLo.Lo.qi(XPropertySet, kargs[1], raise_err=True)
         try:
-            prop_set.setPropertyValue(kargs[2], kargs[3])
-        except Exception as e:
-            raise mEx.PropertySetError(f"Could not set property '{kargs[2]}'") from e
+
+            cls.set(kargs[1], **{kargs[2]: kargs[3]})
+        except mEx.MissingInterfaceError:
+            raise
+        except mEx.MultiError as me:
+            err = me.errors[0]
+            if isinstance(err, (mEx.PropertyNotFoundError, mEx.PropertySetError)):
+                raise err
+            raise mEx.PropertySetError(f"Could not set property '{kargs[2]}'") from err
+        # if mLo.Lo.is_uno_interfaces(kargs[1], XPropertySet):
+        #     prop_set = cast(XPropertySet, kargs[1])
+        # else:
+        #     prop_set = mLo.Lo.qi(XPropertySet, kargs[1], raise_err=True)
+        # try:
+        #     prop_set.setPropertyValue(kargs[2], kargs[3])
+        # except Exception as e:
+        #     raise mEx.PropertySetError(f"Could not set property '{kargs[2]}'") from e
 
     # endregion set_property()
 
@@ -492,7 +501,53 @@ class Props:
     # endregion set_properties()
 
     @staticmethod
-    def set(obj: object, **kwargs) -> None:
+    def _set_by_attribute(obj: object, name: str, value: Any) -> bool:
+        # there is a bug in LibreOffice that in some cases getting XPrpertySet
+        # returns the interface but it is missing setPropertyValue and or getPropertySetInfo
+        # this is the case with XChartDocument.getPageBackground() and XChartDocument.getFirstDiagram().getWall()
+        # See Chart2.set_background_colors()
+        #
+        # the same issue (ct is XChartType) with:
+        #   white_day_ps = mLo.Lo.qi(XPropertySet, mProps.Props.get(ct, "WhiteDay"), True)
+        #   black_day_ps = mLo.Lo.qi(XPropertySet, mProps.Props.get(ct, "BlackDay"), True)
+        # see Chart2.color_stock_bars()
+        # Even though the interface is misssing setPropertyValue and or getPropertySetInfo the
+        # properties are still there.
+        # That is why this method. It is a fallback when bug is found to set value by attribute.
+        # see Props.set()
+
+        if not hasattr(obj, name):
+            return False
+        try:
+            setattr(obj, name, value)
+            return True
+        except AttributeError:
+            pass
+        return False
+
+    @staticmethod
+    def _get_by_attribute(obj: object, name: str) -> Tuple[bool, Any]:
+        # there is a bug in LibreOffice that in some cases getting XPrpertySet
+        # returns the interface but it is missing setPropertyValue and or getPropertySetInfo
+        # this is the case with XChartDocument.getPageBackground() and XChartDocument.getFirstDiagram().getWall()
+        # See Chart2.set_background_colors()
+        #
+        # the same issue (ct is XChartType) with:
+        #   white_day_ps = mLo.Lo.qi(XPropertySet, mProps.Props.get(ct, "WhiteDay"), True)
+        #   black_day_ps = mLo.Lo.qi(XPropertySet, mProps.Props.get(ct, "BlackDay"), True)
+        # see Chart2.color_stock_bars()
+        # Even though the interface is misssing setPropertyValue and or getPropertySetInfo the
+        # properties are still there.
+        # That is why this method. It is a fallback when bug is found to get value by attribute.
+        # see Props.get()
+        try:
+            return (True, getattr(obj, name))
+        except AttributeError:
+            pass
+        return (False, None)
+
+    @classmethod
+    def set(cls, obj: object, **kwargs) -> None:
         """
         Set one or more properties.
 
@@ -521,6 +576,15 @@ class Props:
         for key, value in kwargs.items():
             try:
                 ps.setPropertyValue(key, value)
+            except AttributeError as e:
+                # handle a LibreOffice bug
+                if not cls._set_by_attribute(obj, key, value):
+                    errs.append(
+                        mEx.UnKnownError(
+                            f'Something went wrong. Could not find setPropertyValue attribute on property set. Tried setting "{key}" manually but failed'
+                        )
+                    )
+                    errs.append(e)
             except PropertyVetoException as e:
                 errs.append(mEx.PropertySetError(f'Could not set readonly-property "{key}"', e))
             except UnknownPropertyException as e:
@@ -530,8 +594,8 @@ class Props:
         if len(errs) > 0:
             raise mEx.MultiError(errs)
 
-    @staticmethod
-    def get(obj: object, name: str) -> Any:
+    @classmethod
+    def get(cls, obj: object, name: str) -> Any:
         """
         Gets a property value from an object.
         ``obj`` must support ``XPropertySet`` interface
@@ -552,12 +616,22 @@ class Props:
                 ps = cast(XPropertySet, obj)
             else:
                 ps = mLo.Lo.qi(XPropertySet, obj, True)
-            val = ps.getPropertyValue(name)
-            if val is None:
-                raise mEx.PropertyNotFoundError(name)
+            try:
+                val = ps.getPropertyValue(name)
+            except AttributeError as e:
+                # handle a LibreOffice bug
+                success, val = cls._get_by_attribute(ps, name)
+                if success:
+                    return val
+                else:
+                    raise mEx.UnKnownError(
+                        f'Something went wrong. Could not find getPropertyValue attribute on property set. Tried getting "{name}" manually but failed.'
+                    )
+            # it is perfeclty fine for a property to have a value of None
             return val
-        except mEx.PropertyNotFoundError:
-            raise
+        except UnknownPropertyException:
+            # the property name is not in the property set
+            raise mEx.PropertyNotFoundError(name)
         except Exception as e:
             raise mEx.PropertyError(f'Error getting property: "{name}"') from e
 
@@ -567,8 +641,8 @@ class Props:
 
     # region    get_property()
     @overload
-    @staticmethod
-    def get_property(obj: object, name: str) -> object:
+    @classmethod
+    def get_property(cls, obj: object, name: str) -> object:
         """
         Gets a property value from property set
 
@@ -587,8 +661,8 @@ class Props:
         ...
 
     @overload
-    @staticmethod
-    def get_property(prop_set: XPropertySet, name: str) -> object:
+    @classmethod
+    def get_property(cls, prop_set: XPropertySet, name: str) -> object:
         """
         Gets a property value from property set
 
@@ -605,8 +679,8 @@ class Props:
         """
         ...
 
-    @staticmethod
-    def get_property(*args, **kwargs) -> object:
+    @classmethod
+    def get_property(cls, *args, **kwargs) -> object:
         """
         Gets a property value from property set
 
@@ -616,8 +690,8 @@ class Props:
             name (str): property name
 
         Raises:
-            PropertyNotFoundError: If unable to get property
-            MissingInterfaceError: if obj does not implement XPropertySet interface
+            PropertyNotFoundError: If Property is not found
+            PropertyError: If any other error occurs.
 
         Returns:
             object: property value
@@ -649,20 +723,22 @@ class Props:
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
 
-        if mInfo.Info.is_type_interface(kargs[1], XPropertySet.__pyunointerface__):
-            prop_set = cast(XPropertySet, kargs[1])
-        else:
-            prop_set = mLo.Lo.qi(XPropertySet, kargs[1])
-            if prop_set is None:
-                raise mEx.MissingInterfaceError(XPropertySet)
-        name = kargs[2]
-        try:
-            try:
-                return prop_set.getPropertyValue(name)
-            except RuntimeException as e:
-                mEx.PropertyError(name, f"Could not get runtime property '{name}': {e}")
-        except Exception as e:
-            raise mEx.PropertyNotFoundError(prop_name=name) from e
+        return cls.get(kargs[1], kargs[2])
+
+        # if mInfo.Info.is_type_interface(kargs[1], XPropertySet.__pyunointerface__):
+        #     prop_set = cast(XPropertySet, kargs[1])
+        # else:
+        #     prop_set = mLo.Lo.qi(XPropertySet, kargs[1])
+        #     if prop_set is None:
+        #         raise mEx.MissingInterfaceError(XPropertySet)
+        # name = kargs[2]
+        # try:
+        #     try:
+        #         return prop_set.getPropertyValue(name)
+        #     except RuntimeException as e:
+        #         mEx.PropertyError(name, f"Could not get runtime property '{name}': {e}")
+        # except Exception as e:
+        #     raise mEx.PropertyNotFoundError(prop_name=name) from e
 
     # endregion    get_property()
 
@@ -846,7 +922,7 @@ class Props:
         def get_property_set_str(prop_set, props) -> str:
             lines = []
             for p in props:
-                value = cls.get_property(prop_set, p.Name)
+                value = cls.get(prop_set, p.Name)
                 lines.append(f"{p.Name} = {value}")
             return "[\n    " + "\n    ".join(lines) + "\n]"
 
