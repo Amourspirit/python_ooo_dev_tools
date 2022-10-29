@@ -4,7 +4,7 @@
 
 
 Demonstrates loading a spread sheet into Calc and dynamically inserting charts.
-There are to total of 17 different charts that can be dynamically created by this demo.
+There are a total of 17 different charts that can be dynamically created by this demo.
 
 A message box is display once the document has been created asking if you want to close the document.
 
