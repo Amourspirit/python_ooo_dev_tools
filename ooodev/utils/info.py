@@ -2188,7 +2188,7 @@ class Info(metaclass=StaticProperty):
             cls._version_info = tuple([int(s) for s in cls.version.split(".")])
         return cls._version_info
 
-    @version.setter
+    @version_info.setter
     def version_info(cls, value) -> None:
         # raise error on set. Not really necessary but gives feedback.
         raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
