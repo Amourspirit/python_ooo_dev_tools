@@ -20,5 +20,14 @@ Class Info
 
         Gets the running LibreOffice version
 
-        :return: version as string
+        :return: version as string such as ``"7.3.4.2"``
         :rtype: str
+    
+    .. py:property:: Info.version_info
+
+        Static read-only property
+
+        Gets the running LibreOffice version
+
+        :return: version as tuple of ints such as ``(7, 3, 4, 2)``
+        :rtype: tuple

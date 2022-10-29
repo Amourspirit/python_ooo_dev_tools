@@ -52,6 +52,7 @@ esbonio = "^0.14.1"
 hypothesis = "^6.56.4"
 thefuzz = "^0.19.0"
 python-Levenshtein = "^0.20.7"
+lo-dev-search = {version = "^1.2.2", platform = "linux"}
 
 
 [tool.poetry.group.docs.dependencies]

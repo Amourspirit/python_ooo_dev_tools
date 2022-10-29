@@ -4,12 +4,14 @@ from random import random
 from typing import List, Tuple, cast, overload
 
 import uno
+
+# XChartTypeTemplate import error in LO >+ 7.4
+from com.sun.star.chart2 import XChartTypeTemplate
 from com.sun.star.beans import XPropertySet
 from com.sun.star.chart2 import XAxis
 from com.sun.star.chart2 import XChartDocument
 from com.sun.star.chart2 import XChartType
 from com.sun.star.chart2 import XChartTypeContainer
-from com.sun.star.chart2 import XChartTypeTemplate
 from com.sun.star.chart2 import XCoordinateSystem
 from com.sun.star.chart2 import XCoordinateSystemContainer
 from com.sun.star.chart2 import XDataSeries
@@ -40,8 +42,11 @@ from com.sun.star.sheet import XSpreadsheet
 from com.sun.star.sheet import XSpreadsheetDocument
 from com.sun.star.table import XTableChart
 from com.sun.star.table import XTableChartsSupplier
+from com.sun.star.uno import XInterface
 from com.sun.star.util import XNumberFormatsSupplier
 
+from . import calc as mCalc
+from ..exceptions import ex as mEx
 from ..utils import color as mColor
 from ..utils import file_io as mFileIo
 from ..utils import gui as mGui
@@ -49,16 +54,13 @@ from ..utils import images_lo as mImgLo
 from ..utils import info as mInfo
 from ..utils import lo as mLo
 from ..utils import props as mProps
-from ..exceptions import ex as mEx
-from . import calc as mCalc
 from ..utils.data_type.angle import Angle as Angle
 from ..utils.kind.axis_kind import AxisKind as AxisKind
+from ..utils.kind.chart2_data_role_kind import DataRoleKind as DataRoleKind
 from ..utils.kind.chart2_types import ChartTemplateBase, ChartTypeNameBase, ChartTypes as ChartTypes
 from ..utils.kind.curve_kind import CurveKind as CurveKind
 from ..utils.kind.data_point_label_type_kind import DataPointLabelTypeKind as DataPointLabelTypeKind
-
 from ..utils.kind.line_style_name_kind import LineStyleNameKind as LineStyleNameKind
-from ..utils.kind.chart2_data_role_kind import DataRoleKind as DataRoleKind
 
 from ooo.dyn.awt.rectangle import Rectangle
 from ooo.dyn.chart.chart_data_row_source import ChartDataRowSource
@@ -136,7 +138,7 @@ class Chart2:
 
             # assign chart template to the chart's diagram
             diagram = chart_doc.getFirstDiagram()
-            ct_template = cls.set_templeate(chart_doc=chart_doc, diagram=diagram, diagram_name=diagram_name)
+            ct_template = cls.set_template(chart_doc=chart_doc, diagram=diagram, diagram_name=diagram_name)
 
             has_cats = cls.has_categories(diagram_name)
 
@@ -220,7 +222,7 @@ class Chart2:
             ChartError: If error occurs.
 
         Returns:
-            XChartTypeTemplate: Chart Template
+            XInterface: Chart Template
 
         Note:
             If unable to create template from ``diagram_name`` for any reason then
@@ -229,6 +231,18 @@ class Chart2:
         Hint:
             .. include:: ../../resources/utils/chart2_lookup_chart_tmpl.rst
         """
+        # XChartTypeTemplate does not seem to be supported by LO 7.4 ( gets import error )
+        # Available interfaces com.sun.star.chart2.template.Column: (also XInterface)
+        # com.sun.star.beans.XFastPropertySet
+        # com.sun.star.beans.XMultiPropertySet
+        # com.sun.star.beans.XMultiPropertyStates
+        # com.sun.star.beans.XPropertySet
+        # com.sun.star.beans.XPropertyState
+        # com.sun.star.lang.XServiceName
+        # com.sun.star.lang.XTypeProvider
+        # com.sun.star.style.XStyleSupplier
+        # com.sun.star.uno.XWeak
+
         # ensure diagram_name is ChartTemplateBase | str
         mInfo.Info.is_type_enum_multi(
             alt_type=str, enum_type=ChartTemplateBase, enum_val=diagram_name, arg_name="diagram_name"
@@ -242,7 +256,7 @@ class Chart2:
             if ct_template is None:
                 mLo.Lo.print(f'Could not create chart template "{diagram_name}"; using a column chart instead')
                 ct_template = mLo.Lo.qi(
-                    XChartTypeTemplate, msf.createInstance("com.sun.star.chart2.template.Column", True)
+                    XChartTypeTemplate, msf.createInstance("com.sun.star.chart2.template.Column"), True
                 )
 
             ct_template.changeDiagram(diagram)
@@ -2353,5 +2367,6 @@ class Chart2:
             raise mEx.ChartError("Error getting chart image") from e
 
     # endregion chart shape and image
+
 
 __all__ = ("Chart2",)
