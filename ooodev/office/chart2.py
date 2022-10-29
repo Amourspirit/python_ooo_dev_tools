@@ -1103,7 +1103,7 @@ class Chart2:
             if s is None:
                 mLo.Lo.print(f'Did not reconize scaling type: "{scale_type}"')
             else:
-                sd.Scaling = mLo.Lo.create_instance_mcf(XScaling, f"com.sun.star.chart2.{s}", True)
+                sd.Scaling = mLo.Lo.create_instance_mcf(XScaling, f"com.sun.star.chart2.{s}", raise_err=True)
             axis.setScaleData(sd)
             return axis
         except mEx.ChartError:
@@ -2061,7 +2061,12 @@ class Chart2:
             degree = 2  # assumes POLYNOMIAL trend has degree == 2
 
         # degree, forceIntercept, interceptValue, period (for moving average)
-        curve_calc.setRegressionProperties(degree, False, 0.0, 2)
+        # the last are for setRegressionProperties is movingType
+        #   See: https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1chart2_1_1MovingAverageType.html
+        # movingType Only if regression type is "Moving Average" 1, 3 or 3
+        #   see: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1chart2_1_1XRegressionCurveCalculator.html#ae65112de1214e140d9ce7b28ffb09292
+        # Because thi sis not a Moving Average setting to 0
+        curve_calc.setRegressionProperties(degree, False, 0.0, 2, 0)
 
         data_source = cls.get_data_source(chart_doc)
         # cls.print_labled_seqs(data_source)

@@ -1,4 +1,5 @@
 from __future__ import annotations
+from enum import Enum
 
 import uno
 from com.sun.star.sheet import XSpreadsheetDocument
@@ -27,10 +28,31 @@ from ooo.dyn.drawing.line_style import LineStyle
 from ooo.dyn.awt.font_weight import FontWeight
 
 
+class ChartKind(str, Enum):
+    AREA = "area"
+    BAR = "bar"
+    BUBBLE_LABELED = "bubble_labeled"
+    COLUMN = "col"
+    COLUMN_LINE = "col_line"
+    COLUMN_MULTI = "col_multi"
+    DONUT = "donut"
+    HAPPY_STOCK = "happy_stock"
+    LINE = "line"
+    LINES = "lines"
+    NET = "net"
+    PIE = "pie"
+    PIE_3D = "pie_3d"
+    SCATTER = "scatter"
+    SCATTER_LINE_ERROR = "scatter_line_error"
+    SCATTER_LINE_LOG = "scatter_line_log"
+    STOCK_PRICES = "stock_prices"
+
+
 class Chart2View:
-    def __init__(self, data_fnm: PathOrStr) -> None:
+    def __init__(self, data_fnm: PathOrStr, chart_kind: ChartKind) -> None:
         _ = FileIO.is_exist_file(data_fnm, True)
         self._data_fnm = FileIO.get_absolute_path(data_fnm)
+        self._chart_kind = chart_kind
 
     def main(self) -> None:
         loader = Lo.load_office(Lo.ConnectPipe())
@@ -40,7 +62,40 @@ class Chart2View:
             GUI.set_visible(is_visible=True, odoc=doc)
             sheet = Calc.get_sheet(doc=doc, index=0)
 
-            self._happy_stock_chart(doc=doc, sheet=sheet)
+            if self._chart_kind == ChartKind.AREA:
+                self._area_chart(doc=doc, sheet=sheet)
+            elif self._chart_kind == ChartKind.BAR:
+                self._bar_chart(doc=doc, sheet=sheet)
+            elif self._chart_kind == ChartKind.BUBBLE_LABELED:
+                self._labeled_bubble_chart(doc=doc, sheet=sheet)
+            elif self._chart_kind == ChartKind.COLUMN:
+                self._col_chart(doc=doc, sheet=sheet)
+            elif self._chart_kind == ChartKind.COLUMN_LINE:
+                self._col_line_chart(doc=doc, sheet=sheet)
+            elif self._chart_kind == ChartKind.COLUMN_MULTI:
+                self._mult_col_chart(doc=doc, sheet=sheet)
+            elif self._chart_kind == ChartKind.DONUT:
+                self._donut_chart(doc=doc, sheet=sheet)
+            elif self._chart_kind == ChartKind.HAPPY_STOCK:
+                self._happy_stock_chart(doc=doc, sheet=sheet)
+            elif self._chart_kind == ChartKind.LINE:
+                self._line_chart(doc=doc, sheet=sheet)
+            elif self._chart_kind == ChartKind.LINES:
+                self._lines_chart(doc=doc, sheet=sheet)
+            elif self._chart_kind == ChartKind.NET:
+                self._net_chart(doc=doc, sheet=sheet)
+            elif self._chart_kind == ChartKind.PIE:
+                self._pie_chart(doc=doc, sheet=sheet)
+            elif self._chart_kind == ChartKind.PIE_3D:
+                self._pie_3d_chart(doc=doc, sheet=sheet)
+            elif self._chart_kind == ChartKind.SCATTER:
+                self._scatter_chart(doc=doc, sheet=sheet)
+            elif self._chart_kind == ChartKind.SCATTER_LINE_ERROR:
+                self._scatter_line_error_chart(doc=doc, sheet=sheet)
+            elif self._chart_kind == ChartKind.SCATTER_LINE_LOG:
+                self._scatter_line_log_chart(doc=doc, sheet=sheet)
+            elif self._chart_kind == ChartKind.STOCK_PRICES:
+                self._stock_prices_chart(doc=doc, sheet=sheet)
 
             Lo.delay(2000)
             msg_result = MsgBox.msgbox(
