@@ -1,7 +1,6 @@
 # Demonstrates creating charts.
 
-![charts_3d](https://user-images.githubusercontent.com/4193389/198852486-43ffdca8-9b26-4001-a734-1031cd4e42dd.png)
-
+![charts_happy](https://user-images.githubusercontent.com/4193389/198873533-36de5d26-1071-467b-95f4-2e557b4017cb.png)
 
 Demonstrates loading a spread sheet into Calc and dynamically inserting charts.
 There are a total of 17 different charts that can be dynamically created by this demo.
