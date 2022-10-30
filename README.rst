@@ -64,15 +64,18 @@ Include modules:
     - Draw (LibreOffice Draw/Impress)
     - Forms (Support for building forms)
     - Dialogs (Build dialog forms)
-    - Lo (Various methods common to LO applications)
     - GUI (Various GUI methods for manipulating LO Windows)
+    - Lo (Various methods common to LO applications)
     - FileIO (File Input and Output for working with LO)
+    - Props (Various methods setting and getting the many properties of Office objects)
+    - Info (Various method for getting information about LO applications)
     - Color (Various color utils)
     - DateUtil (Date Time utilities)
     - ImagesLo (Various methods for working with Images)
     - Props (Various methods for working with the many API properties)
     - Chart2 (charting)
-    - Chart (charting) in beta.
+    - Chart (charting)
+    - And more ...
 
 Future releases will add:
     - Base (LibreOffice Base)

@@ -532,7 +532,7 @@ class Forms:
         Returns:
             str: Name of component
         """
-        return str(mProps.Props.get_property(obj=ctl_model, name="Name"))
+        return str(mProps.Props.get(ctl_model, "Name"))
 
     @staticmethod
     def get_label(ctl_model: XControlModel) -> str:
@@ -545,7 +545,7 @@ class Forms:
         Returns:
             str: Label of component
         """
-        return str(mProps.Props.get_property(obj=ctl_model, name="Label"))
+        return str(mProps.Props.get(ctl_model, "Label"))
 
     @classmethod
     def get_type_str(cls, ctl_model: XControlModel) -> str | None:
@@ -618,7 +618,7 @@ class Forms:
         Returns:
             int: Class Id if found, Otherwise ``-1``
         """
-        class_id = mProps.Props.get_property(ctl_model, "ClassId")
+        class_id = mProps.Props.get(ctl_model, "ClassId")
         if class_id is None:
             mLo.Lo.print("No class ID found for form component")
             return -1
@@ -1201,9 +1201,7 @@ class Forms:
         Returns:
             None:
         """
-        mProps.Props.set_property(obj=xform, name="DataSourceName", value=src_name)
-        mProps.Props.set_property(obj=xform, name="Command", value=tbl_name)
-        mProps.Props.set_property(obj=xform, name="CommandType", value=CommandType.TABLE)
+        mProps.Props.set(xform, DataSourceName=src_name, Command=tbl_name, CommandType=CommandType.TABLE)
 
     @staticmethod
     def bind_form_to_sql(xform: XForm, src_name: str, cmd: str) -> None:
@@ -1218,9 +1216,7 @@ class Forms:
         Returns:
             None:
         """
-        mProps.Props.set_property(obj=xform, name="DataSourceName", value=src_name)
-        mProps.Props.set_property(obj=xform, name="Command", value=cmd)
-        mProps.Props.set_property(obj=xform, name="CommandType", value=CommandType.COMMAND)
+        mProps.Props.set(xform, DataSourceName=src_name, Command=cmd, CommandType=CommandType.COMMAND)
         # cannot use CommandType.TABLE for the SELECT cmd
 
     # endregion  bind form to database

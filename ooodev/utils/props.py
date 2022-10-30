@@ -226,8 +226,8 @@ class Props:
         """
         ...
 
+    @overload
     @classmethod
-    @staticmethod
     def set_property(cls, prop_set: XPropertySet, name: str, value: object) -> None:
         """
         Sets the value of the property with the specified name.

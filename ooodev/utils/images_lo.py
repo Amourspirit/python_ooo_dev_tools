@@ -104,7 +104,7 @@ class ImagesLo:
             Size: Size containing Width and Height
         """
         graphic = cls.load_graphic_file(im_fnm)
-        return mProps.Props.get_property(prop_set=graphic, name="SizePixel")
+        return mProps.Props.get(graphic, "SizePixel")
 
     @classmethod
     def get_size_100mm(cls, im_fnm: PathOrStr) -> Size:
@@ -126,7 +126,7 @@ class ImagesLo:
             Size: Size containing Width and Height
         """
         graphic = cls.load_graphic_file(im_fnm)
-        return mProps.Props.get_property(prop_set=graphic, name="Size100thMM")
+        return mProps.Props.get(graphic, "Size100thMM")
 
     @staticmethod
     def load_graphic_link(graphic_link: object) -> XGraphic:
