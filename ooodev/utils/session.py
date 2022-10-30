@@ -104,7 +104,7 @@ class Session(metaclass=StaticProperty):
     def shared_py_scripts(cls) -> str:
         """
         Gets Program Share python dir,
-        such as ``C:\Program Files\LibreOffice\share\Scripts\python``
+        such as ``C:\\Program Files\\LibreOffice\\share\\Scripts\\python``
         """
         # eg: C:\Program Files\LibreOffice\share\Scripts\python
         return "".join([Session.shared_scripts, os.sep, "python"])
