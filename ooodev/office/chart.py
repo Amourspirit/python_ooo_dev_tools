@@ -642,10 +642,10 @@ class Chart:
         for i in range(num_shapes):
             try:
                 shape = mLo.Lo.qi(XShape, draw_page.getByIndex(i), True)
-                class_id = str(mProps.Props.get_property(shape, "CLSID"))
+                class_id = str(mProps.Props.get(shape, "CLSID"))
 
                 if class_id.casefold() == chart_class_id:
-                    mProps.Props.set_property(shape, "Visible", is_visible)
+                    mProps.Props.set(shape, Visible=is_visible)
             except Exception as e:
                 mLo.Lo.print("Error setting visibility of chart")
                 mLo.Lo.print(f"  {e}")
@@ -675,7 +675,7 @@ class Chart:
             for i in range(num_shapes):
                 try:
                     shape = mLo.Lo.qi(XShape, draw_page.getByIndex(i), True)
-                    class_id = str(mProps.Props.get_property(obj=shape, name="CLSID"))
+                    class_id = str(mProps.Props.get(shape, "CLSID"))
 
                     if class_id.casefold() == chart_class_id:
                         break
@@ -707,7 +707,7 @@ class Chart:
             str: Chart Title
         """
         try:
-            title = mProps.Props.get_property(chart_doc.getTitle(), "String")
+            title = mProps.Props.get(chart_doc.getTitle(), "String")
             if title is None:
                 raise mEx.ChartError("Error getting title for chart document. Property returned None")
             return str(title)
@@ -733,7 +733,7 @@ class Chart:
         """
         try:
             shape = chart_doc.getTitle()
-            mProps.Props.set_property(shape, "String", title)
+            mProps.Props.set(shape, String=title)
         except Exception as e:
             raise mEx.ChartError("Error setting title for chart document.") from e
 
@@ -752,7 +752,7 @@ class Chart:
             str: Chart Subtitle
         """
         try:
-            sub_title = mProps.Props.get_property(chart_doc.getSubTitle(), "String")
+            sub_title = mProps.Props.get(chart_doc.getSubTitle(), "String")
             if sub_title is None:
                 raise mEx.ChartError("Error getting subtitle for chart document. Property returned None")
             return str(sub_title)
@@ -780,7 +780,7 @@ class Chart:
             # in java this next line was in error and should have been getSubTitle()
             # chartDoc.getTitle();
             shape = chart_doc.getSubTitle()
-            mProps.Props.set_property(shape, "String", sub_title)
+            mProps.Props.set(shape, String=sub_title)
             # mProps.Props.set_property(shape, "HasSubTitle", True)
         except Exception as e:
             raise mEx.ChartError("Error setting title for chart document.") from e
@@ -810,7 +810,7 @@ class Chart:
             if not mInfo.Info.support_service(diagram, "com.sun.star.chart.ChartAxisXSupplier"):
                 raise mEx.ServiceNotSupported("com.sun.star.chart.ChartAxisXSupplier")
 
-            mProps.Props.set_property(diagram, "HasXAxisDescription", True)
+            mProps.Props.set(diagram, HasXAxisDescription=True)
             axis = mLo.Lo.qi(XAxisXSupplier, diagram, True)
             title_shape = axis.getXAxisTitle()
             mProps.Props.set_property(title_shape, "String", title)
@@ -845,11 +845,11 @@ class Chart:
             if not mInfo.Info.support_service(diagram, "com.sun.star.chart.ChartAxisYSupplier"):
                 raise mEx.ServiceNotSupported("com.sun.star.chart.ChartAxisYSupplier")
 
-            mProps.Props.set_property(diagram, "HasYAxisDescription", True)
+            mProps.Props.set(diagram, HasYAxisDescription=True)
             axis = mLo.Lo.qi(XAxisYSupplier, diagram, True)
             title_shape = axis.getYAxisTitle()
-            mProps.Props.set_property(title_shape, "String", title)
-            # mProps.Props.set_property(title_shape, "HasYAxisTitle", True)
+            mProps.Props.set(title_shape, String=title)
+            # mProps.Props.set(title_shape, HasYAxisTitle=True)
         except mEx.DiagramNotExistingError:
             raise
         except Exception as e:
@@ -880,14 +880,14 @@ class Chart:
             if not mInfo.Info.support_service(diagram, "com.sun.star.chart.ChartTwoAxisYSupplier"):
                 raise mEx.ServiceNotSupported("com.sun.star.chart.ChartTwoAxisYSupplier")
 
-            mProps.Props.set_property(diagram, "HasSecondaryYAxis", True)
+            mProps.Props.set(diagram, HasSecondaryYAxis=True)
             axis = mLo.Lo.qi(XTwoAxisYSupplier, diagram, True)
 
             # y2_ps = axis.getSecondaryYAxis()
             # mProps.Props.show_props("Second y-axis", y2_ps)
 
             y2_title_ps = mLo.Lo.qi(XPropertySet, axis.getYAxisTitle(), True)
-            mProps.Props.set_property(y2_title_ps, "String", title)
+            mProps.Props.set(y2_title_ps, String=title)
             # mProps.Props.show_props("Second y-axis title", y2_title_ps)
 
         except mEx.DiagramNotExistingError:
@@ -986,7 +986,7 @@ class Chart:
             ):
                 raise mEx.ServiceNotSupported("com.sun.star.chart.LineDiagram", "com.sun.star.chart.XYDiagram")
 
-            mProps.Props.set_property(diagram, "Lines", has_lines)
+            mProps.Props.set(diagram, Lines=has_lines)
 
         except mEx.ServiceNotSupported:
             raise
@@ -1021,7 +1021,7 @@ class Chart:
             if not mInfo.Info.support_service(diagram, "com.sun.star.chart.Diagram"):
                 raise mEx.ServiceNotSupported("com.sun.star.chart.Diagram")
 
-            mProps.Props.set_property(diagram, "DataCaption", int(label_types))
+            mProps.Props.set(diagram, DataCaption=int(label_types))
 
         except mEx.ServiceNotSupported:
             raise
@@ -1072,7 +1072,7 @@ class Chart:
                 ps = diagram.getDataPointProperties(0, 0)
             else:
                 ps = diagram.getDataRowProperties(0)
-            mProps.Props.set_property(ps, "LabelPlacement", int(placement))
+            mProps.Props.set(ps, LabelPlacement=int(placement))
             mProps.Props.show_props("Data Row", ps)
 
         except mEx.ServiceNotSupported:
@@ -1136,7 +1136,7 @@ class Chart:
             None:
         """
         try:
-            mProps.Props.set_property(chart_doc.getArea(), "FillTransparence", val.Value)
+            mProps.Props.set(chart_doc.getArea(), FillTransparence=val.Value)
         except Exception as e:
             raise mEx.ChartError("Error setting chart transparency") from e
 
@@ -1173,13 +1173,10 @@ class Chart:
             if diagram is None:
                 raise mEx.DiagramNotExistingError("Diagram does not exist")
 
-            is_vert = bool(mProps.Props.get_property(diagram, "Vertical"))
+            is_vert = bool(mProps.Props.get(diagram, "Vertical"))
             if solid_type is None:
                 solid_type = ChartSolidTypeEnum.CYLINDER
-            mProps.Props.set_property(diagram, "Dim3D", is_3d)
-            mProps.Props.set_property(diagram, "SolidType", int(solid_type))
-            #  reapply Vertical
-            mProps.Props.set_property(diagram, "Vertical", is_vert)
+            mProps.Props.set(diagram, Dim3D=is_3d, SolidType=int(solid_type), Vertical=is_vert)
 
         except mEx.DiagramNotExistingError:
             raise
@@ -1220,9 +1217,9 @@ class Chart:
                 raise mEx.ServiceNotSupported("com.sun.star.chart.LineDiagram", "com.sun.star.chart.XYDiagram")
 
             if has_symbol:
-                mProps.Props.set_property(diagram, "SymbolType", ChartSymbolType.AUTO)
+                mProps.Props.set(diagram, SymbolType=ChartSymbolType.AUTO)
             else:
-                mProps.Props.set_property(diagram, "SymbolType", ChartSymbolType.NONE)
+                mProps.Props.set(diagram, SymbolType=ChartSymbolType.NONE)
 
         except mEx.ServiceNotSupported:
             raise
@@ -1268,7 +1265,7 @@ class Chart:
                 or curve_type == ChartRegressionCurveType.EXPONENTIAL
                 or curve_type == ChartRegressionCurveType.POWER
             ):
-                mProps.Props.set_property(diagram, "RegressionCurves", curve_type)
+                mProps.Props.set(diagram, RegressionCurves=curve_type)
             else:
                 mLo.Lo.print(f"Did not recognize curve type: {curve_type}")
 

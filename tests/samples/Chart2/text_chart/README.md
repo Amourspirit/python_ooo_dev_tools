@@ -2,7 +2,7 @@
 
 ![text_chart](https://user-images.githubusercontent.com/4193389/198876133-15803e66-008c-4eeb-a2ae-28021a0e7245.png)
 
-Demonstrates Generating a Chart in Calc and inserting that chart into a Write document.
+Generates a column chart using the "Sneakers Sold this Month" table from `chartsData.ods`, copies it to the clipboard, and closes the spreadsheet. Then a text document is created, and the chart image is pasted into it.
 
 A message box is display once the document has been created asking if you want to close the document.
 
