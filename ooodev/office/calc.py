@@ -3686,7 +3686,7 @@ class Calc:
             Point: cell name as Point
         """
         xcell = cls._get_cell_sheet_cell(sheet=sheet, cell_name=cell_name)
-        pos = mProps.Props.get_property(prop_set=xcell, name="Position")
+        pos = mProps.Props.get(xcell, "Position")
         if pos is None:
             mLo.Lo.print(f"Could not determine position of cell '{cell_name}'")
             pos = cls.CELL_POS

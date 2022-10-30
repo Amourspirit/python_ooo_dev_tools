@@ -52,14 +52,14 @@ class Chart:
     @overload
     @classmethod
     def insert_chart(
-        cls, slide: XDrawPage, x: int, y: int, width: int, height: int, diagram_name: ChartDiagramKind | str
+        cls, *, slide: XDrawPage, x: int, y: int, width: int, height: int, diagram_name: ChartDiagramKind | str
     ) -> XChartDocument:
         ...
 
     @overload
     @classmethod
     def insert_chart(
-        cls, doc: XTextDocument, x: int, y: int, width: int, height: int, diagram_name: ChartDiagramKind | str
+        cls, *, doc: XTextDocument, x: int, y: int, width: int, height: int, diagram_name: ChartDiagramKind | str
     ) -> XChartDocument:
         ...
 
@@ -67,6 +67,7 @@ class Chart:
     @classmethod
     def insert_chart(
         cls,
+        *,
         sheet: XSpreadsheet,
         chart_name: str,
         cells_range: CellRangeAddress,
@@ -80,6 +81,7 @@ class Chart:
     @classmethod
     def insert_chart(
         cls,
+        *,
         sheet: XSpreadsheet,
         chart_name: str,
         cells_range: CellRangeAddress,
@@ -221,115 +223,29 @@ class Chart:
         Returns:
             XChartDocument: Chart Document
         """
-        ordered_keys = (1, 2, 3, 4)
-        kargs_len = len(kwargs)
-        count = len(args) + kargs_len
+        if len(args) > 0:
+            raise TypeError(f"Insert_chart() takes 0 positional arguments but {len(args)} was given")
 
-        def get_kwargs() -> dict:
-            ka = {}
-            if kargs_len == 0:
-                return ka
-            valid_keys = (
-                "slide",
-                "sheet",
-                "doc",
-                "chart_name",
-                "cells_range",
-                "diagram_name",
-                "x",
-                "y",
-                "width",
-                "height",
-            )
-            check = all(key in valid_keys for key in kwargs.keys())
-            if not check:
-                raise TypeError("insert_chart() got an unexpected keyword argument")
-            keys = ("slide", "sheet", "doc")
-            for key in keys:
-                if key in kwargs:
-                    ka[1] = kwargs[key]
-                    break
-            keys = ("x", "chart_name")
-            for key in keys:
-                if key in kwargs:
-                    ka[2] = kwargs[key]
-                    break
-            keys = ("y", "cells_range")
-            for key in keys:
-                if key in kwargs:
-                    ka[3] = kwargs[key]
-                    break
-            keys = ("width", "x")
-            for key in keys:
-                if key in kwargs:
-                    ka[4] = kwargs[key]
-                    break
-            keys = ("height", "y")
-            for key in keys:
-                if key in kwargs:
-                    ka[5] = kwargs[key]
-                    break
-            keys = ("diagram_name", "width")
-            for key in keys:
-                if key in kwargs:
-                    ka[6] = kwargs[key]
-                    break
-            if count == 6:
-                return ka
-            ka[7] = kwargs.get("height", None)
-            ka[8] = kwargs.get("diagram_name", None)
-            return ka
+        count = len(kwargs)
 
         if not count in (6, 8):
             raise TypeError("insert_chart() got an invalid number of arguments")
 
-        kargs = get_kwargs()
-        for i, arg in enumerate(args):
-            kargs[ordered_keys[i]] = arg
-
         if count == 6:
-            obj2 = kargs[2]  # must be int or str
-            if isinstance(obj2, str):
-                return cls._insert_chart_sheet(
-                    sheet=kargs[1],
-                    chart_name=obj2,
-                    cells_range=kargs[3],
-                    x=1,
-                    y=1,
-                    width=kargs[4],
-                    height=kargs[5],
-                    diagram_name=kargs[6],
-                )
-            slide = mLo.Lo.qi(XDrawPage, kargs[1])
-            if slide is None:
-                return cls._insert_chart_doc(
-                    doc=kargs[1],
-                    x=obj2,
-                    y=kargs[3],
-                    width=kargs[4],
-                    height=kargs[5],
-                    diagram_name=kargs[6],
-                )
-            else:
-                return cls._insert_chart_slide(
-                    slide=slide,
-                    x=obj2,
-                    y=kargs[3],
-                    width=kargs[4],
-                    height=kargs[5],
-                    diagram_name=kargs[6],
-                )
-        else:
-            return cls._insert_chart_sheet(
-                sheet=kargs[1],
-                chart_name=kargs[2],
-                cells_range=kargs[3],
-                x=kargs[4],
-                y=kargs[5],
-                width=kargs[6],
-                height=kargs[7],
-                diagram_name=kargs[8],
-            )
+            if "slide" in kwargs:
+                # insert_chart( slide: XDrawPage, x: int, y: int, width: int, height: int, diagram_name: ChartDiagramKind | str) -> XChartDocument:
+                return cls._insert_chart_slide(**kwargs)
+            if "doc" in kwargs:
+                # insert_chart(doc: XTextDocument, x: int, y: int, width: int, height: int, diagram_name: ChartDiagramKind | str) -> XChartDocument:
+                return cls._insert_chart_doc(**kwargs)
+            # else
+            # insert_chart(sheet: XSpreadsheet, chart_name: str, cells_range: CellRangeAddress, width: int, height: int, diagram_name: ChartDiagramKind | str,) -> XChartDocument:
+            kargs = kwargs.copy()
+            kargs["x"] = 1
+            kargs["y"] = 1
+            return cls._insert_chart_sheet(**kargs)
+
+        return cls._insert_chart_sheet(**kwargs)
 
     # endregion insert_chart()
 
@@ -762,13 +678,13 @@ class Chart:
             raise mEx.ChartError("Error geting chart document subtitle") from e
 
     @staticmethod
-    def set_sub_title(chart_doc: XChartDocument, sub_title: str) -> None:
+    def set_subtitle(chart_doc: XChartDocument, subtitle: str) -> None:
         """
         Set subtitle for a chart document
 
         Args:
             chart_doc (XChartDocument): Chart document
-            title (str): Subtitle text
+            subtitle (str): Subtitle text
 
         Raises:
             ChartError: If error occurs
@@ -780,7 +696,7 @@ class Chart:
             # in java this next line was in error and should have been getSubTitle()
             # chartDoc.getTitle();
             shape = chart_doc.getSubTitle()
-            mProps.Props.set(shape, String=sub_title)
+            mProps.Props.set(shape, String=subtitle)
             # mProps.Props.set_property(shape, "HasSubTitle", True)
         except Exception as e:
             raise mEx.ChartError("Error setting title for chart document.") from e
@@ -896,7 +812,7 @@ class Chart:
             raise mEx.ChartError("Error setting second Y Axis of chart document.") from e
 
     @staticmethod
-    def set_visible_legend(chart_doc: XChartDocument, is_visible: bool) -> None:
+    def view_legend(chart_doc: XChartDocument, is_visible: bool) -> None:
         """
         Set the visibility of chart document legend
 
@@ -1346,6 +1262,8 @@ class Chart:
             print(f"  {e}")
 
     # endregion adjust properties
+
+    # endregion background colors
 
 
 __all__ = ("Chart",)

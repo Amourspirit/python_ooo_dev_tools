@@ -2,7 +2,7 @@
 
 ![charts_happy](https://user-images.githubusercontent.com/4193389/198873533-36de5d26-1071-467b-95f4-2e557b4017cb.png)
 
-Demonstrates loading a spread sheet into Calc and dynamically inserting charts.
+Demonstrates loading a spread sheet into Calc and dynamically inserting charts using `Chart2` class.
 There are a total of 17 different charts that can be dynamically created by this demo.
 
 A message box is display once the document has been created asking if you want to close the document.
