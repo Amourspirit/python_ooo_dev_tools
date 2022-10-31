@@ -10,7 +10,7 @@ A message box is display once the document has been created asking if you want t
 
 ## NOTE
 
-There is currently an issue with LibreOffice `7.4` that does not allow the `Chart2` class to load.
+There is currently a [bug](https://bugs.documentfoundation.org/show_bug.cgi?id=151846) in LibreOffice `7.4` that does not allow the `Chart2` class to load.
 The `Chart2` has been tested with LibreOffice `7.3`
 
 ## Automate
