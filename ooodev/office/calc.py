@@ -777,8 +777,7 @@ class Calc:
         ctrl = cls.get_controller(doc)
         if ctrl is None:
             return
-        mProps.Props.set_property(prop_set=ctrl, name="ZoomType", value=mGui.GUI.ZoomEnum.BY_VALUE)
-        mProps.Props.set_property(prop_set=ctrl, name="ZoomValue", value=value)
+        mProps.Props.set(ctrl, ZoomType=mGui.GUI.ZoomEnum.BY_VALUE, ZoomValue=value)
 
     @classmethod
     def zoom(cls, doc: XSpreadsheetDocument, type: mGui.GUI.ZoomEnum) -> None:
@@ -792,7 +791,7 @@ class Calc:
         ctrl = cls.get_controller(doc)
         if ctrl is None:
             return
-        mProps.Props.set_property(prop_set=ctrl, name="ZoomType", value=type)
+        mProps.Props.set(ctrl, ZoomType=type)
 
     @classmethod
     def get_view(cls, doc: XSpreadsheetDocument) -> XSpreadsheetView:
@@ -3002,7 +3001,7 @@ class Calc:
         # aLocale.Language = "en"
 
         nformat = xformat_types.getStandardFormat(NumberFormat.DATE, alocale)
-        mProps.Props.set_property(prop_set=xcell, name="NumberFormat", value=nformat)
+        mProps.Props.set(xcell, NumberFormat=nformat)
 
     # region    add_annotation()
     @overload
@@ -3686,7 +3685,7 @@ class Calc:
             Point: cell name as Point
         """
         xcell = cls._get_cell_sheet_cell(sheet=sheet, cell_name=cell_name)
-        pos = mProps.Props.get_property(prop_set=xcell, name="Position")
+        pos = mProps.Props.get(xcell, "Position")
         if pos is None:
             mLo.Lo.print(f"Could not determine position of cell '{cell_name}'")
             pos = cls.CELL_POS
@@ -4875,15 +4874,15 @@ class Calc:
                     return False
             else:
                 cell_range = kargs[3]
-            mProps.Props.set_property(prop_set=cell_range, name="CellStyle", value=kargs[2])  # 2 style_name
-            return kargs[2] == mProps.Props.get_property(prop_set=cell_range, name="CellStyle")
+            mProps.Props.set(cell_range, CellStyle=kargs[2])  # 2 style_name
+            return kargs[2] == mProps.Props.get(cell_range, "CellStyle")
         else:
             # def change_style(sheet: XSpreadsheet, style_name: str, x1: int, y1: int, x2: int, y2:int)
             cell_range = cls._get_cell_range_col_row(
                 sheet=kargs[1], start_col=kargs[3], start_row=kargs[4], end_col=kargs[5], end_row=kargs[6]
             )
-            mProps.Props.set_property(prop_set=cell_range, name="CellStyle", value=kargs[2])  # 2 style_name
-            return kargs[2] == mProps.Props.get_property(prop_set=cell_range, name="CellStyle")
+            mProps.Props.set(cell_range, CellStyle=kargs[2])  # 2 style_name
+            return kargs[2] == mProps.Props.get(cell_range, "CellStyle")
 
         # endregion change_style()
 
@@ -4917,8 +4916,8 @@ class Calc:
         color = int(cargs.event_data["color"])
         bvs = cls.BorderEnum(int(cargs.event_data["border_vals"]))
         line = BorderLine2()  # create the border line
-        border = cast(TableBorder2, mProps.Props.get_property(prop_set=cell_range, name="TableBorder2"))
-        inner_line = cast(BorderLine2, mProps.Props.get_property(prop_set=cell_range, name="TopBorder2"))
+        border = cast(TableBorder2, mProps.Props.get(cell_range, "TableBorder2"))
+        inner_line = cast(BorderLine2, mProps.Props.get(cell_range, "TopBorder2"))
 
         line.Color = color
         line.InnerLineWidth = 0
@@ -4949,11 +4948,14 @@ class Calc:
         if (bvs & cls.BorderEnum.RIGHT_BORDER) == cls.BorderEnum.RIGHT_BORDER:
             border.RightLine = line
             border.IsRightLineValid = True
-        mProps.Props.set_property(prop_set=cell_range, name="TopBorder2", value=inner_line)
-        mProps.Props.set_property(prop_set=cell_range, name="RightBorder2", value=inner_line)
-        mProps.Props.set_property(prop_set=cell_range, name="BottomBorder2", value=inner_line)
-        mProps.Props.set_property(prop_set=cell_range, name="LeftBorder2", value=inner_line)
-        mProps.Props.set_property(prop_set=cell_range, name="TableBorder2", value=border)
+        mProps.Props.set(
+            cell_range,
+            TopBorder2=inner_line,
+            RightBorder2=inner_line,
+            BottomBorder2=inner_line,
+            LeftBorder2=inner_line,
+            TableBorder2=border,
+        )
 
     @overload
     @classmethod
@@ -5176,9 +5178,9 @@ class Calc:
         border_vals = cast(Calc.BorderEnum, cargs.event_data)
         cell_range = cast(XCellRange, cargs.cells)
         line = BorderLine2()  # create the border line
-        border = cast(TableBorder2, mProps.Props.get_property(prop_set=cell_range, name="TableBorder2"))
-        line = cast(BorderLine2, mProps.Props.get_property(prop_set=cell_range, name="TopBorder2"))
-        inner_line = cast(BorderLine2, mProps.Props.get_property(prop_set=cell_range, name="TopBorder2"))
+        border = cast(TableBorder2, mProps.Props.get(cell_range, "TableBorder2"))
+        line = cast(BorderLine2, mProps.Props.get(cell_range, "TopBorder2"))
+        inner_line = cast(BorderLine2, mProps.Props.get(cell_range, "TopBorder2"))
         line.Color = 0
         line.LineWidth = 0
         line.InnerLineWidth = 0
@@ -5205,11 +5207,14 @@ class Calc:
             border.RightLine = line
             border.IsRightLineValid = False
 
-        mProps.Props.set_property(prop_set=cell_range, name="TableBorder2", value=border)
-        mProps.Props.set_property(prop_set=cell_range, name="TopBorder2", value=inner_line)
-        mProps.Props.set_property(prop_set=cell_range, name="RightBorder2", value=inner_line)
-        mProps.Props.set_property(prop_set=cell_range, name="BottomBorder2", value=inner_line)
-        mProps.Props.set_property(prop_set=cell_range, name="LeftBorder2", value=inner_line)
+        mProps.Props.set(
+            cell_range,
+            TableBorder2=border,
+            TopBorder2=inner_line,
+            RightBorder2=inner_line,
+            BottomBorder2=inner_line,
+            LeftBorder2=inner_line,
+        )
 
     @overload
     @classmethod
@@ -5568,7 +5573,7 @@ class Calc:
             mLo.Lo.print("Width must be greater then 0")
             return None
         cell_range = cls.get_col_range(sheet=cargs.sheet, idx=cargs.index)
-        mProps.Props.set_property(prop_set=cell_range, name="Width", value=(width * 100))
+        mProps.Props.set(cell_range, Width=(width * 100))
         _Events().trigger(CalcNamedEvent.SHEET_COL_WIDTH_SET, SheetArgs.from_args(cargs))
         return cell_range
 
@@ -5616,7 +5621,7 @@ class Calc:
             return None
         cell_range = cls.get_row_range(sheet=cargs.sheet, idx=idx)
         # mInfo.Info.show_services(obj_name="Cell range for a row", obj=cell_range)
-        mProps.Props.set_property(prop_set=cell_range, name="Height", value=(height * 100))
+        mProps.Props.set(cell_range, Height=(height * 100))
         _Events().trigger(CalcNamedEvent.SHEET_ROW_HEIGHT_SET, SheetArgs.from_args(cargs))
         return cell_range
 
@@ -6315,9 +6320,7 @@ class Calc:
         See Also:
             `LibreOffice API XHeaderFooterContent <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1sheet_1_1XHeaderFooterContent.html>`_
         """
-        result = mLo.Lo.qi(
-            XHeaderFooterContent, mProps.Props.get_property(prop_set=props, name=content), raise_err=True
-        )
+        result = mLo.Lo.qi(XHeaderFooterContent, mProps.Props.get(props, content), raise_err=True)
         return result
 
     @staticmethod

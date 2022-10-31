@@ -641,7 +641,7 @@ class Write(mSel.Selection):
         """
         model = mLo.Lo.qi(XModel, text_doc, True)
         xcontroller = model.getCurrentController()
-        return int(mProps.Props.get_property(xcontroller, "PageCount"))
+        return int(mProps.Props.get(xcontroller, "PageCount"))
 
     @classmethod
     def print_page_size(cls, text_doc: XTextDocument) -> None:
@@ -796,13 +796,13 @@ class Write(mSel.Selection):
             MissingInterfaceError: If required interface cannot be obtained.
         """
         dt_field = mLo.Lo.create_instance_msf(XTextField, "com.sun.star.text.TextField.DateTime")
-        mProps.Props.set_property(dt_field, "IsDate", True)  # so date is reported
+        mProps.Props.set(dt_field, IsDate=True)  # so date is reported
         xtext_content = mLo.Lo.qi(XTextContent, dt_field, True)
         cls._append_text_content(cursor, xtext_content)
         cls.append(cursor, "; ")
 
         dt_field = mLo.Lo.create_instance_msf(XTextField, "com.sun.star.text.TextField.DateTime")
-        mProps.Props.set_property(dt_field, "IsDate", False)  # so time is reported
+        mProps.Props.set(dt_field, IsDate=False)  # so time is reported
         xtext_content = mLo.Lo.qi(XTextContent, dt_field, True)
         cls._append_text_content(cursor, xtext_content)
 
@@ -846,7 +846,7 @@ class Write(mSel.Selection):
         Args:
             cursor (XTextCursor): Text Cursor
         """
-        mProps.Props.set_property(cursor, "BreakType", BreakType.PAGE_AFTER)
+        mProps.Props.set(cursor, BreakType=BreakType.PAGE_AFTER)
         cls.end_paragraph(cursor)
 
     @classmethod
@@ -857,7 +857,7 @@ class Write(mSel.Selection):
         Args:
             cursor (XTextCursor): Text Cursor
         """
-        mProps.Props.set_property(cursor, "BreakType", BreakType.COLUMN_AFTER)
+        mProps.Props.set(cursor, BreakType=BreakType.COLUMN_AFTER)
         cls.end_paragraph(cursor)
 
     @classmethod
@@ -1029,10 +1029,10 @@ class Write(mSel.Selection):
 
         curr_pos = mSel.Selection.get_position(cursor)
         cursor.goLeft(curr_pos - pos, True)
-        mProps.Props.set_property(prop_set=cursor, name=prop_name, value=prop_val)
+        mProps.Props.set_property(cursor, prop_name, prop_val)
 
         cursor.goRight(curr_pos - pos, False)
-        mProps.Props.set_property(prop_set=cursor, name=prop_name, value=old_val)
+        mProps.Props.set_property(cursor, prop_name, old_val)
 
     @classmethod
     def dispatch_cmd_left(
@@ -1143,11 +1143,11 @@ class Write(mSel.Selection):
         old_val = mProps.Props.get_property(cursor, prop_name)
 
         cursor.gotoPreviousParagraph(True)  # select previous paragraph
-        mProps.Props.set_property(prop_set=cursor, name=prop_name, value=prop_val)
+        mProps.Props.set_property(cursor, prop_name, prop_val)
 
         # reset
         cursor.gotoNextParagraph(False)
-        mProps.Props.set_property(prop_set=cursor, name=prop_name, value=old_val)
+        mProps.Props.set_property(cursor, prop_name, old_val)
 
     # endregion style_prev_paragraph()
 
@@ -1289,11 +1289,12 @@ class Write(mSel.Selection):
             footer_text = mLo.Lo.qi(XText, props.getPropertyValue("FooterText"), True)
             footer_cursor = footer_text.createTextCursor()
 
-            mProps.Props.set_property(
-                prop_set=footer_cursor, name="CharFontName", value=mInfo.Info.get_font_general_name()
+            mProps.Props.set(
+                footer_cursor,
+                CharFontName=mInfo.Info.get_font_general_name(),
+                CharHeight=12.0,
+                ParaAdjust=ParagraphAdjust.CENTER,
             )
-            mProps.Props.set_property(prop_set=footer_cursor, name="CharHeight", value=12.0)
-            mProps.Props.set_property(prop_set=footer_cursor, name="ParaAdjust", value=ParagraphAdjust.CENTER)
 
             # add text fields to the footer
             pg_number = cls.get_page_number()
@@ -1326,8 +1327,7 @@ class Write(mSel.Selection):
             :py:meth:`~.Write.get_current_page`
         """
         num_field = mLo.Lo.create_instance_msf(XTextField, "com.sun.star.text.TextField.PageNumber")
-        mProps.Props.set_property(prop_set=num_field, name="NumberingType", value=NumberingType.ARABIC)
-        mProps.Props.set_property(prop_set=num_field, name="SubType", value=PageNumberType.CURRENT)
+        mProps.Props.set(num_field, NumberingType=NumberingType.ARABIC, SubType=PageNumberType.CURRENT)
         return num_field
 
     @staticmethod
@@ -1339,7 +1339,7 @@ class Write(mSel.Selection):
             XTextField: Page Count as Text Field
         """
         pc_field = mLo.Lo.create_instance_msf(XTextField, "com.sun.star.text.TextField.PageCount")
-        mProps.Props.set_property(prop_set=pc_field, name="NumberingType", value=NumberingType.ARABIC)
+        mProps.Props.set(pc_field, NumberingType=NumberingType.ARABIC)
         return pc_field
 
     @staticmethod
@@ -1499,8 +1499,7 @@ class Write(mSel.Selection):
         except Exception as e:
             raise mEx.CreateInstanceMsfError(XTextContent, "com.sun.star.text.TextField.URL") from e
         try:
-            mProps.Props.set_property(prop_set=link, name="URL", value=url_str)
-            mProps.Props.set_property(prop_set=link, name="Representation", value=label)
+            mProps.Props.set(link, URL=url_str, Representation=label)
 
             cls._append_text_content(cursor, link)
             mLo.Lo.print("Added hyperlink")
@@ -1779,7 +1778,7 @@ class Write(mSel.Selection):
             cell_text = mLo.Lo.qi(XText, table.getCellByName(cell_name), True)
             if header_fg_color is not None:
                 text_cursor = cell_text.createTextCursor()
-                mProps.Props.set_property(prop_set=text_cursor, name="CharColor", value=header_fg_color)
+                mProps.Props.set(text_cursor, CharColor=header_fg_color)
 
             cell_text.setString(str(data))
 
@@ -1787,7 +1786,7 @@ class Write(mSel.Selection):
             cell_text = mLo.Lo.qi(XText, table.getCellByName(cell_name), True)
             if tbl_fg_color is not None:
                 text_cursor = cell_text.createTextCursor()
-                mProps.Props.set_property(prop_set=text_cursor, name="CharColor", value=tbl_fg_color)
+                mProps.Props.set(text_cursor, CharColor=tbl_fg_color)
             cell_text.setString(str(data))
 
         num_rows = len(table_data)
@@ -1820,7 +1819,7 @@ class Write(mSel.Selection):
             # set color of first row (i.e. the header)
             if header_bg_color is not None:
                 rows = table.getRows()
-                mProps.Props.set_property(prop_set=rows.getByIndex(0), name="BackColor", value=header_bg_color)
+                mProps.Props.set(rows.getByIndex(0), BackColor=header_bg_color)
 
             #  write table header
             row_data = table_data[0]
@@ -2046,7 +2045,7 @@ class Write(mSel.Selection):
             if bitmap is None:
                 raise ValueError(f"Unable to get bitmap of {pth}")
             # store the image's bitmap as the graphic shape's URL's value
-            mProps.Props.set_property(prop_set=gos, name="GraphicURL", value=bitmap)
+            mProps.Props.set(gos, GraphicURL=bitmap)
 
             # set the shape's size
             xdraw_shape = mLo.Lo.qi(XShape, gos, True)

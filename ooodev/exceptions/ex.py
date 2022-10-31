@@ -435,3 +435,9 @@ class GalleryNotFoundError(GalleryError):
     """Error when Gallery Item is not found"""
 
     pass
+
+
+class ImageError(Exception):
+    """Generic error when error occurs processing an image"""
+
+    pass

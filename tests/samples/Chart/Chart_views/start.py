@@ -1,7 +1,7 @@
 from __future__ import annotations
 import sys
 from pathlib import Path
-from chart_2_views import Chart2View, ChartKind
+from chart_views import ChartViews, ChartKind
 from ooodev.utils.file_io import FileIO
 import argparse
 
@@ -11,7 +11,7 @@ def args_add(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "-k",
         "--kind",
-        const="happy_stock",
+        const="bar",
         nargs="?",
         dest="kind",
         choices=[e.value for e in ChartKind],
@@ -45,7 +45,7 @@ def main() -> int:
 
     kind = ChartKind(args.kind)
 
-    cv = Chart2View(data_fnm=fnm, chart_kind=kind)
+    cv = ChartViews(data_fnm=fnm, chart_kind=kind)
     cv.main()
     return 0
 

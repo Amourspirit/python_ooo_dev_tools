@@ -2,6 +2,18 @@
 Version History
 ***************
 
+Version 0.5.2
+=============
+
+Chart Samples and tests
+
+Misc code tweaks.
+
+Version 0.5.1
+=============
+
+Chart 2 Samples and tests.
+
 Version 0.5.0
 =============
 

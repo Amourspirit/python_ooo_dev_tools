@@ -1,6 +1,6 @@
 # coding: utf-8
 from __future__ import annotations
-from typing import TYPE_CHECKING, Tuple
+from typing import TYPE_CHECKING, Tuple, overload
 import uno
 from com.sun.star.beans import XPropertySet
 from com.sun.star.container import XNameContainer
@@ -16,6 +16,7 @@ from ooo.dyn.awt.size import Size
 from ..utils import lo as mLo
 from ..utils import file_io as mFileIO
 from ..utils import props as mProps
+from ..utils import info as mInfo
 from ..exceptions import ex as mEx
 from ..utils.type_var import PathOrStr
 
@@ -69,17 +70,15 @@ class ImagesLo:
 
         Raises:
             FileNotFoundError: If ``im_fnm`` does not exist.
-            CreateInstanceMcfError: If unable to create graphic.GraphicProvider
-            Exception: If unable to load graphic
+            ImageError: If unable to load graphic
 
         Returns:
             XGraphic: Graphic
         """
         mLo.Lo.print(f"Loading XGraphic from '{im_fnm}'")
         try:
+            _ = mFileIO.FileIO.is_exist_file(fnm=im_fnm, raise_err=True)
             fnm = mFileIO.FileIO.get_absolute_path(im_fnm)
-            if not fnm.exists():
-                raise FileNotFoundError(fnm)
             gprovider = mLo.Lo.create_instance_mcf(
                 XGraphicProvider, "com.sun.star.graphic.GraphicProvider", raise_err=True
             )
@@ -90,10 +89,8 @@ class ImagesLo:
             return result
         except FileNotFoundError:
             raise
-        except mEx.CreateInstanceMcfError:
-            raise
         except Exception as e:
-            raise Exception(f"Could not load XGraphic from '{im_fnm}'") from e
+            raise mEx.ImageError(f"Could not load XGraphic from '{im_fnm}'") from e
 
     @classmethod
     def get_size_pixels(cls, im_fnm: PathOrStr) -> Size:
@@ -107,7 +104,7 @@ class ImagesLo:
             Size: Size containing Width and Height
         """
         graphic = cls.load_graphic_file(im_fnm)
-        return mProps.Props.get_property(prop_set=graphic, name="SizePixel")
+        return mProps.Props.get(graphic, "SizePixel")
 
     @classmethod
     def get_size_100mm(cls, im_fnm: PathOrStr) -> Size:
@@ -129,7 +126,7 @@ class ImagesLo:
             Size: Size containing Width and Height
         """
         graphic = cls.load_graphic_file(im_fnm)
-        return mProps.Props.get_property(prop_set=graphic, name="Size100thMM")
+        return mProps.Props.get(graphic, "Size100thMM")
 
     @staticmethod
     def load_graphic_link(graphic_link: object) -> XGraphic:
@@ -157,26 +154,54 @@ class ImagesLo:
         except Exception as e:
             raise Exception(f"Unable to retrieve graphic") from e
 
+    # region save_graphic()
+    @overload
+    @staticmethod
+    def save_graphic(pic: XGraphic, fnm: PathOrStr) -> None:
+        ...
+
+    @overload
     @staticmethod
     def save_graphic(pic: XGraphic, fnm: PathOrStr, im_format: str) -> None:
-        print(f"Saving graphic in '{fnm}'")
+        ...
 
-        if pic is None:
-            print("Supplied image is null")
-            return
+    @staticmethod
+    def save_graphic(pic: XGraphic, fnm: PathOrStr, im_format: str = "") -> None:
+        """
+        Save a graphic to disk
 
-        gprovider = mLo.Lo.create_instance_mcf(XGraphicProvider, "com.sun.star.graphic.GraphicProvider")
-        if gprovider is None:
-            print("Graphic Provider could not be found")
-            return
+        Args:
+            pic (XGraphic): Graphic object
+            fnm (PathOrStr): File path to save graphic to
+            im_format (str, optional): Image format such as ``png``. Defaults to extension of ``fnm``.
 
-        png_props = mProps.Props.make_props(URL=mFileIO.FileIO.fnm_to_url(fnm), MimeType=f"image/{im_format}")
+        Raises:
+            ImageError: If error occurs.
+        """
+        mLo.Lo.print(f"Saving graphic in '{fnm}'")
 
         try:
+            if pic is None:
+                raise TypeError("Expected pic to be XGraphic instance but got None")
+            if not im_format:
+                im_format = mInfo.Info.get_ext(fnm)
+                if not im_format:
+                    raise ValueError(
+                        "Unable to get image format from fnm. Does fnm have an file extension such as myfile.png?"
+                    )
+                im_format = im_format.lower()
+
+            gprovider = mLo.Lo.create_instance_mcf(
+                XGraphicProvider, "com.sun.star.graphic.GraphicProvider", raise_err=True
+            )
+
+            png_props = mProps.Props.make_props(URL=mFileIO.FileIO.fnm_to_url(fnm), MimeType=f"image/{im_format}")
+
             gprovider.storeGraphic(pic, png_props)
         except Exception as e:
-            print("Unable to save graphic")
-            print(f"    {e}")
+            raise mEx.ImageError(f'Error saving graphic for "{fnm}') from e
+
+    # end region save_graphic()
 
     @staticmethod
     def get_mime_types() -> Tuple[str, ...]:

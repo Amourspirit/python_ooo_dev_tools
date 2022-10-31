@@ -2,7 +2,6 @@
 from __future__ import annotations, unicode_literals
 import sys
 from typing import TYPE_CHECKING, cast
-from enum import Enum
 import uno
 import getpass, os, os.path
 from ..meta.static_meta import StaticProperty, classproperty
@@ -14,20 +13,23 @@ from ..exceptions import ex as mEx
 
 from com.sun.star.util import XStringSubstitution
 from ooo.dyn.uno.deployment_exception import DeploymentException
+
 # com.sun.star.uno.DeploymentException
 
 if TYPE_CHECKING:
     from com.sun.star.util import PathSubstitution
     from com.sun.star.uno import XComponentContext
 
+
 class Session(metaclass=StaticProperty):
     """
     Session Class for handling user paths within the LibreOffice environment.
-    
+
     See Also:
         - `Importing Python Modules <https://help.libreoffice.org/latest/lo/text/sbasic/python/python_import.html>`_
         - `Getting Session Information <https://help.libreoffice.org/latest/lo/text/sbasic/python/python_session.html>`_
     """
+
     # https://help.libreoffice.org/latest/lo/text/sbasic/python/python_import.html
     # https://help.libreoffice.org/latest/lo/text/sbasic/python/python_session.html
 
@@ -53,15 +55,19 @@ class Session(metaclass=StaticProperty):
                 # print(e)
                 # there must be a connection to before calling session.
                 if mLo.Lo.is_loaded is False:
-                    raise mEx.LoNotLoadedError("Lo.load_office must be called before using session when not run as a macro")
-                cls._path_substitution = mLo.Lo.create_instance_mcf(XStringSubstitution, "com.sun.star.util.PathSubstitution")
+                    raise mEx.LoNotLoadedError(
+                        "Lo.load_office must be called before using session when not run as a macro"
+                    )
+                cls._path_substitution = mLo.Lo.create_instance_mcf(
+                    XStringSubstitution, "com.sun.star.util.PathSubstitution"
+                )
         return cls._path_substitution
 
     @staticmethod
     def substitute(var_name: str):
         """
         Returns the current value of a variable.
-        
+
         The method iterates through its internal variable list and tries to find the given variable.
         If the variable is unknown a com.sun.star.container.NoSuchElementException is thrown.
 
@@ -98,7 +104,7 @@ class Session(metaclass=StaticProperty):
     def shared_py_scripts(cls) -> str:
         """
         Gets Program Share python dir,
-        such as ``C:\Program Files\LibreOffice\share\Scripts\python``
+        such as ``C:\\Program Files\\LibreOffice\\share\\Scripts\\python``
         """
         # eg: C:\Program Files\LibreOffice\share\Scripts\python
         return "".join([Session.shared_scripts, os.sep, "python"])
@@ -140,7 +146,7 @@ class Session(metaclass=StaticProperty):
         """
         # eg: C:\Users\user\AppData\Roaming\LibreOffice\4\user\Scripts\python
         return "".join([cls.user_scripts, os.sep, "python"])
-    
+
     @classmethod
     def register_path(cls, path: Session.PathEnum) -> None:
         """
@@ -155,7 +161,7 @@ class Session(metaclass=StaticProperty):
             spath = cls.user_py_scripts
         if not spath in sys.path:
             sys.path.insert(0, spath)
-        
+
 
 def _del_cache_attrs(source: object, e: EventArgs) -> None:
     # clears Lo Attributes that are dynamically created
@@ -163,6 +169,7 @@ def _del_cache_attrs(source: object, e: EventArgs) -> None:
     for attr in dattrs:
         if hasattr(Session, attr):
             delattr(Session, attr)
+
 
 _Events().on(LoNamedEvent.RESET, _del_cache_attrs)
 

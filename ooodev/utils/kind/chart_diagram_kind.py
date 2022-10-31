@@ -3,7 +3,7 @@ from enum import Enum
 
 class ChartDiagramKind(str, Enum):
     AREA = "AreaDiagram"
-    BAR_DIAGRAM = "BarDiagram"
+    BAR = "BarDiagram"
     BUBBLE = "BubbleDiagram"
     DONUT = "DonutDiagram"
     FILLED_NET = "FilledNetDiagram"
