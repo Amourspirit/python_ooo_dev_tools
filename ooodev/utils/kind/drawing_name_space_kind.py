@@ -15,6 +15,7 @@ class DrawingNameSpaceKind(str, Enum):
     SHAPE_TYPE_PAGE = "com.sun.star.presentation.PageShape"
     SUBTITLE_TEXT = "com.sun.star.presentation.SubtitleShape"
     TITLE_TEXT = "com.sun.star.presentation.TitleTextShape"
+    OLE2_SHAPE = "com.sun.star.drawing.OLE2Shape"
 
     def __str__(self) -> str:
         return self.value

@@ -501,7 +501,7 @@ class Chart2View:
         # Chart2.view_legend(chart_doc=chart_doc, is_visible=True)
 
         # change 2nd y-axis min and max; default is poor ($0 - $20)
-        y_axis2 = Chart2.get_y_axis(chart_doc)
+        y_axis2 = Chart2.get_y_axis2(chart_doc)
         sd = y_axis2.getScaleData()
         # Chart2.print_scale_data("Secondary Y-Axis", sd)
         sd.Minimum = 83
@@ -536,7 +536,7 @@ class Chart2View:
         ds = Chart2.get_data_series(chart_doc=chart_doc, chart_type=ct)
         Lo.print(f"No. of data series in candle stick chart: {len(ds)}")
         # Props.show_obj_props("Candle Stick", ds[0])
-        Props.set(ds[0], LineWidth=140, Color=CommonColor.YELLOW)
+        Props.set(ds[0], LineWidth=120, Color=CommonColor.YELLOW)  # LineWidth in 1/100 mm
 
     def _stock_prices_chart(self, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> None:
         # draws a stock chart, with an extra pork bellies line

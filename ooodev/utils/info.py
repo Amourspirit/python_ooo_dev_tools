@@ -332,7 +332,7 @@ class Info(metaclass=StaticProperty):
     @classmethod
     def _get_config1(cls, node_str: str, node_path: str):
         props = cls.get_config_props(node_path)
-        return mProps.Props.get_property(prop_set=props, name=node_str)
+        return mProps.Props.get(props, node_str)
 
     @classmethod
     def _get_config2(cls, node_str: str) -> object:
@@ -605,7 +605,7 @@ class Info(metaclass=StaticProperty):
             props = cls.set_config_props(node_path=node_path)
             if props is None:
                 return False
-            mProps.Props.set_property(prop_set=props, name=node_str, value=val)
+            mProps.Props.set_property(props, node_str, val)
             secure_change = mLo.Lo.qi(XChangesBatch, props)
             if secure_change is None:
                 raise mEx.MissingInterfaceError(XChangesBatch)
