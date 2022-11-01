@@ -9,4 +9,5 @@ Python LibreOffice Programming
     *
     part1/index
     part2/index
+    part3/index
     part4/index
