@@ -9,23 +9,10 @@ from com.sun.star.sheet import XSpreadsheetDocument
 from ooodev.dialog.msgbox import MsgBox, MessageBoxType, MessageBoxButtonsEnum, MessageBoxResultsEnum
 from ooodev.office.calc import Calc
 from ooodev.office.chart import Chart, ChartDiagramKind, ChartDataCaptionEnum, Intensity
-from ooodev.utils.color import CommonColor
 from ooodev.utils.file_io import FileIO
 from ooodev.utils.gui import GUI
-from ooodev.utils.kind.axis_kind import AxisKind
-from ooodev.utils.kind.chart2_types import ChartTypes
-from ooodev.utils.kind.data_point_lable_placement_kind import DataPointLabelPlacementKind
 from ooodev.utils.lo import Lo
-from ooodev.utils.props import Props
 from ooodev.utils.type_var import PathOrStr
-
-from ooo.dyn.awt.font_weight import FontWeight
-from ooo.dyn.chart.time_increment import TimeIncrement
-from ooo.dyn.chart.time_interval import TimeInterval
-from ooo.dyn.chart.time_unit import TimeUnit
-from ooo.dyn.chart2.axis_orientation import AxisOrientation
-from ooo.dyn.chart2.axis_type import AxisType
-from ooo.dyn.drawing.line_style import LineStyle
 
 
 class ChartKind(str, Enum):
