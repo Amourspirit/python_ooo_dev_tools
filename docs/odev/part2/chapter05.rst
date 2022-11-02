@@ -35,6 +35,9 @@ This chapter (and later ones) assume that you're familiar with Writer, including
 
 The API is centered around four text document services which sub-class ``OfficeDocument``, as shown in :numref:`ch05fig_txt_doc_service`.
 
+..
+    Figure 1
+
 .. cssclass:: diagram invert
 
     .. _ch05fig_txt_doc_service:
@@ -56,6 +59,9 @@ The ``WebDocument`` service in :numref:`ch05fig_txt_doc_service` is for manipula
 ``TextDocument``, ``GlobalDocument``, and ``WebDocument`` are mostly empty because those services don't define any interfaces or properties.
 The ``GenericTextDocument`` service is where the action takes place, as summarized in :numref:`ch05fig_txt_doc_serv_interfaces`.
 
+..
+    Figure 2
+
 .. cssclass:: diagram invert
 
     .. _ch05fig_txt_doc_serv_interfaces:
@@ -75,6 +81,9 @@ in :numref:`ch05fig_txt_doc_serv_interfaces` ``XTextDocument`` has a ``getText()
 ``XText`` supports functionality related to text ranges and positions, cursors, and text contents.
 
 It inherits ``XSimpleText`` and ``XTextRange``, as indicated in :numref:`ch05fig_xtext_supers`.
+
+..
+    Figure 3
 
 .. cssclass:: diagram invert
 
@@ -97,6 +106,9 @@ are for iterating through text content (:abbreviation:`ex:` accessing the docume
 This chapter concentrates on ordinary text, chapters 7 and 8 look at more esoteric content forms.
 
 A text document can utilize eight different cursors, which fall into two groups, as in :numref:`ch05fig_cursor_types`.
+
+..
+    Figure 4
 
 .. cssclass:: diagram invert
 
@@ -345,11 +357,7 @@ Another method worth knowing is:
 ``gotoRange()`` method of XTextCursor_ takes an XTextRange_ argument, which represents a selected region or position where the cursor should be moved to.
 For example, it's possible to find a bookmark in a document, extract its text range/position, and move the cursor to that location with ``gotoRange()``.
 
-.. todo::
-
-    Link ch5 to chapter 7
-
-code for this in Chapter 7.
+Code for this in :ref:`ch07`.
 
 A Problem with Write.get_all_text()
 -----------------------------------
@@ -455,6 +463,9 @@ Since the cursor was originally at the start of the paragraph, the selection wil
 
 XParagraphCursor_ and the sentence and word cursors inherit XTextCursor_, as shown in :numref:`ch05fig_model_cursor_inherit`.
 
+..
+    Figure 5
+
 .. cssclass:: diagram invert
 
     .. _ch05fig_model_cursor_inherit:
@@ -481,6 +492,9 @@ In the ``show_paragraphs()`` method above, the two ends of the paragraph are obt
 without selecting anything, and the second moves it to the end position, selecting all the text in between.
 Since this is a view cursor, the selection is visible on-screen, as illustrated in :numref:`ch05fig_ss_sel_para`.
 
+..
+    Figure 6
+
 .. cssclass:: screen_shot invert
 
     .. _ch05fig_ss_sel_para:
@@ -495,6 +509,9 @@ which is Office-lingo for a range that starts and ends at the same cursor positi
 
 Somewhat confusingly, the XTextViewCursor_ interface inherits XTextCursor_ (as shown in :numref:`ch05fig_xtxt_view_inherit`).
 This only means that XTextViewCursor supports the same character-based movement and text range operations as the model-based cursor.
+
+..
+    Figure 7
 
 .. cssclass:: diagram invert
 
@@ -866,6 +883,9 @@ Since there's no string being created by the comparer, there's no way that the i
 The |shuffle_words|_ example searches a document and changes the words it encounters.
 :numref:`ch05fig_word_shuffle` shows the program output. Words longer than three characters are scrambled.
 
+..
+    Figure 8
+
 .. cssclass:: screen_shot invert
 
     .. _ch05fig_word_shuffle:
@@ -947,6 +967,9 @@ Another approach for moving around a document involves the XEnumerationAccess_ i
 XEnumerationAccess_ is an interface in the Text service, which means that an XText_ reference can be converted into it by using :py:meth:`.Lo.qi`.
 These relationships are shown in :numref:`ch05fig_text_service`.
 
+..
+    Figure 9
+
 .. cssclass:: diagram invert
 
     .. _ch05fig_text_service:
@@ -983,6 +1006,9 @@ Each element returned from this iterator is a Paragraph text content:
 Paragraph doesn't support its own interface (i.e. there's no ``XParagraph``), so :py:meth:`.Lo.qi` is used to access its XTextContent_ interface,
 which belongs to the TextContent_ subclass. The hierarchy is shown in :numref:`ch05fig_text_context_hierarchy`.
 
+..
+    Figure 10
+
 .. cssclass:: diagram invert
 
     .. _ch05fig_text_context_hierarchy:
@@ -1017,6 +1043,9 @@ The paragraph enumerator returns text portions, represented by the TextPortion_ 
 TextPortion_ contains a lot of useful properties which describe the paragraph, but it doesn't have its own interface (such as ``XTextPortion``).
 However, TextPortion_ inherits the TextRange_ service, so :py:meth:`.Lo.qi` can be used to obtain its XTextRange_ interface.
 This hierarchy is shown in :numref:`ch05fig_text_portion_hierarchy`.
+
+..
+    Figure 11
 
 .. cssclass:: diagram invert
 

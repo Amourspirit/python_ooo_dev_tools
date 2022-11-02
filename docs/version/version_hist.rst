@@ -2,6 +2,14 @@
 Version History
 ***************
 
+Version 0.5.3
+=============
+
+``Lo.dispatch_cmd`` Now returns the result of the dispatch command if any.
+Formerly a ``bool`` was returned.
+
+``Lo.dispatch_cmd`` Now raises ``DispatchError`` if an error occurs.
+
 Version 0.5.2
 =============
 

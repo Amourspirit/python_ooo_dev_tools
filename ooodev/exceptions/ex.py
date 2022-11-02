@@ -441,3 +441,9 @@ class ImageError(Exception):
     """Generic error when error occurs processing an image"""
 
     pass
+
+
+class DispatchError(Exception):
+    """Generic error when an error occurs while dispatching"""
+
+    pass

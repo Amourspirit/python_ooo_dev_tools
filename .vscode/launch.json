@@ -21,10 +21,28 @@
             "justMyCode": false
         },
         {
-            "name": "Python: Sphinx Docs",
+            "name": "Python: Sphinx Docs Linux",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/env/bin/sphinx-build",
+            "program": "${workspaceFolder}/.venv/bin/sphinx-build",
+            "cwd": "${workspaceFolder}/docs",
+            "args": [
+                "-E",
+                "-b",
+                "html",
+                "-d",
+                "_build/doctrees",
+                ".",
+                "_build/html"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "Python: Sphinx Docs Windows",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/.venv/Scripts/sphinx-build.exe",
             "cwd": "${workspaceFolder}/docs",
             "args": [
                 "-E",
@@ -38,5 +56,6 @@
             "console": "integratedTerminal",
             "justMyCode": false
         }
+
     ]
 }

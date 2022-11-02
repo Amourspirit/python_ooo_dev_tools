@@ -132,3 +132,26 @@ Comments
                 :figclass: align-center
 
                 :Methods to Investigate the Service and Interface Relationships and Hierarchies.
+
+
+Linking to Source code:
+    Two extensions are used here. 
+        sphinx_design: https://sphinx-design.readthedocs.io/en/rtd-theme/get_started.html
+            Allows setting icon :octicon:`code-square;1em;sd-text-info`
+        sphinx.ext.extlinks: https://documentation.help/Sphinx/extlinks.html, see setting for extlinks in conf.py
+            Allows for custom roles to be set up the make for simple source code link injection.
+
+    Linking source code standart for directives such as .. seealso
+        note :odev_src_draw_meth:`get_slide` :octicon:`code-square;1em;sd-text-info` have not spaces in the seealso block
+    .. seealso::
+
+        .. cssclass:: mono
+
+            - :odev_src_draw_meth:`get_slide`:octicon:`code-square;1em;sd-text-info`
+            - :odev_src_draw_meth:`get_slides`:octicon:`code-square;1em;sd-text-info`
+            - :odev_src_draw_meth:`get_slides_count`:octicon:`code-square;1em;sd-text-info`
+    
+    Lining inline. Currently there is not a way to set inline style to mono so just add icon
+        :odev_src_gui_meth:`zoom`:octicon:`code-square;1em;sd-text-info`
+    
+    To see what role are available or to add new rows see extlinks in conf.py

@@ -13,6 +13,9 @@ This chapter focuses on how text documents styles can be examined and manipulate
 This revolves around the XStyleFamiliesSupplier_ interface in GenericTextDocument_, which is highlighted in
 :numref:`ch06fig_txt_doc_serv_interfaces` (a repeat of :numref:`ch05fig_txt_doc_serv_interfaces` in :ref:`ch05`).
 
+..
+    Figure 1
+
 .. cssclass:: diagram invert
 
     .. _ch06fig_txt_doc_serv_interfaces:
@@ -29,6 +32,9 @@ XNameAccess_ is one of Office's collection types, and employed when the objects 
 There's also an XIndexAccess_ for collections in index order.
 
 XNameContainer_ and XIndexContainer_ add the ability to insert and remove objects from a collection.
+
+..
+    Figure 2
 
 .. cssclass:: diagram invert
 
@@ -60,6 +66,9 @@ If you create a new text document in Writer, a "Styles and Formatting" dialog wi
 Within the window you can switch between five icons representing the five style families. :numref:`ch06fig_writer_style_ss` shows the list
 of property set (style) names for the paragraph styles family.
 They corresponds to the property set names shown in :numref:`ch06fig_style_fam_props`.
+
+..
+    Figure 3
 
 .. cssclass:: screen_shot invert
 
@@ -132,6 +141,9 @@ The ``FrameStyle`` service (full name: ``com.sun.star.style.FrameStyle``) has a 
 A style's properties are usually defined across several classes in an inheritance hierarchy.
 The hierarchies for the five styles are summarized in :numref:`ch06fig_style_inheritance`.
 
+..
+    Figure 4
+
 .. cssclass:: diagram invert
 
     .. _ch06fig_style_inheritance:
@@ -146,6 +158,9 @@ There's clearly a lot of similarities between them, so we are focused on ``Chara
 
 There are three services containing character style properties: ``CharacterStyle``, ``Style``, and ``CharacterProperties``.
 If you visit the online documentation for CharacterStyle, the properties are listed under the heading "Public Attributes", which is shown in :numref:`ch06fig_docs_char_style_ss`.
+
+..
+    Figure 5
 
 .. cssclass:: screen_shot invert
 
@@ -166,6 +181,9 @@ The other "(??)" is in the ``ParagraphStyle`` hierarchy. The documentation for `
 indicate that ParagraphStyle inherits only Style and ParagraphCharacter.
 We believe this to be incorrect, based on my coding with ``ParagraphStyle`` (some of which you'll see in the next sections).
 ParagraphStyle appears to inherits three services: Style, ParagraphCharacter, and CharacterStyle, as indicated in :numref:`ch06fig_para_serv_supers`.
+
+..
+    Figure 6
 
 .. cssclass:: diagram invert
 
@@ -505,6 +523,9 @@ The ``ParaLineSpacing`` property is a little more complex than the others since 
 
 The ParagraphProperties_ documentation for "ParaLineSpacing" is shown in :numref:`ch06fig_para_line_spc_ss`.
 
+..
+    Figure 7
+
 .. cssclass:: screen_shot invert
 
     .. _ch06fig_para_line_spc_ss:
@@ -537,6 +558,9 @@ It uses os dependent font determined by :py:meth:`.Info.get_font_general_name` s
 An ``adParagraph`` style is added to the paragraph style family, but how to apply that style to some paragraphs in the document?
 The easiest way is through the document's XTextRange_ interface.
 XTextRange_ is supported by the TextRange_ service, which inherits ParagraphProperties_ and CharacterProperties_ (and several other property classes), as illustrated in :numref:`ch06fig_txt_rng_srvc`.
+
+..
+    Figure 8
 
 .. cssclass:: diagram invert
 
@@ -580,6 +604,9 @@ Then the text's properties are accessed through the cursor.
 
 All the different kinds of model and view cursor belong to the TextCursor_ service, and this inherits TextRange_.
 This allows us to extend :numref:`ch06fig_txt_rng_srvc` to become :numref:`ch06fig_txt_rng_srvc_cursor`.
+
+..
+    Figure 9
 
 .. cssclass:: diagram invert
 
@@ -831,6 +858,9 @@ The |build_doc|_ example contains several examples of how to use :py:meth:`~.Wri
 
 The resulting text in the document looks like :numref:`ch06fig_styled_text_ss`.
 
+..
+    Figure 10
+
 .. cssclass:: screen_shot
 
     .. _ch06fig_styled_text_ss:
@@ -858,6 +888,9 @@ The following fragment from |build_doc|_ applies a 'code' styling to several lin
         Write.style_left_code(cursor, pos)
 
 :numref:`ch06fig_styled_text_code_ss` shows the generated document text.
+
+..
+    Figure 11
 
 .. cssclass:: screen_shot invert
 
@@ -893,6 +926,9 @@ Text hyperlinks are implemented as styles, using ``HyperLinkURL``, and perhaps `
         append(" Website.")
         Write.end_paragraph(cursor)
 
+..
+    Figure 12
+
 .. cssclass:: screen_shot invert
 
     .. _ch06fig_text_hyperlink_ss:
@@ -927,6 +963,9 @@ The following code from |build_doc|_ , numbers three paragraphs:
 
 The result is shown in :numref:`ch06fig_text_num_para_ss`.
 
+..
+    Figure 13
+
 .. cssclass:: screen_shot invert
 
     .. _ch06fig_text_num_para_ss:
@@ -939,6 +978,9 @@ The result is shown in :numref:`ch06fig_text_num_para_ss`.
 ``NumberingStyleName`` is a property in ParagraphProperties_, and the "Numbering 123" style is from the "Paragraph Styles" dialog window in :numref:`ch06fig_writer_style_ss`.
 
 Letters are drawn instead of numbers by changing the style name to "Numbering abc" (see :numref:`ch06fig_text_letter_para_ss`).
+
+..
+    Figure 14
 
 .. cssclass:: screen_shot invert
 
