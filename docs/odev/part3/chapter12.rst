@@ -78,7 +78,7 @@ XComponent_ object before progressing. :py:meth:`.Draw.is_shapes_based` returns 
 
         @staticmethod
         def is_shapes_based(doc: XComponent) -> bool:
-            return mInfo.Info.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.DRAW) or mInfo.Info.is_doc_type(
+            return Info.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.DRAW) or Info.is_doc_type(
                 obj=doc, doc_type=mLo.Lo.Service.IMPRESS
             )
 
@@ -95,9 +95,10 @@ The same trick is utilized in the ``main()`` method, after the call to :py:meth:
 
 .. seealso::
 
-    .. cssclass:: mono
+    .. cssclass:: src-link
 
-        - :odev_src_gui_meth:`zoom`:octicon:`code-square;1em;sd-text-info`
+        - :odev_src_gui_meth:`zoom`
+        - :odev_src_draw_meth:`is_shapes_based`
 
     - `Development/DispatchCommands <https://wiki.documentfoundation.org/Development/DispatchCommands>`_.
 
@@ -187,12 +188,12 @@ These ``Width`` and ``Height`` properties are stored in XDrawPage_'s GenericDraw
 
 .. seealso::
 
-    .. cssclass:: mono
+    .. cssclass:: src-link
 
-        - :odev_src_draw_meth:`get_slide`:octicon:`code-square;1em;sd-text-info`
-        - :odev_src_draw_meth:`get_slides`:octicon:`code-square;1em;sd-text-info`
-        - :odev_src_draw_meth:`get_slides_count`:octicon:`code-square;1em;sd-text-info`
-        - :odev_src_draw_meth:`get_slide_size`:octicon:`code-square;1em;sd-text-info`
+        - :odev_src_draw_meth:`get_slide`
+        - :odev_src_draw_meth:`get_slides`
+        - :odev_src_draw_meth:`get_slides_count`
+        - :odev_src_draw_meth:`get_slide_size`
 
 12.2 Page Layers
 ================
@@ -278,7 +279,7 @@ Typical output from ``_report_layers()`` is:
       Name: backgroundobjects
       Title: 
 
-Each layer contains six properties. Four are defined by the Layer service; use`` lodoc layer service drawing`` to see its documentation.
+Each layer contains six properties. Four are defined by the Layer service; use ``lodoc layer service drawing`` to see its documentation.
 The most useful property is probably ``IsVisible`` which toggles the layer's visibility.
 
 12.3 Styles

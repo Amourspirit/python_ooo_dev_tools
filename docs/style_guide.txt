@@ -47,6 +47,17 @@ Headings:
     “, for paragraphs
 
 
+List
+    By default rdt-theme displays un-ordered list without any list type formating.
+    To create an un-ordered list with bullets us the ul-list class from readthedocs_custom.css
+    
+        .. cssclass:: ul-list
+
+            * simple shapes: line, ellipse, rectangle, text;
+            * shape fills: solid, gradients, hatching, bitmaps;
+            * an OLE shape (a math formulae);
+            * polygons, multiple lines, partial ellipses.
+
 Image Classes
     screen_shot: any still image that is a screen shot type image
     invert: any image that can can have color inverted such as jpeg, png for dark theme.
@@ -142,16 +153,13 @@ Linking to Source code:
             Allows for custom roles to be set up the make for simple source code link injection.
 
     Linking source code standart for directives such as .. seealso
-        note :odev_src_draw_meth:`get_slide` :octicon:`code-square;1em;sd-text-info` have not spaces in the seealso block
+
     .. seealso::
 
-        .. cssclass:: mono
+        .. cssclass:: src-link
 
-            - :odev_src_draw_meth:`get_slide`:octicon:`code-square;1em;sd-text-info`
-            - :odev_src_draw_meth:`get_slides`:octicon:`code-square;1em;sd-text-info`
-            - :odev_src_draw_meth:`get_slides_count`:octicon:`code-square;1em;sd-text-info`
-    
-    Lining inline. Currently there is not a way to set inline style to mono so just add icon
-        :odev_src_gui_meth:`zoom`:octicon:`code-square;1em;sd-text-info`
+            - :odev_src_draw_meth:`get_slide`
+            - :odev_src_draw_meth:`get_slides`
+            - :odev_src_draw_meth:`get_slides_count`
     
     To see what role are available or to add new rows see extlinks in conf.py

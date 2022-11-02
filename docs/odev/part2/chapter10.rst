@@ -95,6 +95,9 @@ A mixed dictionary contains both correctly and incorrectly spelled entries.
 If a dictionary has a locale, such as "GB" for ``en-GB.dic``, then it's only utilized during spell checking if its locale matches Office's.
 The Office locale can be set via the Tools, Options, Language Settings, "Languages" dialog shown in :numref:`ch10fig_lang_dial_ss`.
 
+..
+    figure 1
+
 .. cssclass:: screen_shot invert
 
     .. _ch10fig_lang_dial_ss:
@@ -132,6 +135,9 @@ It retrieves a conventional dictionary list first (called ``dict_lst``), and ite
 Then it obtains the conversion dictionary list (called ``cd_list``), and iterates over that with :py:meth:`~.Write.print_con_dicts_info`.
 
 :numref:`ch09fig_dicts_services` shows the main services and interfaces used by ordinary dictionaries.
+
+..
+    figure 2
 
 .. cssclass:: diagram invert
 
@@ -176,6 +182,9 @@ Conversion dictionaries map words in one language/dialect to corresponding words
 :numref:`ch10fig_convert_dicts_services` shows that conversion dictionaries are organized in a similar way to ordinary ones.
 The interfaces for manipulating a conversion dictionary are XConversionDictionary_ and XConversionPropertyType_.
 
+..
+    figure 3
+
 .. cssclass:: diagram invert
 
     .. _ch10fig_convert_dicts_services:
@@ -207,6 +216,9 @@ an XNameContainer_ from the dictionary list, and then pulling a list of the name
 
 Output similar to :py:meth:`.Write.dicts_info` can be viewed via Office's Tools, Options, Language Settings, "Writing Aids" dialog, shown in :numref:`ch10fig_writing_aids_ss`.
 
+..
+    figure 4
+
 .. cssclass:: screen_shot invert
 
     .. _ch10fig_writing_aids_ss:
@@ -218,6 +230,9 @@ Output similar to :py:meth:`.Write.dicts_info` can be viewed via Office's Tools,
 
 The dictionaries are listed in the second pane of the dialog.
 Also, at the bottom of the window is a "Get more dictionaries online" hyperlink which takes the user to Office's extension website, and displays the "Dictionary" category (see :numref:`ch10fig_ext_dict_ss`).
+
+..
+    figure 5
 
 .. cssclass:: screen_shot invert
 
@@ -320,6 +335,9 @@ The ``Loc`` entries are the directories or OXT files containing the extensions. 
 
 Office can display similar information via its Tools, "Extension Manager" dialog, as in :numref:`ch10fig_ext_dial_ss`.
 
+..
+    figure 6
+
 .. cssclass:: screen_shot invert
 
     .. _ch10fig_ext_dial_ss:
@@ -359,6 +377,9 @@ The LinguServiceManager_ provides access to three of the four main linguistic se
 The proof reader (:abbreviation:`ex:` the grammar checker) is managed by a separate Proofreader_ service, which is explained later.
 
 :numref:`ch10fig_longu_serv_interface` shows the interfaces accessible from the LinguServiceManager service.
+
+..
+    figure 7
 
 .. cssclass:: diagram invert
 
@@ -533,6 +554,9 @@ Nothing is reported for ``horseback`` because that's correctly spelled, and :py:
 
 The SpellChecker_ service and its important interfaces are shown in :numref:`ch10fig_spellcheck_serv_interface`.
 
+..
+    figure 8
+
 .. cssclass:: diagram invert
 
     .. _ch10fig_spellcheck_serv_interface:
@@ -590,6 +614,9 @@ Even a property change performed through the XLinguProperties_ interface, such a
 fails to change ``XSpellChecker.spell()``'s behavior.
 The only way to make a change to the linguistic properties that is acted upon is through the "Options" pane in the "Writing Aids" dialog, as in :numref:`ch10fig_change_cap_ss`.
 
+..
+    figure 9
+
 .. cssclass:: screen_shot invert
 
     .. _ch10fig_change_cap_ss:
@@ -605,6 +632,9 @@ Office's default spell checker is Hunspell (from https://hunspell.github.io/), a
 Hunspell offers extra properties in addition to those in the "Options" pane of the "Writing Aids" dialog.
 They can be accessed through the Tools, Options, Language Settings, "English sentence checking" dialog shown in :numref:`ch10fig_eng_sentence_dialog_ss`.
 
+..
+    figure 10
+
 .. cssclass:: screen_shot invert
 
     .. _ch10fig_eng_sentence_dialog_ss:
@@ -616,6 +646,9 @@ They can be accessed through the Tools, Options, Language Settings, "English sen
 
 The same dialog can also be reached through the Extension Manager window shown back in :numref:`ch10fig_eng_opt_btn_ss`.
 Click on the "English Spelling dictionaries" extension, and then press the "Options" button which appears as in Figure 11.
+
+..
+    figure 11
 
 .. cssclass:: screen_shot
 
@@ -658,6 +691,9 @@ The XML file's location is obtained in two steps.
 First the ID of the Hunspell service (``org.openoffice.en.hunspell.dictionaries``) is passed to ``XPackageInformationProvider.getPackageLocation()``
 to obtain the spell checker's installation folder.
 :numref:`ch10fig_hunspell_instal_dir_ss` shows a hunspell install directory.
+
+..
+    figure 12
 
 .. cssclass:: screen_shot invert
 
@@ -722,6 +758,9 @@ The output from the first call to :py:meth:`.Write.print_meaning` is:
         occultist (generic term)
 
 ``XLinguServiceManager2.getThesaurus()`` returns an instance of XThesaurus_ whose service and main interfaces are shown in :numref:`ch10fig_thesaurus_serv_interface`.
+
+..
+    figure 13
 
 .. cssclass:: diagram invert
 
@@ -793,6 +832,9 @@ Perhaps its biggest drawback is that it requires Java 8 or later.
 
 Another issue is that LanguageTool and Lightproof cannot happily coexist inside Office.
 **Lightproof** must be disabled and **LanguageTool** enabled via the Options, Language Settings, Writing aids, "Available language modules" pane at the top of :numref:`ch10fig_language_tool_on_ss`.
+
+..
+    figure 14
 
 .. cssclass:: screen_shot invert
 
@@ -887,6 +929,9 @@ If you look closely, the first group of check boxes are titled "Grammar checking
 
 If you install LanguageTool, Office's Tools menu will be modified to contain a new "LanguageTool" sub-menu shown in :numref:`ch10fig_language_tool_sub_menu_ss`.
 
+..
+    figure 15
+
 .. cssclass:: screen_shot invert
 
     .. _ch10fig_language_tool_sub_menu_ss:
@@ -897,6 +942,9 @@ If you install LanguageTool, Office's Tools menu will be modified to contain a n
         :The LanguageTool Sub-menu.
 
 The "Options" menu item in the ``LanguageTool`` sub-menu brings up an extensive set of options, reflecting the greater number of grammar rules in the checker (see :numref:`ch10fig_language_opt_dialog_ss`).
+
+..
+    figure 16
 
 .. cssclass:: screen_shot invert
 
@@ -942,6 +990,9 @@ The output is:
 
 The proof reader isn't accessed through the linguistics manager; instead a Proofreader_ service is created, and its interfaces employed.
 A simplified view of the services and interfaces are shown in :numref:`ch10fig_proofreader_serv_interface`.
+
+..
+    figure 17
 
 .. cssclass:: diagram invert
 
@@ -1135,6 +1186,9 @@ For this reason ``com.sun.star.linguistic2.SpellChecker`` is used to get a insta
 
 The poorly written ``badGrammar.odt`` is shown in :numref:`ch10fig_poor_writing_ss`.
 
+..
+    figure 18
+
 .. cssclass:: screen_shot invert
 
     .. _ch10fig_poor_writing_ss:
@@ -1199,6 +1253,9 @@ On larger documents, it's a good idea to redirect the voluminous output to a tem
 
 The output can be considerably reduced if LanguageTool's unpaired rule is disabled, via the Options dialog in :numref:`ch10fig_language_opt_dialog_ss`.
 :numref:`ch10fig_lang_tool_inparied_desel_ss` shows the dialog with the "Unpaired" checkbox deselected in the Punctuation section.
+
+..
+    figure 19
 
 .. cssclass:: screen_shot invert
 

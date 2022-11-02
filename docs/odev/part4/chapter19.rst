@@ -20,6 +20,9 @@ There's also a few examples in the "Spreadsheet Document Examples" section of ht
 19.1 The Spreadsheet Document
 =============================
 
+..
+    figure 1
+
 .. cssclass:: diagram invert
 
     .. _ch19_some_spreadsheet_serv_interface:
@@ -41,6 +44,9 @@ A spreadsheet is a table with formulae added into the mix.
 
 A spreadsheet document (i.e. a Calc file) can consist of multiple spreadsheets (or sheets).
 This is implemented using two services – called Spreadsheets (note the 's') and Spreadsheet, as in :numref:`ch19_sheet_doc_hierarchy`.
+
+..
+    figure 2
 
 .. cssclass:: diagram invert
 
@@ -128,6 +134,9 @@ The data in a spreadsheet can be accessed in many ways:
 for example, as individual cells, cell ranges, collections of cell ranges, rows, and columns.
 These ways of viewing data are supported by different services which are used as labels in :numref:`ch19_sheet_services_data`.
 
+..
+    figure 3
+
 .. cssclass:: diagram invert
 
     .. _ch19_sheet_services_data:
@@ -138,6 +147,9 @@ These ways of viewing data are supported by different services which are used as
         :Services used with Spreadsheet Data.
 
 The simplest spreadsheet unit is a cell, which can be located by its (column, row) coordinate/position or by its name, as in :numref:`ch19_addressing_cells`.
+
+..
+    figure 4
 
 .. cssclass:: diagram invert
 
@@ -177,6 +189,9 @@ they don't handle ``~``, ``!``, or absolute references using ``$``.
 
 The Spreadsheet_ service is a subclass of SheetCellRange_, as shown in :numref:`ch19_spreadsheet_service`, which means that a sheet can be treated as a very big cell range.
 
+..
+    figure 5
+
 .. cssclass:: diagram invert
 
     .. _ch19_spreadsheet_service:
@@ -210,6 +225,9 @@ Oddly enough there's no ``getCellByName()`` method, but the :py:meth:`.Calc.get_
 The main service for cell ranges is SheetCellRange_, which inherits the CellRange_ service from the table
 module and several property-based classes, as indicated in :numref:`ch19_cell_range_service`.
 
+..
+    figure 6
+
 .. cssclass:: diagram invert
 
     .. _ch19_cell_range_service:
@@ -223,6 +241,9 @@ SheetCellRange_ supports an XSheetCellRange_ interface, but that interface gets 
 Most programs that manipulate cell ranges tend to use XCellRange_ rather than XSheetCellRange_.
 
 XCellRange_ is where the useful cell and cell range access methods are defined, as shown in the class diagram in :numref:`ch19_cell_range_class`.
+
+..
+    figure 7
 
 .. cssclass:: screen_shot invert
 
@@ -266,6 +287,9 @@ Code for obtaining the first row of a sheet is:
 XTableRows_ is an indexed container containing a sequence of XCellRange_ objects.
 The TableRow_ services and interfaces are shown in :numref:`ch19_tbl_row_services`:
 
+..
+    figure 8
+
 .. cssclass:: diagram invert
 
     .. _ch19_tbl_row_services:
@@ -277,6 +301,9 @@ The TableRow_ services and interfaces are shown in :numref:`ch19_tbl_row_service
 
 Similar coding is used to retrieve a column: ``XColumnRowRange.getColumns()`` gets all the columns.
 :numref:`ch19_tbl_col_services` shows the TableColumn_ services and interfaces.
+
+..
+    figure 9
 
 .. cssclass:: diagram invert
 
@@ -311,6 +338,9 @@ For example:
 The SheetCell_ service manages properties related to cell formulae and cell input validation.
 However, most cell functionality comes from inheriting the Cell service in the table module, and its XCell_ interface.
 This arrangement is shown in :numref:`ch19_sheet_cell_services`.
+
+..
+    figure 10
 
 .. cssclass:: diagram invert
 
@@ -352,6 +382,9 @@ Calc differentiates between ordinary text and formulae by expecting a formula to
 
 The XCell_ class diagram is shown in :numref:`ch19_xcell_class`.
 
+..
+    figure 11
+
 .. cssclass:: diagram invert
 
     .. _ch19_xcell_class:
@@ -367,6 +400,9 @@ The documentation for XCell can be found using ``lodoc xcell``.
 ======================
 
 A collection of cell ranges has its own service, SheetCellRanges_, shown in :numref:`ch19_sheet_cell_ranges_service`.
+
+..
+    figure 12
 
 .. cssclass:: diagram invert
 

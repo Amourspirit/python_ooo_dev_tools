@@ -371,7 +371,7 @@ OutlinerShape_ has at least nine property services that it inherits.
 ========================
 
 One difference between slides and drawings is that the presentations API supports slide shows.
-This extra functionality can be seen in Figure 2 since the PresentationDocument_ service offers an XPresentationSupplier_ interface
+This extra functionality can be seen in :numref:`ch11fig_draw_and_presentation_services_and_interfaces` since the PresentationDocument_ service offers an XPresentationSupplier_ interface
 which has a ``getPresentation()`` method for returning an XPresentation_ object. Don't be confused by the name – an XPresentation_ object represents a slide show.
 
 
