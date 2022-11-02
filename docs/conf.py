@@ -25,7 +25,6 @@ os.environ["ooouno_ignore_runtime"] = "True"
 # os.environ["ooouno_ignore_import_error"] = "True"
 
 
-
 # -- Project information -----------------------------------------------------
 
 project = "OOO Development Tools"
@@ -54,12 +53,17 @@ extensions = [
     "sphinx_toolbox.more_autodoc.autoprotocol",
     "sphinx.ext.napoleon",
     "sphinx.ext.todo",
+    "sphinx.ext.extlinks",
     "sphinx_autodoc_typehints",
     "sphinx_tabs.tabs",
+    "sphinx_design",
     "sphinxcontrib.spelling",
 ]
-    # "sphinx.ext.linkcode",
-    # sphinx_tabs.tabs docs: https://sphinx-tabs.readthedocs.io/en/latest/
+# "sphinx.ext.linkcode",
+# sphinx_tabs.tabs docs: https://sphinx-tabs.readthedocs.io/en/latest/
+
+# "sphinx_design"
+# https://sphinx-design.readthedocs.io/en/rtd-theme/get_started.html
 
 # region spelling
 # https://sphinxcontrib-spelling.readthedocs.io/en/latest/
@@ -68,15 +72,16 @@ extensions = [
 def get_spell_dictionaries() -> list:
 
     p = _DOCS_PATH.absolute().resolve() / "internal" / "dict"
-    dict_gen = p.glob('spelling_*.*')
+    dict_gen = p.glob("spelling_*.*")
     return [str(d) for d in dict_gen if d.is_file()]
+
 
 spelling_word_list_filename = get_spell_dictionaries()
 
 spelling_show_suggestions = True
 spelling_ignore_pypi_package_names = True
 spelling_ignore_contributor_names = True
-spelling_ignore_acronyms=True
+spelling_ignore_acronyms = True
 
 # spell checking;
 #   run sphinx-build -b spelling . _build
@@ -116,7 +121,7 @@ if html_theme == "sphinx_rtd_theme":
     html_css_files.append("css/readthedocs_dark.css")
 
 html_js_files = [
-    'js/custom.js',
+    "js/custom.js",
 ]
 
 # Napoleon settings
@@ -126,7 +131,7 @@ napoleon_include_init_with_doc = True
 
 # https://fossies.org/linux/Sphinx/doc/usage/extensions/autodoc.rst
 # This value controls how to represent typehints. The setting takes the following values:
-autodoc_typehints = 'description'
+autodoc_typehints = "description"
 
 
 # see: https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#confval-autodoc_mock_imports
@@ -175,29 +180,31 @@ autodoc_type_aliases = {
 }
 
 
-autodoc_typehints_format = 'short'
+autodoc_typehints_format = "short"
 
 
 # https://stackoverflow.com/questions/9698702/how-do-i-create-a-global-role-roles-in-sphinx
 # custom global roles or any other rst to include
 
-rst_prolog_lst = []
-rst_prolog_lst.append(".. role:: event(doc)")
-rst_prolog_lst.append("")
-rst_prolog_lst.append(".. role:: eventref(ref)")
-rst_prolog_lst.append("")
-rst_prolog_lst.append(".. |app_name| replace:: OOO Development Tools")
-rst_prolog_lst.append("")
-rst_prolog_lst.append(".. |app_name_bold| replace:: **OOO Development Tools**")
-rst_prolog_lst.append("")
-rst_prolog_lst.append(".. |odev| replace:: ODEV")
-rst_prolog_lst.append("")
-rst_prolog_lst.append(".. _ooouno: https://pypi.org/project/ooouno/")
-rst_prolog_lst.append("")
-rst_prolog_lst.append(f".. |app_ver| replace:: {__version__}")
+rst_prolog_lst = [
+    ".. role:: event(doc)",
+    "",
+    ".. role:: eventref(ref)",
+    "",
+    ".. |app_name| replace:: OOO Development Tools",
+    "",
+    ".. |app_name_bold| replace:: **OOO Development Tools**",
+    "",
+    ".. |odev| replace:: ODEV",
+    "",
+    ".. _ooouno: https://pypi.org/project/ooouno/",
+    "",
+]
+rst_prolog_lst.append(f".. |app_ver| replace:: {__version__}\n")
 
 
 rst_prolog = "\n".join(rst_prolog_lst)
+
 
 # set if figures can be referenced as numers. Defalut is False
 numfig = True
@@ -207,17 +214,29 @@ numfig = True
 # https://www.sphinx-doc.org/en/master/usage/extensions/todo.html#module-sphinx.ext.todo
 todo_include_todos = False
 
+# region sphinx.ext.extlinks – Markup to shorten external links
+# https://documentation.help/Sphinx/extlinks.html
+odev_src_root = "../../_modules/ooodev"
+extlinks = {
+    "odev_src_draw_meth": (odev_src_root + "/office/draw.html#Draw.%s", "Draw.%s()"),
+    "odev_src_gui_meth": (odev_src_root + "/utils/gui.html#GUI.%s", "GUI.%s()"),
+}
+
+# endregion sphinx.ext.extlinks – Markup to shorten external links
 # region Not currently Used
 
 # Add external links to source code
 
+
 def get_active_branch_name():
 
     head_dir = _ROOT_PATH / ".git" / "HEAD"
-    with head_dir.open("r") as f: content = f.read().splitlines()
+    with head_dir.open("r") as f:
+        content = f.read().splitlines()
 
     for line in content:
         if line[0:4] == "ref:":
             return line.partition("refs/heads/")[2]
+
 
 # endregion Not currently Used

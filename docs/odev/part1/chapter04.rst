@@ -457,6 +457,20 @@ The code is wrapped up in :py:meth:`.Lo.dispatch_cmd`, which is called twice in 
 
             # endregion main
 
+In the :ref:`utils_dispatch` namespace there are several classes that contain constant lookups for dispatch commands.
+
+Example using :py:class:`~.global_edit_dispatch.GlobalEditDispatch` class.
+
+.. tabs::
+
+    .. code-tab:: python
+
+        from ooodev.utils.dispatch.global_edit_dispatch import GlobalEditDispatch
+        from ooodev.utils.lo import Lo
+
+        Lo.dispatch_cmd(cmd=GlobalEditDispatch.COPY)
+        # other processing ...
+        Lo.dispatch_cmd(cmd=GlobalEditDispatch.PASTE)
 
 It is also possible in |odev| to hook events. These events are specific to |odev| and not
 part of LibreOffice.

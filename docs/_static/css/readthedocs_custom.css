@@ -93,3 +93,7 @@ a .rst-content .admonition tt {
     margin-left: 5px;
 }
 /* End Summary Example for .. collapse Example sections */
+
+.mono {
+    font-family: monospace;
+}

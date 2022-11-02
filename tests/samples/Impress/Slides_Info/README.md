@@ -14,6 +14,8 @@ Demonstrates get info using default `algs.odp` file.
 
 ## Automate
 
+A message box is display once the document has been created asking if you want to close the document.
+
 A single parameters can be passed in which is the slide show document to modify:
 
 **Example:**

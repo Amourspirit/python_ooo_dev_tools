@@ -3,8 +3,10 @@ from __future__ import annotations
 import uno
 from com.sun.star.lang import XComponent
 
+from ooodev.dialog.msgbox import MsgBox, MessageBoxType, MessageBoxButtonsEnum, MessageBoxResultsEnum
 from ooodev.office.draw import Draw, DrawingLayerKind
 from ooodev.utils.file_io import FileIO
+from ooodev.utils.gui import GUI
 from ooodev.utils.info import Info
 from ooodev.utils.lo import Lo
 from ooodev.utils.props import Props
@@ -17,13 +19,21 @@ class SlidesInfo:
         self._fnm = FileIO.get_absolute_path(fnm)
 
     def main(self) -> None:
-        with Lo.Loader(Lo.ConnectPipe(headless=True)) as loader:
+        loader = Lo.load_office(Lo.ConnectPipe())
 
+        try:
             doc = Lo.open_doc(fnm=self._fnm, loader=loader)
 
             if not Draw.is_shapes_based(doc):
                 Lo.print("-- not a drawing or slides presentation")
+                Lo.close_doc(doc)
+                Lo.close_office()
                 return
+
+            GUI.set_visible(is_visible=True, odoc=doc)
+            Lo.delay(1_000)  # need delay or zoom nay not occur
+
+            GUI.zoom(view=GUI.ZoomEnum.ENTIRE_PAGE)
 
             print()
             print(f"No. of slides: {Draw.get_slides_count(doc)}")
@@ -38,7 +48,22 @@ class SlidesInfo:
 
             self._report_layers(doc)
             self._report_styles(doc)
-            Lo.close_doc(doc)
+
+            Lo.delay(1_000)
+            msg_result = MsgBox.msgbox(
+                "Do you wish to close document?",
+                "All done",
+                boxtype=MessageBoxType.QUERYBOX,
+                buttons=MessageBoxButtonsEnum.BUTTONS_YES_NO,
+            )
+            if msg_result == MessageBoxResultsEnum.YES:
+                Lo.close_doc(doc=doc, deliver_ownership=True)
+                Lo.close_office()
+            else:
+                print("Keeping document open")
+        except Exception:
+            Lo.close_office()
+            raise
 
     def _report_layers(self, doc: XComponent) -> None:
         lm = Draw.get_layer_manager(doc)
