@@ -3223,25 +3223,42 @@ class Draw:
         except Exception as e:
             raise mEx.ShapeError("Error setting transparency") from e
 
+    @staticmethod
+    def set_gradient_properties(shape: XShape, grad: Gradient) -> None:
+        """
+        Sets shapes gradient properties
+
+        Args:
+            shape (XShape): Shape
+            grad (Gradient): Gradient properties to set
+
+        Returns:
+            None:
+
+        See Also:
+            :py:meth:`~.Draw.set_gradient_color`
+        """
+        mProps.Props.set(shape, FillStyle=FillStyle.GRADIENT, FillGradient=grad)
+
     # region set_gradient_color()
 
     @staticmethod
-    def _set_gradient_color_name(shape: XShape, name: DrawingGradientKind | str) -> None:
+    def _set_gradient_color_name(shape: XShape, name: DrawingGradientKind | str) -> Gradient:
         try:
             props = mLo.Lo.qi(XPropertySet, shape, True)
             props.setPropertyValue("FillStyle", FillStyle.GRADIENT)
             props.setPropertyValue("FillGradientName", str(name))
+            return props.getPropertyValue("FillGradient")
         except IllegalArgumentException:
             raise NameError(f'"{name}" is not a recognized gradient name')
         except Exception as e:
             raise mEx.ShapeError(f"Unable to set shape gradient color: {name}") from e
 
-    @staticmethod
+    @classmethod
     def _set_gradient_color_colors(
-        shape: XShape, start_color: mColor.Color, end_color: mColor.Color, angle: Angle
-    ) -> None:
+        cls, shape: XShape, start_color: mColor.Color, end_color: mColor.Color, angle: Angle
+    ) -> Gradient:
         try:
-            props = mLo.Lo.qi(XPropertySet, shape, True)
 
             grad = Gradient()
             grad.Style = GradientStyle.LINEAR
@@ -3256,8 +3273,10 @@ class Draw:
             grad.EndIntensity = 100
             grad.StepCount = 10
 
-            props.setPropertyValue("FillStyle", FillStyle.GRADIENT)
-            props.setPropertyValue("FillGradient", grad)
+            cls.set_gradient_properties(shape, grad)
+
+            return mProps.Props.get(shape, "FillGradient")
+
         except Exception as e:
             # f-string = is pyton >= 3.8
             raise mEx.ShapeError(
@@ -3266,23 +3285,23 @@ class Draw:
 
     @overload
     @classmethod
-    def set_gradient_color(cls, shape: XShape, name: DrawingGradientKind | str) -> None:
+    def set_gradient_color(cls, shape: XShape, name: DrawingGradientKind | str) -> Gradient:
         ...
 
     @overload
     @classmethod
-    def set_gradient_color(cls, shape: XShape, start_color: mColor.Color, end_color: mColor.Color) -> None:
+    def set_gradient_color(cls, shape: XShape, start_color: mColor.Color, end_color: mColor.Color) -> Gradient:
         ...
 
     @overload
     @classmethod
     def set_gradient_color(
         cls, shape: XShape, start_color: mColor.Color, end_color: mColor.Color, angle: Angle
-    ) -> None:
+    ) -> Gradient:
         ...
 
     @classmethod
-    def set_gradient_color(cls, *args, **kwargs) -> None:
+    def set_gradient_color(cls, *args, **kwargs) -> Gradient:
         """
         Set the gradient color of the shape
 
@@ -3298,7 +3317,7 @@ class Draw:
             ShapeError: If any other error occurs.
 
         Returns:
-            None:
+            Gradient: Gradient instance that just had properties set.
 
         Note:
             When using Gradient Name.
@@ -3308,6 +3327,9 @@ class Draw:
 
             The Easiest way to get the colors is to open Draw and see what gradient color names are available
             on your system.
+        
+        See Also:
+            :py:meth:`~.Draw.set_gradient_properties`
         """
         ordered_keys = (1, 2, 3, 4)
         kargs_len = len(kwargs)
@@ -3343,14 +3365,13 @@ class Draw:
             kargs[ordered_keys[i]] = arg
 
         if count == 2:
-            cls._set_gradient_color_name(kargs[1], kargs[2])
-            return
+            return cls._set_gradient_color_name(kargs[1], kargs[2])
 
         if count == 3:
             angle = Angle(0)
         else:
             angle = cast(Angle, kargs[4])
-        cls._set_gradient_color_colors(shape=kargs[1], start_color=kargs[2], end_color=kargs[3], angle=angle)
+        return cls._set_gradient_color_colors(shape=kargs[1], start_color=kargs[2], end_color=kargs[3], angle=angle)
 
     # endregion set_gradient_color()
 

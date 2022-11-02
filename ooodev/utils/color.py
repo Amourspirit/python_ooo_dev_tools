@@ -210,6 +210,42 @@ class CommonColor:
     # other
     PALE_BLUE = Color(0xD6EBFF)
 
+    @classmethod
+    def from_str(cls, str_color: str) -> Color:
+        """
+        Convert string value to a Color value
+
+        ``str_color`` can be a hex value, a integer value as string or any named value in ``CommonColor``
+
+        ``str_color`` can contain single spaces or ``_`` or ``-``.
+        ``MEDIUM_SEA_GREEN``, ``MEDIUM-SEA-GREEN``, ``MEDIUM SEA GREEN``, ``medium sea green`` are
+        all eqivalent.
+
+        Args:
+            str_color (str): Value to convert. Case insensitive
+
+        Raises:
+            ValueError: If unable to convert.
+
+        Returns:
+            Color: Convert value as Color
+        """
+        if not str_color:
+            raise ValueError("str_color contains no value to convert to Color")
+        if str_color.isalnum():
+            try:
+                # try base 10
+                i = int(str_color)
+            except ValueError:
+                # try hex
+                i = int(str_color, 16)
+            return Color(abs(i))
+        c_str = str_color.replace("-", "_").replace(" ", "_").upper()
+        try:
+            return Color(int(getattr(cls, c_str)))
+        except AttributeError:
+            raise ValueError("str_color is not a valid color")
+
 
 class RGB(NamedTuple):
     red: int
