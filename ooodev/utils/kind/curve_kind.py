@@ -1,4 +1,5 @@
 from enum import Enum
+from . import kind_helper
 
 
 class CurveKind(Enum):
@@ -35,7 +36,7 @@ class CurveKind(Enum):
         self.curve = curve
         self.label = label
         self.ns_regression_curve = ns
-    
+
     def to_namespace(self) -> str:
         """
         Gets the full UNO namespace value of CurveKind instance.
@@ -44,3 +45,22 @@ class CurveKind(Enum):
             str: String namespace such as ``com.sun.star.chart2.LinearRegressionCurve``
         """
         return f"com.sun.star.chart2.{self.ns_regression_curve}"
+
+    @staticmethod
+    def from_str(s: str) -> "CurveKind":
+        """
+        Gets an ``CurveKind`` instance from string.
+
+        Args:
+            s (str): String that represents the name of an enum Name.
+                ``s`` is case insensitive and can be ``CamelCase``, ``pascal_case`` , ``snake_case``,
+                ``hypen-case``, ``normal case``.
+
+        Raises:
+            ValueError: If input string is empty.
+            AttributeError: If unable to get ``CurveKind`` instance.
+
+        Returns:
+            CurveKind: Enum instance.
+        """
+        return kind_helper.enum_from_string(s, CurveKind)

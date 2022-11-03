@@ -34,6 +34,14 @@ def test_is_iterable(arg: object, excluded_types: Iterable[type], expected: bool
         ("red_green_color", "red_green_color"),
         ("", ""),
         ("Red", "red"),
+        ("Red0Green", "red_0_green"),
+        ("2500RedGreen", "2500_red_green"),
+        ("  2500RedGreen  ", "2500_red_green"),
+        ("RedGreen44822 ", "red_green_44822"),
+        ("Red0green", "red_0_green"),
+        ("Red0green1", "red_0_green_1"),
+        ("12Red0green1", "12_red_0_green_1"),
+        ("18Red22green100", "18_red_22_green_100"),
     ),
 )
 def test_to_snake(s: str, expected: str) -> None:
@@ -52,6 +60,7 @@ def test_to_snake(s: str, expected: str) -> None:
         ("red_green_color", "RED_GREEN_COLOR"),
         ("", ""),
         ("Red", "RED"),
+        ("18Red22green100", "18_RED_22_GREEN_100"),
     ),
 )
 def test_to_snake_upper(s: str, expected: str) -> None:
