@@ -1,8 +1,11 @@
 # coding: utf-8
 """General Utilities"""
 from __future__ import annotations
+import re
 from typing import Iterable, Iterator, NamedTuple, Any
 from inspect import isclass
+
+_REG_TO_SNAKE = re.compile(r"(?<!^)(?=[A-Z])")
 
 
 class ArgsHelper:
@@ -105,3 +108,98 @@ class Util:
         if isclass(arg) and issubclass(arg, ex_types):
             return True
         return arg in ex_types
+
+    @staticmethod
+    def to_camel_case(s: str) -> str:
+        """
+        Converts string to ``CamelCase``
+
+        Args:
+            s (str): string to convert such as ``snake_case_word`` or ``pascalCaseWord``
+
+        Returns:
+            str: string converted to ``CamelCaseWord``
+        """
+        if not s:
+            return ""
+        result = s
+        if "_" in s:
+            result = "".join(word.title() for word in s.split("_"))
+            return result
+        # convert to CamelCase if pascalCase was passed in.
+        result = result[:1].upper() + result[1:]
+        return result
+
+    @classmethod
+    def to_pascal_case(cls, s: str) -> str:
+        """
+        Converts string to ``pascalCase``
+
+        Args:
+            s (str): string to convert such as ``snake_case_word`` or  ``CamelCaseWord``
+
+        Returns:
+            str: string converted to ``pascalCaseWord``
+        """
+        result = cls.to_camel_case(s)
+        if result:
+            result = result[:1].lower() + result[1:]
+        return result
+
+    @staticmethod
+    def to_snake_case(s: str) -> str:
+        """
+        Convert string to ``snake_case``
+
+        Args:
+            s (str): string to convert such as ``pascalCaseWord`` or  ``CamelCaseWord``
+
+        Returns:
+            str: string converted to ``snake_case_word``
+        """
+        if not s:
+            return ""
+        result = _REG_TO_SNAKE.sub("_", s).lower()
+        return result
+
+    @classmethod
+    def to_snake_case_upper(cls, s: str) -> str:
+        """
+        Convert string to ``SNAKE_CASE``
+
+        Args:
+            s (str): string to convert such as ``snake_case_word`` or ``pascalCaseWord`` or  ``CamelCaseWord``
+
+        Returns:
+            str: string converted to ``SNAKE_CASE_WORD``
+        """
+        result = cls.to_snake_case(s)
+        if not s:
+            return ""
+        return result.upper()
+
+    @staticmethod
+    def to_single_space(s: str, strip=True) -> str:
+        """
+        Gets a string with multiple spaces converted to single spaces
+
+        Args:
+            s (str): String
+            strip (bool, optional): If ``True`` then whitespace is stripped from start and end or string. Defalult ``True``.
+
+        Returns:
+            str: String with extra spaces removed.
+
+        Example:
+            ..code-block:: python
+
+                >>> s = ' The     quick brown    fox'
+                >>> print(Util.to_single_space(s))
+                'The quick brown fox'
+        """
+        if not s:
+            return ""
+        result = re.sub(" +", " ", s)
+        if strip:
+            return result.strip()
+        return result
