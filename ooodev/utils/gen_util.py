@@ -5,7 +5,11 @@ import re
 from typing import Iterable, Iterator, NamedTuple, Any
 from inspect import isclass
 
-_REG_TO_SNAKE = re.compile(r"(?<!^)(?=[A-Z])")
+# match:
+#   Any uppercase character that is not at the start of a line
+#   Any Number that is preceeded by a Upper or Lower case character
+_REG_TO_SNAKE = re.compile(r"(?<!^)(?=[A-Z])|(?<=[A-zA-Z])(?=[0-9])")  # re.compile(r"(?<!^)(?=[A-Z])")
+_REG_LETTER_AFTER_NUMBER = re.compile(r"(?<=\d)(?=[a-zA-Z])")
 
 
 class ArgsHelper:
@@ -120,6 +124,7 @@ class Util:
         Returns:
             str: string converted to ``CamelCaseWord``
         """
+        s = s.strip()
         if not s:
             return ""
         result = s
@@ -157,10 +162,12 @@ class Util:
         Returns:
             str: string converted to ``snake_case_word``
         """
+        s = s.strip()
         if not s:
             return ""
-        result = _REG_TO_SNAKE.sub("_", s).lower()
-        return result
+        result = _REG_TO_SNAKE.sub("_", s)
+        result = _REG_LETTER_AFTER_NUMBER.sub("_", result)
+        return result.lower()
 
     @classmethod
     def to_snake_case_upper(cls, s: str) -> str:
@@ -191,7 +198,7 @@ class Util:
             str: String with extra spaces removed.
 
         Example:
-            ..code-block:: python
+            .. code-block:: python
 
                 >>> s = ' The     quick brown    fox'
                 >>> print(Util.to_single_space(s))

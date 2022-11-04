@@ -3145,6 +3145,7 @@ class Draw:
         Returns:
             None:
         """
+        # shape is also com.sun.star.drawing.FillProperties service
         try:
             props = mLo.Lo.qi(XPropertySet, shape, True)
             if is_dashed:
@@ -3238,6 +3239,7 @@ class Draw:
         See Also:
             :py:meth:`~.Draw.set_gradient_color`
         """
+        # shape is also com.sun.star.drawing.FillProperties service
         mProps.Props.set(shape, FillStyle=FillStyle.GRADIENT, FillGradient=grad)
 
     # region set_gradient_color()
@@ -3327,10 +3329,11 @@ class Draw:
 
             The Easiest way to get the colors is to open Draw and see what gradient color names are available
             on your system.
-        
+
         See Also:
             :py:meth:`~.Draw.set_gradient_properties`
         """
+        # shape is also com.sun.star.drawing.FillProperties service
         ordered_keys = (1, 2, 3, 4)
         kargs_len = len(kwargs)
         count = len(args) + kargs_len
@@ -3398,6 +3401,7 @@ class Draw:
             The Easiest way to get the colors is to open Draw and see what gradient color names are available
             on your system.
         """
+        # shape is also com.sun.star.drawing.FillProperties service
         try:
             props = mLo.Lo.qi(XPropertySet, shape, True)
             props.setPropertyValue("FillStyle", FillStyle.HATCH)
@@ -3431,6 +3435,7 @@ class Draw:
             The Easiest way to get the colors is to open Draw and see what bitmap color names are available
             on your system.
         """
+        # shape is also com.sun.star.drawing.FillProperties service
         props = mLo.Lo.qi(XPropertySet, shape, True)
         try:
             props.setPropertyValue("FillStyle", FillStyle.BITMAP)
@@ -3455,6 +3460,7 @@ class Draw:
         Returns:
             None:
         """
+        # shape is also com.sun.star.drawing.FillProperties service
         try:
             props = mLo.Lo.qi(XPropertySet, shape, True)
             props.setPropertyValue("FillStyle", FillStyle.BITMAP)

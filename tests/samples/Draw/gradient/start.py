@@ -1,8 +1,10 @@
 from __future__ import annotations
 import sys
 from pathlib import Path
+from ooodev.office.draw import DrawingHatchingKind, DrawingBitmapKind, DrawingGradientKind
 from draw_gradient import DrawGradient, GradientKind
 from ooodev.utils.file_io import FileIO
+from ooodev.utils.color import CommonColor
 import argparse
 
 
@@ -11,10 +13,43 @@ def args_add(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "-k",
         "--kind",
-        const="fill",
+        const="hatch",
         nargs="?",
         dest="kind",
         choices=[e.value for e in GradientKind],
+        help="Kind of gradient to display (default: %(default)s)",
+    )
+    parser.add_argument(
+        # by add name as lower and setting type to type=str.lower
+        # the user can input upper or lower and it will work fine.
+        # note that type=str.lower has no brackets.
+        "--hatch-kind",
+        default="green_30_degrees",
+        nargs="?",
+        dest="hatch_kind",
+        type=str.lower,
+        choices=[e.name.lower() for e in DrawingHatchingKind],
+        help="Kind of hatch gradient to display (default: %(default)s)",
+    )
+    parser.add_argument(
+        # by add name as lower and setting type to type=str.lower
+        # the user can input upper or lower and it will work fine.
+        # note that type=str.lower has no brackets.
+        "--bitmap-kind",
+        default="floral",
+        nargs="?",
+        dest="bitmap_kind",
+        type=str.lower,
+        choices=[e.name.lower() for e in DrawingBitmapKind],
+        help="Kind of bitmap gradient to display (default: %(default)s)",
+    )
+    parser.add_argument(
+        "--gradient-kind",
+        default="neon_light",
+        nargs="?",
+        dest="gradient_kind",
+        type=str.lower,
+        choices=[e.name.lower() for e in DrawingGradientKind],
         help="Kind of gradient to display (default: %(default)s)",
     )
     parser.add_argument(
@@ -71,13 +106,6 @@ def args_add(parser: argparse.ArgumentParser) -> None:
         required=False,
         help="Optional - angle of gradient to display",
     )
-    parser.add_argument(
-        "-n",
-        "--gradient-name",
-        dest="gradient_name",
-        required=False,
-        help="Optional - Name of gradient to display",
-    )
 
 
 # region main()
@@ -113,19 +141,17 @@ def main() -> int:
     if args.y:
         cv.y = args.y
     if args.start_color:
-        try:
-            cv.start_color = int(args.start_color)
-        except ValueError:
-            cv.start_color = int(args.start_color, 16)
+        cv.start_color = CommonColor.from_str(args.start_color)
     if args.end_color:
-        try:
-            cv.end_color = int(args.end_color)
-        except ValueError:
-            cv.end_color = int(args.end_color, 16)
+        cv.end_color = CommonColor.from_str(args.end_color)
     if args.angle:
         cv.angle = args.angle
-    if args.gradient_name:
-        cv.name_gradient = args.gradient_name
+    if args.gradient_kind:
+        cv.name_gradient = DrawingGradientKind.from_str(args.gradient_kind)
+    if args.hatch_kind:
+        cv.hatch_gradient = DrawingHatchingKind.from_str(args.hatch_kind)
+    if args.bitmap_kind:
+        cv.bitmap_gradient = DrawingBitmapKind.from_str(args.bitmap_kind)
     cv.main()
     return 0
 
