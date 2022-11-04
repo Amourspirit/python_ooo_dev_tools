@@ -426,7 +426,7 @@ A visit to the online documentation for EllipseShape_ reveals an inheritance dia
 ..
     figure 6
 
-.. cssclass:: diagram invert
+.. cssclass:: diagram
 
     .. _ch13fig_ellipse_shape_inherit_diag:
     .. figure:: https://user-images.githubusercontent.com/4193389/199569929-c6490409-98af-448a-9f69-8996aa282c43.png

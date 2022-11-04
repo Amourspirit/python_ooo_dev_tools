@@ -21,10 +21,10 @@ Color names are flexible but must be an integer value representing a color or a 
 
 ### Common
 
-- `-x`: Rectangle X position
-- `-Y`: Rectangle Y position
-- `-w`: Rectangle Width
-- `-h`: Rectangle Height
+- `-x` `--x-pos`: Optional - Rectangle X position
+- `-Y` `--y-pos`: Optional - Rectangle Y position
+- `-w` `--width`: Optional - Rectangle Width
+- `-t` `--height`: Optional - Rectangle Height
 
 ### `--Kind` fill
 
@@ -45,15 +45,15 @@ Creates *gradient color Custom props*
 - `--gradient-kind`: Optional - Kind of Draw gradient. Must be one of the choices.
 - `-a` `--angle`: Optional - Angle of the gradient.
 - `-s` `--start-color`: Optional - Start color of the fill.
-- `e` `--end-color`: Optional - End color of fill.
+- `-e` `--end-color`: Optional - End color of fill.
 
 ### `--Kind` gradient
 
 Creates *gradient Common color*
 
-- `-a` `--angle`: Angle of the gradient.
-- `-s` `--start-color`: Start color of the fill.
-- `e` `--end-color`: End color of fill.
+- `-a` `--angle`: Optional - Angle of the gradient.
+- `-s` `--start-color`: Optional - Start color of the fill.
+- `-e` `--end-color`: Optional - End color of fill.
 
 
 ### `--Kind` hatch
