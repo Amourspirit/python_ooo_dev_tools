@@ -60,6 +60,11 @@ def enum_from_string(s: str, ec: Enum) -> Enum:
     if not s:
         raise ValueError("from_str arg s cannot be an empty value")
 
+    try:
+        return getattr(ec, s)
+    except AttributeError:
+        pass
+
     e_str = mGenUtil.Util.to_single_space(s).replace("-", "_").replace(" ", "_")
     if "_" in e_str:
         e_str = e_str.upper()

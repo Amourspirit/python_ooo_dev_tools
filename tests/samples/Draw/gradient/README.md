@@ -81,8 +81,6 @@ Creates *bitmap file*
 - `python -m start -k gradient -s dark-red -e lime-green`
 - `python -m start -k name_props --gradient-kind sunshine -a 88 -s "dark violet" -e light_goldenrod_yellow`
 
-[CommonColor]: https://python-ooo-dev-tools.readthedocs.io/en/latest/src/utils/color.html#ooodev.utils.color.CommonColor
-
 ## Automate
 
 A message box is display once the document has been created asking if you want to close the document.
@@ -106,3 +104,5 @@ python ./tests/samples/Draw/gradient/start.py -h
 ```ps
 python .\tests\samples\Draw\gradient\start.py -h
 ```
+
+[CommonColor]: https://python-ooo-dev-tools.readthedocs.io/en/latest/src/utils/color.html#ooodev.utils.color.CommonColor
