@@ -1934,26 +1934,26 @@ class Lo(metaclass=StaticProperty):
     # region dispatch_cmd()
     @overload
     @staticmethod
-    def dispatch_cmd(cmd: str) -> bool:
+    def dispatch_cmd(cmd: str) -> Any:
         ...
 
     @overload
     @staticmethod
-    def dispatch_cmd(cmd: str, props: Iterable[PropertyValue]) -> bool:
+    def dispatch_cmd(cmd: str, props: Iterable[PropertyValue]) -> Any:
         ...
 
     @overload
     @staticmethod
-    def dispatch_cmd(cmd: str, props: Iterable[PropertyValue], frame: XFrame) -> bool:
+    def dispatch_cmd(cmd: str, props: Iterable[PropertyValue], frame: XFrame) -> Any:
         ...
 
     @overload
     @staticmethod
-    def dispatch_cmd(cmd: str, *, frame: XFrame) -> bool:
+    def dispatch_cmd(cmd: str, *, frame: XFrame) -> Any:
         ...
 
     @classmethod
-    def dispatch_cmd(cls, cmd: str, props: Iterable[PropertyValue] = None, frame: XFrame = None) -> bool:
+    def dispatch_cmd(cls, cmd: str, props: Iterable[PropertyValue] = None, frame: XFrame = None) -> Any:
         """
         Dispatches a LibreOffice command
 
@@ -1963,40 +1963,46 @@ class Lo(metaclass=StaticProperty):
             frame (XFrame, optonal): Frame to dispatch to.
 
         Raises:
-            MissingInterfaceError: If unable to obtain XDispatchHelper instance.
-            Exception: If error occurs dispatching command
+            CancelEventError: If Dispatching is canceled via event.
+            DispatchError: If any other error occurs.
 
         Returns:
-            bool: True on success.
+            Any: A possible result of the executed internal dispatch. The information behind this any depends on the dispatch!
 
-         :events:
+        :events:
             .. cssclass:: lo_event
 
                 - :py:attr:`~.events.lo_named_event.LoNamedEvent.DISPATCHING` :eventref:`src-docs-event-cancel`
                 - :py:attr:`~.events.lo_named_event.LoNamedEvent.DISPATCHED` :eventref:`src-docs-event`
 
+        Note:
+            There are many dispatch command constants that can be found in :ref:`utils_dispatch` Namespace
+
         See Also:
-            `LibreOffice Dispatch Commands <https://wiki.documentfoundation.org/Development/DispatchCommands>`_
+            - :ref:`ch04_dispatching`
+            - `LibreOffice Dispatch Commands <https://wiki.documentfoundation.org/Development/DispatchCommands>`_
         """
-        cargs = DispatchCancelArgs(Lo.dispatch_cmd.__qualname__, cmd)
-        _Events().trigger(LoNamedEvent.DISPATCHING, cargs)
-        if cargs.cancel:
-            return False
-
-        if props is None:
-            props = ()
-        if frame is None:
-            frame = cls._xdesktop.getCurrentFrame()
-
-        helper = cls.create_instance_mcf(XDispatchHelper, "com.sun.star.frame.DispatchHelper")
-        if helper is None:
-            raise mEx.MissingInterfaceError(XDispatchHelper, f"Could not create dispatch helper for command {cmd}")
         try:
-            helper.executeDispatch(frame, f".uno:{cmd}", "", 0, props)
+            cargs = DispatchCancelArgs(Lo.dispatch_cmd.__qualname__, cmd)
+            _Events().trigger(LoNamedEvent.DISPATCHING, cargs)
+            if cargs.cancel:
+                raise mEx.CancelEventError(cargs, f'Dispatch Command "{cmd}" has been canceled')
+
+            if props is None:
+                props = ()
+            if frame is None:
+                frame = cls._xdesktop.getCurrentFrame()
+
+            helper = cls.create_instance_mcf(XDispatchHelper, "com.sun.star.frame.DispatchHelper")
+            if helper is None:
+                raise mEx.MissingInterfaceError(XDispatchHelper, f"Could not create dispatch helper for command {cmd}")
+            result = helper.executeDispatch(frame, f".uno:{cmd}", "", 0, props)
             _Events().trigger(LoNamedEvent.DISPATCHED, DispatchArgs.from_args(cargs))
-            return True
+            return result
+        except mEx.CancelEventError:
+            raise
         except Exception as e:
-            raise Exception(f"Could not dispatch '{cmd}'") from e
+            raise mEx.DispatchError(f'Error dispatching "{cmd}"') from e
 
     # endregion dispatch_cmd()
 

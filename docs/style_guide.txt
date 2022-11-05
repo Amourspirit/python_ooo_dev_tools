@@ -47,6 +47,17 @@ Headings:
     “, for paragraphs
 
 
+List
+    By default rdt-theme displays un-ordered list without any list type formating.
+    To create an un-ordered list with bullets us the ul-list class from readthedocs_custom.css
+    
+        .. cssclass:: ul-list
+
+            * simple shapes: line, ellipse, rectangle, text;
+            * shape fills: solid, gradients, hatching, bitmaps;
+            * an OLE shape (a math formulae);
+            * polygons, multiple lines, partial ellipses.
+
 Image Classes
     screen_shot: any still image that is a screen shot type image
     invert: any image that can can have color inverted such as jpeg, png for dark theme.
@@ -111,8 +122,44 @@ TODO
 
         .. todo::
 
-            | Chapte 5, Add link to chapters 7
-            | Chapte 5, Add link to chapters 8
+            | Chapter 5, Add link to chapters 7
+            | Chapter 5, Add link to chapters 8
 
     When 'todo_include_todos = True' is set in conf.py the main page will list all todo's for across a documents.
     Also each document that contains a todo will disply it on its doc page.
+
+Comments
+    Adding comments to doc is straight forward.
+    In this example adding a comment for a diagram.
+
+        ..
+            Figure 3
+
+        .. cssclass:: diagram invert
+
+            .. _ch03fig_peek_services_interface:
+            .. figure:: https://user-images.githubusercontent.com/4193389/179381798-efcb4f4a-a877-469f-9c6e-033e9cf7fe6b.png
+                :alt: Methods to Investigate the Service and Interface Relationships and Hierarchies
+                :figclass: align-center
+
+                :Methods to Investigate the Service and Interface Relationships and Hierarchies.
+
+
+Linking to Source code:
+    Two extensions are used here. 
+        sphinx_design: https://sphinx-design.readthedocs.io/en/rtd-theme/get_started.html
+            Allows setting icon :octicon:`code-square;1em;sd-text-info`
+        sphinx.ext.extlinks: https://documentation.help/Sphinx/extlinks.html, see setting for extlinks in conf.py
+            Allows for custom roles to be set up the make for simple source code link injection.
+
+    Linking source code standart for directives such as .. seealso
+
+    .. seealso::
+
+        .. cssclass:: src-link
+
+            - :odev_src_draw_meth:`get_slide`
+            - :odev_src_draw_meth:`get_slides`
+            - :odev_src_draw_meth:`get_slides_count`
+    
+    To see what role are available or to add new rows see extlinks in conf.py

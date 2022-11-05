@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "ooo-dev-tools"
-version = "0.5.2"
+version = "0.6.0"
 description = "LibreOffice Developer Tools"
 license = "Apache Software License"
 readme = "README.rst"
@@ -61,6 +61,7 @@ sphinx-tabs = "^3.4.1"
 sphinx-rtd-dark-mode = "^1.2.4"
 sphinx-autodoc-typehints = "^1.19.4"
 sphinxcontrib-spelling = "^7.6.2"
+sphinx_design = "^0.3.0"
 
 [tool.pytest.ini_options]
 testpaths = [

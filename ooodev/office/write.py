@@ -82,17 +82,16 @@ if TYPE_CHECKING:
     from com.sun.star.linguistic2 import XThesaurus
     from com.sun.star.text import XTextCursor
 
-from ooo.dyn.beans.property_value import PropertyValue
 from ooo.dyn.awt.font_slant import FontSlant
 from ooo.dyn.awt.size import Size  # struct
-from ooo.dyn.linguistic2.dictionary_type import DictionaryType as OooDictionaryType
+from ooo.dyn.beans.property_value import PropertyValue
+from ooo.dyn.linguistic2.dictionary_type import DictionaryType as DictionaryType
 from ooo.dyn.style.break_type import BreakType
-from ooo.dyn.style.paragraph_adjust import ParagraphAdjust
-from ooo.dyn.style.paragraph_adjust import ParagraphAdjust
-from ooo.dyn.text.control_character import ControlCharacterEnum
+from ooo.dyn.style.paragraph_adjust import ParagraphAdjust as ParagraphAdjust
+from ooo.dyn.text.control_character import ControlCharacterEnum as ControlCharacterEnum
 from ooo.dyn.text.page_number_type import PageNumberType
 from ooo.dyn.text.text_content_anchor_type import TextContentAnchorType
-from ooo.dyn.view.paper_format import PaperFormat as OooPaperFormat
+from ooo.dyn.view.paper_format import PaperFormat as PaperFormat
 
 # endregion Imports
 
@@ -175,17 +174,6 @@ class Write(mSel.Selection):
         # endregion get_cursor()
 
     # endregion Selection Overloads
-
-    ControlCharacter = ControlCharacterEnum  # UnoControlCharacter
-    # region -------------- Enums --------------------------------------
-
-    DictionaryType = OooDictionaryType
-
-    PaperFormat = OooPaperFormat
-
-    ParagraphAdjust = ParagraphAdjust
-
-    # endregion ----------- Enums --------------------------------------
 
     # region ------------- doc / open / close /create/ etc -------------
     @classmethod
@@ -698,13 +686,13 @@ class Write(mSel.Selection):
 
     @overload
     @classmethod
-    def append(cls, cursor: XTextCursor, ctl_char: ControlCharacter) -> None:
+    def append(cls, cursor: XTextCursor, ctl_char: ControlCharacterEnum) -> None:
         """
         Appents a control character (like a paragraph break or a hard space) into the text.
 
         Args:
             cursor (XTextCursor): Text Cursor
-            ctl_char (Write.ControlCharacter): Control Char
+            ctl_char (ControlCharacterEnum): Control Char
         """
         ...
 
@@ -782,7 +770,7 @@ class Write(mSel.Selection):
         """
         if text is not None:
             cls._append_text(cursor=cursor, text=text)
-        cls._append_ctl_char(cursor=cursor, ctl_char=Write.ControlCharacter.LINE_BREAK)
+        cls._append_ctl_char(cursor=cursor, ctl_char=ControlCharacterEnum.LINE_BREAK)
 
     @classmethod
     def append_date_time(cls, cursor: XTextCursor) -> None:
@@ -816,7 +804,7 @@ class Write(mSel.Selection):
             text (str): Text to append
         """
         cls._append_text(cursor=cursor, text=text)
-        cls._append_ctl_char(cursor=cursor, ctl_char=Write.ControlCharacter.PARAGRAPH_BREAK)
+        cls._append_ctl_char(cursor=cursor, ctl_char=ControlCharacterEnum.PARAGRAPH_BREAK)
 
     @classmethod
     def end_line(cls, cursor: XTextCursor) -> None:
@@ -826,7 +814,7 @@ class Write(mSel.Selection):
         Args:
             cursor (XTextCursor): Text Cursor
         """
-        cls._append_ctl_char(cursor=cursor, ctl_char=Write.ControlCharacter.LINE_BREAK)
+        cls._append_ctl_char(cursor=cursor, ctl_char=ControlCharacterEnum.LINE_BREAK)
 
     @classmethod
     def end_paragraph(cls, cursor: XTextCursor) -> None:
@@ -836,7 +824,7 @@ class Write(mSel.Selection):
         Args:
             cursor (XTextCursor): Text Cursor
         """
-        cls._append_ctl_char(cursor=cursor, ctl_char=Write.ControlCharacter.PARAGRAPH_BREAK)
+        cls._append_ctl_char(cursor=cursor, ctl_char=ControlCharacterEnum.PARAGRAPH_BREAK)
 
     @classmethod
     def page_break(cls, cursor: XTextCursor) -> None:
@@ -872,7 +860,7 @@ class Write(mSel.Selection):
         """
         xtext = cursor.getText()
         xtext.insertString(cursor, para, False)
-        xtext.insertControlCharacter(cursor, Write.ControlCharacter.PARAGRAPH_BREAK, False)
+        xtext.insertControlCharacter(cursor, ControlCharacterEnum.PARAGRAPH_BREAK, False)
         cls.style_prev_paragraph(cursor, para_style)
 
     # endregion ---------- text writing methods ------------------------
@@ -901,7 +889,7 @@ class Write(mSel.Selection):
         # To try and handle that scenario I would change my regular expression to
         # read: '[.!?][\s]{1,2}(?=[A-Z])'
         #   regular expressions are easiest (and fastest)
-        sentence_enders = re.compile("[.!?][\s]{1,2}")
+        sentence_enders = re.compile(r"[.!?][\s]{1,2}")
         sentence_list = sentence_enders.split(paragraph)
         return sentence_list
 
@@ -1207,13 +1195,13 @@ class Write(mSel.Selection):
             raise Exception("Could not access standard page style dimensions") from e
 
     @staticmethod
-    def set_page_format(text_doc: XTextDocument, paper_format: Write.PaperFormat) -> bool:
+    def set_page_format(text_doc: XTextDocument, paper_format: PaperFormat) -> bool:
         """
         Set Page Format
-        paper_format (:py:attr:`.Write.PaperFormat`): Paper Format.
 
         Args:
             text_doc (XTextDocument): Text Document
+            paper_format (PaperFormat): Paper Format.
 
         Raises:
             MissingInterfaceError: If text_doc does not implement XPrintable interface
@@ -1261,7 +1249,7 @@ class Write(mSel.Selection):
         Attention:
             :py:meth:`~.Write.set_page_format` method is called along with any of its events.
         """
-        return cls.set_page_format(text_doc=text_doc, paper_format=Write.PaperFormat.A4)
+        return cls.set_page_format(text_doc=text_doc, paper_format=PaperFormat.A4)
 
     # endregion ---------- style methods -------------------------------
 
@@ -2444,7 +2432,7 @@ class Write(mSel.Selection):
         print()
 
     @staticmethod
-    def get_dict_type(dt: Write.DictionaryType) -> str:
+    def get_dict_type(dt: DictionaryType) -> str:
         """
         Gets dictionary type
 
@@ -2454,11 +2442,11 @@ class Write(mSel.Selection):
         Returns:
             str: positive, negative, mixed, or ?? if unknown
         """
-        if dt == Write.DictionaryType.POSITIVE:
+        if dt == DictionaryType.POSITIVE:
             return "positive"
-        if dt == Write.DictionaryType.NEGATIVE:
+        if dt == DictionaryType.NEGATIVE:
             return "negative"
-        if dt == Write.DictionaryType.MIXED:
+        if dt == DictionaryType.MIXED:
             return "mixed"
         return "??"
 
@@ -2564,7 +2552,7 @@ class Write(mSel.Selection):
             int: Number of words spelled incorrectly
         """
         # https://tinyurl.com/y6o8doh2
-        words = re.split("\W+", sent)
+        words = re.split(r"\W+", sent)
         count = 0
         for word in words:
             is_correct = cls.spell_word(word=word, speller=speller, loc=loc)

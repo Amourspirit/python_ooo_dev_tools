@@ -2,7 +2,6 @@
 
 ![chart_web_filled](https://user-images.githubusercontent.com/4193389/198901667-d7d1da10-4436-4cfc-adce-2e82d1f6692b.png)
 
-
 Demonstrates loading a spread sheet into Calc and dynamically inserting charts using the `Chart` class.
 There are a total of 10 different charts that can be dynamically created by this demo.
 

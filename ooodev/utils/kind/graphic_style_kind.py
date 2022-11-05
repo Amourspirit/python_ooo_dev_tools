@@ -1,4 +1,5 @@
 from enum import Enum
+from . import kind_helper
 
 # these are helper lookups
 # Example Usage:
@@ -45,3 +46,22 @@ class GraphicStyleKind(str, Enum):
 
     def __str__(self) -> str:
         return self.value
+
+    @staticmethod
+    def from_str(s: str) -> "GraphicStyleKind":
+        """
+        Gets an ``GraphicStyleKind`` instance from string.
+
+        Args:
+            s (str): String that represents the name of an enum Name.
+                ``s`` is case insensitive and can be ``CamelCase``, ``pascal_case`` , ``snake_case``,
+                ``hypen-case``, ``normal case``.
+
+        Raises:
+            ValueError: If input string is empty.
+            AttributeError: If unable to get ``GraphicStyleKind`` instance.
+
+        Returns:
+            GraphicStyleKind: Enum instance.
+        """
+        return kind_helper.enum_from_string(s, GraphicStyleKind)

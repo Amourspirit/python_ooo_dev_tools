@@ -1015,58 +1015,30 @@ class GUI:
     # endregion ------------- min/max ----------------------------------
 
     # region ---------------- zooming ----------------------------------
-
+    @overload
     @classmethod
     def zoom(cls, view: GUI.ZoomEnum) -> None:
+        ...
+
+    @overload
+    @classmethod
+    def zoom(cls, view: GUI.ZoomEnum, value: int) -> None:
+        ...
+
+    @overload
+    @classmethod
+    def zoom(cls, *, value: int = 0) -> None:
+        ...
+
+    @classmethod
+    def zoom(cls, view: GUI.ZoomEnum = ZoomEnum.BY_VALUE, value: int = 0) -> None:
         """
         Sets document zoom level.
 
         Args:
             view (ZoomEnum): Zoom value
-        """
-        if view == cls.ZoomEnum.OPTIMAL:
-            mLo.Lo.dispatch_cmd("ZoomOptimal")
-        elif view == cls.ZoomEnum.PAGE_WIDTH:
-            mLo.Lo.dispatch_cmd("ZoomPageWidth")
-        elif view == cls.ZoomEnum.ENTIRE_PAGE:
-            mLo.Lo.dispatch_cmd("ZoomPage")
-        else:
-            mLo.Lo.print(f"Did not recognize zoom view: {view}; using optimal")
-            mLo.Lo.dispatch_cmd("ZoomOptimal")
-        mLo.Lo.delay(500)
-
-    @overload
-    @classmethod
-    def zoom_value(cls, value: int) -> None:
-        """
-        Sets document custom zoom.
-
-        Args:
             value (int): The amount to zoom. :abbreviation:`eg:` 160 zooms 160%
-        """
-        ...
-
-    @overload
-    @classmethod
-    def zoom_value(cls, value: int, view: GUI.ZoomEnum) -> None:
-        """
-        Sets document custom zoom.
-
-        Args:
-            value (int): The amount to zoom. :abbreviation:`eg:` 160 zooms 160%
-                value has a min value of 1 and a max value of 3000. If value is out of range then 100% is used.
-            view (ZoomEnum): Type of zoom. If ``view`` is not ``ZoomEnum.BY_VALUE`` then ``value`` is ignored. Defaults to ``ZoomEnum.BY_VALUE``.
-        """
-        ...
-
-    @classmethod
-    def zoom_value(cls, value: int, view: GUI.ZoomEnum = ZoomEnum.BY_VALUE) -> None:
-        """
-        Sets document custom zoom.
-
-        Args:
-            value (int): The amount to zoom. :abbreviation:`eg:` 160 zooms 160%
-            view (ZoomEnum): Type of zoom. If ``view`` is not ``ZoomEnum.BY_VALUE`` then ``value`` is ignored. Defaults to ``ZoomEnum.BY_VALUE``.
+                ``value`` has a min value of 1 and a max value of 3000. If value is out of range then 100% is used.
         """
         if view == GUI.ZoomEnum.OPTIMAL:
             mLo.Lo.dispatch_cmd("ZoomOptimal")
@@ -1096,6 +1068,41 @@ class GUI:
         # https://wiki.openoffice.org/wiki/Documentation/DevGuide/Drawings/Zooming
 
         mLo.Lo.delay(500)
+
+    @overload
+    @classmethod
+    def zoom_value(cls, value: int) -> None:
+        """
+        Sets document custom zoom.
+
+        Args:
+            value (int): The amount to zoom. :abbreviation:`eg:` 160 zooms 160%
+        """
+        ...
+
+    @overload
+    @classmethod
+    def zoom_value(cls, value: int, view: GUI.ZoomEnum) -> None:
+        """
+        Sets document custom zoom.
+
+        Args:
+            value (int): The amount to zoom. :abbreviation:`eg:` 160 zooms 160%
+                ``value`` has a min value of 1 and a max value of 3000. If value is out of range then 100% is used.
+            view (ZoomEnum): Type of zoom. If ``view`` is not ``ZoomEnum.BY_VALUE`` then ``value`` is ignored. Defaults to ``ZoomEnum.BY_VALUE``.
+        """
+        ...
+
+    @classmethod
+    def zoom_value(cls, value: int, view: GUI.ZoomEnum = ZoomEnum.BY_VALUE) -> None:
+        """
+        Sets document custom zoom.
+
+        Args:
+            value (int): The amount to zoom. :abbreviation:`eg:` 160 zooms 160%
+            view (ZoomEnum): Type of zoom. If ``view`` is not ``ZoomEnum.BY_VALUE`` then ``value`` is ignored. Defaults to ``ZoomEnum.BY_VALUE``.
+        """
+        cls.zoom(view=view, value=value)
 
     # endregion ------------- zooming ----------------------------------
 
