@@ -2,6 +2,42 @@
 Version History
 ***************
 
+Version 0.6.0
+=============
+
+Breaking changes.
+
+``Write.ControlCharacter`` was an alias of ``ooo.dyn.text.control_character.ControlCharacterEnum``.
+Now ``ControlCharacterEnum`` must be used instead of ``Write.ControlCharacter``.
+``ControlCharacterEnum`` can be imported from ``Write``.
+:abbreviation:`e.g.` ``from ooodev.office.write import Write, ControlCharacterEnum``
+
+``Write.DictionaryType`` was an alias of ``ooo.dyn.linguistic2.dictionary_type.DictionaryType``.
+Now ``DictionaryType`` must be used instead of ``Write.DictionaryType``.
+``DictionaryType`` can be imported from ``Write``.
+:abbreviation:`e.g.` ``from ooodev.office.write import Write, DictionaryType``
+
+``Calc.CellFlags`` was an alias of ``ooo.dyn.sheet.cell_flags.CellFlagsEnum``.
+Now ``CellFlagsEnum`` must be used instead of ``Calc.CellFlags``.
+``CellFlagsEnum`` can be imported from ``Calc``.
+:abbreviation:`e.g.` ``from ooodev.office.calc import Calc, CellFlagsEnum``
+
+``Calc.GeneralFunction`` was an alias of ``ooo.dyn.sheet.general_function.GeneralFunction``.
+Now ``GeneralFunction`` must be used instead of ``Calc.GeneralFunction``.
+``GeneralFunction`` can be imported from ``Calc``.
+:abbreviation:`e.g.` ``from ooodev.office.calc import Calc, GeneralFunction``
+
+``Calc.SolverConstraintOperator`` was an alias of ``ooo.dyn.sheet.solver_constraint_operator.SolverConstraintOperator``.
+Now ``SolverConstraintOperator`` must be used instead of ``Calc.SolverConstraintOperator``.
+``SolverConstraintOperator`` can be imported from ``Calc``.
+:abbreviation:`e.g.` ``from ooodev.office.calc import Calc, SolverConstraintOperator``
+
+
+``Calc.FillDateMode`` was an alias of ``ooo.dyn.sheet.fill_date_mode.FillDateMode``.
+Now ``FillDateMode`` must be used instead of ``Calc.FillDateMode``.
+``FillDateMode`` can be imported from ``Calc``.
+:abbreviation:`e.g.` ``from ooodev.office.calc import Calc, FillDateMode``
+
 Version 0.5.3
 =============
 

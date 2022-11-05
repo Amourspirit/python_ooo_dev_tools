@@ -51,7 +51,6 @@ def test_from_str(input: str, expected: int) -> None:
     (
         "nan",
         "not a color",
-        "light  sea  green",
         "DUDE_NOT_HERE",
     ),
 )

@@ -5,7 +5,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
-from ooodev.office.calc import Calc
+from ooodev.office.calc import Calc, GeneralFunction
 
 from com.sun.star.sheet import CellFlags  # const
 from com.sun.star.sheet import XArrayFormulaRange
@@ -66,7 +66,7 @@ def do_cell_range(sheet: XSpreadsheet) -> None:
 
     # Sheet operation using the range of the crData
     sheet_op = Lo.qi(XSheetOperation, cr_data)
-    avg = sheet_op.computeFunction(Calc.GeneralFunction.AVERAGE)
+    avg = sheet_op.computeFunction(GeneralFunction.AVERAGE)
     assert avg == 5.2
 
     # Array formulas

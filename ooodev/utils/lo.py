@@ -1963,7 +1963,8 @@ class Lo(metaclass=StaticProperty):
             frame (XFrame, optonal): Frame to dispatch to.
 
         Raises:
-            DispatchError: If error occurs dispatching command
+            CancelEventError: If Dispatching is canceled via event.
+            DispatchError: If any other error occurs.
 
         Returns:
             Any: A possible result of the executed internal dispatch. The information behind this any depends on the dispatch!
@@ -1985,7 +1986,7 @@ class Lo(metaclass=StaticProperty):
             cargs = DispatchCancelArgs(Lo.dispatch_cmd.__qualname__, cmd)
             _Events().trigger(LoNamedEvent.DISPATCHING, cargs)
             if cargs.cancel:
-                raise mEx.CancelEventError(f'Dispatch Command "{cmd}" has been canceled')
+                raise mEx.CancelEventError(cargs, f'Dispatch Command "{cmd}" has been canceled')
 
             if props is None:
                 props = ()
@@ -1998,6 +1999,8 @@ class Lo(metaclass=StaticProperty):
             result = helper.executeDispatch(frame, f".uno:{cmd}", "", 0, props)
             _Events().trigger(LoNamedEvent.DISPATCHED, DispatchArgs.from_args(cargs))
             return result
+        except mEx.CancelEventError:
+            raise
         except Exception as e:
             raise mEx.DispatchError(f'Error dispatching "{cmd}"') from e
 

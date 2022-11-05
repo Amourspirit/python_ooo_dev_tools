@@ -1136,7 +1136,7 @@ def test_delete_cells_left(loader) -> None:
 
 def test_clear_cells(loader) -> None:
     from ooodev.utils.lo import Lo
-    from ooodev.office.calc import Calc
+    from ooodev.office.calc import Calc, CellFlagsEnum
     from ooodev.utils.gui import GUI
     from ooodev.events.lo_events import Events, is_meth_event
     from ooodev.events.calc_named_event import CalcNamedEvent
@@ -1149,14 +1149,14 @@ def test_clear_cells(loader) -> None:
     def on(source: Any, args: CellCancelArgs) -> None:
         nonlocal on_firing
         assert isinstance(args, CellCancelArgs)
-        assert isinstance(args.event_data["cell_flags"], Calc.CellFlags)
+        assert isinstance(args.event_data["cell_flags"], CellFlagsEnum)
         assert is_meth_event(source, Calc.clear_cells)
         on_firing = True
 
     def after(source: Any, args: CellArgs) -> None:
         nonlocal on_fired
         assert isinstance(args, CellArgs)
-        assert isinstance(args.event_data["cell_flags"], Calc.CellFlags)
+        assert isinstance(args.event_data["cell_flags"], CellFlagsEnum)
         assert is_meth_event(source, Calc.clear_cells)
         on_fired = True
 
@@ -1209,10 +1209,10 @@ def test_clear_cells(loader) -> None:
         cr_addr = Calc.get_address(cell_range=rng)
         if visible:
             GUI.set_visible(is_visible=visible, odoc=doc)
-        # clear_cells(cls, sheet: XSpreadsheet, cell_range: XCellRange, cell_flags: Calc.CellFlags)
+        # clear_cells(cls, sheet: XSpreadsheet, cell_range: XCellRange, cell_flags: CellFlagsEnum)
         Calc.set_array(values=vals, sheet=sheet, name=rng_name)  # or just "A3"
         Lo.delay(delay)
-        flags = Calc.CellFlags.VALUE | Calc.CellFlags.STRING
+        flags = CellFlagsEnum.VALUE | CellFlagsEnum.STRING
         Calc.clear_cells(sheet=sheet, range_name=rng_clear, cell_flags=flags)
         assert on_firing
         assert on_fired
@@ -1225,7 +1225,7 @@ def test_clear_cells(loader) -> None:
 
         Calc.set_array(values=vals, sheet=sheet, name=rng_name)  # or just "A3"
         Lo.delay(delay)
-        flags = Calc.CellFlags.VALUE | Calc.CellFlags.STRING
+        flags = CellFlagsEnum.VALUE | CellFlagsEnum.STRING
         Calc.clear_cells(sheet, rng_clear, flags)
         assert on_firing
         assert on_fired
@@ -1256,10 +1256,10 @@ def test_clear_cells(loader) -> None:
         check_data(data)
         Lo.delay(delay)
 
-        # clear_cells(cls, sheet: XSpreadsheet, cell_range: XCellRange, cell_flags: Calc.CellFlags)
+        # clear_cells(cls, sheet: XSpreadsheet, cell_range: XCellRange, cell_flags: CellFlagsEnum)
         Calc.set_array(values=vals, sheet=sheet, name=rng_name)  # or just "A3"
         Lo.delay(delay)
-        flags = Calc.CellFlags.VALUE | Calc.CellFlags.STRING
+        flags = CellFlagsEnum.VALUE | CellFlagsEnum.STRING
         Calc.clear_cells(sheet=sheet, cell_range=rng, cell_flags=flags)
         assert on_firing
         assert on_fired
@@ -1272,7 +1272,7 @@ def test_clear_cells(loader) -> None:
 
         Calc.set_array(values=vals, sheet=sheet, name=rng_name)  # or just "A3"
         Lo.delay(delay)
-        flags = Calc.CellFlags.VALUE | Calc.CellFlags.STRING
+        flags = CellFlagsEnum.VALUE | CellFlagsEnum.STRING
         Calc.clear_cells(sheet, rng, flags)
         assert on_firing
         assert on_fired
@@ -1308,10 +1308,10 @@ def test_clear_cells(loader) -> None:
         check_data(data)
         Lo.delay(delay)
 
-        # clear_cells(cls, sheet: XSpreadsheet, cr_addr: CellRangeAddress, cell_flags: Calc.CellFlags)
+        # clear_cells(cls, sheet: XSpreadsheet, cr_addr: CellRangeAddress, cell_flags: CellFlagsEnum)
         Calc.set_array(values=vals, sheet=sheet, name=rng_name)  # or just "A3"
         Lo.delay(delay)
-        flags = Calc.CellFlags.VALUE | Calc.CellFlags.STRING
+        flags = CellFlagsEnum.VALUE | CellFlagsEnum.STRING
         Calc.clear_cells(sheet=sheet, cr_addr=cr_addr, cell_flags=flags)
         assert on_firing
         assert on_fired
@@ -1324,7 +1324,7 @@ def test_clear_cells(loader) -> None:
 
         Calc.set_array(values=vals, sheet=sheet, name=rng_name)  # or just "A3"
         Lo.delay(delay)
-        flags = Calc.CellFlags.VALUE | Calc.CellFlags.STRING
+        flags = CellFlagsEnum.VALUE | CellFlagsEnum.STRING
         Calc.clear_cells(sheet, cr_addr, flags)
         assert on_firing
         assert on_fired
