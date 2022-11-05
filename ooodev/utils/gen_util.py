@@ -192,7 +192,7 @@ class Util:
 
         Args:
             s (str): String
-            strip (bool, optional): If ``True`` then whitespace is stripped from start and end or string. Defalult ``True``.
+            strip (bool, optional): If ``True`` then whitespace is stripped from start and end or string. Default ``True``.
 
         Returns:
             str: String with extra spaces removed.

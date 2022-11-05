@@ -8,7 +8,7 @@ Chapter 12. Examining a Draw/Impress Document
 
     Examining Slides/Pages; Page Layers; Styles
 
-This chapter describes the |slide_info|_ example or more specificly |slide_info_py|_, which shows the basics of how to open and display a Draw or Impress file.
+This chapter describes the |slide_info|_ example or more specifically |slide_info_py|_, which shows the basics of how to open and display a Draw or Impress file.
 The code also illustrates how the slides or pages can be examined, including how to retrieve information on their layers and styles.
 
 The |slide_info_py|_ main function:
@@ -85,7 +85,7 @@ XComponent_ object before progressing. :py:meth:`.Draw.is_shapes_based` returns 
 The document is made visible on-screen by calling :py:meth:`.GUI.set_visible`, and the application view is resized so all the drawing (or slide) is visible inside the window.
 :py:meth:`.GUI.zoom` can be passed different :py:class:`.GUI.ZoomEnum` values for showing, ``ZoomEnum.PAGE_WIDTH``, the entire width of the page,
 ``ZoomEnum.ENTIRE_PAGE``, the entire page, ``ZoomEnum.OPTIMAL``. an optimal view that zooms in so all the 'data' on the page is visible without the empty space around it.
-Alternatively, ``ZoomEnum.BY_VALUE`` with an interger value allows the user to supply a zooming percentage.
+Alternatively, ``ZoomEnum.BY_VALUE`` with an integer value allows the user to supply a zooming percentage.
 :abbreviation:`eg:` ``Draw.zoom(view=GUI.ZoomEnum.BY_VALUE, value=75)``
 
 These two methods are defined using :py:meth:`.Lo.dispatch_cmd`, which was introduced at the end of :ref:`ch04`.
@@ -324,13 +324,13 @@ then the style family name will be changed accordingly. The ``Inspiration`` fami
 
 .. todo::
 
-    Chapte 12, Add link to chapter 17
+    Chapter 12, Add link to chapter 17
 
 Details on coding with master pages and Impress templates are given in the |master_use|_ and |points_builder|_ examples in Chapter 17.
 
 .. todo::
 
-    Chapte 12, Add link to chapter 14
+    Chapter 12, Add link to chapter 14
 
 The other Draw/Impress style families are ``cell``, ``graphics`` and ``table``. ``table`` and ``cell`` contain styles which affect the colors used to draw a table and its cells.
 ``graphics`` affects the appearance of shapes. Examples of how to use the ``graphics`` style family are given in the |draw_picture|_ example in Chapter 14.

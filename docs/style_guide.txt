@@ -122,8 +122,8 @@ TODO
 
         .. todo::
 
-            | Chapte 5, Add link to chapters 7
-            | Chapte 5, Add link to chapters 8
+            | Chapter 5, Add link to chapters 7
+            | Chapter 5, Add link to chapters 8
 
     When 'todo_include_todos = True' is set in conf.py the main page will list all todo's for across a documents.
     Also each document that contains a todo will disply it on its doc page.

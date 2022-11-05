@@ -89,7 +89,7 @@ Searching the Online Developer's Guide
 --------------------------------------
 
 The online Developer's Guide can also be time-consuming to search because it's both long (around 1650 pages),
-and poorly organized. To help, I've written a ``loguide`` cli which is quite similar to ``lodoc``.
+and poorly organized. To help, I've written a ``loguide`` command line interface (``cli``) which is quite similar to ``lodoc``.
 It calls a search engine, limiting the search to the Developer's Guide web pages, and loads the first matching page into your web browser.
 
 The first argument of ``loguide`` must be an Office application name, which restricts the search to the part of the guide focusing on that application's API or otherwise, ``general``.

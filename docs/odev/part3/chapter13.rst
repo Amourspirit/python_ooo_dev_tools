@@ -6,7 +6,7 @@ Chapter 13. Drawing Basic Shapes
 
 .. topic:: Overview
 
-    A Black Dashed Line; A Red Ellipse; Filled Rectangles; Text; Shape Names; A Transparent Circle and a Polar Line; A Math Formula as an OLE Shape; Polygons; Multiple Lines, Partial Elipses
+    A Black Dashed Line; A Red Ellipse; Filled Rectangles; Text; Shape Names; A Transparent Circle and a Polar Line; A Math Formula as an OLE Shape; Polygons; Multiple Lines, Partial Ellipses
 
 This chapter contains an assortment of basic shape creation examples, including the following:
 
@@ -69,7 +69,7 @@ The examples come from two files, |draw_picture|_ and |animate_bike|_. The ``sho
                     Lo.close_office()
                     raise
 
-|draw_picture_py|_ creates a new Draw document, and finishes by dispalying a :ref:`class_msg_box` shown in :numref:`ch13fig_msgbox_all_done` asking the user if they want to close the document.
+|draw_picture_py|_ creates a new Draw document, and finishes by displaying a :ref:`class_msg_box` shown in :numref:`ch13fig_msgbox_all_done` asking the user if they want to close the document.
 
 .. tabs::
 
@@ -316,7 +316,7 @@ You should start looking in the documentation for the shape ( :abbreviation:`i.e
 
 .. tip::
 
-    Thre is a `List of all members <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1drawing_1_1LineShape-members.html>`_ link
+    There is a `List of all members <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1drawing_1_1LineShape-members.html>`_ link
     on the top right side of all API pages.
 
 You can click on the inheritance diagram at the top of the page ( :abbreviation:`e.g.` like the one in :numref:`ch13fig_line_shape_diagram` ) to look in the different services.
@@ -522,7 +522,7 @@ and other properties can be set.
 13.4.1 Gradient Color
 ---------------------
 
-``gradient color`` and ``gradient color Custom props`` are actully the same except ``gradient color Custom props``
+``gradient color`` and ``gradient color Custom props`` are actually the same except ``gradient color Custom props``
 set properties after the gradient is created.
 
 .. tabs::
@@ -836,7 +836,7 @@ To see the Bitmap names fire up Office's Draw application, and check out the Bit
 13.4.5 Bitmap File Color
 ------------------------
 
-The final fill in :numref:`ch13fig_seven_fills` loads a bitmap from "crazy_blue.jpg":
+The final fill in :numref:`ch13fig_seven_fills` loads a bitmap from ``crazy_blue.jpg``:
 
 .. tabs::
 
@@ -1013,7 +1013,7 @@ Immediately after the call to :py:meth:`.Draw.draw_text`, the shape's name is se
         Props.set(text1, Name="text1")
 
 The ``Name`` property, which is defined in the Shape_ class, is a useful way of referring to a shape.
-The ``show()`` function of |draw_picture_py| passes a name to :py:meth:`.Draw.find_shape_by_name`:
+The ``show()`` function of |draw_picture_py|_ passes a name to :py:meth:`.Draw.find_shape_by_name`:
 
 .. tabs::
 
@@ -1120,7 +1120,7 @@ and the angle and length of the line from that point.
 
 .. todo::
 
-    Chapte 13.8, Add link to part 5
+    Chapter 13.8, Add link to part 5
 
 Draw/Impress documents can include OLE objects through ``OLE2Shape``, which allows a shape to link to an external document.
 Probably the most popular kind of OLE shape is the chart, we will have a detailed discussion of that topic when we get to Part 5, although there is a code snippet below.
@@ -1142,7 +1142,7 @@ The |draw_picture|_ OLE example displays a mathematical formula, as in :numref:`
 
         :A Math Formula in a Draw Document.
 
-|draw_picture_py|_ renders the formula by calling :py:meth:`.Draw.draw_formula`, which hides the tricky aspects of instatiating the OLE shape:
+|draw_picture_py|_ renders the formula by calling :py:meth:`.Draw.draw_formula`, which hides the tricky aspects of instantiating the OLE shape:
 
 .. tabs::
 
@@ -1386,8 +1386,8 @@ the distance from the center to each point (the shape's radius), and the require
 
         -  :odev_src_draw_meth:`gen_polygon_points`
 
-13.10 Mult-line Shapes
-======================
+13.10 Multi-line Shapes
+=======================
 
 A PolyLineShape_ can hold multiple line paths, where a path is a sequence of connected lines.
 :py:meth:`.Draw.draw_lines` only creates a single line path, based on being passed arrays of ``x-`` and ``y-`` axis coordinates.

@@ -29,5 +29,5 @@ Class Info
 
         Gets the running LibreOffice version
 
-        :return: version as tuple of ints such as ``(7, 3, 4, 2)``
+        :return: version as tuple of integers such as ``(7, 3, 4, 2)``
         :rtype: tuple

@@ -221,7 +221,7 @@ class CommonColor:
 
         ``str_color`` can contain single spaces or ``_`` or ``-``.
         ``MEDIUM_SEA_GREEN``, ``MEDIUM-SEA-GREEN``, ``MEDIUM SEA GREEN``, ``medium sea green``, ``mediumSeaGreen`` , ``MediumSeaGreen`` are
-        all eqivalent.
+        all equivalent.
 
         Args:
             str_color (str): Value to convert. Case insensitive

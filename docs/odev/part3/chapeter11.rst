@@ -98,7 +98,7 @@ Since XDrawPages_ inherit XIndexAccess_, its elements (pages) can be accessed us
 11.2 Draw Page Details
 ======================
 
-A draw page is a collection of shapes: often text shapes, such as a title box or a box holding bulleted points.
+A draw page is a collection of shapes: often text shapes, such as a title box or a box holding bullet points.
 But a shape can be many more things: an ellipse, a polygon, a bitmap, an embedded video, and so on.
 
 This "page as shapes" notion is implemented by the API hierarchy shown in :numref:`ch11fig_drawpage_api_hierarchy`.
@@ -282,7 +282,7 @@ Follow RectangleShape_ link and look inside each inherited Property service unti
 
 .. tip::
 
-    Thre is a `List of all members <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1drawing_1_1RectangleShape-members.html>`_ link
+    There is a `List of all members <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1drawing_1_1RectangleShape-members.html>`_ link
     on the top right side of all API pages.
 
 If the shape contains some text (e.g. the rectangle has a label inside it), and you want to change one of the text's properties,
@@ -337,7 +337,7 @@ This means that all the presentation shapes can be treated as drawing shapes whe
 
 Most of the presentation shapes are special kinds of text shapes.
 For instance, TitleTextShape_ and OutlinerShape_ are text shapes which usually appear automatically when you create a new slide inside
-Impress – the slide's title is typed into the TitleTextShape_, and bulleted points added to OutlinerShape_. This is shown in  :numref:`ch11fig_two_presentation_shapes`.
+Impress – the slide's title is typed into the TitleTextShape_, and bullet points added to OutlinerShape_. This is shown in  :numref:`ch11fig_two_presentation_shapes`.
 
 ..
     Figure 9
