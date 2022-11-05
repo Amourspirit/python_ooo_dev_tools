@@ -1,6 +1,8 @@
 from typing import TYPE_CHECKING, cast
 from ..utils.dialogs import Dialogs
 from ..utils import lo as mLo
+from ..utils import sys_info as mSysInfo
+
 
 from com.sun.star.awt import XControlModel
 from com.sun.star.awt import XDialog
@@ -40,9 +42,13 @@ class Input:
         dialog_model = mLo.Lo.create_instance_mcf(XControlModel, "com.sun.star.awt.UnoControlDialogModel")
 
         dialog.setModel(dialog_model)
-
-        width = 500
-        height = 140
+        platform = mSysInfo.SysInfo.get_platform()
+        if platform == mSysInfo.SysInfo.PlatformEnum.WINDOWS:
+            width = 420
+            height = 130
+        else:
+            width = 500
+            height = 140
         btn_width = 50
         btn_height = 18
 
