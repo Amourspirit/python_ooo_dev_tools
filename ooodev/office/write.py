@@ -82,9 +82,9 @@ if TYPE_CHECKING:
     from com.sun.star.linguistic2 import XThesaurus
     from com.sun.star.text import XTextCursor
 
-from ooo.dyn.beans.property_value import PropertyValue
 from ooo.dyn.awt.font_slant import FontSlant
 from ooo.dyn.awt.size import Size  # struct
+from ooo.dyn.beans.property_value import PropertyValue
 from ooo.dyn.linguistic2.dictionary_type import DictionaryType as DictionaryType
 from ooo.dyn.style.break_type import BreakType
 from ooo.dyn.style.paragraph_adjust import ParagraphAdjust as ParagraphAdjust

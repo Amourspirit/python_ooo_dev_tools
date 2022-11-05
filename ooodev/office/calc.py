@@ -18,12 +18,12 @@ import uno
 from com.sun.star.container import XIndexAccess
 from com.sun.star.container import XNamed
 from com.sun.star.frame import XModel
-from com.sun.star.lang import XComponent
 from com.sun.star.lang import Locale
+from com.sun.star.lang import XComponent
 from com.sun.star.sheet import SolverConstraint  # struct
 from com.sun.star.sheet import XCellAddressable
-from com.sun.star.sheet import XCellRangeData
 from com.sun.star.sheet import XCellRangeAddressable
+from com.sun.star.sheet import XCellRangeData
 from com.sun.star.sheet import XCellRangeMovement
 from com.sun.star.sheet import XCellSeries
 from com.sun.star.sheet import XDataPilotTable
@@ -34,22 +34,22 @@ from com.sun.star.sheet import XHeaderFooterContent
 from com.sun.star.sheet import XRecentFunctions
 from com.sun.star.sheet import XScenario
 from com.sun.star.sheet import XScenariosSupplier
-from com.sun.star.sheet import XSpreadsheet
-from com.sun.star.sheet import XSpreadsheetDocument
-from com.sun.star.sheet import XSpreadsheetView
 from com.sun.star.sheet import XSheetAnnotationAnchor
 from com.sun.star.sheet import XSheetAnnotationsSupplier
 from com.sun.star.sheet import XSheetCellRange
 from com.sun.star.sheet import XSheetOperation
+from com.sun.star.sheet import XSpreadsheet
+from com.sun.star.sheet import XSpreadsheetDocument
 from com.sun.star.sheet import XSpreadsheets
+from com.sun.star.sheet import XSpreadsheetView
 from com.sun.star.sheet import XUsedAreaCursor
-from com.sun.star.sheet import XViewPane
 from com.sun.star.sheet import XViewFreezable
+from com.sun.star.sheet import XViewPane
 from com.sun.star.style import XStyle
 from com.sun.star.table import BorderLine2  # struct
 from com.sun.star.table import TableBorder2  # struct
-from com.sun.star.table import XColumnRowRange
 from com.sun.star.table import XCellRange
+from com.sun.star.table import XColumnRowRange
 from com.sun.star.text import XSimpleText
 from com.sun.star.uno import Exception as UnoException
 from com.sun.star.util import NumberFormat  # const
@@ -63,9 +63,9 @@ if TYPE_CHECKING:
     from com.sun.star.frame import XController
     from com.sun.star.frame import XFrame
     from com.sun.star.sheet import FunctionArgument  # struct
-    from com.sun.star.sheet import XSheetAnnotation
     from com.sun.star.sheet import XDataPilotTables
     from com.sun.star.sheet import XGoalSeek
+    from com.sun.star.sheet import XSheetAnnotation
     from com.sun.star.sheet import XSheetCellCursor
     from com.sun.star.sheet import XSolver
     from com.sun.star.table import CellAddress
@@ -77,33 +77,33 @@ if TYPE_CHECKING:
 
 from ooo.dyn.awt.point import Point
 from ooo.dyn.sheet.cell_delete_mode import CellDeleteMode
-from ooo.dyn.sheet.cell_flags import CellFlagsEnum
+from ooo.dyn.sheet.cell_flags import CellFlagsEnum as CellFlagsEnum
 from ooo.dyn.sheet.cell_insert_mode import CellInsertMode
-from ooo.dyn.sheet.general_function import GeneralFunction as OooGeneralFunction
-from ooo.dyn.sheet.fill_date_mode import FillDateMode as OooFillDateMode
-from ooo.dyn.sheet.solver_constraint_operator import SolverConstraintOperator as OooSolverConstraintOperator
+from ooo.dyn.sheet.general_function import GeneralFunction as GeneralFunction
+from ooo.dyn.sheet.fill_date_mode import FillDateMode as FillDateMode
+from ooo.dyn.sheet.solver_constraint_operator import SolverConstraintOperator as SolverConstraintOperator
 from ooo.dyn.table.cell_content_type import CellContentType
 
-from ..utils import lo as mLo
-from ..utils import info as mInfo
+from ..exceptions import ex as mEx
 from ..utils import gui as mGui
+from ..utils import info as mInfo
+from ..utils import lo as mLo
 from ..utils import props as mProps
+from ..utils import view_state as mViewState
+from ..utils.color import CommonColor, Color
 from ..utils.gen_util import ArgsHelper, Util as GenUtil
 from ..utils.table_helper import TableHelper
-from ..utils.color import CommonColor, Color
-from ..utils import view_state as mViewState
-from ..exceptions import ex as mEx
 from ..utils.type_var import PathOrStr, Row, Column, Table, TupleArray, FloatList, FloatTable
 
-from ..events.calc_named_event import CalcNamedEvent
-from ..events.gbl_named_event import GblNamedEvent
-from ..events.event_singleton import _Events
-from ..events.args.event_args import EventArgs
-from ..events.args.cancel_event_args import CancelEventArgs
-from ..events.args.calc.sheet_args import SheetArgs
-from ..events.args.calc.sheet_cancel_args import SheetCancelArgs
 from ..events.args.calc.cell_args import CellArgs
 from ..events.args.calc.cell_cancel_args import CellCancelArgs
+from ..events.args.calc.sheet_args import SheetArgs
+from ..events.args.calc.sheet_cancel_args import SheetCancelArgs
+from ..events.args.cancel_event_args import CancelEventArgs
+from ..events.args.event_args import EventArgs
+from ..events.calc_named_event import CalcNamedEvent
+from ..events.event_singleton import _Events
+from ..events.gbl_named_event import GblNamedEvent
 
 NameVal = ArgsHelper.NameValue
 # endregion Imports
@@ -136,13 +136,6 @@ class Calc:
         def __str__(self) -> str:
             return self.value
 
-    CellFlags = CellFlagsEnum
-
-    GeneralFunction = OooGeneralFunction
-
-    SolverConstraintOperator = OooSolverConstraintOperator
-
-    FillDateMode = OooFillDateMode
     # endregion classes
 
     # region Constants
@@ -1477,14 +1470,14 @@ class Calc:
 
     @overload
     @classmethod
-    def clear_cells(cls, sheet: XSpreadsheet, cell_range: XCellRange, cell_flags: CellFlags) -> None:
+    def clear_cells(cls, sheet: XSpreadsheet, cell_range: XCellRange, cell_flags: CellFlagsEnum) -> None:
         """
         Clears the specified contents of the cell range
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
             cell_range (XCellRange): Cell range
-            cell_flags (CellFlags): Flags that determine what to clear
+            cell_flags (CellFlagsEnum): Flags that determine what to clear
         """
         ...
 
@@ -1502,14 +1495,14 @@ class Calc:
 
     @overload
     @classmethod
-    def clear_cells(cls, sheet: XSpreadsheet, range_name: str, cell_flags: CellFlags) -> None:
+    def clear_cells(cls, sheet: XSpreadsheet, range_name: str, cell_flags: CellFlagsEnum) -> None:
         """
         Clears the specified contents of the cell range
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
             range_name (str): Range name such as 'A1:G3'
-            cell_flags (CellFlags): Flags that determine what to clear
+            cell_flags (CellFlagsEnum): Flags that determine what to clear
         """
         ...
 
@@ -1527,14 +1520,14 @@ class Calc:
 
     @overload
     @classmethod
-    def clear_cells(cls, sheet: XSpreadsheet, cr_addr: CellRangeAddress, cell_flags: CellFlags) -> None:
+    def clear_cells(cls, sheet: XSpreadsheet, cr_addr: CellRangeAddress, cell_flags: CellFlagsEnum) -> None:
         """
         Clears the specified contents of the cell range
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
             cr_addr (CellRangeAddress): Cell Range Address
-            cell_flags (CellFlags): Flags that determine what to clear
+            cell_flags (CellFlagsEnum): Flags that determine what to clear
         """
         ...
 
@@ -1551,7 +1544,7 @@ class Calc:
             cell_range (XCellRange): Cell range
             range_name (str): Range name such as 'A1:G3'
             cr_addr (CellRangeAddress): Cell Range Address
-            cell_flags (CellFlags): Flags that determine what to clear
+            cell_flags (CellFlagsEnum): Flags that determine what to clear
 
         Raises:
             MissingInterfaceError: If XSheetOperation interface cannot be obtained.
@@ -1569,9 +1562,6 @@ class Calc:
             Events arg for this method have a ``cell`` type of ``XCellRange``.
 
             Events arg ``event_data`` is a dictionary containing ``cell_flags``.
-
-        See Also:
-            :py:class:`~Calc.CellFlags`
         """
         ordered_keys = (1, 2, 3)
         kargs_len = len(kwargs)
@@ -1604,12 +1594,12 @@ class Calc:
             kargs[ordered_keys[i]] = arg
 
         if count == 2:
-            flags = Calc.CellFlags.VALUE | Calc.CellFlags.DATETIME | Calc.CellFlags.STRING
+            flags = CellFlagsEnum.VALUE | CellFlagsEnum.DATETIME | CellFlagsEnum.STRING
         else:
             if isinstance(kargs[3], int):
-                flags = Calc.CellFlags(kargs[3])
+                flags = CellFlagsEnum(kargs[3])
             else:
-                flags = cast(Calc.CellFlags, kargs[3])
+                flags = cast(CellFlagsEnum, kargs[3])
         sht = cast(XSpreadsheet, kargs[1])
         rng_value = kargs[2]
         if isinstance(rng_value, str):
@@ -5767,7 +5757,7 @@ class Calc:
     # region --------------- using calc functions ----------------------
 
     @classmethod
-    def compute_function(cls, fn: Calc.GeneralFunction | str, cell_range: XCellRange) -> float:
+    def compute_function(cls, fn: GeneralFunction | str, cell_range: XCellRange) -> float:
         """
         Computes a Calc Function
 
@@ -5780,7 +5770,7 @@ class Calc:
         """
         try:
             sheet_op = mLo.Lo.qi(XSheetOperation, cell_range, raise_err=True)
-            func = cls.GeneralFunction(fn)  # convert to enum value if str
+            func = GeneralFunction(fn)  # convert to enum value if str
             if not isinstance(fn, uno.Enum):
                 mLo.Lo.print("Arg fn is invalid, returning 0.0")
                 return 0.0
@@ -6090,7 +6080,7 @@ class Calc:
         mLo.Lo.print()
 
     @staticmethod
-    def to_constraint_op(op: str) -> Calc.SolverConstraintOperator:
+    def to_constraint_op(op: str) -> SolverConstraintOperator:
         """
         Convert string value to SolverConstraintOperator.
 
@@ -6103,13 +6093,13 @@ class Calc:
             SolverConstraintOperator: Operator as enum
         """
         if op == "=" or op == "==":
-            return Calc.SolverConstraintOperator.EQUAL
+            return SolverConstraintOperator.EQUAL
         if (op == "<=") or op == "=<":
-            return Calc.SolverConstraintOperator.LESS_EQUAL
+            return SolverConstraintOperator.LESS_EQUAL
         if (op == ">=") or op == "=>":
-            return Calc.SolverConstraintOperator.GREATER_EQUAL
+            return SolverConstraintOperator.GREATER_EQUAL
         mLo.Lo.print(f"Do not recognise op: {op}; using EQUAL")
-        return Calc.SolverConstraintOperator.EQUAL
+        return SolverConstraintOperator.EQUAL
 
     # region    make_constraint()
     @classmethod

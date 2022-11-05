@@ -7,7 +7,7 @@ from typing import cast
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.utils.props import Props
-from ooodev.office.calc import Calc
+from ooodev.office.calc import Calc, SolverConstraintOperator
 
 
 def test_linear_solver(loader, capsys: pytest.CaptureFixture) -> None:
@@ -59,7 +59,7 @@ def test_linear_solver(loader, capsys: pytest.CaptureFixture) -> None:
         sc1 = Calc.make_constraint(num=15000, op="<=", sheet=sheet, cell_name="B4")
         #   20x + 210y <= 15000
         #   B4 is the address of the cell that is constrained
-        sc2 = Calc.make_constraint(num=4000, op=Calc.SolverConstraintOperator.LESS_EQUAL, sheet=sheet, cell_name="B5")
+        sc2 = Calc.make_constraint(num=4000, op=SolverConstraintOperator.LESS_EQUAL, sheet=sheet, cell_name="B5")
         #   110x + 30y <= 4000
         sc3 = Calc.make_constraint(num=75, op="<=", sheet=sheet, cell_name="B6")
         #   x + y <= 75

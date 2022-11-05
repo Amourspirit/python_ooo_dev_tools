@@ -9,7 +9,7 @@ from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.utils.props import Props
 from ooodev.utils.uno_enum import UnoEnum
-from ooodev.office.calc import Calc
+from ooodev.office.calc import Calc, GeneralFunction
 
 from com.sun.star.sheet import XDataPilotTable
 from com.sun.star.sheet import XSpreadsheet
@@ -96,7 +96,7 @@ def create_pivot_table(sheet: XSpreadsheet) -> XDataPilotTable | None:
     # use third column as data field, calculating the sum
     props = Lo.find_container_props(con=fields, nm="Quantity")
     Props.set_property(prop_set=props, name="Orientation", value=DPFO.DATA)
-    Props.set_property(prop_set=props, name="Function", value=Calc.GeneralFunction.SUM)
+    Props.set_property(prop_set=props, name="Function", value=GeneralFunction.SUM)
 
     # select output position
     dest_addr = Calc.get_cell_address(sheet=sheet, cell_name="E3")
