@@ -1,4 +1,5 @@
 from enum import Enum
+from . import kind_helper
 
 
 class DataRoleKind(str, Enum):
@@ -40,3 +41,22 @@ class DataRoleKind(str, Enum):
 
     def __str__(self) -> str:
         return str(self.value)
+
+    @staticmethod
+    def from_str(s: str) -> "DataRoleKind":
+        """
+        Gets an ``DataRoleKind`` instance from string.
+
+        Args:
+            s (str): String that represents the name of an enum Name.
+                ``s`` is case insensitive and can be ``CamelCase``, ``pascal_case`` , ``snake_case``,
+                ``hypen-case``, ``normal case``.
+
+        Raises:
+            ValueError: If input string is empty.
+            AttributeError: If unable to get ``DataRoleKind`` instance.
+
+        Returns:
+            DataRoleKind: Enum instance.
+        """
+        return kind_helper.enum_from_string(s, DataRoleKind)

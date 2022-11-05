@@ -83,6 +83,9 @@ spelling_ignore_pypi_package_names = True
 spelling_ignore_contributor_names = True
 spelling_ignore_acronyms = True
 
+# https://sphinxcontrib-spelling.readthedocs.io/en/latest/customize.html
+spelling_exclude_patterns = [".venv/"]
+
 # spell checking;
 #   run sphinx-build -b spelling . _build
 #       this will checkfor any spelling and create folders with *.spelling files if there are errors.
