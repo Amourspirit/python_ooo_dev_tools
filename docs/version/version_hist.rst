@@ -2,6 +2,21 @@
 Version History
 ***************
 
+Versuib 0.6.0
+=============
+
+Breaking changes.
+
+``Write.ControlCharacter`` was an alias of ``ooo.dyn.text.control_character.ControlCharacterEnum``.
+Now ``ControlCharacterEnum`` must be used instead of ``Write.ControlCharacter``
+``ControlCharacterEnum`` can be imported from ``Write``.
+:abbreviation:`e.g.` ``from ooodev.office.write import Write, ControlCharacterEnum``
+
+``Write.DictionaryType`` was an alias of ``ooo.dyn.linguistic2.dictionary_type.DictionaryType``.
+Now ``DictionaryType`` must be used instead of ``Write.DictionaryType``
+``DictionaryType`` can be imported from ``Write``.
+:abbreviation:`e.g.` ``from ooodev.office.write import Write, DictionaryType``
+
 Version 0.5.3
 =============
 

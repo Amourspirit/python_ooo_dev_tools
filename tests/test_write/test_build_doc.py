@@ -10,7 +10,7 @@ if __name__ == "__main__":
 
 def test_build_doc(loader, props_str_to_dict, fix_image_path, capsys: pytest.CaptureFixture):
     from ooodev.utils.lo import Lo
-    from ooodev.office.write import Write
+    from ooodev.office.write import Write, ControlCharacterEnum, ParagraphAdjust
     from ooodev.utils.gui import GUI
     from ooodev.utils.props import Props
     from ooodev.utils.color import CommonColor
@@ -22,7 +22,7 @@ def test_build_doc(loader, props_str_to_dict, fix_image_path, capsys: pytest.Cap
     from functools import partial
 
     visible = False
-    delay = 0 # 500
+    delay = 0  # 500
     doc = Write.create_doc(loader)
     try:
         if visible:
@@ -54,7 +54,7 @@ def test_build_doc(loader, props_str_to_dict, fix_image_path, capsys: pytest.Cap
         pos = get_pos()
         assert pos == 29
         append("styles.")
-        append(ctl_char=Write.ControlCharacter.LINE_BREAK)
+        append(ctl_char=ControlCharacterEnum.LINE_BREAK)
         Write.style_left_bold(cursor=cursor, pos=pos)
 
         pos = get_pos()
@@ -170,7 +170,7 @@ def test_build_doc(loader, props_str_to_dict, fix_image_path, capsys: pytest.Cap
 
         Lo.delay(delay)
 
-        Write.style_prev_paragraph(cursor=cursor, prop_name="ParaAdjust", prop_val=Write.ParagraphAdjust.CENTER)
+        Write.style_prev_paragraph(cursor=cursor, prop_name="ParaAdjust", prop_val=ParagraphAdjust.CENTER)
 
         append("Image as a shape: ")
         Write.add_image_shape(cursor=cursor, fnm=im_fnm)
