@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.6.1
+=============
+
+Added None to ``GraphicArrowStyleKind`` Enum.
+
 Version 0.6.0
 =============
 
