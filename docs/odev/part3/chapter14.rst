@@ -347,8 +347,6 @@ The details about each item (file) are stored as properties which are defined in
 Currently there is a `bug <https://bugs.documentfoundation.org/show_bug.cgi?id=151932>`_ that has the Gallery Module not work correctly.
 So for the time being this documentmentation is held back on Gallery Module.
 
-Work in progress ...
-
 .. |animate_bike| replace:: Animate Bike
 .. _animate_bike: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/draw/odev_animate_bike
 

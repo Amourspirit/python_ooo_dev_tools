@@ -56,6 +56,8 @@ class Grouper:
             # group, bind, or combine the ellipses
             print()
             print("Grouping (or binding) ellipses ...")
+            # self._group_ellipses(slide=curr_slide, s1=s1, s2=s2)
+            # self._bind_ellipses(slide=curr_slide, s1=s1, s2=s2)
             self._combine_ellipses(slide=curr_slide, s1=s1, s2=s2)
             Draw.show_shapes_info(curr_slide)
 
@@ -69,11 +71,12 @@ class Grouper:
             # split the combination into component shapes
             print()
             print("Splitting the combination ...")
+            # split the combination into component shapes
             combiner = Lo.qi(XShapeCombiner, curr_slide, True)
             combiner.split(comp_shape)
             Draw.show_shapes_info(curr_slide)
 
-            Lo.delay(2000)
+            Lo.delay(1_500)
             msg_result = MsgBox.msgbox(
                 "Do you wish to close document?",
                 "All done",
