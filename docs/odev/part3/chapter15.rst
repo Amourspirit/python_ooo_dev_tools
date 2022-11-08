@@ -302,7 +302,7 @@ The result can be seen in :numref:`ch15fig_connector_with_orange_line_arrow`.
 
 The arrow head can be modified by changing the arrow name assigned to the connector's ``LineStartName`` property, and by setting ``LineStartCenter`` to false.
 The place to find names for arrow heads is the Line dialog box in LibreOffice's "Line and Filling" toolbar.
-The names appear in the "Start styles" combobox, as shown in :numref:`ch15fig_arrow_styles`.
+The names appear in the "Start styles" combo-box, as shown in :numref:`ch15fig_arrow_styles`.
 
 ..
     figure 4
@@ -351,7 +351,7 @@ then the arrow head changes to that shown in :numref:`ch15fig_arrow_line_purple`
 An arrow can be added to the other end of the connector by adjusting its ``LineEndCenter`` and ``LineEndName`` properties.
 
 |odev| as :py:class:`~.kind.graphic_style_kind.GraphicStyleKind` that makes it much easier to get the ``style_name`` to pass
-to :py:meth:`.Draw.set_style`. Styles can be lookec up in the following mannor:
+to :py:meth:`.Draw.set_style`. Styles can be looked up in the following manor:
 
 .. tabs::
 
@@ -594,7 +594,7 @@ If the result needs to be a single shape, then grouping (not binding) can be app
             combiner.combine(shapes)
 
 The combined shape only differs from grouping if the two ellipses are initially overlapping.
-:numref:`ch15fig_combining_shape_combiner` shows that the interesecting areas of the two shapes is removed from the combination.
+:numref:`ch15fig_combining_shape_combiner` shows that the intersecting areas of the two shapes is removed from the combination.
 
 Run the |grouper|_ example with these args.
 
@@ -997,7 +997,7 @@ the curve shown in :numref:`ch15fig_bezier_builder_curve` appears on a page.
         :alt: The Curve Drawn by bezier builder python file
         :figclass: align-center
 
-        :The Curve Drawn by bezier_builder.py
+        :The Curve Drawn by |draw_bezier_py|_
 
 The |draw_bezier_py|_ a data-reading functions can only handle a single ``M`` and ``C`` operation.
 If the curve you draw has straight lines, arcs, smoothing, or multiple parts, then the SVG file will contain operations that are not able to be processed by that code.
@@ -1015,7 +1015,7 @@ If ``Z`` is added as a new line at the end of the ``bpts2.txt``, then the closed
         :alt: The Closed Curve Drawn by bezier builder python file
         :figclass: align-center
 
-        :The Closed Curve Drawn by bezier_builder.py
+        :The Closed Curve Drawn by |draw_bezier_py|_
 
 .. _LineShape: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1drawing_1_1LineShape.html
 .. _ConnectorShape: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1drawing_1_1ConnectorShape.html

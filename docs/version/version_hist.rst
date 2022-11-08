@@ -5,6 +5,12 @@ Version History
 Version 0.6.1
 =============
 
+Added ``Draw.add_dispatch_shape()`` method.
+
+Added ``Draw.create_dispatch_shape()`` method.
+
+Added Dispatch Lookup ``ShapeDispatchKind`` Enum.
+
 Added None to ``GraphicArrowStyleKind`` Enum.
 
 Version 0.6.0
