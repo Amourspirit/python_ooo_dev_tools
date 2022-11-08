@@ -3,7 +3,7 @@ from __future__ import annotations
 from enum import IntEnum, Enum
 from pathlib import Path
 import time
-from typing import List, Sequence, Tuple, cast, overload
+from typing import Callable, List, Sequence, Tuple, cast, overload
 import math
 
 import uno
@@ -66,6 +66,7 @@ from ..utils.data_type.angle import Angle as Angle
 from ..utils.data_type.image_offset import ImageOffset as ImageOffset
 from ..utils.data_type.intensity import Intensity as Intensity
 from ..utils.data_type.poly_sides import PolySides as PolySides
+from ..utils.dispatch.shape_dispatch_kind import ShapeDispatchKind as ShapeDispatchKind
 from ..utils.kind.drawing_bitmap_kind import DrawingBitmapKind as DrawingBitmapKind
 from ..utils.kind.drawing_gradient_kind import DrawingGradientKind as DrawingGradientKind
 from ..utils.kind.drawing_hatching_kind import DrawingHatchingKind as DrawingHatchingKind
@@ -1891,7 +1892,7 @@ class Draw:
             shapes = cls.get_shapes(slide)
             if not shapes:
                 raise mEx.ShapeMissingError("No shapes found")
-            max_zorder = 0
+            max_zorder = -1
             top = None
             for shape in shapes:
                 zo = cls.get_zorder(shape)
@@ -2730,6 +2731,80 @@ class Draw:
 
     # Two methods not include here from java. addDispatchShape and createDispatchShape
     # These were omitted because the require third party Libs that all for automatic screen click and screen moused selecting
+
+    @classmethod
+    def add_dispatch_shape(
+        cls,
+        slide: XDrawPage,
+        shape_dispatch: ShapeDispatchKind | str,
+        x: int,
+        y: int,
+        width: int,
+        height: int,
+        fn: Callable[[XDrawPage, str], XShape | None],
+    ) -> XShape:
+        """
+        Adds a shape to a Draw slide via a dispatch command
+
+        Args:
+            slide (XDrawPage): Slide
+            shape_dispatch (ShapeDispatchKind | str): Dispatch Command
+            x (int): Shape X position in mm units.
+            y (int): Shape Y position in mm units.
+            width (int): Shape width in mm units.
+            height (int): Shape height in mm units.
+            fn (Callable[[XDrawPage, str], XShape  |  None]): Function that is responsible for running the dispatch command and returning the shape.
+
+        Raises:
+            NoneError: If adding a dispatch fails.
+            ShapeError: If any other error occurs.
+
+        Returns:
+            XShape: Shape
+        """
+        cls.warns_position(slide, x, y)
+        try:
+            shape = fn(slide, str(shape_dispatch))
+            if shape is None:
+                raise mEx.NoneError(f'Failed to add shape for dispatch command "{shape_dispatch}"')
+            cls.set_position(shape=shape, x=x, y=y)
+            cls.set_size(shape=shape, width=width, height=height)
+            return shape
+        except mEx.NoneError:
+            raise
+        except Exception as e:
+            raise mEx.ShapeError(f'Error occured adding dispatch shape for dispatch command "{shape_dispatch}"') from e
+
+    @staticmethod
+    def create_dispatch_shape(
+        slide: XDrawPage, shape_dispatch: ShapeDispatchKind | str, fn: Callable[[XDrawPage, str], XShape | None]
+    ) -> XShape:
+        """
+        Creates a shape via a dispatch command.
+
+        Args:
+            slide (XDrawPage): Slide
+            shape_dispatch (ShapeDispatchKind | str): Dispatch Command
+           fn (Callable[[XDrawPage, str], XShape  |  None]): Function that is responsible for running the dispatch command and returning the shape.
+
+        Raises:
+            NoneError: If adding a dispatch fails.
+            ShapeError: If any other error occurs.
+
+        Returns:
+            XShape: Shape
+        """
+        try:
+            shape = fn(slide, str(shape_dispatch))
+            if shape is None:
+                raise mEx.NoneError(f'Failed to add shape for dispatch command "{shape_dispatch}"')
+            return shape
+        except mEx.NoneError:
+            raise
+        except Exception as e:
+            raise mEx.ShapeError(
+                f'Error occured creating dispatch shape for dispatch command "{shape_dispatch}"'
+            ) from e
 
     # endregion
 

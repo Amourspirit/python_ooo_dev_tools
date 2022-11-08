@@ -1982,11 +1982,14 @@ class Lo(metaclass=StaticProperty):
             - :ref:`ch04_dispatching`
             - `LibreOffice Dispatch Commands <https://wiki.documentfoundation.org/Development/DispatchCommands>`_
         """
+        if not cmd:
+            raise mEx.DispatchError("cmd must not be empty or None")
         try:
-            cargs = DispatchCancelArgs(Lo.dispatch_cmd.__qualname__, cmd)
+            str_cmd = str(cmd)  # make sure and enum or other lookup did not get passed by mistake
+            cargs = DispatchCancelArgs(Lo.dispatch_cmd.__qualname__, str_cmd)
             _Events().trigger(LoNamedEvent.DISPATCHING, cargs)
             if cargs.cancel:
-                raise mEx.CancelEventError(cargs, f'Dispatch Command "{cmd}" has been canceled')
+                raise mEx.CancelEventError(cargs, f'Dispatch Command "{str_cmd}" has been canceled')
 
             if props is None:
                 props = ()
@@ -1995,8 +1998,10 @@ class Lo(metaclass=StaticProperty):
 
             helper = cls.create_instance_mcf(XDispatchHelper, "com.sun.star.frame.DispatchHelper")
             if helper is None:
-                raise mEx.MissingInterfaceError(XDispatchHelper, f"Could not create dispatch helper for command {cmd}")
-            result = helper.executeDispatch(frame, f".uno:{cmd}", "", 0, props)
+                raise mEx.MissingInterfaceError(
+                    XDispatchHelper, f"Could not create dispatch helper for command {str_cmd}"
+                )
+            result = helper.executeDispatch(frame, f".uno:{str_cmd}", "", 0, props)
             _Events().trigger(LoNamedEvent.DISPATCHED, DispatchArgs.from_args(cargs))
             return result
         except mEx.CancelEventError:
