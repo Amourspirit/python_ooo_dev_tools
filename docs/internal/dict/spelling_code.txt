@@ -3,6 +3,7 @@ Addon
 Args
 bezier
 Calc
+callout
 CellRangeAddress
 config
 Config
