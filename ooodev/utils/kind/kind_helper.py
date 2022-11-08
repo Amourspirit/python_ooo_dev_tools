@@ -61,7 +61,7 @@ def enum_from_string(s: str, ec: Enum) -> Enum:
         raise ValueError("from_str arg s cannot be an empty value")
 
     try:
-        return getattr(ec, s)
+        return getattr(ec, s.upper())
     except AttributeError:
         pass
 
