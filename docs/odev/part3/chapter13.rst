@@ -8,6 +8,8 @@ Chapter 13. Drawing Basic Shapes
 
     A Black Dashed Line; A Red Ellipse; Filled Rectangles; Text; Shape Names; A Transparent Circle and a Polar Line; A Math Formula as an OLE Shape; Polygons; Multiple Lines, Partial Ellipses
 
+    Examples: |animate_bike|_, |draw_picture|_.
+
 This chapter contains an assortment of basic shape creation examples, including the following:
 
 .. cssclass:: ul-list
@@ -324,7 +326,7 @@ You can click on the inheritance diagram at the top of the page ( :abbreviation:
 ..
     figure 4
 
-.. cssclass:: diagram invert
+.. cssclass:: diagram
 
     .. _ch13fig_line_shape_diagram:
     .. figure:: https://user-images.githubusercontent.com/4193389/199562000-f5a1b03d-638b-4c2c-bebb-6ab026dd0d52.png

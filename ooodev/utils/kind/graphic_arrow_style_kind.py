@@ -32,6 +32,7 @@ class GraphicArrowStyleKind(str, Enum):
             )
     """
 
+    NONE = ""
     ARROW = "Arrow"
     ARROW_LARGE = "Arrow large"
     ARROW_SHORT = "Arrow short"
