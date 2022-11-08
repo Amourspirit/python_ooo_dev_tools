@@ -17,7 +17,7 @@ The chapter ends with a brief outline of the com.sun.star.gallery module.
 14.1 Animating a Circle and a Line
 ==================================
 
-``_anim_shapes()`` in|draw_picture_py|_ implements two animation loops that work in a similar manner.
+``_anim_shapes()`` in |draw_picture_py|_ implements two animation loops that work in a similar manner.
 Inside a loop, a shape is drawn, the function (and program) sleeps for a brief period,
 then the shape's position, size, or properties are updated, and the loop repeats.
 
