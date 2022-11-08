@@ -2742,33 +2742,69 @@ class Draw:
         width: int,
         height: int,
         fn: Callable[[XDrawPage, str], XShape | None],
-    ) -> XShape | None:
+    ) -> XShape:
+        """
+        Adds a shape to a Draw slide via a dispatch command
+
+        Args:
+            slide (XDrawPage): Slide
+            shape_dispatch (ShapeDispatchKind | str): Dispatch Command
+            x (int): Shape X position in mm units.
+            y (int): Shape Y position in mm units.
+            width (int): Shape width in mm units.
+            height (int): Shape height in mm units.
+            fn (Callable[[XDrawPage, str], XShape  |  None]): Function that is responsible for running the dispatch command and returning the shape.
+
+        Raises:
+            NoneError: If adding a dispatch fails.
+            ShapeError: If any other error occurs.
+
+        Returns:
+            XShape: Shape
+        """
         cls.warns_position(slide, x, y)
         try:
             shape = fn(slide, str(shape_dispatch))
             if shape is None:
-                raise mEx.NoneError("Failed to add shaep")
+                raise mEx.NoneError(f'Failed to add shape for dispatch command "{shape_dispatch}"')
             cls.set_position(shape=shape, x=x, y=y)
             cls.set_size(shape=shape, width=width, height=height)
             return shape
         except mEx.NoneError:
             raise
         except Exception as e:
-            raise mEx.ShapeError("Error occured adding dispatch shape") from e
+            raise mEx.ShapeError(f'Error occured adding dispatch shape for dispatch command "{shape_dispatch}"') from e
 
     @staticmethod
     def create_dispatch_shape(
         slide: XDrawPage, shape_dispatch: ShapeDispatchKind | str, fn: Callable[[XDrawPage, str], XShape | None]
-    ) -> XShape | None:
+    ) -> XShape:
+        """
+        Creates a shape via a dispatch command.
+
+        Args:
+            slide (XDrawPage): Slide
+            shape_dispatch (ShapeDispatchKind | str): Dispatch Command
+           fn (Callable[[XDrawPage, str], XShape  |  None]): Function that is responsible for running the dispatch command and returning the shape.
+
+        Raises:
+            NoneError: If adding a dispatch fails.
+            ShapeError: If any other error occurs.
+
+        Returns:
+            XShape: Shape
+        """
         try:
             shape = fn(slide, str(shape_dispatch))
             if shape is None:
-                raise mEx.NoneError("Failed to add shape")
+                raise mEx.NoneError(f'Failed to add shape for dispatch command "{shape_dispatch}"')
             return shape
         except mEx.NoneError:
             raise
         except Exception as e:
-            raise mEx.ShapeError("Error occured creating dispatch shape") from e
+            raise mEx.ShapeError(
+                f'Error occured creating dispatch shape for dispatch command "{shape_dispatch}"'
+            ) from e
 
     # endregion
 

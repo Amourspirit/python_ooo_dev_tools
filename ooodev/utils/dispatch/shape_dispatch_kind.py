@@ -168,7 +168,7 @@ class ShapeDispatchKind(str, Enum):
     FLOW_CHART_SHAPES_FLOWCHART_MERGE = "FlowChartShapes.flowchart-merge"
     """Flowchart: Merge"""
     FLOW_CHART_SHAPES_FLOWCHART_MULTIDOCUMENT = "FlowChartShapes.flowchart-multidocument"
-    """Flowchart: Multidocument"""
+    """Flowchart: Multi-document"""
     FLOW_CHART_SHAPES_FLOWCHART_OFF_PAGE_CONNECTOR = "FlowChartShapes.flowchart-off-page-connector"
     """Flowchart: Off-page Connector"""
     FLOW_CHART_SHAPES_FLOWCHART_OR = "FlowChartShapes.flowchart-or"
