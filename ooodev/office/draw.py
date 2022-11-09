@@ -1353,7 +1353,7 @@ class Draw:
         try:
             # Add text to the slide page by treating it as a title page, which
             # has two text shapes: one for the title, the other for a subtitle
-            mProps.Props.set(slide, Layout=int(PresentationLayoutKind.TITLE_SUB))
+            mProps.Props.set(slide, Layout=PresentationLayoutKind.TITLE_SUB.value)
 
             # add the title text to the title shape
             xs = cls.find_shape_by_type(slide=slide, shape_type=DrawingNameSpaceKind.TITLE_TEXT)

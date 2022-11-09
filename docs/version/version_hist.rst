@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.6.2
+=============
+
+Rename private enum ``_LayoutKind`` to public ``LayoutKind`` to make available for public use.
+
 Version 0.6.1
 =============
 

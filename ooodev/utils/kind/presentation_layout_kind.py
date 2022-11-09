@@ -50,7 +50,7 @@ class PresentationLayoutKind(IntEnum):
         Gets an ``PresentationLayoutKind`` instance from string.
 
         Args:
-            s (str): String that represents the name of an enum Name.
+            s (str): String that represents the name of an enum Attribute or enum value as string.
                 ``s`` is case insensitive and can be ``CamelCase``, ``pascal_case`` , ``snake_case``,
                 ``hypen-case``, ``normal case``.
 

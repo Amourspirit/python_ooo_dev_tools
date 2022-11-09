@@ -351,7 +351,7 @@ then the arrow head changes to that shown in :numref:`ch15fig_arrow_line_purple`
 An arrow can be added to the other end of the connector by adjusting its ``LineEndCenter`` and ``LineEndName`` properties.
 
 |odev| has :py:class:`~.kind.graphic_style_kind.GraphicStyleKind` that makes it much easier to get the ``style_name`` to pass
-to :py:meth:`.Draw.set_style`. Styles can be lookec up in the following mannor:
+to :py:meth:`.Draw.set_style`. Styles can be looked up in the following manor:
 
 .. tabs::
 

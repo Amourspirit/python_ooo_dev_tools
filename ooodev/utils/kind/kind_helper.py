@@ -65,17 +65,16 @@ def enum_from_string(s: str, ec: Type[Enum]) -> Enum:
     except AttributeError:
         pass
 
-    for t in ec.mro():
-        if t is IntEnum or t is IntFlag:
-            try:
-                return ec(int(s))
-            except ValueError:
-                pass
+    if issubclass(ec, (IntEnum, IntFlag)):
+        try:
+            return ec(int(s))
+        except ValueError:
+            pass
+        if s.upper().startswith("0X"):
             try:
                 return ec(int(s, 16))
             except ValueError:
                 pass
-            break
 
     e_str = mGenUtil.Util.to_single_space(s).replace("-", "_").replace(" ", "_")
     if "_" in e_str:
