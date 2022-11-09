@@ -78,6 +78,7 @@ from ..utils.kind.form_control_kind import FormControlKind as FormControlKind
 from ..utils.kind.glue_points_kind import GluePointsKind as GluePointsKind
 from ..utils.kind.graphic_style_kind import GraphicStyleKind as GraphicStyleKind
 from ..utils.kind.presentation_kind import PresentationKind as PresentationKind
+from ..utils.kind.presentation_layout_kind import PresentationLayoutKind as PresentationLayoutKind
 from ..utils.kind.shape_comb_kind import ShapeCombKind as ShapeCombKind
 from ..utils.type_var import PathOrStr
 
@@ -100,39 +101,6 @@ from ooo.dyn.container.no_such_element_exception import NoSuchElementException
 from ooo.dyn.lang.index_out_of_bounds_exception import IndexOutOfBoundsException
 
 # endregion Imports
-
-# region Enums
-class _LayoutKind(IntEnum):
-    TITLE_SUB = 0
-    TITLE_BULLETS = 1
-    TITLE_CHART = 2
-    TITLE_2CONTENT = 3
-    TITLE_CONTENT_CHART = 4
-    TITLE_CONTENT_CLIP = 6
-    TITLE_CHART_CONTENT = 7
-    TITLE_TABLE = 8
-    TITLE_CLIP_CONTENT = 9
-    TITLE_CONTENT_OBJECT = 10
-    TITLE_OBJECT = 11
-    TITLE_CONTENT_2CONTENT = 12
-    TITLE_OBJECT_CONTENT = 13
-    TITLE_CONTENT_OVER_CONTENT = 14
-    TITLE_2CONTENT_CONTENT = 15
-    TITLE_2CONTENT_OVER_CONTENT = 16
-    TITLE_CONTENT_OVER_OBJECT = 17
-    TITLE_4OBJECT = 18
-    TITLE_ONLY = 19
-    BLANK = 20
-    VTITLE_VTEXT_CHART = 27
-    VTITLE_VTEXT = 28
-    TITLE_VTEXT = 29
-    TITLE_VTEXT_CLIP = 30
-    CENTERED_TEXT = 32
-    TITLE_4CONTENT = 33
-    TITLE_6CONTENT = 34
-
-
-# endregion Enums
 
 
 class Draw:
@@ -1385,7 +1353,7 @@ class Draw:
         try:
             # Add text to the slide page by treating it as a title page, which
             # has two text shapes: one for the title, the other for a subtitle
-            mProps.Props.set(slide, Layout=int(_LayoutKind.TITLE_SUB))
+            mProps.Props.set(slide, Layout=int(PresentationLayoutKind.TITLE_SUB))
 
             # add the title text to the title shape
             xs = cls.find_shape_by_type(slide=slide, shape_type=DrawingNameSpaceKind.TITLE_TEXT)
@@ -1421,7 +1389,7 @@ class Draw:
             XText: Text Object
         """
         try:
-            mProps.Props.set(slide, Layout=_LayoutKind.TITLE_BULLETS.value)
+            mProps.Props.set(slide, Layout=PresentationLayoutKind.TITLE_BULLETS.value)
 
             # add the title text to the title shape
             xs = cls.find_shape_by_type(slide=slide, shape_type=DrawingNameSpaceKind.TITLE_TEXT)
@@ -1480,7 +1448,7 @@ class Draw:
             None:
         """
         try:
-            mProps.Props.set(slide, Layout=_LayoutKind.TITLE_ONLY.value)
+            mProps.Props.set(slide, Layout=PresentationLayoutKind.TITLE_ONLY.value)
 
             # add the text to the title shape
             xs = cls.find_shape_by_type(slide=slide, shape_type=DrawingNameSpaceKind.TITLE_TEXT)
@@ -1504,7 +1472,7 @@ class Draw:
             None:
         """
         try:
-            mProps.Props.set(slide, Layout=_LayoutKind.BLANK.value)
+            mProps.Props.set(slide, Layout=PresentationLayoutKind.BLANK.value)
         except Exception as e:
             raise mEx.DrawError("Error inserting blank slide") from e
 
