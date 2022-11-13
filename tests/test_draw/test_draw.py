@@ -192,3 +192,33 @@ def test_lines_and_move_to_top(loader) -> None:
     assert pos2.Y == line_pos.Y
 
     Lo.close(closeable=doc, deliver_ownership=False)
+
+
+def _test_shape_drawing_object(loader) -> None:
+    from ooodev.utils.gui import GUI
+
+    # With the following
+    # nothing appears on the slide, but object is there
+    # position, width and height can not be changed
+
+    # com.sun.star.drawing.Shape3DSceneObject # nothing show up on screen but test pass
+    # com.sun.star.drawing.Shape3DCubeObject # nothing show up on screen but test pass
+    # com.sun.star.drawing.Shape3DSphereObject # nothing show up on screen but test pass
+    # com.sun.star.drawing.Shape3DLatheObject # nothing show up on screen but test pass
+    # com.sun.star.drawing.Shape3DExtrudeObject # nothing show up on screen but test pass
+    # com.sun.star.drawing.Shape3DPolygonObject # nothing show up on screen but test pass
+    doc = Draw.create_draw_doc(loader)
+    slide = Draw.get_slide(doc=doc, idx=0)
+
+    GUI.set_visible(is_visible=True, odoc=doc)
+    Lo.delay(1000)
+    GUI.zoom(GUI.ZoomEnum.ENTIRE_PAGE)
+
+    num_shapes = slide.getCount()
+    assert num_shapes == 0
+    Draw.add_shape(slide=slide, shape_type="Shape3DPolygonObject", x=120, y=120, width=60, height=60)
+    num_shapes2 = slide.getCount()
+    assert num_shapes2 == 1
+
+    Lo.delay(3000)
+    Lo.close(closeable=doc, deliver_ownership=False)

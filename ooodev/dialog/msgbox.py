@@ -1,7 +1,7 @@
 # coding: utf-8
 from __future__ import annotations
 from typing import cast
-from ..utils.lo import Lo
+from ..utils import lo as mLo
 
 from com.sun.star.awt import XToolkit2
 from com.sun.star.awt import XMessageBox
@@ -45,7 +45,7 @@ class MsgBox:
         else:
             _buttons = buttons
 
-        tk = Lo.create_instance_mcf(XToolkit2, "com.sun.star.awt.Toolkit")
+        tk = mLo.Lo.create_instance_mcf(XToolkit2, "com.sun.star.awt.Toolkit")
         parent = tk.getDesktopWindow()
         box = cast(XMessageBox, tk.createMessageBox(parent, boxtype, int(_buttons), str(title), str(msg)))
         return MessageBoxResultsEnum(int(box.execute()))
