@@ -8,7 +8,7 @@ Chapter 13. Drawing Basic Shapes
 
     A Black Dashed Line; A Red Ellipse; Filled Rectangles; Text; Shape Names; A Transparent Circle and a Polar Line; A Math Formula as an OLE Shape; Polygons; Multiple Lines, Partial Ellipses
 
-    Examples: |animate_bike|_, |draw_picture|_.
+    Examples: |animate_bike|_, |draw_picture|_, and |draw_gradient_ex|_.
 
 This chapter contains an assortment of basic shape creation examples, including the following:
 
@@ -24,7 +24,6 @@ The examples come from two files, |draw_picture|_ and |animate_bike|_. The ``sho
 .. tabs::
 
     .. code-tab:: python
-
 
         class DrawPicture:
 

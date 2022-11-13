@@ -1,9 +1,8 @@
 # region Imports
 from __future__ import annotations
-from enum import IntEnum, Enum
 from pathlib import Path
 import time
-from typing import Callable, List, Sequence, Tuple, cast, overload
+from typing import List, Sequence, Tuple, cast, overload, TYPE_CHECKING
 import math
 
 import uno
@@ -66,6 +65,7 @@ from ..utils.data_type.angle import Angle as Angle
 from ..utils.data_type.image_offset import ImageOffset as ImageOffset
 from ..utils.data_type.intensity import Intensity as Intensity
 from ..utils.data_type.poly_sides import PolySides as PolySides
+from ..utils.data_type.window_title import WindowTitle
 from ..utils.dispatch.shape_dispatch_kind import ShapeDispatchKind as ShapeDispatchKind
 from ..utils.kind.drawing_bitmap_kind import DrawingBitmapKind as DrawingBitmapKind
 from ..utils.kind.drawing_gradient_kind import DrawingGradientKind as DrawingGradientKind
@@ -78,6 +78,7 @@ from ..utils.kind.form_control_kind import FormControlKind as FormControlKind
 from ..utils.kind.glue_points_kind import GluePointsKind as GluePointsKind
 from ..utils.kind.graphic_style_kind import GraphicStyleKind as GraphicStyleKind
 from ..utils.kind.presentation_kind import PresentationKind as PresentationKind
+from ..utils.kind.presentation_layout_kind import PresentationLayoutKind as PresentationLayoutKind
 from ..utils.kind.shape_comb_kind import ShapeCombKind as ShapeCombKind
 from ..utils.type_var import PathOrStr
 
@@ -99,40 +100,10 @@ from ooo.dyn.presentation.fade_effect import FadeEffect as FadeEffect
 from ooo.dyn.container.no_such_element_exception import NoSuchElementException
 from ooo.dyn.lang.index_out_of_bounds_exception import IndexOutOfBoundsException
 
+if TYPE_CHECKING:
+    from ..proto.dispatch_shape import DispatchShape
+
 # endregion Imports
-
-# region Enums
-class _LayoutKind(IntEnum):
-    TITLE_SUB = 0
-    TITLE_BULLETS = 1
-    TITLE_CHART = 2
-    TITLE_2CONTENT = 3
-    TITLE_CONTENT_CHART = 4
-    TITLE_CONTENT_CLIP = 6
-    TITLE_CHART_CONTENT = 7
-    TITLE_TABLE = 8
-    TITLE_CLIP_CONTENT = 9
-    TITLE_CONTENT_OBJECT = 10
-    TITLE_OBJECT = 11
-    TITLE_CONTENT_2CONTENT = 12
-    TITLE_OBJECT_CONTENT = 13
-    TITLE_CONTENT_OVER_CONTENT = 14
-    TITLE_2CONTENT_CONTENT = 15
-    TITLE_2CONTENT_OVER_CONTENT = 16
-    TITLE_CONTENT_OVER_OBJECT = 17
-    TITLE_4OBJECT = 18
-    TITLE_ONLY = 19
-    BLANK = 20
-    VTITLE_VTEXT_CHART = 27
-    VTITLE_VTEXT = 28
-    TITLE_VTEXT = 29
-    TITLE_VTEXT_CLIP = 30
-    CENTERED_TEXT = 32
-    TITLE_4CONTENT = 33
-    TITLE_6CONTENT = 34
-
-
-# endregion Enums
 
 
 class Draw:
@@ -1385,7 +1356,7 @@ class Draw:
         try:
             # Add text to the slide page by treating it as a title page, which
             # has two text shapes: one for the title, the other for a subtitle
-            mProps.Props.set(slide, Layout=int(_LayoutKind.TITLE_SUB))
+            mProps.Props.set(slide, Layout=PresentationLayoutKind.TITLE_SUB.value)
 
             # add the title text to the title shape
             xs = cls.find_shape_by_type(slide=slide, shape_type=DrawingNameSpaceKind.TITLE_TEXT)
@@ -1421,7 +1392,7 @@ class Draw:
             XText: Text Object
         """
         try:
-            mProps.Props.set(slide, Layout=_LayoutKind.TITLE_BULLETS.value)
+            mProps.Props.set(slide, Layout=PresentationLayoutKind.TITLE_BULLETS.value)
 
             # add the title text to the title shape
             xs = cls.find_shape_by_type(slide=slide, shape_type=DrawingNameSpaceKind.TITLE_TEXT)
@@ -1480,7 +1451,7 @@ class Draw:
             None:
         """
         try:
-            mProps.Props.set(slide, Layout=_LayoutKind.TITLE_ONLY.value)
+            mProps.Props.set(slide, Layout=PresentationLayoutKind.TITLE_ONLY.value)
 
             # add the text to the title shape
             xs = cls.find_shape_by_type(slide=slide, shape_type=DrawingNameSpaceKind.TITLE_TEXT)
@@ -1504,7 +1475,7 @@ class Draw:
             None:
         """
         try:
-            mProps.Props.set(slide, Layout=_LayoutKind.BLANK.value)
+            mProps.Props.set(slide, Layout=PresentationLayoutKind.BLANK.value)
         except Exception as e:
             raise mEx.DrawError("Error inserting blank slide") from e
 
@@ -2741,7 +2712,8 @@ class Draw:
         y: int,
         width: int,
         height: int,
-        fn: Callable[[XDrawPage, str], XShape | None],
+        fn: DispatchShape,
+        *titles: WindowTitle,
     ) -> XShape:
         """
         Adds a shape to a Draw slide via a dispatch command
@@ -2753,7 +2725,8 @@ class Draw:
             y (int): Shape Y position in mm units.
             width (int): Shape width in mm units.
             height (int): Shape height in mm units.
-            fn (Callable[[XDrawPage, str], XShape  |  None]): Function that is responsible for running the dispatch command and returning the shape.
+            fn (DispatchShpae): Function that is responsible for running the dispatch command and returning the shape.
+            *titles: Optional Expandable list of :py:class`~.data_type.windwos_title.WindowTitle` to pass with ``fn``
 
         Raises:
             NoneError: If adding a dispatch fails.
@@ -2761,10 +2734,13 @@ class Draw:
 
         Returns:
             XShape: Shape
+
+        See Also:
+            :py:protocol:`~.proto.dispatch_shape.DispatchShape`
         """
         cls.warns_position(slide, x, y)
         try:
-            shape = fn(slide, str(shape_dispatch))
+            shape = fn(slide, str(shape_dispatch), *titles)
             if shape is None:
                 raise mEx.NoneError(f'Failed to add shape for dispatch command "{shape_dispatch}"')
             cls.set_position(shape=shape, x=x, y=y)
@@ -2777,7 +2753,7 @@ class Draw:
 
     @staticmethod
     def create_dispatch_shape(
-        slide: XDrawPage, shape_dispatch: ShapeDispatchKind | str, fn: Callable[[XDrawPage, str], XShape | None]
+        slide: XDrawPage, shape_dispatch: ShapeDispatchKind | str, fn: DispatchShape, *titles: WindowTitle
     ) -> XShape:
         """
         Creates a shape via a dispatch command.
@@ -2785,7 +2761,8 @@ class Draw:
         Args:
             slide (XDrawPage): Slide
             shape_dispatch (ShapeDispatchKind | str): Dispatch Command
-           fn (Callable[[XDrawPage, str], XShape  |  None]): Function that is responsible for running the dispatch command and returning the shape.
+            fn (DispatchShpae): Function that is responsible for running the dispatch command and returning the shape.
+            *titles: Optional Expandable list of :py:class`~.data_type.windwos_title.WindowTitle` to pass with ``fn``
 
         Raises:
             NoneError: If adding a dispatch fails.
@@ -2795,7 +2772,7 @@ class Draw:
             XShape: Shape
         """
         try:
-            shape = fn(slide, str(shape_dispatch))
+            shape = fn(slide, str(shape_dispatch), *titles)
             if shape is None:
                 raise mEx.NoneError(f'Failed to add shape for dispatch command "{shape_dispatch}"')
             return shape

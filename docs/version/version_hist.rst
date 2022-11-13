@@ -2,6 +2,15 @@
 Version History
 ***************
 
+Version 0.6.2
+=============
+
+Rename private enum ``_LayoutKind`` to public ``LayoutKind`` to make available for public use.
+
+Added new Fast Lookup methods to ``Props`` class.
+
+New Exceptions ``PropertyGeneralError``
+
 Version 0.6.1
 =============
 
@@ -12,6 +21,8 @@ Added ``Draw.create_dispatch_shape()`` method.
 Added Dispatch Lookup ``ShapeDispatchKind`` Enum.
 
 Added None to ``GraphicArrowStyleKind`` Enum.
+
+Added classes ``WindowTitle`` and ``DialogTitle`` for working with GUI packages.
 
 Version 0.6.0
 =============

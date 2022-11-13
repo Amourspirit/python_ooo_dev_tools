@@ -1,7 +1,7 @@
 # coding: utf-8
 from __future__ import annotations
-from enum import Enum
-from typing import Any
+from enum import Enum, IntEnum, IntFlag
+from typing import Any, Type
 from ...utils import gen_util as mGenUtil
 
 
@@ -40,7 +40,7 @@ def enum_class_new(cls, value: Any) -> Enum:
     raise ValueError("%r is not a valid %s" % (value, cls.__name__))
 
 
-def enum_from_string(s: str, ec: Enum) -> Enum:
+def enum_from_string(s: str, ec: Type[Enum]) -> Enum:
     """
     Gets an enum instance from a string
 
@@ -64,6 +64,17 @@ def enum_from_string(s: str, ec: Enum) -> Enum:
         return getattr(ec, s.upper())
     except AttributeError:
         pass
+
+    if issubclass(ec, (IntEnum, IntFlag)):
+        try:
+            return ec(int(s))
+        except ValueError:
+            pass
+        if s.upper().startswith("0X"):
+            try:
+                return ec(int(s, 16))
+            except ValueError:
+                pass
 
     e_str = mGenUtil.Util.to_single_space(s).replace("-", "_").replace(" ", "_")
     if "_" in e_str:

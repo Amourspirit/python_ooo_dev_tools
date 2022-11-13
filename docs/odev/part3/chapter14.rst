@@ -193,7 +193,7 @@ A second version of :py:meth:`.Draw.draw_image` doesn't require width and height
 
         -  :odev_src_draw_meth:`draw_image`
 
-The image’s size is returned in`` 1/100 mm`` units by :py:meth:`.ImagesLo.get_size_100mm`.
+The image's size is returned in ``1/100 mm`` units by :py:meth:`.ImagesLo.get_size_100mm`.
 It loads the image as an XGraphic_ object so that its ``Size100thMM`` property can be examined:
 
 .. tabs::
@@ -209,10 +209,10 @@ It loads the image as an XGraphic_ object so that its ``Size100thMM`` property c
 This approach isn't very efficient since it means that the image is being loaded twice,
 once as an XGraphic_ object by :py:meth:`~.ImagesLo.get_size_100mm`, and also as a bitmap by ``setImage()``.
 
-14.2.2 Updating the Bike’s Position and Orientation
+14.2.2 Updating the Bike's Position and Orientation
 ---------------------------------------------------
 
-The ``_animate_bike()`` animation uses Draw methods for getting and setting the shape’s position and orientation:
+The ``_animate_bike()`` animation uses Draw methods for getting and setting the shap's position and orientation:
 
 .. tabs::
 
