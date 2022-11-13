@@ -17,4 +17,10 @@ $(document).ready(function () {
     $('a.external').filter(function () {
         return this.href.indexOf(location.origin) === 0;
     }).removeClass('external').addClass('internal')
+
+    // add link to open figure images in a new window for full view.
+    $('figure.diagram img, figure.screen-shot img').css('cursor', 'pointer').click(function () {
+        window.open(this.src);
+        return false;
+    });
 });

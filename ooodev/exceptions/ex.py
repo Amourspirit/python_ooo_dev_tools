@@ -53,7 +53,13 @@ class ConfigError(Exception):
     pass
 
 
-class PropertySetError(Exception):
+class PropertyGeneralError(Exception):
+    """Generic Property Error"""
+
+    pass
+
+
+class PropertySetError(PropertyGeneralError):
     """Generic Property Set Error"""
 
     pass
@@ -65,7 +71,7 @@ class PropertySetMissingError(PropertySetError):
     pass
 
 
-class PropertyError(Exception):
+class PropertyError(PropertyGeneralError):
     """
     Property Error
     """
@@ -83,7 +89,7 @@ class PropertyError(Exception):
         return repr(f"Property Error for: {self.args[0]}")
 
 
-class PropertiesError(Exception):
+class PropertiesError(PropertyGeneralError):
     """Error for multiple properties"""
 
     pass

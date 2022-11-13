@@ -1,9 +1,8 @@
 # region Imports
 from __future__ import annotations
-from enum import IntEnum, Enum
 from pathlib import Path
 import time
-from typing import Callable, List, Sequence, Tuple, cast, overload
+from typing import List, Sequence, Tuple, cast, overload, TYPE_CHECKING
 import math
 
 import uno
@@ -66,6 +65,7 @@ from ..utils.data_type.angle import Angle as Angle
 from ..utils.data_type.image_offset import ImageOffset as ImageOffset
 from ..utils.data_type.intensity import Intensity as Intensity
 from ..utils.data_type.poly_sides import PolySides as PolySides
+from ..utils.data_type.window_title import WindowTitle
 from ..utils.dispatch.shape_dispatch_kind import ShapeDispatchKind as ShapeDispatchKind
 from ..utils.kind.drawing_bitmap_kind import DrawingBitmapKind as DrawingBitmapKind
 from ..utils.kind.drawing_gradient_kind import DrawingGradientKind as DrawingGradientKind
@@ -99,6 +99,9 @@ from ooo.dyn.presentation.animation_speed import AnimationSpeed as AnimationSpee
 from ooo.dyn.presentation.fade_effect import FadeEffect as FadeEffect
 from ooo.dyn.container.no_such_element_exception import NoSuchElementException
 from ooo.dyn.lang.index_out_of_bounds_exception import IndexOutOfBoundsException
+
+if TYPE_CHECKING:
+    from ..proto.dispatch_shape import DispatchShape
 
 # endregion Imports
 
@@ -2709,7 +2712,8 @@ class Draw:
         y: int,
         width: int,
         height: int,
-        fn: Callable[[XDrawPage, str], XShape | None],
+        fn: DispatchShape,
+        *titles: WindowTitle,
     ) -> XShape:
         """
         Adds a shape to a Draw slide via a dispatch command
@@ -2721,7 +2725,8 @@ class Draw:
             y (int): Shape Y position in mm units.
             width (int): Shape width in mm units.
             height (int): Shape height in mm units.
-            fn (Callable[[XDrawPage, str], XShape  |  None]): Function that is responsible for running the dispatch command and returning the shape.
+            fn (DispatchShpae): Function that is responsible for running the dispatch command and returning the shape.
+            *titles: Optional Expandable list of :py:class`~.data_type.windwos_title.WindowTitle` to pass with ``fn``
 
         Raises:
             NoneError: If adding a dispatch fails.
@@ -2729,10 +2734,13 @@ class Draw:
 
         Returns:
             XShape: Shape
+
+        See Also:
+            :py:protocol:`~.proto.dispatch_shape.DispatchShape`
         """
         cls.warns_position(slide, x, y)
         try:
-            shape = fn(slide, str(shape_dispatch))
+            shape = fn(slide, str(shape_dispatch), *titles)
             if shape is None:
                 raise mEx.NoneError(f'Failed to add shape for dispatch command "{shape_dispatch}"')
             cls.set_position(shape=shape, x=x, y=y)
@@ -2745,7 +2753,7 @@ class Draw:
 
     @staticmethod
     def create_dispatch_shape(
-        slide: XDrawPage, shape_dispatch: ShapeDispatchKind | str, fn: Callable[[XDrawPage, str], XShape | None]
+        slide: XDrawPage, shape_dispatch: ShapeDispatchKind | str, fn: DispatchShape, *titles: WindowTitle
     ) -> XShape:
         """
         Creates a shape via a dispatch command.
@@ -2753,7 +2761,8 @@ class Draw:
         Args:
             slide (XDrawPage): Slide
             shape_dispatch (ShapeDispatchKind | str): Dispatch Command
-           fn (Callable[[XDrawPage, str], XShape  |  None]): Function that is responsible for running the dispatch command and returning the shape.
+            fn (DispatchShpae): Function that is responsible for running the dispatch command and returning the shape.
+            *titles: Optional Expandable list of :py:class`~.data_type.windwos_title.WindowTitle` to pass with ``fn``
 
         Raises:
             NoneError: If adding a dispatch fails.
@@ -2763,7 +2772,7 @@ class Draw:
             XShape: Shape
         """
         try:
-            shape = fn(slide, str(shape_dispatch))
+            shape = fn(slide, str(shape_dispatch), *titles)
             if shape is None:
                 raise mEx.NoneError(f'Failed to add shape for dispatch command "{shape_dispatch}"')
             return shape

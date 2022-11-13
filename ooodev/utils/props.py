@@ -9,6 +9,7 @@ import uno
 
 from com.sun.star.beans import PropertyAttribute  # const
 from com.sun.star.beans import XPropertySet
+from com.sun.star.beans import XFastPropertySet
 from com.sun.star.container import XNameAccess
 from com.sun.star.document import XTypeDetection
 from com.sun.star.ui import ItemType  # const
@@ -19,7 +20,7 @@ from com.sun.star.container import XIndexAccess
 
 
 if TYPE_CHECKING:
-    from com.sun.star.beans import Property, PropertyValue
+    from com.sun.star.beans import Property, PropertyValue, XPropertySetInfo
     from com.sun.star.beans import XMultiPropertySet
 
     # import module and not module content to avoid circular import issue.
@@ -183,6 +184,163 @@ class Props:
                 prop.Value = value
                 return True
         print(f"{name} not found")
+        return False
+
+    @staticmethod
+    def get_xproperty_set(obj: object) -> XPropertySet:
+        """
+        Gets Property Set
+
+        Args:
+            obj (object): object that implements ``XPropertySet``
+
+        Raises:
+            MissingInterfaceError: if ``obj`` does not implement ``XPropertySet``.
+
+        Returns:
+            XPropertySet: Property Set
+        """
+        return mLo.Lo.qi(XPropertySet, obj, True)
+
+    @staticmethod
+    def get_xproperty_set_fast(obj: object) -> XFastPropertySet:
+        """
+        Gets Fast Property Set
+
+        Args:
+            obj (object): object that implements ``XFastPropertySet``
+
+        Raises:
+            MissingInterfaceError: if ``obj`` does not implement ``XFastPropertySet``.
+
+        Returns:
+            XFastPropertySet: Property Set
+        """
+        return mLo.Lo.qi(XFastPropertySet, obj, True)
+
+    # region get_xproperty_fast_value()
+    @overload
+    @classmethod
+    def get_xproperty_fast_value(cls, *, handle: int, fps: XFastPropertySet) -> Any:
+        ...
+
+    @overload
+    @classmethod
+    def get_xproperty_fast_value(cls, *, prop: Property, fps: XFastPropertySet) -> Any:
+        ...
+
+    @overload
+    @classmethod
+    def get_xproperty_fast_value(cls, *, handle: int, obj: object) -> Any:
+        ...
+
+    @classmethod
+    def get_xproperty_fast_value(cls, *args, **kwargs) -> Any:
+        """
+        Gets a fast property value via ``XFastPropertySet``
+
+        Arguments:
+            handle (int): handle of the property.
+            fps (XFastPropertySet): property set that contains the property for matching handle.
+            prop (Property): Property that handle can be obtained from.
+            obj (object): an object that ``XFastPropertySet`` can be obtained from.
+
+        Rasies:
+            PropertyGeneralError: If an error occurs.
+
+        Returns:
+            Any: Property Value
+        """
+        if len(args) > 0:
+            raise TypeError(f"get_xproperty_fast_value() takes 0 positional arguments but {len(args)} was given")
+
+        count = len(kwargs)
+
+        if count != 2:
+            raise TypeError("get_xproperty_fast_value() got an invalid number of arguments")
+
+        try:
+            handle = cast(int, kwargs.get("handle", None))
+            if handle is None:
+                handle = cast(Property, kwargs.get("prop")).Handle
+
+            fps = cast(XFastPropertySet, kwargs.get("fps", None))
+            if fps:
+                return fps.getFastPropertyValue(handle)
+
+            fps = cls.get_xproperty_set_fast(kwargs.get("obj"))
+            return fps.getFastPropertyValue(handle)
+        except Exception as e:
+            raise mEx.PropertyGeneralError("Error getting fast property value") from e
+
+    # endregion get_xproperty_fast_value()
+
+    @classmethod
+    def get_property_set_info(cls, obj: object) -> XPropertySetInfo:
+        """
+        Gets property set info
+
+        Args:
+            obj (object): Object that implements ``XPropertySet``.
+
+        Raises:
+            PropertyGeneralError: If error occurs
+
+        Returns:
+            XPropertySetInfo: Property Set Info
+        """
+        try:
+            xset = cls.get_xproperty_set(obj)
+            result = xset.getPropertySetInfo()
+            if result is None:
+                raise mEx.NoneError("None Value: xset.getPropertySetInfo() returned None")
+            return result
+        except Exception as e:
+            raise mEx.PropertyGeneralError("Error getting property set info") from e
+
+    @classmethod
+    def get_property_by_name(cls, obj: object, name: str) -> Property:
+        """
+        Gets a property by name.
+
+        Property instances do not contain a value.
+
+        Args:
+            obj (object): Object to get a property from
+            name (str): Property name to lookup in ``obj``.
+
+        Raises:
+            PropertyError: If error occurs
+
+        Returns:
+            Property: Property instance.
+        """
+        try:
+            info = cls.get_property_set_info(obj)
+            result = info.getPropertyByName(name)
+            if result is None:
+                pass
+            return result
+        except Exception as e:
+            raise mEx.PropertyError(name) from e
+
+    @classmethod
+    def has_property(cls, obj: object, name: str) -> bool:
+        """
+        Gets is an object contains a Property
+
+        Args:
+            obj (object): object that implements ``XPropertySet``
+            name (str): _description_
+
+        Returns:
+            bool: ``True`` if object contains property with name; Otherwise, ``False``.
+        """
+        try:
+            xset = cls.get_property_set_info(obj)
+            return xset.hasPropertyByName(name)
+        except Exception:
+            pass
         return False
 
     @staticmethod

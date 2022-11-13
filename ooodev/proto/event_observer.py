@@ -1,20 +1,23 @@
-# coding: utf-8
+from __future__ import annotations
 import sys
-if sys.version_info < (3, 8):
-    from typing_extensions import Protocol
-else:
+
+try:
     from typing import Protocol
+except ImportError:
+    from typing_extensions import Protocol
 
 from ..utils import type_var
 from ..events.args import event_args
 
+
 class EventObserver(Protocol):
     """
     Protocol Class for Event Observer.
-    
+
     See Also:
         :py:mod:`~.events.lo_events`
     """
+
     def on(self, event_name: str, callback: type_var.EventCallback):
         """
         Registers an event

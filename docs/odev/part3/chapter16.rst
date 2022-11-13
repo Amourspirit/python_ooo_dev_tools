@@ -109,6 +109,7 @@ This creates a new slide deck with one slide whose layout depends on Impress' de
     .. _ch16fig_impress_default_new:
     .. figure:: https://user-images.githubusercontent.com/4193389/200931098-a22c8de5-3578-4322-83a3-f1520b8a6988.png
         :alt: The Default New Slide in Impress
+        :width: 550px
         :figclass: align-center
 
         :The Default New Slide in Impress.
@@ -312,6 +313,7 @@ The result shown in :numref:`ch16fig_slide_title_bullte_img`.
     .. _ch16fig_slide_title_bullte_img:
     .. figure:: https://user-images.githubusercontent.com/4193389/200941913-ef233dc5-b14b-4ca8-a3e7-640c64e90fdf.png
         :alt: A Slide with a Title, Bullet Points, and an Image.
+        :width: 525px
         :figclass: align-center
 
         :A Slide with a Title, Bullet Points, and an Image.
@@ -624,6 +626,7 @@ These actions are both implemented using the ``OnClick`` property for presentati
     .. _ch16fig_slide_btns_two:
     .. figure:: https://user-images.githubusercontent.com/4193389/200957116-abb24fc3-d0e3-4da2-a442-7a0c974a4cca.png
         :alt: A Slide with Two Buttons
+        :width: 525px
         :figclass: align-center
 
         :A Slide with Two 'Buttons'.
@@ -661,7 +664,12 @@ The`` _button_shapes()`` method in |make_slides_py|_ creates the slide:
             )
 
             Draw.add_text(shape=ellipse, msg="Start Video", font_size=30)
-            Props.set(ellipse, OnClick=ClickAction.DOCUMENT, Bookmark=FileIO.fnm_to_url(self._fnm_wildlife))
+            Props.set(
+                ellipse, OnClick=ClickAction.DOCUMENT, Bookmark=FileIO.fnm_to_url(self._fnm_wildlife)
+            )
+            Props.set(
+                ellipse, Effect=AnimationEffect.FADE_FROM_BOTTOM, Speed=AnimationSpeed.SLOW
+            )
 
             # draw a rounded rectangle with text
             button = Draw.draw_rectangle(
@@ -681,6 +689,11 @@ This requires ``OnClick`` to be assigned the ``ClickAction.DOCUMENT`` constant, 
 
 Clicking on the rounded rectangle causes the slide show to jump back to the first page.
 This needs ``OnClick`` to be set to ``ClickAction.FIRSTPAGE``.
+
+Several other forms of click action are listed in :numref:`ch16tbl_click_action_effects`.
+
+..
+    Table 1
 
 .. _ch16tbl_click_action_effects:
 
@@ -705,6 +718,144 @@ This needs ``OnClick`` to be set to ``ClickAction.FIRSTPAGE``.
      MACRO          An Office macro is executed after the click.                                             
     ============== ==========================================================================================
 
+:numref:`ch16tbl_click_action_effects` shows that it's possible to jump to various places in a slide show, and also execute macros and external programs.
+In both cases, the ``Bookmark`` property is used to specify the URL of the macro or program.
+For example, the following will invoke Windows' calculator when the button is pressed:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        Props.set(
+            button,
+            OnClick=ClickAction.PROGRAM,
+            Bookmark=FileIO.fnm_to_url(f'(System.getenv("SystemRoot")}\\System32\\calc.exe')
+            )
+
+``Bookmark`` requires an absolute path to the application, converted to URL form.
+
+Clicking on the ClickAction_ takes you to a table very like the one in :numref:`ch16tbl_click_action_effects`.
+
+16.5 Shape Animation
+====================
+
+Shape animations are performed during a slide show, and are regulated through three presentation Shape properties:
+``Effect``, ``Speed`` and ``TextEffect``.
+
+``Effect`` can be assigned a large range of animation effects, which are defined as constants in the AnimationEffect_ enumeration.
+
+Details can be found in the |star_presentation|_ module.
+Another nice summary, in the form of a large table, is `in the Developer's Guide <https://wiki.openoffice.org/wiki/Documentation/DevGuide/Drawings/Animations_and_Interactions>`_.
+:numref:`ch16fig_animation_effect_dev_guide` shows part of that table.
+
+..
+    figure 8
+
+.. cssclass:: screen_shot invert
+
+    .. _ch16fig_animation_effect_dev_guide:
+    .. figure:: https://user-images.githubusercontent.com/4193389/200963820-001b7e97-c835-4002-83e2-273316d2f9b4.png
+        :alt: Animation Effect Constants Table in the Developer's Guide.
+        :width: 525px
+        :figclass: align-center
+
+        :AnimationEffect_ Constants `Table in the Developer's Guide <https://wiki.openoffice.org/wiki/Documentation/DevGuide/Drawings/Animations_and_Interactions>`_.
+
+There are two broad groups of effects: those that move a shape onto the slide when the page appears, and fade effects that make a shape gradually appear in a given spot.
+
+The following code fragment makes the ellipse on the fourth slide mobr into view, starting from the left of the slide:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in _button_shapes() in make_slides.py
+        Props.set(
+            ellipse, Effect=AnimationEffect.MOVE_FROM_LEFT, Speed=AnimationSpeed.FAST
+        )
+
+The animation speed takes a AnimationSpeed_ value and can be set to  ``AnimationSpeed.SLOW``, ``AnimationSpeed.MEDIUM``, or ``AnimationSpeed.FAST``.
+
+Unfortunately, there seems to be an issue with some of the Animation Effects as shown in :numref:`ch16fig_animationeffect_fade_from_lowerright_bug`,
+:numref:`ch16fig_animationeffect_fade_from_bottom_bug`, and :numref:`ch16fig_animationeffect_fade_from_top_dev_tool_view`.
+When some of the effects are set they actually work in reverse. At least this is the case on Windows 10 and LibreOffice 7.3
+There seemed to be issues with most of the fade effects. Not all effects were tested due to the volume of effects.
+There may be more effects of different types not working correctly.
+
+.. cssclass:: screen_shot invert
+
+    .. _ch16fig_animationeffect_fade_from_lowerright_bug:
+    .. figure:: https://user-images.githubusercontent.com/4193389/201223650-ed3e195f-f506-4fc3-af5d-a14ea02008bc.png
+        :alt: :Animation Effect FADE FROM LOWER RIGHT workS in reverse
+        :width: 550px
+        :figclass: align-center
+
+        :``AnimationEffect.FADE_FROM_LOWERRIGHT`` reversed
+
+
+.. cssclass:: screen_shot invert
+
+    .. _ch16fig_animationeffect_fade_from_bottom_bug:
+    .. figure:: https://user-images.githubusercontent.com/4193389/201224471-98b499b5-c283-48aa-b8cd-0f4eb5321922.png
+        :alt: :Animation Effect FADE FROM BOTTOM workS in reverse
+        :width: 550px
+        :figclass: align-center
+
+        :``AnimationEffect.FADE_FROM_BOTTOM`` reversed
+
+The developer tools of LibreOffice can be used to confirm that ``Effect`` property is actually being set correctly as shown in :numref:`ch16fig_animationeffect_fade_from_top_dev_tool_view`.
+Developer tools are availabel in LibreOffice ``7.3 +``.
+
+.. cssclass:: screen_shot invert
+
+    .. _ch16fig_animationeffect_fade_from_top_dev_tool_view:
+    .. figure:: https://user-images.githubusercontent.com/4193389/201225731-ae40e251-0a13-4eda-8e37-4f2a4a0ee4ad.png
+        :alt: :Animation Effect FADE FROM TOP workS in reverse, developer tools view
+        :width: 680px
+        :figclass: align-center
+
+        :``AnimationEffect.FADE_TOP_BOTTOM`` reversed developer tool view.
+
+More Complex Shape Animations
+-----------------------------
+
+If you browse chapter 9 of the Impress user's guide on slide shows, its animation capabilities extend well beyond the constants in ``AnimationEffect``.
+These features are available through the XAnimationNode_ interface, which is obtained like so:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        from com.sun.star.animations import XAnimationNode
+        from ooodev.utils.lo import Lo
+
+        node_supp = Lo.qi(XAnimationNodeSupplier, slide)
+        slide_node = node_supp.getAnimationNode()  # XAnimationNode
+
+XAnimationNode_ allows a programmer much finer control over animation timings and animation paths for shapes.
+XAnimationNode_ is part of the large ``com.sun.star.animations`` package.
+
+16.6 The Fifth Slide (Various Dispatch Shapes)
+==============================================
+
+The fifth slide is a hacky, slow solution for generating the numerous shapes in Impress' GUI which have no corresponding classes in the API.
+The approach uses dispatch commands, JNA, and Java's Robot class (first described back in Chapter 4).
+
+The resulting slide is shown in :numref:`ch16fig_gui_dispatch_shapes`.
+
+..
+    figure 9
+
+.. cssclass:: screen_shot
+
+    .. _ch16fig_gui_dispatch_shapes:
+    .. figure:: https://user-images.githubusercontent.com/4193389/201233121-e867d84c-cf75-4112-8845-25d3ddbdd64d.png
+        :alt: Shapes Created by Dispatch Commands.
+        :width: 525px
+        :figclass: align-center
+
+        :Shapes Created by Dispatch Commands.
+
 Work in progress ...
 
 .. |animate_bike| replace:: Animate Bike
@@ -716,14 +867,20 @@ Work in progress ...
 .. |make_slides_py| replace:: make_slides.py
 .. _make_slides_py: https://github.com/Amourspirit/python-ooouno-ex/blob/main/ex/auto/impress/odev_make_slides/make_slides.py
 
+.. |star_presentation| replace:: com.sun.star.presentation
+.. _star_presentation: https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1presentation.html
+
+.. _AnimationEffect: https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1presentation.html#a10f2a3114ab31c0e6f7dc48f656fd260
+.. _AnimationSpeed: https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1presentation.html#a07b64dc4a366b20ad5052f974ffdbf62
+.. _ClickAction: https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1presentation.html#a85fe75121d351785616b75b2c5661d8f
 .. _DrawPage: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1presentation_1_1DrawPage.html
 .. _OutlinerShape: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1presentation_1_1OutlinerShape.html
+.. _ParagraphProperties: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1ParagraphProperties.html
+.. _RectangleShape: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1drawing_1_1RectangleShape.html
 .. _SubTitleShape: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1presentation_1_1SubtitleShape.html
+.. _TextRange: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1TextRange.html
 .. _TitleTextShape: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1presentation_1_1TitleTextShape.html
 .. _XDrawPage: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1drawing_1_1XDrawPage.html
 .. _XText: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XText.html
 .. _XTextRange: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextRange.html
-.. _TextRange: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1TextRange.html
-.. _ParagraphProperties: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1ParagraphProperties.html
-.. _RectangleShape: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1drawing_1_1RectangleShape.html
-
+.. _XAnimationNode: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1animations_1_1XAnimationNode.html

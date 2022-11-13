@@ -53,7 +53,6 @@ from ..exceptions import ex as mEx
 from ooo.dyn.awt.rectangle import Rectangle
 from ooo.dyn.awt.window_descriptor import WindowDescriptor
 from ooo.dyn.awt.window_class import WindowClass
-from ooo.dyn.view.document_zoom_type import DocumentZoomTypeEnum
 
 # endregion Imports
 
@@ -231,15 +230,17 @@ class GUI:
     # region ---------------- toolbar addition -------------------------
 
     @classmethod
-    def get_toobar_resource(cls, name: GUI.ToolBarName) -> str:
+    def get_toobar_resource(cls, name: GUI.ToolBarName | str) -> str:
         """
         Get toolbar resource for name
 
         Args:
-            name (ToolBarName): Name of resource
+            name (ToolBarName| str): Name of toolbar resource
 
         Returns:
             str: A formatted resource string such as ``private:resource/toolbar/zoombar``
+
+        Note:
         """
         resource = f"private:resource/toolbar/{name}"
         return resource
@@ -1331,6 +1332,67 @@ class GUI:
             raise Exception("Could not access layout manager") from e
 
     # endregion    get_layout_manager()
+
+    # region    show_memu_bar()
+    @overload
+    @classmethod
+    def show_memu_bar(cls) -> None:
+        ...
+
+    @overload
+    @classmethod
+    def show_memu_bar(cls, doc: XComponent) -> None:
+        ...
+
+    @classmethod
+    def show_memu_bar(cls, doc: XComponent = None) -> None:
+        """
+        Shows the main menu bar
+
+        Args:
+            doc (XComponent): doc (XComponent): office document
+        """
+        lm = cls.get_layout_manager(doc=doc)
+        lm.showElement(GUI.MENU_BAR)
+
+    # endregion show_memu_bar()
+
+    # region    hide_memu_bar()
+    @overload
+    @classmethod
+    def hide_memu_bar(cls) -> None:
+        ...
+
+    @overload
+    @classmethod
+    def hide_memu_bar(cls, doc: XComponent) -> None:
+        ...
+
+    @classmethod
+    def hide_memu_bar(cls, doc: XComponent = None) -> None:
+        """
+        Hides the main menu bar
+
+        Args:
+            doc (XComponent): doc (XComponent): office document
+        """
+        lm = cls.get_layout_manager(doc=doc)
+        lm.hideElement(GUI.MENU_BAR)
+
+    @staticmethod
+    def toggle_menu_bar() -> None:
+        """
+        Toggles the main menu visibality.
+
+        If the menu is visible then it is hidden.
+        If it is hidden then it will be made visible.
+
+        Note:
+            Toggle is done dispatching command ``Menubar``.
+        """
+        mLo.Lo.dispatch_cmd("Menubar")
+
+    # endregion hide_memu_bar()
 
     # region    print_u_is()
     @overload
