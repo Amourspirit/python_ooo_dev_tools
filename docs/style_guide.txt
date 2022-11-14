@@ -163,3 +163,30 @@ Linking to Source code:
             - :odev_src_draw_meth:`get_slides_count`
     
     To see what role are available or to add new rows see extlinks in conf.py
+
+
+Code Blocks:
+    Code blocks are generally in a tab.
+
+    .. tabs::
+
+        .. code-tab:: python
+
+            def _toggle_side_bar(self) -> None:
+                if not RobotKeys:
+                    Lo.print("odevgui_win not found.")
+                    return
+                RobotKeys.send_current(SendKeyInfo(WriterKeyCodes.KB_SIDE_BAR))
+
+    Hilighting can be added to lines by using :emphasize-lines: 
+
+    .. tabs::
+
+        .. code-tab:: python
+            :emphasize-lines: 2, 3, 4, 5
+
+            def _toggle_side_bar(self) -> None:
+                if not RobotKeys:
+                    Lo.print("odevgui_win not found.")
+                    return
+                RobotKeys.send_current(SendKeyInfo(WriterKeyCodes.KB_SIDE_BAR))

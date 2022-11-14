@@ -245,7 +245,7 @@ class Props:
             prop (Property): Property that handle can be obtained from.
             obj (object): an object that ``XFastPropertySet`` can be obtained from.
 
-        Rasies:
+        Raises:
             PropertyGeneralError: If an error occurs.
 
         Returns:

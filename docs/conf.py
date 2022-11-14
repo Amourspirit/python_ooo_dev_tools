@@ -205,7 +205,7 @@ rst_prolog_lst = [
     "",
     ".. _ooouno: https://pypi.org/project/ooouno/",
     "",
-    ".. |odevgui_win| replace:: ooo-dev-tools-gui-win",
+    ".. |odevgui_win| replace:: ODEV GUI Automation for windows",
     f".. _odevgui_win: {odevgui_win_url}",
     "",
 ]
@@ -234,7 +234,7 @@ extlinks = {
 # endregion sphinx.ext.extlinks – Markup to shorten external links
 
 # region intersphinx
-intersphinx_mapping = {"ooo-dev-tools-gui-win": (odevgui_win_url, None)}
+intersphinx_mapping = {"odevguiwin": (odevgui_win_url, None)}
 
 # endregion intersphinx
 
