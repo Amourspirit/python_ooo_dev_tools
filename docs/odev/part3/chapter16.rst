@@ -15,11 +15,11 @@ The |make_slides|_ example creates a deck of five slides, illustrating different
 
 .. cssclass:: ul-list
 
-    * Slide 1. A slide combining a title and subtitle (see Figure 3);
-    * Slide 2. A slide with a title, bullet points, and an image (see Figure 4);
-    * Slide 3. A slide with a title, and an embedded video which plays automatically when that slide appears during a slide show (see Figure 6);
-    * Slide 4. A slide with an ellipse and a rounded rectangle acting as buttons. During a slide show, clicking on the ellipse starts a video playing in an external viewer. Clicking on the rounded rectangle causes the slide show to jump to the first slide in the deck (see Figure 7);
-    * Slide 5. This slide contains eight shapes generated using dispatches, including special symbols, block arrows, 3D shapes, flowchart elements, callouts, and stars (see Figure 9).
+    * Slide 1. A slide combining a title and subtitle (see :numref:`ch16fig_title_subtitle`);
+    * Slide 2. A slide with a title, bullet points, and an image (see :numref:`ch16fig_slide_title_bullte_img`);
+    * Slide 3. A slide with a title, and an embedded video which plays automatically when that slide appears during a slide show (see :numref:`ch16fig_slide_video_frame`);
+    * Slide 4. A slide with an ellipse and a rounded rectangle acting as buttons. During a slide show, clicking on the ellipse starts a video playing in an external viewer. Clicking on the rounded rectangle causes the slide show to jump to the first slide in the deck (see :numref:`ch16fig_slide_btns_two`);
+    * Slide 5. This slide contains eight shapes generated using dispatches, including special symbols, block arrows, 3D shapes, flowchart elements, callouts, and stars (see :numref:`ch16fig_gui_dispatch_shapes`).
 
 |make_slides_py|_ creates a slide deck, adds the five slides to it, and finishes by asking if you want to close the document.:
 
@@ -116,7 +116,7 @@ This creates a new slide deck with one slide whose layout depends on Impress' de
 
 The slide contains two empty presentation shapes – the text rectangle at the top is a TitleTextShape_, and the larger rectangle below is a SubTitleShape_.
 
-This first slide, which is at index position 0 in the deck, can be referred to by calling :py:meth:`.Draw.get_slide`:
+This first slide, which is at index position ``0`` in the deck, can be referred to by calling :py:meth:`.Draw.get_slide`:
 
 .. tabs::
 
@@ -198,12 +198,12 @@ A title/subtitle layout is used for the first slide by calling:
         :The Title and Subtitle Slide.
 
 Having a :py:meth:`.Draw.title_slide` method may seem a bit silly since we've seen that the first slide already uses this layout (e.g. in :numref:`ch16fig_impress_default_new`).
-That's true for my Impress setup, but may not be the case for other installations with different configurations.
+That's true for the Impress setup, but may not be the case for other installations with different configurations.
 
 The other layouts shown on the right of :numref:`ch16fig_impress_default_new` could also be implemented as Draw methods, but the four in :numref:`ch16fig_slide_layout_methods` seem most useful.
 They set the ``Layout`` property in the DrawPage_ service in the ``com.sun.star.presentation`` module (not the one in the drawing module).
 
-The documentation for DrawPage (use ``lodoc DrawPage presentation service``) only says that ``Layout`` stores a short; it doesn't list the possible values or how they correspond to layouts.
+The documentation for DrawPage_ (use ``lodoc DrawPage presentation service``) only says that ``Layout`` stores a short; it doesn't list the possible values or how they correspond to layouts.
 
 For this reason |odev| has :py:class:`~.kind.presentation_layout_kind.PresentationLayoutKind`
 which is used as the basis of the layout constants in the :py:class:`~.draw.Draw` class.
@@ -241,7 +241,7 @@ The functions adds title and subtitle strings to these shapes, and returns.
 The tricky part is obtaining a reference to a particular shape so it can be modified.
 
 One (bad) solution is to use the index ordering of the shapes on the slide, which is displayed by :py:meth:`.Draw.show_shapes_info`.
-It turns out that TitleTextShape_ is first (i.e. at index 0), and SubtitleShape_ second.
+It turns out that TitleTextShape_ is first (i.e. at index ``0``), and SubtitleShape_ second.
 This can be used to write the following code:
 
 .. tabs::
@@ -454,7 +454,7 @@ The |animate_bike|_ example in :ref:`ch14` employed a version of :py:meth:`.Draw
             slide=curr_slide, fnm="skinner.png", xoffset=ImageOffset(0.6), yoffset=ImageOffset(0.5)
         )
 
-The last two arguments mean that the image's top-left corner will be placed at a point that is 0.6 of the slide's width across and 0.5 of its height down.
+The last two arguments mean that the image's top-left corner will be placed at a point that is ``0.6`` of the slide's width across and ``0.5`` of its height down.
 :py:meth:`~.Draw.draw_image_offset` also scales the image so that it doesn't extend beyond the right and bottom edges of the slide.
 The scaling is the same along both dimensions so the picture isn't distorted.
 
@@ -640,9 +640,9 @@ The relevant code in ``main()`` of |make_slides_py|_ is:
         curr_slide = Draw.add_slide(doc)
         self._button_shapes(curr_slide=curr_slide)
 
-This button approach to playing a video doesn't suffer from the strange behavior when using MediaShape on the third slide.
+This button approach to playing a video doesn't suffer from the strange behavior when using ``MediaShape`` on the third slide.
 
-The`` _button_shapes()`` method in |make_slides_py|_ creates the slide:
+The ``_button_shapes()`` method in |make_slides_py|_ creates the slide:
 
 .. tabs::
 
@@ -763,7 +763,7 @@ Another nice summary, in the form of a large table, is `in the Developer's Guide
 
 There are two broad groups of effects: those that move a shape onto the slide when the page appears, and fade effects that make a shape gradually appear in a given spot.
 
-The following code fragment makes the ellipse on the fourth slide mobr into view, starting from the left of the slide:
+The following code fragment makes the ellipse on the fourth slide slide into view, starting from the left of the slide:
 
 .. tabs::
 
@@ -804,7 +804,7 @@ There may be more effects of different types not working correctly.
         :``AnimationEffect.FADE_FROM_BOTTOM`` reversed
 
 The developer tools of LibreOffice can be used to confirm that ``Effect`` property is actually being set correctly as shown in :numref:`ch16fig_animationeffect_fade_from_top_dev_tool_view`.
-Developer tools are availabel in LibreOffice ``7.3 +``.
+Developer tools are available in LibreOffice ``7.3 +``.
 
 .. cssclass:: screen_shot invert
 
@@ -839,7 +839,7 @@ XAnimationNode_ is part of the large ``com.sun.star.animations`` package.
 ==============================================
 
 The fifth slide is a hacky, slow solution for generating the numerous shapes in Impress' GUI which have no corresponding classes in the API.
-The approach uses dispatch commands, JNA, and Java's Robot class (first described back in Chapter 4).
+The approach uses dispatch commands, |odevgui_win|_, and :external+odevguiwin:ref:`class_robot_keys` (first described back in :ref:`ch04_robot_keys`).
 
 The resulting slide is shown in :numref:`ch16fig_gui_dispatch_shapes`.
 
@@ -856,7 +856,287 @@ The resulting slide is shown in :numref:`ch16fig_gui_dispatch_shapes`.
 
         :Shapes Created by Dispatch Commands.
 
-Work in progress ...
+The shapes in :numref:`ch16fig_gui_dispatch_shapes` are just a few of the many available via Impress' "Drawing Toolbar", shown in :numref:`ch16fig_gui_toolbar_shapes`.
+The relevant menus are labeled and their sub-menus are shown beneath the toolbar.
+
+..
+    figure 10
+
+.. cssclass:: diagram invert
+
+    .. _ch16fig_gui_toolbar_shapes:
+    .. figure:: https://user-images.githubusercontent.com/4193389/201736250-445586e0-1e60-48d6-9c13-4548d843a50c.png
+        :alt: The Shapes Available from the Drawing Toolbar
+        :figclass: align-center
+
+        :The Shapes Available from the Drawing Toolbar.
+
+Each sub-menu shape has a name which appears in a tooltip when the cursor is placed over the shape's icon.
+This text turns out to be very useful when writing the dispatch commands.
+
+There's also a "3D-Objects" toolbar which offers the shapes in :numref:`ch16fig_gui_toolbar_3d_objects`.
+
+..
+    figure 11
+
+.. cssclass:: diagram invert
+
+    .. _ch16fig_gui_toolbar_3d_objects:
+    .. figure:: https://user-images.githubusercontent.com/4193389/201736895-64f54480-4830-4ab8-94ca-bc7701f49fe0.png
+        :alt: The 3D Objects Toolbar
+        :figclass: align-center
+
+        :The 3D-Objects Toolbar.
+
+Some of these 3D shapes are available in the API as undocumented Shape subclasses, but it was unable to programmatically resize the shapes to make them visible.
+The only way possible to get them to appear at a reasonable size was by creating them with dispatch commands.
+
+Although there's no mention of these custom and 3D shapes in the Developer's Guide, their dispatch commands do appear in the
+``UICommands.ods`` spreadsheet (available from https://arielch.fedorapeople.org/devel/ooo/UICommands.ods).
+They're also mentioned, in less detail, in the online documentation for Impress dispatches at
+https://wiki.documentfoundation.org/Development/DispatchCommands#Impress_slots_.28sdslots.29
+
+
+It's quite easy to match up the tooltip names in the GUI with the dispatch names.
+For example, the smiley face in the Symbol shapes menu is called "Smiley Face" in the GUI and ``.uno:SymbolShapes.smiley`` in the ``UICommands`` spreadsheet.
+
+|make_slides_py|_ generates the eight shapes shown in :numref:`ch16fig_gui_dispatch_shapes` by calling ``_dispatch_shapes()``:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in make_slides.py
+        def _dispatch_shapes(self, doc: XComponent) -> None:
+            curr_slide = Draw.add_slide(doc)
+            Draw.title_only_slide(slide=curr_slide, header="Dispatched Shapes")
+
+            GUI.set_visible(is_visible=True, odoc=doc)
+            Lo.delay(1_000)
+
+            Draw.goto_page(doc=doc, page=curr_slide)
+            Lo.print(f"Viewing Slide number: {Draw.get_slide_number(Draw.get_viewed_page(doc))}")
+
+            # first row
+            y = 38
+            _ = Draw.add_dispatch_shape(
+                slide=curr_slide,
+                shape_dispatch=ShapeDispatchKind.BASIC_SHAPES_DIAMOND,
+                x=20,
+                y=y,
+                width=50,
+                height=30,
+                fn=DrawDispatcher.create_dispatch_shape,
+            )
+            _ = Draw.add_dispatch_shape(
+                slide=curr_slide,
+                shape_dispatch=ShapeDispatchKind.THREE_D_HALF_SPHERE,
+                x=80,
+                y=y,
+                width=50,
+                height=30,
+                fn=DrawDispatcher.create_dispatch_shape,
+            )
+            dshape = Draw.add_dispatch_shape(
+                slide=curr_slide,
+                shape_dispatch=ShapeDispatchKind.CALLOUT_SHAPES_CLOUD_CALLOUT,
+                x=140,
+                y=y,
+                width=50,
+                height=30,
+                fn=DrawDispatcher.create_dispatch_shape,
+            )
+            Draw.set_bitmap_color(shape=dshape, name=DrawingBitmapKind.LITTLE_CLOUDS)
+
+            dshape = Draw.add_dispatch_shape(
+                slide=curr_slide,
+                shape_dispatch=ShapeDispatchKind.FLOW_CHART_SHAPES_FLOWCHART_CARD,
+                x=200,
+                y=y,
+                width=50,
+                height=30,
+                fn=DrawDispatcher.create_dispatch_shape,
+            )
+            Draw.set_hatch_color(shape=dshape, name=DrawingHatchingKind.BLUE_NEG_45_DEGREES)
+            # convert blue to black manually
+            dhatch = cast(Hatch, Props.get(dshape, "FillHatch"))
+            dhatch.Color = CommonColor.BLACK
+            Props.set(dshape, LineColor=CommonColor.BLACK, FillHatch=dhatch)
+            # Props.show_obj_props("Hatch Shape", dshape)
+
+            # second row
+            y = 100
+            dshape = Draw.add_dispatch_shape(
+                slide=curr_slide,
+                shape_dispatch=ShapeDispatchKind.STAR_SHAPES_STAR_12,
+                x=20,
+                y=y,
+                width=40,
+                height=40,
+                fn=DrawDispatcher.create_dispatch_shape,
+            )
+            Draw.set_gradient_color(shape=dshape, name=DrawingGradientKind.SUNSHINE)
+            Props.set(dshape, LineStyle=LineStyle.NONE)
+
+            dshape = Draw.add_dispatch_shape(
+                slide=curr_slide,
+                shape_dispatch=ShapeDispatchKind.SYMBOL_SHAPES_HEART,
+                x=80,
+                y=y,
+                width=40,
+                height=40,
+                fn=DrawDispatcher.create_dispatch_shape,
+            )
+            Props.set(dshape, FillColor=CommonColor.RED)
+
+            _ = Draw.add_dispatch_shape(
+                slide=curr_slide,
+                shape_dispatch=ShapeDispatchKind.ARROW_SHAPES_LEFT_RIGHT_ARROW,
+                x=140,
+                y=y,
+                width=50,
+                height=30,
+                fn=DrawDispatcher.create_dispatch_shape,
+            )
+            dshape = Draw.add_dispatch_shape(
+                slide=curr_slide,
+                shape_dispatch=ShapeDispatchKind.THREE_D_CYRAMID,
+                x=200,
+                y=y - 20,
+                width=50,
+                height=50,
+                fn=DrawDispatcher.create_dispatch_shape,
+            )
+            Draw.set_bitmap_color(shape=dshape, name=DrawingBitmapKind.STONE)
+
+            Draw.show_shapes_info(curr_slide)
+
+A title-only slide is created, followed by eight calls to :py:meth:`.Draw.add_dispatch_shape` to create two rows of four shapes in :numref:`ch16fig_gui_dispatch_shapes`.
+
+Note that :py:meth:`.Draw.add_dispatch_shape` take a ``fn`` parameter. This is basically a call back function.
+``fn`` is expected to be a function that takes a XDrawPage_ and ``str`` as input parameters and returns XShape_ or ``None``.
+
+The reason for this is |odev| is not responsible for automating Windows GUI however, |odevgui_win|_ is.
+|odevgui_win|_ provides :external+odevguiwin:py:meth:`odevgui_win.draw_dispatcher.DrawDispatcher.create_dispatch_shape` that handles automating mouse movements and returns the shape.
+So, :py:meth:`~.Draw.add_dispatch_shape` is passed as call back function.
+
+
+.. seealso::
+
+    .. cssclass:: src-link
+
+        :odev_src_draw_meth:`add_dispatch_shape`
+
+16.6.1 Viewing the Fifth Slide
+------------------------------
+
+:py:meth:`.Draw.add_dispatch_shape` requires the fifth slide to be the active, visible window on- screen.
+This necessitates a call to :py:meth:`.GUI.set_visible` to make the document visible, but that isn't quite enough.
+Making the document visible causes the first slide to be displayed, not the fifth one.
+
+Impress offers many ways of viewing slides, which are implemented in the API as view classes that inherit the Controller service. The inheritance structure is shown in :numref:`ch16fig_impress_view_classes`.
+
+..
+    figure 12
+
+.. cssclass:: diagram invert
+
+    .. _ch16fig_impress_view_classes:
+    .. figure:: https://user-images.githubusercontent.com/4193389/201742799-ad85319f-bff0-46d7-9f70-59f4106c16b4.png
+        :alt: Impress View Classes.
+        :figclass: align-center
+
+        :Impress View Classes.
+
+When a Draw or Impress document is being edited, the view is DrawingDocumentDrawView, which supports a number of useful properties,
+such as ``ZoomType`` and ``VisibleArea``. Its XDrawView_ interface is employed for getting and setting the current page displayed in this view.
+
+:py:meth:`.Draw.goto_page` gets the XController_ interface for the document, and converts it to XDrawView_ so the visible page can be set:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in Draw class (simplified)
+        @classmethod
+        def goto_page(cls, doc: XComponent, page: XDrawPage) -> None:
+            try:
+                ctl = GUI.get_current_controller(doc)
+                cls.goto_page(ctl, page)
+            except DrawError:
+                raise
+            except Exception as e:
+                raise DrawError("Error while trying to go to page") from e
+
+        @staticmethod
+        def goto_page(ctl: XController, page: XDrawPage) -> None:
+            try:
+                xdraw_view = Lo.qi(XDrawView, ctl)
+                xdraw_view.setCurrentPage(page)
+            except Exception as e:
+                raise DrawError("Error while trying to go to page") from e
+
+.. seealso::
+
+    .. cssclass:: src-link
+
+        :odev_src_draw_meth:`goto_page`
+
+After the call to :py:meth:`.Draw.goto_page`, the specified draw page will be visible on-screen, and so receive any dispatch commands.
+
+:py:meth:`.Draw.get_viewed_page` returns a reference to the currently viewed page by calling ``XDrawView.getCurrentPage()``:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in Draw class
+        @staticmethod
+        def get_viewed_page(doc: XComponent) -> XDrawPage:
+            try:
+                ctl = GUI.get_current_controller(doc)
+                xdraw_view = Lo.qi(XDrawView, ctl, True)
+                return xdraw_view.getCurrentPage()
+            except Exception as e:
+                raise DrawPageError("Error geting Viewed page") from e
+
+
+16.6.2 Adding a Dispatch Shape to the Visible Page
+--------------------------------------------------
+
+If you try adding a smiley face to a slide inside Impress, it's a two-step process.
+It isn't enough only to click on the icon, it's also necessary to drag the cursor over the page in order for the shape to appear and be resized.
+
+These steps are necessary for all the Drawing toolbar and 3D-Objects shapes, and are emulated by my code.
+The programming equivalent of clicking on the icon is done by calling :py:meth:`.Lo.dispatch_cmd`,
+while implementing a mouse drag utilizes |odevgui_win|_ and :external+odevguiwin:ref:`class_robot_keys`.
+
+:py:meth:`Draw.add_dispatch_shape` uses :py:meth:`Draw.create_dispatch_shape` to create the shape, and then positions and resizes it:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in Draw class
+        @classmethod
+        def add_dispatch_shape(
+            cls, slide: XDrawPage, shape_dispatch: ShapeDispatchKind | str,
+            x: int, y: int, width: int, height: int, fn: DispatchShape
+        ) -> XShape:
+            cls.warns_position(slide, x, y)
+            try:
+                shape = fn(slide, str(shape_dispatch))
+                if shape is None:
+                    raise NoneError(f'Failed to add shape for dispatch command "{shape_dispatch}"')
+                cls.set_position(shape=shape, x=x, y=y)
+                cls.set_size(shape=shape, width=width, height=height)
+                return shape
+            except NoneError:
+                raise
+            except Exception as e:
+                raise ShapeError(
+                    f'Error occured adding dispatch shape for dispatch command "{shape_dispatch}"'
+                ) from e
 
 .. |animate_bike| replace:: Animate Bike
 .. _animate_bike: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/draw/odev_animate_bike
@@ -880,7 +1160,10 @@ Work in progress ...
 .. _SubTitleShape: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1presentation_1_1SubtitleShape.html
 .. _TextRange: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1TextRange.html
 .. _TitleTextShape: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1presentation_1_1TitleTextShape.html
+.. _XAnimationNode: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1animations_1_1XAnimationNode.html
+.. _XController: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1frame_1_1XController.html
 .. _XDrawPage: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1drawing_1_1XDrawPage.html
+.. _XDrawView: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1drawing_1_1XDrawView.html
+.. _XShape: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1drawing_1_1XShape.html
 .. _XText: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XText.html
 .. _XTextRange: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextRange.html
-.. _XAnimationNode: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1animations_1_1XAnimationNode.html
