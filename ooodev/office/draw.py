@@ -2713,7 +2713,6 @@ class Draw:
         width: int,
         height: int,
         fn: DispatchShape,
-        *titles: WindowTitle,
     ) -> XShape:
         """
         Adds a shape to a Draw slide via a dispatch command
@@ -2726,7 +2725,6 @@ class Draw:
             width (int): Shape width in mm units.
             height (int): Shape height in mm units.
             fn (DispatchShpae): Function that is responsible for running the dispatch command and returning the shape.
-            *titles: Optional Expandable list of :py:class`~.data_type.windwos_title.WindowTitle` to pass with ``fn``
 
         Raises:
             NoneError: If adding a dispatch fails.
@@ -2740,7 +2738,7 @@ class Draw:
         """
         cls.warns_position(slide, x, y)
         try:
-            shape = fn(slide, str(shape_dispatch), *titles)
+            shape = fn(slide, str(shape_dispatch))
             if shape is None:
                 raise mEx.NoneError(f'Failed to add shape for dispatch command "{shape_dispatch}"')
             cls.set_position(shape=shape, x=x, y=y)
@@ -2752,9 +2750,7 @@ class Draw:
             raise mEx.ShapeError(f'Error occured adding dispatch shape for dispatch command "{shape_dispatch}"') from e
 
     @staticmethod
-    def create_dispatch_shape(
-        slide: XDrawPage, shape_dispatch: ShapeDispatchKind | str, fn: DispatchShape, *titles: WindowTitle
-    ) -> XShape:
+    def create_dispatch_shape(slide: XDrawPage, shape_dispatch: ShapeDispatchKind | str, fn: DispatchShape) -> XShape:
         """
         Creates a shape via a dispatch command.
 
@@ -2762,7 +2758,6 @@ class Draw:
             slide (XDrawPage): Slide
             shape_dispatch (ShapeDispatchKind | str): Dispatch Command
             fn (DispatchShpae): Function that is responsible for running the dispatch command and returning the shape.
-            *titles: Optional Expandable list of :py:class`~.data_type.windwos_title.WindowTitle` to pass with ``fn``
 
         Raises:
             NoneError: If adding a dispatch fails.
@@ -2772,7 +2767,7 @@ class Draw:
             XShape: Shape
         """
         try:
-            shape = fn(slide, str(shape_dispatch), *titles)
+            shape = fn(slide, str(shape_dispatch))
             if shape is None:
                 raise mEx.NoneError(f'Failed to add shape for dispatch command "{shape_dispatch}"')
             return shape

@@ -595,6 +595,15 @@ Here is the output from extended example.
     Dispatched: GetInvolved
     About dispatch canceled
 
+.. _ch04_robot_keys:
+
+4.6 Robot Keys
+===============
+
+|odevgui_win|_ has :external+odevgui_win:ref:`class_robot_keys`.
+
+Work in Progress ...
+
 .. |ex_dispatch| replace:: Dispatch Commands Example
 .. _ex_dispatch: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/general/odev_dispatch
 .. |exlisten| replace:: Office Window Listener

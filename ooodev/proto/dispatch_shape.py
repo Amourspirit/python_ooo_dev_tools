@@ -16,5 +16,5 @@ from ..utils.data_type.window_title import WindowTitle
 class DispatchShape(Protocol):
     """This is strictly for Gui helpers such as ``ooo-dev-tools-gui-win`` that have a create_dispatch_shape method"""
 
-    def __call__(self, slide: XDrawPage, shape_dispatch: str, *titles: WindowTitle) -> XShape | None:
+    def __call__(self, slide: XDrawPage, shape_dispatch: str) -> XShape | None:
         ...
