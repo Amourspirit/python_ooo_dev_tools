@@ -2,6 +2,18 @@
 Version History
 ***************
 
+
+Version 0.6.3
+=============
+
+Overloads for ``GUI.get_window_handle()``
+
+Removed unused ``*titles`` arg from ``Draw.add_dispatch_shape()`` method.
+
+Removed unused ``*titles`` arg from ``Draw.create_dispatch_shape()`` method.
+
+``GUI.get_title_bar()`` method now returns empty string when not able to get title bar text.
+
 Version 0.6.2
 =============
 

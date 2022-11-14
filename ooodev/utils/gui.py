@@ -27,6 +27,7 @@ from com.sun.star.container import XIndexContainer
 from com.sun.star.frame import XDispatchProviderInterception
 from com.sun.star.frame import XLayoutManager
 from com.sun.star.frame import XFrame
+from com.sun.star.frame import XFrame2
 from com.sun.star.frame import XFramesSupplier
 from com.sun.star.frame import XModel
 from com.sun.star.lang import SystemDependent  # const
@@ -863,21 +864,28 @@ class GUI:
         """
         Gets title bar from top window
 
-        Raises:
-            MissingInterfaceError: If XAccessible interface can not be obtained
-            MissingInterfaceError: If XAccessibleContext interface can not be obtained
-
         Returns:
-            str: title bar text
+            str: title bar text if found; Otherwise, Empty string.
         """
-        top_win = cls.get_top_window()
-        acc = mLo.Lo.qi(XAccessible, top_win)
-        if acc is None:
-            raise mEx.MissingInterfaceError(XAccessible, "Top window not accessible")
-        acc_content = acc.getAccessibleContext()
-        if acc_content is None:
-            raise mEx.MissingInterfaceError(XAccessibleContext)
-        return acc_content.getAccessibleName()
+        try:
+            top_win = cls.get_top_window()
+            acc = mLo.Lo.qi(XAccessible, top_win)
+            if acc is None:
+                raise mEx.MissingInterfaceError(XAccessible, "Top window not accessible")
+            acc_content = acc.getAccessibleContext()
+            if acc_content is not None:
+                return acc_content.getAccessibleName()
+        except Exception:
+            pass
+        # could not get title using top window. maybe the window was not currently on top.
+        # get the title from XFrame2.
+        try:
+            frm2 = mLo.Lo.qi(XFrame2, mLo.Lo.get_frame())
+            if frm2 is not None:
+                return frm2.Title
+        except Exception:
+            pass
+        return ""
 
     @staticmethod
     def get_screen_size() -> Rectangle:
@@ -914,8 +922,18 @@ class GUI:
         """
         mLo.Lo.print(f"Rectangle: ({r.X}, {r.Y}), {r.Width} -- {r.Height}")
 
+    @overload
+    @classmethod
+    def get_window_handle(cls) -> int | None:
+        ...
+
+    @overload
     @classmethod
     def get_window_handle(cls, doc: XComponent) -> int | None:
+        ...
+
+    @classmethod
+    def get_window_handle(cls, doc: XComponent | None = None) -> int | None:
         """
         Gets handle to a window
 
@@ -932,20 +950,27 @@ class GUI:
             Use this method at your own risk.
         """
         win = cls.get_window(doc)
-        win_peer = mLo.Lo.qi(XSystemDependentWindowPeer, win)
-        pid = tuple([0 for _ in range(8)])  # tuple of zero's
-        info = SysInfo.get_platform()
-        if info == SysInfo.PlatformEnum.WINDOWS:
-            system_type = SystemDependent.SYSTEM_WIN32
-        elif info == SysInfo.PlatformEnum.MAC:
-            system_type = SystemDependent.SYSTEM_MAC
-        elif info == SysInfo.PlatformEnum.LINUX:
-            system_type = SystemDependent.SYSTEM_XWINDOW
-        else:
-            mLo.Lo.print("Unable to support, don't know this system.")
+        if win is None:
             return None
-        handel = int(win_peer.getWindowHandle(pid, system_type))
-        return handel
+        try:
+            win_peer = mLo.Lo.qi(XSystemDependentWindowPeer, win)
+            pid = tuple([0 for _ in range(8)])  # tuple of zero's
+            info = SysInfo.get_platform()
+            if info == SysInfo.PlatformEnum.WINDOWS:
+                system_type = SystemDependent.SYSTEM_WIN32
+            elif info == SysInfo.PlatformEnum.MAC:
+                system_type = SystemDependent.SYSTEM_MAC
+            elif info == SysInfo.PlatformEnum.LINUX:
+                system_type = SystemDependent.SYSTEM_XWINDOW
+            else:
+                mLo.Lo.print("Unable to support, don't know this system.")
+                return None
+            handel = int(win_peer.getWindowHandle(pid, system_type))
+            return handel
+        except Exception as e:
+            mLo.Lo.print("Error getting windows handle")
+            mLo.Lo.print(f"  {e}")
+        return None
 
     @staticmethod
     def set_look_feel() -> None:
