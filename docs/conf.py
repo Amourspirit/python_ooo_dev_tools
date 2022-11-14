@@ -31,6 +31,8 @@ project = "OOO Development Tools"
 copyright = "2022, :Barry-Thomas-Paul: Moss"
 author = ":Barry-Thomas-Paul: Moss"
 
+odevgui_win_url = "https://ooo-dev-tools-gui-win.readthedocs.io/en/latest/"
+
 # The full version, including alpha/beta/rc tags
 release = __version__
 
@@ -54,6 +56,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.todo",
     "sphinx.ext.extlinks",
+    "sphinx.ext.intersphinx",
     "sphinx_autodoc_typehints",
     "sphinx_tabs.tabs",
     "sphinx_design",
@@ -202,6 +205,9 @@ rst_prolog_lst = [
     "",
     ".. _ooouno: https://pypi.org/project/ooouno/",
     "",
+    ".. |odevgui_win| replace:: ooo-dev-tools-gui-win",
+    f".. _odevgui_win: {odevgui_win_url}",
+    "",
 ]
 rst_prolog_lst.append(f".. |app_ver| replace:: {__version__}\n")
 
@@ -226,6 +232,12 @@ extlinks = {
 }
 
 # endregion sphinx.ext.extlinks – Markup to shorten external links
+
+# region intersphinx
+intersphinx_mapping = {"ooo-dev-tools-gui-win": (odevgui_win_url, None)}
+
+# endregion intersphinx
+
 # region Not currently Used
 
 # Add external links to source code
