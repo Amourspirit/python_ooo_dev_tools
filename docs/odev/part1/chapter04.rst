@@ -369,6 +369,8 @@ because Office's built-in Macro recorder automatically converts a user's interac
 One drawback of dispatching is that it isn't a complete programming solution.
 For instance, copying requires the selection of text, which has to be implemented with the Office API.
 
+|odev| has many dispatch commands in the :ref:`utils_dispatch` namespace, making it much easier to pass dispatch commands.
+
 LibreOffice has a comprehensive webpage listing all the dispatch commands `Development/DispatchCommands <https://wiki.documentfoundation.org/Development/DispatchCommands>`_.
 
 Another resource is chapter 10 of `OpenOffice.org Macros Explained <https://pitonyak.org/book/>`_ by Andrew Pitonyak.
@@ -456,8 +458,6 @@ The code is wrapped up in :py:meth:`.Lo.dispatch_cmd`, which is called twice in 
                 raise SystemExit(main())
 
             # endregion main
-
-In the :ref:`utils_dispatch` namespace there are several classes that contain constant lookups for dispatch commands.
 
 Example using :py:class:`~.global_edit_dispatch.GlobalEditDispatch` class.
 
@@ -600,12 +600,54 @@ Here is the output from extended example.
 4.6 Robot Keys
 ===============
 
-|odevgui_win|_ has :external+odevgui_win:ref:`class_robot_keys`.
+Another menu-related approach to controlling Office is to programmatically send menu shortcut key strokes to the currently active window.
+For example, a loaded Write document is often displayed with a ``SideBar``.
+This can be closed using the menu item View, ``SideBar``, which is assigned the shortcut keys ``CTL+F5``.
 
-Work in Progress ...
+|odevgui_win|_ makes this possible on Windows.
+
+In |ex_dispatch_py|_ of |ex_dispatch|_, ``_toggle_side_bar()`` 'types' these key strokes with the help of :external+odevguiwin:ref:`class_robot_keys`:
+
+.. tabs::
+
+    .. code-tab:: python
+        :emphasize-lines: 16
+
+        try:
+            # only windows
+            from odevgui_win.robot_keys import RobotKeys, SendKeyInfo
+            from odevgui_win.keys.writer_key_codes import WriterKeyCodes
+        except ImportError:
+            RobotKeys, SendKeyInfo, WriterKeyCodes = None, None, None
+
+        class Dispatcher:
+            # ...
+
+            def _toggle_side_bar(self) -> None:
+                # RobotKeys is currently windows only
+                if not RobotKeys:
+                    Lo.print("odevgui_win not found.")
+                    return
+                RobotKeys.send_current(SendKeyInfo(WriterKeyCodes.KB_SIDE_BAR))
+
+:external+odevguiwin:py:meth:`odevgui_win.robot_keys.RobotKeys.send_current` gets current document window and sets
+its focus before sending keys.
+
+``_toggle_side_bar()`` is in the dark about the current state of the GUI. If the ``SideBar`` is visible then the keys will make it disappear,
+but if the pane is not currently on-screen then these keys will bring it up.
+Also, developer must be cautious that the correct keys are being sent to the correct window. Sending keys to the wrong window may have detrimental effects.
+
+|odevgui_win|_ has many predefined shortcut keys that can be found in :external+odevguiwin:ref:`keys_index` and
+also there's lots of documentation on keyboard shortcuts for Office in its User guides (downloadable from https://th.libreoffice.org/get-help/documentation),
+and these can be easily translated into key presses and releases in :external+odevguiwin:ref:`class_robot_keys`.
+
 
 .. |ex_dispatch| replace:: Dispatch Commands Example
 .. _ex_dispatch: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/general/odev_dispatch
+
+.. |ex_dispatch_py| replace:: dispatcher.py
+.. _ex_dispatch_py: https://github.com/Amourspirit/python-ooouno-ex/blob/main/ex/auto/general/odev_dispatch/dispatcher.py
+
 .. |exlisten| replace:: Office Window Listener
 .. _exlisten: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/general/odev_listen
 

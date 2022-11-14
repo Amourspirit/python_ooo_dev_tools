@@ -1407,7 +1407,7 @@ class GUI:
     @staticmethod
     def toggle_menu_bar() -> None:
         """
-        Toggles the main menu visibality.
+        Toggles the main menu visibility.
 
         If the menu is visible then it is hidden.
         If it is hidden then it will be made visible.
