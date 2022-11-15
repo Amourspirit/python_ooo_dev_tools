@@ -103,6 +103,8 @@ Image Classes
 
 
 Spelling
+    To run spell check from docs/ command line
+       docs\> sphinx-build -b spelling . _build
     In some case accepted spelling of words need to added to a single rst file.
     For one off words :spelling:word can be use for example: :spelling:word:`László` :spelling:word:`Németh`
 
@@ -115,7 +117,7 @@ Spelling
 Abbreviations
     Abbreviations are handled by the :abbreviation: role.
 
-    :abbreviation:`eg:`
+    :abbreviation:`i.e.`
 
 TODO
     Docs that still need work such linking to chapter not yet created are to use the following directive.
@@ -164,9 +166,20 @@ Linking to Source code:
     
     To see what role are available or to add new rows see extlinks in conf.py
 
+External Sources via sphinx.ext.intersphinx:
+
+    Use external+mapping name.
+    
+    In conf.py
+    intersphinx_mapping = {"odevguiwin": (odevgui_win_url, None)}
+
+    Examples:
+        :external+odevguiwin:ref:`class_robot_keys`
+        :external+odevguiwin:py:meth:`odevgui_win.draw_dispatcher.DrawDispatcher.create_dispatch_shape`
 
 Code Blocks:
     Code blocks are generally in a tab.
+    See Also: https://sphinx-tabs.readthedocs.io/en/latest/
 
     .. tabs::
 
@@ -190,3 +203,48 @@ Code Blocks:
                     Lo.print("odevgui_win not found.")
                     return
                 RobotKeys.send_current(SendKeyInfo(WriterKeyCodes.KB_SIDE_BAR))
+
+    Adding a None Tab.
+    This option should only be used in conjunction with code tabs.
+    If one code tab on a page gets this option then all code tabs on the page should get this option.
+    If a None Tab is used this should be prefixed by .. cssclass:: tab-none
+        for formatting purposes
+
+    .. tabs::
+
+        .. code-tab:: python
+
+            print("Hello World")
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+Collapse sections:
+
+    Creates a generic collape section
+        .. collapse:: Some Text
+
+            Congrats, you have revealed hidden text
+
+    Creates expanded collapse section
+        .. collapse:: Some Text
+            :open:
+
+            Congrats, you have revealed hidden text
+
+    Creates Example
+        Example has css formatting applied.
+
+        .. collapse:: Example
+
+            .. code::
+
+                special = get_my_code()
+
+    Creates collapse section with special css formatting applied, mostly for spacing
+        .. cssclass:: rst-collapse
+
+            .. collapse:: Some Title
+
+                Fancy stuff

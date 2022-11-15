@@ -205,7 +205,7 @@ class ImagesLo:
 
     @staticmethod
     def get_mime_types() -> Tuple[str, ...]:
-        mi = mLo.Lo.create_instance_mcf(XMimeTypeInfo, "com.sun.star.drawing.GraphicExportFilter")
+        mi = mLo.Lo.create_instance_mcf(XMimeTypeInfo, "com.sun.star.drawing.GraphicExportFilter", raise_err=True)
         return mi.getSupportedMimeTypeNames()
 
     @classmethod
