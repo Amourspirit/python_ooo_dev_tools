@@ -1,3 +1,5 @@
+.. _conn_connect_lo_manager:
+
 Class LoManager
 ===============
 

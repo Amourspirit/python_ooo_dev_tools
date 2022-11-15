@@ -1,3 +1,5 @@
+.. _conn_connect_pipe:
+
 Class ConnectPipe
 =================
 
