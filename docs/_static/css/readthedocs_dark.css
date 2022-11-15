@@ -77,7 +77,8 @@ html[data-theme='dark'] .rst-content .invert img {
 }
 /* Start Summary Example for .. collapse Example sections */
 
-html[data-theme='dark'] .summary-example[open] {
+html[data-theme='dark'] .summary-example[open],
+html[data-theme='dark'] .rst-collapse[open] {
     background-color: #1c1c1c;
 }
 

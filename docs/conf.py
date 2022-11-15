@@ -227,8 +227,14 @@ todo_include_todos = False
 # https://documentation.help/Sphinx/extlinks.html
 odev_src_root = "../../_modules/ooodev"
 extlinks = {
+    "odev_src_calc_meth": (odev_src_root + "/office/calc.html#Calc.%s", "Calc.%s()"),
     "odev_src_draw_meth": (odev_src_root + "/office/draw.html#Draw.%s", "Draw.%s()"),
+    "odev_src_write_meth": (odev_src_root + "/office/write.html#Write.%s", "Write.%s()"),
     "odev_src_gui_meth": (odev_src_root + "/utils/gui.html#GUI.%s", "GUI.%s()"),
+    "odev_src_lo_meth": (odev_src_root + "/utils/lo.html#Lo.%s", "Lo.%s()"),
+    "odev_src_info_meth": (odev_src_root + "/utils/info.html#Info.%s", "Info.%s()"),
+    "odev_src_props_meth": (odev_src_root + "/utils/props.html#Props.%s", "Props.%s()"),
+    "odev_src_fileio_meth": (odev_src_root + "/utils/file_io.html#FileIO.%s", "FileIO.%s()"),
 }
 
 # endregion sphinx.ext.extlinks – Markup to shorten external links

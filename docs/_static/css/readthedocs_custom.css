@@ -73,13 +73,15 @@ a .rst-content .admonition tt {
 
 /* Start Summary Example for .. collapse Example sections */
 
-.summary-example {
+.summary-example, .rst-collapse {
     padding: 3px;
 }
-.summary-example:not([open]) {
+.summary-example:not([open]),
+.rst-collapse:not([open]) {
     margin-bottom: 24px;
+    cursor: pointer;
 }
-.summary-example[open] {
+.summary-example[open], .rst-collapse[open] {
     margin-bottom: 24px;
     background-color: #f0f5ff;
     ;
@@ -154,3 +156,8 @@ ul.ul-list>li>p {
     margin-left: 3px;
 }
 /* end source link files */
+
+.sphinx-tabs-panel.tab-none:not([hidden]) {
+    padding: 1px;
+    visibility: hidden;
+}
