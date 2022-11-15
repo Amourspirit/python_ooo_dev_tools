@@ -1,3 +1,5 @@
+.. _conn_connect_lo_direct_start:
+
 Class LoDirectStart
 ===================
 

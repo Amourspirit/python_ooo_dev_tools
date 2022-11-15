@@ -1,3 +1,5 @@
+.. _conn_cache:
+
 Class Cache
 ===========
 

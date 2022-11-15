@@ -103,6 +103,8 @@ Image Classes
 
 
 Spelling
+    To run spell check from docs/ command line
+       docs\> sphinx-build -b spelling . _build
     In some case accepted spelling of words need to added to a single rst file.
     For one off words :spelling:word can be use for example: :spelling:word:`László` :spelling:word:`Németh`
 
@@ -115,7 +117,7 @@ Spelling
 Abbreviations
     Abbreviations are handled by the :abbreviation: role.
 
-    :abbreviation:`eg:`
+    :abbreviation:`i.e.`
 
 TODO
     Docs that still need work such linking to chapter not yet created are to use the following directive.
@@ -164,6 +166,16 @@ Linking to Source code:
     
     To see what role are available or to add new rows see extlinks in conf.py
 
+External Sources via sphinx.ext.intersphinx:
+
+    Use external+mapping name.
+    
+    In conf.py
+    intersphinx_mapping = {"odevguiwin": (odevgui_win_url, None)}
+
+    Examples:
+        :external+odevguiwin:ref:`class_robot_keys`
+        :external+odevguiwin:py:meth:`odevgui_win.draw_dispatcher.DrawDispatcher.create_dispatch_shape`
 
 Code Blocks:
     Code blocks are generally in a tab.

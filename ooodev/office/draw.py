@@ -621,7 +621,7 @@ class Draw:
         sb: List[str] = []
         shapes = cls._get_ordered_shapes_doc(doc)
         for shape in shapes:
-            text = cls.get_shape_text(shape)
+            text = cls._get_shape_text_shape(shape)
             sb.append(text)
         return "\n".join(sb)
 

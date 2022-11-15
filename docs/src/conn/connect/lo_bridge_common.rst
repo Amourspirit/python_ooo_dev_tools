@@ -1,3 +1,5 @@
+.. _conn_connect_lo_bridge_common:
+
 Class LoBridgeCommon
 ====================
 
