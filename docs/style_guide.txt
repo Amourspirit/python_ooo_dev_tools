@@ -167,6 +167,7 @@ Linking to Source code:
 
 Code Blocks:
     Code blocks are generally in a tab.
+    See Also: https://sphinx-tabs.readthedocs.io/en/latest/
 
     .. tabs::
 
@@ -190,3 +191,48 @@ Code Blocks:
                     Lo.print("odevgui_win not found.")
                     return
                 RobotKeys.send_current(SendKeyInfo(WriterKeyCodes.KB_SIDE_BAR))
+
+    Adding a None Tab.
+    This option should only be used in conjunction with code tabs.
+    If one code tab on a page gets this option then all code tabs on the page should get this option.
+    If a None Tab is used this should be prefixed by .. cssclass:: tab-none
+        for formatting purposes
+
+    .. tabs::
+
+        .. code-tab:: python
+
+            print("Hello World")
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+Collapse sections:
+
+    Creates a generic collape section
+        .. collapse:: Some Text
+
+            Congrats, you have revealed hidden text
+
+    Creates expanded collapse section
+        .. collapse:: Some Text
+            :open:
+
+            Congrats, you have revealed hidden text
+
+    Creates Example
+        Example has css formatting applied.
+
+        .. collapse:: Example
+
+            .. code::
+
+                special = get_my_code()
+
+    Creates collapse section with special css formatting applied, mostly for spacing
+        .. cssclass:: rst-collapse
+
+            .. collapse:: Some Title
+
+                Fancy stuff
