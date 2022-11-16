@@ -27,11 +27,7 @@ There are two main ways of finding this information, using configuration propert
 3.1.1 Examining Configuration Properties
 ----------------------------------------
 
-.. todo:: 
-
-    Chapter 3, Link to chapter 15
-
-Configuration management is a complex area, which is explained reasonably well in chapter 15 of the developer's guide and online at
+Configuration management is a complex area, which is explained reasonably well in :ref:`ch15` of the developer's guide and online at
 OpenOffice |ooconfigmanage|_; Only basics are explained here.
 The easiest way of accessing the relevant online section is by typing: ``loguide "Configuration Management"``.
 
@@ -77,6 +73,12 @@ One way of finding the most current list is to browse `main.xcd` in ``\share\reg
             print(f"\nFilters Dir: {Info.get_paths('Filter')}")
             print(f"\nTemplates Dirs: {Info.get_paths('Template')}")
             print(f"\nGallery Dir: {Info.get_paths('Gallery')}")
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 Example output:
 
@@ -136,6 +138,12 @@ Examples of using :py:meth:`.Info.get_office_dir` and :py:meth:`.Info.get_paths`
         print(f"\nFilters Dir: {Info.get_paths('Filter')}")
         print(f"\nTemplates Dirs: {Info.get_paths('Template')}")
         print(f"\nGallery Dir: {Info.get_paths('Gallery')}")
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 .. _ch03_get_set_prop:
 
@@ -197,6 +205,11 @@ LibreOffice has removed them.
                 mLo.Lo.print(f"    {e}")
             return
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 Although the XDocumentProperties_ interface belongs to a DocumentProperties_ service, that service does not contain any properties/attributes.
 Instead its data is stored inside XDocumentProperties_ and accessed and changed with get/set methods based on the attribute names.
@@ -228,6 +241,12 @@ As a consequence, :py:meth:`~.info.Info.print_doc_props` consists of a long list
         print("  Default Target: " + dps.DefaultTarget)
         # and more ...
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 However, user-defined file properties are accessed with an XPropertyContainer, as can be seen back in :ref:`print_doc_properties() <ch03_print_doc_properties>`.
 
 .. _ch03_get_set_prop_doc_prop:
@@ -252,6 +271,12 @@ The setting of document properties is done with set methods, as in :py:meth:`.In
             except Exception as e:
                 raise mEx.PropertiesError("Unable to set doc properties") from e
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 This method is called at the end of |doc_props|_:
 
 .. tabs::
@@ -259,6 +284,12 @@ This method is called at the end of |doc_props|_:
     .. code-tab:: python
 
         Info.set_doc_props(doc, "Example", "Examples", "Amour Spirit")
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 After the properties are changed, the document must be saved otherwise the changes will be lost when the document is closed.
 
@@ -388,6 +419,12 @@ The relevant code fragment:
 
             Lo.close_doc(doc)
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 When a word file is examined this program, only three services were found: OfficeDocument_, GenericTextDocument_, and TextDocument_,
 which correspond to the text document part of the hierarchy in :ref:`Chapter 1 <ch01>`, :numref:`ch01fig_office_doc_super`.
 That doesn't seem so bad until you look at the output from the other ``Info.getXXX()`` methods: the document can call 206 other available services, 69 interfaces, and manipulate 40 properties.
@@ -401,6 +438,12 @@ In the code above only the methods available to XTextDocument_ are printed:
         for i, meth in enumerate(Info.get_methods("com.sun.star.text.XTextDocument")):
             print(f"  {meth}()")
         print(f"No. methods: {i}")
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 Nineteen methods are listed, collectively inherited from the interfaces in XTextDocument_'s inheritance hierarchy shown in :numref:`ch03fig_xtextdocument_inherit`.
 
@@ -426,6 +469,11 @@ If you only want to know about one specific property then use :py:meth:`.Props.g
         prop_name = "CharacterCount"
         print(f"Value of {prop_name}: {Props.get_property(doc, prop_name)}")
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 File Types Another group of utility methods let a programmer investigate a file's document type.
 :py:meth:`.Info.get_doc_type` get the document type from the file path and  :py:meth:`.Props.show_doc_type_props` show the doc type information.
@@ -439,6 +487,12 @@ File Types Another group of utility methods let a programmer investigate a file'
             doc_type = Info.get_doc_type(fnm=fnm)
             print(f"Doc type: {doc_type}")
             Props.show_doc_type_props(doc_type)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 .. code-block:: text
 

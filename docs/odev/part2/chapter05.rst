@@ -98,12 +98,7 @@ Text content covers a multitude, such as embedded images, tables, footnotes, and
 Many of the suppliers shown in :numref:`ch05fig_txt_doc_serv_interfaces` (:abbreviation:`ex:` ``XTextTablesSupplier``)
 are for iterating through text content (:abbreviation:`ex:` accessing the document's tables).
 
-.. todo::
-
-    | Chapte 5, Add link to chapters 7
-    | Chapte 5, Add link to chapters 8
-
-This chapter concentrates on ordinary text, chapters 7 and 8 look at more esoteric content forms.
+This chapter concentrates on ordinary text, :ref:`ch07` and :ref:`ch08` look at more esoteric content forms.
 
 A text document can utilize eight different cursors, which fall into two groups, as in :numref:`ch05fig_cursor_types`.
 
@@ -202,6 +197,12 @@ The |extract_ex|_ example opens a document using :py:meth:`.Lo.open_doc`, and tr
         if __name__ == "__main__":
             raise SystemExit(main())
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 |extract_ex|_ example also hooks |odev|'s internal events and cancels the printing event.
 Thus suppressing any internal printing to console.
 
@@ -216,6 +217,12 @@ Thus suppressing any internal printing to console.
 
             # hook internal printing event
             LoEvents().on(GblNamedEvent.PRINTING, on_lo_print)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 If internal printing were not suppressed the output would contains extra
 output similar to what is shown here:
@@ -251,6 +258,12 @@ to check the document's service capabilities:
             except Exception:
                 return False
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 The argument type of the document is Object rather than XComponent_ so that a wider range of objects can be passed to the function for testing.
 
 The service names for documents are hard to remember, so they're defined as an enumeration in the :py:class:`.Lo.Service`.
@@ -263,6 +276,11 @@ The service names for documents are hard to remember, so they're defined as an e
 
         text_doc = Lo.qi(XTextDocument, doc, True)
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 ``text_doc = Lo.qi(XTextDocument, doc)`` This may fail (i.e. return None) if the loaded document isn't an instance of the TextDocument_ service.
 
@@ -278,6 +296,12 @@ For instance, the following cast is fine:
 
         xsupplier = Lo.qi(XStyleFamiliesSupplier, doc)
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 This changes the instance into an XStyleFamiliesSupplier_, which can access the document's styles.
 
 Alternatively, the following converts the instance into a supplier defined in OfficeDocument_:
@@ -287,6 +311,12 @@ Alternatively, the following converts the instance into a supplier defined in Of
     .. code-tab:: python
 
         xsupplier = Lo.qi(XDocumentPropertiesSupplier, doc)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 Most of the examples in this chapter and the next few cast the document to XTextDocument_ since that interface can access the document's contents as an XText_ object:
 
@@ -298,6 +328,12 @@ Most of the examples in this chapter and the next few cast the document to XText
         text_doc = Lo.qi(XTextDocument, doc)
         xtext = text_doc.getText()
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 The XText_ instance can access all the capabilities shown in :numref:`ch05fig_xtext_supers`.
 
 A common next step is to create a cursor for moving around the document.
@@ -308,6 +344,12 @@ This is easy since XText_ inherits XSimpleText_ which has a ``createTextCursor()
     .. code-tab:: python
 
         text_cursor = xText.createTextCursor()
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 These few lines are so useful that they are part of :py:meth:`.Selection.get_cursor` method which :py:class:`~.write.Write` inherits.
 
@@ -328,6 +370,12 @@ That's not necessary in for the |extract_ex|_ example; instead, the XTextCursor_
             cursor.gotoEnd(False)  # to deselect everything
             return text
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 All cursor movement operations take a boolean argument which specifies whether the movement should also select the text.
 For example, in :py:meth:`~.Write.get_all_text`, ``cursor.gotoStart(False)`` shifts the cursor to the start of the text without selecting anything.
 The subsequent call to ``cursor.gotoEnd(True)`` moves the cursor to the end of the text and selects all the text moved over.
@@ -342,6 +390,12 @@ Two other useful XTextCursor_ methods are:
         cursro.goLeft(char_count, is_selected)
         cursor.goRight(char_count, is_selected)
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 They move the cursor left or right by a given number of characters, and the boolean argument specifies whether the text moved over is selected.
 
 All cursor methods return a boolean result which indicates if the move (and optional selection) was successful.
@@ -353,6 +407,12 @@ Another method worth knowing is:
     .. code-tab:: python
 
         cursro.gotoRange(text_range, is_selected)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 ``gotoRange()`` method of XTextCursor_ takes an XTextRange_ argument, which represents a selected region or position where the cursor should be moved to.
 For example, it's possible to find a bookmark in a document, extract its text range/position, and move the cursor to that location with ``gotoRange()``.
@@ -404,6 +464,12 @@ It also employs the view cursor, an XTextViewCursor_ instance, to control the Wr
 
             return 0
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 ``main()`` calls :py:meth:`.Write.open_doc` to return the opened document as an XTextDocument_ instance.
 If you recall, the previous |extract_ex|_ example started with an XComponent_ instance by calling
 :py:meth:`.Lo.open_doc`, and then converted it to XTextDocument_. :py:meth:`.Write.open_doc` returns the XTextDocument_ reference in one go.
@@ -437,6 +503,12 @@ The code for ``show_paragraphs()``:
                 if para_cursor.gotoNextParagraph(False) is False:
                     break
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 The code utilizes two Write utility functions (:py:meth:`.Write.get_view_cursor` and :py:meth:`.Write.get_paragraph_cursor`) to create the cursors.
 The subsequent while loop is a common coding pattern for iterating over a text document:
 
@@ -453,6 +525,12 @@ The subsequent while loop is a common coding pattern for iterating over a text d
 
             if para_cursor.gotoNextParagraph(False) is False:
                 break
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 ``gotoNextParagraph()`` tries to move the cursor to the beginning of the next paragraph.
 
@@ -487,6 +565,12 @@ In the ``show_paragraphs()`` method above, the two ends of the paragraph are obt
         ...
             tvc.gotoRange(para_cursor.getStart(), False)
             tvc.gotoRange(para_cursor.getEnd(), True)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 ``gotoRange()`` sets the text range/position of the view cursor: the first call moves the cursor to the paragraph's starting position
 without selecting anything, and the second moves it to the end position, selecting all the text in between.
@@ -544,6 +628,12 @@ An XTextCursor_ is created by calling :py:meth:`.Write.get_cursor`, which can th
             except Exception as e:
                 raise ParagraphCursorError(str(e)) from e
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 Obtaining the view cursor is a little more tricky since it's only accessible via the document's controller.
 
 As described in :ref:`ch01_fcm_relationship`, the controller is reached via the document's model, as shown in the first three lines of
@@ -565,6 +655,12 @@ As described in :ref:`ch01_fcm_relationship`, the controller is reached via the 
                     return vc
                 except Exception as e:
                     raise ViewCursorError(str(e)) from e
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The view cursor isn't directly accessible from the controller; a supplier must be queried,
 even though there's only one view cursor per document.
@@ -592,6 +688,12 @@ even though there's only one view cursor per document.
                     break
             return word_count
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 This uses the same kind of while loop as ``show_paragraphs()`` except that the XWordCursor_ methods
 ``gotoEndOfWord()`` and ``gotoNextWord()`` control the iteration.
 Also, there's no need for an XTextViewCursor_ instance since the selected words aren't shown on the screen.
@@ -611,6 +713,12 @@ This means that XLineCursor_ is a view cursor, which is obtained by converting X
 
         line_cursor = Lo.qi(XLineCursor, tvc, True)
         tvc = Write.get_view_cursor(doc)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The line cursor has limited functionality compared to the model cursors (paragraph, sentence, word).
 In particular, there's no "next' function for moving to the next line (unlike ``gotoNextParagraph()`` or ``gotoNextWord()``).
@@ -635,6 +743,12 @@ One way of getting around the absence of a 'next' operation is shown in ``show_l
                 Lo.delay(500)  # delay half a second
                 tvc.collapseToEnd()
                 have_text = tvc.goRight(1, True)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The view cursor is manipulated using the XTextViewCursor_ object and the XLineCursor_ line cursor.
 This is possible since the two references point to the same on-screen cursor. Either one can move it around the display.
@@ -677,6 +791,12 @@ The main() function is:
 
             return 0
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 :py:meth:`.Write.create_doc` calls :py:meth:`.Lo.create_doc` with the text document service name (the ``Lo.DocTypeStr.WRITER`` enum value is ``swriter``).
 Office creates a TextDocument_ service with an XComponent_ interface, which is cast to the XTextDocument_ interface, and returned:
 
@@ -693,6 +813,12 @@ Office creates a TextDocument_ service with an XComponent_ interface, which is c
                 True,
             )
             return doc
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 Text documents are saved using :py:meth:`.Write.save_doc` that calls :py:meth:`.Lo.save_doc` which was described in :ref:`ch02_save_doc`.
 ``save_doc()`` examines the filename's extension to determine its type.
@@ -715,6 +841,12 @@ positioned at the end of the document before new text is added.
         def append_para(cls, cursor: XTextCursor, text: str) -> None:
             cls.append(cursor=cursor, text=text)
             cls.append(cursor=cursor, ctl_char=Write.ControlCharacter.PARAGRAPH_BREAK)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The :py:meth:`~.Write.append` name is utilized several times in Write via it overloads:
 
@@ -743,6 +875,12 @@ Thanks to ooouno_ library that among other things automatically creates enums fo
 
         class Write(Selection):
             ControlCharacter = ControlCharacterEnum
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 :py:meth:`.Selection.get_position` (inherited by Write) gets the current position if the cursor from the start of the document.
 This method is not full optimized and may not be robust on large files.
@@ -808,6 +946,12 @@ The crucial function in |speak_text|_ is ``speak_sentences()``:
                 if para_cursor.gotoNextParagraph(False) is False:
                     break
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 ``speak_sentences()`` comprises two nested loops: the outer loop iterates through the paragraphs, and the inner loop through the sentences in the current paragraph.
 
 The sentence cursor is created like so:
@@ -819,6 +963,12 @@ The sentence cursor is created like so:
         cursor = para_cursor.getText().createTextCursorByRange(para_cursor.getStart())
 
         sc = Lo.qi(XSentenceCursor, cursor)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The XText_ reference is returned by ``para_cursor.getText()``, and a text cursor is created.
 
@@ -850,6 +1000,12 @@ This means that it is not possible to code the inner loop using the coding patte
             if sc.gotoNextSentence(False) is False:
                 break
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 .. note::
 
     To further confuse matters, a ``XText`` object does not always correspond to the entire text document.
@@ -869,6 +1025,12 @@ initialized to compare ranges that can span the entire document:
         if Write.compare_cursor_ends(sc.getEnd(), end_para) >= Write.CompareEnum.EQUAL:
             print("Sentence cursor passed end of current paragraph")
             break
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 :py:meth:`.Selection.compare_cursor_ends` compares cursors ends and returns an enum value.
 
@@ -941,6 +1103,12 @@ One difference is the use of ``XText.insertString()``:
             word_cursor.gotoStart(False)  # go to start of text
             cursor.gotoStart(False)
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 ``insertString()`` is located in XSimpleText_:
 
 .. tabs::
@@ -952,6 +1120,12 @@ One difference is the use of ``XText.insertString()``:
     .. code-tab:: java
 
         void insertString(XTextRange xRange, String aString, boolean bAbsorb)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The string s is inserted at the cursor's text range position.
 If ``bAbsorb`` is true then the string replaces the current selection (which is the case in ``apply_shuffle()``).
@@ -988,6 +1162,12 @@ The following code fragment utilizes this technique:
         xtext = doc.getText()
         enum_access = Lo.qi(XEnumerationAccess, xtext);
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 XEnumerationAccess_ contains a single method, ``createEnumeration()`` which creates an enumerator (an instance of XEnumeration_).
 Each element returned from this iterator is a Paragraph text content:
 
@@ -1002,6 +1182,12 @@ Each element returned from this iterator is a Paragraph text content:
         while text_enum.hasMoreElements():
             text_con = Lo.qi(XTextContent, text_enum.nextElement())
             # use the Paragraph text content (text_con) in some way...
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 Paragraph doesn't support its own interface (i.e. there's no ``XParagraph``), so :py:meth:`.Lo.qi` is used to access its XTextContent_ interface,
 which belongs to the TextContent_ subclass. The hierarchy is shown in :numref:`ch05fig_text_context_hierarchy`.
@@ -1035,6 +1221,12 @@ The following code illustrates the notion, using the ``text_con`` text content f
                 txt_range = Lo.qi(XTextRange, para_enum.nextElement())
                 # use the text portion (txt_range) in some way...
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 The TextTable_ service is a subclass of Paragraph, and cannot be enumerated.
 
 Therefore, the paragraph enumerator is surrounded with an if-test to skip a paragraph if it's really a table.
@@ -1066,6 +1258,12 @@ For instance, the following prints the text portion type and the string inside t
     .. code-tab:: python
 
         print(f'  {Props.get_property(txt_range, "TextPortionType")} = "{txt_range.getString()}"')
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 These code fragments are combined together in the |show_book|_ example.
 
@@ -1103,6 +1301,12 @@ A list of filenames is read from the command line; the first file is opened, and
                         inserter.insertDocumentFromURL(FileIO.fnm_to_url(arg), ())
                 except Exception as e:
                     print(f"Could not append {arg} : {e}")
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 A XDocumentInsertable_ instance is obtained by converting the text cursor with :py:meth:`.Lo.qi`.
 

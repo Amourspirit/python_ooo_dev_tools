@@ -131,6 +131,12 @@ For example, accessing the graphic objects in a document (see row 3 of :numref:`
         # access the graphic objects collection
         xname_access = ims_supplier.getGraphicObjects()
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 The names associated with the graphic objects in XNameAccess_ can be extracted with ``XNameAccess.getElementNames()``, and printed:
 
 .. tabs::
@@ -143,6 +149,12 @@ The names associated with the graphic objects in XNameAccess_ can be extracted w
         names.sort() # sort them, if you want
         Lo.print_names(names) # useful for printing long lists
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 A particular object in an XNameAccess_ collection is retrieved with ``getByName()``:
 
 .. tabs::
@@ -151,6 +163,12 @@ A particular object in an XNameAccess_ collection is retrieved with ``getByName(
 
         # get graphic object called "foo"
         obj_graphic = xname_access.getByName("foo")
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 A common next step is to convert the object into a property set, which makes it possible to lookup the properties stored in the object's service.
 For instance, the graphic object’s filename or URL can be retrieved using:
@@ -161,6 +179,12 @@ For instance, the graphic object’s filename or URL can be retrieved using:
 
         props =  Lo.qi(XPropertySet, obj_graphic)
         fnm = props.getPropertyValue("GraphicURL") # string
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The graphic object's URL is stored in the ``GraphicURL`` property from looking at the documentation for the TextGraphicObject_ service.
 It can be (almost) directly accessed by typing ``lodoc TextGraphicObject service``.
@@ -242,6 +266,12 @@ In the |build_doc|_ example, text frame creation is done by :py:meth:`.Write.add
                 width=4000,
                 height=1500,
             )
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 An anchor specifies how the text content is positioned relative to the ordinary text around it.
 Anchoring can be relative to a character, paragraph, page, or another frame.
@@ -359,6 +389,12 @@ The y-coordinate is stored in ``yPos`` until after the code listing has been ins
             _Events().trigger(WriteNamedEvent.TEXT_FRAME_ADDED, EventArgs.from_args(cargs))
             return True
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 :py:meth:`~.Write.add_text_frame` starts by creating a TextFrame_ service, and accessing its XTextFrame_ interface:
 
 
@@ -367,6 +403,12 @@ The y-coordinate is stored in ``yPos`` until after the code listing has been ins
     .. code-tab:: python
 
         xframe = Lo.create_instance_msf(XTextFrame, "com.sun.star.text.TextFrame")
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The service name for a text frame is listed as "TextFrame" in row 1 of :numref:`ch07tbl_create_access_text_content`, but :py:meth:`.Lo.create_instance_msf` requires a fully qualified name.
 Almost all the text content services, including TextFrame_, are in the ``com.sun.star.text package``.
@@ -398,6 +440,12 @@ Towards the end of :py:meth:`.Write.add_text_frame`, the frame is added to the d
             xtext = cursor.getText()
             xtext.insertTextContent(cursor, text_content, False)
             cursor.gotoEnd(False)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 It utilizes the ``XText.insertTextContent()`` method.
 
@@ -467,6 +515,12 @@ The example code is in |math_ques|_, but most of the formula embedding is perfor
             _Events().trigger(WriteNamedEvent.FORMULA_ADDED, EventArgs.from_args(cargs))
             return True
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 A math formula is passed to :py:meth:`~.Write.add_formula` as a string in a format this is explained shortly.
 
 The method begins by creating a TextEmbeddedObject_ service, and referring to it using the XTextContent_ interface:
@@ -478,6 +532,12 @@ The method begins by creating a TextEmbeddedObject_ service, and referring to it
         embed_content = Lo.create_instance_msf(
                 XTextContent, "com.sun.star.text.TextEmbeddedObject", raise_err=True
             )
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 Details about embedded objects are given in row 2 of :numref:`ch07tbl_create_access_text_content`.
 
@@ -504,6 +564,12 @@ The embedded object's content is accessed via the XEmbeddedObjectSupplier2_ inte
         embed_obj_supplier = Lo.qi(XEmbeddedObjectSupplier2, embed_content, True)
         embed_obj_model = embed_obj_supplier.getEmbeddedObject()
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 The properties for this empty object (embed_obj_model) are accessed, and the formula string is assigned to the "Formula" property:
 
 .. tabs::
@@ -512,6 +578,12 @@ The properties for this empty object (embed_obj_model) are accessed, and the for
 
         formula_props = Lo.qi(XPropertySet, embed_obj_model, True)
         formula_props.setPropertyValue("Formula", formula)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 7.3.1 What's a Formula String?
 ------------------------------
@@ -586,6 +658,12 @@ Ten formulae are added to the document, which is saved as ``mathQuestions.pdf``.
 
             return 0
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 :numref:`ch07fig_math_formula_ss` shows a screenshot of part of ``mathQuestions.pdf``.
 
 .. cssclass:: screen_shot invert
@@ -640,6 +718,12 @@ The |build_doc|_ example ends with a few lines that appear to do the same thing 
         Write.append_date_time(cursor=cursor)
         Write.end_paragraph(cursor)
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 :py:meth:`.DateUtil.time_stamp` inserts a timestamp (which includes the date and time), and then :py:meth:`.Write.append_date_time` inserts the date and time.
 Although these may seem to be the same, :py:meth:`~.DateUtil.time_stamp` adds a string while :py:meth:`~.Write.append_date_time` creates a text field.
 The difference becomes apparent if you open the file some time after it was created.
@@ -679,6 +763,12 @@ The TextField_ service only contains two properties, with most being in the subc
             Props.set_property(dt_field, "IsDate", False)  # so time is reported
             xtext_content = Lo.qi(XTextContent, dt_field, True)
             cls._append_text_content(cursor, xtext_content)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The method adds two DateTime text fields to the document.
 The first has its "IsDate" property set to true, so that the current date is inserted; the second sets "IsDate" to false so the current time is shown.
@@ -753,6 +843,12 @@ As discussed most of |story_creator|_ in :ref:`ch06`, but skipped over how page 
             Props.set_property(prop_set=pc_field, name="NumberingType", value=NumberingType.ARABIC)
             return pc_field
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 :py:meth:`.Write.set_page_numbers` starts by accessing the "Standard" property set (style) for the page style family.
 Via its properties, the method turns on footer functionality and accesses the footer text area as an XText_ object.
 
@@ -768,6 +864,12 @@ An XTextCursor_ is created for the footer text area, and properties are configur
             prop_set=footer_cursor, name="CharFontName", value=Info.get_font_general_name()
         )
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 These properties will be applied to the text and text fields added afterwards:
 
 .. tabs::
@@ -777,6 +879,12 @@ These properties will be applied to the text and text fields added afterwards:
         Write.append(footer_cursor, Write.get_page_number())
         Wirte.append(footer_cursor, " of ")
         Write.append(footer_cursor, Write.get_page_count())
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 :py:meth:`~.Write.get_page_number` and :py:meth:`~.Write.get_page_count` deal with the properties for the PageNumber and PageCount fields.
 
@@ -807,6 +915,12 @@ The ``bondMovies.txt`` file is read by ``read_table()`` utilizing  Python file p
             ["Dr. No", "1962", "Sean Connery", "Terence Young"],
             ["From Russia with Love", "1963", "Sean Connery", "Terence Young"],
         ]
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 Each line in ``bondMovies.txt`` is converted into a string array by pulling out the sub-strings delimited by tab characters.
 
@@ -881,6 +995,12 @@ The ``main()`` function for |make_table|_ is:
 
         if __name__ == "__main__":
             raise SystemExit(main())
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 :py:meth:`.Write.add_table` does the work of converting the list of rows into a text table.
 
@@ -1010,6 +1130,12 @@ The cells are referred to using names, based on letters for columns and integers
             _Events().trigger(WriteNamedEvent.TABLE_ADDED, EventArgs.from_args(cargs))
             return True
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 A TextTable_ service with an XTextTable_ interface is created at the start of :py:meth:`~.Write.add_table`.
 Then the required number of rows and columns is calculated so that ``XTextTable.initialize()`` can be called to specify the table's dimensions.
 
@@ -1024,6 +1150,12 @@ Then the required number of rows and columns is calculated so that ``XTextTable.
         num_cols = len(table_data[0])
         Lo.print(f"Creating table rows: {num_rows}, cols: {num_cols}")
         table.initialize(num_rows, num_cols)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 Table-wide properties are set (properties are listed in the TextTable_ documentation).
 Note that if "BackTransparent" isn't set to false then Office crashes when the program tries to save the document.
@@ -1041,6 +1173,12 @@ This object inherits XIndexAccess_, so the first row is accessed with index 0.
             rows = table.getRows()
             Props.set_property(prop_set=rows.getByIndex(0), name="BackColor", value=header_bg_color)
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 The filling of the table with data is performed by two loops.
 The first deals with adding text to the header row, the second deals with all the other rows.
 
@@ -1048,12 +1186,8 @@ The first deals with adding text to the header row, the second deals with all th
 
 ``make_cell_name()`` uses :py:class:`~.table_helper.TableHelper` methods to make the conversion.
 
-.. todo::
-
-    Chapter 7.5, Add link to Part 4
-
 :py:meth:`.Write.set_cell_header` uses ``TextTable.getCellByName()`` to access a cell, which is of type XCell_.
-We'll study XCell_ in Part 4 because it's used for representing cells in a spreadsheet.
+We'll study XCell_ in :ref:`part04` because it's used for representing cells in a spreadsheet.
 
 The Cell service supports both the XCell_ and XText_ interfaces, as in :numref:`ch07fig_cell_service`.
 
@@ -1082,6 +1216,12 @@ which makes the cell's text and properties accessible to a text cursor.
 
             cell_text.setString(str(data))
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 The cell's ``CharColor`` property is changed so the inserted text in the header row is white (:py:attr:`.CommonColor.WHITE`) by default, as in :numref:`ch07fig_bond_movie_ss`.
 
 ``set_cell_text()`` like ``set_cell_header()`` optionally changes the text's color:
@@ -1096,6 +1236,12 @@ The cell's ``CharColor`` property is changed so the inserted text in the header 
                 text_cursor = cell_text.createTextCursor()
                 Props.set_property(prop_set=text_cursor, name="CharColor", value=tbl_fg_color)
             cell_text.setString(str(data))
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 7.6 Adding a Bookmark to the Document
 =====================================
@@ -1133,6 +1279,12 @@ The cell's ``CharColor`` property is changed so the inserted text in the header 
             _Events().trigger(WriteNamedEvent.BOOKMARK_ADDIED, EventArgs.from_args(cargs))
             return True
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 The Bookmark_ service doesn't have a specific interface (such as ``XBookmark``), so :py:meth:`.Lo.create_instance_msf` returns an XTextContent_ interface.
 These services and interfaces are summarized by :numref:`ch07fig_bookmark_service`.
 
@@ -1156,6 +1308,12 @@ It calls :py:meth:`.Write.add_bookmark` to add a bookmark called ``ad-Bookmark``
         # code fragment from build doc
         append("This line ends with a bookmark.")
         Write.add_bookmark(cursor=cursor, name="ad-bookmark")
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 Bookmarks, such as ``ad-bookmark``, are not rendered when the document is opened,
 which means that nothing appears after the "The line ends with a bookmark." string in "build.odt".
@@ -1196,6 +1354,12 @@ Just as with real-world bookmarks, you can add one at some important location in
                 return None
             return Lo.qi(XTextContent, obookmark)
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 :py:meth:`~.Write.find_bookmark` can't return an ``XBookmark`` object since there's no such interface (see :numref:`ch07fig_bookmark_service`),
 but XTextContent_ is a good alternative. XTextContent_ has a ``getAnchor()`` method which returns an XTextRange_ that can be used for positioning a cursor.
 The following code fragment from |build_doc|_ illustrates the idea:
@@ -1211,6 +1375,12 @@ The following code fragment from |build_doc|_ illustrates the idea:
 
         view_cursor = Write.get_view_cursor(doc)
         view_cursor.gotoRange(bm_range, False)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The call to ``gotoRange()`` moves the view cursor to the ``ad-bookmark`` position, which causes an on-screen change.
 ``gotoRange()`` can be employed with any type of cursor.
