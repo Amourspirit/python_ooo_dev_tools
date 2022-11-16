@@ -83,6 +83,12 @@ It's possible to change this to a curve, a single line, or a connection made up 
                 Lo.close_office()
                 raise
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 The ``_connect_rectangles()`` function creates two labeled rectangles, and links them with a standard connector.
 The connector starts on the bottom edge of the green rectangle and finishes at the top edge of the blue one (as shown in the top-left of :numref:`ch15fig_styles_of_connector`).
 The method also prints out some information about the glue points of the blue rectangle.
@@ -114,6 +120,12 @@ The method also prints out some information about the glue points of the blue re
                 start_conn=GluePointsKind.BOTTOM,
                 end_conn=GluePointsKind.TOP,
             )
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 Note that :py:meth:`.Draw.add_text` is used to label the shapes.
 
@@ -170,6 +182,12 @@ instead it has ConnectorProperties_ which holds most of the properties used by :
             prop_set.setPropertyValue("EdgeKind", ConnectorType.STANDARD)
             return xconnector
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 .. seealso::
 
     .. cssclass:: src-link
@@ -189,6 +207,12 @@ The real position and dimensions of the connector are set via its properties.
 
         # _connect_rectangles() from grouper.py
         gps = Draw.get_glue_points(blue_rect)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 :py:meth:`.Draw.get_glue_points` converts the shape into an XGluePointsSupplier_, and calls its ``getGluePoints()`` method to retrieves a tuple of GluePoint2_ objects.
 To simplify the access to the points data, this structure is returned as a tuple:
@@ -217,6 +241,12 @@ To simplify the access to the points data, this structure is returned as a tuple
 
             return tuple(gps)
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 .. seealso::
 
     .. cssclass:: src-link
@@ -238,6 +268,11 @@ The ``graphics`` style family is obtained by :py:meth:`.Info.get_style_container
         g_styles = Info.get_style_container(doc=doc, family_style_name="graphics")
         self._connect_rectangles(slide=curr_slide, g_styles=g_styles)
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The styles reported by :py:meth:`.Info.get_style_container` are related to the Draw built in styles seen in :numref:`ch15fig_ss_line_style`.
 
@@ -259,6 +294,12 @@ Inside ``_connect_rectangles()``, the connector's graphic style is changed to us
 
         # in _connect_rectangles() of grouper.py
         Draw.set_style(shape=conn_shape, graphic_styles=g_styles, style_name=GraphicStyleKind.ARROW_LINE)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The :py:attr:`.GraphicStyleKind.ARROW_LINE` style creates black arrows as seen in :numref:`ch15fig_connector_with_arrows`.
 
@@ -290,6 +331,12 @@ The result can be seen in :numref:`ch15fig_connector_with_orange_line_arrow`.
             LineStartCenter=False,
             LineEndName=GraphicArrowStyleKind.NONE,
         )
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 .. cssclass:: diagram
 
@@ -334,6 +381,12 @@ If the properties are set to:
             LineEndName=GraphicArrowStyleKind.NONE,
         )
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 then the arrow head changes to that shown in :numref:`ch15fig_arrow_line_purple`.
 
 ..
@@ -359,6 +412,12 @@ to :py:meth:`.Draw.set_style`. Styles can be looked up in the following manor:
 
         g_styles = Info.get_style_container(doc=doc, family_style_name="graphics")
         Info.show_container_names("Graphic styles", g_styles)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 Alternatively, you can browse through the LineProperties class inherited by ConnectorShape (shown in :numref:`ch15fig_connector_shape_hierarchy`).
 
@@ -410,6 +469,12 @@ The three techniques are:
         Lo.delay(3000)  # delay so user can see previous composition
         # ...
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 Two ellipses are created, and positioned at the top-right of the page.
 
 :py:meth:`.Draw.show_shapes_info` is called to supply information about all the shapes on the page:
@@ -440,6 +505,12 @@ The two ellipses were just created in the code snipper given above.
         s2 = Draw.draw_ellipse(slide=curr_slide, x=x, y=y2, width=width, height=height)
         self._group_ellipses(slide=curr_slide, s1=s1, s2=s2)
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 ``_group_ellipses()`` is:
 
 .. tabs::
@@ -454,6 +525,12 @@ The two ellipses were just created in the code snipper given above.
             shapes = Lo.qi(XShapes, shape_group, True)
             shapes.add(s1)
             shapes.add(s2)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The GroupShape_ is converted to an XShapes_ interface so the two ellipses can be added to it.
 Note that GroupShape_ has no position or size; they are determined from the added shapes.
@@ -509,6 +586,12 @@ Instead of ``_group_ellipses()``, it's possible to call ``_bind_ellipses()`` in 
         s2 = Draw.draw_ellipse(slide=curr_slide, x=x, y=y2, width=width, height=height)
         self._bind_ellipses(slide=curr_slide, s1=s1, s2=s2)
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 The function is defined as:
 
 .. tabs::
@@ -524,6 +607,12 @@ The function is defined as:
             shapes.add(s2)
             binder = Lo.qi(XShapeBinder, slide, True)
             binder.bind(shapes)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 An empty XShapes_ shape is created, then filled with the component shapes.
 The shapes inside XShapes_ are converted into a single object ``XShapeBinder.bind()``.
@@ -577,6 +666,12 @@ If the result needs to be a single shape, then grouping (not binding) can be app
         s2 = Draw.draw_ellipse(slide=curr_slide, x=x, y=y2, width=width, height=height)
         self._combine_ellipses(slide=curr_slide, s1=s1, s2=s2)
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 ``_combine_ellipse()`` employs the XShapeCombiner_ interface, which is used in the same way as XShapeBinder_:
 
 .. tabs::
@@ -592,6 +687,12 @@ If the result needs to be a single shape, then grouping (not binding) can be app
             shapes.add(s2)
             combiner = Lo.qi(XShapeCombiner, slide, True)
             combiner.combine(shapes)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The combined shape only differs from grouping if the two ellipses are initially overlapping.
 :numref:`ch15fig_combining_shape_combiner` shows that the intersecting areas of the two shapes is removed from the combination.
@@ -649,6 +750,12 @@ Those effects had to implemented by using dispatches, as shown in ``_combine_rec
             shapes.add(r2)
             comb = Draw.combine_shape(doc=doc, shapes=shapes, combine_op=ShapeCombKind.COMBINE)
             return comb
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The dispatching is performed by :py:meth:`.Draw.combine_shape`, which is passed an array of XShapes_ and a constant representing one of the four combining techniques.
 
@@ -712,6 +819,12 @@ This approach is implemented in :py:meth:`.Draw.combine_shape`:
             combined_shape = Lo.qi(XShape, xs.getByIndex(0), True)
             return combined_shape
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 .. seealso::
 
     - :py:class:`~.kind.shape_comb_kind.ShapeCombKind`
@@ -733,7 +846,6 @@ On screen the separated shapes will look the same as before, but may not have th
 
 The ``main()`` function of |grouper_py|_ shows how the combination of the two rectangles can be undone:
 
-
 .. tabs::
 
     .. code-tab:: python
@@ -745,6 +857,12 @@ The ``main()`` function of |grouper_py|_ shows how the combination of the two re
         combiner = Lo.qi(XShapeCombiner, curr_slide, True)
         combiner.split(comp_shape)
         Draw.show_shapes_info(curr_slide)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The combined rectangles shape is passed to ``XShapeCombiner.split()`` which removes the combined shape from the slide, replacing it by its components.
 :py:meth:`.Draw.show_shapes_info` shows this result:
@@ -773,6 +891,12 @@ For example:
 
         grouper = Lo.qi(XShapeGrouper, curr_slide)
         grouper.ungroup(comp_shape)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 15.4 Bezier Curves
 ==================
@@ -819,6 +943,12 @@ The code for generating :numref:`ch15fig_cubic_bezier_curve` is in ``_draw_curve
             path_flags.append(PolygonFlags.NORMAL)
 
             return Draw.draw_bezier(slide=slide, pts=path_pts, flags=path_flags, is_open=True)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 Most of the curve generation is done by :py:meth:`.Draw.draw_bezier`, but the programmer must still define two list and a boolean.
 The ``path_pts[]`` list holds the four coordinates, and ``path_flags[]`` specify their types.
@@ -869,6 +999,12 @@ Then it fills a PolyPolygonBezierCoords_ data structure with the coordinates and
 
             Props.set(bezier_poly, PolyPolygonBezier=coords)
             return bezier_poly
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 .. seealso::
 

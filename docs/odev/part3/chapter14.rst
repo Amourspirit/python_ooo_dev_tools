@@ -56,6 +56,12 @@ The second loop rotates a line counter-clockwise while changing its length. The 
                 x2 -= 4
                 y2 -= 4
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 The shape (circle or line) is changed by removing the current version from the page and inserting a new updated instance.
 This means that a lot of objects are created and removed in a short amount of time. The alternative approach,
 which retains the shape and only update its properties, is used in the bicycle animation explained next.
@@ -98,6 +104,12 @@ The animation is performed by ``_animate_bike()``:
 
             print(f"Final Angle: {int(Draw.get_rotation(shape))}")
             Draw.print_matrix(Draw.get_transformation(shape))
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The animation loop in ``_animate_bike()`` is similar to the ones in ``anim_shapes()``, using :py:meth:`.Lo.delay` to space out changes over time.
 However, instead of creating a new shape on each iteration, a single GraphicObjectShape_ is created by :py:meth:`.Draw.draw_image` before the loop starts.
@@ -148,6 +160,12 @@ There are several versions of :py:meth:`.Draw.draw_image` the main one is:
             cls.set_line_style(shape=im_shape, style=LineStyle.NONE)
             return im_shape
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 .. seealso::
 
     .. cssclass:: src-link
@@ -168,6 +186,12 @@ That version is coded using:
 
         Props.set(GraphicURL=FileIO.fnm_to_url(im_fnm))
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 A second version of :py:meth:`.Draw.draw_image` doesn't require width and height arguments – they're obtained from the image’s dimensions:
 
 .. tabs::
@@ -187,6 +211,12 @@ A second version of :py:meth:`.Draw.draw_image` doesn't require width and height
                 height=round(im_size.Height / 100)
             )
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 .. seealso::
 
     .. cssclass:: src-link
@@ -205,6 +235,12 @@ It loads the image as an XGraphic_ object so that its ``Size100thMM`` property c
         def get_size_100mm(cls, im_fnm: PathOrStr) -> Size:
             graphic = cls.load_graphic_file(im_fnm)
             return mProps.Props.get(graphic, "Size100thMM")
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 This approach isn't very efficient since it means that the image is being loaded twice,
 once as an XGraphic_ object by :py:meth:`~.ImagesLo.get_size_100mm`, and also as a bitmap by ``setImage()``.
@@ -238,6 +274,12 @@ The ``_animate_bike()`` animation uses Draw methods for getting and setting the 
         @staticmethod
         def set_rotation(shape: XShape, angle: Angle) -> None:
             mProps.Props.set(shape, RotateAngle=angle.Value * 100)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 .. seealso::
 
@@ -280,6 +322,12 @@ The Draw class has are two support functions for ``Transformation``: one extract
             print(f"  Current angle: {curr_angle}")
             print()
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 These methods are called at the end of ``_animate_bike()``:
 
 .. tabs::
@@ -288,6 +336,12 @@ These methods are called at the end of ``_animate_bike()``:
 
         # from anim_bicycle.py _animate_bike()
         Draw.print_matrix(Draw.get_transformation(shape))
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The output is:
 

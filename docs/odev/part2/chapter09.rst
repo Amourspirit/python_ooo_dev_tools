@@ -38,6 +38,12 @@ The following code fragment utilizes the XSearchable_ and XSearchDescriptor_ int
         srch_desc = searchable.createSearchDescriptor()
         srch_desc.setSearchString("colou?r")
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 XReplaceable_ and XReplaceDescriptor_ objects are configured in a similar way, as shown in the examples.
 
 XSearchDescriptor_ and XReplaceDescriptor_ contain get and set methods for their strings.
@@ -64,6 +70,12 @@ The next code fragment accesses the SearchDescriptor_ properties, and switches o
         srch_props = Lo.qi(XPropertySet, srch_desc, raise_err=True)
         srch_props.setPropertyValue("SearchRegularExpression", True)
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 Alternatively, :py:meth:`.Props.set_property` can be employed:
 
 .. tabs::
@@ -71,6 +83,12 @@ Alternatively, :py:meth:`.Props.set_property` can be employed:
     .. code-tab:: python
 
         Props.set_property(srch_desc, "SearchRegularExpression", True)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 Once a search descriptor has been created (i.e. its string is set and any properties configured), then one of the ``findXXX()`` methods in XSearchable_ can be called.
 
@@ -84,6 +102,12 @@ For instance, ``XSearchable.findFirst()`` returns the text range of the first ma
 
         if srch is not None:
             match_tr = Lo.qi(XTextRange, srch)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The example programs, |text_replace|_ and |italics_styler|_, demonstrate search and replacement.
 |text_replace|_ uses XSearchable_ to find the first occurrence of a regular expression and XReplaceable_ to replace multiple occurrences of other words.
@@ -102,6 +126,12 @@ The first matching phrase for each expression is reported. For instance, the cal
 
         words = ("(G|g)rit", "colou?r",)
         find_words(doc, words)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 prints the following when ``bigStory.doc`` is searched:
 
@@ -154,6 +184,12 @@ The code for ``find_words()``:
                     print(f"    - at char postion: {len(tvc.getString())}")
                     Lo.delay(500)
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 ``find_words()`` get the text view cursor (``tvc``) from :py:meth:`.Write.get_view_cursor`.
 
 .. tabs::
@@ -162,6 +198,12 @@ The code for ``find_words()``:
 
         page_cursor = Write.get_page_cursor(tvc)
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 Alternatively ``page_curser`` could be cast from view cursor:
 
 .. tabs::
@@ -169,6 +211,12 @@ Alternatively ``page_curser`` could be cast from view cursor:
     .. code-tab:: python
 
         page_cursor = Lo.qi(XPageCursor, tvc)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 ``find_words()`` creates the text view cursor (``tvc``), moves it to the start of the document, and links the page cursor to it.
 
@@ -185,6 +233,12 @@ After the page position has been printed, the cursor is moved to the right by th
 
         tvc.goRight(len(match_tr.getString()), True)
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 9.2 Replacing all the Matching Words
 ====================================
 
@@ -196,6 +250,12 @@ After the page position has been printed, the cursor is moved to the right by th
 
         uk_words = ("colour", "neighbour", "centre", "behaviour", "metre", "through")
         us_words = ("color", "neighbor", "center", "behavior", "meter", "thru")
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 ``replace_words()`` cycles through the sequences, replacing all occurrences of the words in the first sequence (:abbreviation:`ex:` in ``uk_words``)
 with the corresponding words in the second sequence (:abbreviation:`ex:` in ``us_words``). For instance, every occurrence of ``colour`` is replaced by ``color``.
@@ -232,6 +292,12 @@ Since ``replace_words()`` doesn't report page and character positions, its code 
                 replace_desc.setSearchString(old)
                 replace_desc.setReplaceString(new)
             return replaceable.replaceAll(replace_desc)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The XReplaceable_ and XReplaceDescriptor_ interfaces are created in a similar way to their search versions.
 The replace descriptor has two set methods, one for the search string, the other for the replacement string.
@@ -342,6 +408,12 @@ The searching in |italics_styler|_ is performed by ``italicize_all()``, which be
                 raise
             return result
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 After the search descriptor string has been defined, the ``SearchCaseSensitive`` property in SearchDescriptor_ is set to ``False``:
 
 .. tabs::
@@ -350,6 +422,12 @@ After the search descriptor string has been defined, the ``SearchCaseSensitive``
 
         srch_desc.setSearchString(phrase)
         Props.set_property(obj=srch_desc, name="SearchCaseSensitive", value=False)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 This allows the search to match text contains both upper and lower case letters, such as "Pleasure".
 Many other search variants, such as restricting the search to complete words,
@@ -363,6 +441,12 @@ The text range for each element is obtained by applying :py:meth:`.Lo.qi`:
     .. code-tab:: python
 
         match_tr = Lo.qi(XTextRange, matches.getByIndex(i))
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The reporting of the matching page and character position use text view and page cursors in the same way as ``find_words()`` in |text_replace|_.
 
@@ -378,6 +462,12 @@ These properties are changed to adjust the character color and style of the sele
             names=("CharColor", "CharPosture"),
             vals=(color, FontSlant.ITALIC)
             )
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 This changes the ``CharColor`` and ``CharPosture`` properties are set to specified color and set to italic.
 

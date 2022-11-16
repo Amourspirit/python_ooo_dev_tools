@@ -69,6 +69,12 @@ The |slide_info_py|_ main function:
                     Lo.close_office()
                     raise
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 :py:meth:`.Lo.open_doc` is capable of opening any Office document, and importing documents in other formats, so it's worthwhile checking the resulting
 XComponent_ object before progressing. :py:meth:`.Draw.is_shapes_based` returns true if the file holds a Draw or Impress document:
 
@@ -81,6 +87,12 @@ XComponent_ object before progressing. :py:meth:`.Draw.is_shapes_based` returns 
             return Info.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.DRAW) or Info.is_doc_type(
                 obj=doc, doc_type=mLo.Lo.Service.IMPRESS
             )
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The document is made visible on-screen by calling :py:meth:`.GUI.set_visible`, and the application view is resized so all the drawing (or slide) is visible inside the window.
 :py:meth:`.GUI.zoom` can be passed different :py:class:`.GUI.ZoomEnum` values for showing, ``ZoomEnum.PAGE_WIDTH``, the entire width of the page,
@@ -136,6 +148,12 @@ For example, :py:meth:`.Draw.get_slides_count` will return 1 when applied to a n
             except Exception as e:
                 raise DrawPageError("Error getting slides") from e
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 :py:meth:`~.Draw.get_slides` employs the XDrawPagesSupplier_ interface which is part of GenericDrawingDocument_ shown in :numref:`ch11fig_draw_and_presentation_services`.
 
 :py:meth:`.Draw.get_slide` (note: no "s") treats the XDrawPages_ object as an indexed container of XDrawPage_ objects:
@@ -160,6 +178,12 @@ For example, :py:meth:`.Draw.get_slides_count` will return 1 when applied to a n
             except Exception as e:
                 raise DrawError(f"Could not get slide: {idx}") from e
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 :py:meth:`.Draw.get_slide_size` returns a |awt_size|_ object created from looking up the ``Width`` and ``Height`` properties of the supplied slide/page:
 
 .. tabs::
@@ -178,6 +202,12 @@ For example, :py:meth:`.Draw.get_slides_count` will return 1 when applied to a n
                 return Size(round(width / 100), round(height / 100))
             except Exception as e:
                 raise SizeError("Could not get shape size") from e
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 These ``Width`` and ``Height`` properties are stored in XDrawPage_'s GenericDrawPage_ service, shown in :numref:`ch11fig_some_drawpage_services`.
 
@@ -224,60 +254,68 @@ Each layer can be made visible or invisible independent of the others. It's also
             layer = Draw.get_layer(doc=doc, layer_name=DrawingLayerKind.BACK_GROUND_OBJECTS)
             Props.show_obj_props("Background Object Props", layer)
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 :py:meth:`.Draw.get_layer_manager` obtains an XLayerManager_ instance which can be treated as an indexed container of XLayer_ objects.
 :py:meth:`.Draw.get_layer` converts the XLayerManager_ into a named container, so it can be searched by layer name.
 
-Typical output from ``_report_layers()`` is:
+.. cssclass:: rst-collapse
 
-.. code::
+    .. collapse::Typical output from _report_layers() is:
 
-    Layer 0 Properties
-      Description: 
-      IsLocked: False
-      IsPrintable: True
-      IsVisible: True
-      Name: layout
-      Title: 
+        .. code::
 
-    Layer 1 Properties
-      Description: 
-      IsLocked: False
-      IsPrintable: True
-      IsVisible: True
-      Name: background
-      Title: 
+            Layer 0 Properties
+              Description: 
+              IsLocked: False
+              IsPrintable: True
+              IsVisible: True
+              Name: layout
+              Title: 
 
-    Layer 2 Properties
-      Description: 
-      IsLocked: False
-      IsPrintable: True
-      IsVisible: True
-      Name: backgroundobjects
-      Title: 
+            Layer 1 Properties
+              Description: 
+              IsLocked: False
+              IsPrintable: True
+              IsVisible: True
+              Name: background
+              Title: 
 
-    Layer 3 Properties
-      Description: 
-      IsLocked: False
-      IsPrintable: True
-      IsVisible: True
-      Name: controls
-      Title: 
+            Layer 2 Properties
+              Description: 
+              IsLocked: False
+              IsPrintable: True
+              IsVisible: True
+              Name: backgroundobjects
+              Title: 
 
-    Layer 4 Properties
-      Description: 
-      IsLocked: False
-      IsPrintable: True
-      IsVisible: True
-      Name: measurelines
-      Title: 
+            Layer 3 Properties
+              Description: 
+              IsLocked: False
+              IsPrintable: True
+              IsVisible: True
+              Name: controls
+              Title: 
 
-    Background Object Props Properties
-      Description: 
-      IsLocked: False
-      IsPrintable: True
-      IsVisible: True
-      Name: backgroundobjects
-      Title: 
+            Layer 4 Properties
+              Description: 
+              IsLocked: False
+              IsPrintable: True
+              IsVisible: True
+              Name: measurelines
+              Title: 
+
+            Background Object Props Properties
+              Description: 
+              IsLocked: False
+              IsPrintable: True
+              IsVisible: True
+              Name: backgroundobjects
+              Title: 
 
 Each layer contains six properties. Four are defined by the Layer service; use ``lodoc layer service drawing`` to see its documentation.
 The most useful property is probably ``IsVisible`` which toggles the layer's visibility.
@@ -322,18 +360,10 @@ Not all the master page styles are shown in :numref:`ch12fig_impress_default_mas
 If a slide deck is formatted using a master page (Impress template) other than ``Default``, such as ``Inspiration``,
 then the style family name will be changed accordingly. The ``Inspiration`` family contains the same properties (styles) as ``Default``, but with different values.
 
-.. todo::
-
-    Chapter 12, Add link to chapter 17
-
-Details on coding with master pages and Impress templates are given in the |master_use|_ and |points_builder|_ examples in Chapter 17.
-
-.. todo::
-
-    Chapter 12, Add link to chapter 14
+Details on coding with master pages and Impress templates are given in the |master_use|_ and |points_builder|_ examples in :ref:`ch17`.
 
 The other Draw/Impress style families are ``cell``, ``graphics`` and ``table``. ``table`` and ``cell`` contain styles which affect the colors used to draw a table and its cells.
-``graphics`` affects the appearance of shapes. Examples of how to use the ``graphics`` style family are given in the |draw_picture|_ example in Chapter 14.
+``graphics`` affects the appearance of shapes. Examples of how to use the ``graphics`` style family are given in the |draw_picture|_ example in :ref:`ch14`.
 
 The ``_report_styles()`` method inside |slide_info_py|_ is:
 
@@ -353,51 +383,61 @@ The ``_report_styles()`` method inside |slide_info_py|_ is:
                 print(f'Styles in the "{name}" style family:')
                 Lo.print_names(con_names)
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 The method prints the names of the style families, and the names of the styles (property sets) inside each family. Typical output is:
 
-.. code::
+.. cssclass:: rst-collapse
 
-    Style Families in this document:
-    No. of names: 4
-      'cell'  'Default'  'graphics'  'table'
+    .. collapse::  Typical output is:
 
-    Styles in the "Default" style family:
-    No. of names: 14
-      'background'  'backgroundobjects'  'notes'  'outline1'
-      'outline2'  'outline3'  'outline4'  'outline5'
-      'outline6'  'outline7'  'outline8'  'outline9'
-      'subtitle'  'title'
+        .. code::
 
-    Styles in the "cell" style family:
-    No. of names: 34
-      'blue1'  'blue2'  'blue3'  'bw1'
-      'bw2'  'bw3'  'default'  'earth1'
-      'earth2'  'earth3'  'gray1'  'gray2'
-      'gray3'  'green1'  'green2'  'green3'
-      'lightblue1'  'lightblue2'  'lightblue3'  'orange1'
-      'orange2'  'orange3'  'seetang1'  'seetang2'
-      'seetang3'  'sun1'  'sun2'  'sun3'
-      'turquoise1'  'turquoise2'  'turquoise3'  'yellow1'
-      'yellow2'  'yellow3'
+            Style Families in this document:
+            No. of names: 4
+              'cell'  'Default'  'graphics'  'table'
 
-    Styles in the "graphics" style family:
-    No. of names: 40
-      'A4'  'A4'  'Arrow Dashed'  'Arrow Line'
-      'Filled'  'Filled Blue'  'Filled Green'  'Filled Red'
-      'Filled Yellow'  'Graphic'  'Heading A0'  'Heading A4'
-      'headline'  'headline1'  'headline2'  'Lines'
-      'measure'  'Object with no fill and no line'  'objectwitharrow'  'objectwithoutfill'
-      'objectwithshadow'  'Outlined'  'Outlined Blue'  'Outlined Green'
-      'Outlined Red'  'Outlined Yellow'  'Shapes'  'standard'
-      'Text'  'text'  'Text A0'  'Text A4'
-      'textbody'  'textbodyindent'  'textbodyjustfied'  'title'
-      'Title A0'  'Title A4'  'title1'  'title2'
+            Styles in the "Default" style family:
+            No. of names: 14
+              'background'  'backgroundobjects'  'notes'  'outline1'
+              'outline2'  'outline3'  'outline4'  'outline5'
+              'outline6'  'outline7'  'outline8'  'outline9'
+              'subtitle'  'title'
 
-    Styles in the "table" style family:
-    No. of names: 11
-      'blue'  'bw'  'default'  'earth'
-      'green'  'lightblue'  'orange'  'seetang'
-      'sun'  'turquoise'  'yellow'
+            Styles in the "cell" style family:
+            No. of names: 34
+              'blue1'  'blue2'  'blue3'  'bw1'
+              'bw2'  'bw3'  'default'  'earth1'
+              'earth2'  'earth3'  'gray1'  'gray2'
+              'gray3'  'green1'  'green2'  'green3'
+              'lightblue1'  'lightblue2'  'lightblue3'  'orange1'
+              'orange2'  'orange3'  'seetang1'  'seetang2'
+              'seetang3'  'sun1'  'sun2'  'sun3'
+              'turquoise1'  'turquoise2'  'turquoise3'  'yellow1'
+              'yellow2'  'yellow3'
+
+            Styles in the "graphics" style family:
+            No. of names: 40
+              'A4'  'A4'  'Arrow Dashed'  'Arrow Line'
+              'Filled'  'Filled Blue'  'Filled Green'  'Filled Red'
+              'Filled Yellow'  'Graphic'  'Heading A0'  'Heading A4'
+              'headline'  'headline1'  'headline2'  'Lines'
+              'measure'  'Object with no fill and no line'  'objectwitharrow'  'objectwithoutfill'
+              'objectwithshadow'  'Outlined'  'Outlined Blue'  'Outlined Green'
+              'Outlined Red'  'Outlined Yellow'  'Shapes'  'standard'
+              'Text'  'text'  'Text A0'  'Text A4'
+              'textbody'  'textbodyindent'  'textbodyjustfied'  'title'
+              'Title A0'  'Title A4'  'title1'  'title2'
+
+            Styles in the "table" style family:
+            No. of names: 11
+              'blue'  'bw'  'default'  'earth'
+              'green'  'lightblue'  'orange'  'seetang'
+              'sun'  'turquoise'  'yellow'
 
 .. |awt_size| replace:: com.sun.star.awt.Size
 .. _awt_size: https://api.libreoffice.org/docs/idl/ref/structcom_1_1sun_1_1star_1_1awt_1_1Size.html
