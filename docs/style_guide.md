@@ -2,7 +2,7 @@
 
 ## Book Naming conventions
 
-### references
+### References
 
 #### Chapter, ch01
 
@@ -24,7 +24,7 @@ Example:
 .. _ch03_examine_office:
 ```
 
-#### sub, sub section
+#### Sub, sub section
 
 sub section followed by `_` followed by sub section short name
 
@@ -34,7 +34,7 @@ Example:
 .. _ch03_examine_office_cofig_prop:
 ```
 
-### chapter figures
+### Chapter figures
 
 chapter name followed by fig followed by `_` followed by short name
 
@@ -44,7 +44,7 @@ Example:
 .. _ch03fig_prop_dialog:
 ```
 
-### chapter tables
+### Chapter tables
 
 chapter name followed by tbl followed by `_` followed by short name
 
