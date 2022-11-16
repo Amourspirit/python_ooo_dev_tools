@@ -64,3 +64,9 @@
                 # ctrl+c exitst the script earily
                 print("\nExiting by user request.\n", file=sys.stderr)
                 sys.exit(0)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None

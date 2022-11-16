@@ -168,9 +168,11 @@ The ``main()`` function of |p_builder_py|_ starts by printing the names of all t
                     Lo.close_office()
                     raise
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 
 ``_report_templates()`` uses ``Info.get_dirs("Template")`` to retrieve a list of all the directories examined by Office when looking for templates.
@@ -198,9 +200,11 @@ It also calls :py:meth:`.Draw.get_slide_template_path` to retrieve the default s
             for fnm in template_fnms:
                 print(f"  {fnm}")
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 .. cssclass:: rst-collapse
 
@@ -250,9 +254,11 @@ It also calls :py:meth:`.Draw.get_slide_template_path` to retrieve the default s
         _ = FileIO.is_exist_file(template_fnm, True)
         doc = Lo.create_doc_from_template(template_path=template_fnm, loader=loader)
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 :py:meth:`.Lo.create_doc_from_template` is a variant of :py:meth:`.Lo.create_doc` which specifies a template for the new document.
 It calls ``XComponentLoader.loadComponentFromURL()`` with the template file as an argument, and sets the ``AsTemplate`` property:
@@ -276,9 +282,11 @@ It calls ``XComponentLoader.loadComponentFromURL()`` with the template file as a
             cls._ms_factory = cls.qi(XMultiServiceFactory, cls._doc, raise_err=True)
             return cls._doc
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 .. seealso::
 
@@ -337,9 +345,11 @@ It ignores blank lines and lines starting with "//", and examines the first char
                 print(f"Error reading points file: {self._points_fnm}")
                 print(f"  {e}")
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 If the line starts with a ``>``, then ``process_bullet()`` is called to determine how many ``>``'s start the line.
 Depending on the number, :py:meth:`.Draw.add_bullet` is called with a different bullet indentation level value.
@@ -480,9 +490,11 @@ The ``main()`` method for |m_use_py|_ is:
                     Lo.close_office()
                     raise
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 17.2.1 Accessing a Master Page
 ------------------------------
@@ -497,9 +509,11 @@ A presentation (or drawing) document can access its master pages through the XMa
         mp_supp = Lo.qi(XMasterPagesSupplier, doc)
         pgs = mp_supp.getMasterPages()  # XDrawPages
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The XDrawPages_ object is an indexed collection, with the default master page at position ``0``:
 
@@ -509,9 +523,11 @@ The XDrawPages_ object is an indexed collection, with the default master page at
 
         master_page = Lo.qi(XDrawPage, pgs.getByIndex(0))
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 Note that there's no ``XMasterPage`` interface – both slides and master pages are manipulated using XDrawPage_.
 
@@ -528,9 +544,11 @@ These preceding lines are packaged up as :py:meth:`.Draw.get_master_page`:
             pgs = mp_supp.getMasterPages()
             return Lo.qi(XDrawPage, pgs.getByIndex(idx), True)
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 There's a second way of obtaining a master page, via the link between a slide and its master; the linked master is called a target.
 This is implemented by an overloaded :py:meth:`.Draw.get_master_page` method:
@@ -545,9 +563,11 @@ This is implemented by an overloaded :py:meth:`.Draw.get_master_page` method:
             mp_target = Lo.qi(XMasterPageTarget, slide, True)
             return mp_target.getMasterPage()
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 .. seealso::
 
@@ -569,9 +589,11 @@ The default master page was shown in :numref:`ch17fig_default_master_page`, and 
         print("Default Master Page")
         Draw.show_shapes_info(master_page)
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The output:
 
@@ -604,9 +626,11 @@ A new master page is created by using ``XMasterPagesSupplier.getMasterPages()`` 
             except Exception as e:
                 raise DrawPageError("Unable to insert master page") from e
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The new master page contains no presentation shapes (unlike the default one). They must be added separately.
 
@@ -634,9 +658,11 @@ and places a blue rectangle and some text in the top-left corner of the master:
             slide=master_page, msg="Default Master Page", x=10, y=15, width=100, height=10, font_size=24
         )
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 :py:meth:`.Draw.set_master_footer` searches through the shapes on the page looking for a FooterShape_.
 The shape is cast to a text interface, and a string added:
@@ -683,9 +709,11 @@ An ellipse and some text are added to it in the same way as for the default mast
             slide=master2, msg="Master Page 2", x=10, y=15, width=100, height=10, font_size=24
         )
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 Unlike the default master page, a number shape must be explicitly added to the second master, by calling :py:meth:`.Draw.add_slide_number`:
 
@@ -695,9 +723,11 @@ Unlike the default master page, a number shape must be explicitly added to the s
 
         _ = Draw.add_slide_number(master2)
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 It is implemented as:
 
@@ -751,9 +781,11 @@ It is implemented as:
             except Exception as e:
                 raise ShapeError("Unable to add slide number") from e
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 17.2.4 Using a Master Page
 --------------------------
@@ -773,9 +805,11 @@ For example, the footer and page number are drawn on a slide like so:
 
         Props.set(slide1, IsPageNumberVisible=True, IsFooterVisible=True, FooterText="MU Slides")
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The relevant property for showing the date/time is ``IsDateTimeVisible``.
 All these properties are define in the |p_draw_service|_ service.
@@ -794,9 +828,11 @@ A slide can be linked to a different master by calling :py:meth:`.Draw.set_maste
         # link master page 2 to third slide
         Draw.set_master_page(slide=Draw.get_slide(doc=doc, idx=2), page=master2)
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 It uses the XMasterPageTarget_ interface to create the new link:
 
@@ -813,9 +849,11 @@ It uses the XMasterPageTarget_ interface to create the new link:
             except Exception as e:
                 raise DrawError("Unable to set master page") from e
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 
 17.3 Adding a Slide to a Deck
@@ -883,9 +921,11 @@ It finishes by saving the modified deck to a new file:
                     Lo.close_office()
                     raise
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 But if you examine the new file, you'll see that the title/subtitle slide has become the second slide in the deck.
 This highlights a restriction on ``XDrawPages.insertNewByIndex()``, which is that a new slide cannot be inserted at index position ``0``.
@@ -909,9 +949,11 @@ If you did want to do this, the code would be something like:
         dup_slide = dup.duplicate(slide)  # XDrawPage
             # dup_slide is located after original slide in the deck
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The only way to rearrange slides inside Office is with dispatch commands, in particular with the "Copy" and "Paste" commands.
 This is complicated by the fact that copying an entire slide is only possible when the deck is displayed in slide-sorter mode.
@@ -978,9 +1020,11 @@ The ``main()`` method of |copy_slide_py|_:
                 Lo.close_office()
                 raise
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 
 All the interesting stuff is performed by ``_copy_to()``.
@@ -1011,9 +1055,11 @@ It is defined as:
             _Events().trigger(LoNamedEvent.DOC_SAVED, EventArgs.from_args(cargs))
             return True
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 It is often best to avoid calling :py:meth:`.Lo.save` due to the fact that it overwrites the input file.
 
@@ -1061,9 +1107,11 @@ The ``_copy_to()`` function in |copy_slide_py|_:
             Lo.dispatch_cmd(cmd=DrawDrawingDispatch.DRAWING_MODE)
             Lo.delay(500)
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 
 The method sends out four dispatches: the ``DiaMode`` command switches the application into slide-sorter mode, and is followed by ``Copy``, ``Paste``,
@@ -1092,9 +1140,11 @@ The solution is to use a reference to the document's controller, as shown in ``_
         # ...
         Draw.goto_page(ctrl, to_slide)
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 17.5 Appending Slide Decks Together
 ===================================
@@ -1200,9 +1250,11 @@ The first file is the destination deck for the slides copied from the other file
                     Lo.close_office()
                     raise
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 Dispatch lookups from :ref:`utils_dispatch` namespace are used for convenience.
 
@@ -1216,9 +1268,11 @@ Note that the controller and frame reference for the destination deck are saved 
         self._to_ctrl = GUI.get_current_controller(doc)
         self._to_frame = GUI.get_frame(doc)
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 This is done this to reduce the number of arguments passed between the methods.
 
@@ -1255,9 +1309,11 @@ The for-loop in the middle of ``main()`` processes each of the slide decks in tu
             Lo.close_doc(doc)
             print()
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 ``_append_doc()`` calls ``_append_slides()`` to cycle through the slides, copying each one to the destination deck:
 
@@ -1286,9 +1342,11 @@ The for-loop in the middle of ``main()`` processes each of the slide decks in tu
                     to_frame=self._to_frame,
                 )
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The for-loop in ``_append_slides()`` calls ``_copy_to()`` which copies and pastes a slide using dispatch commands.
 In addition ( for Windows ), it deals with the 'Confirmation' dialog in :numref:`ch17fig_confirmation_dlg` by way of |odevgui_win|_.
@@ -1340,9 +1398,11 @@ The ``_copy_to()`` Method:
 
             Lo.dispatch_cmd(cmd=GlobalEditDispatch.PASTE, frame=to_frame)
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The |append_slides|_ and |copy_slide|_ examples highlight important missing features in the presentation API.
 Copying and pasting a slide in a deck should be available as methods in XDrawPages_.
@@ -1419,9 +1479,11 @@ The ``main()`` function for |slide_2_img_py|_:
                 Draw.save_page(page=slide, fnm=out_fnm, mime_type=mime)
                 Lo.close_doc(doc)
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 Note how connection to LibreOffice is done with in ``headless`` mode.
 This basically runs LibreOffice in the background without a GUI interface.
@@ -1445,9 +1507,11 @@ The first returns an array of all the mime types supported by GraphicExportFilte
             )
             return mi.getSupportedMimeTypeNames()
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 .. cssclass:: rst-collapse
 
@@ -1492,9 +1556,11 @@ The first returns an array of all the mime types supported by GraphicExportFilte
             print("No matching mime type, so using image/png")
             return "image/png"
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 :py:meth:`Draw.save_page` creates an XGraphicExportFilter_ object, configuring it with the page to be exported and the mime type filter:
 
@@ -1524,9 +1590,11 @@ The first returns an array of all the mime types supported by GraphicExportFilte
             gef.filter(props)
             Lo.print("Export Complete")
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 .. seealso::
 
@@ -1579,9 +1647,11 @@ It is used by the |extract_txt|_ example:
                     Lo.delay(1000)
                     Lo.close_doc(doc)
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 :py:meth:`.Draw.get_shapes_text` calls :py:meth:`~.Draw.get_ordered_shapes` to collect all the shapes from all the slides in the document.
 It then iterates over the shapes list, converting each shape to text and adding it to a String List:
@@ -1623,9 +1693,11 @@ It then iterates over the shapes list, converting each shape to text and adding 
             except Exception as e:
                 raise DrawError("Error getting shape text from shape") from e
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 :py:meth:`.Draw.get_ordered_shapes` iterates over each slide in the document calling another version of itself to extract the shapes from a slide:
 
@@ -1645,9 +1717,11 @@ It then iterates over the shapes list, converting each shape to text and adding 
                 shapes.extend(cls.get_ordered_shapes(slide))
             return shapes
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 .. seealso::
 
@@ -1680,9 +1754,11 @@ For example, ``TitleShape`` usually has a z-order of ``0``.
             sorted_shapes = sorted(shapes, key=sorter, reverse=False)
             return sorted_shapes
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 :py:meth:`Draw.get_shapes` extracts all the shapes from a slide as a list:
 
@@ -1702,9 +1778,11 @@ For example, ``TitleShape`` usually has a z-order of ``0``.
                 shapes.append(Lo.qi(XShape, slide.getByIndex(i), True))
             return shapes
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 .. seealso::
 

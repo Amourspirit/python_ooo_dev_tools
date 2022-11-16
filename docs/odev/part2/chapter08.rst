@@ -77,6 +77,12 @@ Adding an image to a text document follows the same steps as other text content,
             _Events().trigger(WriteNamedEvent.IMAGE_LNIK_ADDED, EventArgs.from_args(cargs))
             return True
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 The TextGraphicObject_ service doesn't offer a ``XTextGraphicObject`` interface, so :py:meth:`.Lo.create_instance_msf`
 returns an XTextContent_.
 
@@ -91,6 +97,12 @@ The image's size on the page depends on the dimensions of its enclosing frame, w
 
         props.setPropertyValue("Width", 4_500) # 45 mm width
         props.setPropertyValue("Height", 4_000) # 40 mm height
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The values are in ``1/100`` mm units, so ``4500`` is ``45`` mm or ``4.5 cm``.
 
@@ -121,6 +133,12 @@ These dimensions are available if the image file is loaded as an XGraphic_ objec
             except Exception as e:
                 raise Exception(f"Unable to retrieve graphic") from e
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 Displaying the image at a scaled size is possible by combining :py:meth:`.ImagesLo.get_size_100mm` and :py:meth:`.Write.add_image_link`:
 
 .. tabs::
@@ -134,6 +152,12 @@ Displaying the image at a scaled size is possible by combining :py:meth:`.Images
         w = round(img_size.Width * 1.5)
         Write.add_image_link(doc, cursor, im_fnm, w, h)
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 A possible drawback of :py:meth:`.Write.add_image_link` is that the document only contains a link to the image.
 This becomes an issue if you save the document in a format other than ``.odt``.
 In particular, when saved as a Word ``.doc`` file, the link is lost.
@@ -141,12 +165,8 @@ In particular, when saved as a Word ``.doc`` file, the link is lost.
 8.2 Adding a Graphic to a Document as a Shape
 =============================================
 
-.. todo::
-
-    Chapter 8.2, add link to part 3.
-
 An alternative to inserting a graphic as a link is to treat it as a shape.
-Shapes will be discussed at length in Part 3, so I won't go into much detail about them here.
+Shapes will be discussed at length in :ref:`part03`, so I won't go into much detail about them here.
 One difference between a graphic link and shape is that shapes can be rotated.
 
 Shapes can be created using the com.sun.star.text.Shape_ service, com.sun.star.drawing.Shape_,
@@ -184,6 +204,12 @@ The |build_doc|_ example adds an image shape to the document by calling :py:meth
         append("Image as a shape: ")
         Write.add_image_shape(cursor=cursor, fnm=im_fnm)
         Write.end_paragraph(cursor)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 :py:meth:`.Write.add_image_shape` comes in two versions: with and without width and height arguments.
 A shape with no explicitly set width and height properties is rendered as a miniscule image (about 1 mm wide).
@@ -254,6 +280,12 @@ The code for :py:meth:`.Write.add_image_shape`:
             _Events().trigger(WriteNamedEvent.IMAGE_SHAPE_ADDED, EventArgs.from_args(cargs))
             return True
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 The image's size is calculated using :py:meth:`.ImagesLo.get_size_100mm` if the user doesn't supply a width and height,
 and is used towards the end of the method.
 
@@ -272,6 +304,12 @@ The graphic text content can be any sub-class of Shape. In the last section I cr
 
         gos = Lo.create_instance_msf(XTextContent, "com.sun.star.drawing.GraphicObjectShape")
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 In this section I'll use LineShape:
 
 .. tabs::
@@ -279,6 +317,12 @@ In this section I'll use LineShape:
     .. code-tab:: python
 
         ls = Lo.create_instance_msf(XTextContent, "com.sun.star.drawing.LineShape")
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The aim is to draw an horizontal line in the document, to act as a divider between paragraphs. The line will be half-a-page wide and centered, like the one in :numref:`ch07fig_graphical_line_divider_ss`.
 
@@ -317,6 +361,12 @@ The page and margin dimensions are accessible through the "Standard" page style,
                 Lo.print(f"    {e}")
                 return 0
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 :py:meth:`~.Write.get_page_text_width` returns the writing width in ``1/100 mm`` units, which is scaled, then passed to :py:meth:`.Write.add_line_divider`:
 
 .. tabs::
@@ -327,6 +377,12 @@ The page and margin dimensions are accessible through the "Standard" page style,
         text_width = Write.get_page_text_width(doc)
         # scale width by 0.5
         Write.add_line_divider(cursor=cursor, line_width=round(text_width * 0.5))
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 :py:meth:`~.Write.add_line_divider` creates a LineShape_ service with an XTextContent_ interface (see :numref:`ch08fig_shape_hierachy_parts`).
 This is converted to XShape_ so its ``setSize()`` method can be passed the line width:
@@ -359,6 +415,12 @@ This is converted to XShape_ so its ``setSize()`` method can be passed the line 
                 raise
             except Exception as e:
                 raise Exception("Insertion of graphic line failed") from e
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The centering of the line is achieved by placing the shape in its own paragraph, then using :py:meth:`.Write.style_prev_paragraph` to center it.
 
@@ -441,6 +503,12 @@ first it retrieves a collection of the graphic links in the document, then itera
             except Exception as e:
                 raise Exception(f"Get text graphics failed:") from e
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 Graphic objects are accessed with XTextGraphicObjectsSupplier_, as implemented by :py:meth:`.Write.get_graphic_links`:
 
 .. tabs::
@@ -462,6 +530,12 @@ Graphic objects are accessed with XTextGraphicObjectsSupplier_, as implemented b
 
             return xname_access
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 Back in :py:meth:`.Write.get_text_graphics`, each graphic is loaded by calling :py:meth:`.ImagesLo.load_graphic_link`. It loads an image from the URL associated with a link:
 
 .. tabs::
@@ -479,6 +553,12 @@ Back in :py:meth:`.Write.get_text_graphics`, each graphic is loaded by calling :
                 return graphic
             except Exception as e:
                 raise Exception(f"Unable to retrieve graphic") from e
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 Note that the XGraphic **ARE** extracted from the document instead of loaded from a URL.
 :py:meth:`.ImagesLo.load_graphic_file` can be used to load a graphic from a file.
@@ -507,6 +587,12 @@ Back in |save_graphics|_, the XGraphic_ objects are saved as PNG files, and thei
             print(f"Image size in pixels: {sz.Width} x {sz.Height}")
         print()
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 :py:meth:`.ImagesLo.save_graphic` utilizes the graphic provider's ``XGraphicProvider.storeGraphic()`` method:
 
 
@@ -515,6 +601,12 @@ Back in |save_graphics|_, the XGraphic_ objects are saved as PNG files, and thei
     .. code-tab:: python
 
         gprovider.storeGraphic(pic, png_props)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 Its second argument is an array of PropertyValue_ objects, not a PropertySet_.
 :py:class:`~.props.Props` utility class provides several functions for creating PropertyValue_ instances,
@@ -525,6 +617,12 @@ which are a variant of the ``{name=value}`` pair idea, but with extra data field
     .. code-tab:: python
 
         png_props = Props.make_props(URL=FileIO.fnm_to_url(fnm), MimeType=f"image/{im_format}")
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 It's passed an array of names and values, which are paired up as PropertyValue_ objects, and returned in a tuple of PropertyValue_.
 
@@ -540,6 +638,12 @@ In :py:meth:`~.ImagesLo.save_graphic`, these methods are used like so:
         png_props = mProps.Props.make_props(URL=FileIO.fnm_to_url(fnm), MimeType=f"image/{im_format}")
 
         gprovider.storeGraphic(pic, png_props)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The idea is to call ``XGraphicProvider.saveGraphics()`` with the ``URL`` and ``MimeType`` properties set – the URL is for the image file, and the ``mimetype`` is an image type (e.g. ``image/png``).
 
@@ -569,6 +673,12 @@ The idea is to call ``XGraphicProvider.saveGraphics()`` with the ``URL`` and ``M
             except Exception as e:
                 print("Unable to save graphic")
                 print(f"    {e}")
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 Other possible image MIME types include ``gif``, ``jpeg``, ``wmf``, and ``bmp``.
 For instance, this call will save the image as a GIF: ``ImagesLO.save_graphic(pic, f"graphics{i}.gif", "gif")``
