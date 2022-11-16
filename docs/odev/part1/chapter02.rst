@@ -53,6 +53,12 @@ A typical program will look like the following:
         if __name__ == "__main__":
             main()
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 ``Lo.load_office(Lo.ConnectSocket(headless=True))`` invokes Office and sets up a UNO bridge using named pipes with a headless connection.
 If not using the Graphic User Interface (GUI) of LibreOffice then ``headless=True`` is recommended.
 
@@ -119,6 +125,12 @@ See :py:meth:`.Lo.load_office` Source code for the full version which also inclu
                 SystemExit(1)
             return loader
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 There is also :py:class:`.Lo.Loader` context manager that allows for automatic closing of office.
 See |convert_doc|_ for an example.
 
@@ -154,6 +166,11 @@ Macros only need use use ``Lo.ThisComponent`` as show below.
             # get access to current spreadsheet
             sheet = Calc.get_active_sheet(doc=doc)
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 :py:meth:`.Lo.load_office` probably illustrates my most significant coding decisions – the use of global static variables inside the Lo class.
 In particular, the `XComponentContext`, `XDesktop`, and `XMultiComponentFactory` objects created by ``load_office()`` are stored globally for later use.
@@ -192,6 +209,12 @@ The creation of the XDesktop_ interface object uses :py:meth:`.Lo.create_instanc
                 raise
             except Exception as e:
                 raise Exception(f"Couldn't create interface for '{service_name}'") from e
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 If you ignore the error-checking, :py:meth:`.Lo.create_instance_mcf` does two things.
 The call to `XMultiComponentFactory.createInstanceWithContext() <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1lang_1_1XMultiComponentFactory.html#ac62a80213fcf269e7a881abc6fa3e6d2>`_
@@ -255,6 +278,12 @@ The general format of a program that opens a document, manipulates it in some wa
             Lo.close_doc(doc)
             lo.close_office()
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 See |convert_doc|_ for an example.
 
 The new methods are :py:meth:`.Lo.open_doc`, :py:meth:`.Lo.save_doc`, and :py:meth:`.Lo.close_doc`.
@@ -271,6 +300,12 @@ For example:
         file_url = FileIO.fnm_to_url(fnm)
         props = Props.make_props(Hidden=True)
         doc = loader.loadComponentFromURL(file_url, "_blank", 0, props)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The frame type is almost always "_blank" which indicates that a new window will be created for the newly loaded document.
 (Other possibilities are listed in the XComponentLoader_ documentation which you can access with ``lodoc XComponentLoader``.)
@@ -345,6 +380,12 @@ For instance, a Writer document is created by:
 
         doc = loader.loadComponentFromURL("private:factory/swriter", "_blank", 0, props)
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 The office classes include code for simplifying the creation of Writer, Draw, Impress, Calc, and Base documents, which I'll be looking at in later chapters.
 
 A Second Service Manager
@@ -360,6 +401,12 @@ XMultiServiceFactory_ service manager which is stored in the :py:class:`~.lo.Lo`
         # _ms_factory global in Lo
         doc = loader.loadComponentFromURL("private:factory/swriter", "_blank", 0, props)
         Lo._ms_factory =  Lo.qi(XMultiServiceFactory, doc)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 First :py:meth:`.Lo.qi` is employed in :py:meth:`~.lo.Lo.create_instance_mcf` to access an interface inside a service.
 This time :py:meth:`~.lo.Lo.qi` is casting one interface (XComponent_) to another (XMultiServiceFactory_).
@@ -407,6 +454,12 @@ The steps in saving a file are:
         store = Lo.qi(XStorable, doc)
         store.storeToURL(save_file_url, store_props);
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 If you don't want a password, then the third property should be left out.
 :py:meth:`.Lo.qi` is used again to cast an interface, this time from XComponent_ to |XStorable|_.
 
@@ -430,6 +483,12 @@ in :ref:`ch02_open_doc`, :py:meth:`.Lo.save_doc` was called like so:
     
         Lo.save_doc(doc, "foo.docx") # save as a Word file
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 :py:meth:`~.Lo.save_doc` extracts the file extension (i.e. "docx") and maps it to a corresponding filter name in Office
 (in this case, "Office Open XML Text"). One concern is that it's not always clear which extension-to-filter mapping should be utilized.
 For instance, another suitable filter name for "docx" is "MS Word 2007 XML".
@@ -448,6 +507,12 @@ to examine the document's service name which is accessed via the XServiceInfo_ i
     
         xinfo = Lo.qi(XServiceInfo, doc)
         is_writer = xinfo.supportsService("com.sun.star.text.TextDocument")
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 Then :py:meth:`~.Lo.save_doc` utilizes :py:meth:`~.Lo.ext_to_format` to get document extension.
 
@@ -499,6 +564,12 @@ The code for closing employs :py:meth:`.Lo.qi` to cast the document's XComponent
         closeable =  Lo.qi(XCloseable.class, doc)
         closeable.close(false)  # doc. closed without saving
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 .. _ch02_gen_purpose_convert:
 
 2.7 A General Purpose Converter
@@ -513,6 +584,12 @@ For instance:
     
         python -m doc_convertor --ext 'odp' --file 'points.ppt'
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 will save slides in MS PowerPoint format as an Impress presentation.
 
 The following converts a JPEG image into PNG:
@@ -522,6 +599,12 @@ The following converts a JPEG image into PNG:
     .. code-tab:: python
     
         python -m doc_convertor --ext 'png' --file 'skinner.jpg'
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 |convert_doc_src|_ is relatively short. Here is the main section.
 
@@ -545,6 +628,12 @@ The following converts a JPEG image into PNG:
             Lo.close_doc(doc)
 
         print(f"All done! converted file: {p_save}")
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 .. _ch02_bug_detection:
 

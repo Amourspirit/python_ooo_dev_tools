@@ -82,9 +82,11 @@ The |make_slides|_ example creates a deck of five slides, illustrating different
                 Lo.close_office()
                 raise
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The five slides are explained in the following sections.
 
@@ -102,9 +104,11 @@ The five slides are explained in the following sections.
         def create_impress_doc(loader: XComponentLoader) -> XComponent:
             return Lo.create_doc(doc_type=Lo.DocTypeStr.IMPRESS, loader=loader)
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 This creates a new slide deck with one slide whose layout depends on Impress' default settings.
 :numref:`ch16fig_impress_default_new` shows the usual layout when a user starts Impress.
@@ -132,9 +136,11 @@ This first slide, which is at index position ``0`` in the deck, can be referred 
 
         curr_slide = Draw.get_slide(doc=doc, idx=0)
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 This is the same method used to get the first page in a Draw document, so we won't go through it again.
 The XDrawPage_ object can be examined by calling :py:meth:`.Draw.show_shapes_info` which lists all the shapes (both draw and presentation ones) on the slide:
@@ -160,9 +166,11 @@ The XDrawPage_ object can be examined by calling :py:meth:`.Draw.show_shapes_inf
         def get_zorder(shape: XShape) -> int:
             return int(Props.get(shape, "ZOrder"))
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 .. seealso::
 
@@ -245,9 +253,11 @@ which is used as the basis of the layout constants in the :py:class:`~.draw.Draw
                 txt_field = Lo.qi(XText, xs, True)
                 txt_field.setString(sub_title)
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 .. seealso::
 
@@ -273,9 +283,11 @@ This can be used to write the following code:
         title_shape = Lo.qi(XShape, x_shapes.getByIndex(0))
         sub_title_shape = Lo.qi(XShape, x_shapes.getByIndex(1))
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 This is a bit hacky, so :py:meth:`.Draw.find_shape_by_type` is coded instead, which searches for a shape based on its type:
 
@@ -298,9 +310,11 @@ This is a bit hacky, so :py:meth:`.Draw.find_shape_by_type` is coded instead, wh
                     return shape
             raise ShapeMissingError(f'No shape found for "{st}"')
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 .. seealso::
 
@@ -318,9 +332,11 @@ This allows for finding the title shape by calling:
 
         xs = Draw.find_shape_by_type(curr_slide, DrawingNameSpaceKind.TITLE_TEXT)
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 16.2 The Second Slide (Title, Bullets, and Image)
 =================================================
@@ -335,9 +351,11 @@ The second slide uses a title and bullet points layout, with an image added at t
         curr_slide = Draw.add_Slide(doc)
         self._do_bullets(curr_slide=curr_slide)
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The result shown in :numref:`ch16fig_slide_title_bullte_img`.
 
@@ -391,9 +409,11 @@ The result shown in :numref:`ch16fig_slide_title_bullte_img`.
             # move below the slide text
             Draw.move_to_bottom(slide=curr_slide, shape=im)
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 :py:meth:`.Draw.bullets_slide` works in a similar way to :py:meth:`.Draw.title_slide` – first the slide's layout is set, then the presentation shapes are found and modified:
 
@@ -414,9 +434,11 @@ The result shown in :numref:`ch16fig_slide_title_bullte_img`.
             xs = cls.find_shape_by_type(slide=slide, shape_type=DrawingNameSpaceKind.BULLETS_TEXT)
             return Lo.qi(XText, xs, True)
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 .. seealso::
 
@@ -447,9 +469,11 @@ returning it as an XText_ reference. This allows text to be inserted into the sh
             Props.set(bulls_txt_end, NumberingLevel=level)
             bulls_txt_end.setString(f"{text}\n")
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 .. seealso::
 
@@ -481,9 +505,11 @@ Another way of finding out about the properties associated with XTextRange_ is t
 
         Props.show_obj_props("TextRange in OutlinerShape", tr)
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The bullet text is added with ``XTextRange.setString()``.
 A newline is added to the text before the set, to ensure that the string is treated as a complete paragraph.
@@ -506,9 +532,11 @@ The |animate_bike|_ example in :ref:`ch14` employed a version of :py:meth:`.Draw
             slide=curr_slide, fnm="skinner.png", xoffset=ImageOffset(0.6), yoffset=ImageOffset(0.5)
         )
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The last two arguments mean that the image's top-left corner will be placed at a point that is ``0.6`` of the slide's width across and ``0.5`` of its height down.
 :py:meth:`~.Draw.draw_image_offset` also scales the image so that it doesn't extend beyond the right and bottom edges of the slide.
@@ -543,9 +571,11 @@ The code for :py:meth:`.Draw.draw_image_offset`:
                 slide=slide, fnm=fnm, x=x, y=y, width=im_size.Width, height=im_size.Height
             )
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 .. seealso::
 
@@ -613,9 +643,11 @@ The code for generating this slide is:
         Draw.title_only_slide(slide=curr_slide, header="Clock Video")
         Draw.draw_media(slide=curr_slide, fnm=self._fnm_clock, x=20, y=70, width=50, height=50)
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 :py:meth:`.Draw.title_only_slide` works in a similar way to :py:meth:`~.title_slide` and :py:meth:`~.bullets_slide`:
 
@@ -633,9 +665,11 @@ The code for generating this slide is:
             txt_field = Lo.qi(XText, xs, True)
             txt_field.setString(header)
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 .. seealso::
 
@@ -667,9 +701,11 @@ When the deck is run as a slide show, the video frame is sometimes incorrectly p
             Lo.print(f'Loading media: "{fnm}"')
             cls.set_shape_props(shape, Loop=True, MediaURL=mFileIO.FileIO.fnm_to_url(fnm))
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 .. seealso::
 
@@ -685,9 +721,11 @@ In the absence of documentation, :py:meth:`.Props.show_obj_props` can be used to
 
         Props.show_obj_props("Shape", shape)
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The ``MediaURL`` property requires a file in URL format, and ``Loop`` is a boolean for making the animation play repeatedly.
 
@@ -720,9 +758,11 @@ The relevant code in ``main()`` of |make_slides_py|_ is:
         curr_slide = Draw.add_slide(doc)
         self._button_shapes(curr_slide=curr_slide)
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 This button approach to playing a video doesn't suffer from the strange behavior when using ``MediaShape`` on the third slide.
 
@@ -764,9 +804,11 @@ The ``_button_shapes()`` method in |make_slides_py|_ creates the slide:
             # clicking makes the presentation jump to first slide
             Props.set(button, CornerRadius=300, OnClick=ClickAction.FIRSTPAGE)
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 A minor point of interest is that a rounded rectangle is a RectangleShape_, but with its ``CornerRadius`` property set.
 
@@ -820,9 +862,11 @@ For example, the following will invoke Windows' calculator when the button is pr
             Bookmark=FileIO.fnm_to_url(f'(System.getenv("SystemRoot")}\\System32\\calc.exe')
             )
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 ``Bookmark`` requires an absolute path to the application, converted to URL form.
 
@@ -866,9 +910,11 @@ The following code fragment makes the ellipse on the fourth slide slide into vie
             ellipse, Effect=AnimationEffect.MOVE_FROM_LEFT, Speed=AnimationSpeed.FAST
         )
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The animation speed takes a AnimationSpeed_ value and can be set to  ``AnimationSpeed.SLOW``, ``AnimationSpeed.MEDIUM``, or ``AnimationSpeed.FAST``.
 
@@ -928,9 +974,11 @@ These features are available through the XAnimationNode_ interface, which is obt
         node_supp = Lo.qi(XAnimationNodeSupplier, slide)
         slide_node = node_supp.getAnimationNode()  # XAnimationNode
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 XAnimationNode_ allows a programmer much finer control over animation timings and animation paths for shapes.
 XAnimationNode_ is part of the large ``com.sun.star.animations`` package.
@@ -1111,9 +1159,11 @@ For example, the smiley face in the Symbol shapes menu is called "Smiley Face" i
 
             Draw.show_shapes_info(curr_slide)
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 A title-only slide is created, followed by eight calls to :py:meth:`.Draw.add_dispatch_shape` to create two rows of four shapes in :numref:`ch16fig_gui_dispatch_shapes`.
 
@@ -1180,9 +1230,11 @@ such as ``ZoomType`` and ``VisibleArea``. Its XDrawView_ interface is employed f
             except Exception as e:
                 raise DrawError("Error while trying to go to page") from e
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 .. seealso::
 
@@ -1208,9 +1260,11 @@ After the call to :py:meth:`.Draw.goto_page`, the specified draw page will be vi
             except Exception as e:
                 raise DrawPageError("Error geting Viewed page") from e
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 16.6.2 Adding a Dispatch Shape to the Visible Page
 --------------------------------------------------
@@ -1249,9 +1303,11 @@ while implementing a mouse drag utilizes |odevgui_win|_ and :external+odevguiwin
                     f'Error occured adding dispatch shape for dispatch command "{shape_dispatch}"'
                 ) from e
 
-    .. cssclass:: tab-none
+    .. only:: html
 
-        .. group-tab:: None
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 .. |animate_bike| replace:: Animate Bike
 .. _animate_bike: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/draw/odev_animate_bike

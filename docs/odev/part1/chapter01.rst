@@ -650,6 +650,12 @@ In |odev| there is a remote bridge and ``Lo.XSCRIPTCONTEXT`` which implements XS
         doc = Write.open_doc(fnm="file:///C:/tmp/testdoc.odt", loader=loader)
 
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 However, if the script is part of a loaded document, then the call to ``loadComponentFromURL()`` isn't needed, reducing the code to:
 
 .. tabs::
@@ -668,6 +674,12 @@ However, if the script is part of a loaded document, then the call to ``loadComp
         _ = Lo.load_office()
         doc = Write.get_text_doc(Lo.ThisComponent)
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 Also, Office's Basic runtime environment automatically creates a service manager and Desktop object, so it's unnecessary to create them explicitly.
 This reduces the code:
 
@@ -685,6 +697,11 @@ This reduces the code:
         _ = Lo.load_office()
         doc = Lo.ThisComponent
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 or even:
 
@@ -700,6 +717,11 @@ or even:
         from ooodev.utils.lo import Lo
         doc = Lo.ThisComponent
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 If other services are needed, Basic programmers call the ``createUnoService()`` function which
 transparently requests the named service from the service manager.
@@ -719,6 +741,12 @@ For instance:
 
         sf_acc = Lo.create_instance_msf(XSimpleFileAccess, "com.sun.star.ucb.SimpleFileAccess")
         sf_acc.CreateFolder(dir_name)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 One of the aims of |odev| is to hide as much of the complexity of Office as the Basic version of the API.
 

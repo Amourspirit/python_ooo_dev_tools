@@ -111,6 +111,11 @@ which is a simple adapter of XTopWindowListener_ class.
                 """
                 print("WL: Disposing")
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 |exlisten|_ example is also demonstrates how to keep a python script alive while office is running.
 
@@ -137,6 +142,12 @@ which is a simple adapter of XTopWindowListener_ class.
                 print("\nExiting by user request.\n", file=sys.stderr)
                 sys.exit(0)
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 The class implements seven methods for XTopWindowListener_, and disposing() inherited from XEventListener_.
 
 The DocWindow object is made the listener for the window by accessing the XExtendedToolkit_ interface,
@@ -150,6 +161,12 @@ When an event arrives at a listener method, one of the more useful things to do 
     .. code-tab:: python
 
         xwin = Lo.qi(XWindow, event.Source)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 It's then possible to access details about the frame, such as its size.
 
@@ -232,6 +249,12 @@ as seen in |exmonitor|_ example.
                 """
                 print("TL: Disposing")
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 An XTerminateListener is attached to the XDesktop instance. The program's output is:
 
 .. code-block:: text
@@ -301,6 +324,12 @@ The modified parts of |exmonitor|_ are:
                     print("\nExiting due to office bridge is gone\n")
                     raise SystemExit(1)
                 time.sleep(0.1)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 Since the disappearance of the Office bridge is a fatal event, in ``main_loop()``  ``raise SystemExit(1)`` is called to kill python.
 
@@ -629,6 +658,12 @@ In |ex_dispatch_py|_ of |ex_dispatch|_, ``_toggle_side_bar()`` 'types' these key
                     Lo.print("odevgui_win not found.")
                     return
                 RobotKeys.send_current(SendKeyInfo(WriterKeyCodes.KB_SIDE_BAR))
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 :external+odevguiwin:py:meth:`odevgui_win.robot_keys.RobotKeys.send_current` gets current document window and sets
 its focus before sending keys.

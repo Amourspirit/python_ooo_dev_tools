@@ -159,6 +159,12 @@ The following lines load a Draw (or Impress) document called "foo" as an XCompon
         loader = Lo.load_office(Lo.ConnectPipe())
         doc = Lo.open_doc(fnm="foo", loader=loader)
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 A common next step is to access the draw pages in the document using the XDrawPagesSupplier_ interface
 shown in :numref:`ch11fig_draw_and_presentation_services_and_interfaces`:
 
@@ -170,6 +176,12 @@ shown in :numref:`ch11fig_draw_and_presentation_services_and_interfaces`:
 
         supplier = Lo.qi(XDrawPagesSupplier, doc)
         pages = supplier.getDrawPages() # XDrawPages
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 This code works whether the document is a sequence of draw pages (i.e. a Draw document) or
 slides (i.e. an Impress document).
@@ -185,6 +197,12 @@ its index position. The first draw page in the document is retrieved with:
 
         page = Lo.qi(XDrawPage, pages.getByIndex(0))
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 Pages are numbered from 0, and a newly created document always contains one page.
 
 The XDrawPage_ interface is supported by the GenericDrawPage service (see :numref:`ch11fig_some_drawpage_services`),
@@ -199,6 +217,12 @@ which holds the page's properties. The following snippet returns the width of th
         width =  int(Props.get(page, "Width"))
         page_number = int(Props.get(page, "Number"))
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 The "Width" and "Number" properties are documented in the GenericDrawPage_ service.
 
 Once a single page has been retrieved, it's possible to access its shapes (as shown in :numref:`ch11fig_drawpage_api_hierarchy`).
@@ -212,6 +236,12 @@ The following code converts the XDrawPage_ object to XShapes_, and accesses the 
 
         shapes = Lo.qi(XShapes, page)
         shape = Lo.qi(XShape, shapes.getByIndex(0))
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 11.4 Shapes in a Drawing
 ========================
@@ -234,12 +264,7 @@ The first type are described here, and the presentation shapes in :ref:`ch011_sh
 
         :Some of the Drawing Shapes.
 
-.. todo::
-
-    | Chapte 11, Add link to chapter 13
-    | Chapte 11, Add link to chapters 15
-
-More about many of these shapes in Chapters 13 and 15, but you can probably guess what most of them do
+More about many of these shapes in :ref:`ch13` and :ref:`ch15`, but you can probably guess what most of them do
 – ``EllipseShape`` is for drawing ellipses and circles, ``LineShape`` is for lines and arrows, ``RectangleShape`` is for rectangles.
 
 The two "??"s in :numref:`ch11fig_some_drawing_shapes` indicate that those services aren't shown in the online documentation, but appear in examples.
@@ -277,6 +302,12 @@ defined in the FillProperties_ service, must be set. The code for doing this is 
 
         Props.set(shape, FillColor=CommonColor.RED)
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 The complication comes in knowing that a property called ``FillColor`` exists.
 Follow RectangleShape_ link and look inside each inherited Property service until you find the relevant property.
 
@@ -303,6 +334,12 @@ For example, the text height is changed to ``18pt`` by:
         cursor.gotoStart(False)
         cursor.gotoEnd(True) #  select all text
         Props.set(cursor, CharHeight=18);
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 First the shape is converted into an XText_ reference so that text selection can be done using a cursor.
 
@@ -404,6 +441,12 @@ Code for starting a slide show for the "foo" document:
         Lo.qi(XPresentation, ps.getPresentation())
         show.start()
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 Alternatively a slide show can be started with a dispatch command.
 
 .. tabs::
@@ -417,6 +460,12 @@ Alternatively a slide show can be started with a dispatch command.
         doc = Lo.open_doc("foo", loader)
         Lo.delay(500) #  wait half a sec
         Lo.dispatch_cmd(DrawViewDispatch.PRESENTATION)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The Presentation_ service is a bit lacking, so an extended service, Presentation2_, was added more recently.
 It can access an XSlideShowController_ interface which gives finer-grained control over how the show progresses; examples will come later.

@@ -74,6 +74,12 @@ The following code fragment shows how the first sheet in the ``test.odt`` docume
         sheets_idx = Lo.qi(XIndexAccess, sheets)
         sheet = Lo.qi(XSpreadsheet, sheets_idx.getByIndex(0))
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 These steps are hidden by methods in the :py:class:`~.calc.Calc` utility class, so the programmer can write:
 
 .. tabs::
@@ -83,6 +89,12 @@ These steps are hidden by methods in the :py:class:`~.calc.Calc` utility class, 
         loader = Lo.load_office(Lo.ConnectSocket())
         Calc.open_doc(doc_path, loader)
         sheet = Calc.get_sheet(doc, 0)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 Some Casting Required
 ---------------------
@@ -101,6 +113,12 @@ It's possible to manipulate a spreadsheet document as an XComponent_, but it mus
     .. code-tab:: python
 
         xc = Lo.qi(XComponent, doc)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 This is why casting to XComponent_ is done automatically in  :py:meth:`.GUI.set_visible`.
 For example, the ``odoc`` arg of :py:meth:`.GUI.set_visible` assumes that it is of type Object:
@@ -123,6 +141,12 @@ For example, the ``odoc`` arg of :py:meth:`.GUI.set_visible` assumes that it is 
             if xwindow is not None:
                 xwindow.setVisible(is_visible)
                 xwindow.setFocus()
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 This :py:meth:`.GUI.set_visible` can be called with a XSpreadsheet_ reference: ``GUI.set_visible(True, doc)``.
 The document is cast to XComponent_ inside :py:meth:`~.GUI.set_visible` and then processed.
@@ -217,6 +241,12 @@ to a sheet's cells and cell ranges via ``getCellByPosition()``, ``getCellRangeBy
 
         cell_range2 = sheet.getCellRangeByName("B2:D3")
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 Oddly enough there's no ``getCellByName()`` method, but the :py:meth:`.Calc.get_cell` has an overload that takes a name.
 
 19.5 Cell Range Services
@@ -284,6 +314,12 @@ Code for obtaining the first row of a sheet is:
         # access the first row as a cell range
         row_range = Lo.qi(XCellRange, con.getByIndex(0));
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 XTableRows_ is an indexed container containing a sequence of XCellRange_ objects.
 The TableRow_ services and interfaces are shown in :numref:`ch19_tbl_row_services`:
 
@@ -322,6 +358,12 @@ Similar coding is used to retrieve a column: ``XColumnRowRange.getColumns()`` ge
 
         row_range = Calc.get_row_range(sheet, 0);
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 19.6 Cell Services
 ==================
 
@@ -334,6 +376,12 @@ For example:
     .. code-tab:: python
 
         cell = sheet.getCellByPosition(2, 4)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The SheetCell_ service manages properties related to cell formulae and cell input validation.
 However, most cell functionality comes from inheriting the Cell service in the table module, and its XCell_ interface.
@@ -363,6 +411,12 @@ For example, the following stores the number 9 in the cell at coordinate ``(2, 4
         cell = sheet.getCellByPosition(2, 4) # (column,row)
         cell.setValue(9)
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 SheetCell_ inherits the same properties as SheetCellRange_.
 For example, ``CellProperties`` stores cell formatting properties, while text styling properties are supported by
 ``CharacterProperties`` and ``ParagraphProperties`` (see :numref:`ch19_sheet_cell_services`).
@@ -377,6 +431,12 @@ can be used to assign plain text to a cell. For instance:
     .. code-tab:: python
 
         cell.setFormula("hello") # put "hello" text in the cell
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 Calc differentiates between ordinary text and formulae by expecting a formula to begin with ``=``.
 

@@ -46,3 +46,9 @@
                         Calc.save_doc(doc, "foo.ods")
                         Lo.close_doc(doc)
                         lo.close_office()
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None

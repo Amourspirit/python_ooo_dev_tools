@@ -70,6 +70,12 @@ The examples come from two files, |draw_picture|_ and |animate_bike|_. The ``sho
                     Lo.close_office()
                     raise
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 |draw_picture_py|_ creates a new Draw document, and finishes by displaying a :ref:`class_msg_box` shown in :numref:`ch13fig_msgbox_all_done` asking the user if they want to close the document.
 
 .. tabs::
@@ -87,6 +93,12 @@ The examples come from two files, |draw_picture|_ and |animate_bike|_. The ``sho
                 Lo.close_office()
             else:
                 print("Keeping document open")
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 .. cssclass:: screen_shot
 
@@ -108,6 +120,12 @@ The examples come from two files, |draw_picture|_ and |animate_bike|_. The ``sho
         def create_draw_doc(loader: XComponentLoader) -> XComponent:
             return Lo.create_doc(doc_type=Lo.DocTypeStr.DRAW, loader=loader)
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 .. tabs::
 
     .. code-tab:: python
@@ -116,6 +134,12 @@ The examples come from two files, |draw_picture|_ and |animate_bike|_. The ``sho
         @staticmethod
         def create_impress_doc(loader: XComponentLoader) -> XComponent:
             return Lo.create_doc(doc_type=Lo.DocTypeStr.IMPRESS, loader=loader)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 .. seealso::
 
@@ -162,6 +186,12 @@ Almost every Draw method call :py:meth:`.Draw.make_shape` which creates a shape 
             shape.setPosition(Point(x * 100, y * 100))
             shape.setSize(Size(width * 100, height * 100))
             return shape
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 .. seealso::
 
@@ -217,6 +247,12 @@ It also check if the (x, y) coordinate is located on the page. If it isn't, :py:
             slide.add(shape)
             return shape
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 .. seealso::
 
     .. cssclass:: src-link
@@ -257,6 +293,12 @@ It also check if the (x, y) coordinate is located on the page. If it isn't, :py:
             line2 = Draw.draw_polar_line(slide=curr_slide, x=60, y=200, degrees=45, distance=100)
             Props.set(line2, LineWidth=300)
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 There's a number of variations possible for each shape.
 The following sections look at how the six shapes are drawn.
 
@@ -288,6 +330,12 @@ In common with other shapes, a line is defined in terms of its enclosing rectang
                 width=width,
                 height=height,
             )
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 As mentioned above, Office will store a shape with a modified position and size if one or both of its dimensions is negative.
 As an example, consider if :py:meth:`.Draw.draw_line` is called with the coordinates (10,20) and (20,10).
@@ -359,6 +407,12 @@ Line color can be set with a single call to :py:meth:`.Props.set`, but line dash
         Props.set(line1, LineColor=CommonColor.BLACK)
         Draw.set_dashed_line(shape=line1, is_dashed=True)
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 .. seealso::
 
     :ref:`module_color`
@@ -392,6 +446,11 @@ The line style is easily set since LineStyle_ is an enumeration with three possi
                 # switch to solid line
                 props.setPropertyValue("LineStyle", LineStyle.SOLID)
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 :py:meth:`~.Draw.set_dashed_line` can be used to toggle a line's dashes on or off.
 
@@ -420,6 +479,12 @@ A red ellipse is drawn using:
         circle1 = Draw.draw_ellipse(slide=curr_slide, x=100, y=100, width=75, height=25)
         Props.set(circle1, FillColor=CommonColor.RED)
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 :py:meth:`.Draw.draw_ellipse` is similar to :py:meth:`.Draw.draw_line` except that an EllipseShape_ is created by :py:meth:`.Draw.add_shape`:
 
 .. tabs::
@@ -432,6 +497,12 @@ A red ellipse is drawn using:
             return cls.add_shape(
                 slide=slide, shape_type=DrawingShapeKind.ELLIPSE_SHAPE, x=x, y=y, width=width, height=height
             )
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The circle needs to be filled with a solid color, which suggests the setting of a property in FillProperties_.
 A visit to the online documentation for EllipseShape_ reveals an inheritance diagram like the one in :numref:`ch13fig_ellipse_shape_inherit_diag`.
@@ -478,6 +549,12 @@ The rectangle example in |draw_gradient_ex|_ comes in seven different colors sho
         rect1 = Draw.draw_rectangle(slide=curr_slide, x=70, y=100, width=75, height=25)
         Props.set(rect1, FillColor=CommonColor.LIME)
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 .. tabs::
 
     .. code-tab:: python
@@ -497,6 +574,12 @@ The rectangle example in |draw_gradient_ex|_ comes in seven different colors sho
             Props.set(rect1, FillColor=self._start_color)
             # other properties can be set
             # rect1.FillTransparence = 55
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 .. seealso::
 
@@ -552,6 +635,12 @@ set properties after the gradient is created.
                 grad.EndColor = self._end_color
                 Draw.set_gradient_properties(shape=rect1, grad=grad)
             # rect1.FillTransparence = 40
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 .. seealso::
 
@@ -610,6 +699,12 @@ The fourth example in :numref:`ch13fig_seven_fills` shows what happens when you 
             )
             # rect1.FillTransparence = 40
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 .. seealso::
 
     - :py:meth:`.Draw.draw_rectangle`
@@ -645,6 +740,11 @@ The fourth example in :numref:`ch13fig_seven_fills` shows what happens when you 
 
             return Props.get(shape, "FillGradient")
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 .. seealso::
 
@@ -690,6 +790,12 @@ Example of setting color.
         # other code ...
         Draw.set_gradient_color(shape=shape, start_color=CommonColor.RED, end_color=CommonColor.GREEN)
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 13.4.3 Hatching
 ---------------
 
@@ -717,6 +823,11 @@ The fifth fill in :numref:`ch13fig_seven_fills` employs hatching. In ``DrawGradi
             Draw.set_hatch_color(shape=rect1, name=self._hatch_gradient)
             # rect1.FillTransparence = 40
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 ``_gradient_hatching()`` Calls :py:meth:`.Draw.set_hatch_color`.
 
@@ -731,7 +842,12 @@ The fifth fill in :numref:`ch13fig_seven_fills` employs hatching. In ``DrawGradi
             props = Lo.qi(XPropertySet, shape, True)
             props.setPropertyValue("FillStyle", FillStyle.HATCH)
             props.setPropertyValue("FillHatchName", str(name))
-  
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 .. seealso::
 
@@ -790,6 +906,12 @@ The sixth rectangle fill in :numref:`ch13fig_seven_fills` utilizes a bitmap colo
             Draw.set_bitmap_color(shape=rect1, name=self._bitmap_gradient)
             # rect1.FillTransparence = 40
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 ``_gradient_bitmap()`` Calls :py:meth:`.Draw.set_bitmap_color`.
 
 .. tabs::
@@ -803,6 +925,12 @@ The sixth rectangle fill in :numref:`ch13fig_seven_fills` utilizes a bitmap colo
             props = Lo.qi(XPropertySet, shape, True)
             props.setPropertyValue("FillStyle", FillStyle.BITMAP)
             props.setPropertyValue("FillBitmapName", str(name))
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 .. seealso::
 
@@ -855,6 +983,12 @@ The final fill in :numref:`ch13fig_seven_fills` loads a bitmap from ``crazy_blue
             )
             Draw.set_bitmap_file_color(shape=rect1, fnm=self._gradient_fnm)
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 ``_gradient_bitmap_file()`` Calls :py:meth:`.Draw.set_bitmap_file_color`.
 
 .. tabs::
@@ -868,6 +1002,12 @@ The final fill in :numref:`ch13fig_seven_fills` loads a bitmap from ``crazy_blue
             props = Lo.qi(XPropertySet, shape, True)
             props.setPropertyValue("FillStyle", FillStyle.BITMAP)
             props.setPropertyValue("FillBitmapURL", FileIO.fnm_to_url(fnm))
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 .. seealso::
 
@@ -890,6 +1030,12 @@ The "Hello LibreOffice" text shape in :numref:`ch13fig_draw_shapes_six` is creat
             slide=curr_slide, msg="Hello LibreOffice", x=120, y=120, width=60, height=30, font_size=24
         )
         Props.set(text1, Name="text1")
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The first four numerical parameters define the shape's bounding rectangle in terms of its top-left coordinate, width, and height.
 The fifth, optional number specifies a font size (in this case, ``24pt``).
@@ -924,6 +1070,12 @@ The fifth, optional number specifies a font size (in this case, ``24pt``).
             cls.add_text(shape=shape, msg=msg, font_size=font_size)
             return shape
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 :py:meth:`~.Draw.add_shape` adds the message to the shape, and sets its font size:
 
 .. tabs::
@@ -946,6 +1098,12 @@ The fifth, optional number specifies a font size (in this case, ``24pt``).
             shape = cls.make_shape(shape_type=shape_type, x=x, y=y, width=width, height=height)
             slide.add(shape)
             return shape
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 .. seealso::
 
@@ -977,6 +1135,11 @@ The text-related properties for a shape can be accessed with :py:meth:`.Draw.get
             xrng = Lo.qi(XTextRange, cursor, True)
             return Lo.qi(XPropertySet, xrng, True)
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 .. seealso::
 
@@ -992,6 +1155,12 @@ The text-related properties for a shape can be accessed with :py:meth:`.Draw.get
 
         # in _draw_shapes() in draw_picture.py
         Props.show_props("TextShape's Text Properties", Draw.get_text_properties(text1))
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The output is long, but includes the line:
 
@@ -1013,6 +1182,12 @@ Immediately after the call to :py:meth:`.Draw.draw_text`, the shape's name is se
         # in _draw_shapes() in draw_picture.py
         Props.set(text1, Name="text1")
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 The ``Name`` property, which is defined in the Shape_ class, is a useful way of referring to a shape.
 The ``show()`` function of |draw_picture_py|_ passes a name to :py:meth:`.Draw.find_shape_by_name`:
 
@@ -1023,6 +1198,12 @@ The ``show()`` function of |draw_picture_py|_ passes a name to :py:meth:`.Draw.f
         # in show() in draw_picture.py
         s = Draw.find_shape_by_name(curr_slide, "text1")
         Draw.report_pos_size(s)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 .. tabs::
 
@@ -1041,6 +1222,12 @@ The ``show()`` function of |draw_picture_py|_ passes a name to :py:meth:`.Draw.f
                 if nm == sn:
                     return shape
             raise mEx.ShapeMissingError(f'No shape named "{shape_name}"')
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 .. seealso::
 
@@ -1067,6 +1254,12 @@ In this case :py:meth:`.Draw.get_shapes` call the internal Draw method ``_get_sh
                 shapes.append(mLo.Lo.qi(XShape, slide.getByIndex(i), True))
             return shapes
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 .. seealso::
 
     .. cssclass:: src-link
@@ -1090,6 +1283,12 @@ In this case :py:meth:`.Draw.get_shapes` call the internal Draw method ``_get_sh
             cls.print_point(shape.getPosition())
             cls.print_size(shape.getSize())
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 ``XShape.getShapeType()`` returns the class name of the shape as a string (in this case, TextShape_).
 
 13.7 A Transparent Circle and a Polar Line
@@ -1110,6 +1309,12 @@ The last two shapes created by |draw_picture_py|_ ``_draw_shapes()`` are a gray 
         # thick line; uses (x,y), angle clockwise from x-axis, length
         line2 = Draw.draw_polar_line(slide=curr_slide, x=60, y=200, degrees=45, distance=100)
         Props.set(line2, LineWidth=300)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 A polar line is one defined using polar coordinates, which specifies the coordinate of one end of the line,
 and the angle and length of the line from that point.
@@ -1159,6 +1364,12 @@ The |draw_picture|_ OLE example displays a mathematical formula, as in :numref:`
             height=40
         )
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 The second argument is a formula string, written using Office's Math notation.
 For an overview, see the "Commands Reference" appendix of the "Math Guide", available from https://libreoffice.org/get-help/documentation.
 
@@ -1195,6 +1406,12 @@ For an overview, see the "Commands Reference" appendix of the "Math Guide", avai
             cls.set_position(shape, Point(x, y))
             return shape
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 .. seealso::
 
     .. cssclass:: src-link
@@ -1227,6 +1444,12 @@ Creating an OLE2Shape for a chart begins like so:
         cls.set_shape_props(shape, CLSID=str(Lo.CLSID.CHART_CLSID))
         model = Lo.qi(XModel, Props.get(shape, "Model"))
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 Online information on how to use XModel_ to store a chart, a graphic, or something else, is pretty sparse.
 A good way is to list the services that support the XModel_ reference. This is done by calling :py:meth:`.Info.show_services`:
 
@@ -1235,6 +1458,12 @@ A good way is to list the services that support the XModel_ reference. This is d
     .. code-tab:: python
 
         Info.show_services("OLE2Shape Model", model)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 For the version of model in :py:meth:`~.Draw.draw_formula`, it reports:
 
@@ -1280,6 +1509,12 @@ The main() function of |animate_bike_py|_ calls :py:meth:`.Draw.draw_polygon` tw
 
         pentagon = Draw.draw_polygon(slide=slide, x=150, y=75, sides=PolySides(5))
         Props.set(pentagon, FillColor=CommonColor.PURPLE)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The polygons can be seen in :numref:`ch12fig_bike_and_shapes`.
 
@@ -1330,6 +1565,12 @@ The polygons can be seen in :numref:`ch12fig_bike_and_shapes`.
             uno.invoke(prop_set, "setPropertyValue", ("PolyPolygon", polyseq))
             return polygon
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 .. seealso::
 
     .. cssclass:: src-link
@@ -1356,6 +1597,12 @@ A points array defining the four points of a square could be:
             Point(5_000, 1_200)
         )
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 .. note::
 
     The coordinates of each point use Office's ``1/100 mm`` units.
@@ -1381,6 +1628,12 @@ the distance from the center to each point (the shape's radius), and the require
                 pts.append(pt)
             return tuple(pts)
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 .. seealso::
 
     .. cssclass:: src-link
@@ -1403,6 +1656,12 @@ For example, the following code in |animate_bike_py|_ creates the crossed lines 
         xs = (10, 30, 10, 30)
         ys = (10, 100, 100, 10)
         Draw.draw_lines(slide=slide, xs=xs, ys=ys)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 :py:meth:`.Draw.draw_lines` is:
 
@@ -1434,6 +1693,12 @@ For example, the following code in |animate_bike_py|_ creates the crossed lines 
             seq = uno.Any("[][]com.sun.star.awt.Point", line_paths)
             uno.invoke(prop_set, "setPropertyValue", ("PolyPolygon", seq))
             return poly_line
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 .. seealso::
 
@@ -1467,6 +1732,12 @@ Zero degrees is the positive ``x-axis``, and the angle increase in ``1/100`` deg
             CircleEndAngle=36_000,  #    360 degrees ccw
             CircleKind=CircleKind.SECTION,
         )
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 This creates the blue partial ellipse shown at the bottom left of :numref:`ch12fig_bike_and_shapes`.
 
