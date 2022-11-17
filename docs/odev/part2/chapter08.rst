@@ -8,6 +8,8 @@ Chapter 8. Graphic Content
 
     Graphics; Linked Images/Shapes
 
+    Examples: |build_doc|_ and |extract_graphics|_.
+
 :ref:`ch07` looked at several forms of text document content (e.g. text frames, math formulae, text fields and tables, and bookmarks),
 as indicated by :numref:`ch08fig_text_content_serv_subs`.
 However the different ways of adding graphical content (corresponding to the services highlighted)
@@ -31,6 +33,7 @@ Adding an image to a text document follows the same steps as other text content,
 
     .. code-tab:: python
 
+        # in Write class
         @classmethod
         def add_image_link(
             cls, doc: XTextDocument, cursor: XTextCursor, fnm: PathOrStr, width: int = 0, height: int = 0
@@ -116,6 +119,7 @@ These dimensions are available if the image file is loaded as an XGraphic_ objec
 
     .. code-tab:: python
 
+        # in ImagesLo class
         @classmethod
         def get_size_100mm(cls, im_fnm: PathOrStr) -> Size:
             graphic = cls.load_graphic_file(im_fnm)
@@ -123,7 +127,9 @@ These dimensions are available if the image file is loaded as an XGraphic_ objec
 
         @staticmethod
         def load_graphic_link(graphic_link: object) -> XGraphic:
-            gprovider = Lo.create_instance_mcf(XGraphicProvider, "com.sun.star.graphic.GraphicProvider", raise_err=True)
+            gprovider = Lo.create_instance_mcf(
+                XGraphicProvider, "com.sun.star.graphic.GraphicProvider", raise_err=True
+            )
 
             xprops = Lo.qi(XPropertySet, graphic_link, True)
 
@@ -225,8 +231,11 @@ The code for :py:meth:`.Write.add_image_shape`:
 
     .. code-tab:: python
 
+        # in Write class
         @classmethod
-        def add_image_shape(cls, cursor: XTextCursor, fnm: PathOrStr, width: int = 0, height: int = 0) -> bool:
+        def add_image_shape(
+            cls, cursor: XTextCursor, fnm: PathOrStr, width: int = 0, height: int = 0
+        ) -> bool:
             cargs = CancelEventArgs(Write.add_image_shape.__qualname__)
             cargs.event_data = {
                 "cursor": cursor,
@@ -254,7 +263,9 @@ The code for :py:meth:`.Write.add_image_shape`:
                         raise ValueError(f"Unable to get image from {pth}")
 
                 # create TextContent for an empty graphic
-                gos = Lo.create_instance_msf(XTextContent, "com.sun.star.drawing.GraphicObjectShape", raise_err=True)
+                gos = Lo.create_instance_msf(
+                    XTextContent, "com.sun.star.drawing.GraphicObjectShape", raise_err=True
+                )
 
                 bitmap = ImagesLo.get_bitmap(pth)
                 if bitmap is None:
@@ -391,6 +402,7 @@ This is converted to XShape_ so its ``setSize()`` method can be passed the line 
 
     .. code-tab:: python
 
+        # in Write class
         @classmethod
         def add_line_divider(cls, cursor: XTextCursor, line_width: int) -> None:
             try:
@@ -406,7 +418,9 @@ This is converted to XShape_ so its ``setSize()`` method can be passed the line 
                 cls.end_paragraph(cursor)
 
                 # center the previous paragraph
-                cls.style_prev_paragraph(cursor=cursor, prop_val=ParagraphAdjust.CENTER, prop_name="ParaAdjust")
+                cls.style_prev_paragraph(
+                    cursor=cursor, prop_val=ParagraphAdjust.CENTER, prop_name="ParaAdjust"
+                )
 
                 cls.end_paragraph(cursor)
             except CreateInstanceMsfError:
@@ -429,37 +443,50 @@ The centering of the line is achieved by placing the shape in its own paragraph,
 
 The outcome of running|build_doc|_ is a ``build.odt`` file containing four graphics – two are linked images, one is an image shape, and the other a line shape.
 
-The |save_graphics|_ example extracts linked graphics from a document, saving them as PNG files.
+The |extract_graphics|_ example extracts linked graphics from a document, saving them as PNG files.
 
-.. code-block:: text
+.. cssclass:: rst-collapse
 
-    Num. of text graphics: 2
-    Saving graphic in graphics1.png
-    Image size in pixels: 319 x 274
-    Saving graphic in graphics2.png
-    Image size in pixels: 319 x 274
+    .. collapse:: Output:
+        :open:
 
-.. todo::
+        ::
 
-    chapter 8.3, implement getting shapes info when ``Draw`` module is created.
+            No. of text graphics: 2
+            Saving graphic in 'C:\Users\user\AppData\Local\Temp\tmpixludwxs\graphics0.png'
+            Image size in pixels: 319 X 274
+            Saving graphic in 'C:\Users\user\AppData\Local\Temp\tmpixludwxs\graphics1.png'
+            Image size in pixels: 319 X 274
 
-In a future revision it will include drawing shape info as well.
+            Could not obtain text shapes supplier
 
-.. code-block:: text
+            No. of draw shapes: 5
+            Shape Name: Shape1
+              Type: com.sun.star.drawing.GraphicObjectShape
+              Point (mm): [0, 0]
+              Size (mm): [61, 58]
+            Shape Name: Shape2
+              Type: com.sun.star.drawing.LineShape
+              Point (mm): [0, 0]
+              Size (mm): [88, 0]
+            Shapes does not have a name property
+              Type: FrameShape
+              Size (mm): [40, 0]
+            Shapes does not have a name property
+              Type: FrameShape
+              Size (mm): [61, 58]
+            Shapes does not have a name property
+              Type: FrameShape
+              Size (mm): [91, 86]
 
-    Num. of draw shapes: 3
-      Shape service: FrameShape; z-order: 0
-      Shape service: com.sun.star.drawing.GraphicObjectShape; z-order: 1
-      Shape service: com.sun.star.drawing.LineShape; z-order: 2
-
-A user who looked at ``build.odt`` for themselves might say that it contains three images not the two reported by |save_graphics|_.
-Why the discrepancy? |save_graphics|_ only saves linked graphics, and only two were added by :py:meth:`.Write.add_image_link`.
+A user who looked at ``build.odt`` for themselves might say that it contains three images not the two reported by |extract_graphics_py|_.
+Why the discrepancy? |extract_graphics_py|_ only saves linked graphics, and only two were added by :py:meth:`.Write.add_image_link`.
 The other image was inserted using :py:meth:`.Write.add_image_shape` which creates an image shape.
 
-The number of shapes reported by|save_graphics|_ may also confuse the user – why are there three rather than two?
+The number of shapes reported by |extract_graphics_py|_ may also confuse the user – why are there three rather than two?
 The only shapes added to the document were an image and a line.
 
-The names of the services gives a clue: the second and third shapes are the expected GraphicObjectShape_ and LineShape_, but the first is a
+The names of the services gives a clue: the second and third shapes are the expected GraphicObjectShape_ and LineShape_, but some are
 text frame (``FrameShape``) added by :py:meth:`.Write.add_text_frame`. Although this frame is an instance of the TextFrame_ service, it's reported as a ``FrameShape``.
 That's a bit mysterious because there's no ``FrameShape`` service in the Office documentation.
 
@@ -474,6 +501,7 @@ first it retrieves a collection of the graphic links in the document, then itera
 
     .. code-tab:: python
 
+        # in Write class
         @classmethod
         def get_text_graphics(cls, text_doc: XTextDocument) -> List[XGraphic]:
             try:
@@ -515,6 +543,7 @@ Graphic objects are accessed with XTextGraphicObjectsSupplier_, as implemented b
 
     .. code-tab:: python
 
+        # in Write class
         @staticmethod
         def get_graphic_links(doc: XComponent) -> XNameAccess | None:
             ims_supplier = Lo.qi(XTextGraphicObjectsSupplier, doc, True)
@@ -542,6 +571,7 @@ Back in :py:meth:`.Write.get_text_graphics`, each graphic is loaded by calling :
 
     .. code-tab:: python
 
+        # in ImagesLo class
         @staticmethod
         def load_graphic_link(graphic_link: object) -> XGraphic:
             xprops = Lo.qi(XPropertySet, graphic_link, True)
@@ -568,9 +598,9 @@ Note that the XGraphic **ARE** extracted from the document instead of loaded fro
     See Tomaz's development blog `Part 1 <https://tomazvajngerl.blogspot.com/2018/01/improving-image-handling-in-libreoffice.html>`_ and `Part 2 <https://tomazvajngerl.blogspot.com/2018/03/improving-image-handling-in-libreoffice.html>`_
     for more information on why "GraphicURL" is no longer recommended.
 
-    And `.GraphicURL no longer works in 6.1.0.3 <https://ask.libreoffice.org/t/graphicurl-no-longer-works-in-6-1-0-3/35459>`_
+    And `GraphicURL no longer works in 6.1.0.3 <https://ask.libreoffice.org/t/graphicurl-no-longer-works-in-6-1-0-3/35459>`_
 
-Back in |save_graphics|_, the XGraphic_ objects are saved as PNG files, and their pixel sizes reported:
+Back in |extract_graphics|_, the XGraphic_ objects are saved as PNG files, and their pixel sizes reported:
 
 .. tabs::
 
@@ -632,10 +662,10 @@ In :py:meth:`~.ImagesLo.save_graphic`, these methods are used like so:
 
     .. code-tab:: python
 
-        gprovider = mLo.Lo.create_instance_mcf(XGraphicProvider, "com.sun.star.graphic.GraphicProvider")
+        gprovider = Lo.create_instance_mcf(XGraphicProvider, "com.sun.star.graphic.GraphicProvider")
 
         # set up properties for storing the graphic
-        png_props = mProps.Props.make_props(URL=FileIO.fnm_to_url(fnm), MimeType=f"image/{im_format}")
+        png_props = Props.make_props(URL=FileIO.fnm_to_url(fnm), MimeType=f"image/{im_format}")
 
         gprovider.storeGraphic(pic, png_props)
 
@@ -653,6 +683,7 @@ The idea is to call ``XGraphicProvider.saveGraphics()`` with the ``URL`` and ``M
 
     .. code-tab:: python
 
+        # in ImagesLo class
         @staticmethod
         def save_graphic(pic: XGraphic, fnm: PathOrStr, im_format: str) -> None:
             print(f"Saving graphic in '{fnm}'")
@@ -698,18 +729,174 @@ The discrepancy is because the rendering of the image in the document is bigger,
 8.3.2 Finding the Shapes in a Document
 --------------------------------------
 
-.. todo::
+The report on shape block of code in |extract_graphics_py|_ reports on the shapes found in the document.
+The relevant code fragment is:
 
-    chapter 8.3.2 needs to be written after ``Draw`` module is written.
+.. tabs::
 
-This section is not yet ready and will be published at a later date.
+    .. code-tab:: python
 
+        # code fragment from extract_graphics.py
+        # report on shapes in the doc
+        draw_page = Write.get_shapes(text_doc)
+        shapes = Draw.get_shapes(draw_page)
+        if shapes:
+            print()
+            print(f"No. of draw shapes: {len(shapes)}")
+
+            for shape in shapes:
+                Draw.report_pos_size(shape)
+            print()
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+Shapes are accessed with the ``XDrawPageSupplier.getDrawPage()`` method, which returns a single XDrawPage_:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in Write class
+        @staticmethod
+        def get_shapes(text_doc: XTextDocument) -> XDrawPage:
+            draw_page_supplier = mLo.Lo.qi(XDrawPageSupplier, text_doc, True)
+            return draw_page_supplier.getDrawPage()
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+XDrawPage_'s usual role is to represent the canvas in Office's Draw, or a slide in Impress, and so plays an important role in :ref:`part03`.
+Several support functions inside that part's :py:class:`~.draw.Draw` class will be used here.
+
+``XDrawPageSupplier.getDrawPage()`` returns a single XDrawPage_ for the entire text document.
+That doesn't mean that the shapes all have to occur on a single text page,
+but rather that all the shapes spread across multiple text pages are collected into a single draw page.
+
+XDrawPage_ inherits from XShapes_ and XindexAccess_, as shown in :numref:`ch08fig_xdrawpage_inherit`, which means that a page can be viewed as a indexed collection of shapes.
+
+..
+    figure 4
+
+.. cssclass:: diagram invert
+
+    .. _ch08fig_xdrawpage_inherit:
+    .. figure:: https://user-images.githubusercontent.com/4193389/202319688-744c27e5-5d56-457a-91c0-d5c86466cf71.png
+        :alt: Partial Inheritance Hierarchy for XDrawPage
+        :figclass: align-center
+
+        :Partial Inheritance Hierarchy for XDrawPage_
+
+:py:meth:`.Draw.get_shapes` uses this idea to iterate through the draw page and store the shapes in a list:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in Draw class (overload method, simplified)
+        @classmethod
+        def get_shapes(cls, slide: XDrawPage) -> List[XShape]:
+            if slide.getCount() == 0:
+                Lo.print("Slide does not contain any shapes")
+                return []
+
+            shapes: List[XShape] = []
+            for i in range(slide.getCount()):
+                try:
+                    shapes.append(Lo.qi(XShape, slide.getByIndex(i), True))
+                except Exception as e:
+                    continue
+            return shapes
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+.. seealso::
+
+    .. cssclass:: src-link
+
+        - :odev_src_draw_meth:`get_shapes`
+
+XShape_ is part of the |d_shape|_ service, which contains many shape-related properties.
+
+XShape_ inherits XShapeDescriptor_, which includes a ``getShapeType()`` method for returning the shape type as a string.
+:numref:`ch08fig_shape_xshape` summarizes these details.
+
+..
+    figure 5
+
+.. cssclass:: diagram invert
+
+    .. _ch08fig_shape_xshape:
+    .. figure:: https://user-images.githubusercontent.com/4193389/202321353-12ebe181-09ad-40cb-b78c-5f2811ed779e.png
+        :alt: The Shape Service and XShape Interface
+        :figclass: align-center
+
+        :The |d_shape|_ Service and XShape_ Interface
+
+:py:meth:`.Draw.show_shape_info` accesses the |d_shape|_ service associated with an XShape_ reference, and prints its ``XOrder`` property.
+This number indicates the order that the shapes were added to the document.
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in Draw class
+        @classmethod
+        def show_shape_info(cls, shape: XShape) -> None:
+            print(f"  Shape service: {shape.getShapeType()}; z-order: {cls.get_zorder(shape)}")
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+:py:meth:`~.Draw.show_shape_info` also calls the inherited ``XShapeDescriptor.getShapeType()`` method to report the shape's service name.
+
+8.3.3 Another Way of Accessing Drawing Shapes
+---------------------------------------------
+
+The XDrawPageSupplier_ documentation states that this interface is deprecated, although what's meant to replace it isn't clear.
+It would seem that is XTextShapesSupplier_, although it did not supply anything.
+For example, the following always reports that the supplier is ``None``:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # this supplier is not created; Lo.qi() returns None
+        shps_supp = Lo.qi(XTextShapesSupplier, text_doc)
+        if shps_supp is None:
+            print("Could not obtain text shapes supplier")
+        else:
+            print(f"No. of text shapes: {shps_supp.getShapes().getCount()}")
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 .. |build_doc| replace:: Build Doc
 .. _build_doc: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_build_doc
 
-.. |save_graphics| replace:: Save Graphics
-.. _save_graphics: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_save_graphics
+.. |extract_graphics| replace:: Extract Graphics
+.. _extract_graphics: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_extract_graphics
+
+.. |extract_graphics_py| replace:: extract_graphics.py
+.. _extract_graphics_py: https://github.com/Amourspirit/python-ooouno-ex/blob/main/ex/auto/writer/odev_extract_graphics/extract_graphics.py
+
+.. |d_shape| replace:: com.sun.star.drawing.Shape
+.. _d_shape: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1drawing_1_1Shape.html
 
 .. _BitmapTable: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1drawing_1_1BitmapTable.html
 .. _com.sun.star.drawing.Shape: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1drawing_1_1Shape.html
@@ -721,10 +908,15 @@ This section is not yet ready and will be published at a later date.
 .. _TextFrame: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1TextFrame.html
 .. _TextGraphicObject: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1TextGraphicObject.html
 .. _XBitmap: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1awt_1_1XBitmap.html
+.. _XDrawPage: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1drawing_1_1XDrawPage.html
+.. _XDrawPageSupplier: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1drawing_1_1XDrawPageSupplier.html
 .. _XGraphic: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1graphic_1_1XGraphic.html
+.. _XindexAccess: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1container_1_1XIndexAccess.html
 .. _XNameContainer: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1container_1_1XNameContainer.html
 .. _XPropertySet: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1beans_1_1XPropertySet.html
 .. _XShape: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1drawing_1_1XShape.html
+.. _XShapes: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1drawing_1_1XShapes.html
 .. _XShapeDescriptor: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1drawing_1_1XShapeDescriptor.html
 .. _XTextContent: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextContent.html
 .. _XTextGraphicObjectsSupplier: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextGraphicObjectsSupplier.html
+.. _XTextShapesSupplier: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextShapesSupplier.html
