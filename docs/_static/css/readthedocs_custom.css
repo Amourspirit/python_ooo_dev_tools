@@ -1,3 +1,7 @@
+.bg-transparent {
+    background-color: transparent !important;
+}
+
 /* New Simplified Version 6 CSS */
 /* Step 1: Common Properties: All required to make icons render reliably */
 .icon::before {

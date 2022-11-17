@@ -369,3 +369,32 @@ Creates collapse section with special css formatting applied, mostly for spacing
 
 [sphinx_design](https://sphinx-design.readthedocs.io/en/rtd-theme/get_started.html)
 Allows setting icon ``:octicon:`code-square;1em;sd-text-info` ``
+
+## Custom CSS
+
+These are extra css style that can be added as seperate `.. cssclass::` styles.
+
+Available Custom css;
+
+- `bg-transparent`
+
+Can be stand alone such as  `.. cssclass:: bg-transparent`
+or combined with other blocks
+
+Example:
+
+```rst
+.. cssclass:: rst-collapse bg-transparent
+
+    .. collapse:: Demo
+        :open:
+
+        .. cssclass:: a_gif
+
+            .. _ch02fig_lo_qi_auto_demo:
+            .. figure:: https://user-images.githubusercontent.com/4193389/178285134-70b9aa56-5eaa-43c8-aa59-c19f2b495336.gif
+                :alt: Lo.qi autocomplete demo image
+                :figclass: align-center
+
+                : :py:meth:`.Lo.qi` autocomplete demo
+```

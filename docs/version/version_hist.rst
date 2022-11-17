@@ -1,6 +1,12 @@
 ***************
 Version History
 ***************
+Version 0.6.4
+=============
+
+Added overload to ``FileIo.make_directory`` that handles creating directory from file path.
+
+Fix for ``FileIo.url_to_path`` on windows sometimes not converting correctly.
 
 Version 0.6.4
 =============
