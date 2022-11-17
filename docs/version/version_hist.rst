@@ -2,6 +2,10 @@
 Version History
 ***************
 
+Version 0.6.4
+=============
+
+Fix for ``Draw.report_pos_size``. Now handles when a shape does not have a ``Name`` property an other errors.
 
 Version 0.6.3
 =============

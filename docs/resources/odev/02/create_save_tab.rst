@@ -1,6 +1,6 @@
 .. tabs::
 
-    .. tab:: Python
+    .. group-tab:: Python
 
         .. tabs::
 

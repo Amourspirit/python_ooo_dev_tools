@@ -2954,10 +2954,21 @@ class Draw:
         if shape is None:
             print("The shape is null")
             return
-        print(f'Shape Name: {mProps.Props.get(shape, "Name")}')
+        try:
+            print(f'Shape Name: {mProps.Props.get(shape, "Name")}')
+        except mEx.PropertyNotFoundError:
+            print("Shapes does not have a name property")
+
         print(f"  Type: {shape.getShapeType()}")
-        cls.print_point(shape.getPosition())
-        cls.print_size(shape.getSize())
+        # not asll shapes have size and positon such as a FrameShape
+        try:
+            cls.print_point(shape.getPosition())
+        except Exception:
+            pass
+        try:
+            cls.print_size(shape.getSize())
+        except Exception:
+            pass
 
     # region set_position()
 
