@@ -19,7 +19,7 @@ from ooodev.conn import cache as mCache
 
 
 @pytest.fixture(scope="session")
-def tmp_path():
+def tmp_path_session():
     result = Path(tempfile.mkdtemp())
     yield result
     if os.path.exists(result):
@@ -32,11 +32,11 @@ def test_headless():
 
 
 @pytest.fixture(scope="session")
-def loader(tmp_path, test_headless):
+def loader(tmp_path_session, test_headless):
     loader = mLo.load_office(
-        connector=mLo.ConnectPipe(headless=test_headless), cache_obj=mCache.Cache(working_dir=tmp_path)
+        connector=mLo.ConnectPipe(headless=test_headless), cache_obj=mCache.Cache(working_dir=tmp_path_session)
     )
-    # loader = mLo.load_office(connector=mLo.ConnectSocket(headless=True), cache_obj=mCache.Cache(working_dir=tmp_path))
+    # loader = mLo.load_office(connector=mLo.ConnectSocket(headless=True), cache_obj=mCache.Cache(working_dir=tmp_path_session))
     yield loader
     mLo.close_office()
 
@@ -50,10 +50,10 @@ def tmp_path_fn():
 
 
 @pytest.fixture(scope="session")
-def copy_fix_writer(tmp_path):
+def copy_fix_writer(tmp_path_session):
     def copy_res(fnm):
         src = Path(writer_fixture_path, fnm)
-        dst = Path(tmp_path, fnm)
+        dst = Path(tmp_path_session, fnm)
         shutil.copy2(src=src, dst=dst)
         return dst
 
@@ -61,10 +61,10 @@ def copy_fix_writer(tmp_path):
 
 
 @pytest.fixture(scope="session")
-def copy_fix_presentation(tmp_path):
+def copy_fix_presentation(tmp_path_session):
     def copy_res(fnm):
         src = Path(pres_fixture_path, fnm)
-        dst = Path(tmp_path, fnm)
+        dst = Path(tmp_path_session, fnm)
         shutil.copy2(src=src, dst=dst)
         return dst
 
@@ -85,10 +85,10 @@ def fix_writer_path():
 
 
 @pytest.fixture(scope="session")
-def copy_fix_calc(tmp_path):
+def copy_fix_calc(tmp_path_session):
     def copy_res(fnm):
         src = Path(calc_fixture_path, fnm)
-        dst = Path(tmp_path, fnm)
+        dst = Path(tmp_path_session, fnm)
         shutil.copy2(src=src, dst=dst)
         return dst
 
@@ -104,10 +104,10 @@ def fix_calc_path():
 
 
 @pytest.fixture(scope="session")
-def copy_fix_xml(tmp_path):
+def copy_fix_xml(tmp_path_session):
     def copy_res(fnm):
         src = Path(xml_fixture_path, fnm)
-        dst = Path(tmp_path, fnm)
+        dst = Path(tmp_path_session, fnm)
         shutil.copy2(src=src, dst=dst)
         return dst
 

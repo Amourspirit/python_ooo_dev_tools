@@ -753,9 +753,7 @@ class Calc:
         Returns:
             XController | None: Controller for Spreadsheet Document
         """
-        model = mLo.Lo.qi(XModel, doc)
-        if model is None:
-            raise mEx.MissingInterfaceError(XModel, "Could not access controller")
+        model = mLo.Lo.qi(XModel, doc, True)
         return model.getCurrentController()
 
     @classmethod
@@ -770,7 +768,7 @@ class Calc:
         ctrl = cls.get_controller(doc)
         if ctrl is None:
             return
-        mProps.Props.set(ctrl, ZoomType=mGui.GUI.ZoomEnum.BY_VALUE, ZoomValue=value)
+        mProps.Props.set(ctrl, ZoomType=mGui.GUI.ZoomEnum.BY_VALUE.value, ZoomValue=value)
 
     @classmethod
     def zoom(cls, doc: XSpreadsheetDocument, type: mGui.GUI.ZoomEnum) -> None:
@@ -781,10 +779,31 @@ class Calc:
             doc (XSpreadsheetDocument): Spreadsheet Document
             type (GUI.ZoomEnum): Type of Zoom to set.
         """
+
         ctrl = cls.get_controller(doc)
         if ctrl is None:
             return
-        mProps.Props.set(ctrl, ZoomType=type)
+
+        def zoom_val(value: int) -> None:
+            mProps.Props.set(ctrl, ZoomType=mGui.GUI.ZoomEnum.BY_VALUE.value, ZoomValue=value)
+
+        if (
+            type == mGui.GUI.ZoomEnum.ENTIRE_PAGE
+            or type == mGui.GUI.ZoomEnum.OPTIMAL
+            or type == mGui.GUI.ZoomEnum.PAGE_WIDTH
+            or type == mGui.GUI.ZoomEnum.PAGE_WIDTH_EXACT
+        ):
+            mProps.Props.set(ctrl, ZoomType=type.value)
+        elif type == mGui.GUI.ZoomEnum.ZOOM_200_PERCENT:
+            zoom_val(200)
+        elif type == mGui.GUI.ZoomEnum.ZOOM_150_PERCENT:
+            zoom_val(150)
+        elif type == mGui.GUI.ZoomEnum.ZOOM_100_PERCENT:
+            zoom_val(100)
+        elif type == mGui.GUI.ZoomEnum.ZOOM_75_PERCENT:
+            zoom_val(75)
+        elif type == mGui.GUI.ZoomEnum.ZOOM_50_PERCENT:
+            zoom_val(50)
 
     @classmethod
     def get_view(cls, doc: XSpreadsheetDocument) -> XSpreadsheetView:
@@ -803,9 +822,7 @@ class Calc:
         Returns:
             XSpreadsheetView | None: XSpreadsheetView on success; Otherwise, None
         """
-        sv = mLo.Lo.qi(XSpreadsheetView, cls.get_controller(doc))
-        if sv is None:
-            raise mEx.MissingInterfaceError(XSpreadsheetView)
+        sv = mLo.Lo.qi(XSpreadsheetView, cls.get_controller(doc), True)
         return sv
 
     @classmethod
@@ -2408,12 +2425,7 @@ class Calc:
     # endregion set_array()
 
     @classmethod
-    def set_array_range(
-        cls,
-        sheet: XSpreadsheet,
-        range_name: str,
-        values: Table,
-    ) -> None:
+    def set_array_range(cls, sheet: XSpreadsheet, range_name: str, values: Table) -> None:
         """
         Inserts array of data into spreadsheet
 
@@ -2465,11 +2477,7 @@ class Calc:
         col_end = pos.X + (len(values[0]) - 1)
         row_end = pos.Y + (v_len - 1)
         cell_range = cls._get_cell_range_col_row(
-            sheet=sheet,
-            start_col=pos.X,
-            start_row=pos.Y,
-            end_col=col_end,
-            end_row=row_end,
+            sheet=sheet, start_col=pos.X, start_row=pos.Y, end_col=col_end, end_row=row_end
         )
         cls.set_cell_range_array(cell_range=cell_range, values=values)
 
@@ -2774,7 +2782,7 @@ class Calc:
         values = cast(Sequence[Any], kargs[2])
         val_len = len(values)  # values
 
-        cell_range = cls.get_cell_range(sheet=kargs[1], start_col=x, start_row=y, end_col=x, end_row=y + val_len - 1)
+        cell_range = cls.get_cell_range(sheet=kargs[1], col_start=x, row_start=y, col_end=x, row_end=y + val_len - 1)
         xcell: XCell = None
         for val in range(val_len):
             xcell = cls.get_cell(cell_range=cell_range, col=0, row=val)
@@ -3323,7 +3331,7 @@ class Calc:
         )
 
     @staticmethod
-    def _get_cell_range_rng_name(sheet: XSpreadsheet, range_name: str) -> XCellRange | None:
+    def _get_cell_range_rng_name(sheet: XSpreadsheet, range_name: str) -> XCellRange:
         cell_range = sheet.getCellRangeByName(range_name)
         if cell_range is None:
             raise Exception(f"Could not access cell range: {range_name}")
@@ -3380,17 +3388,17 @@ class Calc:
     @overload
     @classmethod
     def get_cell_range(
-        cls, sheet: XSpreadsheet, start_col: int, start_row: int, end_col: int, end_row: int
+        cls, sheet: XSpreadsheet, col_start: int, row_start: int, col_end: int, row_end: int
     ) -> XCellRange:
         """
         Gets a cell range
 
         Args:
             sheet (XSpreadsheet): Spreadsheet Document
-            start_col (int): Start Column
-            start_row (int): Start Row
-            end_col (int): End Column
-            end_row (int): End Row
+            col_start (int): Start Column
+            row_start (int): Start Row
+            col_end (int): End Column
+            row_end (int): End Row
 
         Raises:
             Exception: if unable to access cell range.
@@ -3409,11 +3417,10 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet Document
             cr_addr (CellRangeAddress): Cell range Address
             range_name (str): Range Name such as 'A1:D5'
-            start_col (int): Start Column
-            start_row (int): Start Row
-            end_col (int): End Column
-            end_row (int): End Row
-
+            col_start (int): Start Column
+            row_start (int): Start Row
+            col_end (int): End Column
+            row_end (int): End Row
 
         Raises:
             Exception: if unable to access cell range.
@@ -3429,21 +3436,35 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ("sheet", "cr_addr", "range_name", "start_col", "start_row", "end_col", "end_row")
+            # start_col, start_row, end_col, end_row are for backwards compability
+
+            valid_keys = (
+                "sheet",
+                "cr_addr",
+                "range_name",
+                "start_col",
+                "col_start",
+                "start_row",
+                "row_start",
+                "end_col",
+                "col_end",
+                "end_row",
+                "row_end",
+            )
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("get_cell_range() got an unexpected keyword argument")
             ka[1] = kwargs.get("sheet", None)
-            keys = ("cr_addr", "range_name", "start_col")
+            keys = ("cr_addr", "range_name", "start_col", "col_start")
             for key in keys:
                 if key in kwargs:
                     ka[2] = kwargs[key]
                     break
             if count == 2:
                 return ka
-            ka[3] = kwargs.get("start_row", None)
-            ka[4] = kwargs.get("end_col", None)
-            ka[5] = kwargs.get("end_row", None)
+            ka[3] = kwargs.get("start_row", None) if kwargs.get("row_start", None) is None else kwargs.get("row_start")
+            ka[4] = kwargs.get("end_col", None) if kwargs.get("col_end", None) is None else kwargs.get("col_end")
+            ka[5] = kwargs.get("end_row", None) if kwargs.get("row_end", None) is None else kwargs.get("row_end")
             return ka
 
         if not count in (2, 5):
@@ -4011,7 +4032,7 @@ class Calc:
             return cls._get_address_sht_rng(sheet=kargs[1], range_name=kargs[2])
         else:
             range_name = cls._get_range_str_col_row(
-                start_col=kargs[2], start_row=kargs[3], end_col=kargs[4], end_row=kargs[5]
+                col_start=kargs[2], row_start=kargs[3], col_end=kargs[4], row_end=kargs[5]
             )
             return cls._get_address_sht_rng(sheet=kargs[1], range_name=range_name)
 
@@ -4323,9 +4344,9 @@ class Calc:
         return result
 
     @classmethod
-    def _get_range_str_col_row(cls, start_col: int, start_row: int, end_col: int, end_row: int) -> str:
+    def _get_range_str_col_row(cls, col_start: int, row_start: int, col_end: int, row_end: int) -> str:
         """return as str, A1:B2"""
-        return f"{cls._get_cell_str_col_row(start_col, start_row)}:{cls._get_cell_str_col_row(end_col, end_row)}"
+        return f"{cls._get_cell_str_col_row(col_start, row_start)}:{cls._get_cell_str_col_row(col_end, row_end)}"
 
     @overload
     @classmethod
@@ -4389,15 +4410,15 @@ class Calc:
 
     @overload
     @classmethod
-    def get_range_str(cls, start_col: int, start_row: int, end_col: int, end_row: int) -> str:
+    def get_range_str(cls, col_start: int, row_start: int, col_end: int, row_end: int) -> str:
         """
         Gets the range as a string inf format of ``A1:B2``
 
         Args:
-            start_col (int): Zero-based start column index
-            start_row (int): Zero-based start row index
-            end_col (int): Zero-based end column index
-            end_row (int): Zero-based end row index
+            col_start (int): Zero-based start column index
+            row_start (int): Zero-based start row index
+            col_end (int): Zero-based end column index
+            row_end (int): Zero-based end row index
 
         Returns:
             str: range as string
@@ -4406,15 +4427,15 @@ class Calc:
 
     @overload
     @classmethod
-    def get_range_str(cls, start_col: int, start_row: int, end_col: int, end_row: int, sheet: XSpreadsheet) -> str:
+    def get_range_str(cls, col_start: int, row_start: int, col_end: int, row_end: int, sheet: XSpreadsheet) -> str:
         """
         Gets the range as a string inf format of ``Sheet1.A1:B2``
 
         Args:
-            start_col (int): Zero-based start column index
-            start_row (int): Zero-based start row index
-            end_col (int): Zero-based end column index
-            end_row (int): Zero-based end row index
+            col_start (int): Zero-based start column index
+            row_start (int): Zero-based start row index
+            col_end (int): Zero-based end column index
+            row_end (int): Zero-based end row index
             sheet (XSpreadsheet): Spreadsheet
 
         Returns:
@@ -4434,10 +4455,10 @@ class Calc:
             cell_range (XCellRange): Cell Range
             sheet (XSpreadsheet): Spreadsheet
             cr_addr (CellRangeAddress): Cell Range Address
-            start_col (int): Zero-based start column index
-            start_row (int): Zero-based start row index
-            end_col (int): Zero-based end column index
-            end_row (int): Zero-based end row index
+            col_start (int): Zero-based start column index
+            row_start (int): Zero-based start row index
+            col_end (int): Zero-based end column index
+            row_end (int): Zero-based end row index
 
         Returns:
             str: range as string
@@ -4450,11 +4471,24 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ("cell_range", "cr_addr", "sheet", "start_col", "start_row", "end_col", "end_row")
+            # start_col, start_row, end_col, end_row are for backward compability
+            valid_keys = (
+                "cell_range",
+                "cr_addr",
+                "sheet",
+                "start_col",
+                "col_start",
+                "start_row",
+                "row_start",
+                "end_col",
+                "col_end",
+                "end_row",
+                "row_end",
+            )
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("get_range_str() got an unexpected keyword argument")
-            keys = ("cell_range", "cr_addr", "start_col")
+            keys = ("cell_range", "cr_addr", "start_col", "col_start")
             for key in keys:
                 if key in kwargs:
                     ka[1] = kwargs[key]
@@ -4462,17 +4496,17 @@ class Calc:
             if count == 1:
                 return ka
             if count < 5:
-                keys = ("sheet", "start_row")
+                keys = ("sheet", "start_row", "row_start")
             else:
-                keys = ("start_row",)
+                keys = ("start_row", "row_start")
             for key in keys:
                 if key in kwargs:
                     ka[2] = kwargs[key]
                     break
             if count == 2:
                 return ka
-            ka[3] = kwargs.get("end_col", None)
-            ka[4] = kwargs.get("end_row", None)
+            ka[3] = kwargs.get("end_col", None) if kwargs.get("col_end", None) is None else kwargs.get("col_end")
+            ka[4] = kwargs.get("end_row", None) if kwargs.get("row_end", None) is None else kwargs.get("row_end")
             if count == 4:
                 return ka
             ka[5] = kwargs.get("sheet", None)
@@ -4503,12 +4537,12 @@ class Calc:
         elif count == 4:
             # get_range_str(start_col:int, start_row:int, end_col:int, end_row:int)
             return cls._get_range_str_col_row(
-                start_col=kargs[1], start_row=kargs[2], end_col=kargs[3], end_row=kargs[4]
+                col_start=kargs[1], row_start=kargs[2], col_end=kargs[3], row_end=kargs[4]
             )
         elif count == 5:
             # get_range_str(start_col: int, start_row: int, end_col: int, end_row: int,  sheet: XSpreadsheet)
             rng_str = cls._get_range_str_col_row(
-                start_col=kargs[1], start_row=kargs[2], end_col=kargs[3], end_row=kargs[4]
+                col_start=kargs[1], row_start=kargs[2], col_end=kargs[3], row_end=kargs[4]
             )
             return f"{cls.get_sheet_name(sheet=kargs[5])}.{rng_str}"
         return ""

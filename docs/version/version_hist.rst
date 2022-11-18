@@ -2,6 +2,25 @@
 Version History
 ***************
 
+Version 0.6.5
+=============
+
+Added overload to ``FileIo.make_directory`` that handles creating directory from file path.
+
+Fix for ``FileIo.url_to_path`` on windows sometimes not converting correctly.
+
+Other ``FileIo`` Minor updates.
+
+Fix bug in ``Chart2.set_template`` when ``diagram_name`` was passed as string.
+
+Fix bug in ``Draw.warns_position`` when no Slide size is available.
+
+Renamed ``Calc.get_range_str`` args from ``start_col``, ``start_row``, ``end_col``, ``end_row`` to ``col_start``, ``row_start``, ``col_end``, ``row_end`` respectively.
+Change is backwards compatible.
+
+Renamed ``Calc.get_cell_range`` args from ``start_col``, ``start_row``, ``end_col``, ``end_row`` to ``col_start``, ``row_start``, ``col_end``, ``row_end`` respectively.
+Change is backwards compatible.
+
 Version 0.6.4
 =============
 

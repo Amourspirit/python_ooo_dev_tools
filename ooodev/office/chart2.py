@@ -249,7 +249,7 @@ class Chart2:
 
         # ensure diagram_name is ChartTemplateBase | str
         mInfo.Info.is_type_enum_multi(
-            alt_type=str, enum_type=ChartTemplateBase, enum_val=diagram_name, arg_name="diagram_name"
+            alt_type="str", enum_type=ChartTemplateBase, enum_val=diagram_name, arg_name="diagram_name"
         )
 
         try:

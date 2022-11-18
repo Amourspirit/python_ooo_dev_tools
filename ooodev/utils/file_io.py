@@ -8,7 +8,6 @@ import tempfile
 import datetime
 import zipfile
 from pathlib import Path
-import urllib.parse
 from typing import Generator, List, TYPE_CHECKING, overload
 
 import uno
@@ -23,7 +22,7 @@ if TYPE_CHECKING:
 
 from . import lo as mLo
 
-from .type_var import PathOrStr
+from .type_var import PathOrStr, Table
 
 # if sys.version_info >= (3, 10):
 #     from typing import Union
@@ -79,9 +78,7 @@ class FileIO:
             Path: path as string
         """
         try:
-            p = urllib.parse.urlsplit(url)
-            final_path = cls.get_absolute_path(os.path.join(p.netloc, urllib.parse.unquote(p.path)))
-            return final_path
+            return cls.uri_to_path(uri_fnm=url)
         except Exception as e:
             raise Exception(f"Could not parse '{url}'")
 
@@ -128,15 +125,12 @@ class FileIO:
         Returns:
             Path: Converted URI as path.
         """
-        # converts 'file:///C:/Program%20Files/LibreOffice/program/../program/addin'
-        # into: 'C:\\Program Files\\LibreOffice\\program\\addin'
-        pr = urllib.parse.urlsplit(str(uri_fnm))
-        p = Path(urllib.parse.unquote(pr.path))
+        sys_path = uno.fileUrlToSystemPath(str(uri_fnm))
+
+        p = Path(sys_path)
         if not ensure_absolute:
             return p
-        if p.is_absolute():
-            return p
-        return p.absolute().resolve()
+        return cls.get_absolute_path(p)
 
     # endregion uri_to_path()
 
@@ -343,16 +337,69 @@ class FileIO:
 
     # endregion is_exist_dir()
 
+    # region make_directory()
+    @overload
     @classmethod
-    def make_directory(cls, dir: PathOrStr) -> None:
+    def make_directory(cls, dir: PathOrStr) -> Path:
+        ...
+
+    @overload
+    @classmethod
+    def make_directory(cls, fnm: PathOrStr) -> Path:
+        ...
+
+    @classmethod
+    def make_directory(cls, *args, **kwargs) -> Path:
         """
-        Creates path and subpaths not existing.
+        Creates path and subpaths they do not exist.
 
         Args:
-            dest_dir (PathOrStr): PathLike object
+            dir (PathOrStr): PathLike object to a directory
+            fnm (PathOrStr): PathLike object to a directory or file.
+
+        Returns:
+            Path: Path of directory.
+
+        Notes:
+            If a file path is passed in then a directory is created for the file's parent.
         """
-        p = cls.get_absolute_path(dir)
-        p.mkdir(parents=True, exist_ok=True)
+        ordered_keys = (1,)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
+
+        def get_kwargs() -> dict:
+            ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ("dir", "fnm")
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("make_directory() got an unexpected keyword argument")
+            keys = ("doc", "slide")
+            for key in keys:
+                if key in kwargs:
+                    ka[1] = kwargs[key]
+                    break
+            return ka
+
+        if count != 1:
+            raise TypeError("make_directory() got an invalid number of arguments")
+
+        kargs = get_kwargs()
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
+
+        # note that empty str converts to "."
+        p = cls.get_absolute_path(kargs[1])
+        # test for suffix as p.is_file() will report false if the file does not exist.
+        if p.suffix:
+            p.parent.mkdir(parents=True, exist_ok=True)
+            return p.parent
+        else:
+            p.mkdir(parents=True, exist_ok=True)
+            return p
+
+    # endregion make_directory()
 
     @staticmethod
     def create_temp_file(im_format: str) -> str:
@@ -363,14 +410,24 @@ class FileIO:
             im_format (str): File suffix such as txt or cfg
 
         Raises:
+            ValueError: If ``im_format`` is empty.
             Exception: If creation of temp file fails.
 
         Returns:
             str: Path to temp file.
+
+        Note:
+            Temporary file is created in system temp directory.
+            Caller of this method is responsible for deleting the file.
         """
+        if not im_format:
+            raise ValueError("im_format must not be empyt value")
         try:
-            tmp = tempfile.NamedTemporaryFile(prefix="loTemp", suffix=f".{im_format}", delete=True)
-            return tmp.name
+            # delete=False keeps the file after tmp.Close()
+            tmp = tempfile.NamedTemporaryFile(prefix="loTemp", suffix=f".{im_format}", delete=False)
+            name = tmp.name
+            tmp.close()
+            return name
         except Exception as e:
             raise Exception("Could not create temp file") from e
 
@@ -415,8 +472,22 @@ class FileIO:
 
     @classmethod
     def save_string(cls, fnm: PathOrStr, data: str) -> None:
-        if data is None:
-            raise ValueError(f"No data to save in '{fnm}'")
+        """
+        Writes string of data into given file.
+
+        Args:
+            fnm (PathOrStr): File to write string
+            data (str): String to write in file
+
+        Raises:
+            Exception: If Error occurs
+
+        Returns:
+            None:
+        """
+        if not data:
+            mLo.Lo.print(f"No data to save in '{fnm}'")
+            return
         try:
             p = cls.get_absolute_path(fnm)
             with open(p, "w") as file:
@@ -427,24 +498,35 @@ class FileIO:
 
     @classmethod
     def save_bytes(cls, fnm: PathOrStr, b: bytes) -> None:
+        """
+        Writes bytes data to a given file.
+
+        Args:
+            fnm (PathOrStr):  File to write data
+            b (bytes): data to write
+
+        Raises:
+            ValueError: If ``b`` is None
+            Exception: If any other error occurs.
+        """
         if b is None:
             raise ValueError(f"'b' is null. No data to save in '{fnm}'")
         try:
             p = cls.get_absolute_path(fnm)
-            with open(p, "b") as file:
+            with open(p, "wb") as file:
                 file.write(b)
             mLo.Lo.print(f"Saved bytes to file: {p}")
         except Exception as e:
             raise Exception(f"Could not save bytes to file: {fnm}") from e
 
     @classmethod
-    def save_array(cls, fnm: PathOrStr, arr: List[list]) -> None:
+    def save_array(cls, fnm: PathOrStr, arr: Table) -> None:
         """
         Saves a 2d array to a file as tab delimited data.
 
         Args:
             fnm (PathOrStr): file to save data to
-            arr (List[list]): 2d array of data.
+            arr (Table): 2d array of data.
         """
         if arr is None:
             raise ValueError("'arr' is null. No data to save in '{fnm}'")

@@ -61,21 +61,23 @@ A typical program will look like the following:
 
 ``Lo.load_office(Lo.ConnectSocket(headless=True))`` invokes Office and sets up a UNO bridge using named pipes with a headless connection.
 If not using the Graphic User Interface (GUI) of LibreOffice then ``headless=True`` is recommended.
+See example |extract_graphics_py|_.
 
 There is also ``Lo.load_office(Lo.ConnectPipes(headless=True))`` which uses which uses pipes instead of sockets.
+See example |extract_txt_py|_.
 
 For convenience ``Lo.ConnectPipe`` is an alias of :py:class:`~.conn.connectors.ConnectPipe`
-and ``Lo.ConnectSocket`` is an alias of :py:class:`~.conn.connectors.ConnectSocket`
+and ``Lo.ConnectSocket`` is an alias of :py:class:`~.conn.connectors.ConnectSocket`.
 
 In both cases, a remote component context is created (see Chapter 1, :numref:`ch01fig_python_using_office`) and then a service manager,
 Desktop object, and component loader are initialized.
 Below is a simplified version of :py:meth:`.Lo.load_office`, that show the principle of connecting to LibreOffice.
-See :py:meth:`.Lo.load_office` Source code for the full version which also includes events.
 
 .. tabs::
 
     .. code-tab:: python
 
+        # in Lo class (simplified)
         @classmethod
         def load_office(
             cls, connector: ConnectPipe | ConnectSocket | None = None, cache_obj: Cache | None = None
@@ -87,7 +89,10 @@ See :py:meth:`.Lo.load_office` Source code for the full version which also inclu
                     cls._lo_inst = LoDirectStart()
                     cls._lo_inst.connect()
                 except Exception as e:
-                    Lo.print("Office context could not be created. A connector must be supplied if not running as a macro")
+                    Lo.print((
+                        "Office context could not be created."
+                        " A connector must be supplied if not running as a macro"
+                    ))
                     Lo.print(f"    {e}")
                     raise SystemExit(1)
             elif isinstance(connector, ConnectPipe):
@@ -131,6 +136,13 @@ See :py:meth:`.Lo.load_office` Source code for the full version which also inclu
 
             .. group-tab:: None
 
+.. seealso::
+
+    .. cssclass:: src-link
+
+        - :odev_src_lo_meth:`load_office`
+
+
 There is also :py:class:`.Lo.Loader` context manager that allows for automatic closing of office.
 See |convert_doc|_ for an example.
 
@@ -172,11 +184,11 @@ Macros only need use use ``Lo.ThisComponent`` as show below.
 
             .. group-tab:: None
 
-:py:meth:`.Lo.load_office` probably illustrates my most significant coding decisions – the use of global static variables inside the Lo class.
-In particular, the `XComponentContext`, `XDesktop`, and `XMultiComponentFactory` objects created by ``load_office()`` are stored globally for later use.
+:py:meth:`.Lo.load_office` probably illustrates my most significant coding decisions – the use of global static variables inside the :py:class:`~.lo.Lo` class.
+In particular, the XComponentContext_, XDesktop_, and XMultiComponentFactory_ objects created by :py:meth:`~.lo.Lo.load_office` are stored globally for later use.
 This approach is chosen since it allows other support functions to be called with simpler arguments because the objects can be accessed without
 the user having to explicitly pass around references to them.
-The main drawback is that if ``load_office()`` is called more than once all previous Lo class globals are overwritten.
+The main drawback is that if ``load_office()`` is called more than once all previous :py:class:`~.lo.Lo` class globals are overwritten.
 
 The creation of the XDesktop_ interface object uses :py:meth:`.Lo.create_instance_mcf`:
 
@@ -184,28 +196,33 @@ The creation of the XDesktop_ interface object uses :py:meth:`.Lo.create_instanc
 
     .. code-tab:: python
 
+        # in Lo class
         @classmethod
         def create_instance_mcf(
-            cls, atype: Type[T], service_name: str, args: Tuple[object, ...] | None = None, raise_err: bool = False
-        ) -> T:
+            cls,
+            atype: Type[T], service_name: str,
+            args: Tuple[Any, ...] | None = None,
+            raise_err: bool = False
+        ) -> T | None:
+
             if cls._xcc is None or cls._mc_factory is None:
                 raise Exception("No office connection found")
             try:
                 if args is not None:
-                    obj = cls._mc_factory.createInstanceWithArgumentsAndContext(service_name, args, cls._xcc)
+                    obj = cls._mc_factory.createInstanceWithArgumentsAndContext(
+                        service_name, args, cls._xcc
+                    )
                 else:
                     obj = cls._mc_factory.createInstanceWithContext(service_name, cls._xcc)
                 if raise_err is True and obj is None:
-                    mEx.CreateInstanceMcfError(atype, service_name)
+                    CreateInstanceMcfError(atype, service_name)
                 interface_obj = cls.qi(atype=atype, obj=obj)
                 if raise_err is True and interface_obj is None:
-                    raise mEx.MissingInterfaceError(atype)
-                if interface_obj is None:
-                    raise mEx.MissingInterfaceError(atype)
+                    raise MissingInterfaceError(atype)
                 return interface_obj
-            except mEx.CreateInstanceMcfError:
+            except CreateInstanceMcfError:
                 raise
-            except mEx.MissingInterfaceError:
+            except MissingInterfaceError:
                 raise
             except Exception as e:
                 raise Exception(f"Couldn't create interface for '{service_name}'") from e
@@ -218,23 +235,25 @@ The creation of the XDesktop_ interface object uses :py:meth:`.Lo.create_instanc
 
 If you ignore the error-checking, :py:meth:`.Lo.create_instance_mcf` does two things.
 The call to `XMultiComponentFactory.createInstanceWithContext() <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1lang_1_1XMultiComponentFactory.html#ac62a80213fcf269e7a881abc6fa3e6d2>`_
-asks the service manager (``_mc_factory``) to create a service object inside the remote component context (``_xcc``). Then the call to ``uno_obj.queryInterface()``
+asks the service manager (``cls._mc_factory``) to create a service object inside the remote component context (``cls._xcc``). Then the call to ``uno_obj.queryInterface()``
 via :py:meth:`.Lo.qi` looks inside the service instance for the specified interface (``atype``), returning an instance of the interface as its result.
 
 The :py:meth:`.Lo.qi` function's reduces programmer typing, since calls to ``uno_obj.queryInterface()`` are very common in this frame work.
 Querying for the interface has the huge advantage of providing typing :numref:`ch02fig_lo_qi_auto_demo` (autocomplete, static type checking) support thanks to types-unopy_.
 
-.. collapse:: Demo
-    :open:
+.. cssclass:: rst-collapse bg-transparent
 
-    .. cssclass:: a_gif
+    .. collapse:: Demo
+        :open:
 
-        .. _ch02fig_lo_qi_auto_demo:
-        .. figure:: https://user-images.githubusercontent.com/4193389/178285134-70b9aa56-5eaa-43c8-aa59-c19f2b495336.gif
-            :alt: Lo.qi autocomplete demo image
-            :figclass: align-center
+        .. cssclass:: a_gif
 
-            : ``Lo.qi`` autocomplete demo
+            .. _ch02fig_lo_qi_auto_demo:
+            .. figure:: https://user-images.githubusercontent.com/4193389/178285134-70b9aa56-5eaa-43c8-aa59-c19f2b495336.gif
+                :alt: Lo.qi autocomplete demo image
+                :figclass: align-center
+
+                : :py:meth:`.Lo.qi` autocomplete demo
 
 
 The use of generics makes :py:meth:`.Lo.create_instance_mcf` useful for creating any type of interface object.
@@ -737,22 +756,31 @@ The function's code is in EnvStack.cxx, which can be examined by clicking on the
 .. |convert_doc_src| replace:: Write Convert Document Format Source
 .. _convert_doc_src: https://github.com/Amourspirit/python-ooouno-ex/blob/main/ex/auto/general/odev_doc_convert/start.py
 
-.. _NirSoft: https://www.nirsoft.net/
+.. |extract_txt_py| replace:: extract_text.py
+.. _extract_txt_py: https://github.com/Amourspirit/python-ooouno-ex/blob/main/ex/auto/impress/odev_extract_text/extract_text.py
 
-.. _stickytape: https://pypi.org/project/stickytape/
-.. _PropertyValue: https://api.libreoffice.org/docs/idl/ref/structcom_1_1sun_1_1star_1_1beans_1_1PropertyValue.html
-.. _XComponentLoader: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1frame_1_1XComponentLoader.html
-.. _XComponent: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1lang_1_1XComponent.html
-.. _XCloseable: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1util_1_1XCloseable.html
-.. _XDesktop: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1frame_1_1XDesktop.html
-.. _XMultiServiceFactory: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1lang_1_1XMultiServiceFactory.html
-.. _XMultiComponentFactory: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1lang_1_1XMultiComponentFactory.html
-.. _XServiceInfo: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1lang_1_1XServiceInfo.html
+.. |extract_graphics_py| replace:: extract_graphics.py
+.. _extract_graphics_py: https://github.com/Amourspirit/python-ooouno-ex/blob/main/ex/auto/writer/odev_extract_graphics/extract_graphics.py
+
 
 .. |XStorable| replace:: XStorable
 .. _XStorable: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1frame_1_1XStorable.html
 
 .. |storeToURL| replace:: XStorable.storeToURL()
 .. _storeToURL: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1frame_1_1XStorable.html#af48930bc64a00251aa50915bf087f274
+
+.. _NirSoft: https://www.nirsoft.net/
+
+.. _stickytape: https://pypi.org/project/stickytape/
+
+.. _PropertyValue: https://api.libreoffice.org/docs/idl/ref/structcom_1_1sun_1_1star_1_1beans_1_1PropertyValue.html
+.. _XCloseable: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1util_1_1XCloseable.html
+.. _XComponent: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1lang_1_1XComponent.html
+.. _XComponentContext: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1uno_1_1XComponentContext.html
+.. _XComponentLoader: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1frame_1_1XComponentLoader.html
+.. _XDesktop: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1frame_1_1XDesktop.html
+.. _XMultiComponentFactory: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1lang_1_1XMultiComponentFactory.html
+.. _XMultiServiceFactory: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1lang_1_1XMultiServiceFactory.html
+.. _XServiceInfo: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1lang_1_1XServiceInfo.html
 
 .. include:: ../../resources/odev/links.rst

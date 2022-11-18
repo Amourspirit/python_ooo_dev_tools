@@ -1961,8 +1961,9 @@ class Draw:
             This method uses :py:meth:`.Lo.print`. and if those ``print()`` commands are
             suppressed then this method will not be effective.
         """
-        slide_size = cls.get_slide_size(slide)
-        if slide_size is None:
+        try:
+            slide_size = cls.get_slide_size(slide)
+        except mEx.SizeError:
             mLo.Lo.print("No slide size found")
             return
         slide_width = slide_size.Width
