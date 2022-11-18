@@ -377,6 +377,7 @@ These are extra css style that can be added as seperate `.. cssclass::` styles.
 Available Custom css;
 
 - `bg-transparent`
+- `ul-list`
 
 Can be stand alone such as  `.. cssclass:: bg-transparent`
 or combined with other blocks
@@ -397,4 +398,16 @@ Example:
                 :figclass: align-center
 
                 : :py:meth:`.Lo.qi` autocomplete demo
+```
+
+Example:
+
+```rst
+.. seealso::
+
+    .. cssclass:: ul-list
+
+        - :ref:`class_msg_box`
+        - :ref:`class_dialog_input`
+        - :ref:`dialog_tk_input`
 ```
