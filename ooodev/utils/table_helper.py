@@ -2,8 +2,7 @@
 """General Utilities"""
 from __future__ import annotations
 import string
-from typing import Callable, Iterable, Iterator, Sequence, List, NamedTuple, Any, Tuple, cast, overload
-from inspect import isclass
+from typing import Callable, Iterable, Iterator, Sequence, List, Any, Tuple, overload
 import string
 from .type_var import DictTable, Table
 from . import gen_util as gUtil

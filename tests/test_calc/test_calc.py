@@ -1075,7 +1075,6 @@ def test_delete_cells_down(loader) -> None:
         assert args.event_data["is_shift_left"] is False
         on_fired = True
 
-
     # from ooodev.utils.gui import GUI
 
     assert loader is not None
@@ -1084,7 +1083,7 @@ def test_delete_cells_down(loader) -> None:
         events = Events()
         events.on(CalcNamedEvent.CELLS_DELETING, on)
         events.on(CalcNamedEvent.CELLS_DELETED, after)
-        
+
         sheet = Calc.get_active_sheet(doc)
 
         # GUI.set_visible(is_visible=True, odoc=doc)
@@ -1202,7 +1201,7 @@ def test_clear_cells(loader) -> None:
         events = Events()
         events.on(CalcNamedEvent.CELLS_CLEARING, on)
         events.on(CalcNamedEvent.CELLS_CLEARED, after)
-        
+
         rng_name = "A3:C23"
         rng_clear = "A3:C22"
         rng = Calc.get_cell_range(sheet=sheet, range_name=rng_clear)
@@ -1218,7 +1217,7 @@ def test_clear_cells(loader) -> None:
         assert on_fired
         on_firing = False
         on_fired = False
-        
+
         data = Calc.get_array(sheet=sheet, range_name=rng_name)
         check_data(data)
         Lo.delay(delay)
@@ -1231,7 +1230,7 @@ def test_clear_cells(loader) -> None:
         assert on_fired
         on_firing = False
         on_fired = False
-        
+
         data = Calc.get_array(sheet=sheet, range_name=rng_name)
         check_data(data)
         Lo.delay(delay)
@@ -1244,7 +1243,7 @@ def test_clear_cells(loader) -> None:
         assert on_fired
         on_firing = False
         on_fired = False
-        
+
         data = Calc.get_array(sheet=sheet, range_name=rng_name)
         check_data(data)
         Lo.delay(delay)
@@ -1265,7 +1264,7 @@ def test_clear_cells(loader) -> None:
         assert on_fired
         on_firing = False
         on_fired = False
-        
+
         data = Calc.get_array(sheet=sheet, range_name=rng_name)
         check_data(data)
         Lo.delay(delay)
@@ -1278,7 +1277,7 @@ def test_clear_cells(loader) -> None:
         assert on_fired
         on_firing = False
         on_fired = False
-        
+
         data = Calc.get_array(sheet=sheet, range_name=rng_name)
         check_data(data)
         Lo.delay(delay)
@@ -1291,7 +1290,7 @@ def test_clear_cells(loader) -> None:
         assert on_fired
         on_firing = False
         on_fired = False
-        
+
         data = Calc.get_array(sheet=sheet, range_name=rng_name)
         check_data(data)
         Lo.delay(delay)
@@ -1303,7 +1302,7 @@ def test_clear_cells(loader) -> None:
         assert on_fired
         on_firing = False
         on_fired = False
-        
+
         data = Calc.get_array(sheet=sheet, range_name=rng_name)
         check_data(data)
         Lo.delay(delay)
@@ -1317,7 +1316,7 @@ def test_clear_cells(loader) -> None:
         assert on_fired
         on_firing = False
         on_fired = False
-        
+
         data = Calc.get_array(sheet=sheet, range_name=rng_name)
         check_data(data)
         Lo.delay(delay)
@@ -1330,7 +1329,7 @@ def test_clear_cells(loader) -> None:
         assert on_fired
         on_firing = False
         on_fired = False
-        
+
         data = Calc.get_array(sheet=sheet, range_name=rng_name)
         check_data(data)
         Lo.delay(delay)
@@ -1343,7 +1342,7 @@ def test_clear_cells(loader) -> None:
         assert on_fired
         on_firing = False
         on_fired = False
-        
+
         data = Calc.get_array(sheet=sheet, range_name=rng_name)
         check_data(data)
         Lo.delay(delay)
@@ -1355,7 +1354,7 @@ def test_clear_cells(loader) -> None:
         assert on_fired
         on_firing = False
         on_fired = False
-        
+
         data = Calc.get_array(sheet=sheet, range_name=rng_name)
         check_data(data)
         Lo.delay(delay)
@@ -1737,7 +1736,9 @@ def test_set_array(loader) -> None:
         row_start = 0
         col_end = arr_size - 1
         row_end = arr_size - 1
-        Calc.set_array(values=arr, sheet=sheet, col_start=col_start, row_start=row_start, col_end=col_end, row_end=row_end)
+        Calc.set_array(
+            values=arr, sheet=sheet, col_start=col_start, row_start=row_start, col_end=col_end, row_end=row_end
+        )
         val = Calc.get_num(sheet, f"{rng}{arr_size}")
         assert val == float(arr_size * arr_size)
 
@@ -1749,7 +1750,7 @@ def test_set_array(loader) -> None:
         # def set_array(values: Sequence[Sequence[object]], cell_range: XCellRange)
         # keyword args
         cell_range = Calc.get_cell_range(
-            sheet=sheet, start_col=col_start, start_row=row_start, end_col=col_end, end_row=row_end
+            sheet=sheet, col_start=col_start, row_start=row_start, col_end=col_end, row_end=row_end
         )
         Calc.set_array(values=arr, cell_range=cell_range)
         val = Calc.get_num(sheet, f"{rng}{arr_size}")
@@ -1810,7 +1811,10 @@ def test_get_array(loader) -> None:
         # test overloads
         # get_array(sheet: XSpreadsheet, range_name: str)
         # by keyword
-        rng_name = Calc.get_range_str(start_col=0, start_row=0, end_col=arr_size - 1, end_row=arr_size - 1)
+        # in ODEV 0.6.5 args go renamed but are backwards compatable.
+        rng_name_old_args = Calc.get_range_str(start_col=0, start_row=0, end_col=arr_size - 1, end_row=arr_size - 1)
+        rng_name = Calc.get_range_str(col_start=0, row_start=0, col_end=arr_size - 1, row_end=arr_size - 1)
+        assert rng_name_old_args == rng_name
         result_arr = Calc.get_array(sheet=sheet, range_name=rng_name)
         for row, row_data in enumerate(arr):
             for col, _ in enumerate(row_data):
@@ -1849,8 +1853,8 @@ def test_print_array(capsys: pytest.CaptureFixture) -> None:
     from ooodev.events.args.cancel_event_args import CancelEventArgs
     from ooodev.events.lo_events import Events, is_meth_event
     from ooodev.events.gbl_named_event import GblNamedEvent
-    
-    capsys.readouterr() # clear buffer
+
+    capsys.readouterr()  # clear buffer
     Calc.print_array([])
     captured = capsys.readouterr()
     assert captured.out == "No data in array to print\n"
@@ -1867,14 +1871,15 @@ def test_print_array(capsys: pytest.CaptureFixture) -> None:
 
 """
     )
-    
+
     on_firing = False
+
     def on(source: Any, args: CancelEventArgs) -> None:
         nonlocal on_firing
         if is_meth_event(source, Calc.print_array):
             args.cancel = True
             on_firing = True
-    
+
     events = Events()
     events.on(GblNamedEvent.PRINTING, on)
     Calc.print_array([])
@@ -1901,7 +1906,7 @@ def test_get_float_array(loader) -> None:
     sheet = Calc.get_sheet(doc=doc, index=0)
     arr_size = 8
     arr = TableHelper.to_2d_tuple(TableHelper.make_2d_array(arr_size, arr_size, arr_cb))
-    rng_name = Calc.get_range_str(start_col=0, start_row=0, end_col=arr_size - 1, end_row=arr_size - 1)
+    rng_name = Calc.get_range_str(col_start=0, row_start=0, col_end=arr_size - 1, row_end=arr_size - 1)
     Calc.set_array(values=arr, sheet=sheet, name=rng_name)
     arr_float = Calc.get_float_array(sheet=sheet, range_name=rng_name)
     for row, row_data in enumerate(arr):
@@ -2102,7 +2107,7 @@ def test_get_cell(loader) -> None:
         addr = Calc.get_cell_address(sheet=sheet, col=col, row=row)
         cell_name = Calc.get_cell_str(addr=addr)
 
-        cell_range = Calc.get_cell_range(sheet=sheet, start_col=col, start_row=row, end_col=col, end_row=row)
+        cell_range = Calc.get_cell_range(sheet=sheet, col_start=col, row_start=row, col_end=col, row_end=row)
         Calc.set_val(value=test_val, sheet=sheet, cell_name=cell_name)
         # get_cell(sheet: XSpreadsheet, addr: CellAddress)
         cell = Calc.get_cell(sheet=sheet, addr=addr)
@@ -2195,11 +2200,11 @@ def test_get_cell_range(loader) -> None:
         multi_row_end = 21
 
         rng_single = Calc.get_range_str(
-            start_col=single_col_start, start_row=single_row_start, end_col=single_col_end, end_row=single_row_end
+            col_start=single_col_start, row_start=single_row_start, col_end=single_col_end, row_end=single_row_end
         )
 
         rng_multi = Calc.get_range_str(
-            start_col=multi_col_start, start_row=multi_row_start, end_col=multi_col_end, end_row=multi_row_end
+            col_start=multi_col_start, row_start=multi_row_start, col_end=multi_col_end, row_end=multi_row_end
         )
         cr_addr_single = Calc.get_address(sheet=sheet, range_name=rng_single)
         cr_addr_muilti = Calc.get_address(sheet=sheet, range_name=rng_multi)
@@ -2235,10 +2240,10 @@ def test_get_cell_range(loader) -> None:
         #  get_cell_range(sheet: XSpreadsheet, col_start: int, row_start: int, col_end: int, row_end: int)
         rng = Calc.get_cell_range(
             sheet=sheet,
-            start_col=single_col_start,
-            start_row=single_row_start,
-            end_col=single_col_end,
-            end_row=single_row_end,
+            col_start=single_col_start,
+            row_start=single_row_start,
+            col_end=single_col_end,
+            row_end=single_row_end,
         )
         assert rng is not None
         addr = Calc.get_address(cell_range=rng)
@@ -2494,7 +2499,9 @@ def test_get_address(loader) -> None:
         end_col = 5
         end_row = 21
 
-        rng = Calc.get_cell_range(sheet=sheet, start_col=start_col, start_row=start_row, end_col=end_col, end_row=end_row)
+        rng = Calc.get_cell_range(
+            sheet=sheet, col_start=start_col, row_start=start_row, col_end=end_col, row_end=end_row
+        )
         range_name = Calc.get_range_str(cell_range=rng)
         # get_address(cell_range: XCellRange)
         cr_addr = Calc.get_address(cell_range=rng)
@@ -2521,7 +2528,9 @@ def test_get_address(loader) -> None:
         assert cr_addr.EndRow == end_row
 
         # get_address(sheet: XSpreadsheet, start_col: int, start_row: int, end_col: int, end_row: int)
-        cr_addr = Calc.get_address(sheet=sheet, start_col=start_col, start_row=start_row, end_col=end_col, end_row=end_row)
+        cr_addr = Calc.get_address(
+            sheet=sheet, start_col=start_col, start_row=start_row, end_col=end_col, end_row=end_row
+        )
         assert cr_addr.StartColumn == start_col
         assert cr_addr.StartRow == start_row
         assert cr_addr.EndColumn == end_col
@@ -2598,7 +2607,9 @@ def test_print_address(capsys: pytest.CaptureFixture, loader) -> None:
         end_col = 5
         end_row = 21
 
-        rng = Calc.get_cell_range(sheet=sheet, start_col=start_col, start_row=start_row, end_col=end_col, end_row=end_row)
+        rng = Calc.get_cell_range(
+            sheet=sheet, col_start=start_col, row_start=start_row, col_end=end_col, row_end=end_row
+        )
         cr_addr = Calc.get_address(cell_range=rng)
 
         # print_address(cell_range: XCellRange)
@@ -2647,7 +2658,11 @@ Range: Sheet1.B26:J45
         first_end_col = 5
         first_end_row = 21
         first_rng = Calc.get_cell_range(
-            sheet=sheet, start_col=first_start_col, start_row=first_start_row, end_col=first_end_col, end_row=first_end_row
+            sheet=sheet,
+            col_start=first_start_col,
+            row_start=first_start_row,
+            col_end=first_end_col,
+            row_end=first_end_row,
         )
         first_cr_addr = Calc.get_address(cell_range=first_rng)
         second_start_col = 1
@@ -2656,10 +2671,10 @@ Range: Sheet1.B26:J45
         second_end_row = 44
         second_rng = Calc.get_cell_range(
             sheet=sheet,
-            start_col=second_start_col,
-            start_row=second_start_row,
-            end_col=second_end_col,
-            end_row=second_end_row,
+            col_start=second_start_col,
+            row_start=second_start_row,
+            col_end=second_end_col,
+            row_end=second_end_row,
         )
         second_cr_addr = Calc.get_address(cell_range=second_rng)
         captured = capsys.readouterr()  # clear buffer
@@ -2701,7 +2716,11 @@ def test_is_equal_addresses(loader) -> None:
         first_end_col = 5
         first_end_row = 21
         first_rng = Calc.get_cell_range(
-            sheet=sheet, start_col=first_start_col, start_row=first_start_row, end_col=first_end_col, end_row=first_end_row
+            sheet=sheet,
+            col_start=first_start_col,
+            row_start=first_start_row,
+            col_end=first_end_col,
+            row_end=first_end_row,
         )
         first_cr_addr = Calc.get_address(cell_range=first_rng)
         second_start_col = 1
@@ -2710,10 +2729,10 @@ def test_is_equal_addresses(loader) -> None:
         second_end_row = 44
         second_rng = Calc.get_cell_range(
             sheet=sheet,
-            start_col=second_start_col,
-            start_row=second_start_row,
-            end_col=second_end_col,
-            end_row=second_end_row,
+            col_start=second_start_col,
+            row_start=second_start_row,
+            col_end=second_end_col,
+            row_end=second_end_row,
         )
         first_addr = Calc.get_cell_address(sheet=sheet, col=first_start_col, row=first_start_row)
         second_addr = Calc.get_cell_address(sheet=sheet, col=second_start_col, row=second_start_row)
@@ -2760,7 +2779,9 @@ def test_get_range_str(loader) -> None:
         end_row = 21
         rng_str = f"{Calc.get_cell_str(col=start_col, row=start_row)}:{Calc.get_cell_str(col=end_col, row=end_row)}"
         sheet_rng_str = f"{sheet_name}.{rng_str}"
-        rng = Calc.get_cell_range(sheet=sheet, start_col=start_col, start_row=start_row, end_col=end_col, end_row=end_row)
+        rng = Calc.get_cell_range(
+            sheet=sheet, col_start=start_col, row_start=start_row, col_end=end_col, row_end=end_row
+        )
         cr_addr = Calc.get_address(cell_range=rng)
 
         # get_range_str(cell_range: XCellRange)
@@ -2788,14 +2809,14 @@ def test_get_range_str(loader) -> None:
         assert result == sheet_rng_str
 
         # get_range_str(start_col: int, start_row: int, end_col: int, end_row: int)
-        result = Calc.get_range_str(start_col=start_col, start_row=start_row, end_col=end_col, end_row=end_row)
+        result = Calc.get_range_str(col_start=start_col, row_start=start_row, col_end=end_col, row_end=end_row)
         assert result == rng_str
         result = Calc.get_range_str(start_col, start_row, end_col, end_row)
         assert result == rng_str
 
         # get_range_str(start_col: int, start_row: int, end_col: int, end_row: int, sheet: XSpreadsheet)
         result = Calc.get_range_str(
-            start_col=start_col, start_row=start_row, end_col=end_col, end_row=end_row, sheet=sheet
+            col_start=start_col, row_start=start_row, col_end=end_col, row_end=end_row, sheet=sheet
         )
         assert result == sheet_rng_str
         result = Calc.get_range_str(start_col, start_row, end_col, end_row, sheet)
@@ -2911,9 +2932,9 @@ def test_create_cell_style(loader) -> None:
         start_row = 2
         end_col = 5
         end_row = 21
-        rng_str = Calc.get_range_str(start_col=start_col, start_row=start_row, end_col=end_col, end_row=end_row)
+        rng_str = Calc.get_range_str(col_start=start_col, row_start=start_row, col_end=end_col, row_end=end_row)
         cell_range = Calc.get_cell_range(
-            sheet=sheet, start_col=start_col, start_row=start_row, end_col=end_col, end_row=end_row
+            sheet=sheet, col_start=start_col, row_start=start_row, col_end=end_col, row_end=end_row
         )
         style = "Accent 1"
         # change_style(sheet: XSpreadsheet, style_name: str, range_name: str)

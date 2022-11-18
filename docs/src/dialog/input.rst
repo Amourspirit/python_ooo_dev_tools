@@ -1,3 +1,5 @@
+.. _class_dialog_input:
+
 Class Input
 ===========
 
