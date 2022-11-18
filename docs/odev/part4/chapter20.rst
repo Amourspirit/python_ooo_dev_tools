@@ -1333,8 +1333,8 @@ Instead the XSpreadsheetDocument_ interface must be explicitly converted to XCom
 
             .. group-tab:: None
 
-2.7. Adding a Chart
-===================
+20.2.7 Adding a Chart
+---------------------
 
 .. todo::
 
