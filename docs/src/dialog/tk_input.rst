@@ -1,3 +1,5 @@
+.. _dialog_tk_input:
+
 Class Window
 ============
 

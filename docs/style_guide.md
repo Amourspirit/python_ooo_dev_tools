@@ -111,7 +111,7 @@ To create an un-ordered list with bullets us the `ul-list` class from `readthedo
 
 **Notes:**
 
-The cssclass directive is use to assign classes to images.
+The `.. cssclass` directive is use to assign classes to images.
 Screen shots typically have class `screen_shot`, `invert`
 
 **Example:**
@@ -120,7 +120,7 @@ Screen shots typically have class `screen_shot`, `invert`
 .. cssclass:: screen_shot invert
 
     .. _ch03fig_detail_prop_lst:
-    .. figure:: https://user-images.githubusercontent.com/4193389/179298066-7acaa668-7b0b-4a59-bbb8-407ba354bf8a.png
+    .. figure:: https://images.com/myimg.png
         :alt: Details Properties List for algs.odp
         :figclass: align-center
 
@@ -135,11 +135,30 @@ Diagrams typically have class `diagram`, `invert`
 .. cssclass:: diagram invert
 
     .. _ch03fig_peek_services_interface:
-    .. figure:: https://user-images.githubusercontent.com/4193389/179381798-efcb4f4a-a877-469f-9c6e-033e9cf7fe6b.png
-        :alt: Methods to Investigate the Service and Interface Relationships and Hierarchies
+    .. figure:: https://images.com/myimg.png
+        :alt: Alt Description
         :figclass: align-center
 
-        :Methods to Investigate the Service and Interface Relationships and Hierarchies.
+        :Description
+```
+
+In some cases it is desired to set image width.
+this can be done using the `:width:`  arg.
+
+The default width that should be used for oversize images is `:width: 550px`
+
+**Example:**
+
+```rst
+.. cssclass:: diagram invert
+
+    .. _ch03fig_peek_services_interface:
+    .. figure:: https://images.com/myimg.png
+        :width: 550px
+        :alt: Alt Description
+        :figclass: align-center
+
+        :Description
 ```
 
 Animated gif typically have class `a_gif`
@@ -152,7 +171,7 @@ Animated gif is not to be darkened using css styles
 .. cssclass:: a_gif
 
     .. _ch02fig_lo_qi_auto_demo:
-    .. figure:: https://user-images.githubusercontent.com/4193389/178285134-70b9aa56-5eaa-43c8-aa59-c19f2b495336.gif
+    .. figure:: https://images.com/myimg.gif
         :alt: Lo.qi autocomplete demo image
         :figclass: align-center
 
