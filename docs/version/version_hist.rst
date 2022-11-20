@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.6.6
+=============
+
+Add overload to ``Calc.convert_to_floats``
+
 Version 0.6.5
 =============
 

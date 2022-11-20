@@ -79,8 +79,8 @@ from ooo.dyn.awt.point import Point
 from ooo.dyn.sheet.cell_delete_mode import CellDeleteMode
 from ooo.dyn.sheet.cell_flags import CellFlagsEnum as CellFlagsEnum
 from ooo.dyn.sheet.cell_insert_mode import CellInsertMode
-from ooo.dyn.sheet.general_function import GeneralFunction as GeneralFunction
 from ooo.dyn.sheet.fill_date_mode import FillDateMode as FillDateMode
+from ooo.dyn.sheet.general_function import GeneralFunction as GeneralFunction
 from ooo.dyn.sheet.solver_constraint_operator import SolverConstraintOperator as SolverConstraintOperator
 from ooo.dyn.table.cell_content_type import CellContentType
 
@@ -91,7 +91,11 @@ from ..utils import lo as mLo
 from ..utils import props as mProps
 from ..utils import view_state as mViewState
 from ..utils.color import CommonColor, Color
+from ..utils.formatters.formatter_table import FormatterTable as FormatterTable
+from ..utils.formatters.formatter_table_item import FormatterTableItem as FormatterTableItem
 from ..utils.gen_util import ArgsHelper, Util as GenUtil
+from ..utils.kind.formatter_table_item_kind import FormatterTableItemKind as FormatterTableItemKind
+from ..utils.kind.formatter_table_rule_kind import FormatterTableRuleKind as FormatterTableRuleKind
 from ..utils.table_helper import TableHelper
 from ..utils.type_var import PathOrStr, Row, Column, Table, TupleArray, FloatList, FloatTable
 
@@ -2573,13 +2577,26 @@ class Calc:
 
     # endregion get_array()
 
+    # region print_array()
+
+    @overload
     @staticmethod
     def print_array(vals: Table) -> None:
+        ...
+
+    @overload
+    @staticmethod
+    def print_array(vals: Table, format_opt: FormatterTable) -> None:
+        ...
+
+    @staticmethod
+    def print_array(vals: Table, format_opt: FormatterTable | None = None) -> None:
         """
-        Prints a 2-Dimensional array to terminal
+        Prints a 2-Dimensional array to console
 
         Args:
             vals (Sequence[Sequence[object]]): A 2-Dimensional array of value such as a list of list or tuple of tuples.
+            format_opt (FormatterTable, optional): Optional format used to format values when printing to console such as ``FormatterTable(format=".2f")``
 
         Returns:
             None:
@@ -2601,10 +2618,18 @@ class Calc:
             return
         col_len = len(vals[0])
         print(f"Row x Column size: {row_len} x {col_len}")
-        for row in vals:
-            col_str = "  ".join([str(cell) for cell in row])
-            print(col_str)
+
+        if format_opt:
+            for i, row in enumerate(vals):
+                col_str = "  ".join(format_opt.get_formatted(idx_row=i, row_data=row))
+                print(col_str)
+        else:
+            for row in vals:
+                col_str = "  ".join([str(cell) for cell in row])
+                print(col_str)
         print()
+
+    # endregion print_array()
 
     @classmethod
     def get_float_array(cls, sheet: XSpreadsheet, range_name: str) -> FloatTable:
@@ -2646,12 +2671,26 @@ class Calc:
 
     @overload
     @classmethod
+    def convert_to_floats(cls, vals: Column) -> FloatList:
+        """
+        Converts a 1-Dimensional array into List of float
+
+        Args:
+            vals (Column): Sequence to convert to floats.
+
+        Returns:
+            FloatList: vals converted to float
+        """
+        ...
+
+    @overload
+    @classmethod
     def convert_to_floats(cls, vals: Row) -> FloatList:
         """
         Converts a 1-Dimensional array into List of float
 
         Args:
-            vals (Row): List to convert to floats.
+            vals (Row): Sequence to convert to floats.
 
         Returns:
             FloatList: vals converted to float
@@ -2673,7 +2712,7 @@ class Calc:
         ...
 
     @classmethod
-    def convert_to_floats(cls, vals: Row | Table) -> FloatList | FloatTable:
+    def convert_to_floats(cls, vals: list) -> FloatList | FloatTable:
         """
         Converts a 1d or 2d array into List of float
 
@@ -4043,7 +4082,7 @@ class Calc:
     @classmethod
     def print_cell_address(cls, cell: XCell) -> None:
         """
-        Prints Cell to terminal such as ``Cell: Sheet1.D3``
+        Prints Cell to console such as ``Cell: Sheet1.D3``
 
         Args:
             cell (XCell): cell
@@ -4054,7 +4093,7 @@ class Calc:
     @classmethod
     def print_cell_address(cls, addr: CellAddress) -> None:
         """
-        Prints Cell to terminal such as ``Cell: Sheet1.D3``
+        Prints Cell to console such as ``Cell: Sheet1.D3``
 
          Args:
              addr (CellAddress): Cell Address
@@ -4064,7 +4103,7 @@ class Calc:
     @classmethod
     def print_cell_address(cls, *args, **kwargs) -> None:
         """
-        Prints Cell to terminal such as ``Cell: Sheet1.D3``
+        Prints Cell to console such as ``Cell: Sheet1.D3``
 
         Args:
             cell (XCell): cell
@@ -4122,7 +4161,7 @@ class Calc:
     @classmethod
     def print_address(cls, cell_range: XCellRange) -> None:
         """
-        Prints Cell range to terminal such as ``'Range: Sheet1.C3:F22``
+        Prints Cell range to console such as ``'Range: Sheet1.C3:F22``
 
         Args:
             cell_range (XCellRange): Cell range
@@ -4133,7 +4172,7 @@ class Calc:
     @classmethod
     def print_address(cls, cr_addr: CellRangeAddress) -> None:
         """
-        Prints Cell range to terminal such as ``'Range: Sheet1.C3:F22``
+        Prints Cell range to console such as ``'Range: Sheet1.C3:F22``
 
         Args:
             cr_addr (CellRangeAddress): Cell Address
@@ -4143,7 +4182,7 @@ class Calc:
     @classmethod
     def print_address(cls, *args, **kwargs) -> None:
         """
-        Prints Cell range to terminal such as ``Range: Sheet1.C3:F22``
+        Prints Cell range to console such as ``Range: Sheet1.C3:F22``
 
         Args:
             cell_range (XCellRange): Cell range
