@@ -93,8 +93,10 @@ from ..utils import view_state as mViewState
 from ..utils.color import CommonColor, Color
 from ..utils.formatters.formatter_table import FormatterTable as FormatterTable
 from ..utils.formatters.formatter_table_item import FormatterTableItem as FormatterTableItem
+from ..utils.formatters.formatter_table_row import FormatterTableRow as FormatterTableRow
 from ..utils.gen_util import ArgsHelper, Util as GenUtil
 from ..utils.kind.formatter_table_item_kind import FormatterTableItemKind as FormatterTableItemKind
+from ..utils.kind.formatter_table_row_kind import FormatterTableRowKind as FormatterTableRowKind
 from ..utils.kind.formatter_table_rule_kind import FormatterTableRuleKind as FormatterTableRuleKind
 from ..utils.table_helper import TableHelper
 from ..utils.type_var import PathOrStr, Row, Column, Table, TupleArray, FloatList, FloatTable
@@ -2621,7 +2623,7 @@ class Calc:
 
         if format_opt:
             for i, row in enumerate(vals):
-                col_str = "  ".join(format_opt.get_formatted(idx_row=i, row_data=row))
+                col_str = format_opt.get_formatted(idx_row=i, row_data=row)
                 print(col_str)
         else:
             for row in vals:
