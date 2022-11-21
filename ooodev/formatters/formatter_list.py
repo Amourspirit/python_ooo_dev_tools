@@ -1,9 +1,9 @@
 from __future__ import annotations
 from typing import List, Any, Tuple
 from dataclasses import dataclass, field
-from ..validation import check
-from ..kind.only_ignore_kind import OnlyIgnore as OnlyIgnore
-from .formatter_list_item import FormatterListItem as FormatterListItem
+from ..utils.validation import check
+from .only_ignore_kind import OnlyIgnoreKind as OnlyIgnoreKind
+from .format_list_item import FormatListItem as FormatListItem
 
 
 @dataclass
@@ -17,7 +17,7 @@ class FormatterList:
     In this case first float is formated as string with two decimal places, and
     then value is padded to the right with spaces.
     """
-    idx_rule: OnlyIgnore = field(default=OnlyIgnore.IGNORE)
+    idx_rule: OnlyIgnoreKind = field(default=OnlyIgnoreKind.IGNORE)
     """
     Determines what indexes are affected.
     """
@@ -25,7 +25,7 @@ class FormatterList:
     """
     Indexes to apply formatting to or ignore, depending on ``index_rule``.
     """
-    custom_formats: List[FormatterListItem] = field(default_factory=list)
+    custom_formats: List[FormatListItem] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         s_str = f"{self}"
@@ -33,7 +33,7 @@ class FormatterList:
         for index in self.idxs:
             check(isinstance(index, int), s_str, msg)
 
-    def _custom_format(self, current_index: int) -> FormatterListItem | None:
+    def _custom_format(self, current_index: int) -> FormatListItem | None:
         if current_index < 0:
             return None
         for cf in self.custom_formats:
@@ -76,15 +76,18 @@ class FormatterList:
             except Exception:
                 return str(val)
         try:
-            if not self.format or self.idx_rule == OnlyIgnore.NONE:
+            if not self.format or self.idx_rule == OnlyIgnoreKind.NONE:
                 return str(val)
             if current_index > -1:
-                if self.idx_rule == OnlyIgnore.IGNORE:
+                if self.idx_rule == OnlyIgnoreKind.IGNORE:
                     if current_index in self.idxs:
                         return str(val)
-                if self.idx_rule == OnlyIgnore.ONLY:
+                if self.idx_rule == OnlyIgnoreKind.ONLY:
                     if not current_index in self.idxs:
                         return str(val)
             return _apply_all_formats(val, self.format)
         except Exception:
             return str(val)
+
+
+__all__ = ["FormatterList"]

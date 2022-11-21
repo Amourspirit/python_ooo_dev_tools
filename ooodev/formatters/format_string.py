@@ -1,17 +1,18 @@
 from __future__ import annotations
+from typing import Tuple
 from dataclasses import dataclass
-from .formatter_list_item import FormatterListItem
-from ..kind.formatter_table_row_kind import FormatterTableRowKind as FormatterTableRowKind
+from .format_list_item import FormatListItem
+from .string_kind import StringKind as StringKind
 
 
 @dataclass
-class FormatterTableRow(FormatterListItem):
-    row_kind: FormatterTableRowKind = FormatterTableRowKind.NONE
+class FormatString(FormatListItem):
+    row_kind: StringKind = StringKind.NONE
 
     def _get_stripped(self, val: str) -> str:
         result = val
 
-        if FormatterTableRowKind.LEFT_STRIP in self.row_kind:
+        if StringKind.LEFT_STRIP in self.row_kind:
             result = result.lstrip()
 
         return result
@@ -35,3 +36,6 @@ class FormatterTableRow(FormatterListItem):
         result = self._get_stripped(val)
         result = self._apply_all_formats(result)
         return result
+
+
+__all__ = ["FormatString"]

@@ -1,39 +1,61 @@
 from __future__ import annotations
 from typing import List, Set, Any, Tuple, TYPE_CHECKING
-from ..kind.formatter_table_rule_kind import FormatterTableRuleKind as FormatterTableRuleKind
-from ..kind.formatter_table_rule_kind import FormatterTableRuleKind as FormatterTableRuleKind
-from .formatter_table_item import FormatterTableItem as FormatterTableItem
-from .formatter_table_row import FormatterTableRow as FormatterTableRow
+from .table_rule_kind import TableRuleKind as TableRuleKind
+from .format_table_item import FormatTableItem as FormatTableItem
+from .format_string import FormatString as FormatString
+from .table_item_processer import TableItemProcesser
 
 if TYPE_CHECKING:
-    from ..type_var import Row
+    from ..utils.type_var import Row
 
 
 class FormatterTable:
+    """
+    Formatter for formatting 2d sequences.
+
+    See Also:
+        :py:meth:`.Calc.print_array`
+    """
+
     def __init__(
         self,
         format: str | Tuple[str, ...],
-        idx_rule: FormatterTableRuleKind = FormatterTableRuleKind.IGNORE,
+        idx_rule: TableRuleKind = TableRuleKind.IGNORE,
         idxs: Tuple[int, ...] | None = None,
+        **kwargs,
     ) -> None:
+        """
+        Constructor
+
+        Args:
+            format (str | Tuple[str, ...]): Formatting that is applied to  specified data.
+            idx_rule (FormatterTableRuleKind, optional): Flag Options that determine behavours. Defaults to FormatterTableRuleKind.IGNORE.
+            idxs (Tuple[int, ...] | None, optional): Row Indexs that specify which rows are affect. Defaults to None.
+                If ``idx_rule`` contains ``FormatterTableRuleKind.IGNORE`` then ``idxs`` are the rows that are excluded from fromatting.
+                If ``idx_rule`` contains ``FormatterTableRuleKind.ONLY`` then ``idxs`` are the rows that are frrmated.
+            **Kwargs: Exapandable list or Key, value args that are auto asssigned as class Attributes. Useful for child classes.
+        """
         self._format = format
         self._idx_rule = idx_rule
         if idxs is None:
             self._idxs = ()
         else:
             self._idxs = idxs
-        self._custom_formats_row_items: List[FormatterTableItem] = []
-        self._custom_formats_row: List[FormatterTableRow] = []
-        self._custom_formats_col: List[FormatterTableItem] = []
-        self._col_formats: List[FormatterTableItem] = []
+        self._row_formats: List[FormatTableItem] = []
+        self._custom_formats_str: List[FormatString] = []
+        # self._custom_formats_col: List[FormatterTableItem] = []
+        self._col_formats: List[FormatTableItem] = []
         self._cols = None
         self._idx_col_last = -1
+        # for classes that inherit FormatterTable and need to expand constructor
+        for key, value in kwargs.items():
+            setattr(self, key, value)
 
     def _get_cols(self) -> Tuple[int, ...]:
         if self._cols is None:
             cols: Set[int] = set()
             for cf in self.col_formats:
-                cols.update(cf.idxs)
+                cols.update(cf.idxs_inc)
             self._cols = tuple(cols)
         return self._cols
 
@@ -41,78 +63,66 @@ class FormatterTable:
         cols = self._get_cols()
         return idx_col in cols
 
-    def _custom_row_item_format(self, idx_row: int) -> FormatterTableItem | None:
+    def _custom_row_item_format(self, idx_row: int) -> FormatTableItem | None:
         if idx_row < 0:
             return None
-        for cf in self._custom_formats_row_items:
+        for cf in self._row_formats:
+            if cf.is_index(idx_row):
+                return cf
+        return None
+
+    def _custom_row_format(self, idx_row: int) -> FormatString | None:
+        if idx_row < 0:
+            return None
+        for cf in self._custom_formats_str:
             if cf.has_index(idx_row):
                 return cf
         return None
 
-    def _custom_row_format(self, idx_row: int) -> FormatterTableRow | None:
-        if idx_row < 0:
-            return None
-        for cf in self._custom_formats_row:
-            if cf.has_index(idx_row):
-                return cf
-        return None
-
-    def _custom_col_format(self, idx_col: int) -> FormatterTableItem | None:
-        if idx_col < 0:
-            return None
-        for cf in self._custom_formats_col:
-            if cf.has_index(idx_col):
-                return cf
-        return None
-
-    def _get_col_formatter(self, idx_col: int) -> FormatterTableItem | None:
+    def _get_col_formatter(self, idx_col: int) -> FormatTableItem | None:
         if idx_col < 0:
             return None
         for cf in self._col_formats:
-            if cf.has_index(idx_col):
+            if cf.is_index(idx_col):
                 return cf
         return None
 
     def _format_col(self, idx_row: int, idx_col: int, val: Any) -> Tuple[bool, Any]:
         # returns original value or formatting string.
-        ccf = self._custom_col_format(idx_col=idx_col)
+        cf = self._get_col_formatter(idx_col=idx_col)
 
         do_col_format = True
         if not self._is_format_row(idx_row=idx_row):
             # this row may be ignored, check for col override:
-            do_col_format = FormatterTableRuleKind.COL_OVER_ROW in self.idx_rule
+            do_col_format = TableRuleKind.COL_OVER_ROW in self.idx_rule
 
-        if not do_col_format and ccf:
+        if not do_col_format and cf:
             # there is a custom column format
             # apply it if col overrides row for custom format
-            if FormatterTableRuleKind.CUSTOM_COL_OVER_ROW in self._idx_rule:
-                return (True, ccf.get_formatted(val=val, idx_col=idx_col, idx_col_last=self._idx_col_last))
+            if TableRuleKind.COL_OVER_ROW in self._idx_rule:
+                return TableItemProcesser.process_col(
+                    itm=cf, idx_row=idx_row, idx_col=idx_col, idx_col_last=self._idx_col_last, value=val
+                )
 
-        if ccf:
+        if cf:
             # there is a custom column format and column expects formatting.
             # ignore column formatting and apply only custom formatting.
-            return (True, ccf.get_formatted(val=val, idx_col=idx_col, idx_col_last=self._idx_col_last))
+            return TableItemProcesser.process_col(
+                itm=cf, idx_row=idx_row, idx_col=idx_col, idx_col_last=self._idx_col_last, value=val
+            )
 
-        if not do_col_format:
-            # no custom formatting, no column formatting
-            return (False, val)
-
-        cf = self._get_col_formatter(idx_col=idx_col)
-        if not cf:
-            # no column formatting
-            return (False, val)
-        # apply column formatting
-        return (True, self._apply_all_formats(value=val, formats=cf.format))
+        # no column formatting
+        return (False, val)
 
     def _is_format_row(self, idx_row: int) -> bool:
-        if FormatterTableRuleKind.IGNORE in self._idx_rule:
+        if TableRuleKind.IGNORE in self._idx_rule:
             return idx_row not in self._idxs
-        if FormatterTableRuleKind.ONLY in self._idx_rule:
+        if TableRuleKind.ONLY in self._idx_rule:
             return idx_row in self._idxs
         return False
 
     def _format_row(self, idx_row, row_data: List[str], join_str: str) -> str:
-        if len(self._custom_formats_row) == 0:
+        if len(self._custom_formats_str) == 0:
             return join_str.join(row_data).rstrip()
 
         custom_fmt_row = self._custom_row_format(idx_row=idx_row)
@@ -124,17 +134,17 @@ class FormatterTable:
 
     def _format_row_items(self, idx_row: int, row_data: Row, join_str: str) -> str:
         is_row_format = self._is_format_row(idx_row=idx_row)
-        fmt_cols_idxs = set()
+        fmt_rows_idxs = set()
         # do not apply column formatting to rows that are ignored.
         if is_row_format:
-            fmt_cols = []
+            fmt_rows = []
             for i, val in enumerate(row_data):
                 col_formated, col_val = self._format_col(idx_row=idx_row, idx_col=i, val=val)
-                fmt_cols.append(col_val)
+                fmt_rows.append(col_val)
                 if col_formated:
-                    fmt_cols_idxs.add(i)
+                    fmt_rows_idxs.add(i)
         else:
-            fmt_cols = row_data
+            fmt_rows = row_data
 
         custom_row_fmt_itm = self._custom_row_item_format(idx_row=idx_row)
         if custom_row_fmt_itm:
@@ -145,43 +155,37 @@ class FormatterTable:
             # if col over rows then rows should ignore cols that have been formatted
             # for now keep it a simple as possible.
             s_row = []
-            for i, val in enumerate(fmt_cols):
-                if self._has_col(idx_col=i):
-                    s_row.append(val)  # will be string because it is formatted
+            for i, val in enumerate(fmt_rows):
+                # if self._has_col(idx_col=i):
+                #     s_row.append(str(val))
+                # else:
+                p_row_state, p_row_val = TableItemProcesser.process_row(
+                    itm=custom_row_fmt_itm, idx_row=idx_row, idx_col=i, idx_col_last=self._idx_col_last, value=val
+                )
+                if p_row_state:
+                    s_row.append(p_row_val)
                 else:
-                    s_row.append(custom_row_fmt_itm.get_formatted(val=val, idx_col=i, idx_col_last=self._idx_col_last))
-            # if FormatterTableRuleKind.COL_OVER_ROW in self._idx_rule:
-            #     for i, val in enumerate(fmt_cols):
-            #         if self._has_col(idx_col=i):
-            #             s_row.append(val)  # will be string because it is formatted
-            #         else:
-            #             s_row.append(crf.get_formatted(val=val, idx_col=i, idx_col_last=self._idx_col_last))
-            # else:
-            #     for i, val in enumerate(fmt_cols):
-            #         if i in fmt_cols_idxs:
-            #             s_row.append(val)  # will be string because it is formatted
-            #         else:
-            #             s_row.append(self._apply_all_formats(val, self._format))
+                    s_row.append(str(p_row_val))
             return self._format_row(idx_row=idx_row, row_data=s_row, join_str=join_str)
 
         if is_row_format:
             # if col over rows then rows should ignore cols that have been formatted
             s_row = []
-            if FormatterTableRuleKind.COL_OVER_ROW in self._idx_rule:
-                for i, val in enumerate(fmt_cols):
-                    if i in fmt_cols_idxs:
+            if TableRuleKind.COL_OVER_ROW in self._idx_rule:
+                for i, val in enumerate(fmt_rows):
+                    if i in fmt_rows_idxs:
                         # if self._has_col(idx_col=i):
                         s_row.append(val)  # will be string because it is formatted
                     else:
                         s_row.append(self._apply_all_formats(val, self._format))
             else:
-                for i, val in enumerate(fmt_cols):
-                    if i in fmt_cols_idxs:
+                for i, val in enumerate(fmt_rows):
+                    if i in fmt_rows_idxs:
                         s_row.append(val)  # will be string because it is formatted
                     else:
                         s_row.append(self._apply_all_formats(val, self._format))
         else:
-            s_row = [str(v) for v in fmt_cols]
+            s_row = [str(v) for v in fmt_rows]
 
         return self._format_row(idx_row=idx_row, row_data=s_row, join_str=join_str)
 
@@ -210,7 +214,7 @@ class FormatterTable:
             row_data: (Row): List of data to format
 
         Returns:
-            List[str]: List of formatted values
+            str: formatted row
         """
         self._idx_col_last = len(row_data) - 1  # maybe -1
         return self._format_row_items(idx_row=idx_row, row_data=row_data, join_str=join_str)
@@ -231,23 +235,48 @@ class FormatterTable:
         return self._format
 
     @property
-    def col_formats(self) -> List[FormatterTableItem]:
-        """Gets col_formats value"""
+    def col_formats(self) -> List[FormatTableItem]:
+        """
+        Gets Column formats
+
+        New formats can be added.
+
+        Applies to any colum that matches.
+
+        Example:
+            .. code-block:: python
+
+                fl.col_formats.append(FormatTableItem(format=(".0%", ">9"), idxs=(4,)))
+        """
         return self._col_formats
 
     @property
-    def custom_formats_row(self) -> List[FormatterTableRow]:
-        """Gets custom_formats_row value"""
-        return self._custom_formats_row
+    def custom_formats_str(self) -> List[FormatString]:
+        """
+        Gets Custom formats Str value
+
+        If you need to apply extra formatting to a row after is has been formatted as string
+        then ``FormatterString`` formatters can be added.
+        """
+        return self._custom_formats_str
 
     @property
-    def custom_formats_row_items(self) -> List[FormatterTableItem]:
-        """Gets custom_formats_row_items value"""
-        return self._custom_formats_row_items
+    def row_formats(self) -> List[FormatTableItem]:
+        """
+        Gets Row formats
 
-    @property
-    def custom_formats_col(self) -> List[FormatterTableItem]:
-        """Gets custom_formats_col value"""
-        return self._custom_formats_col
+        New formats can be added.
+
+        Applies to any colum that matches.
+
+        Example:
+            .. code-block:: python
+
+                fl.row_formats.append(FormatTableItem(format=">9", idxs_inc=(0, 9)))
+        """
+        return self._row_formats
 
     # endregion Properties
+
+
+__all__ = ["FormatterTable"]

@@ -430,3 +430,21 @@ Example:
         - :ref:`class_dialog_input`
         - :ref:`dialog_tk_input`
 ```
+
+## Code Changes
+
+### NEW
+
+New Class, function, modules etc should include [version added](https://www.sphinx-doc.org/en/master/usage/restructuredtext/directives.html#directive-versionadded).
+
+```rst
+.. versionadded:: 0.6.6
+```
+
+### Changed
+
+Changed method, function etc should include [version changed](https://www.sphinx-doc.org/en/master/usage/restructuredtext/directives.html#directive-versionchanged).
+
+```rst
+.. versionchanged:: 0.66
+```

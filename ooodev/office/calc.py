@@ -85,19 +85,14 @@ from ooo.dyn.sheet.solver_constraint_operator import SolverConstraintOperator as
 from ooo.dyn.table.cell_content_type import CellContentType
 
 from ..exceptions import ex as mEx
+from ..formatters.formatter_table import FormatterTable
 from ..utils import gui as mGui
 from ..utils import info as mInfo
 from ..utils import lo as mLo
 from ..utils import props as mProps
 from ..utils import view_state as mViewState
 from ..utils.color import CommonColor, Color
-from ..utils.formatters.formatter_table import FormatterTable as FormatterTable
-from ..utils.formatters.formatter_table_item import FormatterTableItem as FormatterTableItem
-from ..utils.formatters.formatter_table_row import FormatterTableRow as FormatterTableRow
 from ..utils.gen_util import ArgsHelper, Util as GenUtil
-from ..utils.kind.formatter_table_item_kind import FormatterTableItemKind as FormatterTableItemKind
-from ..utils.kind.formatter_table_row_kind import FormatterTableRowKind as FormatterTableRowKind
-from ..utils.kind.formatter_table_rule_kind import FormatterTableRuleKind as FormatterTableRuleKind
 from ..utils.table_helper import TableHelper
 from ..utils.type_var import PathOrStr, Row, Column, Table, TupleArray, FloatList, FloatTable
 
