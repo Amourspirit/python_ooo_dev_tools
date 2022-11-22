@@ -203,6 +203,7 @@ rst_prolog_lst = [
     "",
     ".. |odev| replace:: ODEV",
     "",
+    ".. |ooouno| replace:: ooouno library",
     ".. _ooouno: https://pypi.org/project/ooouno/",
     "",
     ".. |odevgui_win| replace:: ODEV GUI Automation for windows",

@@ -10,14 +10,15 @@ ooodev
    :maxdepth: 2
    :caption: Contents:
 
-   conn/index
-   cfg/index
    office/index
    utils/index
-   dialog/index
+   conn/index
    exceptions/index
+   dialog/index
    events/index
    listeners/index
-   proto/index
+   formatters/index
    wrapper/index
+   proto/index
+   cfg/index
 
