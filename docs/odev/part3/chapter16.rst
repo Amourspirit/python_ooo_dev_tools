@@ -263,7 +263,7 @@ which is used as the basis of the layout constants in the :py:class:`~.draw.Draw
 
     .. cssclass:: src-link
 
-        - :odev_src_draw_meth:`title_slide`
+        :odev_src_draw_meth:`title_slide`
 
 
 This changes the slide's layout to an empty TitleTextShape_ and SubtitleShape_.

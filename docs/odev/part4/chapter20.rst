@@ -589,7 +589,7 @@ This is handled by :py:meth:`.Calc.zoom_value`:
 20.2 Creating a Document
 ========================
 
-The |build_tbl_py|_ example shows how to create a new spreadsheet document, populate it with data, apply cell styling, and save it to a file.
+The |build_tbl|_ example shows how to create a new spreadsheet document, populate it with data, apply cell styling, and save it to a file.
 We'll look at styling in the next chapter, and will concentrate here on the different ways to add data to a sheet.
 
 The ``main()`` method of |build_tbl_py|_ is:
@@ -1389,6 +1389,7 @@ The named cell acts as an anchor point for the top-left corner of the chart. :nu
 .. |build_tbl_py| replace:: build_table.py
 .. _build_tbl_py: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/calc/odev_build_table/build_table.py
 
+.. _CellRangeAddress: https://api.libreoffice.org/docs/idl/ref/structcom_1_1sun_1_1star_1_1table_1_1CellRangeAddress.html
 .. _Point: https://api.libreoffice.org/docs/idl/ref/structcom_1_1sun_1_1star_1_1awt_1_1Point.html
 .. _Spreadsheet: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1sheet_1_1Spreadsheet.html
 .. _SpreadsheetView: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1sheet_1_1SpreadsheetView.html
@@ -1403,4 +1404,3 @@ The named cell acts as an anchor point for the top-left corner of the chart. :nu
 .. _XSpreadsheet: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1sheet_1_1XSpreadsheet.html
 .. _XSpreadsheetDocument: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1sheet_1_1XSpreadsheetDocument.html
 .. _XSpreadsheetView: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1sheet_1_1XSpreadsheetView.html
-.. _CellRangeAddress: https://api.libreoffice.org/docs/idl/ref/structcom_1_1sun_1_1star_1_1table_1_1CellRangeAddress.html
