@@ -749,7 +749,7 @@ As the cursor is moved, its cell range can be expanded or collapsed in a variety
                 cursor = sheet.createCursor()
             else:
                 xrange = cls._get_cell_range_rng_name(sheet=sheet, range_name=cell_name)
-                cell_range = mLo.Lo.qi(XSheetCellRange, xrange)
+                cell_range = Lo.qi(XSheetCellRange, xrange)
                 cursor = sheet.createCursorByRange(cell_range)
             return cls.find_used_cursor(cursor)
 
@@ -794,7 +794,7 @@ An XSheetCellCursor_ cursor is assigned to a sheet by calling ``XSpreadsheet.cre
     .. code-tab:: python
 
         # in Calc class
-        ua_cursor = mLo.Lo.qi(XUsedAreaCursor, cursor, True)
+        ua_cursor = Lo.qi(XUsedAreaCursor, cursor, True)
         ua_cursor.gotoStartOfUsedArea(False)
         ua_cursor.gotoEndOfUsedArea(True)
 
