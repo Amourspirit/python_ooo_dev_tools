@@ -3,7 +3,7 @@ from enum import Flag
 
 class TableRuleKind(Flag):
     IGNORE = 1 << 0
-    """Do no format indexs"""
+    """Do no format indexes"""
     ONLY = 1 << 1
     """Only format indexes"""
     COL_OVER_ROW = 1 << 2

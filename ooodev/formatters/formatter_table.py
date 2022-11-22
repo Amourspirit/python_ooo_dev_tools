@@ -29,11 +29,11 @@ class FormatterTable:
 
         Args:
             format (str | Tuple[str, ...]): Formatting that is applied to  specified data.
-            idx_rule (FormatterTableRuleKind, optional): Flag Options that determine behavours. Defaults to FormatterTableRuleKind.IGNORE.
-            idxs (Tuple[int, ...] | None, optional): Row Indexs that specify which rows are affect. Defaults to None.
-                If ``idx_rule`` contains ``FormatterTableRuleKind.IGNORE`` then ``idxs`` are the rows that are excluded from fromatting.
-                If ``idx_rule`` contains ``FormatterTableRuleKind.ONLY`` then ``idxs`` are the rows that are frrmated.
-            **Kwargs: Exapandable list or Key, value args that are auto asssigned as class Attributes. Useful for child classes.
+            idx_rule (FormatterTableRuleKind, optional): Flag Options that determine behaviors. Defaults to FormatterTableRuleKind.IGNORE.
+            idxs (Tuple[int, ...] | None, optional): Row Indexes that specify which rows are affect. Defaults to None.
+                If ``idx_rule`` contains ``FormatterTableRuleKind.IGNORE`` then ``idxs`` are the rows that are excluded from formatting.
+                If ``idx_rule`` contains ``FormatterTableRuleKind.ONLY`` then ``idxs`` are the rows that are formatted.
+            **Kwargs: Expandable list or Key, value args that are auto assigned as class Attributes. Useful for child classes.
         """
         self._format = format
         self._idx_rule = idx_rule
@@ -229,7 +229,7 @@ class FormatterTable:
 
         Multiple formats can be added such as ``(".2f", "<10")``.
         Formats are applied in the order they are added.
-        In this case first float is formated as string with two decimal places, and
+        In this case first float is formatted as string with two decimal places, and
         then value is padded to the right with spaces.
         """
         return self._format
@@ -241,7 +241,7 @@ class FormatterTable:
 
         New formats can be added.
 
-        Applies to any colum that matches.
+        Applies to any column that matches.
 
         Example:
             .. code-block:: python
@@ -256,7 +256,7 @@ class FormatterTable:
         Gets Custom formats Str value
 
         If you need to apply extra formatting to a row after is has been formatted as string
-        then ``FormatterString`` formatters can be added.
+        then ``FormatterString`` instances can be added.
         """
         return self._custom_formats_str
 
@@ -267,7 +267,7 @@ class FormatterTable:
 
         New formats can be added.
 
-        Applies to any colum that matches.
+        Applies to any column that matches.
 
         Example:
             .. code-block:: python

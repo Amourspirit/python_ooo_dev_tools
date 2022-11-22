@@ -30,7 +30,7 @@ class FormatListItem:
 
         Multiple formats can be added such as ``(".2f", "<10")``.
         Formats are applied in the order they are added.
-        In this case first float is formated as string with two decimal places, and
+        In this case first float is formatted as string with two decimal places, and
         then value is padded to the right with spaces.
         """
         return self._format

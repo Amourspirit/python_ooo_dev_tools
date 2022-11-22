@@ -192,7 +192,7 @@ instead it has ConnectorProperties_ which holds most of the properties used by :
 
     .. cssclass:: src-link
 
-        -  :odev_src_draw_meth:`add_connector`
+        :odev_src_draw_meth:`add_connector`
 
 :py:meth:`.Draw.add_shape` is called with a (0,0) position, zero width and height.
 The real position and dimensions of the connector are set via its properties.
@@ -251,7 +251,7 @@ To simplify the access to the points data, this structure is returned as a tuple
 
     .. cssclass:: src-link
 
-        -  :odev_src_draw_meth:`get_glue_points`
+        :odev_src_draw_meth:`get_glue_points`
 
 ``_connect_rectangles()`` doesn't do much with this data, aside from printing out each glue points coordinate.
 They're specified in ``1/100 mm`` units relative to the center of the shape.
@@ -827,7 +827,9 @@ This approach is implemented in :py:meth:`.Draw.combine_shape`:
 
 .. seealso::
 
-    - :py:class:`~.kind.shape_comb_kind.ShapeCombKind`
+    .. cssclass:: ul-list
+
+        - :py:class:`~.kind.shape_comb_kind.ShapeCombKind`
 
     .. cssclass:: src-link
 

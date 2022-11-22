@@ -3597,15 +3597,11 @@ class Calc:
             XCellRange: Cell range
         """
         # find the used area
-        ua_cursor = mLo.Lo.qi(XUsedAreaCursor, cursor)
-        if ua_cursor is None:
-            raise mEx.MissingInterfaceError(XUsedAreaCursor)
+        ua_cursor = mLo.Lo.qi(XUsedAreaCursor, cursor, True)
         ua_cursor.gotoStartOfUsedArea(False)
         ua_cursor.gotoEndOfUsedArea(True)
 
-        used_range = mLo.Lo.qi(XCellRange, ua_cursor)
-        if used_range is None:
-            raise mEx.MissingInterfaceError(XCellRange)
+        used_range = mLo.Lo.qi(XCellRange, ua_cursor, True)
         return used_range
 
     @staticmethod

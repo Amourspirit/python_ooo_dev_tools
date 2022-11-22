@@ -11,7 +11,7 @@ class TableItemKind(Flag):
     END_COL_LEFT_STRIP = 1 << 1
     """Left Strip Last Column"""
     START_COL_RIGHT_STRIP = 1 << 2
-    """Right Stip Start Column"""
+    """Right Strip Start Column"""
     START_COL_LEFT_STRIP = 1 << 3
     """Left Strip Start Column"""
     COL_RIGHT_STRIP = 1 << 4

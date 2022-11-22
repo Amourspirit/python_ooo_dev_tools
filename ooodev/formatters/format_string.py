@@ -1,5 +1,4 @@
 from __future__ import annotations
-from typing import Tuple
 from dataclasses import dataclass
 from .format_list_item import FormatListItem
 from .string_kind import StringKind as StringKind

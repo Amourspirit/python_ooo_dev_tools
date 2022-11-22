@@ -99,7 +99,7 @@ class TableItemProcesser:
         Args:
             itm (FormatterTableItem): Current Instance
             idx_row (int): Current row index
-            idx_col (int): Current col indxs
+            idx_col (int): Current col index
             idx_col_last (int): Index of last column
             value (Any): Value to format
 
@@ -122,7 +122,7 @@ class TableItemProcesser:
         Args:
             itm (FormatterTableItem): Current Instance
             idx_row (int): Current row index
-            idx_col (int): Current col indxs
+            idx_col (int): Current col index
             idx_col_last (int): Index of last column
             value (Any): Value to format
 

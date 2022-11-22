@@ -87,7 +87,6 @@ See Also:
 <https://documentation-style-guide-sphinx.readthedocs.io/en/latest/index.html>
 <https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html#sections>
 
-
 ## List
 
 By default rdt-theme displays un-ordered list without any list type formating.
@@ -100,6 +99,20 @@ To create an un-ordered list with bullets us the `ul-list` class from `readthedo
     * shape fills: solid, gradients, hatching, bitmaps;
     * an OLE shape (a math formulae);
     * polygons, multiple lines, partial ellipses.
+```
+
+Nested unordered list example. There needs to be a least two indents for nested list.
+
+```rst
+.. cssclass:: ul-list
+
+    * outtter item 1
+
+        * inner item 1
+        * inner item 2
+
+    * outter item 2
+    * outter itme 3
 ```
 
 ## Image Classes
@@ -221,8 +234,6 @@ A master list of todo's will be on bottom of main page, also each document that 
 
 See Also: [sphinx.ext.todo](https://www.sphinx-doc.org/en/master/usage/extensions/todo.html#module-sphinx.ext.todo)
 
-
-
 ## Comments
 
 Adding comments to doc is straight forward. Use `..` followed by comment on a new intented line.
@@ -247,7 +258,7 @@ In this example adding a comment for a diagram.
 [sphinx.ext.extlinks](https://documentation.help/Sphinx/extlinks.html), see setting for extlinks in conf.py
 Allows for custom roles to be set up the make for simple source code link injection.
 
-Linking source code standart for directives such as `.. seealso`
+Linking source code standard for directives such as `.. seealso::`
 
 `src-link` css class handles adding icon at end of link and formatting of `ul` lists.
 
@@ -261,12 +272,29 @@ Linking source code standart for directives such as `.. seealso`
         - :odev_src_draw_meth:`get_slides_count`
 ```
 
+Mixing lists of `ul-list` with`src-link` lists.
+
+Actually will be two list but looks like a single list when view in html.
+
+This work because there is custom css (`.admonition` class) for list inside `.. seealso::` blocks.
+
+```rst
+.. seealso::
+
+    .. cssclass:: ul-list
+
+        * :py:data:`~.type_var.TupleArray`
+
+    .. cssclass:: src-link
+
+        * :odev_src_calc_meth:`get_array`
+```
+
 **Note:**
 
 `sphinx.ext.extlinks` by defalult creates external links.
 
 The `custom.js` file converts source code links back to internal links.
-
 
 To see what role are available or to add new rows see extlinks in conf.py
 
