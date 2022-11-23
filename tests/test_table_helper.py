@@ -1,3 +1,4 @@
+from typing import Any
 import pytest
 
 if __name__ == "__main__":
@@ -207,23 +208,24 @@ def test_table_2d_to_dict(bond_movies_table) -> None:
     assert row["Year"] == "1962"
     assert row["Actor"] == "Sean Connery"
     assert row["Director"] == "Terence Young"
-    
+
     row = dt[11]
-    
+
     assert row["Title"] == "For Your Eyes Only"
     assert row["Year"] == "1981"
     assert row["Actor"] == "Roger Moore"
     assert row["Director"] == "John Glen"
-    
+
     row = dt[23]
-    
+
     assert row["Title"] == "Spectre"
     assert row["Year"] == "2015"
     assert row["Actor"] == "Daniel Craig"
     assert row["Director"] == "Sam Mendes"
-    
+
     with pytest.raises(ValueError):
         TableHelper.table_2d_to_dict([])
+
 
 def test_table_dict_to_table(bond_movies_lst_dict) -> None:
     tbl = TableHelper.table_dict_to_table(bond_movies_lst_dict)
@@ -233,16 +235,136 @@ def test_table_dict_to_table(bond_movies_lst_dict) -> None:
     assert cols[1] == "Year"
     assert cols[2] == "Actor"
     assert cols[3] == "Director"
-    
+
     tbl[12][0] == "For Your Eyes Only"
     tbl[12][1] == "1981"
     tbl[12][2] == "Roger Moore"
     tbl[12][3] == "John Glen"
-    
+
     tbl[24][0] == "Spectre"
     tbl[24][1] == "2015"
     tbl[24][2] == "Daniel Craig"
     tbl[24][3] == "Sam Mendes"
-    
+
     with pytest.raises(ValueError):
         TableHelper.table_dict_to_table([])
+
+
+@pytest.mark.parametrize(
+    "input,expected",
+    [
+        ((-2, 4, 7), -2),
+        ((200, "", 56, "", 17), 17),
+        ([600_000, 1_000_000, 200_001], 200_001),
+        (
+            (
+                (500, 700, 2, 19_000, 7455),
+                (-500, -700, 1, -19_000, -7455),
+            ),
+            -19_000,
+        ),
+    ],
+)
+def test_get_sm_int(input, expected) -> None:
+    result = TableHelper.get_smallest_int(input)
+    assert result == expected
+
+
+@pytest.mark.parametrize(
+    "input,expected",
+    [
+        ((-2, 4, 7), 7),
+        ((200, "", 56, "", 17), 200),
+        ([600_000, 1_000_000, 200_001], 1_000_000),
+        (
+            (
+                (500, 700, 2, 19_000, 7455),
+                (-500, -700, 1, -19_000, -7455),
+            ),
+            19_000,
+        ),
+    ],
+)
+def test_get_largest_int(input, expected) -> None:
+    result = TableHelper.get_largest_int(input)
+    assert result == expected
+
+
+@pytest.mark.parametrize(
+    "input,expected",
+    [
+        (("this", "that", "is"), 2),
+        (["", "fasting is slimming", "I am not sure about that"], 0),
+        ((56,), -1),
+        (
+            (
+                ("once", "upon", "a", "time"),
+                ("there", "was", "a", "big"),
+                ("bad", "wolf", "in", "the enchantede forest"),
+            ),
+            1,
+        ),
+    ],
+)
+def test_get_sm_str(input, expected) -> None:
+    result = TableHelper.get_smallest_str(input)
+    assert result == expected
+
+
+@pytest.mark.parametrize(
+    "input,expected",
+    [
+        (("this", "that", "is"), 4),
+        (["", "fasting is slimming", "I am not sure about that"], 24),
+        ((56,), -1),
+        (
+            (
+                ("once", "upon", "a", "time"),
+                ("there", "was", "a", "big"),
+                ("bad", "wolf", "in", "the enchantede forest"),
+            ),
+            21,
+        ),
+    ],
+)
+def test_get_large_str(input, expected) -> None:
+    result = TableHelper.get_largest_str(input)
+    assert result == expected
+
+
+def test_get_largest_int_empty_errs() -> None:
+    with pytest.raises(ValueError):
+        TableHelper.get_largest_int([])
+
+
+def test_get_smallest_int_empty_errs() -> None:
+    with pytest.raises(ValueError):
+        TableHelper.get_smallest_int([])
+
+
+@pytest.mark.parametrize(
+    "lst_len,col_count,empty_val,expected_len", [(3, 3, "", 1), (2, 3, None, 1), (1, 3, None, 1), (0, 3, -1, 1)]
+)
+def test_convert_1d_to_2d(lst_len: int, col_count: int, empty_val: Any, expected_len: int) -> None:
+    lst = list(range(lst_len))
+    result = TableHelper.convert_1d_to_2d(seq_obj=lst, col_count=col_count, empty_cell_val=empty_val)
+    assert len(result) == expected_len
+    for row in result:
+        assert len(row) == col_count
+
+
+@pytest.mark.parametrize(
+    "lst_len,col_count,expected_len,expected_last_row_len",
+    [(5, 4, 2, 1), (38, 7, 6, 3), (50, 2, 25, 2), (50, 1, 50, 1)],
+)
+def test_convert_1d_to_2d_no_fill(lst_len: int, col_count: int, expected_len: int, expected_last_row_len: int) -> None:
+    lst = list(range(lst_len))
+    result = TableHelper.convert_1d_to_2d(seq_obj=lst, col_count=col_count)
+    assert len(result) == expected_len
+    lst_row = result[-1:][0]
+    assert len(lst_row) == expected_last_row_len
+
+
+def test_convert_1d_to_2d_col_error() -> None:
+    with pytest.raises(ValueError):
+        TableHelper.convert_1d_to_2d([1, 3], 0)
