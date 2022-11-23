@@ -2592,7 +2592,7 @@ class Calc:
         Prints a 2-Dimensional array to console
 
         Args:
-            vals (Sequence[Sequence[object]]): A 2-Dimensional array of value such as a list of list or tuple of tuples.
+            vals (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
             format_opt (FormatterTable, optional): Optional format used to format values when printing to console such as ``FormatterTable(format=".2f")``
 
         Returns:
@@ -2603,6 +2603,13 @@ class Calc:
 
         Note:
             .. include:: ../../resources/global/printing_note.rst
+
+        See Also:
+            - :ref:`ch21_format_data_console`
+            - :py:data:`~.type_var.Table`
+
+        .. versionchanged:: 0.6.6
+            Added ``format_opt`` parameter
         """
         cargs = CancelEventArgs(Calc.print_array.__qualname__)
         cargs.event_data = {"vals": vals}

@@ -749,7 +749,7 @@ As the cursor is moved, its cell range can be expanded or collapsed in a variety
                 cursor = sheet.createCursor()
             else:
                 xrange = cls._get_cell_range_rng_name(sheet=sheet, range_name=cell_name)
-                cell_range = mLo.Lo.qi(XSheetCellRange, xrange)
+                cell_range = Lo.qi(XSheetCellRange, xrange)
                 cursor = sheet.createCursorByRange(cell_range)
             return cls.find_used_cursor(cursor)
 
@@ -794,7 +794,7 @@ An XSheetCellCursor_ cursor is assigned to a sheet by calling ``XSpreadsheet.cre
     .. code-tab:: python
 
         # in Calc class
-        ua_cursor = mLo.Lo.qi(XUsedAreaCursor, cursor, True)
+        ua_cursor = Lo.qi(XUsedAreaCursor, cursor, True)
         ua_cursor.gotoStartOfUsedArea(False)
         ua_cursor.gotoEndOfUsedArea(True)
 
@@ -948,6 +948,9 @@ Pass the formatter to :py:meth:`.Calc.print_array`.
 
             .. group-tab:: None
 
+.. seealso::
+
+    |py_str_fmt|_
 
 .. |ss_sm_t| replace:: ``small_totals.ods``
 
@@ -956,6 +959,9 @@ Pass the formatter to :py:meth:`.Calc.print_array`.
 
 .. |extract_nums_py| replace:: extract_nums.py
 .. _extract_nums_py: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/calc/odev_extract_nums/extract_nums.py
+
+.. |py_str_fmt| replace:: Python Format Specification Mini-Language
+.. _py_str_fmt: https://docs.python.org/3/library/string.html#format-specification-mini-language
 
 .. _CellFlags: https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1sheet_1_1CellFlags.html
 .. _SheetCell: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1sheet_1_1SheetCell.html

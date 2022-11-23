@@ -1,11 +1,14 @@
 # coding: utf-8
 """General Utilities"""
 from __future__ import annotations
+import sys
 import string
-from typing import Callable, Iterable, Iterator, Sequence, List, Any, Tuple, overload
+from typing import Callable, Iterable, Sequence, List, Any, Tuple, overload, TypeVar
 import string
 from .type_var import DictTable, Table
 from . import gen_util as gUtil
+
+T = TypeVar("T")
 
 
 class TableHelper:
@@ -369,3 +372,295 @@ class TableHelper:
             return data
         except Exception as e:
             raise e
+
+    # region Get Smallest or Largest int in a 1d or 2d sequence
+
+    @staticmethod
+    def _get_extreme_element_value_1d_int(seq_obj: Sequence[int], biggest: bool) -> int:
+        # max_size = sys.maxsize
+        # min_size = -sys.maxsize - 1
+        if biggest:
+            min_max = -sys.maxsize - 1
+        else:
+            min_max = sys.maxsize
+        result = min_max
+        count = 0
+        for i in seq_obj:
+            try:
+                if biggest:
+                    if i > result:
+                        result = i
+                else:
+                    if i < result:
+                        result = i
+                # count valid numbers
+                count += 1
+            except Exception:
+                # ignore elements that fail:
+                pass
+
+        if count == 0:
+            raise ValueError("sequence did not have any integers test.")
+        return result
+
+    @staticmethod
+    def _get_extreme_element_value_2d_int(seq_obj: Sequence[Sequence[int]], biggest: bool) -> int:
+        # max_size = sys.maxsize
+        # min_size = -sys.maxsize - 1
+        # for float max: float("inf"), min: float("-inf")
+        if biggest:
+            min_max = -sys.maxsize - 1
+        else:
+            min_max = sys.maxsize
+        result = min_max
+        count = 0
+        for row in seq_obj:
+            for col in row:
+                try:
+                    if biggest:
+                        if col > result:
+                            result = col
+                    else:
+                        if col < result:
+                            result = col
+                    # count valid numbers
+                    count += 1
+                except Exception:
+                    # ignore elements that fail
+                    pass
+        if count == 0:
+            raise ValueError("sequence did not have any integers test.")
+        return result
+
+    @classmethod
+    def _get_extreme_element_value_int(cls, seq_obj: Sequence[int] | Sequence[Sequence[int]], biggest: bool) -> int:
+        num_rows = len(seq_obj)
+
+        is_2d = False
+        if num_rows > 0:
+            try:
+                is_2d = gUtil.Util.is_iterable(seq_obj[0])
+            except Exception:
+                is_2d = False
+
+        if is_2d:
+            return cls._get_extreme_element_value_2d_int(seq_obj, biggest)
+
+        return cls._get_extreme_element_value_1d_int(seq_obj, biggest)
+
+    @classmethod
+    def get_largest_int(cls, seq_obj: Sequence[int] | Sequence[Sequence[int]]) -> int:
+        """
+        Gets the largest int in a ``1d`` or ``2d`` Sequence integers
+
+        Args:
+            seq_obj (Sequence[int] | Sequence[Sequence[int]]): Input sequence
+
+        Raises:
+            ValueError: If no integers in are found.
+
+        Returns:
+            int: Largest integer found in sequence
+
+        .. versionadded:: 0.6.7
+        """
+        return cls._get_extreme_element_value_int(seq_obj=seq_obj, biggest=True)
+
+    @classmethod
+    def get_smallest_int(cls, seq_obj: Sequence[int] | Sequence[Sequence[int]]) -> int:
+        """
+        Gets the smallest int in a ``1d`` or ``2d`` Sequence integers
+
+        Args:
+            seq_obj (Sequence[int] | Sequence[Sequence[int]]): Input sequence
+
+        Raises:
+            ValueError: If no integers in are found.
+
+        Returns:
+            int: Smallest integer found in sequence
+
+        .. versionadded:: 0.6.7
+        """
+        return cls._get_extreme_element_value_int(seq_obj=seq_obj, biggest=False)
+
+    # endregion Get Smallest or Largest int in a 1d or 2d sequence
+
+    # region Get Smallest or Largest string in a 1d or 2d sequence
+    @staticmethod
+    def _get_extreme_element_value_1d_str(seq_obj: Sequence[str], biggest: bool) -> int:
+        if not seq_obj:
+            return -1
+        # max_size = sys.maxsize
+        # min_size = -sys.maxsize - 1
+        if biggest:
+            result_len = -1
+        else:
+            result_len = sys.maxsize
+
+        count = 0
+        for s in seq_obj:
+            try:
+                s_len = len(s)
+                if biggest:
+                    if s_len > result_len:
+                        result_len = s_len
+                else:
+                    if s_len < result_len:
+                        result_len = s_len
+                count += 1
+            except Exception:
+                # ignore elements that fail:
+                pass
+        if count == 0:
+            return -1
+        return result_len
+
+    @staticmethod
+    def _get_extreme_element_value_2d_str(seq_obj: Sequence[Sequence[str]], biggest: bool) -> int:
+        if not seq_obj:
+            return -1
+        # max_size = sys.maxsize
+        # min_size = -sys.maxsize - 1
+        if biggest:
+            result_len = -1
+        else:
+            result_len = sys.maxsize
+
+        count = 0
+        for row in seq_obj:
+            for s in row:
+                try:
+                    s_len = len(s)
+                    if biggest:
+                        if s_len > result_len:
+                            result_len = s_len
+                    else:
+                        if s_len < result_len:
+                            result_len = s_len
+                    count += 1
+                except Exception:
+                    # ignore elements that fail:
+                    pass
+        if count == 0:
+            return -1
+        return result_len
+
+    @classmethod
+    def _get_extreme_element_value_str(cls, seq_obj: Sequence[str] | Sequence[Sequence[str]], biggest: bool) -> int:
+        num_rows = len(seq_obj)
+
+        is_2d = False
+        if num_rows > 0:
+            try:
+                is_2d = gUtil.Util.is_iterable(seq_obj[0])
+            except Exception:
+                is_2d = False
+
+        if is_2d:
+            return cls._get_extreme_element_value_2d_str(seq_obj, biggest)
+
+        return cls._get_extreme_element_value_1d_str(seq_obj, biggest)
+
+    @classmethod
+    def get_largest_str(cls, seq_obj: Sequence[str] | Sequence[Sequence[str]]) -> int:
+        """
+        Gets the length of longest string in a ``1d`` or ``2d`` sequence of strings.
+
+        Args:
+            seq_obj (Sequence[str] | Sequence[Sequence[str]]): Input Sequence
+
+        Returns:
+            int: Length of longest string if found; Otherwise ``-1``
+
+        .. versionadded:: 0.6.7
+        """
+        return cls._get_extreme_element_value_str(
+            seq_obj=seq_obj,
+            biggest=True,
+        )
+
+    @classmethod
+    def get_smallest_str(cls, seq_obj: Sequence[str] | Sequence[Sequence[str]]) -> int:
+        """
+        Gets the length of shortest string in a ``1d`` or ``2d`` sequence of strings.
+
+        Args:
+            seq_obj (Sequence[str] | Sequence[Sequence[str]]): Input Sequence
+
+        Returns:
+            int: Length of shortest string if found; Otherwise ``-1``
+        """
+        return cls._get_extreme_element_value_str(
+            seq_obj=seq_obj,
+            biggest=False,
+        )
+
+    # endregion Get Smallest or Largest string in a 1d or 2d sequence
+
+    # region convert_1d_to_2d()
+
+    @overload
+    @staticmethod
+    def convert_1d_to_2d(seq_obj: Sequence[T], col_count: int) -> List[List[T]]:
+        ...
+
+    @overload
+    @staticmethod
+    def convert_1d_to_2d(seq_obj: Sequence[T], col_count: int, empty_cell_val: Any) -> List[List[T]]:
+        ...
+
+    @staticmethod
+    def convert_1d_to_2d(seq_obj: Sequence[T], col_count: int, empty_cell_val: Any = gUtil.NULL_OBJ) -> List[List[T]]:
+        """
+        Converts a ``1d`` sequence into a ``2d`` list.
+
+        Args:
+            seq_obj (Sequence[T]): Input sequence
+            col_count (int): the number of columns to create in the ``2d`` list.
+            empty_cell_val (Any, optional): When included any columns missing in last row will be added containing this value.
+                ``None`` is also an acceptable value.
+
+        Raises:
+            ValueError: If ``col_count`` is less then ``1``.
+
+        Returns:
+            List[List[T]]: ``2d`` list.
+
+        .. versionadded:: 0.6.7
+        """
+        # if len(seq_obj) == 0:
+        #     return []
+        if col_count < 1:
+            raise ValueError("Cols must not be less than 1")
+
+        auto_fill = empty_cell_val is not gUtil.NULL_OBJ
+        # see also: https://tinyurl.com/2elcg6fz
+        def convert(lst, var_lst):
+            idx = 0
+            for var_len in var_lst:
+                yield lst[idx : idx + var_len]
+                idx += var_len
+
+        if len(seq_obj) == 0:
+            if auto_fill:
+                # if there is an empty sequence then return a 2d list with one row of empties.
+                return [[empty_cell_val for _ in range(col_count)]]
+            else:
+                return [[]]
+
+        lst = list(seq_obj)
+
+        rows, overflow = divmod(len(seq_obj), col_count)
+        if overflow > 0:
+            if auto_fill:
+                for _ in range(col_count - overflow):
+                    lst.append(empty_cell_val)
+            # add a new row
+            rows += 1
+        var_lst = [col_count for _ in range(rows)]
+
+        new_lst = list(convert(lst, var_lst))
+        return new_lst
+
+    # endregion convert_1d_to_2d()

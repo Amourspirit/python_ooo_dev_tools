@@ -1,5 +1,4 @@
 from __future__ import annotations
-from typing import List
 import pytest
 
 if __name__ == "__main__":
@@ -86,7 +85,7 @@ def test_data_sort(loader) -> None:
     from com.sun.star.view import XSelectionSupplier
 
     visible = False
-    delay = 0 # 2000
+    delay = 0  # 2000
 
     def make_sort_asc_tbl(index: int, ascending: bool) -> TableSortField:
         sf = TableSortField()

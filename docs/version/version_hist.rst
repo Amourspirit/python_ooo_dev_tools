@@ -2,12 +2,23 @@
 Version History
 ***************
 
+Version 0.6.7
+=============
+
+Add new methods ``convert_1d_to_2d``, ``get_smallest_str``, ``get_largest_str``, ``get_smallest_int``, ``get_largest_int`` to ``TableHelper`` Class.
+
+Added overload method ``Lo.print_table(name: str, table: Table, format_opt: FormatterTable)``
+
+Updated ``Lo.print_names()`` to print output in a table format.
+
 Version 0.6.6
 =============
 
 Add overload to ``Calc.convert_to_floats``
 
 Add ``formatters`` module for formatting console output.
+
+Added overload method ``Calc.print_array(vals: Table, format_opt: FormatterTable)``
 
 Version 0.6.5
 =============

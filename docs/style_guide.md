@@ -246,11 +246,11 @@ In this example adding a comment for a diagram.
 .. cssclass:: diagram invert
 
     .. _ch03fig_peek_services_interface:
-    .. figure:: https://user-images.githubusercontent.com/4193389/179381798-efcb4f4a-a877-469f-9c6e-033e9cf7fe6b.png
-        :alt: Methods to Investigate the Service and Interface Relationships and Hierarchies
+    .. figure:: https://somedomain.com/img.png
+        :alt: Methods to Investigate the Service and Interface
         :figclass: align-center
 
-        :Methods to Investigate the Service and Interface Relationships and Hierarchies.
+        :Methods to Investigate the Service and Interface
 ```
 
 ## Linking to Source code
@@ -440,7 +440,7 @@ Example:
         .. cssclass:: a_gif
 
             .. _ch02fig_lo_qi_auto_demo:
-            .. figure:: https://user-images.githubusercontent.com/4193389/178285134-70b9aa56-5eaa-43c8-aa59-c19f2b495336.gif
+            .. figure:: https://somedomain.com/img.gif
                 :alt: Lo.qi autocomplete demo image
                 :figclass: align-center
 
@@ -469,10 +469,35 @@ New Class, function, modules etc should include [version added](https://www.sphi
 .. versionadded:: 0.6.6
 ```
 
+See Also: [.. versionadded](https://www.sphinx-doc.org/en/master/usage/restructuredtext/directives.html#directive-versionadded)
+
 ### Changed
 
 Changed method, function etc should include [version changed](https://www.sphinx-doc.org/en/master/usage/restructuredtext/directives.html#directive-versionchanged).
 
 ```rst
-.. versionchanged:: 0.66
+.. versionchanged:: 0.6.6
 ```
+
+#### Example usage
+
+```rst
+Prints a 2-Dimensional table to console
+
+Args:
+    name (str): Name of table
+    table (Table): Table Data
+    format_opt (FormatterTable, optional): Format when printing to console
+
+Returns:
+    None:
+
+See Also:
+    - :ref:`ch21_format_data_console`
+    - :py:data:`~.type_var.Table`
+
+.. versionchanged:: 0.6.7
+    Added ``format_opt`` parameter
+```
+
+See Also: [.. versionchanged](https://www.sphinx-doc.org/en/master/usage/restructuredtext/directives.html#directive-versionchanged)

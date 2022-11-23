@@ -1,4 +1,3 @@
-from sys import implementation
 import pytest
 
 # from ooodev.office.write import Write

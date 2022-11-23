@@ -11,6 +11,9 @@ from inspect import isclass
 _REG_TO_SNAKE = re.compile(r"(?<!^)(?=[A-Z])|(?<=[A-zA-Z])(?=[0-9])")  # re.compile(r"(?<!^)(?=[A-Z])")
 _REG_LETTER_AFTER_NUMBER = re.compile(r"(?<=\d)(?=[a-zA-Z])")
 
+NULL_OBJ = object()
+"""Null Object uses with None is not an option"""
+
 
 class ArgsHelper:
     "Args Helper"
