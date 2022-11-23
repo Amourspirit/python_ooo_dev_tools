@@ -3,10 +3,12 @@
 from __future__ import annotations
 import sys
 import string
-from typing import Callable, Iterable, Iterator, Sequence, List, Any, Tuple, overload
+from typing import Callable, Iterable, Sequence, List, Any, Tuple, overload, TypeVar
 import string
 from .type_var import DictTable, Table
 from . import gen_util as gUtil
+
+T = TypeVar("T")
 
 
 class TableHelper:
@@ -594,18 +596,18 @@ class TableHelper:
 
     @overload
     @staticmethod
-    def convert_1d_to_2d(seq_obj: Sequence[Any], col_count: int) -> List[List[Any]]:
+    def convert_1d_to_2d(seq_obj: Sequence[T], col_count: int) -> List[List[T]]:
         ...
 
     @overload
     @staticmethod
-    def convert_1d_to_2d(seq_obj: Sequence[Any], col_count: int, empty_cell_val: Any) -> List[List[Any]]:
+    def convert_1d_to_2d(seq_obj: Sequence[T], col_count: int, empty_cell_val: Any) -> List[List[T]]:
         ...
 
     @staticmethod
     def convert_1d_to_2d(
-        seq_obj: Sequence[Any], col_count: int, empty_cell_val: Any = gUtil.NULL_OBJ
-    ) -> List[List[Any]]:
+        seq_obj: Sequence[T], col_count: int, empty_cell_val: Any = gUtil.NULL_OBJ
+    ) -> List[List[T]]:
         # if len(seq_obj) == 0:
         #     return []
         if col_count < 1:
