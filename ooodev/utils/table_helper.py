@@ -461,13 +461,15 @@ class TableHelper:
 
         Returns:
             int: Largest integer found in sequence
+
+        .. versionadded:: 0.6.7
         """
         return cls._get_extreme_element_value_int(seq_obj=seq_obj, biggest=True)
 
     @classmethod
     def get_smallest_int(cls, seq_obj: Sequence[int] | Sequence[Sequence[int]]) -> int:
         """
-        Gets the smalles int in a ``1d`` or ``2d`` Sequence integers
+        Gets the smallest int in a ``1d`` or ``2d`` Sequence integers
 
         Args:
             seq_obj (Sequence[int] | Sequence[Sequence[int]]): Input sequence
@@ -477,6 +479,8 @@ class TableHelper:
 
         Returns:
             int: Smallest integer found in sequence
+
+        .. versionadded:: 0.6.7
         """
         return cls._get_extreme_element_value_int(seq_obj=seq_obj, biggest=False)
 
@@ -568,6 +572,8 @@ class TableHelper:
 
         Returns:
             int: Length of longest string if found; Otherwise ``-1``
+
+        .. versionadded:: 0.6.7
         """
         return cls._get_extreme_element_value_str(
             seq_obj=seq_obj,
@@ -605,9 +611,24 @@ class TableHelper:
         ...
 
     @staticmethod
-    def convert_1d_to_2d(
-        seq_obj: Sequence[T], col_count: int, empty_cell_val: Any = gUtil.NULL_OBJ
-    ) -> List[List[T]]:
+    def convert_1d_to_2d(seq_obj: Sequence[T], col_count: int, empty_cell_val: Any = gUtil.NULL_OBJ) -> List[List[T]]:
+        """
+        Converts a ``1d`` sequence into a ``2d`` list.
+
+        Args:
+            seq_obj (Sequence[T]): Input sequence
+            col_count (int): the number of columns to create in the ``2d`` list.
+            empty_cell_val (Any, optional): When included any columns missing in last row will be added containing this value.
+                ``None`` is also an acceptable value.
+
+        Raises:
+            ValueError: If ``col_count`` is less then ``1``.
+
+        Returns:
+            List[List[T]]: ``2d`` list.
+
+        .. versionadded:: 0.6.7
+        """
         # if len(seq_obj) == 0:
         #     return []
         if col_count < 1:

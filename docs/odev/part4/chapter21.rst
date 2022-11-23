@@ -948,6 +948,9 @@ Pass the formatter to :py:meth:`.Calc.print_array`.
 
             .. group-tab:: None
 
+.. seealso::
+
+    |py_str_fmt|_
 
 .. |ss_sm_t| replace:: ``small_totals.ods``
 
@@ -956,6 +959,9 @@ Pass the formatter to :py:meth:`.Calc.print_array`.
 
 .. |extract_nums_py| replace:: extract_nums.py
 .. _extract_nums_py: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/calc/odev_extract_nums/extract_nums.py
+
+.. |py_str_fmt| replace:: Python Format Specification Mini-Language
+.. _py_str_fmt: https://docs.python.org/3/library/string.html#format-specification-mini-language
 
 .. _CellFlags: https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1sheet_1_1CellFlags.html
 .. _SheetCell: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1sheet_1_1SheetCell.html

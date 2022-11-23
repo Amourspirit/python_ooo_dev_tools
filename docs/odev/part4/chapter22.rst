@@ -6,7 +6,7 @@ Chapter 22. Styles
 
 .. topic:: Overview
 
-    Obtaining Style Information: the TableCellStyle and TablePageStyle Services; Creating and Using a New Style; Adding Borders
+    Obtaining Style Information: the TableCellStyle_ and TablePageStyle_ Services; Creating and Using a New Style; Adding Borders
 
     Examples: |stles_info|_ and |build_tbl|_.
 
@@ -125,7 +125,7 @@ The output for a simple spreadsheet is:
     .. collapse:: Output:
         :open:
 
-        ::
+        .. code::
 
             Style Family Names (2)
               CellStyles
@@ -133,15 +133,20 @@ The output for a simple spreadsheet is:
 
             1. "CellStyles" Family Styles:
             No. of names: 20
-              'Accent'  'Accent 1'  'Accent 2'  'Accent 3'
-              'Bad'  'Default'  'Error'  'Footnote'
-              'Good'  'Heading'  'Heading 1'  'Heading 2'
-              'Hyperlink'  'Neutral'  'Note'  'Result'
-              'Result2'  'Status'  'Text'  'Warning'
+              ----------|-----------|-----------|-----------
+              Accent    | Accent 1  | Accent 2  | Accent 3
+              Bad       | Default   | Error     | Footnote
+              Good      | Heading   | Heading 1 | Heading 2
+              Good      | Heading   | Heading 1 | Heading 2
+              Hyperlink | Neutral   | Note      | Result
+              Result2   | Status    | Text      | Warning
+
+
 
             2. "PageStyles" Family Styles:
             No. of names: 3
-              'Default'  'PageStyle_ACPT (Python)'  'Report'
+              ------------------------|-------------------------|-------------------------
+              Default                 | PageStyle_ACPT (Python) | Report
 
 
 Finding Style Information
@@ -252,7 +257,7 @@ The ``My HeaderStyle`` style is applied to the top row and the first column: the
 The ``My DataStyle`` is used for the numerical data and formulae cells: the background color is made a light blue, and the text is right-justified.
 ``_apply_styles()`` also changes the border properties of the bottom edges of the cells in the last row to be thick and blue.
 
-The resulting spreadsheet is saved and this document is examined by the |stles_info|_ program, it lists the new styles in the ``CellStyles`` family:
+If the resulting spreadsheet is saved and this document is examined by the |stles_info|_ program, it lists the new styles in the ``CellStyles`` family:
 
 .. cssclass:: rst-collapse
 
@@ -267,19 +272,249 @@ The resulting spreadsheet is saved and this document is examined by the |stles_i
 
             1. "CellStyles" Family Styles:
             No. of names: 21
-              'Accent'  'Accent 1'  'Accent 2'  'Accent 3'
-              'Bad'  'Default'  'Error'  'Footnote'
-              'Good'  'Heading'  'Heading 1'  'Heading 2'
-              'Hyperlink'  'My DataStyle'  'My HeaderStyle'  'Neutral'
-              'Note'  'Result'  'Status'  'Text'
-              'Warning'
+              ---------------|----------------|----------------|----------------
+              Accent         | Accent 1       | Accent 2       | Accent 3
+              Bad            | Default        | Error          | Footnote
+              Good           | Heading        | Heading 1      | Heading 2
+              Hyperlink      | My DataStyle   | My HeaderStyle | Neutral
+              Note           | Result         | Status         | Text
+              Warning
+
 
 
             2. "PageStyles" Family Styles:
             No. of names: 2
-              'Default'  'Report'
+              --------|---------
+              Default | Report
 
-Work in progress ...
+22.2.1 Creating a New Style
+---------------------------
+
+|build_tbl_py|_ calls ``_create_styles()`` to create two styles:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in build_table.py
+        def _create_styles(self, doc: XSpreadsheetDocument) -> None:
+            # create HEADER_STYLE_NAME and
+            # DATA_STYLE_NAME cell styles
+            try:
+                style1 = Calc.create_cell_style(doc=doc, style_name=BuildTable.HEADER_STYLE_NAME)
+
+                Props.set(
+                    style1,
+                    IsCellBackgroundTransparent=False,
+                    CellBackColor=CommonColor.ROYAL_BLUE,
+                    CharColor=CommonColor.WHITE,
+                    HoriJustify=CellHoriJustify.CENTER,
+                    VertJustify=CellVertJustify.CENTER,
+                )
+
+                style2 = Calc.create_cell_style(doc=doc, style_name=BuildTable.DATA_STYLE_NAME)
+                Props.set(
+                    style2,
+                    IsCellBackgroundTransparent=False,
+                    CellBackColor=CommonColor.LIGHT_BLUE,
+                    ParaRightMargin=500,  # move away from right edge
+                )
+            except Exception as e:
+                print(e)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+The styles are created by two calls to :py:meth:`.Calc.create_cell_style`, which stores them in the ``CellStyles`` family:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in Calc class
+        @staticmethod
+        def create_cell_style(doc: XSpreadsheetDocument, style_name: str) -> XStyle:
+            comp_doc = Lo.qi(XComponent, doc, raise_err=True)
+            style_families = Info.get_style_container(doc=comp_doc, family_style_name="CellStyles")
+            style = Lo.create_instance_msf(XStyle, "com.sun.star.style.CellStyle", raise_err=True)
+
+            try:
+                style_families.insertByName(style_name, style)
+                return style
+            except Exception as e:
+                raise Exception(f"Unable to create style: {style_name}") from e
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+:py:meth:`.Calc.create_cell_style` calls :py:meth:`.Info.get_style_container` to return a reference to the ``CellStyles`` family as an XNameContainer_.
+A new cell style is created by calling :py:meth:`.Lo.create_instance_msf`, and referred to using the XStyle_ interface.
+This style is added to the family by calling ``XNameContainer.insertByName()`` with the name passed to the function.
+
+A new style is automatically derived from the ``Default`` style, so the rest of the ``_create_styles()`` method involves the changing of properties.
+Five are adjusted in the ``My HeaderStyle`` style, and three in ``My DataStyle``.
+
+The header properties are ``IsCellBackgroundTransparent``, ``CellBackColor``, ``CharColor``, ``HoriJustify``, and ``VertJustify``,
+which are all defined in the CellProperties_ class (see :numref:`ch22fig_table_cell_style_srv`).
+
+The data properties are ``IsCellBackgroundTransparent``, ``CellBackColor``, and ``ParaRightMargin``.
+Although ``IsCellBackgroundTransparent`` and ``CellBackColor`` are from the CellProperties_ class,
+``ParaRightMargin`` is inherited from the ParagraphProperties_ class in the style module (also in :numref:`ch22fig_table_cell_style_srv`).
+
+22.2.2 Applying a New Style
+---------------------------
+
+The new styles, ``My HeaderStyle`` and ``My DataStyle``, are applied to the spreadsheet by the |build_tbl_py|_ method ``_apply_styles()``:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in build_table.py
+        def _apply_styles(sefl, sheet: XSpreadsheet) -> None:
+            Calc.change_style(sheet=sheet, style_name=BuildTable.HEADER_STYLE_NAME, range_name="B1:N1")
+            Calc.change_style(sheet=sheet, style_name=BuildTable.HEADER_STYLE_NAME, range_name="A2:A4")
+            Calc.change_style(sheet=sheet, style_name=BuildTable.DATA_STYLE_NAME, range_name="B2:N4")
+
+            Calc.add_border(
+                sheet=sheet, range_name="A4:N4", color=CommonColor.DARK_BLUE,
+                border_vals=Calc.BorderEnum.BOTTOM_BORDER
+            )
+            Calc.add_border(
+                sheet=sheet,
+                range_name="N1:N4",
+                color=CommonColor.DARK_BLUE,
+                border_vals=Calc.BorderEnum.LEFT_BORDER | Calc.BorderEnum.RIGHT_BORDER,
+            )
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+The header style is applied to two cell ranges: ``B1:N1`` is the top row containing the months (see :numref:`ch22fig_styles_sheet_cells`),
+and ``A2:A4`` is the first column. The data style is applied to ``B2:N4`` which spans the numerical data and formulae.
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in Calc class (overload method, simplified)
+        @classmethod
+        def change_style(cls, sheet: XSpreadsheet, style_name: str, range_name: str) -> bool:
+            cell_range = cls.get_cell_range(sheet=sheet, range_name=range_name)
+            Props.set(cell_range, CellStyle=style_name)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+.. seealso::
+
+    .. cssclass:: src-link
+
+        :odev_src_calc_meth:`change_style`
+
+:py:meth:`.Calc.change_styles` manipulates the styles via the cell range.
+The ``cell_range`` variable refers to a SheetCellRange_ service which inherits many properties, including those from CellProperties_.
+Its ``CellStyle`` property holds the style name used by that cell range.
+
+22.2.3 Adding Borders
+---------------------
+
+The :py:meth:`.Calc.add_border` method highlights borders for a given range of cells.
+The two calls in ``_apply_styles()`` draw a blue line along the bottom edge of the ``A4:N4`` cell range,
+and two lines on either side of the ``SUM`` column (the ``N1:N4`` range), as shown in :numref:`ch22fig_borders_and_data`.
+
+..
+    figure 5
+
+.. cssclass:: screen_shot
+
+    .. _ch22fig_borders_and_data:
+    .. figure:: https://user-images.githubusercontent.com/4193389/203636217-7e487405-0a05-4642-86fc-dae32137708f.png
+        :alt: Borders around the Data spreadsheet screen shot.
+        :figclass: align-center
+
+        :Borders around the Data.
+
+Four border constants are defined in :py:class:`.Calc.BorderEnum`:
+
+:py:meth:`.Calc.add_border` highlights a border or borders for a cell range the following steps.
+
+.. cssclass:: ul-list
+
+    * Creation of a border line style, by instantiating a BorderLine2_ object.
+    * XCellRange_ instance is gotten from ``sheet``
+    * TableBorder2_ and ``TopBorder2`` (BorderLine2_) is gotten from ``cell_range``
+    * The flags are checked to see if border elements should be applied.
+    * The XCellRange_ has border related properties updated.
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in Calc class (overload method, simplified)
+        @classmethod
+        def add_border(cls,
+            sheet: XSpreadsheet, range_name: str, color: Color, border_vals: BorderEnum
+        ) -> XCellRange:
+            line = BorderLine2()  # create the border line
+            line.Color = color
+            line.InnerLineWidth = 0
+            line.LineDistance = 0
+            line.OuterLineWidth = 100
+
+            cell_range = sheet.getCellRangeByName(range_name)
+
+            border = cast(TableBorder2, Props.get(cell_range, "TableBorder2"))
+            inner_line = cast(BorderLine2, Props.get(cell_range, "TopBorder2"))
+
+            if (border_vals & cls.BorderEnum.TOP_BORDER) == cls.BorderEnum.TOP_BORDER:
+                border.TopLine = line
+                border.IsTopLineValid = True
+
+            if (border_vals & cls.BorderEnum.BOTTOM_BORDER) == cls.BorderEnum.BOTTOM_BORDER:
+                border.BottomLine = line
+                border.IsBottomLineValid = True
+
+            if (border_vals & cls.BorderEnum.LEFT_BORDER) == cls.BorderEnum.LEFT_BORDER:
+                border.LeftLine = line
+                border.IsLeftLineValid = True
+
+            if (border_vals & cls.BorderEnum.RIGHT_BORDER) == cls.BorderEnum.RIGHT_BORDER:
+                border.RightLine = line
+                border.IsRightLineValid = True
+
+            Props.set(
+                cell_range,
+                TopBorder2=inner_line,
+                RightBorder2=inner_line,
+                BottomBorder2=inner_line,
+                LeftBorder2=inner_line,
+                TableBorder2=border,
+            )
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+.. seealso::
+
+    .. cssclass:: src-link
+
+        :odev_src_calc_meth:`add_border`
 
 .. |stles_info| replace:: All Styles Info
 .. _stles_info: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/calc/odev_styles_all_info
@@ -293,9 +528,16 @@ Work in progress ...
 .. |build_tbl_py| replace:: build_table.py
 .. _build_tbl_py: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/calc/odev_build_table/build_table.py
 
-.. _TableCellStyle: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1sheet_1_1TableCellStyle.html
-.. _TablePageStyle: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1sheet_1_1TablePageStyle.html
+.. _BorderLine2: https://api.libreoffice.org/docs/idl/ref/structcom_1_1sun_1_1star_1_1table_1_1BorderLine2.html
+.. _BorderLine2: https://api.libreoffice.org/docs/idl/ref/structcom_1_1sun_1_1star_1_1table_1_1BorderLine2.html
 .. _CellProperties: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1table_1_1CellProperties.html
 .. _CharacterProperties: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1CharacterProperties.html
-.. _ParagraphProperties: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1ParagraphProperties.html
 .. _PageProperties: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1PageProperties.html
+.. _ParagraphProperties: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1ParagraphProperties.html
+.. _SheetCellRange: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1sheet_1_1SheetCellRange.html
+.. _TableBorder2: https://api.libreoffice.org/docs/idl/ref/structcom_1_1sun_1_1star_1_1table_1_1TableBorder2.html
+.. _TableCellStyle: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1sheet_1_1TableCellStyle.html
+.. _TablePageStyle: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1sheet_1_1TablePageStyle.html
+.. _XCellRange: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1table_1_1XCellRange.html
+.. _XNameContainer: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1container_1_1XNameContainer.html
+.. _XStyle: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1style_1_1XStyle.html
