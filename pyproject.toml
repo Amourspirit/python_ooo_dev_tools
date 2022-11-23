@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "ooo-dev-tools"
-version = "0.6.6"
+version = "0.6.7"
 description = "LibreOffice Developer Tools"
 license = "Apache Software License"
 readme = "README.rst"

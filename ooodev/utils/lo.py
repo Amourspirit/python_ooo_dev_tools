@@ -6,25 +6,37 @@ from __future__ import annotations
 from datetime import datetime, timezone
 import time
 import types
-from typing import TYPE_CHECKING, Any, Iterable, Optional, List, Tuple, cast, overload, Type
+from typing import TYPE_CHECKING, Any, Iterable, Optional, List, Sequence, Tuple, cast, overload, Type
 from urllib.parse import urlparse
 import uno
 from enum import IntEnum, Enum
 
 from ..mock import mock_g
 
-from ..events.event_singleton import _Events
-from ..events.lo_named_event import LoNamedEvent
-from ..events.gbl_named_event import GblNamedEvent
-from ..events.args.event_args import EventArgs
+# import module and not module content to avoid circular import issue.
+# https://stackoverflow.com/questions/22187279/python-circular-importing
+from . import file_io as mFileIO
+from . import info as mInfo
+from . import props as mProps
+from . import script_context
+from . import table_helper as mThelper
+from . import xml_util as mXML
+from ..formatters import formatter_table as mfrmtTbl
+from ..conn import cache as mCache
+from ..conn import connectors
+from ..conn.connect import ConnectBase, LoPipeStart, LoSocketStart, LoDirectStart
 from ..events.args.cancel_event_args import CancelEventArgs
 from ..events.args.dispatch_args import DispatchArgs
 from ..events.args.dispatch_cancel_args import DispatchCancelArgs
-from ..meta.static_meta import StaticProperty, classproperty
-from ..conn.connect import ConnectBase, LoPipeStart, LoSocketStart, LoDirectStart
-from ..conn import connectors
-from ..conn import cache as mCache
+from ..events.args.event_args import EventArgs
+from ..events.event_singleton import _Events
+from ..events.gbl_named_event import GblNamedEvent
+from ..events.lo_named_event import LoNamedEvent
+from ..exceptions import ex as mEx
+from ..formatters.formatter_table import FormatterTable
 from ..listeners.x_event_adapter import XEventAdapter
+from ..meta.static_meta import StaticProperty, classproperty
+from .type_var import PathOrStr, UnoInterface, T
 
 from com.sun.star.lang import XComponent
 
@@ -67,17 +79,6 @@ from ooo.dyn.document.macro_exec_mode import MacroExecMode  # const
 from ooo.dyn.lang.disposed_exception import DisposedException
 from ooo.dyn.util.close_veto_exception import CloseVetoException
 
-# import module and not module content to avoid circular import issue.
-# https://stackoverflow.com/questions/22187279/python-circular-importing
-from . import script_context
-
-from . import props as mProps
-from . import file_io as mFileIO
-from . import xml_util as mXML
-from . import info as mInfo
-
-from ..exceptions import ex as mEx
-from .type_var import PathOrStr, UnoInterface, T
 
 # PathOrStr = type_var.PathOrStr
 # """Path like object or string"""
@@ -2208,50 +2209,56 @@ class Lo(metaclass=StaticProperty):
     @overload
     @staticmethod
     def print_names(names: Iterable[str]) -> None:
-        """
-        Prints names to console
-
-        Args:
-            names (Iterable[str]): names to print
-        """
         ...
 
     @overload
     @staticmethod
-    def print_names(names: Iterable[str], num_per_line: int) -> None:
-        """
-        Prints names to console
-
-        Args:
-            names (Iterable[str]): names to print
-            num_per_line (int): Number of names per line.
-        """
+    def print_names(names: Sequence[str], num_per_line: int) -> None:
         ...
 
     @staticmethod
-    def print_names(names: Iterable[str], num_per_line: int = 4) -> None:
+    def print_names(names: Sequence[str], num_per_line: int = 4) -> None:
         """
         Prints names to console
 
         Args:
             names (Iterable[str]): names to print
-            num_per_line (int): Number of names per line. Default 4
+            num_per_line (int): Number of names per line. Default ``4``
+            format_opt (FormatterTable, optional): Optional format used to format values when printing to console such as ``FormatterTable(format=">2")``
         """
-        if names is None:
+        if not names:
             print("  No names found")
             return
-        sorted_list = sorted(names, key=str.casefold)
-        print(f"No. of names: {len(sorted_list)}")
-        nl_count = 0
-        for name in sorted_list:
-            print(f"  '{name}'", end="")
-            if num_per_line <= 0:
+        col_count = 1 if num_per_line < 1 else num_per_line
+
+        lst_2d = mThelper.TableHelper.convert_1d_to_2d(seq_obj=sorted(names, key=str.casefold), col_count=col_count)
+        longest = mThelper.TableHelper.get_largest_str(names)
+        if longest > 0:
+            format_opt = mfrmtTbl.FormatterTable(format=f"<{longest + 2}")
+        else:
+            format_opt = None
+
+        indent = "  "
+        print(f"No. of names: {len(names)}")
+        if format_opt:
+            acutal_count = len(lst_2d[0])
+            if acutal_count > 1:
+                # if this is more then on colum then print header
+                #  -----------|-----------|-----------
+                print(f"{indent}", end="")
+                for i, _ in enumerate(range(acutal_count)):
+                    print("-" * (longest + 2), end="")
+                    if i < acutal_count - 1:
+                        print("|-", end="")
                 print()
-                continue
-            nl_count += 1
-            if nl_count % num_per_line == 0:
+            for i, row in enumerate(lst_2d):
+                col_str = format_opt.get_formatted(idx_row=i, row_data=row, join_str="| ")
+                print(f"{indent}{col_str}")
+        else:
+            for row in lst_2d:
+                for col in row:
+                    print(f'{indent}"{col}"', end="")
                 print()
-                nl_count = 0
         print("\n\n")
 
     # ------------------- container manipulation --------------------
