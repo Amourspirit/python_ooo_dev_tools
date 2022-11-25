@@ -1162,6 +1162,9 @@ class Calc:
             CellRangeAddress struct describing which cells are shown in the pane.
             Columns or rows that are only partly visible at the right or lower edge of the view
             are not included.
+
+        See Also:
+            :ref:`ch23_view_states_top_pane`
         """
         con = mLo.Lo.qi(XIndexAccess, cls.get_controller(doc))
         if con is None:
@@ -1223,6 +1226,12 @@ class Calc:
 
         Args:
             doc (XSpreadsheetDocument): Spreadsheet Document
+
+        Returns:
+            None:
+
+        See Also:
+            :ref:`ch23_view_states_top_pane`
         """
         ctrl = cls.get_controller(doc)
 
@@ -1245,6 +1254,12 @@ class Calc:
         Args:
             doc (XSpreadsheetDocument): spreadsheet document
             states (Sequence[ViewState]): Sequence of ViewState objects.
+
+        Returns:
+            None:
+
+        See Also:
+            :ref:`ch23_view_states_top_pane`
         """
         ctrl = cls.get_controller(doc)
         if ctrl is None:
@@ -1295,7 +1310,7 @@ class Calc:
         if cargs.cancel:
             return False
         idx = cargs.index
-        cr_range = mLo.Lo.qi(XColumnRowRange, cargs.sheet, raise_err=True)
+        cr_range = mLo.Lo.qi(XColumnRowRange, cargs.sheet, True)
         rows = cr_range.getRows()
         rows.insertByIndex(idx, 1)  # add 1 row at idx position
         _Events().trigger(CalcNamedEvent.SHEET_ROW_INSERTED, SheetArgs.from_args(cargs))
@@ -1355,7 +1370,7 @@ class Calc:
         if cargs.cancel:
             return False
         idx = cargs.index
-        cr_range = mLo.Lo.qi(XColumnRowRange, cargs.sheet)
+        cr_range = mLo.Lo.qi(XColumnRowRange, cargs.sheet, True)
         cols = cr_range.getColumns()
         cols.insertByIndex(idx, 1)  # add 1 column at idx position
         _Events().trigger(CalcNamedEvent.SHEET_COL_INSERTED, SheetArgs.from_args(cargs))
@@ -1423,7 +1438,7 @@ class Calc:
         _Events().trigger(CalcNamedEvent.CELLS_INSERTING, cargs)
         if cargs.cancel:
             return False
-        mover = mLo.Lo.qi(XCellRangeMovement, cargs.sheet)
+        mover = mLo.Lo.qi(XCellRangeMovement, cargs.sheet, True)
         addr = cls.get_address(cargs.cells)
         if cargs.event_data["is_shift_right"]:
             mover.insertCells(addr, CellInsertMode.RIGHT)

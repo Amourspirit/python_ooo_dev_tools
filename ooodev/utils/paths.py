@@ -62,6 +62,12 @@ def get_soffice_install_path() -> Path:
         p_sf = Path(os.environ["PROGRAMFILES"], "LibreOffice", "program", soffice)
         if p_sf.exists() is False or p_sf.is_file() is False:
             p_sf = Path(os.environ["PROGRAMFILES(X86)"], "LibreOffice", "program", soffice)
+        if p_sf.exists() is False or p_sf.is_file() is False:
+            # perhaps running a developer version.
+            # C:\Program Files\LibreOfficeDev 7\program
+            p_sf = Path(os.environ["PROGRAMFILES"], "LibreOfficeDev 7", "program", soffice)
+        if p_sf.exists() is False or p_sf.is_file() is False:
+            p_sf = Path(os.environ["PROGRAMFILES(X86)"], "LibreOfficeDev 7", "program", soffice)
         if not p_sf.exists():
             raise FileNotFoundError(f"LibreOffice '{p_sf}' not found.")
         if not p_sf.is_file():

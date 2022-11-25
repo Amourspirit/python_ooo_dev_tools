@@ -13,6 +13,7 @@ from tests.fixtures.xml import __test__path__ as xml_fixture_path
 from tests.fixtures.image import __test__path__ as img_fixture_path
 from tests.fixtures.presentation import __test__path__ as pres_fixture_path
 from ooodev.utils.lo import Lo as mLo
+from ooodev.utils import paths as mPaths
 
 # from ooodev.connect import connectors as mConnectors
 from ooodev.conn import cache as mCache
@@ -32,11 +33,19 @@ def test_headless():
 
 
 @pytest.fixture(scope="session")
-def loader(tmp_path_session, test_headless):
+def soffice_path():
+    # allow for a little more development flexibility
+    # it is alos fine to return "" or None from this function
+    return mPaths.get_soffice_path()
+
+
+@pytest.fixture(scope="session")
+def loader(tmp_path_session, test_headless, soffice_path):
     loader = mLo.load_office(
-        connector=mLo.ConnectPipe(headless=test_headless), cache_obj=mCache.Cache(working_dir=tmp_path_session)
+        connector=mLo.ConnectPipe(headless=test_headless, soffice=soffice_path),
+        cache_obj=mCache.Cache(working_dir=tmp_path_session),
     )
-    # loader = mLo.load_office(connector=mLo.ConnectSocket(headless=True), cache_obj=mCache.Cache(working_dir=tmp_path_session))
+    # loader = mLo.load_office(connector=mLo.ConnectSocket(headless=True, soffice=soffice_path), cache_obj=mCache.Cache(working_dir=tmp_path_session))
     yield loader
     mLo.close_office()
 

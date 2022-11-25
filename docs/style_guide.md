@@ -417,7 +417,8 @@ Creates collapse section with special css formatting applied, mostly for spacing
 [sphinx_design](https://sphinx-design.readthedocs.io/en/rtd-theme/get_started.html)
 Allows setting icon ``:octicon:`code-square;1em;sd-text-info` ``
 
-## Custom CSS
+## CSS
+### Custom CSS
 
 These are extra css style that can be added as seperate `.. cssclass::` styles.
 
@@ -457,6 +458,68 @@ Example:
         - :ref:`class_msg_box`
         - :ref:`class_dialog_input`
         - :ref:`dialog_tk_input`
+```
+
+### Color
+
+Two specific kinds of colors are added that can be access via css styles.
+
+- Colors that **do not** change with Theme (dark, light)
+- Colors that may change with theme
+
+Colors are as follows:
+
+|        |         |         |       |        |
+|--------|---------|---------|-------|--------|
+| black  | gray    | silver  | white | maroon |
+| red    | magenta | fuchsia | pink  | orange |
+| yellow | lime    | green   | olive | teal   |
+| cyan   | aqua    | blue    | navy  | purple |
+
+#### Inline color text
+
+uses RST roles.
+
+Adding color via rst fixed color.
+
+If you do not want a color to change with the theme then use ``:color:`my text` `` role.
+
+Example:
+
+```rst
+This is my :red:`red text`.
+```
+
+If you want a color to change with the theme then use ``:t_color:`my text` `` role.
+
+Adding color via rst Theme color.
+
+```rst
+This is my :t_lime:`lime text`.
+```
+
+#### Block color text
+
+Class that match colors match the the following:
+
+- Colors that **do not** change have css style similar to `.color`.
+- Colors that may change with theme have css style similar to `.t-color`
+
+Example Fixed color block.
+
+```rst
+.. cssclass:: green
+
+    My green text goes here.
+    Multil line is all green.
+```
+Example Theme color block.
+
+```rst
+.. cssclass:: t-green
+
+    My green text goes here.
+    May not be green in dark mode thought!
 ```
 
 ## Code Changes
