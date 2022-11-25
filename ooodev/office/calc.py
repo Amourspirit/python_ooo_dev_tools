@@ -879,6 +879,16 @@ class Calc:
             doc (XSpreadsheetDocument): Spreadsheet Document
             num_cols (int): Number of columns to freeze
             num_rows (int): Number of rows to freeze
+
+        Returns:
+            None:
+
+        See Also:
+
+            - :ref:`ch23_freezing_rows`
+            - :py:meth:`~.Calc.freeze_rows`
+            - :py:meth:`~.Calc.freeze_cols`
+            - :py:meth:`~.Calc.unfreeze`
         """
         ctrl = cls.get_controller(doc)
         if ctrl is None:
@@ -895,6 +905,16 @@ class Calc:
 
         Args:
             doc (XSpreadsheetDocument): Spreadsheet Document
+
+        Returns:
+            None:
+
+        See Also:
+
+            - :ref:`ch23_freezing_rows`
+            - :py:meth:`~.Calc.freeze`
+            - :py:meth:`~.Calc.freeze_rows`
+            - :py:meth:`~.Calc.freeze_cols`
         """
         ctrl = cls.get_controller(doc)
         if ctrl is None:
@@ -911,6 +931,16 @@ class Calc:
         Args:
             doc (XSpreadsheetDocument): Spreadsheet Document
             num_cols (int): Number of columns to freeze
+
+        Returns:
+            None:
+
+        See Also:
+
+            - :ref:`ch23_freezing_rows`
+            - :py:meth:`~.Calc.freeze`
+            - :py:meth:`~.Calc.freeze_rows`
+            - :py:meth:`~.Calc.unfreeze`
         """
         cls.freeze(doc=doc, num_cols=num_cols, num_rows=0)
 
@@ -922,6 +952,16 @@ class Calc:
         Args:
             doc (XSpreadsheetDocument): Spreadsheet Document
             num_rows (int): Number of rows to freeze
+
+        Returns:
+            None:
+
+        See Also:
+
+            - :ref:`ch23_freezing_rows`
+            - :py:meth:`~.Calc.freeze`
+            - :py:meth:`~.Calc.freeze_cols`
+            - :py:meth:`~.Calc.unfreeze`
         """
         cls.freeze(doc=doc, num_cols=0, num_rows=num_rows)
 
