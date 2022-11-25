@@ -13,7 +13,7 @@ Chapter 23. Garlic Secrets
 This chapter's |g_secrets_py|_ example illustrates how data can be extracted from an existing spreadsheet (``produceSales.xlsx``) using ``general`` functions, sheet searching, and sheet range queries.
 It also has more examples of cell styling, and demonstrates sheet freezing, view pane splitting, pane activation, and the insertion of new rows into a sheet.
 
-The idea for this chapter, and the data, comes from the Excel example in chapter 12 of "Automate the Boring Stuff with Python" by Al :spelling:word:`Sweigart`. However, he utilized the Python library OpenPyXL to manipulate his file.
+The idea for this chapter, and the data, comes from the Excel example in "Automate the Boring Stuff with Python" by Al :spelling:word:`Sweigart`, `chapter 13<https://automatetheboringstuff.com/2e/chapter13/>`. However, he utilized the Python library OpenPyXL to manipulate his file.
 
 The beginning of the spreadsheet is shown in :numref:`ch23fig_part_product_sheet`.
 
