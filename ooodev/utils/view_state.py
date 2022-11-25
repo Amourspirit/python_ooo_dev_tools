@@ -4,10 +4,17 @@
 from __future__ import annotations
 from enum import IntEnum
 from ..office import calc as mCalc
+from ..utils import lo as mLo
 
 
 class ViewState:
-    """for moving the pane focus"""
+    """
+    For moving the pane focus
+
+    See Also:
+        :ref:`ch23_view_states_top_pane`
+    """
+
     class PaneEnum(IntEnum):
         MOVE_UP = 0
         MOVE_DOWN = 1
@@ -77,7 +84,7 @@ class ViewState:
         try:
             return int(s)
         except ValueError:
-            print(f"'{s}' could not be parsed as an int; using 0")
+            mLo.Lo.print(f"'{s}' could not be parsed as an int; using 0")
         return 0
 
     @property
@@ -202,7 +209,7 @@ class ViewState:
             elif self._pane_focus_num == 2:
                 self._pane_focus_num = 0
             else:
-                print("cannot move up")
+                mLo.Lo.print("cannot move up")
                 return False
         elif d == ViewState.PaneEnum.MOVE_DOWN:
             if self._pane_focus_num == 1:
@@ -210,7 +217,7 @@ class ViewState:
             elif self._pane_focus_num == 0:
                 self._pane_focus_num = 2
             else:
-                print("cannot move down")
+                mLo.Lo.print("cannot move down")
                 return False
         elif d == ViewState.PaneEnum.MOVE_LEFT:
             if self._pane_focus_num == 1:
@@ -218,7 +225,7 @@ class ViewState:
             elif self._pane_focus_num == 3:
                 self._pane_focus_num = 2
             else:
-                print("cannot move left")
+                mLo.Lo.print("cannot move left")
                 return False
         elif d == ViewState.PaneEnum.MOVE_RIGHT:
             if self._pane_focus_num == 0:
@@ -226,7 +233,7 @@ class ViewState:
             elif self._pane_focus_num == 2:
                 self._pane_focus_num = 3
             else:
-                print("cannot move right")
+                mLo.Lo.print("cannot move right")
                 return False
         return True
 
@@ -283,9 +290,7 @@ class ViewState:
             f"  Cursor pos (column, row): ({self.cursor_column}, {self.cursor_row}) or '{mCalc.Calc.get_cell_str(col=self.cursor_column, row=self.cursor_row)}'"
         )
         if self.column_split_mode == 1 and self.row_split_mode == 1:
-            print(
-                f"  Sheet is split vertically and horizontally at {self.vertical_split} / {self.horizontal_split}"
-            )
+            print(f"  Sheet is split vertically and horizontally at {self.vertical_split} / {self.horizontal_split}")
         elif self.column_split_mode == 1:
             print(f"  Sheet is split vertically at {self.vertical_split}")
         elif self.row_split_mode == 1:
@@ -301,9 +306,9 @@ class ViewState:
     def to_string(self) -> str:
         """
         Gets string Representation of object.
-        
+
         String representation can also be used to create a new instance of this class.
-        
+
         same as ``str(instance)``
         """
         lst = [

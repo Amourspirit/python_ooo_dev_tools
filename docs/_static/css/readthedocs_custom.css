@@ -226,3 +226,119 @@ ul.ul-list {
     padding: 1px;
     visibility: hidden;
 }
+
+
+/* Colors in theme_color_roles.txt */
+.t-black {
+    color: var(--t-color-black);
+}
+
+.t-gray {
+    color: var(--t-color-gray);
+}
+
+.t-silver {
+    color: var(--t-color-silver);
+}
+
+.t-white {
+    color: var(--t-color-white);
+}
+
+.t-maroon {
+    color: var(--t-color-maroon);
+}
+
+.t-red {
+    color: var(--t-color-red);
+}
+
+.t-magenta {
+    color: var(--t-color-megenta);
+}
+
+.t-fuchsia {
+    color: var(--t-color-fuchsia);
+}
+
+.t-pink {
+    color: var(--t-color-pink);
+}
+
+.t-orange {
+    color: var(--t-color-orang);
+}
+
+.t-yellow {
+    color: var(--t-color-yellow);
+}
+
+.t-lime {
+    color: (--t-color-lime);
+}
+
+.t-green {
+    color: var(--t-color-green);
+}
+
+.t-olive {
+    color: var(--t-color-olive);
+}
+
+.t-teal {
+    color: var(--t-color-teal);
+}
+
+.t-cyan {
+    color: var(--t-color-cyan);
+}
+
+.t-aqua {
+    color: var(--t-color-aqua);
+}
+
+.t-blue {
+    color: var(--t-color-blue);
+}
+
+.t-navy {
+    color: var(--t-color-navy);
+}
+
+.t-purple {
+    color: var(--t-color-purple);
+}
+
+/* End Colors in theme_color_roles.txt */
+
+/* Custom theme colors
+Thes are colors use with Theme and rst roles.
+Look for /roles/theme_color_roles.txt
+In other css files such as readthedocs_dark.css
+just override the colors listed here.
+typically in rst to set a color would be something like:
+:t_red:`All this text is in red`
+*/
+:root {
+    --t-color-black: black;
+    --t-color-gray: gray;
+    --t-color-silver: silver;
+    --t-color-white: white;
+    --t-color-maroon: maroon;
+    --t-color-red: red;
+    --t-color-megenta: magenta;
+    --t-color-fuchsia: fuchsia;
+    --t-color-pink: pink;
+    --t-color-orange: orange;
+    --t-color-yellow: yellow;
+    --t-color-lime: lime;
+    --t-color-green: green;
+    --t-color-olive: olive;
+    --t-color-teal: teal;
+    --t-color-cyan: cyan;
+    --t-color-aqua: aqua;
+    --t-color-blue: blue;
+    --t-color-navy: navy;
+    --t-color-purple: purple;
+}
+/* End Custom theme colors */

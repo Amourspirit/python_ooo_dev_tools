@@ -24,8 +24,10 @@ class ConnectorBridgeBase(ConnectorBase):
         self._start_as_service = bool(kwargs.get("start_as_service", False))
         self._start_office = bool(kwargs.get("start_office", True))
 
-        if "soffice" in kwargs:
-            self.soffice = kwargs["soffice"]
+        soffice = kwargs.get("soffice", None)
+        if soffice:
+            # allow empty string or None to be passed
+            self.soffice = soffice
 
     def update_startup_args(self, args: List[str]) -> None:
         if self.no_restore:
@@ -51,6 +53,10 @@ class ConnectorBridgeBase(ConnectorBase):
         except AttributeError:
             self._soffice = paths.get_soffice_path()
         return self._soffice
+
+    @soffice.setter
+    def soffice(self, value: Path | str):
+        self._soffice = Path(value)
 
     # region startup flags
     @property
@@ -141,6 +147,7 @@ class ConnectSocket(ConnectorBridgeBase):
             headless (bool, optional): Default ``False``
             start_as_service (bool, optional): Default ``False``
             start_office (bool, optional): Default ``True``
+            soffice: (Path | str, optional): Path to soffice
         """
         super().__init__(**kwargs)
         self._host = host
@@ -192,6 +199,7 @@ class ConnectPipe(ConnectorBridgeBase):
             headless (bool, optional): Default ``False``
             start_as_service (bool, optional): Default ``False``
             start_office (bool, optional): Default ``True``
+            soffice: (Path | str, optional): Path to soffice
         """
         super().__init__(**kwargs)
         if pipe is None:
