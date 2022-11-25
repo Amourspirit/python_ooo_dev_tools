@@ -1,0 +1,25 @@
+.. Definitions of interpreted text roles (classes) for S5/HTML Themed colors.
+.. These colors many be different in Dark Mode and Light Mode of theme.
+.. Theme Colours
+   =============
+
+.. role:: t_black
+.. role:: t_gray
+.. role:: t_silver
+.. role:: t_white
+.. role:: t_maroon
+.. role:: t_red
+.. role:: t_magenta
+.. role:: t_fuchsia
+.. role:: t_pink
+.. role:: t_orange
+.. role:: t_yellow
+.. role:: t_lime
+.. role:: t_green
+.. role:: t_olive
+.. role:: t_teal
+.. role:: t_cyan
+.. role:: t_aqua
+.. role:: t_blue
+.. role:: t_navy
+.. role:: t_purple

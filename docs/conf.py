@@ -122,9 +122,13 @@ html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
 
 html_css_files = ["https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"]
-html_css_files.append("css/readthedocs_custom.css")
 if html_theme == "sphinx_rtd_theme":
+    html_css_files.append("css/readthedocs_custom.css")
+
+if "sphinx_rtd_dark_mode" in extensions:
     html_css_files.append("css/readthedocs_dark.css")
+
+html_css_files.append("css/style_custom.css")
 
 html_js_files = [
     "js/custom.js",
@@ -192,7 +196,13 @@ autodoc_typehints_format = "short"
 # https://stackoverflow.com/questions/9698702/how-do-i-create-a-global-role-roles-in-sphinx
 # custom global roles or any other rst to include
 
+# sphonx includes s5defs.txt that has baked in roles but must be included.
+# style_custom.css contains the colors that match these roles
+# https://stackoverflow.com/questions/3702865/sphinx-restructuredtext-set-color-for-a-single-word/60991308#60991308
+
 rst_prolog_lst = [
+    ".. include:: <s5defs.txt>",
+    "",
     ".. role:: event(doc)",
     "",
     ".. role:: eventref(ref)",
@@ -212,9 +222,13 @@ rst_prolog_lst = [
 ]
 rst_prolog_lst.append(f".. |app_ver| replace:: {__version__}\n")
 
+# add extra roles for custom theme colors.
+# unlike the colors style_custom.css, these colors can be change by
+# changing colors css vars that start with -t-color-
+with open("roles/theme_color_roles.txt", "r") as file:
+    rst_prolog = file.read()
 
-rst_prolog = "\n".join(rst_prolog_lst)
-
+rst_prolog += "\n" + "\n".join(rst_prolog_lst)
 
 # set if figures can be referenced as numers. Defalut is False
 numfig = True
