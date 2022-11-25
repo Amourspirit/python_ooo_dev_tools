@@ -287,6 +287,8 @@ If the resulting spreadsheet is saved and this document is examined by the |stle
               --------|---------
               Default | Report
 
+.. _ch22_creating_new_style:
+
 22.2.1 Creating a New Style
 ---------------------------
 
@@ -367,6 +369,8 @@ The data properties are ``IsCellBackgroundTransparent``, ``CellBackColor``, and 
 Although ``IsCellBackgroundTransparent`` and ``CellBackColor`` are from the CellProperties_ class,
 ``ParaRightMargin`` is inherited from the ParagraphProperties_ class in the style module (also in :numref:`ch22fig_table_cell_style_srv`).
 
+.. _ch22_appling_new_style:
+
 22.2.2 Applying a New Style
 ---------------------------
 
@@ -427,6 +431,8 @@ and ``A2:A4`` is the first column. The data style is applied to ``B2:N4`` which 
 :py:meth:`.Calc.change_styles` manipulates the styles via the cell range.
 The ``cell_range`` variable refers to a SheetCellRange_ service which inherits many properties, including those from CellProperties_.
 Its ``CellStyle`` property holds the style name used by that cell range.
+
+.. _ch22_adding_borders:
 
 22.2.3 Adding Borders
 ---------------------
