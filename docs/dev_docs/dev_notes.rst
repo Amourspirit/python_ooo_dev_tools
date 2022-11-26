@@ -8,7 +8,7 @@ Virtual Environment
 
 `Poetry <https://python-poetry.org/>`_ is required to install this project in a development environment.
 
-Set up virtual environment if not existing.
+After https://github.com/Amourspirit/python_ooo_dev_tools is installed in a folder a virtual environment is set up if not existing then activated.
 
 Linux
 ^^^^^
