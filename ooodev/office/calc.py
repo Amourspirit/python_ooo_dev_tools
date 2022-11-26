@@ -879,6 +879,16 @@ class Calc:
             doc (XSpreadsheetDocument): Spreadsheet Document
             num_cols (int): Number of columns to freeze
             num_rows (int): Number of rows to freeze
+
+        Returns:
+            None:
+
+        See Also:
+
+            - :ref:`ch23_freezing_rows`
+            - :py:meth:`~.Calc.freeze_rows`
+            - :py:meth:`~.Calc.freeze_cols`
+            - :py:meth:`~.Calc.unfreeze`
         """
         ctrl = cls.get_controller(doc)
         if ctrl is None:
@@ -895,6 +905,16 @@ class Calc:
 
         Args:
             doc (XSpreadsheetDocument): Spreadsheet Document
+
+        Returns:
+            None:
+
+        See Also:
+
+            - :ref:`ch23_freezing_rows`
+            - :py:meth:`~.Calc.freeze`
+            - :py:meth:`~.Calc.freeze_rows`
+            - :py:meth:`~.Calc.freeze_cols`
         """
         ctrl = cls.get_controller(doc)
         if ctrl is None:
@@ -911,6 +931,16 @@ class Calc:
         Args:
             doc (XSpreadsheetDocument): Spreadsheet Document
             num_cols (int): Number of columns to freeze
+
+        Returns:
+            None:
+
+        See Also:
+
+            - :ref:`ch23_freezing_rows`
+            - :py:meth:`~.Calc.freeze`
+            - :py:meth:`~.Calc.freeze_rows`
+            - :py:meth:`~.Calc.unfreeze`
         """
         cls.freeze(doc=doc, num_cols=num_cols, num_rows=0)
 
@@ -922,6 +952,16 @@ class Calc:
         Args:
             doc (XSpreadsheetDocument): Spreadsheet Document
             num_rows (int): Number of rows to freeze
+
+        Returns:
+            None:
+
+        See Also:
+
+            - :ref:`ch23_freezing_rows`
+            - :py:meth:`~.Calc.freeze`
+            - :py:meth:`~.Calc.freeze_cols`
+            - :py:meth:`~.Calc.unfreeze`
         """
         cls.freeze(doc=doc, num_cols=0, num_rows=num_rows)
 
@@ -1010,6 +1050,12 @@ class Calc:
         Args:
             doc (XSpreadsheetDocument): Spreadsheet Document
             cell_name (str): Cell to preform split on. e.g. 'C4'
+
+        Returns:
+            None:
+
+        See Also:
+            :ref:`ch23_splitting_panes`
         """
         frame = cls.get_controller(doc).getFrame()
         cls.goto_cell(cell_name=cell_name, frame=frame)
@@ -3118,15 +3164,13 @@ class Calc:
         """
         # add the annotation
         addr = cls.get_cell_address(sheet=sheet, cell_name=cell_name)
-        anns_supp = mLo.Lo.qi(XSheetAnnotationsSupplier, sheet)
-        if anns_supp is None:
-            raise mEx.MissingInterfaceError(XSheetAnnotationsSupplier)
+        anns_supp = mLo.Lo.qi(XSheetAnnotationsSupplier, sheet, True)
         anns = anns_supp.getAnnotations()
         anns.insertNew(addr, msg)
 
         # get a reference to the annotation
         xcell = cls.get_cell(sheet=sheet, cell_name=cell_name)
-        ann_anchor = mLo.Lo.qi(XSheetAnnotationAnchor, xcell)
+        ann_anchor = mLo.Lo.qi(XSheetAnnotationAnchor, xcell, True)
         ann = ann_anchor.getAnnotation()
         ann.setIsVisible(is_visible)
         return ann
@@ -4292,11 +4336,12 @@ class Calc:
 
         Returns:
             XCellSeries: Cell series
+
+        See Also:
+            :ref:`ch24_generating_data`
         """
         cell_range = sheet.getCellRangeByName(range_name)
-        series = mLo.Lo.qi(XCellSeries, cell_range)
-        if series is None:
-            raise mEx.MissingInterfaceError(XCellSeries)
+        series = mLo.Lo.qi(XCellSeries, cell_range, True)
         return series
 
     # region    is_equal_addresses()
@@ -5163,8 +5208,9 @@ class Calc:
             Event args ``event_data`` is a dictionary containing ``color`` and ``border_vals``.
 
         See Also:
-            :py:meth:`~.calc.Calc.remove_border`
-            :py:meth:`~.calc.Calc.highlight_range`
+            - :py:meth:`~.calc.Calc.remove_border`
+            - :py:meth:`~.calc.Calc.highlight_range`
+            - :ref:`ch22_adding_borders`
         """
         ordered_keys = (1, 2, 3, 4)
         kargs_len = len(kwargs)
@@ -5545,7 +5591,8 @@ class Calc:
             Event args ``event_data`` is a dictionary containing ``color`` and ``headline``.
 
         See Also:
-            :py:meth:`~.calc.Calc.add_border`
+            - :py:meth:`~.calc.Calc.add_border`
+            - :ref:`ch24_creating_boder_headline`
         """
         ordered_keys = (1, 2, 3, 4)
         kargs_len = len(kwargs)
@@ -5855,6 +5902,9 @@ class Calc:
 
         Returns:
             float: result of function if successful. If there is an error then 0.0 is returned.
+
+        See Also:
+            :ref:`ch23_gen_func`
         """
         try:
             sheet_op = mLo.Lo.qi(XSheetOperation, cell_range, raise_err=True)

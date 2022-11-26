@@ -13,7 +13,7 @@ Chapter 23. Garlic Secrets
 This chapter's |g_secrets_py|_ example illustrates how data can be extracted from an existing spreadsheet (``produceSales.xlsx``) using ``general`` functions, sheet searching, and sheet range queries.
 It also has more examples of cell styling, and demonstrates sheet freezing, view pane splitting, pane activation, and the insertion of new rows into a sheet.
 
-The idea for this chapter, and the data, comes from the Excel example in chapter 12 of "Automate the Boring Stuff with Python" by Al :spelling:word:`Sweigart`. However, he utilized the Python library OpenPyXL to manipulate his file.
+The idea for this chapter, and the data, comes from the Excel example in "Automate the Boring Stuff with Python" by Al :spelling:word:`Sweigart`, `chapter 13 <https://automatetheboringstuff.com/2e/chapter13/#calibre_link-437>`__. However, he utilized the Python library OpenPyXL to manipulate his file.
 
 The beginning of the spreadsheet is shown in :numref:`ch23fig_part_product_sheet`.
 
@@ -105,7 +105,7 @@ I'll explain the commented out parts in later sections:
 :py:meth:`.Calc.freeze_rows` specifies the number of rows that should be ``frozen`` on-screen as Office's view of the spreadsheet changes (:abbreviation:`i.e.` when the user scrolls downwards).
 The function's argument is the number of rows to freeze, not a row index, and the choice of which rows are frozen depends on which row is currently selected (active) in the application window when the function is called.
 
-The earlier call to :abbreviation:`i.e.`Calc.goto_cell` in ``main()`` means that ``A1`` is the active cell in the spreadsheet,
+The earlier call to :abbreviation:`i.e.` :py:meth:`.Calc.goto_cell` in ``main()`` means that ``A1`` is the active cell in the spreadsheet,
 and so row ``1`` is the active row (and ``A`` the active column).
 For that reason, ``Calc.freeze_rows(doc=doc, num_rows=1)`` will freeze rows ``1``, ``2``, and ``3`` so they remain in view when the spreadsheet is scrolled up or down.
 
@@ -366,7 +366,7 @@ The change made by ``_increase_garlic_cost()`` are of a top-secret nature, and s
 
             .. group-tab:: None
 
-:py:meth:`.Calc.find_empty_row`` returns the index of the first empty row in the sheet, which happens to be the first row after the end of the data.
+:py:meth:`.Calc.find_empty_row` returns the index of the first empty row in the sheet, which happens to be the first row after the end of the data.
 It passes the index to ``_add_garlic_label()`` which inserts the large red text ``Top Secret Garlic Changes`` into the first cell on the row.
 The message is so big that several cells are merged together to make enough space; the row's height is also increased.
 The result is shown in :numref:`ch32fig_msg_end_sheet`.
