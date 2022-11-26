@@ -159,7 +159,7 @@ The ``A1:E8`` cell range referenced using the XCellRange_ interface is converted
 This interface is defined in Office's util module, not in sheet or table, probably because it's also used in text documents for sorting tables.
 
 The two sorting criteria are represented by two TableSortField_ objects in tuple.
-The ``_make_sort_asc()`` function is defined in |d_sort_py| as:
+The ``_make_sort_asc()`` function is defined in |d_sort_py|_ as:
 
 .. tabs::
 
@@ -263,7 +263,7 @@ For example, rows ``7``, ``8``, and ``9`` of :numref:`ch24fig_filler_py_sheet_de
 
 The supplied cell range (``A7:G9``) includes the seed values, and the cells to be filled.
 
-It's converted into an XCellSeries_ interface by Calc.getCellSeries(), which is defined as:
+It's converted into an XCellSeries_ interface by :py:meth:`.Calc.get_cell_series`, which is defined as:
 
 .. tabs::
 
@@ -304,7 +304,7 @@ If ``XCellSeries.fillAuto()`` doesn't guess the correct series for the data gene
 It supports five modes: ``SIMPLE``, ``LINEAR`` , ``GROWTH``, ``DATE``, and ``AUTO``.
 
 ``SIMPLE`` switches off the series generator, and the seed data is copied unchanged to the other blank cells.
-``AUTO`` makes Office generate its data series automatically, so performs in the same way as fillAuto().
+``AUTO`` makes Office generate its data series automatically, so performs in the same way as ``fillAuto()``.
 ``LINEAR`` , ``GROWTH``, and ``DATE`` give more control to the programmer.
 
 24.2.1 Using the LINEAR Mode
@@ -370,7 +370,9 @@ For example, the seed date at the start of row ``4`` (``20th Nov. 2015``) can be
 
         # fill by adding one month to date
         series = Calc.get_cell_series(sheet=sheet, range_name="A4:E4")
-        series.fillSeries(FillDirection.TO_RIGHT, FillMode.DATE, FillDateMode.FILL_DATE_MONTH, 1, Calc.MAX_VALUE)
+        series.fillSeries(
+            FillDirection.TO_RIGHT, FillMode.DATE, FillDateMode.FILL_DATE_MONTH, 1, Calc.MAX_VALUE
+        )
 
     .. only:: html
 
@@ -431,7 +433,7 @@ The resulting sheet is shown in :numref:`ch24fig_data_gen_growth_mode`.
 
     .. _ch24fig_data_gen_growth_mode:
     .. figure:: https://user-images.githubusercontent.com/4193389/204060246-c6b9b4e6-3e54-4c61-9171-874e24ecad34.png
-        :alt:Data Generation Using the GROWTH Mode.
+        :alt: Data Generation Using the GROWTH Mode.
         :figclass: align-center
 
         :Data Generation Using the GROWTH Mode.
@@ -592,6 +594,12 @@ The definition for this version of :py:meth:`~.Calc.get_cell` is:
 
             .. group-tab:: None
 
+.. seealso::
+
+    .. cssclass:: src-link
+
+        :odev_src_calc_meth:`get_cell`
+
 A position in a cell range (:abbreviation:`i.e.` a (column, row) coordinate) is defined relative to the cell range.
 This means that the call: ``first_cell = cls.get_cell(cell_range=headerRange, col=0, row=0)`` is requesting the top-left cell in ``headerRange``.
 Since the ``headerRange`` covers ``A2:C2``, (``0``, ``0``) means the ``A2`` cell.
@@ -696,8 +704,7 @@ The call to ``XText.getString()`` returns all the text, which is printed as:
 
 ::
 
-    Cell Text: "Text in first line.
-    And a hypertext"
+    Cell Text: "Text in first line. And a hypertext"
 
 The text can also be examined by moving a text cursor through it:
 
@@ -744,7 +751,9 @@ and a new one is added by supplying the annotation text and the address of the c
 
         # in Calc class
         @classmethod
-        def add_annotation(cls, sheet: XSpreadsheet, cell_name: str, msg: str, is_visible=True) -> XSheetAnnotation:
+        def add_annotation(
+            cls, sheet: XSpreadsheet, cell_name: str, msg: str, is_visible=True
+        ) -> XSheetAnnotation:
             # add the annotation
             addr = cls.get_cell_address(sheet=sheet, cell_name=cell_name)
             anns_supp = Lo.qi(XSheetAnnotationsSupplier, sheet, True)
@@ -770,8 +779,6 @@ XCell_ is converted into a XSheetAnnotationAnchor_, which has a ``getAnnotation(
 
 XSheetAnnotation_ has several methods for obtaining information about the position, author, and modification date of the annotation.
 ``setIsVisible()`` allows its visibility to be switched on and off.
-
-Work in progress ...
 
 .. |c_txt| replace:: Cell Texts
 .. _c_txt: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/calc/odev_cell_texts
