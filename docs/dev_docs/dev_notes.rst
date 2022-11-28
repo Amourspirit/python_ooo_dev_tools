@@ -93,7 +93,7 @@ Original may look something like:
     include-system-site-packages = false
     version = 3.9.7
 
-Change to: With the version that is the same as current LibreOffice Version
+Change ``home`` and ``version`` using the current LibreOffice Version:
 
 .. code-block:: text
 
