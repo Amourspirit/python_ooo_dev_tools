@@ -8,7 +8,7 @@ Virtual Environment
 
 `Poetry <https://python-poetry.org/>`_ is required to install this project in a development environment.
 
-Clone or unzip `https://github.com/Amourspirit/python_ooo_dev_tools`_ to a new folder, set up a virtual environment if it is not set up, then activate virtual environment.
+Clone or unzip `<https://github.com/Amourspirit/python_ooo_dev_tools>`__ to a new folder, set up a virtual environment if it is not set up, then activate virtual environment.
 
 Linux
 ^^^^^
@@ -89,11 +89,11 @@ Original may look something like:
 
 .. code-block:: text
 
-    home = C:\ProgramData\Miniconda3
+    home = C:\Users\User\AppData\Local\Programs\Python\Python310
     include-system-site-packages = false
-    version = 3.9.7
+    version = 3.10.1
 
-Change to: With the version that is the same as current LibreOffice Version
+Change ``home`` and ``version`` using the current LibreOffice Version:
 
 .. code-block:: text
 
