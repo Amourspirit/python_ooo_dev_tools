@@ -278,6 +278,7 @@ Event listensers must be static method or stand alone functions.
 
     .. code-tab:: python
 
+        # in start.py
         def main_loop() -> None:
             dw = DocWindow()
 
