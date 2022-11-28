@@ -6,11 +6,11 @@ from __future__ import annotations
 import contextlib
 from weakref import ref, ReferenceType, proxy
 from typing import Any, Dict, List, NamedTuple, Generator
-from .args.event_args import EventArgs
-
-from ..utils.type_var import EventCallback as EventCallback
-from ..proto import event_observer
 from . import event_singleton
+from ..proto import event_observer
+from ..utils.type_var import EventCallback as EventCallback
+from .args.event_args import EventArgs
+from .args.generic_args import GenericArgs as GenericArgs
 
 
 class EventArg(NamedTuple):
@@ -130,7 +130,7 @@ class Events(_event_base):
     # is still holding on to it.
     # In short, do not change this class!
 
-    def __init__(self, source: Any | None = None) -> None:
+    def __init__(self, source: Any | None = None, trigger_args: GenericArgs | None = None) -> None:
         """
         Construct for Events
 
@@ -138,18 +138,26 @@ class Events(_event_base):
             source (Any | None, optional): Source can be class or any object.
                 The value of ``source`` is the value assigned to the ``EventArgs.event_source`` property.
                 Defaults to current instance of this class.
+            event_args (GenericArgs, Optional): Args that are passed to events when they are triggered.
         """
         super().__init__()
         self._source = source
+        self._t_args = trigger_args
         # register wih LoEvents so this instance get triggered when LoEvents() are triggered.
         LoEvents().add_observer(self)
 
+    def trigger(self, event_name: str, event_args: EventArgs):
+        if self._t_args is None:
+            super().trigger(event_name=event_name, event_args=event_args)
+        else:
+            super().trigger(event_name, event_args, *self._t_args.args, **self._t_args.kwargs)
 
     def _set_event_args(self, event_name: str, event_args: EventArgs) -> None:
         if event_args is None:
             return
         event_args._event_name = event_name
         event_args._event_source = self if self._source is None else self._source
+
 
 class LoEvents(_event_base):
     """Singleton Class for ODEV global events."""
