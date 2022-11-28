@@ -28,88 +28,243 @@ or using |dsearch|_.
 The top-level document window can be monitored for changes using XTopWindowListener_, which responds to modifications of the window`s state,
 such as when it is opened, closed, minimized, and made active.
 
-The following class from the |exlisten|_ example illustrates how to use the listener. ``DocWindow`` inherits from :py:class:`~.x_top_window_adapter.XTopWindowAdapter`
-which is a simple adapter of XTopWindowListener_ class.
+|odev| has implement some listeners in the :ref:`adapter` namespace such as |top_window_listener|. The listeners in the :ref:`adapter` namespace
+simpilify working with listeners.
+
+
+|exlisten|_ example illustrates two different ways to add listeners.
+
+In the case of |doc_window|_ class it inherits XTopWindowListener_ class and thus must implement all methods in XTopWindowListener_ and its parent classes. 
+
+With |doc_window_adapter|_ it is not necessary to implement XTopWindowListener_ methods.
+Only the desired events can be subscribed to via |top_window_listener| class.
+
+Another advantage of using listeners from :ref:`adapter` namespace is many listeners can be used inside a single class if needed.
+For example |exmonitor|_ uses |terminate_listener| and |event_listener|.
+
+.. tabs::
+
+    .. group-tab:: Python
+
+        .. tabs::
+
+            .. tab:: DocWindow
+
+                .. code-block:: python
+
+                    from __future__ import annotations
+                    from typing import TYPE_CHECKING
+                    import unohelper
+
+                    from ooodev.office.write import Write
+                    from ooodev.utils.gui import GUI
+                    from ooodev.utils.lo import Lo
+
+                    from com.sun.star.awt import XExtendedToolkit
+                    from com.sun.star.awt import XTopWindowListener
+                    from com.sun.star.awt import XWindow
+
+                    if TYPE_CHECKING:
+                        from com.sun.star.lang import EventObject
+
+
+                    class DocWindow(unohelper.Base, XTopWindowListener):
+                        def __init__(self) -> None:
+                            super().__init__()
+                            self.closed = False
+                            loader = Lo.load_office(Lo.ConnectPipe())
+                            self.doc = Write.create_doc(loader=loader)
+
+                            self.tk = Lo.create_instance_mcf(XExtendedToolkit, "com.sun.star.awt.Toolkit")
+                            if self.tk is not None:
+                                self.tk.addTopWindowListener(self)
+
+                            GUI.set_visible(True, self.doc)
+                            # triggers 2 opened and 2 activated events
+
+                        def windowOpened(self, event: EventObject) -> None:
+                            """is invoked when a window is activated."""
+                            print("WL: Opened")
+                            xwin = Lo.qi(XWindow, event.Source)
+                            GUI.print_rect(xwin.getPosSize())
+
+                        def windowActivated(self, event: EventObject) -> None:
+                            """is invoked when a window is activated."""
+                            print("WL: Activated")
+                            print(f"  Titile bar: {GUI.get_title_bar()}")
+
+                        def windowDeactivated(self, event: EventObject) -> None:
+                            """is invoked when a window is deactivated."""
+                            print("WL: Minimized")
+
+                        def windowMinimized(self, event: EventObject) -> None:
+                            """is invoked when a window is iconified."""
+                            print("WL:  De-activated")
+
+                        def windowNormalized(self, event: EventObject) -> None:
+                            """is invoked when a window is deiconified."""
+                            print("WL: Normalized")
+
+                        def windowClosing(self, event: EventObject) -> None:
+                              print("WL: Closing")
+
+                        def windowClosed(self, event: EventObject) -> None:
+                            """is invoked when a window has been closed."""
+                            if not self.closed:
+                                print("WL: Closed")
+                                self.closed = True
+
+                        def disposing(self, event: EventObject) -> None:
+                            print("WL: Disposing")
+
+            .. tab:: DocWindowAdapter
+
+                .. code-block:: python
+
+                    from __future__ import annotations
+                    from typing import TYPE_CHECKING, Any, cast
+
+                    from ooodev.adapter.awt.top_window_listener import (
+                        TopWindowListener, EventArgs, GenericArgs
+                    )
+                    from ooodev.office.write import Write
+                    from ooodev.utils.gui import GUI
+                    from ooodev.utils.lo import Lo
+
+                    from com.sun.star.awt import XWindow
+
+                    if TYPE_CHECKING:
+                        from com.sun.star.lang import EventObject
+
+                    class DocWindowAdapter:
+                        def __init__(self) -> None:
+                            super().__init__()
+                            self.closed = False
+                            loader = Lo.load_office(Lo.ConnectPipe())
+                            self.doc = Write.create_doc(loader=loader)
+
+                            self._twl = TopWindowListener(trigger_args=GenericArgs(listener=self))
+                            self._twl.on("windowOpened", DocWindowAdapter.on_window_opened)
+                            self._twl.on("windowActivated", DocWindowAdapter.on_window_activated)
+                            self._twl.on("windowDeactivated", DocWindowAdapter.on_window_deactivated)
+                            self._twl.on("windowMinimized", DocWindowAdapter.on_window_minimized)
+                            self._twl.on("windowNormalized", DocWindowAdapter.on_window_normalized)
+                            self._twl.on("windowClosing", DocWindowAdapter.on_window_closing)
+                            self._twl.on("windowClosed", DocWindowAdapter.on_window_closed)
+                            self._twl.on("disposing", DocWindowAdapter.on_disposing)
+
+                            GUI.set_visible(True, self.doc)
+                            # triggers 2 opened and 2 activated events
+
+                        @staticmethod
+                        def on_window_opened(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                            """is invoked when a window is activated."""
+                            event = cast("EventObject", event_args.event_data)
+                            print("WA: Opened")
+                            xwin = Lo.qi(XWindow, event.Source)
+                            GUI.print_rect(xwin.getPosSize())
+
+                        @staticmethod
+                        def on_window_activated(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                            """is invoked when a window is activated."""
+                            print("WA: Activated")
+                            print(f"  Titile bar: {GUI.get_title_bar()}")
+
+                        @staticmethod
+                        def on_window_deactivated(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                            """is invoked when a window is deactivated."""
+                            print("WA: Minimized")
+
+                        @staticmethod
+                        def on_window_minimized(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                            """is invoked when a window is iconified."""
+                            print("WA:  De-activated")
+
+                        @staticmethod
+                        def on_window_normalized(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                            """is invoked when a window is deiconified."""
+                            print("WA: Normalized")
+
+                        @staticmethod
+                        def on_window_closing(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                            print("WA: Closing")
+
+                        @staticmethod
+                        def on_window_closed(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                            """is invoked when a window has been closed."""
+                            dw = cast(DocWindowAdapter, kwargs["listener"])
+                            if not dw.closed:
+                                dw.closed = True
+                                print("WA: Closed")
+
+                        @staticmethod
+                        def on_disposing(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                            print("WA: Disposing")
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+In :ref:`adapter` listeners the Original ``EventObject`` data is always available via :py:attr:`.EventArgs.event_data`
+as demonstrated below in ``on_window_opened()``.
+
+.. tabs::
+
+    .. code-tab:: python
+        :emphasize-lines: 5
+
+        # in DocWindowAdapter class
+        @staticmethod
+        def on_window_opened(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+            """is invoked when a window is activated."""
+            event = cast("EventObject", event_args.event_data)
+            print("WA: Opened")
+            xwin = Lo.qi(XWindow, event.Source)
+            GUI.print_rect(xwin.getPosSize())
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+Extra data can be passed to listener events via ``trigger_args`` parameter and |generic_args| class instance.
 
 .. tabs::
 
     .. code-tab:: python
 
-        #!/usr/bin/env python
-        # coding: utf-8
-        from __future__ import annotations
-        import time
-        import sys
-        from typing import TYPE_CHECKING
+        # in DocWindowAdapter.__init__()
+        # ...
+        self._twl = TopWindowListener(trigger_args=GenericArgs(listener=self))
+        # ...
 
-        from ooodev.utils.lo import Lo
-        from ooodev.utils.gui import GUI
-        from ooodev.office.write import Write
-        from ooodev.listeners.x_top_window_adapter import XTopWindowAdapter
+    .. only:: html
 
-        from com.sun.star.awt import XExtendedToolkit
-        from com.sun.star.awt import XWindow
+        .. cssclass:: tab-none
 
-        if TYPE_CHECKING:
-            # only need types in design time and not at run time.
-            from com.sun.star.lang import EventObject
+            .. group-tab:: None
 
-        class DocWindow(XTopWindowAdapter):
-            def __init__(self) -> None:
-                super().__init__()
-                self.closed = False
-                loader = Lo.load_office(Lo.ConnectPipe())
-                self.tk = Lo.create_instance_mcf(XExtendedToolkit, "com.sun.star.awt.Toolkit")
-                if self.tk is not None:
-                    self.tk.addTopWindowListener(self)
 
-                self.doc = Write.create_doc(loader=loader)
+``trigger_args`` passed to listeners can be retrived eaisily.
+In the following case it allows an instance of ``DocWindowAdapter`` to be passed to event listeners.
+Event listensers must be static method or stand alone functions.
 
-                GUI.set_visible(True, self.doc)
-                # triggers 2 opened and 2 activated events
 
-            def windowOpened(self, event: EventObject) -> None:
-                """is invoked when a window is activated."""
-                print("WL: Opened")
-                xwin = Lo.qi(XWindow, event.Source)
-                GUI.print_rect(xwin.getPosSize())
+.. tabs::
 
-            def windowActivated(self, event: EventObject) -> None:
-                """is invoked when a window is activated."""
-                print("WL: Activated")
-                print(f"  Titile bar: {GUI.get_title_bar()}")
+    .. code-tab:: python
+        :emphasize-lines: 5
 
-            def windowDeactivated(self, event: EventObject) -> None:
-                """is invoked when a window is deactivated."""
-                print("WL: Minimized")
-
-            def windowMinimized(self, event: EventObject) -> None:
-                """is invoked when a window is iconified."""
-                print("WL:  De-activated")
-
-            def windowNormalized(self, event: EventObject) -> None:
-                """is invoked when a window is deiconified."""
-                print("WL: Normalized")
-
-            def windowClosing(self, event: EventObject) -> None:
-                """
-                is invoked when a window is in the process of being closed.
-
-                The close operation can be overridden at this point.
-                """
-                print("WL: Closing")
-
-            def windowClosed(self, event: EventObject) -> None:
-                """is invoked when a window has been closed."""
-                print("WL: Closed")
-                self.closed = True
-
-            def disposing(self, event: EventObject) -> None:
-                """
-                gets called when the broadcaster is about to be disposed.
-
-                """
-                print("WL: Disposing")
+        # in DocWindowAdapter class
+        @staticmethod
+        def on_window_closed(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+            """is invoked when a window has been closed."""
+            dw = cast(DocWindowAdapter, kwargs["listener"])
+            dw.closed = True
+            print("WA: Closed")
 
     .. only:: html
 
@@ -686,8 +841,20 @@ and these can be easily translated into key presses and releases in :external+od
 .. |exlisten| replace:: Office Window Listener
 .. _exlisten: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/general/odev_listen
 
+.. |doc_window| replace:: DocWindow
+.. _doc_window: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/general/odev_listen/doc_window.py
+
+.. |doc_window_adapter| replace:: DocWindowAdapter
+.. _doc_window_adapter: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/general/odev_listen/doc_window_adapter.py
+
 .. |exmonitor| replace:: Office Window Monitor
 .. _exmonitor: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/general/odev_monitor
+
+.. |top_window_listener| replace:: :ref:`TopWindowListener <adapter_awt_top_window_listener>`
+.. |terminate_listener| replace:: :ref:`TerminateListener <adapter_frame_terminate_listener>`
+.. |event_listener| replace:: :ref:`EventListener <adapter_lang_event_listener>`
+.. |generic_args| replace:: :ref:`GenericArgs <events_args_generic_args>`
+
 
 .. _XDispatchProvider: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1frame_1_1XDispatchProvider.html
 .. _XDispatchHelper: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1frame_1_1XDispatchHelper.html
