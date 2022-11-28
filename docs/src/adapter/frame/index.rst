@@ -1,0 +1,8 @@
+frame
+=====
+
+.. toctree::
+    :titlesonly:
+    :glob:
+
+    *

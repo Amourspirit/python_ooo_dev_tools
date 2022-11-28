@@ -8,7 +8,7 @@ import sys
 if __name__ == "__main__":
     pytest.main([__file__])
 
-from ooodev.events.lo_events import Events
+from ooodev.events.lo_events import Events, GenericArgs
 from ooodev.events.args.event_args import EventArgs
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 
@@ -29,21 +29,23 @@ def test_event() -> None:
 def test_event_cls_extra_arg() -> None:
     class MyClass:
         def __init__(self) -> None:
-            self.events = Events()
+            self.events = Events(trigger_args=GenericArgs(self))
             self.fired = False
             self.events.on("ev", MyClass.on_ev)
 
         def trigger(self) -> None:
-            self.events.trigger("ev", EventArgs(self.__class__.__name__), self)
+            self.events.trigger("ev", EventArgs(self.__class__.__name__))
 
         @staticmethod
-        def on_ev(source, event: EventArgs, instance: MyClass) -> None:
+        def on_ev(source, event: EventArgs, *args, **kwargs) -> None:
+            instance = args[0]
             instance.fired = True
 
     clazz = MyClass()
     assert clazz.fired is False
     clazz.trigger()
     assert clazz.fired is True
+
 
 def test_event_cls_source() -> None:
     class MyClass:
@@ -64,18 +66,20 @@ def test_event_cls_source() -> None:
     clazz.trigger()
     assert clazz.fired is True
 
+
 def test_event_cls_extra_kwarg() -> None:
     class MyClass:
         def __init__(self) -> None:
-            self.events = Events()
+            self.events = Events(trigger_args=GenericArgs(myclass=self))
             self.fired = False
             self.events.on("ev", MyClass.on_ev)
 
         def trigger(self) -> None:
-            self.events.trigger(event_name="ev", event_args=EventArgs(self.__class__.__name__), instance=self)
+            self.events.trigger(event_name="ev", event_args=EventArgs(self.__class__.__name__))
 
         @staticmethod
-        def on_ev(source, event: EventArgs, instance: MyClass) -> None:
+        def on_ev(source, event: EventArgs, *args, **kwargs) -> None:
+            instance = kwargs["myclass"]
             instance.fired = True
 
     clazz = MyClass()
@@ -104,6 +108,7 @@ def test_event_cls() -> None:
     assert clazz.fired is False
     clazz.trigger()
     assert clazz.fired is True
+
 
 def test_event_new_doc(loader) -> None:
     from ooodev.utils.lo import Lo
