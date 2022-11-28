@@ -4,11 +4,11 @@ Dev Docs
 Virtual Environment
 -------------------
 
-|odev| use a virtual environment for development purposes.
+|odev| uses a virtual environment for development purposes.
 
 `Poetry <https://python-poetry.org/>`_ is required to install this project in a development environment.
 
-Set up virtual environment if not existing.
+Clone or unzip `https://github.com/Amourspirit/python_ooo_dev_tools`_ to a new folder, set up a virtual environment if it is not set up, then activate virtual environment.
 
 Linux
 ^^^^^
@@ -202,7 +202,7 @@ Doc Spelling
 Manual spell check
 """"""""""""""""""
 
-Document are spelled check before commit by default when `Hooks` are set up.
+Documents are spelled checked before commit by default when `Hooks` are set up.
 
 Manual spell check can be run in a ``./docs`` terminal Windows.
 
