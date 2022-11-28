@@ -1,3 +1,5 @@
+.. _adapter_frame_terminate_listener:
+
 Class TerminateListener
 =======================
 
