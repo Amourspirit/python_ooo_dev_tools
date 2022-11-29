@@ -453,3 +453,9 @@ class DispatchError(Exception):
     """Generic error when an error occurs while dispatching"""
 
     pass
+
+
+class ConvertPathError(OSError):
+    """Path Conversion Error"""
+
+    pass
