@@ -6,7 +6,7 @@ Chapter 4. Listening, and Other Techniques
 
 .. topic:: Window Listeners;
 
-    Window Listeners; |odev| Events
+    Window Listeners and |odev| Events.
 
     Examples: |ex_dispatch|_, |exlisten|_, |doc_window|_, |exmonitor|_.
 
@@ -211,6 +211,26 @@ For example |exmonitor|_ uses |terminate_listener| and |event_listener|.
         .. cssclass:: tab-none
 
             .. group-tab:: None
+
+To subscribe to an event of a listener always subscribe to the listener method name.
+In the following example |top_window_listener| class implements XTopWindowListener_.
+Subscribing to an event is a matter of calling ``on()`` and passing it the exact name of the method.
+This is true for all listeners in the :ref:`adapter` namespace.
+In this example the method subscribed to is ``windowOpened``.
+
+.. tabs::
+
+    .. code-tab:: python
+
+        self._twl = TopWindowListener(trigger_args=GenericArgs(listener=self))
+        self._twl.on("windowOpened", DocWindowAdapter.on_window_opened)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 
 In :ref:`adapter` listeners the Original ``EventObject`` data is always available via :py:attr:`.EventArgs.event_data`
 as demonstrated below in ``on_window_opened()``.
