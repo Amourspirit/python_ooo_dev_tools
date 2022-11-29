@@ -15,12 +15,14 @@ from com.sun.star.io import XActiveDataSink
 from com.sun.star.io import XTextInputStream
 from com.sun.star.packages.zip import XZipFileAccess
 from com.sun.star.uno import Exception as UnoException
+from com.sun.star.uno import RuntimeException as UnoRuntimeException
 
 if TYPE_CHECKING:
     from com.sun.star.container import XNameAccess
     from com.sun.star.io import XInputStream
 
 from . import lo as mLo
+from ..exceptions import ex as mEx
 
 from .type_var import PathOrStr, Table
 
@@ -122,10 +124,16 @@ class FileIO:
             uri_fnm (str): URI to convert
             ensure_absolute (bool): If ``True`` then ensures that the return path is absolute. Default is ``True``
 
+        Raises:
+            ConvertPathError: If unable to convert.
+
         Returns:
             Path: Converted URI as path.
         """
-        sys_path = uno.fileUrlToSystemPath(str(uri_fnm))
+        try:
+            sys_path = uno.fileUrlToSystemPath(str(uri_fnm))
+        except UnoRuntimeException:
+            raise mEx.ConvertPathError(f'Couldn\'t convert file url to a system path: uri_fnm="{uri_fnm}"')
 
         p = Path(sys_path)
         if not ensure_absolute:
