@@ -42,7 +42,7 @@ class AdapterBase(unohelper.Base):
         Adds a listener for an event
 
         Args:
-            event_name (str): Event name to add listener for. Usually the name of the method being listnened to such as ``windowOpened``
+            event_name (str): Event name to add listener for. Usually the name of the method being listened to such as ``windowOpened``
             cb (EventCallback): Callback event.
         """
         self._events.on(event_name, cb)

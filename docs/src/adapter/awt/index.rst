@@ -1,3 +1,6 @@
+.. spelling:word-list::
+    awt
+
 awt
 ===
 
