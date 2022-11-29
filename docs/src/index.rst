@@ -16,6 +16,7 @@ ooodev
    exceptions/index
    dialog/index
    events/index
+   adapter/index
    listeners/index
    formatters/index
    wrapper/index

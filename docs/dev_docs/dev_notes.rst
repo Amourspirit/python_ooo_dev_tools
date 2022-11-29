@@ -4,11 +4,11 @@ Dev Docs
 Virtual Environment
 -------------------
 
-|odev| use a virtual environment for development purposes.
+|odev| uses a virtual environment for development purposes.
 
 `Poetry <https://python-poetry.org/>`_ is required to install this project in a development environment.
 
-Set up virtual environment if not existing.
+Clone or unzip `<https://github.com/Amourspirit/python_ooo_dev_tools>`__ to a new folder, set up a virtual environment if it is not set up, then activate virtual environment.
 
 Linux
 ^^^^^
@@ -89,11 +89,11 @@ Original may look something like:
 
 .. code-block:: text
 
-    home = C:\ProgramData\Miniconda3
+    home = C:\Users\User\AppData\Local\Programs\Python\Python310
     include-system-site-packages = false
-    version = 3.9.7
+    version = 3.10.1
 
-Change to: With the version that is the same as current LibreOffice Version
+Change ``home`` and ``version`` using the current LibreOffice Version:
 
 .. code-block:: text
 
@@ -202,7 +202,7 @@ Doc Spelling
 Manual spell check
 """"""""""""""""""
 
-Document are spelled check before commit by default when `Hooks` are set up.
+Documents are spelled checked before commit by default when `Hooks` are set up.
 
 Manual spell check can be run in a ``./docs`` terminal Windows.
 

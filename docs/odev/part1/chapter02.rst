@@ -9,7 +9,7 @@ Chapter 2. Starting and Stopping
 
     Starting Office; Closing Down/Killing Office; Opening a Document; Creating a Document; Saving; Closing; Document Conversion; Bug Detection and Reporting
 
-Chapter 1 introduced some of the core ideas of Office.
+:ref:`ch01` introduced some of the core ideas of Office.
 Now it's time to show how these data structures and relationships (e.g. service, interfaces, FCM, inheritance)
 are programmed in |app_name_bold| (|odev|) API.
 
@@ -150,17 +150,18 @@ See |convert_doc|_ for an example.
 It is also simple to start LibreOffice from the command line automate tasks and leave it open for user input.
 See `Calc Add Range of Data Automation <https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/calc/odev_add_range_data>`_ for an example.
 
-.. todo::
-
-    Update info on building macro scripts
-
 There is of course running as a macro as well.
-Currently there is not of ways to pack |odev| scripts for usage as a macro.
-The |unoex|_ project is one way to compile scripts into a single script, and uses stickytape_ under the hood.
-Efforts are on the way to make this a much simpler process for macros. If not using |odev| for macros
-then this is not a issue.
-See `Calc Add Range of Data Example <https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/calc/odev_add_range_data>`_
-for a macro example in |unoex|_.
+
+Running a project with several modules can be a bit daunting task.
+For this reason oooscript_ was created, which can easily pack several scripts into one script and embed the result into a LibreOfice Document.
+
+The easiest way to run a several module/class project in LibreOffice is to pack into a single script first.
+Many examples can be found on |lo_uno_ex|_,
+such as |lo_uno_calc_ex|_, |lo_uno_sudoku|_, |lo_uno_tab_control|_.
+
+.. seealso::
+
+    :py:class:`~.utils.session.Session` and |lo_uno_shared_acc|_
 
 Macros only need use use ``Lo.ThisComponent`` as show below.
 
@@ -762,6 +763,20 @@ The function's code is in EnvStack.cxx, which can be examined by clicking on the
 .. |extract_graphics_py| replace:: extract_graphics.py
 .. _extract_graphics_py: https://github.com/Amourspirit/python-ooouno-ex/blob/main/ex/auto/writer/odev_extract_graphics/extract_graphics.py
 
+.. |lo_uno_ex| replace:: LibreOffice Python UNO Examples
+.. _lo_uno_ex: https://github.com/Amourspirit/python-ooouno-ex
+
+.. |lo_uno_calc_ex| replace::  Calc Add Range of Data Example
+.. _lo_uno_calc_ex: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/calc/odev_add_range_data
+
+.. |lo_uno_sudoku| replace:: LibreOffice Calc Sudoku Example
+.. _lo_uno_sudoku: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/calc/sudoku
+
+.. |lo_uno_tab_control| replace:: TAB Control Dialog Box Example
+.. _lo_uno_tab_control: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/general/tab_dialog
+
+.. |lo_uno_shared_acc| replace:: Shared Library Access Example
+.. _lo_uno_shared_acc: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/general/odev_share_lib
 
 .. |XStorable| replace:: XStorable
 .. _XStorable: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1frame_1_1XStorable.html
@@ -771,7 +786,7 @@ The function's code is in EnvStack.cxx, which can be examined by clicking on the
 
 .. _NirSoft: https://www.nirsoft.net/
 
-.. _stickytape: https://pypi.org/project/stickytape/
+.. _oooscript: https://pypi.org/project/oooscript/
 
 .. _PropertyValue: https://api.libreoffice.org/docs/idl/ref/structcom_1_1sun_1_1star_1_1beans_1_1PropertyValue.html
 .. _XCloseable: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1util_1_1XCloseable.html

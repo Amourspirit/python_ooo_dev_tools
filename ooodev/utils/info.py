@@ -476,7 +476,7 @@ class Info(metaclass=StaticProperty):
     def get_office_dir(cls) -> str:
         """
         Gets file path to the office dir.
-        e.g. ``"C:\Program Files (x86)\LibreOffice 7"``
+        e.g. ``"C:\\Program Files (x86)\\LibreOffice 7"``
 
         Raises:
             ValueError: if unable to obtain office path.

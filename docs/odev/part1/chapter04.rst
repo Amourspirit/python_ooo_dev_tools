@@ -8,7 +8,11 @@ Chapter 4. Listening, and Other Techniques
 
     Window Listeners; |odev| Events
 
+    Examples: |ex_dispatch|_, |exlisten|_, |doc_window|_, |exmonitor|_.
+
 This chapter concludes the general introduction to Office programming by looking at several techniques that will reappear periodically in later chapters: the use of window listeners.
+
+See also :ref:`ch25`.
 
 .. _ch04_listen_win:
 
@@ -28,88 +32,179 @@ or using |dsearch|_.
 The top-level document window can be monitored for changes using XTopWindowListener_, which responds to modifications of the window`s state,
 such as when it is opened, closed, minimized, and made active.
 
-The following class from the |exlisten|_ example illustrates how to use the listener. ``DocWindow`` inherits from :py:class:`~.x_top_window_adapter.XTopWindowAdapter`
-which is a simple adapter of XTopWindowListener_ class.
+|odev| has implement some listeners in the :ref:`adapter` namespace such as |top_window_listener|. The listeners in the :ref:`adapter` namespace
+simplify working with listeners.
+
+
+|exlisten|_ example illustrates two different ways to add listeners.
+Both of these example are functionally identical.
+
+In the case of |doc_window|_ class it inherits XTopWindowListener_ class and thus must implement all methods in XTopWindowListener_ and its parent classes. 
+
+With |doc_window_adapter|_ it is not necessary to implement XTopWindowListener_ methods.
+Only the desired events can be subscribed to via |top_window_listener| class.
+
+Another advantage of using listeners from :ref:`adapter` namespace is many listeners can be used inside a single class if needed.
+For example |exmonitor|_ uses |terminate_listener| and |event_listener|.
 
 .. tabs::
 
-    .. code-tab:: python
+    .. group-tab:: Python
 
-        #!/usr/bin/env python
-        # coding: utf-8
-        from __future__ import annotations
-        import time
-        import sys
-        from typing import TYPE_CHECKING
+        .. tabs::
 
-        from ooodev.utils.lo import Lo
-        from ooodev.utils.gui import GUI
-        from ooodev.office.write import Write
-        from ooodev.listeners.x_top_window_adapter import XTopWindowAdapter
+            .. tab:: DocWindow
 
-        from com.sun.star.awt import XExtendedToolkit
-        from com.sun.star.awt import XWindow
+                .. code-block:: python
 
-        if TYPE_CHECKING:
-            # only need types in design time and not at run time.
-            from com.sun.star.lang import EventObject
+                    from __future__ import annotations
+                    from typing import TYPE_CHECKING
+                    import unohelper
 
-        class DocWindow(XTopWindowAdapter):
-            def __init__(self) -> None:
-                super().__init__()
-                self.closed = False
-                loader = Lo.load_office(Lo.ConnectPipe())
-                self.tk = Lo.create_instance_mcf(XExtendedToolkit, "com.sun.star.awt.Toolkit")
-                if self.tk is not None:
-                    self.tk.addTopWindowListener(self)
+                    from ooodev.office.write import Write
+                    from ooodev.utils.gui import GUI
+                    from ooodev.utils.lo import Lo
 
-                self.doc = Write.create_doc(loader=loader)
+                    from com.sun.star.awt import XExtendedToolkit
+                    from com.sun.star.awt import XTopWindowListener
+                    from com.sun.star.awt import XWindow
 
-                GUI.set_visible(True, self.doc)
-                # triggers 2 opened and 2 activated events
+                    if TYPE_CHECKING:
+                        from com.sun.star.lang import EventObject
 
-            def windowOpened(self, event: EventObject) -> None:
-                """is invoked when a window is activated."""
-                print("WL: Opened")
-                xwin = Lo.qi(XWindow, event.Source)
-                GUI.print_rect(xwin.getPosSize())
 
-            def windowActivated(self, event: EventObject) -> None:
-                """is invoked when a window is activated."""
-                print("WL: Activated")
-                print(f"  Titile bar: {GUI.get_title_bar()}")
+                    class DocWindow(unohelper.Base, XTopWindowListener):
+                        def __init__(self) -> None:
+                            super().__init__()
+                            self.closed = False
+                            loader = Lo.load_office(Lo.ConnectPipe())
+                            self.doc = Write.create_doc(loader=loader)
 
-            def windowDeactivated(self, event: EventObject) -> None:
-                """is invoked when a window is deactivated."""
-                print("WL: Minimized")
+                            self.tk = Lo.create_instance_mcf(XExtendedToolkit, "com.sun.star.awt.Toolkit")
+                            if self.tk is not None:
+                                self.tk.addTopWindowListener(self)
 
-            def windowMinimized(self, event: EventObject) -> None:
-                """is invoked when a window is iconified."""
-                print("WL:  De-activated")
+                            GUI.set_visible(True, self.doc)
+                            # triggers 2 opened and 2 activated events
 
-            def windowNormalized(self, event: EventObject) -> None:
-                """is invoked when a window is deiconified."""
-                print("WL: Normalized")
+                        def windowOpened(self, event: EventObject) -> None:
+                            """is invoked when a window is activated."""
+                            print("WL: Opened")
+                            xwin = Lo.qi(XWindow, event.Source)
+                            GUI.print_rect(xwin.getPosSize())
 
-            def windowClosing(self, event: EventObject) -> None:
-                """
-                is invoked when a window is in the process of being closed.
+                        def windowActivated(self, event: EventObject) -> None:
+                            """is invoked when a window is activated."""
+                            print("WL: Activated")
+                            print(f"  Titile bar: {GUI.get_title_bar()}")
 
-                The close operation can be overridden at this point.
-                """
-                print("WL: Closing")
+                        def windowDeactivated(self, event: EventObject) -> None:
+                            """is invoked when a window is deactivated."""
+                            print("WL: Minimized")
 
-            def windowClosed(self, event: EventObject) -> None:
-                """is invoked when a window has been closed."""
-                print("WL: Closed")
-                self.closed = True
+                        def windowMinimized(self, event: EventObject) -> None:
+                            """is invoked when a window is iconified."""
+                            print("WL:  De-activated")
 
-            def disposing(self, event: EventObject) -> None:
-                """
-                gets called when the broadcaster is about to be disposed.
+                        def windowNormalized(self, event: EventObject) -> None:
+                            """is invoked when a window is deiconified."""
+                            print("WL: Normalized")
 
-                """
-                print("WL: Disposing")
+                        def windowClosing(self, event: EventObject) -> None:
+                              print("WL: Closing")
+
+                        def windowClosed(self, event: EventObject) -> None:
+                            """is invoked when a window has been closed."""
+                            if not self.closed:
+                                print("WL: Closed")
+                                self.closed = True
+
+                        def disposing(self, event: EventObject) -> None:
+                            print("WL: Disposing")
+
+            .. tab:: DocWindowAdapter
+
+                .. code-block:: python
+
+                    from __future__ import annotations
+                    from typing import TYPE_CHECKING, Any, cast
+
+                    from ooodev.adapter.awt.top_window_listener import (
+                        TopWindowListener, EventArgs, GenericArgs
+                    )
+                    from ooodev.office.write import Write
+                    from ooodev.utils.gui import GUI
+                    from ooodev.utils.lo import Lo
+
+                    from com.sun.star.awt import XWindow
+
+                    if TYPE_CHECKING:
+                        from com.sun.star.lang import EventObject
+
+                    class DocWindowAdapter:
+                        def __init__(self) -> None:
+                            super().__init__()
+                            self.closed = False
+                            loader = Lo.load_office(Lo.ConnectPipe())
+                            self.doc = Write.create_doc(loader=loader)
+
+                            self._twl = TopWindowListener(trigger_args=GenericArgs(listener=self))
+                            self._twl.on("windowOpened", DocWindowAdapter.on_window_opened)
+                            self._twl.on("windowActivated", DocWindowAdapter.on_window_activated)
+                            self._twl.on("windowDeactivated", DocWindowAdapter.on_window_deactivated)
+                            self._twl.on("windowMinimized", DocWindowAdapter.on_window_minimized)
+                            self._twl.on("windowNormalized", DocWindowAdapter.on_window_normalized)
+                            self._twl.on("windowClosing", DocWindowAdapter.on_window_closing)
+                            self._twl.on("windowClosed", DocWindowAdapter.on_window_closed)
+                            self._twl.on("disposing", DocWindowAdapter.on_disposing)
+
+                            GUI.set_visible(True, self.doc)
+                            # triggers 2 opened and 2 activated events
+
+                        @staticmethod
+                        def on_window_opened(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                            """is invoked when a window is activated."""
+                            event = cast("EventObject", event_args.event_data)
+                            print("WA: Opened")
+                            xwin = Lo.qi(XWindow, event.Source)
+                            GUI.print_rect(xwin.getPosSize())
+
+                        @staticmethod
+                        def on_window_activated(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                            """is invoked when a window is activated."""
+                            print("WA: Activated")
+                            print(f"  Titile bar: {GUI.get_title_bar()}")
+
+                        @staticmethod
+                        def on_window_deactivated(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                            """is invoked when a window is deactivated."""
+                            print("WA: Minimized")
+
+                        @staticmethod
+                        def on_window_minimized(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                            """is invoked when a window is iconified."""
+                            print("WA:  De-activated")
+
+                        @staticmethod
+                        def on_window_normalized(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                            """is invoked when a window is deiconified."""
+                            print("WA: Normalized")
+
+                        @staticmethod
+                        def on_window_closing(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                            print("WA: Closing")
+
+                        @staticmethod
+                        def on_window_closed(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                            """is invoked when a window has been closed."""
+                            dw = cast(DocWindowAdapter, kwargs["listener"])
+                            if not dw.closed:
+                                dw.closed = True
+                                print("WA: Closed")
+
+                        @staticmethod
+                        def on_disposing(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                            print("WA: Disposing")
 
     .. only:: html
 
@@ -117,12 +212,129 @@ which is a simple adapter of XTopWindowListener_ class.
 
             .. group-tab:: None
 
+In :ref:`adapter` listeners the Original ``EventObject`` data is always available via :py:attr:`.EventArgs.event_data`
+as demonstrated below in ``on_window_opened()``.
+
+.. tabs::
+
+    .. code-tab:: python
+        :emphasize-lines: 5
+
+        # in DocWindowAdapter class
+        @staticmethod
+        def on_window_opened(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+            """is invoked when a window is activated."""
+            event = cast("EventObject", event_args.event_data)
+            print("WA: Opened")
+            xwin = Lo.qi(XWindow, event.Source)
+            GUI.print_rect(xwin.getPosSize())
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+Extra data can be passed to listener events via ``trigger_args`` parameter and |generic_args| class instance.
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in DocWindowAdapter.__init__()
+        # ...
+        self._twl = TopWindowListener(trigger_args=GenericArgs(listener=self))
+        # ...
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+
+``trigger_args`` passed to listeners can be retrieved easily.
+In the following case it allows an instance of ``DocWindowAdapter`` to be passed to event listeners.
+Event listeners must be static method or stand alone functions.
+
+
+.. tabs::
+
+    .. code-tab:: python
+        :emphasize-lines: 5
+
+        # in DocWindowAdapter class
+        @staticmethod
+        def on_window_closed(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+            """is invoked when a window has been closed."""
+            dw = cast(DocWindowAdapter, kwargs["listener"])
+            dw.closed = True
+            print("WA: Closed")
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+The |doc_window|_ class implements seven methods from XTopWindowListener_, and ``disposing()`` inherited from XEventListener_.
+
+The |doc_window|_ class is made the listener for the window by accessing the XExtendedToolkit_ interface,
+which is part of the Toolkit_ service. ``Toolkit`` is utilized by Office to create windows, and ``XExtendedToolkit``
+adds three kinds of listeners: XTopWindowListener_, XFocusListener_, and the XKeyHandler_ listener.
+|top_window_listener| implements these listeners automatically.
+
+When an event arrives at a listener method, one of the more useful things to do is to transform it into an XWindow_ instance:
+
+.. tabs::
+
+    .. group-tab:: Python
+
+        .. tabs::
+
+            .. tab:: DocWindow
+
+                .. code-block:: python
+
+                    def windowOpened(self, event: EventObject) -> None:
+                        xwin = Lo.qi(XWindow, event.Source)
+                        GUI.print_rect(xwin.getPosSize())
+
+            .. tab:: DocWindowAdapter
+
+                .. code-block:: python
+
+                    @staticmethod
+                    def on_window_opened(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                        event = cast("EventObject", event_args.event_data)
+                        xwin = Lo.qi(XWindow, event.Source)
+                        GUI.print_rect(xwin.getPosSize())
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+It's then possible to access details about the frame, such as its size.
+
+Events are fired when :py:meth:`.GUI.set_visible` is called in the class constructor.
+An opened event is issued, followed by an activated event, triggering calls to ``windowOpened()`` and ``windowActivated()``.
+Rather confusingly, both these methods are called twice.
+
+.. note::
+
+    If :py:meth:`.Lo.close_doc` were to be called, a single deactivated event is fired, but two closed events are issued.
+    Consequently, there's a single call to ``windowDeactivated()`` and two to ``windowClosed()``.
+    Strangely, there's no window closing event trigger of ``windowClosing()``, and :py:meth:`.Lo.close` doesn't cause ``disposing()`` to fire.
+
 |exlisten|_ example is also demonstrates how to keep a python script alive while office is running.
 
 .. tabs::
 
     .. code-tab:: python
 
+        # in start.py
         def main_loop() -> None:
             dw = DocWindow()
 
@@ -148,38 +360,6 @@ which is a simple adapter of XTopWindowListener_ class.
 
             .. group-tab:: None
 
-The class implements seven methods for XTopWindowListener_, and disposing() inherited from XEventListener_.
-
-The DocWindow object is made the listener for the window by accessing the XExtendedToolkit_ interface,
-which is part of the Toolkit_ service. ``Toolkit`` is utilized by Office to create windows, and ``XExtendedToolkit``
-adds three kinds of listeners: XTopWindowListener_, XFocusListener_, and the XKeyHandler_ listener.
-
-When an event arrives at a listener method, one of the more useful things to do is to transform it into an XWindow_ instance:
-
-.. tabs::
-
-    .. code-tab:: python
-
-        xwin = Lo.qi(XWindow, event.Source)
-
-    .. only:: html
-
-        .. cssclass:: tab-none
-
-            .. group-tab:: None
-
-It's then possible to access details about the frame, such as its size.
-
-Events are fired when :py:meth:`.GUI.set_visible` is called in the ``DocWindow()`` constructor.
-An opened event is issued, followed by an activated event, triggering calls to ``windowOpened()`` and ``windowActivated()``.
-Rather confusingly, both these methods are called twice.
-
-.. note::
-
-    If :py:meth:`.Lo.close_doc` were to be called, a single deactivated event is fired, but two closed events are issued.
-    Consequently, there's a single call to ``windowDeactivated()`` and two to ``windowClosed()``.
-    Strangely, there's no window closing event trigger of ``windowClosing()``, and :py:meth:`.Lo.close` doesn't cause ``disposing()`` to fire.
-
 .. _ch04_office_manipulate:
 
 4.2 Office Manipulation
@@ -192,8 +372,9 @@ I the :py:class:`~.gui.GUI` class there are a few methods for basic window manip
 For instance to activate a window use :py:meth:`~.gui.GUI.activate`, for min and max there is :py:meth:`~.gui.GUI.minimize` and :py:meth:`~.gui.GUI.maximize`,
 :py:meth:`get_pos_size` for size and position.
 
-There are other python libraries that can handle mouse and keyboard emulation such as `PyAutoGUI <https://pypi.org/project/PyAutoGUI/>`_ and `keyboard <https://pypi.org/project/keyboard/>`_.
-|odev| will leave it up to developers to implement window manipulation for their own use.
+|odevgui_win|_ for windows makes some of this possible.
+
+See :ref:`ch04_robot_keys`
 
 .. _ch04_detect_end:
 
@@ -207,46 +388,36 @@ as seen in |exmonitor|_ example.
 
     .. code-tab:: python
 
+        # simplified version of DocMonitor class
         class DocMonitor:
-
             def __init__(self) -> None:
                 super().__init__()
                 self.closed = False
+                self.bridge_disposed = False
                 loader = Lo.load_office(Lo.ConnectPipe())
                 xdesktop = Lo.XSCRIPTCONTEXT.getDesktop()
-                
-                # create a new instance of adapter. Note that adapter methods all pass.
-                term_adapter = XTerminateAdapter()
-                
-                # reassign the method we want to use from XTerminateAdapter instance in a pythonic way.
-                term_adapter.notifyTermination = types.MethodType(self.notify_termination, term_adapter)
-                term_adapter.queryTermination = types.MethodType(self.query_termination, term_adapter)
-                term_adapter.disposing = types.MethodType(self.disposing, term_adapter)
-                xdesktop.addTerminateListener(term_adapter)
-                
-                self.doc = Calc.create_doc(loader=loader)
 
+                self._term_listener = TerminateListener(trigger_args=GenericArgs(listener=self))
+                self._term_listener.on("notifyTermination", DocMonitor.on_notify_termination)
+                self._term_listener.on("queryTermination", DocMonitor.on_query_termination)
+                self._term_listener.on("disposing", DocMonitor.on_disposing)
+
+                self.doc = Calc.create_doc(loader=loader)
                 GUI.set_visible(True, self.doc)
 
-
-            def notify_termination(self, src: XTerminateAdapter, event: EventObject) -> None:
-                """
-                is called when the master environment is finally terminated.
-                """
+            @staticmethod
+            def on_notify_termination(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
                 print("TL: Finished Closing")
-                self.closed = True
-            
-            def query_termination(self, src: XTerminateAdapter, event: EventObject) -> None:
-                """
-                is called when the master environment (e.g., desktop) is about to terminate.
-                """
+                dm = cast(DocMonitor, kwargs["listener"])
+                dm.bridge_disposed = True
+                dm.closed = True
+
+            @staticmethod
+            def on_query_termination(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
                 print("TL: Starting Closing")
-                
-                
-            def disposing(self, src: XTerminateAdapter, event: EventObject) -> None:
-                """
-                gets called when the broadcaster is about to be disposed.
-                """
+
+            @staticmethod
+            def on_disposing(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
                 print("TL: Disposing")
 
     .. only:: html
@@ -255,11 +426,14 @@ as seen in |exmonitor|_ example.
 
             .. group-tab:: None
 
-An XTerminateListener is attached to the XDesktop instance. The program's output is:
+
+Behind the scenes |terminate_listener| inherits XTerminateListener_ and is attached to the XDesktop_ instance.
+
+The program's output is:
 
 .. code-block:: text
 
-    PS D:\Users\user\Python\python-ooouno-ex> python -m main auto --process "ex/auto/general/odev_monitor/start.py True"
+    PS D:\Users\user\Python\python-ooouno-ex> python .\ex\auto\general\odev_monitor\start.py True
     Press 'ctl+c' to exit script early.
     Loading Office...
     Creating Office document scalc
@@ -270,8 +444,9 @@ An XTerminateListener is attached to the XDesktop instance. The program's output
 
     Exiting by document close.
 
-XTerminateListener_’s ``queryTermination()`` and ``notifyTermination()`` are called at the start and end of the Office closing sequence.
-As in the |exlisten|_ example, ``disposing()`` is never triggered.
+``on_query_termination()`` and ``on_notify_termination()``  are called at the start and end of the Office closing sequence.
+
+``on_disposing()`` is not called. For some reason XTerminateListener_’ ``disposing()`` method is never triggered.
 
 .. _ch04_bridge_stop:
 
@@ -296,25 +471,37 @@ The modified parts of |exmonitor|_ are:
 
         # DocMonitor constructor changes
         self.bridge_disposed = False
+        self._bridge_listen = EventListener(trigger_args=GenericArgs(listener=self))
+        self._bridge_listen.on("disposing", DocMonitor.on_disposing_bridge)
 
-        bridge_listen = XEventAdapter()
-        bridge_listen.disposing = types.MethodType(self.disposing_bridge, bridge_listen)
-        Lo.bridge.addEventListener(bridge_listen)
+        Lo.bridge.addEventListener(self._bridge_listen)
 
         # DocMonitor new method
-        def disposing_bridge(self, src:XEventAdapter, event:EventObject) -> None:
+        @staticmethod
+        def on_disposing_bridge(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
             print("BR: Office bridge has gone!!")
-            self.bridge_disposed = True
 
-        # main_loop method adds check for dw.bridge_disposed
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+``main_loop()`` method checks for ``dw.bridge_disposed``.
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in start.py
         def main_loop() -> None:
             dw = DocMonitor()
 
-            # check and see if user passed in a auto terminate option
             if len(sys.argv) > 1:
                 if str(sys.argv[1]).casefold() in ("t", "true", "y", "yes"):
-                    Lo.delay(5000)
+                    Lo.delay(3000)
                     Lo.close_office()
+                    return
 
             while 1:
                 if dw.closed is True:  # wait for windowClosed event to be raised
@@ -331,6 +518,7 @@ The modified parts of |exmonitor|_ are:
 
             .. group-tab:: None
 
+
 Since the disappearance of the Office bridge is a fatal event, in ``main_loop()``  ``raise SystemExit(1)`` is called to kill python.
 
 .. note::
@@ -341,7 +529,7 @@ The output of the revised |exmonitor|_ is:
 
 .. code-block:: text
 
-    PS D:\Users\user\Python\python-ooouno-ex> python -m main auto --process "ex/auto/general/odev_monitor/start.py True"
+    PS D:\Users\user\Python\python-ooouno-ex> python .\ex\auto\general\odev_monitor\start.py True
     Press 'ctl+c' to exit script early.
     Loading Office...
     Creating Office document scalc
@@ -358,7 +546,7 @@ However, if I make Office crash while DocMonitor is running, then the output bec
 
 .. code-block:: text
 
-    PS D:\Users\user\Python\python-ooouno-ex> python -m main auto --process "ex/auto/general/odev_monitor/start.py"
+    PS D:\Users\user\Python\python-ooouno-ex> python .\ex\auto\general\odev_monitor\start.py
     Press 'ctl+c' to exit script early.
     Loading Office...
     Creating Office document scalc
@@ -615,7 +803,7 @@ Here is the output from extended example.
 
 .. code-block:: text
 
-    PS D:\Users\user\Python\python-ooouno-ex> python -m main auto --process 'ex\auto\writer\odev_dispatch\start.py -d "resources\odt\story.odt"'
+    PS D:\Users\user\Python\python-ooouno-ex> python .\ex\auto\general\odev_dispatch\start.py -d "resources\odt\story.odt"
     Loading Office...
     Opening D:\Users\user\Python\python-ooouno-ex\resources\odt\story.odt
     Dispatching: ReadOnlyDoc
@@ -686,19 +874,33 @@ and these can be easily translated into key presses and releases in :external+od
 .. |exlisten| replace:: Office Window Listener
 .. _exlisten: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/general/odev_listen
 
+.. |doc_window| replace:: DocWindow
+.. _doc_window: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/general/odev_listen/doc_window.py
+
+.. |doc_window_adapter| replace:: DocWindowAdapter
+.. _doc_window_adapter: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/general/odev_listen/doc_window_adapter.py
+
 .. |exmonitor| replace:: Office Window Monitor
 .. _exmonitor: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/general/odev_monitor
 
-.. _XDispatchProvider: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1frame_1_1XDispatchProvider.html
-.. _XDispatchHelper: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1frame_1_1XDispatchHelper.html
+.. |top_window_listener| replace:: :ref:`TopWindowListener <adapter_awt_top_window_listener>`
+.. |terminate_listener| replace:: :ref:`TerminateListener <adapter_frame_terminate_listener>`
+.. |event_listener| replace:: :ref:`EventListener <adapter_lang_event_listener>`
+.. |generic_args| replace:: :ref:`GenericArgs <events_args_generic_args>`
+
+
 .. _DispatchResultEvent: https://api.libreoffice.org/docs/idl/ref/structcom_1_1sun_1_1star_1_1frame_1_1DispatchResultEvent.html
+.. _ToolKit: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1Toolkit.html
+.. _XDesktop: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1frame_1_1XDesktop.html
+.. _XDispatchHelper: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1frame_1_1XDispatchHelper.html
+.. _XDispatchProvider: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1frame_1_1XDispatchProvider.html
 .. _XEventListener: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1lang_1_1XEventListener.html
-.. _XTopWindowListener: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1awt_1_1XTopWindowListener.html
-.. _XTerminateListener: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1frame_1_1XTerminateListener.html
 .. _XExtendedToolkit: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1awt_1_1XExtendedToolkit.html
 .. _XFocusListener: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1awt_1_1XFocusListener.html
 .. _XKeyHandler: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1awt_1_1XKeyHandler.html
+.. _XTerminateListener: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1frame_1_1XTerminateListener.html
+.. _XTopWindowListener: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1awt_1_1XTopWindowListener.html
 .. _XWindow: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1awt_1_1XWindow.html
-.. _ToolKit: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1Toolkit.html
+
 
 .. include:: ../../resources/odev/links.rst
