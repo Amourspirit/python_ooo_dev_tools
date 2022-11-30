@@ -8,7 +8,7 @@ Chapter 14. Animation
 
     Circle Movement; Line Rotation; Animating an Image; The Gallery Module.
 
-    Examples: |animate_bike|_, |draw_picture|_.
+    Examples: |animate_bike|_, |draw_picture|_, and |gallery_info|_.
 
 |draw_picture_py|_ contains a call to ``_anim_shapes()`` which shows how to animate a circle and a line.
 There's a second animation example in |animate_bike_py|_ which translates and rotates a bicycle image.
@@ -394,12 +394,67 @@ A XGalleryTheme_ represents the file contents of a subdirectory as a container o
 Each XGalleryItem_ represents a file, which may be a graphic or some other resource, such as an audio file.
 The details about each item (file) are stored as properties which are defined in the GalleryItem_ service.
 
-.. todo::
+The :py:class:`~.utils.gallery.Gallery` class helps access the gallery in this way, and |gallery_info_py|_ contains some examples of its use:
 
-    Chapter 14.3, Write documentation for Gallery Module
+.. tabs::
 
-Currently there is a `bug <https://bugs.documentfoundation.org/show_bug.cgi?id=151932>`_ that has the Gallery Module not work correctly.
-So for the time being this documentation is held back on Gallery Module.
+    .. code-tab:: python
+
+        # from gallery_info.py
+        from __future__ import annotations
+        import uno
+        from ooodev.utils.lo import Lo
+        from ooodev.utils.gallery import Gallery, GalleryKind, SearchByKind, SearchMatchKind
+
+
+        class GalleryInfo:
+            def main(self) -> None:
+                with Lo.Loader(Lo.ConnectPipe(headless=True)):
+                    # list all the gallery themes (i.e. the sub-directories below gallery/)
+                    Gallery.report_galleries()
+                    print()
+
+                    # list all the items for the Sounds theme
+                    Gallery.report_gallery_items(GalleryKind.SOUNDS)
+                    print()
+
+                    # find an item that has "applause" as part of its name
+                    # in the Sounds theme
+                    itm = Gallery.find_gallery_obj(
+                        gallery_name=GalleryKind.SOUNDS,
+                        name="applause",
+                        search_match=SearchMatchKind.PARTIAL_IGNORE_CASE,
+                        search_kind=SearchByKind.FILE_NAME,
+                    )
+                    print()
+                    # print out the item's properties
+                    Gallery.report_gallery_item(itm)
+
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+:py:meth:`.Gallery.report_galleries` gives details about ``9`` themes, :py:meth:`.Gallery.report_gallery_items` prints the names of the ``35`` items (files) in the Sounds theme.
+
+:py:meth:`.Gallery.find_gallery_obj` searches that theme for an item name containing ``applause``, and :py:meth:`.Gallery.report_gallery_item` reports its details:
+
+::
+
+    Searching gallery "Sounds" for "applause"
+      Search is ignoring case
+      Searching for a partial match
+
+    Found matching item: applause.wav
+
+    Gallery item information:
+      URL: "file:///C:/Program%20Files/LibreOffice/share/gallery/sounds/applause.wav"
+      Fnm: "applause.wav"
+      Path: C:\Program Files\LibreOffice\share\gallery\sounds\applause.wav
+      Title: ""
+      Type: media
 
 .. |animate_bike| replace:: Animate Bike
 .. _animate_bike: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/draw/odev_animate_bike
@@ -412,6 +467,12 @@ So for the time being this documentation is held back on Gallery Module.
 
 .. |draw_picture_py| replace:: draw_picture.py
 .. _draw_picture_py: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/draw/odev_draw_picture/draw_picture.py
+
+.. |gallery_info| replace:: Gallery Info
+.. _gallery_info: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/general/odev_gallery_info
+
+.. |gallery_info_py| replace:: gallery_info.py
+.. _gallery_info_py: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/general/odev_gallery_info/gallery_info.py
 
 .. _GalleryItem: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1gallery_1_1GalleryItem.html
 .. _GalleryTheme: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1gallery_1_1GalleryTheme.html

@@ -442,10 +442,10 @@ class Info(metaclass=StaticProperty):
         paths_arr = paths.split(";")
         if len(paths_arr) == 0:
             mLo.Lo.print(f"Cound not split paths for '{setting}'")
-            return [mFileIO.FileIO.uri_to_path(paths)]
+            return [mFileIO.FileIO.uri_to_path(mFileIO.FileIO.uri_absolute(paths))]
         dirs = []
         for el in paths_arr:
-            dirs.append(mFileIO.FileIO.uri_to_path(el))
+            dirs.append(mFileIO.FileIO.uri_to_path(mFileIO.FileIO.uri_absolute(el)))
         return dirs
 
     @classmethod

@@ -4,6 +4,7 @@
 # region Imports
 from __future__ import annotations
 import os
+import re
 import tempfile
 import datetime
 import zipfile
@@ -33,6 +34,7 @@ from .type_var import PathOrStr, Table
 # endregion imports
 
 _UTIL_PATH = str(Path(__file__).parent)
+_URI_FILE_RE = r"^(file:(?:/*))"
 
 
 class FileIO:
@@ -103,6 +105,30 @@ class FileIO:
             return p.as_uri()
         except Exception as e:
             raise Exception("Unable to convert '{fnm}'") from e
+
+    @staticmethod
+    def uri_absolute(uri: str) -> str:
+        """
+        Ensures a string ``uri`` is absolute.
+
+        Args:
+            uri (str): _description_
+
+        Returns:
+            str: Absolute uri
+        """
+        # converts
+        # file:///C:/Program%20Files/LibreOffice/program/../share/gallery/sounds/apert2.wav
+        # to
+        # file:///C:/Program%20Files/LibreOffice/share/gallery/sounds/apert2.wav
+        # https://tinyurl.com/2zryl94m
+        result = os.path.normpath(uri)
+        result = result.replace("\\", "/")
+        # result may now start with file:/ and not file:///
+
+        # add proper file:/// again
+        result = re.sub(_URI_FILE_RE, "file:///", result, 1)
+        return result
 
     # region uri_to_path()
     @overload

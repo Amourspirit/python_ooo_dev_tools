@@ -12,7 +12,7 @@
 # as it is. I tried inserting the XGraphic into a Draw XShape and putting it on the document, however it appears to
 # always be the same graphic even though the criteria is change for find_gallery_graphic()
 from __future__ import annotations
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 from pathlib import Path
 from typing import overload
 import uno
@@ -56,7 +56,8 @@ class GalleryObj:
     def __init__(self, itm: XGalleryItem) -> None:
         self._graphic = mProps.Props.get(itm, "Graphic", None)
         self._drawing = mProps.Props.get(itm, "Drawing", None)
-        self._url = mProps.Props.get(itm, "URL", "")
+        url = cast(str, mProps.Props.get(itm, "URL", ""))
+        self._url = Gallery.get_absolute_url(url)
         self._gallery_item_type = mProps.Props.get(itm, "GalleryItemType", 0)
         self._title = mProps.Props.get(itm, "Title", "")
         self._implementation_id = getattr(itm, "ImplementationId", None)
@@ -254,17 +255,12 @@ class Gallery(metaclass=StaticProperty):
     # region find_gallery_item()
     @overload
     @classmethod
-    def find_gallery_obj(cls, gallery_name: str, name: str) -> GalleryObj:
-        ...
-
-    @overload
-    @classmethod
     def find_gallery_obj(cls, gallery_name: GalleryKind, name: str) -> GalleryObj:
         ...
 
     @overload
     @classmethod
-    def find_gallery_obj(cls, gallery_name: str, name: str, search_match: SearchMatchKind) -> GalleryObj:
+    def find_gallery_obj(cls, gallery_name: str, name: str) -> GalleryObj:
         ...
 
     @overload
@@ -274,12 +270,17 @@ class Gallery(metaclass=StaticProperty):
 
     @overload
     @classmethod
-    def find_gallery_obj(cls, gallery_name: str, name: str, *, search_kind: SearchByKind) -> GalleryObj:
+    def find_gallery_obj(cls, gallery_name: str, name: str, search_match: SearchMatchKind) -> GalleryObj:
         ...
 
     @overload
     @classmethod
     def find_gallery_obj(cls, gallery_name: GalleryKind, name: str, *, search_kind: SearchByKind) -> GalleryObj:
+        ...
+
+    @overload
+    @classmethod
+    def find_gallery_obj(cls, gallery_name: str, name: str, *, search_kind: SearchByKind) -> GalleryObj:
         ...
 
     @overload
@@ -322,7 +323,7 @@ class Gallery(metaclass=StaticProperty):
         """
         result = None
         try:
-            if search_match == SearchMatchKind.FULL_IGNORE_CASE or search_kind == SearchMatchKind.PARTIAL_IGNORE_CASE:
+            if search_match == SearchMatchKind.FULL_IGNORE_CASE or search_match == SearchMatchKind.PARTIAL_IGNORE_CASE:
                 nm = name.casefold()
                 case_sensitive = False
             else:
@@ -350,10 +351,15 @@ class Gallery(metaclass=StaticProperty):
             for i in range(num_pics):
                 item = mLo.Lo.qi(XGalleryItem, gallery.getByIndex(i), True)
                 if search_kind == SearchByKind.FILE_NAME:
-                    url = str(mProps.Props.get(item, "URL"))
+                    url = str(mProps.Props.get(item, "URL", ""))
+                    if not url:
+                        continue
+                    url = cls.get_absolute_url(url)
+                    if url.startswith("private:"):
+                        continue
                     fnm = mFileIo.FileIO.get_fnm((mFileIo.FileIO.url_to_path(url)))
                     match_str = fnm if case_sensitive else fnm.casefold()
-                    if partial and match_str in nm:
+                    if partial and nm in match_str:
                         mLo.Lo.print(f"Found matching item: {fnm}")
                         result = item
                         break
@@ -365,7 +371,7 @@ class Gallery(metaclass=StaticProperty):
                 elif search_kind == SearchByKind.TITLE:
                     title = str(mProps.Props.get(item, "Title"))
                     match_str = title if case_sensitive else title.casefold()
-                    if partial and match_str in nm:
+                    if partial and nm in match_str:
                         mLo.Lo.print(f"Found matching item: {title}")
                         result = item
                         break
@@ -415,9 +421,10 @@ class Gallery(metaclass=StaticProperty):
                 print("  Fnm: Unable to compute due to no URL is None")
                 print("  Path: Unable to compute due do no URL is None")
             else:
+                url = Gallery.get_absolute_url(url)
                 path = mFileIo.FileIO.uri_to_path(uri_fnm=url, ensure_absolute=False)
                 print(f'  URL: "{url}"')
-                print(f'  Fnm: "{Path(Gallery.gallery_dir, mFileIo.FileIO.get_fnm(path))}"')
+                print(f'  Fnm: "{mFileIo.FileIO.get_fnm(path)}"')
                 print(f"  Path: {path}")
         except mEx.PropertyNotFoundError:
             print("  URL: Property NOT Found")
@@ -451,7 +458,7 @@ class Gallery(metaclass=StaticProperty):
             else:
                 path = mFileIo.FileIO.uri_to_path(uri_fnm=url, ensure_absolute=False)
                 print(f'  URL: "{url}"')
-                print(f'  Fnm: "{Path(Gallery.gallery_dir, mFileIo.FileIO.get_fnm(path))}"')
+                print(f'  Fnm: "{mFileIo.FileIO.get_fnm(path)}"')
                 print(f"  Path: {path}")
         except mEx.PropertyNotFoundError:
             print("  URL: Property NOT Found")
@@ -504,8 +511,8 @@ class Gallery(metaclass=StaticProperty):
             print(f'Gallery: "{gallery.getName()}" ({num_pics})')
             for i in range(num_pics):
                 try:
-                    item = mLo.Lo.qi(XGalleryItem, gallery.getByIndex(i), True)
-                    cls.report_gallery_item(item)
+                    item = GalleryObj(mLo.Lo.qi(XGalleryItem, gallery.getByIndex(i), True))
+                    cls._report_gallery_obj(item)
                     # url = str(mProps.Props.get(item, "URL"))
                     # print(f"  {mFileIo.FileIO.get_fnm((mFileIo.FileIO.url_to_path(url)))}")
                 except Exception as ex:
@@ -515,6 +522,38 @@ class Gallery(metaclass=StaticProperty):
             print("Error reporting gallery items")
             print(f"  {e}")
         print()
+
+    @staticmethod
+    def get_absolute_url(url: str) -> str:
+        """
+        Get absolute url
+        Some url's may have relative paths in them.
+
+        Args:
+            url (str): url
+
+        Returns:
+            str: absolute url
+
+        Note:
+            If a ``url`` is not a file path such as ``private:gallery/svdraw/dd2051``
+            then it is returned verbatim.
+        """
+        # https://tinyurl.com/2q3evk44
+        if url:
+            if url.startswith("private:"):
+                result = url
+            else:
+                try:
+                    # convert url to path to ensure is a valid format.
+                    _ = mFileIo.FileIO.uri_to_path(uri_fnm=url, ensure_absolute=False)
+                    result = mFileIo.FileIO.uri_absolute(url)
+                except mEx.ConvertPathError:
+                    # could be format such as "private:gallery/svdraw/dd2051"
+                    result = url
+        else:
+            result = ""
+        return result
 
     @classproperty
     def gallery_dir(cls) -> Path:
