@@ -11,7 +11,6 @@
 # find_gallery_graphic() does successfully return XGraphic object, However I am not sure if this graphic can be used
 # as it is. I tried inserting the XGraphic into a Draw XShape and putting it on the document, however it appears to
 # always be the same graphic even though the criteria is change for find_gallery_graphic()
-
 from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 from pathlib import Path
@@ -21,6 +20,7 @@ from com.sun.star.gallery import XGalleryItem
 from com.sun.star.gallery import XGalleryTheme
 from com.sun.star.gallery import XGalleryThemeProvider
 from com.sun.star.graphic import XGraphic
+
 
 from . import file_io as mFileIo
 from . import lo as mLo
@@ -41,6 +41,69 @@ from ..meta.static_meta import StaticProperty, classproperty
 
 if TYPE_CHECKING:
     from com.sun.star.lang import EventObject
+    from com.sun.star.beans import XPropertySetInfo
+
+
+class GalleryObj:
+    """
+    Represents Most properties of ``XGalleryItem``.
+    An instance of this class is returned from :py:meth:`~.gallery.Gallery.find_gallery_obj` in place of ``XGalleryItem`` instance.
+    This is due to a `bug <https://bugs.documentfoundation.org/show_bug.cgi?id=151932>`_ in ``LO 7.4``.
+    """
+
+    # special case for this class. Matching most of GalleryItem properties so
+    # using Camel caase
+    def __init__(self, itm: XGalleryItem) -> None:
+        self._graphic = mProps.Props.get(itm, "Graphic", None)
+        self._drawing = mProps.Props.get(itm, "Drawing", None)
+        self._url = mProps.Props.get(itm, "URL", "")
+        self._gallery_item_type = mProps.Props.get(itm, "GalleryItemType", 0)
+        self._title = mProps.Props.get(itm, "Title", "")
+        self._implementation_id = getattr(itm, "ImplementationId", None)
+        self._implementation_name = getattr(itm, "ImplementationName", "")
+        self._property_set_info = getattr(itm, "PropertySetInfo", None)
+        self._property_to_default = getattr(itm, "PropertyToDefault", None)
+        self._thumbnail = mProps.Props.get(itm, "Thumbnail", None)
+
+    @property
+    def Graphic(self) -> XGraphic:
+        return self._graphic
+
+    @property
+    def Drawing(self) -> Any:
+        return self._drawing
+
+    @property
+    def URL(self) -> str:
+        return self._url
+
+    @property
+    def GalleryItemType(self) -> int:
+        return self._gallery_item_type
+
+    @property
+    def Title(self) -> str:
+        return self._title
+
+    @property
+    def ImplementationId(self) -> uno.ByteSequence:
+        return self._implementation_id
+
+    @property
+    def ImplementationName(self) -> str:
+        return self._implementation_name
+
+    @property
+    def PropertySetInfo(self) -> XPropertySetInfo:
+        return self._property_set_info
+
+    @property
+    def PropertyToDefault(self) -> Any:
+        return self._property_to_default
+
+    @property
+    def Thumbnail(self) -> Any:
+        return self._thumbnail
 
 
 class Gallery(metaclass=StaticProperty):
@@ -57,7 +120,18 @@ class Gallery(metaclass=StaticProperty):
 
     @staticmethod
     def get_gallery(name: GalleryKind | str) -> XGalleryTheme:
+        """
+        Gets Gallery Theme
 
+        Args:
+            name (GalleryKind | str): Kind of gallery to get.
+
+        Raises:
+            GalleryError: If unable to get gallery theme.
+
+        Returns:
+            XGalleryTheme: Gallery Theme
+        """
         # enusre name is GalleryKind | str,
         mInfo.Info.is_type_enum_multi(alt_type="str", enum_type=GalleryKind, enum_val=name, arg_name="name")
 
@@ -76,6 +150,15 @@ class Gallery(metaclass=StaticProperty):
 
     @staticmethod
     def get_item_type_str(item_type: GalleryItemTypeEnum) -> str:
+        """
+        Gets string representation of ``GalleryItemTypeEnum``
+
+        Args:
+            item_type (GalleryItemTypeEnum): item
+
+        Returns:
+            str: string representation
+        """
         if item_type == GalleryItemTypeEnum.EMPTY:
             return "empty"
         elif item_type == GalleryItemTypeEnum.GRAPHIC:
@@ -87,23 +170,35 @@ class Gallery(metaclass=StaticProperty):
         return "??"  # just in case enum change in future.
 
     @staticmethod
-    def get_item_type(item: XGalleryItem) -> GalleryItemTypeEnum:
+    def get_item_type(item: XGalleryItem | GalleryObj) -> GalleryItemTypeEnum:
+        """
+        Get item type
+
+        Args:
+            item (XGalleryItem | GalleryObj): item
+
+        Raises:
+            GalleryError: If error occurs.
+        Returns:
+            GalleryItemTypeEnum: Item type as enum.
+        """
         try:
+            if isinstance(item, GalleryObj):
+                return GalleryItemTypeEnum(int(item.GalleryItemType))
             item_int_type = int(mProps.Props.get(item, "GalleryItemType"))
             return GalleryItemTypeEnum(item_int_type)
         except Exception as e:
             raise mEx.GalleryError("Error getting item type from gallery item") from e
 
     @classmethod
-    def get_gallery_graphic(cls, item: XGalleryItem) -> XGraphic:
+    def get_gallery_graphic(cls, item: XGalleryItem | GalleryObj) -> XGraphic:
         """
         Gets graphic form item
 
         Args:
-            item (XGalleryItem): Gallery Item
+            item (XGalleryItem | GalleryObj): Gallery Item
 
         Raises:
-            GalleryTypeError: If ``item.Graphic`` is not ``GalleryItemType.DRAWING``
             GalleryError: If any other error occurs.
 
         Returns:
@@ -112,12 +207,15 @@ class Gallery(metaclass=StaticProperty):
         try:
             if item is None:
                 raise TypeError("item is expected to be of Type XGalleryItem, got None")
-            itm_type = cls.get_item_type(item)
-            if itm_type != GalleryItemTypeEnum.DRAWING:
-                raise mEx.GalleryTypeError(
-                    f" Expected item to be GalleryItemType.DRAWING but got GalleryItemType.{itm_type.name}"
-                )
-            result = mProps.Props.get(item, "Graphic")
+            # itm_type = cls.get_item_type(item)
+            # if itm_type != GalleryItemTypeEnum.GRAPHIC:
+            #     raise mEx.GalleryTypeError(
+            #         f" Expected item to be GalleryItemType.DRAWING but got GalleryItemType.{itm_type.name}"
+            #     )
+            if isinstance(item, GalleryObj):
+                result = item.Graphic
+            else:
+                result = mProps.Props.get(item, "Graphic")
             return mLo.Lo.qi(XGraphic, result, True)
         except mEx.GalleryTypeError:
             raise
@@ -125,69 +223,103 @@ class Gallery(metaclass=StaticProperty):
             raise mEx.GalleryError("Error getting gallery graphic") from e
 
     @staticmethod
-    def get_gallery_path(item: XGalleryItem) -> Path:
+    def get_gallery_path(item: XGalleryItem | GalleryObj) -> Path:
+        """
+        Gets gallery path
+
+        Args:
+            item (XGalleryItem | GalleryObj): Gallery Item
+
+        Raises:
+            GalleryError: If error occurs
+
+        Returns:
+            Path: Gallery path.
+        """
         if item is None:
             raise TypeError("item is expected to be of Type XGalleryItem, got None")
         try:
-            url = str(mProps.Props.get(item, "URL"))
+            if isinstance(item, GalleryObj):
+                url = item.URL
+            else:
+                url = str(mProps.Props.get(item, "URL", ""))
+            if not url:
+                raise mEx.GalleryError("Error getting gallery path")
             return mFileIo.FileIO.url_to_path(url)
+        except mEx.GalleryError:
+            raise
         except Exception as e:
             raise mEx.GalleryError("Error getting gallery path") from e
 
     # region find_gallery_item()
     @overload
     @classmethod
-    def find_gallery_item(cls, gallery_name: str, name: str) -> XGalleryItem:
+    def find_gallery_obj(cls, gallery_name: str, name: str) -> GalleryObj:
         ...
 
     @overload
     @classmethod
-    def find_gallery_item(cls, gallery_name: GalleryKind, name: str) -> XGalleryItem:
+    def find_gallery_obj(cls, gallery_name: GalleryKind, name: str) -> GalleryObj:
         ...
 
     @overload
     @classmethod
-    def find_gallery_item(cls, gallery_name: str, name: str, search_match: SearchMatchKind) -> XGalleryItem:
+    def find_gallery_obj(cls, gallery_name: str, name: str, search_match: SearchMatchKind) -> GalleryObj:
         ...
 
     @overload
     @classmethod
-    def find_gallery_item(cls, gallery_name: GalleryKind, name: str, search_match: SearchMatchKind) -> XGalleryItem:
+    def find_gallery_obj(cls, gallery_name: GalleryKind, name: str, search_match: SearchMatchKind) -> GalleryObj:
         ...
 
     @overload
     @classmethod
-    def find_gallery_item(cls, gallery_name: str, name: str, *, search_kind: SearchByKind) -> XGalleryItem:
+    def find_gallery_obj(cls, gallery_name: str, name: str, *, search_kind: SearchByKind) -> GalleryObj:
         ...
 
     @overload
     @classmethod
-    def find_gallery_item(cls, gallery_name: GalleryKind, name: str, *, search_kind: SearchByKind) -> XGalleryItem:
+    def find_gallery_obj(cls, gallery_name: GalleryKind, name: str, *, search_kind: SearchByKind) -> GalleryObj:
         ...
 
     @overload
     @classmethod
-    def find_gallery_item(
+    def find_gallery_obj(
         cls, gallery_name: str, name: str, search_match: SearchMatchKind, search_kind: SearchByKind
-    ) -> XGalleryItem:
+    ) -> GalleryObj:
         ...
 
     @overload
     @classmethod
-    def find_gallery_item(
+    def find_gallery_obj(
         cls, gallery_name: GalleryKind, name: str, search_match: SearchMatchKind, search_kind: SearchByKind
-    ) -> XGalleryItem:
+    ) -> GalleryObj:
         ...
 
     @classmethod
-    def find_gallery_item(
+    def find_gallery_obj(
         cls,
         gallery_name: GalleryKind | str,
         name: str,
         search_match: SearchMatchKind = SearchMatchKind.PARTIAL_IGNORE_CASE,
         search_kind: SearchByKind = SearchByKind.TITLE,
-    ) -> XGalleryItem:
+    ) -> GalleryObj:
+        """
+        Finds a Gallery Item
 
+        Args:
+            gallery_name (GalleryKind | str): Kind of gallery to search in.
+            name (str): Name of item to look for. Could be a partial or full name of a title or a path. Determined by ``search_kind``.
+            search_match (SearchMatchKind, optional): Search match option. Defaults to ``SearchMatchKind.PARTIAL_IGNORE_CASE``.
+            search_kind (SearchByKind, optional): Determines what part of Gallery Item to search. Defaults to ``SearchByKind.TITLE``.
+
+        Raises:
+            GalleryNotFoundError: If Gallery Item is not found.
+            GalleryError: If any other error occurs.
+
+        Returns:
+            GalleryObj: Gallery Item
+        """
         result = None
         try:
             if search_match == SearchMatchKind.FULL_IGNORE_CASE or search_kind == SearchMatchKind.PARTIAL_IGNORE_CASE:
@@ -249,141 +381,101 @@ class Gallery(metaclass=StaticProperty):
             ) from e
         if result is None:
             raise mEx.GalleryNotFoundError(f'Not found. Tried to find in gallery: "{gallery_name}" for item: "{name}"')
-        cls.report_gallery_item(result)
-        return result
+
+        # cls.report_gallery_item(result)
+        return GalleryObj(result)
 
     # endregion find_gallery_item()
 
-    # region find_gallery_graphic()
-    @overload
-    @classmethod
-    def find_gallery_graphic(cls, name: str) -> XGraphic:
-        ...
-
-    @overload
-    @classmethod
-    def find_gallery_graphic(cls, name: str, search_match: SearchMatchKind) -> XGraphic:
-        ...
-
-    @overload
-    @classmethod
-    def find_gallery_graphic(cls, name: str, *, search_kind: SearchByKind) -> XGraphic:
-        ...
-
-    @overload
-    @classmethod
-    def find_gallery_graphic(cls, name: str, search_match: SearchMatchKind, search_kind: SearchByKind) -> XGraphic:
-        ...
+    # region report_gallery_item()
 
     @classmethod
-    def find_gallery_graphic(
-        cls,
-        name: str,
-        search_match: SearchMatchKind = SearchMatchKind.PARTIAL_IGNORE_CASE,
-        search_kind: SearchByKind = SearchByKind.TITLE,
-    ) -> XGraphic:
+    def report_gallery_item(cls, item: XGalleryItem | GalleryObj) -> None:
+        """
+        Displays gallery information in the console.
 
-        result = None
-        try:
-            if search_match == SearchMatchKind.FULL_IGNORE_CASE or search_kind == SearchMatchKind.PARTIAL_IGNORE_CASE:
-                nm = name.casefold()
-                case_sensitive = False
-            else:
-                nm = name
-                case_sensitive = True
-
-            if search_match == SearchMatchKind.PARTIAL or search_match == SearchMatchKind.PARTIAL_IGNORE_CASE:
-                partial = True
-            else:
-                partial = False
-
-            gallery = cls.get_gallery(GalleryKind.SHAPES)
-            num_pics = gallery.getCount()
-            mLo.Lo.print(f'Searching gallery "{gallery.getName()}" for "{name}"')
-            if case_sensitive:
-                mLo.Lo.print("  Search is case sensitive")
-            else:
-                mLo.Lo.print("  Search is ignoring case")
-            if partial:
-                mLo.Lo.print("  Searching for a partial match")
-            else:
-                mLo.Lo.print("  Searching for a full match")
-            mLo.Lo.print()
-
-            for i in range(num_pics):
-                item = mLo.Lo.qi(XGalleryItem, gallery.getByIndex(i), True)
-                if search_kind == SearchByKind.FILE_NAME:
-                    url = str(mProps.Props.get(item, "URL"))
-                    fnm = mFileIo.FileIO.get_fnm((mFileIo.FileIO.url_to_path(url)))
-                    match_str = fnm if case_sensitive else fnm.casefold()
-                    if partial and match_str in nm:
-                        mLo.Lo.print(f"Found matching item: {fnm}")
-                        result = item
-                        break
-                    else:
-                        if match_str == nm:
-                            mLo.Lo.print(f"Found matching item: {fnm}")
-                            result = item
-                            break
-                elif search_kind == SearchByKind.TITLE:
-                    title = str(mProps.Props.get(item, "Title"))
-                    match_str = title if case_sensitive else title.casefold()
-                    if partial and match_str in nm:
-                        mLo.Lo.print(f"Found matching item: {title}")
-                        result = item
-                        break
-                    else:
-                        if match_str == nm:
-                            mLo.Lo.print(f"Found matching item: {title}")
-                            result = item
-                            break
-
-        except Exception as e:
-            raise mEx.GalleryError(
-                f'Error occured trying to find in gallery: "{GalleryKind.SHAPES}" for item: "{name}"'
-            ) from e
-        # Gallery._TMP_FIND = result.Graphic
-        if result is None:
-            raise mEx.GalleryNotFoundError(
-                f'Not found. Tried to find in gallery: "{GalleryKind.SHAPES}" for item: "{name}"'
-            )
-        try:
-            graphic = mProps.Props.get(result, "Graphic")
-        except mEx.PropertyNotFoundError as e:
-            raise mEx.GalleryNotFoundError("Error getting Graphic Property") from e
-        return graphic
-
-    # endregion find_gallery_graphic()
+        Args:
+            item (XGalleryItem | GalleryObj): Gallery Item
+        """
+        if isinstance(item, GalleryObj):
+            return cls._report_gallery_obj(item)
+        return cls._report_gallery_item(item)
 
     @classmethod
-    def report_gallery_item(cls, item: XGalleryItem) -> None:
+    def _report_gallery_item(cls, item: XGalleryItem) -> None:
         if item is None:
             print("Gallery item is null")
             return
 
         print("Gallery item information:")
         try:
-            url = str(mProps.Props.get(item, "URL"))
-            path = mFileIo.FileIO.uri_to_path(uri_fnm=url, ensure_absolute=False)
-            print(f'  URL: "{url}"')
-            print(f'  Fnm: "{Path(Gallery.gallery_dir, mFileIo.FileIO.get_fnm(path))}"')
-            print(f"  Path: {path}")
+            url = mProps.Props.get(item, "URL")
+            if url is None:
+                print("  URL: Value is None")
+                print("  Fnm: Unable to compute due to no URL is None")
+                print("  Path: Unable to compute due do no URL is None")
+            else:
+                path = mFileIo.FileIO.uri_to_path(uri_fnm=url, ensure_absolute=False)
+                print(f'  URL: "{url}"')
+                print(f'  Fnm: "{Path(Gallery.gallery_dir, mFileIo.FileIO.get_fnm(path))}"')
+                print(f"  Path: {path}")
         except mEx.PropertyNotFoundError:
             print("  URL: Property NOT Found")
             print("  Fnm: Unable to compute due to no URL Property")
             print("  Path: Unable to compute due do no URL Property")
+        except mEx.ConvertPathError:
+            print(f'  URL: "{url}"')
+            print("  Fnm: Unable to compute due to URL conversion error")
+            print("  Path: Unable to compute due do URL conversion error")
+
+        print(f'  Title: "{mProps.Props.get(item, "Title", "TITLE NOT FOUND")}"')
         try:
-            print(f'  Title: "{mProps.Props.get(item, "Title")}"')
-        except mEx.PropertyNotFoundError:
-            print("  Title: Property NOT Found")
-        try:
-            item_int_type = int(mProps.Props.get(item, "GalleryItemType"))
+            item_int_type = int(mProps.Props.get(item, "GalleryItemType", GalleryItemTypeEnum.EMPTY.value))
             print(f"  Type: {cls.get_item_type_str(GalleryItemTypeEnum(item_int_type))}")
         except mEx.PropertyNotFoundError:
             print("  Type: Property NOT Found")
 
+    @classmethod
+    def _report_gallery_obj(cls, item: GalleryObj) -> None:
+        if item is None:
+            print("Gallery item is null")
+            return
+
+        print("Gallery item information:")
+        try:
+            url = item.URL
+            if url is None:
+                print("  URL: Value is None")
+                print("  Fnm: Unable to compute due to no URL is None")
+                print("  Path: Unable to compute due do no URL is None")
+            else:
+                path = mFileIo.FileIO.uri_to_path(uri_fnm=url, ensure_absolute=False)
+                print(f'  URL: "{url}"')
+                print(f'  Fnm: "{Path(Gallery.gallery_dir, mFileIo.FileIO.get_fnm(path))}"')
+                print(f"  Path: {path}")
+        except mEx.PropertyNotFoundError:
+            print("  URL: Property NOT Found")
+            print("  Fnm: Unable to compute due to no URL Property")
+            print("  Path: Unable to compute due do no URL Property")
+        except mEx.ConvertPathError:
+            print(f'  URL: "{url}"')
+            print("  Fnm: Unable to compute due to URL conversion error")
+            print("  Path: Unable to compute due do URL conversion error")
+
+        print(f'  Title: "{item.Title}"')
+        try:
+            item_int_type = item.GalleryItemType
+            print(f"  Type: {cls.get_item_type_str(GalleryItemTypeEnum(item_int_type))}")
+        except mEx.PropertyNotFoundError:
+            print("  Type: Property NOT Found")
+
+    # endregion report_gallery_item()
+
     @staticmethod
-    def report_galeries() -> None:
+    def report_galleries() -> None:
+        """
+        Displays a list of galleries in the console
+        """
         gtp = mLo.Lo.create_instance_mcf(
             XGalleryThemeProvider, "com.sun.star.gallery.GalleryThemeProvider", raise_err=True
         )
@@ -400,6 +492,12 @@ class Gallery(metaclass=StaticProperty):
 
     @classmethod
     def report_gallery_items(cls, gallery_name: GalleryKind | str) -> None:
+        """
+        Displays Gallery Items information in console for a Gallery.
+
+        Args:
+            gallery_name (GalleryKind | str): Gallery kind
+        """
         try:
             gallery = cls.get_gallery(gallery_name)
             num_pics = gallery.getCount()

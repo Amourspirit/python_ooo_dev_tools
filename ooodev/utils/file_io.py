@@ -107,21 +107,21 @@ class FileIO:
     # region uri_to_path()
     @overload
     @classmethod
-    def uri_to_path(cls, uri_fnm: str) -> Path:
+    def uri_to_path(cls, uri_fnm: PathOrStr) -> Path:
         ...
 
     @overload
     @classmethod
-    def uri_to_path(cls, uri_fnm: str, ensure_absolute: bool) -> Path:
+    def uri_to_path(cls, uri_fnm: PathOrStr, ensure_absolute: bool) -> Path:
         ...
 
     @classmethod
-    def uri_to_path(cls, uri_fnm: str, ensure_absolute: bool = True) -> Path:
+    def uri_to_path(cls, uri_fnm: PathOrStr, ensure_absolute: bool = True) -> Path:
         """
         Converts uri file to path.
 
         Args:
-            uri_fnm (str): URI to convert
+            uri_fnm (PathOrStr): URI to convert
             ensure_absolute (bool): If ``True`` then ensures that the return path is absolute. Default is ``True``
 
         Raises:
