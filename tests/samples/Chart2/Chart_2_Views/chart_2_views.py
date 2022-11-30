@@ -49,13 +49,22 @@ class ChartKind(str, Enum):
 
 
 class Chart2View:
-    def __init__(self, data_fnm: PathOrStr, chart_kind: ChartKind) -> None:
+    def __init__(self, data_fnm: PathOrStr, chart_kind: ChartKind, **kwargs) -> None:
         _ = FileIO.is_exist_file(data_fnm, True)
         self._data_fnm = FileIO.get_absolute_path(data_fnm)
         self._chart_kind = chart_kind
+        so = kwargs.get("soffice", None)
+        if so:
+            _ = FileIO.is_exist_file(so, True)
+            self._soffice = str(FileIO.get_absolute_path(so))
+        else:
+            self._soffice = None
 
     def main(self) -> None:
-        loader = Lo.load_office(Lo.ConnectPipe())
+        if self._soffice:
+            loader = Lo.load_office(Lo.ConnectPipe(soffice=self._soffice))
+        else:
+            loader = Lo.load_office(Lo.ConnectPipe())
 
         try:
             doc = Calc.open_doc(fnm=self._data_fnm, loader=loader)

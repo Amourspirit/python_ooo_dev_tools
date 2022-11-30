@@ -13,8 +13,10 @@ class GalleryInfo:
         with Lo.Loader(Lo.ConnectPipe()) as loader:
 
             # list all the gallery themes (i.e. the sub-directories below gallery/)
-            # Gallery.report_galeries()
-            # Gallery.report_gallery_items(GalleryKind.SHAPES)
+            Gallery.report_galleries()
+            print()
+            Gallery.report_gallery_items(GalleryKind.SHAPES)
+            print()
             # return
             # list all the items for the Diagrams theme
             try:
@@ -29,9 +31,14 @@ class GalleryInfo:
                 # print(item_type)
                 gs = ("Sun", "Callout-6", "8-Pointed-Star", "Shape-3")
                 for g in gs:
-                    graphic = Gallery.find_gallery_graphic(g)
+                    itm = Gallery.find_gallery_obj(
+                        gallery_name=GalleryKind.SHAPES,
+                        name=g,
+                        search_match=SearchMatchKind.FULL,
+                        search_kind=SearchByKind.TITLE,
+                    )
+                    Gallery.report_gallery_item(itm)
 
-                    Info.show_interfaces(f"Graphic: {g}", graphic)
             except GalleryNotFoundError:
                 print("Gallery Item not found")
 

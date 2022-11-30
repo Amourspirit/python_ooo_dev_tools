@@ -2993,7 +2993,7 @@ def test_add_remove_border(loader) -> None:
         # add_border(sheet: XSpreadsheet, range_name: str)
         rng = Calc.add_border(sheet=sheet, range_name=rng_name)
         assert rng is not None
-        tbl_border = cast(TableBorder2, Props.get_property(prop_set=rng, name="TableBorder2"))
+        tbl_border = cast(TableBorder2, Props.get(rng, "TableBorder2"))
         assert tbl_border.LeftLine.Color == 0
         assert tbl_border.RightLine.Color == 0
         assert tbl_border.TopLine.Color == 0
@@ -3422,7 +3422,7 @@ def test_set_row_height(loader) -> None:
         height = 14
         cell_range = Calc.set_row_height(sheet=sheet, height=height, idx=idx)
         assert cell_range is not None
-        c_height = Props.get_property(prop_set=cell_range, name="Height")
+        c_height = Props.get(cell_range, "Height")
         assert c_height is not None
         # assert 0.1401 == 0.14 ± 1.4e-07
         # E         comparison failed

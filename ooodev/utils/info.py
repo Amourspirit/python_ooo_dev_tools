@@ -7,9 +7,6 @@ from pathlib import Path
 import mimetypes
 from typing import TYPE_CHECKING, Any, Tuple, List, Type, cast, overload, Optional
 import uno
-from ..events.event_singleton import _Events
-from ..events.lo_named_event import LoNamedEvent
-from .sys_info import SysInfo
 
 from com.sun.star.awt import XToolkit
 from com.sun.star.beans import XHierarchicalPropertySet
@@ -34,19 +31,21 @@ if TYPE_CHECKING:
     from com.sun.star.document import XDocumentProperties
     from com.sun.star.reflection import XIdlMethod
 
-
 from ooo.dyn.beans.property_value import PropertyValue
 from ooo.dyn.beans.property_concept import PropertyConceptEnum
 from ooo.dyn.beans.the_introspection import theIntrospection
 
-from . import lo as mLo
-from . import file_io as mFileIO
-from . import props as mProps
-
 from . import date_time_util as mDate
-from ..meta.static_meta import StaticProperty, classproperty
-from ..exceptions import ex as mEx
+from . import file_io as mFileIO
+from . import lo as mLo
+from . import props as mProps
 from ..events.args.event_args import EventArgs
+from ..events.event_singleton import _Events
+from ..events.lo_named_event import LoNamedEvent
+from ..exceptions import ex as mEx
+from ..meta.static_meta import StaticProperty, classproperty
+from .kind.info_paths_kind import InfoPathsKind as InfoPathsKind
+from .sys_info import SysInfo
 from .type_var import PathOrStr
 
 
@@ -370,12 +369,12 @@ class Info(metaclass=StaticProperty):
             raise mEx.PropertyError(node_path, f"Unable to access config properties for\n\n  '{node_path}'") from e
 
     @staticmethod
-    def get_paths(setting: str) -> str:
+    def get_paths(setting: str | InfoPathsKind) -> str:
         """
         Gets access to LO's predefined paths.
 
         Args:
-            setting (str): property value
+            setting (str | InfoPathsKind): property value
 
         Raises:
             ValueError: if unable to get paths
@@ -388,34 +387,11 @@ class Info(metaclass=StaticProperty):
             One group stores only a single path and the other group stores two or
             more paths - separated by a semicolon.
 
-            Some setting values (as listed in the OpenOffice docs for PathSettings)
-
-                - Addin
-                - AutoCorrect
-                - AutoText
-                - Backup
-                - Basic
-                - Bitmap
-                - Config
-                - Dictionary
-                - Favorite
-                - Filter
-                - Gallery
-                - Graphic
-                - Help
-                - Linguistic
-                - Module
-                - Palette
-                - Plugin
-                - Storage
-                - Temp
-                - Template
-                - UIConfig
-                - UserConfig
-                - UserDictionary (deprecated)
-                - Work
+            Some setting values (as listed in the OpenOffice docs for PathSettings) are
+            found in :py:class:`~.kind.info_paths_kind.InfoPathsKind`
 
         See Also:
+            - :py:class:`~.kind.info_paths_kind.InfoPathsKind`
             - :py:meth:`Info.get_dirs`
             - :ref:`ch03`
             - `Wiki Path Settings <https://wiki.openoffice.org/w/index.php?title=Documentation/DevGuide/OfficeDev/Path_Settings>`_
@@ -435,7 +411,7 @@ class Info(metaclass=StaticProperty):
         # Replaced by thePathSetting in LibreOffice 4.3
         try:
             prop_set = mLo.Lo.create_instance_mcf(XPropertySet, "com.sun.star.util.PathSettings", raise_err=True)
-            result = prop_set.getPropertyValue(setting)
+            result = prop_set.getPropertyValue(str(setting))
             if result is None:
                 raise ValueError(f"getPropertyValue() for {setting} yielded None")
             return str(result)
@@ -466,10 +442,10 @@ class Info(metaclass=StaticProperty):
         paths_arr = paths.split(";")
         if len(paths_arr) == 0:
             mLo.Lo.print(f"Cound not split paths for '{setting}'")
-            return [mFileIO.FileIO.uri_to_path(paths)]
+            return [mFileIO.FileIO.uri_to_path(mFileIO.FileIO.uri_absolute(paths))]
         dirs = []
         for el in paths_arr:
-            dirs.append(mFileIO.FileIO.uri_to_path(el))
+            dirs.append(mFileIO.FileIO.uri_to_path(mFileIO.FileIO.uri_absolute(el)))
         return dirs
 
     @classmethod
