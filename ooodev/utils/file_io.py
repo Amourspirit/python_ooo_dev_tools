@@ -4,6 +4,7 @@
 # region Imports
 from __future__ import annotations
 import os
+import re
 import tempfile
 import datetime
 import zipfile
@@ -15,12 +16,14 @@ from com.sun.star.io import XActiveDataSink
 from com.sun.star.io import XTextInputStream
 from com.sun.star.packages.zip import XZipFileAccess
 from com.sun.star.uno import Exception as UnoException
+from com.sun.star.uno import RuntimeException as UnoRuntimeException
 
 if TYPE_CHECKING:
     from com.sun.star.container import XNameAccess
     from com.sun.star.io import XInputStream
 
 from . import lo as mLo
+from ..exceptions import ex as mEx
 
 from .type_var import PathOrStr, Table
 
@@ -31,6 +34,7 @@ from .type_var import PathOrStr, Table
 # endregion imports
 
 _UTIL_PATH = str(Path(__file__).parent)
+_URI_FILE_RE = r"^(file:(?:/*))"
 
 
 class FileIO:
@@ -102,30 +106,60 @@ class FileIO:
         except Exception as e:
             raise Exception("Unable to convert '{fnm}'") from e
 
+    @staticmethod
+    def uri_absolute(uri: str) -> str:
+        """
+        Ensures a string ``uri`` is absolute.
+
+        Args:
+            uri (str): _description_
+
+        Returns:
+            str: Absolute uri
+        """
+        # converts
+        # file:///C:/Program%20Files/LibreOffice/program/../share/gallery/sounds/apert2.wav
+        # to
+        # file:///C:/Program%20Files/LibreOffice/share/gallery/sounds/apert2.wav
+        # https://tinyurl.com/2zryl94m
+        result = os.path.normpath(uri)
+        result = result.replace("\\", "/")
+        # result may now start with file:/ and not file:///
+
+        # add proper file:/// again
+        result = re.sub(_URI_FILE_RE, "file:///", result, 1)
+        return result
+
     # region uri_to_path()
     @overload
     @classmethod
-    def uri_to_path(cls, uri_fnm: str) -> Path:
+    def uri_to_path(cls, uri_fnm: PathOrStr) -> Path:
         ...
 
     @overload
     @classmethod
-    def uri_to_path(cls, uri_fnm: str, ensure_absolute: bool) -> Path:
+    def uri_to_path(cls, uri_fnm: PathOrStr, ensure_absolute: bool) -> Path:
         ...
 
     @classmethod
-    def uri_to_path(cls, uri_fnm: str, ensure_absolute: bool = True) -> Path:
+    def uri_to_path(cls, uri_fnm: PathOrStr, ensure_absolute: bool = True) -> Path:
         """
         Converts uri file to path.
 
         Args:
-            uri_fnm (str): URI to convert
+            uri_fnm (PathOrStr): URI to convert
             ensure_absolute (bool): If ``True`` then ensures that the return path is absolute. Default is ``True``
+
+        Raises:
+            ConvertPathError: If unable to convert.
 
         Returns:
             Path: Converted URI as path.
         """
-        sys_path = uno.fileUrlToSystemPath(str(uri_fnm))
+        try:
+            sys_path = uno.fileUrlToSystemPath(str(uri_fnm))
+        except UnoRuntimeException:
+            raise mEx.ConvertPathError(f'Couldn\'t convert file url to a system path: uri_fnm="{uri_fnm}"')
 
         p = Path(sys_path)
         if not ensure_absolute:

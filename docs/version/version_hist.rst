@@ -2,6 +2,24 @@
 Version History
 ***************
 
+Version 0.6.9
+=============
+
+Added ``FileIO.uri_absolute()``
+
+Added overload to ``props.get()``.
+
+``FileIO.uri_to_path()`` now raises ``ConvertPathError`` if unable to convert.
+
+Added an enum lookup option to ``Info.get_paths()``.
+
+Added ``utils.Gallery`` module.
+
+Version 0.6.8
+=============
+
+Added ``utils.adapter`` namespace and classes.
+
 Version 0.6.7
 =============
 

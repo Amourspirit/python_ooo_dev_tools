@@ -223,3 +223,10 @@ def test_append_to() -> None:
         assert f_txt == "Hello World\nNice Day\n"
     finally:
         FileIO.delete_file(tmp_file)
+
+
+def test_uri_absolute() -> None:
+    input = "file:///C:/Program%20Files/LibreOffice/program/../share/gallery/sounds/apert2.wav"
+    expected = "file:///C:/Program%20Files/LibreOffice/share/gallery/sounds/apert2.wav"
+    result = FileIO.uri_absolute(input)
+    assert result == expected

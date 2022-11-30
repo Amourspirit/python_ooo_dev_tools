@@ -17,6 +17,13 @@ def args_add(parser: argparse.ArgumentParser) -> None:
         choices=[e.value for e in ChartKind],
         help="Kind of chart to display (default: %(default)s)",
     )
+    parser.add_argument(
+        "-s",
+        "--soffice",
+        dest="soffice",
+        default=None,
+        help="Path to soffice",
+    )
 
 
 # region main()
@@ -45,7 +52,7 @@ def main() -> int:
 
     kind = ChartKind(args.kind)
 
-    cv = Chart2View(data_fnm=fnm, chart_kind=kind)
+    cv = Chart2View(data_fnm=fnm, chart_kind=kind, soffice=args.soffice)
     cv.main()
     return 0
 

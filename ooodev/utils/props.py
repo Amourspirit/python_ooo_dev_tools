@@ -4,7 +4,7 @@
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 # region Imports
 from __future__ import annotations
-from typing import Any, Iterable, List, Optional, Sequence, Tuple, TYPE_CHECKING, cast, overload
+from typing import Any, Iterable, Optional, Sequence, Tuple, TYPE_CHECKING, cast, overload
 import uno
 
 from com.sun.star.beans import PropertyAttribute  # const
@@ -29,6 +29,7 @@ if TYPE_CHECKING:
     # using lazy loading: https://snarky.ca/lazy-importing-in-python-3-7/
 from . import lo as mLo
 from . import info as mInfo
+from . import gen_util as gUtil
 
 from ..exceptions import ex as mEx
 
@@ -752,8 +753,23 @@ class Props:
         if len(errs) > 0:
             raise mEx.MultiError(errs)
 
+    # endregion ---------------- set properties -----------------------
+
+    # region ------------------- get properties ------------------------
+
+    # region get()
+    @overload
     @classmethod
     def get(cls, obj: object, name: str) -> Any:
+        ...
+
+    @overload
+    @classmethod
+    def get(cls, obj: object, name: str, default: Any) -> Any:
+        ...
+
+    @classmethod
+    def get(cls, obj: object, name: str, default: Any = gUtil.NULL_OBJ) -> Any:
         """
         Gets a property value from an object.
         ``obj`` must support ``XPropertySet`` interface
@@ -761,13 +777,18 @@ class Props:
         Args:
             obj (object): Object to get property from.
             name (str): Property Name.
+            default (Any, optional): Return value if property value is ``None``.
 
         Raises:
-            PropertyNotFoundError: If Property is not found
-            PropertyError: If any other error occurs.
+            PropertyNotFoundError: If Property is not found and default was not set.
+            PropertyError: If any other error occurs and default was not set.
 
         Returns:
-            Any: Property value
+            Any: Property value or default
+
+        Note:
+            If a ``default`` is not set then an error is raised if property is not found.
+            Otherwise, the ``default`` value is returned if property is not found.
         """
         try:
             if mInfo.Info.is_type_interface(obj, "com.sun.star.beans.XPropertySet"):
@@ -779,23 +800,27 @@ class Props:
             except AttributeError as e:
                 # handle a LibreOffice bug
                 success, val = cls._get_by_attribute(ps, name)
-                if success:
-                    return val
-                else:
+                if not success:
                     raise mEx.UnKnownError(
                         f'Something went wrong. Could not find getPropertyValue attribute on property set. Tried getting "{name}" manually but failed.'
                     )
             # it is perfeclty fine for a property to have a value of None
+            if val is None and default is not gUtil.NULL_OBJ:
+                return default
             return val
         except UnknownPropertyException:
             # the property name is not in the property set
+            if default is not gUtil.NULL_OBJ:
+                return default
             raise mEx.PropertyNotFoundError(name)
+        except mEx.UnKnownError:
+            raise
         except Exception as e:
+            if default is not gUtil.NULL_OBJ:
+                return default
             raise mEx.PropertyError(f'Error getting property: "{name}"') from e
 
-    # endregion ---------------- set properties -----------------------
-
-    # region ------------------- get properties ------------------------
+    # endregion get()
 
     # region    get_property()
     @overload
