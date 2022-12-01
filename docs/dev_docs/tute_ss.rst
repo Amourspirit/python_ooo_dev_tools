@@ -493,6 +493,21 @@ Here, we change the name of our sheet. To save our changes, we pass a filename a
 
 Whenever you edit a spreadsheet you’ve loaded from a file, you should always save the new, edited spreadsheet to a different filename than the original. That way, you’ll still have the original spreadsheet file to work with in case a bug in your code caused the new, saved file to have incorrect or corrupt data.
 
+
+Using ooodev:
+
+>>> from ooodev.utils.lo import Lo
+>>> loader = Lo.load_office(Lo.ConnectSocket(headless=True))
+>>> from ooodev.office.calc import Calc
+>>> doc = Calc.create_doc(loader=loader)
+>>> sheet = Calc.get_sheet(doc=doc, index=0)
+>>> 
+>>> # use the Office API to manipulate doc...
+>>> 
+>>> Calc.save_doc(doc, "foo.ods")
+>>> Lo.close_doc(doc)
+>>> lo.close_office()
+
 Creating and Removing Sheets
 ----------------------------
 
