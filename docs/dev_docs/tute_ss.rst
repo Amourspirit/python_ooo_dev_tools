@@ -458,105 +458,132 @@ Open multiple Excel files and compare data between spreadsheets.
 Check whether a spreadsheet has blank rows or invalid data in any cells and alert the user if it does.
 Read data from a spreadsheet and use it as the input for your Python programs.
 
-Writing Excel Documents
-=======================
+Writing Spreadsheet Documents
+=============================
 
-OpenPyXL also provides ways of writing data, meaning that your programs can create and edit spreadsheet files. With Python, it’s simple to create spreadsheets with thousands of rows of data.
+ooodev also provides ways of writing data, meaning that your programs can create and edit spreadsheet files. With Python, it’s simple to create spreadsheets with thousands of rows of data.
 
-Creating and Saving Excel Documents
------------------------------------
-
-Call the openpyxl.Workbook() function to create a new, blank Workbook object. Enter the following into the interactive shell:
-
->>> import openpyxl
->>> wb = openpyxl.Workbook() # Create a blank workbook.
->>> wb.sheetnames # It starts with one sheet.
-['Sheet']
->>> sheet = wb.active
->>> sheet.title
-'Sheet'
->>> sheet.title = 'Spam Bacon Eggs Sheet' # Change title.
->>> wb.sheetnames
-['Spam Bacon Eggs Sheet']
-
-The workbook will start off with a single sheet named Sheet. You can change the name of the sheet by storing a new string in its title attribute.
-
-Any time you modify the Workbook object or its sheets and cells, the spreadsheet file will not be saved until you call the save() workbook method. Enter the following into the interactive shell (with example.xlsx in the current working directory):
-
->>> import openpyxl
->>> wb = openpyxl.load_workbook('example.xlsx')
->>> sheet = wb.active
->>> sheet.title = 'Spam Spam Spam'
->>> wb.save('example_copy.xlsx') # Save the workbook.
-
-Here, we change the name of our sheet. To save our changes, we pass a filename as a string to the save() method. Passing a different filename than the original, such as 'example_copy.xlsx', saves the changes to a copy of the spreadsheet.
-
-Whenever you edit a spreadsheet you’ve loaded from a file, you should always save the new, edited spreadsheet to a different filename than the original. That way, you’ll still have the original spreadsheet file to work with in case a bug in your code caused the new, saved file to have incorrect or corrupt data.
-
-
-Using ooodev:
+A LO instance is required before python can interact with the objects. When the python program is finished it is important to close any document or LO instances or they will continue to run in the computer. This initialisation and finalisation code is required even if it is not shown in the examples.
 
 >>> from ooodev.utils.lo import Lo
 >>> loader = Lo.load_office(Lo.ConnectSocket(headless=True))
+Loading Office...
+>>> # use the Office API... NOTE: Following lines raise an error
+>>> Lo.close_doc(wb)
+Closing the document
+>>> Lo.close_office()
+Closing Office
+Office has already been requested to terminate
+True
+
+Creating and Saving Spreadsheet Documents
+-----------------------------------------
+
+Start a lo instance and use the Calc create_doc class to create a new, blank Workbook object. Enter the following into the interactive shell:
+
+>>> from ooodev.utils.lo import Lo
+>>> loader = Lo.load_office(Lo.ConnectSocket(headless=True))
+>>>
 >>> from ooodev.office.calc import Calc
->>> doc = Calc.create_doc(loader=loader)
->>> sheet = Calc.get_sheet(doc=doc, index=0)
->>> 
->>> # use the Office API to manipulate doc...
->>> 
->>> Calc.save_doc(doc, "foo.ods")
->>> Lo.close_doc(doc)
+>>> wb = Calc.create_doc(loader=loader)
+>>> ws = Calc.get_sheet(doc=wb, index=0)
+>>> Calc.get_sheet_name(ws)
+'Sheet1'
+>>> Calc.set_sheet_name(ws, 'Spam Bacon Eggs Sheet')
+True
+>>> Calc.get_sheet_name(ws)
+'Spam Bacon Eggs Sheet'
+>>> Calc.get_sheet_names(wb)
+('Spam Bacon Eggs Sheet',)
+>>> Calc.save_doc(wb, "foo.ods")
+>>>
+>>> Lo.close_doc(wb)
 >>> lo.close_office()
+
+The workbook will start off with a single sheet named Sheet. **You can change the name of the sheet by storing a new string in its title attribute.**
+
+Any time you modify the Workbook object or its sheets and cells, the spreadsheet file will not be saved until you call the save_doc() workbook method. Enter the following into the interactive shell (with example.xlsx in the current working directory):
+
+>>> from ooodev.utils.lo import Lo
+>>> loader = Lo.load_office(Lo.ConnectSocket(headless=True))
+>>>
+>>> from ooodev.office.calc import Calc
+>>> wb = Calc.open_doc('example.ods', loader)
+>>> ws = Calc.get_sheet(wb, 0)
+>>> Calc.set_sheet_name(ws, 'Spam Spam Spam')
+True
+>>> Calc.save_doc(wb, 'example_copy.ods')
+>>>
+>>> Lo.close_doc(wb)
+>>> Lo.close_office()
+
+Here, we change the name of our sheet. To save our changes, we pass a filename as a string to the save_doc() method. Passing a different filename than the original, such as 'example_copy.xlsx', saves the changes to a copy of the spreadsheet.
+
+Whenever you edit a spreadsheet you’ve loaded from a file, you should always save the new, edited spreadsheet to a different filename than the original. That way, you’ll still have the original spreadsheet file to work with in case a bug in your code caused the new, saved file to have incorrect or corrupt data.
 
 Creating and Removing Sheets
 ----------------------------
 
-Sheets can be added to and removed from a workbook with the create_sheet() method and del operator. Enter the following into the interactive shell:
+Sheets can be added to and removed from a workbook with the insert_sheet() method and del operator. Enter the following into the interactive shell:
 
->>> import openpyxl
->>> wb = openpyxl.Workbook()
->>> wb.sheetnames
-['Sheet']
->>> wb.create_sheet() # Add a new sheet.
-<Worksheet "Sheet1">
->>> wb.sheetnames
-['Sheet', 'Sheet1']
->>> # Create a new sheet at index 0.
->>> wb.create_sheet(index=0, title='First Sheet')
-<Worksheet "First Sheet">
->>> wb.sheetnames
-['First Sheet', 'Sheet', 'Sheet1']
->>> wb.create_sheet(index=2, title='Middle Sheet')
-<Worksheet "Middle Sheet">
->>> wb.sheetnames
-['First Sheet', 'Sheet', 'Middle Sheet', 'Sheet1']
+>>> from ooodev.utils.lo import Lo
+>>> loader = Lo.load_office(Lo.ConnectSocket(headless=True))
+>>>
+>>> from ooodev.office.calc import Calc
+>>> wb = Calc.create_doc(loader=loader)
+Creating Office document scalc
+>>> ws = Calc.get_sheet(doc=wb, index=0)
+>>> Calc.get_sheet_names(wb)
+('Sheet1',)
+>>> Calc.insert_sheet(wb, 'Sheet2', 1)
+>>> Calc.get_sheet_names(wb)
+('Sheet1', 'Sheet2')
+>>> Calc.insert_sheet(wb, 'First Sheet', 0)
+>>> Calc.get_sheet_names(wb)
+('First Sheet', 'Sheet1', 'Sheet2')
+>>> Calc.insert_sheet(wb, 'Middle Sheet', 2)
+>>> Calc.get_sheet_names(wb)
+('First Sheet', 'Sheet1', 'Middle Sheet', 'Sheet2')
 
-The create_sheet() method returns a new Worksheet object named SheetX, which by default is set to be the last sheet in the workbook. Optionally, the index and name of the new sheet can be specified with the index and title keyword arguments.
+The insert_sheet() method returns a new Worksheet object named SheetX, **which by default is set to be the last sheet in the workbook. Optionally, the index and name of the new sheet can be specified with the index and title keyword arguments.**
 
 Continue the previous example by entering the following:
 
->>> wb.sheetnames
-['First Sheet', 'Sheet', 'Middle Sheet', 'Sheet1']
->>> del wb['Middle Sheet']
->>> del wb['Sheet1']
->>> wb.sheetnames
-['First Sheet', 'Sheet']
+>>> Calc.get_sheet_names(wb)
+('First Sheet', 'Sheet1', 'Middle Sheet', 'Sheet2')
+>>> Calc.remove_sheet(wb, 'Middle Sheet')
+True
+>>> Calc.remove_sheet(wb, 'Sheet2')
+True
+>>> Calc.get_sheet_names(wb)
+('First Sheet', 'Sheet1')
+>>>
+>>> Lo.close_doc(wb)
+>>> Lo.close_office()
 
-You can use the del operator to delete a sheet from a workbook, just like you can use it to delete a key-value pair from a dictionary.
+You can use the remove_sheet method to remove a sheet from a workbook, **just like you can use it to delete a key-value pair from a dictionary.**
 
-Remember to call the save() method to save the changes after adding sheets to or removing sheets from the workbook.
+Remember to call the save_doc() method to save the changes after adding sheets to or removing sheets from the workbook.
 
 Writing Values to Cells
 -----------------------
 
 Writing values to cells is much like writing values to keys in a dictionary. Enter this into the interactive shell:
 
->>> import openpyxl
->>> wb = openpyxl.Workbook()
->>> sheet = wb['Sheet']
->>> sheet['A1'] = 'Hello, world!' # Edit the cell's value.
->>> sheet['A1'].value
+
+>>> from ooodev.utils.lo import Lo
+>>> loader = Lo.load_office(Lo.ConnectSocket(headless=True))
+>>>
+>>> from ooodev.office.calc import Calc
+>>> wb = Calc.create_doc(loader=loader)
+Creating Office document scalc
+>>> ws = Calc.get_sheet(doc=wb, index=0)
+>>> Calc.set_val('Hello, world!', ws, 'A1')
+>>> Calc.get_string(ws, 'A1')
 'Hello, world!'
+>>>
+>>> Lo.close_doc(wb)
+>>> Lo.close_office()
 
 If you have the cell’s coordinate as a string, you can use it just like a dictionary key on the Worksheet object to specify which cell to write to.
 
