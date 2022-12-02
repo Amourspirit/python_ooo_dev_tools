@@ -278,6 +278,8 @@ For |show_sheet_py|_, the ``doc_type`` value will be :py:attr:`.Lo.DocType.CALC`
 :py:meth:`.Lo.ext_to_format` is very far from comprehensive, but understands Office and MS spreadsheet formats, ``CSV``, ``RTF``, ``text``, ``HTML``, ``XHTML``, and ``PDF``.
 Other mappings can be added as required.
 
+.. _ch20_read_only_protect_view:
+
 20.1.1 Read-only and Protected Viewing
 --------------------------------------
 

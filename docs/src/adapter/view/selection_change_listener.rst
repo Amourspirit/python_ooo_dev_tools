@@ -1,3 +1,5 @@
+.. _adapter_view_selection_change_listener:
+
 Class SelectionChangeListener
 =============================
 

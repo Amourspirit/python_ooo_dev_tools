@@ -355,38 +355,17 @@ class Calc:
 
     @overload
     @classmethod
+    def get_sheet(cls, doc: XSpreadsheetDocument) -> XSpreadsheet:
+        ...
+
+    @overload
+    @classmethod
     def get_sheet(cls, doc: XSpreadsheetDocument, index: int) -> XSpreadsheet:
-        """
-        Gets a sheet of spreadsheet document
-
-        Args:
-            doc (XSpreadsheetDocument): Spreadsheet document
-            index (int): Zero based index of spreadsheet
-
-        Returns:
-            XSpreadsheet: Spreadsheet at index.
-
-        Raises:
-            Exception: If spreadsheet is not found
-        """
         ...
 
     @overload
     @classmethod
     def get_sheet(cls, doc: XSpreadsheetDocument, sheet_name: str) -> XSpreadsheet:
-        """
-        Gets a sheet of spreadsheet document
-
-        Args:
-            doc (XSpreadsheetDocument): Spreadsheet document
-            sheet_name (str): Name of spreadsheet
-
-        Returns:
-            XSpreadsheet: Spreadsheet with matching name.
-
-        Raises:
-            Exception: If spreadsheet is not found
-        """
         ...
 
     @classmethod
@@ -396,8 +375,8 @@ class Calc:
 
         Args:
             doc (XSpreadsheetDocument): Spreadsheet document
-            index (int): Zero based index of spreadsheet
-            sheet_name (str): Name of spreadsheet
+            index (int, optional): Zero based index of spreadsheet. Defaults to ``0``
+            sheet_name (str, optional): Name of spreadsheet
 
         Raises:
             Exception: If spreadsheet is not found
@@ -428,6 +407,8 @@ class Calc:
             if not check:
                 raise TypeError("get_sheet() got an unexpected keyword argument")
             ka[1] = kwargs.get("doc", None)
+            if count == 1:
+                return ka
             keys = ("index", "sheet_name")
             for key in keys:
                 if key in kwargs:
@@ -435,7 +416,7 @@ class Calc:
                     break
             return ka
 
-        if count != 2:
+        if not count in (1, 2):
             raise TypeError("get_sheet() got an invalid numer of arguments")
 
         kargs = get_kwargs()
@@ -443,11 +424,13 @@ class Calc:
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
 
+        if count == 1:
+            return cls._get_sheet_index(kargs[1], 0)
+
         if isinstance(kargs[2], int):
-            sht = cls._get_sheet_index(kargs[1], kargs[2])
-        else:
-            sht = cls._get_sheet_name(kargs[1], kargs[2])
-        return sht
+            return cls._get_sheet_index(kargs[1], kargs[2])
+
+        return cls._get_sheet_name(kargs[1], kargs[2])
 
     # endregion get_sheet()
 
