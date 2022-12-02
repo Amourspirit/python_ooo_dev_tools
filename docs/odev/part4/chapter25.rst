@@ -169,7 +169,7 @@ One way of doing this is to attach a XModifyListener_ interface to the open docu
 
 |mod_list|_ example utilizes one of two classes, ``ModifyListenerAdapter`` of |mod_list_adapter_py|_
 or ``ModifyListener`` of |mod_list_py|_. These classes are functionally the same.
-These two class are interchangable and are for example purposes. We also seen this in :ref:`ch04_listen_win`.
+These two class are interchangeable and are for example purposes. We also seen this in :ref:`ch04_listen_win`.
 
 We will focus on ``ModifyListenerAdapter`` here.
 
@@ -558,8 +558,108 @@ For example, :numref:`ch25fig_selection_sheet_data` shows the initial sheet of d
 
 Note that the selected cell when the sheet is first created is ``A1``.
 
+If the user carries out the following operations:
 
-Work in progress ...
+.. cssclass:: ul-list
+
+    - click in cell ``B2``
+    - click in cell ``A4``
+    - click in ``A5``
+    - change ``A5`` to ``4`` and press tab
+
+then the sheet will end up looking like :numref:`ch25fig_selection_sheet_modified_data`, with ``B5`` being the selected cell.
+
+..
+    figure 2
+
+.. cssclass:: screen_shot invert
+
+    .. _ch25fig_selection_sheet_modified_data:
+    .. figure:: https://user-images.githubusercontent.com/4193389/205191488-3df39fa0-2fdc-424f-b42a-2c9cd9039c56.png
+        :alt: SelectListener modified data
+        :figclass: align-center
+
+        :|sel_list|_ Modified Sheet.
+
+During these changes, ``on_selection_changed()`` will report:
+
+::
+
+    A2 value: 42.0
+    A3 value: 58.9
+    A4 value: -66.5
+    A5 value: 43.4
+    A5 value: 43.4
+    A5 has changed from 43.40 to 4.00
+
+The "value" lines state the value of a cell when it's first selected, and the "changed" lines report whether the cell was left changed when the focus moved to another cell.
+
+The output from ``on_selection_changed()`` shown above shows how the user moved around the spreadsheet, and changed the ``A5`` cell's contents from ``43.4`` to ``4``.
+
+``on_selection_changed()`` is defined as:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in select_listener.py
+        @staticmethod
+        def on_selection_changed(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+            event = cast("EventObject", event_args.event_data)
+            ctrl = Lo.qi(XController, event.Source)
+            if ctrl is None:
+                print("No ctrl for event source")
+                return
+            sl = cast(SelectionListener, kwargs["listener"])
+            addr = Calc.get_selected_cell_addr(sl._doc)
+            if addr is None:
+                return
+            try:
+                # better to wrap in try block.
+                # otherwise errors crahses office
+                if not Calc.is_equal_addresses(addr, sl.curr_addr):
+                    flt = sl._get_cell_float(sl.curr_addr)
+                    if flt is not None:
+                        if sl.curr_val is None:  # so previously stored value was null
+                            print(f"{Calc.get_cell_str(sl.curr_addr)} new value: {flt:.2f}")
+                        else:
+                            if sl.curr_val != flt:
+                                print(
+                                    f"{Calc.get_cell_str(sl.curr_addr)} has changed from {sl.curr_val:.2f} to {flt:.2f}"
+                                )
+
+                # update current address and value
+                sl.curr_addr = addr
+                sl.curr_val = sl._get_cell_float(addr)
+                if sl.curr_val is not None:
+                    print(f"{Calc.get_cell_str(sl.curr_addr)} value: {sl.curr_val}")
+            except Exception as e:
+                print(e)
+
+        def _get_cell_float(self, addr: CellAddress) -> float | None:
+            # get_val returns floats as float intance
+            obj = Calc.get_val(sheet=self.sheet, addr=addr)
+            if isinstance(obj, float):
+                return obj
+            return None
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+
+``on_selection_changed()`` is called whenever the user selects a new cell.
+The address of this new cell is obtained by :py:meth:`.Calc.get_selected_cell_addr`, which returns null if the user has selected a cell range.
+
+If the new selection is a cell then a series of comparisons are carried out between the previously selected cell address and
+value (stored in ``self.curr_addr`` and ``self.curr_val``) and the new address and its possible numerical value (stored in ``addr`` and ``flt``).
+At the end of the method the current address and value are updated with the new ones.
+
+XSelectionChangeListener_ shares a similar problem to XModifyListener_ in that a single user selection triggers multiple calls to ``selectionChanged()``.
+Clicking once inside a cell causes four calls, and an arrow key press may trigger two calls depending on how it's entered from the keyboard.
+
 
 .. |mod_list| replace:: Calc Modify Listener
 .. _mod_list: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/calc/odev_modify_listener
@@ -580,14 +680,14 @@ Work in progress ...
 .. |modify_listener| replace:: :ref:`ModifyListener <adapter_util_modify_listener>`
 .. |selection_change_listener| replace:: :ref:`SelectionChangeListener <adapter_view_selection_change_listener>`
 
-.. _XModifyListener: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1util_1_1XModifyListener.html
-.. _XTopWindowListener: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1awt_1_1XTopWindowListener.html
-.. _XSelectionChangeListener: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1view_1_1XSelectionChangeListener.html
-.. _XProtectable: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1util_1_1XProtectable.html
-.. _XModifyBroadcaster: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1util_1_1XModifyBroadcaster.html
 .. _EventObject: https://api.libreoffice.org/docs/idl/ref/structcom_1_1sun_1_1star_1_1lang_1_1EventObject.html
-.. _XInterface: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1uno_1_1XInterface.html
 .. _SpreadsheetDocument: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1sheet_1_1SpreadsheetDocument.html
-.. _XSpreadsheetDocument: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1sheet_1_1XSpreadsheetDocument.html
+.. _XInterface: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1uno_1_1XInterface.html
 .. _XModel: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1frame_1_1XModel.html
+.. _XModifyBroadcaster: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1util_1_1XModifyBroadcaster.html
+.. _XModifyListener: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1util_1_1XModifyListener.html
+.. _XProtectable: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1util_1_1XProtectable.html
+.. _XSelectionChangeListener: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1view_1_1XSelectionChangeListener.html
 .. _XSelectionSupplier: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1view_1_1XSelectionSupplier.html
+.. _XSpreadsheetDocument: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1sheet_1_1XSpreadsheetDocument.html
+.. _XTopWindowListener: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1awt_1_1XTopWindowListener.html
