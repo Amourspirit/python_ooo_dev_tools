@@ -19,7 +19,8 @@ class ModifyListener(AdapterBase, XModifyListener):
     makes it possible to receive events when a model object changes.
 
     See Also:
-        `API XModifyListener <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1util_1_1XModifyListener.html>`_
+        - :ref:`ch25_listening_for_modifications`
+        - `API XModifyListener <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1util_1_1XModifyListener.html>`_
     """
 
     def __init__(self, trigger_args: GenericArgs | None = None, doc: XComponent | None = None) -> None:

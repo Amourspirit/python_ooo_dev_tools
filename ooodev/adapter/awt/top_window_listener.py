@@ -18,7 +18,8 @@ class TopWindowListener(AdapterBase, XTopWindowListener):
     Makes it possible to receive window events.
 
     See Also:
-        `API XTopWindowListener <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1awt_1_1XTopWindowListener.html>`_
+        - :ref:`ch04_listen_win`
+        - `API XTopWindowListener <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1awt_1_1XTopWindowListener.html>`_
     """
 
     def __init__(self, trigger_args: GenericArgs | None = None, add_listener: bool = True) -> None:

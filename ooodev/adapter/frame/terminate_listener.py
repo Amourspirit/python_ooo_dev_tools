@@ -17,7 +17,9 @@ class TerminateListener(AdapterBase, XTerminateListener):
     Has to be provided if an object wants to receive an event when the master environment (e.g., desktop) is terminated.
 
     See Also:
-        `API XTerminateListener <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1frame_1_1XTerminateListener.html>`_
+        - :ref:`ch04_detect_end`
+        - :ref:`ch25_listening_close_box`
+        - `API XTerminateListener <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1frame_1_1XTerminateListener.html>`_
     """
 
     def __init__(self, trigger_args: GenericArgs | None = None, add_listener: bool = True) -> None:

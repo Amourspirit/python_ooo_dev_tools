@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.6.10
+==============
+
+Added overload to ``Calc.get_sheet()``
+
 Version 0.6.9
 =============
 

@@ -127,6 +127,7 @@ def test_get_sheet(loader) -> None:
             events.on(CalcNamedEvent.SHEET_GETTING, on)
             events.on(CalcNamedEvent.SHEET_GET, after)
             sheet_1_3 = Calc.get_sheet(doc=doc, index=0)
+            sheet_1_3 = Calc.get_sheet(doc)
 
         assert on_firing
         assert on_fired
@@ -149,7 +150,7 @@ def test_get_sheet(loader) -> None:
             Calc.get_sheet(doc=doc, name="Sheet1")
         with pytest.raises(TypeError):
             # Incorrect number of params
-            Calc.get_sheet(doc=doc)
+            Calc.get_sheet()
     finally:
         Lo.close_doc(doc=doc, deliver_ownership=False)
 

@@ -473,6 +473,8 @@ The program's output is:
 4.4 Bridge Shutdown Detection
 =============================
 
+.. _ch04_detect_shutdown_via_listener:
+
 4.4.1 Detecting Shutdown via Listener
 -------------------------------------
 
@@ -579,8 +581,9 @@ Office was killed while the python program was still running, so it never reache
 However, the XEventListener_ attached to the bridge did fire.
 (If you're wondering, office was killed Office by running ``loproc -k``, which stopped the soffice process. See: |dsearch|_)
 
+.. _ch04_detect_shutdown_via_event:
 
-4.4.1 Detecting Shutdown via Event
+4.4.2 Detecting Shutdown via Event
 ----------------------------------
 
 And finally it is possible use an |odev| event to shutdown.

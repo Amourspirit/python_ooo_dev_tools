@@ -18,7 +18,8 @@ class EventListener(AdapterBase, XEventListener):
     This listener must be attached manually.
 
     See Also:
-        `API XEventListener <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1lang_1_1XEventListener.html>`_
+        - :ref:`ch04_detect_shutdown_via_listener`
+        - `API XEventListener <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1lang_1_1XEventListener.html>`_
     """
 
     def __init__(self, trigger_args: GenericArgs | None = None) -> None:
