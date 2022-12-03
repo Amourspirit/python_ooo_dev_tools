@@ -1,8 +1,8 @@
 .. _ch25:
 
-*************************************
+*****************************
 Chapter 25. Monitoring Sheets
-*************************************
+*****************************
 
 .. topic:: Overview
 
@@ -298,7 +298,7 @@ and it responds by closing the document and Office:
             if doc is None:
                 return
 
-            mb = mLo.Lo.qi(XModifyBroadcaster, doc, True)
+            mb = Lo.qi(XModifyBroadcaster, doc, True)
             mb.addModifyListener(self)
 
     .. only:: html

@@ -20,7 +20,8 @@ class SelectionChangeListener(AdapterBase, XSelectionChangeListener):
     makes it possible to receive events when a model object changes.
 
     See Also:
-        `API XSelectionChangeListener <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1view_1_1XSelectionChangeListener.html>`_
+        - :ref:`ch25_listen_cell_select`
+        - `API XSelectionChangeListener <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1view_1_1XSelectionChangeListener.html>`_
     """
 
     def __init__(self, trigger_args: GenericArgs | None = None, doc: XComponent | None = None) -> None:
