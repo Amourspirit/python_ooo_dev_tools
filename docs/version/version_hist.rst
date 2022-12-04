@@ -7,6 +7,22 @@ Version 0.6.10
 
 Added overload to ``Calc.get_sheet()``
 
+Update ``Props.show_props()`` to support extra formating.
+
+Fix bug in ``Calc.get_function_names()``
+
+Removed unnecessary events from
+
+.. cssclass:: ul-list
+
+    - ``Calc.print_addresses()``
+    - ``Calc.print_array()``
+    - ``Calc.print_cell_address()``
+    - ``Calc.print_fun_arguments()``
+    - ``Calc.print_function_info()``
+    - ``Calc.print_head_foot.print_address``
+    - ``Calc.print_head_foot``
+
 Version 0.6.9
 =============
 

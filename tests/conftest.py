@@ -29,6 +29,13 @@ def tmp_path_session():
 
 @pytest.fixture(scope="session")
 def test_headless():
+    # windows/powershell
+    #   $env:NO_HEADLESS='1'; pytest; Remove-Item Env:\NO_HEADLESS
+    # linux
+    #  NO_HEADLESS="1" pytest
+    no_headless = os.environ.get("NO_HEADLESS", 0)
+    if no_headless == "1":
+        return False
     return True
 
 

@@ -57,7 +57,6 @@ from com.sun.star.util import XNumberFormatsSupplier
 from com.sun.star.util import XNumberFormatTypes
 
 if TYPE_CHECKING:
-    from com.sun.star.beans import PropertyValue
     from com.sun.star.beans import XPropertySet
     from com.sun.star.frame import XComponentLoader
     from com.sun.star.frame import XController
@@ -76,6 +75,7 @@ if TYPE_CHECKING:
     from com.sun.star.util import XSearchDescriptor
 
 from ooo.dyn.awt.point import Point
+from ooo.dyn.beans.property_value import PropertyValue
 from ooo.dyn.sheet.cell_delete_mode import CellDeleteMode
 from ooo.dyn.sheet.cell_flags import CellFlagsEnum as CellFlagsEnum
 from ooo.dyn.sheet.cell_insert_mode import CellInsertMode
@@ -393,6 +393,10 @@ class Calc:
 
         Note:
            For Event args, if ``index`` is available then ``name`` is ``None`` and if ``sheet_name`` is available then ``index`` is ``None``.
+
+        .. versionchanged:: 0.6.10
+
+            Added overload ``get_sheet(cls, doc: XSpreadsheetDocument) -> XSpreadsheet``
         """
         ordered_keys = (1, 2)
         kargs_len = len(kwargs)
@@ -2642,24 +2646,17 @@ class Calc:
         Returns:
             None:
 
-        :events:
-           .. include:: ../../resources/global/printing_events.rst
-
-        Note:
-            .. include:: ../../resources/global/printing_note.rst
-
         See Also:
             - :ref:`ch21_format_data_console`
             - :py:data:`~.type_var.Table`
 
         .. versionchanged:: 0.6.6
             Added ``format_opt`` parameter
+
+        .. versionchanged:: 0.6.10
+
+            Removed cancel event args.
         """
-        cargs = CancelEventArgs(Calc.print_array.__qualname__)
-        cargs.event_data = {"vals": vals}
-        _Events().trigger(GblNamedEvent.PRINTING, cargs)
-        if cargs.cancel:
-            return
         row_len = len(vals)
         if row_len == 0:
             print("No data in array to print")
@@ -4154,16 +4151,10 @@ class Calc:
         Returns:
             None:
 
-        :events:
-           .. include:: ../../resources/global/printing_events.rst
+        .. versionchanged:: 0.6.10
 
-        Note:
-            .. include:: ../../resources/global/printing_note.rst
+            Removed cancel event args.
         """
-        cargs = CancelEventArgs(Calc.print_cell_address.__qualname__)
-        _Events().trigger(GblNamedEvent.PRINTING, cargs)
-        if cargs.cancel:
-            return
         ordered_keys = (1,)
         kargs_len = len(kwargs)
         count = len(args) + kargs_len
@@ -4233,16 +4224,10 @@ class Calc:
         Returns:
             None:
 
-        :events:
-           .. include:: ../../resources/global/printing_events.rst
+        .. versionchanged:: 0.6.10
 
-        Note:
-            .. include:: ../../resources/global/printing_note.rst
+            Removed cancel event args.
         """
-        cargs = CancelEventArgs(Calc.print_address.__qualname__)
-        _Events().trigger(GblNamedEvent.PRINTING, cargs)
-        if cargs.cancel:
-            return
         ordered_keys = (1,)
         kargs_len = len(kwargs)
         count = len(args) + kargs_len
@@ -4290,16 +4275,10 @@ class Calc:
         Returns:
             None:
 
-        :events:
-           .. include:: ../../resources/global/printing_events.rst
+        .. versionchanged:: 0.6.10
 
-        Note:
-            .. include:: ../../resources/global/printing_note.rst
+            Removed cancel event args.
         """
-        cargs = CancelEventArgs(Calc.print_addresses.__qualname__)
-        _Events().trigger(GblNamedEvent.PRINTING, cargs)
-        if cargs.cancel:
-            return
         print(f"No of cellrange addresses: {len(cr_addrs)}")
         for cr_addr in cr_addrs:
             cls.print_address(cr_addr=cr_addr)
@@ -6078,20 +6057,14 @@ class Calc:
         Returns:
             None:
 
-        :events:
-           .. include:: ../../resources/global/printing_events.rst
+        .. versionchanged:: 0.6.10
 
-        Note:
-            .. include:: ../../resources/global/printing_note.rst
+            Removed cancel event args.
         """
-        cargs = CancelEventArgs(Calc.print_function_info.__qualname__)
-        _Events().trigger(GblNamedEvent.PRINTING, cargs)
-        if cargs.cancel:
-            return
         prop_vals = cls._find_function_by_name(func_nm=func_name)
         if prop_vals is None:
             return
-        mProps.Props.show_props(prop_kind=func_name, props_set=prop_vals)
+        mProps.Props.show_props(func_name, prop_vals)
         cls.print_fun_arguments(prop_vals)
         print()
 
@@ -6106,35 +6079,21 @@ class Calc:
         Returns:
             None:
 
-        :events:
-           .. include:: ../../resources/global/printing_events.rst
+        .. versionchanged:: 0.6.10
 
-        Note:
-            .. include:: ../../resources/global/printing_note.rst
-
-        Note:
-            Event args ``event_data`` is set to ``prop_vals``
+            Removed cancel event args.
         """
-        cargs = CancelEventArgs(Calc.print_fun_arguments.__qualname__)
-        cargs.event_data = prop_vals
-        _Events().trigger(GblNamedEvent.PRINTING, cargs)
-        if cargs.cancel:
-            return
-        fargs: Sequence[FunctionArgument] = mProps.Props.get_value(name="Arguments", props=prop_vals)
+        fargs = cast("Sequence[FunctionArgument]", mProps.Props.get_value(name="Arguments", props=prop_vals))
         if fargs is None:
             print("No arguments found")
             return
 
         print(f"No. of arguments: {len(fargs)}")
-        for i, arg in enumerate(fargs):
-            cls._print_fun_argument(i, arg)
-
-    @staticmethod
-    def _print_fun_argument(i: int, fa: FunctionArgument) -> None:
-        print(f"{i+1}. Argument name: {fa.Name}")
-        print(f"  Description: '{fa.Description}'")
-        print(f"  Is optional?: {fa.IsOptional}")
-        print()
+        for i, fa in enumerate(fargs):
+            print(f"{i+1}. Argument name: {fa.Name}")
+            print(f"  Description: '{fa.Description}'")
+            print(f"  Is optional?: {fa.IsOptional}")
+            print()
 
     @staticmethod
     def get_recent_functions() -> Tuple[int, ...] | None:
@@ -6446,21 +6405,10 @@ class Calc:
         Returns:
             None:
 
-        :events:
-           .. include:: ../../resources/global/printing_events.rst
+        .. versionchanged:: 0.6.10
 
-
-        Note:
-            .. include:: ../../resources/global/printing_note.rst
-
-        Note:
-           Event args ``event_data`` is a dictionary containing all method parameters.
+            Removed cancel event args.
         """
-        cargs = CancelEventArgs(Calc.print_head_foot.__qualname__)
-        cargs.event_data = {"title": title, "hfc": hfc}
-        _Events().trigger(GblNamedEvent.PRINTING, cargs)
-        if cargs.cancel:
-            return
         left = hfc.getLeftText()
         center = hfc.getCenterText()
         right = hfc.getRightText()

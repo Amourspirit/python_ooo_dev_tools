@@ -2246,7 +2246,9 @@ class Lo(metaclass=StaticProperty):
             return
         col_count = 1 if num_per_line < 1 else num_per_line
 
-        lst_2d = mThelper.TableHelper.convert_1d_to_2d(seq_obj=sorted(names, key=str.casefold), col_count=col_count)
+        lst_2d = mThelper.TableHelper.convert_1d_to_2d(
+            seq_obj=sorted(names, key=str.casefold), col_count=col_count, empty_cell_val=""
+        )
         longest = mThelper.TableHelper.get_largest_str(names)
         fmt_len = longest + 1
         if longest > 0:

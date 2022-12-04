@@ -1851,9 +1851,6 @@ def test_get_array(loader) -> None:
 
 def test_print_array(capsys: pytest.CaptureFixture) -> None:
     from ooodev.office.calc import Calc
-    from ooodev.events.args.cancel_event_args import CancelEventArgs
-    from ooodev.events.lo_events import Events, is_meth_event
-    from ooodev.events.gbl_named_event import GblNamedEvent
 
     capsys.readouterr()  # clear buffer
     Calc.print_array([])
@@ -1872,21 +1869,6 @@ def test_print_array(capsys: pytest.CaptureFixture) -> None:
 
 """
     )
-
-    on_firing = False
-
-    def on(source: Any, args: CancelEventArgs) -> None:
-        nonlocal on_firing
-        if is_meth_event(source, Calc.print_array):
-            args.cancel = True
-            on_firing = True
-
-    events = Events()
-    events.on(GblNamedEvent.PRINTING, on)
-    Calc.print_array([])
-    assert on_firing is True
-    captured = capsys.readouterr()
-    assert captured.out == ""
 
 
 def test_get_float_array(loader) -> None:
