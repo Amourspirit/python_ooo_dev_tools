@@ -114,7 +114,7 @@ class GoalDivergenceError(Exception):
             message (Any, optional): Message of error
         """
         if message is None:
-            message = f"Divergence error: {divergence:.4f}"
+            message = f"Divergence error: {divergence}"
         super().__init__(divergence, message)
 
     def __str__(self) -> str:

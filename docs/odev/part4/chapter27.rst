@@ -8,9 +8,9 @@ Chapter 27. Functions and Data Analysis
 
     Calling Calc Functions from Code; Pivot Tables; Goal Seek; Linear and Nonlinear Solving (using ``SCO``, ``DEPS``)
 
-    Examples: |fun_ex|_
+    Examples: |fun_ex|_ and |pivot_ex|_
 
-This chapter looks at how to utilize Calc's spreadsheet functions directly from Java, and
+This chapter looks at how to utilize Calc's spreadsheet functions directly from Python, and
 then examines four of Calc's data analysis features: pivot tables, goal seeking, and linear and nonlinear solving.
 There are two nonlinear examples, one using the ``SCO`` solver, the using employing ``DEPS``.
 
@@ -552,6 +552,462 @@ This information is printed by :py:meth:`.Calc.print_fun_arguments`:
 27.2 Pivot Tables
 =================
 
+Pivot tables are explained in detail in chapter 8 of the Calc User's Guide.
+They allow a user to view a spreadsheet consisting of columns of data in a variety of table formats, thereby highlighting the relationships between the columns.
+For example, :numref:`ch27fig_pivottable1_sheet` shows the small spreadsheet in ``pivottable1.ods`` of the |pivot_ex|_ example.
+
+..
+    figure 1
+
+.. cssclass:: screen_shot invert
+
+    .. _ch27fig_pivottable1_sheet:
+    .. figure:: https://user-images.githubusercontent.com/4193389/205520246-082f61cc-7f6a-46f2-88c6-1eed254735f7.png
+        :alt: The pivottable1 Spreadsheet
+        :figclass: align-center
+
+        :The ``pivottable1.ods`` Spreadsheet.
+
+The spreadsheet uses a database-like organization, with each row acting as a record, and each column is a different type/kind of information.
+This formatting style is described in chapter 13 "Calc as a Simple Database" in the User Guide.
+
+The drawback of this kind of data structuring is that it can be difficult to see the underlying relationships between the columns;
+this is where pivot tables can help.
+
+For example, a pivot table can be generated showing how the ``Category`` column affects ``Revenue`` (see :numref:`ch27fig_cat_aff_rev`).
+
+..
+    figure 2
+
+.. cssclass:: screen_shot invert
+
+    .. _ch27fig_cat_aff_rev:
+    .. figure:: https://user-images.githubusercontent.com/4193389/205520669-7efe4d7e-b7ad-4b3a-a8cb-d306f7a2174b.png
+        :alt: Category Affecting Revenue
+        :figclass: align-center
+
+        :``Category`` Affecting ``Revenue``
+
+
+Note that the pivot table shows the ``revenue`` sum in column ``B``, since several revenue entries in the original sheet are covered by each category.
+
+Alternatively, it's possible to see how ``Period`` and ``Category`` interact to affect the ``revenue``, as in :numref:`ch27fig_period_cat_aff_rev`.
+
+..
+    figure 3
+
+.. cssclass:: screen_shot invert
+
+    .. _ch27fig_period_cat_aff_rev:
+    .. figure:: https://user-images.githubusercontent.com/4193389/205520849-496890b0-3a27-420f-8d8e-a42e524e4c13.png
+        :alt: Period and Category Affect on "Revenue"
+        :figclass: align-center
+
+        :``Period`` and ``Category`` Affect on ``Revenue``
+
+The ordering of the ``Period`` values can be changed by clicking on the arrow next to the ``Period`` text in cell ``A2``, then selecting a custom sort (:abbreviation:`i.e.` ``Jan``, ``Feb``, ``Mar``, :abbreviation:`etc.`).
+
+The ``Total Result`` row and column are added automatically, and can be changed easily.
+It's also possible to change the way that the revenue data is grouped (:abbreviation:`i.e.` it can be averaged instead of being summed).
+
+Pivot tables are straightforward to create and modify via Calc's GUI, starting from the Data, Pivot Table, Create menu item.
+Calc automatically selects all the cells used in the database-like table like the one in :numref:`ch27fig_pivottable1_sheet`, and displays the layout dialog shown in :numref:`ch27fig_pivot_layout_gui`.
+
+..
+    figure 4
+
+.. cssclass:: screen_shot invert
+
+    .. _ch27fig_pivot_layout_gui:
+    .. figure:: https://user-images.githubusercontent.com/4193389/205521274-abd35e52-3c15-48ae-9662-f800a31c2d18.png
+        :alt: The Pivot Table Layout GUI.
+        :figclass: align-center
+
+        :The Pivot Table Layout GUI.
+
+The right-most "Available Fields" list contains the names of the columns in the sheet, while the other four fields (Filters, Column, Row, and Data) are empty.
+:numref:`ch27fig_pivot_layout_gui` shows a bug in the current version of the Pivot Table GUI – the addition of a "Data" name in the "Column" fields list.
+This name can be ignored since it doesn't appear in the rendered pivot table.
+
+The pivot table layout in :numref:`ch27fig_layout_for_fig3` is easily created by dragging the ``Period`` name to the Row fields list,
+``Category`` to the Column fields list, and ``Revenue`` to the Data fields list, where it's converted into ``Sum - Revenue``.
+
+..
+    figure 5
+
+.. cssclass:: screen_shot invert
+
+    .. _ch27fig_layout_for_fig3:
+    .. figure:: https://user-images.githubusercontent.com/4193389/205521690-9c24d7d7-39a7-4608-ae7d-de810c8123f8.png
+        :alt: The Layout for the Pivot Table
+        :figclass: align-center
+
+        :The Layout for the Pivot Table in :numref:`ch27fig_period_cat_aff_rev`.
+
+.. _ch27_pivot_tables_in_api:
+
+Pivot Tables in the API
+-----------------------
+
+The Calc API refers to pivot tables by their old Office name, DataPilot tables. The relationships between the DataPilotservices and interfaces are shown in :numref:`ch27fig_data_pilot_srv_interfaces`.
+
+..
+    figure 6
+
+.. cssclass:: diagram invert
+
+    .. _ch27fig_data_pilot_srv_interfaces:
+    .. figure:: https://user-images.githubusercontent.com/4193389/205521932-0baaac79-5821-47ae-8e4c-9a68cb9e4111.png
+        :alt: The DataPilot Services and Interfaces
+        :figclass: align-center
+
+        :The DataPilot Services and Interfaces.
+
+:numref:`ch27fig_data_pilot_srv_interfaces` is best understood by reading downwards: a DataPilotTables_ service (note the ``s``) is a sequence of DataPilotTable_ services.
+Each table contains a DataPilotFields_ service (note the ``s``) which manages a sequence of DataPilotField_ objects.
+
+Each DataPilotField_ is a named property set, representing a column in the source sheet.
+For example, in the following code, four pilot fields will be created for the ``pivottable1.ods`` sheet shown in :numref:`ch27fig_pivottable1_sheet`,
+one each for the columns named ``Year``, ``Period``, ``Category``, and ``Revenue``.
+
+:numref:`ch27fig_data_pilot_srv_interfaces` mentions one of the more important services DataPilotDescriptor_, which does the hard work of converting sheet columns into pilot fields.
+DataPilotDescriptor_ is also responsible for assigning each pilot field to one of the Filters, Column, Row, or Data field lists.
+
+The |pivot_ex1_py|_ example illustrates how to create the pivot table shown in :numref:`ch27fig_period_cat_aff_rev`.
+The program begins by opening the ``pivottable1.ods`` file (:numref:`ch27fig_pivottable1_sheet`):
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in pivot_table1.py
+        def main(self) -> None:
+            loader = Lo.load_office(Lo.ConnectSocket())
+
+            try:
+                doc = Calc.open_doc(fnm=self._fnm, loader=loader)
+
+                GUI.set_visible(is_visible=True, odoc=doc)
+
+                sheet = Calc.get_sheet(doc=doc)
+                dp_sheet = Calc.insert_sheet(doc=doc, name="Pivot Table", idx=1)
+
+                self._create_pivot_table(sheet=sheet, dp_sheet=dp_sheet)
+                Calc.set_active_sheet(doc=doc, sheet=dp_sheet)
+
+                if self._out_fnm:
+                    Lo.save_doc(doc=doc, fnm=self._out_fnm)
+
+                msg_result = MsgBox.msgbox(
+                    "Do you wish to close document?",
+                    "All done",
+                    boxtype=MessageBoxType.QUERYBOX,
+                    buttons=MessageBoxButtonsEnum.BUTTONS_YES_NO,
+                )
+                if msg_result == MessageBoxResultsEnum.YES:
+                    Lo.close_doc(doc=doc, deliver_ownership=True)
+                    Lo.close_office()
+                else:
+                    print("Keeping document open")
+
+            except Exception:
+                Lo.close_office()
+                raise
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+A second sheet (called ``dp_sheet``) is created to hold the generated pivot table, and ``_create_pivot_table()`` is called:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in pivot_table1.py
+        def _create_pivot_table(self, sheet: XSpreadsheet, dp_sheet: XSpreadsheet) -> XDataPilotTable | None:
+            cell_range = Calc.find_used_range(sheet)
+            print(f"The used area is: { Calc.get_range_str(cell_range)}")
+            print()
+
+            dp_tables = Calc.get_pilot_tables(sheet)
+            dp_desc = dp_tables.createDataPilotDescriptor()
+            dp_desc.setSourceRange(Calc.get_address(cell_range))
+
+            # XIndexAccess fields = dpDesc.getDataPilotFields();
+            fields = dp_desc.getHiddenFields()
+            field_names = Lo.get_container_names(con=fields)
+            print(f"Field Names ({len(field_names)}):")
+            for name in field_names:
+                print(f"  {name}")
+
+            # properties defined in DataPilotField
+
+            # set column field
+            props = Lo.find_container_props(con=fields, nm="Category")
+            Props.set(props, Orientation=DataPilotFieldOrientation.COLUMN)
+
+            # set row field
+            props = Lo.find_container_props(con=fields, nm="Period")
+            Props.set(props, Orientation=DataPilotFieldOrientation.ROW)
+
+            # set data field, calculating the sum
+            props = Lo.find_container_props(con=fields, nm="Revenue")
+            Props.set(props, Orientation=DataPilotFieldOrientation.DATA)
+            Props.set(props, Function=GeneralFunction.SUM)
+
+            # place onto sheet
+            dest_addr = Calc.get_cell_address(sheet=dp_sheet, cell_name="A1")
+            dp_tables.insertNewByName("PivotTableExample", dest_addr, dp_desc)
+            Calc.set_col_width(sheet=dp_sheet, width=60, idx=0)
+            # A column; in mm
+
+            # Usually the table is not fully updated. The cells are often
+            # drawn with #VALUE! contents (?).
+
+            # This can be fixed by explicitly refreshing the table, but it has to
+            # be accessed via the sheet or the tables container is considered
+            # empty, and the table is not found.
+
+            dp_tables2 = Calc.get_pilot_tables(sheet=dp_sheet)
+            # return self._refresh_table(dp_tables=dp_tables2, table_name="PivotTableExample")
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+All the sheet's data is selected by calling :py:meth:`.Calc.find_used_range`.
+Then :py:meth:`.Calc.get_pilot_tables` obtains the DataPilotTables_ service:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in Calc class
+        @staticmethod
+        def get_pilot_table(dp_tables: XDataPilotTables, name: str) -> XDataPilotTable:
+            try:
+                otable = dp_tables.getByName(name)
+                if otable is None:
+                    raise Exception(f"Did not find data pilot table '{name}'")
+                result = Lo.qi(XDataPilotTable, otable, raise_err=True)
+                return result
+            except Exception as e:
+                raise Exception(f"Pilot table lookup failed for '{name}'") from e
+
+        get_pivot_table = get_pilot_table
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+Calc.getPilotTables() utilizes the XDataPilotTablesSupplier_ interface of the Spreadsheet_ service to obtain the DataPilotTables_ service.
+
+|pivot_ex1_py|_'s task is to create a new pilot table, which it does indirectly by creating a new pilot description.
+After this pilot description has been initialized, it will be added to the DataPilotTables_ service as a new pilot table.
+
+An empty pilot description is created by calling ``XDataPilotTables.createDataPilotDescriptor()``:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in pivot_table1.py
+        dp_tables = Calc.get_pilot_tables(sheet)
+        dp_desc = dp_tables.createDataPilotDescriptor()
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+The new XDataPilotDescriptor reference (``dp_desc``) creates a pilot table by carrying out two tasks- loading the sheet data into the pilot table,
+and assigning the resulting pilot fields to the Filters, Column, Row, and Data fields in the descriptor.
+This latter task is similar to what the Calc user does in the GUI's layout window in :numref:`ch27fig_layout_for_fig3`.
+
+The descriptor is assigned a source range that spans all the data:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        dp_desc.setSourceRange(Calc.get_address(cell_range))
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+It converts each detected column into a DataPilotField_ service, which is a named property set; the name is the column heading.
+
+These pilot fields are conceptually stored in the "Available Fields" list shown in the layout window in :numref:`ch27fig_layout_for_fig3`,
+and are retrieved by calling ``XDataPilotDescriptor.getHiddenFields()``:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in pivot_table1.py
+        fields = dp_desc.getHiddenFields()
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+It's useful to list the names of these pilot fields:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in pivot_table1.py
+        field_names = Lo.get_container_names(con=fields)
+        print(f"Field Names ({len(field_names)}):")
+        for name in field_names:
+            print(f"  {name}")
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+The output for the spreadsheet in :numref:`ch27fig_pivottable1_sheet` is:
+
+::
+
+    Field Names (5):
+      Year
+      Period
+      Category
+      Revenue
+      Data
+
+This list includes the strange "Data" pilot field which you may remember also cropped up in the layout window in :numref:`ch27fig_pivot_layout_gui`.
+
+The second task is to assign selected pilot fields to the Filters, Column, Row, and Data field lists.
+The standard way of doing this is illustrated below for the case of assigning the ``Category`` pilot field to the Column field list:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in PivotTable1._create_pivot_table()
+        props = Lo.find_container_props(con=fields, nm="Category")
+        Props.set(props, Orientation=DataPilotFieldOrientation.COLUMN)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+The fields variable refers to all the pilot fields as an indexed container.
+
+:py:meth:`.Lo.find_container_props` searches through that container looking for the specified field name.
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in Lo class
+        @classmethod
+        def find_container_props(cls, con: XIndexAccess, nm: str) -> XPropertySet | None:
+            if con is None:
+                raise TypeError("Container is null")
+            for i in range(con.getCount()):
+                try:
+                    el = con.getByIndex(i)
+                    named = cls.qi(XNamed, el)
+                    if named and named.getName() == nm:
+                        return cls.qi(XPropertySet, el)
+                except Exception:
+                    cls.print(f"Could not access element {i}")
+            cls.print(f"Could not find a '{nm}' property set in the container")
+            return None
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+The returned property set is an instance of the DataPilotField_ service, so a complete list of all the properties can be found in its documentation.
+
+The important property for our needs is ``Orientation`` which can be assigned a DataPilotFieldOrientation_ constant, whose values are ``HIDDEN``, ``COLUMN``, ``ROW``, ``PAGE``, and ``DATA``,
+representing the field lists in the layout window.
+
+Once the required pilot fields have been assigned to field lists, the new pivot table is added to the other tables and to the sheet by calling ``XDataPilotTables.insertNewByName()``.
+It takes three arguments: a unique name for the table, the cell address where the table will be drawn, and the completed pilot descriptor:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in PivotTable1._create_pivot_table()
+        dest_addr = Calc.get_cell_address(sheet=dp_sheet, cell_name="A1")
+        dp_tables.insertNewByName("PivotTableExample", dest_addr, dp_desc)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+This code should mark the end of the ``_create_pivot_table()`` method, but it was found that more complex pivot tables would often not be correctly drawn.
+The cells in the Data field would be left containing the word ``#VALUE!``.
+This problem can be fixed by explicitly requesting a refresh of the pivot table, using:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in PivotTable1._create_pivot_table()
+        def _create_pivot_table(self, sheet: XSpreadsheet, dp_sheet: XSpreadsheet) -> XDataPilotTable | None:
+            # ...
+            dp_tables2 = Calc.get_pilot_tables(sheet=dp_sheet)
+            return self._refresh_table(dp_tables=dp_tables2, table_name="PivotTableExample")
+
+        def _refresh_table(self, dp_tables: XDataPilotTables, table_name: str) -> XDataPilotTable | None:
+            nms = dp_tables.getElementNames()
+            print(f"No. of DP tables: {len(nms)}")
+            for nm in nms:
+                print(f"  {nm}")
+
+            dp_table = Calc.get_pilot_table(dp_tables=dp_tables, name=table_name)
+            if dp_table is not None:
+                dp_table.refresh()
+            return dp_table
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+:py:meth:`.Calc.get_pilot_table` searches XDataPilotTables_, which is a named container of XDataPilotTable_ objects.
+
+Oddly enough, it's not enough to call :py:meth:`.Calc.get_pilot_table` on the current XDataPilotTables_ reference (called ``dp_tables`` in ``_create_pivot_table()``), since the new pivot table isn't found.
+
+.. _ch27_goal_seek:
+
+27.3 Seeking a Goal
+===================
+
+The Tools, Goal Seek menu item in Calc allows a formula to be executed 'backwards'.
+Instead of supplying the input to a formula, and obtaining the formula's result,
+the result is given and "goal seek" works backwards through the formula to calculate the value that produces the result.
+
+
 Work in progress ...
 
 .. |calc_add_in| replace:: Calc Add-in Functions
@@ -563,8 +1019,22 @@ Work in progress ...
 .. |fun_ex_py| replace:: calc_functions.py
 .. _fun_ex_py: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/calc/odev_functions/calc_functions.py
 
+.. |pivot_ex| replace:: Pivot Table
+.. _pivot_ex: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/calc/odev_pivot_table
+
+.. |pivot_ex1_py| replace:: pivot_table1.py
+.. _pivot_ex1_py: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/calc/odev_pivot_table/pivot_table1.py
+
 .. _XFunctionAccess: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1sheet_1_1XFunctionAccess.html
 .. _XCellRange: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1table_1_1XCellRange.html
 .. _XFunctionDescriptions: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1sheet_1_1XFunctionDescriptions.html
 .. _PropertyValue: https://api.libreoffice.org/docs/idl/ref/structcom_1_1sun_1_1star_1_1beans_1_1PropertyValue.html
 .. _FunctionArgument: https://api.libreoffice.org/docs/idl/ref/structcom_1_1sun_1_1star_1_1sheet_1_1FunctionArgument.html
+.. _DataPilotTables: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1sheet_1_1DataPilotTables.html
+.. _DataPilotTable: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1sheet_1_1DataPilotTable.html
+.. _DataPilotFields: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1sheet_1_1DataPilotFields.html
+.. _DataPilotField: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1sheet_1_1DataPilotField.html
+.. _DataPilotDescriptor: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1sheet_1_1DataPilotDescriptor.html
+.. _XDataPilotTablesSupplier: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1sheet_1_1XDataPilotTablesSupplier.html
+.. _Spreadsheet: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1sheet_1_1Spreadsheet.html
+.. _DataPilotFieldOrientation: https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1sheet.html#a686c797e7cb837947558aa11c946245a
