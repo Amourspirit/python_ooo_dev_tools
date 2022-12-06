@@ -3,6 +3,7 @@
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 
 from __future__ import annotations
+from dataclasses import dataclass
 from datetime import datetime, timezone
 import time
 import types
@@ -84,6 +85,17 @@ from ooo.dyn.util.close_veto_exception import CloseVetoException
 
 
 class Lo(metaclass=StaticProperty):
+    @dataclass(frozen=True)
+    class Options:
+        """
+        Lo Load options
+
+        .. versionadded:: 0.6.10
+        """
+
+        verbose: bool = False
+        """Determines if various info is sent to console. Default ``False``"""
+
     class ControllerLock:
         """
         Context manager for Locking Controller
@@ -137,6 +149,7 @@ class Lo(metaclass=StaticProperty):
             self,
             connector: connectors.ConnectPipe | connectors.ConnectSocket | None,
             cache_obj: mCache.Cache | None = None,
+            opt: Lo.Options | None = None,
         ):
             """
             Create a connection to office
@@ -145,8 +158,13 @@ class Lo(metaclass=StaticProperty):
                 connector (connectors.ConnectPipe | connectors.ConnectSocket | None): Connection information. Ignore for macros.
                 cache_obj (mCache.Cache | None, optional): Cache instance that determines if LibreOffice profile is to be copied and cached
                     Ignore for macros. Defaults to None.
+                opt (Options, optional): Extra Load options.
+
+            .. versionchanged:: 0.6.10
+
+                Added ``opt`` parameter.
             """
-            self.loader = Lo.load_office(connector=connector, cache_obj=cache_obj)
+            self.loader = Lo.load_office(connector=connector, cache_obj=cache_obj, opt=opt)
 
         def __enter__(self) -> XComponentLoader:
             return self.loader
@@ -585,6 +603,7 @@ class Lo(metaclass=StaticProperty):
         cls,
         connector: connectors.ConnectPipe | connectors.ConnectSocket | None = None,
         cache_obj: mCache.Cache | None = None,
+        opt: Options | None = None,
     ) -> XComponentLoader:
         """
         Loads Office
@@ -600,7 +619,7 @@ class Lo(metaclass=StaticProperty):
             connector (connectors.ConnectPipe | connectors.ConnectSocket | None): Connection information. Ignore for macros.
             cache_obj (Cache | None, optional): Cache instance that determines of LibreOffice profile is to be copied and cached
                 Ignore for macros. Defaults to None.
-
+            opt (Options, optional): Extra Load options.
 
         Raises:
             CancelEventError: If office_loading event is canceled
@@ -631,6 +650,10 @@ class Lo(metaclass=StaticProperty):
                 loader =  Lo.Loader(Lo.ConnectSocket()):
                 doc = Write.create_doc(loader)
                 ...
+
+        .. versionchanged:: 0.6.10
+
+                Added ``opt`` parameter.
         """
         if mock_g.DOCS_BUILDING:
             # some component call this method and are triggered during docs building.
@@ -643,6 +666,12 @@ class Lo(metaclass=StaticProperty):
         #                     component loader (XComponentLoader)
         # Once we have a component loader, we can load a document.
         # xcc, mcFactory, and xDesktop are stored as static globals.
+
+        if opt is None:
+            opt = Lo.Options()
+
+        if not opt.verbose:
+            _Events().on(GblNamedEvent.PRINTING, _on_lo_print_cancel)
 
         cargs = CancelEventArgs(Lo.load_office.__qualname__)
 
@@ -2756,6 +2785,12 @@ class _LoManager(metaclass=StaticProperty):
             bridge_listen.disposing = types.MethodType(cls.disposing_bridge, bridge_listen)
             cls._event_adapter = bridge_listen
         return cls._event_adapter
+
+
+def _on_lo_print_cancel(source: Any, e: CancelEventArgs) -> None:
+    # this method is a callback for ooodev internal printing
+    # by setting e.canecl = True all internal printing of ooodev is suppressed
+    e.cancel = True
 
 
 _Events().on(LoNamedEvent.RESET, _LoManager.del_cache_attrs)

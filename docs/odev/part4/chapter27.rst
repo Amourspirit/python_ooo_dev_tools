@@ -8,7 +8,7 @@ Chapter 27. Functions and Data Analysis
 
     Calling Calc Functions from Code; Pivot Tables; Goal Seek; Linear and Nonlinear Solving (using ``SCO``, ``DEPS``)
 
-    Examples: |fun_ex|_ and |pivot_ex|_
+    Examples: |fun_ex|_, |pivot_ex|_, |goal_ex|_, |solve_ex|_, and |nl_solve_ex|_.
 
 This chapter looks at how to utilize Calc's spreadsheet functions directly from Python, and
 then examines four of Calc's data analysis features: pivot tables, goal seeking, and linear and nonlinear solving.
@@ -80,7 +80,7 @@ XFunctionAccess_ only contains a single function, ``callFunction()``, but it can
 
             .. group-tab:: None
 
-:py:meth:`.Calc.call_fun` is passed the Calc function name and and optionally an sequenence of arguments.
+:py:meth:`.Calc.call_fun` is passed the Calc function name and and optionally an sequence of arguments.
 The function's result is returned as an Object instance.
 
 Several examples of how to use :py:meth:`.Calc.call_fun` can be found in the |fun_ex|_ example:
@@ -154,7 +154,7 @@ This reports the average to be ``3.0``.
 
 When the Calc function documentation talks about an "array" or "matrix" argument, then the data needs to be packaged as a 2D sequence such as list or tuple.
 However for methods that were tested that required a matrix is showed that a list or tuple was not accepted.
-What does work howerver, is writing the 2D data into a sheet and reading it back as XCellRange_ values.
+What does work however, is writing the 2D data into a sheet and reading it back as XCellRange_ values.
 
 For example, the ``SLOPE`` function takes two arrays of x and y coordinates as input, and calculates the slope of the line through them.
 So first the 2D array is written to the sheet using :py:meth:`.Calc.set_array`.
@@ -208,7 +208,7 @@ The functions in the "Array" category almost all use 2D arrays as arguments. For
 
 
 The input array is in row-order, so the ``arr`` created above has two rows and three columns.
-Extra fromatting is use by passing :py:meth:`.Calc.print_array` a :ref:`formatters_formatter_table` instance.
+Extra formatting is use by passing :py:meth:`.Calc.print_array` a :ref:`formatters_formatter_table` instance.
 The printed transpose is:
 
 ::
@@ -807,7 +807,7 @@ Then :py:meth:`.Calc.get_pilot_tables` obtains the DataPilotTables_ service:
 
             .. group-tab:: None
 
-Calc.getPilotTables() utilizes the XDataPilotTablesSupplier_ interface of the Spreadsheet_ service to obtain the DataPilotTables_ service.
+:py:meth:`.Calc.get_pilot_tables` utilizes the XDataPilotTablesSupplier_ interface of the Spreadsheet_ service to obtain the DataPilotTables_ service.
 
 |pivot_ex1_py|_'s task is to create a new pilot table, which it does indirectly by creating a new pilot description.
 After this pilot description has been initialized, it will be added to the DataPilotTables_ service as a new pilot table.
@@ -1007,8 +1007,957 @@ The Tools, Goal Seek menu item in Calc allows a formula to be executed 'backward
 Instead of supplying the input to a formula, and obtaining the formula's result,
 the result is given and "goal seek" works backwards through the formula to calculate the value that produces the result.
 
+The |goal_ex|_ example contains several uses of "goal seeking". It begins like so:
 
-Work in progress ...
+.. tabs::
+
+    .. code-tab:: python
+
+        # in goal_seek.py
+        def main(self) -> None:
+            with Lo.Loader(connector=Lo.ConnectPipe()) as loader:
+                doc = Calc.create_doc(loader)
+                sheet = Calc.get_sheet(doc=doc)
+                gs = Lo.qi(XGoalSeek, doc)
+
+                # -------------------------------------------------
+                # x-variable and starting value
+                Calc.set_val(value=9, sheet=sheet, cell_name="C1")
+                # formula
+                Calc.set_val(value="=SQRT(C1)", sheet=sheet, cell_name="C2")
+                x = Calc.goal_seek(gs=gs, sheet=sheet, cell_name="C1", formula_cell_name="C2", result=4.0)
+                print(f"x == {x}\n")  # 16.0
+
+                # more goal seek examples ...
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+Goal seek functionality is accessed via the XGoalSeek_ interface of the document.
+Also, a spreadsheet is needed to hold an initial guess for the input value being calculated (which I'll call the ``x-variable``), and for the formula.
+In the example above, the ``x-variable`` is stored in cell ``C1`` with an initial value of ``9``, and its formula (``sqrt(x)``) in cell ``C2``.
+
+:py:meth:`.Calc.goal_seek` is passed the cell names of the ``x-variable`` and formula, and the formula's result, and returns the ``x-value`` that produces that result.
+In the example above, :py:meth:`.Calc.goal_seek` returns ``16.0``, because that's the input to ``sqrt()`` that results in ``4``.
+
+:py:meth:`.Calc.goal_seek` is defined as:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in Calc class
+        @classmethod
+        def goal_seek(
+            cls, gs: XGoalSeek, sheet: XSpreadsheet, cell_name: str, formula_cell_name: str, result: numbers.Number
+        ) -> float:
+            xpos = cls._get_cell_address_sheet(sheet=sheet, cell_name=cell_name)
+            formula_pos = cls._get_cell_address_sheet(sheet=sheet, cell_name=formula_cell_name)
+
+            goal_result = gs.seekGoal(formula_pos, xpos, f"{float(result)}")
+            if goal_result.Divergence >= 0.1:
+                Lo.print(f"NO result; divergence: {goal_result.Divergence}")
+                raise GoalDivergenceError(goal_result.Divergence)
+            return goal_result.Result
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+The heart of :py:meth:`.Calc.goal_seek` is a call to ``XGoalSeek.seekGoal()`` which requires three arguments:
+the address of the ``x-variable`` cell, the address of the formula cell, and a string representing the formula's result.
+The call returns a GoalResult_ object that contains two fields:
+Result holds the calculated ``x-value``, and Divergence measures the accuracy of the ``x-value``.
+If the goal seek has succeeded, then the Divergence value should be very close to ``0``; if it failed to find an ``x-value`` then Divergence may be very large since it measures the amount the ``x-value``
+changed in the last iteration of the "goal seek" algorithm.
+
+Not sure what algorithm "goal seek" employs, but it's most likely a root-finding methods, such as Newton-:spelling:word:`Raphson` or the secant method.
+These may fail for a poor choice of starting ``x-value`` or if the formula function has a strange derivative (an odd curvature).
+This can be demonstrated by asking "goal seek" to look for an impossible ``x-value``, such as the input that makes ``sqrt(x) == -4``:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in goal_seek.py
+        try:
+            x = Calc.goal_seek(gs=gs, sheet=sheet, cell_name="C1", formula_cell_name="C2", result=-4.0)
+            # The formula is still y = sqrt(x)
+            # Find x when sqrt(x) == -4, which is impossible
+            print(f"x == {x} when sqrt(x) == -4\n")
+            
+        except GoalDivergenceError as e:
+            print(e)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+There's no need to change the starting value in ``C1`` or the formula in ``C2``. The output is:
+
+::
+
+    'Divergence error: 1.7976931348623157e+308'
+
+"Goal seek" can be useful when examining complex equations, such as:
+
+[*** missing formula ***]
+
+What's the ``x-value`` that produces ``y == 2``?
+
+Actually, this equation is simple: is factorized into , and the common factor removed from the fraction; the equation becomes:
+
+So when ``y == 2``, ``x`` will be ``1``.
+But let's do things the number-crunching way, and supply the original formula to "goal seek":
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in goal_seek.py
+        Calc.set_val(sheet=sheet, cell_name="D1", value=0.8)
+        Calc.set_val(sheet=sheet, cell_name="D2", value="=(D1^2 - 1)/(D1 - 1)")
+        x = Calc.goal_seek(gs=gs, sheet=sheet, cell_name="D1", formula_cell_name="D2", result=2)
+        print(f"x == {x} when x+1 == 2\n")
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+The printed ``x-value`` is ``1.0000000000000053``
+
+If a formula requires numerical values, they can be supplied as cell references, which allows them to be adjusted easily.
+The next "goal seek" example employs an annual interest formula, ``I = x*n*i``, where ``I`` is the annual interest, ``x`` the capital, ``n`` the number of years, and ``i`` the interest rate.
+As usual, the ``x-variable`` has a starting value in a cell, but ``n`` and ``i`` are also represented by cells so that they can be changed. The code is:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in goal_seek.py
+        Calc.set_val(value=100000, sheet=sheet, cell_name="B1")
+        Calc.set_val(value=1, sheet=sheet, cell_name="B2")
+        Calc.set_val(value=0.075, sheet=sheet, cell_name="B3")
+        Calc.set_val("=B1*B2*B3", sheet, "B4")
+        x = Calc.goal_seek(gs=gs, sheet=sheet, cell_name="B1", formula_cell_name="B4", result=15000)
+        print(
+            (
+                f"x == {x} when x*"
+                f'{Calc.get_val(sheet=sheet, cell_name="B2")}*'
+                f'{Calc.get_val(sheet=sheet, cell_name="B3")}'
+                " == 15000\n"
+            )
+        )
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+"Goal seek" is being asked to determine the x-value when the annual return from the formula is ``20000``.
+The values in the cells ``B2`` and ``B3`` are employed, and the printed answer is:
+
+::
+
+    x == 200000.0 when x*1.0*0.075 == 15000
+
+.. _ch27_linear_non_linear_solving:
+
+27.4 Linear and Nonlinear Solving
+=================================
+
+Calc supports both linear and nonlinear programming via its Tools -> Solver menu item.
+The name "linear programming" dates from just after World War II, and doesn't mean programming in the modern sense;
+in fact, it's probably better to use its other common name, "linear optimization".
+
+Linear optimization starts with a series of linear equations involving inequalities, and finds the best numerical values that satisfy the equations according to
+a 'profit' equation that must be maximized (or minimized).
+Fortunately, this has a very nice graphical representation when the equations only involve two unknowns: the equations cam be drawn as lines crossing the ``x`` and ``y`` axes,
+and the best values will be one of the points where the lines intersect.
+
+As you might expect, nonlinear programming (optimization) is a generalization of the linear case where some of the equations are non-linear
+(:abbreviation:`i.e.` perhaps they involve polynomials, logarithmic, or trigonometric functions).
+
+A gentle introduction to linear optimization and its graphing can be found at `<https://purplemath.com/modules/linprog.htm>`__,
+or you can start at `Wikipedia page <https://en.wikipedia.org/wiki/Linear_programming>`__.
+
+The Calc documentation on linear and nonlinear solving is rather minimal.
+There's no mention of it in the Calc Developer's Guide, and just a brief section on its GUI at the end of chapter 9 ("Data Analysis") of the Calc User guide.
+
+The current version of LibreOffice (``ver 7``) offers four optimization tools (called solvers) - two linear optimizers called "LibreOffice Linear Solver" and "LibreOffice CoinMP Linear Solver",
+and two nonlinear ones called "DEPS Evolutionary Algorithm" and "SCO Evolutionary Algorithm".
+The easiest way of checking the current solver situation in your version of Office is to look at Calc's Solver dialog window (by clicking on the Tools -> Solver menu item),
+and click on the "Options" button. The options dialog window lists all the installed solvers, and their numerous parameters, as in :numref:`ch27fig_solvers_and_params`.
+
+..
+    figure 8
+
+.. cssclass:: screen_shot invert
+
+    .. _ch27fig_solvers_and_params:
+    .. figure:: https://user-images.githubusercontent.com/4193389/205714788-c1cdc81d-2311-4cfc-afe3-5eeb03f5a108.png
+        :alt: The LibreOffice Solvers and their Parameters
+        :figclass: align-center
+
+        :The LibreOffice Solvers and their Parameters
+
+Another way of getting a list of the installed solvers, is to call :py:meth:`.Calc.list_solvers`, which is demonstrated in the first example given below.
+
+The two linear solvers are implemented (in Windows) as DLLs, located in the ``\program`` directory as ``lpsolve55.dll`` and ``CoinMP.dll``.
+The source code for these libraries is online, at `<https://docs.libreoffice.org/sccomp/html/files.html>`__, with the code (and graphs of the code) accessible via the "Files" tab.
+The file names are ``LpsolveSolver.cxx`` and ``CoinMPSolver.cxx``.
+
+The ``lpsolve55.dll`` filename strongly suggests that Office's basic linear solver is ``lp_solve 5.5``, which originates online at `<https://lpsolve.sourceforge.net/>`__.
+That site has extensive documentation, including a great introduction to linear optimization.
+The first programming example below comes from one of the examples in its documentation.
+
+Office's other linear optimizer, the :spelling:word:`CoinMP` solver, comes from the COIN-OR (Computational Infrastructure for Operations Research) open-source project which started at IBM research (`<https://coin-or.org/>`__).
+According to `<https://coin-or.org/projects/CoinMP.xml>`__, :spelling:word:`CoinMP` implements most of the functionality of three other COIN-OR projects, called CLP (Coin LP), CBC (Coin Branch-and-Cut), and CGL (Cut Generation Library).
+
+The two nonlinear solvers are known as DEPS and SCO for short, and are explained in the `OpenOffice wiki <https://wiki.openoffice.org/wiki/NLPSolver>`__, along with descriptions of their extensive (and complicated) parameters.
+They're implemented as JAR files, located in LibreOffice's share directory: ``\share\extensions\nlpsolver`` as ``nlpsolver.jar`` and ``EvolutionarySolver.jar``.
+Two of the examples below use these solvers.
+
+.. _ch27_linear_opt_propblem:
+
+27.4.1 A Linear Optimization Problem
+------------------------------------
+
+The |solve_ex|_ example shows how to use the basic linear solver, and also ``CoinMP``.
+It implements the following linear optimization problem, which comes from `<https://lpsolve.sourceforge.net/5.1/formulate.htm>`__.
+There are three constraint inequalities:
+
+::
+
+    120x + 210y ≤ 15000
+    110x + 30y ≤ 4000
+    x + y ≤ 75
+
+The ``profit`` expression to be maximized is:
+
+::
+
+    P = 143x + 60y
+
+The maximum P value is ``6315.625``, when ``x == 21.875`` and ``y == 53.125``.
+Perhaps the easiest way of calculating this outside of Office is via the linear optimization tool at `<https://zweigmedia.com/utilities/lpg/index.html?lang=en>`__.
+Its solution is shown in :numref:`ch27fig_solved_graphed_lo`.
+
+..
+    figure 9
+
+.. cssclass:: screen_shot invert
+
+    .. _ch27fig_solved_graphed_lo:
+    .. figure:: https://user-images.githubusercontent.com/4193389/205744462-cff7d0aa-ccd7-4834-88e2-3f05e789b835.png
+        :alt: Solved and Graphed Linear Optimization Problem
+        :figclass: align-center
+
+        :Solved and Graphed Linear Optimization Problem
+
+Aside from giving the answer, the equations are graphed, which shows how the maximum profit is one of the equation's intersection points.
+
+The main() function for |solve_ex_py|_:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in linear_solve.py
+        def main(verose: bool = False) -> None:
+            with Lo.Loader(connector=Lo.ConnectPipe(), opt=Lo.Options(verbose=verose)) as loader:
+                doc = Calc.create_doc(loader)
+                sheet = Calc.get_sheet(doc=doc)
+                Calc.list_solvers()
+
+                # specify the variable cells
+                xpos = Calc.get_cell_address(sheet=sheet, cell_name="B1")  # X
+                ypos = Calc.get_cell_address(sheet=sheet, cell_name="B2")  # Y
+
+                vars = (xpos, ypos)
+
+                # specify profit equation
+                Calc.set_val(value="=143*B1 + 60*B2", sheet=sheet, cell_name="B3")
+                profit_eq = Calc.get_cell_address(sheet, "B3")
+
+                # set up equation formulae without inequalities
+                Calc.set_val(value="=120*B1 + 210*B2", sheet=sheet, cell_name="B4")
+                Calc.set_val(value="=110*B1 + 30*B2", sheet=sheet, cell_name="B5")
+                Calc.set_val(value="=B1 + B2", sheet=sheet, cell_name="B6")
+
+                # create the constraints
+                # constraints are equations and their inequalities
+                sc1 = Calc.make_constraint(num=15000, op="<=", sheet=sheet, cell_name="B4")
+                #   20x + 210y <= 15000
+                #   B4 is the address of the cell that is constrained
+                sc2 = Calc.make_constraint(
+                    num=4000, op=SolverConstraintOperator.LESS_EQUAL, sheet=sheet, cell_name="B5"
+                )
+                #   110x + 30y <= 4000
+                sc3 = Calc.make_constraint(num=75, op="<=", sheet=sheet, cell_name="B6")
+                #   x + y <= 75
+
+                # could also include x >= 0 and y >= 0
+                constraints = (sc1, sc2, sc3)
+
+                solver = "com.sun.star.comp.Calc.CoinMPSolver"
+
+                # initialize the linear solver (CoinMP or basic linear)
+                solver = Lo.create_instance_mcf(XSolver, solver, raise_err=True)
+                solver.Document = doc
+                solver.Objective = profit_eq
+                solver.Variables = vars
+                solver.Constraints = constraints
+                solver.Maximize = True
+
+                # restrict the search to the top-right quadrant of the graph
+                Props.set(solver, NonNegative=True)
+
+                # execute the solver
+                solver.solve()
+                Calc.solver_report(solver)
+                Lo.close_doc(doc)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+The call to :py:meth:`.Calc.list_solvers` isn't strictly necessary but it provides useful information about the names of the solver services:
+
+::
+
+    Services offered by the solver:
+      com.sun.star.comp.Calc.CoinMPSolver
+      com.sun.star.comp.Calc.LpsolveSolver
+      com.sun.star.comp.Calc.NLPSolver.DEPSSolverImpl
+      com.sun.star.comp.Calc.NLPSolver.SCOSolverImpl 
+      com.sun.star.comp.Calc.SwarmSolver
+
+One of these names is needed when calling :py:meth:`.Lo.create_instance_mcf` to create a solver instance.
+
+:py:meth:`.Calc.list_solvers` is implemented as:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in Calc class
+        @staticmethod
+        def list_solvers() -> None:
+            print("Services offered by the solver:")
+            nms = Info.get_service_names(service_name="com.sun.star.sheet.Solver")
+            if nms is None:
+                print("  none")
+                return
+
+            for service in nms:
+                print(f"  {service}")
+            print()
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+The real work of :py:meth:`~.Calc.list_solvers` is done by calling :py:meth:`.Info.get_service_names` which finds all the implementations that support ``com.sun.star.sheet.Solver``.
+
+Back in |solve_ex_py|_, the inequality and profit equations are defined as formulae in a sheet, and the variables in the equations are also assigned to cells.
+
+The two variables in this problem (``x`` and ``y``) are assigned to the cells ``B1`` and ``B2``, and the cell addresses are stored in an array for later:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in linear_solve.py
+        xpos = Calc.get_cell_address(sheet=sheet, cell_name="B1")  # X
+        ypos = Calc.get_cell_address(sheet=sheet, cell_name="B2")  # Y
+        vars = (xpos, ypos)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+Next the equations are defined. Their formulae are assigned to cells without their inequality parts:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in linear_solve.py
+        # specify profit equation
+        Calc.set_val(value="=143*B1 + 60*B2", sheet=sheet, cell_name="B3")
+        profit_eq = Calc.get_cell_address(sheet, "B3")
+
+        # set up equation formulae without inequalities
+        Calc.set_val(value="=120*B1 + 210*B2", sheet=sheet, cell_name="B4")
+        Calc.set_val(value="=110*B1 + 30*B2", sheet=sheet, cell_name="B5")
+        Calc.set_val(value="=B1 + B2", sheet=sheet, cell_name="B6")
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+Now the three equation formulae are converted into SolverConstraint objects by calling :py:meth:`.Calc.make_constraint`, and the constraints are stored in an array for later use:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in linear_solve.py
+        # create the constraints
+        # constraints are equations and their inequalities
+        sc1 = Calc.make_constraint(num=15000, op="<=", sheet=sheet, cell_name="B4")
+        #   20x + 210y <= 15000
+        #   B4 is the address of the cell that is constrained
+        sc2 = Calc.make_constraint(
+            num=4000, op=SolverConstraintOperator.LESS_EQUAL, sheet=sheet, cell_name="B5"
+        )
+        #   110x + 30y <= 4000
+        sc3 = Calc.make_constraint(num=75, op="<=", sheet=sheet, cell_name="B6")
+        #   x + y <= 75
+
+        # could also include x >= 0 and y >= 0
+        constraints = (sc1, sc2, sc3)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+A constraint is the cell name where an equation is stored and an inequality.
+
+:py:meth:`.Calc.make_constraint` is defined as:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in Calc class (simplified, overlaods)
+        @classmethod
+        def make_constraint(
+            cls, num: numbers.Number, op: str, sheet: XSpreadsheet, cell_name: str
+        ) -> SolverConstraint:
+            return cls.make_constraint(
+                num=num, op=op, addr=cls.get_cell_address(sheet=sheet, cell_name=cell_name)
+            )
+
+        @classmethod
+        def make_constraint(
+            cls, num: numbers.Number, op: str, addr: CellAddress
+        ) -> SolverConstraint:
+            return cls.make_constraint(num=num, op=cls.to_constraint_op(op), addr=addr)
+
+        @classmethod
+        def make_constraint(
+            cls, num: numbers.Number, op: SolverConstraintOperator,
+            sheet: XSpreadsheet, cell_name: str
+        ) -> SolverConstraint:
+            return cls.make_constraint(
+                num=num, op=op, addr=cls.get_cell_address(sheet=sheet, cell_name=cell_name)
+            )
+
+        @classmethod
+        def make_constraint(
+            cls, num: numbers.Number, op: SolverConstraintOperator, addr: CellAddress
+        ) -> SolverConstraint:
+            sc = SolverConstraint()
+            sc.Left = addr
+            sc.Operator = op
+            sc.Right = float(num)
+            return sc
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+.. only:: html
+
+    .. seealso::
+
+        .. cssclass:: src-link
+
+            :odev_src_calc_meth:`make_constraint`
+
+That's a lot of functions to create a SolverConstraint object with four arguments.
+
+Now the solver is created, and its parameters are set:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in linear_solve.py
+        solver = Lo.create_instance_mcf(
+            XSolver, "com.sun.star.comp.Calc.LpsolveSolver", raise_err=True
+        )
+        solver.Document = doc
+        solver.Objective = profit_eq
+        solver.Variables = vars
+        solver.Constraints = constraints
+        solver.Maximize = True
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+The XSolver_ interface is utilized by all the solvers, but the name of service can vary.
+The code above is using the basic linear solver.
+A ``CoinMP`` solver would be created by changing ``LpsolveSolver`` to ``CoinMPSolver``:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        solver = Lo.create_instance_mcf(
+            XSolver, "com.sun.star.comp.Calc.CoinMPSolver", raise_err=True
+        )
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+The various ``set`` methods are described in the XSolver_ documentation as public variables.
+They load the profit equation, constraints, and variables into the solver.
+It's also necessary to specify that the profit equation be maximized, and link the solver to the Calc document.
+
+These ``set`` methods are used in the same way no matter which of the four solvers is employed.
+Where the solvers differ is in their service properties.
+As mentioned above, there's a few sources of online information depending on which solver you're using, or you could look at the options dialog window shown in :numref:`ch27fig_solvers_and_params`.
+
+Another source is to call :py:meth:`.Props.show_obj_props` on the solver, to list its property names and current values:
+``Props.show_obj_props("Solver", solver)`` When the basic linear solver is being used, the output is:
+
+::
+
+    EpsilonLevel == 0
+    Integer == false
+    LimitBBDepth == true
+    NonNegative == false
+    Timeout == 100
+
+This corresponds to the information shown for the basic linear solver in the options dialog in Figure 10.
+
+..
+    figure 10
+
+.. cssclass:: screen_shot invert
+
+    .. _ch27fig_linear_solve_opt_dialog:
+    .. figure:: https://user-images.githubusercontent.com/4193389/205749817-465acd72-9b50-49ad-9c15-5343ea489a4a.png
+        :alt: The Options Dialog for the Basic Linear Solver.
+        :figclass: align-center
+
+        :The Options Dialog for the Basic Linear Solver.
+
+As to what these parameters actually mean, you'll have to look through the ``lp_solve`` API reference section of the documentation at `<https://lpsolve.sourceforge.net/>`__.
+For example, the "epsilon level" is partly explained under the sub-heading ``set_epslevel``.
+
+The only property changed in the |solve_ex_py|_ example is ``NonNegative``, which is set to ``True``:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in linear_solve.py
+        # restrict the search to the top-right quadrant of the graph
+        Props.set(solver, NonNegative=True)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+This restricts the search for intersection points to the top-right quadrant of the graph.
+Alternatively I could have implemented two more constraints:
+
+::
+
+    x ≥ 0
+    y ≥ 0
+
+The solver's results are printed by :py:meth:`.Calc.solver_report`:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in linear_solve.py
+        solver.solve()
+        Calc.solver_report(solver)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+The output:
+
+::
+
+    Solver result: 
+      B3 == 6315.6250 
+    Solver variables: 
+      B1 == 21.8750   
+      B2 == 53.1250  
+
+:py:meth:`.Calc.solver_report` is implemented as:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # in Calc class (simplified)
+        @classmethod
+        def solver_report(cls, solver: XSolver) -> None:
+            is_successful = solver.Success
+            cell_name = cls.get_cell_str(solver.Objective)
+            print("Solver result: ")
+            print(f"  {cell_name} == {solver.ResultValue:.4f}")
+            addrs = solver.Variables
+            solns = solver.Solution
+            print("Solver variables: ")
+            for i, num in enumerate(solns):
+                cell_name = cls.get_cell_str(addrs[i])
+                print(f"  {cell_name} == {num:.4f}")
+            print()
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+``XSolver.Objective`` and ``XSolver.Variables`` return the cell addresses holding the profit equation and the variables (``x`` and ``y``).
+In a corresponding fashion, ``XSolver.ResultValue`` and ``XSolver.Solution`` return the calculated values for the profit equation and variables.
+
+A solver may fail, and so :py:meth:`~.Calc.solver_report` first calls ``XSolver.Success``.
+
+.. _ch27_another_linear_problem_sco:
+
+27.4.2 Another Linear Problem (using SCO)
+-----------------------------------------
+
+Two examples are coded using the nonlinear optimizers - |nl_solve_ex1_py|_ utilizes the SCO solver, and |nl_solve_ex2_py|_ employs DEPS.
+As I mentioned earlier, these two solvers are explained at `<https://wiki.openoffice.org/wiki/NLPSolver>`__.
+
+The |nl_solve_ex1_py|_ example solves a linear problem, but one involving three unknowns.
+This means that graphically the equations define planes in a 3D space, and solving the profit equation involves examining the corners of the volume defined by how the planes intersect.
+Unfortunately, the `<https://zweigmedia.com/utilities/lpg/index.html?lang=en>`__ website cannot handle linear optimizations involving more than two variables, but no such restriction applies to Calc's solvers.
+
+There are three constraint inequalities:
+
+::
+
+    x ≤ 6
+    y ≤ 8
+    z ≥ 4
+
+The 'profit' expression to be maximized is:
+
+::
+
+    P = x + y - z
+    The maximum P value is 10, when x == 6, y == 8, and z == 4.
+
+Much of ``main()`` in |nl_solve_ex1_py|_ is very similar to |solve_ex|_:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # part of main() in solver1.py
+        sheet = Calc.get_sheet(doc=doc)
+
+        # specify the variable cells
+        xpos = Calc.get_cell_address(sheet=sheet, cell_name="B1")  # X
+        ypos = Calc.get_cell_address(sheet=sheet, cell_name="B2")  # Y
+        zpos = Calc.get_cell_address(sheet=sheet, cell_name="B3")  # z
+        vars = (xpos, ypos, zpos)
+
+        # set up equation formula without inequality
+        Calc.set_val(value="=B1+B2-B3", sheet=sheet, cell_name="B4")
+        objective = Calc.get_cell_address(sheet, "B4")
+
+        # create three constraints (using the 3 variables)
+
+        sc1 = Calc.make_constraint(num=6, op="<=", sheet=sheet, cell_name="B1")
+        #   x <= 6
+        sc2 = Calc.make_constraint(num=8, op="<=", sheet=sheet, cell_name="B2")
+        #   y <= 8
+        sc3 = Calc.make_constraint(num=4, op=">=", sheet=sheet, cell_name="B3")
+        #   z >= 4
+
+        constraints = (sc1, sc2, sc3)
+
+        # initialize the nonlinear solver (SCO)
+        solver = Lo.create_instance_mcf(
+            XSolver, "com.sun.star.comp.Calc.NLPSolver.SCOSolverImpl", raise_err=True
+        )
+        solver.Document = doc
+        solver.Objective = objective
+        solver.Variables = vars
+        solver.Constraints = constraints
+        solver.Maximize = True
+
+        # restrict the search to the top-right quadrant of the graph
+        Props.show_obj_props("Solver", solver)
+        # switch off nonlinear dialog about current progress
+        Props.set(solver, EnhancedSolverStatus=False)
+
+        # execute the solver
+        solver.solve()
+        # Profit max == 10; vars are very close to 6, 8, and 4, but off by 6-7 dps
+        Calc.solver_report(solver)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+Only the profit formula needs to be assigned to a cell due to the simplicity of the equation inequalities.
+Their constraints can use the cells containing the ``x``, ``y``, and ``z`` variables rather than be defined as separate formulae.
+
+The Solver is ``com.sun.star.comp.Calc.NLPSolver.SCOSolverImpl``, whose name was found by listing the solver names with :py:meth:`.Calc.list_solvers`.
+
+The properties associated with the SCO solver are more extensive than for the linear solvers.
+:py:meth:`.Props.show_obj_props` reports:
+
+::
+
+    Solver Properties
+      AssumeNonNegative: False
+      SwarmSize: 70
+      LearningCycles: 2000
+      GuessVariableRange: True
+      VariableRangeThreshold: 3.0
+      UseACRComparator: False
+      UseRandomStartingPoint: False
+      UseStrongerPRNG: False
+      StagnationLimit: 70
+      Tolerance: 1e-06
+      EnhancedSolverStatus: True
+      LibrarySize: 210
+
+These can also be viewed via the Options dialog in the Calc GUI, as in :numref:`ch27fig_opt_dialog_for_sco_solver`.
+
+..
+    figure 11
+
+.. cssclass:: screen_shot invert
+
+    .. _ch27fig_opt_dialog_for_sco_solver:
+    .. figure:: https://user-images.githubusercontent.com/4193389/205767595-0f88eed2-4612-42a3-affb-fc10c88e3d9f.png
+        :alt: The Options Dialog for the SCO Solver.
+        :figclass: align-center
+
+        :The Options Dialog for the SCO Solver.
+
+These parameters, most of which apply to the DEPS solver as well, are explained at `<https://wiki.openoffice.org/wiki/NLPSolver#Options_and_Parameters>`__.
+
+The correct solution reported by :py:meth:`.Calc.solver_report` is:
+
+::
+
+    Solver result: 
+      B4 == 10.0000
+    Solver variables:
+      B1 == 6.0000
+      B2 == 8.0000
+      B3 == 4.0000
+
+.. _ch27_nonlinear_prob_deps_sco:
+
+27.4.3 A Nonlinear Problem (using DEPS and SCO)
+===============================================
+
+|nl_solve_ex2_py|_ defines a nonlinear optimization problem, so can only be solved by the DEPS or SCO solver; starting with DEPS.
+
+The problem comes from the `Wikipedia page on nonlinear programming <https://en.wikipedia.org/wiki/Nonlinear_programming>`_.
+There are four constraint inequalities:
+
+::
+
+    x ≥ 0
+    y ≥ 0
+    x
+    2
+     + y
+    2
+     ≥ 1
+    x
+    2
+     + y
+    2
+     ≤ 2
+
+The 'profit' expression to be maximized is:
+
+::
+
+    P = x + y
+
+The maximum ``P`` value is ``2``, when ``x == 1`` and ``y == 1``, which can be represented graphically in :numref:`ch27fig_sol_nonlinear_opt_prob` since we're once again using only two unknowns.
+
+..
+    figure 12
+
+.. cssclass:: diagram invert
+
+    .. _ch27fig_sol_nonlinear_opt_prob:
+    .. figure:: https://user-images.githubusercontent.com/4193389/205769004-783eaec1-fa6a-407d-91e7-9b46cf232b3b.png
+        :alt: Solution for the Nonlinear Optimization Problem
+        :figclass: align-center
+
+        :Solution for the Nonlinear Optimization Problem.
+
+The code in |nl_solve_ex2_py|_ is only slightly different from the previous two examples:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # part of main() in solver2.py
+        sheet = Calc.get_sheet(doc=doc)
+
+        # specify the variable cells
+        xpos = Calc.get_cell_address(sheet=sheet, cell_name="B1")  # X
+        ypos = Calc.get_cell_address(sheet=sheet, cell_name="B2")  # Y
+        vars = (xpos, ypos)
+
+        # specify profit equation
+        Calc.set_val(value="=B1+B2", sheet=sheet, cell_name="B3")
+        objective = Calc.get_cell_address(sheet, "B3")
+
+        # set up equation formula without inequality (only one needed)
+        # x^2 + y^2
+        Calc.set_val(value="=B1*B1 + B2*B2", sheet=sheet, cell_name="B4")
+
+        # create three constraints (using the 3 variables)
+
+        sc1 = Calc.make_constraint(num=1, op=">=", sheet=sheet, cell_name="B4")
+        #   x^2 + y^2 >= 1
+        sc2 = Calc.make_constraint(num=2, op="<=", sheet=sheet, cell_name="B4")
+        #   x^2 + y^2 <= 2
+
+        constraints = (sc1, sc2)
+
+        # initialize the nonlinear solver (SCO)
+        solver = Lo.create_instance_mcf(
+            XSolver, "com.sun.star.comp.Calc.NLPSolver.SCOSolverImpl", raise_err=True
+        )
+        solver.Document = doc
+        solver.Objective = objective
+        solver.Variables = vars
+        solver.Constraints = constraints
+        solver.Maximize = True
+
+        Props.show_obj_props("Solver", solver)
+        # switch off nonlinear dialog about current progress
+        # and restrict the search to the top-right quadrant of the graph
+        Props.set(solver, EnhancedSolverStatus=False, AssumeNonNegative=True)
+
+        # execute the solver
+        solver.solve()
+        Calc.solver_report(solver)
+
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+Only one inequality equation is defined: ``Calc.set_val(value="=B1*B1 + B2*B2", sheet=sheet, cell_name="B4")`` because it can be used twice to define the nonlinear constraints:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        sc1 = Calc.make_constraint(num=1, op=">=", sheet=sheet, cell_name="B4")
+        #   x^2 + y^2 >= 1
+        sc2 = Calc.make_constraint(num=2, op="<=", sheet=sheet, cell_name="B4")
+        #   x^2 + y^2 <= 2
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+No constraints are defined for ``x >= 0`` and ``y >= 0``.
+Instead, the solver's ``AssumeNonNegative`` property is set to ``True``, which achieves the same thing.
+
+The DEPS solver is used by default when a nonlinear optimization needs to be solved,
+so the solver is instantiated using the general Solver service name:
+``solver = Lo.create_instance_mcf(XSolver, "com.sun.star.comp.Calc.NLPSolver.SCOSolverImpl", raise_err=True)``
+Alternatively, it's possible to use the DEPS service name: ``com.sun.star.comp.Calc.NLPSolver.DEPSSolverImpl``
+
+The results printed by :py:meth:`.Calc.solver_report` are:
+
+::
+
+    Solver result: 
+      B3 == 2.0000
+    Solver variables:
+      B1 == 1.0001
+      B2 == 0.9999
+
+If DEPS is replaced by the SCO solver:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        solver = Lo.create_instance_mcf(
+            XSolver, "com.sun.star.comp.Calc.NLPSolver.SCOSolverImpl", raise_err=True
+        )
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+The printed result is slightly more accurate:
+
+::
+
+    Solver result:
+      B3 == 2.0000
+    Solver variables:
+      B1 == 1.0000
+      B2 == 1.0000
+
+but it takes a little bit longer to return.
+
 
 .. |calc_add_in| replace:: Calc Add-in Functions
 .. _calc_add_in: https://help.libreoffice.org/latest/en-US/text/scalc/01/04060111.html
@@ -1025,16 +1974,43 @@ Work in progress ...
 .. |pivot_ex1_py| replace:: pivot_table1.py
 .. _pivot_ex1_py: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/calc/odev_pivot_table/pivot_table1.py
 
-.. _XFunctionAccess: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1sheet_1_1XFunctionAccess.html
-.. _XCellRange: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1table_1_1XCellRange.html
-.. _XFunctionDescriptions: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1sheet_1_1XFunctionDescriptions.html
-.. _PropertyValue: https://api.libreoffice.org/docs/idl/ref/structcom_1_1sun_1_1star_1_1beans_1_1PropertyValue.html
-.. _FunctionArgument: https://api.libreoffice.org/docs/idl/ref/structcom_1_1sun_1_1star_1_1sheet_1_1FunctionArgument.html
-.. _DataPilotTables: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1sheet_1_1DataPilotTables.html
-.. _DataPilotTable: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1sheet_1_1DataPilotTable.html
-.. _DataPilotFields: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1sheet_1_1DataPilotFields.html
-.. _DataPilotField: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1sheet_1_1DataPilotField.html
+.. |goal_ex| replace:: Calc Goal Seek
+.. _goal_ex: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/calc/odev_calc_goalseek
+
+.. |goal_ex_py| replace:: goal_seek.py
+.. _goal_ex_py: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/calc/odev_calc_goalseek/goal_seek.py
+
+.. |solve_ex| replace:: Linear Solve
+.. _solve_ex: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/calc/odev_linear_solve
+
+.. |solve_ex_py| replace:: linear_solve.py
+.. _solve_ex_py: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/calc/odev_linear_solve/linear_solve.py
+
+.. |nl_solve_ex| replace:: Non-Linear Solve
+.. _nl_solve_ex: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/calc/odev_non_linear_solve
+
+.. |nl_solve_ex1_py| replace:: solver1.py
+.. _nl_solve_ex1_py: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/calc/odev_non_linear_solve/solver1.py
+
+.. |nl_solve_ex2_py| replace:: solver2.py
+.. _nl_solve_ex2_py: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/calc/odev_non_linear_solve/solver2.py
+
+
 .. _DataPilotDescriptor: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1sheet_1_1DataPilotDescriptor.html
-.. _XDataPilotTablesSupplier: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1sheet_1_1XDataPilotTablesSupplier.html
-.. _Spreadsheet: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1sheet_1_1Spreadsheet.html
+.. _DataPilotField: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1sheet_1_1DataPilotField.html
 .. _DataPilotFieldOrientation: https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1sheet.html#a686c797e7cb837947558aa11c946245a
+.. _DataPilotFields: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1sheet_1_1DataPilotFields.html
+.. _DataPilotTable: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1sheet_1_1DataPilotTable.html
+.. _DataPilotTables: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1sheet_1_1DataPilotTables.html
+.. _FunctionArgument: https://api.libreoffice.org/docs/idl/ref/structcom_1_1sun_1_1star_1_1sheet_1_1FunctionArgument.html
+.. _GoalResult: https://api.libreoffice.org/docs/idl/ref/structcom_1_1sun_1_1star_1_1sheet_1_1GoalResult.html
+.. _PropertyValue: https://api.libreoffice.org/docs/idl/ref/structcom_1_1sun_1_1star_1_1beans_1_1PropertyValue.html
+.. _Spreadsheet: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1sheet_1_1Spreadsheet.html
+.. _XCellRange: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1table_1_1XCellRange.html
+.. _XDataPilotTable: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1sheet_1_1XDataPilotTable.html
+.. _XDataPilotTables: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1sheet_1_1XDataPilotTables.html
+.. _XDataPilotTablesSupplier: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1sheet_1_1XDataPilotTablesSupplier.html
+.. _XFunctionAccess: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1sheet_1_1XFunctionAccess.html
+.. _XFunctionDescriptions: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1sheet_1_1XFunctionDescriptions.html
+.. _XGoalSeek: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1sheet_1_1XGoalSeek.html
+.. _XSolver: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1sheet_1_1XSolver.html

@@ -2607,7 +2607,7 @@ class Write(mSel.Selection):
             loc = Locale("en", "US", "")
         alts = speller.spell(word, loc, ())
         if alts is not None:
-            print(f"* '{word}' is unknown. Try:")
+            mLo.Lo.print(f"* '{word}' is unknown. Try:")
             alt_words = alts.getAlternatives()
             mLo.Lo.print_names(alt_words)
             return False

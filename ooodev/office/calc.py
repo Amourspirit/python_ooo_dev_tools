@@ -6134,7 +6134,6 @@ class Calc:
         Returns:
             float: result of the goal seek
         """
-        """find x in formula when it equals result"""
         xpos = cls._get_cell_address_sheet(sheet=sheet, cell_name=cell_name)
         formula_pos = cls._get_cell_address_sheet(sheet=sheet, cell_name=formula_cell_name)
 
@@ -6149,15 +6148,15 @@ class Calc:
         """
         Prints solvers
         """
-        mLo.Lo.print("Services offered by the solver:")
+        print("Services offered by the solver:")
         nms = mInfo.Info.get_service_names(service_name="com.sun.star.sheet.Solver")
         if nms is None:
-            mLo.Lo.print("  none")
+            print("  none")
             return
 
         for service in nms:
-            mLo.Lo.print(f"  {service}")
-        mLo.Lo.print()
+            print(f"  {service}")
+        print()
 
     @staticmethod
     def to_constraint_op(op: str) -> SolverConstraintOperator:
@@ -6358,15 +6357,15 @@ class Calc:
         # These are typedef properties. The types-unopy typings are correct. Typedef are represented as Class Properties.
         is_successful = solver.Success
         cell_name = cls._get_cell_str_addr(solver.Objective)
-        mLo.Lo.print("Solver result: ")
-        mLo.Lo.print(f"  {cell_name} == {solver.ResultValue:.4f}")
+        print("Solver result: ")
+        print(f"  {cell_name} == {solver.ResultValue:.4f}")
         addrs = solver.Variables
         solns = solver.Solution
-        mLo.Lo.print("Solver variables: ")
+        print("Solver variables: ")
         for i, num in enumerate(solns):
             cell_name = cls._get_cell_str_addr(addrs[i])
-            mLo.Lo.print(f"  {cell_name} == {num:.4f}")
-        mLo.Lo.print()
+            print(f"  {cell_name} == {num:.4f}")
+        print()
 
     # endregion ------------ solver methods ----------------------------
 

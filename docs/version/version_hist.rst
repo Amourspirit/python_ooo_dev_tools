@@ -5,9 +5,12 @@ Version History
 Version 0.6.10
 ==============
 
+Now ``Lo.load_load()`` has extra options that allow for turning on or off of verbose via the loader.
+Going forward verbose is off by default.
+
 Added overload to ``Calc.get_sheet()``
 
-Update ``Props.show_props()`` to support extra formating.
+Update ``Props.show_props()`` to support extra formatting.
 
 Fix bug in ``Calc.get_function_names()``
 
