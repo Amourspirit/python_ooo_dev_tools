@@ -1096,11 +1096,27 @@ class Props:
             lines = []
             for p in vals:
                 try:
-                    # value = cls.get_property()
                     lines.append(f"{p.Name} = {p.Value}")
                 except AttributeError:
                     continue
-            return "[\n    " + "\n    ".join(lines) + "\n]"
+            if not lines:
+                return "[]"
+            return "[\n    " + "\n    ".join(lines) + "\n  ]"
+
+        def get_pv_str_f_arg(vals) -> str:
+            # com.sun.star.sheet.FunctionArgument
+            lines = []
+            for p in vals:
+                try:
+                    if p.IsOptional:
+                        lines.append(f"{p.Name} (optional)")
+                    else:
+                        lines.append(f"{p.Name}")
+                except AttributeError:
+                    continue
+            if not lines:
+                return "[]"
+            return "[" + ", ".join(lines) + "]"
 
         def get_property_set_str(prop_set, props) -> str:
             lines = []
@@ -1122,16 +1138,26 @@ class Props:
             # iterable
             is_iter = True
         if is_iter:
-
+            val_first = None
             try:
-                if isinstance(val[0], str):
+                val_first = val[0]
+                if isinstance(val_first, str):
                     # assume Iterable[str]
                     return ", ".join(val)
             except Exception:
                 pass
+            if val_first is None:
+                return str(val)
+            t_name = getattr(val_first, "typeName", None)
+            if not t_name:
+                return str(val)
+            if t_name == "com.sun.star.beans.PropertyValue":
+                return get_pv_str(val)
+            if t_name == "com.sun.star.sheet.FunctionArgument":
+                return get_pv_str_f_arg(val)
+            return str(val)
 
             # assume Iterable[PropertyValue]
-            return get_pv_str(val)
         else:
             xprops = mLo.Lo.qi(XPropertySet, val)
             if xprops is not None:
@@ -1251,14 +1277,11 @@ class Props:
 
     @classmethod
     def _show_props_str_props(cls, title: str, props: Sequence[PropertyValue]) -> None:
-        print(f"Properties for '{title}':")
+        print(f'Properties for "{title}"":')
         if props is None:
             print("  none found")
             return
-        lst = list(props)
-        lst.sort(key=lambda prop: prop.Name)
-        for prop in lst:
-
+        for prop in props:
             print(f"  {prop.Name}: {cls.prop_value_to_string(prop.Value)}")
         print()
 
@@ -1266,12 +1289,10 @@ class Props:
     def _show_props_str_xpropertyset(cls, prop_kind: str, props_set: XPropertySet) -> None:
         props = cls.props_set_to_tuple(props_set)
         if props is None:
-            print(f"No {prop_kind} properties found")
+            print(f"No. {prop_kind} properties found")
             return
-        lst = list(props)
-        lst.sort(key=lambda prop: prop.Name)
         print(f"{prop_kind} Properties")
-        for prop in lst:
+        for prop in props:
             prop_value = cls.get_property(props_set, prop.Name)
             print(f"  {prop.Name}: {prop_value}")
         print()

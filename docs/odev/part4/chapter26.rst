@@ -111,7 +111,7 @@ A blank sheet is filled with a ``15 x 6`` grid of animal names, such as the one 
 The SheetCellRange_ supports the XReplaceable_ interface, which is a subclass of XSearchable_, as in :numref:`ch26fig_xreplaceable_xsearchable_interfaces`.
 
 ..
-    figure 1
+    figure 2
 
 .. cssclass:: diagram invert
 
@@ -186,7 +186,7 @@ These search properties are stored in the SearchDescriptor_ service, which is ac
 XSearchDescriptor_ is the interface for the SearchDescriptor service, as shown in :numref:`ch26fig_search_and_replace_descriptors`.
 
 ..
-    figure 2
+    figure 3
 
 .. cssclass:: diagram invert
 

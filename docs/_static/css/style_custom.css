@@ -79,3 +79,9 @@
     color: purple;
 }
 /* End Colors in s5defs.txt */
+
+/* Multi line list items */
+.rst-content li>.line-block {
+    margin-bottom: 0px;
+}
+/* End Multi line list items */

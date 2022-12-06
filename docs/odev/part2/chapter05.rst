@@ -139,15 +139,12 @@ The |extract_ex|_ example opens a document using :py:meth:`.Lo.open_doc`, and tr
         # coding: utf-8
         from __future__ import annotations
         import argparse
-        from typing import Any, cast
+        from typing import cast
 
-        from ooodev.utils.lo import Lo
         from ooodev.office.write import Write
         from ooodev.utils.info import Info
+        from ooodev.utils.lo import Lo
         from ooodev.wrapper.break_context import BreakContext
-        from ooodev.events.gbl_named_event import GblNamedEvent
-        from ooodev.events.args.cancel_event_args import CancelEventArgs
-        from ooodev.events.lo_events import LoEvents
 
 
         def args_add(parser: argparse.ArgumentParser) -> None:
@@ -160,18 +157,13 @@ The |extract_ex|_ example opens a document using :py:meth:`.Lo.open_doc`, and tr
                 required=True,
             )
 
-        def on_lo_print(source: Any, e: CancelEventArgs) -> None:
-            e.cancel = True
-
         def main() -> int:
             parser = argparse.ArgumentParser(description="main")
             args_add(parser=parser)
             args = parser.parse_args()
+            
+            with BreakContext(Lo.Loader(connector=Lo.ConnectSocket(headless=True))) as loader:
 
-            # hook ooodev internal printing event
-            LoEvents().on(GblNamedEvent.PRINTING, on_lo_print)
-
-            with BreakContext(Lo.Loader(Lo.ConnectSocket(headless=True))) as loader:
                 fnm = cast(str, args.file_path)
 
                 try:
@@ -188,7 +180,7 @@ The |extract_ex|_ example opens a document using :py:meth:`.Lo.open_doc`, and tr
                     print(text)
                     print("-" * 50)
                 else:
-                    print("Extraction unsupported for this doc type")
+                    print("Extraction unsupported for this doc type")   
                 Lo.close_doc(doc)
 
             return 0
@@ -202,44 +194,6 @@ The |extract_ex|_ example opens a document using :py:meth:`.Lo.open_doc`, and tr
         .. cssclass:: tab-none
 
             .. group-tab:: None
-
-|extract_ex|_ example also hooks |odev|'s internal events and cancels the printing event.
-Thus suppressing any internal printing to console.
-
-.. tabs::
-
-    .. code-tab:: python
-
-        def on_lo_print(source: Any, e: CancelEventArgs) -> None:
-            e.cancel = True
-
-        def main() -> int:
-
-            # hook internal printing event
-            LoEvents().on(GblNamedEvent.PRINTING, on_lo_print)
-
-    .. only:: html
-
-        .. cssclass:: tab-none
-
-            .. group-tab:: None
-
-If internal printing were not suppressed the output would contains extra
-output similar to what is shown here:
-
-.. code-block:: text
-
-    Loading Office...
-    Opening /home/user/Python/ooouno_ex/resources/odt/cicero_dummy.odt
-    -------------------Text Content-------------------
-    Cicero
-    Dummy Text
-    But I must explain to you how all this mistaken idea of denouncing pleasure and praising ...
-    --------------------------------------------------
-    Closing the document
-    Closing Office
-    Office terminated
-    Office bridge has gone!!
 
 :py:meth:`.Info.is_doc_type` tests the document's type by casting it into an XServiceInfo_ interface. Then it calls ``XServiceInfo.supportsService()``
 to check the document's service capabilities:
