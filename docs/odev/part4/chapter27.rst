@@ -1975,10 +1975,10 @@ but it takes a little bit longer to return.
 .. _pivot_ex1_py: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/calc/odev_pivot_table/pivot_table1.py
 
 .. |goal_ex| replace:: Calc Goal Seek
-.. _goal_ex: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/calc/odev_calc_goalseek
+.. _goal_ex: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/calc/odev_goal_seek
 
 .. |goal_ex_py| replace:: goal_seek.py
-.. _goal_ex_py: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/calc/odev_calc_goalseek/goal_seek.py
+.. _goal_ex_py: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/calc/odev_goal_seek/goal_seek.py
 
 .. |solve_ex| replace:: Linear Solve
 .. _solve_ex: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/calc/odev_linear_solve

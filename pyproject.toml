@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "ooo-dev-tools"
-version = "0.6.10"
+version = "0.6.11"
 description = "LibreOffice Developer Tools"
 license = "Apache Software License"
 readme = "README.rst"
@@ -32,7 +32,7 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.7,<3.12"
+python = "^3.7"
 ooouno = "^0.2.4"
 lxml = "^4.9.1"
 Pillow = "^9.2.0"
@@ -62,6 +62,7 @@ sphinx-autodoc-typehints = "^1.19.4"
 sphinxcontrib-spelling = "^7.6.2"
 sphinx_design = "^0.3.0"
 esbonio = ">=0.15.0"
+pygls = {version = ">=0.12.4,<1.0", python = ">=3.7,<3.12"}
 
 [tool.pytest.ini_options]
 testpaths = [
