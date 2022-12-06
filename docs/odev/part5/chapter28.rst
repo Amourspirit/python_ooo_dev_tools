@@ -207,7 +207,102 @@ In the ``chart2`` API, the variants are accessed via template names, which are l
     |                  |          | - StackedColumnWithLine          |
     +------------------+----------+----------------------------------+
 
+The template names are closely related to the tooltip names in Calc's chart wizard.
+For example, the tooltip name in :numref:`ch28fig_column_chart_tooltip_name` corresponds to the ``PercentStackedColumn`` template.
 
+It's also possible to create a chart using a chart type name, which are listed in :numref:`ch28tbl_chart_type_names`.
+
+.. _ch28tbl_chart_type_names:
+
+.. table:: Chart Type Names.
+    :name: chart_type_names
+    :align: center
+
+    ======== ====================================
+     Chart    Chart Type Names                   
+    ======== ====================================
+     Column   ColumnChartType
+     Bar      BarChartType
+     Pie      PieChartType
+     Area     AreaChartType
+     Line     LineChartType
+     XY       (Scatter) ScatterChartType
+     Bubble   BubbleChartType
+     Net      NetChartType, FilledNetChartType
+     Stock    CandleStickChartType
+    ======== ====================================
+
+|odev| has :py:class:`~.kind.chart2_types.ChartTypes` class for looking up chart names to make it a bit easier for a developer.
+:py:class:`~.kind.chart2_types.ChartTypes` is has a sub-class for each chart type shown in :numref:`ch28tbl_chart_type_names`.
+Each sub-class has a ``NAMED`` field which contain the name in column ``2`` of :numref:`ch28tbl_chart_type_names`.
+Also each sub-class has one or more fileds that start with ``TEMPLATE_`` such as ``TEMPLATE_3D`` or ``TEMPLATE_PERCENT``.
+``TEMPLATE_`` fields point to the possible chart template names listed in column ``3`` of :numref:`ch28tblchart_types_and_template_names`.
+
+For Example ``diagram_name`` of :py:meth:`.Chart2.insert_chart` can be passeed ``ChartTypes.Pie.TEMPLATE_DONUT.DONUT``.
+
+.. tabs::
+
+    .. code-tab:: python
+
+        range_addr = Calc.get_address(sheet=sheet, range_name="A44:C50")
+        chart_doc = Chart2.insert_chart(
+            sheet=sheet,
+            cells_range=range_addr,
+            cell_name="D43",
+            width=15,
+            height=11,
+            diagram_name=ChartTypes.Pie.TEMPLATE_DONUT.DONUT,
+        )
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+Note that a stock chart graph is drawn using a ``CandleStickChartType``, and that there's no type name for a column and line chart because it's implemented as a combination of ``ColumnChartType`` and ``BarChartType``.
+
+The ``chart2`` module is quite complex, so |odev| hides a lot of details inside methods in :py:class:`~.chart2.Chart2` class. It simplifies four kinds of operation:
+
+1. The creation of a new chart in a spreadsheet document, based on a template name.
+2. The accessing and modification of elements inside a chart, such as the title, legend, axes, and colors.
+3. The addition of extra data to a chart, such as error bars or a second graph.
+4. The embedding of a chart in a document other than a spreadsheet, namely in a text document or slide presentation.
+
+Operations no. 1 (chart creation) and no. 2 (element modification) are used by all my examples, so the rest of this chapter will give an overview of how the corresponding :py:class:`~.chart2.Chart2` methods work.
+
+Programming details specific to particular charts will be discussed in subsequent chapters:
+
+.. todo::
+
+    | Chapter 28, Add link to chapters 30
+    | Chapter 28, Add link to chapters 31
+    | Chapter 28, Add link to chapters 32
+
+.. cssclass:: ul-list
+
+    - column: chapter 29;
+    - bar, pie, area, line: chapter 30;
+    - XY (scatter): chapter 31;
+    - bubble, net, stock: chapter 32.
+
+.. _ch28_chart_creation:
+
+28.2 Chart Creation
+===================
+
+Chart creation can be divided into three steps:
+
+1. A TableChart_ service is created inside the spreadsheet.
+2. The |chart2_srv|_ service is accessed inside the TableChart_.
+3. The |chart2_srv|_ is initialized by linking together a chart template, diagram, and data source.
+
+The details are explained in the following sub-sections.
+
+.. _ch28_creating_tbl_chart:
+
+28.2.1 Creating a Table Chart
+-----------------------------
 
 Work in progress ...
 
@@ -226,3 +321,7 @@ Work in progress ...
 
 .. _TableChart: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1table_1_1TableChart.html
 .. _XTableChart: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1table_1_1XTableChart.html
+
+
+.. spelling:word-list::
+    Donut
