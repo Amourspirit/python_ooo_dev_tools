@@ -235,10 +235,10 @@ It's also possible to create a chart using a chart type name, which are listed i
 |odev| has :py:class:`~.kind.chart2_types.ChartTypes` class for looking up chart names to make it a bit easier for a developer.
 :py:class:`~.kind.chart2_types.ChartTypes` is has a sub-class for each chart type shown in :numref:`ch28tbl_chart_type_names`.
 Each sub-class has a ``NAMED`` field which contain the name in column ``2`` of :numref:`ch28tbl_chart_type_names`.
-Also each sub-class has one or more fileds that start with ``TEMPLATE_`` such as ``TEMPLATE_3D`` or ``TEMPLATE_PERCENT``.
+Also each sub-class has one or more fields that start with ``TEMPLATE_`` such as ``TEMPLATE_3D`` or ``TEMPLATE_PERCENT``.
 ``TEMPLATE_`` fields point to the possible chart template names listed in column ``3`` of :numref:`ch28tblchart_types_and_template_names`.
 
-For Example ``diagram_name`` of :py:meth:`.Chart2.insert_chart` can be passeed ``ChartTypes.Pie.TEMPLATE_DONUT.DONUT``.
+For Example ``diagram_name`` of :py:meth:`.Chart2.insert_chart` can be passed ``ChartTypes.Pie.TEMPLATE_DONUT.DONUT``.
 
 .. tabs::
 

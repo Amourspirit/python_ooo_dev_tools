@@ -176,13 +176,35 @@ class Write(mSel.Selection):
     # endregion Selection Overloads
 
     # region ------------- doc / open / close /create/ etc -------------
+
+    # region open_doc()
+    @overload
+    @classmethod
+    def open_doc(cls) -> XTextDocument:
+        ...
+
+    @overload
+    @classmethod
+    def open_doc(cls, fnm: PathOrStr) -> XTextDocument:
+        ...
+
+    @overload
+    @classmethod
+    def open_doc(cls, *, loader: XComponentLoader) -> XTextDocument:
+        ...
+
+    @overload
     @classmethod
     def open_doc(cls, fnm: PathOrStr, loader: XComponentLoader) -> XTextDocument:
+        ...
+
+    @classmethod
+    def open_doc(cls, fnm: PathOrStr | None = None, loader: XComponentLoader | None = None) -> XTextDocument:
         """
-        Opens a Text (Writer) document.
+        Opens or creates a Text (Writer) document.
 
         Args:
-            fnm (PathOrStr): Spreadsheet file to open
+            fnm (PathOrStr): Writer file to open. If omitted then a new Writer document is returned.
             loader (XComponentLoader): Component loader
 
         Raises:
@@ -203,6 +225,8 @@ class Write(mSel.Selection):
         Note:
             Event args ``event_data`` is a dictionary containing ``fnm`` and ``loader``.
 
+             If ``fnm`` is omitted then ``DOC_OPENED`` event will not be raised.
+
         Attention:
             :py:meth:`Lo.open_doc <.utils.lo.Lo.open_doc>` method is called along with any of its events.
         """
@@ -212,7 +236,10 @@ class Write(mSel.Selection):
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
         fnm = cargs.event_data["fnm"]
-        doc = mLo.Lo.open_doc(fnm=fnm, loader=cargs.event_data["loader"])
+        if fnm:
+            doc = mLo.Lo.open_doc(fnm=fnm, loader=loader)
+        else:
+            doc = cls.create_doc(loader=loader)
 
         if not cls.is_text(doc):
             mLo.Lo.print(f"Not a text document; closing '{fnm}'")
@@ -223,8 +250,11 @@ class Write(mSel.Selection):
             mLo.Lo.print(f"Not a text document; closing '{fnm}'")
             mLo.Lo.close_doc(doc)
             raise mEx.MissingInterfaceError(XTextDocument)
-        _Events().trigger(WriteNamedEvent.DOC_OPENED, EventArgs.from_args(cargs))
+        if fnm:
+            _Events().trigger(WriteNamedEvent.DOC_OPENED, EventArgs.from_args(cargs))
         return text_doc
+
+    # endregion open_doc()
 
     @staticmethod
     def is_text(doc: XComponent) -> bool:
@@ -268,8 +298,19 @@ class Write(mSel.Selection):
         _Events().trigger(WriteNamedEvent.DOC_TEXT, EventArgs(Write.get_text_doc.__qualname__))
         return text_doc
 
+    # region create_doc()
+    @overload
+    @staticmethod
+    def create_doc() -> XTextDocument:
+        ...
+
+    @overload
     @staticmethod
     def create_doc(loader: XComponentLoader) -> XTextDocument:
+        ...
+
+    @staticmethod
+    def create_doc(loader: XComponentLoader | None = None) -> XTextDocument:
         """
         Creates a new Writer Text Document
 
@@ -304,8 +345,21 @@ class Write(mSel.Selection):
         _Events().trigger(WriteNamedEvent.DOC_CREATED, EventArgs.from_args(cargs))
         return doc
 
+    # endregion create_doc()
+
+    # region create_doc_from_template()
+    @overload
+    @staticmethod
+    def create_doc_from_template(template_path: PathOrStr) -> XTextDocument:
+        ...
+
+    @overload
     @staticmethod
     def create_doc_from_template(template_path: PathOrStr, loader: XComponentLoader) -> XTextDocument:
+        ...
+
+    @staticmethod
+    def create_doc_from_template(template_path: PathOrStr, loader: XComponentLoader | None = None) -> XTextDocument:
         """
         Create a new Writer Text Document from a template
 
@@ -354,6 +408,8 @@ class Write(mSel.Selection):
         _Events().trigger(WriteNamedEvent.DOC_CREATED, eargs)
         _Events().trigger(WriteNamedEvent.DOC_TMPL_CREATED, eargs)
         return doc
+
+    # endregion create_doc_from_template()
 
     @staticmethod
     def close_doc(text_doc: XTextDocument) -> bool:
@@ -432,9 +488,23 @@ class Write(mSel.Selection):
         _Events().trigger(WriteNamedEvent.DOC_SAVED, EventArgs.from_args(cargs))
         return result
 
+    # region open_flat_doc_using_text_template()
+
+    @overload
+    @classmethod
+    def open_flat_doc_using_text_template(cls, fnm: PathOrStr, template_path: PathOrStr) -> XTextDocument:
+        ...
+
+    @overload
     @classmethod
     def open_flat_doc_using_text_template(
         cls, fnm: PathOrStr, template_path: PathOrStr, loader: XComponentLoader
+    ) -> XTextDocument:
+        ...
+
+    @classmethod
+    def open_flat_doc_using_text_template(
+        cls, fnm: PathOrStr, template_path: PathOrStr, loader: XComponentLoader | None = None
     ) -> XTextDocument:
         """
         Open a new text document applying the template as formatting to the flat XML file
@@ -492,7 +562,7 @@ class Write(mSel.Selection):
         if template_ext != "ott":
             raise ValueError(f"Can only apply a text template as formatting. Not an ott file: {template_path}")
 
-        doc = mLo.Lo.create_doc_from_template(template_path=template_path, loader=cargs.event_data["loader"])
+        doc = mLo.Lo.create_doc_from_template(template_path=template_path, loader=loader)
         text_doc = mLo.Lo.qi(XTextDocument, doc)
         if text_doc is None:
             raise mEx.MissingInterfaceError(
@@ -514,6 +584,8 @@ class Write(mSel.Selection):
             raise Exception("Could not insert document") from e
         _Events().trigger(WriteNamedEvent.DOC_OPENED, EventArgs.from_args(cargs))
         return text_doc
+
+    # endregion open_flat_doc_using_text_template()
 
     # endregion ---------- doc / open / close /create/ etc -------------
 
@@ -2507,6 +2579,8 @@ class Write(mSel.Selection):
         speller = mLo.Lo.create_instance_mcf(XSpellChecker, "com.sun.star.linguistic2.SpellChecker", raise_err=True)
         return speller
 
+    # region spell_sentence()
+
     @overload
     @classmethod
     def spell_sentence(cls, sent: str, speller: XSpellChecker) -> int:
@@ -2558,6 +2632,10 @@ class Write(mSel.Selection):
             is_correct = cls.spell_word(word=word, speller=speller, loc=loc)
             count = count + (0 if is_correct else 1)
         return count
+
+    # endregion spell_sentence()
+
+    # region spell_word()
 
     @overload
     @staticmethod
@@ -2612,6 +2690,8 @@ class Write(mSel.Selection):
             mLo.Lo.print_names(alt_words)
             return False
         return True
+
+    # endregion spell_word()
 
     # endregion ---------- Linguistics: spell checking -----------------
 

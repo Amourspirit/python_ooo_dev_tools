@@ -2,6 +2,17 @@
 Version History
 ***************
 
+Version 0.7.0
+=============
+
+Added ``Lo.loader_current``. Now after ``Lo.load_office()`` is called the ``Lo.loader_current`` property will contain the same loader that is returned by ``Lo.load_office()``
+
+All methods that are using ``loader`` now have a overload to make ``loader`` optional.
+
+``Calc.open_doc()`` has new overloads. Now if a file is not passed to open then a new spreadsheet document is returned.
+
+``Write.open_doc()`` has new overloads. Now if a file is not passed to open then a new Writer document is returned.
+
 Version 0.6.10
 ==============
 

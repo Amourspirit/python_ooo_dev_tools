@@ -1,48 +1,47 @@
 # region Imports
 from __future__ import annotations
 from typing import Tuple, overload
-from enum import Enum
 
 import uno
+from com.sun.star.beans import XPropertySet
+from com.sun.star.chart import XAxisXSupplier
+from com.sun.star.chart import XAxisYSupplier
+from com.sun.star.chart import XChartDataArray
 from com.sun.star.chart import XChartDocument
+from com.sun.star.chart import XDiagram
+from com.sun.star.chart import XTwoAxisYSupplier
 from com.sun.star.container import XNameAccess
+from com.sun.star.document import XEmbeddedObjectSupplier
+from com.sun.star.drawing import XDrawPage
+from com.sun.star.drawing import XDrawPageSupplier
+from com.sun.star.drawing import XShape
+from com.sun.star.lang import XMultiServiceFactory
 from com.sun.star.sheet import XSpreadsheet
 from com.sun.star.table import XTableChart
 from com.sun.star.table import XTableCharts
 from com.sun.star.table import XTableChartsSupplier
-from com.sun.star.document import XEmbeddedObjectSupplier
-from com.sun.star.lang import XMultiServiceFactory
-from com.sun.star.chart import XDiagram
-from com.sun.star.drawing import XDrawPageSupplier
-from com.sun.star.drawing import XShape
-from com.sun.star.drawing import XDrawPage
-from com.sun.star.beans import XPropertySet
-from com.sun.star.text import XTextDocument
 from com.sun.star.text import XTextContent
-from com.sun.star.chart import XAxisXSupplier
-from com.sun.star.chart import XAxisYSupplier
-from com.sun.star.chart import XTwoAxisYSupplier
-from com.sun.star.chart import XChartDataArray
+from com.sun.star.text import XTextDocument
 
 from ..utils.kind.chart_diagram_kind import ChartDiagramKind as ChartDiagramKind
 from ..utils.kind.drawing_shape_kind import DrawingShapeKind as DrawingShapeKind
 
-from ooo.dyn.table.cell_range_address import CellRangeAddress as CellRangeAddress
 from ooo.dyn.awt.rectangle import Rectangle
-from ooo.dyn.text.vert_orientation import VertOrientation
-from ooo.dyn.text.hori_orientation import HoriOrientation
 from ooo.dyn.chart.chart_data_caption import ChartDataCaptionEnum as ChartDataCaptionEnum
-from ooo.dyn.chart.data_label_placement import DataLabelPlacementEnum as DataLabelPlacementEnum
+from ooo.dyn.chart.chart_regression_curve_type import ChartRegressionCurveType as ChartRegressionCurveType
 from ooo.dyn.chart.chart_solid_type import ChartSolidTypeEnum as ChartSolidTypeEnum
 from ooo.dyn.chart.chart_symbol_type import ChartSymbolType as ChartSymbolType
-from ooo.dyn.chart.chart_regression_curve_type import ChartRegressionCurveType as ChartRegressionCurveType
+from ooo.dyn.chart.data_label_placement import DataLabelPlacementEnum as DataLabelPlacementEnum
+from ooo.dyn.table.cell_range_address import CellRangeAddress as CellRangeAddress
+from ooo.dyn.text.hori_orientation import HoriOrientation
+from ooo.dyn.text.vert_orientation import VertOrientation
 
+from . import draw as mDraw
+from ..exceptions import ex as mEx
+from ..utils import info as mInfo
 from ..utils import lo as mLo
 from ..utils import props as mProps
-from . import draw as mDraw
-from ..utils import info as mInfo
-from ..exceptions import ex as mEx
-from ..utils.data_type.intensity import Intensity
+from ..utils.data_type.intensity import Intensity as Intensity
 
 # endregion Imports
 class Chart:
