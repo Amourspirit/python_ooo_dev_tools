@@ -156,8 +156,19 @@ class Draw:
         """
         return mInfo.Info.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.IMPRESS)
 
+    # region create_draw_doc()
+    @overload
+    @staticmethod
+    def create_draw_doc() -> XComponent:
+        ...
+
+    @overload
     @staticmethod
     def create_draw_doc(loader: XComponentLoader) -> XComponent:
+        ...
+
+    @staticmethod
+    def create_draw_doc(loader: XComponentLoader | None = None) -> XComponent:
         """
         Creates a new Draw document.
 
@@ -169,8 +180,21 @@ class Draw:
         """
         return mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.DRAW, loader=loader)
 
+    # endregion create_draw_doc()
+
+    # region create_impress_doc()
+    @overload
+    @staticmethod
+    def create_impress_doc() -> XComponent:
+        ...
+
+    @overload
     @staticmethod
     def create_impress_doc(loader: XComponentLoader) -> XComponent:
+        ...
+
+    @staticmethod
+    def create_impress_doc(loader: XComponentLoader | None = None) -> XComponent:
         """
         Creates a new Impress document.
 
@@ -181,6 +205,8 @@ class Draw:
             XComponent: Component representing document
         """
         return mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.IMPRESS, loader=loader)
+
+    # endregion create_impress_doc()
 
     @staticmethod
     def get_slide_template_path() -> str:
@@ -317,7 +343,17 @@ class Draw:
 
     @overload
     @classmethod
+    def get_slide(cls, doc: XComponent) -> XDrawPage:
+        ...
+
+    @overload
+    @classmethod
     def get_slide(cls, doc: XComponent, idx: int) -> XDrawPage:
+        ...
+
+    @overload
+    @classmethod
+    def get_slide(cls, slides: XDrawPages) -> XDrawPage:
         ...
 
     @overload
@@ -333,7 +369,7 @@ class Draw:
         Args:
             doc (XComponent): Document
             slides (XDrawPages): Draw Pages
-            idx (int): Index of slide
+            idx (int): Index of slide. Default ``0``
 
         Raises:
             IndexError: If ``idx`` is out of bounds
@@ -359,19 +395,26 @@ class Draw:
                 if key in kwargs:
                     ka[1] = kwargs[key]
                     break
+            if count == 1:
+                return ka
             ka[2] = kwargs.get("idx", None)
             return ka
 
-        if count != 2:
+        if not count in (1, 2):
             raise TypeError("get_slide() got an invalid number of arguments")
 
         kargs = get_kwargs()
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
 
+        if count == 1:
+            idx = 0
+        else:
+            idx = cast(int, kargs[2])
+
         if mLo.Lo.is_uno_interfaces(kargs[1], XDrawPages):
-            return cls._get_slide_slides(kargs[1], kargs[2])
-        return cls._get_slide_doc(kargs[1], kargs[2])
+            return cls._get_slide_slides(kargs[1], idx)
+        return cls._get_slide_doc(kargs[1], idx)
 
     # endregion get_slide()
 

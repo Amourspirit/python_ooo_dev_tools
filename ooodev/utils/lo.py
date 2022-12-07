@@ -271,6 +271,8 @@ class Lo(metaclass=StaticProperty):
 
     _lo_inst: ConnectBase = None
 
+    _loader = None
+
     # region    qi()
 
     @overload
@@ -727,12 +729,13 @@ class Lo(metaclass=StaticProperty):
             # OPTIMIZE: Perhaps system exit is not the best what to handle no desktop service
             Lo.print("Could not create a desktop service")
             raise SystemExit(1)
-        loader = cls.qi(XComponentLoader, cls._xdesktop)
-        if loader is None:
+        cls._loader = cls.qi(XComponentLoader, cls._xdesktop)
+        if cls._loader is None:
             Lo.print("Unable to access XComponentLoader")
             SystemExit(1)
+
         _Events().trigger(LoNamedEvent.OFFICE_LOADED, eargs)
-        return loader
+        return cls._loader
         # return cls.xdesktop
 
     # endregion Start Office
@@ -827,8 +830,22 @@ class Lo(metaclass=StaticProperty):
     # endregion office shutdown
 
     # region document opening
+
+    # region open_flat_doc()
+    @overload
+    @classmethod
+    def open_flat_doc(cls, fnm: PathOrStr, doc_type: Lo.DocType) -> XComponent:
+        ...
+
+    @overload
     @classmethod
     def open_flat_doc(cls, fnm: PathOrStr, doc_type: Lo.DocType, loader: XComponentLoader) -> XComponent:
+        ...
+
+    @classmethod
+    def open_flat_doc(
+        cls, fnm: PathOrStr, doc_type: Lo.DocType, loader: Optional[XComponentLoader] = None
+    ) -> XComponent:
         """
         Opens a flat document
 
@@ -848,6 +865,8 @@ class Lo(metaclass=StaticProperty):
         Attention:
             :py:meth:`~.utils.lo.Lo.open_doc` method is called along with any of its events.
         """
+        if loader is None:
+            loader = cls._loader
         nn = mXML.XML.get_flat_fiter_name(doc_type=doc_type)
         Lo.print(f"Flat filter Name: {nn}")
         # do not set Hidden=True property here.
@@ -856,48 +875,34 @@ class Lo(metaclass=StaticProperty):
         # see comments in tests.text_xml.test_in_filters.test_transform_clubs()
         return cls.open_doc(fnm, loader, mProps.Props.make_props(FilterName=nn))
 
+    # endregion open_flat_doc()
+
+    # region open_doc()
+    @overload
+    @classmethod
+    def open_doc(cls, fnm: PathOrStr) -> XComponent:
+        ...
+
     @overload
     @classmethod
     def open_doc(cls, fnm: PathOrStr, loader: XComponentLoader) -> XComponent:
-        """
-        Open a office document
+        ...
 
-        Args:
-            fnm (PathOrStr): path of document to open
-            loader (XComponentLoader): Component Loader
-
-        Raises:
-            Exception: if unable to open document
-
-        Returns:
-            XComponent: Document
-        """
+    @overload
+    @classmethod
+    def open_doc(cls, fnm: PathOrStr, *, props: Iterable[PropertyValue]) -> XComponent:
         ...
 
     @overload
     @classmethod
     def open_doc(cls, fnm: PathOrStr, loader: XComponentLoader, props: Iterable[PropertyValue]) -> XComponent:
-        """
-        Open a office document
-
-        Args:
-            fnm (PathOrStr): path of document to open
-            loader (XComponentLoader): Component Loader
-            props (Iterable[PropertyValue]): Properties passed to component loader
-
-        Raises:
-            Exception: if unable to open document
-
-        Returns:
-            XComponent: Document
-        """
         ...
 
     @classmethod
     def open_doc(
         cls,
         fnm: PathOrStr,
-        loader: XComponentLoader,
+        loader: Optional[XComponentLoader] = None,
         props: Optional[Iterable[PropertyValue]] = None,
     ) -> XComponent:
         """
@@ -941,6 +946,8 @@ class Lo(metaclass=StaticProperty):
                     ...
         """
         # Props and FileIO are called this method so triger global_reset first.
+        if loader is None:
+            loader = cls._loader
         cargs = CancelEventArgs(Lo.open_doc.__qualname__)
         cargs.event_data = {
             "fnm": fnm,
@@ -976,13 +983,28 @@ class Lo(metaclass=StaticProperty):
             doc = loader.loadComponentFromURL(open_file_url, "_blank", 0, props)
             cls._ms_factory = cls.qi(XMultiServiceFactory, doc)
             cls._doc = doc
+            if cls._doc is None:
+                raise mEx.NoneError("loadComponentFromURL() returned None")
             _Events().trigger(LoNamedEvent.DOC_OPENED, eargs)
             return doc
         except Exception as e:
             raise Exception("Unable to open the document") from e
 
+    # endregion open_doc()
+
+    # region open_readonly_doc()
+    @overload
+    @classmethod
+    def open_readonly_doc(cls, fnm: PathOrStr) -> XComponent:
+        ...
+
+    @overload
     @classmethod
     def open_readonly_doc(cls, fnm: PathOrStr, loader: XComponentLoader) -> XComponent:
+        ...
+
+    @classmethod
+    def open_readonly_doc(cls, fnm: PathOrStr, loader: Optional[XComponentLoader] = None) -> XComponent:
         """
         Open a office document as read-only
 
@@ -1004,7 +1026,11 @@ class Lo(metaclass=StaticProperty):
         Attention:
             :py:meth:`~.utils.lo.Lo.open_doc` method is called along with any of its events.
         """
+        if loader is None:
+            loader = cls._loader
         return cls.open_doc(fnm, loader, mProps.Props.make_props(Hidden=True, ReadOnly=True))
+
+    # endregion open_readonly_doc()
 
     # ======================== document creation ==============
 
@@ -1069,48 +1095,32 @@ class Lo(metaclass=StaticProperty):
             Lo.print(f"Do not recognize extension '{doc_type_val}'; using writer")
             return cls.DocTypeStr.WRITER
 
+    # region create_doc()
+    @overload
+    @classmethod
+    def create_doc(cls, doc_type: DocTypeStr) -> XComponent:
+        ...
+
     @overload
     @classmethod
     def create_doc(cls, doc_type: DocTypeStr, loader: XComponentLoader) -> XComponent:
-        """
-        Creates a document
+        ...
 
-        Args:
-            doc_type (DocTypeStr): Document type
-            loader (XComponentLoader): Component Loader
-
-        Raises:
-            Exception: If unable to create document.
-
-        Returns:
-            XComponent: document as component.
-        """
+    @overload
+    @classmethod
+    def create_doc(cls, doc_type: DocTypeStr, *, props: Iterable[PropertyValue]) -> XComponent:
         ...
 
     @overload
     @classmethod
     def create_doc(cls, doc_type: DocTypeStr, loader: XComponentLoader, props: Iterable[PropertyValue]) -> XComponent:
-        """
-        Creates a document
-
-        Args:
-            doc_type (DocTypeStr): Document type
-            loader (XComponentLoader): Component Loader
-            props (Iterable[PropertyValue]): Property values
-
-        Raises:
-            Exception: If unable to create document.
-
-        Returns:
-            XComponent: document as component.
-        """
         ...
 
     @classmethod
     def create_doc(
         cls,
         doc_type: Lo.DocTypeStr,
-        loader: XComponentLoader,
+        loader: Optional[XComponentLoader] = None,
         props: Optional[Iterable[PropertyValue]] = None,
     ) -> XComponent:
         """
@@ -1140,6 +1150,8 @@ class Lo(metaclass=StaticProperty):
             :ref:`ch02_create_doc`
         """
         # Props is called in this method so trigger global_reset first
+        if loader is None:
+            loader = cls._loader
         cargs = CancelEventArgs(Lo.create_doc.__qualname__)
         cargs.event_data = {
             "doc_type": doc_type,
@@ -1167,8 +1179,21 @@ class Lo(metaclass=StaticProperty):
         except Exception as e:
             raise Exception("Could not create a document") from e
 
+    # endregion create_doc()
+
+    # region create_macro_doc()
+    @overload
+    @classmethod
+    def create_macro_doc(cls, doc_type: Lo.DocTypeStr) -> XComponent:
+        ...
+
+    @overload
     @classmethod
     def create_macro_doc(cls, doc_type: Lo.DocTypeStr, loader: XComponentLoader) -> XComponent:
+        ...
+
+    @classmethod
+    def create_macro_doc(cls, doc_type: Lo.DocTypeStr, loader: Optional[XComponentLoader] = None) -> XComponent:
         """
         Create a document that allows executing of macros
 
@@ -1185,14 +1210,32 @@ class Lo(metaclass=StaticProperty):
         See Also:
             :ref:`ch02_create_doc`
         """
+        if loader is None:
+            loader = cls._loader
         return cls.create_doc(
             doc_type=doc_type,
             loader=loader,
             props=mProps.Props.make_props(Hidden=False, MacroExecutionMode=MacroExecMode.ALWAYS_EXECUTE),
         )
 
+    # endregion create_macro_doc()
+
+    # region create_doc_from_template()
+
+    @overload
+    @classmethod
+    def create_doc_from_template(cls, template_path: PathOrStr) -> XComponent:
+        ...
+
+    @overload
     @classmethod
     def create_doc_from_template(cls, template_path: PathOrStr, loader: XComponentLoader) -> XComponent:
+        ...
+
+    @classmethod
+    def create_doc_from_template(
+        cls, template_path: PathOrStr, loader: Optional[XComponentLoader] = None
+    ) -> XComponent:
         """
         Create a document form a template
 
@@ -1206,6 +1249,8 @@ class Lo(metaclass=StaticProperty):
         Returns:
             XComponent: document as component.
         """
+        if loader is None:
+            loader = cls._loader
         cargs = CancelEventArgs(Lo.create_doc_from_template.__qualname__)
         _Events().trigger(LoNamedEvent.DOC_CREATING, cargs)
         if cargs.cancel:
@@ -1225,6 +1270,8 @@ class Lo(metaclass=StaticProperty):
             return cls._doc
         except Exception as e:
             raise Exception(f"Could not create document from template") from e
+
+    # endregion create_doc_from_template()
 
     # ======================== document saving ==============
 
@@ -2735,6 +2782,16 @@ class Lo(metaclass=StaticProperty):
                 cls._bridge_component = None
             return cls._bridge_component
 
+    @classproperty
+    def loader_current(cls) -> XComponentLoader:
+        """
+        Gets the current ``XComponentLoader`` instance.
+
+        Returns:
+            XComponentLoader: Component Loader
+        """
+        return cls._loader
+
 
 class _LoManager(metaclass=StaticProperty):
     """Manages clearing and resetting for Lo static class"""
@@ -2758,8 +2815,8 @@ class _LoManager(metaclass=StaticProperty):
     @staticmethod
     def on_disposed(source: Any, event: EventObject) -> None:
         Lo.print("Office bridge has gone!!")
-        dattrs = ("_xcc", "_doc", "_mc_factory", "_ms_factory", "_lo_inst", "_xdesktop")
-        dvals = (None, None, None, None, None, None)
+        dattrs = ("_xcc", "_doc", "_mc_factory", "_ms_factory", "_lo_inst", "_xdesktop", "_loader")
+        dvals = (None, None, None, None, None, None, None)
         for attr, val in zip(dattrs, dvals):
             setattr(Lo, attr, val)
 

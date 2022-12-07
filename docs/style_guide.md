@@ -236,6 +236,8 @@ See src/conn/index.rst as an example
     conn
 ```
 
+`.. spelling:word-list::` can be at the end of a `rst` file.
+
 ## Abbreviations
 
 Abbreviations are handled by the `:abbreviation:` role.

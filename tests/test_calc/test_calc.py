@@ -9,6 +9,62 @@ if __name__ == "__main__":
 # region    Sheet Methods
 
 
+def test_create_doc_events_no_loader(loader):
+    from ooodev.utils.lo import Lo
+    from ooodev.office.calc import Calc
+    from ooodev.events.args.cancel_event_args import CancelEventArgs
+    from ooodev.events.args.event_args import EventArgs
+    from ooodev.events.lo_events import Events, event_ctx, is_meth_event
+    from ooodev.events.calc_named_event import CalcNamedEvent
+    from ooodev.exceptions import ex as mEx
+
+    doc_opened = False
+    doc_opening = False
+
+    def on(source: Any, args: CancelEventArgs) -> None:
+        nonlocal doc_opening
+        doc_opening = True
+        assert args.event_data["loader"] is None
+        assert is_meth_event(source, Calc.create_doc)
+        assert args.source is source
+        assert args.event_name == CalcNamedEvent.DOC_CREATING
+
+    def on_cancel(source: Any, args: CancelEventArgs) -> None:
+        args.cancel = True
+
+    def after(source: Any, args: EventArgs) -> None:
+        nonlocal doc_opened
+        doc_opened = True
+        assert args.event_data["loader"] is None
+        assert is_meth_event(source, Calc.create_doc)
+        assert args.source is source
+        assert args.event_name == CalcNamedEvent.DOC_CREATED
+
+    events = Events()
+    events.on(CalcNamedEvent.DOC_CREATING, on)
+    events.on(CalcNamedEvent.DOC_CREATED, after)
+
+    doc = Calc.create_doc()
+    assert doc is not None
+    try:
+        assert doc_opened
+        assert doc_opening
+    finally:
+        Lo.close_doc(doc=doc, deliver_ownership=False)
+
+    events = None
+    events = Events()
+    events.on(CalcNamedEvent.DOC_CREATING, on_cancel)
+    with pytest.raises(mEx.CancelEventError):
+        doc = Calc.create_doc()
+    events = None
+
+    with event_ctx() as events:
+        events.on(CalcNamedEvent.DOC_CREATING, on_cancel)
+        with pytest.raises(mEx.CancelEventError):
+            doc = Calc.create_doc()
+
+
 def test_create_doc_events(loader):
     from ooodev.utils.lo import Lo
     from ooodev.office.calc import Calc
@@ -45,6 +101,7 @@ def test_create_doc_events(loader):
     events.on(CalcNamedEvent.DOC_CREATED, after)
 
     doc = Calc.create_doc(loader)
+    assert doc is not None
     try:
         assert doc_opened
         assert doc_opening

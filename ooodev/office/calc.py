@@ -154,17 +154,37 @@ class Calc:
 
     # region --------------- document methods --------------------------
 
+    # region open_doc()
+    @overload
+    @classmethod
+    def open_doc(cls) -> XSpreadsheetDocument:
+        ...
+
+    @overload
+    @classmethod
+    def open_doc(cls, fnm: PathOrStr) -> XSpreadsheetDocument:
+        ...
+
+    @overload
+    @classmethod
+    def open_doc(cls, *, loader: XComponentLoader) -> XSpreadsheetDocument:
+        ...
+
+    @overload
     @classmethod
     def open_doc(cls, fnm: PathOrStr, loader: XComponentLoader) -> XSpreadsheetDocument:
+        ...
+
+    @classmethod
+    def open_doc(cls, fnm: PathOrStr | None = None, loader: XComponentLoader | None = None) -> XSpreadsheetDocument:
         """
-        Opens spreadsheet document
+        Opens or creates a spreadsheet document
 
         Args:
-            fnm (str): Spreadsheet file to open
+            fnm (str): Spreadsheet file to open. If omitted then a new Spreadsheet document is returned.
             loader (XComponentLoader): Component loader
 
         Raises:
-            Exception: If document is null
             CancelEventError: If DOC_OPENING is canceled
 
         Returns:
@@ -178,17 +198,23 @@ class Calc:
 
         Note:
            Event args ``event_data`` is a dictionary containing all method parameters.
+
+           If ``fnm`` is omitted then ``DOC_OPENED`` event will not be raised.
         """
         cargs = CancelEventArgs(Calc.open_doc.__qualname__)
         cargs.event_data = {"fnm": fnm, "loader": loader}
         _Events().trigger(CalcNamedEvent.DOC_OPENING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
-        doc = mLo.Lo.open_doc(fnm=fnm, loader=loader)
-        if doc is None:
-            raise Exception("Document is null")
-        _Events().trigger(CalcNamedEvent.DOC_OPENED, EventArgs.from_args(cargs))
+        _fnm = cargs.event_data["fnm"]
+        if _fnm:
+            doc = mLo.Lo.open_doc(fnm=_fnm, loader=loader)
+            _Events().trigger(CalcNamedEvent.DOC_OPENED, EventArgs.from_args(cargs))
+        else:
+            doc = cls.create_doc(loader=loader)
         return cls.get_ss_doc(doc)
+
+    # endregion open_doc()
 
     @staticmethod
     def save_doc(doc: XSpreadsheetDocument, fnm: PathOrStr) -> bool:
@@ -269,8 +295,19 @@ class Calc:
         _Events().trigger(CalcNamedEvent.DOC_SS, EventArgs(Calc.get_ss_doc.__qualname__))
         return ss_doc
 
+    # region create_doc()
+    @overload
+    @staticmethod
+    def create_doc() -> XSpreadsheetDocument:
+        ...
+
+    @overload
     @staticmethod
     def create_doc(loader: XComponentLoader) -> XSpreadsheetDocument:
+        ...
+
+    @staticmethod
+    def create_doc(loader: XComponentLoader | None = None) -> XSpreadsheetDocument:
         """
         Creates a new spreadsheet document
 
@@ -306,6 +343,8 @@ class Calc:
         return doc
 
         # XSpreadsheetDocument does not inherit XComponent!
+
+    # endregion create_doc()
 
     # endregion ------------ document methods ------------------
 
