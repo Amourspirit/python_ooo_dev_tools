@@ -5,13 +5,13 @@ from typing import List, Tuple, cast, overload, TYPE_CHECKING
 
 import uno
 
-# XChartTypeTemplate import error in LO >+ 7.4
-from com.sun.star.chart2 import XChartTypeTemplate
+# XChartTypeTemplate import error in LO 7.4.0 to 7.4.3
 from com.sun.star.beans import XPropertySet
 from com.sun.star.chart2 import XAxis
 from com.sun.star.chart2 import XChartDocument
 from com.sun.star.chart2 import XChartType
 from com.sun.star.chart2 import XChartTypeContainer
+from com.sun.star.chart2 import XChartTypeTemplate
 from com.sun.star.chart2 import XCoordinateSystem
 from com.sun.star.chart2 import XCoordinateSystemContainer
 from com.sun.star.chart2 import XDataSeries
