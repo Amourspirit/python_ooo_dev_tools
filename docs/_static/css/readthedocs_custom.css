@@ -25,7 +25,7 @@ a.reference.internal>code>span::after {
     margin-left: 3px;
 }
 
-a.reference.external::after {
+a.reference.external:hover::after {
     /* using style CSS custom property */
     font: var(--fa-font-solid);
     content: "\f08e";
@@ -308,7 +308,32 @@ ul.ul-list {
 .t-purple {
     color: var(--t-color-purple);
 }
+.rst-content a {
+    color: var(--link-color);
+}
+.rst-content a:visited {
+    color: var(--link-color-visited);
+}
 
+
+.rst-content code.xref,
+.rst-content tt.xref,
+a .rst-content code,
+a .rst-content tt {
+    color: var(--link-color);
+}
+
+
+.rst-content code.literal:not(a code),
+.rst-content tt.literal:not(a code) {
+    color: #050378;
+}
+
+.rst-content code,
+.rst-content tt,
+code {
+    border: 1px solid #e7f1f5;
+}
 /* End Colors in theme_color_roles.txt */
 
 /* Custom theme colors
@@ -340,5 +365,8 @@ typically in rst to set a color would be something like:
     --t-color-blue: blue;
     --t-color-navy: navy;
     --t-color-purple: purple;
+
+    --link-color: #0d0d9b;
+    --link-color-visited: #0d0d9b;
 }
 /* End Custom theme colors */
