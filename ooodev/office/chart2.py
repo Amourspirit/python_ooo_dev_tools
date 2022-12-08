@@ -234,6 +234,7 @@ class Chart2:
             .. include:: ../../resources/utils/chart2_lookup_chart_tmpl.rst
         """
         # XChartTypeTemplate does not seem to be supported by LO 7.4 ( gets import error )
+        # this should be fixe in LO 7.4.4 +
         # Available interfaces com.sun.star.chart2.template.Column: (also XInterface)
         # com.sun.star.beans.XFastPropertySet
         # com.sun.star.beans.XMultiPropertySet
