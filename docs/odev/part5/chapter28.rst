@@ -117,6 +117,7 @@ In the ``chart2`` API, the variants are accessed via template names, which are l
     +==================+==========+==================================+
     | Column           | Stacked  | - Column                         |
     |                  |          | - StackedColumn                  |
+    |                  |          | - PercentStackedColumn           |
     +------------------+----------+----------------------------------+
     |                  | Percent  | - ThreeDColumnDeep               |
     |                  |          | - ThreeDColumnFlat               |
@@ -144,10 +145,6 @@ In the ``chart2`` API, the variants are accessed via template names, which are l
     |                  |          | - ThreeDPieAllExploded           |
     |                  |          | - ThreeDDonut                    |
     |                  |          | - ThreeDDonutAllExploded         |
-    +------------------+----------+----------------------------------+
-    | Area             | Stacked  | - Area                           |
-    |                  |          | - StackedArea                    |
-    |                  |          | - PercentStackedArea             |
     +------------------+----------+----------------------------------+
     | Area             | Stacked  | - Area                           |
     |                  |          | - StackedArea                    |

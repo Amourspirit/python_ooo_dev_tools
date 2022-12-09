@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.7.1
+=============
+
+Minor updates to ``chart2_types`` module.
+
 Version 0.7.0
 =============
 

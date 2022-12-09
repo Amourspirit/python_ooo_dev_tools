@@ -41,8 +41,6 @@ class ColumnStackedKind(ChartTemplateBase):
     COLUMN = "Column"
     STACKED_COLUMN = "StackedColumn"
     PERCENT_STACKED_COLUMN = "PercentStackedColumn"
-    COLUMN_WITH_LINE = "ColumnWithLine"
-    STACKED_COLUMN_WITH_LINE = "StackedColumnWithLine"
 
 
 class ColumnPercentKind(ChartTemplateBase):
@@ -77,8 +75,8 @@ class PieDonutKind(ChartTemplateBase):
 
 
 class PieExplodeKind(ChartTemplateBase):
-    DONUT_3D = "ThreeDDonut"
-    DONUT_ALL_EXPLODED_3D = "ThreeDDonutAllExploded"
+    PIE_ALL_EXPLODED = "PieAllExploded"
+    DONUT_ALL_EXPLODED = "DonutAllExploded"
 
 
 class Pie3dKind(ChartTemplateBase):
@@ -179,6 +177,11 @@ class StockVolumeKind(ChartTemplateBase):
     STOCK_VOLUME_OPEN_LOW_HIGH_CLOSE = "StockVolumeOpenLowHighClose"
 
 
+class ColumnAndLineStackedKind(ChartTemplateBase):
+    COLUMN_WITH_LINE = "ColumnWithLine"
+    STACKED_COLUMN_WITH_LINE = "StackedColumnWithLine"
+
+
 class NamedColumnKind(ChartTypeNameBase):
     COLUMN_CHART = "ColumnChartType"
 
@@ -226,6 +229,9 @@ class ChartTypes:
         TEMPLATE_3D = Column3dKind
         TEMPLATE_PERCENT = ColumnPercentKind
         TEMPLATE_STACKED = ColumnStackedKind
+
+    class ColumnAndLine:
+        TEMPLATE_STACKED = ColumnAndLineStackedKind
 
     class Bar:
         NAMED = NamedBarKind
