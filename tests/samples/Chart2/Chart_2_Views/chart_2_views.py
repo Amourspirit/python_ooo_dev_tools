@@ -61,50 +61,58 @@ class Chart2View:
             self._soffice = None
 
     def main(self) -> None:
+        opt = Lo.Options(verbose=True)
         if self._soffice:
-            loader = Lo.load_office(Lo.ConnectPipe(soffice=self._soffice))
+            loader = Lo.load_office(Lo.ConnectPipe(soffice=self._soffice), opt=opt)
         else:
-            loader = Lo.load_office(Lo.ConnectPipe())
+            loader = Lo.load_office(Lo.ConnectPipe(), opt=opt)
 
         try:
             doc = Calc.open_doc(fnm=self._data_fnm, loader=loader)
             GUI.set_visible(is_visible=True, odoc=doc)
             sheet = Calc.get_sheet(doc=doc, index=0)
 
+            chart_doc = None
             if self._chart_kind == ChartKind.AREA:
-                self._area_chart(doc=doc, sheet=sheet)
+                chart_doc = self._area_chart(doc=doc, sheet=sheet)
             elif self._chart_kind == ChartKind.BAR:
-                self._bar_chart(doc=doc, sheet=sheet)
+                chart_doc = self._bar_chart(doc=doc, sheet=sheet)
             elif self._chart_kind == ChartKind.BUBBLE_LABELED:
-                self._labeled_bubble_chart(doc=doc, sheet=sheet)
+                chart_doc = self._labeled_bubble_chart(doc=doc, sheet=sheet)
             elif self._chart_kind == ChartKind.COLUMN:
-                self._col_chart(doc=doc, sheet=sheet)
+                chart_doc = self._col_chart(doc=doc, sheet=sheet)
             elif self._chart_kind == ChartKind.COLUMN_LINE:
-                self._col_line_chart(doc=doc, sheet=sheet)
+                chart_doc = self._col_line_chart(doc=doc, sheet=sheet)
             elif self._chart_kind == ChartKind.COLUMN_MULTI:
-                self._mult_col_chart(doc=doc, sheet=sheet)
+                chart_doc = self._mult_col_chart(doc=doc, sheet=sheet)
             elif self._chart_kind == ChartKind.DONUT:
-                self._donut_chart(doc=doc, sheet=sheet)
+                chart_doc = self._donut_chart(doc=doc, sheet=sheet)
             elif self._chart_kind == ChartKind.HAPPY_STOCK:
-                self._happy_stock_chart(doc=doc, sheet=sheet)
+                chart_doc = self._happy_stock_chart(doc=doc, sheet=sheet)
             elif self._chart_kind == ChartKind.LINE:
-                self._line_chart(doc=doc, sheet=sheet)
+                chart_doc = self._line_chart(doc=doc, sheet=sheet)
             elif self._chart_kind == ChartKind.LINES:
-                self._lines_chart(doc=doc, sheet=sheet)
+                chart_doc = self._lines_chart(doc=doc, sheet=sheet)
             elif self._chart_kind == ChartKind.NET:
-                self._net_chart(doc=doc, sheet=sheet)
+                chart_doc = self._net_chart(doc=doc, sheet=sheet)
             elif self._chart_kind == ChartKind.PIE:
-                self._pie_chart(doc=doc, sheet=sheet)
+                chart_doc = self._pie_chart(doc=doc, sheet=sheet)
             elif self._chart_kind == ChartKind.PIE_3D:
-                self._pie_3d_chart(doc=doc, sheet=sheet)
+                chart_doc = self._pie_3d_chart(doc=doc, sheet=sheet)
             elif self._chart_kind == ChartKind.SCATTER:
-                self._scatter_chart(doc=doc, sheet=sheet)
+                chart_doc = self._scatter_chart(doc=doc, sheet=sheet)
             elif self._chart_kind == ChartKind.SCATTER_LINE_ERROR:
-                self._scatter_line_error_chart(doc=doc, sheet=sheet)
+                chart_doc = self._scatter_line_error_chart(doc=doc, sheet=sheet)
             elif self._chart_kind == ChartKind.SCATTER_LINE_LOG:
-                self._scatter_line_log_chart(doc=doc, sheet=sheet)
+                chart_doc = self._scatter_line_log_chart(doc=doc, sheet=sheet)
             elif self._chart_kind == ChartKind.STOCK_PRICES:
-                self._stock_prices_chart(doc=doc, sheet=sheet)
+                chart_doc = self._stock_prices_chart(doc=doc, sheet=sheet)
+
+            if chart_doc:
+                Chart2.print_chart_types(chart_doc)
+
+                template_names = Chart2.get_chart_templates(chart_doc)
+                Lo.print_names(template_names, 1)
 
             Lo.delay(2000)
             msg_result = MsgBox.msgbox(
@@ -142,18 +150,22 @@ class Chart2View:
         Chart2.rotate_y_axis_title(chart_doc=chart_doc, angle=Angle(90))
         return chart_doc
 
-    def _mult_col_chart(self, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> None:
+    def _mult_col_chart(self, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> XChartDocument:
         # draws a multiple column chart: 2D and 3D
         # uses "States with the Most Colleges and Universities by Type"
         range_addr = Calc.get_address(sheet=sheet, range_name="E15:G21")
+        d_name = ChartTypes.Column.TEMPLATE_STACKED.COLUMN
+        # d_name = ChartTypes.Column.TEMPLATE_PERCENT.COLUMN_DEEP_3D
+        # d_name = ChartTypes.Column.TEMPLATE_PERCENT.COLUMN_FLAT_3D
         chart_doc = Chart2.insert_chart(
             sheet=sheet,
             cells_range=range_addr,
             cell_name="A22",
             width=20,
             height=11,
-            diagram_name=ChartTypes.Column.TEMPLATE_PERCENT.COLUMN_DEEP_3D,
+            diagram_name=d_name,
         )
+        ChartTypes.Column.TEMPLATE_STACKED.COLUMN
         Calc.goto_cell(cell_name="A13", doc=doc)
 
         Chart2.set_title(chart_doc=chart_doc, title=Calc.get_string(sheet=sheet, cell_name="E13"))
@@ -164,10 +176,11 @@ class Chart2View:
 
         # for the 3D versions
         # hide labels
-        Chart2.show_axis_label(chart_doc=chart_doc, axis_val=AxisKind.Z, idx=0, is_visible=False)
-        Chart2.set_chart_shape_3d(chart_doc=chart_doc, shape=DataPointGeometry3DEnum.CYLINDER)
+        # Chart2.show_axis_label(chart_doc=chart_doc, axis_val=AxisKind.Z, idx=0, is_visible=False)
+        # Chart2.set_chart_shape_3d(chart_doc=chart_doc, shape=DataPointGeometry3DEnum.CYLINDER)
+        return chart_doc
 
-    def _col_line_chart(self, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> None:
+    def _col_line_chart(self, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> XChartDocument:
         # draws a column+line chart
         # uses "States with the Most Colleges and Universities by Type"
         range_addr = Calc.get_address(sheet=sheet, range_name="E15:G21")
@@ -177,7 +190,7 @@ class Chart2View:
             cell_name="B3",
             width=20,
             height=11,
-            diagram_name=ChartTypes.Column.TEMPLATE_STACKED.COLUMN_WITH_LINE,
+            diagram_name=ChartTypes.ColumnAndLine.TEMPLATE_STACKED.COLUMN_WITH_LINE,
         )
         Calc.goto_cell(cell_name="A13", doc=doc)
 
@@ -186,8 +199,9 @@ class Chart2View:
         Chart2.set_y_axis_title(chart_doc=chart_doc, title=Calc.get_string(sheet=sheet, cell_name="F14"))
         Chart2.rotate_y_axis_title(chart_doc=chart_doc, angle=Angle(90))
         Chart2.view_legend(chart_doc=chart_doc, is_visible=True)
+        return chart_doc
 
-    def _bar_chart(self, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> None:
+    def _bar_chart(self, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> XChartDocument:
         # uses "Sneakers Sold this Month" table
         range_addr = Calc.get_address(sheet=sheet, range_name="A2:B8")
         chart_doc = Chart2.insert_chart(
@@ -205,8 +219,9 @@ class Chart2View:
         Chart2.set_y_axis_title(chart_doc=chart_doc, title=Calc.get_string(sheet=sheet, cell_name="B2"))
         # rotate x-axis which is now the vertical axis
         Chart2.rotate_y_axis_title(chart_doc=chart_doc, angle=Angle(90))
+        return chart_doc
 
-    def _pie_chart(self, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> None:
+    def _pie_chart(self, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> XChartDocument:
         # draw a pie chart, with legend and subtitle;
         # uses "Top 5 States with the Most Elementary and Secondary Schools"
         range_addr = Calc.get_address(sheet=sheet, range_name="E2:F8")
@@ -223,8 +238,9 @@ class Chart2View:
         Chart2.set_title(chart_doc=chart_doc, title=Calc.get_string(sheet=sheet, cell_name="E1"))
         Chart2.set_subtitle(chart_doc=chart_doc, subtitle=Calc.get_string(sheet=sheet, cell_name="F2"))
         Chart2.view_legend(chart_doc=chart_doc, is_visible=True)
+        return chart_doc
 
-    def _pie_3d_chart(self, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> None:
+    def _pie_3d_chart(self, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> XChartDocument:
         # draws a 3D pie chart with rotation, label change
         # uses "Top 5 States with the Most Elementary and Secondary Schools"
         range_addr = Calc.get_address(sheet=sheet, range_name="E2:F8")
@@ -266,8 +282,9 @@ class Chart2View:
             Props.set(props, CharHeight=14.0, CharColor=CommonColor.WHITE, CharWeight=FontWeight.BOLD)
         except mEx.NotFoundError:
             Lo.print("No Properties found for chart.")
+        return chart_doc
 
-    def _donut_chart(self, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> None:
+    def _donut_chart(self, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> XChartDocument:
         # draws a 3D donut chart with 2 rings
         # uses the "Annual Expenditure on Institutions" table
         range_addr = Calc.get_address(sheet=sheet, range_name="A44:C50")
@@ -285,10 +302,11 @@ class Chart2View:
         Chart2.view_legend(chart_doc=chart_doc, is_visible=True)
         subtitle = f'Outer: {Calc.get_string(sheet=sheet, cell_name="B44")}\nInner: {Calc.get_string(sheet=sheet, cell_name="C44")}'
         Chart2.set_subtitle(chart_doc=chart_doc, subtitle=subtitle)
+        return chart_doc
 
         # Chart2.set_data_point_labels(chart_doc=chart_doc, label_type=DataPointLabelTypeKind.CATEGORY)
 
-    def _area_chart(self, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> None:
+    def _area_chart(self, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> XChartDocument:
         # draws an area (stacked) chart;
         # uses "Trends in Enrollment in Public Schools in the US" table
         range_addr = Calc.get_address(sheet=sheet, range_name="E45:G50")
@@ -307,6 +325,7 @@ class Chart2View:
         Chart2.set_y_axis_title(chart_doc=chart_doc, title=Calc.get_string(sheet=sheet, cell_name="F44"))
         Chart2.view_legend(chart_doc=chart_doc, is_visible=True)
         Chart2.rotate_y_axis_title(chart_doc=chart_doc, angle=Angle(90))
+        return chart_doc
 
     def _line_chart(self, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> None:
         # draw a line chart with data points, no legend;
@@ -326,7 +345,7 @@ class Chart2View:
         Chart2.set_x_axis_title(chart_doc=chart_doc, title=Calc.get_string(sheet=sheet, cell_name="A14"))
         Chart2.set_y_axis_title(chart_doc=chart_doc, title=Calc.get_string(sheet=sheet, cell_name="B14"))
 
-    def _lines_chart(self, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> None:
+    def _lines_chart(self, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> XChartDocument:
         # draw a line chart with two lines;
         # uses "Trends in Expenditure Per Pupil"
         range_addr = Calc.get_address(sheet=sheet, range_name="E27:G39")
@@ -347,8 +366,9 @@ class Chart2View:
 
         # too crowded for data points
         Chart2.set_data_point_labels(chart_doc=chart_doc, label_type=DataPointLabelTypeKind.NONE)
+        return chart_doc
 
-    def _scatter_chart(self, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> None:
+    def _scatter_chart(self, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> XChartDocument:
         # data from http://www.mathsisfun.com/data/scatter-xy-plots.html;
         # uses the "Ice Cream Sales vs Temperature" table
         range_addr = Calc.get_address(sheet=sheet, range_name="A110:B122")
@@ -370,8 +390,9 @@ class Chart2View:
         Chart2.calc_regressions(chart_doc)
 
         Chart2.draw_regression_curve(chart_doc=chart_doc, curve_kind=CurveKind.LINEAR)
+        return XChartDocument
 
-    def _scatter_line_log_chart(self, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> None:
+    def _scatter_line_log_chart(self, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> XChartDocument:
         # draw a x-y scatter chart using log scaling
         # uses the "Power Function Test" table
         range_addr = Calc.get_address(sheet=sheet, range_name="E110:F120")
@@ -395,8 +416,9 @@ class Chart2View:
         # Chart2.print_scale_data("x-axis", x_axis)
         _ = Chart2.scale_y_axis(chart_doc=chart_doc, scale_type=CurveKind.LOGARITHMIC)
         Chart2.draw_regression_curve(chart_doc=chart_doc, curve_kind=CurveKind.POWER)
+        return chart_doc
 
-    def _scatter_line_error_chart(self, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> None:
+    def _scatter_line_error_chart(self, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> XChartDocument:
         # draws an x-y scatter chart with lines and y-error bars
         # uses the smaller "Impact Data - 1018 Cold Rolled" table
         # the example comes from "Using Descriptive Statistics.pdf"
@@ -422,8 +444,9 @@ class Chart2View:
         error_label = f"{sheet_name}.C142"
         error_range = f"{sheet_name}.C143:C146"
         Chart2.set_y_error_bars(chart_doc=chart_doc, data_label=error_label, data_range=error_range)
+        return chart_doc
 
-    def _labeled_bubble_chart(self, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> None:
+    def _labeled_bubble_chart(self, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> XChartDocument:
         # draws a bubble chart with labels;
         # uses the "World data" table
         range_addr = Calc.get_address(sheet=sheet, range_name="H63:J93")
@@ -459,8 +482,9 @@ class Chart2View:
         label = f"{sheet_name}.K63"
         names = f"{sheet_name}.K64:K93"
         Chart2.add_cat_labels(chart_doc=chart_doc, data_label=label, data_range=names)
+        return chart_doc
 
-    def _net_chart(self, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> None:
+    def _net_chart(self, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> XChartDocument:
         # draws a net chart;
         # uses the "No of Calls per Day" table
         range_addr = Calc.get_address(sheet=sheet, range_name="A56:D63")
@@ -483,8 +507,9 @@ class Chart2View:
         sd = x_axis.getScaleData()
         sd.Orientation = AxisOrientation.REVERSE
         x_axis.setScaleData(sd)
+        return chart_doc
 
-    def _happy_stock_chart(self, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> None:
+    def _happy_stock_chart(self, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> XChartDocument:
         # draws a fancy stock chart
         # uses the "Happy Systems (HASY)" table
 
@@ -533,7 +558,7 @@ class Chart2View:
         # x_axis = Chart2.get_x_axis(chart_doc)
         # Props.set(x_axis, TextRotation=45)
 
-        Chart2.print_chart_types(chart_doc)
+        # Chart2.print_chart_types(chart_doc)
 
         # change color of "WhiteDay" and "BlackDay" block colors
         ct = ChartTypes.Stock.NAMED.CANDLE_STICK_CHART
@@ -546,8 +571,9 @@ class Chart2View:
         Lo.print(f"No. of data series in candle stick chart: {len(ds)}")
         # Props.show_obj_props("Candle Stick", ds[0])
         Props.set(ds[0], LineWidth=120, Color=CommonColor.YELLOW)  # LineWidth in 1/100 mm
+        return chart_doc
 
-    def _stock_prices_chart(self, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> None:
+    def _stock_prices_chart(self, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> XChartDocument:
         # draws a stock chart, with an extra pork bellies line
         range_addr = Calc.get_address(sheet=sheet, range_name="E141:I146")
         chart_doc = Chart2.insert_chart(
@@ -573,3 +599,4 @@ class Chart2View:
         Chart2.add_stock_line(chart_doc=chart_doc, data_label=pork_label, data_range=pork_points)
 
         Chart2.view_legend(chart_doc=chart_doc, is_visible=True)
+        return chart_doc
