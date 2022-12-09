@@ -1052,7 +1052,8 @@ In the example above, :py:meth:`.Calc.goal_seek` returns ``16.0``, because that'
         # in Calc class
         @classmethod
         def goal_seek(
-            cls, gs: XGoalSeek, sheet: XSpreadsheet, cell_name: str, formula_cell_name: str, result: numbers.Number
+            cls, gs: XGoalSeek, sheet: XSpreadsheet, cell_name: str,
+            formula_cell_name: str, result: numbers.Number
         ) -> float:
             xpos = cls._get_cell_address_sheet(sheet=sheet, cell_name=cell_name)
             formula_pos = cls._get_cell_address_sheet(sheet=sheet, cell_name=formula_cell_name)

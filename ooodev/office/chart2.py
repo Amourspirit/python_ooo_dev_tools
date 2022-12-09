@@ -877,7 +877,7 @@ class Chart2:
         """
         try:
             xtitle = cls.get_axis_title(chart_doc=chart_doc, axis_val=axis_val, idx=idx)
-            mProps.Props.set_property(xtitle, "TextRotation", angle.Value)
+            mProps.Props.set(xtitle, TextRotation=angle.Value)
         except mEx.ChartError:
             raise
         except Exception as e:
@@ -1279,12 +1279,10 @@ class Chart2:
             legend = diagram.getLegend()
             if is_visible and legend is None:
                 leg = mLo.Lo.create_instance_mcf(XLegend, "com.sun.star.chart2.Legend", raise_err=True)
-                mProps.Props.set_property(leg, "LineStyle", LineStyle.NONE)
-                mProps.Props.set_property(leg, "FillStyle", FillStyle.SOLID)
-                mProps.Props.set_property(leg, "FillTransparence", 100)
+                mProps.Props.set(leg, LineStyle=LineStyle.NONE, FillStyle=FillStyle.SOLID, FillTransparence=100)
                 diagram.setLegend(leg)
 
-            mProps.Props.set_property(leg, "Show", is_visible)
+            mProps.Props.set(leg, Show=is_visible)
         except Exception as e:
             raise mEx.ChartError("Error while setting legend visibility") from e
 
@@ -1596,7 +1594,7 @@ class Chart2:
         """
         chart_types = cls.get_chart_types(chart_doc)
         if len(chart_types) > 1:
-            print(f"No. of chart tyeps: {len(chart_types)}")
+            print(f"No. of chart types: {len(chart_types)}")
             for ct in chart_types:
                 print(f"  {ct.getChartType()}")
         else:
