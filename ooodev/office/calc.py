@@ -2612,7 +2612,7 @@ class Calc:
         Gets Array of data from a spreadsheet.
 
         Args:
-            cell_range (XCellRange): Cell range that to get data from.
+            cell_range (XCellRange): Cell range to get data from.
             sheet (XSpreadsheet): Spreadsheet
             range_name (str): Range of data to get such as "A1:E16"
 
@@ -3015,20 +3015,94 @@ class Calc:
 
     # endregion set_row()
 
+    # region get_row()
+
+    @overload
+    @classmethod
+    def get_row(cls, cell_range: XCellRange) -> List[Any]:
+        ...
+
+    @overload
+    @classmethod
+    def get_row(cls, sheet: XSpreadsheet, row_idx: int) -> List[Any]:
+        ...
+
+    @overload
     @classmethod
     def get_row(cls, sheet: XSpreadsheet, range_name: str) -> List[Any]:
+        ...
+
+    @classmethod
+    def get_row(cls, *args, **kwargs) -> List[Any]:
         """
         Gets a row of data from spreadsheet
 
         Args:
+            cell_range (XCellRange): Cell range to get column data from.
+            row_idx (int): Zero base row index such as `0` for row `1`
             sheet (XSpreadsheet): Spreadsheet
             range_name (str): Range such as 'A1:A12'
 
         Returns:
             List[Any]: 1-Dimensional List of values on success; Otherwise, None
         """
-        vals = cls.get_array(sheet=sheet, range_name=range_name)
+        ordered_keys = (1, 2)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
+
+        def get_kwargs() -> dict:
+            ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ("cell_range", "sheet", "range_name", "row_idx")
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("get_row() got an unexpected keyword argument")
+            keys = ("cell_range", "sheet")
+            for key in keys:
+                if key in kwargs:
+                    ka[1] = kwargs[key]
+                    break
+            if count == 1:
+                return ka
+            keys = ("range_name", "row_idx")
+            for key in keys:
+                if key in kwargs:
+                    ka[2] = kwargs[key]
+                    break
+            return ka
+
+        if not count in (1, 2):
+            raise TypeError("get_row() got an invalid numer of arguments")
+
+        kargs = get_kwargs()
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
+
+        if count == 1:
+            vals = cls.get_array(kargs[1])
+        else:  # count == 2
+            sheet = cast(XSpreadsheet, kargs[1])
+            row = -1
+            if isinstance(kargs[2], int):
+                row = cast(int, kargs[2])
+                if row < 0:
+                    # there can't be a negative row.
+                    return []
+            if row > -1:
+                used_range = cls.find_used_range(sheet)
+                ca = cls._get_address_cell(used_range)
+                if ca.StartRow > row or ca.EndRow < row:
+                    # the requested row is outside the used area of sheet.
+                    return []
+                range_name = f"{cls._get_cell_str_col_row(col=ca.StartColumn, row=row)}:{cls._get_cell_str_col_row(col=ca.EndColumn, row=row)}"
+                row_range = used_range.getCellRangeByName(range_name)
+                vals = cls.get_array(row_range)
+            else:
+                vals = cls.get_array(sheet=sheet, range_name=kargs[2])
         return cls.extract_row(vals=vals, row_idx=0)
+
+    # endregion get_row()
 
     @staticmethod
     def extract_row(vals: Table, row_idx: int) -> List[Any]:
@@ -3051,23 +3125,106 @@ class Calc:
 
         return vals[row_idx]
 
+    # region get_col()
+    @overload
     @classmethod
-    def get_col(cls, sheet: XSpreadsheet, range_name: str) -> List[Any] | None:
+    def get_col(cls, cell_range: XCellRange) -> List[Any]:
+        ...
+
+    @overload
+    @classmethod
+    def get_col(cls, sheet: XSpreadsheet, col_name: str) -> List[Any]:
+        ...
+
+    @overload
+    @classmethod
+    def get_col(cls, sheet: XSpreadsheet, col_idx: int) -> List[Any]:
+        ...
+
+    @overload
+    @classmethod
+    def get_col(cls, sheet: XSpreadsheet, range_name: str) -> List[Any]:
+        ...
+
+    @classmethod
+    def get_col(cls, *args, **kwargs) -> List[Any]:
         """
         Gets a column of data from spreadsheet
 
         Args:
+            cell_range (XCellRange): Cell range to get column data from.
             sheet (XSpreadsheet): Spreadsheet
+            col_name (str): column name such as `A`
+            col_idx (int): Zero base column index such as `0` for column `A`
             range_name (str): Range such as 'A1:A12'
 
         Returns:
-            List[Any] | None: 1-Dimensional List of values on success; Otherwise, None
+            List[Any]: 1-Dimensional List.
         """
-        vals = cls.get_array(sheet=sheet, range_name=range_name)
+        ordered_keys = (1, 2)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
+
+        def get_kwargs() -> dict:
+            ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ("cell_range", "sheet", "range_name", "col_name", "col_idx")
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("get_col() got an unexpected keyword argument")
+            keys = ("cell_range", "sheet")
+            for key in keys:
+                if key in kwargs:
+                    ka[1] = kwargs[key]
+                    break
+            if count == 1:
+                return ka
+            keys = ("range_name", "col_name", "col_idx")
+            for key in keys:
+                if key in kwargs:
+                    ka[2] = kwargs[key]
+                    break
+            return ka
+
+        if not count in (1, 2):
+            raise TypeError("get_col() got an invalid numer of arguments")
+
+        kargs = get_kwargs()
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
+
+        if count == 1:
+            vals = cls.get_array(kargs[1])
+        else:  # count == 2
+            sheet = cast(XSpreadsheet, kargs[1])
+            col = -1
+            if isinstance(kargs[2], int):
+                col = cast(int, kargs[2])
+                if col < 0:
+                    # there can't be a negative column.
+                    return []
+            else:
+                name = str(kargs[2])
+                if name.isalpha():
+                    col = cls.column_string_to_number(name)
+            if col > -1:
+                used_range = cls.find_used_range(sheet)
+                ca = cls._get_address_cell(used_range)
+                if ca.StartColumn > col or ca.EndColumn < col:
+                    # the requested col is outside the used area of sheet.
+                    return []
+                range_name = f"{cls._get_cell_str_col_row(col=col, row=ca.StartRow)}:{cls._get_cell_str_col_row(col=col, row=ca.EndRow)}"
+                col_range = used_range.getCellRangeByName(range_name)
+                vals = cls.get_array(col_range)
+            else:
+                vals = cls.get_array(sheet=sheet, range_name=kargs[2])
         return cls.extract_col(vals=vals, col_idx=0)
 
+    # endregion get_col()
+
     @staticmethod
-    def extract_col(vals: Table, col_idx: int) -> List[Any] | None:
+    def extract_col(vals: Table, col_idx: int) -> List[Any]:
         """
         Extract column data and returns as a list
 
@@ -3076,20 +3233,80 @@ class Calc:
             col_idx (int): column index to extract
 
         Returns:
-            List[Any] | None: Column data if found; Otherwise, None.
+            List[Any]: Column data if found; Otherwise, empty list.
         """
+        col_vals = []
         row_len = len(vals)
         if row_len == 0:
-            return None
+            return col_vals
         col_len = len(vals[0])
         if col_idx < 0 or col_idx > col_len - 1:
             mLo.Lo.print("Column index out of range")
-            return None
+            return col_vals
 
-        col_vals = []
         for row in vals:
             col_vals.append(row[col_idx])
         return col_vals
+
+    @classmethod
+    def get_col_used_first_index(cls, sheet: XSpreadsheet) -> int:
+        """
+        Gets the index of the column of the left edge of the used sheet range.
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+
+        Returns:
+            int: Zero based index of first column used on the sheet.
+        """
+        used_range = cls.find_used_range(sheet)
+        ca = cls._get_address_cell(used_range)
+        return ca.StartColumn
+
+    @classmethod
+    def get_col_used_last_index(cls, sheet: XSpreadsheet) -> int:
+        """
+        Gets the index of the column of the right edge of the used sheet range.
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+
+        Returns:
+            int: Zero based index of last column used on the sheet.
+        """
+        used_range = cls.find_used_range(sheet)
+        ca = cls._get_address_cell(used_range)
+        return ca.EndColumn
+
+    @classmethod
+    def get_row_used_first_index(cls, sheet: XSpreadsheet) -> int:
+        """
+        Gets the index of the row of the top edge of the used sheet range.
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+
+        Returns:
+            int: Zero based index of first row used on the sheet.
+        """
+        used_range = cls.find_used_range(sheet)
+        ca = cls._get_address_cell(used_range)
+        return ca.StartRow
+
+    @classmethod
+    def get_row_used_last_index(cls, sheet: XSpreadsheet) -> int:
+        """
+        Gets the index of the row of the bottom edge of the used sheet range.
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+
+        Returns:
+            int: Zero based index of last row used on the sheet.
+        """
+        used_range = cls.find_used_range(sheet)
+        ca = cls._get_address_cell(used_range)
+        return ca.EndRow
 
     # endregion --------------- set/get rows and columns -----------------
 
