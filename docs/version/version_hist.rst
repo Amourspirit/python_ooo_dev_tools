@@ -2,6 +2,27 @@
 Version History
 ***************
 
+Version 0.8.0
+=============
+
+Added ``Calc.get_col_first_used_index()`` method.
+
+Added ``Calc.get_col_last_used_index()`` method.
+
+Added ``Calc.get_row_first_used_index()`` method.
+
+Added ``Calc.get_row_last_used_index()`` method.
+
+Added overloads to ``Calc.get_col()``.
+
+Added overloads to ``Calc.get_row()``.
+
+``Calc.get_col()`` now returns an empty list like ``Calc.get_row()`` if no values are found.
+In previous version it it returned ``None`` When no values were found.
+
+``Calc.extract_col()`` now returns an empty list if no values are found.
+In previous version it it returned ``None`` When no values were found.
+
 Version 0.7.1
 =============
 
