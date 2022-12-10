@@ -71,7 +71,7 @@ class DateUtil:
         elif isinstance(date, datetime.date):
             delta = date - dnull.date()
         else:
-            raise TypeError(f"Incorrect type. Excpected 'date' or 'datetime' got {type(date).__name__}")
+            raise TypeError(f"Incorrect type. Expected 'date' or 'datetime' got {type(date).__name__}")
         return delta.days + delta.seconds / (24.0 * 60 * 60)
 
     @staticmethod
