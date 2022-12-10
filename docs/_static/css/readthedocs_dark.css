@@ -128,7 +128,7 @@ html[data-theme='dark'] {
     --t-color-white: black;
 
     /* overrides for readthedocs dark theme */
-    --dark-link-color: #7f9daf;
+    --dark-link-color: #83caff;
 }
 
 /* end sphinx_design extension */
