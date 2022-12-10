@@ -1975,6 +1975,16 @@ def test_get_set_col(loader) -> None:
         # set_col(sheet: XSpreadsheet, values: Sequence[Any], cell_name: str)
         # keyword arguments
         Calc.set_col(sheet=sheet, values=vals, cell_name="A1")
+
+        col_first = Calc.get_col_used_first_index(sheet)
+        assert col_first == 0
+        col_last = Calc.get_col_used_last_index(sheet)
+        assert col_last == 0
+        row_first = Calc.get_row_used_first_index(sheet)
+        assert row_first == 0
+        row_last = Calc.get_row_used_last_index(sheet)
+        assert row_last == vals_len - 1
+
         range_name = f"{Calc.get_cell_str(col=0, row=0)}:{Calc.get_cell_str(col=0, row= vals_len -1)}"
         new_vals = Calc.get_col(sheet=sheet, range_name=range_name)
         for i, val in enumerate(vals):
