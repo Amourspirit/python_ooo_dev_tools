@@ -272,7 +272,7 @@ There are seven regression curve services in the chart2 module, all of which sup
 The RegressionCurve_ service shown in :numref:`ch31fig_regression_curve_srv` is not a superclass for the other services.
 Also note that the regression curve service for power functions is called ``PotentialRegressionCurve``.
 
-:py:meth:`.Chart2.eval_curve`` uses ``XRegressionCurve.getCalculator()`` to access the XRegressionCurveCalculator_ interface.
+:py:meth:`.Chart2.eval_curve` uses ``XRegressionCurve.getCalculator()`` to access the XRegressionCurveCalculator_ interface.
 It sets up the data and parameters for a particular curve, and prints the results of curve fitting:
 
 .. tabs::
@@ -463,10 +463,10 @@ Instead :py:meth:`.Chart2.draw_regression_curve` only has to initialize the curv
                 key = cls.get_number_format_key(chart_doc=chart_doc, nf_str="0.00")  # 2 dp
                 if key != -1:
                     Props.set_property(ps, "NumberFormat", key)
-            except mEx.ChartError:
+            except ChartError:
                 raise
             except Exception as e:
-                raise mEx.ChartError("Error drawing regression curve") from e
+                raise ChartError("Error drawing regression curve") from e
 
     .. only:: html
 
@@ -523,7 +523,7 @@ Another useful property is ``NumberFormat`` which can be used to reduce the numb
             .. group-tab:: None
 
 The string-to-key conversion is straight forward if you know what number format string to use, but there's little documentation on them.
-Probably the best approach is to use the Format  Cells menu item in a spreadsheet document, and examine the dialog in :numref:`ch31fig_format_cells_dialog`.
+Probably the best approach is to use the Format ``->`` Cells menu item in a spreadsheet document, and examine the dialog in :numref:`ch31fig_format_cells_dialog`.
 
 ..
     figure 7
@@ -561,7 +561,7 @@ This string should be passed to :py:meth:`~.Chart2.get_number_format_key` in :py
 Another way to understand scatter data is by changing the chart's axis scaling.
 Alternatives to linear are logarithmic, exponential, or power, although is seems that the latter two cause the chart to be drawn incorrectly.
 
-_scatter_line_log_chart() in |chart_2_views_py|_ utilizes the "Power Function Test" table in |ods_doc| (see :numref:`ch31fig_pwr_fn_tst_tbl`).
+``_scatter_line_log_chart()`` in |chart_2_views_py|_ utilizes the "Power Function Test" table in |ods_doc| (see :numref:`ch31fig_pwr_fn_tst_tbl`).
 
 ..
     figure 8
@@ -575,7 +575,7 @@ _scatter_line_log_chart() in |chart_2_views_py|_ utilizes the "Power Function Te
 
         :The "Power Function Test" Table.
 
-I used the formula ``=4.1*POWER(E<number>, 3.2)`` (:abbreviation:`i.e.` 4.1x\ :sup:`3.2`) to generate the ``Actual`` column from the ``Input`` column's cells.
+The formula ``=4.1*POWER(E<number>, 3.2)`` is used (:abbreviation:`i.e.` 4.1x\ :sup:`3.2`) to generate the ``Actual`` column from the ``Input`` column's cells.
 Then I manually rounded the results and copied them into the "Output" column.
 
 The data range passed to the :py:meth:`.Chart.insert_chart` uses the ``Input`` and ``Output`` columns of the table in :numref:`ch31fig_pwr_fn_tst_tbl`.
@@ -594,7 +594,7 @@ The generated scatter chart in :numref:`ch31fig_chart_for_fig8` uses log scaling
         :Scatter Chart for the Table in :numref:`ch31fig_pwr_fn_tst_tbl`.
 
 The power function fits the data so well that the black regression line lies over the blue data curve.
-The regression function is f(x) = 3.89 x^2.32 (:abbreviation:`i.e.` 3.89x\ :sup:`2.32` ) with |R2| = 1.00, which is close to the power formula used to generate the ``Actual`` column data.
+The regression function is ``f(x) = 3.89 x^2.32`` (:abbreviation:`i.e.` 3.89x\ :sup:`2.32` ) with |R2| = ``1.00``, which is close to the power formula used to generate the ``Actual`` column data.
 
 ``_scatter_line_log_chart()`` is:
 
@@ -670,7 +670,9 @@ The regression function is f(x) = 3.89 x^2.32 (:abbreviation:`i.e.` 3.89x\ :sup:
 
         # in Chart2 Class
         @classmethod
-        def scale_axis(cls, chart_doc: XChartDocument, axis_val: AxisKind, idx: int, scale_type: CurveKind) -> XAxis:
+        def scale_axis(
+            cls, chart_doc: XChartDocument, axis_val: AxisKind, idx: int, scale_type: CurveKind
+        ) -> XAxis:
             try:
                 axis = cls.get_axis(chart_doc=chart_doc, axis_val=axis_val, idx=idx)
                 sd = axis.getScaleData()
@@ -901,7 +903,7 @@ Four arguments are passed to :py:meth:`~.Chart2.create_ld_seq`: a reference to t
 ``role`` constants are defined in :py:class:`~.kind.chart2_data_role_kind.DataRoleKind`.
 
 ``XDataSink.setData()`` can accept multiple XLabeledDataSequence_ objects in an array, making it possible to add several kinds of data to the chart at once.
-This is just as well since it is easier to add two XLabeledDataSequence_ objects, one for the error bars above the data points (:abbreviation:`i.e.` up the y-axis),
+This is just as well since it is easier to add two XLabeledDataSequence_ objects, one for the error bars above the data points (:abbreviation:`i.e.` up the ``y-axis``),
 and another for the error bars below the points (:abbreviation:`i.e.` down the ``y-axis``).
 The code for doing this:
 
@@ -1032,11 +1034,18 @@ XLabeledDataSequence_ data is added to it, and then the sink is linked to the ch
 
         # in Chart2 class
         @classmethod
-        def set_y_error_bars(cls, chart_doc: XChartDocument, data_label: str, data_range: str) -> None:
+        def set_y_error_bars(
+            cls, chart_doc: XChartDocument, data_label: str, data_range: str
+        ) -> None:
             try:
-                error_bars_ps = Lo.create_instance_mcf(XPropertySet, "com.sun.star.chart2.ErrorBar", raise_err=True)
+                error_bars_ps = Lo.create_instance_mcf(
+                    XPropertySet, "com.sun.star.chart2.ErrorBar", raise_err=True
+                )
                 Props.set(
-                    error_bars_ps, ShowPositiveError=True, ShowNegativeError=True, ErrorBarStyle=ErrorBarStyle.FROM_DATA
+                    error_bars_ps,
+                    ShowPositiveError=True,
+                    ShowNegativeError=True,
+                    ErrorBarStyle=ErrorBarStyle.FROM_DATA
                 )
 
                 # convert into data sink
@@ -1047,10 +1056,16 @@ XLabeledDataSequence_ data is added to it, and then the sink is linked to the ch
                 dp = chart_doc.getDataProvider()
 
                 pos_err_seq = cls.create_ld_seq(
-                    dp=dp, role=DataRoleKind.ERROR_BARS_Y_POSITIVE, data_label=data_label, data_range=data_range
+                    dp=dp,
+                    role=DataRoleKind.ERROR_BARS_Y_POSITIVE,
+                    data_label=data_label,
+                    data_range=data_range
                 )
                 neg_err_seq = cls.create_ld_seq(
-                    dp=dp, role=DataRoleKind.ERROR_BARS_Y_NEGATIVE, data_label=data_label, data_range=data_range
+                    dp=dp,
+                    role=DataRoleKind.ERROR_BARS_Y_NEGATIVE,
+                    data_label=data_label,
+                    data_range=data_range
                 )
 
                 ld_seq = (pos_err_seq, neg_err_seq)
