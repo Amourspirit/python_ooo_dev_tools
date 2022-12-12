@@ -590,3 +590,21 @@ See Also:
 ```
 
 See Also: [.. versionchanged](https://www.sphinx-doc.org/en/master/usage/restructuredtext/directives.html#directive-versionchanged)
+
+## SuperScript / SubScript
+
+Superscript
+
+```rst
+Their equations and |R2| values are printed as shown below:
+
+.. |R2| replace:: R\ :sup:`2`
+```
+
+Subscript example
+
+```rst
+He drank of the |H20| he could find.
+
+.. |H2O| replace:: H\ :sub:`2`\ O
+```

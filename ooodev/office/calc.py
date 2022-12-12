@@ -2584,7 +2584,7 @@ class Calc:
             MissingInterfaceError: if interface is missing
 
         Returns:
-            TupleArray: Resulting data array.
+            TupleArray: Resulting 2D tuple of values.
         """
         ...
 

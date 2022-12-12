@@ -174,7 +174,7 @@ This causes the ``x-axis`` title to rotate 90 degrees counter-clockwise, which a
 30.2 The Pie Chart
 ==================
 
-``_pie_chart()`` in |chart_2_views_py|_ utilizes the "Top 5 States with the Most Elementary and Secondary Schools" table in ``chartsData.ods`` (see :numref:`ch30fig_top_five_states`) to generate the pie chart in :numref:`ch30fig_pie_for_fig3`.
+``_pie_chart()`` in |chart_2_views_py|_ utilizes the "Top 5 States with the Most Elementary and Secondary Schools" table in |ods_doc| (see :numref:`ch30fig_top_five_states`) to generate the pie chart in :numref:`ch30fig_pie_for_fig3`.
 
 ..
     figure 3
@@ -549,7 +549,7 @@ This tuple is iterated over, collecting the property sets for each data point by
 
 If a table has more than one column of data then a ``Donut`` chart can be used to show each column as a ring.
 
-``_donut_chart()`` in |chart_2_views_py|_ utilizes the "Annual Expenditure on Institutions" table in ``chartsData.ods`` (see :numref:`ch30fig_tbl_annual_expenditure_inst`) to generate the donut chart with two rings in :numref:`ch30fig_donut_fig10`.
+``_donut_chart()`` in |chart_2_views_py|_ utilizes the "Annual Expenditure on Institutions" table in |ods_doc| (see :numref:`ch30fig_tbl_annual_expenditure_inst`) to generate the donut chart with two rings in :numref:`ch30fig_donut_fig10`.
 
 ..
     figure 10
@@ -617,7 +617,7 @@ The only thing of note is the use of a more complex string for :py:meth:`.Chart2
 30.3 The Area Chart
 ===================
 
-``_area_chart()`` in |chart_2_views_py|_ utilizes the "Trends in Enrollment in Public Schools in the US" table in ``chartsData.ods`` (see :numref:`ch30fig_annual_exp_inst_tbl`) to generate the area chart in :numref:`ch30fig_area_fig12`.
+``_area_chart()`` in |chart_2_views_py|_ utilizes the "Trends in Enrollment in Public Schools in the US" table in |ods_doc| (see :numref:`ch30fig_annual_exp_inst_tbl`) to generate the area chart in :numref:`ch30fig_area_fig12`.
 
 ..
     figure 12
@@ -703,7 +703,7 @@ If the ``Area`` template is replaced by ``StackedArea`` or ``PercentStackedArea`
 30.4 The Line Chart
 ===================
 
-``_lines_chart()`` in |chart_2_views_py|_ utilizes the "Trends in Expenditure Per Pupil" table in ``chartsData.ods`` (see :numref:`ch30fig_trends_expend_pupiil_tbl`) to generate two lines marked with symbols in :numref:`ch00fig_line_fig15`.
+``_lines_chart()`` in |chart_2_views_py|_ utilizes the "Trends in Expenditure Per Pupil" table in |ods_doc| (see :numref:`ch30fig_trends_expend_pupiil_tbl`) to generate two lines marked with symbols in :numref:`ch00fig_line_fig15`.
 
 ..
     figure 15
@@ -772,6 +772,7 @@ If the ``Area`` template is replaced by ``StackedArea`` or ``PercentStackedArea`
 There are many different line chart templates, as listed in :numref:`ch28tblchart_types_and_template_names`.
 The ``Line`` template differs from ``LineSymbol`` by not including symbols over the data points.
 
+.. |ods_doc| replace:: ``chartsData.ods``
 
 .. |chart_2_views| replace:: Chart2 Views
 .. _chart_2_views: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/chart2/Chart_2_Views
