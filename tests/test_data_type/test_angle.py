@@ -11,12 +11,6 @@ def test_angle() -> None:
         assert isinstance(angle, Angle)
 
 
-@pytest.mark.parametrize("val", [-10, -1, 361, 400, 500])
-def test_angle_error(val: int) -> None:
-    with pytest.raises(AssertionError):
-        Angle(val)
-
-
 @pytest.mark.parametrize("val", ["1", 1.2, -3.3])
 def test_angle_error_incorrect_type(val: int) -> None:
     with pytest.raises(TypeError):
@@ -96,7 +90,7 @@ def test_div_angle_to_angle(start: int, val: int) -> None:
     assert a3.Value == result
 
 
-@pytest.mark.parametrize("start,val", [(0, 1), (2, 3), (3, 77), (55, 198), (100, 360)])
+@pytest.mark.parametrize("start,val", [(0, 1), (2, 3), (3, 77), (55, 198), (100, 359)])
 def test_lt_angle(start: int, val: int) -> None:
     a1 = Angle(start)
     a2 = Angle(val)
@@ -114,7 +108,7 @@ def test_le_angle(start: int, val: int) -> None:
     assert gt == False
 
 
-@pytest.mark.parametrize("start,val", [(1, 0), (3, 2), (77, 3), (198, 10), (360, 3)])
+@pytest.mark.parametrize("start,val", [(1, 0), (3, 2), (77, 3), (198, 10), (359, 3)])
 def test_gt_angle(start: int, val: int) -> None:
     a1 = Angle(start)
     a2 = Angle(val)
@@ -130,3 +124,9 @@ def test_ge_angle(start: int, val: int) -> None:
     assert a1 >= a2
     lt = a1 < a2
     assert lt == False
+
+
+@pytest.mark.parametrize(("val", "expected"), [(360, 0), (-3, 357), (-181, 179), (2500, 340), (-2500, 20)])
+def test_angle_weird(val: int, expected: int) -> None:
+    a1 = Angle(val)
+    assert a1.Value == expected
