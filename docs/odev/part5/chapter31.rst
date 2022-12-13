@@ -688,7 +688,9 @@ The regression function is ``f(x) = 3.89 x^2.32`` (:abbreviation:`i.e.` 3.89x\ :
                 if s is None:
                     Lo.print(f'Did not reconize scaling type: "{scale_type}"')
                 else:
-                    sd.Scaling = Lo.create_instance_mcf(XScaling, f"com.sun.star.chart2.{s}", raise_err=True)
+                    sd.Scaling = Lo.create_instance_mcf(
+                        XScaling, f"com.sun.star.chart2.{s}", raise_err=True
+                    )
                 axis.setScaleData(sd)
                 return axis
             except ChartError:
@@ -1072,9 +1074,6 @@ XLabeledDataSequence_ data is added to it, and then the sink is linked to the ch
 
                 # store the error bar data sequences in the data sink
                 data_sink.setData(ld_seq)
-                # Props.show_obj_props("Error Bar", error_bars_ps)
-                # "ErrorBarRangePositive" and "ErrorBarRangeNegative"
-                # will now have ranges they are read-only
 
                 # store error bar in data series
                 data_series_arr = cls.get_data_series(chart_doc=chart_doc)

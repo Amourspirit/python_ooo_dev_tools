@@ -5,6 +5,11 @@ Version History
 Version 0.8.0
 =============
 
+Updated ``Angle`` to accept any integer value, postitive or negative.
+
+Version 0.8.0
+=============
+
 Added ``Calc.get_col_first_used_index()`` method.
 
 Added ``Calc.get_col_last_used_index()`` method.

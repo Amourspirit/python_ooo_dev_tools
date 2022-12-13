@@ -1907,14 +1907,10 @@ class Chart2:
                 # XProperySet methods such as  setPropertyValue and getPropertySetInfo are missing.
                 # see also: Props._set_by_attribute()
                 white_day_ps = mLo.Lo.qi(XPropertySet, mProps.Props.get(ct, "WhiteDay"), True)
-                white_day_dpp = cast("DataPointProperties", white_day_ps)
-                white_day_dpp.FillColor = int(w_day_color)
-                # mProps.Props.set_property(white_day_ps, "FillColor", int(w_day_color))
+                mProps.Props.set(white_day_ps, FillColor=int(w_day_color))
 
                 black_day_ps = mLo.Lo.qi(XPropertySet, mProps.Props.get(ct, "BlackDay"), True)
-                black_day_dpp = cast("DataPointProperties", black_day_ps)
-                black_day_dpp.FillColor = int(b_day_color)
-                # mProps.Props.set_property(black_day_ps, "FillColor", int(b_day_color))
+                mProps.Props.set(black_day_ps, FillColor=int(b_day_color))
             else:
                 raise mEx.NotSupportedError(
                     f'Only candel stick charts supported. "{ct.getChartType()}" not supported.'
@@ -2232,7 +2228,7 @@ class Chart2:
             # create (empty) data series in the line chart
             ds = mLo.Lo.create_instance_mcf(XDataSeries, "com.sun.star.chart2.DataSeries", raise_err=True)
 
-            mProps.Props.set_property(ds, "Color", int(mColor.CommonColor.RED))
+            mProps.Props.set(ds, Color=int(mColor.CommonColor.RED))
             data_series_cnt.addDataSeries(ds)
 
             # add data to series by treating it as a data sink

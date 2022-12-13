@@ -1,8 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 from dataclasses import dataclass
-from ..validation import check
-from ..decorator import enforce
 from .base_int_value import BaseIntValue
 
 if TYPE_CHECKING:
@@ -16,17 +14,40 @@ if TYPE_CHECKING:
 # most cases. Especially for built in types.
 
 
-@enforce.enforce_types
-@dataclass(frozen=True)
+def _to_positive_angle(angle: int) -> int:
+    if not isinstance(angle, int):
+        raise TypeError(f"Expected type int for angle. Got {type(angle).__name__}")
+    # coverts all ints, negative or positive into a positive angel.
+    # eg: -10 becomes 350, 380 becomes 20
+    return (3600000 + angle) % 360
+
+
+@dataclass(unsafe_hash=True)
 class Angle(BaseIntValue):
-    """Represents a angle value from ``0`` to ``360``."""
+    """
+    Represents a angle value from ``0`` to ``359``.
+
+    All input integers are converted into a postiive angle.
+
+    Example:
+        .. code-block::
+
+            >>> print(Angle(360))
+            Angle(Value=0)
+            >>> print(Angle(413))
+            Angle(Value=53)
+            >>> print(Angle(-235))
+            Angle(Value=125)
+            >>> print(Angle(1794))
+            Angle(Value=354)
+
+    .. versionchanged:: 0.8.1
+
+        Now will accept any integer value, negative or postive.
+    """
 
     def __post_init__(self) -> None:
-        check(
-            self.Value >= 0 and self.Value <= 360,
-            f"{self}",
-            f"Value of {self.Value} is out of range. Value must be from 0 to 360.",
-        )
+        self.Value = _to_positive_angle(self.Value)
 
-    def _from_int(self, int) -> Self:
-        return Angle(int)
+    def _from_int(self, value: int) -> Self:
+        return Angle(_to_positive_angle(value))

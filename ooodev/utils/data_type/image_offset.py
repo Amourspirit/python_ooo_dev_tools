@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 
 @enforce.enforce_types
-@dataclass(frozen=True)
+@dataclass(unsafe_hash=True)
 class ImageOffset(BaseFloatValue):
     """Represents a Image Offset value between ``0.0`` and ``1.0``"""
 

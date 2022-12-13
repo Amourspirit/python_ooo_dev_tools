@@ -10,6 +10,7 @@ Convert XML to an Office document in two steps:
         the flat XML data into Office
 """
 import pytest
+
 # from ooodev.office.write import Write
 if __name__ == "__main__":
     pytest.main([__file__])
@@ -36,27 +37,27 @@ def test_transform_pay(loader, copy_fix_xml) -> None:
     - get the expected range and test
     """
     visible = False
-    delay = 0 # 1000
+    delay = 0  # 1000
     pay_import = copy_fix_xml("payImport.xsl")
     pay = copy_fix_xml("pay.xml")
-    
+
     xml_str = XML.apply_xslt(xml_fnm=str(pay), xls_fnm=pay_import)
     assert xml_str is not None
-    
+
     # save flat XML data to temp file
     flat_fnm = FileIO.create_temp_file("xml")
     FileIO.save_string(flat_fnm, xml_str)
-    
+
     # create a Calc File
     ods_fnm = FileIO.create_temp_file("ods")
-    
+
     # open temp file using Office's correct Flat XML filter
     doc_type = Lo.ext_to_doc_type(Info.get_ext(ods_fnm))
     assert doc_type == Lo.DocTypeStr.CALC
     doc = Lo.open_flat_doc(fnm=flat_fnm, doc_type=doc_type, loader=loader)
     assert doc is not None
     GUI.set_visible(is_visible=visible, odoc=doc)
-    
+
     Lo.delay(delay)
     Lo.save_doc(doc=doc, fnm=ods_fnm)
     Lo.close_doc(doc=doc)
@@ -70,26 +71,27 @@ def test_transform_pay(loader, copy_fix_xml) -> None:
         GUI.set_visible(is_visible=visible, odoc=doc)
     Lo.delay(delay)
     # (('Purpose', 'Amount', 'Tax', 'Maturity'), ('CD', 12.95, 19.1234, 39508.0), ('DVD', 19.95, 19.4321, 39509.0), ('Clothes', 99.95, 18.5678, 39510.0), ('Book', 9.49, 18.9876, 39511.0))
-    assert arr[0][0] == 'Purpose'
-    assert arr[0][1] == 'Amount'
-    assert arr[0][2] == 'Tax'
-    assert arr[0][3] == 'Maturity'
-    
-    assert arr[1][0] == 'CD'
+    assert arr[0][0] == "Purpose"
+    assert arr[0][1] == "Amount"
+    assert arr[0][2] == "Tax"
+    assert arr[0][3] == "Maturity"
+
+    assert arr[1][0] == "CD"
     assert arr[1][3] == 39508.0
-    
-    assert arr[2][0] == 'DVD'
+
+    assert arr[2][0] == "DVD"
     assert arr[2][3] == 39509.0
-    
-    assert arr[3][0] == 'Clothes'
+
+    assert arr[3][0] == "Clothes"
     assert arr[3][3] == 39510.0
-    
-    assert arr[4][0] == 'Book'
+
+    assert arr[4][0] == "Book"
     assert arr[4][3] == 39511.0
-    
+
     Lo.close(closeable=doc, deliver_ownership=False)
     Lo.delay(1000)
-    
+
+
 def test_transform_clubs(loader, copy_fix_xml) -> None:
     """
     - Copy clubs.xml and clubsImport.xsl to tmp dir
@@ -118,32 +120,32 @@ def test_transform_clubs(loader, copy_fix_xml) -> None:
     #       To
     #       return cls.open_doc(fnm, loader, mProps.Props.make_props(FilterName=nn))
     visible = False
-    delay = 0 # 1000
+    delay = 0  # 1000
     clubs_import = copy_fix_xml("clubsImport.xsl")
     clubs = copy_fix_xml("clubs.xml")
-    
+
     xml_str = XML.apply_xslt(xml_fnm=clubs, xls_fnm=str(clubs_import))
     assert xml_str is not None
-    
+
     # save flat XML data to temp file
     flat_fnm = FileIO.create_temp_file("xml")
     FileIO.save_string(flat_fnm, xml_str)
-    
+
     # create a Calc File
     odt_fnm = FileIO.create_temp_file("odt")
-    
+
     # open temp file using Office's correct Flat XML filter
     doc_type = Lo.ext_to_doc_type(Info.get_ext(odt_fnm))
     assert doc_type == Lo.DocTypeStr.WRITER
     doc = Lo.open_flat_doc(fnm=flat_fnm, doc_type=doc_type, loader=loader)
     assert doc is not None
     GUI.set_visible(is_visible=visible, odoc=doc)
-    
+
     Lo.delay(delay)
     Lo.save_doc(doc=doc, fnm=odt_fnm)
     Lo.close_doc(doc=doc)
     Lo.delay(1000)
-    
+
     doc = Write.open_doc(fnm=odt_fnm, loader=loader)
 
     if visible:
@@ -152,7 +154,7 @@ def test_transform_clubs(loader, copy_fix_xml) -> None:
 
     cursor = Write.get_cursor(doc)
     text = Write.get_all_text(cursor=cursor)
-    lines = text.splitlines() 
+    lines = text.splitlines()
     lines_len = len(lines)
     assert lines_len == 1967
     assert lines[0] == "BAWA"
@@ -163,6 +165,9 @@ def test_transform_clubs(loader, copy_fix_xml) -> None:
     assert lines[993] == "Contact: Duane Fidel"
     assert lines[1361] == "Contact: Randy Campbell"
     assert lines[1928] == "Nipomo Youth Wrestling Club I28"
-    
+
     Lo.close(closeable=doc, deliver_ownership=True)
     Lo.delay(1000)
+
+
+# endregion    Sheet Methods

@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 # most cases. Especially for built in types.
 
 
-@dataclass(frozen=True)
+@dataclass(unsafe_hash=True)
 class BaseFloatValue:
     """Base class for Flaot Value"""
 
