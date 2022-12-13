@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
 
 @enforce.enforce_types
-@dataclass(frozen=True)
+@dataclass(unsafe_hash=True)
 class PolySides(BaseIntValue):
     """Represents Polygon Sides value from ``3`` to ``30``."""
 
