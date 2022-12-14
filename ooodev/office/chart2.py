@@ -2350,7 +2350,7 @@ class Chart2:
             for i in range(num_shapes):
                 try:
                     shape = mLo.Lo.qi(XShape, draw_page.getByIndex(i), True)
-                    classid = str(mProps.Props.get_property(shape, "CLSID")).lower()
+                    classid = str(mProps.Props.get(shape, "CLSID")).lower()
                     if classid == chart_classid:
                         break
                 except Exception:
@@ -2430,7 +2430,7 @@ class Chart2:
         try:
             chart_shape = cls.get_chart_shape(sheet)
 
-            graphic = mLo.Lo.qi(XGraphic, mProps.Props.get_property(chart_shape, "Graphic"), True)
+            graphic = mLo.Lo.qi(XGraphic, mProps.Props.get(chart_shape, "Graphic"), True)
 
             tmp_fnm = mFileIo.FileIO.create_temp_file("png")
             mImgLo.ImagesLo.save_graphic(pic=graphic, fnm=tmp_fnm, im_format="png")
