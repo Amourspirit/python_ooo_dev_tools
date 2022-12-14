@@ -46,6 +46,8 @@ class ChartKind(str, Enum):
     SCATTER_LINE_ERROR = "scatter_line_error"
     SCATTER_LINE_LOG = "scatter_line_log"
     STOCK_PRICES = "stock_prices"
+    DEFAULT = "default"
+    DISPATCH = "dispatch"
 
 
 class Chart2View:
@@ -107,6 +109,10 @@ class Chart2View:
                 chart_doc = self._scatter_line_log_chart(doc=doc, sheet=sheet)
             elif self._chart_kind == ChartKind.STOCK_PRICES:
                 chart_doc = self._stock_prices_chart(doc=doc, sheet=sheet)
+            elif self._chart_kind == ChartKind.DEFAULT:
+                chart_doc = self._default_chart(doc=doc, sheet=sheet)
+            elif self._chart_kind == ChartKind.DISPATCH:
+                self._default_dispatch(doc=doc, sheet=sheet)
 
             if chart_doc:
                 Chart2.print_chart_types(chart_doc)
@@ -600,3 +606,27 @@ class Chart2View:
 
         Chart2.view_legend(chart_doc=chart_doc, is_visible=True)
         return chart_doc
+
+    def _default_chart(self, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> XChartDocument:
+        # draw a pie chart, with legend and subtitle;
+        # uses "Top 5 States with the Most Elementary and Secondary Schools"
+
+        # uses "Sneakers Sold this Month" table
+        _ = Calc.set_selected_addr(doc=doc, sheet=sheet, range_name="A2:B8")
+        chart_doc = Chart2.insert_chart()
+        # Calc.goto_cell(cell_name="A1", doc=doc)
+
+        Chart2.set_title(chart_doc=chart_doc, title=Calc.get_string(sheet=sheet, cell_name="A1"))
+        Chart2.set_x_axis_title(chart_doc=chart_doc, title=Calc.get_string(sheet=sheet, cell_name="A2"))
+        Chart2.set_y_axis_title(chart_doc=chart_doc, title=Calc.get_string(sheet=sheet, cell_name="B2"))
+        # rotate x-axis which is now the vertical axis
+        Chart2.rotate_y_axis_title(chart_doc=chart_doc, angle=Angle(90))
+        return chart_doc
+
+    def _default_dispatch(self, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> None:
+        # draw a pie chart, with legend and subtitle;
+        # uses "Top 5 States with the Most Elementary and Secondary Schools"
+
+        # uses "Sneakers Sold this Month" table
+        _ = Calc.set_selected_addr(doc=doc, sheet=sheet, range_name="A2:B8")
+        Lo.dispatch_cmd(cmd="InsertObjectChart")

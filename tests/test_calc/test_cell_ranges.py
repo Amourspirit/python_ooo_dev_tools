@@ -11,9 +11,10 @@ from com.sun.star.sheet import CellFlags  # const
 from com.sun.star.sheet import XArrayFormulaRange
 from com.sun.star.sheet import XCellRangeData
 from com.sun.star.sheet import XCellRangesQuery
-from com.sun.star.sheet import XSheetOperation
 from com.sun.star.sheet import XSheetCellRange
+from com.sun.star.sheet import XSheetOperation
 from com.sun.star.sheet import XSpreadsheet
+from com.sun.star.sheet import XSpreadsheetDocument
 from com.sun.star.sheet import XUsedAreaCursor
 
 
@@ -23,14 +24,15 @@ def test_cell_ranges(loader) -> None:
     delay = 0  # 2000
     if visible:
         GUI.set_visible(is_visible=visible, odoc=doc)
-    sheet = Calc.get_sheet(doc=doc, index=0)
+    sheet = Calc.get_sheet(doc=doc)
 
     try:
         do_cell_range(sheet=sheet)
         do_cell_cursor(sheet=sheet)
+        do_cell_selection(doc=doc, sheet=sheet)
         Lo.delay(delay)
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(doc)
 
 
 def do_cell_range(sheet: XSpreadsheet) -> None:
@@ -58,9 +60,10 @@ def do_cell_range(sheet: XSpreadsheet) -> None:
         ("Alice", "Oranges", 4),
         ("Alice", "Apples", 9),
     )
-    Calc.set_array(values=vals, sheet=sheet, name="A3:C23")  # or just "A3"
+    range_name = "A3:C23"
+    Calc.set_array(values=vals, sheet=sheet, name=range_name)  # or just "A3"
 
-    cell_range = Calc.get_cell_range(sheet=sheet, range_name="A3:C23")
+    cell_range = Calc.get_cell_range(sheet=sheet, range_name=range_name)
     cr_data = Lo.qi(XCellRangeData, cell_range)
     # Calc.print_address(cell_range)
 
@@ -106,3 +109,15 @@ def do_cell_cursor(sheet: XSpreadsheet) -> None:
     # so modifying ua_cursor takes effect on cursor and its cell_range:
     ua_str = Calc.get_range_str(cell_range=cell_range)
     assert ua_str == "E4:E4"
+
+
+def do_cell_selection(doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> None:
+    range_name = "A3:C23"
+    # test cell selection
+    addr = Calc.set_selected_addr(doc=doc, sheet=sheet, range_name=range_name)
+    assert Calc.get_range_str(addr) == range_name
+    # test deselection
+    # when deselection addr will be the current selected cell
+    addr = Calc.set_selected_addr(doc=doc, sheet=sheet)
+    assert addr.StartColumn == addr.EndColumn
+    assert addr.StartRow == addr.EndRow

@@ -27,7 +27,7 @@ class Angle(BaseIntValue):
     """
     Represents a angle value from ``0`` to ``359``.
 
-    All input integers are converted into a postiive angle.
+    All input integers are converted into a positive angle.
 
     Example:
         .. code-block::
@@ -43,7 +43,7 @@ class Angle(BaseIntValue):
 
     .. versionchanged:: 0.8.1
 
-        Now will accept any integer value, negative or postive.
+        Now will accept any integer value, negative or positive.
     """
 
     def __post_init__(self) -> None:

@@ -2,10 +2,16 @@
 Version History
 ***************
 
-Version 0.8.0
+Version 0.8.1
 =============
 
-Updated ``Angle`` to accept any integer value, postitive or negative.
+``Chart2.insert_chart()`` all parameters made optional, added ``chart_name`` parameter.
+
+Added ``Chart2.remove_chart()``.
+
+Added ``Calc.set_selected_addr()``.
+
+Updated ``Angle`` to accept any integer value, positive or negative.
 
 Version 0.8.0
 =============

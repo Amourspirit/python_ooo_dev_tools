@@ -36,6 +36,7 @@ Possible `-k` options are:
 - scatter_line_error
 - scatter_line_log
 - stock_prices
+- default
 
 ## Automate
 
