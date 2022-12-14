@@ -44,6 +44,7 @@ from com.sun.star.table import XTableChart
 from com.sun.star.table import XTableChartsSupplier
 from com.sun.star.util import XNumberFormatsSupplier
 
+
 from . import calc as mCalc
 from ..exceptions import ex as mEx
 from ..utils import color as mColor
@@ -84,31 +85,33 @@ class Chart2:
 
     _CHART_NAME = "chart$$_"
 
-    # region insert a chart
+    # region insert/remove a chart
     @classmethod
     def insert_chart(
         cls,
-        sheet: XSpreadsheet,
-        cells_range: CellRangeAddress,
-        cell_name: str,
-        width: int,
-        height: int,
-        diagram_name: ChartTemplateBase | str,
+        sheet: XSpreadsheet | None = None,
+        cells_range: CellRangeAddress | None = None,
+        cell_name: str = "",
+        width: int = 16,
+        height: int = 9,
+        diagram_name: ChartTemplateBase | str = "bar",
         color_bg: mColor.Color = mColor.CommonColor.PALE_BLUE,
         color_wall: mColor.Color = mColor.CommonColor.LIGHT_BLUE,
+        chart_name: str = "",
     ) -> XChartDocument:
         """
         Insert a new chart
 
         Args:
-            sheet (XSpreadsheet): Spreadsheet
-            cells_range (CellRangeAddress): Cell range address
-            cell_name (str): Cell name such as ``A1``
-            width (int): Width
-            height (int): Height
-            diagram_name (ChartTemplateBase | str): Diagram Name
+            sheet (XSpreadsheet, optional): Spreadsheet
+            cells_range (CellRangeAddress, optional): Cell range address. Defaults to current selected cells.
+            cell_name (str, optional): Cell name such as ``A1``.
+            width (int, optional): Width. Default ``16``.
+            height (int, optional): Height. Default ``9``.
+            diagram_name (ChartTemplateBase | str): Diagram Name. Defaults to ``bar``.
             color_bg (Color, optional): Color Background. Defaults to ``CommonColor.PALE_BLUE``.
             color_wall (Color, optional): Color Wall. Defaults to ``CommonColor.LIGHT_BLUE``.
+            chart_name (str, optional): Chart name
 
         Raises:
             ChartError: If error occurs
@@ -121,13 +124,34 @@ class Chart2:
 
         Hint:
             .. include:: ../../resources/utils/chart2_lookup_chart_tmpl.rst
+
+        .. versionchanged:: 0.8.1
+            All parameters made optional. Added ``chart_name`` parameter.
         """
         try:
             # type check that diagram_name is ChartTemplateBase | str
             mInfo.Info.is_type_enum_multi(
                 alt_type="str", enum_type=ChartTemplateBase, enum_val=diagram_name, arg_name="diagram_name"
             )
-            chart_name = Chart2._CHART_NAME + str(int(random() * 10_000))
+            doc = None
+            if sheet is None:
+                doc = mCalc.Calc.get_ss_doc(mLo.Lo.this_component)
+                sheet = mCalc.Calc.get_active_sheet(doc)
+                if sheet is None:
+                    raise mEx.NoneError("unable to obtain sheet, Calc.get_active_sheet() is None")
+
+            if cells_range is None:
+                if doc is None:
+                    doc = mCalc.Calc.get_ss_doc(mLo.Lo.this_component)
+                cells_range = mCalc.Calc.get_selected_addr(doc)
+                if cells_range is None:
+                    raise mEx.NoneError("unable to obtain cells_rnage, Calc.get_selected_addr() is None")
+
+            if not cell_name:
+                cell_name = mCalc.Calc.get_cell_str(col=cells_range.EndColumn + 1, row=cells_range.StartRow)
+            if not chart_name:
+                chart_name = Chart2._CHART_NAME + str(int(random() * 10_000))
+
             cls.add_table_chart(
                 sheet=sheet,
                 chart_name=chart_name,
@@ -298,7 +322,28 @@ class Chart2:
                 return False
         return True
 
-    # endregion insert a chart
+    @staticmethod
+    def remove_chart(sheet: XSpreadsheet, chart_name: str) -> bool:
+        """
+        Removes a chart from Spreadsheet
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            chart_name (str): Chart Name
+
+        Returns:
+            bool: ``True`` if chart was removed; Otherwise, ``False``
+
+        .. versionadded:: 0.8.1
+        """
+        charts_supp = mLo.Lo.qi(XTableChartsSupplier, sheet, True)
+        tbl_charts = charts_supp.getCharts()
+        if tbl_charts.hasByName(chart_name):
+            tbl_charts.removeByName(chart_name)
+            return True
+        return False
+
+    # endregion insert/remove a chart
 
     # region get a chart
     @classmethod
