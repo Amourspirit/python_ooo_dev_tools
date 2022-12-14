@@ -25,6 +25,7 @@ from com.sun.star.sheet import XCellAddressable
 from com.sun.star.sheet import XCellRangeAddressable
 from com.sun.star.sheet import XCellRangeData
 from com.sun.star.sheet import XCellRangeMovement
+from com.sun.star.sheet import XCellRangesQuery
 from com.sun.star.sheet import XCellSeries
 from com.sun.star.sheet import XDataPilotTable
 from com.sun.star.sheet import XDataPilotTablesSupplier
@@ -55,6 +56,7 @@ from com.sun.star.uno import Exception as UnoException
 from com.sun.star.util import NumberFormat  # const
 from com.sun.star.util import XNumberFormatsSupplier
 from com.sun.star.util import XNumberFormatTypes
+from com.sun.star.view import XSelectionSupplier
 
 if TYPE_CHECKING:
     from com.sun.star.beans import XPropertySet
@@ -775,7 +777,7 @@ class Calc:
             doc (XSpreadsheetDocument): Spreadsheet Document
 
         Raises:
-            Exception: if unable to access controller
+            MissingInterfaceError: If unable to access controller
 
         Returns:
             XController | None: Controller for Spreadsheet Document
@@ -1141,6 +1143,9 @@ class Calc:
 
         Returns:
             CellRangeAddress: Cell range addressees on success; Otherwise, None
+
+        See Also:
+            - :py:meth:`~.Calc.set_selected_addr`
         """
         ordered_keys = (1,)
         kargs_len = len(kwargs)
@@ -1200,6 +1205,10 @@ class Calc:
         Note:
             CellAddress returns Zero-base values.
             For instance: Cell ``B4`` has Column value of ``1`` and Row value of ``3``
+
+        See Also:
+            - :py:meth:`~.Calc.get_selected_addr`
+            - :py:meth:`~.Calc.set_selected_addr`
         """
         cr_addr = cls.get_selected_addr(doc=doc)
         if cls.is_single_cell_range(cr_addr):
@@ -1208,6 +1217,55 @@ class Calc:
             return cls.get_cell_address(cell)
         else:
             raise mEx.CellError("Selected address is not a single cell")
+
+    # region select_cells()
+
+    @overload
+    @classmethod
+    def set_selected_addr(cls, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> CellRangeAddress:
+        ...
+
+    @overload
+    @classmethod
+    def set_selected_addr(cls, doc: XSpreadsheetDocument, sheet: XSpreadsheet, range_name: str) -> CellRangeAddress:
+        ...
+
+    @classmethod
+    def set_selected_addr(
+        cls, doc: XSpreadsheetDocument, sheet: XSpreadsheet, range_name: str = ""
+    ) -> CellRangeAddress:
+        """
+        Selects cells in a Spreadsheet.
+
+        If ``range_name`` is omitted then deselection is preformed.
+
+        Args:
+            doc (XSpreadsheetDocument): Spreadsheet document
+            sheet (XSpreadsheet): Spreadsheet
+            range_name (str): Range name such as ``A1:G3``
+
+        Returns:
+            CellRangeAddress: Cell range address of the current selection.
+
+        See Also:
+            - :py:meth:`~.Calc.get_selected_addr`
+            - :py:meth:`~.Calc.get_selected_cell_addr`
+
+        .. versionadded:: 0.8.1
+        """
+        # this method works fine in headless mode.
+        if not range_name:
+            sel_obj = mLo.Lo.create_instance_msf(XCellRangesQuery, "com.sun.star.sheet.SheetCellRanges")
+            if sel_obj is None:
+                return False
+        else:
+            sel_obj = sheet.getCellRangeByName(range_name)
+        controller = cls.get_controller(doc)
+        supp = mLo.Lo.qi(XSelectionSupplier, controller, True)
+        supp.select(sel_obj)
+        return cls.get_selected_addr(doc)
+
+    # endregion select_cells()
 
     # endregion -------------- view methods ----------------------------
 
@@ -1594,7 +1652,7 @@ class Calc:
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
-            range_name (str): Range name such as 'A1:G3'
+            range_name (str): Range name such as ``A1:G3``
         """
         ...
 
@@ -1606,7 +1664,7 @@ class Calc:
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
-            range_name (str): Range name such as 'A1:G3'
+            range_name (str): Range name such as ``A1:G3``
             cell_flags (CellFlagsEnum): Flags that determine what to clear
         """
         ...
@@ -1647,7 +1705,7 @@ class Calc:
         Args:
             sheet (XSpreadsheet): Spreadsheet
             cell_range (XCellRange): Cell range
-            range_name (str): Range name such as 'A1:G3'
+            range_name (str): Range name such as ``A1:G3``
             cr_addr (CellRangeAddress): Cell Range Address
             cell_flags (CellFlagsEnum): Flags that determine what to clear
 
