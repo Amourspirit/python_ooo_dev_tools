@@ -30,7 +30,7 @@ The relevant lines of |chart_2_views_py|_ are:
 
                 chart_doc = None
                 if self._chart_kind == ChartKind.AREA:
-                    chart_doc = self._area_chart(doc=doc, sheet=sheet
+                    chart_doc = self._area_chart(doc=doc, sheet=sheet)
                 elif self._chart_kind == ChartKind.BAR:
                     chart_doc = self._bar_chart(doc=doc, sheet=sheet)
                 elif self._chart_kind == ChartKind.BUBBLE_LABELED:

@@ -1260,8 +1260,7 @@ class Calc:
                 return False
         else:
             sel_obj = sheet.getCellRangeByName(range_name)
-        controller = cls.get_controller(doc)
-        supp = mLo.Lo.qi(XSelectionSupplier, controller, True)
+        supp = mGui.GUI.get_selection_supplier(doc)
         supp.select(sel_obj)
         return cls.get_selected_addr(doc)
 
