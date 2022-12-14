@@ -201,7 +201,7 @@ class ImagesLo:
         except Exception as e:
             raise mEx.ImageError(f'Error saving graphic for "{fnm}') from e
 
-    # end region save_graphic()
+    # endregion save_graphic()
 
     @staticmethod
     def get_mime_types() -> Tuple[str, ...]:
