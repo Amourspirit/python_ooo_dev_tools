@@ -421,34 +421,86 @@ def test_convert_1d_to_2d_col_error() -> None:
 
 
 def test_get_range_values() -> None:
-    rv = TableHelper.get_range_values(range_name="A2:D6")
-    assert rv.col_start == 0
-    assert rv.row_start == 1
-    assert rv.col_end == 3
-    assert rv.row_end == 5
-    assert rv.get_range_name() == "A2:D6"
+    from ooodev.utils.data_type.range_values import RangeValues
 
-    rv = TableHelper.get_range_values(range_name="A2:D6", zero_index=False)
-    assert rv.col_start == 1
-    assert rv.row_start == 2
-    assert rv.col_end == 4
-    assert rv.row_end == 6
-    assert rv.get_range_name(False) == "A2:D6"
+    rng_name = "A2:D6"
+    rv1 = TableHelper.get_range_values(rng_name)
+    assert rv1.col_start == 0
+    assert rv1.row_start == 1
+    assert rv1.col_end == 3
+    assert rv1.row_end == 5
+    assert str(rv1) == rng_name
+    assert rv1 == rng_name
+
+    rv2 = RangeValues.from_range(rng_name)
+    assert str(rv2) == rng_name
+    assert rv1 == rv2
+    assert rv1 != "Roses are red"
+
+    ro = rv2.get_range_obj()
+    assert str(ro) == rng_name
+    assert ro == rv1
+    assert rv2 == ro
+    assert ro == rng_name
+    assert ro != "A1:C3"
+    assert ro != "Roses are red"
+
+    assert ro.start.col_info.index == 0
+    assert ro.start.col_info.value == "A"
+    assert ro.start.row_info.index == 1
+    assert ro.start.row_info.value == 2
+
+    assert ro.end.col_info.index == 3
+    assert ro.end.col_info.value == "D"
+    assert ro.end.row_info.index == 5
+    assert ro.end.row_info.value == 6
+
+    assert ro.col_start == "A"
+    assert ro.col_end == "D"
+    assert ro.row_start == 2
+    assert ro.row_end == 6
+
+    assert ro.start.col_info < ro.end.col_info
+    assert ro.start.row_info < ro.end.row_info
+
+    assert ro.end.col_info > ro.start.col_info
+    assert ro.end.row_info > ro.start.row_info
+
+    assert ro.start.col_info != ro.end.col_info
+    assert ro.start.row_info != ro.end.row_info
 
 
 def test_get_range_obj() -> None:
-    rp1 = TableHelper.get_range_obj(range_name="A2:D6")
-    assert rp1.col_start == "A"
-    assert rp1.row_start == 2
-    assert rp1.col_end == "D"
-    assert rp1.row_end == 6
+    from ooodev.utils.data_type.range_obj import RangeObj
 
-    rp2 = TableHelper.get_range_obj(range_name="a2:d6")
-    assert rp2.col_start == "A"
-    assert rp2.row_start == 2
-    assert rp2.col_end == "D"
-    assert rp2.row_end == 6
+    ro1 = TableHelper.get_range_obj(range_name="A2:D6")
+    assert ro1.col_start == "A"
+    assert ro1.row_start == 2
+    assert ro1.col_end == "D"
+    assert ro1.row_end == 6
 
-    assert rp1 == rp2
-    assert rp1.start.col_info.index == 0
-    assert rp1.end.col_info.index == 3
+    ro2 = TableHelper.get_range_obj(range_name="a2:d6")
+    assert ro2.col_start == "A"
+    assert ro2.row_start == 2
+    assert ro2.col_end == "D"
+    assert ro2.row_end == 6
+
+    assert ro1 == ro2
+    assert ro1.start.col_info.index == 0
+    assert ro1.end.col_info.index == 3
+
+    ro2 = RangeObj.from_range(range_val="a2:d6")
+    assert ro2 == ro1
+
+    rv1 = ro1.get_range_values()
+    assert str(rv1) == "A2:D6"
+    assert rv1 == "A2:D6"
+    assert rv1 != "A2:D7"
+    assert rv1 != "Roses are red"
+
+    rv2 = ro2.get_range_values()
+    assert rv1 == rv2
+    assert rv2 == rv1
+    assert rv2 == ro2
+    assert ro2 == rv2
+    assert rv2 == "A2:D6"

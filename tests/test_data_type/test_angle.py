@@ -21,7 +21,7 @@ def test_angle_error_incorrect_type(val: int) -> None:
 def test_addition_int(start: int, val: int) -> None:
     a1 = Angle(start)
     a2 = a1 + val
-    assert a2.Value == start + val
+    assert a2.value == start + val
 
 
 @pytest.mark.parametrize("start,val", [(0, 0), (0, 5), (1, 3), (33, 55), (255, 100)])
@@ -29,7 +29,7 @@ def test_addition_angle_to_angle(start: int, val: int) -> None:
     a1 = Angle(start)
     a2 = Angle(val)
     a3 = a1 + a2
-    assert a3.Value == start + val
+    assert a3.value == start + val
 
 
 @pytest.mark.parametrize("start,val", [(0, 0), (0, 5), (1, 3), (33, 55), (255, 100)])
@@ -37,7 +37,7 @@ def test_addition_plus_equal(start: int, val: int) -> None:
     a1 = Angle(start)
     a1 += val
     result = start + val
-    assert a1.Value == result
+    assert a1.value == result
 
 
 def test_angle_init_angle() -> None:
@@ -51,7 +51,7 @@ def test_sub_angle_to_angle(start: int, val: int) -> None:
     a1 = Angle(start)
     a2 = Angle(val)
     a3 = a1 - a2
-    assert a3.Value == start - val
+    assert a3.value == start - val
 
 
 @pytest.mark.parametrize("start,val", [(0, 0), (5, 0), (3, 1), (55, 22), (255, 100)])
@@ -59,7 +59,7 @@ def test_minus_equal(start: int, val: int) -> None:
     a1 = Angle(start)
     a1 -= val
     result = start - val
-    assert a1.Value == result
+    assert a1.value == result
 
 
 def test_sum_angle() -> None:
@@ -69,7 +69,7 @@ def test_sum_angle() -> None:
     a4 = Angle(20)
     sums = sum([a1, a2, a3, a4])
     assert isinstance(sums, Angle)
-    assert sums.Value == 50
+    assert sums.value == 50
 
 
 @pytest.mark.parametrize("start,val", [(0, 0), (5, 0), (3, 3), (55, 3)])
@@ -78,7 +78,7 @@ def test_mul_angle_to_angle(start: int, val: int) -> None:
     a2 = Angle(val)
     a3 = a1 * a2
     result = start * val
-    assert a3.Value == result
+    assert a3.value == result
 
 
 @pytest.mark.parametrize("start,val", [(5, 2), (300, 45), (355, 3)])
@@ -87,7 +87,7 @@ def test_div_angle_to_angle(start: int, val: int) -> None:
     a2 = Angle(val)
     a3 = a1 / a2
     result = round(start / val)
-    assert a3.Value == result
+    assert a3.value == result
 
 
 @pytest.mark.parametrize("start,val", [(0, 1), (2, 3), (3, 77), (55, 198), (100, 359)])
@@ -129,4 +129,4 @@ def test_ge_angle(start: int, val: int) -> None:
 @pytest.mark.parametrize(("val", "expected"), [(360, 0), (-3, 357), (-181, 179), (2500, 340), (-2500, 20)])
 def test_angle_weird(val: int, expected: int) -> None:
     a1 = Angle(val)
-    assert a1.Value == expected
+    assert a1.value == expected

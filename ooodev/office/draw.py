@@ -2200,8 +2200,8 @@ class Draw:
         """
         try:
             pts: List[Point] = []
-            angle_step = math.pi / sides.Value
-            for i in range(sides.Value):
+            angle_step = math.pi / sides.value
+            for i in range(sides.value):
                 pt = Point(
                     int(round(((x * 100) + ((radius * 100)) * math.cos(i * 2 * angle_step)))),
                     int(round(((y * 100) + ((radius * 100)) * math.sin(i * 2 * angle_step)))),
@@ -3322,7 +3322,7 @@ class Draw:
             None:
         """
         try:
-            mProps.Props.set(shape, FillTransparence=level.Value)
+            mProps.Props.set(shape, FillTransparence=level.value)
         except Exception as e:
             raise mEx.ShapeError("Error setting transparency") from e
 
@@ -3369,7 +3369,7 @@ class Draw:
             grad.StartColor = start_color
             grad.EndColor = end_color
 
-            grad.Angle = angle.Value * 10  # in 1/10 degree units
+            grad.Angle = angle.value * 10  # in 1/10 degree units
             grad.Border = 0
             grad.XOffset = 0
             grad.YOffset = 0
@@ -3630,7 +3630,7 @@ class Draw:
             None:
         """
         try:
-            cls.set_shape_props(shape=shape, RotateAngle=angle.Value * 100)
+            cls.set_shape_props(shape=shape, RotateAngle=angle.value * 100)
         except Exception as e:
             raise mEx.ShapeError(f"Error setting shape angle: {angle}") from e
 
@@ -3670,7 +3670,7 @@ class Draw:
             None:
         """
         try:
-            mProps.Props.set(shape, RotateAngle=angle.Value * 100)
+            mProps.Props.set(shape, RotateAngle=angle.value * 100)
         except Exception as e:
             raise mEx.ShapeError("Error setting shape rotation") from e
 
@@ -3916,8 +3916,8 @@ class Draw:
         """
         try:
             slide_size = cls.get_slide_size(slide)
-            x = round(slide_size.Width * xoffset.Value)  # in mm units
-            y = round(slide_size.Height * yoffset.Value)
+            x = round(slide_size.Width * xoffset.value)  # in mm units
+            y = round(slide_size.Height * yoffset.value)
 
             max_width = slide_size.Width - x
             max_height = slide_size.Height - y

@@ -3,6 +3,7 @@ from dataclasses import dataclass, field
 from ..decorator import enforce
 from .. import table_helper as mTb
 from . import cell_obj as mCo
+from . import range_values as mRngValues
 
 
 @enforce.enforce_types
@@ -37,7 +38,7 @@ class RangeObj:
         object.__setattr__(self, "end", mCo.CellObj.from_str(f"{self.col_end}{self.row_end}"))
 
     @staticmethod
-    def from_str(range_name: str) -> RangeObj:
+    def from_range(range_val: str | mRngValues.RangeValues) -> RangeObj:
         """
         Gets a ``RangeObj`` from are range name.
 
@@ -47,7 +48,16 @@ class RangeObj:
         Returns:
             RangeObj: Object that represents the name range.
         """
-        return mTb.TableHelper.get_range_obj(range_name=range_name)
+        return mTb.TableHelper.get_range_obj(range_name=str(range_val))
+
+    def get_range_values(self) -> mRngValues.RangeValues:
+        """
+        Gets``RangeValues``
+
+        Returns:
+            RangeValues: Range Values.
+        """
+        return mRngValues.RangeValues.from_range(str(self))
 
     def to_string(self, include_sheet_name: bool = False) -> str:
         """
@@ -69,6 +79,14 @@ class RangeObj:
         return f"{self.col_start}{self.row_start}:{self.col_end}{self.row_end}"
 
     def __eq__(self, other: object) -> bool:
-        if not isinstance(other, RangeObj):
-            return False
-        return self.to_string(True) == other.to_string(True)
+        if isinstance(other, RangeObj):
+            return self.to_string(True) == other.to_string(True)
+        if isinstance(other, mRngValues.RangeValues):
+            return str(self) == str(other)
+        if isinstance(other, str):
+            try:
+                oth = RangeObj.from_range(other)
+            except Exception:
+                return False
+            return self.to_string(True) == oth.to_string(True)
+        return False

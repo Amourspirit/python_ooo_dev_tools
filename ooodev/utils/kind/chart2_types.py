@@ -34,7 +34,7 @@ class ChartTemplateBase(ChartBaseTypeEnum):
 
 class ChartTypeNameBase(ChartBaseTypeEnum):
     def to_namespace(self) -> str:
-        return f"com.sun.star.chart2.{self.value}"
+        return f"com.sun.star.chart2.template.{self.value}"
 
 
 class ColumnStackedKind(ChartTemplateBase):
@@ -183,40 +183,40 @@ class ColumnAndLineStackedKind(ChartTemplateBase):
 
 
 class NamedColumnKind(ChartTypeNameBase):
-    COLUMN_CHART = "ColumnChartType"
+    COLUMN_CHART = "Column"
 
 
 class NamedBarKind(ChartTypeNameBase):
-    BAR_CHART = "BarChartType"
+    BAR_CHART = "Bar"
 
 
 class NamedPieKind(ChartTypeNameBase):
-    PIE_CHART = "PieChartType"
+    PIE_CHART = "Pie"
 
 
 class NamedAreaKind(ChartTypeNameBase):
-    AREA_CHART = "AreaChartType"
+    AREA_CHART = "Area"
 
 
 class NamedLineKind(ChartTypeNameBase):
-    LINE_CHART = "LineChartType"
+    LINE_CHART = "Symbol"
 
 
 class NamedXYKind(ChartTypeNameBase):
-    SCATTER_CHART = "ScatterChartType"
+    SCATTER_CHART = "ScatterSymbol"
 
 
 class NamedBubbleKind(ChartTypeNameBase):
-    BUBBLE_CHART = "BubbleChartType"
+    BUBBLE_CHART = "Bubble"
 
 
 class NamedNetKind(ChartTypeNameBase):
-    NET_CHART = "NetChartType"
-    FILLED_NET_CHART = "FilledNetChartType"
+    NET_CHART = "NetSymbol"
+    FILLED_NET_CHART = "FilledNet"
 
 
 class NamedStockKind(ChartTypeNameBase):
-    CANDLE_STICK_CHART = "CandleStickChartType"
+    CANDLE_STICK_CHART = "StockLowHighClose"
 
 
 class ChartTypes:

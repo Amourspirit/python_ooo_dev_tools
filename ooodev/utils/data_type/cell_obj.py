@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from ..decorator import enforce
 from .. import table_helper as mTb
 from . import col_obj as mCol
+from . import row_obj as mRow
 
 
 @enforce.enforce_types
@@ -45,9 +46,18 @@ class CellObj:
 
     @property
     def col_info(self) -> mCol.ColObj:
-        """Gets col_info value"""
+        """Gets Column Info"""
         try:
             return self._col_info
         except AttributeError:
             object.__setattr__(self, "_col_info", mCol.ColObj(self.col))
         return self._col_info
+
+    @property
+    def row_info(self) -> mRow.RowObj:
+        """Gets Row Info"""
+        try:
+            return self._row_info
+        except AttributeError:
+            object.__setattr__(self, "_row_info", mRow.RowObj(self.row))
+        return self._row_info

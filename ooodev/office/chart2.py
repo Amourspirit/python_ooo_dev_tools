@@ -57,7 +57,7 @@ from ..utils import props as mProps
 from ..utils.data_type.angle import Angle as Angle
 from ..utils.kind.axis_kind import AxisKind as AxisKind
 from ..utils.kind.chart2_data_role_kind import DataRoleKind as DataRoleKind
-from ..utils.kind.chart2_types import ChartTemplateBase, ChartTypeNameBase, ChartTypes as ChartTypes
+from ..utils.kind.chart2_types import ChartBaseTypeEnum, ChartTypeNameBase, ChartTypes as ChartTypes
 from ..utils.kind.curve_kind import CurveKind as CurveKind
 from ..utils.kind.data_point_label_type_kind import DataPointLabelTypeKind as DataPointLabelTypeKind
 from ..utils.kind.line_style_name_kind import LineStyleNameKind as LineStyleNameKind
@@ -94,10 +94,10 @@ class Chart2:
         cell_name: str = "",
         width: int = 16,
         height: int = 9,
-        diagram_name: ChartTemplateBase | str = "bar",
+        diagram_name: ChartBaseTypeEnum | str = "Column",
         color_bg: mColor.Color = mColor.CommonColor.PALE_BLUE,
         color_wall: mColor.Color = mColor.CommonColor.LIGHT_BLUE,
-        chart_name: str = "",
+        **kwargs,
     ) -> XChartDocument:
         """
         Insert a new chart
@@ -108,16 +108,25 @@ class Chart2:
             cell_name (str, optional): Cell name such as ``A1``.
             width (int, optional): Width. Default ``16``.
             height (int, optional): Height. Default ``9``.
-            diagram_name (ChartTemplateBase | str): Diagram Name. Defaults to ``bar``.
+            diagram_name (ChartBaseTypeEnum | str): Diagram Name. Defaults to ``Column``.
             color_bg (Color, optional): Color Background. Defaults to ``CommonColor.PALE_BLUE``.
             color_wall (Color, optional): Color Wall. Defaults to ``CommonColor.LIGHT_BLUE``.
+
+        Keyword Arguments:
             chart_name (str, optional): Chart name
+            is_row (bool, optional): Determines if the data is row data or column data.
+            first_cell_as_label (bool, optional): Set is first row is to be used as a label.
+            set_data_point_labels (bool, optional): Determines if the data point lables are set.
 
         Raises:
             ChartError: If error occurs
 
         Returns:
             XChartDocument: Chart Document that was created and inserted
+
+        Note:
+            **Keyword Arguments** are to mostly be ignored.
+            If finer control over chart creation is needed then **Keyword Arguments** can be used.
 
         See Also:
             :py:class:`~.color.CommonColor`
@@ -129,9 +138,9 @@ class Chart2:
             All parameters made optional. Added ``chart_name`` parameter.
         """
         try:
-            # type check that diagram_name is ChartTemplateBase | str
+            # type check that diagram_name is ChartBaseTypeEnum | str
             mInfo.Info.is_type_enum_multi(
-                alt_type="str", enum_type=ChartTemplateBase, enum_val=diagram_name, arg_name="diagram_name"
+                alt_type="str", enum_type=ChartBaseTypeEnum, enum_val=diagram_name, arg_name="diagram_name"
             )
             doc = None
             if sheet is None:
@@ -149,6 +158,8 @@ class Chart2:
 
             if not cell_name:
                 cell_name = mCalc.Calc.get_cell_str(col=cells_range.EndColumn + 1, row=cells_range.StartRow)
+
+            chart_name = kwargs.get("chart_name", None)
             if not chart_name:
                 chart_name = Chart2._CHART_NAME + str(int(random() * 10_000))
 
@@ -161,19 +172,52 @@ class Chart2:
                 height=height,
             )
             chart_doc = cls.get_chart_doc(sheet, chart_name)
+            if "is_row" in kwargs:
+                is_row = bool(kwargs["is_row"])
+            else:
+                is_row = mCalc.Calc.is_single_row_range(cells_range)
+
+            is_single = mCalc.Calc.is_single_column_range(cells_range) or mCalc.Calc.is_single_row_range(cells_range)
+
+            if is_row:
+                data_row_source = ChartDataRowSource.ROWS
+            else:
+                data_row_source = ChartDataRowSource.COLUMNS
 
             # assign chart template to the chart's diagram
             diagram = chart_doc.getFirstDiagram()
             ct_template = cls.set_template(chart_doc=chart_doc, diagram=diagram, diagram_name=diagram_name)
 
-            has_cats = cls.has_categories(diagram_name)
+            arg_first_cell = False
+            arg_has_cats = False
+
+            if "set_data_point_labels" in kwargs:
+                has_cats = bool(kwargs["set_data_point_labels"])
+                arg_has_cats = True
+            else:
+                has_cats = cls.has_categories(diagram_name)
 
             dp = chart_doc.getDataProvider()
 
+            if "first_cell_as_label" in kwargs:
+                first_cell_as_lbl = bool(kwargs["first_cell_as_label"])
+                arg_first_cell = True
+            else:
+                first_cell_as_lbl = True
+
+            if is_single:
+                if not arg_has_cats:
+                    has_cats = False
+                # get the cell first value
+                if not arg_first_cell:
+                    first_val = mCalc.Calc.get_val(sheet=sheet, col=cells_range.StartColumn, row=cells_range.StartRow)
+                    if isinstance(first_val, float):
+                        first_cell_as_lbl = False
+
             ps = mProps.Props.make_props(
                 CellRangeRepresentation=mCalc.Calc.get_range_str(cells_range, sheet),
-                DataRowSource=ChartDataRowSource.COLUMNS,
-                FirstCellAsLabel=True,
+                DataRowSource=data_row_source,
+                FirstCellAsLabel=first_cell_as_lbl,
                 HasCategories=has_cats,
             )
             ds = dp.createDataSource(ps)
@@ -234,7 +278,7 @@ class Chart2:
 
     @staticmethod
     def set_template(
-        chart_doc: XChartDocument, diagram: XDiagram, diagram_name: ChartTemplateBase | str
+        chart_doc: XChartDocument, diagram: XDiagram, diagram_name: ChartBaseTypeEnum | str
     ) -> XChartTypeTemplate:
         """
         Sets template of chart
@@ -242,7 +286,7 @@ class Chart2:
         Args:
             chart_doc (XChartDocument): Chart Document
             diagram (XDiagram): diagram
-            diagram_name (ChartTemplateBase | str): Diagram template name
+            diagram_name (ChartBaseTypeEnum | str): Diagram template name
 
         Raises:
             ChartError: If error occurs.
@@ -272,15 +316,18 @@ class Chart2:
 
         # in LO 7.3 com.sun.star.chart2.XChartTypeTemplate is included
 
-        # ensure diagram_name is ChartTemplateBase | str
+        # ensure diagram_name is ChartBaseTypeEnum | str
         mInfo.Info.is_type_enum_multi(
-            alt_type="str", enum_type=ChartTemplateBase, enum_val=diagram_name, arg_name="diagram_name"
+            alt_type="str", enum_type=ChartBaseTypeEnum, enum_val=diagram_name, arg_name="diagram_name"
         )
 
         try:
             ct_man = chart_doc.getChartTypeManager()
             msf = mLo.Lo.qi(XMultiServiceFactory, ct_man, True)
-            template_nm = f"com.sun.star.chart2.template.{diagram_name}"
+            if isinstance(diagram_name, ChartBaseTypeEnum):
+                template_nm = diagram_name.to_namespace()
+            else:
+                template_nm = f"com.sun.star.chart2.template.{diagram_name}"
             ct_template = mLo.Lo.qi(XChartTypeTemplate, msf.createInstance(template_nm))
             if ct_template is None:
                 mLo.Lo.print(f'Could not create chart template "{diagram_name}"; using a column chart instead')
@@ -294,12 +341,12 @@ class Chart2:
             raise mEx.ChartError("Error setting chart template") from e
 
     @staticmethod
-    def has_categories(diagram_name: ChartTemplateBase | str) -> bool:
+    def has_categories(diagram_name: ChartBaseTypeEnum | str) -> bool:
         """
         Gets if diagram name has categories
 
         Args:
-            diagram_name (ChartTemplateBase | str): Diagram Name
+            diagram_name (ChartBaseTypeEnum | str): Diagram Name
 
         Returns:
             bool: ``True`` if has categories; Otherwise, ``False``.
@@ -310,9 +357,9 @@ class Chart2:
         # All the chart templates, except for scatter and bubble use
         # categories on the x-axis
 
-        # Ensure diagram_name ChartTemplateBase | str
+        # Ensure diagram_name ChartBaseTypeEnum | str
         mInfo.Info.is_type_enum_multi(
-            alt_type="str", enum_type=ChartTemplateBase, enum_val=diagram_name, arg_name="diagram_name"
+            alt_type="str", enum_type=ChartBaseTypeEnum, enum_val=diagram_name, arg_name="diagram_name"
         )
 
         dn = str(diagram_name).lower()
@@ -922,7 +969,7 @@ class Chart2:
         """
         try:
             xtitle = cls.get_axis_title(chart_doc=chart_doc, axis_val=axis_val, idx=idx)
-            mProps.Props.set(xtitle, TextRotation=angle.Value)
+            mProps.Props.set(xtitle, TextRotation=angle.value)
         except mEx.ChartError:
             raise
         except Exception as e:

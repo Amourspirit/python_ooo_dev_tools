@@ -71,13 +71,12 @@ class TableHelper:
         )
 
     @classmethod
-    def get_range_values(cls, range_name: str, zero_index: bool = True) -> mRv.RangeValues:
+    def get_range_values(cls, range_name: str) -> mRv.RangeValues:
         """
         Gets range parts from a range name.
 
         Args:
             range_name (str): Range name such as ``A23:G:45``
-            zero_index (bool, optional): determines return ``RangeValues`` has zero based or one based values. Default ``True``.
 
         Returns:
             RangeParts: Range Parts
@@ -85,10 +84,10 @@ class TableHelper:
         .. versionadded:: 0.8.2
         """
         ro = cls.get_range_obj(range_name=range_name)
-        col_start = cls.col_name_to_int(ro.col_start, zero_index)
-        col_end = cls.col_name_to_int(ro.col_end, zero_index)
-        row_start = ro.row_start - 1 if zero_index else ro.row_start
-        row_end = ro.row_end - 1 if zero_index else ro.row_end
+        col_start = cls.col_name_to_int(ro.col_start, True)
+        col_end = cls.col_name_to_int(ro.col_end, True)
+        row_start = ro.row_start - 1
+        row_end = ro.row_end - 1
         return mRv.RangeValues(col_start=col_start, col_end=col_end, row_start=row_start, row_end=row_end)
 
     @staticmethod

@@ -4702,9 +4702,9 @@ class Calc:
                 if len(args) > 0:
                     val = args[0]
             if val and isinstance(val, str):
-                return mRngObj.RangeObj.from_str(val)
+                return mRngObj.RangeObj.from_range(val)
         range_name = cls.get_range_str(*args, **kwargs)
-        return mRngObj.RangeObj.from_str(range_name=range_name)
+        return mRngObj.RangeObj.from_range(range_val=range_name)
 
     # endregion get_range_obj()
 
@@ -4748,7 +4748,7 @@ class Calc:
         .. versionadded:: 0.8.2
         """
         range_name = cls.get_range_str(*args, **kwargs)
-        rv = mRngValues.RangeValues.from_str(range_name=range_name)
+        rv = mRngValues.RangeValues.from_range(range_name)
         height = rv.row_end - rv.row_start + 1
         width = rv.col_end - rv.col_start + 1
         return Size(width, height)
