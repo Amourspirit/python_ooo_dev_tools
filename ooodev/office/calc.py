@@ -56,7 +56,6 @@ from com.sun.star.uno import Exception as UnoException
 from com.sun.star.util import NumberFormat  # const
 from com.sun.star.util import XNumberFormatsSupplier
 from com.sun.star.util import XNumberFormatTypes
-from com.sun.star.view import XSelectionSupplier
 
 if TYPE_CHECKING:
     from com.sun.star.beans import XPropertySet
@@ -85,6 +84,7 @@ from ooo.dyn.sheet.fill_date_mode import FillDateMode as FillDateMode
 from ooo.dyn.sheet.general_function import GeneralFunction as GeneralFunction
 from ooo.dyn.sheet.solver_constraint_operator import SolverConstraintOperator as SolverConstraintOperator
 from ooo.dyn.table.cell_content_type import CellContentType
+from ooo.dyn.awt.size import Size
 
 from ..exceptions import ex as mEx
 from ..formatters.formatter_table import FormatterTable
@@ -92,10 +92,13 @@ from ..utils import gui as mGui
 from ..utils import info as mInfo
 from ..utils import lo as mLo
 from ..utils import props as mProps
+from ..utils import table_helper as mTblHelper
 from ..utils import view_state as mViewState
 from ..utils.color import CommonColor, Color
+from ..utils.data_type import range_obj as mRngObj
+from ..utils.data_type import range_values as mRngValues
+from ..utils.data_type import cell_obj as mCellObj
 from ..utils.gen_util import ArgsHelper, Util as GenUtil
-from ..utils.table_helper import TableHelper
 from ..utils.type_var import PathOrStr, Row, Column, Table, TupleArray, FloatList, FloatTable
 
 from ..events.args.calc.cell_args import CellArgs
@@ -106,7 +109,6 @@ from ..events.args.cancel_event_args import CancelEventArgs
 from ..events.args.event_args import EventArgs
 from ..events.calc_named_event import CalcNamedEvent
 from ..events.event_singleton import _Events
-from ..events.gbl_named_event import GblNamedEvent
 
 NameVal = ArgsHelper.NameValue
 # endregion Imports
@@ -997,25 +999,21 @@ class Calc:
     @overload
     @classmethod
     def goto_cell(cls, cell_name: str, doc: XSpreadsheetDocument) -> None:
-        """
-        Go to a cell
+        ...
 
-        Args:
-            cell_name (str): Cell Name such as 'B4'
-            doc (XSpreadsheetDocument): Spreadsheet Document
-        """
+    @overload
+    @classmethod
+    def goto_cell(cls, cell_obj: mCellObj.CellObj, doc: XSpreadsheetDocument) -> None:
         ...
 
     @overload
     @classmethod
     def goto_cell(cls, cell_name: str, frame: XFrame) -> None:
-        """
-        Go to a cell
+        ...
 
-        Args:
-            cell_name (str): Cell Name such as 'B4'
-            frame (XFrame): Spreadsheet frame.
-        """
+    @overload
+    @classmethod
+    def goto_cell(cls, cell_obj: mCellObj.CellObj, frame: XFrame) -> None:
         ...
 
     @classmethod
@@ -1041,11 +1039,15 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ("cell_name", "doc", "frame")
+            valid_keys = ("cell_name", "cell_obj", "doc", "frame")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("goto_cell() got an unexpected keyword argument")
-            ka[1] = kwargs.get("cell_name", None)
+            keys = ("cell_name", "cell_obj")
+            for key in keys:
+                if key in kwargs:
+                    ka[1] = kwargs[key]
+                    break
             keys = ("doc", "frame")
             for key in keys:
                 if key in kwargs:
@@ -1065,7 +1067,7 @@ class Calc:
             frame = cls.get_controller(doc).getFrame()
         else:
             frame = kargs[2]
-        props = mProps.Props.make_props(ToPoint=kargs[1])
+        props = mProps.Props.make_props(ToPoint=str(kargs[1]))
         mLo.Lo.dispatch_cmd(cmd="GoToCell", props=props, frame=frame)
 
     # endregion    goto_cell()
@@ -1228,6 +1230,11 @@ class Calc:
     @overload
     @classmethod
     def set_selected_addr(cls, doc: XSpreadsheetDocument, sheet: XSpreadsheet, range_name: str) -> CellRangeAddress:
+        ...
+
+    @overload
+    @classmethod
+    def set_selected_addr(cls, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> CellRangeAddress:
         ...
 
     @classmethod
@@ -1812,40 +1819,21 @@ class Calc:
     @overload
     @classmethod
     def set_val(cls, value: object, cell: XCell) -> None:
-        """
-        Sets the value of a cell
-
-        Args:
-            value (object): Value for cell
-            cell (XCell): Cell to assign value
-        """
         ...
 
     @overload
     @classmethod
     def set_val(cls, value: object, sheet: XSpreadsheet, cell_name: str) -> None:
-        """
-        Sets the value of a cell
+        ...
 
-        Args:
-            value (object): Value for cell
-            sheet (XSpreadsheet): Spreadsheet
-            cell_name (str): Name of cel to set value of such as 'B4'
-        """
+    @overload
+    @classmethod
+    def set_val(cls, value: object, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj) -> None:
         ...
 
     @overload
     @classmethod
     def set_val(cls, value: object, sheet: XSpreadsheet, col: int, row: int) -> None:
-        """
-        Sets the value of a cell
-
-        Args:
-            value (object): Value for cell
-            sheet (XSpreadsheet): Spreadsheet
-            col (int): Cell column as zero-based integer
-            row (int): Cell row as zero-based integer
-        """
         ...
 
     @classmethod
@@ -1869,7 +1857,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ("value", "cell", "sheet", "cell_name", "col", "row")
+            valid_keys = ("value", "cell", "sheet", "cell_name", "cell_obj", "col", "row")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("set_val() got an unexpected keyword argument")
@@ -1882,7 +1870,7 @@ class Calc:
             if count == 2:
                 return ka
 
-            keys = ("cell_name", "col")
+            keys = ("cell_name", "cell_obj", "col")
             for key in keys:
                 if key in kwargs:
                     ka[3] = kwargs[key]
@@ -1903,7 +1891,7 @@ class Calc:
         if count == 2:
             cls._set_val_by_cell(value=kargs[1], cell=kargs[2])
         elif count == 3:
-            cls._set_val_by_cell_name(value=kargs[1], sheet=kargs[2], cell_name=kargs[3])
+            cls._set_val_by_cell_name(value=kargs[1], sheet=kargs[2], cell_name=str(kargs[3]))
         elif count == 4:
             cls._set_val_by_col_row(value=kargs[1], sheet=kargs[2], col=kargs[3], row=kargs[4])
 
@@ -2001,61 +1989,26 @@ class Calc:
     @overload
     @classmethod
     def get_val(cls, cell: XCell) -> object | None:
-        """
-        Gets cell value
-
-        Args:
-            cell (XCell): cell to get value of
-
-        Returns:
-            object | None: Cell value cell has a value; Otherwise, None
-        """
         ...
 
     @overload
     @classmethod
     def get_val(cls, sheet: XSpreadsheet, addr: CellAddress) -> object | None:
-        """
-        Get cell value
-
-        Args:
-            sheet (XSpreadsheet): Spreadsheet
-            addr (CellAddress): Address of cell
-
-        Returns:
-            object | None: Cell value cell has a value; Otherwise, None
-        """
         ...
 
     @overload
     @classmethod
     def get_val(cls, sheet: XSpreadsheet, cell_name: str) -> object | None:
-        """
-        Gets cell value
+        ...
 
-        Args:
-            sheet (XSpreadsheet): Spreadsheet
-            cell_name (str): Name of cell such as 'B4'
-
-        Returns:
-            object | None: Cell value cell has a value; Otherwise, None
-        """
+    @overload
+    @classmethod
+    def get_val(cls, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj) -> object | None:
         ...
 
     @overload
     @classmethod
     def get_val(cls, sheet: XSpreadsheet, col: int, row: int) -> object | None:
-        """
-        Get cell value
-
-        Args:
-            sheet (XSpreadsheet): Spreadsheet
-            col (int): Cell zero-based column
-            row (int): Cell zero-base row
-
-        Returns:
-            object | None: Cell value cell has a value; Otherwise, None
-        """
         ...
 
     @classmethod
@@ -2068,6 +2021,7 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet
             addr (CellAddress): Address of cell
             cell_name (str): Name of cell such as 'B4'
+            cell_obj (CellObj): Cell Object
             col (int): Cell zero-based column
             row (int): Cell zero-base row
 
@@ -2082,7 +2036,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ("sheet", "cell", "cell_name", "addr", "col", "row")
+            valid_keys = ("sheet", "cell", "cell_name", "cell_obj", "addr", "col", "row")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("get_val() got an unexpected keyword argument")
@@ -2093,7 +2047,7 @@ class Calc:
                     break
             if count == 1:
                 return ka
-            keys = ("addr", "cell_name", "col")
+            keys = ("addr", "cell_name", "cell_obj", "col")
             for key in keys:
                 if key in kwargs:
                     ka[2] = kwargs[key]
@@ -2118,9 +2072,9 @@ class Calc:
             return cls._get_val_by_cell(cell=kargs[1])
 
         if count == 2:
-            if isinstance(kargs[2], str):
+            if isinstance(kargs[2], (str, mCellObj.CellObj)):
                 #   get_val(sheet: XSpreadsheet, cell_name: str)
-                return cls._get_val_by_cell_name(sheet=kargs[1], cell_name=kargs[2])
+                return cls._get_val_by_cell_name(sheet=kargs[1], cell_name=str(kargs[2]))
 
             #   get_val(sheet: XSpreadsheet, addr: CellAddress)
             return cls._get_val_by_cell_addr(sheet=kargs[1], addr=kargs[2])
@@ -2265,61 +2219,26 @@ class Calc:
     @overload
     @classmethod
     def get_string(cls, cell: XCell) -> str:
-        """
-        Gets the value of a cell as a string.
-
-        Args:
-            cell (XCell): Cell to get value of
-
-        Returns:
-            str: Cell value as string.
-        """
         ...
 
     @overload
     @classmethod
     def get_string(cls, sheet: XSpreadsheet, cell_name: str) -> str:
-        """
-        Gets the value of a cell as a string
+        ...
 
-        Args:
-            sheet (XSpreadsheet): Spreadsheet
-            cell_name (str): Name of cell to get the value of such as 'B4'
-
-        Returns:
-            str: Cell value as string
-        """
+    @overload
+    @classmethod
+    def get_string(cls, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj) -> str:
         ...
 
     @overload
     @classmethod
     def get_string(cls, sheet: XSpreadsheet, addr: CellAddress) -> str:
-        """
-        Gets the value of a cell as a string
-
-        Args:
-            sheet (XSpreadsheet): Spreadsheet
-            addr (CellAddress): Cell address
-
-        Returns:
-            str: Cell value as string
-        """
         ...
 
     @overload
     @classmethod
     def get_string(cls, sheet: XSpreadsheet, col: int, row: int) -> str:
-        """
-        Gets the value of a cell as a string
-
-        Args:
-            sheet (XSpreadsheet): Spreadsheet
-            col (int): Cell zero-based column number
-            row (int): Cell zero-based row number
-
-        Returns:
-            str: Cell value as string
-        """
         ...
 
     @classmethod
@@ -2346,7 +2265,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ("cell", "sheet", "cell_name", "addr", "col", "row")
+            valid_keys = ("cell", "sheet", "cell_name", "cell_obj", "addr", "col", "row")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("get_string() got an unexpected keyword argument")
@@ -2357,7 +2276,7 @@ class Calc:
                     break
             if count == 1:
                 return ka
-            keys = ("cell_name", "addr", "col")
+            keys = ("cell_name", "cell_obj", "addr", "col")
             for key in keys:
                 if key in kwargs:
                     ka[2] = kwargs[key]
@@ -2386,8 +2305,8 @@ class Calc:
         if count == 3:
             return convert(cls.get_val(sheet=kargs[1], col=kargs[2], row=kargs[3]))
         if count == 2:
-            if isinstance(kargs[2], str):
-                return convert(cls.get_val(sheet=kargs[1], cell_name=kargs[2]))
+            if isinstance(kargs[2], (str, mCellObj.CellObj)):
+                return convert(cls.get_val(sheet=kargs[1], cell_name=str(kargs[2])))
             return convert(cls.get_val(sheet=kargs[1], addr=kargs[2]))
         return None
 
@@ -2804,7 +2723,7 @@ class Calc:
             return []
         col_len = len(vals[0])
 
-        doubles = TableHelper.make_2d_array(num_rows=row_len, num_cols=col_len)
+        doubles = mTblHelper.TableHelper.make_2d_array(num_rows=row_len, num_cols=col_len)
         for row in range(row_len):
             for col in range(col_len):
                 doubles[row][col] = cls.convert_to_float(vals[row][col])
@@ -2884,28 +2803,16 @@ class Calc:
     @overload
     @classmethod
     def set_col(cls, sheet: XSpreadsheet, values: Column, cell_name: str) -> None:
-        """
-        Inserts a column of data into spreadsheet
+        ...
 
-        Args:
-            sheet (XSpreadsheet): Spreadsheet
-            values (Column): Column Data
-            cell_name (str): Name of Cell to begin the insert such as 'A1'
-        """
+    @overload
+    @classmethod
+    def set_col(cls, sheet: XSpreadsheet, values: Column, cell_obj: mCellObj.CellObj) -> None:
         ...
 
     @overload
     @classmethod
     def set_col(cls, sheet: XSpreadsheet, values: Column, col_start: int, row_start: int) -> None:
-        """
-        Inserts a column of data into spreadsheet
-
-        Args:
-            sheet (XSpreadsheet): Spreadsheet
-            values (Column):  Column Data as 1-Dimensional Sequence such as a list of values
-            col_start (int): Zero-base column index
-            row_start (int): Zero-base row index
-        """
         ...
 
     @classmethod
@@ -2928,13 +2835,13 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ("sheet", "values", "cell_name", "col_start", "row_start")
+            valid_keys = ("sheet", "values", "cell_name", "cell_obj", "col_start", "row_start")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("set_col() got an unexpected keyword argument")
             ka[1] = kwargs.get("sheet", None)
             ka[2] = kwargs.get("values", None)
-            keys = ("cell_name", "col_start")
+            keys = ("cell_name", "cell_obj", "col_start")
             for key in keys:
                 if key in kwargs:
                     ka[3] = kwargs[key]
@@ -2953,7 +2860,7 @@ class Calc:
             kargs[ordered_keys[i]] = arg
 
         if count == 3:
-            pos = cls.get_cell_position(kargs[3])
+            pos = cls.get_cell_position(str(kargs[3]))
             x = pos.X
             y = pos.Y
         else:
@@ -2974,34 +2881,16 @@ class Calc:
     @overload
     @classmethod
     def set_row(cls, sheet: XSpreadsheet, values: Row, cell_name: str) -> None:
-        """
-        Inserts a row of data into spreadsheet
+        ...
 
-        Raises:
-            MissingInterfaceError: if unable to obtain interface
-
-        Args:
-            sheet (XSpreadsheet): Spreadsheet
-            values (Row): Row Data
-            cell_name (str): Name of Cell to begin the insert such as 'A1'
-        """
+    @overload
+    @classmethod
+    def set_row(cls, sheet: XSpreadsheet, values: Row, cell_obj: mCellObj.CellObj) -> None:
         ...
 
     @overload
     @classmethod
     def set_row(cls, sheet: XSpreadsheet, values: Row, col_start: int, row_start: int) -> None:
-        """
-        Inserts a row of data into spreadsheet
-
-        Raises:
-            MissingInterfaceError: if unable to obtain interface
-
-        Args:
-            sheet (XSpreadsheet): Spreadsheet
-            values (Row):  Row Data as 1-Dimensional Sequence such as a list of values
-            col_start (int): Zero-base column index
-            row_start (int): Zero-base row index
-        """
         ...
 
     @classmethod
@@ -3027,13 +2916,13 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ("sheet", "values", "cell_name", "col_start", "row_start")
+            valid_keys = ("sheet", "values", "cell_name", "cell_obj", "col_start", "row_start")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("set_row() got an unexpected keyword argument")
             ka[1] = kwargs.get("sheet", None)
             ka[2] = kwargs.get("values", None)
-            keys = ("cell_name", "col_start")
+            keys = ("cell_name", "cell_obj", "col_start")
             for key in keys:
                 if key in kwargs:
                     ka[3] = kwargs[key]
@@ -3052,7 +2941,7 @@ class Calc:
             kargs[ordered_keys[i]] = arg
 
         if count == 3:
-            pos = cls.get_cell_position(kargs[3])
+            pos = cls.get_cell_position(str(kargs[3]))
             col_start = pos.X
             row_start = pos.Y
         else:
@@ -3068,7 +2957,7 @@ class Calc:
             end_row=row_start,
         )
         cr_data = mLo.Lo.qi(XCellRangeData, cell_range, raise_err=True)
-        cr_data.setDataArray(TableHelper.to_2d_tuple(values))  #  1-row 2D array
+        cr_data.setDataArray(mTblHelper.TableHelper.to_2d_tuple(values))  #  1-row 2D array
 
     # endregion set_row()
 
@@ -3538,77 +3427,31 @@ class Calc:
     @overload
     @classmethod
     def get_cell(cls, sheet: XSpreadsheet, addr: CellAddress) -> XCell:
-        """
-        Gets a cell
-
-        Args:
-            sheet (XSpreadsheet): Spreadsheet
-            addr (CellAddress): Cell Address
-
-        Returns:
-            XCell: cell
-        """
         ...
 
     @overload
     @classmethod
     def get_cell(cls, sheet: XSpreadsheet, cell_name: str) -> XCell:
-        """
-        Gets a cell
+        ...
 
-        Args:
-            sheet (XSpreadsheet): Spreadsheet
-            cell_name (str): Cell Name such as 'A1'
-
-        Returns:
-            XCell: Cell
-        """
+    @overload
+    @classmethod
+    def get_cell(cls, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj) -> XCell:
         ...
 
     @overload
     @classmethod
     def get_cell(cls, sheet: XSpreadsheet, col: int, row: int) -> XCell:
-        """
-        Gets a cell
-
-        Args:
-            sheet (XSpreadsheet): Spreadsheet
-            col (int): Cell column
-            row (int): cell row
-
-        Returns:
-            XCell: Cell
-        """
         ...
 
     @overload
     @classmethod
     def get_cell(cls, cell_range: XCellRange) -> XCell:
-        """
-        Gets a cell
-
-        Args:
-            cell_range (XCellRange): Cell Range
-
-        Returns:
-            XCell: Cell
-        """
         ...
 
     @overload
     @classmethod
     def get_cell(cls, cell_range: XCellRange, col: int, row: int) -> XCell:
-        """
-        Gets a cell
-
-        Args:
-            cell_range (XCellRange): Cell Range
-            col (int): Cell column
-            row (int): Cell row
-
-        Returns:
-            XCell: Cell
-        """
         ...
 
     @classmethod
@@ -3620,6 +3463,7 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet
             addr (CellAddress): Cell Address
             cell_name (str): Cell Name such as 'A1'
+            cell_obj: (CellObj): Cell object
             cell_range (XCellRange): Cell Range
             col (int): Cell column
             row (int): cell row
@@ -3635,7 +3479,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ("sheet", "cell_range", "addr", "col", "cell_name", "row")
+            valid_keys = ("sheet", "cell_range", "addr", "col", "cell_name", "cell_obj", "row")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("get_cell() got an unexpected keyword argument")
@@ -3646,7 +3490,7 @@ class Calc:
                     break
             if count == 1:
                 return ka
-            keys = ("addr", "col", "cell_name")
+            keys = ("addr", "col", "cell_name", "cell_obj")
             for key in keys:
                 if key in kwargs:
                     ka[2] = kwargs[key]
@@ -3671,9 +3515,9 @@ class Calc:
             return cls._get_cell_cell_rng(cell_range=kargs[1], col=0, row=0)
 
         elif count == 2:
-            if isinstance(kargs[2], str):
+            if isinstance(kargs[2], (str, mCellObj.CellObj)):
                 # get_cell(sheet: XSpreadsheet, cell_name: str)
-                return cls._get_cell_sheet_cell(sheet=kargs[1], cell_name=kargs[2])
+                return cls._get_cell_sheet_cell(sheet=kargs[1], cell_name=str(kargs[2]))
             else:
                 # get_cell(sheet: XSpreadsheet, addr: CellAddress)
                 return cls._get_cell_sheet_addr(sheet=kargs[1], addr=kargs[2])
@@ -3714,6 +3558,42 @@ class Calc:
         """
         return cr_addr.StartColumn == cr_addr.EndColumn and cr_addr.StartRow == cr_addr.EndRow
 
+    @staticmethod
+    def is_single_column_range(cr_addr: CellRangeAddress) -> bool:
+        """
+        Gets if a cell address is a single column or multi-column
+
+        Args:
+            cr_addr (CellRangeAddress): cell range address
+
+        Returns:
+            bool: True if single column; Otherwise, False
+
+        Note:
+            If ``cr_addr`` is a single cell address then ``True`` is returned.
+
+        .. versionadded:: 0.8.2
+        """
+        return cr_addr.StartColumn == cr_addr.EndColumn
+
+    @staticmethod
+    def is_single_row_range(cr_addr: CellRangeAddress) -> bool:
+        """
+        Gets if a cell address is a single row or multi-row
+
+        Args:
+            cr_addr (CellRangeAddress): cell range address
+
+        Returns:
+            bool: True if single row; Otherwise, False
+
+        Note:
+            If ``cr_addr`` is a single cell address then ``True`` is returned.
+
+        .. versionadded:: 0.8.2
+        """
+        return cr_addr.StartRow == cr_addr.EndRow
+
     # region    get_cell_range()
     @classmethod
     def _get_cell_range_addr(cls, sheet: XSpreadsheet, addr: CellRangeAddress) -> XCellRange:
@@ -3747,37 +3627,16 @@ class Calc:
     @overload
     @classmethod
     def get_cell_range(cls, sheet: XSpreadsheet, cr_addr: CellRangeAddress) -> XCellRange:
-        """
-        Gets a cell range
-
-        Args:
-            sheet (XSpreadsheet): Spreadsheet Document
-            cr_addr (CellRangeAddress): Cell range Address
-
-        Raises:
-            Exception: if unable to access cell range.
-
-        Returns:
-            XCellRange: Cell range
-        """
         ...
 
     @overload
     @classmethod
     def get_cell_range(cls, sheet: XSpreadsheet, range_name: str) -> XCellRange:
-        """
-        Gets a cell range
+        ...
 
-        Args:
-            sheet (XSpreadsheet): Spreadsheet Document
-            range_name (str): Range Name such as 'A1:D5'
-
-        Raises:
-            Exception: if unable to access cell range.
-
-        Returns:
-            XCellRange: Cell range
-        """
+    @overload
+    @classmethod
+    def get_cell_range(cls, sheet: XSpreadsheet, range_obj: mRngObj.RangeObj) -> XCellRange:
         ...
 
     @overload
@@ -3785,22 +3644,6 @@ class Calc:
     def get_cell_range(
         cls, sheet: XSpreadsheet, col_start: int, row_start: int, col_end: int, row_end: int
     ) -> XCellRange:
-        """
-        Gets a cell range
-
-        Args:
-            sheet (XSpreadsheet): Spreadsheet Document
-            col_start (int): Start Column
-            row_start (int): Start Row
-            col_end (int): End Column
-            row_end (int): End Row
-
-        Raises:
-            Exception: if unable to access cell range.
-
-        Returns:
-            XCellRange: Cell range
-        """
         ...
 
     @classmethod
@@ -3812,6 +3655,7 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet Document
             cr_addr (CellRangeAddress): Cell range Address
             range_name (str): Range Name such as 'A1:D5'
+            range_obj (RangeObj): Range Object
             col_start (int): Start Column
             row_start (int): Start Row
             col_end (int): End Column
@@ -3837,6 +3681,7 @@ class Calc:
                 "sheet",
                 "cr_addr",
                 "range_name",
+                "range_obj",
                 "start_col",
                 "col_start",
                 "start_row",
@@ -3850,7 +3695,7 @@ class Calc:
             if not check:
                 raise TypeError("get_cell_range() got an unexpected keyword argument")
             ka[1] = kwargs.get("sheet", None)
-            keys = ("cr_addr", "range_name", "start_col", "col_start")
+            keys = ("cr_addr", "range_name", "range_obj", "start_col", "col_start")
             for key in keys:
                 if key in kwargs:
                     ka[2] = kwargs[key]
@@ -3870,9 +3715,9 @@ class Calc:
             kargs[ordered_keys[i]] = arg
 
         if count == 2:
-            if isinstance(kargs[2], str):
+            if isinstance(kargs[2], (str, mRngObj.RangeObj)):
                 # def get_cell_range(sheet: XSpreadsheet, range_name: str)
-                return cls._get_cell_range_rng_name(sheet=kargs[1], range_name=kargs[2])
+                return cls._get_cell_range_rng_name(sheet=kargs[1], range_name=str(kargs[2]))
             else:
                 # get_cell_range(sheet: XSpreadsheet, addr:CellRangeAddress)
                 return cls._get_cell_range_addr(sheet=kargs[1], addr=kargs[2])
@@ -4109,7 +3954,7 @@ class Calc:
         Returns:
             int: Zero based int representing column name
         """
-        i = TableHelper.col_name_to_int(name=col_str)
+        i = mTblHelper.TableHelper.col_name_to_int(name=col_str)
         return i - 1  # convert to zero based.
 
     @staticmethod
@@ -4124,7 +3969,7 @@ class Calc:
             int: Number if conversion succeeds; Otherwise, 0
         """
         try:
-            return TableHelper.row_name_to_int(row_str) - 1
+            return mTblHelper.TableHelper.row_name_to_int(row_str) - 1
         except ValueError:
             mLo.Lo.print(f"Incorrect format for {row_str}")
         return 0
@@ -4151,73 +3996,26 @@ class Calc:
     @overload
     @classmethod
     def get_cell_address(cls, cell: XCell) -> CellAddress:
-        """
-        Gets Cell Address
-
-        Args:
-            cell (XCell): Cell
-
-        Raises:
-            MissingInterfaceError: if unable to obtain interface
-
-        Returns:
-            CellAddress: Cell Address
-        """
         ...
 
     @overload
     @classmethod
     def get_cell_address(cls, sheet: XSpreadsheet, cell_name: str) -> CellAddress:
-        """
-        Gets Cell Address
+        ...
 
-        Args:
-            sheet (XSpreadsheet): Spreadsheet
-            cell_name (str): Cell name such as 'A1'
-
-        Raises:
-            MissingInterfaceError: if unable to obtain interface
-
-        Returns:
-            CellAddress: Cell Address
-        """
+    @overload
+    @classmethod
+    def get_cell_address(cls, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj) -> CellAddress:
         ...
 
     @overload
     @classmethod
     def get_cell_address(cls, sheet: XSpreadsheet, addr: CellAddress) -> CellAddress:
-        """
-        Gets Cell Address
-
-        Args:
-            sheet (XSpreadsheet): Spreadsheet
-            addr (CellAddress): Cell Address
-
-        Raises:
-            MissingInterfaceError: if unable to obtain interface
-
-        Returns:
-            CellAddress: Cell Address
-        """
         ...
 
     @overload
     @classmethod
     def get_cell_address(cls, sheet: XSpreadsheet, col: int, row: int) -> CellAddress:
-        """
-        Gets Cell Address
-
-        Args:
-            sheet (XSpreadsheet): Spreadsheet
-            col (int): Zero-base column index
-            row (int): Zero-base row index
-
-        Raises:
-            MissingInterfaceError: if unable to obtain interface
-
-        Returns:
-            CellAddress: Cell Address
-        """
         ...
 
     @classmethod
@@ -4229,6 +4027,7 @@ class Calc:
             cell (XCell): Cell
             sheet (XSpreadsheet): Spreadsheet
             cell_name (str): Cell name such as 'A1'
+            cell_obj (CellObj): Cell object
             addr (CellAddress): Cell Address
             col (int): Zero-base column index
             row (int): Zero-base row index
@@ -4247,7 +4046,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ("cell", "sheet", "cell_name", "col", "addr", "row")
+            valid_keys = ("cell", "sheet", "cell_name", "cell_obj", "col", "addr", "row")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("get_cell_address() got an unexpected keyword argument")
@@ -4258,7 +4057,7 @@ class Calc:
                     break
             if count == 1:
                 return ka
-            keys = ("cell_name", "col", "addr")
+            keys = ("cell_name", "cell_obj", "col", "addr")
             for key in keys:
                 if key in kwargs:
                     ka[2] = kwargs[key]
@@ -4278,8 +4077,8 @@ class Calc:
         if count == 1:
             return cls._get_cell_address_cell(cell=kargs[1])
         elif count == 2:
-            if isinstance(kargs[2], str):
-                return cls._get_cell_address_sheet(sheet=kargs[1], cell_name=kargs[2])
+            if isinstance(kargs[2], (str, mCellObj.CellObj)):
+                return cls._get_cell_address_sheet(sheet=kargs[1], cell_name=str(kargs[2]))
             cell_name = cls._get_cell_str_addr(addr=kargs[2])
             return cls._get_cell_address_sheet(sheet=kargs[1], cell_name=cell_name)
         elif count == 3:
@@ -4303,36 +4102,16 @@ class Calc:
     @overload
     @classmethod
     def get_address(cls, cell_range: XCellRange) -> CellRangeAddress:
-        """
-        Gets Range Address
-
-        Args:
-            cell_range (XCellRange): Cell Range
-
-        Raises:
-            MissingInterfaceError: if unable to obtain interface
-
-        Returns:
-            CellRangeAddress: Cell Range Address
-        """
         ...
 
     @overload
     @classmethod
     def get_address(cls, sheet: XSpreadsheet, range_name: str) -> CellRangeAddress:
-        """
-        Gets Range Address
+        ...
 
-        Args:
-            sheet (XSpreadsheet): Spreadsheet
-            range_name (str): Range name such as 'A1:D7'
-
-        Raises:
-            MissingInterfaceError: if unable to obtain interface
-
-        Returns:
-            CellRangeAddress: Cell Range Address
-        """
+    @overload
+    @classmethod
+    def get_address(cls, sheet: XSpreadsheet, range_obj: mRngObj.RangeObj) -> CellRangeAddress:
         ...
 
     @overload
@@ -4340,22 +4119,6 @@ class Calc:
     def get_address(
         cls, sheet: XSpreadsheet, start_col: int, start_row: int, end_col: int, end_row: int
     ) -> CellRangeAddress:
-        """
-        Gets Range Address
-
-        Args:
-            sheet (XSpreadsheet): Spreadsheet
-            start_col (int): Zero-base start column index
-            start_row (int): Zero-base start row index
-            end_col (int): Zero-base end column index
-            end_row (int): Zero-base end row index
-
-        Raises:
-            MissingInterfaceError: if unable to obtain interface
-
-        Returns:
-            CellRangeAddress: Cell Range Address
-        """
         ...
 
     @classmethod
@@ -4367,6 +4130,7 @@ class Calc:
             cell_range (XCellRange): Cell Range
             sheet (XSpreadsheet): Spreadsheet
             range_name (str): Range name such as 'A1:D7'
+            range_obj (RangeObj): Range Object
             start_col (int): Zero-base start column index
             start_row (int): Zero-base start row index
             end_col (int): Zero-base end column index
@@ -4386,7 +4150,16 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ("cell_range", "sheet", "range_name", "start_col", "start_row", "end_col", "end_row")
+            valid_keys = (
+                "cell_range",
+                "sheet",
+                "range_name",
+                "range_obj",
+                "start_col",
+                "start_row",
+                "end_col",
+                "end_row",
+            )
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("get_address() got an unexpected keyword argument")
@@ -4397,7 +4170,7 @@ class Calc:
                     break
             if count == 1:
                 return ka
-            keys = ("range_name", "start_col")
+            keys = ("range_name", "range_obj", "start_col")
             for key in keys:
                 if key in kwargs:
                     ka[2] = kwargs[key]
@@ -4417,10 +4190,11 @@ class Calc:
             kargs[ordered_keys[i]] = arg
 
         if count == 1:
+            # range_name or range_obj
             return cls._get_address_cell(cell_range=kargs[1])
         elif count == 2:
 
-            return cls._get_address_sht_rng(sheet=kargs[1], range_name=kargs[2])
+            return cls._get_address_sht_rng(sheet=kargs[1], range_name=str(kargs[2]))
         else:
             range_name = cls._get_range_str_col_row(
                 col_start=kargs[2], row_start=kargs[3], col_end=kargs[4], row_end=kargs[5]
@@ -4725,102 +4499,42 @@ class Calc:
     @overload
     @classmethod
     def get_range_str(cls, cell_range: XCellRange) -> str:
-        """
-        Gets the range as a string inf format of ``A1:B2``
+        ...
 
-        Args:
-            cell_range (XCellRange): Cell Range
-            sheet (XSpreadsheet): Spreadsheet
-
-        Returns:
-            str: range as string
-        """
+    @overload
+    @classmethod
+    def get_range_str(cls, range_obj: mRngObj.RangeObj) -> str:
         ...
 
     @overload
     @classmethod
     def get_range_str(cls, cr_addr: CellRangeAddress) -> str:
-        """
-        Gets the range as a string inf format of ``A1:B2``
-
-        Args:
-            cr_addr (CellRangeAddress): Cell Range Address
-            sheet (XSpreadsheet): Spreadsheet
-
-        Returns:
-            str: range as string
-        """
         ...
 
     @overload
     @classmethod
     def get_range_str(cls, cell_range: XCellRange, sheet: XSpreadsheet) -> str:
-        """
-        Gets the range as a string inf format of ``Sheet1.A1:B2``
-
-        Args:
-            cell_range (XCellRange): Cell Range
-            sheet (XSpreadsheet): Spreadsheet
-
-        Returns:
-            str: range as string
-        """
         ...
 
     @overload
     @classmethod
     def get_range_str(cls, cr_addr: CellRangeAddress, sheet: XSpreadsheet) -> str:
-        """
-        Gets the range as a string inf format of ``Sheet1.A1:B2``
-
-        Args:
-            cr_addr (CellRangeAddress): Cell Range Address
-            sheet (XSpreadsheet): Spreadsheet
-
-        Returns:
-            str: range as string
-        """
         ...
 
     @overload
     @classmethod
     def get_range_str(cls, col_start: int, row_start: int, col_end: int, row_end: int) -> str:
-        """
-        Gets the range as a string inf format of ``A1:B2``
-
-        Args:
-            col_start (int): Zero-based start column index
-            row_start (int): Zero-based start row index
-            col_end (int): Zero-based end column index
-            row_end (int): Zero-based end row index
-
-        Returns:
-            str: range as string
-        """
         ...
 
     @overload
     @classmethod
     def get_range_str(cls, col_start: int, row_start: int, col_end: int, row_end: int, sheet: XSpreadsheet) -> str:
-        """
-        Gets the range as a string inf format of ``Sheet1.A1:B2``
-
-        Args:
-            col_start (int): Zero-based start column index
-            row_start (int): Zero-based start row index
-            col_end (int): Zero-based end column index
-            row_end (int): Zero-based end row index
-            sheet (XSpreadsheet): Spreadsheet
-
-        Returns:
-            str: range as string
-        """
         ...
 
     @classmethod
     def get_range_str(cls, *args, **kwargs) -> str:
         """
-        Gets the range as a string inf format of ``A1:B2`` or ``Sheet1.A1:B2``
+        Gets the range as a string in format of ``A1:B2`` or ``Sheet1.A1:B2``
 
         If ``sheet`` is included the format ``Sheet1.A1:B2`` is returned; Otherwise,
         ``A1:B2`` format is returned.
@@ -4848,6 +4562,7 @@ class Calc:
             # start_col, start_row, end_col, end_row are for backward compability
             valid_keys = (
                 "cell_range",
+                "range_obj",
                 "cr_addr",
                 "sheet",
                 "start_col",
@@ -4862,7 +4577,7 @@ class Calc:
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("get_range_str() got an unexpected keyword argument")
-            keys = ("cell_range", "cr_addr", "start_col", "col_start")
+            keys = ("cell_range", "range_obj", "cr_addr", "start_col", "col_start")
             for key in keys:
                 if key in kwargs:
                     ka[1] = kwargs[key]
@@ -4894,12 +4609,15 @@ class Calc:
             kargs[ordered_keys[i]] = arg
 
         if count == 1:
+            if isinstance(kargs[1], mRngObj.RangeObj):
+                return cast(mRngObj.RangeObj, kargs[1]).to_string(True)
+
             if mInfo.Info.is_type_interface(kargs[1], "com.sun.star.table.XCellRange"):
                 # get_range_str(cell_range: XCellRange)
                 return cls._get_range_str_cell_rng(cell_range=kargs[1])
-            else:
-                # get_range_str(cr_addr: CellRangeAddress)
-                return cls._get_range_str_cr_addr(cr_addr=kargs[1])
+
+            # get_range_str(cr_addr: CellRangeAddress)
+            return cls._get_range_str_cr_addr(cr_addr=kargs[1])
 
         elif count == 2:
             if mInfo.Info.is_type_interface(kargs[1], "com.sun.star.table.XCellRange"):
@@ -4923,6 +4641,120 @@ class Calc:
 
     # endregion get_range_str()
 
+    # region get_range_obj()
+    @overload
+    @classmethod
+    def get_range_obj(cls, range_name: str) -> mRngObj.RangeObj:
+        ...
+
+    @overload
+    @classmethod
+    def get_range_obj(cls, cell_range: XCellRange) -> mRngObj.RangeObj:
+        ...
+
+    @overload
+    @classmethod
+    def get_range_obj(cls, cr_addr: CellRangeAddress) -> mRngObj.RangeObj:
+        ...
+
+    @overload
+    @classmethod
+    def get_range_obj(cls, cell_range: XCellRange, sheet: XSpreadsheet) -> mRngObj.RangeObj:
+        ...
+
+    @overload
+    @classmethod
+    def get_range_obj(cls, col_start: int, row_start: int, col_end: int, row_end: int) -> mRngObj.RangeObj:
+        ...
+
+    @overload
+    @classmethod
+    def get_range_obj(
+        cls, col_start: int, row_start: int, col_end: int, row_end: int, sheet: XSpreadsheet
+    ) -> mRngObj.RangeObj:
+        ...
+
+    @classmethod
+    def get_range_obj(cls, *args, **kwargs) -> mRngObj.RangeObj:
+        """
+        Gets a range Object representing a range.
+
+        Args:
+            range_name (str): Cell range as string
+            cell_range (XCellRange): Cell Range
+            sheet (XSpreadsheet): Spreadsheet
+            cr_addr (CellRangeAddress): Cell Range Address
+            col_start (int): Zero-based start column index
+            row_start (int): Zero-based start row index
+            col_end (int): Zero-based end column index
+            row_end (int): Zero-based end row index
+
+        Returns:
+            mRngObj.RangeObj: Range object.
+
+        .. versionadded:: 0.8.2
+        """
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
+        if count == 1:
+            val = kwargs.get("range_name", None)
+            if val is None:
+                if len(args) > 0:
+                    val = args[0]
+            if val and isinstance(val, str):
+                return mRngObj.RangeObj.from_str(val)
+        range_name = cls.get_range_str(*args, **kwargs)
+        return mRngObj.RangeObj.from_str(range_name=range_name)
+
+    # endregion get_range_obj()
+
+    # region get_range_size()
+    @overload
+    @classmethod
+    def get_range_size(cls, range_obj: mRngObj.RangeObj) -> Size:
+        ...
+
+    @overload
+    @classmethod
+    def get_range_size(cls, cell_range: XCellRange) -> Size:
+        ...
+
+    @overload
+    @classmethod
+    def get_range_size(cls, cr_addr: CellRangeAddress) -> Size:
+        ...
+
+    @overload
+    @classmethod
+    def get_range_size(cls, col_start: int, row_start: int, col_end: int, row_end: int) -> Size:
+        ...
+
+    @classmethod
+    def get_range_size(cls, *args, **kwargs) -> Size:
+        """
+        Gets range size
+
+        Args:
+            cell_range (XCellRange): Cell Range
+            cr_addr (CellRangeAddress): Cell Range Address
+            col_start (int): Zero-based start column index
+            row_start (int): Zero-based start row index
+            col_end (int): Zero-based end column index
+            row_end (int): Zero-based end row index
+
+        Returns:
+            Size: Size, Width is number of Columns and Height is number of Rows
+
+        .. versionadded:: 0.8.2
+        """
+        range_name = cls.get_range_str(*args, **kwargs)
+        rv = mRngValues.RangeValues.from_str(range_name=range_name)
+        height = rv.row_end - rv.row_start + 1
+        width = rv.col_end - rv.col_start + 1
+        return Size(width, height)
+
+    # endregion get_range_size()
+
     # region    get_cell_str()
     @classmethod
     def _get_cell_str_addr(cls, addr: CellAddress) -> str:
@@ -4942,50 +4774,22 @@ class Calc:
     @overload
     @classmethod
     def get_cell_str(cls, addr: CellAddress) -> str:
-        """
-        Gets the range as a string inf format of ``A1``
-
-        Args:
-            addr (CellAddress): Cell Address
-
-        Returns:
-            str: Cell as str
-        """
         ...
 
     @overload
     @classmethod
     def get_cell_str(cls, cell: XCell) -> str:
-        """
-        Gets the range as a string inf format of ``A1``
-
-        Args:
-            cell (XCell): Cell
-
-        Returns:
-            str: Cell as str
-        """
         ...
 
     @overload
     @classmethod
     def get_cell_str(cls, col: int, row: int) -> str:
-        """
-         Gets the range as a string inf format of ``A1``
-
-        Args:
-            col (int): Zero-based column index
-            row (int): Zero-based row index
-
-        Returns:
-            str: Cell as str
-        """
         ...
 
     @classmethod
     def get_cell_str(cls, *args, **kwargs) -> str:
         """
-        Gets the range as a string inf format of ``A1``
+        Gets the cell as a string in format of ``A1``
 
         Args:
             addr (CellAddress): Cell Address
@@ -5041,6 +4845,55 @@ class Calc:
 
     # endregion get_cell_str()
 
+    # region get_cell_obj()
+    @overload
+    @classmethod
+    def get_cell_obj(cls, cell_name: str) -> mCellObj.CellObj:
+        ...
+
+    @overload
+    @classmethod
+    def get_cell_obj(cls, addr: CellAddress) -> mCellObj.CellObj:
+        ...
+
+    @overload
+    @classmethod
+    def get_cell_obj(cls, cell: XCell) -> mCellObj.CellObj:
+        ...
+
+    @overload
+    @classmethod
+    def get_cell_obj(cls, col: int, row: int) -> mCellObj.CellObj:
+        ...
+
+    @classmethod
+    def get_cell_obj(cls, *args, **kwargs) -> mCellObj.CellObj:
+        """
+        Gets the cell as ``CellObj`` instance.
+
+        Args:
+            cell_name (str): Cell name.
+            addr (CellAddress): Cell Address
+            cell (XCell): Cell
+            col (int): Zero-based column index
+            row (int): Zero-based row index
+
+        Returns:
+            mCellObj.CellObj: Cell Object
+        """
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
+        if count == 1:
+            val = kwargs.get("cell_name", None)
+            if val is None:
+                if len(args) > 0:
+                    val = args[0]
+            if val and isinstance(val, str):
+                return mCellObj.CellObj.from_str(val)
+        return mCellObj.CellObj.from_str(cls.get_cell_str(*args, **kwargs))
+
+    # endregion get_cell_obj()
+
     @staticmethod
     def column_number_str(col: int) -> str:
         """
@@ -5056,7 +4909,7 @@ class Calc:
             str: Column Name
         """
         num = col + 1  # shift to one based.
-        return TableHelper.make_column_name(num)
+        return mTblHelper.TableHelper.make_column_name(num)
 
     # endregion ------------ convert cell range address to string ------
 
@@ -5618,63 +5471,31 @@ class Calc:
     @overload
     @classmethod
     def remove_border(cls, sheet: XSpreadsheet, cell_range: XCellRange) -> XCellRange:
-        """
-        Removes borders of a cell range
-
-        Args:
-            sheet (XSpreadsheet): Spreadsheet
-            cell_range (XCellRange): Cell range
-
-        Returns:
-            XCellRange: Range borders that are affected
-        """
         ...
 
     @overload
     @classmethod
     def remove_border(cls, sheet: XSpreadsheet, range_name: str) -> XCellRange:
-        """
-        Removes borders of a cell range
+        ...
 
-        Args:
-            sheet (XSpreadsheet): Spreadsheet
-            range_name (str): Range Name such as 'A1:F9'
-
-        Returns:
-            XCellRange: Range borders that are affected
-        """
+    @overload
+    @classmethod
+    def remove_border(cls, sheet: XSpreadsheet, range_obj: mRngObj.RangeObj) -> XCellRange:
         ...
 
     @overload
     @classmethod
     def remove_border(cls, sheet: XSpreadsheet, cell_range: XCellRange, border_vals: BorderEnum) -> XCellRange:
-        """
-        Removes borders of a cell range
-
-        Args:
-            sheet (XSpreadsheet): Spreadsheet
-            cell_range (XCellRange): Cell range
-            border_vals (BorderEnum): Determines what borders are applied.
-
-        Returns:
-            XCellRange: Range borders that are affected
-        """
         ...
 
     @overload
     @classmethod
     def remove_border(cls, sheet: XSpreadsheet, range_name: str, border_vals: BorderEnum) -> XCellRange:
-        """
-        Removes borders of a cell range
+        ...
 
-        Args:
-            sheet (XSpreadsheet): Spreadsheet
-            range_name (str): Range Name such as 'A1:F9'
-            border_vals (BorderEnum): Determines what borders are applied.
-
-        Returns:
-            XCellRange: Range borders that are affected
-        """
+    @overload
+    @classmethod
+    def remove_border(cls, sheet: XSpreadsheet, range_obj: mRngObj.RangeObj, border_vals: BorderEnum) -> XCellRange:
         ...
 
     @classmethod
@@ -5716,12 +5537,12 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ("sheet", "range_name", "cell_range", "border_vals")
+            valid_keys = ("sheet", "range_name", "range_obj", "cell_range", "border_vals")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("remove_border() got an unexpected keyword argument")
             ka[1] = kwargs.get("sheet", None)
-            keys = ("range_name", "cell_range")
+            keys = ("range_name", "range_obj", "cell_range")
             for key in keys:
                 if key in kwargs:
                     ka[2] = kwargs[key]
@@ -5740,8 +5561,8 @@ class Calc:
             kargs[ordered_keys[i]] = arg
 
         sheet = cast(XSpreadsheet, kargs[1])
-        if isinstance(kargs[2], str):
-            cell_range = sheet.getCellRangeByName(kargs[2])
+        if isinstance(kargs[2], (str, mRngObj.RangeObj)):
+            cell_range = sheet.getCellRangeByName(str(kargs[2]))
         else:
             cell_range = cast(XCellRange, kargs[2])
 

@@ -30,38 +30,88 @@ def test_create_2d():
             assert col == "a"
 
 
-def test_make_column_name():
-    name = TableHelper.make_column_name(2)
-    assert name == "B"
-
-    name = TableHelper.make_column_name(27)
-    assert name == "AA"
-
-    name = TableHelper.make_column_name(100)
-    assert name == "CV"
-
-    with pytest.raises(ValueError) as ctx:
-        name = TableHelper.make_column_name(0)
-
-    with pytest.raises(ValueError) as ctx:
-        name = TableHelper.make_column_name(-11)
+@pytest.mark.parametrize(
+    ("row", "col", "expected"), [(1, 1, "A1"), (10, 26, "Z10"), (10, 3, "C10"), (101, 100, "CV101")]
+)
+def test_make_cell_name(row: int, col: int, expected: str) -> None:
+    name = TableHelper.make_cell_name(row=row, col=col)
+    assert name == expected
 
 
-def test_make_cell_name():
-    name = TableHelper.make_cell_name(row=10, col=3)
-    assert name == "C10"
+@pytest.mark.parametrize(
+    ("row", "col", "expected"), [(0, 0, "A1"), (1, 1, "B2"), (9, 25, "Z10"), (9, 2, "C10"), (100, 99, "CV101")]
+)
+def test_make_cell_name_zero(row: int, col: int, expected: str) -> None:
+    name = TableHelper.make_cell_name(row=row, col=col, zero_index=True)
+    assert name == expected
 
-    name = TableHelper.make_cell_name(row=100, col=27)
-    assert name == "AA100"
 
-    name = TableHelper.make_cell_name(row=101, col=100)
-    assert name == "CV101"
+def test_make_cell_name_error() -> None:
+    with pytest.raises(ValueError):
+        _ = TableHelper.make_cell_name(row=0, col=3)
 
-    with pytest.raises(ValueError) as ctx:
-        name = TableHelper.make_cell_name(row=0, col=3)
+    with pytest.raises(ValueError):
+        _ = TableHelper.make_cell_name(row=2, col=0)
 
-    with pytest.raises(ValueError) as ctx:
-        name = TableHelper.make_cell_name(row=2, col=0)
+    with pytest.raises(ValueError):
+        _ = TableHelper.make_cell_name(row=2, col=-1, zero_index=True)
+
+    with pytest.raises(ValueError):
+        _ = TableHelper.make_cell_name(row=-2, col=0, zero_index=True)
+
+
+@pytest.mark.parametrize(("val", "expected"), [("A", 1), ("C2", 3), ("AA2", 27)])
+def test_col_name_to_int(val: int, expected: str) -> None:
+    i = TableHelper.col_name_to_int(val)
+    assert i == expected
+
+
+@pytest.mark.parametrize(("val", "expected"), [("A", 0), ("C2", 2), ("AA2", 26)])
+def test_col_name_to_int_zero_index(val: int, expected: str) -> None:
+    i = TableHelper.col_name_to_int(val, True)
+    assert i == expected
+
+
+@pytest.mark.parametrize(("val", "expected"), [("1", 1), ("C2", 2), ("AA27", 27), ("abz27756", 27756)])
+def test_row_name_to_int(val: int, expected: str) -> None:
+    i = TableHelper.row_name_to_int(val)
+    assert i == expected
+
+
+@pytest.mark.parametrize(("val", "expected"), [("1", 0), ("C2", 1), ("AA27", 26), ("abz27756", 27755)])
+def test_row_name_to_int_zero(val: int, expected: str) -> None:
+    i = TableHelper.row_name_to_int(val, True)
+    assert i == expected
+
+
+@pytest.mark.parametrize(("val"), [("AA-27"), ("-1")])
+def test_row_name_to_int_err(val: int) -> None:
+    with pytest.raises(ValueError):
+        _ = TableHelper.row_name_to_int(val)
+
+
+@pytest.mark.parametrize(("val", "expected"), [(1, "A"), (2, "B"), (27, "AA"), (100, "CV")])
+def test_make_column_name(val: int, expected: str) -> None:
+    name = TableHelper.make_column_name(val)
+    assert name == expected
+
+
+@pytest.mark.parametrize(("val", "expected"), [(0, "A"), (1, "B"), (26, "AA"), (99, "CV")])
+def test_make_column_name_zero_based(val: int, expected: str) -> None:
+    name = TableHelper.make_column_name(val, True)
+    assert name == expected
+
+
+def test_make_column_name_error() -> None:
+
+    with pytest.raises(ValueError):
+        _ = TableHelper.make_column_name(0)
+
+    with pytest.raises(ValueError):
+        _ = TableHelper.make_column_name(-1, True)
+
+    with pytest.raises(ValueError):
+        _ = TableHelper.make_column_name(-11)
 
 
 def test_to_list():
@@ -368,3 +418,37 @@ def test_convert_1d_to_2d_no_fill(lst_len: int, col_count: int, expected_len: in
 def test_convert_1d_to_2d_col_error() -> None:
     with pytest.raises(ValueError):
         TableHelper.convert_1d_to_2d([1, 3], 0)
+
+
+def test_get_range_values() -> None:
+    rv = TableHelper.get_range_values(range_name="A2:D6")
+    assert rv.col_start == 0
+    assert rv.row_start == 1
+    assert rv.col_end == 3
+    assert rv.row_end == 5
+    assert rv.get_range_name() == "A2:D6"
+
+    rv = TableHelper.get_range_values(range_name="A2:D6", zero_index=False)
+    assert rv.col_start == 1
+    assert rv.row_start == 2
+    assert rv.col_end == 4
+    assert rv.row_end == 6
+    assert rv.get_range_name(False) == "A2:D6"
+
+
+def test_get_range_obj() -> None:
+    rp1 = TableHelper.get_range_obj(range_name="A2:D6")
+    assert rp1.col_start == "A"
+    assert rp1.row_start == 2
+    assert rp1.col_end == "D"
+    assert rp1.row_end == 6
+
+    rp2 = TableHelper.get_range_obj(range_name="a2:d6")
+    assert rp2.col_start == "A"
+    assert rp2.row_start == 2
+    assert rp2.col_end == "D"
+    assert rp2.row_end == 6
+
+    assert rp1 == rp2
+    assert rp1.start.col_info.index == 0
+    assert rp1.end.col_info.index == 3
