@@ -47,7 +47,7 @@ class Angle(BaseIntValue):
     """
 
     def __post_init__(self) -> None:
-        self.Value = _to_positive_angle(self.Value)
+        self.value = _to_positive_angle(self.value)
 
     def _from_int(self, value: int) -> Self:
         return Angle(_to_positive_angle(value))

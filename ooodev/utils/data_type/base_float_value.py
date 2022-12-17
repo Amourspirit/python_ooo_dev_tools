@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 class BaseFloatValue:
     """Base class for Flaot Value"""
 
-    Value: float
+    value: float
     """Float value."""
 
     @abstractmethod
@@ -28,15 +28,15 @@ class BaseFloatValue:
 
     # Override "int" method
     def __float__(self) -> float:
-        return self.Value
+        return self.value
 
     def __int__(self) -> float:
-        return int(self.Value)
+        return int(self.value)
 
     def __add__(self, other: object) -> Self:
         try:
             i = float(other)
-            return self._from_float(self.Value + i)
+            return self._from_float(self.value + i)
         except AssertionError:
             raise
         except Exception:
@@ -57,14 +57,14 @@ class BaseFloatValue:
         # for example, the truth of (x<y or x==y) does not imply x<=y.
         try:
             i = float(other)
-            return math.isclose(i, self.Value)
+            return math.isclose(i, self.value)
         except Exception as e:
             return False
 
     def __sub__(self, other: object) -> Self:
         try:
             i = float(other)
-            return self._from_float(self.Value - i)
+            return self._from_float(self.value - i)
         except AssertionError:
             raise
         except Exception:
@@ -73,7 +73,7 @@ class BaseFloatValue:
     def __rsub__(self, other: object) -> Self:
         try:
             i = float(other)
-            return self._from_float(i - self.Value)
+            return self._from_float(i - self.value)
         except AssertionError:
             raise
         except Exception:
@@ -82,7 +82,7 @@ class BaseFloatValue:
     def __mul__(self, other: object) -> Self:
         try:
             i = float(other)
-            return self._from_float(self.Value * i)
+            return self._from_float(self.value * i)
         except AssertionError:
             raise
         except Exception:
@@ -97,38 +97,38 @@ class BaseFloatValue:
     def __lt__(self, other: object) -> bool:
         try:
             i = float(other)
-            if math.isclose(i, self.Value):
+            if math.isclose(i, self.value):
                 return False
-            return self.Value < i
+            return self.value < i
         except Exception:
             return NotImplemented
 
     def __le__(self, other: object) -> bool:
         try:
             i = float(other)
-            if math.isclose(i, self.Value):
+            if math.isclose(i, self.value):
                 return True
-            return self.Value <= i
+            return self.value <= i
         except Exception:
             return NotImplemented
 
     def __gt__(self, other: object) -> bool:
         try:
             i = float(other)
-            if math.isclose(i, self.Value):
+            if math.isclose(i, self.value):
                 return False
-            return self.Value > i
+            return self.value > i
         except Exception:
             return NotImplemented
 
     def __ge__(self, other: object) -> bool:
         try:
             i = float(other)
-            if math.isclose(i, self.Value):
+            if math.isclose(i, self.value):
                 return True
-            return self.Value >= i
+            return self.value >= i
         except Exception:
             return NotImplemented
 
     def __abs__(self) -> int:
-        return abs(self.Value)
+        return abs(self.value)

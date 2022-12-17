@@ -28,7 +28,7 @@ def test_addition_float(start: float, val: float) -> None:
     a1 = ImageOffset(start)
     a2 = a1 + val
     result = start + val
-    assert a2.Value == result
+    assert a2.value == result
 
 
 @pytest.mark.parametrize("start,val", [(0.0, 0.2), (0.224, 0.456), (0.33, 0.055), (0.255, 0.111)])
@@ -37,7 +37,7 @@ def test_addition_offset_to_offset(start: float, val: float) -> None:
     a2 = ImageOffset(val)
     a3 = a1 + a2
     result = start + val
-    assert a3.Value == result
+    assert a3.value == result
 
 
 @pytest.mark.parametrize("start,val", [(0.0, 0.2), (0.224, 0.456), (0.33, 0.055), (0.255, 0.111)])
@@ -45,7 +45,7 @@ def test_plus_equal(start: float, val: float) -> None:
     a1 = ImageOffset(start)
     a1 += val
     result = start + val
-    assert a1.Value == result
+    assert a1.value == result
 
 
 def test_angle_init_offset() -> None:
@@ -60,7 +60,7 @@ def test_sub_offset_to_offset(start: float, val: float) -> None:
     a2 = ImageOffset(val)
     a3 = a1 - a2
     result = start - val
-    assert a3.Value == result
+    assert a3.value == result
 
 
 @pytest.mark.parametrize("start,val", [(0.4, 0.2), (0.533, 0.0335589), (0.999, 0.998)])
@@ -68,7 +68,7 @@ def test_minus_equal(start: float, val: float) -> None:
     a1 = ImageOffset(start)
     a1 -= val
     result = start - val
-    assert a1.Value == result
+    assert a1.value == result
 
 
 def test_sum_offset() -> None:
@@ -78,7 +78,7 @@ def test_sum_offset() -> None:
     a4 = ImageOffset(0.1)
     sums = sum([a1, a2, a3, a4])
     assert isinstance(sums, ImageOffset)
-    assert sums.Value == 0.6
+    assert sums.value == 0.6
 
 
 @pytest.mark.parametrize("start,val", [(0.08, 0.2), (0.2, 0.008), (0.5, 0.499), (0.23, 0.3)])
@@ -87,7 +87,7 @@ def test_mul_offset_to_offset(start: float, val: float) -> None:
     a2 = ImageOffset(val)
     a3 = a1 * a2
     result = start * val
-    assert a3.Value == result
+    assert a3.value == result
 
 
 @pytest.mark.parametrize("start,val", [(0.1, 0.9), (0.02, 0.3)])
