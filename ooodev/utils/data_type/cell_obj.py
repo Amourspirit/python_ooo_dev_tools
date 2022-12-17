@@ -1,4 +1,5 @@
 from __future__ import annotations
+import string
 from dataclasses import dataclass
 from ..decorator import enforce
 from .. import table_helper as mTb
@@ -34,7 +35,26 @@ class CellObj:
         Returns:
             CellObj: Cell Object
         """
-        return mTb.TableHelper.get_cell_obj(name)
+        # split will cover if a range is passed in, return first cell
+        cells = name.split(":")
+        col_start = cells[0].rstrip(string.digits).upper()
+        row_start = mTb.TableHelper.row_name_to_int(cells[0])
+        return CellObj(col=col_start, row=row_start)
+
+    @staticmethod
+    def from_idx(col_idx: int, row_idx: int) -> CellObj:
+        """
+        Gets a ``CellObj`` from zero-based col and row indexes
+
+        Args:
+            col_idx (int): Column index
+            row_idx (int): Row Index
+
+        Returns:
+            CellObj: Cell object
+        """
+        col = mTb.TableHelper.make_column_name(col=col_idx, zero_index=True)
+        return CellObj(col=col, row=row_idx + 1)
 
     def __str__(self) -> str:
         return f"{self.col}{self.row}"

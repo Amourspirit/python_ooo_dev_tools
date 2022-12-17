@@ -717,26 +717,45 @@ class Calc:
         sheets = doc.getSheets()
         return sheets.getElementNames()
 
-    @staticmethod
-    def get_sheets(doc: XSpreadsheetDocument) -> XSpreadsheets:
+    @classmethod
+    def get_sheets(cls, doc: XSpreadsheetDocument | None) -> XSpreadsheets:
         """
         Gets all existing spreadsheets in the spreadsheet document.
 
         Args:
-            doc (XSpreadsheetDocument): Document to get sheets of
+            doc (XSpreadsheetDocument, optional): Document to get sheets of
 
         Returns:
             XSpreadsheets: document sheets
         """
+        if doc is None:
+            doc = cls.open_doc()
         return doc.getSheets()
 
-    @staticmethod
-    def get_sheet_name(sheet: XSpreadsheet) -> str:
+    @classmethod
+    def get_sheet_index(cls, sheet: XSpreadsheet | None = None) -> int:
+        """
+        Gets index if sheet
+
+        Args:
+            sheet (XSpreadsheet | None, optional): Spread sheet. Defaults to active sheet.
+
+        Returns:
+            int: _description_
+        """
+        if sheet is None:
+            sheet = cls.get_active_sheet()
+        ra = mLo.Lo.qi(XCellRangeAddressable, sheet, True)
+        ca = ra.getRangeAddress()
+        return ca.Sheet
+
+    @classmethod
+    def get_sheet_name(cls, sheet: XSpreadsheet | None = None) -> str:
         """
         Gets the name of a sheet
 
         Args:
-            sheet (XSpreadsheet): Spreadsheet
+            sheet (XSpreadsheet, optional): Spreadsheet
 
         Raises:
             MissingInterfaceError: If unable to access spreadsheet named interface
@@ -744,6 +763,8 @@ class Calc:
         Returns:
             str: Name of sheet
         """
+        if sheet is None:
+            sheet = cls.get_active_sheet()
         xnamed = mLo.Lo.qi(XNamed, sheet, True)
         return xnamed.getName()
 
@@ -887,16 +908,18 @@ class Calc:
         _Events().trigger(CalcNamedEvent.SHEET_ACTIVATED, SheetArgs.from_args(cargs))
 
     @classmethod
-    def get_active_sheet(cls, doc: XSpreadsheetDocument) -> XSpreadsheet:
+    def get_active_sheet(cls, doc: XSpreadsheetDocument | None = None) -> XSpreadsheet:
         """
         Gets the active sheet
 
         Args:
-            doc (XSpreadsheetDocument): Spreadsheet Document
+            doc (XSpreadsheetDocument, optional): Spreadsheet Document
 
         Returns:
             XSpreadsheet | None: Active Sheet if found; Otherwise, None
         """
+        if doc is None:
+            doc = cls.open_doc()
         ss_view = cls.get_view(doc)
         return ss_view.getActiveSheet()
 
@@ -1097,37 +1120,11 @@ class Calc:
     @overload
     @classmethod
     def get_selected_addr(cls, doc: XSpreadsheetDocument) -> CellRangeAddress:
-        """
-        Gets select cell range addresses
-
-        Args:
-            doc (XSpreadsheetDocument): Spreadsheet Document
-
-        Raises:
-            Exception: if unable to get document model
-            MissingInterfaceError: if unable to get interface XCellRangeAddressable
-
-        Returns:
-            CellRangeAddress: Cell range adresses on success; Othwrwise, None
-        """
         ...
 
     @overload
     @classmethod
     def get_selected_addr(cls, model: XModel) -> CellRangeAddress:
-        """
-        Gets select cell range addresses
-
-        Args:
-            model (XModel): model used to access sheet
-
-        Raises:
-            Exception: if unable to get document model
-            MissingInterfaceError: if unable to get interface XCellRangeAddressable
-
-        Returns:
-            CellRangeAddress: Cell range addresses on success; Otherwise, None
-        """
         ...
 
     @classmethod
@@ -1144,10 +1141,13 @@ class Calc:
             MissingInterfaceError: if unable to get interface XCellRangeAddressable
 
         Returns:
-            CellRangeAddress: Cell range addressees on success; Otherwise, None
+            CellRangeAddress: Cell range addresses.
 
         See Also:
+            - :py:meth:`~.Calc.get_selected_range`
             - :py:meth:`~.Calc.set_selected_addr`
+            - :py:meth:`~.Calc.set_selected_range`
+            - :py:meth:`~.Calc.get_selected_cell_addr`
         """
         ordered_keys = (1,)
         kargs_len = len(kwargs)
@@ -1190,6 +1190,46 @@ class Calc:
 
     # endregion  get_selected_addr()
 
+    # region get_selected_range()
+    @overload
+    @classmethod
+    def get_selected_range(cls, doc: XSpreadsheetDocument) -> mRngObj.RangeObj:
+        ...
+
+    @overload
+    @classmethod
+    def get_selected_range(cls, model: XModel) -> mRngObj.RangeObj:
+        ...
+
+    @classmethod
+    def get_selected_range(cls, *args, **kwargs) -> mRngObj.RangeObj:
+        """
+        Gets select cell range
+
+        Args:
+            doc (XSpreadsheetDocument): Spreadsheet Document
+            model (XModel): model used to access sheet
+
+        Raises:
+            Exception: if unable to get document model
+            MissingInterfaceError: if unable to get interface XCellRangeAddressable
+
+        Returns:
+            RangeObj: Cell range addresses
+
+        See Also:
+            - :py:meth:`~.Calc.get_selected_addr`
+            - :py:meth:`~.Calc.set_selected_addr`
+            - :py:meth:`~.Calc.get_selected_cell_addr`
+            - :py:meth:`~.Calc.set_selected_range`
+
+        .. versionadded:: 0.8.2
+        """
+        ca = cls.get_selected_addr(*args, **kwargs)
+        return cls.get_range_obj(ca)
+
+    # endregion get_selected_range()
+
     @classmethod
     def get_selected_cell_addr(cls, doc: XSpreadsheetDocument) -> CellAddress:
         """
@@ -1209,6 +1249,7 @@ class Calc:
             For instance: Cell ``B4`` has Column value of ``1`` and Row value of ``3``
 
         See Also:
+            - :py:meth:`~.Calc.get_selected_cell`
             - :py:meth:`~.Calc.get_selected_addr`
             - :py:meth:`~.Calc.set_selected_addr`
         """
@@ -1219,6 +1260,32 @@ class Calc:
             return cls.get_cell_address(cell)
         else:
             raise mEx.CellError("Selected address is not a single cell")
+
+    @classmethod
+    def get_selected_cell(cls, doc: XSpreadsheetDocument) -> mCellObj.CellObj:
+        """
+        Gets the cell address of current selected cell of the active sheet.
+
+        Args:
+            doc (XSpreadsheetDocument): Spreadsheet document
+
+        Raises:
+            CellError: if active selection is not a single cell
+
+        Returns:
+            CellAddress: Cell Address
+
+        Note:
+            CellAddress returns Zero-base values.
+            For instance: Cell ``B4`` has Column value of ``1`` and Row value of ``3``
+
+        See Also:
+            - :py:meth:`~.Calc.get_selected_cell_addr`
+            - :py:meth:`~.Calc.get_selected_addr`
+            - :py:meth:`~.Calc.set_selected_addr`
+        """
+        ca = cls.get_selected_cell_addr(doc)
+        return mCellObj.CellObj.from_idx(col_idx=ca.Column, row_idx=ca.Row)
 
     # region select_cells()
 
@@ -1272,6 +1339,58 @@ class Calc:
         return cls.get_selected_addr(doc)
 
     # endregion select_cells()
+
+    # region set_selected()
+    @overload
+    @classmethod
+    def set_selected_range(
+        cls, doc: XSpreadsheetDocument, sheet: XSpreadsheet, range_val: mRngObj.RangeObj
+    ) -> mRngObj.RangeObj:
+        ...
+
+    @overload
+    @classmethod
+    def set_selected_range(cls, doc: XSpreadsheetDocument, sheet: XSpreadsheet, range_val: str) -> mRngObj.RangeObj:
+        ...
+
+    @overload
+    @classmethod
+    def set_selected_range(cls, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> mRngObj.RangeObj:
+        ...
+
+    @classmethod
+    def set_selected_range(
+        cls, doc: XSpreadsheetDocument, sheet: XSpreadsheet, range_val: str | mRngObj.RangeObj = ""
+    ) -> mRngObj.RangeObj:
+        """
+        Selects cells in a Spreadsheet.
+
+        If ``range_name`` is omitted then deselection is preformed.
+
+        Args:
+            doc (XSpreadsheetDocument): Spreadsheet document
+            sheet (XSpreadsheet): Spreadsheet
+            range_val (str): Range name such as ``A1:G3`` or ``RangeObj``
+
+        Returns:
+            CellRangeAddress: Cell range address of the current selection.
+
+        See Also:
+            - :py:meth:`~.Calc.get_selected_range`
+            - :py:meth:`~.Calc.get_selected_addr`
+            - :py:meth:`~.Calc.get_selected_cell_addr`
+            - :py:meth:`~.Calc.set_selected_addr`
+
+        .. versionadded:: 0.8.2
+        """
+        if range_val:
+            rng_name = str(range_val)
+        else:
+            rng_name = ""
+        ca = cls.set_selected_addr(doc=doc, sheet=sheet, range_name=rng_name)
+        return cls.get_range_obj(ca)
+
+    # endregion set_selected()
 
     # endregion -------------- view methods ----------------------------
 
@@ -2550,36 +2669,16 @@ class Calc:
     @overload
     @classmethod
     def get_array(cls, cell_range: XCellRange) -> TupleArray:
-        """
-        Gets Array of data from a spreadsheet.
-
-        Args:
-            cell_range (XCellRange): Cell range that to get data from.
-
-        Raises:
-            MissingInterfaceError: if interface is missing
-
-        Returns:
-            TupleArray: Resulting 2D tuple of values.
-        """
         ...
 
     @overload
     @classmethod
     def get_array(cls, sheet: XSpreadsheet, range_name: str) -> TupleArray:
-        """
-        Gets Array of data from a spreadsheet.
+        ...
 
-        Args:
-            sheet (XSpreadsheet): Spreadsheet
-            range_name (str): Range of data to get such as "A1:E16"
-
-        Raises:
-            MissingInterfaceError: if interface is missing
-
-        Returns:
-            TupleArray: Resulting data array.
-        """
+    @overload
+    @classmethod
+    def get_array(cls, sheet: XSpreadsheet, range_obj: mRngObj.RangeObj) -> TupleArray:
         ...
 
     @classmethod
@@ -2591,6 +2690,7 @@ class Calc:
             cell_range (XCellRange): Cell range to get data from.
             sheet (XSpreadsheet): Spreadsheet
             range_name (str): Range of data to get such as "A1:E16"
+            range_obj (RangeObj): Range object
 
         Raises:
             MissingInterfaceError: if interface is missing
@@ -2606,7 +2706,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ("cell_range", "sheet", "range_name")
+            valid_keys = ("cell_range", "sheet", "range_name", "range_obj")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("get_array() got an unexpected keyword argument")
@@ -2617,7 +2717,11 @@ class Calc:
                     break
             if count == 1:
                 return ka
-            ka[2] = kwargs.get("range_name", None)
+            keys = ("range_name", "range_obj")
+            for key in keys:
+                if key in kwargs:
+                    ka[2] = kwargs[key]
+                    break
             return ka
 
         if not count in (1, 2):
@@ -2630,7 +2734,7 @@ class Calc:
         if count == 1:
             cell_range = cast(XCellRange, kargs[1])
         else:
-            cell_range = cls.get_cell_range(sheet=kargs[1], range_name=kargs[2])
+            cell_range = cls.get_cell_range(kargs[1], kargs[2])
 
         cr_data = mLo.Lo.qi(XCellRangeData, cell_range, raise_err=True)
         return cr_data.getDataArray()
@@ -4090,9 +4194,7 @@ class Calc:
     # region    get_address()
     @staticmethod
     def _get_address_cell(cell_range: XCellRange) -> CellRangeAddress:
-        addr = mLo.Lo.qi(XCellRangeAddressable, cell_range)
-        if addr is None:
-            raise mEx.MissingInterfaceError(XCellRangeAddressable)
+        addr = mLo.Lo.qi(XCellRangeAddressable, cell_range, True)
         return addr.getRangeAddress()
 
     @classmethod
@@ -4690,7 +4792,7 @@ class Calc:
             row_end (int): Zero-based end row index
 
         Returns:
-            mRngObj.RangeObj: Range object.
+            RangeObj: Range object.
 
         .. versionadded:: 0.8.2
         """
@@ -4879,7 +4981,7 @@ class Calc:
             row (int): Zero-based row index
 
         Returns:
-            mCellObj.CellObj: Cell Object
+            CellObj: Cell Object
         """
         kargs_len = len(kwargs)
         count = len(args) + kargs_len

@@ -3,7 +3,7 @@
 from __future__ import annotations
 import sys
 import string
-from typing import Callable, Iterable, Sequence, List, Any, Tuple, overload, TypeVar
+from typing import Callable, Iterable, Sequence, List, Any, Tuple, overload, TypeVar, NamedTuple
 
 from . import gen_util as gUtil
 from .data_type.cell_obj import CellObj as CellObj
@@ -16,31 +16,19 @@ import string
 T = TypeVar("T")
 
 
+class RangeParts(NamedTuple):
+    """Range Named parts"""
+
+    sheet: str
+    col_start: str
+    row_start: int
+    col_end: str
+    row_end: int
+
+
 class TableHelper:
     @classmethod
-    def get_cell_obj(cls, name: str) -> CellObj:
-        """
-        Gets cell parts from a cell name such as ``A2``.
-
-        Args:
-            name (str): Cell name
-
-        Returns:
-            CellParts: Cell parts
-
-        Note:
-            If a range name is passed in such as ``A2:D32`` then the ``A2`` cell is returned
-
-        .. versionadded:: 0.8.2
-        """
-        # split will cover if a range is passed in, return first cell
-        cells = name.split(":")
-        col_start = cells[0].rstrip(string.digits).upper()
-        row_start = cls.row_name_to_int(cells[0])
-        return CellObj(col=col_start, row=row_start)
-
-    @classmethod
-    def get_range_obj(cls, range_name: str) -> mRo.RangeObj:
+    def get_range_parts(cls, range_name: str) -> RangeParts:
         """
         Gets range parts from a range name.
 
@@ -66,29 +54,7 @@ class TableHelper:
         row_start = cls.row_name_to_int(cells[0])
         row_end = cls.row_name_to_int(cells[1])
 
-        return mRo.RangeObj(
-            col_start=col_start, col_end=col_end, row_start=row_start, row_end=row_end, sheet_name=sheet_name
-        )
-
-    @classmethod
-    def get_range_values(cls, range_name: str) -> mRv.RangeValues:
-        """
-        Gets range parts from a range name.
-
-        Args:
-            range_name (str): Range name such as ``A23:G:45``
-
-        Returns:
-            RangeParts: Range Parts
-
-        .. versionadded:: 0.8.2
-        """
-        ro = cls.get_range_obj(range_name=range_name)
-        col_start = cls.col_name_to_int(ro.col_start, True)
-        col_end = cls.col_name_to_int(ro.col_end, True)
-        row_start = ro.row_start - 1
-        row_end = ro.row_end - 1
-        return mRv.RangeValues(col_start=col_start, col_end=col_end, row_start=row_start, row_end=row_end)
+        return RangeParts(sheet=sheet_name, col_start=col_start, row_start=row_start, col_end=col_end, row_end=row_end)
 
     @staticmethod
     def col_name_to_int(name: str, zero_index: bool = False) -> int:

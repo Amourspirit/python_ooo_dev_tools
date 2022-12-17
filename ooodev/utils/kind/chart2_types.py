@@ -34,7 +34,7 @@ class ChartTemplateBase(ChartBaseTypeEnum):
 
 class ChartTypeNameBase(ChartBaseTypeEnum):
     def to_namespace(self) -> str:
-        return f"com.sun.star.chart2.template.{self.value}"
+        return f"com.sun.star.chart2.{self.value}"
 
 
 class ColumnStackedKind(ChartTemplateBase):
@@ -183,40 +183,40 @@ class ColumnAndLineStackedKind(ChartTemplateBase):
 
 
 class NamedColumnKind(ChartTypeNameBase):
-    COLUMN_CHART = "Column"
+    COLUMN_CHART = "ColumnChartType"
 
 
 class NamedBarKind(ChartTypeNameBase):
-    BAR_CHART = "Bar"
+    BAR_CHART = "BarChartType"
 
 
 class NamedPieKind(ChartTypeNameBase):
-    PIE_CHART = "Pie"
+    PIE_CHART = "PieChartType"
 
 
 class NamedAreaKind(ChartTypeNameBase):
-    AREA_CHART = "Area"
+    AREA_CHART = "AreaChartType"
 
 
 class NamedLineKind(ChartTypeNameBase):
-    LINE_CHART = "Symbol"
+    LINE_CHART = "LineChartType"
 
 
 class NamedXYKind(ChartTypeNameBase):
-    SCATTER_CHART = "ScatterSymbol"
+    SCATTER_CHART = "ScatterChartType"
 
 
 class NamedBubbleKind(ChartTypeNameBase):
-    BUBBLE_CHART = "Bubble"
+    BUBBLE_CHART = "BubbleChartType"
 
 
 class NamedNetKind(ChartTypeNameBase):
-    NET_CHART = "NetSymbol"
-    FILLED_NET_CHART = "FilledNet"
+    NET_CHART = "NetChartType"
+    FILLED_NET_CHART = "FilledNetChartType"
 
 
 class NamedStockKind(ChartTypeNameBase):
-    CANDLE_STICK_CHART = "StockLowHighClose"
+    CANDLE_STICK_CHART = "CandleStickChartType"
 
 
 class ChartTypes:
@@ -225,33 +225,39 @@ class ChartTypes:
     """
 
     class Column:
+        DEFAULT = ColumnStackedKind.COLUMN
         NAMED = NamedColumnKind
         TEMPLATE_3D = Column3dKind
         TEMPLATE_PERCENT = ColumnPercentKind
         TEMPLATE_STACKED = ColumnStackedKind
 
     class ColumnAndLine:
+        DEFAULT = ColumnAndLineStackedKind.COLUMN_WITH_LINE
         TEMPLATE_STACKED = ColumnAndLineStackedKind
 
     class Bar:
+        DEFAULT = BarStackedKind.BAR
         NAMED = NamedBarKind
         TEMPLATE_3D = Bar3dKind
         TEMPLATE_PERCENT = BarPercentKind
         TEMPLATE_STACKED = BarStackedKind
 
     class Pie:
+        DEFAULT = PieDonutKind.PIE
         NAMED = NamedPieKind
         TEMPLATE_3D = Pie3dKind
         TEMPLATE_DONUT = PieDonutKind
         TEMPLATE_EXPLODE = PieExplodeKind
 
     class Area:
+        DEFAULT = AreaStackedKind.AREA
         NAMED = NamedAreaKind
         TEMPLATE_3D = Area3dKind
         TEMPLATE_PERCENT = AreaPercentKind
         TEMPLATE_STACKED = AreaStackedKind
 
     class Line:
+        DEFAULT = LineSymbolKind.LINE
         NAMED = NamedLineKind
         TEMPLATE_3D = Line3dKind
         TEMPLATE_PERCENT = LinePercentKind
@@ -259,15 +265,18 @@ class ChartTypes:
         TEMPLATE_SYMBOL = LineSymbolKind
 
     class XY:
+        DEFAULT = XYLineKind.SCATTER_SYMBOL
         NAMED = NamedXYKind
         TEMPLATE_3D = XY3dKind
         TEMPLATE_LINE = XYLineKind
 
     class Bubble:
+        DEFAULT = NamedBubbleKind.BUBBLE_CHART
         NAMED = NamedBubbleKind
         TEMPLATE_BUBBLE = BubbleKind
 
     class Net:
+        DEFAULT = NetLineKind.NET_SYMBOL
         NAMED = NamedNetKind
         TEMPLATE_FILLED = NetFilledKind
         TEMPLATE_LINE = NetLineKind
@@ -276,6 +285,7 @@ class ChartTypes:
         TEMPLATE_SYMBOL = NetSymbolKind
 
     class Stock:
+        DEFAULT = StockOpenKind.STOCK_LOW_HIGH_CLOSE
         NAMED = NamedStockKind
         TEMPLATE_OPEN = StockOpenKind
         TEMPLATE_VOLUME = StockVolumeKind

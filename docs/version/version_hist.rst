@@ -14,6 +14,10 @@ Added ``Calc.get_range_size()``
 
 Added ``Calc.get_range_obj()``
 
+Added ``Calc.get_selected_range()``
+
+Added ``Calc.get_selected_cell()``
+
 Many enhancements for working with sheet ranges.
 
 Version 0.8.1

@@ -40,7 +40,7 @@ class ColObj:
     @staticmethod
     def from_int(num: int, zero_index: bool = False) -> ColObj:
         """
-        Gets a ``ColObj`` instance from an interger.
+        Gets a ``ColObj`` instance from an integer.
 
         Args:
             num (int): Column number.

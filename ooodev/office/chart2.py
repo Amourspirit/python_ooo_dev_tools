@@ -57,7 +57,7 @@ from ..utils import props as mProps
 from ..utils.data_type.angle import Angle as Angle
 from ..utils.kind.axis_kind import AxisKind as AxisKind
 from ..utils.kind.chart2_data_role_kind import DataRoleKind as DataRoleKind
-from ..utils.kind.chart2_types import ChartBaseTypeEnum, ChartTypeNameBase, ChartTypes as ChartTypes
+from ..utils.kind.chart2_types import ChartTemplateBase, ChartTypeNameBase, ChartTypes as ChartTypes
 from ..utils.kind.curve_kind import CurveKind as CurveKind
 from ..utils.kind.data_point_label_type_kind import DataPointLabelTypeKind as DataPointLabelTypeKind
 from ..utils.kind.line_style_name_kind import LineStyleNameKind as LineStyleNameKind
@@ -94,7 +94,7 @@ class Chart2:
         cell_name: str = "",
         width: int = 16,
         height: int = 9,
-        diagram_name: ChartBaseTypeEnum | str = "Column",
+        diagram_name: ChartTemplateBase | str = "Column",
         color_bg: mColor.Color = mColor.CommonColor.PALE_BLUE,
         color_wall: mColor.Color = mColor.CommonColor.LIGHT_BLUE,
         **kwargs,
@@ -108,7 +108,7 @@ class Chart2:
             cell_name (str, optional): Cell name such as ``A1``.
             width (int, optional): Width. Default ``16``.
             height (int, optional): Height. Default ``9``.
-            diagram_name (ChartBaseTypeEnum | str): Diagram Name. Defaults to ``Column``.
+            diagram_name (ChartTemplateBase | str): Diagram Name. Defaults to ``Column``.
             color_bg (Color, optional): Color Background. Defaults to ``CommonColor.PALE_BLUE``.
             color_wall (Color, optional): Color Wall. Defaults to ``CommonColor.LIGHT_BLUE``.
 
@@ -116,7 +116,7 @@ class Chart2:
             chart_name (str, optional): Chart name
             is_row (bool, optional): Determines if the data is row data or column data.
             first_cell_as_label (bool, optional): Set is first row is to be used as a label.
-            set_data_point_labels (bool, optional): Determines if the data point lables are set.
+            set_data_point_labels (bool, optional): Determines if the data point labels are set.
 
         Raises:
             ChartError: If error occurs
@@ -138,9 +138,9 @@ class Chart2:
             All parameters made optional. Added ``chart_name`` parameter.
         """
         try:
-            # type check that diagram_name is ChartBaseTypeEnum | str
+            # type check that diagram_name is ChartTemplateBase | str
             mInfo.Info.is_type_enum_multi(
-                alt_type="str", enum_type=ChartBaseTypeEnum, enum_val=diagram_name, arg_name="diagram_name"
+                alt_type="str", enum_type=ChartTemplateBase, enum_val=diagram_name, arg_name="diagram_name"
             )
             doc = None
             if sheet is None:
@@ -278,7 +278,7 @@ class Chart2:
 
     @staticmethod
     def set_template(
-        chart_doc: XChartDocument, diagram: XDiagram, diagram_name: ChartBaseTypeEnum | str
+        chart_doc: XChartDocument, diagram: XDiagram, diagram_name: ChartTemplateBase | str
     ) -> XChartTypeTemplate:
         """
         Sets template of chart
@@ -286,7 +286,7 @@ class Chart2:
         Args:
             chart_doc (XChartDocument): Chart Document
             diagram (XDiagram): diagram
-            diagram_name (ChartBaseTypeEnum | str): Diagram template name
+            diagram_name (ChartTemplateBase | str): Diagram template name
 
         Raises:
             ChartError: If error occurs.
@@ -316,15 +316,15 @@ class Chart2:
 
         # in LO 7.3 com.sun.star.chart2.XChartTypeTemplate is included
 
-        # ensure diagram_name is ChartBaseTypeEnum | str
+        # ensure diagram_name is ChartTemplateBase | str
         mInfo.Info.is_type_enum_multi(
-            alt_type="str", enum_type=ChartBaseTypeEnum, enum_val=diagram_name, arg_name="diagram_name"
+            alt_type="str", enum_type=ChartTemplateBase, enum_val=diagram_name, arg_name="diagram_name"
         )
 
         try:
             ct_man = chart_doc.getChartTypeManager()
             msf = mLo.Lo.qi(XMultiServiceFactory, ct_man, True)
-            if isinstance(diagram_name, ChartBaseTypeEnum):
+            if isinstance(diagram_name, ChartTemplateBase):
                 template_nm = diagram_name.to_namespace()
             else:
                 template_nm = f"com.sun.star.chart2.template.{diagram_name}"
@@ -341,12 +341,12 @@ class Chart2:
             raise mEx.ChartError("Error setting chart template") from e
 
     @staticmethod
-    def has_categories(diagram_name: ChartBaseTypeEnum | str) -> bool:
+    def has_categories(diagram_name: ChartTemplateBase | str) -> bool:
         """
         Gets if diagram name has categories
 
         Args:
-            diagram_name (ChartBaseTypeEnum | str): Diagram Name
+            diagram_name (ChartTemplateBase | str): Diagram Name
 
         Returns:
             bool: ``True`` if has categories; Otherwise, ``False``.
@@ -357,9 +357,9 @@ class Chart2:
         # All the chart templates, except for scatter and bubble use
         # categories on the x-axis
 
-        # Ensure diagram_name ChartBaseTypeEnum | str
+        # Ensure diagram_name ChartTemplateBase | str
         mInfo.Info.is_type_enum_multi(
-            alt_type="str", enum_type=ChartBaseTypeEnum, enum_val=diagram_name, arg_name="diagram_name"
+            alt_type="str", enum_type=ChartTemplateBase, enum_val=diagram_name, arg_name="diagram_name"
         )
 
         dn = str(diagram_name).lower()
@@ -1666,7 +1666,10 @@ class Chart2:
             alt_type="str", enum_type=ChartTypeNameBase, enum_val=chart_type, arg_name="chart_type"
         )
         try:
-            srch_name = f"com.sun.star.chart2.{str(chart_type).lower()}"
+            if isinstance(chart_type, ChartTypeNameBase):
+                srch_name = chart_type.to_namespace().lower()
+            else:
+                srch_name = f"com.sun.star.chart2.{str(chart_type).lower()}"
             chart_types = cls.get_chart_types(chart_doc)
             for ct in chart_types:
                 ct_name = ct.getChartType().lower()
