@@ -1053,7 +1053,7 @@ def test_insert_cells_down(loader) -> None:
         val = Calc.get_val(sheet=sheet, cell_name="B9")
         assert val == "hello world"
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(doc)
 
 
 def test_insert_cells_right(loader) -> None:
@@ -2158,6 +2158,10 @@ def test_get_cell(loader) -> None:
         cell_name = Calc.get_cell_str(addr=addr)
 
         cell_range = Calc.get_cell_range(sheet=sheet, col_start=col, row_start=row, col_end=col, row_end=row)
+        rng_obj = Calc.get_range_obj(cell_range=cell_range)
+        assert rng_obj.col_start == "C"
+        assert rng_obj.row_start == row + 1
+
         Calc.set_val(value=test_val, sheet=sheet, cell_name=cell_name)
         # get_cell(sheet: XSpreadsheet, addr: CellAddress)
         cell = Calc.get_cell(sheet=sheet, addr=addr)
@@ -2393,7 +2397,9 @@ def test_get_row_range(loader) -> None:
 def test_get_cell_range_positions() -> None:
     from ooodev.office.calc import Calc
 
-    points = Calc.get_cell_range_positions(range_name="A1:C5")
+    range_name = "A1:C5"
+    rng_obj = Calc.get_range_obj(range_name=range_name)
+    points = Calc.get_cell_range_positions(range_name=str(rng_obj))
     assert len(points) == 2
     assert points[0].X == 0  # A
     assert points[0].Y == 0  # 1
@@ -2411,6 +2417,18 @@ def test_get_cell_position() -> None:
     p = Calc.get_cell_position("C5")
     assert p.X == 2
     assert p.Y == 4
+
+
+@pytest.mark.parametrize(("rng", "width", "height"), [("A1:C5", 3, 5), ("E10:K21", 7, 12), ("AA58:CT81", 72, 24)])
+def test_get_cell_size(rng: str, width: int, height: int) -> None:
+    from ooodev.office.calc import Calc
+
+    range_name = rng
+    rng_obj = Calc.get_range_obj(range_name=range_name)
+    size = Calc.get_range_size(rng_obj)
+
+    assert size.Width == width
+    assert size.Height == height
 
 
 def test_get_cell_pos(loader) -> None:
@@ -2482,6 +2500,7 @@ def test_row_string_to_number() -> None:
 def test_get_cell_address(loader) -> None:
     from ooodev.utils.lo import Lo
     from ooodev.office.calc import Calc
+    from ooodev.utils.data_type.cell_obj import CellObj
 
     assert loader is not None
     doc = Calc.create_doc(loader)
@@ -2500,8 +2519,15 @@ def test_get_cell_address(loader) -> None:
         assert addr.Column == 2
         assert addr.Row == 1
 
+        co = CellObj("C", 2)
+        cell = Calc.get_cell(sheet=sheet, cell_obj=co)
+
+        addr = Calc.get_cell_address(cell=cell)
+        assert addr.Column == 2
+        assert addr.Row == 1
+
         # get_cell_address(sheet: XSpreadsheet, cell_name: str)
-        addr = Calc.get_cell_address(sheet=sheet, cell_name=cell_name)
+        addr = Calc.get_cell_address(sheet=sheet, cell_obj=co)
         assert addr.Column == 2
         assert addr.Row == 1
         addr = Calc.get_cell_address(sheet, cell_name)

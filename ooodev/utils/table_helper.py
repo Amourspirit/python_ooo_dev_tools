@@ -3,26 +3,81 @@
 from __future__ import annotations
 import sys
 import string
-from typing import Callable, Iterable, Sequence, List, Any, Tuple, overload, TypeVar
-import string
-from .type_var import DictTable, Table
+from typing import Callable, Iterable, Sequence, List, Any, Tuple, overload, TypeVar, NamedTuple
+
 from . import gen_util as gUtil
+from .data_type.cell_obj import CellObj as CellObj
+from .data_type.cell_values import CellValues as CellValues
+from .data_type import range_obj as mRo
+from .data_type import range_values as mRv
+from .type_var import DictTable, Table
+import string
 
 T = TypeVar("T")
 
 
+class RangeParts(NamedTuple):
+    """Range Named parts"""
+
+    sheet: str
+    col_start: str
+    row_start: int
+    col_end: str
+    row_end: int
+
+
 class TableHelper:
+    @classmethod
+    def get_range_parts(cls, range_name: str) -> RangeParts:
+        """
+        Gets range parts from a range name.
+
+        Args:
+            range_name (str): Range name such as ``A23:G:45``
+
+        Returns:
+            RangeParts: Range Parts
+
+        .. versionadded:: 0.8.2
+        """
+        doc_idx = range_name.find(".")
+
+        if doc_idx >= 0:
+            sheet_name = range_name[:doc_idx]
+            range_name = range_name[doc_idx + 1 :]
+        else:
+            sheet_name = ""
+
+        cells = range_name.split(":")
+        col_start = cells[0].rstrip(string.digits)
+        col_end = cells[1].rstrip(string.digits)
+        row_start = cls.row_name_to_int(cells[0])
+        row_end = cls.row_name_to_int(cells[1])
+
+        return RangeParts(sheet=sheet_name, col_start=col_start, row_start=row_start, col_end=col_end, row_end=row_end)
+
     @staticmethod
-    def col_name_to_int(name: str) -> int:
+    def col_name_to_int(name: str, zero_index: bool = False) -> int:
         """
         Converts a Column Name into an int.
-        Results are one based so ``a`` converts to ``1``
 
         Args:
             name (str):Case insensitive column name such as 'a' or 'AB'
+            zero_index (bool, optional): determines if return is zero based or one based. Default ``False``.
 
         Returns:
             int: One based int representing column name
+
+        Example:
+            .. code-block:: python
+
+                >>> TableHelper.col_name_to_int('a')
+                1
+                >>> TableHelper.col_name_to_int('a', True)
+                0
+
+        .. versionchanged:: 0.8.2
+            Added ``zero_index`` parameter.
         """
         chars = name.rstrip(string.digits)
         pow = 1
@@ -30,67 +85,112 @@ class TableHelper:
         for letter in chars[::-1]:  # reverse chars
             col_num += (int(letter, 36) - 9) * pow
             pow *= 26
+        if zero_index:
+            return col_num - 1
         return col_num
 
     @staticmethod
-    def row_name_to_int(name: str) -> int:
+    def row_name_to_int(name: str, zero_index: bool = False) -> int:
         """
         Converts a row name into an int.
-        Leading Alpha chars are ignore. ``'4'`` converts to ``4``. ``'C5'`` converts to ``5``
+        Leading Alpha chars are ignore. String ``4`` converts to integer ``4``.
+        String ``C5`` converts to integer ``5``.
+
+        If ``zero_index`` is ``True`` string ``4`` converts to integer ``3``.
+        String ``C5`` converts to integer ``4``.
 
         Args:
             name (str): row name to convert
+            zero_index (bool, optional): determines if return is zero based or one based. Default ``False``.
 
         Returns:
             int: converted name as int.
+
+        Example:
+            .. code-block:: python
+
+                >>> TableHelper.row_name_to_int('C5')
+                5
+                >>> TableHelper.row_name_to_int('C5', True)
+                4
+
+        .. versionchanged:: 0.8.2
+            Added ``zero_index`` parameter.
         """
         chars = name.rstrip(string.digits + "-")
         if chars:
-            s = name[len(chars)]  # drop leading chars that are not numbers.
+            s = name[len(chars) :]  # drop leading chars that are not numbers.
         else:
             s = name
         result = int(s)
         if result < 0:
             raise ValueError(f"Cannot parse negative values: {name}")
+        if zero_index:
+            return result - 1
         return result
 
     @classmethod
-    def make_cell_name(cls, row: int, col: int) -> str:
+    def make_cell_name(cls, row: int, col: int, zero_index: bool = False) -> str:
         """
         Convert given row and column number to ``A1`` style cell name.
 
         Args:
-            row (int): Row number. This is a 1 based value.
-            col (int): Column Number. This is 1 based value.
+            row (int): Row number.
+            col (int): Column Number.
+            zero_index (bool, optional): determines if return is zero based or one based. Default ``False``.
 
         Raises:
-            ValueError: If row or col value < 1
+            ValueError: If col Value is ``<1`` for one based or ``<0`` for zero based.
 
         Returns:
             str: row and col as cell name such as A1, AB3
+
+        Example:
+            .. code-block:: python
+
+                >>> TableHelper.make_cell_name(1, 1)
+                A1
+                >>> TableHelper.make_cell_name(0, 0, True)
+                A1
+
+        .. versionchanged:: 0.8.2
+            Added ``zero_index`` parameter.
         """
-        if row < 1:
-            raise ValueError(f"row is one based. Value cannot be less then 1: {row}")
-        return f"{cls.make_column_name(col)}{row}"
+        idx_min = 0 if zero_index else 1
+        if zero_index:
+            row_index = row + 1
+        else:
+            row_index = row
+        if row < idx_min:
+            raise ValueError(f"Row value cannot be less then {idx_min}: {row}")
+        return f"{cls.make_column_name(col, zero_index)}{row_index}"
 
     @staticmethod
-    def make_column_name(col: int) -> str:  # col is 1 based
+    def make_column_name(col: int, zero_index: bool = False) -> str:  # col is 1 based
         """
         Makes a cell style name. eg: A, B, C, ... AA, AB, AC
 
         Args:
-            col (int): Column number. This is a one based value.
+            col (int): Column number.
+            zero_index (bool, optional): determines if return is zero based or one based. Default ``False``.
 
         Raises:
-            ValueError: If col value < 1
+            ValueError: If col Value is ``<1`` for one based or ``<0`` for zero based.
 
         Returns:
             str: column name. eg: A, B, C, ... AA, AB, AC
+
+        .. versionchanged:: 0.8.2
+            Added ``zero_index`` parameter.
         """
-        if col < 1:
-            raise ValueError(f"col is one based. Value cannot be less then 1: {col}")
+        idx_min = 0 if zero_index else 1
+        if col < idx_min:
+            raise ValueError(f"Value cannot be less then {idx_min}: {col}")
         str_col = str()
-        div = col
+        if zero_index:
+            div = col + 1
+        else:
+            div = col
         while div:
             (div, mod) = divmod(div - 1, 26)  # will return (x, 0 .. 25)
             str_col = chr(mod + 65) + str_col

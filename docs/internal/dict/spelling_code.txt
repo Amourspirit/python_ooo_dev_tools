@@ -47,6 +47,8 @@ odoc
 odt
 PathSubstitution
 PropertyValue
+RangeObj
+RangeValues
 removeEventListener
 RGB
 Runtime

@@ -1051,7 +1051,7 @@ class Chart:
             None:
         """
         try:
-            mProps.Props.set(chart_doc.getArea(), FillTransparence=val.Value)
+            mProps.Props.set(chart_doc.getArea(), FillTransparence=val.value)
         except Exception as e:
             raise mEx.ChartError("Error setting chart transparency") from e
 

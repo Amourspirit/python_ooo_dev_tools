@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 class BaseIntValue:
     """Base class for Int Value"""
 
-    Value: int
+    value: int
     """Int value."""
 
     @abstractmethod
@@ -27,12 +27,12 @@ class BaseIntValue:
 
     # Override "int" method
     def __int__(self) -> int:
-        return self.Value
+        return self.value
 
     def __add__(self, other: object) -> Self:
         try:
             i = int(other)
-            return self._from_int(self.Value + i)
+            return self._from_int(self.value + i)
         except AssertionError:
             raise
         except Exception:
@@ -53,14 +53,14 @@ class BaseIntValue:
         # for example, the truth of (x<y or x==y) does not imply x<=y.
         try:
             i = int(other)
-            return i == self.Value
+            return i == self.value
         except Exception as e:
             return False
 
     def __sub__(self, other: object) -> Self:
         try:
             i = int(other)
-            return self._from_int(self.Value - i)
+            return self._from_int(self.value - i)
         except AssertionError:
             raise
         except Exception:
@@ -69,7 +69,7 @@ class BaseIntValue:
     def __rsub__(self, other: object) -> Self:
         try:
             i = int(other)
-            return self._from_int(i=self.Value)
+            return self._from_int(i=self.value)
         except AssertionError:
             raise
         except Exception:
@@ -78,7 +78,7 @@ class BaseIntValue:
     def __mul__(self, other: object) -> Self:
         try:
             i = int(other)
-            return self._from_int(self.Value * i)
+            return self._from_int(self.value * i)
         except AssertionError:
             raise
         except Exception:
@@ -93,44 +93,44 @@ class BaseIntValue:
     def __lt__(self, other: object) -> bool:
         try:
             i = int(other)
-            return self.Value < i
+            return self.value < i
         except Exception:
             return NotImplemented
 
     def __le__(self, other: object) -> bool:
         try:
             i = int(other)
-            return self.Value <= i
+            return self.value <= i
         except Exception:
             return NotImplemented
 
     def __gt__(self, other: object) -> bool:
         try:
             i = int(other)
-            return self.Value > i
+            return self.value > i
         except Exception:
             return NotImplemented
 
     def __ge__(self, other: object) -> bool:
         try:
             i = int(other)
-            return self.Value >= i
+            return self.value >= i
         except Exception:
             return NotImplemented
 
     def __abs__(self) -> int:
-        return abs(self.Value)
+        return abs(self.value)
 
     def __truediv__(self, other):
         try:
             i = int(other)
-            return self._from_int(round(self.Value / i))
+            return self._from_int(round(self.value / i))
         except Exception:
             return NotImplemented
 
     def __rtruediv__(self, other):
         try:
             i = int(other)
-            return self._from_int(round(i / self.Value))
+            return self._from_int(round(i / self.value))
         except Exception:
             return NotImplemented
