@@ -2,6 +2,12 @@
 Version History
 ***************
 
+Version 0.8.3
+=============
+
+Many new Overloads in ``Calc`` module for range objects.
+
+Several enhancements for range objects.
 
 Version 0.8.2
 =============

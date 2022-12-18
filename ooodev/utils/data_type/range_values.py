@@ -1,10 +1,10 @@
 from __future__ import annotations
 from dataclasses import dataclass
 from typing import overload
-from ..decorator import enforce
-from .. import table_helper as mTb
 from . import range_obj as mRngObj
+from .. import table_helper as mTb
 from ...office import calc as mCalc
+from ..decorator import enforce
 
 import uno
 from ooo.dyn.table.cell_range_address import CellRangeAddress
@@ -90,7 +90,7 @@ class RangeValues:
             col_end = mTb.TableHelper.col_name_to_int(range_val.col_end, True)
             row_start = range_val.row_start - 1
             row_end = range_val.row_end - 1
-            sheet_name = range_val.sheet_name
+            sheet_idx = range_val.sheet_idx
         elif isinstance(range_val, str):
             parts = mTb.TableHelper.get_range_parts(range_val)
             col_start = mTb.TableHelper.col_name_to_int(parts.col_start, True)
@@ -98,26 +98,21 @@ class RangeValues:
             row_start = parts.row_start - 1
             row_end = parts.row_end - 1
             sheet_name = parts.sheet
-        else:
-            return RangeValues(
-                col_start=range_val.StartColumn,
-                row_start=range_val.StartRow,
-                col_end=range_val.EndColumn,
-                row_end=range_val.EndRow,
-                sheet_idx=range_val.Sheet,
-            )
-        idx = -1
-        if sheet_name:
-            try:
+            sheet_idx = -1
+            if sheet_name:
                 sheet = mCalc.Calc.get_sheet(doc=mCalc.Calc.open_doc(), sheet_name=sheet_name)
-                idx = mCalc.Calc.get_sheet_index(sheet)
-            except:
-                pass
-        if idx >= 0:
-            return RangeValues(
-                col_start=col_start, row_start=row_start, col_end=col_end, row_end=row_end, sheet_idx=idx
-            )
-        return RangeValues(col_start=col_start, row_start=row_start, col_end=col_end, row_end=row_end)
+                sheet_idx = mCalc.Calc.get_sheet_index(sheet)
+        else:
+            # CellRange
+            col_start = range_val.StartColumn
+            col_end = range_val.EndColumn
+            row_start = range_val.StartRow
+            row_end = range_val.EndRow
+            sheet_idx = range_val.Sheet
+
+        return RangeValues(
+            col_start=col_start, row_start=row_start, col_end=col_end, row_end=row_end, sheet_idx=sheet_idx
+        )
 
     # endregion from_range()
 
@@ -144,3 +139,36 @@ class RangeValues:
             EndColumn=self.col_end,
             EndRow=self.row_end,
         )
+
+    def is_single_col(self) -> bool:
+        """
+        Gets if instance is a single column or multi-column
+
+        Returns:
+            bool: ``True`` if single column; Otherwise, ``False``
+
+        Note:
+            If instance is a single cell address then ``True`` is returned.
+        """
+        return self.col_start == self.col_end
+
+    def is_single_row(self) -> bool:
+        """
+        Gets if instance is a single row or multi-row
+
+        Returns:
+            bool: ``True`` if single row; Otherwise, ``False``
+
+        Note:
+            If instance is a single cell address then ``True`` is returned.
+        """
+        return self.row_start == self.row_end
+
+    def is_single_cell(self) -> bool:
+        """
+        Gets if a instance is a single cell or a range
+
+        Returns:
+            bool: ``True`` if single cell; Otherwise, ``False``
+        """
+        return self.is_single_col() and self.is_single_row()
