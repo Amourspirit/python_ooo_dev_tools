@@ -33,6 +33,7 @@ Welcome to OOO Development Tools documentation!
    :caption: DEVELOPING ODEV:
 
    dev_docs/dev_notes
+   dev_docs/tute_ss
 
 Indices and tables
 ==================
