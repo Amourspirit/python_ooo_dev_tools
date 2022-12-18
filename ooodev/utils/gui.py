@@ -441,13 +441,19 @@ class GUI:
 
     # region ---------------- controller and frame ---------------------
 
+    # region get_current_controller()
+    @overload
     @staticmethod
-    def get_current_controller(odoc: object) -> XController:
+    def get_current_controller(doc: object) -> XController:
+        ...
+
+    @staticmethod
+    def get_current_controller(*args, **kwargs) -> XController:
         """
         Gets controller from document
 
         Args:
-            odoc (object): office document
+            doc (object): office document
 
         Raises:
             MissingInterfaceError: If required interface is not present.
@@ -455,13 +461,26 @@ class GUI:
         Returns:
             XController: controller
         """
-        doc = mLo.Lo.qi(XComponent, odoc)
+        args_len = len(args)
+        kargs_len = len(kwargs)
+        count = args_len + kargs_len
+        if count != 1:
+            raise TypeError("get_current_controller() got an invalid number of arguments")
+
+        doc = None
+        if args_len == 1:
+            doc = args[0]
         if doc is None:
-            raise mEx.MissingInterfaceError(XComponent)
-        model = mLo.Lo.qi(XModel, doc)
-        if model is None:
-            raise mEx.MissingInterfaceError(XComponent)
+            doc = kwargs.get("doc", None)
+        if doc is None:
+            # odoc for backwards combability
+            doc = kwargs.get("odoc", None)
+
+        component = mLo.Lo.qi(XComponent, doc, True)
+        model = mLo.Lo.qi(XModel, component, True)
         return model.getCurrentController()
+
+    # endregion get_current_controller()
 
     @classmethod
     def get_frame(cls, doc: XComponent) -> XFrame:
@@ -515,13 +534,19 @@ class GUI:
             raise mEx.MissingInterfaceError(XUserInputInterception)
         return result
 
+    # region get_selection_supplier()
+    @overload
     @classmethod
-    def get_selection_supplier(cls, odoc: object) -> XSelectionSupplier:
+    def get_selection_supplier(cls, doc: object) -> XSelectionSupplier:
+        ...
+
+    @classmethod
+    def get_selection_supplier(cls, *args, **kwargs) -> XSelectionSupplier:
         """
         Gets selection supplier
 
         Args:
-            odoc (object): office document
+            doc (object): office document
 
         Raises:
             MissingInterfaceError: if odoc does not implement XComponent interface.
@@ -530,14 +555,30 @@ class GUI:
         Returns:
             XSelectionSupplier: Selection supplier
         """
-        doc = mLo.Lo.qi(XComponent, odoc)
+        args_len = len(args)
+        kargs_len = len(kwargs)
+        count = args_len + kargs_len
+        if count != 1:
+            raise TypeError("get_selection_supplier() got an invalid number of arguments")
+
+        doc = None
+        if args_len == 1:
+            doc = args[0]
         if doc is None:
+            doc = kwargs.get("doc", None)
+        if doc is None:
+            # odoc for backwards combability
+            doc = kwargs.get("odoc", None)
+        component = mLo.Lo.qi(XComponent, doc)
+        if component is None:
             raise mEx.MissingInterfaceError(XComponent, "Not an office document")
-        xcontroler = cls.get_current_controller(doc)
+        xcontroler = cls.get_current_controller(component)
         result = mLo.Lo.qi(XSelectionSupplier, xcontroler)
         if result is None:
             raise mEx.MissingInterfaceError(XSelectionSupplier)
         return result
+
+    # endregion get_selection_supplier()
 
     @classmethod
     def get_dpi(cls, doc: XComponent) -> XDispatchProviderInterception:
@@ -765,18 +806,18 @@ class GUI:
 
     @overload
     @classmethod
-    def set_visible(cls, is_visible: bool, odoc: object) -> None:
+    def set_visible(cls, is_visible: bool, doc: object) -> None:
         """
         Set window visibility.
 
         Args:
             is_visible (bool): If True window is set visible; Otherwise, window is set invisible.
-            odoc (object): office document
+            doc (object): office document
         """
         ...
 
     @classmethod
-    def set_visible(cls, is_visible: bool, odoc: object = None) -> None:
+    def set_visible(cls, *args, **kwargs) -> None:
         """
         Set window visibility.
 
@@ -784,13 +825,45 @@ class GUI:
             is_visible (bool): If True window is set visible; Otherwise, window is set invisible.
             odoc (object): office document
         """
+        ordered_keys = (1, 2)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
+
+        def get_kwargs() -> dict:
+            ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ("is_visible", "doc", "odoc")
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("set_visible() got an unexpected keyword argument")
+            ka[1] = kwargs.get("is_visible", None)
+            if count == 1:
+                return ka
+            keys = ("doc", "odoc")
+            for key in keys:
+                if key in kwargs:
+                    ka[2] = kwargs[key]
+                    break
+            return ka
+
+        if not count in (1, 2):
+            raise TypeError("set_visible() got an invalid number of arguments")
+
+        kargs = get_kwargs()
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
+
+        is_visible = bool(kargs[1])
+        odoc = kargs.get(2, None)
+
         if odoc is None:
             xwindow = cls.get_window()
         else:
-            doc = mLo.Lo.qi(XComponent, odoc)
-            if doc is None:
+            component = mLo.Lo.qi(XComponent, odoc)
+            if component is None:
                 return
-            xwindow = cls.get_frame(doc).getContainerWindow()
+            xwindow = cls.get_frame(component).getContainerWindow()
 
         if xwindow is not None:
             xwindow.setVisible(is_visible)

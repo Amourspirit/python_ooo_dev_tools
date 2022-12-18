@@ -16,6 +16,14 @@ import string
 T = TypeVar("T")
 
 
+class CellParts(NamedTuple):
+    """Cell Named parts"""
+
+    sheet: str
+    col: str
+    row: int
+
+
 class RangeParts(NamedTuple):
     """Range Named parts"""
 
@@ -28,15 +36,51 @@ class RangeParts(NamedTuple):
 
 class TableHelper:
     @classmethod
+    def get_cell_parts(cls, cell_name: str) -> CellParts:
+        """
+        Gets cell parts from a cell name.
+
+        Args:
+            cell_name (str): Cell name such as ``A23`` or ``Sheet1.A23``
+
+        Returns:
+            CellParts: Cell Parts
+
+        Note:
+            If a range name such as ``A23:G45`` or ``Sheet1.A23:G45`` then only the first cell is used.
+
+            Column name is upper case.
+
+        .. versionadded:: 0.8.3
+        """
+        doc_idx = cell_name.find(".")
+
+        if doc_idx >= 0:
+            sheet_name = cell_name[:doc_idx]
+            cell_name = cell_name[doc_idx + 1 :]
+        else:
+            sheet_name = ""
+        # split will cover if a range is passed in, return first cell
+        cells = cell_name.split(":")
+
+        col = cells[0].rstrip(string.digits).upper()
+        row = cls.row_name_to_int(cells[0])
+
+        return CellParts(sheet=sheet_name, col=col, row=row)
+
+    @classmethod
     def get_range_parts(cls, range_name: str) -> RangeParts:
         """
         Gets range parts from a range name.
 
         Args:
-            range_name (str): Range name such as ``A23:G:45``
+            range_name (str): Range name such as ``A23:G45`` or ``Sheet1.A23:G45``
 
         Returns:
             RangeParts: Range Parts
+
+        Notes:
+            Column names are upper case.
 
         .. versionadded:: 0.8.2
         """
@@ -49,8 +93,8 @@ class TableHelper:
             sheet_name = ""
 
         cells = range_name.split(":")
-        col_start = cells[0].rstrip(string.digits)
-        col_end = cells[1].rstrip(string.digits)
+        col_start = cells[0].rstrip(string.digits).upper()
+        col_end = cells[1].rstrip(string.digits).upper()
         row_start = cls.row_name_to_int(cells[0])
         row_end = cls.row_name_to_int(cells[1])
 

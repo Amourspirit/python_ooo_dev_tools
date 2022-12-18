@@ -1056,6 +1056,43 @@ def test_insert_cells_down(loader) -> None:
         Lo.close(doc)
 
 
+def test_insert_cells_down_rng(loader) -> None:
+    from ooodev.utils.lo import Lo
+    from ooodev.office.calc import Calc
+
+    doc = Calc.create_doc(loader)
+    try:
+
+        sheet = Calc.get_active_sheet(doc)
+
+        rng = Calc.get_range_obj("B1:D4")
+        Calc.set_val(value="hello world", sheet=sheet, cell_name="B5")
+        assert Calc.insert_cells(sheet=sheet, range_obj=rng, is_shift_right=False)
+
+        val = Calc.get_val(sheet=sheet, cell_name="B9")
+        assert val == "hello world"
+    finally:
+        Lo.close(doc)
+
+
+def test_insert_cells_down_positional(loader) -> None:
+    from ooodev.utils.lo import Lo
+    from ooodev.office.calc import Calc
+
+    doc = Calc.create_doc(loader)
+    try:
+
+        sheet = Calc.get_active_sheet(doc)
+
+        Calc.set_val(value="hello world", sheet=sheet, cell_name="B5")
+        assert Calc.insert_cells(sheet, "B1:D4", False)
+
+        val = Calc.get_val(sheet=sheet, cell_name="B9")
+        assert val == "hello world"
+    finally:
+        Lo.close(doc)
+
+
 def test_insert_cells_right(loader) -> None:
     from ooodev.utils.lo import Lo
     from ooodev.office.calc import Calc
@@ -1157,6 +1194,49 @@ def test_delete_cells_down(loader) -> None:
         # note without calling 'sheet = Calc.get_active_sheet(doc)' this test fails.
         # for unknown reason Calc.get_val() will always return None after delete_cell()
         # refreshing sheet solves the issue.
+        sheet = Calc.get_active_sheet(doc)
+        val = Calc.get_val(sheet=sheet, cell_name="B5")
+        assert val == "hello world"
+    finally:
+        Lo.close(closeable=doc, deliver_ownership=False)
+
+
+def test_delete_cells_down_rng(loader) -> None:
+    from ooodev.utils.lo import Lo
+    from ooodev.office.calc import Calc
+
+    # from ooodev.utils.gui import GUI
+    doc = Calc.create_doc(loader)
+    try:
+        sheet = Calc.get_active_sheet(doc)
+
+        # GUI.set_visible(is_visible=True, odoc=doc)
+        rng = Calc.get_range_obj("B1:D4")
+        Calc.set_val(value="hello world", sheet=sheet, cell_name="B9")
+        # Calc.set_val(value="A1",sheet=sheet, cell_name="A1")
+        assert Calc.delete_cells(sheet=sheet, range_obj=rng, is_shift_left=False)
+
+        sheet = Calc.get_active_sheet(doc)
+        val = Calc.get_val(sheet=sheet, cell_name="B5")
+        assert val == "hello world"
+    finally:
+        Lo.close(closeable=doc, deliver_ownership=False)
+
+
+def test_delete_cells_down_rng_postional(loader) -> None:
+    from ooodev.utils.lo import Lo
+    from ooodev.office.calc import Calc
+
+    # from ooodev.utils.gui import GUI
+    doc = Calc.create_doc(loader)
+    try:
+        sheet = Calc.get_active_sheet(doc)
+
+        # GUI.set_visible(is_visible=True, odoc=doc)
+        Calc.set_val(value="hello world", sheet=sheet, cell_name="B9")
+        # Calc.set_val(value="A1",sheet=sheet, cell_name="A1")
+        assert Calc.delete_cells(sheet, "B1:D4", False)
+
         sheet = Calc.get_active_sheet(doc)
         val = Calc.get_val(sheet=sheet, cell_name="B5")
         assert val == "hello world"
