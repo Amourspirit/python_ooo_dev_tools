@@ -1,10 +1,9 @@
 from __future__ import annotations
 from dataclasses import dataclass, field
-from ..decorator import enforce
+from . import cell_obj as mCell
 from .. import table_helper as mTb
 
 
-@enforce.enforce_types
 @dataclass(frozen=True)
 class ColObj:
     """
@@ -17,6 +16,8 @@ class ColObj:
     """Column such as ``A``"""
     index: int = field(init=False, repr=False, hash=False)
     """Column Index (zero-based)"""
+    cell_obj: mCell.CellObj | None = None
+    """Cell Object that instance is part of"""
 
     def __post_init__(self):
         object.__setattr__(self, "value", self.value.upper())

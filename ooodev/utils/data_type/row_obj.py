@@ -1,11 +1,10 @@
 from __future__ import annotations
 from dataclasses import dataclass, field
-from ..decorator import enforce
-from .base_int_value import BaseIntValue
+from . import cell_obj as mCell
 from ..validation import check
+from .base_int_value import BaseIntValue
 
 
-@enforce.enforce_types
 @dataclass(unsafe_hash=True)
 class RowObj(BaseIntValue):
     """
@@ -16,6 +15,8 @@ class RowObj(BaseIntValue):
 
     index: int = field(init=False, repr=False, hash=False)
     """row Index (zero-based)"""
+    cell_obj: mCell.CellObj | None = None
+    """Cell Object that instance is part of"""
 
     def __post_init__(self):
         # must be value of 1 or greater

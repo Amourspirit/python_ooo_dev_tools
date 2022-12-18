@@ -81,6 +81,37 @@ def test_get_range_obj(loader) -> None:
         assert ro1.row_end == 6
         assert ro1.sheet_name.startswith("Sheet")
 
+        # test that RangObj assigns itself to CellObj.range_obj
+        assert ro1.cell_start.range_obj is ro1
+        assert ro1.cell_end.range_obj is ro1
+
+        assert ro1.cell_start.col_info.cell_obj is ro1.cell_start
+        assert ro1.cell_start.row_info.cell_obj is ro1.cell_start
+
+        assert ro1.cell_end.col_info.cell_obj is ro1.cell_end
+        assert ro1.cell_end.row_info.cell_obj is ro1.cell_end
+
+        assert ro1.cell_start.col == "A"
+        assert ro1.cell_start.row == 2
+
+        assert ro1.cell_end.col == "D"
+        assert ro1.cell_end.row == 6
+
+        assert ro1.cell_start.col_info.value == "A"
+        assert ro1.cell_start.col_info.index == 0
+
+        assert ro1.cell_start.row_info.value == 2
+        assert ro1.cell_start.row_info.index == 1
+
+        assert ro1.cell_end.col_info.value == "D"
+        assert ro1.cell_end.col_info.index == 3
+
+        assert ro1.cell_end.row_info.value == 6
+        assert ro1.cell_end.row_info.index == 5
+
+        assert ro1.cell_start.sheet_idx == ro1.sheet_idx
+        assert ro1.cell_end.sheet_idx == ro1.sheet_idx
+
         ro2 = RangeObj.from_range(range_val="a2:d6")
         assert ro2.col_start == "A"
         assert ro2.row_start == 2
@@ -117,6 +148,7 @@ def test_get_range_values_cell_address(loader) -> None:
     from ooodev.utils.data_type.range_values import RangeValues
     from ooodev.utils.lo import Lo
     from ooodev.office.calc import Calc
+
     # from ooo.dyn.table.cell_range_address import CellRangeAddress
 
     doc = Calc.create_doc()
@@ -144,11 +176,14 @@ def test_get_range_values_cell_address(loader) -> None:
     finally:
         Lo.close_doc(doc)
 
+
 def test_get_range_obj_cell_address(loader) -> None:
     from ooodev.utils.data_type.range_obj import RangeObj
+
     # from ooodev.utils.data_type.range_values import RangeValues
     from ooodev.utils.lo import Lo
     from ooodev.office.calc import Calc
+
     # from ooo.dyn.table.cell_range_address import CellRangeAddress
 
     doc = Calc.create_doc()
