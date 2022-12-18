@@ -1,6 +1,6 @@
 from __future__ import annotations
 import string
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from . import col_obj as mCol
 from . import range_obj as mRngObj
 from . import row_obj as mRow
@@ -24,7 +24,7 @@ class CellObj:
     """Row such as ``125``"""
     sheet_idx: int = -1
     """Sheet index that this cell value belongs to"""
-    range_obj: mRngObj.RangeObj | None = None
+    range_obj: mRngObj.RangeObj | None = field(repr=False, hash=False, default=None)
     """Range Object that instance is part of"""
 
     def __post_init__(self):
@@ -114,7 +114,7 @@ class CellObj:
         if isinstance(other, CellObj):
             return self.sheet_idx == other.sheet_idx and self.col == other.col and self.row == other.row
         if isinstance(other, str):
-            return str(self) == other
+            return str(self) == other.upper()
         return False
 
     @property

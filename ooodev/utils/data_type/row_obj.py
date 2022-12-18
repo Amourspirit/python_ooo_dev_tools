@@ -15,7 +15,7 @@ class RowObj(BaseIntValue):
 
     index: int = field(init=False, repr=False, hash=False)
     """row Index (zero-based)"""
-    cell_obj: mCell.CellObj | None = None
+    cell_obj: mCell.CellObj | None = field(repr=False, hash=False, default=None)
     """Cell Object that instance is part of"""
 
     def __post_init__(self):
