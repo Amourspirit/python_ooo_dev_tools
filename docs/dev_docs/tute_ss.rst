@@ -1,7 +1,11 @@
 LIBREOFFICE AND PYTHON TO WORK WITH EXCEL SPREADSHEETS 
 ******************************************************
 
-https://automatetheboringstuff.com/2e/images/000076.jpg
+.. cssclass:: diagram invert
+
+    .. figure:: https://user-images.githubusercontent.com/11288701/208299691-79a5b476-dd5c-42e4-927b-982c1213d43b.png
+        :alt: Tutorial Image
+        :figclass: align-center
 
 Although we don’t often think of spreadsheets as programming tools, almost everyone uses them to organize information into two-dimensional data structures, perform calculations with formulas, and produce output as charts. In this tutorial, we’ll integrate Python into the popular spreadsheet application LibreOffice.
 
@@ -69,8 +73,14 @@ Reading Excel Documents
 
 The examples in this section will use a spreadsheet named example.xlsx stored in the root folder. You can either create the spreadsheet yourself or download it from https://nostarch.com/automatestuff2/. Figure 13-1 shows the tabs for the three default sheets named Sheet1, Sheet2, and Sheet3 that Excel automatically provides for new workbooks. (The number of default sheets created may vary between operating systems and spreadsheet programs.)
 
-https://automatetheboringstuff.com/2e/images/000024.jpg
-Figure 13-1: The tabs for a workbook’s sheets are in the lower-left corner of Excel.
+.. cssclass:: diagram invert
+
+    .. _ch01fig_timeline:
+    .. figure:: https://user-images.githubusercontent.com/11288701/208299710-3cfbd875-1d13-43f2-8e62-d93af56fa5f1.png
+        :alt: OpenOffice Timeline Image
+        :figclass: align-center
+
+        :The tabs for a workbook’s sheets are in the lower-left corner of Excel
 
 Sheet 1 in the example file should look like Table 13-1. (If you didn’t download example.xlsx from the website, you should enter this data into the sheet yourself.)
 
@@ -285,8 +295,14 @@ Project: Reading Data from a Spreadsheet
 
 Say you have a spreadsheet of data from the 2010 US Census and you have the boring task of going through its thousands of rows to count both the total population and the number of census tracts for each county. (A census tract is simply a geographic area defined for the purposes of the census.) Each row represents a single census tract. We’ll name the spreadsheet file censuspopdata.xlsx, and you can download it from https://nostarch.com/automatestuff2/. Its contents look like Figure 13-2.
 
-https://automatetheboringstuff.com/2e/images/000116.jpg
-Figure 13-2: The censuspopdata.xlsx spreadsheet
+.. cssclass:: diagram invert
+
+    .. _ch01fig_timeline:
+    .. figure:: https://user-images.githubusercontent.com/11288701/208299730-026a12e8-1105-4637-ad7b-13914a247fc7.png
+        :alt: OpenOffice Timeline Image
+        :figclass: align-center
+
+        :The censuspopdata.xlsx spreadsheet
 
 Even though Excel can calculate the sum of multiple selected cells, you’d still have to select the cells for each of the 3,000-plus counties. Even if it takes just a few seconds to calculate a county’s population by hand, this would take hours to do for the whole spreadsheet.
 
@@ -638,8 +654,14 @@ Project: Updating a Spreadsheet
 
 In this project, you’ll write a program to update cells in a spreadsheet of produce sales. Your program will look through the spreadsheet, find specific kinds of produce, and update their prices. Download this spreadsheet from https://nostarch.com/automatestuff2/. Figure 13-3 shows what the spreadsheet looks like.
 
-https://automatetheboringstuff.com/2e/images/000062.jpg
-Figure 13-3: A spreadsheet of produce sales
+.. cssclass:: diagram invert
+
+    .. _ch01fig_timeline:
+    .. figure:: https://user-images.githubusercontent.com/11288701/208299752-dd9cdbe8-7171-4312-a578-c3e1b699b042.png
+        :alt: OpenOffice Timeline Image
+        :figclass: align-center
+
+        :A spreadsheet of produce sales
 
 Each row represents an individual sale. The columns are the type of produce sold (A), the cost per pound of that produce (B), the number of pounds sold (C), and the total revenue from the sale (D). The TOTAL column is set to the Excel formula =ROUND(B3*C3, 2), which multiplies the cost per pound by the number of pounds sold and rounds the result to the nearest cent. With this formula, the cells in the TOTAL column will automatically update themselves if there is a change in column B or C.
 
@@ -833,8 +855,14 @@ The best way of setting font attributes is to define a style and apply it to the
 
 Here, we store a style name in a STYLE_NAME constant, create a style with create_cell_style() method, use the Prop class set() method to set the style properties, then set the cell value with the set_val() method. We repeat the process with another style for a second cell. After you run this code, the styles of the A1 and B3 cells in the spreadsheet will be set to custom character styles, as shown in Figure 13-4.
 
-https://automatetheboringstuff.com/2e/images/000007.jpg
-Figure 13-4: A spreadsheet with custom font styles (??????? CHECK ??????)
+.. cssclass:: diagram invert
+
+    .. _ch01fig_timeline:
+    .. figure:: https://user-images.githubusercontent.com/11288701/208299766-0bfc9ef8-9675-4266-80b8-c8c57059f2ea.png
+        :alt: OpenOffice Timeline Image
+        :figclass: align-center
+
+        :A spreadsheet with custom font styles
 
 For cell A1, we set the font name to 'Times New Roman' [*** FIX THIS ***] and set bold to true, so our text appears in bold Times New Roman. We didn’t specify a size, so the default is used. In cell B3, our text is italic, with a size of 24; we didn’t specify a font name, so the default, Calibri, is used.
 
@@ -847,8 +875,14 @@ Excel formulas, which begin with an equal sign, can configure cells to contain v
 
 This will store =SUM(B1:B8) as the value in cell B9. This sets the B9 cell to a formula that calculates the sum of values in cells B1 to B8. You can see this in action in Figure 13-5.
 
-https://automatetheboringstuff.com/2e/images/000100.jpg
-Figure 13-5: Cell B9 contains the formula =SUM(B1:B8), which adds the cells B1 to B8.
+.. cssclass:: diagram invert
+
+    .. _ch01fig_timeline:
+    .. figure:: https://user-images.githubusercontent.com/11288701/208299779-ff5d2bfa-8e36-4606-8bd3-e48a0704a80d.png
+        :alt: OpenOffice Timeline Image
+        :figclass: align-center
+
+        :Cell B9 contains the formula =SUM(B1:B8), which adds the cells B1 to B8
 
 An Excel formula is set just like any other text value in a cell. Enter the following into the interactive shell:
 
@@ -911,8 +945,14 @@ A sheet’s row_dimensions and column_dimensions are dictionary-like values; row
 
 The dimensions.xlsx spreadsheet looks like Figure 13-6.
 
-image
-Figure 13-6: Row 1 and column B set to larger heights and widths
+.. cssclass:: diagram invert
+
+    .. _ch01fig_timeline:
+    .. figure:: https://user-images.githubusercontent.com/11288701/208299789-682e72d3-b7f5-44c2-b941-96bc0854b41c.png
+        :alt: OpenOffice Timeline Image
+        :figclass: align-center
+
+        :Row 1 and column B set to larger heights and widths
 
 Once you have the RowDimension object, you can set its height. Once you have the ColumnDimension object, you can set its width. The row height can be set to an integer or float value between 0 and 409. This value represents the height measured in points, where one point equals 1/72 of an inch. The default row height is 12.75. The column width can be set to an integer or float value between 0 and 255. This value represents the number of characters at the default font size (11 point) that can be displayed in the cell. The default column width is 8.43 characters. Columns with widths of 0 or rows with heights of 0 are hidden from the user.
 
@@ -947,8 +987,14 @@ The argument to merge_cells() is a single string of the top-left and bottom-righ
 
 When you run this code, merged.xlsx will look like Figure 13-7.
 
-https://automatetheboringstuff.com/2e/images/000140.jpg
-Figure 13-7: Merged cells in a spreadsheet
+.. cssclass:: diagram invert
+
+    .. _ch01fig_timeline:
+    .. figure:: https://user-images.githubusercontent.com/11288701/208299799-b8b51ce7-8f6c-46f0-8aec-e62bc571c609.png
+        :alt: OpenOffice Timeline Image
+        :figclass: align-center
+
+        :Merged cells in a spreadsheet
 
 To unmerge cells, call the unmerge_cells() sheet method. Enter this into the interactive shell:
 
@@ -1004,8 +1050,14 @@ Make sure you have the produce sales spreadsheet from https://nostarch.com/autom
 
 If you set the freeze_panes property to 'A2', row 1 will always be viewable, no matter where the user scrolls in the spreadsheet. You can see this in Figure 13-8.
 
-https://automatetheboringstuff.com/2e/images/000083.jpg
-Figure 13-8: With freeze_panes set to 'A2', row 1 is always visible, even as the user scrolls down.
+.. cssclass:: diagram invert
+
+    .. _ch01fig_timeline:
+    .. figure:: https://user-images.githubusercontent.com/11288701/208299812-13dd64f0-5dca-4906-af52-5cf4e90e6622.png
+        :alt: OpenOffice Timeline Image
+        :figclass: align-center
+
+        :With freeze_panes set to 'A2', row 1 is always visible, even as the user scrolls down
 
 Charts
 ======
@@ -1024,8 +1076,14 @@ A tuple of two integers, representing the top-left cell of the rectangular selec
 A tuple of two integers, representing the bottom-right cell of the rectangular selection of cells containing your chart data: the first integer in the tuple is the row, and the second is the column.
 Figure 13-9 shows some sample coordinate arguments.
 
-https://automatetheboringstuff.com/2e/images/000099.jpg
-Figure 13-9: From left to right: (1, 1), (10, 1); (3, 2), (6, 4); (5, 3), (5, 3)
+.. cssclass:: diagram invert
+
+    .. _ch01fig_timeline:
+    .. figure:: https://user-images.githubusercontent.com/11288701/208299822-1620a00b-f148-4ff3-9086-8f4b55c60273.png
+        :alt: OpenOffice Timeline Image
+        :figclass: align-center
+
+        :From left to right: (1, 1), (10, 1); (3, 2), (6, 4); (5, 3), (5, 3)
 
 Enter this interactive shell example to create a bar chart and add it to the spreadsheet:
 
@@ -1060,8 +1118,14 @@ True
 
 This produces a spreadsheet that looks like Figure 13-10.
 
-https://automatetheboringstuff.com/2e/images/000122.jpg
-Figure 13-10: A spreadsheet with a chart added
+.. cssclass:: diagram invert
+
+    .. _ch01fig_timeline:
+    .. figure:: https://user-images.githubusercontent.com/11288701/208299968-9fdc7c59-b2ca-4369-bb9a-364c41c67f5a.png
+        :alt: OpenOffice Timeline Image
+        :figclass: align-center
+
+        :A spreadsheet with a chart added
 
 We’ve created a bar chart by using the Calc class get_address() method to set a range to A1:A10, then using the Chart2 class insert_chart() method to insert the chart at C5. The default insert a column chart with no row or column values and default colours. You can create many chart types including: line charts, scatter charts, and pie charts.
 
@@ -1131,8 +1195,14 @@ py multiplicationTable.py 6
 
 . . . it should create a spreadsheet that looks like Figure 13-11.
 
-https://automatetheboringstuff.com/2e/images/000067.jpg
-Figure 13-11: A multiplication table generated in a spreadsheet
+.. cssclass:: diagram invert
+
+    .. _ch01fig_timeline:
+    .. figure:: https://user-images.githubusercontent.com/11288701/208299901-74f36232-747a-4803-adfa-ae6d66fab93d.png
+        :alt: OpenOffice Timeline Image
+        :figclass: align-center
+
+        :A multiplication table generated in a spreadsheet
 
 Row 1 and column A should be used for labels and should be in bold.
 
@@ -1145,8 +1215,14 @@ python blankRowInserter.py 3 2 myProduce.xlsx
 
 . . . the “before” and “after” spreadsheets should look like Figure 13-12.
 
-https://automatetheboringstuff.com/2e/images/000013.jpg
-Figure 13-12: Before (left) and after (right) the two blank rows are inserted at row 3
+.. cssclass:: diagram invert
+
+    .. _ch01fig_timeline:
+    .. figure:: https://user-images.githubusercontent.com/11288701/208299859-486ca40a-0bbf-46e4-add9-5fa101781563.png
+        :alt: OpenOffice Timeline Image
+        :figclass: align-center
+
+        :Before (left) and after (right) the two blank rows are inserted at row 3
 
 You can write this program by reading in the contents of the spreadsheet. Then, when writing out the new spreadsheet, use a for loop to copy the first N lines. For the remaining lines, add M to the row number in the output spreadsheet.
 
@@ -1155,8 +1231,14 @@ Spreadsheet Cell Inverter
 
 Write a program to invert the row and column of the cells in the spreadsheet. For example, the value at row 5, column 3 will be at row 3, column 5 (and vice versa). This should be done for all cells in the spreadsheet. For example, the “before” and “after” spreadsheets would look something like Figure 13-13.
 
-https://automatetheboringstuff.com/2e/images/000108.jpg
-Figure 13-13: The spreadsheet before (top) and after (bottom) inversion
+.. cssclass:: diagram invert
+
+    .. _ch01fig_timeline:
+    .. figure:: https://user-images.githubusercontent.com/11288701/208299872-1d3fec93-a74f-4660-a6af-fde3ad9ae33d.png
+        :alt: OpenOffice Timeline Image
+        :figclass: align-center
+
+        :The spreadsheet before (top) and after (bottom) inversion
 
 You can write this program by using nested for loops to read the spreadsheet’s data into a list of lists data structure. This data structure could have sheetData[x][y] for the cell at column x and row y. Then, when writing out the new spreadsheet, use sheetData[y][x] for the cell at column x and row y.
 
