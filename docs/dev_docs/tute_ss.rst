@@ -1,38 +1,73 @@
-13 WORKING WITH EXCEL SPREADSHEETS
-**********************************
+LIBREOFFICE AND PYTHON TO WORK WITH EXCEL SPREADSHEETS 
+******************************************************
 
 https://automatetheboringstuff.com/2e/images/000076.jpg
 
-Although we don’t often think of spreadsheets as programming tools, almost everyone uses them to organize information into two-dimensional data structures, perform calculations with formulas, and produce output as charts. In the next two chapters, we’ll integrate Python into two popular spreadsheet applications: Microsoft Excel and Google Sheets.
+Although we don’t often think of spreadsheets as programming tools, almost everyone uses them to organize information into two-dimensional data structures, perform calculations with formulas, and produce output as charts. In this tutorial, we’ll integrate Python into the popular spreadsheet application LibreOffice.
 
-Excel is a popular and powerful spreadsheet application for Windows. The openpyxl module allows your Python programs to read and modify Excel spreadsheet files. For example, you might have the boring task of copying certain data from one spreadsheet and pasting it into another one. Or you might have to go through thousands of rows and pick out just a handful of them to make small edits based on some criteria. Or you might have to look through hundreds of spreadsheets of department budgets, searching for any that are in the red. These are exactly the sort of boring, mindless spreadsheet tasks that Python can do for you.
+Excel is a popular and powerful spreadsheet application for Windows. The |odev|_ package allows your Python programs to read and modify Excel spreadsheet files. For example, you might have the boring task of copying certain data from one spreadsheet and pasting it into another one. Or you might have to go through thousands of rows and pick out just a handful of them to make small edits based on some criteria. Or you might have to look through hundreds of spreadsheets of department budgets, searching for any that are in the red. These are exactly the sort of boring, mindless spreadsheet tasks that Python can do for you.
 
-Although Excel is proprietary software from Microsoft, there are free alternatives that run on Windows, macOS, and Linux. Both LibreOffice Calc and OpenOffice Calc work with Excel’s .xlsx file format for spreadsheets, which means the openpyxl module can work on spreadsheets from these applications as well. You can download the software from https://www.libreoffice.org/ and https://www.openoffice.org/, respectively. Even if you already have Excel installed on your computer, you may find these programs easier to use. The screenshots in this chapter, however, are all from Excel 2010 on Windows 10.
+Although Excel is proprietary software from Microsoft, there are free alternatives that run on Windows, macOS, and Linux. Both LibreOffice Calc and OpenOffice Calc work with Excel’s .xlsx file format for spreadsheets, which means the |odev|_ module can work on spreadsheets from these applications as well. You can download the software from https://www.libreoffice.org/ and https://www.openoffice.org/, respectively. Even if you already have Excel installed on your computer, you may find these programs easier to use. The screenshots in this chapter, however, are all from Excel 2010 on Windows 10.
 
 Excel Documents
-===============
+---------------
 
-First, let’s go over some basic definitions: an Excel spreadsheet document is called a workbook. A single workbook is saved in a file with the .xlsx extension. Each workbook can contain multiple sheets (also called worksheets). The sheet the user is currently viewing (or last viewed before closing Excel) is called the active sheet.
+Let’s go over some basic definitions: an Excel spreadsheet document is called a workbook. A single workbook is saved in a file with the .xlsx extension. Each workbook can contain multiple sheets (also called worksheets). The sheet the user is currently viewing (or last viewed before closing Excel) is called the active sheet.
 
 Each sheet has columns (addressed by letters starting at A) and rows (addressed by numbers starting at 1). A box at a particular column and row is called a cell. Each cell can contain a number or text value. The grid of cells with data makes up a sheet.
 
-Installing the openpyxl Module
-==============================
+Installing ODEV
+---------------
 
-Python does not come with OpenPyXL, so you’ll have to install it. Follow the instructions for installing third-party modules in Appendix A; the name of the module is openpyxl.
+Python does not come with ODEV, so you’ll have to install it. Follow the instructions in the |odev|_ documentation for installing the Virtual Environment: https://python-ooo-dev-tools.readthedocs.io/en/develop/dev_docs/dev_notes.html#virtual-environment
 
-This book uses version 2.6.2 of OpenPyXL. It’s important that you install this version by running pip install --user -U openpyxl==2.6.2 because newer versions of OpenPyXL are incompatible with the information in this book. To test whether it is installed correctly, enter the following into the interactive shell:
+Working with Python and LibreOffice
+-----------------------------------
 
->>> import openpyxl
+Note: Python is normally used by running script files, but it is an interpretive language executing line by line. This tutorial uses the REPL, an interactive python shell, so the user can execute a single Python command and get the result. New modules are normally loaded in the tutorial as they are needed but later they may appear at the top of the listing as normally used.
 
-If the module was correctly installed, this should produce no error messages. Remember to import the openpyxl module before running the interactive shell examples in this chapter, or you’ll get a NameError: name 'openpyxl' is not defined error.
+Note: Code in a section often required code earlier in the section to be executed beforehand but all the required code should be within the section. The names used for objects like the workbook and worksheet vary throughout the sections and a mix of plain arguments and keyword pairs are used.
 
-You can find the full documentation for OpenPyXL at https://openpyxl.readthedocs.org/.
+Firstly, let us understand how python works with Office. An office instance is required before python can interact with the objects. When the python program is finished it is important to close any document and the Office instance or it will continue to run in the computer stopping other interfaces from starting it. This initialisation and finalisation code is required even if it is not shown in the examples.
+
+Once |odev|_ is installed, start up a python shell and enter the following code into the REPL:
+
+>>> from ooodev.utils.lo import Lo
+>>> loader = Lo.load_office(Lo.ConnectSocket(headless=True))
+>>> # use the Office API...
+>>> Lo.close_doc(wb)
+>>> # generates an error if wb not open
+>>> Lo.close_office()
+True
+
+.. cssclass:: bg_light_gray, blue
+
+   As a comparison, elsewhere this might be done in a script with similar code to the following to close the loader and context manager automatically after it runs, even if there is an error:
+
+   .. code-block:: python
+
+      def main() -> int:
+         with Lo.Loader(Lo.ConnectSocket(headless=True)) as loader:
+            doc = Calc.create_doc(loader=loader)
+            sheet = Calc.get_sheet(doc=doc, index=0)
+            # do some work
+            Lo.close_doc(doc=doc)
+         return 0
+
+
+      if __name__ == "__main__":
+         raise SystemExit(main())
+
+Note: Similar commands are used to open with GUI:
+
+>>> from ooodev.utils.lo import Lo
+>>> from ooodev.utils.gui import GUI
+>>> _ = Lo.load_office(Lo.ConnectSocket())
 
 Reading Excel Documents
 =======================
 
-The examples in this chapter will use a spreadsheet named example.xlsx stored in the root folder. You can either create the spreadsheet yourself or download it from https://nostarch.com/automatestuff2/. Figure 13-1 shows the tabs for the three default sheets named Sheet1, Sheet2, and Sheet3 that Excel automatically provides for new workbooks. (The number of default sheets created may vary between operating systems and spreadsheet programs.)
+The examples in this section will use a spreadsheet named example.xlsx stored in the root folder. You can either create the spreadsheet yourself or download it from https://nostarch.com/automatestuff2/. Figure 13-1 shows the tabs for the three default sheets named Sheet1, Sheet2, and Sheet3 that Excel automatically provides for new workbooks. (The number of default sheets created may vary between operating systems and spreadsheet programs.)
 
 https://automatetheboringstuff.com/2e/images/000024.jpg
 Figure 13-1: The tabs for a workbook’s sheets are in the lower-left corner of Excel.
@@ -41,247 +76,188 @@ Sheet 1 in the example file should look like Table 13-1. (If you didn’t downlo
 
 Table 13-1: The example.xlsx Spreadsheet
 
-A
++--+-----------------+--------------+----+
+|  | A               | B            | C  |
++==+=================+==============+====+
+| 1|5/04/2015 13:34  |Apples        |  73|
++--+-----------------+--------------+----+
+| 2|5/04/2015 3:41   |Cherries      |  85|
++--+-----------------+--------------+----+
+| 3|6/04/2015 12:46  |Pears         |  14|
++--+-----------------+--------------+----+
+| 4|8/04/2015 8:59   |Oranges       |  52|
++--+-----------------+--------------+----+
+| 5|10/04/2015 2:07  |Apples        | 152|
++--+-----------------+--------------+----+
+| 6|10/04/2015 18:10 |Bananas       |  23|
++--+-----------------+--------------+----+
+| 7|10/04/2015 2:40  |Strawberries  |  98|
++--+-----------------+--------------+----+
 
-B
+Now that we have our example spreadsheet, let’s see how we can manipulate it with the |odev|_ package.
 
-C
+Opening Excel Documents with ODEV
+---------------------------------
 
-1
+Once you’ve installed the |odev|_ package, you’ll be able to use the Calc class. Enter the following into a new interactive shell:
 
-4/5/2015  1:34:02 PM
-
-Apples
-
-73
-
-2
-
-4/5/2015  3:41:23 AM
-
-Cherries
-
-85
-
-3
-
-4/6/2015  12:46:51 PM
-
-Pears
-
-14
-
-4
-
-4/8/2015  8:59:43 AM
-
-Oranges
-
-52
-
-5
-
-4/10/2015  2:07:00 AM
-
-Apples
-
-152
-
-6
-
-4/10/2015  6:10:37 PM
-
-Bananas
-
-23
-
-7
-
-4/10/2015  2:40:46 AM
-
-Strawberries
-
-98
-
-Now that we have our example spreadsheet, let’s see how we can manipulate it with the openpyxl module.
-
-Opening Excel Documents with OpenPyXL
--------------------------------------
-
-Once you’ve imported the openpyxl module, you’ll be able to use the openpyxl.load_workbook() function. Enter the following into the interactive shell:
-
->>> import openpyxl
->>> wb = openpyxl.load_workbook('example.xlsx')
+>>> from ooodev.utils.lo import Lo
+>>> loader = Lo.load_office(Lo.ConnectSocket(headless=True, soffice="C:\\Program Files\\LibreOfficeDev 7\\program\\soffice.exe"))
+>>>
+>>> from ooodev.office.calc import Calc
+>>> wb = Calc.open_doc('example.xlsx', loader)
 >>> type(wb)
-<class 'openpyxl.workbook.workbook.Workbook'>
+<class 'pyuno'>
 
-The openpyxl.load_workbook() function takes in the filename and returns a value of the workbook data type. This Workbook object represents the Excel file, a bit like how a File object represents an opened text file.
+The Calc.open_doc() class takes in the filename and loader, and returns a value of the workbook data type. This Workbook object represents the Excel file, a bit like how a File object represents an opened text file.
 
 Remember that example.xlsx needs to be in the current working directory in order for you to work with it. You can find out what the current working directory is by importing os and using os.getcwd(), and you can change the current working directory using os.chdir().
 
 Getting Sheets from the Workbook
 --------------------------------
 
-You can get a list of all the sheet names in the workbook by accessing the sheetnames attribute. Enter the following into the interactive shell:
+You can get a list of all the sheet names in the workbook by accessing the sheetnames property. Enter the following into the interactive shell:
 
->>> import openpyxl
->>> wb = openpyxl.load_workbook('example.xlsx')
->>> wb.sheetnames # The workbook's sheets' names.
-['Sheet1', 'Sheet2', 'Sheet3']
->>> sheet = wb['Sheet3'] # Get a sheet from the workbook.
->>> sheet
-<Worksheet "Sheet3">
->>> type(sheet)
-<class 'openpyxl.worksheet.worksheet.Worksheet'>
->>> sheet.title # Get the sheet's title as a string.
+>>> Calc.get_sheet_names(wb)
+('Sheet1', 'Sheet2', 'Sheet3')
+>>> ws = Calc.get_sheet(doc=wb, sheet_name='Sheet3')
+>>> Calc.get_sheet_name(ws)
 'Sheet3'
->>> anotherSheet = wb.active # Get the active sheet.
->>> anotherSheet
-<Worksheet "Sheet1">
+>>> ws2 = Calc.get_active_sheet(wb)
+>>> Calc.get_sheet_name(ws2)
+'Sheet1'
 
-Each sheet is represented by a Worksheet object, which you can obtain by using the square brackets with the sheet name string like a dictionary key. Finally, you can use the active attribute of a Workbook object to get the workbook’s active sheet. The active sheet is the sheet that’s on top when the workbook is opened in Excel. Once you have the Worksheet object, you can get its name from the title attribute.
+>>> Lo.close_doc(wb)
+>>> Lo.close_office()
+True
+
+Each sheet is represented by a Worksheet object and you can use the Calc class to return it's properties. get_sheet_names() will return all sheets in the workbook given as an argument. A particular Worksheet object is returned using get_sheet() with the Workbook and sheet name string as arguments, and get_sheet_name() with a Worksheet object argument returns teh Worksheet name. Finally, you can use get_active_sheet() of a Workbook object to get the workbook’s active sheet, and from there the name. The active sheet is the sheet that is displayed when the workbook is opened on your computer.
 
 Getting Cells from the Sheets
 -----------------------------
 
-Once you have a Worksheet object, you can access a Cell object by its name. Enter the following into the interactive shell:
+Once you have a Worksheet object, you can access a Cell object using the Calc class. Enter the following into the interactive shell:
 
->>> import openpyxl
->>> wb = openpyxl.load_workbook('example.xlsx')
->>> sheet = wb['Sheet1'] # Get a sheet from the workbook.
->>> sheet['A1'] # Get a cell from the sheet.
-<Cell 'Sheet1'.A1>
->>> sheet['A1'].value # Get the value from the cell.
-datetime.datetime(2015, 4, 5, 13, 34, 2)
->>> c = sheet['B1'] # Get another cell from the sheet.
->>> c.value
+>>> from ooodev.utils.lo import Lo
+>>> from ooodev.office.calc import Calc
+>>> from ooodev.utils.gui import GUI
+>>> from ooodev.utils.date_time_util import DateUtil
+>>>
+>>> _ = Lo.load_office(Lo.ConnectSocket(soffice="C:\\Program Files\\LibreOfficeDev 7\\program\\soffice.exe"))
+>>> wb = Calc.open_doc('example.xlsx')
+>>> GUI.set_visible(is_visible=True, odoc=wb)
+>>>
+>>> ws = Calc.get_sheet(doc=wb, sheet_name='Sheet1')
+>>>
+>>> Calc.get_val(sheet=ws, cell_name="A1")
+42099.565300925926
+>>> DateUtil.date_from_number(Calc.get_val(sheet=ws, cell_name="A1"))
+datetime.datetime(2015, 4, 5, 13, 34, 2, tzinfo=datetime.timezone.utc)
+>>> str(DateUtil.date_from_number(Calc.get_val(sheet=ws, cell_name="A1")))
+'2015-04-05 13:34:02+00:00'
+>>>
+>>> Calc.get_val(sheet=ws, cell_name="B1")
 'Apples'
->>> # Get the row, column, and value from the cell.
->>> 'Row %s, Column %s is %s' % (c.row, c.column, c.value)
-'Row 1, Column B is Apples'
->>> 'Cell %s is %s' % (c.coordinate, c.value)
-'Cell B1 is Apples'
->>> sheet['C1'].value
-73
+>>>
+>>> c = Calc.get_cell(ws, "B1")
+>>> 'Row %s, Column %s is %s' % (Calc.get_cell_address(c).Row, Calc.get_cell_address(c).Column, Calc.get_val(c))
+'Row 0, Column 1 is Apples'
+>>>
+>>> Calc.get_val(sheet=ws, cell_name="C1")
+73.0
 
-The Cell object has a value attribute that contains, unsurprisingly, the value stored in that cell. Cell objects also have row, column, and coordinate attributes that provide location information for the cell.
+The Cell object has a value property that contains, unsurprisingly, the value stored in that cell. There are many ways of referencing Cell objects, using the cell object, or the sheet with: cell address, cell name also have row, column, and coordinate properties that provide location information for the cell.
 
-Here, accessing the value attribute of our Cell object for cell B1 gives us the string 'Apples'. The row attribute gives us the integer 1, the column attribute gives us 'B', and the coordinate attribute gives us 'B1'.
+|odev|_ returns dates as float so they need to be formatted to display the date in the required format.
 
-OpenPyXL will automatically interpret the dates in column A and return them as datetime values rather than strings. The datetime data type is explained further in Chapter 17.
+Here, accessing the value property of our Cell object for cell B1 gives us the string 'Apples'. The row property gives us the integer 1, the column property gives us 'B', and the coordinate property gives us 'B1'.
 
-Specifying a column by letter can be tricky to program, especially because after column Z, the columns start by using two letters: AA, AB, AC, and so on. As an alternative, you can also get a cell using the sheet’s cell() method and passing integers for its row and column keyword arguments. The first row or column integer is 1, not 0. Continue the interactive shell example by entering the following:
+Specifying a column by letter can be tricky to program, especially because after column Z, the columns start by using two letters: AA, AB, AC, and so on. As an alternative, you can also get a cell using Calc's get_cell() method and passing integers for its row and column keyword arguments. The first row or column integer is 0, not 1. Continue the interactive shell example by entering the following:
 
->>> sheet.cell(row=1, column=2)
-<Cell 'Sheet1'.B1>
->>> sheet.cell(row=1, column=2).value
+>>> Calc.get_val(Calc.get_cell(ws, "B1"))
 'Apples'
->>> for i in range(1, 8, 2): # Go through every other row:
-...     print(i, sheet.cell(row=i, column=2).value)
+>>> Calc.get_val(Calc.get_cell(ws, 1,0))
+'Apples'
+>>> for i in range(0, 7, 2): # Go through every other row:
+...     print(i+1, Calc.get_val(Calc.get_cell(ws, 1,i)))
 ...
 1 Apples
 3 Pears
 5 Apples
 7 Strawberries
 
-As you can see, using the sheet’s cell() method and passing it row=1 and column=2 gets you a Cell object for cell B1, just like specifying sheet['B1'] did. Then, using the cell() method and its keyword arguments, you can write a for loop to print the values of a series of cells.
+As you can see, using Calc's get_cell() method and passing it column=1 and row=0 gets you a Cell object for cell B1, just like specifying get_cell() with 'B1' did. Then, using the get_val() method and its keyword arguments, you can write a for loop to print the values of a series of cells.
 
 Say you want to go down column B and print the value in every cell with an odd row number. By passing 2 for the range() function’s “step” parameter, you can get cells from every second row (in this case, all the odd-numbered rows). The for loop’s i variable is passed for the row keyword argument to the cell() method, while 2 is always passed for the column keyword argument. Note that the integer 2, not the string 'B', is passed.
 
-You can determine the size of the sheet with the Worksheet object’s max_row and max_column attributes. Enter the following into the interactive shell:
+You can determine the size of the sheet with the Worksheet object’s max_row and max_column properties. Enter the following into the interactive shell:
 
->>> import openpyxl
->>> wb = openpyxl.load_workbook('example.xlsx')
->>> sheet = wb['Sheet1']
->>> sheet.max_row # Get the highest row number.
-7
->>> sheet.max_column # Get the highest column number.
-3
+>>> range = Calc.find_used_range(ws)
+>>> Calc.get_range_str(range)
+'A1:C7'
+>>> Calc.get_address(range)
+(com.sun.star.table.CellRangeAddress){ Sheet = (short)0x0, StartColumn = (long)0x0, StartRow = (long)0x0, EndColumn = (long)0x2, EndRow = (long)0x6 }
+>>> Calc.get_address(range).EndRow
+6
+>>> Calc.get_address(range).EndColumn
+2
 
-Note that the max_column attribute is an integer rather than the letter that appears in Excel.
+Note that the max_column property is an integer rather than the letter that appears in Excel.
 
 Converting Between Column Letters and Numbers
 ---------------------------------------------
 
-To convert from letters to numbers, call the openpyxl.utils.column_index_from_string() function. To convert from numbers to letters, call the openpyxl.utils.get_column_letter() function. Enter the following into the interactive shell:
+To convert from letters to numbers, use the TableHelper class with the col_name_to_int() method. To convert from numbers to letters, use the make_column_name() method. Enter the following into the interactive shell:
 
->>> import openpyxl
->>> from openpyxl.utils import get_column_letter, column_index_from_string
->>> get_column_letter(1) # Translate column 1 to a letter.
-'A'
->>> get_column_letter(2)
-'B'
->>> get_column_letter(27)
-'AA'
->>> get_column_letter(900)
-'AHP'
->>> wb = openpyxl.load_workbook('example.xlsx')
->>> sheet = wb['Sheet1']
->>> get_column_letter(sheet.max_column)
-'C'
->>> column_index_from_string('A') # Get A's number.
+>>> from ooodev.utils.table_helper import TableHelper
+>>> TableHelper.col_name_to_int('A') # Get A's number.
 1
->>> column_index_from_string('AA')
+>>> TableHelper.col_name_to_int('AA')
 27
+>>> TableHelper.make_column_name(85)
+'CG'
 
-After you import these two functions from the openpyxl.utils module, you can call get_column_letter() and pass it an integer like 27 to figure out what the letter name of the 27th column is. The function column_index_string() does the reverse: you pass it the letter name of a column, and it tells you what number that column is. You don’t need to have a workbook loaded to use these functions. If you want, you can load a workbook, get a Worksheet object, and use a Worksheet attribute like max_column to get an integer. Then, you can pass that integer to get_column_letter().
+After you import the TableHelper class from |odev|_ , you can use make_column_name() and pass it an integer like 27 to figure out what the letter name of the 27th column is. The function column_index_string() does the reverse: you pass it the letter name of a column, and it tells you what number that column is. You don’t need to have a workbook loaded to use these functions. If you want, you can load a workbook, get a Worksheet object, and use a Worksheet property like max_column to get an integer. Then, you can pass that integer to get_column_letter().
 
 Getting Rows and Columns from the Sheets
 ----------------------------------------
 
 You can slice Worksheet objects to get all the Cell objects in a row, column, or rectangular area of the spreadsheet. Then you can loop over all the cells in the slice. Enter the following into the interactive shell:
 
-   >>> import openpyxl
-   >>> wb = openpyxl.load_workbook('example.xlsx')
-   >>> sheet = wb['Sheet1']
-   >>> tuple(sheet['A1':'C3']) # Get all cells from A1 to C3.
-   ((<Cell 'Sheet1'.A1>, <Cell 'Sheet1'.B1>, <Cell 'Sheet1'.C1>), (<Cell
-   'Sheet1'.A2>, <Cell 'Sheet1'.B2>, <Cell 'Sheet1'.C2>), (<Cell 'Sheet1'.A3>,
-   <Cell 'Sheet1'.B3>, <Cell 'Sheet1'.C3>))
-➊ >>> for rowOfCellObjects in sheet['A1':'C3']:
-➋ ...     for cellObj in rowOfCellObjects:
-   ...         print(cellObj.coordinate, cellObj.value)
-   ...     print('--- END OF ROW ---')
 
-   A1 2015-04-05 13:34:02
-   B1 Apples
-   C1 73
-   --- END OF ROW ---
-   A2 2015-04-05 03:41:23
-   B2 Cherries
-   C2 85
-   --- END OF ROW ---
-   A3 2015-04-06 12:46:51
-   B3 Pears
-   C3 14
-   --- END OF ROW ---
+>>> data = Calc.get_array(sheet=ws, range_name="A1:C3")
+>>> tuple(data)
+((42099.565300925926, 'Apples', 73.0), (42099.15373842593, 'Cherries', 85.0), (42100.532534722224, 'Pears', 14.0))
+>>> for i, r in enumerate(data):
+...     for j, c in enumerate(r):
+...         print(Calc.column_number_str(j)+str(i+1), c)
+...     print('--- END OF ROW ---')
+...
+A1 42099.565300925926
+B1 Apples
+C1 73.0
+--- END OF ROW ---
+A2 42099.15373842593
+B2 Cherries
+C2 85.0
+--- END OF ROW ---
+A3 42100.532534722224
+B3 Pears
+C3 14.0
+--- END OF ROW ---
 
-Here, we specify that we want the Cell objects in the rectangular area from A1 to C3, and we get a Generator object containing the Cell objects in that area. To help us visualize this Generator object, we can use tuple() on it to display its Cell objects in a tuple.
+Here, we specify that we want the Cell objects in the rectangular area from A1 to C3, and we get a Generator object containing the Cell objects in that area. To help us visualize this Generator object, we can use tuple() on it to display its Cell objects in a tuple, alternatively use the Calc class static print_array.
 
 This tuple contains three tuples: one for each row, from the top of the desired area to the bottom. Each of these three inner tuples contains the Cell objects in one row of our desired area, from the leftmost cell to the right. So overall, our slice of the sheet contains all the Cell objects in the area from A1 to C3, starting from the top-left cell and ending with the bottom-right cell.
 
-To print the values of each cell in the area, we use two for loops. The outer for loop goes over each row in the slice ➊. Then, for each row, the nested for loop goes through each cell in that row ➋.
+To print the values of each cell in the area, we use two for loops. The outer for loop goes over each row in the slice. Then, for each row, the nested for loop goes through each cell in that row.
 
-To access the values of cells in a particular row or column, you can also use a Worksheet object’s rows and columns attribute. These attributes must be converted to lists with the list() function before you can use the square brackets and an index with them. Enter the following into the interactive shell:
+To access the values of cells in a particular row or column, you can also use a Worksheet object’s rows and columns interface. These properties must be converted to lists with the list() function before you can use the square brackets and an index with them. Enter the following into the interactive shell:
 
->>> import openpyxl
->>> wb = openpyxl.load_workbook('example.xlsx')
->>> sheet = wb.active
->>> list(sheet.columns)[1] # Get second column's cells.
-(<Cell 'Sheet1'.B1>, <Cell 'Sheet1'.B2>, <Cell 'Sheet1'.B3>, <Cell 'Sheet1'.
-B4>, <Cell 'Sheet1'.B5>, <Cell 'Sheet1'.B6>, <Cell 'Sheet1'.B7>)
->>> for cellObj in list(sheet.columns)[1]:
-        print(cellObj.value)
+>>> list(Calc.get_col(ws,1))
+['Apples', 'Cherries', 'Pears', 'Oranges', 'Apples', 'Bananas', 'Strawberries']
 
-Apples
-Cherries
-Pears
-Oranges
-Apples
-Bananas
-Strawberries
-
-Using the rows attribute on a Worksheet object will give you a tuple of tuples. Each of these inner tuples represents a row, and contains the Cell objects in that row. The columns attribute also gives you a tuple of tuples, with each of the inner tuples containing the Cell objects in a particular column. For example.xlsx, since there are 7 rows and 3 columns, rows gives us a tuple of 7 tuples (each containing 3 Cell objects), and columns gives us a tuple of 3 tuples (each containing 7 Cell objects).
+Using the rows property on a Worksheet object will give you a tuple of tuples. Each of these inner tuples represents a row, and contains the Cell objects in that row. The columns property also gives you a tuple of tuples, with each of the inner tuples containing the Cell objects in a particular column. For example.xlsx, since there are 7 rows and 3 columns, rows gives us a tuple of 7 tuples (each containing 3 Cell objects), and columns gives us a tuple of 3 tuples (each containing 7 Cell objects).
 
 To access one particular tuple, you can refer to it by its index in the larger tuple. For example, to get the tuple that represents column B, you use list(sheet.columns)[1]. To get the tuple containing the Cell objects in column A, you’d use list(sheet.columns)[0]. Once you have a tuple representing one row or column, you can loop through its Cell objects and print their values.
 
@@ -290,14 +266,19 @@ Workbooks, Sheets, Cells
 
 As a quick review, here’s a rundown of all the functions, methods, and data types involved in reading a cell out of a spreadsheet file:
 
-Import the openpyxl module.
-Call the openpyxl.load_workbook() function.
+Import the |odev|_ modules
 Get a Workbook object.
-Use the active or sheetnames attributes.
+Use the active or sheetnames properties.
 Get a Worksheet object.
 Use indexing or the cell() sheet method with row and column keyword arguments.
 Get a Cell object.
-Read the Cell object’s value attribute.
+Read the Cell object’s value property.
+
+This section is finished so close the doc and office:
+
+>>> Lo.close_doc(wb)
+>>> Lo.close_office()
+True
 
 Project: Reading Data from a Spreadsheet
 ========================================
@@ -319,7 +300,7 @@ Counts the total population of each county
 Prints the results
 This means your code will need to do the following:
 
-Open and read the cells of an Excel document with the openpyxl module.
+Open and read the cells of an Excel document with |odev|_ modules.
 Calculate all the tract and population data and store it in a data structure.
 Write the data structure to a text file with the .py extension using the pprint module.
 
@@ -330,27 +311,35 @@ There is just one sheet in the censuspopdata.xlsx spreadsheet, named 'Population
 
 Open a new file editor tab and enter the following code. Save the file as readCensusExcel.py.
 
-   #! python3
-   # readCensusExcel.py - Tabulates population and number of census tracts for
-   # each county.
+#! python3
+# readCensusExcel.py - Tabulates population and number of census tracts for
+# each county.
 
-➊ import openpyxl, pprint
-   print('Opening workbook...')
-➋ wb = openpyxl.load_workbook('censuspopdata.xlsx')
-➌ sheet = wb['Population by Census Tract']
-   countyData = {}
+import pprint
+from ooodev.utils.lo import Lo
+from ooodev.office.calc import Calc
+from ooodev.utils.gui import GUI
+from ooodev.utils.date_time_util import DateUtil
 
-   # TODO: Fill in countyData with each county's population and tracts.
-   print('Reading rows...')
-➍ for row in range(2, sheet.max_row + 1):
-       # Each row in the spreadsheet has data for one census tract.
-       state  = sheet['B' + str(row)].value
-       county = sheet['C' + str(row)].value
-       pop    = sheet['D' + str(row)].value
+_ = Lo.load_office(Lo.ConnectSocket())
+print('Opening workbook...')
+wb = Calc.open_doc('censuspopdata.xlsx')
+GUI.set_visible(is_visible=True, odoc=wb)
+
+sheet = Calc.get_sheet(doc=wb, sheet_name='Population by Census Tract')
+countyData = {}
+
+# TODO: Fill in countyData with each county's population and tracts.
+print('Reading rows...')
+for row in range(2, Calc.get_row_used_last_index(sheet) + 2):
+    # Each row in the spreadsheet has data for one census tract.
+    state  = Calc.get_val(sheet, 'B' + str(row))
+    county = Calc.get_val(sheet, 'C' + str(row))
+    pop    = Calc.get_val(sheet, 'D' + str(row))
 
 # TODO: Open a new text file and write the contents of countyData to it.
 
-This code imports the openpyxl module, as well as the pprint module that you’ll use to print the final county data ➊. Then it opens the censuspopdata.xlsx file ➋, gets the sheet with the census data ➌, and begins iterating over its rows ➍.
+This code imports the |odev|_ modules, as well as the pprint module that you’ll use to print the final county data. Then it opens the censuspopdata.xlsx file, gets the sheet with the census data, and begins iterating over its rows.
 
 Note that you’ve also created a variable named countyData, which will contain the populations and number of tracts you calculate for each county. Before you can store anything in it, though, you should determine exactly how you’ll structure the data inside it.
 
@@ -386,29 +375,28 @@ Now that you know how countyData will be structured, you can write the code that
 
 --snip--
 
-for row in range(2, sheet.max_row + 1):
-     # Each row in the spreadsheet has data for one census tract.
-     state  = sheet['B' + str(row)].value
-     county = sheet['C' + str(row)].value
-     pop    = sheet['D' + str(row)].value
-
-     # Make sure the key for this state exists.
-  ➊ countyData.setdefault(state, {})
-     # Make sure the key for this county in this state exists.
-  ➋ countyData[state].setdefault(county, {'tracts': 0, 'pop': 0})
-
-     # Each row represents one census tract, so increment by one.
-  ➌ countyData[state][county]['tracts'] += 1
-     # Increase the county pop by the pop in this census tract.
-  ➍ countyData[state][county]['pop'] += int(pop)
+print('Reading rows...')
+for row in range(2, Calc.get_row_used_last_index(sheet) + 2):
+    # Each row in the spreadsheet has data for one census tract.
+    state  = Calc.get_val(sheet, 'B' + str(row))
+    county = Calc.get_val(sheet, 'C' + str(row))
+    pop    = Calc.get_val(sheet, 'D' + str(row))
+    # Make sure the key for this state exists.
+    _ = countyData.setdefault(state, {})
+    # Make sure the key for this county in this state exists.
+    _ = countyData[state].setdefault(county, {'tracts': 0, 'pop': 0})
+    # Each row represents one census tract, so increment by one.
+    countyData[state][county]['tracts'] += 1
+    # Increase the county pop by the pop in this census tract.
+    countyData[state][county]['pop'] += int(pop)
 
 # TODO: Open a new text file and write the contents of countyData to it.
 
-The last two lines of code perform the actual calculation work, incrementing the value for tracts ➌ and increasing the value for pop ➍ for the current county on each iteration of the for loop.
+The last two lines of code perform the actual calculation work, incrementing the value for tracts and increasing the value for pop for the current county on each iteration of the for loop.
 
-The other code is there because you cannot add a county dictionary as the value for a state abbreviation key until the key itself exists in countyData. (That is, countyData['AK']['Anchorage']['tracts'] += 1 will cause an error if the 'AK' key doesn’t exist yet.) To make sure the state abbreviation key exists in your data structure, you need to call the setdefault() method to set a value if one does not already exist for state ➊.
+The other code is there because you cannot add a county dictionary as the value for a state abbreviation key until the key itself exists in countyData. (That is, countyData['AK']['Anchorage']['tracts'] += 1 will cause an error if the 'AK' key doesn’t exist yet.) To make sure the state abbreviation key exists in your data structure, you need to call the setdefault() method to set a value if one does not already exist for state.
 
-Just as the countyData dictionary needs a dictionary as the value for each state abbreviation key, each of those dictionaries will need its own dictionary as the value for each county key ➋. And each of those dictionaries in turn will need keys 'tracts' and 'pop' that start with the integer value 0. (If you ever lose track of the dictionary structure, look back at the example dictionary at the start of this section.)
+Just as the countyData dictionary needs a dictionary as the value for each state abbreviation key, each of those dictionaries will need its own dictionary as the value for each county key. And each of those dictionaries in turn will need keys 'tracts' and 'pop' that start with the integer value 0. (If you ever lose track of the dictionary structure, look back at the example dictionary at the start of this section.)
 
 Since setdefault() will do nothing if the key already exists, you can call it on every iteration of the for loop without a problem.
 
@@ -423,7 +411,7 @@ After the for loop has finished, the countyData dictionary will contain all of t
 
 --snip--
 
-for row in range(2, sheet.max_row + 1):
+for row in range(2, Calc.get_row_used_last_index(sheet)-1):
 --snip--
 
 # Open a new text file and write the contents of countyData to it.
@@ -446,7 +434,66 @@ The 2010 population of Anchorage was 291826
 
 The readCensusExcel.py program was throwaway code: once you have its results saved to census2010.py, you won’t need to run the program again. Whenever you need the county data, you can just run import census2010.
 
-Calculating this data by hand would have taken hours; this program did it in a few seconds. Using OpenPyXL, you will have no trouble extracting information that is saved to an Excel spreadsheet and performing calculations on it. You can download the complete program from https://nostarch.com/automatestuff2/.
+Calculating this data by hand would have taken hours; this program did it in a few seconds. Using ODEV, you will have no trouble extracting information that is saved to an Excel spreadsheet and performing calculations on it. You can download the complete program from https://nostarch.com/automatestuff2/.
+
+>>> #! python3
+>>> # readCensusExcel.py - Tabulates population and number of census tracts for
+>>> # each county.
+>>>
+>>> import pprint
+>>> from ooodev.utils.lo import Lo
+>>> from ooodev.office.calc import Calc
+>>> from ooodev.utils.gui import GUI
+>>>
+>>> _ = Lo.load_office(Lo.ConnectSocket(soffice="C:\\Program Files\\LibreOfficeDev 7\\program\\soffice.exe"))
+>>> print('Opening workbook...')
+Opening workbook...
+>>> wb = Calc.open_doc('censuspopdata.xlsx')
+>>> GUI.set_visible(is_visible=True, odoc=wb)
+>>>
+>>> sheet = Calc.get_sheet(doc=wb, sheet_name='Population by Census Tract')
+>>> countyData = {}
+>>>
+>>> range_name = 'B2:D' + str(Calc.get_row_used_last_index(sheet)+1)
+>>> # print(range_name)
+>>> data = Calc.get_array(sheet=sheet, range_name=range_name)
+>>>
+>>> print('Reading rows...')
+Reading rows...
+>>> for i, row in enumerate(data):
+...     # Each row in the spreadsheet has data for one census tract.
+...     state, county, pop = row
+...     # Make sure the key for this state exists.
+...     _ = countyData.setdefault(state, {})
+...     # Make sure the key for this county in this state exists.
+...     _ = countyData[state].setdefault(county, {'tracts': 0, 'pop': 0})
+...     # Each row represents one census tract, so increment by one.
+...     countyData[state][county]['tracts'] += 1
+...     # Increase the county pop by the pop in this census tract.
+...     countyData[state][county]['pop'] += int(pop)
+...
+>>>
+>>> # Open a new text file and write the contents of countyData to it.
+>>> print('Writing results...')
+Writing results...
+>>> resultFile = open('census2010B.py', 'w')
+>>> resultFile.write('allData = ' + pprint.pformat(countyData))
+152237
+>>> resultFile.close()
+>>> print('Done.')
+Done.
+>>>
+>>> import os
+>>> import census2010
+>>> census2010.allData['AK']['Anchorage']
+{'pop': 291826, 'tracts': 55}
+>>> anchoragePop = census2010.allData['AK']['Anchorage']['pop']
+>>> print('The 2010 population of Anchorage was ' + str(anchoragePop))
+The 2010 population of Anchorage was 291826
+>>>
+>>> Lo.close_doc(wb)
+>>> Lo.close_office()
+True
 
 Ideas for Similar Programs
 --------------------------
@@ -461,13 +508,10 @@ Read data from a spreadsheet and use it as the input for your Python programs.
 Writing Spreadsheet Documents
 =============================
 
-ooodev also provides ways of writing data, meaning that your programs can create and edit spreadsheet files. With Python, it’s simple to create spreadsheets with thousands of rows of data.
-
-A LO instance is required before python can interact with the objects. When the python program is finished it is important to close any document or LO instances or they will continue to run in the computer. This initialisation and finalisation code is required even if it is not shown in the examples.
+|odev|_ also provides ways of writing data, meaning that your programs can create and edit spreadsheet files. With Python, it’s simple to create spreadsheets with thousands of rows of data.
 
 >>> from ooodev.utils.lo import Lo
 >>> loader = Lo.load_office(Lo.ConnectSocket(headless=True))
-Loading Office...
 >>> # use the Office API... NOTE: Following lines raise an error
 >>> Lo.close_doc(wb)
 Closing the document
@@ -498,9 +542,9 @@ True
 >>> Calc.save_doc(wb, "foo.ods")
 >>>
 >>> Lo.close_doc(wb)
->>> lo.close_office()
+>>> Lo.close_office()
 
-The workbook will start off with a single sheet named Sheet. **You can change the name of the sheet by storing a new string in its title attribute.**
+The workbook will start off with a single sheet named Sheet. You can change the name of the sheet using the set_sheet_name() method which stores a new string in its title property.
 
 Any time you modify the Workbook object or its sheets and cells, the spreadsheet file will not be saved until you call the save_doc() workbook method. Enter the following into the interactive shell (with example.xlsx in the current working directory):
 
@@ -524,7 +568,7 @@ Whenever you edit a spreadsheet you’ve loaded from a file, you should always s
 Creating and Removing Sheets
 ----------------------------
 
-Sheets can be added to and removed from a workbook with the insert_sheet() method and del operator. Enter the following into the interactive shell:
+Sheets can be added to and removed from a workbook with the insert_sheet() and remove_sheet() methods. Enter the following into the interactive shell:
 
 >>> from ooodev.utils.lo import Lo
 >>> loader = Lo.load_office(Lo.ConnectSocket(headless=True))
@@ -532,6 +576,7 @@ Sheets can be added to and removed from a workbook with the insert_sheet() metho
 >>> from ooodev.office.calc import Calc
 >>> wb = Calc.create_doc(loader=loader)
 Creating Office document scalc
+
 >>> ws = Calc.get_sheet(doc=wb, index=0)
 >>> Calc.get_sheet_names(wb)
 ('Sheet1',)
@@ -545,7 +590,7 @@ Creating Office document scalc
 >>> Calc.get_sheet_names(wb)
 ('First Sheet', 'Sheet1', 'Middle Sheet', 'Sheet2')
 
-The insert_sheet() method returns a new Worksheet object named SheetX, **which by default is set to be the last sheet in the workbook. Optionally, the index and name of the new sheet can be specified with the index and title keyword arguments.**
+The insert_sheet() method returns a new Worksheet object named SheetX, which by default is set to be the last sheet in the workbook. Optionally, the name and index of the new sheet can be specified with the name and index keyword arguments.
 
 Continue the previous example by entering the following:
 
@@ -557,11 +602,11 @@ True
 True
 >>> Calc.get_sheet_names(wb)
 ('First Sheet', 'Sheet1')
->>>
+
 >>> Lo.close_doc(wb)
 >>> Lo.close_office()
 
-You can use the remove_sheet method to remove a sheet from a workbook, **just like you can use it to delete a key-value pair from a dictionary.**
+You can use the remove_sheet() method to remove a sheet from a workbook, similarly to deleting a key-value pair from a dictionary.
 
 Remember to call the save_doc() method to save the changes after adding sheets to or removing sheets from the workbook.
 
@@ -577,11 +622,12 @@ Writing values to cells is much like writing values to keys in a dictionary. Ent
 >>> from ooodev.office.calc import Calc
 >>> wb = Calc.create_doc(loader=loader)
 Creating Office document scalc
+
 >>> ws = Calc.get_sheet(doc=wb, index=0)
 >>> Calc.set_val('Hello, world!', ws, 'A1')
 >>> Calc.get_string(ws, 'A1')
 'Hello, world!'
->>>
+
 >>> Lo.close_doc(wb)
 >>> Lo.close_office()
 
@@ -617,9 +663,9 @@ The prices that you need to update are as follows:
 
 Celery         1.19
 
-Garlic          3.07
+Garlic         3.07
 
-Lemon         1.27
+Lemon          1.27
 
 You could write code like this:
 
@@ -634,12 +680,14 @@ Having the produce and updated price data hardcoded like this is a bit inelegant
 
 A more flexible solution is to store the corrected price information in a dictionary and write your code to use this data structure. In a new file editor tab, enter the following code:
 
+[*** FIX THIS ***
+
 #! python3
 # updateProduce.py - Corrects costs in produce sales spreadsheet.
 
-import openpyxl
+import ***openpyxl***************************************************************************************
 
-wb = openpyxl.load_workbook('produceSales.xlsx')
+wb = ***openpyxl***.load_workbook('produceSales.xlsx')
 sheet = wb['Sheet']
 
 # The produce types and their updated prices
@@ -656,18 +704,20 @@ Step 2: Check All Rows and Update Incorrect Prices
 
 The next part of the program will loop through all the rows in the spreadsheet. Add the following code to the bottom of updateProduce.py:
 
-   #! python3
-   # updateProduce.py - Corrects costs in produce sales spreadsheet.
+#! python3
+# updateProduce.py - Corrects costs in produce sales spreadsheet.
 
-   --snip--
+--snip--
 
-   # Loop through the rows and update the prices.
-➊ for rowNum in range(2, sheet.max_row):    # skip the first row
-    ➋ produceName = sheet.cell(row=rowNum, column=1).value
-    ➌ if produceName in PRICE_UPDATES:
-          sheet.cell(row=rowNum, column=2).value = PRICE_UPDATES[produceName]
+[*** FIX THIS ***
 
-➍ wb.save('updatedProduceSales.xlsx')
+# Loop through the rows and update the prices.
+for rowNum in range(2, sheet.max_row):    # skip the first row
+    produceName = sheet.cell(row=rowNum, column=1).value
+    if produceName in PRICE_UPDATES:
+        sheet.cell(row=rowNum, column=2).value = PRICE_UPDATES[produceName]
+
+wb.save('updatedProduceSales.xlsx')
 
 We loop through the rows starting at row 2, since row 1 is just the header ➊. The cell in column 1 (that is, column A) will be stored in the variable produceName ➋. If produceName exists as a key in the PRICE_UPDATES dictionary ➌, then you know this is a row that must have its price corrected. The correct price will be in PRICE_UPDATES[produceName].
 
@@ -691,92 +741,109 @@ Setting the Font Style of Cells
 
 Styling certain cells, rows, or columns can help you emphasize important areas in your spreadsheet. In the produce spreadsheet, for example, your program could apply bold text to the potato, garlic, and parsnip rows. Or perhaps you want to italicize every row with a cost per pound greater than $5. Styling parts of a large spreadsheet by hand would be tedious, but your programs can do it instantly.
 
-To customize font styles in cells, important, import the Font() function from the openpyxl.styles module.
+To customize font styles in cells the |odev|_ Props class and two ooo.dyn.awt classes, font_slant and font_weight, must be imported.
 
-from openpyxl.styles import Font
+Note that an alias has been used on the classes to make them easier to recognise.
 
-This allows you to type Font() instead of openpyxl.styles.Font(). (See “Importing Modules” on page 47 to review this style of import statement.)
+Here’s an example that creates a new workbook and sets cell A1 to have an italicized, bold, 24-point font. Enter the following into the interactive shell:
 
-Here’s an example that creates a new workbook and sets cell A1 to have a 24-point, italicized font. Enter the following into the interactive shell:
+>>> from ooodev.utils.lo import Lo
+>>> from ooodev.office.calc import Calc
+>>> from ooodev.utils.gui import GUI
+>>>
+>>> loader = Lo.load_office(Lo.ConnectSocket())
+>>> doc = Calc.create_doc()
+>>> GUI.set_visible(is_visible=True, odoc=doc)
 
-  >>> import openpyxl
-  >>> from openpyxl.styles import Font
-  >>> wb = openpyxl.Workbook()
-  >>> sheet = wb['Sheet']
-➊ >>> italic24Font = Font(size=24, italic=True) # Create a font.
-➋ >>> sheet['A1'].font = italic24Font # Apply the font to A1.
-  >>> sheet['A1'] = 'Hello, world!'
-  >>> wb.save('styles.xlsx')
+>>> sheet = Calc.get_sheet(doc=doc)
+>>> for i in range(1, 6): # create some data in column A
+...     Calc.set_val(i, sheet, 'A'+str(i))
+...
 
-In this example, Font(size=24, italic=True) returns a Font object, which is stored in italic24Font ➊. The keyword arguments to Font(), size and italic, configure the Font object’s styling information. And when sheet['A1'].font is assigned the italic24Font object ➋, all that font styling information gets applied to cell A1.
+>>> from ooodev.utils.props import Props
+>>> from ooo.dyn.awt.font_slant import FontSlant
+>>> from ooo.dyn.awt.font_weight import FontWeight
+>>>
+>>> cell = Calc.get_cell(sheet, 'A1')
+>>> Props.set(cell, CharPosture=FontSlant.ITALIC, CharWeight=FontWeight.BOLD, CharHeight=24,)
+>>> _ = Calc.save_doc(doc, "sampleChart.xlsx")
+
+>>> # check file
+>>> Lo.close_doc(doc=doc)
+>>> _ = Lo.close_office()
+
+In this example, Calc.get_cell() returns an XCell type with is used to reference the cell in Props.set()and set the properties directly. CharPosture and CharWeight use the FontSlat and FontWeight classes respectively as previously imported. CharHeight is set directly. The effect is shown in the saved file.
 
 Font Objects
 ============
 
-To set font attributes, you pass keyword arguments to Font(). Table 13-2 shows the possible keyword arguments for the Font() function.
+A number of |odev|_ classes have methods to change font properties. Table 13-2 shows key properties for Font objects.
 
-Table 13-2: Keyword Arguments for Font Objects
+Table 13-2: Properties for Font Objects
 
-Keyword argument
++-----------------+-----------+---------------------------------+
+| Property        | Data type | Description                     |
++=================+===========+=================================+
+|name             +String     + The font name, such as 'Calibri'|
+|                 +           + or 'Times New Roman'            |
++-----------------+-----------+---------------------------------+
+|size             +Integer    +The point size                   |
++-----------------+-----------+---------------------------------+
+|bold             +Boolean    +True, for bold font              |
++-----------------+-----------+---------------------------------+
+|italic           +Boolean    +True, for italic font            |
++-----------------+-----------+---------------------------------+
 
-Data type
+The best way of setting font attributes is to define a style and apply it to the required objects. In this example a spreadsheet is created the a style is; named, created, properties set, and applied to a cell object. The cell value is then set which demonstrates the new style, and the process is repeated again.
 
-Description
+>>> from ooodev.utils.lo import Lo
+>>> from ooodev.office.calc import Calc
+>>> from ooodev.utils.gui import GUI
+>>>
+>>> loader = Lo.load_office(Lo.ConnectSocket())
+>>> doc = Calc.create_doc()
+>>> GUI.set_visible(is_visible=True, odoc=doc)
+>>> sheet = Calc.get_sheet(doc=doc)
 
-name
+>>> from ooodev.utils.props import Props
+>>> from ooo.dyn.awt.font_slant import FontSlant
+>>> from ooo.dyn.awt.font_weight import FontWeight
+>>>
+>>> # Name style
+>>> HEADER_STYLE_NAME = "My HeaderStyle"
+>>> # Create style
+>>> style1 = Calc.create_cell_style(doc=doc, style_name=HEADER_STYLE_NAME)
+>>> # Set style properties
+>>> Props.set(style1, CharWeight=FontWeight.BOLD, CharHeight=14,)
+>>> # Apply style
+>>> Calc.change_style(sheet=sheet, style_name=HEADER_STYLE_NAME, range_name="A1")
+>>> # Set cell value
+>>> Calc.set_val('Bold Times New Roman', sheet, 'A1')
+>>> # Repeat for data
+>>> DATA_STYLE_NAME = "My DataStyle"
+>>> style2 = Calc.create_cell_style(doc=doc, style_name=DATA_STYLE_NAME)
+>>> Props.set(style2, CharPosture=FontSlant.ITALIC, CharHeight=24,)
+>>> Calc.change_style(sheet=sheet, style_name=DATA_STYLE_NAME, range_name="B3")
+>>> Calc.set_val('24 pt Italic', sheet, 'B3')
+>>> _ = Calc.save_doc(doc, "styles.xlsx")
 
-String
+>>> # check file
+>>> Lo.close_doc(doc=doc)
+>>> _ = Lo.close_office()
 
-The font name, such as 'Calibri' or 'Times New Roman'
-
-size
-
-Integer
-
-The point size
-
-bold
-
-Boolean
-
-True, for bold font
-
-italic
-
-Boolean
-
-True, for italic font
-
-You can call Font() to create a Font object and store that Font object in a variable. You then assign that variable to a Cell object’s font attribute. For example, this code creates various font styles:
-
->>> import openpyxl
->>> from openpyxl.styles import Font
->>> wb = openpyxl.Workbook()
->>> sheet = wb['Sheet']
-
->>> fontObj1 = Font(name='Times New Roman', bold=True)
->>> sheet['A1'].font = fontObj1
->>> sheet['A1'] = 'Bold Times New Roman'
-
->>> fontObj2 = Font(size=24, italic=True)
->>> sheet['B3'].font = fontObj2
->>> sheet['B3'] = '24 pt Italic'
-
->>> wb.save('styles.xlsx')
-
-Here, we store a Font object in fontObj1 and then set the A1 Cell object’s font attribute to fontObj1. We repeat the process with another Font object to set the font of a second cell. After you run this code, the styles of the A1 and B3 cells in the spreadsheet will be set to custom font styles, as shown in Figure 13-4.
+Here, we store a style name in a STYLE_NAME constant, create a style with create_cell_style() method, use the Prop class set() method to set the style properties, then set the cell value with the set_val() method. We repeat the process with another style for a second cell. After you run this code, the styles of the A1 and B3 cells in the spreadsheet will be set to custom character styles, as shown in Figure 13-4.
 
 https://automatetheboringstuff.com/2e/images/000007.jpg
-Figure 13-4: A spreadsheet with custom font styles
+Figure 13-4: A spreadsheet with custom font styles (??????? CHECK ??????)
 
-For cell A1, we set the font name to 'Times New Roman' and set bold to true, so our text appears in bold Times New Roman. We didn’t specify a size, so the openpyxl default, 11, is used. In cell B3, our text is italic, with a size of 24; we didn’t specify a font name, so the openpyxl default, Calibri, is used.
+For cell A1, we set the font name to 'Times New Roman' [*** FIX THIS ***] and set bold to true, so our text appears in bold Times New Roman. We didn’t specify a size, so the default is used. In cell B3, our text is italic, with a size of 24; we didn’t specify a font name, so the default, Calibri, is used.
 
 Formulas
 ========
 
-Excel formulas, which begin with an equal sign, can configure cells to contain values calculated from other cells. In this section, you’ll use the openpyxl module to programmatically add formulas to cells, just like any normal value. For example:
+Excel formulas, which begin with an equal sign, can configure cells to contain values calculated from other cells. In this section, you’ll use the setFormula() method on a cell to programmatically add formulas to cells, just like any normal value. For example:
 
->>> sheet['B9'] = '=SUM(B1:B8)'
+>>> Calc.get_cell(sheet, 'B9').setFormula('=SUM(B9)')
 
 This will store =SUM(B1:B8) as the value in cell B9. This sets the B9 cell to a formula that calculates the sum of values in cells B1 to B8. You can see this in action in Figure 13-5.
 
@@ -785,17 +852,28 @@ Figure 13-5: Cell B9 contains the formula =SUM(B1:B8), which adds the cells B1 t
 
 An Excel formula is set just like any other text value in a cell. Enter the following into the interactive shell:
 
->>> import openpyxl
->>> wb = openpyxl.Workbook()
->>> sheet = wb.active
->>> sheet['A1'] = 200
->>> sheet['A2'] = 300
->>> sheet['A3'] = '=SUM(A1:A2)' # Set the formula.
->>> wb.save('writeFormula.xlsx')
+>>> from ooodev.utils.lo import Lo
+>>> from ooodev.office.calc import Calc
+>>> from ooodev.utils.gui import GUI
+>>>
+>>> loader = Lo.load_office(Lo.ConnectSocket())
+>>> doc = Calc.create_doc()
+>>> GUI.set_visible(is_visible=True, odoc=doc)
 
-The cells in A1 and A2 are set to 200 and 300, respectively. The value in cell A3 is set to a formula that sums the values in A1 and A2. When the spreadsheet is opened in Excel, A3 will display its value as 500.
+>>> sheet = Calc.get_sheet(doc=doc)
+>>> Calc.set_val(200, sheet, 'A1')
+>>> Calc.set_val(300, sheet, 'A2')
+>>> cell = Calc.get_cell(sheet, 'A3')
+>>> cell.setFormula('=SUM(A1:A2)') # Set the formula
+>>> _ = Calc.save_doc(doc, "writeFormula.xlsx")
 
-Excel formulas offer a level of programmability for spreadsheets but can quickly become unmanageable for complicated tasks. For example, even if you’re deeply familiar with Excel formulas, it’s a headache to try to decipher what =IFERROR(TRIM(IF(LEN(VLOOKUP(F7, Sheet2!$A$1:$B$10000, 2, FALSE))>0,SUBSTITUTE(VLOOKUP(F7, Sheet2!$A$1:$B$10000, 2, FALSE), " ", ""),"")), "") actually does. Python code is much more readable.
+>>> # check file
+>>> Lo.close_doc(doc=doc)
+>>> _ = Lo.close_office()
+
+The cells in A1 and A2 are set to 200 and 300, respectively with the set_val() method. The value in cell A3 is set to a formula that sums the values in A1 and A2. When the spreadsheet is opened in Excel, A3 will display its value as 500.
+
+Formulas offer a level of programmability for spreadsheets but can quickly become unmanageable for complicated tasks. For example, even if you’re deeply familiar with formulas, it’s a headache to try to decipher what =IFERROR(TRIM(IF(LEN(VLOOKUP(F7, Sheet2!$A$1:$B$10000, 2, FALSE))>0,SUBSTITUTE(VLOOKUP(F7, Sheet2!$A$1:$B$10000, 2, FALSE), " ", ""),"")), "") actually does. Python code is much more readable.
 
 Adjusting Rows and Columns
 ==========================
@@ -807,17 +885,27 @@ Rows and columns can also be hidden entirely from view. Or they can be “frozen
 Setting Row Height and Column Width
 -----------------------------------
 
-Worksheet objects have row_dimensions and column_dimensions attributes that control row heights and column widths. Enter this into the interactive shell:
+Worksheet objects have row_dimensions and column_dimensions properties that control row heights and column widths. Enter this into the interactive shell:
 
->>> import openpyxl
->>> wb = openpyxl.Workbook()
->>> sheet = wb.active
->>> sheet['A1'] = 'Tall row'
->>> sheet['B2'] = 'Wide column'
+>>> from ooodev.utils.lo import Lo
+>>> from ooodev.office.calc import Calc
+>>> from ooodev.utils.gui import GUI
+>>>
+>>> loader = Lo.load_office(Lo.ConnectSocket())
+>>> doc = Calc.create_doc()
+>>> GUI.set_visible(is_visible=True, odoc=doc)
+
+>>> sheet = Calc.get_sheet(doc=doc)
+>>> Calc.set_val('Tall row', sheet, 'A1')
+>>> Calc.set_val('Wide column', sheet, 'B2')
 >>> # Set the height and width:
->>> sheet.row_dimensions[1].height = 70
->>> sheet.column_dimensions['B'].width = 20
->>> wb.save('dimensions.xlsx')
+>>> _ = Calc.set_row_height(sheet, 70, 0)
+>>> _ = Calc.set_col_width(sheet, 40, 1)
+>>> _ = Calc.save_doc(doc, 'dimensions.xlsx')
+
+>>> # check file
+>>> Lo.close_doc(doc=doc)
+>>> _ = Lo.close_office()
 
 A sheet’s row_dimensions and column_dimensions are dictionary-like values; row_dimensions contains RowDimension objects and column_dimensions contains ColumnDimension objects. In row_dimensions, you can access one of the objects using the number of the row (in this case, 1 or 2). In column_dimensions, you can access one of the objects using the letter of the column (in this case, A or B).
 
@@ -833,14 +921,27 @@ Merging and Unmerging Cells
 
 A rectangular area of cells can be merged into a single cell with the merge_cells() sheet method. Enter the following into the interactive shell:
 
->>> import openpyxl
->>> wb = openpyxl.Workbook()
->>> sheet = wb.active
->>> sheet.merge_cells('A1:D3') # Merge all these cells.
->>> sheet['A1'] = 'Twelve cells merged together.'
->>> sheet.merge_cells('C5:D5') # Merge these two cells.
->>> sheet['C5'] = 'Two merged cells.'
->>> wb.save('merged.xlsx')
+>>> from ooodev.utils.lo import Lo
+>>> from ooodev.office.calc import Calc
+>>> from ooodev.utils.gui import GUI
+>>>
+>>> loader = Lo.load_office(Lo.ConnectSocket())
+>>> doc = Calc.create_doc()
+>>> GUI.set_visible(is_visible=True, odoc=doc)
+
+>>> sheet = Calc.get_sheet(doc=doc)
+>>> 
+>>> # Merge first few cells of the last row
+>>> cell_range = Calc.get_cell_range(sheet, 'A1:D3')
+>>> from com.sun.star.util import XMergeable
+>>> xmerge = Lo.qi(XMergeable, cell_range, True)
+>>> xmerge.merge(True)
+>>> Calc.set_val('Twelve cells merged together.', sheet, 'A1')
+>>> cell_range = Calc.get_cell_range(sheet, 'C5:D5')
+>>> xmerge = Lo.qi(XMergeable, cell_range, True)
+>>> xmerge.merge(True)
+>>> Calc.set_val('Two merged cells.', sheet, 'C5')
+>>> _ = Calc.save_doc(doc, 'merged.xlsx')
 
 The argument to merge_cells() is a single string of the top-left and bottom-right cells of the rectangular area to be merged: 'A1:D3' merges 12 cells into a single cell. To set the value of these merged cells, simply set the value of the top-left cell of the merged group.
 
@@ -851,57 +952,57 @@ Figure 13-7: Merged cells in a spreadsheet
 
 To unmerge cells, call the unmerge_cells() sheet method. Enter this into the interactive shell:
 
->>> import openpyxl
->>> wb = openpyxl.load_workbook('merged.xlsx')
->>> sheet = wb.active
->>> sheet.unmerge_cells('A1:D3') # Split these cells up.
->>> sheet.unmerge_cells('C5:D5')
->>> wb.save('merged.xlsx')
+>>> xmerge.merge(False) # Split up last merged cells
+>>> cell_range = Calc.get_cell_range(sheet, 'A1:D3')
+>>> Lo.qi(XMergeable, cell_range, True).merge(False)
+>>> _ = Calc.save_doc(doc, 'merged.xlsx')
+
+>>> # check file
+>>> Lo.close_doc(doc=doc)
+>>> _ = Lo.close_office()
 
 If you save your changes and then take a look at the spreadsheet, you’ll see that the merged cells have gone back to being individual cells.
 
 Freezing Panes
 --------------
 
-For spreadsheets too large to be displayed all at once, it’s helpful to “freeze” a few of the top rows or leftmost columns onscreen. Frozen column or row headers, for example, are always visible to the user even as they scroll through the spreadsheet. These are known as freeze panes. In OpenPyXL, each Worksheet object has a freeze_panes attribute that can be set to a Cell object or a string of a cell’s coordinates. Note that all rows above and all columns to the left of this cell will be frozen, but the row and column of the cell itself will not be frozen.
+For spreadsheets too large to be displayed all at once, it’s helpful to “freeze” a few of the top rows or leftmost columns onscreen. Frozen column or row headers, for example, are always visible to the user even as they scroll through the spreadsheet. These are known as freeze panes. In OpenPyXL, each Worksheet object has a freeze_panes property that can be set to a Cell object or a string of a cell’s coordinates. Note that all rows above and all columns to the left of this cell will be frozen, but the row and column of the cell itself will not be frozen.
 
 To unfreeze all panes, set freeze_panes to None or 'A1'. Table 13-3 shows which rows and columns will be frozen for some example settings of freeze_panes.
 
 Table 13-3: Frozen Pane Examples
 
-freeze_panes setting
-
-Rows and columns frozen
-
-sheet.freeze_panes = 'A2'
-
-Row 1
-
-sheet.freeze_panes = 'B1'
-
-Column A
-
-sheet.freeze_panes = 'C1'
-
-Columns A and B
-
-sheet.freeze_panes = 'C2'
-
-Row 1 and columns A and B
-
-sheet.freeze_panes = 'A1' or sheet.freeze_panes = None
-
-No frozen panes
++----------------------------------------+---------------------------+
+|freeze_panes setting                    |Rows and columns frozen    |
++========================================+===========================+
+|sheet.freeze_panes = 'A2'               |Row 1                      |
++----------------------------------------+---------------------------+
+|sheet.freeze_panes = 'B1'               |Column A                   |
++----------------------------------------+---------------------------+
+|sheet.freeze_panes = 'C1'               |Columns A and B            |
++----------------------------------------+---------------------------+
+|sheet.freeze_panes = 'C2'               |Row 1 and columns A and B  |
++----------------------------------------+---------------------------+
+|sheet.freeze_panes = 'A1'               |No frozen panes            |
+| or sheet.freeze_panes = None           |                           |
++----------------------------------------+---------------------------+
 
 Make sure you have the produce sales spreadsheet from https://nostarch.com/automatestuff2/. Then enter the following into the interactive shell:
 
->>> import openpyxl
->>> wb = openpyxl.load_workbook('produceSales.xlsx')
->>> sheet = wb.active
->>> sheet.freeze_panes = 'A2' # Freeze the rows above A2.
->>> wb.save('freezeExample.xlsx')
+>>> from ooodev.utils.lo import Lo
+>>> from ooodev.office.calc import Calc
+>>> from ooodev.utils.gui import GUI
+>>>
+>>> loader = Lo.load_office(Lo.ConnectSocket())
+>>> doc = Calc.open_doc('produceSales.xlsx')
+>>> GUI.set_visible(is_visible=True, odoc=doc)
 
-If you set the freeze_panes attribute to 'A2', row 1 will always be viewable, no matter where the user scrolls in the spreadsheet. You can see this in Figure 13-8.
+>>> sheet = Calc.get_sheet(doc=doc)
+>>> Calc.goto_cell(cell_name="A1", doc=doc) # activate reference row
+>>> Calc.freeze_rows(doc=doc, num_rows=1)   # freeze one row before reference
+>>> _ = Calc.save_doc(doc, 'freezeExample.xlsx')
+
+If you set the freeze_panes property to 'A2', row 1 will always be viewable, no matter where the user scrolls in the spreadsheet. You can see this in Figure 13-8.
 
 https://automatetheboringstuff.com/2e/images/000083.jpg
 Figure 13-8: With freeze_panes set to 'A2', row 1 is always visible, even as the user scrolls down.
@@ -909,14 +1010,14 @@ Figure 13-8: With freeze_panes set to 'A2', row 1 is always visible, even as the
 Charts
 ======
 
-OpenPyXL supports creating bar, line, scatter, and pie charts using the data in a sheet’s cells. To make a chart, you need to do the following:
+|odev|_ supports creating many charts including bar, line, scatter, and pie charts using the data in a sheet’s cells. To make a chart, you need to do the following:
 
 Create a Reference object from a rectangular selection of cells.
 Create a Series object by passing in the Reference object.
 Create a Chart object.
 Append the Series object to the Chart object.
 Add the Chart object to the Worksheet object, optionally specifying which cell should be the top-left corner of the chart.
-The Reference object requires some explaining. You create Reference objects by calling the openpyxl.chart.Reference() function and passing three arguments:
+The Reference object requires some explaining. You create Reference objects by calling the ***openpyxl***.chart.Reference() function and passing three arguments:
 
 The Worksheet object containing your chart data.
 A tuple of two integers, representing the top-left cell of the rectangular selection of cells containing your chart data: the first integer in the tuple is the row, and the second is the column. Note that 1 is the first row, not 0.
@@ -928,29 +1029,41 @@ Figure 13-9: From left to right: (1, 1), (10, 1); (3, 2), (6, 4); (5, 3), (5, 3)
 
 Enter this interactive shell example to create a bar chart and add it to the spreadsheet:
 
->>> import openpyxl
->>> wb = openpyxl.Workbook()
->>> sheet = wb.active
+>>> from ooodev.office.calc import Calc
+>>> from ooodev.office.chart2 import Chart2, Angle
+>>> from ooodev.utils.gui import GUI
+>>> from ooodev.utils.lo import Lo
+>>>
+>>> _ = Lo.load_office(connector=Lo.ConnectPipe(soffice="C:\\Program Files\\LibreOfficeDev 7\\program\\soffice.exe"))
+>>> doc = Calc.create_doc()
+>>> GUI.set_visible(is_visible=True, odoc=doc)
+>>> sheet = Calc.get_sheet(doc=doc)
 >>> for i in range(1, 11): # create some data in column A
-...     sheet['A' + str(i)] = i
+...     Calc.set_val(i, sheet, 'A' + str(i))
 ...
->>> refObj = openpyxl.chart.Reference(sheet, min_col=1, min_row=1, max_col=1,
-max_row=10)
->>> seriesObj = openpyxl.chart.Series(refObj, title='First series')
+>>> range_addr = Calc.get_address(sheet=sheet, range_name="A1:A10")
+>>> chart_doc = Chart2.insert_chart(
+...     sheet=sheet,
+...     cells_range=range_addr,
+...     cell_name="C5",
+... )
+>>> Calc.goto_cell(cell_name="A1", doc=doc)
+>>> _ = Chart2.set_title(chart_doc=chart_doc, title="My Chart")
+>>> Chart2
+<class 'ooodev.office.chart2.Chart2'>
+>>> Calc.save_doc(doc, "sampleChart.xlsx")
+True
 
->>> chartObj = openpyxl.chart.BarChart()
->>> chartObj.title = 'My Chart'
->>> chartObj.append(seriesObj)
-
->>> sheet.add_chart(chartObj, 'C5')
->>> wb.save('sampleChart.xlsx')
+>>> Lo.close_doc(doc)
+>>> Lo.close_office()
+True
 
 This produces a spreadsheet that looks like Figure 13-10.
 
 https://automatetheboringstuff.com/2e/images/000122.jpg
 Figure 13-10: A spreadsheet with a chart added
 
-We’ve created a bar chart by calling openpyxl.chart.BarChart(). You can also create line charts, scatter charts, and pie charts by calling openpyxl.charts.LineChart(), openpyxl.chart.ScatterChart(), and openpyxl.chart.PieChart().
+We’ve created a bar chart by using the Calc class get_address() method to set a range to A1:A10, then using the Chart2 class insert_chart() method to insert the chart at C5. The default insert a column chart with no row or column values and default colours. You can create many chart types including: line charts, scatter charts, and pie charts.
 
 Summary
 =======
@@ -959,7 +1072,7 @@ Often the hard part of processing information isn’t the processing itself but 
 
 You can also generate spreadsheets as output from your programs. So if colleagues need your text file or PDF of thousands of sales contacts transferred to a spreadsheet file, you won’t have to tediously copy and paste it all into Excel.
 
-Equipped with the openpyxl module and some programming knowledge, you’ll find processing even the biggest spreadsheets a piece of cake.
+Equipped with the ***openpyxl*** module and some programming knowledge, you’ll find processing even the biggest spreadsheets a piece of cake.
 
 In the next chapter, we’ll take a look at using Python to interact with another spreadsheet program: the popular online Google Sheets application.
 
@@ -968,9 +1081,9 @@ Practice Questions
 
 For the following questions, imagine you have a Workbook object in the variable wb, a Worksheet object in sheet, a Cell object in cell, a Comment object in comm, and an Image object in img.
 
-1. What does the openpyxl.load_workbook() function return?
+1. What does the ***openpyxl***.load_workbook() function return?
 
-2. What does the wb.sheetnames workbook attribute contain?
+2. What does the wb.sheetnames workbook property contain?
 
 3. How would you retrieve the Worksheet object for a sheet named 'Sheet1'?
 
@@ -982,7 +1095,7 @@ For the following questions, imagine you have a Workbook object in the variable 
 
 7. How would you retrieve the cell’s row and column as integers?
 
-8. What do the sheet.max_column and sheet.max_row sheet attributes hold, and what is the data type of these attributes?
+8. What do the sheet.max_column and sheet.max_row sheet properties hold, and what is the data type of these properties?
 
 9. If you needed to get the integer index for column 'M', what function would you need to call?
 
@@ -1058,3 +1171,6 @@ Spreadsheet to Text Files
 -------------------------
 
 Write a program that performs the tasks of the previous program in reverse order: the program should open a spreadsheet and write the cells of column A into one text file, the cells of column B into another text file, and so on.
+
+.. |odev| replace:: ODEV
+.. _odev: https://python-ooo-dev-tools.readthedocs.io/en/latest/
