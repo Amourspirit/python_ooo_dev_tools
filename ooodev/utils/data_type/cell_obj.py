@@ -101,7 +101,7 @@ class CellObj:
         Gets a Range object that has start and end column set to this instance cell values.
 
         Returns:
-            mRngObj.RangeObj: Range Object
+            RangeObj: Range Object
         """
         return mRngObj.RangeObj(
             col_start=self.col, col_end=self.col, row_start=self.row, row_end=self.row, sheet_idx=self.sheet_idx

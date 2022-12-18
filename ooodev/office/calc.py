@@ -5402,7 +5402,7 @@ class Calc:
             CellObj: Cell Object
 
         Note:
-            If no args are pass in thencurrent selected cell is returned.
+            If no args are pass in then current selected cell is returned.
 
         See Also:
             :py:meth:`~.calc.Calc.get_selected_cell`
