@@ -1,17 +1,22 @@
+.. _tute_ss:
+
 LIBREOFFICE AND PYTHON TO WORK WITH EXCEL SPREADSHEETS 
 ******************************************************
 
-.. cssclass:: diagram invert
+.. cssclass:: screen_shot invert
 
+    .. _tute_ss_fig_main_img:
     .. figure:: https://user-images.githubusercontent.com/11288701/208299691-79a5b476-dd5c-42e4-927b-982c1213d43b.png
         :alt: Tutorial Image
         :figclass: align-center
 
 Although we don’t often think of spreadsheets as programming tools, almost everyone uses them to organize information into two-dimensional data structures, perform calculations with formulas, and produce output as charts. In this tutorial, we’ll integrate Python into the popular spreadsheet application LibreOffice.
 
-Excel is a popular and powerful spreadsheet application for Windows. The |odev|_ package allows your Python programs to read and modify Excel spreadsheet files. For example, you might have the boring task of copying certain data from one spreadsheet and pasting it into another one. Or you might have to go through thousands of rows and pick out just a handful of them to make small edits based on some criteria. Or you might have to look through hundreds of spreadsheets of department budgets, searching for any that are in the red. These are exactly the sort of boring, mindless spreadsheet tasks that Python can do for you.
+Excel is a popular and powerful spreadsheet application for Windows. The |odev| package allows your Python programs to read and modify Excel spreadsheet files. For example, you might have the boring task of copying certain data from one spreadsheet and pasting it into another one. Or you might have to go through thousands of rows and pick out just a handful of them to make small edits based on some criteria. Or you might have to look through hundreds of spreadsheets of department budgets, searching for any that are in the red. These are exactly the sort of boring, mindless spreadsheet tasks that Python can do for you.
 
-Although Excel is proprietary software from Microsoft, there are free alternatives that run on Windows, macOS, and Linux. Both LibreOffice Calc and OpenOffice Calc work with Excel’s .xlsx file format for spreadsheets, which means the |odev|_ module can work on spreadsheets from these applications as well. You can download the software from https://www.libreoffice.org/ and https://www.openoffice.org/, respectively. Even if you already have Excel installed on your computer, you may find these programs easier to use. The screenshots in this chapter, however, are all from Excel 2010 on Windows 10.
+Although Excel is proprietary software from Microsoft, there are free alternatives that run on Windows, macOS, and Linux. Both LibreOffice Calc and OpenOffice Calc work with Excel’s .xlsx file format for spreadsheets, which means the |odev| module can work on spreadsheets from these applications as well. You can download the software from https://www.libreoffice.org/ and https://www.openoffice.org/, respectively. Even if you already have Excel installed on your computer, you may find these programs easier to use. The screenshots in this chapter, however, are all from Excel 2010 on Windows 10.
+
+.. _tute_ss_excel_docs:
 
 Excel Documents
 ---------------
@@ -20,10 +25,14 @@ Let’s go over some basic definitions: an Excel spreadsheet document is called 
 
 Each sheet has columns (addressed by letters starting at A) and rows (addressed by numbers starting at 1). A box at a particular column and row is called a cell. Each cell can contain a number or text value. The grid of cells with data makes up a sheet.
 
-Installing ODEV
+.. _tute_ss_install_odev:
+
+Installing |odev|
 ---------------
 
-Python does not come with ODEV, so you’ll have to install it. Follow the instructions in the |odev|_ documentation for installing the Virtual Environment: https://python-ooo-dev-tools.readthedocs.io/en/develop/dev_docs/dev_notes.html#virtual-environment
+Python does not come with |odev|, so you’ll have to install it. Follow the instructions in the |odev| :ref:`dev_doc` for installing the :ref:`dev_doc_virtulal_env`.
+
+.. _tute_ss_python_libreoffice:
 
 Working with Python and LibreOffice
 -----------------------------------
@@ -34,857 +43,1389 @@ Note: Code in a section often required code earlier in the section to be execute
 
 Firstly, let us understand how python works with Office. An office instance is required before python can interact with the objects. When the python program is finished it is important to close any document and the Office instance or it will continue to run in the computer stopping other interfaces from starting it. This initialisation and finalisation code is required even if it is not shown in the examples.
 
-Once |odev|_ is installed, start up a python shell and enter the following code into the REPL:
+Once |odev| is installed, start up a python shell and enter the following code into the REPL:
 
->>> from ooodev.utils.lo import Lo
->>> loader = Lo.load_office(Lo.ConnectSocket(headless=True))
->>> # use the Office API...
->>> Lo.close_doc(wb)
->>> # generates an error if wb not open
->>> Lo.close_office()
-True
+.. tabs::
+
+    .. code-tab:: python
+
+        >>> from ooodev.utils.lo import Lo
+        >>> loader = Lo.load_office(Lo.ConnectSocket(headless=True))
+        >>> # use the Office API...
+        >>> Lo.close_doc(wb)
+        >>> # generates an error if wb not open
+        >>> Lo.close_office()
+        True
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+
+
 
 .. cssclass:: bg_light_gray, blue
 
    As a comparison, elsewhere this might be done in a script with similar code to the following to close the loader and context manager automatically after it runs, even if there is an error:
 
-   .. code-block:: python
+.. tabs::
 
-      def main() -> int:
-         with Lo.Loader(Lo.ConnectSocket(headless=True)) as loader:
+    .. code-tab:: python
+
+        def main() -> int:
+            with Lo.Loader(Lo.ConnectSocket(headless=True)) as loader:
             doc = Calc.create_doc(loader=loader)
             sheet = Calc.get_sheet(doc=doc, index=0)
             # do some work
             Lo.close_doc(doc=doc)
-         return 0
+            return 0
 
 
-      if __name__ == "__main__":
-         raise SystemExit(main())
+        if __name__ == "__main__":
+            raise SystemExit(main())
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 
 Note: Similar commands are used to open with GUI:
 
->>> from ooodev.utils.lo import Lo
->>> from ooodev.utils.gui import GUI
->>> _ = Lo.load_office(Lo.ConnectSocket())
+.. tabs::
+
+    .. code-tab:: python
+
+        >>> from ooodev.utils.lo import Lo
+        >>> from ooodev.utils.gui import GUI
+        >>> _ = Lo.load_office(Lo.ConnectSocket())
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+
+.. _tute_ss_reading_excel_docs:
 
 Reading Excel Documents
 =======================
 
-The examples in this section will use a spreadsheet named example.xlsx stored in the root folder. You can either create the spreadsheet yourself or download it from https://nostarch.com/automatestuff2/. Figure 13-1 shows the tabs for the three default sheets named Sheet1, Sheet2, and Sheet3 that Excel automatically provides for new workbooks. (The number of default sheets created may vary between operating systems and spreadsheet programs.)
+The examples in this section will use a spreadsheet named ``example.xlsx`` stored in the root folder.
+You can either create the spreadsheet yourself or download it from `<https://nostarch.com/automatestuff2/>`__.
+:numref:`tute_ss_fig_office_timeline` shows the tabs for the three default sheets named ``Sheet1``, ``Sheet2``, and ``Sheet3`` that Excel automatically provides for new workbooks.
+(The number of default sheets created may vary between operating systems and spreadsheet programs.)
 
 .. cssclass:: diagram invert
 
-    .. _ch01fig_timeline:
+    .. _tute_ss_fig_office_timeline:
     .. figure:: https://user-images.githubusercontent.com/11288701/208299710-3cfbd875-1d13-43f2-8e62-d93af56fa5f1.png
         :alt: OpenOffice Timeline Image
         :figclass: align-center
 
-        :The tabs for a workbook’s sheets are in the lower-left corner of Excel
+        The tabs for a workbook’s sheets are in the lower-left corner of Excel
 
-Sheet 1 in the example file should look like Table 13-1. (If you didn’t download example.xlsx from the website, you should enter this data into the sheet yourself.)
+Sheet 1 in the example file should look like :numref:`tute_ss_tbl_sheet_data`
+(If you didn’t download ``example.xlsx`` from the website, you should enter this data into the sheet yourself).
 
-Table 13-1: The example.xlsx Spreadsheet
+:numref:`tute_ss_tbl_sheet_data`: The ``example.xlsx`` Spreadsheet
 
-+--+-----------------+--------------+----+
-|  | A               | B            | C  |
-+==+=================+==============+====+
-| 1|5/04/2015 13:34  |Apples        |  73|
-+--+-----------------+--------------+----+
-| 2|5/04/2015 3:41   |Cherries      |  85|
-+--+-----------------+--------------+----+
-| 3|6/04/2015 12:46  |Pears         |  14|
-+--+-----------------+--------------+----+
-| 4|8/04/2015 8:59   |Oranges       |  52|
-+--+-----------------+--------------+----+
-| 5|10/04/2015 2:07  |Apples        | 152|
-+--+-----------------+--------------+----+
-| 6|10/04/2015 18:10 |Bananas       |  23|
-+--+-----------------+--------------+----+
-| 7|10/04/2015 2:40  |Strawberries  |  98|
-+--+-----------------+--------------+----+
+.. _tute_ss_tbl_sheet_data:
 
-Now that we have our example spreadsheet, let’s see how we can manipulate it with the |odev|_ package.
+.. table:: Sheet Data.
+    :name: sheet_data
 
-Opening Excel Documents with ODEV
+    +--+-----------------+--------------+----+
+    |  | A               | B            | C  |
+    +==+=================+==============+====+
+    | 1|5/04/2015 13:34  |Apples        |  73|
+    +--+-----------------+--------------+----+
+    | 2|5/04/2015 3:41   |Cherries      |  85|
+    +--+-----------------+--------------+----+
+    | 3|6/04/2015 12:46  |Pears         |  14|
+    +--+-----------------+--------------+----+
+    | 4|8/04/2015 8:59   |Oranges       |  52|
+    +--+-----------------+--------------+----+
+    | 5|10/04/2015 2:07  |Apples        | 152|
+    +--+-----------------+--------------+----+
+    | 6|10/04/2015 18:10 |Bananas       |  23|
+    +--+-----------------+--------------+----+
+    | 7|10/04/2015 2:40  |Strawberries  |  98|
+    +--+-----------------+--------------+----+
+
+Now that we have our example spreadsheet, let’s see how we can manipulate it with the |odev| package.
+
+.. _tute_ss_open_excel_doc_odev:
+
+Opening Excel Documents with |odev|
 ---------------------------------
 
-Once you’ve installed the |odev|_ package, you’ll be able to use the Calc class. Enter the following into a new interactive shell:
+Once you’ve installed the |odev| package, you’ll be able to use the Calc class. Enter the following into a new interactive shell:
 
->>> from ooodev.utils.lo import Lo
->>> loader = Lo.load_office(Lo.ConnectSocket(headless=True, soffice="C:\\Program Files\\LibreOfficeDev 7\\program\\soffice.exe"))
->>>
->>> from ooodev.office.calc import Calc
->>> wb = Calc.open_doc('example.xlsx', loader)
->>> type(wb)
-<class 'pyuno'>
+.. tabs::
 
-The Calc.open_doc() class takes in the filename and loader, and returns a value of the workbook data type. This Workbook object represents the Excel file, a bit like how a File object represents an opened text file.
+    .. code-tab:: python
 
-Remember that example.xlsx needs to be in the current working directory in order for you to work with it. You can find out what the current working directory is by importing os and using os.getcwd(), and you can change the current working directory using os.chdir().
+        >>> from ooodev.utils.lo import Lo
+        >>> loader = Lo.load_office(Lo.ConnectSocket(headless=True, soffice="C:\\Program Files\\LibreOfficeDev 7\\program\\soffice.exe"))
+        >>>
+        >>> from ooodev.office.calc import Calc
+        >>> wb = Calc.open_doc('example.xlsx', loader)
+        >>> type(wb)
+        <class 'pyuno'>
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+
+The Calc.open_doc() class takes in the filename and loader, and returns a value of the workbook data type.
+This Workbook object represents the Excel file, a bit like how a File object represents an opened text file.
+
+Remember that example.xlsx needs to be in the current working directory in order for you to work with it.
+You can find out what the current working directory is by importing os and using os.getcwd(), and you can change the current working directory using os.chdir().
+
+.. _tute_ss_get_sheet_wb:
 
 Getting Sheets from the Workbook
 --------------------------------
 
-You can get a list of all the sheet names in the workbook by accessing the sheetnames property. Enter the following into the interactive shell:
+You can get a list of all the sheet names in the workbook by accessing the sheetnames property.
+Enter the following into the interactive shell:
 
->>> Calc.get_sheet_names(wb)
-('Sheet1', 'Sheet2', 'Sheet3')
->>> ws = Calc.get_sheet(doc=wb, sheet_name='Sheet3')
->>> Calc.get_sheet_name(ws)
-'Sheet3'
->>> ws2 = Calc.get_active_sheet(wb)
->>> Calc.get_sheet_name(ws2)
-'Sheet1'
+.. tabs::
 
->>> Lo.close_doc(wb)
->>> Lo.close_office()
-True
+    .. code-tab:: python
 
-Each sheet is represented by a Worksheet object and you can use the Calc class to return it's properties. get_sheet_names() will return all sheets in the workbook given as an argument. A particular Worksheet object is returned using get_sheet() with the Workbook and sheet name string as arguments, and get_sheet_name() with a Worksheet object argument returns teh Worksheet name. Finally, you can use get_active_sheet() of a Workbook object to get the workbook’s active sheet, and from there the name. The active sheet is the sheet that is displayed when the workbook is opened on your computer.
+        >>> Calc.get_sheet_names(wb)
+        ('Sheet1', 'Sheet2', 'Sheet3')
+        >>> ws = Calc.get_sheet(doc=wb, sheet_name='Sheet3')
+        >>> Calc.get_sheet_name(ws)
+        'Sheet3'
+        >>> ws2 = Calc.get_active_sheet(wb)
+        >>> Calc.get_sheet_name(ws2)
+        'Sheet1'
+
+        >>> Lo.close_doc(wb)
+        >>> Lo.close_office()
+        True
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+Each sheet is represented by a Worksheet object and you can use the Calc class to return it's properties.
+:py:meth:`~.Calc.get_sheet_names` will return all sheets in the workbook given as an argument.
+A particular Worksheet object is returned using :py:meth:`~.Calc.get_sheet` with the Workbook and sheet name string as arguments, and :py:meth:`~.Calc/get_sheet_name` with a Worksheet object argument returns teh Worksheet name.
+Finally, you can use :py:meth:`~.Calc.get_active_sheet` of a Workbook object to get the workbook’s active sheet, and from there the name.
+The active sheet is the sheet that is displayed when the workbook is opened on your computer.
+
+.. _tute_ss_get_sheet_cells:
 
 Getting Cells from the Sheets
 -----------------------------
 
 Once you have a Worksheet object, you can access a Cell object using the Calc class. Enter the following into the interactive shell:
 
->>> from ooodev.utils.lo import Lo
->>> from ooodev.office.calc import Calc
->>> from ooodev.utils.gui import GUI
->>> from ooodev.utils.date_time_util import DateUtil
->>>
->>> _ = Lo.load_office(Lo.ConnectSocket(soffice="C:\\Program Files\\LibreOfficeDev 7\\program\\soffice.exe"))
->>> wb = Calc.open_doc('example.xlsx')
->>> GUI.set_visible(is_visible=True, odoc=wb)
->>>
->>> ws = Calc.get_sheet(doc=wb, sheet_name='Sheet1')
->>>
->>> Calc.get_val(sheet=ws, cell_name="A1")
-42099.565300925926
->>> DateUtil.date_from_number(Calc.get_val(sheet=ws, cell_name="A1"))
-datetime.datetime(2015, 4, 5, 13, 34, 2, tzinfo=datetime.timezone.utc)
->>> str(DateUtil.date_from_number(Calc.get_val(sheet=ws, cell_name="A1")))
-'2015-04-05 13:34:02+00:00'
->>>
->>> Calc.get_val(sheet=ws, cell_name="B1")
-'Apples'
->>>
->>> c = Calc.get_cell(ws, "B1")
->>> 'Row %s, Column %s is %s' % (Calc.get_cell_address(c).Row, Calc.get_cell_address(c).Column, Calc.get_val(c))
-'Row 0, Column 1 is Apples'
->>>
->>> Calc.get_val(sheet=ws, cell_name="C1")
-73.0
+.. tabs::
 
-The Cell object has a value property that contains, unsurprisingly, the value stored in that cell. There are many ways of referencing Cell objects, using the cell object, or the sheet with: cell address, cell name also have row, column, and coordinate properties that provide location information for the cell.
+    .. code-tab:: python
 
-|odev|_ returns dates as float so they need to be formatted to display the date in the required format.
+        >>> from ooodev.utils.lo import Lo
+        >>> from ooodev.office.calc import Calc
+        >>> from ooodev.utils.gui import GUI
+        >>> from ooodev.utils.date_time_util import DateUtil
+        >>>
+        >>> _ = Lo.load_office(Lo.ConnectSocket(soffice="C:\\Program Files\\LibreOfficeDev 7\\program\\soffice.exe"))
+        >>> wb = Calc.open_doc('example.xlsx')
+        >>> GUI.set_visible(is_visible=True, odoc=wb)
+        >>>
+        >>> ws = Calc.get_sheet(doc=wb, sheet_name='Sheet1')
+        >>>
+        >>> Calc.get_val(sheet=ws, cell_name="A1")
+        42099.565300925926
+        >>> DateUtil.date_from_number(Calc.get_val(sheet=ws, cell_name="A1"))
+        datetime.datetime(2015, 4, 5, 13, 34, 2, tzinfo=datetime.timezone.utc)
+        >>> str(DateUtil.date_from_number(Calc.get_val(sheet=ws, cell_name="A1")))
+        '2015-04-05 13:34:02+00:00'
+        >>>
+        >>> Calc.get_val(sheet=ws, cell_name="B1")
+        'Apples'
+        >>>
+        >>> c = Calc.get_cell(ws, "B1")
+        >>> 'Row %s, Column %s is %s' % (Calc.get_cell_address(c).Row, Calc.get_cell_address(c).Column, Calc.get_val(c))
+        'Row 0, Column 1 is Apples'
+        >>>
+        >>> Calc.get_val(sheet=ws, cell_name="C1")
+        73.0
 
-Here, accessing the value property of our Cell object for cell B1 gives us the string 'Apples'. The row property gives us the integer 1, the column property gives us 'B', and the coordinate property gives us 'B1'.
+    .. only:: html
 
-Specifying a column by letter can be tricky to program, especially because after column Z, the columns start by using two letters: AA, AB, AC, and so on. As an alternative, you can also get a cell using Calc's get_cell() method and passing integers for its row and column keyword arguments. The first row or column integer is 0, not 1. Continue the interactive shell example by entering the following:
+        .. cssclass:: tab-none
 
->>> Calc.get_val(Calc.get_cell(ws, "B1"))
-'Apples'
->>> Calc.get_val(Calc.get_cell(ws, 1,0))
-'Apples'
->>> for i in range(0, 7, 2): # Go through every other row:
-...     print(i+1, Calc.get_val(Calc.get_cell(ws, 1,i)))
-...
-1 Apples
-3 Pears
-5 Apples
-7 Strawberries
+            .. group-tab:: None
 
-As you can see, using Calc's get_cell() method and passing it column=1 and row=0 gets you a Cell object for cell B1, just like specifying get_cell() with 'B1' did. Then, using the get_val() method and its keyword arguments, you can write a for loop to print the values of a series of cells.
 
-Say you want to go down column B and print the value in every cell with an odd row number. By passing 2 for the range() function’s “step” parameter, you can get cells from every second row (in this case, all the odd-numbered rows). The for loop’s i variable is passed for the row keyword argument to the cell() method, while 2 is always passed for the column keyword argument. Note that the integer 2, not the string 'B', is passed.
 
-You can determine the size of the sheet with the Worksheet object’s max_row and max_column properties. Enter the following into the interactive shell:
 
->>> range = Calc.find_used_range(ws)
->>> Calc.get_range_str(range)
-'A1:C7'
->>> Calc.get_address(range)
-(com.sun.star.table.CellRangeAddress){ Sheet = (short)0x0, StartColumn = (long)0x0, StartRow = (long)0x0, EndColumn = (long)0x2, EndRow = (long)0x6 }
->>> Calc.get_address(range).EndRow
-6
->>> Calc.get_address(range).EndColumn
-2
+The Cell object has a value property that contains, unsurprisingly, the value stored in that cell.
+There are many ways of referencing Cell objects, using the cell object, or the sheet with: cell address, cell name also have row, column, and coordinate properties that provide location information for the cell.
+
+|odev| returns dates as float so they need to be formatted to display the date in the required format.
+
+Here, accessing the value property of our Cell object for cell ``B1`` gives us the string ``Apples``.
+The row property gives us the integer ``1``, the column property gives us ``B``, and the coordinate property gives us ``B1``.
+
+Specifying a column by letter can be tricky to program, especially because after column ``Z``, the columns start by using two letters: ``AA``, ``AB``, ``AC``, and so on.
+As an alternative, you can also get a cell using :py:meth:`.Calc.get_cell` method and passing integers for its row and column keyword arguments.
+The first row or column integer is ``0``, not ``1``.
+Continue the interactive shell example by entering the following:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        >>> Calc.get_val(Calc.get_cell(ws, "B1"))
+        'Apples'
+        >>> Calc.get_val(Calc.get_cell(ws, 1,0))
+        'Apples'
+        >>> for i in range(0, 7, 2): # Go through every other row:
+        ...     print(i+1, Calc.get_val(Calc.get_cell(ws, 1,i)))
+        ...
+        1 Apples
+        3 Pears
+        5 Apples
+        7 Strawberries
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+As you can see, using :py:meth:`.Calc.get_cell` method and passing it ``column=1`` and ``row=0`` gets you a Cell object for cell ``B1``, just like specifying :py:meth:`~.Calc.get_cell` with 'B1' did.
+Then, using the :py:meth:`~.Calc.get_val` method and its keyword arguments, you can write a for loop to print the values of a series of cells.
+
+Say you want to go down column ``B`` and print the value in every cell with an odd row number.
+By passing ``2`` for the ``range()`` function’s “step” parameter, you can get cells from every second row (in this case, all the odd-numbered rows).
+The for loop’s ``i`` variable is passed for the row keyword argument to the ``cell()`` method, while ``2`` is always passed for the column keyword argument.
+Note that the integer ``2``, not the string ``B``, is passed.
+
+You can determine the size of the sheet with the Worksheet object’s max_row and max_column properties.
+Enter the following into the interactive shell:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        >>> range = Calc.find_used_range(ws)
+        >>> Calc.get_range_str(range)
+        'A1:C7'
+        >>> Calc.get_address(range)
+        (com.sun.star.table.CellRangeAddress){ Sheet = (short)0x0, StartColumn = (long)0x0, StartRow = (long)0x0, EndColumn = (long)0x2, EndRow = (long)0x6 }
+        >>> Calc.get_address(range).EndRow
+        6
+        >>> Calc.get_address(range).EndColumn
+        2
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 Note that the max_column property is an integer rather than the letter that appears in Excel.
+
+.. _tute_ss_letter_number:
 
 Converting Between Column Letters and Numbers
 ---------------------------------------------
 
-To convert from letters to numbers, use the TableHelper class with the col_name_to_int() method. To convert from numbers to letters, use the make_column_name() method. Enter the following into the interactive shell:
+To convert from letters to numbers, use the :py:class:`.TableHelper` class with the :py:meth:`~.TableHelper.col_name_to_int` method.
+To convert from numbers to letters, use the :py:meth:`~.TableHelper.make_column_name` method.
+Enter the following into the interactive shell:
 
->>> from ooodev.utils.table_helper import TableHelper
->>> TableHelper.col_name_to_int('A') # Get A's number.
-1
->>> TableHelper.col_name_to_int('AA')
-27
->>> TableHelper.make_column_name(85)
-'CG'
+.. tabs::
 
-After you import the TableHelper class from |odev|_ , you can use make_column_name() and pass it an integer like 27 to figure out what the letter name of the 27th column is. The function column_index_string() does the reverse: you pass it the letter name of a column, and it tells you what number that column is. You don’t need to have a workbook loaded to use these functions. If you want, you can load a workbook, get a Worksheet object, and use a Worksheet property like max_column to get an integer. Then, you can pass that integer to get_column_letter().
+    .. code-tab:: python
+
+        >>> from ooodev.utils.table_helper import TableHelper
+        >>> TableHelper.col_name_to_int('A') # Get A's number.
+        1
+        >>> TableHelper.col_name_to_int('AA')
+        27
+        >>> TableHelper.make_column_name(85)
+        'CG'
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+
+After you import the :py:class:`.TableHelper` class from |odev| , you can use :py:meth:`~.Calc.make_column_name` and pass it an integer like ``27`` to figure out what the letter name of the ``27th`` column is.
+The function :py:meth:`~.Calc.column_index_string` does the reverse: you pass it the letter name of a column, and it tells you what number that column is. You don’t need to have a workbook loaded to use these functions. If you want, you can load a workbook, get a Worksheet object, and use a Worksheet property like max_column to get an integer. Then, you can pass that integer to get_column_letter().
+
+.. _tute_ss_rows_cols_sheet:
 
 Getting Rows and Columns from the Sheets
 ----------------------------------------
 
-You can slice Worksheet objects to get all the Cell objects in a row, column, or rectangular area of the spreadsheet. Then you can loop over all the cells in the slice. Enter the following into the interactive shell:
+You can slice Worksheet objects to get all the Cell objects in a row, column, or rectangular area of the spreadsheet.
+Then you can loop over all the cells in the slice. Enter the following into the interactive shell:
 
 
->>> data = Calc.get_array(sheet=ws, range_name="A1:C3")
->>> tuple(data)
-((42099.565300925926, 'Apples', 73.0), (42099.15373842593, 'Cherries', 85.0), (42100.532534722224, 'Pears', 14.0))
->>> for i, r in enumerate(data):
-...     for j, c in enumerate(r):
-...         print(Calc.column_number_str(j)+str(i+1), c)
-...     print('--- END OF ROW ---')
-...
-A1 42099.565300925926
-B1 Apples
-C1 73.0
---- END OF ROW ---
-A2 42099.15373842593
-B2 Cherries
-C2 85.0
---- END OF ROW ---
-A3 42100.532534722224
-B3 Pears
-C3 14.0
---- END OF ROW ---
+.. tabs::
 
-Here, we specify that we want the Cell objects in the rectangular area from A1 to C3, and we get a Generator object containing the Cell objects in that area. To help us visualize this Generator object, we can use tuple() on it to display its Cell objects in a tuple, alternatively use the Calc class static print_array.
+    .. code-tab:: python
 
-This tuple contains three tuples: one for each row, from the top of the desired area to the bottom. Each of these three inner tuples contains the Cell objects in one row of our desired area, from the leftmost cell to the right. So overall, our slice of the sheet contains all the Cell objects in the area from A1 to C3, starting from the top-left cell and ending with the bottom-right cell.
+        >>> data = Calc.get_array(sheet=ws, range_name="A1:C3")
+        >>> tuple(data)
+        ((42099.565300925926, 'Apples', 73.0), (42099.15373842593, 'Cherries', 85.0), (42100.532534722224, 'Pears', 14.0))
+        >>> for i, r in enumerate(data):
+        ...     for j, c in enumerate(r):
+        ...         print(Calc.column_number_str(j)+str(i+1), c)
+        ...     print('--- END OF ROW ---')
+        ...
+        A1 42099.565300925926
+        B1 Apples
+        C1 73.0
+        --- END OF ROW ---
+        A2 42099.15373842593
+        B2 Cherries
+        C2 85.0
+        --- END OF ROW ---
+        A3 42100.532534722224
+        B3 Pears
+        C3 14.0
+        --- END OF ROW ---
 
-To print the values of each cell in the area, we use two for loops. The outer for loop goes over each row in the slice. Then, for each row, the nested for loop goes through each cell in that row.
+    .. only:: html
 
-To access the values of cells in a particular row or column, you can also use a Worksheet object’s rows and columns interface. These properties must be converted to lists with the list() function before you can use the square brackets and an index with them. Enter the following into the interactive shell:
+        .. cssclass:: tab-none
 
->>> list(Calc.get_col(ws,1))
-['Apples', 'Cherries', 'Pears', 'Oranges', 'Apples', 'Bananas', 'Strawberries']
+            .. group-tab:: None
 
-Using the rows property on a Worksheet object will give you a tuple of tuples. Each of these inner tuples represents a row, and contains the Cell objects in that row. The columns property also gives you a tuple of tuples, with each of the inner tuples containing the Cell objects in a particular column. For example.xlsx, since there are 7 rows and 3 columns, rows gives us a tuple of 7 tuples (each containing 3 Cell objects), and columns gives us a tuple of 3 tuples (each containing 7 Cell objects).
 
-To access one particular tuple, you can refer to it by its index in the larger tuple. For example, to get the tuple that represents column B, you use list(sheet.columns)[1]. To get the tuple containing the Cell objects in column A, you’d use list(sheet.columns)[0]. Once you have a tuple representing one row or column, you can loop through its Cell objects and print their values.
+Here, we specify that we want the Cell objects in the rectangular area from ``A1`` to ``C3``, and we get a Generator object containing the Cell objects in that area.
+To help us visualize this Generator object, we can use ``tuple()`` on it to display its Cell objects in a tuple, alternatively use the :py:meth:`.Calc.print_array`.
+
+This tuple contains three tuples: one for each row, from the top of the desired area to the bottom.
+Each of these three inner tuples contains the Cell objects in one row of our desired area, from the leftmost cell to the right.
+So overall, our slice of the sheet contains all the Cell objects in the area from ``A1`` to ``C3``, starting from the top-left cell and ending with the bottom-right cell.
+
+To print the values of each cell in the area, we use two for loops.
+The outer for loop goes over each row in the slice.
+Then, for each row, the nested for loop goes through each cell in that row.
+
+To access the values of cells in a particular row or column, you can also use a Worksheet object’s rows and columns interface.
+These properties must be converted to lists with the ``list()`` function before you can use the square brackets and an index with them.
+Enter the following into the interactive shell:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        >>> list(Calc.get_col(ws,1))
+        ['Apples', 'Cherries', 'Pears', 'Oranges', 'Apples', 'Bananas', 'Strawberries']
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+
+Using the rows property on a Worksheet object will give you a tuple of tuples.
+Each of these inner tuples represents a row, and contains the Cell objects in that row.
+The columns property also gives you a tuple of tuples, with each of the inner tuples containing the Cell objects in a particular column.
+For ``example.xlsx``, since there are ``7`` rows and ``3`` columns, rows gives us a tuple of ``7`` tuples (each containing ``3`` Cell objects), and columns gives us a tuple of ``3`` tuples (each containing ``7`` Cell objects).
+
+To access one particular tuple, you can refer to it by its index in the larger tuple.
+For example, to get the tuple that represents column ``B``, you use ``list(sheet.columns)[1]``.
+To get the tuple containing the Cell objects in column A, you’d use ``list(sheet.columns)[0]``.
+Once you have a tuple representing one row or column, you can loop through its Cell objects and print their values.
+
+.. _tute_ss_wb_sheet_cells:
 
 Workbooks, Sheets, Cells
 ------------------------
 
 As a quick review, here’s a rundown of all the functions, methods, and data types involved in reading a cell out of a spreadsheet file:
 
-Import the |odev|_ modules
-Get a Workbook object.
-Use the active or sheetnames properties.
-Get a Worksheet object.
-Use indexing or the cell() sheet method with row and column keyword arguments.
-Get a Cell object.
-Read the Cell object’s value property.
+
+| Import the |odev| modules.
+| Get a Workbook object.
+| Use the active or sheetnames properties.
+| Get a Worksheet object.
+| Use indexing or the cell() sheet method with row and column keyword arguments.
+| Get a Cell object.
+| Read the Cell object’s value property.
 
 This section is finished so close the doc and office:
 
->>> Lo.close_doc(wb)
->>> Lo.close_office()
-True
+.. tabs::
+
+    .. code-tab:: python
+
+        >>> Lo.close_doc(wb)
+        >>> Lo.close_office()
+        True
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+.. _tute_ss_proj_read_data_sheet:
 
 Project: Reading Data from a Spreadsheet
 ========================================
 
-Say you have a spreadsheet of data from the 2010 US Census and you have the boring task of going through its thousands of rows to count both the total population and the number of census tracts for each county. (A census tract is simply a geographic area defined for the purposes of the census.) Each row represents a single census tract. We’ll name the spreadsheet file censuspopdata.xlsx, and you can download it from https://nostarch.com/automatestuff2/. Its contents look like Figure 13-2.
+Say you have a spreadsheet of data from the 2010 US Census and you have the boring task of going through its thousands of rows to count both the total population and the number of census tracts for each county.
+(A census tract is simply a geographic area defined for the purposes of the census.)
+Each row represents a single census tract. We’ll name the spreadsheet file ``censuspopdata.xlsx``, and you can download it from `<https://nostarch.com/automatestuff2/>`__.
+Its contents look like :numref:`tute_ss_fig_censuspopdata_sht`.
 
 .. cssclass:: diagram invert
 
-    .. _ch01fig_timeline:
+    .. _tute_ss_fig_censuspopdata_sht:
     .. figure:: https://user-images.githubusercontent.com/11288701/208299730-026a12e8-1105-4637-ad7b-13914a247fc7.png
-        :alt: OpenOffice Timeline Image
+        :alt: The censuspopdata.xlsx spreadsheet
         :figclass: align-center
 
-        :The censuspopdata.xlsx spreadsheet
+        :The ``censuspopdata.xlsx`` spreadsheet
 
-Even though Excel can calculate the sum of multiple selected cells, you’d still have to select the cells for each of the 3,000-plus counties. Even if it takes just a few seconds to calculate a county’s population by hand, this would take hours to do for the whole spreadsheet.
+Even though Excel can calculate the sum of multiple selected cells, you’d still have to select the cells for each of the 3,000-plus counties.
+Even if it takes just a few seconds to calculate a county’s population by hand, this would take hours to do for the whole spreadsheet.
 
 In this project, you’ll write a script that can read from the census spreadsheet file and calculate statistics for each county in a matter of seconds.
 
 This is what your program does:
 
-Reads the data from the Excel spreadsheet
-Counts the number of census tracts in each county
-Counts the total population of each county
-Prints the results
+.. cssclass:: ul-list
+
+    - Reads the data from the Excel spreadsheet
+    - Counts the number of census tracts in each county
+    - Counts the total population of each county
+    - Prints the results
+
 This means your code will need to do the following:
 
-Open and read the cells of an Excel document with |odev|_ modules.
-Calculate all the tract and population data and store it in a data structure.
-Write the data structure to a text file with the .py extension using the pprint module.
+.. cssclass:: ul-list
+
+    - Open and read the cells of an Excel document with |odev| modules
+    - Calculate all the tract and population data and store it in a data structure
+    - Write the data structure to a text file with the ``.py`` extension using the pprint module
+
+.. _tute_ss_step_read_sheet_data:
 
 Step 1: Read the Spreadsheet Data
 ---------------------------------
 
-There is just one sheet in the censuspopdata.xlsx spreadsheet, named 'Population by Census Tract', and each row holds the data for a single census tract. The columns are the tract number (A), the state abbreviation (B), the county name (C), and the population of the tract (D).
+There is just one sheet in the ``censuspopdata.xlsx`` spreadsheet, named 'Population by Census Tract', and each row holds the data for a single census tract.
+The columns are the tract number ``A``, the state abbreviation ``B``, the county name ``C``, and the population of the tract ``D``.
 
-Open a new file editor tab and enter the following code. Save the file as readCensusExcel.py.
+Open a new file editor tab and enter the following code. Save the file as ``readCensusExcel.py``.
 
-#! python3
-# readCensusExcel.py - Tabulates population and number of census tracts for
-# each county.
+.. tabs::
 
-import pprint
-from ooodev.utils.lo import Lo
-from ooodev.office.calc import Calc
-from ooodev.utils.gui import GUI
-from ooodev.utils.date_time_util import DateUtil
+    .. code-tab:: python
 
-_ = Lo.load_office(Lo.ConnectSocket())
-print('Opening workbook...')
-wb = Calc.open_doc('censuspopdata.xlsx')
-GUI.set_visible(is_visible=True, odoc=wb)
+        #! python3
+        # readCensusExcel.py - Tabulates population and number of census tracts for
+        # each county.
 
-sheet = Calc.get_sheet(doc=wb, sheet_name='Population by Census Tract')
-countyData = {}
+        import pprint
+        from ooodev.utils.lo import Lo
+        from ooodev.office.calc import Calc
+        from ooodev.utils.gui import GUI
+        from ooodev.utils.date_time_util import DateUtil
 
-# TODO: Fill in countyData with each county's population and tracts.
-print('Reading rows...')
-for row in range(2, Calc.get_row_used_last_index(sheet) + 2):
-    # Each row in the spreadsheet has data for one census tract.
-    state  = Calc.get_val(sheet, 'B' + str(row))
-    county = Calc.get_val(sheet, 'C' + str(row))
-    pop    = Calc.get_val(sheet, 'D' + str(row))
+        _ = Lo.load_office(Lo.ConnectSocket())
+        print('Opening workbook...')
+        wb = Calc.open_doc('censuspopdata.xlsx')
+        GUI.set_visible(is_visible=True, odoc=wb)
 
-# TODO: Open a new text file and write the contents of countyData to it.
+        sheet = Calc.get_sheet(doc=wb, sheet_name='Population by Census Tract')
+        county_data = {}
 
-This code imports the |odev|_ modules, as well as the pprint module that you’ll use to print the final county data. Then it opens the censuspopdata.xlsx file, gets the sheet with the census data, and begins iterating over its rows.
+        # TODO: Fill in county_data with each county's population and tracts.
 
-Note that you’ve also created a variable named countyData, which will contain the populations and number of tracts you calculate for each county. Before you can store anything in it, though, you should determine exactly how you’ll structure the data inside it.
+        print('Reading rows...')
+        for row in range(2, Calc.get_row_used_last_index(sheet) + 2):
+            # Each row in the spreadsheet has data for one census tract.
+            state  = Calc.get_val(sheet, 'B' + str(row))
+            county = Calc.get_val(sheet, 'C' + str(row))
+            pop    = Calc.get_val(sheet, 'D' + str(row))
+
+        # TODO: Open a new text file and write the contents of county_data to it.
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+This code imports the |odev| modules, as well as the ``pprint`` module that you’ll use to print the final county data.
+Then it opens the ``censuspopdata.xlsx`` file, gets the sheet with the census data, and begins iterating over its rows.
+
+Note that you’ve also created a variable named ``county_data``, which will contain the populations and number of tracts you calculate for each county.
+Before you can store anything in it, though, you should determine exactly how you’ll structure the data inside it.
+
+.. _tute_ss_step_pop_data_structure:
 
 Step 2: Populate the Data Structure
 -----------------------------------
 
-The data structure stored in countyData will be a dictionary with state abbreviations as its keys. Each state abbreviation will map to another dictionary, whose keys are strings of the county names in that state. Each county name will in turn map to a dictionary with just two keys, 'tracts' and 'pop'. These keys map to the number of census tracts and population for the county. For example, the dictionary will look similar to this:
+The data structure stored in ``county_data`` will be a dictionary with state abbreviations as its keys.
+Each state abbreviation will map to another dictionary, whose keys are strings of the county names in that state.
+Each county name will in turn map to a dictionary with just two keys, ``tracts`` and ``pop``.
+These keys map to the number of census tracts and population for the county.
+For example, the dictionary will look similar to this:
 
-{'AK': {'Aleutians East': {'pop': 3141, 'tracts': 1},
-        'Aleutians West': {'pop': 5561, 'tracts': 2},
-        'Anchorage': {'pop': 291826, 'tracts': 55},
-        'Bethel': {'pop': 17013, 'tracts': 3},
-        'Bristol Bay': {'pop': 997, 'tracts': 1},
-        --snip--
+.. tabs::
 
-If the previous dictionary were stored in countyData, the following expressions would evaluate like this:
+    .. code-tab:: python
 
->>> countyData['AK']['Anchorage']['pop']
-291826
->>> countyData['AK']['Anchorage']['tracts']
-55
+        {'AK': {'Aleutians East': {'pop': 3141, 'tracts': 1},
+                'Aleutians West': {'pop': 5561, 'tracts': 2},
+                'Anchorage': {'pop': 291826, 'tracts': 55},
+                'Bethel': {'pop': 17013, 'tracts': 3},
+                'Bristol Bay': {'pop': 997, 'tracts': 1},
 
-More generally, the countyData dictionary’s keys will look like this:
+    .. only:: html
 
-countyData[state abbrev][county]['tracts']
-countyData[state abbrev][county]['pop']
+        .. cssclass:: tab-none
 
-Now that you know how countyData will be structured, you can write the code that will fill it with the county data. Add the following code to the bottom of your program:
+            .. group-tab:: None
 
-#! python 3
-# readCensusExcel.py - Tabulates population and number of census tracts for
-# each county.
 
---snip--
 
-print('Reading rows...')
-for row in range(2, Calc.get_row_used_last_index(sheet) + 2):
-    # Each row in the spreadsheet has data for one census tract.
-    state  = Calc.get_val(sheet, 'B' + str(row))
-    county = Calc.get_val(sheet, 'C' + str(row))
-    pop    = Calc.get_val(sheet, 'D' + str(row))
-    # Make sure the key for this state exists.
-    _ = countyData.setdefault(state, {})
-    # Make sure the key for this county in this state exists.
-    _ = countyData[state].setdefault(county, {'tracts': 0, 'pop': 0})
-    # Each row represents one census tract, so increment by one.
-    countyData[state][county]['tracts'] += 1
-    # Increase the county pop by the pop in this census tract.
-    countyData[state][county]['pop'] += int(pop)
+If the previous dictionary were stored in ``county_data``, the following expressions would evaluate like this:
 
-# TODO: Open a new text file and write the contents of countyData to it.
+.. tabs::
+
+    .. code-tab:: python
+
+        >>> county_data['AK']['Anchorage']['pop']
+        291826
+        >>> county_data['AK']['Anchorage']['tracts']
+        55
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+
+More generally, the ``county_data`` dictionary’s keys will look like this:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        county_data[state abbrev][county]['tracts']
+        county_data[state abbrev][county]['pop']
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+
+Now that you know how ``county_data`` will be structured, you can write the code that will fill it with the county data.
+Add the following code to the bottom of your program:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        #! python 3
+        # readCensusExcel.py - Tabulates population and number of census tracts for
+        # each county.
+
+        print('Reading rows...')
+        for row in range(2, Calc.get_row_used_last_index(sheet) + 2):
+            # Each row in the spreadsheet has data for one census tract.
+            state  = Calc.get_val(sheet, 'B' + str(row))
+            county = Calc.get_val(sheet, 'C' + str(row))
+            pop    = Calc.get_val(sheet, 'D' + str(row))
+            # Make sure the key for this state exists.
+            _ = county_data.setdefault(state, {})
+            # Make sure the key for this county in this state exists.
+            _ = county_data[state].setdefault(county, {'tracts': 0, 'pop': 0})
+            # Each row represents one census tract, so increment by one.
+            county_data[state][county]['tracts'] += 1
+            # Increase the county pop by the pop in this census tract.
+            county_data[state][county]['pop'] += int(pop)
+
+        # TODO: Open a new text file and write the contents of county_data to it.
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The last two lines of code perform the actual calculation work, incrementing the value for tracts and increasing the value for pop for the current county on each iteration of the for loop.
 
-The other code is there because you cannot add a county dictionary as the value for a state abbreviation key until the key itself exists in countyData. (That is, countyData['AK']['Anchorage']['tracts'] += 1 will cause an error if the 'AK' key doesn’t exist yet.) To make sure the state abbreviation key exists in your data structure, you need to call the setdefault() method to set a value if one does not already exist for state.
+The other code is there because you cannot add a county dictionary as the value for a state abbreviation key until the key itself exists in ``county_data``
+(that is, ``county_data['AK']['Anchorage']['tracts'] += 1`` will cause an error if the ``AK`` key doesn’t exist yet).
+To make sure the state abbreviation key exists in your data structure, you need to call the ``setdefault()`` method to set a value if one does not already exist for state.
 
-Just as the countyData dictionary needs a dictionary as the value for each state abbreviation key, each of those dictionaries will need its own dictionary as the value for each county key. And each of those dictionaries in turn will need keys 'tracts' and 'pop' that start with the integer value 0. (If you ever lose track of the dictionary structure, look back at the example dictionary at the start of this section.)
+Just as the county_data dictionary needs a dictionary as the value for each state abbreviation key, each of those dictionaries will need its own dictionary as the value for each county key.
+And each of those dictionaries in turn will need keys ``tracts`` and ``pop`` that start with the integer value ``0``
+(if you ever lose track of the dictionary structure, look back at the example dictionary at the start of this section).
 
-Since setdefault() will do nothing if the key already exists, you can call it on every iteration of the for loop without a problem.
+Since ``setdefault()`` will do nothing if the key already exists, you can call it on every iteration of the for loop without a problem.
+
+.. _tute_ss_step_write_file:
 
 Step 3: Write the Results to a File
 -----------------------------------
 
-After the for loop has finished, the countyData dictionary will contain all of the population and tract information keyed by county and state. At this point, you could program more code to write this to a text file or another Excel spreadsheet. For now, let’s just use the pprint.pformat() function to write the countyData dictionary value as a massive string to a file named census2010.py. Add the following code to the bottom of your program (making sure to keep it unindented so that it stays outside the for loop):
+After the for loop has finished, the ``county_data`` dictionary will contain all of the population and tract information keyed by county and state.
+At this point, you could program more code to write this to a text file or another Excel spreadsheet.
+For now, let’s just use the ``pprint.pformat()`` function to write the ``county_data`` dictionary value as a massive string to a file named ``census2010.py``.
+Add the following code to the bottom of your program (making sure to keep it unindented so that it stays outside the for loop):
 
-#! python 3
-# readCensusExcel.py - Tabulates population and number of census tracts for
-# each county.
+.. tabs::
 
---snip--
+    .. code-tab:: python
 
-for row in range(2, Calc.get_row_used_last_index(sheet)-1):
---snip--
+        #! python 3
+        # readCensusExcel.py - Tabulates population and number of census tracts for
+        # each county.
 
-# Open a new text file and write the contents of countyData to it.
-print('Writing results...')
-resultFile = open('census2010.py', 'w')
-resultFile.write('allData = ' + pprint.pformat(countyData))
-resultFile.close()
-print('Done.')
+        # --snip--
 
-The pprint.pformat() function produces a string that itself is formatted as valid Python code. By outputting it to a text file named census2010.py, you’ve generated a Python program from your Python program! This may seem complicated, but the advantage is that you can now import census2010.py just like any other Python module. In the interactive shell, change the current working directory to the folder with your newly created census2010.py file and then import it:
+        for row in range(2, Calc.get_row_used_last_index(sheet)-1):
+        # --snip--
 
->>> import os
+        # Open a new text file and write the contents of county_data to it.
+        print('Writing results...')
+        result_file = open('census2010.py', 'w')
+        result_file.write('allData = ' + pprint.pformat(county_data))
+        result_file.close()
+        print('Done.')
 
->>> import census2010
->>> census2010.allData['AK']['Anchorage']
-{'pop': 291826, 'tracts': 55}
->>> anchoragePop = census2010.allData['AK']['Anchorage']['pop']
->>> print('The 2010 population of Anchorage was ' + str(anchoragePop))
-The 2010 population of Anchorage was 291826
+    .. only:: html
 
-The readCensusExcel.py program was throwaway code: once you have its results saved to census2010.py, you won’t need to run the program again. Whenever you need the county data, you can just run import census2010.
+        .. cssclass:: tab-none
 
-Calculating this data by hand would have taken hours; this program did it in a few seconds. Using ODEV, you will have no trouble extracting information that is saved to an Excel spreadsheet and performing calculations on it. You can download the complete program from https://nostarch.com/automatestuff2/.
+            .. group-tab:: None
 
->>> #! python3
->>> # readCensusExcel.py - Tabulates population and number of census tracts for
->>> # each county.
->>>
->>> import pprint
->>> from ooodev.utils.lo import Lo
->>> from ooodev.office.calc import Calc
->>> from ooodev.utils.gui import GUI
->>>
->>> _ = Lo.load_office(Lo.ConnectSocket(soffice="C:\\Program Files\\LibreOfficeDev 7\\program\\soffice.exe"))
->>> print('Opening workbook...')
-Opening workbook...
->>> wb = Calc.open_doc('censuspopdata.xlsx')
->>> GUI.set_visible(is_visible=True, odoc=wb)
->>>
->>> sheet = Calc.get_sheet(doc=wb, sheet_name='Population by Census Tract')
->>> countyData = {}
->>>
->>> range_name = 'B2:D' + str(Calc.get_row_used_last_index(sheet)+1)
->>> # print(range_name)
->>> data = Calc.get_array(sheet=sheet, range_name=range_name)
->>>
->>> print('Reading rows...')
-Reading rows...
->>> for i, row in enumerate(data):
-...     # Each row in the spreadsheet has data for one census tract.
-...     state, county, pop = row
-...     # Make sure the key for this state exists.
-...     _ = countyData.setdefault(state, {})
-...     # Make sure the key for this county in this state exists.
-...     _ = countyData[state].setdefault(county, {'tracts': 0, 'pop': 0})
-...     # Each row represents one census tract, so increment by one.
-...     countyData[state][county]['tracts'] += 1
-...     # Increase the county pop by the pop in this census tract.
-...     countyData[state][county]['pop'] += int(pop)
-...
->>>
->>> # Open a new text file and write the contents of countyData to it.
->>> print('Writing results...')
-Writing results...
->>> resultFile = open('census2010B.py', 'w')
->>> resultFile.write('allData = ' + pprint.pformat(countyData))
-152237
->>> resultFile.close()
->>> print('Done.')
-Done.
->>>
->>> import os
->>> import census2010
->>> census2010.allData['AK']['Anchorage']
-{'pop': 291826, 'tracts': 55}
->>> anchoragePop = census2010.allData['AK']['Anchorage']['pop']
->>> print('The 2010 population of Anchorage was ' + str(anchoragePop))
-The 2010 population of Anchorage was 291826
->>>
->>> Lo.close_doc(wb)
->>> Lo.close_office()
-True
+
+        
+
+The ``pprint.pformat()`` function produces a string that itself is formatted as valid Python code.
+By outputting it to a text file named ``census2010.py``, you’ve generated a Python program from your Python program!
+This may seem complicated, but the advantage is that you can now import ``census2010.py`` just like any other Python module.
+In the interactive shell, change the current working directory to the folder with your newly created ``census2010.py`` file and then import it:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        >>> import os
+        >>> import census2010
+        >>> census2010.allData['AK']['Anchorage']
+        {'pop': 291826, 'tracts': 55}
+        >>> anchoragePop = census2010.allData['AK']['Anchorage']['pop']
+        >>> print('The 2010 population of Anchorage was ' + str(anchoragePop))
+        The 2010 population of Anchorage was 291826
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+The ``readCensusExcel.py`` program was throwaway code: once you have its results saved to ``census2010.py``, you won’t need to run the program again.
+Whenever you need the county data, you can just run ``import census2010``.
+
+Calculating this data by hand would have taken hours; this program did it in a few seconds.
+Using |odev|, you will have no trouble extracting information that is saved to an Excel spreadsheet and performing calculations on it.
+You can download the complete program from `<https://nostarch.com/automatestuff2/>`__.
+
+.. tabs::
+
+    .. code-tab:: python
+
+        >>> #! python3
+        >>> # readCensusExcel.py - Tabulates population and number of census tracts for
+        >>> # each county.
+        >>>
+        >>> import pprint
+        >>> from ooodev.utils.lo import Lo
+        >>> from ooodev.office.calc import Calc
+        >>> from ooodev.utils.gui import GUI
+        >>>
+        >>> _ = Lo.load_office(Lo.ConnectSocket(soffice="C:\\Program Files\\LibreOfficeDev 7\\program\\soffice.exe"))
+        >>> print('Opening workbook...')
+        Opening workbook...
+        >>> wb = Calc.open_doc('censuspopdata.xlsx')
+        >>> GUI.set_visible(is_visible=True, odoc=wb)
+        >>>
+        >>> sheet = Calc.get_sheet(doc=wb, sheet_name='Population by Census Tract')
+        >>> county_data = {}
+        >>>
+        >>> range_name = 'B2:D' + str(Calc.get_row_used_last_index(sheet)+1)
+        >>> # print(range_name)
+        >>> data = Calc.get_array(sheet=sheet, range_name=range_name)
+        >>>
+        >>> print('Reading rows...')
+        Reading rows...
+        >>> for i, row in enumerate(data):
+        ...     # Each row in the spreadsheet has data for one census tract.
+        ...     state, county, pop = row
+        ...     # Make sure the key for this state exists.
+        ...     _ = county_data.setdefault(state, {})
+        ...     # Make sure the key for this county in this state exists.
+        ...     _ = county_data[state].setdefault(county, {'tracts': 0, 'pop': 0})
+        ...     # Each row represents one census tract, so increment by one.
+        ...     county_data[state][county]['tracts'] += 1
+        ...     # Increase the county pop by the pop in this census tract.
+        ...     county_data[state][county]['pop'] += int(pop)
+        ...
+        >>>
+        >>> # Open a new text file and write the contents of county_data to it.
+        >>> print('Writing results...')
+        Writing results...
+        >>> result_file = open('census2010B.py', 'w')
+        >>> result_file.write('allData = ' + pprint.pformat(county_data))
+        152237
+        >>> result_file.close()
+        >>> print('Done.')
+        Done.
+        >>>
+        >>> import os
+        >>> import census2010
+        >>> census2010.allData['AK']['Anchorage']
+        {'pop': 291826, 'tracts': 55}
+        >>> anchoragePop = census2010.allData['AK']['Anchorage']['pop']
+        >>> print('The 2010 population of Anchorage was ' + str(anchoragePop))
+        The 2010 population of Anchorage was 291826
+        >>>
+        >>> Lo.close_doc(wb)
+        >>> Lo.close_office()
+        True
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+.. _tute_ss_ideas_programs:
 
 Ideas for Similar Programs
 --------------------------
 
-Many businesses and offices use Excel to store various types of data, and it’s not uncommon for spreadsheets to become large and unwieldy. Any program that parses an Excel spreadsheet has a similar structure: it loads the spreadsheet file, preps some variables or data structures, and then loops through each of the rows in the spreadsheet. Such a program could do the following:
+Many businesses and offices use Excel to store various types of data, and it’s not uncommon for spreadsheets to become large and unwieldy.
+Any program that parses an Excel spreadsheet has a similar structure: it loads the spreadsheet file, preps some variables or data structures, and then loops through each of the rows in the spreadsheet.
+Such a program could do the following:
 
-Compare data across multiple rows in a spreadsheet.
-Open multiple Excel files and compare data between spreadsheets.
-Check whether a spreadsheet has blank rows or invalid data in any cells and alert the user if it does.
-Read data from a spreadsheet and use it as the input for your Python programs.
+.. cssclass:: ul-list
+
+    - Compare data across multiple rows in a spreadsheet.
+    - Open multiple Excel files and compare data between spreadsheets.
+    - Check whether a spreadsheet has blank rows or invalid data in any cells and alert the user if it does.
+    - Read data from a spreadsheet and use it as the input for your Python programs.
+
+.. _tute_ss_writing_sheet_docs:
 
 Writing Spreadsheet Documents
 =============================
 
-|odev|_ also provides ways of writing data, meaning that your programs can create and edit spreadsheet files. With Python, it’s simple to create spreadsheets with thousands of rows of data.
+|odev| also provides ways of writing data, meaning that your programs can create and edit spreadsheet files.
+With Python, it’s simple to create spreadsheets with thousands of rows of data.
 
->>> from ooodev.utils.lo import Lo
->>> loader = Lo.load_office(Lo.ConnectSocket(headless=True))
->>> # use the Office API... NOTE: Following lines raise an error
->>> Lo.close_doc(wb)
-Closing the document
->>> Lo.close_office()
-Closing Office
-Office has already been requested to terminate
-True
+.. tabs::
+
+    .. code-tab:: python
+
+        >>> from ooodev.utils.lo import Lo
+        >>> loader = Lo.load_office(Lo.ConnectSocket(headless=True))
+        >>> # use the Office API... NOTE: Following lines raise an error
+        >>> Lo.close_doc(wb)
+        Closing the document
+        >>> Lo.close_office()
+        Closing Office
+        Office has already been requested to terminate
+        True
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+.. _tute_ss_create_save_sheet_docs:
 
 Creating and Saving Spreadsheet Documents
 -----------------------------------------
 
-Start a lo instance and use the Calc create_doc class to create a new, blank Workbook object. Enter the following into the interactive shell:
+Start a lo instance and use the Calc create_doc class to create a new, blank Workbook object.
+Enter the following into the interactive shell:
 
->>> from ooodev.utils.lo import Lo
->>> loader = Lo.load_office(Lo.ConnectSocket(headless=True))
->>>
->>> from ooodev.office.calc import Calc
->>> wb = Calc.create_doc(loader=loader)
->>> ws = Calc.get_sheet(doc=wb, index=0)
->>> Calc.get_sheet_name(ws)
-'Sheet1'
->>> Calc.set_sheet_name(ws, 'Spam Bacon Eggs Sheet')
-True
->>> Calc.get_sheet_name(ws)
-'Spam Bacon Eggs Sheet'
->>> Calc.get_sheet_names(wb)
-('Spam Bacon Eggs Sheet',)
->>> Calc.save_doc(wb, "foo.ods")
->>>
->>> Lo.close_doc(wb)
->>> Lo.close_office()
+.. tabs::
 
-The workbook will start off with a single sheet named Sheet. You can change the name of the sheet using the set_sheet_name() method which stores a new string in its title property.
+    .. code-tab:: python
 
-Any time you modify the Workbook object or its sheets and cells, the spreadsheet file will not be saved until you call the save_doc() workbook method. Enter the following into the interactive shell (with example.xlsx in the current working directory):
+        >>> from ooodev.utils.lo import Lo
+        >>> loader = Lo.load_office(Lo.ConnectSocket(headless=True))
+        >>>
+        >>> from ooodev.office.calc import Calc
+        >>> wb = Calc.create_doc(loader=loader)
+        >>> ws = Calc.get_sheet(doc=wb, index=0)
+        >>> Calc.get_sheet_name(ws)
+        'Sheet1'
+        >>> Calc.set_sheet_name(ws, 'Spam Bacon Eggs Sheet')
+        True
+        >>> Calc.get_sheet_name(ws)
+        'Spam Bacon Eggs Sheet'
+        >>> Calc.get_sheet_names(wb)
+        ('Spam Bacon Eggs Sheet',)
+        >>> Calc.save_doc(wb, "foo.ods")
+        >>>
+        >>> Lo.close_doc(wb)
+        >>> Lo.close_office()
 
->>> from ooodev.utils.lo import Lo
->>> loader = Lo.load_office(Lo.ConnectSocket(headless=True))
->>>
->>> from ooodev.office.calc import Calc
->>> wb = Calc.open_doc('example.ods', loader)
->>> ws = Calc.get_sheet(wb, 0)
->>> Calc.set_sheet_name(ws, 'Spam Spam Spam')
-True
->>> Calc.save_doc(wb, 'example_copy.ods')
->>>
->>> Lo.close_doc(wb)
->>> Lo.close_office()
+    .. only:: html
 
-Here, we change the name of our sheet. To save our changes, we pass a filename as a string to the save_doc() method. Passing a different filename than the original, such as 'example_copy.xlsx', saves the changes to a copy of the spreadsheet.
+        .. cssclass:: tab-none
 
-Whenever you edit a spreadsheet you’ve loaded from a file, you should always save the new, edited spreadsheet to a different filename than the original. That way, you’ll still have the original spreadsheet file to work with in case a bug in your code caused the new, saved file to have incorrect or corrupt data.
+            .. group-tab:: None
+
+
+The workbook will start off with a single sheet named Sheet.
+You can change the name of the sheet using the :py:meth:`.Calc.set_sheet_name` method which stores a new string in its title property.
+
+Any time you modify the Workbook object or its sheets and cells, the spreadsheet file will not be saved until you call the :py:meth:`.Calc.save_doc` workbook method.
+Enter the following into the interactive shell (with ``example.xlsx`` in the current working directory):
+
+.. tabs::
+
+    .. code-tab:: python
+
+        >>> from ooodev.utils.lo import Lo
+        >>> loader = Lo.load_office(Lo.ConnectSocket(headless=True))
+        >>>
+        >>> from ooodev.office.calc import Calc
+        >>> wb = Calc.open_doc('example.ods', loader)
+        >>> ws = Calc.get_sheet(wb, 0)
+        >>> Calc.set_sheet_name(ws, 'Spam Spam Spam')
+        True
+        >>> Calc.save_doc(wb, 'example_copy.ods')
+        >>>
+        >>> Lo.close_doc(wb)
+        >>> Lo.close_office()
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+Here, we change the name of our sheet. To save our changes, we pass a filename as a string to the :py:meth:`.Calc.save_doc` method.
+Passing a different filename than the original, such as ``example_copy.xlsx``, saves the changes to a copy of the spreadsheet.
+
+Whenever you edit a spreadsheet you’ve loaded from a file, you should always save the new, edited spreadsheet to a different filename than the original.
+That way, you’ll still have the original spreadsheet file to work with in case a bug in your code caused the new, saved file to have incorrect or corrupt data.
+
+.. _tute_ss_create_remove_shts:
 
 Creating and Removing Sheets
 ----------------------------
 
-Sheets can be added to and removed from a workbook with the insert_sheet() and remove_sheet() methods. Enter the following into the interactive shell:
+Sheets can be added to and removed from a workbook with the :py:meth:`.Calc.insert_sheet` and :py:meth:`.Calc.remove_sheet` methods.
+Enter the following into the interactive shell:
 
->>> from ooodev.utils.lo import Lo
->>> loader = Lo.load_office(Lo.ConnectSocket(headless=True))
->>>
->>> from ooodev.office.calc import Calc
->>> wb = Calc.create_doc(loader=loader)
-Creating Office document scalc
+.. tabs::
 
->>> ws = Calc.get_sheet(doc=wb, index=0)
->>> Calc.get_sheet_names(wb)
-('Sheet1',)
->>> Calc.insert_sheet(wb, 'Sheet2', 1)
->>> Calc.get_sheet_names(wb)
-('Sheet1', 'Sheet2')
->>> Calc.insert_sheet(wb, 'First Sheet', 0)
->>> Calc.get_sheet_names(wb)
-('First Sheet', 'Sheet1', 'Sheet2')
->>> Calc.insert_sheet(wb, 'Middle Sheet', 2)
->>> Calc.get_sheet_names(wb)
-('First Sheet', 'Sheet1', 'Middle Sheet', 'Sheet2')
+    .. code-tab:: python
 
-The insert_sheet() method returns a new Worksheet object named SheetX, which by default is set to be the last sheet in the workbook. Optionally, the name and index of the new sheet can be specified with the name and index keyword arguments.
+        >>> from ooodev.utils.lo import Lo
+        >>> loader = Lo.load_office(Lo.ConnectSocket(headless=True))
+        >>>
+        >>> from ooodev.office.calc import Calc
+        >>> wb = Calc.create_doc(loader=loader)
+        Creating Office document scalc
+        >>> ws = Calc.get_sheet(doc=wb, index=0)
+        >>> Calc.get_sheet_names(wb)
+        ('Sheet1',)
+        >>> Calc.insert_sheet(wb, 'Sheet2', 1)
+        >>> Calc.get_sheet_names(wb)
+        ('Sheet1', 'Sheet2')
+        >>> Calc.insert_sheet(wb, 'First Sheet', 0)
+        >>> Calc.get_sheet_names(wb)
+        ('First Sheet', 'Sheet1', 'Sheet2')
+        >>> Calc.insert_sheet(wb, 'Middle Sheet', 2)
+        >>> Calc.get_sheet_names(wb)
+        ('First Sheet', 'Sheet1', 'Middle Sheet', 'Sheet2')
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+The :py:meth:`.Calc.insert_sheet` method returns a new Worksheet object named ``SheetX``, which by default is set to be the last sheet in the workbook.
+Optionally, the name and index of the new sheet can be specified with the name and index keyword arguments.
 
 Continue the previous example by entering the following:
 
->>> Calc.get_sheet_names(wb)
-('First Sheet', 'Sheet1', 'Middle Sheet', 'Sheet2')
->>> Calc.remove_sheet(wb, 'Middle Sheet')
-True
->>> Calc.remove_sheet(wb, 'Sheet2')
-True
->>> Calc.get_sheet_names(wb)
-('First Sheet', 'Sheet1')
+.. tabs::
 
->>> Lo.close_doc(wb)
->>> Lo.close_office()
+    .. code-tab:: python
 
-You can use the remove_sheet() method to remove a sheet from a workbook, similarly to deleting a key-value pair from a dictionary.
+        >>> Calc.get_sheet_names(wb)
+        ('First Sheet', 'Sheet1', 'Middle Sheet', 'Sheet2')
+        >>> Calc.remove_sheet(wb, 'Middle Sheet')
+        True
+        >>> Calc.remove_sheet(wb, 'Sheet2')
+        True
+        >>> Calc.get_sheet_names(wb)
+        ('First Sheet', 'Sheet1')
+        >>> Lo.close_doc(wb)
+        >>> Lo.close_office()
 
-Remember to call the save_doc() method to save the changes after adding sheets to or removing sheets from the workbook.
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+
+You can use the :py:meth:`.Calc.remove_sheet` method to remove a sheet from a workbook, similarly to deleting a key-value pair from a dictionary.
+
+Remember to call the :py:meth:`.Calc.save_doc` method to save the changes after adding sheets to or removing sheets from the workbook.
+
+.. _tute_ss_vals_cells:
 
 Writing Values to Cells
 -----------------------
 
-Writing values to cells is much like writing values to keys in a dictionary. Enter this into the interactive shell:
+Writing values to cells is much like writing values to keys in a dictionary.
+Enter this into the interactive shell:
 
+.. tabs::
 
->>> from ooodev.utils.lo import Lo
->>> loader = Lo.load_office(Lo.ConnectSocket(headless=True))
->>>
->>> from ooodev.office.calc import Calc
->>> wb = Calc.create_doc(loader=loader)
-Creating Office document scalc
+    .. code-tab:: python
 
->>> ws = Calc.get_sheet(doc=wb, index=0)
->>> Calc.set_val('Hello, world!', ws, 'A1')
->>> Calc.get_string(ws, 'A1')
-'Hello, world!'
+        >>> from ooodev.utils.lo import Lo
+        >>> loader = Lo.load_office(Lo.ConnectSocket(headless=True))
+        >>>
+        >>> from ooodev.office.calc import Calc
+        >>> wb = Calc.create_doc(loader=loader)
+        Creating Office document scalc
+        >>> ws = Calc.get_sheet(doc=wb, index=0)
+        >>> Calc.set_val('Hello, world!', ws, 'A1')
+        >>> Calc.get_string(ws, 'A1')
+        'Hello, world!'
+        >>> Lo.close_doc(wb)
+        >>> Lo.close_office()
 
->>> Lo.close_doc(wb)
->>> Lo.close_office()
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 If you have the cell’s coordinate as a string, you can use it just like a dictionary key on the Worksheet object to specify which cell to write to.
+
+.. _tute_ss_updating_sheet:
 
 Project: Updating a Spreadsheet
 ===============================
 
-In this project, you’ll write a program to update cells in a spreadsheet of produce sales. Your program will look through the spreadsheet, find specific kinds of produce, and update their prices. Download this spreadsheet from https://nostarch.com/automatestuff2/. Figure 13-3 shows what the spreadsheet looks like.
+In this project, you’ll write a program to update cells in a spreadsheet of produce sales.
+Your program will look through the spreadsheet, find specific kinds of produce, and update their prices.
+Download this spreadsheet from `<https://nostarch.com/automatestuff2/>`__. :numref:`tute_ss_fig_produce_sht`  shows what the spreadsheet looks like.
 
 .. cssclass:: diagram invert
 
-    .. _ch01fig_timeline:
+    .. _tute_ss_fig_produce_sht:
     .. figure:: https://user-images.githubusercontent.com/11288701/208299752-dd9cdbe8-7171-4312-a578-c3e1b699b042.png
-        :alt: OpenOffice Timeline Image
+        :alt: A spreadsheet of produce sales
         :figclass: align-center
 
         :A spreadsheet of produce sales
 
-Each row represents an individual sale. The columns are the type of produce sold (A), the cost per pound of that produce (B), the number of pounds sold (C), and the total revenue from the sale (D). The TOTAL column is set to the Excel formula =ROUND(B3*C3, 2), which multiplies the cost per pound by the number of pounds sold and rounds the result to the nearest cent. With this formula, the cells in the TOTAL column will automatically update themselves if there is a change in column B or C.
+Each row represents an individual sale.
+The columns are the type of produce sold ``A``, the cost per pound of that produce ``B``, the number of pounds sold ``C``, and the total revenue from the sale ``D``.
+The TOTAL column is set to the Excel formula`` =ROUND(B3*C3, 2)``, which multiplies the cost per pound by the number of pounds sold and rounds the result to the nearest cent.
+With this formula, the cells in the TOTAL column will automatically update themselves if there is a change in column ``B`` or ``C``.
 
-Now imagine that the prices of garlic, celery, and lemons were entered incorrectly, leaving you with the boring task of going through thousands of rows in this spreadsheet to update the cost per pound for any garlic, celery, and lemon rows. You can’t do a simple find-and-replace for the price, because there might be other items with the same price that you don’t want to mistakenly “correct.” For thousands of rows, this would take hours to do by hand. But you can write a program that can accomplish this in seconds.
+Now imagine that the prices of garlic, celery, and lemons were entered incorrectly,
+leaving you with the boring task of going through thousands of rows in this spreadsheet to update the cost per pound for any garlic, celery, and lemon rows.
+You can’t do a simple find-and-replace for the price, because there might be other items with the same price that you don’t want to mistakenly “correct.” For thousands of rows, this would take hours to do by hand.
+But you can write a program that can accomplish this in seconds.
+
+See Also: :ref:`ch23`
 
 Your program does the following:
 
-Loops over all the rows
-If the row is for garlic, celery, or lemons, changes the price
+.. cssclass:: ul-list
+
+    - Loops over all the rows
+    - If the row is for garlic, celery, or lemons, changes the price
+
 This means your code will need to do the following:
 
-Open the spreadsheet file.
-For each row, check whether the value in column A is Celery, Garlic, or Lemon.
-If it is, update the price in column B.
-Save the spreadsheet to a new file (so that you don’t lose the old spreadsheet, just in case).
+.. cssclass:: ul-list
+
+    - Open the spreadsheet file.
+    - For each row, check whether the value in column A is Celery, Garlic, or Lemon.
+    - If it is, update the price in column B.
+    - Save the spreadsheet to a new file (so that you don’t lose the old spreadsheet, just in case).
+
+.. _tute_ss_step_set_data_structure:
 
 Step 1: Set Up a Data Structure with the Update Information
 -----------------------------------------------------------
 
 The prices that you need to update are as follows:
 
-Celery         1.19
+::
 
-Garlic         3.07
-
-Lemon          1.27
+    Celery         1.19
+    Garlic         3.07
+    Lemon          1.27
 
 You could write code like this:
 
-if produceName == 'Celery':
-    cellObj = 1.19
-if produceName == 'Garlic':
-    cellObj = 3.07
-if produceName == 'Lemon':
-    cellObj = 1.27
+.. tabs::
+
+    .. code-tab:: python
+
+        if produceName == 'Celery':
+            cellObj = 1.19
+        if produceName == 'Garlic':
+            cellObj = 3.07
+        if produceName == 'Lemon':
+            cellObj = 1.27
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 Having the produce and updated price data hardcoded like this is a bit inelegant. If you needed to update the spreadsheet again with different prices or different produce, you would have to change a lot of the code. Every time you change code, you risk introducing bugs.
 
 A more flexible solution is to store the corrected price information in a dictionary and write your code to use this data structure. In a new file editor tab, enter the following code:
 
-[*** FIX THIS ***
+.. todo::
 
-#! python3
-# updateProduce.py - Corrects costs in produce sales spreadsheet.
+    Tute ss. This section seems to be half pseudocode but openpyxl needs to go to odev
 
-import ***openpyxl***************************************************************************************
+    Re fix this. Needs to be referred back to original doc for context.
+    Formatting is really screwy in this section too
 
-wb = ***openpyxl***.load_workbook('produceSales.xlsx')
-sheet = wb['Sheet']
+    [*** FIX THIS ***
 
-# The produce types and their updated prices
-PRICE_UPDATES = {'Garlic': 3.07,
-                 'Celery': 1.19,
-                 'Lemon': 1.27}
+    #! python3
+    # updateProduce.py - Corrects costs in produce sales spreadsheet.
 
-# TODO: Loop through the rows and update the prices.
+    import ***openpyxl***************************************************************************************
 
-Save this as updateProduce.py. If you need to update the spreadsheet again, you’ll need to update only the PRICE_UPDATES dictionary, not any other code.
+    wb = ***openpyxl***.load_workbook('produceSales.xlsx')
+    sheet = wb['Sheet']
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # The produce types and their updated prices
+        PRICE_UPDATES = {'Garlic': 3.07,
+                        'Celery': 1.19,
+                        'Lemon': 1.27}
+
+        # TODO: Loop through the rows and update the prices.
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+Save this as ``updateProduce.py``.
+If you need to update the spreadsheet again, you’ll need to update only the ``PRICE_UPDATES`` dictionary, not any other code.
+
+.. _tute_ss_step_update_row_prices:
 
 Step 2: Check All Rows and Update Incorrect Prices
 --------------------------------------------------
 
-The next part of the program will loop through all the rows in the spreadsheet. Add the following code to the bottom of updateProduce.py:
+The next part of the program will loop through all the rows in the spreadsheet.
+Add the following code to the bottom of ``updateProduce.py``:
 
-#! python3
-# updateProduce.py - Corrects costs in produce sales spreadsheet.
+.. todo:: 
+    Tute SS, fix code section below: Loop through the rows and update the prices.
 
---snip--
+.. tabs::
 
-[*** FIX THIS ***
+    .. code-tab:: python
 
-# Loop through the rows and update the prices.
-for rowNum in range(2, sheet.max_row):    # skip the first row
-    produceName = sheet.cell(row=rowNum, column=1).value
-    if produceName in PRICE_UPDATES:
-        sheet.cell(row=rowNum, column=2).value = PRICE_UPDATES[produceName]
+        #! python3
+        # updateProduce.py - Corrects costs in produce sales spreadsheet.
 
-wb.save('updatedProduceSales.xlsx')
+        # --snip--
 
-We loop through the rows starting at row 2, since row 1 is just the header ➊. The cell in column 1 (that is, column A) will be stored in the variable produceName ➋. If produceName exists as a key in the PRICE_UPDATES dictionary ➌, then you know this is a row that must have its price corrected. The correct price will be in PRICE_UPDATES[produceName].
+        # Loop through the rows and update the prices.
+        for rowNum in range(2, sheet.max_row):    # skip the first row
+            produceName = sheet.cell(row=rowNum, column=1).value
+            if produceName in PRICE_UPDATES:
+                sheet.cell(row=rowNum, column=2).value = PRICE_UPDATES[produceName]
 
-Notice how clean using PRICE_UPDATES makes the code. Only one if statement, rather than code like if produceName == 'Garlic': , is necessary for every type of produce to update. And since the code uses the PRICE_UPDATES dictionary instead of hardcoding the produce names and updated costs into the for loop, you modify only the PRICE_UPDATES dictionary and not the code if the produce sales spreadsheet needs additional changes.
+        wb.save('updatedProduceSales.xlsx')
 
-After going through the entire spreadsheet and making changes, the code saves the Workbook object to updatedProduceSales.xlsx ➍. It doesn’t overwrite the old spreadsheet just in case there’s a bug in your program and the updated spreadsheet is wrong. After checking that the updated spreadsheet looks right, you can delete the old spreadsheet.
+    .. only:: html
 
-You can download the complete source code for this program from https://nostarch.com/automatestuff2/.
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+
+We loop through the rows starting at row ``2``, since row 1 is just the header ➊.
+The cell in column ``1`` (that is, column ``A``) will be stored in the variable produceName ➋.
+If produceName exists as a key in the ``PRICE_UPDATES`` dictionary ➌, then you know this is a row that must have its price corrected.
+The correct price will be in ``PRICE_UPDATES[produceName]``.
+
+Notice how clean using ``PRICE_UPDATES`` makes the code.
+Only one if statement, rather than code like if ``produceName == 'Garlic'``: , is necessary for every type of produce to update.
+And since the code uses the ``PRICE_UPDATES`` dictionary instead of hardcoding the produce names and updated costs into the for loop,
+you modify only the ``PRICE_UPDATES`` dictionary and not the code if the produce sales spreadsheet needs additional changes.
+
+After going through the entire spreadsheet and making changes, the code saves the Workbook object to ``updatedProduceSales.xlsx`` ➍.
+It doesn’t overwrite the old spreadsheet just in case there’s a bug in your program and the updated spreadsheet is wrong.
+After checking that the updated spreadsheet looks right, you can delete the old spreadsheet.
+
+You can download the complete source code for this program from `<https://nostarch.com/automatestuff2/>`__.
+
+.. _tute_ss_ideas_simalar_programs:
 
 Ideas for Similar Programs
 --------------------------
 
-Since many office workers use Excel spreadsheets all the time, a program that can automatically edit and write Excel files could be really useful. Such a program could do the following:
+Since many office workers use Excel spreadsheets all the time, a program that can automatically edit and write Excel files could be really useful.
+Such a program could do the following:
 
 Read data from one spreadsheet and write it to parts of other spreadsheets.
 Read data from websites, text files, or the clipboard and write it to a spreadsheet.
-Automatically “clean up” data in spreadsheets. For example, it could use regular expressions to read multiple formats of phone numbers and edit them to a single, standard format.
+Automatically “clean up” data in spreadsheets.
+For example, it could use regular expressions to read multiple formats of phone numbers and edit them to a single, standard format.
+
+.. _tute_ss_set_cell_font_style:
 
 Setting the Font Style of Cells
 ===============================
 
-Styling certain cells, rows, or columns can help you emphasize important areas in your spreadsheet. In the produce spreadsheet, for example, your program could apply bold text to the potato, garlic, and parsnip rows. Or perhaps you want to italicize every row with a cost per pound greater than $5. Styling parts of a large spreadsheet by hand would be tedious, but your programs can do it instantly.
+Styling certain cells, rows, or columns can help you emphasize important areas in your spreadsheet.
+In the produce spreadsheet, for example, your program could apply bold text to the potato, garlic, and parsnip rows.
+Or perhaps you want to italicize every row with a cost per pound greater than ``$5``.
+Styling parts of a large spreadsheet by hand would be tedious, but your programs can do it instantly.
 
-To customize font styles in cells the |odev|_ Props class and two ooo.dyn.awt classes, font_slant and font_weight, must be imported.
+To customize font styles in cells the |odev| Props class and two ``ooo.dyn.awt`` import from  |ooouno|_ classes, ``FontSlant`` and ``FontWeight``, must be imported.
 
 Note that an alias has been used on the classes to make them easier to recognise.
 
-Here’s an example that creates a new workbook and sets cell A1 to have an italicized, bold, 24-point font. Enter the following into the interactive shell:
+Here’s an example that creates a new workbook and sets cell ``A1`` to have an italicized, bold, 24-point font.
+Enter the following into the interactive shell:
 
->>> from ooodev.utils.lo import Lo
->>> from ooodev.office.calc import Calc
->>> from ooodev.utils.gui import GUI
->>>
->>> loader = Lo.load_office(Lo.ConnectSocket())
->>> doc = Calc.create_doc()
->>> GUI.set_visible(is_visible=True, odoc=doc)
+.. tabs::
 
->>> sheet = Calc.get_sheet(doc=doc)
->>> for i in range(1, 6): # create some data in column A
-...     Calc.set_val(i, sheet, 'A'+str(i))
-...
+    .. code-tab:: python
 
->>> from ooodev.utils.props import Props
->>> from ooo.dyn.awt.font_slant import FontSlant
->>> from ooo.dyn.awt.font_weight import FontWeight
->>>
->>> cell = Calc.get_cell(sheet, 'A1')
->>> Props.set(cell, CharPosture=FontSlant.ITALIC, CharWeight=FontWeight.BOLD, CharHeight=24,)
->>> _ = Calc.save_doc(doc, "sampleChart.xlsx")
+        >>> from ooodev.utils.lo import Lo
+        >>> from ooodev.office.calc import Calc
+        >>> from ooodev.utils.gui import GUI
+        >>>
+        >>> loader = Lo.load_office(Lo.ConnectSocket())
+        >>> doc = Calc.create_doc()
+        >>> GUI.set_visible(is_visible=True, odoc=doc)
+        >>> sheet = Calc.get_sheet(doc=doc)
+        >>> for i in range(1, 6): # create some data in column A
+        ...     Calc.set_val(i, sheet, 'A'+str(i))
+        ...
+        >>> from ooodev.utils.props import Props
+        >>> from ooo.dyn.awt.font_slant import FontSlant
+        >>> from ooo.dyn.awt.font_weight import FontWeight
+        >>>
+        >>> cell = Calc.get_cell(sheet, 'A1')
+        >>> Props.set(cell, CharPosture=FontSlant.ITALIC, CharWeight=FontWeight.BOLD, CharHeight=24,)
+        >>> _ = Calc.save_doc(doc, "sampleChart.xlsx")
+        >>> # check file
+        >>> Lo.close_doc(doc=doc)
+        >>> _ = Lo.close_office()
 
->>> # check file
->>> Lo.close_doc(doc=doc)
->>> _ = Lo.close_office()
+    .. only:: html
 
-In this example, Calc.get_cell() returns an XCell type with is used to reference the cell in Props.set()and set the properties directly. CharPosture and CharWeight use the FontSlat and FontWeight classes respectively as previously imported. CharHeight is set directly. The effect is shown in the saved file.
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+In this example, :py:meth:`.Calc.get_cell` returns an XCell_ type with is used to reference the cell in :py:meth:`.Props.set` and set the properties directly.
+``CharPosture`` and ``CharWeight`` use the ``FontSlat`` and ``FontWeight`` classes respectively as previously imported.
+``CharHeight`` is set directly. The effect is shown in the saved file.
+
+.. _tute_ss_font_objects:
 
 Font Objects
 ============
 
-A number of |odev|_ classes have methods to change font properties. Table 13-2 shows key properties for Font objects.
+A number of |odev| classes have methods to change font properties.
+:numref:`tute_ss_tbl_props_for_font_objects` shows key properties for Font objects.
 
-Table 13-2: Properties for Font Objects
+..
+    Table 13-2
 
-+-----------------+-----------+---------------------------------+
-| Property        | Data type | Description                     |
-+=================+===========+=================================+
-|name             +String     + The font name, such as 'Calibri'|
-|                 +           + or 'Times New Roman'            |
-+-----------------+-----------+---------------------------------+
-|size             +Integer    +The point size                   |
-+-----------------+-----------+---------------------------------+
-|bold             +Boolean    +True, for bold font              |
-+-----------------+-----------+---------------------------------+
-|italic           +Boolean    +True, for italic font            |
-+-----------------+-----------+---------------------------------+
+.. _tute_ss_tbl_props_for_font_objects:
 
-The best way of setting font attributes is to define a style and apply it to the required objects. In this example a spreadsheet is created the a style is; named, created, properties set, and applied to a cell object. The cell value is then set which demonstrates the new style, and the process is repeated again.
+.. table:: Properties for Font Objects.
+    :name: props_for_font_objects
 
->>> from ooodev.utils.lo import Lo
->>> from ooodev.office.calc import Calc
->>> from ooodev.utils.gui import GUI
->>>
->>> loader = Lo.load_office(Lo.ConnectSocket())
->>> doc = Calc.create_doc()
->>> GUI.set_visible(is_visible=True, odoc=doc)
->>> sheet = Calc.get_sheet(doc=doc)
+    +-----------------+-----------+---------------------------------+
+    | Property        | Data type | Description                     |
+    +=================+===========+=================================+
+    |name             +String     + The font name, such as 'Calibri'|
+    |                 +           + or 'Times New Roman'            |
+    +-----------------+-----------+---------------------------------+
+    |size             +Integer    +The point size                   |
+    +-----------------+-----------+---------------------------------+
+    |bold             +Boolean    +True, for bold font              |
+    +-----------------+-----------+---------------------------------+
+    |italic           +Boolean    +True, for italic font            |
+    +-----------------+-----------+---------------------------------+
 
->>> from ooodev.utils.props import Props
->>> from ooo.dyn.awt.font_slant import FontSlant
->>> from ooo.dyn.awt.font_weight import FontWeight
->>>
->>> # Name style
->>> HEADER_STYLE_NAME = "My HeaderStyle"
->>> # Create style
->>> style1 = Calc.create_cell_style(doc=doc, style_name=HEADER_STYLE_NAME)
->>> # Set style properties
->>> Props.set(style1, CharWeight=FontWeight.BOLD, CharHeight=14,)
->>> # Apply style
->>> Calc.change_style(sheet=sheet, style_name=HEADER_STYLE_NAME, range_name="A1")
->>> # Set cell value
->>> Calc.set_val('Bold Times New Roman', sheet, 'A1')
->>> # Repeat for data
->>> DATA_STYLE_NAME = "My DataStyle"
->>> style2 = Calc.create_cell_style(doc=doc, style_name=DATA_STYLE_NAME)
->>> Props.set(style2, CharPosture=FontSlant.ITALIC, CharHeight=24,)
->>> Calc.change_style(sheet=sheet, style_name=DATA_STYLE_NAME, range_name="B3")
->>> Calc.set_val('24 pt Italic', sheet, 'B3')
->>> _ = Calc.save_doc(doc, "styles.xlsx")
+The best way of setting font attributes is to define a style and apply it to the required objects.
+In this example a spreadsheet is created the a style is; named, created, properties set, and applied to a cell object.
+The cell value is then set which demonstrates the new style, and the process is repeated again.
 
->>> # check file
->>> Lo.close_doc(doc=doc)
->>> _ = Lo.close_office()
+.. tabs::
 
-Here, we store a style name in a STYLE_NAME constant, create a style with create_cell_style() method, use the Prop class set() method to set the style properties, then set the cell value with the set_val() method. We repeat the process with another style for a second cell. After you run this code, the styles of the A1 and B3 cells in the spreadsheet will be set to custom character styles, as shown in Figure 13-4.
+    .. code-tab:: python
+
+        >>> from ooodev.utils.lo import Lo
+        >>> from ooodev.office.calc import Calc
+        >>> from ooodev.utils.gui import GUI
+        >>>
+        >>> loader = Lo.load_office(Lo.ConnectSocket())
+        >>> doc = Calc.create_doc()
+        >>> GUI.set_visible(is_visible=True, odoc=doc)
+        >>> sheet = Calc.get_sheet(doc=doc)
+
+        >>> from ooodev.utils.props import Props
+        >>> from ooo.dyn.awt.font_slant import FontSlant
+        >>> from ooo.dyn.awt.font_weight import FontWeight
+        >>>
+        >>> # Name style
+        >>> HEADER_STYLE_NAME = "My HeaderStyle"
+        >>> # Create style
+        >>> style1 = Calc.create_cell_style(doc=doc, style_name=HEADER_STYLE_NAME)
+        >>> # Set style properties
+        >>> Props.set(style1, CharWeight=FontWeight.BOLD, CharHeight=14,)
+        >>> # Apply style
+        >>> Calc.change_style(sheet=sheet, style_name=HEADER_STYLE_NAME, range_name="A1")
+        >>> # Set cell value
+        >>> Calc.set_val('Bold Times New Roman', sheet, 'A1')
+        >>> # Repeat for data
+        >>> DATA_STYLE_NAME = "My DataStyle"
+        >>> style2 = Calc.create_cell_style(doc=doc, style_name=DATA_STYLE_NAME)
+        >>> Props.set(style2, CharPosture=FontSlant.ITALIC, CharHeight=24,)
+        >>> Calc.change_style(sheet=sheet, style_name=DATA_STYLE_NAME, range_name="B3")
+        >>> Calc.set_val('24 pt Italic', sheet, 'B3')
+        >>> _ = Calc.save_doc(doc, "styles.xlsx")
+
+        >>> # check file
+        >>> Lo.close_doc(doc=doc)
+        >>> _ = Lo.close_office()
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+
+Here, we store a style name in a ``STYLE_NAME`` constant, create a style with :py:meth:`.Calc.create_cell_style` method,
+use :py:meth:`.Props.set` method to set the style properties, then set the cell value with the :py:meth:`.Calc.set_val` method.
+We repeat the process with another style for a second cell.
+After you run this code, the styles of the ``A1`` and ``B3`` cells in the spreadsheet will be set to custom character styles, as shown in :numref:`tute_ss_fig_custom_font_styles`.
+
+..
+    Figure 13-4
 
 .. cssclass:: diagram invert
 
-    .. _ch01fig_timeline:
+    .. _tute_ss_fig_custom_font_styles:
     .. figure:: https://user-images.githubusercontent.com/11288701/208299766-0bfc9ef8-9675-4266-80b8-c8c57059f2ea.png
-        :alt: OpenOffice Timeline Image
+        :alt: A spreadsheet with custom font styles
         :figclass: align-center
 
         :A spreadsheet with custom font styles
 
-For cell A1, we set the font name to 'Times New Roman' [*** FIX THIS ***] and set bold to true, so our text appears in bold Times New Roman. We didn’t specify a size, so the default is used. In cell B3, our text is italic, with a size of 24; we didn’t specify a font name, so the default, Calibri, is used.
+.. todo:: 
+
+    Tute ss: Correct how to set a font for a cell.
+
+For cell A1, we set the font name to ``Times New Roman`` and set bold to true, so our text appears in bold Times New Roman.
+We didn’t specify a size, so the default is used.
+In cell ``B3``, our text is italic, with a size of ``24``; we didn’t specify a font name, so the default, ``Calibri``, is used.
+
+.. _tute_ss_formulas:
 
 Formulas
 ========
 
-Excel formulas, which begin with an equal sign, can configure cells to contain values calculated from other cells. In this section, you’ll use the setFormula() method on a cell to programmatically add formulas to cells, just like any normal value. For example:
+Spreadsheet formulas, which begin with an equal sign, can configure cells to contain values calculated from other cells.
+In this section, you’ll use the setFormula() method on a cell to programmatically add formulas to cells, just like any normal value. For example:
 
->>> Calc.get_cell(sheet, 'B9').setFormula('=SUM(B9)')
+.. tabs::
 
-This will store =SUM(B1:B8) as the value in cell B9. This sets the B9 cell to a formula that calculates the sum of values in cells B1 to B8. You can see this in action in Figure 13-5.
+    .. code-tab:: python
+
+        >>> Calc.set_val(sheet=sheet, cell_name="B9", value="=SUM(B1:B8)")
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+
+This will store ``=SUM(B1:B8)`` as the value in cell ``B9``. This sets the ``B9`` cell to a formula that calculates the sum of values in cells ``B1`` to ``B8``.
+You can see this in action in :numref:`tute_ss_figb9_b1_b8`.
 
 .. cssclass:: diagram invert
 
-    .. _ch01fig_timeline:
+    .. _tute_ss_figb9_b1_b8:
     .. figure:: https://user-images.githubusercontent.com/11288701/208299779-ff5d2bfa-8e36-4606-8bd3-e48a0704a80d.png
-        :alt: OpenOffice Timeline Image
+        :alt: :Cell B9 contains the formula =SUM(B1:B8), which adds the cells B1 to B8
         :figclass: align-center
 
-        :Cell B9 contains the formula =SUM(B1:B8), which adds the cells B1 to B8
+        :Cell ``B9`` contains the formula ``=SUM(B1:B8)``, which adds the cells ``B1`` to ``B8``
 
-An Excel formula is set just like any other text value in a cell. Enter the following into the interactive shell:
+A formula is set just like any other text value in a cell. Enter the following into the interactive shell:
+
+.. todo:: 
+    
+    Tute ss: Add See 20.2.3 Storing 2D Arrays of Data
 
 >>> from ooodev.utils.lo import Lo
 >>> from ooodev.office.calc import Calc
@@ -1062,7 +1603,7 @@ If you set the freeze_panes property to 'A2', row 1 will always be viewable, no 
 Charts
 ======
 
-|odev|_ supports creating many charts including bar, line, scatter, and pie charts using the data in a sheet’s cells. To make a chart, you need to do the following:
+|odev| supports creating many charts including bar, line, scatter, and pie charts using the data in a sheet’s cells. To make a chart, you need to do the following:
 
 Create a Reference object from a rectangular selection of cells.
 Create a Series object by passing in the Reference object.
@@ -1254,5 +1795,5 @@ Spreadsheet to Text Files
 
 Write a program that performs the tasks of the previous program in reverse order: the program should open a spreadsheet and write the cells of column A into one text file, the cells of column B into another text file, and so on.
 
-.. |odev| replace:: ODEV
-.. _odev: https://python-ooo-dev-tools.readthedocs.io/en/latest/
+
+.. _XCell: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1table_1_1XCell.html
