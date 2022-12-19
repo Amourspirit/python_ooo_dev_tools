@@ -22,6 +22,8 @@ This chapter looks at a number of common tasks performed with slide decks:
     * exporting a slide from a deck as an image;
     * extracting all the text from a slide deck.
 
+.. _ch17_build_deck:
+
 17.1 Building a Deck from Notes
 ===============================
 
@@ -355,6 +357,8 @@ If the line starts with a ``>``, then ``process_bullet()`` is called to determin
 Depending on the number, :py:meth:`.Draw.add_bullet` is called with a different bullet indentation level value.
 If the line doesn't start with a ``>``, then it's assumed to be the title line of a new slide, and :py:meth:`.Draw.add_slide` and :py:meth:`.Draw.bullets_slide` create a new bullets-based slide.
 
+.. _ch17_master_pg:
+
 17.2 Master Pages
 =================
 
@@ -496,6 +500,8 @@ The ``main()`` method for |m_use_py|_ is:
 
             .. group-tab:: None
 
+.. _ch17_master_pg_access:
+
 17.2.1 Accessing a Master Page
 ------------------------------
 
@@ -575,6 +581,8 @@ This is implemented by an overloaded :py:meth:`.Draw.get_master_page` method:
 
         :odev_src_draw_meth:`get_master_page`
 
+.. _ch17_master_pg_what:
+
 17.2.2 What's on a Master Page?
 -------------------------------
 
@@ -633,6 +641,8 @@ A new master page is created by using ``XMasterPagesSupplier.getMasterPages()`` 
             .. group-tab:: None
 
 The new master page contains no presentation shapes (unlike the default one). They must be added separately.
+
+.. _ch17_master_pg_modify:
 
 17.2.3 Modifying a Master Page
 ------------------------------
@@ -787,6 +797,8 @@ It is implemented as:
 
             .. group-tab:: None
 
+.. _ch17_master_pg_use:
+
 17.2.4 Using a Master Page
 --------------------------
 
@@ -855,6 +867,8 @@ It uses the XMasterPageTarget_ interface to create the new link:
 
             .. group-tab:: None
 
+
+.. _ch17_deck_add_slide:
 
 17.3 Adding a Slide to a Deck
 =============================
@@ -1146,6 +1160,8 @@ The solution is to use a reference to the document's controller, as shown in ``_
 
             .. group-tab:: None
 
+.. _ch17_deck_append:
+
 17.5 Appending Slide Decks Together
 ===================================
 
@@ -1412,6 +1428,8 @@ Copying and pasting a slide in a deck should be available as methods in XDrawPag
     Chapter 17.5, Add link to chapters 51
 
 If you need a robust way of doing these tasks then take a look at the ODF Toolkit library in Chapter 51.
+
+.. _ch17_export_img:
 
 17.6 Exporting a Slide as an Image
 ==================================

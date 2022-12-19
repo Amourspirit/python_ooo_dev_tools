@@ -41,6 +41,8 @@ An older information source is the ``Lingucomponent Project`` page at the OpenOf
 https://openoffice.org/lingucomponent, which links to some useful tools, such as alternative grammar checkers.
 An interesting set of slides by Daniel Naber explaining the state of the project in 2005 can be found at http://danielnaber.de/publications/, along with more recent material.
 
+.. _ch10_linguistic_tools:
+
 10.1 The Linguistic Tools
 =========================
 
@@ -76,6 +78,8 @@ Lingo_ example prints a variety of information about the linguistics services:
         .. cssclass:: tab-none
 
             .. group-tab:: None
+
+.. _ch10_dict_info:
 
 10.1.1 Dictionary Information
 -----------------------------
@@ -272,6 +276,8 @@ If you can't find what you're looking for, don't forget the extensions for OpenO
 If you're unclear about how to install extensions, the process is explained online at https://wiki.documentfoundation.org/Documentation/HowTo/install_extension,
 or in the "Installing Extensions" guide available at https://libreoffice.org/get-help/documentation.
 
+.. _ch10_linguistic_props:
+
 10.1.2 Linguistic Properties
 ----------------------------
 
@@ -322,6 +328,8 @@ These properties are explained in the online documentation for the XLinguPropert
 
 The properties are spread across several dialog in Office's GUI, starting from the Tools, Options, "Language Settings" menu item.
 However, most of them are in the "Options" pane of the "Writing Aids" Dialog in :numref:`ch10fig_writing_aids_ss`.
+
+.. _ch10_installed_ext:
 
 10.1.3 Installed Extensions
 ---------------------------
@@ -405,6 +413,8 @@ The code for :py:meth:`.Info.list_extensions`:
             .. group-tab:: None
 
 Extensions are accessed via the XPackageInformationProvider_ interface.
+
+.. _ch10_exam_lingu:
 
 10.1.4 Examining the Lingu Services
 -----------------------------------
@@ -560,6 +570,8 @@ The choice of services depends on the current locale by default, so :py:meth:`.W
 In a similar way, :py:meth:`.Write.print_config_service_info` calls ``XLinguServiceManager.getConfiguredServices()``,
 and :py:meth:`.Write.print_locales` gets a sequence of Locale objects from ``XLinguServiceManager.getAvailableLocales()``.
 
+
+.. _ch10_use_spell_check:
 
 10.2 Using the Spell Checker
 ============================
@@ -792,6 +804,8 @@ The ``XXX`` name will be Office's locale language, which in this case is "en".
 
 The URL required by the ``OptionsTreeDialog`` dispatch is constructed by appending ``/dialog/en.xdl`` to the installation folder string.
 
+.. _ch10_use_thesaurus:
+
 10.3 Using the Thesaurus
 ========================
 
@@ -905,6 +919,8 @@ Also, the ``Lingucomponent`` website has some C++ code for reading ``.idx`` and 
 
 However, if you want to write code using a thesaurus independently of Office,
 then consider programming with one of the many APIs for WordNet; listed at https://wordnet.princeton.edu/related-projects#Python.
+
+.. _ch10_grammar_check:
 
 10.4 Grammar Checking
 =====================
@@ -1032,6 +1048,8 @@ The code for :py:meth:`.Write.set_configured_services` is:
 The method utilizes ``XLinguServiceManager.setConfiguredServices()`` to attach a particular implementation service
 (:abbreviation:`eg:` LanguageTool) to a specified linguistic service (:abbreviation:`eg:` the Proofreader).
 
+.. _ch10_err_rpt:
+
 10.4.1 Error Reporting Options
 ------------------------------
 
@@ -1069,6 +1087,8 @@ The "Options" menu item in the ``LanguageTool`` sub-menu brings up an extensive 
         :The LanguageTool Options Dialog.
 
 Unfortunately, there seems to be no way to modify these options through Office's Proofreader API.
+
+.. _ch10_proof_reader:
 
 10.4.2 Using the Proof Reader
 -----------------------------
@@ -1186,6 +1206,8 @@ Grammar rule IDs are one area where the proof reader API could be improved.
 The XProofreader_ interface includes methods for switching on and off rules based on their IDs,
 but there's no way to find out what these IDs are except by looking at SingleProofreadingError_ objects.
 
+.. _ch10_string_guess:
+
 10.5 Guessing the Language used in a String
 ===========================================
 
@@ -1249,6 +1271,8 @@ The output is:
             .. group-tab:: None
 
 XLanguageGuessing_ actually guesses a Locale_ rather than a language, and it includes information about the language, country and a variant BCP 47 language label.
+
+.. _ch10_spell_chk_grammar_chk:
 
 10.6 Spell Checking and Grammar Checking a Document
 ===================================================

@@ -286,6 +286,8 @@ The |auto_show_py|_ example removes the need for a presenter to click on a slide
 
             .. group-tab:: None
 
+.. _ch18_automatic_transition:
+
 Automatic Slide Transitioning
 -----------------------------
 
@@ -370,6 +372,8 @@ relieves the presenter from clicking to trigger shape animations, but he still n
 
 The ``Duration`` property is specified in seconds and refers to how long the current slide stays on display before the transition effect begins.
 This is different from the ``Speed`` property which refers to how quickly a transition is performed.
+
+.. _ch18_automatic_finish:
 
 Finishing Automatically
 -----------------------
@@ -548,6 +552,8 @@ This creates a play list called "ShortPlay" which will show the slides with indi
 
 The play list is installed by setting the ``CustomShow`` property in the slide show.
 The rest of the code in |c_show_py|_ is similar to the |basic_show_py|_ example.
+
+.. _ch18_play_list:
 
 Creating a Play List Using Containers
 -------------------------------------

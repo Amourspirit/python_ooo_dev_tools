@@ -57,6 +57,8 @@ Perhaps the best place for learning about Office macro programming is Andrew Pit
 `website <https://pitonyak.org/>`_, which includes an excellent free-to-download book:
 "OpenOffice.org Macros Explained", a macros cookbook, and a document focusing on database macros.
 
+.. _ch01_finding_api_docs:
+
 Finding API Documentation Online
 --------------------------------
 
@@ -85,6 +87,8 @@ If you want to reach the "text" module (which implements most of Writer), search
 You can call lodoc with Office application names, which are mapped to API module names.
 For instance: ``lodoc Impress`` brings up the "presentation" module page.
 
+.. _ch01_searching_dev_guide:
+
 Searching the Online Developer's Guide
 --------------------------------------
 
@@ -96,6 +100,8 @@ The first argument of ``loguide`` must be an Office application name, which rest
 
 Type ``loguide -h`` for options.
 
+.. _ch01_gen_ex:
+
 General example
 ^^^^^^^^^^^^^^^
 
@@ -104,6 +110,8 @@ General example
     loguide general Lifetime of UNO Objects
 
 Loads the guide page with that heading into the browser. A less precise query will probably produce the same page, but even when the result is 'wrong' it'll still be somewhere in the guide.
+
+.. _ch01_impress_ex:
 
 Impress example
 ^^^^^^^^^^^^^^^
@@ -116,10 +124,14 @@ Impress example
 Calling ``loguide`` with just an application name, opens the guide at the start of the chapter on that topic.
 For example: ``loguide writer`` opens the guide at the start of the "Text Documents" chapter.
 
+.. _ch01_loapi:
+
 loapi
 ^^^^^
 
 ``loapi`` uses a local database to narrow class names and namespaces for a more focused search.
+
+.. _ch01_loapi_comp:
 
 loapi comp
 """"""""""
@@ -172,6 +184,8 @@ For Example:
     [2],  IllegalArgumentException          - com.sun.star.lang.IllegalArgumentException              - exception
 
 searches for all components of type ``exception`` that contain ``ill`` followed by any number of characters and then ``arg``.
+
+.. _ch01_loapi_ns:
 
 loapi ns
 """"""""

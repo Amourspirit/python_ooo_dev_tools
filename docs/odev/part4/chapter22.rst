@@ -149,6 +149,8 @@ The output for a simple spreadsheet is:
               Default                 | PageStyle_ACPT (Python) | Report
 
 
+.. _ch22_finding_style_info:
+
 Finding Style Information
 -------------------------
 
@@ -381,7 +383,7 @@ The new styles, ``My HeaderStyle`` and ``My DataStyle``, are applied to the spre
     .. code-tab:: python
 
         # in build_table.py
-        def _apply_styles(sefl, sheet: XSpreadsheet) -> None:
+        def _apply_styles(self, sheet: XSpreadsheet) -> None:
             Calc.change_style(sheet=sheet, style_name=BuildTable.HEADER_STYLE_NAME, range_name="B1:N1")
             Calc.change_style(sheet=sheet, style_name=BuildTable.HEADER_STYLE_NAME, range_name="A2:A4")
             Calc.change_style(sheet=sheet, style_name=BuildTable.DATA_STYLE_NAME, range_name="B2:N4")

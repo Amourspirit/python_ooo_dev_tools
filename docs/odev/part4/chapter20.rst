@@ -409,6 +409,8 @@ As a fallback :py:meth:`.GUI.get_password` will attempt to build a dialog using 
         - :ref:`class_dialog_input`
         - :ref:`dialog_tk_input`
 
+.. _ch20_change_active_sheet:
+
 20.1.2 Changing the Active Sheet
 --------------------------------
 
@@ -457,6 +459,8 @@ which is the main interface for the SpreadsheetView_ service (see :numref:`ch20f
 SpreadsheetView_ implements a number of interfaces for affecting the user's view of a document.
 View-related properties are stored in the inherited SpreadsheetViewSettings_ class, which can be listed by calling :py:meth:`.Props.show_obj_props`:
 
+.. _ch20_sheet_names:
+
 20.1.3 Sheet Names
 ------------------
 
@@ -503,6 +507,8 @@ All the sheet names in a document can be accessed via :py:meth:`.Calc.get_sheet_
         .. cssclass:: tab-none
 
             .. group-tab:: None
+
+.. _ch20_zooming:
 
 20.1.4 Zooming
 --------------
@@ -588,6 +594,8 @@ This is handled by :py:meth:`.Calc.zoom_value`:
 
             .. group-tab:: None
 
+.. _ch20_creating_doc:
+
 20.2 Creating a Document
 ========================
 
@@ -666,6 +674,8 @@ The ``main()`` method of |build_tbl_py|_ is:
 ``main()`` can call one of four different build methods to demonstrate various :py:class:`~calc.Calc` methods for filling cells and cell ranges.
 ``_convert_addresses()`` illustrates the :py:class:`~calc.Calc` methods for converting between cell names and positions, and between cell range names and position intervals.
 
+.. _ch20_switch_name_range_pos:
+
 20.2.1 Switching between Cell Names, Cell Ranges, and Positions
 ---------------------------------------------------------------
 
@@ -721,6 +731,8 @@ it's still sometimes necessary to convert between the different formats. ``_conv
     Range of A1:D5: (0, 0) -- (3, 4)
     Range: Sheet1.A1:D5
     A1:D5: A1:D5
+
+.. _ch20_name_manipulation:
 
 Cell Name Manipulation
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -829,6 +841,8 @@ The ``get_cell(sheet: XSpreadsheet, col: int, row: int)`` overload of :py:meth:`
 and ``XCellRange.getCellByPosition()`` treats ``(0, 0)`` as a position relative to the cell range.
 There's only one cell in this range, so ``getCellByPosition()`` returns a reference to the ``AA2`` cell.
 
+.. _ch20_range_manipulation:
+
 Cell Range Manipulation
 ^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -893,6 +907,8 @@ This method wraps a call to ``XCellRange.getCellRangeByName()``:
     .. cssclass:: src-link
 
         :odev_src_calc_meth:`get_cell_range`
+
+.. _ch20_changing_cell_values:
 
 20.2.2 Changing Cell Values
 ---------------------------
@@ -963,6 +979,8 @@ Both methods store a number or a string in a cell, by processing the input value
         :odev_src_calc_meth:`set_val`
 
 The ``set_val(cls, value: object, cell: XCell) -> None`` method examines the type of the value to decide whether to call ``XCell.setValue()`` or ``XCell.setFormula()``.
+
+.. _ch20_storing_2d_arrays:
 
 20.2.3 Storing 2D Arrays of Data
 --------------------------------
@@ -1110,6 +1128,8 @@ This means that the call used above could be rewritten as:
 The storage of the array is performed by :py:meth:`.Calc.set_cell_range_array` which is passed an XCellRange_ object and a 2D array.
 XCellRange_ is converted into XCellRangeData_ which has a ``setDataArray()`` method.
 
+.. _ch20_storing_rows_data:
+
 20.2.4 Storing Rows of Data
 ---------------------------
 
@@ -1166,6 +1186,8 @@ XCellRange_ is converted into XCellRangeData_ which has a ``setDataArray()`` met
     .. cssclass:: src-link
 
         :odev_src_calc_meth:`set_row`
+
+.. _ch20_storing_col_data:
 
 20.2.5 Storing Columns of Data
 ------------------------------
@@ -1253,6 +1275,8 @@ Instead :py:meth:`.Calc.set_col` calls :py:meth:`.Calc.set_val` in a loop:
 
         :odev_src_calc_meth:`set_col`
 
+.. _ch20_adding_pic:
+
 20.2.6 Adding a Picture
 -----------------------
 
@@ -1282,6 +1306,8 @@ Adding a picture is done by calling :py:meth:`.Draw.draw_image`:
 
 The ``(125, 32)`` or ``(230, 32)`` passed to :py:meth:`.Draw.draw_image` is the ``(x, y)`` offset from the top-left corner of the sheet, specified in millimeters.
 This method comes from my :py:class:`~.draw.Draw` class, explained in :ref:`part03`.
+
+.. _ch20_draw_warn:
 
 Warning when Drawing
 ^^^^^^^^^^^^^^^^^^^^
@@ -1334,6 +1360,8 @@ Instead the XSpreadsheetDocument_ interface must be explicitly converted to XCom
         .. cssclass:: tab-none
 
             .. group-tab:: None
+
+.. _ch20_adding_chart:
 
 20.2.7 Adding a Chart
 ---------------------

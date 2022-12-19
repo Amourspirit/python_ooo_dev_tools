@@ -112,6 +112,8 @@ The code that implements this process in the Write utility class is a bit more c
 
 The calls to :py:meth:`.Lo.qi` cast the object returned from a collection into the correct type.
 
+.. _ch06_props_propset:
+
 6.1 What Properties are in a PropertySet?
 =========================================
 
@@ -202,6 +204,8 @@ ParagraphStyle appears to inherits three services: Style, ParagraphCharacter, an
 
 For more information of the styles API, start in the development guide in the "Overall Document Features" section,
 online at: https://wiki.openoffice.org/wiki/Documentation/DevGuide/Text/Overall_Document_Features
+
+.. _ch06_list_styles:
 
 6.2 Listing Styles Information
 ==============================
@@ -479,6 +483,8 @@ This listing, and in fact any listing of a style from "ParagraphStyles",
 shows that the properties are a mixture of those defined in the Style,
 ParagraphProperties_, and CharacterProperties_ services.
 
+.. _ch06_create_style:
+
 6.3 Creating a New Style
 ========================
 
@@ -630,6 +636,8 @@ In |story_creator|_, ``create_para_style()`` is called like so:
 A new style called ``adParagraph`` is added to the paragraph style family.
 It uses os dependent font determined by :py:meth:`.Info.get_font_general_name` such as "Liberation Serif" 12pt font, and leaves a 4mm space between paragraphs.
 
+.. _ch06_apply_style_para:
+
 6.4 Applying Styles to Paragraphs (and Characters)
 ==================================================
 
@@ -685,6 +693,8 @@ The code above obtains the text range at the start of the document, and set its 
 Any text added from this position onward will use that style.
 
 This approach is used in |story_creator|_: the style is set first, then text is added.
+
+.. _ch06_cursors_txt_rng:
 
 6.5 Cursors and Text Ranges
 ===========================
@@ -743,6 +753,8 @@ Using :py:meth:`.Props.set_property`, simplifies this to:
             .. group-tab:: None
 
 This approach is employed in |story_creator|_ when some paragraphs (such as section headers) need to use a paragraph style other than ``adParagraph``.
+
+.. _ch06_build_story:
 
 6.6 Building a Story Document
 =============================
@@ -895,6 +907,8 @@ Afterwards, that style name is applied back to the cursor.
 
 ``read_text()`` calls :py:meth:`~.Write.style_prev_paragraph` with three style names ("Title", "Subtitle", and "Heading").
 Those names come from looking at the "Paragraph Styles" dialog window in :numref:`ch06fig_writer_style_ss`.
+
+.. _ch06_style_change:
 
 6.7 Style Changes to Words and Phrases
 ======================================
@@ -1059,6 +1073,8 @@ The following fragment from |build_doc|_ applies a 'code' styling to several lin
 Unfortunately, :py:meth:`~.Write.style_left` depend on integer character positions, which are calculated using :py:meth:`.Write.get_position`.
 As previously mentioned, this method could fail if asked to generate too large a string, and this would cause :py:meth:`~.Write.style_left` to die.
 
+.. _ch06_style_hyperlink:
+
 6.8 Hyperlink Styling
 =====================
 
@@ -1103,6 +1119,8 @@ If the user control-clicks on the link, then the URL value of ``HyperLinkURL`` w
 
 The ``HyperLinkName`` property specifies a link name, which can be used when searching a document.
 ``HyperLinkTarget`` corresponds to the HTML hypertext target attribute, and has a default value of "_self".
+
+.. _ch06_text_num:
 
 6.9 Text Numbering
 ==================
@@ -1180,6 +1198,8 @@ Chapter and line numbering are dealt with differently from most document styles.
 Instead of being accessed via XStyleFamiliesSupplier_, they employ XChapterNumberingSupplier_ and XNumberFormatsSupplier_.
 
 For more details, see the development guide: https://wiki.openoffice.org/wiki/Documentation/DevGuide/Text/Line_Numbering_and_Outline_Numbering
+
+.. _ch06_style_oth:
 
 6.10 Other Style Changes
 ========================

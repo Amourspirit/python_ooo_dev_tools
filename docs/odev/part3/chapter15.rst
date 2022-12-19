@@ -421,6 +421,8 @@ to :py:meth:`.Draw.set_style`. Styles can be looked up in the following manor:
 
 Alternatively, you can browse through the LineProperties class inherited by ConnectorShape (shown in :numref:`ch15fig_connector_shape_hierarchy`).
 
+.. _ch15_shape_comp:
+
 15.2 Shape Composition
 ======================
 
@@ -490,6 +492,8 @@ Two ellipses are created, and positioned at the top-right of the page.
 
 The two rectangles and the connector listed first are the results of calling ``_connect_rectangles()`` earlier |grouper_py|_.
 The two ellipses were just created in the code snipper given above.
+
+.. _ch15_group_shapes:
 
 15.2.1 Grouping Shapes
 ----------------------
@@ -572,6 +576,8 @@ The change is better shown by a second call to :py:meth:`.Draw.show_shapes_info`
 
 The two ellipses have disappeared, replaced by a single GroupShape_.
 
+.. _ch15_bind_shapes:
+
 15.2.2 Binding Shapes
 ---------------------
 
@@ -652,6 +658,8 @@ The two ellipses have been replaced by a closed Bezier shape.
 It's likely easier to link shapes explicitly with connectors, using code like that in ``_connect_rectangles()`` from :ref:`ch15_connecting_tow_rectangles`.
 If the result needs to be a single shape, then grouping (not binding) can be applied to the shapes and the connector.
 
+.. _ch15_combine_shapes:
+
 15.2.3 Combining Shapes with XShapeCombiner
 -------------------------------------------
 
@@ -726,6 +734,8 @@ The result is also visible in a call to :py:meth:`.Draw.show_shapes_info`:
       Shape service: com.sun.star.drawing.ClosedBezierShape; z-order: 3
 
 The two ellipses have again been replaced by a closed Bezier shape .
+
+.. _ch15_combine_dispatch:
 
 15.2.4 Richer Shape Combination by Dispatch
 -------------------------------------------
@@ -839,6 +849,7 @@ The shapes are selected by adding them to an XSelectionSupplier_.
 The requested dispatch is sent to the selection, and then the function briefly sleeps to ensure that the dispatch has been processed.
 An XShapes_ object is obtained from the changed selection, and the new PolyPolygonShape_ is extracted and returned.
 
+.. _ch15_undo_action:
 
 15.3 Undoing a Grouping/Binding/Combining
 =========================================
@@ -899,6 +910,8 @@ For example:
         .. cssclass:: tab-none
 
             .. group-tab:: None
+
+.. _ch15_bezier_curves:
 
 15.4 Bezier Curves
 ==================
@@ -1017,6 +1030,8 @@ Then it fills a PolyPolygonBezierCoords_ data structure with the coordinates and
 A PolyPolygonBezierCoords_ object can store multiple Bezier curves, but :py:meth:`.Draw.draw_bezier` only assigns one curve to it.
 Each curve is defined by a list of coordinates and a set of flags.
 
+.. _ch15_bezier_simple:
+
 15.4.1 Drawing a Simple Bezier
 ------------------------------
 
@@ -1058,6 +1073,8 @@ and applying some scaling of the values to make the curve visible on the page.
 Remember that Office uses ``1/100 mm`` units for drawing.
 A simple scale factor is to multiply all the numbers by 10, producing: (1000, 2500), (1000, 1000), (4000, 1000), and (4000, 2500).
 These are the numbers in :numref:`ch15fig_cubic_bezier_curve`, and utilized by ``_draw_curve()`` in |draw_bezier_py|_.
+
+.. _ch15_bezier_complicated:
 
 15.4.2 Drawing a Complicated Bezier Curve
 -----------------------------------------
