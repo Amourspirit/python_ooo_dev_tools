@@ -14,6 +14,8 @@ Chapter 14. Animation
 There's a second animation example in |animate_bike_py|_ which translates and rotates a bicycle image.
 The chapter ends with a brief outline of the com.sun.star.gallery module.
 
+.. _ch14_animate_circle_ln:
+
 14.1 Animating a Circle and a Line
 ==================================
 
@@ -66,6 +68,8 @@ The shape (circle or line) is changed by removing the current version from the p
 This means that a lot of objects are created and removed in a short amount of time. The alternative approach,
 which retains the shape and only update its properties, is used in the bicycle animation explained next.
 
+.. _ch14_animate_img:
+
 14.2 Animating an Image
 =======================
 
@@ -114,6 +118,8 @@ The animation is performed by ``_animate_bike()``:
 The animation loop in ``_animate_bike()`` is similar to the ones in ``anim_shapes()``, using :py:meth:`.Lo.delay` to space out changes over time.
 However, instead of creating a new shape on each iteration, a single GraphicObjectShape_ is created by :py:meth:`.Draw.draw_image` before the loop starts.
 Inside the loop, that shape’s position and orientation are repeatedly updated by :py:meth:`.Draw.set_position` and :py:meth:`.Draw.set_rotation`.
+
+.. _ch14_draw_img:
 
 14.2.1 Drawing the Image
 ------------------------
@@ -245,6 +251,8 @@ It loads the image as an XGraphic_ object so that its ``Size100thMM`` property c
 This approach isn't very efficient since it means that the image is being loaded twice,
 once as an XGraphic_ object by :py:meth:`~.ImagesLo.get_size_100mm`, and also as a bitmap by ``setImage()``.
 
+.. _ch14_update_bike:
+
 14.2.2 Updating the Bike's Position and Orientation
 ---------------------------------------------------
 
@@ -355,6 +363,8 @@ The output is:
 
 These numbers suggests that the transformation was a clockwise rotation, but the calls to :py:meth:`.Draw.set_rotation` in the earlier animation loop made the bicycle turn counter-clockwise.
 This discrepancy pointed to stay with the deprecated approach for shape rotation.
+
+.. _ch14_alt_gallery_access:
 
 14.3 Another Way to Access the Gallery
 ======================================

@@ -307,6 +307,8 @@ It supports five modes: ``SIMPLE``, ``LINEAR`` , ``GROWTH``, ``DATE``, and ``AUT
 ``AUTO`` makes Office generate its data series automatically, so performs in the same way as ``fillAuto()``.
 ``LINEAR`` , ``GROWTH``, and ``DATE`` give more control to the programmer.
 
+..  _ch24_using_linear_mode:
+
 24.2.1 Using the LINEAR Mode
 ----------------------------
 
@@ -354,6 +356,8 @@ Note that the second row is incomplete since the generated values for those cell
 
 If no stopping value is required, then the last argument can be replaced with :py:attr:`.Calc.MAX_VALUE`.
 
+..  _ch24_using_date_mode:
+
 24.2.2 Using the DATE Mode
 --------------------------
 
@@ -395,6 +399,8 @@ The result is shown in :numref:`ch24fig_data_gen_date_mode`.
         :Data Generation Using the DATE Mode.
 
 When the month is incremented past ``12``, it resets to ``1``, and the year is incremented.
+
+..  _ch24_using_growth_mode:
 
 24.2.3 Using the GROWTH Mode
 ----------------------------
@@ -678,6 +684,8 @@ which contain the properties related to cell text:
         .. cssclass:: tab-none
 
             .. group-tab:: None
+
+..  _ch24_print_cell_txt:
 
 24.3.3 Printing the Cell's Text
 -------------------------------

@@ -469,7 +469,7 @@ The ``_search_all()`` method in |replace_all_py|_ utilizes ``XSearchable.findAll
 
 .. _ch26_replacing_all_matches:
 
-25.3 Replacing All Matches
+26.3 Replacing All Matches
 ==========================
 
 The XReplaceable_ interface only contains a ``replaceAll()`` method (see :numref:`ch26fig_search_and_replace_descriptors`), so there's no way to implement an iterative replace function.

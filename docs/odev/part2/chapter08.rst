@@ -24,6 +24,8 @@ are the focus of this chapter
 
         :The TextContent Service and Some Sub-classes.
 
+.. _ch08_link_graphic:
+
 8.1 Linking a Graphic Object to a Document
 ==========================================
 
@@ -168,6 +170,8 @@ A possible drawback of :py:meth:`.Write.add_image_link` is that the document onl
 This becomes an issue if you save the document in a format other than ``.odt``.
 In particular, when saved as a Word ``.doc`` file, the link is lost.
 
+.. _ch08_add_graphic_shape:
+
 8.2 Adding a Graphic to a Document as a Shape
 =============================================
 
@@ -195,6 +199,8 @@ is com.sun.star.drawing.Shape_.
 The examples use GraphicObjectShape_ (:py:meth:`.Write.add_image_shape`) to create a shape containing an image, and LineShape_ (:py:meth:`.Write.add_line_divider`) to add a line to the document.
 
 The XShapeDescriptor_ interface in com.sun.star.drawing.Shape_ is a useful way to obtain the name of a shape service.
+
+.. _ch08_create_img_shape:
 
 8.2.1 Creating an Image Shape
 -----------------------------
@@ -303,6 +309,8 @@ and is used towards the end of the method.
 An image shape is created using the GraphicObjectShape_ service, and its XTextContent_ interface is converted to XPropertySet_ for
 assigning its properties, and to XShape_ for setting its size (see :numref:`ch08fig_shape_hierachy_parts`).
 XShape_ includes a ``setSize()`` method.
+
+.. _ch08_add_oth_graphic:
 
 8.2.2 Adding Other Graphics to the Document
 ===========================================
@@ -438,6 +446,8 @@ This is converted to XShape_ so its ``setSize()`` method can be passed the line 
 
 The centering of the line is achieved by placing the shape in its own paragraph, then using :py:meth:`.Write.style_prev_paragraph` to center it.
 
+.. _ch08_access_link_img:
+
 8.3 Accessing Linked Images and Shapes
 ======================================
 
@@ -489,6 +499,8 @@ The only shapes added to the document were an image and a line.
 The names of the services gives a clue: the second and third shapes are the expected GraphicObjectShape_ and LineShape_, but some are
 text frame (``FrameShape``) added by :py:meth:`.Write.add_text_frame`. Although this frame is an instance of the TextFrame_ service, it's reported as a ``FrameShape``.
 That's a bit mysterious because there's no ``FrameShape`` service in the Office documentation.
+
+.. _ch08_find_save_graphic:
 
 8.3.1 Finding and Saving Text Graphics in a Document
 ----------------------------------------------------
@@ -726,6 +738,8 @@ The printed output from :py:meth:`~.ImagesLo.save_graphic` contains another surp
 The two saved graphics are the same size, but the second image is bigger inside the document.
 The discrepancy is because the rendering of the image in the document is bigger, scaled up to fit the enclosing frame; the original image is unchanged.
 
+.. _ch08_find_shapes:
+
 8.3.2 Finding the Shapes in a Document
 --------------------------------------
 
@@ -862,6 +876,8 @@ This number indicates the order that the shapes were added to the document.
             .. group-tab:: None
 
 :py:meth:`~.Draw.show_shape_info` also calls the inherited ``XShapeDescriptor.getShapeType()`` method to report the shape's service name.
+
+.. _ch08_alt_access_shape:
 
 8.3.3 Another Way of Accessing Drawing Shapes
 ---------------------------------------------

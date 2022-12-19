@@ -17,6 +17,8 @@ Alternatively, you can access the chapter online, starting at https://wiki.openo
 The guide's examples can be found at https://api.libreoffice.org/examples/DevelopersGuide/examples.html#Spreadsheet.
 There's also a few examples in the "Spreadsheet Document Examples" section of https://api.libreoffice.org/examples/examples.html#Java_examples.
 
+.. _ch19_spreadsheet_doc:
+
 19.1 The Spreadsheet Document
 =============================
 
@@ -38,6 +40,8 @@ Alternatively, you can try ``lodoc star sheet module`` and ``lodoc star table mo
 
 The reason for this module division is Office's support for three types of 'table': text tables, database tables, and spreadsheets.
 A spreadsheet is a table with formulae added into the mix.
+
+.. _ch19_doc_spreadsheets:
 
 19.2 Document Spreadsheets
 ==========================
@@ -96,6 +100,8 @@ These steps are hidden by methods in the :py:class:`~.calc.Calc` utility class, 
 
             .. group-tab:: None
 
+.. _ch19_casting:
+
 Some Casting Required
 ---------------------
 
@@ -150,6 +156,8 @@ For example, the ``odoc`` arg of :py:meth:`.GUI.set_visible` assumes that it is 
 
 This :py:meth:`.GUI.set_visible` can be called with a XSpreadsheet_ reference: ``GUI.set_visible(True, doc)``.
 The document is cast to XComponent_ inside :py:meth:`~.GUI.set_visible` and then processed.
+
+.. _ch19_spreadsheet_data:
 
 19.3 Spreadsheet Data
 =====================
@@ -208,6 +216,8 @@ For instance ``(=\)A$1*3)`` stops the ``A`` and ``1`` from being changed by a mo
 The :py:class:`~.calc.Calc` support class includes methods for converting between simple cell names and positions;
 they don't handle ``~``, ``!``, or absolute references using ``$``.
 
+.. _ch19_spreadsheet_service:
+
 19.4 The Spreadsheet Service
 ============================
 
@@ -248,6 +258,8 @@ to a sheet's cells and cell ranges via ``getCellByPosition()``, ``getCellRangeBy
             .. group-tab:: None
 
 Oddly enough there's no ``getCellByName()`` method, but the :py:meth:`.Calc.get_cell` has an overload that takes a name.
+
+.. _ch19_cell_rng_services:
 
 19.5 Cell Range Services
 ========================
@@ -364,6 +376,8 @@ Similar coding is used to retrieve a column: ``XColumnRowRange.getColumns()`` ge
 
             .. group-tab:: None
 
+.. _ch19_cell_services:
+
 19.6 Cell Services
 ==================
 
@@ -455,6 +469,8 @@ The XCell_ class diagram is shown in :numref:`ch19_xcell_class`.
         :The XCell_ Class Diagram.
 
 The documentation for XCell can be found using ``lodoc xcell``.
+
+.. _ch19_sht_cell_rng:
 
 19.7 Sheet Cell Ranges
 ======================
