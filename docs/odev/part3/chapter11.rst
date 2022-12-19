@@ -66,6 +66,8 @@ and adds features for slide shows (via the XPresentationSupplier_ and XCustomPre
 The word "presentation" is a little overloaded in the API – PresentationDocument_ corresponds to the slide deck,
 while ``XPresentationSupplier.getPresentation()`` returns an XPresentation_ object which represents a slide show.
 
+.. _ch11_draw_pg_master_pg:
+
 11.1 Draw Pages and Master Pages
 ================================
 
@@ -94,6 +96,8 @@ Note the "s" in XDrawPages_: an XDrawPages_ object is an indexed container of XD
         :The XDrawPages_ Interface
 
 Since XDrawPages_ inherit XIndexAccess_, its elements (pages) can be accessed using index-based lookup (i.e. to return page 0, page 1, etc.).
+
+.. _ch11_draw_pg_details:
 
 11.2 Draw Page Details
 ======================
@@ -143,6 +147,8 @@ No properties are defined in the drawing DrawPage_, instead everything is inheri
 There is "(??)" next to the XDrawPage_ and XPresentationPage_ interfaces in :numref:`ch11fig_some_drawpage_services` because they're not listed in the
 GenericDrawPage_ and presentation DrawPage_ services in the documentation, but must be there because of the way that the code works.
 Also, the documentation for GenericDrawPage_ lists XShapes_ as an interface, rather than XDrawPage_.
+
+.. _ch11_api_code_ex:
 
 11.3 API Hierarchy Code Examples
 ================================
@@ -242,6 +248,8 @@ The following code converts the XDrawPage_ object to XShapes_, and accesses the 
         .. cssclass:: tab-none
 
             .. group-tab:: None
+
+.. _ch11_shapes_drawing:
 
 11.4 Shapes in a Drawing
 ========================
@@ -403,6 +411,8 @@ Using OutlinerShape_ as an example, its 'simplified' inheritance hierarchy looks
         :The OutlinerShape_ Hierarchy.
 
 OutlinerShape_ has at least nine property services that it inherits.
+
+.. _ch11_slide_show_apis:
 
 11.6 The Slide Show APIs
 ========================

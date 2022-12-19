@@ -408,6 +408,8 @@ For instance, a Writer document is created by:
 
 The office classes include code for simplifying the creation of Writer, Draw, Impress, Calc, and Base documents, which I'll be looking at in later chapters.
 
+.. _ch02_second_srv_mgr:
+
 A Second Service Manager
 ------------------------
 
@@ -485,6 +487,8 @@ If you don't want a password, then the third property should be left out.
 
 :numref:`ch01fig_office_doc_serv` in :ref:`Chapter 1 <ch01>` shows that |XStorable|_ is part of the OfficeDocument service,
 which means that it's inherited by all Office document types.
+
+.. _ch02_what_filter_name:
 
 What's a Filter Name?
 ---------------------

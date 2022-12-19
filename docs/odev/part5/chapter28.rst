@@ -602,6 +602,8 @@ The result is the column chart shown in :numref:`ch28fig_colum_chart_via_fig5`.
 :py:meth:`~.Chart2.insert_chart` creates a new chart document by calling :py:meth:`~.Chart2.add_table_chart` and :py:meth:`~.Chart2.get_chart_doc`,
 and then proceeds to link the chart template, diagram, and data source.
 
+.. _ch28_get_diagram:
+
 Get the Diagram
 ^^^^^^^^^^^^^^^
 
@@ -619,6 +621,8 @@ The chart diagram is the easiest to obtain, since it's directly accessible via t
         .. cssclass:: tab-none
 
             .. group-tab:: None
+
+.. _ch28_creating_tmpl:
 
 Creating a Template
 ^^^^^^^^^^^^^^^^^^^
@@ -668,6 +672,8 @@ The ``diagram_name`` value is one of the template names shown in :numref:`ch28tb
 The string ``com.sun.star.chart2.template.`` is added to the front to create a fully qualified service name, which is then instantiated.
 If the instance creation fails, then the function falls back to creating an instance of the ``Column`` template.
 :py:meth:`~.Chart2.set_template` ends by calling ``XChartTypeTemplate.changeDiagram()`` which links the template to the chart's diagram.
+
+.. _ch28_get_data_source:
 
 Get the Data Source
 ^^^^^^^^^^^^^^^^^^^
@@ -743,6 +749,8 @@ the first column of data will not be used as ``x-axis`` categories, so the boole
         .. cssclass:: tab-none
 
             .. group-tab:: None
+
+.. _ch28_linking_tmpl_diagram_data:
 
 Linking the template, diagram, and data source
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

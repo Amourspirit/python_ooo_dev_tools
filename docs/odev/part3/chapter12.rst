@@ -114,6 +114,8 @@ The same trick is utilized in the ``main()`` method, after the call to :py:meth:
 
     - `Development/DispatchCommands <https://wiki.documentfoundation.org/Development/DispatchCommands>`_.
 
+.. _ch12_access_slides_pages:
+
 12.1 Accessing Slides/Pages
 ===========================
 
@@ -225,6 +227,8 @@ These ``Width`` and ``Height`` properties are stored in XDrawPage_'s GenericDraw
         - :odev_src_draw_meth:`get_slides_count`
         - :odev_src_draw_meth:`get_slide_size`
 
+.. _ch12_pg_layers:
+
 12.2 Page Layers
 ================
 
@@ -319,6 +323,8 @@ Each layer can be made visible or invisible independent of the others. It's also
 
 Each layer contains six properties. Four are defined by the Layer service; use ``lodoc layer service drawing`` to see its documentation.
 The most useful property is probably ``IsVisible`` which toggles the layer's visibility.
+
+.. _ch12_styles:
 
 12.3 Styles
 ===========

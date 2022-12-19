@@ -112,6 +112,8 @@ Most of the methods are in Supplier interfaces which are part of the GenericText
 
 **Graphic** Object and **Shape** are discussed in the next chapter.
 
+.. _ch07_access_txt_content:
+
 7.1 How to Access Text Content
 ==============================
 
@@ -225,6 +227,8 @@ For information, see: https://wiki.openoffice.org/wiki/Documentation/DevGuide/Te
 **Redlines**. Redlines are the changes recorded when a user edits a document with track changes turned on.
 Each of the changes is saved as a text fragment (also called a text portion) inside a redline object.
 See: https://wiki.openoffice.org/wiki/Documentation/DevGuide/Text/Redline (or type ``loguide Redline``).
+
+.. _ch07_add_txt_frame:
 
 7.2 Adding a Text Frame to a Document
 =====================================
@@ -457,6 +461,8 @@ This means that all the text manipulations possible in a document are also possi
 The ordering of the tasks at the end of :py:meth:`~.Write.add_text_frame` is important.
 Office prefers that an empty text content be added to the document, and the data inserted afterwards.
 
+.. _ch07_add_txt_embedded:
+
 7.3 Adding a Text Embedded Object to a Document
 ===============================================
 
@@ -585,6 +591,8 @@ The properties for this empty object (embed_obj_model) are accessed, and the for
 
             .. group-tab:: None
 
+.. _ch07_what_formula:
+
 7.3.1 What's a Formula String?
 ------------------------------
 
@@ -595,6 +603,8 @@ For example, the formula string: "1 {5}over{9} + 3 {5}over{9} = 5 {1}over{9}" is
 .. math::
 
    1 \frac{5}{9} + 3 \frac{5}{9} = 5 \frac{1}{9}
+
+.. _ch07_build_formulae:
 
 7.3.2 Building Formulae
 -----------------------
@@ -675,6 +685,8 @@ Ten formulae are added to the document, which is saved as ``mathQuestions.pdf``.
 
         :Math Formulae in a Text Document.
 
+.. _ch07_txt_fields:
+
 7.4 Text Fields
 ===============
 
@@ -702,6 +714,8 @@ You can see the complete hierarchy in the online documentation for TextField_.
         :figclass: align-center
 
         :Simplified Hierarchy for the TextField Service.
+
+.. _ch07_datetime_textfield:
 
 7.4.1 The DateTime TextField
 ----------------------------
@@ -772,6 +786,8 @@ The TextField_ service only contains two properties, with most being in the subc
 
 The method adds two DateTime text fields to the document.
 The first has its "IsDate" property set to true, so that the current date is inserted; the second sets "IsDate" to false so the current time is shown.
+
+.. _ch07_pagenumber_pagecount:
 
 7.4.2 The PageNumber and PageCount Text Fields
 ----------------------------------------------
@@ -887,6 +903,8 @@ These properties will be applied to the text and text fields added afterwards:
             .. group-tab:: None
 
 :py:meth:`~.Write.get_page_number` and :py:meth:`~.Write.get_page_count` deal with the properties for the PageNumber and PageCount fields.
+
+.. _ch07_add_txt_tbl:
 
 7.5 Adding a Text Table to a Document
 =====================================
@@ -1242,6 +1260,8 @@ The cell's ``CharColor`` property is changed so the inserted text in the header 
         .. cssclass:: tab-none
 
             .. group-tab:: None
+
+.. _ch07_add_bookmark:
 
 7.6 Adding a Bookmark to the Document
 =====================================

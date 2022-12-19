@@ -114,6 +114,8 @@ The example programs, |text_replace|_ and |italics_styler|_, demonstrate search 
 
 |italics_styler|_ calls XSearchable_'s ``findAll()`` to find every occurrence of a phrase.
 
+.. _ch09_find_first_phrase:
+
 9.1 Finding the First Matching Phrase
 =====================================
 
@@ -239,6 +241,8 @@ After the page position has been printed, the cursor is moved to the right by th
 
             .. group-tab:: None
 
+.. _ch09_replace_words:
+
 9.2 Replacing all the Matching Words
 ====================================
 
@@ -301,6 +305,8 @@ Since ``replace_words()`` doesn't report page and character positions, its code 
 
 The XReplaceable_ and XReplaceDescriptor_ interfaces are created in a similar way to their search versions.
 The replace descriptor has two set methods, one for the search string, the other for the replacement string.
+
+.. _ch09_find_all_match_pharses:
 
 9.3 Finding all Matching Phrases
 ================================
