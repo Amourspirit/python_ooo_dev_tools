@@ -10,6 +10,10 @@ LIBREOFFICE AND PYTHON TO WORK WITH EXCEL SPREADSHEETS
         :alt: Tutorial Image
         :figclass: align-center
 
+.. warning:: 
+
+    This document is a work in progress and many of the examples are not yet in full working order.
+
 Although we don’t often think of spreadsheets as programming tools, almost everyone uses them to organize information into two-dimensional data structures, perform calculations with formulas, and produce output as charts. In this tutorial, we’ll integrate Python into the popular spreadsheet application LibreOffice.
 
 Excel is a popular and powerful spreadsheet application for Windows. The |odev| package allows your Python programs to read and modify Excel spreadsheet files. For example, you might have the boring task of copying certain data from one spreadsheet and pasting it into another one. Or you might have to go through thousands of rows and pick out just a handful of them to make small edits based on some criteria. Or you might have to look through hundreds of spreadsheets of department budgets, searching for any that are in the red. These are exactly the sort of boring, mindless spreadsheet tasks that Python can do for you.
@@ -246,7 +250,7 @@ Once you have a Worksheet object, you can access a Cell object using the Calc cl
         >>>
         >>> _ = Lo.load_office(Lo.ConnectSocket(soffice="C:\\Program Files\\LibreOfficeDev 7\\program\\soffice.exe"))
         >>> wb = Calc.open_doc('example.xlsx')
-        >>> GUI.set_visible(is_visible=True, odoc=wb)
+        >>> GUI.set_visible(is_visible=True, doc=wb)
         >>>
         >>> ws = Calc.get_sheet(doc=wb, sheet_name='Sheet1')
         >>>
@@ -555,7 +559,7 @@ Open a new file editor tab and enter the following code. Save the file as ``read
         _ = Lo.load_office(Lo.ConnectSocket())
         print('Opening workbook...')
         wb = Calc.open_doc('censuspopdata.xlsx')
-        GUI.set_visible(is_visible=True, odoc=wb)
+        GUI.set_visible(is_visible=True, doc=wb)
 
         sheet = Calc.get_sheet(doc=wb, sheet_name='Population by Census Tract')
         county_data = {}
@@ -778,7 +782,7 @@ You can download the complete program from `<https://nostarch.com/automatestuff2
         >>> print('Opening workbook...')
         Opening workbook...
         >>> wb = Calc.open_doc('censuspopdata.xlsx')
-        >>> GUI.set_visible(is_visible=True, odoc=wb)
+        >>> GUI.set_visible(is_visible=True, doc=wb)
         >>>
         >>> sheet = Calc.get_sheet(doc=wb, sheet_name='Population by Census Tract')
         >>> county_data = {}
@@ -1258,7 +1262,7 @@ Enter the following into the interactive shell:
         >>>
         >>> loader = Lo.load_office(Lo.ConnectSocket())
         >>> doc = Calc.create_doc()
-        >>> GUI.set_visible(is_visible=True, odoc=doc)
+        >>> GUI.set_visible(is_visible=True, doc=doc)
         >>> sheet = Calc.get_sheet(doc=doc)
         >>> for i in range(1, 6): # create some data in column A
         ...     Calc.set_val(i, sheet, 'A'+str(i))
@@ -1327,7 +1331,7 @@ The cell value is then set which demonstrates the new style, and the process is 
         >>>
         >>> loader = Lo.load_office(Lo.ConnectSocket())
         >>> doc = Calc.create_doc()
-        >>> GUI.set_visible(is_visible=True, odoc=doc)
+        >>> GUI.set_visible(is_visible=True, doc=doc)
         >>> sheet = Calc.get_sheet(doc=doc)
 
         >>> from ooodev.utils.props import Props
@@ -1394,7 +1398,8 @@ Formulas
 ========
 
 Spreadsheet formulas, which begin with an equal sign, can configure cells to contain values calculated from other cells.
-In this section, you’ll use the setFormula() method on a cell to programmatically add formulas to cells, just like any normal value. For example:
+In this section, you’ll use :py:meth:`.Calc.set_val` to set a formula on a cell, just like any normal value.
+For example:
 
 .. tabs::
 
@@ -1423,239 +1428,366 @@ You can see this in action in :numref:`tute_ss_figb9_b1_b8`.
 
 A formula is set just like any other text value in a cell. Enter the following into the interactive shell:
 
-.. todo:: 
-    
-    Tute ss: Add See 20.2.3 Storing 2D Arrays of Data
+See also :ref:`ch20_storing_2d_arrays`.
 
->>> from ooodev.utils.lo import Lo
->>> from ooodev.office.calc import Calc
->>> from ooodev.utils.gui import GUI
->>>
->>> loader = Lo.load_office(Lo.ConnectSocket())
->>> doc = Calc.create_doc()
->>> GUI.set_visible(is_visible=True, odoc=doc)
+.. tabs::
 
->>> sheet = Calc.get_sheet(doc=doc)
->>> Calc.set_val(200, sheet, 'A1')
->>> Calc.set_val(300, sheet, 'A2')
->>> cell = Calc.get_cell(sheet, 'A3')
->>> cell.setFormula('=SUM(A1:A2)') # Set the formula
->>> _ = Calc.save_doc(doc, "writeFormula.xlsx")
+    .. code-tab:: python
 
->>> # check file
->>> Lo.close_doc(doc=doc)
->>> _ = Lo.close_office()
+        >>> from ooodev.utils.lo import Lo
+        >>> from ooodev.office.calc import Calc
+        >>> from ooodev.utils.gui import GUI
+        >>>
+        >>> loader = Lo.load_office(Lo.ConnectSocket())
+        >>> doc = Calc.create_doc()
+        >>> GUI.set_visible(is_visible=True, doc=doc)
+        >>> sheet = Calc.get_sheet(doc=doc)
+        >>> Calc.set_val(sheet=sheet, cell_name='A1', value=200)
+        >>> Calc.set_val(sheet=sheet, cell_name='A2', value=300)
+        >>> Calc.set_val(sheet=sheet, cell_name="A3", value="=SUM(A1:A2)") # Set the formula
+        >>> _ = Calc.save_doc(doc, "writeFormula.xlsx")
+        >>> # check file
+        >>> Lo.close_doc(doc=doc)
+        >>> _ = Lo.close_office()
 
-The cells in A1 and A2 are set to 200 and 300, respectively with the set_val() method. The value in cell A3 is set to a formula that sums the values in A1 and A2. When the spreadsheet is opened in Excel, A3 will display its value as 500.
+    .. only:: html
 
-Formulas offer a level of programmability for spreadsheets but can quickly become unmanageable for complicated tasks. For example, even if you’re deeply familiar with formulas, it’s a headache to try to decipher what =IFERROR(TRIM(IF(LEN(VLOOKUP(F7, Sheet2!$A$1:$B$10000, 2, FALSE))>0,SUBSTITUTE(VLOOKUP(F7, Sheet2!$A$1:$B$10000, 2, FALSE), " ", ""),"")), "") actually does. Python code is much more readable.
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+
+
+
+The cells in ``A1`` and ``A2`` are set to ``200`` and ``300``, respectively with the :py:meth:`.Calc.set_val` method.
+The value in cell ``A3`` is set to a formula that sums the values in ``A1`` and ``A2``.
+When the spreadsheet is opened, ``A3`` will display its value as ``500``.
+
+Formulas offer a level of programmability for spreadsheets but can quickly become unmanageable for complicated tasks.
+For example, even if you’re deeply familiar with formulas, it’s a headache to try to decipher what the following actually does:
+
+::
+
+    =IFERROR(TRIM(IF(LEN(VLOOKUP(F7, Sheet2!$A$1:$B$10000, 2, FALSE))>0,SUBSTITUTE(VLOOKUP(F7, Sheet2!$A$1:$B$10000, 2, FALSE), " ", ""),"")), "")
+
+Python code is much more readable.
+
+.. _tute_ss_adjusting_rows_cols:
 
 Adjusting Rows and Columns
 ==========================
 
-In Excel, adjusting the sizes of rows and columns is as easy as clicking and dragging the edges of a row or column header. But if you need to set a row or column’s size based on its cells’ contents or if you want to set sizes in a large number of spreadsheet files, it will be much quicker to write a Python program to do it.
+Adjusting the sizes of rows and columns is as easy as clicking and dragging the edges of a row or column header.
+But if you need to set a row or column’s size based on its cells’ contents or if you want to set sizes in a large number of spreadsheet files, it will be much quicker to write a Python program to do it.
 
-Rows and columns can also be hidden entirely from view. Or they can be “frozen” in place so that they are always visible on the screen and appear on every page when the spreadsheet is printed (which is handy for headers).
+Rows and columns can also be hidden entirely from view.
+Or they can be “frozen” in place so that they are always visible on the screen and appear on every page when the spreadsheet is printed (which is handy for headers).
+
+.. _tute_ss_setting_row_col_width:
 
 Setting Row Height and Column Width
 -----------------------------------
 
-Worksheet objects have row_dimensions and column_dimensions properties that control row heights and column widths. Enter this into the interactive shell:
+.. todo::
 
->>> from ooodev.utils.lo import Lo
->>> from ooodev.office.calc import Calc
->>> from ooodev.utils.gui import GUI
->>>
->>> loader = Lo.load_office(Lo.ConnectSocket())
->>> doc = Calc.create_doc()
->>> GUI.set_visible(is_visible=True, odoc=doc)
+    Tute ss, setting row and height seection needs serious review and updates.
 
->>> sheet = Calc.get_sheet(doc=doc)
->>> Calc.set_val('Tall row', sheet, 'A1')
->>> Calc.set_val('Wide column', sheet, 'B2')
->>> # Set the height and width:
->>> _ = Calc.set_row_height(sheet, 70, 0)
->>> _ = Calc.set_col_width(sheet, 40, 1)
->>> _ = Calc.save_doc(doc, 'dimensions.xlsx')
+Worksheet objects have row_dimensions and ``column_dimensions`` properties that control row heights and column widths.
+Enter this into the interactive shell:
 
->>> # check file
->>> Lo.close_doc(doc=doc)
->>> _ = Lo.close_office()
+.. tabs::
 
-A sheet’s row_dimensions and column_dimensions are dictionary-like values; row_dimensions contains RowDimension objects and column_dimensions contains ColumnDimension objects. In row_dimensions, you can access one of the objects using the number of the row (in this case, 1 or 2). In column_dimensions, you can access one of the objects using the letter of the column (in this case, A or B).
+    .. code-tab:: python
 
-The dimensions.xlsx spreadsheet looks like Figure 13-6.
+        >>> from ooodev.utils.lo import Lo
+        >>> from ooodev.office.calc import Calc
+        >>> from ooodev.utils.gui import GUI
+        >>>
+        >>> loader = Lo.load_office(Lo.ConnectSocket())
+        >>> doc = Calc.create_doc()
+        >>> GUI.set_visible(is_visible=True, doc=doc)
+        >>> sheet = Calc.get_sheet(doc=doc)
+        >>> Calc.set_val(sheet=sheet, cell_name='A1', value='Tall row')
+        >>> Calc.set_val(sheet=sheet, cell_name='B2', value='Wide column',)
+        >>> # Set the height and width:
+        >>> _ = Calc.set_row_height(sheet=sheet, height=70, idx=0)
+        >>> _ = Calc.set_col_width(sheet=sheet, width=40, idx=1)
+        >>> _ = Calc.save_doc(doc, 'dimensions.xlsx')
+        >>> # check file
+        >>> Lo.close_doc(doc=doc)
+        >>> _ = Lo.close_office()
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+
+A sheet’s row_dimensions and ``column_dimensions`` are dictionary-like values; ``row_dimensions`` contains ``RowDimension`` objects and ``column_dimensions`` contains ``ColumnDimension`` objects.
+In ``row_dimensions``, you can access one of the objects using the number of the row (in this case, ``1`` or ``2``).
+In ``column_dimensions``, you can access one of the objects using the letter of the column (in this case, ``A`` or ``B``).
+
+The ``dimensions.xlsx`` spreadsheet looks like :numref:`tute_ss_fig_rot1b_larger`.
+
+..
+    Figure 13-6
 
 .. cssclass:: diagram invert
 
-    .. _ch01fig_timeline:
+    .. _tute_ss_fig_rot1b_larger:
     .. figure:: https://user-images.githubusercontent.com/11288701/208299789-682e72d3-b7f5-44c2-b941-96bc0854b41c.png
-        :alt: OpenOffice Timeline Image
+        :alt: Row 1 and column B set to larger heights and widths
         :figclass: align-center
 
-        :Row 1 and column B set to larger heights and widths
+        :Row ``1`` and column ``B`` set to larger heights and widths
 
-Once you have the RowDimension object, you can set its height. Once you have the ColumnDimension object, you can set its width. The row height can be set to an integer or float value between 0 and 409. This value represents the height measured in points, where one point equals 1/72 of an inch. The default row height is 12.75. The column width can be set to an integer or float value between 0 and 255. This value represents the number of characters at the default font size (11 point) that can be displayed in the cell. The default column width is 8.43 characters. Columns with widths of 0 or rows with heights of 0 are hidden from the user.
+Once you have the RowDimension object, you can set its height.
+Once you have the ``ColumnDimension`` object, you can set its width.
+The row height can be set to an integer or float value between 0 and 409.
+This value represents the height measured in points, where one point equals 1/72 of an inch.
+The default row height is 12.75. The column width can be set to an integer or float value between 0 and 255.
+This value represents the number of characters at the default font size (11 point) that can be displayed in the cell.
+The default column width is 8.43 characters.
+Columns with widths of 0 or rows with heights of 0 are hidden from the user.
 
 Merging and Unmerging Cells
 ---------------------------
 
-A rectangular area of cells can be merged into a single cell with the merge_cells() sheet method. Enter the following into the interactive shell:
+.. todo::
 
->>> from ooodev.utils.lo import Lo
->>> from ooodev.office.calc import Calc
->>> from ooodev.utils.gui import GUI
->>>
->>> loader = Lo.load_office(Lo.ConnectSocket())
->>> doc = Calc.create_doc()
->>> GUI.set_visible(is_visible=True, odoc=doc)
+    Tute ss, Merging and Unmerging Cells section.
+    Calc will be getting a merge_cells() method and this section needs to reflect that.
 
->>> sheet = Calc.get_sheet(doc=doc)
->>> 
->>> # Merge first few cells of the last row
->>> cell_range = Calc.get_cell_range(sheet, 'A1:D3')
->>> from com.sun.star.util import XMergeable
->>> xmerge = Lo.qi(XMergeable, cell_range, True)
->>> xmerge.merge(True)
->>> Calc.set_val('Twelve cells merged together.', sheet, 'A1')
->>> cell_range = Calc.get_cell_range(sheet, 'C5:D5')
->>> xmerge = Lo.qi(XMergeable, cell_range, True)
->>> xmerge.merge(True)
->>> Calc.set_val('Two merged cells.', sheet, 'C5')
->>> _ = Calc.save_doc(doc, 'merged.xlsx')
+A rectangular area of cells can be merged into a single cell with the ``merge_cells()`` sheet method.
+Enter the following into the interactive shell:
 
-The argument to merge_cells() is a single string of the top-left and bottom-right cells of the rectangular area to be merged: 'A1:D3' merges 12 cells into a single cell. To set the value of these merged cells, simply set the value of the top-left cell of the merged group.
+.. tabs::
 
-When you run this code, merged.xlsx will look like Figure 13-7.
+    .. code-tab:: python
+
+        >>> from ooodev.utils.lo import Lo
+        >>> from ooodev.office.calc import Calc
+        >>> from ooodev.utils.gui import GUI
+        >>>
+        >>> loader = Lo.load_office(Lo.ConnectSocket())
+        >>> doc = Calc.create_doc()
+        >>> GUI.set_visible(is_visible=True, doc=doc)
+        >>> sheet = Calc.get_sheet(doc=doc)
+        >>> 
+        >>> # Merge first few cells of the last row
+        >>> cell_range = Calc.get_cell_range(sheet, 'A1:D3')
+        >>> from com.sun.star.util import XMergeable
+        >>> xmerge = Lo.qi(XMergeable, cell_range, True)
+        >>> xmerge.merge(True)
+        >>> Calc.set_val('Twelve cells merged together.', sheet, 'A1')
+        >>> cell_range = Calc.get_cell_range(sheet, 'C5:D5')
+        >>> xmerge = Lo.qi(XMergeable, cell_range, True)
+        >>> xmerge.merge(True)
+        >>> Calc.set_val('Two merged cells.', sheet, 'C5')
+        >>> _ = Calc.save_doc(doc, 'merged.xlsx')
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+
+The argument to ``merge_cells()`` is a single string of the top-left and bottom-right cells of the rectangular area to be merged: ``A1:D3`` merges ``12`` cells into a single cell.
+To set the value of these merged cells, simply set the value of the top-left cell of the merged group.
+
+When you run this code, merged.xlsx will look like :numref:`tute_ss_fig_merged_cells`.
+
+..
+    Figure 13-7
 
 .. cssclass:: diagram invert
 
-    .. _ch01fig_timeline:
+    .. _tute_ss_fig_merged_cells:
     .. figure:: https://user-images.githubusercontent.com/11288701/208299799-b8b51ce7-8f6c-46f0-8aec-e62bc571c609.png
-        :alt: OpenOffice Timeline Image
+        :alt: Merged cells in a spreadsheet
         :figclass: align-center
 
         :Merged cells in a spreadsheet
 
-To unmerge cells, call the unmerge_cells() sheet method. Enter this into the interactive shell:
+To unmerge cells, call the ``unmerge_cells()`` sheet method.
+Enter this into the interactive shell:
 
->>> xmerge.merge(False) # Split up last merged cells
->>> cell_range = Calc.get_cell_range(sheet, 'A1:D3')
->>> Lo.qi(XMergeable, cell_range, True).merge(False)
->>> _ = Calc.save_doc(doc, 'merged.xlsx')
+.. tabs::
 
->>> # check file
->>> Lo.close_doc(doc=doc)
->>> _ = Lo.close_office()
+    .. code-tab:: python
+
+        >>> xmerge.merge(False) # Split up last merged cells
+        >>> cell_range = Calc.get_cell_range(sheet, 'A1:D3')
+        >>> Lo.qi(XMergeable, cell_range, True).merge(False)
+        >>> _ = Calc.save_doc(doc, 'merged.xlsx')
+        >>> # check file
+        >>> Lo.close_doc(doc=doc)
+        >>> _ = Lo.close_office()
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 
 If you save your changes and then take a look at the spreadsheet, you’ll see that the merged cells have gone back to being individual cells.
 
 Freezing Panes
 --------------
 
-For spreadsheets too large to be displayed all at once, it’s helpful to “freeze” a few of the top rows or leftmost columns onscreen. Frozen column or row headers, for example, are always visible to the user even as they scroll through the spreadsheet. These are known as freeze panes. In OpenPyXL, each Worksheet object has a freeze_panes property that can be set to a Cell object or a string of a cell’s coordinates. Note that all rows above and all columns to the left of this cell will be frozen, but the row and column of the cell itself will not be frozen.
+For spreadsheets too large to be displayed all at once, it’s helpful to “freeze” a few of the top rows or leftmost columns onscreen.
+Frozen column or row headers, for example, are always visible to the user even as they scroll through the spreadsheet.
+These are known as freeze panes. In OpenPyXL, each Worksheet object has a freeze_panes property that can be set to a Cell object or a string of a cell’s coordinates.
+Note that all rows above and all columns to the left of this cell will be frozen, but the row and column of the cell itself will not be frozen.
 
-To unfreeze all panes, set freeze_panes to None or 'A1'. Table 13-3 shows which rows and columns will be frozen for some example settings of freeze_panes.
+See Also: :ref:`ch23_freezing_rows`
 
-Table 13-3: Frozen Pane Examples
+To unfreeze all panes, set freeze_panes to None or ``A1``. :numref:`tute_ss_tbl_frozen_pane_ex` shows which rows and columns will be frozen for some example settings of ``freeze_panes``.
 
-+----------------------------------------+---------------------------+
-|freeze_panes setting                    |Rows and columns frozen    |
-+========================================+===========================+
-|sheet.freeze_panes = 'A2'               |Row 1                      |
-+----------------------------------------+---------------------------+
-|sheet.freeze_panes = 'B1'               |Column A                   |
-+----------------------------------------+---------------------------+
-|sheet.freeze_panes = 'C1'               |Columns A and B            |
-+----------------------------------------+---------------------------+
-|sheet.freeze_panes = 'C2'               |Row 1 and columns A and B  |
-+----------------------------------------+---------------------------+
-|sheet.freeze_panes = 'A1'               |No frozen panes            |
-| or sheet.freeze_panes = None           |                           |
-+----------------------------------------+---------------------------+
+.. todo::
 
-Make sure you have the produce sales spreadsheet from https://nostarch.com/automatestuff2/. Then enter the following into the interactive shell:
+    Tute ss, Frozen Pane Examples table needs to be completly redone.
 
->>> from ooodev.utils.lo import Lo
->>> from ooodev.office.calc import Calc
->>> from ooodev.utils.gui import GUI
->>>
->>> loader = Lo.load_office(Lo.ConnectSocket())
->>> doc = Calc.open_doc('produceSales.xlsx')
->>> GUI.set_visible(is_visible=True, odoc=doc)
+..
+    Table 13-3
 
->>> sheet = Calc.get_sheet(doc=doc)
->>> Calc.goto_cell(cell_name="A1", doc=doc) # activate reference row
->>> Calc.freeze_rows(doc=doc, num_rows=1)   # freeze one row before reference
->>> _ = Calc.save_doc(doc, 'freezeExample.xlsx')
+.. _tute_ss_tbl_frozen_pane_ex:
 
-If you set the freeze_panes property to 'A2', row 1 will always be viewable, no matter where the user scrolls in the spreadsheet. You can see this in Figure 13-8.
+.. table:: Frozen Pane Examples.
+    :name: tbl_frozen_pane_ex
+
+    +----------------------------------------+---------------------------+
+    |freeze_panes setting                    |Rows and columns frozen    |
+    +========================================+===========================+
+    |sheet.freeze_panes = 'A2'               |Row 1                      |
+    +----------------------------------------+---------------------------+
+    |sheet.freeze_panes = 'B1'               |Column A                   |
+    +----------------------------------------+---------------------------+
+    |sheet.freeze_panes = 'C1'               |Columns A and B            |
+    +----------------------------------------+---------------------------+
+    |sheet.freeze_panes = 'C2'               |Row 1 and columns A and B  |
+    +----------------------------------------+---------------------------+
+    |sheet.freeze_panes = 'A1'               |No frozen panes            |
+    | or sheet.freeze_panes = None           |                           |
+    +----------------------------------------+---------------------------+
+
+Make sure you have the produce sales spreadsheet from `<https://nostarch.com/automatestuff2/>`__.
+Then enter the following into the interactive shell:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        >>> from ooodev.utils.lo import Lo
+        >>> from ooodev.office.calc import Calc
+        >>> from ooodev.utils.gui import GUI
+        >>>
+        >>> loader = Lo.load_office(Lo.ConnectSocket())
+        >>> doc = Calc.open_doc('produceSales.xlsx')
+        >>> GUI.set_visible(is_visible=True, doc=doc)
+        >>> sheet = Calc.get_sheet(doc=doc)
+        >>> Calc.goto_cell(cell_name="A1", doc=doc) # activate reference row
+        >>> Calc.freeze_rows(doc=doc, num_rows=1)   # freeze one row before reference
+        >>> _ = Calc.save_doc(doc, 'freezeExample.xlsx')
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+If you set the freeze_panes property to ``A2``, row ``1`` will always be viewable, no matter where the user scrolls in the spreadsheet.
+You can see this in :numref:`tute_ss_fig_freeze_a2`.
+
+..
+    Figure 13-8
 
 .. cssclass:: diagram invert
 
-    .. _ch01fig_timeline:
+    .. _tute_ss_fig_freeze_a2:
     .. figure:: https://user-images.githubusercontent.com/11288701/208299812-13dd64f0-5dca-4906-af52-5cf4e90e6622.png
-        :alt: OpenOffice Timeline Image
+        :alt: With freeze_panes set to A2, row 1 is always visible, even as the user scrolls down
         :figclass: align-center
 
-        :With freeze_panes set to 'A2', row 1 is always visible, even as the user scrolls down
+        :With freeze_panes set to ``A2``, row ``1`` is always visible, even as the user scrolls down
+
+.. _tute_ss_charts:
 
 Charts
 ======
 
 |odev| supports creating many charts including bar, line, scatter, and pie charts using the data in a sheet’s cells. To make a chart, you need to do the following:
 
-Create a Reference object from a rectangular selection of cells.
-Create a Series object by passing in the Reference object.
-Create a Chart object.
-Append the Series object to the Chart object.
-Add the Chart object to the Worksheet object, optionally specifying which cell should be the top-left corner of the chart.
-The Reference object requires some explaining. You create Reference objects by calling the ***openpyxl***.chart.Reference() function and passing three arguments:
+.. cssclass:: ul-list
+
+    - Create a Reference object from a rectangular selection of cells.
+    - Create a Series object by passing in the Reference object.
+    - Create a Chart object.
+    - Append the Series object to the Chart object.
+    - Add the Chart object to the Worksheet object, optionally specifying which cell should be the top-left corner of the chart.
+
+The Reference object requires some explaining.
+You create Reference objects by calling the ***openpyxl***.chart.Reference() function and passing three arguments:
 
 The Worksheet object containing your chart data.
 A tuple of two integers, representing the top-left cell of the rectangular selection of cells containing your chart data: the first integer in the tuple is the row, and the second is the column. Note that 1 is the first row, not 0.
 A tuple of two integers, representing the bottom-right cell of the rectangular selection of cells containing your chart data: the first integer in the tuple is the row, and the second is the column.
-Figure 13-9 shows some sample coordinate arguments.
+:numref:`tute_ss_fig_tuple_vals` shows some sample coordinate arguments.
+
+..
+    Figure 13-9
 
 .. cssclass:: diagram invert
 
-    .. _ch01fig_timeline:
+    .. _tute_ss_fig_tuple_vals:
     .. figure:: https://user-images.githubusercontent.com/11288701/208299822-1620a00b-f148-4ff3-9086-8f4b55c60273.png
-        :alt: OpenOffice Timeline Image
+        :alt: tuple values
         :figclass: align-center
 
-        :From left to right: (1, 1), (10, 1); (3, 2), (6, 4); (5, 3), (5, 3)
+        From left to right: (1, 1), (10, 1); (3, 2), (6, 4); (5, 3), (5, 3)
 
 Enter this interactive shell example to create a bar chart and add it to the spreadsheet:
 
->>> from ooodev.office.calc import Calc
->>> from ooodev.office.chart2 import Chart2, Angle
->>> from ooodev.utils.gui import GUI
->>> from ooodev.utils.lo import Lo
->>>
->>> _ = Lo.load_office(connector=Lo.ConnectPipe(soffice="C:\\Program Files\\LibreOfficeDev 7\\program\\soffice.exe"))
->>> doc = Calc.create_doc()
->>> GUI.set_visible(is_visible=True, odoc=doc)
->>> sheet = Calc.get_sheet(doc=doc)
->>> for i in range(1, 11): # create some data in column A
-...     Calc.set_val(i, sheet, 'A' + str(i))
-...
->>> range_addr = Calc.get_address(sheet=sheet, range_name="A1:A10")
->>> chart_doc = Chart2.insert_chart(
-...     sheet=sheet,
-...     cells_range=range_addr,
-...     cell_name="C5",
-... )
->>> Calc.goto_cell(cell_name="A1", doc=doc)
->>> _ = Chart2.set_title(chart_doc=chart_doc, title="My Chart")
->>> Chart2
-<class 'ooodev.office.chart2.Chart2'>
->>> Calc.save_doc(doc, "sampleChart.xlsx")
-True
+.. tabs::
 
->>> Lo.close_doc(doc)
->>> Lo.close_office()
-True
+    .. code-tab:: python
+
+        >>> from ooodev.office.calc import Calc
+        >>> from ooodev.office.chart2 import Chart2, Angle
+        >>> from ooodev.utils.gui import GUI
+        >>> from ooodev.utils.lo import Lo
+        >>>
+        >>> _ = Lo.load_office(connector=Lo.ConnectPipe(soffice="C:\\Program Files\\LibreOfficeDev 7\\program\\soffice.exe"))
+        >>> doc = Calc.create_doc()
+        >>> GUI.set_visible(is_visible=True, doc=doc)
+        >>> sheet = Calc.get_sheet(doc=doc)
+        >>> for i in range(1, 11): # create some data in column A
+        ...     Calc.set_val(i, sheet, 'A' + str(i))
+        ...
+        >>> range_addr = Calc.get_address(sheet=sheet, range_name="A1:A10")
+        >>> chart_doc = Chart2.insert_chart(
+        ...     sheet=sheet,
+        ...     cells_range=range_addr,
+        ...     cell_name="C5",
+        ... )
+        >>> Calc.goto_cell(cell_name="A1", doc=doc)
+        >>> _ = Chart2.set_title(chart_doc=chart_doc, title="My Chart")
+        >>> Chart2
+        <class 'ooodev.office.chart2.Chart2'>
+        >>> Calc.save_doc(doc, "sampleChart.xlsx")
+        True
+        >>> Lo.close_doc(doc)
+        >>> Lo.close_office()
+        True
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 This produces a spreadsheet that looks like Figure 13-10.
 
@@ -1668,132 +1800,165 @@ This produces a spreadsheet that looks like Figure 13-10.
 
         :A spreadsheet with a chart added
 
-We’ve created a bar chart by using the Calc class get_address() method to set a range to A1:A10, then using the Chart2 class insert_chart() method to insert the chart at C5. The default insert a column chart with no row or column values and default colours. You can create many chart types including: line charts, scatter charts, and pie charts.
+We’ve created a bar chart by using :py:meth:`.Calc.get_address` method to set a range to ``A1:A10``, then using :py:meth:`.Chart2.insert_chart` method to insert the chart at ``C5``.
+The default insert a column chart with no row or column values and default colours.
+You can create many chart types including: line charts, scatter charts, and pie charts.
+
+.. _tute_ss_summary:
 
 Summary
 =======
 
-Often the hard part of processing information isn’t the processing itself but simply getting the data in the right format for your program. But once you have your spreadsheet loaded into Python, you can extract and manipulate its data much faster than you could by hand.
+Often the hard part of processing information isn’t the processing itself but simply getting the data in the right format for your program.
+But once you have your spreadsheet loaded into Python, you can extract and manipulate its data much faster than you could by hand.
 
-You can also generate spreadsheets as output from your programs. So if colleagues need your text file or PDF of thousands of sales contacts transferred to a spreadsheet file, you won’t have to tediously copy and paste it all into Excel.
+You can also generate spreadsheets as output from your programs.
+So if colleagues need your text file or PDF of thousands of sales contacts transferred to a spreadsheet file, you won’t have to tediously copy and paste it all into spreadsheets.
 
-Equipped with the ***openpyxl*** module and some programming knowledge, you’ll find processing even the biggest spreadsheets a piece of cake.
+Equipped with |odev| module and some programming knowledge, you’ll find processing even the biggest spreadsheets a piece of cake.
 
-In the next chapter, we’ll take a look at using Python to interact with another spreadsheet program: the popular online Google Sheets application.
+.. _tute_ss_practice_questions:
 
 Practice Questions
 ==================
 
-For the following questions, imagine you have a Workbook object in the variable wb, a Worksheet object in sheet, a Cell object in cell, a Comment object in comm, and an Image object in img.
+For the following questions, imagine you have a Workbook object in the variable wb, a Worksheet object in sheet, a Cell object in cell, a Comment object in comm, and an Image object in ``img``.
+
+.. todo::
+
+    Tute ss, Practice questions most all need revamped.
 
 1. What does the ***openpyxl***.load_workbook() function return?
-
 2. What does the wb.sheetnames workbook property contain?
-
 3. How would you retrieve the Worksheet object for a sheet named 'Sheet1'?
-
 4. How would you retrieve the Worksheet object for the workbook’s active sheet?
-
 5. How would you retrieve the value in the cell C5?
-
 6. How would you set the value in the cell C5 to "Hello"?
-
 7. How would you retrieve the cell’s row and column as integers?
-
 8. What do the sheet.max_column and sheet.max_row sheet properties hold, and what is the data type of these properties?
-
 9. If you needed to get the integer index for column 'M', what function would you need to call?
-
 10. If you needed to get the string name for column 14, what function would you need to call?
-
 11. How can you retrieve a tuple of all the Cell objects from A1 to F1?
-
 12. How would you save the workbook to the filename example.xlsx?
-
 13. How do you set a formula in a cell?
-
 14. If you want to retrieve the result of a cell’s formula instead of the cell’s formula itself, what must you do first?
-
 15. How would you set the height of row 5 to 100?
-
 16. How would you hide column C?
-
 17. What is a freeze pane?
-
 18. What five functions and methods do you have to call to create a bar chart?
+
+.. _tute_ss_practice_projects:
 
 Practice Projects
 =================
 
 For practice, write programs that perform the following tasks.
 
+.. _tute_ss_multiplicaton_tbl:
+
 Multiplication Table Maker
 --------------------------
 
-Create a program multiplicationTable.py that takes a number N from the command line and creates an N×N multiplication table in an Excel spreadsheet. For example, when the program is run like this:
+Create a program ``multiplicationTable.py`` that takes a number ``N`` from the command line and creates an ``NxN`` multiplication table in a spreadsheet.
+For example, when the program is run like this:
 
-py multiplicationTable.py 6
+::
 
-. . . it should create a spreadsheet that looks like Figure 13-11.
+    py multiplicationTable.py 6
+
+. . . it should create a spreadsheet that looks like :numref:`tute_ss_fig_multiplication_tbl`.
+
+..
+    Figure 13-11
 
 .. cssclass:: diagram invert
 
-    .. _ch01fig_timeline:
+    .. _tute_ss_fig_multiplication_tbl:
     .. figure:: https://user-images.githubusercontent.com/11288701/208299901-74f36232-747a-4803-adfa-ae6d66fab93d.png
-        :alt: OpenOffice Timeline Image
+        :alt: A multiplication table generated in a spreadsheet
         :figclass: align-center
 
         :A multiplication table generated in a spreadsheet
 
-Row 1 and column A should be used for labels and should be in bold.
+Row ``1`` and column ``A`` should be used for labels and should be in bold.
+
+.. _tute_ss_blank_row_inserter:
 
 Blank Row Inserter
 ------------------
 
-Create a program blankRowInserter.py that takes two integers and a filename string as command line arguments. Let’s call the first integer N and the second integer M. Starting at row N, the program should insert M blank rows into the spreadsheet. For example, when the program is run like this:
+Create a program ``blankRowInserter.py`` that takes two integers and a filename string as command line arguments.
+Let’s call the first integer ``N`` and the second integer ``M``.
+Starting at row ``N``, the program should insert ``M`` blank rows into the spreadsheet.
+For example, when the program is run like this:
 
-python blankRowInserter.py 3 2 myProduce.xlsx
+::
 
-. . . the “before” and “after” spreadsheets should look like Figure 13-12.
+    python blankRowInserter.py 3 2 myProduce.xlsx
+
+. . . the “before” and “after” spreadsheets should look like :numref:`tute_ss_fig_ex_inserted_row_3`.
+
+..
+    Figure 13-12
 
 .. cssclass:: diagram invert
 
-    .. _ch01fig_timeline:
+    .. _tute_ss_fig_ex_inserted_row_3:
     .. figure:: https://user-images.githubusercontent.com/11288701/208299859-486ca40a-0bbf-46e4-add9-5fa101781563.png
-        :alt: OpenOffice Timeline Image
+        :alt: Before (left) and after (right) the two blank rows are inserted at row 3
         :figclass: align-center
 
-        :Before (left) and after (right) the two blank rows are inserted at row 3
+        Before (left) and after (right) the two blank rows are inserted at row 3
 
-You can write this program by reading in the contents of the spreadsheet. Then, when writing out the new spreadsheet, use a for loop to copy the first N lines. For the remaining lines, add M to the row number in the output spreadsheet.
+You can write this program by reading in the contents of the spreadsheet.
+Then, when writing out the new spreadsheet, use a for loop to copy the first N lines.
+For the remaining lines, add M to the row number in the output spreadsheet.
+
+.. _tute_ss_sht_cell_invert:
 
 Spreadsheet Cell Inverter
 -------------------------
 
-Write a program to invert the row and column of the cells in the spreadsheet. For example, the value at row 5, column 3 will be at row 3, column 5 (and vice versa). This should be done for all cells in the spreadsheet. For example, the “before” and “after” spreadsheets would look something like Figure 13-13.
+Write a program to invert the row and column of the cells in the spreadsheet.
+For example, the value at row ``5``, column ``3`` will be at row ``3``, column ``5`` (and vice versa).
+This should be done for all cells in the spreadsheet.
+For example, the “before” and “after” spreadsheets would look something like :numref:`tute_ss_fig_sht_before_after_top_btm`.
+
+..
+    Figure 13-13
 
 .. cssclass:: diagram invert
 
-    .. _ch01fig_timeline:
+    .. _tute_ss_fig_sht_before_after_top_btm:
     .. figure:: https://user-images.githubusercontent.com/11288701/208299872-1d3fec93-a74f-4660-a6af-fde3ad9ae33d.png
-        :alt: OpenOffice Timeline Image
+        :alt: The spreadsheet before (top) and after (bottom) inversion
         :figclass: align-center
 
-        :The spreadsheet before (top) and after (bottom) inversion
+        The spreadsheet before (top) and after (bottom) inversion
 
-You can write this program by using nested for loops to read the spreadsheet’s data into a list of lists data structure. This data structure could have sheetData[x][y] for the cell at column x and row y. Then, when writing out the new spreadsheet, use sheetData[y][x] for the cell at column x and row y.
+You can write this program by using nested for loops to read the spreadsheet’s data into a list of lists data structure.
+This data structure could have ``sheet_data[x][y]`` for the cell at column x and row y.
+Then, when writing out the new spreadsheet, use ``sheet_data[y][x]`` for the cell at column ``x`` and row ``y``.
+
+.. _text_ss_text_file_sht:
 
 Text Files to Spreadsheet
 -------------------------
 
-Write a program to read in the contents of several text files (you can make the text files yourself) and insert those contents into a spreadsheet, with one line of text per row. The lines of the first text file will be in the cells of column A, the lines of the second text file will be in the cells of column B, and so on.
+Write a program to read in the contents of several text files (you can make the text files yourself) and insert those contents into a spreadsheet, with one line of text per row.
+The lines of the first text file will be in the cells of column ``A``, the lines of the second text file will be in the cells of column ``B``, and so on.
 
-Use the readlines() File object method to return a list of strings, one string per line in the file. For the first file, output the first line to column 1, row 1. The second line should be written to column 1, row 2, and so on. The next file that is read with readlines() will be written to column 2, the next file to column 3, and so on.
+Use the ``readlines()`` File object method to return a list of strings, one string per line in the file.
+For the first file, output the first line to column ``1``, row ``1``.
+The second line should be written to column ``1``, row ``2``, and so on.
+The next file that is read with ``readlines()`` will be written to column ``2``, the next file to column 3``, and so on.
+
+.. _tute_ss_sht_to_txt_file:
 
 Spreadsheet to Text Files
 -------------------------
 
-Write a program that performs the tasks of the previous program in reverse order: the program should open a spreadsheet and write the cells of column A into one text file, the cells of column B into another text file, and so on.
-
+Write a program that performs the tasks of the previous program in reverse order: the program should open a spreadsheet and write the cells of column ``A`` into one text file,
+the cells of column B into another text file, and so on.
 
 .. _XCell: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1table_1_1XCell.html
