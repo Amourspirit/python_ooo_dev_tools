@@ -54,6 +54,7 @@ from com.sun.star.table import XColumnRowRange
 from com.sun.star.text import XSimpleText
 from com.sun.star.uno import Exception as UnoException
 from com.sun.star.util import NumberFormat  # const
+from com.sun.star.util import XMergeable
 from com.sun.star.util import XNumberFormatsSupplier
 from com.sun.star.util import XNumberFormatTypes
 
@@ -76,6 +77,7 @@ if TYPE_CHECKING:
     from com.sun.star.util import XSearchDescriptor
 
 from ooo.dyn.awt.point import Point
+from ooo.dyn.awt.size import Size
 from ooo.dyn.beans.property_value import PropertyValue
 from ooo.dyn.sheet.cell_delete_mode import CellDeleteMode
 from ooo.dyn.sheet.cell_flags import CellFlagsEnum as CellFlagsEnum
@@ -84,7 +86,8 @@ from ooo.dyn.sheet.fill_date_mode import FillDateMode as FillDateMode
 from ooo.dyn.sheet.general_function import GeneralFunction as GeneralFunction
 from ooo.dyn.sheet.solver_constraint_operator import SolverConstraintOperator as SolverConstraintOperator
 from ooo.dyn.table.cell_content_type import CellContentType
-from ooo.dyn.awt.size import Size
+from ooo.dyn.table.cell_hori_justify import CellHoriJustify
+from ooo.dyn.table.cell_vert_justify2 import CellVertJustify2
 
 from ..exceptions import ex as mEx
 from ..formatters.formatter_table import FormatterTable
@@ -4003,6 +4006,11 @@ class Calc:
 
     @overload
     @classmethod
+    def get_cell_range(cls, cell_range: XCellRange) -> XCellRange:
+        ...
+
+    @overload
+    @classmethod
     def get_cell_range(
         cls, sheet: XSpreadsheet, col_start: int, row_start: int, col_end: int, row_end: int
     ) -> XCellRange:
@@ -4015,10 +4023,11 @@ class Calc:
 
         Args:
             sheet (XSpreadsheet): Spreadsheet Document
-            range_name (str): Range Name such as 'A1:D5'
+            range_name (str): Range Name such as ``A1:D5``
             range_obj (RangeObj): Range Object
             cell_obj (CellObj): Cell Object
             cr_addr (CellRangeAddress): Cell range Address
+            cell_range (XCellRange): Cell Range. If passed in then the same instance is returned.
             col_start (int): Start Column
             row_start (int): Start Row
             col_end (int): End Column
@@ -4046,6 +4055,7 @@ class Calc:
                 "range_name",
                 "range_obj",
                 "cell_obj",
+                "cell_range",
                 "start_col",
                 "col_start",
                 "start_row",
@@ -4058,7 +4068,13 @@ class Calc:
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("get_cell_range() got an unexpected keyword argument")
-            ka[1] = kwargs.get("sheet", None)
+            keys = ("sheet", "cell_range")
+            for key in keys:
+                if key in kwargs:
+                    ka[1] = kwargs[key]
+                    break
+            if count == 1:
+                return ka
             keys = ("cr_addr", "range_name", "range_obj", "cell_obj", "start_col", "col_start")
             for key in keys:
                 if key in kwargs:
@@ -4071,12 +4087,19 @@ class Calc:
             ka[5] = kwargs.get("end_row", None) if kwargs.get("row_end", None) is None else kwargs.get("row_end")
             return ka
 
-        if not count in (2, 5):
+        if not count in (1, 2, 5):
             raise TypeError("get_cell_range() got an invalid numer of arguments")
 
         kargs = get_kwargs()
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
+
+        if count == 1:
+            # can only be: get_cell_range(cls, cell_range: XCellRange) -> XCellRange:
+            try:
+                return mLo.Lo.qi(kargs[1], XCellRange, True)
+            except Exception as e:
+                raise TypeError(f"Expected XCellRange but got {type(kargs[1]).__name__}") from e
 
         arg1 = cast(XSpreadsheet, kargs[1])
         arg2 = kargs[2]
@@ -5478,6 +5501,208 @@ class Calc:
 
     # endregion ------------ convert cell range address to string ------
 
+    # region --------------- merge--------------------------------------
+    # region merge_cells()
+    @overload
+    @classmethod
+    def merge_cells(cls, cell_range: XCellRange) -> None:
+        ...
+
+    @overload
+    @classmethod
+    def merge_cells(cls, cell_range: XCellRange, center: bool) -> None:
+        ...
+
+    @overload
+    @classmethod
+    def merge_cells(cls, sheet: XSpreadsheet, range_name: str) -> None:
+        ...
+
+    @overload
+    @classmethod
+    def merge_cells(cls, sheet: XSpreadsheet, range_name: str, center: bool) -> None:
+        ...
+
+    @overload
+    @classmethod
+    def merge_cells(cls, sheet: XSpreadsheet, range_obj: mRngObj.RangeObj) -> None:
+        ...
+
+    @overload
+    @classmethod
+    def merge_cells(cls, sheet: XSpreadsheet, range_obj: mRngObj.RangeObj, center: bool) -> None:
+        ...
+
+    @overload
+    @classmethod
+    def merge_cells(cls, sheet: XSpreadsheet, cr_addr: CellRangeAddress) -> None:
+        ...
+
+    @overload
+    @classmethod
+    def merge_cells(cls, sheet: XSpreadsheet, cr_addr: CellRangeAddress, center: bool) -> None:
+        ...
+
+    @overload
+    @classmethod
+    def merge_cells(cls, col_start: int, row_start: int, col_end: int, row_end: int, center: bool) -> None:
+        ...
+
+    @classmethod
+    def merge_cells(cls, *args, **kwargs) -> None:
+        """
+        Merges a range of cells
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet Document
+            center (bool): Determines if the merge will be a merge and center. Default ``False``.
+            range_name (str): Range Name such as ``A1:D5``
+            range_obj (RangeObj): Range Object
+            cell_obj (CellObj): Cell Object
+            cr_addr (CellRangeAddress): Cell range Address
+            cell_range (XCellRange): Cell Range
+            col_start (int): Start Column
+            row_start (int): Start Row
+            col_end (int): End Column
+            row_end (int): End Row
+
+        Returns:
+            None:
+
+        .. versionadded:: 0.8.4
+        """
+        # center must be removed from args if it exist so the rest of the args can be passed to get_cell_range()
+        center = None
+        kw = kwargs.copy()
+        lst_args = list(args)
+        args_len = len(lst_args)
+        if "center" in kw:
+            center = bool(kw["center"])
+            del kw["center"]
+
+        if center is None and args_len > 0:
+            if isinstance(lst_args[-1], bool):
+                center = lst_args.pop()
+
+        cell_range = Calc.get_cell_range(*lst_args, **kw)
+        xmerge = mLo.Lo.qi(XMergeable, cell_range, True)
+        xmerge.merge(True)
+        if center:
+            mProps.Props.set(cell_range, HoriJustify=CellHoriJustify.CENTER, VertJustify=CellVertJustify2.CENTER)
+
+    # endregion merge_cells()
+
+    # region unmerge_cells()
+    @overload
+    @classmethod
+    def unmerge_cells(cls, cell_range: XCellRange) -> None:
+        ...
+
+    @overload
+    @classmethod
+    def unmerge_cells(cls, sheet: XSpreadsheet, range_name: str) -> None:
+        ...
+
+    @overload
+    @classmethod
+    def unmerge_cells(cls, sheet: XSpreadsheet, range_obj: mRngObj.RangeObj) -> None:
+        ...
+
+    @overload
+    @classmethod
+    def unmerge_cells(cls, sheet: XSpreadsheet, cr_addr: CellRangeAddress) -> None:
+        ...
+
+    @overload
+    @classmethod
+    def unmerge_cells(cls, col_start: int, row_start: int, col_end: int, row_end: int) -> None:
+        ...
+
+    @classmethod
+    def unmerge_cells(cls, *args, **kwargs) -> None:
+        """
+        Un-merges a range of cells
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet Document
+            range_name (str): Range Name such as ``A1:D5``
+            range_obj (RangeObj): Range Object
+            cell_obj (CellObj): Cell Object
+            cr_addr (CellRangeAddress): Cell range Address
+            cell_range (XCellRange): Cell Range
+            col_start (int): Start Column
+            row_start (int): Start Row
+            col_end (int): End Column
+            row_end (int): End Row
+
+        Returns:
+            None:
+
+        .. versionadded:: 0.8.4
+        """
+        cell_range = Calc.get_cell_range(*args, **kwargs)
+        xmerge = mLo.Lo.qi(XMergeable, cell_range, True)
+        xmerge.merge(False)
+        # XMergeable
+
+    # endregion unmerge_cells()
+
+    # region unmerge_cells()
+    @overload
+    @classmethod
+    def is_merged_cells(cls, cell_range: XCellRange) -> bool:
+        ...
+
+    @overload
+    @classmethod
+    def is_merged_cells(cls, sheet: XSpreadsheet, range_name: str) -> bool:
+        ...
+
+    @overload
+    @classmethod
+    def is_merged_cells(cls, sheet: XSpreadsheet, range_obj: mRngObj.RangeObj) -> bool:
+        ...
+
+    @overload
+    @classmethod
+    def is_merged_cells(cls, sheet: XSpreadsheet, cr_addr: CellRangeAddress) -> bool:
+        ...
+
+    @overload
+    @classmethod
+    def is_merged_cells(cls, col_start: int, row_start: int, col_end: int, row_end: int) -> bool:
+        ...
+
+    @classmethod
+    def is_merged_cells(cls, *args, **kwargs) -> bool:
+        """
+        Gets is a range of cells is merged.
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet Document
+            range_name (str): Range Name such as ``A1:D5``
+            range_obj (RangeObj): Range Object
+            cell_obj (CellObj): Cell Object
+            cr_addr (CellRangeAddress): Cell range Address
+            cell_range (XCellRange): Cell Range
+            col_start (int): Start Column
+            row_start (int): Start Row
+            col_end (int): End Column
+            row_end (int): End Row
+
+        Returns:
+            bool: ``True`` if range is merged; Otherwise, ``False``
+
+        .. versionadded:: 0.8.4
+        """
+        cell_range = Calc.get_cell_range(*args, **kwargs)
+        xmerge = mLo.Lo.qi(XMergeable, cell_range, True)
+        return xmerge.getIsMerged()
+
+    # endregion unmerge_cells()
+
+    # endregion ------------ merge--------------------------------------
+
     # region --------------- search ------------------------------------
 
     @staticmethod
@@ -5572,33 +5797,16 @@ class Calc:
     @overload
     @classmethod
     def change_style(cls, sheet: XSpreadsheet, style_name: str, cell_range: XCellRange) -> bool:
-        """
-        Changes style of a range of cells
-
-        Args:
-            sheet (XSpreadsheet): Spreadsheet
-            style_name (str): Name of style to apply
-            cell_range (XCellRange): Cell range to apply style to
-
-        Returns:
-            bool: True if style has been changed; Otherwise, False
-        """
         ...
 
     @overload
     @classmethod
     def change_style(cls, sheet: XSpreadsheet, style_name: str, range_name: str) -> bool:
-        """
-        Changes style of a range of cells
+        ...
 
-        Args:
-            sheet (XSpreadsheet): Spreadsheet
-            style_name (str) :Name of style to apply
-            range_name (str): Range to apply style to such as 'A1:E23'
-
-        Returns:
-            bool: True if style has been changed; Otherwise, False
-        """
+    @overload
+    @classmethod
+    def change_style(cls, sheet: XSpreadsheet, style_name: str, range_obj: mRngObj.RangeObj) -> bool:
         ...
 
     @overload
@@ -5606,20 +5814,6 @@ class Calc:
     def change_style(
         cls, sheet: XSpreadsheet, style_name: str, start_col: int, start_row: int, end_col: int, end_row: int
     ) -> bool:
-        """
-        Changes style of a range of cells
-
-        Args:
-            sheet (XSpreadsheet): Spreadsheet
-            style_name (str):  Name of style to apply
-            start_col (int): Zero-base start column index
-            start_row (int): Zero-base start row index
-            end_col (int): Zero-base end column index
-            end_row (int): Zero-base end row index
-
-        Returns:
-            bool: True if style has been changed; Otherwise, False
-        """
         ...
 
     @classmethod
@@ -5631,7 +5825,8 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet
             style_name (str): Name of style to apply
             cell_range (XCellRange): Cell range to apply style to
-            range_name (str): Range to apply style to such as 'A1:E23'
+            range_name (str): Range to apply style to such as ``A1:E23``
+            range_obj (RangeObj): Range Object
             start_col (int): Zero-base start column index
             start_row (int): Zero-base start row index
             end_col (int): Zero-base end column index
@@ -5652,6 +5847,7 @@ class Calc:
                 "sheet",
                 "style_name",
                 "range_name",
+                "range_obj",
                 "cell_range",
                 "start_col",
                 "start_row",
@@ -5663,7 +5859,7 @@ class Calc:
                 raise TypeError("change_style() got an unexpected keyword argument")
             ka[1] = kwargs.get("sheet", None)
             ka[2] = kwargs.get("style_name", None)
-            keys = ("range_name", "start_col", "cell_range")
+            keys = ("range_name", "range_obj", "start_col", "cell_range")
             for key in keys:
                 if key in kwargs:
                     ka[3] = kwargs[key]
@@ -5682,23 +5878,30 @@ class Calc:
 
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
+        sheet = cast(XSpreadsheet, kargs[1])
+        style_name = cast(str, kargs[2])
         if count == 3:
-            if isinstance(kargs[3], str):
+            arg3 = kargs[3]
+            if isinstance(arg3, str):
                 # change_style(sheet: XSpreadsheet, style_name: str, range_name: str)
-                cell_range = cls._get_cell_range_rng_name(sheet=kargs[1], range_name=kargs[3])  # 1 sheet, 3 range_name
+                cell_range = cls._get_cell_range_rng_name(sheet=sheet, range_name=arg3)  # 1 sheet, 3 range_name
+                if cell_range is None:
+                    return False
+            elif isinstance(arg3, mRngObj.RangeObj):
+                cell_range = cls.get_cell_range(sheet=sheet, range_obj=arg3)
                 if cell_range is None:
                     return False
             else:
-                cell_range = kargs[3]
-            mProps.Props.set(cell_range, CellStyle=kargs[2])  # 2 style_name
-            return kargs[2] == mProps.Props.get(cell_range, "CellStyle")
+                cell_range = arg3
+            mProps.Props.set(cell_range, CellStyle=style_name)  # 2 style_name
+            return style_name == mProps.Props.get(cell_range, "CellStyle")
         else:
             # def change_style(sheet: XSpreadsheet, style_name: str, x1: int, y1: int, x2: int, y2:int)
             cell_range = cls._get_cell_range_col_row(
-                sheet=kargs[1], start_col=kargs[3], start_row=kargs[4], end_col=kargs[5], end_row=kargs[6]
+                sheet=sheet, start_col=kargs[3], start_row=kargs[4], end_col=kargs[5], end_row=kargs[6]
             )
-            mProps.Props.set(cell_range, CellStyle=kargs[2])  # 2 style_name
-            return kargs[2] == mProps.Props.get(cell_range, "CellStyle")
+            mProps.Props.set(cell_range, CellStyle=style_name)  # 2 style_name
+            return style_name == mProps.Props.get(cell_range, "CellStyle")
 
         # endregion change_style()
 

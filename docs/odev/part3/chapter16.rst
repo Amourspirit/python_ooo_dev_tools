@@ -90,6 +90,8 @@ The |make_slides|_ example creates a deck of five slides, illustrating different
 
 The five slides are explained in the following sections.
 
+.. _ch16_first_slide:
+
 16.1 The First Slide (Title and Subtitle)
 =========================================
 
@@ -338,6 +340,8 @@ This allows for finding the title shape by calling:
 
             .. group-tab:: None
 
+.. _ch16_second_slide:
+
 16.2 The Second Slide (Title, Bullets, and Image)
 =================================================
 
@@ -451,6 +455,7 @@ and an OutlinerShape_ beneath it (as in the second picture in :numref:`ch16fig_s
 :py:meth:`.Draw.bullets_slide` calls :py:meth:`.Draw.find_shape_by_type` twice to find these shapes, but it does nothing to the OutlinerShape_ itself,
 returning it as an XText_ reference. This allows text to be inserted into the shape by other code (i.e. by :py:meth:`.Draw.add_bullet`).
 
+.. _ch16_add_bullets:
 
 16.2.1 Adding Bullets to a Text Area
 ------------------------------------
@@ -515,6 +520,8 @@ The bullet text is added with ``XTextRange.setString()``.
 A newline is added to the text before the set, to ensure that the string is treated as a complete paragraph.
 The drawback is that the newline causes an extra bullet symbol to be drawn after the real bullet points.
 This can be seen in :numref:`ch16fig_slide_title_bullte_img`, at the bottom of the slide. (Principal Skinner is pointing at it.)
+
+.. _ch16_img_offset:
 
 16.2.2 Offsetting an Image
 --------------------------
@@ -612,6 +619,8 @@ The code for :py:meth:`.Draw.draw_image_offset`:
 
 :py:meth:`~.ImagesLo.calc_scale` uses :py:meth:`.ImagesLo.get_size100mm` to retrieve the size of the image in ``1/100 mm`` units, and then a scale factor is calculated for both the width and height.
 This is used to set the image frame's dimensions when the graphic is loaded by :py:meth:`~.Draw.draw_image`.
+
+.. _ch16_third_slide:
 
 16.3 The Third Slide (Title and Video)
 ======================================
@@ -728,6 +737,8 @@ In the absence of documentation, :py:meth:`.Props.show_obj_props` can be used to
             .. group-tab:: None
 
 The ``MediaURL`` property requires a file in URL format, and ``Loop`` is a boolean for making the animation play repeatedly.
+
+.. _ch16_fourth_slide:
 
 16.4 The Fourth Slide (Title and Buttons)
 =========================================
@@ -872,6 +883,8 @@ For example, the following will invoke Windows' calculator when the button is pr
 
 Clicking on the ClickAction_ takes you to a table very like the one in :numref:`ch16tbl_click_action_effects`.
 
+.. _ch16_shape_animation:
+
 16.5 Shape Animation
 ====================
 
@@ -958,6 +971,8 @@ Developer tools are available in LibreOffice ``7.3 +``.
 
         :``AnimationEffect.FADE_TOP_BOTTOM`` reversed developer tool view.
 
+.. _ch16_complex:
+
 More Complex Shape Animations
 -----------------------------
 
@@ -982,6 +997,8 @@ These features are available through the XAnimationNode_ interface, which is obt
 
 XAnimationNode_ allows a programmer much finer control over animation timings and animation paths for shapes.
 XAnimationNode_ is part of the large ``com.sun.star.animations`` package.
+
+.. _ch16_fifth_slide:
 
 16.6 The Fifth Slide (Various Dispatch Shapes)
 ==============================================
@@ -1181,6 +1198,8 @@ So, :py:meth:`~.Draw.add_dispatch_shape` is passed as call back function.
 
         :odev_src_draw_meth:`add_dispatch_shape`
 
+.. _ch16_fifth_view:
+
 16.6.1 Viewing the Fifth Slide
 ------------------------------
 
@@ -1265,6 +1284,8 @@ After the call to :py:meth:`.Draw.goto_page`, the specified draw page will be vi
         .. cssclass:: tab-none
 
             .. group-tab:: None
+
+.. _ch16_add_dispatch_shape:
 
 16.6.2 Adding a Dispatch Shape to the Visible Page
 --------------------------------------------------

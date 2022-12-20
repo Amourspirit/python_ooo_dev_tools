@@ -148,6 +148,8 @@ The examples come from two files, |draw_picture|_ and |animate_bike|_. The ``sho
         - :odev_src_draw_meth:`create_draw_doc`
         - :odev_src_draw_meth:`create_impress_doc`
 
+.. _ch13_draw_shapes:
+
 13.1 Drawing Shapes
 ===================
 
@@ -301,6 +303,8 @@ It also check if the (x, y) coordinate is located on the page. If it isn't, :py:
 
 There's a number of variations possible for each shape.
 The following sections look at how the six shapes are drawn.
+
+.. _ch13_black_dash_ln:
 
 13.2 A Black Dashed Line
 ========================
@@ -466,6 +470,8 @@ The line style is easily set since LineStyle_ is an enumeration with three possi
 
         :odev_src_draw_meth:`set_dashed_line`
 
+.. _ch13_red_ellipse:
+
 13.3 A Red Ellipse
 ==================
 
@@ -535,6 +541,8 @@ Clicking on the FillProperties_ rectangle jumps to its documentation, which list
 
 Both the ``FillColor`` and ``FillStyle`` properties should be set, but the default value for ``FillStyle`` is already ``FillStyle.SOLID``, which is what's needed.
 
+.. _ch13_rect_many_fills:
+
 13.4 A Rectangle with a Variety of Fills
 ========================================
 
@@ -603,6 +611,8 @@ and other properties can be set.
 
         :Seven Ways of Filling a Rectangle.
 
+.. _ch13_gradient_color:
+
 13.4.1 Gradient Color
 ---------------------
 
@@ -668,6 +678,8 @@ To see the gradient name fire up Office's Draw application, and check out the gr
 
 Calling ``_gradient_name()`` with ``set_props=True`` will result in creating a gradient similar to ``gradient color Custom props`` of :numref:`ch13fig_seven_fills`.
 The actual gradient created will depend on the Properties set for ``DrawGradient`` class instance.
+
+.. _ch13_gradient_common_color:
 
 13.4.2 Gradient Common Color
 ----------------------------
@@ -796,6 +808,8 @@ Example of setting color.
 
             .. group-tab:: None
 
+.. _ch13_hatching:
+
 13.4.3 Hatching
 ---------------
 
@@ -878,6 +892,8 @@ To see the Hatching names fire up Office's Draw application, and check out the H
         :figclass: align-center
 
         :The Hatching Names in LibreOffice.
+
+.. _ch13_bitmap_color:
 
 13.4.4 Bitmap Color
 -------------------
@@ -962,6 +978,8 @@ To see the Bitmap names fire up Office's Draw application, and check out the Bit
 
         :The Bitmap Names in LibreOffice.
 
+.. _ch13_bitmap_file_color:
+
 13.4.5 Bitmap File Color
 ------------------------
 
@@ -1016,6 +1034,8 @@ The final fill in :numref:`ch13fig_seven_fills` loads a bitmap from ``crazy_blue
         -  :odev_src_draw_meth:`set_bitmap_file_color`
 
 The ``FillBitmapURL`` property requires a URL, so the filename is converted by :py:meth:`.FileIO.fnm_to_url`.
+
+.. _ch13_text:
 
 13.5 Text
 =========
@@ -1116,6 +1136,8 @@ The shape is converted into an XText_ reference, and the text range selected wit
 
 The ``CharHeight`` property comes from the CharacterProperties_ service, which is inherited by the Text_ service (as shown in  :numref:`ch11fig_rectangel_shape_props`).
 
+.. _ch13_text_prop_help:
+
 Some Help with Text Properties
 ------------------------------
 
@@ -1169,6 +1191,8 @@ The output is long, but includes the line:
   CharHeight = 24.0
 
 which indicates that the font size was correctly changed by the earlier call to :py:meth:`.Draw.draw_text`.
+
+.. _ch13_use_shape_name:
 
 13.6 Using a Shape Name
 =======================
@@ -1291,6 +1315,8 @@ In this case :py:meth:`.Draw.get_shapes` call the internal Draw method ``_get_sh
 
 ``XShape.getShapeType()`` returns the class name of the shape as a string (in this case, TextShape_).
 
+.. _ch13_tp_circle_polar_ln:
+
 13.7 A Transparent Circle and a Polar Line
 ==========================================
 
@@ -1320,6 +1346,8 @@ A polar line is one defined using polar coordinates, which specifies the coordin
 and the angle and length of the line from that point.
 
 :py:meth:`.Draw.draw_circle` uses an EllipseShape_, and :py:meth:`.Draw.draw_polar_line` converts the polar values into two coordinates so :py:meth:`.Draw.draw_line` can be called.
+
+.. _ch13_math_formula_ole:
 
 13.8 A Math formula as an OLE Shape
 ===================================
@@ -1423,6 +1451,8 @@ Setting this property affects the shape's model (data format), which is stored i
 :py:meth:`~.Draw.draw_formula` casts this property to XModel_ and, since the model represents formula data,
 it has a ``Formula`` property where the formula string is stored.
 
+.. _ch13_create_oth_ole:
+
 Creating Other Kinds of OLE Shape
 ---------------------------------
 
@@ -1492,6 +1522,8 @@ When the model refers to chart data, the same call to :py:meth:`.Info.show_servi
 The ``com.sun.star.chart2`` package is the newer way of manipulating charts, which suggests that the XModel_ interfaces should be converted to an interface of ``com.sun.star.chart2.ChartDocument``.
 The most useful is XChartDocument_, which is obtained via: ``chart_doc = Lo.qi(XChartDocument, model)`` XChartDocument_ supports a rich set of chart manipulation methods.
 We'll return to charts in Part 5.
+
+.. _ch13_polygons:
 
 13.9 Polygons
 =============
@@ -1640,6 +1672,8 @@ the distance from the center to each point (the shape's radius), and the require
 
         -  :odev_src_draw_meth:`gen_polygon_points`
 
+.. _ch13_multi_ln_shapes:
+
 13.10 Multi-line Shapes
 =======================
 
@@ -1708,6 +1742,8 @@ For example, the following code in |animate_bike_py|_ creates the crossed lines 
 
 :py:meth:`~.Draw.draw_lines` creates an tuple of Point tuples which is stored in the PolyLineShape_ property called ``PolyPolygon``.
 However, :py:meth:`~.Draw.draw_lines` only adds a single points tuple to the ``line_paths`` data structure since only one line path is being created.
+
+.. _ch13_partial_ellipses:
 
 13.11 Partial Ellipses
 ======================
