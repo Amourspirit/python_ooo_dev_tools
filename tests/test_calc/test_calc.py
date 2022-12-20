@@ -2396,7 +2396,7 @@ def test_get_cell_range(loader) -> None:
             Calc.get_cell_range(sheet=sheet, rangeName="A2:B5")
         with pytest.raises(TypeError):
             # error on incorrect number of args
-            Calc.get_cell_range(sheet)
+            Calc.get_cell_range()
     finally:
         Lo.close(closeable=doc, deliver_ownership=False)
 
