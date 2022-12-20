@@ -1258,8 +1258,6 @@ This shifts the last three rows of the produce sheet ``A4999:B5001`` to the righ
 
         :Shifted Cells at the end of the Produce Sheet.
 
-Work in progress ...
-
 .. |g_secrets| replace::  Garlic Secrets
 .. _g_secrets: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/calc/odev_garlic_secrets
 
