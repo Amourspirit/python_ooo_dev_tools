@@ -13,6 +13,17 @@
             "justMyCode": true
         },
         {
+            "name": "Python: Not Headless",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "env": {
+                "NO_HEADLESS": "1"
+            }
+        },
+        {
             "name": "Python: Current All Code",
             "type": "python",
             "request": "launch",
