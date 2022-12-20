@@ -4096,7 +4096,10 @@ class Calc:
 
         if count == 1:
             # can only be: get_cell_range(cls, cell_range: XCellRange) -> XCellRange:
-            return kargs[1]
+            try:
+                return mLo.Lo.qi(kargs[1], XCellRange, True)
+            except Exception as e:
+                raise TypeError(f"Expected XCellRange but got {type(kargs[1]).__name__}") from e
 
         arg1 = cast(XSpreadsheet, kargs[1])
         arg2 = kargs[2]
