@@ -353,6 +353,16 @@ class Calc:
 
     # endregion create_doc()
 
+    @classmethod
+    def get_current_doc(cls) -> XSpreadsheetDocument:
+        """
+        Gets the current document.
+
+        Returns:
+            XSpreadsheetDocument: Spreadsheet Docoument
+        """
+        return cls.get_ss_doc(mLo.Lo.this_component)
+
     # endregion ------------ document methods ------------------
 
     # region --------------- sheet methods -----------------------------
@@ -732,7 +742,7 @@ class Calc:
             XSpreadsheets: document sheets
         """
         if doc is None:
-            doc = cls.open_doc()
+            doc = cls.get_current_doc()
         return doc.getSheets()
 
     @classmethod
@@ -809,7 +819,7 @@ class Calc:
             XController | None: Controller for Spreadsheet Document
         """
         if doc is None:
-            doc = cls.open_doc()
+            doc = cls.get_current_doc()
         model = mLo.Lo.qi(XModel, doc, True)
         return model.getCurrentController()
 
@@ -924,7 +934,7 @@ class Calc:
             XSpreadsheet | None: Active Sheet if found; Otherwise, None
         """
         if doc is None:
-            doc = cls.open_doc()
+            doc = cls.get_current_doc()
         ss_view = cls.get_view(doc)
         return ss_view.getActiveSheet()
 
@@ -1290,7 +1300,7 @@ class Calc:
             - :py:meth:`~.Calc.set_selected_addr`
         """
         if doc is None:
-            doc = cls.open_doc()
+            doc = cls.get_current_doc()
         ca = cls.get_selected_cell_addr(doc)
         return mCellObj.CellObj.from_idx(col_idx=ca.Column, row_idx=ca.Row)
 
@@ -5558,7 +5568,6 @@ class Calc:
             center (bool): Determines if the merge will be a merge and center. Default ``False``.
             range_name (str): Range Name such as ``A1:D5``
             range_obj (RangeObj): Range Object
-            cell_obj (CellObj): Cell Object
             cr_addr (CellRangeAddress): Cell range Address
             cell_range (XCellRange): Cell Range
             col_start (int): Start Column
@@ -5568,6 +5577,10 @@ class Calc:
 
         Returns:
             None:
+
+        See Also:
+            - :py:meth:`.Calc.unmerge_cells`
+            - :py:meth:`.Calc.is_merged_cells`
 
         .. versionadded:: 0.8.4
         """
@@ -5627,7 +5640,6 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet Document
             range_name (str): Range Name such as ``A1:D5``
             range_obj (RangeObj): Range Object
-            cell_obj (CellObj): Cell Object
             cr_addr (CellRangeAddress): Cell range Address
             cell_range (XCellRange): Cell Range
             col_start (int): Start Column
@@ -5638,6 +5650,10 @@ class Calc:
         Returns:
             None:
 
+        See Also:
+            - :py:meth:`.Calc.merge_cells`
+            - :py:meth:`.Calc.is_merged_cells`
+
         .. versionadded:: 0.8.4
         """
         cell_range = Calc.get_cell_range(*args, **kwargs)
@@ -5647,7 +5663,7 @@ class Calc:
 
     # endregion unmerge_cells()
 
-    # region unmerge_cells()
+    # region is_merged_cells()
     @overload
     @classmethod
     def is_merged_cells(cls, cell_range: XCellRange) -> bool:
@@ -5682,7 +5698,6 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet Document
             range_name (str): Range Name such as ``A1:D5``
             range_obj (RangeObj): Range Object
-            cell_obj (CellObj): Cell Object
             cr_addr (CellRangeAddress): Cell range Address
             cell_range (XCellRange): Cell Range
             col_start (int): Start Column
@@ -5693,13 +5708,17 @@ class Calc:
         Returns:
             bool: ``True`` if range is merged; Otherwise, ``False``
 
+        See Also:
+            - :py:meth:`.Calc.merge_cells`
+            - :py:meth:`.Calc.unmerge_cells`
+
         .. versionadded:: 0.8.4
         """
         cell_range = Calc.get_cell_range(*args, **kwargs)
         xmerge = mLo.Lo.qi(XMergeable, cell_range, True)
         return xmerge.getIsMerged()
 
-    # endregion unmerge_cells()
+    # endregion is_merged_cells()
 
     # endregion ------------ merge--------------------------------------
 

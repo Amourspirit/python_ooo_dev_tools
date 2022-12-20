@@ -100,7 +100,7 @@ class RangeValues:
             sheet_name = parts.sheet
             sheet_idx = -1
             if sheet_name:
-                sheet = mCalc.Calc.get_sheet(doc=mCalc.Calc.open_doc(), sheet_name=sheet_name)
+                sheet = mCalc.Calc.get_sheet(doc=mCalc.Calc.get_current_doc(), sheet_name=sheet_name)
                 sheet_idx = mCalc.Calc.get_sheet_index(sheet)
         else:
             # CellRange
