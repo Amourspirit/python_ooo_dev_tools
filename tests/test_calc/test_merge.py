@@ -12,7 +12,7 @@ from ooodev.office.calc import Calc
 def test_merge(loader, test_headless) -> None:
     doc = Calc.create_doc()
     visible = not test_headless
-    delay = 2000 if visible else 0
+    delay = 0  # 2000 if visible else 0
     if visible:
         GUI.set_visible(is_visible=visible, doc=doc)
     sheet = Calc.get_sheet(doc=doc)

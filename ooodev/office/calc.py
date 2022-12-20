@@ -5788,33 +5788,16 @@ class Calc:
     @overload
     @classmethod
     def change_style(cls, sheet: XSpreadsheet, style_name: str, cell_range: XCellRange) -> bool:
-        """
-        Changes style of a range of cells
-
-        Args:
-            sheet (XSpreadsheet): Spreadsheet
-            style_name (str): Name of style to apply
-            cell_range (XCellRange): Cell range to apply style to
-
-        Returns:
-            bool: True if style has been changed; Otherwise, False
-        """
         ...
 
     @overload
     @classmethod
     def change_style(cls, sheet: XSpreadsheet, style_name: str, range_name: str) -> bool:
-        """
-        Changes style of a range of cells
+        ...
 
-        Args:
-            sheet (XSpreadsheet): Spreadsheet
-            style_name (str) :Name of style to apply
-            range_name (str): Range to apply style to such as 'A1:E23'
-
-        Returns:
-            bool: True if style has been changed; Otherwise, False
-        """
+    @overload
+    @classmethod
+    def change_style(cls, sheet: XSpreadsheet, style_name: str, range_obj: mRngObj.RangeObj) -> bool:
         ...
 
     @overload
@@ -5822,20 +5805,6 @@ class Calc:
     def change_style(
         cls, sheet: XSpreadsheet, style_name: str, start_col: int, start_row: int, end_col: int, end_row: int
     ) -> bool:
-        """
-        Changes style of a range of cells
-
-        Args:
-            sheet (XSpreadsheet): Spreadsheet
-            style_name (str):  Name of style to apply
-            start_col (int): Zero-base start column index
-            start_row (int): Zero-base start row index
-            end_col (int): Zero-base end column index
-            end_row (int): Zero-base end row index
-
-        Returns:
-            bool: True if style has been changed; Otherwise, False
-        """
         ...
 
     @classmethod
@@ -5847,7 +5816,8 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet
             style_name (str): Name of style to apply
             cell_range (XCellRange): Cell range to apply style to
-            range_name (str): Range to apply style to such as 'A1:E23'
+            range_name (str): Range to apply style to such as ``A1:E23``
+            range_obj (RangeObj): Range Object
             start_col (int): Zero-base start column index
             start_row (int): Zero-base start row index
             end_col (int): Zero-base end column index
@@ -5868,6 +5838,7 @@ class Calc:
                 "sheet",
                 "style_name",
                 "range_name",
+                "range_obj",
                 "cell_range",
                 "start_col",
                 "start_row",
@@ -5879,7 +5850,7 @@ class Calc:
                 raise TypeError("change_style() got an unexpected keyword argument")
             ka[1] = kwargs.get("sheet", None)
             ka[2] = kwargs.get("style_name", None)
-            keys = ("range_name", "start_col", "cell_range")
+            keys = ("range_name", "range_obj", "start_col", "cell_range")
             for key in keys:
                 if key in kwargs:
                     ka[3] = kwargs[key]
@@ -5898,23 +5869,30 @@ class Calc:
 
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
+        sheet = cast(XSpreadsheet, kargs[1])
+        style_name = cast(str, kargs[2])
         if count == 3:
-            if isinstance(kargs[3], str):
+            arg3 = kargs[3]
+            if isinstance(arg3, str):
                 # change_style(sheet: XSpreadsheet, style_name: str, range_name: str)
-                cell_range = cls._get_cell_range_rng_name(sheet=kargs[1], range_name=kargs[3])  # 1 sheet, 3 range_name
+                cell_range = cls._get_cell_range_rng_name(sheet=sheet, range_name=arg3)  # 1 sheet, 3 range_name
+                if cell_range is None:
+                    return False
+            elif isinstance(arg3, mRngObj.RangeObj):
+                cell_range = cls.get_cell_range(sheet=sheet, range_obj=arg3)
                 if cell_range is None:
                     return False
             else:
-                cell_range = kargs[3]
-            mProps.Props.set(cell_range, CellStyle=kargs[2])  # 2 style_name
-            return kargs[2] == mProps.Props.get(cell_range, "CellStyle")
+                cell_range = arg3
+            mProps.Props.set(cell_range, CellStyle=style_name)  # 2 style_name
+            return style_name == mProps.Props.get(cell_range, "CellStyle")
         else:
             # def change_style(sheet: XSpreadsheet, style_name: str, x1: int, y1: int, x2: int, y2:int)
             cell_range = cls._get_cell_range_col_row(
-                sheet=kargs[1], start_col=kargs[3], start_row=kargs[4], end_col=kargs[5], end_row=kargs[6]
+                sheet=sheet, start_col=kargs[3], start_row=kargs[4], end_col=kargs[5], end_row=kargs[6]
             )
-            mProps.Props.set(cell_range, CellStyle=kargs[2])  # 2 style_name
-            return kargs[2] == mProps.Props.get(cell_range, "CellStyle")
+            mProps.Props.set(cell_range, CellStyle=style_name)  # 2 style_name
+            return style_name == mProps.Props.get(cell_range, "CellStyle")
 
         # endregion change_style()
 
