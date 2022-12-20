@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.8.5
+=============
+
+Fix for Some ``Calc`` related method getting a new doc with the existing doc was expected.
+
 Version 0.8.4
 =============
 

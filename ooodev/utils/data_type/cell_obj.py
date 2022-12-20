@@ -60,7 +60,7 @@ class CellObj:
             idx = -1
             if parts.sheet:
                 try:
-                    sheet = mCalc.Calc.get_sheet(doc=mCalc.Calc.open_doc(), sheet_name=parts.sheet)
+                    sheet = mCalc.Calc.get_sheet(doc=mCalc.Calc.get_current_doc(), sheet_name=parts.sheet)
                     idx = mCalc.Calc.get_sheet_index(sheet=sheet)
                 except:
                     pass
