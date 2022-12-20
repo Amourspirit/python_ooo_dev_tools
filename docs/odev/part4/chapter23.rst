@@ -460,30 +460,29 @@ The cell is made wider by merging a few cells together, made taller by adjusting
     .. code-tab:: python
 
         # in garlic_secrets.py
-        def _add_garlic_label(
-            self, doc: XSpreadsheetDocument, sheet: XSpreadsheet, empty_row_num: int
-            ) -> None:
+        def _add_garlic_label(self, doc: XSpreadsheetDocument, sheet: XSpreadsheet, empty_row_num: int) -> None:
+
             Calc.goto_cell(cell_name=Calc.get_cell_str(col=0, row=empty_row_num), doc=doc)
 
             # Merge first few cells of the last row
-            cell_range = Calc.get_cell_range(
-                sheet=sheet, start_col=0, start_row=empty_row_num, end_col=3, end_row=empty_row_num
+            rng_obj = Calc.get_range_obj(
+                col_start=0, row_start=empty_row_num, col_end=3, row_end=empty_row_num
             )
-            xmerge = Lo.qi(XMergeable, cell_range, True)
-            xmerge.merge(True)
+
+            # merge and center range
+            Calc.merge_cells(sheet=sheet, range_obj=rng_obj, center=True)
 
             # make the row taller
             Calc.set_row_height(sheet=sheet, height=18, idx=empty_row_num)
-            cell = Calc.get_cell(sheet=sheet, col=0, row=empty_row_num)
+            # get the cell from the range cell start
+            cell = Calc.get_cell(sheet=sheet, cell_obj=rng_obj.cell_start)
             cell.setFormula("Top Secret Garlic Changes")
             Props.set(
                 cell,
                 CharWeight=FontWeight.BOLD,
                 CharHeight=24,
-                CellBackColor=CommonColor.RED,
-                HoriJustify=CellHoriJustify.CENTER,
-                VertJustify=CellVertJustify.CENTER,
-            )
+                CellBackColor=CommonColor.RED
+                )
 
     .. only:: html
 
@@ -491,11 +490,13 @@ The cell is made wider by merging a few cells together, made taller by adjusting
 
             .. group-tab:: None
 
-Cell merging requires a cell range, which is obtained by calling the version of :py:meth:`.Calc.get_cell_range` that employs start and end cell positions in (column, row) order.
+Cell merging requires a cell range, which is obtained by calling the version of :py:meth:`.Calc.get_range_obj` that employs start and end cell positions in (column, row) order.
 
 The range spans the first four cells of the empty row, making it wide enough for the large text.
 
 The XMergeable_ interface is supported by the SheetCellRange_ service and uses ``merge()`` with a boolean argument to ``merge`` or ``unmerge`` a cell range.
+
+:py:meth:`.Calc.merge_cells` makes use of XMergeable_ and SheetCellRange_ to merge and center the range into a single cell range.
 
 Changing the cell height affects the entire row, not just the merged cells, and so :py:meth:`.Calc.set_row_height` manipulates a cell range representing the row:
 

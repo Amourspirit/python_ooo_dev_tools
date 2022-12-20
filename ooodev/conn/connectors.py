@@ -1,5 +1,6 @@
 # coding: utf-8
 from __future__ import annotations
+import os
 from typing import List
 from pathlib import Path
 import uuid
@@ -51,7 +52,11 @@ class ConnectorBridgeBase(ConnectorBase):
         try:
             return self._soffice
         except AttributeError:
-            self._soffice = paths.get_soffice_path()
+            so = os.environ.get("ODEV_CONN_SOFFICE", None)
+            if so:
+                self._soffice = so
+            else:
+                self._soffice = paths.get_soffice_path()
         return self._soffice
 
     @soffice.setter

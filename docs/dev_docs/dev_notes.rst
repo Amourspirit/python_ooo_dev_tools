@@ -242,3 +242,15 @@ Any custom dictionary in this directory starting with ``spelling_*`` is auto-loa
 
 .. |online_docs| replace:: Online Docs
 .. _online_docs: https://python-ooo-dev-tools.readthedocs.io/en/latest/
+
+.. _dev_doc_env_vars:
+
+Environment Variables
+=====================
+
+|odev| contains some environment variables.
+
+ODEV_CONN_SOFFICE
+-----------------
+
+If set and soffice is not passed to :py:class:`~.connectors.ConnectorBridgeBase` and `ODEV_CONN_SOFFICE` is present then the environment variable value is used.
