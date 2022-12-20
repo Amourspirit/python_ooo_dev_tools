@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.8.4
+=============
+
+Added methods, ``Calc.merge_cells()``, ``Calc.unmerge_cells()``, and ``Calc.is_merged_cells()``
+
 Version 0.8.3
 =============
 

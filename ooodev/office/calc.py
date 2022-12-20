@@ -5565,6 +5565,8 @@ class Calc:
 
         Returns:
             None:
+
+        .. versionadded:: 0.8.4
         """
         # center must be removed from args if it exist so the rest of the args can be passed to get_cell_range()
         center = None
@@ -5632,6 +5634,8 @@ class Calc:
 
         Returns:
             None:
+
+        .. versionadded:: 0.8.4
         """
         cell_range = Calc.get_cell_range(*args, **kwargs)
         xmerge = mLo.Lo.qi(XMergeable, cell_range, True)
@@ -5685,6 +5689,8 @@ class Calc:
 
         Returns:
             bool: ``True`` if range is merged; Otherwise, ``False``
+
+        .. versionadded:: 0.8.4
         """
         cell_range = Calc.get_cell_range(*args, **kwargs)
         xmerge = mLo.Lo.qi(XMergeable, cell_range, True)
