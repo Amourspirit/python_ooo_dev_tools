@@ -5558,7 +5558,6 @@ class Calc:
             center (bool): Determines if the merge will be a merge and center. Default ``False``.
             range_name (str): Range Name such as ``A1:D5``
             range_obj (RangeObj): Range Object
-            cell_obj (CellObj): Cell Object
             cr_addr (CellRangeAddress): Cell range Address
             cell_range (XCellRange): Cell Range
             col_start (int): Start Column
@@ -5627,7 +5626,6 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet Document
             range_name (str): Range Name such as ``A1:D5``
             range_obj (RangeObj): Range Object
-            cell_obj (CellObj): Cell Object
             cr_addr (CellRangeAddress): Cell range Address
             cell_range (XCellRange): Cell Range
             col_start (int): Start Column
@@ -5682,7 +5680,6 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet Document
             range_name (str): Range Name such as ``A1:D5``
             range_obj (RangeObj): Range Object
-            cell_obj (CellObj): Cell Object
             cr_addr (CellRangeAddress): Cell range Address
             cell_range (XCellRange): Cell Range
             col_start (int): Start Column
