@@ -1,6 +1,7 @@
-# coding: utf-8
+from __future__ import annotations
 import os
 import sys
+import shutil
 import __main__
 from pathlib import Path
 from typing import List, Union, overload
@@ -93,7 +94,16 @@ def get_path(path: Union[str, Path, List[str]], ensure_absolute: bool = False) -
     return p
 
 
-def _get_virtual_path() -> str:
+def get_virtual_env_path() -> str:
+    """
+    Gets the Virtual Environment Path
+
+    Returns:
+        str: Viruatl Environment Path
+
+    Note:
+        If unable to get virtual path from Environment then ``sys.base_exec_prefix`` is returned.
+    """
     spath = os.environ.get("VIRTUAL_ENV", None)
     if spath is not None:
         return spath
@@ -107,7 +117,7 @@ def get_site_packeges_dir() -> Union[Path, None]:
     Returns:
         Union[Path, None]: site-packages dir if found; Otherwise, None.
     """
-    v_path = _get_virtual_path()
+    v_path = get_virtual_env_path()
     p_site = Path(v_path, "Lib", "site-packages")
     if p_site.exists() and p_site.is_dir():
         return p_site
@@ -117,3 +127,7 @@ def get_site_packeges_dir() -> Union[Path, None]:
     if p_site.exists() and p_site.is_dir():
         return p_site
     return None
+
+
+def copy_file(src: str | Path, dst: str | Path):
+    shutil.copy2(src=src, dst=dst)
