@@ -4,7 +4,7 @@ import argparse
 import sys
 import os
 from pathlib import Path
-from src.cmds import uno_lnk, run_auto
+from src.cmds import uno_lnk, run_auto, manage_env_cfg
 from src.utils import util
 
 # region parser
@@ -58,9 +58,26 @@ def _args_cmd_auto(parser: argparse.ArgumentParser) -> None:
     )
 
 
-def _args_action_cmd_link(
-    a_parser: argparse.ArgumentParser, args: argparse.Namespace
-) -> None:
+def _args_cmd_toggle_evn(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "-t",
+        "--toggle-env",
+        help="Toggle virtual environment to and from LibreOffice environment",
+        action="store_true",
+        dest="toggle_env",
+        default=False,
+    )
+    parser.add_argument(
+        "-c",
+        "--custom-env",
+        help="Set a custom environment. cfg file must must be manually configured.",
+        action="store",
+        dest="cusom_env",
+        required=False,
+    )
+
+
+def _args_action_cmd_link(a_parser: argparse.ArgumentParser, args: argparse.Namespace) -> None:
     if not (args.add or args.remove):
         a_parser.error("No action requested, add --add or --remove")
     if args.add:
@@ -69,9 +86,7 @@ def _args_action_cmd_link(
         uno_lnk.remove_links()
 
 
-def _args_action_cmd_auto(
-    a_parser: argparse.ArgumentParser, args: argparse.Namespace
-) -> None:
+def _args_action_cmd_auto(a_parser: argparse.ArgumentParser, args: argparse.Namespace) -> None:
     pargs = str(args.process_file).split()
     if sys.platform == "win32":
         run_auto.run_lo_py(*pargs)
@@ -79,13 +94,20 @@ def _args_action_cmd_auto(
         run_auto.run_py(*pargs)
 
 
-def _args_process_cmd(
-    a_parser: argparse.ArgumentParser, args: argparse.Namespace
-) -> None:
+def _args_action_cmd_toggle_env(a_parser: argparse.ArgumentParser, args: argparse.Namespace) -> None:
+    if args.toggle_env:
+        manage_env_cfg.toggle_cfg()
+    if args.cusom_env:
+        manage_env_cfg.toggle_cfg(suffix=args.cusom_env)
+
+
+def _args_process_cmd(a_parser: argparse.ArgumentParser, args: argparse.Namespace) -> None:
     if args.command == "cmd-link":
         _args_action_cmd_link(a_parser=a_parser, args=args)
     elif args.command == "auto":
         _args_action_cmd_auto(a_parser=a_parser, args=args)
+    elif args.command == "env":
+        _args_action_cmd_toggle_env(a_parser=a_parser, args=args)
     else:
         a_parser.print_help()
 
@@ -115,6 +137,13 @@ def main() -> int:
             help="Add/Remove links in virtual environments to uno files.",
         )
         _args_cmd_link(parser=cmd_link)
+
+    if sys.platform == "win32":
+        cmd_env_toggle = subparser.add_parser(
+            name="env",
+            help="Manage Virtual Environment configuration.",
+        )
+        _args_cmd_toggle_evn(parser=cmd_env_toggle)
 
     cmd_auto = subparser.add_parser(name="auto", help="Run an automation script")
 
