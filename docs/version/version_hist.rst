@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.8.6
+=============
+
+Extended Cell Objects with focues on ``CellValues`` Class.
+
 Version 0.8.5
 =============
 

@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING, overload
 from dataclasses import dataclass, field
 from . import cell_obj as mCo
 from . import range_values as mRngValues
@@ -9,6 +10,11 @@ from ..decorator import enforce
 
 import uno
 from ooo.dyn.table.cell_range_address import CellRangeAddress
+
+if TYPE_CHECKING:
+    from . import cell_obj as mCellObj
+    from . import cell_values as mCellVals
+    from com.sun.star.table import CellAddress
 
 
 @enforce.enforce_types
@@ -217,6 +223,46 @@ class RangeObj:
         """
         cv = mRngValues.RangeValues.from_range(self)
         return cv.is_single_cell()
+
+    # region contains()
+
+    @overload
+    def contains(self, cell_obj: mCellObj.CellObj) -> bool:
+        ...
+
+    @overload
+    def contains(self, cell_addr: CellAddress) -> bool:
+        ...
+
+    @overload
+    def contains(self, cell_vals: mCellVals.CellValues) -> bool:
+        ...
+
+    @overload
+    def contains(self, cell_name: str) -> bool:
+        ...
+
+    def contains(self, *args, **kwargs) -> bool:
+        """
+        Gets if current instance contains a cell value.
+
+        Args:
+            cell_obj (CellObj): Cell object
+            cell_addr (CellAddress): Cell address
+            cell_vals (CellValues): Cell Values
+            cell_name (str): Cell name
+
+        Returns:
+            bool: ``True`` if instance contains cell; Otherwishe, ``False``.
+
+        Note:
+            If cell input contains sheet info the it is use in comparsion.
+            Otherwise sheet is ignored.
+        """
+        rv = self.get_range_values()
+        return rv.contains(*args, **kwargs)
+
+    # endregion contains()
 
     def __str__(self) -> str:
         return f"{self.col_start}{self.row_start}:{self.col_end}{self.row_end}"

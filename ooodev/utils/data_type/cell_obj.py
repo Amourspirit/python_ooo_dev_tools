@@ -3,6 +3,7 @@ import string
 from dataclasses import dataclass, field
 from . import col_obj as mCol
 from . import range_obj as mRngObj
+from . import cell_values as mCellVals
 from . import row_obj as mRow
 from .. import table_helper as mTb
 from ...office import calc as mCalc
@@ -41,12 +42,12 @@ class CellObj:
                     pass
 
     @staticmethod
-    def from_cell(cell_val: str | CellAddress) -> CellObj:
+    def from_cell(cell_val: str | CellAddress | mCellVals.CellValues | CellObj) -> CellObj:
         """
         Gets a ``CellObj`` instance from a string
 
         Args:
-            cell_val (str | CellAddress): Cell Name such ``A23`` or ``Sheet1.A23``, or Cell Address object.
+            cell_val (str | CellAddress | CellValues | CellObj): Cell value. If ``cell_val`` is `CellObj`` then that instance is returned.
 
         Returns:
             CellObj: Cell Object
@@ -54,6 +55,9 @@ class CellObj:
         Note:
             If a range name such as ``A23:G45`` or ``Sheet1.A23:G45`` then only the first cell is used.
         """
+        if isinstance(cell_val, CellObj):
+            return cell_val
+
         if isinstance(cell_val, str):
             # split will cover if a range is passed in, return first cell
             parts = mTb.TableHelper.get_cell_parts(cell_val)
@@ -66,9 +70,9 @@ class CellObj:
                     pass
             return CellObj(col=parts.col, row=parts.row, sheet_idx=idx)
 
-        # CellAddress
-        col = mTb.TableHelper.make_column_name(cell_val.Column, True)
-        return CellObj(col=col, row=cell_val.Row + 1, sheet_idx=cell_val.Sheet)
+        cv = mCellVals.CellValues.from_cell(cell_val)
+        col = mTb.TableHelper.make_column_name(cv.col, True)
+        return CellObj(col=col, row=cv.row + 1, sheet_idx=cv.sheet_idx)
 
     @staticmethod
     def from_idx(col_idx: int, row_idx: int, sheet_idx: int = -1) -> CellObj:
@@ -85,6 +89,15 @@ class CellObj:
         """
         col = mTb.TableHelper.make_column_name(col=col_idx, zero_index=True)
         return CellObj(col=col, row=row_idx + 1, sheet_idx=sheet_idx)
+
+    def get_cell_values(self) -> mCellVals.CellValues:
+        """
+        Gets cell values
+
+        Returns:
+            CellValues: Cell Values instance.
+        """
+        return mCellVals.CellValues.from_cell(self.get_cell_address())
 
     def get_cell_address(self) -> CellAddress:
         """
