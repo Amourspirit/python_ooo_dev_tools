@@ -36,10 +36,9 @@ def get_uno_python_ver() -> Version:
     """Gets Uno Python Version"""
     python_exe = get_uno_python_exe()
     output = subprocess.check_output([python_exe, "--version"]).decode("UTF8").strip()
-    # somethink like Python 3.8.10
+    # something like Python 3.8.10
     parts = output.split()
     major, minor, rev = parts[1].split(".")
-    # RangeParts()
     return Version(major=int(major), minor=int(minor), revision=int(rev))
 
 
@@ -47,13 +46,13 @@ def read_pyvenv_cfg(fnm: str = "pyvenv.cfg") -> dict:
     pyvenv_cfg = _get_pyvenv_cfg_path(fnm=fnm)
     result = {}
     with open(pyvenv_cfg, "r") as file:
-        # strip of new line and remove anything after //
+        # strip of new line and remove anything after #
         # # for comment
         data = (row.partition("#")[0].rstrip() for row in file)
         # chain generator
         # remove empty lines
         data = (row for row in data if row)
-        # each line should now be key valu pairs seperated by =
+        # each line should now be key value pairs seperated by =
         for row in data:
             key, value = row.split("=")
             result[key.strip()] = value.strip()
