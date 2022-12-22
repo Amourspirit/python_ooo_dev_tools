@@ -68,6 +68,14 @@ def _args_cmd_toggle_evn(parser: argparse.ArgumentParser) -> None:
         default=False,
     )
     parser.add_argument(
+        "-u",
+        "--uno-env",
+        help="Displayes if the current Virtual Environment is UNO Environment.",
+        action="store_true",
+        dest="uno_env",
+        default=False,
+    )
+    parser.add_argument(
         "-c",
         "--custom-env",
         help="Set a custom environment. cfg file must must be manually configured.",
@@ -95,8 +103,15 @@ def _args_action_cmd_auto(a_parser: argparse.ArgumentParser, args: argparse.Name
 
 
 def _args_action_cmd_toggle_env(a_parser: argparse.ArgumentParser, args: argparse.Namespace) -> None:
+    if args.uno_env:
+        if manage_env_cfg.is_env_uno_python():
+            print("UNO Environment")
+        else:
+            print("NOT a UNO Environment")
+        return
     if args.toggle_env:
         manage_env_cfg.toggle_cfg()
+        return
     if args.cusom_env:
         manage_env_cfg.toggle_cfg(suffix=args.cusom_env)
 

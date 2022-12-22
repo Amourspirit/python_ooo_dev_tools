@@ -10,7 +10,7 @@ Virtual Environment
 
 It is assumed `<https://github.com/Amourspirit/python_ooo_dev_tools>`__ has been cloned or unzipped to a folder.
 
-`Poetry <https://python-poetry.org/>`_ is required to install this project in a development environment.
+poetry_ is required to install this project in a development environment.
 
 |odev| uses a virtual environment for development purposes.
 
@@ -69,43 +69,16 @@ This is due to the how LibreOffice implements the python environment on Windows.
 
 The way |odev| works on Windows is a slight hack to the virtual environment.
 
-Start by using terminal to create a ``.venv`` environment in the projects root folder
 
+
+|odev| has build in tools that aid in this that we will get to shortly.
+
+
+Start by using terminal to create a ``.venv`` environment in the projects root folder
 
 .. code-block:: text
 
     PS C:\python_ooo_dev_tools> python -m venv .\.venv
-
-Get LibreOffice python version.
-
-.. code-block:: text
-
-    PS C:\python_ooo_dev_tools> "C:\Program Files\LibreOffice\program\python.exe" --version
-
-Will return something like ``Python 3.8.10``
-
-Edit ``pyvenv.cfg``  file.
-
-.. code-block:: text
-
-    PS C:\python_ooo_dev_tools> notepad .\.venv\pyvenv.cfg
-
-Original may look something like:
-
-
-.. code-block:: text
-
-    home = C:\Users\User\AppData\Local\Programs\Python\Python310
-    include-system-site-packages = false
-    version = 3.10.1
-
-Change ``home`` and ``version`` using the current LibreOffice Version:
-
-.. code-block:: text
-
-    home = C:\Program Files\LibreOffice\program
-    include-system-site-packages = false
-    version = 3.8.10
 
 Activate Virtual environment.
 
@@ -113,11 +86,36 @@ Activate Virtual environment.
 
      PS C:\python_ooo_dev_tools> .\.venv\Scripts\Activate
 
-Install requirements using Poetry.
+Install requirements using poetry.
 
 .. code-block:: text
 
     (.venv) PS C:\python_ooo_dev_tools> poetry install
+
+After installing using the previous command it time to set the environment to work with LibreOffice.
+
+.. code-block:: text
+
+    (.venv) PS C:\python_ooo_dev_tools> python -m main env -t
+
+This will set the virtual environment to work with LibreOffice.
+
+To check of the virtual environment is set for LibreOffice use the following command.
+
+.. code-block:: text
+
+    (.venv) PS C:\python_ooo_dev_tools> python -m main env -u
+    UNO Environment
+
+Newer versions of poetry_ will not work with the configuration set up for LibreOffice.
+
+When you need to use poetry_ just toggle environment.
+
+.. code-block:: text
+
+    (.venv) PS C:\python_ooo_dev_tools> python -m main env -t
+
+This will toggle between the origional setup configuration and the LibreOffice configuration.
 
 .. _dev_doc_ve_test:
 
@@ -254,3 +252,5 @@ ODEV_CONN_SOFFICE
 ^^^^^^^^^^^^^^^^^
 
 If set and soffice is not passed to :py:class:`~.connectors.ConnectorBridgeBase` and `ODEV_CONN_SOFFICE` is present then the environment variable value is used.
+
+.. _poetry: https://python-poetry.org/
