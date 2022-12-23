@@ -793,27 +793,21 @@ class GUI:
             xcontroller = cls.get_current_controller(doc)
             return xcontroller.getFrame().getContainerWindow()
 
+    # region set_visible()
+
+    @overload
+    @classmethod
+    def set_visible(cls) -> None:
+        ...
+
     @overload
     @classmethod
     def set_visible(cls, is_visible: bool) -> None:
-        """
-        Set window visibility.
-
-        Args:
-            is_visible (bool): If True window is set visible; Otherwise, window is set invisible.
-        """
         ...
 
     @overload
     @classmethod
     def set_visible(cls, is_visible: bool, doc: object) -> None:
-        """
-        Set window visibility.
-
-        Args:
-            is_visible (bool): If True window is set visible; Otherwise, window is set invisible.
-            doc (object): office document
-        """
         ...
 
     @classmethod
@@ -822,7 +816,7 @@ class GUI:
         Set window visibility.
 
         Args:
-            is_visible (bool): If True window is set visible; Otherwise, window is set invisible.
+            is_visible (bool): If ``True`` window is set visible; Otherwise, window is set invisible. Default ``True``
             odoc (object): office document
         """
         ordered_keys = (1, 2)
@@ -847,27 +841,29 @@ class GUI:
                     break
             return ka
 
-        if not count in (1, 2):
+        if not count in (0, 1, 2):
             raise TypeError("set_visible() got an invalid number of arguments")
 
         kargs = get_kwargs()
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
 
-        is_visible = bool(kargs[1])
+        is_visible = bool(kargs.get(1, True))
         odoc = kargs.get(2, None)
 
         if odoc is None:
-            xwindow = cls.get_window()
-        else:
-            component = mLo.Lo.qi(XComponent, odoc)
-            if component is None:
-                return
-            xwindow = cls.get_frame(component).getContainerWindow()
+            odoc = mLo.Lo.this_component
+
+        component = mLo.Lo.qi(XComponent, odoc)
+        if component is None:
+            return
+        xwindow = cls.get_frame(component).getContainerWindow()
 
         if xwindow is not None:
             xwindow.setVisible(is_visible)
             xwindow.setFocus()
+
+    # endregion set_visible()
 
     @classmethod
     def set_size_window(cls, doc: XComponent, width: int, height: int) -> None:
