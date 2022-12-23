@@ -7,6 +7,8 @@ Version 0.8.6
 
 Extended Cell Objects with focues on ``CellValues`` Class.
 
+Fixed but in ``GUI.set_visible()`` added a new overload.
+
 Version 0.8.5
 =============
 
