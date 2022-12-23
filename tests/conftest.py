@@ -36,7 +36,7 @@ def test_headless():
     no_headless = os.environ.get("NO_HEADLESS", 0)
     if no_headless == "1":
         return False
-    return True
+    return False
 
 
 @pytest.fixture(scope="session")
