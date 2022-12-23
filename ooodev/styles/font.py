@@ -7,6 +7,7 @@ from ooo.dyn.awt.font_strikeout import FontStrikeoutEnum as FontStrikeoutEnum
 from ooo.dyn.awt.font_underline import FontUnderlineEnum as FontUnderlineEnum
 from ooo.dyn.awt.font_weight import FontWeightEnum as FontWeightEnum
 from ooo.dyn.awt.char_set import CharSetEnum as CharSetEnum
+from ooo.dyn.awt.font_family import FontFamilyEnum as FontFamilyEnum
 
 
 class Font(StyleBase):
@@ -14,7 +15,7 @@ class Font(StyleBase):
         self,
         name: str | None = None,
         charset: CharSetEnum | None = None,
-        family: str | None = None,
+        family: FontFamilyEnum | None = None,
         b: bool | None = None,
         color: Color | None = None,
         strike: FontStrikeoutEnum | None = None,
@@ -27,24 +28,25 @@ class Font(StyleBase):
 
         Args:
             name (str | None, optional): This property specifies the name of the font style. It may contain more than one name separated by comma.
-            charset (str | None, optional): This property contains the text encoding of the font.
-            family (str | None, optional): _description_. Defaults to None.
+            charset (CharSetEnum | None, optional): The text encoding of the font.
+            family (FontFamilyEnum | None, optional): Font Family
             b (bool | None, optional): Short cut to set ``weight`` to bold.
-            color (Color | None, optional): _description_. Defaults to None.
-            strike (FontStrikeoutEnum | None, optional): _description_. Defaults to None.
-            underine (FontUnderlineEnum | None, optional): _description_. Defaults to None.
-            underine_color (Color | None, optional): _description_. Defaults to None.
-            weight (FontWeightEnum | None, optional): _description_. Defaults to None.
+            color (Color | None, optional): The value of the text color.
+            strike (FontStrikeoutEnum | None, optional): Dermines the type of the strike out of the character.
+            underine (FontUnderlineEnum | None, optional): The value for the character underline.
+            underine_color (Color | None, optional): Specifies if the property ``CharUnderlineColor`` is used for an underline.
+            weight (FontWeightEnum | None, optional): The value of the font weight.
         """
         # see: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1CharacterProperties.html
         init_vals = {
             "FontName": name,
-            "FontFamily": family,
             "CharColor": color,
             "CharUnderlineColor": underine_color,
         }
         if not charset is None:
             init_vals["CharFontCharSet"] = charset.value
+        if not family is None:
+            init_vals["CharFontFamily"] = family.value
         if not strike is None:
             init_vals["CharStrikeout"] = strike.value
         if not underine is None:
@@ -76,13 +78,16 @@ class Font(StyleBase):
 
     @property
     def color(self) -> Color | None:
-        """Gets color value"""
+        """This property contains the value of the text color."""
         return self._color
 
     @property
-    def family(self) -> str | None:
-        """Specifies family"""
-        return self._get("FontFamily")
+    def family(self) -> FontFamilyEnum | None:
+        """This property contains font family."""
+        pv = cast(FontFamilyEnum, self._get("CharFontFamily"))
+        if not pv is None:
+            return FontFamilyEnum(pv)
+        return None
 
     @property
     def name(self) -> str | None:
@@ -91,7 +96,7 @@ class Font(StyleBase):
 
     @property
     def strike(self) -> FontStrikeoutEnum | None:
-        """Gets strike value"""
+        """This property determines the type of the strike out of the character."""
         pv = cast(int, self._get("CharStrikeout"))
         if not pv is None:
             FontStrikeoutEnum(pv)
@@ -100,9 +105,17 @@ class Font(StyleBase):
     @property
     def weight(self) -> FontWeightEnum | None:
         """This property contains the value of the font weight."""
-        pv = cast(int, self._get("CharWeight"))
+        pv = cast(float, self._get("CharWeight"))
         if not pv is None:
             FontWeightEnum(pv)
+        return None
+
+    @property
+    def underline(self) -> FontUnderlineEnum | None:
+        """This property contains the value for the character underline."""
+        pv = cast(int, self._get("CharUnderline"))
+        if not pv is None:
+            FontUnderlineEnum(pv)
         return None
 
     @property
