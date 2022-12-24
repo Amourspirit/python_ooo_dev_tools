@@ -7,6 +7,10 @@ Version 0.8.6
 
 Extended Cell Objects with focues on ``CellValues`` Class.
 
+Added overload to ``GUI.set_visible()``
+
+Added overload to ``GUI.set_visible()``
+
 Added overload to ``Calc.get_sheet_names()``
 
 Added overload to ``Calc.set_sheet_name()``
