@@ -1,3 +1,5 @@
+.. _ns_proto:
+
 Protocol
 ========
 

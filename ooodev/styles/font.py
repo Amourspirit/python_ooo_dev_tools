@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import cast
+from enum import Enum
 
 from ..exceptions import ex as mEx
 from ..utils import info as mInfo
@@ -7,7 +8,7 @@ from ..utils import lo as mLo
 from ..utils.color import Color
 from .style_base import StyleBase
 
-from ooo.dyn.awt.char_set import CharSetEnum as CharSetKnid
+from ooo.dyn.awt.char_set import CharSetEnum as CharSetKind
 from ooo.dyn.awt.font_family import FontFamilyEnum as FamilyKind
 from ooo.dyn.awt.font_slant import FontSlant as SlantKind
 from ooo.dyn.awt.font_strikeout import FontStrikeoutEnum as StrikeOutKind
@@ -15,52 +16,72 @@ from ooo.dyn.awt.font_underline import FontUnderlineEnum as LineKind
 from ooo.dyn.awt.font_weight import FontWeightEnum as WeightKind
 
 
+class CharSpacingKind(float, Enum):
+    """Character Spacing"""
+
+    VERY_TIGHT = -3.0
+    TIGHT = -1.5
+    NORMAL = 0.0
+    LOOSE = 3.0
+    VERY_LOOSE = 6.0
+
+
 class Font(StyleBase):
+    POINT_RATIO = 35.28
+    """Ratio multiplier to convert from point to CharKerning"""
+
     def __init__(
         self,
-        name: str | None = None,
-        height: float | None = None,
-        charset: CharSetKnid | None = None,
-        family: FamilyKind | None = None,
+        *,
         b: bool | None = None,
         i: bool | None = None,
         u: bool | None = None,
-        color: Color | None = None,
         bg_color: Color | None = None,
         bg_transparent: bool | None = None,
-        strike: StrikeOutKind | None = None,
+        charset: CharSetKind | None = None,
+        color: Color | None = None,
+        family: FamilyKind | None = None,
+        height: float | None = None,
+        name: str | None = None,
         overline: LineKind | None = None,
         overline_color: Color | None = None,
+        rotation: float | None = None,
+        slant: SlantKind | None = None,
+        spacing: CharSpacingKind | float | None = None,
+        strike: StrikeOutKind | None = None,
+        sub_script: bool | None = None,
+        super_script: bool | None = None,
         underine: LineKind | None = None,
         underine_color: Color | None = None,
         weight: WeightKind | None = None,
-        slant: SlantKind | None = None,
-        super_script: bool | None = None,
-        sub_script: bool | None = None,
-        rotation: float | None = None,
+        word_mode: bool | None = None,
     ) -> None:
         """
         Font options used in styles.
 
         Args:
-            name (str, optional): This property specifies the name of the font style. It may contain more than one name separated by comma.
-            height (float, optional): This value contains the height of the characters in point.
-            charset (CharSetKnid, optional): The text encoding of the font.
-            family (FamilyKind, optional): Font Family
             b (bool, optional): Short cut to set ``weight`` to bold.
             i (bool, optional): Short cut to set ``slant`` to italic.
             u (bool, optional): Short cut ot set ``underline`` to underline.
-            color (Color, optional): The value of the text color.
             bg_color (Color, optional): The value of the text background color.
             bg_transparent (bool, optional): Determines if the text background color is set to transparent.
+            charset (CharSetKind, optional): The text encoding of the font.
+            color (Color, optional): The value of the text color.
+            family (FamilyKind, optional): Font Family
+            height (float, optional): This value contains the height of the characters in point.
+            name (str, optional): This property specifies the name of the font style. It may contain more than one name separated by comma.
+            overline (LineKind, optional): The value for the character overline.
+            overline_color (Color, optional): Specifies if the property ``CharOverlinelineColor`` is used for an overline.
+            rotation (float, optional): Determines the rotation of a character in degrees. Depending on the implementation only certain values may be allowed.
+            slant (SlantKind, optional): The value of the posture of the document such as ``SlantKind.ITALIC``.
+            spacing(CharSpacingKind, float, optional): Character spacing in point units.
             strike (StrikeOutKind, optional): Dermines the type of the strike out of the character.
+            sub_script (bool, optional): Sub script option.
+            super_script (bool, optional): Super script option.
             underine (LineKind, optional): The value for the character underline.
             underine_color (Color, optional): Specifies if the property ``CharUnderlineColor`` is used for an underline.
             weight (WeightKind, optional): The value of the font weight.
-            slant (SlantKind, optional): The value of the posture of the document such as ``SlantKind.ITALIC``.
-            super_script (bool, optional): Super script option.
-            sub_script (bool, optional): Sub script option.
-            rotation (float, optional): Determines the rotation of a character in degrees. Depending on the implementation only certain values may be allowed.
+            word_mode(bool, optional): If ``True``, the underline and strike-through properties are not applied to white spaces.
         """
         # could not find any documention in the API or elsewhere online for Overline
         # see: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1CharacterProperties.html
@@ -72,6 +93,7 @@ class Font(StyleBase):
             "CharOverlineColor": overline_color,
             "CharHeight": height,
             "CharBackTransparent": bg_transparent,
+            "CharWordMode": word_mode,
         }
         if not bg_color is None:
             init_vals["CharBackTransparent"] = False
@@ -114,6 +136,9 @@ class Font(StyleBase):
 
         if not slant is None:
             init_vals["CharPosture"] = slant
+
+        if not spacing is None:
+            init_vals["CharKerning"] = round(float(spacing) * Font.POINT_RATIO)
 
         if not super_script is None:
             if super_script:
@@ -182,11 +207,11 @@ class Font(StyleBase):
         return None
 
     @property
-    def charset(self) -> CharSetKnid | None:
+    def charset(self) -> CharSetKind | None:
         """This property contains the text encoding of the font."""
         pv = cast(int, self._get("CharFontCharSet"))
         if not pv is None:
-            return CharSetKnid(pv)
+            return CharSetKind(pv)
         return None
 
     @property
@@ -232,6 +257,16 @@ class Font(StyleBase):
     def slant(self) -> SlantKind | None:
         """This property contains the value of the posture of the document such as  ``SlantKind.ITALIC``"""
         return self._get("CharPosture")
+
+    @property
+    def spacing(self) -> float | None:
+        """This value contains character spacing in point units"""
+        pv = self._get("CharKerning")
+        if not pv is None:
+            if pv == 0.0:
+                return 0.0
+            return pv / Font.POINT_RATIO
+        return None
 
     @property
     def super_script(self) -> bool | None:
@@ -284,3 +319,8 @@ class Font(StyleBase):
         if not pv is None:
             return float(pv / 10)
         return None
+
+    @property
+    def word_mode(self) -> bool | None:
+        """If this property is ``True``, the underline and strike-through properties are not applied to white spaces."""
+        return self._get("CharWordMode")
