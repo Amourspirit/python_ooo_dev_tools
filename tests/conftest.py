@@ -1,4 +1,3 @@
-# coding: utf-8
 import csv
 import os
 from pathlib import Path
@@ -17,6 +16,8 @@ from ooodev.utils import paths as mPaths
 
 # from ooodev.connect import connectors as mConnectors
 from ooodev.conn import cache as mCache
+
+os.environ["NO_HEADLESS"] = "1"
 
 
 @pytest.fixture(scope="session")
@@ -51,6 +52,7 @@ def loader(tmp_path_session, test_headless, soffice_path):
     loader = mLo.load_office(
         connector=mLo.ConnectPipe(headless=test_headless, soffice=soffice_path),
         cache_obj=mCache.Cache(working_dir=tmp_path_session),
+        opt=mLo.Options(verbose=True),
     )
     # loader = mLo.load_office(connector=mLo.ConnectSocket(headless=True, soffice=soffice_path), cache_obj=mCache.Cache(working_dir=tmp_path_session))
     yield loader

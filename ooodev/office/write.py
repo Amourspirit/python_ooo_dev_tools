@@ -831,8 +831,19 @@ class Write(mSel.Selection):
 
     # endregion append()
 
+    # region append_line()
+    @overload
     @classmethod
-    def append_line(cls, cursor: XTextCursor, text: str | None = None) -> None:
+    def append_line(cls, cursor: XTextCursor) -> None:
+        ...
+
+    @overload
+    @classmethod
+    def append_line(cls, cursor: XTextCursor, text: str) -> None:
+        ...
+
+    @classmethod
+    def append_line(cls, cursor: XTextCursor, text: str = "") -> None:
         """
         Appends a new Line
 
@@ -840,9 +851,11 @@ class Write(mSel.Selection):
             cursor (XTextCursor): Text Cursor
             text (str, optional): text to append before new line is inserted.
         """
-        if text is not None:
+        if text:
             cls._append_text(cursor=cursor, text=text)
         cls._append_ctl_char(cursor=cursor, ctl_char=ControlCharacterEnum.LINE_BREAK)
+
+    # endregion append_line()
 
     @classmethod
     def append_date_time(cls, cursor: XTextCursor) -> None:
@@ -866,17 +879,31 @@ class Write(mSel.Selection):
         xtext_content = mLo.Lo.qi(XTextContent, dt_field, True)
         cls._append_text_content(cursor, xtext_content)
 
+    # region append_para()
+    @overload
+    @classmethod
+    def append_para(cls, cursor: XTextCursor) -> None:
+        ...
+
+    @overload
     @classmethod
     def append_para(cls, cursor: XTextCursor, text: str) -> None:
+        ...
+
+    @classmethod
+    def append_para(cls, cursor: XTextCursor, text: str = "") -> None:
         """
-        Appends text and then a paragraph break.
+        Appends text (if present) and then a paragraph break.
 
         Args:
             cursor (XTextCursor): Text Cursor
-            text (str): Text to append
+            text (str, optional): Text to append
         """
-        cls._append_text(cursor=cursor, text=text)
+        if text:
+            cls._append_text(cursor=cursor, text=text)
         cls._append_ctl_char(cursor=cursor, ctl_char=ControlCharacterEnum.PARAGRAPH_BREAK)
+
+    # endregion append_para()
 
     @classmethod
     def end_line(cls, cursor: XTextCursor) -> None:
