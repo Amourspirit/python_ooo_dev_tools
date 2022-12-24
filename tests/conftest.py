@@ -17,7 +17,7 @@ from ooodev.utils import paths as mPaths
 # from ooodev.connect import connectors as mConnectors
 from ooodev.conn import cache as mCache
 
-# os.environ["NO_HEADLESS"] = "1"
+os.environ["NO_HEADLESS"] = "1"
 
 
 @pytest.fixture(scope="session")

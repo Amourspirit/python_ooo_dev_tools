@@ -11,9 +11,10 @@ from ooodev.styles.font import (
     StrikeOutKind,
     LineKind,
     WeightKind,
-    CharSetKnid,
+    CharSetKind,
     FamilyKind,
     SlantKind,
+    CharSpacingKind,
 )
 from ooodev.styles import CommonColor
 from ooodev.utils.info import Info
@@ -28,7 +29,7 @@ def test_font(loader) -> None:
     ft = Font(
         name=Info.get_font_general_name(),
         height=22.0,
-        charset=CharSetKnid.SYSTEM,
+        charset=CharSetKind.SYSTEM,
         family=FamilyKind.MODERN,
         b=True,
         i=True,
@@ -40,9 +41,10 @@ def test_font(loader) -> None:
         overline_color=CommonColor.BEIGE,
         super_script=True,
         rotation=90.0,
+        spacing=CharSpacingKind.TIGHT,
     )
     assert ft.name == Info.get_font_general_name()
-    assert ft.charset == CharSetKnid.SYSTEM
+    assert ft.charset == CharSetKind.SYSTEM
     assert ft.family == FamilyKind.MODERN
     assert ft.b
     assert ft.i
@@ -58,16 +60,20 @@ def test_font(loader) -> None:
     assert ft.rotation == 90.0
     assert ft.overline == LineKind.BOLDDASHDOT
     assert ft.overline_color == CommonColor.BEIGE
+    assert ft.spacing == pytest.approx(CharSpacingKind.TIGHT.value, rel=1e-2)
 
-    ft = Font(weight=WeightKind.BOLD, underine=LineKind.BOLDDASH, slant=SlantKind.OBLIQUE, sub_script=True)
+    ft = Font(
+        weight=WeightKind.BOLD, underine=LineKind.BOLDDASH, slant=SlantKind.OBLIQUE, sub_script=True, spacing=2.0
+    )
     assert ft.weight == WeightKind.BOLD
     assert ft.underline == LineKind.BOLDDASH
     assert ft.slant == SlantKind.OBLIQUE
     assert ft.sub_script
+    assert ft.spacing == pytest.approx(2.0, rel=1e-2)
 
 
 def test_font_cursor(loader, test_headless) -> None:
-    delay = 0  # 5_000
+    delay = 5_000
     from ooodev.office.write import Write
     from ooodev.styles import Style
     from functools import partial
@@ -140,6 +146,52 @@ def test_font_cursor(loader, test_headless) -> None:
         cursor.goLeft(8, True)
         style(Font(bg_color=CommonColor.LIGHT_YELLOW))
         assert cp.CharBackColor == CommonColor.LIGHT_YELLOW
+        cursor.gotoEnd(False)
+        Write.end_paragraph(cursor)
+
+        Lo.dispatch_cmd("ResetAttributes")
+        Lo.delay(500)
+        Write.append(cursor, "Very Tight")
+        cursor.goLeft(10, True)
+        style(Font(spacing=CharSpacingKind.VERY_TIGHT, height=30))
+        assert cp.CharKerning == round(CharSpacingKind.VERY_TIGHT.value * Font.POINT_RATIO)
+        cursor.gotoEnd(False)
+        Write.end_paragraph(cursor)
+
+        Write.append(cursor, "Tight")
+        cursor.goLeft(5, True)
+        style(Font(spacing=CharSpacingKind.TIGHT, height=30))
+        assert cp.CharKerning == round(CharSpacingKind.TIGHT.value * Font.POINT_RATIO)
+        cursor.gotoEnd(False)
+        Write.end_paragraph(cursor)
+
+        Write.append(cursor, "Normal")
+        cursor.goLeft(6, True)
+        style(Font(spacing=CharSpacingKind.NORMAL, height=30))
+        assert cp.CharKerning == 0
+        cursor.gotoEnd(False)
+        Write.end_paragraph(cursor)
+
+        Write.append(cursor, "Loose")
+        cursor.goLeft(5, True)
+        style(Font(spacing=CharSpacingKind.LOOSE, height=30))
+        assert cp.CharKerning == round(CharSpacingKind.LOOSE.value * Font.POINT_RATIO)
+        cursor.gotoEnd(False)
+        Write.end_paragraph(cursor)
+
+        Write.append(cursor, "Very Loose")
+        cursor.goLeft(10, True)
+        style(Font(spacing=CharSpacingKind.VERY_LOOSE, height=30))
+        assert cp.CharKerning == round(CharSpacingKind.VERY_LOOSE.value * Font.POINT_RATIO)
+        cursor.gotoEnd(False)
+        Write.end_paragraph(cursor)
+
+        Write.append(cursor, "Custom Spacing 6 pt")
+        cursor.goLeft(19, True)
+        style(Font(spacing=19.0, height=14))
+        assert cp.CharKerning == round(19.0 * Font.POINT_RATIO)
+        cursor.gotoEnd(False)
+        Write.end_paragraph(cursor)
 
         Lo.delay(delay)
     finally:
