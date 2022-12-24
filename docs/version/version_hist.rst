@@ -7,6 +7,16 @@ Version 0.8.6
 
 Extended Cell Objects with focues on ``CellValues`` Class.
 
+Added overload to ``Calc.get_sheet_names()``
+
+Added overload to ``Calc.set_sheet_name()``
+
+Changed ``Calc.get_sheet(doc: XSpreadsheetDocument, index: int)`` to ``Calcget_sheet(doc: XSpreadsheetDocument, idx: int)``.
+``index`` will still work but is not undocumented.
+
+Changed ``Calc.remove_sheet(doc: XSpreadsheetDocument, index: int)`` to ``Calc.remove_sheet(doc: XSpreadsheetDocument, idx: int)``
+``index`` will still work but is not undocumented.
+
 Version 0.8.5
 =============
 
