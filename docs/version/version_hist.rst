@@ -5,9 +5,23 @@ Version History
 Version 0.8.6
 =============
 
+Added Styles namesapce.
+
 Extended Cell Objects with focues on ``CellValues`` Class.
 
-Fixed but in ``GUI.set_visible()`` added a new overload.
+Added overload to ``GUI.set_visible()``
+
+Added overload to ``GUI.set_visible()``
+
+Added overload to ``Calc.get_sheet_names()``
+
+Added overload to ``Calc.set_sheet_name()``
+
+Changed ``Calc.get_sheet(doc: XSpreadsheetDocument, index: int)`` to ``Calcget_sheet(doc: XSpreadsheetDocument, idx: int)``.
+``index`` will still work but is not undocumented.
+
+Changed ``Calc.remove_sheet(doc: XSpreadsheetDocument, index: int)`` to ``Calc.remove_sheet(doc: XSpreadsheetDocument, idx: int)``
+``index`` will still work but is not undocumented.
 
 Version 0.8.5
 =============

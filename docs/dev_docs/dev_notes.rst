@@ -67,34 +67,55 @@ Windows
 Windows is a little trickery. Creating a link to ``uno.py`` and importing it will not work as it does in Linux.
 This is due to the how LibreOffice implements the python environment on Windows.
 
-The way |odev| works on Windows is a slight hack to the virtual environment.
+The recommended way to is to start by creating a virtual environment using a python version that matches the LibreOffice version being target.
+For instance LibreOffice ``7.3`` uses Python ``3.10``.
+
+Most likely the version of Python active on your system is not going to match the LibreOffice version.
 
 
+Checking LibreOffice Python version
 
-|odev| has build in tools that aid in this that we will get to shortly.
+::
 
+    PS C:\> & 'C:\Program Files\LibreOffice\program\python.exe' --version
+    Python 3.8.10
+
+The details of installing a python version for use with a virtual evironment is beyond the scope of this document.
+However, for windows I would recommend a tool such as pyenv-win_.
+
+Install command might look someting link:
+
+::
+
+    pyenv install 3.8.10
+
+Lets assume Python ``3.8.10`` is installed to ``C:\Users\user\.pyenv\pyenv-win\versions\3.8.10``
+
+The recommended tool for creating the virtual environments that work with |odev| is Virtualenv_.
+
+In summary, pyenv-win_ installs python versions and Virtualenv_ creates virtual environments.
 
 Start by using terminal to create a ``.venv`` environment in the projects root folder
 
-.. code-block:: text
+::
 
-    PS C:\python_ooo_dev_tools> python -m venv .\.venv
+    PS C:\python_ooo_dev_tools> virtualenv -p "C:\Users\user\.pyenv\pyenv-win\versions\3.8.10\python.exe" .venv
 
 Activate Virtual environment.
 
-.. code-block:: text
+::
 
-     PS C:\python_ooo_dev_tools> .\.venv\Scripts\Activate
+    PS C:\python_ooo_dev_tools> .\.venv\Scripts\activate.ps1
 
 Install requirements using poetry.
 
-.. code-block:: text
+::
 
     (.venv) PS C:\python_ooo_dev_tools> poetry install
 
 After installing using the previous command it time to set the environment to work with LibreOffice.
 
-.. code-block:: text
+::
 
     (.venv) PS C:\python_ooo_dev_tools> python -m main env -t
 
@@ -102,7 +123,7 @@ This will set the virtual environment to work with LibreOffice.
 
 To check of the virtual environment is set for LibreOffice use the following command.
 
-.. code-block:: text
+::
 
     (.venv) PS C:\python_ooo_dev_tools> python -m main env -u
     UNO Environment
@@ -111,7 +132,7 @@ Newer versions of poetry_ will not work with the configuration set up for LibreO
 
 When you need to use poetry_ just toggle environment.
 
-.. code-block:: text
+"""
 
     (.venv) PS C:\python_ooo_dev_tools> python -m main env -t
 
@@ -124,7 +145,7 @@ Testing Virtual Environment
 
 For a quick test of environment import ``uno`` If there is no import  error you should be good to go.
 
-.. code-block:: text
+::
 
     PS C:\python_ooo_dev_tools> .\.venv\scripts\activate
     (.venv) PS C:\python_ooo_dev_tools> python
@@ -254,3 +275,6 @@ ODEV_CONN_SOFFICE
 If set and soffice is not passed to :py:class:`~.connectors.ConnectorBridgeBase` and `ODEV_CONN_SOFFICE` is present then the environment variable value is used.
 
 .. _poetry: https://python-poetry.org/
+
+.. _pyenv-win: https://github.com/pyenv-win/pyenv-win
+.. _Virtualenv: https://virtualenv.pypa.io/en/latest/

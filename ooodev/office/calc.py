@@ -411,12 +411,27 @@ class Calc:
 
     @overload
     @classmethod
+    def get_sheet(cls) -> XSpreadsheet:
+        ...
+
+    @overload
+    @classmethod
+    def get_sheet(cls, idx: int) -> XSpreadsheet:
+        ...
+
+    @overload
+    @classmethod
+    def get_sheet(cls, sheet_name: str) -> XSpreadsheet:
+        ...
+
+    @overload
+    @classmethod
     def get_sheet(cls, doc: XSpreadsheetDocument) -> XSpreadsheet:
         ...
 
     @overload
     @classmethod
-    def get_sheet(cls, doc: XSpreadsheetDocument, index: int) -> XSpreadsheet:
+    def get_sheet(cls, doc: XSpreadsheetDocument, idx: int) -> XSpreadsheet:
         ...
 
     @overload
@@ -430,8 +445,8 @@ class Calc:
         Gets a sheet of spreadsheet document
 
         Args:
-            doc (XSpreadsheetDocument): Spreadsheet document
-            index (int, optional): Zero based index of spreadsheet. Defaults to ``0``
+            doc (XSpreadsheetDocument, optional): Spreadsheet document
+            idx (int, optional): Zero based index of spreadsheet. Defaults to ``0``
             sheet_name (str, optional): Name of spreadsheet
 
         Raises:
@@ -452,31 +467,38 @@ class Calc:
 
         .. versionchanged:: 0.6.10
 
-            Added overload ``get_sheet(cls, doc: XSpreadsheetDocument) -> XSpreadsheet``
+            Added overload ``get_sheet(doc: XSpreadsheetDocument) -> XSpreadsheet``
+
+        .. versionchanged:: 0.8.6
+            Added overload ``get_sheet() -> XSpreadsheet``.
+            Added overload ``get_sheet(idx: int) -> XSpreadsheet``.
+            Added overload ``get_sheet(sheet_name: str) -> XSpreadsheet``.
+            Chaged ``get_sheet(doc: XSpreadsheetDocument, index: int)`` to ``get_sheet(doc: XSpreadsheetDocument, idx: int)``
         """
         ordered_keys = (1, 2)
         kargs_len = len(kwargs)
         count = len(args) + kargs_len
 
+        # index is backwargs compatability
         def get_kwargs() -> dict:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ("doc", "index", "sheet_name")
+            valid_keys = ("doc", "idx", "index", "sheet_name")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("get_sheet() got an unexpected keyword argument")
             ka[1] = kwargs.get("doc", None)
             if count == 1:
                 return ka
-            keys = ("index", "sheet_name")
+            keys = ("index", "idx", "sheet_name")
             for key in keys:
                 if key in kwargs:
                     ka[2] = kwargs[key]
                     break
             return ka
 
-        if not count in (1, 2):
+        if not count in (0, 1, 2):
             raise TypeError("get_sheet() got an invalid numer of arguments")
 
         kargs = get_kwargs()
@@ -484,13 +506,22 @@ class Calc:
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
 
+        if count == 0:
+            return cls._get_sheet_index(cls.get_current_doc(), 0)
+
+        arg1 = kargs[1]
         if count == 1:
-            return cls._get_sheet_index(kargs[1], 0)
+            if isinstance(arg1, int):
+                return cls._get_sheet_index(cls.get_current_doc(), arg1)
+            if isinstance(arg1, str):
+                return cls._get_sheet_name(cls.get_current_doc(), arg1)
+            return cls._get_sheet_index(arg1, 0)
 
-        if isinstance(kargs[2], int):
-            return cls._get_sheet_index(kargs[1], kargs[2])
+        arg2 = kargs[2]
+        if isinstance(arg2, int):
+            return cls._get_sheet_index(arg1, arg2)
 
-        return cls._get_sheet_name(kargs[1], kargs[2])
+        return cls._get_sheet_name(arg1, arg2)
 
     # endregion get_sheet()
 
@@ -592,31 +623,11 @@ class Calc:
     @overload
     @classmethod
     def remove_sheet(cls, doc: XSpreadsheetDocument, sheet_name: str) -> bool:
-        """
-        Removes a sheet from document
-
-        Args:
-            doc (XSpreadsheetDocument): Spreadsheet document
-            sheet_name (str): Name of sheet to remove
-
-        Returns:
-            bool: True of sheet was removed; Otherwise, False
-        """
         ...
 
     @overload
     @classmethod
-    def remove_sheet(cls, doc: XSpreadsheetDocument, index: int) -> bool:
-        """
-        Removes a sheet from document
-
-        Args:
-            doc (XSpreadsheetDocument): Spreadsheet document
-            index (int): Zero based index of sheet to remove.
-
-        Returns:
-            bool: True of sheet was removed; Otherwise, False
-        """
+    def remove_sheet(cls, doc: XSpreadsheetDocument, idx: int) -> bool:
         ...
 
     @classmethod
@@ -627,7 +638,7 @@ class Calc:
         Args:
             doc (XSpreadsheetDocument): Spreadsheet document
             sheet_name (str): Name of sheet to remove
-            index (int): Zero based index of sheet to remove.
+            idx (int): Zero based index of sheet to remove.
 
         Returns:
             bool: True of sheet was removed; Otherwise, False
@@ -640,22 +651,26 @@ class Calc:
 
         Note:
             Event args ``event_data`` is set to a dictionary.
-            If ``index`` is available then args ``event_data["fn_type"]`` is set to a value *"index"*; Otherwise, set to a value *"name"*.
+            If ``idx`` is available then args ``event_data["fn_type"]`` is set to a value ``idx``; Otherwise, set to a value ``name``.
+
+        .. versionchanged:: 0.8.6
+            Renamed ``index`` arg to ``idx``. ``index`` will still work but is now undocumented.
         """
         ordered_keys = (1, 2)
         kargs_len = len(kwargs)
         count = len(args) + kargs_len
 
+        # index is backwards compatible
         def get_kwargs() -> dict:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ("doc", "index", "sheet_name")
+            valid_keys = ("doc", "index", "idx", "sheet_name")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("remove_sheet() got an unexpected keyword argument")
             ka[1] = kwargs.get("doc", None)
-            keys = ("index", "sheet_name")
+            keys = ("index", "idx", "sheet_name")
             for key in keys:
                 if key in kwargs:
                     ka[2] = kwargs[key]
@@ -716,19 +731,48 @@ class Calc:
             _Events().trigger(CalcNamedEvent.SHEET_MOVED, SheetArgs.from_args(cargs))
         return result
 
-    @staticmethod
-    def get_sheet_names(doc: XSpreadsheetDocument) -> Tuple[str, ...]:
+    # region get_sheet_names()
+    @overload
+    @classmethod
+    def get_sheet_names(cls) -> Tuple[str, ...]:
+        ...
+
+    @overload
+    @classmethod
+    def get_sheet_names(cls, doc: XSpreadsheetDocument) -> Tuple[str, ...]:
+        ...
+
+    @classmethod
+    def get_sheet_names(cls, doc: XSpreadsheetDocument | None = None) -> Tuple[str, ...]:
         """
         Gets names of all existing spreadsheets in the spreadsheet document.
 
         Args:
-            doc (XSpreadsheetDocument): Document to get sheets names of
+            doc (XSpreadsheetDocument, optional): Document to get sheets names of
 
         Returns:
             Tuple[str, ...]: Tuple of sheet names.
+
+        .. versionchanged:: 0.8.6
+            Added overload ``get_sheet_names() -> Tuple[str, ...]``
         """
+        if doc is None:
+            doc = cls.get_current_doc()
         sheets = doc.getSheets()
         return sheets.getElementNames()
+
+    # endregion get_sheet_names()
+
+    # region get_sheets()
+    @overload
+    @classmethod
+    def get_sheets(cls) -> XSpreadsheets:
+        ...
+
+    @overload
+    @classmethod
+    def get_sheets(cls, doc: XSpreadsheetDocument) -> XSpreadsheets:
+        ...
 
     @classmethod
     def get_sheets(cls, doc: XSpreadsheetDocument | None) -> XSpreadsheets:
@@ -744,6 +788,8 @@ class Calc:
         if doc is None:
             doc = cls.get_current_doc()
         return doc.getSheets()
+
+    # endregion get_sheets()
 
     @classmethod
     def get_sheet_index(cls, sheet: XSpreadsheet | None = None) -> int:
@@ -762,27 +808,91 @@ class Calc:
         ca = ra.getRangeAddress()
         return ca.Sheet
 
+    # region get_sheet_name()
+    @overload
     @classmethod
-    def get_sheet_name(cls, sheet: XSpreadsheet | None = None) -> str:
+    def get_sheet_name(cls) -> str:
+        ...
+
+    @overload
+    @classmethod
+    def get_sheet_name(cls, idx: int) -> str:
+        ...
+
+    @overload
+    @classmethod
+    def get_sheet_name(cls, sheet: XSpreadsheet) -> str:
+        ...
+
+    @classmethod
+    def get_sheet_name(cls, *args, **kwargs) -> str:
         """
         Gets the name of a sheet
 
         Args:
             sheet (XSpreadsheet, optional): Spreadsheet
+            idx (int, optional): Index of Spreadsheet
 
         Raises:
             MissingInterfaceError: If unable to access spreadsheet named interface
 
         Returns:
             str: Name of sheet
+
+        .. versionchanged:: 0.8.6
+            Added overload ``get_sheet_name(idx: int) -> str``
         """
-        if sheet is None:
-            sheet = cls.get_active_sheet()
+        ordered_keys = (1,)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
+
+        def get_kwargs() -> dict:
+            ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ("sheet", "idx")
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("get_sheet_name() got an unexpected keyword argument")
+            for key in valid_keys:
+                if key in kwargs:
+                    ka[1] = kwargs[key]
+                    break
+            return ka
+
+        if count != 1:
+            raise TypeError("get_sheet_name() got an invalid number of arguments")
+
+        kargs = get_kwargs()
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
+
+        if count == 0:
+            xnamed = mLo.Lo.qi(XNamed, cls.get_active_sheet(), True)
+            return xnamed.getName()
+
+        arg1 = kargs[1]
+        if isinstance(arg1, int):
+            sheet = cls.get_sheet(arg1)
+        else:
+            sheet = cast(XSpreadsheet, arg1)
+
         xnamed = mLo.Lo.qi(XNamed, sheet, True)
         return xnamed.getName()
 
-    @staticmethod
-    def set_sheet_name(sheet: XSpreadsheet, name: str) -> bool:
+    # endregion get_sheet_name()
+    @overload
+    @classmethod
+    def set_sheet_name(cls, name: str) -> bool:
+        ...
+
+    @overload
+    @classmethod
+    def set_sheet_name(cls, sheet: XSpreadsheet, name: str) -> bool:
+        ...
+
+    @classmethod
+    def set_sheet_name(cls, *args, **kwargs) -> bool:
         """
         Sets the name of a spreadsheet.
 
@@ -793,6 +903,42 @@ class Calc:
         Returns:
             bool: True on success; Otherwise, False
         """
+        ordered_keys = (1, 2)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
+
+        def get_kwargs() -> dict:
+            ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ("sheet", "name")
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("set_sheet_name() got an unexpected keyword argument")
+            keys = ("sheet", "name")
+            for key in keys:
+                if key in kwargs:
+                    ka[1] = kwargs[key]
+                    break
+            if count == 1:
+                return ka
+            ka[2] = ka.get("name", None)
+            return ka
+
+        if not count in (1, 2):
+            raise TypeError("set_sheet_name() got an invalid number of arguments")
+
+        kargs = get_kwargs()
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
+
+        if count == 1:
+            sheet = cls.get_active_sheet()
+            name = cast(str, kargs[1])
+        else:
+            sheet = cast(XSpreadsheet, kargs[1])
+            name = cast(str, kargs[2])
+
         xnamed = mLo.Lo.qi(XNamed, sheet)
         if xnamed is None:
             mLo.Lo.print("Could not access spreadsheet")
@@ -803,6 +949,17 @@ class Calc:
     # endregion --------------------- sheet methods -------------------------
 
     # region --------------- view methods ------------------------------
+
+    # region get_controller()
+    @overload
+    @classmethod
+    def get_controller(cls) -> XController:
+        ...
+
+    @overload
+    @classmethod
+    def get_controller(cls, doc: XSpreadsheetDocument) -> XController:
+        ...
 
     @classmethod
     def get_controller(cls, doc: XSpreadsheetDocument | None) -> XController:
@@ -822,6 +979,8 @@ class Calc:
             doc = cls.get_current_doc()
         model = mLo.Lo.qi(XModel, doc, True)
         return model.getCurrentController()
+
+    # endregion get_controller()
 
     @classmethod
     def zoom_value(cls, doc: XSpreadsheetDocument, value: int) -> None:
