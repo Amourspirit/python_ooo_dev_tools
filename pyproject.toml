@@ -33,10 +33,10 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.7"
-ooouno = "^0.2.4"
-lxml = "^4.9.1"
+ooouno = "^0.2.5"
 Pillow = "^9.2.0"
 typing-extensions = {version = "^4.4.0", python = "<3.8"}
+lxml = "^4.9.2"
 
 [[tool.poetry.source]]
 name = "pypi-test"
