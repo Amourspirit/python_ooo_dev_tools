@@ -5,6 +5,8 @@ Version History
 Version 0.8.6
 =============
 
+Added Styles namesapce.
+
 Extended Cell Objects with focues on ``CellValues`` Class.
 
 Added overload to ``GUI.set_visible()``

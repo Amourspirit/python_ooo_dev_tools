@@ -67,7 +67,7 @@ def test_font(loader) -> None:
 
 
 def test_font_cursor(loader, test_headless) -> None:
-    delay = 5_000
+    delay = 0  # 5_000
     from ooodev.office.write import Write
     from ooodev.styles import Style
     from functools import partial

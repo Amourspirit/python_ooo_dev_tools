@@ -119,9 +119,17 @@ def toggle_cfg(suffix: str = "") -> None:
     uno_cfg = env_path / "pyvenv_uno.cfg"
     if not uno_cfg.exists():
         # need to create the file.
-        cfg["home"] = _get_lo_path()
-        cfg["version"] = str(get_uno_python_ver())
+        ver = str(get_uno_python_ver())
+        hm = _get_lo_path()
+        if "version" in cfg:
+            del cfg["version"]
+        cfg["home"] = hm
+        cfg["implementation"] = "CPython"
+        cfg["version_info"] = f"{ver}.final.0"
         cfg["include-system-site-packages"] = "false"
+        cfg["base-prefix"] = f"{hm}\\python-core-{ver}"
+        cfg["base-exec-prefix"] = f"{hm}\\python-core-{ver}"
+        cfg["base-executable"] = f"{hm}\\python.exe"
         _save_config(cfg=cfg, fnm="pyvenv_uno.cfg")
 
     src = env_path / "pyvenv_uno.cfg"
