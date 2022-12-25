@@ -42,7 +42,7 @@ class Font(StyleBase):
         charset: CharSetKind | None = None,
         color: Color | None = None,
         family: FamilyKind | None = None,
-        height: float | None = None,
+        size: float | None = None,
         name: str | None = None,
         overline: LineKind | None = None,
         overline_color: Color | None = None,
@@ -71,7 +71,7 @@ class Font(StyleBase):
             charset (CharSetKind, optional): The text encoding of the font.
             color (Color, optional): The value of the text color.
             family (FamilyKind, optional): Font Family
-            height (float, optional): This value contains the height of the characters in point.
+            size (float, optional): This value contains the size of the characters in point units.
             name (str, optional): This property specifies the name of the font style. It may contain more than one name separated by comma.
             overline (LineKind, optional): The value for the character overline.
             overline_color (Color, optional): Specifies if the property ``CharOverlinelineColor`` is used for an overline.
@@ -96,7 +96,7 @@ class Font(StyleBase):
             "CharBackColor": bg_color,
             "CharUnderlineColor": underine_color,
             "CharOverlineColor": overline_color,
-            "CharHeight": height,
+            "CharHeight": size,
             "CharBackTransparent": bg_transparent,
             "CharWordMode": word_mode,
             "CharShadowed": shadowed,
@@ -166,12 +166,21 @@ class Font(StyleBase):
             init_vals["CharRotation"] = round(rotation * 10)
 
         if not shadow_fmt is None:
-            if mInfo.Info.is_type_struct(shadow_fmt, "'com.sun.star.table.ShadowFormat"):
+            if mInfo.Info.is_type_struct(shadow_fmt, "com.sun.star.table.ShadowFormat"):
                 init_vals["CharShadowFormat"] = shadow_fmt
 
         super().__init__(**init_vals)
 
     def apply_style(self, obj: object) -> None:
+        """
+        Applies styles to object
+
+        Args:
+            obj (object): UNO Oject that styles are to be applied.
+
+        Returns:
+            None:
+        """
         if mInfo.Info.support_service(obj, "com.sun.star.style.CharacterProperties"):
             try:
                 super().apply_style(obj)
@@ -238,8 +247,8 @@ class Font(StyleBase):
         return None
 
     @property
-    def height(self) -> float | None:
-        """This value contains the height of the characters in point."""
+    def size(self) -> float | None:
+        """This value contains the size of the characters in point."""
         return self._get("CharHeight")
 
     @property

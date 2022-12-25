@@ -12,7 +12,7 @@ class Style:
 
         Args:
             style (StyleObj): Style object such as ``Font``
-            obj (Any): Oject that styles are to be applied.
+            obj (Any): UNO Oject that styles are to be applied.
 
         Returns:
             None:

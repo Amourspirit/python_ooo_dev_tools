@@ -35,10 +35,25 @@ class StyleBase(ABC):
         return key in self._dv
 
     def apply_style(self, obj: object) -> None:
+        """
+        Applies styles to object
+
+        Args:
+            obj (object): UNO Oject that styles are to be applied.
+
+        Returns:
+            None:
+        """
         if len(self._dv) > 0:
             mProps.Props.set(obj, **self._dv)
 
     def get_props(self) -> Tuple[PropertyValue, ...]:
+        """
+        Gets instance properties
+
+        Returns:
+            Tuple[PropertyValue, ...]: Tuple of properties.
+        """
         # see: setPropertyValues([in] sequence< com::sun::star::beans::PropertyValue > aProps)
         # https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1beans_1_1XPropertyAccess.html#a5ac97dfa6d796f4c794e2350e9130692
         if len(self._dv) == 0:
