@@ -199,7 +199,7 @@ def test_font_cursor(loader, test_headless) -> None:
         Lo.delay(500)
 
         Write.append(cursor, "Shadowed")
-        cursor.goLeft(19, True)
+        cursor.goLeft(8, True)
         style(Font(height=40, shadowed=True))
         assert cp.CharShadowed
         cursor.gotoEnd(False)
