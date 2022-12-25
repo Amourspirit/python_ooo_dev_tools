@@ -14,6 +14,7 @@ from ooo.dyn.awt.font_slant import FontSlant as SlantKind
 from ooo.dyn.awt.font_strikeout import FontStrikeoutEnum as StrikeOutKind
 from ooo.dyn.awt.font_underline import FontUnderlineEnum as LineKind
 from ooo.dyn.awt.font_weight import FontWeightEnum as WeightKind
+from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
 
 
 class CharSpacingKind(float, Enum):
@@ -48,6 +49,8 @@ class Font(StyleBase):
         rotation: float | None = None,
         slant: SlantKind | None = None,
         spacing: CharSpacingKind | float | None = None,
+        shadowed: bool | None = None,
+        shadow_fmt: ShadowFormat | None = None,
         strike: StrikeOutKind | None = None,
         sub_script: bool | None = None,
         super_script: bool | None = None,
@@ -74,7 +77,9 @@ class Font(StyleBase):
             overline_color (Color, optional): Specifies if the property ``CharOverlinelineColor`` is used for an overline.
             rotation (float, optional): Determines the rotation of a character in degrees. Depending on the implementation only certain values may be allowed.
             slant (SlantKind, optional): The value of the posture of the document such as ``SlantKind.ITALIC``.
-            spacing(CharSpacingKind, float, optional): Character spacing in point units.
+            spacing (CharSpacingKind, float, optional): Character spacing in point units.
+            shadowed (bool, optional): Specifies if the characters are formatted and displayed with a shadow effect.
+            shadow_fmt: (ShadowFormat, optional): Determines the type, color, and width of the shadow.
             strike (StrikeOutKind, optional): Dermines the type of the strike out of the character.
             sub_script (bool, optional): Sub script option.
             super_script (bool, optional): Super script option.
@@ -94,6 +99,7 @@ class Font(StyleBase):
             "CharHeight": height,
             "CharBackTransparent": bg_transparent,
             "CharWordMode": word_mode,
+            "CharShadowed": shadowed,
         }
         if not bg_color is None:
             init_vals["CharBackTransparent"] = False
@@ -158,6 +164,10 @@ class Font(StyleBase):
 
         if not rotation is None:
             init_vals["CharRotation"] = round(rotation * 10)
+
+        if not shadow_fmt is None:
+            if mInfo.Info.is_type_struct(shadow_fmt, "'com.sun.star.table.ShadowFormat"):
+                init_vals["CharShadowFormat"] = shadow_fmt
 
         super().__init__(**init_vals)
 
@@ -269,7 +279,21 @@ class Font(StyleBase):
         return None
 
     @property
+    def shadowed(self) -> bool | None:
+        """This property specifies if the characters are formatted and displayed with a shadow effect."""
+        pv = cast(int, self._get("CharShadowed"))
+        if not pv is None:
+            return pv > 0
+        return None
+
+    @property
+    def shadow_fmt(self) -> ShadowFormat | None:
+        """This property specifies the type, color, and width of the shadow."""
+        return self._get("CharShadowFormat")
+
+    @property
     def super_script(self) -> bool | None:
+        """Specifies if the font is super script"""
         pv = cast(int, self._get("CharEscapement"))
         if not pv is None:
             return pv > 0
@@ -277,6 +301,7 @@ class Font(StyleBase):
 
     @property
     def sub_script(self) -> bool | None:
+        """Specifies if the font is sub script"""
         pv = cast(int, self._get("CharEscapement"))
         if not pv is None:
             return pv < 0

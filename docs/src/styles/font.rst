@@ -1,7 +1,8 @@
 .. _style_font:
 
-Class Font
-==========
+Module Font
+===========
 
-.. autoclass:: ooodev.styles.font.Font
+.. automodule:: ooodev.styles.font
     :members:
+    :undoc-members:

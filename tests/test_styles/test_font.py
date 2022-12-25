@@ -42,6 +42,7 @@ def test_font(loader) -> None:
         super_script=True,
         rotation=90.0,
         spacing=CharSpacingKind.TIGHT,
+        shadowed=True,
     )
     assert ft.name == Info.get_font_general_name()
     assert ft.charset == CharSetKind.SYSTEM
@@ -61,6 +62,7 @@ def test_font(loader) -> None:
     assert ft.overline == LineKind.BOLDDASHDOT
     assert ft.overline_color == CommonColor.BEIGE
     assert ft.spacing == pytest.approx(CharSpacingKind.TIGHT.value, rel=1e-2)
+    assert ft.shadowed
 
     ft = Font(
         weight=WeightKind.BOLD, underine=LineKind.BOLDDASH, slant=SlantKind.OBLIQUE, sub_script=True, spacing=2.0
@@ -73,7 +75,7 @@ def test_font(loader) -> None:
 
 
 def test_font_cursor(loader, test_headless) -> None:
-    delay = 5_000
+    delay = 0 if test_headless else 5_000
     from ooodev.office.write import Write
     from ooodev.styles import Style
     from functools import partial
@@ -193,13 +195,23 @@ def test_font_cursor(loader, test_headless) -> None:
         cursor.gotoEnd(False)
         Write.end_paragraph(cursor)
 
+        Lo.dispatch_cmd("ResetAttributes")
+        Lo.delay(500)
+
+        Write.append(cursor, "Shadowed")
+        cursor.goLeft(8, True)
+        style(Font(height=40, shadowed=True))
+        assert cp.CharShadowed
+        cursor.gotoEnd(False)
+        Write.end_paragraph(cursor)
+
         Lo.delay(delay)
     finally:
         Lo.close_doc(doc)
 
 
 def test_calc_font(loader, test_headless) -> None:
-    delay = 5_000
+    delay = 0 if test_headless else 5_000
     from ooodev.office.calc import Calc
     from ooodev.styles import Style
 
