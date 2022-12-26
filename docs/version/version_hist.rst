@@ -2,6 +2,14 @@
 Version History
 ***************
 
+Version 0.9.0
+=============
+
+Renamed method ``GUI.show_memu_bar()`` to ``GUI.show_menu_bar()``
+
+Fixxed issue with ``Calc.get_sheet_names()`` when overload with no args was used.
+
+
 Version 0.8.6
 =============
 
@@ -18,10 +26,10 @@ Added overload to ``Calc.get_sheet_names()``
 Added overload to ``Calc.set_sheet_name()``
 
 Changed ``Calc.get_sheet(doc: XSpreadsheetDocument, index: int)`` to ``Calcget_sheet(doc: XSpreadsheetDocument, idx: int)``.
-``index`` will still work but is not undocumented.
+``index`` will still work but is not documented.
 
 Changed ``Calc.remove_sheet(doc: XSpreadsheetDocument, index: int)`` to ``Calc.remove_sheet(doc: XSpreadsheetDocument, idx: int)``
-``index`` will still work but is not undocumented.
+``index`` will still work but is not documented.
 
 Version 0.8.5
 =============

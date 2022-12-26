@@ -1,6 +1,6 @@
-.. _ns_office:
+.. _ns_styles:
 
-office
+Styles
 ======
 
 .. toctree::

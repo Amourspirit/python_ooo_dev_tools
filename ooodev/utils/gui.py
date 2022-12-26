@@ -1430,21 +1430,24 @@ class GUI:
     # region    show_memu_bar()
     @overload
     @classmethod
-    def show_memu_bar(cls) -> None:
+    def show_menu_bar(cls) -> None:
         ...
 
     @overload
     @classmethod
-    def show_memu_bar(cls, doc: XComponent) -> None:
+    def show_menu_bar(cls, doc: XComponent) -> None:
         ...
 
     @classmethod
-    def show_memu_bar(cls, doc: XComponent = None) -> None:
+    def show_menu_bar(cls, doc: XComponent = None) -> None:
         """
         Shows the main menu bar
 
         Args:
             doc (XComponent): doc (XComponent): office document
+
+        .. versionchanged:: 0.9.0
+            Renamed from show_memu_bar to show_menu_bar
         """
         lm = cls.get_layout_manager(doc=doc)
         lm.showElement(GUI.MENU_BAR)

@@ -860,16 +860,17 @@ class Calc:
                     break
             return ka
 
-        if count != 1:
-            raise TypeError("get_sheet_name() got an invalid number of arguments")
 
-        kargs = get_kwargs()
-        for i, arg in enumerate(args):
-            kargs[ordered_keys[i]] = arg
+        if not count in (0, 1):
+            raise TypeError("get_sheet_name() got an invalid number of arguments")
 
         if count == 0:
             xnamed = mLo.Lo.qi(XNamed, cls.get_active_sheet(), True)
             return xnamed.getName()
+
+        kargs = get_kwargs()
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
 
         arg1 = kargs[1]
         if isinstance(arg1, int):
