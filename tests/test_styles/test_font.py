@@ -86,7 +86,6 @@ def test_font_cursor(loader, test_headless) -> None:
         Lo.delay(500)
         GUI.zoom(GUI.ZoomEnum.ZOOM_150_PERCENT)
     try:
-        # red: 16711680
         ft = Font(size=30.0, b=True, i=True, u=True, color=CommonColor.BLUE, underine_color=CommonColor.GREEN)
         cursor = Write.get_cursor(doc)
         style = partial(Style.apply_style, cursor)

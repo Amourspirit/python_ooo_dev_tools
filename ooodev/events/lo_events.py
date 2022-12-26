@@ -107,7 +107,7 @@ class _event_base(object):
                     except AttributeError:
                         # event_arg is None
                         callback()(self, None)
-            if cleanup is not None and len(cleanup) > 0:
+            if cleanup:
                 cleanup.reverse()
                 for i in cleanup:
                     self._callbacks[event_name].pop(i)
@@ -116,7 +116,12 @@ class _event_base(object):
 
 
 class Events(_event_base):
-    """Class for sharing events among classes and functions."""
+    """
+    Class for sharing events among classes and functions.
+
+    Note:
+        If an events source is ``None`` then it is set to ``source`` or ``Events`` instance if ``source`` is None.
+    """
 
     # Dev Notes:
     # Event callbacks are assigned to this class as a weak ref.
@@ -138,7 +143,7 @@ class Events(_event_base):
             source (Any | None, optional): Source can be class or any object.
                 The value of ``source`` is the value assigned to the ``EventArgs.event_source`` property.
                 Defaults to current instance of this class.
-            event_args (GenericArgs, Optional): Args that are passed to events when they are triggered.
+            event_args (GenericArgs, optional): Args that are passed to events when they are triggered.
         """
         super().__init__()
         self._source = source
@@ -157,6 +162,8 @@ class Events(_event_base):
             return
         event_args._event_name = event_name
         event_args._event_source = self if self._source is None else self._source
+        if event_args.source is None:
+            event_args.source = self if self._source is None else self._source
 
 
 class LoEvents(_event_base):
@@ -208,11 +215,11 @@ class LoEvents(_event_base):
                     cleanup.append(i)
                     continue
                 observer().trigger(event_name=event_name, event_args=event_args)
-            if cleanup is not None and len(cleanup) > 0:
+            if cleanup:
                 # reverse list to allow removing form highest to lowest to avoid errors
                 cleanup.reverse()
                 for i in cleanup:
-                    self._observers.pop(i)
+                    _ = self._observers.pop(i)
 
 
 @contextlib.contextmanager

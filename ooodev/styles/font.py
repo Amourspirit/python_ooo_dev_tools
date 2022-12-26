@@ -185,11 +185,11 @@ class Font(StyleBase):
             try:
                 super().apply_style(obj)
             except mEx.MultiError as e:
-                mLo.Lo.print(f"Unable to set Property:")
+                mLo.Lo.print(f"Font.apply_style(): Unable to set Property")
                 for err in e.errors:
                     mLo.Lo.print(f"  {err}")
         else:
-            mLo.Lo.print("Unable to apply font style. CharacterProperties service not supported")
+            mLo.Lo.print('Font.apply_style(): "com.sun.star.style.CharacterProperties" not supported')
 
     @property
     def b(self) -> bool:

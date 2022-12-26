@@ -1,3 +1,5 @@
+.. _styles_style:
+
 Class Style
 ===========
 
