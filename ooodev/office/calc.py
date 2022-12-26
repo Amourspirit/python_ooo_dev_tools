@@ -1082,6 +1082,17 @@ class Calc:
         ss_view.setActiveSheet(cargs.sheet)
         _Events().trigger(CalcNamedEvent.SHEET_ACTIVATED, SheetArgs.from_args(cargs))
 
+    # region get_active_sheet()
+    @overload
+    @classmethod
+    def get_active_sheet(cls) -> XSpreadsheet:
+        ...
+
+    @overload
+    @classmethod
+    def get_active_sheet(cls, doc: XSpreadsheetDocument) -> XSpreadsheet:
+        ...
+
     @classmethod
     def get_active_sheet(cls, doc: XSpreadsheetDocument | None = None) -> XSpreadsheet:
         """
@@ -1097,6 +1108,8 @@ class Calc:
             doc = cls.get_current_doc()
         ss_view = cls.get_view(doc)
         return ss_view.getActiveSheet()
+
+    # endregion get_active_sheet()
 
     @classmethod
     def freeze(cls, doc: XSpreadsheetDocument, num_cols: int, num_rows: int) -> None:
