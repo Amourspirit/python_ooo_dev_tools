@@ -802,12 +802,12 @@ class GUI:
 
     @overload
     @classmethod
-    def set_visible(cls, is_visible: bool) -> None:
+    def set_visible(cls, visible: bool) -> None:
         ...
 
     @overload
     @classmethod
-    def set_visible(cls, is_visible: bool, doc: object) -> None:
+    def set_visible(cls, visible: bool, doc: object) -> None:
         ...
 
     @classmethod
@@ -816,8 +816,8 @@ class GUI:
         Set window visibility.
 
         Args:
-            is_visible (bool): If ``True`` window is set visible; Otherwise, window is set invisible. Default ``True``
-            odoc (object): office document
+            visible (bool): If ``True`` window is set visible; Otherwise, window is set invisible. Default ``True``
+            doc (object): office document
         """
         ordered_keys = (1, 2)
         kargs_len = len(kwargs)
@@ -827,11 +827,15 @@ class GUI:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ("is_visible", "doc", "odoc")
+            valid_keys = ("is_visible", "visible", "doc", "odoc")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("set_visible() got an unexpected keyword argument")
-            ka[1] = kwargs.get("is_visible", None)
+            keys = ("is_visible", "visible")
+            for key in keys:
+                if key in kwargs:
+                    ka[1] = kwargs[key]
+                    break
             if count == 1:
                 return ka
             keys = ("doc", "odoc")
