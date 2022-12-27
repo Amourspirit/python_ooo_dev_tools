@@ -7,13 +7,14 @@ from ..utils import info as mInfo
 from ..utils import lo as mLo
 from ..utils.color import Color
 from .style_base import StyleBase
+from .style_const import POINT_RATIO
 
-from ooo.dyn.awt.char_set import CharSetEnum as CharSetKind
-from ooo.dyn.awt.font_family import FontFamilyEnum as FamilyKind
-from ooo.dyn.awt.font_slant import FontSlant as SlantKind
-from ooo.dyn.awt.font_strikeout import FontStrikeoutEnum as StrikeOutKind
-from ooo.dyn.awt.font_underline import FontUnderlineEnum as LineKind
-from ooo.dyn.awt.font_weight import FontWeightEnum as WeightKind
+from ooo.dyn.awt.char_set import CharSetEnum as CharSetEnum
+from ooo.dyn.awt.font_family import FontFamilyEnum as FontFamilyEnum
+from ooo.dyn.awt.font_slant import FontSlant as FontSlant
+from ooo.dyn.awt.font_strikeout import FontStrikeoutEnum as FontStrikeoutEnum
+from ooo.dyn.awt.font_underline import FontUnderlineEnum as FontUnderlineEnum
+from ooo.dyn.awt.font_weight import FontWeightEnum as FontWeightEnum
 from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
 
 
@@ -28,9 +29,6 @@ class CharSpacingKind(float, Enum):
 
 
 class Font(StyleBase):
-    POINT_RATIO = 35.28
-    """Ratio multiplier to convert from point to CharKerning"""
-
     def __init__(
         self,
         *,
@@ -39,24 +37,24 @@ class Font(StyleBase):
         u: bool | None = None,
         bg_color: Color | None = None,
         bg_transparent: bool | None = None,
-        charset: CharSetKind | None = None,
+        charset: CharSetEnum | None = None,
         color: Color | None = None,
-        family: FamilyKind | None = None,
+        family: FontFamilyEnum | None = None,
         size: float | None = None,
         name: str | None = None,
-        overline: LineKind | None = None,
+        overline: FontUnderlineEnum | None = None,
         overline_color: Color | None = None,
         rotation: float | None = None,
-        slant: SlantKind | None = None,
+        slant: FontSlant | None = None,
         spacing: CharSpacingKind | float | None = None,
         shadowed: bool | None = None,
         shadow_fmt: ShadowFormat | None = None,
-        strike: StrikeOutKind | None = None,
+        strike: FontStrikeoutEnum | None = None,
         sub_script: bool | None = None,
         super_script: bool | None = None,
-        underine: LineKind | None = None,
+        underine: FontUnderlineEnum | None = None,
         underine_color: Color | None = None,
-        weight: WeightKind | None = None,
+        weight: FontWeightEnum | None = None,
         word_mode: bool | None = None,
     ) -> None:
         """
@@ -68,24 +66,24 @@ class Font(StyleBase):
             u (bool, optional): Short cut ot set ``underline`` to underline.
             bg_color (Color, optional): The value of the text background color.
             bg_transparent (bool, optional): Determines if the text background color is set to transparent.
-            charset (CharSetKind, optional): The text encoding of the font.
+            charset (CharSetEnum, optional): The text encoding of the font.
             color (Color, optional): The value of the text color.
-            family (FamilyKind, optional): Font Family
+            family (FontFamilyEnum, optional): Font Family
             size (float, optional): This value contains the size of the characters in point units.
             name (str, optional): This property specifies the name of the font style. It may contain more than one name separated by comma.
-            overline (LineKind, optional): The value for the character overline.
+            overline (FontUnderlineEnum, optional): The value for the character overline.
             overline_color (Color, optional): Specifies if the property ``CharOverlinelineColor`` is used for an overline.
             rotation (float, optional): Determines the rotation of a character in degrees. Depending on the implementation only certain values may be allowed.
-            slant (SlantKind, optional): The value of the posture of the document such as ``SlantKind.ITALIC``.
+            slant (FontSlant, optional): The value of the posture of the document such as ``FontSlant.ITALIC``.
             spacing (CharSpacingKind, float, optional): Character spacing in point units.
             shadowed (bool, optional): Specifies if the characters are formatted and displayed with a shadow effect.
             shadow_fmt: (ShadowFormat, optional): Determines the type, color, and width of the shadow.
-            strike (StrikeOutKind, optional): Dermines the type of the strike out of the character.
+            strike (FontStrikeoutEnum, optional): Dermines the type of the strike out of the character.
             sub_script (bool, optional): Sub script option.
             super_script (bool, optional): Super script option.
-            underine (LineKind, optional): The value for the character underline.
+            underine (FontUnderlineEnum, optional): The value for the character underline.
             underine_color (Color, optional): Specifies if the property ``CharUnderlineColor`` is used for an underline.
-            weight (WeightKind, optional): The value of the font weight.
+            weight (FontWeightEnum, optional): The value of the font weight.
             word_mode(bool, optional): If ``True``, the underline and strike-through properties are not applied to white spaces.
         """
         # could not find any documention in the API or elsewhere online for Overline
@@ -117,19 +115,19 @@ class Font(StyleBase):
 
         if not b is None:
             if b:
-                init_vals["CharWeight"] = WeightKind.BOLD.value
+                init_vals["CharWeight"] = FontWeightEnum.BOLD.value
             else:
-                init_vals["CharWeight"] = WeightKind.NORMAL.value
+                init_vals["CharWeight"] = FontWeightEnum.NORMAL.value
         if not i is None:
             if i:
-                init_vals["CharPosture"] = SlantKind.ITALIC
+                init_vals["CharPosture"] = FontSlant.ITALIC
             else:
-                init_vals["CharWeight"] = SlantKind.NONE
+                init_vals["CharWeight"] = FontSlant.NONE
         if not u is None:
             if u:
-                init_vals["CharUnderline"] = LineKind.SINGLE.value
+                init_vals["CharUnderline"] = FontUnderlineEnum.SINGLE.value
             else:
-                init_vals["CharUnderline"] = LineKind.NONE.value
+                init_vals["CharUnderline"] = FontUnderlineEnum.NONE.value
 
         if not overline is None:
             init_vals["CharOverline"] = overline.value
@@ -144,7 +142,7 @@ class Font(StyleBase):
             init_vals["CharPosture"] = slant
 
         if not spacing is None:
-            init_vals["CharKerning"] = round(float(spacing) * Font.POINT_RATIO)
+            init_vals["CharKerning"] = round(float(spacing) * POINT_RATIO)
 
         if not super_script is None:
             if super_script:
@@ -196,7 +194,7 @@ class Font(StyleBase):
         """Specifies bold"""
         pv = cast(float, self._get("CharWeight"))
         if not pv is None:
-            return pv == WeightKind.BOLD.value
+            return pv == FontWeightEnum.BOLD.value
         return False
 
     @property
@@ -212,9 +210,9 @@ class Font(StyleBase):
     @property
     def i(self) -> bool | None:
         """Specifies italic"""
-        pv = cast(SlantKind, self._get("CharPosture"))
+        pv = cast(FontSlant, self._get("CharPosture"))
         if not pv is None:
-            return pv == SlantKind.ITALIC
+            return pv == FontSlant.ITALIC
         return None
 
     @property
@@ -222,15 +220,15 @@ class Font(StyleBase):
         """Specifies underline"""
         pv = cast(int, self._get("CharUnderline"))
         if not pv is None:
-            return pv != LineKind.NONE.value
+            return pv != FontUnderlineEnum.NONE.value
         return None
 
     @property
-    def charset(self) -> CharSetKind | None:
+    def charset(self) -> CharSetEnum | None:
         """This property contains the text encoding of the font."""
         pv = cast(int, self._get("CharFontCharSet"))
         if not pv is None:
-            return CharSetKind(pv)
+            return CharSetEnum(pv)
         return None
 
     @property
@@ -239,11 +237,11 @@ class Font(StyleBase):
         return self._get("CharColor")
 
     @property
-    def family(self) -> FamilyKind | None:
+    def family(self) -> FontFamilyEnum | None:
         """This property contains font family."""
-        pv = cast(FamilyKind, self._get("CharFontFamily"))
+        pv = cast(FontFamilyEnum, self._get("CharFontFamily"))
         if not pv is None:
-            return FamilyKind(pv)
+            return FontFamilyEnum(pv)
         return None
 
     @property
@@ -257,24 +255,24 @@ class Font(StyleBase):
         return self._get("FontName")
 
     @property
-    def strike(self) -> StrikeOutKind | None:
+    def strike(self) -> FontStrikeoutEnum | None:
         """This property determines the type of the strike out of the character."""
         pv = cast(int, self._get("CharStrikeout"))
         if not pv is None:
-            return StrikeOutKind(pv)
+            return FontStrikeoutEnum(pv)
         return None
 
     @property
-    def weight(self) -> WeightKind | None:
+    def weight(self) -> FontWeightEnum | None:
         """This property contains the value of the font weight."""
         pv = cast(float, self._get("CharWeight"))
         if not pv is None:
-            return WeightKind(pv)
+            return FontWeightEnum(pv)
         return None
 
     @property
-    def slant(self) -> SlantKind | None:
-        """This property contains the value of the posture of the document such as  ``SlantKind.ITALIC``"""
+    def slant(self) -> FontSlant | None:
+        """This property contains the value of the posture of the document such as  ``FontSlant.ITALIC``"""
         return self._get("CharPosture")
 
     @property
@@ -284,7 +282,7 @@ class Font(StyleBase):
         if not pv is None:
             if pv == 0.0:
                 return 0.0
-            return pv / Font.POINT_RATIO
+            return pv / POINT_RATIO
         return None
 
     @property
@@ -317,11 +315,11 @@ class Font(StyleBase):
         return None
 
     @property
-    def overline(self) -> LineKind | None:
+    def overline(self) -> FontUnderlineEnum | None:
         """This property contains the value for the character overline."""
         pv = cast(int, self._get("CharOverline"))
         if not pv is None:
-            return LineKind(pv)
+            return FontUnderlineEnum(pv)
         return None
 
     @property
@@ -330,11 +328,11 @@ class Font(StyleBase):
         return self._get("CharOverlineColor")
 
     @property
-    def underline(self) -> LineKind | None:
+    def underline(self) -> FontUnderlineEnum | None:
         """This property contains the value for the character underline."""
         pv = cast(int, self._get("CharUnderline"))
         if not pv is None:
-            return LineKind(pv)
+            return FontUnderlineEnum(pv)
         return None
 
     @property

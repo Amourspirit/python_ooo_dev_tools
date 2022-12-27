@@ -1,19 +1,18 @@
 from __future__ import annotations
 from typing import Any, cast
-from enum import Enum, IntFlag
+from enum import IntFlag
 
 from ..exceptions import ex as mEx
 from ..utils import info as mInfo
 from ..utils import lo as mLo
-from ..utils import props as mProps
 from ..utils.color import Color
 from ..utils.color import CommonColor
 from .style_base import StyleBase
+from .style_const import POINT_RATIO
 from . import paragraphs as mPara
-from ..events.args.key_val_cancel_args import KeyValCancelArgs
 
 import uno
-from ooo.dyn.table.border_line_style import BorderLineStyleEnum as LineStyleKind
+from ooo.dyn.table.border_line_style import BorderLineStyleEnum as BorderLineStyleEnum
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
 from ooo.dyn.table.border_line import BorderLine as BorderLine
@@ -42,9 +41,9 @@ class Side:
 
     def __init__(
         self,
-        style: LineStyleKind = LineStyleKind.SOLID,
+        style: BorderLineStyleEnum = BorderLineStyleEnum.SOLID,
         color: Color = CommonColor.BLACK,
-        width: float = 0.26,
+        width: float = 0.75,
         width_inner: float = 0.0,
         distance: float = 0.0,
     ) -> None:
@@ -52,7 +51,7 @@ class Side:
         Constructs Side
 
         Args:
-            style (LineStyleKind, optional): Line Style of the border.
+            style (BorderLineStyleEnum, optional): Line Style of the border.
             color (Color, optional): Color of the border.
             width (float, optional): Contains the width in of a single line or the width of outer part of a double line (in mm units). If this value is zero, no line is drawn. Default ``0.26``
             width_inner (float, optional): contains the width of the inner part of a double line (in mm units). If this value is zero, only a single line is drawn. Default ``0.0``
@@ -75,11 +74,11 @@ class Side:
 
         init_vals = {
             "Color": color,
-            "InnerLineWidth": round(width_inner * 100),
+            "InnerLineWidth": round(width_inner * POINT_RATIO),
             "LineDistance": round(distance * 100),
             "LineStyle": style.value,
-            "LineWidth": round(width * 100),
-            "OuterLineWidth": round(width * 100),
+            "LineWidth": round(width * POINT_RATIO),
+            "OuterLineWidth": round(width * POINT_RATIO),
         }
         self._dv = init_vals
 
@@ -87,10 +86,10 @@ class Side:
         return self._dv.get(key, None)
 
     @property
-    def style(self) -> LineStyleKind:
+    def style(self) -> BorderLineStyleEnum:
         """Gets Border Line style"""
         pv = cast(int, self._get("LineStyle"))
-        return LineStyleKind(pv)
+        return BorderLineStyleEnum(pv)
 
     @property
     def color(self) -> Color:
@@ -108,7 +107,7 @@ class Side:
         pv = cast(int, self._get("OuterLineWidth"))
         if pv == 0:
             return 0.0
-        return float(pv / 100)
+        return float(pv / POINT_RATIO)
 
     @property
     def width_inner(self) -> float:
@@ -121,44 +120,7 @@ class Side:
         pv = cast(int, self._get("InnerLineWidth"))
         if pv == 0:
             return 0.0
-        return float(pv / 100)
-
-    # def apply_style(self, obj: object, border: BorderKind = BorderKind.ALL) -> None:
-    #     tb = cast(TableBorder, mProps.Props.get(obj, "TableBorder", None))
-    #     tb2 = cast(TableBorder2, mProps.Props.get(obj, "TableBorder2", None))
-    #     if tb is None and tb2 is None:
-    #         mLo.Lo.print("Side.apply_style(): No border to apply styles")
-    #         return
-    #     bl = self.get_border_line()
-    #     bl2 = self.get_border_line2()
-    #     if BorderKind.TOP_BORDER in border:
-    #         if not tb is None:
-    #             tb.TopLine = bl
-    #             tb.IsTopLineValid = True
-    #         if not tb2 is None:
-    #             tb2.TopLine = bl2
-    #             tb2.IsTopLineValid = True
-    #     if BorderKind.BOTTOM_BORDER in border:
-    #         if not tb is None:
-    #             tb.BottomLine = bl
-    #             tb.IsBottomLineValid = True
-    #         if not tb2 is None:
-    #             tb2.BottomLine = bl2
-    #             tb2.IsBottomLineValid = True
-    #     if BorderKind.LEFT_BORDER in border:
-    #         if not tb is None:
-    #             tb.LeftLine = bl
-    #             tb.IsLeftLineValid = True
-    #         if not tb2 is None:
-    #             tb2.LeftLine = bl2
-    #             tb2.IsLeftLineValid = True
-    #     if BorderKind.RIGHT_BORDER in border:
-    #         if not tb is None:
-    #             tb.RightLine = bl
-    #             tb.IsRightLineValid = True
-    #         if not tb2 is None:
-    #             tb2.RightLine = bl2
-    #             tb2.IsRightLineValid = True
+        return float(pv / POINT_RATIO)
 
     def get_border_line(self) -> BorderLine:
         b2 = self.get_border_line2()
@@ -179,7 +141,11 @@ class Side:
 
 class Shadow:
     def __init__(
-        self, location: ShadowLocation = ShadowLocation.BOTTOM_RIGHT, color: Color = CommonColor.GRAY, transparent: bool = False, width: float = 1.76
+        self,
+        location: ShadowLocation = ShadowLocation.BOTTOM_RIGHT,
+        color: Color = CommonColor.GRAY,
+        transparent: bool = False,
+        width: float = 1.76,
     ) -> None:
         """
         Constructor
@@ -414,16 +380,16 @@ class BorderTable:
         return self._has_attribs
 
 
-class CellBorder(StyleBase):
+class Border(StyleBase):
     """Border positioning for use in styles."""
 
     def __init__(
         self,
         *,
+        right: Side | None = None,
+        left: Side | None = None,
         top: Side | None = None,
         bottom: Side | None = None,
-        left: Side | None = None,
-        right: Side | None = None,
         border_side: Side | None = None,
         vertical: Side | None = None,
         horizontal: Side | None = None,
@@ -433,6 +399,23 @@ class CellBorder(StyleBase):
         shadow: Shadow | None = None,
         padding: BorderPadding | None = None,
     ) -> None:
+        """
+        _summary_
+
+        Args:
+           left (Side | None, optional): Determines the line style at the left edge.
+            right (Side | None, optional): Determines the line style at the right edge.
+            top (Side | None, optional): Determines the line style at the top edge.
+            bottom (Side | None, optional): Determines the line style at the bottom edge.
+            border_side (Side | None, optional): Determines the line style at the top, bottom, left, right edges. If this argument has a value then arguments ``top``, ``bottom``, ``left``, ``right`` are ignored
+            horizontal (Side | None, optional): Determines the line style of horizontal lines for the inner part of a cell range.
+            vertical (Side | None, optional): Determines the line style of vertical lines for the inner part of a cell range.
+            distance (float | None, optional): Contains the distance between the lines and other contents (in mm units).
+            diagonal_down (Side | None, optional): Determines the line style from top-left to bottom-right diagonal.
+            diagonal_up (Side | None, optional): Determines the line style from bottom-left to top-right diagonal.
+            shadow (Shadow | None, optional): Cell Shadow
+            padding (BorderPadding | None, optional): Cell padding
+        """
         init_vals = {}
 
         if not shadow is None:
@@ -468,3 +451,7 @@ class CellBorder(StyleBase):
                 mLo.Lo.print(f"CellBorder.apply_style(): Unable to set Property")
                 for err in e.errors:
                     mLo.Lo.print(f"  {err}")
+
+
+DEFAULT_BORDER = Border(border_side=Side(), padding=BorderPadding(padding_all=0.35))
+"""Default Border"""
