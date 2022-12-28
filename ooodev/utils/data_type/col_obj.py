@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 from dataclasses import dataclass, field
 from . import cell_obj as mCell
 from .. import table_helper as mTb
+from ..validation import check
 
 if TYPE_CHECKING:
     try:
@@ -27,8 +28,13 @@ class ColObj:
     """Cell Object that instance is part of"""
 
     def __post_init__(self):
+
         object.__setattr__(self, "value", self.value.upper())
-        idx = mTb.TableHelper.col_name_to_int(name=self.value, zero_index=True)
+        try:
+            idx = mTb.TableHelper.col_name_to_int(name=self.value, zero_index=True)
+        except ValueError as e:
+            raise AssertionError from e
+        check(idx >= 0, f"{self}", f"Expected a value index of 0 or greater. Got: {idx}")
         object.__setattr__(self, "index", idx)
 
     @staticmethod
@@ -39,11 +45,19 @@ class ColObj:
         Args:
             name (str): Column letter such as ``A`` or Cell Name such ``A1``
 
+        Raises:
+            AssertionError: if unablt to create ``ColObj`` instance.
+
         Returns:
             ColObj: Column Object
         """
-        num = mTb.TableHelper.col_name_to_int(name=name)
-        return ColObj(mTb.TableHelper.make_column_name(num))
+        try:
+            num = mTb.TableHelper.col_name_to_int(name=name)
+            return ColObj(mTb.TableHelper.make_column_name(num))
+        except AssertionError:
+            raise
+        except Exception as e:
+            raise AssertionError from e
 
     @staticmethod
     def from_int(num: int, zero_index: bool = False) -> ColObj:
@@ -54,13 +68,26 @@ class ColObj:
             num (int): Column number.
             zero_index (bool, optional): Determines if the column number is treated as zero index. Defaults to ``False``.
 
+        Raises:
+            AssertionError: if unablt to create ``ColObj`` instance.
+
         Returns:
             ColObj: Cell Object
         """
-        return ColObj(mTb.TableHelper.make_column_name(num, zero_index))
+        if zero_index:
+            check(num >= 0, f"{ColObj}", f"Expected a value of 0 or greater. Got: {num}")
+        else:
+            check(num >= 1, f"{ColObj}", f"Expected a value of 1 or greater. Got: {num}")
+        try:
+            col_name = mTb.TableHelper.make_column_name(num, zero_index)
+            return ColObj(col_name)
+        except AssertionError:
+            raise
+        except Exception as e:
+            raise AssertionError from e
 
     def __int__(self) -> int:
-        return self.index
+        return self.index + 1
 
     def __str__(self) -> str:
         return self.value
@@ -68,6 +95,8 @@ class ColObj:
     def __eq__(self, other: object) -> bool:
         if isinstance(other, str):
             return self.value == other.upper()
+        if isinstance(other, int):
+            return self.index + 1 == other
         if not isinstance(other, ColObj):
             return False
         return self.index == other.index
@@ -78,7 +107,7 @@ class ColObj:
                 oth = ColObj(other)
                 return self.index < oth.index
             i = int(other)
-            return self.index < i
+            return self.index + 1 < i
         except Exception:
             return NotImplemented
 
@@ -88,7 +117,7 @@ class ColObj:
                 oth = ColObj(other)
                 return self.index <= oth.index
             i = int(other)
-            return self.index <= i
+            return self.index + 1 <= i
         except Exception:
             return NotImplemented
 
@@ -98,7 +127,7 @@ class ColObj:
                 oth = ColObj(other)
                 return self.index > oth.index
             i = int(other)
-            return self.index > i
+            return self.index + 1 > i
         except Exception:
             return NotImplemented
 
@@ -108,7 +137,7 @@ class ColObj:
                 oth = ColObj(other)
                 return self.index >= oth.index
             i = int(other)
-            return self.index >= i
+            return self.index + 1 >= i
         except Exception:
             return NotImplemented
 
@@ -118,15 +147,17 @@ class ColObj:
                 if isinstance(other, str):
                     oth = ColObj(other)
                     return ColObj.from_int(self.index + oth.index + 2)
+            except AssertionError as e:
+                raise IndexError from e
             except Exception:
                 return NotImplemented
-        if isinstance(other, ColObj):
-            return ColObj.from_int(self.index + other.index + 2)
         try:
+            if isinstance(other, ColObj):
+                return ColObj.from_int(self.index + other.index + 2)
             i = int(other)
             return ColObj.from_int(self.index + i, True)
-        except AssertionError:
-            raise
+        except AssertionError as e:
+            raise IndexError from e
         except Exception:
             return NotImplemented
 
@@ -140,19 +171,21 @@ class ColObj:
             return self.__add__(other)
 
     def __sub__(self, other: object) -> Self:
-        if isinstance(other, ColObj):
-            return ColObj.from_int(self.index - other.index)
         if isinstance(other, str):
             try:
                 oth = ColObj(other)
                 return ColObj.from_int(self.index - oth.index)
+            except AssertionError as e:
+                raise IndexError from e
             except Exception:
                 raise NotImplemented
         try:
+            if isinstance(other, ColObj):
+                return ColObj.from_int(self.index - other.index)
             i = int(other)
             return ColObj.from_int(self.index - i, True)
-        except AssertionError:
-            raise
+        except AssertionError as e:
+            raise IndexError from e
         except Exception:
             return NotImplemented
 
@@ -161,12 +194,14 @@ class ColObj:
             try:
                 oth = ColObj(other)
                 return ColObj.from_int(oth.index - self.index)
+            except AssertionError as e:
+                raise IndexError from e
             except Exception:
                 raise NotImplemented
         try:
             i = int(other)
             return self.from_int(i - self.index - 1)
-        except AssertionError:
-            raise
+        except AssertionError as e:
+            raise IndexError from e
         except Exception:
             return NotImplemented

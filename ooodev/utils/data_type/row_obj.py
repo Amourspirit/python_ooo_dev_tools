@@ -1,8 +1,15 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING
 from dataclasses import dataclass, field
 from . import cell_obj as mCell
 from ..validation import check
 from .base_int_value import BaseIntValue
+
+if TYPE_CHECKING:
+    try:
+        from typing import Self
+    except ImportError:
+        from typing_extensions import Self
 
 
 @dataclass(unsafe_hash=True)
@@ -36,11 +43,101 @@ class RowObj(BaseIntValue):
             num (int): Row number.
             zero_index (bool, optional): Determines if the row value is treated as zero index. Defaults to ``False``.
 
+        Raises:
+            AssertionError: if unablt to create ``RowObj`` instance.
+
         Returns:
             RowObj: Cell Object
         """
-        n = num + 1 if zero_index else num
-        return RowObj(n)
+        if zero_index:
+            check(num >= 0, f"{RowObj}", f"Expected a value of 0 or greater. Got: {num}")
+        else:
+            check(num >= 1, f"{RowObj}", f"Expected a value of 1 or greater. Got: {num}")
+        try:
+            n = num + 1 if zero_index else num
+            return RowObj(n)
+        except AssertionError:
+            raise
+        except Exception as e:
+            raise AssertionError from e
 
     def __str__(self) -> str:
         return str(self.value)
+
+    def __int__(self) -> int:
+        return self.value
+
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, int):
+            return self.value == other
+        if not isinstance(other, RowObj):
+            return False
+        return self.value == other.value
+
+    def __lt__(self, other: object) -> bool:
+        try:
+            i = int(other)
+            return self.value < i
+        except Exception:
+            return NotImplemented
+
+    def __le__(self, other: object) -> bool:
+        try:
+            i = int(other)
+            return self.value <= i
+        except Exception:
+            return NotImplemented
+
+    def __gt__(self, other: object) -> bool:
+        try:
+            i = int(other)
+            return self.value > i
+        except Exception:
+            return NotImplemented
+
+    def __ge__(self, other: object) -> bool:
+        try:
+            i = int(other)
+            return self.value >= i
+        except Exception:
+            return NotImplemented
+
+    def __add__(self, other: object) -> Self:
+        if isinstance(other, RowObj):
+            return RowObj.from_int(self.value + other.value)
+        try:
+            i = int(other)
+            return RowObj.from_int(self.value + i)
+        except AssertionError as e:
+            raise IndexError from e
+        except Exception:
+            return NotImplemented
+
+    def __radd__(self, other: object) -> Self:
+        # angle = sum([col1, col2, col3])
+        # will result in TypeError becuase sum() start with 0
+        # this will force a call to __radd__
+        if other == 0:
+            return self
+        else:
+            return self.__add__(other)
+
+    def __sub__(self, other: object) -> Self:
+        try:
+            if isinstance(other, RowObj):
+                return RowObj.from_int(self.value - other.value)
+            i = int(other)
+            return RowObj.from_int(self.value - i)
+        except AssertionError as e:
+            raise IndexError from e
+        except Exception:
+            return NotImplemented
+
+    def __rsub__(self, other: object) -> Self:
+        try:
+            i = int(other)
+            return self.from_int(i - self.value)
+        except AssertionError as e:
+            raise IndexError from e
+        except Exception:
+            return NotImplemented

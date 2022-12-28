@@ -5,7 +5,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 
-def test_cell_obj_to_cell_values() -> None:
+def test_col_math() -> None:
     from ooodev.utils.data_type.col_obj import ColObj
 
     c1 = ColObj.from_int(1)
@@ -15,6 +15,8 @@ def test_cell_obj_to_cell_values() -> None:
     c1 = ColObj.from_int(0, True)
     assert c1.index == 0
     assert c1.value == "A"
+    assert c1 == 1
+    assert 1 == c1
 
     c1 = ColObj("A")
     assert c1.index == 0
@@ -116,3 +118,25 @@ def test_cell_obj_to_cell_values() -> None:
 
     c_sum = cast(ColObj, sum([c1, "b", 3]))
     assert c_sum.index == 5
+
+
+def test_col_math_errors() -> None:
+    from ooodev.utils.data_type.col_obj import ColObj
+
+    c1 = ColObj("A")
+    c3 = ColObj("C")
+
+    with pytest.raises(IndexError):
+        _ = c1 - c3
+
+    with pytest.raises(IndexError):
+        _ = c1 - 3
+
+    with pytest.raises(IndexError):
+        _ = c1 - 1
+
+    with pytest.raises(IndexError):
+        _ = c1 - "C"
+
+    with pytest.raises(IndexError):
+        _ = -10 + c3
