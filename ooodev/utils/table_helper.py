@@ -109,6 +109,9 @@ class TableHelper:
             name (str):Case insensitive column name such as 'a' or 'AB'
             zero_index (bool, optional): determines if return is zero based or one based. Default ``False``.
 
+        Raises:
+            ValueError: If number of Column letters (``name``) is greater than 5.
+
         Returns:
             int: One based int representing column name
 
@@ -124,6 +127,10 @@ class TableHelper:
             Added ``zero_index`` parameter.
         """
         chars = name.rstrip(string.digits)
+        if len(chars) > 5:
+            raise ValueError(
+                f"Maximum number of letters that can be proceesed is 5. currently name contains {len(chars)}"
+            )
         pow = 1
         col_num = 0
         for letter in chars[::-1]:  # reverse chars
