@@ -72,7 +72,7 @@ class _Events(object):
                     except AttributeError:
                         # event_arg is None
                         callback()(self, None)
-            if cleanup is not None and len(cleanup) > 0:
+            if cleanup:
                 # reverse list to allow removing form highest to lowest to avoid errors
                 cleanup.reverse()
                 for i in cleanup:
@@ -91,7 +91,7 @@ class _Events(object):
                     cleanup.append(i)
                     continue
                 observer().trigger(event_name=event_name, event_args=event_args)
-            if cleanup is not None and len(cleanup) > 0:
+            if cleanup:
                 # reverse list to allow removing form highest to lowest to avoid errors
                 cleanup.reverse()
                 for i in cleanup:

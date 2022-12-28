@@ -8,12 +8,12 @@ if __name__ == "__main__":
 import uno
 from ooodev.styles.font import (
     Font,
-    StrikeOutKind,
-    LineKind,
-    WeightKind,
-    CharSetKind,
-    FamilyKind,
-    SlantKind,
+    FontStrikeoutEnum,
+    FontUnderlineEnum,
+    FontWeightEnum,
+    CharSetEnum,
+    FontFamilyEnum,
+    FontSlant,
     CharSpacingKind,
 )
 from ooodev.styles import CommonColor
@@ -28,16 +28,16 @@ if TYPE_CHECKING:
 def test_font(loader) -> None:
     ft = Font(
         name=Info.get_font_general_name(),
-        height=22.0,
-        charset=CharSetKind.SYSTEM,
-        family=FamilyKind.MODERN,
+        size=22.0,
+        charset=CharSetEnum.SYSTEM,
+        family=FontFamilyEnum.MODERN,
         b=True,
         i=True,
         u=True,
         color=CommonColor.BLUE,
-        strike=StrikeOutKind.BOLD,
+        strike=FontStrikeoutEnum.BOLD,
         underine_color=CommonColor.AQUA,
-        overline=LineKind.BOLDDASHDOT,
+        overline=FontUnderlineEnum.BOLDDASHDOT,
         overline_color=CommonColor.BEIGE,
         super_script=True,
         rotation=90.0,
@@ -45,31 +45,35 @@ def test_font(loader) -> None:
         shadowed=True,
     )
     assert ft.name == Info.get_font_general_name()
-    assert ft.charset == CharSetKind.SYSTEM
-    assert ft.family == FamilyKind.MODERN
+    assert ft.charset == CharSetEnum.SYSTEM
+    assert ft.family == FontFamilyEnum.MODERN
     assert ft.b
     assert ft.i
     assert ft.u
-    assert ft.weight == WeightKind.BOLD
-    assert ft.slant == SlantKind.ITALIC
-    assert ft.underline == LineKind.SINGLE
+    assert ft.weight == FontWeightEnum.BOLD
+    assert ft.slant == FontSlant.ITALIC
+    assert ft.underline == FontUnderlineEnum.SINGLE
     assert ft.color == CommonColor.BLUE
-    assert ft.strike == StrikeOutKind.BOLD
+    assert ft.strike == FontStrikeoutEnum.BOLD
     assert ft.underine_color == CommonColor.AQUA
     assert ft.super_script
-    assert ft.height == 22.0
+    assert ft.size == 22.0
     assert ft.rotation == 90.0
-    assert ft.overline == LineKind.BOLDDASHDOT
+    assert ft.overline == FontUnderlineEnum.BOLDDASHDOT
     assert ft.overline_color == CommonColor.BEIGE
     assert ft.spacing == pytest.approx(CharSpacingKind.TIGHT.value, rel=1e-2)
     assert ft.shadowed
 
     ft = Font(
-        weight=WeightKind.BOLD, underine=LineKind.BOLDDASH, slant=SlantKind.OBLIQUE, sub_script=True, spacing=2.0
+        weight=FontWeightEnum.BOLD,
+        underine=FontUnderlineEnum.BOLDDASH,
+        slant=FontSlant.OBLIQUE,
+        sub_script=True,
+        spacing=2.0,
     )
-    assert ft.weight == WeightKind.BOLD
-    assert ft.underline == LineKind.BOLDDASH
-    assert ft.slant == SlantKind.OBLIQUE
+    assert ft.weight == FontWeightEnum.BOLD
+    assert ft.underline == FontUnderlineEnum.BOLDDASH
+    assert ft.slant == FontSlant.OBLIQUE
     assert ft.sub_script
     assert ft.spacing == pytest.approx(2.0, rel=1e-2)
 
@@ -86,8 +90,7 @@ def test_font_cursor(loader, test_headless) -> None:
         Lo.delay(500)
         GUI.zoom(GUI.ZoomEnum.ZOOM_150_PERCENT)
     try:
-        # red: 16711680
-        ft = Font(height=30.0, b=True, i=True, u=True, color=CommonColor.BLUE, underine_color=CommonColor.GREEN)
+        ft = Font(size=30.0, b=True, i=True, u=True, color=CommonColor.BLUE, underine_color=CommonColor.GREEN)
         cursor = Write.get_cursor(doc)
         style = partial(Style.apply_style, cursor)
         Write.append(cursor, "hello")
@@ -96,16 +99,17 @@ def test_font_cursor(loader, test_headless) -> None:
         cp = cast("CharacterProperties", cursor)
         assert cp.CharColor == CommonColor.BLUE
         assert cp.CharUnderlineColor == CommonColor.GREEN
-        assert cp.CharWeight == WeightKind.BOLD.value
-        assert cp.CharPosture == SlantKind.ITALIC
-        assert cp.CharUnderline == LineKind.SINGLE.value
+        assert cp.CharWeight == FontWeightEnum.BOLD.value
+        assert cp.CharPosture == FontSlant.ITALIC
+        assert cp.CharUnderline == FontUnderlineEnum.SINGLE.value
+        assert cp.CharHeight == pytest.approx(30.0, rel=1e-2)
 
         # clear attributes or cursor will continue on with font setting just set above.
         Lo.dispatch_cmd("ResetAttributes")
         Lo.delay(500)
 
         cursor.gotoEnd(False)
-        Style.apply_style(cursor, Font(height=40))
+        Style.apply_style(cursor, Font(size=40))
         Write.append(cursor, " world")
 
         cursor.goLeft(5, False)
@@ -124,7 +128,7 @@ def test_font_cursor(loader, test_headless) -> None:
 
         Write.append(cursor, "BIG")
         cursor.goLeft(3, True)
-        style(Font(height=36, rotation=90.0))
+        style(Font(size=36, rotation=90.0))
         assert cp.CharRotation == 900
         cursor.gotoEnd(False)
 
@@ -134,11 +138,11 @@ def test_font_cursor(loader, test_headless) -> None:
 
         Write.append(cursor, "Overline")
         cursor.goLeft(8, True)
-        style(Font(overline=LineKind.BOLDWAVE, height=40, overline_color=CommonColor.CHARTREUSE))
+        style(Font(overline=FontUnderlineEnum.BOLDWAVE, size=40, overline_color=CommonColor.CHARTREUSE))
         # no documentation found for Overline
         assert cursor.CharOverlineHasColor
         assert cursor.CharOverlineColor == CommonColor.CHARTREUSE
-        assert cursor.CharOverline == LineKind.BOLDWAVE
+        assert cursor.CharOverline == FontUnderlineEnum.BOLDWAVE
         cursor.gotoEnd(False)
         Write.end_paragraph(cursor)
 
@@ -155,42 +159,42 @@ def test_font_cursor(loader, test_headless) -> None:
         Lo.delay(500)
         Write.append(cursor, "Very Tight")
         cursor.goLeft(10, True)
-        style(Font(spacing=CharSpacingKind.VERY_TIGHT, height=30))
+        style(Font(spacing=CharSpacingKind.VERY_TIGHT, size=30))
         assert cp.CharKerning == round(CharSpacingKind.VERY_TIGHT.value * Font.POINT_RATIO)
         cursor.gotoEnd(False)
         Write.end_paragraph(cursor)
 
         Write.append(cursor, "Tight")
         cursor.goLeft(5, True)
-        style(Font(spacing=CharSpacingKind.TIGHT, height=30))
+        style(Font(spacing=CharSpacingKind.TIGHT, size=30))
         assert cp.CharKerning == round(CharSpacingKind.TIGHT.value * Font.POINT_RATIO)
         cursor.gotoEnd(False)
         Write.end_paragraph(cursor)
 
         Write.append(cursor, "Normal")
         cursor.goLeft(6, True)
-        style(Font(spacing=CharSpacingKind.NORMAL, height=30))
+        style(Font(spacing=CharSpacingKind.NORMAL, size=30))
         assert cp.CharKerning == 0
         cursor.gotoEnd(False)
         Write.end_paragraph(cursor)
 
         Write.append(cursor, "Loose")
         cursor.goLeft(5, True)
-        style(Font(spacing=CharSpacingKind.LOOSE, height=30))
+        style(Font(spacing=CharSpacingKind.LOOSE, size=30))
         assert cp.CharKerning == round(CharSpacingKind.LOOSE.value * Font.POINT_RATIO)
         cursor.gotoEnd(False)
         Write.end_paragraph(cursor)
 
         Write.append(cursor, "Very Loose")
         cursor.goLeft(10, True)
-        style(Font(spacing=CharSpacingKind.VERY_LOOSE, height=30))
+        style(Font(spacing=CharSpacingKind.VERY_LOOSE, size=30))
         assert cp.CharKerning == round(CharSpacingKind.VERY_LOOSE.value * Font.POINT_RATIO)
         cursor.gotoEnd(False)
         Write.end_paragraph(cursor)
 
         Write.append(cursor, "Custom Spacing 6 pt")
         cursor.goLeft(19, True)
-        style(Font(spacing=19.0, height=14))
+        style(Font(spacing=19.0, size=14))
         assert cp.CharKerning == round(19.0 * Font.POINT_RATIO)
         cursor.gotoEnd(False)
         Write.end_paragraph(cursor)
@@ -200,7 +204,7 @@ def test_font_cursor(loader, test_headless) -> None:
 
         Write.append(cursor, "Shadowed")
         cursor.goLeft(8, True)
-        style(Font(height=40, shadowed=True))
+        style(Font(size=40, shadowed=True))
         assert cp.CharShadowed
         cursor.gotoEnd(False)
         Write.end_paragraph(cursor)
@@ -227,8 +231,8 @@ def test_calc_font(loader, test_headless) -> None:
         cell = Calc.get_cell(sheet, cell_obj)
         cp = cast("CharacterProperties", cell)
         Style.apply_style(cell, Font(b=True, u=True, color=CommonColor.ROYAL_BLUE))
-        assert cp.CharWeight == WeightKind.BOLD.value
-        assert cp.CharUnderline == LineKind.SINGLE.value
+        assert cp.CharWeight == FontWeightEnum.BOLD.value
+        assert cp.CharUnderline == FontUnderlineEnum.SINGLE.value
         assert cp.CharColor == CommonColor.ROYAL_BLUE
 
         cell_obj = Calc.get_cell_obj("A3")
@@ -239,7 +243,7 @@ def test_calc_font(loader, test_headless) -> None:
             cell,
             Font(
                 i=True,
-                overline=LineKind.DOUBLE,
+                overline=FontUnderlineEnum.DOUBLE,
                 overline_color=CommonColor.RED,
                 color=CommonColor.DARK_GREEN,
                 bg_color=CommonColor.LIGHT_GRAY,
@@ -248,8 +252,8 @@ def test_calc_font(loader, test_headless) -> None:
         # no documentation found for Overline
         assert cell.CharOverlineHasColor
         assert cell.CharOverlineColor == CommonColor.RED
-        assert cell.CharOverline == LineKind.DOUBLE.value
-        assert cp.CharPosture == SlantKind.ITALIC
+        assert cell.CharOverline == FontUnderlineEnum.DOUBLE.value
+        assert cp.CharPosture == FontSlant.ITALIC
         assert cp.CharColor == CommonColor.DARK_GREEN
         # CharBackColor not supported for cell
         # assert cp.CharBackColor == CommonColor.LIGHT_GRAY
