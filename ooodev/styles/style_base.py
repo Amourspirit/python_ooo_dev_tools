@@ -34,15 +34,25 @@ class StyleBase(ABC):
         self._dv[key] = val
         return True
 
+    def _clear(self) -> None:
+        self._dv.clear()
+
     def _has(self, key: str) -> bool:
         return key in self._dv
 
-    def apply_style(self, obj: object) -> None:
+    def _remove(self, key: str) -> bool:
+        if self._has(key):
+            del self._dv[key]
+            return True
+        return False
+
+    def apply_style(self, obj: object, **kwargs) -> None:
         """
         Applies styles to object
 
         Args:
             obj (object): UNO Oject that styles are to be applied.
+            kwargs (Any, optional): Expandable list of key value pairs that may be used in child classes.
 
         Returns:
             None:

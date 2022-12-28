@@ -1,14 +1,18 @@
 from __future__ import annotations
 from typing import cast
 
+from ..exceptions import ex as mEx
+from ..meta.static_prop import static_prop
 from ..utils import info as mInfo
 from ..utils import lo as mLo
-from ..exceptions import ex as mEx
+from ..utils import props as mProps
 from .style_base import StyleBase
 
 
 class Padding(StyleBase):
     """Paragraph Padding"""
+
+    _DEFAULT = None
 
     # this class also set Borders Padding in borders.Border class.
 
@@ -64,12 +68,13 @@ class Padding(StyleBase):
 
         super().__init__(**init_vals)
 
-    def apply_style(self, obj: object) -> None:
+    def apply_style(self, obj: object, **kwargs) -> None:
         """
         Applies padding to ``obj``
 
         Args:
-            obj (object): Object that supports ``com.sun.star.style.ParagraphProperties`` service
+            obj (object): UNO object that supports ``com.sun.star.style.ParagraphProperties`` service.
+            kwargs (Any, optional): Expandable list of key value pairs that may be used in child classes.
 
         Returns:
             None:
@@ -85,42 +90,100 @@ class Padding(StyleBase):
             mLo.Lo.print('Padding.apply_style(): "com.sun.star.style.ParagraphProperties" not supported')
         return None
 
+    @staticmethod
+    def from_obj(obj: object) -> Padding:
+        """
+        Gets Padding instance from object
+
+        Args:
+            obj (object): UNO object that supports ``com.sun.star.style.ParagraphProperties`` service.
+
+        Raises:
+            NotSupportedServiceError: If ``obj`` does not support  ``com.sun.star.style.ParagraphProperties`` service.
+
+        Returns:
+            Padding: Padding that represents ``obj`` padding.
+        """
+        if not mInfo.Info.support_service(obj, "com.sun.star.style.ParagraphProperties"):
+            raise mEx.NotSupportedServiceError("com.sun.star.style.ParagraphProperties")
+        pd = Padding()
+        pd._set("ParaLeftMargin", int(mProps.Props.get(obj, "ParaLeftMargin")))
+        pd._set("ParaRightMargin", int(mProps.Props.get(obj, "ParaRightMargin")))
+        pd._set("ParaTopMargin", int(mProps.Props.get(obj, "ParaTopMargin")))
+        pd._set("ParaBottomMargin", int(mProps.Props.get(obj, "ParaBottomMargin")))
+        return pd
+
     @property
     def left(self) -> float | None:
-        """Gets paragraph left padding (in mm units)."""
+        """Gets/Sets paragraph left padding (in mm units)."""
         pv = cast(int, self._get("ParaLeftMargin"))
         if pv is None:
             return None
-        if pv == 0.0:
+        if pv == 0:
             return 0.0
         return float(pv / 100)
+
+    @left.setter
+    def left(self, value: float | None):
+        if value is None:
+            self._remove("ParaLeftMargin")
+            return
+        self._set("ParaLeftMargin", round(value * 100))
 
     @property
     def right(self) -> float | None:
-        """Gets paragraph right padding (in mm units)."""
+        """Gets/Sets paragraph right padding (in mm units)."""
         pv = cast(int, self._get("ParaRightMargin"))
         if pv is None:
             return None
-        if pv == 0.0:
+        if pv == 0:
             return 0.0
         return float(pv / 100)
+
+    @right.setter
+    def right(self, value: float | None):
+        if value is None:
+            self._remove("ParaRightMargin")
+            return
+        self._set("ParaRightMargin", round(value * 100))
 
     @property
     def top(self) -> float | None:
-        """Gets paragraph top padding (in mm units)."""
+        """Gets/Sets paragraph top padding (in mm units)."""
         pv = cast(int, self._get("ParaTopMargin"))
         if pv is None:
             return None
-        if pv == 0.0:
+        if pv == 0:
             return 0.0
         return float(pv / 100)
 
+    @top.setter
+    def top(self, value: float | None):
+        if value is None:
+            self._remove("ParaTopMargin")
+            return
+        self._set("ParaTopMargin", round(value * 100))
+
     @property
     def bottom(self) -> float | None:
-        """Gets paragraph bottom padding (in mm units)."""
+        """Gets/Sets paragraph bottom padding (in mm units)."""
         pv = cast(int, self._get("ParaBottomMargin"))
         if pv is None:
             return None
-        if pv == 0.0:
+        if pv == 0:
             return 0.0
         return float(pv / 100)
+
+    @bottom.setter
+    def bottom(self, value: float | None):
+        if value is None:
+            self._remove("ParaBottomMargin")
+            return
+        self._set("ParaBottomMargin", round(value * 100))
+
+    @static_prop
+    def default(cls) -> Padding:
+        """Gets Padding default. Static Property."""
+        if cls._DEFAULT is None:
+            cls._DEFAULT = Padding(padding_all=0.35)
+        return cls._DEFAULT

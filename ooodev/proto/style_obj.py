@@ -17,7 +17,7 @@ class StyleObj(Protocol):
     Protolcol Class for Styles
     """
 
-    def apply_style(self, obj: object) -> None:
+    def apply_style(self, obj: object, **kwargs) -> None:
         """Applies style"""
         ...
 

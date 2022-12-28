@@ -1,43 +1,81 @@
+# region imports
 from __future__ import annotations
-from typing import Any, cast
+from typing import cast, overload
 from enum import IntFlag
 
+from . import paragraphs as mPara
 from ..exceptions import ex as mEx
+from ..meta.static_prop import static_prop
 from ..utils import info as mInfo
 from ..utils import lo as mLo
+from ..utils import props as mProps
 from ..utils.color import Color
 from ..utils.color import CommonColor
 from .style_base import StyleBase
 from .style_const import POINT_RATIO
-from . import paragraphs as mPara
 
 import uno
-from ooo.dyn.table.border_line_style import BorderLineStyleEnum as BorderLineStyleEnum
-from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
-from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
 from ooo.dyn.table.border_line import BorderLine as BorderLine
+from ooo.dyn.table.border_line_style import BorderLineStyleEnum as BorderLineStyleEnum
 from ooo.dyn.table.border_line2 import BorderLine2 as BorderLine2
-from ooo.dyn.table.table_border2 import TableBorder2
+from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
+from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 from ooo.dyn.table.table_border import TableBorder
+from ooo.dyn.table.table_border2 import TableBorder2
+
+
+# endregion imports
+
+# region Enums
 
 
 class BorderKind(IntFlag):
     """Border Value (bitwise composition is possible)"""
 
-    TOP_BORDER = 0x01
+    TOP = 0x01
     """Apply Top Border"""
-    BOTTOM_BORDER = 0x02
+    BOTTOM = 0x02
     """Apply Bottom Border"""
-    LEFT_BORDER = 0x04
+    LEFT = 0x04
     """Apply Left Border"""
-    RIGHT_BORDER = 0x08
+    RIGHT = 0x08
     """Apply Right Border"""
-    ALL = TOP_BORDER | BOTTOM_BORDER | LEFT_BORDER | RIGHT_BORDER
+    ALL = TOP | BOTTOM | LEFT | RIGHT
     """Apply to all Borders"""
 
 
-class Side:
+class SideFlags(IntFlag):
+    """Side Flags Enum"""
+
+    LEFT = 0x01
+    """Apply to Left Side"""
+    TOP = 0x02
+    """Apply to Top Side"""
+    RIGHT = 0x03
+    """Apply to Right Side"""
+    BOTTOM = 0x04
+    """Apply to Bottom Side"""
+    LEFT_RIGHT = LEFT | RIGHT
+    """Apply to Left and Right Sides"""
+    TOP_BOTTOM = TOP | BOTTOM
+    """Apply to Top and Bottom Sides"""
+    BORDER = LEFT | TOP | RIGHT | BOTTOM
+    """Apply to Left, Right, Top, and bottom Sides"""
+    BOTTOM_LEFT_TOP_RIGHT = 0x05
+    """Apply to Diagonal starting Bottom-Left and draw to Top-Right"""
+    TOP_LEFT_BOTTOM_RIGHT = 0x06
+    """Apply to Diagonal starting Top-Left and draw to Bottom-Right"""
+
+
+# endregion Enums
+
+
+class Side(StyleBase):
     """Represents one side of a border"""
+
+    _EMPTY = None
+
+    # region init
 
     def __init__(
         self,
@@ -72,55 +110,62 @@ class Side:
         if distance < 0.0:
             raise ValueError("distance must be a postivie value")
 
+        self._style = style
+        self._color = color
+        self._width = width
+        self._width_inner = width_inner
+        self._distance = distance
+
         init_vals = {
-            "Color": color,
-            "InnerLineWidth": round(width_inner * POINT_RATIO),
-            "LineDistance": round(distance * 100),
-            "LineStyle": style.value,
-            "LineWidth": round(width * POINT_RATIO),
-            "OuterLineWidth": round(width * POINT_RATIO),
+            "Color": self._color,
+            "InnerLineWidth": round(self._width_inner * POINT_RATIO),
+            "LineDistance": round(self._distance * 100),
+            "LineStyle": self._style.value,
+            "LineWidth": round(self._width * POINT_RATIO),
+            "OuterLineWidth": round(self._width * POINT_RATIO),
         }
-        self._dv = init_vals
 
-    def _get(self, key: str) -> Any:
-        return self._dv.get(key, None)
+        super().__init__(**init_vals)
 
-    @property
-    def style(self) -> BorderLineStyleEnum:
-        """Gets Border Line style"""
-        pv = cast(int, self._get("LineStyle"))
-        return BorderLineStyleEnum(pv)
+    # endregion init
 
-    @property
-    def color(self) -> Color:
-        """Gets Border Line Color"""
-        return self._get("Color")
+    # region methods
 
-    @property
-    def width(self) -> float:
+    @overload
+    def apply_style(self, obj: object, *, flags: SideFlags) -> None:
+        ...
+
+    def apply_style(self, obj: object, **kwargs) -> None:
         """
-        Gets Border Line Width.
+        Applies style to object
 
-        Contains the width of a single line or the width of outer part of a double line (in mm units).
-        If this value is zero, no line is drawn.
-        """
-        pv = cast(int, self._get("OuterLineWidth"))
-        if pv == 0:
-            return 0.0
-        return float(pv / POINT_RATIO)
+        Args:
+            obj (object): Object to apply style to.
 
-    @property
-    def width_inner(self) -> float:
-        """
-        Gets Border Line Inner Width.
+        Other Parameters:
+            flags: (SideFlags): Determins where to apply side.
 
-        Contains the width of the inner part of a double line (in mm units).
-        If this value is zero, no line is drawn.
+        Returns:
+            None:
         """
-        pv = cast(int, self._get("InnerLineWidth"))
-        if pv == 0:
-            return 0.0
-        return float(pv / POINT_RATIO)
+        expected_key_names = ("flags",)
+        for kw in expected_key_names:
+            if not kw in kwargs:
+                raise Exception(f'apply_style() requires argument "{kw}"')
+        flags = cast(SideFlags, kwargs["flags"])
+        val = self.get_border_line2()
+        if SideFlags.LEFT in flags:
+            mProps.Props.set(obj, LeftBorder2=val)
+        if SideFlags.TOP in flags:
+            mProps.Props.set(obj, TopBorder2=val)
+        if SideFlags.RIGHT in flags:
+            mProps.Props.set(obj, RightBorder2=val)
+        if SideFlags.BOTTOM in flags:
+            mProps.Props.set(obj, BottomBorder2=val)
+        if SideFlags.BOTTOM_LEFT_TOP_RIGHT in flags:
+            mProps.Props.set(obj, DiagonalBLTR2=val)
+        if SideFlags.TOP_LEFT_BOTTOM_RIGHT in flags:
+            mProps.Props.set(obj, DiagonalTLBR2=val)
 
     def get_border_line(self) -> BorderLine:
         b2 = self.get_border_line2()
@@ -138,8 +183,54 @@ class Side:
             setattr(line, key, val)
         return line
 
+    @static_prop
+    def empty(cls) -> Side:
+        """Gets an empyty side. When applied formatting is removed"""
+        if cls._EMPTY is None:
+            cls._EMPTY = Side(style=BorderLineStyleEnum.NONE, color=0, width=0.0, width_inner=0.0, distance=0)
+        return cls._EMPTY
 
-class Shadow:
+    # endregion methods
+
+    # region properties
+
+    @property
+    def style(self) -> BorderLineStyleEnum:
+        """Gets Border Line style"""
+        return self._style
+
+    @property
+    def color(self) -> Color:
+        """Gets Border Line Color"""
+        return self._color
+
+    @property
+    def width(self) -> float:
+        """
+        Gets Border Line Width.
+
+        Contains the width of a single line or the width of outer part of a double line (in mm units).
+        If this value is zero, no line is drawn.
+        """
+        return self._width
+
+    @property
+    def width_inner(self) -> float:
+        """
+        Gets Border Line Inner Width.
+
+        Contains the width of the inner part of a double line (in mm units).
+        If this value is zero, no line is drawn.
+        """
+        return self._width_inner
+
+    # endregion properties
+
+
+class Shadow(StyleBase):
+    # region init
+    _EMPTY = None
+
     def __init__(
         self,
         location: ShadowLocation = ShadowLocation.BOTTOM_RIGHT,
@@ -163,85 +254,98 @@ class Shadow:
             raise ValueError("color must be a positive number")
         if width < 0:
             raise ValueError("Width must be a postivie number")
-        self._color = color
-        self._transparent = transparent
-        self._width = round(width * 100)
-        self._location = location
+        init_vals = {
+            "Location": location,
+            "Color": color,
+            "IsTransparent": transparent,
+            "ShadowWidth": round(width * 100),
+        }
+        super().__init__(**init_vals)
+
+    # endregion init
+
+    # region methods
 
     def get_shadow_format(self) -> ShadowFormat:
+        """
+        Gets Shadow format for instance.
+
+        Returns:
+            ShadowFormat: Shadow Format
+        """
         return ShadowFormat(
-            Location=self._location, ShadowWidth=self._width, IsTransparent=self._transparent, Color=self._color
+            Location=self._get("Location"),
+            ShadowWidth=self._get("ShadowWidth"),
+            IsTransparent=self._get("IsTransparent"),
+            Color=self._get("Color"),
         )
+
+    # region apply_style()
+
+    @overload
+    def apply_style(self, obj: object) -> None:
+        ...
+
+    def apply_style(self, obj: object, **kwargs) -> None:
+        """
+        Applies style to object
+
+        Args:
+            obj (object): Object that contains a ``ShadowFormat`` property.
+
+        Returns:
+            None:
+        """
+        shadow = self.get_shadow_format()
+        mProps.Props.set(obj, ShadowFormat=shadow)
+
+    # endregion apply_style()
+
+    # endregion methods
+
+    # region Properties
 
     @property
     def location(self) -> ShadowLocation:
         """Gets the location of the shadow."""
-        return self._location
+        return self._get("Location")
 
     @property
     def color(self) -> Color:
         """Gets the color value of the shadow."""
-        return self._color
+        return self._get("Color")
 
     @property
     def transparent(self) -> bool:
         """Gets transparent value"""
-        return self._transparent
+        return self._get("IsTransparent")
 
     @property
     def width(self) -> float:
         """Gets the size of the shadow (in mm units)"""
-        if self._width == 0.0:
+        pv = cast(int, self._get("ShadowWidth"))
+        if pv == 0:
             return 0.0
-        return float(self._width / 100)
+        return float(pv / 100)
+
+    @static_prop
+    def empty(cls) -> Shadow:
+        """Gets empty Shadow. Static Property. when style is applied it remove any shadow."""
+        if cls._EMPTY is None:
+            cls._EMPTY = Shadow(location=ShadowLocation.NONE, transparent=False, color=8421504)
+            # just to be exact due to float conversions.
+            cls._EMPTY._set("ShadowWidth", 176)
+        return cls._EMPTY
+
+    # endregion Properties
 
 
-class BorderPadding(mPara.Padding):
-    def __init__(
-        self,
-        left: float = 0.35,
-        right: float = 0.35,
-        top: float = 0.35,
-        bottom: float = 0.35,
-        padding_all: float | None = None,
-    ) -> None:
-        """
-        Constructor
-
-        Args:
-            left (float, optional): Paragraph left padding (in mm units). Defaults to ``0.35``.
-            right (float, optional): Paragraph right padding (in mm units). Defaults to ``0.35``.
-            top (float, optional): Paragraph top padding (in mm units). Defaults to ``0.35``.
-            bottom (float, optional): Paragraph bottom padding (in mm units). Defaults to ``0.35``.
-            padding_all (float, optional): Paragraph left, right, top, bottom padding (in mm units). If argument is present then ``left``, ``right``, ``top``, and ``bottom`` arguments are ignored.
-        """
-        super().__init__(left, right, top, bottom, padding_all)
-
-    @property
-    def left(self) -> float:
-        """Gets paragraph left padding (in mm units)."""
-        return super().left
-
-    @property
-    def right(self) -> float:
-        """Gets paragraph right padding (in mm units)."""
-        return super().right
-
-    @property
-    def top(self) -> float:
-        """Gets paragraph top padding (in mm units)."""
-        return super().top
-
-    @property
-    def bottom(self) -> float:
-        """Gets paragraph bottom padding (in mm units)."""
-        return super().bottom
-
-
-class BorderTable:
+class BorderTable(StyleBase):
     """Table Border positioning for use in styles."""
 
     _SIDE_ATTRS = ("TopLine", "BottomLine", "LeftLine", "RightLine", "HorizontalLine", "VerticalLine")
+
+    # region init
 
     def __init__(
         self,
@@ -302,10 +406,93 @@ class BorderTable:
             init_vals["Distance"] = round(distance * 100)
             init_vals["IsDistanceValid"] = True
         self._has_attribs = len(init_vals) > 0
-        self._dv = init_vals
+        super().__init__(**init_vals)
 
-    def _get(self, key: str) -> Any:
-        return self._dv.get(key, None)
+    # endregion init
+
+    # region methods
+
+    # region apply_style()
+
+    @overload
+    def apply_style(self, obj: object) -> None:
+        ...
+
+    def apply_style(self, obj: object, **kwargs) -> None:
+        """
+        Applies Style to obj
+
+        Args:
+            obj (object): UNO object
+
+        Raises:
+            PropertyNotFoundError: If ``obj`` does not have ``TableBorder2`` property.
+
+        Returns:
+            None:
+        """
+        tb = cast(TableBorder2, mProps.Props.get(obj, "TableBorder2", None))
+        if tb is None:
+            raise mEx.PropertyNotFoundError("TableBorder2", "apply_style() obj has no property, TableBorder2")
+        attrs = ("TopLine", "BottomLine", "LeftLine", "RightLine", "HorizontalLine", "VerticalLine")
+        for attr in attrs:
+            val = cast(Side, self._get(attr))
+            if not val is None:
+                setattr(tb, attr, val.get_border_line2())
+                setattr(tb, f"Is{attr}Valid", True)
+        distance = cast(int, self._get("Distance"))
+        if not distance is None:
+            tb.Distance = distance
+            tb.IsDistanceValid = True
+        mProps.Props.set(obj, TableBorder2=tb)
+
+    # endregion apply_style()
+
+    @staticmethod
+    def from_obj(obj: object) -> BorderTable:
+        """
+        Gets instance from object properties
+
+        Args:
+            obj (object): UNO object that has a ``TableBorder2`` property
+
+        Raises:
+            PropertyNotFoundError: If ``obj`` does not have ``TableBorder2`` property.
+
+        Returns:
+            BorderTable: Border Table.
+        """
+        tb = cast(TableBorder2, mProps.Props.get(obj, "TableBorder2", None))
+        if tb is None:
+            raise mEx.PropertyNotFoundError("TableBorder2", "from_obj() obj as no TableBorder2 property")
+        line_props = ("Color", "InnerLineWidth", "LineDistance", "LineStyle", "LineWidth", "OuterLineWidth")
+
+        left = Side() if tb.IsLeftLineValid else None
+        top = Side() if tb.IsTopLineValid else None
+        right = Side() if tb.IsRightLineValid else None
+        bottom = Side() if tb.IsBottomLineValid else None
+        vertical = Side() if tb.IsVerticalLineValid else None
+        horizontal = Side() if tb.IsHorizontalLineValid else None
+
+        for prop in line_props:
+            if left:
+                left._set(prop, getattr(tb.LeftLine, prop))
+            if top:
+                top._set(prop, getattr(tb.TopLine, prop))
+            if right:
+                right._set(prop, getattr(tb.RightLine, prop))
+            if bottom:
+                bottom._set(prop, getattr(tb.BottomLine, prop))
+            if vertical:
+                vertical._set(prop, getattr(tb.VerticalLine, prop))
+            if horizontal:
+                horizontal._set(prop, getattr(tb.HorizontalLine, prop))
+        bt = BorderTable(left=left, right=right, top=top, bottom=bottom, vertical=vertical, horizontal=horizontal)
+        if tb.IsDistanceValid:
+            bt._set("IsDistanceValid", True)
+            bt._set("Distance", tb.Distance)
+        bt._has_attribs = len(bt._dv) > 0
+        return bt
 
     def get_table_border2(self) -> TableBorder2:
         """
@@ -338,6 +525,10 @@ class BorderTable:
             else:
                 setattr(tb, key, val)
         return tb
+
+    # endregion methods
+
+    # region Properties
 
     @property
     def distance(self) -> float | None:
@@ -379,9 +570,16 @@ class BorderTable:
         """Gets If instantance has any attributes set."""
         return self._has_attribs
 
+    # endregion Properties
+
 
 class Border(StyleBase):
     """Border positioning for use in styles."""
+
+    _DEFAULT = None
+    _EMPTY = None
+
+    # region init
 
     def __init__(
         self,
@@ -397,13 +595,13 @@ class Border(StyleBase):
         diagonal_down: Side | None = None,
         diagonal_up: Side | None = None,
         shadow: Shadow | None = None,
-        padding: BorderPadding | None = None,
+        padding: mPara.Padding | None = None,
     ) -> None:
         """
         _summary_
 
         Args:
-           left (Side | None, optional): Determines the line style at the left edge.
+            left (Side | None, optional): Determines the line style at the left edge.
             right (Side | None, optional): Determines the line style at the right edge.
             top (Side | None, optional): Determines the line style at the top edge.
             bottom (Side | None, optional): Determines the line style at the bottom edge.
@@ -435,15 +633,34 @@ class Border(StyleBase):
             vertical=vertical,
             distance=distance,
         )
+
         if border_table.has_attribs:
-            init_vals["TableBorder2"] = border_table.get_table_border2()
+            self._border_table = border_table
+        else:
+            self._border_table = None
         self._padding = padding
 
         super().__init__(**init_vals)
 
-    def apply_style(self, obj: object) -> None:
+    # endregion init
+
+    # region methods
+
+    def apply_style(self, obj: object, **kwargs) -> None:
+        """
+        Applies padding to ``obj``
+
+        Args:
+            obj (object): Object that supports ``com.sun.star.style.ParagraphProperties`` service.
+            kwargs (Any, optional): Expandable list of key value pairs that may be used in child classes.
+
+        Returns:
+            None:
+        """
         if not self._padding is None:
             self._padding.apply_style(obj)
+        if not self._border_table is None:
+            self._border_table.apply_style(obj)
         if mInfo.Info.support_service(obj, "com.sun.star.table.CellProperties"):
             try:
                 super().apply_style(obj)
@@ -452,6 +669,30 @@ class Border(StyleBase):
                 for err in e.errors:
                     mLo.Lo.print(f"  {err}")
 
+    # endregion methods
 
-DEFAULT_BORDER = Border(border_side=Side(), padding=BorderPadding(padding_all=0.35))
-"""Default Border"""
+    # region Properties
+    @static_prop
+    def default(cls) -> Border:
+        """Gets Default Border. Static Property"""
+        if cls._DEFAULT is None:
+            cls._DEFAULT = Border(border_side=Side(), padding=mPara.Padding.default)
+        return cls._DEFAULT
+
+    @static_prop
+    def empty(cls) -> Border:
+        """Gets Empty Border. Static Property. When style is applied formatting is removed."""
+        if cls._EMPTY is None:
+            cls._EMPTY = Border(
+                border_side=Side.empty,
+                vertical=Side.empty,
+                horizontal=Side.empty,
+                diagonal_down=Side.empty,
+                diagonal_up=Side.empty,
+                distance=0.0,
+                shadow=Shadow.empty,
+                padding=mPara.Padding.default,
+            )
+        return cls._EMPTY
+
+    # endregion Properties

@@ -12,11 +12,9 @@ from ooodev.styles.tbl_borders import (
     Side,
     BorderLineStyleEnum,
     ShadowLocation,
-    BorderPadding,
-    DEFAULT_BORDER,
 )
+from ooodev.styles.paragraphs import Padding
 from ooodev.styles import CommonColor, Style
-from ooodev.utils.info import Info
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.styles.style_const import POINT_RATIO
@@ -24,6 +22,7 @@ from ooodev.styles.style_const import POINT_RATIO
 if TYPE_CHECKING:
     from com.sun.star.table import CellProperties  # service
     from com.sun.star.style import ParagraphProperties  # service
+    from com.sun.star.table import CellRange  # service
 
 
 def test_calc_border(loader, test_headless) -> None:
@@ -121,7 +120,7 @@ def test_calc_border(loader, test_headless) -> None:
         Calc.set_val(value="Hello", sheet=sheet, cell_obj=cell_obj)
         cell = Calc.get_cell(sheet, cell_obj)
         cb = Border(diagonal_down=side, diagonal_up=side)
-        Style.apply_style(cell, Border(padding=BorderPadding(padding_all=0.7)))
+        Style.apply_style(cell, Border(padding=Padding(padding_all=0.7)))
         cp = cast("ParagraphProperties", cell)
         # padding may not apply exact
         assert cp.ParaLeftMargin >= 69 and cp.ParaLeftMargin <= 72
@@ -133,7 +132,7 @@ def test_calc_border(loader, test_headless) -> None:
         Calc.set_val(value="Hello", sheet=sheet, cell_obj=cell_obj)
         cell = Calc.get_cell(sheet, cell_obj)
         cb = Border(diagonal_down=side, diagonal_up=side)
-        Style.apply_style(cell, Border(padding=BorderPadding(left=1.2, right=1.2, top=0.5, bottom=0.5)))
+        Style.apply_style(cell, Border(padding=Padding(left=1.2, right=1.2, top=0.5, bottom=0.5)))
         cp = cast("ParagraphProperties", cell)
         # padding may not apply exact
         assert cp.ParaLeftMargin >= 118 and cp.ParaLeftMargin <= 122
@@ -146,7 +145,7 @@ def test_calc_border(loader, test_headless) -> None:
         Calc.set_val(value="Hello", sheet=sheet, cell_obj=cell_obj)
         cell = Calc.get_cell(sheet, cell_obj)
         cb = Border(diagonal_down=side, diagonal_up=side)
-        Style.apply_style(cell, DEFAULT_BORDER)
+        Style.apply_style(cell, Border.default)
 
         Lo.delay(delay)
     finally:
@@ -165,16 +164,95 @@ def test_calc_border_range(loader, test_headless) -> None:
             Lo.delay(500)
             Calc.zoom(doc, GUI.ZoomEnum.ZOOM_200_PERCENT)
 
-        rng_obj = Calc.get_range_obj("B2:G8")
+        rng_obj = Calc.get_range_obj("B2:G6")
         cr = Calc.get_cell_range(sheet, rng_obj)
 
         # for some unknown reason LibreOffice is overriding style of horizontal Side. to match outter border.
+        # Soluttion is to create a new border with only horizontal side set after inital range has been set
         cb = Border(
             border_side=Side(style=BorderLineStyleEnum.SOLID, color=CommonColor.BLUE),
             vertical=Side(color=CommonColor.RED, style=BorderLineStyleEnum.DASHED),
             horizontal=Side(color=CommonColor.GREEN, width=1.4, style=BorderLineStyleEnum.DOUBLE),
         )
         Style.apply_style(cr, cb)
+
+        rng = cast("CellRange", cr)
+
+        assert rng.TableBorder2.TopLine.Color == CommonColor.BLUE
+        assert rng.TableBorder2.RightLine.LineStyle == BorderLineStyleEnum.SOLID.value
+
+        cb = Border(horizontal=Side(color=CommonColor.GREEN, width=1.4, style=BorderLineStyleEnum.DOUBLE))
+        Style.apply_style(cr, cb)
+
+        assert rng.TableBorder2.VerticalLine.Color == CommonColor.RED
+        assert rng.TableBorder2.VerticalLine.LineStyle == BorderLineStyleEnum.DASHED.value
+
+        assert rng.TableBorder2.HorizontalLine.Color == CommonColor.GREEN
+        assert rng.TableBorder2.HorizontalLine.LineStyle == BorderLineStyleEnum.DOUBLE.value
+
+        rng_obj = Calc.get_range_obj("B8:G12")
+        cr = Calc.get_cell_range(sheet, rng_obj)
+
+        if not test_headless:
+            Calc.goto_cell(cell_obj=rng_obj.cell_start, doc=doc)
+
+        cb = Border(border_side=Side(), diagonal_up=Side(color=CommonColor.RED))
+        Style.apply_style(cr, cb)
+
+        cell = Calc.get_cell(sheet=sheet, cell_obj=rng_obj.cell_start)
+
+        cp = cast("CellProperties", cell)
+        assert cp.DiagonalBLTR.Color == CommonColor.RED
+
+        rng_obj = Calc.get_range_obj("B14:G18")
+        cr = Calc.get_cell_range(sheet, rng_obj)
+
+        if not test_headless:
+            Calc.goto_cell(cell_obj=rng_obj.cell_start, doc=doc)
+
+        cb = Border(
+            border_side=Side(), diagonal_up=Side(color=CommonColor.RED), diagonal_down=Side(color=CommonColor.RED)
+        )
+        Style.apply_style(cr, cb)
+
+        rng_obj = Calc.get_range_obj("c15:F17")
+        cr = Calc.get_cell_range(sheet, rng_obj)
+
+        if not test_headless:
+            Calc.goto_cell(cell_obj=rng_obj.cell_start, doc=doc)
+
+        Style.apply_style(cr, Border.empty)
+
+        cell = Calc.get_cell(sheet=sheet, cell_obj=rng_obj.cell_start)
+        cp = cast("CellProperties", cell)
+        assert cp.LeftBorder2.LineWidth == 0
+        assert cp.TopBorder2.LineWidth == 0
+        assert cp.RightBorder2.LineWidth == 0
+        assert cp.BottomBorder.LineWidth == 0
+
+        para = cast("ParagraphProperties", cell)
+        assert para.ParaLeftMargin == 35
+        assert para.ParaRightMargin == 35
+        assert para.ParaTopMargin == 35
+        assert para.ParaBottomMargin == 35
+
+        cb = Border(border_side=Side(style=BorderLineStyleEnum.DOUBLE_THIN, color=CommonColor.GREEN))
+
+        Style.apply_style(cr, cb)
+
+        cell = Calc.get_cell(sheet=sheet, cell_obj=rng_obj.cell_start)
+        cp = cast("CellProperties", cell)
+        assert cp.LeftBorder2.Color == CommonColor.GREEN
+        assert cp.LeftBorder2.LineStyle == BorderLineStyleEnum.DOUBLE_THIN
+        assert cp.TopBorder2.Color == CommonColor.GREEN
+        assert cp.TopBorder2.LineStyle == BorderLineStyleEnum.DOUBLE_THIN
+
+        cell = Calc.get_cell(sheet=sheet, cell_obj=rng_obj.cell_end)
+        cp = cast("CellProperties", cell)
+        assert cp.RightBorder2.Color == CommonColor.GREEN
+        assert cp.RightBorder2.LineStyle == BorderLineStyleEnum.DOUBLE_THIN
+        assert cp.BottomBorder2.Color == CommonColor.GREEN
+        assert cp.BottomBorder2.LineStyle == BorderLineStyleEnum.DOUBLE_THIN
 
         Lo.delay(delay)
     finally:

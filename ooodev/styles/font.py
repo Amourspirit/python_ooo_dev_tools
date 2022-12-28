@@ -169,12 +169,13 @@ class Font(StyleBase):
 
         super().__init__(**init_vals)
 
-    def apply_style(self, obj: object) -> None:
+    def apply_style(self, obj: object, **kwargs) -> None:
         """
         Applies styles to object
 
         Args:
             obj (object): UNO Oject that styles are to be applied.
+            kwargs (Any, optional): Expandable list of key value pairs that may be used in child classes.
 
         Returns:
             None:
