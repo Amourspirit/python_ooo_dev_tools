@@ -17,8 +17,9 @@ from ooodev.styles.font import (
     CharSpacingKind,
 )
 from ooodev.styles import CommonColor
-from ooodev.utils.info import Info
+from ooodev.styles.style_const import POINT_RATIO
 from ooodev.utils.gui import GUI
+from ooodev.utils.info import Info
 from ooodev.utils.lo import Lo
 
 if TYPE_CHECKING:
@@ -160,14 +161,14 @@ def test_font_cursor(loader, test_headless) -> None:
         Write.append(cursor, "Very Tight")
         cursor.goLeft(10, True)
         style(Font(spacing=CharSpacingKind.VERY_TIGHT, size=30))
-        assert cp.CharKerning == round(CharSpacingKind.VERY_TIGHT.value * Font.POINT_RATIO)
+        assert cp.CharKerning == round(CharSpacingKind.VERY_TIGHT.value * POINT_RATIO)
         cursor.gotoEnd(False)
         Write.end_paragraph(cursor)
 
         Write.append(cursor, "Tight")
         cursor.goLeft(5, True)
         style(Font(spacing=CharSpacingKind.TIGHT, size=30))
-        assert cp.CharKerning == round(CharSpacingKind.TIGHT.value * Font.POINT_RATIO)
+        assert cp.CharKerning == round(CharSpacingKind.TIGHT.value * POINT_RATIO)
         cursor.gotoEnd(False)
         Write.end_paragraph(cursor)
 
@@ -181,21 +182,21 @@ def test_font_cursor(loader, test_headless) -> None:
         Write.append(cursor, "Loose")
         cursor.goLeft(5, True)
         style(Font(spacing=CharSpacingKind.LOOSE, size=30))
-        assert cp.CharKerning == round(CharSpacingKind.LOOSE.value * Font.POINT_RATIO)
+        assert cp.CharKerning == round(CharSpacingKind.LOOSE.value * POINT_RATIO)
         cursor.gotoEnd(False)
         Write.end_paragraph(cursor)
 
         Write.append(cursor, "Very Loose")
         cursor.goLeft(10, True)
         style(Font(spacing=CharSpacingKind.VERY_LOOSE, size=30))
-        assert cp.CharKerning == round(CharSpacingKind.VERY_LOOSE.value * Font.POINT_RATIO)
+        assert cp.CharKerning == round(CharSpacingKind.VERY_LOOSE.value * POINT_RATIO)
         cursor.gotoEnd(False)
         Write.end_paragraph(cursor)
 
         Write.append(cursor, "Custom Spacing 6 pt")
         cursor.goLeft(19, True)
         style(Font(spacing=19.0, size=14))
-        assert cp.CharKerning == round(19.0 * Font.POINT_RATIO)
+        assert cp.CharKerning == round(19.0 * POINT_RATIO)
         cursor.gotoEnd(False)
         Write.end_paragraph(cursor)
 
