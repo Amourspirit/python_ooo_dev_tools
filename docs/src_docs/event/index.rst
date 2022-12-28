@@ -7,4 +7,5 @@ Events
 
     *
     calc/index
+    props/index
     write/index

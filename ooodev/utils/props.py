@@ -8,15 +8,15 @@ from typing import Any, Iterable, Optional, Sequence, Tuple, TYPE_CHECKING, cast
 import uno
 
 from com.sun.star.beans import PropertyAttribute  # const
-from com.sun.star.beans import XPropertySet
-from com.sun.star.beans import XFastPropertySet
-from com.sun.star.container import XNameAccess
-from com.sun.star.document import XTypeDetection
-from com.sun.star.ui import ItemType  # const
-from com.sun.star.ui import ItemStyle  # const
 from com.sun.star.beans import PropertyVetoException
 from com.sun.star.beans import UnknownPropertyException
+from com.sun.star.beans import XFastPropertySet
+from com.sun.star.beans import XPropertySet
 from com.sun.star.container import XIndexAccess
+from com.sun.star.container import XNameAccess
+from com.sun.star.document import XTypeDetection
+from com.sun.star.ui import ItemStyle  # const
+from com.sun.star.ui import ItemType  # const
 
 
 if TYPE_CHECKING:
@@ -27,10 +27,13 @@ if TYPE_CHECKING:
     # https://stackoverflow.com/questions/22187279/python-circular-importing
     #
     # using lazy loading: https://snarky.ca/lazy-importing-in-python-3-7/
-from . import lo as mLo
-from . import info as mInfo
 from . import gen_util as gUtil
-
+from . import info as mInfo
+from . import lo as mLo
+from ..events.args.key_val_args import KeyValArgs
+from ..events.args.key_val_cancel_args import KeyValCancelArgs
+from ..events.event_singleton import _Events
+from ..events.props_named_event import PropsNamedEvent
 from ..exceptions import ex as mEx
 
 # endregion Imports
@@ -371,34 +374,11 @@ class Props:
     @overload
     @classmethod
     def set_property(cls, obj: object, name: str, value: object) -> None:
-        """
-        Sets the value of the property with the specified name.
-
-        Args:
-            obj (object): object that implements XPropertySet interface
-            name (str): Name of property to set value of
-            value (object): property value
-
-        Raises:
-            MissingInterfaceError: If required interface cannot be obtained.
-            Exception: If unable to set property value
-        """
         ...
 
     @overload
     @classmethod
     def set_property(cls, prop_set: XPropertySet, name: str, value: object) -> None:
-        """
-        Sets the value of the property with the specified name.
-
-        Args:
-            prop_set (XPropertySet): Property set
-            name (str): Name of property to set value of
-            value (object): property value
-
-        Raises:
-            Exception: If unable to set property value
-        """
         ...
 
     @classmethod
@@ -412,9 +392,21 @@ class Props:
             name (str): Name of property to set value of
             value (object): property value
 
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.props_named_event.PropsNamedEvent.PROP_SETTING` :eventref:`src-docs-props-event-setting`
+                - :py:attr:`~.events.props_named_event.PropsNamedEvent.PROP_SET` :eventref:`src-docs-props-event-set`
+
         Raises:
             MissingInterfaceError: If required interface cannot be obtained.
             PropertySetError: If unable to set property value
+
+        Returns:
+            None:
+
+        Note:
+            If a Event is canceled then property is not set. No error occurs.
         """
         ordered_keys = (1, 2, 3)
         kargs_len = len(kwargs)
@@ -445,7 +437,6 @@ class Props:
             kargs[ordered_keys[i]] = arg
 
         try:
-
             cls.set(kargs[1], **{kargs[2]: kargs[3]})
         except mEx.MissingInterfaceError:
             raise
@@ -454,14 +445,6 @@ class Props:
             if isinstance(err, (mEx.PropertyNotFoundError, mEx.PropertySetError)):
                 raise err
             raise mEx.PropertySetError(f"Could not set property '{kargs[2]}'") from err
-        # if mLo.Lo.is_uno_interfaces(kargs[1], XPropertySet):
-        #     prop_set = cast(XPropertySet, kargs[1])
-        # else:
-        #     prop_set = mLo.Lo.qi(XPropertySet, kargs[1], raise_err=True)
-        # try:
-        #     prop_set.setPropertyValue(kargs[2], kargs[3])
-        # except Exception as e:
-        #     raise mEx.PropertySetError(f"Could not set property '{kargs[2]}'") from e
 
     # endregion set_property()
 
@@ -556,7 +539,15 @@ class Props:
         Returns:
             None:
 
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.props_named_event.PropsNamedEvent.PROP_SETTING` :eventref:`src-docs-props-event-setting`
+                - :py:attr:`~.events.props_named_event.PropsNamedEvent.PROP_SET` :eventref:`src-docs-props-event-set`
+
         Note:
+            If a Event is canceled then that property is not set. No error occurs.
+
             If ``MultiError`` occurs only the properties that raised an error is part of the error object.
             The remaining properties will still be set.
         """
@@ -624,14 +615,25 @@ class Props:
     def _set_properties_by_vals(cls, prop_set: XPropertySet, names: Sequence[str], vals: Sequence[object]) -> None:
         errs = []
         for i, name in enumerate(names):
+            has_error = False
             try:
-                prop_set.setPropertyValue(name, vals[i])
+                cargs = KeyValCancelArgs(Props.set_properties.__qualname__, name, vals[i])
+                cargs.event_data = prop_set
+                _Events().trigger(PropsNamedEvent.PROP_SETTING, cargs)
+                if cargs.cancel:
+                    continue
+                prop_set.setPropertyValue(cargs.key, cargs.value)
             except PropertyVetoException as e:
+                has_error = True
                 errs.append(mEx.PropertySetError(f'Could not set readonly-property "{name}"', e))
             except UnknownPropertyException as e:
+                has_error = True
                 errs.append(mEx.PropertyNotFoundError(name, e))
             except Exception as e:
+                has_error = True
                 errs.append(Exception(f'Could not set property "{name}"', e))
+            if not has_error:
+                _Events().trigger(PropsNamedEvent.PROP_SET, KeyValArgs.from_args(cargs))
         if len(errs) > 0:
             raise mEx.MultiError(errs)
 
@@ -646,14 +648,25 @@ class Props:
             return
         nms = cls.get_prop_names(from_props)
         for itm in nms:
+            has_error = False
             try:
-                prop_set.setPropertyValue(itm, cls.get_property(from_props, itm))
+                cargs = KeyValCancelArgs(Props.set_properties.__qualname__, itm, cls.get_property(from_props, itm))
+                cargs.event_data = prop_set
+                _Events().trigger(PropsNamedEvent.PROP_SETTING, cargs)
+                if cargs.cancel:
+                    continue
+                prop_set.setPropertyValue(cargs.key, cargs.value)
             except PropertyVetoException as e:
+                has_error = True
                 errs.append(mEx.PropertySetError(f'Could not set readonly-property "{itm}"', e))
             except UnknownPropertyException as e:
+                has_error = True
                 errs.append(mEx.PropertyNotFoundError(itm, e))
             except Exception as e:
+                has_error = True
                 errs.append(Exception(f'Could not set property "{itm}"', e))
+            if not has_error:
+                _Events().trigger(PropsNamedEvent.PROP_SET, KeyValArgs.from_args(cargs))
         if len(errs) > 0:
             raise mEx.MultiError(errs)
 
@@ -721,7 +734,15 @@ class Props:
         Returns:
             None:
 
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.props_named_event.PropsNamedEvent.PROP_SETTING` :eventref:`src-docs-props-event-setting`
+                - :py:attr:`~.events.props_named_event.PropsNamedEvent.PROP_SET` :eventref:`src-docs-props-event-set`
+
         Note:
+            If a Event is canceled then that property is not set. No error occurs.
+
             If ``MultiError`` occurs only the properties that raised an error is part of the error object.
             The remaining properties will still be set.
         """
@@ -733,23 +754,36 @@ class Props:
             ps = mLo.Lo.qi(XPropertySet, obj, True)
         errs = []
         for key, value in kwargs.items():
+            has_error = False
+            cargs = KeyValCancelArgs(Props.set.__qualname__, key, value)
+            cargs.event_data = obj
+            _Events().trigger(PropsNamedEvent.PROP_SETTING, cargs)
+            if cargs.cancel:
+                continue
             try:
-                ps.setPropertyValue(key, value)
+                ps.setPropertyValue(cargs.key, cargs.value)
             except AttributeError as e:
                 # handle a LibreOffice bug
-                if not cls._set_by_attribute(obj, key, value):
+                if not cls._set_by_attribute(obj, cargs.key, cargs.value):
                     errs.append(
                         mEx.UnKnownError(
                             f'Something went wrong. Could not find setPropertyValue attribute on property set. Tried setting "{key}" manually but failed'
                         )
                     )
+                    has_error = True
                     errs.append(e)
+
             except PropertyVetoException as e:
+                has_error = True
                 errs.append(mEx.PropertySetError(f'Could not set readonly-property "{key}"', e))
             except UnknownPropertyException as e:
+                has_error = True
                 errs.append(mEx.PropertyNotFoundError(key, e))
             except Exception as e:
+                has_error = True
                 errs.append(Exception(f'Could not set property "{key}"', e))
+            if not has_error:
+                _Events().trigger(PropsNamedEvent.PROP_SET, KeyValArgs.from_args(cargs))
         if len(errs) > 0:
             raise mEx.MultiError(errs)
 

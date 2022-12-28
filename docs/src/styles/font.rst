@@ -1,6 +1,6 @@
-.. _style_font:
+.. _styles_font:
 
-Module Font
+Module font
 ===========
 
 .. automodule:: ooodev.styles.font
