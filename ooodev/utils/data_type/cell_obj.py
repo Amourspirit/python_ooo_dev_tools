@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, cast
 from dataclasses import dataclass, field
 from typing import overload
 from weakref import ref
+import numbers
 from . import cell_values as mCellVals
 from . import col_obj as mCol
 from . import range_obj as mRngObj
@@ -184,7 +185,7 @@ class CellObj:
             return str(self) == other.upper()
         return False
 
-    def __add__(self, other: object) -> Self:
+    def __add__(self, other: object) -> CellObj:
         try:
             if isinstance(other, str):
                 # string mean add column
@@ -198,19 +199,22 @@ class CellObj:
                 return CellObj(col=self.col, row=self.row + other, sheet_idx=self.sheet_idx, range_obj=self.range_obj)
             if isinstance(other, CellObj):
                 # add row and column:
-                col = cast(mCol.ColObj, self.col_obj + other.col_obj)
-                row = cast(mRow.RowObj, self.row_obj + other.row_obj)
+                col = self.col_obj + other.col_obj
+                row = self.row_obj + other.row_obj
                 return CellObj(col=col.value, row=row.value, sheet_idx=self.sheet_idx, range_obj=self.range_obj)
+        except IndexError:
+            raise
         except AssertionError as e:
             raise IndexError from e
         except Exception:
-            return NotImplemented
+            pass
+        return NotImplemented
 
-    def __sub__(self, other: object) -> Self:
+    def __sub__(self, other: object) -> CellObj:
         try:
             if isinstance(other, str):
                 # string mean subtract column
-                col = cast(mCol.ColObj, self.col_obj - other)
+                col = self.col_obj - other
                 return CellObj(col=col.value, row=self.row, sheet_idx=self.sheet_idx, range_obj=self.range_obj)
             if isinstance(other, mCol.ColObj):
                 return CellObj(col=other.value, row=self.row, sheet_idx=self.sheet_idx, range_obj=self.range_obj)
@@ -220,13 +224,93 @@ class CellObj:
                 return CellObj(col=self.col, row=self.row - other, sheet_idx=self.sheet_idx, range_obj=self.range_obj)
             if isinstance(other, CellObj):
                 # subbtract row and column:
-                col = cast(mCol.ColObj, self.col_obj - other.col_obj)
-                row = cast(mRow.RowObj, self.row_obj - other.row_obj)
+                col = self.col_obj - other.col_obj
+                row = self.row_obj - other.row_obj
                 return CellObj(col=col.value, row=row.value, sheet_idx=self.sheet_idx, range_obj=self.range_obj)
+        except IndexError:
+            raise
         except AssertionError as e:
             raise IndexError from e
         except Exception:
-            return NotImplemented
+            pass
+        return NotImplemented
+
+    def __mul__(self, other: object) -> CellObj:
+        try:
+            if isinstance(other, str):
+                # string mean subtract column
+                col = self.col_obj * other
+                return CellObj(col=col.value, row=self.row, sheet_idx=self.sheet_idx, range_obj=self.range_obj)
+            if isinstance(other, mCol.ColObj):
+                return CellObj(col=other.value, row=self.row, sheet_idx=self.sheet_idx, range_obj=self.range_obj)
+            if isinstance(other, mRow.RowObj):
+                return CellObj(col=self.col, row=other.value, sheet_idx=self.sheet_idx, range_obj=self.range_obj)
+            if isinstance(other, int):
+                row = self.row_obj * other
+                return CellObj(col=self.col, row=row.value, sheet_idx=self.sheet_idx, range_obj=self.range_obj)
+            if isinstance(other, CellObj):
+                # multiply row and column:
+                col = self.col_obj * other.col_obj
+                row = self.row_obj * other.row_obj
+                return CellObj(col=col.value, row=row.value, sheet_idx=self.sheet_idx, range_obj=self.range_obj)
+        except IndexError:
+            raise
+        except AssertionError as e:
+            raise IndexError from e
+        except Exception:
+            pass
+        return NotImplemented
+
+    def __rmul__(self, other: object) -> CellObj:
+        if other == 0:
+            return self
+        else:
+            return self.__mul__(other)
+
+    def __truediv__(self, other: object) -> CellObj:
+        try:
+            if isinstance(other, str):
+                # string mean subtract column
+                col = self.col_obj / other
+                return CellObj(col=col.value, row=self.row, sheet_idx=self.sheet_idx, range_obj=self.range_obj)
+            if isinstance(other, mCol.ColObj):
+                return CellObj(col=other.value, row=self.row, sheet_idx=self.sheet_idx, range_obj=self.range_obj)
+            if isinstance(other, mRow.RowObj):
+                return CellObj(col=self.col, row=other.value, sheet_idx=self.sheet_idx, range_obj=self.range_obj)
+            if isinstance(other, int):
+                row = self.row_obj / other
+                return CellObj(col=self.col, row=row.value, sheet_idx=self.sheet_idx, range_obj=self.range_obj)
+            if isinstance(other, CellObj):
+                # divide row and column:
+                col = self.col_obj / other.col_obj
+                row = self.row_obj / other.row_obj
+                return CellObj(col=col.value, row=row.value, sheet_idx=self.sheet_idx, range_obj=self.range_obj)
+        except IndexError:
+            raise
+        except AssertionError as e:
+            raise IndexError from e
+        except Exception:
+            pass
+        return NotImplemented
+
+    def __rtruediv__(self, other: object) -> CellObj:
+        try:
+            i = self.index + 1
+            if isinstance(other, str):
+                oth = CellObj(other)
+                return oth.__truediv__(self.col)
+            if isinstance(other, numbers.Real):
+                check(other != 0, f"{repr(self)}", f"Cannot be divided by zero")
+                check(other >= i, f"{repr(self)}", f"Cannot be divided by lessor number")
+                oth = CellObj.from_idx(col_idx=self.col_obj.index, row_idx=round(other - 1), sheet_idx=self.sheet_idx)
+                return oth.__truediv__(self.row)
+        except IndexError:
+            raise
+        except AssertionError as e:
+            raise IndexError from e
+        except Exception:
+            pass
+        return NotImplemented
 
     # endregion dunder methods
 
