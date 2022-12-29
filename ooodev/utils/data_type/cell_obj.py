@@ -3,12 +3,13 @@ from typing import TYPE_CHECKING, cast
 from dataclasses import dataclass, field
 from typing import overload
 from weakref import ref
+from . import cell_values as mCellVals
 from . import col_obj as mCol
 from . import range_obj as mRngObj
-from . import cell_values as mCellVals
 from . import row_obj as mRow
 from .. import table_helper as mTb
 from ...office import calc as mCalc
+from ..validation import check
 
 from ooo.dyn.table.cell_address import CellAddress
 
@@ -39,7 +40,14 @@ class CellObj:
     """Range Object that instance is part of"""
 
     def __post_init__(self):
+
         object.__setattr__(self, "col", self.col.upper())
+        try:
+            # convert col to index for the purpose of validataion
+            _ = mTb.TableHelper.col_name_to_int(name=self.col)
+        except ValueError as e:
+            raise AssertionError from e
+        check(self.row >= 1, f"{self}", f"Expected a row of 1 or greater. Got: {self.row}")
         if self.sheet_idx < 0:
             if self.range_obj:
                 if self.range_obj.sheet_idx >= 0:

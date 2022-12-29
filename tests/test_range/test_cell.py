@@ -51,6 +51,56 @@ def test_cell_obj(loader) -> None:
         Lo.close_doc(doc)
 
 
+def test_cell_obj_init_error(loader) -> None:
+    from ooodev.utils.data_type.cell_obj import CellObj
+
+    from ooodev.utils.lo import Lo
+    from ooodev.office.calc import Calc
+
+    doc = Calc.create_doc()
+    _ = Calc.get_sheet(doc)
+
+    try:
+        with pytest.raises(AssertionError):
+            _ = CellObj("@", 2)
+
+        with pytest.raises(AssertionError):
+            _ = CellObj("B:", 2)
+
+        with pytest.raises(AssertionError):
+            _ = CellObj("A", 0)
+
+        with pytest.raises(AssertionError):
+            _ = CellObj("A", -1)
+
+        with pytest.raises(AssertionError):
+            _ = CellObj("", 10)
+
+        with pytest.raises(AssertionError):
+            _ = CellObj.from_cell("B!2")
+
+        with pytest.raises(AssertionError):
+            _ = CellObj.from_cell("2")
+
+        with pytest.raises(ValueError):
+            _ = CellObj.from_cell("B:a2")
+
+        with pytest.raises(ValueError):
+            _ = CellObj.from_cell("b.")
+
+        with pytest.raises(ValueError):
+            _ = CellObj.from_cell("b:0")
+
+        with pytest.raises(ValueError):
+            _ = CellObj.from_idx(-1, 0, 0)
+
+        with pytest.raises(AssertionError):
+            _ = CellObj.from_idx(0, -1, 0)
+
+    finally:
+        Lo.close_doc(doc)
+
+
 def test_cell_obj_to_cell_values(loader) -> None:
     from ooodev.utils.data_type.cell_obj import CellObj
 
@@ -198,5 +248,30 @@ def test_cell_math(loader) -> None:
         assert e3.col == "E"
         assert e3.row == 3
 
+    finally:
+        Lo.close_doc(doc)
+
+
+def test_cell_math_errors(loader) -> None:
+    from ooodev.utils.data_type.cell_obj import CellObj
+
+    from ooodev.utils.lo import Lo
+    from ooodev.office.calc import Calc
+
+    doc = Calc.create_doc()
+    _ = Calc.get_sheet(doc)
+    try:
+        b2 = CellObj.from_cell("B2")
+        with pytest.raises(IndexError):
+            _ = b2 - 2
+
+        with pytest.raises(IndexError):
+            _ = b2 - (b2.row_info - 2)
+
+        with pytest.raises(IndexError):
+            _ = b2 - (b2.row_info - 2)
+
+        with pytest.raises(IndexError):
+            _ = b2 - (b2.col_info - 2)
     finally:
         Lo.close_doc(doc)
