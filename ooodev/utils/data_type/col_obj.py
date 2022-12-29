@@ -222,6 +222,7 @@ class ColObj:
     # region properties
     @property
     def next(self) -> ColObj:
+        """Gets the next column"""
         try:
             n = self._next
             if n() is None:
@@ -234,6 +235,12 @@ class ColObj:
 
     @property
     def prev(self) -> ColObj:
+        """
+        Gets the previous column
+
+        Raises:
+            IndexError: If prevous column is out of range
+        """
         try:
             p = self._prev
             if p() is None:

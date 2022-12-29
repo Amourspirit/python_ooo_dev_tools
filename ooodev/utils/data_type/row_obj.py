@@ -158,6 +158,7 @@ class RowObj(BaseIntValue):
 
     @property
     def next(self) -> RowObj:
+        """Gets the nex row"""
         try:
             n = self._next
             if n() is None:
@@ -166,10 +167,16 @@ class RowObj(BaseIntValue):
         except AttributeError:
             n = RowObj.from_int(self.value + 1)
             object.__setattr__(self, "_next", ref(n))
-            return self._next()
+        return self._next()
 
     @property
     def prev(self) -> RowObj:
+        """
+        Gets the prevous row
+
+        Raises:
+            IndexError: If previous row is out of range
+        """
         try:
             p = self._prev
             if p() is None:
@@ -181,6 +188,6 @@ class RowObj(BaseIntValue):
                 object.__setattr__(self, "_prev", ref(p))
             except AssertionError as e:
                 raise IndexError from e
-            return self._prev()
+        return self._prev()
 
     # endregion properties
