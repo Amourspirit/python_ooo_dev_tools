@@ -10,11 +10,6 @@ from ..validation import check
 if TYPE_CHECKING:
     from . import cell_obj as mCell
 
-    try:
-        from typing import Self
-    except ImportError:
-        from typing_extensions import Self
-
 
 @dataclass(frozen=True)
 class ColObj:

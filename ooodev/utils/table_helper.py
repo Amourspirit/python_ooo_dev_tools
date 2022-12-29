@@ -7,10 +7,6 @@ import string
 from typing import Callable, Iterable, Sequence, List, Any, Tuple, overload, TypeVar, NamedTuple
 
 from . import gen_util as gUtil
-from .data_type.cell_obj import CellObj as CellObj
-from .data_type.cell_values import CellValues as CellValues
-from .data_type import range_obj as mRo
-from .data_type import range_values as mRv
 from .type_var import DictTable, Table
 import string
 
