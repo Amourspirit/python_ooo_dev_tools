@@ -9,6 +9,9 @@ Renamed method ``GUI.show_memu_bar()`` to ``GUI.show_menu_bar()``
 
 Fixxed issue with ``Calc.get_sheet_names()`` when overload with no args was used.
 
+Rename ``CellObj.col_info`` to ``CellObj.col_obj``
+
+Rename ``CellObj.row_info`` to ``CellObj.row_obj``
 
 Version 0.8.6
 =============

@@ -1,4 +1,3 @@
-from typing import Any
 import pytest
 
 if __name__ == "__main__":
@@ -37,29 +36,29 @@ def test_get_range_values(loader) -> None:
         assert ro != "Roses are red"
         assert ro.sheet_name.startswith("Sheet")
 
-        assert ro.start.col_info.index == 0
-        assert ro.start.col_info.value == "A"
-        assert ro.start.row_info.index == 1
-        assert ro.start.row_info.value == 2
+        assert ro.start.col_obj.index == 0
+        assert ro.start.col_obj.value == "A"
+        assert ro.start.row_obj.index == 1
+        assert ro.start.row_obj.value == 2
 
-        assert ro.end.col_info.index == 3
-        assert ro.end.col_info.value == "D"
-        assert ro.end.row_info.index == 5
-        assert ro.end.row_info.value == 6
+        assert ro.end.col_obj.index == 3
+        assert ro.end.col_obj.value == "D"
+        assert ro.end.row_obj.index == 5
+        assert ro.end.row_obj.value == 6
 
         assert ro.col_start == "A"
         assert ro.col_end == "D"
         assert ro.row_start == 2
         assert ro.row_end == 6
 
-        assert ro.start.col_info < ro.end.col_info
-        assert ro.start.row_info < ro.end.row_info
+        assert ro.start.col_obj < ro.end.col_obj
+        assert ro.start.row_obj < ro.end.row_obj
 
-        assert ro.end.col_info > ro.start.col_info
-        assert ro.end.row_info > ro.start.row_info
+        assert ro.end.col_obj > ro.start.col_obj
+        assert ro.end.row_obj > ro.start.row_obj
 
-        assert ro.start.col_info != ro.end.col_info
-        assert ro.start.row_info != ro.end.row_info
+        assert ro.start.col_obj != ro.end.col_obj
+        assert ro.start.row_obj != ro.end.row_obj
     finally:
         Lo.close_doc(doc)
 
@@ -83,11 +82,11 @@ def test_get_range_obj(loader) -> None:
         assert ro1.cell_start.range_obj is ro1
         assert ro1.cell_end.range_obj is ro1
 
-        assert ro1.cell_start.col_info.cell_obj is ro1.cell_start
-        assert ro1.cell_start.row_info.cell_obj is ro1.cell_start
+        assert ro1.cell_start.col_obj.cell_obj is ro1.cell_start
+        assert ro1.cell_start.row_obj.cell_obj is ro1.cell_start
 
-        assert ro1.cell_end.col_info.cell_obj is ro1.cell_end
-        assert ro1.cell_end.row_info.cell_obj is ro1.cell_end
+        assert ro1.cell_end.col_obj.cell_obj is ro1.cell_end
+        assert ro1.cell_end.row_obj.cell_obj is ro1.cell_end
 
         assert ro1.cell_start.col == "A"
         assert ro1.cell_start.row == 2
@@ -95,17 +94,17 @@ def test_get_range_obj(loader) -> None:
         assert ro1.cell_end.col == "D"
         assert ro1.cell_end.row == 6
 
-        assert ro1.cell_start.col_info.value == "A"
-        assert ro1.cell_start.col_info.index == 0
+        assert ro1.cell_start.col_obj.value == "A"
+        assert ro1.cell_start.col_obj.index == 0
 
-        assert ro1.cell_start.row_info.value == 2
-        assert ro1.cell_start.row_info.index == 1
+        assert ro1.cell_start.row_obj.value == 2
+        assert ro1.cell_start.row_obj.index == 1
 
-        assert ro1.cell_end.col_info.value == "D"
-        assert ro1.cell_end.col_info.index == 3
+        assert ro1.cell_end.col_obj.value == "D"
+        assert ro1.cell_end.col_obj.index == 3
 
-        assert ro1.cell_end.row_info.value == 6
-        assert ro1.cell_end.row_info.index == 5
+        assert ro1.cell_end.row_obj.value == 6
+        assert ro1.cell_end.row_obj.index == 5
 
         assert ro1.cell_start.sheet_idx == ro1.sheet_idx
         assert ro1.cell_end.sheet_idx == ro1.sheet_idx
@@ -117,8 +116,8 @@ def test_get_range_obj(loader) -> None:
         assert ro2.row_end == 6
 
         assert ro1 == ro2
-        assert ro1.start.col_info.index == 0
-        assert ro1.end.col_info.index == 3
+        assert ro1.start.col_obj.index == 0
+        assert ro1.end.col_obj.index == 3
 
         ro2 = RangeObj.from_range(range_val="a2:d6")
         assert ro2 == ro1
@@ -262,80 +261,6 @@ def test_range_obj_is_methods(loader) -> None:
         assert rng.is_single_cell() == True
         assert rng.is_single_col() == True
         assert rng.is_single_row() == True
-
-    finally:
-        Lo.close_doc(doc)
-
-
-def test_cell_obj(loader) -> None:
-    from ooodev.utils.data_type.cell_obj import CellObj
-    from ooodev.utils.data_type.range_obj import RangeObj
-
-    from ooodev.utils.lo import Lo
-    from ooodev.office.calc import Calc
-
-    doc = Calc.create_doc()
-    sheet = Calc.get_sheet(doc)
-
-    try:
-
-        name = "B22"
-        addr = Calc.get_cell_address(sheet, name)
-        cell = CellObj.from_cell(addr)
-        assert cell.col == "B"
-        assert cell.row == 22
-
-        name = "r75"
-        cell = CellObj.from_cell(name)
-        assert cell.col == "R"
-        assert cell.row == 75
-        assert cell.col_info.value == "R"
-        assert cell.col_info.index == 17
-        assert cell.row_info.value == 75
-        assert cell.row_info.index == 74
-        assert cell == "R75"
-        assert cell == "r75"
-
-        rng = RangeObj.from_range("a1:r75")
-        assert rng.cell_end == cell
-
-        addr = cell.get_cell_address()
-        assert addr.Column == 17
-        assert addr.Row == 74
-        assert addr.Sheet == 0
-
-        cell = CellObj.from_idx(1, 7)
-        assert cell.sheet_idx == 0
-        assert cell.col == "B"
-        assert cell.row == 8
-
-    finally:
-        Lo.close_doc(doc)
-
-
-def test_cell_obj_to_cell_values(loader) -> None:
-    from ooodev.utils.data_type.cell_obj import CellObj
-
-    from ooodev.utils.lo import Lo
-    from ooodev.office.calc import Calc
-
-    doc = Calc.create_doc()
-    sheet = Calc.get_sheet(doc)
-
-    try:
-
-        name = "B2"
-        cell1 = CellObj.from_cell(name)
-        cv1 = cell1.get_cell_values()
-        assert cv1.col == 1
-        assert cv1.row == 1
-        assert cv1.sheet_idx == cell1.sheet_idx
-
-        cell2 = CellObj.from_cell(cv1)
-        assert cell2 == cell1
-        cv2 = cell2.get_cell_values()
-        assert cv2 == cv1
-        assert cv2 == name
 
     finally:
         Lo.close_doc(doc)
