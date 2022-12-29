@@ -2,11 +2,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from dataclasses import dataclass, field
 from weakref import ref
-from . import cell_obj as mCell
+import numbers
 from ..validation import check
 from .base_int_value import BaseIntValue
 
 if TYPE_CHECKING:
+    from . import cell_obj as mCell
+
     try:
         from typing import Self
     except ImportError:
@@ -24,16 +26,12 @@ class RowObj(BaseIntValue):
     # region init
     index: int = field(init=False, repr=False, hash=False)
     """row Index (zero-based)"""
-    cell_obj: mCell.CellObj | None = field(repr=False, hash=False, default=None)
+    cell_obj: "mCell.CellObj | None" = field(repr=False, hash=False, default=None)
     """Cell Object that instance is part of"""
 
     def __post_init__(self):
         # must be value of 1 or greater
-        check(
-            self.value > 0,
-            f"{self}",
-            f"Expected a value of 1 or greater. Got: {self.value}",
-        )
+        check(self.value > 0, "RowObj", f"Expected a value of 1 or greater. Got: {self.value}")
         self.index = self.value - 1
 
     # endregion init
@@ -112,18 +110,19 @@ class RowObj(BaseIntValue):
         except Exception:
             return NotImplemented
 
-    def __add__(self, other: object) -> Self:
+    def __add__(self, other: object) -> RowObj:
         if isinstance(other, RowObj):
             return RowObj.from_int(self.value + other.value)
         try:
-            i = int(other)
+            i = round(other)
             return RowObj.from_int(self.value + i)
         except AssertionError as e:
             raise IndexError from e
         except Exception:
-            return NotImplemented
+            pass
+        return NotImplemented
 
-    def __radd__(self, other: object) -> Self:
+    def __radd__(self, other: object) -> RowObj:
         # angle = sum([col1, col2, col3])
         # will result in TypeError becuase sum() start with 0
         # this will force a call to __radd__
@@ -132,25 +131,72 @@ class RowObj(BaseIntValue):
         else:
             return self.__add__(other)
 
-    def __sub__(self, other: object) -> Self:
+    def __sub__(self, other: object) -> RowObj:
         try:
             if isinstance(other, RowObj):
                 return RowObj.from_int(self.value - other.value)
-            i = int(other)
+            i = round(other)
             return RowObj.from_int(self.value - i)
         except AssertionError as e:
             raise IndexError from e
         except Exception:
-            return NotImplemented
+            pass
+        return NotImplemented
 
-    def __rsub__(self, other: object) -> Self:
+    def __rsub__(self, other: object) -> RowObj:
         try:
-            i = int(other)
+            i = round(other)
             return self.from_int(i - self.value)
         except AssertionError as e:
             raise IndexError from e
         except Exception:
-            return NotImplemented
+            pass
+        return NotImplemented
+
+    def __mul__(self, other: object) -> RowObj:
+        try:
+            if isinstance(other, RowObj):
+                return RowObj.from_int(self.value * other.value)
+            if isinstance(other, numbers.Real):
+                return RowObj.from_int(round(self.value * other))
+        except AssertionError as e:
+            raise IndexError from e
+        except Exception:
+            pass
+        return NotImplemented
+
+    def __rmul__(self, other: object) -> RowObj:
+        if other == 0:
+            return self
+        else:
+            return self.__mul__(other)
+
+    def __truediv__(self, other: object):
+        try:
+            if isinstance(other, RowObj):
+                check(self.value != 0, f"{repr(self)}", f"Cannot be divided by zero")
+                return RowObj.from_int(round(self.value / other.value))
+            if isinstance(other, numbers.Real):
+                check(other != 0, f"{repr(self)}", f"Cannot be divided by zero")
+                check(self.value >= other, f"{repr(self)}", f"Cannot be divided by lessor number")
+            return RowObj.from_int(round(self.value / other))
+        except AssertionError as e:
+            raise IndexError from e
+        except Exception:
+            pass
+        return NotImplemented
+
+    def __rtruediv__(self, other: object) -> RowObj:
+        try:
+            if isinstance(other, numbers.Real):
+                check(other != 0, f"{repr(self)}", f"Cannot be divided by zero")
+                check(other >= self.value, f"{repr(self)}", f"Cannot be divided by lessor number")
+            return RowObj.from_int(round(other / self.value))
+        except AssertionError as e:
+            raise IndexError from e
+        except Exception:
+            pass
+        return NotImplemented
 
     # endregion duner methods
 

@@ -2,11 +2,14 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from dataclasses import dataclass, field
 from weakref import ref
-from . import cell_obj as mCell
+import numbers
+
 from .. import table_helper as mTb
 from ..validation import check
 
 if TYPE_CHECKING:
+    from . import cell_obj as mCell
+
     try:
         from typing import Self
     except ImportError:
@@ -27,7 +30,7 @@ class ColObj:
     """Column such as ``A``"""
     index: int = field(init=False, repr=False, hash=False)
     """Column Index (zero-based)"""
-    cell_obj: mCell.CellObj | None = field(repr=False, hash=False, default=None)
+    cell_obj: "mCell.CellObj | None" = field(repr=False, hash=False, default=None)
     """Cell Object that instance is part of"""
 
     def __post_init__(self):
@@ -152,7 +155,7 @@ class ColObj:
         except Exception:
             return NotImplemented
 
-    def __add__(self, other: object) -> Self:
+    def __add__(self, other: object) -> ColObj:
         if isinstance(other, str):
             try:
                 if isinstance(other, str):
@@ -170,9 +173,10 @@ class ColObj:
         except AssertionError as e:
             raise IndexError from e
         except Exception:
-            return NotImplemented
+            pass
+        return NotImplemented
 
-    def __radd__(self, other: object) -> Self:
+    def __radd__(self, other: object) -> ColObj:
         # angle = sum([col1, col2, col3])
         # will result in TypeError becuase sum() start with 0
         # this will force a call to __radd__
@@ -181,7 +185,7 @@ class ColObj:
         else:
             return self.__add__(other)
 
-    def __sub__(self, other: object) -> Self:
+    def __sub__(self, other: object) -> ColObj:
         if isinstance(other, str):
             try:
                 oth = ColObj(other)
@@ -198,9 +202,10 @@ class ColObj:
         except AssertionError as e:
             raise IndexError from e
         except Exception:
-            return NotImplemented
+            pass
+        return NotImplemented
 
-    def __rsub__(self, other: object) -> Self:
+    def __rsub__(self, other: object) -> ColObj:
         if isinstance(other, str):
             try:
                 oth = ColObj(other)
@@ -215,7 +220,74 @@ class ColObj:
         except AssertionError as e:
             raise IndexError from e
         except Exception:
-            return NotImplemented
+            pass
+        return NotImplemented
+
+    def __mul__(self, other: object) -> ColObj:
+        try:
+            i = self.index + 1
+            if isinstance(other, str):
+                oth = ColObj(other)
+                return ColObj.from_int(i * (oth.index + 1))
+            if isinstance(other, ColObj):
+                return ColObj.from_int(i * (other.index + 1))
+            if isinstance(other, numbers.Real):
+                return ColObj.from_int(round(i * other))
+        except IndexError:
+            raise
+        except AssertionError as e:
+            raise IndexError from e
+        except Exception:
+            pass
+        return NotImplemented
+
+    def __rmul__(self, other: object) -> ColObj:
+        if other == 0:
+            return self
+        else:
+            return self.__mul__(other)
+
+    def __truediv__(self, other: object) -> ColObj:
+        try:
+            i = self.index + 1
+            if isinstance(other, str):
+                oth = ColObj(other)
+                i2 = oth.index + 1
+                check(i >= i2, f"{repr(self)}", f"Cannot be divided by lessor number")
+                return ColObj.from_int(round(i / i2))
+            if isinstance(other, ColObj):
+                i2 = other.index + 1
+                check(i >= i2, f"{repr(self)}", f"Cannot be divided by lessor {repr(other)}")
+                return ColObj.from_int(round(i / i2))
+            if isinstance(other, numbers.Real):
+                check(other != 0, f"{repr(self)}", f"Cannot be divided by zero")
+                check(i >= other, f"{repr(self)}", f"Cannot be divided by lessor number")
+            return ColObj.from_int(round(i / other))
+        except IndexError:
+            raise
+        except AssertionError as e:
+            raise IndexError from e
+        except Exception:
+            pass
+        return NotImplemented
+
+    def __rtruediv__(self, other: object) -> ColObj:
+        try:
+            i = self.index + 1
+            if isinstance(other, str):
+                oth = ColObj(other)
+                return oth.__truediv__(self)
+            if isinstance(other, numbers.Real):
+                check(other != 0, f"{repr(self)}", f"Cannot be divided by zero")
+                check(other >= i, f"{repr(self)}", f"Cannot be divided by lessor number")
+                return ColObj.from_int(round(other / i))
+        except IndexError:
+            raise
+        except AssertionError as e:
+            raise IndexError from e
+        except Exception:
+            pass
+        return NotImplemented
 
     # endregion dunder methods
 

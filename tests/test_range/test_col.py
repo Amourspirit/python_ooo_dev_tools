@@ -46,7 +46,7 @@ def test_col_math() -> None:
     assert "c" > c2
     assert c2 < "c"
 
-    c3 = cast(ColObj, c2 + 1)
+    c3 = c2 + 1
     assert c3.index == 2
     assert c3.value == "C"
     assert c3 == "C"
@@ -54,29 +54,29 @@ def test_col_math() -> None:
     c5 = ColObj("E")
     assert c5.index == 4
 
-    c10 = cast(ColObj, c1 + 9)
+    c10 = c1 + 9
     assert c10.value == "J"
     assert c10.index == 9
 
-    c11 = cast(ColObj, c2 + 9)
+    c11 = c2 + 9
     assert c11.value == "K"
     assert c11.index == 10
     assert c11 > c10
 
     # I is adding 9
     # b (2) + I (9) = K (11)
-    c11 = cast(ColObj, c2 + "i")
+    c11 = c2 + "i"
     assert c11.value == "K"
     assert c11.index == 10
     assert c11 > c10
 
-    c11 = cast(ColObj, "i" + c2)
+    c11 = "i" + c2
     assert c11.value == "K"
     assert c11.index == 10
     assert c11 > c10
     assert c11 < "O"
 
-    c9 = cast(ColObj, c11 - 2)
+    c9 = c11 - 2
     assert c9.value == "I"
     assert c9.index == 8
     assert c9 < c11
@@ -88,16 +88,16 @@ def test_col_math() -> None:
     assert c9 < c11
     assert c9 < "K"
 
-    c9 = cast(ColObj, c11 - "B")
+    c9 = c11 - "B"
     assert c9.value == "I"
     assert c9.index == 8
     assert c9 < c11
     assert c9 < "K"
 
-    c2 = cast(ColObj, 5 - c3)
+    c2 = 5 - c3
     assert c2.index == 1
 
-    c2 = cast(ColObj, "E" - c3)
+    c2 = "E" - c3
     assert c2.index == 1
 
     assert c1.index == 0
@@ -110,14 +110,38 @@ def test_col_math() -> None:
     c_sum = sum([c1, c2, c3])
     assert c_sum.index == 5
 
-    c_sum = cast(ColObj, sum([c1, 2, 3]))
+    c_sum = sum([c1, 2, 3])
     assert c_sum.index == 5
 
-    c_sum = cast(ColObj, sum([c1, "b", "c"]))
+    c_sum = sum([c1, "b", "c"])
     assert c_sum.index == 5
 
-    c_sum = cast(ColObj, sum([c1, "b", 3]))
+    c_sum = sum([c1, "b", 3])
     assert c_sum.index == 5
+
+    c6 = c2 * 3
+    assert c6.index == 5
+
+    c60 = c6 * 10
+    assert c60.index == 59
+
+    c6 = c60 / 10
+    assert c6.index == 5
+
+    c10 = (c6 - 1) + c5
+    assert c10.index == 9
+
+    c5 = 50 / c10
+    assert c5.index == 4
+
+    c3 = c6 / "B"  # divide by 2
+    assert c3.index == 2
+
+    c12 = c3 * "D"  # muliply by 4
+    assert c12.index == 11
+
+    c4 = "T" / c5  # T is 20
+    assert c4.index == 3
 
 
 def test_col_math_errors() -> None:
@@ -140,6 +164,18 @@ def test_col_math_errors() -> None:
 
     with pytest.raises(IndexError):
         _ = -10 + c3
+
+    with pytest.raises(IndexError):
+        _ = c3 / 5
+
+    with pytest.raises(IndexError):
+        _ = c3 / "E"
+
+    with pytest.raises(IndexError):
+        _ = c3 / 0
+    
+    with pytest.raises(IndexError):
+        _ = "B" / c3
 
 
 def test_col_next_prev() -> None:

@@ -206,23 +206,23 @@ def test_cell_math(loader) -> None:
         assert b4.col == "B"
         assert b4.row == 4
 
-        b4 = cast(CellObj, b2 + (b2.row_obj + 2))
+        b4 = b2 + (b2.row_obj + 2)
         assert b4.col == "B"
         assert b4.row == 4
 
-        d2 = cast(CellObj, b2 + (b2.col_obj + 2))
+        d2 = b2 + (b2.col_obj + 2)
         assert d2.col == "D"
         assert d2.row == 2
 
-        e2 = cast(CellObj, b2 + "C")  # add 3 columns
+        e2 = b2 + "C"  # add 3 columns
         assert e2.col == "E"
         assert e2.row == 2
 
-        a2 = cast(CellObj, e2 - "D")  # subtract 4 columns
+        a2 = e2 - "D"  # subtract 4 columns
         assert a2.col == "A"
         assert a2.row == 2
 
-        a2 = cast(CellObj, e2 - (e2.col_obj - 4))
+        a2 = e2 - (e2.col_obj - 4)
         assert a2.col == "A"
         assert a2.row == 2
 
@@ -230,23 +230,71 @@ def test_cell_math(loader) -> None:
         assert b2.col == "B"
         assert b2.row == 2
 
-        e5 = cast(CellObj, e2 + (e2.row_obj + 3))
+        e5 = e2 + (e2.row_obj + 3)
         assert e5.col == "E"
         assert e5.row == 5
 
-        e3 = cast(CellObj, e5 - (e5.row_obj - 2))
+        e3 = e5 - (e5.row_obj - 2)
         assert e3.col == "E"
         assert e3.row == 3
 
         # add two cells and two colums by adding CellObj instnaces
-        g5 = cast(CellObj, e3 + CellObj("B", 2, sheet_idx=e3.sheet_idx))
+        g5 = e3 + CellObj("B", 2, sheet_idx=e3.sheet_idx)
         assert g5.col == "G"
         assert g5.row == 5
 
         # subtract to cells and tow columns by subtracting CellObj instance
-        e3 = cast(CellObj, g5 - CellObj("B", 2, sheet_idx=e3.sheet_idx))
+        e3 = g5 - CellObj("B", 2, sheet_idx=e3.sheet_idx)
         assert e3.col == "E"
         assert e3.row == 3
+
+        e9 = e3 * 3
+        assert e9.col == "E"
+        assert e9.row == 9
+
+        e3 == e9 / 3
+        assert e3.col == "E"
+        assert e3.row == 3
+
+        b4 = b2 * 2
+        assert b4.col == "B"
+        assert b4.row == 4
+
+        b40 = b4 * (b4.row_obj * 10)
+        assert b40.col == "B"
+        assert b40.row == 40
+
+        t40 = b40 * (b40.col_obj * 10)
+        assert t40.col == "T"
+        assert t40.row == 40
+
+        d4 = b2 * b2
+        assert d4.col == "D"
+        assert d4.row == 4
+
+        p16 = d4 * d4
+        assert p16.col == "P"
+        assert p16.row == 16
+
+        d4 = p16 / d4
+        assert d4.col == "D"
+        assert d4.row == 4
+
+        p4 = d4 * "D"  # multiply col by 4
+        assert p4.col == "P"
+        assert p4.row == 4
+
+        d4 = p4 / "D"  # divide col by 4
+        assert d4.col == "D"
+        assert d4.row == 4
+
+        d16 = d4 * 4  # multiply rows by 4
+        assert d16.col == "D"
+        assert d16.row == 16
+
+        d4 = d16 / 4  # divide row by 4
+        assert d4.col == "D"
+        assert d4.row == 4
 
     finally:
         Lo.close_doc(doc)
@@ -262,6 +310,7 @@ def test_cell_math_errors(loader) -> None:
     _ = Calc.get_sheet(doc)
     try:
         b2 = CellObj.from_cell("B2")
+        b4 = CellObj.from_cell("B4")
         with pytest.raises(IndexError):
             _ = b2 - 2
 
@@ -273,5 +322,17 @@ def test_cell_math_errors(loader) -> None:
 
         with pytest.raises(IndexError):
             _ = b2 - (b2.col_obj - 2)
+
+        with pytest.raises(IndexError):
+            _ = b2 / 0
+
+        with pytest.raises(IndexError):
+            _ = b2 / 3
+
+        with pytest.raises(IndexError):
+            _ = b2 / "C"
+
+        with pytest.raises(IndexError):
+            _ = b2 / b4
     finally:
         Lo.close_doc(doc)

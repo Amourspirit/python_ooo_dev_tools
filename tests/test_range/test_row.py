@@ -37,6 +37,19 @@ def test_row_math() -> None:
     r2 = 5 - r3
     assert r2.value == 2
 
+    r20 = r2 * 10
+    assert r20.value == 20
+
+    r2 = r20 / 10
+    assert r2.value == 2
+
+    r10 = 200 / r20
+    assert r10.value == 10
+
+    r8 = r10 - 2
+    r3 = r8 / 2.3
+    assert r3.value == 3
+
 
 def test_row_math_errors() -> None:
     from ooodev.utils.data_type.row_obj import RowObj
@@ -71,6 +84,18 @@ def test_row_math_errors() -> None:
 
     with pytest.raises(IndexError):
         _ = -4 + r3
+
+    with pytest.raises(IndexError):
+        _ = 2 / r3
+
+    with pytest.raises(IndexError):
+        _ = r3 / 0
+
+    with pytest.raises(IndexError):
+        _ = r3 / 5
+
+    with pytest.raises(IndexError):
+        _ = 0 / r3
 
 
 def test_row_next_prev() -> None:
