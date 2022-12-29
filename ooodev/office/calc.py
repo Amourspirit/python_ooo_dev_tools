@@ -860,7 +860,6 @@ class Calc:
                     break
             return ka
 
-
         if not count in (0, 1):
             raise TypeError("get_sheet_name() got an invalid number of arguments")
 
@@ -3685,9 +3684,9 @@ class Calc:
             col = -1
             arg2 = kargs[2]
             if isinstance(arg2, mCellObj.CellObj):
-                col = arg2.col_info.index
+                col = arg2.col_obj.index
             elif isinstance(arg2, mRngObj.RangeObj):
-                col = arg2.cell_start.col_info.index
+                col = arg2.cell_start.col_obj.index
             elif isinstance(arg2, int):
                 col = arg2
                 if col < 0:
@@ -4544,7 +4543,7 @@ class Calc:
             co = mCellObj.CellObj.from_cell(cell_name)
         else:
             co = cell_name
-        return Point(co.col_info.index, co.row_info.index)
+        return Point(co.col_obj.index, co.row_obj.index)
 
     @classmethod
     def get_cell_pos(cls, sheet: XSpreadsheet, cell_name: str | mCellObj.CellObj) -> Point:

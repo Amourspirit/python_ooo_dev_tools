@@ -27,10 +27,10 @@ def test_cell_obj(loader) -> None:
         cell = CellObj.from_cell(name)
         assert cell.col == "R"
         assert cell.row == 75
-        assert cell.col_info.value == "R"
-        assert cell.col_info.index == 17
-        assert cell.row_info.value == 75
-        assert cell.row_info.index == 74
+        assert cell.col_obj.value == "R"
+        assert cell.col_obj.index == 17
+        assert cell.row_obj.value == 75
+        assert cell.row_obj.index == 74
         assert cell == "R75"
         assert cell == "r75"
 
@@ -206,11 +206,11 @@ def test_cell_math(loader) -> None:
         assert b4.col == "B"
         assert b4.row == 4
 
-        b4 = cast(CellObj, b2 + (b2.row_info + 2))
+        b4 = cast(CellObj, b2 + (b2.row_obj + 2))
         assert b4.col == "B"
         assert b4.row == 4
 
-        d2 = cast(CellObj, b2 + (b2.col_info + 2))
+        d2 = cast(CellObj, b2 + (b2.col_obj + 2))
         assert d2.col == "D"
         assert d2.row == 2
 
@@ -222,7 +222,7 @@ def test_cell_math(loader) -> None:
         assert a2.col == "A"
         assert a2.row == 2
 
-        a2 = cast(CellObj, e2 - (e2.col_info - 4))
+        a2 = cast(CellObj, e2 - (e2.col_obj - 4))
         assert a2.col == "A"
         assert a2.row == 2
 
@@ -230,11 +230,11 @@ def test_cell_math(loader) -> None:
         assert b2.col == "B"
         assert b2.row == 2
 
-        e5 = cast(CellObj, e2 + (e2.row_info + 3))
+        e5 = cast(CellObj, e2 + (e2.row_obj + 3))
         assert e5.col == "E"
         assert e5.row == 5
 
-        e3 = cast(CellObj, e5 - (e5.row_info - 2))
+        e3 = cast(CellObj, e5 - (e5.row_obj - 2))
         assert e3.col == "E"
         assert e3.row == 3
 
@@ -266,12 +266,12 @@ def test_cell_math_errors(loader) -> None:
             _ = b2 - 2
 
         with pytest.raises(IndexError):
-            _ = b2 - (b2.row_info - 2)
+            _ = b2 - (b2.row_obj - 2)
 
         with pytest.raises(IndexError):
-            _ = b2 - (b2.row_info - 2)
+            _ = b2 - (b2.row_obj - 2)
 
         with pytest.raises(IndexError):
-            _ = b2 - (b2.col_info - 2)
+            _ = b2 - (b2.col_obj - 2)
     finally:
         Lo.close_doc(doc)

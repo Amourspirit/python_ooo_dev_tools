@@ -1,9 +1,11 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, overload
 from dataclasses import dataclass, field
+from weakref import ref
+
+from . import cell_obj as mCell
 from . import cell_obj as mCo
 from . import range_values as mRngValues
-from . import cell_obj as mCell
 from .. import table_helper as mTb
 from ...office import calc as mCalc
 from ..decorator import enforce
@@ -302,18 +304,24 @@ class RangeObj:
     def cell_start(self) -> mCell.CellObj:
         """Gets the Start Cell object for Range"""
         try:
-            return self._cell_start
+            co = self._cell_start
+            if co() is None:
+                raise AttributeError
+            return co()
         except AttributeError:
             c = mCell.CellObj(col=self.col_start, row=self.row_start, sheet_idx=self.sheet_idx, range_obj=self)
-            object.__setattr__(self, "_cell_start", c)
-        return self._cell_start
+            object.__setattr__(self, "_cell_start", ref(c))
+        return self._cell_start()
 
     @property
     def cell_end(self) -> mCell.CellObj:
         """Gets the End Cell object for Range"""
         try:
-            return self._cell_end
+            co = self._cell_end
+            if co() is None:
+                raise AttributeError
+            return co()
         except AttributeError:
             c = mCell.CellObj(col=self.col_end, row=self.row_end, sheet_idx=self.sheet_idx, range_obj=self)
-            object.__setattr__(self, "_cell_end", c)
-        return self._cell_end
+            object.__setattr__(self, "_cell_end", ref(c))
+        return self._cell_end()

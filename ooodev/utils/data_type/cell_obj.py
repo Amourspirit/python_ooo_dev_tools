@@ -188,7 +188,7 @@ class CellObj:
         try:
             if isinstance(other, str):
                 # string mean add column
-                col = cast(mCol.ColObj, self.col_info + other)
+                col = cast(mCol.ColObj, self.col_obj + other)
                 return CellObj(col=col.value, row=self.row, sheet_idx=self.sheet_idx, range_obj=self.range_obj)
             if isinstance(other, mCol.ColObj):
                 return CellObj(col=other.value, row=self.row, sheet_idx=self.sheet_idx, range_obj=self.range_obj)
@@ -198,8 +198,8 @@ class CellObj:
                 return CellObj(col=self.col, row=self.row + other, sheet_idx=self.sheet_idx, range_obj=self.range_obj)
             if isinstance(other, CellObj):
                 # add row and column:
-                col = cast(mCol.ColObj, self.col_info + other.col_info)
-                row = cast(mRow.RowObj, self.row_info + other.row_info)
+                col = cast(mCol.ColObj, self.col_obj + other.col_obj)
+                row = cast(mRow.RowObj, self.row_obj + other.row_obj)
                 return CellObj(col=col.value, row=row.value, sheet_idx=self.sheet_idx, range_obj=self.range_obj)
         except AssertionError as e:
             raise IndexError from e
@@ -210,7 +210,7 @@ class CellObj:
         try:
             if isinstance(other, str):
                 # string mean subtract column
-                col = cast(mCol.ColObj, self.col_info - other)
+                col = cast(mCol.ColObj, self.col_obj - other)
                 return CellObj(col=col.value, row=self.row, sheet_idx=self.sheet_idx, range_obj=self.range_obj)
             if isinstance(other, mCol.ColObj):
                 return CellObj(col=other.value, row=self.row, sheet_idx=self.sheet_idx, range_obj=self.range_obj)
@@ -220,8 +220,8 @@ class CellObj:
                 return CellObj(col=self.col, row=self.row - other, sheet_idx=self.sheet_idx, range_obj=self.range_obj)
             if isinstance(other, CellObj):
                 # subbtract row and column:
-                col = cast(mCol.ColObj, self.col_info - other.col_info)
-                row = cast(mRow.RowObj, self.row_info - other.row_info)
+                col = cast(mCol.ColObj, self.col_obj - other.col_obj)
+                row = cast(mRow.RowObj, self.row_obj - other.row_obj)
                 return CellObj(col=col.value, row=row.value, sheet_idx=self.sheet_idx, range_obj=self.range_obj)
         except AssertionError as e:
             raise IndexError from e
@@ -233,8 +233,8 @@ class CellObj:
     # region properties
 
     @property
-    def col_info(self) -> mCol.ColObj:
-        """Gets Column Info"""
+    def col_obj(self) -> mCol.ColObj:
+        """Gets Column object"""
         try:
             inf = self._col_info
             if inf() is None:
@@ -246,8 +246,8 @@ class CellObj:
         return self._col_info()
 
     @property
-    def row_info(self) -> mRow.RowObj:
-        """Gets Row Info"""
+    def row_obj(self) -> mRow.RowObj:
+        """Gets Row object"""
         try:
             inf = self._row_info
             if inf() is None:
@@ -267,9 +267,7 @@ class CellObj:
                 raise AttributeError
             return co()
         except AttributeError:
-            co = CellObj(
-                col=self.col_info.next.value, row=self.row, sheet_idx=self.sheet_idx, range_obj=self.range_obj
-            )
+            co = CellObj(col=self.col_obj.next.value, row=self.row, sheet_idx=self.sheet_idx, range_obj=self.range_obj)
             object.__setattr__(self, "_cell_right", ref(co))
         return self._cell_right()
 
@@ -289,7 +287,7 @@ class CellObj:
         except AttributeError:
             try:
                 co = CellObj(
-                    col=self.col_info.prev.value, row=self.row, sheet_idx=self.sheet_idx, range_obj=self.range_obj
+                    col=self.col_obj.prev.value, row=self.row, sheet_idx=self.sheet_idx, range_obj=self.range_obj
                 )
                 object.__setattr__(self, "_cell_left", ref(co))
             except IndexError:
@@ -307,9 +305,7 @@ class CellObj:
                 raise AttributeError
             return co()
         except AttributeError:
-            co = CellObj(
-                col=self.col, row=self.row_info.next.value, sheet_idx=self.sheet_idx, range_obj=self.range_obj
-            )
+            co = CellObj(col=self.col, row=self.row_obj.next.value, sheet_idx=self.sheet_idx, range_obj=self.range_obj)
             object.__setattr__(self, "_cell_down", ref(co))
         return self._cell_down()
 
@@ -329,7 +325,7 @@ class CellObj:
         except AttributeError:
             try:
                 co = CellObj(
-                    col=self.col, row=self.row_info.prev.value, sheet_idx=self.sheet_idx, range_obj=self.range_obj
+                    col=self.col, row=self.row_obj.prev.value, sheet_idx=self.sheet_idx, range_obj=self.range_obj
                 )
                 object.__setattr__(self, "_cell_up", ref(co))
             except IndexError:
