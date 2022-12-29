@@ -88,7 +88,7 @@ class CellValues:
         elif isinstance(cell_val, mCellObj.CellObj):
             idx = cell_val.sheet_idx
             row = cell_val.row - 1
-            col = cell_val.col_info.index
+            col = cell_val.col_obj.index
         else:
             idx = cell_val.Sheet
             row = cell_val.Row

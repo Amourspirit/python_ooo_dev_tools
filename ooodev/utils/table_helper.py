@@ -1,6 +1,7 @@
 # coding: utf-8
 """General Utilities"""
 from __future__ import annotations
+import re
 import sys
 import string
 from typing import Callable, Iterable, Sequence, List, Any, Tuple, overload, TypeVar, NamedTuple
@@ -109,6 +110,10 @@ class TableHelper:
             name (str):Case insensitive column name such as 'a' or 'AB'
             zero_index (bool, optional): determines if return is zero based or one based. Default ``False``.
 
+        Raises:
+            ValueError: If number of Column letters (``name``) is ``0`` or greater than ``5``.
+            ValueError: If ``name`` is not valid characters, ``[a-zA-Z0-9]``.
+
         Returns:
             int: One based int representing column name
 
@@ -123,7 +128,17 @@ class TableHelper:
         .. versionchanged:: 0.8.2
             Added ``zero_index`` parameter.
         """
-        chars = name.rstrip(string.digits)
+        chars = name.rstrip(string.digits).strip()
+        c_len = len(chars)
+        if c_len == 0:
+            raise ValueError("Empty name value or Invalid or characters detected.")
+        if c_len > 5:
+            raise ValueError(
+                f"Maximum number of letters that can be proceesed is 5. currently name contains {len(chars)}"
+            )
+        if re.fullmatch(r"[a-zA-Z]+", chars) is None:
+            raise ValueError(f'name of "{name}" contains invalid characters. Must be in format of "A" or "AB" or "A3"')
+
         pow = 1
         col_num = 0
         for letter in chars[::-1]:  # reverse chars
