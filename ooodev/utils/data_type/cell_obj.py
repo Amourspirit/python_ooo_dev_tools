@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, cast
+from typing import cast
 from dataclasses import dataclass, field
 from typing import overload
 from weakref import ref
@@ -13,12 +13,6 @@ from ...office import calc as mCalc
 from ..validation import check
 
 from ooo.dyn.table.cell_address import CellAddress
-
-if TYPE_CHECKING:
-    try:
-        from typing import Self
-    except ImportError:
-        from typing_extensions import Self
 
 
 @dataclass(frozen=True)

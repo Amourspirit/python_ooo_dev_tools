@@ -9,11 +9,6 @@ from .base_int_value import BaseIntValue
 if TYPE_CHECKING:
     from . import cell_obj as mCell
 
-    try:
-        from typing import Self
-    except ImportError:
-        from typing_extensions import Self
-
 
 @dataclass(unsafe_hash=True)
 class RowObj(BaseIntValue):
