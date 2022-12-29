@@ -1,5 +1,5 @@
 from __future__ import annotations
-import string
+from typing import TYPE_CHECKING, cast
 from dataclasses import dataclass, field
 from typing import overload
 from weakref import ref
@@ -11,6 +11,12 @@ from .. import table_helper as mTb
 from ...office import calc as mCalc
 
 from ooo.dyn.table.cell_address import CellAddress
+
+if TYPE_CHECKING:
+    try:
+        from typing import Self
+    except ImportError:
+        from typing_extensions import Self
 
 
 @dataclass(frozen=True)
@@ -169,6 +175,50 @@ class CellObj:
         if isinstance(other, str):
             return str(self) == other.upper()
         return False
+
+    def __add__(self, other: object) -> Self:
+        try:
+            if isinstance(other, str):
+                # string mean add column
+                col = cast(mCol.ColObj, self.col_info + other)
+                return CellObj(col=col.value, row=self.row, sheet_idx=self.sheet_idx, range_obj=self.range_obj)
+            if isinstance(other, mCol.ColObj):
+                return CellObj(col=other.value, row=self.row, sheet_idx=self.sheet_idx, range_obj=self.range_obj)
+            if isinstance(other, mRow.RowObj):
+                return CellObj(col=self.col, row=other.value, sheet_idx=self.sheet_idx, range_obj=self.range_obj)
+            if isinstance(other, int):
+                return CellObj(col=self.col, row=self.row + other, sheet_idx=self.sheet_idx, range_obj=self.range_obj)
+            if isinstance(other, CellObj):
+                # add row and column:
+                col = cast(mCol.ColObj, self.col_info + other.col_info)
+                row = cast(mRow.RowObj, self.row_info + other.row_info)
+                return CellObj(col=col.value, row=row.value, sheet_idx=self.sheet_idx, range_obj=self.range_obj)
+        except AssertionError as e:
+            raise IndexError from e
+        except Exception:
+            return NotImplemented
+
+    def __sub__(self, other: object) -> Self:
+        try:
+            if isinstance(other, str):
+                # string mean subtract column
+                col = cast(mCol.ColObj, self.col_info - other)
+                return CellObj(col=col.value, row=self.row, sheet_idx=self.sheet_idx, range_obj=self.range_obj)
+            if isinstance(other, mCol.ColObj):
+                return CellObj(col=other.value, row=self.row, sheet_idx=self.sheet_idx, range_obj=self.range_obj)
+            if isinstance(other, mRow.RowObj):
+                return CellObj(col=self.col, row=other.value, sheet_idx=self.sheet_idx, range_obj=self.range_obj)
+            if isinstance(other, int):
+                return CellObj(col=self.col, row=self.row - other, sheet_idx=self.sheet_idx, range_obj=self.range_obj)
+            if isinstance(other, CellObj):
+                # subbtract row and column:
+                col = cast(mCol.ColObj, self.col_info - other.col_info)
+                row = cast(mRow.RowObj, self.row_info - other.row_info)
+                return CellObj(col=col.value, row=row.value, sheet_idx=self.sheet_idx, range_obj=self.range_obj)
+        except AssertionError as e:
+            raise IndexError from e
+        except Exception:
+            return NotImplemented
 
     # endregion dunder methods
 
