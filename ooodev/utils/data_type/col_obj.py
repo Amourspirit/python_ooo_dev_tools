@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 from dataclasses import dataclass, field
+from weakref import ref
 from . import cell_obj as mCell
 from .. import table_helper as mTb
 from ..validation import check
@@ -20,6 +21,8 @@ class ColObj:
     .. versionadded:: 0.8.2
     """
 
+    # region init
+
     value: str
     """Column such as ``A``"""
     index: int = field(init=False, repr=False, hash=False)
@@ -36,6 +39,10 @@ class ColObj:
             raise AssertionError from e
         check(idx >= 0, f"{self}", f"Expected a value index of 0 or greater. Got: {idx}")
         object.__setattr__(self, "index", idx)
+
+    # endregion init
+
+    # region static methods
 
     @staticmethod
     def from_str(name: str) -> ColObj:
@@ -85,6 +92,10 @@ class ColObj:
             raise
         except Exception as e:
             raise AssertionError from e
+
+    # endregion static methods
+
+    # region dunder methods
 
     def __int__(self) -> int:
         return self.index + 1
@@ -205,3 +216,35 @@ class ColObj:
             raise IndexError from e
         except Exception:
             return NotImplemented
+
+    # endregion dunder methods
+
+    # region properties
+    @property
+    def next(self) -> ColObj:
+        try:
+            n = self._next
+            if n() is None:
+                raise AttributeError
+            return n()
+        except AttributeError:
+            n = ColObj.from_int(self.index + 2)
+            object.__setattr__(self, "_next", ref(n))
+            return self._next()
+
+    @property
+    def prev(self) -> ColObj:
+        try:
+            p = self._prev
+            if p() is None:
+                raise AttributeError
+            return p()
+        except AttributeError:
+            try:
+                p = ColObj.from_int(self.index)
+                object.__setattr__(self, "_prev", ref(p))
+            except AssertionError as e:
+                raise IndexError from e
+            return self._prev()
+
+    # endregion properties

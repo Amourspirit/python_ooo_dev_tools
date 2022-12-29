@@ -140,3 +140,57 @@ def test_col_math_errors() -> None:
 
     with pytest.raises(IndexError):
         _ = -10 + c3
+
+
+def test_col_next_prev() -> None:
+    from ooodev.utils.data_type.col_obj import ColObj
+
+    c1 = ColObj("A")
+    c2 = c1.next
+    assert c2.value == "B"
+    assert c2.prev == c1
+
+    c1 = None
+    c1 = c2.prev
+    assert c1.value == "A"
+
+    c5 = c1.next.next.next.next
+    assert c5.value == "E"
+    assert c5 == 5
+
+    assert c5.prev == "D"
+    assert c5.prev == 4
+    assert c5.prev.index == 3
+
+    assert c5.next == "F"
+    assert c5.next == 6
+    assert c5.next.index == 5
+
+    assert c5.next > c5
+    assert c5 < c5.next
+    assert c5.prev.prev < c5.prev
+    assert c5.next.next > c5.next
+
+    col = ColObj("A")
+    for _ in range(10):
+        col = col.next
+    assert col.value == "K"
+
+    for _ in range(10):
+        col = col.prev
+    assert col.value == "A"
+
+
+def test_col_prev_error() -> None:
+    from ooodev.utils.data_type.col_obj import ColObj
+
+    c1 = ColObj("A")
+    c2 = c1.next
+    with pytest.raises(IndexError):
+        _ = c1.prev
+
+    with pytest.raises(IndexError):
+        _ = c2.prev.prev
+
+    with pytest.raises(IndexError):
+        _ = c2.prev.prev.prev.prev

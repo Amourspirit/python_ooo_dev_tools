@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 from dataclasses import dataclass, field
+from weakref import ref
 from . import cell_obj as mCell
 from ..validation import check
 from .base_int_value import BaseIntValue
@@ -20,6 +21,7 @@ class RowObj(BaseIntValue):
     .. versionadded:: 0.8.2
     """
 
+    # region init
     index: int = field(init=False, repr=False, hash=False)
     """row Index (zero-based)"""
     cell_obj: mCell.CellObj | None = field(repr=False, hash=False, default=None)
@@ -33,6 +35,10 @@ class RowObj(BaseIntValue):
             f"Expected a value of 1 or greater. Got: {self.value}",
         )
         self.index = self.value - 1
+
+    # endregion init
+
+    # region static methods
 
     @staticmethod
     def from_int(num: int, zero_index: bool = False) -> RowObj:
@@ -60,6 +66,10 @@ class RowObj(BaseIntValue):
             raise
         except Exception as e:
             raise AssertionError from e
+
+    # endregion static methods
+
+    # region duner methods
 
     def __str__(self) -> str:
         return str(self.value)
@@ -141,3 +151,36 @@ class RowObj(BaseIntValue):
             raise IndexError from e
         except Exception:
             return NotImplemented
+
+    # endregion duner methods
+
+    # region properties
+
+    @property
+    def next(self) -> RowObj:
+        try:
+            n = self._next
+            if n() is None:
+                raise AttributeError
+            return n()
+        except AttributeError:
+            n = RowObj.from_int(self.value + 1)
+            object.__setattr__(self, "_next", ref(n))
+            return self._next()
+
+    @property
+    def prev(self) -> RowObj:
+        try:
+            p = self._prev
+            if p() is None:
+                raise AttributeError
+            return p()
+        except AttributeError:
+            try:
+                p = RowObj.from_int(self.value - 1)
+                object.__setattr__(self, "_prev", ref(p))
+            except AssertionError as e:
+                raise IndexError from e
+            return self._prev()
+
+    # endregion properties
