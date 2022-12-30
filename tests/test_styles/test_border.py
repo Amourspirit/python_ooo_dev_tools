@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 
 
 def test_calc_border(loader, test_headless) -> None:
-    delay = 0 if test_headless else 5_000
+    delay = 0  # 0 if test_headless else 5_000
     from ooodev.office.calc import Calc
 
     doc = Calc.create_doc()
@@ -73,14 +73,14 @@ def test_calc_border(loader, test_headless) -> None:
         cp = cast("CellProperties", cell)
         assert cp.TableBorder2.IsLeftLineValid
         assert cp.TableBorder2.LeftLine.LineWidth in [
-            round(4.5 * POINT_RATIO) - 1 + i for i in range(3)
-        ]  # plus or minus 1
+            round(4.5 * POINT_RATIO) - 2 + i for i in range(5)
+        ]  # plus or minus 2
         assert cp.TableBorder2.LeftLine.LineStyle == BorderLineStyleEnum.DASHED.value
 
         assert cp.TableBorder2.IsRightLineValid
         assert cp.TableBorder2.RightLine.LineWidth in [
-            round(2.5 * POINT_RATIO) - 1 + i for i in range(3)
-        ]  # plus or minus 1
+            round(2.5 * POINT_RATIO) - 2 + i for i in range(5)
+        ]  # plus or minus 2
         assert cp.TableBorder2.RightLine.LineStyle == BorderLineStyleEnum.DOUBLE.value
 
         assert cp.ShadowFormat == shadow.get_shadow_format()
@@ -153,7 +153,7 @@ def test_calc_border(loader, test_headless) -> None:
 
 
 def test_calc_border_range(loader, test_headless) -> None:
-    delay = 0 if test_headless else 5_000
+    delay = 0  # 0 if test_headless else 5_000
     from ooodev.office.calc import Calc
 
     doc = Calc.create_doc()
