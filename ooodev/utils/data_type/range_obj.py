@@ -6,6 +6,7 @@ from weakref import ref
 from . import cell_obj as mCell
 from . import cell_obj as mCo
 from . import range_values as mRngValues
+from .. import lo as mLo
 from .. import table_helper as mTb
 from ...office import calc as mCalc
 from ..decorator import enforce
@@ -51,8 +52,9 @@ class RangeObj:
         object.__setattr__(self, "end", mCo.CellObj.from_cell(f"{self.col_end}{self.row_end}"))
         if self.sheet_idx < 0:
             try:
-                idx = mCalc.Calc.get_sheet_index()
-                object.__setattr__(self, "sheet_idx", idx)
+                if mLo.Lo.is_loaded:
+                    idx = mCalc.Calc.get_sheet_index()
+                    object.__setattr__(self, "sheet_idx", idx)
             except:
                 pass
 
