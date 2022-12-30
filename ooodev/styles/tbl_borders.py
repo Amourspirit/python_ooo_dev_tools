@@ -431,6 +431,15 @@ class BorderTable(StyleBase):
         Returns:
             None:
         """
+        # there seems to be a bug in LibreOffice for TableBorder2.HorizontalLine
+        # When top or bottom line is set for some reason TableBorder2.HorizontalLine also picks it up.
+        #
+        # current work around is to get if the current TableBorder2.HorizontalLine contains any data on read.
+        # if it does not and the current style is not applying HorizontalLine then read back TableBorder2
+        # and reset its HorizontalLine to default empty values.
+        # the save TableBorder2 again.
+        # Even if HorizontalLine is present in current style that is being applied it is ignored and set to top line or bottom line values.
+        # The work around is to save TableBorder2 after setting other properties, read it again, set the HorizontalLine and save it again.
         tb = cast(TableBorder2, mProps.Props.get(obj, "TableBorder2", None))
         if tb is None:
             raise mEx.PropertyNotFoundError("TableBorder2", "apply_style() obj has no property, TableBorder2")
@@ -445,6 +454,27 @@ class BorderTable(StyleBase):
             tb.Distance = distance
             tb.IsDistanceValid = True
         mProps.Props.set(obj, TableBorder2=tb)
+
+        h_line = cast(Side, self._get("HorizontalLine"))
+
+        if h_line is None:
+            h_ln = tb.HorizontalLine
+            h_invalid = (
+                h_ln.InnerLineWidth == 0
+                and h_ln.LineDistance == 0
+                and h_ln.LineWidth == 0
+                and h_ln.OuterLineWidth == 0
+            )
+            if h_invalid:
+                tb = cast(TableBorder2, mProps.Props.get(obj, "TableBorder2"))
+                tb.HorizontalLine = Side.empty.get_border_line2()
+                tb.IsHorizontalLineValid = True
+                mProps.Props.set(obj, TableBorder2=tb)
+        else:
+            tb = cast(TableBorder2, mProps.Props.get(obj, "TableBorder2"))
+            tb.HorizontalLine = h_line.get_border_line2()
+            tb.IsHorizontalLineValid = True
+            mProps.Props.set(obj, TableBorder2=tb)
 
     # endregion apply_style()
 
