@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import pytest
-import types
 from typing import Any
-import sys
+from hypothesis import given, settings
+from hypothesis.strategies import text, characters, integers
 
 if __name__ == "__main__":
     pytest.main([__file__])
@@ -132,3 +132,27 @@ def test_event_new_doc(loader) -> None:
     doc = Write.create_doc(loader)
     assert fired_creating is True
     assert fired_created is True
+
+
+@given(
+    text(
+        alphabet=characters(min_codepoint=95, max_codepoint=122, blacklist_characters=("`",)), min_size=3, max_size=25
+    ),
+    integers(min_value=-100, max_value=100),
+)
+@settings(max_examples=10)
+def test_event_kv(key: str, value: Any) -> None:
+
+    args = EventArgs("random_event")
+    args._event_name = "test_event_kv"
+
+    with pytest.raises(KeyError):
+        _ = args.get(key)
+
+    assert args.get(key, None) is None
+    assert args.set(key, value)
+    assert args.has(key)
+    val = args.get(key)
+    assert val == value
+    args.remove(key)
+    assert args.has(key) == False

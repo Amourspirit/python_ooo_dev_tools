@@ -1,4 +1,3 @@
-# coding: utf-8
 from __future__ import annotations
 from typing import Any
 from .event_args import AbstractEvent
@@ -26,7 +25,7 @@ class AbstractCancelEventArgs(AbstractEvent):
 class CancelEventArgs(AbstractCancelEventArgs):
     """Cancel Event Arguments"""
 
-    __slots__ = ("source", "_event_name", "event_data", "cancel", "_event_source")
+    __slots__ = ("source", "_event_name", "event_data", "cancel", "_event_source", "_kv_data")
 
     @staticmethod
     def from_args(args: CancelEventArgs) -> CancelEventArgs:

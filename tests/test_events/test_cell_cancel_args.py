@@ -66,7 +66,6 @@ def test_trigger_event_canceled(event_name_str: str, value: int):
     assert cargs.sheet is None
 
 
-
 @given(
     text(
         alphabet=characters(min_codepoint=95, max_codepoint=122, blacklist_characters=("`",)), min_size=3, max_size=25
@@ -74,21 +73,21 @@ def test_trigger_event_canceled(event_name_str: str, value: int):
     integers(min_value=-100, max_value=100),
 )
 @settings(max_examples=10)
-def test_from_args(event_name_str:str, value: int):
+def test_from_args(event_name_str: str, value: int):
     from ooodev.events.args.calc.cell_cancel_args import CellCancelArgs
+
     cargs = CellCancelArgs(test_from_args)
     cargs.event_data = value
     cargs._event_name = event_name_str
     cargs.sheet = None
     cargs.cells = value
-    
+
     assert cargs.event_name == event_name_str
     assert cargs.event_data == value
     assert cargs.source is test_from_args
     assert cargs.cancel is False
     assert cargs.cells == value
     assert cargs.sheet is None
-
 
     e = CellCancelArgs.from_args(cargs)
     assert e.event_data == cargs.event_data
@@ -97,3 +96,28 @@ def test_from_args(event_name_str:str, value: int):
     assert e.cancel == cargs.cancel
     assert e.cells == cargs.cells
     assert e.sheet is cargs.sheet
+
+
+@given(
+    text(
+        alphabet=characters(min_codepoint=95, max_codepoint=122, blacklist_characters=("`",)), min_size=3, max_size=25
+    ),
+    integers(min_value=-100, max_value=100),
+)
+@settings(max_examples=10)
+def test_event_kv(key: str, value: Any) -> None:
+    from ooodev.events.args.calc.cell_cancel_args import CellCancelArgs
+
+    args = CellCancelArgs("random_event")
+    args._event_name = "test_event_kv"
+
+    with pytest.raises(KeyError):
+        _ = args.get(key)
+
+    assert args.get(key, None) is None
+    assert args.set(key, value)
+    assert args.has(key)
+    val = args.get(key)
+    assert val == value
+    args.remove(key)
+    assert args.has(key) == False
