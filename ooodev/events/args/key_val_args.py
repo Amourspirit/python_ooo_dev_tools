@@ -1,4 +1,3 @@
-# coding: utf-8
 from __future__ import annotations
 from typing import Any
 from .event_args import AbstractEvent
@@ -28,9 +27,11 @@ class AbstractKeyValArgs(AbstractEvent):
 class KeyValArgs(AbstractKeyValArgs):
     """
     Key Value Args
+
+    .. versionadded:: 0.9.0
     """
 
-    __slots__ = ("source", "_event_name", "event_data", "key", "value", "_event_source")
+    __slots__ = ("source", "_event_name", "event_data", "key", "value", "_event_source", "_kv_data")
 
     @staticmethod
     def from_args(args: KeyValArgs) -> KeyValArgs:

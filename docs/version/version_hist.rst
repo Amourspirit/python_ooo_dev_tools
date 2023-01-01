@@ -13,6 +13,8 @@ Rename ``CellObj.col_info`` to ``CellObj.col_obj``
 
 Rename ``CellObj.row_info`` to ``CellObj.row_obj``
 
+All events now can have key value pairs of data added or removed
+
 Version 0.8.6
 =============
 

@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Any
-
+import pytest
 from hypothesis import given, settings
 from hypothesis.strategies import text, characters, integers
 
@@ -19,7 +19,7 @@ def test_trigger_event(name: str, value: int):
     eargs = SheetArgs(test_trigger_event)
     eargs.sheet = None
     eargs.doc = None
-    
+
     def triggered(source: Any, args: SheetArgs):
         assert source is test_trigger_event
         eargs.event_data = value
@@ -38,6 +38,7 @@ def test_trigger_event(name: str, value: int):
     assert eargs.index == value
     assert eargs.name == name
 
+
 @given(
     text(
         alphabet=characters(min_codepoint=95, max_codepoint=122, blacklist_characters=("`",)), min_size=3, max_size=25
@@ -45,8 +46,9 @@ def test_trigger_event(name: str, value: int):
     integers(min_value=-100, max_value=100),
 )
 @settings(max_examples=10)
-def test_from_args(name:str, value: int):
+def test_from_args(name: str, value: int):
     from ooodev.events.args.calc.sheet_args import SheetArgs
+
     eargs = SheetArgs(test_from_args)
     eargs.event_data = value
     eargs._event_name = name
@@ -54,7 +56,7 @@ def test_from_args(name:str, value: int):
     eargs.index = value
     eargs.name = name
     eargs.doc = None
-    
+
     assert eargs.event_name == name
     assert eargs.event_data == value
     assert eargs.source is test_from_args
@@ -70,4 +72,28 @@ def test_from_args(name:str, value: int):
     assert e.doc is eargs.doc
     assert e.index is eargs.index
     assert e.name is eargs.name
-    
+
+
+@given(
+    text(
+        alphabet=characters(min_codepoint=95, max_codepoint=122, blacklist_characters=("`",)), min_size=3, max_size=25
+    ),
+    integers(min_value=-100, max_value=100),
+)
+@settings(max_examples=10)
+def test_event_kv(key: str, value: Any) -> None:
+    from ooodev.events.args.calc.sheet_args import SheetArgs
+
+    args = SheetArgs("random_event")
+    args._event_name = "test_event_kv"
+
+    with pytest.raises(KeyError):
+        _ = args.get(key)
+
+    assert args.get(key, None) is None
+    assert args.set(key, value)
+    assert args.has(key)
+    val = args.get(key)
+    assert val == value
+    args.remove(key)
+    assert args.has(key) == False
