@@ -1,13 +1,13 @@
 from __future__ import annotations
-from typing import cast
+from typing import cast, overload
 from enum import Enum
 
-from ..exceptions import ex as mEx
-from ..utils import info as mInfo
-from ..utils import lo as mLo
-from ..utils.color import Color
-from .style_base import StyleBase
-from .style_const import POINT_RATIO
+from ...exceptions import ex as mEx
+from ...utils import info as mInfo
+from ...utils import lo as mLo
+from ...utils.color import Color
+from ..style_base import StyleBase
+from ..style_const import POINT_RATIO
 
 from ooo.dyn.awt.char_set import CharSetEnum as CharSetEnum
 from ooo.dyn.awt.font_family import FontFamilyEnum as FontFamilyEnum
@@ -89,7 +89,7 @@ class Font(StyleBase):
         # could not find any documention in the API or elsewhere online for Overline
         # see: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1CharacterProperties.html
         init_vals = {
-            "FontName": name,
+            "CharFontName": name,
             "CharColor": color,
             "CharBackColor": bg_color,
             "CharUnderlineColor": underine_color,
@@ -169,13 +169,16 @@ class Font(StyleBase):
 
         super().__init__(**init_vals)
 
+    @overload
+    def apply_style(self, obj: object) -> None:
+        ...
+
     def apply_style(self, obj: object, **kwargs) -> None:
         """
         Applies styles to object
 
         Args:
-            obj (object): UNO Oject that styles are to be applied.
-            kwargs (Any, optional): Expandable list of key value pairs that may be used in child classes.
+            obj (object): UNO object that has supports ``com.sun.star.style.CharacterProperties`` service.
 
         Returns:
             None:
@@ -253,7 +256,7 @@ class Font(StyleBase):
     @property
     def name(self) -> str | None:
         """This property specifies the name of the font style. It may contain more than one name separated by comma."""
-        return self._get("FontName")
+        return self._get("CharFontName")
 
     @property
     def strike(self) -> FontStrikeoutEnum | None:

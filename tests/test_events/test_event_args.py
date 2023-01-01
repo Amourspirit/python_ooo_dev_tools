@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Any
-
+import pytest
 from hypothesis import given, example, settings
 from hypothesis.strategies import text, characters, integers
 
@@ -10,6 +10,7 @@ from hypothesis.strategies import text, characters, integers
 @settings(max_examples=25)
 def test_event_name(test_str: str):
     from ooodev.events.args.event_args import EventArgs
+
     e = EventArgs(test_event_name)
     e._event_name = test_str
     assert e.event_name == test_str
@@ -17,8 +18,10 @@ def test_event_name(test_str: str):
 
 def test_source():
     from ooodev.events.args.event_args import EventArgs
+
     e = EventArgs(test_source)
     assert e.source is test_source
+
 
 @given(
     text(
@@ -43,6 +46,7 @@ def test_trigger_event(event_name_str: str, value: int):
     events.trigger(event_name_str, eargs)
     assert eargs.event_name == event_name_str
 
+
 @given(
     text(
         alphabet=characters(min_codepoint=95, max_codepoint=122, blacklist_characters=("`",)), min_size=3, max_size=25
@@ -50,12 +54,13 @@ def test_trigger_event(event_name_str: str, value: int):
     integers(min_value=-100, max_value=100),
 )
 @settings(max_examples=10)
-def test_from_args(event_name_str:str, value: int):
+def test_from_args(event_name_str: str, value: int):
     from ooodev.events.args.event_args import EventArgs
+
     eargs = EventArgs(test_from_args)
     eargs.event_data = value
     eargs._event_name = event_name_str
-    
+
     assert eargs.event_name == event_name_str
     assert eargs.event_data == value
     assert eargs.source is test_from_args
@@ -64,4 +69,28 @@ def test_from_args(event_name_str:str, value: int):
     assert e.event_data == eargs.event_data
     assert e.source is eargs.source
     assert e.event_name == eargs.event_name
-    
+
+
+@given(
+    text(
+        alphabet=characters(min_codepoint=95, max_codepoint=122, blacklist_characters=("`",)), min_size=3, max_size=25
+    ),
+    integers(min_value=-100, max_value=100),
+)
+@settings(max_examples=10)
+def test_event_kv(key: str, value: Any) -> None:
+    from ooodev.events.args.event_args import EventArgs
+
+    args = EventArgs("random_event")
+    args._event_name = "test_event_kv"
+
+    with pytest.raises(KeyError):
+        _ = args.get(key)
+
+    assert args.get(key, None) is None
+    assert args.set(key, value)
+    assert args.has(key)
+    val = args.get(key)
+    assert val == value
+    args.remove(key)
+    assert args.has(key) == False

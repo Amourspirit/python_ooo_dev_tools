@@ -1,4 +1,3 @@
-# coding: utf-8
 from __future__ import annotations
 from typing import Any
 from .sheet_args import AbstractSheetArgs
@@ -24,7 +23,18 @@ class SheetCancelArgs(AbstractSheetCancelArgs):
     Sheet Cancel Event Args
     """
 
-    __slots__ = ("source", "_event_name", "event_data", "name", "index", "doc", "sheet", "cancel", "_event_source")
+    __slots__ = (
+        "source",
+        "_event_name",
+        "event_data",
+        "name",
+        "index",
+        "doc",
+        "sheet",
+        "cancel",
+        "_event_source",
+        "_kv_data",
+    )
 
     @staticmethod
     def from_args(args: SheetCancelArgs) -> SheetCancelArgs:

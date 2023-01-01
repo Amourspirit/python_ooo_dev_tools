@@ -24,3 +24,17 @@ class StyleObj(Protocol):
     def get_props(self) -> Tuple[PropertyValue, ...]:
         """Gets Properties"""
         ...
+
+    def get_attrs(self) -> Tuple[str, ...]:
+        """
+        Gets the attributes that are slated for change in the current instance
+
+        Returns:
+            Tuple(str, ...): Tuple of attribures
+        """
+        ...
+
+    @property
+    def has_attribs(self) -> bool:
+        """Gets If instantance has any attributes set."""
+        ...

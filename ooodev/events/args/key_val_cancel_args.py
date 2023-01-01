@@ -1,4 +1,3 @@
-# coding: utf-8
 from __future__ import annotations
 from typing import Any
 from .key_val_args import AbstractKeyValArgs
@@ -24,9 +23,11 @@ class AbstractKeyValueArgs(AbstractKeyValArgs, AbstractCancelEventArgs):
 class KeyValCancelArgs(AbstractKeyValueArgs):
     """
     Key Value Cancel Args
+
+    .. versionadded:: 0.9.0
     """
 
-    __slots__ = ("key", "value", "source", "_event_name", "event_data", "cancel", "_event_source")
+    __slots__ = ("key", "value", "source", "_event_name", "event_data", "cancel", "_event_source", "_kv_data")
 
     @staticmethod
     def from_args(args: KeyValCancelArgs) -> KeyValCancelArgs:

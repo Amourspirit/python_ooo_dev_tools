@@ -1,4 +1,3 @@
-# coding: utf-8
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 from ..event_args import AbstractEvent
@@ -35,7 +34,7 @@ class AbstractSheetArgs(AbstractEvent):
 
 
 class SheetArgs(AbstractSheetArgs):
-    __slots__ = ("source", "_event_name", "event_data", "name", "index", "doc", "sheet", "_event_source")
+    __slots__ = ("source", "_event_name", "event_data", "name", "index", "doc", "sheet", "_event_source", "_kv_data")
 
     @staticmethod
     def from_args(args: SheetArgs) -> SheetArgs:

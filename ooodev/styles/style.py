@@ -6,16 +6,17 @@ from ..proto.style_obj import StyleObj
 
 class Style:
     @staticmethod
-    def apply_style(obj: Any, style: StyleObj, **kwargs) -> None:
+    def apply_style(obj: Any, *styles: StyleObj, **kwargs) -> None:
         """
         Applies style to object
 
         Args:
-            style (StyleObj): Style object such as ``Font``
             obj (Any): UNO Oject that styles are to be applied.
+            styles expandable list of styles object such as ``Font`` to apply to ``obj``.
             kwargs (Any, optional): Expandable list of key value pairs.
 
         Returns:
             None:
         """
-        style.apply_style(obj, **kwargs)
+        for style in styles:
+            style.apply_style(obj, **kwargs)
