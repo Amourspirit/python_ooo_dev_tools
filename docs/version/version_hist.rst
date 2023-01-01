@@ -15,6 +15,12 @@ Rename ``CellObj.row_info`` to ``CellObj.row_obj``
 
 All events now can have key value pairs of data added or removed
 
+Added ``Write.append(cursor: XTextCursor, text: str, styles: Iterable[StyleObj])`` overload.
+
+Added ``Write.style_left(cursor: XTextCursor, pos: int, styles: Iterable[StyleObj])`` overload.
+
+Added :ref:`ns_styles` namespace with many classes for applying styles to documents and sheets.
+
 Version 0.8.6
 =============
 

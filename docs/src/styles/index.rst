@@ -7,4 +7,8 @@ styles
     :titlesonly:
     :glob:
 
+    char/index
+    para/index
+    structs/index
+    table/index
     *

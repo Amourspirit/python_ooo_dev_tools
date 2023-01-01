@@ -7,7 +7,7 @@ from ..events.lo_events import Events
 from ..events.props_named_event import PropsNamedEvent
 from ..events.args.key_val_cancel_args import KeyValCancelArgs
 from ..events.args.key_val_args import KeyValArgs
-from abc import ABC
+from abc import ABC, abstractmethod
 
 if TYPE_CHECKING:
     from com.sun.star.beans import PropertyValue
@@ -19,9 +19,9 @@ class StyleBase(ABC):
         for (key, value) in kwargs.items():
             if not value is None:
                 self._dv[key] = value
-        self._events = Events(source=self)
-        self._events.on(PropsNamedEvent.PROP_SETTING, _on_props_setting)
-        self._events.on(PropsNamedEvent.PROP_SET, _on_props_set)
+        # self._events = Events(source=self)
+        # self._events.on(PropsNamedEvent.PROP_SETTING, _on_props_setting)
+        # self._events.on(PropsNamedEvent.PROP_SET, _on_props_set)
 
     def _get(self, key: str) -> Any:
         return self._dv.get(key, None)
@@ -46,6 +46,20 @@ class StyleBase(ABC):
             return True
         return False
 
+    def _is_supported(self, obj: object) -> bool:
+        # can be used in child classe to for something like if mInfo.Info.support_service(obj, "com.sun.star.table.CellProperties"):
+        raise NotImplemented
+
+    def get_attrs(self) -> Tuple[str, ...]:
+        """
+        Gets the attributes that are slated for change in the current instance
+
+        Returns:
+            Tuple(str, ...): Tuple of attribures
+        """
+        # get current keys in internal dictionary
+        return tuple(self._dv.keys())
+
     def apply_style(self, obj: object, **kwargs) -> None:
         """
         Applies styles to object
@@ -58,7 +72,11 @@ class StyleBase(ABC):
             None:
         """
         if len(self._dv) > 0:
+            events = Events(source=self)
+            events.on(PropsNamedEvent.PROP_SETTING, _on_props_setting)
+            events.on(PropsNamedEvent.PROP_SET, _on_props_set)
             mProps.Props.set(obj, **self._dv)
+            events = None
 
     def on_property_setting(self, event_args: KeyValCancelArgs):
         """
@@ -92,6 +110,11 @@ class StyleBase(ABC):
         if len(self._dv) == 0:
             return ()
         return mProps.Props.make_props(**self._dv)
+
+    @property
+    def has_attribs(self) -> bool:
+        """Gets If instantance has any attributes set."""
+        return len(self._dv)
 
 
 def _on_props_setting(source: Any, event_args: KeyValCancelArgs, *args, **kwargs) -> None:
