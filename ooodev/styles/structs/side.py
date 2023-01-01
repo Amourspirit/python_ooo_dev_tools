@@ -68,8 +68,8 @@ class Side(StyleBase):
         Args:
             style (BorderLineStyleEnum, optional): Line Style of the border.
             color (Color, optional): Color of the border.
-            width (float, optional): Contains the width in of a single line or the width of outer part of a double line (in mm units). If this value is zero, no line is drawn. Default ``0.26``
-            width_inner (float, optional): contains the width of the inner part of a double line (in mm units). If this value is zero, only a single line is drawn. Default ``0.0``
+            width (float, optional): Contains the width in of a single line or the width of outer part of a double line (in pt units). If this value is zero, no line is drawn. Default ``0.75``
+            width_inner (float, optional): contains the width of the inner part of a double line (in pt units). If this value is zero, only a single line is drawn. Default ``0.0``
             distance (float, optional): contains the distance between the inner and outer parts of a double line (in mm units). Defalut ``0.0``
 
         Raises:

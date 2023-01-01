@@ -89,7 +89,7 @@ class Font(StyleBase):
         # could not find any documention in the API or elsewhere online for Overline
         # see: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1CharacterProperties.html
         init_vals = {
-            "FontName": name,
+            "CharFontName": name,
             "CharColor": color,
             "CharBackColor": bg_color,
             "CharUnderlineColor": underine_color,
@@ -256,7 +256,7 @@ class Font(StyleBase):
     @property
     def name(self) -> str | None:
         """This property specifies the name of the font style. It may contain more than one name separated by comma."""
-        return self._get("FontName")
+        return self._get("CharFontName")
 
     @property
     def strike(self) -> FontStrikeoutEnum | None:

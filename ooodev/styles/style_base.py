@@ -19,9 +19,9 @@ class StyleBase(ABC):
         for (key, value) in kwargs.items():
             if not value is None:
                 self._dv[key] = value
-        self._events = Events(source=self)
-        self._events.on(PropsNamedEvent.PROP_SETTING, _on_props_setting)
-        self._events.on(PropsNamedEvent.PROP_SET, _on_props_set)
+        # self._events = Events(source=self)
+        # self._events.on(PropsNamedEvent.PROP_SETTING, _on_props_setting)
+        # self._events.on(PropsNamedEvent.PROP_SET, _on_props_set)
 
     def _get(self, key: str) -> Any:
         return self._dv.get(key, None)
@@ -72,7 +72,11 @@ class StyleBase(ABC):
             None:
         """
         if len(self._dv) > 0:
+            events = Events(source=self)
+            events.on(PropsNamedEvent.PROP_SETTING, _on_props_setting)
+            events.on(PropsNamedEvent.PROP_SET, _on_props_set)
             mProps.Props.set(obj, **self._dv)
+            events = None
 
     def on_property_setting(self, event_args: KeyValCancelArgs):
         """

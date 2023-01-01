@@ -106,8 +106,11 @@ class Sides(StyleBase):
         Args:
             event_args (KeyValueCancelArgs): Event Args
         """
+        if event_args.has("sides_border2_set"):
+            return
         side = cast(Side, event_args.value)
         event_args.value = side.get_border_line2()
+        event_args.set("sides_border2_set", True)
 
     @staticmethod
     def from_obj(obj: object) -> Sides:
