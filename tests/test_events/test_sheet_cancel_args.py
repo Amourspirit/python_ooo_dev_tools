@@ -109,3 +109,28 @@ def test_from_args(event_name_str: str, value: int):
     assert e.doc is cargs.doc
     assert e.name == cargs.name
     assert e.index == cargs.index
+
+
+@given(
+    text(
+        alphabet=characters(min_codepoint=95, max_codepoint=122, blacklist_characters=("`",)), min_size=3, max_size=25
+    ),
+    integers(min_value=-100, max_value=100),
+)
+@settings(max_examples=10)
+def test_event_kv(key: str, value: Any) -> None:
+    from ooodev.events.args.calc.sheet_cancel_args import SheetCancelArgs
+
+    args = SheetCancelArgs("random_event")
+    args._event_name = "test_event_kv"
+
+    with pytest.raises(KeyError):
+        _ = args.get(key)
+
+    assert args.get(key, None) is None
+    assert args.set(key, value)
+    assert args.has(key)
+    val = args.get(key)
+    assert val == value
+    args.remove(key)
+    assert args.has(key) == False
