@@ -1,13 +1,13 @@
 from __future__ import annotations
-from typing import cast
+from typing import cast, overload
 from enum import Enum
 
-from ..exceptions import ex as mEx
-from ..utils import info as mInfo
-from ..utils import lo as mLo
-from ..utils.color import Color
-from .style_base import StyleBase
-from .style_const import POINT_RATIO
+from ...exceptions import ex as mEx
+from ...utils import info as mInfo
+from ...utils import lo as mLo
+from ...utils.color import Color
+from ..style_base import StyleBase
+from ..style_const import POINT_RATIO
 
 from ooo.dyn.awt.char_set import CharSetEnum as CharSetEnum
 from ooo.dyn.awt.font_family import FontFamilyEnum as FontFamilyEnum
@@ -169,13 +169,16 @@ class Font(StyleBase):
 
         super().__init__(**init_vals)
 
+    @overload
+    def apply_style(self, obj: object) -> None:
+        ...
+
     def apply_style(self, obj: object, **kwargs) -> None:
         """
         Applies styles to object
 
         Args:
-            obj (object): UNO Oject that styles are to be applied.
-            kwargs (Any, optional): Expandable list of key value pairs that may be used in child classes.
+            obj (object): UNO object that has supports ``com.sun.star.style.CharacterProperties`` service.
 
         Returns:
             None:

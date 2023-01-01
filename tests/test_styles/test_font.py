@@ -6,7 +6,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.styles.font import (
+from ooodev.styles.char.font import (
     Font,
     FontStrikeoutEnum,
     FontUnderlineEnum,

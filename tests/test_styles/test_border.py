@@ -6,14 +6,14 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.styles.tbl_borders import (
-    Border,
+from ooodev.styles.table.borders import (
+    Borders,
     Shadow,
     Side,
     BorderLineStyleEnum,
     ShadowLocation,
 )
-from ooodev.styles.paragraphs import Padding
+from ooodev.styles.para.padding import Padding
 from ooodev.styles import CommonColor, Style
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
@@ -41,7 +41,7 @@ def test_calc_border(loader, test_headless) -> None:
         Calc.set_val(value="Hello", sheet=sheet, cell_obj=cell_obj)
 
         cell = Calc.get_cell(sheet, cell_obj)
-        cb = Border(border_side=Side())
+        cb = Borders(border_side=Side())
 
         Style.apply_style(cell, cb)
         cp = cast("CellProperties", cell)
@@ -64,7 +64,7 @@ def test_calc_border(loader, test_headless) -> None:
 
         cell_obj = Calc.get_cell_obj("c1")
         cell = Calc.get_cell(sheet, cell_obj)
-        cb = Border(
+        cb = Borders(
             left=Side(style=BorderLineStyleEnum.DASHED, color=CommonColor.BLUE, width=4.5),
             right=Side(style=BorderLineStyleEnum.DOUBLE, width=2.5),
             shadow=shadow,
@@ -90,7 +90,7 @@ def test_calc_border(loader, test_headless) -> None:
 
         cell_obj = Calc.get_cell_obj("e1")
         cell = Calc.get_cell(sheet, cell_obj)
-        cb = Border(diagonal_up=Side(style=BorderLineStyleEnum.DOUBLE_THIN, color=CommonColor.RED))
+        cb = Borders(diagonal_up=Side(style=BorderLineStyleEnum.DOUBLE_THIN, color=CommonColor.RED))
         Style.apply_style(cell, cb)
         cp = cast("CellProperties", cell)
         assert cp.DiagonalBLTR2.Color == CommonColor.RED
@@ -98,7 +98,7 @@ def test_calc_border(loader, test_headless) -> None:
 
         cell_obj = Calc.get_cell_obj("g1")
         cell = Calc.get_cell(sheet, cell_obj)
-        cb = Border(diagonal_down=Side(style=BorderLineStyleEnum.DOTTED, color=CommonColor.BROWN))
+        cb = Borders(diagonal_down=Side(style=BorderLineStyleEnum.DOTTED, color=CommonColor.BROWN))
         Style.apply_style(cell, cb)
         cp = cast("CellProperties", cell)
         assert cp.DiagonalTLBR2.Color == CommonColor.BROWN
@@ -108,7 +108,7 @@ def test_calc_border(loader, test_headless) -> None:
 
         cell_obj = Calc.get_cell_obj("A3")
         cell = Calc.get_cell(sheet, cell_obj)
-        cb = Border(diagonal_down=side, diagonal_up=side)
+        cb = Borders(diagonal_down=side, diagonal_up=side)
         Style.apply_style(cell, cb)
         cp = cast("CellProperties", cell)
         assert cp.DiagonalTLBR2.Color == CommonColor.ORANGE_RED
@@ -119,8 +119,8 @@ def test_calc_border(loader, test_headless) -> None:
         cell_obj = Calc.get_cell_obj("C3")
         Calc.set_val(value="Hello", sheet=sheet, cell_obj=cell_obj)
         cell = Calc.get_cell(sheet, cell_obj)
-        cb = Border(diagonal_down=side, diagonal_up=side)
-        Style.apply_style(cell, Border(padding=Padding(padding_all=0.7)))
+        cb = Borders(diagonal_down=side, diagonal_up=side)
+        Style.apply_style(cell, Borders(padding=Padding(padding_all=0.7)))
         cp = cast("ParagraphProperties", cell)
         # padding may not apply exact
         assert cp.ParaLeftMargin >= 69 and cp.ParaLeftMargin <= 72
@@ -131,8 +131,8 @@ def test_calc_border(loader, test_headless) -> None:
         cell_obj = Calc.get_cell_obj("E3")
         Calc.set_val(value="Hello", sheet=sheet, cell_obj=cell_obj)
         cell = Calc.get_cell(sheet, cell_obj)
-        cb = Border(diagonal_down=side, diagonal_up=side)
-        Style.apply_style(cell, Border(padding=Padding(left=1.2, right=1.2, top=0.5, bottom=0.5)))
+        cb = Borders(diagonal_down=side, diagonal_up=side)
+        Style.apply_style(cell, Borders(padding=Padding(left=1.2, right=1.2, top=0.5, bottom=0.5)))
         cp = cast("ParagraphProperties", cell)
         # padding may not apply exact
         assert cp.ParaLeftMargin >= 118 and cp.ParaLeftMargin <= 122
@@ -144,8 +144,8 @@ def test_calc_border(loader, test_headless) -> None:
         cell_obj = Calc.get_cell_obj("G3")
         Calc.set_val(value="Hello", sheet=sheet, cell_obj=cell_obj)
         cell = Calc.get_cell(sheet, cell_obj)
-        cb = Border(diagonal_down=side, diagonal_up=side)
-        Style.apply_style(cell, Border.default)
+        cb = Borders(diagonal_down=side, diagonal_up=side)
+        Style.apply_style(cell, Borders.default)
 
         Lo.delay(delay)
     finally:
@@ -169,7 +169,7 @@ def test_calc_border_range(loader, test_headless) -> None:
 
         # for some unknown reason LibreOffice is overriding style of horizontal Side. to match outter border.
         # Soluttion is to create a new border with only horizontal side set after inital range has been set
-        cb = Border(
+        cb = Borders(
             border_side=Side(style=BorderLineStyleEnum.SOLID, color=CommonColor.BLUE),
             vertical=Side(color=CommonColor.RED, style=BorderLineStyleEnum.DASHED),
             horizontal=Side(color=CommonColor.GREEN, width=1.4, style=BorderLineStyleEnum.DOUBLE),
@@ -181,7 +181,7 @@ def test_calc_border_range(loader, test_headless) -> None:
         assert rng.TableBorder2.TopLine.Color == CommonColor.BLUE
         assert rng.TableBorder2.RightLine.LineStyle == BorderLineStyleEnum.SOLID.value
 
-        cb = Border(horizontal=Side(color=CommonColor.GREEN, width=1.4, style=BorderLineStyleEnum.DOUBLE))
+        cb = Borders(horizontal=Side(color=CommonColor.GREEN, width=1.4, style=BorderLineStyleEnum.DOUBLE))
         Style.apply_style(cr, cb)
 
         assert rng.TableBorder2.VerticalLine.Color == CommonColor.RED
@@ -196,7 +196,7 @@ def test_calc_border_range(loader, test_headless) -> None:
         if not test_headless:
             Calc.goto_cell(cell_obj=rng_obj.cell_start, doc=doc)
 
-        cb = Border(border_side=Side(), diagonal_up=Side(color=CommonColor.RED))
+        cb = Borders(border_side=Side(), diagonal_up=Side(color=CommonColor.RED))
         Style.apply_style(cr, cb)
 
         cell = Calc.get_cell(sheet=sheet, cell_obj=rng_obj.cell_start)
@@ -210,7 +210,7 @@ def test_calc_border_range(loader, test_headless) -> None:
         if not test_headless:
             Calc.goto_cell(cell_obj=rng_obj.cell_start, doc=doc)
 
-        cb = Border(
+        cb = Borders(
             border_side=Side(), diagonal_up=Side(color=CommonColor.RED), diagonal_down=Side(color=CommonColor.RED)
         )
         Style.apply_style(cr, cb)
@@ -221,7 +221,7 @@ def test_calc_border_range(loader, test_headless) -> None:
         if not test_headless:
             Calc.goto_cell(cell_obj=rng_obj.cell_start, doc=doc)
 
-        Style.apply_style(cr, Border.empty)
+        Style.apply_style(cr, Borders.empty)
 
         cell = Calc.get_cell(sheet=sheet, cell_obj=rng_obj.cell_start)
         cp = cast("CellProperties", cell)
@@ -236,7 +236,7 @@ def test_calc_border_range(loader, test_headless) -> None:
         assert para.ParaTopMargin == 35
         assert para.ParaBottomMargin == 35
 
-        cb = Border(border_side=Side(style=BorderLineStyleEnum.DOUBLE_THIN, color=CommonColor.GREEN))
+        cb = Borders(border_side=Side(style=BorderLineStyleEnum.DOUBLE_THIN, color=CommonColor.GREEN))
 
         Style.apply_style(cr, cb)
 

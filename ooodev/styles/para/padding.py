@@ -1,12 +1,12 @@
 from __future__ import annotations
 from typing import cast
 
-from ..exceptions import ex as mEx
-from ..meta.static_prop import static_prop
-from ..utils import info as mInfo
-from ..utils import lo as mLo
-from ..utils import props as mProps
-from .style_base import StyleBase
+from ...exceptions import ex as mEx
+from ...meta.static_prop import static_prop
+from ...utils import info as mInfo
+from ...utils import lo as mLo
+from ...utils import props as mProps
+from ..style_base import StyleBase
 
 
 class Padding(StyleBase):
@@ -68,6 +68,9 @@ class Padding(StyleBase):
 
         super().__init__(**init_vals)
 
+    def _is_supported(self, obj: object) -> bool:
+        return mInfo.Info.support_service(obj, "com.sun.star.style.ParagraphProperties")
+
     def apply_style(self, obj: object, **kwargs) -> None:
         """
         Applies padding to ``obj``
@@ -79,11 +82,11 @@ class Padding(StyleBase):
         Returns:
             None:
         """
-        if mInfo.Info.support_service(obj, "com.sun.star.style.ParagraphProperties"):
+        if self._is_supported(obj):
             try:
                 super().apply_style(obj)
             except mEx.MultiError as e:
-                mLo.Lo.print(f"Padding.apply_style(): Unable to set Property")
+                mLo.Lo.print(f"{self.__class__}.apply_style(): Unable to set Property")
                 for err in e.errors:
                     mLo.Lo.print(f"  {err}")
         else:

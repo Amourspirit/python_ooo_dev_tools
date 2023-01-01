@@ -6,22 +6,26 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Iterable, List, overload
 import re
 import uno
+from weakref import ref
 
-from ..exceptions import ex as mEx
-from ..utils import lo as mLo
-from ..utils import info as mInfo
-from ..utils import file_io as mFileIO
-from ..utils import props as mProps
-from ..utils.table_helper import TableHelper
-from ..utils.color import CommonColor, Color
-from ..utils.type_var import PathOrStr, Table, DocOrCursor
-from ..utils import images_lo as mImgLo
-from ..utils import selection as mSel
-from ..events.event_singleton import _Events
-from ..events.args.event_args import EventArgs
 from ..events.args.cancel_event_args import CancelEventArgs
-from ..events.write_named_event import WriteNamedEvent
+from ..events.args.event_args import EventArgs
+from ..events.event_singleton import _Events
 from ..events.gbl_named_event import GblNamedEvent
+from ..events.lo_named_event import LoNamedEvent
+from ..events.write_named_event import WriteNamedEvent
+from ..exceptions import ex as mEx
+from ..meta.static_meta import classproperty, StaticProperty
+from ..styles import style_base as mStyleBase
+from ..utils import file_io as mFileIO
+from ..utils import images_lo as mImgLo
+from ..utils import info as mInfo
+from ..utils import lo as mLo
+from ..utils import props as mProps
+from ..utils import selection as mSel
+from ..utils.color import CommonColor, Color
+from ..utils.table_helper import TableHelper
+from ..utils.type_var import PathOrStr, Table, DocOrCursor
 
 from ..mock import mock_g
 
@@ -269,8 +273,20 @@ class Write(mSel.Selection):
         """
         return mInfo.Info.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.WRITER)
 
+    # region get_text_doc()
+
+    @overload
+    @classmethod
+    def get_text_doc(cls) -> XTextDocument:
+        ...
+
+    @overload
     @classmethod
     def get_text_doc(cls, doc: XComponent) -> XTextDocument:
+        ...
+
+    @classmethod
+    def get_text_doc(cls, doc: XComponent | None = None) -> XTextDocument:
         """
         Gets a writer document
 
@@ -290,13 +306,18 @@ class Write(mSel.Selection):
             .. cssclass:: lo_event
 
                 - :py:attr:`~.events.write_named_event.WriteNamedEvent.DOC_TEXT` :eventref:`src-docs-event`
+
+        .. versionchanged:: 0.9.0
+            Added overload ``get_text_doc()``
         """
         if doc is None:
-            raise TypeError("Document is null")
+            doc = mLo.Lo.this_component
 
         text_doc = mLo.Lo.qi(XTextDocument, doc, True)
         _Events().trigger(WriteNamedEvent.DOC_TEXT, EventArgs(Write.get_text_doc.__qualname__))
         return text_doc
+
+    # endregion get_text_doc()
 
     # region create_doc()
     @overload
@@ -411,8 +432,19 @@ class Write(mSel.Selection):
 
     # endregion create_doc_from_template()
 
-    @staticmethod
-    def close_doc(text_doc: XTextDocument) -> bool:
+    # region close_doc()
+    @overload
+    @classmethod
+    def close_doc(cls) -> bool:
+        ...
+
+    @overload
+    @classmethod
+    def close_doc(cls, text_doc: XTextDocument) -> bool:
+        ...
+
+    @classmethod
+    def close_doc(cls, text_doc: XTextDocument | None = None) -> bool:
         """
         Closes text document
 
@@ -436,7 +468,12 @@ class Write(mSel.Selection):
 
         Attention:
             :py:meth:`Lo.close <.utils.lo.Lo.close>` method is called along with any of its events.
+
+        .. versionchanged:: 0.9.0
+            Added overload ``close_doc()``
         """
+        if text_doc is None:
+            text_doc = cls.active_doc
         cargs = CancelEventArgs(Write.close_doc.__qualname__)
         cargs.event_data = {"text_doc": text_doc}
         _Events().trigger(WriteNamedEvent.DOC_CLOSING, cargs)
@@ -446,6 +483,8 @@ class Write(mSel.Selection):
         result = mLo.Lo.close(closable)
         _Events().trigger(WriteNamedEvent.DOC_CLOSED, EventArgs.from_args(cargs))
         return result
+
+    # endregion close_doc()
 
     @staticmethod
     def save_doc(text_doc: XTextDocument, fnm: PathOrStr) -> bool:
@@ -515,7 +554,7 @@ class Write(mSel.Selection):
             loader (XComponentLoader): Component Loader
 
         Raises:
-            # UnOpenableError: If fnm is not able to be opened
+            UnOpenableError: If fnm is not able to be opened
             ValueError: If template_path is not ott file
             MissingInterfaceError: If template_path document does not implement XTextDocument interface
             ValueError: If unable to obtain cursor object
@@ -1101,25 +1140,93 @@ class Write(mSel.Selection):
         cls.style_left(cursor, pos, "CharFontName", mInfo.Info.get_font_mono_name())
         cls.style_left(cursor, pos, "CharHeight", 10)
 
-    @classmethod
-    def style_left(cls, cursor: XTextCursor, pos: int, prop_name: str, prop_val: object) -> None:
-        """
-        Styles left. From current cursor position to left by pos amount.
+    # region style_left()
 
-        Args:
-            cursor (XTextCursor): Text Cursor
-            pos (int): Positions to style left
-            prop_name (str): Property Name such as 'CharHeight
-            prop_val (object): Property Value such as 10
-        """
-        old_val = mProps.Props.get_property(cursor, prop_name)
+    @classmethod
+    def _style_left(cls, cursor: XTextCursor, pos: int, prop_name: str, prop_val: object) -> None:
+
+        old_val = mProps.Props.get(cursor, prop_name)
 
         curr_pos = mSel.Selection.get_position(cursor)
         cursor.goLeft(curr_pos - pos, True)
         mProps.Props.set_property(cursor, prop_name, prop_val)
 
         cursor.goRight(curr_pos - pos, False)
-        mProps.Props.set_property(cursor, prop_name, old_val)
+        mProps.Props.set(cursor, **{prop_name: old_val})
+
+    @classmethod
+    def _style_left_style(cls, cursor: XTextCursor, pos: int, style: mStyleBase.StyleBase) -> None:
+
+        old_val = {}
+        for attr in style.get_attrs():
+            old_val[attr] = mProps.Props.get(cursor, attr)
+
+        curr_pos = mSel.Selection.get_position(cursor)
+        cursor.goLeft(curr_pos - pos, True)
+        style.apply_style(cursor)
+
+        cursor.goRight(curr_pos - pos, False)
+        for key, val in old_val.items():
+            mProps.Props.set(cursor, **{key: val})
+
+    @overload
+    @classmethod
+    def style_left(cls, cursor: XTextCursor, pos: int, style: mStyleBase.StyleBase) -> None:
+        ...
+
+    @overload
+    @classmethod
+    def style_left(cls, cursor: XTextCursor, pos: int, prop_name: str, prop_val: object) -> None:
+        ...
+
+    @classmethod
+    def style_left(cls, *args, **kwargs) -> None:
+        """
+        Styles left. From current cursor position to left by pos amount.
+
+        Args:
+            cursor (XTextCursor): Text Cursor
+            pos (int): Positions to style left
+            style (style): style the inherits from ``StyleBase`` such as ``Font``
+            prop_name (str): Property Name such as 'CharHeight
+            prop_val (object): Property Value such as 10
+        """
+        ordered_keys = (1, 2, 3, 4)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
+
+        def get_kwargs() -> dict:
+            ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ("cursor", "pos", "prop_name", "prop_val", "style")
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("style_left() got an unexpected keyword argument")
+            ka[1] = kwargs.get("cursor", None)
+            ka[2] = kwargs.get("pos", None)
+            keys = ("prop_name", "style")
+            for key in keys:
+                if key in kwargs:
+                    ka[3] = kwargs[key]
+                    break
+            if count == 3:
+                return ka
+            ka[4] = ka.get("prop_val", None)
+            return ka
+
+        if not count in (3, 4):
+            raise TypeError("style_left() got an invalid number of arguments")
+
+        kargs = get_kwargs()
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
+
+        if count == 4:
+            return cls._style_left(kargs[1], kargs[2], kargs[3], kargs[4])
+        return cls._style_left_style(kargs[1], kargs[2], kargs[3])
+
+    # endregion style_left()
 
     @classmethod
     def dispatch_cmd_left(
@@ -2978,5 +3085,37 @@ class Write(mSel.Selection):
         """
         mLo.Lo.dispatch_cmd("ThesaurusDialog")
 
+    @classproperty
+    def active_doc(cls) -> XTextDocument:
+        """
+        Gets current active document
+
+        Returns:
+            XTextDocument: Text Document
+
+        .. versionadded:: 0.9.0
+        """
+        # note:
+        # It is not permitted to create weak ref to pyuno objects.
+        try:
+            return Write._active_doc
+        except AttributeError:
+            Write._active_doc = Write.get_text_doc()
+            return Write._active_doc
+
+
+class _WriteManager:
+    """Manages clearing and resetting for Lo static class"""
+
+    @staticmethod
+    def del_cache_attrs(source: object, event: EventArgs) -> None:
+        # clears Lo Attributes that are dynamically created
+        dattrs = ("_active_doc",)
+        for attr in dattrs:
+            if hasattr(Write, attr):
+                delattr(Write, attr)
+
+
+_Events().on(LoNamedEvent.RESET, _WriteManager.del_cache_attrs)
 
 __all__ = ("Write",)
