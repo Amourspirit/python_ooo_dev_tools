@@ -1,3 +1,8 @@
+"""
+Module for managing the applying of styles.
+
+.. versionadded:: 0.9.0
+"""
 from __future__ import annotations
 from typing import Any
 
@@ -5,6 +10,12 @@ from ..proto.style_obj import StyleObj
 
 
 class Style:
+    """
+    Style methods
+
+    .. versionadded:: 0.9.0
+    """
+
     @staticmethod
     def apply_style(obj: Any, *styles: StyleObj, **kwargs) -> None:
         """

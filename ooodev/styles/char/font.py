@@ -1,3 +1,8 @@
+"""
+Module for managing character fonts.
+
+.. versionadded:: 0.9.0
+"""
 from __future__ import annotations
 from typing import cast, overload
 from enum import Enum
@@ -19,7 +24,11 @@ from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
 
 
 class CharSpacingKind(float, Enum):
-    """Character Spacing"""
+    """
+    Character Spacing
+
+    .. versionadded:: 0.9.0
+    """
 
     VERY_TIGHT = -3.0
     TIGHT = -1.5
@@ -29,6 +38,12 @@ class CharSpacingKind(float, Enum):
 
 
 class Font(StyleBase):
+    """
+    Character Font
+
+    .. versionadded:: 0.9.0
+    """
+
     def __init__(
         self,
         *,

@@ -1,5 +1,10 @@
+"""
+Module for handeling character highlight.
+
+.. versionadded:: 0.9.0
+"""
 from __future__ import annotations
-from typing import cast, overload
+from typing import overload
 
 from ...exceptions import ex as mEx
 from ...meta.static_prop import static_prop
@@ -10,17 +15,16 @@ from ..style_base import StyleBase
 from ...utils.color import Color
 
 
-class Hightlight(StyleBase):
-    """Character Hightlighting"""
+class Highlight(StyleBase):
+    """
+    Character Highlighting
+
+    .. versionadded:: 0.9.0
+    """
 
     _EMPTY = None
 
-    # this class also set Borders Padding in borders.Border class.
-
-    def __init__(
-        self,
-        color: Color = -1,
-    ) -> None:
+    def __init__(self, color: Color = -1) -> None:
         """
         Constructor
 
@@ -30,7 +34,6 @@ class Hightlight(StyleBase):
         Returns:
             None:
         """
-        # https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1ParagraphProperties-members.html
         init_vals = {}
         if color >= 0:
             init_vals["CharBackColor"] = color
@@ -75,9 +78,9 @@ class Hightlight(StyleBase):
     # endregion apply_style()
 
     @staticmethod
-    def from_obj(obj: object) -> Hightlight:
+    def from_obj(obj: object) -> Highlight:
         """
-        Gets Padding instance from object
+        Gets Hightlight instance from object
 
         Args:
             obj (object): UNO object that supports ``com.sun.star.style.CharacterProperties`` service.
@@ -86,11 +89,11 @@ class Hightlight(StyleBase):
             NotSupportedServiceError: If ``obj`` does not support  ``com.sun.star.style.CharacterProperties`` service.
 
         Returns:
-            Padding: Padding that represents ``obj`` padding.
+            Hightlight: Hightlight that represents ``obj`` Hightlight.
         """
         if not mInfo.Info.support_service(obj, "com.sun.star.style.CharacterProperties"):
             raise mEx.NotSupportedServiceError("com.sun.star.style.CharacterProperties")
-        inst = Hightlight()
+        inst = Highlight()
         inst._set("CharBackColor", int(mProps.Props.get(obj, "CharBackColor")))
         inst._set("CharBackTransparent", bool(mProps.Props.get(obj, "CharBackTransparent")))
         return inst
@@ -110,8 +113,8 @@ class Hightlight(StyleBase):
             self._set("CharBackTransparent", True)
 
     @static_prop
-    def empty(cls) -> Hightlight:
+    def empty(cls) -> Highlight:
         """Gets Highlight empty. Static Property."""
         if cls._EMPTY is None:
-            cls._EMPTY = Hightlight()
+            cls._EMPTY = Highlight()
         return cls._EMPTY

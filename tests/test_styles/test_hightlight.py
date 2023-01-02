@@ -6,7 +6,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.styles.char.highlight import Hightlight
+from ooodev.styles.char.highlight import Highlight
 from ooodev.styles import CommonColor
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 
 
 def test_char_highlight_props() -> None:
-    hl = Hightlight(color=CommonColor.LIGHT_YELLOW)
+    hl = Highlight(color=CommonColor.LIGHT_YELLOW)
     assert hl.color == CommonColor.LIGHT_YELLOW
     assert hl._get("CharBackColor") == CommonColor.LIGHT_YELLOW
     assert hl._get("CharBackTransparent") == False
@@ -31,7 +31,7 @@ def test_char_highlight_props() -> None:
     assert hl._get("CharBackColor") == -1
     assert hl._get("CharBackTransparent")
 
-    hl = Hightlight()
+    hl = Highlight()
     hl.color = -1
     assert hl.color == -1
     assert hl._get("CharBackColor") == -1
@@ -42,7 +42,7 @@ def test_char_highlight_props() -> None:
     assert hl._get("CharBackColor") == CommonColor.AQUA
     assert hl._get("CharBackTransparent") == False
 
-    hl = Hightlight.empty
+    hl = Highlight.empty
     hl.color = -1
     assert hl.color == -1
     assert hl._get("CharBackColor") == -1
@@ -65,7 +65,7 @@ def test_char_hightlight(loader, test_headless) -> None:
         ft = Font(size=40)
         Write.append(cursor, "Starting ", (ft,))
         pos = Write.get_position(cursor)
-        hl = Hightlight(color=CommonColor.LIGHT_YELLOW)
+        hl = Highlight(color=CommonColor.LIGHT_YELLOW)
         Write.append(cursor, "Hello")
         Write.style_left(cursor=cursor, pos=pos, styles=(hl, ft))
         cursor.gotoEnd(False)
@@ -75,7 +75,7 @@ def test_char_hightlight(loader, test_headless) -> None:
         assert cp.CharBackTransparent == False
         cursor.gotoEnd(False)
 
-        Write.style_left(cursor=cursor, pos=pos, styles=(Hightlight.empty,))
+        Write.style_left(cursor=cursor, pos=pos, styles=(Highlight.empty,))
         cursor.gotoEnd(False)
         cursor.goLeft(5, True)
         cp = cast("CharacterProperties", cursor)

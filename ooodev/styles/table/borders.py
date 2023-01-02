@@ -1,3 +1,8 @@
+"""
+Module for managing table borders (cells and ranges).
+
+.. versionadded:: 0.9.0
+"""
 # region imports
 from __future__ import annotations
 from ast import Tuple
@@ -29,7 +34,11 @@ from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 
 
 class Borders(StyleBase):
-    """Borders used in styles for table cells and ranges."""
+    """
+    Table Borders used in styles for table cells and ranges.
+
+    .. versionadded:: 0.9.0
+    """
 
     _DEFAULT = None
     _EMPTY = None
