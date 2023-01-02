@@ -1,3 +1,8 @@
+"""
+Module for managing character padding.
+
+.. versionadded:: 0.9.0
+"""
 from __future__ import annotations
 from typing import cast
 
@@ -10,7 +15,11 @@ from ..style_base import StyleBase
 
 
 class Padding(StyleBase):
-    """Character Padding"""
+    """
+    Character Padding
+
+    .. versionadded:: 0.9.0
+    """
 
     _DEFAULT = None
 

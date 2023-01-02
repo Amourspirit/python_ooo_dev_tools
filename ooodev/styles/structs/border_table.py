@@ -1,3 +1,8 @@
+"""
+Module for table border (``TableBorder2``) struct
+
+.. versionadded:: 0.9.0
+"""
 # region imports
 from __future__ import annotations
 from typing import cast, overload
@@ -17,7 +22,11 @@ from ooo.dyn.table.table_border2 import TableBorder2
 
 
 class BorderTable(StyleBase):
-    """Table Border positioning for use in styles."""
+    """
+    Table Border struct positioning for use in styles.
+
+    .. versionadded:: 0.9.0
+    """
 
     _SIDE_ATTRS = ("TopLine", "BottomLine", "LeftLine", "RightLine", "HorizontalLine", "VerticalLine")
 

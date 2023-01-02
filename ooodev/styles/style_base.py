@@ -14,6 +14,12 @@ if TYPE_CHECKING:
 
 
 class StyleBase(ABC):
+    """
+    Base Styles class
+
+    .. versionadded:: 0.9.0
+    """
+
     def __init__(self, **kwargs) -> None:
         self._dv = {}
         for (key, value) in kwargs.items():
@@ -27,11 +33,11 @@ class StyleBase(ABC):
         return self._dv.get(key, None)
 
     def _set(self, key: str, val: Any) -> bool:
-        if val is None:
-            if key in self._dv:
-                del self._dv[key]
+        cargs = KeyValCancelArgs("style_base", key=key, value=val)
+        self._on_setting(cargs)
+        if cargs.cancel:
             return False
-        self._dv[key] = val
+        self._dv[cargs.key] = cargs.value
         return True
 
     def _clear(self) -> None:
@@ -45,6 +51,11 @@ class StyleBase(ABC):
             del self._dv[key]
             return True
         return False
+
+    def _on_setting(self, event: KeyValCancelArgs) -> None:
+        # can be overridden in child classes to manage or modify setting
+        # called by _set()
+        pass
 
     def _is_supported(self, obj: object) -> bool:
         # can be used in child classe to for something like if mInfo.Info.support_service(obj, "com.sun.star.table.CellProperties"):

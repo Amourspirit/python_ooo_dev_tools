@@ -1,3 +1,8 @@
+"""
+Module for managing character border side.
+
+.. versionadded:: 0.9.0
+"""
 # region imports
 from __future__ import annotations
 from typing import cast, overload, TYPE_CHECKING
@@ -21,7 +26,11 @@ if TYPE_CHECKING:
 
 
 class Sides(StyleBase):
-    """Character Border for use in styles."""
+    """
+    Character Border for use in styles.
+
+    .. versionadded:: 0.9.0
+    """
 
     _CHAR_BORDERS = ("CharTopBorder", "CharBottomBorder", "CharLeftBorder", "CharRightBorder")
     # region init
@@ -80,9 +89,6 @@ class Sides(StyleBase):
 
         Args:
             obj (object): UNO object
-
-        Raises:
-            PropertyNotFoundError: If ``obj`` does not have ``TableBorder2`` property.
 
         Returns:
             None:
