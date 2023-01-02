@@ -1,3 +1,8 @@
+"""
+Module for managing character borders.
+
+.. versionadded:: 0.9.0
+"""
 # region imports
 from __future__ import annotations
 from typing import Tuple
@@ -30,7 +35,11 @@ from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 
 
 class Borders(StyleBase):
-    """Border used in styles for characters."""
+    """
+    Border used in styles for characters.
+
+    .. versionadded:: 0.9.0
+    """
 
     _DEFAULT = None
     _EMPTY = None

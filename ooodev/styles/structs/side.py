@@ -1,3 +1,8 @@
+"""
+Module for table side (``BorderLine2``) struct.
+
+.. versionadded:: 0.9.0
+"""
 # region imports
 from __future__ import annotations
 from typing import Dict, cast, overload
@@ -22,7 +27,11 @@ from ooo.dyn.table.border_line2 import BorderLine2 as BorderLine2
 
 
 class SideFlags(IntFlag):
-    """Side Flags Enum"""
+    """
+    Side Flags Enum
+
+    .. versionadded:: 0.9.0
+    """
 
     LEFT = 0x01
     """Apply to Left Side"""
@@ -48,7 +57,13 @@ class SideFlags(IntFlag):
 
 
 class Side(StyleBase):
-    """Represents one side of a border"""
+    """
+    Side struct.
+
+    Represents one side of a border.
+
+    .. versionadded:: 0.9.0
+    """
 
     _EMPTY = None
 

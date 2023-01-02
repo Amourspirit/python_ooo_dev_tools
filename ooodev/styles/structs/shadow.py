@@ -1,3 +1,8 @@
+"""
+Module for Shadow format (``ShadowFormat``) struct.
+
+.. versionadded:: 0.9.0
+"""
 # region imports
 from __future__ import annotations
 from typing import cast, overload
@@ -15,6 +20,12 @@ from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 
 # endregion imports
 class Shadow(StyleBase):
+    """
+    Shadow struct
+
+    .. versionadded:: 0.9.0
+    """
+
     # region init
     _EMPTY = None
 
