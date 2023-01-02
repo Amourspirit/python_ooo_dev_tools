@@ -19,6 +19,12 @@ Added ``Write.append(cursor: XTextCursor, text: str, styles: Iterable[StyleObj])
 
 Added ``Write.style_left(cursor: XTextCursor, pos: int, styles: Iterable[StyleObj])`` overload.
 
+Added ``Write.style_prev_paragraph(cursor: XTextCursor, styles: Iterable[StyleObj])`` overload.
+
+Added ``Write.append_line(cursor: XTextCursor, text: str, styles: Iterable[StyleObj])`` overload.
+
+Added ``Write.append_para(cursor: XTextCursor, text: str, styles: Iterable[StyleObj])`` overload.
+
 Added :ref:`ns_styles` namespace with many classes for applying styles to documents and sheets.
 
 Version 0.8.6

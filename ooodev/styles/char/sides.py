@@ -81,9 +81,6 @@ class Sides(StyleBase):
         Args:
             obj (object): UNO object
 
-        Raises:
-            PropertyNotFoundError: If ``obj`` does not have ``TableBorder2`` property.
-
         Returns:
             None:
         """

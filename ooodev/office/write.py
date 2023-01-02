@@ -835,9 +835,12 @@ class Write(mSel.Selection):
         Args:
             cursor (XTextCursor): Text Cursor
             text (str): Text to append
-            styles (Iterable[StyleObj]): One or my styles to apply to text.
+            styles (Iterable[StyleObj]):One or more styles to apply to text.
             ctl_char (int): Control Char (like a paragraph break or a hard space)
             text_content (XTextContent): Text content, such as a text table, text frame or text field.
+
+        Returns:
+            None:
 
         See Also:
             `API ControlCharacter <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1text_1_1ControlCharacter.html>`_
@@ -902,17 +905,30 @@ class Write(mSel.Selection):
     def append_line(cls, cursor: XTextCursor, text: str) -> None:
         ...
 
+    @overload
     @classmethod
-    def append_line(cls, cursor: XTextCursor, text: str = "") -> None:
+    def append_line(cls, cursor: XTextCursor, text: str, styles: Iterable[StyleObj]) -> None:
+        ...
+
+    @classmethod
+    def append_line(cls, cursor: XTextCursor, text: str = "", styles: Iterable[StyleObj] = None) -> None:
         """
         Appends a new Line
 
         Args:
             cursor (XTextCursor): Text Cursor
             text (str, optional): text to append before new line is inserted.
+            styles (Iterable[StyleObj]): One or more styles to apply to text. If ``text`` is ommited then this argument is ignored.
+
+        .. versionchanged:: 0.9.0
+            Added overload ``append_line(cursor: XTextCursor, text: str, styles: Iterable[StyleObj])``
         """
         if text:
-            cls._append_text(cursor=cursor, text=text)
+            if styles is None:
+                cls._append_text(cursor=cursor, text=text)
+            else:
+                cls._append_text_style(cursor=cursor, text=text, styles=styles)
+
         cls._append_ctl_char(cursor=cursor, ctl_char=ControlCharacterEnum.LINE_BREAK)
 
     # endregion append_line()
@@ -950,17 +966,29 @@ class Write(mSel.Selection):
     def append_para(cls, cursor: XTextCursor, text: str) -> None:
         ...
 
+    @overload
     @classmethod
-    def append_para(cls, cursor: XTextCursor, text: str = "") -> None:
+    def append_para(cls, cursor: XTextCursor, text: str, styles: Iterable[StyleObj]) -> None:
+        ...
+
+    @classmethod
+    def append_para(cls, cursor: XTextCursor, text: str = "", styles: Iterable[StyleObj] = None) -> None:
         """
         Appends text (if present) and then a paragraph break.
 
         Args:
             cursor (XTextCursor): Text Cursor
             text (str, optional): Text to append
+            styles (Iterable[StyleObj]): One or more styles to apply to text. If ``text`` is empty then this argument is ignored.
+
+        .. versionchanged:: 0.9.0
+            Added overload ``append_para(cursor: XTextCursor, text: str, styles: Iterable[StyleObj])``
         """
         if text:
-            cls._append_text(cursor=cursor, text=text)
+            if styles is None:
+                cls._append_text(cursor=cursor, text=text)
+            else:
+                cls._append_text_style(cursor=cursor, text=text, styles=styles)
         cls._append_ctl_char(cursor=cursor, ctl_char=ControlCharacterEnum.PARAGRAPH_BREAK)
 
     # endregion append_para()
@@ -1228,9 +1256,12 @@ class Write(mSel.Selection):
         Args:
             cursor (XTextCursor): Text Cursor
             pos (int): Positions to style left
-            styles (Iterable[StyleObj]): One or my styles to apply to text.
+            styles (Iterable[StyleObj]):One or more styles to apply to text.
             prop_name (str): Property Name such as 'CharHeight
             prop_val (object): Property Value such as 10
+
+        Returns:
+            None:
 
         .. versionchanged:: 0.9.0
             Added ``style_left(cursor: XTextCursor, pos: int, styles: Iterable[StyleObj])`` overload.
@@ -1330,38 +1361,60 @@ class Write(mSel.Selection):
             mLo.Lo.dispatch_cmd(cmd=cmd, props=props, frame=frame)
 
     # region    style_prev_paragraph()
-    @overload
     @staticmethod
-    def style_prev_paragraph(cursor: XTextCursor, prop_val: object) -> None:
-        """
-        Style ParaStyleName of previous paragraph
+    def _style_prev_paragraph_prop(cursor: XTextCursor | XParagraphCursor, prop_val: object, prop_name: str) -> None:
+        old_val = mProps.Props.get(cursor, prop_name)
 
-        Args:
-            cursor (XTextCursor): Text Cursor
-            prop_val (object): Property value
-        """
+        cursor.gotoPreviousParagraph(True)  # select previous paragraph
+        mProps.Props.set(cursor, **{prop_name: prop_val})
+
+        # reset
+        cursor.gotoNextParagraph(False)
+        mProps.Props.set(cursor, **{prop_name: old_val})
+
+    @classmethod
+    def _style_prev_paragraph_style(cls, cursor: XTextCursor | XParagraphCursor, styles: Iterable[StyleObj]) -> None:
+
+        for style in styles:
+            old_val = {}
+            for attr in style.get_attrs():
+                val = mProps.Props.get(cursor, attr, None)
+                if not val is None:
+                    old_val[attr] = val
+
+            cursor.gotoPreviousParagraph(True)  # select previous paragraph
+
+            style.apply_style(cursor)
+
+            # reset
+            cursor.gotoNextParagraph(False)
+            # restore the cursors properties that were changed
+            for key, val in old_val.items():
+                mProps.Props.set(cursor, **{key: val})
+
+    @overload
+    @classmethod
+    def style_prev_paragraph(cls, cursor: XTextCursor, styles: Iterable[StyleObj]) -> None:
         ...
 
     @overload
-    @staticmethod
-    def style_prev_paragraph(cursor: XTextCursor, prop_val: object, prop_name: str) -> None:
+    @classmethod
+    def style_prev_paragraph(cls, cursor: XTextCursor, prop_val: object) -> None:
+        ...
+
+    @overload
+    @classmethod
+    def style_prev_paragraph(cls, cursor: XTextCursor, prop_val: object, prop_name: str) -> None:
+        ...
+
+    @classmethod
+    def style_prev_paragraph(cls, *args, **kwargs) -> None:
         """
         Style previous paragraph
 
         Args:
             cursor (XTextCursor): Text Cursor
-            prop_val (object): Property value
-            prop_name (str): Property Name
-        """
-        ...
-
-    @staticmethod
-    def style_prev_paragraph(cursor: XTextCursor | XParagraphCursor, prop_val: object, prop_name: str = None) -> None:
-        """
-        Style previous paragraph
-
-        Args:
-            cursor (XTextCursor): Text Cursor
+            styles (Iterable[StyleObj]):One or more styles to apply to text.
             prop_val (object): Property value
             prop_name (str): Property Name
 
@@ -1374,18 +1427,53 @@ class Write(mSel.Selection):
 
                 cursor = Write.get_cursor(doc)
                 Write.style_prev_paragraph(cursor=cursor, prop_val=ParagraphAdjust.CENTER, prop_name="ParaAdjust")
+
+        .. versionchanged:: 0.9.0
+            Added overload ``style_prev_paragraph(cursor: XTextCursor, styles: Iterable[StyleObj])``
         """
-        if prop_name is None:
-            prop_name = "ParaStyleName"
-        # raises PropertyNotFoundError if property is not found
-        old_val = mProps.Props.get(cursor, prop_name)
+        ordered_keys = (1, 2, 3)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
 
-        cursor.gotoPreviousParagraph(True)  # select previous paragraph
-        mProps.Props.set(cursor, **{prop_name: prop_val})
+        def get_kwargs() -> dict:
+            ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ("cursor", "prop_name", "prop_val", "styles")
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("style_prev_paragraph() got an unexpected keyword argument")
+            ka[1] = kwargs.get("cursor", None)
+            keys = ("prop_val", "styles")
+            for key in keys:
+                if key in kwargs:
+                    ka[2] = kwargs[key]
+                    break
+            if count == 2:
+                return ka
+            ka[3] = ka.get("prop_name", None)
+            return ka
 
-        # reset
-        cursor.gotoNextParagraph(False)
-        mProps.Props.set(cursor, **{prop_name: old_val})
+        if not count in (2, 3):
+            raise TypeError("style_prev_paragraph() got an invalid number of arguments")
+
+        kargs = get_kwargs()
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
+        # procees code here
+
+        if count == 3:
+            cls._style_prev_paragraph_prop(cursor=kargs[1], prop_val=kargs[2], prop_name=kargs[3])
+            return
+
+        # count == 2
+        arg2 = kargs[2]
+        # arg2 must be string or Iterable[StyleObj]
+        # ParaStyleName can only be set a string value
+        if isinstance(arg2, str):
+            cls._style_prev_paragraph_prop(cursor=kargs[1], prop_val=arg2, prop_name="ParaStyleName")
+        else:
+            cls._style_prev_paragraph_style(cursor=kargs[1], styles=arg2)
 
     # endregion style_prev_paragraph()
 
