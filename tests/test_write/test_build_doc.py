@@ -7,21 +7,22 @@ from typing import cast
 if __name__ == "__main__":
     pytest.main([__file__])
 
+from ooodev.utils.lo import Lo
+from ooodev.office.write import Write, ControlCharacterEnum, ParagraphAdjust
+from ooodev.utils.gui import GUI
+from ooodev.utils.props import Props
+from ooodev.utils.color import CommonColor
+from ooodev.utils.images_lo import ImagesLo
+from ooodev.utils.info import Info
+from ooodev.exceptions import ex
+from ooodev.utils.color import CommonColor
+from ooodev.utils.date_time_util import DateUtil
+from functools import partial
+
 
 def test_build_doc(loader, props_str_to_dict, fix_image_path, capsys: pytest.CaptureFixture):
-    from ooodev.utils.lo import Lo
-    from ooodev.office.write import Write, ControlCharacterEnum, ParagraphAdjust
-    from ooodev.utils.gui import GUI
-    from ooodev.utils.props import Props
-    from ooodev.utils.color import CommonColor
-    from ooodev.utils.images_lo import ImagesLo
-    from ooodev.utils.info import Info
-    from ooodev.exceptions import ex
-    from ooodev.utils.color import CommonColor
-    from ooodev.utils.date_time_util import DateUtil
-    from functools import partial
 
-    visible = False
+    visible = False if Lo.bridge_connector.headless else True
     delay = 0  # 500
     doc = Write.create_doc(loader)
     try:

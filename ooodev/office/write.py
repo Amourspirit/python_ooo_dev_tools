@@ -106,73 +106,93 @@ class Write(mSel.Selection):
     # At least not for static methods. My current work around is to implement the same
     # methods in this class.
 
-    if mock_g.DOCS_BUILDING:
-        # This code block will only ever import when doc are building.
-        # In Short this code block is not seen by Write
+    # region    get_cursor()
+    # https://tinyurl.com/2dlclzqf
+    @overload
+    @classmethod
+    def get_cursor(cls) -> XTextCursor:
+        ...
 
-        # region    get_cursor()
-        # https://tinyurl.com/2dlclzqf
-        @overload
-        @classmethod
-        def get_cursor(cls, cursor_obj: DocOrCursor) -> XTextCursor:
-            """
-            Gets text cursor
+    @overload
+    @classmethod
+    def get_cursor(cls, cursor_obj: DocOrCursor) -> XTextCursor:
+        ...
 
-            Args:
-                cursor_obj (DocOrCursor): Text Document or Text Cursor
+    @overload
+    @classmethod
+    def get_cursor(cls, rng: XTextRange, txt: XText) -> XTextCursor:
+        ...
 
-            Returns:
-                XTextCursor: Cursor
-            """
-            ...
+    @overload
+    @classmethod
+    def get_cursor(cls, rng: XTextRange, text_doc: XTextDocument) -> XTextCursor:
+        ...
 
-        @overload
-        @classmethod
-        def get_cursor(cls, rng: XTextRange, txt: XText) -> XTextCursor:
-            """
-            Gets text cursor
+    @classmethod
+    def get_cursor(cls, *args, **kwargs) -> XTextCursor:
+        """
+        Gets text cursor
 
-            Args:
-                rng (XTextRange): Text Range Instance
-                txt (XText): Text Instance
+        Args:
+            cursor_obj (DocOrCursor): Text Document or Text View Cursor
+            rng (XTextRange): Text Range Instance
+            text_doc (XTextDocument): Text Document instance
 
-            Returns:
-                XTextCursor: Cursor
-            """
-            ...
+        Raises:
+            CursorError: If Unable to get cursor
 
-        @overload
-        @classmethod
-        def get_cursor(cls, rng: XTextRange, text_doc: XTextDocument) -> XTextCursor:
-            """
-            Gets text cursor
+        Returns:
+            XTextCursor: Cursor
 
-            Args:
-                rng (XTextRange): Text Range instance
-                text_doc (XTextDocument): Text Document instance
+        .. versionchanged:: 0.9.0
+            Added overload ``get_cursor()``
+        """
+        ordered_keys = (1, 2)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
 
-            Returns:
-                XTextCursor: Cursor
-            """
-            ...
+        def get_kwargs() -> dict:
+            ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ("cursor_obj", "rng", "txt", "text_doc")
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("get_cursor() got an unexpected keyword argument")
 
-        @classmethod
-        def get_cursor(cls, *args, **kwargs) -> XTextCursor:
-            """
-            Gets text cursor
+            keys = ("cursor_obj", "rng")
+            for key in keys:
+                if key in kwargs:
+                    ka[1] = kwargs[key]
+                    break
+            if count == 1:
+                return ka
+            keys = ("txt", "text_doc")
+            for key in keys:
+                if key in kwargs:
+                    ka[2] = kwargs[key]
+                    break
+            return ka
 
-            Args:
-                cursor_obj (DocOrCursor): Text Document or Text View Cursor
-                rng (XTextRange): Text Range Instance
-                text_doc (XTextDocument): Text Document instance
+        if not count in (0, 1, 2):
+            raise TypeError("get_cursor() got an invalid number of arguments")
 
-            Raises:
-                CursorError: If Unable to get cursor
+        kargs = get_kwargs()
 
-            Returns:
-                XTextCursor: Cursor
-            """
-            return super(Write, cls).get_cursor(*args, **kwargs)
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
+
+        if count == 0:
+            return cls._get_cursor_obj(cls.active_doc)
+
+        if count == 1:
+            return cls._get_cursor_obj(kargs[1])
+        txt_doc = mLo.Lo.qi(XTextDocument, kargs[2])
+        if txt_doc is None:
+            txt = kargs[2]
+        else:
+            txt = txt_doc.getText()
+        return cls._get_cursor_txt(rng=kargs[1], txt=txt)
 
         # endregion get_cursor()
 
@@ -1189,6 +1209,97 @@ class Write(mSel.Selection):
         cls.style_left(cursor, pos, "CharFontName", mInfo.Info.get_font_mono_name())
         cls.style_left(cursor, pos, "CharHeight", 10)
 
+    # region style()
+    @classmethod
+    def _style(cls, pos: int, distance: int, prop_name: str, prop_val: object) -> None:
+
+        cursor = cls.get_cursor()
+        cursor.gotoStart(False)
+        cursor.goRight(pos, False)
+        cursor.goRight(distance, True)
+        mProps.Props.set(cursor, **{prop_name: prop_val})
+
+    @classmethod
+    def _style_style(cls, pos: int, distance: int, styles: Iterable[StyleObj]) -> None:
+        # store properties about to be changed
+
+        cursor = cls.get_cursor()
+        # cursor.collapseToEnd()
+        cursor.gotoStart(False)
+        cursor.goRight(pos, False)
+        cursor.goRight(distance, True)
+
+        for style in styles:
+            style.apply_style(cursor)
+
+    @overload
+    @classmethod
+    def style(cls, pos: int, distance: int, styles: Iterable[StyleObj]) -> None:
+        ...
+
+    @overload
+    @classmethod
+    def style(cls, pos: int, distance: int, prop_name: str, prop_val: object) -> None:
+        ...
+
+    @classmethod
+    def style(cls, *args, **kwargs) -> None:
+        """
+        Styles. From position styles right by distance amount.
+
+        Args:
+            pos (int): Position style start.
+            distance (int): The distance from ``pos`` to apply style.
+            styles (Iterable[StyleObj]):One or more styles to apply to text.
+            prop_name (str): Property Name such as ``CharHeight``
+            prop_val (object): Property Value such as ``10``
+
+        Returns:
+            None:
+
+        See Also:
+            :py:meth:`~.Write.style_left`
+
+        Note:
+            Unlike :py:meth:`~.Write.style_left` this method does not restore any style properties after style is applied.
+
+        .. versionadded:: 0.9.0
+        """
+        ordered_keys = (1, 2, 3, 4)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
+
+        def get_kwargs() -> dict:
+            ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ("pos", "distance", "prop_name", "prop_val", "styles")
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("style() got an unexpected keyword argument")
+            ka[1] = kwargs.get("pos", None)
+            ka[2] = kwargs.get("distance", None)
+            keys = ("prop_name", "styles")
+            for key in keys:
+                if key in kwargs:
+                    ka[3] = kwargs[key]
+                    break
+            if count == 3:
+                return ka
+            ka[4] = kwargs.get("prop_val", None)
+            return ka
+
+        if not count in (3, 4):
+            raise TypeError("style() got an invalid number of arguments")
+
+        kargs = get_kwargs()
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
+        if count == 3:
+            return cls._style_style(kargs[1], kargs[2], kargs[3])
+        return cls._style(kargs[1], kargs[2], kargs[3], kargs[4])
+
+    # endregion style()
     # region style_left()
 
     @classmethod
@@ -1257,11 +1368,19 @@ class Write(mSel.Selection):
             cursor (XTextCursor): Text Cursor
             pos (int): Positions to style left
             styles (Iterable[StyleObj]):One or more styles to apply to text.
-            prop_name (str): Property Name such as 'CharHeight
-            prop_val (object): Property Value such as 10
+            prop_name (str): Property Name such as ``CharHeight``
+            prop_val (object): Property Value such as ``10``
 
         Returns:
             None:
+
+        See Also:
+            :py:meth:`~.Write.style`
+
+        Note:
+            This method restors the style properties to their original state after the style is applied.
+            This is done so applied style properties are reset before next text is appended.
+            This is not the case for :py:meth:`~.Write.style` method.
 
         .. versionchanged:: 0.9.0
             Added ``style_left(cursor: XTextCursor, pos: int, styles: Iterable[StyleObj])`` overload.
@@ -1451,7 +1570,7 @@ class Write(mSel.Selection):
                     break
             if count == 2:
                 return ka
-            ka[3] = ka.get("prop_name", None)
+            ka[3] = kwargs.get("prop_name", None)
             return ka
 
         if not count in (2, 3):

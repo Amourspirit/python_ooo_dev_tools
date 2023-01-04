@@ -15,6 +15,10 @@ Rename ``CellObj.row_info`` to ``CellObj.row_obj``
 
 All events now can have key value pairs of data added or removed
 
+Added ``Write.style()`` method.
+
+Added ``Write.get_cursor()`` overload.
+
 Added ``Write.append(cursor: XTextCursor, text: str, styles: Iterable[StyleObj])`` overload.
 
 Added ``Write.style_left(cursor: XTextCursor, pos: int, styles: Iterable[StyleObj])`` overload.

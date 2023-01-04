@@ -25,14 +25,14 @@ if TYPE_CHECKING:
     from com.sun.star.table import CellRange  # service
 
 
-def test_calc_border(loader, test_headless) -> None:
-    delay = 0  # 0 if test_headless else 5_000
+def test_calc_border(loader) -> None:
+    delay = 0  # 0 if Lo.bridge_connector.headless else 5_000
     from ooodev.office.calc import Calc
 
     doc = Calc.create_doc()
     try:
         sheet = Calc.get_sheet(doc)
-        if not test_headless:
+        if not Lo.bridge_connector.headless:
             GUI.set_visible()
             Lo.delay(500)
             Calc.zoom(doc, GUI.ZoomEnum.ZOOM_200_PERCENT)
@@ -152,14 +152,14 @@ def test_calc_border(loader, test_headless) -> None:
         Lo.close_doc(doc)
 
 
-def test_calc_border_range(loader, test_headless) -> None:
-    delay = 0  # 0 if test_headless else 5_000
+def test_calc_border_range(loader) -> None:
+    delay = 0  # 0 if Lo.bridge_connector.headless else 5_000
     from ooodev.office.calc import Calc
 
     doc = Calc.create_doc()
     try:
         sheet = Calc.get_sheet(doc)
-        if not test_headless:
+        if not Lo.bridge_connector.headless:
             GUI.set_visible()
             Lo.delay(500)
             Calc.zoom(doc, GUI.ZoomEnum.ZOOM_200_PERCENT)
@@ -193,7 +193,7 @@ def test_calc_border_range(loader, test_headless) -> None:
         rng_obj = Calc.get_range_obj("B8:G12")
         cr = Calc.get_cell_range(sheet, rng_obj)
 
-        if not test_headless:
+        if not Lo.bridge_connector.headless:
             Calc.goto_cell(cell_obj=rng_obj.cell_start, doc=doc)
 
         cb = Borders(border_side=Side(), diagonal_up=Side(color=CommonColor.RED))
@@ -207,7 +207,7 @@ def test_calc_border_range(loader, test_headless) -> None:
         rng_obj = Calc.get_range_obj("B14:G18")
         cr = Calc.get_cell_range(sheet, rng_obj)
 
-        if not test_headless:
+        if not Lo.bridge_connector.headless:
             Calc.goto_cell(cell_obj=rng_obj.cell_start, doc=doc)
 
         cb = Borders(
@@ -218,7 +218,7 @@ def test_calc_border_range(loader, test_headless) -> None:
         rng_obj = Calc.get_range_obj("c15:F17")
         cr = Calc.get_cell_range(sheet, rng_obj)
 
-        if not test_headless:
+        if not Lo.bridge_connector.headless:
             Calc.goto_cell(cell_obj=rng_obj.cell_start, doc=doc)
 
         Style.apply_style(cr, Borders.empty)
