@@ -42,6 +42,20 @@ class Font(StyleBase):
     """
     Character Font
 
+    Any properties starting with ``prop_`` set or get current instance values.
+
+    All methods ``style_`` can be used to chain together font properties.
+
+    Many properties such as ``bold``, ``italic``, ``underline`` can be chained together.
+
+    Example:
+        .. code-block:: python
+
+            # chaining fonts together to add new properties
+            ft = Font().bold.italic.underline
+
+            ft_color = Font().style_color(CommonColor.GREEN).style_bg_color(CommonColor.LIGHT_BLUE)
+
     .. versionadded:: 0.9.0
     """
 
@@ -91,10 +105,10 @@ class Font(StyleBase):
             overline_color (Color, optional): Specifies if the property ``CharOverlinelineColor`` is used for an overline.
             rotation (float, optional): Determines the rotation of a character in degrees. Depending on the implementation only certain values may be allowed.
             slant (FontSlant, optional): The value of the posture of the document such as ``FontSlant.ITALIC``.
-            spacing (CharSpacingKind, float, optional): Character spacing in point units.
+            spacing (float, optional): Character spacing in point units.
             shadowed (bool, optional): Specifies if the characters are formatted and displayed with a shadow effect.
             shadow_fmt: (ShadowFormat, optional): Determines the type, color, and width of the shadow.
-            strike (FontStrikeoutEnum, optional): Dermines the type of the strike out of the character.
+            strike (FontStrikeoutEnum, optional): Detrmines the type of the strike out of the character.
             sub_script (bool, optional): Sub script option.
             super_script (bool, optional): Super script option.
             underine (FontUnderlineEnum, optional): The value for the character underline.
@@ -160,22 +174,6 @@ class Font(StyleBase):
         if not spacing is None:
             init_vals["CharKerning"] = round(float(spacing) * POINT_RATIO)
 
-        if not super_script is None:
-            if super_script:
-                init_vals["CharEscapementHeight"] = 58
-                init_vals["CharEscapement"] = 14_000
-            else:
-                init_vals["CharEscapementHeight"] = 100
-                init_vals["CharEscapement"] = 0
-
-        if not sub_script is None:
-            if sub_script:
-                init_vals["CharEscapementHeight"] = 58
-                init_vals["CharEscapement"] = -14_000
-            else:
-                init_vals["CharEscapementHeight"] = 100
-                init_vals["CharEscapement"] = 0
-
         if not rotation is None:
             init_vals["CharRotation"] = round(rotation * 10)
 
@@ -184,6 +182,9 @@ class Font(StyleBase):
                 init_vals["CharShadowFormat"] = shadow_fmt
 
         super().__init__(**init_vals)
+
+        self.prop_superscript = sub_script
+        self.prop_subscript = sub_script
 
     @overload
     def apply_style(self, obj: object) -> None:
@@ -209,94 +210,566 @@ class Font(StyleBase):
         else:
             mLo.Lo.print('Font.apply_style(): "com.sun.star.style.CharacterProperties" not supported')
 
+    # region Style Methods
+
+    def style_bg_color(self, value: Color | None = None) -> Font:
+        """
+        Get copy of instance with text background color set or removed.
+
+        Args:
+            value (Color, optional): The text background color.
+                If ``None`` style is removed. Default ``None``
+
+        Returns:
+            Font: Font with style added or removed
+        """
+        ft = Font._from_inst(self)
+        ft.prop_bg_color = value
+        return ft
+
+    def style_bg_transparent(self, value: bool | None = None) -> Font:
+        """
+        Get copy of instance with text background transparency set or removed.
+
+        Args:
+            value (bool, optional): The text background transparency.
+                If ``None`` style is removed. Default ``None``
+
+        Returns:
+            Font: Font with style added or removed
+        """
+        ft = Font._from_inst(self)
+        ft.prop_bg_transparent = value
+        return ft
+
+    def style_charset(self, value: CharSetEnum | None = None) -> Font:
+        """
+        Gets a copy of instance with charset set or removed.
+
+        Args:
+            value (CharSetEnum, optional): The text encoding of the font.
+                If ``None`` style is removed. Default ``None``
+
+        Returns:
+            Font: Font with style added or removed
+        """
+        ft = Font._from_inst(self)
+        ft.prop_charset = value
+        return ft
+
+    def style_color(self, value: Color | None = None) -> Font:
+        """
+        Get copy of instance with text color set or removed.
+
+        Args:
+            value (Color, optional): The text color.
+                If ``None`` style is removed. Default ``None``
+
+        Returns:
+            Font: Font with style added or removed
+        """
+        ft = Font._from_inst(self)
+        ft.prop_color = value
+        return ft
+
+    def style_family(self, value: FontFamilyEnum | None = None) -> Font:
+        """
+        Gets a copy of instance with charset set or removed.
+
+        Args:
+            value (FontFamilyEnum, optional): The Font Family.
+                If ``None`` style is removed. Default ``None``
+
+        Returns:
+            Font: Font with style added or removed
+        """
+        ft = Font._from_inst(self)
+        ft.prop_family = value
+        return ft
+
+    def style_size(self, value: float | None = None) -> Font:
+        """
+        Get copy of instance with text size set or removed.
+
+        Args:
+            value (float, optional): The size of the characters in point units.
+                If ``None`` style is removed. Default ``None``
+
+        Returns:
+            Font: Font with style added or removed
+        """
+        ft = Font._from_inst(self)
+        ft.prop_color = value
+        return ft
+
+    def style_name(self, value: str | None = None) -> Font:
+        """
+        Get copy of instance with name set or removed.
+
+        Args:
+            value (str, optional): The name of the font style. It may contain more than one name separated by comma.
+                If ``None`` style is removed. Default ``None``
+
+        Returns:
+            Font: Font with style added or removed
+        """
+        ft = Font._from_inst(self)
+        ft.prop_name = value
+        return ft
+
+    def style_overline(self, value: FontUnderlineEnum | None = None) -> Font:
+        """
+        Get copy of instance with overline set or removed.
+
+        Args:
+            value (FontUnderlineEnum, optional): The size of the characters in point units.
+                If ``None`` style is removed. Default ``None``
+
+        Returns:
+            Font: Font with style added or removed
+        """
+        ft = Font._from_inst(self)
+        ft.prop_overline = value
+        return ft
+
+    def style_overline_color(self, value: Color | None = None) -> Font:
+        """
+        Get copy of instance with text overline color set or removed.
+
+        Args:
+            value (Color, optional): The color is used for an overline.
+                If ``None`` style is removed. Default ``None``
+
+        Returns:
+            Font: Font with style added or removed
+        """
+        ft = Font._from_inst(self)
+        ft.prop_overline_color = value
+        return ft
+
+    def style_rotation(self, value: float | None = None) -> Font:
+        """
+        Get copy of instance with rotation set or removed.
+
+        Args:
+            value (str, optional): The rotation of a character in degrees. Depending on the implementation only certain values may be allowed.
+                If ``None`` style is removed. Default ``None``
+
+        Returns:
+            Font: Font with style added or removed
+        """
+        ft = Font._from_inst(self)
+        ft.prop_rotation = value
+        return ft
+
+    def style_slant(self, value: FontSlant | None = None) -> Font:
+        """
+        Get copy of instance with slant set or removed.
+
+        Args:
+            value (FontSlant, optional): The value of the posture of the document such as ``FontSlant.ITALIC``.
+                If ``None`` style is removed. Default ``None``
+
+        Returns:
+            Font: Font with style added or removed
+
+        Note:
+            This method chanages or removes any italic settings.
+        """
+        ft = Font._from_inst(self)
+        ft.prop_shadow_fmt = value
+        return ft
+
+    def style_spacing(self, value: float | None = None) -> Font:
+        """
+        Get copy of instance with spacing set or removed.
+
+        Args:
+            value (str, optional): The character spacing in point units.
+                If ``None`` style is removed. Default ``None``
+
+        Returns:
+            Font: Font with style added or removed
+        """
+        ft = Font._from_inst(self)
+        ft.prop_spacing = value
+        return ft
+
+    def style_shadow_fmt(self, value: ShadowFormat | None = None) -> Font:
+        """
+        Get copy of instance with shadow format set or removed.
+
+        Args:
+            value (ShadowFormat, optional): The type, color, and width of the shadow.
+                If ``None`` style is removed. Default ``None``
+
+        Returns:
+            Font: Font with style added or removed
+        """
+        ft = Font._from_inst(self)
+        ft.prop_shadow_fmt = value
+        return ft
+
+    def style_strike(self, value: FontStrikeoutEnum | None = None) -> Font:
+        """
+        Get copy of instance with strike set or removed.
+
+        Args:
+            value (FontStrikeoutEnum, optional): The type of the strike out of the character.
+                If ``None`` style is removed. Default ``None``
+
+        Returns:
+            Font: Font with style added or removed
+        """
+        ft = Font._from_inst(self)
+        ft.prop_shadow_fmt = value
+        return ft
+
+    def style_subscript(self, value: bool | None = None) -> Font:
+        """
+        Get copy of instance with text sub script set or removed.
+
+        Args:
+            value (bool, optional): The sub script.
+                If ``None`` style is removed. Default ``None``
+
+        Returns:
+            Font: Font with style added or removed
+        """
+        ft = Font._from_inst(self)
+        ft.prop_subscript = value
+        return ft
+
+    def style_superscript(self, value: bool | None = None) -> Font:
+        """
+        Get copy of instance with text super script set or removed.
+
+        Args:
+            value (bool, optional): The super script.
+                If ``None`` style is removed. Default ``None``
+
+        Returns:
+            Font: Font with style added or removed
+        """
+        ft = Font._from_inst(self)
+        ft.prop_superscript = value
+        return ft
+
+    def style_underline(self, value: FontUnderlineEnum | None = None) -> Font:
+        """
+        Get copy of instance with underline set or removed.
+
+        Args:
+            value (FontUnderlineEnum, optional): The value for the character underline.
+                If ``None`` style is removed. Default ``None``
+
+        Returns:
+            Font: Font with style added or removed
+        """
+        ft = Font._from_inst(self)
+        ft.prop_shadow_fmt = value
+        return ft
+
+    def style_weight(self, value: FontWeightEnum | None = None) -> Font:
+        """
+        Get copy of instance with weight set or removed or removed.
+
+        Args:
+            value (FontWeightEnum, optional): The value of the font weight.
+                If ``None`` style is removed. Default ``None``
+
+        Returns:
+            Font: Font with style added or removed
+
+        Note:
+            This method chanages or removes any bold settings.
+        """
+        ft = Font._from_inst(self)
+        ft.prop_shadow_fmt = value
+        return ft
+
+    def style_word_mode(self, value: bool | None = None) -> Font:
+        """
+        Get copy of instance with word mode set or removed.
+
+        The underline and strike-through properties are not applied to white spaces when set to ``True``.
+
+        Args:
+            value (bool, optional): The word mode.
+                If ``None`` style is removed. Default ``None``
+
+        Returns:
+            Font: Font with style added or removed
+        """
+        ft = Font._from_inst(self)
+        ft.prop_superscript = value
+        return ft
+
+    # endregion Style Methods
+
+    # region Style Properties
+
     @property
-    def b(self) -> bool:
+    def bold(self) -> Font:
+        """Gets copy of instance with bold set"""
+        ft = Font._from_inst(self)
+        ft.prop_bold = True
+        return ft
+
+    @property
+    def italic(self) -> Font:
+        """Gets copy of instance with italic set"""
+        ft = Font._from_inst(self)
+        ft.prop_italic = True
+        return ft
+
+    @property
+    def underline(self) -> Font:
+        """Gets copy of instance with underline set"""
+        ft = Font._from_inst(self)
+        ft.prop_underline = True
+        return ft
+
+    @property
+    def bg_transparent(self) -> Font:
+        """Gets copy of instance with background transparent set"""
+        ft = Font._from_inst(self)
+        ft.prop_bg_transparent = True
+        return ft
+
+    @property
+    def overline(self) -> Font:
+        """Gets copy of instance with overline set"""
+        ft = Font._from_inst(self)
+        ft.prop_overline = FontUnderlineEnum.SINGLE
+        return ft
+
+    @property
+    def shadowed(self) -> Font:
+        """Gets copy of instance with shadow set"""
+        ft = Font._from_inst(self)
+        ft.prop_shadowed = True
+        return ft
+
+    @property
+    def strike(self) -> Font:
+        """Gets copy of instance with strike set"""
+        ft = Font._from_inst(self)
+        ft.prop_strike = FontStrikeoutEnum.SINGLE
+        return ft
+
+    @property
+    def subscript(self) -> Font:
+        """Gets copy of instance with sub script set"""
+        ft = Font._from_inst(self)
+        ft.prop_subscript = True
+        return ft
+
+    @property
+    def superscript(self) -> Font:
+        """Gets copy of instance with super script set"""
+        ft = Font._from_inst(self)
+        ft.prop_superscript = True
+        return ft
+
+    @property
+    def word_mode(self) -> Font:
+        """Gets copy of instance with word mode set"""
+        ft = Font._from_inst(self)
+        ft.prop_word_mode = True
+        return ft
+
+    # endregion Style Properties
+
+    # region Prop Properties
+    @property
+    def prop_bold(self) -> bool:
         """Specifies bold"""
         pv = cast(float, self._get("CharWeight"))
         if not pv is None:
             return pv == FontWeightEnum.BOLD.value
         return False
 
+    @prop_bold.setter
+    def prop_bold(self, value: bool | None) -> None:
+        if value is None:
+            self._remove("CharWeight")
+            return
+        if value:
+            self._set("CharWeight", FontWeightEnum.BOLD.value)
+        else:
+            self._set("CharWeight", FontWeightEnum.NORMAL.value)
+
     @property
-    def bg_color(self) -> Color | None:
+    def prop_bg_color(self) -> Color | None:
         """This property contains the text background color."""
         return self._get("CharBackColor")
 
+    @prop_bg_color.setter
+    def prop_bg_color(self, value: Color | None) -> None:
+        if value is None:
+            self._remove("CharBackColor")
+            return
+        self._set("CharBackColor", value)
+
     @property
-    def bg_color_transparent(self) -> bool | None:
+    def prop_bg_color_transparent(self) -> bool | None:
         """This property contains the text background color."""
         return self._get("CharBackTransparent")
 
+    @prop_bg_color_transparent.setter
+    def prop_bg_color_transparent(self, value: bool | None) -> None:
+        if value is None:
+            self._remove("CharBackTransparent")
+            return
+        self._set("CharBackTransparent", value)
+
     @property
-    def i(self) -> bool | None:
+    def prop_italic(self) -> bool | None:
         """Specifies italic"""
         pv = cast(FontSlant, self._get("CharPosture"))
         if not pv is None:
             return pv == FontSlant.ITALIC
         return None
 
+    @prop_italic.setter
+    def prop_italic(self, value: bool | None) -> None:
+        if value is None:
+            self._remove("CharPosture")
+            return
+        if value:
+            self._set("CharPosture", FontSlant.ITALIC)
+        else:
+            self._set("CharPosture", FontSlant.NONE)
+
     @property
-    def u(self) -> bool | None:
+    def prop_underline(self) -> bool | None:
         """Specifies underline"""
         pv = cast(int, self._get("CharUnderline"))
         if not pv is None:
             return pv != FontUnderlineEnum.NONE.value
         return None
 
+    @prop_underline.setter
+    def prop_underline(self, value: bool | None) -> None:
+        if value is None:
+            self._remove("CharUnderline")
+            return
+        if value:
+            self._set("CharUnderline", FontUnderlineEnum.SINGLE.value)
+        else:
+            self._set("CharUnderline", FontUnderlineEnum.NONE.value)
+
     @property
-    def charset(self) -> CharSetEnum | None:
+    def prop_charset(self) -> CharSetEnum | None:
         """This property contains the text encoding of the font."""
         pv = cast(int, self._get("CharFontCharSet"))
         if not pv is None:
             return CharSetEnum(pv)
         return None
 
+    @prop_charset.setter
+    def prop_charset(self, value: CharSetEnum | None) -> None:
+        if value is None:
+            self._remove("CharFontCharSet")
+            return
+        self._set("CharFontCharSet", value.value)
+
     @property
-    def color(self) -> Color | None:
+    def prop_color(self) -> Color | None:
         """This property contains the value of the text color."""
         return self._get("CharColor")
 
+    @prop_color.setter
+    def prop_color(self, value: Color | None) -> None:
+        if value is None:
+            self._remove("CharColor")
+            return
+        self._set("CharColor", value)
+
     @property
-    def family(self) -> FontFamilyEnum | None:
+    def prop_family(self) -> FontFamilyEnum | None:
         """This property contains font family."""
         pv = cast(FontFamilyEnum, self._get("CharFontFamily"))
         if not pv is None:
             return FontFamilyEnum(pv)
         return None
 
+    @prop_family.setter
+    def prop_family(self, value: FontFamilyEnum | None) -> None:
+        if value is None:
+            self._remove("CharFontFamily")
+            return
+        self._set("CharFontFamily", value.value)
+
     @property
-    def size(self) -> float | None:
+    def prop_size(self) -> float | None:
         """This value contains the size of the characters in point."""
         return self._get("CharHeight")
 
+    @prop_size.setter
+    def prop_size(self, value: float | None) -> None:
+        if value is None:
+            self._remove("CharHeight")
+            return
+        self._set("CharHeight", value)
+
     @property
-    def name(self) -> str | None:
+    def prop_name(self) -> str | None:
         """This property specifies the name of the font style. It may contain more than one name separated by comma."""
         return self._get("CharFontName")
 
+    @prop_name.setter
+    def prop_name(self, value: str | None) -> None:
+        if value is None:
+            self._remove("CharFontName")
+            return
+        self._set("CharFontName", value)
+
     @property
-    def strike(self) -> FontStrikeoutEnum | None:
+    def prop_strike(self) -> FontStrikeoutEnum | None:
         """This property determines the type of the strike out of the character."""
         pv = cast(int, self._get("CharStrikeout"))
         if not pv is None:
             return FontStrikeoutEnum(pv)
         return None
 
+    @prop_strike.setter
+    def prop_strike(self, value: FontStrikeoutEnum | None) -> None:
+        if value is None:
+            self._remove("CharStrikeout")
+            return
+        self._set("CharStrikeout", value.value)
+
     @property
-    def weight(self) -> FontWeightEnum | None:
+    def prop_weight(self) -> FontWeightEnum | None:
         """This property contains the value of the font weight."""
         pv = cast(float, self._get("CharWeight"))
         if not pv is None:
             return FontWeightEnum(pv)
         return None
 
+    @prop_weight.setter
+    def prop_weight(self, value: FontWeightEnum | None) -> None:
+        if value is None:
+            self._remove("CharWeight")
+            return
+        self._set("CharWeight", value.value)
+
     @property
-    def slant(self) -> FontSlant | None:
+    def prop_slant(self) -> FontSlant | None:
         """This property contains the value of the posture of the document such as  ``FontSlant.ITALIC``"""
         return self._get("CharPosture")
 
+    @prop_slant.setter
+    def prop_slant(self, value: FontSlant | None) -> None:
+        if value is None:
+            self._remove("CharPosture")
+            return
+        self._set("CharPosture", value.value)
+
     @property
-    def spacing(self) -> float | None:
+    def prop_spacing(self) -> float | None:
         """This value contains character spacing in point units"""
         pv = self._get("CharKerning")
         if not pv is None:
@@ -305,63 +778,121 @@ class Font(StyleBase):
             return pv / POINT_RATIO
         return None
 
-    @property
-    def shadowed(self) -> bool | None:
-        """This property specifies if the characters are formatted and displayed with a shadow effect."""
-        pv = cast(int, self._get("CharShadowed"))
-        if not pv is None:
-            return pv > 0
-        return None
+    @prop_spacing.setter
+    def prop_spacing(self, value: float | None) -> None:
+        if value is None:
+            self._remove("CharKerning")
+            return
+        self._set("CharKerning", round(float(value) * POINT_RATIO))
 
     @property
-    def shadow_fmt(self) -> ShadowFormat | None:
+    def prop_shadowed(self) -> bool | None:
+        """This property specifies if the characters are formatted and displayed with a shadow effect."""
+        return self._get("CharShadowed")
+
+    @prop_shadowed.setter
+    def prop_shadowed(self, value: bool | None) -> None:
+        if value is None:
+            self._remove("CharShadowed")
+            return
+        self._set("CharShadowed", value)
+
+    @property
+    def prop_shadow_fmt(self) -> ShadowFormat | None:
         """This property specifies the type, color, and width of the shadow."""
         return self._get("CharShadowFormat")
 
+    @prop_shadow_fmt.setter
+    def prop_shadow_fmt(self, value: ShadowFormat | None) -> None:
+        if value is None:
+            self._remove("CharShadowFormat")
+            return
+        if mInfo.Info.is_type_struct(value, "com.sun.star.table.ShadowFormat"):
+            self._set("CharShadowFormat", value.value)
+
     @property
-    def super_script(self) -> bool | None:
+    def prop_superscript(self) -> bool | None:
         """Specifies if the font is super script"""
         pv = cast(int, self._get("CharEscapement"))
         if not pv is None:
             return pv > 0
         return None
 
+    @prop_superscript.setter
+    def prop_superscript(self, value: bool | None) -> None:
+        if value is None:
+            self._remove("CharEscapementHeight")
+            self._remove("CharEscapement")
+            return
+        if value:
+            self._set("CharEscapementHeight", 58)
+            self._set("CharEscapement", 14_000)
+        else:
+            self._set("CharEscapementHeight", 100)
+            self._set("CharEscapement", 0)
+
     @property
-    def sub_script(self) -> bool | None:
+    def prop_subscript(self) -> bool | None:
         """Specifies if the font is sub script"""
         pv = cast(int, self._get("CharEscapement"))
         if not pv is None:
             return pv < 0
         return None
 
+    @prop_subscript.setter
+    def prop_subscript(self, value: bool | None) -> None:
+        if value is None:
+            self._remove("CharEscapementHeight")
+            self._remove("CharEscapement")
+            return
+        if value:
+            self._set("CharEscapementHeight", 58)
+            self._set("CharEscapement", -14_000)
+        else:
+            self._set("CharEscapementHeight", 100)
+            self._set("CharEscapement", 0)
+
     @property
-    def overline(self) -> FontUnderlineEnum | None:
+    def prop_overline(self) -> FontUnderlineEnum | None:
         """This property contains the value for the character overline."""
         pv = cast(int, self._get("CharOverline"))
         if not pv is None:
             return FontUnderlineEnum(pv)
         return None
 
+    @prop_overline.setter
+    def prop_overline(self, value: FontUnderlineEnum | None) -> None:
+        if value is None:
+            self._remove("CharOverline")
+            return
+        self._set("CharOverline", value.value)
+
     @property
-    def overline_color(self) -> Color | None:
-        """This property specifies if the property ``CharOverlineColor`` is used for an underline."""
+    def prop_overline_color(self) -> Color | None:
+        """This property specifies if the property ``CharOverlineColor`` is used for an overline."""
         return self._get("CharOverlineColor")
 
-    @property
-    def underline(self) -> FontUnderlineEnum | None:
-        """This property contains the value for the character underline."""
-        pv = cast(int, self._get("CharUnderline"))
-        if not pv is None:
-            return FontUnderlineEnum(pv)
-        return None
+    @prop_overline_color.setter
+    def prop_overline_color(self, value: Color | None) -> None:
+        if value is None:
+            self._remove("CharOverlineColor")
+            return
+        self._set("CharOverlineColor", value)
 
     @property
-    def underine_color(self) -> Color | None:
+    def prop_underine_color(self) -> Color | None:
         """This property specifies if the property ``CharUnderlineColor`` is used for an underline."""
         return self._get("CharUnderlineColor")
 
+    @prop_underine_color.setter
+    def prop_underine_color(self, value: Color | None) -> None:
+        if value is None:
+            self._remove("CharUnderlineColor")
+            return
+        self._set("CharUnderlineColor", value)
+
     @property
-    def rotation(self) -> float | None:
+    def prop_rotation(self) -> float | None:
         """
         This optional property determines the rotation of a character in degrees.
 
@@ -372,7 +903,23 @@ class Font(StyleBase):
             return float(pv / 10)
         return None
 
+    @prop_rotation.setter
+    def prop_rotation(self, value: float | None) -> None:
+        if value is None:
+            self._remove("CharRotation")
+            return
+        self._set("CharRotation", round(value * 10))
+
     @property
-    def word_mode(self) -> bool | None:
+    def prop_word_mode(self) -> bool | None:
         """If this property is ``True``, the underline and strike-through properties are not applied to white spaces."""
         return self._get("CharWordMode")
+
+    @prop_word_mode.setter
+    def prop_word_mode(self, value: bool | None) -> None:
+        if value is None:
+            self._remove("CharWordMode")
+            return
+        self._set("CharWordMode", value)
+
+    # endregion Prop Properties

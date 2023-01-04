@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Tuple, TYPE_CHECKING, cast
+from typing import Any, Dict, Tuple, TYPE_CHECKING, cast
 import uno
 from ..utils import props as mProps
 
@@ -7,6 +7,7 @@ from ..events.lo_events import Events
 from ..events.props_named_event import PropsNamedEvent
 from ..events.args.key_val_cancel_args import KeyValCancelArgs
 from ..events.args.key_val_args import KeyValArgs
+from ..utils.type_var import T
 from abc import ABC, abstractmethod
 
 if TYPE_CHECKING:
@@ -22,6 +23,7 @@ class StyleBase(ABC):
 
     def __init__(self, **kwargs) -> None:
         self._dv = {}
+
         for (key, value) in kwargs.items():
             if not value is None:
                 self._dv[key] = value
@@ -51,6 +53,9 @@ class StyleBase(ABC):
             del self._dv[key]
             return True
         return False
+
+    def _update(self, kv: Dict[str, Any]) -> None:
+        self._dv.update(kv)
 
     def _on_setting(self, event: KeyValCancelArgs) -> None:
         # can be overridden in child classes to manage or modify setting
@@ -126,6 +131,13 @@ class StyleBase(ABC):
     def has_attribs(self) -> bool:
         """Gets If instantance has any attributes set."""
         return len(self._dv)
+
+    @classmethod
+    def _from_inst(cls, inst: T) -> T:
+        nu = super(StyleBase, cls).__new__(cls)
+        nu.__init__()
+        nu._update(inst._dv)
+        return nu
 
 
 def _on_props_setting(source: Any, event_args: KeyValCancelArgs, *args, **kwargs) -> None:

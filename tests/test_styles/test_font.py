@@ -45,25 +45,25 @@ def test_font(loader) -> None:
         spacing=CharSpacingKind.TIGHT,
         shadowed=True,
     )
-    assert ft.name == Info.get_font_general_name()
-    assert ft.charset == CharSetEnum.SYSTEM
-    assert ft.family == FontFamilyEnum.MODERN
-    assert ft.b
-    assert ft.i
-    assert ft.u
-    assert ft.weight == FontWeightEnum.BOLD
-    assert ft.slant == FontSlant.ITALIC
-    assert ft.underline == FontUnderlineEnum.SINGLE
-    assert ft.color == CommonColor.BLUE
-    assert ft.strike == FontStrikeoutEnum.BOLD
-    assert ft.underine_color == CommonColor.AQUA
+    assert ft.prop_name == Info.get_font_general_name()
+    assert ft.prop_charset == CharSetEnum.SYSTEM
+    assert ft.prop_family == FontFamilyEnum.MODERN
+    assert ft.prop_bold
+    assert ft.prop_italic
+    assert ft.prop_underline
+    assert ft.prop_weight == FontWeightEnum.BOLD
+    assert ft.prop_slant == FontSlant.ITALIC
+    assert ft.prop_underline == FontUnderlineEnum.SINGLE
+    assert ft.prop_color == CommonColor.BLUE
+    assert ft.prop_strike == FontStrikeoutEnum.BOLD
+    assert ft.prop_underine_color == CommonColor.AQUA
     assert ft.super_script
-    assert ft.size == 22.0
-    assert ft.rotation == 90.0
-    assert ft.overline == FontUnderlineEnum.BOLDDASHDOT
-    assert ft.overline_color == CommonColor.BEIGE
-    assert ft.spacing == pytest.approx(CharSpacingKind.TIGHT.value, rel=1e-2)
-    assert ft.shadowed
+    assert ft.prop_size == 22.0
+    assert ft.prop_rotation == 90.0
+    assert ft.prop_overline == FontUnderlineEnum.BOLDDASHDOT
+    assert ft.prop_overline_color == CommonColor.BEIGE
+    assert ft.prop_spacing == pytest.approx(CharSpacingKind.TIGHT.value, rel=1e-2)
+    assert ft.prop_shadowed
 
     ft = Font(
         weight=FontWeightEnum.BOLD,
@@ -72,11 +72,11 @@ def test_font(loader) -> None:
         sub_script=True,
         spacing=2.0,
     )
-    assert ft.weight == FontWeightEnum.BOLD
-    assert ft.underline == FontUnderlineEnum.BOLDDASH
-    assert ft.slant == FontSlant.OBLIQUE
-    assert ft.sub_script
-    assert ft.spacing == pytest.approx(2.0, rel=1e-2)
+    assert ft.prop_weight == FontWeightEnum.BOLD
+    assert ft.prop_underline == FontUnderlineEnum.BOLDDASH
+    assert ft.prop_slant == FontSlant.OBLIQUE
+    assert ft.prop_subscript
+    assert ft.prop_spacing == pytest.approx(2.0, rel=1e-2)
 
 
 def test_font_cursor(loader) -> None:
