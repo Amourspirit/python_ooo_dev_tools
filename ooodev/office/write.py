@@ -1211,19 +1211,20 @@ class Write(mSel.Selection):
 
     # region style()
     @classmethod
-    def _style(cls, pos: int, distance: int, prop_name: str, prop_val: object) -> None:
+    def _style(cls, pos: int, distance: int, prop_name: str, prop_val: object, cursor: XTextCursor = None) -> None:
 
-        cursor = cls.get_cursor()
+        if cursor is None:
+            cursor = cls.get_cursor()
         cursor.gotoStart(False)
         cursor.goRight(pos, False)
         cursor.goRight(distance, True)
         mProps.Props.set(cursor, **{prop_name: prop_val})
+        cursor.gotoEnd(False)
 
     @classmethod
-    def _style_style(cls, pos: int, distance: int, styles: Iterable[StyleObj]) -> None:
-        # store properties about to be changed
-
-        cursor = cls.get_cursor()
+    def _style_style(cls, pos: int, distance: int, styles: Iterable[StyleObj], cursor: XTextCursor = None) -> None:
+        if cursor is None:
+            cursor = cls.get_cursor()
         # cursor.collapseToEnd()
         cursor.gotoStart(False)
         cursor.goRight(pos, False)
@@ -1231,6 +1232,7 @@ class Write(mSel.Selection):
 
         for style in styles:
             style.apply_style(cursor)
+        cursor.gotoEnd(False)
 
     @overload
     @classmethod
@@ -1239,7 +1241,17 @@ class Write(mSel.Selection):
 
     @overload
     @classmethod
+    def style(cls, pos: int, distance: int, styles: Iterable[StyleObj], cursor: XTextCursor) -> None:
+        ...
+
+    @overload
+    @classmethod
     def style(cls, pos: int, distance: int, prop_name: str, prop_val: object) -> None:
+        ...
+
+    @overload
+    @classmethod
+    def style(cls, pos: int, distance: int, prop_name: str, prop_val: object, cursor: XTextCursor) -> None:
         ...
 
     @classmethod
@@ -1253,6 +1265,7 @@ class Write(mSel.Selection):
             styles (Iterable[StyleObj]):One or more styles to apply to text.
             prop_name (str): Property Name such as ``CharHeight``
             prop_val (object): Property Value such as ``10``
+            cursor (XTextCursor): Text Cursor
 
         Returns:
             None:
@@ -1265,7 +1278,7 @@ class Write(mSel.Selection):
 
         .. versionadded:: 0.9.0
         """
-        ordered_keys = (1, 2, 3, 4)
+        ordered_keys = (1, 2, 3, 4, 5)
         kargs_len = len(kwargs)
         count = len(args) + kargs_len
 
@@ -1273,7 +1286,7 @@ class Write(mSel.Selection):
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ("pos", "distance", "prop_name", "prop_val", "styles")
+            valid_keys = ("pos", "distance", "prop_name", "prop_val", "styles", "cursor")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("style() got an unexpected keyword argument")
@@ -1286,18 +1299,31 @@ class Write(mSel.Selection):
                     break
             if count == 3:
                 return ka
-            ka[4] = kwargs.get("prop_val", None)
+            keys = ("prop_val", "cursor")
+            for key in keys:
+                if key in kwargs:
+                    ka[4] = kwargs[key]
+                    break
+            if count == 4:
+                return ka
+            ka[5] = kwargs.get("cursor", None)
             return ka
 
-        if not count in (3, 4):
+        if not count in (3, 4, 5):
             raise TypeError("style() got an invalid number of arguments")
 
         kargs = get_kwargs()
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
         if count == 3:
-            return cls._style_style(kargs[1], kargs[2], kargs[3])
-        return cls._style(kargs[1], kargs[2], kargs[3], kargs[4])
+            return cls._style_style(pos=kargs[1], distance=kargs[2], styles=kargs[3])
+        if count == 4:
+            # cursor or prop value
+            arg4 = kargs[4]
+            if mInfo.Info.is_uno(arg4):
+                return cls._style_style(pos=kargs[1], distance=kargs[2], styles=kargs[3], cursor=arg4)
+            return cls._style(pos=kargs[1], distance=kargs[2], prop_name=kargs[3], prop_val=arg4)
+        return cls._style(pos=kargs[1], distance=kargs[2], prop_name=kargs[3], prop_val=kargs[4], cursor=kargs[5])
 
     # endregion style()
     # region style_left()

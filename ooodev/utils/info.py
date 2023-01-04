@@ -2027,6 +2027,21 @@ class Info(metaclass=StaticProperty):
             return obj.typeName == type_name
         return False
 
+    @staticmethod
+    def is_uno(obj: object) -> bool:
+        """
+        Gets if an object is a UNO object
+
+        Args:
+            obj (object): Object to check
+
+        Returns:
+            bool: ``True`` if is ``UNO`` object; Otherwise, ``False``
+
+        .. versionadded:: 0.9.0
+        """
+        return type(obj).__name__ == "pyuno"
+
     # region is_type_enum_multi()
     @overload
     @staticmethod
