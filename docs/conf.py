@@ -71,6 +71,21 @@ extensions = [
 # region spelling
 # https://sphinxcontrib-spelling.readthedocs.io/en/latest/
 
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#confval-suppress_warnings
+# https://github.com/sphinx-doc/sphinx/issues/4961
+# List of zero or more Sphinx-specific warning categories to be squelched (i.e.,
+# suppressed, ignored).
+suppress_warnings = [
+    # FIXME: *THIS IS TERRIBLE.* Generally speaking, we do want Sphinx to inform
+    # us about cross-referencing failures. Remove this hack entirely after Sphinx
+    # resolves this open issue:
+    #    https://github.com/sphinx-doc/sphinx/issues/4961
+    # Squelch mostly ignorable warnings resembling:
+    #     WARNING: more than one target found for cross-reference 'TypeHint':
+    #     beartype.door._doorcls.TypeHint, beartype.door.TypeHint
+    "ref.python",
+]
+
 
 def get_spell_dictionaries() -> list:
 
