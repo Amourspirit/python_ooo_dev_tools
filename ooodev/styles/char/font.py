@@ -21,6 +21,7 @@ from ooo.dyn.awt.font_strikeout import FontStrikeoutEnum as FontStrikeoutEnum
 from ooo.dyn.awt.font_underline import FontUnderlineEnum as FontUnderlineEnum
 from ooo.dyn.awt.font_weight import FontWeightEnum as FontWeightEnum
 from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
+from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 
 
 class CharSpacingKind(float, Enum):
