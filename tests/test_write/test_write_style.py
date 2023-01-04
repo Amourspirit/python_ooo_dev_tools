@@ -45,11 +45,18 @@ def test_style(loader, run_headless) -> None:
 
         Lo.delay(delay)
         Write.style(pos=pos, distance=4, styles=(Highlight.empty,))
-
         cursor.gotoStart(False)
         cursor.goRight(pos, False)
         cursor.goRight(4, True)
         assert cp.CharBackColor == -1
+        cursor.gotoEnd(False)
+
+        Lo.delay(delay)
+        Write.style(pos=pos, distance=4, styles=(hl,), cursor=cursor)
+        cursor.gotoStart(False)
+        cursor.goRight(pos, False)
+        cursor.goRight(4, True)
+        assert cp.CharBackColor == CommonColor.YELLOW_GREEN
         cursor.gotoEnd(False)
 
         Lo.delay(delay)
@@ -58,6 +65,14 @@ def test_style(loader, run_headless) -> None:
         cursor.goRight(pos, False)
         cursor.goRight(4, True)
         assert cp.CharBackColor == CommonColor.YELLOW_GREEN
+        cursor.gotoEnd(False)
+
+        Lo.delay(delay)
+        Write.style(pos=pos, distance=4, prop_name="CharBackColor", prop_val=CommonColor.LIGHT_BLUE, cursor=cursor)
+        cursor.gotoStart(False)
+        cursor.goRight(pos, False)
+        cursor.goRight(4, True)
+        assert cp.CharBackColor == CommonColor.LIGHT_BLUE
         cursor.gotoEnd(False)
 
         Lo.delay(delay)
