@@ -623,13 +623,14 @@ class Selection(metaclass=StaticProperty):
         Returns:
             XTextRangeCompare: Text Range Compare instance
         """
-
+        # Note: This class is inherited so is important the attribue be assigned directly
+        # to Selection and not to cls
         try:
-            return cls._text_range_compare
+            return Selection._text_range_compare
         except AttributeError:
             doc = mLo.Lo.XSCRIPTCONTEXT.getDocument()
             text = doc.getText()
-            cls._text_range_compare = mLo.Lo.qi(XTextRangeCompare, text)
+            Selection._text_range_compare = mLo.Lo.qi(XTextRangeCompare, text)
         return cls._text_range_compare
 
     @text_range_compare.setter

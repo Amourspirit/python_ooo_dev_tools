@@ -79,14 +79,14 @@ def test_font(loader) -> None:
     assert ft.spacing == pytest.approx(2.0, rel=1e-2)
 
 
-def test_font_cursor(loader, test_headless) -> None:
-    delay = 0  # 0 if test_headless else 5_000
+def test_font_cursor(loader) -> None:
+    delay = 0  # 0 if Lo.bridge_connector.headless else 5_000
     from ooodev.office.write import Write
     from ooodev.styles import Style
     from functools import partial
 
     doc = Write.create_doc()
-    if not test_headless:
+    if not Lo.bridge_connector.headless:
         GUI.set_visible()
         Lo.delay(500)
         GUI.zoom(GUI.ZoomEnum.ZOOM_150_PERCENT)
@@ -215,15 +215,15 @@ def test_font_cursor(loader, test_headless) -> None:
         Lo.close_doc(doc)
 
 
-def test_calc_font(loader, test_headless) -> None:
-    delay = 0 if test_headless else 5_000
+def test_calc_font(loader, run_headless) -> None:
+    delay = 0 if run_headless else 5_000
     from ooodev.office.calc import Calc
     from ooodev.styles import Style
 
     doc = Calc.create_doc()
     try:
         sheet = Calc.get_sheet(doc)
-        if not test_headless:
+        if not run_headless:
             GUI.set_visible()
             Lo.delay(500)
             Calc.zoom(doc, GUI.ZoomEnum.ZOOM_200_PERCENT)

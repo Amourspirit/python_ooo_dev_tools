@@ -63,3 +63,11 @@ Class Lo
         a substitute to `XSCRIPTCONTEXT` LibreOffice/OpenOffice built-in
 
         :rtype: XScriptContext
+
+    .. py:property:: Lo.bridge_connector
+
+        Static read-only property
+
+        Get the current Bride connection
+
+        :rtype: LoBridgeCommon

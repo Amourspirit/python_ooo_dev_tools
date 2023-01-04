@@ -20,12 +20,12 @@ if TYPE_CHECKING:
     from com.sun.star.style import CharacterProperties  # service
 
 
-def test_char_borders(loader, test_headless) -> None:
-    delay = 0  # 0 if test_headless else 5_000
+def test_char_borders(loader) -> None:
+    delay = 0  # 0 if Lo.bridge_connector.headless else 5_000
     from ooodev.office.write import Write
 
     doc = Write.create_doc()
-    if not test_headless:
+    if not Lo.bridge_connector.headless:
         GUI.set_visible()
         Lo.delay(500)
         GUI.zoom(GUI.ZoomEnum.ZOOM_150_PERCENT)

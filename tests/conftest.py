@@ -2,6 +2,7 @@ import csv
 import os
 from pathlib import Path
 import shutil
+import stat
 import tempfile
 from typing import List
 import pytest
@@ -20,21 +21,29 @@ from ooodev.conn import cache as mCache
 # os.environ["NO_HEADLESS"] = "1"
 
 
+def remove_readonly(func, path, excinfo):
+    try:
+        os.chmod(path, stat.S_IWRITE)
+        func(path)
+    except Exception:
+        pass
+
+
 @pytest.fixture(scope="session")
 def tmp_path_session():
     result = Path(tempfile.mkdtemp())
     yield result
     if os.path.exists(result):
-        shutil.rmtree(result, ignore_errors=True)
+        shutil.rmtree(result, onerror=remove_readonly)
 
 
 @pytest.fixture(scope="session")
-def test_headless():
+def run_headless():
     # windows/powershell
     #   $env:NO_HEADLESS='1'; pytest; Remove-Item Env:\NO_HEADLESS
     # linux
     #  NO_HEADLESS="1" pytest
-    no_headless = os.environ.get("NO_HEADLESS", 0)
+    no_headless = os.environ.get("NO_HEADLESS", "")
     if no_headless == "1":
         return False
     return True
@@ -48,11 +57,11 @@ def soffice_path():
 
 
 @pytest.fixture(scope="session")
-def loader(tmp_path_session, test_headless, soffice_path):
+def loader(tmp_path_session, run_headless, soffice_path):
     loader = mLo.load_office(
-        connector=mLo.ConnectPipe(headless=test_headless, soffice=soffice_path),
+        connector=mLo.ConnectPipe(headless=run_headless, soffice=soffice_path),
         cache_obj=mCache.Cache(working_dir=tmp_path_session),
-        opt=mLo.Options(verbose=True),
+        opt=mLo.Options(verbose=False),
     )
     # loader = mLo.load_office(connector=mLo.ConnectSocket(headless=True, soffice=soffice_path), cache_obj=mCache.Cache(working_dir=tmp_path_session))
     yield loader
@@ -64,7 +73,7 @@ def tmp_path_fn():
     result = Path(tempfile.mkdtemp())
     yield result
     if os.path.exists(result):
-        shutil.rmtree(result, ignore_errors=True)
+        shutil.rmtree(result, onerror=remove_readonly)
 
 
 @pytest.fixture(scope="session")
