@@ -24,7 +24,7 @@ from . import table_helper as mThelper
 from . import xml_util as mXML
 from ..conn import cache as mCache
 from ..conn import connectors
-from ..conn.connect import ConnectBase, LoPipeStart, LoSocketStart, LoDirectStart
+from ..conn.connect import ConnectBase, LoPipeStart, LoSocketStart, LoDirectStart, LoBridgeCommon
 from ..events.args.cancel_event_args import CancelEventArgs
 from ..events.args.dispatch_args import DispatchArgs
 from ..events.args.dispatch_cancel_args import DispatchCancelArgs
@@ -2199,7 +2199,7 @@ class Lo(metaclass=StaticProperty):
             ms (int): Number of milliseconds to delay
         """
         if ms <= 0:
-            Lo.print("Ms must be greater then zero")
+            Lo.print("Lo.delay(): Ms must be greater then zero")
             return
         sec = ms / 1000
         time.sleep(sec)
@@ -2791,6 +2791,16 @@ class Lo(metaclass=StaticProperty):
             XComponentLoader: Component Loader
         """
         return cls._loader
+
+    @classproperty
+    def bridge_connector(cls) -> LoBridgeCommon:
+        """
+        Get the current Bride connection
+
+        Returns:
+            LoBridgeCommon: If not in macro mode; Otherwise, ``ConnectBase``
+        """
+        return cls._lo_inst
 
 
 class _LoManager(metaclass=StaticProperty):

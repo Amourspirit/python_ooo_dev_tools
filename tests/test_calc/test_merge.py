@@ -9,9 +9,9 @@ from ooodev.utils.lo import Lo
 from ooodev.office.calc import Calc
 
 
-def test_merge(loader, test_headless) -> None:
+def test_merge(loader, run_headless) -> None:
     doc = Calc.create_doc()
-    visible = not test_headless
+    visible = not run_headless
     delay = 0  # 2000 if visible else 0
     if visible:
         GUI.set_visible(is_visible=visible, doc=doc)

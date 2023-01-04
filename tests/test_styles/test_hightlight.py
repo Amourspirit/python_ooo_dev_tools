@@ -10,6 +10,7 @@ from ooodev.styles.char.highlight import Highlight
 from ooodev.styles import CommonColor
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
+from ooodev.office.write import Write
 from ooodev.styles.char.font import (
     Font,
     FontUnderlineEnum,
@@ -49,12 +50,12 @@ def test_char_highlight_props() -> None:
     assert hl._get("CharBackTransparent")
 
 
-def test_char_hightlight(loader, test_headless) -> None:
-    delay = 0 if test_headless else 5_000
-    from ooodev.office.write import Write
+def test_char_hightlight(loader) -> None:
+    # breakpoint()
+    delay = 0  # 0 if Lo.bridge_connector.headless else 3_000
 
     doc = Write.create_doc()
-    if not test_headless:
+    if not Lo.bridge_connector.headless:
         GUI.set_visible()
         Lo.delay(500)
         GUI.zoom(GUI.ZoomEnum.ZOOM_150_PERCENT)
