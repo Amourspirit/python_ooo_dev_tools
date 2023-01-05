@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Tuple, TYPE_CHECKING, cast
+from typing import Any, Dict, Tuple, TYPE_CHECKING, cast
 import uno
 from ..utils import props as mProps
 
@@ -7,6 +7,7 @@ from ..events.lo_events import Events
 from ..events.props_named_event import PropsNamedEvent
 from ..events.args.key_val_cancel_args import KeyValCancelArgs
 from ..events.args.key_val_args import KeyValArgs
+from ..utils.type_var import T
 from abc import ABC, abstractmethod
 
 if TYPE_CHECKING:
@@ -22,6 +23,7 @@ class StyleBase(ABC):
 
     def __init__(self, **kwargs) -> None:
         self._dv = {}
+
         for (key, value) in kwargs.items():
             if not value is None:
                 self._dv[key] = value
@@ -52,14 +54,13 @@ class StyleBase(ABC):
             return True
         return False
 
+    def _update(self, kv: Dict[str, Any]) -> None:
+        self._dv.update(kv)
+
     def _on_setting(self, event: KeyValCancelArgs) -> None:
         # can be overridden in child classes to manage or modify setting
         # called by _set()
         pass
-
-    def _is_supported(self, obj: object) -> bool:
-        # can be used in child classe to for something like if mInfo.Info.support_service(obj, "com.sun.star.table.CellProperties"):
-        raise NotImplemented
 
     def get_attrs(self) -> Tuple[str, ...]:
         """
@@ -126,6 +127,12 @@ class StyleBase(ABC):
     def has_attribs(self) -> bool:
         """Gets If instantance has any attributes set."""
         return len(self._dv)
+
+    def copy(self: T) -> T:
+        nu = super(StyleBase, self.__class__).__new__(self.__class__)
+        nu.__init__()
+        nu._update(self._dv)
+        return nu
 
 
 def _on_props_setting(source: Any, event_args: KeyValCancelArgs, *args, **kwargs) -> None:

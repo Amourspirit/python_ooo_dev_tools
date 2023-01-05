@@ -98,13 +98,32 @@ class Highlight(StyleBase):
         inst._set("CharBackTransparent", bool(mProps.Props.get(obj, "CharBackTransparent")))
         return inst
 
+    # region set styles
+    def style_color(self, value: int) -> Highlight:
+        """
+        Gets copy of instance with color set.
+
+        Args:
+            value (float | None): color value. If value is less then zero then it means no color.
+
+        Returns:
+            Highlight: Highlight instance
+        """
+        cp = self.copy()
+        if value < 0:
+            cp.prop_color = -1
+        else:
+            cp.prop_color = value
+
+    # endregion set styles
+
     @property
-    def color(self) -> int:
+    def prop_color(self) -> int:
         """Gets/Sets color"""
         return self._get("CharBackColor")
 
-    @color.setter
-    def color(self, value: int):
+    @prop_color.setter
+    def prop_color(self, value: int):
         if value >= 0:
             self._set("CharBackColor", value)
             self._set("CharBackTransparent", False)

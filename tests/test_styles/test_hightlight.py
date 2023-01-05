@@ -23,23 +23,23 @@ if TYPE_CHECKING:
 
 def test_char_highlight_props() -> None:
     hl = Highlight(color=CommonColor.LIGHT_YELLOW)
-    assert hl.color == CommonColor.LIGHT_YELLOW
+    assert hl.prop_color == CommonColor.LIGHT_YELLOW
     assert hl._get("CharBackColor") == CommonColor.LIGHT_YELLOW
     assert hl._get("CharBackTransparent") == False
 
-    hl.color = -1
-    assert hl.color == -1
+    hl.prop_color = -1
+    assert hl.prop_color == -1
     assert hl._get("CharBackColor") == -1
     assert hl._get("CharBackTransparent")
 
     hl = Highlight()
-    hl.color = -1
-    assert hl.color == -1
+    hl.prop_color = -1
+    assert hl.prop_color == -1
     assert hl._get("CharBackColor") == -1
     assert hl._get("CharBackTransparent")
 
-    hl.color = CommonColor.AQUA
-    assert hl.color == CommonColor.AQUA
+    hl.prop_color = CommonColor.AQUA
+    assert hl.prop_color == CommonColor.AQUA
     assert hl._get("CharBackColor") == CommonColor.AQUA
     assert hl._get("CharBackTransparent") == False
 
