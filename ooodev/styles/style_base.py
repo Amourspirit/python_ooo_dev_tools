@@ -62,10 +62,6 @@ class StyleBase(ABC):
         # called by _set()
         pass
 
-    def _is_supported(self, obj: object) -> bool:
-        # can be used in child classe to for something like if mInfo.Info.support_service(obj, "com.sun.star.table.CellProperties"):
-        raise NotImplemented
-
     def get_attrs(self) -> Tuple[str, ...]:
         """
         Gets the attributes that are slated for change in the current instance
@@ -132,11 +128,10 @@ class StyleBase(ABC):
         """Gets If instantance has any attributes set."""
         return len(self._dv)
 
-    @classmethod
-    def _from_inst(cls, inst: T) -> T:
-        nu = super(StyleBase, cls).__new__(cls)
+    def copy(self: T) -> T:
+        nu = super(StyleBase, self.__class__).__new__(self.__class__)
         nu.__init__()
-        nu._update(inst._dv)
+        nu._update(self._dv)
         return nu
 
 

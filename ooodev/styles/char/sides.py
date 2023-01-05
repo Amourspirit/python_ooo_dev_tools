@@ -29,6 +29,10 @@ class Sides(StyleBase):
     """
     Character Border for use in styles.
 
+    Any properties starting with ``prop_`` set or get current instance values.
+
+    All methods starting with ``style_`` can be used to chain together Sides properties.
+
     .. versionadded:: 0.9.0
     """
 
@@ -75,6 +79,10 @@ class Sides(StyleBase):
 
     # endregion init
 
+    # region style methods
+    # def style_left(self, value: Side | None = None) -> Sides:
+    #     pass
+    # endregion style methods
     # region methods
 
     # region apply_style()
@@ -147,26 +155,130 @@ class Sides(StyleBase):
 
     # endregion methods
 
+    # region style methods
+    def style_border_side(self, value: Side | None) -> Sides:
+        """
+        Gets copy of instance with left, right, top, bottom sides set or removed
+
+        Args:
+            value (Side | None): Side value
+
+        Returns:
+            Sides: Sides instance
+        """
+        cp = self.copy()
+        cp.prop_top = value
+        cp.prop_bottom = value
+        cp.prop_left = value
+        cp.prop_right = value
+        return cp
+
+    def style_top(self, value: Side | None) -> Sides:
+        """
+        Gets a copy of instance with top side set or removed
+
+        Args:
+            value (Side | None): Side value
+
+        Returns:
+            Sides: Sides instance
+        """
+        cp = self.copy()
+        cp.prop_top = value
+        return cp
+
+    def style_bottom(self, value: Side | None) -> Sides:
+        """
+        Gets a copy of instance with bottom side set or removed
+
+        Args:
+            value (Side | None): Side value
+
+        Returns:
+            Sides: Sides instance
+        """
+        cp = self.copy()
+        cp.prop_bottom = value
+        return cp
+
+    def style_left(self, value: Side | None) -> Sides:
+        """
+        Gets a copy of instance with left side set or removed
+
+        Args:
+            value (Side | None): Side value
+
+        Returns:
+            Sides: Sides instance
+        """
+        cp = self.copy()
+        cp.prop_left = value
+        return cp
+
+    def style_right(self, value: Side | None) -> Sides:
+        """
+        Gets a copy of instance with right side set or removed
+
+        Args:
+            value (Side | None): Side value
+
+        Returns:
+            Sides: Sides instance
+        """
+        cp = self.copy()
+        cp.prop_right = value
+        return cp
+
+    # endregion style methods
+
     # region Properties
 
     @property
-    def left(self) -> Side | None:
+    def prop_left(self) -> Side | None:
         """Gets left value"""
         return self._get("CharLeftBorder")
 
+    @prop_left.setter
+    def prop_left(self, value: Side | None) -> None:
+        if value is None:
+            self._remove("CharLeftBorder")
+            return
+        self._set("CharLeftBorder", value)
+
     @property
-    def right(self) -> Side | None:
+    def prop_right(self) -> Side | None:
         """Gets right value"""
         return self._get("CharRightBorder")
 
-    @property
-    def top(self) -> Side | None:
-        """Gets bottom value"""
-        return self._get("CharTopBorder")
+    @prop_right.setter
+    def prop_right(self, value: Side | None) -> None:
+        if value is None:
+            self._remove("CharRightBorder")
+            return
+        self._set("CharRightBorder", value)
 
     @property
-    def bottom(self) -> Side | None:
+    def prop_top(self) -> Side | None:
+        """Gets top value"""
+        return self._get("CharTopBorder")
+
+    @prop_top.setter
+    def prop_top(self, value: Side | None) -> None:
+        if value is None:
+            self._remove("CharTopBorder")
+            return
+        self._set("CharTopBorder", value)
+
+    @property
+    def prop_bottom(self) -> Side | None:
         """Gets bottom value"""
         return self._get("CharBottomBorder")
+
+    @prop_bottom.setter
+    def prop_bottom(self, value: Side | None) -> None:
+        if value is None:
+            self._remove("CharBottomBorder")
+            return
+        self._set("CharBottomBorder", value)
 
     # endregion Properties

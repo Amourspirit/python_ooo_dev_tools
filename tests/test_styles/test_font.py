@@ -26,6 +26,55 @@ if TYPE_CHECKING:
     from com.sun.star.style import CharacterProperties  # service
 
 
+def test_font_chain() -> None:
+    ft = Font().bold
+    assert ft.prop_weight == FontWeightEnum.BOLD
+    ft = ft.italic
+    assert ft.prop_weight == FontWeightEnum.BOLD
+    assert ft.prop_is_italic
+    assert ft.prop_is_bold
+
+    ft = ft.style_color(CommonColor.RED)
+    assert ft.prop_weight == FontWeightEnum.BOLD
+    assert ft.prop_is_italic
+    assert ft.prop_is_bold
+    assert ft.prop_color == CommonColor.RED
+
+    ft = ft.style_bg_color(CommonColor.BLUE)
+    assert ft.prop_weight == FontWeightEnum.BOLD
+    assert ft.prop_is_italic
+    assert ft.prop_is_bold
+    assert ft.prop_color == CommonColor.RED
+    assert ft.prop_bg_color == CommonColor.BLUE
+
+    ft = ft.underline
+    assert ft.prop_weight == FontWeightEnum.BOLD
+    assert ft.prop_is_italic
+    assert ft.prop_is_bold
+    assert ft.prop_color == CommonColor.RED
+    assert ft.prop_bg_color == CommonColor.BLUE
+    assert ft.prop_is_underline
+
+    ft = ft.strike
+    assert ft.prop_weight == FontWeightEnum.BOLD
+    assert ft.prop_is_italic
+    assert ft.prop_is_bold
+    assert ft.prop_color == CommonColor.RED
+    assert ft.prop_bg_color == CommonColor.BLUE
+    assert ft.prop_is_underline
+    assert ft.prop_strike == FontStrikeoutEnum.SINGLE
+
+    ft = ft.shadowed
+    assert ft.prop_weight == FontWeightEnum.BOLD
+    assert ft.prop_is_italic
+    assert ft.prop_is_bold
+    assert ft.prop_color == CommonColor.RED
+    assert ft.prop_bg_color == CommonColor.BLUE
+    assert ft.prop_is_underline
+    assert ft.prop_strike == FontStrikeoutEnum.SINGLE
+    assert ft.prop_shadowed
+
+
 def test_font(loader) -> None:
     ft = Font(
         name=Info.get_font_general_name(),
@@ -40,7 +89,7 @@ def test_font(loader) -> None:
         underine_color=CommonColor.AQUA,
         overline=FontUnderlineEnum.BOLDDASHDOT,
         overline_color=CommonColor.BEIGE,
-        super_script=True,
+        superscript=True,
         rotation=90.0,
         spacing=CharSpacingKind.TIGHT,
         shadowed=True,
@@ -48,16 +97,16 @@ def test_font(loader) -> None:
     assert ft.prop_name == Info.get_font_general_name()
     assert ft.prop_charset == CharSetEnum.SYSTEM
     assert ft.prop_family == FontFamilyEnum.MODERN
-    assert ft.prop_bold
-    assert ft.prop_italic
-    assert ft.prop_underline
+    assert ft.prop_is_bold
+    assert ft.prop_is_italic
+    assert ft.prop_is_underline
     assert ft.prop_weight == FontWeightEnum.BOLD
     assert ft.prop_slant == FontSlant.ITALIC
     assert ft.prop_underline == FontUnderlineEnum.SINGLE
     assert ft.prop_color == CommonColor.BLUE
     assert ft.prop_strike == FontStrikeoutEnum.BOLD
     assert ft.prop_underine_color == CommonColor.AQUA
-    assert ft.super_script
+    assert ft.prop_superscript
     assert ft.prop_size == 22.0
     assert ft.prop_rotation == 90.0
     assert ft.prop_overline == FontUnderlineEnum.BOLDDASHDOT
@@ -69,10 +118,11 @@ def test_font(loader) -> None:
         weight=FontWeightEnum.BOLD,
         underine=FontUnderlineEnum.BOLDDASH,
         slant=FontSlant.OBLIQUE,
-        sub_script=True,
+        subscript=True,
         spacing=2.0,
     )
     assert ft.prop_weight == FontWeightEnum.BOLD
+    assert ft.prop_is_underline
     assert ft.prop_underline == FontUnderlineEnum.BOLDDASH
     assert ft.prop_slant == FontSlant.OBLIQUE
     assert ft.prop_subscript
@@ -115,13 +165,13 @@ def test_font_cursor(loader) -> None:
 
         cursor.goLeft(5, False)
         cursor.goRight(1, True)
-        Style.apply_style(cursor, Font(super_script=True))
+        Style.apply_style(cursor, Font(superscript=True))
         assert cp.CharEscapement == 14_000
 
         cursor.gotoEnd(False)
         cursor.goLeft(1, True)
         # use partial function
-        style(Font(sub_script=True))
+        style(Font(subscript=True))
         assert cp.CharEscapement == -14_000
         cursor.gotoEnd(False)
 

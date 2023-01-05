@@ -18,12 +18,16 @@ class Padding(StyleBase):
     """
     Paragraph Padding
 
+    Any properties starting with ``prop_`` set or get current instance values.
+
+    All methods starting with ``style_`` can be used to chain together Padding properties.
+
     .. versionadded:: 0.9.0
     """
 
     _DEFAULT = None
 
-    # this class also set Borders Padding in borders.Border class.
+    # region init
 
     def __init__(
         self,
@@ -77,8 +81,9 @@ class Padding(StyleBase):
 
         super().__init__(**init_vals)
 
-    def _is_supported(self, obj: object) -> bool:
-        return mInfo.Info.support_service(obj, "com.sun.star.style.ParagraphProperties")
+    # endregion init
+
+    # region methods
 
     def apply_style(self, obj: object, **kwargs) -> None:
         """
@@ -91,7 +96,7 @@ class Padding(StyleBase):
         Returns:
             None:
         """
-        if self._is_supported(obj):
+        if mInfo.Info.support_service(obj, "com.sun.star.style.ParagraphProperties"):
             try:
                 super().apply_style(obj)
             except mEx.MultiError as e:
@@ -125,8 +130,88 @@ class Padding(StyleBase):
         pd._set("ParaBottomMargin", int(mProps.Props.get(obj, "ParaBottomMargin")))
         return pd
 
+    # endregion methods
+
+    # region style methods
+    def style_padding_all(self, value: float | None) -> Padding:
+        """
+        Gets copy of instance with left, right, top, bottom sides set or removed
+
+        Args:
+            value (float | None): Padding value
+
+        Returns:
+            Padding: Border Table
+        """
+        cp = self.copy()
+        cp.prop_top = value
+        cp.prop_bottom = value
+        cp.prop_left = value
+        cp.prop_right = value
+        return cp
+
+    def style_top(self, value: float | None) -> Padding:
+        """
+        Gets a copy of instance with top side set or removed
+
+        Args:
+            value (float | None): Padding value
+
+        Returns:
+            Padding: Border Table
+        """
+        cp = self.copy()
+        cp.prop_top = value
+        return cp
+
+    def style_bottom(self, value: float | None) -> Padding:
+        """
+        Gets a copy of instance with bottom side set or removed
+
+        Args:
+            value (float | None): Padding value
+
+        Returns:
+            Padding: Border Table
+        """
+        cp = self.copy()
+        cp.prop_bottom = value
+        return cp
+
+    def style_left(self, value: float | None) -> Padding:
+        """
+        Gets a copy of instance with left side set or removed
+
+        Args:
+            value (float | None): Padding value
+
+        Returns:
+            Padding: Border Table
+        """
+        cp = self.copy()
+        cp.prop_left = value
+        return cp
+
+    def style_right(self, value: float | None) -> Padding:
+        """
+        Gets a copy of instance with right side set or removed
+
+        Args:
+            value (float | None): Padding value
+
+        Returns:
+            Padding: Border Table
+        """
+        cp = self.copy()
+        cp.prop_right = value
+        return cp
+
+    # endregion style methods
+
+    # region properties
+
     @property
-    def left(self) -> float | None:
+    def prop_left(self) -> float | None:
         """Gets/Sets paragraph left padding (in mm units)."""
         pv = cast(int, self._get("ParaLeftMargin"))
         if pv is None:
@@ -135,15 +220,15 @@ class Padding(StyleBase):
             return 0.0
         return float(pv / 100)
 
-    @left.setter
-    def left(self, value: float | None):
+    @prop_left.setter
+    def prop_left(self, value: float | None):
         if value is None:
             self._remove("ParaLeftMargin")
             return
         self._set("ParaLeftMargin", round(value * 100))
 
     @property
-    def right(self) -> float | None:
+    def prop_right(self) -> float | None:
         """Gets/Sets paragraph right padding (in mm units)."""
         pv = cast(int, self._get("ParaRightMargin"))
         if pv is None:
@@ -152,15 +237,15 @@ class Padding(StyleBase):
             return 0.0
         return float(pv / 100)
 
-    @right.setter
-    def right(self, value: float | None):
+    @prop_right.setter
+    def prop_right(self, value: float | None):
         if value is None:
             self._remove("ParaRightMargin")
             return
         self._set("ParaRightMargin", round(value * 100))
 
     @property
-    def top(self) -> float | None:
+    def prop_top(self) -> float | None:
         """Gets/Sets paragraph top padding (in mm units)."""
         pv = cast(int, self._get("ParaTopMargin"))
         if pv is None:
@@ -169,15 +254,15 @@ class Padding(StyleBase):
             return 0.0
         return float(pv / 100)
 
-    @top.setter
-    def top(self, value: float | None):
+    @prop_top.setter
+    def prop_top(self, value: float | None):
         if value is None:
             self._remove("ParaTopMargin")
             return
         self._set("ParaTopMargin", round(value * 100))
 
     @property
-    def bottom(self) -> float | None:
+    def prop_bottom(self) -> float | None:
         """Gets/Sets paragraph bottom padding (in mm units)."""
         pv = cast(int, self._get("ParaBottomMargin"))
         if pv is None:
@@ -186,8 +271,8 @@ class Padding(StyleBase):
             return 0.0
         return float(pv / 100)
 
-    @bottom.setter
-    def bottom(self, value: float | None):
+    @prop_bottom.setter
+    def prop_bottom(self, value: float | None):
         if value is None:
             self._remove("ParaBottomMargin")
             return
@@ -199,3 +284,5 @@ class Padding(StyleBase):
         if cls._DEFAULT is None:
             cls._DEFAULT = Padding(padding_all=0.35)
         return cls._DEFAULT
+
+    # endregion properties

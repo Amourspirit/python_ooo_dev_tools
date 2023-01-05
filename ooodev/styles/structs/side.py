@@ -30,6 +30,10 @@ class SideFlags(IntFlag):
     """
     Side Flags Enum
 
+    Any properties starting with ``prop_`` set or get current instance values.
+
+    All methods ``style_`` can be used to chain together font properties.
+
     .. versionadded:: 0.9.0
     """
 
@@ -204,21 +208,115 @@ class Side(StyleBase):
 
     # endregion methods
 
+    # region style methods
+    def style_style(self, value: BorderLineStyleEnum) -> Side:
+        """
+        Gets copy of instance with style set.
+
+        Args:
+            value (BorderLineStyleEnum): style value
+
+        Returns:
+            Side: Side with style set
+        """
+        cp = self.copy()
+        cp.prop_style = value
+        return cp
+
+    def style_color(self, value: Color) -> Side:
+        """
+        Gets copy of instance with color set.
+
+        Args:
+            value (Color): color value
+
+        Returns:
+            Side: Side with color set
+        """
+        cp = self.copy()
+        cp.prop_color = value
+        return cp
+
+    def style_width(self, value: float) -> Side:
+        """
+        Gets copy of instance with width set.
+
+        Args:
+            value (float): width value
+
+        Returns:
+            Side: Side with width set
+        """
+        cp = self.copy()
+        cp.prop_width = value
+        return cp
+
+    def style_width_inner(self, value: float) -> Side:
+        """
+        Gets copy of instance with inner width set.
+
+        Args:
+            value (float): inner width value
+
+        Returns:
+            Side: Side with inner width set
+        """
+        cp = self.copy()
+        cp.prop_width_inner = value
+        return cp
+
+    def style_distance(self, value: float) -> Side:
+        """
+        Gets copy of instance with distance set.
+
+        Args:
+            value (float): distance value
+
+        Returns:
+            Side: Side with distance set
+        """
+        cp = self.copy()
+        cp.prop_distance = value
+        return cp
+
+    # endregion style methods
     # region properties
 
     @property
-    def style(self) -> BorderLineStyleEnum:
+    def prop_style(self) -> BorderLineStyleEnum:
         """Gets Border Line style"""
         pv = cast(int, self._get("LineStyle"))
         return BorderLineStyleEnum(pv)
 
+    @prop_style.setter
+    def prop_style(self, value: BorderLineStyleEnum) -> None:
+        self._set("LineStyle", value.value)
+
     @property
-    def color(self) -> Color:
+    def prop_color(self) -> Color:
         """Gets Border Line Color"""
         return self._get("Color")
 
+    @prop_color.setter
+    def prop_color(self, value: Color) -> None:
+        self._set("Color", value)
+
     @property
-    def width(self) -> float:
+    def prop_distance(self) -> float:
+        """
+        Gets/Sets the distance between the inner and outer parts of a double line (in mm units). Defalut ``0.0``
+        """
+        pv = cast(int, self._get("LineDistance"))
+        if pv == 0:
+            return 0.0
+        return float(pv / 100)
+
+    @prop_distance.setter
+    def prop_distance(self, value: float):
+        self._set("LineDistance", round(value, *100))
+
+    @property
+    def prop_width(self) -> float:
         """
         Gets Border Line Width.
 
@@ -230,8 +328,14 @@ class Side(StyleBase):
             return 0.0
         return float(pv / POINT_RATIO)
 
+    @prop_width.setter
+    def prop_width(self, value: float) -> None:
+        i = round(value, *POINT_RATIO)
+        self._set("LineWidth", i)
+        self._set("OuterLineWidth", i)
+
     @property
-    def width_inner(self) -> float:
+    def prop_width_inner(self) -> float:
         """
         Gets Border Line Inner Width.
 
@@ -242,5 +346,9 @@ class Side(StyleBase):
         if pv == 0:
             return 0.0
         return float(pv / POINT_RATIO)
+
+    @prop_width_inner.setter
+    def prop_width_inner(self, value: float) -> None:
+        self._set("InnerLineWidth", round(value, *POINT_RATIO))
 
     # endregion properties
