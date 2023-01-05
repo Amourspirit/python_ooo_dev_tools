@@ -418,3 +418,42 @@ def test_convert_1d_to_2d_no_fill(lst_len: int, col_count: int, expected_len: in
 def test_convert_1d_to_2d_col_error() -> None:
     with pytest.raises(ValueError):
         TableHelper.convert_1d_to_2d([1, 3], 0)
+
+
+@pytest.mark.parametrize(
+    ("rng_name", "cstart", "rstart", "cend", "rend"),
+    [
+        ("A2:A2", "A", 2, "A", 2),
+        ("A2:A1", "A", 1, "A", 2),
+        ("A7:B2", "A", 2, "B", 7),
+        ("R22:B7", "B", 7, "R", 22),
+        ("R7:B22", "B", 7, "R", 22),
+        ("Sheet1.R7:B22", "B", 7, "R", 22),
+    ],
+)
+def test_get_range_parts_order(rng_name: str, cstart: str, rstart: int, cend: str, rend: int) -> None:
+    # if rng_name col start is greater then col end then expect them to be swapped
+    # if rng_name row start is greater then row end then expect them to be swapped
+    p = TableHelper.get_range_parts(rng_name)
+    assert p.col_start == cstart
+    assert p.row_start == rstart
+    assert p.col_end == cend
+    assert p.row_end == rend
+
+
+@pytest.mark.parametrize(
+    ("rng_name", "expected"),
+    [
+        ("A2:A2", "A2:A2"),
+        ("A2:A1", "A1:A2"),
+        ("A7:B2", "A2:B7"),
+        ("R22:B7", "B7:R22"),
+        ("R7:B22", "B7:R22"),
+        ("Sheet1.R7:B22", "Sheet1.B7:R22"),
+    ],
+)
+def test_get_range_parts_str(rng_name: str, expected: str) -> None:
+    # if rng_name col start is greater then col end then expect them to be swapped
+    # if rng_name row start is greater then row end then expect them to be swapped
+    p = TableHelper.get_range_parts(rng_name)
+    assert str(p) == expected

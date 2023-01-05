@@ -20,6 +20,12 @@ class CellParts(NamedTuple):
     col: str
     row: int
 
+    def __str__(self) -> str:
+        if self.sheet:
+            return f"{self.sheet}.{self.col}{self.row}"
+        else:
+            return f"{self.col}{self.row}"
+
 
 class RangeParts(NamedTuple):
     """Range Named parts"""
@@ -29,6 +35,12 @@ class RangeParts(NamedTuple):
     row_start: int
     col_end: str
     row_end: int
+
+    def __str__(self) -> str:
+        if self.sheet:
+            return f"{self.sheet}.{self.col_start}{self.row_start}:{self.col_end}{self.row_end}"
+        else:
+            return f"{self.col_start}{self.row_start}:{self.col_end}{self.row_end}"
 
 
 class TableHelper:
@@ -94,6 +106,16 @@ class TableHelper:
         col_end = cells[1].rstrip(string.digits).upper()
         row_start = cls.row_name_to_int(cells[0])
         row_end = cls.row_name_to_int(cells[1])
+        start_col_num = cls.col_name_to_int(col_start)
+        end_col_num = cls.col_name_to_int(col_end)
+        # chekc and see if the range name need to be reversed
+        # e.g. D12:B3 => B3:D12
+        if start_col_num > end_col_num:
+            # swap
+            col_start, col_end = col_end, col_start
+        # B12:D3 => B3:D12
+        if row_start > row_end:
+            row_start, row_end = row_end, row_start
 
         return RangeParts(sheet=sheet_name, col_start=col_start, row_start=row_start, col_end=col_end, row_end=row_end)
 
