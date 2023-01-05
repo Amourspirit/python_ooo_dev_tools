@@ -25,6 +25,10 @@ class BorderTable(StyleBase):
     """
     Table Border struct positioning for use in styles.
 
+    Any properties starting with ``prop_`` set or get current instance values.
+
+    All methods starting with ``style_`` can be used to chain together Border Table properties.
+
     .. versionadded:: 0.9.0
     """
 
@@ -90,7 +94,6 @@ class BorderTable(StyleBase):
         if not distance is None:
             init_vals["Distance"] = round(distance * 100)
             init_vals["IsDistanceValid"] = True
-        self._has_attribs = len(init_vals) > 0
         super().__init__(**init_vals)
 
     # endregion init
@@ -206,7 +209,6 @@ class BorderTable(StyleBase):
         if tb.IsDistanceValid:
             bt._set("IsDistanceValid", True)
             bt._set("Distance", tb.Distance)
-        bt._has_attribs = len(bt._dv) > 0
         return bt
 
     def get_table_border2(self) -> TableBorder2:
@@ -243,10 +245,128 @@ class BorderTable(StyleBase):
 
     # endregion methods
 
+    # region Style methods
+    def style_border_side(self, value: Side | None) -> BorderTable:
+        """
+        Gets copy of instance with left, right, top, bottom sides set or removed
+
+        Args:
+            value (Side | None): Side value
+
+        Returns:
+            BorderTable: Border Table
+        """
+        cp = self.copy()
+        cp.prop_top = value
+        cp.prop_bottom = value
+        cp.prop_left = value
+        cp.prop_right = value
+        return cp
+
+    def style_top(self, value: Side | None) -> BorderTable:
+        """
+        Gets a copy of instance with top side set or removed
+
+        Args:
+            value (Side | None): Side value
+
+        Returns:
+            BorderTable: Border Table
+        """
+        cp = self.copy()
+        cp.prop_top = value
+        return cp
+
+    def style_bottom(self, value: Side | None) -> BorderTable:
+        """
+        Gets a copy of instance with bottom side set or removed
+
+        Args:
+            value (Side | None): Side value
+
+        Returns:
+            BorderTable: Border Table
+        """
+        cp = self.copy()
+        cp.prop_bottom = value
+        return cp
+
+    def style_left(self, value: Side | None) -> BorderTable:
+        """
+        Gets a copy of instance with left side set or removed
+
+        Args:
+            value (Side | None): Side value
+
+        Returns:
+            BorderTable: Border Table
+        """
+        cp = self.copy()
+        cp.prop_left = value
+        return cp
+
+    def style_right(self, value: Side | None) -> BorderTable:
+        """
+        Gets a copy of instance with right side set or removed
+
+        Args:
+            value (Side | None): Side value
+
+        Returns:
+            BorderTable: Border Table
+        """
+        cp = self.copy()
+        cp.prop_right = value
+        return cp
+
+    def style_horizontal(self, value: Side | None) -> BorderTable:
+        """
+        Gets a copy of instance with horizontal side set or removed
+
+        Args:
+            value (Side | None): Side value
+
+        Returns:
+            BorderTable: Border Table
+        """
+        cp = self.copy()
+        cp.prop_horizontal = value
+        return cp
+
+    def style_vertical(self, value: Side | None) -> BorderTable:
+        """
+        Gets a copy of instance with top vertical set or removed
+
+        Args:
+            value (Side | None): Side value
+
+        Returns:
+            BorderTable: Border Table
+        """
+        cp = self.copy()
+        cp.prop_vertical = value
+        return cp
+
+    def style_distance(self, value: float | None) -> BorderTable:
+        """
+        Gets a copy of instance with distance set or removed
+
+        Args:
+            value (float | None): Distance value
+
+        Returns:
+            BorderTable: Border Table
+        """
+        cp = self.copy()
+        cp.prop_distance = value
+        return cp
+
+    # endregion Style methods
+
     # region Properties
 
     @property
-    def distance(self) -> float | None:
+    def prop_distance(self) -> float | None:
         """Gets distance value"""
         pv = cast(int, self._get("Distance"))
         if not pv is None:
@@ -255,34 +375,97 @@ class BorderTable(StyleBase):
             return float(pv / 100)
         return None
 
+    @prop_distance.setter
+    def prop_distance(self, value: float | None) -> None:
+        if value is None:
+            self._remove("Distance")
+            self._remove("IsDistanceValid")
+            return
+        self._set("Distance", round(value * 100))
+        self._set("IsDistanceValid", True)
+
     @property
-    def left(self) -> Side | None:
+    def prop_left(self) -> Side | None:
         """Gets left value"""
         return self._get("LeftLine")
 
+    @prop_left.setter
+    def prop_left(self, value: Side | None) -> None:
+        if value is None:
+            self._remove("LeftLine")
+            self._remove("IsLeftLineValid")
+            return
+        self._set("LeftLine", value)
+        self._set("IsLeftLineValid", True)
+
     @property
-    def right(self) -> Side | None:
+    def prop_right(self) -> Side | None:
         """Gets right value"""
         return self._get("RightLine")
 
+    @prop_right.setter
+    def prop_right(self, value: Side | None) -> None:
+        if value is None:
+            self._remove("RightLine")
+            self._remove("IsRightLineValid")
+            return
+        self._set("RightLine", value)
+        self._set("IsRightLineValid", True)
+
     @property
-    def bottom(self) -> Side | None:
+    def prop_top(self) -> Side | None:
+        """Gets bottom value"""
+        return self._get("TopLine")
+
+    @prop_top.setter
+    def prop_top(self, value: Side | None) -> None:
+        if value is None:
+            self._remove("TopLine")
+            self._remove("IsTopLineValid")
+            return
+        self._set("TopLine", value)
+        self._set("IsTopLineValid", True)
+
+    @property
+    def prop_bottom(self) -> Side | None:
         """Gets bottom value"""
         return self._get("BottomLine")
 
+    @prop_bottom.setter
+    def prop_bottom(self, value: Side | None) -> None:
+        if value is None:
+            self._remove("BottomLine")
+            self._remove("IsBottomLineValid")
+            return
+        self._set("BottomLine", value)
+        self._set("IsBottomLineValid", True)
+
     @property
-    def horizontal(self) -> Side | None:
+    def prop_horizontal(self) -> Side | None:
         """Gets horizontal value"""
         return self._get("HorizontalLine")
 
+    @prop_horizontal.setter
+    def prop_horizontal(self, value: Side | None) -> None:
+        if value is None:
+            self._remove("HorizontalLine")
+            self._remove("IsHorizontalLineValid")
+            return
+        self._set("HorizontalLine", value)
+        self._set("IsHorizontalLineValid", True)
+
     @property
-    def vertical(self) -> Side | None:
+    def prop_vertical(self) -> Side | None:
         """Gets vertical value"""
         return self._get("VerticalLine")
 
-    @property
-    def has_attribs(self) -> bool:
-        """Gets If instantance has any attributes set."""
-        return self._has_attribs
+    @prop_vertical.setter
+    def prop_vertical(self, value: Side | None) -> None:
+        if value is None:
+            self._remove("VerticalLine")
+            self._remove("IsVerticalLineValid")
+            return
+        self._set("VerticalLine", value)
+        self._set("IsVerticalLineValid", True)
 
     # endregion Properties

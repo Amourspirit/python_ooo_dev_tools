@@ -147,7 +147,264 @@ class Borders(StyleBase):
                 for err in e.errors:
                     mLo.Lo.print(f"  {err}")
 
+    def copy(self) -> Borders:
+        """
+        Creates a copy
+
+        Returns:
+            Borders: Copy of instance
+        """
+        cp = super().copy()
+        if self._border_table is None:
+            cp._border_table = None
+        else:
+            cp._border_table = self._border_table.copy()
+        if self._padding is None:
+            cp._padding = None
+        else:
+            cp._padding = self._padding.copy()
+        return cp
+
     # endregion methods
+
+    # region Style Methods
+    def style_border_side(self, value: Side | None) -> Borders:
+        """
+        Gets copy of instance with left, right, top, bottom sides set or removed
+
+        Args:
+            value (Side | None): Side value
+
+        Returns:
+            Borders: Borders instance
+        """
+        cp = self.copy()
+        if cp._border_table is None and value is None:
+            return cp
+        if cp._border_table is None:
+            cp._border_table = BorderTable(border_side=value)
+            return cp
+        bt = cp._border_table.copy()
+        bt.prop_left = value
+        bt.prop_right = value
+        bt.prop_top = value
+        bt.prop_bottom = value
+        cp._border_table = bt
+        return cp
+
+    def style_left(self, value: Side | None) -> Borders:
+        """
+        Gets copy of instance with left set or removed
+
+        Args:
+            value (Side | None): Side value
+
+        Returns:
+            Borders: Borders instance
+        """
+        cp = self.copy()
+        if cp._border_table is None and value is None:
+            return cp
+        if cp._border_table is None:
+            cp._border_table = BorderTable(left=value)
+            return cp
+        bt = cp._border_table.copy()
+        bt.prop_left = value
+        cp._border_table = bt
+        return cp
+
+    def style_right(self, value: Side | None) -> Borders:
+        """
+        Gets copy of instance with right set or removed
+
+        Args:
+            value (Side | None): Side value
+
+        Returns:
+            Borders: Borders instance
+        """
+        cp = self.copy()
+        if cp._border_table is None and value is None:
+            return cp
+        if cp._border_table is None:
+            cp._border_table = BorderTable(right=value)
+            return cp
+        bt = cp._border_table.copy()
+        bt.prop_right = value
+        cp._border_table = bt
+        return cp
+
+    def style_top(self, value: Side | None) -> Borders:
+        """
+        Gets copy of instance with top set or removed
+
+        Args:
+            value (Side | None): Side value
+
+        Returns:
+            Borders: Borders instance
+        """
+        cp = self.copy()
+        if cp._border_table is None and value is None:
+            return cp
+        if cp._border_table is None:
+            cp._border_table = BorderTable(top=value)
+            return cp
+        bt = cp._border_table.copy()
+        bt.prop_top = value
+        cp._border_table = bt
+        return cp
+
+    def style_bottom(self, value: Side | None) -> Borders:
+        """
+        Gets copy of instance with bottom set or removed
+
+        Args:
+            value (Side | None): Side value
+
+        Returns:
+            Borders: Borders instance
+        """
+        cp = self.copy()
+        if cp._border_table is None and value is None:
+            return cp
+        if cp._border_table is None:
+            cp._border_table = BorderTable(bottom=value)
+            return cp
+        bt = cp._border_table.copy()
+        bt.prop_bottom = value
+        cp._border_table = bt
+        return cp
+
+    def style_horizontal(self, value: Side | None) -> Borders:
+        """
+        Gets copy of instance with horizontal set or removed
+
+        Args:
+            value (Side | None): Side value
+
+        Returns:
+            Borders: Borders instance
+        """
+        cp = self.copy()
+        if cp._border_table is None and value is None:
+            return cp
+        if cp._border_table is None:
+            cp._border_table = BorderTable(horizontal=value)
+            return cp
+        bt = cp._border_table.copy()
+        bt.prop_horizontal = value
+        cp._border_table = bt
+        return cp
+
+    def style_vertical(self, value: Side | None) -> Borders:
+        """
+        Gets copy of instance with vertical set or removed
+
+        Args:
+            value (Side | None): Side value
+
+        Returns:
+            Borders: Borders instance
+        """
+        cp = self.copy()
+        if cp._border_table is None and value is None:
+            return cp
+        if cp._border_table is None:
+            cp._border_table = BorderTable(vertical=value)
+            return cp
+        bt = cp._border_table.copy()
+        bt.prop_vertical = value
+        cp._border_table = bt
+        return cp
+
+    def style_distance(self, value: float | None) -> Borders:
+        """
+        Gets copy of instance with distance set or removed
+
+        Args:
+            value (float | None): Distance value
+
+        Returns:
+            Borders: Borders instance
+        """
+        cp = self.copy()
+        if cp._border_table is None and value is None:
+            return cp
+        if cp._border_table is None:
+            cp._border_table = BorderTable(distance=value)
+            return cp
+        bt = cp._border_table.copy()
+        bt.prop_distance = value
+        cp._border_table = bt
+        return cp
+
+    def style_diagonal_down(self, value: Side | None) -> Borders:
+        """
+        Gets copy of instance with diagonal down set or removed
+
+        Args:
+            value (Shadow | None): Side value
+
+        Returns:
+            Borders: Borders instance
+        """
+        cp = self.copy()
+        if value is None:
+            cp._remove("DiagonalTLBR2")
+        else:
+            cp._set("DiagonalTLBR2", value.get_border_line2())
+        return cp
+
+    def style_diagonal_up(self, value: Side | None) -> Borders:
+        """
+        Gets copy of instance with diagonal up set or removed
+
+        Args:
+            value (Shadow | None): Side value
+
+        Returns:
+            Borders: Borders instance
+        """
+        cp = self.copy()
+        if value is None:
+            cp._remove("DiagonalBLTR2")
+        else:
+            cp._set("DiagonalBLTR2", value.get_border_line2())
+        return cp
+
+    def style_shadow(self, value: Shadow | None) -> Borders:
+        """
+        Gets copy of instance with shadow set or removed
+
+        Args:
+            value (Shadow | None): Shadow value
+
+        Returns:
+            Borders: Borders instance
+        """
+        cp = self.copy()
+        if value is None:
+            cp._remove("ShadowFormat")
+        else:
+            cp._set("ShadowFormat", value.get_shadow_format())
+        return cp
+
+    def style_padding(self, value: Padding | None) -> Borders:
+        """
+        Gets copy of instance with padding set or removed
+
+        Args:
+            value (Padding | None): Padding value
+
+        Returns:
+            Borders: Borders instance
+        """
+        cp = self.copy()
+        cp._padding = value
+        return cp
+
+    # endregion Style Methods
 
     # region Properties
     @static_prop

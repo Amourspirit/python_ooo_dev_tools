@@ -18,6 +18,10 @@ class Padding(StyleBase):
     """
     Character Padding
 
+    Any properties starting with ``prop_`` set or get current instance values.
+
+    All methods starting with ``style_`` can be used to chain together Sides properties.
+
     .. versionadded:: 0.9.0
     """
 
@@ -130,8 +134,84 @@ class Padding(StyleBase):
         pd._set("CharBottomBorderDistance", int(mProps.Props.get(obj, "CharBottomBorderDistance")))
         return pd
 
+    # region Syle methods
+    def style_padding_all(self, value: float | None) -> Padding:
+        """
+        Gets copy of instance with left, right, top, bottom sides set or removed
+
+        Args:
+            value (float | None): padding value
+
+        Returns:
+            Padding: Padding instance
+        """
+        cp = self.copy()
+        cp.prop_top = value
+        cp.prop_bottom = value
+        cp.prop_left = value
+        cp.prop_right = value
+        return cp
+
+    def style_top(self, value: float | None) -> Padding:
+        """
+        Gets a copy of instance with top side set or removed
+
+        Args:
+            value (float | None): padding value
+
+        Returns:
+            Padding: Padding instance
+        """
+        cp = self.copy()
+        cp.prop_top = value
+        return cp
+
+    def style_bottom(self, value: float | None) -> Padding:
+        """
+        Gets a copy of instance with bottom side set or removed
+
+        Args:
+            value (float | None): padding value
+
+        Returns:
+            Padding: Padding instance
+        """
+        cp = self.copy()
+        cp.prop_bottom = value
+        return cp
+
+    def style_left(self, value: float | None) -> Padding:
+        """
+        Gets a copy of instance with left side set or removed
+
+        Args:
+            value (float | None): padding value
+
+        Returns:
+            Padding: Padding instance
+        """
+        cp = self.copy()
+        cp.prop_left = value
+        return cp
+
+    def style_right(self, value: float | None) -> Padding:
+        """
+        Gets a copy of instance with right side set or removed
+
+        Args:
+            value (float | None): padding value
+
+        Returns:
+            Padding: Padding instance
+        """
+        cp = self.copy()
+        cp.prop_right = value
+        return cp
+
+    # endregion style methods
+
     @property
-    def left(self) -> float | None:
+    def prop_left(self) -> float | None:
         """Gets/Sets paragraph left padding (in mm units)."""
         pv = cast(int, self._get("CharLeftBorderDistance"))
         if pv is None:
@@ -140,15 +220,15 @@ class Padding(StyleBase):
             return 0.0
         return float(pv / 100)
 
-    @left.setter
-    def left(self, value: float | None):
+    @prop_left.setter
+    def prop_left(self, value: float | None):
         if value is None:
             self._remove("CharLeftBorderDistance")
             return
         self._set("CharLeftBorderDistance", round(value * 100))
 
     @property
-    def right(self) -> float | None:
+    def prop_right(self) -> float | None:
         """Gets/Sets paragraph right padding (in mm units)."""
         pv = cast(int, self._get("CharRightBorderDistance"))
         if pv is None:
@@ -157,15 +237,15 @@ class Padding(StyleBase):
             return 0.0
         return float(pv / 100)
 
-    @right.setter
-    def right(self, value: float | None):
+    @prop_right.setter
+    def prop_right(self, value: float | None):
         if value is None:
             self._remove("CharRightBorderDistance")
             return
         self._set("CharRightBorderDistance", round(value * 100))
 
     @property
-    def top(self) -> float | None:
+    def prop_top(self) -> float | None:
         """Gets/Sets paragraph top padding (in mm units)."""
         pv = cast(int, self._get("CharTopBorderDistance"))
         if pv is None:
@@ -174,15 +254,15 @@ class Padding(StyleBase):
             return 0.0
         return float(pv / 100)
 
-    @top.setter
-    def top(self, value: float | None):
+    @prop_top.setter
+    def prop_top(self, value: float | None):
         if value is None:
             self._remove("CharTopBorderDistance")
             return
         self._set("CharTopBorderDistance", round(value * 100))
 
     @property
-    def bottom(self) -> float | None:
+    def prop_bottom(self) -> float | None:
         """Gets/Sets paragraph bottom padding (in mm units)."""
         pv = cast(int, self._get("CharBottomBorderDistance"))
         if pv is None:
@@ -191,8 +271,8 @@ class Padding(StyleBase):
             return 0.0
         return float(pv / 100)
 
-    @bottom.setter
-    def bottom(self, value: float | None):
+    @prop_bottom.setter
+    def prop_bottom(self, value: float | None):
         if value is None:
             self._remove("CharBottomBorderDistance")
             return

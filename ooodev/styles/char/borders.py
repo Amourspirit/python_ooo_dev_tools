@@ -38,6 +38,8 @@ class Borders(StyleBase):
     """
     Border used in styles for characters.
 
+    All methods starting with ``style_`` can be used to chain together Borders properties.
+
     .. versionadded:: 0.9.0
     """
 
@@ -92,10 +94,149 @@ class Borders(StyleBase):
 
     # endregion init
 
-    # region methods
+    # region Style Methods
+    def style_border_side(self, value: Side | None) -> Borders:
+        """
+        Gets copy of instance with left, right, top, bottom sides set or removed
 
-    def _is_supported(self, obj: object) -> bool:
-        return mInfo.Info.support_service(obj, "com.sun.star.style.CharacterProperties")
+        Args:
+            value (Side | None): Side value
+
+        Returns:
+            Borders: Borders instance
+        """
+        cp = self.copy()
+        if cp._sides is None and value is None:
+            return cp
+        if cp._sides is None:
+            cp._sides = Sides(border_side=value)
+            return cp
+        sides = cp._sides.copy()
+        sides.prop_left = value
+        sides.prop_right = value
+        sides.prop_top = value
+        sides.prop_bottom = value
+        cp._sides = sides
+        return cp
+
+    def style_left(self, value: Side | None) -> Borders:
+        """
+        Gets copy of instance with left set or removed
+
+        Args:
+            value (Side | None): Side value
+
+        Returns:
+            Borders: Borders instance
+        """
+        cp = self.copy()
+        if cp._sides is None and value is None:
+            return cp
+        if cp._sides is None:
+            cp._sides = Sides(left=value)
+            return cp
+        sides = cp._sides.copy()
+        sides.prop_left = value
+        cp._sides = sides
+        return cp
+
+    def style_right(self, value: Side | None) -> Borders:
+        """
+        Gets copy of instance with right set or removed
+
+        Args:
+            value (Side | None): Side value
+
+        Returns:
+            Borders: Borders instance
+        """
+        cp = self.copy()
+        if cp._sides is None and value is None:
+            return cp
+        if cp._sides is None:
+            cp._sides = Sides(right=value)
+            return cp
+        sides = cp._sides.copy()
+        sides.prop_right = value
+        cp._sides = sides
+        return cp
+
+    def style_top(self, value: Side | None) -> Borders:
+        """
+        Gets copy of instance with top set or removed
+
+        Args:
+            value (Side | None): Side value
+
+        Returns:
+            Borders: Borders instance
+        """
+        cp = self.copy()
+        if cp._sides is None and value is None:
+            return cp
+        if cp._sides is None:
+            cp._sides = Sides(top=value)
+            return cp
+        sides = cp._sides.copy()
+        sides.prop_top = value
+        cp._sides = sides
+        return cp
+
+    def style_bottom(self, value: Side | None) -> Borders:
+        """
+        Gets copy of instance with bottom set or removed
+
+        Args:
+            value (Side | None): Side value
+
+        Returns:
+            Borders: Borders instance
+        """
+        cp = self.copy()
+        if cp._sides is None and value is None:
+            return cp
+        if cp._sides is None:
+            cp._sides = Sides(bottom=value)
+            return cp
+        sides = cp._sides.copy()
+        sides.prop_bottom = value
+        cp._sides = sides
+        return cp
+
+    def style_shadow(self, value: Shadow | None) -> Borders:
+        """
+        Gets copy of instance with shadow set or removed
+
+        Args:
+            value (Shadow | None): Shadow value
+
+        Returns:
+            Borders: Borders instance
+        """
+        cp = self.copy()
+        if value is None:
+            cp._remove("CharShadowFormat")
+        else:
+            cp._set("CharShadowFormat", value.get_shadow_format())
+        return cp
+
+    def style_padding(self, value: Padding | None) -> Borders:
+        """
+        Gets copy of instance with padding set or removed
+
+        Args:
+            value (Padding | None): Padding value
+
+        Returns:
+            Borders: Borders instance
+        """
+        cp = self.copy()
+        cp._padding = value
+        return cp
+
+    # endregion Style Methods
+
+    # region methods
 
     def apply_style(self, obj: object, **kwargs) -> None:
         """
@@ -112,7 +253,7 @@ class Borders(StyleBase):
             self._padding.apply_style(obj)
         if not self._sides is None:
             self._sides.apply_style(obj)
-        if self._is_supported(obj):
+        if mInfo.Info.support_service(obj, "com.sun.star.style.CharacterProperties"):
             try:
                 super().apply_style(obj)
             except mEx.MultiError as e:
@@ -134,6 +275,24 @@ class Borders(StyleBase):
         if self._sides:
             attribs.update(self._sides.get_attrs())
         return tuple(attribs)
+
+    def copy(self) -> Borders:
+        """
+        Creates a copy
+
+        Returns:
+            Borders: Copy of instance
+        """
+        cp = super().copy()
+        if self._sides is None:
+            cp._sides = None
+        else:
+            cp._sides = self._sides.copy()
+        if self._padding is None:
+            cp._padding = None
+        else:
+            cp._padding = self._padding.copy()
+        return cp
 
     # endregion methods
 

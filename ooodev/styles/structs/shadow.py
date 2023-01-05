@@ -101,30 +101,105 @@ class Shadow(StyleBase):
 
     # endregion methods
 
+    # region style methods
+    def style_location(self, value: ShadowLocation) -> Shadow:
+        """
+        Gets a copy of instance with location set
+
+        Args:
+            value (ShadowLocation): Shadow location value
+
+        Returns:
+            Shadow: Shadow with location set
+        """
+        cp = self.copy()
+        cp.prop_location = value
+        return cp
+
+    def style_color(self, value: Color) -> Shadow:
+        """
+        Gets a copy of instance with color set
+
+        Args:
+            value (Color): color value
+
+        Returns:
+            Shadow: Shadow with color set
+        """
+        cp = self.copy()
+        cp.prop_color = value
+        return cp
+
+    def style_transparent(self, value: bool) -> Shadow:
+        """
+        Gets a copy of instance with transparency set
+
+        Args:
+            value (bool): transparency value
+
+        Returns:
+            Shadow: Shadow with transparency set
+        """
+        cp = self.copy()
+        cp.prop_transparent = value
+        return cp
+
+    def style_width(self, value: float) -> Shadow:
+        """
+        Gets a copy of instance with width set
+
+        Args:
+            value (float): width value
+
+        Returns:
+            Shadow: Shadow with width set
+        """
+        cp = self.copy()
+        cp.prop_width = value
+        return cp
+
+    # endregion style methods
+
     # region Properties
 
     @property
-    def location(self) -> ShadowLocation:
+    def prop_location(self) -> ShadowLocation:
         """Gets the location of the shadow."""
         return self._get("Location")
 
+    @prop_location.setter
+    def prop_location(self, value: ShadowLocation) -> None:
+        self._set("Location", value)
+
     @property
-    def color(self) -> Color:
+    def prop_color(self) -> Color:
         """Gets the color value of the shadow."""
         return self._get("Color")
 
+    @prop_color.setter
+    def prop_color(self, value: Color) -> None:
+        self._set("Color", value)
+
     @property
-    def transparent(self) -> bool:
+    def prop_transparent(self) -> bool:
         """Gets transparent value"""
         return self._get("IsTransparent")
 
+    @prop_transparent.setter
+    def prop_transparent(self, value: bool) -> None:
+        self._set("IsTransparent", value)
+
     @property
-    def width(self) -> float:
+    def prop_width(self) -> float:
         """Gets the size of the shadow (in mm units)"""
         pv = cast(int, self._get("ShadowWidth"))
         if pv == 0:
             return 0.0
         return float(pv / 100)
+
+    @prop_width.setter
+    def prop_width(self, value: float) -> None:
+        self._set("ShadowWidth", round(value * 100))
 
     @static_prop
     def empty(cls) -> Shadow:
