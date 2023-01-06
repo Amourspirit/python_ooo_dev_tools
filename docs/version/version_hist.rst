@@ -15,6 +15,8 @@ Rename ``CellObj.row_info`` to ``CellObj.row_obj``
 
 All events now can have key value pairs of data added or removed
 
+Added ``Calc.get_safe_rng_str()`` method.
+
 Added ``Info.is_uno()`` method.
 
 Added ``Write.style()`` method.

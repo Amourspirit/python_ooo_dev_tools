@@ -2038,6 +2038,9 @@ class Info(metaclass=StaticProperty):
         Returns:
             bool: ``True`` if is ``UNO`` object; Otherwise, ``False``
 
+        Note:
+            This method only check for type ``pyuno``, therefore UNO ``struct`` are not considered UNO objects in this context.
+
         .. versionadded:: 0.9.0
         """
         return type(obj).__name__ == "pyuno"

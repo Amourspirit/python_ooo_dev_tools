@@ -1,9 +1,10 @@
+# region imports
 from __future__ import annotations
-from typing import TYPE_CHECKING, overload
+from typing import TYPE_CHECKING, Generator, overload
 from dataclasses import dataclass, field
 from weakref import ref
 
-from . import cell_obj as mCell
+from . import cell_obj as mCellObj
 from . import cell_obj as mCo
 from . import range_values as mRngValues
 from .. import lo as mLo
@@ -11,13 +12,14 @@ from .. import table_helper as mTb
 from ...office import calc as mCalc
 from ..decorator import enforce
 
+
 import uno
 from ooo.dyn.table.cell_range_address import CellRangeAddress
 
 if TYPE_CHECKING:
-    from . import cell_obj as mCellObj
     from . import cell_values as mCellVals
     from com.sun.star.table import CellAddress
+# endregion imports
 
 
 @enforce.enforce_types
@@ -28,6 +30,8 @@ class RangeObj:
 
     .. versionadded:: 0.8.2
     """
+
+    # region init
 
     col_start: str
     """Column start such as ``A``"""
@@ -57,6 +61,27 @@ class RangeObj:
                     object.__setattr__(self, "sheet_idx", idx)
             except:
                 pass
+
+    # endregion init
+
+    # region methods
+
+    # region from_range()
+
+    @overload
+    @staticmethod
+    def from_range(range_val: str) -> RangeObj:
+        ...
+
+    @overload
+    @staticmethod
+    def from_range(range_val: mRngValues.RangeValues) -> RangeObj:
+        ...
+
+    @overload
+    @staticmethod
+    def from_range(range_val: CellRangeAddress) -> RangeObj:
+        ...
 
     @staticmethod
     def from_range(range_val: str | mRngValues.RangeValues | CellRangeAddress) -> RangeObj:
@@ -89,13 +114,15 @@ class RangeObj:
             row_end = parts.row_end
             sheet_name = parts.sheet
             sheet_idx = -1
-            if sheet_name:
+            if sheet_name and mLo.Lo.is_loaded:
                 sheet = mCalc.Calc.get_sheet(doc=mCalc.Calc.get_current_doc(), sheet_name=sheet_name)
                 sheet_idx = mCalc.Calc.get_sheet_index(sheet)
 
         return RangeObj(
-            col_start=col_start, row_start=row_start, col_end=col_end, row_end=row_end, sheet_idx=sheet_idx
+            col_start=col_start, col_end=col_end, row_start=row_start, row_end=row_end, sheet_idx=sheet_idx
         )
+
+    # endregion from_range()
 
     def get_range_values(self) -> mRngValues.RangeValues:
         """
@@ -268,6 +295,58 @@ class RangeObj:
 
     # endregion contains()
 
+    def get_cells(self) -> Generator[Generator[mCellObj.CellObj, None, None], None, None]:
+        """
+        Get a generator that can loop over all cells within current range.
+
+        Returns:
+            Generator[Generator[CellObj, None, None], None, None]: Nested Generator that returns :py:class:`~.cell_obj.CellObj` for each cell in current range.
+
+        Example:
+            .. code-block:: python
+
+                >>> rng = RangeObj.from_range("A1:C3")
+                >>> for row, cells in enumerate(rng.get_cells()):
+                >>>     print("Row:", row)
+                >>>     for cell in cells:
+                >>>         print(f"  {cell}: {repr(cell)}")
+                >>> print("Done")
+                Row: 0
+                  A1: CellObj(col='A', row=1, sheet_idx=0)
+                  B1: CellObj(col='B', row=1, sheet_idx=0)
+                  C1: CellObj(col='C', row=1, sheet_idx=0)
+                Row: 1
+                  A2: CellObj(col='A', row=2, sheet_idx=0)
+                  B2: CellObj(col='B', row=2, sheet_idx=0)
+                  C2: CellObj(col='C', row=2, sheet_idx=0)
+                Row: 2
+                  A3: CellObj(col='A', row=3, sheet_idx=0)
+                  B3: CellObj(col='B', row=3, sheet_idx=0)
+                  C3: CellObj(col='C', row=3, sheet_idx=0)
+                Done
+        """
+
+        def row_cell_gen(start_cell: mCellObj.CellObj):
+            # idx 17, 10
+            cplus = self.start_col_index + self.col_count + 1
+            for i in range(self.start_col_index + 1, cplus):
+                col_name = mTb.TableHelper.make_column_name(i)
+                cell = mCellObj.CellObj(
+                    col=col_name, row=start_cell.row, sheet_idx=start_cell.sheet_idx, range_obj=self
+                )
+                yield cell
+
+        def row_gen():
+            curr_row = self.row_start
+            while curr_row <= self.row_end:
+                start_cell = mCellObj.CellObj(
+                    col=self.col_start, row=curr_row, sheet_idx=self.sheet_idx, range_obj=self
+                )
+                yield row_cell_gen(start_cell)
+                curr_row += 1
+
+        return row_gen()
+
     def __str__(self) -> str:
         return f"{self.col_start}{self.row_start}:{self.col_end}{self.row_end}"
 
@@ -283,6 +362,10 @@ class RangeObj:
                 return False
             return self.to_string(True) == oth.to_string(True)
         return False
+
+    # endregion methods
+
+    # region properties
 
     @property
     def sheet_name(self) -> str:
@@ -303,7 +386,7 @@ class RangeObj:
         return name
 
     @property
-    def cell_start(self) -> mCell.CellObj:
+    def cell_start(self) -> mCellObj.CellObj:
         """Gets the Start Cell object for Range"""
         try:
             co = self._cell_start
@@ -311,12 +394,12 @@ class RangeObj:
                 raise AttributeError
             return co()
         except AttributeError:
-            c = mCell.CellObj(col=self.col_start, row=self.row_start, sheet_idx=self.sheet_idx, range_obj=self)
+            c = mCellObj.CellObj(col=self.col_start, row=self.row_start, sheet_idx=self.sheet_idx, range_obj=self)
             object.__setattr__(self, "_cell_start", ref(c))
         return self._cell_start()
 
     @property
-    def cell_end(self) -> mCell.CellObj:
+    def cell_end(self) -> mCellObj.CellObj:
         """Gets the End Cell object for Range"""
         try:
             co = self._cell_end
@@ -324,6 +407,88 @@ class RangeObj:
                 raise AttributeError
             return co()
         except AttributeError:
-            c = mCell.CellObj(col=self.col_end, row=self.row_end, sheet_idx=self.sheet_idx, range_obj=self)
+            c = mCellObj.CellObj(col=self.col_end, row=self.row_end, sheet_idx=self.sheet_idx, range_obj=self)
             object.__setattr__(self, "_cell_end", ref(c))
         return self._cell_end()
+
+    @property
+    def start_row_index(self) -> int:
+        """Gets start row zero-based index"""
+        return self.row_start - 1
+
+    @property
+    def start_col_index(self) -> int:
+        """Gets start column zero-based index"""
+        try:
+            return self._start_col_index
+        except AttributeError:
+            object.__setattr__(self, "_start_col_index", self.cell_start.col_obj.index)
+        return self._start_col_index
+
+    @property
+    def end_row_index(self) -> int:
+        """Gets end row zero-based index"""
+        return self.row_end - 1
+
+    @property
+    def end_col_index(self) -> int:
+        """Gets end column zero-based index"""
+        try:
+            return self._end_col_index
+        except AttributeError:
+            object.__setattr__(self, "_end_col_index", self.cell_end.col_obj.index)
+        return self._end_col_index
+
+    @property
+    def row_count(self) -> int:
+        """
+        Gets the number of rows in the current range
+
+        Returns:
+            int: Number of rows
+        """
+        start = self.start_row_index
+        end = self.end_row_index
+        count = abs(end - start) + 1
+        return count
+        # try:
+        #     return self._row_count
+        # except AttributeError:
+        #     start = self.start_row_index
+        #     end = self.end_row_index
+        #     count = abs(end - start) + 1
+        #     object.__setattr__(self, "_row_count", count)
+        # return self._row_count
+
+    @property
+    def col_count(self) -> int:
+        """
+        Gets the number of columns in the current range
+
+        Returns:
+            int: Number of columns
+        """
+        start = self.start_col_index
+        end = self.end_col_index
+        count = abs(end - start) + 1
+        return count
+        # try:
+        #     return self._col_count
+        # except AttributeError:
+        #     start = self.cell_start.col_obj.index
+        #     end = self.cell_end.col_obj.index
+        #     count = abs(end - start) + 1
+        #     object.__setattr__(self, "_col_count", count)
+        # return self._col_count
+
+    @property
+    def cell_count(self) -> int:
+        """
+        Gets the number of cell in the current range
+
+        Returns:
+            int: Number of cells
+        """
+        return self.row_count * self.col_count
+
+    # endregion properties
