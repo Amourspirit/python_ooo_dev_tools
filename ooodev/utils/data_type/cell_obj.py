@@ -103,7 +103,7 @@ class CellObj:
             # split will cover if a range is passed in, return first cell
             parts = mTb.TableHelper.get_cell_parts(cell_val)
             idx = -1
-            if parts.sheet:
+            if parts.sheet and mLo.Lo.is_loaded:
                 try:
                     sheet = mCalc.Calc.get_sheet(doc=mCalc.Calc.get_current_doc(), sheet_name=parts.sheet)
                     idx = mCalc.Calc.get_sheet_index(sheet=sheet)
