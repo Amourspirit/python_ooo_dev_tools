@@ -301,3 +301,51 @@ def test_range_obj_contains(rng_name: str, cell_name: str, expected: bool, loade
         assert rng.contains(cell) == expected
     finally:
         Lo.close_doc(doc)
+
+
+@pytest.mark.parametrize(
+    ("rng_name", "rows", "cols", "count"),
+    [
+        ("A2:B7", 6, 2, 12),
+        ("A2:A2", 1, 1, 1),
+        ("A3:G25", 23, 7, 161),
+        ("G16:K25", 10, 5, 50),
+    ],
+)
+def test_row_col_cell_count(rng_name: str, rows: int, cols: int, count: int) -> None:
+    from ooodev.utils.data_type.range_obj import RangeObj
+
+    rng = RangeObj.from_range(rng_name)
+    assert rng.row_count == rows
+    assert rng.col_count == cols
+    assert rng.cell_count == count
+
+
+@pytest.mark.parametrize(
+    ("rng_name",),
+    [
+        ("A1:C3",),
+        ("A2:A2",),
+        ("R22:AA55",),
+        ("O30:AQ66",),
+    ],
+)
+def test_gen(rng_name: str) -> None:
+    from ooodev.utils.data_type.range_obj import RangeObj
+    from ooodev.utils.table_helper import TableHelper
+
+    parts = TableHelper.get_range_parts(rng_name)
+
+    rng = RangeObj(
+        col_start=parts.col_start, col_end=parts.col_end, row_start=parts.row_start, row_end=parts.row_end, sheet_idx=0
+    )
+    row_count = 0
+    cell_count = 0
+    for row, cells in enumerate(rng.get_cells()):
+        row_count += 1
+        for col, cell in enumerate(cells):
+            cell_count += 1
+            assert cell.col_obj.index == col + rng.start_col_index
+            assert cell.row == row + rng.start_row_index + 1
+    assert row_count == rng.row_count
+    assert cell_count == rng.cell_count

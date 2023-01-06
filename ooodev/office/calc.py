@@ -2845,7 +2845,7 @@ class Calc:
             if isinstance(arg3, str):
                 # set_array(values: Sequence[Sequence[object]], sheet: XSpreadsheet, name: str)
                 if cls.is_cell_range_name(arg3):
-                    cls._set_array_range(sheet=arg2, range_name=arg3, values=arg1)
+                    cls._set_array_range(sheet=arg2, range_name=cls.get_safe_rng_str(arg3), values=arg1)
                     return
                 else:
                     cls._set_array_cell(sheet=arg2, cell_name=arg3, values=arg1)
@@ -4158,6 +4158,12 @@ class Calc:
     def _get_cell_range_col_row(
         sheet: XSpreadsheet, start_col: int, start_row: int, end_col: int, end_row: int
     ) -> XCellRange:
+        if start_col > end_col:
+            # swap
+            start_col, end_col = end_col, start_col
+        if start_row > end_row:
+            # swap
+            start_row, end_row = end_row, start_row
         try:
             cell_range = sheet.getCellRangeByPosition(start_col, start_row, end_col, end_row)
             if cell_range is None:
@@ -4288,9 +4294,13 @@ class Calc:
         if count == 2:
             if isinstance(arg2, str):
                 # def get_cell_range(sheet: XSpreadsheet, range_name: str)
-                return cls._get_cell_range_rng_name(sheet=arg1, range_name=arg2)
-            elif isinstance(arg2, (mRngObj.RangeObj, mCellObj.CellObj)):
+                return cls._get_cell_range_rng_name(sheet=arg1, range_name=cls.get_safe_rng_str(arg2, True))
+            elif isinstance(arg2, mRngObj.RangeObj):
                 return cls._get_cell_range_rng_name(sheet=arg1, range_name=str(arg2))
+            elif isinstance(arg2, mCellObj.CellObj):
+                if arg2.range_obj:
+                    return cls._get_cell_range_rng_name(sheet=arg1, range_name=str(arg2.range_obj))
+                return cls._get_cell_range_rng_name(sheet=arg1, range_name=str(arg2.get_range_obj()))
             else:
                 # get_cell_range(sheet: XSpreadsheet, addr:CellRangeAddress)
                 return cls._get_cell_range_addr(sheet=arg1, addr=arg2)
@@ -4611,6 +4621,59 @@ class Calc:
 
     # region --------------- get cell and cell range addresses ---------
 
+    # region get_safe_rng_str()
+    @overload
+    @classmethod
+    def get_safe_rng_str(cls, range_name: str) -> str:
+        ...
+
+    @overload
+    @classmethod
+    def get_safe_rng_str(cls, range_name: str, allow_cell_name: bool) -> str:
+        ...
+
+    @classmethod
+    def get_safe_rng_str(cls, range_name: str, allow_cell_name: bool = False) -> str:
+        """
+        Gets safe range string.
+
+        If range name is out of order then correct order is returned.
+
+        For instance:
+
+            - ``A7:B2`` returns ``A2:B7``
+            - ``R7:B22`` returns ``B7:R22``
+
+        Args:
+            range_name (str): range name such as ``A1.B7`` or ``Sheet1.A1.B7``
+            allow_cell_name: Determins if ``range_name`` accepts cell name input.
+
+        Returns:
+            str: Range name as strig with correct column an row order.
+
+        Note:
+            If ``allow_cell_name`` is ``True`` and ``range_name`` is a cell name then
+            the cell name is converted into a range string.
+
+            - ``C2`` is returned as ``C2:C2``
+            - ``Sheet1.C2`` is returned as ``Sheet1.C2:C2``
+
+        .. versionadded:: 0.9.0
+        """
+        try:
+            parts = mTblHelper.TableHelper.get_range_parts(range_name)
+            return str(parts)
+        except Exception:
+            if not allow_cell_name:
+                raise
+            if cls.is_cell_range_name(range_name):
+                raise
+        cell = mTblHelper.TableHelper.get_cell_parts(range_name)
+        # convert to a range string
+        return f"{cell}:{cell.col}{cell.row}"
+
+    # endregion get_safe_rng_str()
+
     # region    get_cell_address()
 
     @staticmethod
@@ -4824,8 +4887,12 @@ class Calc:
             # range_name or range_obj
             return cls._get_address_cell(cell_range=kargs[1])
         elif count == 2:
-
-            return cls._get_address_sht_rng(sheet=kargs[1], range_name=str(kargs[2]))
+            arg2 = kargs[2]
+            if isinstance(arg2, str):
+                range_name = cls.get_safe_rng_str(arg2, True)
+            else:
+                range_name = str(arg2)
+            return cls._get_address_sht_rng(sheet=kargs[1], range_name=range_name)
         else:
             range_name = cls._get_range_str_col_row(
                 col_start=kargs[2], row_start=kargs[3], col_end=kargs[4], row_end=kargs[5]
@@ -5167,7 +5234,17 @@ class Calc:
     @classmethod
     def _get_range_str_col_row(cls, col_start: int, row_start: int, col_end: int, row_end: int) -> str:
         """return as str, A1:B2"""
-        return f"{cls._get_cell_str_col_row(col_start, row_start)}:{cls._get_cell_str_col_row(col_end, row_end)}"
+        cstart = col_start
+        cend = col_end
+        rstart = row_start
+        rend = row_end
+        if cstart > cend:
+            # swap
+            cstart, cend = cend, cstart
+        if rstart > rend:
+            # swap
+            rstart, rend = rend, rstart
+        return f"{cls._get_cell_str_col_row(cstart, rstart)}:{cls._get_cell_str_col_row(cend, rend)}"
 
     @overload
     @classmethod
@@ -6075,7 +6152,10 @@ class Calc:
             arg3 = kargs[3]
             if isinstance(arg3, str):
                 # change_style(sheet: XSpreadsheet, style_name: str, range_name: str)
-                cell_range = cls._get_cell_range_rng_name(sheet=sheet, range_name=arg3)  # 1 sheet, 3 range_name
+
+                cell_range = cls._get_cell_range_rng_name(
+                    sheet=sheet, range_name=cls.get_safe_rng_str(arg3)
+                )  # 1 sheet, 3 range_name
                 if cell_range is None:
                     return False
             elif isinstance(arg3, mRngObj.RangeObj):
