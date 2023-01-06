@@ -4395,6 +4395,50 @@ class Calc:
 
     # endregion find_used_range()
 
+    # region find_used_range_obj()
+
+    @overload
+    @classmethod
+    def find_used_range_obj(cls, sheet: XSpreadsheet) -> mRngObj.RangeObj:
+        ...
+
+    @overload
+    @classmethod
+    def find_used_range_obj(cls, sheet: XSpreadsheet, range_name: str) -> mRngObj.RangeObj:
+        ...
+
+    @overload
+    @classmethod
+    def find_used_range_obj(cls, sheet: XSpreadsheet, range_obj: mRngObj.RangeObj) -> mRngObj.RangeObj:
+        ...
+
+    @overload
+    @classmethod
+    def find_used_range_obj(cls, sheet: XSpreadsheet, cr_addr: CellRangeAddress) -> mRngObj.RangeObj:
+        ...
+
+    @classmethod
+    def find_used_range_obj(cls, *args, **kwargs) -> mRngObj.RangeObj:
+        """
+        Find used range
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet Document
+            range_name (str): Range Name such as 'A1:D5'
+            range_obj (RangeObj): Range Object
+            cr_addr (CellRangeAddress): Cell range Address
+
+        Returns:
+            RangeObj: Range object
+
+        .. versionadded:: 0.9.0
+        """
+        used_range = cls.find_used_range(*args, **kwargs)
+        ca = cls._get_address_cell(used_range)
+        return mRngObj.RangeObj.from_range(ca)
+
+    # endregion find_used_range_obj()
+
     @staticmethod
     def find_used_cursor(cursor: XSheetCellCursor) -> XCellRange:
         """
