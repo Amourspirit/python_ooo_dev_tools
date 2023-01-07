@@ -8,14 +8,15 @@ from __future__ import annotations
 from typing import cast, overload, TYPE_CHECKING
 
 import uno
+from ...events.args.key_val_cancel_args import KeyValCancelArgs
 from ...exceptions import ex as mEx
-from ...utils import props as mProps
 from ...utils import info as mInfo
 from ...utils import lo as mLo
-from ..style_base import StyleBase
-from ...events.args.key_val_cancel_args import KeyValCancelArgs
+from ...utils import props as mProps
+from ..kind.style_kind import StyleKind
 from ..structs import side
 from ..structs.side import Side as Side, BorderLineStyleEnum as BorderLineStyleEnum
+from ..style_base import StyleBase
 
 from ooo.dyn.table.border_line2 import BorderLine2
 
@@ -232,6 +233,10 @@ class Sides(StyleBase):
     # endregion style methods
 
     # region Properties
+    @property
+    def prop_style_kind(self) -> StyleKind:
+        """Gets the kind of style"""
+        return StyleKind.CHAR
 
     @property
     def prop_left(self) -> Side | None:

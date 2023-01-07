@@ -11,8 +11,9 @@ from ...meta.static_prop import static_prop
 from ...utils import info as mInfo
 from ...utils import lo as mLo
 from ...utils import props as mProps
-from ..style_base import StyleBase
 from ...utils.color import Color
+from ..kind.style_kind import StyleKind
+from ..style_base import StyleBase
 
 
 class Highlight(StyleBase):
@@ -43,9 +44,6 @@ class Highlight(StyleBase):
             init_vals["CharBackTransparent"] = True
 
         super().__init__(**init_vals)
-
-    def _is_supported(self, obj: object) -> bool:
-        return mInfo.Info.support_service(obj, "com.sun.star.style.CharacterProperties")
 
     # region apply_style()
 
@@ -116,6 +114,10 @@ class Highlight(StyleBase):
             cp.prop_color = value
 
     # endregion set styles
+    @property
+    def prop_style_kind(self) -> StyleKind:
+        """Gets the kind of style"""
+        return StyleKind.CHAR
 
     @property
     def prop_color(self) -> int:

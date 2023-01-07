@@ -1,8 +1,6 @@
 from __future__ import annotations
-from typing import Any, Tuple, TYPE_CHECKING
-import uno
-from com.sun.star.beans import XPropertySet
-from ..utils import props as mProps
+from typing import Tuple, TYPE_CHECKING
+from ..styles.kind.style_kind import StyleKind as StyleKind
 
 try:
     from typing import Protocol
@@ -35,6 +33,11 @@ class StyleObj(Protocol):
         ...
 
     @property
-    def has_attribs(self) -> bool:
+    def prop_has_attribs(self) -> bool:
         """Gets If instantance has any attributes set."""
+        ...
+
+    @property
+    def prop_style_kind(self) -> StyleKind:
+        """Gets the kind of style"""
         ...

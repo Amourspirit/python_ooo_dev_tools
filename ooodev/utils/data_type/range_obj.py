@@ -126,7 +126,7 @@ class RangeObj:
 
     def get_range_values(self) -> mRngValues.RangeValues:
         """
-        Gets``RangeValues``
+        Gets ``RangeValues``
 
         Returns:
             RangeValues: Range Values.

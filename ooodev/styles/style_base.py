@@ -8,7 +8,8 @@ from ..events.props_named_event import PropsNamedEvent
 from ..events.args.key_val_cancel_args import KeyValCancelArgs
 from ..events.args.key_val_args import KeyValArgs
 from ..utils.type_var import T
-from abc import ABC, abstractmethod
+from .kind.style_kind import StyleKind
+from abc import ABC
 
 if TYPE_CHECKING:
     from com.sun.star.beans import PropertyValue
@@ -27,9 +28,6 @@ class StyleBase(ABC):
         for (key, value) in kwargs.items():
             if not value is None:
                 self._dv[key] = value
-        # self._events = Events(source=self)
-        # self._events.on(PropsNamedEvent.PROP_SETTING, _on_props_setting)
-        # self._events.on(PropsNamedEvent.PROP_SET, _on_props_set)
 
     def _get(self, key: str) -> Any:
         return self._dv.get(key, None)
@@ -83,7 +81,7 @@ class StyleBase(ABC):
         Returns:
             None:
         """
-        if len(self._dv) > 0:
+        if self.prop_has_attribs:
             events = Events(source=self)
             events.on(PropsNamedEvent.PROP_SETTING, _on_props_setting)
             events.on(PropsNamedEvent.PROP_SET, _on_props_set)
@@ -123,16 +121,68 @@ class StyleBase(ABC):
             return ()
         return mProps.Props.make_props(**self._dv)
 
-    @property
-    def has_attribs(self) -> bool:
-        """Gets If instantance has any attributes set."""
-        return len(self._dv)
-
     def copy(self: T) -> T:
         nu = super(StyleBase, self.__class__).__new__(self.__class__)
         nu.__init__()
         nu._update(self._dv)
         return nu
+
+    @property
+    def prop_has_attribs(self) -> bool:
+        """Gets If instantance has any attributes set."""
+        return len(self._dv) > 0
+
+    @property
+    def prop_style_kind(self) -> StyleKind:
+        """Gets the kind of style"""
+        return StyleKind.UNKNOWN
+
+
+class StyleMulti(StyleBase):
+    """
+    Multi style class.
+
+    Supports appending styles via ``_append_style()`` (protected) method.
+    When ``apply_style()`` is call all internal style instances are also applied.
+
+    .. versionadded:: 0.9.0
+    """
+
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+        self._styles: Dict[int, StyleBase] = {}
+
+    def _set_style(self, key: str, style: StyleBase) -> None:
+        self._styles[key] = style
+
+    def _remove_style(self, key: str) -> bool:
+        if key in self._styles:
+            del self._styles[key]
+            return True
+        return False
+
+    def _get_style(self, key: str) -> StyleBase | None:
+        return self._styles.get(key, None)
+
+    def _has_style(self, key: str) -> bool:
+        return key in self._styles
+
+    def apply_style(self, obj: object, **kwargs) -> None:
+        """
+        Applies style of current instance and all other internal style instances.
+
+        Args:
+            obj (object): UNO Oject that styles are to be applied.
+        """
+        super().apply_style(obj, **kwargs)
+        for _, style in self._styles.items():
+            style.apply_style(obj, **kwargs)
+
+    def copy(self: T) -> T:
+        cp = super().copy()
+        for key, style in self._styles.items():
+            cp._set_style(key, style.copy())
+        return cp
 
 
 def _on_props_setting(source: Any, event_args: KeyValCancelArgs, *args, **kwargs) -> None:
@@ -145,4 +195,4 @@ def _on_props_set(source: Any, event_args: KeyValArgs, *args, **kwargs) -> None:
     instance.on_property_set(event_args)
 
 
-__all__ = ("StyleBase",)
+__all__ = ("StyleBase", "StyleMulti")

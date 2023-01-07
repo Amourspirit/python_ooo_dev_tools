@@ -14,6 +14,7 @@ from ...meta.static_prop import static_prop
 from ...utils import info as mInfo
 from ...utils import lo as mLo
 from ...utils import props as mProps
+from ..kind.style_kind import StyleKind
 from ..style_base import StyleBase
 
 # endregion imports
@@ -196,6 +197,11 @@ class Hyperlink(StyleBase):
     @unvisited_style.setter
     def unvisited_style(self, value: str):
         self._set("UnvisitedCharStyleName", value)
+
+    @property
+    def prop_style_kind(self) -> StyleKind:
+        """Gets the kind of style"""
+        return StyleKind.CHAR
 
     @static_prop
     def empty(cls) -> Hyperlink:
