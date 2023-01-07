@@ -12,6 +12,7 @@ from ...meta.static_prop import static_prop
 from ...utils import info as mInfo
 from ...utils import lo as mLo
 from ...utils import props as mProps
+from ..kind.style_kind import StyleKind
 from ..style_base import StyleMulti
 from .writing_mode import WritingMode
 
@@ -73,6 +74,7 @@ class Alignment(StyleMulti):
         init_vals = {}
 
         if not align is None:
+            # ParagraphAdjust.STRETCH seems to be the same as LEFT
             init_vals["ParaAdjust"] = align
 
         if not align_vert is None:
@@ -268,9 +270,41 @@ class Alignment(StyleMulti):
         al.prop_expand_single_word = True
         return al
 
+    @property
+    def justified(self) -> Alignment:
+        """Gets copy of instance with align set to block"""
+        al = self.copy()
+        al.prop_align = ParagraphAdjust.BLOCK
+        return al
+
+    @property
+    def align_center(self) -> Alignment:
+        """Gets copy of instance with align set to center"""
+        al = self.copy()
+        al.prop_align = ParagraphAdjust.CENTER
+        return al
+
+    @property
+    def align_left(self) -> Alignment:
+        """Gets copy of instance with align set to left"""
+        al = self.copy()
+        al.prop_align = ParagraphAdjust.LEFT
+        return al
+
+    @property
+    def align_right(self) -> Alignment:
+        """Gets copy of instance with align set to left"""
+        al = self.copy()
+        al.prop_align = ParagraphAdjust.RIGHT
+        return al
+
     # endregion Style Properties
 
     # region properties
+    @property
+    def prop_style_kind(self) -> StyleKind:
+        """Gets the kind of style"""
+        return StyleKind.PARA
 
     @property
     def prop_align(self) -> ParagraphAdjust | None:

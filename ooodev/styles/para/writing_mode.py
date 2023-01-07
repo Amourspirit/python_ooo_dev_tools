@@ -11,6 +11,7 @@ from ...meta.static_prop import static_prop
 from ...utils import info as mInfo
 from ...utils import lo as mLo
 from ...utils import props as mProps
+from ..kind.style_kind import StyleKind
 from ..style_base import StyleBase
 
 from ooo.dyn.text.writing_mode2 import WritingMode2Enum as WritingMode2Enum
@@ -116,7 +117,101 @@ class WritingMode(StyleBase):
 
     # endregion style methods
 
+    # region Style Properties
+    @property
+    def bt_lr(self) -> WritingMode:
+        """
+        Gets instance.
+
+        Text within a line is written bottom-to-top.
+        Lines and blocks are placed left-to-right.
+        """
+        cp = self.copy()
+        cp.prop_mode = WritingMode2Enum.BT_LR
+        return cp
+
+    @property
+    def lr_tb(self) -> WritingMode:
+        """
+        Gets instance.
+
+        Text within lines is written left-to-right.
+        Lines and blocks are placed top-to-bottom.
+        Typically, this is the writing mode for normal ``alphabetic`` text.
+        """
+        cp = self.copy()
+        cp.prop_mode = WritingMode2Enum.LR_TB
+        return cp
+
+    @property
+    def rl_tb(self) -> WritingMode:
+        """
+        Gets instance.
+
+        Text within a line are written right-to-left.
+        Lines and blocks are placed top-to-bottom.
+        Typically, this writing mode is used in Arabic and Hebrew text.
+        """
+        cp = self.copy()
+        cp.prop_mode = WritingMode2Enum.RL_TB
+        return cp
+
+    @property
+    def tb_rl(self) -> WritingMode:
+        """
+        Gets instance.
+
+        Text within a line is written top-to-bottom.
+        Lines and blocks are placed right-to-left.
+        Typically, this writing mode is used in Chinese and Japanese text.
+        """
+        cp = self.copy()
+        cp.prop_mode = WritingMode2Enum.TB_RL
+        return cp
+
+    @property
+    def tb_lr(self) -> WritingMode:
+        """
+        Gets instance.
+
+        Text within a line is written top-to-bottom.
+        Lines and blocks are placed left-to-right.
+        Typically, this writing mode is used in Mongolian text.
+        """
+        cp = self.copy()
+        cp.prop_mode = WritingMode2Enum.TB_LR
+        return cp
+
+    @property
+    def page(self) -> WritingMode:
+        """
+        Gets instance.
+
+        Obtain writing mode from the current page.
+        May not be used in page styles.
+        """
+        cp = self.copy()
+        cp.prop_mode = WritingMode2Enum.PAGE
+        return cp
+
+    @property
+    def context(self) -> WritingMode:
+        """
+        Gets instance.
+
+        Obtain actual writing mode from the context of the object.
+        """
+        cp = self.copy()
+        cp.prop_mode = WritingMode2Enum.CONTEXT
+        return cp
+
+    # endregion Style Properties
+
     # region properties
+    @property
+    def prop_style_kind(self) -> StyleKind:
+        """Gets the kind of style"""
+        return StyleKind.PARA | StyleKind.PARA_COMPLEX
 
     @property
     def prop_mode(self) -> WritingMode2Enum | None:

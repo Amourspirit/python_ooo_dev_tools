@@ -21,6 +21,7 @@ from ..structs.side import Side as Side, SideFlags as SideFlags
 from ..structs.shadow import Shadow
 from ..structs.border_table import BorderTable as BorderTable
 from ..para.padding import Padding as Padding
+from ..kind.style_kind import StyleKind
 
 import uno
 from ooo.dyn.table.border_line import BorderLine as BorderLine
@@ -98,7 +99,7 @@ class Borders(StyleBase):
             distance=distance,
         )
 
-        if border_table.has_attribs:
+        if border_table.prop_has_attribs:
             self._border_table = border_table
         else:
             self._border_table = None
@@ -408,6 +409,11 @@ class Borders(StyleBase):
     # endregion Style Methods
 
     # region Properties
+    @property
+    def prop_style_kind(self) -> StyleKind:
+        """Gets the kind of style"""
+        return StyleKind.CELL
+
     @static_prop
     def default(cls) -> Borders:
         """Gets Default Border. Static Property"""

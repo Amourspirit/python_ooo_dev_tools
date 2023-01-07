@@ -8,6 +8,7 @@ from ..events.props_named_event import PropsNamedEvent
 from ..events.args.key_val_cancel_args import KeyValCancelArgs
 from ..events.args.key_val_args import KeyValArgs
 from ..utils.type_var import T
+from .kind.style_kind import StyleKind
 from abc import ABC
 
 if TYPE_CHECKING:
@@ -80,7 +81,7 @@ class StyleBase(ABC):
         Returns:
             None:
         """
-        if self.has_attribs:
+        if self.prop_has_attribs:
             events = Events(source=self)
             events.on(PropsNamedEvent.PROP_SETTING, _on_props_setting)
             events.on(PropsNamedEvent.PROP_SET, _on_props_set)
@@ -120,16 +121,21 @@ class StyleBase(ABC):
             return ()
         return mProps.Props.make_props(**self._dv)
 
-    @property
-    def has_attribs(self) -> bool:
-        """Gets If instantance has any attributes set."""
-        return len(self._dv) > 0
-
     def copy(self: T) -> T:
         nu = super(StyleBase, self.__class__).__new__(self.__class__)
         nu.__init__()
         nu._update(self._dv)
         return nu
+
+    @property
+    def prop_has_attribs(self) -> bool:
+        """Gets If instantance has any attributes set."""
+        return len(self._dv) > 0
+
+    @property
+    def prop_style_kind(self) -> StyleKind:
+        """Gets the kind of style"""
+        return StyleKind.UNKNOWN
 
 
 class StyleMulti(StyleBase):

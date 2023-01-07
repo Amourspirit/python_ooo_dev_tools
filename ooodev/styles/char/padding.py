@@ -12,6 +12,7 @@ from ...utils import info as mInfo
 from ...utils import lo as mLo
 from ...utils import props as mProps
 from ..style_base import StyleBase
+from ..kind.style_kind import StyleKind
 
 
 class Padding(StyleBase):
@@ -209,6 +210,11 @@ class Padding(StyleBase):
         return cp
 
     # endregion style methods
+
+    @property
+    def prop_style_kind(self) -> StyleKind:
+        """Gets the kind of style"""
+        return StyleKind.CHAR
 
     @property
     def prop_left(self) -> float | None:
