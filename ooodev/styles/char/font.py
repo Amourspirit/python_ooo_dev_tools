@@ -11,6 +11,7 @@ from ...exceptions import ex as mEx
 from ...utils import info as mInfo
 from ...utils import lo as mLo
 from ...utils.color import Color
+from ..kind.style_kind import StyleKind
 from ..style_base import StyleBase
 from ..style_const import POINT_RATIO
 
@@ -189,6 +190,8 @@ class Font(StyleBase):
         if not subscript is None:
             self.prop_subscript = subscript
 
+    # region methods
+
     @overload
     def apply_style(self, obj: object) -> None:
         ...
@@ -212,6 +215,8 @@ class Font(StyleBase):
                     mLo.Lo.print(f"  {err}")
         else:
             mLo.Lo.print('Font.apply_style(): "com.sun.star.style.CharacterProperties" not supported')
+
+    # endregion methods
 
     # region Style Methods
 
@@ -586,6 +591,11 @@ class Font(StyleBase):
     # endregion Style Properties
 
     # region Prop Properties
+    @property
+    def prop_style_kind(self) -> StyleKind:
+        """Gets the kind of style"""
+        return StyleKind.CHAR
+
     @property
     def prop_is_bold(self) -> bool:
         """Specifies bold"""

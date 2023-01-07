@@ -15,7 +15,7 @@ from ..events.lo_named_event import LoNamedEvent
 from ..events.write_named_event import WriteNamedEvent
 from ..exceptions import ex as mEx
 from ..meta.static_meta import classproperty
-from ..proto.style_obj import StyleObj
+from ..proto.style_obj import StyleObj, StyleKind
 from ..utils import file_io as mFileIO
 from ..utils import images_lo as mImgLo
 from ..utils import info as mInfo
@@ -799,21 +799,24 @@ class Write(mSel.Selection):
         cursor.setString(text)
         cursor.gotoEnd(False)
         for style in styles:
-            # store properties about to be changed
-            old_val = {}
-            for attr in style.get_attrs():
-                val = mProps.Props.get(cursor, attr, None)
-                if not val is None:
-                    old_val[attr] = val
+            bak = not StyleKind.PARA in style.prop_style_kind
+
+            if bak:
+                # store properties about to be changed
+                old_val = {}
+                for attr in style.get_attrs():
+                    val = mProps.Props.get(cursor, attr, None)
+                    if not val is None:
+                        old_val[attr] = val
             cursor.goLeft(s_len, True)
 
             style.apply_style(cursor)
 
             cursor.gotoEnd(False)
-
-            # restore the cursors properties that were changed
-            for key, val in old_val.items():
-                mProps.Props.set(cursor, **{key: val})
+            if bak:
+                # restore the cursors properties that were changed
+                for key, val in old_val.items():
+                    mProps.Props.set(cursor, **{key: val})
 
     @classmethod
     def _append_ctl_char(cls, cursor: XTextCursor, ctl_char: int) -> None:
@@ -1004,12 +1007,35 @@ class Write(mSel.Selection):
         .. versionchanged:: 0.9.0
             Added overload ``append_para(cursor: XTextCursor, text: str, styles: Iterable[StyleObj])``
         """
+
+        # paragraph styles need to capture the current pargarph setting and restore them.
+        # other styles are handeled by _append_text_style().
+
+        old_val = None
+
+        def capture_old_val(style: StyleObj) -> None:
+            nonlocal old_val
+            if StyleKind.PARA in style.prop_style_kind:
+                if old_val is None:
+                    old_val = {}
+                for attr in style.get_attrs():
+                    val = mProps.Props.get(cursor, attr, None)
+                    if not val is None:
+                        old_val[attr] = val
+
         if text:
             if styles is None:
                 cls._append_text(cursor=cursor, text=text)
             else:
+                for style in styles:
+                    capture_old_val(style)
                 cls._append_text_style(cursor=cursor, text=text, styles=styles)
+
         cls._append_ctl_char(cursor=cursor, ctl_char=ControlCharacterEnum.PARAGRAPH_BREAK)
+
+        if old_val:
+            for key, val in old_val.items():
+                mProps.Props.set(cursor, **{key: val})
 
     # endregion append_para()
 

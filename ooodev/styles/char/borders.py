@@ -23,6 +23,7 @@ from ..structs.shadow import Shadow
 from .padding import Padding as Padding
 from . import sides
 from .sides import Sides
+from ..kind.style_kind import StyleKind
 
 from ooo.dyn.table.border_line import BorderLine as BorderLine
 from ooo.dyn.table.border_line_style import BorderLineStyleEnum as BorderLineStyleEnum
@@ -84,7 +85,7 @@ class Borders(StyleBase):
             border_side=border_side,
         )
 
-        if sides.has_attribs:
+        if sides.prop_has_attribs:
             self._sides = sides
         else:
             self._sides = None
@@ -298,7 +299,12 @@ class Borders(StyleBase):
 
     # region Properties
     @property
-    def has_attribs(self) -> bool:
+    def prop_style_kind(self) -> StyleKind:
+        """Gets the kind of style"""
+        return StyleKind.CHAR
+
+    @property
+    def prop_has_attribs(self) -> bool:
         """Gets If instantance has any attributes set."""
         if self._dv:
             return True

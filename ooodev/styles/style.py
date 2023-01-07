@@ -6,8 +6,7 @@ Module for managing the applying of styles.
 from __future__ import annotations
 from typing import Any
 
-from ..proto.style_obj import StyleObj
-
+from ..proto import style_obj
 
 class Style:
     """
@@ -17,7 +16,7 @@ class Style:
     """
 
     @staticmethod
-    def apply_style(obj: Any, *styles: StyleObj, **kwargs) -> None:
+    def apply_style(obj: Any, *styles: style_obj.StyleObj, **kwargs) -> None:
         """
         Applies style to object
 

@@ -12,6 +12,7 @@ from ...utils import props as mProps
 from ...utils.color import Color
 from ...utils.color import CommonColor
 from ..style_base import StyleBase
+from ..kind.style_kind import StyleKind
 
 import uno
 from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
@@ -161,6 +162,10 @@ class Shadow(StyleBase):
     # endregion style methods
 
     # region Properties
+    @property
+    def prop_style_kind(self) -> StyleKind:
+        """Gets the kind of style"""
+        return StyleKind.STRUCT
 
     @property
     def prop_location(self) -> ShadowLocation:

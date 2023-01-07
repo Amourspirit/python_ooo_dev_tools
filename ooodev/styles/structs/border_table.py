@@ -12,6 +12,7 @@ from ...utils import props as mProps
 from ..style_base import StyleBase
 from . import side
 from .side import Side as Side
+from ..kind.style_kind import StyleKind
 
 import uno
 from ooo.dyn.table.table_border import TableBorder
@@ -364,6 +365,10 @@ class BorderTable(StyleBase):
     # endregion Style methods
 
     # region Properties
+    @property
+    def prop_style_kind(self) -> StyleKind:
+        """Gets the kind of style"""
+        return StyleKind.STRUCT
 
     @property
     def prop_distance(self) -> float | None:
