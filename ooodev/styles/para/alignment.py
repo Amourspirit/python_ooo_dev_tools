@@ -1,0 +1,360 @@
+"""
+Modele for managing paragraph padding.
+
+.. versionadded:: 0.9.0
+"""
+from __future__ import annotations
+from typing import cast
+from enum import Enum
+
+from ...exceptions import ex as mEx
+from ...meta.static_prop import static_prop
+from ...utils import info as mInfo
+from ...utils import lo as mLo
+from ...utils import props as mProps
+from ..style_base import StyleMulti
+from .writing_mode import WritingMode
+
+from ooo.dyn.style.paragraph_adjust import ParagraphAdjust as ParagraphAdjust
+from ooo.dyn.text.paragraph_vert_align import ParagraphVertAlignEnum as ParagraphVertAlignEnum
+from ooo.dyn.text.writing_mode2 import WritingMode2Enum as WritingMode2Enum
+
+
+class LastLineKind(Enum):
+    """Last Line Alignment kind"""
+
+    START = 0
+    """Align Start"""
+    JUSTIFY = 2
+    """Align justified"""
+    CENTER = 3
+    """Align Center"""
+
+
+class Alignment(StyleMulti):
+    """
+    Paragraph Alignment
+
+    Any properties starting with ``prop_`` set or get current instance values.
+
+    All methods starting with ``style_`` can be used to chain together Padding properties.
+
+    .. versionadded:: 0.9.0
+    """
+
+    _DEFAULT = None
+
+    # region init
+
+    def __init__(
+        self,
+        align: ParagraphAdjust | None = None,
+        align_vert: ParagraphVertAlignEnum | None = None,
+        txt_direction: WritingMode | None = None,
+        align_last: LastLineKind | None = None,
+        expand_single_word: bool | None = None,
+        snap_to_grid: bool | None = None,
+    ) -> None:
+        """
+        Constructor
+
+        Args:
+            align (ParagraphAdjust, optional): Determines horizontal alignment of a paragraph.
+            align_vert (ParagraphVertAlignEnum, optional): Determines verticial alignment of a paragraph.
+            align_last (LastLineKind, optional): Determines the adjustment of the last line.
+            expand_single_word (bool, optional): Determines if single words are stretched.
+                It is only valid if ``align`` and ``align_last`` are also valid.
+            snap_to_grid (bool, optional): Determines snap to text grid (if active).
+
+        Returns:
+            None:
+        """
+        # https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1ParagraphProperties-members.html
+        init_vals = {}
+
+        if not align is None:
+            init_vals["ParaAdjust"] = align
+
+        if not align_vert is None:
+            init_vals["ParaVertAlignment"] = align_vert.value
+
+        if not align_last is None:
+            init_vals["ParaLastLineAdjust"] = align_last.value
+
+        # SnapToGrid: could not find what service this property is part of, may not be any.
+        if not snap_to_grid is None:
+            init_vals["SnapToGrid"] = snap_to_grid
+
+        if not expand_single_word is None:
+            init_vals["ParaExpandSingleWord"] = expand_single_word
+
+        super().__init__(**init_vals)
+        if not txt_direction is None:
+            self._set_style("txt_direction", txt_direction)
+
+    # endregion init
+
+    # region methods
+
+    def apply_style(self, obj: object, **kwargs) -> None:
+        """
+        Applies alignment to ``obj``
+
+        Args:
+            obj (object): UNO object that supports ``com.sun.star.style.ParagraphProperties`` service.
+            kwargs (Any, optional): Expandable list of key value pairs that may be used in child classes.
+
+        Returns:
+            None:
+        """
+        if mInfo.Info.support_service(obj, "com.sun.star.style.ParagraphProperties"):
+            try:
+                super().apply_style(obj)
+            except mEx.MultiError as e:
+                mLo.Lo.print(f"{self.__class__}.apply_style(): Unable to set Property")
+                for err in e.errors:
+                    mLo.Lo.print(f"  {err}")
+        else:
+            mLo.Lo.print('Padding.apply_style(): "com.sun.star.style.ParagraphProperties" not supported')
+        return None
+
+    @staticmethod
+    def from_obj(obj: object) -> Alignment:
+        """
+        Gets Padding instance from object
+
+        Args:
+            obj (object): UNO object that supports ``com.sun.star.style.ParagraphProperties`` service.
+
+        Raises:
+            NotSupportedServiceError: If ``obj`` does not support  ``com.sun.star.style.ParagraphProperties`` service.
+
+        Returns:
+            Padding: Padding that represents ``obj`` padding.
+        """
+        if not mInfo.Info.support_service(obj, "com.sun.star.style.ParagraphProperties"):
+            raise mEx.NotSupportedServiceError("com.sun.star.style.ParagraphProperties")
+
+        def set_prop(key: str, align: Alignment):
+            nonlocal obj
+            val = mProps.Props.get(obj, key, None)
+            if not val is None:
+                align._set(key, val)
+
+        al = Alignment()
+        set_prop("ParaAdjust", al)
+        set_prop("ParaVertAlignment", al)
+        set_prop("ParaLastLineAdjust", al)
+        set_prop("ParaExpandSingleWord", al)
+        try:
+            # SnapToGrid is not part of any know service
+            snap = mProps.Props.get(obj, "SnapToGrid")
+            al._set("SnapToGrid", snap)
+        except mEx.PropertyNotFoundError as e:
+            mLo.Lo.print("Alignment.from_obj(), SnapToGrid property not found")
+            mLo.Lo.print(f"  {e}")
+
+        try:
+            txt_dir = WritingMode.from_obj(obj)
+            al._set_style("txt_direction", txt_dir)
+        except Exception:
+            mLo.Lo.print("Alignment.from_obj(): unable to set txt_direction style")
+        return al
+
+    # endregion methods
+
+    # region style methods
+    def style_align(self, value: ParagraphAdjust | None) -> Alignment:
+        """
+        Gets copy of instance with horizontal alignment set or removed
+
+        Args:
+            value (ParagraphAdjust | None): Alignment value
+
+        Returns:
+            Alignment: Alignment instance
+        """
+        cp = self.copy()
+        cp.prop_align = value
+        return cp
+
+    def style_align_vert(self, value: ParagraphVertAlignEnum | None) -> Alignment:
+        """
+        Gets copy of instance with verticial alignment set or removed
+
+        Args:
+            value (ParagraphVertAlignEnum | None): Alignment value
+
+        Returns:
+            Alignment: Alignment instance
+        """
+        cp = self.copy()
+        cp.prop_align_vert = value
+        return cp
+
+    def style_align_last(self, value: LastLineKind | None) -> Alignment:
+        """
+        Gets copy of instance with align last set or removed
+
+        Args:
+            value (LastLineKind | None): Align last value
+
+        Returns:
+            Alignment: Alignment instance
+        """
+        cp = self.copy()
+        cp.prop_align_last = value
+        return cp
+
+    def style_expand_single_word(self, value: bool | None) -> Alignment:
+        """
+        Gets copy of instance with expand single word set or removed
+
+        Args:
+            value (LastLineKind | None): Expand single word value
+
+        Returns:
+            Alignment: Alignment instance
+        """
+        cp = self.copy()
+        cp.prop_expand_single_word = value
+        return cp
+
+    def style_snap_to_grid(self, value: bool | None) -> Alignment:
+        """
+        Gets copy of instance with snap to grid set or removed
+
+        Args:
+            value (LastLineKind | None): Snap to grid value
+
+        Returns:
+            Alignment: Alignment instance
+        """
+        cp = self.copy()
+        cp.prop_snap_to_grid = value
+        return cp
+
+    def style_txt_direction(self, value: WritingMode | None) -> Alignment:
+        """
+        Gets copy of instance with verticial alignment set or removed
+
+        Args:
+            value (ParagraphVertAlignEnum | None): Alignment value
+
+        Returns:
+            Alignment: Alignment instance
+        """
+        cp = self.copy()
+        if value is None:
+            self._remove_style("txt_direction")
+        else:
+            self._set_style("txt_direction", value)
+        return cp
+
+    # endregion style methods
+
+    # region Style Properties
+    @property
+    def snap_to_grid(self) -> Alignment:
+        """Gets copy of instance with snap to grid set"""
+        al = self.copy()
+        al.prop_snap_to_grid = True
+        return al
+
+    @property
+    def expand_single_word(self) -> Alignment:
+        """Gets copy of instance with expand single word set"""
+        al = self.copy()
+        al.prop_expand_single_word = True
+        return al
+
+    # endregion Style Properties
+
+    # region properties
+
+    @property
+    def prop_align(self) -> ParagraphAdjust | None:
+        """Gets/Sets horizontal alignment of a paragraph."""
+        return self._get("ParaAdjust")
+
+    @prop_align.setter
+    def prop_align(self, value: ParagraphAdjust | None):
+        if value is None:
+            self._remove("ParaAdjust")
+            return
+        self._set("ParaAdjust", value)
+
+    @property
+    def prop_align_vert(self) -> ParagraphVertAlignEnum | None:
+        """Gets/Sets verticial alignment of a paragraph."""
+        pv = cast(int, self._get("ParaVertAlignment"))
+        if pv is None:
+            return None
+        return ParagraphVertAlignEnum(pv)
+
+    @prop_align_vert.setter
+    def prop_align_vert(self, value: ParagraphVertAlignEnum | None):
+        if value is None:
+            self._remove("ParaVertAlignment")
+            return
+        self._set("ParaVertAlignment", value)
+
+    @property
+    def prop_align_last(self) -> LastLineKind | None:
+        """Gets/Sets the adjustment of the last line."""
+        pv = cast(int, self._get("ParaLastLineAdjust"))
+        if pv is None:
+            return None
+        return LastLineKind(pv)
+
+    @prop_align_last.setter
+    def prop_align_last(self, value: LastLineKind | None):
+        if value is None:
+            self._remove("ParaLastLineAdjust")
+            return
+        self._set("ParaLastLineAdjust", value)
+
+    @property
+    def prop_expand_single_word(self) -> bool | None:
+        """
+        Gets/Sets Determines if single words are stretched.
+
+        It is only valid if ``prop_align`` and ``prop_align_last`` are also valid.
+        """
+        return self._get("ParaExpandSingleWord")
+
+    @prop_expand_single_word.setter
+    def prop_expand_single_word(self, value: bool | None):
+        if value is None:
+            self._remove("ParaExpandSingleWord")
+            return
+        self._set("ParaExpandSingleWord", value)
+
+    @property
+    def prop_snap_to_grid(self) -> bool | None:
+        """Gets/Sets snap to text grid (if active)."""
+        # SnapToGrid is not part of any know service
+        return self._get("SnapToGrid")
+
+    @prop_snap_to_grid.setter
+    def prop_snap_to_grid(self, value: bool | None):
+        if value is None:
+            self._remove("SnapToGrid")
+            return
+        self._set("SnapToGrid", value)
+
+    @static_prop
+    def default(cls) -> Alignment:
+        """Gets Alignment defult. Static Property."""
+        if cls._DEFAULT is None:
+            cls._DEFAULT = Alignment(
+                align=ParagraphAdjust.LEFT,
+                align_vert=ParagraphVertAlignEnum.AUTOMATIC,
+                txt_direction=WritingMode.default.copy(),
+                align_last=LastLineKind.START,
+                expand_single_word=False,
+                snap_to_grid=True,
+            )
+        return cls._DEFAULT
+
+    # endregion properties

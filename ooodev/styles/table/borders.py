@@ -109,6 +109,7 @@ class Borders(StyleBase):
     # endregion init
 
     # region methods
+
     def get_attrs(self) -> Tuple[str, ...]:
         """
         Gets the attributes that are slated for change in the current instance

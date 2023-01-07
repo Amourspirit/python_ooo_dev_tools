@@ -189,6 +189,8 @@ class Font(StyleBase):
         if not subscript is None:
             self.prop_subscript = subscript
 
+    # region methods
+
     @overload
     def apply_style(self, obj: object) -> None:
         ...
@@ -212,6 +214,8 @@ class Font(StyleBase):
                     mLo.Lo.print(f"  {err}")
         else:
             mLo.Lo.print('Font.apply_style(): "com.sun.star.style.CharacterProperties" not supported')
+
+    # endregion methods
 
     # region Style Methods
 

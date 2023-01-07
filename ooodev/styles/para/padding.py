@@ -141,7 +141,7 @@ class Padding(StyleBase):
             value (float | None): Padding value
 
         Returns:
-            Padding: Border Table
+            Padding: Padding instance
         """
         cp = self.copy()
         cp.prop_top = value
@@ -158,7 +158,7 @@ class Padding(StyleBase):
             value (float | None): Padding value
 
         Returns:
-            Padding: Border Table
+            Padding: Padding instance
         """
         cp = self.copy()
         cp.prop_top = value
@@ -172,7 +172,7 @@ class Padding(StyleBase):
             value (float | None): Padding value
 
         Returns:
-            Padding: Border Table
+            Padding: Padding instance
         """
         cp = self.copy()
         cp.prop_bottom = value
@@ -186,7 +186,7 @@ class Padding(StyleBase):
             value (float | None): Padding value
 
         Returns:
-            Padding: Border Table
+            Padding: Padding instance
         """
         cp = self.copy()
         cp.prop_left = value
@@ -200,7 +200,7 @@ class Padding(StyleBase):
             value (float | None): Padding value
 
         Returns:
-            Padding: Border Table
+            Padding: Padding instance
         """
         cp = self.copy()
         cp.prop_right = value

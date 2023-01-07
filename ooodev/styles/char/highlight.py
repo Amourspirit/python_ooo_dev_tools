@@ -44,9 +44,6 @@ class Highlight(StyleBase):
 
         super().__init__(**init_vals)
 
-    def _is_supported(self, obj: object) -> bool:
-        return mInfo.Info.support_service(obj, "com.sun.star.style.CharacterProperties")
-
     # region apply_style()
 
     @overload
