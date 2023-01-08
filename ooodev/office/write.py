@@ -1262,22 +1262,22 @@ class Write(mSel.Selection):
 
     @overload
     @classmethod
-    def style(cls, pos: int, distance: int, styles: Iterable[StyleObj]) -> None:
+    def style(cls, pos: int, length: int, styles: Iterable[StyleObj]) -> None:
         ...
 
     @overload
     @classmethod
-    def style(cls, pos: int, distance: int, styles: Iterable[StyleObj], cursor: XTextCursor) -> None:
+    def style(cls, pos: int, length: int, styles: Iterable[StyleObj], cursor: XTextCursor) -> None:
         ...
 
     @overload
     @classmethod
-    def style(cls, pos: int, distance: int, prop_name: str, prop_val: object) -> None:
+    def style(cls, pos: int, length: int, prop_name: str, prop_val: object) -> None:
         ...
 
     @overload
     @classmethod
-    def style(cls, pos: int, distance: int, prop_name: str, prop_val: object, cursor: XTextCursor) -> None:
+    def style(cls, pos: int, length: int, prop_name: str, prop_val: object, cursor: XTextCursor) -> None:
         ...
 
     @classmethod
@@ -1287,7 +1287,7 @@ class Write(mSel.Selection):
 
         Args:
             pos (int): Position style start.
-            distance (int): The distance from ``pos`` to apply style.
+            length (int): The distance from ``pos`` to apply style.
             styles (Iterable[StyleObj]):One or more styles to apply to text.
             prop_name (str): Property Name such as ``CharHeight``
             prop_val (object): Property Value such as ``10``
@@ -1312,12 +1312,12 @@ class Write(mSel.Selection):
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ("pos", "distance", "prop_name", "prop_val", "styles", "cursor")
+            valid_keys = ("pos", "length", "prop_name", "prop_val", "styles", "cursor")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("style() got an unexpected keyword argument")
             ka[1] = kwargs.get("pos", None)
-            ka[2] = kwargs.get("distance", None)
+            ka[2] = kwargs.get("length", None)
             keys = ("prop_name", "styles")
             for key in keys:
                 if key in kwargs:
