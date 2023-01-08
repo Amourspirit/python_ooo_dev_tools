@@ -5,7 +5,7 @@ Module for creating hyperlinks
 """
 # region imports
 from __future__ import annotations
-from typing import overload
+from typing import Tuple, overload
 from enum import Enum
 
 
@@ -86,6 +86,14 @@ class Hyperlink(StyleBase):
     # endregion init
 
     # region methods
+    def _supported_services(self) -> Tuple[str, ...]:
+        """
+        Gets a tuple of supported services (``com.sun.star.style.CharacterProperties``,)
+
+        Returns:
+            Tuple[str, ...]: Supported services
+        """
+        return ("com.sun.star.style.CharacterProperties",)
 
     # region apply_style()
 
@@ -131,14 +139,15 @@ class Hyperlink(StyleBase):
         Returns:
             Hyperlink: Hyperlink that represents ``obj`` Hyperlink.
         """
-        if not mInfo.Info.support_service(obj, "com.sun.star.style.CharacterProperties"):
-            raise mEx.NotSupportedServiceError("com.sun.star.style.CharacterProperties")
         inst = Hyperlink()
-        inst._set("HyperLinkName", mProps.Props.get(obj, "HyperLinkName"))
-        inst._set("HyperLinkURL", mProps.Props.get(obj, "HyperLinkURL"))
-        inst._set("HyperLinkTarget", mProps.Props.get(obj, "HyperLinkTarget"))
-        inst._set("VisitedCharStyleName", mProps.Props.get(obj, "VisitedCharStyleName"))
-        inst._set("UnvisitedCharStyleName", mProps.Props.get(obj, "UnvisitedCharStyleName"))
+        if inst._supported_services():
+            inst._set("HyperLinkName", mProps.Props.get(obj, "HyperLinkName"))
+            inst._set("HyperLinkURL", mProps.Props.get(obj, "HyperLinkURL"))
+            inst._set("HyperLinkTarget", mProps.Props.get(obj, "HyperLinkTarget"))
+            inst._set("VisitedCharStyleName", mProps.Props.get(obj, "VisitedCharStyleName"))
+            inst._set("UnvisitedCharStyleName", mProps.Props.get(obj, "UnvisitedCharStyleName"))
+        else:
+            raise mEx.NotSupportedServiceError(inst._supported_services()[0])
         return inst
 
     # endregion methods

@@ -5,7 +5,7 @@ Module for managing character border side.
 """
 # region imports
 from __future__ import annotations
-from typing import cast, overload, TYPE_CHECKING
+from typing import Tuple, cast, overload, TYPE_CHECKING
 
 import uno
 from ...events.args.key_val_cancel_args import KeyValCancelArgs
@@ -86,6 +86,15 @@ class Sides(StyleBase):
     # endregion style methods
     # region methods
 
+    def _supported_services(self) -> Tuple[str, ...]:
+        """
+        Gets a tuple of supported services (``com.sun.star.style.CharacterProperties``,)
+
+        Returns:
+            Tuple[str, ...]: Supported services
+        """
+        return ("com.sun.star.style.CharacterProperties",)
+
     # region apply_style()
 
     @overload
@@ -102,15 +111,12 @@ class Sides(StyleBase):
         Returns:
             None:
         """
-        if mInfo.Info.support_service(obj, "com.sun.star.style.CharacterProperties"):
-            try:
-                super().apply_style(obj)
-            except mEx.MultiError as e:
-                mLo.Lo.print(f"BorderChar.apply_style(): Unable to set Property")
-                for err in e.errors:
-                    mLo.Lo.print(f"  {err}")
-        else:
-            mLo.Lo.print('BorderChar.apply_style(): "com.sun.star.style.CharacterProperties" not supported')
+        try:
+            super().apply_style(obj)
+        except mEx.MultiError as e:
+            mLo.Lo.print(f"BorderChar.apply_style(): Unable to set Property")
+            for err in e.errors:
+                mLo.Lo.print(f"  {err}")
 
     # endregion apply_style()
 
@@ -136,6 +142,7 @@ class Sides(StyleBase):
             obj (object): UNO object that has supports ``com.sun.star.style.CharacterProperties`` service.
 
         Raises:
+            NotSupportedServiceError: If ``obj`` does not support ``com.sun.star.style.CharacterProperties`` service.
             PropertyNotFoundError: If ``obj`` does not have ``TableBorder2`` property.
 
         Returns:
@@ -145,13 +152,16 @@ class Sides(StyleBase):
             mLo.Lo.print('BorderChar.apply_style(): "com.sun.star.style.CharacterProperties" not supported')
             return
 
-        cp = cast("CharacterProperties", obj)
-        empty = BorderLine2()
         bc = Sides()
-        for attr in Sides._CHAR_BORDERS:
-            b2 = cast(BorderLine2, getattr(cp, attr, empty))
-            side = Side.from_border2(b2)
-            bc._set(attr, side)
+        if bc._is_valid_service(obj):
+            cp = cast("CharacterProperties", obj)
+            empty = BorderLine2()
+            for attr in Sides._CHAR_BORDERS:
+                b2 = cast(BorderLine2, getattr(cp, attr, empty))
+                side = Side.from_border2(b2)
+                bc._set(attr, side)
+        else:
+            raise mEx.NotSupportedServiceError(bc._supported_services()[0])
         return bc
 
     # endregion methods

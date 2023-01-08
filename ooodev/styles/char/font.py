@@ -4,7 +4,7 @@ Module for managing character fonts.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import cast, overload
+from typing import Tuple, cast, overload
 from enum import Enum
 
 from ...exceptions import ex as mEx
@@ -191,6 +191,14 @@ class Font(StyleBase):
             self.prop_subscript = subscript
 
     # region methods
+    def _supported_services(self) -> Tuple[str, ...]:
+        """
+        Gets a tuple of supported services (``com.sun.star.style.CharacterProperties``,)
+
+        Returns:
+            Tuple[str, ...]: Supported services
+        """
+        return ("com.sun.star.style.CharacterProperties",)
 
     @overload
     def apply_style(self, obj: object) -> None:
@@ -206,7 +214,7 @@ class Font(StyleBase):
         Returns:
             None:
         """
-        if mInfo.Info.support_service(obj, "com.sun.star.style.CharacterProperties"):
+        if self._is_valid_service(obj):
             try:
                 super().apply_style(obj)
             except mEx.MultiError as e:
@@ -214,7 +222,7 @@ class Font(StyleBase):
                 for err in e.errors:
                     mLo.Lo.print(f"  {err}")
         else:
-            mLo.Lo.print('Font.apply_style(): "com.sun.star.style.CharacterProperties" not supported')
+            self._print_no_required_service("apply_style")
 
     # endregion methods
 
