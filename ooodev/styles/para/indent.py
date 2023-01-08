@@ -14,8 +14,6 @@ from ...utils import props as mProps
 from ..kind.style_kind import StyleKind
 from ..style_base import StyleBase
 
-from ooo.dyn.text.writing_mode2 import WritingMode2Enum as WritingMode2Enum
-
 
 class Indent(StyleBase):
     """
