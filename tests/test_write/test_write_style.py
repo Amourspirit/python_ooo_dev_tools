@@ -35,7 +35,7 @@ def test_style(loader, run_headless) -> None:
         Write.append(cursor=cursor, text="Highlighting starts ")
         pos = Write.get_position(cursor)
         Write.append_para(cursor=cursor, text="here.")
-        Write.style(pos=pos, distance=4, styles=(hl,))
+        Write.style(pos=pos, length=4, styles=(hl,))
         cp = cast("CharacterProperties", cursor)
         cursor.gotoStart(False)
         cursor.goRight(pos, False)
@@ -44,7 +44,7 @@ def test_style(loader, run_headless) -> None:
         cursor.gotoEnd(False)
 
         Lo.delay(delay)
-        Write.style(pos=pos, distance=4, styles=(Highlight.empty,))
+        Write.style(pos=pos, length=4, styles=(Highlight.empty,))
         cursor.gotoStart(False)
         cursor.goRight(pos, False)
         cursor.goRight(4, True)
@@ -52,7 +52,7 @@ def test_style(loader, run_headless) -> None:
         cursor.gotoEnd(False)
 
         Lo.delay(delay)
-        Write.style(pos=pos, distance=4, styles=(hl,), cursor=cursor)
+        Write.style(pos=pos, length=4, styles=(hl,), cursor=cursor)
         cursor.gotoStart(False)
         cursor.goRight(pos, False)
         cursor.goRight(4, True)
@@ -60,7 +60,7 @@ def test_style(loader, run_headless) -> None:
         cursor.gotoEnd(False)
 
         Lo.delay(delay)
-        Write.style(pos=pos, distance=4, prop_name="CharBackColor", prop_val=CommonColor.YELLOW_GREEN)
+        Write.style(pos=pos, length=4, prop_name="CharBackColor", prop_val=CommonColor.YELLOW_GREEN)
         cursor.gotoStart(False)
         cursor.goRight(pos, False)
         cursor.goRight(4, True)
@@ -68,7 +68,7 @@ def test_style(loader, run_headless) -> None:
         cursor.gotoEnd(False)
 
         Lo.delay(delay)
-        Write.style(pos=pos, distance=4, prop_name="CharBackColor", prop_val=CommonColor.LIGHT_BLUE, cursor=cursor)
+        Write.style(pos=pos, length=4, prop_name="CharBackColor", prop_val=CommonColor.LIGHT_BLUE, cursor=cursor)
         cursor.gotoStart(False)
         cursor.goRight(pos, False)
         cursor.goRight(4, True)
