@@ -5,7 +5,7 @@ Module for table border (``TableBorder2``) struct
 """
 # region imports
 from __future__ import annotations
-from typing import cast, overload
+from typing import Tuple, cast, overload
 
 from ...exceptions import ex as mEx
 from ...utils import props as mProps
@@ -102,6 +102,9 @@ class BorderTable(StyleBase):
     # region methods
 
     # region apply_style()
+
+    def _supported_services(self) -> Tuple[str, ...]:
+        return ()
 
     @overload
     def apply_style(self, obj: object) -> None:

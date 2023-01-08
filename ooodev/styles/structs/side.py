@@ -5,7 +5,7 @@ Module for table side (``BorderLine2``) struct.
 """
 # region imports
 from __future__ import annotations
-from typing import Dict, cast, overload
+from typing import Dict, Tuple, cast, overload
 from enum import IntFlag
 
 from ...meta.static_prop import static_prop
@@ -76,7 +76,7 @@ class Side(StyleBase):
 
     def __init__(
         self,
-        style: BorderLineStyleEnum = BorderLineStyleEnum.SOLID,
+        line: BorderLineStyleEnum = BorderLineStyleEnum.SOLID,
         color: Color = CommonColor.BLACK,
         width: float = 0.75,
         width_inner: float = 0.0,
@@ -86,7 +86,7 @@ class Side(StyleBase):
         Constructs Side
 
         Args:
-            style (BorderLineStyleEnum, optional): Line Style of the border.
+            line (BorderLineStyleEnum, optional): Line Style of the border.
             color (Color, optional): Color of the border.
             width (float, optional): Contains the width in of a single line or the width of outer part of a double line (in pt units). If this value is zero, no line is drawn. Default ``0.75``
             width_inner (float, optional): contains the width of the inner part of a double line (in pt units). If this value is zero, only a single line is drawn. Default ``0.0``
@@ -111,7 +111,7 @@ class Side(StyleBase):
             "Color": color,
             "InnerLineWidth": round(width_inner * POINT_RATIO),
             "LineDistance": round(distance * 100),
-            "LineStyle": style.value,
+            "LineStyle": line.value,
             "LineWidth": round(width * POINT_RATIO),
             "OuterLineWidth": round(width * POINT_RATIO),
         }
@@ -121,6 +121,8 @@ class Side(StyleBase):
     # endregion init
 
     # region methods
+    def _supported_services(self) -> Tuple[str, ...]:
+        return ()
 
     @overload
     def apply_style(self, obj: object, *, flags: SideFlags) -> None:
@@ -194,7 +196,7 @@ class Side(StyleBase):
     def empty(cls) -> Side:
         """Gets an empyty side. When applied formatting is removed"""
         if cls._EMPTY is None:
-            cls._EMPTY = Side(style=BorderLineStyleEnum.NONE, color=0, width=0.0, width_inner=0.0, distance=0)
+            cls._EMPTY = Side(line=BorderLineStyleEnum.NONE, color=0, width=0.0, width_inner=0.0, distance=0)
         return cls._EMPTY
 
     @staticmethod
@@ -221,7 +223,7 @@ class Side(StyleBase):
             Side: Side with style set
         """
         cp = self.copy()
-        cp.prop_style = value
+        cp.prop_line = value
         return cp
 
     def style_color(self, value: Color) -> Side:
@@ -281,6 +283,148 @@ class Side(StyleBase):
         return cp
 
     # endregion style methods
+    # region Style Properties
+    @property
+    def line_none(self) -> Side:
+        """Gets instance with no border line"""
+        cp = self.copy()
+        cp.prop_line = BorderLineStyleEnum.NONE
+        return cp
+
+    @property
+    def line_solid(self) -> Side:
+        """Gets instance with solid border line"""
+        cp = self.copy()
+        cp.prop_line = BorderLineStyleEnum.SOLID
+        return cp
+
+    @property
+    def line_dotted(self) -> Side:
+        """Gets instance with dotted border line"""
+        cp = self.copy()
+        cp.prop_line = BorderLineStyleEnum.DOTTED
+        return cp
+
+    @property
+    def line_dashed(self) -> Side:
+        """Gets instance with dashed border line"""
+        cp = self.copy()
+        cp.prop_line = BorderLineStyleEnum.DASHED
+        return cp
+
+    @property
+    def line_dashed(self) -> Side:
+        """Gets instance with dashed border line"""
+        cp = self.copy()
+        cp.prop_line = BorderLineStyleEnum.DOUBLE
+        return cp
+
+    @property
+    def line_thin_thick_small_gap(self) -> Side:
+        """Gets instance with double border line with a thin line outside and a thick line inside separated by a small gap."""
+        cp = self.copy()
+        cp.prop_line = BorderLineStyleEnum.THINTHICK_SMALLGAP
+        return cp
+
+    @property
+    def line_thin_thick_medium_gap(self) -> Side:
+        """Gets instance with double border line with a thin line outside and a thick line inside separated by a medium gap."""
+        cp = self.copy()
+        cp.prop_line = BorderLineStyleEnum.THINTHICK_MEDIUMGAP
+        return cp
+
+    @property
+    def line_thin_thick_large_gap(self) -> Side:
+        """Gets instance with double border line with a thin line outside and a thick line inside separated by a large gap."""
+        cp = self.copy()
+        cp.prop_line = BorderLineStyleEnum.THINTHICK_LARGEGAP
+        return cp
+
+    @property
+    def line_thick_thin_small_gap(self) -> Side:
+        """Gets instance with double border line with a thick line outside and a thin line inside separated by a small gap."""
+        cp = self.copy()
+        cp.prop_line = BorderLineStyleEnum.THICKTHIN_SMALLGAP
+        return cp
+
+    @property
+    def line_thick_thin_medium_gap(self) -> Side:
+        """Gets instance with double border line with a thick line outside and a thin line inside separated by a medium gap."""
+        cp = self.copy()
+        cp.prop_line = BorderLineStyleEnum.THICKTHIN_MEDIUMGAP
+        return cp
+
+    @property
+    def line_thick_thin_large_gap(self) -> Side:
+        """Gets instance with double border line with a thick line outside and a thin line inside separated by a large gap."""
+        cp = self.copy()
+        cp.prop_line = BorderLineStyleEnum.THICKTHIN_LARGEGAP
+        return cp
+
+    @property
+    def line_embossed(self) -> Side:
+        """Gets instance with 3D embossed border line."""
+        cp = self.copy()
+        cp.prop_line = BorderLineStyleEnum.EMBOSSED
+        return cp
+
+    @property
+    def line_engraved(self) -> Side:
+        """Gets instance with 3D engraved border line."""
+        cp = self.copy()
+        cp.prop_line = BorderLineStyleEnum.ENGRAVED
+        return cp
+
+    @property
+    def line_outset(self) -> Side:
+        """Gets instance with outset border line."""
+        cp = self.copy()
+        cp.prop_line = BorderLineStyleEnum.OUTSET
+        return cp
+
+    @property
+    def line_inset(self) -> Side:
+        """Gets instance with inset border line."""
+        cp = self.copy()
+        cp.prop_line = BorderLineStyleEnum.INSET
+        return cp
+
+    @property
+    def line_fine_dashed(self) -> Side:
+        """Gets instance with finely dashed border line."""
+        cp = self.copy()
+        cp.prop_line = BorderLineStyleEnum.FINE_DASHED
+        return cp
+
+    @property
+    def line_double_thin(self) -> Side:
+        """Gets instance with Double border line consisting of two fixed thin lines separated by a variable gap."""
+        cp = self.copy()
+        cp.prop_line = BorderLineStyleEnum.DOUBLE_THIN
+        return cp
+
+    @property
+    def line_dash_dot(self) -> Side:
+        """Gets instance with line consisting of a repetition of one dash and one dot."""
+        cp = self.copy()
+        cp.prop_line = BorderLineStyleEnum.DASH_DOT
+        return cp
+
+    @property
+    def line_dash_dot_dot(self) -> Side:
+        """Gets instance with line consisting of a repetition of one dash and 2 dots."""
+        cp = self.copy()
+        cp.prop_line = BorderLineStyleEnum.DASH_DOT_DOT
+        return cp
+
+    @property
+    def line_border_line_style_max(self) -> Side:
+        """Gets instance with maximum valid border line style value."""
+        cp = self.copy()
+        cp.prop_line = BorderLineStyleEnum.BORDER_LINE_STYLE_MAX
+        return cp
+
+    # endregion Style Properties
     # region properties
     @property
     def prop_style_kind(self) -> StyleKind:
@@ -288,13 +432,13 @@ class Side(StyleBase):
         return StyleKind.STRUCT
 
     @property
-    def prop_style(self) -> BorderLineStyleEnum:
+    def prop_line(self) -> BorderLineStyleEnum:
         """Gets Border Line style"""
         pv = cast(int, self._get("LineStyle"))
         return BorderLineStyleEnum(pv)
 
-    @prop_style.setter
-    def prop_style(self, value: BorderLineStyleEnum) -> None:
+    @prop_line.setter
+    def prop_line(self, value: BorderLineStyleEnum) -> None:
         self._set("LineStyle", value.value)
 
     @property

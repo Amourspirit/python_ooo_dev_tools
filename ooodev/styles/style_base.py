@@ -1,8 +1,10 @@
 from __future__ import annotations
 from typing import Any, Dict, Tuple, TYPE_CHECKING, cast
 import uno
-from ..utils import props as mProps
 
+from ..utils import props as mProps
+from ..utils import info as mInfo
+from ..utils import lo as mLo
 from ..events.lo_events import Events
 from ..events.props_named_event import PropsNamedEvent
 from ..events.args.key_val_cancel_args import KeyValCancelArgs
@@ -60,6 +62,56 @@ class StyleBase(ABC):
         # called by _set()
         pass
 
+    # region Services
+    def _supported_services(self) -> Tuple[str, ...]:
+        """
+        Gets a tuple of suported services for the style such as (``com.sun.star.style.ParagraphProperties``,)
+
+        Raises:
+            NotImplementedError: If not implemented in child class
+
+        Returns:
+            Tuple[str, ...]: Supported services
+        """
+        raise NotImplementedError
+
+    def _is_valid_service(self, obj: object) -> bool:
+        """
+        Gets if ``obj`` supports one of the services required by style class
+
+        Args:
+            obj (object): UNO object that must have requires service
+
+        Returns:
+            bool: ``True`` if has a required service; Otherwise, ``False``
+        """
+        rs = self._supported_services()
+        if rs:
+            return mInfo.Info.support_service(obj, *rs)
+        # if style class has no required services then return True
+        return True
+
+    def _print_no_required_service(self, method_name: str = ""):
+        """
+        Prints via ``Lo.print()`` notice that requied service is missing
+
+        Args:
+            method_name (str, optional): Calling method name.
+        """
+        rs = self._supported_services()
+        rs_len = len(rs)
+        if rs_len == 0:
+            return
+        if method_name:
+            name = f".{method_name}()"
+        else:
+            name = ""
+        services = ", ".join(rs)
+        srv = "service" if rs_len == 1 else "serivces"
+        mLo.Lo.print(f"{self.__class__.__name__}{name}: object must support {srv}: {services}")
+
+    # endregion Services
+
     def get_attrs(self) -> Tuple[str, ...]:
         """
         Gets the attributes that are slated for change in the current instance
@@ -82,11 +134,14 @@ class StyleBase(ABC):
             None:
         """
         if self.prop_has_attribs:
-            events = Events(source=self)
-            events.on(PropsNamedEvent.PROP_SETTING, _on_props_setting)
-            events.on(PropsNamedEvent.PROP_SET, _on_props_set)
-            mProps.Props.set(obj, **self._dv)
-            events = None
+            if self._is_valid_service(obj):
+                events = Events(source=self)
+                events.on(PropsNamedEvent.PROP_SETTING, _on_props_setting)
+                events.on(PropsNamedEvent.PROP_SET, _on_props_set)
+                mProps.Props.set(obj, **self._dv)
+                events = None
+            else:
+                self._print_no_required_service("apply_style")
 
     def on_property_setting(self, event_args: KeyValCancelArgs):
         """

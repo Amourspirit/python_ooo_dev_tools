@@ -238,6 +238,14 @@ class Borders(StyleBase):
     # endregion Style Methods
 
     # region methods
+    def _supported_services(self) -> Tuple[str, ...]:
+        """
+        Gets a tuple of supported services (``com.sun.star.style.CharacterProperties``,)
+
+        Returns:
+            Tuple[str, ...]: Supported services
+        """
+        return ("com.sun.star.style.CharacterProperties",)
 
     def apply_style(self, obj: object, **kwargs) -> None:
         """
@@ -254,13 +262,15 @@ class Borders(StyleBase):
             self._padding.apply_style(obj)
         if not self._sides is None:
             self._sides.apply_style(obj)
-        if mInfo.Info.support_service(obj, "com.sun.star.style.CharacterProperties"):
+        if self._is_valid_service(obj):
             try:
                 super().apply_style(obj)
             except mEx.MultiError as e:
                 mLo.Lo.print(f"{self.__name__}.apply_style(): Unable to set Property")
                 for err in e.errors:
                     mLo.Lo.print(f"  {err}")
+        else:
+            self._print_no_required_service("apply_style")
 
     def get_attrs(self) -> Tuple[str, ...]:
         """

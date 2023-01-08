@@ -4,7 +4,7 @@ Modele for managing paragraph padding.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import cast
+from typing import Tuple, cast
 
 from ...exceptions import ex as mEx
 from ...meta.static_prop import static_prop
@@ -86,6 +86,15 @@ class Padding(StyleBase):
 
     # region methods
 
+    def _supported_services(self) -> Tuple[str, ...]:
+        """
+        Gets a tuple of supported services (``com.sun.star.style.ParagraphProperties``,)
+
+        Returns:
+            Tuple[str, ...]: Supported services
+        """
+        return ("com.sun.star.style.ParagraphProperties",)
+
     def apply_style(self, obj: object, **kwargs) -> None:
         """
         Applies padding to ``obj``
@@ -97,7 +106,7 @@ class Padding(StyleBase):
         Returns:
             None:
         """
-        if mInfo.Info.support_service(obj, "com.sun.star.style.ParagraphProperties"):
+        if self._is_valid_service(obj):
             try:
                 super().apply_style(obj)
             except mEx.MultiError as e:
@@ -105,7 +114,7 @@ class Padding(StyleBase):
                 for err in e.errors:
                     mLo.Lo.print(f"  {err}")
         else:
-            mLo.Lo.print('Padding.apply_style(): "com.sun.star.style.ParagraphProperties" not supported')
+            self._print_no_required_service("apply_style")
         return None
 
     @staticmethod
@@ -117,19 +126,22 @@ class Padding(StyleBase):
             obj (object): UNO object that supports ``com.sun.star.style.ParagraphProperties`` service.
 
         Raises:
-            NotSupportedServiceError: If ``obj`` does not support  ``com.sun.star.style.ParagraphProperties`` service.
+            NotSupportedServiceError: If ``obj`` does not support ``com.sun.star.style.ParagraphProperties`` service.
 
         Returns:
             Padding: Padding that represents ``obj`` padding.
         """
         if not mInfo.Info.support_service(obj, "com.sun.star.style.ParagraphProperties"):
             raise mEx.NotSupportedServiceError("com.sun.star.style.ParagraphProperties")
-        pd = Padding()
-        pd._set("ParaLeftMargin", int(mProps.Props.get(obj, "ParaLeftMargin")))
-        pd._set("ParaRightMargin", int(mProps.Props.get(obj, "ParaRightMargin")))
-        pd._set("ParaTopMargin", int(mProps.Props.get(obj, "ParaTopMargin")))
-        pd._set("ParaBottomMargin", int(mProps.Props.get(obj, "ParaBottomMargin")))
-        return pd
+        inst = Padding()
+        if inst._is_valid_service(obj):
+            inst._set("ParaLeftMargin", int(mProps.Props.get(obj, "ParaLeftMargin")))
+            inst._set("ParaRightMargin", int(mProps.Props.get(obj, "ParaRightMargin")))
+            inst._set("ParaTopMargin", int(mProps.Props.get(obj, "ParaTopMargin")))
+            inst._set("ParaBottomMargin", int(mProps.Props.get(obj, "ParaBottomMargin")))
+        else:
+            raise mEx.NotSupportedServiceError(inst._supported_services()[0])
+        return inst
 
     # endregion methods
 

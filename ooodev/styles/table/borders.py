@@ -126,6 +126,15 @@ class Borders(StyleBase):
             attribs.update(self._border_table.get_attrs())
         return tuple(attribs)
 
+    def _supported_services(self) -> Tuple[str, ...]:
+        """
+        Gets a tuple of supported services (``com.sun.star.table.CellProperties``,)
+
+        Returns:
+            Tuple[str, ...]: Supported services
+        """
+        return ("com.sun.star.table.CellProperties",)
+
     def apply_style(self, obj: object, **kwargs) -> None:
         """
         Applies padding to ``obj``
@@ -141,13 +150,13 @@ class Borders(StyleBase):
             self._padding.apply_style(obj)
         if not self._border_table is None:
             self._border_table.apply_style(obj)
-        if mInfo.Info.support_service(obj, "com.sun.star.table.CellProperties"):
-            try:
-                super().apply_style(obj)
-            except mEx.MultiError as e:
-                mLo.Lo.print(f"CellBorder.apply_style(): Unable to set Property")
-                for err in e.errors:
-                    mLo.Lo.print(f"  {err}")
+
+        try:
+            super().apply_style(obj)
+        except mEx.MultiError as e:
+            mLo.Lo.print(f"CellBorder.apply_style(): Unable to set Property")
+            for err in e.errors:
+                mLo.Lo.print(f"  {err}")
 
     def copy(self) -> Borders:
         """

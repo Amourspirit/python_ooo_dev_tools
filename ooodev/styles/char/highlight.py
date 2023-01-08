@@ -4,7 +4,7 @@ Module for handeling character highlight.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import overload
+from typing import Tuple, overload
 
 from ...exceptions import ex as mEx
 from ...meta.static_prop import static_prop
@@ -45,6 +45,15 @@ class Highlight(StyleBase):
 
         super().__init__(**init_vals)
 
+    def _supported_services(self) -> Tuple[str, ...]:
+        """
+        Gets a tuple of supported services (``com.sun.star.style.CharacterProperties``,)
+
+        Returns:
+            Tuple[str, ...]: Supported services
+        """
+        return ("com.sun.star.style.CharacterProperties",)
+
     # region apply_style()
 
     @overload
@@ -62,7 +71,7 @@ class Highlight(StyleBase):
         Returns:
             None:
         """
-        if mInfo.Info.support_service(obj, "com.sun.star.style.CharacterProperties"):
+        if self._is_valid_service(obj):
             try:
                 super().apply_style(obj)
             except mEx.MultiError as e:
@@ -70,7 +79,7 @@ class Highlight(StyleBase):
                 for err in e.errors:
                     mLo.Lo.print(f"  {err}")
         else:
-            mLo.Lo.print(f'{self.__class__}.apply_style(): "com.sun.star.style.CharacterProperties" not supported')
+            self._print_no_required_service("apply_style")
         return None
 
     # endregion apply_style()
@@ -84,16 +93,17 @@ class Highlight(StyleBase):
             obj (object): UNO object that supports ``com.sun.star.style.CharacterProperties`` service.
 
         Raises:
-            NotSupportedServiceError: If ``obj`` does not support  ``com.sun.star.style.CharacterProperties`` service.
+            NotSupportedServiceError: If ``obj`` does not support ``com.sun.star.style.CharacterProperties`` service.
 
         Returns:
             Hightlight: Hightlight that represents ``obj`` Hightlight.
         """
-        if not mInfo.Info.support_service(obj, "com.sun.star.style.CharacterProperties"):
-            raise mEx.NotSupportedServiceError("com.sun.star.style.CharacterProperties")
         inst = Highlight()
-        inst._set("CharBackColor", int(mProps.Props.get(obj, "CharBackColor")))
-        inst._set("CharBackTransparent", bool(mProps.Props.get(obj, "CharBackTransparent")))
+        if inst._is_valid_service(obj):
+            inst._set("CharBackColor", int(mProps.Props.get(obj, "CharBackColor")))
+            inst._set("CharBackTransparent", bool(mProps.Props.get(obj, "CharBackTransparent")))
+        else:
+            raise mEx.NotSupportedServiceError(inst._supported_services()[0])
         return inst
 
     # region set styles

@@ -91,7 +91,7 @@ def test_char_borders(loader) -> None:
         # reset the paragraph style
         Write.style_left(cursor=cursor, pos=0, prop_name="ParaStyleName", prop_val="Standard")
 
-        border = Borders(border_side=Side(color=CommonColor.DARK_ORANGE, style=BorderLineStyleEnum.DOUBLE, width=1.1))
+        border = Borders(border_side=Side(color=CommonColor.DARK_ORANGE, line=BorderLineStyleEnum.DOUBLE, width=1.1))
         ft = Font(size=30.0, b=True, i=True, u=True, color=CommonColor.BLUE, underine_color=CommonColor.GREEN)
         Write.append(cursor=cursor, text="Nice Day", styles=(border, ft))
         cursor.gotoEnd(False)

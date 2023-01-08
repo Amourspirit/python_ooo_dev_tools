@@ -65,8 +65,8 @@ def test_calc_border(loader) -> None:
         cell_obj = Calc.get_cell_obj("c1")
         cell = Calc.get_cell(sheet, cell_obj)
         cb = Borders(
-            left=Side(style=BorderLineStyleEnum.DASHED, color=CommonColor.BLUE, width=4.5),
-            right=Side(style=BorderLineStyleEnum.DOUBLE, width=2.5),
+            left=Side(line=BorderLineStyleEnum.DASHED, color=CommonColor.BLUE, width=4.5),
+            right=Side(line=BorderLineStyleEnum.DOUBLE, width=2.5),
             shadow=shadow,
         )
         Style.apply_style(cell, cb)
@@ -90,7 +90,7 @@ def test_calc_border(loader) -> None:
 
         cell_obj = Calc.get_cell_obj("e1")
         cell = Calc.get_cell(sheet, cell_obj)
-        cb = Borders(diagonal_up=Side(style=BorderLineStyleEnum.DOUBLE_THIN, color=CommonColor.RED))
+        cb = Borders(diagonal_up=Side(line=BorderLineStyleEnum.DOUBLE_THIN, color=CommonColor.RED))
         Style.apply_style(cell, cb)
         cp = cast("CellProperties", cell)
         assert cp.DiagonalBLTR2.Color == CommonColor.RED
@@ -98,7 +98,7 @@ def test_calc_border(loader) -> None:
 
         cell_obj = Calc.get_cell_obj("g1")
         cell = Calc.get_cell(sheet, cell_obj)
-        cb = Borders(diagonal_down=Side(style=BorderLineStyleEnum.DOTTED, color=CommonColor.BROWN))
+        cb = Borders(diagonal_down=Side(line=BorderLineStyleEnum.DOTTED, color=CommonColor.BROWN))
         Style.apply_style(cell, cb)
         cp = cast("CellProperties", cell)
         assert cp.DiagonalTLBR2.Color == CommonColor.BROWN
@@ -170,9 +170,9 @@ def test_calc_border_range(loader) -> None:
         # for some unknown reason LibreOffice is overriding style of horizontal Side. to match outter border.
         # Soluttion is to create a new border with only horizontal side set after inital range has been set
         cb = Borders(
-            border_side=Side(style=BorderLineStyleEnum.SOLID, color=CommonColor.BLUE),
-            vertical=Side(color=CommonColor.RED, style=BorderLineStyleEnum.DASHED),
-            horizontal=Side(color=CommonColor.GREEN, width=1.4, style=BorderLineStyleEnum.DOUBLE),
+            border_side=Side(line=BorderLineStyleEnum.SOLID, color=CommonColor.BLUE),
+            vertical=Side(color=CommonColor.RED, line=BorderLineStyleEnum.DASHED),
+            horizontal=Side(color=CommonColor.GREEN, width=1.4, line=BorderLineStyleEnum.DOUBLE),
         )
         Style.apply_style(cr, cb)
 
@@ -181,7 +181,7 @@ def test_calc_border_range(loader) -> None:
         assert rng.TableBorder2.TopLine.Color == CommonColor.BLUE
         assert rng.TableBorder2.RightLine.LineStyle == BorderLineStyleEnum.SOLID.value
 
-        cb = Borders(horizontal=Side(color=CommonColor.GREEN, width=1.4, style=BorderLineStyleEnum.DOUBLE))
+        cb = Borders(horizontal=Side(color=CommonColor.GREEN, width=1.4, line=BorderLineStyleEnum.DOUBLE))
         Style.apply_style(cr, cb)
 
         assert rng.TableBorder2.VerticalLine.Color == CommonColor.RED
@@ -236,7 +236,7 @@ def test_calc_border_range(loader) -> None:
         assert para.ParaTopMargin == 35
         assert para.ParaBottomMargin == 35
 
-        cb = Borders(border_side=Side(style=BorderLineStyleEnum.DOUBLE_THIN, color=CommonColor.GREEN))
+        cb = Borders(border_side=Side(color=CommonColor.GREEN).line_double_thin)
 
         Style.apply_style(cr, cb)
 
