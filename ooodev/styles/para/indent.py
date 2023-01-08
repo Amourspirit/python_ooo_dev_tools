@@ -8,7 +8,6 @@ from typing import Tuple, cast, overload
 
 from ...exceptions import ex as mEx
 from ...meta.static_prop import static_prop
-from ...utils import info as mInfo
 from ...utils import lo as mLo
 from ...utils import props as mProps
 from ..kind.style_kind import StyleKind
@@ -17,7 +16,7 @@ from ..style_base import StyleBase
 
 class Indent(StyleBase):
     """
-    Paragraph Alignment
+    Paragraph Indent
 
     Any properties starting with ``prop_`` set or get current instance values.
 
@@ -32,18 +31,18 @@ class Indent(StyleBase):
 
     def __init__(
         self,
-        before_text: float | None = None,
-        after_text: float | None = None,
-        first_indent: float | None = None,
+        before: float | None = None,
+        after: float | None = None,
+        first: float | None = None,
         auto: bool | None = None,
     ) -> None:
         """
         Constructor
 
         Args:
-            before_text (float, optional): Determines the left margin of the paragraph (in mm units).
-            after_text (float, optional): Determines the right margin of the paragraph (in mm units).
-            first_indent (float, optional): specifies the indent for the first line (in mm units).
+            before (float, optional): Determines the left margin of the paragraph (in mm units).
+            after (float, optional): Determines the right margin of the paragraph (in mm units).
+            first (float, optional): specifies the indent for the first line (in mm units).
             auto (bool, optional): Determines if the first line should be indented automatically.
         Returns:
             None:
@@ -51,14 +50,14 @@ class Indent(StyleBase):
         # https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1ParagraphProperties-members.html
         init_vals = {}
 
-        if not before_text is None:
-            init_vals["ParaLeftMargin"] = round(before_text * 100)
+        if not before is None:
+            init_vals["ParaLeftMargin"] = round(before * 100)
 
-        if not after_text is None:
-            init_vals["ParaRightMargin"] = round(after_text * 100)
+        if not after is None:
+            init_vals["ParaRightMargin"] = round(after * 100)
 
-        if not first_indent is None:
-            init_vals["ParaFirstLineIndent"] = round(first_indent * 100)
+        if not first is None:
+            init_vals["ParaFirstLineIndent"] = round(first * 100)
 
         if not auto is None:
             init_vals["ParaIsAutoFirstLineIndent"] = auto
@@ -85,7 +84,7 @@ class Indent(StyleBase):
         Applies writing mode to ``obj``
 
         Args:
-            obj (object): UNO object that supports ``com.sun.star.style.ParagraphPropertiesComplex`` service.
+            obj (object): UNO object that supports ``com.sun.star.style.ParagraphProperties`` service.
 
         Returns:
             None:
@@ -103,13 +102,13 @@ class Indent(StyleBase):
         Gets instance from object
 
         Args:
-            obj (object): UNO object that supports ``com.sun.star.style.ParagraphPropertiesComplex`` service.
+            obj (object): UNO object that supports ``com.sun.star.style.ParagraphProperties`` service.
 
         Raises:
-            NotSupportedServiceError: If ``obj`` does not support  ``com.sun.star.style.ParagraphPropertiesComplex`` service.
+            NotSupportedServiceError: If ``obj`` does not support  ``com.sun.star.style.ParagraphProperties`` service.
 
         Returns:
-            WritingMode: ``WritingMode`` instance that represents ``obj`` writing mode.
+            WritingMode: ``Indent`` instance that represents ``obj`` writing mode.
         """
         inst = Indent()
         if not inst._is_valid_service(obj):
@@ -130,46 +129,46 @@ class Indent(StyleBase):
     # endregion methods
 
     # region style methods
-    def style_before_text(self, value: float | None) -> Indent:
+    def style_before(self, value: float | None) -> Indent:
         """
-        Gets a copy of instance with before text set or removed
+        Gets a copy of instance with before margin set or removed
 
         Args:
             value (float | None): Margin value (in mm units).
 
         Returns:
-            Padding: Indent instance
+            Indent: Indent instance
         """
         cp = self.copy()
-        cp.prop_before_text = value
+        cp.prop_before = value
         return cp
 
-    def style_after_text(self, value: float | None) -> Indent:
+    def style_after(self, value: float | None) -> Indent:
         """
-        Gets a copy of instance with after text set or removed
+        Gets a copy of instance with after margin set or removed
 
         Args:
             value (float | None): Margin value (in mm units).
 
         Returns:
-            Padding: Indent instance
+            Indent: Indent instance
         """
         cp = self.copy()
-        cp.prop_after_text = value
+        cp.prop_after = value
         return cp
 
-    def style_first_indent(self, value: float | None) -> Indent:
+    def style_first(self, value: float | None) -> Indent:
         """
-        Gets a copy of instance with first indent set or removed
+        Gets a copy of instance with first indent margin set or removed
 
         Args:
             value (float | None): Margin value (in mm units).
 
         Returns:
-            Padding: Indent instance
+            Indent: Indent instance
         """
         cp = self.copy()
-        cp.prop_after_text = value
+        cp.prop_after = value
         return cp
 
     def style_auto(self, value: bool | None) -> Indent:
@@ -180,7 +179,7 @@ class Indent(StyleBase):
             value (bool | None): Auto value.
 
         Returns:
-            Padding: Indent instance
+            Indent: Indent instance
         """
         cp = self.copy()
         cp.prop_auto = value
@@ -205,7 +204,7 @@ class Indent(StyleBase):
         return StyleKind.PARA
 
     @property
-    def prop_before_text(self) -> float | None:
+    def prop_before(self) -> float | None:
         """Gets/Sets the left margin of the paragraph (in mm units)."""
         pv = cast(int, self._get("ParaLeftMargin"))
         if pv is None:
@@ -214,15 +213,15 @@ class Indent(StyleBase):
             return 0.0
         return float(pv / 100)
 
-    @prop_before_text.setter
-    def prop_before_text(self, value: float | None):
+    @prop_before.setter
+    def prop_before(self, value: float | None):
         if value is None:
             self._remove("ParaLeftMargin")
             return
         self._set("ParaLeftMargin", value)
 
     @property
-    def prop_after_text(self) -> float | None:
+    def prop_after(self) -> float | None:
         """Gets/Sets the right margin of the paragraph (in mm units)."""
         pv = cast(int, self._get("ParaRightMargin"))
         if pv is None:
@@ -231,15 +230,15 @@ class Indent(StyleBase):
             return 0.0
         return float(pv / 100)
 
-    @prop_after_text.setter
-    def prop_after_text(self, value: float | None):
+    @prop_after.setter
+    def prop_after(self, value: float | None):
         if value is None:
             self._remove("ParaRightMargin")
             return
         self._set("ParaRightMargin", value)
 
     @property
-    def prop_first_indent(self) -> float | None:
+    def prop_first(self) -> float | None:
         """Gets/Sets the indent for the first line (in mm units)."""
         pv = cast(int, self._get("ParaFirstLineIndent"))
         if pv is None:
@@ -248,8 +247,8 @@ class Indent(StyleBase):
             return 0.0
         return float(pv / 100)
 
-    @prop_first_indent.setter
-    def prop_first_indent(self, value: float | None):
+    @prop_first.setter
+    def prop_first(self, value: float | None):
         if value is None:
             self._remove("ParaFirstLineIndent")
             return
@@ -257,7 +256,7 @@ class Indent(StyleBase):
 
     @property
     def prop_auto(self) -> bool | None:
-        """Gets/Sets  if the first line should be indented automatically"""
+        """Gets/Sets if the first line should be indented automatically"""
         return self._get("ParaIsAutoFirstLineIndent")
 
     @prop_auto.setter
@@ -269,9 +268,9 @@ class Indent(StyleBase):
 
     @static_prop
     def default(cls) -> Indent:
-        """Gets ``WritingMode`` default. Static Property."""
+        """Gets ``Indent`` default. Static Property."""
         if cls._DEFAULT is None:
-            cls._DEFAULT = Indent(before_text=0.0, after_text=0.0, first_indent=0.0, auto=False)
+            cls._DEFAULT = Indent(before=0.0, after=0.0, first=0.0, auto=False)
         return cls._DEFAULT
 
     # endregion properties

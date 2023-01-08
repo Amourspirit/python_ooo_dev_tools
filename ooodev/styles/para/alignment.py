@@ -137,7 +137,7 @@ class Alignment(StyleMulti):
             NotSupportedServiceError: If ``obj`` does not support ``com.sun.star.style.ParagraphProperties`` service.
 
         Returns:
-            Padding: Padding that represents ``obj`` padding.
+            Alignment: Alignment that represents ``obj`` alignment.
         """
         inst = Alignment()
         if not inst._is_valid_service(obj):
