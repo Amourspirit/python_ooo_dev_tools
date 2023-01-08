@@ -17,16 +17,16 @@ if TYPE_CHECKING:
 
 
 def test_indent_props() -> None:
-    idt = Indent(before_text=10.2)
-    assert idt.prop_before_text > 10.1 and idt.prop_before_text < 10.3
+    idt = Indent(before=10.2)
+    assert idt.prop_before > 10.1 and idt.prop_before < 10.3
     assert idt._get("ParaLeftMargin") == 1020
 
-    idt = Indent(after_text=10.2)
-    assert idt.prop_after_text > 10.1 and idt.prop_after_text < 10.3
+    idt = Indent(after=10.2)
+    assert idt.prop_after > 10.1 and idt.prop_after < 10.3
     assert idt._get("ParaRightMargin") == 1020
 
-    idt = Indent(first_indent=10.2)
-    assert idt.prop_first_indent > 10.1 and idt.prop_first_indent < 10.3
+    idt = Indent(first=10.2)
+    assert idt.prop_first > 10.1 and idt.prop_first < 10.3
     assert idt._get("ParaFirstLineIndent") == 1020
 
     idt = Indent(auto=True)
@@ -36,9 +36,9 @@ def test_indent_props() -> None:
 
 def test_indent_default() -> None:
     idt = cast(Indent, Indent.default)
-    assert idt.prop_after_text == 0.0
-    assert idt.prop_before_text == 0.0
-    assert idt.prop_first_indent == 0.0
+    assert idt.prop_after == 0.0
+    assert idt.prop_before == 0.0
+    assert idt.prop_first == 0.0
     assert idt.prop_auto == False
 
 
@@ -59,7 +59,7 @@ def test_alignemnt_write(loader, para_text) -> None:
         cursor = Write.get_cursor(doc)
         p_len = len(para_text)
         amt = 3.5
-        Write.append_para(cursor=cursor, text=para_text, styles=(Indent(before_text=amt),))
+        Write.append_para(cursor=cursor, text=para_text, styles=(Indent(before=amt),))
 
         cursor.goLeft(1, False)
         cursor.gotoStart(True)
@@ -69,14 +69,14 @@ def test_alignemnt_write(loader, para_text) -> None:
         cursor.gotoEnd(False)
 
         amt = 2.0
-        Write.append_para(cursor=cursor, text=para_text, styles=(Indent(after_text=amt),))
+        Write.append_para(cursor=cursor, text=para_text, styles=(Indent(after=amt),))
         cursor.goLeft(p_len + 1, False)
         cursor.goRight(p_len, True)
         assert pp.ParaRightMargin in [round(amt * 100) - 2 + i for i in range(5)]  # plus or minus 2
         cursor.gotoEnd(False)
 
         amt = 6.0
-        Write.append_para(cursor=cursor, text=para_text, styles=(Indent(first_indent=amt),))
+        Write.append_para(cursor=cursor, text=para_text, styles=(Indent(first=amt),))
         cursor.goLeft(p_len + 1, False)
         cursor.goRight(p_len, True)
         assert pp.ParaFirstLineIndent in [round(amt * 100) - 2 + i for i in range(5)]  # plus or minus 2

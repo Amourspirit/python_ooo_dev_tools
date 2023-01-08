@@ -112,10 +112,10 @@ class WritingMode(StyleBase):
         Gets copy of instance with writing mode set or removed
 
         Args:
-            value (ParagraphAdjust | None): Alignment value
+            value (ParagraphAdjust | None): mode value
 
         Returns:
-            Alignment: Alignment instance
+            WritingMode: ``WritingMode`` instance
         """
         cp = self.copy()
         cp.prop_align = value
