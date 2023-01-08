@@ -53,7 +53,7 @@ def test_alignment_props() -> None:
     assert al.prop_align_vert is None
 
     al = Alignment(txt_direction=WritingMode(WritingMode2Enum.PAGE))
-    wm = cast(WritingMode, al._get_style("txt_direction"))
+    wm = cast(WritingMode, al._get_style("txt_direction")[0])
     assert wm.prop_mode == WritingMode2Enum.PAGE
 
     al = Alignment(align_last=LastLineKind.JUSTIFY)
@@ -85,7 +85,7 @@ def test_alignment_default() -> None:
     assert al.prop_align_last == LastLineKind.START
     assert al.prop_expand_single_word == False
     assert al.prop_snap_to_grid == True
-    wm = cast(WritingMode, al._get_style("txt_direction"))
+    wm = cast(WritingMode, al._get_style("txt_direction")[0])
     assert wm.prop_mode == WritingMode2Enum.PAGE
 
 
@@ -111,7 +111,7 @@ def test_alignment_copy() -> None:
     assert al.prop_align_last == LastLineKind.START
     assert al.prop_expand_single_word == False
     assert al.prop_snap_to_grid == True
-    wm = cast(WritingMode, al._get_style("txt_direction"))
+    wm = cast(WritingMode, al._get_style("txt_direction")[0])
     assert wm.prop_mode == WritingMode2Enum.PAGE
 
 

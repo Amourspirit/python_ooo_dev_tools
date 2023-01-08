@@ -193,6 +193,25 @@ class StyleBase(ABC):
         return StyleKind.UNKNOWN
 
 
+class _GenerickwArgs:
+    """Generic Args"""
+
+    def __init__(self, **kwargs):
+        """
+        Constructor
+        """
+        self._kwargs = kwargs.copy()
+
+    @property
+    def kwargs(self) -> Dict[str, Any]:
+        """
+        Gets kwargs Dictionary
+
+        This is a copy of ``kwargs`` passed into constructor
+        """
+        return self._kwargs
+
+
 class StyleMulti(StyleBase):
     """
     Multi style class.
@@ -205,10 +224,21 @@ class StyleMulti(StyleBase):
 
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
-        self._styles: Dict[int, StyleBase] = {}
+        self._styles: Dict[str, Tuple[StyleBase, _GenerickwArgs | None]] = {}
 
-    def _set_style(self, key: str, style: StyleBase) -> None:
-        self._styles[key] = style
+    def _set_style(self, key: str, style: StyleBase, **kwargs) -> None:
+        """
+        Sets style
+
+        Args:
+            key (str): key store style info
+            style (StyleBase): style
+            kwargs: Expandalble key value args to that are to be passed to style when ``apply_style()`` is called.
+        """
+        if len(kwargs) == 0:
+            self._styles[key] = (style, None)
+        else:
+            self._styles[key] = (style, _GenerickwArgs(**kwargs))
 
     def _remove_style(self, key: str) -> bool:
         if key in self._styles:
@@ -216,11 +246,16 @@ class StyleMulti(StyleBase):
             return True
         return False
 
-    def _get_style(self, key: str) -> StyleBase | None:
+    def _get_style(self, key: str) -> Tuple[StyleBase, _GenerickwArgs | None] | None:
         return self._styles.get(key, None)
 
     def _has_style(self, key: str) -> bool:
         return key in self._styles
+
+    @property
+    def prop_has_attribs(self) -> bool:
+        """Gets If instantance has any attributes set."""
+        return len(self._dv) + len(self._styles) > 0
 
     def apply_style(self, obj: object, **kwargs) -> None:
         """
@@ -230,14 +265,35 @@ class StyleMulti(StyleBase):
             obj (object): UNO Oject that styles are to be applied.
         """
         super().apply_style(obj, **kwargs)
-        for _, style in self._styles.items():
-            style.apply_style(obj, **kwargs)
+        for _, info in self._styles.items():
+            style, kw = info
+            if kw:
+                style.apply_style(obj, **kw.kwargs)
+            else:
+                style.apply_style(obj)
 
     def copy(self: T) -> T:
         cp = super().copy()
-        for key, style in self._styles.items():
-            cp._set_style(key, style.copy())
+        for key, info in self._styles.items():
+            style, kw = info
+            if kw:
+                cp._set_style(key, style.copy(), **kw.kwargs)
+            else:
+                cp._set_style(key, style.copy())
         return cp
+
+    def get_attrs(self) -> Tuple[str, ...]:
+        """
+        Gets the attributes that are slated for change in the current instance
+
+        Returns:
+            Tuple(str, ...): Tuple of attribures
+        """
+        # get current keys in internal dictionary
+        attrs = set(self._dv.keys())
+        if self._styles:
+            attrs.update(self._styles.keys())
+        return tuple(attrs)
 
 
 def _on_props_setting(source: Any, event_args: KeyValCancelArgs, *args, **kwargs) -> None:

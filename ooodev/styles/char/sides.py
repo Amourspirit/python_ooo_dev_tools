@@ -111,15 +111,12 @@ class Sides(StyleBase):
         Returns:
             None:
         """
-        if self._is_valid_service(obj):
-            try:
-                super().apply_style(obj)
-            except mEx.MultiError as e:
-                mLo.Lo.print(f"BorderChar.apply_style(): Unable to set Property")
-                for err in e.errors:
-                    mLo.Lo.print(f"  {err}")
-        else:
-            self._print_no_required_service("apply_style")
+        try:
+            super().apply_style(obj)
+        except mEx.MultiError as e:
+            mLo.Lo.print(f"BorderChar.apply_style(): Unable to set Property")
+            for err in e.errors:
+                mLo.Lo.print(f"  {err}")
 
     # endregion apply_style()
 

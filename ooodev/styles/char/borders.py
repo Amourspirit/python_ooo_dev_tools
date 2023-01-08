@@ -12,7 +12,7 @@ from ...exceptions import ex as mEx
 from ...meta.static_prop import static_prop
 from ...utils import info as mInfo
 from ...utils import lo as mLo
-from ..style_base import StyleBase
+from ..style_base import StyleMulti
 
 from ..structs import side
 from ..structs import shadow
@@ -35,7 +35,7 @@ from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 # endregion imports
 
 
-class Borders(StyleBase):
+class Borders(StyleMulti):
     """
     Border used in styles for characters.
 
@@ -85,13 +85,12 @@ class Borders(StyleBase):
             border_side=border_side,
         )
 
-        if sides.prop_has_attribs:
-            self._sides = sides
-        else:
-            self._sides = None
-        self._padding = padding
-
         super().__init__(**init_vals)
+
+        if sides.prop_has_attribs:
+            self._set_style("sides", sides)
+        if not padding is None:
+            self._set_style("padding", padding)
 
     # endregion init
 
@@ -258,52 +257,13 @@ class Borders(StyleBase):
         Returns:
             None:
         """
-        if not self._padding is None:
-            self._padding.apply_style(obj)
-        if not self._sides is None:
-            self._sides.apply_style(obj)
-        if self._is_valid_service(obj):
-            try:
-                super().apply_style(obj)
-            except mEx.MultiError as e:
-                mLo.Lo.print(f"{self.__name__}.apply_style(): Unable to set Property")
-                for err in e.errors:
-                    mLo.Lo.print(f"  {err}")
-        else:
-            self._print_no_required_service("apply_style")
 
-    def get_attrs(self) -> Tuple[str, ...]:
-        """
-        Gets the attributes that are slated for change in the current instance
-
-        Returns:
-            Tuple(str, ...): Tuple of attribures
-        """
-        # get current keys in internal dictionary
-        attribs = set(super().get_attrs())
-        if self._padding:
-            attribs.update(self._padding.get_attrs())
-        if self._sides:
-            attribs.update(self._sides.get_attrs())
-        return tuple(attribs)
-
-    def copy(self) -> Borders:
-        """
-        Creates a copy
-
-        Returns:
-            Borders: Copy of instance
-        """
-        cp = super().copy()
-        if self._sides is None:
-            cp._sides = None
-        else:
-            cp._sides = self._sides.copy()
-        if self._padding is None:
-            cp._padding = None
-        else:
-            cp._padding = self._padding.copy()
-        return cp
+        try:
+            super().apply_style(obj)
+        except mEx.MultiError as e:
+            mLo.Lo.print(f"{self.__name__}.apply_style(): Unable to set Property")
+            for err in e.errors:
+                mLo.Lo.print(f"  {err}")
 
     # endregion methods
 
@@ -312,17 +272,6 @@ class Borders(StyleBase):
     def prop_style_kind(self) -> StyleKind:
         """Gets the kind of style"""
         return StyleKind.CHAR
-
-    @property
-    def prop_has_attribs(self) -> bool:
-        """Gets If instantance has any attributes set."""
-        if self._dv:
-            return True
-        if self._padding:
-            return True
-        if self._sides:
-            return True
-        return False
 
     @static_prop
     def default(cls) -> Borders:
