@@ -1,5 +1,5 @@
 """
-Modele for managing paragraph padding.
+Modele for managing paragraph alignment.
 
 .. versionadded:: 0.9.0
 """
