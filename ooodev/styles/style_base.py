@@ -248,7 +248,7 @@ class StyleMulti(StyleBase):
                 This is used for backup and restore in Write Module.
             kwargs: Expandalble key value args to that are to be passed to style when ``apply_style()`` is called.
         """
-        if len(kwargs) == 0:
+        if len(attrs) + len(kwargs) == 0:
             self._styles[key] = (style, None)
         else:
             self._styles[key] = (style, _StyleMultArgs(*attrs, **kwargs))

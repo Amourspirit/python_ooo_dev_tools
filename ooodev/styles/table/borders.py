@@ -130,7 +130,7 @@ class Borders(StyleMulti):
             None:
         """
         try:
-            super().apply_style(obj)
+            super().apply_style(obj, **kwargs)
         except mEx.MultiError as e:
             mLo.Lo.print(f"CellBorder.apply_style(): Unable to set Property")
             for err in e.errors:

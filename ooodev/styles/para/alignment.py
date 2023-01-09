@@ -119,7 +119,7 @@ class Alignment(StyleMulti):
             None:
         """
         try:
-            super().apply_style(obj)
+            super().apply_style(obj, **kwargs)
         except mEx.MultiError as e:
             mLo.Lo.print(f"{self.__class__}.apply_style(): Unable to set Property")
             for err in e.errors:
@@ -163,7 +163,7 @@ class Alignment(StyleMulti):
 
         try:
             txt_dir = WritingMode.from_obj(obj)
-            inst._set_style("txt_direction", txt_dir)
+            inst._set_style("txt_direction", txt_dir, *txt_dir.get_attrs())
         except Exception:
             mLo.Lo.print("Alignment.from_obj(): unable to set txt_direction style")
         return inst

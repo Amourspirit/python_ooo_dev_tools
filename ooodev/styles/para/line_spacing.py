@@ -66,7 +66,7 @@ class LineSpacing(StyleMulti):
         Constructor
 
         Args:
-            mode (ModeKind, optional): Determines the left margin of the paragraph (in mm units).
+            mode (ModeKind, optional): Determines the mode that is use to apply units.
             value (Real, optional): Value of line spacing. Only applies when ``ModeKind`` is ``PORPORTINAL``, ``AT_LEAST``, ``LEADING``, or ``FIXED``.
             active_ln_spacing (bool, optional): Determines active page line-spacing.
         Returns:
@@ -102,11 +102,14 @@ class LineSpacing(StyleMulti):
                 # value is considered to be mm units
                 ls = mLs.LineSpacing(int(mode), round(value * 100))
 
+        self._mode = mode
+        self._value = value
+
         if not active_ln_spacing is None:
             init_vals["ParaRegisterModeActive"] = active_ln_spacing
 
         super().__init__(**init_vals)
-        if not mode is None:
+        if not ls is None:
             self._set_style("line_spacing", ls, "ParaLineSpacing", keys={"spacing": "ParaLineSpacing"})
 
     # endregion init
@@ -136,7 +139,7 @@ class LineSpacing(StyleMulti):
             None:
         """
         try:
-            super().apply_style(obj)
+            super().apply_style(obj, **kwargs)
         except mEx.MultiError as e:
             mLo.Lo.print(f"{self.__class__}.apply_style(): Unable to set Property")
             for err in e.errors:
@@ -170,7 +173,7 @@ class LineSpacing(StyleMulti):
 
         ls = mProps.Props.get(obj, "ParaLineSpacing", None)
         if not ls is None:
-            inst._set_style("line_spacing", ls, keys={"spacing": "ParaLineSpacing"})
+            inst._set_style("line_spacing", ls, "ParaLineSpacing", keys={"spacing": "ParaLineSpacing"})
         return inst
 
     # endregion methods
@@ -192,6 +195,16 @@ class LineSpacing(StyleMulti):
             self._remove("ParaRegisterModeActive")
             return
         self._set("ParaRegisterModeActive", value)
+
+    @property
+    def prop_mode(self) -> ModeKind | None:
+        """Gets the mode that is use to apply units."""
+        return self._mode
+
+    @property
+    def prop_value(self) -> Real | None:
+        """Gets the Value of line spacing."""
+        return self._value
 
     @static_prop
     def default(cls) -> LineSpacing:
