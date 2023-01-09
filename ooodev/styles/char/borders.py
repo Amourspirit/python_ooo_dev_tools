@@ -88,9 +88,9 @@ class Borders(StyleMulti):
         super().__init__(**init_vals)
 
         if sides.prop_has_attribs:
-            self._set_style("sides", sides)
+            self._set_style("sides", sides, *sides.get_attrs())
         if not padding is None:
-            self._set_style("padding", padding)
+            self._set_style("padding", padding, *padding.get_attrs())
 
     # endregion init
 

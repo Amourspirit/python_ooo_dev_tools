@@ -101,9 +101,9 @@ class Borders(StyleMulti):
 
         super().__init__(**init_vals)
         if border_table.prop_has_attribs:
-            self._set_style("border_table", border_table)
+            self._set_style("border_table", border_table, *border_table.get_attrs())
         if not padding is None:
-            self._set_style("padding", padding)
+            self._set_style("padding", padding, *padding.get_attrs())
 
     # endregion init
 

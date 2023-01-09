@@ -92,7 +92,7 @@ class Alignment(StyleMulti):
 
         super().__init__(**init_vals)
         if not txt_direction is None:
-            self._set_style("txt_direction", txt_direction)
+            self._set_style("txt_direction", txt_direction, *txt_direction.get_attrs())
 
     # endregion init
 
