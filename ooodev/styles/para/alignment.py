@@ -1,10 +1,10 @@
 """
-Modele for managing paragraph padding.
+Modele for managing paragraph alignment.
 
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import cast
+from typing import Tuple, cast
 from enum import Enum
 
 from ...exceptions import ex as mEx
@@ -92,11 +92,20 @@ class Alignment(StyleMulti):
 
         super().__init__(**init_vals)
         if not txt_direction is None:
-            self._set_style("txt_direction", txt_direction)
+            self._set_style("txt_direction", txt_direction, *txt_direction.get_attrs())
 
     # endregion init
 
     # region methods
+
+    def _supported_services(self) -> Tuple[str, ...]:
+        """
+        Gets a tuple of supported services (``com.sun.star.style.ParagraphProperties``,)
+
+        Returns:
+            Tuple[str, ...]: Supported services
+        """
+        return ("com.sun.star.style.ParagraphProperties",)
 
     def apply_style(self, obj: object, **kwargs) -> None:
         """
@@ -109,16 +118,12 @@ class Alignment(StyleMulti):
         Returns:
             None:
         """
-        if mInfo.Info.support_service(obj, "com.sun.star.style.ParagraphProperties"):
-            try:
-                super().apply_style(obj)
-            except mEx.MultiError as e:
-                mLo.Lo.print(f"{self.__class__}.apply_style(): Unable to set Property")
-                for err in e.errors:
-                    mLo.Lo.print(f"  {err}")
-        else:
-            mLo.Lo.print('Padding.apply_style(): "com.sun.star.style.ParagraphProperties" not supported')
-        return None
+        try:
+            super().apply_style(obj, **kwargs)
+        except mEx.MultiError as e:
+            mLo.Lo.print(f"{self.__class__}.apply_style(): Unable to set Property")
+            for err in e.errors:
+                mLo.Lo.print(f"  {err}")
 
     @staticmethod
     def from_obj(obj: object) -> Alignment:
@@ -129,13 +134,14 @@ class Alignment(StyleMulti):
             obj (object): UNO object that supports ``com.sun.star.style.ParagraphProperties`` service.
 
         Raises:
-            NotSupportedServiceError: If ``obj`` does not support  ``com.sun.star.style.ParagraphProperties`` service.
+            NotSupportedServiceError: If ``obj`` does not support ``com.sun.star.style.ParagraphProperties`` service.
 
         Returns:
-            Padding: Padding that represents ``obj`` padding.
+            Alignment: Alignment that represents ``obj`` alignment.
         """
-        if not mInfo.Info.support_service(obj, "com.sun.star.style.ParagraphProperties"):
-            raise mEx.NotSupportedServiceError("com.sun.star.style.ParagraphProperties")
+        inst = Alignment()
+        if not inst._is_valid_service(obj):
+            raise mEx.NotSupportedServiceError(inst._supported_services()[0])
 
         def set_prop(key: str, align: Alignment):
             nonlocal obj
@@ -143,25 +149,24 @@ class Alignment(StyleMulti):
             if not val is None:
                 align._set(key, val)
 
-        al = Alignment()
-        set_prop("ParaAdjust", al)
-        set_prop("ParaVertAlignment", al)
-        set_prop("ParaLastLineAdjust", al)
-        set_prop("ParaExpandSingleWord", al)
+        set_prop("ParaAdjust", inst)
+        set_prop("ParaVertAlignment", inst)
+        set_prop("ParaLastLineAdjust", inst)
+        set_prop("ParaExpandSingleWord", inst)
         try:
             # SnapToGrid is not part of any know service
             snap = mProps.Props.get(obj, "SnapToGrid")
-            al._set("SnapToGrid", snap)
+            inst._set("SnapToGrid", snap)
         except mEx.PropertyNotFoundError as e:
             mLo.Lo.print("Alignment.from_obj(), SnapToGrid property not found")
             mLo.Lo.print(f"  {e}")
 
         try:
             txt_dir = WritingMode.from_obj(obj)
-            al._set_style("txt_direction", txt_dir)
+            inst._set_style("txt_direction", txt_dir, *txt_dir.get_attrs())
         except Exception:
             mLo.Lo.print("Alignment.from_obj(): unable to set txt_direction style")
-        return al
+        return inst
 
     # endregion methods
 

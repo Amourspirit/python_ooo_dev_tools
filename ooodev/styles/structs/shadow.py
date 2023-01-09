@@ -5,7 +5,7 @@ Module for Shadow format (``ShadowFormat``) struct.
 """
 # region imports
 from __future__ import annotations
-from typing import cast, overload
+from typing import Tuple, cast, overload
 
 from ...meta.static_prop import static_prop
 from ...utils import props as mProps
@@ -78,6 +78,9 @@ class Shadow(StyleBase):
             IsTransparent=self._get("IsTransparent"),
             Color=self._get("Color"),
         )
+
+    def _supported_services(self) -> Tuple[str, ...]:
+        return ()
 
     # region apply_style()
 

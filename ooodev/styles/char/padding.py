@@ -4,7 +4,7 @@ Module for managing character padding.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import cast
+from typing import Tuple, cast
 
 from ...exceptions import ex as mEx
 from ...meta.static_prop import static_prop
@@ -87,8 +87,14 @@ class Padding(StyleBase):
 
         super().__init__(**init_vals)
 
-    def _is_supported(self, obj: object) -> bool:
-        return mInfo.Info.support_service(obj, "com.sun.star.style.CharacterProperties")
+    def _supported_services(self) -> Tuple[str, ...]:
+        """
+        Gets a tuple of supported services (``com.sun.star.style.CharacterProperties``,)
+
+        Returns:
+            Tuple[str, ...]: Supported services
+        """
+        return ("com.sun.star.style.CharacterProperties",)
 
     def apply_style(self, obj: object, **kwargs) -> None:
         """
@@ -101,15 +107,12 @@ class Padding(StyleBase):
         Returns:
             None:
         """
-        if self._is_supported(obj):
-            try:
-                super().apply_style(obj)
-            except mEx.MultiError as e:
-                mLo.Lo.print(f"{self.__class__}.apply_style(): Unable to set Property")
-                for err in e.errors:
-                    mLo.Lo.print(f"  {err}")
-        else:
-            mLo.Lo.print(f'{self.__class__}.apply_style(): "com.sun.star.style.CharacterProperties" not supported')
+        try:
+            super().apply_style(obj, **kwargs)
+        except mEx.MultiError as e:
+            mLo.Lo.print(f"{self.__class__}.apply_style(): Unable to set Property")
+            for err in e.errors:
+                mLo.Lo.print(f"  {err}")
         return None
 
     @staticmethod
@@ -126,14 +129,15 @@ class Padding(StyleBase):
         Returns:
             Padding: Padding that represents ``obj`` padding.
         """
-        if not mInfo.Info.support_service(obj, "com.sun.star.style.CharacterProperties"):
-            raise mEx.NotSupportedServiceError("com.sun.star.style.CharacterProperties")
-        pd = Padding()
-        pd._set("CharLeftBorderDistance", int(mProps.Props.get(obj, "CharLeftBorderDistance")))
-        pd._set("CharRightBorderDistance", int(mProps.Props.get(obj, "CharRightBorderDistance")))
-        pd._set("CharTopBorderDistance", int(mProps.Props.get(obj, "CharTopBorderDistance")))
-        pd._set("CharBottomBorderDistance", int(mProps.Props.get(obj, "CharBottomBorderDistance")))
-        return pd
+        inst = Padding()
+        if inst._is_valid_service(obj):
+            inst._set("CharLeftBorderDistance", int(mProps.Props.get(obj, "CharLeftBorderDistance")))
+            inst._set("CharRightBorderDistance", int(mProps.Props.get(obj, "CharRightBorderDistance")))
+            inst._set("CharTopBorderDistance", int(mProps.Props.get(obj, "CharTopBorderDistance")))
+            inst._set("CharBottomBorderDistance", int(mProps.Props.get(obj, "CharBottomBorderDistance")))
+        else:
+            raise mEx.NotSupportedServiceError(inst._supported_services()[0])
+        return inst
 
     # region Syle methods
     def style_padding_all(self, value: float | None) -> Padding:

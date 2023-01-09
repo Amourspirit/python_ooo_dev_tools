@@ -4,7 +4,7 @@ Modele for managing paragraph padding.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import cast, overload
+from typing import Tuple, cast, overload
 
 from ...exceptions import ex as mEx
 from ...meta.static_prop import static_prop
@@ -53,6 +53,15 @@ class WritingMode(StyleBase):
     # endregion init
 
     # region methods
+    def _supported_services(self) -> Tuple[str, ...]:
+        """
+        Gets a tuple of supported services (``com.sun.star.style.ParagraphPropertiesComplex``,)
+
+        Returns:
+            Tuple[str, ...]: Supported services
+        """
+        return ("com.sun.star.style.ParagraphPropertiesComplex",)
+
     @overload
     def apply_style(self, obj: object) -> None:
         ...
@@ -67,16 +76,12 @@ class WritingMode(StyleBase):
         Returns:
             None:
         """
-        if mInfo.Info.support_service(obj, "com.sun.star.style.ParagraphPropertiesComplex"):
-            try:
-                super().apply_style(obj)
-            except mEx.MultiError as e:
-                mLo.Lo.print(f"{self.__class__}.apply_style(): Unable to set Property")
-                for err in e.errors:
-                    mLo.Lo.print(f"  {err}")
-        else:
-            mLo.Lo.print('Padding.apply_style(): "com.sun.star.style.ParagraphPropertiesComplex" not supported')
-        return None
+        try:
+            super().apply_style(obj, **kwargs)
+        except mEx.MultiError as e:
+            mLo.Lo.print(f"{self.__class__}.apply_style(): Unable to set Property")
+            for err in e.errors:
+                mLo.Lo.print(f"  {err}")
 
     @staticmethod
     def from_obj(obj: object) -> WritingMode:
@@ -92,11 +97,12 @@ class WritingMode(StyleBase):
         Returns:
             WritingMode: ``WritingMode`` instance that represents ``obj`` writing mode.
         """
-        if not mInfo.Info.support_service(obj, "com.sun.star.style.ParagraphPropertiesComplex"):
-            raise mEx.NotSupportedServiceError("com.sun.star.style.ParagraphPropertiesComplex")
-        wm = WritingMode()
-        wm._set("WritingMode", int(mProps.Props.get(obj, "WritingMode")))
-        return wm
+        inst = WritingMode()
+        if inst._is_valid_service(obj):
+            inst._set("WritingMode", int(mProps.Props.get(obj, "WritingMode")))
+        else:
+            raise mEx.NotSupportedServiceError(inst._supported_services()[0])
+        return inst
 
     # endregion methods
 
@@ -106,10 +112,10 @@ class WritingMode(StyleBase):
         Gets copy of instance with writing mode set or removed
 
         Args:
-            value (ParagraphAdjust | None): Alignment value
+            value (ParagraphAdjust | None): mode value
 
         Returns:
-            Alignment: Alignment instance
+            WritingMode: ``WritingMode`` instance
         """
         cp = self.copy()
         cp.prop_align = value

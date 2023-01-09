@@ -11,7 +11,7 @@ from ...exceptions import ex as mEx
 from ...meta.static_prop import static_prop
 from ...utils import info as mInfo
 from ...utils import lo as mLo
-from ..style_base import StyleBase
+from ..style_base import StyleMulti
 
 from ..structs import side
 from ..structs import shadow
@@ -34,7 +34,7 @@ from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 # endregion imports
 
 
-class Borders(StyleBase):
+class Borders(StyleMulti):
     """
     Table Borders used in styles for table cells and ranges.
 
@@ -99,32 +99,24 @@ class Borders(StyleBase):
             distance=distance,
         )
 
-        if border_table.prop_has_attribs:
-            self._border_table = border_table
-        else:
-            self._border_table = None
-        self._padding = padding
-
         super().__init__(**init_vals)
+        if border_table.prop_has_attribs:
+            self._set_style("border_table", border_table, *border_table.get_attrs())
+        if not padding is None:
+            self._set_style("padding", padding, *padding.get_attrs())
 
     # endregion init
 
     # region methods
 
-    def get_attrs(self) -> Tuple[str, ...]:
+    def _supported_services(self) -> Tuple[str, ...]:
         """
-        Gets the attributes that are slated for change in the current instance
+        Gets a tuple of supported services (``com.sun.star.table.CellProperties``,)
 
         Returns:
-            Tuple(str, ...): Tuple of attribures
+            Tuple[str, ...]: Supported services
         """
-        # get current keys in internal dictionary
-        attribs = set(super().get_attrs())
-        if self._padding:
-            attribs.update(self._padding.get_attrs())
-        if self._border_table:
-            attribs.update(self._border_table.get_attrs())
-        return tuple(attribs)
+        return ("com.sun.star.table.CellProperties",)
 
     def apply_style(self, obj: object, **kwargs) -> None:
         """
@@ -137,35 +129,12 @@ class Borders(StyleBase):
         Returns:
             None:
         """
-        if not self._padding is None:
-            self._padding.apply_style(obj)
-        if not self._border_table is None:
-            self._border_table.apply_style(obj)
-        if mInfo.Info.support_service(obj, "com.sun.star.table.CellProperties"):
-            try:
-                super().apply_style(obj)
-            except mEx.MultiError as e:
-                mLo.Lo.print(f"CellBorder.apply_style(): Unable to set Property")
-                for err in e.errors:
-                    mLo.Lo.print(f"  {err}")
-
-    def copy(self) -> Borders:
-        """
-        Creates a copy
-
-        Returns:
-            Borders: Copy of instance
-        """
-        cp = super().copy()
-        if self._border_table is None:
-            cp._border_table = None
-        else:
-            cp._border_table = self._border_table.copy()
-        if self._padding is None:
-            cp._padding = None
-        else:
-            cp._padding = self._padding.copy()
-        return cp
+        try:
+            super().apply_style(obj, **kwargs)
+        except mEx.MultiError as e:
+            mLo.Lo.print(f"CellBorder.apply_style(): Unable to set Property")
+            for err in e.errors:
+                mLo.Lo.print(f"  {err}")
 
     # endregion methods
 
