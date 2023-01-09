@@ -815,8 +815,7 @@ class Write(mSel.Selection):
             cursor.gotoEnd(False)
             if bak:
                 # restore the cursors properties that were changed
-                for key, val in old_val.items():
-                    mProps.Props.set(cursor, **{key: val})
+                mProps.Props.set(cursor, **old_val)
 
     @classmethod
     def _append_ctl_char(cls, cursor: XTextCursor, ctl_char: int) -> None:
@@ -1034,8 +1033,7 @@ class Write(mSel.Selection):
         cls._append_ctl_char(cursor=cursor, ctl_char=ControlCharacterEnum.PARAGRAPH_BREAK)
 
         if old_val:
-            for key, val in old_val.items():
-                mProps.Props.set(cursor, **{key: val})
+            mProps.Props.set(cursor, **old_val)
 
     # endregion append_para()
 

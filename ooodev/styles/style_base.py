@@ -133,7 +133,7 @@ class StyleBase(ABC):
         Returns:
             None:
         """
-        if self.prop_has_attribs:
+        if len(self._dv) > 0:
             if self._is_valid_service(obj):
                 events = Events(source=self)
                 events.on(PropsNamedEvent.PROP_SETTING, _on_props_setting)
@@ -193,14 +193,24 @@ class StyleBase(ABC):
         return StyleKind.UNKNOWN
 
 
-class _GenerickwArgs:
+class _StyleMultArgs:
     """Generic Args"""
 
-    def __init__(self, **kwargs):
+    def __init__(self, *attrs, **kwargs):
         """
         Constructor
         """
+        self._args = attrs[:]
         self._kwargs = kwargs.copy()
+
+    @property
+    def attrs(self) -> tuple:
+        """
+        Gets attribs tuple.
+
+        This is a copy of ``args`` passed into constructor.
+        """
+        return self._args
 
     @property
     def kwargs(self) -> Dict[str, Any]:
@@ -224,21 +234,24 @@ class StyleMulti(StyleBase):
 
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
-        self._styles: Dict[str, Tuple[StyleBase, _GenerickwArgs | None]] = {}
+        self._styles: Dict[str, Tuple[StyleBase, _StyleMultArgs | None]] = {}
 
-    def _set_style(self, key: str, style: StyleBase, **kwargs) -> None:
+    def _set_style(self, key: str, style: StyleBase, *attrs, **kwargs) -> None:
         """
         Sets style
 
         Args:
             key (str): key store style info
             style (StyleBase): style
+            attrs: Exapandable list attributes that style sets.
+                The values added here are added when get_attrs() method is called.
+                This is used for backup and restore in Write Module.
             kwargs: Expandalble key value args to that are to be passed to style when ``apply_style()`` is called.
         """
         if len(kwargs) == 0:
             self._styles[key] = (style, None)
         else:
-            self._styles[key] = (style, _GenerickwArgs(**kwargs))
+            self._styles[key] = (style, _StyleMultArgs(*attrs, **kwargs))
 
     def _remove_style(self, key: str) -> bool:
         if key in self._styles:
@@ -246,7 +259,7 @@ class StyleMulti(StyleBase):
             return True
         return False
 
-    def _get_style(self, key: str) -> Tuple[StyleBase, _GenerickwArgs | None] | None:
+    def _get_style(self, key: str) -> Tuple[StyleBase, _StyleMultArgs | None] | None:
         return self._styles.get(key, None)
 
     def _has_style(self, key: str) -> bool:
@@ -292,7 +305,10 @@ class StyleMulti(StyleBase):
         # get current keys in internal dictionary
         attrs = set(self._dv.keys())
         if self._styles:
-            attrs.update(self._styles.keys())
+            for _, info in self._styles.items():
+                _, args = info
+                if args:
+                    attrs.update(args.attrs)
         return tuple(attrs)
 
 

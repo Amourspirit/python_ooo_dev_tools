@@ -103,7 +103,7 @@ class Spacing(StyleBase):
             NotSupportedServiceError: If ``obj`` does not support  ``com.sun.star.style.ParagraphProperties`` service.
 
         Returns:
-            WritingMode: ``Spacing`` instance that represents ``obj`` writing mode.
+            Spacing: ``Spacing`` instance that represents ``obj`` spacing.
         """
         inst = Spacing()
         if not inst._is_valid_service(obj):
