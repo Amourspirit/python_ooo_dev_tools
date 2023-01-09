@@ -47,7 +47,7 @@ def test_indent_auto() -> None:
     assert idt.prop_auto
 
 
-def test_alignemnt_write(loader, para_text) -> None:
+def test_write(loader, para_text) -> None:
     delay = 0 if Lo.bridge_connector.headless else 3_000
 
     doc = Write.create_doc()

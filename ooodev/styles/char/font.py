@@ -216,7 +216,7 @@ class Font(StyleBase):
         """
         if self._is_valid_service(obj):
             try:
-                super().apply_style(obj)
+                super().apply_style(obj, **kwargs)
             except mEx.MultiError as e:
                 mLo.Lo.print(f"Font.apply_style(): Unable to set Property")
                 for err in e.errors:
