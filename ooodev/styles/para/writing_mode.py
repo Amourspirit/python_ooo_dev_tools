@@ -1,5 +1,5 @@
 """
-Modele for managing paragraph padding.
+Modele for managing paragraph Writing Mode.
 
 .. versionadded:: 0.9.0
 """
@@ -8,7 +8,6 @@ from typing import Tuple, cast, overload
 
 from ...exceptions import ex as mEx
 from ...meta.static_prop import static_prop
-from ...utils import info as mInfo
 from ...utils import lo as mLo
 from ...utils import props as mProps
 from ..kind.style_kind import StyleKind
@@ -19,7 +18,7 @@ from ooo.dyn.text.writing_mode2 import WritingMode2Enum as WritingMode2Enum
 
 class WritingMode(StyleBase):
     """
-    Paragraph Alignment
+    Paragraph Writeing Mode
 
     Any properties starting with ``prop_`` set or get current instance values.
 
