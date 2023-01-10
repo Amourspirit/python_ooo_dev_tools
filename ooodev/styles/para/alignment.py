@@ -38,7 +38,7 @@ class Alignment(StyleMulti):
 
     Any properties starting with ``prop_`` set or get current instance values.
 
-    All methods starting with ``style_`` can be used to chain together Padding properties.
+    All methods starting with ``style_`` can be used to chain together properties.
 
     .. versionadded:: 0.9.0
     """
@@ -383,7 +383,7 @@ class Alignment(StyleMulti):
         self._set("SnapToGrid", value)
 
     @static_prop
-    def default(cls) -> Alignment:
+    def default(cls) -> Alignment:  # type: ignore[misc]
         """Gets Alignment defult. Static Property."""
         if cls._DEFAULT is None:
             cls._DEFAULT = Alignment(

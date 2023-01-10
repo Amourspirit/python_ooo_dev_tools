@@ -133,7 +133,7 @@ class IndentSpacing(StyleMulti):
         return StyleKind.PARA
 
     @static_prop
-    def default(cls) -> IndentSpacing:
+    def default(cls) -> IndentSpacing:  # type: ignore[misc]
         """Gets ``IndentSpacing`` default. Static Property."""
         if cls._DEFAULT is None:
             ls = LineSpacing.default

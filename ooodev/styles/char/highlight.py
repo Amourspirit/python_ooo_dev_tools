@@ -141,7 +141,7 @@ class Highlight(StyleBase):
             self._set("CharBackTransparent", True)
 
     @static_prop
-    def empty(cls) -> Highlight:
+    def empty(cls) -> Highlight:  # type: ignore[misc]
         """Gets Highlight empty. Static Property."""
         if cls._EMPTY is None:
             cls._EMPTY = Highlight()

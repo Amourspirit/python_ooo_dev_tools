@@ -20,7 +20,7 @@ class Indent(StyleBase):
 
     Any properties starting with ``prop_`` set or get current instance values.
 
-    All methods starting with ``style_`` can be used to chain together Padding properties.
+    All methods starting with ``style_`` can be used to chain together properties.
 
     .. versionadded:: 0.9.0
     """
@@ -267,7 +267,7 @@ class Indent(StyleBase):
         self._set("ParaIsAutoFirstLineIndent", value)
 
     @static_prop
-    def default(cls) -> Indent:
+    def default(cls) -> Indent:  # type: ignore[misc]
         """Gets ``Indent`` default. Static Property."""
         if cls._DEFAULT is None:
             cls._DEFAULT = Indent(before=0.0, after=0.0, first=0.0, auto=False)

@@ -117,7 +117,7 @@ class LineSpacing(StyleBase):
         self._set("Height", value)
 
     @static_prop
-    def empty(cls) -> LineSpacing:
+    def empty(cls) -> LineSpacing:  # type: ignore[misc]
         """Gets empty Line Spacing. Static Property."""
         if cls._EMPTY is None:
             cls._EMPTY = LineSpacing(0, 0)

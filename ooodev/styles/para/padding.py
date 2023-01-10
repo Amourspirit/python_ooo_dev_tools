@@ -21,7 +21,7 @@ class Padding(StyleBase):
 
     Any properties starting with ``prop_`` set or get current instance values.
 
-    All methods starting with ``style_`` can be used to chain together Padding properties.
+    All methods starting with ``style_`` can be used to chain together properties.
 
     .. versionadded:: 0.9.0
     """
@@ -293,7 +293,7 @@ class Padding(StyleBase):
         self._set("ParaBottomMargin", round(value * 100))
 
     @static_prop
-    def default(cls) -> Padding:
+    def default(cls) -> Padding:  # type: ignore[misc]
         """Gets Padding default. Static Property."""
         if cls._DEFAULT is None:
             cls._DEFAULT = Padding(padding_all=0.35)

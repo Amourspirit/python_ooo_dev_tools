@@ -274,14 +274,14 @@ class Borders(StyleMulti):
         return StyleKind.CHAR
 
     @static_prop
-    def default(cls) -> Borders:
+    def default(cls) -> Borders:  # type: ignore[misc]
         """Gets Default Border. Static Property"""
         if cls._DEFAULT is None:
             cls._DEFAULT = Borders(border_side=Side.empty, padding=Padding.default, shadow=Shadow.empty)
         return cls._DEFAULT
 
     @static_prop
-    def empty(cls) -> Borders:
+    def empty(cls) -> Borders:  # type: ignore[misc]
         """Gets Empty Border. Static Property. When style is applied formatting is removed."""
         if cls._EMPTY is None:
             cls._EMPTY = Borders(

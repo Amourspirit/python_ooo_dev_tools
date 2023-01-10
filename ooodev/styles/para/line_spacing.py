@@ -47,7 +47,7 @@ class LineSpacing(StyleMulti):
 
     Any properties starting with ``prop_`` set or get current instance values.
 
-    All methods starting with ``style_`` can be used to chain together Padding properties.
+    All methods starting with ``style_`` can be used to chain together properties.
 
     .. versionadded:: 0.9.0
     """
@@ -207,7 +207,7 @@ class LineSpacing(StyleMulti):
         return self._value
 
     @static_prop
-    def default(cls) -> LineSpacing:
+    def default(cls) -> LineSpacing:  # type: ignore[misc]
         """Gets ``LineSpacing`` default. Static Property."""
         if cls._DEFAULT is None:
             cls._DEFAULT = LineSpacing(mode=ModeKind.SINGLE)
