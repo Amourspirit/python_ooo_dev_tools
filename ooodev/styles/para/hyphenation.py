@@ -300,10 +300,10 @@ class Hyphenation(StyleBase):
         self._set("ParaHyphenationMaxHyphens", value)
 
     @static_prop
-    def default(cls) -> Hyphenation:  # type: ignore[misc]
+    def default() -> Hyphenation:  # type: ignore[misc]
         """Gets ``Hyphenation`` default. Static Property."""
-        if cls._DEFAULT is None:
-            cls._DEFAULT = Hyphenation(auto=False, no_caps=False, start_chars=2, end_chars=2, max=0)
-        return cls._DEFAULT
+        if Hyphenation._DEFAULT is None:
+            Hyphenation._DEFAULT = Hyphenation(auto=False, no_caps=False, start_chars=2, end_chars=2, max=0)
+        return Hyphenation._DEFAULT
 
     # endregion properties

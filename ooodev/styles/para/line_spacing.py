@@ -207,10 +207,10 @@ class LineSpacing(StyleMulti):
         return self._value
 
     @static_prop
-    def default(cls) -> LineSpacing:  # type: ignore[misc]
+    def default() -> LineSpacing:  # type: ignore[misc]
         """Gets ``LineSpacing`` default. Static Property."""
-        if cls._DEFAULT is None:
-            cls._DEFAULT = LineSpacing(mode=ModeKind.SINGLE)
-        return cls._DEFAULT
+        if LineSpacing._DEFAULT is None:
+            LineSpacing._DEFAULT = LineSpacing(mode=ModeKind.SINGLE)
+        return LineSpacing._DEFAULT
 
     # endregion properties

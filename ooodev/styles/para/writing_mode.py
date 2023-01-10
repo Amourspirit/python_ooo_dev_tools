@@ -234,10 +234,10 @@ class WritingMode(StyleBase):
         self._set("WritingMode", value)
 
     @static_prop
-    def default(cls) -> WritingMode:  # type: ignore[misc]
+    def default() -> WritingMode:  # type: ignore[misc]
         """Gets ``WritingMode`` default. Static Property."""
-        if cls._DEFAULT is None:
-            cls._DEFAULT = WritingMode(WritingMode2Enum.PAGE)
-        return cls._DEFAULT
+        if WritingMode._DEFAULT is None:
+            WritingMode._DEFAULT = WritingMode(WritingMode2Enum.PAGE)
+        return WritingMode._DEFAULT
 
     # endregion properties

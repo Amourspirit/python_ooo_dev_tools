@@ -210,12 +210,12 @@ class Shadow(StyleBase):
         self._set("ShadowWidth", round(value * 100))
 
     @static_prop
-    def empty(cls) -> Shadow:  # type: ignore[misc]
+    def empty() -> Shadow:  # type: ignore[misc]
         """Gets empty Shadow. Static Property. when style is applied it remove any shadow."""
-        if cls._EMPTY is None:
-            cls._EMPTY = Shadow(location=ShadowLocation.NONE, transparent=False, color=8421504)
+        if Shadow._EMPTY is None:
+            Shadow._EMPTY = Shadow(location=ShadowLocation.NONE, transparent=False, color=8421504)
             # just to be exact due to float conversions.
-            cls._EMPTY._set("ShadowWidth", 176)
-        return cls._EMPTY
+            Shadow._EMPTY._set("ShadowWidth", 176)
+        return Shadow._EMPTY
 
     # endregion Properties

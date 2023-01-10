@@ -4,7 +4,7 @@ Modele for managing paragraph breaks.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, overload, Any
+from typing import Tuple, overload
 
 from ...exceptions import ex as mEx
 from ...meta.static_prop import static_prop

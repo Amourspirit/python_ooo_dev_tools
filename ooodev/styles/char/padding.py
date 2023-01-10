@@ -289,8 +289,8 @@ class Padding(StyleBase):
         self._set("CharBottomBorderDistance", round(value * 100))
 
     @static_prop
-    def default(cls) -> Padding:  # type: ignore[misc]
+    def default() -> Padding:  # type: ignore[misc]
         """Gets Padding default. Static Property."""
-        if cls._DEFAULT is None:
-            cls._DEFAULT = Padding(padding_all=0.0)
-        return cls._DEFAULT
+        if Padding._DEFAULT is None:
+            Padding._DEFAULT = Padding(padding_all=0.0)
+        return Padding._DEFAULT
