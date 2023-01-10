@@ -58,11 +58,11 @@ class IndentSpacing(StyleMulti):
             None:
 
         Note:
-            Arguments ``before``, ``after``, ``first`` and ``auto`` set Line Spacing.
+            Arguments ``before``, ``after``, ``first`` and ``auto`` set Indent.
 
-            Arguments ``above``, ``below``, and ``style_no_space`` set Paragraph Spacing.
+            Arguments ``above``, ``below``, and ``style_no_space`` set Spacing.
 
-            Arguments ``mode``, ``value``, and ``active_ln_spacing`` set Paragraph Indent.
+            Arguments ``mode``, ``value``, and ``active_ln_spacing`` set Line Spacing.
 
             When ``mode`` is ``ModeKind.AT_LEAST``, ``ModeKind.LEADING``, or ``ModeKind.FIXED``
             then the units are mm units (as float).
