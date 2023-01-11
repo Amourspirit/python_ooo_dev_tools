@@ -14,7 +14,7 @@ from ...utils import info as mInfo
 from ..kind.style_kind import StyleKind
 from ..style_base import StyleBase
 
-from ooo.dyn.style.break_type import BreakType
+from ooo.dyn.style.break_type import BreakType as BreakType
 
 
 class Breaks(StyleBase):
