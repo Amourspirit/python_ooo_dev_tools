@@ -8,7 +8,8 @@ from typing import Any
 
 from ..proto import style_obj
 
-class Style:
+
+class Styler:
     """
     Style methods
 

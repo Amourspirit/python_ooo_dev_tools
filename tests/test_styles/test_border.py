@@ -14,7 +14,7 @@ from ooodev.styles.table.borders import (
     ShadowLocation,
 )
 from ooodev.styles.para.padding import Padding
-from ooodev.styles import CommonColor, Style
+from ooodev.styles import CommonColor, Styler
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.styles.style_const import POINT_RATIO
@@ -43,7 +43,7 @@ def test_calc_border(loader) -> None:
         cell = Calc.get_cell(sheet, cell_obj)
         cb = Borders(border_side=Side())
 
-        Style.apply_style(cell, cb)
+        Styler.apply_style(cell, cb)
         cp = cast("CellProperties", cell)
         # line width may not be applied exact by LibreOffice.
         assert cp.TableBorder2.IsLeftLineValid
@@ -69,7 +69,7 @@ def test_calc_border(loader) -> None:
             right=Side(line=BorderLineStyleEnum.DOUBLE, width=2.5),
             shadow=shadow,
         )
-        Style.apply_style(cell, cb)
+        Styler.apply_style(cell, cb)
         cp = cast("CellProperties", cell)
         assert cp.TableBorder2.IsLeftLineValid
         assert cp.TableBorder2.LeftLine.LineWidth in [
@@ -91,7 +91,7 @@ def test_calc_border(loader) -> None:
         cell_obj = Calc.get_cell_obj("e1")
         cell = Calc.get_cell(sheet, cell_obj)
         cb = Borders(diagonal_up=Side(line=BorderLineStyleEnum.DOUBLE_THIN, color=CommonColor.RED))
-        Style.apply_style(cell, cb)
+        Styler.apply_style(cell, cb)
         cp = cast("CellProperties", cell)
         assert cp.DiagonalBLTR2.Color == CommonColor.RED
         assert cp.DiagonalBLTR2.LineStyle == BorderLineStyleEnum.DOUBLE_THIN.value
@@ -99,7 +99,7 @@ def test_calc_border(loader) -> None:
         cell_obj = Calc.get_cell_obj("g1")
         cell = Calc.get_cell(sheet, cell_obj)
         cb = Borders(diagonal_down=Side(line=BorderLineStyleEnum.DOTTED, color=CommonColor.BROWN))
-        Style.apply_style(cell, cb)
+        Styler.apply_style(cell, cb)
         cp = cast("CellProperties", cell)
         assert cp.DiagonalTLBR2.Color == CommonColor.BROWN
         assert cp.DiagonalTLBR2.LineStyle == BorderLineStyleEnum.DOTTED.value
@@ -109,7 +109,7 @@ def test_calc_border(loader) -> None:
         cell_obj = Calc.get_cell_obj("A3")
         cell = Calc.get_cell(sheet, cell_obj)
         cb = Borders(diagonal_down=side, diagonal_up=side)
-        Style.apply_style(cell, cb)
+        Styler.apply_style(cell, cb)
         cp = cast("CellProperties", cell)
         assert cp.DiagonalTLBR2.Color == CommonColor.ORANGE_RED
         assert cp.DiagonalTLBR2.LineStyle == BorderLineStyleEnum.SOLID.value
@@ -120,7 +120,7 @@ def test_calc_border(loader) -> None:
         Calc.set_val(value="Hello", sheet=sheet, cell_obj=cell_obj)
         cell = Calc.get_cell(sheet, cell_obj)
         cb = Borders(diagonal_down=side, diagonal_up=side)
-        Style.apply_style(cell, Borders(padding=Padding(padding_all=0.7)))
+        Styler.apply_style(cell, Borders(padding=Padding(padding_all=0.7)))
         cp = cast("ParagraphProperties", cell)
         # padding may not apply exact
         assert cp.ParaLeftMargin >= 69 and cp.ParaLeftMargin <= 72
@@ -132,7 +132,7 @@ def test_calc_border(loader) -> None:
         Calc.set_val(value="Hello", sheet=sheet, cell_obj=cell_obj)
         cell = Calc.get_cell(sheet, cell_obj)
         cb = Borders(diagonal_down=side, diagonal_up=side)
-        Style.apply_style(cell, Borders(padding=Padding(left=1.2, right=1.2, top=0.5, bottom=0.5)))
+        Styler.apply_style(cell, Borders(padding=Padding(left=1.2, right=1.2, top=0.5, bottom=0.5)))
         cp = cast("ParagraphProperties", cell)
         # padding may not apply exact
         assert cp.ParaLeftMargin >= 118 and cp.ParaLeftMargin <= 122
@@ -145,7 +145,7 @@ def test_calc_border(loader) -> None:
         Calc.set_val(value="Hello", sheet=sheet, cell_obj=cell_obj)
         cell = Calc.get_cell(sheet, cell_obj)
         cb = Borders(diagonal_down=side, diagonal_up=side)
-        Style.apply_style(cell, Borders.default)
+        Styler.apply_style(cell, Borders.default)
 
         Lo.delay(delay)
     finally:
@@ -174,7 +174,7 @@ def test_calc_border_range(loader) -> None:
             vertical=Side(color=CommonColor.RED, line=BorderLineStyleEnum.DASHED),
             horizontal=Side(color=CommonColor.GREEN, width=1.4, line=BorderLineStyleEnum.DOUBLE),
         )
-        Style.apply_style(cr, cb)
+        Styler.apply_style(cr, cb)
 
         rng = cast("CellRange", cr)
 
@@ -182,7 +182,7 @@ def test_calc_border_range(loader) -> None:
         assert rng.TableBorder2.RightLine.LineStyle == BorderLineStyleEnum.SOLID.value
 
         cb = Borders(horizontal=Side(color=CommonColor.GREEN, width=1.4, line=BorderLineStyleEnum.DOUBLE))
-        Style.apply_style(cr, cb)
+        Styler.apply_style(cr, cb)
 
         assert rng.TableBorder2.VerticalLine.Color == CommonColor.RED
         assert rng.TableBorder2.VerticalLine.LineStyle == BorderLineStyleEnum.DASHED.value
@@ -197,7 +197,7 @@ def test_calc_border_range(loader) -> None:
             Calc.goto_cell(cell_obj=rng_obj.cell_start, doc=doc)
 
         cb = Borders(border_side=Side(), diagonal_up=Side(color=CommonColor.RED))
-        Style.apply_style(cr, cb)
+        Styler.apply_style(cr, cb)
 
         cell = Calc.get_cell(sheet=sheet, cell_obj=rng_obj.cell_start)
 
@@ -213,7 +213,7 @@ def test_calc_border_range(loader) -> None:
         cb = Borders(
             border_side=Side(), diagonal_up=Side(color=CommonColor.RED), diagonal_down=Side(color=CommonColor.RED)
         )
-        Style.apply_style(cr, cb)
+        Styler.apply_style(cr, cb)
 
         rng_obj = Calc.get_range_obj("c15:F17")
         cr = Calc.get_cell_range(sheet, rng_obj)
@@ -221,7 +221,7 @@ def test_calc_border_range(loader) -> None:
         if not Lo.bridge_connector.headless:
             Calc.goto_cell(cell_obj=rng_obj.cell_start, doc=doc)
 
-        Style.apply_style(cr, Borders.empty)
+        Styler.apply_style(cr, Borders.empty)
 
         cell = Calc.get_cell(sheet=sheet, cell_obj=rng_obj.cell_start)
         cp = cast("CellProperties", cell)
@@ -238,7 +238,7 @@ def test_calc_border_range(loader) -> None:
 
         cb = Borders(border_side=Side(color=CommonColor.GREEN).line_double_thin)
 
-        Style.apply_style(cr, cb)
+        Styler.apply_style(cr, cb)
 
         cell = Calc.get_cell(sheet=sheet, cell_obj=rng_obj.cell_start)
         cp = cast("CellProperties", cell)

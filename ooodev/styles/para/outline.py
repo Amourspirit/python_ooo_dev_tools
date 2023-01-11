@@ -11,7 +11,6 @@ from ...exceptions import ex as mEx
 from ...meta.static_prop import static_prop
 from ...utils import lo as mLo
 from ...utils import props as mProps
-from ...utils import info as mInfo
 from ..kind.style_kind import StyleKind
 from ..style_base import StyleBase
 
