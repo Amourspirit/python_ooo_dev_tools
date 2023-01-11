@@ -1,10 +1,10 @@
 """
-Modele for managing paragraph padding.
+Modele for managing paragraph hyphenation.
 
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, cast, overload
+from typing import Tuple, overload
 
 from ...exceptions import ex as mEx
 from ...meta.static_prop import static_prop
@@ -13,8 +13,6 @@ from ...utils import props as mProps
 from ..kind.style_kind import StyleKind
 from ..style_base import StyleBase
 
-from ooo.dyn.text.writing_mode2 import WritingMode2Enum as WritingMode2Enum
-
 
 class Hyphenation(StyleBase):
     """
@@ -22,7 +20,7 @@ class Hyphenation(StyleBase):
 
     Any properties starting with ``prop_`` set or get current instance values.
 
-    All methods starting with ``style_`` can be used to chain together Padding properties.
+    All methods starting with ``style_`` can be used to chain together properties.
 
     .. versionadded:: 0.9.0
     """
@@ -46,7 +44,7 @@ class Hyphenation(StyleBase):
             auto (bool, optional): Hyphenate automatically.
             no_caps (bool, optional): Don't hyphenate word in caps.
             start_chars (int, optional): Characters at line begin.
-            end_chars: (int, optional): charactors at line end.
+            end_chars (int, optional): charactors at line end.
             max (int, optional): Maximum consecutive hyphenated lines.
 
         Returns:
@@ -302,10 +300,10 @@ class Hyphenation(StyleBase):
         self._set("ParaHyphenationMaxHyphens", value)
 
     @static_prop
-    def default(cls) -> Hyphenation:
+    def default() -> Hyphenation:  # type: ignore[misc]
         """Gets ``Hyphenation`` default. Static Property."""
-        if cls._DEFAULT is None:
-            cls._DEFAULT = Hyphenation(auto=False, no_caps=False, start_chars=2, end_chars=2, max=0)
-        return cls._DEFAULT
+        if Hyphenation._DEFAULT is None:
+            Hyphenation._DEFAULT = Hyphenation(auto=False, no_caps=False, start_chars=2, end_chars=2, max=0)
+        return Hyphenation._DEFAULT
 
     # endregion properties

@@ -22,7 +22,7 @@ class WritingMode(StyleBase):
 
     Any properties starting with ``prop_`` set or get current instance values.
 
-    All methods starting with ``style_`` can be used to chain together Padding properties.
+    All methods starting with ``style_`` can be used to chain together properties.
 
     .. versionadded:: 0.9.0
     """
@@ -234,10 +234,10 @@ class WritingMode(StyleBase):
         self._set("WritingMode", value)
 
     @static_prop
-    def default(cls) -> WritingMode:
+    def default() -> WritingMode:  # type: ignore[misc]
         """Gets ``WritingMode`` default. Static Property."""
-        if cls._DEFAULT is None:
-            cls._DEFAULT = WritingMode(WritingMode2Enum.PAGE)
-        return cls._DEFAULT
+        if WritingMode._DEFAULT is None:
+            WritingMode._DEFAULT = WritingMode(WritingMode2Enum.PAGE)
+        return WritingMode._DEFAULT
 
     # endregion properties
