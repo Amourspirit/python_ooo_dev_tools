@@ -37,7 +37,7 @@ class Breaks(StyleBase):
         Constructor
 
         Args:
-            type (Any, optional): Break type.
+            type (BreakType, optional): Break type.
             style (str, optional): Style to apply to break.
             num (int, optional): Page number to apply to break.
 

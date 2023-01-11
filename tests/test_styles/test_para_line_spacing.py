@@ -6,7 +6,6 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.styles.para.spacing import Spacing
 from ooodev.styles.para.line_spacing import LineSpacing, ModeKind
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
@@ -76,7 +75,7 @@ def test_props() -> None:
 
 
 def test_default() -> None:
-    idt = cast(LineSpacing, LineSpacing.default)
+    idt = LineSpacing.default
     ls_info = idt._get_style("line_spacing")
     ls, gen = ls_info
     assert ls.prop_height == 100

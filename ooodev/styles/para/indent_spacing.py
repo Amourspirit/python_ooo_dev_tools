@@ -29,40 +29,40 @@ class IndentSpacing(StyleMulti):
     def __init__(
         self,
         *,
-        before: float | None = None,
-        after: float | None = None,
-        first: float | None = None,
-        auto: bool | None = None,
-        above: float | None = None,
-        below: float | None = None,
-        style_no_space: bool | None = None,
-        mode: ModeKind | None = None,
-        value: Real | None = None,
-        active_ln_spacing: bool | None = None,
+        id_before: float | None = None,
+        id_after: float | None = None,
+        id_first: float | None = None,
+        id_auto: bool | None = None,
+        sp_above: float | None = None,
+        sp_below: float | None = None,
+        sp_style_no_space: bool | None = None,
+        ln_mode: ModeKind | None = None,
+        ln_value: Real | None = None,
+        ln_active_spacing: bool | None = None,
     ) -> None:
         """
         Constructor
 
         Args:
-            before (float, optional): Determines the left margin of the paragraph (in mm units).
-            after (float, optional): Determines the right margin of the paragraph (in mm units).
-            first (float, optional): specifies the indent for the first line (in mm units).
-            auto (bool, optional): Determines if the first line should be indented automatically.
-            above (float, optional): Determines the top margin of the paragraph (in mm units).
-            below (float, optional): Determines the bottom margin of the paragraph (in mm units).
-            style_no_space (bool, optional): Do not add space between paragraphs of the same style.
-            mode (ModeKind, optional): Determines the left margin of the paragraph (in mm units).
-            value (Real, optional): Value of line spacing. Only applies when ``ModeKind`` is ``PORPORTINAL``, ``AT_LEAST``, ``LEADING``, or ``FIXED``.
-            active_ln_spacing (bool, optional): Determines active page line-spacing.
+            id_before (float, optional): Determines the left margin of the paragraph (in mm units).
+            id_after (float, optional): Determines the right margin of the paragraph (in mm units).
+            id_first (float, optional): specifies the indent for the first line (in mm units).
+            id_auto (bool, optional): Determines if the first line should be indented automatically.
+            sp_above (float, optional): Determines the top margin of the paragraph (in mm units).
+            sp_below (float, optional): Determines the bottom margin of the paragraph (in mm units).
+            sp_style_no_space (bool, optional): Do not add space between paragraphs of the same style.
+            ln_mode (ModeKind, optional): Determines the left margin of the paragraph (in mm units).
+            ln_value (Real, optional): Value of line spacing. Only applies when ``ModeKind`` is ``PORPORTINAL``, ``AT_LEAST``, ``LEADING``, or ``FIXED``.
+            ln_active_spacing (bool, optional): Determines active page line-spacing.
         Returns:
             None:
 
         Note:
-            Arguments ``before``, ``after``, ``first`` and ``auto`` set Indent.
+            Arguments that start with ``id_`` set Indent.
 
-            Arguments ``above``, ``below``, and ``style_no_space`` set Spacing.
+            Arguments that start with ``sp_`` set Spacing.
 
-            Arguments ``mode``, ``value``, and ``active_ln_spacing`` set Line Spacing.
+            Arguments that start with ``ln_`` set Line Spacing.
 
             When ``mode`` is ``ModeKind.AT_LEAST``, ``ModeKind.LEADING``, or ``ModeKind.FIXED``
             then the units are mm units (as float).
@@ -72,11 +72,11 @@ class IndentSpacing(StyleMulti):
         # https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1ParagraphProperties-members.html
         init_vals = {}
 
-        ls = LineSpacing(mode=mode, value=value, active_ln_spacing=active_ln_spacing)
+        ls = LineSpacing(mode=ln_mode, value=ln_value, active_ln_spacing=ln_active_spacing)
 
-        spc = Spacing(above=above, below=below, style_no_space=style_no_space)
+        spc = Spacing(above=sp_above, below=sp_below, style_no_space=sp_style_no_space)
 
-        indent = Indent(before=before, after=after, first=first, auto=auto)
+        indent = Indent(before=id_before, after=id_after, first=id_first, auto=id_auto)
 
         super().__init__(**init_vals)
         if ls.prop_has_attribs:
@@ -141,16 +141,16 @@ class IndentSpacing(StyleMulti):
             spc = Spacing.default
 
             IndentSpacing._DEFAULT = IndentSpacing(
-                mode=ls.prop_mode,
-                value=ls.prop_value,
-                active_ln_spacing=ls.prop_active_ln_spacing,
-                above=spc.prop_above,
-                below=spc.prop_below,
-                style_no_space=spc.prop_style_no_space,
-                before=indent.prop_before,
-                after=indent.prop_after,
-                first=indent.prop_first,
-                auto=indent.prop_auto,
+                ln_mode=ls.prop_mode,
+                ln_value=ls.prop_value,
+                ln_active_spacing=ls.prop_active_ln_spacing,
+                sp_above=spc.prop_above,
+                sp_below=spc.prop_below,
+                sp_style_no_space=spc.prop_style_no_space,
+                id_before=indent.prop_before,
+                id_after=indent.prop_after,
+                id_first=indent.prop_first,
+                id_auto=indent.prop_auto,
             )
         return IndentSpacing._DEFAULT
 
