@@ -806,8 +806,7 @@ class Write(mSel.Selection):
                 old_val = {}
                 for attr in style.get_attrs():
                     val = mProps.Props.get(cursor, attr, None)
-                    if not val is None:
-                        old_val[attr] = val
+                    old_val[attr] = val
             cursor.goLeft(s_len, True)
 
             style.apply_style(cursor)
@@ -815,7 +814,12 @@ class Write(mSel.Selection):
             cursor.gotoEnd(False)
             if bak:
                 # restore the cursors properties that were changed
-                mProps.Props.set(cursor, **old_val)
+                try:
+                    mProps.Props.set(cursor, **old_val)
+                except mEx.MultiError as e:
+                    mLo.Lo.print(f"Write.append(): Unable to restore Property")
+                    for err in e.errors:
+                        mLo.Lo.print(f"  {err}")
 
     @classmethod
     def _append_ctl_char(cls, cursor: XTextCursor, ctl_char: int) -> None:
@@ -1019,8 +1023,7 @@ class Write(mSel.Selection):
                     old_val = {}
                 for attr in style.get_attrs():
                     val = mProps.Props.get(cursor, attr, None)
-                    if not val is None:
-                        old_val[attr] = val
+                    old_val[attr] = val
 
         if text:
             if styles is None:
@@ -1033,7 +1036,12 @@ class Write(mSel.Selection):
         cls._append_ctl_char(cursor=cursor, ctl_char=ControlCharacterEnum.PARAGRAPH_BREAK)
 
         if old_val:
-            mProps.Props.set(cursor, **old_val)
+            try:
+                mProps.Props.set(cursor, **old_val)
+            except mEx.MultiError as e:
+                mLo.Lo.print(f"Write.append_para(): Unable to restore Property")
+                for err in e.errors:
+                    mLo.Lo.print(f"  {err}")
 
     # endregion append_para()
 

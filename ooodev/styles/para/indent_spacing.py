@@ -58,11 +58,11 @@ class IndentSpacing(StyleMulti):
             None:
 
         Note:
-            Arguments ``before``, ``after``, ``first`` and ``auto`` set Line Spacing.
+            Arguments ``before``, ``after``, ``first`` and ``auto`` set Indent.
 
-            Arguments ``above``, ``below``, and ``style_no_space`` set Paragraph Spacing.
+            Arguments ``above``, ``below``, and ``style_no_space`` set Spacing.
 
-            Arguments ``mode``, ``value``, and ``active_ln_spacing`` set Paragraph Indent.
+            Arguments ``mode``, ``value``, and ``active_ln_spacing`` set Line Spacing.
 
             When ``mode`` is ``ModeKind.AT_LEAST``, ``ModeKind.LEADING``, or ``ModeKind.FIXED``
             then the units are mm units (as float).
@@ -133,14 +133,14 @@ class IndentSpacing(StyleMulti):
         return StyleKind.PARA
 
     @static_prop
-    def default(cls) -> IndentSpacing:
+    def default() -> IndentSpacing:  # type: ignore[misc]
         """Gets ``IndentSpacing`` default. Static Property."""
-        if cls._DEFAULT is None:
+        if IndentSpacing._DEFAULT is None:
             ls = LineSpacing.default
             indent = Indent.default
             spc = Spacing.default
 
-            cls._DEFAULT = IndentSpacing(
+            IndentSpacing._DEFAULT = IndentSpacing(
                 mode=ls.prop_mode,
                 value=ls.prop_value,
                 active_ln_spacing=ls.prop_active_ln_spacing,
@@ -152,6 +152,6 @@ class IndentSpacing(StyleMulti):
                 first=indent.prop_first,
                 auto=indent.prop_auto,
             )
-        return cls._DEFAULT
+        return IndentSpacing._DEFAULT
 
     # endregion properties

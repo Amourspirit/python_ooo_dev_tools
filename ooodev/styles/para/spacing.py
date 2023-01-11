@@ -20,7 +20,7 @@ class Spacing(StyleBase):
 
     Any properties starting with ``prop_`` set or get current instance values.
 
-    All methods starting with ``style_`` can be used to chain together Padding properties.
+    All methods starting with ``style_`` can be used to chain together properties.
 
     .. versionadded:: 0.9.0
     """
@@ -230,10 +230,10 @@ class Spacing(StyleBase):
         self._set("ParaContextMargin", value)
 
     @static_prop
-    def default(cls) -> Spacing:
+    def default() -> Spacing:  # type: ignore[misc]
         """Gets ``Spacing`` default. Static Property."""
-        if cls._DEFAULT is None:
-            cls._DEFAULT = Spacing(above=0.0, below=0.0, style_no_space=False)
-        return cls._DEFAULT
+        if Spacing._DEFAULT is None:
+            Spacing._DEFAULT = Spacing(above=0.0, below=0.0, style_no_space=False)
+        return Spacing._DEFAULT
 
     # endregion properties

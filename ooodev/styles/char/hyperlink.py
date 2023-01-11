@@ -210,10 +210,10 @@ class Hyperlink(StyleBase):
         return StyleKind.CHAR
 
     @static_prop
-    def empty(cls) -> Hyperlink:
+    def empty() -> Hyperlink:  # type: ignore[misc]
         """Gets Highlight empty. Static Property."""
-        if cls._EMPTY is None:
-            cls._EMPTY = Hyperlink(name="", url="")
-        return cls._EMPTY
+        if Hyperlink._EMPTY is None:
+            Hyperlink._EMPTY = Hyperlink(name="", url="")
+        return Hyperlink._EMPTY
 
     # endregion Properties
