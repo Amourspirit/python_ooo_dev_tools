@@ -30,7 +30,7 @@ def test_write(loader, para_text) -> None:
         p_len = len(para_text)
         amt = 3.5
         # test Indent
-        Write.append_para(cursor=cursor, text=para_text, styles=(IndentSpacing(before=amt),))
+        Write.append_para(cursor=cursor, text=para_text, styles=(IndentSpacing(id_before=amt),))
 
         cursor.goLeft(1, False)
         cursor.gotoStart(True)
@@ -40,7 +40,9 @@ def test_write(loader, para_text) -> None:
         cursor.gotoEnd(False)
 
         # test LineSpacing
-        Write.append_para(cursor=cursor, text=para_text, styles=(IndentSpacing(mode=ModeKind.PORPORTINAL, value=96),))
+        Write.append_para(
+            cursor=cursor, text=para_text, styles=(IndentSpacing(ln_mode=ModeKind.PORPORTINAL, ln_value=96),)
+        )
         cursor.goLeft(p_len + 1, False)
         cursor.goRight(p_len, True)
         ls = pp.ParaLineSpacing
@@ -50,7 +52,7 @@ def test_write(loader, para_text) -> None:
 
         # test Spacing
         amt = 2.0
-        Write.append_para(cursor=cursor, text=para_text, styles=(IndentSpacing(below=amt),))
+        Write.append_para(cursor=cursor, text=para_text, styles=(IndentSpacing(sp_below=amt),))
         cursor.goLeft(p_len + 1, False)
         cursor.goRight(p_len, True)
         assert pp.ParaBottomMargin in [round(amt * 100) - 2 + i for i in range(5)]  # plus or minus 2

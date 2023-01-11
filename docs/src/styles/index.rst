@@ -11,4 +11,5 @@ styles
     para/index
     structs/index
     table/index
+    style/index
     *
