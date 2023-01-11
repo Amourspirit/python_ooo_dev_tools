@@ -33,7 +33,7 @@ Added ``Write.append_line(cursor: XTextCursor, text: str, styles: Iterable[Style
 
 Added ``Write.append_para(cursor: XTextCursor, text: str, styles: Iterable[StyleObj])`` overload.
 
-Added :ref:`ns_styles` namespace with many classes for applying styles to documents and sheets.
+Added :ref:`ns_format` namespace with many classes for applying styles and formatting to documents and sheets.
 
 Version 0.8.6
 =============
