@@ -38,7 +38,6 @@ class ListStyle(StyleBase):
 
         Args:
             list_style (str, StyleListKind, optional): List Style.
-            restart (int, optional): Restart numbering at this paragraph.
             num_start (int, optional): Starts with number.
                 If ``-1`` then restart numbering at current paragraph is consider to be ``False``.
                 If ``-2`` then restart numbering at current paragraph is consider to be ``True``.

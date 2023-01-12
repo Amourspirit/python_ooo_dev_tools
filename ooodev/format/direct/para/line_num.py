@@ -36,7 +36,6 @@ class LineNum(StyleBase):
         Constructor
 
         Args:
-            list_style (str, StyleListKind, optional): List Style.
             num_start (int, optional): Restart paragraph with number.
                 If ``0`` then this paragraph is include in line numbering.
                 If ``-1`` then this paragraph is excluded in line numbering.

@@ -70,7 +70,6 @@ class IndentSpacing(StyleMulti):
             When ``mode`` is ``ModeKind.PORPORTINAL`` then the unit is percentage (as int).
         """
         # https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1ParagraphProperties-members.html
-        init_vals = {}
 
         ls = LineSpacing(mode=ln_mode, value=ln_value, active_ln_spacing=ln_active_spacing)
 
@@ -78,7 +77,7 @@ class IndentSpacing(StyleMulti):
 
         indent = Indent(before=id_before, after=id_after, first=id_first, auto=id_auto)
 
-        super().__init__(**init_vals)
+        super().__init__()
         if ls.prop_has_attribs:
             self._set_style("line_spacing", ls, *ls.get_attrs())
         if spc.prop_has_attribs:
