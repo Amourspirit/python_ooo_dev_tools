@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Tuple, TYPE_CHECKING
-from ..styles.kind.style_kind import StyleKind as StyleKind
+from ..format.kind.style_kind import StyleKind as StyleKind
 
 try:
     from typing import Protocol

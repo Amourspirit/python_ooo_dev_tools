@@ -9,8 +9,8 @@ if __name__ == "__main__":
 from ooodev.utils.lo import Lo
 from ooodev.utils.gui import GUI
 from ooodev.office.write import Write
-from ooodev.styles.char.highlight import Highlight
-from ooodev.styles import CommonColor
+from ooodev.format.direct.char.highlight import Highlight
+from ooodev.format import CommonColor
 
 if TYPE_CHECKING:
     from com.sun.star.style import CharacterProperties  # service
