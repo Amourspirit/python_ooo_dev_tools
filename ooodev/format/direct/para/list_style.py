@@ -48,7 +48,7 @@ class ListStyle(StyleBase):
             None:
 
         Note:
-            If argument ``list_style`` is ``StyleListKind.NONE`` or empty string then num_start is ignored.
+            If argument ``list_style`` is ``StyleListKind.NONE`` or empty string then ``num_start`` is ignored.
         """
         # https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1ParagraphProperties-members.html
 
