@@ -46,7 +46,7 @@ class OutlineList(StyleMulti):
             ln_num (int, optional): Restart paragraph with number.
                 If ``0`` then this paragraph is include in line numbering.
                 If ``-1`` then this paragraph is excluded in line numbering.
-                If greater then zero then this paragraph is included in line numbering and the numbering is restarted with value of ``num_start``.
+                If greater then zero then this paragraph is included in line numbering and the numbering is restarted with value of ``ln_num``.
         Returns:
             None:
 
