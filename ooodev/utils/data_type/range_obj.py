@@ -363,6 +363,62 @@ class RangeObj:
             return self.to_string(True) == oth.to_string(True)
         return False
 
+    def __add__(self, other: object) -> RangeObj:
+        if isinstance(other, str):
+            # add cols to right of range
+            cols = mTb.TableHelper.col_name_to_int(other)
+            current_rv = self.get_range_values()
+            rv = current_rv.add_cols(cols)
+            return RangeObj.from_range(rv)
+        if isinstance(other, int):
+            # add rows to bottom of range
+            current_rv = self.get_range_values()
+            rv = current_rv.add_rows(other)
+            return RangeObj.from_range(rv)
+        return NotImplemented
+
+    def __radd__(self, other: object) -> RangeObj:
+        if isinstance(other, str):
+            # add cols to left of range
+            cols = mTb.TableHelper.col_name_to_int(other)
+            current_rv = self.get_range_values()
+            rv = current_rv.add_cols(cols, False)
+            return RangeObj.from_range(rv)
+        if isinstance(other, int):
+            # add rows to top of range
+            current_rv = self.get_range_values()
+            rv = current_rv.add_rows(other, False)
+            return RangeObj.from_range(rv)
+        return NotImplemented
+
+    def __sub__(self, other: object) -> RangeObj:
+        if isinstance(other, str):
+            # subtract col from right of range
+            cols = mTb.TableHelper.col_name_to_int(other)
+            current_rv = self.get_range_values()
+            rv = current_rv.subtract_cols(cols)
+            return RangeObj.from_range(rv)
+        if isinstance(other, int):
+            # subtract rows from bottom of range
+            current_rv = self.get_range_values()
+            rv = current_rv.subtract_rows(other)
+            return RangeObj.from_range(rv)
+        return NotImplemented
+
+    def __rsub__(self, other: object) -> RangeObj:
+        if isinstance(other, str):
+            # subtract col from left of range
+            cols = mTb.TableHelper.col_name_to_int(other)
+            current_rv = self.get_range_values()
+            rv = current_rv.subtract_cols(cols, False)
+            return RangeObj.from_range(rv)
+        if isinstance(other, int):
+            # subtract rows from top of range
+            current_rv = self.get_range_values()
+            rv = current_rv.subtract_rows(other, False)
+            return RangeObj.from_range(rv)
+        return NotImplemented
+
     # endregion methods
 
     # region properties

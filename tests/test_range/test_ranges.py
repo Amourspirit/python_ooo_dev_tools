@@ -63,6 +63,177 @@ def test_get_range_values(loader) -> None:
         Lo.close_doc(doc)
 
 
+@pytest.mark.parametrize(
+    ("val", "add", "end", "expected"),
+    [
+        (10, 10, True, 20),
+        (0, 5, True, 5),
+        (11, -5, True, 6),
+        (10, 10, False, 0),
+        (6, 5, False, 1),
+        (11, -5, False, 16),
+    ],
+)
+def test_range_values_add_cols(val: int, add: int, end: bool, expected: int) -> None:
+    from ooodev.utils.data_type.range_values import RangeValues
+
+    col_start = 0
+    col_end = 0
+    if end:
+        col_end = val
+    else:
+        col_start = val
+    rv1 = RangeValues(col_start=col_start, col_end=col_end, row_start=0, row_end=0, sheet_idx=0)
+    rv2 = rv1.add_cols(add, end)
+    if end:
+        assert rv2.col_end == expected
+    else:
+        assert rv2.col_start == expected
+
+
+@pytest.mark.parametrize(
+    ("val", "add", "end", "expected"),
+    [
+        (10, 10, True, 20),
+        (0, 5, True, 5),
+        (11, -5, True, 6),
+        (10, 10, False, 0),
+        (6, 5, False, 1),
+        (11, -5, False, 16),
+    ],
+)
+def test_range_values_add_rows(val: int, add: int, end: bool, expected: int) -> None:
+    from ooodev.utils.data_type.range_values import RangeValues
+
+    row_start = 0
+    row_end = 0
+    if end:
+        row_end = val
+    else:
+        row_start = val
+    rv1 = RangeValues(col_start=0, col_end=0, row_start=row_start, row_end=row_end, sheet_idx=0)
+    rv2 = rv1.add_rows(add, end)
+    if end:
+        assert rv2.row_end == expected
+    else:
+        assert rv2.row_start == expected
+
+
+@pytest.mark.parametrize(
+    ("val", "add", "end", "expected"),
+    [
+        (10, 10, True, 20),
+        (0, 5, True, 5),
+        (11, -5, True, 6),
+        (10, 10, False, 0),
+        (6, 5, False, 1),
+        (11, -5, False, 16),
+    ],
+)
+def test_range_values_add_cols(val: int, add: int, end: bool, expected: int) -> None:
+    from ooodev.utils.data_type.range_values import RangeValues
+
+    col_start = 0
+    col_end = 0
+    if end:
+        col_end = val
+    else:
+        col_start = val
+    rv1 = RangeValues(col_start=col_start, col_end=col_end, row_start=0, row_end=0, sheet_idx=0)
+    rv2 = rv1.add_cols(add, end)
+    if end:
+        assert rv2.col_end == expected
+    else:
+        assert rv2.col_start == expected
+
+
+@pytest.mark.parametrize(
+    ("val", "subt", "end", "expected"),
+    [
+        (10, 10, True, 0),
+        (5, 0, True, 5),
+        (7, 3, True, 4),
+        (11, -5, True, 16),
+        (12, 10, False, 22),
+        (6, 5, False, 11),
+        (11, -5, False, 6),
+    ],
+)
+def test_range_values_subtract_rows(val: int, subt: int, end: bool, expected: int) -> None:
+    from ooodev.utils.data_type.range_values import RangeValues
+
+    row_start = 0
+    row_end = 0
+    if end:
+        row_end = val
+    else:
+        row_start = val
+    rv1 = RangeValues(col_start=0, col_end=0, row_start=row_start, row_end=row_end, sheet_idx=0)
+    rv2 = rv1.subtract_rows(subt, end)
+    if end:
+        assert rv2.row_end == expected
+    else:
+        assert rv2.row_start == expected
+
+
+@pytest.mark.parametrize(
+    ("val", "subt", "end", "expected"),
+    [
+        (10, 10, True, 0),
+        (5, 0, True, 5),
+        (7, 3, True, 4),
+        (11, -5, True, 16),
+        (12, 10, False, 22),
+        (6, 5, False, 11),
+        (11, -5, False, 6),
+    ],
+)
+def test_range_values_subtract_cols(val: int, subt: int, end: bool, expected: int) -> None:
+    from ooodev.utils.data_type.range_values import RangeValues
+
+    col_start = 0
+    col_end = 0
+    if end:
+        col_end = val
+    else:
+        col_start = val
+    rv1 = RangeValues(col_start=col_start, col_end=col_end, row_start=0, row_end=0, sheet_idx=0)
+    rv2 = rv1.subtract_cols(subt, end)
+    if end:
+        assert rv2.col_end == expected
+    else:
+        assert rv2.col_start == expected
+
+
+def test_range_math_errors() -> None:
+    from ooodev.utils.data_type.range_values import RangeValues
+
+    rv = RangeValues(col_start=1, col_end=1, row_start=1, row_end=1, sheet_idx=0)
+    with pytest.raises(ValueError):
+        _ = rv.add_rows(-2)
+
+    with pytest.raises(ValueError):
+        _ = rv.add_rows(2, False)
+
+    with pytest.raises(ValueError):
+        _ = rv.add_cols(-2)
+
+    with pytest.raises(ValueError):
+        _ = rv.add_cols(2, False)
+
+    with pytest.raises(ValueError):
+        _ = rv.subtract_cols(2)
+
+    with pytest.raises(ValueError):
+        _ = rv.subtract_cols(-2, False)
+
+    with pytest.raises(ValueError):
+        _ = rv.subtract_rows(2)
+
+    with pytest.raises(ValueError):
+        _ = rv.subtract_rows(-2, False)
+
+
 def test_get_range_obj(loader) -> None:
     from ooodev.utils.data_type.range_obj import RangeObj
     from ooodev.utils.lo import Lo
@@ -349,3 +520,171 @@ def test_gen(rng_name: str) -> None:
             assert cell.row == row + rng.start_row_index + 1
     assert row_count == rng.row_count
     assert cell_count == rng.cell_count
+
+
+@pytest.mark.parametrize(
+    ("rng_name", "rows", "expected"),
+    [
+        ("A1:C3", 1, "A1:C4"),
+        ("A2:A2", 2, "A2:A4"),
+        ("C2:R22", 10, "C2:R32"),
+        ("C2:R22", -10, "C2:R12"),
+    ],
+)
+def test_add_range_rows_end(rng_name: str, rows: int, expected: str) -> None:
+    from ooodev.utils.data_type.range_obj import RangeObj
+
+    # adding rows to the end is appending rows to the bottom of the range.
+    # the overall rows is increased, unless adding negative
+    # the first row is expected to remain the same
+    # the columns are expected to remain the same
+
+    rng1 = RangeObj.from_range(rng_name)
+    rng2 = rng1 + rows
+    assert str(rng2) == expected
+
+
+@pytest.mark.parametrize(
+    ("rng_name", "rows", "expected"),
+    [
+        ("A3:C3", 1, "A2:C3"),
+        ("A3:A3", 2, "A1:A3"),
+        ("C22:R30", 10, "C12:R30"),
+        ("C12:R30", -10, "C22:R30"),
+    ],
+)
+def test_add_range_rows_start(rng_name: str, rows: int, expected: str) -> None:
+    from ooodev.utils.data_type.range_obj import RangeObj
+
+    # adding rows to the start is adding rows to the top of the range.
+    # The overall rows are increased by adding to the top of the range, unless adding negative.
+    # the last row is expected to remain the same
+    # the columns are expected to remain the same
+
+    rng1 = RangeObj.from_range(rng_name)
+    rng2 = rows + rng1
+    assert str(rng2) == expected
+
+
+@pytest.mark.parametrize(
+    ("rng_name", "rows", "expected"),
+    [
+        ("A3:C4", 1, "A3:C3"),
+        ("B33:C44", 10, "B33:C34"),
+        ("B33:C44", -10, "B33:C54"),
+    ],
+)
+def test_subtract_range_rows_end(rng_name: str, rows: int, expected: str) -> None:
+    from ooodev.utils.data_type.range_obj import RangeObj
+
+    # subtracting rows from end is removing rows from the bottom of the range.
+    # the overall rows are reduced by removing from the bottom of the range, unless subtracting a negative value.
+    # the columns are expected to remain the same
+
+    rng1 = RangeObj.from_range(rng_name)
+    rng2 = rng1 - rows
+    assert str(rng2) == expected
+
+
+@pytest.mark.parametrize(
+    ("rng_name", "rows", "expected"),
+    [
+        ("A3:C4", 1, "A4:C4"),
+        ("B33:C44", 10, "B43:C44"),
+        ("B33:C44", -10, "B23:C44"),
+    ],
+)
+def test_subtract_range_rows_start(rng_name: str, rows: int, expected: str) -> None:
+    from ooodev.utils.data_type.range_obj import RangeObj
+
+    # subtracting rows from start is removing rows from the top of the range.
+    # the overall rows are reduced by removing from the top of the range, unless subtracting a negative value.
+    # the columns are expected to remain the same
+
+    rng1 = RangeObj.from_range(rng_name)
+    rng2 = rows - rng1
+    assert str(rng2) == expected
+
+
+@pytest.mark.parametrize(
+    ("rng_name", "col", "expected"),
+    [
+        ("A1:C3", "A", "A1:D3"),
+        ("A2:A2", "B", "A2:C2"),
+        ("C2:R22", "J", "C2:AB22"),
+    ],
+)
+def test_add_range_cols_end(rng_name: str, col: str, expected: str) -> None:
+    from ooodev.utils.data_type.range_obj import RangeObj
+
+    # adding cols to the end is adding cols to the right of the range.
+    # The overall cols are increased by adding to the right of the range.
+    # the rows are expected to remain the same.
+    # the first column is expect to remain the same.
+
+    rng1 = RangeObj.from_range(rng_name)
+    rng2 = rng1 + col
+    assert str(rng2) == expected
+
+
+@pytest.mark.parametrize(
+    ("rng_name", "col", "expected"),
+    [
+        ("B1:C3", "A", "A1:C3"),
+        ("D2:E2", "B", "B2:E2"),
+        ("R2:V22", "J", "H2:V22"),
+    ],
+)
+def test_add_range_cols_start(rng_name: str, col: str, expected: str) -> None:
+    from ooodev.utils.data_type.range_obj import RangeObj
+
+    # adding cols to the start is adding cols to the left of the range.
+    # The overall cols are increased by adding to the left of the range.
+    # the rows are expected to remain the same.
+    # the last column is expect to remain the same.
+
+    rng1 = RangeObj.from_range(rng_name)
+    rng2 = col + rng1
+    assert str(rng2) == expected
+
+
+@pytest.mark.parametrize(
+    ("rng_name", "col", "expected"),
+    [
+        ("A1:C3", "A", "A1:B3"),
+        ("A2:D2", "B", "A2:B2"),
+        ("C2:R22", "J", "C2:H22"),
+    ],
+)
+def test_subtract_range_cols_end(rng_name: str, col: str, expected: str) -> None:
+    from ooodev.utils.data_type.range_obj import RangeObj
+
+    # subtracting cols from the end is removing cols from the right of the range.
+    # The overall cols are decreased by removeing from the right of the range.
+    # the rows are expected to remain the same.
+    # the first column is expect to remain the same.
+
+    rng1 = RangeObj.from_range(rng_name)
+    rng2 = rng1 - col
+    assert str(rng2) == expected
+
+
+@pytest.mark.parametrize(
+    ("rng_name", "col", "expected"),
+    [
+        ("A1:C3", "A", "B1:C3"),
+        ("A2:D2", "B", "C2:D2"),
+        ("C2:R22", "J", "M2:R22"),
+    ],
+)
+def test_subtract_range_cols_start(rng_name: str, col: str, expected: str) -> None:
+    from ooodev.utils.data_type.range_obj import RangeObj
+
+    # subtracting cols from the start is removing cols from the left of the range.
+    # The overall cols are decreased by removeing from the left of the range.
+    # the rows are expected to remain the same.
+    # the last column is expect to remain the same.
+
+    rng1 = RangeObj.from_range(rng_name)
+    rng2 = col - rng1
+    assert str(rng2) == expected
