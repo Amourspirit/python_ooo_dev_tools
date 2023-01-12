@@ -38,7 +38,6 @@ class ListStyle(StyleBase):
 
         Args:
             list_style (str, StyleListKind, optional): List Style.
-            restart (int, optional): Restart numbering at this paragraph.
             num_start (int, optional): Starts with number.
                 If ``-1`` then restart numbering at current paragraph is consider to be ``False``.
                 If ``-2`` then restart numbering at current paragraph is consider to be ``True``.
@@ -48,7 +47,7 @@ class ListStyle(StyleBase):
             None:
 
         Note:
-            If argument ``list_style`` is ``StyleListKind.NONE`` or empty string then num_start is ignored.
+            If argument ``list_style`` is ``StyleListKind.NONE`` or empty string then ``num_start`` is ignored.
         """
         # https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1ParagraphProperties-members.html
 

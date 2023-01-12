@@ -51,7 +51,7 @@ class Outline(StyleBase):
         Constructor
 
         Args:
-            level (Any, optional): Break type.
+            level (LevelKind): Outline level.
 
         Returns:
             None:
