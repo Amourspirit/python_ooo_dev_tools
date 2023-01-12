@@ -3,10 +3,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Generator, overload
 from dataclasses import dataclass, field
 from weakref import ref
-
-from . import cell_obj as mCellObj
-from . import cell_obj as mCo
-from . import range_values as mRngValues
 from .. import lo as mLo
 from .. import table_helper as mTb
 from ...office import calc as mCalc
@@ -548,3 +544,8 @@ class RangeObj:
         return self.row_count * self.col_count
 
     # endregion properties
+
+
+from . import cell_obj as mCellObj
+from . import cell_obj as mCo
+from . import range_values as mRngValues

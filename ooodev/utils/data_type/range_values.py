@@ -3,9 +3,6 @@ from typing import TYPE_CHECKING
 from dataclasses import dataclass
 from typing import cast, overload
 
-from . import cell_obj as mCellObj
-from . import cell_values as mCellVals
-from . import range_obj as mRngObj
 from .. import lo as mLo
 from .. import table_helper as mTb
 from ...office import calc as mCalc
@@ -489,3 +486,8 @@ class RangeValues:
         return contains
 
     # endregion contains()
+
+
+from . import cell_obj as mCellObj
+from . import cell_values as mCellVals
+from . import range_obj as mRngObj
