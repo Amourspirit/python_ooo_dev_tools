@@ -10,7 +10,7 @@ from ....exceptions import ex as mEx
 from ....meta.static_prop import static_prop
 from ....utils import lo as mLo
 from ....utils import props as mProps
-from ...kind.style_kind import StyleKind
+from ...kind.format_kind import FormatKind
 from ...style_base import StyleBase
 
 from ooo.dyn.text.writing_mode2 import WritingMode2Enum as WritingMode2Enum
@@ -218,9 +218,9 @@ class WritingMode(StyleBase):
 
     # region properties
     @property
-    def prop_style_kind(self) -> StyleKind:
+    def prop_style_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return StyleKind.PARA | StyleKind.PARA_COMPLEX
+        return FormatKind.PARA | FormatKind.PARA_COMPLEX
 
     @property
     def prop_mode(self) -> WritingMode2Enum | None:

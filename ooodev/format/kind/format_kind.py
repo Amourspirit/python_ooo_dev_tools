@@ -1,7 +1,9 @@
 from enum import IntFlag
 
 
-class StyleKind(IntFlag):
+class FormatKind(IntFlag):
+    """Format Kind"""
+
     UNKNOWN = 0
     PARA = 0x01
     CHAR = 0x02

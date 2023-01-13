@@ -15,7 +15,7 @@ from ..events.lo_named_event import LoNamedEvent
 from ..events.write_named_event import WriteNamedEvent
 from ..exceptions import ex as mEx
 from ..meta.static_meta import classproperty
-from ..proto.style_obj import StyleObj, StyleKind
+from ..proto.style_obj import StyleObj, FormatKind
 from ..utils import file_io as mFileIO
 from ..utils import images_lo as mImgLo
 from ..utils import info as mInfo
@@ -799,7 +799,7 @@ class Write(mSel.Selection):
         cursor.setString(text)
         cursor.gotoEnd(False)
         for style in styles:
-            bak = not StyleKind.PARA in style.prop_style_kind
+            bak = not FormatKind.PARA in style.prop_style_kind
 
             if bak:
                 # store properties about to be changed
@@ -1018,7 +1018,7 @@ class Write(mSel.Selection):
 
         def capture_old_val(style: StyleObj) -> None:
             nonlocal old_val
-            if StyleKind.PARA in style.prop_style_kind:
+            if FormatKind.PARA in style.prop_style_kind:
                 if old_val is None:
                     old_val = {}
                 for attr in style.get_attrs():

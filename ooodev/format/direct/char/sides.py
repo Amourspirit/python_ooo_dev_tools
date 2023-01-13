@@ -12,7 +12,7 @@ from ....events.args.key_val_cancel_args import KeyValCancelArgs
 from ....exceptions import ex as mEx
 from ....utils import info as mInfo
 from ....utils import lo as mLo
-from ...kind.style_kind import StyleKind
+from ...kind.format_kind import FormatKind
 from ..structs import side
 from ..structs.side import Side as Side, BorderLineStyleEnum as BorderLineStyleEnum
 from ...style_base import StyleBase
@@ -243,9 +243,9 @@ class Sides(StyleBase):
 
     # region Properties
     @property
-    def prop_style_kind(self) -> StyleKind:
+    def prop_style_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return StyleKind.CHAR
+        return FormatKind.CHAR
 
     @property
     def prop_left(self) -> Side | None:

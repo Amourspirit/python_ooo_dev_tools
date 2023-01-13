@@ -12,7 +12,7 @@ import uno
 from ....meta.static_prop import static_prop
 from ....utils import props as mProps
 from ...style_base import StyleBase
-from ...kind.style_kind import StyleKind
+from ...kind.format_kind import FormatKind
 
 from ooo.dyn.style.line_spacing import LineSpacing as UnoLineSpacing
 
@@ -94,9 +94,9 @@ class LineSpacing(StyleBase):
 
     # region Properties
     @property
-    def prop_style_kind(self) -> StyleKind:
+    def prop_style_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return StyleKind.STRUCT
+        return FormatKind.STRUCT
 
     @property
     def prop_mode(self) -> int:

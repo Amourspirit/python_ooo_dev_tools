@@ -14,7 +14,7 @@ from ....utils import lo as mLo
 from ....utils import props as mProps
 from ...style_base import StyleMulti
 from ..structs import line_spacing as mLs
-from ...kind.style_kind import StyleKind
+from ...kind.format_kind import FormatKind
 
 
 class ModeKind(Enum):
@@ -181,9 +181,9 @@ class LineSpacing(StyleMulti):
 
     # region properties
     @property
-    def prop_style_kind(self) -> StyleKind:
+    def prop_style_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return StyleKind.PARA
+        return FormatKind.PARA
 
     @property
     def prop_active_ln_spacing(self) -> bool | None:

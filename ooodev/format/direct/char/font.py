@@ -11,7 +11,7 @@ from ....exceptions import ex as mEx
 from ....utils import info as mInfo
 from ....utils import lo as mLo
 from ....utils.color import Color
-from ...kind.style_kind import StyleKind
+from ...kind.format_kind import FormatKind
 from ...style_base import StyleBase
 from ...style_const import POINT_RATIO
 
@@ -602,9 +602,9 @@ class Font(StyleBase):
 
     # region Prop Properties
     @property
-    def prop_style_kind(self) -> StyleKind:
+    def prop_style_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return StyleKind.CHAR
+        return FormatKind.CHAR
 
     @property
     def prop_is_bold(self) -> bool:

@@ -22,7 +22,7 @@ from ..structs.shadow import Shadow
 from .padding import Padding as Padding
 from . import sides
 from .sides import Sides
-from ...kind.style_kind import StyleKind
+from ...kind.format_kind import FormatKind
 
 from ooo.dyn.table.border_line import BorderLine as BorderLine
 from ooo.dyn.table.border_line_style import BorderLineStyleEnum as BorderLineStyleEnum
@@ -273,9 +273,9 @@ class Borders(StyleMulti):
 
     # region Properties
     @property
-    def prop_style_kind(self) -> StyleKind:
+    def prop_style_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return StyleKind.CHAR
+        return FormatKind.CHAR
 
     @static_prop
     def default() -> Borders:  # type: ignore[misc]

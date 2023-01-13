@@ -13,7 +13,7 @@ from ....utils import props as mProps
 from ...style_base import StyleBase
 from . import side
 from .side import Side as Side
-from ...kind.style_kind import StyleKind
+from ...kind.format_kind import FormatKind
 
 from ooo.dyn.table.table_border import TableBorder
 from ooo.dyn.table.table_border2 import TableBorder2
@@ -369,9 +369,9 @@ class BorderTable(StyleBase):
 
     # region Properties
     @property
-    def prop_style_kind(self) -> StyleKind:
+    def prop_style_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return StyleKind.STRUCT
+        return FormatKind.STRUCT
 
     @property
     def prop_distance(self) -> float | None:

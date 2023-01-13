@@ -10,7 +10,7 @@ from ..events.props_named_event import PropsNamedEvent
 from ..events.args.key_val_cancel_args import KeyValCancelArgs
 from ..events.args.key_val_args import KeyValArgs
 from ..utils.type_var import T
-from .kind.style_kind import StyleKind
+from .kind.format_kind import FormatKind
 from abc import ABC
 
 if TYPE_CHECKING:
@@ -188,9 +188,9 @@ class StyleBase(ABC):
         return len(self._dv) > 0
 
     @property
-    def prop_style_kind(self) -> StyleKind:
+    def prop_style_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return StyleKind.UNKNOWN
+        return FormatKind.UNKNOWN
 
 
 class _StyleMultArgs:

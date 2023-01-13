@@ -8,7 +8,7 @@ from typing import Tuple
 
 from ....meta.static_prop import static_prop
 from ...style_base import StyleMulti
-from ...kind.style_kind import StyleKind
+from ...kind.format_kind import FormatKind
 from .outline import Outline as Outline, LevelKind as LevelKind
 from .list_style import ListStyle as ListStyle, StyleListKind as StyleListKind
 from .line_num import LineNum as LineNum
@@ -113,9 +113,9 @@ class OutlineList(StyleMulti):
 
     # region properties
     @property
-    def prop_style_kind(self) -> StyleKind:
+    def prop_style_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return StyleKind.PARA
+        return FormatKind.PARA
 
     @static_prop
     def default() -> OutlineList:  # type: ignore[misc]

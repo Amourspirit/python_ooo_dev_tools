@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Tuple, TYPE_CHECKING
-from ..format.kind.style_kind import StyleKind as StyleKind
+from ..format.kind.format_kind import FormatKind as FormatKind
 
 try:
     from typing import Protocol
@@ -38,6 +38,6 @@ class StyleObj(Protocol):
         ...
 
     @property
-    def prop_style_kind(self) -> StyleKind:
+    def prop_style_kind(self) -> FormatKind:
         """Gets the kind of style"""
         ...

@@ -12,7 +12,7 @@ from ....meta.static_prop import static_prop
 from ....utils import props as mProps
 from ....utils.color import Color
 from ....utils.color import CommonColor
-from ...kind.style_kind import StyleKind
+from ...kind.format_kind import FormatKind
 from ...style_base import StyleBase
 from ...style_const import POINT_RATIO
 
@@ -430,9 +430,9 @@ class Side(StyleBase):
     # endregion Style Properties
     # region properties
     @property
-    def prop_style_kind(self) -> StyleKind:
+    def prop_style_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return StyleKind.STRUCT
+        return FormatKind.STRUCT
 
     @property
     def prop_line(self) -> BorderLineStyleEnum:
