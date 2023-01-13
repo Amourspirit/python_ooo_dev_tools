@@ -860,3 +860,74 @@ def test_subtract_range_cols_start_col_obj(rng_name: str, col: str, expected: st
 
 
 # endregion Test RangeObj add/subtract cols using ColObj
+
+# region test RangeObj add/subtract using CellObj
+@pytest.mark.parametrize(
+    ("rng_name", "cell_name", "expected"),
+    [
+        ("A1:A1", "A2", "A1:B3"),
+        ("C7:D9", "B3", "C7:F12"),
+    ],
+)
+def test_add_range_cols_end_cell_obj(rng_name: str, cell_name: str, expected: str) -> None:
+    from ooodev.utils.data_type.range_obj import RangeObj
+    from ooodev.utils.data_type.cell_obj import CellObj
+
+    co = CellObj.from_cell(cell_name)
+    rng1 = RangeObj.from_range(rng_name)
+    rng2 = rng1 + co
+    assert str(rng2) == expected
+
+
+@pytest.mark.parametrize(
+    ("rng_name", "cell_name", "expected"),
+    [
+        ("C3:D4", "A2", "B1:D4"),
+        ("C7:D9", "B3", "A4:D9"),
+    ],
+)
+def test_add_range_cols_start_cell_obj(rng_name: str, cell_name: str, expected: str) -> None:
+    from ooodev.utils.data_type.range_obj import RangeObj
+    from ooodev.utils.data_type.cell_obj import CellObj
+
+    co = CellObj.from_cell(cell_name)
+    rng1 = RangeObj.from_range(rng_name)
+    rng2 = co + rng1
+    assert str(rng2) == expected
+
+
+@pytest.mark.parametrize(
+    ("rng_name", "cell_name", "expected"),
+    [
+        ("A1:C3", "A2", "A1:B1"),
+        ("C7:D9", "C3", "A6:C7"),
+    ],
+)
+def test_subtract_range_cols_end_cell_obj(rng_name: str, cell_name: str, expected: str) -> None:
+    from ooodev.utils.data_type.range_obj import RangeObj
+    from ooodev.utils.data_type.cell_obj import CellObj
+
+    co = CellObj.from_cell(cell_name)
+    rng1 = RangeObj.from_range(rng_name)
+    rng2 = rng1 - co
+    assert str(rng2) == expected
+
+
+@pytest.mark.parametrize(
+    ("rng_name", "cell_name", "expected"),
+    [
+        ("R13:Z33", "A2", "S15:Z33"),
+        ("E7:R9", "C3", "H9:R10"),
+    ],
+)
+def test_subtract_range_cols_start_cell_obj(rng_name: str, cell_name: str, expected: str) -> None:
+    from ooodev.utils.data_type.range_obj import RangeObj
+    from ooodev.utils.data_type.cell_obj import CellObj
+
+    co = CellObj.from_cell(cell_name)
+    rng1 = RangeObj.from_range(rng_name)
+    rng2 = co - rng1
+    assert str(rng2) == expected
+
+
+# endregion test RangeObj add/subtract using CellObj

@@ -397,6 +397,11 @@ class RangeObj:
             current_rv = self.get_range_values()
             rv = current_rv.add_cols(other.index + 1)
             return RangeObj.from_range(rv)
+        if isinstance(other, mCellObj.CellObj):
+            current_rv = self.get_range_values()
+            rv = current_rv.add_cols(other.col_obj.index + 1)
+            rv = rv.add_rows(other.row)
+            return RangeObj.from_range(rv)
         return NotImplemented
 
     def __radd__(self, other: object) -> RangeObj:
@@ -418,6 +423,11 @@ class RangeObj:
         if isinstance(other, mColObj.ColObj):
             current_rv = self.get_range_values()
             rv = current_rv.add_cols(other.index + 1, False)
+            return RangeObj.from_range(rv)
+        if isinstance(other, mCellObj.CellObj):
+            current_rv = self.get_range_values()
+            rv = current_rv.add_cols(other.col_obj.index + 1, False)
+            rv = rv.add_rows(other.row, False)
             return RangeObj.from_range(rv)
         return NotImplemented
 
@@ -441,6 +451,11 @@ class RangeObj:
             current_rv = self.get_range_values()
             rv = current_rv.subtract_cols(other.index + 1)
             return RangeObj.from_range(rv)
+        if isinstance(other, mCellObj.CellObj):
+            current_rv = self.get_range_values()
+            rv = current_rv.subtract_cols(other.col_obj.index + 1)
+            rv = rv.subtract_rows(other.row)
+            return RangeObj.from_range(rv)
         return NotImplemented
 
     def __rsub__(self, other: object) -> RangeObj:
@@ -462,6 +477,11 @@ class RangeObj:
         if isinstance(other, mColObj.ColObj):
             current_rv = self.get_range_values()
             rv = current_rv.subtract_cols(other.index + 1, False)
+            return RangeObj.from_range(rv)
+        if isinstance(other, mCellObj.CellObj):
+            current_rv = self.get_range_values()
+            rv = current_rv.subtract_cols(other.col_obj.index + 1, False)
+            rv = rv.subtract_rows(other.row, False)
             return RangeObj.from_range(rv)
         return NotImplemented
 
