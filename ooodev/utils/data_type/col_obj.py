@@ -165,6 +165,9 @@ class ColObj:
                 return ColObj.from_int(self.index + other.index + 2)
             i = int(other)
             return ColObj.from_int(self.index + i, True)
+        except TypeError:
+            # not an int
+            return NotImplemented
         except AssertionError as e:
             raise IndexError from e
         except Exception:
@@ -194,6 +197,9 @@ class ColObj:
                 return ColObj.from_int(self.index - other.index)
             i = int(other)
             return ColObj.from_int(self.index - i, True)
+        except TypeError:
+            # not an int
+            return NotImplemented
         except AssertionError as e:
             raise IndexError from e
         except Exception:
@@ -212,6 +218,9 @@ class ColObj:
         try:
             i = int(other)
             return self.from_int(i - self.index - 1)
+        except TypeError:
+            # not an int
+            return NotImplemented
         except AssertionError as e:
             raise IndexError from e
         except Exception:

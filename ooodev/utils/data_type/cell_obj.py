@@ -4,10 +4,6 @@ from dataclasses import dataclass, field
 from typing import overload
 from weakref import ref
 import numbers
-from . import cell_values as mCellVals
-from . import col_obj as mCol
-from . import range_obj as mRngObj
-from . import row_obj as mRow
 from .. import lo as mLo
 from .. import table_helper as mTb
 from ...office import calc as mCalc
@@ -415,3 +411,9 @@ class CellObj:
         return self._cell_up()
 
     # endregion properties
+
+
+from . import cell_values as mCellVals
+from . import col_obj as mCol
+from . import range_obj as mRngObj
+from . import row_obj as mRow
