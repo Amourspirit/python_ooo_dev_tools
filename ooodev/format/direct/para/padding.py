@@ -4,14 +4,14 @@ Modele for managing paragraph padding.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, cast
+from typing import Tuple, cast, overload
 
 from ....exceptions import ex as mEx
 from ....meta.static_prop import static_prop
 from ....utils import info as mInfo
 from ....utils import lo as mLo
 from ....utils import props as mProps
-from ...kind.style_kind import StyleKind
+from ...kind.format_kind import FormatKind
 from ...style_base import StyleBase
 
 
@@ -21,7 +21,7 @@ class Padding(StyleBase):
 
     Any properties starting with ``prop_`` set or get current instance values.
 
-    All methods starting with ``style_`` can be used to chain together properties.
+    All methods starting with ``fmt_`` can be used to chain together properties.
 
     .. versionadded:: 0.9.0
     """
@@ -95,7 +95,12 @@ class Padding(StyleBase):
         """
         return ("com.sun.star.style.ParagraphProperties",)
 
-    def apply_style(self, obj: object, **kwargs) -> None:
+    # region apply()
+    @overload
+    def apply(self, obj: object) -> None:
+        ...
+
+    def apply(self, obj: object, **kwargs) -> None:
         """
         Applies padding to ``obj``
 
@@ -107,12 +112,14 @@ class Padding(StyleBase):
             None:
         """
         try:
-            super().apply_style(obj, **kwargs)
+            super().apply(obj, **kwargs)
         except mEx.MultiError as e:
             mLo.Lo.print(f"{self.__class__}.apply_style(): Unable to set Property")
             for err in e.errors:
                 mLo.Lo.print(f"  {err}")
         return None
+
+    # endregion apply()
 
     @staticmethod
     def from_obj(obj: object) -> Padding:
@@ -143,7 +150,7 @@ class Padding(StyleBase):
     # endregion methods
 
     # region style methods
-    def style_padding_all(self, value: float | None) -> Padding:
+    def fmt_padding_all(self, value: float | None) -> Padding:
         """
         Gets copy of instance with left, right, top, bottom sides set or removed
 
@@ -160,7 +167,7 @@ class Padding(StyleBase):
         cp.prop_right = value
         return cp
 
-    def style_top(self, value: float | None) -> Padding:
+    def fmt_top(self, value: float | None) -> Padding:
         """
         Gets a copy of instance with top side set or removed
 
@@ -174,7 +181,7 @@ class Padding(StyleBase):
         cp.prop_top = value
         return cp
 
-    def style_bottom(self, value: float | None) -> Padding:
+    def fmt_bottom(self, value: float | None) -> Padding:
         """
         Gets a copy of instance with bottom side set or removed
 
@@ -188,7 +195,7 @@ class Padding(StyleBase):
         cp.prop_bottom = value
         return cp
 
-    def style_left(self, value: float | None) -> Padding:
+    def fmt_left(self, value: float | None) -> Padding:
         """
         Gets a copy of instance with left side set or removed
 
@@ -202,7 +209,7 @@ class Padding(StyleBase):
         cp.prop_left = value
         return cp
 
-    def style_right(self, value: float | None) -> Padding:
+    def fmt_right(self, value: float | None) -> Padding:
         """
         Gets a copy of instance with right side set or removed
 
@@ -220,9 +227,9 @@ class Padding(StyleBase):
 
     # region properties
     @property
-    def prop_style_kind(self) -> StyleKind:
+    def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return StyleKind.PARA
+        return FormatKind.PARA
 
     @property
     def prop_left(self) -> float | None:

@@ -11,7 +11,7 @@ from ....exceptions import ex as mEx
 from ....utils import info as mInfo
 from ....utils import lo as mLo
 from ....utils.color import Color
-from ...kind.style_kind import StyleKind
+from ...kind.format_kind import FormatKind
 from ...style_base import StyleBase
 from ...style_const import POINT_RATIO
 
@@ -45,7 +45,7 @@ class Font(StyleBase):
 
     Any properties starting with ``prop_`` set or get current instance values.
 
-    All methods starting with ``style_`` can be used to chain together font properties.
+    All methods starting with ``fmt_`` can be used to chain together font properties.
 
     Many properties such as ``bold``, ``italic``, ``underline`` can be chained together.
 
@@ -200,11 +200,12 @@ class Font(StyleBase):
         """
         return ("com.sun.star.style.CharacterProperties",)
 
+    # region apply()
     @overload
-    def apply_style(self, obj: object) -> None:
+    def apply(self, obj: object) -> None:
         ...
 
-    def apply_style(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: object, **kwargs) -> None:
         """
         Applies styles to object
 
@@ -216,7 +217,7 @@ class Font(StyleBase):
         """
         if self._is_valid_service(obj):
             try:
-                super().apply_style(obj, **kwargs)
+                super().apply(obj, **kwargs)
             except mEx.MultiError as e:
                 mLo.Lo.print(f"Font.apply_style(): Unable to set Property")
                 for err in e.errors:
@@ -224,11 +225,12 @@ class Font(StyleBase):
         else:
             self._print_no_required_service("apply_style")
 
+    # endregion apply()
     # endregion methods
 
-    # region Style Methods
+    # region Format Methods
 
-    def style_bg_color(self, value: Color | None = None) -> Font:
+    def fmt_bg_color(self, value: Color | None = None) -> Font:
         """
         Get copy of instance with text background color set or removed.
 
@@ -243,7 +245,7 @@ class Font(StyleBase):
         ft.prop_bg_color = value
         return ft
 
-    def style_bg_transparent(self, value: bool | None = None) -> Font:
+    def fmt_bg_transparent(self, value: bool | None = None) -> Font:
         """
         Get copy of instance with text background transparency set or removed.
 
@@ -258,7 +260,7 @@ class Font(StyleBase):
         ft.prop_bg_transparent = value
         return ft
 
-    def style_charset(self, value: CharSetEnum | None = None) -> Font:
+    def fmt_charset(self, value: CharSetEnum | None = None) -> Font:
         """
         Gets a copy of instance with charset set or removed.
 
@@ -273,7 +275,7 @@ class Font(StyleBase):
         ft.prop_charset = value
         return ft
 
-    def style_color(self, value: Color | None = None) -> Font:
+    def fmt_color(self, value: Color | None = None) -> Font:
         """
         Get copy of instance with text color set or removed.
 
@@ -288,7 +290,7 @@ class Font(StyleBase):
         ft.prop_color = value
         return ft
 
-    def style_family(self, value: FontFamilyEnum | None = None) -> Font:
+    def fmt_family(self, value: FontFamilyEnum | None = None) -> Font:
         """
         Gets a copy of instance with charset set or removed.
 
@@ -303,7 +305,7 @@ class Font(StyleBase):
         ft.prop_family = value
         return ft
 
-    def style_size(self, value: float | None = None) -> Font:
+    def fmt_size(self, value: float | None = None) -> Font:
         """
         Get copy of instance with text size set or removed.
 
@@ -318,7 +320,7 @@ class Font(StyleBase):
         ft.prop_size = value
         return ft
 
-    def style_name(self, value: str | None = None) -> Font:
+    def fmt_name(self, value: str | None = None) -> Font:
         """
         Get copy of instance with name set or removed.
 
@@ -333,7 +335,7 @@ class Font(StyleBase):
         ft.prop_name = value
         return ft
 
-    def style_overline(self, value: FontUnderlineEnum | None = None) -> Font:
+    def fmt_overline(self, value: FontUnderlineEnum | None = None) -> Font:
         """
         Get copy of instance with overline set or removed.
 
@@ -348,7 +350,7 @@ class Font(StyleBase):
         ft.prop_overline = value
         return ft
 
-    def style_overline_color(self, value: Color | None = None) -> Font:
+    def fmt_overline_color(self, value: Color | None = None) -> Font:
         """
         Get copy of instance with text overline color set or removed.
 
@@ -363,7 +365,7 @@ class Font(StyleBase):
         ft.prop_overline_color = value
         return ft
 
-    def style_rotation(self, value: float | None = None) -> Font:
+    def fmt_rotation(self, value: float | None = None) -> Font:
         """
         Get copy of instance with rotation set or removed.
 
@@ -378,7 +380,7 @@ class Font(StyleBase):
         ft.prop_rotation = value
         return ft
 
-    def style_slant(self, value: FontSlant | None = None) -> Font:
+    def fmt_slant(self, value: FontSlant | None = None) -> Font:
         """
         Get copy of instance with slant set or removed.
 
@@ -396,7 +398,7 @@ class Font(StyleBase):
         ft.prop_slant = value
         return ft
 
-    def style_spacing(self, value: float | None = None) -> Font:
+    def fmt_spacing(self, value: float | None = None) -> Font:
         """
         Get copy of instance with spacing set or removed.
 
@@ -411,7 +413,7 @@ class Font(StyleBase):
         ft.prop_spacing = value
         return ft
 
-    def style_shadow_fmt(self, value: ShadowFormat | None = None) -> Font:
+    def fmt_shadow_fmt(self, value: ShadowFormat | None = None) -> Font:
         """
         Get copy of instance with shadow format set or removed.
 
@@ -426,7 +428,7 @@ class Font(StyleBase):
         ft.prop_shadow_fmt = value
         return ft
 
-    def style_strike(self, value: FontStrikeoutEnum | None = None) -> Font:
+    def fmt_strike(self, value: FontStrikeoutEnum | None = None) -> Font:
         """
         Get copy of instance with strike set or removed.
 
@@ -441,7 +443,7 @@ class Font(StyleBase):
         ft.prop_strike = value
         return ft
 
-    def style_subscript(self, value: bool | None = None) -> Font:
+    def fmt_subscript(self, value: bool | None = None) -> Font:
         """
         Get copy of instance with text sub script set or removed.
 
@@ -456,7 +458,7 @@ class Font(StyleBase):
         ft.prop_subscript = value
         return ft
 
-    def style_superscript(self, value: bool | None = None) -> Font:
+    def fmt_superscript(self, value: bool | None = None) -> Font:
         """
         Get copy of instance with text super script set or removed.
 
@@ -471,7 +473,7 @@ class Font(StyleBase):
         ft.prop_superscript = value
         return ft
 
-    def style_underline(self, value: FontUnderlineEnum | None = None) -> Font:
+    def fmt_underline(self, value: FontUnderlineEnum | None = None) -> Font:
         """
         Get copy of instance with underline set or removed.
 
@@ -486,7 +488,7 @@ class Font(StyleBase):
         ft.prop_underline = value
         return ft
 
-    def style_weight(self, value: FontWeightEnum | None = None) -> Font:
+    def fmt_weight(self, value: FontWeightEnum | None = None) -> Font:
         """
         Get copy of instance with weight set or removed or removed.
 
@@ -504,7 +506,7 @@ class Font(StyleBase):
         ft.prop_weight = value
         return ft
 
-    def style_word_mode(self, value: bool | None = None) -> Font:
+    def fmt_word_mode(self, value: bool | None = None) -> Font:
         """
         Get copy of instance with word mode set or removed.
 
@@ -521,7 +523,7 @@ class Font(StyleBase):
         ft.prop_word_mode = value
         return ft
 
-    # endregion Style Methods
+    # endregion Format Methods
 
     # region Style Properties
 
@@ -600,9 +602,9 @@ class Font(StyleBase):
 
     # region Prop Properties
     @property
-    def prop_style_kind(self) -> StyleKind:
+    def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return StyleKind.CHAR
+        return FormatKind.CHAR
 
     @property
     def prop_is_bold(self) -> bool:

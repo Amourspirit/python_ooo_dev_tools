@@ -8,7 +8,7 @@ from typing import Tuple
 
 from ....meta.static_prop import static_prop
 from ...style_base import StyleMulti
-from ...kind.style_kind import StyleKind
+from ...kind.format_kind import FormatKind
 from .breaks import Breaks
 from .hyphenation import Hyphenation
 from .flow_options import FlowOptions
@@ -130,9 +130,9 @@ class TextFlow(StyleMulti):
 
     # region properties
     @property
-    def prop_style_kind(self) -> StyleKind:
+    def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return StyleKind.PARA
+        return FormatKind.PARA
 
     @static_prop
     def default() -> TextFlow:  # type: ignore[misc]

@@ -10,7 +10,7 @@ from ....exceptions import ex as mEx
 from ....meta.static_prop import static_prop
 from ....utils import lo as mLo
 from ....utils import props as mProps
-from ...kind.style_kind import StyleKind
+from ...kind.format_kind import FormatKind
 from ...style_base import StyleBase
 
 
@@ -20,7 +20,7 @@ class Indent(StyleBase):
 
     Any properties starting with ``prop_`` set or get current instance values.
 
-    All methods starting with ``style_`` can be used to chain together properties.
+    All methods starting with ``fmt_`` can be used to chain together properties.
 
     .. versionadded:: 0.9.0
     """
@@ -75,11 +75,12 @@ class Indent(StyleBase):
         """
         return ("com.sun.star.style.ParagraphProperties",)
 
+    # region apply()
     @overload
-    def apply_style(self, obj: object) -> None:
+    def apply(self, obj: object) -> None:
         ...
 
-    def apply_style(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: object, **kwargs) -> None:
         """
         Applies writing mode to ``obj``
 
@@ -90,11 +91,13 @@ class Indent(StyleBase):
             None:
         """
         try:
-            super().apply_style(obj, **kwargs)
+            super().apply(obj, **kwargs)
         except mEx.MultiError as e:
             mLo.Lo.print(f"{self.__class__}.apply_style(): Unable to set Property")
             for err in e.errors:
                 mLo.Lo.print(f"  {err}")
+
+    # endregion apply()
 
     @staticmethod
     def from_obj(obj: object) -> Indent:
@@ -129,7 +132,7 @@ class Indent(StyleBase):
     # endregion methods
 
     # region style methods
-    def style_before(self, value: float | None) -> Indent:
+    def fmt_before(self, value: float | None) -> Indent:
         """
         Gets a copy of instance with before margin set or removed
 
@@ -143,7 +146,7 @@ class Indent(StyleBase):
         cp.prop_before = value
         return cp
 
-    def style_after(self, value: float | None) -> Indent:
+    def fmt_after(self, value: float | None) -> Indent:
         """
         Gets a copy of instance with after margin set or removed
 
@@ -157,7 +160,7 @@ class Indent(StyleBase):
         cp.prop_after = value
         return cp
 
-    def style_first(self, value: float | None) -> Indent:
+    def fmt_first(self, value: float | None) -> Indent:
         """
         Gets a copy of instance with first indent margin set or removed
 
@@ -171,7 +174,7 @@ class Indent(StyleBase):
         cp.prop_after = value
         return cp
 
-    def style_auto(self, value: bool | None) -> Indent:
+    def fmt_auto(self, value: bool | None) -> Indent:
         """
         Gets a copy of instance with auto set or removed
 
@@ -199,9 +202,9 @@ class Indent(StyleBase):
 
     # region properties
     @property
-    def prop_style_kind(self) -> StyleKind:
+    def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return StyleKind.PARA
+        return FormatKind.PARA
 
     @property
     def prop_before(self) -> float | None:

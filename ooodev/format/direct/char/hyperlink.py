@@ -13,7 +13,7 @@ from ....exceptions import ex as mEx
 from ....meta.static_prop import static_prop
 from ....utils import lo as mLo
 from ....utils import props as mProps
-from ...kind.style_kind import StyleKind
+from ...kind.format_kind import FormatKind
 from ...style_base import StyleBase
 
 # endregion imports
@@ -94,13 +94,13 @@ class Hyperlink(StyleBase):
         """
         return ("com.sun.star.style.CharacterProperties",)
 
-    # region apply_style()
+    # region apply()
 
     @overload
-    def apply_style(self, obj: object) -> None:
+    def apply(self, obj: object) -> None:
         ...
 
-    def apply_style(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: object, **kwargs) -> None:
         """
         Applies padding to ``obj``
 
@@ -112,14 +112,14 @@ class Hyperlink(StyleBase):
             None:
         """
         try:
-            super().apply_style(obj, **kwargs)
+            super().apply(obj, **kwargs)
         except mEx.MultiError as e:
             mLo.Lo.print(f"{self.__class__}.apply_style(): Unable to set Property")
             for err in e.errors:
                 mLo.Lo.print(f"  {err}")
         return None
 
-    # endregion apply_style()
+    # endregion apply()
 
     @staticmethod
     def from_obj(obj: object) -> Hyperlink:
@@ -204,9 +204,9 @@ class Hyperlink(StyleBase):
         self._set("UnvisitedCharStyleName", value)
 
     @property
-    def prop_style_kind(self) -> StyleKind:
+    def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return StyleKind.CHAR
+        return FormatKind.CHAR
 
     @static_prop
     def empty() -> Hyperlink:  # type: ignore[misc]

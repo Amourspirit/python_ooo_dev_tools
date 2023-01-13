@@ -12,7 +12,7 @@ from ....utils import props as mProps
 from ....utils.color import Color
 from ....utils.color import CommonColor
 from ...style_base import StyleBase
-from ...kind.style_kind import StyleKind
+from ...kind.format_kind import FormatKind
 
 import uno
 from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
@@ -23,6 +23,10 @@ from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 class Shadow(StyleBase):
     """
     Shadow struct
+
+    Any properties starting with ``prop_`` set or get current instance values.
+
+    All methods starting with ``fmt_`` can be used to chain together properties.
 
     .. versionadded:: 0.9.0
     """
@@ -82,13 +86,13 @@ class Shadow(StyleBase):
     def _supported_services(self) -> Tuple[str, ...]:
         return ()
 
-    # region apply_style()
+    # region apply()
 
     @overload
-    def apply_style(self, obj: object) -> None:
+    def apply(self, obj: object) -> None:
         ...
 
-    def apply_style(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: object, **kwargs) -> None:
         """
         Applies style to object
 
@@ -101,12 +105,12 @@ class Shadow(StyleBase):
         shadow = self.get_shadow_format()
         mProps.Props.set(obj, ShadowFormat=shadow)
 
-    # endregion apply_style()
+    # endregion apply()
 
     # endregion methods
 
     # region style methods
-    def style_location(self, value: ShadowLocation) -> Shadow:
+    def fmt_location(self, value: ShadowLocation) -> Shadow:
         """
         Gets a copy of instance with location set
 
@@ -120,7 +124,7 @@ class Shadow(StyleBase):
         cp.prop_location = value
         return cp
 
-    def style_color(self, value: Color) -> Shadow:
+    def fmt_color(self, value: Color) -> Shadow:
         """
         Gets a copy of instance with color set
 
@@ -134,7 +138,7 @@ class Shadow(StyleBase):
         cp.prop_color = value
         return cp
 
-    def style_transparent(self, value: bool) -> Shadow:
+    def fmt_transparent(self, value: bool) -> Shadow:
         """
         Gets a copy of instance with transparency set
 
@@ -148,7 +152,7 @@ class Shadow(StyleBase):
         cp.prop_transparent = value
         return cp
 
-    def style_width(self, value: float) -> Shadow:
+    def fmt_width(self, value: float) -> Shadow:
         """
         Gets a copy of instance with width set
 
@@ -166,9 +170,9 @@ class Shadow(StyleBase):
 
     # region Properties
     @property
-    def prop_style_kind(self) -> StyleKind:
+    def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return StyleKind.STRUCT
+        return FormatKind.STRUCT
 
     @property
     def prop_location(self) -> ShadowLocation:

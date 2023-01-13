@@ -12,7 +12,7 @@ from ....events.args.key_val_cancel_args import KeyValCancelArgs
 from ....exceptions import ex as mEx
 from ....utils import info as mInfo
 from ....utils import lo as mLo
-from ...kind.style_kind import StyleKind
+from ...kind.format_kind import FormatKind
 from ..structs import side
 from ..structs.side import Side as Side, BorderLineStyleEnum as BorderLineStyleEnum
 from ...style_base import StyleBase
@@ -31,7 +31,7 @@ class Sides(StyleBase):
 
     Any properties starting with ``prop_`` set or get current instance values.
 
-    All methods starting with ``style_`` can be used to chain together Sides properties.
+    All methods starting with ``fmt_`` can be used to chain together Sides properties.
 
     .. versionadded:: 0.9.0
     """
@@ -94,13 +94,13 @@ class Sides(StyleBase):
         """
         return ("com.sun.star.style.CharacterProperties",)
 
-    # region apply_style()
+    # region apply()
 
     @overload
-    def apply_style(self, obj: object) -> None:
+    def apply(self, obj: object) -> None:
         ...
 
-    def apply_style(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: object, **kwargs) -> None:
         """
         Applies Style to obj
 
@@ -111,13 +111,13 @@ class Sides(StyleBase):
             None:
         """
         try:
-            super().apply_style(obj, **kwargs)
+            super().apply(obj, **kwargs)
         except mEx.MultiError as e:
             mLo.Lo.print(f"BorderChar.apply_style(): Unable to set Property")
             for err in e.errors:
                 mLo.Lo.print(f"  {err}")
 
-    # endregion apply_style()
+    # endregion apply()
 
     def on_property_setting(self, event_args: KeyValCancelArgs):
         """
@@ -166,7 +166,7 @@ class Sides(StyleBase):
     # endregion methods
 
     # region style methods
-    def style_border_side(self, value: Side | None) -> Sides:
+    def fmt_border_side(self, value: Side | None) -> Sides:
         """
         Gets copy of instance with left, right, top, bottom sides set or removed
 
@@ -183,7 +183,7 @@ class Sides(StyleBase):
         cp.prop_right = value
         return cp
 
-    def style_top(self, value: Side | None) -> Sides:
+    def fmt_top(self, value: Side | None) -> Sides:
         """
         Gets a copy of instance with top side set or removed
 
@@ -197,7 +197,7 @@ class Sides(StyleBase):
         cp.prop_top = value
         return cp
 
-    def style_bottom(self, value: Side | None) -> Sides:
+    def fmt_bottom(self, value: Side | None) -> Sides:
         """
         Gets a copy of instance with bottom side set or removed
 
@@ -211,7 +211,7 @@ class Sides(StyleBase):
         cp.prop_bottom = value
         return cp
 
-    def style_left(self, value: Side | None) -> Sides:
+    def fmt_left(self, value: Side | None) -> Sides:
         """
         Gets a copy of instance with left side set or removed
 
@@ -225,7 +225,7 @@ class Sides(StyleBase):
         cp.prop_left = value
         return cp
 
-    def style_right(self, value: Side | None) -> Sides:
+    def fmt_right(self, value: Side | None) -> Sides:
         """
         Gets a copy of instance with right side set or removed
 
@@ -243,9 +243,9 @@ class Sides(StyleBase):
 
     # region Properties
     @property
-    def prop_style_kind(self) -> StyleKind:
+    def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return StyleKind.CHAR
+        return FormatKind.CHAR
 
     @property
     def prop_left(self) -> Side | None:

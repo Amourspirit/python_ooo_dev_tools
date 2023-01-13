@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from com.sun.star.style import CharacterProperties  # service
 
 
-def test_style(loader, run_headless) -> None:
+def test_format(loader, run_headless) -> None:
     # breakpoint()
 
     delay = 0 if run_headless else 2_000
@@ -80,7 +80,7 @@ def test_style(loader, run_headless) -> None:
         Lo.close_doc(doc)
 
 
-def test_style_left(loader, run_headless) -> None:
+def test_format_left(loader, run_headless) -> None:
     # breakpoint()
 
     delay = 0 if run_headless else 2_000

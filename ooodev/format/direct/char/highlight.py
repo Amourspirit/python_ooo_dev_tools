@@ -11,7 +11,7 @@ from ....meta.static_prop import static_prop
 from ....utils import lo as mLo
 from ....utils import props as mProps
 from ....utils.color import Color
-from ...kind.style_kind import StyleKind
+from ...kind.format_kind import FormatKind
 from ...style_base import StyleBase
 
 
@@ -53,13 +53,13 @@ class Highlight(StyleBase):
         """
         return ("com.sun.star.style.CharacterProperties",)
 
-    # region apply_style()
+    # region apply()
 
     @overload
-    def apply_style(self, obj: object) -> None:
+    def apply(self, obj: object) -> None:
         ...
 
-    def apply_style(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: object, **kwargs) -> None:
         """
         Applies padding to ``obj``
 
@@ -71,14 +71,14 @@ class Highlight(StyleBase):
             None:
         """
         try:
-            super().apply_style(obj, **kwargs)
+            super().apply(obj, **kwargs)
         except mEx.MultiError as e:
             mLo.Lo.print(f"{self.__class__}.apply_style(): Unable to set Property")
             for err in e.errors:
                 mLo.Lo.print(f"  {err}")
         return None
 
-    # endregion apply_style()
+    # endregion apply()
 
     @staticmethod
     def from_obj(obj: object) -> Highlight:
@@ -103,7 +103,7 @@ class Highlight(StyleBase):
         return inst
 
     # region set styles
-    def style_color(self, value: int) -> Highlight:
+    def fmt_color(self, value: int) -> Highlight:
         """
         Gets copy of instance with color set.
 
@@ -121,9 +121,9 @@ class Highlight(StyleBase):
 
     # endregion set styles
     @property
-    def prop_style_kind(self) -> StyleKind:
+    def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return StyleKind.CHAR
+        return FormatKind.CHAR
 
     @property
     def prop_color(self) -> int:

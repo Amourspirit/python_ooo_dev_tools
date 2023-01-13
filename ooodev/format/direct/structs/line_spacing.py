@@ -5,14 +5,14 @@ Module for Shadow format (``LineSpacing``) struct.
 """
 # region imports
 from __future__ import annotations
-from typing import Dict, Tuple, cast, overload
+from typing import Dict, Tuple, overload
 
 import uno
 
 from ....meta.static_prop import static_prop
 from ....utils import props as mProps
 from ...style_base import StyleBase
-from ...kind.style_kind import StyleKind
+from ...kind.format_kind import FormatKind
 
 from ooo.dyn.style.line_spacing import LineSpacing as UnoLineSpacing
 
@@ -53,17 +53,17 @@ class LineSpacing(StyleBase):
     def _supported_services(self) -> Tuple[str, ...]:
         return ()
 
-    # region apply_style()
+    # region apply()
 
     @overload
-    def apply_style(self, obj: object, *, keys: Dict[str, str]) -> None:
+    def apply(self, obj: object, *, keys: Dict[str, str]) -> None:
         ...
 
     @overload
-    def apply_style(self, obj: object) -> None:
+    def apply(self, obj: object) -> None:
         ...
 
-    def apply_style(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: object, **kwargs) -> None:
         """
         Applies style to object
 
@@ -81,7 +81,7 @@ class LineSpacing(StyleBase):
         key = keys["spacing"]
         mProps.Props.set(obj, **{key: self.get_line_spacing()})
 
-    # endregion apply_style()
+    # endregion apply()
 
     def get_line_spacing(self) -> UnoLineSpacing:
         """gets Line spacing of instance"""
@@ -94,9 +94,9 @@ class LineSpacing(StyleBase):
 
     # region Properties
     @property
-    def prop_style_kind(self) -> StyleKind:
+    def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return StyleKind.STRUCT
+        return FormatKind.STRUCT
 
     @property
     def prop_mode(self) -> int:

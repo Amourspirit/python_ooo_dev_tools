@@ -6,4 +6,4 @@ style
 .. toctree::
     :titlesonly:
 
-    kind/index
+    writer/index

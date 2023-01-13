@@ -12,7 +12,7 @@ from ....meta.static_prop import static_prop
 from ....utils import props as mProps
 from ....utils.color import Color
 from ....utils.color import CommonColor
-from ...kind.style_kind import StyleKind
+from ...kind.format_kind import FormatKind
 from ...style_base import StyleBase
 from ...style_const import POINT_RATIO
 
@@ -33,7 +33,7 @@ class SideFlags(IntFlag):
 
     Any properties starting with ``prop_`` set or get current instance values.
 
-    All methods ``style_`` can be used to chain together font properties.
+    All methods starting with ``fmt_`` can be used to chain together properties.
 
     .. versionadded:: 0.9.0
     """
@@ -124,15 +124,16 @@ class Side(StyleBase):
     def _supported_services(self) -> Tuple[str, ...]:
         return ()
 
+    # region apply()
     @overload
-    def apply_style(self, obj: object, *, flags: SideFlags) -> None:
+    def apply(self, obj: object, *, flags: SideFlags) -> None:
         ...
 
     @overload
-    def apply_style(self, obj: object, *, flags: SideFlags, keys: Dict[str, str]) -> None:
+    def apply(self, obj: object, *, flags: SideFlags, keys: Dict[str, str]) -> None:
         ...
 
-    def apply_style(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: object, **kwargs) -> None:
         """
         Applies style to object
 
@@ -176,6 +177,8 @@ class Side(StyleBase):
         if SideFlags.TOP_LEFT_BOTTOM_RIGHT in flags:
             mProps.Props.set(obj, **{keys["diagonal_down"]: val})
 
+    # endregion apply()
+
     def get_border_line(self) -> BorderLine:
         b2 = self.get_border_line2()
         return BorderLine(
@@ -212,7 +215,7 @@ class Side(StyleBase):
     # endregion methods
 
     # region style methods
-    def style_style(self, value: BorderLineStyleEnum) -> Side:
+    def fmt_style(self, value: BorderLineStyleEnum) -> Side:
         """
         Gets copy of instance with style set.
 
@@ -226,7 +229,7 @@ class Side(StyleBase):
         cp.prop_line = value
         return cp
 
-    def style_color(self, value: Color) -> Side:
+    def fmt_color(self, value: Color) -> Side:
         """
         Gets copy of instance with color set.
 
@@ -240,7 +243,7 @@ class Side(StyleBase):
         cp.prop_color = value
         return cp
 
-    def style_width(self, value: float) -> Side:
+    def fmt_width(self, value: float) -> Side:
         """
         Gets copy of instance with width set.
 
@@ -254,7 +257,7 @@ class Side(StyleBase):
         cp.prop_width = value
         return cp
 
-    def style_width_inner(self, value: float) -> Side:
+    def fmt_width_inner(self, value: float) -> Side:
         """
         Gets copy of instance with inner width set.
 
@@ -268,7 +271,7 @@ class Side(StyleBase):
         cp.prop_width_inner = value
         return cp
 
-    def style_distance(self, value: float) -> Side:
+    def fmt_distance(self, value: float) -> Side:
         """
         Gets copy of instance with distance set.
 
@@ -427,9 +430,9 @@ class Side(StyleBase):
     # endregion Style Properties
     # region properties
     @property
-    def prop_style_kind(self) -> StyleKind:
+    def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return StyleKind.STRUCT
+        return FormatKind.STRUCT
 
     @property
     def prop_line(self) -> BorderLineStyleEnum:

@@ -34,13 +34,13 @@ def test_font_chain() -> None:
     assert ft.prop_is_italic
     assert ft.prop_is_bold
 
-    ft = ft.style_color(CommonColor.RED)
+    ft = ft.fmt_color(CommonColor.RED)
     assert ft.prop_weight == FontWeightEnum.BOLD
     assert ft.prop_is_italic
     assert ft.prop_is_bold
     assert ft.prop_color == CommonColor.RED
 
-    ft = ft.style_bg_color(CommonColor.BLUE)
+    ft = ft.fmt_bg_color(CommonColor.BLUE)
     assert ft.prop_weight == FontWeightEnum.BOLD
     assert ft.prop_is_italic
     assert ft.prop_is_bold
@@ -143,10 +143,10 @@ def test_font_cursor(loader) -> None:
     try:
         ft = Font(size=30.0, b=True, i=True, u=True, color=CommonColor.BLUE, underine_color=CommonColor.GREEN)
         cursor = Write.get_cursor(doc)
-        style = partial(Styler.apply_style, cursor)
+        style = partial(Styler.apply, cursor)
         Write.append(cursor, "hello")
         cursor.goLeft(5, True)
-        ft.apply_style(cursor)
+        ft.apply(cursor)
         cp = cast("CharacterProperties", cursor)
         assert cp.CharColor == CommonColor.BLUE
         assert cp.CharUnderlineColor == CommonColor.GREEN
@@ -160,12 +160,12 @@ def test_font_cursor(loader) -> None:
         Lo.delay(500)
 
         cursor.gotoEnd(False)
-        Styler.apply_style(cursor, Font(size=40))
+        Styler.apply(cursor, Font(size=40))
         Write.append(cursor, " world")
 
         cursor.goLeft(5, False)
         cursor.goRight(1, True)
-        Styler.apply_style(cursor, Font(superscript=True))
+        Styler.apply(cursor, Font(superscript=True))
         assert cp.CharEscapement == 14_000
 
         cursor.gotoEnd(False)
@@ -281,7 +281,7 @@ def test_calc_font(loader, run_headless) -> None:
         Calc.set_val(value="Hello", sheet=sheet, cell_obj=cell_obj)
         cell = Calc.get_cell(sheet, cell_obj)
         cp = cast("CharacterProperties", cell)
-        Styler.apply_style(cell, Font(b=True, u=True, color=CommonColor.ROYAL_BLUE))
+        Styler.apply(cell, Font(b=True, u=True, color=CommonColor.ROYAL_BLUE))
         assert cp.CharWeight == FontWeightEnum.BOLD.value
         assert cp.CharUnderline == FontUnderlineEnum.SINGLE.value
         assert cp.CharColor == CommonColor.ROYAL_BLUE
@@ -290,7 +290,7 @@ def test_calc_font(loader, run_headless) -> None:
         Calc.set_val(value="World", sheet=sheet, cell_obj=cell_obj)
         cell = Calc.get_cell(sheet, cell_obj)
         cp = cast("CharacterProperties", cell)
-        Styler.apply_style(
+        Styler.apply(
             cell,
             Font(
                 i=True,

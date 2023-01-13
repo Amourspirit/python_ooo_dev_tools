@@ -8,7 +8,7 @@ from typing import Tuple
 
 from ....meta.static_prop import static_prop
 from ...style_base import StyleMulti
-from ...kind.style_kind import StyleKind
+from ...kind.format_kind import FormatKind
 from .outline import Outline as Outline, LevelKind as LevelKind
 from .list_style import ListStyle as ListStyle, StyleListKind as StyleListKind
 from .line_num import LineNum as LineNum
@@ -46,7 +46,7 @@ class OutlineList(StyleMulti):
             ln_num (int, optional): Restart paragraph with number.
                 If ``0`` then this paragraph is include in line numbering.
                 If ``-1`` then this paragraph is excluded in line numbering.
-                If greater then zero then this paragraph is included in line numbering and the numbering is restarted with value of ``num_start``.
+                If greater then zero then this paragraph is included in line numbering and the numbering is restarted with value of ``ln_num``.
         Returns:
             None:
 
@@ -113,9 +113,9 @@ class OutlineList(StyleMulti):
 
     # region properties
     @property
-    def prop_style_kind(self) -> StyleKind:
+    def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return StyleKind.PARA
+        return FormatKind.PARA
 
     @static_prop
     def default() -> OutlineList:  # type: ignore[misc]

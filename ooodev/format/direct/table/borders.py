@@ -6,6 +6,7 @@ Module for managing table borders (cells and ranges).
 # region imports
 from __future__ import annotations
 from ast import Tuple
+from typing import overload
 
 import uno
 from ....exceptions import ex as mEx
@@ -21,7 +22,7 @@ from ..structs.side import Side as Side, SideFlags as SideFlags
 from ..structs.shadow import Shadow
 from ..structs.border_table import BorderTable as BorderTable
 from ..para.padding import Padding as Padding
-from ...kind.style_kind import StyleKind
+from ...kind.format_kind import FormatKind
 
 from ooo.dyn.table.border_line import BorderLine as BorderLine
 from ooo.dyn.table.border_line_style import BorderLineStyleEnum as BorderLineStyleEnum
@@ -36,6 +37,10 @@ from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 class Borders(StyleMulti):
     """
     Table Borders used in styles for table cells and ranges.
+
+    Any properties starting with ``prop_`` set or get current instance values.
+
+    All methods starting with ``fmt_`` can be used to chain together properties.
 
     .. versionadded:: 0.9.0
     """
@@ -117,28 +122,34 @@ class Borders(StyleMulti):
         """
         return ("com.sun.star.table.CellProperties",)
 
-    def apply_style(self, obj: object, **kwargs) -> None:
+    # region apply()
+    @overload
+    def apply(self, obj: object) -> None:
+        ...
+
+    def apply(self, obj: object, **kwargs) -> None:
         """
         Applies padding to ``obj``
 
         Args:
             obj (object): Object that supports ``com.sun.star.style.ParagraphProperties`` service.
-            kwargs (Any, optional): Expandable list of key value pairs that may be used in child classes.
 
         Returns:
             None:
         """
         try:
-            super().apply_style(obj, **kwargs)
+            super().apply(obj, **kwargs)
         except mEx.MultiError as e:
             mLo.Lo.print(f"CellBorder.apply_style(): Unable to set Property")
             for err in e.errors:
                 mLo.Lo.print(f"  {err}")
 
+    # endregion apply()
+
     # endregion methods
 
     # region Style Methods
-    def style_border_side(self, value: Side | None) -> Borders:
+    def fmt_border_side(self, value: Side | None) -> Borders:
         """
         Gets copy of instance with left, right, top, bottom sides set or removed
 
@@ -162,7 +173,7 @@ class Borders(StyleMulti):
         cp._border_table = bt
         return cp
 
-    def style_left(self, value: Side | None) -> Borders:
+    def fmt_left(self, value: Side | None) -> Borders:
         """
         Gets copy of instance with left set or removed
 
@@ -183,7 +194,7 @@ class Borders(StyleMulti):
         cp._border_table = bt
         return cp
 
-    def style_right(self, value: Side | None) -> Borders:
+    def fmt_right(self, value: Side | None) -> Borders:
         """
         Gets copy of instance with right set or removed
 
@@ -204,7 +215,7 @@ class Borders(StyleMulti):
         cp._border_table = bt
         return cp
 
-    def style_top(self, value: Side | None) -> Borders:
+    def fmt_top(self, value: Side | None) -> Borders:
         """
         Gets copy of instance with top set or removed
 
@@ -225,7 +236,7 @@ class Borders(StyleMulti):
         cp._border_table = bt
         return cp
 
-    def style_bottom(self, value: Side | None) -> Borders:
+    def fmt_bottom(self, value: Side | None) -> Borders:
         """
         Gets copy of instance with bottom set or removed
 
@@ -246,7 +257,7 @@ class Borders(StyleMulti):
         cp._border_table = bt
         return cp
 
-    def style_horizontal(self, value: Side | None) -> Borders:
+    def fmt_horizontal(self, value: Side | None) -> Borders:
         """
         Gets copy of instance with horizontal set or removed
 
@@ -267,7 +278,7 @@ class Borders(StyleMulti):
         cp._border_table = bt
         return cp
 
-    def style_vertical(self, value: Side | None) -> Borders:
+    def fmt_vertical(self, value: Side | None) -> Borders:
         """
         Gets copy of instance with vertical set or removed
 
@@ -288,7 +299,7 @@ class Borders(StyleMulti):
         cp._border_table = bt
         return cp
 
-    def style_distance(self, value: float | None) -> Borders:
+    def fmt_distance(self, value: float | None) -> Borders:
         """
         Gets copy of instance with distance set or removed
 
@@ -309,7 +320,7 @@ class Borders(StyleMulti):
         cp._border_table = bt
         return cp
 
-    def style_diagonal_down(self, value: Side | None) -> Borders:
+    def fmt_diagonal_down(self, value: Side | None) -> Borders:
         """
         Gets copy of instance with diagonal down set or removed
 
@@ -326,7 +337,7 @@ class Borders(StyleMulti):
             cp._set("DiagonalTLBR2", value.get_border_line2())
         return cp
 
-    def style_diagonal_up(self, value: Side | None) -> Borders:
+    def fmt_diagonal_up(self, value: Side | None) -> Borders:
         """
         Gets copy of instance with diagonal up set or removed
 
@@ -343,7 +354,7 @@ class Borders(StyleMulti):
             cp._set("DiagonalBLTR2", value.get_border_line2())
         return cp
 
-    def style_shadow(self, value: Shadow | None) -> Borders:
+    def fmt_shadow(self, value: Shadow | None) -> Borders:
         """
         Gets copy of instance with shadow set or removed
 
@@ -360,7 +371,7 @@ class Borders(StyleMulti):
             cp._set("ShadowFormat", value.get_shadow_format())
         return cp
 
-    def style_padding(self, value: Padding | None) -> Borders:
+    def fmt_padding(self, value: Padding | None) -> Borders:
         """
         Gets copy of instance with padding set or removed
 
@@ -378,9 +389,9 @@ class Borders(StyleMulti):
 
     # region Properties
     @property
-    def prop_style_kind(self) -> StyleKind:
+    def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return StyleKind.CELL
+        return FormatKind.CELL
 
     @static_prop
     def default() -> Borders:  # type: ignore[misc]
