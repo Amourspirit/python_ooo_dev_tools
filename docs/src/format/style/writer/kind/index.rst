@@ -1,4 +1,4 @@
-.. _ns_format_style_kind:
+.. _ns_format_style_writer_kind:
 
 kind
 ====

@@ -7,7 +7,6 @@ direct
     :titlesonly:
 
     char/index
-    kind/index
     para/index
     structs/index
     table/index

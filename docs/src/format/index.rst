@@ -8,5 +8,6 @@ format
     :glob:
 
     direct/index
+    kind/index
     style/index
     *
