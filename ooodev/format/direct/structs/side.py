@@ -125,14 +125,14 @@ class Side(StyleBase):
         return ()
 
     @overload
-    def apply_style(self, obj: object, *, flags: SideFlags) -> None:
+    def apply(self, obj: object, *, flags: SideFlags) -> None:
         ...
 
     @overload
-    def apply_style(self, obj: object, *, flags: SideFlags, keys: Dict[str, str]) -> None:
+    def apply(self, obj: object, *, flags: SideFlags, keys: Dict[str, str]) -> None:
         ...
 
-    def apply_style(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: object, **kwargs) -> None:
         """
         Applies style to object
 

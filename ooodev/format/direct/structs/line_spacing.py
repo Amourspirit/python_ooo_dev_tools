@@ -56,14 +56,14 @@ class LineSpacing(StyleBase):
     # region apply_style()
 
     @overload
-    def apply_style(self, obj: object, *, keys: Dict[str, str]) -> None:
+    def apply(self, obj: object, *, keys: Dict[str, str]) -> None:
         ...
 
     @overload
-    def apply_style(self, obj: object) -> None:
+    def apply(self, obj: object) -> None:
         ...
 
-    def apply_style(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: object, **kwargs) -> None:
         """
         Applies style to object
 

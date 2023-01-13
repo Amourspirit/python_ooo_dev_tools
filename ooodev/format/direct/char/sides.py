@@ -97,10 +97,10 @@ class Sides(StyleBase):
     # region apply_style()
 
     @overload
-    def apply_style(self, obj: object) -> None:
+    def apply(self, obj: object) -> None:
         ...
 
-    def apply_style(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: object, **kwargs) -> None:
         """
         Applies Style to obj
 
@@ -111,7 +111,7 @@ class Sides(StyleBase):
             None:
         """
         try:
-            super().apply_style(obj, **kwargs)
+            super().apply(obj, **kwargs)
         except mEx.MultiError as e:
             mLo.Lo.print(f"BorderChar.apply_style(): Unable to set Property")
             for err in e.errors:

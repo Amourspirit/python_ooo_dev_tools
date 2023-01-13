@@ -41,7 +41,7 @@ def test_write(loader, para_text) -> None:
         # test ListStyle
         start_pos = Write.get_position(cursor)
         ls = OutlineList(ls_style=StyleListKind.NUM_123)
-        ls.apply_style(cursor)
+        ls.apply(cursor)
         for i in range(1, 6):
             Write.append_para(cursor=cursor, text=f"Num Point {i}")
         end_pos = Write.get_position(cursor)
@@ -49,7 +49,7 @@ def test_write(loader, para_text) -> None:
         assert pp.NumberingStyleName == StyleListKind.NUM_123.value
         cursor.gotoEnd(False)
 
-        OutlineList.default.apply_style(cursor)
+        OutlineList.default.apply(cursor)
 
         # test LineNum
         Write.append_para(cursor=cursor, text=para_text, styles=(OutlineList(ln_num=6),))

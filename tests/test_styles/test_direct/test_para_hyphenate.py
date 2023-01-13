@@ -108,7 +108,7 @@ def test_write(loader, para_text) -> None:
 
         # apply style directly to cursor
         hy = Hyphenation(auto=True, no_caps=True, start_chars=5, end_chars=4, max=8)
-        hy.apply_style(cursor)
+        hy.apply(cursor)
         Write.append_para(cursor=cursor, text=para_text)
         cursor.goLeft(p_len + 1, False)
         cursor.goRight(p_len, True)
@@ -120,7 +120,7 @@ def test_write(loader, para_text) -> None:
         cursor.gotoEnd(False)
 
         # restore cursor
-        Hyphenation.default.apply_style(cursor)
+        Hyphenation.default.apply(cursor)
         assert pp.ParaIsHyphenation == False
         assert pp.ParaHyphenationNoCaps == False
         assert pp.ParaHyphenationMaxLeadingChars == 2

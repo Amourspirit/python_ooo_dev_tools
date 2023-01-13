@@ -122,7 +122,7 @@ class StyleBase(ABC):
         # get current keys in internal dictionary
         return tuple(self._dv.keys())
 
-    def apply_style(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: object, **kwargs) -> None:
         """
         Applies styles to object
 
@@ -270,20 +270,20 @@ class StyleMulti(StyleBase):
         """Gets If instantance has any attributes set."""
         return len(self._dv) + len(self._styles) > 0
 
-    def apply_style(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: object, **kwargs) -> None:
         """
         Applies style of current instance and all other internal style instances.
 
         Args:
             obj (object): UNO Oject that styles are to be applied.
         """
-        super().apply_style(obj, **kwargs)
+        super().apply(obj, **kwargs)
         for _, info in self._styles.items():
             style, kw = info
             if kw:
-                style.apply_style(obj, **kw.kwargs)
+                style.apply(obj, **kw.kwargs)
             else:
-                style.apply_style(obj)
+                style.apply(obj)
 
     def copy(self: T) -> T:
         cp = super().copy()

@@ -117,7 +117,7 @@ class Borders(StyleMulti):
         """
         return ("com.sun.star.table.CellProperties",)
 
-    def apply_style(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: object, **kwargs) -> None:
         """
         Applies padding to ``obj``
 
@@ -129,7 +129,7 @@ class Borders(StyleMulti):
             None:
         """
         try:
-            super().apply_style(obj, **kwargs)
+            super().apply(obj, **kwargs)
         except mEx.MultiError as e:
             mLo.Lo.print(f"CellBorder.apply_style(): Unable to set Property")
             for err in e.errors:

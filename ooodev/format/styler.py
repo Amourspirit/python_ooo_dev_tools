@@ -17,7 +17,7 @@ class Styler:
     """
 
     @staticmethod
-    def apply_style(obj: Any, *styles: style_obj.StyleObj, **kwargs) -> None:
+    def apply(obj: Any, *styles: style_obj.StyleObj, **kwargs) -> None:
         """
         Applies style to object
 
@@ -30,4 +30,4 @@ class Styler:
             None:
         """
         for style in styles:
-            style.apply_style(obj, **kwargs)
+            style.apply(obj, **kwargs)

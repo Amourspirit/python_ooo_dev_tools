@@ -79,7 +79,7 @@ def test_write(loader) -> None:
     try:
         cursor = Write.get_cursor(doc)
         ls = ListStyle(list_style=StyleListKind.LIST_01)
-        ls.apply_style(cursor)
+        ls.apply(cursor)
         start_pos = 0
         for i in range(1, 6):
             Write.append_para(cursor=cursor, text=f"Point {i}")
@@ -89,12 +89,12 @@ def test_write(loader) -> None:
         assert pp.NumberingStyleName == StyleListKind.LIST_01.value
         cursor.gotoEnd(False)
 
-        ListStyle.default.apply_style(cursor)
+        ListStyle.default.apply(cursor)
         Write.append_para(cursor, "Moving on...")
 
         start_pos = Write.get_position(cursor)
         ls = ListStyle(list_style=StyleListKind.NUM_123)
-        ls.apply_style(cursor)
+        ls.apply(cursor)
         for i in range(1, 6):
             Write.append_para(cursor=cursor, text=f"Num Point {i}")
         end_pos = Write.get_position(cursor)
@@ -102,14 +102,14 @@ def test_write(loader) -> None:
         assert pp.NumberingStyleName == StyleListKind.NUM_123.value
         cursor.gotoEnd(False)
 
-        ListStyle.default.apply_style(cursor)
+        ListStyle.default.apply(cursor)
         Write.append_para(cursor, "Moving on...")
 
         start_pos = Write.get_position(cursor)
-        ls.apply_style(cursor)
+        ls.apply(cursor)
         for i in range(1, 4):
             if i == 1:
-                ls.restart_numbers.apply_style(cursor)
+                ls.restart_numbers.apply(cursor)
                 assert pp.ParaIsNumberingRestart == True
             Write.append_para(cursor=cursor, text=f"Num Point {i}")
         end_pos = Write.get_position(cursor)
@@ -117,11 +117,11 @@ def test_write(loader) -> None:
         assert pp.NumberingStyleName == StyleListKind.NUM_123.value
         cursor.gotoEnd(False)
 
-        ls.restart_numbers.apply_style(cursor)
+        ls.restart_numbers.apply(cursor)
         start_pos = Write.get_position(cursor)
         for i in range(4, 8):
             if i == 4:
-                ls.restart_numbers.apply_style(cursor)
+                ls.restart_numbers.apply(cursor)
                 assert pp.ParaIsNumberingRestart == True
             Write.append_para(cursor=cursor, text=f"Num Point {i}")
         end_pos = Write.get_position(cursor)
@@ -130,20 +130,20 @@ def test_write(loader) -> None:
         cursor.gotoEnd(False)
         # restart numbering
         ls_rs = ls.style_num_start(-2)
-        ls_rs.apply_style(cursor)
+        ls_rs.apply(cursor)
         assert pp.ParaIsNumberingRestart == True
         Write.append_para(cursor=cursor, text="Num Point 8")
         Write.append_para(cursor=cursor, text="Num Point 9")
 
-        ListStyle.default.apply_style(cursor)
+        ListStyle.default.apply(cursor)
         Write.append_para(cursor, "Moving on...")
 
         start_pos = Write.get_position(cursor)
         ls = ListStyle(list_style=StyleListKind.NUM_ABC, num_start=-2)
-        ls.apply_style(cursor)
+        ls.apply(cursor)
         for i in range(1, 4):
             if i == 1:
-                ls.restart_numbers.apply_style(cursor)
+                ls.restart_numbers.apply(cursor)
                 assert pp.ParaIsNumberingRestart == True
             Write.append_para(cursor=cursor, text=f"Num Point {i}")
         end_pos = Write.get_position(cursor)
@@ -151,15 +151,15 @@ def test_write(loader) -> None:
         assert pp.NumberingStyleName == StyleListKind.NUM_ABC.value
         cursor.gotoEnd(False)
 
-        ListStyle.default.apply_style(cursor)
+        ListStyle.default.apply(cursor)
         Write.append_para(cursor, "Moving on...")
 
         start_pos = Write.get_position(cursor)
         ls = ListStyle(list_style=StyleListKind.NUM_abc, num_start=-2)
-        ls.apply_style(cursor)
+        ls.apply(cursor)
         for i in range(1, 4):
             if i == 1:
-                ls.restart_numbers.apply_style(cursor)
+                ls.restart_numbers.apply(cursor)
                 assert pp.ParaIsNumberingRestart == True
             Write.append_para(cursor=cursor, text=f"Num Point {i}")
         end_pos = Write.get_position(cursor)
@@ -167,15 +167,15 @@ def test_write(loader) -> None:
         assert pp.NumberingStyleName == StyleListKind.NUM_abc.value
         cursor.gotoEnd(False)
 
-        ListStyle.default.apply_style(cursor)
+        ListStyle.default.apply(cursor)
         Write.append_para(cursor, "Moving on...")
 
         start_pos = Write.get_position(cursor)
         ls = ListStyle(list_style=StyleListKind.NUM_IVX, num_start=-2)
-        ls.apply_style(cursor)
+        ls.apply(cursor)
         for i in range(1, 4):
             if i == 1:
-                ls.restart_numbers.apply_style(cursor)
+                ls.restart_numbers.apply(cursor)
                 assert pp.ParaIsNumberingRestart == True
             Write.append_para(cursor=cursor, text=f"Num Point {i}")
         end_pos = Write.get_position(cursor)
@@ -183,15 +183,15 @@ def test_write(loader) -> None:
         assert pp.NumberingStyleName == StyleListKind.NUM_IVX.value
         cursor.gotoEnd(False)
 
-        ListStyle.default.apply_style(cursor)
+        ListStyle.default.apply(cursor)
         Write.append_para(cursor, "Moving on...")
 
         start_pos = Write.get_position(cursor)
         ls = ListStyle(list_style=StyleListKind.NUM_ivx, num_start=-2)
-        ls.apply_style(cursor)
+        ls.apply(cursor)
         for i in range(1, 4):
             if i == 1:
-                ls.restart_numbers.apply_style(cursor)
+                ls.restart_numbers.apply(cursor)
                 assert pp.ParaIsNumberingRestart == True
             Write.append_para(cursor=cursor, text=f"Num Point {i}")
         end_pos = Write.get_position(cursor)
@@ -199,15 +199,15 @@ def test_write(loader) -> None:
         assert pp.NumberingStyleName == StyleListKind.NUM_ivx.value
         cursor.gotoEnd(False)
 
-        ListStyle.default.apply_style(cursor)
+        ListStyle.default.apply(cursor)
         Write.append_para(cursor, "Moving on...")
 
         start_pos = Write.get_position(cursor)
         ls = ListStyle(list_style=StyleListKind.LIST_02, num_start=-2)
-        ls.apply_style(cursor)
+        ls.apply(cursor)
         for i in range(1, 4):
             if i == 1:
-                ls.restart_numbers.apply_style(cursor)
+                ls.restart_numbers.apply(cursor)
                 assert pp.ParaIsNumberingRestart == True
             Write.append_para(cursor=cursor, text=f"Num Point {i}")
         end_pos = Write.get_position(cursor)
@@ -215,15 +215,15 @@ def test_write(loader) -> None:
         assert pp.NumberingStyleName == StyleListKind.LIST_02.value
         cursor.gotoEnd(False)
 
-        ListStyle.default.apply_style(cursor)
+        ListStyle.default.apply(cursor)
         Write.append_para(cursor, "Moving on...")
 
         start_pos = Write.get_position(cursor)
         ls = ListStyle(list_style=StyleListKind.LIST_03, num_start=-2)
-        ls.apply_style(cursor)
+        ls.apply(cursor)
         for i in range(1, 4):
             if i == 1:
-                ls.restart_numbers.apply_style(cursor)
+                ls.restart_numbers.apply(cursor)
                 assert pp.ParaIsNumberingRestart == True
             Write.append_para(cursor=cursor, text=f"Num Point {i}")
         end_pos = Write.get_position(cursor)
@@ -231,15 +231,15 @@ def test_write(loader) -> None:
         assert pp.NumberingStyleName == StyleListKind.LIST_03.value
         cursor.gotoEnd(False)
 
-        ListStyle.default.apply_style(cursor)
+        ListStyle.default.apply(cursor)
         Write.append_para(cursor, "Moving on...")
 
         start_pos = Write.get_position(cursor)
         ls = ListStyle(list_style=StyleListKind.LIST_04, num_start=-2)
-        ls.apply_style(cursor)
+        ls.apply(cursor)
         for i in range(1, 4):
             if i == 1:
-                ls.restart_numbers.apply_style(cursor)
+                ls.restart_numbers.apply(cursor)
                 assert pp.ParaIsNumberingRestart == True
             Write.append_para(cursor=cursor, text=f"Num Point {i}")
         end_pos = Write.get_position(cursor)
@@ -247,15 +247,15 @@ def test_write(loader) -> None:
         assert pp.NumberingStyleName == StyleListKind.LIST_04.value
         cursor.gotoEnd(False)
 
-        ListStyle.default.apply_style(cursor)
+        ListStyle.default.apply(cursor)
         Write.append_para(cursor, "Moving on...")
 
         start_pos = Write.get_position(cursor)
         ls = ListStyle(list_style=StyleListKind.LIST_05, num_start=-2)
-        ls.apply_style(cursor)
+        ls.apply(cursor)
         for i in range(1, 4):
             if i == 1:
-                ls.restart_numbers.apply_style(cursor)
+                ls.restart_numbers.apply(cursor)
                 assert pp.ParaIsNumberingRestart == True
             Write.append_para(cursor=cursor, text=f"Num Point {i}")
         end_pos = Write.get_position(cursor)
@@ -263,7 +263,7 @@ def test_write(loader) -> None:
         assert pp.NumberingStyleName == StyleListKind.LIST_05.value
         cursor.gotoEnd(False)
 
-        ListStyle.default.apply_style(cursor)
+        ListStyle.default.apply(cursor)
 
         Lo.delay(delay)
     finally:

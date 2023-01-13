@@ -809,7 +809,7 @@ class Write(mSel.Selection):
                     old_val[attr] = val
             cursor.goLeft(s_len, True)
 
-            style.apply_style(cursor)
+            style.apply(cursor)
 
             cursor.gotoEnd(False)
             if bak:
@@ -1263,7 +1263,7 @@ class Write(mSel.Selection):
         cursor.goRight(distance, True)
 
         for style in styles:
-            style.apply_style(cursor)
+            style.apply(cursor)
         cursor.gotoEnd(False)
 
     @overload
@@ -1398,7 +1398,7 @@ class Write(mSel.Selection):
                     if not val is None:
                         old_val[attr] = val
                 cursor.goLeft(amt, True)
-            style.apply_style(cursor)
+            style.apply(cursor)
             if pos > 0:
                 cursor.goRight(amt, False)
                 for key, val in old_val.items():
@@ -1561,7 +1561,7 @@ class Write(mSel.Selection):
 
             cursor.gotoPreviousParagraph(True)  # select previous paragraph
 
-            style.apply_style(cursor)
+            style.apply(cursor)
 
             # reset
             cursor.gotoNextParagraph(False)

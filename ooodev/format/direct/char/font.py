@@ -201,10 +201,10 @@ class Font(StyleBase):
         return ("com.sun.star.style.CharacterProperties",)
 
     @overload
-    def apply_style(self, obj: object) -> None:
+    def apply(self, obj: object) -> None:
         ...
 
-    def apply_style(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: object, **kwargs) -> None:
         """
         Applies styles to object
 
@@ -216,7 +216,7 @@ class Font(StyleBase):
         """
         if self._is_valid_service(obj):
             try:
-                super().apply_style(obj, **kwargs)
+                super().apply(obj, **kwargs)
             except mEx.MultiError as e:
                 mLo.Lo.print(f"Font.apply_style(): Unable to set Property")
                 for err in e.errors:
