@@ -799,7 +799,7 @@ class Write(mSel.Selection):
         cursor.setString(text)
         cursor.gotoEnd(False)
         for style in styles:
-            bak = not FormatKind.PARA in style.prop_style_kind
+            bak = not FormatKind.PARA in style.prop_format_kind
 
             if bak:
                 # store properties about to be changed
@@ -1018,7 +1018,7 @@ class Write(mSel.Selection):
 
         def capture_old_val(style: StyleObj) -> None:
             nonlocal old_val
-            if FormatKind.PARA in style.prop_style_kind:
+            if FormatKind.PARA in style.prop_format_kind:
                 if old_val is None:
                     old_val = {}
                 for attr in style.get_attrs():

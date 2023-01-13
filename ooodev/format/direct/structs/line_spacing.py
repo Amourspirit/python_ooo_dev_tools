@@ -94,7 +94,7 @@ class LineSpacing(StyleBase):
 
     # region Properties
     @property
-    def prop_style_kind(self) -> FormatKind:
+    def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
         return FormatKind.STRUCT
 
