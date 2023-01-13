@@ -37,19 +37,37 @@ class RangeObj:
     """Row start such as ``1``"""
     row_end: int
     """Row end such as ``125``"""
-    start: mCo.CellObj = field(init=False, repr=False, hash=False)
+    start: mCellObj.CellObj = field(init=False, repr=False, hash=False)
     """Start Cell Object"""
-    end: mCo.CellObj = field(init=False, repr=False, hash=False)
+    end: mCellObj.CellObj = field(init=False, repr=False, hash=False)
     """End Cell Object"""
     sheet_idx: int = -1
     """Sheet index that this range value belongs to"""
 
     def __post_init__(self):
+        row_start = self.row_start
+        row_end = self.row_end
+        if row_start > row_end:
+            row_start, row_end = row_end, row_start
+            object.__setattr__(self, "row_start", row_start)
+            object.__setattr__(self, "row_end", row_end)
+
         object.__setattr__(self, "col_start", self.col_start.upper())
         object.__setattr__(self, "col_end", self.col_end.upper())
 
-        object.__setattr__(self, "start", mCo.CellObj.from_cell(f"{self.col_start}{self.row_start}"))
-        object.__setattr__(self, "end", mCo.CellObj.from_cell(f"{self.col_end}{self.row_end}"))
+        col_start_num = mTb.TableHelper.col_name_to_int(self.col_start)
+        col_end_num = mTb.TableHelper.col_name_to_int(self.col_end)
+        if col_start_num > col_end_num:
+            # swap columns
+            col_start, col_end = self.col_end, self.col_start
+            object.__setattr__(self, "col_start", col_start)
+            object.__setattr__(self, "col_end", col_end)
+
+        start = mCellObj.CellObj(col=self.col_start, row=self.row_start, range_obj=self)
+        end = mCellObj.CellObj(col=self.col_end, row=self.row_end, range_obj=self)
+
+        object.__setattr__(self, "start", start)
+        object.__setattr__(self, "end", end)
         if self.sheet_idx < 0:
             try:
                 if mLo.Lo.is_loaded:
@@ -371,6 +389,14 @@ class RangeObj:
             current_rv = self.get_range_values()
             rv = current_rv.add_rows(other)
             return RangeObj.from_range(rv)
+        if isinstance(other, mRowObj.RowObj):
+            current_rv = self.get_range_values()
+            rv = current_rv.add_rows(other.value)
+            return RangeObj.from_range(rv)
+        if isinstance(other, mColObj.ColObj):
+            current_rv = self.get_range_values()
+            rv = current_rv.add_cols(other.index + 1)
+            return RangeObj.from_range(rv)
         return NotImplemented
 
     def __radd__(self, other: object) -> RangeObj:
@@ -384,6 +410,14 @@ class RangeObj:
             # add rows to top of range
             current_rv = self.get_range_values()
             rv = current_rv.add_rows(other, False)
+            return RangeObj.from_range(rv)
+        if isinstance(other, mRowObj.RowObj):
+            current_rv = self.get_range_values()
+            rv = current_rv.add_rows(other.value, False)
+            return RangeObj.from_range(rv)
+        if isinstance(other, mColObj.ColObj):
+            current_rv = self.get_range_values()
+            rv = current_rv.add_cols(other.index + 1, False)
             return RangeObj.from_range(rv)
         return NotImplemented
 
@@ -399,6 +433,14 @@ class RangeObj:
             current_rv = self.get_range_values()
             rv = current_rv.subtract_rows(other)
             return RangeObj.from_range(rv)
+        if isinstance(other, mRowObj.RowObj):
+            current_rv = self.get_range_values()
+            rv = current_rv.subtract_rows(other.value)
+            return RangeObj.from_range(rv)
+        if isinstance(other, mColObj.ColObj):
+            current_rv = self.get_range_values()
+            rv = current_rv.subtract_cols(other.index + 1)
+            return RangeObj.from_range(rv)
         return NotImplemented
 
     def __rsub__(self, other: object) -> RangeObj:
@@ -412,6 +454,14 @@ class RangeObj:
             # subtract rows from top of range
             current_rv = self.get_range_values()
             rv = current_rv.subtract_rows(other, False)
+            return RangeObj.from_range(rv)
+        if isinstance(other, mRowObj.RowObj):
+            current_rv = self.get_range_values()
+            rv = current_rv.subtract_rows(other.value, False)
+            return RangeObj.from_range(rv)
+        if isinstance(other, mColObj.ColObj):
+            current_rv = self.get_range_values()
+            rv = current_rv.subtract_cols(other.index + 1, False)
             return RangeObj.from_range(rv)
         return NotImplemented
 
@@ -503,14 +553,6 @@ class RangeObj:
         end = self.end_row_index
         count = abs(end - start) + 1
         return count
-        # try:
-        #     return self._row_count
-        # except AttributeError:
-        #     start = self.start_row_index
-        #     end = self.end_row_index
-        #     count = abs(end - start) + 1
-        #     object.__setattr__(self, "_row_count", count)
-        # return self._row_count
 
     @property
     def col_count(self) -> int:
@@ -524,14 +566,6 @@ class RangeObj:
         end = self.end_col_index
         count = abs(end - start) + 1
         return count
-        # try:
-        #     return self._col_count
-        # except AttributeError:
-        #     start = self.cell_start.col_obj.index
-        #     end = self.cell_end.col_obj.index
-        #     count = abs(end - start) + 1
-        #     object.__setattr__(self, "_col_count", count)
-        # return self._col_count
 
     @property
     def cell_count(self) -> int:
@@ -546,6 +580,7 @@ class RangeObj:
     # endregion properties
 
 
+from . import row_obj as mRowObj
+from . import col_obj as mColObj
 from . import cell_obj as mCellObj
-from . import cell_obj as mCo
 from . import range_values as mRngValues

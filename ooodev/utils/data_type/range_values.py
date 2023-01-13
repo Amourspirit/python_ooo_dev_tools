@@ -45,6 +45,20 @@ class RangeValues:
                     f"All indexes must be greater than 0. Column Range ({self.col_start}:{self.col_end}), Row Range - ({self.row_start}:{self.row_end})"
                 )
 
+        col_start = self.col_start
+        col_end = self.col_end
+        if col_start > col_end:
+            col_start, col_end = col_end, col_start
+            object.__setattr__(self, "col_start", col_start)
+            object.__setattr__(self, "col_end", col_end)
+
+        row_start = self.row_start
+        row_end = self.row_end
+        if row_start > row_end:
+            row_start, row_end = row_end, row_start
+            object.__setattr__(self, "row_start", row_start)
+            object.__setattr__(self, "row_end", row_end)
+
         if self.sheet_idx < 0:
             try:
                 if mLo.Lo.is_loaded:
