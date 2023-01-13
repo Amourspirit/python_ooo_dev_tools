@@ -10,7 +10,7 @@ from ....exceptions import ex as mEx
 from ....meta.static_prop import static_prop
 from ....utils import lo as mLo
 from ....utils import props as mProps
-from ...kind.style_kind import StyleKind
+from ...kind.format_kind import FormatKind
 from ...style_base import StyleBase
 
 
@@ -20,7 +20,7 @@ class Hyphenation(StyleBase):
 
     Any properties starting with ``prop_`` set or get current instance values.
 
-    All methods starting with ``style_`` can be used to chain together properties.
+    All methods starting with ``fmt_`` can be used to chain together properties.
 
     .. versionadded:: 0.9.0
     """
@@ -84,11 +84,12 @@ class Hyphenation(StyleBase):
         """
         return ("com.sun.star.style.ParagraphProperties",)
 
+    # region apply()
     @overload
-    def apply_style(self, obj: object) -> None:
+    def apply(self, obj: object) -> None:
         ...
 
-    def apply_style(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: object, **kwargs) -> None:
         """
         Applies hypenation properties to ``obj``
 
@@ -99,11 +100,13 @@ class Hyphenation(StyleBase):
             None:
         """
         try:
-            super().apply_style(obj, **kwargs)
+            super().apply(obj, **kwargs)
         except mEx.MultiError as e:
             mLo.Lo.print(f"{self.__class__}.apply_style(): Unable to set Property")
             for err in e.errors:
                 mLo.Lo.print(f"  {err}")
+
+    # endregion apply()
 
     @staticmethod
     def from_obj(obj: object) -> Hyphenation:
@@ -140,7 +143,7 @@ class Hyphenation(StyleBase):
     # endregion methods
 
     # region style methods
-    def style_auto(self, value: bool | None) -> Hyphenation:
+    def fmt_auto(self, value: bool | None) -> Hyphenation:
         """
         Gets copy of instance with auto set or removed
 
@@ -154,7 +157,7 @@ class Hyphenation(StyleBase):
         cp.prop_auto = value
         return cp
 
-    def style_no_caps(self, value: bool | None) -> Hyphenation:
+    def fmt_no_caps(self, value: bool | None) -> Hyphenation:
         """
         Gets copy of instance with no caps set or removed
 
@@ -168,7 +171,7 @@ class Hyphenation(StyleBase):
         cp.prop_no_caps = value
         return cp
 
-    def style_start_chars(self, value: int | None) -> Hyphenation:
+    def fmt_start_chars(self, value: int | None) -> Hyphenation:
         """
         Gets copy of instance with start chars set or removed
 
@@ -182,7 +185,7 @@ class Hyphenation(StyleBase):
         cp.prop_start_chars = value
         return cp
 
-    def style_end_chars(self, value: int | None) -> Hyphenation:
+    def fmt_end_chars(self, value: int | None) -> Hyphenation:
         """
         Gets copy of instance with end chars set or removed
 
@@ -196,7 +199,7 @@ class Hyphenation(StyleBase):
         cp.prop_end_chars = value
         return cp
 
-    def style_max_chars(self, value: int | None) -> Hyphenation:
+    def fmt_max_chars(self, value: int | None) -> Hyphenation:
         """
         Gets copy of instance with max set or removed
 
@@ -235,9 +238,9 @@ class Hyphenation(StyleBase):
 
     # region properties
     @property
-    def prop_style_kind(self) -> StyleKind:
+    def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return StyleKind.PARA
+        return FormatKind.PARA
 
     @property
     def prop_auto(self) -> bool | None:

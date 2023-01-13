@@ -10,7 +10,7 @@ from ....exceptions import ex as mEx
 from ....meta.static_prop import static_prop
 from ....utils import lo as mLo
 from ....utils import props as mProps
-from ...kind.style_kind import StyleKind
+from ...kind.format_kind import FormatKind
 from ...style_base import StyleBase
 
 from ooo.dyn.text.writing_mode2 import WritingMode2Enum as WritingMode2Enum
@@ -22,7 +22,7 @@ class WritingMode(StyleBase):
 
     Any properties starting with ``prop_`` set or get current instance values.
 
-    All methods starting with ``style_`` can be used to chain together properties.
+    All methods starting with ``fmt_`` can be used to chain together properties.
 
     .. versionadded:: 0.9.0
     """
@@ -61,11 +61,13 @@ class WritingMode(StyleBase):
         """
         return ("com.sun.star.style.ParagraphPropertiesComplex",)
 
+    # region apply()
+
     @overload
-    def apply_style(self, obj: object) -> None:
+    def apply(self, obj: object) -> None:
         ...
 
-    def apply_style(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: object, **kwargs) -> None:
         """
         Applies writing mode to ``obj``
 
@@ -76,11 +78,13 @@ class WritingMode(StyleBase):
             None:
         """
         try:
-            super().apply_style(obj, **kwargs)
+            super().apply(obj, **kwargs)
         except mEx.MultiError as e:
             mLo.Lo.print(f"{self.__class__}.apply_style(): Unable to set Property")
             for err in e.errors:
                 mLo.Lo.print(f"  {err}")
+
+    # endregion apply()
 
     @staticmethod
     def from_obj(obj: object) -> WritingMode:
@@ -106,7 +110,7 @@ class WritingMode(StyleBase):
     # endregion methods
 
     # region style methods
-    def style_mode(self, value: WritingMode2Enum | None) -> WritingMode:
+    def fmt_mode(self, value: WritingMode2Enum | None) -> WritingMode:
         """
         Gets copy of instance with writing mode set or removed
 
@@ -214,9 +218,9 @@ class WritingMode(StyleBase):
 
     # region properties
     @property
-    def prop_style_kind(self) -> StyleKind:
+    def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return StyleKind.PARA | StyleKind.PARA_COMPLEX
+        return FormatKind.PARA | FormatKind.PARA_COMPLEX
 
     @property
     def prop_mode(self) -> WritingMode2Enum | None:

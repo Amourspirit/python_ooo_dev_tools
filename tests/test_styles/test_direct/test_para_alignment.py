@@ -213,7 +213,7 @@ def test_alignemnt_write(loader, para_text) -> None:
 
         # reset text direction
         al = Alignment(txt_direction=WritingMode().lr_tb)
-        al.apply_style(cursor)
+        al.apply(cursor)
 
         Write.append_para(cursor=cursor, text=para_text)
         Write.style_prev_paragraph(cursor=cursor, styles=(Alignment().justified,))

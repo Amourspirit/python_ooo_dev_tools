@@ -10,7 +10,7 @@ from ..events.props_named_event import PropsNamedEvent
 from ..events.args.key_val_cancel_args import KeyValCancelArgs
 from ..events.args.key_val_args import KeyValArgs
 from ..utils.type_var import T
-from .kind.style_kind import StyleKind
+from .kind.format_kind import FormatKind
 from abc import ABC
 
 if TYPE_CHECKING:
@@ -122,7 +122,7 @@ class StyleBase(ABC):
         # get current keys in internal dictionary
         return tuple(self._dv.keys())
 
-    def apply_style(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: object, **kwargs) -> None:
         """
         Applies styles to object
 
@@ -188,9 +188,9 @@ class StyleBase(ABC):
         return len(self._dv) > 0
 
     @property
-    def prop_style_kind(self) -> StyleKind:
+    def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return StyleKind.UNKNOWN
+        return FormatKind.UNKNOWN
 
 
 class _StyleMultArgs:
@@ -270,20 +270,20 @@ class StyleMulti(StyleBase):
         """Gets If instantance has any attributes set."""
         return len(self._dv) + len(self._styles) > 0
 
-    def apply_style(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: object, **kwargs) -> None:
         """
         Applies style of current instance and all other internal style instances.
 
         Args:
             obj (object): UNO Oject that styles are to be applied.
         """
-        super().apply_style(obj, **kwargs)
+        super().apply(obj, **kwargs)
         for _, info in self._styles.items():
             style, kw = info
             if kw:
-                style.apply_style(obj, **kw.kwargs)
+                style.apply(obj, **kw.kwargs)
             else:
-                style.apply_style(obj)
+                style.apply(obj)
 
     def copy(self: T) -> T:
         cp = super().copy()
