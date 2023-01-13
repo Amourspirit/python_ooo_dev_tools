@@ -1,7 +1,6 @@
 from __future__ import annotations
 from dataclasses import dataclass
 
-from . import cell_obj as mCellObj
 from .. import table_helper as mTb
 from ...office import calc as mCalc
 from ..decorator import enforce
@@ -94,3 +93,6 @@ class CellValues:
             row = cell_val.Row
             col = cell_val.Column
         return CellValues(col=col, row=row, sheet_idx=idx)
+
+
+from . import cell_obj as mCellObj

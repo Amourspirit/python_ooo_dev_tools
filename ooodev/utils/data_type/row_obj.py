@@ -111,6 +111,9 @@ class RowObj(BaseIntValue):
         try:
             i = round(other)
             return RowObj.from_int(self.value + i)
+        except TypeError:
+            # not an int
+            return NotImplemented
         except AssertionError as e:
             raise IndexError from e
         except Exception:
@@ -132,6 +135,9 @@ class RowObj(BaseIntValue):
                 return RowObj.from_int(self.value - other.value)
             i = round(other)
             return RowObj.from_int(self.value - i)
+        except TypeError:
+            # not an int
+            return NotImplemented
         except AssertionError as e:
             raise IndexError from e
         except Exception:
@@ -142,6 +148,9 @@ class RowObj(BaseIntValue):
         try:
             i = round(other)
             return self.from_int(i - self.value)
+        except TypeError:
+            # not an int
+            return NotImplemented
         except AssertionError as e:
             raise IndexError from e
         except Exception:
