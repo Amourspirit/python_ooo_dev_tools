@@ -34,13 +34,13 @@ def test_font_chain() -> None:
     assert ft.prop_is_italic
     assert ft.prop_is_bold
 
-    ft = ft.style_color(CommonColor.RED)
+    ft = ft.fmt_color(CommonColor.RED)
     assert ft.prop_weight == FontWeightEnum.BOLD
     assert ft.prop_is_italic
     assert ft.prop_is_bold
     assert ft.prop_color == CommonColor.RED
 
-    ft = ft.style_bg_color(CommonColor.BLUE)
+    ft = ft.fmt_bg_color(CommonColor.BLUE)
     assert ft.prop_weight == FontWeightEnum.BOLD
     assert ft.prop_is_italic
     assert ft.prop_is_bold

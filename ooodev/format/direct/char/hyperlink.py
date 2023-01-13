@@ -94,7 +94,7 @@ class Hyperlink(StyleBase):
         """
         return ("com.sun.star.style.CharacterProperties",)
 
-    # region apply_style()
+    # region apply()
 
     @overload
     def apply(self, obj: object) -> None:
@@ -119,7 +119,7 @@ class Hyperlink(StyleBase):
                 mLo.Lo.print(f"  {err}")
         return None
 
-    # endregion apply_style()
+    # endregion apply()
 
     @staticmethod
     def from_obj(obj: object) -> Hyperlink:

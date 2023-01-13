@@ -23,7 +23,7 @@ class ListStyle(StyleBase):
 
     Any properties starting with ``prop_`` set or get current instance values.
 
-    All methods starting with ``style_`` can be used to chain together properties.
+    All methods starting with ``fmt_`` can be used to chain together properties.
 
     .. versionadded:: 0.9.0
     """
@@ -88,6 +88,7 @@ class ListStyle(StyleBase):
         """
         return ("com.sun.star.style.ParagraphProperties",)
 
+    # region apply()
     @overload
     def apply(self, obj: object) -> None:
         ...
@@ -108,6 +109,8 @@ class ListStyle(StyleBase):
             mLo.Lo.print(f"{self.__class__}.apply_style(): Unable to set Property")
             for err in e.errors:
                 mLo.Lo.print(f"  {err}")
+
+    # endregion apply()
 
     @staticmethod
     def from_obj(obj: object) -> ListStyle:
@@ -142,7 +145,7 @@ class ListStyle(StyleBase):
     # endregion methods
 
     # region Style Methods
-    def style_list_style(self, value: str | StyleListKind | None) -> ListStyle:
+    def fmt_list_style(self, value: str | StyleListKind | None) -> ListStyle:
         """
         Gets a copy of instance with before list style set or removed
 
@@ -156,7 +159,7 @@ class ListStyle(StyleBase):
         cp.prop_list_style = value
         return cp
 
-    def style_num_start(self, value: int | None) -> ListStyle:
+    def fmt_num_start(self, value: int | None) -> ListStyle:
         """
         Gets a copy of instance with before list style set or removed
 

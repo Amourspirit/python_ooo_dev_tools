@@ -22,7 +22,7 @@ class WritingMode(StyleBase):
 
     Any properties starting with ``prop_`` set or get current instance values.
 
-    All methods starting with ``style_`` can be used to chain together properties.
+    All methods starting with ``fmt_`` can be used to chain together properties.
 
     .. versionadded:: 0.9.0
     """
@@ -61,6 +61,8 @@ class WritingMode(StyleBase):
         """
         return ("com.sun.star.style.ParagraphPropertiesComplex",)
 
+    # region apply()
+
     @overload
     def apply(self, obj: object) -> None:
         ...
@@ -81,6 +83,8 @@ class WritingMode(StyleBase):
             mLo.Lo.print(f"{self.__class__}.apply_style(): Unable to set Property")
             for err in e.errors:
                 mLo.Lo.print(f"  {err}")
+
+    # endregion apply()
 
     @staticmethod
     def from_obj(obj: object) -> WritingMode:
@@ -106,7 +110,7 @@ class WritingMode(StyleBase):
     # endregion methods
 
     # region style methods
-    def style_mode(self, value: WritingMode2Enum | None) -> WritingMode:
+    def fmt_mode(self, value: WritingMode2Enum | None) -> WritingMode:
         """
         Gets copy of instance with writing mode set or removed
 

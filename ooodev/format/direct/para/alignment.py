@@ -4,7 +4,7 @@ Modele for managing paragraph alignment.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, cast
+from typing import Tuple, cast, overload
 from enum import Enum
 
 from ....exceptions import ex as mEx
@@ -37,7 +37,7 @@ class Alignment(StyleMulti):
 
     Any properties starting with ``prop_`` set or get current instance values.
 
-    All methods starting with ``style_`` can be used to chain together properties.
+    All methods starting with ``fmt_`` can be used to chain together properties.
 
     .. versionadded:: 0.9.0
     """
@@ -106,13 +106,17 @@ class Alignment(StyleMulti):
         """
         return ("com.sun.star.style.ParagraphProperties",)
 
+    # region apply()
+    @overload
+    def apply(self, obj: object) -> None:
+        ...
+
     def apply(self, obj: object, **kwargs) -> None:
         """
         Applies alignment to ``obj``
 
         Args:
             obj (object): UNO object that supports ``com.sun.star.style.ParagraphProperties`` service.
-            kwargs (Any, optional): Expandable list of key value pairs that may be used in child classes.
 
         Returns:
             None:
@@ -123,6 +127,8 @@ class Alignment(StyleMulti):
             mLo.Lo.print(f"{self.__class__}.apply_style(): Unable to set Property")
             for err in e.errors:
                 mLo.Lo.print(f"  {err}")
+
+    # endregion apply()
 
     @staticmethod
     def from_obj(obj: object) -> Alignment:
@@ -170,7 +176,7 @@ class Alignment(StyleMulti):
     # endregion methods
 
     # region style methods
-    def style_align(self, value: ParagraphAdjust | None) -> Alignment:
+    def fmt_align(self, value: ParagraphAdjust | None) -> Alignment:
         """
         Gets copy of instance with horizontal alignment set or removed
 
@@ -184,7 +190,7 @@ class Alignment(StyleMulti):
         cp.prop_align = value
         return cp
 
-    def style_align_vert(self, value: ParagraphVertAlignEnum | None) -> Alignment:
+    def fmt_align_vert(self, value: ParagraphVertAlignEnum | None) -> Alignment:
         """
         Gets copy of instance with verticial alignment set or removed
 
@@ -198,7 +204,7 @@ class Alignment(StyleMulti):
         cp.prop_align_vert = value
         return cp
 
-    def style_align_last(self, value: LastLineKind | None) -> Alignment:
+    def fmt_align_last(self, value: LastLineKind | None) -> Alignment:
         """
         Gets copy of instance with align last set or removed
 
@@ -212,7 +218,7 @@ class Alignment(StyleMulti):
         cp.prop_align_last = value
         return cp
 
-    def style_expand_single_word(self, value: bool | None) -> Alignment:
+    def fmt_expand_single_word(self, value: bool | None) -> Alignment:
         """
         Gets copy of instance with expand single word set or removed
 
@@ -226,7 +232,7 @@ class Alignment(StyleMulti):
         cp.prop_expand_single_word = value
         return cp
 
-    def style_snap_to_grid(self, value: bool | None) -> Alignment:
+    def fmt_snap_to_grid(self, value: bool | None) -> Alignment:
         """
         Gets copy of instance with snap to grid set or removed
 
@@ -240,7 +246,7 @@ class Alignment(StyleMulti):
         cp.prop_snap_to_grid = value
         return cp
 
-    def style_txt_direction(self, value: WritingMode | None) -> Alignment:
+    def fmt_txt_direction(self, value: WritingMode | None) -> Alignment:
         """
         Gets copy of instance with verticial alignment set or removed
 

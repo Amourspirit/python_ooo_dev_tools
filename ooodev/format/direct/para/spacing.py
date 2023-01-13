@@ -20,7 +20,7 @@ class Spacing(StyleBase):
 
     Any properties starting with ``prop_`` set or get current instance values.
 
-    All methods starting with ``style_`` can be used to chain together properties.
+    All methods starting with ``fmt_`` can be used to chain together properties.
 
     .. versionadded:: 0.9.0
     """
@@ -70,6 +70,7 @@ class Spacing(StyleBase):
         """
         return ("com.sun.star.style.ParagraphProperties",)
 
+    # region apply()
     @overload
     def apply(self, obj: object) -> None:
         ...
@@ -90,6 +91,8 @@ class Spacing(StyleBase):
             mLo.Lo.print(f"{self.__class__}.apply_style(): Unable to set Property")
             for err in e.errors:
                 mLo.Lo.print(f"  {err}")
+
+    # endregion apply()
 
     @staticmethod
     def from_obj(obj: object) -> Spacing:
@@ -123,7 +126,7 @@ class Spacing(StyleBase):
     # endregion methods
 
     # region style methods
-    def style_above(self, value: float | None) -> Spacing:
+    def fmt_above(self, value: float | None) -> Spacing:
         """
         Gets a copy of instance with above margin set or removed
 
@@ -137,7 +140,7 @@ class Spacing(StyleBase):
         cp.prop_above = value
         return cp
 
-    def style_below(self, value: float | None) -> Spacing:
+    def fmt_below(self, value: float | None) -> Spacing:
         """
         Gets a copy of instance with below margin set or removed
 
@@ -151,7 +154,7 @@ class Spacing(StyleBase):
         cp.prop_below = value
         return cp
 
-    def style_style_no_space(self, value: bool | None) -> Spacing:
+    def fmt_style_no_space(self, value: bool | None) -> Spacing:
         """
         Gets a copy of instance with style no spacing set or removed
 

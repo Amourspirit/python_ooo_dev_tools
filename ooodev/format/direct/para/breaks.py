@@ -95,6 +95,7 @@ class Breaks(StyleBase):
         """
         return ("com.sun.star.style.ParagraphProperties",)
 
+    # region apply()
     @overload
     def apply(self, obj: object) -> None:
         ...
@@ -115,6 +116,8 @@ class Breaks(StyleBase):
             mLo.Lo.print(f"{self.__class__}.apply_style(): Unable to set Property")
             for err in e.errors:
                 mLo.Lo.print(f"  {err}")
+
+    # endregion apply()
 
     @staticmethod
     def from_obj(obj: object) -> Breaks:

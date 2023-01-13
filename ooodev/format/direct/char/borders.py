@@ -5,7 +5,7 @@ Module for managing character borders.
 """
 # region imports
 from __future__ import annotations
-from typing import Tuple
+from typing import Tuple, overload
 
 import uno
 from ....exceptions import ex as mEx
@@ -38,7 +38,7 @@ class Borders(StyleMulti):
     """
     Border used in styles for characters.
 
-    All methods starting with ``style_`` can be used to chain together Borders properties.
+    All methods starting with ``fmt_`` can be used to chain together Borders properties.
 
     .. versionadded:: 0.9.0
     """
@@ -60,7 +60,7 @@ class Borders(StyleMulti):
         padding: Padding | None = None,
     ) -> None:
         """
-        _summary_
+        Constructor
 
         Args:
             left (Side | None, optional): Determines the line style at the left edge.
@@ -93,8 +93,8 @@ class Borders(StyleMulti):
 
     # endregion init
 
-    # region Style Methods
-    def style_border_side(self, value: Side | None) -> Borders:
+    # region format Methods
+    def fmt_border_side(self, value: Side | None) -> Borders:
         """
         Gets copy of instance with left, right, top, bottom sides set or removed
 
@@ -118,7 +118,7 @@ class Borders(StyleMulti):
         cp._sides = sides
         return cp
 
-    def style_left(self, value: Side | None) -> Borders:
+    def fmt_left(self, value: Side | None) -> Borders:
         """
         Gets copy of instance with left set or removed
 
@@ -139,7 +139,7 @@ class Borders(StyleMulti):
         cp._sides = sides
         return cp
 
-    def style_right(self, value: Side | None) -> Borders:
+    def fmt_right(self, value: Side | None) -> Borders:
         """
         Gets copy of instance with right set or removed
 
@@ -160,7 +160,7 @@ class Borders(StyleMulti):
         cp._sides = sides
         return cp
 
-    def style_top(self, value: Side | None) -> Borders:
+    def fmt_top(self, value: Side | None) -> Borders:
         """
         Gets copy of instance with top set or removed
 
@@ -181,7 +181,7 @@ class Borders(StyleMulti):
         cp._sides = sides
         return cp
 
-    def style_bottom(self, value: Side | None) -> Borders:
+    def fmt_bottom(self, value: Side | None) -> Borders:
         """
         Gets copy of instance with bottom set or removed
 
@@ -202,7 +202,7 @@ class Borders(StyleMulti):
         cp._sides = sides
         return cp
 
-    def style_shadow(self, value: Shadow | None) -> Borders:
+    def fmt_shadow(self, value: Shadow | None) -> Borders:
         """
         Gets copy of instance with shadow set or removed
 
@@ -219,7 +219,7 @@ class Borders(StyleMulti):
             cp._set("CharShadowFormat", value.get_shadow_format())
         return cp
 
-    def style_padding(self, value: Padding | None) -> Borders:
+    def fmt_padding(self, value: Padding | None) -> Borders:
         """
         Gets copy of instance with padding set or removed
 
@@ -233,7 +233,7 @@ class Borders(StyleMulti):
         cp._padding = value
         return cp
 
-    # endregion Style Methods
+    # endregion format Methods
 
     # region methods
     def _supported_services(self) -> Tuple[str, ...]:
@@ -245,13 +245,17 @@ class Borders(StyleMulti):
         """
         return ("com.sun.star.style.CharacterProperties",)
 
+    # region apply()
+    @overload
+    def apply(self, obj: object) -> None:
+        ...
+
     def apply(self, obj: object, **kwargs) -> None:
         """
         Applies padding to ``obj``
 
         Args:
             obj (object): Object that supports ``com.sun.star.style.CharacterProperties`` service.
-            kwargs (Any, optional): Expandable list of key value pairs that may be used in child classes.
 
         Returns:
             None:
@@ -264,6 +268,7 @@ class Borders(StyleMulti):
             for err in e.errors:
                 mLo.Lo.print(f"  {err}")
 
+    # endregion apply()
     # endregion methods
 
     # region Properties

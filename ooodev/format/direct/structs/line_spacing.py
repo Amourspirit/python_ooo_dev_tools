@@ -5,7 +5,7 @@ Module for Shadow format (``LineSpacing``) struct.
 """
 # region imports
 from __future__ import annotations
-from typing import Dict, Tuple, cast, overload
+from typing import Dict, Tuple, overload
 
 import uno
 
@@ -53,7 +53,7 @@ class LineSpacing(StyleBase):
     def _supported_services(self) -> Tuple[str, ...]:
         return ()
 
-    # region apply_style()
+    # region apply()
 
     @overload
     def apply(self, obj: object, *, keys: Dict[str, str]) -> None:
@@ -81,7 +81,7 @@ class LineSpacing(StyleBase):
         key = keys["spacing"]
         mProps.Props.set(obj, **{key: self.get_line_spacing()})
 
-    # endregion apply_style()
+    # endregion apply()
 
     def get_line_spacing(self) -> UnoLineSpacing:
         """gets Line spacing of instance"""

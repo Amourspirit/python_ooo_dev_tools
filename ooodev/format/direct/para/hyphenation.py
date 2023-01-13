@@ -20,7 +20,7 @@ class Hyphenation(StyleBase):
 
     Any properties starting with ``prop_`` set or get current instance values.
 
-    All methods starting with ``style_`` can be used to chain together properties.
+    All methods starting with ``fmt_`` can be used to chain together properties.
 
     .. versionadded:: 0.9.0
     """
@@ -84,6 +84,7 @@ class Hyphenation(StyleBase):
         """
         return ("com.sun.star.style.ParagraphProperties",)
 
+    # region apply()
     @overload
     def apply(self, obj: object) -> None:
         ...
@@ -104,6 +105,8 @@ class Hyphenation(StyleBase):
             mLo.Lo.print(f"{self.__class__}.apply_style(): Unable to set Property")
             for err in e.errors:
                 mLo.Lo.print(f"  {err}")
+
+    # endregion apply()
 
     @staticmethod
     def from_obj(obj: object) -> Hyphenation:
@@ -140,7 +143,7 @@ class Hyphenation(StyleBase):
     # endregion methods
 
     # region style methods
-    def style_auto(self, value: bool | None) -> Hyphenation:
+    def fmt_auto(self, value: bool | None) -> Hyphenation:
         """
         Gets copy of instance with auto set or removed
 
@@ -154,7 +157,7 @@ class Hyphenation(StyleBase):
         cp.prop_auto = value
         return cp
 
-    def style_no_caps(self, value: bool | None) -> Hyphenation:
+    def fmt_no_caps(self, value: bool | None) -> Hyphenation:
         """
         Gets copy of instance with no caps set or removed
 
@@ -168,7 +171,7 @@ class Hyphenation(StyleBase):
         cp.prop_no_caps = value
         return cp
 
-    def style_start_chars(self, value: int | None) -> Hyphenation:
+    def fmt_start_chars(self, value: int | None) -> Hyphenation:
         """
         Gets copy of instance with start chars set or removed
 
@@ -182,7 +185,7 @@ class Hyphenation(StyleBase):
         cp.prop_start_chars = value
         return cp
 
-    def style_end_chars(self, value: int | None) -> Hyphenation:
+    def fmt_end_chars(self, value: int | None) -> Hyphenation:
         """
         Gets copy of instance with end chars set or removed
 
@@ -196,7 +199,7 @@ class Hyphenation(StyleBase):
         cp.prop_end_chars = value
         return cp
 
-    def style_max_chars(self, value: int | None) -> Hyphenation:
+    def fmt_max_chars(self, value: int | None) -> Hyphenation:
         """
         Gets copy of instance with max set or removed
 

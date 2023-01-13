@@ -22,7 +22,7 @@ class LineNum(StyleBase):
 
     Any properties starting with ``prop_`` set or get current instance values.
 
-    All methods starting with ``style_`` can be used to chain together properties.
+    All methods starting with ``fmt_`` can be used to chain together properties.
 
     .. versionadded:: 0.9.0
     """
@@ -72,6 +72,7 @@ class LineNum(StyleBase):
         """
         return ("com.sun.star.style.ParagraphProperties",)
 
+    # region apply()
     @overload
     def apply(self, obj: object) -> None:
         ...
@@ -92,6 +93,8 @@ class LineNum(StyleBase):
             mLo.Lo.print(f"{self.__class__}.apply_style(): Unable to set Property")
             for err in e.errors:
                 mLo.Lo.print(f"  {err}")
+
+    # endregion apply()
 
     @staticmethod
     def from_obj(obj: object) -> LineNum:
@@ -126,7 +129,7 @@ class LineNum(StyleBase):
 
     # region Style Methods
 
-    def style_num_start(self, value: int) -> LineNum:
+    def fmt_num_start(self, value: int) -> LineNum:
         """
         Gets a copy of instance with before list style set or removed
 

@@ -21,7 +21,7 @@ class FlowOptions(StyleBase):
 
     Any properties starting with ``prop_`` set or get current instance values.
 
-    All methods starting with ``style_`` can be used to chain together properties.
+    All methods starting with ``fmt_`` can be used to chain together properties.
 
     .. versionadded:: 0.9.0
     """
@@ -85,6 +85,7 @@ class FlowOptions(StyleBase):
         """
         return ("com.sun.star.style.ParagraphProperties",)
 
+    # region apply()
     @overload
     def apply(self, obj: object) -> None:
         ...
@@ -105,6 +106,8 @@ class FlowOptions(StyleBase):
             mLo.Lo.print(f"{self.__class__}.apply_style(): Unable to set Property")
             for err in e.errors:
                 mLo.Lo.print(f"  {err}")
+
+    # endregion apply()
 
     @staticmethod
     def from_obj(obj: object) -> FlowOptions:
@@ -154,7 +157,7 @@ class FlowOptions(StyleBase):
     # endregion methods
 
     # region style methods
-    def style_orphans(self, value: int | None) -> FlowOptions:
+    def fmt_orphans(self, value: int | None) -> FlowOptions:
         """
         Gets a copy of instance with orphans set or removed
 
@@ -168,7 +171,7 @@ class FlowOptions(StyleBase):
         cp.prop_orphans = value
         return cp
 
-    def style_widows(self, value: int | None) -> FlowOptions:
+    def fmt_widows(self, value: int | None) -> FlowOptions:
         """
         Gets a copy of instance with widows set or removed
 
@@ -182,7 +185,7 @@ class FlowOptions(StyleBase):
         cp.prop_widows = value
         return cp
 
-    def style_keep(self, value: bool | None) -> FlowOptions:
+    def fmt_keep(self, value: bool | None) -> FlowOptions:
         """
         Gets a copy of instance with keep set or removed
 
@@ -196,7 +199,7 @@ class FlowOptions(StyleBase):
         cp.prop_keep = value
         return cp
 
-    def style_no_split(self, value: bool | None) -> FlowOptions:
+    def fmt_no_split(self, value: bool | None) -> FlowOptions:
         """
         Gets a copy of instance with no split set or removed
 

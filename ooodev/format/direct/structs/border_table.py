@@ -28,7 +28,7 @@ class BorderTable(StyleBase):
 
     Any properties starting with ``prop_`` set or get current instance values.
 
-    All methods starting with ``style_`` can be used to chain together Border Table properties.
+    All methods starting with ``fmt_`` can be used to chain together Border Table properties.
 
     .. versionadded:: 0.9.0
     """
@@ -101,10 +101,10 @@ class BorderTable(StyleBase):
 
     # region methods
 
-    # region apply_style()
-
     def _supported_services(self) -> Tuple[str, ...]:
         return ()
+
+    # region apply()
 
     @overload
     def apply(self, obj: object) -> None:
@@ -168,7 +168,7 @@ class BorderTable(StyleBase):
             tb.IsHorizontalLineValid = True
             mProps.Props.set(obj, TableBorder2=tb)
 
-    # endregion apply_style()
+    # endregion apply()
 
     @staticmethod
     def from_obj(obj: object) -> BorderTable:
@@ -250,7 +250,7 @@ class BorderTable(StyleBase):
     # endregion methods
 
     # region Style methods
-    def style_border_side(self, value: Side | None) -> BorderTable:
+    def fmt_border_side(self, value: Side | None) -> BorderTable:
         """
         Gets copy of instance with left, right, top, bottom sides set or removed
 
@@ -267,7 +267,7 @@ class BorderTable(StyleBase):
         cp.prop_right = value
         return cp
 
-    def style_top(self, value: Side | None) -> BorderTable:
+    def fmt_top(self, value: Side | None) -> BorderTable:
         """
         Gets a copy of instance with top side set or removed
 
@@ -281,7 +281,7 @@ class BorderTable(StyleBase):
         cp.prop_top = value
         return cp
 
-    def style_bottom(self, value: Side | None) -> BorderTable:
+    def fmt_bottom(self, value: Side | None) -> BorderTable:
         """
         Gets a copy of instance with bottom side set or removed
 
@@ -295,7 +295,7 @@ class BorderTable(StyleBase):
         cp.prop_bottom = value
         return cp
 
-    def style_left(self, value: Side | None) -> BorderTable:
+    def fmt_left(self, value: Side | None) -> BorderTable:
         """
         Gets a copy of instance with left side set or removed
 
@@ -309,7 +309,7 @@ class BorderTable(StyleBase):
         cp.prop_left = value
         return cp
 
-    def style_right(self, value: Side | None) -> BorderTable:
+    def fmt_right(self, value: Side | None) -> BorderTable:
         """
         Gets a copy of instance with right side set or removed
 
@@ -323,7 +323,7 @@ class BorderTable(StyleBase):
         cp.prop_right = value
         return cp
 
-    def style_horizontal(self, value: Side | None) -> BorderTable:
+    def fmt_horizontal(self, value: Side | None) -> BorderTable:
         """
         Gets a copy of instance with horizontal side set or removed
 
@@ -337,7 +337,7 @@ class BorderTable(StyleBase):
         cp.prop_horizontal = value
         return cp
 
-    def style_vertical(self, value: Side | None) -> BorderTable:
+    def fmt_vertical(self, value: Side | None) -> BorderTable:
         """
         Gets a copy of instance with top vertical set or removed
 
@@ -351,7 +351,7 @@ class BorderTable(StyleBase):
         cp.prop_vertical = value
         return cp
 
-    def style_distance(self, value: float | None) -> BorderTable:
+    def fmt_distance(self, value: float | None) -> BorderTable:
         """
         Gets a copy of instance with distance set or removed
 

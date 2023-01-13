@@ -53,7 +53,7 @@ class Highlight(StyleBase):
         """
         return ("com.sun.star.style.CharacterProperties",)
 
-    # region apply_style()
+    # region apply()
 
     @overload
     def apply(self, obj: object) -> None:
@@ -78,7 +78,7 @@ class Highlight(StyleBase):
                 mLo.Lo.print(f"  {err}")
         return None
 
-    # endregion apply_style()
+    # endregion apply()
 
     @staticmethod
     def from_obj(obj: object) -> Highlight:
@@ -103,7 +103,7 @@ class Highlight(StyleBase):
         return inst
 
     # region set styles
-    def style_color(self, value: int) -> Highlight:
+    def fmt_color(self, value: int) -> Highlight:
         """
         Gets copy of instance with color set.
 

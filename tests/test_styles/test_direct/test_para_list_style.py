@@ -129,7 +129,7 @@ def test_write(loader) -> None:
         assert pp.NumberingStyleName == StyleListKind.NUM_123.value
         cursor.gotoEnd(False)
         # restart numbering
-        ls_rs = ls.style_num_start(-2)
+        ls_rs = ls.fmt_num_start(-2)
         ls_rs.apply(cursor)
         assert pp.ParaIsNumberingRestart == True
         Write.append_para(cursor=cursor, text="Num Point 8")
