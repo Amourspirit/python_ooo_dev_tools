@@ -6,6 +6,8 @@ Modele for managing paragraph Writing Mode.
 from __future__ import annotations
 from typing import Tuple, cast, overload
 
+import uno
+
 from ....exceptions import ex as mEx
 from ....meta.static_prop import static_prop
 from ....utils import lo as mLo
