@@ -799,7 +799,7 @@ class Write(mSel.Selection):
         cursor.setString(text)
         cursor.gotoEnd(False)
         for style in styles:
-            bak = not FormatKind.PARA in style.prop_format_kind
+            bak = not any((FormatKind.PARA in style.prop_format_kind, FormatKind.STATIC in style.prop_format_kind))
 
             if bak:
                 # store properties about to be changed
@@ -1018,7 +1018,7 @@ class Write(mSel.Selection):
 
         def capture_old_val(style: StyleObj) -> None:
             nonlocal old_val
-            if FormatKind.PARA in style.prop_format_kind:
+            if FormatKind.PARA in style.prop_format_kind and not FormatKind.STATIC in style.prop_format_kind:
                 if old_val is None:
                     old_val = {}
                 for attr in style.get_attrs():
@@ -1391,15 +1391,18 @@ class Write(mSel.Selection):
             amt = curr_pos - pos
 
         for style in styles:
+            old_val = None
             if pos > 0:
-                old_val = {}
-                for attr in style.get_attrs():
-                    val = mProps.Props.get(cursor, attr, None)
-                    if not val is None:
-                        old_val[attr] = val
+                bak = not any((FormatKind.PARA in style.prop_format_kind, FormatKind.STATIC in style.prop_format_kind))
+                if bak:
+                    old_val = {}
+                    for attr in style.get_attrs():
+                        val = mProps.Props.get(cursor, attr, None)
+                        if not val is None:
+                            old_val[attr] = val
                 cursor.goLeft(amt, True)
             style.apply(cursor)
-            if pos > 0:
+            if old_val:
                 cursor.goRight(amt, False)
                 for key, val in old_val.items():
                     mProps.Props.set(cursor, **{key: val})

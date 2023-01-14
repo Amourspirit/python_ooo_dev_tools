@@ -23,8 +23,6 @@ class Breaks(StyleBase):
 
     Any properties starting with ``prop_`` set or get current instance values.
 
-    All methods starting with ``style_`` can be used to chain together properties.
-
     .. versionadded:: 0.9.0
     """
 
