@@ -99,6 +99,10 @@ class Info(metaclass=StaticProperty):
         AKA: 3RDPARTYFILTER
         """
 
+    class RegPropKind(Enum):
+        PROPERTY = 1
+        VALUE = 2
+
     @staticmethod
     def get_fonts() -> Tuple[FontDescriptor, ...]:
         """
@@ -182,42 +186,42 @@ class Info(metaclass=StaticProperty):
     @overload
     @classmethod
     def get_reg_item_prop(cls, item: str, prop: str) -> str:
-        """
-        Gets value from 'registrymodifications.xcu'
-
-        Args:
-            item (str): item name
-            prop (str): property value
-
-        Raises:
-            ValueError: if unable to get value
-
-        Returns:
-            str: value from 'registrymodifications.xcu'. e.g. "Writer/MailMergeWizard" null, "MailAddress"
-        """
         ...
 
     @overload
     @classmethod
     def get_reg_item_prop(cls, item: str, prop: str, node: str) -> str:
-        """
-        Gets value from 'registrymodifications.xcu'
+        ...
 
-        Args:
-            item (str): item name
-            prop (str): property value
-            node (str): node
+    @overload
+    @classmethod
+    def get_reg_item_prop(cls, item: str, *, kind: RegPropKind) -> str:
+        ...
 
-        Raises:
-            ValueError: if unable to get value
+    @overload
+    @classmethod
+    def get_reg_item_prop(cls, item: str, *, kind: RegPropKind, idx: int) -> str:
+        ...
 
-        Returns:
-            str: value from 'registrymodifications.xcu'. e.g. "Writer/MailMergeWizard" null, "MailAddress"
-        """
+    @overload
+    @classmethod
+    def get_reg_item_prop(cls, item: str, prop: str, *, idx: int) -> str:
+        ...
+
+    @overload
+    @classmethod
+    def get_reg_item_prop(cls, item: str, prop: str, node: str, kind: RegPropKind) -> str:
         ...
 
     @classmethod
-    def get_reg_item_prop(cls, item: str, prop: str, node: Optional[str] = None) -> str:
+    def get_reg_item_prop(
+        cls,
+        item: str,
+        prop: str = "",
+        node: Optional[str] = None,
+        kind: RegPropKind = RegPropKind.PROPERTY,
+        idx: int = 0,
+    ) -> str:
         """
         Gets value from ``registrymodifications.xcu``
 
@@ -225,17 +229,29 @@ class Info(metaclass=StaticProperty):
             item (str): item name
             prop (str): property value
             node (str): node
+            kind (RegPropKind): property or value
+            idx: (int): index of value to return
 
         Raises:
             ValueError: if unable to get value
 
         Returns:
             str: value from ``registrymodifications.xcu``. e.g. ``Writer/MailMergeWizard``, ``None``, ``MailAddress``
+
+        Note:
+            Often is it not necessary to get value from registry.
+            Which is not available in macro mode.
+
+            Often the configuration option can be gotten via :py:meth:`~.info.Info.get_config`.
+
+        See Also:
+            :py:meth:`~.info.Info.get_config`
         """
         # return value from "registrymodifications.xcu"
-        # e.g. "Writer/MailMergeWizard" null, "MailAddress"
-        # e.g. "Logging/Settings", "org.openoffice.logging.sdbc.DriverManager", "LogLevel"
-        #
+        # windows C:\Users\user\AppData\Roaming\LibreOffice\4\user\registrymodifications.xcu
+        # e.g. val = Info.get_reg_item_prop("Calc/Calculate/Other", "DecimalPlaces")
+        # e.g. val = Info.get_reg_item_prop("Logging/Settings", "LogLevel", "org.openoffice.logging.sdbc.DriverManager")
+        # e.g. val = Info.get_reg_item_prop("Writer/Layout/Other/TabStop", kind=Info.RegPropKind.VALUE, idx=1)
         # This xpath doesn't deal with all cases in the XCU file, which sometimes
         # has many node levels between the item and the prop
         if mLo.Lo.is_macro_mode:
@@ -251,14 +267,21 @@ class Info(metaclass=StaticProperty):
             tree: XML_ETREE._ElementTree = XML_ETREE.parse(fnm, parser=_xml_parser)
 
             if node is None:
-                xpath = f"//item[@oor:path='/org.openoffice.Office.{item}']/prop[@oor:name='{prop}']"
+                if kind == Info.RegPropKind.PROPERTY:
+                    xpath = f'//item[@oor:path="/org.openoffice.Office.{item}"]/prop[@oor:name="{prop}"]/value'
+                elif kind == Info.RegPropKind.VALUE:
+                    xpath = f'//item[@oor:path="/org.openoffice.Office.{item}"]/value'
             else:
-                xpath = f"']/prop[@oor:name='{item}']/node[@oor:name='{node}']/prop[@oor:name='{prop}']"
-            value = tree.xpath(xpath)
-            if value is None:
+                if kind == Info.RegPropKind.PROPERTY:
+                    xpath = f'//item[@oor:path="/org.openoffice.Office.{item}"]/node[@oor:name="{node}"]/prop[@oor:name="{prop}"]/value'
+                elif kind == Info.RegPropKind.VALUE:
+                    xpath = f'//item[@oor:path="/org.openoffice.Office.{item}"]/node[@oor:name="{node}"]/value'
+                    xpath = f"//item[/prop[@oor:name='{item}']/node[@oor:name='{node}']/value"
+            value = tree.xpath(xpath, namespaces={"oor": "http://openoffice.org/2001/registry"})
+            if not value:
                 raise Exception("Item Property not found")
             else:
-                value = str(value).strip()
+                value = value[idx].text.strip()
                 if value == "":
                     raise Exception("Item Property is white space (?)")
             return value
@@ -317,7 +340,18 @@ class Info(metaclass=StaticProperty):
 
         See Also:
             :ref:`ch03`
+
+        Example:
+            .. code-block:: python
+
+                props = mLo.Lo.qi(
+                    XPropertySet,
+                    mInfo.Info.get_config(node_str="Other", node_path="/org.openoffice.Office.Writer/Layout/"),
+                )
+                ts_val = props.getPropertyValue("TabStop") # int val
         """
+        # props = Lo.qi(XPropertySet, Info.get_config(node_str='Data', node_path="/org.openoffice.UserProfile/"))
+        # Props.show_obj_props("User Data", props)
         try:
             if node_path is None:
                 return cls._get_config2(node_str=node_str)
