@@ -8,8 +8,8 @@ from typing import Tuple, cast
 
 import uno
 
+from ....meta.static_prop import static_prop
 from ....utils import props as mProps
-from ....utils import info as mInfo
 from ..structs.tab import Tab, FillChar as FillChar
 
 from ooo.dyn.style.tab_align import TabAlign as TabAlign
@@ -27,6 +27,8 @@ class Tabs(Tab):
     .. versionadded:: 0.9.0
     """
 
+    _DEFAULT = None
+
     # region methods
 
     @staticmethod
@@ -41,11 +43,13 @@ class Tabs(Tab):
         Returns:
             Tab | None: ``Tab`` instance if found; Otherwise, ``None``
         """
-        if not mInfo.Info.support_service(obj, "com.sun.star.style.ParagraphProperties"):
+        if not Tabs.default._is_valid_service(obj):
             return None
         key = "ParaTabStops"
         pos = round(position * 100)
         tss = cast(Tuple[TabStop, ...], mProps.Props.get(obj, key))
+        if tss is None:
+            return None
         match = -1
         # often Writer will change Position values, 800 to 801 etc.
         # for this reason using a range to check plus or minus 2
@@ -96,6 +100,8 @@ class Tabs(Tab):
             None:
         """
         tss = cast(Tuple[TabStop, ...], mProps.Props.get(obj, "ParaTabStops"))
+        if tss is None:
+            return False
         lst = []
         for ts in tss:
             if position != ts.Position:
@@ -117,11 +123,38 @@ class Tabs(Tab):
         Returns:
             bool: ``True`` if a Tab has been removed; Oherwise, ``False``
         """
-        if not mInfo.Info.support_service(obj, "com.sun.star.style.ParagraphProperties"):
+        if not Tabs.default._is_valid_service(obj):
             return False
         if isinstance(tab, Tab):
             return cls._remove_by_positon(obj, tab._get("Position"))
         ts = cast(TabStop, tab)
         return cls._remove_by_positon(obj, ts.Position)
 
+    @classmethod
+    def remove_all(cls, obj: object) -> None:
+        """
+        Removes all tab from ``obj`` ``ParaTabStops`` property.
+
+        Args:
+            obj (object): Object that supports ``com.sun.star.style.ParagraphProperties``
+        """
+        if not Tabs.default._is_valid_service(obj):
+            return
+        tss = cast(Tuple[TabStop, ...], mProps.Props.get(obj, "ParaTabStops"))
+        if tss is None:
+            return
+        cls._set_obj_tabs(obj, [Tabs.default.get_tab_stop()])
+
     # endregion methods
+
+    # region Properties
+    @static_prop
+    def default() -> Tabs:  # type: ignore[misc]
+        """Gets ``Tabs`` default. Static Property."""
+        if Tabs._DEFAULT is None:
+            inst = Tabs(align=TabAlign.DEFAULT)
+            inst._set("Position", 1251)
+            Tabs._DEFAULT = inst
+        return Tabs._DEFAULT
+
+    # endregion Properties

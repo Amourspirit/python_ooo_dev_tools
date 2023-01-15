@@ -44,7 +44,7 @@ def test_write(loader, para_text) -> None:
 
         pos = 14.5
         tb = Tabs(position=pos, align=TabAlign.DECIMAL, decimal_char=",")
-        Write.append_para(cursor=cursor, text="\t" + para_text, styles=(tb,))
+        Write.append_para(cursor=cursor, text=txt, styles=(tb,))
 
         cursor.goLeft(p_len + 1, False)
         cursor.goRight(p_len, True)
@@ -72,8 +72,14 @@ def test_write(loader, para_text) -> None:
         assert result
         assert len(pp.ParaTabStops) == ts_len - 1
         ts_len = len(pp.ParaTabStops)
-
         cursor.gotoEnd(False)
+
+        # remove all tabs
+        Tabs.remove_all(cursor)
+        tb = Tabs.from_obj(cursor, 0)
+        assert tb is not None
+        assert len(pp.ParaTabStops) == 1
+        Write.append_para(cursor=cursor, text=para_text)
 
         Lo.delay(delay)
     finally:
