@@ -6,7 +6,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.direct.structs.tab import Tab, TabAlign, FillChar
+from ooodev.format.direct.structs.tab import Tab, TabAlign, FillCharKind
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
@@ -43,8 +43,8 @@ def test_props() -> None:
     tab.prop_decimal_char = "#"
     assert tab.prop_decimal_char == "#"
 
-    tab.prop_fill_char = FillChar.DASH
-    assert tab.prop_fill_char == str(FillChar.DASH)
+    tab.prop_fill_char = FillCharKind.DASH
+    assert tab.prop_fill_char == str(FillCharKind.DASH)
 
 
 def test_write(loader, para_text) -> None:

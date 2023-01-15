@@ -10,7 +10,11 @@ import uno
 
 from ....meta.static_prop import static_prop
 from ....utils import props as mProps
-from ..structs.tab import Tab, FillChar as FillChar
+from ....utils import info as mInfo
+from ....utils import lo as mLo
+from ..structs.tab import Tab, FillCharKind as FillCharKind
+
+from com.sun.star.beans import XPropertySet
 
 from ooo.dyn.style.tab_align import TabAlign as TabAlign
 from ooo.dyn.style.tab_stop import TabStop
@@ -143,7 +147,27 @@ class Tabs(Tab):
         tss = cast(Tuple[TabStop, ...], mProps.Props.get(obj, "ParaTabStops"))
         if tss is None:
             return
-        cls._set_obj_tabs(obj, [Tabs.default.get_tab_stop()])
+        try:
+            cls._set_obj_tabs(obj, [Tabs.default.get_tab_stop()])
+        except Exception:
+            # if for any reason can't get default it is ok to just remove all.
+            cls._set_obj_tabs(obj, [])
+
+    def get_tab_stop(self) -> TabStop:
+        """
+        Gets tab stop for instance
+
+        Returns:
+            TabStop: Tab stop instance
+        """
+        ts = super().get_tab_stop()
+        try:
+            # not critical
+            if self is Tabs.default:
+                ts.DecimalChar = "."
+        except Exception:
+            pass
+        return ts
 
     # endregion methods
 
@@ -153,7 +177,19 @@ class Tabs(Tab):
         """Gets ``Tabs`` default. Static Property."""
         if Tabs._DEFAULT is None:
             inst = Tabs(align=TabAlign.DEFAULT)
-            inst._set("Position", 1251)
+            # this commented section works if not in macro mode
+            # mInfo.Info.get_reg_item_prop() imports lxml
+            # ts_val: str = mInfo.Info.get_reg_item_prop(
+            #     "Writer/Layout/Other/TabStop", kind=mInfo.Info.RegPropKind.VALUE, idx=1
+            # )
+            # inst._set("Position", int(ts_val))
+            props = mLo.Lo.qi(
+                XPropertySet,
+                mInfo.Info.get_config(node_str="Other", node_path="/org.openoffice.Office.Writer/Layout/"),
+            )
+            ts_val = props.getPropertyValue("TabStop")
+            inst._set("Position", ts_val)
+            inst._set("DecimalChar", ".")
             Tabs._DEFAULT = inst
         return Tabs._DEFAULT
 

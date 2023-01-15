@@ -22,7 +22,7 @@ from ooo.dyn.style.tab_align import TabAlign as TabAlign
 from ooo.dyn.style.tab_stop import TabStop
 
 
-class FillChar(Enum):
+class FillCharKind(Enum):
     """Tab Fill Char"""
 
     NONE = " "
@@ -52,7 +52,7 @@ class Tab(StyleBase):
         position: float = 0.0,
         align: TabAlign = TabAlign.LEFT,
         decimal_char: str = ".",
-        fill_char: FillChar | str = FillChar.NONE,
+        fill_char: FillCharKind | str = FillCharKind.NONE,
     ) -> None:
         """
         Constructor
@@ -64,9 +64,9 @@ class Tab(StyleBase):
             decimal_char (str): Specifies which delimiter is used for the decimal.
                 Argument is expected to be a single character string.
                 This argument is only used when ``align`` is set to ``TabAlign.DECIMAL``.
-            fill_char (FillChar, str): specifies the character that is used to fill up the space between the text in the text range and the tabulators.
+            fill_char (FillCharKind, str): specifies the character that is used to fill up the space between the text in the text range and the tabulators.
                 If string value then argument is expected to be a single character string.
-                Defaults to ``FillChar.NONE``
+                Defaults to ``FillCharKind.NONE``
 
         Returns:
             None:
@@ -287,7 +287,7 @@ class Tab(StyleBase):
         cp.prop_decimal_char = value
         return cp
 
-    def fmt_fill_char(self, value: FillChar | str) -> Tab:
+    def fmt_fill_char(self, value: FillCharKind | str) -> Tab:
         """
         Gets a copy of instance with fill char set.
 
@@ -348,7 +348,7 @@ class Tab(StyleBase):
         return self._get("FillChar")
 
     @prop_fill_char.setter
-    def prop_fill_char(self, value: FillChar | str) -> None:
+    def prop_fill_char(self, value: FillCharKind | str) -> None:
         self._set("FillChar", str(value)[:1])
 
     # endregion properties

@@ -6,7 +6,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.direct.para.tabs import Tabs, TabAlign, FillChar
+from ooodev.format.direct.para.tabs import Tabs, TabAlign, FillCharKind
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
@@ -58,13 +58,13 @@ def test_write(loader, para_text) -> None:
         pos = 14.5
         tb = Tabs.find(cursor, pos)
         assert tb is not None
-        tb.prop_fill_char = FillChar.UNDER_SCORE
+        tb.prop_fill_char = FillCharKind.UNDER_SCORE
         tb.prop_align = TabAlign.RIGHT
         tb.apply(cursor)
         assert len(pp.ParaTabStops) == ts_len
         tb = Tabs.find(cursor, pos)
         assert tb is not None
-        assert tb.prop_fill_char == str(FillChar.UNDER_SCORE)
+        assert tb.prop_fill_char == str(FillCharKind.UNDER_SCORE)
         assert tb.prop_align == TabAlign.RIGHT
 
         # remove tabstop
