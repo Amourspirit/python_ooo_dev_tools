@@ -49,6 +49,31 @@ def run_headless():
     return True
 
 
+@pytest.fixture(autouse=True)
+def skip_for_headless(request, run_headless):
+    # https://stackoverflow.com/questions/28179026/how-to-skip-a-pytest-using-an-external-fixture
+    #
+    # Also Added:
+    # [tool.pytest.ini_options]
+    # markers = ["skip_headless: skips a test in headless mode",]
+    # see: https://docs.pytest.org/en/stable/how-to/mark.html
+    #
+    # Usage:
+    # @pytest.mark.skip_headless("Requires Dispatch")
+    # def test_write(loader, para_text) -> None:
+    if run_headless:
+        if request.node.get_closest_marker("skip_headless"):
+            reason = ""
+            try:
+                reason = request.node.get_closest_marker("skip_headless").args[0]
+            except Exception:
+                pass
+            if reason:
+                pytest.skip(reason)
+            else:
+                pytest.skip("Skiped in headless mode")
+
+
 @pytest.fixture(scope="session")
 def soffice_path():
     # allow for a little more development flexibility

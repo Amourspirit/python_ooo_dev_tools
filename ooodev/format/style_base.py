@@ -25,6 +25,9 @@ class StyleBase(ABC):
     """
     Base Styles class
 
+    Warning:
+        This class uses dispatch commands and is not suitable for use in headless mode.
+
     .. versionadded:: 0.9.0
     """
 
