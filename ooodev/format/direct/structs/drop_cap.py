@@ -90,6 +90,12 @@ class DropCap(StyleBase):
             obj (object): UNO object that supports ``com.sun.star.style.ParagraphProperties`` service.
             keys (Dict[str, str], optional): Property key, value items that map properties.
 
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.format_named_event.FormatNamedEvent.STYLE_APPLYING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.format_named_event.FormatNamedEvent.STYLE_APPLYED` :eventref:`src-docs-event`
+
         Returns:
             None:
         """

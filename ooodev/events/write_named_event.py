@@ -3,10 +3,9 @@
 Write Named Events.
 """
 from __future__ import annotations
-from typing import NamedTuple
 
 
-class WriteNamedEvent(NamedTuple):
+class WriteNamedEvent:
     """
     Named events for :py:class:`~.office.wite.Write` class
     """

@@ -52,6 +52,19 @@ class DropCaps(StyleMulti):
         Note:
             If ``count==-1`` then only ``style`` can be updated.
             If ``count==0`` then all other argumnets are ignored and instance set to remove drop caps when ``apply()`` is called.
+
+        Warning:
+            Due seeemingly to a bug setting ``style`` result in style not being written. If style is set to a valid Character Style Name
+            then it will be written successfully.
+
+            For this reson the recommended way to reset next paragraph after applying a style to a paragraph that includes style is to call
+            :py:meth:`~.DropCaps.dispatch_reset()`
+
+            .. code-block:: python
+
+                dc = DropCaps(count=1, style=StyleCharKind.DROP_CAPS)
+                Write.append_para(cursor=cursor, text="Hello World!", styles=(dc,))
+                dc.dispatch_reset()
         """
         # https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1ParagraphProperties-members.html
 
@@ -90,6 +103,20 @@ class DropCaps(StyleMulti):
 
     # region methods
     def dispatch_reset(self) -> None:
+        """
+        Resets the cursor at is current position/selection to remove any Drop Caps Formatting.
+
+        Returns:
+            None:
+
+        Example:
+
+            .. code-block:: python
+
+                dc = DropCaps(count=1, style=StyleCharKind.DROP_CAPS)
+                Write.append_para(cursor=cursor, text="Hello World!", styles=(dc,))
+                dc.dispatch_reset()
+        """
         drop_cap_args = {
             "FormatDropcap.Lines": 1,
             "FormatDropcap.Count": 1,

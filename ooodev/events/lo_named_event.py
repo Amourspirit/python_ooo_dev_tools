@@ -3,10 +3,9 @@
 Lo Named Events.
 """
 from __future__ import annotations
-from typing import NamedTuple
 
 
-class LoNamedEvent(NamedTuple):
+class LoNamedEvent:
     """
     Named events for utils.lo.LO class
     """
