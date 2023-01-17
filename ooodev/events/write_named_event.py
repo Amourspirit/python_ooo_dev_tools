@@ -1,6 +1,6 @@
 # coding: utf-8
 """
-Calc Named Events.
+Write Named Events.
 """
 from __future__ import annotations
 from typing import NamedTuple
@@ -88,3 +88,14 @@ class WriteNamedEvent(NamedTuple):
     """Services configuration setting see :py:meth:`Write.set_configured_services() <.office.write.Write.set_configured_services>`"""
     CONFIGURED_SERVICES_SET = "write_configure_services_set"
     """Services configuration set see :py:meth:`Write.set_configured_services() <.office.write.Write.set_configured_services>`"""
+
+    STYLE_PREV_PARA_STYLES_SETTING = "write_prev_para_prop_setting"
+    STYLE_PREV_PARA_STYLES_SET = "write_prev_para_prop_set"
+
+    STYLING = "write_styling"
+    """Styling"""
+    STYLED = "write_styled"
+    """Styled"""
+
+    STYLE_PREV_PARA_PROP_SETTING = "write_prev_para_prop_setting"
+    STYLE_PREV_PARA_PROP_SET = "write_prev_para_prop_set"

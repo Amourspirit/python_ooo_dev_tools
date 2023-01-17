@@ -8,12 +8,13 @@ from __future__ import annotations
 from typing import Tuple, cast, overload
 
 import uno
+from . import side
+from ....events.event_singleton import _Events
 from ....exceptions import ex as mEx
 from ....utils import props as mProps
-from ...style_base import StyleBase
-from . import side
-from .side import Side as Side
 from ...kind.format_kind import FormatKind
+from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent
+from .side import Side as Side
 
 from ooo.dyn.table.table_border import TableBorder
 from ooo.dyn.table.table_border2 import TableBorder2
@@ -117,6 +118,12 @@ class BorderTable(StyleBase):
         Args:
             obj (object): UNO object
 
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.format_named_event.FormatNamedEvent.STYLE_APPLYING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.format_named_event.FormatNamedEvent.STYLE_APPLYED` :eventref:`src-docs-event`
+
         Raises:
             PropertyNotFoundError: If ``obj`` does not have ``TableBorder2`` property.
 
@@ -132,6 +139,15 @@ class BorderTable(StyleBase):
         # the save TableBorder2 again.
         # Even if HorizontalLine is present in current style that is being applied it is ignored and set to top line or bottom line values.
         # The work around is to save TableBorder2 after setting other properties, read it again, set the HorizontalLine and save it again.
+        cargs = CancelEventArgs(source=f"{self.apply.__qualname__}")
+        cargs.event_data = self
+        self.on_applying(cargs)
+        if cargs.cancel:
+            return
+        _Events().trigger(FormatNamedEvent.STYLE_APPLYING, cargs)
+        if cargs.cancel:
+            return
+
         tb = cast(TableBorder2, mProps.Props.get(obj, "TableBorder2", None))
         if tb is None:
             raise mEx.PropertyNotFoundError("TableBorder2", "apply_style() obj has no property, TableBorder2")
@@ -167,6 +183,9 @@ class BorderTable(StyleBase):
             tb.HorizontalLine = h_line.get_border_line2()
             tb.IsHorizontalLineValid = True
             mProps.Props.set(obj, TableBorder2=tb)
+        eargs = EventArgs.from_args(cargs)
+        self.on_applied(eargs)
+        _Events().trigger(FormatNamedEvent.STYLE_APPLIED, eargs)
 
     # endregion apply()
 

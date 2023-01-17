@@ -197,7 +197,7 @@ class ListStyle(StyleBase):
 
     @property
     def prop_list_style(self) -> str | None:
-        """Gets/Sets break type"""
+        """Gets/Sets List Style"""
         return self._get("NumberingStyleName")
 
     @prop_list_style.setter

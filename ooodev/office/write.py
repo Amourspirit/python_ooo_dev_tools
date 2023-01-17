@@ -9,6 +9,8 @@ import uno
 
 from ..events.args.cancel_event_args import CancelEventArgs
 from ..events.args.event_args import EventArgs
+from ..events.args.key_val_cancel_args import KeyValCancelArgs
+from ..events.args.key_val_args import KeyValArgs
 from ..events.event_singleton import _Events
 from ..events.gbl_named_event import GblNamedEvent
 from ..events.lo_named_event import LoNamedEvent
@@ -799,27 +801,33 @@ class Write(mSel.Selection):
         cursor.setString(text)
         cursor.gotoEnd(False)
         for style in styles:
+            cargs = CancelEventArgs("Write.append")
+            cargs.event_data = style
+            _Events().trigger(WriteNamedEvent.STYLING, cargs)
+            if cargs.cancel:
+                continue
             bak = not any((FormatKind.PARA in style.prop_format_kind, FormatKind.STATIC in style.prop_format_kind))
 
             if bak:
                 # store properties about to be changed
-                old_val = {}
-                for attr in style.get_attrs():
-                    val = mProps.Props.get(cursor, attr, None)
-                    old_val[attr] = val
+                style.backup(cursor)
             cursor.goLeft(s_len, True)
 
             style.apply(cursor)
 
             cursor.gotoEnd(False)
-            if bak:
-                # restore the cursors properties that were changed
+            if bak and style.prop_has_backup:
                 try:
-                    mProps.Props.set(cursor, **old_val)
+                    style.restore(cursor, True)
                 except mEx.MultiError as e:
                     mLo.Lo.print(f"Write.append(): Unable to restore Property")
                     for err in e.errors:
                         mLo.Lo.print(f"  {err}")
+                except Exception as e:
+                    mLo.Lo.print(f"Write.append(): Unable to restore Property")
+                    mLo.Lo.print(f"  {e}")
+
+            _Events().trigger(WriteNamedEvent.STYLED, EventArgs.from_args(cargs))
 
     @classmethod
     def _append_ctl_char(cls, cursor: XTextCursor, ctl_char: int) -> None:
@@ -868,11 +876,21 @@ class Write(mSel.Selection):
         Returns:
             None:
 
+        :events:
+            If using styles then the following events are triggered for each style.
+
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLED` :eventref:`src-docs-event`
+
         See Also:
             `API ControlCharacter <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1text_1_1ControlCharacter.html>`_
 
         .. versionchanged:: 0.9.0
             Added ``append(cursor: XTextCursor, text: str, styles: Iterable[StyleObj])`` overload.
+
+            Added Events.
         """
         ordered_keys = (1, 2, 3)
         kargs_len = len(kwargs)
@@ -946,8 +964,18 @@ class Write(mSel.Selection):
             text (str, optional): text to append before new line is inserted.
             styles (Iterable[StyleObj]): One or more styles to apply to text. If ``text`` is ommited then this argument is ignored.
 
+        :events:
+            If using styles then the following events are triggered for each style.
+
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLED` :eventref:`src-docs-event`
+
         .. versionchanged:: 0.9.0
-            Added overload ``append_line(cursor: XTextCursor, text: str, styles: Iterable[StyleObj])``
+            Added overload ``append_line(cursor: XTextCursor, text: str, styles: Iterable[StyleObj])``.
+
+            Added events.
         """
         if text:
             if styles is None:
@@ -1007,23 +1035,30 @@ class Write(mSel.Selection):
             text (str, optional): Text to append
             styles (Iterable[StyleObj]): One or more styles to apply to text. If ``text`` is empty then this argument is ignored.
 
+        :events:
+            If using styles then the following events are triggered for each style.
+
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLED` :eventref:`src-docs-event`
+
         .. versionchanged:: 0.9.0
-            Added overload ``append_para(cursor: XTextCursor, text: str, styles: Iterable[StyleObj])``
+            Added overload ``append_para(cursor: XTextCursor, text: str, styles: Iterable[StyleObj])``.
+
+            Added Events.
         """
 
         # paragraph styles need to capture the current pargarph setting and restore them.
         # other styles are handeled by _append_text_style().
 
-        old_val = None
+        restore = False
 
         def capture_old_val(style: StyleObj) -> None:
-            nonlocal old_val
+            nonlocal restore
             if FormatKind.PARA in style.prop_format_kind and not FormatKind.STATIC in style.prop_format_kind:
-                if old_val is None:
-                    old_val = {}
-                for attr in style.get_attrs():
-                    val = mProps.Props.get(cursor, attr, None)
-                    old_val[attr] = val
+                restore = True
+                style.backup(cursor)
 
         if text:
             if styles is None:
@@ -1035,13 +1070,18 @@ class Write(mSel.Selection):
 
         cls._append_ctl_char(cursor=cursor, ctl_char=ControlCharacterEnum.PARAGRAPH_BREAK)
 
-        if old_val:
-            try:
-                mProps.Props.set(cursor, **old_val)
-            except mEx.MultiError as e:
-                mLo.Lo.print(f"Write.append_para(): Unable to restore Property")
-                for err in e.errors:
-                    mLo.Lo.print(f"  {err}")
+        if restore:
+            for style in styles:
+                try:
+                    if style.prop_has_backup:
+                        style.restore(cursor, True)
+                except mEx.MultiError as e:
+                    mLo.Lo.print(f"Write.append_para(): Unable to restore Property")
+                    for err in e.errors:
+                        mLo.Lo.print(f"  {err}")
+                except Exception as e:
+                    mLo.Lo.print(f"Write.append_para(): Unable to restore Property")
+                    mLo.Lo.print(f"  {e}")
 
     # endregion append_para()
 
@@ -1245,6 +1285,10 @@ class Write(mSel.Selection):
     @classmethod
     def _style(cls, pos: int, distance: int, prop_name: str, prop_val: object, cursor: XTextCursor = None) -> None:
 
+        cargs = KeyValCancelArgs("Write.style", prop_name, prop_val)
+        _Events().trigger(WriteNamedEvent.STYLING, cargs)
+        if cargs.cancel:
+            return
         if cursor is None:
             cursor = cls.get_cursor()
         cursor.gotoStart(False)
@@ -1252,6 +1296,7 @@ class Write(mSel.Selection):
         cursor.goRight(distance, True)
         mProps.Props.set(cursor, **{prop_name: prop_val})
         cursor.gotoEnd(False)
+        _Events().trigger(WriteNamedEvent.STYLED, KeyValArgs.from_args(cargs))
 
     @classmethod
     def _style_style(cls, pos: int, distance: int, styles: Iterable[StyleObj], cursor: XTextCursor = None) -> None:
@@ -1263,7 +1308,13 @@ class Write(mSel.Selection):
         cursor.goRight(distance, True)
 
         for style in styles:
+            cargs = CancelEventArgs("Write.style")
+            cargs.event_data = style
+            _Events().trigger(WriteNamedEvent.STYLING, cargs)
+            if cargs.cancel:
+                continue
             style.apply(cursor)
+            _Events().trigger(WriteNamedEvent.STYLED, EventArgs.from_args(cargs))
         cursor.gotoEnd(False)
 
     @overload
@@ -1362,6 +1413,11 @@ class Write(mSel.Selection):
 
     @classmethod
     def _style_left(cls, cursor: XTextCursor, pos: int, prop_name: str, prop_val: object) -> None:
+        cargs = KeyValCancelArgs("Write.style", prop_name, prop_val)
+        cargs.event_data = {"pos": pos}
+        _Events().trigger(WriteNamedEvent.STYLING, cargs)
+        if cargs.cancel:
+            return
 
         if pos == 0:
             cursor.goLeft(0, True)
@@ -1378,6 +1434,7 @@ class Write(mSel.Selection):
             mProps.Props.set(cursor, **{prop_name: old_val})
         else:
             cursor.goRight(0, False)
+        _Events().trigger(WriteNamedEvent.STYLED, KeyValArgs.from_args(cargs))
 
     @classmethod
     def _style_left_style(cls, cursor: XTextCursor, pos: int, styles: Iterable[StyleObj]) -> None:
@@ -1391,21 +1448,33 @@ class Write(mSel.Selection):
             amt = curr_pos - pos
 
         for style in styles:
-            old_val = None
+            cargs = CancelEventArgs("Write.style_left")
+            cargs.event_data = style
+            _Events().trigger(WriteNamedEvent.STYLING, cargs)
+            if cargs.cancel:
+                continue
             if pos > 0:
                 bak = not any((FormatKind.PARA in style.prop_format_kind, FormatKind.STATIC in style.prop_format_kind))
                 if bak:
-                    old_val = {}
-                    for attr in style.get_attrs():
-                        val = mProps.Props.get(cursor, attr, None)
-                        if not val is None:
-                            old_val[attr] = val
+                    style.backup(cursor)
+
                 cursor.goLeft(amt, True)
             style.apply(cursor)
-            if old_val:
+            if pos > 0:
                 cursor.goRight(amt, False)
-                for key, val in old_val.items():
-                    mProps.Props.set(cursor, **{key: val})
+
+            if bak and style.prop_has_backup:
+                try:
+                    style.restore(cursor)
+                except mEx.MultiError as e:
+                    mLo.Lo.print(f"Write.style_left(): Unable to restore Property")
+                    for err in e.errors:
+                        mLo.Lo.print(f"  {err}")
+                except Exception as e:
+                    mLo.Lo.print(f"Write.style_left(): Unable to restore Property")
+                    mLo.Lo.print(f"  {e}")
+
+            _Events().trigger(WriteNamedEvent.STYLED, EventArgs.from_args(cargs))
 
         if pos <= 0:
             cursor.goRight(0, False)
@@ -1435,6 +1504,21 @@ class Write(mSel.Selection):
         Returns:
             None:
 
+        :events:
+            If using styles then the following events are triggered for each style.
+
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLED` :eventref:`src-docs-event`
+
+            Otherwise the following events are triggered once.
+
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLING` :eventref:`src-docs-key-event-cancel`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLED` :eventref:`src-docs-key-event`
+
         See Also:
             :py:meth:`~.Write.style`
 
@@ -1445,6 +1529,8 @@ class Write(mSel.Selection):
 
         .. versionchanged:: 0.9.0
             Added ``style_left(cursor: XTextCursor, pos: int, styles: Iterable[StyleObj])`` overload.
+
+            Added Events.
         """
         ordered_keys = (1, 2, 3, 4)
         kargs_len = len(kwargs)
@@ -1543,6 +1629,13 @@ class Write(mSel.Selection):
     # region    style_prev_paragraph()
     @staticmethod
     def _style_prev_paragraph_prop(cursor: XTextCursor | XParagraphCursor, prop_val: object, prop_name: str) -> None:
+        cargs = KeyValCancelArgs("Write._style_prev_paragraph_prop", prop_name, prop_val)
+        _Events().trigger(WriteNamedEvent.STYLE_PREV_PARA_PROP_SETTING, cargs)
+        if cargs.cancel:
+            return
+        _Events().trigger(WriteNamedEvent.STYLING, cargs)
+        if cargs.cancel:
+            return
         old_val = mProps.Props.get(cursor, prop_name)
 
         cursor.gotoPreviousParagraph(True)  # select previous paragraph
@@ -1551,26 +1644,35 @@ class Write(mSel.Selection):
         # reset
         cursor.gotoNextParagraph(False)
         mProps.Props.set(cursor, **{prop_name: old_val})
+        eargs = KeyValArgs.from_args(cargs)
+        _Events().trigger(WriteNamedEvent.STYLED, eargs)
+        _Events().trigger(WriteNamedEvent.STYLE_PREV_PARA_PROP_SET, eargs)
 
     @classmethod
     def _style_prev_paragraph_style(cls, cursor: XTextCursor | XParagraphCursor, styles: Iterable[StyleObj]) -> None:
+        c_styles_args = CancelEventArgs("Write._style_prev_paragraph_style")
+        c_styles_args.event_data = styles
+        _Events().trigger(WriteNamedEvent.STYLE_PREV_PARA_STYLES_SETTING, c_styles_args)
+        if c_styles_args.cancel:
+            return
+        for style in cast(Iterable[StyleObj], c_styles_args.event_data):
+            cargs = CancelEventArgs(c_styles_args.source)
+            cargs.event_data = style
+            _Events().trigger(WriteNamedEvent.STYLING, cargs)
+            if cargs.cancel:
+                continue
 
-        for style in styles:
-            old_val = {}
-            for attr in style.get_attrs():
-                val = mProps.Props.get(cursor, attr, None)
-                if not val is None:
-                    old_val[attr] = val
+            if cursor.gotoPreviousParagraph(True):  # select previous paragraph
+                style.backup(cursor)
+                style.apply(cursor)
+                cursor.gotoNextParagraph(False)
+                if style.prop_has_backup:
+                    style.restore(cursor, True)
 
-            cursor.gotoPreviousParagraph(True)  # select previous paragraph
+                _Events().trigger(WriteNamedEvent.STYLED, EventArgs.from_args(cargs))
 
-            style.apply(cursor)
-
-            # reset
-            cursor.gotoNextParagraph(False)
-            # restore the cursors properties that were changed
-            for key, val in old_val.items():
-                mProps.Props.set(cursor, **{key: val})
+        e_style_args = EventArgs.from_args(c_styles_args)
+        _Events().trigger(WriteNamedEvent.STYLE_PREV_PARA_STYLES_SET, e_style_args)
 
     @overload
     @classmethod
@@ -1597,6 +1699,21 @@ class Write(mSel.Selection):
             styles (Iterable[StyleObj]):One or more styles to apply to text.
             prop_val (object): Property value
             prop_name (str): Property Name
+
+        :events:
+            If using styles then the following events are triggered for each style.
+
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLED` :eventref:`src-docs-event`
+
+            Otherwise the following events are triggered once.
+
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLING` :eventref:`src-docs-key-event-cancel`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLED` :eventref:`src-docs-key-event`
 
         Returns:
             None:
