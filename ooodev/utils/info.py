@@ -195,12 +195,12 @@ class Info(metaclass=StaticProperty):
 
     @overload
     @classmethod
-    def get_reg_item_prop(cls, item: str, *, kind: RegPropKind) -> str:
+    def get_reg_item_prop(cls, item: str, *, kind: Info.RegPropKind) -> str:
         ...
 
     @overload
     @classmethod
-    def get_reg_item_prop(cls, item: str, *, kind: RegPropKind, idx: int) -> str:
+    def get_reg_item_prop(cls, item: str, *, kind: Info.RegPropKind, idx: int) -> str:
         ...
 
     @overload
@@ -210,7 +210,7 @@ class Info(metaclass=StaticProperty):
 
     @overload
     @classmethod
-    def get_reg_item_prop(cls, item: str, prop: str, node: str, kind: RegPropKind) -> str:
+    def get_reg_item_prop(cls, item: str, prop: str, node: str, kind: Info.RegPropKind) -> str:
         ...
 
     @classmethod
@@ -219,7 +219,7 @@ class Info(metaclass=StaticProperty):
         item: str,
         prop: str = "",
         node: Optional[str] = None,
-        kind: RegPropKind = RegPropKind.PROPERTY,
+        kind: Info.RegPropKind = RegPropKind.PROPERTY,
         idx: int = 0,
     ) -> str:
         """
@@ -229,7 +229,7 @@ class Info(metaclass=StaticProperty):
             item (str): item name
             prop (str): property value
             node (str): node
-            kind (RegPropKind): property or value
+            kind (Info.RegPropKind): property or value
             idx: (int): index of value to return
 
         Raises:
