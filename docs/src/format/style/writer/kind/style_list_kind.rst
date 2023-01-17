@@ -1,4 +1,3 @@
-
 Class StyleListKind
 ===================
 
