@@ -6,7 +6,8 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.direct.para.drop_caps import DropCaps, StyleCharKind
+from ooodev.format.direct.para.fill_color import FillColor
+from ooodev.format import CommonColor
 from ooodev.format.direct.structs.drop_cap import DropCap
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
@@ -23,6 +24,13 @@ def test_write(loader, para_text) -> None:
     delay = 0
     # delay = 0 if Lo.bridge_connector.headless else 3_000
 
+    # Fillcolor is done via dispatch commands for Writer.
+    # LibreOffice seems to have an unresolved bug with Background color.
+    # https://bugs.documentfoundation.org/show_bug.cgi?id=99125
+    # see Also: https://forum.openoffice.org/en/forum/viewtopic.php?p=417389&sid=17b21c173e4a420b667b45a2949b9cc5#p417389
+
+    # Unable to access properties to test. This test exist as a visual test only.
+
     doc = Write.create_doc()
     if not Lo.bridge_connector.headless:
         GUI.set_visible()
@@ -32,54 +40,31 @@ def test_write(loader, para_text) -> None:
         cursor = Write.get_cursor(doc)
         p_len = len(para_text)
 
-        dc = DropCaps(count=1)
+        dc = FillColor(CommonColor.LIME_GREEN)
         Write.append_para(cursor=cursor, text=para_text, styles=(dc,))
-        # dc.dispatch_reset()
 
         cursor.goLeft(1, False)
         cursor.gotoStart(True)
 
         pp = cast("ParagraphProperties", cursor)
-        assert pp.DropCapCharStyleName == ""
-        assert pp.DropCapWholeWord == False
-        inner_dc = cast(DropCap, dc._get_style("drop_cap")[0])
-        assert inner_dc == pp.DropCapFormat
+        # assert pp.ParaBackColor == CommonColor.LIME_GREEN
         cursor.gotoEnd(False)
 
-        dc = DropCaps(count=1, style=StyleCharKind.DROP_CAPS)
+        dc = FillColor(CommonColor.LIGHT_BLUE)
         Write.append_para(cursor=cursor, text=para_text, styles=(dc,))
         # dc.dispatch_reset()
 
         cursor.goLeft(p_len + 1, False)
         cursor.goRight(p_len, True)
-        assert pp.DropCapCharStyleName == StyleCharKind.DROP_CAPS.value
-        assert pp.DropCapWholeWord == False
-        inner_dc = cast(DropCap, dc._get_style("drop_cap")[0])
-        assert inner_dc == pp.DropCapFormat
+        # assert pp.DropCapWholeWord == False
         cursor.gotoEnd(False)
 
-        dc = DropCaps(count=5, lines=5, style=StyleCharKind.DROP_CAPS)
-        Write.append_para(cursor=cursor, text=para_text, styles=(dc,))
+        Write.append_para(cursor=cursor, text=para_text)
         # dc.dispatch_reset()
 
         cursor.goLeft(p_len + 1, False)
         cursor.goRight(p_len, True)
-        assert pp.DropCapCharStyleName == StyleCharKind.DROP_CAPS.value
-        assert pp.DropCapWholeWord == False
-        inner_dc = cast(DropCap, dc._get_style("drop_cap")[0])
-        assert inner_dc == pp.DropCapFormat
-        cursor.gotoEnd(False)
-
-        dc = DropCaps(count=3, whole_word=True)
-        Write.append_para(cursor=cursor, text=para_text, styles=(dc,))
-        # dc.dispatch_reset()
-
-        cursor.goLeft(p_len + 1, False)
-        cursor.goRight(p_len, True)
-        assert pp.DropCapCharStyleName == ""
-        assert pp.DropCapWholeWord == True
-        inner_dc = cast(DropCap, dc._get_style("drop_cap")[0])
-        assert inner_dc == pp.DropCapFormat
+        # assert pp.DropCapWholeWord == False
         cursor.gotoEnd(False)
 
         Lo.delay(delay)

@@ -65,7 +65,6 @@ class Highlight(StyleBase):
 
         Args:
             obj (object): UNO object that supports ``com.sun.star.style.CharacterProperties`` service.
-            kwargs (Any, optional): Expandable list of key value pairs that may be used in child classes.
 
         Returns:
             None:
@@ -103,12 +102,12 @@ class Highlight(StyleBase):
         return inst
 
     # region set styles
-    def fmt_color(self, value: int) -> Highlight:
+    def fmt_color(self, value: Color) -> Highlight:
         """
         Gets copy of instance with color set.
 
         Args:
-            value (float | None): color value. If value is less then zero then it means no color.
+            value (int): color value. If value is less then zero then it means no color.
 
         Returns:
             Highlight: Highlight instance
@@ -126,12 +125,12 @@ class Highlight(StyleBase):
         return FormatKind.CHAR
 
     @property
-    def prop_color(self) -> int:
+    def prop_color(self) -> Color:
         """Gets/Sets color"""
         return self._get("CharBackColor")
 
     @prop_color.setter
-    def prop_color(self, value: int):
+    def prop_color(self, value: Color):
         if value >= 0:
             self._set("CharBackColor", value)
             self._set("CharBackTransparent", False)
