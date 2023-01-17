@@ -8,12 +8,13 @@ from __future__ import annotations
 from typing import Dict, Tuple, cast, overload
 from enum import IntFlag
 
+from ....events.event_singleton import _Events
 from ....meta.static_prop import static_prop
 from ....utils import props as mProps
 from ....utils.color import Color
 from ....utils.color import CommonColor
 from ...kind.format_kind import FormatKind
-from ...style_base import StyleBase
+from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent
 from ...style_const import POINT_RATIO
 
 import uno
@@ -145,9 +146,24 @@ class Side(StyleBase):
             keys: (Dict[str, str], optional): key map for properties.
                 Can be any or all of the following ``left``, ``right``, ``top``, ``bottom``, ``diagonal_up``, ``diagonal_down``
 
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.format_named_event.FormatNamedEvent.STYLE_APPLYING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.format_named_event.FormatNamedEvent.STYLE_APPLYED` :eventref:`src-docs-event`
+
         Returns:
             None:
         """
+        cargs = CancelEventArgs(source=f"{self.apply.__qualname__}")
+        cargs.event_data = self
+        self.on_applying(cargs)
+        if cargs.cancel:
+            return
+        _Events().trigger(FormatNamedEvent.STYLE_APPLYING, cargs)
+        if cargs.cancel:
+            return
+
         expected_key_names = ("flags",)
         for kw in expected_key_names:
             if not kw in kwargs:
@@ -164,18 +180,30 @@ class Side(StyleBase):
         if "keys" in kwargs:
             keys.update(kwargs["keys"])
         val = self.get_border_line2()
+        applied = False
         if SideFlags.LEFT in flags:
             mProps.Props.set(obj, **{keys["left"]: val})
+            applied == True
         if SideFlags.TOP in flags:
             mProps.Props.set(obj, **{keys["top"]: val})
+            applied == True
         if SideFlags.RIGHT in flags:
             mProps.Props.set(obj, **{keys["right"]: val})
+            applied == True
         if SideFlags.BOTTOM in flags:
             mProps.Props.set(obj, **{keys["bottom"]: val})
+            applied == True
         if SideFlags.BOTTOM_LEFT_TOP_RIGHT in flags:
             mProps.Props.set(obj, **{keys["diagonal_up"]: val})
+            applied == True
         if SideFlags.TOP_LEFT_BOTTOM_RIGHT in flags:
             mProps.Props.set(obj, **{keys["diagonal_down"]: val})
+            applied == True
+
+        if applied:
+            eargs = EventArgs.from_args(cargs)
+            self.on_applied(eargs)
+            _Events().trigger(FormatNamedEvent.STYLE_APPLIED, eargs)
 
     # endregion apply()
 

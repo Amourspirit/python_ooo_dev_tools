@@ -7,11 +7,12 @@ Module for Shadow format (``ShadowFormat``) struct.
 from __future__ import annotations
 from typing import Tuple, cast, overload
 
+from ....events.event_singleton import _Events
 from ....meta.static_prop import static_prop
 from ....utils import props as mProps
 from ....utils.color import Color
 from ....utils.color import CommonColor
-from ...style_base import StyleBase
+from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent
 from ...kind.format_kind import FormatKind
 
 import uno
@@ -99,11 +100,29 @@ class Shadow(StyleBase):
         Args:
             obj (object): Object that contains a ``ShadowFormat`` property.
 
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.format_named_event.FormatNamedEvent.STYLE_APPLYING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.format_named_event.FormatNamedEvent.STYLE_APPLYED` :eventref:`src-docs-event`
+
         Returns:
             None:
         """
+        cargs = CancelEventArgs(source=f"{self.apply.__qualname__}")
+        cargs.event_data = self
+        self.on_applying(cargs)
+        if cargs.cancel:
+            return
+        _Events().trigger(FormatNamedEvent.STYLE_APPLYING, cargs)
+        if cargs.cancel:
+            return
+
         shadow = self.get_shadow_format()
         mProps.Props.set(obj, ShadowFormat=shadow)
+        eargs = EventArgs.from_args(cargs)
+        self.on_applied(eargs)
+        _Events().trigger(FormatNamedEvent.STYLE_APPLIED, eargs)
 
     # endregion apply()
 
