@@ -4,17 +4,17 @@ Modele for addin paragraph tab.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Iterable, Tuple, cast, overload
+from typing import Dict, Iterable, Tuple, cast, overload
 from enum import Enum
 
 import uno
+from ....events.event_singleton import _Events
 from ....exceptions import ex as mEx
+from ....utils import info as mInfo
 from ....utils import lo as mLo
 from ....utils import props as mProps
-from ....utils import info as mInfo
 from ...kind.format_kind import FormatKind
-from ...style_base import StyleBase
-from ....events.args.key_val_cancel_args import KeyValCancelArgs
+from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent
 
 from com.sun.star.beans import XPropertySet
 
@@ -104,6 +104,10 @@ class Tab(StyleBase):
     def apply(self, obj: object) -> None:
         ...
 
+    @overload
+    def apply(self, obj: object, keys: Dict[str, str]) -> None:
+        ...
+
     def apply(self, obj: object, **kwargs) -> None:
         """
         Applies tab properties to ``obj``
@@ -113,12 +117,28 @@ class Tab(StyleBase):
 
         Args:
             obj (object): UNO object that supports ``com.sun.star.style.ParagraphProperties`` service.
+            keys (Dict[str, str], optional): Property key, value items that map properties.
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.format_named_event.FormatNamedEvent.STYLE_APPLYING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.format_named_event.FormatNamedEvent.STYLE_APPLYED` :eventref:`src-docs-event`
 
         Returns:
             None:
         """
         if not self._is_valid_service(obj):
             raise mEx.NotSupportedServiceError(self._supported_services()[0])
+
+        cargs = CancelEventArgs(source=f"{self.apply.__qualname__}")
+        cargs.event_data = self
+        self.on_applying(cargs)
+        if cargs.cancel:
+            return
+        _Events().trigger(FormatNamedEvent.STYLE_APPLYING, cargs)
+        if cargs.cancel:
+            return
 
         keys = {"prop": "ParaTabStops"}
         if "keys" in kwargs:
@@ -148,6 +168,9 @@ class Tab(StyleBase):
             tss_lst.append(ts)
 
         Tab._set_obj_tabs(obj, tss_lst, key)
+        eargs = EventArgs.from_args(cargs)
+        self.on_applied(eargs)
+        _Events().trigger(FormatNamedEvent.STYLE_APPLIED, eargs)
 
         # mProps.Props.set(obj, **{key: tuple(tss_lst)})
 
@@ -311,7 +334,7 @@ class Tab(StyleBase):
 
     @property
     def prop_position(self) -> float:
-        """Gets the position of the tabulator in relation to the left border (in mm units)."""
+        """Gets/Sets the position of the tabulator in relation to the left border (in mm units)."""
         pv = self._get("Position")
         if pv == 0:
             return 0.0
@@ -323,7 +346,7 @@ class Tab(StyleBase):
 
     @property
     def prop_align(self) -> TabAlign:
-        """Gets the alignment of the text range before the tabulator"""
+        """Gets/Sets the alignment of the text range before the tabulator"""
         return self._get("Alignment")
 
     @prop_align.setter
@@ -332,7 +355,7 @@ class Tab(StyleBase):
 
     @property
     def prop_decimal_char(self) -> str:
-        """Gets which delimiter is used for the decimal."""
+        """Gets/Sets which delimiter is used for the decimal."""
         return self._get("DecimalChar")
 
     @prop_decimal_char.setter
@@ -344,7 +367,7 @@ class Tab(StyleBase):
 
     @property
     def prop_fill_char(self) -> str:
-        """Gets which delimiter is used for the decimal."""
+        """Gets/Sets which delimiter is used for the decimal."""
         return self._get("FillChar")
 
     @prop_fill_char.setter

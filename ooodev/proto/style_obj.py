@@ -32,9 +32,46 @@ class StyleObj(Protocol):
         """
         ...
 
+    def backup(self, obj: object) -> None:
+        """
+        Backs up Attriubes that are to be changed by apply.
+
+        If used method should be called before apply.
+
+        Args:
+            obj (object): Object to backup properties from.
+
+        Returns:
+            None:
+        """
+        ...
+
+    def restore(self, obj: object, clear: bool = False) -> None:
+        """
+        Restores ``obj`` properties from backed up setting if any exist.
+
+        Restore can only be effective if ``backup()`` has be run before calling this method.
+
+        Args:
+            obj (object): Object to restore properties on.
+            clear (bool): Determines if backup is cleared after resore. Default ``False``
+
+        Returns:
+            None:
+
+        See Also:
+            :py:meth:`~.style_base.StyleBase.backup`
+        """
+        ...
+
     @property
     def prop_has_attribs(self) -> bool:
         """Gets If instantance has any attributes set."""
+        ...
+
+    @property
+    def prop_has_backup(self) -> bool:
+        """Gets If instantance has backup data set."""
         ...
 
     @property

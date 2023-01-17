@@ -3,10 +3,9 @@
 Draw Named Events.
 """
 from __future__ import annotations
-from typing import NamedTuple
 
 
-class DrawNamedEvent(NamedTuple):
+class DrawNamedEvent:
     """
     Named events for utils.draw.Draw class
     """
