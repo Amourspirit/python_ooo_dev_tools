@@ -129,8 +129,11 @@ class RangeObj:
             sheet_name = parts.sheet
             sheet_idx = -1
             if sheet_name and mLo.Lo.is_loaded:
-                sheet = mCalc.Calc.get_sheet(doc=mCalc.Calc.get_current_doc(), sheet_name=sheet_name)
-                sheet_idx = mCalc.Calc.get_sheet_index(sheet)
+                try:
+                    sheet = mCalc.Calc.get_sheet(doc=mCalc.Calc.get_current_doc(), sheet_name=sheet_name)
+                    sheet_idx = mCalc.Calc.get_sheet_index(sheet)
+                except Exception:
+                    pass
 
         return RangeObj(
             col_start=col_start, col_end=col_end, row_start=row_start, row_end=row_end, sheet_idx=sheet_idx
@@ -485,6 +488,48 @@ class RangeObj:
             return RangeObj.from_range(rv)
         return NotImplemented
 
+    def __truediv__(self, other: object) -> RangeObj:
+        rng_obj: RangeObj is None
+        if isinstance(other, RangeObj):
+            rng_obj = other
+        if isinstance(other, str):
+            try:
+                parts = mTb.TableHelper.get_range_parts(other)
+                rng_obj = RangeObj(
+                    col_start=parts.col_start,
+                    col_end=parts.col_end,
+                    row_start=parts.row_start,
+                    row_end=parts.row_end,
+                    sheet_idx=0,
+                )
+            except Exception:
+                raise ValueError(f'String Value "{other}" cannot be converted to a RangeObj')
+
+        if not rng_obj is None:
+            if self.row_start < rng_obj.row_start:
+                row_start = self.row_start
+            else:
+                row_start = rng_obj.row_start
+            if self.row_end > rng_obj.row_end:
+                row_end = self.row_end
+            else:
+                row_end = rng_obj.row_end
+            if self.start_col_index < rng_obj.start_col_index:
+                col_start = self.col_start
+            else:
+                col_start = rng_obj.col_start
+            if self.end_col_index > rng_obj.end_col_index:
+                col_end = self.col_end
+            else:
+                col_end = rng_obj.col_end
+            return RangeObj(
+                col_start=col_start, col_end=col_end, row_start=row_start, row_end=row_end, sheet_idx=self.sheet_idx
+            )
+        return NotImplemented
+
+    def __rtruediv__(self, other):
+        return self.__truediv__(other)
+
     # endregion methods
 
     # region properties
@@ -500,9 +545,10 @@ class RangeObj:
             if self.sheet_idx < 0:
                 return name
             try:
-                sheet = mCalc.Calc.get_sheet(doc=mCalc.Calc.get_current_doc(), index=self.sheet_idx)
-                name = mCalc.Calc.get_sheet_name(sheet=sheet)
-                object.__setattr__(self, "_sheet_name", name)
+                if mLo.Lo.is_loaded:
+                    sheet = mCalc.Calc.get_sheet(doc=mCalc.Calc.get_current_doc(), index=self.sheet_idx)
+                    name = mCalc.Calc.get_sheet_name(sheet=sheet)
+                    object.__setattr__(self, "_sheet_name", name)
             except:
                 pass
         return name

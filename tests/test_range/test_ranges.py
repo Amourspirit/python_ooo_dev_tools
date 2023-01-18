@@ -930,4 +930,81 @@ def test_subtract_range_cols_start_cell_obj(rng_name: str, cell_name: str, expec
     assert str(rng2) == expected
 
 
+def test_combine() -> None:
+    from ooodev.utils.data_type.range_obj import RangeObj
+
+    # combining range objects should result in a new range object
+    # that contains the smallest start column, the smallest start row, the largest end column, the largest end row
+
+    rng1 = RangeObj(col_start="C", col_end="F", row_start=3, row_end=6, sheet_idx=0)
+    rng2 = RangeObj(col_start="C", col_end="F", row_start=1, row_end=2, sheet_idx=0)
+    rng3 = rng1 / rng2
+    assert str(rng3) == "C1:F6"
+
+    rng2 = RangeObj(col_start="A", col_end="F", row_start=1, row_end=2, sheet_idx=0)
+    rng3 = rng1 / rng2
+    assert str(rng3) == "A1:F6"
+
+    rng2 = RangeObj(col_start="C", col_end="F", row_start=4, row_end=6, sheet_idx=0)
+    rng3 = rng1 / rng2
+    assert str(rng3) == "C3:F6"
+
+    rng1 = RangeObj(col_start="A", col_end="G", row_start=3, row_end=1, sheet_idx=0)
+    rng2 = RangeObj(col_start="C", col_end="F", row_start=1, row_end=2, sheet_idx=0)
+    rng3 = rng1 / rng2
+    assert str(rng3) == "A1:G3"
+
+    rng1 = RangeObj(col_start="C", col_end="F", row_start=1, row_end=2, sheet_idx=0)
+    rng2 = RangeObj(col_start="A", col_end="G", row_start=3, row_end=1, sheet_idx=0)
+    rng3 = rng1 / rng2
+    assert str(rng3) == "A1:G3"
+
+    rng1 = RangeObj(col_start="C", col_end="F", row_start=1, row_end=2, sheet_idx=0)
+    rng2 = RangeObj(col_start="A", col_end="G", row_start=3, row_end=1, sheet_idx=0)
+    rng3 = RangeObj(col_start="A", col_end="H", row_start=3, row_end=7, sheet_idx=0)
+    rng4 = rng1 / rng2 / rng3
+    assert str(rng4) == "A1:H7"
+
+    rng1 = RangeObj(col_start="C", col_end="F", row_start=2, row_end=2, sheet_idx=0)
+    rng2 = RangeObj(col_start="A", col_end="G", row_start=3, row_end=1, sheet_idx=0)
+    rng3 = RangeObj(col_start="A", col_end="H", row_start=3, row_end=7, sheet_idx=0)
+    rng4 = RangeObj(col_start="A", col_end="B", row_start=1, row_end=7, sheet_idx=0)
+    rng5 = rng1 / rng2 / rng3 / rng4
+    assert str(rng5) == "A1:H7"
+
+    rng1 = RangeObj(col_start="C", col_end="F", row_start=2, row_end=2, sheet_idx=0)
+    rng2 = rng1 / "B2:C4"
+    assert str(rng2) == "B2:F4"
+
+    rng1 = RangeObj(col_start="C", col_end="F", row_start=2, row_end=2, sheet_idx=0)
+    rng2 = rng1 / "B2:C4" / "a1:d7"
+    assert str(rng2) == "A1:F7"
+
+    rng1 = RangeObj(col_start="C", col_end="F", row_start=2, row_end=2, sheet_idx=0)
+    rng2 = "B2:C4" / rng1
+    assert str(rng2) == "B2:F4"
+
+    rng1 = RangeObj(col_start="C", col_end="F", row_start=2, row_end=2, sheet_idx=0)
+    rng2 = "B2:C4" / rng1 / "a1:d7"
+    assert str(rng2) == "A1:F7"
+
+
+def test_combine_errors() -> None:
+    from ooodev.utils.data_type.range_obj import RangeObj
+
+    rng1 = RangeObj(col_start="C", col_end="F", row_start=2, row_end=2, sheet_idx=0)
+
+    with pytest.raises(ValueError):
+        _ = rng1 / "B2"
+
+    with pytest.raises(ValueError):
+        _ = rng1 / "B"
+
+    with pytest.raises(ValueError):
+        _ = "B2" / rng1
+
+    with pytest.raises(TypeError):
+        _ = "B2:C4" / "a1:d7" / rng1
+
+
 # endregion test RangeObj add/subtract using CellObj
