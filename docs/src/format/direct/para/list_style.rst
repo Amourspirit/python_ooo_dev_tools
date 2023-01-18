@@ -5,4 +5,5 @@ Class ListStyle
 
 .. autoclass:: ooodev.format.direct.para.list_style.ListStyle
     :members:
+    :inherited-members:
     :undoc-members:

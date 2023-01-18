@@ -103,7 +103,7 @@ class WritingMode(StyleBase):
             WritingMode: ``WritingMode`` instance that represents ``obj`` writing mode.
         """
         inst = WritingMode()
-        if inst._is_valid_service(obj):
+        if inst._is_valid_obj(obj):
             inst._set("WritingMode", int(mProps.Props.get(obj, "WritingMode")))
         else:
             raise mEx.NotSupportedServiceError(inst._supported_services()[0])

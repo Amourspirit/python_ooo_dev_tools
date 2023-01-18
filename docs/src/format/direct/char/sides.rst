@@ -5,4 +5,5 @@ Class Sides
 
 .. autoclass:: ooodev.format.direct.char.sides.Sides
     :members:
+    :inherited-members:
     :undoc-members:

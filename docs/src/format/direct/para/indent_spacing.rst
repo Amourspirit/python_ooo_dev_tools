@@ -5,4 +5,5 @@ Class IndentSpacing
 
 .. autoclass:: ooodev.format.direct.para.indent_spacing.IndentSpacing
     :members:
+    :inherited-members:
     :undoc-members:

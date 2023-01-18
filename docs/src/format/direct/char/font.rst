@@ -5,4 +5,5 @@ Module font
 
 .. automodule:: ooodev.format.direct.char.font
     :members:
+    :inherited-members:
     :undoc-members:

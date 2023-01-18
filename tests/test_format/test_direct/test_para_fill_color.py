@@ -8,7 +8,6 @@ if __name__ == "__main__":
 import uno
 from ooodev.format.direct.para.fill_color import FillColor
 from ooodev.format import CommonColor
-from ooodev.format.direct.structs.drop_cap import DropCap
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write

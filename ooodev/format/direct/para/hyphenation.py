@@ -123,7 +123,7 @@ class Hyphenation(StyleBase):
             Hyphenation: ``Hyphenation`` instance that represents ``obj`` hypenation properties.
         """
         inst = Hyphenation()
-        if not inst._is_valid_service(obj):
+        if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedServiceError(inst._supported_services()[0])
 
         def set_prop(key: str, indent: Hyphenation):

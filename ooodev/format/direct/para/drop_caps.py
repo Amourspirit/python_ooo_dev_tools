@@ -174,7 +174,7 @@ class DropCaps(StyleMulti):
             DropCaps: ``DropCaps`` instance that represents ``obj`` Drop Caps.
         """
         inst = DropCaps()
-        if not inst._is_valid_service(obj):
+        if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedServiceError(inst._supported_services()[0])
         dc = DropCap.from_obj(obj)
         inst._set_style_dc(dc)

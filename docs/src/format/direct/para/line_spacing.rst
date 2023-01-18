@@ -5,4 +5,5 @@ Module line_spacing
 
 .. automodule:: ooodev.format.direct.para.line_spacing
     :members:
+    :inherited-members:
     :undoc-members:

@@ -150,7 +150,7 @@ class BorderTable(StyleBase):
 
         tb = cast(TableBorder2, mProps.Props.get(obj, "TableBorder2", None))
         if tb is None:
-            raise mEx.PropertyNotFoundError("TableBorder2", "apply_style() obj has no property, TableBorder2")
+            raise mEx.PropertyNotFoundError("TableBorder2", "apply() obj has no property, TableBorder2")
         attrs = ("TopLine", "BottomLine", "LeftLine", "RightLine", "HorizontalLine", "VerticalLine")
         for attr in attrs:
             val = cast(Side, self._get(attr))

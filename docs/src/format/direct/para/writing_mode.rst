@@ -5,4 +5,5 @@ Class WritingMode
 
 .. autoclass:: ooodev.format.direct.para.writing_mode.WritingMode
     :members:
+    :inherited-members:
     :undoc-members:

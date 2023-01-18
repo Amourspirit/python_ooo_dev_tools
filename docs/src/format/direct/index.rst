@@ -8,5 +8,6 @@ direct
 
     char/index
     para/index
+    fill/index
     structs/index
     table/index

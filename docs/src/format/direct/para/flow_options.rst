@@ -5,4 +5,5 @@ Class FlowOptions
 
 .. autoclass:: ooodev.format.direct.para.flow_options.FlowOptions
     :members:
+    :inherited-members:
     :undoc-members:

@@ -94,7 +94,7 @@ class Highlight(StyleBase):
             Hightlight: Hightlight that represents ``obj`` Hightlight.
         """
         inst = Highlight()
-        if inst._is_valid_service(obj):
+        if inst._is_valid_obj(obj):
             inst._set("CharBackColor", int(mProps.Props.get(obj, "CharBackColor")))
             inst._set("CharBackTransparent", bool(mProps.Props.get(obj, "CharBackTransparent")))
         else:
