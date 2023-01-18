@@ -6,7 +6,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.direct.table.borders import (
+from ooodev.format.direct.cell.borders import (
     Borders,
     Shadow,
     Side,

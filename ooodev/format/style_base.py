@@ -86,7 +86,7 @@ class StyleBase(ABC):
         """
         raise NotImplementedError
 
-    def _is_valid_service(self, obj: object) -> bool:
+    def _is_valid_obj(self, obj: object) -> bool:
         """
         Gets if ``obj`` supports one of the services required by style class
 
@@ -151,7 +151,7 @@ class StyleBase(ABC):
             None:
         """
         if len(self._dv) > 0:
-            if self._is_valid_service(obj):
+            if self._is_valid_obj(obj):
                 cargs = CancelEventArgs(source=f"{self.apply.__qualname__}")
                 cargs.event_data = self
                 self.on_applying(cargs)
@@ -186,7 +186,7 @@ class StyleBase(ABC):
         See Also:
             :py:meth:`~.style_base.StyleBase.restore`
         """
-        if not self._is_valid_service(obj):
+        if not self._is_valid_obj(obj):
             self._print_no_required_service("Backup")
             return
         if self._dv_bak is None:

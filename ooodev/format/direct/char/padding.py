@@ -135,7 +135,7 @@ class Padding(StyleBase):
             Padding: Padding that represents ``obj`` padding.
         """
         inst = Padding()
-        if inst._is_valid_service(obj):
+        if inst._is_valid_obj(obj):
             inst._set("CharLeftBorderDistance", int(mProps.Props.get(obj, "CharLeftBorderDistance")))
             inst._set("CharRightBorderDistance", int(mProps.Props.get(obj, "CharRightBorderDistance")))
             inst._set("CharTopBorderDistance", int(mProps.Props.get(obj, "CharTopBorderDistance")))

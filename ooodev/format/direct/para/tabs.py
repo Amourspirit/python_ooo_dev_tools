@@ -47,7 +47,7 @@ class Tabs(Tab):
         Returns:
             Tab | None: ``Tab`` instance if found; Otherwise, ``None``
         """
-        if not Tabs.default._is_valid_service(obj):
+        if not Tabs.default._is_valid_obj(obj):
             return None
         key = "ParaTabStops"
         pos = round(position * 100)
@@ -127,7 +127,7 @@ class Tabs(Tab):
         Returns:
             bool: ``True`` if a Tab has been removed; Oherwise, ``False``
         """
-        if not Tabs.default._is_valid_service(obj):
+        if not Tabs.default._is_valid_obj(obj):
             return False
         if isinstance(tab, Tab):
             return cls._remove_by_positon(obj, tab._get("Position"))
@@ -142,7 +142,7 @@ class Tabs(Tab):
         Args:
             obj (object): Object that supports ``com.sun.star.style.ParagraphProperties``
         """
-        if not Tabs.default._is_valid_service(obj):
+        if not Tabs.default._is_valid_obj(obj):
             return
         tss = cast(Tuple[TabStop, ...], mProps.Props.get(obj, "ParaTabStops"))
         if tss is None:

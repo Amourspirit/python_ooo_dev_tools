@@ -152,7 +152,7 @@ class Sides(StyleBase):
             return
 
         bc = Sides()
-        if bc._is_valid_service(obj):
+        if bc._is_valid_obj(obj):
             cp = cast("CharacterProperties", obj)
             empty = BorderLine2()
             for attr in Sides._CHAR_BORDERS:

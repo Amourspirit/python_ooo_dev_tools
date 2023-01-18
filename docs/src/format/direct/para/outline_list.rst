@@ -5,4 +5,5 @@ Class OutlineList
 
 .. autoclass:: ooodev.format.direct.para.outline_list.OutlineList
     :members:
+    :inherited-members:
     :undoc-members:

@@ -107,7 +107,7 @@ class DropCap(StyleBase):
         _Events().trigger(FormatNamedEvent.STYLE_APPLYING, cargs)
         if cargs.cancel:
             return
-        if not self._is_valid_service(obj):
+        if not self._is_valid_obj(obj):
             raise mEx.NotSupportedServiceError(self._supported_services()[0])
 
         keys = {"prop": "DropCapFormat"}

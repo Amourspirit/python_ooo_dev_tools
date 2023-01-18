@@ -5,4 +5,5 @@ Class Indent
 
 .. autoclass:: ooodev.format.direct.para.indent.Indent
     :members:
+    :inherited-members:
     :undoc-members:

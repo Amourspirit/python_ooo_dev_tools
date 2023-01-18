@@ -5,4 +5,5 @@ Class LineNum
 
 .. autoclass:: ooodev.format.direct.para.line_num.LineNum
     :members:
+    :inherited-members:
     :undoc-members:

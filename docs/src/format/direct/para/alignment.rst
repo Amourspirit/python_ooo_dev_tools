@@ -5,4 +5,5 @@ Module alignment
 
 .. automodule:: ooodev.format.direct.para.alignment
     :members:
+    :inherited-members:
     :undoc-members:
