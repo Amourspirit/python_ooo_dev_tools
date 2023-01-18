@@ -5,4 +5,5 @@ Module borders
 
 .. automodule:: ooodev.format.direct.table.borders
     :members:
+    :inherited-members:
     :undoc-members:

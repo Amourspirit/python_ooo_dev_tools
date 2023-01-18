@@ -5,4 +5,5 @@ Class DropCaps
 
 .. autoclass:: ooodev.format.direct.para.drop_caps.DropCaps
     :members:
+    :inherited-members:
     :undoc-members:

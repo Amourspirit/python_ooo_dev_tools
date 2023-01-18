@@ -47,6 +47,7 @@ from com.sun.star.util import XNumberFormatsSupplier
 
 from . import calc as mCalc
 from ..exceptions import ex as mEx
+from ..proto.style_obj import StyleObj
 from ..utils import color as mColor
 from ..utils import file_io as mFileIo
 from ..utils import gui as mGui
@@ -1380,7 +1381,71 @@ class Chart2:
 
     # endregion legend
 
+    # region Styles
+
+    @staticmethod
+    def style_background(chart_doc: XChartDocument, *styles: StyleObj) -> None:
+        """
+        Styles background of chart
+
+        Args:
+            chart_doc (XChartDocument): Chart Document.
+            styles: Expandable list of styles to apply to chart background
+
+        Returns:
+            None:
+
+        .. versionadded:: 0.9.0
+        """
+        bg_ps = chart_doc.getPageBackground()
+        for style in styles:
+            style.apply(bg_ps)
+
+    @staticmethod
+    def style_wall(chart_doc: XChartDocument, *styles: StyleObj) -> None:
+        """
+        Styles Wall of chart
+
+        Args:
+            chart_doc (XChartDocument): Chart Document.
+            styles: Expandable list of styles to apply to chart background
+
+        Returns:
+            None:
+
+        .. versionadded:: 0.9.0
+        """
+        wall = chart_doc.getFirstDiagram().getWall()
+        for style in styles:
+            style.apply(wall)
+
+    @staticmethod
+    def style_data_point(chart_doc: XChartDocument, series_idx: int, idx: int, *styles: StyleObj) -> None:
+        """
+        Styles a data point of chart
+
+        Args:
+            chart_doc (XChartDocument): Chart Document.
+            series_idx (int): Series Index.
+            idx (int): Index to extract from the datapoints data.
+                If ``idx=-1`` then the last data point is styled.
+            styles: Expandable list of styles to apply to chart background
+
+        Returns:
+            None:
+
+        .. versionadded:: 0.9.0
+        """
+
+        pp = Chart2.get_data_point_props(chart_doc=chart_doc, series_idx=series_idx, idx=idx)
+
+        for style in styles:
+            style.apply(pp)
+
+    # endregion Styles
+
     # region background colors
+
     @staticmethod
     def set_background_colors(chart_doc: XChartDocument, bg_color: mColor.Color, wall_color: mColor.Color) -> None:
         """
@@ -1864,7 +1929,8 @@ class Chart2:
         Args:
             chart_doc (XChartDocument): Chart Document.
             series_idx (int): Series Index
-            idx (int): Index to extract from the datapoints data
+            idx (int): Index to extract from the datapoints data.
+                If ``idx=-1`` then the last data point is returned.
 
         Raises:
             NotFoundError: If ``series_idx`` did not find any data points.
@@ -1875,10 +1941,16 @@ class Chart2:
 
         See Also:
             :py:meth:`~.Chart2.get_data_points_props`
+
+        .. versionchanged:: 0.9.0
+            ``idx`` value of ``-1`` returns last data point.
         """
         props = cls.get_data_points_props(chart_doc=chart_doc, idx=series_idx)
         if not props:
             raise mEx.NotFoundError("No Datapoints found to get XPropertySet from")
+
+        if idx == -1:
+            return props.pop()
 
         if idx < 0 or idx >= len(props):
             raise IndexError(f"Index value of {idx} is out of of range")

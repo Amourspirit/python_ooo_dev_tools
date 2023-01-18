@@ -5,4 +5,5 @@ Class Spacing
 
 .. autoclass:: ooodev.format.direct.para.spacing.Spacing
     :members:
+    :inherited-members:
     :undoc-members:

@@ -145,7 +145,7 @@ class Alignment(StyleMulti):
             Alignment: Alignment that represents ``obj`` alignment.
         """
         inst = Alignment()
-        if not inst._is_valid_service(obj):
+        if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedServiceError(inst._supported_services()[0])
 
         def set_prop(key: str, align: Alignment):

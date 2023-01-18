@@ -138,7 +138,7 @@ class Padding(StyleBase):
         if not mInfo.Info.support_service(obj, "com.sun.star.style.ParagraphProperties"):
             raise mEx.NotSupportedServiceError("com.sun.star.style.ParagraphProperties")
         inst = Padding()
-        if inst._is_valid_service(obj):
+        if inst._is_valid_obj(obj):
             inst._set("ParaLeftMargin", int(mProps.Props.get(obj, "ParaLeftMargin")))
             inst._set("ParaRightMargin", int(mProps.Props.get(obj, "ParaRightMargin")))
             inst._set("ParaTopMargin", int(mProps.Props.get(obj, "ParaTopMargin")))

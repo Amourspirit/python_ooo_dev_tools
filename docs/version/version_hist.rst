@@ -33,6 +33,12 @@ Added ``Write.append_line(cursor: XTextCursor, text: str, styles: Iterable[Style
 
 Added ``Write.append_para(cursor: XTextCursor, text: str, styles: Iterable[StyleObj])`` overload.
 
+Added ``Chart2.style_background()`` Method.
+
+Added ``Chart2.style_wall()`` Method.
+
+Added ``Chart2.style_data_point()`` Method.
+
 Added :ref:`ns_format` namespace with many classes for applying styles and formatting to documents and sheets.
 
 Version 0.8.6

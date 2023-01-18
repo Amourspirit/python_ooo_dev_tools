@@ -109,7 +109,7 @@ class Outline(StyleBase):
             Outline: ``Outline`` instance that represents ``obj`` break properties.
         """
         inst = Outline(level=LevelKind.TEXT_BODY)
-        if not inst._is_valid_service(obj):
+        if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedServiceError(inst._supported_services()[0])
 
         level = int(mProps.Props.get(obj, "OutlineLevel"))

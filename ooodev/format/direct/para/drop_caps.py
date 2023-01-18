@@ -4,7 +4,7 @@ Modele for managing paragraph Drop Caps.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, cast
+from typing import Tuple, cast, overload
 
 from ....exceptions import ex as mEx
 from ....meta.static_prop import static_prop
@@ -20,6 +20,9 @@ from ....events.args.key_val_cancel_args import KeyValCancelArgs
 class DropCaps(StyleMulti):
     """
     Paragraph Drop Caps
+
+    Warning:
+        This class uses dispatch commands and is not suitable for use in headless mode.
 
     .. versionadded:: 0.9.0
     """
@@ -54,22 +57,20 @@ class DropCaps(StyleMulti):
             If ``count==0`` then all other argumnets are ignored and instance set to remove drop caps when ``apply()`` is called.
 
         Warning:
-            Due seeemingly to a bug setting ``style`` result in style not being written. If style is set to a valid Character Style Name
-            then it will be written successfully.
+            This class may uses dispatch commands and may not suitable for use in headless mode.
 
-            For this reson the recommended way to reset next paragraph after applying a style to a paragraph that includes style is to call
-            :py:meth:`~.DropCaps.dispatch_reset()`
-
-            .. code-block:: python
-
-                dc = DropCaps(count=1, style=StyleCharKind.DROP_CAPS)
-                Write.append_para(cursor=cursor, text="Hello World!", styles=(dc,))
-                dc.dispatch_reset()
+            Due to LibreOffice bug this class will use a dispatch command if ``style`` is set to empty string.
         """
         # https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1ParagraphProperties-members.html
 
+        # Due seeemingly to a bug setting ``style`` result in style not being written.
+        # If style is set to a valid Character Style Name
+        # then it will be written successfully.
+
         # if count == -1 then do not include DropCap. only update style
         # if count = 0 then default to no drop cap values
+        if mLo.Lo.bridge_connector.headless:
+            mLo.Lo.print("Warning! DropCaps class is not suitable in Headless mode.")
         dc = None
         init_vars = {}
 
@@ -125,9 +126,9 @@ class DropCaps(StyleMulti):
         }
         drop_cap_props = mProps.Props.make_props(**drop_cap_args)
         mLo.Lo.dispatch_cmd("FormatDropcap", drop_cap_props)
-        mLo.Lo.delay(300)
+        # mLo.Lo.delay(300)
         mLo.Lo.dispatch_cmd("SetDropCapCharStyleName", mProps.Props.make_props(CharStyleName=""))
-        mLo.Lo.delay(300)
+        # mLo.Lo.delay(300)
 
     def on_property_backing_up(self, event_args: KeyValCancelArgs):
         """
@@ -173,7 +174,7 @@ class DropCaps(StyleMulti):
             DropCaps: ``DropCaps`` instance that represents ``obj`` Drop Caps.
         """
         inst = DropCaps()
-        if not inst._is_valid_service(obj):
+        if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedServiceError(inst._supported_services()[0])
         dc = DropCap.from_obj(obj)
         inst._set_style_dc(dc)
@@ -190,9 +191,21 @@ class DropCaps(StyleMulti):
         """Overrides, No actions are taken"""
         pass
 
+    @overload
+    def restore(self, obj: object) -> None:
+        ...
+
     def restore(self, obj: object, clear: bool = False) -> None:
-        """Overrides, No actions are taken"""
-        pass
+        """
+        Restores ``obj`` via dispatc command.
+
+        Args:
+            obj (object): Object to restore properties on.
+
+        Returns:
+            None:
+        """
+        self.dispatch_reset()
 
     # endregion methods
 
@@ -200,7 +213,7 @@ class DropCaps(StyleMulti):
     @property
     def prop_has_backup(self) -> bool:
         """Gets If instantance has backup data. Overrides, Returns ``False``."""
-        return False
+        return True
 
     @property
     def prop_format_kind(self) -> FormatKind:

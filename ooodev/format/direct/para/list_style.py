@@ -127,7 +127,7 @@ class ListStyle(StyleBase):
             ListStyle: ``ListStyle`` instance that represents ``obj`` properties.
         """
         inst = ListStyle()
-        if not inst._is_valid_service(obj):
+        if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedServiceError(inst._supported_services()[0])
 
         def set_prop(key: str, o: ListStyle):

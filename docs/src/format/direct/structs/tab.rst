@@ -5,4 +5,5 @@ Module tab
 
 .. automodule:: ooodev.format.direct.structs.tab
     :members:
+    :inherited-members:
     :undoc-members:

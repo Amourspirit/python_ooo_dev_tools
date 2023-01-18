@@ -215,7 +215,7 @@ class Font(StyleBase):
         Returns:
             None:
         """
-        if self._is_valid_service(obj):
+        if self._is_valid_obj(obj):
             try:
                 super().apply(obj, **kwargs)
             except mEx.MultiError as e:

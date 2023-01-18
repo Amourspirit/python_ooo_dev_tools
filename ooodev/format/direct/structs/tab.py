@@ -128,7 +128,7 @@ class Tab(StyleBase):
         Returns:
             None:
         """
-        if not self._is_valid_service(obj):
+        if not self._is_valid_obj(obj):
             raise mEx.NotSupportedServiceError(self._supported_services()[0])
 
         cargs = CancelEventArgs(source=f"{self.apply.__qualname__}")

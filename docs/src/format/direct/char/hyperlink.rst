@@ -5,4 +5,5 @@ Module hyperlink
 
 .. automodule:: ooodev.format.direct.char.hyperlink
     :members:
+    :inherited-members:
     :undoc-members:

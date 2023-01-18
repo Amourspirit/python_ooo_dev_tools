@@ -5,4 +5,5 @@ Class BorderTable
 
 .. autoclass:: ooodev.format.direct.structs.border_table.BorderTable
     :members:
+    :inherited-members:
     :undoc-members:

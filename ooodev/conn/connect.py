@@ -56,6 +56,41 @@ class ConnectBase(ABC):
     def ctx(self) -> XComponentContext:
         return self._ctx
 
+    @property
+    def start_office(self) -> bool:
+        """For compatability. Returns ``True``"""
+        return True
+
+    @property
+    def no_restore(self) -> bool:
+        """For compatability. Returns ``True``"""
+        return True
+
+    @property
+    def no_first_start_wizard(self) -> bool:
+        """For compatability. Returns ``True``"""
+        return True
+
+    @property
+    def no_logo(self) -> bool:
+        """For compatability. Returns ``True``"""
+        return True
+
+    @property
+    def invisible(self) -> bool:
+        """For compatability. Returns ``False``"""
+        return False
+
+    @property
+    def headless(self) -> bool:
+        """For compatability. Returns ``False``"""
+        return False
+
+    @property
+    def start_as_service(self) -> bool:
+        """For compatability. Returns ``False``"""
+        return False
+
 
 class LoBridgeCommon(ConnectBase):
     """Base Abstract Class for LoSocketStart and LoPipeStart"""
