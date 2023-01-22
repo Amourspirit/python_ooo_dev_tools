@@ -1,7 +1,7 @@
-.. _ns_format_direct_table:
+.. _ns_format_direct_common:
 
-table
-=====
+common
+======
 
 .. toctree::
     :titlesonly:
