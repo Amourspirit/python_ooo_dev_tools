@@ -6,7 +6,7 @@ Module for table side (``BorderLine2``) struct.
 # region imports
 from __future__ import annotations
 from typing import Dict, Tuple, cast, overload
-from enum import IntFlag
+from enum import IntFlag, Enum
 
 from ....events.event_singleton import _Events
 from ....meta.static_prop import static_prop
@@ -16,6 +16,8 @@ from ....utils.color import CommonColor
 from ...kind.format_kind import FormatKind
 from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent
 from ...style_const import POINT_RATIO
+from ..common import border_width_impl as mBwi
+from ....utils.unit_convert import UnitConvert, Length
 
 import uno
 from ooo.dyn.table.border_line import BorderLine as BorderLine
@@ -26,6 +28,26 @@ from ooo.dyn.table.border_line2 import BorderLine2 as BorderLine2
 # endregion imports
 
 # region Enums
+
+
+class LineSize(Enum):
+    """Line Size Options"""
+
+    HAIRLINE = (1, 0.05)
+    """``0.05pt``"""
+    VERY_THIN = (2, 0.5)
+    """``0.5pt``"""
+    THIN = (3, 0.75)
+    """``0.75pt``"""
+    MEDIUM = (4, 1.5)
+    """``1.5pt``"""
+    THICK = (4, 2.25)
+    """``2.5pt``"""
+    EXTRA_THICK = (5, 4.5)
+    """``5.5pt``"""
+
+    def __float__(self) -> float:
+        return self.value[1]
 
 
 class SideFlags(IntFlag):
@@ -79,9 +101,7 @@ class Side(StyleBase):
         self,
         line: BorderLineStyleEnum = BorderLineStyleEnum.SOLID,
         color: Color = CommonColor.BLACK,
-        width: float = 0.75,
-        width_inner: float = 0.0,
-        distance: float = 0.0,
+        width: LineSize | float = LineSize.THIN,
     ) -> None:
         """
         Constructs Side
@@ -89,9 +109,7 @@ class Side(StyleBase):
         Args:
             line (BorderLineStyleEnum, optional): Line Style of the border.
             color (Color, optional): Color of the border.
-            width (float, optional): Contains the width in of a single line or the width of outer part of a double line (in pt units). If this value is zero, no line is drawn. Default ``0.75``
-            width_inner (float, optional): contains the width of the inner part of a double line (in pt units). If this value is zero, only a single line is drawn. Default ``0.0``
-            distance (float, optional): contains the distance between the inner and outer parts of a double line (in mm units). Defalut ``0.0``
+            width (LineSize, float, optional): Contains the width in of a single line or the width of outer part of a double line (in pt units). If this value is zero, no line is drawn. Default ``0.75``
 
         Raises:
             ValueError: if ``color``, ``width`` or ``width_inner`` is less than ``0``.
@@ -99,29 +117,166 @@ class Side(StyleBase):
         Returns:
             None:
         """
+        width = float(width)
         if color < 0:
             raise ValueError("color must be a positive value")
         if width < 0.0:
             raise ValueError("width must be a postivie value")
-        if width_inner < 0.0:
-            raise ValueError("width_inner must be a postivie value")
-        if distance < 0.0:
-            raise ValueError("distance must be a postivie value")
+        if width > 9.0000001:
+            raise ValueError("Maximum width allowed is 9pt")
+
+        self._pts = width
+
+        lw = round(UnitConvert.convert(num=width, frm=Length.PT, to=Length.MM100))
 
         init_vals = {
             "Color": color,
-            "InnerLineWidth": round(width_inner * POINT_RATIO),
-            "LineDistance": round(distance * 100),
+            "InnerLineWidth": 0,
+            "LineDistance": 0,
             "LineStyle": line.value,
-            "LineWidth": round(width * POINT_RATIO),
-            "OuterLineWidth": round(width * POINT_RATIO),
+            "LineWidth": lw,
+            "OuterLineWidth": 0,
         }
 
         super().__init__(**init_vals)
+        self._set_line_values(pts=width, line=line)
+
+    def _set_line_values(self, pts: int, line: BorderLineStyleEnum) -> None:
+        if line == BorderLineStyleEnum.BORDER_LINE_STYLE_MAX:
+            raise ValueError("BORDER_LINE_STYLE_MAX is not supported")
+
+        val_keys = ("OuterLineWidth", "InnerLineWidth", "LineDistance")
+
+        if line == BorderLineStyleEnum.NONE:
+            for attr in val_keys:
+                self._set(attr, 0)
+            return
+
+        twips = UnitConvert.to_twips(pts, Length.PT)
+        single_lns = (
+            BorderLineStyleEnum.SOLID,
+            BorderLineStyleEnum.DOTTED,
+            BorderLineStyleEnum.DASHED,
+            BorderLineStyleEnum.FINE_DASHED,
+            BorderLineStyleEnum.DASH_DOT,
+            BorderLineStyleEnum.DASH_DOT_DOT,
+        )
+        en_em = (BorderLineStyleEnum.ENGRAVED, BorderLineStyleEnum.EMBOSSED)
+
+        vals = None
+
+        if line in single_lns:
+            flags = mBwi.BorderWidthImplFlags.CHANGE_LINE1
+            bw = mBwi.BorderWidthImpl(nFlags=flags, nRate1=1.0, nRate2=0.0, nRateGap=0.0)
+            vals = (bw.get_line1(twips), bw.get_line2(twips), bw.get_gap(twips))
+
+        elif line == BorderLineStyleEnum.DOUBLE:
+            flags = (
+                mBwi.BorderWidthImplFlags.CHANGE_DIST
+                | mBwi.BorderWidthImplFlags.CHANGE_LINE1
+                | mBwi.BorderWidthImplFlags.CHANGE_LINE2
+            )
+            bw = mBwi.BorderWidthImpl(nFlags=flags, nRate1=1 / 3, nRate2=1 / 3, nRateGap=1 / 3)
+            vals = (bw.get_line1(twips), bw.get_line2(twips), bw.get_gap(twips))
+
+        elif line == BorderLineStyleEnum.DOUBLE_THIN:
+            flags = mBwi.BorderWidthImplFlags.CHANGE_DIST
+            bw = mBwi.BorderWidthImpl(nFlags=flags, nRate1=10.0, nRate2=10.0, nRateGap=1.0)
+            vals = (bw.get_line1(twips), bw.get_line2(twips), bw.get_gap(twips))
+
+        elif line == BorderLineStyleEnum.THINTHICK_SMALLGAP:
+            flags = mBwi.BorderWidthImplFlags.CHANGE_LINE1
+            bw = mBwi.BorderWidthImpl(
+                nFlags=flags, nRate1=1.0, nRate2=mBwi.THINTHICK_SMALLGAP_LINE2, nRateGap=mBwi.THINTHICK_SMALLGAP_GAP
+            )
+            vals = (bw.get_line1(twips), bw.get_line2(twips), bw.get_gap(twips))
+
+        elif line == BorderLineStyleEnum.THINTHICK_MEDIUMGAP:
+            flags = (
+                mBwi.BorderWidthImplFlags.CHANGE_DIST
+                | mBwi.BorderWidthImplFlags.CHANGE_LINE1
+                | mBwi.BorderWidthImplFlags.CHANGE_LINE2
+            )
+            bw = mBwi.BorderWidthImpl(nFlags=flags, nRate1=0.5, nRate2=0.25, nRateGap=0.25)
+            vals = (bw.get_line1(twips), bw.get_line2(twips), bw.get_gap(twips))
+
+        elif line == BorderLineStyleEnum.THINTHICK_LARGEGAP:
+            flags = mBwi.BorderWidthImplFlags.CHANGE_DIST
+            bw = mBwi.BorderWidthImpl(
+                nFlags=flags, nRate1=mBwi.THINTHICK_LARGEGAP_LINE1, nRate2=mBwi.THINTHICK_LARGEGAP_LINE2, nRateGap=1.0
+            )
+            vals = (bw.get_line1(twips), bw.get_line2(twips), bw.get_gap(twips))
+
+        elif line == BorderLineStyleEnum.THICKTHIN_SMALLGAP:
+            flags = mBwi.BorderWidthImplFlags.CHANGE_LINE2
+            bw = mBwi.BorderWidthImpl(
+                nFlags=flags, nRate1=mBwi.THICKTHIN_SMALLGAP_LINE1, nRate2=1.0, nRateGap=mBwi.THICKTHIN_SMALLGAP_GAP
+            )
+            vals = (bw.get_line1(twips), bw.get_line2(twips), bw.get_gap(twips))
+
+        elif line == BorderLineStyleEnum.THICKTHIN_MEDIUMGAP:
+            flags = (
+                mBwi.BorderWidthImplFlags.CHANGE_DIST
+                | mBwi.BorderWidthImplFlags.CHANGE_LINE1
+                | mBwi.BorderWidthImplFlags.CHANGE_LINE2
+            )
+            bw = mBwi.BorderWidthImpl(nFlags=flags, nRate1=0.25, nRate2=0.5, nRateGap=0.25)
+            vals = (bw.get_line1(twips), bw.get_line2(twips), bw.get_gap(twips))
+
+        elif line == BorderLineStyleEnum.THICKTHIN_LARGEGAP:
+            flags = mBwi.BorderWidthImplFlags.CHANGE_DIST
+            bw = mBwi.BorderWidthImpl(
+                nFlags=flags, nRate1=mBwi.THICKTHIN_LARGEGAP_LINE1, nRate2=mBwi.THICKTHIN_LARGEGAP_LINE2, nRateGap=1.0
+            )
+            vals = (bw.get_line1(twips), bw.get_line2(twips), bw.get_gap(twips))
+
+        elif line in en_em:
+            # Word compat: the lines widths are exactly following this rule, should be:
+            # 0.75pt up to 3pt and then 3pt
+            flags = (
+                mBwi.BorderWidthImplFlags.CHANGE_DIST
+                | mBwi.BorderWidthImplFlags.CHANGE_LINE1
+                | mBwi.BorderWidthImplFlags.CHANGE_LINE2
+            )
+            bw = mBwi.BorderWidthImpl(nFlags=flags, nRate1=0.25, nRate2=0.25, nRateGap=0.5)
+            vals = (bw.get_line1(twips), bw.get_line2(twips), bw.get_gap(twips))
+
+        elif line == BorderLineStyleEnum.OUTSET:
+            flags = flags = mBwi.BorderWidthImplFlags.CHANGE_DIST | mBwi.BorderWidthImplFlags.CHANGE_LINE2
+            bw = mBwi.BorderWidthImpl(nFlags=flags, nRate1=mBwi.OUTSET_LINE1, nRate2=0.5, nRateGap=0.5)
+            vals = (bw.get_line1(twips), bw.get_line2(twips), bw.get_gap(twips))
+
+        elif line == BorderLineStyleEnum.INSET:
+            flags = flags = mBwi.BorderWidthImplFlags.CHANGE_DIST | mBwi.BorderWidthImplFlags.CHANGE_LINE1
+            bw = mBwi.BorderWidthImpl(nFlags=flags, nRate1=0.5, nRate2=mBwi.INSET_LINE2, nRateGap=0.5)
+            vals = (bw.get_line1(twips), bw.get_line2(twips), bw.get_gap(twips))
+
+        if vals:
+            for key, value in zip(val_keys, vals):
+                val = round(UnitConvert.convert_twip_mm100(value))
+                self._set(key, val)
 
     # endregion init
 
     # region methods
+    def __eq__(self, other: object) -> bool:
+        bl2: BorderLine2 = None
+        if isinstance(other, Side):
+            bl2 = other.get_border_line2()
+        elif getattr(other, "typeName", None) == "com.sun.star.table.BorderLine2":
+            bl2 = other
+        if bl2:
+            bl1 = self.get_border_line2()
+            return (
+                bl1.Color == bl2.Color
+                and bl1.InnerLineWidth == bl2.InnerLineWidth
+                and bl1.LineDistance == bl2.LineDistance
+                and bl1.LineStyle == bl2.LineStyle
+                and bl1.LineWidth == bl2.LineWidth
+                and bl1.OuterLineWidth == bl2.OuterLineWidth
+            )
+        return False
+
     def _supported_services(self) -> Tuple[str, ...]:
         return ()
 
@@ -223,11 +378,17 @@ class Side(StyleBase):
             setattr(line, key, val)
         return line
 
+    def copy(self) -> Side:
+        """Gets a copy of current instance"""
+        cp = super().copy()
+        cp._pts = self._pts
+        return cp
+
     @static_prop
     def empty() -> Side:
         """Gets an empyty side. When applied formatting is removed"""
         if Side._EMPTY is None:
-            Side._EMPTY = Side(line=BorderLineStyleEnum.NONE, color=0, width=0.0, width_inner=0.0, distance=0)
+            Side._EMPTY = Side(line=BorderLineStyleEnum.NONE, color=0, width=0.0)
         return Side._EMPTY
 
     @staticmethod
@@ -253,9 +414,8 @@ class Side(StyleBase):
         Returns:
             Side: Side with style set
         """
-        cp = self.copy()
-        cp.prop_line = value
-        return cp
+        inst = Side(line=value, width=self._pts, color=self.prop_color)
+        return inst
 
     def fmt_color(self, value: Color) -> Side:
         """
@@ -281,179 +441,105 @@ class Side(StyleBase):
         Returns:
             Side: Side with width set
         """
-        cp = self.copy()
-        cp.prop_width = value
-        return cp
-
-    def fmt_width_inner(self, value: float) -> Side:
-        """
-        Gets copy of instance with inner width set.
-
-        Args:
-            value (float): inner width value
-
-        Returns:
-            Side: Side with inner width set
-        """
-        cp = self.copy()
-        cp.prop_width_inner = value
-        return cp
-
-    def fmt_distance(self, value: float) -> Side:
-        """
-        Gets copy of instance with distance set.
-
-        Args:
-            value (float): distance value
-
-        Returns:
-            Side: Side with distance set
-        """
-        cp = self.copy()
-        cp.prop_distance = value
-        return cp
+        inst = Side(line=self.prop_line, width=value, color=self.prop_color)
+        return inst
 
     # endregion style methods
     # region Style Properties
     @property
     def line_none(self) -> Side:
         """Gets instance with no border line"""
-        cp = self.copy()
-        cp.prop_line = BorderLineStyleEnum.NONE
-        return cp
+        return self.fmt_style(BorderLineStyleEnum.NONE)
 
     @property
     def line_solid(self) -> Side:
         """Gets instance with solid border line"""
-        cp = self.copy()
-        cp.prop_line = BorderLineStyleEnum.SOLID
-        return cp
+        return self.fmt_style(BorderLineStyleEnum.SOLID)
 
     @property
     def line_dotted(self) -> Side:
         """Gets instance with dotted border line"""
-        cp = self.copy()
-        cp.prop_line = BorderLineStyleEnum.DOTTED
-        return cp
+        return self.fmt_style(BorderLineStyleEnum.DOTTED)
 
     @property
     def line_dashed(self) -> Side:
         """Gets instance with dashed border line"""
-        cp = self.copy()
-        cp.prop_line = BorderLineStyleEnum.DASHED
-        return cp
+        return self.fmt_style(BorderLineStyleEnum.DASHED)
 
     @property
     def line_dashed(self) -> Side:
         """Gets instance with dashed border line"""
-        cp = self.copy()
-        cp.prop_line = BorderLineStyleEnum.DOUBLE
-        return cp
+        return self.fmt_style(BorderLineStyleEnum.DOUBLE)
 
     @property
     def line_thin_thick_small_gap(self) -> Side:
         """Gets instance with double border line with a thin line outside and a thick line inside separated by a small gap."""
-        cp = self.copy()
-        cp.prop_line = BorderLineStyleEnum.THINTHICK_SMALLGAP
-        return cp
+        return self.fmt_style(BorderLineStyleEnum.THINTHICK_SMALLGAP)
 
     @property
     def line_thin_thick_medium_gap(self) -> Side:
         """Gets instance with double border line with a thin line outside and a thick line inside separated by a medium gap."""
-        cp = self.copy()
-        cp.prop_line = BorderLineStyleEnum.THINTHICK_MEDIUMGAP
-        return cp
+        return self.fmt_style(BorderLineStyleEnum.THINTHICK_MEDIUMGAP)
 
     @property
     def line_thin_thick_large_gap(self) -> Side:
         """Gets instance with double border line with a thin line outside and a thick line inside separated by a large gap."""
-        cp = self.copy()
-        cp.prop_line = BorderLineStyleEnum.THINTHICK_LARGEGAP
-        return cp
+        return self.fmt_style(BorderLineStyleEnum.THINTHICK_LARGEGAP)
 
     @property
     def line_thick_thin_small_gap(self) -> Side:
         """Gets instance with double border line with a thick line outside and a thin line inside separated by a small gap."""
-        cp = self.copy()
-        cp.prop_line = BorderLineStyleEnum.THICKTHIN_SMALLGAP
-        return cp
+        return self.fmt_style(BorderLineStyleEnum.THICKTHIN_SMALLGAP)
 
     @property
     def line_thick_thin_medium_gap(self) -> Side:
         """Gets instance with double border line with a thick line outside and a thin line inside separated by a medium gap."""
-        cp = self.copy()
-        cp.prop_line = BorderLineStyleEnum.THICKTHIN_MEDIUMGAP
-        return cp
+        return self.fmt_style(BorderLineStyleEnum.THICKTHIN_MEDIUMGAP)
 
     @property
     def line_thick_thin_large_gap(self) -> Side:
         """Gets instance with double border line with a thick line outside and a thin line inside separated by a large gap."""
-        cp = self.copy()
-        cp.prop_line = BorderLineStyleEnum.THICKTHIN_LARGEGAP
-        return cp
+        return self.fmt_style(BorderLineStyleEnum.THICKTHIN_LARGEGAP)
 
     @property
     def line_embossed(self) -> Side:
         """Gets instance with 3D embossed border line."""
-        cp = self.copy()
-        cp.prop_line = BorderLineStyleEnum.EMBOSSED
-        return cp
+        return self.fmt_style(BorderLineStyleEnum.EMBOSSED)
 
     @property
     def line_engraved(self) -> Side:
         """Gets instance with 3D engraved border line."""
-        cp = self.copy()
-        cp.prop_line = BorderLineStyleEnum.ENGRAVED
-        return cp
+        return self.fmt_style(BorderLineStyleEnum.ENGRAVED)
 
     @property
     def line_outset(self) -> Side:
         """Gets instance with outset border line."""
-        cp = self.copy()
-        cp.prop_line = BorderLineStyleEnum.OUTSET
-        return cp
+        return self.fmt_style(BorderLineStyleEnum.OUTSET)
 
     @property
     def line_inset(self) -> Side:
         """Gets instance with inset border line."""
-        cp = self.copy()
-        cp.prop_line = BorderLineStyleEnum.INSET
-        return cp
+        return self.fmt_style(BorderLineStyleEnum.INSET)
 
     @property
     def line_fine_dashed(self) -> Side:
         """Gets instance with finely dashed border line."""
-        cp = self.copy()
-        cp.prop_line = BorderLineStyleEnum.FINE_DASHED
-        return cp
+        return self.fmt_style(BorderLineStyleEnum.FINE_DASHED)
 
     @property
     def line_double_thin(self) -> Side:
         """Gets instance with Double border line consisting of two fixed thin lines separated by a variable gap."""
-        cp = self.copy()
-        cp.prop_line = BorderLineStyleEnum.DOUBLE_THIN
-        return cp
+        return self.fmt_style(BorderLineStyleEnum.DOUBLE_THIN)
 
     @property
     def line_dash_dot(self) -> Side:
         """Gets instance with line consisting of a repetition of one dash and one dot."""
-        cp = self.copy()
-        cp.prop_line = BorderLineStyleEnum.DASH_DOT
-        return cp
+        return self.fmt_style(BorderLineStyleEnum.DASH_DOT)
 
     @property
     def line_dash_dot_dot(self) -> Side:
         """Gets instance with line consisting of a repetition of one dash and 2 dots."""
-        cp = self.copy()
-        cp.prop_line = BorderLineStyleEnum.DASH_DOT_DOT
-        return cp
-
-    @property
-    def line_border_line_style_max(self) -> Side:
-        """Gets instance with maximum valid border line style value."""
-        cp = self.copy()
-        cp.prop_line = BorderLineStyleEnum.BORDER_LINE_STYLE_MAX
-        return cp
+        return self.fmt_style(BorderLineStyleEnum.DASH_DOT_DOT)
 
     # endregion Style Properties
     # region properties
@@ -471,6 +557,7 @@ class Side(StyleBase):
     @prop_line.setter
     def prop_line(self, value: BorderLineStyleEnum) -> None:
         self._set("LineStyle", value.value)
+        self._set_line_values(self._pts, value)
 
     @property
     def prop_color(self) -> Color:
@@ -480,20 +567,6 @@ class Side(StyleBase):
     @prop_color.setter
     def prop_color(self, value: Color) -> None:
         self._set("Color", value)
-
-    @property
-    def prop_distance(self) -> float:
-        """
-        Gets/Sets the distance between the inner and outer parts of a double line (in mm units). Defalut ``0.0``
-        """
-        pv = cast(int, self._get("LineDistance"))
-        if pv == 0:
-            return 0.0
-        return float(pv / 100)
-
-    @prop_distance.setter
-    def prop_distance(self, value: float):
-        self._set("LineDistance", round(value, *100))
 
     @property
     def prop_width(self) -> float:
@@ -506,29 +579,6 @@ class Side(StyleBase):
         pv = cast(int, self._get("LineWidth"))
         if pv == 0:
             return 0.0
-        return float(pv / POINT_RATIO)
-
-    @prop_width.setter
-    def prop_width(self, value: float) -> None:
-        i = round(value, *POINT_RATIO)
-        self._set("LineWidth", i)
-        self._set("OuterLineWidth", i)
-
-    @property
-    def prop_width_inner(self) -> float:
-        """
-        Gets Border Line Inner Width.
-
-        Contains the width of the inner part of a double line (in mm units).
-        If this value is zero, no line is drawn.
-        """
-        pv = cast(int, self._get("InnerLineWidth"))
-        if pv == 0:
-            return 0.0
-        return float(pv / POINT_RATIO)
-
-    @prop_width_inner.setter
-    def prop_width_inner(self, value: float) -> None:
-        self._set("InnerLineWidth", round(value, *POINT_RATIO))
+        return UnitConvert.convert(num=pv, frm=Length.MM100, to=Length.PT)
 
     # endregion properties

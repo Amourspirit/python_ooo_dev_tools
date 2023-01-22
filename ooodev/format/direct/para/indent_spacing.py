@@ -7,12 +7,13 @@ from __future__ import annotations
 from typing import Tuple
 from numbers import Real
 
+from ....exceptions import ex as mEx
 from ....meta.static_prop import static_prop
-from ...style_base import StyleMulti
 from ...kind.format_kind import FormatKind
+from ...style_base import StyleMulti
 from .indent import Indent
-from .spacing import Spacing
 from .line_spacing import LineSpacing, ModeKind as ModeKind
+from .spacing import Spacing
 
 
 class IndentSpacing(StyleMulti):
@@ -106,22 +107,24 @@ class IndentSpacing(StyleMulti):
             obj (object): UNO object that supports ``com.sun.star.style.ParagraphProperties`` service.
 
         Raises:
-            NotSupportedServiceError: If ``obj`` does not support  ``com.sun.star.style.ParagraphProperties`` service.
+            ServiceNotSupported: If ``obj`` does not support  ``com.sun.star.style.ParagraphProperties`` service.
 
         Returns:
             IndentSpacing: ``IndentSpacing`` instance that represents ``obj`` Indents and spacing.
         """
-        ids = IndentSpacing()
+        inst = IndentSpacing()
+        if not inst._is_valid_obj(obj):
+            raise mEx.ServiceNotSupported(inst._supported_services()[0])
         ls = LineSpacing.from_obj(obj)
         if ls.prop_has_attribs:
-            ids._set_style("line_spacing", ls, *ls.get_attrs())
+            inst._set_style("line_spacing", ls, *ls.get_attrs())
         spc = Spacing.from_obj(obj)
         if spc.prop_has_attribs:
-            ids._set_style("spacing", spc, *spc.get_attrs())
+            inst._set_style("spacing", spc, *spc.get_attrs())
         indent = Indent.from_obj(obj)
         if indent.prop_has_attribs:
-            ids._set_style("indent", indent, *indent.get_attrs())
-        return ids
+            inst._set_style("indent", indent, *indent.get_attrs())
+        return inst
 
     # endregion methods
 

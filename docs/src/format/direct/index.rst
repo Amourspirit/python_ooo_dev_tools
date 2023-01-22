@@ -6,8 +6,9 @@ direct
 .. toctree::
     :titlesonly:
 
+    cell/index
     char/index
+    common/index
     para/index
     fill/index
     structs/index
-    table/index

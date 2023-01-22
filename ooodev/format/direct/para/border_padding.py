@@ -17,9 +17,9 @@ from ..common.abstract_padding import AbstractPadding
 from ..common.border_props import BorderProps
 
 
-class Padding(AbstractPadding):
+class BorderPadding(AbstractPadding):
     """
-    Paragraph Padding
+    Paragraph BorderPadding
 
     Any properties starting with ``prop_`` set or get current instance values.
 
@@ -33,9 +33,9 @@ class Padding(AbstractPadding):
     # region methods
 
     @staticmethod
-    def from_obj(obj: object) -> Padding:
+    def from_obj(obj: object) -> BorderPadding:
         """
-        Gets Padding instance from object
+        Gets BorderPadding instance from object
 
         Args:
             obj (object): UNO object that supports ``com.sun.star.style.ParagraphProperties`` service.
@@ -44,9 +44,9 @@ class Padding(AbstractPadding):
             NotSupportedServiceError: If ``obj`` does not support ``com.sun.star.style.ParagraphProperties`` service.
 
         Returns:
-            Padding: Padding that represents ``obj`` padding.
+            BorderPadding: BorderPadding that represents ``obj`` padding.
         """
-        inst = Padding()
+        inst = BorderPadding()
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedServiceError(inst._supported_services()[0])
 
@@ -67,11 +67,30 @@ class Padding(AbstractPadding):
         """Gets the kind of style"""
         return FormatKind.PARA
 
+    @property
+    def _border(self) -> BorderProps:
+        try:
+            return self.__border_properties
+        except AttributeError:
+            self.__border_properties = BorderProps(
+                left="LeftBorderDistance",
+                top="TopBorderDistance",
+                right="RightBorderDistance",
+                bottom="BottomBorderDistance",
+            )
+        return self.__border_properties
+
     @static_prop
-    def default() -> Padding:  # type: ignore[misc]
-        """Gets Padding default. Static Property."""
-        if Padding._DEFAULT is None:
-            Padding._DEFAULT = Padding(padding_all=0.35)
-        return Padding._DEFAULT
+    def default() -> BorderPadding:  # type: ignore[misc]
+        """Gets BorderPadding default. Static Property."""
+        if BorderPadding._DEFAULT is None:
+            inst = BorderPadding()
+            inst._set(inst._border.bottom, 0)
+            inst._set(inst._border.left, 0)
+            inst._set(inst._border.right, 0)
+            inst._set(inst._border.top, 0)
+            BorderPadding._DEFAULT = inst
+
+        return BorderPadding._DEFAULT
 
     # endregion properties

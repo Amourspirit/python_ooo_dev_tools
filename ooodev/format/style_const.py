@@ -5,5 +5,5 @@ Module for style constants.
 """
 from __future__ import annotations
 
-POINT_RATIO = 35.28
+POINT_RATIO = 35.27777777778
 """point Ratio"""

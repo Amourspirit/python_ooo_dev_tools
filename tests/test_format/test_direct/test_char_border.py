@@ -6,7 +6,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.direct.char.borders import Borders, BorderLineStyleEnum, Side
+from ooodev.format.direct.char.borders import Borders, BorderLineStyleEnum, Side, LineSize
 from ooodev.format import CommonColor
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
@@ -43,22 +43,17 @@ def test_char_borders(loader) -> None:
             overline_color=CommonColor.CHARTREUSE,
             family=FontFamilyEnum.SCRIPT,
         )
-        border = Borders(border_side=Side(color=CommonColor.RED))
+        side = Side(color=CommonColor.RED)
+        border = Borders(border_side=side)
         Write.style_left(cursor=cursor, pos=pos, styles=(border, ft))
         cursor.gotoEnd(False)
         cursor.goLeft(5, True)
         cp = cast("CharacterProperties", cursor)
-        assert cp.CharLeftBorder.Color == CommonColor.RED
-        assert cp.CharLeftBorder.LineWidth == 26
+        assert side == cp.CharLeftBorder
+        assert side == cp.CharRightBorder
+        assert side == cp.CharTopBorder
+        assert side == cp.CharBottomBorder
 
-        assert cp.CharRightBorder.Color == CommonColor.RED
-        assert cp.CharRightBorder.LineWidth == 26
-
-        assert cp.CharTopBorder.Color == CommonColor.RED
-        assert cp.CharTopBorder.LineWidth == 26
-
-        assert cp.CharBottomBorder.Color == CommonColor.RED
-        assert cp.CharBottomBorder.LineWidth == 26
         cursor.gotoEnd(False)
 
         # cursor.goLeft(5, True)
@@ -67,50 +62,36 @@ def test_char_borders(loader) -> None:
         Write.append_para(cursor, " Non-Formatted")
 
         # cursor.ParaStyleName = "Default Paragraph Style"
-        border = Borders(border_side=Side(color=CommonColor.BLUE, width=5.0))
+        side = Side(color=CommonColor.BLUE, width=5.0)
+        border = Borders(border_side=side)
         pos = Write.get_position(cursor)
         Write.append(cursor, "World")
         Write.style_left(cursor=cursor, pos=pos, styles=(border,))
         cp = cast("CharacterProperties", cursor)
         cursor.gotoEnd(False)
         cursor.goLeft(5, True)
-        assert cp.CharLeftBorder.Color == CommonColor.BLUE
-        assert cp.CharLeftBorder.LineWidth == 176
+        assert side == cp.CharLeftBorder
+        assert side == cp.CharRightBorder
+        assert side == cp.CharTopBorder
+        assert side == cp.CharBottomBorder
 
-        assert cp.CharRightBorder.Color == CommonColor.BLUE
-        assert cp.CharRightBorder.LineWidth == 176
-
-        assert cp.CharTopBorder.Color == CommonColor.BLUE
-        assert cp.CharTopBorder.LineWidth == 176
-
-        assert cp.CharBottomBorder.Color == CommonColor.BLUE
-        assert cp.CharBottomBorder.LineWidth == 176
         cursor.gotoEnd(False)
 
         Write.end_paragraph(cursor)
         # reset the paragraph style
         Write.style_left(cursor=cursor, pos=0, prop_name="ParaStyleName", prop_val="Standard")
 
-        border = Borders(border_side=Side(color=CommonColor.DARK_ORANGE, line=BorderLineStyleEnum.DOUBLE, width=1.1))
+        # using 1.05 for this test. LibreOffice chnages 1.1 to 1.05 in  this case.
+        side = Side(color=CommonColor.DARK_ORANGE, line=BorderLineStyleEnum.DOUBLE, width=1.05)
+        border = Borders(border_side=side)
         ft = Font(size=30.0, b=True, i=True, u=True, color=CommonColor.BLUE, underine_color=CommonColor.GREEN)
         Write.append(cursor=cursor, text="Nice Day", styles=(border, ft))
         cursor.gotoEnd(False)
         cursor.goLeft(5, True)
-        assert cp.CharLeftBorder.Color == CommonColor.DARK_ORANGE
-        assert cp.CharLeftBorder.LineWidth == 39
-        assert cp.CharLeftBorder.LineStyle == BorderLineStyleEnum.DOUBLE.value
-
-        assert cp.CharRightBorder.Color == CommonColor.DARK_ORANGE
-        assert cp.CharRightBorder.LineWidth == 39
-        assert cp.CharRightBorder.LineStyle == BorderLineStyleEnum.DOUBLE.value
-
-        assert cp.CharTopBorder.Color == CommonColor.DARK_ORANGE
-        assert cp.CharTopBorder.LineWidth == 39
-        assert cp.CharTopBorder.LineStyle == BorderLineStyleEnum.DOUBLE.value
-
-        assert cp.CharBottomBorder.Color == CommonColor.DARK_ORANGE
-        assert cp.CharBottomBorder.LineWidth == 39
-        assert cp.CharBottomBorder.LineStyle == BorderLineStyleEnum.DOUBLE.value
+        assert side == cp.CharLeftBorder
+        assert side == cp.CharRightBorder
+        assert side == cp.CharTopBorder
+        assert side == cp.CharBottomBorder
         cursor.gotoEnd(False)
 
         Write.end_paragraph(cursor)
@@ -118,25 +99,15 @@ def test_char_borders(loader) -> None:
         Write.style_left(cursor=cursor, pos=0, prop_name="ParaStyleName", prop_val="Standard")
 
         txt = "adding\nmultiple\nlines"
-        Write.append(
-            cursor=cursor,
-            text=txt,
-            styles=(Borders(border_side=Side(color=CommonColor.CADET_BLUE, width=1.3)),),
-        )
+        side = Side(color=CommonColor.CADET_BLUE, width=LineSize.MEDIUM)
+        Write.append(cursor=cursor, text=txt, styles=(Borders(border_side=side),))
 
         cursor.gotoEnd(False)
         cursor.goLeft(len(txt), True)
-        assert cp.CharLeftBorder.Color == CommonColor.CADET_BLUE
-        assert cp.CharLeftBorder.LineWidth == 46
-
-        assert cp.CharRightBorder.Color == CommonColor.CADET_BLUE
-        assert cp.CharRightBorder.LineWidth == 46
-
-        assert cp.CharTopBorder.Color == CommonColor.CADET_BLUE
-        assert cp.CharTopBorder.LineWidth == 46
-
-        assert cp.CharBottomBorder.Color == CommonColor.CADET_BLUE
-        assert cp.CharBottomBorder.LineWidth == 46
+        assert side == cp.CharLeftBorder
+        assert side == cp.CharRightBorder
+        assert side == cp.CharTopBorder
+        assert side == cp.CharBottomBorder
         cursor.gotoEnd(False)
 
         Lo.delay(delay)
