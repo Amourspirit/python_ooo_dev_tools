@@ -8,7 +8,7 @@ from __future__ import annotations
 from typing import cast
 
 import uno
-from ..common.abstract_sides import AbstractSides
+from ..common.abstract_sides import AbstractSides, BorderProps
 from ....exceptions import ex as mEx
 from ...kind.format_kind import FormatKind
 from ..structs.side import Side as Side, BorderLineStyleEnum as BorderLineStyleEnum
@@ -20,7 +20,7 @@ from ooo.dyn.table.border_line2 import BorderLine2
 
 class Sides(AbstractSides):
     """
-    Character Border.
+    Paragraph Border.
 
     Any properties starting with ``prop_`` set or get current instance values.
 
@@ -63,6 +63,16 @@ class Sides(AbstractSides):
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.CHAR
+        return FormatKind.PARA | FormatKind.STATIC
+
+    @property
+    def _border(self) -> BorderProps:
+        try:
+            return self.__border_properties
+        except AttributeError:
+            self.__border_properties = BorderProps(
+                left="LeftBorder", top="TopBorder", right="RightBorder", bottom="BottomBorder"
+            )
+        return self.__border_properties
 
     # endregion Properties

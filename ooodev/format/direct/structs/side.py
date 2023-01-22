@@ -16,6 +16,8 @@ from ....utils.color import CommonColor
 from ...kind.format_kind import FormatKind
 from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent
 from ...style_const import POINT_RATIO
+from ..common import border_width_impl as mBwi
+from ....utils.unit_convert import UnitConvert, Length
 
 import uno
 from ooo.dyn.table.border_line import BorderLine as BorderLine
@@ -108,20 +110,151 @@ class Side(StyleBase):
         if distance < 0.0:
             raise ValueError("distance must be a postivie value")
 
+        lw = round(UnitConvert.convert(num=width, frm=Length.PT, to=Length.MM100))
+
         init_vals = {
             "Color": color,
             "InnerLineWidth": round(width_inner * POINT_RATIO),
             "LineDistance": round(distance * 100),
             "LineStyle": line.value,
-            "LineWidth": round(width * POINT_RATIO),
+            "LineWidth": lw,
             "OuterLineWidth": round(width * POINT_RATIO),
         }
 
         super().__init__(**init_vals)
+        self._set_line_values(width=width, line=line)
+
+    def _set_line_values(self, width: int, line: BorderLineStyleEnum) -> None:
+        twips = UnitConvert.to_twips(width, Length.PT)
+        val_keys = ("OuterLineWidth", "InnerLineWidth", "LineDistance")
+
+        def set_vals(inner: int, outer: int, dist: int) -> None:
+            self._set("InnerLineWidth", inner)
+            self._set("LineDistance", dist)
+            self._set("OuterLineWidth", outer)
+
+        single_lns = (
+            BorderLineStyleEnum.SOLID,
+            BorderLineStyleEnum.DOTTED,
+            BorderLineStyleEnum.DASHED,
+            BorderLineStyleEnum.FINE_DASHED,
+            BorderLineStyleEnum.DASH_DOT,
+            BorderLineStyleEnum.DASH_DOT_DOT,
+        )
+        en_em = (BorderLineStyleEnum.ENGRAVED, BorderLineStyleEnum.EMBOSSED)
+        vals = None
+        if line in single_lns:
+            flags = mBwi.BorderWidthImplFlags.CHANGE_LINE1
+            bw = mBwi.BorderWidthImpl(nFlags=flags, nRate1=1.0, nRate2=0.0, nRateGap=0.0)
+            vals = (bw.get_line1(twips), bw.get_line2(twips), bw.get_gap(twips))
+
+        elif line == BorderLineStyleEnum.DOUBLE:
+            flags = (
+                mBwi.BorderWidthImplFlags.CHANGE_DIST
+                | mBwi.BorderWidthImplFlags.CHANGE_LINE1
+                | mBwi.BorderWidthImplFlags.CHANGE_LINE2
+            )
+            bw = mBwi.BorderWidthImpl(nFlags=flags, nRate1=1 / 3, nRate2=1 / 3, nRateGap=1 / 3)
+            vals = (bw.get_line1(twips), bw.get_line2(twips), bw.get_gap(twips))
+
+        elif line == BorderLineStyleEnum.DOUBLE_THIN:
+            flags = mBwi.BorderWidthImplFlags.CHANGE_DIST
+            bw = mBwi.BorderWidthImpl(nFlags=flags, nRate1=10.0, nRate2=10.0, nRateGap=1.0)
+            vals = (bw.get_line1(twips), bw.get_line2(twips), bw.get_gap(twips))
+
+        elif line == BorderLineStyleEnum.THINTHICK_SMALLGAP:
+            flags = mBwi.BorderWidthImplFlags.CHANGE_LINE1
+            bw = mBwi.BorderWidthImpl(
+                nFlags=flags, nRate1=1.0, nRate2=mBwi.THINTHICK_SMALLGAP_LINE2, nRateGap=mBwi.THINTHICK_SMALLGAP_GAP
+            )
+            vals = (bw.get_line1(twips), bw.get_line2(twips), bw.get_gap(twips))
+
+        elif line == BorderLineStyleEnum.THINTHICK_MEDIUMGAP:
+            flags = (
+                mBwi.BorderWidthImplFlags.CHANGE_DIST
+                | mBwi.BorderWidthImplFlags.CHANGE_LINE1
+                | mBwi.BorderWidthImplFlags.CHANGE_LINE2
+            )
+            bw = mBwi.BorderWidthImpl(nFlags=flags, nRate1=0.5, nRate2=0.25, nRateGap=0.25)
+            vals = (bw.get_line1(twips), bw.get_line2(twips), bw.get_gap(twips))
+
+        elif line == BorderLineStyleEnum.THINTHICK_LARGEGAP:
+            flags = mBwi.BorderWidthImplFlags.CHANGE_DIST
+            bw = mBwi.BorderWidthImpl(
+                nFlags=flags, nRate1=mBwi.THINTHICK_LARGEGAP_LINE1, nRate2=mBwi.THINTHICK_LARGEGAP_LINE2, nRateGap=1.0
+            )
+            vals = (bw.get_line1(twips), bw.get_line2(twips), bw.get_gap(twips))
+
+        elif line == BorderLineStyleEnum.THICKTHIN_SMALLGAP:
+            flags = mBwi.BorderWidthImplFlags.CHANGE_LINE2
+            bw = mBwi.BorderWidthImpl(
+                nFlags=flags, nRate1=mBwi.THICKTHIN_SMALLGAP_LINE1, nRate2=1.0, nRateGap=mBwi.THICKTHIN_SMALLGAP_GAP
+            )
+            vals = (bw.get_line1(twips), bw.get_line2(twips), bw.get_gap(twips))
+
+        elif line == BorderLineStyleEnum.THICKTHIN_MEDIUMGAP:
+            flags = (
+                mBwi.BorderWidthImplFlags.CHANGE_DIST
+                | mBwi.BorderWidthImplFlags.CHANGE_LINE1
+                | mBwi.BorderWidthImplFlags.CHANGE_LINE2
+            )
+            bw = mBwi.BorderWidthImpl(nFlags=flags, nRate1=0.25, nRate2=0.5, nRateGap=0.25)
+            vals = (bw.get_line1(twips), bw.get_line2(twips), bw.get_gap(twips))
+
+        elif line == BorderLineStyleEnum.THICKTHIN_LARGEGAP:
+            flags = mBwi.BorderWidthImplFlags.CHANGE_DIST
+            bw = mBwi.BorderWidthImpl(
+                nFlags=flags, nRate1=mBwi.THICKTHIN_LARGEGAP_LINE1, nRate2=mBwi.THICKTHIN_LARGEGAP_LINE2, nRateGap=1.0
+            )
+            vals = (bw.get_line1(twips), bw.get_line2(twips), bw.get_gap(twips))
+
+        elif line in en_em:
+            # Word compat: the lines widths are exactly following this rule, should be:
+            # 0.75pt up to 3pt and then 3pt
+            flags = (
+                mBwi.BorderWidthImplFlags.CHANGE_DIST
+                | mBwi.BorderWidthImplFlags.CHANGE_LINE1
+                | mBwi.BorderWidthImplFlags.CHANGE_LINE2
+            )
+            bw = mBwi.BorderWidthImpl(nFlags=flags, nRate1=0.25, nRate2=0.25, nRateGap=0.5)
+            vals = (bw.get_line1(twips), bw.get_line2(twips), bw.get_gap(twips))
+
+        elif line == BorderLineStyleEnum.OUTSET:
+            flags = flags = mBwi.BorderWidthImplFlags.CHANGE_DIST | mBwi.BorderWidthImplFlags.CHANGE_LINE2
+            bw = mBwi.BorderWidthImpl(nFlags=flags, nRate1=mBwi.OUTSET_LINE1, nRate2=0.5, nRateGap=0.5)
+            vals = (bw.get_line1(twips), bw.get_line2(twips), bw.get_gap(twips))
+
+        elif line == BorderLineStyleEnum.INSET:
+            flags = flags = mBwi.BorderWidthImplFlags.CHANGE_DIST | mBwi.BorderWidthImplFlags.CHANGE_LINE1
+            bw = mBwi.BorderWidthImpl(nFlags=flags, nRate1=0.5, nRate2=mBwi.INSET_LINE2, nRateGap=0.5)
+            vals = (bw.get_line1(twips), bw.get_line2(twips), bw.get_gap(twips))
+
+        if vals:
+            for key, value in zip(val_keys, vals):
+                val = round(UnitConvert.convert_twip_mm100(value))
+                self._set(key, val)
 
     # endregion init
 
     # region methods
+    def __eq__(self, other: object) -> bool:
+        bl2: BorderLine2 = None
+        if isinstance(other, Side):
+            bl2 = other.get_border_line2()
+        elif getattr(other, "typeName", None) == "com.sun.star.table.BorderLine2":
+            bl2 = other
+        if bl2:
+            bl1 = self.get_border_line2()
+            return (
+                bl1.Color == bl2.Color
+                and bl1.InnerLineWidth == bl2.InnerLineWidth
+                and bl1.LineDistance == bl2.LineDistance
+                and bl1.LineStyle == bl2.LineStyle
+                and bl1.LineWidth == bl2.LineWidth
+                and bl1.OuterLineWidth == bl2.OuterLineWidth
+            )
+        return False
+
     def _supported_services(self) -> Tuple[str, ...]:
         return ()
 

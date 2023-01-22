@@ -5,15 +5,15 @@ Module for Shadow format (``ShadowFormat``) struct.
 """
 # region imports
 from __future__ import annotations
-from typing import Tuple, cast, overload
+from typing import Dict, Tuple, cast, overload
 
 from ....events.event_singleton import _Events
 from ....meta.static_prop import static_prop
 from ....utils import props as mProps
 from ....utils.color import Color
 from ....utils.color import CommonColor
-from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent
 from ...kind.format_kind import FormatKind
+from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent
 
 import uno
 from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
@@ -69,6 +69,21 @@ class Shadow(StyleBase):
     # endregion init
 
     # region methods
+    def __eq__(self, other: object) -> bool:
+        s2: ShadowFormat = None
+        if isinstance(other, Shadow):
+            s2 = other.get_shadow_format()
+        elif getattr(other, "typeName", None) == "com.sun.star.table.ShadowFormat":
+            s2 = other
+        if s2:
+            s1 = self.get_shadow_format()
+            return (
+                s1.Color == s2.Color
+                and s1.IsTransparent == s2.IsTransparent
+                and s1.Location == s2.Location
+                and s1.ShadowWidth == s2.ShadowWidth
+            )
+        return False
 
     def get_shadow_format(self) -> ShadowFormat:
         """
@@ -93,12 +108,18 @@ class Shadow(StyleBase):
     def apply(self, obj: object) -> None:
         ...
 
+    @overload
+    def apply(self, obj: object, keys: Dict[str, str]) -> None:
+        ...
+
     def apply(self, obj: object, **kwargs) -> None:
         """
         Applies style to object
 
         Args:
             obj (object): Object that contains a ``ShadowFormat`` property.
+            keys: (Dict[str, str], optional): key map for properties.
+                Can be ``prop`` which defaults to ``ShadowFormat``.
 
         :events:
             .. cssclass:: lo_event
@@ -109,6 +130,10 @@ class Shadow(StyleBase):
         Returns:
             None:
         """
+        keys = {"prop": "ShadowFormat"}
+        if "keys" in kwargs:
+            keys.update(kwargs["keys"])
+
         cargs = CancelEventArgs(source=f"{self.apply.__qualname__}")
         cargs.event_data = self
         self.on_applying(cargs)
@@ -119,12 +144,53 @@ class Shadow(StyleBase):
             return
 
         shadow = self.get_shadow_format()
-        mProps.Props.set(obj, ShadowFormat=shadow)
+        mProps.Props.set(obj, **{keys["prop"]: shadow})
         eargs = EventArgs.from_args(cargs)
         self.on_applied(eargs)
         _Events().trigger(FormatNamedEvent.STYLE_APPLIED, eargs)
 
     # endregion apply()
+
+    @staticmethod
+    def from_obj(obj: object, prop_name: str) -> Shadow:
+        """
+        Gets instance from object
+
+        Args:
+            obj (object): UNO object
+            prop_name (str): Name of property that has a ``ShadowFormat`` value.
+
+        Returns:
+            Shadow: Instance from object
+        """
+        inst = Shadow.empty.copy()
+
+        shadow = cast(ShadowFormat, mProps.Props.get(obj, prop_name))
+        if shadow is None:
+            return inst
+        inst._set("Location", shadow.Location)
+        inst._set("Color", shadow.Color)
+        inst._set("IsTransparent", shadow.IsTransparent)
+        inst._set("ShadowWidth", shadow.ShadowWidth)
+        return inst
+
+    @staticmethod
+    def from_shadow(shadow: ShadowFormat) -> Shadow:
+        """
+        Gets an instance
+
+        Args:
+            shadow (ShadowFormat): Shadow Format
+
+        Returns:
+            Shadow: Instance representing ``shadow``.
+        """
+        inst = Shadow.empty.copy()
+        inst._set("Location", shadow.Location)
+        inst._set("Color", shadow.Color)
+        inst._set("IsTransparent", shadow.IsTransparent)
+        inst._set("ShadowWidth", shadow.ShadowWidth)
+        return inst
 
     # endregion methods
 

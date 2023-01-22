@@ -463,6 +463,65 @@ class StyleMulti(StyleBase):
                     attrs.update(args.attrs)
         return tuple(attrs)
 
+    def backup(self, obj: object) -> None:
+        """
+        Backs up Attriubes that are to be changed by apply.
+
+        If used method should be called before apply.
+
+        Args:
+            obj (object): Object to backup properties from.
+
+        Returns:
+            None:
+
+        See Also:
+            :py:meth:`~.style_base.StyleMulti.restore`
+        """
+        if not self._is_valid_obj(obj):
+            self._print_no_required_service("Backup")
+            return
+        super().backup(obj)
+        for _, info in self._styles.items():
+            style, _ = info
+            style.backup(obj)
+
+    def restore(self, obj: object, clear: bool = False) -> None:
+        """
+        Restores ``obj`` properties from backed up setting if any exist.
+
+        Restore can only be effective if ``backup()`` has be run before calling this method.
+
+        Args:
+            obj (object): Object to restore properties on.
+            clear (bool): Determines if backup is cleared after resore. Default ``False``
+
+        Returns:
+            None:
+
+        See Also:
+            :py:meth:`~.style_base.StyleMulti.backup`
+        """
+        super().restore(obj=obj, clear=clear)
+        for _, info in self._styles.items():
+            style, _ = info
+            style.restore(obj=obj, clear=clear)
+
+    @property
+    def prop_has_backup(self) -> bool:
+        """Gets If instantance or any added style has backup data set."""
+        result = False
+        for _, info in self._styles.items():
+            style, _ = info
+            if style.prop_has_backup:
+                result = True
+                break
+        if result:
+            return True
+        if self._dv_bak is None:
+            return False
+        return len(self._dv_bak) > 0
+
 
 def _on_props_setting(source: Any, event_args: KeyValCancelArgs, *args, **kwargs) -> None:
     instance = cast(StyleBase, event_args.event_source)

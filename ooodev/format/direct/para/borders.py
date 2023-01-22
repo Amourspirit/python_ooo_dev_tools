@@ -8,21 +8,17 @@ from __future__ import annotations
 from typing import Tuple, overload
 
 import uno
+
 from ....exceptions import ex as mEx
 from ....meta.static_prop import static_prop
 from ....utils import lo as mLo
-from ...style_base import StyleMulti
-
-from ..structs import side
-from ..structs import shadow
-from ..structs import border_table
-from . import padding
-from ..structs.side import Side as Side, SideFlags as SideFlags
-from ..structs.shadow import Shadow
-from .padding import Padding as Padding
-from . import sides
-from .sides import Sides
+from ....utils import props as mProps
 from ...kind.format_kind import FormatKind
+from ...style_base import StyleMulti
+from ..structs.shadow import Shadow
+from ..structs.side import Side as Side, SideFlags as SideFlags
+from .border_padding import BorderPadding as BorderPadding
+from .sides import Sides
 
 from ooo.dyn.table.border_line import BorderLine as BorderLine
 from ooo.dyn.table.border_line_style import BorderLineStyleEnum as BorderLineStyleEnum
@@ -44,7 +40,6 @@ class Borders(StyleMulti):
     """
 
     _DEFAULT = None
-    _EMPTY = None
 
     # region init
 
@@ -57,24 +52,23 @@ class Borders(StyleMulti):
         bottom: Side | None = None,
         border_side: Side | None = None,
         shadow: Shadow | None = None,
-        padding: Padding | None = None,
+        padding: BorderPadding | None = None,
+        merge: bool | None = None,
     ) -> None:
         """
         Constructor
 
         Args:
-            left (Side | None, optional): Determines the line style at the left edge.
-            right (Side | None, optional): Determines the line style at the right edge.
-            top (Side | None, optional): Determines the line style at the top edge.
-            bottom (Side | None, optional): Determines the line style at the bottom edge.
-            border_side (Side | None, optional): Determines the line style at the top, bottom, left, right edges. If this argument has a value then arguments ``top``, ``bottom``, ``left``, ``right`` are ignored
-            shadow (Shadow | None, optional): Character Shadow
-            padding (Padding | None, optional): Character padding
+            left (Side, None, optional): Determines the line style at the left edge.
+            right (Side, None, optional): Determines the line style at the right edge.
+            top (Side, None, optional): Determines the line style at the top edge.
+            bottom (Side, None, optional): Determines the line style at the bottom edge.
+            border_side (Side, None, optional): Determines the line style at the top, bottom, left, right edges. If this argument has a value then arguments ``top``, ``bottom``, ``left``, ``right`` are ignored
+            shadow (Shadow, None, optional): Character Shadow
+            padding (BorderPadding, None, optional): Character padding
+            merge (bool, None, optional): Merge with next paragraph
         """
         init_vals = {}
-
-        if not shadow is None:
-            init_vals["CharShadowFormat"] = shadow.get_shadow_format()
 
         sides = Sides(
             left=left,
@@ -84,12 +78,21 @@ class Borders(StyleMulti):
             border_side=border_side,
         )
 
+        if not merge is None:
+            init_vals["ParaIsConnectBorder"] = merge
+
+        if not padding is None:
+            # BorderDistance is set to padding bottom for some reason.
+            init_vals["BorderDistance"] = padding._get(padding._border.bottom)
+
         super().__init__(**init_vals)
 
         if sides.prop_has_attribs:
             self._set_style("sides", sides, *sides.get_attrs())
         if not padding is None:
             self._set_style("padding", padding, *padding.get_attrs())
+        if not shadow is None:
+            self._set_style("shadow", shadow, "ParaShadowFormat", keys={"prop": "ParaShadowFormat"})
 
     # endregion init
 
@@ -219,12 +222,12 @@ class Borders(StyleMulti):
             cp._set("CharShadowFormat", value.get_shadow_format())
         return cp
 
-    def fmt_padding(self, value: Padding | None) -> Borders:
+    def fmt_padding(self, value: BorderPadding | None) -> Borders:
         """
         Gets copy of instance with padding set or removed
 
         Args:
-            value (Padding | None): Padding value
+            value (BorderPadding | None): Padding value
 
         Returns:
             Borders: Borders instance
@@ -269,32 +272,48 @@ class Borders(StyleMulti):
                 mLo.Lo.print(f"  {err}")
 
     # endregion apply()
+
+    @staticmethod
+    def from_obj(obj: object) -> Borders:
+        """
+        Gets instance from object
+
+        Args:
+            obj (object): UNO object that supports ``com.sun.star.style.ParagraphProperties`` service.
+
+        Raises:
+            ServiceNotSupported: If ``obj`` does not support  ``com.sun.star.style.ParagraphProperties`` service.
+
+        Returns:
+            Borders: ``Borders`` instance that represents the ``obj`` borders.
+        """
+        inst = Borders()
+        if not inst._is_valid_obj(obj):
+            raise mEx.ServiceNotSupported(inst._supported_services()[0])
+        inst_sides = Sides.from_obj(obj)
+        inst_padding = BorderPadding.from_obj(obj)
+        inst_shadow = Shadow.from_obj(obj, "ParaShadowFormat")
+        inst._set("ParaIsConnectBorder", mProps.Props.get(obj, "ParaIsConnectBorder"))
+        inst._set_style("sides", inst_sides, *inst_sides.get_attrs())
+        inst._set_style("padding", inst_padding, *inst_padding.get_attrs())
+        inst._set_style("shadow", inst_shadow, "ParaShadowFormat", keys={"prop": "ParaShadowFormat"})
+        return inst
+
     # endregion methods
 
     # region Properties
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.CHAR
+        return FormatKind.PARA | FormatKind.STATIC
 
     @static_prop
     def default() -> Borders:  # type: ignore[misc]
         """Gets Default Border. Static Property"""
         if Borders._DEFAULT is None:
-            Borders._DEFAULT = Borders(border_side=Side.empty, padding=Padding.default, shadow=Shadow.empty)
-        return Borders._DEFAULT
-
-    @static_prop
-    def empty() -> Borders:  # type: ignore[misc]
-        """Gets Empty Border. Static Property. When style is applied formatting is removed."""
-        if Borders._EMPTY is None:
-            Borders._EMPTY = Borders(
-                border_side=Side.empty,
-                vertical=Side.empty,
-                horizontal=Side.empty,
-                shadow=Shadow.empty,
-                padding=Padding.default,
+            Borders._DEFAULT = Borders(
+                border_side=Side.empty, padding=BorderPadding.default, shadow=Shadow.empty, merge=True
             )
-        return cls._EMPTY
+        return Borders._DEFAULT
 
     # endregion Properties
