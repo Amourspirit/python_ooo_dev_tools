@@ -576,9 +576,6 @@ class Side(StyleBase):
         Contains the width of a single line or the width of outer part of a double line (in mm units).
         If this value is zero, no line is drawn.
         """
-        pv = cast(int, self._get("LineWidth"))
-        if pv == 0:
-            return 0.0
-        return UnitConvert.convert(num=pv, frm=Length.MM100, to=Length.PT)
+        return self._pts
 
     # endregion properties

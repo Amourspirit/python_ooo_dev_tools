@@ -1,9 +1,9 @@
 .. _format_direct_struct_side:
 
-Class Side
-==========
+Module side
+===========
 
-.. autoclass:: ooodev.format.direct.structs.side.Side
+.. automodule:: ooodev.format.direct.structs.side
     :members:
     :inherited-members:
     :undoc-members:
