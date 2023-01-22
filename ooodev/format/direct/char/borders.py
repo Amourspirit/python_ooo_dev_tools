@@ -17,11 +17,12 @@ from ..structs import side
 from ..structs import shadow
 from ..structs import border_table
 from . import padding
-from ..structs.side import Side as Side, SideFlags as SideFlags
+from ..structs.side import Side as Side, SideFlags as SideFlags, LineSize as LineSize
 from ..structs.shadow import Shadow
 from .padding import Padding as Padding
 from . import sides
 from .sides import Sides
+
 from ...kind.format_kind import FormatKind
 
 from ooo.dyn.table.border_line import BorderLine as BorderLine

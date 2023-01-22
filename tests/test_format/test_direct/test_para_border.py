@@ -6,7 +6,15 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.direct.para.borders import Borders, Side, BorderLineStyleEnum, Shadow, ShadowLocation, BorderPadding
+from ooodev.format.direct.para.borders import (
+    Borders,
+    Side,
+    BorderLineStyleEnum,
+    Shadow,
+    ShadowLocation,
+    BorderPadding,
+    LineSize,
+)
 from ooodev.format import CommonColor
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
@@ -57,7 +65,7 @@ def test_write(loader, para_text) -> None:
         cursor.gotoEnd(False)
         Borders.default.apply(cursor)
 
-        side = Side(line=BorderLineStyleEnum.DOUBLE_THIN, color=CommonColor.DARK_RED, width=1.5)
+        side = Side(line=BorderLineStyleEnum.DOUBLE_THIN, color=CommonColor.DARK_RED, width=LineSize.MEDIUM)
         bdr = Borders(border_side=side, merge=False)
         Write.append_para(cursor=cursor, text=para_text, styles=(bdr,))
         cursor.goLeft(p_len + 1, False)

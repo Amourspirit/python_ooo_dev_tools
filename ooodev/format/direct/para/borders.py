@@ -19,6 +19,7 @@ from ..structs.shadow import Shadow
 from ..structs.side import Side as Side, SideFlags as SideFlags
 from .border_padding import BorderPadding as BorderPadding
 from .sides import Sides
+from ..structs.side import LineSize as LineSize
 
 from ooo.dyn.table.border_line import BorderLine as BorderLine
 from ooo.dyn.table.border_line_style import BorderLineStyleEnum as BorderLineStyleEnum

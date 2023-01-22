@@ -1,3 +1,8 @@
+"""
+Module for converting between different units.
+
+.. versionadded:: 0.9.0
+"""
 from __future__ import annotations
 from typing import List, Tuple, TypeVar, NamedTuple, overload
 from enum import IntEnum
