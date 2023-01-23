@@ -11,11 +11,12 @@ import uno
 from ....events.event_singleton import _Events
 from ....exceptions import ex as mEx
 from ....utils import props as mProps
+from ....utils.type_var import T
+from ....utils.unit_convert import UnitConvert, Length
 from ...kind.format_kind import FormatKind
 from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent
-from .side import Side as Side
 from ..common.border_table_props import BorderTableProps, PropPair
-from ....utils.unit_convert import UnitConvert, Length
+from .side import Side as Side
 
 from ooo.dyn.table.table_border import TableBorder
 from ooo.dyn.table.table_border2 import TableBorder2
@@ -114,6 +115,13 @@ class BorderTable(StyleBase):
 
     def _get_property_name(self) -> str:
         return "TableBorder2"
+
+    def copy(self: T) -> T:
+        nu = super(BorderTable, self.__class__).__new__(self.__class__)
+        nu.__init__()
+        if self._dv:
+            nu._update(self._dv)
+        return nu
 
     # region apply()
 
@@ -214,10 +222,10 @@ class BorderTable(StyleBase):
         Gets instance from object properties
 
         Args:
-            obj (object): UNO object that has a ``TableBorder2`` property
+            obj (object): UNO object
 
         Raises:
-            PropertyNotFoundError: If ``obj`` does not have ``TableBorder2`` property.
+            PropertyNotFoundError: If ``obj`` does not have required property.
 
         Returns:
             BorderTable: Border Table.

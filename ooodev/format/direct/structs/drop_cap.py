@@ -9,9 +9,9 @@ from typing import Dict, Tuple, cast, overload
 import uno
 from ....events.event_singleton import _Events
 from ....exceptions import ex as mEx
-from ....utils import info as mInfo
 from ....utils import props as mProps
 from ....utils.data_type.byte import Byte
+from ....utils.type_var import T
 from ...kind.format_kind import FormatKind
 from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent
 
@@ -63,12 +63,26 @@ class DropCap(StyleBase):
     # region methods
     def _supported_services(self) -> Tuple[str, ...]:
         """
-        Gets a tuple of supported services (``com.sun.star.style.ParagraphProperties``,)
+        Gets a tuple of supported services.
+        This is an empty value for this class but may be different for child classes.
 
         Returns:
             Tuple[str, ...]: Supported services
         """
-        return ("com.sun.star.style.ParagraphProperties",)
+        return ()
+
+    def _get_property_name(self) -> str:
+        return "DropCapFormat"
+
+    def copy(self: T) -> T:
+        nu = super(DropCap, self.__class__).__new__(self.__class__)
+        nu.__init__()
+        if self._dv:
+            nu._update(self._dv)
+        return nu
+
+    def get_attrs(self) -> Tuple[str, ...]:
+        return (self._get_property_name(),)
 
     # region apply()
     @overload
@@ -99,6 +113,11 @@ class DropCap(StyleBase):
         Returns:
             None:
         """
+        if not self._is_valid_obj(obj):
+            # will not apply on this class but may apply on child classes
+            self._print_not_valid_obj("apply()")
+            return
+
         cargs = CancelEventArgs(source=f"{self.apply.__qualname__}")
         cargs.event_data = self
         self.on_applying(cargs)
@@ -107,10 +126,8 @@ class DropCap(StyleBase):
         _Events().trigger(FormatNamedEvent.STYLE_APPLYING, cargs)
         if cargs.cancel:
             return
-        if not self._is_valid_obj(obj):
-            raise mEx.NotSupportedServiceError(self._supported_services()[0])
 
-        keys = {"prop": "DropCapFormat"}
+        keys = {"prop": self._get_property_name()}
         if "keys" in kwargs:
             keys.update(kwargs["keys"])
         key = keys["prop"]
@@ -123,9 +140,6 @@ class DropCap(StyleBase):
         # mProps.Props.set(obj, **{key: tuple(tss_lst)})
 
     # endregion apply()
-
-    def get_attrs(self) -> Tuple[str, ...]:
-        return ("DropCapFormat",)
 
     def get_drop_cap_format(self) -> DropCapFormat:
         """
@@ -142,20 +156,24 @@ class DropCap(StyleBase):
         Gets instance from object
 
         Args:
-            obj (object): UNO object that supports ``com.sun.star.style.ParagraphProperties`` service.
+            obj (object): UNO object
 
         Raises:
-            NotSupportedServiceError: If ``obj`` does not support ``com.sun.star.style.ParagraphProperties`` service.
+            PropertyNotFoundError: If ``obj`` does not have required property
 
         Returns:
             DropCap: ``DropCap`` instance that represents ``obj`` Drop cap format properties.
         """
-        if not mInfo.Info.support_service(obj, "com.sun.star.style.ParagraphProperties"):
-            raise mEx.NotSupportedServiceError("com.sun.star.style.ParagraphProperties")
+        # this nu is only used to get Property Name
+        nu = super(DropCap, cls).__new__(cls)
+        nu.__init__()
+        prop_name = nu._get_property_name()
 
-        dcf = cast(DropCapFormat, mProps.Props.get(obj, "DropCapFormat"))
+        dcf = cast(DropCapFormat, mProps.Props.get(obj, prop_name), None)
+        if dcf is None:
+            raise mEx.PropertyNotFoundError(prop_name, f"from_obj() obj as no {prop_name} property")
 
-        return DropCap.from_drop_cap_format(dcf)
+        return cls.from_drop_cap_format(dcf)
 
     @classmethod
     def from_drop_cap_format(cls, dcf: DropCapFormat) -> DropCap:
@@ -168,10 +186,8 @@ class DropCap(StyleBase):
         Returns:
             DropCap: DropCap set with DropCap Stop properties
         """
-        inst = DropCap()
-        inst._set("Count", dcf.Count)
-        inst._set("Distance", dcf.Distance)
-        inst._set("Lines", dcf.Lines)
+        inst = super(DropCap, cls).__new__(cls)
+        inst.__init__(count=dcf.Count, distance=dcf.Distance, lines=dcf.Lines)
         return inst
 
     # endregion methods
@@ -207,7 +223,7 @@ class DropCap(StyleBase):
             DropCap: DropCap instance
         """
         cp = self.copy()
-        cp.prop_cunt = value
+        cp.prop_count = value
         return cp
 
     def fmt_distance(self, value: int) -> DropCap:

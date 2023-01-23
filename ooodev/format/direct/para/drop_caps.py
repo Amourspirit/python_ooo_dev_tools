@@ -1,5 +1,5 @@
 """
-Modele for managing paragraph Drop Caps.
+Module for managing paragraph Drop Caps.
 
 .. versionadded:: 0.9.0
 """
@@ -15,6 +15,30 @@ from ...style_base import StyleMulti
 from ...style.writer.kind.style_char_kind import StyleCharKind as StyleCharKind
 from ..structs.drop_cap import DropCap
 from ....events.args.key_val_cancel_args import KeyValCancelArgs
+
+
+class DropCapFmt(DropCap):
+    """
+    Paragraph Drop Cap
+
+    Any properties starting with ``prop_`` set or get current instance values.
+
+    All methods starting with ``fmt_`` can be used to chain together properties.
+
+    .. versionadded:: 0.9.0
+    """
+
+    def _supported_services(self) -> Tuple[str, ...]:
+        """
+        Gets a tuple of supported services (``com.sun.star.style.ParagraphProperties``,)
+
+        Returns:
+            Tuple[str, ...]: Supported services
+        """
+        return ("com.sun.star.style.ParagraphProperties",)
+
+    def _get_property_name(self) -> str:
+        return "DropCapFormat"
 
 
 class DropCaps(StyleMulti):
@@ -67,7 +91,7 @@ class DropCaps(StyleMulti):
         # If style is set to a valid Character Style Name
         # then it will be written successfully.
 
-        # if count == -1 then do not include DropCap. only update style
+        # if count == -1 then do not include DropCapFmt. only update style
         # if count = 0 then default to no drop cap values
         if mLo.Lo.bridge_connector.headless:
             mLo.Lo.print("Warning! DropCaps class is not suitable in Headless mode.")
@@ -83,9 +107,9 @@ class DropCaps(StyleMulti):
             style = ""
             init_vars["DropCapWholeWord"] = False
             init_vars["DropCapCharStyleName"] = ""
-            dc = DropCap(0, 0, 0)
+            dc = DropCapFmt(0, 0, 0)
         elif count > 0:
-            dc = DropCap(count, round(spaces * 100), lines)
+            dc = DropCapFmt(count, round(spaces * 100), lines)
             if not whole_word is None:
                 init_vars["DropCapWholeWord"] = whole_word
                 if whole_word:
@@ -144,7 +168,7 @@ class DropCaps(StyleMulti):
             if event_args.value is None or event_args.value == "":
                 event_args.cancel = True
 
-    def _set_style_dc(self, dc: DropCap | None) -> None:
+    def _set_style_dc(self, dc: DropCapFmt | None) -> None:
         if dc is None:
             self._remove_style("drop_cap")
             return
@@ -176,7 +200,7 @@ class DropCaps(StyleMulti):
         inst = DropCaps()
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedServiceError(inst._supported_services()[0])
-        dc = DropCap.from_obj(obj)
+        dc = DropCapFmt.from_obj(obj)
         inst._set_style_dc(dc)
 
         whole_word = cast(bool, mProps.Props.get(obj, "DropCapWholeWord"))
