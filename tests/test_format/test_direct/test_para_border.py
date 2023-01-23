@@ -10,7 +10,7 @@ from ooodev.format.direct.para.borders import (
     Borders,
     Side,
     BorderLineStyleEnum,
-    BorderShadow,
+    ParaShadowFmt,
     ShadowLocation,
     BorderPadding,
     LineSize,
@@ -197,7 +197,7 @@ def test_write(loader, para_text) -> None:
         Borders.default.apply(cursor)
 
         side = Side(line=BorderLineStyleEnum.DOUBLE, color=CommonColor.GREEN)
-        shadow = BorderShadow(location=ShadowLocation.BOTTOM_RIGHT)
+        shadow = ParaShadowFmt(location=ShadowLocation.BOTTOM_RIGHT)
         bdr = Borders(border_side=side, shadow=shadow, merge=True)
         Write.append_para(cursor=cursor, text=para_text, styles=(bdr,))
         cursor.goLeft(p_len + 1, False)
@@ -213,7 +213,7 @@ def test_write(loader, para_text) -> None:
 
         bdr = Borders(
             border_side=Side(line=BorderLineStyleEnum.DOUBLE_THIN, color=CommonColor.BLUE),
-            shadow=BorderShadow(location=ShadowLocation.BOTTOM_RIGHT),
+            shadow=ParaShadowFmt(location=ShadowLocation.BOTTOM_RIGHT),
             padding=BorderPadding(left=2.0, right=1.5, top=3.1, bottom=4.2),
         )
         Write.append_para(cursor=cursor, text=para_text, styles=(bdr,))

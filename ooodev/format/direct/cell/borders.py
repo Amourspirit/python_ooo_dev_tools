@@ -14,15 +14,11 @@ from ....meta.static_prop import static_prop
 from ....utils import lo as mLo
 from ...style_base import StyleMulti
 
-from ..structs import side
-from ..structs import shadow
-from ..structs import border_table
-from ..para import padding
-from ..structs.side import Side as Side, SideFlags as SideFlags
-from ..structs.shadow import Shadow
-from ..structs.border_table import BorderTable as BorderTable
-from ..para.padding import Padding as Padding
 from ...kind.format_kind import FormatKind
+from ..para.padding import Padding as Padding
+from ..structs.border_table import BorderTable
+from ..structs.shadow import Shadow
+from ..structs.side import Side as Side, SideFlags as SideFlags
 
 from ooo.dyn.table.border_line import BorderLine as BorderLine
 from ooo.dyn.table.border_line_style import BorderLineStyleEnum as BorderLineStyleEnum
@@ -30,8 +26,24 @@ from ooo.dyn.table.border_line2 import BorderLine2 as BorderLine2
 from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 
-
 # endregion imports
+
+
+class TblBorder2(BorderTable):
+    """
+    Table Border struct positioning for setting Calc borders.
+
+    Any properties starting with ``prop_`` set or get current instance values.
+
+    All methods starting with ``fmt_`` can be used to chain together Border Table properties.
+    """
+
+    def _get_property_name(self) -> str:
+        return "TableBorder2"
+
+    def _supported_services(self) -> Tuple[str, ...]:
+        # will affect apply() on parent class.
+        return ("com.sun.star.table.CellProperties",)
 
 
 class Borders(StyleMulti):
@@ -92,7 +104,7 @@ class Borders(StyleMulti):
         if not diagonal_up is None:
             init_vals["DiagonalBLTR2"] = diagonal_up.get_border_line2()
 
-        border_table = BorderTable(
+        border_table = TblBorder2(
             left=left,
             right=right,
             top=top,
@@ -163,7 +175,7 @@ class Borders(StyleMulti):
         if cp._border_table is None and value is None:
             return cp
         if cp._border_table is None:
-            cp._border_table = BorderTable(border_side=value)
+            cp._border_table = TblBorder2(border_side=value)
             return cp
         bt = cp._border_table.copy()
         bt.prop_left = value
@@ -187,7 +199,7 @@ class Borders(StyleMulti):
         if cp._border_table is None and value is None:
             return cp
         if cp._border_table is None:
-            cp._border_table = BorderTable(left=value)
+            cp._border_table = TblBorder2(left=value)
             return cp
         bt = cp._border_table.copy()
         bt.prop_left = value
@@ -208,7 +220,7 @@ class Borders(StyleMulti):
         if cp._border_table is None and value is None:
             return cp
         if cp._border_table is None:
-            cp._border_table = BorderTable(right=value)
+            cp._border_table = TblBorder2(right=value)
             return cp
         bt = cp._border_table.copy()
         bt.prop_right = value
@@ -229,7 +241,7 @@ class Borders(StyleMulti):
         if cp._border_table is None and value is None:
             return cp
         if cp._border_table is None:
-            cp._border_table = BorderTable(top=value)
+            cp._border_table = TblBorder2(top=value)
             return cp
         bt = cp._border_table.copy()
         bt.prop_top = value
@@ -250,7 +262,7 @@ class Borders(StyleMulti):
         if cp._border_table is None and value is None:
             return cp
         if cp._border_table is None:
-            cp._border_table = BorderTable(bottom=value)
+            cp._border_table = TblBorder2(bottom=value)
             return cp
         bt = cp._border_table.copy()
         bt.prop_bottom = value
@@ -271,7 +283,7 @@ class Borders(StyleMulti):
         if cp._border_table is None and value is None:
             return cp
         if cp._border_table is None:
-            cp._border_table = BorderTable(horizontal=value)
+            cp._border_table = TblBorder2(horizontal=value)
             return cp
         bt = cp._border_table.copy()
         bt.prop_horizontal = value
@@ -292,7 +304,7 @@ class Borders(StyleMulti):
         if cp._border_table is None and value is None:
             return cp
         if cp._border_table is None:
-            cp._border_table = BorderTable(vertical=value)
+            cp._border_table = TblBorder2(vertical=value)
             return cp
         bt = cp._border_table.copy()
         bt.prop_vertical = value
@@ -313,7 +325,7 @@ class Borders(StyleMulti):
         if cp._border_table is None and value is None:
             return cp
         if cp._border_table is None:
-            cp._border_table = BorderTable(distance=value)
+            cp._border_table = TblBorder2(distance=value)
             return cp
         bt = cp._border_table.copy()
         bt.prop_distance = value

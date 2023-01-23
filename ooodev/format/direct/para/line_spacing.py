@@ -18,7 +18,7 @@ from ..structs.line_spacing import ModeKind as ModeKind
 from ...kind.format_kind import FormatKind
 
 
-class LineSpacingStruct(mLs.LineSpacing):
+class ParaLineSpace(mLs.LineSpacing):
     """Represents a Line spacing Struct for use with paragraphs"""
 
     _DEFAULT = None
@@ -31,11 +31,11 @@ class LineSpacingStruct(mLs.LineSpacing):
         return ("com.sun.star.style.ParagraphProperties",)
 
     @static_prop
-    def default() -> LineSpacingStruct:  # type: ignore[misc]
+    def default() -> ParaLineSpace:  # type: ignore[misc]
         """Gets empty Line Spacing. Static Property."""
-        if LineSpacingStruct._DEFAULT is None:
-            LineSpacingStruct._DEFAULT = LineSpacingStruct(mLs.ModeKind.SINGLE, 0)
-        return LineSpacingStruct._DEFAULT
+        if ParaLineSpace._DEFAULT is None:
+            ParaLineSpace._DEFAULT = ParaLineSpace(mLs.ModeKind.SINGLE, 0)
+        return ParaLineSpace._DEFAULT
 
 
 class LineSpacing(StyleMulti):
@@ -78,7 +78,7 @@ class LineSpacing(StyleMulti):
 
         ls = None
         if not mode is None:
-            ls = LineSpacingStruct(mode=mode, value=value)
+            ls = ParaLineSpace(mode=mode, value=value)
 
         self._mode = mode
         self._value = value
@@ -182,7 +182,7 @@ class LineSpacing(StyleMulti):
         info = self._get_style("line_spacing")
         if info is None:
             return None
-        ls = cast(LineSpacingStruct, info[0])
+        ls = cast(ParaLineSpace, info[0])
         return ls.prop_mode
 
     @property
@@ -191,7 +191,7 @@ class LineSpacing(StyleMulti):
         info = self._get_style("line_spacing")
         if info is None:
             return None
-        ls = cast(LineSpacingStruct, info[0])
+        ls = cast(ParaLineSpace, info[0])
         return ls.prop_value
 
     @static_prop

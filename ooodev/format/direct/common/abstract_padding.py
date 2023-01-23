@@ -75,10 +75,10 @@ class AbstractPadding(StyleBase):
         validate(bottom)
         validate(padding_all)
         if padding_all is None:
-            for key, value in zip(self._border, (left, top, right, bottom)):
+            for key, value in zip(self._props, (left, top, right, bottom)):
                 set_val(key, value)
         else:
-            for key in self._border:
+            for key in self._props:
                 set_val(key, padding_all)
 
         super().__init__(**init_vals)
@@ -209,7 +209,7 @@ class AbstractPadding(StyleBase):
     @property
     def prop_left(self) -> float | None:
         """Gets/Sets paragraph left padding (in mm units)."""
-        pv = cast(int, self._get(self._border.left))
+        pv = cast(int, self._get(self._props.left))
         if pv is None:
             return None
         if pv == 0:
@@ -219,14 +219,14 @@ class AbstractPadding(StyleBase):
     @prop_left.setter
     def prop_left(self, value: float | None):
         if value is None:
-            self._remove(self._border.left)
+            self._remove(self._props.left)
             return
-        self._set(self._border.left, round(value * 100))
+        self._set(self._props.left, round(value * 100))
 
     @property
     def prop_right(self) -> float | None:
         """Gets/Sets paragraph right padding (in mm units)."""
-        pv = cast(int, self._get(self._border.right))
+        pv = cast(int, self._get(self._props.right))
         if pv is None:
             return None
         if pv == 0:
@@ -236,14 +236,14 @@ class AbstractPadding(StyleBase):
     @prop_right.setter
     def prop_right(self, value: float | None):
         if value is None:
-            self._remove(self._border.right)
+            self._remove(self._props.right)
             return
-        self._set(self._border.right, round(value * 100))
+        self._set(self._props.right, round(value * 100))
 
     @property
     def prop_top(self) -> float | None:
         """Gets/Sets paragraph top padding (in mm units)."""
-        pv = cast(int, self._get(self._border.top))
+        pv = cast(int, self._get(self._props.top))
         if pv is None:
             return None
         if pv == 0:
@@ -253,14 +253,14 @@ class AbstractPadding(StyleBase):
     @prop_top.setter
     def prop_top(self, value: float | None):
         if value is None:
-            self._remove(self._border.top)
+            self._remove(self._props.top)
             return
-        self._set(self._border.top, round(value * 100))
+        self._set(self._props.top, round(value * 100))
 
     @property
     def prop_bottom(self) -> float | None:
         """Gets/Sets paragraph bottom padding (in mm units)."""
-        pv = cast(int, self._get(self._border.bottom))
+        pv = cast(int, self._get(self._props.bottom))
         if pv is None:
             return None
         if pv == 0:
@@ -270,12 +270,12 @@ class AbstractPadding(StyleBase):
     @prop_bottom.setter
     def prop_bottom(self, value: float | None):
         if value is None:
-            self._remove(self._border.bottom)
+            self._remove(self._props.bottom)
             return
-        self._set(self._border.bottom, round(value * 100))
+        self._set(self._props.bottom, round(value * 100))
 
     @property
-    def _border(self) -> BorderProps:
+    def _props(self) -> BorderProps:
         try:
             return self.__border_properties
         except AttributeError:

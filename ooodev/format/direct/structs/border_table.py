@@ -8,13 +8,14 @@ from __future__ import annotations
 from typing import Tuple, cast, overload
 
 import uno
-from . import side
 from ....events.event_singleton import _Events
 from ....exceptions import ex as mEx
 from ....utils import props as mProps
 from ...kind.format_kind import FormatKind
 from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent
 from .side import Side as Side
+from ..common.border_table_props import BorderTableProps, PropPair
+from ....utils.unit_convert import UnitConvert, Length
 
 from ooo.dyn.table.table_border import TableBorder
 from ooo.dyn.table.table_border2 import TableBorder2
@@ -30,11 +31,7 @@ class BorderTable(StyleBase):
     Any properties starting with ``prop_`` set or get current instance values.
 
     All methods starting with ``fmt_`` can be used to chain together Border Table properties.
-
-    .. versionadded:: 0.9.0
     """
-
-    _SIDE_ATTRS = ("TopLine", "BottomLine", "LeftLine", "RightLine", "HorizontalLine", "VerticalLine")
 
     # region init
 
@@ -64,38 +61,48 @@ class BorderTable(StyleBase):
         """
         init_vals = {}
         if not border_side is None:
-            init_vals["TopLine"] = border_side
-            init_vals["IsTopLineValid"] = True
-            init_vals["BottomLine"] = border_side
-            init_vals["IsBottomLineValid"] = True
-            init_vals["LeftLine"] = border_side
-            init_vals["IsLeftLineValid"] = True
-            init_vals["RightLine"] = border_side
-            init_vals["IsRightLineValid"] = True
-
+            init_vals[self._props.top.first] = border_side
+            if self._props.top.second:
+                init_vals[self._props.top.second] = True
+            init_vals[self._props.bottom.first] = border_side
+            if self._props.bottom.second:
+                init_vals[self._props.bottom.second] = True
+            init_vals[self._props.left.first] = border_side
+            if self._props.left.second:
+                init_vals[self._props.left.second] = True
+            init_vals[self._props.right.first] = border_side
+            if self._props.right.second:
+                init_vals[self._props.right.second] = True
         else:
             if not top is None:
-                init_vals["TopLine"] = top
-                init_vals["IsTopLineValid"] = True
+                init_vals[self._props.top.first] = top
+                if self._props.top.second:
+                    init_vals[self._props.top.second] = True
             if not bottom is None:
-                init_vals["BottomLine"] = bottom
-                init_vals["IsBottomLineValid"] = True
+                init_vals[self._props.bottom.first] = bottom
+                if self._props.bottom.second:
+                    init_vals[self._props.bottom.second] = True
             if not left is None:
-                init_vals["LeftLine"] = left
-                init_vals["IsLeftLineValid"] = True
+                init_vals[self._props.left.first] = left
+                if self._props.left.second:
+                    init_vals[self._props.left.second] = True
             if not right is None:
-                init_vals["RightLine"] = right
-                init_vals["IsRightLineValid"] = True
+                init_vals[self._props.right.first] = right
+                if self._props.right.second:
+                    init_vals[self._props.right.second] = True
 
         if not horizontal is None:
-            init_vals["HorizontalLine"] = horizontal
-            init_vals["IsHorizontalLineValid"] = True
+            init_vals[self._props.horz.first] = horizontal
+            if self._props.horz.second:
+                init_vals[self._props.horz.second] = True
         if not vertical is None:
-            init_vals["VerticalLine"] = vertical
-            init_vals["IsVerticalLineValid"] = True
+            init_vals[self._props.vert.first] = vertical
+            if self._props.vert.second:
+                init_vals[self._props.vert.second] = True
         if not distance is None:
-            init_vals["Distance"] = round(distance * 100)
-            init_vals["IsDistanceValid"] = True
+            init_vals[self._props.dist.first] = UnitConvert.convert(num=distance, frm=Length.MM, to=Length.MM100)
+            if self._props.dist.second:
+                init_vals[self._props.dist.second] = True
         super().__init__(**init_vals)
 
     # endregion init
@@ -104,6 +111,9 @@ class BorderTable(StyleBase):
 
     def _supported_services(self) -> Tuple[str, ...]:
         return ()
+
+    def _get_property_name(self) -> str:
+        return "TableBorder2"
 
     # region apply()
 
@@ -139,6 +149,13 @@ class BorderTable(StyleBase):
         # the save TableBorder2 again.
         # Even if HorizontalLine is present in current style that is being applied it is ignored and set to top line or bottom line values.
         # The work around is to save TableBorder2 after setting other properties, read it again, set the HorizontalLine and save it again.
+        if not self._is_valid_obj(obj):
+            # will not apply on this class but may apply on child classes
+            self._print_not_valid_obj("apply()")
+            return
+
+        prop_name = self._get_property_name()
+
         cargs = CancelEventArgs(source=f"{self.apply.__qualname__}")
         cargs.event_data = self
         self.on_applying(cargs)
@@ -148,22 +165,24 @@ class BorderTable(StyleBase):
         if cargs.cancel:
             return
 
-        tb = cast(TableBorder2, mProps.Props.get(obj, "TableBorder2", None))
+        tb = cast(TableBorder2, mProps.Props.get(obj, prop_name, None))
         if tb is None:
-            raise mEx.PropertyNotFoundError("TableBorder2", "apply() obj has no property, TableBorder2")
-        attrs = ("TopLine", "BottomLine", "LeftLine", "RightLine", "HorizontalLine", "VerticalLine")
-        for attr in attrs:
-            val = cast(Side, self._get(attr))
+            raise mEx.PropertyNotFoundError(prop_name, "apply() obj has no property")
+        attrs_props = (*(self._props[i] for i in range(6)),)
+
+        for ap in attrs_props:
+            val = cast(Side, self._get(ap.first))
             if not val is None:
-                setattr(tb, attr, val.get_border_line2())
-                setattr(tb, f"Is{attr}Valid", True)
-        distance = cast(int, self._get("Distance"))
+                setattr(tb, ap.first, val.get_border_line2())
+                if ap.second:
+                    setattr(tb, ap.second, True)
+        distance = cast(int, self._get(self._props.dist.first))
         if not distance is None:
             tb.Distance = distance
             tb.IsDistanceValid = True
         mProps.Props.set(obj, TableBorder2=tb)
 
-        h_line = cast(Side, self._get("HorizontalLine"))
+        h_line = cast(Side, self._get(self._props.horz.first))
 
         if h_line is None:
             h_ln = tb.HorizontalLine
@@ -174,12 +193,12 @@ class BorderTable(StyleBase):
                 and h_ln.OuterLineWidth == 0
             )
             if h_invalid:
-                tb = cast(TableBorder2, mProps.Props.get(obj, "TableBorder2"))
+                tb = cast(TableBorder2, mProps.Props.get(obj, prop_name))
                 tb.HorizontalLine = Side.empty.get_border_line2()
                 tb.IsHorizontalLineValid = True
                 mProps.Props.set(obj, TableBorder2=tb)
         else:
-            tb = cast(TableBorder2, mProps.Props.get(obj, "TableBorder2"))
+            tb = cast(TableBorder2, mProps.Props.get(obj, prop_name))
             tb.HorizontalLine = h_line.get_border_line2()
             tb.IsHorizontalLineValid = True
             mProps.Props.set(obj, TableBorder2=tb)
@@ -189,8 +208,8 @@ class BorderTable(StyleBase):
 
     # endregion apply()
 
-    @staticmethod
-    def from_obj(obj: object) -> BorderTable:
+    @classmethod
+    def from_obj(cls, obj: object) -> BorderTable:
         """
         Gets instance from object properties
 
@@ -203,9 +222,14 @@ class BorderTable(StyleBase):
         Returns:
             BorderTable: Border Table.
         """
-        tb = cast(TableBorder2, mProps.Props.get(obj, "TableBorder2", None))
+        # this nu is only used to get Property Name
+        nu = super(BorderTable, cls).__new__(cls)
+        nu.__init__()
+        prop_name = nu._get_property_name()
+
+        tb = cast(TableBorder2, mProps.Props.get(obj, prop_name, None))
         if tb is None:
-            raise mEx.PropertyNotFoundError("TableBorder2", "from_obj() obj as no TableBorder2 property")
+            raise mEx.PropertyNotFoundError(prop_name, f"from_obj() obj as no {prop_name} property")
         line_props = ("Color", "InnerLineWidth", "LineDistance", "LineStyle", "LineWidth", "OuterLineWidth")
 
         left = Side() if tb.IsLeftLineValid else None
@@ -228,11 +252,15 @@ class BorderTable(StyleBase):
                 vertical._set(prop, getattr(tb.VerticalLine, prop))
             if horizontal:
                 horizontal._set(prop, getattr(tb.HorizontalLine, prop))
-        bt = BorderTable(left=left, right=right, top=top, bottom=bottom, vertical=vertical, horizontal=horizontal)
+        nu = super(BorderTable, cls).__new__(cls)
+        nu.__init__(left=left, right=right, top=top, bottom=bottom, vertical=vertical, horizontal=horizontal)
+
         if tb.IsDistanceValid:
-            bt._set("IsDistanceValid", True)
-            bt._set("Distance", tb.Distance)
-        return bt
+            p = nu._props.dist
+            nu._set(p.first, tb.Distance)
+            if p.second:
+                nu._set(p.second, True)
+        return nu
 
     def get_table_border2(self) -> TableBorder2:
         """
@@ -242,8 +270,12 @@ class BorderTable(StyleBase):
             TableBorder2: ``com.sun.star.table.TableBorder2``
         """
         tb = TableBorder2()
+
+        # put attribs in a tuple
+        attrs = (*(self._props[i].first for i in range(6)),)
+
         for key, val in self._dv.items():
-            if key in BorderTable._SIDE_ATTRS:
+            if key in attrs:
                 side = cast(Side, val)
                 setattr(tb, key, side.get_border_line2())
             else:
@@ -258,8 +290,11 @@ class BorderTable(StyleBase):
             TableBorder: ``com.sun.star.table.TableBorder``
         """
         tb = TableBorder2()
+        # put attribs in a tuple
+        attrs = (*(self._props[i].first for i in range(6)),)
+
         for key, val in self._dv.items():
-            if key in BorderTable._SIDE_ATTRS:
+            if key in attrs:
                 side = cast(Side, val)
                 setattr(tb, key, side.get_border_line())
             else:
@@ -394,105 +429,142 @@ class BorderTable(StyleBase):
 
     @property
     def prop_distance(self) -> float | None:
-        """Gets distance value"""
-        pv = cast(int, self._get("Distance"))
+        """Gets/Sets distance value (``in mm`` units)"""
+        pv = cast(int, self._get(self._props.dist.first))
         if not pv is None:
             if pv == 0:
                 return 0.0
-            return float(pv / 100)
+            return UnitConvert.convert(num=pv, frm=Length.MM100, to=Length.MM)
         return None
 
     @prop_distance.setter
     def prop_distance(self, value: float | None) -> None:
+        p = self._props.dist
         if value is None:
-            self._remove("Distance")
-            self._remove("IsDistanceValid")
+            self._remove(p.first)
+            if p.second:
+                self._remove(p.second)
             return
-        self._set("Distance", round(value * 100))
-        self._set("IsDistanceValid", True)
+        self._set(p.first, UnitConvert.convert(num=value, frm=Length.MM, to=Length.MM100))
+        if p.second:
+            self._set(p.second, True)
 
     @property
     def prop_left(self) -> Side | None:
-        """Gets left value"""
-        return self._get("LeftLine")
+        """Gets/Sets left value"""
+        return self._get(self._props.left.first)
 
     @prop_left.setter
     def prop_left(self, value: Side | None) -> None:
+        p = self._props.left
         if value is None:
-            self._remove("LeftLine")
-            self._remove("IsLeftLineValid")
+            self._remove(p.first)
+            if p.second:
+                self._remove(p.second)
             return
-        self._set("LeftLine", value)
-        self._set("IsLeftLineValid", True)
+        self._set(p.first, value)
+        if p.second:
+            self._set(p.second, True)
 
     @property
     def prop_right(self) -> Side | None:
-        """Gets right value"""
-        return self._get("RightLine")
+        """Gets/Sets right value"""
+        return self._get(self._props.right.first)
 
     @prop_right.setter
     def prop_right(self, value: Side | None) -> None:
+        p = self._props.right
         if value is None:
-            self._remove("RightLine")
-            self._remove("IsRightLineValid")
+            self._remove(p.first)
+            if p.second:
+                self._remove(p.second)
             return
-        self._set("RightLine", value)
-        self._set("IsRightLineValid", True)
+        self._set(p.first, value)
+        if p.second:
+            self._set(p.second, True)
 
     @property
     def prop_top(self) -> Side | None:
-        """Gets bottom value"""
-        return self._get("TopLine")
+        """Gets/Sets bottom value"""
+        return self._get(self._props.top.first)
 
     @prop_top.setter
     def prop_top(self, value: Side | None) -> None:
+        p = self._props.top
         if value is None:
-            self._remove("TopLine")
-            self._remove("IsTopLineValid")
+            self._remove(p.first)
+            if p.second:
+                self._remove(p.second)
             return
-        self._set("TopLine", value)
-        self._set("IsTopLineValid", True)
+        self._set(p.first, value)
+        if p.second:
+            self._set(p.second, True)
 
     @property
     def prop_bottom(self) -> Side | None:
-        """Gets bottom value"""
-        return self._get("BottomLine")
+        """Gets/Sets bottom value"""
+        return self._get(self._props.bottom.first)
 
     @prop_bottom.setter
     def prop_bottom(self, value: Side | None) -> None:
+        p = self._props.bottom
         if value is None:
-            self._remove("BottomLine")
-            self._remove("IsBottomLineValid")
+            self._remove(p.first)
+            if p.second:
+                self._remove(p.second)
             return
-        self._set("BottomLine", value)
-        self._set("IsBottomLineValid", True)
+        self._set(p.first, value)
+        if p.second:
+            self._set(p.second, True)
 
     @property
     def prop_horizontal(self) -> Side | None:
-        """Gets horizontal value"""
-        return self._get("HorizontalLine")
+        """Gets/Sets horizontal value"""
+        return self._get(self._props.horz.first)
 
     @prop_horizontal.setter
     def prop_horizontal(self, value: Side | None) -> None:
+        p = self._props.horz
         if value is None:
-            self._remove("HorizontalLine")
-            self._remove("IsHorizontalLineValid")
+            self._remove(p.first)
+            if p.second:
+                self._remove(p.second)
             return
-        self._set("HorizontalLine", value)
-        self._set("IsHorizontalLineValid", True)
+        self._set(p.first, value)
+        if p.second:
+            self._set(p.second, True)
 
     @property
     def prop_vertical(self) -> Side | None:
-        """Gets vertical value"""
-        return self._get("VerticalLine")
+        """Gets/Sets vertical value"""
+        return self._get(self._props.vert.first)
 
     @prop_vertical.setter
     def prop_vertical(self, value: Side | None) -> None:
+        p = self._props.vert
         if value is None:
-            self._remove("VerticalLine")
-            self._remove("IsVerticalLineValid")
+            self._remove(p.first)
+            if p.second:
+                self._remove(p.second)
             return
-        self._set("VerticalLine", value)
-        self._set("IsVerticalLineValid", True)
+        self._set(p.first, value)
+        if p.second:
+            self._set(p.second, True)
+
+    @property
+    def _props(self) -> BorderTableProps:
+        try:
+            return self.__border_properties
+        except AttributeError:
+            self.__border_properties = BorderTableProps(
+                left=PropPair("LeftLine", "IsLeftLineValid"),
+                top=PropPair("TopLine", "IsTopLineValid"),
+                right=PropPair("RightLine", "IsRightLineValid"),
+                bottom=PropPair("BottomLine", "IsBottomLineValid"),
+                horz=PropPair("HorizontalLine", "IsHorizontalLineValid"),
+                vert=PropPair("VerticalLine", "IsVerticalLineValid"),
+                dist=PropPair("Distance", "IsDistanceValid"),
+            )
+        return self.__border_properties
 
     # endregion Properties

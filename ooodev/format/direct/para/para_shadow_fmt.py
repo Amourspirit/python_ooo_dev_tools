@@ -7,7 +7,7 @@ import uno
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 
 
-class BorderShadow(Shadow):
+class ParaShadowFmt(Shadow):
     _EMPTY = None
 
     def _get_property_name(self) -> str:
@@ -18,10 +18,10 @@ class BorderShadow(Shadow):
         return ("com.sun.star.style.CharacterProperties",)
 
     @static_prop
-    def empty() -> BorderShadow:  # type: ignore[misc]
+    def empty() -> ParaShadowFmt:  # type: ignore[misc]
         """Gets empty Shadow. Static Property. when style is applied it remove any shadow."""
-        if BorderShadow._EMPTY is None:
-            BorderShadow._EMPTY = BorderShadow(
+        if ParaShadowFmt._EMPTY is None:
+            ParaShadowFmt._EMPTY = ParaShadowFmt(
                 location=ShadowLocation.NONE, transparent=False, color=8421504, width=1.76
             )
-        return BorderShadow._EMPTY
+        return ParaShadowFmt._EMPTY

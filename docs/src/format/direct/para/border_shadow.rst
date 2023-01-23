@@ -1,9 +1,9 @@
-.. _format_direct_para_border_shadow:
+.. _format_direct_para_para_shadow_fmt:
 
-Class BorderShadow
-==================
+Class ParaShadowFmt
+===================
 
-.. autoclass:: ooodev.format.direct.para.border_shadow.BorderShadow
+.. autoclass:: ooodev.format.direct.para.para_shadow_fmt.ParaShadowFmt
     :members:
     :inherited-members:
     :undoc-members:

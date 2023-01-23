@@ -17,7 +17,7 @@ from ...kind.format_kind import FormatKind
 from ...style_base import StyleMulti
 
 # from ..structs.shadow import Shadow
-from .border_shadow import BorderShadow as BorderShadow
+from .para_shadow_fmt import ParaShadowFmt as ParaShadowFmt
 from ..structs.side import Side as Side, SideFlags as SideFlags
 from .border_padding import BorderPadding as BorderPadding
 from .sides import Sides
@@ -54,7 +54,7 @@ class Borders(StyleMulti):
         top: Side | None = None,
         bottom: Side | None = None,
         border_side: Side | None = None,
-        shadow: BorderShadow | None = None,
+        shadow: ParaShadowFmt | None = None,
         padding: BorderPadding | None = None,
         merge: bool | None = None,
     ) -> None:
@@ -86,7 +86,7 @@ class Borders(StyleMulti):
 
         if not padding is None:
             # BorderDistance is set to padding bottom for some reason.
-            init_vals["BorderDistance"] = padding._get(padding._border.bottom)
+            init_vals["BorderDistance"] = padding._get(padding._props.bottom)
 
         super().__init__(**init_vals)
 
@@ -208,7 +208,7 @@ class Borders(StyleMulti):
         cp._sides = sides
         return cp
 
-    def fmt_shadow(self, value: BorderShadow | None) -> Borders:
+    def fmt_shadow(self, value: ParaShadowFmt | None) -> Borders:
         """
         Gets copy of instance with shadow set or removed
 
@@ -298,7 +298,7 @@ class Borders(StyleMulti):
             raise mEx.ServiceNotSupported(inst._supported_services()[0])
         inst_sides = Sides.from_obj(obj)
         inst_padding = BorderPadding.from_obj(obj)
-        inst_shadow = BorderShadow.from_obj(obj)
+        inst_shadow = ParaShadowFmt.from_obj(obj)
         inst._set("ParaIsConnectBorder", mProps.Props.get(obj, "ParaIsConnectBorder"))
         inst._set("BorderDistance", mProps.Props.get(obj, "BorderDistance"))
         inst._set_style("sides", inst_sides, *inst_sides.get_attrs())
@@ -319,7 +319,7 @@ class Borders(StyleMulti):
         """Gets Default Border. Static Property"""
         if Borders._DEFAULT is None:
             Borders._DEFAULT = Borders(
-                border_side=Side.empty, padding=BorderPadding.default, shadow=BorderShadow.empty, merge=True
+                border_side=Side.empty, padding=BorderPadding.default, shadow=ParaShadowFmt.empty, merge=True
             )
         return Borders._DEFAULT
 
