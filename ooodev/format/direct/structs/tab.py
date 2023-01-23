@@ -13,6 +13,7 @@ from ....exceptions import ex as mEx
 from ....utils import info as mInfo
 from ....utils import lo as mLo
 from ....utils import props as mProps
+from ....utils.type_var import T
 from ...kind.format_kind import FormatKind
 from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent
 
@@ -97,7 +98,20 @@ class Tab(StyleBase):
         Returns:
             Tuple[str, ...]: Supported services
         """
-        return ("com.sun.star.style.ParagraphProperties",)
+        return ()
+
+    def _get_property_name(self) -> str:
+        return "ParaTabStops"
+
+    def copy(self: T) -> T:
+        nu = super(Tab, self.__class__).__new__(self.__class__)
+        nu.__init__()
+        if self._dv:
+            nu._update(self._dv)
+        return nu
+
+    def get_attrs(self) -> Tuple[str, ...]:
+        return (self._get_property_name(),)
 
     # region apply()
     @overload
@@ -129,7 +143,9 @@ class Tab(StyleBase):
             None:
         """
         if not self._is_valid_obj(obj):
-            raise mEx.NotSupportedServiceError(self._supported_services()[0])
+            # will not apply on this class but may apply on child classes
+            self._print_not_valid_obj("apply()")
+            return
 
         cargs = CancelEventArgs(source=f"{self.apply.__qualname__}")
         cargs.event_data = self
@@ -140,7 +156,7 @@ class Tab(StyleBase):
         if cargs.cancel:
             return
 
-        keys = {"prop": "ParaTabStops"}
+        keys = {"prop": self._get_property_name()}
         if "keys" in kwargs:
             keys.update(kwargs["keys"])
         key = keys["prop"]
@@ -167,7 +183,7 @@ class Tab(StyleBase):
         else:
             tss_lst.append(ts)
 
-        Tab._set_obj_tabs(obj, tss_lst, key)
+        self._set_obj_tabs(obj, tss_lst, key)
         eargs = EventArgs.from_args(cargs)
         self.on_applied(eargs)
         _Events().trigger(FormatNamedEvent.STYLE_APPLIED, eargs)
@@ -203,22 +219,26 @@ class Tab(StyleBase):
         Gets instance from object
 
         Args:
-            obj (object): UNO object that supports ``com.sun.star.style.ParagraphProperties`` service.
+            obj (object): UNO object
 
         Raises:
-            NotSupportedServiceError: If ``obj`` does not support ``com.sun.star.style.ParagraphProperties`` service.
+            PropertyNotFoundError: If ``obj`` does not have required property
 
         Returns:
             Tab: ``Tab`` instance that represents ``obj`` Tab properties.
         """
-        if not mInfo.Info.support_service(obj, "com.sun.star.style.ParagraphProperties"):
-            raise mEx.NotSupportedServiceError("com.sun.star.style.ParagraphProperties")
-
-        tss = cast(Tuple[TabStop, ...], mProps.Props.get(obj, "ParaTabStops"))
+        # this nu is only used to get Property Name
+        nu = super(Tab, cls).__new__(cls)
+        nu.__init__()
+        prop_name = nu._get_property_name()
+        try:
+            tss = cast(Tuple[TabStop, ...], mProps.Props.get(obj, prop_name))
+        except mEx.PropertyNotFoundError:
+            raise mEx.PropertyNotFoundError(prop_name, f"from_obj() obj as no {prop_name} property")
         # can expcet for ts to contain at least one TabAlign
         ts = tss[index]
 
-        return Tab.from_tab_stop(ts)
+        return cls.from_tab_stop(ts)
 
     @classmethod
     def from_tab_stop(cls, ts: TabStop) -> Tab:
@@ -231,15 +251,17 @@ class Tab(StyleBase):
         Returns:
             Tab: Tab set with Tab Stop properties
         """
-        inst = Tab()
+        inst = super(Tab, cls).__new__(cls)
+        inst.__init__()
         inst._set("FillChar", ts.FillChar)
         inst._set("Alignment", ts.Alignment)
         inst._set("DecimalChar", ts.DecimalChar)
         inst._set("Position", ts.Position)
         return inst
 
-    @staticmethod
-    def _set_obj_tabs(obj: object, tabs: Iterable[TabStop], prop: str = "ParaTabStops") -> None:
+    def _set_obj_tabs(self, obj: object, tabs: Iterable[TabStop], prop: str = "") -> None:
+        if not prop:
+            prop = self._get_property_name()
         prop_set = mLo.Lo.qi(XPropertySet, obj, raise_err=True)
         seq = uno.Any("[]com.sun.star.style.TabStop", tabs)
         uno.invoke(prop_set, "setPropertyValue", (prop, seq))

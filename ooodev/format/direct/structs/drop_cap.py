@@ -169,8 +169,9 @@ class DropCap(StyleBase):
         nu.__init__()
         prop_name = nu._get_property_name()
 
-        dcf = cast(DropCapFormat, mProps.Props.get(obj, prop_name), None)
-        if dcf is None:
+        try:
+            dcf = cast(DropCapFormat, mProps.Props.get(obj, prop_name))
+        except mEx.PropertyNotFoundError:
             raise mEx.PropertyNotFoundError(prop_name, f"from_obj() obj as no {prop_name} property")
 
         return cls.from_drop_cap_format(dcf)
