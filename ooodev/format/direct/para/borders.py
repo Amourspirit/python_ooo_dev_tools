@@ -15,7 +15,9 @@ from ....utils import lo as mLo
 from ....utils import props as mProps
 from ...kind.format_kind import FormatKind
 from ...style_base import StyleMulti
-from ..structs.shadow import Shadow
+
+# from ..structs.shadow import Shadow
+from .border_shadow import BorderShadow as BorderShadow
 from ..structs.side import Side as Side, SideFlags as SideFlags
 from .border_padding import BorderPadding as BorderPadding
 from .sides import Sides
@@ -52,7 +54,7 @@ class Borders(StyleMulti):
         top: Side | None = None,
         bottom: Side | None = None,
         border_side: Side | None = None,
-        shadow: Shadow | None = None,
+        shadow: BorderShadow | None = None,
         padding: BorderPadding | None = None,
         merge: bool | None = None,
     ) -> None:
@@ -65,7 +67,7 @@ class Borders(StyleMulti):
             top (Side, None, optional): Determines the line style at the top edge.
             bottom (Side, None, optional): Determines the line style at the bottom edge.
             border_side (Side, None, optional): Determines the line style at the top, bottom, left, right edges. If this argument has a value then arguments ``top``, ``bottom``, ``left``, ``right`` are ignored
-            shadow (Shadow, None, optional): Character Shadow
+            shadow (BorderShadow, None, optional): Character Shadow
             padding (BorderPadding, None, optional): Character padding
             merge (bool, None, optional): Merge with next paragraph
         """
@@ -93,7 +95,7 @@ class Borders(StyleMulti):
         if not padding is None:
             self._set_style("padding", padding, *padding.get_attrs())
         if not shadow is None:
-            self._set_style("shadow", shadow, "ParaShadowFormat", keys={"prop": "ParaShadowFormat"})
+            self._set_style("shadow", shadow, *shadow.get_attrs())
 
     # endregion init
 
@@ -206,7 +208,7 @@ class Borders(StyleMulti):
         cp._sides = sides
         return cp
 
-    def fmt_shadow(self, value: Shadow | None) -> Borders:
+    def fmt_shadow(self, value: BorderShadow | None) -> Borders:
         """
         Gets copy of instance with shadow set or removed
 
@@ -218,9 +220,9 @@ class Borders(StyleMulti):
         """
         cp = self.copy()
         if value is None:
-            cp._remove("CharShadowFormat")
+            cp._remove_style("shadow")
         else:
-            cp._set("CharShadowFormat", value.get_shadow_format())
+            cp._set_style("shadow", value, *value.get_attrs())
         return cp
 
     def fmt_padding(self, value: BorderPadding | None) -> Borders:
@@ -234,7 +236,10 @@ class Borders(StyleMulti):
             Borders: Borders instance
         """
         cp = self.copy()
-        cp._padding = value
+        if value is None:
+            cp._remove_style("padding")
+        else:
+            cp._set_style("padding", value, *value.get_attrs())
         return cp
 
     # endregion format Methods
@@ -268,7 +273,7 @@ class Borders(StyleMulti):
         try:
             super().apply(obj, **kwargs)
         except mEx.MultiError as e:
-            mLo.Lo.print(f"{self.__name__}.apply_style(): Unable to set Property")
+            mLo.Lo.print(f"{self.__class__.__name__}.apply(): Unable to set Property")
             for err in e.errors:
                 mLo.Lo.print(f"  {err}")
 
@@ -293,11 +298,12 @@ class Borders(StyleMulti):
             raise mEx.ServiceNotSupported(inst._supported_services()[0])
         inst_sides = Sides.from_obj(obj)
         inst_padding = BorderPadding.from_obj(obj)
-        inst_shadow = Shadow.from_obj(obj, "ParaShadowFormat")
+        inst_shadow = BorderShadow.from_obj(obj)
         inst._set("ParaIsConnectBorder", mProps.Props.get(obj, "ParaIsConnectBorder"))
+        inst._set("BorderDistance", mProps.Props.get(obj, "BorderDistance"))
         inst._set_style("sides", inst_sides, *inst_sides.get_attrs())
         inst._set_style("padding", inst_padding, *inst_padding.get_attrs())
-        inst._set_style("shadow", inst_shadow, "ParaShadowFormat", keys={"prop": "ParaShadowFormat"})
+        inst._set_style("shadow", inst_shadow, *inst_shadow.get_attrs())
         return inst
 
     # endregion methods
@@ -313,7 +319,7 @@ class Borders(StyleMulti):
         """Gets Default Border. Static Property"""
         if Borders._DEFAULT is None:
             Borders._DEFAULT = Borders(
-                border_side=Side.empty, padding=BorderPadding.default, shadow=Shadow.empty, merge=True
+                border_side=Side.empty, padding=BorderPadding.default, shadow=BorderShadow.empty, merge=True
             )
         return Borders._DEFAULT
 

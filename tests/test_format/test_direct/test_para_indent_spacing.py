@@ -18,7 +18,8 @@ if TYPE_CHECKING:
 
 def test_write(loader, para_text) -> None:
     # minimal testing is fine here as each part of IndentSpacing is tested via Indent, Spacing and Line Spacing test.
-    delay = 0 if Lo.bridge_connector.headless else 3_000
+    # delay = 0 if Lo.bridge_connector.headless else 3_000
+    delay = 0
 
     doc = Write.create_doc()
     if not Lo.bridge_connector.headless:
@@ -41,12 +42,12 @@ def test_write(loader, para_text) -> None:
 
         # test LineSpacing
         Write.append_para(
-            cursor=cursor, text=para_text, styles=(IndentSpacing(ln_mode=ModeKind.PORPORTINAL, ln_value=96),)
+            cursor=cursor, text=para_text, styles=(IndentSpacing(ln_mode=ModeKind.PROPORTIONAL, ln_value=96),)
         )
         cursor.goLeft(p_len + 1, False)
         cursor.goRight(p_len, True)
         ls = pp.ParaLineSpacing
-        assert ls.Mode == int(ModeKind.PORPORTINAL)
+        assert ls.Mode == ModeKind.PROPORTIONAL.get_mode()
         assert ls.Height == 96
         cursor.gotoEnd(False)
 

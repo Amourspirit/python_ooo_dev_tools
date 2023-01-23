@@ -99,7 +99,7 @@ class StyleBase(ABC):
         # if style class has no required services then return True
         return True
 
-    def _print_no_required_service(self, method_name: str = ""):
+    def _print_not_valid_obj(self, method_name: str = ""):
         """
         Prints via ``Lo.print()`` notice that requied service is missing
 
@@ -166,7 +166,7 @@ class StyleBase(ABC):
                 self.on_applied(eargs)
                 _Events().trigger(FormatNamedEvent.STYLE_APPLIED, eargs)
             else:
-                self._print_no_required_service("apply_style")
+                self._print_not_valid_obj("apply()")
 
     def backup(self, obj: object) -> None:
         """
@@ -184,7 +184,7 @@ class StyleBase(ABC):
             :py:meth:`~.style_base.StyleBase.restore`
         """
         if not self._is_valid_obj(obj):
-            self._print_no_required_service("Backup")
+            self._print_not_valid_obj("Backup")
             return
         if self._dv_bak is None:
             self._dv_bak = {}
@@ -479,7 +479,7 @@ class StyleMulti(StyleBase):
             :py:meth:`~.style_base.StyleMulti.restore`
         """
         if not self._is_valid_obj(obj):
-            self._print_no_required_service("Backup")
+            self._print_not_valid_obj("Backup")
             return
         super().backup(obj)
         for _, info in self._styles.items():

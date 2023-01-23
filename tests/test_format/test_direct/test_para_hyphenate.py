@@ -58,7 +58,8 @@ def test_no_caps() -> None:
 
 
 def test_write(loader, para_text) -> None:
-    delay = 0 if Lo.bridge_connector.headless else 3_000
+    # delay = 0 if Lo.bridge_connector.headless else 3_000
+    delay = 0
 
     doc = Write.create_doc()
     if not Lo.bridge_connector.headless:

@@ -115,7 +115,7 @@ class AbstractPadding(StyleBase):
         try:
             super().apply(obj, **kwargs)
         except mEx.MultiError as e:
-            mLo.Lo.print(f"{self.__class__}.apply_style(): Unable to set Property")
+            mLo.Lo.print(f"{self.__class__.__name__}.apply(): Unable to set Property")
             for err in e.errors:
                 mLo.Lo.print(f"  {err}")
         return None

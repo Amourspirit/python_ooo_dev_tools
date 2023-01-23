@@ -13,17 +13,12 @@ from ....meta.static_prop import static_prop
 from ....utils import lo as mLo
 from ...style_base import StyleMulti
 
-from ..structs import side
-from ..structs import shadow
-from ..structs import border_table
-from . import padding
-from ..structs.side import Side as Side, SideFlags as SideFlags, LineSize as LineSize
-from ..structs.shadow import Shadow
-from .padding import Padding as Padding
-from . import sides
-from .sides import Sides
-
+from ...kind.border_kind import BorderKind
 from ...kind.format_kind import FormatKind
+from ..structs.side import Side as Side, SideFlags as SideFlags, LineSize as LineSize
+from .border_shadow import BorderShadow
+from .padding import Padding as Padding
+from .sides import Sides
 
 from ooo.dyn.table.border_line import BorderLine as BorderLine
 from ooo.dyn.table.border_line_style import BorderLineStyleEnum as BorderLineStyleEnum
@@ -57,7 +52,7 @@ class Borders(StyleMulti):
         top: Side | None = None,
         bottom: Side | None = None,
         border_side: Side | None = None,
-        shadow: Shadow | None = None,
+        shadow: BorderShadow | None = None,
         padding: Padding | None = None,
     ) -> None:
         """
@@ -69,13 +64,10 @@ class Borders(StyleMulti):
             top (Side | None, optional): Determines the line style at the top edge.
             bottom (Side | None, optional): Determines the line style at the bottom edge.
             border_side (Side | None, optional): Determines the line style at the top, bottom, left, right edges. If this argument has a value then arguments ``top``, ``bottom``, ``left``, ``right`` are ignored
-            shadow (Shadow | None, optional): Character Shadow
+            shadow (BorderShadow | None, optional): Character Shadow
             padding (Padding | None, optional): Character padding
         """
         init_vals = {}
-
-        if not shadow is None:
-            init_vals["CharShadowFormat"] = shadow.get_shadow_format()
 
         sides = Sides(
             left=left,
@@ -91,8 +83,30 @@ class Borders(StyleMulti):
             self._set_style("sides", sides, *sides.get_attrs())
         if not padding is None:
             self._set_style("padding", padding, *padding.get_attrs())
+        if not shadow is None:
+            self._set_style("shadow", shadow, *shadow.get_attrs())
 
     # endregion init
+    def _set_side(self, side: Side | None, pos: BorderKind, inst: Borders | None = None) -> None:
+        if inst is None:
+            inst = self
+        if pos == BorderKind.NONE:
+            inst._remove_style("sides")
+            return
+        sides_info = inst._get_style("sides")
+        if sides_info is None:
+            sides = Sides()
+        else:
+            sides = sides_info[0].copy()
+        if BorderKind.BOTTOM in pos:
+            sides.prop_bottom = side
+        if BorderKind.LEFT in pos:
+            sides.prop_left = side
+        if BorderKind.RIGHT in pos:
+            sides.prop_right = side
+        if BorderKind.TOP in pos:
+            sides.prop_bottom = side
+        inst._set_style("sides", sides, *sides.get_attrs())
 
     # region format Methods
     def fmt_border_side(self, value: Side | None) -> Borders:
@@ -106,17 +120,10 @@ class Borders(StyleMulti):
             Borders: Borders instance
         """
         cp = self.copy()
-        if cp._sides is None and value is None:
+        if value is None:
+            self._set_side(side=value, pos=BorderKind.NONE, inst=cp)
             return cp
-        if cp._sides is None:
-            cp._sides = Sides(border_side=value)
-            return cp
-        sides = cp._sides.copy()
-        sides.prop_left = value
-        sides.prop_right = value
-        sides.prop_top = value
-        sides.prop_bottom = value
-        cp._sides = sides
+        self._set_side(side=value, pos=BorderKind.ALL, inst=cp)
         return cp
 
     def fmt_left(self, value: Side | None) -> Borders:
@@ -130,14 +137,10 @@ class Borders(StyleMulti):
             Borders: Borders instance
         """
         cp = self.copy()
-        if cp._sides is None and value is None:
+        if value is None:
+            self._set_side(side=value, pos=BorderKind.NONE, inst=cp)
             return cp
-        if cp._sides is None:
-            cp._sides = Sides(left=value)
-            return cp
-        sides = cp._sides.copy()
-        sides.prop_left = value
-        cp._sides = sides
+        self._set_side(side=value, pos=BorderKind.LEFT, inst=cp)
         return cp
 
     def fmt_right(self, value: Side | None) -> Borders:
@@ -151,14 +154,10 @@ class Borders(StyleMulti):
             Borders: Borders instance
         """
         cp = self.copy()
-        if cp._sides is None and value is None:
+        if value is None:
+            self._set_side(side=value, pos=BorderKind.NONE, inst=cp)
             return cp
-        if cp._sides is None:
-            cp._sides = Sides(right=value)
-            return cp
-        sides = cp._sides.copy()
-        sides.prop_right = value
-        cp._sides = sides
+        self._set_side(side=value, pos=BorderKind.RIGHT, inst=cp)
         return cp
 
     def fmt_top(self, value: Side | None) -> Borders:
@@ -172,14 +171,10 @@ class Borders(StyleMulti):
             Borders: Borders instance
         """
         cp = self.copy()
-        if cp._sides is None and value is None:
+        if value is None:
+            self._set_side(side=value, pos=BorderKind.NONE, inst=cp)
             return cp
-        if cp._sides is None:
-            cp._sides = Sides(top=value)
-            return cp
-        sides = cp._sides.copy()
-        sides.prop_top = value
-        cp._sides = sides
+        self._set_side(side=value, pos=BorderKind.TOP, inst=cp)
         return cp
 
     def fmt_bottom(self, value: Side | None) -> Borders:
@@ -193,17 +188,13 @@ class Borders(StyleMulti):
             Borders: Borders instance
         """
         cp = self.copy()
-        if cp._sides is None and value is None:
+        if value is None:
+            self._set_side(side=value, pos=BorderKind.NONE, inst=cp)
             return cp
-        if cp._sides is None:
-            cp._sides = Sides(bottom=value)
-            return cp
-        sides = cp._sides.copy()
-        sides.prop_bottom = value
-        cp._sides = sides
+        self._set_side(side=value, pos=BorderKind.BOTTOM, inst=cp)
         return cp
 
-    def fmt_shadow(self, value: Shadow | None) -> Borders:
+    def fmt_shadow(self, value: BorderShadow | None) -> Borders:
         """
         Gets copy of instance with shadow set or removed
 
@@ -215,9 +206,9 @@ class Borders(StyleMulti):
         """
         cp = self.copy()
         if value is None:
-            cp._remove("CharShadowFormat")
+            cp._remove_style("shadow")
         else:
-            cp._set("CharShadowFormat", value.get_shadow_format())
+            cp._set_style("shadow", value, *value.get_attrs())
         return cp
 
     def fmt_padding(self, value: Padding | None) -> Borders:
@@ -231,7 +222,10 @@ class Borders(StyleMulti):
             Borders: Borders instance
         """
         cp = self.copy()
-        cp._padding = value
+        if value is None:
+            cp._remove_style("padding")
+        else:
+            cp._set_style("padding", value, *value.get_attrs())
         return cp
 
     # endregion format Methods
@@ -265,7 +259,7 @@ class Borders(StyleMulti):
         try:
             super().apply(obj, **kwargs)
         except mEx.MultiError as e:
-            mLo.Lo.print(f"{self.__name__}.apply_style(): Unable to set Property")
+            mLo.Lo.print(f"{self.__class__.__name__}.apply(): Unable to set Property")
             for err in e.errors:
                 mLo.Lo.print(f"  {err}")
 
@@ -282,7 +276,7 @@ class Borders(StyleMulti):
     def default() -> Borders:  # type: ignore[misc]
         """Gets Default Border. Static Property"""
         if Borders._DEFAULT is None:
-            Borders._DEFAULT = Borders(border_side=Side.empty, padding=Padding.default, shadow=Shadow.empty)
+            Borders._DEFAULT = Borders(border_side=Side.empty, padding=Padding.default, shadow=BorderShadow.empty)
         return Borders._DEFAULT
 
     @static_prop
@@ -293,9 +287,9 @@ class Borders(StyleMulti):
                 border_side=Side.empty,
                 vertical=Side.empty,
                 horizontal=Side.empty,
-                shadow=Shadow.empty,
+                shadow=BorderShadow.empty,
                 padding=Padding.default,
             )
-        return cls._EMPTY
+        return Borders._EMPTY
 
     # endregion Properties

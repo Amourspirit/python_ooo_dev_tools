@@ -265,15 +265,16 @@ def test_font_cursor(loader) -> None:
         Lo.close_doc(doc)
 
 
-def test_calc_font(loader, run_headless) -> None:
-    delay = 0 if run_headless else 5_000
+def test_calc_font(loader) -> None:
+    # delay = 0 if not Lo.bridge_connector.headless else 5_000
+    delay = 0
     from ooodev.office.calc import Calc
     from ooodev.format import Styler
 
     doc = Calc.create_doc()
     try:
         sheet = Calc.get_sheet(doc)
-        if not run_headless:
+        if not Lo.bridge_connector.headless:
             GUI.set_visible()
             Lo.delay(500)
             Calc.zoom(doc, GUI.ZoomEnum.ZOOM_200_PERCENT)
