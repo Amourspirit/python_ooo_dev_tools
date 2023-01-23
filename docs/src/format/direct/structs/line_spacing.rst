@@ -1,9 +1,9 @@
 .. _format_direct_struct_line_spacing:
 
-Class LineSpacing
-=================
+Module line_spacing
+===================
 
-.. autoclass:: ooodev.format.direct.structs.line_spacing.LineSpacing
+.. automodule:: ooodev.format.direct.structs.line_spacing
     :members:
     :inherited-members:
     :undoc-members:

@@ -66,7 +66,7 @@ class Sides(AbstractSides):
         return FormatKind.PARA | FormatKind.STATIC
 
     @property
-    def _border(self) -> BorderProps:
+    def _props(self) -> BorderProps:
         try:
             return self.__border_properties
         except AttributeError:

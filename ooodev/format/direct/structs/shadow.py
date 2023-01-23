@@ -14,6 +14,8 @@ from ....utils.color import Color
 from ....utils.color import CommonColor
 from ...kind.format_kind import FormatKind
 from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent
+from ....utils.unit_convert import UnitConvert, Length
+from ....utils.type_var import T
 
 import uno
 from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
@@ -58,13 +60,13 @@ class Shadow(StyleBase):
             raise ValueError("color must be a positive number")
         if width < 0:
             raise ValueError("Width must be a postivie number")
-        init_vals = {
-            "Location": location,
-            "Color": color,
-            "IsTransparent": transparent,
-            "ShadowWidth": round(width * 100),
-        }
-        super().__init__(**init_vals)
+
+        self._location = location
+        self._color = color
+        self._transparent = transparent
+        self._width: int = round(UnitConvert.convert(num=width, frm=Length.MM, to=Length.MM100))
+
+        super().__init__()
 
     # endregion init
 
@@ -93,14 +95,35 @@ class Shadow(StyleBase):
             ShadowFormat: Shadow Format
         """
         return ShadowFormat(
-            Location=self._get("Location"),
-            ShadowWidth=self._get("ShadowWidth"),
-            IsTransparent=self._get("IsTransparent"),
-            Color=self._get("Color"),
+            Location=self._location,
+            ShadowWidth=self._width,
+            IsTransparent=self._transparent,
+            Color=self._color,
         )
 
     def _supported_services(self) -> Tuple[str, ...]:
         return ()
+
+    def _get_property_name(self) -> str:
+        return "ShadowFormat"
+
+    def get_attrs(self) -> Tuple[str, ...]:
+        """
+        Gets the attributes that are slated for change in the current instance
+
+        Returns:
+            Tuple(str, ...): Tuple of attribures
+        """
+        return (self._get_property_name(),)
+
+    def copy(self: T) -> T:
+        nu = super(Shadow, self.__class__).__new__(self.__class__)
+        nu.__init__(
+            location=self.prop_width, color=self.prop_color, transparent=self.prop_transparent, width=self.prop_width
+        )
+        if self._dv:
+            nu._update(self._dv)
+        return nu
 
     # region apply()
 
@@ -130,7 +153,12 @@ class Shadow(StyleBase):
         Returns:
             None:
         """
-        keys = {"prop": "ShadowFormat"}
+        if not self._is_valid_obj(obj):
+            # will not apply on this class but may apply on child classes
+            self._print_not_valid_obj("apply()")
+            return
+
+        keys = {"prop": self._get_property_name()}
         if "keys" in kwargs:
             keys.update(kwargs["keys"])
 
@@ -151,31 +179,33 @@ class Shadow(StyleBase):
 
     # endregion apply()
 
-    @staticmethod
-    def from_obj(obj: object, prop_name: str) -> Shadow:
+    @classmethod
+    def from_obj(cls, obj: object) -> Shadow:
         """
         Gets instance from object
 
         Args:
             obj (object): UNO object
-            prop_name (str): Name of property that has a ``ShadowFormat`` value.
 
         Returns:
             Shadow: Instance from object
         """
-        inst = Shadow.empty.copy()
 
-        shadow = cast(ShadowFormat, mProps.Props.get(obj, prop_name))
+        # this nu is only used to get Property Name
+        nu = super(Shadow, cls).__new__(cls)
+        nu.__init__()
+
+        shadow = cast(ShadowFormat, mProps.Props.get(obj, nu._get_property_name()))
         if shadow is None:
-            return inst
-        inst._set("Location", shadow.Location)
-        inst._set("Color", shadow.Color)
-        inst._set("IsTransparent", shadow.IsTransparent)
-        inst._set("ShadowWidth", shadow.ShadowWidth)
-        return inst
+            return cls.empty.copy()
+        width = UnitConvert.convert(num=shadow.ShadowWidth, frm=Length.MM100, to=Length.MM)
 
-    @staticmethod
-    def from_shadow(shadow: ShadowFormat) -> Shadow:
+        nu = super(Shadow, cls).__new__(cls)
+        nu.__init__(location=shadow.Location, color=shadow.Color, transparent=shadow.IsTransparent, width=width)
+        return nu
+
+    @classmethod
+    def from_shadow(cls, shadow: ShadowFormat) -> Shadow:
         """
         Gets an instance
 
@@ -185,12 +215,10 @@ class Shadow(StyleBase):
         Returns:
             Shadow: Instance representing ``shadow``.
         """
-        inst = Shadow.empty.copy()
-        inst._set("Location", shadow.Location)
-        inst._set("Color", shadow.Color)
-        inst._set("IsTransparent", shadow.IsTransparent)
-        inst._set("ShadowWidth", shadow.ShadowWidth)
-        return inst
+        width = UnitConvert.convert(num=shadow.ShadowWidth, frm=Length.MM100, to=Length.MM)
+        nu = super(Shadow, cls).__new__(cls)
+        nu.__init__(location=shadow.Location, color=shadow.Color, transparent=shadow.IsTransparent, width=width)
+        return nu
 
     # endregion methods
 
@@ -262,49 +290,44 @@ class Shadow(StyleBase):
     @property
     def prop_location(self) -> ShadowLocation:
         """Gets the location of the shadow."""
-        return self._get("Location")
+        return self._location
 
     @prop_location.setter
     def prop_location(self, value: ShadowLocation) -> None:
-        self._set("Location", value)
+        self._location = value
 
     @property
     def prop_color(self) -> Color:
         """Gets the color value of the shadow."""
-        return self._get("Color")
+        return self._color
 
     @prop_color.setter
     def prop_color(self, value: Color) -> None:
-        self._set("Color", value)
+        self._color = value
 
     @property
     def prop_transparent(self) -> bool:
         """Gets transparent value"""
-        return self._get("IsTransparent")
+        return self._transparent
 
     @prop_transparent.setter
     def prop_transparent(self, value: bool) -> None:
-        self._set("IsTransparent", value)
+        self._transparent = value
 
     @property
     def prop_width(self) -> float:
         """Gets the size of the shadow (in mm units)"""
-        pv = cast(int, self._get("ShadowWidth"))
-        if pv == 0:
-            return 0.0
-        return float(pv / 100)
+        return UnitConvert.convert(num=self._width, frm=Length.MM100, to=Length.MM)
 
     @prop_width.setter
     def prop_width(self, value: float) -> None:
-        self._set("ShadowWidth", round(value * 100))
+        self._width = round(UnitConvert.convert(num=value, frm=Length.MM, to=Length.MM100))
 
     @static_prop
     def empty() -> Shadow:  # type: ignore[misc]
         """Gets empty Shadow. Static Property. when style is applied it remove any shadow."""
         if Shadow._EMPTY is None:
-            Shadow._EMPTY = Shadow(location=ShadowLocation.NONE, transparent=False, color=8421504)
-            # just to be exact due to float conversions.
-            Shadow._EMPTY._set("ShadowWidth", 176)
+            Shadow._EMPTY = Shadow(location=ShadowLocation.NONE, transparent=False, color=8421504, width=1.76)
         return Shadow._EMPTY
 
     # endregion Properties

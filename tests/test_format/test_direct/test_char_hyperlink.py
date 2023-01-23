@@ -61,7 +61,8 @@ def test_hyperlink_props() -> None:
 
 
 def test_hyperlink(loader) -> None:
-    delay = 300  # 0 if Lo.bridge_connector.headless else 2_000
+    # delay = 0 if Lo.bridge_connector.headless else 2_000
+    delay = 0
 
     doc = Write.create_doc()
     if not Lo.bridge_connector.headless:

@@ -6,6 +6,8 @@ Module for Shadow format (``LineSpacing``) struct.
 # region imports
 from __future__ import annotations
 from typing import Dict, Tuple, overload
+from enum import Enum
+from numbers import Real
 
 import uno
 from ....events.event_singleton import _Events
@@ -13,45 +15,123 @@ from ....meta.static_prop import static_prop
 from ....utils import props as mProps
 from ...kind.format_kind import FormatKind
 from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent
+from ....utils.unit_convert import UnitConvert, Length
+from ....utils.type_var import T
 
 from ooo.dyn.style.line_spacing import LineSpacing as UnoLineSpacing
+
+
+class ModeKind(Enum):
+    """Mode Kind for line spacing"""
+
+    # Enum value, mode, default
+    SINGLE = (0, 0, 100)  # zero value,
+    """Single Line Spacing ``1mm``"""
+    LINE_1_15 = (1, 0, 115)  # zero value, value
+    """Line Spacing ``1.15mm``"""
+    LINE_1_5 = (2, 0, 150)
+    """Line Spacing ``1.5mm``"""
+    DOUBLE = (3, 0, 200)
+    """Double line spacing ``2mm``"""
+    PROPORTIONAL = (4, 0, 0)  # PERCENTAGE, No conversion onf height value 98 % = 98 MM100
+    """Proportional line spacing"""
+    AT_LEAST = (5, 1, 0)  # IN 1/100 MM
+    """At least line spacing"""
+    LEADING = (6, 2, 0)  # in 1/100 MM
+    """Leading Line Spacing"""
+    FIXED = (7, 3, 0)  # in 1/100 MM
+    """Fixed Line Spacing"""
+
+    def __int__(self) -> int:
+        return self.value[2]
+
+    def get_mode(self) -> int:
+        return self.value[1]
+
+    def get_enum_val(self) -> int:
+        return self.value[0]
 
 
 # endregion imports
 class LineSpacing(StyleBase):
     """
     Line Spacing struct
-
-    .. versionadded:: 0.9.0
     """
 
     # region init
-    _EMPTY = None
+    _DEFAULT = None
 
-    def __init__(self, mode: int = 0, height: int = 0) -> None:
+    def __init__(self, mode: ModeKind = ModeKind.SINGLE, value: Real = 0) -> None:
         """
         Constructor
 
         Args:
-            mode (int, optional): This value specifies the way the height is specified.
-            height (int, optional): This value specifies the height in regard to Mode.
+            mode (LineMode, optional): This value specifies the way the spacing is specified.
+            value (Real, optional): This value specifies the spacing in regard to Mode.
 
         Raises:
-            ValueError: If ``color`` or ``width`` are less than zero.
+            ValueError: If ``value``are less than zero.
+
+        Note:
+            If ``LineMode`` is ``SINGLE``, ``LINE_1_15``, ``LINE_1_5``, or ``DOUBLE`` then ``value`` is ignored.
+
+            If ``LineMode`` is ``AT_LEAST``, ``LEADING``, or ``FIXED`` then ``value`` is a float (``in mm uints``).
+
+            If ``LineMode`` is ``PROPORTIONAL`` then value is an int representing percentage.
+            For example ``95`` equals ``95%``, ``130`` equals ``130%``
         """
-        if height < 0:
+        if value < 0:
             raise ValueError("mode must be a positive number")
-        if mode < 0:
-            raise ValueError("height must be a postivie number")
-        init_vals = {"Height": height, "Mode": mode}
-        super().__init__(**init_vals)
+
+        self._line_mode = mode
+        self._mode = mode.get_mode()
+        self._value = int(mode)
+        enum_val = mode.get_enum_val()
+
+        if mode == ModeKind.PROPORTIONAL:
+            # no conversion
+            self._value = value
+
+        elif enum_val >= 5:
+            self._value = UnitConvert.convert(num=value, frm=Length.MM, to=Length.MM100)
+
+        super().__init__()
 
     # endregion init
 
     # region methods
+    def __eq__(self, other: object) -> bool:
+        ls2: UnoLineSpacing = None
+        if isinstance(other, LineSpacing):
+            ls2 = other.get_line_spacing()
+        elif getattr(other, "typeName", None) == "com.sun.star.style.LineSpacing":
+            ls2 = other
+        if ls2:
+            ls1 = self.get_line_spacing()
+            return ls1.Height == ls2.Height and ls1.Mode == ls2.Mode
+        return False
 
     def _supported_services(self) -> Tuple[str, ...]:
         return ()
+
+    def _get_property_name(self) -> str:
+        return "ParaLineSpacing"
+
+    def get_attrs(self) -> Tuple[str, ...]:
+        """
+        Gets the attributes that are slated for change in the current instance
+
+        Returns:
+            Tuple(str, ...): Tuple of attribures
+        """
+        return (self._get_property_name(),)
+
+    def copy(self: T) -> T:
+        nu = super(LineSpacing, self.__class__).__new__(self.__class__)
+        nu.__init__(mode=self._mode, height=self._value)
+        if self._dv:
+            nu._update(self._dv)
+        return nu
 
     # region apply()
 
@@ -82,6 +162,10 @@ class LineSpacing(StyleBase):
         Returns:
             None:
         """
+        if not self._is_valid_obj(obj):
+            # will not apply on this class but may apply on child classes
+            self._print_not_valid_obj("apply()")
+            return
         cargs = CancelEventArgs(source=f"{self.apply.__qualname__}")
         cargs.event_data = self
         self.on_applying(cargs)
@@ -91,7 +175,7 @@ class LineSpacing(StyleBase):
         if cargs.cancel:
             return
 
-        keys = {"spacing": "ParaLineSpacing"}
+        keys = {"spacing": self._get_property_name()}
         if "keys" in kwargs:
             keys.update(kwargs["keys"])
         key = keys["spacing"]
@@ -104,10 +188,7 @@ class LineSpacing(StyleBase):
 
     def get_line_spacing(self) -> UnoLineSpacing:
         """gets Line spacing of instance"""
-        line = UnoLineSpacing()  # create the border line
-        for key, val in self._dv.items():
-            setattr(line, key, val)
-        return line
+        return UnoLineSpacing(Mode=self._mode, Height=self._value)
 
     # endregion methods
 
@@ -118,28 +199,20 @@ class LineSpacing(StyleBase):
         return FormatKind.STRUCT
 
     @property
-    def prop_mode(self) -> int:
+    def prop_mode(self) -> ModeKind:
         """Gets mode value"""
-        return self._get("Mode")
-
-    @prop_mode.setter
-    def prop_mode(self, value: int) -> None:
-        self._set("Mode", value)
+        return self._line_mode
 
     @property
-    def prop_height(self) -> int:
-        """Gets the size of the shadow (in mm units)"""
-        return self._get("Height")
-
-    @prop_height.setter
-    def prop_height(self, value: int) -> None:
-        self._set("Height", value)
+    def prop_value(self) -> Real:
+        """Gets the spacing value in regard to Mode"""
+        return self._value
 
     @static_prop
-    def empty() -> LineSpacing:  # type: ignore[misc]
+    def default() -> LineSpacing:  # type: ignore[misc]
         """Gets empty Line Spacing. Static Property."""
-        if LineSpacing._EMPTY is None:
-            LineSpacing._EMPTY = LineSpacing(0, 0)
-        return LineSpacing._EMPTY
+        if LineSpacing._DEFAULT is None:
+            LineSpacing._DEFAULT = LineSpacing(ModeKind.SINGLE, 0)
+        return LineSpacing._DEFAULT
 
     # endregion Properties

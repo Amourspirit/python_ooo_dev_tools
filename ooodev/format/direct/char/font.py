@@ -219,11 +219,11 @@ class Font(StyleBase):
             try:
                 super().apply(obj, **kwargs)
             except mEx.MultiError as e:
-                mLo.Lo.print(f"Font.apply_style(): Unable to set Property")
+                mLo.Lo.print(f"Font.apply(): Unable to set Property")
                 for err in e.errors:
                     mLo.Lo.print(f"  {err}")
         else:
-            self._print_no_required_service("apply_style")
+            self._print_not_valid_obj("apply()")
 
     # endregion apply()
     # endregion methods
