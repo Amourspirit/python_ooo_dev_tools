@@ -123,6 +123,18 @@ def _prepare_mul_div(md: Tuple[MdItem]) -> List[List[int]]:
 class UnitConvert:
     @staticmethod
     def make_unsigned(num: N) -> N:
+        """
+        Gets unsigned number
+
+        Args:
+            num (N): Number
+
+        Raises:
+            AssertionError: If ``num`` is a negative number.
+
+        Returns:
+            N: Value of ``num`` if positive number.
+        """
         # https://github.com/LibreOffice/core/blob/bdbb5d0389642c0d445b5779fe2a18fda3e4a4d4/include/o3tl/safeint.hxx
         assert num >= 0
         return num
@@ -138,17 +150,38 @@ class UnitConvert:
 
     @staticmethod
     def mul_div(num: N, mul: N, div: N) -> float:
+        """
+        Multiplies and divides.
+
+        Args:
+            num (N): number
+            mul (N): multiplier
+            div (N): divisor
+
+        Returns:
+            float: Converted Number
+
+        Note:
+            Formula ``num * (mul / div)``
+        """
         assert mul > 0 and div > 0
         return num * (mul / div)
-        # if isinstance(num, float):
-        #     return num * (mul / div)
-        # else:
-        #     # round towards zero
-        #     # https://tinyurl.com/yblvrllj
-        #     return int(num * (mul / div))
 
     @staticmethod
     def asserting_gcd(m: int, n: int) -> int:
+        """
+        Find the greatest common divisor of the two integers
+
+        Args:
+            m (int): The first integer to find the GCD for
+            n (int): The second integer to find the GCD for
+
+        Raises:
+            AssertionError: If GCD result equals ``0``.
+
+        Returns:
+            int: A value, representing the greatest common divisor (GCD) for two integers
+        """
         ret = math.gcd(m, n)
         assert ret != 0
         return ret
@@ -156,27 +189,109 @@ class UnitConvert:
     @overload
     @classmethod
     def convert(cls, num: int, frm: Length, to: Length) -> float:
+        """
+        Converts a number from one unit to another unit.
+
+        Args:
+            num (int): Number to convert
+            frm (Length): Current number kind
+            to (Length): Kind to convert to
+
+        Returns:
+            float: Converted number
+        """
         ...
 
     @overload
     @classmethod
     def convert(cls, num: int, frm: int, to: int) -> float:
+        """
+        Converts number by calling ``mul_div()``.
+
+        Args:
+            num (int): Number to convert
+            frm (int): multiplier
+            to (int): divisor
+
+        Returns:
+            float: Converted number
+        """
         ...
 
     @classmethod
     def convert(cls, num: int, frm: int | Length, to: int | Length) -> float:
+        """
+        Converts a number from one unit to another unit.
+
+        Args:
+            num (int): Number to convert
+            frm (int | Length): Current number kind
+            to (int | Length): Kind to convert to
+
+        Returns:
+            float: Converted number
+
+        Note:
+            If ``Length`` is not used then :py:meth:`~.UnitConvert.mul_div` is called directly.
+        """
         if isinstance(frm, Length):
             return cls.mul_div(num, cls._md(frm, to), cls._md(to, frm))
         return cls.mul_div(num, frm, to)
 
     @classmethod
     def to_twips(cls, num: N, frm: Length) -> float:
+        """
+        Converts number to twips
+
+        Args:
+            num (N): Number to convert
+            frm (Length): The number kind to convert to twips
+
+        Returns:
+            float: Converted number
+        """
         # Convert to twips - for convenience as we do this a lot
         return cls.convert(num=num, frm=frm, to=Length.TWIP)
 
     @classmethod
     def convert_twip_mm100(cls, num: N) -> float:
+        """
+        Converts twips to ``1/100th mm``
+
+        Args:
+            num (N): Number to convert
+
+
+        Returns:
+            float: Converted number
+        """
         return cls.convert(num=num, frm=Length.TWIP, to=Length.MM100)
+
+    @classmethod
+    def convert_pt_mm100(cls, num: N) -> float:
+        """
+        Converts points to ``1/100th mm``
+
+        Args:
+            num (N): Number to convert
+
+        Returns:
+            float: Converted number
+        """
+        return cls.convert(num=num, frm=Length.PT, to=Length.MM100)
+
+    @classmethod
+    def convert_mm100_pt(cls, num: N) -> float:
+        """
+        Converts ``1/100th mm`` to points
+
+        Args:
+            num (N): Number to convert
+
+        Returns:
+            float: Converted number
+        """
+        return cls.convert(num=num, frm=Length.MM100, to=Length.PT)
 
 
 assert len(_mul_div) == Length.COUNT

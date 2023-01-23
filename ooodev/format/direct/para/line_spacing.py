@@ -14,31 +14,28 @@ from ....utils import lo as mLo
 from ....utils import props as mProps
 from ...style_base import StyleMulti
 from ..structs import line_spacing as mLs
+from ..structs.line_spacing import ModeKind as ModeKind
 from ...kind.format_kind import FormatKind
 
 
-class ModeKind(Enum):
-    """Mode Kinde"""
+class ParaLineSpace(mLs.LineSpacing):
+    """Represents a Line spacing Struct for use with paragraphs"""
 
-    SINGLE = (0, 0)
-    """Single"""
-    PORPORTINAL = (1, 0)
-    """Portortinal"""
-    LINES_1_15 = (2, 0)
-    """1.15 Lines"""
-    LINES_15 = (3, 0)
-    """1.5 Lines"""
-    DOUBLE = (4, 0)
-    """Double"""
-    AT_LEAST = (5, 1)
-    """At Least"""
-    LEADING = (6, 2)
-    """Leading"""
-    FIXED = (7, 3)
-    """Fixed"""
+    _DEFAULT = None
 
-    def __int__(self) -> int:
-        return self.value[1]
+    def _get_property_name(self) -> str:
+        return "ParaLineSpacing"
+
+    def _supported_services(self) -> Tuple[str, ...]:
+        # will affect apply() on parent class.
+        return ("com.sun.star.style.ParagraphProperties",)
+
+    @static_prop
+    def default() -> ParaLineSpace:  # type: ignore[misc]
+        """Gets empty Line Spacing. Static Property."""
+        if ParaLineSpace._DEFAULT is None:
+            ParaLineSpace._DEFAULT = ParaLineSpace(mLs.ModeKind.SINGLE, 0)
+        return ParaLineSpace._DEFAULT
 
 
 class LineSpacing(StyleMulti):
@@ -46,8 +43,6 @@ class LineSpacing(StyleMulti):
     Paragraph Line Spacing
 
     Any properties starting with ``prop_`` set or get current instance values.
-
-    .. versionadded:: 0.9.0
     """
 
     _DEFAULT = None
@@ -57,7 +52,7 @@ class LineSpacing(StyleMulti):
     def __init__(
         self,
         mode: ModeKind | None = None,
-        value: Real | None = None,
+        value: Real = 0,
         active_ln_spacing: bool | None = None,
     ) -> None:
         """
@@ -65,50 +60,34 @@ class LineSpacing(StyleMulti):
 
         Args:
             mode (ModeKind, optional): Determines the mode that is use to apply units.
-            value (Real, optional): Value of line spacing. Only applies when ``ModeKind`` is ``PORPORTINAL``, ``AT_LEAST``, ``LEADING``, or ``FIXED``.
+            value (Real, optional): Value of line spacing. Only applies when ``ModeKind`` is ``PROPORTIONAL``, ``AT_LEAST``, ``LEADING``, or ``FIXED``.
             active_ln_spacing (bool, optional): Determines active page line-spacing.
         Returns:
             None:
 
         Note:
-            When ``mode`` is ``ModeKind.AT_LEAST``, ``ModeKind.LEADING``, or ``ModeKind.FIXED``
-            then the units are mm units (as float).
+            If ``ModeKind`` is ``SINGLE``, ``LINE_1_15``, ``LINE_1_5``, or ``DOUBLE`` then ``value`` is ignored.
 
-            When ``mode`` is ``ModeKind.PORPORTINAL`` then the unit is percentage (as int).
+            If ``ModeKind`` is ``AT_LEAST``, ``LEADING``, or ``FIXED`` then ``value`` is a float (``in mm uints``).
+
+            If ``ModeKind`` is ``PROPORTIONAL`` then value is an int representing percentage.
+            For example ``95`` equals ``95%``, ``130`` equals ``130%``
         """
         # https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1ParagraphProperties-members.html
-        init_vals = {}
+        super().__init__()
 
         ls = None
         if not mode is None:
-            if mode == ModeKind.SINGLE:
-                ls = mLs.LineSpacing(int(mode), 100)
-            elif mode == ModeKind.LINES_1_15:
-                ls = mLs.LineSpacing(int(mode), 115)
-            elif mode == ModeKind.LINES_15:
-                ls = mLs.LineSpacing(int(mode), 150)
-            elif mode == ModeKind.DOUBLE:
-                ls = mLs.LineSpacing(int(mode), 200)
-            elif mode == ModeKind.PORPORTINAL:
-                # value is considered a percentage
-                if not isinstance(value, int):
-                    raise TypeError("Value must be a integer when mode is PORPORTINAL")
-                ls = mLs.LineSpacing(int(mode), value)
-            elif mode in (ModeKind.AT_LEAST, ModeKind.LEADING, ModeKind.FIXED):
-                if not isinstance(value, Real):
-                    raise TypeError("Value must be a integer or float when mode is AT_LEAST or LEADING or FIXED")
-                # value is considered to be mm units
-                ls = mLs.LineSpacing(int(mode), round(value * 100))
+            ls = ParaLineSpace(mode=mode, value=value)
 
         self._mode = mode
         self._value = value
 
         if not active_ln_spacing is None:
-            init_vals["ParaRegisterModeActive"] = active_ln_spacing
+            self._set("ParaRegisterModeActive", active_ln_spacing)
 
-        super().__init__(**init_vals)
         if not ls is None:
-            self._set_style("line_spacing", ls, "ParaLineSpacing", keys={"spacing": "ParaLineSpacing"})
+            self._set_style("line_spacing", ls, *ls.get_attrs())
 
     # endregion init
 
@@ -140,7 +119,7 @@ class LineSpacing(StyleMulti):
         try:
             super().apply(obj, **kwargs)
         except mEx.MultiError as e:
-            mLo.Lo.print(f"{self.__class__}.apply_style(): Unable to set Property")
+            mLo.Lo.print(f"{self.__class__.__name__}.apply(): Unable to set Property")
             for err in e.errors:
                 mLo.Lo.print(f"  {err}")
 
@@ -164,17 +143,17 @@ class LineSpacing(StyleMulti):
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedServiceError(inst._supported_services()[0])
 
-        def set_prop(key: str, indent: LineSpacing):
+        def set_prop(key: str, ls_inst: LineSpacing):
             nonlocal obj
             val = mProps.Props.get(obj, key, None)
             if not val is None:
-                indent._set(key, val)
+                ls_inst._set(key, val)
 
         set_prop("ParaRegisterModeActive", inst)
 
         ls = mProps.Props.get(obj, "ParaLineSpacing", None)
         if not ls is None:
-            inst._set_style("line_spacing", ls, "ParaLineSpacing", keys={"spacing": "ParaLineSpacing"})
+            inst._set_style("line_spacing", ls, *ls.get_attrs())
         return inst
 
     # endregion methods
@@ -200,12 +179,20 @@ class LineSpacing(StyleMulti):
     @property
     def prop_mode(self) -> ModeKind | None:
         """Gets the mode that is use to apply units."""
-        return self._mode
+        info = self._get_style("line_spacing")
+        if info is None:
+            return None
+        ls = cast(ParaLineSpace, info[0])
+        return ls.prop_mode
 
     @property
     def prop_value(self) -> Real | None:
         """Gets the Value of line spacing."""
-        return self._value
+        info = self._get_style("line_spacing")
+        if info is None:
+            return None
+        ls = cast(ParaLineSpace, info[0])
+        return ls.prop_value
 
     @static_prop
     def default() -> LineSpacing:  # type: ignore[misc]

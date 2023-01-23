@@ -18,7 +18,8 @@ if TYPE_CHECKING:
 
 def test_write(loader, para_text) -> None:
     # Tabs inherits from Tab and tab is tested in test_struct_tab
-    delay = 0 if Lo.bridge_connector.headless else 3_000
+    # delay = 0 if Lo.bridge_connector.headless else 3_000
+    delay = 0
 
     doc = Write.create_doc()
     if not Lo.bridge_connector.headless:

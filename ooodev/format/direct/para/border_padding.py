@@ -4,15 +4,11 @@ Modele for managing paragraph padding.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, cast, overload
 
 from ....exceptions import ex as mEx
 from ....meta.static_prop import static_prop
-from ....utils import info as mInfo
-from ....utils import lo as mLo
 from ....utils import props as mProps
 from ...kind.format_kind import FormatKind
-from ...style_base import StyleBase
 from ..common.abstract_padding import AbstractPadding
 from ..common.border_props import BorderProps
 
@@ -51,10 +47,10 @@ class BorderPadding(AbstractPadding):
             raise mEx.NotSupportedServiceError(inst._supported_services()[0])
 
         if inst._is_valid_obj(obj):
-            inst._set(inst._border.left, int(mProps.Props.get(obj, inst._border.left)))
-            inst._set(inst._border.right, int(mProps.Props.get(obj, inst._border.right)))
-            inst._set(inst._border.top, int(mProps.Props.get(obj, inst._border.top)))
-            inst._set(inst._border.bottom, int(mProps.Props.get(obj, inst._border.bottom)))
+            inst._set(inst._props.left, int(mProps.Props.get(obj, inst._props.left)))
+            inst._set(inst._props.right, int(mProps.Props.get(obj, inst._props.right)))
+            inst._set(inst._props.top, int(mProps.Props.get(obj, inst._props.top)))
+            inst._set(inst._props.bottom, int(mProps.Props.get(obj, inst._props.bottom)))
         else:
             raise mEx.NotSupportedServiceError(inst._supported_services()[0])
         return inst
@@ -68,7 +64,7 @@ class BorderPadding(AbstractPadding):
         return FormatKind.PARA
 
     @property
-    def _border(self) -> BorderProps:
+    def _props(self) -> BorderProps:
         try:
             return self.__border_properties
         except AttributeError:
@@ -85,10 +81,10 @@ class BorderPadding(AbstractPadding):
         """Gets BorderPadding default. Static Property."""
         if BorderPadding._DEFAULT is None:
             inst = BorderPadding()
-            inst._set(inst._border.bottom, 0)
-            inst._set(inst._border.left, 0)
-            inst._set(inst._border.right, 0)
-            inst._set(inst._border.top, 0)
+            inst._set(inst._props.bottom, 0)
+            inst._set(inst._props.left, 0)
+            inst._set(inst._props.right, 0)
+            inst._set(inst._props.top, 0)
             BorderPadding._DEFAULT = inst
 
         return BorderPadding._DEFAULT

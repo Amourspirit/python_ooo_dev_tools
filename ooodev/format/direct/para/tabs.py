@@ -34,6 +34,11 @@ class Tabs(Tab):
     _DEFAULT = None
 
     # region methods
+    def _supported_services(self) -> Tuple[str, ...]:
+        return ("com.sun.star.style.ParagraphProperties",)
+
+    def _get_property_name(self) -> str:
+        return "ParaTabStops"
 
     @staticmethod
     def find(obj: object, position: float) -> Tab | None:
@@ -49,7 +54,7 @@ class Tabs(Tab):
         """
         if not Tabs.default._is_valid_obj(obj):
             return None
-        key = "ParaTabStops"
+        key = Tabs.default._get_property_name()
         pos = round(position * 100)
         tss = cast(Tuple[TabStop, ...], mProps.Props.get(obj, key))
         if tss is None:
@@ -103,7 +108,7 @@ class Tabs(Tab):
         Returns:
             None:
         """
-        tss = cast(Tuple[TabStop, ...], mProps.Props.get(obj, "ParaTabStops"))
+        tss = cast(Tuple[TabStop, ...], mProps.Props.get(obj, Tabs.default._get_property_name()))
         if tss is None:
             return False
         lst = []
@@ -112,7 +117,7 @@ class Tabs(Tab):
                 lst.append(ts)
         if len(lst) == len(tss):
             return False
-        cls._set_obj_tabs(obj, lst)
+        Tabs.default._set_obj_tabs(obj, lst)
         return True
 
     @classmethod
@@ -130,9 +135,9 @@ class Tabs(Tab):
         if not Tabs.default._is_valid_obj(obj):
             return False
         if isinstance(tab, Tab):
-            return cls._remove_by_positon(obj, tab._get("Position"))
+            return Tabs.default._remove_by_positon(obj, tab._get("Position"))
         ts = cast(TabStop, tab)
-        return cls._remove_by_positon(obj, ts.Position)
+        return Tabs.default._remove_by_positon(obj, ts.Position)
 
     @classmethod
     def remove_all(cls, obj: object) -> None:
@@ -144,14 +149,14 @@ class Tabs(Tab):
         """
         if not Tabs.default._is_valid_obj(obj):
             return
-        tss = cast(Tuple[TabStop, ...], mProps.Props.get(obj, "ParaTabStops"))
+        tss = cast(Tuple[TabStop, ...], mProps.Props.get(obj, Tabs.default._get_property_name()))
         if tss is None:
             return
         try:
-            cls._set_obj_tabs(obj, [Tabs.default.get_tab_stop()])
+            Tabs.default._set_obj_tabs(obj, [Tabs.default.get_tab_stop()])
         except Exception:
             # if for any reason can't get default it is ok to just remove all.
-            cls._set_obj_tabs(obj, [])
+            Tabs.default._set_obj_tabs(obj, [])
 
     def get_tab_stop(self) -> TabStop:
         """

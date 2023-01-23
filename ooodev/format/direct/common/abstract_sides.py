@@ -59,20 +59,20 @@ class AbstractSides(StyleBase):
         """
         init_vals = {}
         if not border_side is None:
-            init_vals[self._border.top] = border_side
-            init_vals[self._border.bottom] = border_side
-            init_vals[self._border.left] = border_side
-            init_vals[self._border.right] = border_side
+            init_vals[self._props.top] = border_side
+            init_vals[self._props.bottom] = border_side
+            init_vals[self._props.left] = border_side
+            init_vals[self._props.right] = border_side
 
         else:
             if not top is None:
-                init_vals[self._border.top] = top
+                init_vals[self._props.top] = top
             if not bottom is None:
-                init_vals[self._border.bottom] = bottom
+                init_vals[self._props.bottom] = bottom
             if not left is None:
-                init_vals[self._border.left] = left
+                init_vals[self._props.left] = left
             if not right is None:
-                init_vals[self._border.right] = right
+                init_vals[self._props.right] = right
 
         self._has_attribs = len(init_vals) > 0
         super().__init__(**init_vals)
@@ -113,7 +113,7 @@ class AbstractSides(StyleBase):
         try:
             super().apply(obj, **kwargs)
         except mEx.MultiError as e:
-            mLo.Lo.print(f"BorderChar.apply_style(): Unable to set Property")
+            mLo.Lo.print(f"{self.__class__.__name__}.apply(): Unable to set Property")
             for err in e.errors:
                 mLo.Lo.print(f"  {err}")
 
@@ -229,53 +229,53 @@ class AbstractSides(StyleBase):
     @property
     def prop_left(self) -> Side | None:
         """Gets left value"""
-        return self._get(self._border.left)
+        return self._get(self._props.left)
 
     @prop_left.setter
     def prop_left(self, value: Side | None) -> None:
         if value is None:
-            self._remove(self._border.left)
+            self._remove(self._props.left)
             return
-        self._set(self._border.left, value)
+        self._set(self._props.left, value)
 
     @property
     def prop_right(self) -> Side | None:
         """Gets right value"""
-        return self._get(self._border.right)
+        return self._get(self._props.right)
 
     @prop_right.setter
     def prop_right(self, value: Side | None) -> None:
         if value is None:
-            self._remove(self._border.right)
+            self._remove(self._props.right)
             return
-        self._set(self._border.right, value)
+        self._set(self._props.right, value)
 
     @property
     def prop_top(self) -> Side | None:
         """Gets top value"""
-        return self._get(self._border.top)
+        return self._get(self._props.top)
 
     @prop_top.setter
     def prop_top(self, value: Side | None) -> None:
         if value is None:
-            self._remove(self._border.top)
+            self._remove(self._props.top)
             return
-        self._set(self._border.top, value)
+        self._set(self._props.top, value)
 
     @property
     def prop_bottom(self) -> Side | None:
         """Gets bottom value"""
-        return self._get(self._border.bottom)
+        return self._get(self._props.bottom)
 
     @prop_bottom.setter
     def prop_bottom(self, value: Side | None) -> None:
         if value is None:
-            self._remove(self._border.bottom)
+            self._remove(self._props.bottom)
             return
-        self._set(self._border.bottom, value)
+        self._set(self._props.bottom, value)
 
     @property
-    def _border(self) -> BorderProps:
+    def _props(self) -> BorderProps:
         try:
             return self.__border_properties
         except AttributeError:
