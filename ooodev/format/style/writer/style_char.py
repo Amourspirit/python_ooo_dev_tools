@@ -69,6 +69,11 @@ class StyleChar(StyleBase):
         return StyleChar(StyleCharKind.CITATION)
 
     @property
+    def quotation(self) -> StyleChar:
+        """Style Citation"""
+        return StyleChar(StyleCharKind.CITATION)
+
+    @property
     def definition(self) -> StyleChar:
         """Style Definition"""
         return StyleChar(StyleCharKind.DEFINITION)
