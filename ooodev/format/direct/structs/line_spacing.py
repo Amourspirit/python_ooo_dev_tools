@@ -70,7 +70,7 @@ class LineSpacing(StyleBase):
             value (Real, optional): This value specifies the spacing in regard to Mode.
 
         Raises:
-            ValueError: If ``value``are less than zero.
+            ValueError: If ``value`` are less than zero.
 
         Note:
             If ``LineMode`` is ``SINGLE``, ``LINE_1_15``, ``LINE_1_5``, or ``DOUBLE`` then ``value`` is ignored.
