@@ -12,3 +12,4 @@ class FormatKind(IntFlag):
     CELL = 1 << 5
     STATIC = 1 << 6  # no backups if properties in write, etc.
     Fill = 1 << 7
+    STYLE = 1 << 8

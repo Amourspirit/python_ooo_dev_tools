@@ -9,7 +9,7 @@ class StyleListKind(Enum):
     LIST_01 = "List 1"
     """Bullet •"""
     LIST_02 = "List 2"
-    """Bullet –"""
+    """Dash –"""
     LIST_03 = "List 3"
     """Bullet 🗹 (checkbox like)"""
     LIST_04 = "List 4"
@@ -25,7 +25,7 @@ class StyleListKind(Enum):
     NUM_ivx = "Numbering ivx"
     """Numbering ivx (lower case)"""
     NUM_IVX = "Numbering IVX"
-    """Numbering IVX (uper case)"""
+    """Numbering IVX (upper case)"""
 
     def __str__(self) -> str:
         return self.value

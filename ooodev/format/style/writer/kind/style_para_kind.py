@@ -108,6 +108,7 @@ class StyleParaKind(Enum):
     SENDER = "Sender"
     SIGNATURE = "Signature"
     STANDARD = "Standard"
+    """Clears paragraph style"""
     SUBTITLE = "Subtitle"
     TABLE = "Table"
     TABLE_CONTENTS = "Table Contents"
