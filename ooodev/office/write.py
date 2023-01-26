@@ -78,6 +78,7 @@ if TYPE_CHECKING:
     # from com.sun.star.beans import PropertyValue
     from com.sun.star.container import XEnumeration
     from com.sun.star.container import XNameAccess
+    from com.sun.star.drawing import FillProperties
     from com.sun.star.drawing import XDrawPage
     from com.sun.star.frame import XComponentLoader
     from com.sun.star.frame import XFrame
@@ -1054,11 +1055,31 @@ class Write(mSel.Selection):
 
         restore = False
 
+        style_lst: List[StyleObj] = []
+        fill_lst: List[StyleObj] = []
+        restore_style_lst: List[StyleObj] = []
+        restore_fill_lst: List[StyleObj] = []
+        if not styles is None:
+            for style in styles:
+                if FormatKind.FILL in style.prop_format_kind and FormatKind.PARA in style.prop_format_kind:
+                    fill_lst.append(style)
+                else:
+                    style_lst.append(style)
+
+        para_c = None
+        if fill_lst:
+            para_c = cls.get_paragraph_cursor(cursor)
+
         def capture_old_val(style: StyleObj) -> None:
-            nonlocal restore
+            nonlocal restore, para_c, restore_style_lst, restore_fill_lst
             if FormatKind.PARA in style.prop_format_kind and not FormatKind.STATIC in style.prop_format_kind:
                 restore = True
-                style.backup(cursor)
+                if not para_c is None and FormatKind.FILL in style.prop_format_kind:
+                    style.backup(para_c.TextParagraph)
+                    restore_fill_lst.append(style)
+                else:
+                    style.backup(cursor)
+                    restore_style_lst.append(style)
 
         if text:
             if styles is None:
@@ -1066,15 +1087,35 @@ class Write(mSel.Selection):
             else:
                 for style in styles:
                     capture_old_val(style)
-                cls._append_text_style(cursor=cursor, text=text, styles=styles)
+                cls._append_text_style(cursor=cursor, text=text, styles=style_lst)
+
+        if fill_lst:
+            # para_c = cls.get_paragraph_cursor(cursor)
+            para_c.gotoStartOfParagraph(False)
+            para_c.gotoEndOfParagraph(True)
+            fp = cast("FillProperties", para_c.TextParagraph)
+            for style in fill_lst:
+                style.apply(fp)
+            para_c.gotoEnd(False)
 
         cls._append_ctl_char(cursor=cursor, ctl_char=ControlCharacterEnum.PARAGRAPH_BREAK)
 
-        if restore:
-            for style in styles:
+        for style in restore_style_lst:
+            try:
+                style.restore(cursor, True)
+            except mEx.MultiError as e:
+                mLo.Lo.print(f"Write.append_para(): Unable to restore Property")
+                for err in e.errors:
+                    mLo.Lo.print(f"  {err}")
+            except Exception as e:
+                mLo.Lo.print(f"Write.append_para(): Unable to restore Property")
+                mLo.Lo.print(f"  {e}")
+
+        if not para_c is None:
+            fp = cast("FillProperties", para_c.TextParagraph)
+            for style in restore_fill_lst:
                 try:
-                    if style.prop_has_backup:
-                        style.restore(cursor, True)
+                    style.restore(fp, True)
                 except mEx.MultiError as e:
                     mLo.Lo.print(f"Write.append_para(): Unable to restore Property")
                     for err in e.errors:

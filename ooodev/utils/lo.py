@@ -2054,6 +2054,10 @@ class Lo(metaclass=StaticProperty):
         Note:
             There are many dispatch command constants that can be found in :ref:`utils_dispatch` Namespace
 
+            | ``DISPATCHING`` Event args data contains any properties passed in via ``props``.
+            | ``DISPATCHED`` Event args data contains any results from the dispatch commands.
+
+
         See Also:
             - :ref:`ch04_dispatching`
             - `LibreOffice Dispatch Commands <https://wiki.documentfoundation.org/Development/DispatchCommands>`_
@@ -2063,10 +2067,11 @@ class Lo(metaclass=StaticProperty):
         try:
             str_cmd = str(cmd)  # make sure and enum or other lookup did not get passed by mistake
             cargs = DispatchCancelArgs(Lo.dispatch_cmd.__qualname__, str_cmd)
+            cargs.event_data = props
             _Events().trigger(LoNamedEvent.DISPATCHING, cargs)
             if cargs.cancel:
                 raise mEx.CancelEventError(cargs, f'Dispatch Command "{str_cmd}" has been canceled')
-
+            props = cargs.event_data
             if props is None:
                 props = ()
             if frame is None:
@@ -2078,7 +2083,9 @@ class Lo(metaclass=StaticProperty):
                     XDispatchHelper, f"Could not create dispatch helper for command {str_cmd}"
                 )
             result = helper.executeDispatch(frame, f".uno:{str_cmd}", "", 0, props)
-            _Events().trigger(LoNamedEvent.DISPATCHED, DispatchArgs.from_args(cargs))
+            eargs = DispatchArgs.from_args(cargs)
+            eargs.event_data = result
+            _Events().trigger(LoNamedEvent.DISPATCHED, eargs)
             return result
         except mEx.CancelEventError:
             raise

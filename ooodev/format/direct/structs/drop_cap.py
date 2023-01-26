@@ -1,5 +1,5 @@
 """
-Modele for addin paragraph Drop Cap.
+Module for ``DropCapFormat`` struct.
 
 .. versionadded:: 0.9.0
 """
@@ -179,13 +179,13 @@ class DropCap(StyleBase):
     @classmethod
     def from_drop_cap_format(cls, dcf: DropCapFormat) -> DropCap:
         """
-        Converts a DropCap Stop instance to a DropCap
+        Converts a ``DropCapFormat`` Stop instance to a ``DropCap``
 
         Args:
-            ts (TabStop): DropCap stop
+            dcf (DropCapFormat): UNO Drop Cap Format
 
         Returns:
-            DropCap: DropCap set with DropCap Stop properties
+            DropCap: ``DropCap`` set with Drop Cap Format properties
         """
         inst = super(DropCap, cls).__new__(cls)
         inst.__init__(count=dcf.Count, distance=dcf.Distance, lines=dcf.Lines)

@@ -9,27 +9,26 @@ from typing import Tuple, overload
 from ....meta.static_prop import static_prop
 from ....utils import lo as mLo
 from ....utils import props as mProps
-from ....events.event_singleton import _Events
+from ....exceptions import ex as mEx
 from ....utils.color import Color
 from ...kind.format_kind import FormatKind
-from ...style_base import StyleBase, CancelEventArgs, EventArgs, FormatNamedEvent
+from ...style_base import StyleBase
+from ooo.dyn.drawing.fill_style import FillStyle
 
 # LibreOffice seems to have an unresolved bug with Background color.
 # https://bugs.documentfoundation.org/show_bug.cgi?id=99125
 # see Also: https://forum.openoffice.org/en/forum/viewtopic.php?p=417389&sid=17b21c173e4a420b667b45a2949b9cc5#p417389
+# The solution to these issues is to apply FillColor to Paragraph cursors TextParagraph.
 
 
 class FillColor(StyleBase):
     """
     Paragraph Fill Coloring
 
-    Warning:
-        This class uses dispatch commands and is not suitable for use in headless mode.
-
     .. versionadded:: 0.9.0
     """
 
-    _EMPTY = None
+    _DEFAULT = None
 
     def __init__(self, color: Color = -1) -> None:
         """
@@ -41,27 +40,22 @@ class FillColor(StyleBase):
         Returns:
             None:
         """
-        if mLo.Lo.bridge_connector.headless:
-            mLo.Lo.print("Warning! FillColor class is not suitable in Headless mode.")
 
         init_vals = {}
         if color >= 0:
             init_vals["FillColor"] = color
-            init_vals["FillBackground"] = False
+            init_vals["FillStyle"] = FillStyle.SOLID
         else:
             init_vals["FillColor"] = -1
-            init_vals["FillBackground"] = True
+            init_vals["FillStyle"] = FillStyle.NONE
 
         super().__init__(**init_vals)
 
     def _supported_services(self) -> Tuple[str, ...]:
-        """
-        Gets a tuple of supported services (``com.sun.star.style.ParagraphProperties``,)
-
-        Returns:
-            Tuple[str, ...]: Supported services
-        """
-        return ("com.sun.star.style.ParagraphProperties",)
+        return (
+            "com.sun.star.drawing.FillProperties",
+            "com.sun.star.text.TextContent",
+        )
 
     # region apply()
 
@@ -80,23 +74,15 @@ class FillColor(StyleBase):
         Returns:
             None:
         """
-        cargs = CancelEventArgs(source=f"{self.apply.__qualname__}")
-        cargs.event_data = self
-        self.on_applying(cargs)
-        if cargs.cancel:
-            return
-        _Events().trigger(FormatNamedEvent.STYLE_APPLYING, cargs)
-        if cargs.cancel:
-            return
-
-        mLo.Lo.dispatch_cmd("BackgroundColor", mProps.Props.make_props(BackgroundColor=self.prop_color))
-        mLo.Lo.dispatch_cmd("Escape")
-
-        eargs = EventArgs.from_args(cargs)
-        self.on_applied(eargs)
-        _Events().trigger(FormatNamedEvent.STYLE_APPLIED, eargs)
+        try:
+            super().apply(obj, **kwargs)
+        except mEx.MultiError as e:
+            mLo.Lo.print(f"{self.__class__.__name__}.apply(): Unable to set Property")
+            for err in e.errors:
+                mLo.Lo.print(f"  {err}")
 
     # endregion apply()
+
     def dispatch_reset(self) -> None:
         """
         Resets the cursor at is current position/selection to remove any Fill Color Formatting.
@@ -107,26 +93,10 @@ class FillColor(StyleBase):
         mLo.Lo.dispatch_cmd("BackgroundColor", mProps.Props.make_props(BackgroundColor=-1))
         mLo.Lo.dispatch_cmd("Escape")
 
-    def backup(self, obj: object) -> None:
-        """Overrides, No actions are taken"""
-        pass
-
-    def restore(self, obj: object, clear: bool = False) -> None:
-        """Overrides, No actions are taken"""
-        self.dispatch_reset()
-
-    # region set styles
-
-    # endregion set styles
-    @property
-    def prop_has_backup(self) -> bool:
-        """Gets If instantance has backup data. Overrides, Returns ``False``."""
-        return True
-
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.PARA
+        return FormatKind.PARA | FormatKind.FILL
 
     @property
     def prop_color(self) -> Color:
@@ -135,16 +105,18 @@ class FillColor(StyleBase):
 
     @prop_color.setter
     def prop_color(self, value: Color):
+        if self is FillColor.default:
+            raise ValueError("Properties of FillColor.default can not be changed.")
         if value >= 0:
             self._set("FillColor", value)
-            self._set("FillBackground", False)
+            self._set("FillStyle", FillStyle.SOLID)
         else:
             self._set("FillColor", -1)
-            self._set("FillBackground", True)
+            self._set("FillStyle", FillStyle.NONE)
 
     @static_prop
-    def empty() -> FillColor:  # type: ignore[misc]
+    def default() -> FillColor:  # type: ignore[misc]
         """Gets FillColor empty. Static Property."""
-        if FillColor._EMPTY is None:
-            FillColor._EMPTY = FillColor()
-        return FillColor._EMPTY
+        if FillColor._DEFAULT is None:
+            FillColor._DEFAULT = FillColor(-1)
+        return FillColor._DEFAULT

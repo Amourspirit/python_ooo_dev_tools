@@ -129,7 +129,7 @@ class FillColor(StyleBase):
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.Fill
+        return FormatKind.FILL
 
     @property
     def prop_color(self) -> Color:
