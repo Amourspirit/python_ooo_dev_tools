@@ -6,13 +6,13 @@ Module for Paragraph Fill Color.
 from __future__ import annotations
 from typing import Tuple, overload
 
-from ....meta.static_prop import static_prop
-from ....utils import lo as mLo
-from ....utils import props as mProps
-from ....exceptions import ex as mEx
-from ....utils.color import Color
-from ...kind.format_kind import FormatKind
-from ...style_base import StyleBase
+from .....meta.static_prop import static_prop
+from .....utils import lo as mLo
+from .....utils import props as mProps
+from .....exceptions import ex as mEx
+from .....utils import color as mColor
+from ....kind.format_kind import FormatKind
+from ....style_base import StyleBase
 from ooo.dyn.drawing.fill_style import FillStyle
 
 # LibreOffice seems to have an unresolved bug with Background color.
@@ -21,7 +21,7 @@ from ooo.dyn.drawing.fill_style import FillStyle
 # The solution to these issues is to apply FillColor to Paragraph cursors TextParagraph.
 
 
-class FillColor(StyleBase):
+class Color(StyleBase):
     """
     Paragraph Fill Coloring
 
@@ -30,7 +30,7 @@ class FillColor(StyleBase):
 
     _DEFAULT = None
 
-    def __init__(self, color: Color = -1) -> None:
+    def __init__(self, color: mColor.Color = -1) -> None:
         """
         Constructor
 
@@ -69,7 +69,6 @@ class FillColor(StyleBase):
 
         Args:
             obj (object): UNO object that supports ``com.sun.star.style.ParagraphProperties`` service.
-            kwargs (Any, optional): Expandable list of key value pairs that may be used in child classes.
 
         Returns:
             None:
@@ -99,13 +98,13 @@ class FillColor(StyleBase):
         return FormatKind.PARA | FormatKind.FILL
 
     @property
-    def prop_color(self) -> Color:
+    def prop_color(self) -> mColor.Color:
         """Gets/Sets color"""
         return self._get("FillColor")
 
     @prop_color.setter
-    def prop_color(self, value: Color):
-        if self is FillColor.default:
+    def prop_color(self, value: mColor.Color):
+        if self is Color.default:
             raise ValueError("Properties of FillColor.default can not be changed.")
         if value >= 0:
             self._set("FillColor", value)
@@ -115,8 +114,8 @@ class FillColor(StyleBase):
             self._set("FillStyle", FillStyle.NONE)
 
     @static_prop
-    def default() -> FillColor:  # type: ignore[misc]
+    def default() -> Color:  # type: ignore[misc]
         """Gets FillColor empty. Static Property."""
-        if FillColor._DEFAULT is None:
-            FillColor._DEFAULT = FillColor(-1)
-        return FillColor._DEFAULT
+        if Color._DEFAULT is None:
+            Color._DEFAULT = Color(-1)
+        return Color._DEFAULT

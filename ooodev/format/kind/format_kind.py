@@ -13,3 +13,4 @@ class FormatKind(IntFlag):
     STATIC = 1 << 6  # no backups if properties in write, etc.
     FILL = 1 << 7
     STYLE = 1 << 8
+    PAGE = 1 << 9

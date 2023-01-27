@@ -6,6 +6,7 @@ Module for ``Gradient`` struct.
 from __future__ import annotations
 from typing import Tuple, cast, overload
 import json
+from enum import Enum
 
 from ....events.event_singleton import _Events
 from ....exceptions import ex as mEx
@@ -20,7 +21,7 @@ from ...kind.format_kind import FormatKind
 
 import uno
 from ooo.dyn.awt.gradient import Gradient
-from ooo.dyn.awt.gradient_style import GradientStyle
+from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
 
 
 class GradinetStruct(StyleBase):
@@ -177,7 +178,7 @@ class GradinetStruct(StyleBase):
         """
         if not self._is_valid_obj(obj):
             # will not apply on this class but may apply on child classes
-            self._print_not_valid_obj("apply()")
+            self._print_not_valid_obj("apply")
             return
 
         cargs = CancelEventArgs(source=f"{self.apply.__qualname__}")
@@ -293,7 +294,7 @@ class GradinetStruct(StyleBase):
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.PARA
+        return FormatKind.PARA | FormatKind.FILL
 
     @property
     def prop_style(self) -> GradientStyle:

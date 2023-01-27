@@ -44,14 +44,14 @@ class Sides(AbstractSides):
             PropertyNotFoundError: If ``obj`` does not have ``TableBorder2`` property.
 
         Returns:
-            BorderTable: Border Table.
+            Sides: Instance that represents ``BorderLine2``.
         """
         bc = Sides()
         if not bc._is_valid_obj(obj):
             raise mEx.NotSupportedServiceError(bc._supported_services()[0])
 
         empty = BorderLine2()
-        for attr in bc.__border_properties:
+        for attr in bc._props:
             b2 = cast(BorderLine2, getattr(obj, attr, empty))
             side = Side.from_border2(b2)
             bc._set(attr, side)

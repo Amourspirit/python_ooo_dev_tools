@@ -36,10 +36,16 @@ class StyleBase(ABC):
             if not value is None:
                 self._dv[key] = value
 
+    def _get_properties(self) -> Dict[str, Any]:
+        """Gets Key value pairs for the instance."""
+        return self._dv
+
     def _get(self, key: str) -> Any:
+        """Gets the property value"""
         return self._dv.get(key, None)
 
     def _set(self, key: str, val: Any) -> bool:
+        """Sets a property value"""
         cargs = KeyValCancelArgs("style_base", key=key, value=val)
         self._on_setting(cargs)
         if cargs.cancel:
@@ -48,18 +54,22 @@ class StyleBase(ABC):
         return True
 
     def _clear(self) -> None:
+        """Clears all properties"""
         self._dv.clear()
 
     def _has(self, key: str) -> bool:
+        """Gets if a property exist"""
         return key in self._dv
 
     def _remove(self, key: str) -> bool:
+        """Removes a property if it exist"""
         if self._has(key):
             del self._dv[key]
             return True
         return False
 
     def _update(self, value: Dict[str, Any] | StyleBase) -> None:
+        """Updates properties"""
         if isinstance(value, StyleBase):
             self._dv.update(value._dv)
             return
@@ -108,12 +118,13 @@ class StyleBase(ABC):
         """
         rs = self._supported_services()
         rs_len = len(rs)
-        if rs_len == 0:
-            return
         if method_name:
             name = f".{method_name}()"
         else:
             name = ""
+        if rs_len == 0:
+            mLo.Lo.print(f"{self.__class__.__name__}{name}: object is not valid.")
+            return
         services = ", ".join(rs)
         srv = "service" if rs_len == 1 else "serivces"
         mLo.Lo.print(f"{self.__class__.__name__}{name}: object must support {srv}: {services}")
@@ -166,7 +177,7 @@ class StyleBase(ABC):
                 self.on_applied(eargs)
                 _Events().trigger(FormatNamedEvent.STYLE_APPLIED, eargs)
             else:
-                self._print_not_valid_obj("apply()")
+                self._print_not_valid_obj("apply")
 
     def backup(self, obj: object) -> None:
         """
@@ -319,6 +330,7 @@ class StyleBase(ABC):
         return mProps.Props.make_props(**self._dv)
 
     def copy(self: T) -> T:
+        """Gets a copy of instance as a new instance"""
         nu = super(StyleBase, self.__class__).__new__(self.__class__)
         nu.__init__()
         nu._update(self._dv)
