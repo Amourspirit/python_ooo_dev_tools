@@ -4,7 +4,7 @@ Module for Paragraph Fill Color.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, overload
+from typing import Tuple, cast, overload, TYPE_CHECKING
 
 from .....meta.static_prop import static_prop
 from .....utils import lo as mLo
@@ -22,6 +22,10 @@ from ....preset.preset_gradient import PresetKind as PresetKind
 
 from ooo.dyn.drawing.fill_style import FillStyle
 from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
+from ooo.dyn.awt.gradient import Gradient as UNOGradient
+
+if TYPE_CHECKING:
+    from com.sun.star.drawing import FillProperties
 
 
 class FillStyleStruct(GradinetStruct):
@@ -106,6 +110,47 @@ class Gradient(StyleMulti):
         return (
             "com.sun.star.drawing.FillProperties",
             "com.sun.star.text.TextContent",
+        )
+
+    @classmethod
+    def from_obj(cls, obj: object) -> Gradient:
+        """
+        Gets instance from object
+
+        Args:
+            obj (object): Object that implements ``com.sun.star.drawing.FillProperties`` service
+
+        Returns:
+            Gradient: Instance that represents Gradient color.
+        """
+        # this nu is only used to get Property Name
+        nu = super(Gradient, cls).__new__(cls)
+        nu.__init__()
+        if not nu._is_valid_obj(obj):
+            raise mEx.NotSupportedError("obj is not supported")
+
+        gs = FillStyleStruct()
+        gs_prop_name = gs._get_property_name()
+
+        grad_fill = cast(UNOGradient, mProps.Props.get(obj, gs_prop_name))
+        gs = FillStyleStruct.from_gradient(grad_fill)
+        fill_gradient_name = cast(str, mProps.Props.get(obj, "FillGradientName"))
+        if grad_fill.Angle == 0:
+            angle = 0
+        else:
+            angle = round(grad_fill.Angle / 10)
+        return Gradient(
+            style=grad_fill.Style,
+            step_count=grad_fill.StepCount,
+            x_offset=grad_fill.XOffset,
+            y_offset=grad_fill.YOffset,
+            angle=angle,
+            border=grad_fill.Border,
+            start_color=grad_fill.StartColor,
+            start_intensity=grad_fill.StartIntensity,
+            end_color=grad_fill.EndColor,
+            end_intensity=grad_fill.EndIntensity,
+            name=fill_gradient_name,
         )
 
     @staticmethod

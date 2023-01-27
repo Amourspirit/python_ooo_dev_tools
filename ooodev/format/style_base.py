@@ -336,6 +336,19 @@ class StyleBase(ABC):
         nu._update(self._dv)
         return nu
 
+    def __eq__(self, oth: object) -> bool:
+        if isinstance(oth, StyleBase):
+            result = False
+            try:
+                for k, v in self._get_properties().items():
+                    if oth._get(k) != v:
+                        break
+                result = True
+            except Exception:
+                return False
+            return result
+        return NotImplemented
+
     @property
     def prop_has_attribs(self) -> bool:
         """Gets If instantance has any attributes set."""
@@ -409,25 +422,30 @@ class StyleMulti(StyleBase):
                 This is used for backup and restore in Write Module.
             kwargs: Expandalble key value args to that are to be passed to style when ``apply_style()`` is called.
         """
+        styles = self._get_multi_styles()
         if len(attrs) + len(kwargs) == 0:
-            self._styles[key] = (style, None)
+            styles[key] = (style, None)
         else:
-            self._styles[key] = (style, _StyleMultArgs(*attrs, **kwargs))
+            styles[key] = (style, _StyleMultArgs(*attrs, **kwargs))
 
     def _update_style(self, value: StyleMulti) -> None:
-        self._styles.update(value._styles)
+        self._get_multi_styles().update(value._styles)
 
     def _remove_style(self, key: str) -> bool:
-        if key in self._styles:
-            del self._styles[key]
+        styles = self._get_multi_styles()
+        if key in styles:
+            del styles[key]
             return True
         return False
 
     def _get_style(self, key: str) -> Tuple[StyleBase, _StyleMultArgs | None] | None:
-        return self._styles.get(key, None)
+        return self._get_multi_styles().get(key, None)
 
     def _has_style(self, key: str) -> bool:
-        return key in self._styles
+        return key in self._get_multi_styles()
+
+    def _get_multi_styles(self) -> Dict[str, Tuple[StyleBase, _StyleMultArgs | None]]:
+        return self._styles
 
     @property
     def prop_has_attribs(self) -> bool:
@@ -442,7 +460,8 @@ class StyleMulti(StyleBase):
             obj (object): UNO Oject that styles are to be applied.
         """
         super().apply(obj, **kwargs)
-        for _, info in self._styles.items():
+        styles = self._get_multi_styles()
+        for _, info in styles.items():
             style, kw = info
             if kw:
                 style.apply(obj, **kw.kwargs)
@@ -451,13 +470,34 @@ class StyleMulti(StyleBase):
 
     def copy(self: T) -> T:
         cp = super().copy()
-        for key, info in self._styles.items():
+        styles = self._get_multi_styles()
+        for key, info in styles.items():
             style, kw = info
             if kw:
                 cp._set_style(key, style.copy(), **kw.kwargs)
             else:
                 cp._set_style(key, style.copy())
         return cp
+
+    def __eq__(self, oth: object) -> bool:
+        if isinstance(oth, StyleMulti):
+            result = super().__eq__(oth)
+            if result is False:
+                return False
+            result = True
+            styles = self._get_multi_styles()
+            for key, info in styles.items():
+                style, _ = info
+                style_other = oth._get_style(key)
+                if style_other is None:
+                    result = False
+                    break
+
+                result = style == style_other[0]
+                if result is False:
+                    break
+            return result
+        return NotImplemented
 
     def get_attrs(self) -> Tuple[str, ...]:
         """
@@ -467,9 +507,11 @@ class StyleMulti(StyleBase):
             Tuple(str, ...): Tuple of attribures
         """
         # get current keys in internal dictionary
-        attrs = set(self._dv.keys())
-        if self._styles:
-            for _, info in self._styles.items():
+        props = self._get_properties()
+        attrs = set(props.keys())
+        styles = self._get_multi_styles()
+        if styles:
+            for _, info in styles.items():
                 _, args = info
                 if args:
                     attrs.update(args.attrs)
@@ -494,7 +536,8 @@ class StyleMulti(StyleBase):
             self._print_not_valid_obj("Backup")
             return
         super().backup(obj)
-        for _, info in self._styles.items():
+        styles = self._get_multi_styles()
+        for _, info in styles.items():
             style, _ = info
             style.backup(obj)
 
@@ -515,7 +558,8 @@ class StyleMulti(StyleBase):
             :py:meth:`~.style_base.StyleMulti.backup`
         """
         super().restore(obj=obj, clear=clear)
-        for _, info in self._styles.items():
+        styles = self._get_multi_styles()
+        for _, info in styles.items():
             style, _ = info
             style.restore(obj=obj, clear=clear)
 
@@ -523,7 +567,8 @@ class StyleMulti(StyleBase):
     def prop_has_backup(self) -> bool:
         """Gets If instantance or any added style has backup data set."""
         result = False
-        for _, info in self._styles.items():
+        styles = self._get_multi_styles()
+        for _, info in styles.items():
             style, _ = info
             if style.prop_has_backup:
                 result = True
