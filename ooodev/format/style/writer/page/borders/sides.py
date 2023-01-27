@@ -125,7 +125,7 @@ class Sides(PageStyleBase, AbstractSides):
         return self._style_name
 
     @prop_style_name.setter
-    def prop_style_name(self, value: str):
-        self._style_name = value
+    def prop_style_name(self, value: str | StylePageKind):
+        self._style_name = str(value)
 
     # endregion Properties

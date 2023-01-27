@@ -4,11 +4,9 @@ Module for Page Style Fill Color Fill Color.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import cast
 
 from ......exceptions import ex as mEx
 from ......utils import color as mColor
-from ......utils import props as mProps
 from ...kind.style_page_kind import StylePageKind
 from ..page_style_base import PageStyleBase
 
@@ -84,5 +82,5 @@ class Color(PageStyleBase):
         return self._style_name
 
     @prop_style_name.setter
-    def prop_style_name(self, value: str):
-        self._style_name = value
+    def prop_style_name(self, value: str | StylePageKind):
+        self._style_name = str(value)

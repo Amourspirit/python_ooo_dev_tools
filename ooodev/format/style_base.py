@@ -35,6 +35,7 @@ class StyleBase(ABC):
         for (key, value) in kwargs.items():
             if not value is None:
                 self._dv[key] = value
+        super().__init__()
 
     def _get_properties(self) -> Dict[str, Any]:
         """Gets Key value pairs for the instance."""
@@ -484,7 +485,6 @@ class StyleMulti(StyleBase):
             result = super().__eq__(oth)
             if result is False:
                 return False
-            result = True
             styles = self._get_multi_styles()
             for key, info in styles.items():
                 style, _ = info

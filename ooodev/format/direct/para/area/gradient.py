@@ -1,31 +1,26 @@
 """
-Module for Paragraph Fill Color.
+Module for Paragraph Gradient Color.
 
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, cast, overload, TYPE_CHECKING
+from typing import Tuple, cast
 
-from .....meta.static_prop import static_prop
-from .....utils import lo as mLo
-from .....utils import props as mProps
 from .....exceptions import ex as mEx
+from .....meta.static_prop import static_prop
+from .....utils import props as mProps
 from .....utils.color import Color
-from .....utils.data_type.intensity import Intensity as Intensity
 from .....utils.data_type.angle import Angle as Angle
+from .....utils.data_type.intensity import Intensity as Intensity
 from ....kind.format_kind import FormatKind
+from ....preset import preset_gradient
+from ....preset.preset_gradient import PresetKind as PresetKind
 from ....style_base import StyleMulti
 from ...structs.gradient_struct import GradinetStruct
-from ....preset import preset_gradient
-
-from ....preset.preset_gradient import PresetKind as PresetKind
 
 from ooo.dyn.drawing.fill_style import FillStyle
 from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
 from ooo.dyn.awt.gradient import Gradient as UNOGradient
-
-if TYPE_CHECKING:
-    from com.sun.star.drawing import FillProperties
 
 
 class FillStyleStruct(GradinetStruct):
@@ -46,10 +41,8 @@ class FillStyleStruct(GradinetStruct):
 
 class Gradient(StyleMulti):
     """
-    Paragraph Drop Caps
+    Paragraph Gradient Color
 
-    Warning:
-        This class uses dispatch commands and is not suitable for use in headless mode.
 
     .. versionadded:: 0.9.0
     """
@@ -70,6 +63,24 @@ class Gradient(StyleMulti):
         end_intensity: Intensity | int = 100,
         name: str = "",
     ) -> None:
+        """
+        _summary_
+
+        Args:
+            style (GradientStyle, optional): Specifies the style of the gradient. Defaults to ``GradientStyle.LINEAR``.
+            step_count (int, optional): Specifies the number of steps of change color. Defaults to ``0``.
+            x_offset (Intensity, int, optional): Specifies the X-coordinate, where the gradient begins.
+                This is effectively the center of the ``RADIAL``, ``ELLIPTICAL``, ``SQUARE`` and ``RECT`` style gradients. Defaults to ``50``.
+            y_offset (Intensity, int, optional): Specifies the Y-coordinate, where the gradient begins.
+                See: ``x_offset``. Defaults to ``50``.
+            angle (Angle, int, optional): Specifies angle of the gradient. Defaults to 0.
+            border (int, optional): Specifies percent of the total width where just the start color is used. Defaults to 0.
+            start_color (Color, optional): Specifies the color at the start point of the gradient. Defaults to ``Color(0)``.
+            start_intensity (Intensity, int, optional): Specifies the intensity at the start point of the gradient. Defaults to ``100``.
+            end_color (Color, optional): Specifies the color at the end point of the gradient. Defaults to ``Color(16777215)``.
+            end_intensity (Intensity, int, optional): Specifies the intensity at the end point of the gradient. Defaults to ``100``.
+            name (str, optional): Specifies the Fill Gradient Name.
+        """
         fs = FillStyleStruct(
             style=style,
             step_count=step_count,
@@ -155,6 +166,15 @@ class Gradient(StyleMulti):
 
     @staticmethod
     def from_preset(preset: PresetKind) -> Gradient:
+        """
+        Gets instance from preset
+
+        Args:
+            preset (PresetKind): Preset
+
+        Returns:
+            Gradient: Graident from a preset.
+        """
         args = preset_gradient.get_preset(preset)
         return Gradient(**args)
 

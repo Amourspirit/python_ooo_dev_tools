@@ -14,7 +14,7 @@ from .....utils import lo as mLo
 from .....utils import props as mProps
 from .....utils.type_var import T
 from ....kind.format_kind import FormatKind
-from ....style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent
+from ....style_base import StyleMulti, EventArgs, CancelEventArgs, FormatNamedEvent
 from ..kind.style_page_kind import StylePageKind
 
 from com.sun.star.beans import XPropertySet
@@ -25,7 +25,7 @@ from com.sun.star.beans import XPropertySet
 # The solution to these issues is to apply FillColor to Paragraph cursors TextParagraph.
 
 
-class PageStyleBase(StyleBase):
+class PageStyleBaseMulti(StyleMulti):
     """
     Page Style Base
 
@@ -76,6 +76,13 @@ class PageStyleBase(StyleBase):
                 eargs = EventArgs.from_args(cargs)
                 self.on_applied(eargs)
                 _Events().trigger(FormatNamedEvent.STYLE_APPLIED, eargs)
+                styles = self._get_multi_styles()
+                for _, info in styles.items():
+                    style, kw = info
+                    if kw:
+                        style.apply(obj, **kw.kwargs)
+                    else:
+                        style.apply(obj)
             else:
                 mLo.Lo.print(f"{self.__class__.__name__}.apply(): Not a Writer Document. Unable to set Style Property")
         except mEx.MultiError as e:

@@ -50,16 +50,16 @@ class GradinetStruct(StyleBase):
         Args:
             style (GradientStyle, optional): Specifies the style of the gradient. Defaults to ``GradientStyle.LINEAR``.
             step_count (int, optional): Specifies the number of steps of change color. Defaults to ``0``.
-            x_offset (Intensity | int, optional): Specifies the X-coordinate, where the gradient begins.
+            x_offset (Intensity, int, optional): Specifies the X-coordinate, where the gradient begins.
                 This is effectively the center of the ``RADIAL``, ``ELLIPTICAL``, ``SQUARE`` and ``RECT`` style gradients. Defaults to ``50``.
-            y_offset (Intensity | int, optional): Specifies the Y-coordinate, where the gradient begins.
+            y_offset (Intensity, int, optional): Specifies the Y-coordinate, where the gradient begins.
                 See: ``x_offset``. Defaults to ``50``.
-            angle (Angle | int, optional): Specifies angle of the gradient. Defaults to 0.
+            angle (Angle, int, optional): Specifies angle of the gradient. Defaults to 0.
             border (int, optional): Specifies percent of the total width where just the start color is used. Defaults to 0.
             start_color (Color, optional): Specifies the color at the start point of the gradient. Defaults to ``Color(0)``.
-            start_intensity (Intensity | int, optional): Specifies the intensity at the start point of the gradient. Defaults to ``100``.
+            start_intensity (Intensity, int, optional): Specifies the intensity at the start point of the gradient. Defaults to ``100``.
             end_color (Color, optional): Specifies the color at the end point of the gradient. Defaults to ``Color(16777215)``.
-            end_intensity (Intensity | int, optional): Specifies the intensity at the end point of the gradient. Defaults to ``100``.
+            end_intensity (Intensity, int, optional): Specifies the intensity at the end point of the gradient. Defaults to ``100``.
 
         Raises:
             ValueError: If ``step_count`` is less then zero.
@@ -176,8 +176,7 @@ class GradinetStruct(StyleBase):
         Returns:
             None:
         """
-        if not self._is_valid_obj(obj):
-            # will not apply on this class but may apply on child classes
+        if not mProps.Props.has(obj, self._get_property_name()):
             self._print_not_valid_obj("apply")
             return
 
@@ -276,7 +275,7 @@ class GradinetStruct(StyleBase):
             DropCap: ``DropCap`` instance that represents ``obj`` Drop cap format properties.
         """
         # this nu is only used to get Property Name
-        nu = super(Gradient, cls).__new__(cls)
+        nu = super(GradinetStruct, cls).__new__(cls)
         nu.__init__()
         prop_name = nu._get_property_name()
 
@@ -339,24 +338,24 @@ class GradinetStruct(StyleBase):
         self._set("YOffset", value.value)
 
     @property
-    def prop_angle(self) -> Intensity:
+    def prop_angle(self) -> Angle:
         """Gets/Sets angle of the gradient."""
         pv = cast(int, self._get("Angle"))
-        return Intensity(pv)
+        if pv == 0:
+            return Angle(0)
+        return Angle(round(pv / 10))
 
     @prop_angle.setter
-    def prop_angle(self, value: Intensity | int):
-        if not isinstance(value, Intensity):
-            value = Intensity(value)
+    def prop_angle(self, value: Angle | int):
+        if not isinstance(value, Angle):
+            value = Angle(value)
         self._set("Angle", value.value * 10)
 
     @property
     def prop_border(self) -> Intensity:
         """Gets/Sets percent of the total width where just the start color is used."""
         pv = cast(int, self._get("Border"))
-        if pv == 0:
-            Intensity(0)
-        return Intensity(round(pv / 10))
+        return Intensity(pv)
 
     @prop_border.setter
     def prop_border(self, value: Intensity | int):

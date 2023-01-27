@@ -1369,7 +1369,7 @@ class Props:
 
     # region ------------------- others --------------------------------
     @staticmethod
-    def has_property(obj: object, name: str) -> bool:
+    def has(obj: object, name: str) -> bool:
         """
         Gets if a object contains a property matching name
 
@@ -1384,6 +1384,8 @@ class Props:
         if prop_set is None:
             return False
         return prop_set.getPropertySetInfo().hasPropertyByName(name)
+
+    has_property = has
 
     @classmethod
     def show_doc_type_props(cls, type: str) -> None:
