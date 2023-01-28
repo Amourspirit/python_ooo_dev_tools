@@ -9,16 +9,16 @@ from ast import Tuple
 from typing import overload
 
 import uno
-from ....exceptions import ex as mEx
-from ....meta.static_prop import static_prop
-from ....utils import lo as mLo
-from ...style_base import StyleMulti
+from .....exceptions import ex as mEx
+from .....meta.static_prop import static_prop
+from .....utils import lo as mLo
+from ....style_base import StyleMulti
 
-from ...kind.format_kind import FormatKind
-from ..para.padding import Padding as Padding
-from ..structs.table_border_struct import TableBorderStruct
-from ..structs.shadow_struct import ShadowStruct
-from ..structs.side import Side as Side, SideFlags as SideFlags
+from ....kind.format_kind import FormatKind
+from .padding import Padding as Padding
+from ...structs.table_border_struct import TableBorderStruct
+from .shadow import Shadow
+from ...structs.side import Side as Side, SideFlags as SideFlags
 
 from ooo.dyn.table.border_line import BorderLine as BorderLine
 from ooo.dyn.table.border_line_style import BorderLineStyleEnum as BorderLineStyleEnum
@@ -75,7 +75,7 @@ class Borders(StyleMulti):
         distance: float | None = None,
         diagonal_down: Side | None = None,
         diagonal_up: Side | None = None,
-        shadow: ShadowStruct | None = None,
+        shadow: Shadow | None = None,
         padding: Padding | None = None,
     ) -> None:
         """
@@ -366,7 +366,7 @@ class Borders(StyleMulti):
             cp._set("DiagonalBLTR2", value.get_border_line2())
         return cp
 
-    def fmt_shadow(self, value: ShadowStruct | None) -> Borders:
+    def fmt_shadow(self, value: Shadow | None) -> Borders:
         """
         Gets copy of instance with shadow set or removed
 
@@ -423,7 +423,7 @@ class Borders(StyleMulti):
                 diagonal_down=Side.empty,
                 diagonal_up=Side.empty,
                 distance=0.0,
-                shadow=ShadowStruct.empty,
+                shadow=Shadow.empty,
                 padding=Padding.default,
             )
         return Borders._EMPTY

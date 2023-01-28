@@ -6,9 +6,9 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.direct.cell.borders import (
+from ooodev.format.direct.cell.border import (
     Borders,
-    ShadowStruct,
+    Shadow,
     Side,
     BorderLineStyleEnum,
     ShadowLocation,
@@ -17,7 +17,7 @@ from ooodev.format.direct.para.padding import Padding
 from ooodev.format import CommonColor, Styler
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
-from ooodev.format.style_const import POINT_RATIO
+from ooodev.utils.unit_convert import UnitConvert
 
 if TYPE_CHECKING:
     from com.sun.star.table import CellProperties  # service
@@ -48,7 +48,10 @@ def test_calc_border(loader) -> None:
         # line width may not be applied exact by LibreOffice.
         assert cp.TableBorder2.IsLeftLineValid
         assert cp.TableBorder2.LeftLine.LineWidth in [
-            round(0.75 * POINT_RATIO) - 1 + i for i in range(3)
+            UnitConvert.convert_pt_mm100(0.75) - 1 + i for i in range(3)
+        ]  # plus or minus 1
+        assert cp.TableBorder2.LeftLine.LineWidth in [
+            UnitConvert.convert_pt_mm100(0.75) - 1 + i for i in range(3)
         ]  # plus or minus 1
 
         assert cp.TableBorder2.IsRightLineValid
@@ -60,7 +63,7 @@ def test_calc_border(loader) -> None:
         assert cp.TableBorder2.IsBottomLineValid
         assert cp.TableBorder2.BottomLine.LineWidth == cp.TableBorder2.LeftLine.LineWidth
 
-        shadow = ShadowStruct()
+        shadow = Shadow()
 
         cell_obj = Calc.get_cell_obj("c1")
         cell = Calc.get_cell(sheet, cell_obj)
@@ -73,19 +76,19 @@ def test_calc_border(loader) -> None:
         cp = cast("CellProperties", cell)
         assert cp.TableBorder2.IsLeftLineValid
         assert cp.TableBorder2.LeftLine.LineWidth in [
-            round(4.5 * POINT_RATIO) - 2 + i for i in range(5)
+            UnitConvert.convert_pt_mm100(4.5) - 2 + i for i in range(5)
         ]  # plus or minus 2
         assert cp.TableBorder2.LeftLine.LineStyle == BorderLineStyleEnum.DASHED.value
 
         assert cp.TableBorder2.IsRightLineValid
         assert cp.TableBorder2.RightLine.LineWidth in [
-            round(2.5 * POINT_RATIO) - 2 + i for i in range(5)
+            UnitConvert.convert_pt_mm100(2.5) - 2 + i for i in range(5)
         ]  # plus or minus 2
         assert cp.TableBorder2.RightLine.LineStyle == BorderLineStyleEnum.DOUBLE.value
 
         assert cp.ShadowFormat == shadow.get_shadow_format()
 
-        shadow = ShadowStruct(location=ShadowLocation.BOTTOM_LEFT)
+        shadow = Shadow(location=ShadowLocation.BOTTOM_LEFT)
         assert cp.ShadowFormat != shadow.get_shadow_format()
 
         cell_obj = Calc.get_cell_obj("e1")

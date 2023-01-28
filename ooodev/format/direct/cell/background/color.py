@@ -6,20 +6,16 @@ Module for Cell Properties Cell Back Color.
 from __future__ import annotations
 from typing import Tuple, overload
 
-from ....exceptions import ex as mEx
-from ....utils import props as mProps
-from ....meta.static_prop import static_prop
-from ....utils import lo as mLo
-from ....utils.color import Color
-from ...kind.format_kind import FormatKind
-from ...style_base import StyleBase
-
-# LibreOffice seems to have an unresolved bug with Background color.
-# https://bugs.documentfoundation.org/show_bug.cgi?id=99125
-# see Also: https://forum.openoffice.org/en/forum/viewtopic.php?p=417389&sid=17b21c173e4a420b667b45a2949b9cc5#p417389
+from .....exceptions import ex as mEx
+from .....utils import props as mProps
+from .....meta.static_prop import static_prop
+from .....utils import lo as mLo
+from .....utils import color as mColor
+from ....kind.format_kind import FormatKind
+from ....style_base import StyleBase
 
 
-class BackColor(StyleBase):
+class Color(StyleBase):
     """
     Class for Cell Properties Back Color.
 
@@ -28,12 +24,12 @@ class BackColor(StyleBase):
 
     _EMPTY = None
 
-    def __init__(self, color: Color = -1) -> None:
+    def __init__(self, color: mColor.Color = -1) -> None:
         """
         Constructor
 
         Args:
-            color (Color, optional): Color
+            color (Color, optional): Color such as ``CommonColor.LIGHT_BLUE``
 
         Returns:
             None:
@@ -84,7 +80,7 @@ class BackColor(StyleBase):
     # endregion apply()
 
     @staticmethod
-    def from_obj(obj: object) -> BackColor:
+    def from_obj(obj: object) -> Color:
         """
         Gets instance from object
 
@@ -97,7 +93,7 @@ class BackColor(StyleBase):
         Returns:
             BackColor: ``BackColor`` instance that represents ``obj`` Back Color properties.
         """
-        inst = BackColor()
+        inst = Color()
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedServiceError(inst._supported_services()[0])
 
@@ -120,12 +116,12 @@ class BackColor(StyleBase):
         return FormatKind.CELL
 
     @property
-    def prop_color(self) -> Color:
+    def prop_color(self) -> mColor.Color:
         """Gets/Sets color"""
         return self._get("CellBackColor")
 
     @prop_color.setter
-    def prop_color(self, value: Color):
+    def prop_color(self, value: mColor.Color):
         if value >= 0:
             self._set("CellBackColor", value)
             self._set("IsCellBackgroundTransparent", False)
@@ -143,8 +139,8 @@ class BackColor(StyleBase):
         self._set("IsCellBackgroundTransparent", value)
 
     @static_prop
-    def empty() -> BackColor:  # type: ignore[misc]
+    def empty() -> Color:  # type: ignore[misc]
         """Gets BackColor empty. Static Property."""
-        if BackColor._EMPTY is None:
-            BackColor._EMPTY = BackColor()
-        return BackColor._EMPTY
+        if Color._EMPTY is None:
+            Color._EMPTY = Color()
+        return Color._EMPTY
