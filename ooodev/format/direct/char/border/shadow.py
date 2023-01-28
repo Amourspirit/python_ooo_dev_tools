@@ -1,14 +1,14 @@
 from __future__ import annotations
 from typing import Tuple
-from ..structs.shadow_struct import ShadowStruct
-from ....meta.static_prop import static_prop
+from ...structs.shadow_struct import ShadowStruct
+from .....meta.static_prop import static_prop
 
 import uno
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 
 
-class BorderShadow(ShadowStruct):
-    __EMPTY = None
+class Shadow(ShadowStruct):
+    _EMPTY = None
 
     def _get_property_name(self) -> str:
         return "CharShadowFormat"
@@ -18,10 +18,8 @@ class BorderShadow(ShadowStruct):
         return ("com.sun.star.style.CharacterProperties",)
 
     @static_prop
-    def empty() -> BorderShadow:  # type: ignore[misc]
+    def empty() -> Shadow:  # type: ignore[misc]
         """Gets empty Shadow. Static Property. when style is applied it remove any shadow."""
-        if BorderShadow._EMPTY is None:
-            BorderShadow._EMPTY = BorderShadow(
-                location=ShadowLocation.NONE, transparent=False, color=8421504, width=1.76
-            )
-        return BorderShadow._EMPTY
+        if Shadow._EMPTY is None:
+            Shadow._EMPTY = Shadow(location=ShadowLocation.NONE, transparent=False, color=8421504, width=1.76)
+        return Shadow._EMPTY

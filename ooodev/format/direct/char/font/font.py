@@ -7,13 +7,13 @@ from __future__ import annotations
 from typing import Tuple, cast, overload
 from enum import Enum
 
-from ....exceptions import ex as mEx
-from ....utils import info as mInfo
-from ....utils import lo as mLo
-from ....utils.color import Color
-from ...kind.format_kind import FormatKind
-from ...style_base import StyleBase
-from ...style_const import POINT_RATIO
+from .....exceptions import ex as mEx
+from .....utils import info as mInfo
+from .....utils import lo as mLo
+from .....utils.color import Color
+from ....kind.format_kind import FormatKind
+from ....style_base import StyleBase
+from .....utils.unit_convert import UnitConvert
 
 from ooo.dyn.awt.char_set import CharSetEnum as CharSetEnum
 from ooo.dyn.awt.font_family import FontFamilyEnum as FontFamilyEnum
@@ -173,8 +173,7 @@ class Font(StyleBase):
             init_vals["CharPosture"] = slant
 
         if not spacing is None:
-            init_vals["CharKerning"] = round(float(spacing) * POINT_RATIO)
-
+            init_vals["CharKerning"] = UnitConvert.convert_pt_mm100(float(spacing))
         if not rotation is None:
             init_vals["CharRotation"] = round(rotation * 10)
 
@@ -814,7 +813,7 @@ class Font(StyleBase):
         if not pv is None:
             if pv == 0.0:
                 return 0.0
-            return pv / POINT_RATIO
+            return UnitConvert.convert_mm100_pt(pv)
         return None
 
     @prop_spacing.setter
@@ -822,7 +821,7 @@ class Font(StyleBase):
         if value is None:
             self._remove("CharKerning")
             return
-        self._set("CharKerning", round(float(value) * POINT_RATIO))
+        self._set("CharKerning", UnitConvert.convert_pt_mm100(float(value)))
 
     @property
     def prop_shadowed(self) -> bool | None:

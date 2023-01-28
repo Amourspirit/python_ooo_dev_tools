@@ -6,12 +6,12 @@ Module for managing character padding.
 from __future__ import annotations
 from typing import Tuple, cast, overload
 
-from ....exceptions import ex as mEx
-from ....meta.static_prop import static_prop
-from ....utils import lo as mLo
-from ....utils import props as mProps
-from ...style_base import StyleBase
-from ...kind.format_kind import FormatKind
+from .....exceptions import ex as mEx
+from .....meta.static_prop import static_prop
+from .....utils import lo as mLo
+from .....utils import props as mProps
+from ....style_base import StyleBase
+from ....kind.format_kind import FormatKind
 
 
 class Padding(StyleBase):

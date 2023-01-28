@@ -17,7 +17,7 @@ from ooodev.format.direct.char.font import (
     CharSpacingKind,
 )
 from ooodev.format import CommonColor
-from ooodev.format.style_const import POINT_RATIO
+from ooodev.utils.unit_convert import UnitConvert
 from ooodev.utils.gui import GUI
 from ooodev.utils.info import Info
 from ooodev.utils.lo import Lo
@@ -211,14 +211,14 @@ def test_font_cursor(loader) -> None:
         Write.append(cursor, "Very Tight")
         cursor.goLeft(10, True)
         style(Font(spacing=CharSpacingKind.VERY_TIGHT, size=30))
-        assert cp.CharKerning == round(CharSpacingKind.VERY_TIGHT.value * POINT_RATIO)
+        assert cp.CharKerning == UnitConvert.convert_pt_mm100(CharSpacingKind.VERY_TIGHT.value)
         cursor.gotoEnd(False)
         Write.end_paragraph(cursor)
 
         Write.append(cursor, "Tight")
         cursor.goLeft(5, True)
         style(Font(spacing=CharSpacingKind.TIGHT, size=30))
-        assert cp.CharKerning == round(CharSpacingKind.TIGHT.value * POINT_RATIO)
+        assert cp.CharKerning == UnitConvert.convert_pt_mm100(CharSpacingKind.TIGHT.value)
         cursor.gotoEnd(False)
         Write.end_paragraph(cursor)
 
@@ -232,21 +232,21 @@ def test_font_cursor(loader) -> None:
         Write.append(cursor, "Loose")
         cursor.goLeft(5, True)
         style(Font(spacing=CharSpacingKind.LOOSE, size=30))
-        assert cp.CharKerning == round(CharSpacingKind.LOOSE.value * POINT_RATIO)
+        assert cp.CharKerning == UnitConvert.convert_pt_mm100(CharSpacingKind.LOOSE.value)
         cursor.gotoEnd(False)
         Write.end_paragraph(cursor)
 
         Write.append(cursor, "Very Loose")
         cursor.goLeft(10, True)
         style(Font(spacing=CharSpacingKind.VERY_LOOSE, size=30))
-        assert cp.CharKerning == round(CharSpacingKind.VERY_LOOSE.value * POINT_RATIO)
+        assert cp.CharKerning == UnitConvert.convert_pt_mm100(CharSpacingKind.VERY_LOOSE.value)
         cursor.gotoEnd(False)
         Write.end_paragraph(cursor)
 
         Write.append(cursor, "Custom Spacing 6 pt")
         cursor.goLeft(19, True)
         style(Font(spacing=19.0, size=14))
-        assert cp.CharKerning == round(19.0 * POINT_RATIO)
+        assert cp.CharKerning == UnitConvert.convert_pt_mm100(19.0)
         cursor.gotoEnd(False)
         Write.end_paragraph(cursor)
 

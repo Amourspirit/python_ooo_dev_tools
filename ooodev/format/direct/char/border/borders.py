@@ -8,15 +8,15 @@ from __future__ import annotations
 from typing import Tuple, overload
 
 import uno
-from ....exceptions import ex as mEx
-from ....meta.static_prop import static_prop
-from ....utils import lo as mLo
-from ...style_base import StyleMulti
+from .....exceptions import ex as mEx
+from .....meta.static_prop import static_prop
+from .....utils import lo as mLo
+from ....style_base import StyleMulti
 
-from ...kind.border_kind import BorderKind
-from ...kind.format_kind import FormatKind
-from ..structs.side import Side as Side, SideFlags as SideFlags, LineSize as LineSize
-from .border_shadow import BorderShadow
+from ....kind.border_kind import BorderKind
+from ....kind.format_kind import FormatKind
+from ...structs.side import Side as Side, SideFlags as SideFlags, LineSize as LineSize
+from .shadow import Shadow
 from .padding import Padding as Padding
 from .sides import Sides
 
@@ -52,7 +52,7 @@ class Borders(StyleMulti):
         top: Side | None = None,
         bottom: Side | None = None,
         border_side: Side | None = None,
-        shadow: BorderShadow | None = None,
+        shadow: Shadow | None = None,
         padding: Padding | None = None,
     ) -> None:
         """
@@ -194,7 +194,7 @@ class Borders(StyleMulti):
         self._set_side(side=value, pos=BorderKind.BOTTOM, inst=cp)
         return cp
 
-    def fmt_shadow(self, value: BorderShadow | None) -> Borders:
+    def fmt_shadow(self, value: Shadow | None) -> Borders:
         """
         Gets copy of instance with shadow set or removed
 
@@ -276,7 +276,7 @@ class Borders(StyleMulti):
     def default() -> Borders:  # type: ignore[misc]
         """Gets Default Border. Static Property"""
         if Borders._DEFAULT is None:
-            Borders._DEFAULT = Borders(border_side=Side.empty, padding=Padding.default, shadow=BorderShadow.empty)
+            Borders._DEFAULT = Borders(border_side=Side.empty, padding=Padding.default, shadow=Shadow.empty)
         return Borders._DEFAULT
 
     @static_prop
@@ -287,7 +287,7 @@ class Borders(StyleMulti):
                 border_side=Side.empty,
                 vertical=Side.empty,
                 horizontal=Side.empty,
-                shadow=BorderShadow.empty,
+                shadow=Shadow.empty,
                 padding=Padding.default,
             )
         return Borders._EMPTY

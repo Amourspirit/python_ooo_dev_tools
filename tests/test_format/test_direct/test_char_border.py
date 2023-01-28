@@ -6,7 +6,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.direct.char.borders import Borders, BorderLineStyleEnum, Side, LineSize
+from ooodev.format.direct.char.border import Borders, BorderLineStyleEnum, Side, LineSize
 from ooodev.format import CommonColor
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo

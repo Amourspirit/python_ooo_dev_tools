@@ -268,7 +268,7 @@ class UnitConvert:
         return cls.convert(num=num, frm=Length.TWIP, to=Length.MM100)
 
     @classmethod
-    def convert_pt_mm100(cls, num: N) -> float:
+    def convert_pt_mm100(cls, num: N) -> int:
         """
         Converts points to ``1/100th mm``
 
@@ -278,7 +278,7 @@ class UnitConvert:
         Returns:
             float: Converted number
         """
-        return cls.convert(num=num, frm=Length.PT, to=Length.MM100)
+        return round(cls.convert(num=num, frm=Length.PT, to=Length.MM100))
 
     @classmethod
     def convert_mm100_pt(cls, num: N) -> float:
