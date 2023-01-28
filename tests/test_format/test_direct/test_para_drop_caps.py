@@ -17,7 +17,6 @@ if TYPE_CHECKING:
     from com.sun.star.style import ParagraphProperties  # service
 
 
-@pytest.mark.skip_headless("Requires Dispatch")
 def test_write(loader, para_text) -> None:
     # Tabs inherits from Tab and tab is tested in test_struct_tab
     delay = 0
@@ -30,57 +29,70 @@ def test_write(loader, para_text) -> None:
         GUI.zoom(GUI.ZoomEnum.ZOOM_150_PERCENT)
     try:
         cursor = Write.get_cursor(doc)
-        p_len = len(para_text)
 
         dc = DropCaps(count=1)
         Write.append_para(cursor=cursor, text=para_text, styles=(dc,))
-        # dc.dispatch_reset()
-
-        cursor.goLeft(1, False)
-        cursor.gotoStart(True)
-
-        pp = cast("ParagraphProperties", cursor)
+        cursor_p = Write.get_paragraph_cursor(cursor)
+        cursor_p.gotoEnd(False)
+        cursor_p.gotoPreviousParagraph(True)
+        pp = cast("ParagraphProperties", cursor_p.TextParagraph)
         assert pp.DropCapCharStyleName == ""
         assert pp.DropCapWholeWord == False
         inner_dc = cast(DropCapStruct, dc._get_style("drop_cap")[0])
         assert inner_dc == pp.DropCapFormat
-        cursor.gotoEnd(False)
+        cursor_p.gotoEnd(False)
 
         dc = DropCaps(count=1, style=StyleCharKind.DROP_CAPS)
         Write.append_para(cursor=cursor, text=para_text, styles=(dc,))
-        # dc.dispatch_reset()
-
-        cursor.goLeft(p_len + 1, False)
-        cursor.goRight(p_len, True)
+        cursor_p.gotoEnd(False)
+        cursor_p.gotoPreviousParagraph(True)
+        pp = cast("ParagraphProperties", cursor_p.TextParagraph)
         assert pp.DropCapCharStyleName == StyleCharKind.DROP_CAPS.value
         assert pp.DropCapWholeWord == False
         inner_dc = cast(DropCapStruct, dc._get_style("drop_cap")[0])
         assert inner_dc == pp.DropCapFormat
-        cursor.gotoEnd(False)
+        cursor_p.gotoEnd(False)
 
         dc = DropCaps(count=5, lines=5, style=StyleCharKind.DROP_CAPS)
         Write.append_para(cursor=cursor, text=para_text, styles=(dc,))
-        # dc.dispatch_reset()
-
-        cursor.goLeft(p_len + 1, False)
-        cursor.goRight(p_len, True)
+        cursor_p.gotoEnd(False)
+        cursor_p.gotoPreviousParagraph(True)
+        pp = cast("ParagraphProperties", cursor_p.TextParagraph)
         assert pp.DropCapCharStyleName == StyleCharKind.DROP_CAPS.value
         assert pp.DropCapWholeWord == False
         inner_dc = cast(DropCapStruct, dc._get_style("drop_cap")[0])
         assert inner_dc == pp.DropCapFormat
-        cursor.gotoEnd(False)
+        cursor_p.gotoEnd(False)
 
         dc = DropCaps(count=3, whole_word=True)
         Write.append_para(cursor=cursor, text=para_text, styles=(dc,))
-        # dc.dispatch_reset()
-
-        cursor.goLeft(p_len + 1, False)
-        cursor.goRight(p_len, True)
+        cursor_p.gotoEnd(False)
+        cursor_p.gotoPreviousParagraph(True)
+        pp = cast("ParagraphProperties", cursor_p.TextParagraph)
         assert pp.DropCapCharStyleName == ""
         assert pp.DropCapWholeWord == True
         inner_dc = cast(DropCapStruct, dc._get_style("drop_cap")[0])
         assert inner_dc == pp.DropCapFormat
-        cursor.gotoEnd(False)
+        cursor_p.gotoEnd(False)
+
+        # set drop cap on cursor
+        dc = DropCaps(count=3, whole_word=True, style=StyleCharKind.DROP_CAPS)
+        dc.apply(cursor_p.TextParagraph)
+        for _ in range(2):
+            Write.append_para(cursor=cursor, text=para_text)
+            cursor_p.gotoEnd(False)
+            cursor_p.gotoPreviousParagraph(True)
+            pp = cast("ParagraphProperties", cursor_p.TextParagraph)
+            assert pp.DropCapCharStyleName == StyleCharKind.DROP_CAPS.value
+            assert pp.DropCapWholeWord == True
+            inner_dc = cast(DropCapStruct, dc._get_style("drop_cap")[0])
+            assert inner_dc == pp.DropCapFormat
+            cursor_p.gotoEnd(False)
+
+        DropCaps.default.apply(cursor_p.TextParagraph)
+        pp = cast("ParagraphProperties", cursor_p.TextParagraph)
+        assert pp.DropCapCharStyleName == ""
+        assert pp.DropCapWholeWord == False
 
         Lo.delay(delay)
     finally:

@@ -293,7 +293,7 @@ class GradientStruct(StyleBase):
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.PARA | FormatKind.FILL
+        return FormatKind.PARA | FormatKind.TXT_CONTENT
 
     @property
     def prop_style(self) -> GradientStyle:

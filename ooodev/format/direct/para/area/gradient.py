@@ -25,10 +25,7 @@ from ooo.dyn.awt.gradient import Gradient as UNOGradient
 
 class FillStyleStruct(GradientStruct):
     def _supported_services(self) -> Tuple[str, ...]:
-        return (
-            "com.sun.star.drawing.FillProperties",
-            "com.sun.star.text.TextContent",
-        )
+        return ("com.sun.star.drawing.FillProperties", "com.sun.star.text.TextContent")
 
     def _get_property_name(self) -> str:
         return "FillGradient"
@@ -36,7 +33,7 @@ class FillStyleStruct(GradientStruct):
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.PARA | FormatKind.FILL
+        return FormatKind.PARA | FormatKind.TXT_CONTENT | FormatKind.FILL
 
 
 class Gradient(StyleMulti):
@@ -181,7 +178,7 @@ class Gradient(StyleMulti):
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.PARA | FormatKind.FILL
+        return FormatKind.PARA | FormatKind.TXT_CONTENT
 
     @static_prop
     def default() -> Gradient:  # type: ignore[misc]

@@ -237,7 +237,7 @@ class StyleBase(ABC):
             if clear:
                 self._dv_bak.clear()
 
-    def on_property_setting(self, event_args: KeyValCancelArgs):
+    def on_property_setting(self, event_args: KeyValCancelArgs) -> None:
         """
         Triggers for each property that is set
 
@@ -247,7 +247,7 @@ class StyleBase(ABC):
         # can be overriden in child classes.
         pass
 
-    def on_property_set(self, event_args: KeyValArgs):
+    def on_property_set(self, event_args: KeyValArgs) -> None:
         """
         Triggers for each property that is set
 
@@ -257,7 +257,7 @@ class StyleBase(ABC):
         # can be overriden in child classes.
         pass
 
-    def on_property_backing_up(self, event_args: KeyValCancelArgs):
+    def on_property_backing_up(self, event_args: KeyValCancelArgs) -> None:
         """
         Triggers before each property that is about to be backup up during backup
 
@@ -267,7 +267,7 @@ class StyleBase(ABC):
         # can be overriden in child classes.
         pass
 
-    def on_property_backed_up(self, event_args: KeyValArgs):
+    def on_property_backed_up(self, event_args: KeyValArgs) -> None:
         """
         Triggers before each property that is about to be set during restore
 
@@ -277,7 +277,7 @@ class StyleBase(ABC):
         # can be overriden in child classes.
         pass
 
-    def on_property_restore_setting(self, event_args: KeyValCancelArgs):
+    def on_property_restore_setting(self, event_args: KeyValCancelArgs) -> None:
         """
         Triggers before each property that is about to be set during restore
 
@@ -285,9 +285,10 @@ class StyleBase(ABC):
             event_args (KeyValueCancelArgs): Event Args
         """
         # can be overriden in child classes.
-        pass
+        event_args.set("on_property_restore_setting", True)
+        self.on_property_setting(event_args)
 
-    def on_property_restore_set(self, event_args: KeyValArgs):
+    def on_property_restore_set(self, event_args: KeyValArgs) -> None:
         """
         Triggers for each property that has been set during restore
 
@@ -295,9 +296,10 @@ class StyleBase(ABC):
             event_args (KeyValArgs): Event Args
         """
         # can be overriden in child classes.
-        pass
+        event_args.set("on_property_restore_set", True)
+        self.on_property_set(event_args)
 
-    def on_applying(self, event_args: CancelEventArgs):
+    def on_applying(self, event_args: CancelEventArgs) -> None:
         """
         Triggers before style/format is applied.
 
@@ -307,7 +309,7 @@ class StyleBase(ABC):
         # can be overriden in child classes.
         pass
 
-    def on_applied(self, event_args: EventArgs):
+    def on_applied(self, event_args: EventArgs) -> None:
         """
         Triggers after style/format is applied.
 
@@ -410,6 +412,7 @@ class StyleMulti(StyleBase):
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
         self._styles: Dict[str, Tuple[StyleBase, _StyleMultArgs | None]] = {}
+        self._all_attributes = True
 
     def _set_style(self, key: str, style: StyleBase, *attrs, **kwargs) -> None:
         """
@@ -509,12 +512,13 @@ class StyleMulti(StyleBase):
         # get current keys in internal dictionary
         props = self._get_properties()
         attrs = set(props.keys())
-        styles = self._get_multi_styles()
-        if styles:
-            for _, info in styles.items():
-                _, args = info
-                if args:
-                    attrs.update(args.attrs)
+        if self._all_attributes:
+            styles = self._get_multi_styles()
+            if styles:
+                for _, info in styles.items():
+                    _, args = info
+                    if args:
+                        attrs.update(args.attrs)
         return tuple(attrs)
 
     def backup(self, obj: object) -> None:
@@ -535,11 +539,15 @@ class StyleMulti(StyleBase):
         if not self._is_valid_obj(obj):
             self._print_not_valid_obj("Backup")
             return
-        super().backup(obj)
-        styles = self._get_multi_styles()
-        for _, info in styles.items():
-            style, _ = info
-            style.backup(obj)
+        try:
+            self._all_attributes = False
+            super().backup(obj)
+            styles = self._get_multi_styles()
+            for _, info in styles.items():
+                style, _ = info
+                style.backup(obj)
+        finally:
+            self._all_attributes = True
 
     def restore(self, obj: object, clear: bool = False) -> None:
         """

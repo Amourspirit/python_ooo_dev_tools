@@ -12,6 +12,7 @@ from com.sun.star.beans import PropertyVetoException
 from com.sun.star.beans import UnknownPropertyException
 from com.sun.star.beans import XFastPropertySet
 from com.sun.star.beans import XPropertySet
+from com.sun.star.beans import XPropertyState
 from com.sun.star.container import XIndexAccess
 from com.sun.star.container import XNameAccess
 from com.sun.star.document import XTypeDetection
@@ -32,6 +33,8 @@ from . import info as mInfo
 from . import lo as mLo
 from ..events.args.key_val_args import KeyValArgs
 from ..events.args.key_val_cancel_args import KeyValCancelArgs
+from ..events.args.event_args import EventArgs
+from ..events.args.cancel_event_args import CancelEventArgs
 from ..events.event_singleton import _Events
 from ..events.props_named_event import PropsNamedEvent
 from ..exceptions import ex as mEx
@@ -728,7 +731,7 @@ class Props:
             **kwargs: Variable length Key value pairs used to set properties.
 
         Raises:
-            MissingInterfaceError: if obj does not implement XPropertySet interface
+            MissingInterfaceError: if obj does not implement ``XPropertySet`` interface
             MultiError: If unable to set a property
 
         Returns:
@@ -745,6 +748,14 @@ class Props:
 
             If ``MultiError`` occurs only the properties that raised an error is part of the error object.
             The remaining properties will still be set.
+
+            If ``KeyValCancelArgs.default`` is set to true then property is set to Default
+
+        See Also:
+            :py:meth:`~.props.Props.set_default`
+
+        .. versionchanged:: 0.9.0
+            Setting ``KeyValCancelArgs.default=False`` will set a property to its default.
         """
         if len(kwargs) == 0:
             return
@@ -761,7 +772,10 @@ class Props:
             if cargs.cancel:
                 continue
             try:
-                ps.setPropertyValue(cargs.key, cargs.value)
+                if cargs.default:
+                    cls.set_default(obj, cargs.key)
+                else:
+                    ps.setPropertyValue(cargs.key, cargs.value)
             except AttributeError as e:
                 # handle a LibreOffice bug
                 if not cls._set_by_attribute(obj, cargs.key, cargs.value):
@@ -787,9 +801,72 @@ class Props:
         if len(errs) > 0:
             raise mEx.MultiError(errs)
 
+    @classmethod
+    def set_default(cls, obj: object, *prop_names: str) -> None:
+        """
+        Set one or more properties to default values.
+
+        Args:
+            obj (object): object to set properties for. Must support ``XPropertyState``
+            **prop_names: Variable length of property names to set default.
+
+        Raises:
+            MissingInterfaceError: if obj does not implement ``XPropertyState`` interface
+            MultiError: If unable to set a property
+
+        Returns:
+            None:
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.props_named_event.PropsNamedEvent.PROP_DEFAULT_SETTING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.props_named_event.PropsNamedEvent.PROP_DEFAULT_SET` :eventref:`src-docs-event`
+
+        Note:
+            If a Event is canceled then that property is not set. No error occurs.
+
+            If ``MultiError`` occurs only the properties that raised an error is part of the error object.
+            The remaining properties will still be set to default.
+
+        .. versionadded:: 0.9.0
+        """
+        ps = mLo.Lo.qi(XPropertyState, obj, True)
+        errs = []
+        for name in prop_names:
+            has_error = False
+            cargs = CancelEventArgs(Props.set.__qualname__)
+            cargs.event_data = name
+            _Events().trigger(PropsNamedEvent.PROP_DEFAULT_SETTING, cargs)
+            if cargs.cancel:
+                continue
+            try:
+                ps.setPropertyToDefault(name)
+            except Exception as e:
+                has_error = True
+                errs.append(Exception(f'Could not set property Default "{name}"', e))
+            if not has_error:
+                _Events().trigger(PropsNamedEvent.PROP_DEFAULT_SET, EventArgs.from_args(cargs))
+        if len(errs) > 0:
+            raise mEx.MultiError(errs)
+
     # endregion ---------------- set properties -----------------------
 
     # region ------------------- get properties ------------------------
+    @classmethod
+    def get_default(obj: object, prop_name: str) -> Any:
+        """
+        Gets the default value of the property with the name Property Name.
+
+        Args:
+            obj (object): object to set properties for. Must support ``XPropertyState``
+            prop_name (str): Propery name to get default for.
+
+        Returns:
+            Any: If no default exists, is not known or is ``None``, then the return type is ``None``.
+        """
+        ps = mLo.Lo.qi(XPropertyState, obj, True)
+        return ps.getPropertyDefault(prop_name)
 
     # region get()
     @overload

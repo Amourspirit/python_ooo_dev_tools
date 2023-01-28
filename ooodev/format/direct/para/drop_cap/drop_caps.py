@@ -35,18 +35,23 @@ class DropCapFmt(DropCapStruct):
         Returns:
             Tuple[str, ...]: Supported services
         """
-        return ("com.sun.star.style.ParagraphProperties",)
+        return (
+            "com.sun.star.style.ParagraphProperties",
+            "com.sun.star.text.TextContent",
+        )
 
     def _get_property_name(self) -> str:
         return "DropCapFormat"
+
+    @property
+    def prop_format_kind(self) -> FormatKind:
+        """Gets the kind of style"""
+        return FormatKind.PARA | FormatKind.TXT_CONTENT
 
 
 class DropCaps(StyleMulti):
     """
     Paragraph Drop Caps
-
-    Warning:
-        This class uses dispatch commands and is not suitable for use in headless mode.
 
     .. versionadded:: 0.9.0
     """
@@ -87,10 +92,6 @@ class DropCaps(StyleMulti):
         """
         # https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1ParagraphProperties-members.html
 
-        # Due seeemingly to a bug setting ``style`` result in style not being written.
-        # If style is set to a valid Character Style Name
-        # then it will be written successfully.
-
         # if count == -1 then do not include DropCapFmt. only update style
         # if count = 0 then default to no drop cap values
         if mLo.Lo.bridge_connector.headless:
@@ -127,9 +128,10 @@ class DropCaps(StyleMulti):
     # endregion init
 
     # region methods
+
     def dispatch_reset(self) -> None:
         """
-        Resets the cursor at is current position/selection to remove any Drop Caps Formatting.
+        Resets the cursor at is current position/selection to remove any Drop Caps Formatting using a dispatch command.
 
         Returns:
             None:
@@ -154,25 +156,27 @@ class DropCaps(StyleMulti):
         mLo.Lo.dispatch_cmd("SetDropCapCharStyleName", mProps.Props.make_props(CharStyleName=""))
         # mLo.Lo.delay(300)
 
-    def on_property_backing_up(self, event_args: KeyValCancelArgs):
+    def on_property_setting(self, event_args: KeyValCancelArgs) -> None:
         """
-        Triggers before each property that is about to be backup up during backup
+        Triggers for each property that is set
 
         Args:
             event_args (KeyValueCancelArgs): Event Args
         """
         if event_args.key == "DropCapCharStyleName":
-            # DropCapCharStyleName will not allow itself to be set if it has empyt string
+            # DropCapCharStyleName will not allow itself to be set if it has empty string
             # as a value, even though it ia a string and will take a string value of any valid
             # character style.
             if event_args.value is None or event_args.value == "":
-                event_args.cancel = True
+                # instruct Props.set to call set_default()
+                event_args.default = True
+            super().on_property_setting(event_args)
 
     def _set_style_dc(self, dc: DropCapFmt | None) -> None:
         if dc is None:
             self._remove_style("drop_cap")
             return
-        self._set_style("drop_cap", dc, *dc.get_attrs(), keys={"prop": "DropCapFormat"})
+        self._set_style("drop_cap", dc, *dc.get_attrs())
 
     def _supported_services(self) -> Tuple[str, ...]:
         """
@@ -181,7 +185,7 @@ class DropCaps(StyleMulti):
         Returns:
             Tuple[str, ...]: Supported services
         """
-        return ("com.sun.star.style.ParagraphProperties",)
+        return ("com.sun.star.style.ParagraphProperties", "com.sun.star.text.TextContent")
 
     @staticmethod
     def from_obj(obj: object) -> DropCaps:
@@ -211,38 +215,14 @@ class DropCaps(StyleMulti):
             inst.set("DropCapCharStyleName", style)
         return inst
 
-    def backup(self, obj: object) -> None:
-        """Overrides, No actions are taken"""
-        pass
-
-    @overload
-    def restore(self, obj: object) -> None:
-        ...
-
-    def restore(self, obj: object, clear: bool = False) -> None:
-        """
-        Restores ``obj`` via dispatc command.
-
-        Args:
-            obj (object): Object to restore properties on.
-
-        Returns:
-            None:
-        """
-        self.dispatch_reset()
-
     # endregion methods
 
     # region properties
-    @property
-    def prop_has_backup(self) -> bool:
-        """Gets If instantance has backup data. Overrides, Returns ``False``."""
-        return True
 
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.PARA
+        return FormatKind.PARA | FormatKind.TXT_CONTENT
 
     @static_prop
     def default() -> DropCaps:  # type: ignore[misc]

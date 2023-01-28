@@ -74,6 +74,9 @@ class DropCapStruct(StyleBase):
     def _get_property_name(self) -> str:
         return "DropCapFormat"
 
+    def _is_valid_obj(self, obj: object) -> bool:
+        return mProps.Props.has(obj, self._get_property_name())
+
     def copy(self: T) -> T:
         nu = super(DropCapStruct, self.__class__).__new__(self.__class__)
         nu.__init__()

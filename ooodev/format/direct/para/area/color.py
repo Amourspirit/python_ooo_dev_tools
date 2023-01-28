@@ -95,7 +95,7 @@ class Color(StyleBase):
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.PARA | FormatKind.FILL
+        return FormatKind.PARA | FormatKind.TXT_CONTENT
 
     @property
     def prop_color(self) -> mColor.Color:

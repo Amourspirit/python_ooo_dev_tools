@@ -1061,7 +1061,7 @@ class Write(mSel.Selection):
         restore_fill_lst: List[StyleObj] = []
         if not styles is None:
             for style in styles:
-                if FormatKind.FILL in style.prop_format_kind and FormatKind.PARA in style.prop_format_kind:
+                if FormatKind.TXT_CONTENT in style.prop_format_kind and FormatKind.PARA in style.prop_format_kind:
                     fill_lst.append(style)
                 else:
                     style_lst.append(style)
@@ -1074,7 +1074,7 @@ class Write(mSel.Selection):
             nonlocal restore, para_c, restore_style_lst, restore_fill_lst
             if FormatKind.PARA in style.prop_format_kind and not FormatKind.STATIC in style.prop_format_kind:
                 restore = True
-                if not para_c is None and FormatKind.FILL in style.prop_format_kind:
+                if not para_c is None and FormatKind.TXT_CONTENT in style.prop_format_kind:
                     style.backup(para_c.TextParagraph)
                     restore_fill_lst.append(style)
                 else:
