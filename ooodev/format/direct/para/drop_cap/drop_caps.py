@@ -6,18 +6,18 @@ Module for managing paragraph Drop Caps.
 from __future__ import annotations
 from typing import Tuple, cast, overload
 
-from ....exceptions import ex as mEx
-from ....meta.static_prop import static_prop
-from ....utils import props as mProps
-from ....utils import lo as mLo
-from ...kind.format_kind import FormatKind
-from ...style_base import StyleMulti
-from ...style.writer.kind.style_char_kind import StyleCharKind as StyleCharKind
-from ..structs.drop_cap import DropCap
-from ....events.args.key_val_cancel_args import KeyValCancelArgs
+from .....exceptions import ex as mEx
+from .....meta.static_prop import static_prop
+from .....utils import props as mProps
+from .....utils import lo as mLo
+from ....kind.format_kind import FormatKind
+from ....style_base import StyleMulti
+from ....style.writer.kind.style_char_kind import StyleCharKind as StyleCharKind
+from ...structs.drop_cap_struct import DropCapStruct
+from .....events.args.key_val_cancel_args import KeyValCancelArgs
 
 
-class DropCapFmt(DropCap):
+class DropCapFmt(DropCapStruct):
     """
     Paragraph Drop Cap
 

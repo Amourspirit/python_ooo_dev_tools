@@ -25,7 +25,7 @@ from ooo.dyn.table.table_border2 import TableBorder2
 # endregion imports
 
 
-class BorderTable(StyleBase):
+class TableBorderStruct(StyleBase):
     """
     Table Border struct positioning for use in styles.
 
@@ -117,7 +117,7 @@ class BorderTable(StyleBase):
         return "TableBorder2"
 
     def copy(self: T) -> T:
-        nu = super(BorderTable, self.__class__).__new__(self.__class__)
+        nu = super(TableBorderStruct, self.__class__).__new__(self.__class__)
         nu.__init__()
         if self._dv:
             nu._update(self._dv)
@@ -217,7 +217,7 @@ class BorderTable(StyleBase):
     # endregion apply()
 
     @classmethod
-    def from_obj(cls, obj: object) -> BorderTable:
+    def from_obj(cls, obj: object) -> TableBorderStruct:
         """
         Gets instance from object properties
 
@@ -231,7 +231,7 @@ class BorderTable(StyleBase):
             BorderTable: Border Table.
         """
         # this nu is only used to get Property Name
-        nu = super(BorderTable, cls).__new__(cls)
+        nu = super(TableBorderStruct, cls).__new__(cls)
         nu.__init__()
         prop_name = nu._get_property_name()
 
@@ -260,7 +260,7 @@ class BorderTable(StyleBase):
                 vertical._set(prop, getattr(tb.VerticalLine, prop))
             if horizontal:
                 horizontal._set(prop, getattr(tb.HorizontalLine, prop))
-        nu = super(BorderTable, cls).__new__(cls)
+        nu = super(TableBorderStruct, cls).__new__(cls)
         nu.__init__(left=left, right=right, top=top, bottom=bottom, vertical=vertical, horizontal=horizontal)
 
         if tb.IsDistanceValid:
@@ -312,7 +312,7 @@ class BorderTable(StyleBase):
     # endregion methods
 
     # region Style methods
-    def fmt_border_side(self, value: Side | None) -> BorderTable:
+    def fmt_border_side(self, value: Side | None) -> TableBorderStruct:
         """
         Gets copy of instance with left, right, top, bottom sides set or removed
 
@@ -329,7 +329,7 @@ class BorderTable(StyleBase):
         cp.prop_right = value
         return cp
 
-    def fmt_top(self, value: Side | None) -> BorderTable:
+    def fmt_top(self, value: Side | None) -> TableBorderStruct:
         """
         Gets a copy of instance with top side set or removed
 
@@ -343,7 +343,7 @@ class BorderTable(StyleBase):
         cp.prop_top = value
         return cp
 
-    def fmt_bottom(self, value: Side | None) -> BorderTable:
+    def fmt_bottom(self, value: Side | None) -> TableBorderStruct:
         """
         Gets a copy of instance with bottom side set or removed
 
@@ -357,7 +357,7 @@ class BorderTable(StyleBase):
         cp.prop_bottom = value
         return cp
 
-    def fmt_left(self, value: Side | None) -> BorderTable:
+    def fmt_left(self, value: Side | None) -> TableBorderStruct:
         """
         Gets a copy of instance with left side set or removed
 
@@ -371,7 +371,7 @@ class BorderTable(StyleBase):
         cp.prop_left = value
         return cp
 
-    def fmt_right(self, value: Side | None) -> BorderTable:
+    def fmt_right(self, value: Side | None) -> TableBorderStruct:
         """
         Gets a copy of instance with right side set or removed
 
@@ -385,7 +385,7 @@ class BorderTable(StyleBase):
         cp.prop_right = value
         return cp
 
-    def fmt_horizontal(self, value: Side | None) -> BorderTable:
+    def fmt_horizontal(self, value: Side | None) -> TableBorderStruct:
         """
         Gets a copy of instance with horizontal side set or removed
 
@@ -399,7 +399,7 @@ class BorderTable(StyleBase):
         cp.prop_horizontal = value
         return cp
 
-    def fmt_vertical(self, value: Side | None) -> BorderTable:
+    def fmt_vertical(self, value: Side | None) -> TableBorderStruct:
         """
         Gets a copy of instance with top vertical set or removed
 
@@ -413,7 +413,7 @@ class BorderTable(StyleBase):
         cp.prop_vertical = value
         return cp
 
-    def fmt_distance(self, value: float | None) -> BorderTable:
+    def fmt_distance(self, value: float | None) -> TableBorderStruct:
         """
         Gets a copy of instance with distance set or removed
 

@@ -6,9 +6,9 @@ Modele for managing paragraph Outline and List.
 from __future__ import annotations
 from typing import Tuple
 
-from ....meta.static_prop import static_prop
-from ...style_base import StyleMulti
-from ...kind.format_kind import FormatKind
+from .....meta.static_prop import static_prop
+from ....style_base import StyleMulti
+from ....kind.format_kind import FormatKind
 from .outline import Outline as Outline, LevelKind as LevelKind
 from .list_style import ListStyle as ListStyle, StyleListKind as StyleListKind
 from .line_num import LineNum as LineNum

@@ -6,13 +6,13 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.direct.para.borders import (
+from ooodev.format.direct.para.border import (
     Borders,
     Side,
     BorderLineStyleEnum,
-    ParaShadowFmt,
+    Shadow,
     ShadowLocation,
-    BorderPadding,
+    Padding,
     LineSize,
 )
 from ooodev.format import CommonColor
@@ -197,7 +197,7 @@ def test_write(loader, para_text) -> None:
         Borders.default.apply(cursor)
 
         side = Side(line=BorderLineStyleEnum.DOUBLE, color=CommonColor.GREEN)
-        shadow = ParaShadowFmt(location=ShadowLocation.BOTTOM_RIGHT)
+        shadow = Shadow(location=ShadowLocation.BOTTOM_RIGHT)
         bdr = Borders(border_side=side, shadow=shadow, merge=True)
         Write.append_para(cursor=cursor, text=para_text, styles=(bdr,))
         cursor.goLeft(p_len + 1, False)
@@ -213,8 +213,8 @@ def test_write(loader, para_text) -> None:
 
         bdr = Borders(
             border_side=Side(line=BorderLineStyleEnum.DOUBLE_THIN, color=CommonColor.BLUE),
-            shadow=ParaShadowFmt(location=ShadowLocation.BOTTOM_RIGHT),
-            padding=BorderPadding(left=2.0, right=1.5, top=3.1, bottom=4.2),
+            shadow=Shadow(location=ShadowLocation.BOTTOM_RIGHT),
+            padding=Padding(left=2.0, right=1.5, top=3.1, bottom=4.2),
         )
         Write.append_para(cursor=cursor, text=para_text, styles=(bdr,))
         cursor.goLeft(p_len + 1, False)

@@ -53,7 +53,7 @@ class ModeKind(Enum):
 
 
 # endregion imports
-class LineSpacing(StyleBase):
+class LineSpacingStruct(StyleBase):
     """
     Line Spacing struct
     """
@@ -102,7 +102,7 @@ class LineSpacing(StyleBase):
     # region methods
     def __eq__(self, other: object) -> bool:
         ls2: UnoLineSpacing = None
-        if isinstance(other, LineSpacing):
+        if isinstance(other, LineSpacingStruct):
             ls2 = other.get_line_spacing()
         elif getattr(other, "typeName", None) == "com.sun.star.style.LineSpacing":
             ls2 = other
@@ -127,7 +127,7 @@ class LineSpacing(StyleBase):
         return (self._get_property_name(),)
 
     def copy(self: T) -> T:
-        nu = super(LineSpacing, self.__class__).__new__(self.__class__)
+        nu = super(LineSpacingStruct, self.__class__).__new__(self.__class__)
         nu.__init__(mode=self._mode, height=self._value)
         if self._dv:
             nu._update(self._dv)
@@ -209,10 +209,10 @@ class LineSpacing(StyleBase):
         return self._value
 
     @static_prop
-    def default() -> LineSpacing:  # type: ignore[misc]
+    def default() -> LineSpacingStruct:  # type: ignore[misc]
         """Gets empty Line Spacing. Static Property."""
-        if LineSpacing._DEFAULT is None:
-            LineSpacing._DEFAULT = LineSpacing(ModeKind.SINGLE, 0)
-        return LineSpacing._DEFAULT
+        if LineSpacingStruct._DEFAULT is None:
+            LineSpacingStruct._DEFAULT = LineSpacingStruct(ModeKind.SINGLE, 0)
+        return LineSpacingStruct._DEFAULT
 
     # endregion Properties

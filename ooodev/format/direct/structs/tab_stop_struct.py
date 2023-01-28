@@ -10,7 +10,6 @@ from enum import Enum
 import uno
 from ....events.event_singleton import _Events
 from ....exceptions import ex as mEx
-from ....utils import info as mInfo
 from ....utils import lo as mLo
 from ....utils import props as mProps
 from ....utils.type_var import T
@@ -35,7 +34,7 @@ class FillCharKind(Enum):
         return self.value
 
 
-class Tab(StyleBase):
+class TabStopStruct(StyleBase):
     """
     Paragraph Tab
 
@@ -104,7 +103,7 @@ class Tab(StyleBase):
         return "ParaTabStops"
 
     def copy(self: T) -> T:
-        nu = super(Tab, self.__class__).__new__(self.__class__)
+        nu = super(TabStopStruct, self.__class__).__new__(self.__class__)
         nu.__init__()
         if self._dv:
             nu._update(self._dv)
@@ -214,7 +213,7 @@ class Tab(StyleBase):
         )
 
     @classmethod
-    def from_obj(cls, obj: object, index: int = 0) -> Tab:
+    def from_obj(cls, obj: object, index: int = 0) -> TabStopStruct:
         """
         Gets instance from object
 
@@ -228,7 +227,7 @@ class Tab(StyleBase):
             Tab: ``Tab`` instance that represents ``obj`` Tab properties.
         """
         # this nu is only used to get Property Name
-        nu = super(Tab, cls).__new__(cls)
+        nu = super(TabStopStruct, cls).__new__(cls)
         nu.__init__()
         prop_name = nu._get_property_name()
         try:
@@ -241,7 +240,7 @@ class Tab(StyleBase):
         return cls.from_tab_stop(ts)
 
     @classmethod
-    def from_tab_stop(cls, ts: TabStop) -> Tab:
+    def from_tab_stop(cls, ts: TabStop) -> TabStopStruct:
         """
         Converts a Tab Stop instance to a Tab
 
@@ -251,7 +250,7 @@ class Tab(StyleBase):
         Returns:
             Tab: Tab set with Tab Stop properties
         """
-        inst = super(Tab, cls).__new__(cls)
+        inst = super(TabStopStruct, cls).__new__(cls)
         inst.__init__()
         inst._set("FillChar", ts.FillChar)
         inst._set("Alignment", ts.Alignment)
@@ -270,7 +269,7 @@ class Tab(StyleBase):
 
     # region dunder methods
     def __eq__(self, oth: object) -> bool:
-        if isinstance(oth, Tab):
+        if isinstance(oth, TabStopStruct):
             return (
                 self._get("Position") == oth._get("Position")
                 and self._get("Alignment") == oth._get("Alignment")
@@ -290,7 +289,7 @@ class Tab(StyleBase):
     # endregion dunder methods
 
     # region format methods
-    def fmt_position(self, value: float) -> Tab:
+    def fmt_position(self, value: float) -> TabStopStruct:
         """
         Gets a copy of instance with position set.
 
@@ -304,7 +303,7 @@ class Tab(StyleBase):
         cp.prop_position = value
         return cp
 
-    def fmt_align(self, value: TabAlign) -> Tab:
+    def fmt_align(self, value: TabAlign) -> TabStopStruct:
         """
         Gets a copy of instance with align set.
 
@@ -318,7 +317,7 @@ class Tab(StyleBase):
         cp.prop_align = value
         return cp
 
-    def fmt_decimal_char(self, value: str) -> Tab:
+    def fmt_decimal_char(self, value: str) -> TabStopStruct:
         """
         Gets a copy of instance with decimal char set.
 
@@ -332,7 +331,7 @@ class Tab(StyleBase):
         cp.prop_decimal_char = value
         return cp
 
-    def fmt_fill_char(self, value: FillCharKind | str) -> Tab:
+    def fmt_fill_char(self, value: FillCharKind | str) -> TabStopStruct:
         """
         Gets a copy of instance with fill char set.
 

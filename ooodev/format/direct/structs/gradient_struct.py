@@ -24,7 +24,7 @@ from ooo.dyn.awt.gradient import Gradient
 from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
 
 
-class GradinetStruct(StyleBase):
+class GradientStruct(StyleBase):
     """
     Represents UNO ``Gradient`` struct.
 
@@ -106,7 +106,7 @@ class GradinetStruct(StyleBase):
         return "FillGradient"
 
     def copy(self: T) -> T:
-        nu = super(GradinetStruct, self.__class__).__new__(self.__class__)
+        nu = super(GradientStruct, self.__class__).__new__(self.__class__)
         nu.__init__()
         if self._dv:
             nu._update(self._dv)
@@ -131,7 +131,7 @@ class GradinetStruct(StyleBase):
 
     def __eq__(self, oth: object) -> bool:
         obj2 = None
-        if isinstance(oth, GradinetStruct):
+        if isinstance(oth, GradientStruct):
             obj2 = oth.get_gradient()
         if getattr(oth, "typeName", None) == "com.sun.star.awt.Gradient":
             obj2 = oth
@@ -236,7 +236,7 @@ class GradinetStruct(StyleBase):
 
     # region static methods
     @classmethod
-    def from_gradient(cls, grad: Gradient) -> GradinetStruct:
+    def from_gradient(cls, grad: Gradient) -> GradientStruct:
         """
         Converts a ``Gradient`` instance to a ``GradinetStruct``
 
@@ -246,7 +246,7 @@ class GradinetStruct(StyleBase):
         Returns:
             GradinetStruct: ``GradinetStruct`` set with ``Gradient`` properties
         """
-        inst = super(GradinetStruct, cls).__new__(cls)
+        inst = super(GradientStruct, cls).__new__(cls)
         inst.__init__()
         inst._set("Style", grad.Style),
         inst._set("StartColor", grad.StartColor),
@@ -261,7 +261,7 @@ class GradinetStruct(StyleBase):
         return inst
 
     @classmethod
-    def from_obj(cls, obj: object) -> GradinetStruct:
+    def from_obj(cls, obj: object) -> GradientStruct:
         """
         Gets instance from object
 
@@ -275,7 +275,7 @@ class GradinetStruct(StyleBase):
             DropCap: ``DropCap`` instance that represents ``obj`` Drop cap format properties.
         """
         # this nu is only used to get Property Name
-        nu = super(GradinetStruct, cls).__new__(cls)
+        nu = super(GradientStruct, cls).__new__(cls)
         nu.__init__()
         prop_name = nu._get_property_name()
 

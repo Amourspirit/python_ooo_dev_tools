@@ -7,7 +7,6 @@ if __name__ == "__main__":
 import uno
 from ooodev.format.style.writer.page.area.color import Color
 from ooodev.format.style.writer.page.area.gradient import Gradient, StylePageKind, PresetKind
-from ooodev.format import CommonColor
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write

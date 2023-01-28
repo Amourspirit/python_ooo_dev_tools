@@ -16,8 +16,8 @@ from ...style_base import StyleMulti
 
 from ...kind.format_kind import FormatKind
 from ..para.padding import Padding as Padding
-from ..structs.border_table import BorderTable
-from ..structs.shadow import Shadow
+from ..structs.table_border_struct import TableBorderStruct
+from ..structs.shadow_struct import ShadowStruct
 from ..structs.side import Side as Side, SideFlags as SideFlags
 
 from ooo.dyn.table.border_line import BorderLine as BorderLine
@@ -29,7 +29,7 @@ from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 # endregion imports
 
 
-class TblBorder2(BorderTable):
+class TblBorder2(TableBorderStruct):
     """
     Table Border struct positioning for setting Calc borders.
 
@@ -75,7 +75,7 @@ class Borders(StyleMulti):
         distance: float | None = None,
         diagonal_down: Side | None = None,
         diagonal_up: Side | None = None,
-        shadow: Shadow | None = None,
+        shadow: ShadowStruct | None = None,
         padding: Padding | None = None,
     ) -> None:
         """
@@ -366,7 +366,7 @@ class Borders(StyleMulti):
             cp._set("DiagonalBLTR2", value.get_border_line2())
         return cp
 
-    def fmt_shadow(self, value: Shadow | None) -> Borders:
+    def fmt_shadow(self, value: ShadowStruct | None) -> Borders:
         """
         Gets copy of instance with shadow set or removed
 
@@ -423,7 +423,7 @@ class Borders(StyleMulti):
                 diagonal_down=Side.empty,
                 diagonal_up=Side.empty,
                 distance=0.0,
-                shadow=Shadow.empty,
+                shadow=ShadowStruct.empty,
                 padding=Padding.default,
             )
         return Borders._EMPTY

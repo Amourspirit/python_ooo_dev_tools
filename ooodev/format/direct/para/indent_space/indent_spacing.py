@@ -7,10 +7,10 @@ from __future__ import annotations
 from typing import Tuple
 from numbers import Real
 
-from ....exceptions import ex as mEx
-from ....meta.static_prop import static_prop
-from ...kind.format_kind import FormatKind
-from ...style_base import StyleMulti
+from .....exceptions import ex as mEx
+from .....meta.static_prop import static_prop
+from ....kind.format_kind import FormatKind
+from ....style_base import StyleMulti
 from .indent import Indent
 from .line_spacing import LineSpacing, ModeKind as ModeKind
 from .spacing import Spacing

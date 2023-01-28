@@ -6,8 +6,8 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.direct.para.drop_caps import DropCaps, StyleCharKind
-from ooodev.format.direct.structs.drop_cap import DropCap
+from ooodev.format.direct.para.drop_cap import DropCaps, StyleCharKind
+from ooodev.format.direct.structs.drop_cap_struct import DropCapStruct
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
@@ -42,7 +42,7 @@ def test_write(loader, para_text) -> None:
         pp = cast("ParagraphProperties", cursor)
         assert pp.DropCapCharStyleName == ""
         assert pp.DropCapWholeWord == False
-        inner_dc = cast(DropCap, dc._get_style("drop_cap")[0])
+        inner_dc = cast(DropCapStruct, dc._get_style("drop_cap")[0])
         assert inner_dc == pp.DropCapFormat
         cursor.gotoEnd(False)
 
@@ -54,7 +54,7 @@ def test_write(loader, para_text) -> None:
         cursor.goRight(p_len, True)
         assert pp.DropCapCharStyleName == StyleCharKind.DROP_CAPS.value
         assert pp.DropCapWholeWord == False
-        inner_dc = cast(DropCap, dc._get_style("drop_cap")[0])
+        inner_dc = cast(DropCapStruct, dc._get_style("drop_cap")[0])
         assert inner_dc == pp.DropCapFormat
         cursor.gotoEnd(False)
 
@@ -66,7 +66,7 @@ def test_write(loader, para_text) -> None:
         cursor.goRight(p_len, True)
         assert pp.DropCapCharStyleName == StyleCharKind.DROP_CAPS.value
         assert pp.DropCapWholeWord == False
-        inner_dc = cast(DropCap, dc._get_style("drop_cap")[0])
+        inner_dc = cast(DropCapStruct, dc._get_style("drop_cap")[0])
         assert inner_dc == pp.DropCapFormat
         cursor.gotoEnd(False)
 
@@ -78,7 +78,7 @@ def test_write(loader, para_text) -> None:
         cursor.goRight(p_len, True)
         assert pp.DropCapCharStyleName == ""
         assert pp.DropCapWholeWord == True
-        inner_dc = cast(DropCap, dc._get_style("drop_cap")[0])
+        inner_dc = cast(DropCapStruct, dc._get_style("drop_cap")[0])
         assert inner_dc == pp.DropCapFormat
         cursor.gotoEnd(False)
 

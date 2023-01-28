@@ -5,17 +5,17 @@ Modele for managing paragraph padding.
 """
 from __future__ import annotations
 
-from ....exceptions import ex as mEx
-from ....meta.static_prop import static_prop
-from ....utils import props as mProps
-from ...kind.format_kind import FormatKind
-from ..common.abstract_padding import AbstractPadding
-from ..common.border_props import BorderProps
+from .....exceptions import ex as mEx
+from .....meta.static_prop import static_prop
+from .....utils import props as mProps
+from ....kind.format_kind import FormatKind
+from ...common.abstract_padding import AbstractPadding
+from ...common.border_props import BorderProps
 
 
-class BorderPadding(AbstractPadding):
+class Padding(AbstractPadding):
     """
-    Paragraph BorderPadding
+    Paragraph Border Padding
 
     Any properties starting with ``prop_`` set or get current instance values.
 
@@ -29,9 +29,9 @@ class BorderPadding(AbstractPadding):
     # region methods
 
     @staticmethod
-    def from_obj(obj: object) -> BorderPadding:
+    def from_obj(obj: object) -> Padding:
         """
-        Gets BorderPadding instance from object
+        Gets Border Padding instance from object
 
         Args:
             obj (object): UNO object that supports ``com.sun.star.style.ParagraphProperties`` service.
@@ -42,7 +42,7 @@ class BorderPadding(AbstractPadding):
         Returns:
             BorderPadding: BorderPadding that represents ``obj`` padding.
         """
-        inst = BorderPadding()
+        inst = Padding()
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedServiceError(inst._supported_services()[0])
 
@@ -77,16 +77,16 @@ class BorderPadding(AbstractPadding):
         return self.__border_properties
 
     @static_prop
-    def default() -> BorderPadding:  # type: ignore[misc]
+    def default() -> Padding:  # type: ignore[misc]
         """Gets BorderPadding default. Static Property."""
-        if BorderPadding._DEFAULT is None:
-            inst = BorderPadding()
+        if Padding._DEFAULT is None:
+            inst = Padding()
             inst._set(inst._props.bottom, 0)
             inst._set(inst._props.left, 0)
             inst._set(inst._props.right, 0)
             inst._set(inst._props.top, 0)
-            BorderPadding._DEFAULT = inst
+            Padding._DEFAULT = inst
 
-        return BorderPadding._DEFAULT
+        return Padding._DEFAULT
 
     # endregion properties

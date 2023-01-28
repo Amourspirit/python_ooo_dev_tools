@@ -16,14 +16,14 @@ from ....kind.format_kind import FormatKind
 from ....preset import preset_gradient
 from ....preset.preset_gradient import PresetKind as PresetKind
 from ....style_base import StyleMulti
-from ...structs.gradient_struct import GradinetStruct
+from ...structs.gradient_struct import GradientStruct
 
 from ooo.dyn.drawing.fill_style import FillStyle
 from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
 from ooo.dyn.awt.gradient import Gradient as UNOGradient
 
 
-class FillStyleStruct(GradinetStruct):
+class FillStyleStruct(GradientStruct):
     def _supported_services(self) -> Tuple[str, ...]:
         return (
             "com.sun.star.drawing.FillProperties",

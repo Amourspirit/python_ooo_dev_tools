@@ -19,7 +19,7 @@ from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEven
 from ooo.dyn.style.drop_cap_format import DropCapFormat
 
 
-class DropCap(StyleBase):
+class DropCapStruct(StyleBase):
     """
     Paragraph Drop Cap
 
@@ -75,7 +75,7 @@ class DropCap(StyleBase):
         return "DropCapFormat"
 
     def copy(self: T) -> T:
-        nu = super(DropCap, self.__class__).__new__(self.__class__)
+        nu = super(DropCapStruct, self.__class__).__new__(self.__class__)
         nu.__init__()
         if self._dv:
             nu._update(self._dv)
@@ -151,7 +151,7 @@ class DropCap(StyleBase):
         return DropCapFormat(Lines=self._get("Lines"), Count=self._get("Count"), Distance=self._get("Distance"))
 
     @classmethod
-    def from_obj(cls, obj: object) -> DropCap:
+    def from_obj(cls, obj: object) -> DropCapStruct:
         """
         Gets instance from object
 
@@ -165,7 +165,7 @@ class DropCap(StyleBase):
             DropCap: ``DropCap`` instance that represents ``obj`` Drop cap format properties.
         """
         # this nu is only used to get Property Name
-        nu = super(DropCap, cls).__new__(cls)
+        nu = super(DropCapStruct, cls).__new__(cls)
         nu.__init__()
         prop_name = nu._get_property_name()
 
@@ -177,7 +177,7 @@ class DropCap(StyleBase):
         return cls.from_drop_cap_format(dcf)
 
     @classmethod
-    def from_drop_cap_format(cls, dcf: DropCapFormat) -> DropCap:
+    def from_drop_cap_format(cls, dcf: DropCapFormat) -> DropCapStruct:
         """
         Converts a ``DropCapFormat`` Stop instance to a ``DropCap``
 
@@ -187,7 +187,7 @@ class DropCap(StyleBase):
         Returns:
             DropCap: ``DropCap`` set with Drop Cap Format properties
         """
-        inst = super(DropCap, cls).__new__(cls)
+        inst = super(DropCapStruct, cls).__new__(cls)
         inst.__init__(count=dcf.Count, distance=dcf.Distance, lines=dcf.Lines)
         return inst
 
@@ -195,7 +195,7 @@ class DropCap(StyleBase):
 
     # region dunder methods
     def __eq__(self, oth: object) -> bool:
-        if isinstance(oth, DropCap):
+        if isinstance(oth, DropCapStruct):
             return (
                 self._get("Count") == oth._get("Count")
                 and self._get("Distance") == oth._get("Distance")
@@ -213,7 +213,7 @@ class DropCap(StyleBase):
     # endregion dunder methods
 
     # region format methods
-    def fmt_count(self, value: int) -> DropCap:
+    def fmt_count(self, value: int) -> DropCapStruct:
         """
         Gets a copy of instance with count set.
 
@@ -227,7 +227,7 @@ class DropCap(StyleBase):
         cp.prop_count = value
         return cp
 
-    def fmt_distance(self, value: int) -> DropCap:
+    def fmt_distance(self, value: int) -> DropCapStruct:
         """
         Gets a copy of instance with distance set.
 
@@ -241,7 +241,7 @@ class DropCap(StyleBase):
         cp.prop_distance = value
         return cp
 
-    def fmt_lines(self, value: int) -> DropCap:
+    def fmt_lines(self, value: int) -> DropCapStruct:
         """
         Gets a copy of instance with lines set.
 

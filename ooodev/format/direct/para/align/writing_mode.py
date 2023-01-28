@@ -8,12 +8,12 @@ from typing import Tuple, cast, overload
 
 import uno
 
-from ....exceptions import ex as mEx
-from ....meta.static_prop import static_prop
-from ....utils import lo as mLo
-from ....utils import props as mProps
-from ...kind.format_kind import FormatKind
-from ...style_base import StyleBase
+from .....exceptions import ex as mEx
+from .....meta.static_prop import static_prop
+from .....utils import lo as mLo
+from .....utils import props as mProps
+from ....kind.format_kind import FormatKind
+from ....style_base import StyleBase
 
 from ooo.dyn.text.writing_mode2 import WritingMode2Enum as WritingMode2Enum
 

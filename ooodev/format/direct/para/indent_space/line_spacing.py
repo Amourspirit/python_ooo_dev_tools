@@ -5,20 +5,19 @@ Modele for managing paragraph Line Spacing.
 """
 from __future__ import annotations
 from typing import Tuple, cast, overload
-from enum import Enum
 from numbers import Real
 
-from ....exceptions import ex as mEx
-from ....meta.static_prop import static_prop
-from ....utils import lo as mLo
-from ....utils import props as mProps
-from ...style_base import StyleMulti
-from ..structs import line_spacing as mLs
-from ..structs.line_spacing import ModeKind as ModeKind
-from ...kind.format_kind import FormatKind
+from .....exceptions import ex as mEx
+from .....meta.static_prop import static_prop
+from .....utils import lo as mLo
+from .....utils import props as mProps
+from ....style_base import StyleMulti
+from ...structs import line_spacing_struct as mLs
+from ...structs.line_spacing_struct import ModeKind as ModeKind
+from ....kind.format_kind import FormatKind
 
 
-class ParaLineSpace(mLs.LineSpacing):
+class ParaLineSpace(mLs.LineSpacingStruct):
     """Represents a Line spacing Struct for use with paragraphs"""
 
     _DEFAULT = None

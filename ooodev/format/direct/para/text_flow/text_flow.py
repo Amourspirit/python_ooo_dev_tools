@@ -6,9 +6,9 @@ Modele for managing paragraph Text Flow.
 from __future__ import annotations
 from typing import Tuple
 
-from ....meta.static_prop import static_prop
-from ...style_base import StyleMulti
-from ...kind.format_kind import FormatKind
+from .....meta.static_prop import static_prop
+from ....style_base import StyleMulti
+from ....kind.format_kind import FormatKind
 from .breaks import Breaks
 from .hyphenation import Hyphenation
 from .flow_options import FlowOptions

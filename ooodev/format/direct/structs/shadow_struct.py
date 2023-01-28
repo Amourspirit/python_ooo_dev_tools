@@ -23,7 +23,7 @@ from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 
 
 # endregion imports
-class Shadow(StyleBase):
+class ShadowStruct(StyleBase):
     """
     Shadow struct
 
@@ -73,7 +73,7 @@ class Shadow(StyleBase):
     # region methods
     def __eq__(self, other: object) -> bool:
         s2: ShadowFormat = None
-        if isinstance(other, Shadow):
+        if isinstance(other, ShadowStruct):
             s2 = other.get_shadow_format()
         elif getattr(other, "typeName", None) == "com.sun.star.table.ShadowFormat":
             s2 = other
@@ -117,7 +117,7 @@ class Shadow(StyleBase):
         return (self._get_property_name(),)
 
     def copy(self: T) -> T:
-        nu = super(Shadow, self.__class__).__new__(self.__class__)
+        nu = super(ShadowStruct, self.__class__).__new__(self.__class__)
         nu.__init__(
             location=self.prop_width, color=self.prop_color, transparent=self.prop_transparent, width=self.prop_width
         )
@@ -180,7 +180,7 @@ class Shadow(StyleBase):
     # endregion apply()
 
     @classmethod
-    def from_obj(cls, obj: object) -> Shadow:
+    def from_obj(cls, obj: object) -> ShadowStruct:
         """
         Gets instance from object
 
@@ -192,7 +192,7 @@ class Shadow(StyleBase):
         """
 
         # this nu is only used to get Property Name
-        nu = super(Shadow, cls).__new__(cls)
+        nu = super(ShadowStruct, cls).__new__(cls)
         nu.__init__()
 
         shadow = cast(ShadowFormat, mProps.Props.get(obj, nu._get_property_name()))
@@ -200,12 +200,12 @@ class Shadow(StyleBase):
             return cls.empty.copy()
         width = UnitConvert.convert(num=shadow.ShadowWidth, frm=Length.MM100, to=Length.MM)
 
-        nu = super(Shadow, cls).__new__(cls)
+        nu = super(ShadowStruct, cls).__new__(cls)
         nu.__init__(location=shadow.Location, color=shadow.Color, transparent=shadow.IsTransparent, width=width)
         return nu
 
     @classmethod
-    def from_shadow(cls, shadow: ShadowFormat) -> Shadow:
+    def from_shadow(cls, shadow: ShadowFormat) -> ShadowStruct:
         """
         Gets an instance
 
@@ -216,14 +216,14 @@ class Shadow(StyleBase):
             Shadow: Instance representing ``shadow``.
         """
         width = UnitConvert.convert(num=shadow.ShadowWidth, frm=Length.MM100, to=Length.MM)
-        nu = super(Shadow, cls).__new__(cls)
+        nu = super(ShadowStruct, cls).__new__(cls)
         nu.__init__(location=shadow.Location, color=shadow.Color, transparent=shadow.IsTransparent, width=width)
         return nu
 
     # endregion methods
 
     # region style methods
-    def fmt_location(self, value: ShadowLocation) -> Shadow:
+    def fmt_location(self, value: ShadowLocation) -> ShadowStruct:
         """
         Gets a copy of instance with location set
 
@@ -237,7 +237,7 @@ class Shadow(StyleBase):
         cp.prop_location = value
         return cp
 
-    def fmt_color(self, value: Color) -> Shadow:
+    def fmt_color(self, value: Color) -> ShadowStruct:
         """
         Gets a copy of instance with color set
 
@@ -251,7 +251,7 @@ class Shadow(StyleBase):
         cp.prop_color = value
         return cp
 
-    def fmt_transparent(self, value: bool) -> Shadow:
+    def fmt_transparent(self, value: bool) -> ShadowStruct:
         """
         Gets a copy of instance with transparency set
 
@@ -265,7 +265,7 @@ class Shadow(StyleBase):
         cp.prop_transparent = value
         return cp
 
-    def fmt_width(self, value: float) -> Shadow:
+    def fmt_width(self, value: float) -> ShadowStruct:
         """
         Gets a copy of instance with width set
 
@@ -324,10 +324,12 @@ class Shadow(StyleBase):
         self._width = round(UnitConvert.convert(num=value, frm=Length.MM, to=Length.MM100))
 
     @static_prop
-    def empty() -> Shadow:  # type: ignore[misc]
+    def empty() -> ShadowStruct:  # type: ignore[misc]
         """Gets empty Shadow. Static Property. when style is applied it remove any shadow."""
-        if Shadow._EMPTY is None:
-            Shadow._EMPTY = Shadow(location=ShadowLocation.NONE, transparent=False, color=8421504, width=1.76)
-        return Shadow._EMPTY
+        if ShadowStruct._EMPTY is None:
+            ShadowStruct._EMPTY = ShadowStruct(
+                location=ShadowLocation.NONE, transparent=False, color=8421504, width=1.76
+            )
+        return ShadowStruct._EMPTY
 
     # endregion Properties

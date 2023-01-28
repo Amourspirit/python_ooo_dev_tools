@@ -9,19 +9,18 @@ from typing import Tuple, overload
 
 import uno
 
-from ....exceptions import ex as mEx
-from ....meta.static_prop import static_prop
-from ....utils import lo as mLo
-from ....utils import props as mProps
-from ...kind.format_kind import FormatKind
-from ...style_base import StyleMulti
+from .....exceptions import ex as mEx
+from .....meta.static_prop import static_prop
+from .....utils import lo as mLo
+from .....utils import props as mProps
+from ....kind.format_kind import FormatKind
+from ....style_base import StyleMulti
 
 # from ..structs.shadow import Shadow
-from .para_shadow_fmt import ParaShadowFmt as ParaShadowFmt
-from ..structs.side import Side as Side, SideFlags as SideFlags
-from .border_padding import BorderPadding as BorderPadding
+from .shadow import Shadow as Shadow
+from ...structs.side import Side as Side, SideFlags as SideFlags, LineSize as LineSize
+from .padding import Padding as Padding
 from .sides import Sides
-from ..structs.side import LineSize as LineSize
 
 from ooo.dyn.table.border_line import BorderLine as BorderLine
 from ooo.dyn.table.border_line_style import BorderLineStyleEnum as BorderLineStyleEnum
@@ -54,8 +53,8 @@ class Borders(StyleMulti):
         top: Side | None = None,
         bottom: Side | None = None,
         border_side: Side | None = None,
-        shadow: ParaShadowFmt | None = None,
-        padding: BorderPadding | None = None,
+        shadow: Shadow | None = None,
+        padding: Padding | None = None,
         merge: bool | None = None,
     ) -> None:
         """
@@ -208,7 +207,7 @@ class Borders(StyleMulti):
         cp._sides = sides
         return cp
 
-    def fmt_shadow(self, value: ParaShadowFmt | None) -> Borders:
+    def fmt_shadow(self, value: Shadow | None) -> Borders:
         """
         Gets copy of instance with shadow set or removed
 
@@ -225,7 +224,7 @@ class Borders(StyleMulti):
             cp._set_style("shadow", value, *value.get_attrs())
         return cp
 
-    def fmt_padding(self, value: BorderPadding | None) -> Borders:
+    def fmt_padding(self, value: Padding | None) -> Borders:
         """
         Gets copy of instance with padding set or removed
 
@@ -297,8 +296,8 @@ class Borders(StyleMulti):
         if not inst._is_valid_obj(obj):
             raise mEx.ServiceNotSupported(inst._supported_services()[0])
         inst_sides = Sides.from_obj(obj)
-        inst_padding = BorderPadding.from_obj(obj)
-        inst_shadow = ParaShadowFmt.from_obj(obj)
+        inst_padding = Padding.from_obj(obj)
+        inst_shadow = Shadow.from_obj(obj)
         inst._set("ParaIsConnectBorder", mProps.Props.get(obj, "ParaIsConnectBorder"))
         inst._set("BorderDistance", mProps.Props.get(obj, "BorderDistance"))
         inst._set_style("sides", inst_sides, *inst_sides.get_attrs())
@@ -319,7 +318,7 @@ class Borders(StyleMulti):
         """Gets Default Border. Static Property"""
         if Borders._DEFAULT is None:
             Borders._DEFAULT = Borders(
-                border_side=Side.empty, padding=BorderPadding.default, shadow=ParaShadowFmt.empty, merge=True
+                border_side=Side.empty, padding=Padding.default, shadow=Shadow.empty, merge=True
             )
         return Borders._DEFAULT
 

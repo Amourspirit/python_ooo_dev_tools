@@ -6,13 +6,13 @@ Modele for managing paragraph breaks.
 from __future__ import annotations
 from typing import Tuple, overload
 
-from ....exceptions import ex as mEx
-from ....meta.static_prop import static_prop
-from ....utils import lo as mLo
-from ....utils import props as mProps
-from ...kind.format_kind import FormatKind
-from ...style_base import StyleBase
-from ...style.writer.kind.style_list_kind import StyleListKind as StyleListKind
+from .....exceptions import ex as mEx
+from .....meta.static_prop import static_prop
+from .....utils import lo as mLo
+from .....utils import props as mProps
+from ....kind.format_kind import FormatKind
+from ....style_base import StyleBase
+from ....style.writer.kind.style_list_kind import StyleListKind as StyleListKind
 
 # from ...events.args.key_val_cancel_args import KeyValCancelArgs
 

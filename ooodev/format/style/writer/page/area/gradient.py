@@ -13,7 +13,7 @@ from ......utils import lo as mLo
 from ......utils.color import Color
 from ......utils.data_type.angle import Angle as Angle
 from ......utils.data_type.intensity import Intensity as Intensity
-from .....direct.structs.gradient_struct import GradinetStruct
+from .....direct.structs.gradient_struct import GradientStruct
 from .....preset import preset_gradient
 from .....preset.preset_gradient import PresetKind as PresetKind
 from ...kind.style_page_kind import StylePageKind
@@ -25,7 +25,7 @@ from ooo.dyn.drawing.fill_style import FillStyle
 from com.sun.star.beans import XPropertySet
 
 
-class FillStyleStruct(GradinetStruct):
+class FillStyleStruct(GradientStruct):
     def __init__(
         self,
         style: GradientStyle = GradientStyle.LINEAR,
@@ -217,12 +217,12 @@ class Gradient(PageStyleBaseMulti):
         Returns:
             Gradient: Instance that represents Gradient Color.
         """
-        bc = Gradient()
+        bc = Gradient(style_name=style_name)
         if not bc._is_valid_obj(obj):
             raise mEx.NotSupportedError("obj is not a Writer Document")
 
         p = bc._get_style_props(obj)
-        struct = GradinetStruct.from_obj(p)
+        struct = GradientStruct.from_obj(p)
         prop_name = p.getPropertyValue("FillGradientName")
         inst = Gradient(
             style=struct.prop_style,

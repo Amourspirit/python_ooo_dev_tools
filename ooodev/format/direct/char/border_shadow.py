@@ -1,13 +1,13 @@
 from __future__ import annotations
 from typing import Tuple
-from ..structs.shadow import Shadow
+from ..structs.shadow_struct import ShadowStruct
 from ....meta.static_prop import static_prop
 
 import uno
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 
 
-class BorderShadow(Shadow):
+class BorderShadow(ShadowStruct):
     __EMPTY = None
 
     def _get_property_name(self) -> str:

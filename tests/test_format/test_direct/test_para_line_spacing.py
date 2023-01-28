@@ -6,7 +6,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.direct.para.line_spacing import LineSpacing, ModeKind
+from ooodev.format.direct.para.indent_space.line_spacing import LineSpacing, ModeKind
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write

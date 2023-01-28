@@ -8,7 +8,7 @@ if __name__ == "__main__":
 import uno
 from ooodev.format.direct.cell.borders import (
     Borders,
-    Shadow,
+    ShadowStruct,
     Side,
     BorderLineStyleEnum,
     ShadowLocation,
@@ -60,7 +60,7 @@ def test_calc_border(loader) -> None:
         assert cp.TableBorder2.IsBottomLineValid
         assert cp.TableBorder2.BottomLine.LineWidth == cp.TableBorder2.LeftLine.LineWidth
 
-        shadow = Shadow()
+        shadow = ShadowStruct()
 
         cell_obj = Calc.get_cell_obj("c1")
         cell = Calc.get_cell(sheet, cell_obj)
@@ -85,7 +85,7 @@ def test_calc_border(loader) -> None:
 
         assert cp.ShadowFormat == shadow.get_shadow_format()
 
-        shadow = Shadow(location=ShadowLocation.BOTTOM_LEFT)
+        shadow = ShadowStruct(location=ShadowLocation.BOTTOM_LEFT)
         assert cp.ShadowFormat != shadow.get_shadow_format()
 
         cell_obj = Calc.get_cell_obj("e1")

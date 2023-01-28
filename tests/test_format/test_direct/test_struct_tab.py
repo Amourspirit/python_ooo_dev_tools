@@ -6,7 +6,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.direct.structs.tab import Tab, TabAlign, FillCharKind
+from ooodev.format.direct.structs.tab_stop_struct import TabStopStruct, TabAlign, FillCharKind
 from ooodev.format.direct.para.tabs import Tabs
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
@@ -18,23 +18,23 @@ if TYPE_CHECKING:
 
 
 def test_props() -> None:
-    tab = Tab(position=10.0)
+    tab = TabStopStruct(position=10.0)
     assert tab.prop_position == 10.0
     assert tab._get("Position") == 1000
 
-    tab = Tab(align=TabAlign.LEFT)
+    tab = TabStopStruct(align=TabAlign.LEFT)
     assert tab.prop_align == TabAlign.LEFT
     assert tab._get("Alignment") == TabAlign.LEFT
 
-    tab = Tab(align=TabAlign.DECIMAL, decimal_char="*")
+    tab = TabStopStruct(align=TabAlign.DECIMAL, decimal_char="*")
     assert tab.prop_decimal_char == "*"
     assert tab._get("DecimalChar") == "*"
 
-    tab = Tab(fill_char="#")
+    tab = TabStopStruct(fill_char="#")
     assert tab.prop_fill_char == "#"
     assert tab._get("FillChar") == "#"
 
-    tab = Tab()
+    tab = TabStopStruct()
     tab.prop_align = TabAlign.DEFAULT
     assert tab.prop_align == TabAlign.DEFAULT
 

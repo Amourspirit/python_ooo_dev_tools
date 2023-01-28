@@ -6,13 +6,13 @@ Modele for managing paragraph breaks.
 from __future__ import annotations
 from typing import Tuple, overload
 
-from ....exceptions import ex as mEx
-from ....meta.static_prop import static_prop
-from ....utils import lo as mLo
-from ....utils import props as mProps
-from ....utils import info as mInfo
-from ...kind.format_kind import FormatKind
-from ...style_base import StyleBase
+from .....exceptions import ex as mEx
+from .....meta.static_prop import static_prop
+from .....utils import lo as mLo
+from .....utils import props as mProps
+from .....utils import info as mInfo
+from ....kind.format_kind import FormatKind
+from ....style_base import StyleBase
 
 from ooo.dyn.style.break_type import BreakType as BreakType
 

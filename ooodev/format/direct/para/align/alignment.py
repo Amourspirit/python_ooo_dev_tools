@@ -7,12 +7,12 @@ from __future__ import annotations
 from typing import Tuple, cast, overload
 from enum import Enum
 
-from ....exceptions import ex as mEx
-from ....meta.static_prop import static_prop
-from ....utils import lo as mLo
-from ....utils import props as mProps
-from ...kind.format_kind import FormatKind
-from ...style_base import StyleMulti
+from .....exceptions import ex as mEx
+from .....meta.static_prop import static_prop
+from .....utils import lo as mLo
+from .....utils import props as mProps
+from ....kind.format_kind import FormatKind
+from ....style_base import StyleMulti
 from .writing_mode import WritingMode
 
 from ooo.dyn.style.paragraph_adjust import ParagraphAdjust as ParagraphAdjust

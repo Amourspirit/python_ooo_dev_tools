@@ -6,7 +6,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.direct.para.alignment import Alignment, LastLineKind
+from ooodev.format.direct.para.Align import Alignment, LastLineKind
 from ooodev.format.style.writer.style_para import StylePara, StyleParaKind
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo

@@ -8,10 +8,10 @@ from __future__ import annotations
 from typing import cast
 
 import uno
-from ..common.abstract_sides import AbstractSides, BorderProps
-from ....exceptions import ex as mEx
-from ...kind.format_kind import FormatKind
-from ..structs.side import Side as Side, BorderLineStyleEnum as BorderLineStyleEnum
+from ...common.abstract_sides import AbstractSides, BorderProps
+from .....exceptions import ex as mEx
+from ....kind.format_kind import FormatKind
+from ...structs.side import Side as Side, BorderLineStyleEnum as BorderLineStyleEnum
 
 from ooo.dyn.table.border_line2 import BorderLine2
 

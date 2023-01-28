@@ -8,11 +8,11 @@ from typing import Tuple, cast
 
 import uno
 
-from ....meta.static_prop import static_prop
-from ....utils import props as mProps
-from ....utils import info as mInfo
-from ....utils import lo as mLo
-from ..structs.tab import Tab, FillCharKind as FillCharKind
+from .....meta.static_prop import static_prop
+from .....utils import props as mProps
+from .....utils import info as mInfo
+from .....utils import lo as mLo
+from ...structs.tab_stop_struct import TabStopStruct, FillCharKind as FillCharKind
 
 from com.sun.star.beans import XPropertySet
 
@@ -20,7 +20,7 @@ from ooo.dyn.style.tab_align import TabAlign as TabAlign
 from ooo.dyn.style.tab_stop import TabStop
 
 
-class Tabs(Tab):
+class Tabs(TabStopStruct):
     """
     Paragraph Tabs
 
@@ -41,7 +41,7 @@ class Tabs(Tab):
         return "ParaTabStops"
 
     @staticmethod
-    def find(obj: object, position: float) -> Tab | None:
+    def find(obj: object, position: float) -> TabStopStruct | None:
         """
         Gets a Tab that matches position from obj such as a cursor.
 
@@ -75,7 +75,7 @@ class Tabs(Tab):
         if match == -1:
             return None
         ts = tss[match]
-        return Tab.from_tab_stop(ts)
+        return TabStopStruct.from_tab_stop(ts)
 
     @classmethod
     def remove_by_pos(cls, obj: object, position: float) -> bool:
@@ -121,7 +121,7 @@ class Tabs(Tab):
         return True
 
     @classmethod
-    def remove(cls, obj: object, tab: TabStop | Tab) -> bool:
+    def remove(cls, obj: object, tab: TabStop | TabStopStruct) -> bool:
         """
         Removes a Tab Stop from ``obj`` ``ParaTabStops`` property.
 
@@ -134,7 +134,7 @@ class Tabs(Tab):
         """
         if not Tabs.default._is_valid_obj(obj):
             return False
-        if isinstance(tab, Tab):
+        if isinstance(tab, TabStopStruct):
             return Tabs.default._remove_by_positon(obj, tab._get("Position"))
         ts = cast(TabStop, tab)
         return Tabs.default._remove_by_positon(obj, ts.Position)
