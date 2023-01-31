@@ -12,7 +12,7 @@ from .....utils import props as mProps
 from .....utils import lo as mLo
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleMulti
-from ....style.writer.kind.style_char_kind import StyleCharKind as StyleCharKind
+from ....writer.style.char.kind import StyleCharKind as StyleCharKind
 from ...structs.drop_cap_struct import DropCapStruct
 from .....events.args.key_val_cancel_args import KeyValCancelArgs
 

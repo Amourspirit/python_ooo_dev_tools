@@ -6,7 +6,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.style.writer.style_char import StyleChar, StyleCharKind
+from ooodev.format.writer.style.char import Char, StyleCharKind
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
@@ -30,7 +30,7 @@ def test_write(loader) -> None:
 
         txt = "Hello "
         Write.append(cursor=cursor, text=txt)
-        sc = StyleChar(name=StyleCharKind.EXAMPLE)
+        sc = Char(name=StyleCharKind.EXAMPLE)
         Write.append(cursor=cursor, text="World", styles=(sc,))
         cursor.goLeft(5, False)
         cursor.goRight(5, True)
@@ -40,12 +40,12 @@ def test_write(loader) -> None:
         Write.end_paragraph(cursor)
 
         Write.append(cursor=cursor, text="What a ")
-        sc = StyleChar().source_text
+        sc = Char().source_text
         Write.append_para(cursor=cursor, text="World", styles=(sc,))
         cursor.goLeft(6, False)
         cursor.goRight(5, True)
         assert cp.CharStyleName == str(StyleCharKind.SOURCE_TEXT)
-        StyleChar.default.apply(cursor)
+        Char.default.apply(cursor)
         assert cp.CharStyleName == ""
         cursor.gotoEnd(False)
 

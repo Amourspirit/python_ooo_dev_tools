@@ -6,7 +6,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.direct.char.font import (
+from ooodev.format.writer.direct.char.font import (
     Font,
     FontStrikeoutEnum,
     FontUnderlineEnum,
@@ -259,56 +259,6 @@ def test_font_cursor(loader) -> None:
         assert cp.CharShadowed
         cursor.gotoEnd(False)
         Write.end_paragraph(cursor)
-
-        Lo.delay(delay)
-    finally:
-        Lo.close_doc(doc)
-
-
-def test_calc_font(loader) -> None:
-    # delay = 0 if not Lo.bridge_connector.headless else 5_000
-    delay = 0
-    from ooodev.office.calc import Calc
-    from ooodev.format import Styler
-
-    doc = Calc.create_doc()
-    try:
-        sheet = Calc.get_sheet(doc)
-        if not Lo.bridge_connector.headless:
-            GUI.set_visible()
-            Lo.delay(500)
-            Calc.zoom(doc, GUI.ZoomEnum.ZOOM_200_PERCENT)
-        cell_obj = Calc.get_cell_obj("A1")
-        Calc.set_val(value="Hello", sheet=sheet, cell_obj=cell_obj)
-        cell = Calc.get_cell(sheet, cell_obj)
-        cp = cast("CharacterProperties", cell)
-        Styler.apply(cell, Font(b=True, u=True, color=CommonColor.ROYAL_BLUE))
-        assert cp.CharWeight == FontWeightEnum.BOLD.value
-        assert cp.CharUnderline == FontUnderlineEnum.SINGLE.value
-        assert cp.CharColor == CommonColor.ROYAL_BLUE
-
-        cell_obj = Calc.get_cell_obj("A3")
-        Calc.set_val(value="World", sheet=sheet, cell_obj=cell_obj)
-        cell = Calc.get_cell(sheet, cell_obj)
-        cp = cast("CharacterProperties", cell)
-        Styler.apply(
-            cell,
-            Font(
-                i=True,
-                overline=FontUnderlineEnum.DOUBLE,
-                overline_color=CommonColor.RED,
-                color=CommonColor.DARK_GREEN,
-                bg_color=CommonColor.LIGHT_GRAY,
-            ),
-        )
-        # no documentation found for Overline
-        assert cell.CharOverlineHasColor
-        assert cell.CharOverlineColor == CommonColor.RED
-        assert cell.CharOverline == FontUnderlineEnum.DOUBLE.value
-        assert cp.CharPosture == FontSlant.ITALIC
-        assert cp.CharColor == CommonColor.DARK_GREEN
-        # CharBackColor not supported for cell
-        # assert cp.CharBackColor == CommonColor.LIGHT_GRAY
 
         Lo.delay(delay)
     finally:

@@ -6,14 +6,14 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.direct.cell.border import (
+from ooodev.format.calc.direct.borders import (
     Borders,
     Shadow,
     Side,
     BorderLineStyleEnum,
     ShadowLocation,
+    Padding,
 )
-from ooodev.format.direct.para.padding import Padding
 from ooodev.format import CommonColor, Styler
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo

@@ -11,7 +11,7 @@ from ooodev.format import CommonColor
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
-from ooodev.format.direct.char.font import (
+from ooodev.format.writer.direct.char.font import (
     Font,
     FontUnderlineEnum,
     FontFamilyEnum,

@@ -6,11 +6,11 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.direct.char.border import Borders, BorderLineStyleEnum, Side, LineSize
+from ooodev.format.writer.direct.char.borders import Borders, BorderLineStyleEnum, Side, LineSize
 from ooodev.format import CommonColor
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
-from ooodev.format.direct.char.font import (
+from ooodev.format.writer.direct.char.font import (
     Font,
     FontUnderlineEnum,
     FontFamilyEnum,

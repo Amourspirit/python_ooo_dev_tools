@@ -17,6 +17,8 @@ from ..events.format_named_event import FormatNamedEvent as FormatNamedEvent
 from ..events.event_singleton import _Events
 from abc import ABC
 
+from com.sun.star.container import XNameContainer
+
 if TYPE_CHECKING:
     from com.sun.star.beans import PropertyValue
 
@@ -36,6 +38,8 @@ class StyleBase(ABC):
             if not value is None:
                 self._dv[key] = value
         super().__init__()
+
+    # region style property methods
 
     def _get_properties(self) -> Dict[str, Any]:
         """Gets Key value pairs for the instance."""
@@ -76,10 +80,7 @@ class StyleBase(ABC):
             return
         self._dv.update(value)
 
-    def _on_setting(self, event: KeyValCancelArgs) -> None:
-        # can be overridden in child classes to manage or modify setting
-        # called by _set()
-        pass
+    # endregion style property methods
 
     # region Services
     def _supported_services(self) -> Tuple[str, ...]:
@@ -172,13 +173,21 @@ class StyleBase(ABC):
                 events = Events(source=self)
                 events.on(PropsNamedEvent.PROP_SETTING, _on_props_setting)
                 events.on(PropsNamedEvent.PROP_SET, _on_props_set)
-                mProps.Props.set(obj, **self._dv)
+                # mProps.Props.set(obj, **self._dv)
+                self._props_set(obj, **self._dv)
                 events = None
                 eargs = EventArgs.from_args(cargs)
                 self.on_applied(eargs)
                 _Events().trigger(FormatNamedEvent.STYLE_APPLIED, eargs)
             else:
                 self._print_not_valid_obj("apply")
+
+    def _props_set(self, obj: object, **kwargs: Any) -> None:
+        # set properties. Can be overriden in child classes
+        # may be usful to wrap in try statements in child classes
+        mProps.Props.set(obj, **kwargs)
+
+    # region Backup/Restore
 
     def backup(self, obj: object) -> None:
         """
@@ -236,6 +245,15 @@ class StyleBase(ABC):
             events = None
             if clear:
                 self._dv_bak.clear()
+
+    # endregion Backup/Restore
+
+    # region Event Methods
+
+    def _on_setting(self, event: KeyValCancelArgs) -> None:
+        # can be overridden in child classes to manage or modify setting
+        # called by _set()
+        pass
 
     def on_property_setting(self, event_args: KeyValCancelArgs) -> None:
         """
@@ -319,6 +337,8 @@ class StyleBase(ABC):
         # can be overriden in child classes.
         pass
 
+    # endregion Event Methods
+
     def get_props(self) -> Tuple[PropertyValue, ...]:
         """
         Gets instance properties
@@ -339,6 +359,8 @@ class StyleBase(ABC):
         nu._update(self._dv)
         return nu
 
+    # region Dunder Methods
+
     def __eq__(self, oth: object) -> bool:
         if isinstance(oth, StyleBase):
             result = False
@@ -351,6 +373,56 @@ class StyleBase(ABC):
                 return False
             return result
         return NotImplemented
+
+    # endregion Dunder Methods
+
+    # region Named Container Methods
+    # endregion Named Container Methods
+
+    def _get_container_service_name(self) -> str:
+        raise NotImplementedError
+
+    def _get_name_container(self) -> XNameContainer:
+        container = mLo.Lo.create_instance_msf(XNameContainer, self._get_container_service_name(), raise_err=True)
+        return container
+
+    def _add_value_to_container(
+        self, name: str, obj: object, allow_update: bool = True, nc: XNameContainer | None = None
+    ) -> None:
+        if nc is None:
+            nc = self._get_name_container()
+        if nc.hasByName(name):
+            if allow_update:
+                nc.replaceByName(name, obj)
+                return
+        else:
+            nc.insertByName(name, obj)
+
+    def _get_unnique_container_el_name(self, prefix: str, nc: XNameContainer | None = None) -> str:
+        """
+        Gets the next name that does not exist in the container.
+
+        Lets say ``prefix`` is ``Transparency `` then names are search in sequence.
+        ``Transparency 1``, ``Transparency 3``, ``Transparency 3``, etc until a unique name is found.
+
+        Args:
+            prefix (str): Any string such as ``Transparency ``
+            nc (XNameContainer | None, optional): Container. Defaults to None.
+
+        Returns:
+            str: Unique name
+        """
+        if nc is None:
+            nc = self._get_name_container()
+        names = nc.getElementNames()
+        i = 1
+        name = f"{prefix}{i}"
+        while name in names:
+            i += 1
+            name = f"{prefix}{i}"
+        return name
+
+    # region Properties
 
     @property
     def prop_has_attribs(self) -> bool:
@@ -368,6 +440,8 @@ class StyleBase(ABC):
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
         return FormatKind.UNKNOWN
+
+    # endregion Properties
 
 
 class _StyleMultArgs:

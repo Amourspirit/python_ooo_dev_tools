@@ -13,7 +13,7 @@ from .....utils import lo as mLo
 from .....utils import props as mProps
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleMulti
-from .writing_mode import WritingMode
+from .writing_mode import WritingMode as WritingMode
 
 from ooo.dyn.style.paragraph_adjust import ParagraphAdjust as ParagraphAdjust
 from ooo.dyn.text.paragraph_vert_align import ParagraphVertAlignEnum as ParagraphVertAlignEnum

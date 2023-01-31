@@ -6,7 +6,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.direct.para.align import (
+from ooodev.format.writer.direct.para.alignment import (
     Alignment,
     ParagraphAdjust,
     ParagraphVertAlignEnum,

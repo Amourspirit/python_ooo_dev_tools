@@ -18,7 +18,7 @@ from ....kind.format_kind import FormatKind
 from .padding import Padding as Padding
 from ...structs.table_border_struct import TableBorderStruct
 from .shadow import Shadow
-from ...structs.side import Side as Side, SideFlags as SideFlags
+from ...structs.side import Side as Side
 
 from ooo.dyn.table.border_line import BorderLine as BorderLine
 from ooo.dyn.table.border_line_style import BorderLineStyleEnum as BorderLineStyleEnum

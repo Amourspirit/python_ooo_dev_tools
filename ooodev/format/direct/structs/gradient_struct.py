@@ -23,6 +23,9 @@ import uno
 from ooo.dyn.awt.gradient import Gradient
 from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
 
+# see Also:
+# https://github.com/LibreOffice/core/blob/f725629a6241ec064770c28957f11d306c18f130/filter/source/msfilter/escherex.cxx
+
 
 class GradientStruct(StyleBase):
     """

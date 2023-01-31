@@ -6,7 +6,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.style.writer.style_list import StyleList, StyleListKind
+from ooodev.format.writer.style.bullet_list import BulletList, StyleListKind
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
@@ -27,7 +27,7 @@ def test_write(loader) -> None:
         GUI.zoom(GUI.ZoomEnum.ZOOM_150_PERCENT)
     try:
         cursor = Write.get_cursor(doc)
-        sl = StyleList(name=StyleListKind.LIST_01)
+        sl = BulletList(name=StyleListKind.LIST_01)
         sl.apply(cursor)
 
         start_pos = 0
@@ -38,10 +38,10 @@ def test_write(loader) -> None:
         pp = cast("ParagraphProperties", cursor)
         assert pp.NumberingStyleName == StyleListKind.LIST_01.value
         cursor.gotoEnd(False)
-        StyleList.default.apply(cursor)
+        BulletList.default.apply(cursor)
         Write.append_para(cursor=cursor, text="Moving On...")
 
-        sl = StyleList().list_02
+        sl = BulletList().list_02
         start_pos = Write.get_position(cursor)
         sl.apply(cursor)
         for i in range(1, 11):
@@ -50,10 +50,10 @@ def test_write(loader) -> None:
         cursor.goLeft(end_pos - start_pos, True)
         assert pp.NumberingStyleName == StyleListKind.LIST_02.value
         cursor.gotoEnd(False)
-        StyleList.default.apply(cursor)
+        BulletList.default.apply(cursor)
         Write.append_para(cursor=cursor, text="Moving On...")
 
-        sl = StyleList().list_03
+        sl = BulletList().list_03
         start_pos = Write.get_position(cursor)
         sl.apply(cursor)
         for i in range(1, 11):
@@ -62,10 +62,10 @@ def test_write(loader) -> None:
         cursor.goLeft(end_pos - start_pos, True)
         assert pp.NumberingStyleName == StyleListKind.LIST_03.value
         cursor.gotoEnd(False)
-        StyleList.default.apply(cursor)
+        BulletList.default.apply(cursor)
         Write.append_para(cursor=cursor, text="Moving On...")
 
-        sl = StyleList(name=StyleListKind.NUM_123)
+        sl = BulletList(name=StyleListKind.NUM_123)
         start_pos = Write.get_position(cursor)
         sl.apply(cursor)
         for i in range(1, 11):
@@ -74,10 +74,10 @@ def test_write(loader) -> None:
         cursor.goLeft(end_pos - start_pos, True)
         assert pp.NumberingStyleName == StyleListKind.NUM_123.value
         cursor.gotoEnd(False)
-        StyleList.default.apply(cursor)
+        BulletList.default.apply(cursor)
         Write.append_para(cursor=cursor, text="Moving On...")
 
-        sl = StyleList(name=StyleListKind.NUM_ABC)
+        sl = BulletList(name=StyleListKind.NUM_ABC)
         start_pos = Write.get_position(cursor)
         sl.apply(cursor)
         for i in range(1, 11):
@@ -86,10 +86,10 @@ def test_write(loader) -> None:
         cursor.goLeft(end_pos - start_pos, True)
         assert pp.NumberingStyleName == StyleListKind.NUM_ABC.value
         cursor.gotoEnd(False)
-        StyleList.default.apply(cursor)
+        BulletList.default.apply(cursor)
         Write.append_para(cursor=cursor, text="Moving On...")
 
-        sl = StyleList().num_ivx
+        sl = BulletList().num_ivx
         start_pos = Write.get_position(cursor)
         sl.apply(cursor)
         for i in range(1, 11):
@@ -98,7 +98,7 @@ def test_write(loader) -> None:
         cursor.goLeft(end_pos - start_pos, True)
         assert pp.NumberingStyleName == StyleListKind.NUM_ivx.value
         cursor.gotoEnd(False)
-        StyleList.default.apply(cursor)
+        BulletList.default.apply(cursor)
         Write.append_para(cursor=cursor, text="Moving On...")
 
         Lo.delay(delay)

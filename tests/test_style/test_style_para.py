@@ -7,7 +7,7 @@ if __name__ == "__main__":
 
 import uno
 from ooodev.format.direct.para.align import Alignment, LastLineKind
-from ooodev.format.style.writer.style_para import StylePara, StyleParaKind
+from ooodev.format.writer.style.para import Para, StyleParaKind
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
@@ -38,7 +38,7 @@ def test_write(loader, para_text) -> None:
         pp = cast("ParagraphProperties", cursor)
         assert pp.ParaAdjust == 1  # ParagraphAdjust.RIGHT
         cursor.gotoEnd(False)
-        StylePara.default.apply(cursor)
+        Para.default.apply(cursor)
         assert pp.ParaStyleName == str(StyleParaKind.STANDARD)
         assert pp.ParaAdjust == 0
 
@@ -51,7 +51,7 @@ def test_write(loader, para_text) -> None:
         assert pp.ParaLastLineAdjust == LastLineKind.CENTER.value
         assert cursor.SnapToGrid == False
         cursor.gotoEnd(False)
-        StylePara.default.apply(cursor)
+        Para.default.apply(cursor)
         assert pp.ParaStyleName == str(StyleParaKind.STANDARD)
         assert pp.ParaAdjust == 0
         assert pp.ParaLastLineAdjust == 0
@@ -65,13 +65,13 @@ def test_write(loader, para_text) -> None:
         assert pp.ParaLastLineAdjust == LastLineKind.JUSTIFY.value
         assert pp.ParaExpandSingleWord == True
         cursor.gotoEnd(False)
-        StylePara.default.apply(cursor)
+        Para.default.apply(cursor)
         assert pp.ParaStyleName == str(StyleParaKind.STANDARD)
         assert pp.ParaAdjust == 0
         assert pp.ParaLastLineAdjust == 0
         assert pp.ParaExpandSingleWord == False
 
-        st = StylePara(name=StyleParaKind.TITLE)
+        st = Para(name=StyleParaKind.TITLE)
         txt = "Title Text"
         t_len = len(txt)
         Write.append_para(cursor=cursor, text=txt, styles=(st,))
@@ -81,7 +81,7 @@ def test_write(loader, para_text) -> None:
         cursor.gotoEnd(False)
         assert pp.ParaStyleName == str(StyleParaKind.STANDARD)
 
-        st = StylePara().h1
+        st = Para().h1
         txt = "H1 Text"
         t_len = len(txt)
         Write.append_para(cursor=cursor, text=txt, styles=(st,))
@@ -91,7 +91,7 @@ def test_write(loader, para_text) -> None:
         cursor.gotoEnd(False)
         assert pp.ParaStyleName == str(StyleParaKind.STANDARD)
 
-        st = StylePara().h2
+        st = Para().h2
         txt = "H2 Text"
         t_len = len(txt)
         Write.append_para(cursor=cursor, text=txt, styles=(st,))
@@ -101,7 +101,7 @@ def test_write(loader, para_text) -> None:
         cursor.gotoEnd(False)
         assert pp.ParaStyleName == str(StyleParaKind.STANDARD)
 
-        st = StylePara().h3
+        st = Para().h3
         txt = "H3 Text"
         t_len = len(txt)
         Write.append_para(cursor=cursor, text=txt, styles=(st,))
@@ -111,7 +111,7 @@ def test_write(loader, para_text) -> None:
         cursor.gotoEnd(False)
         assert pp.ParaStyleName == str(StyleParaKind.STANDARD)
 
-        st = StylePara().h4
+        st = Para().h4
         txt = "H4 Text"
         t_len = len(txt)
         Write.append_para(cursor=cursor, text=txt, styles=(st,))
@@ -121,7 +121,7 @@ def test_write(loader, para_text) -> None:
         cursor.gotoEnd(False)
         assert pp.ParaStyleName == str(StyleParaKind.STANDARD)
 
-        st = StylePara().h5
+        st = Para().h5
         txt = "H5 Text"
         t_len = len(txt)
         Write.append_para(cursor=cursor, text=txt, styles=(st,))
@@ -131,7 +131,7 @@ def test_write(loader, para_text) -> None:
         cursor.gotoEnd(False)
         assert pp.ParaStyleName == str(StyleParaKind.STANDARD)
 
-        st = StylePara().h6
+        st = Para().h6
         txt = "H6 Text"
         t_len = len(txt)
         Write.append_para(cursor=cursor, text=txt, styles=(st,))
@@ -141,7 +141,7 @@ def test_write(loader, para_text) -> None:
         cursor.gotoEnd(False)
         assert pp.ParaStyleName == str(StyleParaKind.STANDARD)
 
-        st = StylePara().h7
+        st = Para().h7
         txt = "H7 Text"
         t_len = len(txt)
         Write.append_para(cursor=cursor, text=txt, styles=(st,))
@@ -151,7 +151,7 @@ def test_write(loader, para_text) -> None:
         cursor.gotoEnd(False)
         assert pp.ParaStyleName == str(StyleParaKind.STANDARD)
 
-        st = StylePara().h8
+        st = Para().h8
         txt = "H8 Text"
         t_len = len(txt)
         Write.append_para(cursor=cursor, text=txt, styles=(st,))
@@ -161,7 +161,7 @@ def test_write(loader, para_text) -> None:
         cursor.gotoEnd(False)
         assert pp.ParaStyleName == str(StyleParaKind.STANDARD)
 
-        st = StylePara().h9
+        st = Para().h9
         txt = "H9 Text"
         t_len = len(txt)
         Write.append_para(cursor=cursor, text=txt, styles=(st,))
@@ -171,7 +171,7 @@ def test_write(loader, para_text) -> None:
         cursor.gotoEnd(False)
         assert pp.ParaStyleName == str(StyleParaKind.STANDARD)
 
-        st = StylePara().h10
+        st = Para().h10
         txt = "H10 Text"
         t_len = len(txt)
         Write.append_para(cursor=cursor, text=txt, styles=(st,))
