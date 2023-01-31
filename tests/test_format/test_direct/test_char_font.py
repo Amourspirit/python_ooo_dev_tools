@@ -86,7 +86,7 @@ def test_font(loader) -> None:
         u=True,
         color=CommonColor.BLUE,
         strike=FontStrikeoutEnum.BOLD,
-        underine_color=CommonColor.AQUA,
+        underline_color=CommonColor.AQUA,
         overline=FontUnderlineEnum.BOLDDASHDOT,
         overline_color=CommonColor.BEIGE,
         superscript=True,
@@ -105,7 +105,7 @@ def test_font(loader) -> None:
     assert ft.prop_underline == FontUnderlineEnum.SINGLE
     assert ft.prop_color == CommonColor.BLUE
     assert ft.prop_strike == FontStrikeoutEnum.BOLD
-    assert ft.prop_underine_color == CommonColor.AQUA
+    assert ft.prop_underline_color == CommonColor.AQUA
     assert ft.prop_superscript
     assert ft.prop_size == 22.0
     assert ft.prop_rotation == 90.0
@@ -141,7 +141,7 @@ def test_font_cursor(loader) -> None:
         Lo.delay(500)
         GUI.zoom(GUI.ZoomEnum.ZOOM_150_PERCENT)
     try:
-        ft = Font(size=30.0, b=True, i=True, u=True, color=CommonColor.BLUE, underine_color=CommonColor.GREEN)
+        ft = Font(size=30.0, b=True, i=True, u=True, color=CommonColor.BLUE, underline_color=CommonColor.GREEN)
         cursor = Write.get_cursor(doc)
         style = partial(Styler.apply, cursor)
         Write.append(cursor, "hello")

@@ -4,7 +4,7 @@ Module for managing character fonts.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, cast, overload
+from typing import Any, Tuple, cast, overload
 from enum import Enum
 
 from .....exceptions import ex as mEx
@@ -14,6 +14,7 @@ from .....utils.color import Color
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleBase
 from .....utils.unit_convert import UnitConvert
+from .font_position import CharSpacingKind as CharSpacingKind
 
 from ooo.dyn.awt.char_set import CharSetEnum as CharSetEnum
 from ooo.dyn.awt.font_family import FontFamilyEnum as FontFamilyEnum
@@ -23,20 +24,6 @@ from ooo.dyn.awt.font_underline import FontUnderlineEnum as FontUnderlineEnum
 from ooo.dyn.awt.font_weight import FontWeightEnum as FontWeightEnum
 from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
-
-
-class CharSpacingKind(float, Enum):
-    """
-    Character Spacing
-
-    .. versionadded:: 0.9.0
-    """
-
-    VERY_TIGHT = -3.0
-    TIGHT = -1.5
-    NORMAL = 0.0
-    LOOSE = 3.0
-    VERY_LOOSE = 6.0
 
 
 class Font(StyleBase):
@@ -84,7 +71,7 @@ class Font(StyleBase):
         subscript: bool | None = None,
         superscript: bool | None = None,
         underine: FontUnderlineEnum | None = None,
-        underine_color: Color | None = None,
+        underline_color: Color | None = None,
         weight: FontWeightEnum | None = None,
         word_mode: bool | None = None,
     ) -> None:
@@ -98,7 +85,7 @@ class Font(StyleBase):
             bg_color (Color, optional): The value of the text background color.
             bg_transparent (bool, optional): Determines if the text background color is set to transparent.
             charset (CharSetEnum, optional): The text encoding of the font.
-            color (Color, optional): The value of the text color.
+            color (Color, optional): The value of the text color. Setting to ``-1`` will cause automatic color.
             family (FontFamilyEnum, optional): Font Family
             size (float, optional): This value contains the size of the characters in point units.
             name (str, optional): This property specifies the name of the font style. It may contain more than one name separated by comma.
@@ -110,10 +97,10 @@ class Font(StyleBase):
             shadowed (bool, optional): Specifies if the characters are formatted and displayed with a shadow effect.
             shadow_fmt: (ShadowFormat, optional): Determines the type, color, and width of the shadow.
             strike (FontStrikeoutEnum, optional): Detrmines the type of the strike out of the character.
-            subscript (bool, optional): Sub script option.
-            superscript (bool, optional): Super script option.
+            subscript (bool, optional): Subscript option.
+            superscript (bool, optional): Superscript option.
             underine (FontUnderlineEnum, optional): The value for the character underline.
-            underine_color (Color, optional): Specifies if the property ``CharUnderlineColor`` is used for an underline.
+            underline_color (Color, optional): Specifies if the property ``CharUnderlineColor`` is used for an underline.
             weight (FontWeightEnum, optional): The value of the font weight.
             word_mode(bool, optional): If ``True``, the underline and strike-through properties are not applied to white spaces.
         """
@@ -123,7 +110,7 @@ class Font(StyleBase):
             "CharFontName": name,
             "CharColor": color,
             "CharBackColor": bg_color,
-            "CharUnderlineColor": underine_color,
+            "CharUnderlineColor": underline_color,
             "CharOverlineColor": overline_color,
             "CharHeight": size,
             "CharBackTransparent": bg_transparent,
@@ -135,7 +122,7 @@ class Font(StyleBase):
 
         if not overline_color is None:
             init_vals["CharOverlineHasColor"] = True
-        if not underine_color is None:
+        if not underline_color is None:
             init_vals["CharUnderlineHasColor"] = True
         if not charset is None:
             init_vals["CharFontCharSet"] = charset.value
@@ -153,7 +140,7 @@ class Font(StyleBase):
             if i:
                 init_vals["CharPosture"] = FontSlant.ITALIC
             else:
-                init_vals["CharWeight"] = FontSlant.NONE
+                init_vals["CharPosture"] = FontSlant.NONE
         if not u is None:
             if u:
                 init_vals["CharUnderline"] = FontUnderlineEnum.SINGLE.value
@@ -214,15 +201,15 @@ class Font(StyleBase):
         Returns:
             None:
         """
-        if self._is_valid_obj(obj):
-            try:
-                super().apply(obj, **kwargs)
-            except mEx.MultiError as e:
-                mLo.Lo.print(f"Font.apply(): Unable to set Property")
-                for err in e.errors:
-                    mLo.Lo.print(f"  {err}")
-        else:
-            self._print_not_valid_obj("apply()")
+        super().apply(obj, **kwargs)
+
+    def _props_set(self, obj: object, **kwargs: Any) -> None:
+        try:
+            super()._props_set(obj, **kwargs)
+        except mEx.MultiError as e:
+            mLo.Lo.print(f"Font.apply(): Unable to set Property")
+            for err in e.errors:
+                mLo.Lo.print(f"  {err}")
 
     # endregion apply()
     # endregion methods
@@ -369,7 +356,7 @@ class Font(StyleBase):
         Get copy of instance with rotation set or removed.
 
         Args:
-            value (str, optional): The rotation of a character in degrees. Depending on the implementation only certain values may be allowed.
+            value (float, optional): The rotation of a character in degrees. Depending on the implementation only certain values may be allowed.
                 If ``None`` style is removed. Default ``None``
 
         Returns:
@@ -444,10 +431,10 @@ class Font(StyleBase):
 
     def fmt_subscript(self, value: bool | None = None) -> Font:
         """
-        Get copy of instance with text sub script set or removed.
+        Get copy of instance with text subscript set or removed.
 
         Args:
-            value (bool, optional): The sub script.
+            value (bool, optional): The subscript.
                 If ``None`` style is removed. Default ``None``
 
         Returns:
@@ -459,10 +446,10 @@ class Font(StyleBase):
 
     def fmt_superscript(self, value: bool | None = None) -> Font:
         """
-        Get copy of instance with text super script set or removed.
+        Get copy of instance with text superscript set or removed.
 
         Args:
-            value (bool, optional): The super script.
+            value (bool, optional): The superscript.
                 If ``None`` style is removed. Default ``None``
 
         Returns:
@@ -595,6 +582,41 @@ class Font(StyleBase):
         """Gets copy of instance with word mode set"""
         ft = self.copy()
         ft.prop_word_mode = True
+        return ft
+
+    @property
+    def spacing_very_tight(self) -> Font:
+        """Gets copy of instance with spacing set to very tight value"""
+        ft = self.copy()
+        ft.prop_spacing = CharSpacingKind.VERY_TIGHT
+        return ft
+
+    @property
+    def spacing_tight(self) -> Font:
+        """Gets copy of instance with spacing set to tight value"""
+        ft = self.copy()
+        ft.prop_spacing = CharSpacingKind.TIGHT
+        return ft
+
+    @property
+    def spacing_normal(self) -> Font:
+        """Gets copy of instance with spacing set to normal value"""
+        ft = self.copy()
+        ft.prop_spacing = CharSpacingKind.NORMAL
+        return ft
+
+    @property
+    def spacing_loose(self) -> Font:
+        """Gets copy of instance with spacing set to loose value"""
+        ft = self.copy()
+        ft.prop_spacing = CharSpacingKind.LOOSE
+        return ft
+
+    @property
+    def spacing_very_loose(self) -> Font:
+        """Gets copy of instance with spacing set to very loose value"""
+        ft = self.copy()
+        ft.prop_spacing = CharSpacingKind.VERY_LOOSE
         return ft
 
     # endregion Style Properties
@@ -817,7 +839,7 @@ class Font(StyleBase):
         return None
 
     @prop_spacing.setter
-    def prop_spacing(self, value: float | None) -> None:
+    def prop_spacing(self, value: float | CharSpacingKind | None) -> None:
         if value is None:
             self._remove("CharKerning")
             return
@@ -918,12 +940,12 @@ class Font(StyleBase):
         self._set("CharOverlineColor", value)
 
     @property
-    def prop_underine_color(self) -> Color | None:
+    def prop_underline_color(self) -> Color | None:
         """This property specifies if the property ``CharUnderlineColor`` is used for an underline."""
         return self._get("CharUnderlineColor")
 
-    @prop_underine_color.setter
-    def prop_underine_color(self, value: Color | None) -> None:
+    @prop_underline_color.setter
+    def prop_underline_color(self, value: Color | None) -> None:
         if value is None:
             self._remove("CharUnderlineColor")
             return

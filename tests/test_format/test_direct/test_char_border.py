@@ -84,7 +84,7 @@ def test_char_borders(loader) -> None:
         # using 1.05 for this test. LibreOffice chnages 1.1 to 1.05 in  this case.
         side = Side(color=CommonColor.DARK_ORANGE, line=BorderLineStyleEnum.DOUBLE, width=1.05)
         border = Borders(border_side=side)
-        ft = Font(size=30.0, b=True, i=True, u=True, color=CommonColor.BLUE, underine_color=CommonColor.GREEN)
+        ft = Font(size=30.0, b=True, i=True, u=True, color=CommonColor.BLUE, underline_color=CommonColor.GREEN)
         Write.append(cursor=cursor, text="Nice Day", styles=(border, ft))
         cursor.gotoEnd(False)
         cursor.goLeft(5, True)
