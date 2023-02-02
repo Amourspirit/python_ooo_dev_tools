@@ -10,11 +10,11 @@ from ooo.dyn.style.case_map import CaseMapEnum as CaseMapEnum
 from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 from ....style.char.kind.style_char_kind import StyleCharKind as StyleCharKind
-from .....direct.shared.font.font_effects import FontEffects as FontEffects
-from .....direct.shared.font.font_only import FontOnly as FontOnly, FontLang as FontLang
-from .....direct.shared.font.font_position import (
+from .....direct.char.font.font_effects import FontEffects as FontEffects
+from .....direct.char.font.font_only import FontOnly as FontOnly, FontLang as FontLang
+from .....direct.char.font.font_position import (
     FontPosition as FontPosition,
     FontScriptKind as FontScriptKind,
     CharSpacingKind as CharSpacingKind,
 )
-from .....direct.shared.font.font import Font as Font
+from .....direct.char.font.font import Font as Font
