@@ -9,7 +9,7 @@ if __name__ == "__main__":
 from ooodev.utils.lo import Lo
 from ooodev.utils.gui import GUI
 from ooodev.office.write import Write
-from ooodev.format.direct.char.highlight import Highlight
+from ooodev.format.writer.direct.char.highlight import Highlight
 from ooodev.format import CommonColor
 
 if TYPE_CHECKING:

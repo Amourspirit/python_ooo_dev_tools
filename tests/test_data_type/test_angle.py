@@ -139,3 +139,13 @@ def test_angle_rsub(val: int, subval: int, expected: int) -> None:
     a1 = Angle(val)
     result = subval - a1
     assert result == Angle(expected)
+
+
+@pytest.mark.parametrize("start", [1, 3, 5, 100, 0])
+def test_eq_angle(start: int) -> None:
+    a1 = Angle(start)
+    a2 = Angle(start)
+    assert a1 == a2
+    assert a2 == a1
+    assert a1 == start
+    assert start == a1

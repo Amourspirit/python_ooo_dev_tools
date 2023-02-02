@@ -37,9 +37,9 @@ class DropCapStruct(StyleBase):
         Constructor
 
         Args:
-            count (int): Specifies the number of characters in the drop cap. Must be from ``0`` to ``255``. Defaults to ``0``
-            distance (int): Specifies the distance between the drop cap in the following text. Defaults to ``0``
-            lines (int): Specifies the number of lines used for a drop cap. Must be from ``0`` to ``255``. Defaults to ``0``
+            count (int, optional): Specifies the number of characters in the drop cap. Must be from ``0`` to ``255``. Defaults to ``0``
+            distance (int, optional): Specifies the distance between the drop cap in the following text. Defaults to ``0``
+            lines (int, optional): Specifies the number of lines used for a drop cap. Must be from ``0`` to ``255``. Defaults to ``0``
 
         Returns:
             None:
@@ -104,7 +104,7 @@ class DropCapStruct(StyleBase):
         Otherwise, a new DropCap is added.
 
         Args:
-            obj (object): UNO object that supports ``com.sun.star.style.ParagraphProperties`` service.
+            obj (object): UNO object.
             keys (Dict[str, str], optional): Property key, value items that map properties.
 
         :events:
@@ -118,7 +118,7 @@ class DropCapStruct(StyleBase):
         """
         if not self._is_valid_obj(obj):
             # will not apply on this class but may apply on child classes
-            self._print_not_valid_obj("apply()")
+            self._print_not_valid_obj("apply")
             return
 
         cargs = CancelEventArgs(source=f"{self.apply.__qualname__}")
@@ -224,7 +224,7 @@ class DropCapStruct(StyleBase):
             value (int): Count value.
 
         Returns:
-            DropCap: DropCap instance
+            DropCap: ``DropCap`` instance
         """
         cp = self.copy()
         cp.prop_count = value
@@ -238,7 +238,7 @@ class DropCapStruct(StyleBase):
             value (int): Distance value.
 
         Returns:
-            DropCap: DropCap instance
+            DropCap: ``DropCap`` instance
         """
         cp = self.copy()
         cp.prop_distance = value
@@ -252,7 +252,7 @@ class DropCapStruct(StyleBase):
             value (int): Lines value.
 
         Returns:
-            DropCap: DropCap instance
+            DropCap: ``DropCap`` instance
         """
         cp = self.copy()
         cp.prop_lines = value

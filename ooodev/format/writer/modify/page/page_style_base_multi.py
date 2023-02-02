@@ -15,7 +15,7 @@ from .....utils import props as mProps
 from .....utils.type_var import T
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleMulti, EventArgs, CancelEventArgs, FormatNamedEvent
-from ...style.para.kind import StylePageKind
+from ...style.page.kind import StylePageKind
 
 from com.sun.star.beans import XPropertySet
 

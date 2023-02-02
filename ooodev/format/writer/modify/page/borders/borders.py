@@ -14,7 +14,7 @@ from ......utils import lo as mLo
 from ......utils import props as mProps
 from .....direct.common.abstract_sides import AbstractSides, BorderProps
 from .....direct.structs.side import Side as Side, BorderLineStyleEnum as BorderLineStyleEnum
-from ....style.para.kind import StylePageKind as StylePageKind
+from ....style.page.kind import StylePageKind as StylePageKind
 from ..page_style_base import PageStyleBase
 
 from ooo.dyn.table.border_line2 import BorderLine2

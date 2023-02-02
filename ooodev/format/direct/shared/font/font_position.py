@@ -4,12 +4,15 @@ Module for managing character Font position.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Any, cast, overload
+from typing import Any, Tuple, cast, overload
 from enum import Enum
 
+from .....events.args.cancel_event_args import CancelEventArgs
+from .....events.args.key_val_cancel_args import KeyValCancelArgs
 from .....exceptions import ex as mEx
 from .....meta.static_prop import static_prop
 from .....utils import lo as mLo
+from .....utils import props as mProps
 from .....utils.data_type.angle import Angle
 from .....utils.data_type.intensity import Intensity as Intensity
 from .....utils.unit_convert import UnitConvert
@@ -59,7 +62,7 @@ class FontPosition(StyleBase):
     .. versionadded:: 0.9.0
     """
 
-    _DEFAULT = None
+    _DEFAULT_SUPER_SUB_HEIGHT = 58
 
     def __init__(
         self,
@@ -91,9 +94,9 @@ class FontPosition(StyleBase):
         if not script_kind is None:
             self.prop_script_kind = script_kind
         if not raise_lower is None:
-            self.prop_rel_size = raise_lower
+            self.prop_raise_lower = raise_lower
         if not rel_size is None:
-            self.prop_raise_lower = rel_size
+            self.prop_rel_size = rel_size
         if not rotation is None:
             self.prop_rotation = rotation
         if not scale is None:
@@ -106,6 +109,13 @@ class FontPosition(StyleBase):
             self.prop_pair = pair
 
     # region methods
+    def _supported_services(self) -> Tuple[str, ...]:
+        return ("com.sun.star.style.CharacterProperties",)
+
+    def _on_modifing(self, event: CancelEventArgs) -> None:
+        if self._is_default_inst:
+            raise ValueError("Setting properties on a default instance is not allowed")
+        return super()._on_setting(event)
 
     # region apply()
     @overload
@@ -133,6 +143,55 @@ class FontPosition(StyleBase):
                 mLo.Lo.print(f"  {err}")
 
     # endregion apply()
+
+    @staticmethod
+    def from_obj(obj: object) -> FontPosition:
+        """
+        Gets instance from object
+
+        Args:
+            obj (object): UNO object that supports ``com.sun.star.style.CharacterProperties`` service.
+
+        Raises:
+            NotSupportedError: If ``obj`` is not supported.
+
+        Returns:
+            FontPosition: ``FontPosition`` instance that represents ``obj`` font postiion.
+        """
+        if not FontPosition.default._is_valid_obj(obj):
+            raise mEx.NotSupportedError("Object is not supported to get FontEffects from.")
+
+        def set_prop(key: str, fp: FontPosition):
+            nonlocal obj
+            val = mProps.Props.get(obj, key, None)
+            if not val is None:
+                fp._set(key, val)
+
+        inst = FontPosition()
+        set_prop("CharEscapement", inst)
+        set_prop("CharEscapementHeight", inst)
+        set_prop("CharRotation", inst)
+        set_prop("CharScaleWidth", inst)
+        set_prop("CharRotationIsFitToLine", inst)
+        set_prop("CharKerning", inst)
+        set_prop("CharAutoKerning", inst)
+        return inst
+
+    def on_property_setting(self, event_args: KeyValCancelArgs) -> None:
+        """
+        Triggers for each property that is set
+
+        Args:
+            event_args (KeyValueCancelArgs): Event Args
+        """
+        # if position is normal then defaults should be set
+        if event_args.key == "CharEscapementHeight":
+            if self.prop_script_kind == FontScriptKind.NORMAL:
+                event_args.value == 100
+        if event_args.key == "CharEscapement":
+            if self.prop_script_kind == FontScriptKind.NORMAL:
+                event_args.value == 0
+        super().on_property_setting(event_args)
 
     # endregion methods
 
@@ -377,8 +436,6 @@ class FontPosition(StyleBase):
 
     @prop_raise_lower.setter
     def prop_raise_lower(self, value: int | None) -> None:
-        if self is FontPosition.default:
-            raise ValueError("FontPosition.default is not allowed to change values")
         if value is None:
             self._remove("CharEscapement")
             return
@@ -414,12 +471,10 @@ class FontPosition(StyleBase):
 
     @prop_rel_size.setter
     def prop_rel_size(self, value: Intensity | int | None) -> None:
-        if self is FontPosition.default:
-            raise ValueError("FontPosition.default is not allowed to change values")
         if value is None:
             self._remove("CharEscapementHeight")
             return
-        self._set("CharEscapementHeight", Intensity(int(value)))
+        self._set("CharEscapementHeight", Intensity(int(value)).value)
 
     @property
     def prop_script_kind(self) -> FontScriptKind | None:
@@ -434,13 +489,18 @@ class FontPosition(StyleBase):
 
     @prop_script_kind.setter
     def prop_script_kind(self, value: FontScriptKind | None) -> None:
-        if self is FontPosition.default:
-            raise ValueError("FontPosition.default is not allowed to change values")
         if value is None:
             self._remove("CharEscapement")
             return
+        height = cast(int, self._get("CharEscapementHeight"))
+        if height is None:
+            if value == FontScriptKind.NORMAL:
+                self._set("CharEscapementHeight", 100)
+            else:
+                self._set("CharEscapementHeight", FontPosition._DEFAULT_SUPER_SUB_HEIGHT)
         if value == FontScriptKind.NORMAL:
             self._set("CharEscapement", value.value)
+            self._set("CharEscapementHeight", 100)
             return
         pv = cast(int, self._get("CharEscapement"))
         if pv is None:
@@ -463,8 +523,6 @@ class FontPosition(StyleBase):
 
     @prop_rotation.setter
     def prop_rotation(self, value: int | Angle | None) -> None:
-        if self is FontPosition.default:
-            raise ValueError("FontPosition.default is not allowed to change values")
         if value is None:
             self._remove("CharRotation")
             return
@@ -479,8 +537,6 @@ class FontPosition(StyleBase):
 
     @prop_scale.setter
     def prop_scale(self, value: int | None) -> None:
-        if self is FontPosition.default:
-            raise ValueError("FontPosition.default is not allowed to change values")
         if value is None:
             self._remove("CharScaleWidth")
             return
@@ -496,8 +552,6 @@ class FontPosition(StyleBase):
 
     @prop_fit.setter
     def prop_fit(self, value: bool | None) -> None:
-        if self is FontPosition.default:
-            raise ValueError("FontPosition.default is not allowed to change values")
         if value is None:
             self._remove("CharRotationIsFitToLine")
             return
@@ -515,8 +569,6 @@ class FontPosition(StyleBase):
 
     @prop_spacing.setter
     def prop_spacing(self, value: float | CharSpacingKind | None) -> None:
-        if self is FontPosition.default:
-            raise ValueError("FontPosition.default is not allowed to change values")
         if value is None:
             self._remove("CharKerning")
             return
@@ -529,8 +581,6 @@ class FontPosition(StyleBase):
 
     @prop_pair.setter
     def prop_pair(self, value: bool | None) -> None:
-        if self is FontPosition.default:
-            raise ValueError("FontPosition.default is not allowed to change values")
         if value is None:
             self._remove("CharAutoKerning")
             return
@@ -540,7 +590,9 @@ class FontPosition(StyleBase):
     @static_prop
     def default() -> FontPosition:  # type: ignore[misc]
         """Gets Font Position default. Static Property."""
-        if FontPosition._DEFAULT is None:
+        try:
+            return FontPosition._DEFAULT_INSTANCE
+        except AttributeError:
             fp = FontPosition()
             fp._set("CharEscapement", 0)
             fp._set("CharEscapementHeight", 100)
@@ -549,5 +601,6 @@ class FontPosition(StyleBase):
             fp._set("CharRotationIsFitToLine", False)
             fp._set("CharKerning", 0)
             fp._set("CharAutoKerning", True)
-            FontPosition._DEFAULT = fp
-        return FontPosition._DEFAULT
+            fp._is_default_inst = True
+            FontPosition._DEFAULT_INSTANCE = fp
+        return FontPosition._DEFAULT_INSTANCE

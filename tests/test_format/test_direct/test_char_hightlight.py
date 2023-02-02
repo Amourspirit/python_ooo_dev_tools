@@ -6,7 +6,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.direct.char.highlight import Highlight
+from ooodev.format.writer.direct.char.highlight import Highlight
 from ooodev.format import CommonColor
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo

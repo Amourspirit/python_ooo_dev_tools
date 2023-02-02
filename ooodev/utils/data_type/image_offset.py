@@ -1,9 +1,11 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 from dataclasses import dataclass
+import math
 from ..validation import check
 from ..decorator import enforce
 from .base_float_value import BaseFloatValue
+
 
 if TYPE_CHECKING:
     try:
@@ -26,3 +28,11 @@ class ImageOffset(BaseFloatValue):
 
     def _from_float(self, value: int) -> Self:
         return ImageOffset(value)
+
+    def __eq__(self, other: object) -> bool:
+
+        try:
+            i = float(other)
+            return math.isclose(i, self.value)
+        except Exception as e:
+            return False

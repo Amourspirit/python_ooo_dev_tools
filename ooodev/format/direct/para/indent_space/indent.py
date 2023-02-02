@@ -111,7 +111,7 @@ class Indent(StyleBase):
             NotSupportedServiceError: If ``obj`` does not support  ``com.sun.star.style.ParagraphProperties`` service.
 
         Returns:
-            WritingMode: ``Indent`` instance that represents ``obj`` writing mode.
+            Indent: ``Indent`` instance that represents ``obj`` writing mode.
         """
         inst = Indent()
         if not inst._is_valid_obj(obj):

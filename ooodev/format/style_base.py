@@ -37,6 +37,9 @@ class StyleBase(ABC):
         for (key, value) in kwargs.items():
             if not value is None:
                 self._dv[key] = value
+
+        # this property is used in child classes that have default instances
+        self._is_default_inst = False
         super().__init__()
 
     # region style property methods
@@ -51,15 +54,26 @@ class StyleBase(ABC):
 
     def _set(self, key: str, val: Any) -> bool:
         """Sets a property value"""
-        cargs = KeyValCancelArgs("style_base", key=key, value=val)
-        self._on_setting(cargs)
+        kvargs = KeyValCancelArgs("style_base", key=key, value=val)
+        cargs = CancelEventArgs.from_args(kvargs)
+        self._on_setting(kvargs)
+        self._on_modifing(cargs)
+        if kvargs.cancel:
+            return False
         if cargs.cancel:
             return False
-        self._dv[cargs.key] = cargs.value
+        self._dv[kvargs.key] = kvargs.value
         return True
 
     def _clear(self) -> None:
         """Clears all properties"""
+        cargs = CancelEventArgs("style_base")
+        self._on_clearing(cargs)
+        self._on_modifing(cargs)
+        if cargs.cancel:
+            return
+        self._on_setting(cargs)
+        self._on_modifing(cargs)
         self._dv.clear()
 
     def _has(self, key: str) -> bool:
@@ -68,6 +82,12 @@ class StyleBase(ABC):
 
     def _remove(self, key: str) -> bool:
         """Removes a property if it exist"""
+        cargs = CancelEventArgs("style_base")
+        cargs.event_data = key
+        self._on_clearing(cargs)
+        self._on_modifing(cargs)
+        if cargs.cancel:
+            return
         if self._has(key):
             del self._dv[key]
             return True
@@ -75,10 +95,16 @@ class StyleBase(ABC):
 
     def _update(self, value: Dict[str, Any] | StyleBase) -> None:
         """Updates properties"""
-        if isinstance(value, StyleBase):
-            self._dv.update(value._dv)
+        cargs = CancelEventArgs("style_base")
+        cargs.event_data: Dict[str, Any] | StyleBase = value
+        self._on_clearing(cargs)
+        self._on_modifing(cargs)
+        if cargs.cancel:
             return
-        self._dv.update(value)
+        if isinstance(cargs.event_data, StyleBase):
+            self._dv.update(cargs.event_data._dv)
+            return
+        self._dv.update(cargs.event_data)
 
     # endregion style property methods
 
@@ -253,6 +279,26 @@ class StyleBase(ABC):
     def _on_setting(self, event: KeyValCancelArgs) -> None:
         # can be overridden in child classes to manage or modify setting
         # called by _set()
+        pass
+
+    def _on_removing(self, event: CancelEventArgs) -> None:
+        # can be overridden in child classes to manage or modify setting
+        # called by _remove()
+        pass
+
+    def _on_clearing(self, event: CancelEventArgs) -> None:
+        # can be overridden in child classes to manage or modify setting
+        # called by _clear()
+        pass
+
+    def _on_updateing(self, event: CancelEventArgs) -> None:
+        # can be overridden in child classes to manage or modify setting
+        # called by _update()
+        pass
+
+    def _on_modifing(self, event: CancelEventArgs) -> None:
+        # can be overridden in child classes to manage or modify setting
+        # called by _set(), _remove(), _clear(), _update()
         pass
 
     def on_property_setting(self, event_args: KeyValCancelArgs) -> None:
