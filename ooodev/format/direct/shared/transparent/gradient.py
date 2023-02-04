@@ -22,6 +22,7 @@ from com.sun.star.container import XNameContainer
 
 from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
 from ooo.dyn.awt.gradient import Gradient as UNOGradient
+from ooo.dyn.drawing.fill_style import FillStyle
 
 # See Also:
 # https://wiki.documentfoundation.org/Documentation/BASIC_Guide#Color_Gradient
@@ -37,7 +38,7 @@ class FillTransparendGrad(GradientStruct):
     def _get_property_name(self) -> str:
         return "FillTransparenceGradient"
 
-    def _get_container_service_name(self) -> str:
+    def _container_get_service_name(self) -> str:
         return "com.sun.star.drawing.TransparencyGradientTable"
 
     @property
@@ -108,11 +109,12 @@ class Gradient(StyleMulti):
 
         # FillTransparenceGradientName "Transparency " will be expaned to Transparency 1 or Transparency 2 etc in on_property_setting() method.
         self._set("FillTransparenceGradientName", "Transparency ")
+        self._set("FillStyle", FillStyle.GRADIENT)
         # self._set("FillGradientName", "gradient")
         # self._set("FillHatchName", "hatch")
         self._set_style("fill_style", fs, *fs.get_attrs())
 
-    def _get_container_service_name(self) -> str:
+    def _container_get_service_name(self) -> str:
         return "com.sun.star.drawing.TransparencyGradientTable"
 
     def _supported_services(self) -> Tuple[str, ...]:
@@ -143,13 +145,13 @@ class Gradient(StyleMulti):
             elif event_args.value == "Transparency ":
                 # https://github.com/LibreOffice/core/blob/d9e044f04ac11b76b9a3dac575f4e9155b67490e/chart2/source/tools/PropertyHelper.cxx#L212
                 # get unique name
-                nc = self._get_name_container()
-                name = self._get_unnique_container_el_name(event_args.value, nc)
+                nc = self._container_get_inst()
+                name = self._container_get_unique_el_name(event_args.value, nc)
 
                 # get the Gradient and add value to container
                 # these are necessary steps to have gradient applied.
                 grad = cast(FillTransparendGrad, self._get_style("fill_style")[0]).get_gradient()
-                self._add_value_to_container(name=name, obj=grad, nc=nc)
+                self._container_add_value(name=name, obj=grad, nc=nc)
 
                 event_args.value = name
 

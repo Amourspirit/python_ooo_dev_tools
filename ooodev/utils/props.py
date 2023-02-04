@@ -853,20 +853,32 @@ class Props:
     # endregion ---------------- set properties -----------------------
 
     # region ------------------- get properties ------------------------
-    @classmethod
-    def get_default(obj: object, prop_name: str) -> Any:
+    @staticmethod
+    def get_default(obj: object, prop_name: str, default: Any = gUtil.NULL_OBJ) -> Any:
         """
         Gets the default value of the property with the name Property Name.
 
         Args:
             obj (object): object to set properties for. Must support ``XPropertyState``
             prop_name (str): Propery name to get default for.
+            default (Any, optional): Return value if property value is ``None`` or ``obj`` does not support ``XPropertyState`` interface.
+
+        Raises:
+            MissingInterfaceError: If ``obj`` does not support ``XPropertyState`` interface and a ``default`` value is not provided.
 
         Returns:
             Any: If no default exists, is not known or is ``None``, then the return type is ``None``.
         """
-        ps = mLo.Lo.qi(XPropertyState, obj, True)
-        return ps.getPropertyDefault(prop_name)
+        try:
+            ps = mLo.Lo.qi(XPropertyState, obj, True)
+            result = ps.getPropertyDefault(prop_name)
+            if result is None and default is not gUtil.NULL_OBJ:
+                return default
+            return result
+        except mEx.MissingInterfaceError:
+            if default is not gUtil.NULL_OBJ:
+                return default
+            raise
 
     # region get()
     @overload

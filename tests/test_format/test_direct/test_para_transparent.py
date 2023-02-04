@@ -44,6 +44,7 @@ def test_write(loader, para_text) -> None:
 
         # dc.apply(pp)
         # tp.apply(pp)
+        # cursor.ParaBackTransparent = False
         Write.append_para(cursor=cursor, text=para_text, styles=(dc, tp))
         # add_gradient_to_table("Transparency 1", grad)
         Para.default.apply(cursor)

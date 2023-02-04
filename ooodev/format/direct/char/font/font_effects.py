@@ -178,7 +178,7 @@ class FontEffects(StyleBase):
             FontEffects: ``FontEffects`` instance that represents ``obj`` font effects.
         """
         if not FontEffects.default._is_valid_obj(obj):
-            raise mEx.NotSupportedError("Object is not supported to get FontEffects from.")
+            raise mEx.NotSupportedError("Object is not supported to convert to FontEffects.")
 
         def set_prop(key: str, fe: FontEffects):
             nonlocal obj

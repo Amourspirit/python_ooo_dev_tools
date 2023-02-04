@@ -425,18 +425,18 @@ class StyleBase(ABC):
     # region Named Container Methods
     # endregion Named Container Methods
 
-    def _get_container_service_name(self) -> str:
+    def _container_get_service_name(self) -> str:
         raise NotImplementedError
 
-    def _get_name_container(self) -> XNameContainer:
-        container = mLo.Lo.create_instance_msf(XNameContainer, self._get_container_service_name(), raise_err=True)
+    def _container_get_inst(self) -> XNameContainer:
+        container = mLo.Lo.create_instance_msf(XNameContainer, self._container_get_service_name(), raise_err=True)
         return container
 
-    def _add_value_to_container(
+    def _container_add_value(
         self, name: str, obj: object, allow_update: bool = True, nc: XNameContainer | None = None
     ) -> None:
         if nc is None:
-            nc = self._get_name_container()
+            nc = self._container_get_inst()
         if nc.hasByName(name):
             if allow_update:
                 nc.replaceByName(name, obj)
@@ -444,7 +444,7 @@ class StyleBase(ABC):
         else:
             nc.insertByName(name, obj)
 
-    def _get_unnique_container_el_name(self, prefix: str, nc: XNameContainer | None = None) -> str:
+    def _container_get_unique_el_name(self, prefix: str, nc: XNameContainer | None = None) -> str:
         """
         Gets the next name that does not exist in the container.
 
@@ -459,7 +459,7 @@ class StyleBase(ABC):
             str: Unique name
         """
         if nc is None:
-            nc = self._get_name_container()
+            nc = self._container_get_inst()
         names = nc.getElementNames()
         i = 1
         name = f"{prefix}{i}"
@@ -467,6 +467,15 @@ class StyleBase(ABC):
             i += 1
             name = f"{prefix}{i}"
         return name
+
+    def _container_get_value(self, name: str, nc: XNameContainer | None = None) -> Any:
+        if not name:
+            raise ValueError("Name is empty value. Expected a string name.")
+        if nc is None:
+            nc = self._container_get_inst()
+        if nc.hasByName(name):
+            return nc.getByName(name)
+        return None
 
     # region Properties
 
