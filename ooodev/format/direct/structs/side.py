@@ -400,6 +400,7 @@ class Side(StyleBase):
         side._set("LineStyle", border.LineStyle)
         side._set("LineWidth", border.LineWidth)
         side._set("OuterLineWidth", border.OuterLineWidth)
+        return side
 
     # endregion methods
 

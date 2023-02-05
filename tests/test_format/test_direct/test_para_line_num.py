@@ -6,8 +6,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.direct.para.outline import Outline, LevelKind
-from ooodev.format.direct.para.line_num import LineNum
+from ooodev.format.direct.para.outline_list import LineNum
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write

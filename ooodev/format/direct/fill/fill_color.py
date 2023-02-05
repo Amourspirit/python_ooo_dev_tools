@@ -6,6 +6,7 @@ Module for Fill Properties Fill Color.
 from __future__ import annotations
 from typing import Tuple, overload
 
+from ....events.args.cancel_event_args import CancelEventArgs
 from ....exceptions import ex as mEx
 from ....utils import props as mProps
 from ....meta.static_prop import static_prop
@@ -27,8 +28,6 @@ class FillColor(StyleBase):
 
     .. versionadded:: 0.9.0
     """
-
-    _EMPTY = None
 
     def __init__(self, color: Color = -1) -> None:
         """
@@ -65,6 +64,11 @@ class FillColor(StyleBase):
             "com.sun.star.beans.PropertySet",
             "com.sun.star.chart2.PageBackground",
         )
+
+    def _on_modifing(self, event: CancelEventArgs) -> None:
+        if self._is_default_inst:
+            raise ValueError("Setting properties on a default instance is not allowed")
+        return super()._on_setting(event)
 
     # region apply()
 
@@ -129,7 +133,7 @@ class FillColor(StyleBase):
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.Fill
+        return FormatKind.TXT_CONTENT
 
     @property
     def prop_color(self) -> Color:
@@ -150,6 +154,9 @@ class FillColor(StyleBase):
     @static_prop
     def empty() -> FillColor:  # type: ignore[misc]
         """Gets FillColor empty. Static Property."""
-        if FillColor._EMPTY is None:
-            FillColor._EMPTY = FillColor()
-        return FillColor._EMPTY
+        try:
+            return FillColor._EMPTY_PROPS
+        except AttributeError:
+            FillColor._EMPTY_PROPS = FillColor()
+            FillColor._EMPTY_PROPS._is_default_inst = True
+        return FillColor._EMPTY_PROPS

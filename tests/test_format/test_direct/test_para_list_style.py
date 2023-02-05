@@ -6,8 +6,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.direct.para.breaks import Breaks, BreakType
-from ooodev.format.direct.para.list_style import ListStyle, StyleListKind
+from ooodev.format.writer.direct.para.outline_list import ListStyle, StyleListKind
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write

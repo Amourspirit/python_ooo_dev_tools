@@ -1,6 +1,8 @@
 # coding: utf-8
 from __future__ import annotations
-from typing import TYPE_CHECKING, Tuple, overload
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, ByteString, Tuple, overload
+import base64
 import uno
 from com.sun.star.beans import XPropertySet
 from com.sun.star.container import XNameContainer
@@ -24,14 +26,29 @@ from ..utils.type_var import PathOrStr
 # see Also: https://tomazvajngerl.blogspot.com/2018/03/improving-image-handling-in-libreoffice.html
 
 
+@dataclass
+class BitmapArgs:
+    """Args use when calling bitmap method that support args"""
+
+    name: str
+    """Name given to bitmap in the ``BitmapTable`` containor"""
+    auto_name: bool = True
+    """If True then name is checked. If it exist in ``BitmapTable`` then a new unique name is created"""
+    auto_update: bool = False
+    """If True and name already exist in ``BitmapTable`` container then the existing name is updated. ``auto_name`` must be ``False``"""
+    out_name: str = ""
+    """The name used in the ``BitmapTable`` container will be assigned to the property."""
+
+
 class ImagesLo:
-    @staticmethod
-    def get_bitmap(fnm: PathOrStr) -> XBitmap:
+    @classmethod
+    def get_bitmap(cls, fnm: PathOrStr, args: BitmapArgs | None = None) -> XBitmap:
         """
         Gets an image from path
 
         Args:
             fnm (PathOrStr): path to image
+            args (BitmapArgs, optional): Args for the method
 
         Raises:
             UnOpenableError: If image is not able to be opened
@@ -39,26 +56,75 @@ class ImagesLo:
 
         Returns:
             XBitmap: Bitmap
+
+        Note:
+            ``args`` are in and out values. When ``args`` are used the ``args.out_name`` is assigned the name used to add bitmap to ``BitmapTable``.
+
+            If ``args.auto_name`` is ``False`` then ``args.out_name`` will be the same name assigned to ``args.name``;
+            Otherwise, if ``args.auto_name`` is ``True`` then ``args.out_name`` will be then be value of ``args.name`` with a number appended.
+            For example a name of ``Bitmap `` would typically return a ``out_name`` such as ``Bitmap 1`` or ``Bitmap 2``, etc.
+
+
+        .. versionchanged:: 0.9.0
+            Added ``args`` to method.
         """
         try:
             fp = mFileIO.FileIO.get_absolute_path(fnm)
-            bitmap_container = mLo.Lo.create_instance_msf(XNameContainer, "com.sun.star.drawing.BitmapTable")
             if not mFileIO.FileIO.is_openable(fp):
                 raise mEx.UnOpenableError(fnm=fp)
-
-            name = str(fp)
+            btc = mLo.Lo.create_instance_msf(XNameContainer, "com.sun.star.drawing.BitmapTable", raise_err=True)
+            if not args is None:
+                if args.auto_name:
+                    name = cls._get_unique_container_el_name(args.name, btc)
+                else:
+                    name = args.name
+                args.out_name = name
+            else:
+                # Get a sequence name Bitmap 1, Bitmat 2 etc
+                name = cls._get_unique_container_el_name("Bitmap ", btc)
             pic_url = mFileIO.FileIO.fnm_to_url(fp)
 
-            # use the filename as the name of the bitmap
-            bitmap_container.insertByName(name, pic_url)
+            if not args is None and args.auto_update:
+                if btc.hasByName(name):
+                    btc.replaceByName(name, pic_url)
+                else:
+                    btc.insertByName(name, pic_url)
+            else:
+                if btc.hasByName(name):
+                    return btc.getByName(name)
+                btc.insertByName(name, pic_url)
 
-            bitmap = bitmap_container.getByName(name)
             # return bitmap.getDIB() # byte sequence
-            return bitmap
+            return btc.getByName(name)
         except mEx.UnOpenableError:
             raise
         except Exception as e:
             raise Exception(f"Could not create a bitmap container for '{fnm}'") from e
+
+    @classmethod
+    def get_bitmap_from_b64(
+        cls, value: ByteString, args: BitmapArgs | None = None, img_format: str = "png"
+    ) -> XBitmap:
+        """
+        Gets a ``XBitmap`` from a base 64 encoded byte string.
+
+        Args:
+            value (ByteString): Base 64 image
+            args (BitmapArgs, optional): Args for the method
+            img_format (str, optional): Image format such as ``png``, ``jpeg``
+
+        Returns:
+            XBitmap: Image as ``XBitmap``
+
+        .. versionadded:: 0.9.0
+        """
+        tmp = mFileIO.FileIO.create_temp_file(img_format)
+        try:
+            with open(tmp, "wb") as fh:
+                fh.write(base64.decodebytes(value))
+            return cls.get_bitmap(tmp, args)
+        finally:
+            mFileIO.FileIO.delete_file(tmp)
 
     @staticmethod
     def load_graphic_file(im_fnm: PathOrStr) -> XGraphic:
@@ -241,3 +307,29 @@ class ImagesLo:
         w = round(im_size.Width * scale_factor / 100)
         h = round(im_size.Height * scale_factor / 100)
         return Size(w, h)
+
+    # region internal methods
+    @staticmethod
+    def _get_unique_container_el_name(prefix: str, nc: XNameContainer) -> str:
+        """
+        Gets the next name that does not exist in the container.
+
+        Lets say ``prefix`` is ``Transparency `` then names are search in sequence.
+        ``Transparency 1``, ``Transparency 3``, ``Transparency 3``, etc until a unique name is found.
+
+        Args:
+            prefix (str): Any string such as ``Transparency ``
+            nc (XNameContainer | None, optional): Container. Defaults to None.
+
+        Returns:
+            str: Unique name
+        """
+        names = nc.getElementNames()
+        i = 1
+        name = f"{prefix}{i}"
+        while name in names:
+            i += 1
+            name = f"{prefix}{i}"
+        return name
+
+    # endregion internal methods

@@ -28,3 +28,12 @@ class Intensity(BaseIntValue):
 
     def _from_int(self, int) -> Self:
         return Intensity(int)
+
+    def __eq__(self, other: object) -> bool:
+        # for some reason BaseIntValue __eq__ is not picked up.
+        # I suspect this is due to this class being a dataclass.
+        try:
+            i = int(other)
+            return i == self.value
+        except Exception as e:
+            return False

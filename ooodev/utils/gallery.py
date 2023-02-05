@@ -12,7 +12,7 @@
 # as it is. I tried inserting the XGraphic into a Draw XShape and putting it on the document, however it appears to
 # always be the same graphic even though the criteria is change for find_gallery_graphic()
 from __future__ import annotations
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any, List, cast
 from pathlib import Path
 from typing import overload
 import uno
@@ -477,6 +477,22 @@ class Gallery(metaclass=StaticProperty):
             print("  Type: Property NOT Found")
 
     # endregion report_gallery_item()
+
+    @staticmethod
+    def get_gallery_names() -> List[str]:
+        """
+        Gets a list of Gallery Names
+
+        Returns:
+            List[str]: Gallery names list
+        """
+        gtp = mLo.Lo.create_instance_mcf(
+            XGalleryThemeProvider, "com.sun.star.gallery.GalleryThemeProvider", raise_err=True
+        )
+        themes = gtp.getElementNames()
+        lst = list(themes)
+        lst.sort()
+        return lst
 
     @staticmethod
     def report_galleries() -> None:

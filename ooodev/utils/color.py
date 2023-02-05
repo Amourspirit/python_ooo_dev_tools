@@ -12,6 +12,8 @@ from ..utils import gen_util as mGenUtil
 
 # ref: https://gist.github.com/mathebox/e0805f72e7db3269ec22
 
+# see Also: https://github.com/LibreOffice/core/blob/f4a568fc0553603fbf05477e0942af4e8466fba0/oox/source/drawingml/color.cxx
+
 MAX_COLOR = 255
 """Max Color Value"""
 MIN_COLOR = 0
@@ -260,6 +262,42 @@ class CommonColor:
             raise ValueError("str_color is not a valid color")
 
 
+class RGBA(NamedTuple):
+    red: int
+    """Red color as int"""
+    green: int
+    """Green color as int"""
+    blue: int
+    """Blue color as int"""
+    alpha: int
+
+    @staticmethod
+    def from_int(value: int) -> RGBA:
+        """
+        Gets RGAB from int value
+
+        Args:
+            value (int): Value that represents a RGBA
+
+        Returns:
+            RGBA: Instance converted from integer.
+        """
+        blue = value & 255
+        green = (value >> 8) & 255
+        red = (value >> 16) & 255
+        alpha = (value >> 24) & 255
+        return RGBA(red=red, green=green, blue=blue, alpha=alpha)
+
+    def to_int(self) -> int:
+        """
+        Gets integer representing RGBA value
+        """
+        return (self.alpha << 24) + (self.red << 16) + (self.green << 8) + self.blue
+
+    def __int__(self) -> int:
+        return self.to_int()
+
+
 class RGB(NamedTuple):
     red: int
     """Red color as int"""
@@ -406,7 +444,10 @@ class RGB(NamedTuple):
         return not self.is_dark()
 
     def __str__(self) -> str:
-        return "rgb(" + round(self.red) + ", " + round(self.green) + ", " + round(self.blue) + ")"
+        return f"rgb({round(self.red)}, {round(self.green)}, {round(self.blue)})"
+
+    def __int__(self) -> int:
+        return self.to_int()
 
 
 class HSL(NamedTuple):
@@ -715,3 +756,52 @@ def darken(rgb_color: Union[RGB, int], percent: numbers.Number) -> RGB:
     c2_hsl = HSL(c_hsl.hue, c_hsl.saturation, decrease)
     c_rgb = hsl_to_rgb(c2_hsl)
     return c_rgb
+
+
+def get_gray_rgb(percent: int, rgb: RGB | None = None) -> RGB:
+    """
+    Gets a Gray RGB. The higher the percent the lighter the color.
+
+    ``100`` percent returns RGB of White color. ``0`` percent return Black color
+
+    Args:
+        percent (int): Percent from ``0`` to ``100``
+        rgb (RGB, optional): Optional RGB used for calculations.
+
+    Raises:
+        ValueError: If percent is out of range.
+
+    Returns:
+        RGB: RGB representing red, green blue.
+
+    Note:
+        The returned RGB has all channels are set to the same value.
+
+    .. versionadded:: 0.9.0
+    """
+    # same functionality as see in
+    # https://github.com/LibreOffice/core/blob/7c3ea0abeff6e0cb9e2893cec8ed63025a274117/oox/source/export/drawingml.cxx#L664
+    if percent < 0 or percent > 100:
+        raise ValueError("percent must br form 0 to 100")
+    if percent == 0:
+        return RGB(0, 0, 0)  # black
+    if percent == 100:
+        return RGB(255, 255, 255)  # white
+    if rgb is None:
+        # convert from white #ffffff
+        r, g, b = 255, 255, 255
+    else:
+        r = rgb.red
+        g = rgb.green
+        b = rgb.blue
+
+    r = 0.2989 * r
+    g = 0.5870 * g
+    b = 0.1140 * b
+    gs = r + g + b
+    if percent > 0:
+        gs_per = (percent / 100) * gs
+    else:
+        gs_per = gs
+    gs_int = round(gs_per)
+    return RGB(red=gs_int, green=gs_int, blue=gs_int)
