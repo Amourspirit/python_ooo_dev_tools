@@ -22,6 +22,8 @@ from com.sun.star.awt import XBitmap
 
 from ooo.dyn.drawing.fill_style import FillStyle as FillStyle
 
+# https://github.com/LibreOffice/core/blob/6379414ca34527fbe69df2035d49d651655317cd/vcl/source/filter/ipict/ipict.cxx#L92
+
 
 class Pattern(StyleBase):
     """

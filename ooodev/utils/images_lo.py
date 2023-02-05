@@ -102,20 +102,23 @@ class ImagesLo:
             raise Exception(f"Could not create a bitmap container for '{fnm}'") from e
 
     @classmethod
-    def get_bitmap_from_b64(cls, value: ByteString, args: BitmapArgs | None = None) -> XBitmap:
+    def get_bitmap_from_b64(
+        cls, value: ByteString, args: BitmapArgs | None = None, img_format: str = "png"
+    ) -> XBitmap:
         """
         Gets a ``XBitmap`` from a base 64 encoded byte string.
 
         Args:
             value (ByteString): Base 64 image
             args (BitmapArgs, optional): Args for the method
+            img_format (str, optional): Image format such as ``png``, ``jpeg``
 
         Returns:
             XBitmap: Image as ``XBitmap``
 
         .. versionadded:: 0.9.0
         """
-        tmp = mFileIO.FileIO.create_temp_file("png")
+        tmp = mFileIO.FileIO.create_temp_file(img_format)
         try:
             with open(tmp, "wb") as fh:
                 fh.write(base64.decodebytes(value))

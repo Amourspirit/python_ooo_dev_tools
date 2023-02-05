@@ -3,7 +3,7 @@ from enum import Enum
 from typing import ByteString
 import uno
 
-from ooodev.utils.images_lo import ImagesLo, BitmapArgs
+from ...utils.images_lo import ImagesLo, BitmapArgs
 
 
 from com.sun.star.awt import XBitmap
@@ -12,42 +12,39 @@ from com.sun.star.awt import XBitmap
 class PatternKind(Enum):
     """Pattern Kind"""
 
-    DASHED_DOWNWARD_DIAGONAL = (1, "Dashed Downward Diagonal")
+    DASHED_DOWNWARD_DIAGONAL = "Dashed Downward Diagonal"
     """Dashed Downward Diagonal"""
-    DASHED_DOTTED_UPWARD_DIAGONAL = (2, "Dashed Dotted Upward Diagonal")
+    DASHED_DOTTED_UPWARD_DIAGONAL = "Dashed Dotted Upward Diagonal"
     """Dashed Dotted Upward Diagonal"""
-    DASHED_HORIZONTAL = (3, "Dashed Horizontal")
+    DASHED_HORIZONTAL = "Dashed Horizontal"
     """Dashed Horizontal"""
-    DIAGONAL_BRICK = (4, "Diagonal Brick")
+    DIAGONAL_BRICK = "Diagonal Brick"
     """Diagonal Brick"""
-    DIVOT = (5, "Divot")
+    DIVOT = "Divot"
     """Divot"""
-    DOTTED_GRID = (6, "Dotted Grid")
+    DOTTED_GRID = "Dotted Grid"
     """Dotted Grid"""
-    HORIZONTAL_BRICK = (7, "Horizontal Brick")
+    HORIZONTAL_BRICK = "Horizontal Brick"
     """Horizontal Brick"""
-    LARGE_CONFETTI = (8, "Large Confetti")
+    LARGE_CONFETTI = "Large Confetti"
     """Large Confetti"""
-    PERCENT_10 = (9, "10 Percent")
+    PERCENT_10 = "10 Percent"
     """10 Percent"""
-    PERCENT_20 = (10, "20 Percent")
+    PERCENT_20 = "20 Percent"
     """20 Percent"""
-    PERCENT_5 = (11, "5 Percent")
+    PERCENT_5 = "5 Percent"
     """5 Percent"""
-    SHINGLE = (12, "Shingle")
+    SHINGLE = "Shingle"
     """Shingle"""
-    SPHERE = (13, "Sphere")
+    SPHERE = "Sphere"
     """Sphere"""
-    WEAVE = (14, "Weave")
+    WEAVE = "Weave"
     """Weave"""
-    ZIG_ZAG = (15, "Zig Zag")
+    ZIG_ZAG = "Zig Zag"
     """Zig Zag"""
 
     def __str__(self) -> str:
-        return self.value[1]
-
-    def __int__(self) -> int:
-        return self.value[0]
+        return self.value
 
 
 # endregion Enum
@@ -161,6 +158,15 @@ def _get_b64(preset: PatternKind) -> ByteString:
 
 
 def get_prest_bitmap(preset: PatternKind) -> XBitmap:
+    """
+    Gets preset Image
+
+    Args:
+        preset (ImageKind): Present image to return
+
+    Returns:
+        XBitmap: Preset Image
+    """
     b64 = _get_b64(preset)
     bargs = BitmapArgs(name=str(preset), auto_name=False, auto_update=False)
     return ImagesLo.get_bitmap_from_b64(b64, bargs)
