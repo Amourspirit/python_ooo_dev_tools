@@ -423,7 +423,6 @@ class StyleBase(ABC):
     # endregion Dunder Methods
 
     # region Named Container Methods
-    # endregion Named Container Methods
 
     def _container_get_service_name(self) -> str:
         raise NotImplementedError
@@ -476,6 +475,8 @@ class StyleBase(ABC):
         if nc.hasByName(name):
             return nc.getByName(name)
         return None
+
+    # endregion Named Container Methods
 
     # region Properties
 

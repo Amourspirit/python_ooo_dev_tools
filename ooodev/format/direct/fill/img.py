@@ -242,7 +242,7 @@ class Img(StyleBase):
         Gets an instance from a preset
 
         Args:
-            preset (PatternKind): Preset
+            preset (ImageKind): Preset
 
         Returns:
             Img: Instance from preset.
