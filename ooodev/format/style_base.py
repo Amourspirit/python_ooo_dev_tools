@@ -290,6 +290,12 @@ class StyleBase(ABC):
         Returns:
             None:
 
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.format_named_event.FormatNamedEvent.STYLE_BACKING_UP` :eventref:`src-docs-key-event-cancel`
+                - :py:attr:`~.events.format_named_event.FormatNamedEvent.STYLE_BACKED_UP` :eventref:`src-docs-key-event`
+
         See Also:
             :py:meth:`~.style_base.StyleBase.restore`
         """
@@ -322,6 +328,12 @@ class StyleBase(ABC):
 
         Returns:
             None:
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.format_named_event.FormatNamedEvent.STYLE_PROPERTY_RESTORING` :eventref:`src-docs-key-event-cancel`
+                - :py:attr:`~.events.format_named_event.FormatNamedEvent.STYLE_PROPERTY_RESTORED` :eventref:`src-docs-key-event`
 
         See Also:
             :py:meth:`~.style_base.StyleBase.backup`
@@ -728,6 +740,12 @@ class StyleMulti(StyleBase):
         Returns:
             None:
 
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.format_named_event.FormatNamedEvent.STYLE_BACKING_UP` :eventref:`src-docs-key-event-cancel`
+                - :py:attr:`~.events.format_named_event.FormatNamedEvent.STYLE_BACKED_UP` :eventref:`src-docs-key-event`
+
         See Also:
             :py:meth:`~.style_base.StyleMulti.restore`
         """
@@ -756,6 +774,12 @@ class StyleMulti(StyleBase):
 
         Returns:
             None:
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.format_named_event.FormatNamedEvent.STYLE_PROPERTY_RESTORING` :eventref:`src-docs-key-event-cancel`
+                - :py:attr:`~.events.format_named_event.FormatNamedEvent.STYLE_PROPERTY_RESTORED` :eventref:`src-docs-key-event`
 
         See Also:
             :py:meth:`~.style_base.StyleMulti.backup`

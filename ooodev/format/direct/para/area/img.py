@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Tuple, cast, overload
+from typing import Any, Tuple, overload
 
 import uno
 
@@ -33,7 +33,7 @@ class Img(StyleMulti):
         *,
         bitmap: XBitmap | None = None,
         name: str = "",
-        mode: ImgStyleKind = ImgStyleKind.STRETCHED,
+        mode: ImgStyleKind = ImgStyleKind.TILED,
         size: SizePercent | SizeMM | None = None,
         position: RectanglePoint | None = None,
         pos_offset: Offset | None = None,
@@ -45,17 +45,20 @@ class Img(StyleMulti):
 
         Args:
             bitmap (XBitmap, optional): Bitmap instance. If ``name`` is not already in the Bitmap Table then this property is requied.
-            name (str, optional): Specifies the name of the pattern. This is also the name that is used to store bitmap in LibreOffice Bitmap Table.
-            tile (bool, optional): Specified if bitmap is tiled. Defaults to ``True``.
-            stretch (bool, optional): Specifies if bitmap is stretched. Defaults to ``False``.
+            name (str, optional): Specifies the name of the image. This is also the name that is used to store bitmap in LibreOffice Bitmap Table.
+            mode (ImgStyleKind, optional): Specifies the image style, tiled, stretched etc. Default ``ImgStyleKind.TILED``.
+            size (SizePercent, SizeMM, optional): Size in percent (``0 - 100``) or size in ``mm`` units.
+            positin (RectanglePoint): Tiling position of Image.
+            pos_offset (Offset, optional): Tiling position offset.
+            tile_offset (OffsetColumn, OffsetRow, optional): The tiling offset.
             auto_name (bool, optional): Specifies if ``name`` is ensured to be unique. Defaults to ``False``.
 
         Returns:
             None:
 
         Note:
-            If ``auto_name`` is ``False`` then a bitmap for a given name is only required the first call.
-            All subsequent call of the same name will retreive the bitmap form the LibreOffice Bitmap Table.
+            If ``auto_name`` is ``False`` then a bitmap for a given ``name`` is only required the first call.
+            All subsequent call of the same ``name`` will retreive the bitmap form the LibreOffice Bitmap Table.
         """
 
         fimg = FillImg(

@@ -105,7 +105,7 @@ class Img(StyleBase):
         *,
         bitmap: XBitmap | None = None,
         name: str = "",
-        mode: ImgStyleKind = ImgStyleKind.STRETCHED,
+        mode: ImgStyleKind = ImgStyleKind.TILED,
         size: SizePercent | SizeMM | None = None,
         position: RectanglePoint | None = None,
         pos_offset: Offset | None = None,
@@ -118,16 +118,19 @@ class Img(StyleBase):
         Args:
             bitmap (XBitmap, optional): Bitmap instance. If ``name`` is not already in the Bitmap Table then this property is requied.
             name (str, optional): Specifies the name of the image. This is also the name that is used to store bitmap in LibreOffice Bitmap Table.
-            mode ()
-
+            mode (ImgStyleKind, optional): Specifies the image style, tiled, stretched etc. Default ``ImgStyleKind.TILED``.
+            size (SizePercent, SizeMM, optional): Size in percent (``0 - 100``) or size in ``mm`` units.
+            positin (RectanglePoint): Tiling position of Image.
+            pos_offset (Offset, optional): Tiling position offset.
+            tile_offset (OffsetColumn, OffsetRow, optional): The tiling offset.
             auto_name (bool, optional): Specifies if ``name`` is ensured to be unique. Defaults to ``False``.
 
         Returns:
             None:
 
         Note:
-            If ``auto_name`` is ``False`` then a bitmap for a given name is only required the first call.
-            All subsequent call of the same name will retreive the bitmap form the LibreOffice Bitmap Table.
+            If ``auto_name`` is ``False`` then a bitmap for a given ``name`` is only required the first call.
+            All subsequent call of the same ``name`` will retreive the bitmap form the LibreOffice Bitmap Table.
         """
 
         # when mode is ImgStyleKind.STRETCHED size, position, pos_offset, and tile_offset are not required
@@ -310,9 +313,12 @@ class Img(StyleBase):
         set_prop("FillBitmapRectanglePoint", inst)
         set_prop("FillBitmapSizeX", inst)
         set_prop("FillBitmapSizeY", inst)
-        set_prop("FillBitmapStretch", inst)
-        set_prop("FillBitmapTile", inst)
         set_prop("FillStyle", inst)
+
+        # FillBitmapStretch and FillBitmapTile properties should not be used anymore
+        # The FillBitmapMode property can be used instead to set all supported bitmap modes.
+        # set_prop("FillBitmapStretch", inst)
+        # set_prop("FillBitmapTile", inst)
         return inst
 
     # endregion Static Methods

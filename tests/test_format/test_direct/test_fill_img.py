@@ -94,13 +94,16 @@ def test_draw(loader) -> None:
             img.apply(rec)
             fp = cast("FillProperties", rec)
             point = preset._get_point()
-            assert fp.FillBitmapTile == True
-            assert fp.FillBitmapStretch == False
+
             assert fp.FillBitmapName == str(preset)
             assert fp.FillBitmap is not None
             assert fp.FillBitmapMode == ImgStyleKind.TILED.value
             assert fp.FillBitmapSizeX == point.x
             assert fp.FillBitmapSizeY == point.y
+
+            # FillBitmapTile and FillBitmapStretch are not used anymore.
+            # assert fp.FillBitmapTile == True
+            # assert fp.FillBitmapStretch == False
         Lo.delay(delay)
     finally:
         Lo.close_doc(doc)
