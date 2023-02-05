@@ -19,9 +19,7 @@ from ...fill.img import (
 )
 from ....preset.preset_image import ImageKind as ImageKind
 from ....kind.format_kind import FormatKind
-
-from .....events.lo_events import Events
-from .....events.props_named_event import PropsNamedEvent
+from .....events.format_named_event import FormatNamedEvent
 
 from com.sun.star.awt import XBitmap
 
@@ -82,6 +80,8 @@ class Img(StyleMulti):
 
         super().__init__(**init_vars)
         self._set_style("fill_image", fimg, *fimg.get_attrs())
+        fimg.add_event_listener(FormatNamedEvent.STYLE_PROPERTY_APPLYING, _on_fill_img_prop_setting)
+        fimg.add_event_listener(FormatNamedEvent.STYLE_BACKING_UP, _on_fill_img_prop_backup)
 
     # region Overrides
 
@@ -197,6 +197,8 @@ class Img(StyleMulti):
         )
         inst._set("ParaBackGraphic", fill_img._get("FillBitmap"))
         inst._set_style("fill_image", fill_img, *fill_img.get_attrs())
+        fill_img.add_event_listener(FormatNamedEvent.STYLE_PROPERTY_APPLYING, _on_fill_img_prop_setting)
+        fill_img.add_event_listener(FormatNamedEvent.STYLE_BACKING_UP, _on_fill_img_prop_backup)
         return inst
 
     @classmethod
@@ -223,6 +225,8 @@ class Img(StyleMulti):
         if not bmap is None:
             inst._set("ParaBackGraphic", fill_img._get("FillBitmap"))
         inst._set_style("fill_image", fill_img, *fill_img.get_attrs())
+        fill_img.add_event_listener(FormatNamedEvent.STYLE_PROPERTY_APPLYING, _on_fill_img_prop_setting)
+        fill_img.add_event_listener(FormatNamedEvent.STYLE_BACKING_UP, _on_fill_img_prop_backup)
         return inst
 
     # endregion Static Methods
@@ -231,3 +235,17 @@ class Img(StyleMulti):
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
         return FormatKind.TXT_CONTENT | FormatKind.PARA | FormatKind.FILL
+
+
+def _on_fill_img_prop_setting(source: Any, event_args: KeyValCancelArgs, *args, **kwargs) -> None:
+    # Fill images do not support setting of FillBitmapMode in Write
+    if event_args.key == "FillBitmapMode":
+        # print("Setting Fill Property: Found FillBitmapMode, canceling.")
+        event_args.cancel = True
+
+
+def _on_fill_img_prop_backup(source: Any, event_args: KeyValCancelArgs, *args, **kwargs) -> None:
+    # Fill images do not support setting of FillBitmapMode in Write
+    if event_args.key == "FillBitmapMode":
+        # print("Backup up Fill Property: Found FillBitmapMode, canceling.")
+        event_args.cancel = True
