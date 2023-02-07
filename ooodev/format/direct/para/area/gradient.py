@@ -14,7 +14,7 @@ from .....utils.data_type.angle import Angle as Angle
 from .....utils.data_type.intensity import Intensity as Intensity
 from ....kind.format_kind import FormatKind
 from ....preset import preset_gradient
-from ....preset.preset_gradient import PresetKind as PresetKind
+from ....preset.preset_gradient import PresetGradientKind as PresetGradientKind
 from ....style_base import StyleMulti
 from ...structs.gradient_struct import GradientStruct
 
@@ -162,7 +162,7 @@ class Gradient(StyleMulti):
         )
 
     @staticmethod
-    def from_preset(preset: PresetKind) -> Gradient:
+    def from_preset(preset: PresetGradientKind) -> Gradient:
         """
         Gets instance from preset
 

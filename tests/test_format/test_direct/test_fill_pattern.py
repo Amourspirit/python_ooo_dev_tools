@@ -9,7 +9,7 @@ import uno
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.draw import Draw
-from ooodev.format.direct.fill.pattern import Pattern, PatternKind
+from ooodev.format.direct.fill.pattern import Pattern, PresetPatternKind
 
 
 if TYPE_CHECKING:
@@ -29,30 +29,30 @@ def test_draw(loader) -> None:
     try:
         slide = Draw.get_slide(doc)
         rec = Draw.draw_rectangle(slide=slide, x=10, y=10, width=20, height=20)
-        pattern = Pattern.from_preset(preset=PatternKind.HORIZONTAL_BRICK)
+        pattern = Pattern.from_preset(preset=PresetPatternKind.HORIZONTAL_BRICK)
         pattern.apply(rec)
         fp = cast("FillProperties", rec)
         assert fp.FillBitmapTile == True
         assert fp.FillBitmapStretch == False
-        assert fp.FillBitmapName == str(PatternKind.HORIZONTAL_BRICK)
+        assert fp.FillBitmapName == str(PresetPatternKind.HORIZONTAL_BRICK)
         assert fp.FillBitmap is not None
 
         cir = Draw.draw_circle(slide=slide, x=40, y=20, radius=10)
-        pattern = Pattern.from_preset(preset=PatternKind.DASHED_DOTTED_UPWARD_DIAGONAL)
+        pattern = Pattern.from_preset(preset=PresetPatternKind.DASHED_DOTTED_UPWARD_DIAGONAL)
         pattern.apply(cir)
         fp = cast("FillProperties", cir)
         assert fp.FillBitmapTile == True
         assert fp.FillBitmapStretch == False
-        assert fp.FillBitmapName == str(PatternKind.DASHED_DOTTED_UPWARD_DIAGONAL)
+        assert fp.FillBitmapName == str(PresetPatternKind.DASHED_DOTTED_UPWARD_DIAGONAL)
         assert fp.FillBitmap is not None
 
         poly = Draw.draw_polygon(slide=slide, x=60, y=20, sides=5, radius=10)
-        pattern = Pattern.from_preset(preset=PatternKind.SHINGLE)
+        pattern = Pattern.from_preset(preset=PresetPatternKind.SHINGLE)
         pattern.apply(poly)
         fp = cast("FillProperties", poly)
         assert fp.FillBitmapTile == True
         assert fp.FillBitmapStretch == False
-        assert fp.FillBitmapName == str(PatternKind.SHINGLE)
+        assert fp.FillBitmapName == str(PresetPatternKind.SHINGLE)
         assert fp.FillBitmap is not None
 
         Lo.delay(delay)

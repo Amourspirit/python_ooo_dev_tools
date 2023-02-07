@@ -9,7 +9,7 @@ from ...utils.images_lo import ImagesLo, BitmapArgs
 from com.sun.star.awt import XBitmap
 
 # region Enum
-class PatternKind(Enum):
+class PresetPatternKind(Enum):
     """Pattern Kind"""
 
     DASHED_DOWNWARD_DIAGONAL = "Dashed Downward Diagonal"
@@ -125,39 +125,39 @@ def _get_b64_5():
     return b"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX///8AAABVwtN+AAAAEklEQVR4nGNgAAIFBghgYmAAAAF2ACN1w4S1AAAAAElFTkSuQmCC"
 
 
-def _get_b64(preset: PatternKind) -> ByteString:
-    if preset == PatternKind.DASHED_DOWNWARD_DIAGONAL:
+def _get_b64(preset: PresetPatternKind) -> ByteString:
+    if preset == PresetPatternKind.DASHED_DOWNWARD_DIAGONAL:
         return _get_b64_dashed_downward_diogonal()
-    if preset == PatternKind.DASHED_DOTTED_UPWARD_DIAGONAL:
+    if preset == PresetPatternKind.DASHED_DOTTED_UPWARD_DIAGONAL:
         return _get_b64_dashed_dotted_upward_diagonal()
-    if preset == PatternKind.DASHED_HORIZONTAL:
+    if preset == PresetPatternKind.DASHED_HORIZONTAL:
         return _get_b64_dashed_horzontal()
-    if preset == PatternKind.DIAGONAL_BRICK:
+    if preset == PresetPatternKind.DIAGONAL_BRICK:
         return _get_b64_digonal_brick()
-    if preset == PatternKind.DIVOT:
+    if preset == PresetPatternKind.DIVOT:
         return _get_b64_divot()
-    if preset == PatternKind.DOTTED_GRID:
+    if preset == PresetPatternKind.DOTTED_GRID:
         return _get_b64_dotted_grid()
-    if preset == PatternKind.HORIZONTAL_BRICK:
+    if preset == PresetPatternKind.HORIZONTAL_BRICK:
         return _get_b64_horizontal_brick()
-    if preset == PatternKind.LARGE_CONFETTI:
+    if preset == PresetPatternKind.LARGE_CONFETTI:
         return _get_b64_large_confetti()
-    if preset == PatternKind.PERCENT_10:
+    if preset == PresetPatternKind.PERCENT_10:
         return _get_b64_10()
-    if preset == PatternKind.PERCENT_20:
+    if preset == PresetPatternKind.PERCENT_20:
         return _get_b64_20()
-    if preset == PatternKind.PERCENT_5:
+    if preset == PresetPatternKind.PERCENT_5:
         return _get_b64_5()
-    if preset == PatternKind.SHINGLE:
+    if preset == PresetPatternKind.SHINGLE:
         return _get_b64_shingle()
-    if preset == PatternKind.SPHERE:
+    if preset == PresetPatternKind.SPHERE:
         return _get_b64_sphere()
-    if preset == PatternKind.WEAVE:
+    if preset == PresetPatternKind.WEAVE:
         return _get_b64_weave()
     return _get_b64_zig_zag()
 
 
-def get_prest_bitmap(preset: PatternKind) -> XBitmap:
+def get_prest_bitmap(preset: PresetPatternKind) -> XBitmap:
     """
     Gets preset Image
 

@@ -15,7 +15,7 @@ from ....utils import props as mProps
 from ....utils.type_var import T
 from ...kind.format_kind import FormatKind
 from ...preset import preset_pattern as mPattern
-from ...preset.preset_pattern import PatternKind as PatternKind
+from ...preset.preset_pattern import PresetPatternKind as PresetPatternKind
 from ...style_base import StyleBase
 
 from com.sun.star.awt import XBitmap
@@ -161,7 +161,7 @@ class Pattern(StyleBase):
 
     # region Static Methods
     @classmethod
-    def from_preset(cls, preset: PatternKind) -> Pattern:
+    def from_preset(cls, preset: PresetPatternKind) -> Pattern:
         """
         Gets an instance from a preset
 

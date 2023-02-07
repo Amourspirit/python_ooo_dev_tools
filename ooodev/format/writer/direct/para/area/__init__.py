@@ -4,12 +4,12 @@ from ooo.dyn.drawing.rectangle_point import RectanglePoint as RectanglePoint
 
 from ......utils.data_type.angle import Angle as Angle
 from ......utils.data_type.intensity import Intensity as Intensity
-from .....preset.preset_gradient import PresetKind as PresetKind
+from .....preset.preset_gradient import PresetGradientKind as PresetGradientKind
 from .....direct.para.area.color import Color as Color
 from .....direct.para.area.gradient import Gradient as Gradient
 from .....direct.para.area.pattern import Pattern as Pattern
-from .....preset.preset_pattern import PatternKind as PatternKind
-from .....preset.preset_image import ImageKind as ImageKind
+from .....preset.preset_pattern import PresetPatternKind as PresetPatternKind
+from .....preset.preset_image import PresetImageKind as PresetImageKind
 from .....direct.fill.img import (
     ImgStyleKind as ImgStyleKind,
     SizeMM as SizeMM,

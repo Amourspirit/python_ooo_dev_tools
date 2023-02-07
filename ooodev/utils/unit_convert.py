@@ -307,7 +307,7 @@ class UnitConvert:
         return round(cls.convert(num=num, frm=Length.MM, to=Length.MM100))
 
     @classmethod
-    def convert_mm100_mm(cls, num: N) -> int:
+    def convert_mm100_mm(cls, num: N) -> float:
         """
         Converts ``mm`` to ``1/100th mm``
 
@@ -317,7 +317,7 @@ class UnitConvert:
         Returns:
             float: Converted number
         """
-        return round(cls.convert(num=num, frm=Length.MM100, to=Length.MM))
+        return cls.convert(num=num, frm=Length.MM100, to=Length.MM)
 
 
 assert len(_mul_div) == Length.COUNT

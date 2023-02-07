@@ -4,7 +4,7 @@ Module for Page Style Fill Color Fill Color.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import overload
+from typing import Tuple, overload
 
 import uno
 from ......exceptions import ex as mEx
@@ -15,7 +15,7 @@ from ......utils.data_type.angle import Angle as Angle
 from ......utils.data_type.intensity import Intensity as Intensity
 from .....direct.structs.gradient_struct import GradientStruct
 from .....preset import preset_gradient
-from .....preset.preset_gradient import PresetKind as PresetKind
+from .....preset.preset_gradient import PresetGradientKind as PresetGradientKind
 from ....style.page.kind.style_page_kind import StylePageKind as StylePageKind
 from ..page_style_base_multi import PageStyleBaseMulti
 
@@ -75,7 +75,16 @@ class FillStyleStruct(GradientStruct):
     def _get_property_name(self) -> str:
         return "FillGradient"
 
+    def _supported_services(self) -> Tuple[str, ...]:
+        return (
+            "com.sun.star.style.PageStyle",
+            "com.sun.star.style.Style",
+        )
+
     def _is_valid_obj(self, obj: object) -> bool:
+        valid = super()._is_valid_obj(obj)
+        if valid:
+            return True
         return mInfo.Info.is_doc_type(obj, mLo.Lo.Service.WRITER)
 
     # region apply()
@@ -241,7 +250,7 @@ class Gradient(PageStyleBaseMulti):
         return inst
 
     @staticmethod
-    def from_preset(preset: PresetKind, style_name: StylePageKind | str = StylePageKind.STANDARD) -> Gradient:
+    def from_preset(preset: PresetGradientKind, style_name: StylePageKind | str = StylePageKind.STANDARD) -> Gradient:
         """
         Gets instance from preset
 

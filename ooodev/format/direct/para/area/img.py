@@ -17,7 +17,7 @@ from ...fill.img import (
     OffsetRow as OffsetRow,
     ImgStyleKind as ImgStyleKind,
 )
-from ....preset.preset_image import ImageKind as ImageKind
+from ....preset.preset_image import PresetImageKind as PresetImageKind
 from ....kind.format_kind import FormatKind
 from .....events.format_named_event import FormatNamedEvent
 
@@ -181,7 +181,7 @@ class Img(StyleMulti):
 
     # region Static Methods
     @classmethod
-    def from_preset(cls, preset: ImageKind) -> Img:
+    def from_preset(cls, preset: PresetImageKind) -> Img:
         """
         Gets an instance from a preset
 

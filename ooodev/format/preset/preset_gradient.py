@@ -5,7 +5,7 @@ import uno
 from ooo.dyn.awt.gradient_style import GradientStyle
 
 
-class PresetKind(Enum):
+class PresetGradientKind(Enum):
     PASTEL_BOUQUET = 1
     PASTEL_DREAM = 2
     BLUE_TOUCH = 3
@@ -278,40 +278,40 @@ def mahogany() -> Dict[str, Any]:
     }
 
 
-def get_preset(kind: PresetKind) -> Dict[str:Any]:
+def get_preset(kind: PresetGradientKind) -> Dict[str:Any]:
     """
     Gets preset
 
     Returns:
         PresetKind: Preset Kind
     """
-    if kind == PresetKind.PASTEL_BOUQUET:
+    if kind == PresetGradientKind.PASTEL_BOUQUET:
         return pastel_bouquet()
-    if kind == PresetKind.PASTEL_DREAM:
+    if kind == PresetGradientKind.PASTEL_DREAM:
         return pastel_dream()
-    if kind == PresetKind.BLUE_TOUCH:
+    if kind == PresetGradientKind.BLUE_TOUCH:
         return blue_touch()
-    if kind == PresetKind.BLANK_GRAY:
+    if kind == PresetGradientKind.BLANK_GRAY:
         return blank_gray()
-    if kind == PresetKind.SPOTTED_GRAY:
+    if kind == PresetGradientKind.SPOTTED_GRAY:
         return spotted_gray()
-    if kind == PresetKind.LONDON_MIST:
+    if kind == PresetGradientKind.LONDON_MIST:
         return london_mist()
-    if kind == PresetKind.TEAL_BLUE:
+    if kind == PresetGradientKind.TEAL_BLUE:
         return teal_blue()
-    if kind == PresetKind.MIDNIGHT:
+    if kind == PresetGradientKind.MIDNIGHT:
         return midnight()
-    if kind == PresetKind.DEEP_OCEAN:
+    if kind == PresetGradientKind.DEEP_OCEAN:
         return deep_ocean()
-    if kind == PresetKind.SUBMARINE:
+    if kind == PresetGradientKind.SUBMARINE:
         return submarine()
-    if kind == PresetKind.GREEN_GRASS:
+    if kind == PresetGradientKind.GREEN_GRASS:
         return green_grass()
-    if kind == PresetKind.NEON_LIGHT:
+    if kind == PresetGradientKind.NEON_LIGHT:
         return neon_light()
-    if kind == PresetKind.SUNSHINE:
+    if kind == PresetGradientKind.SUNSHINE:
         return sunshine()
-    if kind == PresetKind.PRESENT:
+    if kind == PresetGradientKind.PRESENT:
         return present()
-    if kind == PresetKind.MAHOGANY:
+    if kind == PresetGradientKind.MAHOGANY:
         return mahogany()

@@ -14,16 +14,16 @@ from ....events.args.key_val_cancel_args import KeyValCancelArgs
 from ....exceptions import ex as mEx
 from ....utils import lo as mLo
 from ....utils import props as mProps
-from ....utils.type_var import T
-from ...kind.format_kind import FormatKind
-from ...preset import preset_image as mImage
-from ...preset.preset_image import ImageKind as ImageKind
-from ...style_base import StyleBase
+from ....utils.data_type.intensity import Intensity
+from ....utils.data_type.point_positive import PointPostivie
 from ....utils.data_type.width_height_fraction import WidthHeightFraction
 from ....utils.data_type.width_height_percent import WidthHeightPercent
-from ....utils.data_type.point_positive import PointPostivie
-from ....utils.data_type.intensity import Intensity
+from ....utils.type_var import T
 from ....utils.unit_convert import UnitConvert
+from ...kind.format_kind import FormatKind
+from ...preset import preset_image as mImage
+from ...preset.preset_image import PresetImageKind as PresetImageKind
+from ...style_base import StyleBase
 
 
 from com.sun.star.awt import XBitmap
@@ -188,6 +188,7 @@ class Img(StyleBase):
         return cp
 
     def _container_get_service_name(self) -> str:
+        # https://github.com/LibreOffice/core/blob/d9e044f04ac11b76b9a3dac575f4e9155b67490e/chart2/source/tools/PropertyHelper.cxx#L246
         return "com.sun.star.drawing.BitmapTable"
 
     def _supported_services(self) -> Tuple[str, ...]:
@@ -240,7 +241,7 @@ class Img(StyleBase):
 
     # region Static Methods
     @classmethod
-    def from_preset(cls, preset: ImageKind) -> Img:
+    def from_preset(cls, preset: PresetImageKind) -> Img:
         """
         Gets an instance from a preset
 
@@ -381,8 +382,8 @@ class Img(StyleBase):
         if x < 0 or y < 0:
             # percent
             return SizePercent(abs(x), abs(y))
-        xval = UnitConvert.convert_mm100_mm(x)
-        yval = UnitConvert.convert_mm100_mm(y)
+        xval = round(UnitConvert.convert_mm100_mm(x))
+        yval = round(UnitConvert.convert_mm100_mm(y))
         return SizePercent(xval, yval)
 
     @prop_size.setter

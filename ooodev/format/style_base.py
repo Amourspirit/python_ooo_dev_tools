@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Dict, Tuple, TYPE_CHECKING, cast
+from typing import Any, Dict, NamedTuple, Tuple, TYPE_CHECKING, cast
 import uno
 import random
 import string
@@ -238,6 +238,9 @@ class StyleBase(ABC):
             obj (object): UNO Oject that styles are to be applied.
             kwargs (Any, optional): Expandable list of key value pairs that may be used in child classes.
 
+        Keyword Arguments:
+            override_dv (Dic[str, Any], optional): if passed in this dictionary is used to set properties instead of internal dictionary of property values.
+
         :events:
             .. cssclass:: lo_event
 
@@ -247,7 +250,11 @@ class StyleBase(ABC):
         Returns:
             None:
         """
-        if len(self._dv) > 0:
+        if "override_dv" in kwargs:
+            dv = kwargs["override_dv"]
+        else:
+            dv = self._dv
+        if len(dv) > 0:
             if self._is_valid_obj(obj):
                 cargs = CancelEventArgs(source=f"{self.apply.__qualname__}")
                 cargs.event_data = self
@@ -261,8 +268,8 @@ class StyleBase(ABC):
                 events = Events(source=self)
                 events.on(PropsNamedEvent.PROP_SETTING, _on_props_setting)
                 events.on(PropsNamedEvent.PROP_SET, _on_props_set)
-                # mProps.Props.set(obj, **self._dv)
-                self._props_set(obj, **self._dv)
+                # mProps.Props.set(obj, **dv)
+                self._props_set(obj, **dv)
                 events = None
                 eargs = EventArgs.from_args(cargs)
                 self.on_applied(eargs)
@@ -490,7 +497,7 @@ class StyleBase(ABC):
             try:
                 for k, v in self._get_properties().items():
                     if oth._get(k) != v:
-                        break
+                        return False
                 result = True
             except Exception:
                 return False
@@ -606,6 +613,11 @@ class _StyleMultArgs:
         return self._kwargs
 
 
+class _StyleInfo(NamedTuple):
+    style: StyleBase
+    args: _StyleMultArgs | None
+
+
 class StyleMulti(StyleBase):
     """
     Multi style class.
@@ -618,7 +630,7 @@ class StyleMulti(StyleBase):
 
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
-        self._styles: Dict[str, Tuple[StyleBase, _StyleMultArgs | None]] = {}
+        self._styles: Dict[str, _StyleInfo] = {}
         self._all_attributes = True
 
     def _set_style(self, key: str, style: StyleBase, *attrs, **kwargs) -> None:
@@ -637,7 +649,7 @@ class StyleMulti(StyleBase):
         if len(attrs) + len(kwargs) == 0:
             styles[key] = (style, None)
         else:
-            styles[key] = (style, _StyleMultArgs(*attrs, **kwargs))
+            styles[key] = _StyleInfo(style, _StyleMultArgs(*attrs, **kwargs))
 
     def _update_style(self, value: StyleMulti) -> None:
         self._get_multi_styles().update(value._styles)
@@ -649,13 +661,19 @@ class StyleMulti(StyleBase):
             return True
         return False
 
-    def _get_style(self, key: str) -> Tuple[StyleBase, _StyleMultArgs | None] | None:
+    def _get_style(self, key: str) -> _StyleInfo | None:
         return self._get_multi_styles().get(key, None)
+
+    def _get_style_inst(self, key: str) -> StyleBase | None:
+        style = self._get_style(key)
+        if style is None:
+            return None
+        return style.style
 
     def _has_style(self, key: str) -> bool:
         return key in self._get_multi_styles()
 
-    def _get_multi_styles(self) -> Dict[str, Tuple[StyleBase, _StyleMultArgs | None]]:
+    def _get_multi_styles(self) -> Dict[str, _StyleInfo]:
         return self._styles
 
     @property
@@ -670,7 +688,6 @@ class StyleMulti(StyleBase):
         Args:
             obj (object): UNO Oject that styles are to be applied.
         """
-        super().apply(obj, **kwargs)
         styles = self._get_multi_styles()
         for _, info in styles.items():
             style, kw = info
@@ -678,6 +695,9 @@ class StyleMulti(StyleBase):
                 style.apply(obj, **kw.kwargs)
             else:
                 style.apply(obj)
+        # apply this instance properties after all others styles.
+        # allows this instance to overwrite properties set by multi styles if needed.
+        super().apply(obj, **kwargs)
 
     def copy(self: T) -> T:
         cp = super().copy()

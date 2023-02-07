@@ -8,7 +8,7 @@ from .....exceptions import ex as mEx
 from .....utils import lo as mLo
 from .....utils import props as mProps
 from ....kind.format_kind import FormatKind
-from ....preset.preset_pattern import PatternKind as PatternKind
+from ....preset.preset_pattern import PresetPatternKind as PresetPatternKind
 from ....style_base import StyleMulti
 from ...fill.pattern import Pattern as FillPattern
 
@@ -113,7 +113,7 @@ class Pattern(StyleMulti):
 
     # endregion Overrides
     @classmethod
-    def from_preset(cls, preset: PatternKind) -> Pattern:
+    def from_preset(cls, preset: PresetPatternKind) -> Pattern:
         """
         Gets an instance from a preset
 
