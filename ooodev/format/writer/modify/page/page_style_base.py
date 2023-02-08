@@ -41,6 +41,7 @@ class PageStyleBase(StyleBase):
         """Gets a copy of instance as a new instance"""
         cp = super().copy()
         cp.prop_style_name = self.prop_style_name
+        return cp
 
     # region apply()
 
