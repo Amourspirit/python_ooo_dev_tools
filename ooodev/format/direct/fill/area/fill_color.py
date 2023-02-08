@@ -6,14 +6,14 @@ Module for Fill Properties Fill Color.
 from __future__ import annotations
 from typing import Tuple, overload
 
-from ....events.args.cancel_event_args import CancelEventArgs
-from ....exceptions import ex as mEx
-from ....utils import props as mProps
-from ....meta.static_prop import static_prop
-from ....utils import lo as mLo
-from ....utils.color import Color
-from ...kind.format_kind import FormatKind
-from ...style_base import StyleBase
+from .....events.args.cancel_event_args import CancelEventArgs
+from .....exceptions import ex as mEx
+from .....utils import props as mProps
+from .....meta.static_prop import static_prop
+from .....utils import lo as mLo
+from .....utils.color import Color
+from ....kind.format_kind import FormatKind
+from ....style_base import StyleBase
 
 from ooo.dyn.drawing.fill_style import FillStyle as FillStyle
 
@@ -95,8 +95,8 @@ class FillColor(StyleBase):
 
     # endregion apply()
 
-    @staticmethod
-    def from_obj(obj: object) -> FillColor:
+    @classmethod
+    def from_obj(cls, obj: object) -> FillColor:
         """
         Gets instance from object
 
@@ -109,17 +109,22 @@ class FillColor(StyleBase):
         Returns:
             FillColor: ``FillColor`` instance that represents ``obj`` Fill Color properties.
         """
-        inst = FillColor()
-        if not inst._is_valid_obj(obj):
-            raise mEx.NotSupportedServiceError(inst._supported_services()[0])
+
+        nu = super(Color, cls).__new__(cls)
+        nu.__init__()
+
+        # inst = Color()
+        if not nu._is_valid_obj(obj):
+            raise mEx.NotSupportedError("Object does not suport conversion to color")
 
         color = mProps.Props.get(obj, "FillColor", None)
-        bg = mProps.Props.get(obj, "FillBackground", None)
-        if not color is None:
-            inst._set("FillColor", int(color))
-        if not bg is None:
-            inst._set("FillBackground", bool(bg))
 
+        inst = super(Color, cls).__new__(cls)
+
+        if color is None:
+            inst.__init__()
+        else:
+            inst.__init__(color=color)
         return inst
 
     def _is_valid_obj(self, obj: object) -> bool:

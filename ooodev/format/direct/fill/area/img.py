@@ -10,20 +10,20 @@ from enum import Enum
 
 import uno
 
-from ....events.args.key_val_cancel_args import KeyValCancelArgs
-from ....exceptions import ex as mEx
-from ....utils import lo as mLo
-from ....utils import props as mProps
-from ....utils.type_var import T
-from ...kind.format_kind import FormatKind
-from ...preset import preset_image as mImage
-from ...preset.preset_image import ImageKind as ImageKind
-from ...style_base import StyleBase
-from ....utils.data_type.width_height_fraction import WidthHeightFraction
-from ....utils.data_type.width_height_percent import WidthHeightPercent
-from ....utils.data_type.point_positive import PointPostivie
-from ....utils.data_type.intensity import Intensity
-from ....utils.unit_convert import UnitConvert
+from .....events.args.key_val_cancel_args import KeyValCancelArgs
+from .....exceptions import ex as mEx
+from .....utils import lo as mLo
+from .....utils import props as mProps
+from .....utils.data_type.intensity import Intensity
+from .....utils.data_type.offset import Offset as Offset
+from .....utils.data_type.width_height_fraction import WidthHeightFraction
+from .....utils.data_type.width_height_percent import WidthHeightPercent
+from .....utils.type_var import T
+from .....utils.unit_convert import UnitConvert
+from ....kind.format_kind import FormatKind
+from ....preset import preset_image as mImage
+from ....preset.preset_image import PresetImageKind as PresetImageKind
+from ....style_base import StyleBase
 
 
 from com.sun.star.awt import XBitmap
@@ -48,13 +48,6 @@ class SizeMM(WidthHeightFraction):
 @dataclass(frozen=True)
 class SizePercent(WidthHeightPercent):
     """Size in percent values"""
-
-    pass
-
-
-@dataclass(frozen=True)
-class Offset(PointPostivie):
-    """Offset x and y values."""
 
     pass
 
@@ -105,7 +98,7 @@ class Img(StyleBase):
         *,
         bitmap: XBitmap | None = None,
         name: str = "",
-        mode: ImgStyleKind = ImgStyleKind.STRETCHED,
+        mode: ImgStyleKind = ImgStyleKind.TILED,
         size: SizePercent | SizeMM | None = None,
         position: RectanglePoint | None = None,
         pos_offset: Offset | None = None,
@@ -118,16 +111,19 @@ class Img(StyleBase):
         Args:
             bitmap (XBitmap, optional): Bitmap instance. If ``name`` is not already in the Bitmap Table then this property is requied.
             name (str, optional): Specifies the name of the image. This is also the name that is used to store bitmap in LibreOffice Bitmap Table.
-            mode ()
-
+            mode (ImgStyleKind, optional): Specifies the image style, tiled, stretched etc. Default ``ImgStyleKind.TILED``.
+            size (SizePercent, SizeMM, optional): Size in percent (``0 - 100``) or size in ``mm`` units.
+            positin (RectanglePoint): Tiling position of Image.
+            pos_offset (Offset, optional): Tiling position offset.
+            tile_offset (OffsetColumn, OffsetRow, optional): The tiling offset.
             auto_name (bool, optional): Specifies if ``name`` is ensured to be unique. Defaults to ``False``.
 
         Returns:
             None:
 
         Note:
-            If ``auto_name`` is ``False`` then a bitmap for a given name is only required the first call.
-            All subsequent call of the same name will retreive the bitmap form the LibreOffice Bitmap Table.
+            If ``auto_name`` is ``False`` then a bitmap for a given ``name`` is only required the first call.
+            All subsequent call of the same ``name`` will retreive the bitmap form the LibreOffice Bitmap Table.
         """
 
         # when mode is ImgStyleKind.STRETCHED size, position, pos_offset, and tile_offset are not required
@@ -185,6 +181,7 @@ class Img(StyleBase):
         return cp
 
     def _container_get_service_name(self) -> str:
+        # https://github.com/LibreOffice/core/blob/d9e044f04ac11b76b9a3dac575f4e9155b67490e/chart2/source/tools/PropertyHelper.cxx#L246
         return "com.sun.star.drawing.BitmapTable"
 
     def _supported_services(self) -> Tuple[str, ...]:
@@ -237,12 +234,12 @@ class Img(StyleBase):
 
     # region Static Methods
     @classmethod
-    def from_preset(cls, preset: ImageKind) -> Img:
+    def from_preset(cls, preset: PresetImageKind) -> Img:
         """
         Gets an instance from a preset
 
         Args:
-            preset (PatternKind): Preset
+            preset (ImageKind): Preset
 
         Returns:
             Img: Instance from preset.
@@ -310,9 +307,12 @@ class Img(StyleBase):
         set_prop("FillBitmapRectanglePoint", inst)
         set_prop("FillBitmapSizeX", inst)
         set_prop("FillBitmapSizeY", inst)
-        set_prop("FillBitmapStretch", inst)
-        set_prop("FillBitmapTile", inst)
         set_prop("FillStyle", inst)
+
+        # FillBitmapStretch and FillBitmapTile properties should not be used anymore
+        # The FillBitmapMode property can be used instead to set all supported bitmap modes.
+        # set_prop("FillBitmapStretch", inst)
+        # set_prop("FillBitmapTile", inst)
         return inst
 
     # endregion Static Methods
@@ -375,8 +375,8 @@ class Img(StyleBase):
         if x < 0 or y < 0:
             # percent
             return SizePercent(abs(x), abs(y))
-        xval = UnitConvert.convert_mm100_mm(x)
-        yval = UnitConvert.convert_mm100_mm(y)
+        xval = round(UnitConvert.convert_mm100_mm(x))
+        yval = round(UnitConvert.convert_mm100_mm(y))
         return SizePercent(xval, yval)
 
     @prop_size.setter

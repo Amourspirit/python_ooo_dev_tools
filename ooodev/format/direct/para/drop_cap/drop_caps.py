@@ -6,15 +6,16 @@ Module for managing paragraph Drop Caps.
 from __future__ import annotations
 from typing import Tuple, cast, overload
 
+from .....events.args.cancel_event_args import CancelEventArgs
+from .....events.args.key_val_cancel_args import KeyValCancelArgs
 from .....exceptions import ex as mEx
 from .....meta.static_prop import static_prop
-from .....utils import props as mProps
 from .....utils import lo as mLo
+from .....utils import props as mProps
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleMulti
 from ....writer.style.char.kind import StyleCharKind as StyleCharKind
 from ...structs.drop_cap_struct import DropCapStruct
-from .....events.args.key_val_cancel_args import KeyValCancelArgs
 
 
 class DropCapFmt(DropCapStruct):
@@ -178,6 +179,11 @@ class DropCaps(StyleMulti):
             return
         self._set_style("drop_cap", dc, *dc.get_attrs())
 
+    def _on_modifing(self, event: CancelEventArgs) -> None:
+        if self._is_default_inst:
+            raise ValueError("Modifying a default instance is not allowed")
+        return super()._on_modifing(event)
+
     def _supported_services(self) -> Tuple[str, ...]:
         """
         Gets a tuple of supported services (``com.sun.star.style.ParagraphProperties``,)
@@ -229,6 +235,7 @@ class DropCaps(StyleMulti):
         """Gets ``DropCaps`` default. Static Property."""
         if DropCaps._DEFAULT is None:
             inst = DropCaps(count=0)
+            inst._is_default_inst = True
             DropCaps._DEFAULT = inst
         return DropCaps._DEFAULT
 

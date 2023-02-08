@@ -9,7 +9,7 @@ import uno
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
-from ooodev.format.direct.para.area.pattern import Pattern, PatternKind
+from ooodev.format.direct.para.area.pattern import Pattern, PresetPatternKind
 from ooodev.utils.images_lo import ImagesLo, BitmapArgs
 
 
@@ -32,7 +32,7 @@ def test_write(loader, para_text) -> None:
     try:
         cursor = Write.get_cursor(doc)
 
-        pattern = Pattern.from_preset(PatternKind.DIVOT)
+        pattern = Pattern.from_preset(PresetPatternKind.DIVOT)
         Write.append_para(cursor=cursor, text=para_text, styles=(pattern,))
 
         cursor_p = Write.get_paragraph_cursor(cursor)
@@ -41,7 +41,7 @@ def test_write(loader, para_text) -> None:
         # note: it is necessary to reast fp each time cursor_p is moved
         assert fp.FillBitmapTile == True
         assert fp.FillBitmapStretch == False
-        assert fp.FillBitmapName == str(PatternKind.DIVOT)
+        assert fp.FillBitmapName == str(PresetPatternKind.DIVOT)
         assert fp.FillBitmap is not None
         pp = cast("ParagraphProperties", cursor_p.TextParagraph)
         assert pp.ParaBackColor == -1
@@ -50,7 +50,7 @@ def test_write(loader, para_text) -> None:
         assert pp.ParaBackGraphic is not None
         cursor_p.gotoEnd(False)
 
-        pattern = Pattern.from_preset(PatternKind.DIAGONAL_BRICK)
+        pattern = Pattern.from_preset(PresetPatternKind.DIAGONAL_BRICK)
         Write.append_para(cursor=cursor, text=para_text, styles=(pattern,))
 
         cursor_p = Write.get_paragraph_cursor(cursor)
@@ -59,7 +59,7 @@ def test_write(loader, para_text) -> None:
         # note: it is necessary to reast fp each time cursor_p is moved
         assert fp.FillBitmapTile == True
         assert fp.FillBitmapStretch == False
-        assert fp.FillBitmapName == str(PatternKind.DIAGONAL_BRICK)
+        assert fp.FillBitmapName == str(PresetPatternKind.DIAGONAL_BRICK)
         assert fp.FillBitmap is not None
         pp = cast("ParagraphProperties", cursor_p.TextParagraph)
         assert pp.ParaBackColor == -1

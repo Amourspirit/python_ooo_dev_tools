@@ -1,6 +1,8 @@
 from __future__ import annotations
-from typing import Any, Dict, Tuple, TYPE_CHECKING, cast
+from typing import Any, Dict, NamedTuple, Tuple, TYPE_CHECKING, cast
 import uno
+import random
+import string
 
 from ..utils import props as mProps
 from ..utils import info as mInfo
@@ -11,10 +13,11 @@ from ..events.args.key_val_cancel_args import KeyValCancelArgs as KeyValCancelAr
 from ..events.args.key_val_args import KeyValArgs as KeyValArgs
 from ..events.args.cancel_event_args import CancelEventArgs as CancelEventArgs
 from ..events.args.event_args import EventArgs as EventArgs
-from ..utils.type_var import T
+from ..utils.type_var import T, EventCallback
 from .kind.format_kind import FormatKind
 from ..events.format_named_event import FormatNamedEvent as FormatNamedEvent
-from ..events.event_singleton import _Events
+
+# from ..events.event_singleton import _Events
 from abc import ABC
 
 from com.sun.star.container import XNameContainer
@@ -40,7 +43,56 @@ class StyleBase(ABC):
 
         # this property is used in child classes that have default instances
         self._is_default_inst = False
+        self._events = Events(source=self)
+        self._uniquie_id = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
         super().__init__()
+
+    # region Events
+
+    def add_event_listener(self, event_name: str, callback: EventCallback) -> None:
+        """
+        Add an event listener to current instance.
+
+        Args:
+            event_name (str): Event Name.
+            callback (EventCallback): Callback of the event listener.
+
+        Returns:
+            None:
+
+        See Also:
+            - :py:class:`~.format_named_event.FormatNamedEvent`
+            - :py:meth:`.remove_event_listener`
+
+        Note:
+            This method is generally only used in the context of child classes.
+        """
+        self._events.on(self._get_uniquie_event_name(event_name), callback)
+
+    def remove_event_listener(self, event_name: str, callback: EventCallback) -> None:
+        """
+        Remove an event listener from current instance.
+
+        Args:
+            event_name (str): Event Name.
+            callback (EventCallback): Callback of the event listener.
+
+        Returns:
+            None:
+
+        See Also:
+            - :py:class:`~.format_named_event.FormatNamedEvent`
+            - :py:meth:`.add_event_listener`
+
+        Note:
+            This method is generally only used in the context of child classes.
+        """
+        self._events.remove(self._get_uniquie_event_name(event_name), callback)
+
+    def _get_uniquie_event_name(self, event_name: str) -> str:
+        return f"{event_name}_{self._uniquie_id}"
+
+    # endregion Events
 
     # region style property methods
 
@@ -58,11 +110,14 @@ class StyleBase(ABC):
         cargs = CancelEventArgs.from_args(kvargs)
         self._on_setting(kvargs)
         self._on_modifing(cargs)
+        self._events.trigger(self._get_uniquie_event_name(FormatNamedEvent.STYLE_SETTING), kvargs)
+        self._events.trigger(self._get_uniquie_event_name(FormatNamedEvent.STYLE_MODIFING), cargs)
         if kvargs.cancel:
             return False
         if cargs.cancel:
             return False
         self._dv[kvargs.key] = kvargs.value
+        self._events.trigger(FormatNamedEvent.STYLE_SET, KeyValArgs.from_args(kvargs))
         return True
 
     def _clear(self) -> None:
@@ -70,6 +125,8 @@ class StyleBase(ABC):
         cargs = CancelEventArgs("style_base")
         self._on_clearing(cargs)
         self._on_modifing(cargs)
+        self._events.trigger(self._get_uniquie_event_name(FormatNamedEvent.STYLE_MODIFING), cargs)
+        self._events.trigger(self._get_uniquie_event_name(FormatNamedEvent.STYLE_CLEARING), cargs)
         if cargs.cancel:
             return
         self._on_setting(cargs)
@@ -84,8 +141,10 @@ class StyleBase(ABC):
         """Removes a property if it exist"""
         cargs = CancelEventArgs("style_base")
         cargs.event_data = key
-        self._on_clearing(cargs)
+        self._on_removing(cargs)
         self._on_modifing(cargs)
+        self._events.trigger(self._get_uniquie_event_name(FormatNamedEvent.STYLE_REMOVING), cargs)
+        self._events.trigger(self._get_uniquie_event_name(FormatNamedEvent.STYLE_MODIFING), cargs)
         if cargs.cancel:
             return
         if self._has(key):
@@ -99,6 +158,8 @@ class StyleBase(ABC):
         cargs.event_data: Dict[str, Any] | StyleBase = value
         self._on_clearing(cargs)
         self._on_modifing(cargs)
+        self._events.trigger(self._get_uniquie_event_name(FormatNamedEvent.STYLE_UPDATING), cargs)
+        self._events.trigger(self._get_uniquie_event_name(FormatNamedEvent.STYLE_MODIFING), cargs)
         if cargs.cancel:
             return
         if isinstance(cargs.event_data, StyleBase):
@@ -177,6 +238,9 @@ class StyleBase(ABC):
             obj (object): UNO Oject that styles are to be applied.
             kwargs (Any, optional): Expandable list of key value pairs that may be used in child classes.
 
+        Keyword Arguments:
+            override_dv (Dic[str, Any], optional): if passed in this dictionary is used to set properties instead of internal dictionary of property values.
+
         :events:
             .. cssclass:: lo_event
 
@@ -186,25 +250,31 @@ class StyleBase(ABC):
         Returns:
             None:
         """
-        if len(self._dv) > 0:
+        if "override_dv" in kwargs:
+            dv = kwargs["override_dv"]
+        else:
+            dv = self._dv
+        if len(dv) > 0:
             if self._is_valid_obj(obj):
                 cargs = CancelEventArgs(source=f"{self.apply.__qualname__}")
                 cargs.event_data = self
                 self.on_applying(cargs)
                 if cargs.cancel:
                     return
-                _Events().trigger(FormatNamedEvent.STYLE_APPLYING, cargs)
+                # _Events().trigger(FormatNamedEvent.STYLE_APPLYING, cargs)
+                self._events.trigger(FormatNamedEvent.STYLE_APPLYING, cargs)
                 if cargs.cancel:
                     return
                 events = Events(source=self)
                 events.on(PropsNamedEvent.PROP_SETTING, _on_props_setting)
                 events.on(PropsNamedEvent.PROP_SET, _on_props_set)
-                # mProps.Props.set(obj, **self._dv)
-                self._props_set(obj, **self._dv)
+                # mProps.Props.set(obj, **dv)
+                self._props_set(obj, **dv)
                 events = None
                 eargs = EventArgs.from_args(cargs)
                 self.on_applied(eargs)
-                _Events().trigger(FormatNamedEvent.STYLE_APPLIED, eargs)
+                # _Events().trigger(FormatNamedEvent.STYLE_APPLIED, eargs)
+                self._events.trigger(FormatNamedEvent.STYLE_APPLIED, eargs)
             else:
                 self._print_not_valid_obj("apply")
 
@@ -227,6 +297,12 @@ class StyleBase(ABC):
         Returns:
             None:
 
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.format_named_event.FormatNamedEvent.STYLE_BACKING_UP` :eventref:`src-docs-key-event-cancel`
+                - :py:attr:`~.events.format_named_event.FormatNamedEvent.STYLE_BACKED_UP` :eventref:`src-docs-key-event`
+
         See Also:
             :py:meth:`~.style_base.StyleBase.restore`
         """
@@ -239,11 +315,13 @@ class StyleBase(ABC):
             val = mProps.Props.get(obj, attr, None)
             cargs = KeyValCancelArgs("style_base", key=attr, value=val)
             self.on_property_backing_up(cargs)
+            self._events.trigger(self._get_uniquie_event_name(FormatNamedEvent.STYLE_BACKING_UP), cargs)
             if cargs.cancel:
                 continue
             self._dv_bak[attr] = val
             eargs = KeyValArgs.from_args(cargs)
             self.on_property_backed_up(eargs)
+            self._events.trigger(self._get_uniquie_event_name(FormatNamedEvent.STYLE_BACKED_UP), eargs)
 
     def restore(self, obj: object, clear: bool = False) -> None:
         """
@@ -257,6 +335,12 @@ class StyleBase(ABC):
 
         Returns:
             None:
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.format_named_event.FormatNamedEvent.STYLE_PROPERTY_RESTORING` :eventref:`src-docs-key-event-cancel`
+                - :py:attr:`~.events.format_named_event.FormatNamedEvent.STYLE_PROPERTY_RESTORED` :eventref:`src-docs-key-event`
 
         See Also:
             :py:meth:`~.style_base.StyleBase.backup`
@@ -413,7 +497,7 @@ class StyleBase(ABC):
             try:
                 for k, v in self._get_properties().items():
                     if oth._get(k) != v:
-                        break
+                        return False
                 result = True
             except Exception:
                 return False
@@ -423,7 +507,6 @@ class StyleBase(ABC):
     # endregion Dunder Methods
 
     # region Named Container Methods
-    # endregion Named Container Methods
 
     def _container_get_service_name(self) -> str:
         raise NotImplementedError
@@ -477,6 +560,8 @@ class StyleBase(ABC):
             return nc.getByName(name)
         return None
 
+    # endregion Named Container Methods
+
     # region Properties
 
     @property
@@ -528,6 +613,11 @@ class _StyleMultArgs:
         return self._kwargs
 
 
+class _StyleInfo(NamedTuple):
+    style: StyleBase
+    args: _StyleMultArgs | None
+
+
 class StyleMulti(StyleBase):
     """
     Multi style class.
@@ -540,7 +630,7 @@ class StyleMulti(StyleBase):
 
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
-        self._styles: Dict[str, Tuple[StyleBase, _StyleMultArgs | None]] = {}
+        self._styles: Dict[str, _StyleInfo] = {}
         self._all_attributes = True
 
     def _set_style(self, key: str, style: StyleBase, *attrs, **kwargs) -> None:
@@ -557,9 +647,9 @@ class StyleMulti(StyleBase):
         """
         styles = self._get_multi_styles()
         if len(attrs) + len(kwargs) == 0:
-            styles[key] = (style, None)
+            styles[key] = _StyleInfo(style, None)
         else:
-            styles[key] = (style, _StyleMultArgs(*attrs, **kwargs))
+            styles[key] = _StyleInfo(style, _StyleMultArgs(*attrs, **kwargs))
 
     def _update_style(self, value: StyleMulti) -> None:
         self._get_multi_styles().update(value._styles)
@@ -571,13 +661,19 @@ class StyleMulti(StyleBase):
             return True
         return False
 
-    def _get_style(self, key: str) -> Tuple[StyleBase, _StyleMultArgs | None] | None:
+    def _get_style(self, key: str) -> _StyleInfo | None:
         return self._get_multi_styles().get(key, None)
+
+    def _get_style_inst(self, key: str) -> StyleBase | None:
+        style = self._get_style(key)
+        if style is None:
+            return None
+        return style.style
 
     def _has_style(self, key: str) -> bool:
         return key in self._get_multi_styles()
 
-    def _get_multi_styles(self) -> Dict[str, Tuple[StyleBase, _StyleMultArgs | None]]:
+    def _get_multi_styles(self) -> Dict[str, _StyleInfo]:
         return self._styles
 
     @property
@@ -592,7 +688,6 @@ class StyleMulti(StyleBase):
         Args:
             obj (object): UNO Oject that styles are to be applied.
         """
-        super().apply(obj, **kwargs)
         styles = self._get_multi_styles()
         for _, info in styles.items():
             style, kw = info
@@ -600,6 +695,9 @@ class StyleMulti(StyleBase):
                 style.apply(obj, **kw.kwargs)
             else:
                 style.apply(obj)
+        # apply this instance properties after all others styles.
+        # allows this instance to overwrite properties set by multi styles if needed.
+        super().apply(obj, **kwargs)
 
     def copy(self: T) -> T:
         cp = super().copy()
@@ -662,6 +760,12 @@ class StyleMulti(StyleBase):
         Returns:
             None:
 
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.format_named_event.FormatNamedEvent.STYLE_BACKING_UP` :eventref:`src-docs-key-event-cancel`
+                - :py:attr:`~.events.format_named_event.FormatNamedEvent.STYLE_BACKED_UP` :eventref:`src-docs-key-event`
+
         See Also:
             :py:meth:`~.style_base.StyleMulti.restore`
         """
@@ -690,6 +794,12 @@ class StyleMulti(StyleBase):
 
         Returns:
             None:
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.format_named_event.FormatNamedEvent.STYLE_PROPERTY_RESTORING` :eventref:`src-docs-key-event-cancel`
+                - :py:attr:`~.events.format_named_event.FormatNamedEvent.STYLE_PROPERTY_RESTORED` :eventref:`src-docs-key-event`
 
         See Also:
             :py:meth:`~.style_base.StyleMulti.backup`
@@ -720,21 +830,25 @@ class StyleMulti(StyleBase):
 def _on_props_setting(source: Any, event_args: KeyValCancelArgs, *args, **kwargs) -> None:
     instance = cast(StyleBase, event_args.event_source)
     instance.on_property_setting(event_args)
+    instance._events.trigger(instance._get_uniquie_event_name(FormatNamedEvent.STYLE_PROPERTY_APPLYING), event_args)
 
 
 def _on_props_set(source: Any, event_args: KeyValArgs, *args, **kwargs) -> None:
     instance = cast(StyleBase, event_args.event_source)
     instance.on_property_set(event_args)
+    instance._events.trigger(instance._get_uniquie_event_name(FormatNamedEvent.STYLE_PROPERTY_APPLIED), event_args)
 
 
 def _on_props_restore_setting(source: Any, event_args: KeyValCancelArgs, *args, **kwargs) -> None:
     instance = cast(StyleBase, event_args.event_source)
     instance.on_property_restore_setting(event_args)
+    instance._events.trigger(instance._get_uniquie_event_name(FormatNamedEvent.STYLE_PROPERTY_RESTORING), event_args)
 
 
-def _on_props_restore_set(source: Any, event_args: KeyValCancelArgs, *args, **kwargs) -> None:
+def _on_props_restore_set(source: Any, event_args: KeyValArgs, *args, **kwargs) -> None:
     instance = cast(StyleBase, event_args.event_source)
     instance.on_property_restore_set(event_args)
+    instance._events.trigger(instance._get_uniquie_event_name(FormatNamedEvent.STYLE_PROPERTY_RESTORED), event_args)
 
 
 __all__ = ("StyleBase", "StyleMulti")

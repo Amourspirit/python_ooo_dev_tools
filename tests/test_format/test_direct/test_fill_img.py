@@ -9,9 +9,9 @@ import uno
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.draw import Draw
-from ooodev.format.direct.fill.img import (
+from ooodev.format.direct.fill.area.img import (
     Img,
-    ImageKind,
+    PresetImageKind,
     ImgStyleKind,
     SizeMM,
     SizePercent,
@@ -41,36 +41,36 @@ def test_draw(loader) -> None:
         height = 30
         max_col = 6
         presets = (
-            ImageKind.PAINTED_WHITE,
-            ImageKind.PAPER_TEXTURE,
-            ImageKind.PAPER_CRUMPLED,
-            ImageKind.PARCHMENT_PAPER,
-            ImageKind.FENCE,
-            ImageKind.INVOICE_PAPER,
-            ImageKind.MAPLE_LEAVES,
-            ImageKind.LAWN,
-            ImageKind.COLORFUL_PEBBLES,
-            ImageKind.COFFEE_BEANS,
-            ImageKind.LITTLE_CLOUDS,
-            ImageKind.BATHROOM_TILES,
-            ImageKind.CONCRETE,
-            ImageKind.PAPER_GRAPH,
-            ImageKind.ZEBRA,
-            ImageKind.WALL_OF_ROCK,
-            ImageKind.BRICK_WALL,
-            ImageKind.STONE_WALL,
-            ImageKind.FLORAL,
-            ImageKind.SPACE,
-            ImageKind.COLOR_STRIPES,
-            ImageKind.ICE_LIGHT,
-            ImageKind.POOL,
-            ImageKind.MARBLE,
-            ImageKind.SAND_LIGHT,
-            ImageKind.STONE,
-            ImageKind.WHITE_DIFFUSION,
-            ImageKind.SURFACE,
-            ImageKind.CARDBOARD,
-            ImageKind.STUDIO,
+            PresetImageKind.PAINTED_WHITE,
+            PresetImageKind.PAPER_TEXTURE,
+            PresetImageKind.PAPER_CRUMPLED,
+            PresetImageKind.PARCHMENT_PAPER,
+            PresetImageKind.FENCE,
+            PresetImageKind.INVOICE_PAPER,
+            PresetImageKind.MAPLE_LEAVES,
+            PresetImageKind.LAWN,
+            PresetImageKind.COLORFUL_PEBBLES,
+            PresetImageKind.COFFEE_BEANS,
+            PresetImageKind.LITTLE_CLOUDS,
+            PresetImageKind.BATHROOM_TILES,
+            PresetImageKind.CONCRETE,
+            PresetImageKind.PAPER_GRAPH,
+            PresetImageKind.ZEBRA,
+            PresetImageKind.WALL_OF_ROCK,
+            PresetImageKind.BRICK_WALL,
+            PresetImageKind.STONE_WALL,
+            PresetImageKind.FLORAL,
+            PresetImageKind.SPACE,
+            PresetImageKind.COLOR_STRIPES,
+            PresetImageKind.ICE_LIGHT,
+            PresetImageKind.POOL,
+            PresetImageKind.MARBLE,
+            PresetImageKind.SAND_LIGHT,
+            PresetImageKind.STONE,
+            PresetImageKind.WHITE_DIFFUSION,
+            PresetImageKind.SURFACE,
+            PresetImageKind.CARDBOARD,
+            PresetImageKind.STUDIO,
         )
         col = 0
         row = 1
@@ -94,13 +94,16 @@ def test_draw(loader) -> None:
             img.apply(rec)
             fp = cast("FillProperties", rec)
             point = preset._get_point()
-            assert fp.FillBitmapTile == True
-            assert fp.FillBitmapStretch == False
+
             assert fp.FillBitmapName == str(preset)
             assert fp.FillBitmap is not None
             assert fp.FillBitmapMode == ImgStyleKind.TILED.value
             assert fp.FillBitmapSizeX == point.x
             assert fp.FillBitmapSizeY == point.y
+
+            # FillBitmapTile and FillBitmapStretch are not used anymore.
+            # assert fp.FillBitmapTile == True
+            # assert fp.FillBitmapStretch == False
         Lo.delay(delay)
     finally:
         Lo.close_doc(doc)

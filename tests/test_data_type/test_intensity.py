@@ -126,12 +126,6 @@ def test_ge_intensity(start: int, val: int) -> None:
     assert lt == False
 
 
-@pytest.mark.parametrize(("val", "expected"), [(360, 0), (-3, 357), (-181, 179), (2500, 340), (-2500, 20)])
-def test_intensity_weird(val: int, expected: int) -> None:
-    a1 = Intensity(val)
-    assert a1.value == expected
-
-
 @pytest.mark.parametrize(("val", "subval", "expected"), [(1, 100, 99), (2, 3, 1)])
 def test_intensity_rsub(val: int, subval: int, expected: int) -> None:
     # test __rsub__

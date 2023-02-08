@@ -6,7 +6,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.writer.direct.para.area import Gradient, PresetKind
+from ooodev.format.writer.direct.para.area import Gradient, PresetGradientKind
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
@@ -34,7 +34,7 @@ def test_write(loader, para_text) -> None:
         # there are 15 enum values 1-15
         # add a paragraph for each enum and test values
         for i in range(1, 16):
-            kind = PresetKind(i)
+            kind = PresetGradientKind(i)
             pg = Gradient.from_preset(kind)
             Write.append_para(cursor=cursor, text=para_text, styles=(pg,))
             cursor_p.gotoEnd(False)
@@ -47,7 +47,7 @@ def test_write(loader, para_text) -> None:
         # test applying directly to cursor.
         cursor_p.gotoEnd(False)
         fp = cast("FillProperties", cursor_p.TextParagraph)
-        pg = Gradient.from_preset(PresetKind.DEEP_OCEAN)
+        pg = Gradient.from_preset(PresetGradientKind.DEEP_OCEAN)
         pg.apply(fp)
         for _ in range(3):
             Write.append_para(cursor=cursor, text=para_text)

@@ -137,7 +137,7 @@ class GradientStruct(StyleBase):
         if isinstance(oth, GradientStruct):
             obj2 = oth.get_gradient()
         if getattr(oth, "typeName", None) == "com.sun.star.awt.Gradient":
-            obj2 = oth
+            obj2 = cast(Gradient, oth)
         if obj2:
             obj1 = self.get_gradient()
             return (
@@ -163,12 +163,8 @@ class GradientStruct(StyleBase):
         """
         Applies tab properties to ``obj``
 
-        If a DropCap instance with the same position is existing it is updated;
-        Otherwise, a new DropCap is added.
-
         Args:
-            obj (object): UNO object that supports ``com.sun.star.style.ParagraphProperties`` service.
-            keys (Dict[str, str], optional): Property key, value items that map properties.
+            obj (object): UNO object.
 
         :events:
             .. cssclass:: lo_event
@@ -179,24 +175,14 @@ class GradientStruct(StyleBase):
         Returns:
             None:
         """
+        # override_dv
         if not mProps.Props.has(obj, self._get_property_name()):
             self._print_not_valid_obj("apply")
             return
 
-        cargs = CancelEventArgs(source=f"{self.apply.__qualname__}")
-        cargs.event_data = self
-        self.on_applying(cargs)
-        if cargs.cancel:
-            return
-        _Events().trigger(FormatNamedEvent.STYLE_APPLYING, cargs)
-        if cargs.cancel:
-            return
-
         grad = self.get_gradient()
-        mProps.Props.set(obj, **{self._get_property_name(): grad})
-        eargs = EventArgs.from_args(cargs)
-        self.on_applied(eargs)
-        _Events().trigger(FormatNamedEvent.STYLE_APPLIED, eargs)
+        props = {self._get_property_name(): grad}
+        super().apply(obj=obj, override_dv=props)
 
     # endregion apply()
 
@@ -239,28 +225,28 @@ class GradientStruct(StyleBase):
 
     # region static methods
     @classmethod
-    def from_gradient(cls, grad: Gradient) -> GradientStruct:
+    def from_gradient(cls, value: Gradient) -> GradientStruct:
         """
         Converts a ``Gradient`` instance to a ``GradinetStruct``
 
         Args:
-            grad (Gradient): UNO Gradient
+            value (Gradient): UNO Gradient
 
         Returns:
             GradinetStruct: ``GradinetStruct`` set with ``Gradient`` properties
         """
         inst = super(GradientStruct, cls).__new__(cls)
         inst.__init__()
-        inst._set("Style", grad.Style),
-        inst._set("StartColor", grad.StartColor),
-        inst._set("EndColor", grad.EndColor),
-        inst._set("Angle", grad.Angle),
-        inst._set("Border", grad.Border),
-        inst._set("XOffset", grad.XOffset),
-        inst._set("YOffset", grad.YOffset),
-        inst._set("StartIntensity", grad.StartIntensity),
-        inst._set("EndIntensity", grad.EndIntensity),
-        inst._set("StepCount", grad.StepCount),
+        inst._set("Style", value.Style)
+        inst._set("StartColor", value.StartColor)
+        inst._set("EndColor", value.EndColor)
+        inst._set("Angle", value.Angle)
+        inst._set("Border", value.Border)
+        inst._set("XOffset", value.XOffset)
+        inst._set("YOffset", value.YOffset)
+        inst._set("StartIntensity", value.StartIntensity)
+        inst._set("EndIntensity", value.EndIntensity)
+        inst._set("StepCount", value.StepCount)
         return inst
 
     @classmethod
@@ -275,7 +261,7 @@ class GradientStruct(StyleBase):
             PropertyNotFoundError: If ``obj`` does not have required property
 
         Returns:
-            DropCap: ``DropCap`` instance that represents ``obj`` Drop cap format properties.
+            GradientStruct: ``GradientStruct`` instance that represents ``obj`` gradient properties.
         """
         # this nu is only used to get Property Name
         nu = super(GradientStruct, cls).__new__(cls)
