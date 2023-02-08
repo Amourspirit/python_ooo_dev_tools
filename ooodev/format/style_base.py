@@ -647,7 +647,7 @@ class StyleMulti(StyleBase):
         """
         styles = self._get_multi_styles()
         if len(attrs) + len(kwargs) == 0:
-            styles[key] = (style, None)
+            styles[key] = _StyleInfo(style, None)
         else:
             styles[key] = _StyleInfo(style, _StyleMultArgs(*attrs, **kwargs))
 

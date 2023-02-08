@@ -41,11 +41,31 @@ class PresetHatchKind(Enum):
     def __str__(self) -> str:
         return self.value
 
+    @staticmethod
+    def is_preset(name: str) -> bool:
+        """
+        Gets if name is a preset name.
+
+        Args:
+            name (str): Name such as ``"Red 45 Degrees``.
+
+        Returns:
+            bool: ``True`` if preset name; Otherwise, ``False``.
+        """
+        try:
+            p_name = PresetHatchKind._preset_names
+        except AttributeError:
+            attrs = [getattr(PresetHatchKind, x).value for x in dir(PresetHatchKind) if x.isupper()]
+            PresetHatchKind._preset_names = tuple(attrs)
+            p_name = PresetHatchKind._preset_names
+
+        return name in p_name
+
 
 # endregion Enum
 
-# region Preset Dictionaries
-def black_0_degrees() -> Dict[str, Any]:
+# region Fill Preset Dictionaries
+def fill_black_0_degrees() -> Dict[str, Any]:
     """Black 0 Degrees"""
     return {
         "style": HatchStyle.SINGLE,
@@ -56,7 +76,7 @@ def black_0_degrees() -> Dict[str, Any]:
     }
 
 
-def black_90_degrees() -> Dict[str, Any]:
+def fill_black_90_degrees() -> Dict[str, Any]:
     """Black 90 Degrees"""
     return {
         "style": HatchStyle.SINGLE,
@@ -67,7 +87,7 @@ def black_90_degrees() -> Dict[str, Any]:
     }
 
 
-def black_180_degrees_crossed() -> Dict[str, Any]:
+def fill_black_180_degrees_crossed() -> Dict[str, Any]:
     """Black 180 Degrees Crossed"""
     return {
         "style": HatchStyle.DOUBLE,
@@ -78,7 +98,7 @@ def black_180_degrees_crossed() -> Dict[str, Any]:
     }
 
 
-def blue_45_degrees() -> Dict[str, Any]:
+def fill_blue_45_degrees() -> Dict[str, Any]:
     """Blue 45 Degrees"""
     return {
         "style": HatchStyle.SINGLE,
@@ -89,7 +109,7 @@ def blue_45_degrees() -> Dict[str, Any]:
     }
 
 
-def blue_45_degrees_neg() -> Dict[str, Any]:
+def fill_blue_45_degrees_neg() -> Dict[str, Any]:
     """Blue -45 Degrees"""
     return {
         "style": HatchStyle.SINGLE,
@@ -100,7 +120,7 @@ def blue_45_degrees_neg() -> Dict[str, Any]:
     }
 
 
-def blue_45_degrees_crossed() -> Dict[str, Any]:
+def fill_blue_45_degrees_crossed() -> Dict[str, Any]:
     """Blue 45 Degrees Crossed"""
     return {
         "style": HatchStyle.DOUBLE,
@@ -111,7 +131,7 @@ def blue_45_degrees_crossed() -> Dict[str, Any]:
     }
 
 
-def green_30_degrees() -> Dict[str, Any]:
+def fill_green_30_degrees() -> Dict[str, Any]:
     """Green 30 Degrees"""
     return {
         "style": HatchStyle.SINGLE,
@@ -122,7 +142,7 @@ def green_30_degrees() -> Dict[str, Any]:
     }
 
 
-def green_60_degrees() -> Dict[str, Any]:
+def fill_green_60_degrees() -> Dict[str, Any]:
     """Green 60 Degrees"""
     return {
         "style": HatchStyle.SINGLE,
@@ -133,7 +153,7 @@ def green_60_degrees() -> Dict[str, Any]:
     }
 
 
-def green_90_degrees_triple() -> Dict[str, Any]:
+def fill_green_90_degrees_triple() -> Dict[str, Any]:
     """Green 90 Degrees Triple"""
     return {
         "style": HatchStyle.TRIPLE,
@@ -144,7 +164,7 @@ def green_90_degrees_triple() -> Dict[str, Any]:
     }
 
 
-def red_45_degrees() -> Dict[str, Any]:
+def fill_red_45_degrees() -> Dict[str, Any]:
     """Red 45 Degrees"""
     return {
         "style": HatchStyle.SINGLE,
@@ -155,7 +175,7 @@ def red_45_degrees() -> Dict[str, Any]:
     }
 
 
-def red_90_degrees_crossed() -> Dict[str, Any]:
+def fill_red_90_degrees_crossed() -> Dict[str, Any]:
     """Red 90 Degrees Crossed"""
     return {
         "style": HatchStyle.DOUBLE,
@@ -166,7 +186,7 @@ def red_90_degrees_crossed() -> Dict[str, Any]:
     }
 
 
-def red_45_degrees_neg_triple() -> Dict[str, Any]:
+def fill_red_45_degrees_neg_triple() -> Dict[str, Any]:
     """Red -45 Degrees Triple"""
     return {
         "style": HatchStyle.TRIPLE,
@@ -177,7 +197,7 @@ def red_45_degrees_neg_triple() -> Dict[str, Any]:
     }
 
 
-def yellow_45_degrees() -> Dict[str, Any]:
+def fill_yellow_45_degrees() -> Dict[str, Any]:
     """Yellow 45 Degrees"""
     return {
         "style": HatchStyle.SINGLE,
@@ -188,7 +208,7 @@ def yellow_45_degrees() -> Dict[str, Any]:
     }
 
 
-def yellow_45_degrees_crossed() -> Dict[str, Any]:
+def fill_yellow_45_degrees_crossed() -> Dict[str, Any]:
     """Yellow 45 Degrees Crossed"""
     return {
         "style": HatchStyle.DOUBLE,
@@ -199,7 +219,7 @@ def yellow_45_degrees_crossed() -> Dict[str, Any]:
     }
 
 
-def yellow_45_degrees_triple() -> Dict[str, Any]:
+def fill_yellow_45_degrees_triple() -> Dict[str, Any]:
     """Yellow 45 Degrees Triple"""
     return {
         "style": HatchStyle.TRIPLE,
@@ -210,10 +230,180 @@ def yellow_45_degrees_triple() -> Dict[str, Any]:
     }
 
 
-# endregion Preset Dictionaries
+# endregion Fill Preset Dictionaries
+
+
+# region Write Preset Dictionaries
+def write_black_0_degrees() -> Dict[str, Any]:
+    """Black 0 Degrees"""
+    return {
+        "style": HatchStyle.SINGLE,
+        "color": StandardColor.BLACK,
+        "space": 1.80,
+        "angle": 0,
+        "bg_color": -1,
+    }
+
+
+def write_black_90_degrees() -> Dict[str, Any]:
+    """Black 90 Degrees"""
+    return {
+        "style": HatchStyle.SINGLE,
+        "color": StandardColor.BLACK,
+        "space": 1.80,
+        "angle": 90,
+        "bg_color": -1,
+    }
+
+
+def write_black_180_degrees_crossed() -> Dict[str, Any]:
+    """Black 180 Degrees Crossed"""
+    return {
+        "style": HatchStyle.DOUBLE,
+        "color": StandardColor.BLACK,
+        "space": 1.80,
+        "angle": 180,
+        "bg_color": -1,
+    }
+
+
+def write_blue_45_degrees() -> Dict[str, Any]:
+    """Blue 45 Degrees"""
+    return {
+        "style": HatchStyle.SINGLE,
+        "color": StandardColor.BLUE,
+        "space": 3.58,
+        "angle": 45,
+        "bg_color": -1,
+    }
+
+
+def write_blue_45_degrees_neg() -> Dict[str, Any]:
+    """Blue -45 Degrees"""
+    return {
+        "style": HatchStyle.SINGLE,
+        "color": StandardColor.BLUE,
+        "space": 3.58,
+        "angle": 315,
+        "bg_color": -1,
+    }
+
+
+def write_blue_45_degrees_crossed() -> Dict[str, Any]:
+    """Blue 45 Degrees Crossed"""
+    return {
+        "style": HatchStyle.DOUBLE,
+        "color": StandardColor.BLUE,
+        "space": 3.58,
+        "angle": 45,
+        "bg_color": -1,
+    }
+
+
+def write_green_30_degrees() -> Dict[str, Any]:
+    """Green 30 Degrees"""
+    return {
+        "style": HatchStyle.SINGLE,
+        "color": StandardColor.GREEN,
+        "space": 3.58,
+        "angle": 30,
+        "bg_color": -1,
+    }
+
+
+def write_green_60_degrees() -> Dict[str, Any]:
+    """Green 60 Degrees"""
+    return {
+        "style": HatchStyle.SINGLE,
+        "color": StandardColor.GREEN,
+        "space": 3.58,
+        "angle": 60,
+        "bg_color": -1,
+    }
+
+
+def write_green_90_degrees_triple() -> Dict[str, Any]:
+    """Green 90 Degrees Triple"""
+    return {
+        "style": HatchStyle.TRIPLE,
+        "color": StandardColor.GREEN,
+        "space": 3.58,
+        "angle": 90,
+        "bg_color": -1,
+    }
+
+
+def write_red_45_degrees() -> Dict[str, Any]:
+    """Red 45 Degrees"""
+    return {
+        "style": HatchStyle.SINGLE,
+        "color": StandardColor.RED,
+        "space": 5.38,
+        "angle": 45,
+        "bg_color": -1,
+    }
+
+
+def write_red_90_degrees_crossed() -> Dict[str, Any]:
+    """Red 90 Degrees Crossed"""
+    return {
+        "style": HatchStyle.DOUBLE,
+        "color": StandardColor.RED,
+        "space": 5.38,
+        "angle": 90,
+        "bg_color": -1,
+    }
+
+
+def write_red_45_degrees_neg_triple() -> Dict[str, Any]:
+    """Red -45 Degrees Triple"""
+    return {
+        "style": HatchStyle.TRIPLE,
+        "color": StandardColor.RED,
+        "space": 5.38,
+        "angle": 135,
+        "bg_color": -1,
+    }
+
+
+def write_yellow_45_degrees() -> Dict[str, Any]:
+    """Yellow 45 Degrees"""
+    return {
+        "style": HatchStyle.SINGLE,
+        "color": StandardColor.GOLD,
+        "space": 7.23,
+        "angle": 45,
+        "bg_color": -1,
+    }
+
+
+def write_yellow_45_degrees_crossed() -> Dict[str, Any]:
+    """Yellow 45 Degrees Crossed"""
+    return {
+        "style": HatchStyle.DOUBLE,
+        "color": StandardColor.GOLD,
+        "space": 7.23,
+        "angle": 45,
+        "bg_color": -1,
+    }
+
+
+def write_yellow_45_degrees_triple() -> Dict[str, Any]:
+    """Yellow 45 Degrees Triple"""
+    return {
+        "style": HatchStyle.TRIPLE,
+        "color": StandardColor.GOLD,
+        "space": 7.23,
+        "angle": 45,
+        "bg_color": -1,
+    }
+
+
+# endregion Write Preset Dictionaries
+
 
 # region Get Preset
-def get_preset(kind: PresetHatchKind) -> Dict[str:Any]:
+def get_fill_preset(kind: PresetHatchKind) -> Dict[str:Any]:
     """
     Gets preset
 
@@ -221,34 +411,72 @@ def get_preset(kind: PresetHatchKind) -> Dict[str:Any]:
         PresetKind: Preset Kind
     """
     if kind == PresetHatchKind.BLACK_0_DEGREES:
-        return black_0_degrees()
+        return fill_black_0_degrees()
     if kind == PresetHatchKind.BLACK_90_DEGREES:
-        return black_90_degrees()
+        return fill_black_90_degrees()
     if kind == PresetHatchKind.BLACK_180_DEGREES_CROSSED:
-        return black_180_degrees_crossed()
+        return fill_black_180_degrees_crossed()
     if kind == PresetHatchKind.BLUE_45_DEGREES:
-        return blue_45_degrees()
+        return fill_blue_45_degrees()
     if kind == PresetHatchKind.BLUE_45_DEGREES_NEG:
-        return blue_45_degrees_neg()
+        return fill_blue_45_degrees_neg()
     if kind == PresetHatchKind.BLUE_45_DEGREES_CROSSED:
-        return blue_45_degrees_crossed()
+        return fill_blue_45_degrees_crossed()
     if kind == PresetHatchKind.GREEN_30_DEGREES:
-        return green_30_degrees()
+        return fill_green_30_degrees()
     if kind == PresetHatchKind.GREEN_60_DEGREES:
-        return green_60_degrees()
+        return fill_green_60_degrees()
     if kind == PresetHatchKind.GREEN_90_DEGREES_TRIPLE:
-        return green_90_degrees_triple()
+        return fill_green_90_degrees_triple()
     if kind == PresetHatchKind.RED_45_DEGREES:
-        return red_45_degrees()
+        return fill_red_45_degrees()
     if kind == PresetHatchKind.RED_90_DEGREES_CROSSED:
-        return red_90_degrees_crossed()
+        return fill_red_90_degrees_crossed()
     if kind == PresetHatchKind.RED_45_DEGREES_NEG_TRIPLE:
-        return red_45_degrees_neg_triple()
+        return fill_red_45_degrees_neg_triple()
     if kind == PresetHatchKind.YELLOW_45_DEGREES:
-        return yellow_45_degrees()
+        return fill_yellow_45_degrees()
     if kind == PresetHatchKind.YELLOW_45_DEGREES_CROSSED:
-        return yellow_45_degrees_crossed()
-    return yellow_45_degrees_triple()
+        return fill_yellow_45_degrees_crossed()
+    return fill_yellow_45_degrees_triple()
+
+
+def get_write_preset(kind: PresetHatchKind) -> Dict[str:Any]:
+    """
+    Gets preset
+
+    Returns:
+        PresetKind: Preset Kind
+    """
+    if kind == PresetHatchKind.BLACK_0_DEGREES:
+        return write_black_0_degrees()
+    if kind == PresetHatchKind.BLACK_90_DEGREES:
+        return write_black_90_degrees()
+    if kind == PresetHatchKind.BLACK_180_DEGREES_CROSSED:
+        return write_black_180_degrees_crossed()
+    if kind == PresetHatchKind.BLUE_45_DEGREES:
+        return write_blue_45_degrees()
+    if kind == PresetHatchKind.BLUE_45_DEGREES_NEG:
+        return write_blue_45_degrees_neg()
+    if kind == PresetHatchKind.BLUE_45_DEGREES_CROSSED:
+        return write_blue_45_degrees_crossed()
+    if kind == PresetHatchKind.GREEN_30_DEGREES:
+        return write_green_30_degrees()
+    if kind == PresetHatchKind.GREEN_60_DEGREES:
+        return write_green_60_degrees()
+    if kind == PresetHatchKind.GREEN_90_DEGREES_TRIPLE:
+        return write_green_90_degrees_triple()
+    if kind == PresetHatchKind.RED_45_DEGREES:
+        return write_red_45_degrees()
+    if kind == PresetHatchKind.RED_90_DEGREES_CROSSED:
+        return write_red_90_degrees_crossed()
+    if kind == PresetHatchKind.RED_45_DEGREES_NEG_TRIPLE:
+        return write_red_45_degrees_neg_triple()
+    if kind == PresetHatchKind.YELLOW_45_DEGREES:
+        return write_yellow_45_degrees()
+    if kind == PresetHatchKind.YELLOW_45_DEGREES_CROSSED:
+        return write_yellow_45_degrees_crossed()
+    return write_yellow_45_degrees_triple()
 
 
 # endregion Get Preset

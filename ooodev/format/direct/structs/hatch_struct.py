@@ -141,22 +141,22 @@ class HatchStruct(StyleBase):
 
     # region static methods
     @classmethod
-    def from_hatch(cls, grad: Hatch) -> HatchStruct:
+    def from_hatch(cls, value: Hatch) -> HatchStruct:
         """
         Converts a ``Hatch`` instance to a ``HatchStruct``
 
         Args:
-            grad (Gradient): UNO Gradient
+            value (Hatch): UNO Hatch
 
         Returns:
             HatchStruct: ``HatchStruct`` set with ``Hatch`` properties
         """
         inst = super(HatchStruct, cls).__new__(cls)
         inst.__init__()
-        inst._set("Style", grad.Style)
-        inst._set("Color", grad.Color)
-        inst._set("Distance", grad.Distance)
-        inst._set("Angle", grad.Angle)
+        inst._set("Style", value.Style)
+        inst._set("Color", value.Color)
+        inst._set("Distance", value.Distance)
+        inst._set("Angle", value.Angle)
         return inst
 
     @classmethod

@@ -82,6 +82,36 @@ class Color(StyleBase):
 
     # endregion apply()
 
+    @classmethod
+    def from_obj(cls, obj: object) -> Color:
+        """
+        Gets instance from object
+
+        Args:
+            obj (object): UNO object that supports ``com.sun.star.drawing.FillProperties`` service.
+
+        Raises:
+            NotSupportedError: If ``obj`` is not supported.
+        Returns:
+            Color: ``Color`` instance that represents ``obj`` Color properties.
+        """
+        nu = super(Color, cls).__new__(cls)
+        nu.__init__()
+
+        # inst = Color()
+        if not nu._is_valid_obj(obj):
+            raise mEx.NotSupportedError("Object does not suport conversion to color")
+
+        color = mProps.Props.get(obj, "FillColor", None)
+
+        inst = super(Color, cls).__new__(cls)
+
+        if color is None:
+            inst.__init__()
+        else:
+            inst.__init__(color=color)
+        return inst
+
     def dispatch_reset(self) -> None:
         """
         Resets the cursor at is current position/selection to remove any Fill Color Formatting.

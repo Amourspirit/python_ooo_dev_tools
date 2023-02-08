@@ -225,28 +225,28 @@ class GradientStruct(StyleBase):
 
     # region static methods
     @classmethod
-    def from_gradient(cls, grad: Gradient) -> GradientStruct:
+    def from_gradient(cls, value: Gradient) -> GradientStruct:
         """
         Converts a ``Gradient`` instance to a ``GradinetStruct``
 
         Args:
-            grad (Gradient): UNO Gradient
+            value (Gradient): UNO Gradient
 
         Returns:
             GradinetStruct: ``GradinetStruct`` set with ``Gradient`` properties
         """
         inst = super(GradientStruct, cls).__new__(cls)
         inst.__init__()
-        inst._set("Style", grad.Style)
-        inst._set("StartColor", grad.StartColor)
-        inst._set("EndColor", grad.EndColor)
-        inst._set("Angle", grad.Angle)
-        inst._set("Border", grad.Border)
-        inst._set("XOffset", grad.XOffset)
-        inst._set("YOffset", grad.YOffset)
-        inst._set("StartIntensity", grad.StartIntensity)
-        inst._set("EndIntensity", grad.EndIntensity)
-        inst._set("StepCount", grad.StepCount)
+        inst._set("Style", value.Style)
+        inst._set("StartColor", value.StartColor)
+        inst._set("EndColor", value.EndColor)
+        inst._set("Angle", value.Angle)
+        inst._set("Border", value.Border)
+        inst._set("XOffset", value.XOffset)
+        inst._set("YOffset", value.YOffset)
+        inst._set("StartIntensity", value.StartIntensity)
+        inst._set("EndIntensity", value.EndIntensity)
+        inst._set("StepCount", value.StepCount)
         return inst
 
     @classmethod
