@@ -9,7 +9,7 @@ import uno
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.draw import Draw
-from ooodev.format.direct.fill.img import (
+from ooodev.format.direct.fill.area.img import (
     Img,
     PresetImageKind,
     ImgStyleKind,

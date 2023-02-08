@@ -6,14 +6,14 @@ Module for Fill Properties Fill Color.
 from __future__ import annotations
 from typing import Tuple, overload
 
-from ....events.args.cancel_event_args import CancelEventArgs
-from ....exceptions import ex as mEx
-from ....utils import props as mProps
-from ....meta.static_prop import static_prop
-from ....utils import lo as mLo
-from ....utils.color import Color
-from ...kind.format_kind import FormatKind
-from ...style_base import StyleBase
+from .....events.args.cancel_event_args import CancelEventArgs
+from .....exceptions import ex as mEx
+from .....utils import props as mProps
+from .....meta.static_prop import static_prop
+from .....utils import lo as mLo
+from .....utils.color import Color
+from ....kind.format_kind import FormatKind
+from ....style_base import StyleBase
 
 from ooo.dyn.drawing.fill_style import FillStyle as FillStyle
 

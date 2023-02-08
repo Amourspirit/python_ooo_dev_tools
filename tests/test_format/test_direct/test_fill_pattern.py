@@ -9,7 +9,7 @@ import uno
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.draw import Draw
-from ooodev.format.direct.fill.pattern import Pattern, PresetPatternKind
+from ooodev.format.direct.fill.area.pattern import Pattern, PresetPatternKind
 
 
 if TYPE_CHECKING:

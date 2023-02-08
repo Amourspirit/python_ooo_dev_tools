@@ -8,7 +8,7 @@ from .....exceptions import ex as mEx
 from .....utils import lo as mLo
 from .....utils import props as mProps
 from ....style_base import StyleMulti
-from ...fill.img import (
+from ...fill.area.img import (
     Img as FillImg,
     SizeMM as SizeMM,
     SizePercent as SizePercent,

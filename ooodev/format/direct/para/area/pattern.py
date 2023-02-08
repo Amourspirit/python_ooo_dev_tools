@@ -10,7 +10,7 @@ from .....utils import props as mProps
 from ....kind.format_kind import FormatKind
 from ....preset.preset_pattern import PresetPatternKind as PresetPatternKind
 from ....style_base import StyleMulti
-from ...fill.pattern import Pattern as FillPattern
+from ...fill.area.pattern import Pattern as FillPattern
 
 from com.sun.star.awt import XBitmap
 

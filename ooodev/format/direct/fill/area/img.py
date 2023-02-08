@@ -10,20 +10,20 @@ from enum import Enum
 
 import uno
 
-from ....events.args.key_val_cancel_args import KeyValCancelArgs
-from ....exceptions import ex as mEx
-from ....utils import lo as mLo
-from ....utils import props as mProps
-from ....utils.data_type.intensity import Intensity
-from ....utils.data_type.point_positive import PointPostivie
-from ....utils.data_type.width_height_fraction import WidthHeightFraction
-from ....utils.data_type.width_height_percent import WidthHeightPercent
-from ....utils.type_var import T
-from ....utils.unit_convert import UnitConvert
-from ...kind.format_kind import FormatKind
-from ...preset import preset_image as mImage
-from ...preset.preset_image import PresetImageKind as PresetImageKind
-from ...style_base import StyleBase
+from .....events.args.key_val_cancel_args import KeyValCancelArgs
+from .....exceptions import ex as mEx
+from .....utils import lo as mLo
+from .....utils import props as mProps
+from .....utils.data_type.intensity import Intensity
+from .....utils.data_type.offset import Offset as Offset
+from .....utils.data_type.width_height_fraction import WidthHeightFraction
+from .....utils.data_type.width_height_percent import WidthHeightPercent
+from .....utils.type_var import T
+from .....utils.unit_convert import UnitConvert
+from ....kind.format_kind import FormatKind
+from ....preset import preset_image as mImage
+from ....preset.preset_image import PresetImageKind as PresetImageKind
+from ....style_base import StyleBase
 
 
 from com.sun.star.awt import XBitmap
@@ -48,13 +48,6 @@ class SizeMM(WidthHeightFraction):
 @dataclass(frozen=True)
 class SizePercent(WidthHeightPercent):
     """Size in percent values"""
-
-    pass
-
-
-@dataclass(frozen=True)
-class Offset(PointPostivie):
-    """Offset x and y values."""
 
     pass
 

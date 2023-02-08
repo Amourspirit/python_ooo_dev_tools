@@ -6,6 +6,7 @@ Module for Paragraph Gradient Color.
 from __future__ import annotations
 from typing import Tuple, cast
 
+from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
 from .....meta.static_prop import static_prop
 from .....utils import props as mProps
@@ -120,6 +121,11 @@ class Gradient(StyleMulti):
             "com.sun.star.text.TextContent",
         )
 
+    def _on_modifing(self, event: CancelEventArgs) -> None:
+        if self._is_default_inst:
+            raise ValueError("Modifying a default instance is not allowed")
+        return super()._on_modifing(event)
+
     @classmethod
     def from_obj(cls, obj: object) -> Gradient:
         """
@@ -198,5 +204,6 @@ class Gradient(StyleMulti):
             )
             inst._set("FillStyle", FillStyle.NONE)
             inst._set("FillGradientName", "")
+            inst._is_default_inst = True
             Gradient._DEFAULT = inst
         return Gradient._DEFAULT

@@ -6,6 +6,7 @@ Module for Paragraph Fill Color.
 from __future__ import annotations
 from typing import Tuple, overload
 
+from .....events.args.cancel_event_args import CancelEventArgs
 from .....meta.static_prop import static_prop
 from .....utils import lo as mLo
 from .....utils import props as mProps
@@ -27,8 +28,6 @@ class Color(StyleBase):
 
     .. versionadded:: 0.9.0
     """
-
-    _DEFAULT = None
 
     def __init__(self, color: mColor.Color = -1) -> None:
         """
@@ -56,6 +55,11 @@ class Color(StyleBase):
             "com.sun.star.drawing.FillProperties",
             "com.sun.star.text.TextContent",
         )
+
+    def _on_modifing(self, event: CancelEventArgs) -> None:
+        if self._is_default_inst:
+            raise ValueError("Modifying a default instance is not allowed")
+        return super()._on_modifing(event)
 
     # region apply()
 
@@ -146,6 +150,9 @@ class Color(StyleBase):
     @static_prop
     def default() -> Color:  # type: ignore[misc]
         """Gets FillColor empty. Static Property."""
-        if Color._DEFAULT is None:
-            Color._DEFAULT = Color(-1)
-        return Color._DEFAULT
+        try:
+            return Color._DEFAULT_INST
+        except AttributeError:
+            Color._DEFAULT_INST = Color(-1)
+            Color._DEFAULT_INST._is_default_inst = True
+        return Color._DEFAULT_INST

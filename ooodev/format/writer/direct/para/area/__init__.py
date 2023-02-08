@@ -12,7 +12,7 @@ from .....preset.preset_gradient import PresetGradientKind as PresetGradientKind
 from .....preset.preset_hatch import PresetHatchKind as PresetHatchKind
 from .....preset.preset_pattern import PresetPatternKind as PresetPatternKind
 from .....preset.preset_image import PresetImageKind as PresetImageKind
-from .....direct.fill.img import (
+from .....direct.fill.area.img import (
     ImgStyleKind as ImgStyleKind,
     SizeMM as SizeMM,
     SizePercent as SizePercent,
