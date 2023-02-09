@@ -30,6 +30,7 @@ class Hyphenation(StyleBase):
 
     def __init__(
         self,
+        *,
         auto: bool | None = None,
         no_caps: bool | None = None,
         start_chars: int | None = None,

@@ -31,6 +31,7 @@ class FlowOptions(StyleBase):
 
     def __init__(
         self,
+        *,
         orphans: int | None = None,
         widows: int | None = None,
         keep: bool | None = None,

@@ -15,6 +15,7 @@ from .....utils import lo as mLo
 from .....utils import props as mProps
 from .....utils.data_type.angle import Angle as Angle
 from .....utils.data_type.intensity import Intensity as Intensity
+from .....utils.data_type.intensity_range import IntensityRange as IntensityRange
 from .....utils.data_type.offset import Offset as Offset
 from .....utils.type_var import T
 from ....kind.format_kind import FormatKind
@@ -59,12 +60,13 @@ class Gradient(StyleMulti):
 
     def __init__(
         self,
+        *,
         style: GradientStyle = GradientStyle.LINEAR,
         offset: Offset = Offset(50, 50),
         angle: Angle | int = 0,
         border: Intensity | int = 0,
-        start_value: Intensity | int = 0,
-        end_value: Intensity | int = 0,
+        grad_intensity: IntensityRange = IntensityRange(0, 0),
+        **kwargs: Any,
     ) -> None:
         """
         Constructor
@@ -76,16 +78,11 @@ class Gradient(StyleMulti):
                 X is effectively the center of the ``RADIAL``, ``ELLIPTICAL``, ``SQUARE`` and ``RECT`` style gradients. Defaults to ``Offset(50, 50)``.
             angle (Angle, int, optional): Specifies angle of the gradient. Defaults to 0.
             border (int, optional): Specifies percent of the total width where just the start color is used. Defaults to 0.
-            start_value (Intensity, int, optional): Specifies the gradient start value from ``0`` to ``100``.
-            end_value (Intensity, int, optional): Specifies the gradient End value from ``0`` to ``100``.
+            grad_intensity (IntensityRange, optional): Specifies the intensity at the start point and stop point of the gradient. Defaults to ``IntensityRange(0, 0)``.
         """
-        if not isinstance(start_value, Intensity):
-            start_value = Intensity(start_value)
-        if not isinstance(end_value, Intensity):
-            end_value = Intensity(end_value)
 
-        start_color = int(mColor.get_gray_rgb(start_value.value))
-        end_color = int(mColor.get_gray_rgb(end_value.value))
+        start_color = int(mColor.get_gray_rgb(grad_intensity.start))
+        end_color = int(mColor.get_gray_rgb(grad_intensity.end))
         # start_color = 4144959
         # end_color = 16777215
 
@@ -104,29 +101,34 @@ class Gradient(StyleMulti):
 
         super().__init__()
         # gradient
-        self._set_fill_tp(fs)
+        self._set_fill_tp(fs, kwargs.get("transparency_name", ""))
         # self._set("FillStyle", FillStyle.SOLID)
         # Fill Transparence is always zero when Gradient Tranparency is applied
         self._set("FillTransparence", 0)
 
     # region Internal Methods
-    def _set_fill_tp(self, fill_tp: FillTransparentGrad) -> None:
-        fs = self._get_fill_tp(fill_tp)
+    def _set_fill_tp(self, fill_tp: FillTransparentGrad, name: str = "") -> None:
+        fs = self._get_fill_tp(fill_tp, name)
         self._set("FillTransparenceGradientName", self._name)
         self._set_style("fill_style", fs, *fs.get_attrs())
 
-    def _get_fill_tp(self, fill_tp: FillTransparentGrad) -> FillTransparentGrad:
+    def _get_fill_tp(self, fill_tp: FillTransparentGrad, name: str) -> FillTransparentGrad:
         # if the name passed in already exist in the TransparencyGradientTable Table then it is returned.
         # Otherwise the struc is added to the TransparencyGradientTable Table and then returned.
         # after struct is added to table all other subsequent call of this name will return
         # that struc from the Table. With the exception of auto_name which will force a new entry
         # into the Table each time.
         # see: https://github.com/LibreOffice/core/blob/d9e044f04ac11b76b9a3dac575f4e9155b67490e/chart2/source/tools/PropertyHelper.cxx#L212
-        name = "Transparency "
         nc = self._container_get_inst()
-        self._name = self._container_get_unique_el_name(name, nc)
+        if name:
+            struct = self._container_get_value(name, nc)  # raises value error if name is empty
+            if not struct is None:
+                self._name = name
+                return FillTransparentGrad.from_gradient(struct)
 
+        self._name = self._container_get_unique_el_name(name, nc)
         struct = self._container_get_value(self._name, nc)  # raises value error if name is empty
+        name = "Transparency "
         if not struct is None:
             return FillTransparentGrad.from_gradient(struct)
         struct = fill_tp.get_gradient()
@@ -201,22 +203,18 @@ class Gradient(StyleMulti):
 
         grad_fill = cast(UNOGradient, mProps.Props.get(obj, gs_prop_name))
         gs = FillTransparentGrad.from_gradient(grad_fill)
-        fill_gradient_name = cast(str, mProps.Props.get(obj, "FillGradientName"))
+        fill_gradient_name = cast(str, mProps.Props.get(obj, "FillGradientName", ""))
         if grad_fill.Angle == 0:
             angle = 0
         else:
             angle = round(grad_fill.Angle / 10)
         return Gradient(
             style=grad_fill.Style,
-            step_count=grad_fill.StepCount,
             offset=Offset(grad_fill.XOffset, grad_fill.YOffset),
             angle=angle,
-            border=grad_fill.Border,
-            start_vaule=grad_fill.StartColor,
-            start_intensity=grad_fill.StartIntensity,
-            end_color=grad_fill.EndColor,
-            end_intensity=grad_fill.EndIntensity,
-            name=fill_gradient_name,
+            border=Intensity(grad_fill.Border),
+            grad_intensity=IntensityRange(grad_fill.StartColor, grad_fill.EndColor),
+            transparency_name=fill_gradient_name,
         )
 
     @property
@@ -234,10 +232,9 @@ class Gradient(StyleMulti):
                 style=GradientStyle.LINEAR,
                 step_count=0,
                 offset=Offset(0, 0),
-                angle=0,
+                angle=Angle(0),
                 border=0,
-                start_value=mColor.Color(0),
-                end_value=mColor.Color(0),
+                grad_intensity=IntensityRange(0, 0),
             )
             inst._is_default_inst = True
             Gradient._DEFAULT_INST = inst

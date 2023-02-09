@@ -66,6 +66,7 @@ class FontPosition(StyleBase):
 
     def __init__(
         self,
+        *,
         script_kind: FontScriptKind | None = None,
         raise_lower: int | Intensity | None = None,
         rel_size: int | None = None,
