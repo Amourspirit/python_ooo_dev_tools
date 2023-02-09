@@ -59,7 +59,6 @@ class LineSpacingStruct(StyleBase):
     """
 
     # region init
-    _DEFAULT = None
 
     def __init__(self, mode: ModeKind = ModeKind.SINGLE, value: Real = 0) -> None:
         """
@@ -113,6 +112,11 @@ class LineSpacingStruct(StyleBase):
 
     def _supported_services(self) -> Tuple[str, ...]:
         return ()
+
+    def _on_modifing(self, event: CancelEventArgs) -> None:
+        if self._is_default_inst:
+            raise ValueError("Modifying a default instance is not allowed")
+        return super()._on_modifing(event)
 
     def _get_property_name(self) -> str:
         return "ParaLineSpacing"
@@ -211,8 +215,11 @@ class LineSpacingStruct(StyleBase):
     @static_prop
     def default() -> LineSpacingStruct:  # type: ignore[misc]
         """Gets empty Line Spacing. Static Property."""
-        if LineSpacingStruct._DEFAULT is None:
-            LineSpacingStruct._DEFAULT = LineSpacingStruct(ModeKind.SINGLE, 0)
-        return LineSpacingStruct._DEFAULT
+        try:
+            return LineSpacingStruct._DEFAULT_INST
+        except AttributeError:
+            LineSpacingStruct._DEFAULT_INST = LineSpacingStruct(ModeKind.SINGLE, 0)
+            LineSpacingStruct._DEFAULT_INST._is_default_inst = True
+        return LineSpacingStruct._DEFAULT_INST
 
     # endregion Properties

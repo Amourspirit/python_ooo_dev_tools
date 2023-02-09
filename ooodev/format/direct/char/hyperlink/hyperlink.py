@@ -8,7 +8,7 @@ from __future__ import annotations
 from typing import Tuple, overload
 from enum import Enum
 
-
+from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
 from .....meta.static_prop import static_prop
 from .....utils import lo as mLo
@@ -44,8 +44,6 @@ class Hyperlink(StyleBase):
 
     .. versionadded:: 0.9.0
     """
-
-    _EMPTY = None
 
     # region init
 
@@ -93,6 +91,11 @@ class Hyperlink(StyleBase):
             Tuple[str, ...]: Supported services
         """
         return ("com.sun.star.style.CharacterProperties",)
+
+    def _on_modifing(self, event: CancelEventArgs) -> None:
+        if self._is_default_inst:
+            raise ValueError("Modifying a default instance is not allowed")
+        return super()._on_modifing(event)
 
     # region apply()
 
@@ -211,8 +214,11 @@ class Hyperlink(StyleBase):
     @static_prop
     def empty() -> Hyperlink:  # type: ignore[misc]
         """Gets Highlight empty. Static Property."""
-        if Hyperlink._EMPTY is None:
-            Hyperlink._EMPTY = Hyperlink(name="", url="")
-        return Hyperlink._EMPTY
+        try:
+            return Hyperlink._EMPTY_INST
+        except AttributeError:
+            Hyperlink._EMPTY_INST = Hyperlink(name="", url="")
+            Hyperlink._EMPTY_INST._is_default_inst = True
+        return Hyperlink._EMPTY_INST
 
     # endregion Properties

@@ -7,6 +7,7 @@ from __future__ import annotations
 from typing import Tuple, cast, overload
 from numbers import Real
 
+from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
 from .....meta.static_prop import static_prop
 from .....utils import lo as mLo
@@ -20,8 +21,6 @@ from ....kind.format_kind import FormatKind
 class ParaLineSpace(mLs.LineSpacingStruct):
     """Represents a Line spacing Struct for use with paragraphs"""
 
-    _DEFAULT = None
-
     def _get_property_name(self) -> str:
         return "ParaLineSpacing"
 
@@ -29,12 +28,20 @@ class ParaLineSpace(mLs.LineSpacingStruct):
         # will affect apply() on parent class.
         return ("com.sun.star.style.ParagraphProperties",)
 
+    def _on_modifing(self, event: CancelEventArgs) -> None:
+        if self._is_default_inst:
+            raise ValueError("Modifying a default instance is not allowed")
+        return super()._on_modifing(event)
+
     @static_prop
     def default() -> ParaLineSpace:  # type: ignore[misc]
         """Gets empty Line Spacing. Static Property."""
-        if ParaLineSpace._DEFAULT is None:
-            ParaLineSpace._DEFAULT = ParaLineSpace(mLs.ModeKind.SINGLE, 0)
-        return ParaLineSpace._DEFAULT
+        try:
+            return ParaLineSpace._DEFAULT_INST
+        except AttributeError:
+            ParaLineSpace._DEFAULT_INST = ParaLineSpace(mLs.ModeKind.SINGLE, 0)
+            ParaLineSpace._DEFAULT_INST._is_default_inst = True
+        return ParaLineSpace._DEFAULT_INST
 
 
 class LineSpacing(StyleMulti):
@@ -43,8 +50,6 @@ class LineSpacing(StyleMulti):
 
     Any properties starting with ``prop_`` set or get current instance values.
     """
-
-    _DEFAULT = None
 
     # region init
 
@@ -99,6 +104,11 @@ class LineSpacing(StyleMulti):
             Tuple[str, ...]: Supported services
         """
         return ("com.sun.star.style.ParagraphProperties",)
+
+    def _on_modifing(self, event: CancelEventArgs) -> None:
+        if self._is_default_inst:
+            raise ValueError("Modifying a default instance is not allowed")
+        return super()._on_modifing(event)
 
     # region apply()
     @overload
@@ -196,8 +206,11 @@ class LineSpacing(StyleMulti):
     @static_prop
     def default() -> LineSpacing:  # type: ignore[misc]
         """Gets ``LineSpacing`` default. Static Property."""
-        if LineSpacing._DEFAULT is None:
-            LineSpacing._DEFAULT = LineSpacing(mode=ModeKind.SINGLE)
-        return LineSpacing._DEFAULT
+        try:
+            return LineSpacing._DEFAULT_INST
+        except AttributeError:
+            LineSpacing._DEFAULT_INST = LineSpacing(mode=ModeKind.SINGLE)
+            LineSpacing._DEFAULT_INST._is_default_inst = True
+        return LineSpacing._DEFAULT_INST
 
     # endregion properties

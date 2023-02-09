@@ -57,8 +57,6 @@ class DropCaps(StyleMulti):
     .. versionadded:: 0.9.0
     """
 
-    _DEFAULT = None
-
     # region init
 
     def __init__(
@@ -233,10 +231,12 @@ class DropCaps(StyleMulti):
     @static_prop
     def default() -> DropCaps:  # type: ignore[misc]
         """Gets ``DropCaps`` default. Static Property."""
-        if DropCaps._DEFAULT is None:
+        try:
+            return DropCaps._DEFAULT_INST
+        except AttributeError:
             inst = DropCaps(count=0)
             inst._is_default_inst = True
-            DropCaps._DEFAULT = inst
-        return DropCaps._DEFAULT
+            DropCaps._DEFAULT_INST = inst
+        return DropCaps._DEFAULT_INST
 
     # endregion properties

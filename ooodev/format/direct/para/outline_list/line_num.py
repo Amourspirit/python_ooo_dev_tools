@@ -6,6 +6,7 @@ Modele for managing paragraph line numbrs.
 from __future__ import annotations
 from typing import Tuple, overload
 
+from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
 from .....meta.static_prop import static_prop
 from .....utils import lo as mLo
@@ -26,8 +27,6 @@ class LineNum(StyleBase):
 
     .. versionadded:: 0.9.0
     """
-
-    _DEFAULT = None
 
     # region init
 
@@ -71,6 +70,11 @@ class LineNum(StyleBase):
             Tuple[str, ...]: Supported services
         """
         return ("com.sun.star.style.ParagraphProperties",)
+
+    def _on_modifing(self, event: CancelEventArgs) -> None:
+        if self._is_default_inst:
+            raise ValueError("Modifying a default instance is not allowed")
+        return super()._on_modifing(event)
 
     # region apply()
     @overload
@@ -201,8 +205,11 @@ class LineNum(StyleBase):
     @static_prop
     def default() -> LineNum:  # type: ignore[misc]
         """Gets ``LineNum`` default. Static Property."""
-        if LineNum._DEFAULT is None:
-            LineNum._DEFAULT = LineNum(0)
-        return LineNum._DEFAULT
+        try:
+            return LineNum._DEFAULT_INST
+        except AttributeError:
+            LineNum._DEFAULT_INST = LineNum(0)
+            LineNum._DEFAULT_INST._is_default_inst = True
+        return LineNum._DEFAULT_INST
 
     # endregion properties

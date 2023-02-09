@@ -45,8 +45,6 @@ class Gradient(StyleMulti):
     .. versionadded:: 0.9.0
     """
 
-    _DEFAULT = None
-
     def __init__(
         self,
         style: GradientStyle = GradientStyle.LINEAR,
@@ -189,7 +187,9 @@ class Gradient(StyleMulti):
     @static_prop
     def default() -> Gradient:  # type: ignore[misc]
         """Gets Gradient empty. Static Property."""
-        if Gradient._DEFAULT is None:
+        try:
+            return Gradient._DEFAULT_INST
+        except AttributeError:
             inst = Gradient(
                 style=GradientStyle.LINEAR,
                 step_count=0,
@@ -205,5 +205,5 @@ class Gradient(StyleMulti):
             inst._set("FillStyle", FillStyle.NONE)
             inst._set("FillGradientName", "")
             inst._is_default_inst = True
-            Gradient._DEFAULT = inst
-        return Gradient._DEFAULT
+            Gradient._DEFAULT_INST = inst
+        return Gradient._DEFAULT_INST

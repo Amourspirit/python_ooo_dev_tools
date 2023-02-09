@@ -44,8 +44,6 @@ class Alignment(StyleMulti):
     .. versionadded:: 0.9.0
     """
 
-    _DEFAULT = None
-
     # region init
 
     def __init__(

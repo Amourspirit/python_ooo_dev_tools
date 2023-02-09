@@ -9,6 +9,7 @@ from typing import Tuple, overload
 
 import uno
 
+from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
 from .....meta.static_prop import static_prop
 from .....utils import lo as mLo
@@ -40,8 +41,6 @@ class Borders(StyleMulti):
 
     .. versionadded:: 0.9.0
     """
-
-    _DEFAULT = None
 
     # region init
 
@@ -253,6 +252,11 @@ class Borders(StyleMulti):
         """
         return ("com.sun.star.style.CharacterProperties",)
 
+    def _on_modifing(self, event: CancelEventArgs) -> None:
+        if self._is_default_inst:
+            raise ValueError("Modifying a default instance is not allowed")
+        return super()._on_modifing(event)
+
     # region apply()
     @overload
     def apply(self, obj: object) -> None:
@@ -316,10 +320,13 @@ class Borders(StyleMulti):
     @static_prop
     def default() -> Borders:  # type: ignore[misc]
         """Gets Default Border. Static Property"""
-        if Borders._DEFAULT is None:
-            Borders._DEFAULT = Borders(
+        try:
+            return Borders._DEFAULT_INST
+        except AttributeError:
+            Borders._DEFAULT_INST = Borders(
                 border_side=Side.empty, padding=Padding.default, shadow=Shadow.empty, merge=True
             )
-        return Borders._DEFAULT
+            Borders._DEFAULT_INST._is_default_inst = True
+        return Borders._DEFAULT_INST
 
     # endregion Properties

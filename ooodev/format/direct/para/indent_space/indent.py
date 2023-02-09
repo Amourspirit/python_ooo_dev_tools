@@ -6,6 +6,7 @@ Modele for managing paragraph padding.
 from __future__ import annotations
 from typing import Tuple, cast, overload
 
+from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
 from .....meta.static_prop import static_prop
 from .....utils import lo as mLo
@@ -24,8 +25,6 @@ class Indent(StyleBase):
 
     .. versionadded:: 0.9.0
     """
-
-    _DEFAULT = None
 
     # region init
 
@@ -74,6 +73,11 @@ class Indent(StyleBase):
             Tuple[str, ...]: Supported services
         """
         return ("com.sun.star.style.ParagraphProperties",)
+
+    def _on_modifing(self, event: CancelEventArgs) -> None:
+        if self._is_default_inst:
+            raise ValueError("Modifying a default instance is not allowed")
+        return super()._on_modifing(event)
 
     # region apply()
     @overload
@@ -272,8 +276,11 @@ class Indent(StyleBase):
     @static_prop
     def default() -> Indent:  # type: ignore[misc]
         """Gets ``Indent`` default. Static Property."""
-        if Indent._DEFAULT is None:
-            Indent._DEFAULT = Indent(before=0.0, after=0.0, first=0.0, auto=False)
-        return Indent._DEFAULT
+        try:
+            return Indent._DEFAULT_INST
+        except AttributeError:
+            Indent._DEFAULT_INST = Indent(before=0.0, after=0.0, first=0.0, auto=False)
+            Indent._DEFAULT_INST._is_default_inst = True
+        return Indent._DEFAULT_INST
 
     # endregion properties

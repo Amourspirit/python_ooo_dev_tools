@@ -35,7 +35,6 @@ class ShadowStruct(StyleBase):
     """
 
     # region init
-    _EMPTY = None
 
     def __init__(
         self,
@@ -103,6 +102,11 @@ class ShadowStruct(StyleBase):
 
     def _supported_services(self) -> Tuple[str, ...]:
         return ()
+
+    def _on_modifing(self, event: CancelEventArgs) -> None:
+        if self._is_default_inst:
+            raise ValueError("Modifying a default instance is not allowed")
+        return super()._on_modifing(event)
 
     def _get_property_name(self) -> str:
         return "ShadowFormat"
@@ -326,10 +330,13 @@ class ShadowStruct(StyleBase):
     @static_prop
     def empty() -> ShadowStruct:  # type: ignore[misc]
         """Gets empty Shadow. Static Property. when style is applied it remove any shadow."""
-        if ShadowStruct._EMPTY is None:
-            ShadowStruct._EMPTY = ShadowStruct(
+        try:
+            return ShadowStruct._EMPTY_INST
+        except AttributeError:
+            ShadowStruct._EMPTY_INST = ShadowStruct(
                 location=ShadowLocation.NONE, transparent=False, color=8421504, width=1.76
             )
-        return ShadowStruct._EMPTY
+            ShadowStruct._EMPTY_INST._is_default_inst = True
+        return ShadowStruct._EMPTY_INST
 
     # endregion Properties

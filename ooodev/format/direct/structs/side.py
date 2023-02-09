@@ -93,8 +93,6 @@ class Side(StyleBase):
     .. versionadded:: 0.9.0
     """
 
-    _EMPTY = None
-
     # region init
 
     def __init__(
@@ -280,6 +278,11 @@ class Side(StyleBase):
     def _supported_services(self) -> Tuple[str, ...]:
         return ()
 
+    def _on_modifing(self, event: CancelEventArgs) -> None:
+        if self._is_default_inst:
+            raise ValueError("Modifying a default instance is not allowed")
+        return super()._on_modifing(event)
+
     # region apply()
     @overload
     def apply(self, obj: object, *, flags: SideFlags) -> None:
@@ -387,9 +390,12 @@ class Side(StyleBase):
     @static_prop
     def empty() -> Side:
         """Gets an empyty side. When applied formatting is removed"""
-        if Side._EMPTY is None:
-            Side._EMPTY = Side(line=BorderLineStyleEnum.NONE, color=0, width=0.0)
-        return Side._EMPTY
+        try:
+            return Side._EMPTY_INST
+        except AttributeError:
+            Side._EMPTY_INST = Side(line=BorderLineStyleEnum.NONE, color=0, width=0.0)
+            Side._EMPTY_INST._is_default_inst = True
+        return Side._EMPTY_INST
 
     @staticmethod
     def from_border2(border: BorderLine2) -> Side:

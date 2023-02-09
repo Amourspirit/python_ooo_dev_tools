@@ -8,6 +8,8 @@ from __future__ import annotations
 from typing import Tuple, overload
 
 import uno
+
+from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
 from .....meta.static_prop import static_prop
 from .....utils import lo as mLo
@@ -38,9 +40,6 @@ class Borders(StyleMulti):
 
     .. versionadded:: 0.9.0
     """
-
-    _DEFAULT = None
-    _EMPTY = None
 
     # region init
 
@@ -240,6 +239,11 @@ class Borders(StyleMulti):
         """
         return ("com.sun.star.style.CharacterProperties",)
 
+    def _on_modifing(self, event: CancelEventArgs) -> None:
+        if self._is_default_inst:
+            raise ValueError("Modifying a default instance is not allowed")
+        return super()._on_modifing(event)
+
     # region apply()
     @overload
     def apply(self, obj: object) -> None:
@@ -275,21 +279,27 @@ class Borders(StyleMulti):
     @static_prop
     def default() -> Borders:  # type: ignore[misc]
         """Gets Default Border. Static Property"""
-        if Borders._DEFAULT is None:
-            Borders._DEFAULT = Borders(border_side=Side.empty, padding=Padding.default, shadow=Shadow.empty)
-        return Borders._DEFAULT
+        try:
+            return Borders._DEFAULT_INST
+        except AttributeError:
+            Borders._DEFAULT_INST = Borders(border_side=Side.empty, padding=Padding.default, shadow=Shadow.empty)
+            Borders._DEFAULT_INST._is_default_inst = True
+        return Borders._DEFAULT_INST
 
     @static_prop
     def empty() -> Borders:  # type: ignore[misc]
         """Gets Empty Border. Static Property. When style is applied formatting is removed."""
-        if Borders._EMPTY is None:
-            Borders._EMPTY = Borders(
+        try:
+            return Borders._EMPTY_INST
+        except AttributeError:
+            Borders._EMPTY_INST = Borders(
                 border_side=Side.empty,
                 vertical=Side.empty,
                 horizontal=Side.empty,
                 shadow=Shadow.empty,
                 padding=Padding.default,
             )
-        return Borders._EMPTY
+            Borders._EMPTY_INST._is_default_inst = True
+        return Borders._EMPTY_INST
 
     # endregion Properties

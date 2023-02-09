@@ -6,6 +6,7 @@ Modele for managing paragraph Text Flow.
 from __future__ import annotations
 from typing import Tuple
 
+from .....events.args.cancel_event_args import CancelEventArgs
 from .....meta.static_prop import static_prop
 from ....style_base import StyleMulti
 from ....kind.format_kind import FormatKind
@@ -22,8 +23,6 @@ class TextFlow(StyleMulti):
 
     .. versionadded:: 0.9.0
     """
-
-    _DEFAULT = None
 
     # region init
 
@@ -100,6 +99,11 @@ class TextFlow(StyleMulti):
         """
         return ("com.sun.star.style.ParagraphProperties",)
 
+    def _on_modifing(self, event: CancelEventArgs) -> None:
+        if self._is_default_inst:
+            raise ValueError("Modifying a default instance is not allowed")
+        return super()._on_modifing(event)
+
     @staticmethod
     def from_obj(obj: object) -> TextFlow:
         """
@@ -137,7 +141,9 @@ class TextFlow(StyleMulti):
     @static_prop
     def default() -> TextFlow:  # type: ignore[misc]
         """Gets ``TextFlow`` default. Static Property."""
-        if TextFlow._DEFAULT is None:
+        try:
+            return TextFlow._DEFAULT_INST
+        except AttributeError:
             hy = Hyphenation.default
             brk = Breaks.default
             flo = FlowOptions.default
@@ -145,7 +151,8 @@ class TextFlow(StyleMulti):
             tf._set_style("hyphenation", hy, *hy.get_attrs())
             tf._set_style("breaks", brk, *brk.get_attrs())
             tf._set_style("flow_options", flo, *flo.get_attrs())
-            TextFlow._DEFAULT = tf
-        return TextFlow._DEFAULT
+            tf._is_default_inst = True
+            TextFlow._DEFAULT_INST = tf
+        return TextFlow._DEFAULT_INST
 
     # endregion properties

@@ -6,6 +6,7 @@ Module for Cell Properties Cell Back Color.
 from __future__ import annotations
 from typing import Tuple, overload
 
+from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
 from .....utils import props as mProps
 from .....meta.static_prop import static_prop
@@ -21,8 +22,6 @@ class Color(StyleBase):
 
     .. versionadded:: 0.9.0
     """
-
-    _EMPTY = None
 
     def __init__(self, color: mColor.Color = -1) -> None:
         """
@@ -53,6 +52,11 @@ class Color(StyleBase):
             Tuple[str, ...]: Supported services
         """
         return ("com.sun.star.table.CellProperties",)
+
+    def _on_modifing(self, event: CancelEventArgs) -> None:
+        if self._is_default_inst:
+            raise ValueError("Modifying a default instance is not allowed")
+        return super()._on_modifing(event)
 
     # region apply()
 
@@ -141,6 +145,9 @@ class Color(StyleBase):
     @static_prop
     def empty() -> Color:  # type: ignore[misc]
         """Gets BackColor empty. Static Property."""
-        if Color._EMPTY is None:
-            Color._EMPTY = Color()
-        return Color._EMPTY
+        try:
+            return Color._EMPTY_INST
+        except AttributeError:
+            Color._EMPTY_INST = Color()
+            Color._EMPTY_INST._is_default_inst = True
+        return Color._EMPTY_INST

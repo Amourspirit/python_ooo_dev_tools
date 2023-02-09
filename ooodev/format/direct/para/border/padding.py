@@ -5,6 +5,7 @@ Modele for managing paragraph padding.
 """
 from __future__ import annotations
 
+from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
 from .....meta.static_prop import static_prop
 from .....utils import props as mProps
@@ -23,8 +24,6 @@ class Padding(AbstractPadding):
 
     .. versionadded:: 0.9.0
     """
-
-    _DEFAULT = None
 
     # region methods
 
@@ -55,6 +54,11 @@ class Padding(AbstractPadding):
             raise mEx.NotSupportedServiceError(inst._supported_services()[0])
         return inst
 
+    def _on_modifing(self, event: CancelEventArgs) -> None:
+        if self._is_default_inst:
+            raise ValueError("Modifying a default instance is not allowed")
+        return super()._on_modifing(event)
+
     # endregion methods
 
     # region properties
@@ -79,14 +83,16 @@ class Padding(AbstractPadding):
     @static_prop
     def default() -> Padding:  # type: ignore[misc]
         """Gets BorderPadding default. Static Property."""
-        if Padding._DEFAULT is None:
+        try:
+            return Padding._DEFAULT_INST
+        except AttributeError:
             inst = Padding()
             inst._set(inst._props.bottom, 0)
             inst._set(inst._props.left, 0)
             inst._set(inst._props.right, 0)
             inst._set(inst._props.top, 0)
-            Padding._DEFAULT = inst
-
-        return Padding._DEFAULT
+            inst._is_default_inst = True
+            Padding._DEFAULT_INST = inst
+        return Padding._DEFAULT_INST
 
     # endregion properties
