@@ -189,7 +189,11 @@ class DropCaps(StyleMulti):
         Returns:
             Tuple[str, ...]: Supported services
         """
-        return ("com.sun.star.style.ParagraphProperties", "com.sun.star.text.TextContent")
+        return (
+            "com.sun.star.style.ParagraphProperties",
+            "com.sun.star.text.TextContent",
+            "com.sun.star.style.ParagraphStyle",
+        )
 
     @staticmethod
     def from_obj(obj: object) -> DropCaps:

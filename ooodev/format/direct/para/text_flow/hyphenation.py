@@ -82,7 +82,7 @@ class Hyphenation(StyleBase):
         Returns:
             Tuple[str, ...]: Supported services
         """
-        return ("com.sun.star.style.ParagraphProperties",)
+        return ("com.sun.star.style.ParagraphProperties", "com.sun.star.style.ParagraphStyle")
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:

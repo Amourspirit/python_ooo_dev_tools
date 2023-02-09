@@ -31,6 +31,7 @@ class Gradient(StyleMulti):
 
     def __init__(
         self,
+        *,
         style: GradientStyle = GradientStyle.LINEAR,
         offset: Offset = Offset(50, 50),
         angle: Angle | int = 0,
@@ -66,6 +67,7 @@ class Gradient(StyleMulti):
         return (
             "com.sun.star.drawing.FillProperties",
             "com.sun.star.text.TextContent",
+            "com.sun.star.style.ParagraphStyle",
         )
 
     def on_property_setting(self, event_args: KeyValCancelArgs) -> None:

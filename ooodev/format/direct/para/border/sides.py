@@ -5,7 +5,7 @@ Module for managing character border side.
 """
 # region imports
 from __future__ import annotations
-from typing import cast
+from typing import Tuple, cast
 
 import uno
 from ...common.abstract_sides import AbstractSides, BorderProps
@@ -30,6 +30,8 @@ class Sides(AbstractSides):
     """
 
     # region methods
+    def _supported_services(self) -> Tuple[str, ...]:
+        return ("com.sun.star.style.CharacterProperties", "com.sun.star.style.ParagraphStyle")
 
     @staticmethod
     def from_obj(obj: object) -> Sides:

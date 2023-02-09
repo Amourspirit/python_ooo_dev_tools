@@ -93,6 +93,7 @@ class Img(StyleMulti):
             "com.sun.star.style.ParagraphProperties",
             "com.sun.star.text.TextContent",
             "com.sun.star.beans.PropertySet",
+            "com.sun.star.style.ParagraphStyle",
         )
 
     def _props_set(self, obj: object, **kwargs: Any) -> None:

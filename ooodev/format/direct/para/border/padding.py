@@ -4,6 +4,7 @@ Modele for managing paragraph padding.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
+from typing import Tuple
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
@@ -26,6 +27,14 @@ class Padding(AbstractPadding):
     """
 
     # region methods
+    def _supported_services(self) -> Tuple[str, ...]:
+        """
+        Gets a tuple of supported services (``com.sun.star.style.ParagraphProperties``,)
+
+        Returns:
+            Tuple[str, ...]: Supported services
+        """
+        return ("com.sun.star.style.ParagraphProperties", "com.sun.star.style.ParagraphStyle")
 
     @staticmethod
     def from_obj(obj: object) -> Padding:

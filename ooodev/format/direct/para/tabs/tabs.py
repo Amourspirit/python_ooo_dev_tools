@@ -34,7 +34,7 @@ class Tabs(TabStopStruct):
 
     # region methods
     def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.style.ParagraphProperties",)
+        return ("com.sun.star.style.ParagraphProperties", "com.sun.star.style.ParagraphStyle")
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:
