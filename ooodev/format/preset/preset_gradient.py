@@ -3,24 +3,47 @@ from typing import Dict, Any
 from enum import Enum
 import uno
 from ooo.dyn.awt.gradient_style import GradientStyle
+from ...utils.data_type.offset import Offset
+from ...utils.data_type.color_range import ColorRange
+from ...utils.data_type.intensity_range import IntensityRange
 
 
 class PresetGradientKind(Enum):
-    PASTEL_BOUQUET = 1
-    PASTEL_DREAM = 2
-    BLUE_TOUCH = 3
-    BLANK_GRAY = 4
-    SPOTTED_GRAY = 5
-    LONDON_MIST = 6
-    TEAL_BLUE = 7
-    MIDNIGHT = 8
-    DEEP_OCEAN = 9
-    SUBMARINE = 10
-    GREEN_GRASS = 11
-    NEON_LIGHT = 12
-    SUNSHINE = 13
-    PRESENT = 14
-    MAHOGANY = 15
+    """Preset Gradient Kind."""
+
+    PASTEL_BOUQUET = "Pastel Bouquet"
+    """Pastel Bouquet"""
+    PASTEL_DREAM = "Pastel Dream"
+    """Pastel Dream"""
+    BLUE_TOUCH = "Blue Touch"
+    """Blue Touch"""
+    BLANK_GRAY = "Blank with Gray"
+    """Blank with Gray"""
+    SPOTTED_GRAY = "Spotted Gray"
+    """Spotted Gray"""
+    LONDON_MIST = "London Mist"
+    """London Mist"""
+    TEAL_BLUE = "Teal to Blue"
+    """Teal to Blue"""
+    MIDNIGHT = "Midnight"
+    """Midnight"""
+    DEEP_OCEAN = "Deep Ocean"
+    """Deep Ocean"""
+    SUBMARINE = "Submarine"
+    """Submarine"""
+    GREEN_GRASS = "Green Grass"
+    """Green Grass"""
+    NEON_LIGHT = "Neon Light"
+    """Neon Light"""
+    SUNSHINE = "Sunshine"
+    """Sunshine"""
+    PRESENT = "Present"
+    """Present"""
+    MAHOGANY = "Mahogany"
+    """Mahogany"""
+
+    def __str__(self) -> str:
+        return self.value
 
 
 def pastel_bouquet() -> Dict[str, Any]:
@@ -28,15 +51,12 @@ def pastel_bouquet() -> Dict[str, Any]:
     return {
         "style": GradientStyle.LINEAR,
         "step_count": 0,
-        "x_offset": 0,
-        "y_offset": 0,
+        "offset": Offset(0, 0),
         "angle": 30,
         "border": 0,
-        "start_color": 14543051,
-        "start_intensity": 100,
-        "end_color": 16766935,
-        "end_intensity": 100,
-        "name": "Pastel Bouquet",
+        "grad_color": ColorRange(14543051, 16766935),
+        "grad_intensity": IntensityRange(100, 100),
+        "name": PresetGradientKind.PASTEL_BOUQUET.value,
     }
 
 
@@ -45,15 +65,12 @@ def pastel_dream() -> Dict[str, Any]:
     return {
         "style": GradientStyle.RECT,
         "step_count": 0,
-        "x_offset": 50,
-        "y_offset": 50,
+        "offset": Offset(50, 50),
         "angle": 45,
         "border": 0,
-        "start_color": 16766935,
-        "start_intensity": 100,
-        "end_color": 11847644,
-        "end_intensity": 100,
-        "name": "Pastel Dream",
+        "grad_color": ColorRange(16766935, 11847644),
+        "grad_intensity": IntensityRange(100, 100),
+        "name": PresetGradientKind.PASTEL_DREAM.value,
     }
 
 
@@ -62,15 +79,12 @@ def blue_touch() -> Dict[str, Any]:
     return {
         "style": GradientStyle.LINEAR,
         "step_count": 0,
-        "x_offset": 0,
-        "y_offset": 0,
+        "offset": Offset(0, 0),
         "angle": 1,
         "border": 0,
-        "start_color": 11847644,
-        "start_intensity": 100,
-        "end_color": 14608111,
-        "end_intensity": 100,
-        "name": "Blue Touch",
+        "grad_color": ColorRange(11847644, 14608111),
+        "grad_intensity": IntensityRange(100, 100),
+        "name": PresetGradientKind.BLUE_TOUCH.value,
     }
 
 
@@ -79,15 +93,12 @@ def blank_gray() -> Dict[str, Any]:
     return {
         "style": GradientStyle.LINEAR,
         "step_count": 0,
-        "x_offset": 0,
-        "y_offset": 0,
+        "offset": Offset(0, 0),
         "angle": 90,
         "border": 75,
-        "start_color": 16777215,
-        "start_intensity": 100,
-        "end_color": 14540253,
-        "end_intensity": 100,
-        "name": "Blank with Gray",
+        "grad_color": ColorRange(16777215, 14540253),
+        "grad_intensity": IntensityRange(100, 100),
+        "name": PresetGradientKind.BLANK_GRAY.value,
     }
 
 
@@ -96,15 +107,12 @@ def spotted_gray() -> Dict[str, Any]:
     return {
         "style": GradientStyle.RADIAL,
         "step_count": 0,
-        "x_offset": 50,
-        "y_offset": 50,
+        "offset": Offset(50, 50),
         "angle": 0,
         "border": 0,
-        "start_color": 11711154,
-        "start_intensity": 100,
-        "end_color": 15658734,
-        "end_intensity": 100,
-        "name": "Spotted Gray",
+        "grad_color": ColorRange(11711154, 15658734),
+        "grad_intensity": IntensityRange(100, 100),
+        "name": PresetGradientKind.SPOTTED_GRAY.value,
     }
 
 
@@ -113,15 +121,12 @@ def london_mist() -> Dict[str, Any]:
     return {
         "style": GradientStyle.LINEAR,
         "step_count": 0,
-        "x_offset": 0,
-        "y_offset": 0,
+        "offset": Offset(0, 0),
         "angle": 30,
         "border": 0,
-        "start_color": 13421772,
-        "start_intensity": 100,
-        "end_color": 6710886,
-        "end_intensity": 100,
-        "name": "London Mist",
+        "grad_color": ColorRange(13421772, 6710886),
+        "grad_intensity": IntensityRange(100, 100),
+        "name": PresetGradientKind.LONDON_MIST.value,
     }
 
 
@@ -130,15 +135,12 @@ def teal_blue() -> Dict[str, Any]:
     return {
         "style": GradientStyle.LINEAR,
         "step_count": 0,
-        "x_offset": 0,
-        "y_offset": 0,
+        "offset": Offset(0, 0),
         "angle": 30,
         "border": 0,
-        "start_color": 5280650,
-        "start_intensity": 100,
-        "end_color": 5866416,
-        "end_intensity": 100,
-        "name": "Teal to Blue",
+        "grad_color": ColorRange(5280650, 5866416),
+        "grad_intensity": IntensityRange(100, 100),
+        "name": PresetGradientKind.TEAL_BLUE.value,
     }
 
 
@@ -147,15 +149,12 @@ def midnight() -> Dict[str, Any]:
     return {
         "style": GradientStyle.LINEAR,
         "step_count": 0,
-        "x_offset": 0,
-        "y_offset": 0,
+        "offset": Offset(0, 0),
         "angle": 0,
         "border": 0,
-        "start_color": 0,
-        "start_intensity": 100,
-        "end_color": 2777241,
-        "end_intensity": 100,
-        "name": "Midnight",
+        "grad_color": ColorRange(0, 2777241),
+        "grad_intensity": IntensityRange(100, 100),
+        "name": PresetGradientKind.MIDNIGHT.value,
     }
 
 
@@ -164,15 +163,12 @@ def deep_ocean() -> Dict[str, Any]:
     return {
         "style": GradientStyle.RADIAL,
         "step_count": 0,
-        "x_offset": 50,
-        "y_offset": 50,
+        "offset": Offset(50, 50),
         "angle": 0,
         "border": 0,
-        "start_color": 0,
-        "start_intensity": 100,
-        "end_color": 7512015,
-        "end_intensity": 100,
-        "name": "Deep Ocean",
+        "grad_color": ColorRange(0, 7512015),
+        "grad_intensity": IntensityRange(100, 100),
+        "name": PresetGradientKind.DEEP_OCEAN.value,
     }
 
 
@@ -181,15 +177,12 @@ def submarine() -> Dict[str, Any]:
     return {
         "style": GradientStyle.LINEAR,
         "step_count": 0,
-        "x_offset": 0,
-        "y_offset": 0,
+        "offset": Offset(0, 0),
         "angle": 0,
         "border": 0,
-        "start_color": 14543051,
-        "start_intensity": 100,
-        "end_color": 11847644,
-        "end_intensity": 100,
-        "name": "Submarine",
+        "grad_color": ColorRange(14543051, 11847644),
+        "grad_intensity": IntensityRange(100, 100),
+        "name": PresetGradientKind.SUBMARINE.value,
     }
 
 
@@ -198,15 +191,12 @@ def green_grass() -> Dict[str, Any]:
     return {
         "style": GradientStyle.LINEAR,
         "step_count": 0,
-        "x_offset": 0,
-        "y_offset": 0,
+        "offset": Offset(0, 0),
         "angle": 30,
         "border": 0,
-        "start_color": 16776960,
-        "start_intensity": 100,
-        "end_color": 8508442,
-        "end_intensity": 100,
-        "name": "Green Grass",
+        "grad_color": ColorRange(16776960, 8508442),
+        "grad_intensity": IntensityRange(100, 100),
+        "name": PresetGradientKind.GREEN_GRASS.value,
     }
 
 
@@ -215,15 +205,12 @@ def neon_light() -> Dict[str, Any]:
     return {
         "style": GradientStyle.ELLIPTICAL,
         "step_count": 0,
-        "x_offset": 50,
-        "y_offset": 50,
+        "offset": Offset(50, 50),
         "angle": 0,
         "border": 15,
-        "start_color": 1209890,
-        "start_intensity": 100,
-        "end_color": 16777215,
-        "end_intensity": 100,
-        "name": "Neon Light",
+        "grad_color": ColorRange(1209890, 16777215),
+        "grad_intensity": IntensityRange(100, 100),
+        "name": PresetGradientKind.NEON_LIGHT.value,
     }
 
 
@@ -232,15 +219,12 @@ def sunshine() -> Dict[str, Any]:
     return {
         "style": GradientStyle.RADIAL,
         "step_count": 0,
-        "x_offset": 66,
-        "y_offset": 33,
+        "offset": Offset(66, 33),
         "angle": 0,
         "border": 33,
-        "start_color": 16760576,
-        "start_intensity": 100,
-        "end_color": 16776960,
-        "end_intensity": 100,
-        "name": "Sunshine",
+        "grad_color": ColorRange(16760576, 16776960),
+        "grad_intensity": IntensityRange(100, 100),
+        "name": PresetGradientKind.SUNSHINE.value,
     }
 
 
@@ -249,15 +233,12 @@ def present() -> Dict[str, Any]:
     return {
         "style": GradientStyle.SQUARE,
         "step_count": 0,
-        "x_offset": 70,
-        "y_offset": 60,
+        "offset": Offset(70, 60),
         "angle": 45,
         "border": 72,
-        "start_color": 8468233,
-        "start_intensity": 100,
-        "end_color": 16728064,
-        "end_intensity": 100,
-        "name": "Present",
+        "grad_color": ColorRange(8468233, 16728064),
+        "grad_intensity": IntensityRange(100, 100),
+        "name": PresetGradientKind.PRESENT.value,
     }
 
 
@@ -266,15 +247,12 @@ def mahogany() -> Dict[str, Any]:
     return {
         "style": GradientStyle.SQUARE,
         "step_count": 0,
-        "x_offset": 50,
-        "y_offset": 50,
+        "offset": Offset(50, 50),
         "angle": 45,
         "border": 0,
-        "start_color": 0,
-        "start_intensity": 100,
-        "end_color": 9250846,
-        "end_intensity": 100,
-        "name": "Mahogany",
+        "grad_color": ColorRange(0, 9250846),
+        "grad_intensity": IntensityRange(100, 100),
+        "name": PresetGradientKind.MAHOGANY.value,
     }
 
 

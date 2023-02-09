@@ -4,7 +4,10 @@ from ooo.dyn.drawing.rectangle_point import RectanglePoint as RectanglePoint
 from ooo.dyn.drawing.hatch_style import HatchStyle as HatchStyle
 
 from ......utils.data_type.angle import Angle as Angle
+from ......utils.data_type.offset import Offset as Offset
 from ......utils.data_type.intensity import Intensity as Intensity
+from ......utils.data_type.intensity_range import IntensityRange as IntensityRange
+from ......utils.data_type.color_range import ColorRange as ColorRange
 from .....direct.para.area.color import Color as Color
 from .....direct.para.area.gradient import Gradient as Gradient
 from .....direct.para.area.pattern import Pattern as Pattern
