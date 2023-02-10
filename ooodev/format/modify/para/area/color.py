@@ -23,8 +23,9 @@ class Color(ParaStyleBaseMulti):
         Constructor
 
         Args:
-            color (Color, optional): FillColor Color
+            color (Color, optional): Fill Color.
             style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to. Deftult is Default Paragraph Style.
+            style_family (str, optional): Style family. Defatult ``ParagraphStyles``.
 
         Returns:
             None:

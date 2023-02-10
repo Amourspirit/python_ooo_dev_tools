@@ -3,7 +3,7 @@ from __future__ import annotations
 import uno
 from ....utils import info as mInfo
 from ....utils import lo as mLo
-from ...style_base import StyleModifyMulti
+from ...style_base import StyleModifyMulti, _T as _T
 from ...writer.style.para.kind import StyleParaKind as StyleParaKind
 
 

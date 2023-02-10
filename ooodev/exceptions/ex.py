@@ -164,6 +164,12 @@ class NotSupportedError(Exception):
     pass
 
 
+class NotSupportedDocumentError(NotSupportedError):
+    """Generic Not Suppored Document Error"""
+
+    pass
+
+
 class NotSupportedServiceError(NotSupportedError):
     """
     Handles errors of service not being supported.

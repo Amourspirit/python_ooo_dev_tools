@@ -5,7 +5,7 @@ Module for Shadow format (``LineSpacing``) struct.
 """
 # region imports
 from __future__ import annotations
-from typing import Dict, Tuple, overload
+from typing import Dict, Tuple, Type, TypeVar, cast, overload, TYPE_CHECKING
 from enum import Enum
 from numbers import Real
 
@@ -14,11 +14,17 @@ from ....events.event_singleton import _Events
 from ....meta.static_prop import static_prop
 from ....utils import props as mProps
 from ...kind.format_kind import FormatKind
-from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent
+from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent, _T
 from ....utils.unit_convert import UnitConvert, Length
 from ....utils.type_var import T
 
 from ooo.dyn.style.line_spacing import LineSpacing as UnoLineSpacing
+
+if TYPE_CHECKING:
+    try:
+        from typing import Self
+    except ImportError:
+        from typing_extensions import Self
 
 
 class ModeKind(Enum):
@@ -50,6 +56,30 @@ class ModeKind(Enum):
 
     def get_enum_val(self) -> int:
         return self.value[0]
+
+    @staticmethod
+    def from_uno(ls: UnoLineSpacing) -> ModeKind:
+        """Converts UNO ``LineSpacing`` struct to ``ModeKind`` enum."""
+        mode = ls.Mode
+        val = ls.Height
+        if mode == 0:
+            if val == 100:
+                return ModeKind.SINGLE
+            if val == 115:
+                return ModeKind.LINE_1_15
+            if val == 150:
+                return ModeKind.LINE_1_5
+            if val == 200:
+                return ModeKind.DOUBLE
+            else:
+                return ModeKind.PROPORTIONAL
+        if mode == 1:
+            return ModeKind.AT_LEAST
+        if mode == 2:
+            return ModeKind.LEADING
+        if mode == 3:
+            return ModeKind.FIXED
+        raise ValueError("Uanble to convert uno LineSpacing object to ModeKind Enum")
 
 
 # endregion imports
@@ -130,7 +160,7 @@ class LineSpacingStruct(StyleBase):
         """
         return (self._get_property_name(),)
 
-    def copy(self: T) -> T:
+    def copy(self: Self) -> Self:
         nu = super(LineSpacingStruct, self.__class__).__new__(self.__class__)
         nu.__init__(mode=self._mode, height=self._value)
         if self._dv:
@@ -193,6 +223,24 @@ class LineSpacingStruct(StyleBase):
     def get_line_spacing(self) -> UnoLineSpacing:
         """gets Line spacing of instance"""
         return UnoLineSpacing(Mode=self._mode, Height=self._value)
+
+    @classmethod
+    def from_line_spacing(cls: Type[_T], ln_spacing: UnoLineSpacing) -> _T:
+        """
+        Converts a UNO ``LineSpacing`` struct into a ``LineSpacingStruct``
+
+        Args:
+            ln_spacing (UnoLineSpacing): UNO ``LineSpacing`` object.
+
+        Returns:
+            LineSpacingStruct: ``LineSpacingStruct`` set with Line spacing properties.
+        """
+        inst = cast(LineSpacingStruct, super(LineSpacingStruct, cls).__new__(cls))
+        inst.__init__()
+        inst._mode = ln_spacing.Mode
+        inst._value = ln_spacing.Height
+        inst._line_mode = ModeKind.from_uno(ln_spacing)
+        return inst
 
     # endregion methods
 

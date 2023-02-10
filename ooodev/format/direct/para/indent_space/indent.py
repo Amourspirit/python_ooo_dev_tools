@@ -39,9 +39,9 @@ class Indent(StyleBase):
         Constructor
 
         Args:
-            before (float, optional): Determines the left margin of the paragraph (in mm units).
-            after (float, optional): Determines the right margin of the paragraph (in mm units).
-            first (float, optional): specifies the indent for the first line (in mm units).
+            before (float, optional): Determines the left margin of the paragraph (in ``mm`` units).
+            after (float, optional): Determines the right margin of the paragraph (in ``mm`` units).
+            first (float, optional): specifies the indent for the first line (in ``mm`` units).
             auto (bool, optional): Determines if the first line should be indented automatically.
         Returns:
             None:

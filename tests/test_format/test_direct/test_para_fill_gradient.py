@@ -31,7 +31,6 @@ def test_write(loader, para_text) -> None:
 
         # with Lo.ControllerLock():
         # using ControllerLock() is about 25% faster in this case
-        # there are 15 enum values 1-15
         # add a paragraph for each enum and test values
         presets = (
             PresetGradientKind.PASTEL_BOUQUET,

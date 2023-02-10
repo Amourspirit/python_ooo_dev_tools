@@ -50,6 +50,7 @@ class Gradient(ParaStyleBaseMulti):
             grad_intensity (IntensityRange, optional): Specifies the intensity at the start point and stop point of the gradient. Defaults to ``IntensityRange(100, 100)``.
             name (str, optional): Specifies the Fill Gradient Name.
             style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to. Deftult is Default Paragraph Style.
+            style_family (str, optional): Style family. Defatult ``ParagraphStyles``.
 
         Returns:
             None:

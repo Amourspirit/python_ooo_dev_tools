@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Dict, NamedTuple, Tuple, TYPE_CHECKING, cast
+from typing import Any, Dict, NamedTuple, Tuple, TYPE_CHECKING, TypeVar, cast
 import uno
 import random
 import string
@@ -26,6 +26,9 @@ from com.sun.star.beans import XPropertySet
 
 if TYPE_CHECKING:
     from com.sun.star.beans import PropertyValue
+
+
+_T = TypeVar("_T")
 
 
 class StyleBase(ABC):
@@ -901,11 +904,16 @@ class StyleModifyMulti(StyleMulti):
         Gets the Style Properties
 
         Args:
-            obj (object): UNO Object
+            doc (object): UNO Documnet Object.
+
+        Raised:
+            NotSupportedDocumentError: If document is not supported.
 
         Returns:
             XPropertySet: Styles properties property set.
         """
+        if not self._is_valid_doc(doc):
+            raise mEx.NotSupportedDocumentError
         return mInfo.Info.get_style_props(doc, self._get_style_family_name(), self.prop_style_name)
 
     def _get_style_family_name(self) -> str:
