@@ -29,7 +29,11 @@ from ooo.dyn.awt.gradient import Gradient as UNOGradient
 
 class FillStyleStruct(GradientStruct):
     def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.drawing.FillProperties", "com.sun.star.text.TextContent")
+        return (
+            "com.sun.star.drawing.FillProperties",
+            "com.sun.star.text.TextContent",
+            "com.sun.star.style.ParagraphStyle",
+        )
 
     def _get_property_name(self) -> str:
         return "FillGradient"

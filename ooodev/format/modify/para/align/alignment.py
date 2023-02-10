@@ -18,8 +18,6 @@ class Alignment(ParaStyleBaseMulti):
     .. versionadded:: 0.9.0
     """
 
-    _DEFAULT = None
-
     # region init
 
     def __init__(
@@ -32,6 +30,7 @@ class Alignment(ParaStyleBaseMulti):
         expand_single_word: bool | None = None,
         snap_to_grid: bool | None = None,
         style_name: StyleParaKind | str = StyleParaKind.STANDARD,
+        style_family: str = "ParagraphStyles",
     ) -> None:
         """
         Constructor
@@ -44,12 +43,13 @@ class Alignment(ParaStyleBaseMulti):
                 It is only valid if ``align`` and ``align_last`` are also valid.
             snap_to_grid (bool, optional): Determines snap to text grid (if active).
             style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to. Deftult is Default Paragraph Style.
+            style_family (str, optional): Family Style. Defatul ``ParagraphStyles``.
 
         Returns:
             None:
         """
 
-        dl = DirectAlignment(
+        direct = DirectAlignment(
             align=align,
             align_vert=align_vert,
             txt_direction=txt_direction,
@@ -57,9 +57,13 @@ class Alignment(ParaStyleBaseMulti):
             expand_single_word=expand_single_word,
             snap_to_grid=snap_to_grid,
         )
-        self._style_name = str(style_name)
         super().__init__()
-        self._set_style("fill_style", dl, *dl.get_attrs())
+        self._style_name = str(style_name)
+        self._style_family_name = style_family
+
+        self._set_style("direct", direct, *direct.get_attrs())
+
+    # endregion init
 
     @property
     def prop_style_name(self) -> str:
@@ -69,5 +73,3 @@ class Alignment(ParaStyleBaseMulti):
     @prop_style_name.setter
     def prop_style_name(self, value: str | StyleParaKind):
         self._style_name = str(value)
-
-    # endregion init

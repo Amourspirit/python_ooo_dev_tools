@@ -840,8 +840,13 @@ class StyleModifyMulti(StyleMulti):
     .. versionadded:: 0.9.0
     """
 
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+        self._style_family_name = ""
+
     def _supported_services(self) -> Tuple[str, ...]:
         return (
+            "com.sun.star.style.Style",
             "com.sun.star.style.ParagraphStyle",
             "com.sun.star.beans.PropertySet",
         )
@@ -851,6 +856,10 @@ class StyleModifyMulti(StyleMulti):
         if valid:
             return True
         return mInfo.Info.is_doc_type(obj, mLo.Lo.Service.WRITER)
+
+    def _is_valid_doc(self, obj: object) -> bool:
+        return True
+        # return mInfo.Info.is_doc_type(obj, mLo.Lo.Service.WRITER)
 
     def copy(self: T) -> T:
         """Gets a copy of instance as a new instance"""
@@ -871,8 +880,8 @@ class StyleModifyMulti(StyleMulti):
             None:
         """
 
-        if not mInfo.Info.is_doc_type(obj, mLo.Lo.Service.WRITER):
-            mLo.Lo.print(f"{self.__class__.__name__}.apply(): Not a Writer Document. Unable to set Style Property")
+        if not self._is_valid_doc(obj):
+            mLo.Lo.print(f"{self.__class__.__name__}.apply(): Not a Valid Document. Unable to set Style Property")
             return
         p = self.get_style_props(obj)
         super()._apply_direct(p, override_dv={**self._get_properties()})
@@ -900,12 +909,14 @@ class StyleModifyMulti(StyleMulti):
         return mInfo.Info.get_style_props(doc, self._get_style_family_name(), self.prop_style_name)
 
     def _get_style_family_name(self) -> str:
-        raise NotImplementedError
+        if not self._style_family_name:
+            raise ValueError("Must set internal property _style_family_name")
+        return self._style_family_name
 
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.PARA | FormatKind.STYLE
+        return FormatKind.DOC | FormatKind.STYLE
 
     @property
     def prop_style_name(self) -> str:
@@ -920,6 +931,15 @@ class StyleModifyMulti(StyleMulti):
     @prop_style_name.setter
     def prop_style_name(self, value: str):
         raise NotImplementedError
+
+    @property
+    def prop_style_family_name(self) -> str:
+        """Gets/Set Style Family Name"""
+        return self._style_family_name
+
+    @prop_style_family_name.setter
+    def prop_style_family_name(self, value: str):
+        self._style_family_name = value
 
 
 def _on_props_setting(source: Any, event_args: KeyValCancelArgs, *args, **kwargs) -> None:
