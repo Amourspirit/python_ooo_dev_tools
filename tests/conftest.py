@@ -86,7 +86,7 @@ def loader(tmp_path_session, run_headless, soffice_path):
     loader = mLo.load_office(
         connector=mLo.ConnectPipe(headless=run_headless, soffice=soffice_path),
         cache_obj=mCache.Cache(working_dir=tmp_path_session),
-        opt=mLo.Options(verbose=False),
+        opt=mLo.Options(verbose=True),
     )
     # loader = mLo.load_office(connector=mLo.ConnectSocket(headless=True, soffice=soffice_path), cache_obj=mCache.Cache(working_dir=tmp_path_session))
     yield loader

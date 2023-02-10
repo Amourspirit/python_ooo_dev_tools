@@ -6,29 +6,26 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.direct.para.fill_color import FillColor
+from ooodev.format.writer.direct.para.area import Color
 from ooodev.format import CommonColor
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
 
+from ooo.dyn.drawing.fill_style import FillStyle
 
 if TYPE_CHECKING:
-    from com.sun.star.style import ParagraphProperties  # service
+    from com.sun.star.drawing import FillProperties  # service
 
 
-@pytest.mark.skip_headless("Requires Dispatch")
 def test_write(loader, para_text) -> None:
-    # Tabs inherits from Tab and tab is tested in test_struct_tab
     delay = 0
     # delay = 0 if Lo.bridge_connector.headless else 3_000
 
-    # Fillcolor is done via dispatch commands for Writer.
     # LibreOffice seems to have an unresolved bug with Background color.
     # https://bugs.documentfoundation.org/show_bug.cgi?id=99125
     # see Also: https://forum.openoffice.org/en/forum/viewtopic.php?p=417389&sid=17b21c173e4a420b667b45a2949b9cc5#p417389
-
-    # Unable to access properties to test. This test exist as a visual test only.
+    # The solution to these issues is to apply FillColor to Paragraph cursors TextParagraph.
 
     doc = Write.create_doc()
     if not Lo.bridge_connector.headless:
@@ -39,32 +36,54 @@ def test_write(loader, para_text) -> None:
         cursor = Write.get_cursor(doc)
         p_len = len(para_text)
 
-        dc = FillColor(CommonColor.LIME_GREEN)
+        dc = Color(CommonColor.LIME_GREEN)
         Write.append_para(cursor=cursor, text=para_text, styles=(dc,))
 
-        cursor.goLeft(1, False)
-        cursor.gotoStart(True)
+        cursor_p = Write.get_paragraph_cursor(cursor)
+        cursor_p.gotoPreviousParagraph(True)
+        fp = cast("FillProperties", cursor_p.TextParagraph)
+        # note: it is necessary to reast fp each time cursor_p is moved
+        for attr in dc.get_attrs():
+            assert getattr(fp, attr) == dc._get(attr)
+        cursor_p.gotoEnd(False)
 
-        pp = cast("ParagraphProperties", cursor)
-        # assert pp.ParaBackColor == CommonColor.LIME_GREEN
-        cursor.gotoEnd(False)
-
-        dc = FillColor(CommonColor.LIGHT_BLUE)
+        dc = Color(CommonColor.LIGHT_BLUE)
         Write.append_para(cursor=cursor, text=para_text, styles=(dc,))
         # dc.dispatch_reset()
 
-        cursor.goLeft(p_len + 1, False)
-        cursor.goRight(p_len, True)
-        # assert pp.DropCapWholeWord == False
-        cursor.gotoEnd(False)
+        cursor_p.gotoEnd(False)
+        cursor_p.gotoPreviousParagraph(True)
+        fp = cast("FillProperties", cursor_p.TextParagraph)
+        for attr in dc.get_attrs():
+            assert getattr(fp, attr) == dc._get(attr)
+        cursor_p.gotoEnd(False)
 
         Write.append_para(cursor=cursor, text=para_text)
         # dc.dispatch_reset()
 
-        cursor.goLeft(p_len + 1, False)
-        cursor.goRight(p_len, True)
-        # assert pp.DropCapWholeWord == False
-        cursor.gotoEnd(False)
+        cursor_p.gotoEnd(False)
+        cursor_p.gotoPreviousParagraph(True)
+        fp = cast("FillProperties", cursor_p.TextParagraph)
+        assert fp.FillStyle == FillStyle.NONE
+        cursor_p.gotoEnd(False)
+
+        # test applying to cursor
+        dc = Color(CommonColor.AQUAMARINE)
+        dc.apply(cursor_p.TextParagraph)
+
+        for _ in range(3):
+            Write.append_para(cursor=cursor, text=para_text)
+            cursor_p.gotoEnd(False)
+            cursor_p.gotoPreviousParagraph(True)
+            fp = cast("FillProperties", cursor_p.TextParagraph)
+            for attr in dc.get_attrs():
+                assert getattr(fp, attr) == dc._get(attr)
+            cursor_p.gotoEnd(False)
+
+        Color.default.apply(cursor_p.TextParagraph)
+
+        fp = cast("FillProperties", cursor_p.TextParagraph)
+        assert fp.FillStyle == FillStyle.NONE
 
         Lo.delay(delay)
     finally:

@@ -11,4 +11,9 @@ class FormatKind(IntFlag):
     PARA_COMPLEX = 1 << 4
     CELL = 1 << 5
     STATIC = 1 << 6  # no backups if properties in write, etc.
-    Fill = 1 << 7
+    TXT_CONTENT = 1 << 7
+    STYLE = 1 << 8
+    PAGE = 1 << 9
+    FILL = 1 << 10
+    DOC = 1 << 11
+    """Document level Styles"""

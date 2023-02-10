@@ -2047,6 +2047,8 @@ class Draw:
             - :py:meth:`~.draw.Draw.warns_position`
             - :py:meth:`~.draw.Draw.make_shape`
         """
+        # shape are postiion from center.
+        # a square of 20x20 would be x=10, y=10 for top right corer to be at 0x0
         try:
             cls.warns_position(slide=slide, x=x, y=y)
             shape = cls.make_shape(shape_type=shape_type, x=x, y=y, width=width, height=height)
@@ -2130,16 +2132,18 @@ class Draw:
     # region draw_polygon()
     @overload
     @classmethod
-    def draw_polygon(cls, slide: XDrawPage, x: int, y: int, sides: PolySides) -> XShape:
+    def draw_polygon(cls, slide: XDrawPage, x: int, y: int, sides: PolySides | int) -> XShape:
         ...
 
     @overload
     @classmethod
-    def draw_polygon(cls, slide: XDrawPage, x: int, y: int, sides: PolySides, radius: int) -> XShape:
+    def draw_polygon(cls, slide: XDrawPage, x: int, y: int, sides: PolySides | int, radius: int) -> XShape:
         ...
 
     @classmethod
-    def draw_polygon(cls, slide: XDrawPage, x: int, y: int, sides: PolySides, radius: int = POLY_RADIUS) -> XShape:
+    def draw_polygon(
+        cls, slide: XDrawPage, x: int, y: int, sides: PolySides | int, radius: int = POLY_RADIUS
+    ) -> XShape:
         """
         Gets a polygon
 
@@ -2147,7 +2151,7 @@ class Draw:
             slide (XDrawPage): Slide
             x (int): Shape X position in mm units.
             y (int): Shape Y position in mm units.
-            sides (PolySides): Polygon Sides value from ``3`` to ``30``.
+            sides (PolySides | int): Polygon Sides value from ``3`` to ``30``.
             radius (int, optional): Shape radius in mm units. Defaults to the value of :py:attr:`.Draw.POLY_RADIUS`
 
         Raises:
@@ -2182,7 +2186,7 @@ class Draw:
     # endregion draw_polygon()
 
     @staticmethod
-    def gen_polygon_points(x: int, y: int, radius: int, sides: PolySides) -> Tuple[Point, ...]:
+    def gen_polygon_points(x: int, y: int, radius: int, sides: PolySides | int) -> Tuple[Point, ...]:
         """
         Generates a list of polygon points
 
@@ -2190,7 +2194,7 @@ class Draw:
             x (int): Shape X position in mm units.
             y (int): Shape Y position in mm units.
             radius (int): Shape radius in mm units.
-            sides (int): Number of Polygon sides from 3 to 30.
+            sides (PolySides, int): Number of Polygon sides from 3 to 30.
 
         Raises:
             DrawError: If Error occurs
@@ -2199,9 +2203,10 @@ class Draw:
             Tuple[Point, ...]: Tuple of points.
         """
         try:
+            psides = PolySides(int(sides))
             pts: List[Point] = []
-            angle_step = math.pi / sides.value
-            for i in range(sides.value):
+            angle_step = math.pi / psides.value
+            for i in range(psides.value):
                 pt = Point(
                     int(round(((x * 100) + ((radius * 100)) * math.cos(i * 2 * angle_step)))),
                     int(round(((y * 100) + ((radius * 100)) * math.sin(i * 2 * angle_step)))),

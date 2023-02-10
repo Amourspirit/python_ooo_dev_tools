@@ -6,7 +6,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.direct.para.tabs import Tabs, TabAlign, FillCharKind
+from ooodev.format.writer.direct.para.tabs import Tabs, TabAlign, FillCharKind
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write

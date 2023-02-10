@@ -131,11 +131,36 @@ class Info(metaclass=StaticProperty):
             return []
 
         names_set = set()
-        for name in fds:
-            names_set.add(name)
+        for fd in fds:
+            names_set.add(fd.Name)
         names = list(names_set)
         names.sort()
         return names
+
+    @classmethod
+    def get_font_descriptor(cls, name: str, style: str) -> FontDescriptor | None:
+        """
+        Gets font descriptor for a font name with a font style such as ``Bold Italic``.
+
+        Args:
+            name (str): Font Name
+            style (str): Font Style
+
+        Returns:
+            FontDescriptor: Instance if found; Othwerwise None.
+
+        .. versionadded:: 0.9.0
+        """
+        if not name:
+            return None
+        if not style:
+            return None
+        style = style.casefold()
+        fds = cls.get_fonts()
+        for fd in fds:
+            if fd.Name == name and fd.StyleName.casefold() == style:
+                return fd
+        return None
 
     @staticmethod
     def get_font_mono_name() -> str:

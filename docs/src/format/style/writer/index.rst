@@ -5,5 +5,7 @@ writer
 
 .. toctree::
     :titlesonly:
-    
+    :glob:
+
+    *
     kind/index

@@ -1,10 +1,12 @@
 """
-Modele for managing paragraph padding.
+Module for managing paragraph padding.
 
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
+from typing import Tuple
 
+from ....events.args.cancel_event_args import CancelEventArgs
 from ....exceptions import ex as mEx
 from ....meta.static_prop import static_prop
 from ....utils import props as mProps
@@ -21,9 +23,14 @@ class Padding(AbstractPadding):
     All methods starting with ``fmt_`` can be used to chain together properties.
     """
 
-    _DEFAULT = None
-
     # region methods
+    def _supported_services(self) -> Tuple[str, ...]:
+        return ("com.sun.star.style.ParagraphProperties", "com.sun.star.style.ParagraphStyle")
+
+    def _on_modifing(self, event: CancelEventArgs) -> None:
+        if self._is_default_inst:
+            raise ValueError("Modifying a default instance is not allowed")
+        return super()._on_modifing(event)
 
     @staticmethod
     def from_obj(obj: object) -> Padding:
@@ -63,8 +70,11 @@ class Padding(AbstractPadding):
     @static_prop
     def default() -> Padding:  # type: ignore[misc]
         """Gets Padding default. Static Property."""
-        if Padding._DEFAULT is None:
-            Padding._DEFAULT = Padding(padding_all=0.35)
-        return Padding._DEFAULT
+        try:
+            return Padding._DEFAULT_INST
+        except AttributeError:
+            Padding._DEFAULT_INST = Padding(padding_all=0.35)
+            Padding._DEFAULT_INST._is_default_inst = True
+        return Padding._DEFAULT_INST
 
     # endregion properties
