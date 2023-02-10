@@ -6,6 +6,7 @@ Module for managing character padding.
 from __future__ import annotations
 from typing import Tuple, cast, overload
 
+from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
 from .....meta.static_prop import static_prop
 from .....utils import lo as mLo
@@ -24,8 +25,6 @@ class Padding(StyleBase):
 
     .. versionadded:: 0.9.0
     """
-
-    _DEFAULT = None
 
     # this class also set Borders Padding in borders.Border class.
 
@@ -94,6 +93,11 @@ class Padding(StyleBase):
             Tuple[str, ...]: Supported services
         """
         return ("com.sun.star.style.CharacterProperties",)
+
+    def _on_modifing(self, event: CancelEventArgs) -> None:
+        if self._is_default_inst:
+            raise ValueError("Modifying a default instance is not allowed")
+        return super()._on_modifing(event)
 
     # region apply()
     @overload
@@ -296,6 +300,9 @@ class Padding(StyleBase):
     @static_prop
     def default() -> Padding:  # type: ignore[misc]
         """Gets Padding default. Static Property."""
-        if Padding._DEFAULT is None:
-            Padding._DEFAULT = Padding(padding_all=0.0)
-        return Padding._DEFAULT
+        try:
+            return Padding._DEFAULT_INST
+        except AttributeError:
+            Padding._DEFAULT_INST = Padding(padding_all=0.0)
+            Padding._DEFAULT_INST._is_default_inst = True
+        return Padding._DEFAULT_INST

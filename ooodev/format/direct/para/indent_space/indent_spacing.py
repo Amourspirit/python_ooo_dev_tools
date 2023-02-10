@@ -7,6 +7,7 @@ from __future__ import annotations
 from typing import Tuple
 from numbers import Real
 
+from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
 from .....meta.static_prop import static_prop
 from ....kind.format_kind import FormatKind
@@ -22,8 +23,6 @@ class IndentSpacing(StyleMulti):
 
     .. versionadded:: 0.9.0
     """
-
-    _DEFAULT = None
 
     # region init
 
@@ -96,7 +95,12 @@ class IndentSpacing(StyleMulti):
         Returns:
             Tuple[str, ...]: Supported services
         """
-        return ("com.sun.star.style.ParagraphProperties",)
+        return ("com.sun.star.style.ParagraphProperties", "com.sun.star.style.ParagraphStyle")
+
+    def _on_modifing(self, event: CancelEventArgs) -> None:
+        if self._is_default_inst:
+            raise ValueError("Modifying a default instance is not allowed")
+        return super()._on_modifing(event)
 
     @staticmethod
     def from_obj(obj: object) -> IndentSpacing:
@@ -137,12 +141,14 @@ class IndentSpacing(StyleMulti):
     @static_prop
     def default() -> IndentSpacing:  # type: ignore[misc]
         """Gets ``IndentSpacing`` default. Static Property."""
-        if IndentSpacing._DEFAULT is None:
+        try:
+            return IndentSpacing._DEFAULT_INST
+        except AttributeError:
             ls = LineSpacing.default
             indent = Indent.default
             spc = Spacing.default
 
-            IndentSpacing._DEFAULT = IndentSpacing(
+            IndentSpacing._DEFAULT_INST = IndentSpacing(
                 ln_mode=ls.prop_mode,
                 ln_value=ls.prop_value,
                 ln_active_spacing=ls.prop_active_ln_spacing,
@@ -154,6 +160,7 @@ class IndentSpacing(StyleMulti):
                 id_first=indent.prop_first,
                 id_auto=indent.prop_auto,
             )
-        return IndentSpacing._DEFAULT
+            IndentSpacing._DEFAULT_INST._is_default_inst = True
+        return IndentSpacing._DEFAULT_INST
 
     # endregion properties

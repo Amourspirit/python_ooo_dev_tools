@@ -6,6 +6,7 @@ Modele for managing paragraph breaks.
 from __future__ import annotations
 from typing import Tuple, overload
 
+from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
 from .....meta.static_prop import static_prop
 from .....utils import lo as mLo
@@ -27,8 +28,6 @@ class ListStyle(StyleBase):
 
     .. versionadded:: 0.9.0
     """
-
-    _DEFAULT = None
 
     # region init
 
@@ -80,13 +79,12 @@ class ListStyle(StyleBase):
 
     # region methods
     def _supported_services(self) -> Tuple[str, ...]:
-        """
-        Gets a tuple of supported services (``com.sun.star.style.ParagraphProperties``,)
+        return ("com.sun.star.style.ParagraphProperties", "com.sun.star.style.ParagraphStyle")
 
-        Returns:
-            Tuple[str, ...]: Supported services
-        """
-        return ("com.sun.star.style.ParagraphProperties",)
+    def _on_modifing(self, event: CancelEventArgs) -> None:
+        if self._is_default_inst:
+            raise ValueError("Modifying a default instance is not allowed")
+        return super()._on_modifing(event)
 
     # region apply()
     @overload
@@ -241,12 +239,15 @@ class ListStyle(StyleBase):
     @static_prop
     def default() -> ListStyle:  # type: ignore[misc]
         """Gets ``ListStyle`` default. Static Property."""
-        if ListStyle._DEFAULT is None:
+        try:
+            return ListStyle._DEFAULT_INST
+        except AttributeError:
             ls = ListStyle()
             ls._set("NumberingStyleName", "")
             ls._set("ParaIsNumberingRestart", False)
             ls._set("NumberingStartValue", -1)
-            ListStyle._DEFAULT = ls
-        return ListStyle._DEFAULT
+            ls._is_default_inst = True
+            ListStyle._DEFAULT_INST = ls
+        return ListStyle._DEFAULT_INST
 
     # endregion properties

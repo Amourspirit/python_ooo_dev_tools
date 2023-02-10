@@ -1,5 +1,5 @@
 """
-Module for Page Style Fill Color Fill Color.
+Base Class for Page Style.
 
 .. versionadded:: 0.9.0
 """
@@ -42,6 +42,7 @@ class PageStyleBaseMulti(StyleMulti):
         """Gets a copy of instance as a new instance"""
         cp = super().copy()
         cp.prop_style_name = self.prop_style_name
+        return cp
 
     # region apply()
 

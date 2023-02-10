@@ -66,6 +66,7 @@ class FontPosition(StyleBase):
 
     def __init__(
         self,
+        *,
         script_kind: FontScriptKind | None = None,
         raise_lower: int | Intensity | None = None,
         rel_size: int | None = None,
@@ -114,7 +115,7 @@ class FontPosition(StyleBase):
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:
-            raise ValueError("Setting properties on a default instance is not allowed")
+            raise ValueError("Modifying a default instance is not allowed")
         return super()._on_setting(event)
 
     # region apply()

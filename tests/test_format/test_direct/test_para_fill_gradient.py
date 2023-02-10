@@ -33,9 +33,25 @@ def test_write(loader, para_text) -> None:
         # using ControllerLock() is about 25% faster in this case
         # there are 15 enum values 1-15
         # add a paragraph for each enum and test values
-        for i in range(1, 16):
-            kind = PresetGradientKind(i)
-            pg = Gradient.from_preset(kind)
+        presets = (
+            PresetGradientKind.PASTEL_BOUQUET,
+            PresetGradientKind.PASTEL_DREAM,
+            PresetGradientKind.BLUE_TOUCH,
+            PresetGradientKind.BLANK_GRAY,
+            PresetGradientKind.SPOTTED_GRAY,
+            PresetGradientKind.LONDON_MIST,
+            PresetGradientKind.TEAL_BLUE,
+            PresetGradientKind.MIDNIGHT,
+            PresetGradientKind.DEEP_OCEAN,
+            PresetGradientKind.SUBMARINE,
+            PresetGradientKind.GREEN_GRASS,
+            PresetGradientKind.NEON_LIGHT,
+            PresetGradientKind.SUNSHINE,
+            PresetGradientKind.PRESENT,
+            PresetGradientKind.MAHOGANY,
+        )
+        for preset in presets:
+            pg = Gradient.from_preset(preset)
             Write.append_para(cursor=cursor, text=para_text, styles=(pg,))
             cursor_p.gotoEnd(False)
             cursor_p.gotoPreviousParagraph(True)

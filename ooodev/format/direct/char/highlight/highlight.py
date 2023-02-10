@@ -6,6 +6,7 @@ Module for handeling character highlight.
 from __future__ import annotations
 from typing import Tuple, overload
 
+from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
 from .....meta.static_prop import static_prop
 from .....utils import lo as mLo
@@ -21,8 +22,6 @@ class Highlight(StyleBase):
 
     .. versionadded:: 0.9.0
     """
-
-    _EMPTY = None
 
     def __init__(self, color: Color = -1) -> None:
         """
@@ -52,6 +51,11 @@ class Highlight(StyleBase):
             Tuple[str, ...]: Supported services
         """
         return ("com.sun.star.style.CharacterProperties",)
+
+    def _on_modifing(self, event: CancelEventArgs) -> None:
+        if self._is_default_inst:
+            raise ValueError("Modifying a default instance is not allowed")
+        return super()._on_modifing(event)
 
     # region apply()
 
@@ -141,6 +145,9 @@ class Highlight(StyleBase):
     @static_prop
     def empty() -> Highlight:  # type: ignore[misc]
         """Gets Highlight empty. Static Property."""
-        if Highlight._EMPTY is None:
-            Highlight._EMPTY = Highlight()
-        return Highlight._EMPTY
+        try:
+            return Highlight._EMPTY_INST
+        except AttributeError:
+            Highlight._EMPTY_INST = Highlight()
+            Highlight._EMPTY_INST._is_default_inst = True
+        return Highlight._EMPTY_INST

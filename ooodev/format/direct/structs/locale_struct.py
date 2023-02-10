@@ -10,7 +10,6 @@ import uno
 from ....events.event_singleton import _Events
 from ....exceptions import ex as mEx
 from ....utils import props as mProps
-from ....utils.data_type.byte import Byte
 from ....utils.type_var import T
 from ...kind.format_kind import FormatKind
 from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent

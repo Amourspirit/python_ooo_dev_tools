@@ -6,6 +6,7 @@ Modele for managing paragraph Text Flow options.
 from __future__ import annotations
 from typing import Tuple, cast, overload
 
+from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
 from .....meta.static_prop import static_prop
 from .....utils import lo as mLo
@@ -26,12 +27,11 @@ class FlowOptions(StyleBase):
     .. versionadded:: 0.9.0
     """
 
-    _DEFAULT = None
-
     # region init
 
     def __init__(
         self,
+        *,
         orphans: int | None = None,
         widows: int | None = None,
         keep: bool | None = None,
@@ -77,13 +77,12 @@ class FlowOptions(StyleBase):
 
     # region methods
     def _supported_services(self) -> Tuple[str, ...]:
-        """
-        Gets a tuple of supported services (``com.sun.star.style.ParagraphProperties``,)
+        return ("com.sun.star.style.ParagraphProperties", "com.sun.star.style.ParagraphStyle")
 
-        Returns:
-            Tuple[str, ...]: Supported services
-        """
-        return ("com.sun.star.style.ParagraphProperties",)
+    def _on_modifing(self, event: CancelEventArgs) -> None:
+        if self._is_default_inst:
+            raise ValueError("Modifying a default instance is not allowed")
+        return super()._on_modifing(event)
 
     # region apply()
     @overload
@@ -296,13 +295,16 @@ class FlowOptions(StyleBase):
     @static_prop
     def default() -> FlowOptions:  # type: ignore[misc]
         """Gets ``FlowOptions`` default. Static Property."""
-        if FlowOptions._DEFAULT is None:
+        try:
+            return FlowOptions._DEFAULT_INST
+        except AttributeError:
             flo = FlowOptions()
             flo._set("ParaOrphans", 2)
             flo._set("ParaWidows", 2)
             flo._set("ParaSplit", True)
             flo._set("ParaKeepTogether", False)
-            FlowOptions._DEFAULT = flo
-        return FlowOptions._DEFAULT
+            flo._is_default_inst = True
+            FlowOptions._DEFAULT_INST = flo
+        return FlowOptions._DEFAULT_INST
 
     # endregion properties

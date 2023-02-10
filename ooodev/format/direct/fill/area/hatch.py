@@ -141,7 +141,7 @@ class Hatch(StyleMulti):
         Returns:
             Hatch: Instance from preset.
         """
-        kargs = mPreset.get_fill_preset(preset)
+        kargs = mPreset.get_preset(preset)
         inst = super(Hatch, cls).__new__(cls)
         inst.__init__(**kargs)
         return inst

@@ -8,11 +8,11 @@ from .....exceptions import ex as mEx
 from .....utils import lo as mLo
 from .....utils import props as mProps
 from ....style_base import StyleMulti
+from .....utils.data_type.offset import Offset as Offset
 from ...fill.area.img import (
     Img as FillImg,
     SizeMM as SizeMM,
     SizePercent as SizePercent,
-    Offset as Offset,
     OffsetColumn as OffsetColumn,
     OffsetRow as OffsetRow,
     ImgStyleKind as ImgStyleKind,
@@ -93,6 +93,7 @@ class Img(StyleMulti):
             "com.sun.star.style.ParagraphProperties",
             "com.sun.star.text.TextContent",
             "com.sun.star.beans.PropertySet",
+            "com.sun.star.style.ParagraphStyle",
         )
 
     def _props_set(self, obj: object, **kwargs: Any) -> None:
@@ -186,7 +187,7 @@ class Img(StyleMulti):
         Gets an instance from a preset
 
         Args:
-            preset (ImageKind): Preset
+            preset (PresetImageKind): Preset
 
         Returns:
             Img: Instance from preset.

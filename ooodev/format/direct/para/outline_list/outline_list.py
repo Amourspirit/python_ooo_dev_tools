@@ -6,6 +6,7 @@ Modele for managing paragraph Outline and List.
 from __future__ import annotations
 from typing import Tuple
 
+from .....events.args.cancel_event_args import CancelEventArgs
 from .....meta.static_prop import static_prop
 from ....style_base import StyleMulti
 from ....kind.format_kind import FormatKind
@@ -20,8 +21,6 @@ class OutlineList(StyleMulti):
 
     .. versionadded:: 0.9.0
     """
-
-    _DEFAULT = None
 
     # region init
 
@@ -75,13 +74,12 @@ class OutlineList(StyleMulti):
 
     # region methods
     def _supported_services(self) -> Tuple[str, ...]:
-        """
-        Gets a tuple of supported services (``com.sun.star.style.ParagraphProperties``,)
+        return ("com.sun.star.style.ParagraphProperties", "com.sun.star.style.ParagraphStyle")
 
-        Returns:
-            Tuple[str, ...]: Supported services
-        """
-        return ("com.sun.star.style.ParagraphProperties",)
+    def _on_modifing(self, event: CancelEventArgs) -> None:
+        if self._is_default_inst:
+            raise ValueError("Modifying a default instance is not allowed")
+        return super()._on_modifing(event)
 
     @staticmethod
     def from_obj(obj: object) -> OutlineList:
@@ -120,12 +118,15 @@ class OutlineList(StyleMulti):
     @static_prop
     def default() -> OutlineList:  # type: ignore[misc]
         """Gets ``OutlineList`` default. Static Property."""
-        if OutlineList._DEFAULT is None:
+        try:
+            return OutlineList._DEFAULT_INST
+        except AttributeError:
             inst = OutlineList()
             inst._set_style("outline", Outline.default.copy(), *Outline.default.get_attrs())
             inst._set_style("list_style", ListStyle.default.copy(), *ListStyle.default.get_attrs())
             inst._set_style("line_num", LineNum.default.copy(), *LineNum.default.get_attrs())
-            OutlineList._DEFAULT = inst
-        return OutlineList._DEFAULT
+            inst._is_default_inst = True
+            OutlineList._DEFAULT_INST = inst
+        return OutlineList._DEFAULT_INST
 
     # endregion properties

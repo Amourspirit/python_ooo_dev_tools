@@ -8,6 +8,7 @@ from typing import Tuple, cast
 
 import uno
 
+from .....events.args.cancel_event_args import CancelEventArgs
 from .....meta.static_prop import static_prop
 from .....utils import props as mProps
 from .....utils import info as mInfo
@@ -31,11 +32,14 @@ class Tabs(TabStopStruct):
     .. versionadded:: 0.9.0
     """
 
-    _DEFAULT = None
-
     # region methods
     def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.style.ParagraphProperties",)
+        return ("com.sun.star.style.ParagraphProperties", "com.sun.star.style.ParagraphStyle")
+
+    def _on_modifing(self, event: CancelEventArgs) -> None:
+        if self._is_default_inst:
+            raise ValueError("Modifying a default instance is not allowed")
+        return super()._on_modifing(event)
 
     def _get_property_name(self) -> str:
         return "ParaTabStops"
@@ -180,7 +184,9 @@ class Tabs(TabStopStruct):
     @static_prop
     def default() -> Tabs:  # type: ignore[misc]
         """Gets ``Tabs`` default. Static Property."""
-        if Tabs._DEFAULT is None:
+        try:
+            return Tabs._DEFAULT_INST
+        except AttributeError:
             inst = Tabs(align=TabAlign.DEFAULT)
             # this commented section works if not in macro mode
             # mInfo.Info.get_reg_item_prop() imports lxml
@@ -195,7 +201,8 @@ class Tabs(TabStopStruct):
             ts_val = props.getPropertyValue("TabStop")
             inst._set("Position", ts_val)
             inst._set("DecimalChar", ".")
-            Tabs._DEFAULT = inst
-        return Tabs._DEFAULT
+            inst._is_default_inst = True
+            Tabs._DEFAULT_INST = inst
+        return Tabs._DEFAULT_INST
 
     # endregion Properties

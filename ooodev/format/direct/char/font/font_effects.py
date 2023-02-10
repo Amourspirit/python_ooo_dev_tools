@@ -6,6 +6,7 @@ Module for managing character fonts.
 from __future__ import annotations
 from typing import Any, Tuple, cast, overload
 
+from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
 from .....meta.static_prop import static_prop
 from .....utils import lo as mLo
@@ -33,8 +34,6 @@ class FontEffects(StyleBase):
 
     .. versionadded:: 0.9.0
     """
-
-    _DEFAULT = None
 
     def __init__(
         self,
@@ -136,6 +135,11 @@ class FontEffects(StyleBase):
             Tuple[str, ...]: Supported services
         """
         return ("com.sun.star.style.CharacterProperties",)
+
+    def _on_modifing(self, event: CancelEventArgs) -> None:
+        if self._is_default_inst:
+            raise ValueError("Modifying a default instance is not allowed")
+        return super()._on_modifing(event)
 
     # region apply()
     @overload
@@ -732,7 +736,9 @@ class FontEffects(StyleBase):
     @static_prop
     def default() -> FontEffects:  # type: ignore[misc]
         """Gets Font Position default. Static Property."""
-        if FontEffects._DEFAULT is None:
+        try:
+            return FontEffects._DEFAULT_INST
+        except AttributeError:
             fe = FontEffects()
             fe._set("CharColor", -1)
             fe._set("CharOverline", 0)
@@ -749,7 +755,8 @@ class FontEffects(StyleBase):
             fe._set("CharStrikeout", 0)
             fe._set("CharCaseMap", 0)
             fe._set("CharRelief", 0)
-            FontEffects._DEFAULT = fe
-        return FontEffects._DEFAULT
+            fe._is_default_inst = True
+            FontEffects._DEFAULT_INST = fe
+        return FontEffects._DEFAULT_INST
 
     # endregion Prop Properties

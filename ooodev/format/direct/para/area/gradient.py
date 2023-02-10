@@ -12,7 +12,10 @@ from .....meta.static_prop import static_prop
 from .....utils import props as mProps
 from .....utils.color import Color
 from .....utils.data_type.angle import Angle as Angle
+from .....utils.data_type.offset import Offset as Offset
 from .....utils.data_type.intensity import Intensity as Intensity
+from .....utils.data_type.intensity_range import IntensityRange as IntensityRange
+from .....utils.data_type.color_range import ColorRange
 from ....kind.format_kind import FormatKind
 from ....preset import preset_gradient
 from ....preset.preset_gradient import PresetGradientKind as PresetGradientKind
@@ -26,7 +29,11 @@ from ooo.dyn.awt.gradient import Gradient as UNOGradient
 
 class FillStyleStruct(GradientStruct):
     def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.drawing.FillProperties", "com.sun.star.text.TextContent")
+        return (
+            "com.sun.star.drawing.FillProperties",
+            "com.sun.star.text.TextContent",
+            "com.sun.star.style.ParagraphStyle",
+        )
 
     def _get_property_name(self) -> str:
         return "FillGradient"
@@ -45,51 +52,43 @@ class Gradient(StyleMulti):
     .. versionadded:: 0.9.0
     """
 
-    _DEFAULT = None
-
     def __init__(
         self,
+        *,
         style: GradientStyle = GradientStyle.LINEAR,
         step_count: int = 0,
-        x_offset: Intensity | int = 50,
-        y_offset: Intensity | int = 50,
+        offset: Offset = Offset(50, 50),
         angle: Angle | int = 0,
         border: Intensity | int = 0,
-        start_color: Color = 0,
-        start_intensity: Intensity | int = 100,
-        end_color: Color = 16777215,
-        end_intensity: Intensity | int = 100,
+        grad_color: ColorRange = ColorRange(Color(0), Color(16777215)),
+        grad_intensity: IntensityRange = IntensityRange(100, 100),
         name: str = "",
     ) -> None:
         """
-        _summary_
+        Constructor
 
         Args:
             style (GradientStyle, optional): Specifies the style of the gradient. Defaults to ``GradientStyle.LINEAR``.
             step_count (int, optional): Specifies the number of steps of change color. Defaults to ``0``.
-            x_offset (Intensity, int, optional): Specifies the X-coordinate, where the gradient begins.
-                This is effectively the center of the ``RADIAL``, ``ELLIPTICAL``, ``SQUARE`` and ``RECT`` style gradients. Defaults to ``50``.
-            y_offset (Intensity, int, optional): Specifies the Y-coordinate, where the gradient begins.
-                See: ``x_offset``. Defaults to ``50``.
+            offset (Offset, int, optional): Specifies the X and Y coordinate, where the gradient begins.
+                 X is is effectively the center of the ``RADIAL``, ``ELLIPTICAL``, ``SQUARE`` and ``RECT`` style gradients. Defaults to ``Offset(50, 50)``.
             angle (Angle, int, optional): Specifies angle of the gradient. Defaults to 0.
             border (int, optional): Specifies percent of the total width where just the start color is used. Defaults to 0.
-            start_color (Color, optional): Specifies the color at the start point of the gradient. Defaults to ``Color(0)``.
-            start_intensity (Intensity, int, optional): Specifies the intensity at the start point of the gradient. Defaults to ``100``.
-            end_color (Color, optional): Specifies the color at the end point of the gradient. Defaults to ``Color(16777215)``.
-            end_intensity (Intensity, int, optional): Specifies the intensity at the end point of the gradient. Defaults to ``100``.
+            grad_color (ColorRange, optional): Specifies the color at the start point and stop point of the gradient. Defaults to ``ColorRange(Color(0), Color(16777215))``.
+            grad_intensity (IntensityRange, optional): Specifies the intensity at the start point and stop point of the gradient. Defaults to ``IntensityRange(100, 100)``.
             name (str, optional): Specifies the Fill Gradient Name.
         """
         fs = FillStyleStruct(
             style=style,
             step_count=step_count,
-            x_offset=x_offset,
-            y_offset=y_offset,
+            x_offset=offset.x,
+            y_offset=offset.y,
             angle=angle,
             border=border,
-            start_color=start_color,
-            start_intensity=start_intensity,
-            end_color=end_color,
-            end_intensity=end_intensity,
+            start_color=grad_color.start,
+            start_intensity=grad_intensity.start,
+            end_color=grad_color.end,
+            end_intensity=grad_intensity.end,
         )
         super().__init__()
         # gradient
@@ -119,6 +118,7 @@ class Gradient(StyleMulti):
         return (
             "com.sun.star.drawing.FillProperties",
             "com.sun.star.text.TextContent",
+            "com.sun.star.style.ParagraphStyle",
         )
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
@@ -156,14 +156,11 @@ class Gradient(StyleMulti):
         return Gradient(
             style=grad_fill.Style,
             step_count=grad_fill.StepCount,
-            x_offset=grad_fill.XOffset,
-            y_offset=grad_fill.YOffset,
+            offset=Offset(grad_fill.XOffset, grad_fill.YOffset),
             angle=angle,
             border=grad_fill.Border,
-            start_color=grad_fill.StartColor,
-            start_intensity=grad_fill.StartIntensity,
-            end_color=grad_fill.EndColor,
-            end_intensity=grad_fill.EndIntensity,
+            grad_color=ColorRange(grad_fill.StartColor, grad_fill.EndColor),
+            grad_intensity=IntensityRange(grad_fill.StartIntensity, grad_fill.EndIntensity),
             name=fill_gradient_name,
         )
 
@@ -189,21 +186,20 @@ class Gradient(StyleMulti):
     @static_prop
     def default() -> Gradient:  # type: ignore[misc]
         """Gets Gradient empty. Static Property."""
-        if Gradient._DEFAULT is None:
+        try:
+            return Gradient._DEFAULT_INST
+        except AttributeError:
             inst = Gradient(
                 style=GradientStyle.LINEAR,
                 step_count=0,
-                x_offset=0,
-                y_offset=0,
+                offset=Offset(0, 0),
                 angle=0,
                 border=0,
-                start_color=Color(0),
-                start_intensity=100,
-                end_color=Color(16777215),
-                end_intensity=100,
+                grad_color=ColorRange(0, 16777215),
+                grad_intensity=IntensityRange(100, 100),
             )
             inst._set("FillStyle", FillStyle.NONE)
             inst._set("FillGradientName", "")
             inst._is_default_inst = True
-            Gradient._DEFAULT = inst
-        return Gradient._DEFAULT
+            Gradient._DEFAULT_INST = inst
+        return Gradient._DEFAULT_INST

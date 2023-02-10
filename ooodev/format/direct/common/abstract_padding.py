@@ -88,12 +88,6 @@ class AbstractPadding(StyleBase):
     # region methods
 
     def _supported_services(self) -> Tuple[str, ...]:
-        """
-        Gets a tuple of supported services (``com.sun.star.style.ParagraphProperties``,)
-
-        Returns:
-            Tuple[str, ...]: Supported services
-        """
         return ("com.sun.star.style.ParagraphProperties",)
 
     # region apply()

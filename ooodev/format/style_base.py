@@ -16,11 +16,13 @@ from ..events.args.event_args import EventArgs as EventArgs
 from ..utils.type_var import T, EventCallback
 from .kind.format_kind import FormatKind
 from ..events.format_named_event import FormatNamedEvent as FormatNamedEvent
+from ..exceptions import ex as mEx
 
 # from ..events.event_singleton import _Events
 from abc import ABC
 
 from com.sun.star.container import XNameContainer
+from com.sun.star.beans import XPropertySet
 
 if TYPE_CHECKING:
     from com.sun.star.beans import PropertyValue
@@ -681,6 +683,10 @@ class StyleMulti(StyleBase):
         """Gets If instantance has any attributes set."""
         return len(self._dv) + len(self._styles) > 0
 
+    def _apply_direct(self, obj: object, **kwargs) -> None:
+        """Calls super apply directly"""
+        super().apply(obj, **kwargs)
+
     def apply(self, obj: object, **kwargs) -> None:
         """
         Applies style of current instance and all other internal style instances.
@@ -825,6 +831,115 @@ class StyleMulti(StyleBase):
         if self._dv_bak is None:
             return False
         return len(self._dv_bak) > 0
+
+
+class StyleModifyMulti(StyleMulti):
+    """
+    Para Style Base
+
+    .. versionadded:: 0.9.0
+    """
+
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+        self._style_family_name = ""
+
+    def _supported_services(self) -> Tuple[str, ...]:
+        return (
+            "com.sun.star.style.Style",
+            "com.sun.star.style.ParagraphStyle",
+            "com.sun.star.beans.PropertySet",
+        )
+
+    def _is_valid_obj(self, obj: object) -> bool:
+        valid = super()._is_valid_obj(obj)
+        if valid:
+            return True
+        return mInfo.Info.is_doc_type(obj, mLo.Lo.Service.WRITER)
+
+    def _is_valid_doc(self, obj: object) -> bool:
+        return True
+        # return mInfo.Info.is_doc_type(obj, mLo.Lo.Service.WRITER)
+
+    def copy(self: T) -> T:
+        """Gets a copy of instance as a new instance"""
+        cp = super().copy()
+        cp.prop_style_name = self.prop_style_name
+        return cp
+
+    # region apply()
+
+    def apply(self, obj: object, **kwargs) -> None:
+        """
+        Applies padding to ``obj``
+
+        Args:
+            obj (object): UNO Writer Document
+
+        Returns:
+            None:
+        """
+
+        if not self._is_valid_doc(obj):
+            mLo.Lo.print(f"{self.__class__.__name__}.apply(): Not a Valid Document. Unable to set Style Property")
+            return
+        p = self.get_style_props(obj)
+        super()._apply_direct(p, override_dv={**self._get_properties()})
+        super().apply(p, **kwargs)
+
+    # endregion apply()
+    def _props_set(self, obj: object, **kwargs: Any) -> None:
+        try:
+            super()._props_set(obj, **kwargs)
+        except mEx.MultiError as e:
+            mLo.Lo.print(f"{self.__class__.__name__}.apply(): Unable to set Property")
+            for err in e.errors:
+                mLo.Lo.print(f"  {err}")
+
+    def get_style_props(self, doc: object) -> XPropertySet:
+        """
+        Gets the Style Properties
+
+        Args:
+            obj (object): UNO Object
+
+        Returns:
+            XPropertySet: Styles properties property set.
+        """
+        return mInfo.Info.get_style_props(doc, self._get_style_family_name(), self.prop_style_name)
+
+    def _get_style_family_name(self) -> str:
+        if not self._style_family_name:
+            raise ValueError("Must set internal property _style_family_name")
+        return self._style_family_name
+
+    @property
+    def prop_format_kind(self) -> FormatKind:
+        """Gets the kind of style"""
+        return FormatKind.DOC | FormatKind.STYLE
+
+    @property
+    def prop_style_name(self) -> str:
+        """
+        Gets/Sets property Style Name.
+
+        Raises:
+            NotImplementedError:
+        """
+        raise NotImplementedError
+
+    @prop_style_name.setter
+    def prop_style_name(self, value: str):
+        raise NotImplementedError
+
+    @property
+    def prop_style_family_name(self) -> str:
+        """Gets/Set Style Family Name"""
+        return self._style_family_name
+
+    @prop_style_family_name.setter
+    def prop_style_family_name(self, value: str):
+        self._style_family_name = value
 
 
 def _on_props_setting(source: Any, event_args: KeyValCancelArgs, *args, **kwargs) -> None:

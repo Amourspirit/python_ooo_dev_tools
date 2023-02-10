@@ -5,15 +5,14 @@ Module for managing character fonts.
 """
 from __future__ import annotations
 from typing import Any, Tuple, cast, overload
-from enum import Enum
 
 from .....exceptions import ex as mEx
 from .....utils import info as mInfo
 from .....utils import lo as mLo
 from .....utils.color import Color
+from .....utils.unit_convert import UnitConvert
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleBase
-from .....utils.unit_convert import UnitConvert
 from .font_position import CharSpacingKind as CharSpacingKind
 
 from ooo.dyn.awt.char_set import CharSetEnum as CharSetEnum

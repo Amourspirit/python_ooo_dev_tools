@@ -6,8 +6,9 @@ from ....style_base import StyleMulti
 from .....utils.data_type.angle import Angle as Angle
 from .....utils.data_type.offset import Offset as Offset
 from .....utils.data_type.intensity import Intensity as Intensity
+from .....utils.data_type.intensity_range import IntensityRange as IntensityRange
 from .....utils import gen_util as gUtil
-from .....utils import props as mProps
+from .....utils import lo as mLo
 from ...fill.transparent.gradient import Gradient as FillGradient
 from ....kind.format_kind import FormatKind
 from .....events.args.key_val_cancel_args import KeyValCancelArgs
@@ -30,12 +31,12 @@ class Gradient(StyleMulti):
 
     def __init__(
         self,
+        *,
         style: GradientStyle = GradientStyle.LINEAR,
         offset: Offset = Offset(50, 50),
         angle: Angle | int = 0,
         border: Intensity | int = 0,
-        start_value: Intensity | int = 0,
-        end_value: Intensity | int = 0,
+        grad_intensity: IntensityRange = IntensityRange(0, 0),
     ) -> None:
         """
         Constructor
@@ -47,13 +48,12 @@ class Gradient(StyleMulti):
                 X is effectively the center of the ``RADIAL``, ``ELLIPTICAL``, ``SQUARE`` and ``RECT`` style gradients. Defaults to ``Offset(50, 50)``.
             angle (Angle, int, optional): Specifies angle of the gradient. Defaults to 0.
             border (int, optional): Specifies percent of the total width where just the start color is used. Defaults to 0.
-            start_value (Intensity, int, optional): Specifies the gradient start value from ``0`` to ``100``.
-            end_value (Intensity, int, optional): Specifies the gradient End value from ``0`` to ``100``.
+            grad_intensity (IntensityRange, optional): Specifies the intensity at the start point and stop point of the gradient. Defaults to ``IntensityRange(0, 0)``.
         """
 
-        fg = FillGradient(
-            style=style, offset=offset, angle=angle, border=border, start_value=start_value, end_value=end_value
-        )
+        mLo.Lo.print("Gradient Transparency Class for Paragraph is not currently supported.")
+
+        fg = FillGradient(style=style, offset=offset, angle=angle, border=border, grad_intensity=grad_intensity)
         super().__init__()
         self._set("ParaBackColor", gUtil.NULL_OBJ)
         self._set_style("fill_grad", fg, *fg.get_attrs())
@@ -67,6 +67,7 @@ class Gradient(StyleMulti):
         return (
             "com.sun.star.drawing.FillProperties",
             "com.sun.star.text.TextContent",
+            "com.sun.star.style.ParagraphStyle",
         )
 
     def on_property_setting(self, event_args: KeyValCancelArgs) -> None:

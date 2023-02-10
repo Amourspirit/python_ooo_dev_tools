@@ -8,6 +8,7 @@ from typing import Tuple, cast, overload
 
 import uno
 
+from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
 from .....meta.static_prop import static_prop
 from .....utils import lo as mLo
@@ -28,8 +29,6 @@ class WritingMode(StyleBase):
 
     .. versionadded:: 0.9.0
     """
-
-    _DEFAULT = None
 
     # region init
 
@@ -61,7 +60,12 @@ class WritingMode(StyleBase):
         Returns:
             Tuple[str, ...]: Supported services
         """
-        return ("com.sun.star.style.ParagraphPropertiesComplex",)
+        return ("com.sun.star.style.ParagraphPropertiesComplex", "com.sun.star.style.ParagraphStyle")
+
+    def _on_modifing(self, event: CancelEventArgs) -> None:
+        if self._is_default_inst:
+            raise ValueError("Modifying a default instance is not allowed")
+        return super()._on_modifing(event)
 
     # region apply()
 
@@ -242,8 +246,11 @@ class WritingMode(StyleBase):
     @static_prop
     def default() -> WritingMode:  # type: ignore[misc]
         """Gets ``WritingMode`` default. Static Property."""
-        if WritingMode._DEFAULT is None:
-            WritingMode._DEFAULT = WritingMode(WritingMode2Enum.PAGE)
-        return WritingMode._DEFAULT
+        try:
+            return WritingMode._DEFAULT_INST
+        except AttributeError:
+            WritingMode._DEFAULT_INST = WritingMode(WritingMode2Enum.PAGE)
+            WritingMode._DEFAULT_INST._is_default_inst = True
+        return WritingMode._DEFAULT_INST
 
     # endregion properties

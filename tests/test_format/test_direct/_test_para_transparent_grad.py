@@ -7,7 +7,7 @@ if __name__ == "__main__":
 
 import uno
 
-from ooodev.format.direct.para.transparent.gradient import Gradient, GradientStyle
+from ooodev.format.direct.para.transparent.gradient import Gradient, GradientStyle, IntensityRange
 
 # from ooodev.format.writer.direct.para.transparency import Gradient, GradientStyle
 # from ooodev.format.direct.para.area.color import Color
@@ -46,7 +46,7 @@ def _test_write(loader, para_text) -> None:
 
         dc = Color(StandardColor.LIME)
         # ParaBackColor 2088883226  Color   Lime  Linear  Start 0%    End value 100%
-        tp = Gradient(style=GradientStyle.LINEAR, angle=0, start_value=0, end_value=100)
+        tp = Gradient(style=GradientStyle.LINEAR, angle=0, grad_intensity=IntensityRange(0, 100))
         Write.append_para(cursor=cursor, text=para_text, styles=(dc, tp))
         Para.default.apply(cursor)
         cursor_p.gotoEnd(False)

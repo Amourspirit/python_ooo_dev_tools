@@ -189,6 +189,7 @@ class Img(StyleBase):
             "com.sun.star.drawing.FillProperties",
             "com.sun.star.text.TextContent",
             "com.sun.star.beans.PropertySet",
+            "com.sun.star.style.ParagraphStyle",
         )
 
     # region apply()
@@ -384,6 +385,7 @@ class Img(StyleBase):
         if value is None:
             self._remove("FillBitmapSizeX")
             self._remove("FillBitmapSizeY")
+            return
 
         if isinstance(value, SizePercent):
             self._set("FillBitmapSizeX", -value.width)

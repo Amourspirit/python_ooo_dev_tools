@@ -35,6 +35,7 @@ class Hatch(StyleMulti):
 
     def __init__(
         self,
+        *,
         style: HatchStyle = HatchStyle.SINGLE,
         color: Color = Color(0),
         space: float = 0.0,
@@ -183,6 +184,7 @@ class Hatch(StyleMulti):
             "com.sun.star.drawing.FillProperties",
             "com.sun.star.text.TextContent",
             "com.sun.star.beans.PropertySet",
+            "com.sun.star.style.ParagraphStyle",
         )
 
     def _container_get_service_name(self) -> str:
@@ -238,7 +240,7 @@ class Hatch(StyleMulti):
             Hatch: Instance from preset.
         """
         # kargs = mPreset.get_write_preset(preset)
-        kargs = mPreset.get_fill_preset(preset)
+        kargs = mPreset.get_preset(preset)
         kargs["name"] = str(preset)
         kargs["auto_name"] = False
         inst = super(Hatch, cls).__new__(cls)

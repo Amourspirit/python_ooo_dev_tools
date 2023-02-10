@@ -12,6 +12,9 @@ from ......utils import info as mInfo
 from ......utils import lo as mLo
 from ......utils.color import Color
 from ......utils.data_type.angle import Angle as Angle
+from ......utils.data_type.offset import Offset as Offset
+from ......utils.data_type.color_range import ColorRange as ColorRange
+from ......utils.data_type.intensity_range import IntensityRange as IntensityRange
 from ......utils.data_type.intensity import Intensity as Intensity
 from .....direct.structs.gradient_struct import GradientStruct
 from .....preset import preset_gradient
@@ -139,16 +142,14 @@ class Gradient(PageStyleBaseMulti):
 
     def __init__(
         self,
+        *,
         style: GradientStyle = GradientStyle.LINEAR,
         step_count: int = 0,
-        x_offset: Intensity | int = 50,
-        y_offset: Intensity | int = 50,
+        offset: Offset = Offset(50, 50),
         angle: Angle | int = 0,
         border: Intensity | int = 0,
-        start_color: Color = 0,
-        start_intensity: Intensity | int = 100,
-        end_color: Color = 16777215,
-        end_intensity: Intensity | int = 100,
+        grad_color: ColorRange = ColorRange(Color(0), Color(16777215)),
+        grad_intensity: IntensityRange = IntensityRange(100, 100),
         name: str = "",
         style_name: StylePageKind | str = StylePageKind.STANDARD,
     ) -> None:
@@ -158,16 +159,12 @@ class Gradient(PageStyleBaseMulti):
         Args:
             style (GradientStyle, optional): Specifies the style of the gradient. Defaults to ``GradientStyle.LINEAR``.
             step_count (int, optional): Specifies the number of steps of change color. Defaults to ``0``.
-            x_offset (Intensity, int, optional): Specifies the X-coordinate, where the gradient begins.
-                This is effectively the center of the ``RADIAL``, ``ELLIPTICAL``, ``SQUARE`` and ``RECT`` style gradients. Defaults to ``50``.
-            y_offset (Intensity, int, optional): Specifies the Y-coordinate, where the gradient begins.
-                See: ``x_offset``. Defaults to ``50``.
+            offset (Offset, int, optional): Specifies the X and Y coordinate, where the gradient begins.
+                 X is is effectively the center of the ``RADIAL``, ``ELLIPTICAL``, ``SQUARE`` and ``RECT`` style gradients. Defaults to ``Offset(50, 50)``.
             angle (Angle, int, optional): Specifies angle of the gradient. Defaults to 0.
             border (int, optional): Specifies percent of the total width where just the start color is used. Defaults to 0.
-            start_color (Color, optional): Specifies the color at the start point of the gradient. Defaults to ``Color(0)``.
-            start_intensity (Intensity, int, optional): Specifies the intensity at the start point of the gradient. Defaults to ``100``.
-            end_color (Color, optional): Specifies the color at the end point of the gradient. Defaults to ``Color(16777215)``.
-            end_intensity (Intensity, int, optional): Specifies the intensity at the end point of the gradient. Defaults to ``100``.
+            grad_color (ColorRange, optional): Specifies the color at the start point and stop point of the gradient. Defaults to ``ColorRange(Color(0), Color(16777215))``.
+            grad_intensity (IntensityRange, optional): Specifies the intensity at the start point and stop point of the gradient. Defaults to ``IntensityRange(100, 100)``.
             name (str, optional): Specifies the Fill Gradient Name.
             style_name (StylePageKind, str, optional): Specifies the Page Style that instance applies to. Deftult is Default Page Style.
 
@@ -178,14 +175,14 @@ class Gradient(PageStyleBaseMulti):
         fs = FillStyleStruct(
             style=style,
             step_count=step_count,
-            x_offset=x_offset,
-            y_offset=y_offset,
+            x_offset=offset.x,
+            y_offset=offset.y,
             angle=angle,
             border=border,
-            start_color=start_color,
-            start_intensity=start_intensity,
-            end_color=end_color,
-            end_intensity=end_intensity,
+            start_color=grad_color.start,
+            start_intensity=grad_intensity.start,
+            end_color=grad_color.end,
+            end_intensity=grad_intensity.end,
             style_name=style_name,
         )
         super().__init__()
@@ -236,14 +233,11 @@ class Gradient(PageStyleBaseMulti):
         inst = Gradient(
             style=struct.prop_style,
             step_count=struct.prop_step_count,
-            x_offset=struct.prop_x_offset,
-            y_offset=struct.prop_y_offset,
+            offset=Offset(struct.prop_x_offset, struct.prop_y_offset),
             angle=struct.prop_angle,
             border=struct.prop_border,
-            start_color=struct.prop_start_color,
-            start_intensity=struct.prop_start_intensity,
-            end_color=struct.prop_end_color,
-            end_intensity=struct.prop_end_intensity,
+            grad_color=ColorRange(struct.prop_start_color, struct.prop_end_color),
+            grad_intensity=IntensityRange(int(struct.prop_start_intensity), int(struct.prop_end_intensity)),
             name=prop_name,
             style_name=style_name,
         )

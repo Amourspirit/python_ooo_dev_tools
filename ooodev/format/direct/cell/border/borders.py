@@ -9,6 +9,8 @@ from ast import Tuple
 from typing import overload
 
 import uno
+
+from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
 from .....meta.static_prop import static_prop
 from .....utils import lo as mLo
@@ -56,9 +58,6 @@ class Borders(StyleMulti):
 
     .. versionadded:: 0.9.0
     """
-
-    _DEFAULT = None
-    _EMPTY = None
 
     # region init
 
@@ -124,6 +123,11 @@ class Borders(StyleMulti):
     # endregion init
 
     # region methods
+
+    def _on_modifing(self, event: CancelEventArgs) -> None:
+        if self._is_default_inst:
+            raise ValueError("Modifying a default instance is not allowed")
+        return super()._on_modifing(event)
 
     def _supported_services(self) -> Tuple[str, ...]:
         """
@@ -408,15 +412,20 @@ class Borders(StyleMulti):
     @static_prop
     def default() -> Borders:  # type: ignore[misc]
         """Gets Default Border. Static Property"""
-        if Borders._DEFAULT is None:
-            Borders._DEFAULT = Borders(border_side=Side(), padding=Padding.default)
-        return Borders._DEFAULT
+        try:
+            return Borders._DEFAULT_INST
+        except AttributeError:
+            Borders._DEFAULT_INST = Borders(border_side=Side(), padding=Padding.default)
+            Borders._DEFAULT_INST._is_default_inst = True
+        return Borders._DEFAULT_INST
 
     @static_prop
     def empty() -> Borders:  # type: ignore[misc]
         """Gets Empty Border. Static Property. When style is applied formatting is removed."""
-        if Borders._EMPTY is None:
-            Borders._EMPTY = Borders(
+        try:
+            return Borders._EMPTY_INST
+        except AttributeError:
+            Borders._EMPTY_INST = Borders(
                 border_side=Side.empty,
                 vertical=Side.empty,
                 horizontal=Side.empty,
@@ -426,6 +435,7 @@ class Borders(StyleMulti):
                 shadow=Shadow.empty,
                 padding=Padding.default,
             )
-        return Borders._EMPTY
+            Borders._EMPTY_INST._is_default_inst = True
+        return Borders._EMPTY_INST
 
     # endregion Properties

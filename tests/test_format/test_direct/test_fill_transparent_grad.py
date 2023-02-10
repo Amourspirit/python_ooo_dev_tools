@@ -9,7 +9,7 @@ import uno
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.draw import Draw
-from ooodev.format.direct.fill.transparent.gradient import Gradient, GradientStyle, FillTransparentGrad
+from ooodev.format.direct.fill.transparent.gradient import Gradient, GradientStyle, FillTransparentGrad, IntensityRange
 
 
 if TYPE_CHECKING:
@@ -35,7 +35,7 @@ def test_draw(loader) -> None:
         y = height / 2
 
         rec = Draw.draw_rectangle(slide=slide, x=x, y=y, width=width, height=height)
-        ts = Gradient(angle=30, end_value=100)
+        ts = Gradient(angle=30, grad_intensity=IntensityRange(0, 100))
         ts.apply(rec)
         fp = cast("FillProperties", rec)
         tp_grad = cast(FillTransparentGrad, ts._get_style_inst("fill_style"))
@@ -43,7 +43,7 @@ def test_draw(loader) -> None:
 
         x += width
         rec = Draw.draw_rectangle(slide=slide, x=x, y=y, width=width, height=height)
-        ts = Gradient(style=GradientStyle.RECT, angle=25, end_value=100)
+        ts = Gradient(style=GradientStyle.RECT, angle=25, grad_intensity=IntensityRange(0, 100))
         ts.apply(rec)
         fp = cast("FillProperties", rec)
         tp_grad = cast(FillTransparentGrad, ts._get_style_inst("fill_style"))
