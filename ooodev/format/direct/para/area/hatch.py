@@ -164,7 +164,7 @@ class Hatch(StyleMulti):
         if not hatch is None:
             return HatchStruct.from_hatch(hatch)
 
-        self._container_add_value(name=self._name, obj=hatch_struct.get_hatch(), allow_update=False, nc=nc)
+        self._container_add_value(name=self._name, obj=hatch_struct.get_uno_struct(), allow_update=False, nc=nc)
         hatch = self._container_get_value(self._name, nc)
         return HatchStruct.from_hatch(hatch)
 

@@ -4,7 +4,7 @@ Module for ``DropCapFormat`` struct.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Dict, Tuple, cast, overload
+from typing import Dict, Tuple, Type, cast, overload
 
 import uno
 from ....events.event_singleton import _Events
@@ -13,7 +13,7 @@ from ....utils import props as mProps
 from ....utils.data_type.byte import Byte
 from ....utils.type_var import T
 from ...kind.format_kind import FormatKind
-from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent
+from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent, _T
 
 
 from ooo.dyn.style.drop_cap_format import DropCapFormat
@@ -134,7 +134,7 @@ class DropCapStruct(StyleBase):
         if "keys" in kwargs:
             keys.update(kwargs["keys"])
         key = keys["prop"]
-        dcf = self.get_drop_cap_format()
+        dcf = self.get_uno_struct()
         mProps.Props.set(obj, **{key: dcf})
         eargs = EventArgs.from_args(cargs)
         self.on_applied(eargs)
@@ -144,9 +144,9 @@ class DropCapStruct(StyleBase):
 
     # endregion apply()
 
-    def get_drop_cap_format(self) -> DropCapFormat:
+    def get_uno_struct(self) -> DropCapFormat:
         """
-        Gets drop cap foramt for instance
+        Gets ``DropCapFormat`` from instance
 
         Returns:
             DropCapFormat: ``DropCapFormat`` instance
@@ -154,7 +154,7 @@ class DropCapStruct(StyleBase):
         return DropCapFormat(Lines=self._get("Lines"), Count=self._get("Count"), Distance=self._get("Distance"))
 
     @classmethod
-    def from_obj(cls, obj: object) -> DropCapStruct:
+    def from_obj(cls: Type[_T], obj: object) -> _T:
         """
         Gets instance from object
 
@@ -180,7 +180,7 @@ class DropCapStruct(StyleBase):
         return cls.from_drop_cap_format(dcf)
 
     @classmethod
-    def from_drop_cap_format(cls, dcf: DropCapFormat) -> DropCapStruct:
+    def from_drop_cap_format(cls: Type[_T], dcf: DropCapFormat) -> _T:
         """
         Converts a ``DropCapFormat`` Stop instance to a ``DropCap``
 

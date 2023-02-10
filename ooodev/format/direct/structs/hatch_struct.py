@@ -4,7 +4,7 @@ Module for ``Hatch`` struct.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, cast, overload
+from typing import Tuple, Type, cast, overload, TYPE_CHECKING
 
 import uno
 from ....exceptions import ex as mEx
@@ -12,8 +12,7 @@ from ....utils import props as mProps
 from ....utils.color import Color
 from ....utils.data_type.angle import Angle as Angle
 from ....utils.data_type.intensity import Intensity as Intensity
-from ....utils.type_var import T
-from ...style_base import StyleBase
+from ...style_base import StyleBase, _T
 from ...kind.format_kind import FormatKind
 from ....utils.unit_convert import UnitConvert
 
@@ -22,6 +21,12 @@ from ooo.dyn.drawing.hatch_style import HatchStyle
 
 # see Also:
 # https://github.com/LibreOffice/core/blob/f725629a6241ec064770c28957f11d306c18f130/filter/source/msfilter/escherex.cxx
+
+if TYPE_CHECKING:
+    try:
+        from typing import Self
+    except AttributeError:
+        from typing_extensions import Self
 
 
 class HatchStruct(StyleBase):
@@ -68,7 +73,7 @@ class HatchStruct(StyleBase):
     def _get_property_name(self) -> str:
         return "FillHatch"
 
-    def copy(self: T) -> T:
+    def copy(self) -> Self:
         nu = super(HatchStruct, self.__class__).__new__(self.__class__)
         nu.__init__()
         if self._dv:
@@ -78,12 +83,12 @@ class HatchStruct(StyleBase):
     def get_attrs(self) -> Tuple[str, ...]:
         return (self._get_property_name(),)
 
-    def get_hatch(self) -> Hatch:
+    def get_uno_struct(self) -> Hatch:
         """
-        Gets UNO ``Hatch`` from properties
+        Gets UNO ``Hatch`` from instance.
 
         Returns:
-            Hatch: ``com.sun.star.drawing.Hatch``
+            Hatch: ``Hatch`` instance
         """
         return Hatch(
             Style=self._get("Style"),
@@ -95,11 +100,11 @@ class HatchStruct(StyleBase):
     def __eq__(self, oth: object) -> bool:
         obj2 = None
         if isinstance(oth, HatchStruct):
-            obj2 = oth.get_hatch()
+            obj2 = oth.get_uno_struct()
         if getattr(oth, "typeName", None) == "com.sun.star.drawing.Hatch":
             obj2 = cast(Hatch, oth)
         if obj2:
-            obj1 = self.get_hatch()
+            obj1 = self.get_uno_struct()
             return (
                 obj1.Style == obj2.Style
                 and obj1.Color == obj2.Color
@@ -133,7 +138,7 @@ class HatchStruct(StyleBase):
             self._print_not_valid_obj("apply")
             return
 
-        hatch = self.get_hatch()
+        hatch = self.get_uno_struct()
         props = {self._get_property_name(): hatch}
         super().apply(obj=obj, override_dv=props)
 
@@ -141,7 +146,7 @@ class HatchStruct(StyleBase):
 
     # region static methods
     @classmethod
-    def from_hatch(cls, value: Hatch) -> HatchStruct:
+    def from_hatch(cls: Type[_T], value: Hatch) -> _T:
         """
         Converts a ``Hatch`` instance to a ``HatchStruct``
 
@@ -160,7 +165,7 @@ class HatchStruct(StyleBase):
         return inst
 
     @classmethod
-    def from_obj(cls, obj: object) -> HatchStruct:
+    def from_obj(cls: Type[_T], obj: object) -> _T:
         """
         Gets instance from object
 

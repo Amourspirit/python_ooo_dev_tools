@@ -5,7 +5,7 @@ Module for table side (``BorderLine2``) struct.
 """
 # region imports
 from __future__ import annotations
-from typing import Dict, Tuple, cast, overload
+from typing import Dict, Tuple, cast, overload, TYPE_CHECKING
 from enum import IntFlag, Enum
 
 from ....events.event_singleton import _Events
@@ -15,7 +15,6 @@ from ....utils.color import Color
 from ....utils.color import CommonColor
 from ...kind.format_kind import FormatKind
 from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent
-from ...style_const import POINT_RATIO
 from ..common import border_width_impl as mBwi
 from ....utils.unit_convert import UnitConvert, Length
 
@@ -24,6 +23,11 @@ from ooo.dyn.table.border_line import BorderLine as BorderLine
 from ooo.dyn.table.border_line_style import BorderLineStyleEnum as BorderLineStyleEnum
 from ooo.dyn.table.border_line2 import BorderLine2 as BorderLine2
 
+if TYPE_CHECKING:
+    try:
+        from typing import Self
+    except ImportError:
+        from typing_extensions import Self
 
 # endregion imports
 
@@ -260,11 +264,11 @@ class Side(StyleBase):
     def __eq__(self, other: object) -> bool:
         bl2: BorderLine2 = None
         if isinstance(other, Side):
-            bl2 = other.get_border_line2()
+            bl2 = other.get_uno_struct()
         elif getattr(other, "typeName", None) == "com.sun.star.table.BorderLine2":
             bl2 = other
         if bl2:
-            bl1 = self.get_border_line2()
+            bl1 = self.get_uno_struct()
             return (
                 bl1.Color == bl2.Color
                 and bl1.InnerLineWidth == bl2.InnerLineWidth
@@ -337,7 +341,7 @@ class Side(StyleBase):
         }
         if "keys" in kwargs:
             keys.update(kwargs["keys"])
-        val = self.get_border_line2()
+        val = self.get_uno_struct()
         applied = False
         if SideFlags.LEFT in flags:
             mProps.Props.set(obj, **{keys["left"]: val})
@@ -365,8 +369,14 @@ class Side(StyleBase):
 
     # endregion apply()
 
-    def get_border_line(self) -> BorderLine:
-        b2 = self.get_border_line2()
+    def get_uno_struct_border_line(self) -> BorderLine:
+        """
+        Gets UNO ``BorderLine`` from instance.
+
+        Returns:
+            BorderLine: ``BorderLine`` instance
+        """
+        b2 = self.get_uno_struct()
         return BorderLine(
             Color=b2.Color,
             InnerLineWidth=b2.InnerLineWidth,
@@ -374,14 +384,19 @@ class Side(StyleBase):
             LineDistance=b2.LineDistance,
         )
 
-    def get_border_line2(self) -> BorderLine2:
-        """gets Border Line of instance"""
+    def get_uno_struct(self) -> BorderLine2:
+        """
+        Gets UNO ``BorderLine2`` from instance.
+
+        Returns:
+            BorderLine2: ``BorderLine2`` instance
+        """
         line = BorderLine2()  # create the border line
         for key, val in self._dv.items():
             setattr(line, key, val)
         return line
 
-    def copy(self) -> Side:
+    def copy(self) -> Self:
         """Gets a copy of current instance"""
         cp = super().copy()
         cp._pts = self._pts
@@ -399,6 +414,15 @@ class Side(StyleBase):
 
     @staticmethod
     def from_border2(border: BorderLine2) -> Side:
+        """
+        Gets instance that is populated from UNO ``BorderLine2``.
+
+        Args:
+            border (BorderLine2): UNO struct
+
+        Returns:
+            Side: instance.
+        """
         side = Side()
         side._set("Color", border.Color)
         side._set("InnerLineWidth", border.InnerLineWidth)

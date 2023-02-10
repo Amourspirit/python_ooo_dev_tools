@@ -27,6 +27,10 @@ from com.sun.star.beans import XPropertySet
 if TYPE_CHECKING:
     from com.sun.star.beans import PropertyValue
 
+    try:
+        from typing import Self
+    except ImportError:
+        from typing_extensions import Self
 
 _T = TypeVar("_T")
 
@@ -487,7 +491,7 @@ class StyleBase(ABC):
             return ()
         return mProps.Props.make_props(**self._dv)
 
-    def copy(self: T) -> T:
+    def copy(self) -> Self:
         """Gets a copy of instance as a new instance"""
         nu = super(StyleBase, self.__class__).__new__(self.__class__)
         nu.__init__()

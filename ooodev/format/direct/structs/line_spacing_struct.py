@@ -132,11 +132,11 @@ class LineSpacingStruct(StyleBase):
     def __eq__(self, other: object) -> bool:
         ls2: UnoLineSpacing = None
         if isinstance(other, LineSpacingStruct):
-            ls2 = other.get_line_spacing()
+            ls2 = other.get_uno_struct()
         elif getattr(other, "typeName", None) == "com.sun.star.style.LineSpacing":
             ls2 = other
         if ls2:
-            ls1 = self.get_line_spacing()
+            ls1 = self.get_uno_struct()
             return ls1.Height == ls2.Height and ls1.Mode == ls2.Mode
         return False
 
@@ -213,15 +213,20 @@ class LineSpacingStruct(StyleBase):
         if "keys" in kwargs:
             keys.update(kwargs["keys"])
         key = keys["spacing"]
-        mProps.Props.set(obj, **{key: self.get_line_spacing()})
+        mProps.Props.set(obj, **{key: self.get_uno_struct()})
         eargs = EventArgs.from_args(cargs)
         self.on_applied(eargs)
         _Events().trigger(FormatNamedEvent.STYLE_APPLIED, eargs)
 
     # endregion apply()
 
-    def get_line_spacing(self) -> UnoLineSpacing:
-        """gets Line spacing of instance"""
+    def get_uno_struct(self) -> UnoLineSpacing:
+        """
+        Gets UNO ``Gradient`` from instance.
+
+        Returns:
+            Gradient: ``Gradient`` instance
+        """
         return UnoLineSpacing(Mode=self._mode, Height=self._value)
 
     @classmethod

@@ -86,10 +86,10 @@ def test_calc_border(loader) -> None:
         ]  # plus or minus 2
         assert cp.TableBorder2.RightLine.LineStyle == BorderLineStyleEnum.DOUBLE.value
 
-        assert cp.ShadowFormat == shadow.get_shadow_format()
+        assert cp.ShadowFormat == shadow.get_uno_struct()
 
         shadow = Shadow(location=ShadowLocation.BOTTOM_LEFT)
-        assert cp.ShadowFormat != shadow.get_shadow_format()
+        assert cp.ShadowFormat != shadow.get_uno_struct()
 
         cell_obj = Calc.get_cell_obj("e1")
         cell = Calc.get_cell(sheet, cell_obj)

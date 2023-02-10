@@ -4,7 +4,7 @@ Module for ``DropCapFormat`` struct.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Dict, Tuple, cast, overload
+from typing import Dict, Tuple, Type, cast, overload, TYPE_CHECKING
 
 import uno
 from ....events.event_singleton import _Events
@@ -12,10 +12,16 @@ from ....exceptions import ex as mEx
 from ....utils import props as mProps
 from ....utils.type_var import T
 from ...kind.format_kind import FormatKind
-from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent
+from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent, _T
 
 
 from ooo.dyn.lang.locale import Locale
+
+if TYPE_CHECKING:
+    try:
+        from typing import Self
+    except AttributeError:
+        from typing_extensions import Self
 
 
 class LocaleStruct(StyleBase):
@@ -77,7 +83,7 @@ class LocaleStruct(StyleBase):
     def _is_valid_obj(self, obj: object) -> bool:
         return mProps.Props.has(obj, self._get_property_name())
 
-    def copy(self: T) -> T:
+    def copy(self) -> Self:
         nu = super(LocaleStruct, self.__class__).__new__(self.__class__)
         nu.__init__()
         if self._dv:
@@ -131,7 +137,7 @@ class LocaleStruct(StyleBase):
         if "keys" in kwargs:
             keys.update(kwargs["keys"])
         key = keys["prop"]
-        dcf = self.get_locale()
+        dcf = self.get_uno_struct()
         mProps.Props.set(obj, **{key: dcf})
         eargs = EventArgs.from_args(cargs)
         self.on_applied(eargs)
@@ -141,9 +147,9 @@ class LocaleStruct(StyleBase):
 
     # endregion apply()
 
-    def get_locale(self) -> Locale:
+    def get_uno_struct(self) -> Locale:
         """
-        Gets locale for instance
+        Gets UNO ``Locale`` from instance.
 
         Returns:
             Locale: ``Locale`` instance
@@ -151,7 +157,7 @@ class LocaleStruct(StyleBase):
         return Locale(Language=self._get("Language"), Country=self._get("Country"), Variant=self._get("Variant"))
 
     @classmethod
-    def from_obj(cls, obj: object) -> LocaleStruct:
+    def from_obj(cls: Type[_T], obj: object) -> _T:
         """
         Gets instance from object
 
@@ -177,7 +183,7 @@ class LocaleStruct(StyleBase):
         return cls.from_locale(dcf)
 
     @classmethod
-    def from_locale(cls, locale: Locale) -> LocaleStruct:
+    def from_locale(cls: Type[_T], locale: Locale) -> _T:
         """
         Converts a ``Locale`` Stop instance to a ``LocaleStruct``
 
@@ -197,11 +203,11 @@ class LocaleStruct(StyleBase):
     def __eq__(self, oth: object) -> bool:
         obj2 = None
         if isinstance(oth, LocaleStruct):
-            obj2 = oth.get_locale()
+            obj2 = oth.get_uno_struct()
         if getattr(oth, "typeName", None) == "com.sun.star.lang.Locale":
             obj2 = cast(Locale, oth)
         if not obj2 is None:
-            obj1 = self.get_locale()
+            obj1 = self.get_uno_struct()
             return obj1.Country == obj2.Country and obj1.Language == obj2.Language and obj1.Variant == obj2.Variant
         return NotImplemented
 

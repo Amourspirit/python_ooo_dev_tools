@@ -129,7 +129,7 @@ class AbstractSides(StyleBase):
         if event_args.has("sides_border2_set"):
             return
         side = cast(Side, event_args.value)
-        event_args.value = side.get_border_line2()
+        event_args.value = side.get_uno_struct()
         event_args.set("sides_border2_set", True)
 
     def __eq__(self, other: object) -> bool:

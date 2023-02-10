@@ -5,7 +5,7 @@ Module for Shadow format (``ShadowFormat``) struct.
 """
 # region imports
 from __future__ import annotations
-from typing import Dict, Tuple, cast, overload
+from typing import Dict, Tuple, Type, cast, overload
 
 from ....events.event_singleton import _Events
 from ....meta.static_prop import static_prop
@@ -13,7 +13,7 @@ from ....utils import props as mProps
 from ....utils.color import Color
 from ....utils.color import CommonColor
 from ...kind.format_kind import FormatKind
-from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent
+from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent, _T
 from ....utils.unit_convert import UnitConvert, Length
 from ....utils.type_var import T
 
@@ -73,11 +73,11 @@ class ShadowStruct(StyleBase):
     def __eq__(self, other: object) -> bool:
         s2: ShadowFormat = None
         if isinstance(other, ShadowStruct):
-            s2 = other.get_shadow_format()
+            s2 = other.get_uno_struct()
         elif getattr(other, "typeName", None) == "com.sun.star.table.ShadowFormat":
             s2 = other
         if s2:
-            s1 = self.get_shadow_format()
+            s1 = self.get_uno_struct()
             return (
                 s1.Color == s2.Color
                 and s1.IsTransparent == s2.IsTransparent
@@ -86,12 +86,12 @@ class ShadowStruct(StyleBase):
             )
         return False
 
-    def get_shadow_format(self) -> ShadowFormat:
+    def get_uno_struct(self) -> ShadowFormat:
         """
-        Gets Shadow format for instance.
+        Gets UNO ``ShadowFormat`` from instance.
 
         Returns:
-            ShadowFormat: Shadow Format
+            ShadowFormat: ``ShadowFormat`` instance
         """
         return ShadowFormat(
             Location=self._location,
@@ -175,7 +175,7 @@ class ShadowStruct(StyleBase):
         if cargs.cancel:
             return
 
-        shadow = self.get_shadow_format()
+        shadow = self.get_uno_struct()
         mProps.Props.set(obj, **{keys["prop"]: shadow})
         eargs = EventArgs.from_args(cargs)
         self.on_applied(eargs)
@@ -184,7 +184,7 @@ class ShadowStruct(StyleBase):
     # endregion apply()
 
     @classmethod
-    def from_obj(cls, obj: object) -> ShadowStruct:
+    def from_obj(cls: Type[_T], obj: object) -> _T:
         """
         Gets instance from object
 
@@ -209,7 +209,7 @@ class ShadowStruct(StyleBase):
         return nu
 
     @classmethod
-    def from_shadow(cls, shadow: ShadowFormat) -> ShadowStruct:
+    def from_shadow(cls: Type[_T], shadow: ShadowFormat) -> _T:
         """
         Gets an instance
 

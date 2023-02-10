@@ -54,7 +54,7 @@ def _test_write(loader, para_text) -> None:
         cursor_p.gotoStartOfParagraph(False)
         cursor_p.gotoEndOfParagraph(True)
         pp = cast("ParagraphProperties", cursor_p.TextParagraph)
-        grad = cast(FillTransparentGrad, tp._get_style_inst("fill_grad")).get_gradient()
+        grad = cast(FillTransparentGrad, tp._get_style_inst("fill_grad")).get_uno_struct()
 
         cursor_p.gotoEnd(False)
 

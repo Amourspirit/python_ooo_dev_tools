@@ -131,7 +131,7 @@ class Gradient(StyleMulti):
         name = "Transparency "
         if not struct is None:
             return FillTransparentGrad.from_gradient(struct)
-        struct = fill_tp.get_gradient()
+        struct = fill_tp.get_uno_struct()
         self._container_add_value(name=self._name, obj=struct, allow_update=False, nc=nc)
         return FillTransparentGrad.from_gradient(self._container_get_value(self._name, nc))
 

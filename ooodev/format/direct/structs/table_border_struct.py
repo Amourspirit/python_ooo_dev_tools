@@ -5,7 +5,7 @@ Module for table border (``TableBorder2``) struct
 """
 # region imports
 from __future__ import annotations
-from typing import Tuple, cast, overload
+from typing import Tuple, cast, overload, TYPE_CHECKING
 
 import uno
 from ....events.event_singleton import _Events
@@ -21,6 +21,11 @@ from .side import Side as Side
 from ooo.dyn.table.table_border import TableBorder
 from ooo.dyn.table.table_border2 import TableBorder2
 
+if TYPE_CHECKING:
+    try:
+        from typing import Self
+    except AttributeError:
+        from typing_extensions import Self
 
 # endregion imports
 
@@ -116,7 +121,7 @@ class TableBorderStruct(StyleBase):
     def _get_property_name(self) -> str:
         return "TableBorder2"
 
-    def copy(self: T) -> T:
+    def copy(self) -> Self:
         nu = super(TableBorderStruct, self.__class__).__new__(self.__class__)
         nu.__init__()
         if self._dv:
@@ -181,7 +186,7 @@ class TableBorderStruct(StyleBase):
         for ap in attrs_props:
             val = cast(Side, self._get(ap.first))
             if not val is None:
-                setattr(tb, ap.first, val.get_border_line2())
+                setattr(tb, ap.first, val.get_uno_struct())
                 if ap.second:
                     setattr(tb, ap.second, True)
         distance = cast(int, self._get(self._props.dist.first))
@@ -202,12 +207,12 @@ class TableBorderStruct(StyleBase):
             )
             if h_invalid:
                 tb = cast(TableBorder2, mProps.Props.get(obj, prop_name))
-                tb.HorizontalLine = Side.empty.get_border_line2()
+                tb.HorizontalLine = Side.empty.get_uno_struct()
                 tb.IsHorizontalLineValid = True
                 mProps.Props.set(obj, TableBorder2=tb)
         else:
             tb = cast(TableBorder2, mProps.Props.get(obj, prop_name))
-            tb.HorizontalLine = h_line.get_border_line2()
+            tb.HorizontalLine = h_line.get_uno_struct()
             tb.IsHorizontalLineValid = True
             mProps.Props.set(obj, TableBorder2=tb)
         eargs = EventArgs.from_args(cargs)
@@ -270,12 +275,12 @@ class TableBorderStruct(StyleBase):
                 nu._set(p.second, True)
         return nu
 
-    def get_table_border2(self) -> TableBorder2:
+    def get_uno_struct(self) -> TableBorder2:
         """
-        Gets Table Border for current instance.
+        Gets UNO ``TableBorder2`` from instance.
 
         Returns:
-            TableBorder2: ``com.sun.star.table.TableBorder2``
+            TableBorder2: ``TableBorder2`` instance
         """
         tb = TableBorder2()
 
@@ -285,17 +290,17 @@ class TableBorderStruct(StyleBase):
         for key, val in self._dv.items():
             if key in attrs:
                 side = cast(Side, val)
-                setattr(tb, key, side.get_border_line2())
+                setattr(tb, key, side.get_uno_struct())
             else:
                 setattr(tb, key, val)
         return tb
 
-    def get_table_border(self) -> TableBorder:
+    def get_uno_struct_table_border(self) -> TableBorder:
         """
-        Gets Table Border for current instance.
+        Gets UNO ``TableBorder`` from instance.
 
         Returns:
-            TableBorder: ``com.sun.star.table.TableBorder``
+            TableBorder: ``TableBorder`` instance
         """
         tb = TableBorder2()
         # put attribs in a tuple
@@ -304,7 +309,7 @@ class TableBorderStruct(StyleBase):
         for key, val in self._dv.items():
             if key in attrs:
                 side = cast(Side, val)
-                setattr(tb, key, side.get_border_line())
+                setattr(tb, key, side.get_uno_struct_border_line())
             else:
                 setattr(tb, key, val)
         return tb

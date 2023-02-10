@@ -97,11 +97,11 @@ class Borders(StyleMulti):
         init_vals = {}
 
         if not shadow is None:
-            init_vals["ShadowFormat"] = shadow.get_shadow_format()
+            init_vals["ShadowFormat"] = shadow.get_uno_struct()
         if not diagonal_down is None:
-            init_vals["DiagonalTLBR2"] = diagonal_down.get_border_line2()
+            init_vals["DiagonalTLBR2"] = diagonal_down.get_uno_struct()
         if not diagonal_up is None:
-            init_vals["DiagonalBLTR2"] = diagonal_up.get_border_line2()
+            init_vals["DiagonalBLTR2"] = diagonal_up.get_uno_struct()
 
         border_table = TblBorder2(
             left=left,
@@ -350,7 +350,7 @@ class Borders(StyleMulti):
         if value is None:
             cp._remove("DiagonalTLBR2")
         else:
-            cp._set("DiagonalTLBR2", value.get_border_line2())
+            cp._set("DiagonalTLBR2", value.get_uno_struct())
         return cp
 
     def fmt_diagonal_up(self, value: Side | None) -> Borders:
@@ -367,7 +367,7 @@ class Borders(StyleMulti):
         if value is None:
             cp._remove("DiagonalBLTR2")
         else:
-            cp._set("DiagonalBLTR2", value.get_border_line2())
+            cp._set("DiagonalBLTR2", value.get_uno_struct())
         return cp
 
     def fmt_shadow(self, value: Shadow | None) -> Borders:
@@ -384,7 +384,7 @@ class Borders(StyleMulti):
         if value is None:
             cp._remove("ShadowFormat")
         else:
-            cp._set("ShadowFormat", value.get_shadow_format())
+            cp._set("ShadowFormat", value.get_uno_struct())
         return cp
 
     def fmt_padding(self, value: Padding | None) -> Borders:
