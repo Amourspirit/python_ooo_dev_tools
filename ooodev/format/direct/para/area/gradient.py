@@ -192,14 +192,11 @@ class Gradient(StyleMulti):
             inst = Gradient(
                 style=GradientStyle.LINEAR,
                 step_count=0,
-                offset=0,
-                y_offset=0,
+                offset=Offset(0, 0),
                 angle=0,
                 border=0,
-                start_color=Color(0),
-                start_intensity=100,
-                end_color=Color(16777215),
-                end_intensity=100,
+                grad_color=ColorRange(0, 16777215),
+                grad_intensity=IntensityRange(100, 100),
             )
             inst._set("FillStyle", FillStyle.NONE)
             inst._set("FillGradientName", "")
