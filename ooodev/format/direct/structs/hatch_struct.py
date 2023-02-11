@@ -4,7 +4,7 @@ Module for ``Hatch`` struct.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, Type, cast, overload, TYPE_CHECKING
+from typing import Tuple, Type, cast, overload, TypeVar, TYPE_CHECKING
 
 import uno
 from ....exceptions import ex as mEx
@@ -12,7 +12,7 @@ from ....utils import props as mProps
 from ....utils.color import Color
 from ....utils.data_type.angle import Angle as Angle
 from ....utils.data_type.intensity import Intensity as Intensity
-from ...style_base import StyleBase, _T
+from ...style_base import StyleBase
 from ...kind.format_kind import FormatKind
 from ....utils.unit_convert import UnitConvert
 
@@ -22,11 +22,7 @@ from ooo.dyn.drawing.hatch_style import HatchStyle
 # see Also:
 # https://github.com/LibreOffice/core/blob/f725629a6241ec064770c28957f11d306c18f130/filter/source/msfilter/escherex.cxx
 
-if TYPE_CHECKING:
-    try:
-        from typing import Self
-    except AttributeError:
-        from typing_extensions import Self
+_THatchStruct = TypeVar(name="_THatchStruct", bound="HatchStruct")
 
 
 class HatchStruct(StyleBase):
@@ -38,6 +34,7 @@ class HatchStruct(StyleBase):
 
     def __init__(
         self,
+        *,
         style: HatchStyle = HatchStyle.SINGLE,
         color: Color = Color(0),
         distance: float = 0.0,
@@ -73,7 +70,7 @@ class HatchStruct(StyleBase):
     def _get_property_name(self) -> str:
         return "FillHatch"
 
-    def copy(self) -> Self:
+    def copy(self: _THatchStruct) -> _THatchStruct:
         nu = super(HatchStruct, self.__class__).__new__(self.__class__)
         nu.__init__()
         if self._dv:
@@ -146,7 +143,7 @@ class HatchStruct(StyleBase):
 
     # region static methods
     @classmethod
-    def from_hatch(cls: Type[_T], value: Hatch) -> _T:
+    def from_hatch(cls: Type[_THatchStruct], value: Hatch) -> _THatchStruct:
         """
         Converts a ``Hatch`` instance to a ``HatchStruct``
 
@@ -165,7 +162,7 @@ class HatchStruct(StyleBase):
         return inst
 
     @classmethod
-    def from_obj(cls: Type[_T], obj: object) -> _T:
+    def from_obj(cls: Type[_THatchStruct], obj: object) -> _THatchStruct:
         """
         Gets instance from object
 

@@ -5,8 +5,7 @@ Module for managing table borders (cells and ranges).
 """
 # region imports
 from __future__ import annotations
-from ast import Tuple
-from typing import overload
+from typing import overload, cast, Tuple
 
 import uno
 
@@ -408,6 +407,24 @@ class Borders(StyleMulti):
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
         return FormatKind.CELL
+
+    @property
+    def prop_inner_padding(self) -> Padding:
+        """Gets Padding instance"""
+        try:
+            return self._direct_inner_padding
+        except AttributeError:
+            self._direct_inner_padding = cast(Padding, self._get_style_inst("padding"))
+        return self._direct_inner_padding
+
+    @property
+    def prop_inner_border_table(self) -> TblBorder2:
+        """Gets border table instance"""
+        try:
+            return self._direct_inner_table
+        except AttributeError:
+            self._direct_inner_table = cast(TblBorder2, self._get_style_inst("border_table"))
+        return self._direct_inner_table
 
     @static_prop
     def default() -> Borders:  # type: ignore[misc]

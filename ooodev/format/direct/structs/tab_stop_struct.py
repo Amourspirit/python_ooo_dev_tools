@@ -4,7 +4,7 @@ Modele for addin paragraph tab.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Dict, Iterable, Tuple, Type, cast, overload, TYPE_CHECKING
+from typing import Dict, Iterable, Tuple, Type, cast, overload, TypeVar
 from enum import Enum
 
 import uno
@@ -13,18 +13,14 @@ from ....exceptions import ex as mEx
 from ....utils import lo as mLo
 from ....utils import props as mProps
 from ...kind.format_kind import FormatKind
-from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent, _T
+from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent
 
 from com.sun.star.beans import XPropertySet
 
 from ooo.dyn.style.tab_align import TabAlign as TabAlign
 from ooo.dyn.style.tab_stop import TabStop
 
-if TYPE_CHECKING:
-    try:
-        from typing import Self
-    except AttributeError:
-        from typing_extensions import Self
+_TTabStopStruct = TypeVar(name="_TTabStopStruct", bound="TabStopStruct")
 
 
 class FillCharKind(Enum):
@@ -54,6 +50,7 @@ class TabStopStruct(StyleBase):
 
     def __init__(
         self,
+        *,
         position: float = 0.0,
         align: TabAlign = TabAlign.LEFT,
         decimal_char: str = ".",
@@ -107,8 +104,8 @@ class TabStopStruct(StyleBase):
     def _get_property_name(self) -> str:
         return "ParaTabStops"
 
-    def copy(self) -> Self:
-        nu = super(TabStopStruct, self.__class__).__new__(self.__class__)
+    def copy(self: _TTabStopStruct) -> _TTabStopStruct:
+        nu = cast(TabStopStruct, super(TabStopStruct, self.__class__).__new__(self.__class__))
         nu.__init__()
         if self._dv:
             nu._update(self._dv)
@@ -218,7 +215,7 @@ class TabStopStruct(StyleBase):
         )
 
     @classmethod
-    def from_obj(cls: Type[_T], obj: object, index: int = 0) -> _T:
+    def from_obj(cls: Type[_TTabStopStruct], obj: object, index: int = 0) -> _TTabStopStruct:
         """
         Gets instance from object
 
@@ -245,7 +242,7 @@ class TabStopStruct(StyleBase):
         return cls.from_tab_stop(ts)
 
     @classmethod
-    def from_tab_stop(cls: Type[_T], ts: TabStop) -> _T:
+    def from_tab_stop(cls: Type[_TTabStopStruct], ts: TabStop) -> _TTabStopStruct:
         """
         Converts a Tab Stop instance to a Tab
 
@@ -294,7 +291,7 @@ class TabStopStruct(StyleBase):
     # endregion dunder methods
 
     # region format methods
-    def fmt_position(self, value: float) -> TabStopStruct:
+    def fmt_position(self: _TTabStopStruct, value: float) -> _TTabStopStruct:
         """
         Gets a copy of instance with position set.
 
@@ -308,7 +305,7 @@ class TabStopStruct(StyleBase):
         cp.prop_position = value
         return cp
 
-    def fmt_align(self, value: TabAlign) -> TabStopStruct:
+    def fmt_align(self: _TTabStopStruct, value: TabAlign) -> _TTabStopStruct:
         """
         Gets a copy of instance with align set.
 
@@ -322,7 +319,7 @@ class TabStopStruct(StyleBase):
         cp.prop_align = value
         return cp
 
-    def fmt_decimal_char(self, value: str) -> TabStopStruct:
+    def fmt_decimal_char(self: _TTabStopStruct, value: str) -> _TTabStopStruct:
         """
         Gets a copy of instance with decimal char set.
 
@@ -336,7 +333,7 @@ class TabStopStruct(StyleBase):
         cp.prop_decimal_char = value
         return cp
 
-    def fmt_fill_char(self, value: FillCharKind | str) -> TabStopStruct:
+    def fmt_fill_char(self: _TTabStopStruct, value: FillCharKind | str) -> _TTabStopStruct:
         """
         Gets a copy of instance with fill char set.
 

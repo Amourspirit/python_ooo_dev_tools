@@ -4,7 +4,7 @@ Module for ``DropCapFormat`` struct.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Dict, Tuple, Type, cast, overload
+from typing import Dict, Tuple, Type, cast, overload, TypeVar
 
 import uno
 from ....events.event_singleton import _Events
@@ -13,10 +13,12 @@ from ....utils import props as mProps
 from ....utils.data_type.byte import Byte
 from ....utils.type_var import T
 from ...kind.format_kind import FormatKind
-from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent, _T
+from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent
 
 
 from ooo.dyn.style.drop_cap_format import DropCapFormat
+
+_TDropCapStruct = TypeVar(name="_TDropCapStruct", bound="DropCapStruct")
 
 
 class DropCapStruct(StyleBase):
@@ -32,7 +34,7 @@ class DropCapStruct(StyleBase):
 
     # region init
 
-    def __init__(self, count: int = 0, distance: int = 0, lines: int = 0) -> None:
+    def __init__(self, *, count: int = 0, distance: int = 0, lines: int = 0) -> None:
         """
         Constructor
 
@@ -154,7 +156,7 @@ class DropCapStruct(StyleBase):
         return DropCapFormat(Lines=self._get("Lines"), Count=self._get("Count"), Distance=self._get("Distance"))
 
     @classmethod
-    def from_obj(cls: Type[_T], obj: object) -> _T:
+    def from_obj(cls: Type[_TDropCapStruct], obj: object) -> _TDropCapStruct:
         """
         Gets instance from object
 
@@ -180,7 +182,7 @@ class DropCapStruct(StyleBase):
         return cls.from_drop_cap_format(dcf)
 
     @classmethod
-    def from_drop_cap_format(cls: Type[_T], dcf: DropCapFormat) -> _T:
+    def from_drop_cap_format(cls: Type[_TDropCapStruct], dcf: DropCapFormat) -> _TDropCapStruct:
         """
         Converts a ``DropCapFormat`` Stop instance to a ``DropCap``
 
@@ -216,7 +218,7 @@ class DropCapStruct(StyleBase):
     # endregion dunder methods
 
     # region format methods
-    def fmt_count(self, value: int) -> DropCapStruct:
+    def fmt_count(self: _TDropCapStruct, value: int) -> _TDropCapStruct:
         """
         Gets a copy of instance with count set.
 
@@ -230,7 +232,7 @@ class DropCapStruct(StyleBase):
         cp.prop_count = value
         return cp
 
-    def fmt_distance(self, value: int) -> DropCapStruct:
+    def fmt_distance(self: _TDropCapStruct, value: int) -> _TDropCapStruct:
         """
         Gets a copy of instance with distance set.
 
@@ -244,7 +246,7 @@ class DropCapStruct(StyleBase):
         cp.prop_distance = value
         return cp
 
-    def fmt_lines(self, value: int) -> DropCapStruct:
+    def fmt_lines(self: _TDropCapStruct, value: int) -> _TDropCapStruct:
         """
         Gets a copy of instance with lines set.
 

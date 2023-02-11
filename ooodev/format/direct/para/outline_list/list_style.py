@@ -4,7 +4,7 @@ Modele for managing paragraph breaks.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, overload
+from typing import Tuple, overload, cast, Type, TypeVar
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
@@ -16,6 +16,8 @@ from ....style_base import StyleBase
 from ....writer.style.lst import StyleListKind as StyleListKind
 
 # from ...events.args.key_val_cancel_args import KeyValCancelArgs
+
+_TListStyle = TypeVar(name="_TListStyle", bound="ListStyle")
 
 
 class ListStyle(StyleBase):
@@ -110,23 +112,24 @@ class ListStyle(StyleBase):
 
     # endregion apply()
 
-    @staticmethod
-    def from_obj(obj: object) -> ListStyle:
+    @classmethod
+    def from_obj(cls: Type[_TListStyle], obj: object) -> _TListStyle:
         """
         Gets instance from object
 
         Args:
-            obj (object): UNO object that supports ``com.sun.star.style.ParagraphProperties`` service.
+            obj (object): UNO object.
 
         Raises:
-            NotSupportedServiceError: If ``obj`` does not support  ``com.sun.star.style.ParagraphProperties`` service.
+            NotSupportedError: If ``obj`` is not supported.
 
         Returns:
             ListStyle: ``ListStyle`` instance that represents ``obj`` properties.
         """
-        inst = ListStyle()
+        inst = super(ListStyle, cls).__new__(cls)
+        inst.__init__()
         if not inst._is_valid_obj(obj):
-            raise mEx.NotSupportedServiceError(inst._supported_services()[0])
+            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
         def set_prop(key: str, o: ListStyle):
             nonlocal obj
@@ -143,7 +146,7 @@ class ListStyle(StyleBase):
     # endregion methods
 
     # region Style Methods
-    def fmt_list_style(self, value: str | StyleListKind | None) -> ListStyle:
+    def fmt_list_style(self: _TListStyle, value: str | StyleListKind | None) -> _TListStyle:
         """
         Gets a copy of instance with before list style set or removed
 
@@ -157,7 +160,7 @@ class ListStyle(StyleBase):
         cp.prop_list_style = value
         return cp
 
-    def fmt_num_start(self, value: int | None) -> ListStyle:
+    def fmt_num_start(self: _TListStyle, value: int | None) -> _TListStyle:
         """
         Gets a copy of instance with before list style set or removed
 
@@ -178,7 +181,7 @@ class ListStyle(StyleBase):
 
     # region Style Properties
     @property
-    def restart_numbers(self) -> ListStyle:
+    def restart_numbers(self: _TListStyle) -> _TListStyle:
         """Gets instance with restart numbers set"""
         cp = self.copy()
         cp.prop_num_start = -1

@@ -4,7 +4,7 @@ Module for Fill Transparency.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Any, cast
+from typing import Any, cast, Type, TypeVar
 import uno
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
@@ -14,6 +14,8 @@ from .....utils import props as mProps
 from .....utils.data_type.intensity import Intensity as Intensity
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleBase
+
+_TTransparency = TypeVar(name="_TTransparency", bound="Transparency")
 
 
 class Transparency(StyleBase):
@@ -59,7 +61,7 @@ class Transparency(StyleBase):
     # endregion Overrides
 
     @classmethod
-    def from_obj(cls, obj: object) -> Transparency:
+    def from_obj(cls: Type[_TTransparency], obj: object) -> _TTransparency:
         """
         Gets instance from object
 
@@ -71,13 +73,18 @@ class Transparency(StyleBase):
         """
         # this nu is only used to get Property Name
 
-        if not Transparency.default._is_valid_obj(obj):
-            raise mEx.NotSupportedError("obj is not supported")
+        nu = super(Transparency, cls).__new__(cls)
+        nu.__init__()
+        if not nu._is_valid_obj(obj):
+            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
         tp = cast(int, mProps.Props.get(obj, "FillTransparence", None))
+        inst = super(Transparency, cls).__new__(cls)
         if tp is None:
-            return Transparency(0)
-        return Transparency(tp)
+            inst.__init__(value=0)
+        else:
+            inst.__init__(value=tp)
+        return inst
 
     @property
     def prop_format_kind(self) -> FormatKind:

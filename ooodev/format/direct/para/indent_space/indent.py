@@ -4,7 +4,7 @@ Modele for managing paragraph padding.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, cast, overload
+from typing import Tuple, cast, overload, Type, TypeVar
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
@@ -13,6 +13,8 @@ from .....utils import lo as mLo
 from .....utils import props as mProps
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleBase
+
+_TIndent = TypeVar(name="_TIndent", bound="Indent")
 
 
 class Indent(StyleBase):
@@ -30,6 +32,7 @@ class Indent(StyleBase):
 
     def __init__(
         self,
+        *,
         before: float | None = None,
         after: float | None = None,
         first: float | None = None,
@@ -66,12 +69,6 @@ class Indent(StyleBase):
 
     # region methods
     def _supported_services(self) -> Tuple[str, ...]:
-        """
-        Gets a tuple of supported services (``com.sun.star.style.ParagraphProperties``,)
-
-        Returns:
-            Tuple[str, ...]: Supported services
-        """
         return ("com.sun.star.style.ParagraphProperties", "com.sun.star.style.ParagraphStyle")
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
@@ -104,22 +101,23 @@ class Indent(StyleBase):
     # endregion apply()
 
     @staticmethod
-    def from_obj(obj: object) -> Indent:
+    def from_obj(cls: Type[_TIndent], obj: object) -> _TIndent:
         """
         Gets instance from object
 
         Args:
-            obj (object): UNO object that supports ``com.sun.star.style.ParagraphProperties`` service.
+            obj (object): UNO object.
 
         Raises:
-            NotSupportedServiceError: If ``obj`` does not support  ``com.sun.star.style.ParagraphProperties`` service.
+            NotSupportedError: If ``obj`` is not supported.
 
         Returns:
             Indent: ``Indent`` instance that represents ``obj`` writing mode.
         """
-        inst = Indent()
+        inst = cast(Indent, super(Indent, cls).__new__(cls))
+        inst.__init__()
         if not inst._is_valid_obj(obj):
-            raise mEx.NotSupportedServiceError(inst._supported_services()[0])
+            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
         def set_prop(key: str, indent: Indent):
             nonlocal obj
@@ -136,7 +134,7 @@ class Indent(StyleBase):
     # endregion methods
 
     # region style methods
-    def fmt_before(self, value: float | None) -> Indent:
+    def fmt_before(self: _TIndent, value: float | None) -> _TIndent:
         """
         Gets a copy of instance with before margin set or removed
 
@@ -150,7 +148,7 @@ class Indent(StyleBase):
         cp.prop_before = value
         return cp
 
-    def fmt_after(self, value: float | None) -> Indent:
+    def fmt_after(self: _TIndent, value: float | None) -> _TIndent:
         """
         Gets a copy of instance with after margin set or removed
 
@@ -164,7 +162,7 @@ class Indent(StyleBase):
         cp.prop_after = value
         return cp
 
-    def fmt_first(self, value: float | None) -> Indent:
+    def fmt_first(self: _TIndent, value: float | None) -> _TIndent:
         """
         Gets a copy of instance with first indent margin set or removed
 
@@ -178,7 +176,7 @@ class Indent(StyleBase):
         cp.prop_after = value
         return cp
 
-    def fmt_auto(self, value: bool | None) -> Indent:
+    def fmt_auto(self: _TIndent, value: bool | None) -> _TIndent:
         """
         Gets a copy of instance with auto set or removed
 
@@ -196,7 +194,7 @@ class Indent(StyleBase):
 
     # region Style Properties
     @property
-    def auto(self) -> Indent:
+    def auto(self: _TIndent) -> _TIndent:
         """Gets copy of instance with auto set"""
         cp = self.copy()
         cp.prop_auto = True

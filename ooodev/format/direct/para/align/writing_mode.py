@@ -4,7 +4,7 @@ Modele for managing paragraph Writing Mode.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, cast, overload
+from typing import Tuple, cast, overload, Type, TypeVar
 
 import uno
 
@@ -17,6 +17,8 @@ from ....kind.format_kind import FormatKind
 from ....style_base import StyleBase
 
 from ooo.dyn.text.writing_mode2 import WritingMode2Enum as WritingMode2Enum
+
+_TWritingMode = TypeVar(name="_TWritingMode", bound="WritingMode")
 
 
 class WritingMode(StyleBase):
@@ -54,12 +56,6 @@ class WritingMode(StyleBase):
 
     # region methods
     def _supported_services(self) -> Tuple[str, ...]:
-        """
-        Gets a tuple of supported services (``com.sun.star.style.ParagraphPropertiesComplex``,)
-
-        Returns:
-            Tuple[str, ...]: Supported services
-        """
         return ("com.sun.star.style.ParagraphPropertiesComplex", "com.sun.star.style.ParagraphStyle")
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
@@ -93,30 +89,31 @@ class WritingMode(StyleBase):
     # endregion apply()
 
     @staticmethod
-    def from_obj(obj: object) -> WritingMode:
+    def from_obj(cls: Type[_TWritingMode], obj: object) -> _TWritingMode:
         """
         Gets instance from object
 
         Args:
-            obj (object): UNO object that supports ``com.sun.star.style.ParagraphPropertiesComplex`` service.
+            obj (object): UNO object.
 
         Raises:
-            NotSupportedServiceError: If ``obj`` does not support  ``com.sun.star.style.ParagraphPropertiesComplex`` service.
+            NotSupportedError: If ``obj`` is not supported.
 
         Returns:
             WritingMode: ``WritingMode`` instance that represents ``obj`` writing mode.
         """
-        inst = WritingMode()
-        if inst._is_valid_obj(obj):
-            inst._set("WritingMode", int(mProps.Props.get(obj, "WritingMode")))
-        else:
-            raise mEx.NotSupportedServiceError(inst._supported_services()[0])
+        inst = super(WritingMode, cls).__new__(cls)
+        inst.__init__()
+        if not inst._is_valid_obj(obj):
+            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
+
+        inst._set("WritingMode", int(mProps.Props.get(obj, "WritingMode")))
         return inst
 
     # endregion methods
 
     # region style methods
-    def fmt_mode(self, value: WritingMode2Enum | None) -> WritingMode:
+    def fmt_mode(self: _TWritingMode, value: WritingMode2Enum | None) -> _TWritingMode:
         """
         Gets copy of instance with writing mode set or removed
 
@@ -134,7 +131,7 @@ class WritingMode(StyleBase):
 
     # region Style Properties
     @property
-    def bt_lr(self) -> WritingMode:
+    def bt_lr(self: _TWritingMode) -> _TWritingMode:
         """
         Gets instance.
 
@@ -146,7 +143,7 @@ class WritingMode(StyleBase):
         return cp
 
     @property
-    def lr_tb(self) -> WritingMode:
+    def lr_tb(self: _TWritingMode) -> _TWritingMode:
         """
         Gets instance.
 
@@ -159,7 +156,7 @@ class WritingMode(StyleBase):
         return cp
 
     @property
-    def rl_tb(self) -> WritingMode:
+    def rl_tb(self: _TWritingMode) -> _TWritingMode:
         """
         Gets instance.
 
@@ -172,7 +169,7 @@ class WritingMode(StyleBase):
         return cp
 
     @property
-    def tb_rl(self) -> WritingMode:
+    def tb_rl(self: _TWritingMode) -> _TWritingMode:
         """
         Gets instance.
 
@@ -185,7 +182,7 @@ class WritingMode(StyleBase):
         return cp
 
     @property
-    def tb_lr(self) -> WritingMode:
+    def tb_lr(self: _TWritingMode) -> _TWritingMode:
         """
         Gets instance.
 
@@ -198,7 +195,7 @@ class WritingMode(StyleBase):
         return cp
 
     @property
-    def page(self) -> WritingMode:
+    def page(self: _TWritingMode) -> _TWritingMode:
         """
         Gets instance.
 
@@ -210,7 +207,7 @@ class WritingMode(StyleBase):
         return cp
 
     @property
-    def context(self) -> WritingMode:
+    def context(self: _TWritingMode) -> _TWritingMode:
         """
         Gets instance.
 

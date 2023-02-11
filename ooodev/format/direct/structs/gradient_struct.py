@@ -4,7 +4,7 @@ Module for ``Gradient`` struct.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, Type, cast, overload, TYPE_CHECKING
+from typing import Tuple, Type, cast, overload, TypeVar, TYPE_CHECKING
 import json
 
 from ....exceptions import ex as mEx
@@ -12,7 +12,7 @@ from ....utils import props as mProps
 from ....utils.color import Color, RGB
 from ....utils.data_type.angle import Angle as Angle
 from ....utils.data_type.intensity import Intensity as Intensity
-from ...style_base import StyleBase, _T
+from ...style_base import StyleBase
 from ...kind.format_kind import FormatKind
 
 
@@ -20,14 +20,11 @@ import uno
 from ooo.dyn.awt.gradient import Gradient
 from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
 
-if TYPE_CHECKING:
-    try:
-        from typing import Self
-    except AttributeError:
-        from typing_extensions import Self
 
 # see Also:
 # https://github.com/LibreOffice/core/blob/f725629a6241ec064770c28957f11d306c18f130/filter/source/msfilter/escherex.cxx
+
+_TGradientStruct = TypeVar(name="_TGradientStruct", bound="GradientStruct")
 
 
 class GradientStruct(StyleBase):
@@ -39,6 +36,7 @@ class GradientStruct(StyleBase):
 
     def __init__(
         self,
+        *,
         style: GradientStyle = GradientStyle.LINEAR,
         step_count: int = 0,
         x_offset: Intensity | int = 50,
@@ -111,7 +109,7 @@ class GradientStruct(StyleBase):
     def _get_property_name(self) -> str:
         return "FillGradient"
 
-    def copy(self) -> Self:
+    def copy(self: _TGradientStruct) -> _TGradientStruct:
         nu = super(GradientStruct, self.__class__).__new__(self.__class__)
         nu.__init__()
         if self._dv:
@@ -234,7 +232,7 @@ class GradientStruct(StyleBase):
 
     # region static methods
     @classmethod
-    def from_gradient(cls, value: Gradient) -> GradientStruct:
+    def from_gradient(cls: Type[_TGradientStruct], value: Gradient) -> _TGradientStruct:
         """
         Converts a ``Gradient`` instance to a ``GradinetStruct``
 
@@ -259,7 +257,7 @@ class GradientStruct(StyleBase):
         return inst
 
     @classmethod
-    def from_obj(cls: Type[_T], obj: object) -> _T:
+    def from_obj(cls: Type[_TGradientStruct], obj: object) -> _TGradientStruct:
         """
         Gets instance from object
 

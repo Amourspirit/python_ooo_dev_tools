@@ -4,7 +4,7 @@ Module for managing character font.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Any, Tuple, cast, overload
+from typing import Any, Tuple, cast, overload, TypeVar
 
 import uno
 
@@ -23,6 +23,8 @@ from ...structs.locale_struct import LocaleStruct
 from com.sun.star.beans import XPropertySet
 
 from ooo.dyn.awt.font_descriptor import FontDescriptor
+
+_TFontOnly = TypeVar(name="_TFontOnly", bound="FontOnly")
 
 
 class FontLang(LocaleStruct):
@@ -127,7 +129,7 @@ class FontOnly(StyleMulti):
 
     # region methods
     def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.style.CharacterProperties",)
+        return ("com.sun.star.style.CharacterProperties", "com.sun.star.style.CharacterStyle")
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:
@@ -185,7 +187,7 @@ class FontOnly(StyleMulti):
 
     # region Format Methods
 
-    def fmt_size(self, value: float | None = None) -> FontOnly:
+    def fmt_size(self: _TFontOnly, value: float | None = None) -> _TFontOnly:
         """
         Get copy of instance with text size set.
 
@@ -199,7 +201,7 @@ class FontOnly(StyleMulti):
         ft.prop_size = value
         return ft
 
-    def fmt_name(self, value: str | None = None) -> FontOnly:
+    def fmt_name(self: _TFontOnly, value: str | None = None) -> _TFontOnly:
         """
         Get copy of instance with name set.
 
@@ -213,7 +215,7 @@ class FontOnly(StyleMulti):
         ft.prop_name = value
         return ft
 
-    def fmt_style_name(self, value: str | None = None) -> FontOnly:
+    def fmt_style_name(self: _TFontOnly, value: str | None = None) -> _TFontOnly:
         """
         Get copy of instance with style name set.
 
@@ -282,6 +284,15 @@ class FontOnly(StyleMulti):
                 name="CharFontName", size="CharHeight", style_name="CharFontStyleName"
             )
         return self._font_only_properties
+
+    @property
+    def prop_inner(self) -> FontLang:
+        """Gets Lang instance"""
+        try:
+            return self._direct_inner
+        except AttributeError:
+            self._direct_inner = cast(FontLang, self._get_style_inst("lang"))
+        return self._direct_inner
 
     # endregion Prop Properties
 

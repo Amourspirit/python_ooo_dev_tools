@@ -1,14 +1,15 @@
 from pathlib import Path
 import pytest
+
 # from ooodev.office.write import Write
 if __name__ == "__main__":
     pytest.main([__file__])
 
 
-# region    Sheet Methods
 def test_create_pay(copy_fix_xml) -> None:
     xml_path: Path = copy_fix_xml("company.xml")
     from ooodev.utils.xml_util import XML
+
     xdoc = XML.load_doc(xml_path)
     root = xdoc.childNodes
     assert root is not None
@@ -17,7 +18,7 @@ def test_create_pay(copy_fix_xml) -> None:
     comp = XML.get_node("Company", comps.childNodes)
     exec = XML.get_node("Executive", comp.childNodes)
     assert exec is not None
-    
+
     exec_type = XML.get_node_attr("type", exec)
     assert exec_type == "CEO"
     ex_nodes = exec.childNodes
@@ -33,9 +34,9 @@ def test_create_pay(copy_fix_xml) -> None:
     assert state == "Cheshire"
     zip = XML.get_node_value("zip", ex_nodes)
     assert zip == "11234"
-    
+
     comp = comp.nextSibling
-    exec = XML.get_node("Executive", comp.childNodes)   
+    exec = XML.get_node("Executive", comp.childNodes)
     exec_type = XML.get_node_attr("type", exec)
     assert exec_type == "President"
     ex_nodes = exec.childNodes
@@ -51,9 +52,9 @@ def test_create_pay(copy_fix_xml) -> None:
     assert state == "Lincs"
     zip = XML.get_node_value("zip", ex_nodes)
     assert zip == "33451"
-    
+
     comp = comp.nextSibling
-    exec = XML.get_node("Executive", comp.childNodes)   
+    exec = XML.get_node("Executive", comp.childNodes)
     exec_type = XML.get_node_attr("type", exec)
     assert exec_type == "Boss"
     ex_nodes = exec.childNodes
@@ -69,9 +70,9 @@ def test_create_pay(copy_fix_xml) -> None:
     assert state == "London"
     zip = XML.get_node_value("zip", ex_nodes)
     assert zip == "77392"
-    
+
     # get all the data in the tree for a given node/tag name
-    lnames = ('Smith', 'Jones', 'Singh')
+    lnames = ("Smith", "Jones", "Singh")
     ln_nodes = xdoc.getElementsByTagName("LastName")
     assert len(ln_nodes) == 3
     for ln in ln_nodes:

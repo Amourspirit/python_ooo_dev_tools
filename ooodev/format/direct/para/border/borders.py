@@ -5,7 +5,7 @@ Module for managing character borders.
 """
 # region imports
 from __future__ import annotations
-from typing import Tuple, overload
+from typing import Tuple, overload, cast, Type, TypeVar
 
 import uno
 
@@ -31,6 +31,8 @@ from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 
 
 # endregion imports
+
+_TBorders = TypeVar(name="_TBorders", bound="Borders")
 
 
 class Borders(StyleMulti):
@@ -98,7 +100,7 @@ class Borders(StyleMulti):
     # endregion init
 
     # region format Methods
-    def fmt_border_side(self, value: Side | None) -> Borders:
+    def fmt_border_side(self: _TBorders, value: Side | None) -> _TBorders:
         """
         Gets copy of instance with left, right, top, bottom sides set or removed
 
@@ -122,7 +124,7 @@ class Borders(StyleMulti):
         cp._sides = sides
         return cp
 
-    def fmt_left(self, value: Side | None) -> Borders:
+    def fmt_left(self: _TBorders, value: Side | None) -> _TBorders:
         """
         Gets copy of instance with left set or removed
 
@@ -143,7 +145,7 @@ class Borders(StyleMulti):
         cp._sides = sides
         return cp
 
-    def fmt_right(self, value: Side | None) -> Borders:
+    def fmt_right(self: _TBorders, value: Side | None) -> _TBorders:
         """
         Gets copy of instance with right set or removed
 
@@ -164,7 +166,7 @@ class Borders(StyleMulti):
         cp._sides = sides
         return cp
 
-    def fmt_top(self, value: Side | None) -> Borders:
+    def fmt_top(self: _TBorders, value: Side | None) -> _TBorders:
         """
         Gets copy of instance with top set or removed
 
@@ -185,7 +187,7 @@ class Borders(StyleMulti):
         cp._sides = sides
         return cp
 
-    def fmt_bottom(self, value: Side | None) -> Borders:
+    def fmt_bottom(self: _TBorders, value: Side | None) -> _TBorders:
         """
         Gets copy of instance with bottom set or removed
 
@@ -206,7 +208,7 @@ class Borders(StyleMulti):
         cp._sides = sides
         return cp
 
-    def fmt_shadow(self, value: Shadow | None) -> Borders:
+    def fmt_shadow(self: _TBorders, value: Shadow | None) -> _TBorders:
         """
         Gets copy of instance with shadow set or removed
 
@@ -223,7 +225,7 @@ class Borders(StyleMulti):
             cp._set_style("shadow", value, *value.get_attrs())
         return cp
 
-    def fmt_padding(self, value: Padding | None) -> Borders:
+    def fmt_padding(self: _TBorders, value: Padding | None) -> _TBorders:
         """
         Gets copy of instance with padding set or removed
 
@@ -282,8 +284,8 @@ class Borders(StyleMulti):
 
     # endregion apply()
 
-    @staticmethod
-    def from_obj(obj: object) -> Borders:
+    @classmethod
+    def from_obj(cls: Type[_TBorders], obj: object) -> _TBorders:
         """
         Gets instance from object
 
@@ -296,7 +298,8 @@ class Borders(StyleMulti):
         Returns:
             Borders: ``Borders`` instance that represents the ``obj`` borders.
         """
-        inst = Borders()
+        inst = cast(Borders, super(Borders, cls).__new__(cls))
+        inst.__init__()
         if not inst._is_valid_obj(obj):
             raise mEx.ServiceNotSupported(inst._supported_services()[0])
         inst_sides = Sides.from_obj(obj)
@@ -316,6 +319,33 @@ class Borders(StyleMulti):
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
         return FormatKind.PARA | FormatKind.STATIC
+
+    @property
+    def prop_inner_sides(self) -> Sides | None:
+        """Gets Sides instance"""
+        try:
+            return self._direct_inner_sides
+        except AttributeError:
+            self._direct_inner_sides = cast(Sides, self._get_style_inst("sides"))
+        return self._direct_inner_sides
+
+    @property
+    def prop_inner_padding(self) -> Padding | None:
+        """Gets Padding instance"""
+        try:
+            return self._direct_inner_padding
+        except AttributeError:
+            self._direct_inner_padding = cast(Padding, self._get_style_inst("padding"))
+        return self._direct_inner_padding
+
+    @property
+    def prop_inner_shadow(self) -> Shadow | None:
+        """Gets Shadow instance"""
+        try:
+            return self._direct_inner_shadow
+        except AttributeError:
+            self._direct_inner_shadow = cast(Shadow, self._get_style_inst("shadow"))
+        return self._direct_inner_shadow
 
     @static_prop
     def default() -> Borders:  # type: ignore[misc]

@@ -4,7 +4,7 @@ Module for Fill Gradient Color.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Any, Tuple, cast
+from typing import Any, Tuple, cast, Type, TypeVar
 import uno
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....events.args.key_val_cancel_args import KeyValCancelArgs
@@ -17,7 +17,6 @@ from .....utils.data_type.angle import Angle as Angle
 from .....utils.data_type.intensity import Intensity as Intensity
 from .....utils.data_type.intensity_range import IntensityRange as IntensityRange
 from .....utils.data_type.offset import Offset as Offset
-from .....utils.type_var import T
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleMulti
 from ...structs.gradient_struct import GradientStruct
@@ -33,6 +32,8 @@ from ooo.dyn.awt.gradient import Gradient as UNOGradient
 # https://github.com/LibreOffice/core/blob/d57836db76fcf3133e6eb54d264c774911015e08/chart2/source/controller/itemsetwrapper/GraphicPropertyItemConverter.cxx
 # https://github.com/LibreOffice/core/blob/cfb2a587bc59d2a0ff520dd09393f898506055d6/vcl/source/outdev/transparent.cxx
 # https://github.com/LibreOffice/core/blob/7c3ea0abeff6e0cb9e2893cec8ed63025a274117/oox/source/export/drawingml.cxx
+
+_TGradient = TypeVar(name="_TGradient", bound="Gradient")
 
 
 class FillTransparentGrad(GradientStruct):
@@ -138,7 +139,7 @@ class Gradient(StyleMulti):
     # endregion Internal Methods
 
     # region Overrides
-    def copy(self: T) -> T:
+    def copy(self: _TGradient) -> _TGradient:
         cp = super().copy()
         cp._name = self._name
         return cp
@@ -182,12 +183,15 @@ class Gradient(StyleMulti):
     # endregion Overrides
 
     @classmethod
-    def from_obj(cls, obj: object) -> Gradient:
+    def from_obj(cls: Type[_TGradient], obj: object) -> _TGradient:
         """
         Gets instance from object
 
         Args:
-            obj (object): Object that implements ``com.sun.star.drawing.FillProperties`` service
+            obj (object): UNO object.
+
+        Raises:
+            NotSupportedError: If ``obj`` is not supported.
 
         Returns:
             Gradient: Instance that represents Gradient color.
@@ -196,7 +200,7 @@ class Gradient(StyleMulti):
         nu = super(Gradient, cls).__new__(cls)
         nu.__init__()
         if not nu._is_valid_obj(obj):
-            raise mEx.NotSupportedError("obj is not supported")
+            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
         gs = FillTransparentGrad()
         gs_prop_name = gs._get_property_name()
@@ -221,6 +225,15 @@ class Gradient(StyleMulti):
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
         return FormatKind.PARA | FormatKind.TXT_CONTENT | FormatKind.FILL
+
+    @property
+    def prop_inner(self) -> FillTransparentGrad:
+        """Gets Fill Trasparent Gradient instance"""
+        try:
+            return self._direct_inner_fill_grad
+        except AttributeError:
+            self._direct_inner_fill_grad = cast(FillTransparentGrad, self._get_style_inst("fill_style"))
+        return self._direct_inner_fill_grad
 
     @static_prop
     def default() -> Gradient:  # type: ignore[misc]

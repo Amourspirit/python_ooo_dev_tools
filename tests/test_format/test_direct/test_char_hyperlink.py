@@ -22,40 +22,40 @@ def test_hyperlink_props() -> None:
 
     hl = Hyperlink(name=ln_name, url=ln_url)
 
-    assert hl.name == ln_name
-    assert hl.url == ln_url
-    assert hl.target == TargetKind.NONE
-    assert hl.visited_style == "Visited Internet Link"
-    assert hl.unvisited_style == "Internet link"
+    assert hl.prop_name == ln_name
+    assert hl.prop_url == ln_url
+    assert hl.prop_target == TargetKind.NONE
+    assert hl.prop_visited_style == "Visited Internet Link"
+    assert hl.prop_unvisited_style == "Internet link"
 
-    hl.name = "test"
-    assert hl.name == "test"
+    hl.prop_name = "test"
+    assert hl.prop_name == "test"
 
-    hl.url = "ftp:///notreal"
-    assert hl.url == "ftp:///notreal"
+    hl.prop_url = "ftp:///notreal"
+    assert hl.prop_url == "ftp:///notreal"
 
-    hl.target = TargetKind.PARENT
-    assert hl.target == TargetKind.PARENT
+    hl.prop_target = TargetKind.PARENT
+    assert hl.prop_target == TargetKind.PARENT
 
-    hl.unvisited_style = "unvisited"
-    assert hl.unvisited_style == "unvisited"
+    hl.prop_unvisited_style = "unvisited"
+    assert hl.prop_unvisited_style == "unvisited"
 
-    hl.visited_style = "visited"
-    assert hl.visited_style == "visited"
+    hl.prop_visited_style = "visited"
+    assert hl.prop_visited_style == "visited"
 
-    hl.url = None
-    assert hl.url is None
+    hl.prop_url = None
+    assert hl.prop_url is None
     assert hl._get("HyperLinkURL") is None
     assert hl._has("HyperLinkURL") == False
 
-    hl.name = None
-    assert hl.name is None
+    hl.prop_name = None
+    assert hl.prop_name is None
     assert hl._get("HyperLinkName") is None
     assert hl._has("HyperLinkName") == False
 
     hl = Hyperlink()
-    assert hl.url is None
-    assert hl.name is None
+    assert hl.prop_url is None
+    assert hl.prop_name is None
     assert hl._has("HyperLinkURL") == False
     assert hl._has("HyperLinkName") == False
 

@@ -4,15 +4,18 @@ Modele for managing paragraph Outline and List.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple
+from typing import Tuple, Type, cast, TypeVar
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....meta.static_prop import static_prop
 from ....style_base import StyleMulti
+from .....exceptions import ex as mEx
 from ....kind.format_kind import FormatKind
 from .outline import Outline as Outline, LevelKind as LevelKind
 from .list_style import ListStyle as ListStyle, StyleListKind as StyleListKind
 from .line_num import LineNum as LineNum
+
+_TOutlineList = TypeVar(name="_TOutlineList", bound="OutlineList")
 
 
 class OutlineList(StyleMulti):
@@ -81,21 +84,24 @@ class OutlineList(StyleMulti):
             raise ValueError("Modifying a default instance is not allowed")
         return super()._on_modifing(event)
 
-    @staticmethod
-    def from_obj(obj: object) -> OutlineList:
+    @classmethod
+    def from_obj(cls: Type[_TOutlineList], obj: object) -> _TOutlineList:
         """
         Gets instance from object
 
         Args:
-            obj (object): UNO object that supports ``com.sun.star.style.ParagraphProperties`` service.
+            obj (object): UNO object.
 
         Raises:
-            NotSupportedServiceError: If ``obj`` does not support  ``com.sun.star.style.ParagraphProperties`` service.
+            NotSupportedError: If ``obj`` is not supported.
 
         Returns:
             OutlineList: ``OutlineList`` instance that represents ``obj`` Outline and List.
         """
-        inst = OutlineList()
+        inst = super(OutlineList, cls).__new__(cls)
+        inst.__init__()
+        if not inst._is_valid_obj(obj):
+            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
         ol = Outline.from_obj(obj)
         if ol.prop_has_attribs:
             inst._set_style("outline", ol, *ol.get_attrs())
@@ -115,6 +121,33 @@ class OutlineList(StyleMulti):
         """Gets the kind of style"""
         return FormatKind.PARA
 
+    @property
+    def prop_inner_outline(self) -> Outline | None:
+        """Gets Outline instance"""
+        try:
+            return self._direct_inner_outline
+        except AttributeError:
+            self._direct_inner_outline = cast(Outline, self._get_style_inst("outline"))
+        return self._direct_inner_outline
+
+    @property
+    def prop_inner_list_style(self) -> ListStyle | None:
+        """Gets List Style instance"""
+        try:
+            return self._direct_inner_ls
+        except AttributeError:
+            self._direct_inner_ls = cast(ListStyle, self._get_style_inst("list_style"))
+        return self._direct_inner_ls
+
+    @property
+    def prop_inner_line_number(self) -> LineNum | None:
+        """Gets Line Number instance"""
+        try:
+            return self._direct_inner_ln
+        except AttributeError:
+            self._direct_inner_ln = cast(LineNum, self._get_style_inst("line_num"))
+        return self._direct_inner_ln
+
     @static_prop
     def default() -> OutlineList:  # type: ignore[misc]
         """Gets ``OutlineList`` default. Static Property."""
@@ -122,9 +155,9 @@ class OutlineList(StyleMulti):
             return OutlineList._DEFAULT_INST
         except AttributeError:
             inst = OutlineList()
-            inst._set_style("outline", Outline.default.copy(), *Outline.default.get_attrs())
-            inst._set_style("list_style", ListStyle.default.copy(), *ListStyle.default.get_attrs())
-            inst._set_style("line_num", LineNum.default.copy(), *LineNum.default.get_attrs())
+            inst._set_style("outline", Outline.default, *Outline.default.get_attrs())
+            inst._set_style("list_style", ListStyle.default, *ListStyle.default.get_attrs())
+            inst._set_style("line_num", LineNum.default, *LineNum.default.get_attrs())
             inst._is_default_inst = True
             OutlineList._DEFAULT_INST = inst
         return OutlineList._DEFAULT_INST

@@ -4,14 +4,14 @@ Modele for managing paragraph Indents and Spacing.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple
+from typing import Tuple, cast, Type
 from numbers import Real
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
 from .....meta.static_prop import static_prop
 from ....kind.format_kind import FormatKind
-from ....style_base import StyleMulti
+from ....style_base import StyleMulti, _T
 from .indent import Indent
 from .line_spacing import LineSpacing, ModeKind as ModeKind
 from .spacing import Spacing
@@ -102,23 +102,24 @@ class IndentSpacing(StyleMulti):
             raise ValueError("Modifying a default instance is not allowed")
         return super()._on_modifing(event)
 
-    @staticmethod
-    def from_obj(obj: object) -> IndentSpacing:
+    @classmethod
+    def from_obj(cls: Type[_T], obj: object) -> _T:
         """
         Gets instance from object
 
         Args:
-            obj (object): UNO object that supports ``com.sun.star.style.ParagraphProperties`` service.
+            obj (object): UNO object.
 
         Raises:
-            ServiceNotSupported: If ``obj`` does not support  ``com.sun.star.style.ParagraphProperties`` service.
+            NotSupportedError: If ``obj`` is not supported.
 
         Returns:
             IndentSpacing: ``IndentSpacing`` instance that represents ``obj`` Indents and spacing.
         """
-        inst = IndentSpacing()
+        inst = cast(IndentSpacing, super(IndentSpacing, cls).__new__(cls))
+        inst.__init__()
         if not inst._is_valid_obj(obj):
-            raise mEx.ServiceNotSupported(inst._supported_services()[0])
+            raise mEx.NotSupportedError("Object is not supported for conversion to IndentSpacing")
         ls = LineSpacing.from_obj(obj)
         if ls.prop_has_attribs:
             inst._set_style("line_spacing", ls, *ls.get_attrs())
@@ -137,6 +138,33 @@ class IndentSpacing(StyleMulti):
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
         return FormatKind.PARA
+
+    @property
+    def prop_inner_line_spacing(self) -> LineSpacing | None:
+        """Gets Line Spacing instance"""
+        try:
+            return self._direct_inner_ls
+        except AttributeError:
+            self._direct_inner_ls = cast(LineSpacing, self._get_style_inst("line_spacing"))
+        return self._direct_inner_ls
+
+    @property
+    def prop_inner_spacing(self) -> Spacing | None:
+        """Gets Spacing instance"""
+        try:
+            return self._direct_inner_spacing
+        except AttributeError:
+            self._direct_inner_spacing = cast(Spacing, self._get_style_inst("spacing"))
+        return self._direct_inner_spacing
+
+    @property
+    def prop_inner_indent(self) -> Indent | None:
+        """Gets Indent instance"""
+        try:
+            return self._direct_inner_indent
+        except AttributeError:
+            self._direct_inner_indent = cast(Indent, self._get_style_inst("indent"))
+        return self._direct_inner_indent
 
     @static_prop
     def default() -> IndentSpacing:  # type: ignore[misc]

@@ -4,7 +4,7 @@ Modele for managing paragraph Line Spacing.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, cast, overload
+from typing import Tuple, cast, overload, Type, TypeVar
 from numbers import Real
 
 from .....events.args.cancel_event_args import CancelEventArgs
@@ -18,6 +18,8 @@ from ...structs.line_spacing_struct import ModeKind as ModeKind
 from ....kind.format_kind import FormatKind
 
 from ooo.dyn.style.line_spacing import LineSpacing as UnoLineSpacing
+
+_TLineSpacing = TypeVar(name="_TLineSpacing", bound="LineSpacing")
 
 
 class ParaLineSpace(mLs.LineSpacingStruct):
@@ -128,8 +130,8 @@ class LineSpacing(StyleMulti):
 
     # endregion apply()
 
-    @staticmethod
-    def from_obj(obj: object) -> LineSpacing:
+    @classmethod
+    def from_obj(cls: Type[_TLineSpacing], obj: object) -> _TLineSpacing:
         """
         Gets instance from object
 
@@ -142,9 +144,10 @@ class LineSpacing(StyleMulti):
         Returns:
             LineSpacing: ``LineSpacing`` instance that represents ``obj`` line spacing.
         """
-        inst = LineSpacing()
+        inst = super(LineSpacing, cls).__new__(cls)
+        inst.__init__()
         if not inst._is_valid_obj(obj):
-            raise mEx.NotSupportedError("Object is not support for converting to LineSpacing")
+            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
         def set_prop(key: str, ls_inst: LineSpacing):
             nonlocal obj
@@ -192,7 +195,7 @@ class LineSpacing(StyleMulti):
 
     @property
     def prop_inner(self) -> ParaLineSpace:
-        """Gets Line Sapcing Instance"""
+        """Gets Line Spacing instance"""
         try:
             return self._direct_inner
         except AttributeError:

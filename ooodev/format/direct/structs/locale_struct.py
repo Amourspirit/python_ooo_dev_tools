@@ -4,7 +4,7 @@ Module for ``DropCapFormat`` struct.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Dict, Tuple, Type, cast, overload, TYPE_CHECKING
+from typing import Dict, Tuple, Type, cast, overload, TypeVar
 
 import uno
 from ....events.event_singleton import _Events
@@ -12,16 +12,12 @@ from ....exceptions import ex as mEx
 from ....utils import props as mProps
 from ....utils.type_var import T
 from ...kind.format_kind import FormatKind
-from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent, _T
+from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent
 
 
 from ooo.dyn.lang.locale import Locale
 
-if TYPE_CHECKING:
-    try:
-        from typing import Self
-    except AttributeError:
-        from typing_extensions import Self
+_TLocaleStruct = TypeVar(name="_TLocaleStruct", bound="LocaleStruct")
 
 
 class LocaleStruct(StyleBase):
@@ -37,7 +33,7 @@ class LocaleStruct(StyleBase):
 
     # region init
 
-    def __init__(self, country: str = "US", language: str = "en", variant: str = "") -> None:
+    def __init__(self, *, country: str = "US", language: str = "en", variant: str = "") -> None:
         """
         Constructor
 
@@ -83,7 +79,7 @@ class LocaleStruct(StyleBase):
     def _is_valid_obj(self, obj: object) -> bool:
         return mProps.Props.has(obj, self._get_property_name())
 
-    def copy(self) -> Self:
+    def copy(self: _TLocaleStruct) -> _TLocaleStruct:
         nu = super(LocaleStruct, self.__class__).__new__(self.__class__)
         nu.__init__()
         if self._dv:
@@ -157,7 +153,7 @@ class LocaleStruct(StyleBase):
         return Locale(Language=self._get("Language"), Country=self._get("Country"), Variant=self._get("Variant"))
 
     @classmethod
-    def from_obj(cls: Type[_T], obj: object) -> _T:
+    def from_obj(cls: Type[_TLocaleStruct], obj: object) -> _TLocaleStruct:
         """
         Gets instance from object
 
@@ -180,10 +176,11 @@ class LocaleStruct(StyleBase):
         except mEx.PropertyNotFoundError:
             raise mEx.PropertyNotFoundError(prop_name, f"from_obj() obj as no {prop_name} property")
 
-        return cls.from_locale(dcf)
+        ls = cast(LocaleStruct, cls)
+        return ls.from_locale(dcf)
 
     @classmethod
-    def from_locale(cls: Type[_T], locale: Locale) -> _T:
+    def from_locale(cls: Type[_TLocaleStruct], locale: Locale) -> _TLocaleStruct:
         """
         Converts a ``Locale`` Stop instance to a ``LocaleStruct``
 
@@ -214,7 +211,7 @@ class LocaleStruct(StyleBase):
     # endregion dunder methods
 
     # region format methods
-    def fmt_country(self, value: str) -> LocaleStruct:
+    def fmt_country(self: _TLocaleStruct, value: str) -> _TLocaleStruct:
         """
         Gets a copy of instance with country set.
 
@@ -228,7 +225,7 @@ class LocaleStruct(StyleBase):
         cp.prop_country = value
         return cp
 
-    def fmt_language(self, value: str) -> LocaleStruct:
+    def fmt_language(self: _TLocaleStruct, value: str) -> _TLocaleStruct:
         """
         Gets a copy of instance with language set.
 
@@ -242,7 +239,7 @@ class LocaleStruct(StyleBase):
         cp.prop_language = value
         return cp
 
-    def fmt_variant(self, value: str) -> LocaleStruct:
+    def fmt_variant(self: _TLocaleStruct, value: str) -> _TLocaleStruct:
         """
         Gets a copy of instance with variant set.
 
@@ -260,382 +257,382 @@ class LocaleStruct(StyleBase):
 
     # region Style Properties
     @property
-    def english_us(self) -> LocaleStruct:
+    def english_us(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English US locale"""
         return LocaleStruct(country="US", language="en", variant="")
 
     @property
-    def locale_none(self) -> LocaleStruct:
+    def locale_none(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets no locale"""
         return LocaleStruct(country="", language="zxx", variant="")
 
     @property
-    def english_australia(self) -> LocaleStruct:
+    def english_australia(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Australia locale"""
         return LocaleStruct(country="AU", language="en", variant="")
 
     @property
-    def english_belize(self) -> LocaleStruct:
+    def english_belize(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Belize locale"""
         return LocaleStruct(country="BZ", language="en", variant="")
 
     @property
-    def english_botswana(self) -> LocaleStruct:
+    def english_botswana(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Botswana locale"""
         return LocaleStruct(country="BW", language="en", variant="")
 
     @property
-    def english_canada(self) -> LocaleStruct:
+    def english_canada(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Canada locale"""
         return LocaleStruct(country="CA", language="en", variant="")
 
     @property
-    def english_caribbean(self) -> LocaleStruct:
+    def english_caribbean(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Caribbean locale"""
         return LocaleStruct(country="BS", language="en", variant="")
 
     @property
-    def english_gambia(self) -> LocaleStruct:
+    def english_gambia(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Gambia locale"""
         return LocaleStruct(country="GM", language="en", variant="")
 
     @property
-    def english_ghana(self) -> LocaleStruct:
+    def english_ghana(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Ghana locale"""
         return LocaleStruct(country="GH", language="en", variant="")
 
     @property
-    def english_hong_kong(self) -> LocaleStruct:
+    def english_hong_kong(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Hong Kong locale"""
         return LocaleStruct(country="HK", language="en", variant="")
 
     @property
-    def english_india(self) -> LocaleStruct:
+    def english_india(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English India locale"""
         return LocaleStruct(country="IN", language="en", variant="")
 
     @property
-    def english_ireland(self) -> LocaleStruct:
+    def english_ireland(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Ireland locale"""
         return LocaleStruct(country="IE", language="en", variant="")
 
     @property
-    def english_ireland(self) -> LocaleStruct:
+    def english_ireland(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Ireland locale"""
         return LocaleStruct(country="IE", language="en", variant="")
 
     @property
-    def english_israel(self) -> LocaleStruct:
+    def english_israel(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Israel locale"""
         return LocaleStruct(country="IL", language="en", variant="")
 
     @property
-    def english_jamaica(self) -> LocaleStruct:
+    def english_jamaica(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Jamaica locale"""
         return LocaleStruct(country="JM", language="en", variant="")
 
     @property
-    def english_kenya(self) -> LocaleStruct:
+    def english_kenya(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Kenya locale"""
         return LocaleStruct(country="KE", language="en", variant="")
 
     @property
-    def english_malawi(self) -> LocaleStruct:
+    def english_malawi(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Malawi locale"""
         return LocaleStruct(country="MW", language="en", variant="")
 
     @property
-    def english_malaysia(self) -> LocaleStruct:
+    def english_malaysia(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Malaysia locale"""
         return LocaleStruct(country="MY", language="en", variant="")
 
     @property
-    def english_mauritius(self) -> LocaleStruct:
+    def english_mauritius(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Mauritius locale"""
         return LocaleStruct(country="MU", language="en", variant="")
 
     @property
-    def english_namibia(self) -> LocaleStruct:
+    def english_namibia(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Namibia locale"""
         return LocaleStruct(country="NA", language="en", variant="")
 
     @property
-    def english_new_zealand(self) -> LocaleStruct:
+    def english_new_zealand(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English New Zealand locale"""
         return LocaleStruct(country="NZ", language="en", variant="")
 
     @property
-    def english_nigeria(self) -> LocaleStruct:
+    def english_nigeria(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Nigeria locale"""
         return LocaleStruct(country="NG", language="en", variant="")
 
     @property
-    def english_philippines(self) -> LocaleStruct:
+    def english_philippines(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Philippines locale"""
         return LocaleStruct(country="PH", language="en", variant="")
 
     @property
-    def english_south_africa(self) -> LocaleStruct:
+    def english_south_africa(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English South Africa locale"""
         return LocaleStruct(country="ZA", language="en", variant="")
 
     @property
-    def english_sri_lanka(self) -> LocaleStruct:
+    def english_sri_lanka(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Sri Lanka locale"""
         return LocaleStruct(country="LK", language="en", variant="")
 
     @property
-    def english_trinidad(self) -> LocaleStruct:
+    def english_trinidad(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Trinidad locale"""
         return LocaleStruct(country="TT", language="en", variant="")
 
     @property
-    def english_uk(self) -> LocaleStruct:
+    def english_uk(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English UK locale"""
         return LocaleStruct(country="GB", language="en", variant="")
 
     @property
-    def english_usa(self) -> LocaleStruct:
+    def english_usa(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English USA locale"""
         return LocaleStruct(country="US", language="en", variant="")
 
     @property
-    def english_zambia(self) -> LocaleStruct:
+    def english_zambia(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Zambia locale"""
         return LocaleStruct(country="ZM", language="en", variant="")
 
     @property
-    def english_zimbabwe(self) -> LocaleStruct:
+    def english_zimbabwe(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Zimbabwe locale"""
         return LocaleStruct(country="ZW", language="en", variant="")
 
     @property
-    def english_uk_ode(self) -> LocaleStruct:
+    def english_uk_ode(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English ODE Spelling UK locale"""
         return LocaleStruct(country="GB", language="qlt", variant="en-GB-oxendict")
 
     @property
-    def german_austria(self) -> LocaleStruct:
+    def german_austria(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets German Austria locale"""
         return LocaleStruct(country="AT", language="de", variant="")
 
     @property
-    def german_belgium(self) -> LocaleStruct:
+    def german_belgium(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets German Belgium locale"""
         return LocaleStruct(country="BE", language="de", variant="")
 
     @property
-    def german_germany(self) -> LocaleStruct:
+    def german_germany(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets German Germany locale"""
         return LocaleStruct(country="DE", language="de", variant="")
 
     @property
-    def german_liechtenstein(self) -> LocaleStruct:
+    def german_liechtenstein(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets German Liechtenstein locale"""
         return LocaleStruct(country="LI", language="de", variant="")
 
     @property
-    def german_luxembourg(self) -> LocaleStruct:
+    def german_luxembourg(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets German Luxembourg locale"""
         return LocaleStruct(country="LU", language="de", variant="")
 
     @property
-    def german_switzerland(self) -> LocaleStruct:
+    def german_switzerland(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets German Switzerland locale"""
         return LocaleStruct(country="CH", language="de", variant="")
 
     @property
-    def french_belgium(self) -> LocaleStruct:
+    def french_belgium(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets French Belgium locale"""
         return LocaleStruct(country="BE", language="fr", variant="")
 
     @property
-    def french_benin(self) -> LocaleStruct:
+    def french_benin(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets French Benin locale"""
         return LocaleStruct(country="BJ", language="fr", variant="")
 
     @property
-    def french_benin(self) -> LocaleStruct:
+    def french_benin(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets French Benin locale"""
         return LocaleStruct(country="BJ", language="fr", variant="")
 
     @property
-    def french_burkina_faso(self) -> LocaleStruct:
+    def french_burkina_faso(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets French Burkina Faso locale"""
         return LocaleStruct(country="BF", language="fr", variant="")
 
     @property
-    def french_canada(self) -> LocaleStruct:
+    def french_canada(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets French Canada locale"""
         return LocaleStruct(country="CA", language="fr", variant="")
 
     @property
-    def french_cote_d_ivoire(self) -> LocaleStruct:
+    def french_cote_d_ivoire(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets French (Côte d'Ivoire) locale"""
         return LocaleStruct(country="CI", language="fr", variant="")
 
     @property
-    def french_france(self) -> LocaleStruct:
+    def french_france(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets French France locale"""
         return LocaleStruct(country="FR", language="fr", variant="")
 
     @property
-    def french_luxembourg(self) -> LocaleStruct:
+    def french_luxembourg(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets French Luxembourg locale"""
         return LocaleStruct(country="LU", language="fr", variant="")
 
     @property
-    def french_mali(self) -> LocaleStruct:
+    def french_mali(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets French Mali locale"""
         return LocaleStruct(country="ML", language="fr", variant="")
 
     @property
-    def french_mauritius(self) -> LocaleStruct:
+    def french_mauritius(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets French Mauritius locale"""
         return LocaleStruct(country="MU", language="fr", variant="")
 
     @property
-    def french_monaco(self) -> LocaleStruct:
+    def french_monaco(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets French Monaco locale"""
         return LocaleStruct(country="MC", language="fr", variant="")
 
     @property
-    def french_niger(self) -> LocaleStruct:
+    def french_niger(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets French Niger locale"""
         return LocaleStruct(country="NE", language="fr", variant="")
 
     @property
-    def french_senegal(self) -> LocaleStruct:
+    def french_senegal(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets French Senegal locale"""
         return LocaleStruct(country="SN", language="fr", variant="")
 
     @property
-    def french_switzerland(self) -> LocaleStruct:
+    def french_switzerland(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets French Switzerland locale"""
         return LocaleStruct(country="CH", language="fr", variant="")
 
     @property
-    def french_togo(self) -> LocaleStruct:
+    def french_togo(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets French Togo locale"""
         return LocaleStruct(country="TG", language="fr", variant="")
 
     @property
-    def spanish_argentina(self) -> LocaleStruct:
+    def spanish_argentina(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish Argentina locale"""
         return LocaleStruct(country="AR", language="es", variant="")
 
     @property
-    def spanish_bolivia(self) -> LocaleStruct:
+    def spanish_bolivia(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish Bolivia locale"""
         return LocaleStruct(country="BO", language="es", variant="")
 
     @property
-    def spanish_chile(self) -> LocaleStruct:
+    def spanish_chile(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish Chile locale"""
         return LocaleStruct(country="CL", language="es", variant="")
 
     @property
-    def spanish_colombia(self) -> LocaleStruct:
+    def spanish_colombia(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish Colombia locale"""
         return LocaleStruct(country="CO", language="es", variant="")
 
     @property
-    def spanish_costa_rica(self) -> LocaleStruct:
+    def spanish_costa_rica(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish Costa Rica locale"""
         return LocaleStruct(country="CR", language="es", variant="")
 
     @property
-    def spanish_cuba(self) -> LocaleStruct:
+    def spanish_cuba(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish Cuba locale"""
         return LocaleStruct(country="CU", language="es", variant="")
 
     @property
-    def spanish_dom_rep(self) -> LocaleStruct:
+    def spanish_dom_rep(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish Dominion Republic locale"""
         return LocaleStruct(country="DO", language="es", variant="")
 
     @property
-    def spanish_ecuador(self) -> LocaleStruct:
+    def spanish_ecuador(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish Ecuador locale"""
         return LocaleStruct(country="EC", language="es", variant="")
 
     @property
-    def spanish_el_salvador(self) -> LocaleStruct:
+    def spanish_el_salvador(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish El Salvador locale"""
         return LocaleStruct(country="SV", language="es", variant="")
 
     @property
-    def spanish_equatorial_guinea(self) -> LocaleStruct:
+    def spanish_equatorial_guinea(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish Equatorial Guinea locale ``es-GQ``"""
         return LocaleStruct(country="GQ", language="es", variant="")
 
     @property
-    def spanish_guatemala(self) -> LocaleStruct:
+    def spanish_guatemala(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish Guatemala locale"""
         return LocaleStruct(country="GT", language="es", variant="")
 
     @property
-    def spanish_honduras(self) -> LocaleStruct:
+    def spanish_honduras(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish Honduras locale"""
         return LocaleStruct(country="HN", language="es", variant="")
 
     @property
-    def spanish_mexico(self) -> LocaleStruct:
+    def spanish_mexico(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish Mexico locale"""
         return LocaleStruct(country="MX", language="es", variant="")
 
     @property
-    def spanish_nicaragua(self) -> LocaleStruct:
+    def spanish_nicaragua(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish Nicaragua locale"""
         return LocaleStruct(country="NI", language="es", variant="")
 
     @property
-    def spanish_panama(self) -> LocaleStruct:
+    def spanish_panama(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish Panama locale"""
         return LocaleStruct(country="PA", language="es", variant="")
 
     @property
-    def spanish_paraguay(self) -> LocaleStruct:
+    def spanish_paraguay(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish Paraguay locale"""
         return LocaleStruct(country="PY", language="es", variant="")
 
     @property
-    def spanish_peru(self) -> LocaleStruct:
+    def spanish_peru(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish Peru locale"""
         return LocaleStruct(country="PE", language="es", variant="")
 
     @property
-    def spanish_philippines(self) -> LocaleStruct:
+    def spanish_philippines(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish Philippines locale ``es-PH``"""
         return LocaleStruct(country="PH", language="es", variant="")
 
     @property
-    def spanish_puerto_rico(self) -> LocaleStruct:
+    def spanish_puerto_rico(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish Puerto Rico locale"""
         return LocaleStruct(country="PR", language="es", variant="")
 
     @property
-    def spanish_spain(self) -> LocaleStruct:
+    def spanish_spain(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish Spain locale"""
         return LocaleStruct(country="ES", language="es", variant="")
 
     @property
-    def spanish_usa(self) -> LocaleStruct:
+    def spanish_usa(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish USA locale ``es-US``"""
         return LocaleStruct(country="US", language="es", variant="")
 
     @property
-    def spanish_uruguay(self) -> LocaleStruct:
+    def spanish_uruguay(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish Uruguay locale"""
         return LocaleStruct(country="UY", language="es", variant="")
 
     @property
-    def spanish_venezuela(self) -> LocaleStruct:
+    def spanish_venezuela(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish Venezuela locale"""
         return LocaleStruct(country="VE", language="es", variant="")
 
     @property
-    def spanish_es(self) -> LocaleStruct:
+    def spanish_es(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish locale ``es``"""
         return LocaleStruct(country="", language="es", variant="")
 

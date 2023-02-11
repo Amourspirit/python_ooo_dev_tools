@@ -4,7 +4,7 @@ Module for managing paragraph padding.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple
+from typing import Tuple, cast, Type, TypeVar
 
 from ....events.args.cancel_event_args import CancelEventArgs
 from ....exceptions import ex as mEx
@@ -12,6 +12,8 @@ from ....meta.static_prop import static_prop
 from ....utils import props as mProps
 from ...kind.format_kind import FormatKind
 from ..common.abstract_padding import AbstractPadding
+
+_TPadding = TypeVar(name="_TPadding", bound="Padding")
 
 
 class Padding(AbstractPadding):
@@ -32,31 +34,30 @@ class Padding(AbstractPadding):
             raise ValueError("Modifying a default instance is not allowed")
         return super()._on_modifing(event)
 
-    @staticmethod
-    def from_obj(obj: object) -> Padding:
+    @classmethod
+    def from_obj(cls: Type[_TPadding], obj: object) -> _TPadding:
         """
         Gets Padding instance from object
 
         Args:
-            obj (object): UNO object that supports ``com.sun.star.style.ParagraphProperties`` service.
+            obj (object): UNO object.
 
         Raises:
-            NotSupportedServiceError: If ``obj`` does not support ``com.sun.star.style.ParagraphProperties`` service.
+            NotSupportedError: If ``obj`` is not supported.
 
         Returns:
             Padding: Padding that represents ``obj`` padding.
         """
-        inst = Padding()
+        inst = super(Padding, cls).__new__(cls)
+        inst.__init__()
         if not inst._is_valid_obj(obj):
-            raise mEx.NotSupportedServiceError(inst._supported_services()[0])
+            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
-        if inst._is_valid_obj(obj):
-            inst._set(inst._props.left, int(mProps.Props.get(obj, inst._props.left)))
-            inst._set(inst._props.right, int(mProps.Props.get(obj, inst._props.right)))
-            inst._set(inst._props.top, int(mProps.Props.get(obj, inst._props.top)))
-            inst._set(inst._props.bottom, int(mProps.Props.get(obj, inst._props.bottom)))
-        else:
-            raise mEx.NotSupportedServiceError(inst._supported_services()[0])
+        inst._set(inst._props.left, int(mProps.Props.get(obj, inst._props.left)))
+        inst._set(inst._props.right, int(mProps.Props.get(obj, inst._props.right)))
+        inst._set(inst._props.top, int(mProps.Props.get(obj, inst._props.top)))
+        inst._set(inst._props.bottom, int(mProps.Props.get(obj, inst._props.bottom)))
+
         return inst
 
     # endregion methods

@@ -5,7 +5,7 @@ Module for creating hyperlinks
 """
 # region imports
 from __future__ import annotations
-from typing import Tuple, overload
+from typing import Tuple, overload, Type, TypeVar
 from enum import Enum
 
 from .....events.args.cancel_event_args import CancelEventArgs
@@ -17,6 +17,8 @@ from ....kind.format_kind import FormatKind
 from ....style_base import StyleBase
 
 # endregion imports
+
+_THyperlink = TypeVar(name="_THyperlink", bound="Hyperlink")
 
 
 class TargetKind(Enum):
@@ -84,13 +86,7 @@ class Hyperlink(StyleBase):
 
     # region methods
     def _supported_services(self) -> Tuple[str, ...]:
-        """
-        Gets a tuple of supported services (``com.sun.star.style.CharacterProperties``,)
-
-        Returns:
-            Tuple[str, ...]: Supported services
-        """
-        return ("com.sun.star.style.CharacterProperties",)
+        return ("com.sun.star.style.CharacterProperties", "com.sun.star.style.CharacterStyle")
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:
@@ -124,29 +120,31 @@ class Hyperlink(StyleBase):
 
     # endregion apply()
 
-    @staticmethod
-    def from_obj(obj: object) -> Hyperlink:
+    @classmethod
+    def from_obj(cls: Type[_THyperlink], obj: object) -> _THyperlink:
         """
         Gets hyperlink instance from object
 
         Args:
-            obj (object): UNO object that supports ``com.sun.star.style.CharacterProperties`` service.
+            obj (object): UNO object.
 
         Raises:
-            NotSupportedServiceError: If ``obj`` does not support  ``com.sun.star.style.CharacterProperties`` service.
+            NotSupportedError: If ``obj`` is not supported.
 
         Returns:
             Hyperlink: Hyperlink that represents ``obj`` Hyperlink.
         """
-        inst = Hyperlink()
-        if inst._supported_services():
-            inst._set("HyperLinkName", mProps.Props.get(obj, "HyperLinkName"))
-            inst._set("HyperLinkURL", mProps.Props.get(obj, "HyperLinkURL"))
-            inst._set("HyperLinkTarget", mProps.Props.get(obj, "HyperLinkTarget"))
-            inst._set("VisitedCharStyleName", mProps.Props.get(obj, "VisitedCharStyleName"))
-            inst._set("UnvisitedCharStyleName", mProps.Props.get(obj, "UnvisitedCharStyleName"))
-        else:
-            raise mEx.NotSupportedServiceError(inst._supported_services()[0])
+        inst = super(Hyperlink, cls).__new__(cls)
+        inst.__init__()
+        if not inst._is_valid_obj(obj):
+            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
+
+        inst._set("HyperLinkName", mProps.Props.get(obj, "HyperLinkName"))
+        inst._set("HyperLinkURL", mProps.Props.get(obj, "HyperLinkURL"))
+        inst._set("HyperLinkTarget", mProps.Props.get(obj, "HyperLinkTarget"))
+        inst._set("VisitedCharStyleName", mProps.Props.get(obj, "VisitedCharStyleName"))
+        inst._set("UnvisitedCharStyleName", mProps.Props.get(obj, "UnvisitedCharStyleName"))
+
         return inst
 
     # endregion methods
@@ -154,12 +152,12 @@ class Hyperlink(StyleBase):
     # region Properties
 
     @property
-    def name(self) -> str | None:
+    def prop_name(self) -> str | None:
         """Gets/Sets name"""
         return self._get("HyperLinkName")
 
-    @name.setter
-    def name(self, value: str | None):
+    @prop_name.setter
+    def prop_name(self, value: str | None):
         if value is None:
             if self._has("HyperLinkName"):
                 self._remove("HyperLinkName")
@@ -167,12 +165,12 @@ class Hyperlink(StyleBase):
             self._set("HyperLinkName", value)
 
     @property
-    def url(self) -> str | None:
+    def prop_url(self) -> str | None:
         """Gets/Sets url"""
         return self._get("HyperLinkURL")
 
-    @url.setter
-    def url(self, value: str | None):
+    @prop_url.setter
+    def prop_url(self, value: str | None):
         if value is None:
             if self._has("HyperLinkURL"):
                 self._remove("HyperLinkURL")
@@ -180,30 +178,30 @@ class Hyperlink(StyleBase):
             self._set("HyperLinkURL", value)
 
     @property
-    def target(self) -> TargetKind:
+    def prop_target(self) -> TargetKind:
         """Gets/Sets target"""
         return TargetKind(self._get("HyperLinkTarget"))
 
-    @target.setter
-    def target(self, value: TargetKind):
+    @prop_target.setter
+    def prop_target(self, value: TargetKind):
         self._set("HyperLinkTarget", value.value)
 
     @property
-    def visited_style(self) -> str:
+    def prop_visited_style(self) -> str:
         """Gets/Sets visited style"""
         return self._get("VisitedCharStyleName")
 
-    @visited_style.setter
-    def visited_style(self, value: str):
+    @prop_visited_style.setter
+    def prop_visited_style(self, value: str):
         self._set("VisitedCharStyleName", value)
 
     @property
-    def unvisited_style(self) -> str:
+    def prop_unvisited_style(self) -> str:
         """Gets/Sets style for links that have not yet been visited"""
         return self._get("UnvisitedCharStyleName")
 
-    @unvisited_style.setter
-    def unvisited_style(self, value: str):
+    @prop_unvisited_style.setter
+    def prop_unvisited_style(self, value: str):
         self._set("UnvisitedCharStyleName", value)
 
     @property

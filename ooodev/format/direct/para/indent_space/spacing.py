@@ -4,7 +4,7 @@ Modele for managing paragraph padding.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, cast, overload
+from typing import Tuple, cast, overload, Type, TypeVar
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
@@ -13,6 +13,8 @@ from .....utils import lo as mLo
 from .....utils import props as mProps
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleBase
+
+_TSpacing = TypeVar(name="_TSpacing", bound="Spacing")
 
 
 class Spacing(StyleBase):
@@ -92,23 +94,24 @@ class Spacing(StyleBase):
 
     # endregion apply()
 
-    @staticmethod
-    def from_obj(obj: object) -> Spacing:
+    @classmethod
+    def from_obj(cls: Type[_TSpacing], obj: object) -> _TSpacing:
         """
         Gets instance from object
 
         Args:
-            obj (object): UNO object that supports ``com.sun.star.style.ParagraphProperties`` service.
+            obj (object): UNO object.
 
         Raises:
-            NotSupportedServiceError: If ``obj`` does not support  ``com.sun.star.style.ParagraphProperties`` service.
+            NotSupportedError: If ``obj`` is not supported.
 
         Returns:
             Spacing: ``Spacing`` instance that represents ``obj`` spacing.
         """
-        inst = Spacing()
+        inst = super(Spacing, cls).__new__(cls)
+        inst.__init__()
         if not inst._is_valid_obj(obj):
-            raise mEx.NotSupportedServiceError(inst._supported_services()[0])
+            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
         def set_prop(key: str, indent: Spacing):
             nonlocal obj
@@ -124,7 +127,7 @@ class Spacing(StyleBase):
     # endregion methods
 
     # region style methods
-    def fmt_above(self, value: float | None) -> Spacing:
+    def fmt_above(self: _TSpacing, value: float | None) -> _TSpacing:
         """
         Gets a copy of instance with above margin set or removed
 
@@ -138,7 +141,7 @@ class Spacing(StyleBase):
         cp.prop_above = value
         return cp
 
-    def fmt_below(self, value: float | None) -> Spacing:
+    def fmt_below(self: _TSpacing, value: float | None) -> _TSpacing:
         """
         Gets a copy of instance with below margin set or removed
 
@@ -152,7 +155,7 @@ class Spacing(StyleBase):
         cp.prop_below = value
         return cp
 
-    def fmt_style_no_space(self, value: bool | None) -> Spacing:
+    def fmt_style_no_space(self: _TSpacing, value: bool | None) -> _TSpacing:
         """
         Gets a copy of instance with style no spacing set or removed
 
@@ -170,7 +173,7 @@ class Spacing(StyleBase):
 
     # region Style Properties
     @property
-    def style_no_space(self) -> Spacing:
+    def style_no_space(self: _TSpacing) -> _TSpacing:
         """Gets copy of instance with style no spacing set"""
         cp = self.copy()
         cp.prop_style_no_space = True

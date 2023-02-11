@@ -14,17 +14,13 @@ from ....events.event_singleton import _Events
 from ....meta.static_prop import static_prop
 from ....utils import props as mProps
 from ...kind.format_kind import FormatKind
-from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent, _T
+from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent
 from ....utils.unit_convert import UnitConvert, Length
 from ....utils.type_var import T
 
 from ooo.dyn.style.line_spacing import LineSpacing as UnoLineSpacing
 
-if TYPE_CHECKING:
-    try:
-        from typing import Self
-    except ImportError:
-        from typing_extensions import Self
+_TLineSpacingStruct = TypeVar(name="_TLineSpacingStruct", bound="LineSpacingStruct")
 
 
 class ModeKind(Enum):
@@ -160,7 +156,7 @@ class LineSpacingStruct(StyleBase):
         """
         return (self._get_property_name(),)
 
-    def copy(self: Self) -> Self:
+    def copy(self: _TLineSpacingStruct) -> _TLineSpacingStruct:
         nu = super(LineSpacingStruct, self.__class__).__new__(self.__class__)
         nu.__init__(mode=self._mode, height=self._value)
         if self._dv:
@@ -230,7 +226,7 @@ class LineSpacingStruct(StyleBase):
         return UnoLineSpacing(Mode=self._mode, Height=self._value)
 
     @classmethod
-    def from_line_spacing(cls: Type[_T], ln_spacing: UnoLineSpacing) -> _T:
+    def from_line_spacing(cls: Type[_TLineSpacingStruct], ln_spacing: UnoLineSpacing) -> _TLineSpacingStruct:
         """
         Converts a UNO ``LineSpacing`` struct into a ``LineSpacingStruct``
 
@@ -240,7 +236,7 @@ class LineSpacingStruct(StyleBase):
         Returns:
             LineSpacingStruct: ``LineSpacingStruct`` set with Line spacing properties.
         """
-        inst = cast(LineSpacingStruct, super(LineSpacingStruct, cls).__new__(cls))
+        inst = super(LineSpacingStruct, cls).__new__(cls)
         inst.__init__()
         inst._mode = ln_spacing.Mode
         inst._value = ln_spacing.Height

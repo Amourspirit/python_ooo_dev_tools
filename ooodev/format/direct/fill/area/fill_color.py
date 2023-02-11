@@ -4,7 +4,7 @@ Module for Fill Properties Fill Color.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, overload
+from typing import Tuple, overload, Type, TypeVar
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
@@ -20,6 +20,8 @@ from ooo.dyn.drawing.fill_style import FillStyle as FillStyle
 # LibreOffice seems to have an unresolved bug with Background color.
 # https://bugs.documentfoundation.org/show_bug.cgi?id=99125
 # see Also: https://forum.openoffice.org/en/forum/viewtopic.php?p=417389&sid=17b21c173e4a420b667b45a2949b9cc5#p417389
+
+_TFillColor = TypeVar(name="_TFillColor", bound="FillColor")
 
 
 class FillColor(StyleBase):
@@ -96,15 +98,15 @@ class FillColor(StyleBase):
     # endregion apply()
 
     @classmethod
-    def from_obj(cls, obj: object) -> FillColor:
+    def from_obj(cls: Type[_TFillColor], obj: object) -> _TFillColor:
         """
         Gets instance from object
 
         Args:
-            obj (object): UNO object that supports ``com.sun.star.drawing.FillProperties`` service.
+            obj (object): UNO object.
 
         Raises:
-            NotSupportedServiceError: If ``obj`` does not support  ``com.sun.star.drawing.FillProperties`` service.
+            NotSupportedError: If ``obj`` is not supported.
 
         Returns:
             FillColor: ``FillColor`` instance that represents ``obj`` Fill Color properties.
@@ -115,7 +117,7 @@ class FillColor(StyleBase):
 
         # inst = Color()
         if not nu._is_valid_obj(obj):
-            raise mEx.NotSupportedError("Object does not suport conversion to color")
+            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
         color = mProps.Props.get(obj, "FillColor", None)
 

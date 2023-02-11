@@ -4,7 +4,7 @@ Modele for managing paragraph line numbrs.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, overload
+from typing import Tuple, overload, Type, cast, TypeVar
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
@@ -15,6 +15,8 @@ from ....kind.format_kind import FormatKind
 from ....style_base import StyleBase
 
 # from ...events.args.key_val_cancel_args import KeyValCancelArgs
+
+_TLineNum = TypeVar(name="_TLineNum", bound="LineNum")
 
 
 class LineNum(StyleBase):
@@ -94,23 +96,24 @@ class LineNum(StyleBase):
 
     # endregion apply()
 
-    @staticmethod
-    def from_obj(obj: object) -> LineNum:
+    @classmethod
+    def from_obj(cls: Type[_TLineNum], obj: object) -> _TLineNum:
         """
         Gets instance from object
 
         Args:
-            obj (object): UNO object that supports ``com.sun.star.style.ParagraphProperties`` service.
+            obj (object): UNO object.
 
         Raises:
-            NotSupportedServiceError: If ``obj`` does not support  ``com.sun.star.style.ParagraphProperties`` service.
+            NotSupportedError: If ``obj`` is not supported.
 
         Returns:
             LineNum: ``LineNum`` instance that represents ``obj`` properties.
         """
-        inst = LineNum()
+        inst = super(LineNum, cls).__new__(cls)
+        inst.__init__()
         if not inst._is_valid_obj(obj):
-            raise mEx.NotSupportedServiceError(inst._supported_services()[0])
+            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
         def set_prop(key: str, o: LineNum):
             nonlocal obj
@@ -127,7 +130,7 @@ class LineNum(StyleBase):
 
     # region Style Methods
 
-    def fmt_num_start(self, value: int) -> LineNum:
+    def fmt_num_start(self: _TLineNum, value: int) -> _TLineNum:
         """
         Gets a copy of instance with before list style set or removed
 
@@ -148,12 +151,12 @@ class LineNum(StyleBase):
 
     # region Style Properties
     @property
-    def restart_numbers(self) -> LineNum:
+    def restart_numbers(self: _TLineNum) -> _TLineNum:
         """Gets instance with restart numbers set to ``1``"""
         return LineNum(1)
 
     @property
-    def include(self) -> LineNum:
+    def include(self: _TLineNum) -> _TLineNum:
         """Gets instance with include in line numbering set to include."""
         cp = self.copy()
         # zero or higher is already include
@@ -162,7 +165,7 @@ class LineNum(StyleBase):
         return cp
 
     @property
-    def exclude(self) -> LineNum:
+    def exclude(self: _TLineNum) -> _TLineNum:
         """Gets instance with include in line numbering set to exclude."""
         return LineNum(-1)
 

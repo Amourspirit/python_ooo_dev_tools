@@ -5,22 +5,22 @@ Module for Shadow format (``ShadowFormat``) struct.
 """
 # region imports
 from __future__ import annotations
-from typing import Dict, Tuple, Type, cast, overload
+from typing import Dict, Tuple, Type, cast, overload, TypeVar
 
+import uno
 from ....events.event_singleton import _Events
 from ....meta.static_prop import static_prop
 from ....utils import props as mProps
 from ....utils.color import Color
 from ....utils.color import CommonColor
 from ...kind.format_kind import FormatKind
-from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent, _T
+from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent
 from ....utils.unit_convert import UnitConvert, Length
-from ....utils.type_var import T
 
-import uno
 from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 
+_TShadowStruct = TypeVar(name="_TShadowStruct", bound="ShadowStruct")
 
 # endregion imports
 class ShadowStruct(StyleBase):
@@ -38,6 +38,7 @@ class ShadowStruct(StyleBase):
 
     def __init__(
         self,
+        *,
         location: ShadowLocation = ShadowLocation.BOTTOM_RIGHT,
         color: Color = CommonColor.GRAY,
         transparent: bool = False,
@@ -120,7 +121,7 @@ class ShadowStruct(StyleBase):
         """
         return (self._get_property_name(),)
 
-    def copy(self: T) -> T:
+    def copy(self: _TShadowStruct) -> _TShadowStruct:
         nu = super(ShadowStruct, self.__class__).__new__(self.__class__)
         nu.__init__(
             location=self.prop_width, color=self.prop_color, transparent=self.prop_transparent, width=self.prop_width
@@ -184,7 +185,7 @@ class ShadowStruct(StyleBase):
     # endregion apply()
 
     @classmethod
-    def from_obj(cls: Type[_T], obj: object) -> _T:
+    def from_obj(cls: Type[_TShadowStruct], obj: object) -> _TShadowStruct:
         """
         Gets instance from object
 
@@ -209,7 +210,7 @@ class ShadowStruct(StyleBase):
         return nu
 
     @classmethod
-    def from_shadow(cls: Type[_T], shadow: ShadowFormat) -> _T:
+    def from_shadow(cls: Type[_TShadowStruct], shadow: ShadowFormat) -> _TShadowStruct:
         """
         Gets an instance
 
@@ -227,7 +228,7 @@ class ShadowStruct(StyleBase):
     # endregion methods
 
     # region style methods
-    def fmt_location(self, value: ShadowLocation) -> ShadowStruct:
+    def fmt_location(self: _TShadowStruct, value: ShadowLocation) -> _TShadowStruct:
         """
         Gets a copy of instance with location set
 
@@ -241,7 +242,7 @@ class ShadowStruct(StyleBase):
         cp.prop_location = value
         return cp
 
-    def fmt_color(self, value: Color) -> ShadowStruct:
+    def fmt_color(self: _TShadowStruct, value: Color) -> _TShadowStruct:
         """
         Gets a copy of instance with color set
 
@@ -255,7 +256,7 @@ class ShadowStruct(StyleBase):
         cp.prop_color = value
         return cp
 
-    def fmt_transparent(self, value: bool) -> ShadowStruct:
+    def fmt_transparent(self: _TShadowStruct, value: bool) -> _TShadowStruct:
         """
         Gets a copy of instance with transparency set
 
@@ -269,7 +270,7 @@ class ShadowStruct(StyleBase):
         cp.prop_transparent = value
         return cp
 
-    def fmt_width(self, value: float) -> ShadowStruct:
+    def fmt_width(self: _TShadowStruct, value: float) -> _TShadowStruct:
         """
         Gets a copy of instance with width set
 

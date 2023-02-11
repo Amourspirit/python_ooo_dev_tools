@@ -5,9 +5,10 @@ Module for table side (``BorderLine2``) struct.
 """
 # region imports
 from __future__ import annotations
-from typing import Dict, Tuple, cast, overload, TYPE_CHECKING
+from typing import Dict, Tuple, cast, overload, Type, TypeVar
 from enum import IntFlag, Enum
 
+import uno
 from ....events.event_singleton import _Events
 from ....meta.static_prop import static_prop
 from ....utils import props as mProps
@@ -18,18 +19,14 @@ from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEven
 from ..common import border_width_impl as mBwi
 from ....utils.unit_convert import UnitConvert, Length
 
-import uno
 from ooo.dyn.table.border_line import BorderLine as BorderLine
 from ooo.dyn.table.border_line_style import BorderLineStyleEnum as BorderLineStyleEnum
 from ooo.dyn.table.border_line2 import BorderLine2 as BorderLine2
 
-if TYPE_CHECKING:
-    try:
-        from typing import Self
-    except ImportError:
-        from typing_extensions import Self
 
 # endregion imports
+
+_TSide = TypeVar(name="_TSide", bound="Side")
 
 # region Enums
 
@@ -101,6 +98,7 @@ class Side(StyleBase):
 
     def __init__(
         self,
+        *,
         line: BorderLineStyleEnum = BorderLineStyleEnum.SOLID,
         color: Color = CommonColor.BLACK,
         width: LineSize | float = LineSize.THIN,
@@ -396,7 +394,7 @@ class Side(StyleBase):
             setattr(line, key, val)
         return line
 
-    def copy(self) -> Self:
+    def copy(self: _TSide) -> _TSide:
         """Gets a copy of current instance"""
         cp = super().copy()
         cp._pts = self._pts
@@ -412,8 +410,8 @@ class Side(StyleBase):
             Side._EMPTY_INST._is_default_inst = True
         return Side._EMPTY_INST
 
-    @staticmethod
-    def from_border2(border: BorderLine2) -> Side:
+    @classmethod
+    def from_border2(cls: Type[_TSide], border: BorderLine2) -> _TSide:
         """
         Gets instance that is populated from UNO ``BorderLine2``.
 
@@ -423,19 +421,20 @@ class Side(StyleBase):
         Returns:
             Side: instance.
         """
-        side = Side()
-        side._set("Color", border.Color)
-        side._set("InnerLineWidth", border.InnerLineWidth)
-        side._set("LineDistance", border.LineDistance)
-        side._set("LineStyle", border.LineStyle)
-        side._set("LineWidth", border.LineWidth)
-        side._set("OuterLineWidth", border.OuterLineWidth)
-        return side
+        inst = super(Side, cls).__new__(cls)
+        inst.__init__()
+        inst._set("Color", border.Color)
+        inst._set("InnerLineWidth", border.InnerLineWidth)
+        inst._set("LineDistance", border.LineDistance)
+        inst._set("LineStyle", border.LineStyle)
+        inst._set("LineWidth", border.LineWidth)
+        inst._set("OuterLineWidth", border.OuterLineWidth)
+        return inst
 
     # endregion methods
 
     # region style methods
-    def fmt_style(self, value: BorderLineStyleEnum) -> Side:
+    def fmt_style(self: _TSide, value: BorderLineStyleEnum) -> _TSide:
         """
         Gets copy of instance with style set.
 
@@ -445,10 +444,11 @@ class Side(StyleBase):
         Returns:
             Side: Side with style set
         """
-        inst = Side(line=value, width=self._pts, color=self.prop_color)
+        inst = cast(Side, super(Side, self.__class__).__new__(self.__class__))
+        inst.__init__(line=value, width=self._pts, color=self.prop_color)
         return inst
 
-    def fmt_color(self, value: Color) -> Side:
+    def fmt_color(self: _TSide, value: Color) -> _TSide:
         """
         Gets copy of instance with color set.
 
@@ -462,7 +462,7 @@ class Side(StyleBase):
         cp.prop_color = value
         return cp
 
-    def fmt_width(self, value: float) -> Side:
+    def fmt_width(self: _TSide, value: float) -> _TSide:
         """
         Gets copy of instance with width set.
 
@@ -472,103 +472,104 @@ class Side(StyleBase):
         Returns:
             Side: Side with width set
         """
-        inst = Side(line=self.prop_line, width=value, color=self.prop_color)
+        inst = cast(Side, super(Side, self.__class__).__new__(self.__class__))
+        inst.__init__(line=self.prop_line, width=value, color=self.prop_color)
         return inst
 
     # endregion style methods
     # region Style Properties
     @property
-    def line_none(self) -> Side:
+    def line_none(self: _TSide) -> _TSide:
         """Gets instance with no border line"""
         return self.fmt_style(BorderLineStyleEnum.NONE)
 
     @property
-    def line_solid(self) -> Side:
+    def line_solid(self: _TSide) -> _TSide:
         """Gets instance with solid border line"""
         return self.fmt_style(BorderLineStyleEnum.SOLID)
 
     @property
-    def line_dotted(self) -> Side:
+    def line_dotted(self: _TSide) -> _TSide:
         """Gets instance with dotted border line"""
         return self.fmt_style(BorderLineStyleEnum.DOTTED)
 
     @property
-    def line_dashed(self) -> Side:
+    def line_dashed(self: _TSide) -> _TSide:
         """Gets instance with dashed border line"""
         return self.fmt_style(BorderLineStyleEnum.DASHED)
 
     @property
-    def line_dashed(self) -> Side:
+    def line_dashed(self: _TSide) -> _TSide:
         """Gets instance with dashed border line"""
         return self.fmt_style(BorderLineStyleEnum.DOUBLE)
 
     @property
-    def line_thin_thick_small_gap(self) -> Side:
+    def line_thin_thick_small_gap(self: _TSide) -> _TSide:
         """Gets instance with double border line with a thin line outside and a thick line inside separated by a small gap."""
         return self.fmt_style(BorderLineStyleEnum.THINTHICK_SMALLGAP)
 
     @property
-    def line_thin_thick_medium_gap(self) -> Side:
+    def line_thin_thick_medium_gap(self: _TSide) -> _TSide:
         """Gets instance with double border line with a thin line outside and a thick line inside separated by a medium gap."""
         return self.fmt_style(BorderLineStyleEnum.THINTHICK_MEDIUMGAP)
 
     @property
-    def line_thin_thick_large_gap(self) -> Side:
+    def line_thin_thick_large_gap(self: _TSide) -> _TSide:
         """Gets instance with double border line with a thin line outside and a thick line inside separated by a large gap."""
         return self.fmt_style(BorderLineStyleEnum.THINTHICK_LARGEGAP)
 
     @property
-    def line_thick_thin_small_gap(self) -> Side:
+    def line_thick_thin_small_gap(self: _TSide) -> _TSide:
         """Gets instance with double border line with a thick line outside and a thin line inside separated by a small gap."""
         return self.fmt_style(BorderLineStyleEnum.THICKTHIN_SMALLGAP)
 
     @property
-    def line_thick_thin_medium_gap(self) -> Side:
+    def line_thick_thin_medium_gap(self: _TSide) -> _TSide:
         """Gets instance with double border line with a thick line outside and a thin line inside separated by a medium gap."""
         return self.fmt_style(BorderLineStyleEnum.THICKTHIN_MEDIUMGAP)
 
     @property
-    def line_thick_thin_large_gap(self) -> Side:
+    def line_thick_thin_large_gap(self: _TSide) -> _TSide:
         """Gets instance with double border line with a thick line outside and a thin line inside separated by a large gap."""
         return self.fmt_style(BorderLineStyleEnum.THICKTHIN_LARGEGAP)
 
     @property
-    def line_embossed(self) -> Side:
+    def line_embossed(self: _TSide) -> _TSide:
         """Gets instance with 3D embossed border line."""
         return self.fmt_style(BorderLineStyleEnum.EMBOSSED)
 
     @property
-    def line_engraved(self) -> Side:
+    def line_engraved(self: _TSide) -> _TSide:
         """Gets instance with 3D engraved border line."""
         return self.fmt_style(BorderLineStyleEnum.ENGRAVED)
 
     @property
-    def line_outset(self) -> Side:
+    def line_outset(self: _TSide) -> _TSide:
         """Gets instance with outset border line."""
         return self.fmt_style(BorderLineStyleEnum.OUTSET)
 
     @property
-    def line_inset(self) -> Side:
+    def line_inset(self: _TSide) -> _TSide:
         """Gets instance with inset border line."""
         return self.fmt_style(BorderLineStyleEnum.INSET)
 
     @property
-    def line_fine_dashed(self) -> Side:
+    def line_fine_dashed(self: _TSide) -> _TSide:
         """Gets instance with finely dashed border line."""
         return self.fmt_style(BorderLineStyleEnum.FINE_DASHED)
 
     @property
-    def line_double_thin(self) -> Side:
+    def line_double_thin(self: _TSide) -> _TSide:
         """Gets instance with Double border line consisting of two fixed thin lines separated by a variable gap."""
         return self.fmt_style(BorderLineStyleEnum.DOUBLE_THIN)
 
     @property
-    def line_dash_dot(self) -> Side:
+    def line_dash_dot(self: _TSide) -> _TSide:
         """Gets instance with line consisting of a repetition of one dash and one dot."""
         return self.fmt_style(BorderLineStyleEnum.DASH_DOT)
 
     @property
-    def line_dash_dot_dot(self) -> Side:
+    def line_dash_dot_dot(self: _TSide) -> _TSide:
         """Gets instance with line consisting of a repetition of one dash and 2 dots."""
         return self.fmt_style(BorderLineStyleEnum.DASH_DOT_DOT)
 

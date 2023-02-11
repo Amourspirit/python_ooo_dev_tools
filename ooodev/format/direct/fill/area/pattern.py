@@ -4,7 +4,7 @@ Module for Fill Properties Fill Pattern.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Any, Tuple, overload
+from typing import Any, Tuple, overload, Type, TypeVar
 
 import uno
 
@@ -12,7 +12,6 @@ from .....events.args.key_val_cancel_args import KeyValCancelArgs
 from .....exceptions import ex as mEx
 from .....utils import lo as mLo
 from .....utils import props as mProps
-from .....utils.type_var import T
 from ....kind.format_kind import FormatKind
 from ....preset import preset_pattern as mPattern
 from ....preset.preset_pattern import PresetPatternKind as PresetPatternKind
@@ -23,6 +22,8 @@ from com.sun.star.awt import XBitmap
 from ooo.dyn.drawing.fill_style import FillStyle as FillStyle
 
 # https://github.com/LibreOffice/core/blob/6379414ca34527fbe69df2035d49d651655317cd/vcl/source/filter/ipict/ipict.cxx#L92
+
+_TPattern = TypeVar(name="_TPattern", bound="Pattern")
 
 
 class Pattern(StyleBase):
@@ -103,7 +104,7 @@ class Pattern(StyleBase):
 
     # region Overrides
 
-    def copy(self: T) -> T:
+    def copy(self: _TPattern) -> _TPattern:
         cp = super().copy()
         cp._name = self._name
         return cp
@@ -184,7 +185,7 @@ class Pattern(StyleBase):
         return inst
 
     @classmethod
-    def from_obj(cls, obj: object) -> Pattern:
+    def from_obj(cls: Type[_TPattern], obj: object) -> _TPattern:
         """
         Gets instance from object
 
@@ -200,7 +201,7 @@ class Pattern(StyleBase):
         nu = super(Pattern, cls).__new__(cls)
         nu.__init__()
         if not nu._is_valid_obj(obj):
-            raise mEx.NotSupportedError("Object is not support to convert to Pattern")
+            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
         def set_prop(key: str, fp: Pattern):
             nonlocal obj
