@@ -3,13 +3,12 @@ from typing import cast
 import uno
 from ....writer.style.para.kind import StyleParaKind as StyleParaKind
 from ..para_style_base_multi import ParaStyleBaseMulti
-from .....utils import color as mColor
-from ....direct.para.area.color import Color as DirectColor
+from ....direct.para.indent_space.spacing import Spacing as DirectSpacing
 
 
-class Color(ParaStyleBaseMulti):
+class Spacing(ParaStyleBaseMulti):
     """
-    Paragraph Style Fill Coloring
+    Paragraph Style Spacing
 
     .. versionadded:: 0.9.0
     """
@@ -17,7 +16,9 @@ class Color(ParaStyleBaseMulti):
     def __init__(
         self,
         *,
-        color: mColor.Color = -1,
+        above: float | None = None,
+        below: float | None = None,
+        style_no_space: bool | None = None,
         style_name: StyleParaKind | str = StyleParaKind.STANDARD,
         style_family: str = "ParagraphStyles",
     ) -> None:
@@ -25,7 +26,9 @@ class Color(ParaStyleBaseMulti):
         Constructor
 
         Args:
-            color (Color, optional): Fill Color.
+            above (float, optional): Determines the top margin of the paragraph (in mm units).
+            below (float, optional): Determines the bottom margin of the paragraph (in mm units).
+            style_no_space (bool, optional): Do not add space between paragraphs of the same style.
             style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to. Deftult is Default Paragraph Style.
             style_family (str, optional): Style family. Defatult ``ParagraphStyles``.
 
@@ -33,7 +36,7 @@ class Color(ParaStyleBaseMulti):
             None:
         """
 
-        direct = DirectColor(color=color)
+        direct = DirectSpacing(above=above, below=below, style_no_space=style_no_space)
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
@@ -45,7 +48,7 @@ class Color(ParaStyleBaseMulti):
         doc: object,
         style_name: StyleParaKind | str = StyleParaKind.STANDARD,
         style_family: str = "ParagraphStyles",
-    ) -> Color:
+    ) -> Spacing:
         """
         Gets instance from Document.
 
@@ -55,11 +58,11 @@ class Color(ParaStyleBaseMulti):
             style_family (str, optional): Style family. Defatult ``ParagraphStyles``.
 
         Returns:
-            Color: ``Color`` instance from document properties.
+            Spacing: ``Spacing`` instance from document properties.
         """
-        inst = super(Color, cls).__new__(cls)
+        inst = super(Spacing, cls).__new__(cls)
         inst.__init__(style_name=style_name, style_family=style_family)
-        direct = DirectColor.from_obj(inst.get_style_props(doc))
+        direct = DirectSpacing.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -73,10 +76,10 @@ class Color(ParaStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> DirectColor:
-        """Gets Inner Color instance"""
+    def prop_inner(self) -> DirectSpacing:
+        """Gets Inner Spacing instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(DirectColor, self._get_style_inst("direct"))
+            self._direct_inner = cast(DirectSpacing, self._get_style_inst("direct"))
         return self._direct_inner

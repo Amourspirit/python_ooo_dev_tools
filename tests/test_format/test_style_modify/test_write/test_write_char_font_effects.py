@@ -5,7 +5,13 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.writer.modify.para.area import Color
+from ooodev.format.writer.modify.char.font import (
+    FontEffects,
+    FontStrikeoutEnum,
+    FontReliefEnum,
+    FontUnderlineEnum,
+    CaseMapEnum,
+)
 from ooodev.format import StandardColor
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
@@ -25,13 +31,14 @@ def test_write(loader, para_text) -> None:
         cursor = Write.get_cursor(doc)
         Write.append_para(cursor=cursor, text=para_text)
 
-        style = Color(color=StandardColor.BLUE_LIGHT3)
+        style = FontEffects(color=StandardColor.BLUE_LIGHT1, underine=FontUnderlineEnum.DOUBLE)
         style.apply(doc)
         props = style.get_style_props(doc)
-        assert props.getPropertyValue("FillColor") == StandardColor.BLUE_LIGHT3
+        assert props.getPropertyValue("CharUnderline") == FontUnderlineEnum.DOUBLE
 
-        f_style = Color.from_style(doc)
-        assert f_style.prop_inner.prop_color == StandardColor.BLUE_LIGHT3
+        f_style = FontEffects.from_style(doc)
+        assert f_style.prop_inner.prop_color == StandardColor.BLUE_LIGHT1
+        assert f_style.prop_inner.prop_underline == FontUnderlineEnum.DOUBLE
         Lo.delay(delay)
     finally:
         Lo.close_doc(doc)

@@ -7,9 +7,9 @@ from ...style_base import StyleModifyMulti
 from ...writer.style.para.kind import StyleParaKind as StyleParaKind
 
 
-class ParaStyleBaseMulti(StyleModifyMulti):
+class CharStyleBaseMulti(StyleModifyMulti):
     """
-    Para Style Base Multi
+    Char Style Base Multi
 
     .. versionadded:: 0.9.0
     """

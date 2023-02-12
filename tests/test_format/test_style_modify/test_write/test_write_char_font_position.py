@@ -5,8 +5,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.writer.modify.para.area import Color
-from ooodev.format import StandardColor
+from ooodev.format.writer.modify.char.font import FontPosition, Angle, FontScriptKind, CharSpacingKind
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
@@ -25,13 +24,16 @@ def test_write(loader, para_text) -> None:
         cursor = Write.get_cursor(doc)
         Write.append_para(cursor=cursor, text=para_text)
 
-        style = Color(color=StandardColor.BLUE_LIGHT3)
+        style = FontPosition(script_kind=FontScriptKind.NORMAL, spacing=CharSpacingKind.LOOSE, rotation=Angle(90))
         style.apply(doc)
         props = style.get_style_props(doc)
-        assert props.getPropertyValue("FillColor") == StandardColor.BLUE_LIGHT3
+        assert props.getPropertyValue("CharEscapementHeight") == 100
+        assert props.getPropertyValue("CharRotation") == 900
 
-        f_style = Color.from_style(doc)
-        assert f_style.prop_inner.prop_color == StandardColor.BLUE_LIGHT3
+        f_style = FontPosition.from_style(doc)
+        assert f_style.prop_inner.prop_rotation == Angle(90)
+        assert f_style.prop_inner.prop_script_kind == FontScriptKind.NORMAL
+        assert f_style.prop_inner.prop_spacing == pytest.approx(CharSpacingKind.LOOSE.value, rel=1e2)
         Lo.delay(delay)
     finally:
         Lo.close_doc(doc)

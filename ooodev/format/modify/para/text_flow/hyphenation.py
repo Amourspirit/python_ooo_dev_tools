@@ -3,13 +3,12 @@ from typing import cast
 import uno
 from ....writer.style.para.kind import StyleParaKind as StyleParaKind
 from ..para_style_base_multi import ParaStyleBaseMulti
-from .....utils import color as mColor
-from ....direct.para.area.color import Color as DirectColor
+from ....direct.para.text_flow.hyphenation import Hyphenation as DirectHyphenation
 
 
-class Color(ParaStyleBaseMulti):
+class Hyphenation(ParaStyleBaseMulti):
     """
-    Paragraph Style Fill Coloring
+    Paragraph Style Hyphenation
 
     .. versionadded:: 0.9.0
     """
@@ -17,7 +16,11 @@ class Color(ParaStyleBaseMulti):
     def __init__(
         self,
         *,
-        color: mColor.Color = -1,
+        auto: bool | None = None,
+        no_caps: bool | None = None,
+        start_chars: int | None = None,
+        end_chars: int | None = None,
+        max: int | None = None,
         style_name: StyleParaKind | str = StyleParaKind.STANDARD,
         style_family: str = "ParagraphStyles",
     ) -> None:
@@ -25,7 +28,11 @@ class Color(ParaStyleBaseMulti):
         Constructor
 
         Args:
-            color (Color, optional): Fill Color.
+            auto (bool, optional): Hyphenate automatically.
+            no_caps (bool, optional): Don't hyphenate word in caps.
+            start_chars (int, optional): Characters at line begin.
+            end_chars (int, optional): charactors at line end.
+            max (int, optional): Maximum consecutive hyphenated lines.
             style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to. Deftult is Default Paragraph Style.
             style_family (str, optional): Style family. Defatult ``ParagraphStyles``.
 
@@ -33,7 +40,7 @@ class Color(ParaStyleBaseMulti):
             None:
         """
 
-        direct = DirectColor(color=color)
+        direct = DirectHyphenation(auto=auto, no_caps=no_caps, start_chars=start_chars, end_chars=end_chars, max=max)
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
@@ -45,7 +52,7 @@ class Color(ParaStyleBaseMulti):
         doc: object,
         style_name: StyleParaKind | str = StyleParaKind.STANDARD,
         style_family: str = "ParagraphStyles",
-    ) -> Color:
+    ) -> Hyphenation:
         """
         Gets instance from Document.
 
@@ -55,11 +62,11 @@ class Color(ParaStyleBaseMulti):
             style_family (str, optional): Style family. Defatult ``ParagraphStyles``.
 
         Returns:
-            Color: ``Color`` instance from document properties.
+            Breaks: ``Breaks`` instance from document properties.
         """
-        inst = super(Color, cls).__new__(cls)
+        inst = super(Hyphenation, cls).__new__(cls)
         inst.__init__(style_name=style_name, style_family=style_family)
-        direct = DirectColor.from_obj(inst.get_style_props(doc))
+        direct = DirectHyphenation.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -73,10 +80,10 @@ class Color(ParaStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> DirectColor:
-        """Gets Inner Color instance"""
+    def prop_inner(self) -> DirectHyphenation:
+        """Gets Inner Hyphenation instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(DirectColor, self._get_style_inst("direct"))
+            self._direct_inner = cast(DirectHyphenation, self._get_style_inst("direct"))
         return self._direct_inner

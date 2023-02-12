@@ -13,7 +13,7 @@ from .....exceptions import ex as mEx
 from .....meta.static_prop import static_prop
 from .....utils import lo as mLo
 from .....utils import props as mProps
-from .....utils.data_type.angle import Angle
+from .....utils.data_type.angle import Angle as Angle
 from .....utils.data_type.intensity import Intensity as Intensity
 from .....utils.unit_convert import UnitConvert
 from ....kind.format_kind import FormatKind

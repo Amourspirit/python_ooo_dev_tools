@@ -3,13 +3,12 @@ from typing import cast
 import uno
 from ....writer.style.para.kind import StyleParaKind as StyleParaKind
 from ..para_style_base_multi import ParaStyleBaseMulti
-from .....utils import color as mColor
-from ....direct.para.area.color import Color as DirectColor
+from ....direct.para.text_flow.flow_options import FlowOptions as DirectFlowOptions
 
 
-class Color(ParaStyleBaseMulti):
+class FlowOptions(ParaStyleBaseMulti):
     """
-    Paragraph Style Fill Coloring
+    Paragraph Style Flow Options
 
     .. versionadded:: 0.9.0
     """
@@ -17,7 +16,10 @@ class Color(ParaStyleBaseMulti):
     def __init__(
         self,
         *,
-        color: mColor.Color = -1,
+        orphans: int | None = None,
+        widows: int | None = None,
+        keep: bool | None = None,
+        no_split: bool | None = None,
         style_name: StyleParaKind | str = StyleParaKind.STANDARD,
         style_family: str = "ParagraphStyles",
     ) -> None:
@@ -25,7 +27,10 @@ class Color(ParaStyleBaseMulti):
         Constructor
 
         Args:
-            color (Color, optional): Fill Color.
+            orphans (int, optional): Number of Orphan Control Lines.
+            widows (int, optional): Number Widow Control Lines.
+            keep (bool, optional): Keep with next paragraph.
+            no_split (bool, optional): Do not split paragraph.
             style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to. Deftult is Default Paragraph Style.
             style_family (str, optional): Style family. Defatult ``ParagraphStyles``.
 
@@ -33,7 +38,7 @@ class Color(ParaStyleBaseMulti):
             None:
         """
 
-        direct = DirectColor(color=color)
+        direct = DirectFlowOptions(orphans=orphans, widows=widows, keep=keep, no_split=no_split)
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
@@ -45,7 +50,7 @@ class Color(ParaStyleBaseMulti):
         doc: object,
         style_name: StyleParaKind | str = StyleParaKind.STANDARD,
         style_family: str = "ParagraphStyles",
-    ) -> Color:
+    ) -> FlowOptions:
         """
         Gets instance from Document.
 
@@ -55,11 +60,11 @@ class Color(ParaStyleBaseMulti):
             style_family (str, optional): Style family. Defatult ``ParagraphStyles``.
 
         Returns:
-            Color: ``Color`` instance from document properties.
+            Breaks: ``Breaks`` instance from document properties.
         """
-        inst = super(Color, cls).__new__(cls)
+        inst = super(FlowOptions, cls).__new__(cls)
         inst.__init__(style_name=style_name, style_family=style_family)
-        direct = DirectColor.from_obj(inst.get_style_props(doc))
+        direct = DirectFlowOptions.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -73,10 +78,10 @@ class Color(ParaStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> DirectColor:
-        """Gets Inner Color instance"""
+    def prop_inner(self) -> DirectFlowOptions:
+        """Gets Inner Flow Options instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(DirectColor, self._get_style_inst("direct"))
+            self._direct_inner = cast(DirectFlowOptions, self._get_style_inst("direct"))
         return self._direct_inner
