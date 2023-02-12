@@ -1,22 +1,24 @@
 from __future__ import annotations
-from typing import cast
+from typing import Type, cast
 import uno
 from ....writer.style.para.kind import StyleParaKind as StyleParaKind
-from ..para_style_base_multi import ParaStyleBaseMulti
-from .....utils import color as mColor
-from ....direct.para.area.color import Color as DirectColor
+from ..para_style_base_multi import ParaStyleBaseMulti, _T
+from ....direct.para.indent_space.indent import Indent as DirectIndent
 
 
-class Color(ParaStyleBaseMulti):
+class Indent(ParaStyleBaseMulti):
     """
-    Paragraph Style Fill Coloring
+    Paragraph Style Indent
 
     .. versionadded:: 0.9.0
     """
 
     def __init__(
         self,
-        color: mColor.Color = -1,
+        before: float | None = None,
+        after: float | None = None,
+        first: float | None = None,
+        auto: bool | None = None,
         style_name: StyleParaKind | str = StyleParaKind.STANDARD,
         style_family: str = "ParagraphStyles",
     ) -> None:
@@ -24,7 +26,10 @@ class Color(ParaStyleBaseMulti):
         Constructor
 
         Args:
-            color (Color, optional): Fill Color.
+            before (float, optional): Determines the left margin of the paragraph (in ``mm`` units).
+            after (float, optional): Determines the right margin of the paragraph (in ``mm`` units).
+            first (float, optional): specifies the indent for the first line (in ``mm`` units).
+            auto (bool, optional): Determines if the first line should be indented automatically.
             style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to. Deftult is Default Paragraph Style.
             style_family (str, optional): Style family. Defatult ``ParagraphStyles``.
 
@@ -32,7 +37,7 @@ class Color(ParaStyleBaseMulti):
             None:
         """
 
-        direct = DirectColor(color=color)
+        direct = DirectIndent(before=before, after=after, first=first, auto=auto)
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
@@ -44,7 +49,7 @@ class Color(ParaStyleBaseMulti):
         doc: object,
         style_name: StyleParaKind | str = StyleParaKind.STANDARD,
         style_family: str = "ParagraphStyles",
-    ) -> Color:
+    ) -> Indent:
         """
         Gets instance from Document.
 
@@ -54,11 +59,11 @@ class Color(ParaStyleBaseMulti):
             style_family (str, optional): Style family. Defatult ``ParagraphStyles``.
 
         Returns:
-            Color: ``Color`` instance from document properties.
+            Indent: ``Indent`` instance from document properties.
         """
-        inst = super(Color, cls).__new__(cls)
+        inst = cast(Indent, super(Indent, cls).__new__(cls))
         inst.__init__(style_name=style_name, style_family=style_family)
-        direct = DirectColor.from_obj(inst.get_style_props(doc))
+        direct = DirectIndent.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -72,10 +77,10 @@ class Color(ParaStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> DirectColor:
-        """Gets Inner Color instance"""
+    def prop_inner(self) -> DirectIndent:
+        """Gets Inner Indent Instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(DirectColor, self._get_style_inst("direct"))
+            self._direct_inner = cast(DirectIndent, self._get_style_inst("direct"))
         return self._direct_inner

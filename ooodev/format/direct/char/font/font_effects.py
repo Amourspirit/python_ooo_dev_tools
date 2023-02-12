@@ -4,7 +4,7 @@ Module for managing character fonts.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Any, Tuple, cast, overload
+from typing import Any, Tuple, Type, cast, overload, TypeVar
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
@@ -20,6 +20,8 @@ from ooo.dyn.awt.font_strikeout import FontStrikeoutEnum as FontStrikeoutEnum
 from ooo.dyn.awt.font_underline import FontUnderlineEnum as FontUnderlineEnum
 from ooo.dyn.style.case_map import CaseMapEnum as CaseMapEnum
 from ooo.dyn.awt.font_relief import FontReliefEnum as FontReliefEnum
+
+_TFontEffects = TypeVar(name="_TFontEffects", bound="FontEffects")
 
 
 class FontEffects(StyleBase):
@@ -128,13 +130,7 @@ class FontEffects(StyleBase):
 
     # region methods
     def _supported_services(self) -> Tuple[str, ...]:
-        """
-        Gets a tuple of supported services (``com.sun.star.style.CharacterProperties``,)
-
-        Returns:
-            Tuple[str, ...]: Supported services
-        """
-        return ("com.sun.star.style.CharacterProperties",)
+        return ("com.sun.star.style.CharacterProperties", "com.sun.star.style.CharacterStyle")
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:
@@ -167,13 +163,13 @@ class FontEffects(StyleBase):
                 mLo.Lo.print(f"  {err}")
 
     # endregion apply()
-    @staticmethod
-    def from_obj(obj: object) -> FontEffects:
+    @classmethod
+    def from_obj(cls: Type[_TFontEffects], obj: object) -> _TFontEffects:
         """
         Gets instance from object
 
         Args:
-            obj (object): UNO object that supports ``com.sun.star.style.CharacterProperties`` service.
+            obj (object): UNO object.
 
         Raises:
             NotSupportedError: If ``obj`` is not supported.
@@ -181,8 +177,10 @@ class FontEffects(StyleBase):
         Returns:
             FontEffects: ``FontEffects`` instance that represents ``obj`` font effects.
         """
-        if not FontEffects.default._is_valid_obj(obj):
-            raise mEx.NotSupportedError("Object is not supported to convert to FontEffects.")
+        inst = super(FontEffects, cls).__new__(cls)
+        inst.__init__()
+        if not inst._is_valid_obj(obj):
+            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
         def set_prop(key: str, fe: FontEffects):
             nonlocal obj
@@ -190,7 +188,6 @@ class FontEffects(StyleBase):
             if not val is None:
                 fe._set(key, val)
 
-        inst = FontEffects()
         set_prop("CharColor", inst)
         set_prop("CharOverline", inst)
         set_prop("CharOverlineColor", inst)
@@ -211,7 +208,7 @@ class FontEffects(StyleBase):
     # endregion methods
 
     # region Format Methods
-    def fmt_color(self, value: Color | None = None) -> FontEffects:
+    def fmt_color(self: _TFontEffects, value: Color | None = None) -> _TFontEffects:
         """
         Gets copy of instance with text color set or removed.
 
@@ -226,7 +223,7 @@ class FontEffects(StyleBase):
         ft.prop_color = value
         return ft
 
-    def fmt_transparency(self, value: bool | None = None) -> FontEffects:
+    def fmt_transparency(self: _TFontEffects, value: bool | None = None) -> _TFontEffects:
         """
         Gets copy of instance with text background transparency set or removed.
 
@@ -241,7 +238,7 @@ class FontEffects(StyleBase):
         ft.prop_bg_transparent = value
         return ft
 
-    def fmt_overline(self, value: FontUnderlineEnum | None = None) -> FontEffects:
+    def fmt_overline(self: _TFontEffects, value: FontUnderlineEnum | None = None) -> _TFontEffects:
         """
         Gets copy of instance with overline set or removed.
 
@@ -256,7 +253,7 @@ class FontEffects(StyleBase):
         ft.prop_overline = value
         return ft
 
-    def fmt_overline_color(self, value: Color | None = None) -> FontEffects:
+    def fmt_overline_color(self: _TFontEffects, value: Color | None = None) -> _TFontEffects:
         """
         Gets copy of instance with text overline color set or removed.
 
@@ -271,7 +268,7 @@ class FontEffects(StyleBase):
         ft.prop_overline_color = value
         return ft
 
-    def fmt_strike(self, value: FontStrikeoutEnum | None = None) -> FontEffects:
+    def fmt_strike(self: _TFontEffects, value: FontStrikeoutEnum | None = None) -> _TFontEffects:
         """
         Gets copy of instance with strike set or removed.
 
@@ -286,7 +283,7 @@ class FontEffects(StyleBase):
         ft.prop_strike = value
         return ft
 
-    def fmt_underline(self, value: FontUnderlineEnum | None = None) -> FontEffects:
+    def fmt_underline(self: _TFontEffects, value: FontUnderlineEnum | None = None) -> _TFontEffects:
         """
         Gets copy of instance with underline set or removed.
 
@@ -301,7 +298,7 @@ class FontEffects(StyleBase):
         ft.prop_underline = value
         return ft
 
-    def fmt_underline_color(self, value: Color | None = None) -> FontEffects:
+    def fmt_underline_color(self: _TFontEffects, value: Color | None = None) -> _TFontEffects:
         """
         Gets copy of instance with text underline color set or removed.
 
@@ -316,7 +313,7 @@ class FontEffects(StyleBase):
         ft.prop_underline_color = value
         return ft
 
-    def fmt_word_mode(self, value: bool | None = None) -> FontEffects:
+    def fmt_word_mode(self: _TFontEffects, value: bool | None = None) -> _TFontEffects:
         """
         Gets copy of instance with word mode set or removed.
 
@@ -333,7 +330,7 @@ class FontEffects(StyleBase):
         ft.prop_word_mode = value
         return ft
 
-    def fmt_case(self, value: CaseMapEnum | None = None) -> FontEffects:
+    def fmt_case(self: _TFontEffects, value: CaseMapEnum | None = None) -> _TFontEffects:
         """
         Gets copy of instance with case set or removed.
 
@@ -348,7 +345,7 @@ class FontEffects(StyleBase):
         ft.prop_case = value
         return ft
 
-    def fmt_relief(self, value: FontReliefEnum | None = None) -> FontEffects:
+    def fmt_relief(self: _TFontEffects, value: FontReliefEnum | None = None) -> _TFontEffects:
         """
         Gets copy of instance with relief set or removed.
 
@@ -363,7 +360,7 @@ class FontEffects(StyleBase):
         ft.prop_relief = value
         return ft
 
-    def fmt_outline(self, value: bool | None = None) -> FontEffects:
+    def fmt_outline(self: _TFontEffects, value: bool | None = None) -> _TFontEffects:
         """
         Gets copy of instance with outline set or removed.
 
@@ -378,7 +375,7 @@ class FontEffects(StyleBase):
         ft.prop_relief = value
         return ft
 
-    def fmt_hidden(self, value: bool | None = None) -> FontEffects:
+    def fmt_hidden(self: _TFontEffects, value: bool | None = None) -> _TFontEffects:
         """
         Gets copy of instance with hidden set or removed.
 
@@ -393,7 +390,7 @@ class FontEffects(StyleBase):
         ft.prop_hidden = value
         return ft
 
-    def fmt_shadowed(self, value: bool | None = None) -> FontEffects:
+    def fmt_shadowed(self: _TFontEffects, value: bool | None = None) -> _TFontEffects:
         """
         Gets copy of instance with shadowed set or removed.
 
@@ -412,126 +409,126 @@ class FontEffects(StyleBase):
 
     # region Style Properties
     @property
-    def color_auto(self) -> FontEffects:
+    def color_auto(self: _TFontEffects) -> _TFontEffects:
         """Gets copy of instance with color set to automatic"""
         ft = self.copy()
         ft.prop_color = -1
         return ft
 
     @property
-    def overline(self) -> FontEffects:
+    def overline(self: _TFontEffects) -> _TFontEffects:
         """Gets copy of instance with overline set"""
         ft = self.copy()
         ft.prop_overline = FontUnderlineEnum.SINGLE
         return ft
 
     @property
-    def overline_color_auto(self) -> FontEffects:
+    def overline_color_auto(self: _TFontEffects) -> _TFontEffects:
         """Gets copy of instance with overline color set to automatic"""
         ft = self.copy()
         ft.prop_overline_color = -1
         return ft
 
     @property
-    def strike(self) -> FontEffects:
+    def strike(self: _TFontEffects) -> _TFontEffects:
         """Gets copy of instance with strike set"""
         ft = self.copy()
         ft.prop_strike = FontStrikeoutEnum.SINGLE
         return ft
 
     @property
-    def underline(self) -> FontEffects:
+    def underline(self: _TFontEffects) -> _TFontEffects:
         """Gets copy of instance with underline set"""
         ft = self.copy()
         ft.prop_underline = FontUnderlineEnum.SINGLE
         return ft
 
     @property
-    def under_color_auto(self) -> FontEffects:
+    def under_color_auto(self: _TFontEffects) -> _TFontEffects:
         """Gets copy of instance with underline color set to automatic"""
         ft = self.copy()
         ft.prop_underline_color = -1
         return ft
 
     @property
-    def word_mode(self) -> FontEffects:
+    def word_mode(self: _TFontEffects) -> _TFontEffects:
         """Gets copy of instance with word mode set"""
         ft = self.copy()
         ft.prop_word_mode = True
         return ft
 
     @property
-    def outline(self) -> FontEffects:
+    def outline(self: _TFontEffects) -> _TFontEffects:
         """Gets copy of instance with outline set"""
         ft = self.copy()
         ft.prop_outline = True
         return ft
 
     @property
-    def hidden(self) -> FontEffects:
+    def hidden(self: _TFontEffects) -> _TFontEffects:
         """Gets copy of instance with hidden set"""
         ft = self.copy()
         ft.prop_hidden = True
         return ft
 
     @property
-    def shadowed(self) -> FontEffects:
+    def shadowed(self: _TFontEffects) -> _TFontEffects:
         """Gets copy of instance with shadow set"""
         ft = self.copy()
         ft.prop_shadowed = True
         return ft
 
     @property
-    def case_upper(self) -> FontEffects:
+    def case_upper(self: _TFontEffects) -> _TFontEffects:
         """Gets copy of instance with case set to upper"""
         ft = self.copy()
         ft.prop_case = CaseMapEnum.UPPERCASE
         return ft
 
     @property
-    def case_lower(self) -> FontEffects:
+    def case_lower(self: _TFontEffects) -> _TFontEffects:
         """Gets copy of instance with case set to lower"""
         ft = self.copy()
         ft.prop_case = CaseMapEnum.LOWERCASE
         return ft
 
     @property
-    def case_title(self) -> FontEffects:
+    def case_title(self: _TFontEffects) -> _TFontEffects:
         """Gets copy of instance with case set to title"""
         ft = self.copy()
         ft.prop_case = CaseMapEnum.TITLE
         return ft
 
     @property
-    def case_small_caps(self) -> FontEffects:
+    def case_small_caps(self: _TFontEffects) -> _TFontEffects:
         """Gets copy of instance with case set to small caps"""
         ft = self.copy()
         ft.prop_case = CaseMapEnum.SMALLCAPS
         return ft
 
     @property
-    def case_none(self) -> FontEffects:
+    def case_none(self: _TFontEffects) -> _TFontEffects:
         """Gets copy of instance with no case set"""
         ft = self.copy()
         ft.prop_case = CaseMapEnum.NONE
         return ft
 
     @property
-    def relief_none(self) -> FontEffects:
+    def relief_none(self: _TFontEffects) -> _TFontEffects:
         """Gets copy of instance with no relief set"""
         ft = self.copy()
         ft.prop_relief = FontReliefEnum.NONE
         return ft
 
     @property
-    def relief_embossed(self) -> FontEffects:
+    def relief_embossed(self: _TFontEffects) -> _TFontEffects:
         """Gets copy of instance with relief set to embossed"""
         ft = self.copy()
         ft.prop_relief = FontReliefEnum.EMBOSSED
         return ft
 
     @property
-    def relief_engraved(self) -> FontEffects:
+    def relief_engraved(self: _TFontEffects) -> _TFontEffects:
         """Gets copy of instance with relief set to engraved"""
         ft = self.copy()
         ft.prop_relief = FontReliefEnum.ENGRAVED

@@ -4,7 +4,7 @@ Modele for managing paragraph Outline.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, cast, overload
+from typing import Tuple, cast, overload, Type, TypeVar
 from enum import IntEnum
 
 from .....events.args.cancel_event_args import CancelEventArgs
@@ -14,6 +14,8 @@ from .....utils import lo as mLo
 from .....utils import props as mProps
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleBase
+
+_TOutline = TypeVar(name="_TOutline", bound="Outline")
 
 
 class LevelKind(IntEnum):
@@ -92,23 +94,24 @@ class Outline(StyleBase):
 
     # endregion apply()
 
-    @staticmethod
-    def from_obj(obj: object) -> Outline:
+    @classmethod
+    def from_obj(cls: Type[_TOutline], obj: object) -> _TOutline:
         """
         Gets instance from object
 
         Args:
-            obj (object): UNO object that supports ``com.sun.star.style.ParagraphProperties`` service.
+            obj (object): UNO object.
 
         Raises:
-            NotSupportedServiceError: If ``obj`` does not support  ``com.sun.star.style.ParagraphProperties`` service.
+            NotSupportedError: If ``obj`` is not supported.
 
         Returns:
             Outline: ``Outline`` instance that represents ``obj`` break properties.
         """
-        inst = Outline(level=LevelKind.TEXT_BODY)
+        inst = super(Outline, cls).__new__(cls)
+        inst.__init__(level=LevelKind.TEXT_BODY)
         if not inst._is_valid_obj(obj):
-            raise mEx.NotSupportedServiceError(inst._supported_services()[0])
+            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
         level = int(mProps.Props.get(obj, "OutlineLevel"))
         inst._set("OutlineLevel", level)
@@ -116,7 +119,7 @@ class Outline(StyleBase):
 
     # endregion methods
     # region style methods
-    def style_above(self, value: LevelKind | None) -> Outline:
+    def style_above(self: _TOutline, value: LevelKind | None) -> _TOutline:
         """
         Gets a copy of instance with level set.
 
@@ -134,77 +137,77 @@ class Outline(StyleBase):
 
     # region Style Properties
     @property
-    def text_body(self) -> Outline:
+    def text_body(self: _TOutline) -> _TOutline:
         """GEts copy of instance set to outline level text body."""
         cp = self.copy()
         cp.prop_level = LevelKind.TEXT_BODY
         return cp
 
     @property
-    def level_01(self) -> Outline:
+    def level_01(self: _TOutline) -> _TOutline:
         """GEts copy of instance set to outline level ``1``."""
         cp = self.copy()
         cp.prop_level = LevelKind.LEVEL_01
         return cp
 
     @property
-    def level_02(self) -> Outline:
+    def level_02(self: _TOutline) -> _TOutline:
         """GEts copy of instance set to outline level ``2``."""
         cp = self.copy()
         cp.prop_level = LevelKind.LEVEL_02
         return cp
 
     @property
-    def level_03(self) -> Outline:
+    def level_03(self: _TOutline) -> _TOutline:
         """GEts copy of instance set to outline level ``3``."""
         cp = self.copy()
         cp.prop_level = LevelKind.LEVEL_03
         return cp
 
     @property
-    def level_04(self) -> Outline:
+    def level_04(self: _TOutline) -> _TOutline:
         """GEts copy of instance set to outline level ``4``."""
         cp = self.copy()
         cp.prop_level = LevelKind.LEVEL_04
         return cp
 
     @property
-    def level_05(self) -> Outline:
+    def level_05(self: _TOutline) -> _TOutline:
         """GEts copy of instance set to outline level ``5``."""
         cp = self.copy()
         cp.prop_level = LevelKind.LEVEL_05
         return cp
 
     @property
-    def level_06(self) -> Outline:
+    def level_06(self: _TOutline) -> _TOutline:
         """GEts copy of instance set to outline level ``6``."""
         cp = self.copy()
         cp.prop_level = LevelKind.LEVEL_06
         return cp
 
     @property
-    def level_07(self) -> Outline:
+    def level_07(self: _TOutline) -> _TOutline:
         """GEts copy of instance set to outline level ``7``."""
         cp = self.copy()
         cp.prop_level = LevelKind.LEVEL_07
         return cp
 
     @property
-    def level_08(self) -> Outline:
+    def level_08(self: _TOutline) -> _TOutline:
         """GEts copy of instance set to outline level ``8``."""
         cp = self.copy()
         cp.prop_level = LevelKind.LEVEL_08
         return cp
 
     @property
-    def level_09(self) -> Outline:
+    def level_09(self: _TOutline) -> _TOutline:
         """GEts copy of instance set to outline level ``9``."""
         cp = self.copy()
         cp.prop_level = LevelKind.LEVEL_09
         return cp
 
     @property
-    def level_10(self) -> Outline:
+    def level_10(self: _TOutline) -> _TOutline:
         """GEts copy of instance set to outline level ``10``."""
         cp = self.copy()
         cp.prop_level = LevelKind.LEVEL_10

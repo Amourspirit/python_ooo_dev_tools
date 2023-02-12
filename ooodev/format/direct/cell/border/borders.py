@@ -5,8 +5,7 @@ Module for managing table borders (cells and ranges).
 """
 # region imports
 from __future__ import annotations
-from ast import Tuple
-from typing import overload
+from typing import overload, cast, Tuple
 
 import uno
 
@@ -97,11 +96,11 @@ class Borders(StyleMulti):
         init_vals = {}
 
         if not shadow is None:
-            init_vals["ShadowFormat"] = shadow.get_shadow_format()
+            init_vals["ShadowFormat"] = shadow.get_uno_struct()
         if not diagonal_down is None:
-            init_vals["DiagonalTLBR2"] = diagonal_down.get_border_line2()
+            init_vals["DiagonalTLBR2"] = diagonal_down.get_uno_struct()
         if not diagonal_up is None:
-            init_vals["DiagonalBLTR2"] = diagonal_up.get_border_line2()
+            init_vals["DiagonalBLTR2"] = diagonal_up.get_uno_struct()
 
         border_table = TblBorder2(
             left=left,
@@ -350,7 +349,7 @@ class Borders(StyleMulti):
         if value is None:
             cp._remove("DiagonalTLBR2")
         else:
-            cp._set("DiagonalTLBR2", value.get_border_line2())
+            cp._set("DiagonalTLBR2", value.get_uno_struct())
         return cp
 
     def fmt_diagonal_up(self, value: Side | None) -> Borders:
@@ -367,7 +366,7 @@ class Borders(StyleMulti):
         if value is None:
             cp._remove("DiagonalBLTR2")
         else:
-            cp._set("DiagonalBLTR2", value.get_border_line2())
+            cp._set("DiagonalBLTR2", value.get_uno_struct())
         return cp
 
     def fmt_shadow(self, value: Shadow | None) -> Borders:
@@ -384,7 +383,7 @@ class Borders(StyleMulti):
         if value is None:
             cp._remove("ShadowFormat")
         else:
-            cp._set("ShadowFormat", value.get_shadow_format())
+            cp._set("ShadowFormat", value.get_uno_struct())
         return cp
 
     def fmt_padding(self, value: Padding | None) -> Borders:
@@ -408,6 +407,24 @@ class Borders(StyleMulti):
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
         return FormatKind.CELL
+
+    @property
+    def prop_inner_padding(self) -> Padding:
+        """Gets Padding instance"""
+        try:
+            return self._direct_inner_padding
+        except AttributeError:
+            self._direct_inner_padding = cast(Padding, self._get_style_inst("padding"))
+        return self._direct_inner_padding
+
+    @property
+    def prop_inner_border_table(self) -> TblBorder2:
+        """Gets border table instance"""
+        try:
+            return self._direct_inner_table
+        except AttributeError:
+            self._direct_inner_table = cast(TblBorder2, self._get_style_inst("border_table"))
+        return self._direct_inner_table
 
     @static_prop
     def default() -> Borders:  # type: ignore[misc]

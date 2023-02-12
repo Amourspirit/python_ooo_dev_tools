@@ -4,7 +4,7 @@ Modele for managing paragraph Line Spacing.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, cast, overload
+from typing import Tuple, cast, overload, Type, TypeVar
 from numbers import Real
 
 from .....events.args.cancel_event_args import CancelEventArgs
@@ -16,6 +16,10 @@ from ....style_base import StyleMulti
 from ...structs import line_spacing_struct as mLs
 from ...structs.line_spacing_struct import ModeKind as ModeKind
 from ....kind.format_kind import FormatKind
+
+from ooo.dyn.style.line_spacing import LineSpacing as UnoLineSpacing
+
+_TLineSpacing = TypeVar(name="_TLineSpacing", bound="LineSpacing")
 
 
 class ParaLineSpace(mLs.LineSpacingStruct):
@@ -55,6 +59,7 @@ class LineSpacing(StyleMulti):
 
     def __init__(
         self,
+        *,
         mode: ModeKind | None = None,
         value: Real = 0,
         active_ln_spacing: bool | None = None,
@@ -83,9 +88,6 @@ class LineSpacing(StyleMulti):
         ls = None
         if not mode is None:
             ls = ParaLineSpace(mode=mode, value=value)
-
-        self._mode = mode
-        self._value = value
 
         if not active_ln_spacing is None:
             self._set("ParaRegisterModeActive", active_ln_spacing)
@@ -128,23 +130,24 @@ class LineSpacing(StyleMulti):
 
     # endregion apply()
 
-    @staticmethod
-    def from_obj(obj: object) -> LineSpacing:
+    @classmethod
+    def from_obj(cls: Type[_TLineSpacing], obj: object) -> _TLineSpacing:
         """
         Gets instance from object
 
         Args:
-            obj (object): UNO object that supports ``com.sun.star.style.ParagraphProperties`` service.
+            obj (object): UNO object.
 
         Raises:
-            NotSupportedServiceError: If ``obj`` does not support  ``com.sun.star.style.ParagraphProperties`` service.
+            NotSupportedError: If ``obj`` is not supported.
 
         Returns:
             LineSpacing: ``LineSpacing`` instance that represents ``obj`` line spacing.
         """
-        inst = LineSpacing()
+        inst = super(LineSpacing, cls).__new__(cls)
+        inst.__init__()
         if not inst._is_valid_obj(obj):
-            raise mEx.NotSupportedServiceError(inst._supported_services()[0])
+            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
         def set_prop(key: str, ls_inst: LineSpacing):
             nonlocal obj
@@ -154,7 +157,8 @@ class LineSpacing(StyleMulti):
 
         set_prop("ParaRegisterModeActive", inst)
 
-        ls = mProps.Props.get(obj, "ParaLineSpacing", None)
+        pls = cast(UnoLineSpacing, mProps.Props.get(obj, "ParaLineSpacing", None))
+        ls = ParaLineSpace.from_line_spacing(pls)
         if not ls is None:
             inst._set_style("line_spacing", ls, *ls.get_attrs())
         return inst
@@ -182,20 +186,21 @@ class LineSpacing(StyleMulti):
     @property
     def prop_mode(self) -> ModeKind | None:
         """Gets the mode that is use to apply units."""
-        info = self._get_style("line_spacing")
-        if info is None:
-            return None
-        ls = cast(ParaLineSpace, info[0])
-        return ls.prop_mode
+        return self.prop_inner.prop_mode
 
     @property
     def prop_value(self) -> Real | None:
         """Gets the Value of line spacing."""
-        info = self._get_style("line_spacing")
-        if info is None:
-            return None
-        ls = cast(ParaLineSpace, info[0])
-        return ls.prop_value
+        return self.prop_inner.prop_value
+
+    @property
+    def prop_inner(self) -> ParaLineSpace:
+        """Gets Line Spacing instance"""
+        try:
+            return self._direct_inner
+        except AttributeError:
+            self._direct_inner = cast(ParaLineSpace, self._get_style_inst("line_spacing"))
+        return self._direct_inner
 
     @static_prop
     def default() -> LineSpacing:  # type: ignore[misc]

@@ -4,7 +4,7 @@ Modele for managing paragraph alignment.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, cast, overload
+from typing import Tuple, cast, overload, Type, TypeVar
 from enum import Enum
 
 
@@ -20,6 +20,8 @@ from .writing_mode import WritingMode as WritingMode
 from ooo.dyn.style.paragraph_adjust import ParagraphAdjust as ParagraphAdjust
 from ooo.dyn.text.paragraph_vert_align import ParagraphVertAlignEnum as ParagraphVertAlignEnum
 from ooo.dyn.text.writing_mode2 import WritingMode2Enum as WritingMode2Enum
+
+_TAlignment = TypeVar(name="_TAlignment", bound="Alignment")
 
 
 class LastLineKind(Enum):
@@ -136,23 +138,49 @@ class Alignment(StyleMulti):
 
     # endregion apply()
 
+    # region static methods
+
     @staticmethod
-    def from_obj(obj: object) -> Alignment:
+    def convert_int_to_paragraph_adjust(num: int) -> ParagraphAdjust:
+        """
+        Converts integer value to ``ParagraphAdjust``.
+
+        When Writer saves ``ParagraphAdjust`` value into ``ParaAdjust`` it converts it to a integer value.
+
+        Args:
+            num (int): Number to convert
+
+        Returns:
+            ParagraphAdjust: Number as ``ParagraphAdjust``
+        """
+        if num == 0:
+            return ParagraphAdjust.LEFT
+        if num == 1:
+            return ParagraphAdjust.RIGHT
+        if num == 2:
+            return ParagraphAdjust.BLOCK
+        if num == 3:
+            return ParagraphAdjust.CENTER
+        return ParagraphAdjust.STRETCH
+
+    @classmethod
+    def from_obj(cls: Type[_TAlignment], obj: object) -> _TAlignment:
         """
         Gets Padding instance from object
 
         Args:
-            obj (object): UNO object that supports ``com.sun.star.style.ParagraphProperties`` service.
+            obj (object): UNO object.
 
         Raises:
-            NotSupportedServiceError: If ``obj`` does not support ``com.sun.star.style.ParagraphProperties`` service.
+            NotSupportedError: If ``obj`` is not supported.
 
         Returns:
             Alignment: Alignment that represents ``obj`` alignment.
         """
-        inst = Alignment()
+        inst = super(Alignment, cls).__new__(cls)
+        inst.__init__()
         if not inst._is_valid_obj(obj):
-            raise mEx.NotSupportedServiceError(inst._supported_services()[0])
+            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
         def set_prop(key: str, align: Alignment):
             nonlocal obj
@@ -160,12 +188,15 @@ class Alignment(StyleMulti):
             if not val is None:
                 align._set(key, val)
 
-        set_prop("ParaAdjust", inst)
         set_prop("ParaVertAlignment", inst)
         set_prop("ParaLastLineAdjust", inst)
         set_prop("ParaExpandSingleWord", inst)
+
+        # LibreOffice Writer converts ParagraphAdjust to an int value
+        padj = cast(int, mProps.Props.get(obj, "ParaAdjust"))
+        inst._set("ParaAdjust", cls.convert_int_to_paragraph_adjust(padj))
         try:
-            # SnapToGrid is not part of any know service
+            # SnapToGrid is not part of any known service
             snap = mProps.Props.get(obj, "SnapToGrid")
             inst._set("SnapToGrid", snap)
         except mEx.PropertyNotFoundError as e:
@@ -179,10 +210,12 @@ class Alignment(StyleMulti):
             mLo.Lo.print("Alignment.from_obj(): unable to set txt_direction style")
         return inst
 
+    # endregion static methods
+
     # endregion methods
 
     # region style methods
-    def fmt_align(self, value: ParagraphAdjust | None) -> Alignment:
+    def fmt_align(self: _TAlignment, value: ParagraphAdjust | None) -> _TAlignment:
         """
         Gets copy of instance with horizontal alignment set or removed
 
@@ -196,7 +229,7 @@ class Alignment(StyleMulti):
         cp.prop_align = value
         return cp
 
-    def fmt_align_vert(self, value: ParagraphVertAlignEnum | None) -> Alignment:
+    def fmt_align_vert(self: _TAlignment, value: ParagraphVertAlignEnum | None) -> _TAlignment:
         """
         Gets copy of instance with verticial alignment set or removed
 
@@ -210,7 +243,7 @@ class Alignment(StyleMulti):
         cp.prop_align_vert = value
         return cp
 
-    def fmt_align_last(self, value: LastLineKind | None) -> Alignment:
+    def fmt_align_last(self: _TAlignment, value: LastLineKind | None) -> _TAlignment:
         """
         Gets copy of instance with align last set or removed
 
@@ -224,7 +257,7 @@ class Alignment(StyleMulti):
         cp.prop_align_last = value
         return cp
 
-    def fmt_expand_single_word(self, value: bool | None) -> Alignment:
+    def fmt_expand_single_word(self: _TAlignment, value: bool | None) -> _TAlignment:
         """
         Gets copy of instance with expand single word set or removed
 
@@ -238,7 +271,7 @@ class Alignment(StyleMulti):
         cp.prop_expand_single_word = value
         return cp
 
-    def fmt_snap_to_grid(self, value: bool | None) -> Alignment:
+    def fmt_snap_to_grid(self: _TAlignment, value: bool | None) -> _TAlignment:
         """
         Gets copy of instance with snap to grid set or removed
 
@@ -252,7 +285,7 @@ class Alignment(StyleMulti):
         cp.prop_snap_to_grid = value
         return cp
 
-    def fmt_txt_direction(self, value: WritingMode | None) -> Alignment:
+    def fmt_txt_direction(self: _TAlignment, value: WritingMode | None) -> _TAlignment:
         """
         Gets copy of instance with verticial alignment set or removed
 
@@ -273,42 +306,42 @@ class Alignment(StyleMulti):
 
     # region Style Properties
     @property
-    def snap_to_grid(self) -> Alignment:
+    def snap_to_grid(self: _TAlignment) -> _TAlignment:
         """Gets copy of instance with snap to grid set"""
         al = self.copy()
         al.prop_snap_to_grid = True
         return al
 
     @property
-    def expand_single_word(self) -> Alignment:
+    def expand_single_word(self: _TAlignment) -> _TAlignment:
         """Gets copy of instance with expand single word set"""
         al = self.copy()
         al.prop_expand_single_word = True
         return al
 
     @property
-    def justified(self) -> Alignment:
+    def justified(self: _TAlignment) -> _TAlignment:
         """Gets copy of instance with align set to block"""
         al = self.copy()
         al.prop_align = ParagraphAdjust.BLOCK
         return al
 
     @property
-    def align_center(self) -> Alignment:
+    def align_center(self: _TAlignment) -> _TAlignment:
         """Gets copy of instance with align set to center"""
         al = self.copy()
         al.prop_align = ParagraphAdjust.CENTER
         return al
 
     @property
-    def align_left(self) -> Alignment:
+    def align_left(self: _TAlignment) -> _TAlignment:
         """Gets copy of instance with align set to left"""
         al = self.copy()
         al.prop_align = ParagraphAdjust.LEFT
         return al
 
     @property
-    def align_right(self) -> Alignment:
+    def align_right(self: _TAlignment) -> _TAlignment:
         """Gets copy of instance with align set to left"""
         al = self.copy()
         al.prop_align = ParagraphAdjust.RIGHT
@@ -392,6 +425,15 @@ class Alignment(StyleMulti):
             self._remove("SnapToGrid")
             return
         self._set("SnapToGrid", value)
+
+    @property
+    def prop_inner_mode(self) -> WritingMode | None:
+        """Gets Writing Mode (``txt_direction``) instance if exist."""
+        try:
+            return self._direct_inner_mode
+        except AttributeError:
+            self._direct_inner_mode = cast(WritingMode, self._get_style_inst("txt_direction"))
+        return self._direct_inner_mode
 
     @static_prop
     def default() -> Alignment:  # type: ignore[misc]

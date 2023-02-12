@@ -4,9 +4,10 @@ Modele for managing paragraph Text Flow.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple
+from typing import Tuple, cast, Type, TypeVar
 
 from .....events.args.cancel_event_args import CancelEventArgs
+from .....exceptions import ex as mEx
 from .....meta.static_prop import static_prop
 from ....style_base import StyleMulti
 from ....kind.format_kind import FormatKind
@@ -16,6 +17,7 @@ from .flow_options import FlowOptions
 
 from ooo.dyn.style.break_type import BreakType as BreakType
 
+_TTextFlow = TypeVar(name="_TTextFlow", bound="TextFlow")
 
 class TextFlow(StyleMulti):
     """
@@ -98,31 +100,35 @@ class TextFlow(StyleMulti):
             raise ValueError("Modifying a default instance is not allowed")
         return super()._on_modifing(event)
 
-    @staticmethod
-    def from_obj(obj: object) -> TextFlow:
+    @classmethod
+    def from_obj(cls: Type[_TTextFlow], obj: object) -> _TTextFlow:
         """
         Gets instance from object
 
         Args:
-            obj (object): UNO object that supports ``com.sun.star.style.ParagraphProperties`` service.
+            obj (object): UNO object.
 
         Raises:
-            NotSupportedServiceError: If ``obj`` does not support  ``com.sun.star.style.ParagraphProperties`` service.
+            NotSupportedError: If ``obj`` is not supported.
 
         Returns:
             TextFlow: ``TextFlow`` instance that represents ``obj`` Indents and spacing.
         """
-        ids = TextFlow()
+        inst = super(TextFlow, cls).__new__(cls)
+        inst.__init__()
+        if not inst._is_valid_obj(obj):
+            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
+
         hy = Hyphenation.from_obj(obj)
         if hy.prop_has_attribs:
-            ids._set_style("hyphenation", hy, *hy.get_attrs())
+            inst._set_style("hyphenation", hy, *hy.get_attrs())
         brk = Breaks.from_obj(obj)
         if brk.prop_has_attribs:
-            ids._set_style("breaks", brk, *brk.get_attrs())
+            inst._set_style("breaks", brk, *brk.get_attrs())
         flo = FlowOptions.from_obj(obj)
         if flo.prop_has_attribs:
-            ids._set_style("flow_options", flo, *flo.get_attrs())
-        return ids
+            inst._set_style("flow_options", flo, *flo.get_attrs())
+        return inst
 
     # endregion methods
 
@@ -131,6 +137,33 @@ class TextFlow(StyleMulti):
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
         return FormatKind.PARA
+
+    @property
+    def prop_inner_hyphenation(self) -> Hyphenation | None:
+        """Gets Hyphenation instance"""
+        try:
+            return self._direct_inner_hy
+        except AttributeError:
+            self._direct_inner_hy = cast(Hyphenation, self._get_style_inst("hyphenation"))
+        return self._direct_inner_hy
+
+    @property
+    def prop_inner_breaks(self) -> Breaks | None:
+        """Gets Breaks instance"""
+        try:
+            return self._direct_inner_breaks
+        except AttributeError:
+            self._direct_inner_breaks = cast(Breaks, self._get_style_inst("breaks"))
+        return self._direct_inner_breaks
+
+    @property
+    def prop_inner_flow_options(self) -> FlowOptions | None:
+        """Gets Flow Options instance"""
+        try:
+            return self._direct_inner_fo
+        except AttributeError:
+            self._direct_inner_fo = cast(FlowOptions, self._get_style_inst("flow_options"))
+        return self._direct_inner_fo
 
     @static_prop
     def default() -> TextFlow:  # type: ignore[misc]

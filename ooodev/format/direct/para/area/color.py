@@ -4,7 +4,7 @@ Module for Paragraph Fill Color.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, overload
+from typing import Tuple, overload, Type, TypeVar
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....meta.static_prop import static_prop
@@ -20,6 +20,8 @@ from ooo.dyn.drawing.fill_style import FillStyle
 # https://bugs.documentfoundation.org/show_bug.cgi?id=99125
 # see Also: https://forum.openoffice.org/en/forum/viewtopic.php?p=417389&sid=17b21c173e4a420b667b45a2949b9cc5#p417389
 # The solution to these issues is to apply FillColor to Paragraph cursors TextParagraph.
+
+_TColor = TypeVar(name="_TColor", bound="Color")
 
 
 class Color(StyleBase):
@@ -88,7 +90,7 @@ class Color(StyleBase):
     # endregion apply()
 
     @classmethod
-    def from_obj(cls, obj: object) -> Color:
+    def from_obj(cls: Type[_TColor], obj: object) -> _TColor:
         """
         Gets instance from object
 

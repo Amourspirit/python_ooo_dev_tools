@@ -4,18 +4,19 @@ Modele for managing paragraph breaks.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, overload
+from typing import Tuple, overload, cast, Type, TypeVar
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
 from .....meta.static_prop import static_prop
 from .....utils import lo as mLo
 from .....utils import props as mProps
-from .....utils import info as mInfo
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleBase
 
 from ooo.dyn.style.break_type import BreakType as BreakType
+
+_TBreaks = TypeVar(name="_TBreaks", bound="Breaks")
 
 
 class Breaks(StyleBase):
@@ -29,7 +30,7 @@ class Breaks(StyleBase):
 
     # region init
 
-    def __init__(self, type: BreakType | None = None, style: str | None = None, num: int | None = None) -> None:
+    def __init__(self, *, type: BreakType | None = None, style: str | None = None, num: int | None = None) -> None:
         """
         Constructor
 
@@ -115,27 +116,30 @@ class Breaks(StyleBase):
 
     # endregion apply()
 
-    @staticmethod
-    def from_obj(obj: object) -> Breaks:
+    @classmethod
+    def from_obj(cls: Type[_TBreaks], obj: object) -> _TBreaks:
         """
         Gets instance from object
 
         Args:
-            obj (object): UNO object that supports ``com.sun.star.style.ParagraphProperties`` service.
+            obj (object): UNO object.
 
         Raises:
-            NotSupportedServiceError: If ``obj`` does not support  ``com.sun.star.style.ParagraphProperties`` service.
+            NotSupportedError: If ``obj`` is not supported.
 
         Returns:
             Breaks: ``Breaks`` instance that represents ``obj`` break properties.
         """
-        if not mInfo.Info.support_service(obj, "com.sun.star.style.ParagraphProperties"):
-            raise mEx.NotSupportedServiceError("com.sun.star.style.ParagraphProperties")
+        nu = cast(Breaks, super(Breaks, cls).__new__(cls))
+        nu.__init__()
+        if not nu._is_valid_obj(obj):
+            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
         t = mProps.Props.get(obj, "BreakType", None)
         style = mProps.Props.get(obj, "PageDescName", None)
         num = mProps.Props.get(obj, "PageNumberOffset", None)
-        inst = Breaks(type=t, style=style, num=num)
+        inst = cast(Breaks, super(Breaks, cls).__new__(cls))
+        inst.__init__(type=t, style=style, num=num)
         return inst
 
     # endregion methods

@@ -209,7 +209,7 @@ class Gradient(PageStyleBaseMulti):
             return "gradient"
 
     @staticmethod
-    def from_obj(obj: object, style_name: StylePageKind | str = StylePageKind.STANDARD) -> Gradient:
+    def from_style(doc: object, style_name: StylePageKind | str = StylePageKind.STANDARD) -> Gradient:
         """
         Gets instance from object properties
 
@@ -224,10 +224,10 @@ class Gradient(PageStyleBaseMulti):
             Gradient: Instance that represents Gradient Color.
         """
         bc = Gradient(style_name=style_name)
-        if not bc._is_valid_obj(obj):
+        if not bc._is_valid_obj(doc):
             raise mEx.NotSupportedError("obj is not a Writer Document")
 
-        p = bc._get_style_props(obj)
+        p = bc._get_style_props(doc)
         struct = GradientStruct.from_obj(p)
         prop_name = p.getPropertyValue("FillGradientName")
         inst = Gradient(

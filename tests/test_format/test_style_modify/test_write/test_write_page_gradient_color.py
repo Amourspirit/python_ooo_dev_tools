@@ -27,13 +27,13 @@ def test_write(loader, para_text) -> None:
         style = Gradient.from_preset(PresetGradientKind.SUNSHINE)
         style.apply(doc)
 
-        obj = Gradient.from_obj(doc, style.prop_style_name)
+        obj = Gradient.from_style(doc, style.prop_style_name)
         assert obj == style
 
         style = Gradient.from_preset(preset=PresetGradientKind.MAHOGANY, style_name=StylePageKind.FIRST_PAGE)
         style.apply(doc)
 
-        obj = Gradient.from_obj(doc, style.prop_style_name)
+        obj = Gradient.from_style(doc, style.prop_style_name)
         assert obj == style
 
         Lo.delay(delay)

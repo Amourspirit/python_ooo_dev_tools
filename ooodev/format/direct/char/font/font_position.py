@@ -4,7 +4,7 @@ Module for managing character Font position.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Any, Tuple, cast, overload
+from typing import Any, Tuple, Type, cast, overload, TypeVar
 from enum import Enum
 
 from .....events.args.cancel_event_args import CancelEventArgs
@@ -18,6 +18,8 @@ from .....utils.data_type.intensity import Intensity as Intensity
 from .....utils.unit_convert import UnitConvert
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleBase
+
+_TFontPosition = TypeVar(name="_TFontPosition", bound="FontPosition")
 
 
 class CharSpacingKind(Enum):
@@ -111,7 +113,7 @@ class FontPosition(StyleBase):
 
     # region methods
     def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.style.CharacterProperties",)
+        return ("com.sun.star.style.CharacterProperties", "com.sun.star.style.CharacterStyle")
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:
@@ -145,8 +147,8 @@ class FontPosition(StyleBase):
 
     # endregion apply()
 
-    @staticmethod
-    def from_obj(obj: object) -> FontPosition:
+    @classmethod
+    def from_obj(cls: Type[_TFontPosition], obj: object) -> _TFontPosition:
         """
         Gets instance from object
 
@@ -159,8 +161,10 @@ class FontPosition(StyleBase):
         Returns:
             FontPosition: ``FontPosition`` instance that represents ``obj`` font postiion.
         """
-        if not FontPosition.default._is_valid_obj(obj):
-            raise mEx.NotSupportedError("Object is not supported to get FontEffects from.")
+        inst = super(FontPosition, cls).__new__(cls)
+        inst.__init__()
+        if not inst._is_valid_obj(obj):
+            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
         def set_prop(key: str, fp: FontPosition):
             nonlocal obj
@@ -168,7 +172,6 @@ class FontPosition(StyleBase):
             if not val is None:
                 fp._set(key, val)
 
-        inst = FontPosition()
         set_prop("CharEscapement", inst)
         set_prop("CharEscapementHeight", inst)
         set_prop("CharRotation", inst)
@@ -197,7 +200,7 @@ class FontPosition(StyleBase):
     # endregion methods
 
     # region Format Methods
-    def fmt_scrip_kind(self, value: FontScriptKind | None = None) -> FontPosition:
+    def fmt_scrip_kind(self: _TFontPosition, value: FontScriptKind | None = None) -> _TFontPosition:
         """
         Get copy of instance with superscript/subscript set or removed.
 
@@ -212,7 +215,7 @@ class FontPosition(StyleBase):
         ft.prop_script_kind = value
         return ft
 
-    def fmt_raise_lower(self, value: int | Intensity | None = None) -> FontPosition:
+    def fmt_raise_lower(self: _TFontPosition, value: int | Intensity | None = None) -> _TFontPosition:
         """
         Get copy of instance with raise/lower set or removed.
 
@@ -227,7 +230,7 @@ class FontPosition(StyleBase):
         ft.prop_rel_size = value
         return ft
 
-    def fmt_rel_size(self, value: int | None = None) -> FontPosition:
+    def fmt_rel_size(self: _TFontPosition, value: int | None = None) -> _TFontPosition:
         """
         Get copy of instance with relative size set or removed.
 
@@ -242,7 +245,7 @@ class FontPosition(StyleBase):
         ft.prop_raise_lower = value
         return ft
 
-    def fmt_rotation(self, value: int | Angle | None = None) -> FontPosition:
+    def fmt_rotation(self: _TFontPosition, value: int | Angle | None = None) -> _TFontPosition:
         """
         Get copy of instance with rotation set or removed.
 
@@ -257,7 +260,7 @@ class FontPosition(StyleBase):
         ft.prop_rotation = value
         return ft
 
-    def fmt_scale(self, value: int | None = None) -> FontPosition:
+    def fmt_scale(self: _TFontPosition, value: int | None = None) -> _TFontPosition:
         """
         Get copy of instance with scale width set or removed.
 
@@ -272,7 +275,7 @@ class FontPosition(StyleBase):
         ft.prop_scale = value
         return ft
 
-    def fmt_fit(self, value: bool | None = None) -> FontPosition:
+    def fmt_fit(self: _TFontPosition, value: bool | None = None) -> _TFontPosition:
         """
         Get copy of instance with rotation fit set or removed.
 
@@ -287,7 +290,7 @@ class FontPosition(StyleBase):
         ft.prop_fit = value
         return ft
 
-    def fmt_spacing(self, value: float | None = None) -> FontPosition:
+    def fmt_spacing(self: _TFontPosition, value: float | None = None) -> _TFontPosition:
         """
         Get copy of instance with spacing set or removed.
 
@@ -302,7 +305,7 @@ class FontPosition(StyleBase):
         ft.prop_spacing = value
         return ft
 
-    def fmt_pair(self, value: bool | None = None) -> FontPosition:
+    def fmt_pair(self: _TFontPosition, value: bool | None = None) -> _TFontPosition:
         """
         Get copy of instance with pair kerning set or removed.
 
@@ -321,98 +324,98 @@ class FontPosition(StyleBase):
 
     # region Style Properties
     @property
-    def script_kind_normal(self) -> FontPosition:
+    def script_kind_normal(self: _TFontPosition) -> _TFontPosition:
         """Gets copy of instance set to Position Normal"""
         ft = self.copy()
         ft.prop_script_kind = FontScriptKind.NORMAL
         return ft
 
     @property
-    def script_kind_superscript(self) -> FontPosition:
+    def script_kind_superscript(self: _TFontPosition) -> _TFontPosition:
         """Gets copy of instance set to Position Superscript"""
         ft = self.copy()
         ft.prop_script_kind = FontScriptKind.SUPERSCRIPT
         return ft
 
     @property
-    def script_kind_subscript(self) -> FontPosition:
+    def script_kind_subscript(self: _TFontPosition) -> _TFontPosition:
         """Gets copy of instance set to Position Subscript"""
         ft = self.copy()
         ft.prop_script_kind = FontScriptKind.SUBSCRIPT
         return ft
 
     @property
-    def raise_lower_auto(self) -> FontPosition:
+    def raise_lower_auto(self: _TFontPosition) -> _TFontPosition:
         """Gets copy of instance with raise/lower set to automatic"""
         ft = self.copy()
         ft.prop_raise_lower = 0
         return ft
 
     @property
-    def rotation_none(self) -> FontPosition:
+    def rotation_none(self: _TFontPosition) -> _TFontPosition:
         """Gets copy of instance with rotation set to ``0``"""
         ft = self.copy()
         ft.prop_rotation = 0
         return ft
 
     @property
-    def rotation_90(self) -> FontPosition:
+    def rotation_90(self: _TFontPosition) -> _TFontPosition:
         """Gets copy of instance with rotation set to ``90``"""
         ft = self.copy()
         ft.prop_rotation = 90
         return ft
 
     @property
-    def rotation_270(self) -> FontPosition:
+    def rotation_270(self: _TFontPosition) -> _TFontPosition:
         """Gets copy of instance with rotation set to ``270``"""
         ft = self.copy()
         ft.prop_rotation = 270
         return ft
 
     @property
-    def fit(self) -> FontPosition:
+    def fit(self: _TFontPosition) -> _TFontPosition:
         """Gets copy of instance with rotation fit to line set to ``True``"""
         ft = self.copy()
         ft.prop_fit = True
         return ft
 
     @property
-    def spacing_very_tight(self) -> FontPosition:
+    def spacing_very_tight(self) -> _TFontPosition:
         """Gets copy of instance with spacing set to very tight value"""
         ft = self.copy()
         ft.prop_spacing = CharSpacingKind.VERY_TIGHT
         return ft
 
     @property
-    def spacing_tight(self) -> FontPosition:
+    def spacing_tight(self: _TFontPosition) -> _TFontPosition:
         """Gets copy of instance with spacing set to tight value"""
         ft = self.copy()
         ft.prop_spacing = CharSpacingKind.TIGHT
         return ft
 
     @property
-    def spacing_normal(self) -> FontPosition:
+    def spacing_normal(self: _TFontPosition) -> _TFontPosition:
         """Gets copy of instance with spacing set to normal value"""
         ft = self.copy()
         ft.prop_spacing = CharSpacingKind.NORMAL
         return ft
 
     @property
-    def spacing_loose(self) -> FontPosition:
+    def spacing_loose(self: _TFontPosition) -> _TFontPosition:
         """Gets copy of instance with spacing set to loose value"""
         ft = self.copy()
         ft.prop_spacing = CharSpacingKind.LOOSE
         return ft
 
     @property
-    def spacing_very_loose(self) -> FontPosition:
+    def spacing_very_loose(self: _TFontPosition) -> _TFontPosition:
         """Gets copy of instance with spacing set to very loose value"""
         ft = self.copy()
         ft.prop_spacing = CharSpacingKind.VERY_LOOSE
         return ft
 
     @property
-    def pair(self) -> FontPosition:
+    def pair(self: _TFontPosition) -> _TFontPosition:
         """Gets copy of instance with rotation pair kerning set to ``True``"""
         ft = self.copy()
         ft.prop_pair = True

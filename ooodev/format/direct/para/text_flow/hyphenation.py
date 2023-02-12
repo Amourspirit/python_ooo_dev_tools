@@ -4,7 +4,7 @@ Modele for managing paragraph hyphenation.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, overload
+from typing import Tuple, overload, cast, Type, TypeVar
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
@@ -13,6 +13,8 @@ from .....utils import lo as mLo
 from .....utils import props as mProps
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleBase
+
+_THyphenation = TypeVar(name="_THyphenation", bound="Hyphenation")
 
 
 class Hyphenation(StyleBase):
@@ -113,23 +115,24 @@ class Hyphenation(StyleBase):
 
     # endregion apply()
 
-    @staticmethod
-    def from_obj(obj: object) -> Hyphenation:
+    @classmethod
+    def from_obj(cls: Type[_THyphenation], obj: object) -> _THyphenation:
         """
         Gets instance from object
 
         Args:
-            obj (object): UNO object that supports ``com.sun.star.style.ParagraphProperties`` service.
+            obj (object): UNO object.
 
         Raises:
-            NotSupportedServiceError: If ``obj`` does not support  ``com.sun.star.style.ParagraphProperties`` service.
+            NotSupportedError: If ``obj`` is not supported.
 
         Returns:
             Hyphenation: ``Hyphenation`` instance that represents ``obj`` hypenation properties.
         """
-        inst = Hyphenation()
+        inst = super(Hyphenation, cls).__new__(cls)
+        inst.__init__()
         if not inst._is_valid_obj(obj):
-            raise mEx.NotSupportedServiceError(inst._supported_services()[0])
+            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
         def set_prop(key: str, indent: Hyphenation):
             nonlocal obj
@@ -148,7 +151,7 @@ class Hyphenation(StyleBase):
     # endregion methods
 
     # region style methods
-    def fmt_auto(self, value: bool | None) -> Hyphenation:
+    def fmt_auto(self: _THyphenation, value: bool | None) -> _THyphenation:
         """
         Gets copy of instance with auto set or removed
 
@@ -162,7 +165,7 @@ class Hyphenation(StyleBase):
         cp.prop_auto = value
         return cp
 
-    def fmt_no_caps(self, value: bool | None) -> Hyphenation:
+    def fmt_no_caps(self: _THyphenation, value: bool | None) -> _THyphenation:
         """
         Gets copy of instance with no caps set or removed
 
@@ -176,7 +179,7 @@ class Hyphenation(StyleBase):
         cp.prop_no_caps = value
         return cp
 
-    def fmt_start_chars(self, value: int | None) -> Hyphenation:
+    def fmt_start_chars(self: _THyphenation, value: int | None) -> _THyphenation:
         """
         Gets copy of instance with start chars set or removed
 
@@ -190,7 +193,7 @@ class Hyphenation(StyleBase):
         cp.prop_start_chars = value
         return cp
 
-    def fmt_end_chars(self, value: int | None) -> Hyphenation:
+    def fmt_end_chars(self: _THyphenation, value: int | None) -> _THyphenation:
         """
         Gets copy of instance with end chars set or removed
 
@@ -204,7 +207,7 @@ class Hyphenation(StyleBase):
         cp.prop_end_chars = value
         return cp
 
-    def fmt_max_chars(self, value: int | None) -> Hyphenation:
+    def fmt_max_chars(self: _THyphenation, value: int | None) -> _THyphenation:
         """
         Gets copy of instance with max set or removed
 
@@ -222,7 +225,7 @@ class Hyphenation(StyleBase):
 
     # region Style Properties
     @property
-    def auto(self) -> Hyphenation:
+    def auto(self: _THyphenation) -> _THyphenation:
         """
         Gets instance with Hyphenate automatically set to ``True``.
         """
@@ -231,7 +234,7 @@ class Hyphenation(StyleBase):
         return cp
 
     @property
-    def no_caps(self) -> Hyphenation:
+    def no_caps(self: _THyphenation) -> _THyphenation:
         """
         Gets instance with no caps set to ``True``.
         """

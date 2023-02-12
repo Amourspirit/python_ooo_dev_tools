@@ -157,19 +157,19 @@ class Tabs(TabStopStruct):
         if tss is None:
             return
         try:
-            Tabs.default._set_obj_tabs(obj, [Tabs.default.get_tab_stop()])
+            Tabs.default._set_obj_tabs(obj, [Tabs.default.get_uno_struct()])
         except Exception:
             # if for any reason can't get default it is ok to just remove all.
             Tabs.default._set_obj_tabs(obj, [])
 
-    def get_tab_stop(self) -> TabStop:
+    def get_uno_struct(self) -> TabStop:
         """
         Gets tab stop for instance
 
         Returns:
             TabStop: Tab stop instance
         """
-        ts = super().get_tab_stop()
+        ts = super().get_uno_struct()
         try:
             # not critical
             if self is Tabs.default:

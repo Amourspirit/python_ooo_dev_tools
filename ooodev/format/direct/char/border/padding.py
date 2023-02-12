@@ -4,15 +4,17 @@ Module for managing character padding.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, cast, overload
+from typing import Tuple, Type, cast, overload, TypeVar
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
 from .....meta.static_prop import static_prop
 from .....utils import lo as mLo
 from .....utils import props as mProps
-from ....style_base import StyleBase
+from ....style_base import StyleBase, TStyleBase
 from ....kind.format_kind import FormatKind
+
+_TPadding = TypeVar(name="_TPadding", bound="Padding")
 
 
 class Padding(StyleBase):
@@ -86,13 +88,7 @@ class Padding(StyleBase):
         super().__init__(**init_vals)
 
     def _supported_services(self) -> Tuple[str, ...]:
-        """
-        Gets a tuple of supported services (``com.sun.star.style.CharacterProperties``,)
-
-        Returns:
-            Tuple[str, ...]: Supported services
-        """
-        return ("com.sun.star.style.CharacterProperties",)
+        return ("com.sun.star.style.CharacterProperties", "com.sun.star.style.CharacterStyle")
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:
@@ -124,8 +120,8 @@ class Padding(StyleBase):
 
     # endregion apply()
 
-    @staticmethod
-    def from_obj(obj: object) -> Padding:
+    @classmethod
+    def from_obj(cls: Type[_TPadding], obj: object) -> _TPadding:
         """
         Gets Padding instance from object
 
@@ -138,7 +134,8 @@ class Padding(StyleBase):
         Returns:
             Padding: Padding that represents ``obj`` padding.
         """
-        inst = Padding()
+        inst = super(Padding, cls).__new__(cls)
+        inst.__init__()
         if inst._is_valid_obj(obj):
             inst._set("CharLeftBorderDistance", int(mProps.Props.get(obj, "CharLeftBorderDistance")))
             inst._set("CharRightBorderDistance", int(mProps.Props.get(obj, "CharRightBorderDistance")))
@@ -149,7 +146,7 @@ class Padding(StyleBase):
         return inst
 
     # region Syle methods
-    def fmt_padding_all(self, value: float | None) -> Padding:
+    def fmt_padding_all(self: _TPadding, value: float | None) -> _TPadding:
         """
         Gets copy of instance with left, right, top, bottom sides set or removed
 
@@ -166,7 +163,7 @@ class Padding(StyleBase):
         cp.prop_right = value
         return cp
 
-    def fmt_top(self, value: float | None) -> Padding:
+    def fmt_top(self: _TPadding, value: float | None) -> _TPadding:
         """
         Gets a copy of instance with top side set or removed
 
@@ -180,7 +177,7 @@ class Padding(StyleBase):
         cp.prop_top = value
         return cp
 
-    def fmt_bottom(self, value: float | None) -> Padding:
+    def fmt_bottom(self: _TPadding, value: float | None) -> _TPadding:
         """
         Gets a copy of instance with bottom side set or removed
 
@@ -194,7 +191,7 @@ class Padding(StyleBase):
         cp.prop_bottom = value
         return cp
 
-    def fmt_left(self, value: float | None) -> Padding:
+    def fmt_left(self: _TPadding, value: float | None) -> _TPadding:
         """
         Gets a copy of instance with left side set or removed
 
@@ -208,7 +205,7 @@ class Padding(StyleBase):
         cp.prop_left = value
         return cp
 
-    def fmt_right(self, value: float | None) -> Padding:
+    def fmt_right(self: _TPadding, value: float | None) -> _TPadding:
         """
         Gets a copy of instance with right side set or removed
 

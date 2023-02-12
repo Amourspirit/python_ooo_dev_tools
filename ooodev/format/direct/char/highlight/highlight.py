@@ -4,7 +4,7 @@ Module for handeling character highlight.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, overload
+from typing import Tuple, Type, overload, TypeVar
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
@@ -14,6 +14,8 @@ from .....utils import props as mProps
 from .....utils.color import Color
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleBase
+
+_THighlight = TypeVar(name="_THighlight", bound="Highlight")
 
 
 class Highlight(StyleBase):
@@ -44,13 +46,7 @@ class Highlight(StyleBase):
         super().__init__(**init_vals)
 
     def _supported_services(self) -> Tuple[str, ...]:
-        """
-        Gets a tuple of supported services (``com.sun.star.style.CharacterProperties``,)
-
-        Returns:
-            Tuple[str, ...]: Supported services
-        """
-        return ("com.sun.star.style.CharacterProperties",)
+        return ("com.sun.star.style.CharacterProperties", "com.sun.star.style.CharacterStyle")
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:
@@ -83,30 +79,32 @@ class Highlight(StyleBase):
 
     # endregion apply()
 
-    @staticmethod
-    def from_obj(obj: object) -> Highlight:
+    @classmethod
+    def from_obj(cls: Type[_THighlight], obj: object) -> _THighlight:
         """
         Gets Hightlight instance from object
 
         Args:
-            obj (object): UNO object that supports ``com.sun.star.style.CharacterProperties`` service.
+            obj (object): UNO object.
 
         Raises:
-            NotSupportedServiceError: If ``obj`` does not support ``com.sun.star.style.CharacterProperties`` service.
+            NotSupportedError: If ``obj`` is not supported.
 
         Returns:
             Hightlight: Hightlight that represents ``obj`` Hightlight.
         """
-        inst = Highlight()
-        if inst._is_valid_obj(obj):
-            inst._set("CharBackColor", int(mProps.Props.get(obj, "CharBackColor")))
-            inst._set("CharBackTransparent", bool(mProps.Props.get(obj, "CharBackTransparent")))
-        else:
-            raise mEx.NotSupportedServiceError(inst._supported_services()[0])
+        inst = super(Highlight, cls).__new__(cls)
+        inst.__init__()
+        if not inst._is_valid_obj(obj):
+            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
+
+        inst._set("CharBackColor", int(mProps.Props.get(obj, "CharBackColor")))
+        inst._set("CharBackTransparent", bool(mProps.Props.get(obj, "CharBackTransparent")))
+
         return inst
 
     # region set styles
-    def fmt_color(self, value: Color) -> Highlight:
+    def fmt_color(self: _THighlight, value: Color) -> _THighlight:
         """
         Gets copy of instance with color set.
 

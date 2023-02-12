@@ -42,7 +42,7 @@ class Color(PageStyleBase):
         return "BackColor"
 
     @staticmethod
-    def from_obj(obj: object, style_name: StylePageKind | str = StylePageKind.STANDARD) -> Color:
+    def from_style(doc: object, style_name: StylePageKind | str = StylePageKind.STANDARD) -> Color:
         """
         Gets instance from object properties
 
@@ -57,10 +57,10 @@ class Color(PageStyleBase):
             Color: Instance that represents Style Color.
         """
         bc = Color(style_name=style_name)
-        if not bc._is_valid_obj(obj):
+        if not bc._is_valid_obj(doc):
             raise mEx.NotSupportedError("obj is not a Writer Document")
 
-        p = bc._get_style_props(obj)
+        p = bc._get_style_props(doc)
         bc.prop_color = p.getPropertyValue(bc._get_property_name())
         return bc
 
