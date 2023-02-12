@@ -1,15 +1,18 @@
 from __future__ import annotations
 import pytest
+from typing import TYPE_CHECKING, cast
 
 if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.writer.modify.para.area import Color
-from ooodev.format import StandardColor
+from ooodev.format.writer.modify.para.indent_space import LineSpacing, ModeKind, StyleParaKind
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
+
+if TYPE_CHECKING:
+    from com.sun.star.style import ParagraphProperties  # service
 
 
 def test_write(loader, para_text) -> None:
@@ -25,13 +28,19 @@ def test_write(loader, para_text) -> None:
         cursor = Write.get_cursor(doc)
         Write.append_para(cursor=cursor, text=para_text)
 
-        style = Color(StandardColor.BLUE_LIGHT3)
+        amt = 6.0
+        style = LineSpacing(mode=ModeKind.LINE_1_5, active_ln_spacing=True)
         style.apply(doc)
         props = style.get_style_props(doc)
-        assert props.getPropertyValue("FillColor") == StandardColor.BLUE_LIGHT3
+        pp = cast("ParagraphProperties", props)
+        assert style.prop_inner.prop_inner == pp.ParaLineSpacing
 
-        f_style = Color.from_style(doc)
-        assert f_style.prop_inner.prop_color == StandardColor.BLUE_LIGHT3
+        f_style = LineSpacing.from_style(
+            doc=doc, style_name=style.prop_style_name, style_family=style.prop_style_family_name
+        )
+        assert f_style.prop_inner.prop_mode == ModeKind.LINE_1_5
+        assert f_style.prop_inner.prop_active_ln_spacing == True
+
         Lo.delay(delay)
     finally:
         Lo.close_doc(doc)

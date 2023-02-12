@@ -49,6 +49,16 @@ def test_draw(loader) -> None:
         assert props.getPropertyValue("FillStyle") == FillStyle.BITMAP
         assert props.getPropertyValue("FillBitmapName") == str(PresetImageKind.FLORAL)
 
+        f_style = Img.from_style(doc)
+        point = PresetImageKind.FLORAL._get_point()
+        xlst = [(point.x - 2) + i for i in range(5)]  # plus or minus 2
+        ylst = [(point.y - 2) + i for i in range(5)]  # plus or minus 2
+        assert f_style.prop_inner.prop_is_size_mm
+        size = f_style.prop_inner.prop_size
+        assert isinstance(size, SizeMM)
+        assert round(size.width * 100) in xlst
+        assert round(size.height * 100) in ylst
+
         Lo.delay(delay)
     finally:
         Lo.close_doc(doc)

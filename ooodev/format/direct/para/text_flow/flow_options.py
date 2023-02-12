@@ -4,7 +4,7 @@ Modele for managing paragraph Text Flow options.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, cast, overload
+from typing import Tuple, cast, overload, Type, TypeVar
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
@@ -14,6 +14,8 @@ from .....utils import props as mProps
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleBase
 from .....events.args.key_val_cancel_args import KeyValCancelArgs
+
+_TFlowOptions = TypeVar(name="_TFlowOptions", bound="FlowOptions")
 
 
 class FlowOptions(StyleBase):
@@ -108,23 +110,24 @@ class FlowOptions(StyleBase):
 
     # endregion apply()
 
-    @staticmethod
-    def from_obj(obj: object) -> FlowOptions:
+    @classmethod
+    def from_obj(cls: Type[_TFlowOptions], obj: object) -> _TFlowOptions:
         """
         Gets instance from object
 
         Args:
-            obj (object): UNO object that supports ``com.sun.star.style.ParagraphProperties`` service.
+            obj (object): UNO object.
 
         Raises:
-            NotSupportedServiceError: If ``obj`` does not support  ``com.sun.star.style.ParagraphProperties`` service.
+            NotSupportedError: If ``obj`` is not supported.
 
         Returns:
             WritingMode: ``FlowOptions`` instance that represents ``obj`` writing mode.
         """
-        inst = FlowOptions()
+        inst = super(FlowOptions, cls).__new__(cls)
+        inst.__init__()
         if not inst._is_valid_obj(obj):
-            raise mEx.NotSupportedServiceError(inst._supported_services()[0])
+            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
         def set_prop(key: str, indent: FlowOptions):
             nonlocal obj
@@ -156,7 +159,7 @@ class FlowOptions(StyleBase):
     # endregion methods
 
     # region style methods
-    def fmt_orphans(self, value: int | None) -> FlowOptions:
+    def fmt_orphans(self: _TFlowOptions, value: int | None) -> _TFlowOptions:
         """
         Gets a copy of instance with orphans set or removed
 
@@ -170,7 +173,7 @@ class FlowOptions(StyleBase):
         cp.prop_orphans = value
         return cp
 
-    def fmt_widows(self, value: int | None) -> FlowOptions:
+    def fmt_widows(self: _TFlowOptions, value: int | None) -> _TFlowOptions:
         """
         Gets a copy of instance with widows set or removed
 
@@ -184,7 +187,7 @@ class FlowOptions(StyleBase):
         cp.prop_widows = value
         return cp
 
-    def fmt_keep(self, value: bool | None) -> FlowOptions:
+    def fmt_keep(self: _TFlowOptions, value: bool | None) -> _TFlowOptions:
         """
         Gets a copy of instance with keep set or removed
 
@@ -198,7 +201,7 @@ class FlowOptions(StyleBase):
         cp.prop_keep = value
         return cp
 
-    def fmt_no_split(self, value: bool | None) -> FlowOptions:
+    def fmt_no_split(self: _TFlowOptions, value: bool | None) -> _TFlowOptions:
         """
         Gets a copy of instance with no split set or removed
 
@@ -216,14 +219,14 @@ class FlowOptions(StyleBase):
 
     # region Style Properties
     @property
-    def keep(self) -> FlowOptions:
+    def keep(self: _TFlowOptions) -> _TFlowOptions:
         """Gets copy of instance with keep set"""
         cp = self.copy()
         cp.prop_keep = True
         return cp
 
     @property
-    def no_split(self) -> FlowOptions:
+    def no_split(self: _TFlowOptions) -> _TFlowOptions:
         """Gets copy of instance with no split set"""
         cp = self.copy()
         cp.prop_no_split = True

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Tuple, cast, overload
+from typing import Any, Tuple, cast, overload, Type, TypeVar
 
 import uno
 
@@ -15,6 +15,8 @@ from ...fill.area.pattern import Pattern as FillPattern
 from com.sun.star.awt import XBitmap
 
 from ooo.dyn.style.graphic_location import GraphicLocation
+
+_TPattern = TypeVar(name="_TPattern", bound="Pattern")
 
 
 class Pattern(StyleMulti):
@@ -113,8 +115,10 @@ class Pattern(StyleMulti):
         return super().on_property_restore_setting(event_args)
 
     # endregion Overrides
+
+    # region Static Methods
     @classmethod
-    def from_preset(cls, preset: PresetPatternKind) -> Pattern:
+    def from_preset(cls: Type[_TPattern], preset: PresetPatternKind) -> _TPattern:
         """
         Gets an instance from a preset
 
@@ -127,11 +131,12 @@ class Pattern(StyleMulti):
         fp = FillPattern.from_preset(preset)
         bmap = fp._get("FillBitmap")
         name = str(preset)
-        pattern = Pattern(bitmap=bmap, name=name, tile=True, stretch=False, auto_name=False)
-        return pattern
+        inst = cast(Pattern, super(Pattern, cls).__new__(cls))
+        inst.__init__(bitmap=bmap, name=name, tile=True, stretch=False, auto_name=False)
+        return inst
 
     @classmethod
-    def from_obj(cls, obj: object) -> Pattern:
+    def from_obj(cls: Type[_TPattern], obj: object) -> _TPattern:
         """
         Gets instance from object
 
@@ -147,13 +152,25 @@ class Pattern(StyleMulti):
         fp = FillPattern.from_obj(obj)
         bmap = fp._get("FillBitmap")
         name = fp._get("FillBitmapName")
-        pattern = Pattern(bitmap=bmap, name=name, tile=True, stretch=False, auto_name=False)
-        return pattern
+        inst = cast(Pattern, super(Pattern, cls).__new__(cls))
+        inst.__init__(bitmap=bmap, name=name, tile=True, stretch=False, auto_name=False)
+        return inst
 
-    # region Static Methods
     # endregion Static Methods
 
+    # region Properties
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
         return FormatKind.TXT_CONTENT | FormatKind.PARA
+
+    @property
+    def prop_inner(self) -> FillPattern:
+        """Gets Fill Pattern instance"""
+        try:
+            return self._direct_inner
+        except AttributeError:
+            self._direct_inner = cast(FillPattern, self._get_style_inst("fill_props"))
+        return self._direct_inner
+
+    # endregion Properties

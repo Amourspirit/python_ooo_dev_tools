@@ -5,7 +5,7 @@ Module for table border (``TableBorder2``) struct
 """
 # region imports
 from __future__ import annotations
-from typing import Tuple, cast, overload
+from typing import Tuple, Type, cast, overload, TypeVar
 
 import uno
 from ....events.event_singleton import _Events
@@ -24,6 +24,8 @@ from ooo.dyn.table.table_border2 import TableBorder2
 
 # endregion imports
 
+_TTableBorderStruct = TypeVar(name="_TTableBorderStruct", bound="TableBorderStruct")
+
 
 class TableBorderStruct(StyleBase):
     """
@@ -38,6 +40,7 @@ class TableBorderStruct(StyleBase):
 
     def __init__(
         self,
+        *,
         left: Side | None = None,
         right: Side | None = None,
         top: Side | None = None,
@@ -116,7 +119,7 @@ class TableBorderStruct(StyleBase):
     def _get_property_name(self) -> str:
         return "TableBorder2"
 
-    def copy(self: T) -> T:
+    def copy(self: _TTableBorderStruct) -> _TTableBorderStruct:
         nu = super(TableBorderStruct, self.__class__).__new__(self.__class__)
         nu.__init__()
         if self._dv:
@@ -181,7 +184,7 @@ class TableBorderStruct(StyleBase):
         for ap in attrs_props:
             val = cast(Side, self._get(ap.first))
             if not val is None:
-                setattr(tb, ap.first, val.get_border_line2())
+                setattr(tb, ap.first, val.get_uno_struct())
                 if ap.second:
                     setattr(tb, ap.second, True)
         distance = cast(int, self._get(self._props.dist.first))
@@ -202,12 +205,12 @@ class TableBorderStruct(StyleBase):
             )
             if h_invalid:
                 tb = cast(TableBorder2, mProps.Props.get(obj, prop_name))
-                tb.HorizontalLine = Side.empty.get_border_line2()
+                tb.HorizontalLine = Side.empty.get_uno_struct()
                 tb.IsHorizontalLineValid = True
                 mProps.Props.set(obj, TableBorder2=tb)
         else:
             tb = cast(TableBorder2, mProps.Props.get(obj, prop_name))
-            tb.HorizontalLine = h_line.get_border_line2()
+            tb.HorizontalLine = h_line.get_uno_struct()
             tb.IsHorizontalLineValid = True
             mProps.Props.set(obj, TableBorder2=tb)
         eargs = EventArgs.from_args(cargs)
@@ -217,7 +220,7 @@ class TableBorderStruct(StyleBase):
     # endregion apply()
 
     @classmethod
-    def from_obj(cls, obj: object) -> TableBorderStruct:
+    def from_obj(cls: Type[_TTableBorderStruct], obj: object) -> _TTableBorderStruct:
         """
         Gets instance from object properties
 
@@ -260,22 +263,22 @@ class TableBorderStruct(StyleBase):
                 vertical._set(prop, getattr(tb.VerticalLine, prop))
             if horizontal:
                 horizontal._set(prop, getattr(tb.HorizontalLine, prop))
-        nu = super(TableBorderStruct, cls).__new__(cls)
-        nu.__init__(left=left, right=right, top=top, bottom=bottom, vertical=vertical, horizontal=horizontal)
+        inst = super(TableBorderStruct, cls).__new__(cls)
+        inst.__init__(left=left, right=right, top=top, bottom=bottom, vertical=vertical, horizontal=horizontal)
 
         if tb.IsDistanceValid:
-            p = nu._props.dist
-            nu._set(p.first, tb.Distance)
+            p = inst._props.dist
+            inst._set(p.first, tb.Distance)
             if p.second:
-                nu._set(p.second, True)
-        return nu
+                inst._set(p.second, True)
+        return inst
 
-    def get_table_border2(self) -> TableBorder2:
+    def get_uno_struct(self) -> TableBorder2:
         """
-        Gets Table Border for current instance.
+        Gets UNO ``TableBorder2`` from instance.
 
         Returns:
-            TableBorder2: ``com.sun.star.table.TableBorder2``
+            TableBorder2: ``TableBorder2`` instance
         """
         tb = TableBorder2()
 
@@ -285,17 +288,17 @@ class TableBorderStruct(StyleBase):
         for key, val in self._dv.items():
             if key in attrs:
                 side = cast(Side, val)
-                setattr(tb, key, side.get_border_line2())
+                setattr(tb, key, side.get_uno_struct())
             else:
                 setattr(tb, key, val)
         return tb
 
-    def get_table_border(self) -> TableBorder:
+    def get_uno_struct_table_border(self) -> TableBorder:
         """
-        Gets Table Border for current instance.
+        Gets UNO ``TableBorder`` from instance.
 
         Returns:
-            TableBorder: ``com.sun.star.table.TableBorder``
+            TableBorder: ``TableBorder`` instance
         """
         tb = TableBorder2()
         # put attribs in a tuple
@@ -304,7 +307,7 @@ class TableBorderStruct(StyleBase):
         for key, val in self._dv.items():
             if key in attrs:
                 side = cast(Side, val)
-                setattr(tb, key, side.get_border_line())
+                setattr(tb, key, side.get_uno_struct_border_line())
             else:
                 setattr(tb, key, val)
         return tb
@@ -312,7 +315,7 @@ class TableBorderStruct(StyleBase):
     # endregion methods
 
     # region Style methods
-    def fmt_border_side(self, value: Side | None) -> TableBorderStruct:
+    def fmt_border_side(self: _TTableBorderStruct, value: Side | None) -> _TTableBorderStruct:
         """
         Gets copy of instance with left, right, top, bottom sides set or removed
 
@@ -329,7 +332,7 @@ class TableBorderStruct(StyleBase):
         cp.prop_right = value
         return cp
 
-    def fmt_top(self, value: Side | None) -> TableBorderStruct:
+    def fmt_top(self: _TTableBorderStruct, value: Side | None) -> _TTableBorderStruct:
         """
         Gets a copy of instance with top side set or removed
 
@@ -343,7 +346,7 @@ class TableBorderStruct(StyleBase):
         cp.prop_top = value
         return cp
 
-    def fmt_bottom(self, value: Side | None) -> TableBorderStruct:
+    def fmt_bottom(self: _TTableBorderStruct, value: Side | None) -> _TTableBorderStruct:
         """
         Gets a copy of instance with bottom side set or removed
 
@@ -357,7 +360,7 @@ class TableBorderStruct(StyleBase):
         cp.prop_bottom = value
         return cp
 
-    def fmt_left(self, value: Side | None) -> TableBorderStruct:
+    def fmt_left(self: _TTableBorderStruct, value: Side | None) -> _TTableBorderStruct:
         """
         Gets a copy of instance with left side set or removed
 
@@ -371,7 +374,7 @@ class TableBorderStruct(StyleBase):
         cp.prop_left = value
         return cp
 
-    def fmt_right(self, value: Side | None) -> TableBorderStruct:
+    def fmt_right(self: _TTableBorderStruct, value: Side | None) -> _TTableBorderStruct:
         """
         Gets a copy of instance with right side set or removed
 
@@ -385,7 +388,7 @@ class TableBorderStruct(StyleBase):
         cp.prop_right = value
         return cp
 
-    def fmt_horizontal(self, value: Side | None) -> TableBorderStruct:
+    def fmt_horizontal(self: _TTableBorderStruct, value: Side | None) -> _TTableBorderStruct:
         """
         Gets a copy of instance with horizontal side set or removed
 
@@ -399,7 +402,7 @@ class TableBorderStruct(StyleBase):
         cp.prop_horizontal = value
         return cp
 
-    def fmt_vertical(self, value: Side | None) -> TableBorderStruct:
+    def fmt_vertical(self: _TTableBorderStruct, value: Side | None) -> _TTableBorderStruct:
         """
         Gets a copy of instance with top vertical set or removed
 
@@ -413,7 +416,7 @@ class TableBorderStruct(StyleBase):
         cp.prop_vertical = value
         return cp
 
-    def fmt_distance(self, value: float | None) -> TableBorderStruct:
+    def fmt_distance(self: _TTableBorderStruct, value: float | None) -> _TTableBorderStruct:
         """
         Gets a copy of instance with distance set or removed
 

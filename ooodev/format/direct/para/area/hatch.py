@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Tuple, overload, cast
+from typing import Any, Tuple, overload, cast, Type, TypeVar
 
 import uno
 
@@ -11,7 +11,6 @@ from .....utils import props as mProps
 from .....utils.color import Color, StandardColor
 from .....utils.data_type.angle import Angle as Angle
 from .....utils.unit_convert import UnitConvert
-from .....utils.type_var import T
 from ....kind.format_kind import FormatKind
 from ....preset import preset_hatch as mPreset
 from ....preset.preset_hatch import PresetHatchKind as PresetHatchKind
@@ -24,6 +23,8 @@ from ooo.dyn.drawing.hatch_style import HatchStyle as HatchStyle
 from ooo.dyn.drawing.hatch import Hatch as UnoHatch
 
 PARA_BACK_COLOR_FLAGS = 0x7F000000
+
+_THatch = TypeVar(name="_THatch", bound="Hatch")
 
 
 class Hatch(StyleMulti):
@@ -118,15 +119,10 @@ class Hatch(StyleMulti):
         self._set("ParaBackColor", para_bg_color)
 
     def _set_fill_hatch(self, hatch_struct: HatchStruct, ignore_preset: bool) -> None:
+        self._del_attribs("_direct_inner_hatch")
         name_hatch = self._get_named_hatch_struct(hatch_struct, self._name, ignore_preset)
         self._set("FillHatchName", self._name)
         self._set_style("fill_hatch", name_hatch, *name_hatch.get_attrs())
-
-    def _get_fill_color(self) -> FillColor:
-        return self._get_style_inst("fill_color")
-
-    def _get_hatch_struct(self) -> HatchStruct:
-        return self._get_style_inst("fill_hatch")
 
     def _get_named_hatch_struct(self, hatch_struct: HatchStruct, name: str, ignore_preset: bool) -> HatchStruct:
         # if the name passed in already exist in the Hatch Table then it is returned.
@@ -164,15 +160,14 @@ class Hatch(StyleMulti):
         if not hatch is None:
             return HatchStruct.from_hatch(hatch)
 
-        self._container_add_value(name=self._name, obj=hatch_struct.get_hatch(), allow_update=False, nc=nc)
+        self._container_add_value(name=self._name, obj=hatch_struct.get_uno_struct(), allow_update=False, nc=nc)
         hatch = self._container_get_value(self._name, nc)
         return HatchStruct.from_hatch(hatch)
 
     def _on_hatch_property_change(self) -> None:
         if self._is_preset:
-            hs = self._get_hatch_struct()
             self._auto_name = True
-            self._set_fill_hatch(hs, True)
+            self._set_fill_hatch(self.prop_inner_hatch, True)
             self._is_preset = False
 
     # endregion Internal Methods
@@ -191,7 +186,7 @@ class Hatch(StyleMulti):
         # https://github.com/LibreOffice/core/blob/d9e044f04ac11b76b9a3dac575f4e9155b67490e/chart2/source/tools/PropertyHelper.cxx#L229
         return "com.sun.star.drawing.HatchTable"
 
-    def copy(self: T) -> T:
+    def copy(self: _THatch) -> _THatch:
         cp = super().copy()
         cp._name = self._name
         cp._is_preset = self._is_preset
@@ -229,7 +224,7 @@ class Hatch(StyleMulti):
 
     # region Static Methods
     @classmethod
-    def from_preset(cls, preset: PresetHatchKind) -> Hatch:
+    def from_preset(cls: Type[_THatch], preset: PresetHatchKind) -> _THatch:
         """
         Gets an instance from a preset
 
@@ -248,7 +243,7 @@ class Hatch(StyleMulti):
         return inst
 
     @classmethod
-    def from_obj(cls, obj: object) -> Hatch:
+    def from_obj(cls: Type[_THatch], obj: object) -> _THatch:
         """
         Gets instance from object
 
@@ -292,12 +287,11 @@ class Hatch(StyleMulti):
     @property
     def prop_bg_color(self) -> Color:
         """Gets sets if fill image is tiled"""
-        return self._get_fill_color().prop_color
+        return self.prop_inner_color.prop_color
 
     @prop_bg_color.setter
     def prop_bg_color(self, value: Color):
-        fc = self._get_fill_color()
-        fc.prop_color = value
+        self.prop_inner_color.prop_color = value
         if value < 0:
             self._set("FillBackground", False)
         else:
@@ -307,47 +301,61 @@ class Hatch(StyleMulti):
     @property
     def prop_style(self) -> HatchStyle:
         """Gets/Sets the style of the hatch."""
-        return self._get_hatch_struct().prop_style
+        return self.prop_inner_hatch.prop_style
 
     @prop_style.setter
     def prop_style(self, value: HatchStyle):
         self._on_hatch_property_change()
-        hs = self._get_hatch_struct()
-        hs.prop_style = value
+        self.prop_inner_hatch.prop_style = value
 
     @property
     def prop_color(self) -> Color:
         """Gets/Sets the color of the hatch lines."""
-        return self._get_hatch_struct().prop_color
+        return self.prop_inner_hatch.prop_color
 
     @prop_color.setter
     def prop_color(self, value: Color):
         self._on_hatch_property_change()
-        hs = self._get_hatch_struct()
-        hs.prop_color = value
+        self.prop_inner_hatch.prop_color = value
         self._set_bg_color(value)
 
     @property
     def prop_distance(self) -> float:
         """Gets/Sets the distance between the lines in the hatch (in ``mm`` units)."""
-        return self._get_hatch_struct().prop_distance
+        return self.prop_inner_hatch.prop_distance
 
     @prop_distance.setter
     def prop_distance(self, value: float):
         self._on_hatch_property_change()
-        hs = self._get_hatch_struct()
-        hs.prop_distance = value
+        self.prop_inner_hatch.prop_distance = value
 
     @property
     def prop_angle(self) -> Angle:
         """Gets/Sets angle of the hatch."""
-        return self._get_hatch_struct().prop_angle
+        return self.prop_inner_hatch.prop_angle
 
     @prop_angle.setter
     def prop_angle(self, value: Angle | int):
         self._on_hatch_property_change()
-        hs = self._get_hatch_struct()
-        hs.prop_angle = value
+        self.prop_inner_hatch.prop_angle = value
+
+    @property
+    def prop_inner_hatch(self) -> HatchStruct:
+        """Gets Hatch struct instance"""
+        try:
+            return self._direct_inner_hatch
+        except AttributeError:
+            self._direct_inner_hatch = cast(HatchStruct, self._get_style_inst("fill_hatch"))
+        return self._direct_inner_hatch
+
+    @property
+    def prop_inner_color(self) -> FillColor:
+        """Gets Fill color instance"""
+        try:
+            return self._direct_inner_color
+        except AttributeError:
+            self._direct_inner_color = cast(FillColor, self._get_style_inst("fill_color"))
+        return self._direct_inner_color
 
     # endregion Properties
 

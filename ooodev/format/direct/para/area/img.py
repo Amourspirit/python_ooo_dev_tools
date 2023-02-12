@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Tuple, overload
+from typing import Any, Tuple, cast, overload, Type, TypeVar
 
 import uno
 
@@ -25,6 +25,8 @@ from com.sun.star.awt import XBitmap
 
 from ooo.dyn.style.graphic_location import GraphicLocation
 from ooo.dyn.drawing.rectangle_point import RectanglePoint as RectanglePoint
+
+_TImg = TypeVar(name="_TImg", bound="Img")
 
 
 class Img(StyleMulti):
@@ -182,7 +184,7 @@ class Img(StyleMulti):
 
     # region Static Methods
     @classmethod
-    def from_preset(cls, preset: PresetImageKind) -> Img:
+    def from_preset(cls: Type[_TImg], preset: PresetImageKind) -> _TImg:
         """
         Gets an instance from a preset
 
@@ -194,7 +196,7 @@ class Img(StyleMulti):
         """
         fill_img = FillImg.from_preset(preset)
 
-        inst = super(Img, cls).__new__(cls)
+        inst = cast(Img, super(Img, cls).__new__(cls))
         inst.__init__()
         inst._set(
             "ParaBackGraphicLocation", inst._get_graphic_loc(position=fill_img.prop_posiion, mode=fill_img.prop_mode)
@@ -206,7 +208,7 @@ class Img(StyleMulti):
         return inst
 
     @classmethod
-    def from_obj(cls, obj: object) -> Img:
+    def from_obj(cls: Type[_TImg], obj: object) -> _TImg:
         """
         Gets instance from object
 
@@ -220,7 +222,7 @@ class Img(StyleMulti):
             Img: ``Img`` instance that represents ``obj`` fill imgage.
         """
         fill_img = FillImg.from_obj(obj)
-        inst = super(Img, cls).__new__(cls)
+        inst = cast(Img, super(Img, cls).__new__(cls))
         inst.__init__()
         bmap = fill_img._get("FillBitmap")
         inst._set(
@@ -239,6 +241,15 @@ class Img(StyleMulti):
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
         return FormatKind.TXT_CONTENT | FormatKind.PARA | FormatKind.FILL
+
+    @property
+    def prop_inner(self) -> FillImg:
+        """Gets Fill image instance"""
+        try:
+            return self._direct_inner
+        except AttributeError:
+            self._direct_inner = cast(FillImg, self._get_style_inst("fill_image"))
+        return self._direct_inner
 
 
 def _on_fill_img_prop_setting(source: Any, event_args: KeyValCancelArgs, *args, **kwargs) -> None:

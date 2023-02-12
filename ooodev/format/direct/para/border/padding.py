@@ -4,7 +4,7 @@ Modele for managing paragraph padding.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple
+from typing import Tuple, Type, cast, TypeVar
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
@@ -13,6 +13,8 @@ from .....utils import props as mProps
 from ....kind.format_kind import FormatKind
 from ...common.abstract_padding import AbstractPadding
 from ...common.border_props import BorderProps
+
+_TPadding = TypeVar(name="_TPadding", bound="Padding")
 
 
 class Padding(AbstractPadding):
@@ -36,8 +38,8 @@ class Padding(AbstractPadding):
         """
         return ("com.sun.star.style.ParagraphProperties", "com.sun.star.style.ParagraphStyle")
 
-    @staticmethod
-    def from_obj(obj: object) -> Padding:
+    @classmethod
+    def from_obj(cls: Type[_TPadding], obj: object) -> _TPadding:
         """
         Gets Border Padding instance from object
 
@@ -50,7 +52,8 @@ class Padding(AbstractPadding):
         Returns:
             BorderPadding: BorderPadding that represents ``obj`` padding.
         """
-        inst = Padding()
+        inst = cast(Padding, super(Padding, cls).__new__(cls))
+        inst.__init__()
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedServiceError(inst._supported_services()[0])
 

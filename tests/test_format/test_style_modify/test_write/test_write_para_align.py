@@ -29,6 +29,10 @@ def test_write(loader, para_text) -> None:
         props = style.get_style_props(doc)
         assert props.getPropertyValue("ParaLastLineAdjust") == LastLineKind.CENTER.value
         assert props.getPropertyValue("ParaAdjust") == 2
+
+        f_style = Alignment.from_style(doc)
+        assert f_style.prop_inner.prop_align == ParagraphAdjust.BLOCK
+        assert f_style.prop_inner.prop_align_last == LastLineKind.CENTER
         Lo.delay(delay)
     finally:
         Lo.close_doc(doc)

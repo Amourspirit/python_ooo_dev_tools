@@ -5,7 +5,7 @@ Module for Fill Properties Fill Image.
 """
 from __future__ import annotations
 from dataclasses import dataclass
-from typing import Any, Tuple, cast, overload, TYPE_CHECKING
+from typing import Any, Tuple, cast, overload, Type, TypeVar, TYPE_CHECKING
 from enum import Enum
 
 import uno
@@ -18,7 +18,6 @@ from .....utils.data_type.intensity import Intensity
 from .....utils.data_type.offset import Offset as Offset
 from .....utils.data_type.width_height_fraction import WidthHeightFraction
 from .....utils.data_type.width_height_percent import WidthHeightPercent
-from .....utils.type_var import T
 from .....utils.unit_convert import UnitConvert
 from ....kind.format_kind import FormatKind
 from ....preset import preset_image as mImage
@@ -36,6 +35,8 @@ if TYPE_CHECKING:
     from com.sun.star.graphic import Graphic
 
 # https://github.com/LibreOffice/core/blob/6379414ca34527fbe69df2035d49d651655317cd/vcl/source/filter/ipict/ipict.cxx#L92
+
+_TImg = TypeVar(name="_TImg", bound="Img")
 
 
 @dataclass(frozen=True)
@@ -175,7 +176,7 @@ class Img(StyleBase):
 
     # region Overrides
 
-    def copy(self: T) -> T:
+    def copy(self: _TImg) -> _TImg:
         cp = super().copy()
         cp._name = self._name
         return cp
@@ -235,7 +236,7 @@ class Img(StyleBase):
 
     # region Static Methods
     @classmethod
-    def from_preset(cls, preset: PresetImageKind) -> Img:
+    def from_preset(cls: Type[_TImg], preset: PresetImageKind) -> _TImg:
         """
         Gets an instance from a preset
 
@@ -270,7 +271,7 @@ class Img(StyleBase):
         return inst
 
     @classmethod
-    def from_obj(cls, obj: object) -> Img:
+    def from_obj(cls: Type[_TImg], obj: object) -> _TImg:
         """
         Gets instance from object
 
@@ -375,10 +376,10 @@ class Img(StyleBase):
             return SizeMM(0, 0)
         if x < 0 or y < 0:
             # percent
-            return SizePercent(abs(x), abs(y))
-        xval = round(UnitConvert.convert_mm100_mm(x))
-        yval = round(UnitConvert.convert_mm100_mm(y))
-        return SizePercent(xval, yval)
+            return SizePercent(round(abs(x)), round(abs(y)))
+        xval = UnitConvert.convert_mm100_mm(x)
+        yval = UnitConvert.convert_mm100_mm(y)
+        return SizeMM(xval, yval)
 
     @prop_size.setter
     def prop_size(self, value: SizePercent | SizeMM | None) -> None:

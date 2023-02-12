@@ -4,7 +4,7 @@ Module for Paragraph Gradient Color.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, cast
+from typing import Tuple, Type, cast, TypeVar
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
@@ -25,6 +25,8 @@ from ...structs.gradient_struct import GradientStruct
 from ooo.dyn.drawing.fill_style import FillStyle
 from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
 from ooo.dyn.awt.gradient import Gradient as UNOGradient
+
+_TGradient = TypeVar(name="_TGradient", bound="Gradient")
 
 
 class FillStyleStruct(GradientStruct):
@@ -127,12 +129,15 @@ class Gradient(StyleMulti):
         return super()._on_modifing(event)
 
     @classmethod
-    def from_obj(cls, obj: object) -> Gradient:
+    def from_obj(cls: Type[_TGradient], obj: object) -> _TGradient:
         """
         Gets instance from object
 
         Args:
-            obj (object): Object that implements ``com.sun.star.drawing.FillProperties`` service
+            obj (object): UNO object.
+
+        Raises:
+            NotSupportedError: If ``obj`` is not supported.
 
         Returns:
             Gradient: Instance that represents Gradient color.
@@ -141,7 +146,7 @@ class Gradient(StyleMulti):
         nu = super(Gradient, cls).__new__(cls)
         nu.__init__()
         if not nu._is_valid_obj(obj):
-            raise mEx.NotSupportedError("obj is not supported")
+            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
         gs = FillStyleStruct()
         gs_prop_name = gs._get_property_name()
@@ -153,7 +158,9 @@ class Gradient(StyleMulti):
             angle = 0
         else:
             angle = round(grad_fill.Angle / 10)
-        return Gradient(
+
+        inst = super(Gradient, cls).__new__(cls)
+        inst.__init__(
             style=grad_fill.Style,
             step_count=grad_fill.StepCount,
             offset=Offset(grad_fill.XOffset, grad_fill.YOffset),
@@ -163,9 +170,10 @@ class Gradient(StyleMulti):
             grad_intensity=IntensityRange(grad_fill.StartIntensity, grad_fill.EndIntensity),
             name=fill_gradient_name,
         )
+        return inst
 
-    @staticmethod
-    def from_preset(preset: PresetGradientKind) -> Gradient:
+    @classmethod
+    def from_preset(cls: Type[_TGradient], preset: PresetGradientKind) -> _TGradient:
         """
         Gets instance from preset
 
@@ -176,12 +184,23 @@ class Gradient(StyleMulti):
             Gradient: Graident from a preset.
         """
         args = preset_gradient.get_preset(preset)
-        return Gradient(**args)
+        inst = super(Gradient, cls).__new__(cls)
+        inst.__init__(**args)
+        return inst
 
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
         return FormatKind.PARA | FormatKind.TXT_CONTENT
+
+    @property
+    def prop_inner(self) -> FillStyleStruct:
+        """Gets Fill styles instance"""
+        try:
+            return self._direct_inner
+        except AttributeError:
+            self._direct_inner = cast(FillStyleStruct, self._get_style_inst("fill_style"))
+        return self._direct_inner
 
     @static_prop
     def default() -> Gradient:  # type: ignore[misc]

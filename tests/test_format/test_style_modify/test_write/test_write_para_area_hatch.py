@@ -6,6 +6,7 @@ if __name__ == "__main__":
 
 import uno
 from ooodev.format.writer.modify.para.area import Hatch, PresetHatchKind, StyleParaKind
+from ooodev.format import StandardColor
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
@@ -31,6 +32,9 @@ def test_write(loader, para_text) -> None:
         props = style.get_style_props(doc)
         assert props.getPropertyValue("FillStyle") == FillStyle.HATCH
         assert props.getPropertyValue("FillHatchName") == str(PresetHatchKind.GREEN_90_DEGREES_TRIPLE)
+
+        f_style = Hatch.from_style(doc)
+        assert f_style.prop_inner.prop_inner_hatch.prop_color == StandardColor.GREEN
         Lo.delay(delay)
     finally:
         Lo.close_doc(doc)

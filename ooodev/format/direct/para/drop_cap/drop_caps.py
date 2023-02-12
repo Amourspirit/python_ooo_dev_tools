@@ -4,7 +4,7 @@ Module for managing paragraph Drop Caps.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, cast, overload
+from typing import Tuple, cast, Type, TypeVar
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....events.args.key_val_cancel_args import KeyValCancelArgs
@@ -16,6 +16,8 @@ from ....kind.format_kind import FormatKind
 from ....style_base import StyleMulti
 from ....writer.style.char.kind import StyleCharKind as StyleCharKind
 from ...structs.drop_cap_struct import DropCapStruct
+
+_TDropCaps = TypeVar(name="_TDropCaps", bound="DropCaps")
 
 
 class DropCapFmt(DropCapStruct):
@@ -93,8 +95,6 @@ class DropCaps(StyleMulti):
 
         # if count == -1 then do not include DropCapFmt. only update style
         # if count = 0 then default to no drop cap values
-        if mLo.Lo.bridge_connector.headless:
-            mLo.Lo.print("Warning! DropCaps class is not suitable in Headless mode.")
         dc = None
         init_vars = {}
 
@@ -107,9 +107,9 @@ class DropCaps(StyleMulti):
             style = ""
             init_vars["DropCapWholeWord"] = False
             init_vars["DropCapCharStyleName"] = ""
-            dc = DropCapFmt(0, 0, 0)
+            dc = DropCapFmt(count=0, distance=0, lines=0)
         elif count > 0:
-            dc = DropCapFmt(count, round(spaces * 100), lines)
+            dc = DropCapFmt(count=count, distance=round(spaces * 100), lines=lines)
             if not whole_word is None:
                 init_vars["DropCapWholeWord"] = whole_word
                 if whole_word:
@@ -195,23 +195,24 @@ class DropCaps(StyleMulti):
             "com.sun.star.style.ParagraphStyle",
         )
 
-    @staticmethod
-    def from_obj(obj: object) -> DropCaps:
+    @classmethod
+    def from_obj(cls: Type[_TDropCaps], obj: object) -> _TDropCaps:
         """
         Gets instance from object
 
         Args:
-            obj (object): UNO object that supports ``com.sun.star.style.ParagraphProperties`` service.
+            obj (object): UNO object.
 
         Raises:
-            NotSupportedServiceError: If ``obj`` does not support  ``com.sun.star.style.ParagraphProperties`` service.
+            NotSupportedError: If ``obj`` is not supported.
 
         Returns:
             DropCaps: ``DropCaps`` instance that represents ``obj`` Drop Caps.
         """
-        inst = DropCaps()
+        inst = cast(DropCaps, super(DropCaps, cls).__new__(cls))
+        inst.__init__()
         if not inst._is_valid_obj(obj):
-            raise mEx.NotSupportedServiceError(inst._supported_services()[0])
+            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
         dc = DropCapFmt.from_obj(obj)
         inst._set_style_dc(dc)
 
@@ -231,6 +232,15 @@ class DropCaps(StyleMulti):
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
         return FormatKind.PARA | FormatKind.TXT_CONTENT
+
+    @property
+    def prop_inner(self) -> DropCapFmt | None:
+        """Gets Drop Caps Format instance"""
+        try:
+            return self._direct_inner
+        except AttributeError:
+            self._direct_inner = cast(DropCapFmt, self._get_style_inst("drop_cap"))
+        return self._direct_inner
 
     @static_prop
     def default() -> DropCaps:  # type: ignore[misc]
