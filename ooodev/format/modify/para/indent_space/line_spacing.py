@@ -3,7 +3,7 @@ from typing import Type, cast
 import uno
 from numbers import Real
 from ....writer.style.para.kind import StyleParaKind as StyleParaKind
-from ..para_style_base_multi import ParaStyleBaseMulti, _T as _T
+from ..para_style_base_multi import ParaStyleBaseMulti
 from ....direct.structs.line_spacing_struct import ModeKind as ModeKind
 from ....direct.para.indent_space.line_spacing import LineSpacing as DirectLineSpacing
 
@@ -46,11 +46,11 @@ class LineSpacing(ParaStyleBaseMulti):
 
     @classmethod
     def from_style(
-        cls: Type[_T],
+        cls,
         doc: object,
         style_name: StyleParaKind | str = StyleParaKind.STANDARD,
         style_family: str = "ParagraphStyles",
-    ) -> _T:
+    ) -> LineSpacing:
         """
         Gets instance from Document.
 
@@ -62,7 +62,7 @@ class LineSpacing(ParaStyleBaseMulti):
         Returns:
             LineSpacing: ``LineSpacing`` instance from document properties.
         """
-        inst = cast(LineSpacing, super(LineSpacing, cls).__new__(cls))
+        inst = super(LineSpacing, cls).__new__(cls)
         inst.__init__(style_name=style_name, style_family=style_family)
         direct = DirectLineSpacing.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct, *direct.get_attrs())
@@ -79,7 +79,7 @@ class LineSpacing(ParaStyleBaseMulti):
 
     @property
     def prop_inner(self) -> DirectLineSpacing:
-        """Gets Inner Line Spacing Instance"""
+        """Gets Inner Line Spacing instance"""
         try:
             return self._direct_inner
         except AttributeError:

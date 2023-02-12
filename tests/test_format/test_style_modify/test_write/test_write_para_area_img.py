@@ -5,7 +5,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.writer.modify.para.area import StyleParaKind, Img, PresetImageKind
+from ooodev.format.writer.modify.para.area import StyleParaKind, Img, PresetImageKind, SizeMM
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
@@ -32,6 +32,17 @@ def test_write(loader, para_text) -> None:
         assert props.getPropertyValue("FillStyle") == FillStyle.BITMAP
         assert props.getPropertyValue("FillBitmapName") == str(PresetImageKind.COLORFUL_PEBBLES)
         # assert props.getPropertyValue("FillGradientName") == str(PresetGradientKind.MAHOGANY)
+
+        f_style = Img.from_style(doc)
+        point = PresetImageKind.COLORFUL_PEBBLES._get_point()
+        xlst = [(point.x - 2) + i for i in range(5)]  # plus or minus 2
+        ylst = [(point.y - 2) + i for i in range(5)]  # plus or minus 2
+        assert f_style.prop_inner.prop_is_size_mm
+        size = f_style.prop_inner.prop_size
+        assert isinstance(size, SizeMM)
+        assert round(size.width * 100) in xlst
+        assert round(size.height * 100) in ylst
+
         Lo.delay(delay)
     finally:
         Lo.close_doc(doc)

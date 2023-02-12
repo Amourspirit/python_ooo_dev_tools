@@ -29,6 +29,9 @@ def test_write(loader, para_text) -> None:
         style.apply(doc)
         props = style.get_style_props(doc)
         assert props.getPropertyValue("FillColor") == StandardColor.BLUE_LIGHT3
+
+        f_style = Color.from_style(doc)
+        assert f_style.prop_inner.prop_color == StandardColor.BLUE_LIGHT3
         Lo.delay(delay)
     finally:
         Lo.close_doc(doc)

@@ -376,10 +376,10 @@ class Img(StyleBase):
             return SizeMM(0, 0)
         if x < 0 or y < 0:
             # percent
-            return SizePercent(abs(x), abs(y))
-        xval = round(UnitConvert.convert_mm100_mm(x))
-        yval = round(UnitConvert.convert_mm100_mm(y))
-        return SizePercent(xval, yval)
+            return SizePercent(round(abs(x)), round(abs(y)))
+        xval = UnitConvert.convert_mm100_mm(x)
+        yval = UnitConvert.convert_mm100_mm(y)
+        return SizeMM(xval, yval)
 
     @prop_size.setter
     def prop_size(self, value: SizePercent | SizeMM | None) -> None:

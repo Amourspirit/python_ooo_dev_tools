@@ -100,7 +100,7 @@ class Indent(StyleBase):
 
     # endregion apply()
 
-    @staticmethod
+    @classmethod
     def from_obj(cls: Type[_TIndent], obj: object) -> _TIndent:
         """
         Gets instance from object

@@ -45,11 +45,11 @@ class Indent(ParaStyleBaseMulti):
 
     @classmethod
     def from_style(
-        cls: Type[_T],
+        cls,
         doc: object,
         style_name: StyleParaKind | str = StyleParaKind.STANDARD,
         style_family: str = "ParagraphStyles",
-    ) -> _T:
+    ) -> Indent:
         """
         Gets instance from Document.
 

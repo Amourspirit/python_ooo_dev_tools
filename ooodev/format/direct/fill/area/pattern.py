@@ -117,6 +117,7 @@ class Pattern(StyleBase):
             "com.sun.star.drawing.FillProperties",
             "com.sun.star.text.TextContent",
             "com.sun.star.beans.PropertySet",
+            "com.sun.star.style.ParagraphStyle",
         )
 
     # region apply()

@@ -31,6 +31,10 @@ def test_write(loader, para_text) -> None:
         props = style.get_style_props(doc)
         assert props.getPropertyValue("FillStyle") == FillStyle.BITMAP
         assert props.getPropertyValue("FillBitmapName") == str(PresetPatternKind.HORIZONTAL_BRICK)
+
+        f_style = Pattern.from_style(doc)
+        assert f_style.prop_inner.prop_inner.prop_stretch == False
+
         Lo.delay(delay)
     finally:
         Lo.close_doc(doc)

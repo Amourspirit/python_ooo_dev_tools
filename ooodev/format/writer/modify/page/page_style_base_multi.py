@@ -4,7 +4,7 @@ Base Class for Page Style.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, overload
+from typing import Tuple, overload, Type, TypeVar
 
 import uno
 from .....events.event_singleton import _Events
@@ -12,7 +12,6 @@ from .....exceptions import ex as mEx
 from .....utils import info as mInfo
 from .....utils import lo as mLo
 from .....utils import props as mProps
-from .....utils.type_var import T
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleMulti, EventArgs, CancelEventArgs, FormatNamedEvent
 from ...style.page.kind import StylePageKind
@@ -23,6 +22,8 @@ from com.sun.star.beans import XPropertySet
 # https://bugs.documentfoundation.org/show_bug.cgi?id=99125
 # see Also: https://forum.openoffice.org/en/forum/viewtopic.php?p=417389&sid=17b21c173e4a420b667b45a2949b9cc5#p417389
 # The solution to these issues is to apply FillColor to Paragraph cursors TextParagraph.
+
+_TPageStyleBaseMulti = TypeVar(name="_TPageStyleBaseMulti", bound="PageStyleBaseMulti")
 
 
 class PageStyleBaseMulti(StyleMulti):
@@ -38,7 +39,7 @@ class PageStyleBaseMulti(StyleMulti):
     def _is_valid_obj(self, obj: object) -> bool:
         return mInfo.Info.is_doc_type(obj, mLo.Lo.Service.WRITER)
 
-    def copy(self: T) -> T:
+    def copy(self: _TPageStyleBaseMulti) -> _TPageStyleBaseMulti:
         """Gets a copy of instance as a new instance"""
         cp = super().copy()
         cp.prop_style_name = self.prop_style_name

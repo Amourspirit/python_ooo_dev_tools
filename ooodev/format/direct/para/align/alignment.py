@@ -138,6 +138,31 @@ class Alignment(StyleMulti):
 
     # endregion apply()
 
+    # region static methods
+
+    @staticmethod
+    def convert_int_to_paragraph_adjust(num: int) -> ParagraphAdjust:
+        """
+        Converts integer value to ``ParagraphAdjust``.
+
+        When Writer saves ``ParagraphAdjust`` value into ``ParaAdjust`` it converts it to a integer value.
+
+        Args:
+            num (int): Number to convert
+
+        Returns:
+            ParagraphAdjust: Number as ``ParagraphAdjust``
+        """
+        if num == 0:
+            return ParagraphAdjust.LEFT
+        if num == 1:
+            return ParagraphAdjust.RIGHT
+        if num == 2:
+            return ParagraphAdjust.BLOCK
+        if num == 3:
+            return ParagraphAdjust.CENTER
+        return ParagraphAdjust.STRETCH
+
     @classmethod
     def from_obj(cls: Type[_TAlignment], obj: object) -> _TAlignment:
         """
@@ -163,12 +188,15 @@ class Alignment(StyleMulti):
             if not val is None:
                 align._set(key, val)
 
-        set_prop("ParaAdjust", inst)
         set_prop("ParaVertAlignment", inst)
         set_prop("ParaLastLineAdjust", inst)
         set_prop("ParaExpandSingleWord", inst)
+
+        # LibreOffice Writer converts ParagraphAdjust to an int value
+        padj = cast(int, mProps.Props.get(obj, "ParaAdjust"))
+        inst._set("ParaAdjust", cls.convert_int_to_paragraph_adjust(padj))
         try:
-            # SnapToGrid is not part of any know service
+            # SnapToGrid is not part of any known service
             snap = mProps.Props.get(obj, "SnapToGrid")
             inst._set("SnapToGrid", snap)
         except mEx.PropertyNotFoundError as e:
@@ -181,6 +209,8 @@ class Alignment(StyleMulti):
         except Exception:
             mLo.Lo.print("Alignment.from_obj(): unable to set txt_direction style")
         return inst
+
+    # endregion static methods
 
     # endregion methods
 

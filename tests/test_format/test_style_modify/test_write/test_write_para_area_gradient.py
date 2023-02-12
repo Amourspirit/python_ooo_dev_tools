@@ -31,6 +31,9 @@ def test_write(loader, para_text) -> None:
         props = style.get_style_props(doc)
         assert props.getPropertyValue("FillStyle") == FillStyle.GRADIENT
         assert props.getPropertyValue("FillGradientName") == str(PresetGradientKind.MAHOGANY)
+
+        f_style = Gradient.from_style(doc)
+        assert f_style.prop_inner.prop_inner.prop_angle == 45
         Lo.delay(delay)
     finally:
         Lo.close_doc(doc)
