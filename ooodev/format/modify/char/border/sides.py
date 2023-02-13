@@ -1,15 +1,18 @@
 from __future__ import annotations
 from typing import cast
 import uno
-
 from ....writer.style.char.kind.style_char_kind import StyleCharKind as StyleCharKind
 from ..char_style_base_multi import CharStyleBaseMulti
-from ....direct.char.font.font_only import FontOnly as DirectFontOnly, FontLang as FontLang
+from ....direct.char.border.sides import Sides as DirectSides
+from ....direct.structs.side import Side as Side, SideFlags as SideFlags, LineSize as LineSize
 
 
-class FontOnly(CharStyleBaseMulti):
+from ooo.dyn.table.border_line_style import BorderLineStyleEnum as BorderLineStyleEnum
+
+
+class Sides(CharStyleBaseMulti):
     """
-    Character Style Font
+    Character Style Border Sides (lines).
 
     .. versionadded:: 0.9.0
     """
@@ -17,10 +20,11 @@ class FontOnly(CharStyleBaseMulti):
     def __init__(
         self,
         *,
-        name: str | None = None,
-        size: float | None = None,
-        font_style_name: str | None = None,
-        lang: FontLang | None = None,
+        left: Side | None = None,
+        right: Side | None = None,
+        top: Side | None = None,
+        bottom: Side | None = None,
+        border_side: Side | None = None,
         style_name: StyleCharKind | str = StyleCharKind.STANDARD,
         style_family: str = "CharacterStyles",
     ) -> None:
@@ -28,10 +32,11 @@ class FontOnly(CharStyleBaseMulti):
         Constructor
 
         Args:
-            name (str, optional): This property specifies the name of the font style. It may contain more than one name separated by comma.
-            size (float, optional): This value contains the size of the characters in point units.
-            font_style_name (str, optional): Font style name such as ``Bold``.
-            lang (Lang, optional): Font Language
+            left (Side | None, optional): Determines the line style at the left edge.
+            right (Side | None, optional): Determines the line style at the right edge.
+            top (Side | None, optional): Determines the line style at the top edge.
+            bottom (Side | None, optional): Determines the line style at the bottom edge.
+            border_side (Side | None, optional): Determines the line style at the top, bottom, left, right edges. If this argument has a value then arguments ``top``, ``bottom``, ``left``, ``right`` are ignored
             shadowed (bool, optional): Specifies if the characters are formatted and displayed with a shadow effect.
             style_name (StyleParaKind, str, optional): Specifies the Character Style that instance applies to. Deftult is Default Character Style.
             style_family (str, optional): Style family. Defatult ``CharacterStyles``.
@@ -40,7 +45,7 @@ class FontOnly(CharStyleBaseMulti):
             None:
         """
 
-        direct = DirectFontOnly(name=name, size=size, style_name=font_style_name, lang=lang)
+        direct = DirectSides(left=left, right=right, top=top, bottom=bottom, border_side=border_side)
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
@@ -52,7 +57,7 @@ class FontOnly(CharStyleBaseMulti):
         doc: object,
         style_name: StyleCharKind | str = StyleCharKind.STANDARD,
         style_family: str = "CharacterStyles",
-    ) -> FontOnly:
+    ) -> Sides:
         """
         Gets instance from Document.
 
@@ -62,11 +67,11 @@ class FontOnly(CharStyleBaseMulti):
             style_family (str, optional): Style family. Defatult ``CharacterStyles``.
 
         Returns:
-            FontOnly: ``FontOnly`` instance from document properties.
+            Sides: ``Sides`` instance from document properties.
         """
-        inst = super(FontOnly, cls).__new__(cls)
+        inst = super(Sides, cls).__new__(cls)
         inst.__init__(style_name=style_name, style_family=style_family)
-        direct = DirectFontOnly.from_obj(inst.get_style_props(doc))
+        direct = DirectSides.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -80,10 +85,10 @@ class FontOnly(CharStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> DirectFontOnly:
-        """Gets Inner Font instance"""
+    def prop_inner(self) -> DirectSides:
+        """Gets Inner Sides instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(DirectFontOnly, self._get_style_inst("direct"))
+            self._direct_inner = cast(DirectSides, self._get_style_inst("direct"))
         return self._direct_inner

@@ -11,8 +11,7 @@ import uno
 from ....events.event_singleton import _Events
 from ....meta.static_prop import static_prop
 from ....utils import props as mProps
-from ....utils.color import Color
-from ....utils.color import CommonColor
+from ....utils.color import Color, StandardColor
 from ...kind.format_kind import FormatKind
 from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent
 from ....utils.unit_convert import UnitConvert, Length
@@ -40,7 +39,7 @@ class ShadowStruct(StyleBase):
         self,
         *,
         location: ShadowLocation = ShadowLocation.BOTTOM_RIGHT,
-        color: Color = CommonColor.GRAY,
+        color: Color = StandardColor.GRAY,
         transparent: bool = False,
         width: float = 1.76,
     ) -> None:
@@ -49,7 +48,7 @@ class ShadowStruct(StyleBase):
 
         Args:
             location (ShadowLocation, optional): contains the location of the shadow. Default to ``ShadowLocation.BOTTOM_RIGHT``.
-            color (Color, optional):contains the color value of the shadow. Defaults to ``CommonColor.GRAY``.
+            color (Color, optional):contains the color value of the shadow. Defaults to ``StandardColor.GRAY``.
             transparent (bool, optional): Shadow transparency. Defaults to False.
             width (float, optional): contains the size of the shadow (in mm units). Defaults to ``1.76``.
 

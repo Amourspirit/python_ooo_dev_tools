@@ -5,6 +5,7 @@ from ooo.dyn.table.border_line2 import BorderLine2 as BorderLine2
 from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 from .....direct.structs.side import Side as Side, SideFlags as SideFlags, LineSize as LineSize
+from .....direct.char.border.sides import Sides as Sides
 from .....direct.char.border.shadow import Shadow as Shadow
 from .....direct.char.border.padding import Padding as Padding
 from .....direct.char.border.borders import Borders as Borders

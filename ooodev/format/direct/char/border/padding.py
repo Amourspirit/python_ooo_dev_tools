@@ -32,6 +32,7 @@ class Padding(StyleBase):
 
     def __init__(
         self,
+        *,
         left: float | None = None,
         right: float | None = None,
         top: float | None = None,

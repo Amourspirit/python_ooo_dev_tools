@@ -2,8 +2,8 @@ from __future__ import annotations
 from typing import cast
 import uno
 
-from ....writer.style.char.kind.style_char_kind import StyleCharKind as StyleCharKind
-from ..char_style_base_multi import CharStyleBaseMulti
+from ....writer.style.para.kind.style_para_kind import StyleParaKind as StyleParaKind
+from ..para_style_base_multi import ParaStyleBaseMulti
 from .....utils.data_type.intensity import Intensity as Intensity
 from .....utils.data_type.angle import Angle as Angle
 from ....direct.char.font.font_position import (
@@ -13,7 +13,7 @@ from ....direct.char.font.font_position import (
 )
 
 
-class FontPosition(CharStyleBaseMulti):
+class FontPosition(ParaStyleBaseMulti):
     """
     Character Style Font Effects
 
@@ -31,8 +31,8 @@ class FontPosition(CharStyleBaseMulti):
         fit: bool | None = None,
         spacing: CharSpacingKind | float | None = None,
         pair: bool | None = None,
-        style_name: StyleCharKind | str = StyleCharKind.STANDARD,
-        style_family: str = "CharacterStyles",
+        style_name: StyleParaKind | str = StyleParaKind.STANDARD,
+        style_family: str = "ParagraphStyles",
     ) -> None:
         """
         Constructor
@@ -46,8 +46,8 @@ class FontPosition(CharStyleBaseMulti):
             fit (bool, optional): Specifies if rotation is fit to line.
             spacing (float, optional): Specifies character spacing in point units.
             pair (bool, optional): Specifies pair kerning.
-            style_name (StyleCharKind, str, optional): Specifies the Character Style that instance applies to. Deftult is Default Character Style.
-            style_family (str, optional): Style family. Defatult ``CharacterStyles``.
+            style_name (StyleParaKind, str, optional): Specifies the Character Style that instance applies to. Deftult is Default Character Style.
+            style_family (str, optional): Style family. Defatult ``ParagraphStyles``.
 
         Returns:
             None:
@@ -71,8 +71,8 @@ class FontPosition(CharStyleBaseMulti):
     def from_style(
         cls,
         doc: object,
-        style_name: StyleCharKind | str = StyleCharKind.STANDARD,
-        style_family: str = "CharacterStyles",
+        style_name: StyleParaKind | str = StyleParaKind.STANDARD,
+        style_family: str = "ParagraphStyles",
     ) -> FontPosition:
         """
         Gets instance from Document.
@@ -80,7 +80,7 @@ class FontPosition(CharStyleBaseMulti):
         Args:
             doc (object): UNO Documnet Object.
             style_name (StyleParaKind, str, optional): Specifies the Character Style that instance applies to. Deftult is Default Character Style.
-            style_family (str, optional): Style family. Defatult ``CharacterStyles``.
+            style_family (str, optional): Style family. Defatult ``ParagraphStyles``.
 
         Returns:
             FontPosition: ``FontPosition`` instance from document properties.
@@ -97,7 +97,7 @@ class FontPosition(CharStyleBaseMulti):
         return self._style_name
 
     @prop_style_name.setter
-    def prop_style_name(self, value: str | StyleCharKind):
+    def prop_style_name(self, value: str | StyleParaKind):
         self._style_name = str(value)
 
     @property

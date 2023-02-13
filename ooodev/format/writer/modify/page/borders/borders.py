@@ -35,6 +35,7 @@ class Borders(PageStyleBase, AbstractSides):
 
     def __init__(
         self,
+        *,
         left: Side | None = None,
         right: Side | None = None,
         top: Side | None = None,
@@ -43,7 +44,7 @@ class Borders(PageStyleBase, AbstractSides):
         style_name: StylePageKind | str = StylePageKind.STANDARD,
     ) -> None:
         self._style_name = str(style_name)
-        super().__init__(left, right, top, bottom, border_side)
+        super().__init__(left=left, right=right, top=top, bottom=bottom, border_side=border_side)
 
     # region methods
     def _is_valid_obj(self, obj: object) -> bool:

@@ -2,14 +2,14 @@ from __future__ import annotations
 from typing import cast
 import uno
 
-from ....writer.style.char.kind.style_char_kind import StyleCharKind as StyleCharKind
-from ..char_style_base_multi import CharStyleBaseMulti
+from ....writer.style.para.kind.style_para_kind import StyleParaKind as StyleParaKind
+from ..para_style_base_multi import ParaStyleBaseMulti
 from ....direct.char.font.font_only import FontOnly as DirectFontOnly, FontLang as FontLang
 
 
-class FontOnly(CharStyleBaseMulti):
+class FontOnly(ParaStyleBaseMulti):
     """
-    Character Style Font
+    Style Font
 
     .. versionadded:: 0.9.0
     """
@@ -21,8 +21,8 @@ class FontOnly(CharStyleBaseMulti):
         size: float | None = None,
         font_style_name: str | None = None,
         lang: FontLang | None = None,
-        style_name: StyleCharKind | str = StyleCharKind.STANDARD,
-        style_family: str = "CharacterStyles",
+        style_name: StyleParaKind | str = StyleParaKind.STANDARD,
+        style_family: str = "ParagraphStyles",
     ) -> None:
         """
         Constructor
@@ -34,7 +34,7 @@ class FontOnly(CharStyleBaseMulti):
             lang (Lang, optional): Font Language
             shadowed (bool, optional): Specifies if the characters are formatted and displayed with a shadow effect.
             style_name (StyleParaKind, str, optional): Specifies the Character Style that instance applies to. Deftult is Default Character Style.
-            style_family (str, optional): Style family. Defatult ``CharacterStyles``.
+            style_family (str, optional): Style family. Defatult ``ParagraphStyles``.
 
         Returns:
             None:
@@ -50,16 +50,16 @@ class FontOnly(CharStyleBaseMulti):
     def from_style(
         cls,
         doc: object,
-        style_name: StyleCharKind | str = StyleCharKind.STANDARD,
-        style_family: str = "CharacterStyles",
+        style_name: StyleParaKind | str = StyleParaKind.STANDARD,
+        style_family: str = "ParagraphStyles",
     ) -> FontOnly:
         """
         Gets instance from Document.
 
         Args:
             doc (object): UNO Documnet Object.
-            style_name (StyleCharKind, str, optional): Specifies the Character Style that instance applies to. Deftult is Default Character Style.
-            style_family (str, optional): Style family. Defatult ``CharacterStyles``.
+            style_name (StyleParaKind, str, optional): Specifies the Character Style that instance applies to. Deftult is Default Character Style.
+            style_family (str, optional): Style family. Defatult ``ParagraphStyles``.
 
         Returns:
             FontOnly: ``FontOnly`` instance from document properties.
@@ -76,7 +76,7 @@ class FontOnly(CharStyleBaseMulti):
         return self._style_name
 
     @prop_style_name.setter
-    def prop_style_name(self, value: str | StyleCharKind):
+    def prop_style_name(self, value: str | StyleParaKind):
         self._style_name = str(value)
 
     @property

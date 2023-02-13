@@ -31,7 +31,7 @@ class FontLang(LocaleStruct):
     """Class for Character Language"""
 
     def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.style.CharacterProperties",)
+        return ("com.sun.star.style.CharacterProperties", "com.sun.star.style.ParagraphStyle")
 
     def _get_property_name(self) -> str:
         return "CharLocale"
@@ -130,7 +130,11 @@ class FontOnly(StyleMulti):
 
     # region Overrides
     def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.style.CharacterProperties", "com.sun.star.style.CharacterStyle")
+        return (
+            "com.sun.star.style.CharacterProperties",
+            "com.sun.star.style.CharacterStyle",
+            "com.sun.star.style.ParagraphStyle",
+        )
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:

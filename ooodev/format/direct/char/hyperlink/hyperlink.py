@@ -51,6 +51,7 @@ class Hyperlink(StyleBase):
 
     def __init__(
         self,
+        *,
         name: str | None = None,
         url: str | None = None,
         target: TargetKind = TargetKind.NONE,

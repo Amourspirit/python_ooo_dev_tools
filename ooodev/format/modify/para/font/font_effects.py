@@ -1,8 +1,8 @@
 from __future__ import annotations
 from typing import cast
 import uno
-from ....writer.style.char.kind.style_char_kind import StyleCharKind as StyleCharKind
-from ..char_style_base_multi import CharStyleBaseMulti
+from ....writer.style.para.kind.style_para_kind import StyleParaKind as StyleParaKind
+from ..para_style_base_multi import ParaStyleBaseMulti
 from ....direct.char.font.font_effects import FontEffects as DirectFontEffects
 from .....utils.data_type.intensity import Intensity as Intensity
 from .....utils.color import Color
@@ -13,9 +13,9 @@ from ooo.dyn.style.case_map import CaseMapEnum as CaseMapEnum
 from ooo.dyn.awt.font_relief import FontReliefEnum as FontReliefEnum
 
 
-class FontEffects(CharStyleBaseMulti):
+class FontEffects(ParaStyleBaseMulti):
     """
-    Character Style Font Effects
+    Style Font Effects
 
     .. versionadded:: 0.9.0
     """
@@ -36,8 +36,8 @@ class FontEffects(CharStyleBaseMulti):
         outline: bool | None = None,
         hidden: bool | None = None,
         shadowed: bool | None = None,
-        style_name: StyleCharKind | str = StyleCharKind.STANDARD,
-        style_family: str = "CharacterStyles",
+        style_name: StyleParaKind | str = StyleParaKind.STANDARD,
+        style_family: str = "ParagraphStyles",
     ) -> None:
         """
         Constructor
@@ -60,7 +60,7 @@ class FontEffects(CharStyleBaseMulti):
             hidden (bool, optional): Specifies if the font is hidden.
             shadowed (bool, optional): Specifies if the characters are formatted and displayed with a shadow effect.
             style_name (StyleParaKind, str, optional): Specifies the Character Style that instance applies to. Deftult is Default Character Style.
-            style_family (str, optional): Style family. Defatult ``CharacterStyles``.
+            style_family (str, optional): Style family. Defatult ``ParagraphStyles``.
 
         Returns:
             None:
@@ -90,16 +90,16 @@ class FontEffects(CharStyleBaseMulti):
     def from_style(
         cls,
         doc: object,
-        style_name: StyleCharKind | str = StyleCharKind.STANDARD,
-        style_family: str = "CharacterStyles",
+        style_name: StyleParaKind | str = StyleParaKind.STANDARD,
+        style_family: str = "ParagraphStyles",
     ) -> FontEffects:
         """
         Gets instance from Document.
 
         Args:
             doc (object): UNO Documnet Object.
-            style_name (StyleCharKind, str, optional): Specifies the Character Style that instance applies to. Deftult is Default Character Style.
-            style_family (str, optional): Style family. Defatult ``CharacterStyles``.
+            style_name (StyleParaKind, str, optional): Specifies the Character Style that instance applies to. Deftult is Default Character Style.
+            style_family (str, optional): Style family. Defatult ``ParagraphStyles``.
 
         Returns:
             FontEffects: ``FontEffects`` instance from document properties.
@@ -116,7 +116,7 @@ class FontEffects(CharStyleBaseMulti):
         return self._style_name
 
     @prop_style_name.setter
-    def prop_style_name(self, value: str | StyleCharKind):
+    def prop_style_name(self, value: str | StyleParaKind):
         self._style_name = str(value)
 
     @property

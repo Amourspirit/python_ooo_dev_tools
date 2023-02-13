@@ -1,15 +1,14 @@
 from __future__ import annotations
 from typing import cast
 import uno
-
 from ....writer.style.char.kind.style_char_kind import StyleCharKind as StyleCharKind
 from ..char_style_base_multi import CharStyleBaseMulti
-from ....direct.char.font.font_only import FontOnly as DirectFontOnly, FontLang as FontLang
+from ....direct.char.border.padding import Padding as DirectPadding
 
 
-class FontOnly(CharStyleBaseMulti):
+class Padding(CharStyleBaseMulti):
     """
-    Character Style Font
+    Character Style Border padding.
 
     .. versionadded:: 0.9.0
     """
@@ -17,10 +16,11 @@ class FontOnly(CharStyleBaseMulti):
     def __init__(
         self,
         *,
-        name: str | None = None,
-        size: float | None = None,
-        font_style_name: str | None = None,
-        lang: FontLang | None = None,
+        left: float | None = None,
+        right: float | None = None,
+        top: float | None = None,
+        bottom: float | None = None,
+        padding_all: float | None = None,
         style_name: StyleCharKind | str = StyleCharKind.STANDARD,
         style_family: str = "CharacterStyles",
     ) -> None:
@@ -28,11 +28,11 @@ class FontOnly(CharStyleBaseMulti):
         Constructor
 
         Args:
-            name (str, optional): This property specifies the name of the font style. It may contain more than one name separated by comma.
-            size (float, optional): This value contains the size of the characters in point units.
-            font_style_name (str, optional): Font style name such as ``Bold``.
-            lang (Lang, optional): Font Language
-            shadowed (bool, optional): Specifies if the characters are formatted and displayed with a shadow effect.
+            left (float, optional): Character left padding (in mm units).
+            right (float, optional): Character right padding (in mm units).
+            top (float, optional): Character top padding (in mm units).
+            bottom (float, optional): Character bottom padding (in mm units).
+            padding_all (float, optional): Character left, right, top, bottom padding (in mm units). If argument is present then ``left``, ``right``, ``top``, and ``bottom`` arguments are ignored.
             style_name (StyleParaKind, str, optional): Specifies the Character Style that instance applies to. Deftult is Default Character Style.
             style_family (str, optional): Style family. Defatult ``CharacterStyles``.
 
@@ -40,7 +40,7 @@ class FontOnly(CharStyleBaseMulti):
             None:
         """
 
-        direct = DirectFontOnly(name=name, size=size, style_name=font_style_name, lang=lang)
+        direct = DirectPadding(left=left, right=right, top=top, bottom=bottom, padding_all=padding_all)
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
@@ -52,7 +52,7 @@ class FontOnly(CharStyleBaseMulti):
         doc: object,
         style_name: StyleCharKind | str = StyleCharKind.STANDARD,
         style_family: str = "CharacterStyles",
-    ) -> FontOnly:
+    ) -> Padding:
         """
         Gets instance from Document.
 
@@ -62,11 +62,11 @@ class FontOnly(CharStyleBaseMulti):
             style_family (str, optional): Style family. Defatult ``CharacterStyles``.
 
         Returns:
-            FontOnly: ``FontOnly`` instance from document properties.
+            Padding: ``Padding`` instance from document properties.
         """
-        inst = super(FontOnly, cls).__new__(cls)
+        inst = super(Padding, cls).__new__(cls)
         inst.__init__(style_name=style_name, style_family=style_family)
-        direct = DirectFontOnly.from_obj(inst.get_style_props(doc))
+        direct = DirectPadding.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -80,10 +80,10 @@ class FontOnly(CharStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> DirectFontOnly:
-        """Gets Inner Font instance"""
+    def prop_inner(self) -> DirectPadding:
+        """Gets Inner Padding instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(DirectFontOnly, self._get_style_inst("direct"))
+            self._direct_inner = cast(DirectPadding, self._get_style_inst("direct"))
         return self._direct_inner

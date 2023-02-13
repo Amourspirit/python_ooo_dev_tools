@@ -41,22 +41,22 @@ class Sides(AbstractSides):
         Gets instance from object properties
 
         Args:
-            obj (object): UNO object that has supports ``com.sun.star.style.CharacterProperties`` service.
+            obj (object): UNO object.
 
         Raises:
-            NotSupportedServiceError: If ``obj`` does not support ``com.sun.star.style.CharacterProperties`` service.
+            NotSupportedError: If ``obj`` is not supported.
             PropertyNotFoundError: If ``obj`` does not have ``TableBorder2`` property.
 
         Returns:
-            BorderTable: Border Table.
+            Sides: ``Sides`` instance that represents ``obj`` Side properties.
         """
         inst = super(Sides, cls).__new__(cls)
         inst.__init__()
         if not inst._is_valid_obj(obj):
-            raise mEx.NotSupportedServiceError(inst._supported_services()[0])
+            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
         empty = BorderLine2()
-        for attr in inst.__border_properties:
+        for attr in inst._props:
             b2 = cast(BorderLine2, getattr(obj, attr, empty))
             side = Side.from_border2(b2)
             inst._set(attr, side)

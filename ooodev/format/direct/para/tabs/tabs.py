@@ -4,7 +4,7 @@ Modele for managing paragraph Tabs.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, cast
+from typing import Tuple, cast, Type, TypeVar
 
 import uno
 
@@ -19,6 +19,8 @@ from com.sun.star.beans import XPropertySet
 
 from ooo.dyn.style.tab_align import TabAlign as TabAlign
 from ooo.dyn.style.tab_stop import TabStop
+
+_TTabs = TypeVar(name="_TTabs", bound="Tabs")
 
 
 class Tabs(TabStopStruct):
@@ -44,19 +46,21 @@ class Tabs(TabStopStruct):
     def _get_property_name(self) -> str:
         return "ParaTabStops"
 
-    @staticmethod
-    def find(obj: object, position: float) -> TabStopStruct | None:
+    @classmethod
+    def find(cls: Type[_TTabs], obj: object, position: float) -> _TTabs | None:
         """
         Gets a Tab that matches position from obj such as a cursor.
 
         Args:
-            obj (object): Object that supports ``com.sun.star.style.ParagraphProperties``
+            obj (object): UNO Object.
             position (float): position of tab stop (in mm units).
 
         Returns:
             Tab | None: ``Tab`` instance if found; Otherwise, ``None``
         """
-        if not Tabs.default._is_valid_obj(obj):
+        nu = super(Tabs, cls).__new__(cls)
+        nu.__init__()
+        if not nu._is_valid_obj(obj):
             return None
         key = Tabs.default._get_property_name()
         pos = round(position * 100)
@@ -79,7 +83,7 @@ class Tabs(TabStopStruct):
         if match == -1:
             return None
         ts = tss[match]
-        return TabStopStruct.from_tab_stop(ts)
+        return cls.from_tab_stop(ts)
 
     @classmethod
     def remove_by_pos(cls, obj: object, position: float) -> bool:
