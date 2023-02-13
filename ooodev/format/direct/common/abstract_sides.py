@@ -41,6 +41,7 @@ class AbstractSides(StyleBase):
 
     def __init__(
         self,
+        *,
         left: Side | None = None,
         right: Side | None = None,
         top: Side | None = None,

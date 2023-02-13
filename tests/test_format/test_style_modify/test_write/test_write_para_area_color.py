@@ -25,7 +25,7 @@ def test_write(loader, para_text) -> None:
         cursor = Write.get_cursor(doc)
         Write.append_para(cursor=cursor, text=para_text)
 
-        style = Color(StandardColor.BLUE_LIGHT3)
+        style = Color(color=StandardColor.BLUE_LIGHT3)
         style.apply(doc)
         props = style.get_style_props(doc)
         assert props.getPropertyValue("FillColor") == StandardColor.BLUE_LIGHT3

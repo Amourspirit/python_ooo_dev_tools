@@ -16,6 +16,7 @@ class Color(ParaStyleBaseMulti):
 
     def __init__(
         self,
+        *,
         color: mColor.Color = -1,
         style_name: StyleParaKind | str = StyleParaKind.STANDARD,
         style_family: str = "ParagraphStyles",

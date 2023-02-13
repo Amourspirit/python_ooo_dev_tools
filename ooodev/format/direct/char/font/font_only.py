@@ -4,11 +4,12 @@ Module for managing character font.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Any, Tuple, cast, overload, TypeVar
+from typing import Any, Tuple, Type, cast, overload, TypeVar
 
 import uno
 
 from .....events.args.cancel_event_args import CancelEventArgs
+from .....events.args.key_val_cancel_args import KeyValCancelArgs
 from .....exceptions import ex as mEx
 from .....meta.static_prop import static_prop
 from .....utils import info as mInfo
@@ -22,7 +23,6 @@ from ...structs.locale_struct import LocaleStruct
 
 from com.sun.star.beans import XPropertySet
 
-from ooo.dyn.awt.font_descriptor import FontDescriptor
 
 _TFontOnly = TypeVar(name="_TFontOnly", bound="FontOnly")
 
@@ -31,7 +31,7 @@ class FontLang(LocaleStruct):
     """Class for Character Language"""
 
     def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.style.CharacterProperties",)
+        return ("com.sun.star.style.CharacterProperties", "com.sun.star.style.ParagraphStyle")
 
     def _get_property_name(self) -> str:
         return "CharLocale"
@@ -100,6 +100,7 @@ class FontOnly(StyleMulti):
 
     def __init__(
         self,
+        *,
         name: str | None = None,
         size: float | None = None,
         style_name: str | None = None,
@@ -127,14 +128,24 @@ class FontOnly(StyleMulti):
         if not size is None:
             self.prop_size = size
 
-    # region methods
+    # region Overrides
     def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.style.CharacterProperties", "com.sun.star.style.CharacterStyle")
+        return (
+            "com.sun.star.style.CharacterProperties",
+            "com.sun.star.style.CharacterStyle",
+            "com.sun.star.style.ParagraphStyle",
+        )
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:
             raise ValueError("Setting properties on a default instance is not allowed")
         return super()._on_setting(event)
+
+    def on_property_setting(self, event_args: KeyValCancelArgs) -> None:
+        if event_args.key == self._props.style_name:
+            if not event_args.value:
+                event_args.default = True
+        return super().on_property_setting(event_args)
 
     # region apply()
     @overload
@@ -163,6 +174,10 @@ class FontOnly(StyleMulti):
 
     # endregion apply()
 
+    # endregion Overrides
+
+    # region Internal Methods
+
     def _set_fd_style(self, name: str | None, style: str | None) -> None:
         """Set Font Discriptor Style"""
         fd = mInfo.Info.get_font_descriptor(name, style)
@@ -183,7 +198,45 @@ class FontOnly(StyleMulti):
         self._set("CharUnderline", fd.Underline)
         self._set("CharWeight", fd.Weight)
 
-    # endregion methods
+    # endregion Internal Methods
+
+    # region Static Methods
+    @classmethod
+    def from_obj(cls: Type[_TFontOnly], obj: object) -> _TFontOnly:
+        """
+        Gets Font Only instance from object
+
+        Args:
+            obj (object): UNO object.
+
+        Raises:
+            NotSupportedError: If ``obj`` is not supported.
+
+        Returns:
+            FontOnly: Font Only that represents ``obj`` Font.
+        """
+        inst = super(FontOnly, cls).__new__(cls)
+        inst.__init__()
+        if not inst._is_valid_obj(obj):
+            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
+
+        def set_prop(key: str, align: FontOnly):
+            nonlocal obj
+            val = mProps.Props.get(obj, key, None)
+            if not val is None:
+                align._set(key, val)
+
+        set_prop(inst._props.name, inst)
+        set_prop(inst._props.size, inst)
+        set_prop(inst._props.style_name, inst)
+        try:
+            lang = FontLang.from_obj(obj)
+            inst._set_style("lang", lang, *lang.get_attrs())
+        except mEx.PropertyNotFoundError:
+            pass
+        return inst
+
+    # endregion Static Methods
 
     # region Format Methods
 

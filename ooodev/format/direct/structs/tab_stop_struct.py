@@ -221,6 +221,7 @@ class TabStopStruct(StyleBase):
 
         Args:
             obj (object): UNO object
+            index (int, optional): Index of tab stop. Defatult ``0``.
 
         Raises:
             PropertyNotFoundError: If ``obj`` does not have required property
