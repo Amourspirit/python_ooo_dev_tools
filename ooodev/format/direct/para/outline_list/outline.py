@@ -57,7 +57,7 @@ class Outline(StyleBase):
         Returns:
             None:
         """
-        super().__init__(**{"OutlineLevel": level.value})
+        super().__init__(OutlineLevel=level.value)
 
     # endregion init
 
