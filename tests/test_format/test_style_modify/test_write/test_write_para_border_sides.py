@@ -5,7 +5,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.writer.modify.char.borders import Side, SideFlags, Sides, BorderLineStyleEnum, LineSize
+from ooodev.format.writer.modify.para.borders import Side, SideFlags, Sides, BorderLineStyleEnum, LineSize
 from ooodev.format import StandardColor
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
@@ -29,8 +29,8 @@ def test_write(loader, para_text) -> None:
             border_side=Side(line=BorderLineStyleEnum.DOUBLE, color=StandardColor.DEFAULT_BLUE, width=LineSize.MEDIUM)
         )
         style.apply(doc)
-        props = style.get_style_props(doc)
-        left = props.getPropertyValue("CharLeftBorder")
+        props = style.get_style_props(doc=doc)
+        left = props.getPropertyValue("LeftBorder")
         assert style.prop_inner.prop_left == left
 
         f_style = Sides.from_style(doc)

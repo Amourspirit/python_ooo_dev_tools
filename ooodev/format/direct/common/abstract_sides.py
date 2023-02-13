@@ -5,25 +5,22 @@ Module for managing character border side.
 """
 # region imports
 from __future__ import annotations
-from typing import Tuple, cast, overload, TYPE_CHECKING
+from typing import Tuple, cast, overload, Type, TypeVar
 
 import uno
 from ....events.args.key_val_cancel_args import KeyValCancelArgs
 from ....exceptions import ex as mEx
 from ....utils import lo as mLo
 from ...kind.format_kind import FormatKind
-from ..structs import side
-from ..structs.side import Side as Side, BorderLineStyleEnum as BorderLineStyleEnum
+from ..structs.side import Side as Side
 from ...style_base import StyleBase
 from .border_props import BorderProps as BorderProps
 
-if TYPE_CHECKING:
-    try:
-        from typing import Self
-    except ImportError:
-        from typing_extensions import Self
+from ooo.dyn.table.border_line2 import BorderLine2
 
 # endregion imports
+
+_TAbstractSides = TypeVar(name="_TAbstractSides", bound="AbstractSides")
 
 
 class AbstractSides(StyleBase):
@@ -137,10 +134,36 @@ class AbstractSides(StyleBase):
             )
         return False
 
+    @classmethod
+    def from_obj(cls: Type[_TAbstractSides], obj: object) -> _TAbstractSides:
+        """
+        Gets instance from object properties
+
+        Args:
+            obj (object): UNO object.
+
+        Raises:
+            NotSupportedError: If ``obj`` is not supported.
+
+        Returns:
+            Sides: Instance that represents ``BorderLine2``.
+        """
+        inst = super(AbstractSides, cls).__new__(cls)
+        inst.__init__()
+        if not inst._is_valid_obj(obj):
+            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
+
+        empty = BorderLine2()
+        for attr in inst._props:
+            b2 = cast(BorderLine2, getattr(obj, attr, empty))
+            side = Side.from_border2(b2)
+            inst._set(attr, side)
+        return inst
+
     # endregion methods
 
     # region style methods
-    def fmt_border_side(self, value: Side | None) -> AbstractSides:
+    def fmt_border_side(self: _TAbstractSides, value: Side | None) -> _TAbstractSides:
         """
         Gets copy of instance with left, right, top, bottom sides set or removed
 
@@ -157,7 +180,7 @@ class AbstractSides(StyleBase):
         cp.prop_right = value
         return cp
 
-    def fmt_top(self, value: Side | None) -> Self:
+    def fmt_top(self: _TAbstractSides, value: Side | None) -> _TAbstractSides:
         """
         Gets a copy of instance with top side set or removed
 
@@ -171,7 +194,7 @@ class AbstractSides(StyleBase):
         cp.prop_top = value
         return cp
 
-    def fmt_bottom(self, value: Side | None) -> Self:
+    def fmt_bottom(self: _TAbstractSides, value: Side | None) -> _TAbstractSides:
         """
         Gets a copy of instance with bottom side set or removed
 
@@ -185,7 +208,7 @@ class AbstractSides(StyleBase):
         cp.prop_bottom = value
         return cp
 
-    def fmt_left(self, value: Side | None) -> Self:
+    def fmt_left(self: _TAbstractSides, value: Side | None) -> _TAbstractSides:
         """
         Gets a copy of instance with left side set or removed
 
@@ -199,7 +222,7 @@ class AbstractSides(StyleBase):
         cp.prop_left = value
         return cp
 
-    def fmt_right(self, value: Side | None) -> Self:
+    def fmt_right(self: _TAbstractSides, value: Side | None) -> _TAbstractSides:
         """
         Gets a copy of instance with right side set or removed
 

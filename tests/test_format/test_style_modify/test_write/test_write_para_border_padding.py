@@ -1,12 +1,11 @@
 from __future__ import annotations
-from typing import cast
 import pytest
 
 if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.writer.modify.char.borders import Shadow, ShadowFormat, ShadowLocation
+from ooodev.format.writer.modify.para.borders import Padding
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
@@ -25,17 +24,16 @@ def test_write(loader, para_text) -> None:
         cursor = Write.get_cursor(doc)
         Write.append_para(cursor=cursor, text=para_text)
 
-        style = Shadow(location=ShadowLocation.BOTTOM_RIGHT, width=2.0)
+        style = Padding(padding_all=3.0)
         style.apply(doc)
         props = style.get_style_props(doc)
-        struct = style.prop_inner.get_uno_struct()
-        p_struct = cast(ShadowFormat, props.getPropertyValue("CharShadowFormat"))
-        assert struct.Color == p_struct.Color
-        assert struct.Location == p_struct.Location
+        assert props.getPropertyValue("LeftBorderDistance") in (298, 299, 300, 301, 302)
 
-        f_style = Shadow.from_style(doc)
-        assert f_style.prop_inner.prop_location == ShadowLocation.BOTTOM_RIGHT
-        assert f_style.prop_inner.prop_width == pytest.approx(2.0, rel=1e2)
+        f_style = Padding.from_style(doc)
+        assert f_style.prop_inner.prop_left == pytest.approx(3.0, rel=1e2)
+        assert f_style.prop_inner.prop_top == pytest.approx(3.0, rel=1e2)
+        assert f_style.prop_inner.prop_right == pytest.approx(3.0, rel=1e2)
+        assert f_style.prop_inner.prop_bottom == pytest.approx(3.0, rel=1e2)
 
         Lo.delay(delay)
     finally:

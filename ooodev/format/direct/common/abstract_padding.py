@@ -4,19 +4,17 @@ Modele for managing paragraph padding.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, cast, overload, TYPE_CHECKING
+from typing import Tuple, cast, overload, Type, TypeVar
 
+from ....events.args.cancel_event_args import CancelEventArgs
+from ....utils import props as mProps
 from ....exceptions import ex as mEx
 from ....utils import lo as mLo
 from ...kind.format_kind import FormatKind
 from ...style_base import StyleBase
 from .border_props import BorderProps as BorderProps
 
-if TYPE_CHECKING:
-    try:
-        from typing import Self
-    except ImportError:
-        from typing_extensions import Self
+_TAbstractPadding = TypeVar(name="_TAbstractPadding", bound="AbstractPadding")
 
 
 class AbstractPadding(StyleBase):
@@ -34,6 +32,7 @@ class AbstractPadding(StyleBase):
 
     def __init__(
         self,
+        *,
         left: float | None = None,
         right: float | None = None,
         top: float | None = None,
@@ -86,6 +85,10 @@ class AbstractPadding(StyleBase):
     # endregion init
 
     # region methods
+    def _on_modifing(self, event: CancelEventArgs) -> None:
+        if self._is_default_inst:
+            raise ValueError("Modifying a default instance is not allowed")
+        return super()._on_modifing(event)
 
     def _supported_services(self) -> Tuple[str, ...]:
         return ("com.sun.star.style.ParagraphProperties",)
@@ -116,10 +119,38 @@ class AbstractPadding(StyleBase):
 
     # endregion apply()
 
+    @classmethod
+    def from_obj(cls: Type[_TAbstractPadding], obj: object) -> _TAbstractPadding:
+        """
+        Gets Border Padding instance from object
+
+        Args:
+            obj (object): UNO object that supports ``com.sun.star.style.ParagraphProperties`` service.
+
+        Raises:
+            NotSupportedServiceError: If ``obj`` does not support ``com.sun.star.style.ParagraphProperties`` service.
+
+        Returns:
+            BorderPadding: BorderPadding that represents ``obj`` padding.
+        """
+        inst = super(AbstractPadding, cls).__new__(cls)
+        inst.__init__()
+        if not inst._is_valid_obj(obj):
+            raise mEx.NotSupportedServiceError(inst._supported_services()[0])
+
+        if inst._is_valid_obj(obj):
+            inst._set(inst._props.left, int(mProps.Props.get(obj, inst._props.left)))
+            inst._set(inst._props.right, int(mProps.Props.get(obj, inst._props.right)))
+            inst._set(inst._props.top, int(mProps.Props.get(obj, inst._props.top)))
+            inst._set(inst._props.bottom, int(mProps.Props.get(obj, inst._props.bottom)))
+        else:
+            raise mEx.NotSupportedServiceError(inst._supported_services()[0])
+        return inst
+
     # endregion methods
 
     # region style methods
-    def fmt_padding_all(self, value: float | None) -> Self:
+    def fmt_padding_all(self: _TAbstractPadding, value: float | None) -> _TAbstractPadding:
         """
         Gets copy of instance with left, right, top, bottom sides set or removed
 
@@ -136,7 +167,7 @@ class AbstractPadding(StyleBase):
         cp.prop_right = value
         return cp
 
-    def fmt_top(self, value: float | None) -> Self:
+    def fmt_top(self: _TAbstractPadding, value: float | None) -> _TAbstractPadding:
         """
         Gets a copy of instance with top side set or removed
 
@@ -150,7 +181,7 @@ class AbstractPadding(StyleBase):
         cp.prop_top = value
         return cp
 
-    def fmt_bottom(self, value: float | None) -> Self:
+    def fmt_bottom(self: _TAbstractPadding, value: float | None) -> _TAbstractPadding:
         """
         Gets a copy of instance with bottom side set or removed
 
@@ -164,7 +195,7 @@ class AbstractPadding(StyleBase):
         cp.prop_bottom = value
         return cp
 
-    def fmt_left(self, value: float | None) -> Self:
+    def fmt_left(self: _TAbstractPadding, value: float | None) -> _TAbstractPadding:
         """
         Gets a copy of instance with left side set or removed
 
@@ -178,7 +209,7 @@ class AbstractPadding(StyleBase):
         cp.prop_left = value
         return cp
 
-    def fmt_right(self, value: float | None) -> Self:
+    def fmt_right(self: _TAbstractPadding, value: float | None) -> _TAbstractPadding:
         """
         Gets a copy of instance with right side set or removed
 
