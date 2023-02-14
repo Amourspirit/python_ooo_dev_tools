@@ -1,6 +1,6 @@
 from __future__ import annotations
 import pytest
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, cast
 
 if __name__ == "__main__":
     pytest.main([__file__])
@@ -38,7 +38,7 @@ def test_write(loader, para_text) -> None:
         pp = cast("ParagraphProperties", cursor_p.TextParagraph)
         assert pp.DropCapCharStyleName == ""
         assert pp.DropCapWholeWord == False
-        inner_dc = cast(DropCapStruct, dc._get_style("drop_cap")[0])
+        inner_dc = cast(DropCapStruct, dc._get_style_inst("drop_cap"))
         assert inner_dc == pp.DropCapFormat
         cursor_p.gotoEnd(False)
 
@@ -49,7 +49,7 @@ def test_write(loader, para_text) -> None:
         pp = cast("ParagraphProperties", cursor_p.TextParagraph)
         assert pp.DropCapCharStyleName == StyleCharKind.DROP_CAPS.value
         assert pp.DropCapWholeWord == False
-        inner_dc = cast(DropCapStruct, dc._get_style("drop_cap")[0])
+        inner_dc = cast(DropCapStruct, dc._get_style_inst("drop_cap"))
         assert inner_dc == pp.DropCapFormat
         cursor_p.gotoEnd(False)
 
@@ -60,7 +60,7 @@ def test_write(loader, para_text) -> None:
         pp = cast("ParagraphProperties", cursor_p.TextParagraph)
         assert pp.DropCapCharStyleName == StyleCharKind.DROP_CAPS.value
         assert pp.DropCapWholeWord == False
-        inner_dc = cast(DropCapStruct, dc._get_style("drop_cap")[0])
+        inner_dc = cast(DropCapStruct, dc._get_style_inst("drop_cap"))
         assert inner_dc == pp.DropCapFormat
         cursor_p.gotoEnd(False)
 
@@ -71,7 +71,7 @@ def test_write(loader, para_text) -> None:
         pp = cast("ParagraphProperties", cursor_p.TextParagraph)
         assert pp.DropCapCharStyleName == ""
         assert pp.DropCapWholeWord == True
-        inner_dc = cast(DropCapStruct, dc._get_style("drop_cap")[0])
+        inner_dc = cast(DropCapStruct, dc._get_style_inst("drop_cap"))
         assert inner_dc == pp.DropCapFormat
         cursor_p.gotoEnd(False)
 
@@ -85,7 +85,7 @@ def test_write(loader, para_text) -> None:
             pp = cast("ParagraphProperties", cursor_p.TextParagraph)
             assert pp.DropCapCharStyleName == StyleCharKind.DROP_CAPS.value
             assert pp.DropCapWholeWord == True
-            inner_dc = cast(DropCapStruct, dc._get_style("drop_cap")[0])
+            inner_dc = cast(DropCapStruct, dc._get_style_inst("drop_cap"))
             assert inner_dc == pp.DropCapFormat
             cursor_p.gotoEnd(False)
 

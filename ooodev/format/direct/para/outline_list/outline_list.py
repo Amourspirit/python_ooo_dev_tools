@@ -12,7 +12,7 @@ from ....style_base import StyleMulti
 from .....exceptions import ex as mEx
 from ....kind.format_kind import FormatKind
 from .outline import Outline as Outline, LevelKind as LevelKind
-from .list_style import ListStyle as ListStyle, StyleListKind as StyleListKind
+from .list_style import ListStyle as ParaListStyle, StyleListKind as StyleListKind
 from .line_num import LineNum as LineNum
 
 _TOutlineList = TypeVar(name="_TOutlineList", bound="OutlineList")
@@ -66,7 +66,7 @@ class OutlineList(StyleMulti):
             ol = Outline(level=ol_level)
             self._set_style("outline", ol, *ol.get_attrs())
 
-        ls = ListStyle(list_style=ls_style, num_start=ls_num)
+        ls = ParaListStyle(list_style=ls_style, num_start=ls_num)
         if ls.prop_has_attribs:
             self._set_style("list_style", ls, *ls.get_attrs())
         if not ln_num is None:
@@ -105,7 +105,7 @@ class OutlineList(StyleMulti):
         ol = Outline.from_obj(obj)
         if ol.prop_has_attribs:
             inst._set_style("outline", ol, *ol.get_attrs())
-        ls = ListStyle.from_obj(obj)
+        ls = ParaListStyle.from_obj(obj)
         if ls.prop_has_attribs:
             inst._set_style("list_style", ls, *ls.get_attrs())
         ln = LineNum.from_obj(obj)
@@ -131,12 +131,12 @@ class OutlineList(StyleMulti):
         return self._direct_inner_outline
 
     @property
-    def prop_inner_list_style(self) -> ListStyle | None:
+    def prop_inner_list_style(self) -> ParaListStyle | None:
         """Gets List Style instance"""
         try:
             return self._direct_inner_ls
         except AttributeError:
-            self._direct_inner_ls = cast(ListStyle, self._get_style_inst("list_style"))
+            self._direct_inner_ls = cast(ParaListStyle, self._get_style_inst("list_style"))
         return self._direct_inner_ls
 
     @property
@@ -156,7 +156,7 @@ class OutlineList(StyleMulti):
         except AttributeError:
             inst = OutlineList()
             inst._set_style("outline", Outline.default, *Outline.default.get_attrs())
-            inst._set_style("list_style", ListStyle.default, *ListStyle.default.get_attrs())
+            inst._set_style("list_style", ParaListStyle.default, *ParaListStyle.default.get_attrs())
             inst._set_style("line_num", LineNum.default, *LineNum.default.get_attrs())
             inst._is_default_inst = True
             OutlineList._DEFAULT_INST = inst

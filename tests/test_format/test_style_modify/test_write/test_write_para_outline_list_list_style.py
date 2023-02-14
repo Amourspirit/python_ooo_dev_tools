@@ -1,15 +1,18 @@
 from __future__ import annotations
-from typing import cast
 import pytest
+from typing import TYPE_CHECKING, cast
 
 if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.writer.modify.char.borders import Shadow, ShadowFormat, ShadowLocation
+from ooodev.format.writer.modify.para.outline_list import ListStyle, StyleListKind, StyleParaKind
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
+
+if TYPE_CHECKING:
+    from com.sun.star.style import ParagraphProperties  # service
 
 
 def test_write(loader, para_text) -> None:
@@ -25,17 +28,16 @@ def test_write(loader, para_text) -> None:
         cursor = Write.get_cursor(doc)
         Write.append_para(cursor=cursor, text=para_text)
 
-        style = Shadow(location=ShadowLocation.BOTTOM_RIGHT, width=2.0)
+        style = ListStyle(list_style=StyleListKind.NUM_ABC, style_name=StyleParaKind.CAPTION)
         style.apply(doc)
         props = style.get_style_props(doc)
-        struct = style.prop_inner.get_uno_struct()
-        p_struct = cast(ShadowFormat, props.getPropertyValue("CharShadowFormat"))
-        assert struct.Color == p_struct.Color
-        assert struct.Location == p_struct.Location
+        pp = cast("ParagraphProperties", props)
+        assert pp.NumberingStyleName == str(StyleListKind.NUM_ABC)
 
-        f_style = Shadow.from_style(doc)
-        assert f_style.prop_inner.prop_location == ShadowLocation.BOTTOM_RIGHT
-        assert f_style.prop_inner.prop_width == pytest.approx(2.0, rel=1e2)
+        f_style = ListStyle.from_style(
+            doc=doc, style_name=style.prop_style_name, style_family=style.prop_style_family_name
+        )
+        assert f_style.prop_inner.prop_list_style == str(StyleListKind.NUM_ABC)
 
         Lo.delay(delay)
     finally:

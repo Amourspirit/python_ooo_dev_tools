@@ -5,19 +5,16 @@ Module for managing character border side.
 """
 # region imports
 from __future__ import annotations
-from typing import Tuple, Type, cast, TypeVar
+from typing import Tuple
 
 import uno
 from ...common.abstract_sides import AbstractSides, BorderProps
-from .....exceptions import ex as mEx
 from ....kind.format_kind import FormatKind
-from ...structs.side import Side as Side, BorderLineStyleEnum as BorderLineStyleEnum
+from ...structs.side import Side as Side, LineSize as LineSize, SideFlags as SideFlags
 
-from ooo.dyn.table.border_line2 import BorderLine2
+from ooo.dyn.table.border_line_style import BorderLineStyleEnum as BorderLineStyleEnum
 
 # endregion imports
-
-_TSides = TypeVar(name="_TSides", bound="Sides")
 
 
 class Sides(AbstractSides):
@@ -33,34 +30,7 @@ class Sides(AbstractSides):
 
     # region methods
     def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.style.CharacterProperties", "com.sun.star.style.ParagraphStyle")
-
-    @classmethod
-    def from_obj(cls: Type[_TSides], obj: object) -> _TSides:
-        """
-        Gets instance from object properties
-
-        Args:
-            obj (object): UNO object.
-
-        Raises:
-            NotSupportedError: If ``obj`` is not supported.
-            PropertyNotFoundError: If ``obj`` does not have ``TableBorder2`` property.
-
-        Returns:
-            Sides: Instance that represents ``BorderLine2``.
-        """
-        inst = super(Sides, cls).__new__(cls)
-        inst.__init__()
-        if not inst._is_valid_obj(obj):
-            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
-
-        empty = BorderLine2()
-        for attr in inst._props:
-            b2 = cast(BorderLine2, getattr(obj, attr, empty))
-            side = Side.from_border2(b2)
-            inst._set(attr, side)
-        return inst
+        return ("com.sun.star.style.ParagraphProperties", "com.sun.star.style.ParagraphStyle")
 
     # endregion methods
 

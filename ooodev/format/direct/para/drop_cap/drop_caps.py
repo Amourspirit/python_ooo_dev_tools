@@ -32,15 +32,10 @@ class DropCapFmt(DropCapStruct):
     """
 
     def _supported_services(self) -> Tuple[str, ...]:
-        """
-        Gets a tuple of supported services (``com.sun.star.style.ParagraphProperties``,)
-
-        Returns:
-            Tuple[str, ...]: Supported services
-        """
         return (
             "com.sun.star.style.ParagraphProperties",
             "com.sun.star.text.TextContent",
+            "com.sun.star.style.ParagraphStyle",
         )
 
     def _get_property_name(self) -> str:
@@ -183,12 +178,6 @@ class DropCaps(StyleMulti):
         return super()._on_modifing(event)
 
     def _supported_services(self) -> Tuple[str, ...]:
-        """
-        Gets a tuple of supported services (``com.sun.star.style.ParagraphProperties``,)
-
-        Returns:
-            Tuple[str, ...]: Supported services
-        """
         return (
             "com.sun.star.style.ParagraphProperties",
             "com.sun.star.text.TextContent",
@@ -219,9 +208,9 @@ class DropCaps(StyleMulti):
         whole_word = cast(bool, mProps.Props.get(obj, "DropCapWholeWord"))
         style = cast(str, mProps.Props.get(obj, "DropCapCharStyleName"))
         if not whole_word is None:
-            inst.set("DropCapWholeWord", whole_word)
+            inst._set("DropCapWholeWord", whole_word)
         if not style is None:
-            inst.set("DropCapCharStyleName", style)
+            inst._set("DropCapCharStyleName", style)
         return inst
 
     # endregion methods
