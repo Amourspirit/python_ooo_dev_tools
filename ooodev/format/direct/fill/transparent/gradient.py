@@ -38,7 +38,11 @@ _TGradient = TypeVar(name="_TGradient", bound="Gradient")
 
 class FillTransparentGrad(GradientStruct):
     def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.drawing.FillProperties", "com.sun.star.text.TextContent")
+        return (
+            "com.sun.star.drawing.FillProperties",
+            "com.sun.star.text.TextContent",
+            "com.sun.star.style.ParagraphStyle",
+        )
 
     def _get_property_name(self) -> str:
         return "FillTransparenceGradient"
@@ -95,9 +99,9 @@ class Gradient(StyleMulti):
             angle=angle,
             border=border,
             start_color=start_color,
-            start_intensity=100,
+            start_intensity=grad_intensity.start,
             end_color=end_color,
-            end_intensity=100,
+            end_intensity=grad_intensity.end,
         )
 
         super().__init__()
@@ -127,9 +131,9 @@ class Gradient(StyleMulti):
                 self._name = name
                 return FillTransparentGrad.from_gradient(struct)
 
+        name = "Transparency "
         self._name = self._container_get_unique_el_name(name, nc)
         struct = self._container_get_value(self._name, nc)  # raises value error if name is empty
-        name = "Transparency "
         if not struct is None:
             return FillTransparentGrad.from_gradient(struct)
         struct = fill_tp.get_uno_struct()
@@ -151,6 +155,7 @@ class Gradient(StyleMulti):
         return (
             "com.sun.star.drawing.FillProperties",
             "com.sun.star.text.TextContent",
+            "com.sun.star.style.ParagraphStyle",
         )
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
@@ -207,7 +212,7 @@ class Gradient(StyleMulti):
 
         grad_fill = cast(UNOGradient, mProps.Props.get(obj, gs_prop_name))
         gs = FillTransparentGrad.from_gradient(grad_fill)
-        fill_gradient_name = cast(str, mProps.Props.get(obj, "FillGradientName", ""))
+        fill_gradient_name = cast(str, mProps.Props.get(obj, "FillTransparenceGradientName", ""))
         if grad_fill.Angle == 0:
             angle = 0
         else:
@@ -217,7 +222,7 @@ class Gradient(StyleMulti):
             offset=Offset(grad_fill.XOffset, grad_fill.YOffset),
             angle=angle,
             border=Intensity(grad_fill.Border),
-            grad_intensity=IntensityRange(grad_fill.StartColor, grad_fill.EndColor),
+            grad_intensity=IntensityRange(grad_fill.StartIntensity, grad_fill.EndIntensity),
             transparency_name=fill_gradient_name,
         )
 
