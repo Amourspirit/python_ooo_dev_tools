@@ -18,7 +18,7 @@ from .....utils import props as mProps
 from .....utils.unit_convert import UnitConvert
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleMulti
-from ...common.font_only_props import FontOnlyProps
+from ...common.props.font_only_props import FontOnlyProps
 from ...structs.locale_struct import LocaleStruct
 
 from com.sun.star.beans import XPropertySet

@@ -1,17 +1,18 @@
 from __future__ import annotations
 from typing import cast
 import uno
-from ....direct.common.format_types.size_mm import SizeMM as SizeMM
-from .....utils.data_type.intensity import Intensity as Intensity
-from ....writer.style.page.kind import StylePageKind as StylePageKind
+from com.sun.star.awt import XBitmap
+
+from ....preset.preset_pattern import PresetPatternKind as PresetPatternKind
+from ....writer.style.page.kind.style_page_kind import StylePageKind as StylePageKind
 from ..page_style_base_multi import PageStyleBaseMulti
-from ....preset.preset_paper_format import PaperFormatKind as PaperFormatKind
-from ....direct.page.page.paper_format import PaperFormat as DirectPaperFormat
+
+from ....direct.fill.area.pattern import Pattern as DirectPattern
 
 
-class PaperFormat(PageStyleBaseMulti):
+class Pattern(PageStyleBaseMulti):
     """
-    Page Style Paper Format
+    Page Style Pattern
 
     .. versionadded:: 0.9.0
     """
@@ -19,7 +20,11 @@ class PaperFormat(PageStyleBaseMulti):
     def __init__(
         self,
         *,
-        size: SizeMM = SizeMM(215.9, 279.4),
+        bitmap: XBitmap | None = None,
+        name: str = "",
+        tile: bool = True,
+        stretch: bool = False,
+        auto_name: bool = False,
         style_name: StylePageKind | str = StylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> None:
@@ -27,7 +32,11 @@ class PaperFormat(PageStyleBaseMulti):
         Constructor
 
         Args:
-            size (SizeMM, optional): Width and height in ``mm`` units. Defaults to Letter size in Portrait mode.
+            bitmap (XBitmap, optional): Bitmap instance. If ``name`` is not already in the Bitmap Table then this property is requied.
+            name (str, optional): Specifies the name of the pattern. This is also the name that is used to store bitmap in LibreOffice Bitmap Table.
+            tile (bool, optional): Specified if bitmap is tiled. Defaults to ``True``.
+            stretch (bool, optional): Specifies if bitmap is stretched. Defaults to ``False``.
+            auto_name (bool, optional): Specifies if ``name`` is ensured to be unique. Defaults to ``False``.
             style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to. Deftult is Default Paragraph Style.
             style_family (str, optional): Style family. Defatult ``PageStyles``.
 
@@ -35,7 +44,7 @@ class PaperFormat(PageStyleBaseMulti):
             None:
         """
 
-        direct = DirectPaperFormat(size=size)
+        direct = DirectPattern(bitmap=bitmap, name=name, tile=tile, stretch=stretch, auto_name=auto_name)
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
@@ -47,7 +56,7 @@ class PaperFormat(PageStyleBaseMulti):
         doc: object,
         style_name: StylePageKind | str = StylePageKind.STANDARD,
         style_family: str = "PageStyles",
-    ) -> PaperFormat:
+    ) -> Pattern:
         """
         Gets instance from Document.
 
@@ -57,37 +66,35 @@ class PaperFormat(PageStyleBaseMulti):
             style_family (str, optional): Style family. Defatult ``PageStyles``.
 
         Returns:
-            PaperFormat: ``PaperFormat`` instance from document properties.
+            Pattern: ``Pattern`` instance from document properties.
         """
-        inst = super(PaperFormat, cls).__new__(cls)
+        inst = super(Pattern, cls).__new__(cls)
         inst.__init__(style_name=style_name, style_family=style_family)
-        direct = DirectPaperFormat.from_obj(inst.get_style_props(doc))
+        direct = DirectPattern.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
     @classmethod
     def from_preset(
         cls,
-        preset: PaperFormatKind,
-        landscape: bool = False,
+        preset: PresetPatternKind,
         style_name: StylePageKind | str = StylePageKind.STANDARD,
         style_family: str = "PageStyles",
-    ) -> PaperFormat:
+    ) -> Pattern:
         """
-        Gets instance from preset
+        Gets an instance from a preset.
 
         Args:
-            preset (PaperFormatKind): Preset kind
-            landscape (bool, optional): Specifies if the preset is in landscape mode. Defaults to ``False``.
+            preset (PatternKind): Preset.
             style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to. Deftult is Default Paragraph Style.
             style_family (str, optional): Style family. Defatult ``PageStyles``.
 
         Returns:
-            PaperFormat: Format from preset
+            Pattern: ``Pattern`` instance from preset.
         """
-        inst = super(PaperFormat, cls).__new__(cls)
+        inst = super(Pattern, cls).__new__(cls)
         inst.__init__(style_name=style_name, style_family=style_family)
-        direct = DirectPaperFormat.from_preset(preset=preset, landscape=landscape)
+        direct = DirectPattern.from_preset(preset=preset)
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -101,10 +108,10 @@ class PaperFormat(PageStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> DirectPaperFormat:
-        """Gets Inner Paper Format instance"""
+    def prop_inner(self) -> DirectPattern:
+        """Gets Inner Pattern instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(DirectPaperFormat, self._get_style_inst("direct"))
+            self._direct_inner = cast(DirectPattern, self._get_style_inst("direct"))
         return self._direct_inner

@@ -1,8 +1,8 @@
 from __future__ import annotations
 from dataclasses import dataclass
-from ....utils.data_type.size import Size
-from ....utils.data_type.width_height_fraction import WidthHeightFraction
-from ....utils.unit_convert import UnitConvert
+from .....utils.data_type.size import Size
+from .....utils.data_type.width_height_fraction import WidthHeightFraction
+from .....utils.unit_convert import UnitConvert
 
 
 @dataclass(frozen=True)

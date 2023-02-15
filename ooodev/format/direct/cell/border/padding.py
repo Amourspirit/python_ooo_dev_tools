@@ -10,8 +10,8 @@ from .....exceptions import ex as mEx
 from .....meta.static_prop import static_prop
 from .....utils import props as mProps
 from ....kind.format_kind import FormatKind
-from ...common.abstract_padding import AbstractPadding
-from ...common.border_props import BorderProps as BorderProps
+from ...common.abstract.abstract_padding import AbstractPadding
+from ...common.props.border_props import BorderProps as BorderProps
 
 
 class Padding(AbstractPadding):

@@ -13,7 +13,7 @@ from .....utils import lo as mLo
 from .....utils import props as mProps
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleBase
-from ...common.size_mm import SizeMM as SizeMM
+from ...common.format_types.size_mm import SizeMM as SizeMM
 from ....preset.preset_paper_format import PaperFormatKind as PaperFormatKind
 
 from ooo.dyn.awt.size import Size as Size

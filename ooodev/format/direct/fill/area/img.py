@@ -23,6 +23,10 @@ from ....kind.format_kind import FormatKind
 from ....preset import preset_image as mImage
 from ....preset.preset_image import PresetImageKind as PresetImageKind
 from ....style_base import StyleBase
+from ...common.format_types.size_mm import SizeMM as SizeMM
+from ...common.format_types.size_percent import SizePercent as SizePercent
+from ...common.format_types.offset_row import OffsetRow as OffsetRow
+from ...common.format_types.offset_column import OffsetColumn as OffsetColumn
 
 
 from com.sun.star.awt import XBitmap
@@ -37,34 +41,6 @@ if TYPE_CHECKING:
 # https://github.com/LibreOffice/core/blob/6379414ca34527fbe69df2035d49d651655317cd/vcl/source/filter/ipict/ipict.cxx#L92
 
 _TImg = TypeVar(name="_TImg", bound="Img")
-
-
-@dataclass(frozen=True)
-class SizeMM(WidthHeightFraction):
-    """Size in ``mm`` units"""
-
-    pass
-
-
-@dataclass(frozen=True)
-class SizePercent(WidthHeightPercent):
-    """Size in percent values"""
-
-    pass
-
-
-@dataclass(unsafe_hash=True)
-class OffsetColumn(Intensity):
-    """Represents a Column Offset value from ``0`` to ``100``."""
-
-    pass
-
-
-@dataclass(unsafe_hash=True)
-class OffsetRow(Intensity):
-    """Represents a Row Offset value from ``0`` to ``100``."""
-
-    pass
 
 
 class ImgStyleKind(Enum):
@@ -191,6 +167,7 @@ class Img(StyleBase):
             "com.sun.star.text.TextContent",
             "com.sun.star.beans.PropertySet",
             "com.sun.star.style.ParagraphStyle",
+            "com.sun.star.style.PageStyle",
         )
 
     # region apply()

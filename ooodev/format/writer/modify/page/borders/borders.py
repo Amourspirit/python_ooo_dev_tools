@@ -12,7 +12,7 @@ import uno
 from ......exceptions import ex as mEx
 from ......utils import lo as mLo
 from ......utils import props as mProps
-from .....direct.common.abstract_sides import AbstractSides, BorderProps
+from .....direct.common.abstract.abstract_sides import AbstractSides, BorderProps
 from .....direct.structs.side import Side as Side, BorderLineStyleEnum as BorderLineStyleEnum
 from ....style.page.kind import StylePageKind as StylePageKind
 from ..page_style_base import PageStyleBase

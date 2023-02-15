@@ -2,12 +2,12 @@ from __future__ import annotations
 from typing import NamedTuple
 from typing import Any, Tuple, overload, Type, TypeVar
 
-from ....events.args.cancel_event_args import CancelEventArgs
-from ....exceptions import ex as mEx
-from ....utils import lo as mLo
-from ....utils import props as mProps
-from ...kind.format_kind import FormatKind
-from ...style_base import StyleBase
+from .....events.args.cancel_event_args import CancelEventArgs
+from .....exceptions import ex as mEx
+from .....utils import lo as mLo
+from .....utils import props as mProps
+from ....kind.format_kind import FormatKind
+from ....style_base import StyleBase
 
 # from ...events.args.key_val_cancel_args import KeyValCancelArgs
 

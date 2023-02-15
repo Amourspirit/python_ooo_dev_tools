@@ -112,7 +112,7 @@ class FillColor(StyleBase):
             FillColor: ``FillColor`` instance that represents ``obj`` Fill Color properties.
         """
 
-        nu = super(Color, cls).__new__(cls)
+        nu = super(FillColor, cls).__new__(cls)
         nu.__init__()
 
         # inst = Color()
@@ -121,7 +121,7 @@ class FillColor(StyleBase):
 
         color = mProps.Props.get(obj, "FillColor", None)
 
-        inst = super(Color, cls).__new__(cls)
+        inst = super(FillColor, cls).__new__(cls)
 
         if color is None:
             inst.__init__()

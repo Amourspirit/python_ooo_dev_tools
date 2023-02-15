@@ -14,7 +14,7 @@ from .....utils import props as mProps
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleBase
 from ....writer.style.lst import StyleListKind as StyleListKind
-from ...common.list_style_props import ListStyleProps
+from ...common.props.list_style_props import ListStyleProps
 
 # from ...events.args.key_val_cancel_args import KeyValCancelArgs
 

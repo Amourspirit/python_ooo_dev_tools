@@ -57,6 +57,7 @@ class Color(StyleBase):
             "com.sun.star.drawing.FillProperties",
             "com.sun.star.text.TextContent",
             "com.sun.star.style.ParagraphStyle",
+            "com.sun.star.style.PageStyle",
         )
 
     def _on_modifing(self, event: CancelEventArgs) -> None:

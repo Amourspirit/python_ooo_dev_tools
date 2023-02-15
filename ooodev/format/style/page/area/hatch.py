@@ -1,17 +1,20 @@
 from __future__ import annotations
 from typing import cast
 import uno
-from ....direct.common.format_types.size_mm import SizeMM as SizeMM
-from .....utils.data_type.intensity import Intensity as Intensity
-from ....writer.style.page.kind import StylePageKind as StylePageKind
+from ooo.dyn.drawing.hatch_style import HatchStyle as HatchStyle
+
+from .....utils.data_type.angle import Angle as Angle
+from .....utils.color import Color
+from ....preset.preset_hatch import PresetHatchKind as PresetHatchKind
+from ....writer.style.page.kind.style_page_kind import StylePageKind as StylePageKind
 from ..page_style_base_multi import PageStyleBaseMulti
-from ....preset.preset_paper_format import PaperFormatKind as PaperFormatKind
-from ....direct.page.page.paper_format import PaperFormat as DirectPaperFormat
+
+from ....direct.fill.area.hatch import Hatch as DirectHatch
 
 
-class PaperFormat(PageStyleBaseMulti):
+class Hatch(PageStyleBaseMulti):
     """
-    Page Style Paper Format
+    Page Style Pattern
 
     .. versionadded:: 0.9.0
     """
@@ -19,7 +22,11 @@ class PaperFormat(PageStyleBaseMulti):
     def __init__(
         self,
         *,
-        size: SizeMM = SizeMM(215.9, 279.4),
+        style: HatchStyle = HatchStyle.SINGLE,
+        color: Color = Color(0),
+        space: float = 0.0,
+        angle: Angle | int = 0,
+        bg_color: Color = Color(-1),
         style_name: StylePageKind | str = StylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> None:
@@ -27,7 +34,11 @@ class PaperFormat(PageStyleBaseMulti):
         Constructor
 
         Args:
-            size (SizeMM, optional): Width and height in ``mm`` units. Defaults to Letter size in Portrait mode.
+            style (HatchStyle, optional): Specifies the kind of lines used to draw this hatch. Default ``HatchStyle.SINGLE``.
+            color (Color, optional): Specifies the color of the hatch lines. Default ``0``.
+            space (int, optional): Specifies the space between the lines in the hatch (in ``mm`` units). Default ``0.0``
+            angle (Angle, int, optional): Specifies angle of the hatch in degrees. Default to ``0``.
+            bg_color(Color, optionl): Specifies the background Color. Set this ``-1`` (default) for no background color.
             style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to. Deftult is Default Paragraph Style.
             style_family (str, optional): Style family. Defatult ``PageStyles``.
 
@@ -35,7 +46,7 @@ class PaperFormat(PageStyleBaseMulti):
             None:
         """
 
-        direct = DirectPaperFormat(size=size)
+        direct = DirectHatch(style=style, color=color, space=space, angle=angle, bg_color=bg_color)
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
@@ -47,7 +58,7 @@ class PaperFormat(PageStyleBaseMulti):
         doc: object,
         style_name: StylePageKind | str = StylePageKind.STANDARD,
         style_family: str = "PageStyles",
-    ) -> PaperFormat:
+    ) -> Hatch:
         """
         Gets instance from Document.
 
@@ -57,37 +68,35 @@ class PaperFormat(PageStyleBaseMulti):
             style_family (str, optional): Style family. Defatult ``PageStyles``.
 
         Returns:
-            PaperFormat: ``PaperFormat`` instance from document properties.
+            Hatch: ``Hatch`` instance from document properties.
         """
-        inst = super(PaperFormat, cls).__new__(cls)
+        inst = super(Hatch, cls).__new__(cls)
         inst.__init__(style_name=style_name, style_family=style_family)
-        direct = DirectPaperFormat.from_obj(inst.get_style_props(doc))
+        direct = DirectHatch.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
     @classmethod
     def from_preset(
         cls,
-        preset: PaperFormatKind,
-        landscape: bool = False,
+        preset: PresetHatchKind,
         style_name: StylePageKind | str = StylePageKind.STANDARD,
         style_family: str = "PageStyles",
-    ) -> PaperFormat:
+    ) -> Hatch:
         """
-        Gets instance from preset
+        Gets an instance from a preset.
 
         Args:
-            preset (PaperFormatKind): Preset kind
-            landscape (bool, optional): Specifies if the preset is in landscape mode. Defaults to ``False``.
+            preset (PresetHatchKind): Preset.
             style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to. Deftult is Default Paragraph Style.
             style_family (str, optional): Style family. Defatult ``PageStyles``.
 
         Returns:
-            PaperFormat: Format from preset
+            Hatch: ``Hatch`` instance from preset.
         """
-        inst = super(PaperFormat, cls).__new__(cls)
+        inst = super(Hatch, cls).__new__(cls)
         inst.__init__(style_name=style_name, style_family=style_family)
-        direct = DirectPaperFormat.from_preset(preset=preset, landscape=landscape)
+        direct = DirectHatch.from_preset(preset=preset)
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -101,10 +110,10 @@ class PaperFormat(PageStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> DirectPaperFormat:
-        """Gets Inner Paper Format instance"""
+    def prop_inner(self) -> DirectHatch:
+        """Gets Inner Hatch instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(DirectPaperFormat, self._get_style_inst("direct"))
+            self._direct_inner = cast(DirectHatch, self._get_style_inst("direct"))
         return self._direct_inner
