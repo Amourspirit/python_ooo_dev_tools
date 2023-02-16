@@ -2,6 +2,10 @@ from __future__ import annotations
 from typing import Any, Tuple, cast, overload, Type, TypeVar
 
 import uno
+from com.sun.star.awt import XBitmap
+
+from ooo.dyn.style.graphic_location import GraphicLocation
+from ooo.dyn.drawing.rectangle_point import RectanglePoint as RectanglePoint
 
 from .....events.args.key_val_cancel_args import KeyValCancelArgs
 from .....exceptions import ex as mEx
@@ -21,10 +25,6 @@ from ....preset.preset_image import PresetImageKind as PresetImageKind
 from ....kind.format_kind import FormatKind
 from .....events.format_named_event import FormatNamedEvent
 
-from com.sun.star.awt import XBitmap
-
-from ooo.dyn.style.graphic_location import GraphicLocation
-from ooo.dyn.drawing.rectangle_point import RectanglePoint as RectanglePoint
 
 _TImg = TypeVar(name="_TImg", bound="Img")
 
@@ -186,10 +186,10 @@ class Img(StyleMulti):
     @classmethod
     def from_preset(cls: Type[_TImg], preset: PresetImageKind) -> _TImg:
         """
-        Gets an instance from a preset
+        Gets an instance from a preset.
 
         Args:
-            preset (PresetImageKind): Preset
+            preset (PresetImageKind): Preset.
 
         Returns:
             Img: Instance from preset.

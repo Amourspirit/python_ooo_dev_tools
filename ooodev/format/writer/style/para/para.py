@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Tuple
 
+from .....events.args.cancel_event_args import CancelEventArgs
 from .....events.args.key_val_cancel_args import KeyValCancelArgs
 from .....meta.static_prop import static_prop
 from ....kind.format_kind import FormatKind
@@ -19,21 +20,18 @@ class Para(StyleBase):
     .. versionadded:: 0.9.0
     """
 
-    _DEFAULT = None
-
     def __init__(self, name: StyleParaKind | str = "") -> None:
         if name == "":
             name = Para.default.prop_name
         super().__init__(**{self._get_property_name(): str(name)})
 
     def _supported_services(self) -> Tuple[str, ...]:
-        """
-        Gets a tuple of supported services (``com.sun.star.style.ParagraphProperties``,)
-
-        Returns:
-            Tuple[str, ...]: Supported services
-        """
         return ("com.sun.star.style.ParagraphProperties",)
+
+    def _on_modifing(self, event: CancelEventArgs) -> None:
+        if self._is_default_inst:
+            raise ValueError("Modifying a default instance is not allowed")
+        return super()._on_modifing(event)
 
     def _get_property_name(self) -> str:
         return "ParaStyleName"
@@ -407,13 +405,15 @@ class Para(StyleBase):
 
     @prop_name.setter
     def prop_name(self, value: StyleParaKind | str) -> None:
-        if self is Para.default:
-            raise ValueError("Setting StylePara.default properties is not allowed.")
         self._set(self._get_property_name(), str(value))
 
     @static_prop
     def default() -> Para:  # type: ignore[misc]
         """Gets ``StylePara`` default. Static Property."""
-        if Para._DEFAULT is None:
-            Para._DEFAULT = Para(name=StyleParaKind.STANDARD)
-        return Para._DEFAULT
+        try:
+            return Para._DEFAULT_INST
+        except AttributeError:
+            Para._DEFAULT_INST = Para(name=StyleParaKind.STANDARD)
+            Para._DEFAULT_INST._is_default_inst = True
+
+        return Para._DEFAULT_INST

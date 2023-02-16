@@ -11,7 +11,7 @@ from ....exceptions import ex as mEx
 from ....meta.static_prop import static_prop
 from ....utils import props as mProps
 from ...kind.format_kind import FormatKind
-from ..common.abstract_padding import AbstractPadding
+from ..common.abstract.abstract_padding import AbstractPadding
 
 _TPadding = TypeVar(name="_TPadding", bound="Padding")
 

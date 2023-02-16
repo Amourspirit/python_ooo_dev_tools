@@ -4,7 +4,7 @@ Modele for managing paragraph breaks.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, overload, cast, Type, TypeVar
+from typing import Any, Tuple, overload, Type, TypeVar
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
@@ -14,6 +14,7 @@ from .....utils import props as mProps
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleBase
 from ....writer.style.lst import StyleListKind as StyleListKind
+from ...common.props.list_style_props import ListStyleProps
 
 # from ...events.args.key_val_cancel_args import KeyValCancelArgs
 
@@ -57,23 +58,23 @@ class ListStyle(StyleBase):
             # if list_style is StyleListKind and it is StyleListKind.NONE then str will be empty string
             str_style = str(list_style)
             if str_style:
-                init_vals["NumberingStyleName"] = str_style
+                init_vals[self._props.name] = str_style
             else:
-                init_vals["NumberingStyleName"] = ""
-                init_vals["NumberingStartValue"] = -1
-                init_vals["ParaIsNumberingRestart"] = False
+                init_vals[self._props.name] = ""
+                init_vals[self._props.value] = -1
+                init_vals[self._props.restart] = False
 
-        if not num_start is None and not "NumberingStartValue" in init_vals:
+        if not num_start is None and not self._props.value in init_vals:
             # ignore num_start if NumberingStartValue = -1 due to no style
             if num_start == -1:
-                init_vals["NumberingStartValue"] = -1
-                init_vals["ParaIsNumberingRestart"] = False
+                init_vals[self._props.value] = -1
+                init_vals[self._props.restart] = False
             elif num_start < -1:
-                init_vals["NumberingStartValue"] = -1
-                init_vals["ParaIsNumberingRestart"] = True
+                init_vals[self._props.value] = -1
+                init_vals[self._props.restart] = True
             elif num_start >= 0:
-                init_vals["NumberingStartValue"] = num_start
-                init_vals["ParaIsNumberingRestart"] = True
+                init_vals[self._props.value] = num_start
+                init_vals[self._props.restart] = True
 
         super().__init__(**init_vals)
 
@@ -103,8 +104,11 @@ class ListStyle(StyleBase):
         Returns:
             None:
         """
+        super().apply(obj, **kwargs)
+
+    def _props_set(self, obj: object, **kwargs: Any) -> None:
         try:
-            super().apply(obj, **kwargs)
+            super()._props_set(obj, **kwargs)
         except mEx.MultiError as e:
             mLo.Lo.print(f"{self.__class__.__name__}.apply(): Unable to set Property")
             for err in e.errors:
@@ -137,9 +141,9 @@ class ListStyle(StyleBase):
             if not val is None:
                 o._set(key, val)
 
-        set_prop("NumberingStyleName", inst)
-        set_prop("NumberingStartValue", inst)
-        set_prop("ParaIsNumberingRestart", inst)
+        set_prop(inst._props.name, inst)
+        set_prop(inst._props.value, inst)
+        set_prop(inst._props.restart, inst)
 
         return inst
 
@@ -185,7 +189,7 @@ class ListStyle(StyleBase):
         """Gets instance with restart numbers set"""
         cp = self.copy()
         cp.prop_num_start = -1
-        cp._set("ParaIsNumberingRestart", True)
+        cp._set(self._props.restart, True)
         return cp
 
     # endregion Style Properties
@@ -199,19 +203,19 @@ class ListStyle(StyleBase):
     @property
     def prop_list_style(self) -> str | None:
         """Gets/Sets List Style"""
-        return self._get("NumberingStyleName")
+        return self._get(self._props.name)
 
     @prop_list_style.setter
     def prop_list_style(self, value: str | StyleListKind | None) -> None:
         if value is None:
-            self._remove("NumberingStyleName")
+            self._remove(self._props.name)
             return
         str_val = str(value)
         if not str_val:
             # empty string
-            self._remove("NumberingStyleName")
+            self._remove(self._props.name)
             return
-        self._set("NumberingStyleName", value)
+        self._set(self._props.name, value)
 
     @property
     def prop_num_start(self) -> int | None:
@@ -221,23 +225,33 @@ class ListStyle(StyleBase):
         If Less then zero then restart numbering at current paragraph is consider to be ``False``;
         Otherewise; restart numbering is considered to be ``True``.
         """
-        return self._get("NumberingStartValue")
+        return self._get(self._props.value)
 
     @prop_num_start.setter
     def prop_num_start(self, value: int | None) -> None:
         if value is None:
-            self._remove("NumberingStartValue")
-            self._remove("ParaIsNumberingRestart")
+            self._remove(self._props.value)
+            self._remove(self._props.restart)
             return
         if value == -1:
-            self._set("NumberingStartValue", -1)
-            self._set("ParaIsNumberingRestart", False)
+            self._set(self._props.value, -1)
+            self._set(self._props.restart, False)
             return
         if value < -1:
-            self._set("NumberingStartValue", -1)
-            self._set("ParaIsNumberingRestart", True)
-        self._set("NumberingStartValue", value)
-        self._set("ParaIsNumberingRestart", True)
+            self._set(self._props.value, -1)
+            self._set(self._props.restart, True)
+        self._set(self._props.value, value)
+        self._set(self._props.restart, True)
+
+    @property
+    def _props(self) -> ListStyleProps:
+        try:
+            return self._props_list_style
+        except AttributeError:
+            self._props_list_style = ListStyleProps(
+                name="NumberingStyleName", value="NumberingStartValue", restart="ParaIsNumberingRestart"
+            )
+        return self._props_list_style
 
     @static_prop
     def default() -> ListStyle:  # type: ignore[misc]
@@ -246,9 +260,9 @@ class ListStyle(StyleBase):
             return ListStyle._DEFAULT_INST
         except AttributeError:
             ls = ListStyle()
-            ls._set("NumberingStyleName", "")
-            ls._set("ParaIsNumberingRestart", False)
-            ls._set("NumberingStartValue", -1)
+            ls._set(ls._props.name, "")
+            ls._set(ls._props.restart, False)
+            ls._set(ls._props.value, -1)
             ls._is_default_inst = True
             ListStyle._DEFAULT_INST = ls
         return ListStyle._DEFAULT_INST

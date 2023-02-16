@@ -15,7 +15,8 @@ from ....utils.type_var import T
 from ....utils.unit_convert import UnitConvert, Length
 from ...kind.format_kind import FormatKind
 from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent
-from ..common.border_table_props import BorderTableProps, PropPair
+from ..common.props.border_table_props import BorderTableProps
+from ..common.props.prop_pair import PropPair
 from .side import Side as Side
 
 from ooo.dyn.table.table_border import TableBorder

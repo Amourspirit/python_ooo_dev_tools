@@ -13,7 +13,7 @@ from .....exceptions import ex as mEx
 from .....meta.static_prop import static_prop
 from .....utils import lo as mLo
 from .....utils import props as mProps
-from .....utils.data_type.angle import Angle
+from .....utils.data_type.angle import Angle as Angle
 from .....utils.data_type.intensity import Intensity as Intensity
 from .....utils.unit_convert import UnitConvert
 from ....kind.format_kind import FormatKind
@@ -113,7 +113,11 @@ class FontPosition(StyleBase):
 
     # region methods
     def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.style.CharacterProperties", "com.sun.star.style.CharacterStyle")
+        return (
+            "com.sun.star.style.CharacterProperties",
+            "com.sun.star.style.CharacterStyle",
+            "com.sun.star.style.ParagraphStyle",
+        )
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:

@@ -5,16 +5,17 @@ Module for Shadow format (``ShadowFormat``) struct.
 """
 # region imports
 from __future__ import annotations
-from typing import Dict, Tuple, Type, cast, overload, TypeVar
+from typing import Any, Dict, Tuple, Type, cast, overload, TypeVar
 
 import uno
 from ....events.event_singleton import _Events
 from ....meta.static_prop import static_prop
 from ....utils import props as mProps
-from ....utils.color import Color
-from ....utils.color import CommonColor
+from ....utils import lo as mLo
+from ....utils.color import Color, StandardColor
+from ....exceptions import ex as mEx
 from ...kind.format_kind import FormatKind
-from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent
+from ...style_base import StyleBase, CancelEventArgs
 from ....utils.unit_convert import UnitConvert, Length
 
 from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
@@ -40,7 +41,7 @@ class ShadowStruct(StyleBase):
         self,
         *,
         location: ShadowLocation = ShadowLocation.BOTTOM_RIGHT,
-        color: Color = CommonColor.GRAY,
+        color: Color = StandardColor.GRAY,
         transparent: bool = False,
         width: float = 1.76,
     ) -> None:
@@ -49,7 +50,7 @@ class ShadowStruct(StyleBase):
 
         Args:
             location (ShadowLocation, optional): contains the location of the shadow. Default to ``ShadowLocation.BOTTOM_RIGHT``.
-            color (Color, optional):contains the color value of the shadow. Defaults to ``CommonColor.GRAY``.
+            color (Color, optional):contains the color value of the shadow. Defaults to ``StandardColor.GRAY``.
             transparent (bool, optional): Shadow transparency. Defaults to False.
             width (float, optional): contains the size of the shadow (in mm units). Defaults to ``1.76``.
 
@@ -158,29 +159,20 @@ class ShadowStruct(StyleBase):
         Returns:
             None:
         """
-        if not self._is_valid_obj(obj):
-            # will not apply on this class but may apply on child classes
-            self._print_not_valid_obj("apply()")
-            return
-
         keys = {"prop": self._get_property_name()}
         if "keys" in kwargs:
             keys.update(kwargs["keys"])
 
-        cargs = CancelEventArgs(source=f"{self.apply.__qualname__}")
-        cargs.event_data = self
-        self.on_applying(cargs)
-        if cargs.cancel:
-            return
-        _Events().trigger(FormatNamedEvent.STYLE_APPLYING, cargs)
-        if cargs.cancel:
-            return
-
         shadow = self.get_uno_struct()
-        mProps.Props.set(obj, **{keys["prop"]: shadow})
-        eargs = EventArgs.from_args(cargs)
-        self.on_applied(eargs)
-        _Events().trigger(FormatNamedEvent.STYLE_APPLIED, eargs)
+        super().apply(obj=obj, override_dv={keys["prop"]: shadow})
+
+    def _props_set(self, obj: object, **kwargs: Any) -> None:
+        try:
+            super()._props_set(obj, **kwargs)
+        except mEx.MultiError as e:
+            mLo.Lo.print(f"Hatch.apply(): Unable to set Property")
+            for err in e.errors:
+                mLo.Lo.print(f"  {err}")
 
     # endregion apply()
 

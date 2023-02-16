@@ -30,7 +30,7 @@ class Highlight(StyleBase):
         Constructor
 
         Args:
-            color (Color, optional): Highlight Color
+            color (Color, optional): Highlight Color. A value of ``-1`` Set color to Transparent.
 
         Returns:
             None:
@@ -46,7 +46,11 @@ class Highlight(StyleBase):
         super().__init__(**init_vals)
 
     def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.style.CharacterProperties", "com.sun.star.style.CharacterStyle")
+        return (
+            "com.sun.star.style.CharacterProperties",
+            "com.sun.star.style.CharacterStyle",
+            "com.sun.star.style.ParagraphStyle",
+        )
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:

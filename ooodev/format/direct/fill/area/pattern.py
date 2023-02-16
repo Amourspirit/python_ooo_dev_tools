@@ -7,6 +7,9 @@ from __future__ import annotations
 from typing import Any, Tuple, overload, Type, TypeVar
 
 import uno
+from com.sun.star.awt import XBitmap
+
+from ooo.dyn.drawing.fill_style import FillStyle as FillStyle
 
 from .....events.args.key_val_cancel_args import KeyValCancelArgs
 from .....exceptions import ex as mEx
@@ -17,9 +20,6 @@ from ....preset import preset_pattern as mPattern
 from ....preset.preset_pattern import PresetPatternKind as PresetPatternKind
 from ....style_base import StyleBase
 
-from com.sun.star.awt import XBitmap
-
-from ooo.dyn.drawing.fill_style import FillStyle as FillStyle
 
 # https://github.com/LibreOffice/core/blob/6379414ca34527fbe69df2035d49d651655317cd/vcl/source/filter/ipict/ipict.cxx#L92
 
@@ -118,6 +118,7 @@ class Pattern(StyleBase):
             "com.sun.star.text.TextContent",
             "com.sun.star.beans.PropertySet",
             "com.sun.star.style.ParagraphStyle",
+            "com.sun.star.style.PageStyle",
         )
 
     # region apply()
@@ -163,15 +164,15 @@ class Pattern(StyleBase):
 
     # region Static Methods
     @classmethod
-    def from_preset(cls, preset: PresetPatternKind) -> Pattern:
+    def from_preset(cls: Type[_TPattern], preset: PresetPatternKind) -> _TPattern:
         """
-        Gets an instance from a preset
+        Gets an instance from a preset.
 
         Args:
-            preset (PatternKind): Preset
+            preset (PatternKind): Preset.
 
         Returns:
-            Pattern: Instance from preset.
+            Pattern: ``Pattern`` instance from preset.
         """
         name = str(preset)
         nu = super(Pattern, cls).__new__(cls)

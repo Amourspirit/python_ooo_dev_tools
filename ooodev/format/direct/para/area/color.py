@@ -57,6 +57,7 @@ class Color(StyleBase):
             "com.sun.star.drawing.FillProperties",
             "com.sun.star.text.TextContent",
             "com.sun.star.style.ParagraphStyle",
+            "com.sun.star.style.PageStyle",
         )
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
@@ -75,7 +76,7 @@ class Color(StyleBase):
         Applies padding to ``obj``
 
         Args:
-            obj (object): UNO object that supports ``com.sun.star.style.ParagraphProperties`` service.
+            obj (object): UNO object.
 
         Returns:
             None:
@@ -95,19 +96,19 @@ class Color(StyleBase):
         Gets instance from object
 
         Args:
-            obj (object): UNO object that supports ``com.sun.star.drawing.FillProperties`` service.
+            obj (object): UNO object.
 
         Raises:
             NotSupportedError: If ``obj`` is not supported.
+
         Returns:
             Color: ``Color`` instance that represents ``obj`` Color properties.
         """
         nu = super(Color, cls).__new__(cls)
         nu.__init__()
 
-        # inst = Color()
         if not nu._is_valid_obj(obj):
-            raise mEx.NotSupportedError("Object does not suport conversion to color")
+            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
         color = mProps.Props.get(obj, "FillColor", None)
 

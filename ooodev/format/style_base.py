@@ -920,7 +920,7 @@ class StyleModifyMulti(StyleMulti):
             mLo.Lo.print(f"{self.__class__.__name__}.apply(): Not a Valid Document. Unable to set Style Property")
             return
         p = self.get_style_props(obj)
-        super()._apply_direct(p, override_dv={**self._get_properties()})
+        # super()._apply_direct(p, override_dv={**self._get_properties()})
         super().apply(p, **kwargs)
 
     # endregion apply()

@@ -5,19 +5,15 @@ Module for managing character border side.
 """
 # region imports
 from __future__ import annotations
-from typing import Tuple, Type, cast, TypeVar
+from typing import Tuple
 
 import uno
-from ...common.abstract_sides import AbstractSides
-from .....exceptions import ex as mEx
+from ...common.abstract.abstract_sides import AbstractSides
+from ...common.props.border_props import BorderProps
 from ....kind.format_kind import FormatKind
 from ...structs.side import Side as Side, BorderLineStyleEnum as BorderLineStyleEnum
 
-from ooo.dyn.table.border_line2 import BorderLine2
-
 # endregion imports
-
-_TSides = TypeVar(name="_TSides", bound="Sides")
 
 
 class Sides(AbstractSides):
@@ -35,33 +31,6 @@ class Sides(AbstractSides):
     def _supported_services(self) -> Tuple[str, ...]:
         return ("com.sun.star.style.CharacterProperties", "com.sun.star.style.CharacterStyle")
 
-    @classmethod
-    def from_obj(cls: Type[_TSides], obj: object) -> _TSides:
-        """
-        Gets instance from object properties
-
-        Args:
-            obj (object): UNO object that has supports ``com.sun.star.style.CharacterProperties`` service.
-
-        Raises:
-            NotSupportedServiceError: If ``obj`` does not support ``com.sun.star.style.CharacterProperties`` service.
-            PropertyNotFoundError: If ``obj`` does not have ``TableBorder2`` property.
-
-        Returns:
-            BorderTable: Border Table.
-        """
-        inst = super(Sides, cls).__new__(cls)
-        inst.__init__()
-        if not inst._is_valid_obj(obj):
-            raise mEx.NotSupportedServiceError(inst._supported_services()[0])
-
-        empty = BorderLine2()
-        for attr in inst.__border_properties:
-            b2 = cast(BorderLine2, getattr(obj, attr, empty))
-            side = Side.from_border2(b2)
-            inst._set(attr, side)
-        return inst
-
     # endregion methods
 
     # region Properties
@@ -69,5 +38,15 @@ class Sides(AbstractSides):
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
         return FormatKind.CHAR
+
+    @property
+    def _props(self) -> BorderProps:
+        try:
+            return self.__border_properties
+        except AttributeError:
+            self.__border_properties = BorderProps(
+                left="CharLeftBorder", top="CharTopBorder", right="CharRightBorder", bottom="CharBottomBorder"
+            )
+        return self.__border_properties
 
     # endregion Properties

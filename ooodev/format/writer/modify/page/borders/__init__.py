@@ -1,4 +1,8 @@
 import uno
-from .....direct.structs.side import Side as Side, BorderLineStyleEnum as BorderLineStyleEnum
+from ooo.dyn.table.border_line_style import BorderLineStyleEnum as BorderLineStyleEnum
+from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 from ....style.page.kind.style_page_kind import StylePageKind as StylePageKind
-from .borders import Borders as Borders
+from .....direct.structs.side import Side as Side, LineSize as LineSize, SideFlags as SideFlags
+from .....modify.page.border.padding import Padding as Padding
+from .....modify.page.border.sides import Sides as Sides
+from .....modify.page.border.shadow import Shadow as Shadow

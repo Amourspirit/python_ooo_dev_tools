@@ -6,6 +6,11 @@ Module for Paragraph Gradient Color.
 from __future__ import annotations
 from typing import Tuple, Type, cast, TypeVar
 
+import uno
+from ooo.dyn.drawing.fill_style import FillStyle
+from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
+from ooo.dyn.awt.gradient import Gradient as UNOGradient
+
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
 from .....meta.static_prop import static_prop
@@ -15,16 +20,13 @@ from .....utils.data_type.angle import Angle as Angle
 from .....utils.data_type.offset import Offset as Offset
 from .....utils.data_type.intensity import Intensity as Intensity
 from .....utils.data_type.intensity_range import IntensityRange as IntensityRange
-from .....utils.data_type.color_range import ColorRange
+from .....utils.data_type.color_range import ColorRange as ColorRange
 from ....kind.format_kind import FormatKind
 from ....preset import preset_gradient
 from ....preset.preset_gradient import PresetGradientKind as PresetGradientKind
 from ....style_base import StyleMulti
 from ...structs.gradient_struct import GradientStruct
 
-from ooo.dyn.drawing.fill_style import FillStyle
-from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
-from ooo.dyn.awt.gradient import Gradient as UNOGradient
 
 _TGradient = TypeVar(name="_TGradient", bound="Gradient")
 
@@ -35,6 +37,7 @@ class FillStyleStruct(GradientStruct):
             "com.sun.star.drawing.FillProperties",
             "com.sun.star.text.TextContent",
             "com.sun.star.style.ParagraphStyle",
+            "com.sun.star.style.PageStyle",
         )
 
     def _get_property_name(self) -> str:
@@ -121,6 +124,7 @@ class Gradient(StyleMulti):
             "com.sun.star.drawing.FillProperties",
             "com.sun.star.text.TextContent",
             "com.sun.star.style.ParagraphStyle",
+            "com.sun.star.style.PageStyle",
         )
 
     def _on_modifing(self, event: CancelEventArgs) -> None:

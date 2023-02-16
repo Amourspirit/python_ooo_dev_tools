@@ -4,7 +4,7 @@ Module for Fill Transparency.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Any, cast, Type, TypeVar
+from typing import Any, Tuple, cast, Type, TypeVar
 import uno
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
@@ -41,6 +41,12 @@ class Transparency(StyleBase):
     # endregion Internal Methods
 
     # region Overrides
+    def _supported_services(self) -> Tuple[str, ...]:
+        return (
+            "com.sun.star.drawing.FillProperties",
+            "com.sun.star.text.TextContent",
+            "com.sun.star.style.ParagraphStyle",
+        )
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:

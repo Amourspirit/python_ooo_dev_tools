@@ -32,6 +32,7 @@ class Spacing(StyleBase):
 
     def __init__(
         self,
+        *,
         above: float | None = None,
         below: float | None = None,
         style_no_space: bool | None = None,

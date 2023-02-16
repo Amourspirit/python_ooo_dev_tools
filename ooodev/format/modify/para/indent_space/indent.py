@@ -1,8 +1,8 @@
 from __future__ import annotations
-from typing import Type, cast
+from typing import cast
 import uno
 from ....writer.style.para.kind import StyleParaKind as StyleParaKind
-from ..para_style_base_multi import ParaStyleBaseMulti, _T
+from ..para_style_base_multi import ParaStyleBaseMulti
 from ....direct.para.indent_space.indent import Indent as DirectIndent
 
 
@@ -15,6 +15,7 @@ class Indent(ParaStyleBaseMulti):
 
     def __init__(
         self,
+        *,
         before: float | None = None,
         after: float | None = None,
         first: float | None = None,
@@ -61,7 +62,7 @@ class Indent(ParaStyleBaseMulti):
         Returns:
             Indent: ``Indent`` instance from document properties.
         """
-        inst = cast(Indent, super(Indent, cls).__new__(cls))
+        inst = super(Indent, cls).__new__(cls)
         inst.__init__(style_name=style_name, style_family=style_family)
         direct = DirectIndent.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct, *direct.get_attrs())
@@ -78,7 +79,7 @@ class Indent(ParaStyleBaseMulti):
 
     @property
     def prop_inner(self) -> DirectIndent:
-        """Gets Inner Indent Instance"""
+        """Gets Inner Indent instance"""
         try:
             return self._direct_inner
         except AttributeError:
