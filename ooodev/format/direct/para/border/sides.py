@@ -8,7 +8,8 @@ from __future__ import annotations
 from typing import Tuple
 
 import uno
-from ...common.abstract_sides import AbstractSides, BorderProps
+from ...common.abstract.abstract_sides import AbstractSides
+from ...common.props.border_props import BorderProps
 from ....kind.format_kind import FormatKind
 from ...structs.side import Side as Side, LineSize as LineSize, SideFlags as SideFlags
 
@@ -30,7 +31,7 @@ class Sides(AbstractSides):
 
     # region methods
     def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.style.ParagraphProperties", "com.sun.star.style.ParagraphStyle")
+        return ("com.sun.star.style.ParagraphProperties", "com.sun.star.style.ParagraphStyle", "com.sun.star.style.PageStyle")
 
     # endregion methods
 

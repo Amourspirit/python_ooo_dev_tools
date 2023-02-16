@@ -8,8 +8,8 @@ from typing import Tuple
 
 from .....meta.static_prop import static_prop
 from ....kind.format_kind import FormatKind
-from ...common.abstract_padding import AbstractPadding
-from ...common.border_props import BorderProps
+from ...common.abstract.abstract_padding import AbstractPadding
+from ...common.props.border_props import BorderProps
 
 
 class Padding(AbstractPadding):

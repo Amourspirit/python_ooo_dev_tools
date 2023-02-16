@@ -6,13 +6,13 @@ Modele for managing paragraph padding.
 from __future__ import annotations
 from typing import Tuple, cast, overload, Type, TypeVar
 
-from ....events.args.cancel_event_args import CancelEventArgs
-from ....utils import props as mProps
-from ....exceptions import ex as mEx
-from ....utils import lo as mLo
-from ...kind.format_kind import FormatKind
-from ...style_base import StyleBase
-from .border_props import BorderProps as BorderProps
+from .....events.args.cancel_event_args import CancelEventArgs
+from .....utils import props as mProps
+from .....exceptions import ex as mEx
+from .....utils import lo as mLo
+from ....kind.format_kind import FormatKind
+from ....style_base import StyleBase
+from ..props.border_props import BorderProps as BorderProps
 
 _TAbstractPadding = TypeVar(name="_TAbstractPadding", bound="AbstractPadding")
 

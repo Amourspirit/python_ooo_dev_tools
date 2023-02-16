@@ -43,6 +43,7 @@ class Hatch(StyleMulti):
 
     def __init__(
         self,
+        *,
         style: HatchStyle = HatchStyle.SINGLE,
         color: Color = Color(0),
         space: float = 0.0,
@@ -98,6 +99,7 @@ class Hatch(StyleMulti):
             "com.sun.star.drawing.FillProperties",
             "com.sun.star.text.TextContent",
             "com.sun.star.beans.PropertySet",
+            "com.sun.star.style.PageStyle",
         )
 
     def _container_get_service_name(self) -> str:
@@ -137,10 +139,10 @@ class Hatch(StyleMulti):
     @classmethod
     def from_preset(cls: Type[_THatch], preset: PresetHatchKind) -> _THatch:
         """
-        Gets an instance from a preset
+        Gets an instance from a preset.
 
         Args:
-            preset (PatternKind): Preset
+            preset (PresetHatchKind): Preset.
 
         Returns:
             Hatch: Instance from preset.
@@ -173,11 +175,15 @@ class Hatch(StyleMulti):
         fc = FillColor.from_obj(obj)
 
         inst = super(Hatch, cls).__new__(cls)
+        if hatch.Angle > 0:
+            angle = round(hatch.Angle / 10)
+        else:
+            angle = 0
         inst.__init__(
             style=hatch.Style,
             color=hatch.Color,
             space=UnitConvert.convert_mm100_mm(hatch.Distance),
-            angle=hatch.Angle,
+            angle=angle,
             bg_color=fc.prop_color,
         )
         return inst

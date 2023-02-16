@@ -6,6 +6,9 @@ Module for Fill Gradient Color.
 from __future__ import annotations
 from typing import Any, Tuple, cast, Type, TypeVar
 import uno
+from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
+from ooo.dyn.awt.gradient import Gradient as UNOGradient
+
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....events.args.key_val_cancel_args import KeyValCancelArgs
 from .....exceptions import ex as mEx
@@ -21,9 +24,6 @@ from ....kind.format_kind import FormatKind
 from ....style_base import StyleMulti
 from ...structs.gradient_struct import GradientStruct
 
-
-from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
-from ooo.dyn.awt.gradient import Gradient as UNOGradient
 
 # from ooo.dyn.drawing.fill_style import FillStyle
 
@@ -42,6 +42,7 @@ class FillTransparentGrad(GradientStruct):
             "com.sun.star.drawing.FillProperties",
             "com.sun.star.text.TextContent",
             "com.sun.star.style.ParagraphStyle",
+            "com.sun.star.style.PageStyle",
         )
 
     def _get_property_name(self) -> str:
@@ -156,6 +157,7 @@ class Gradient(StyleMulti):
             "com.sun.star.drawing.FillProperties",
             "com.sun.star.text.TextContent",
             "com.sun.star.style.ParagraphStyle",
+            "com.sun.star.style.PageStyle",
         )
 
     def _on_modifing(self, event: CancelEventArgs) -> None:

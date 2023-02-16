@@ -23,3 +23,7 @@ class IntensityRange:
             f"{self}",
             f"End value of {self.end} is out of range. Value must be from 0 to 100.",
         )
+
+    def swap(self) -> IntensityRange:
+        """Gets an instance with values swaped."""
+        return IntensityRange(self.end, self.start)

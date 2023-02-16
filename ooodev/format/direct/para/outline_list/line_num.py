@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from .....meta.static_prop import static_prop
 from ....kind.format_kind import FormatKind
-from ...common.abstract_line_number import AbstractLineNumber, LineNumeProps
+from ...common.abstract.abstract_line_number import AbstractLineNumber, LineNumeProps
 
 # from ...events.args.key_val_cancel_args import KeyValCancelArgs
 

@@ -15,7 +15,10 @@ class Shadow(ShadowStruct):
 
     def _supported_services(self) -> Tuple[str, ...]:
         # will affect apply() on parent class.
-        return ("com.sun.star.style.CharacterProperties", "com.sun.star.style.ParagraphStyle")
+        return (
+            "com.sun.star.style.CharacterProperties",
+            "com.sun.star.style.ParagraphStyle",
+        )
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:

@@ -4,7 +4,7 @@ import uno
 from ....writer.style.para.kind import StyleParaKind as StyleParaKind
 from ..para_style_base_multi import ParaStyleBaseMulti
 from ....kind.format_kind import FormatKind
-from ....direct.common.abstract_line_number import AbstractLineNumber, LineNumeProps
+from ....direct.common.abstract.abstract_line_number import AbstractLineNumber, LineNumeProps
 
 
 class DirectLineNum(AbstractLineNumber):
