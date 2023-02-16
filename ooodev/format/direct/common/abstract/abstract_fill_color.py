@@ -46,9 +46,13 @@ class AbstractColor(StyleBase):
         if color >= 0:
             init_vals[self._props.color] = color
             init_vals[self._props.style] = FillStyle.SOLID
+            if self._props.bg:
+                init_vals[self._props.bg] = False
         else:
             init_vals[self._props.color] = -1
             init_vals[self._props.style] = FillStyle.NONE
+            if self._props.bg:
+                init_vals[self._props.bg] = True
 
         super().__init__(**init_vals)
 
@@ -134,9 +138,13 @@ class AbstractColor(StyleBase):
         if value >= 0:
             self._set(self._props.color, value)
             self._set(self._props.style, FillStyle.SOLID)
+            if self._props.bg:
+                self._set(self._props.bg, False)
         else:
             self._set(self._props.color, -1)
             self._set(self._props.style, FillStyle.NONE)
+            if self._props.bg:
+                self._set(self._props.bg, True)
 
     @property
     def _props(self) -> FillColorProps:
