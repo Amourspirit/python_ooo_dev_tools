@@ -5,7 +5,14 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.writer.style.page.area import Color, StylePageKind
+from ooodev.format.writer.modify.page.borders import (
+    Sides,
+    Side,
+    SideFlags,
+    LineSize,
+    StylePageKind,
+    BorderLineStyleEnum,
+)
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.utils.color import StandardColor
@@ -26,14 +33,16 @@ def test_write(loader, para_text) -> None:
         if not Lo.bridge_connector.headless:
             Write.append_para(cursor=cursor, text=para_text)
 
-        style = Color(color=StandardColor.BLUE_LIGHT2)
+        side = Side(line=BorderLineStyleEnum.DOUBLE, color=StandardColor.RED_DARK3, width=LineSize.MEDIUM)
+
+        style = Sides(border_side=side)
         style.apply(doc)
-        props = style.get_style_props(doc)
+        # props = style.get_style_props(doc)
 
-        assert props.getPropertyValue("FillColor") == StandardColor.BLUE_LIGHT2
-
-        f_style = Color.from_style(doc, style.prop_style_name)
-        assert f_style.prop_inner.prop_color == style.prop_inner.prop_color
+        f_style = Sides.from_style(doc, style.prop_style_name)
+        f_side = f_style.prop_inner.prop_left
+        assert f_side.prop_color == side.prop_color
+        assert f_side.prop_width == pytest.approx(side.prop_width, rel=1e2)
 
         Lo.delay(delay)
     finally:

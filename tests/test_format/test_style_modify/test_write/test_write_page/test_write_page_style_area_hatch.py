@@ -5,7 +5,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.writer.style.page.area import Pattern, PresetPatternKind, StylePageKind
+from ooodev.format.writer.modify.page.area import Hatch, PresetHatchKind, StylePageKind
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
@@ -26,23 +26,23 @@ def test_write(loader, para_text) -> None:
             Write.append_para(cursor=cursor, text=para_text)
 
         presets = (
-            PresetPatternKind.DASHED_DOTTED_UPWARD_DIAGONAL,
-            PresetPatternKind.DIAGONAL_BRICK,
-            PresetPatternKind.DIVOT,
-            PresetPatternKind.SHINGLE,
-            PresetPatternKind.ZIG_ZAG,
+            PresetHatchKind.BLACK_0_DEGREES,
+            PresetHatchKind.BLACK_180_DEGREES_CROSSED,
+            PresetHatchKind.BLUE_45_DEGREES,
+            PresetHatchKind.GREEN_90_DEGREES_TRIPLE,
+            PresetHatchKind.RED_45_DEGREES_NEG_TRIPLE,
         )
-
         for preset in presets:
 
-            style = Pattern.from_preset(preset=preset)
+            style = Hatch.from_preset(preset=preset)
             style.apply(doc)
             # props = style.get_style_props(doc)
             # fp = cast("FillProperties", props)
 
-            f_style = Pattern.from_style(doc, style.prop_style_name)
-            assert f_style.prop_inner.prop_tile == style.prop_inner.prop_tile
-            assert f_style.prop_inner.prop_stretch == style.prop_inner.prop_stretch
+            f_style = Hatch.from_style(doc, style.prop_style_name)
+            assert f_style.prop_inner.prop_angle == style.prop_inner.prop_angle
+            assert f_style.prop_inner.prop_bg_color == style.prop_inner.prop_bg_color
+            assert f_style.prop_inner.prop_style == style.prop_inner.prop_style
 
         Lo.delay(delay)
     finally:

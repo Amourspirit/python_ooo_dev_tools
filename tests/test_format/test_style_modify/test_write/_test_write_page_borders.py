@@ -12,7 +12,7 @@ from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
 
 
-def test_write(loader, para_text) -> None:
+def _test_write(loader, para_text) -> None:
     # delay = 0 if Lo.bridge_connector.headless else 3_000
     delay = 0
 

@@ -5,10 +5,10 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.writer.modify.page.area.color import Color, StylePageKind
-from ooodev.format import CommonColor
+from ooodev.format.writer.modify.page.area import Color, StylePageKind
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
+from ooodev.utils.color import StandardColor
 from ooodev.office.write import Write
 
 
@@ -20,22 +20,20 @@ def test_write(loader, para_text) -> None:
     if not Lo.bridge_connector.headless:
         GUI.set_visible()
         Lo.delay(500)
-        GUI.zoom(GUI.ZoomEnum.ZOOM_150_PERCENT)
+        GUI.zoom(GUI.ZoomEnum.ENTIRE_PAGE)
     try:
         cursor = Write.get_cursor(doc)
-        Write.append_para(cursor=cursor, text=para_text)
+        if not Lo.bridge_connector.headless:
+            Write.append_para(cursor=cursor, text=para_text)
 
-        style = Color(CommonColor.LIGHT_GREEN)
+        style = Color(color=StandardColor.BLUE_LIGHT2)
         style.apply(doc)
+        props = style.get_style_props(doc)
 
-        cobj = Color.from_style(doc, style.prop_style_name)
-        assert cobj.prop_color == style.prop_color
+        assert props.getPropertyValue("FillColor") == StandardColor.BLUE_LIGHT2
 
-        style = Color(CommonColor.DIM_GRAY, style_name=StylePageKind.FIRST_PAGE)
-        style.apply(doc)
-
-        cobj = Color.from_style(doc, style.prop_style_name)
-        assert cobj.prop_color == style.prop_color
+        f_style = Color.from_style(doc, style.prop_style_name)
+        assert f_style.prop_inner.prop_color == style.prop_inner.prop_color
 
         Lo.delay(delay)
     finally:

@@ -25,7 +25,11 @@ class Padding(AbstractPadding):
 
     # region methods
     def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.style.ParagraphProperties", "com.sun.star.style.ParagraphStyle")
+        return (
+            "com.sun.star.style.ParagraphProperties",
+            "com.sun.star.style.ParagraphStyle",
+            "com.sun.star.style.PageStyle",
+        )
 
     # endregion methods
 

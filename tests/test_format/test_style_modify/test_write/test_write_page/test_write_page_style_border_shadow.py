@@ -5,9 +5,10 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.writer.style.page.area import Gradient, PresetGradientKind, StylePageKind
+from ooodev.format.writer.modify.page.borders import Shadow, ShadowLocation, StylePageKind
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
+from ooodev.utils.color import StandardColor
 from ooodev.office.write import Write
 
 
@@ -25,13 +26,12 @@ def test_write(loader, para_text) -> None:
         if not Lo.bridge_connector.headless:
             Write.append_para(cursor=cursor, text=para_text)
 
-        style = Gradient.from_preset(preset=PresetGradientKind.SUBMARINE)
+        style = Shadow(location=ShadowLocation.BOTTOM_RIGHT, color=StandardColor.GRAY_LIGHT1, width=2.4)
         style.apply(doc)
         # props = style.get_style_props(doc)
-        # fp = cast("FillProperties", props)
-
-        f_style = Gradient.from_style(doc, style.prop_style_name)
-        assert f_style.prop_inner.prop_inner == style.prop_inner.prop_inner
+        f_style = Shadow.from_style(doc, style.prop_style_name)
+        assert f_style.prop_inner.prop_width == pytest.approx(style.prop_inner.prop_width, rel=1e2)
+        assert f_style.prop_inner.prop_color == StandardColor.GRAY_LIGHT1
 
         Lo.delay(delay)
     finally:

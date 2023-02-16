@@ -3,7 +3,6 @@ from typing import cast
 import uno
 from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
 
-from .....utils import color as mColor
 from ....writer.style.page.kind.style_page_kind import StylePageKind as StylePageKind
 from ..page_style_base_multi import PageStyleBaseMulti
 from .....utils.data_type.angle import Angle as Angle
