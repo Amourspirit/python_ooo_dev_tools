@@ -28,7 +28,7 @@ class PaperFormat(PageStyleBaseMulti):
 
         Args:
             size (SizeMM, optional): Width and height in ``mm`` units. Defaults to Letter size in Portrait mode.
-            style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to. Deftult is Default Paragraph Style.
+            style_name (StyleParaKind, str, optional): Specifies the Page Style that instance applies to. Deftult is Default Page Style.
             style_family (str, optional): Style family. Defatult ``PageStyles``.
 
         Returns:

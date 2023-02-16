@@ -138,7 +138,7 @@ class AbstractLineNumber(StyleBase):
         Gets a copy of instance with before list style set or removed
 
         Args:
-            value (int | None): List style value.
+            value (int): List style value.
                 If ``0`` then this paragraph is include in line numbering.
                 If ``-1`` then this paragraph is excluded in line numbering.
                 If greater then zero then this paragraph is included in line numbering and the numbering is restarted with ``value``.

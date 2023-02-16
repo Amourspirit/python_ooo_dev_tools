@@ -34,7 +34,7 @@ class Margins(PageStyleBaseMulti):
             top (float, optional): Top Margin Value in ``mm`` units.
             bottom (float, optional): Bottom Margin Value in ``mm`` units.
             gutter (float, optional): Gutter Margin Value in ``mm`` units.
-            style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to. Deftult is Default Paragraph Style.
+            style_name (StyleParaKind, str, optional): Specifies the Page Style that instance applies to. Deftult is Default Page Style.
             style_family (str, optional): Style family. Defatult ``PageStyles``.
 
         Returns:

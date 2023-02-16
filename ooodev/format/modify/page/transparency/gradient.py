@@ -36,7 +36,7 @@ class Gradient(PageStyleBaseMulti):
 
         Args:
             value (Intensity, int, optional): Specifies the transparency value from ``0`` to ``100``.
-            style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to. Deftult is Default Paragraph Style.
+            style_name (StyleParaKind, str, optional): Specifies the Page Style that instance applies to. Deftult is Default Page Style.
             style_family (str, optional): Style family. Defatult ``PageStyles``.
 
         Returns:

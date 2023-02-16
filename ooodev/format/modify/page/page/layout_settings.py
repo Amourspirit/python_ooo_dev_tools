@@ -35,7 +35,7 @@ class LayoutSettings(PageStyleBaseMulti):
             numbers (NumberingTypeEnum, optional): Specifies the default numbering type for this page.
             ref_style (str, StyleParaKind, optional): Specifies the name of the paragraph style that is used as reference of the register mode.
             right_gutter (bool, optional): Specifies that the page gutter shall be placed on the right side of the page.
-            style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to. Deftult is Default Paragraph Style.
+            style_name (StyleParaKind, str, optional): Specifies the Page Style that instance applies to. Deftult is Default Page Style.
             style_family (str, optional): Style family. Defatult ``PageStyles``.
 
         Returns:
