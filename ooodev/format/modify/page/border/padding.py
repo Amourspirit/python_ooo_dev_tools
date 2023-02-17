@@ -29,12 +29,12 @@ class Padding(PageStyleBaseMulti):
         Constructor
 
         Args:
-            left (float, optional): Paragraph left padding (in mm units).
-            right (float, optional): Paragraph right padding (in mm units).
-            top (float, optional): Paragraph top padding (in mm units).
-            bottom (float, optional): Paragraph bottom padding (in mm units).
-            padding_all (float, optional): Paragraph left, right, top, bottom padding (in mm units). If argument is present then ``left``, ``right``, ``top``, and ``bottom`` arguments are ignored.
-            style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to. Deftult is Default Paragraph Style.
+            left (float, optional): Page left padding (in mm units).
+            right (float, optional): Page right padding (in mm units).
+            top (float, optional): Page top padding (in mm units).
+            bottom (float, optional): Page bottom padding (in mm units).
+            padding_all (float, optional): Page left, right, top, bottom padding (in mm units). If argument is present then ``left``, ``right``, ``top``, and ``bottom`` arguments are ignored.
+            style_name (StyleParaKind, str, optional): Specifies the Page Style that instance applies to. Deftult is Default Page Style.
             style_family (str, optional): Style family. Defatult ``PageStyles``.
 
         Returns:

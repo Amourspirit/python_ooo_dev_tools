@@ -39,6 +39,7 @@ from . import date_time_util as mDate
 from . import file_io as mFileIO
 from . import lo as mLo
 from . import props as mProps
+from . import unit_convert as mConvert
 from ..events.args.event_args import EventArgs
 from ..events.event_singleton import _Events
 from ..events.lo_named_event import LoNamedEvent
@@ -1340,6 +1341,37 @@ class Info(metaclass=StaticProperty):
         print(f"{obj_name} Interfaces ({len(intfs)})")
         for s in intfs:
             print(f"  {s}")
+
+    @staticmethod
+    def show_conversion_values(value: Any, frm: mConvert.Length) -> None:
+        """
+        Prints values of conversions to terminal.
+
+        Args:
+            value (Any): Any numeric value
+            frm (mConvert.Length): The unit type of ``value``.
+
+        Note:
+            Useful to help determine what different conversion of ``value`` are.
+
+        .. versionadded:: 0.9.0
+        """
+        lengths = cast(
+            List[mConvert.Length],
+            [
+                getattr(mConvert.Length, x)
+                for x in dir(mConvert.Length)
+                if x.isupper()
+                and getattr(mConvert.Length, x).value < mConvert.Length.COUNT
+                and getattr(mConvert.Length, x).value >= 0
+            ],
+        )
+        for length in lengths:
+            try:
+                result = mConvert.UnitConvert.convert(num=value, frm=frm, to=length)
+                print(f"{length.name}:".ljust(10), round(result, 2))
+            except Exception:
+                print(f'"{length.name}" does not convert')
 
     @staticmethod
     def get_methods_obj(obj: object, property_concept: PropertyConceptEnum | None = None) -> List[str]:

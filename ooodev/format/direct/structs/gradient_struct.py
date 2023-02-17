@@ -107,7 +107,11 @@ class GradientStruct(StyleBase):
         return ()
 
     def _get_property_name(self) -> str:
-        return "FillGradient"
+        try:
+            return self._struct_property_name
+        except AttributeError:
+            self._struct_property_name = "FillGradient"
+        return self._struct_property_name
 
     def copy(self: _TGradientStruct) -> _TGradientStruct:
         nu = super(GradientStruct, self.__class__).__new__(self.__class__)

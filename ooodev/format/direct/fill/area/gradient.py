@@ -17,14 +17,15 @@ from .....meta.static_prop import static_prop
 from .....utils import props as mProps
 from .....utils.color import Color
 from .....utils.data_type.angle import Angle as Angle
-from .....utils.data_type.offset import Offset as Offset
+from .....utils.data_type.color_range import ColorRange as ColorRange
 from .....utils.data_type.intensity import Intensity as Intensity
 from .....utils.data_type.intensity_range import IntensityRange as IntensityRange
-from .....utils.data_type.color_range import ColorRange as ColorRange
+from .....utils.data_type.offset import Offset as Offset
 from ....kind.format_kind import FormatKind
 from ....preset import preset_gradient
 from ....preset.preset_gradient import PresetGradientKind as PresetGradientKind
 from ....style_base import StyleMulti
+from ...common.props.area_gradient_props import AreaGradientProps
 from ...structs.gradient_struct import GradientStruct
 
 
@@ -33,15 +34,23 @@ _TGradient = TypeVar(name="_TGradient", bound="Gradient")
 
 class FillStyleStruct(GradientStruct):
     def _supported_services(self) -> Tuple[str, ...]:
-        return (
-            "com.sun.star.drawing.FillProperties",
-            "com.sun.star.text.TextContent",
-            "com.sun.star.style.ParagraphStyle",
-            "com.sun.star.style.PageStyle",
-        )
+        try:
+            return self._supported_struct_services
+        except AttributeError:
+            self._supported_struct_services = (
+                "com.sun.star.drawing.FillProperties",
+                "com.sun.star.text.TextContent",
+                "com.sun.star.style.ParagraphStyle",
+                "com.sun.star.style.PageStyle",
+            )
+        return self._supported_struct_services
 
     def _get_property_name(self) -> str:
-        return "FillGradient"
+        try:
+            return self._struct_property_name
+        except AttributeError:
+            self._struct_property_name = "FillGradient"
+        return self._struct_property_name
 
     @property
     def prop_format_kind(self) -> FormatKind:
@@ -95,29 +104,52 @@ class Gradient(StyleMulti):
             end_color=grad_color.end,
             end_intensity=grad_intensity.end,
         )
+        fs._struct_property_name = self._props.grad_prop_name
+        fs._supported_struct_services = self._supported_services()
         super().__init__()
-        # gradient
 
-        self._set("FillStyle", FillStyle.GRADIENT)
-        self._set("FillGradientStepCount", step_count)
-        self._set("FillGradientName", self._get_gradient_name(style, name))
-        self._set_style("fill_style", fs, *fs.get_attrs())
-
-    def _get_gradient_name(self, style: GradientStyle, name: str) -> str:
-        if name:
-            return name
-        if style == GradientStyle.AXIAL:
-            return "Gradient 2"
-        elif style == GradientStyle.ELLIPTICAL:
-            return "Gradient 3"
-        elif style == GradientStyle.SQUARE:
-            # Square is quadratic
-            return "Gradient 8"
-        elif style == GradientStyle.RECT:
-            # Rect is Square
-            return "Gradient 7"
+        self._set(self._props.style, FillStyle.GRADIENT)
+        self._set(self._props.step_count, step_count)
+        if name == "__constructor_default__":
+            # __constructor_default__ means the values will never be used.
+            self._set(self._props.name, "Gradient 9999")
+            self._set_style("fill_style", fs, *fs.get_attrs())
         else:
-            return "gradient"
+            fill_struct = self._get_fill_struct(fill_struct=fs, name=name, auto_name=False)
+            self._set(self._props.name, self._name)
+            self._set_style("fill_style", fill_struct, *fill_struct.get_attrs())
+
+    def _get_fill_struct(self, fill_struct: FillStyleStruct | None, name: str, auto_name: bool) -> FillStyleStruct:
+        # if the name passed in already exist in the Gradient Table then it is returned.
+        # Otherwise the Gradient is added to the Gradient Table and then returned.
+        # after Gradient is added to table all other subsequent call of this name will return
+        # that Gradient from the Table. With the exception of auto_name which will force a new entry
+        # into the Table each time.
+        self._name = name
+        if name:
+            if PresetGradientKind.is_preset(name):
+                return fill_struct
+        else:
+            auto_name = True
+            name = "Gradient"
+        nc = self._container_get_inst()
+        if auto_name:
+            name = name.rstrip() + " "  # add a space after name before getting unique name
+            self._name = self._container_get_unique_el_name(name, nc)
+
+        grad = self._container_get_value(self._name, nc)  # raises value error if name is empty
+        if not grad is None:
+            return FillStyleStruct.from_gradient(grad)
+        if fill_struct is None:
+            raise ValueError(
+                f'No Gradient could be found in container for "{name}". In this case a Gradient is required.'
+            )
+        self._container_add_value(name=self._name, obj=fill_struct.get_uno_struct(), allow_update=False, nc=nc)
+        return FillStyleStruct.from_gradient(self._container_get_value(self._name, nc))
+
+    def _container_get_service_name(self) -> str:
+        # https://github.com/LibreOffice/core/blob/d9e044f04ac11b76b9a3dac575f4e9155b67490e/chart2/source/tools/PropertyHelper.cxx#L229
+        return "com.sun.star.drawing.GradientTable"
 
     def _supported_services(self) -> Tuple[str, ...]:
         return (
@@ -147,42 +179,30 @@ class Gradient(StyleMulti):
             Gradient: Instance that represents Gradient color.
         """
         # this nu is only used to get Property Name
-        nu = super(Gradient, cls).__new__(cls)
-        nu.__init__()
-        if not nu._is_valid_obj(obj):
+        inst = super(Gradient, cls).__new__(cls)
+        inst.__init__(name="__constructor_default__")
+        if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
-        gs = FillStyleStruct()
-        gs_prop_name = gs._get_property_name()
-
-        grad_fill = cast(UNOGradient, mProps.Props.get(obj, gs_prop_name))
+        grad_fill = cast(UNOGradient, mProps.Props.get(obj, inst._props.grad_prop_name))
         gs = FillStyleStruct.from_gradient(grad_fill)
-        fill_gradient_name = cast(str, mProps.Props.get(obj, "FillGradientName"))
-        if grad_fill.Angle == 0:
-            angle = 0
-        else:
-            angle = round(grad_fill.Angle / 10)
+        gs._struct_property_name = inst._props.grad_prop_name
+        gs._supported_struct_services = inst._supported_services()
 
-        inst = super(Gradient, cls).__new__(cls)
-        inst.__init__(
-            style=grad_fill.Style,
-            step_count=grad_fill.StepCount,
-            offset=Offset(grad_fill.XOffset, grad_fill.YOffset),
-            angle=angle,
-            border=grad_fill.Border,
-            grad_color=ColorRange(grad_fill.StartColor, grad_fill.EndColor),
-            grad_intensity=IntensityRange(grad_fill.StartIntensity, grad_fill.EndIntensity),
-            name=fill_gradient_name,
-        )
+        fill_gradient_name = cast(str, mProps.Props.get(obj, inst._props.name))
+
+        inst._set(inst._props.step_count, grad_fill.StepCount)
+        inst._set(inst._props.name, fill_gradient_name)
+        inst._set_style("fill_style", gs, *gs.get_attrs())
         return inst
 
     @classmethod
     def from_preset(cls: Type[_TGradient], preset: PresetGradientKind) -> _TGradient:
         """
-        Gets instance from preset
+        Gets instance from preset.
 
         Args:
-            preset (PresetKind): Preset
+            preset (PresetKind): Preset.
 
         Returns:
             Gradient: Graident from a preset.
@@ -206,6 +226,19 @@ class Gradient(StyleMulti):
             self._direct_inner = cast(FillStyleStruct, self._get_style_inst("fill_style"))
         return self._direct_inner
 
+    @property
+    def _props(self) -> AreaGradientProps:
+        try:
+            return self._props_gradient
+        except AttributeError:
+            self._props_gradient = AreaGradientProps(
+                style="FillStyle",
+                step_count="FillGradientStepCount",
+                name="FillGradientName",
+                grad_prop_name="FillGradient",
+            )
+        return self._props_gradient
+
     @static_prop
     def default() -> Gradient:  # type: ignore[misc]
         """Gets Gradient empty. Static Property."""
@@ -221,8 +254,8 @@ class Gradient(StyleMulti):
                 grad_color=ColorRange(0, 16777215),
                 grad_intensity=IntensityRange(100, 100),
             )
-            inst._set("FillStyle", FillStyle.NONE)
-            inst._set("FillGradientName", "")
+            inst._set(inst._props.style, FillStyle.NONE)
+            inst._set(inst._props.name, "")
             inst._is_default_inst = True
             Gradient._DEFAULT_INST = inst
         return Gradient._DEFAULT_INST

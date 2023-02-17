@@ -128,7 +128,7 @@ class Hatch(StyleMulti):
         # if the name passed in already exist in the Hatch Table then it is returned.
         # Otherwise the hatch is added to the Hatch Table and then returned
         # unless name is a present name.
-        # If it is a preset name any value in the Hatch Table is ignore.
+        # If it is a preset name any value in the Hatch Table is ignored.
         # This is due to Writer alters the stored Struct for some unknown reason.
         # Presets are not added to Hatch Table. Write handles this for hatch.
         #

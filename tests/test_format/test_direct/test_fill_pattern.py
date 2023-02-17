@@ -25,7 +25,7 @@ def test_draw(loader) -> None:
     if not Lo.bridge_connector.headless:
         GUI.set_visible()
         Lo.delay(500)
-        GUI.zoom(GUI.ZoomEnum.ZOOM_150_PERCENT)
+        GUI.zoom(GUI.ZoomEnum.ENTIRE_PAGE)
     try:
         slide = Draw.get_slide(doc)
         rec = Draw.draw_rectangle(slide=slide, x=10, y=10, width=20, height=20)

@@ -39,7 +39,7 @@ class Hatch(PageStyleBaseMulti):
             space (int, optional): Specifies the space between the lines in the hatch (in ``mm`` units). Default ``0.0``
             angle (Angle, int, optional): Specifies angle of the hatch in degrees. Default to ``0``.
             bg_color(Color, optionl): Specifies the background Color. Set this ``-1`` (default) for no background color.
-            style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to. Deftult is Default Paragraph Style.
+            style_name (StyleParaKind, str, optional): Specifies the Page Style that instance applies to. Deftult is Default Page Style.
             style_family (str, optional): Style family. Defatult ``PageStyles``.
 
         Returns:

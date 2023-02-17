@@ -37,7 +37,7 @@ class Pattern(PageStyleBaseMulti):
             tile (bool, optional): Specified if bitmap is tiled. Defaults to ``True``.
             stretch (bool, optional): Specifies if bitmap is stretched. Defaults to ``False``.
             auto_name (bool, optional): Specifies if ``name`` is ensured to be unique. Defaults to ``False``.
-            style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to. Deftult is Default Paragraph Style.
+            style_name (StyleParaKind, str, optional): Specifies the Page Style that instance applies to. Deftult is Default Page Style.
             style_family (str, optional): Style family. Defatult ``PageStyles``.
 
         Returns:

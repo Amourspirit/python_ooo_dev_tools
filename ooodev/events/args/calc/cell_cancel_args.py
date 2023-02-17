@@ -16,6 +16,7 @@ class AbstractCellCancelArgs(AbstractCancelEventArgs, AbstractCellArgs):
             cancel (bool, optional): Cancel value. Defaults to False.
         """
         super().__init__(source=source, cancel=cancel)
+        self.handled = False
 
 
 class CellCancelArgs(AbstractCellCancelArgs):
@@ -23,7 +24,17 @@ class CellCancelArgs(AbstractCellCancelArgs):
     Sheet Cancel Event Args
     """
 
-    __slots__ = ("source", "_event_name", "event_data", "sheet", "cells", "cancel", "_event_source", "_kv_data")
+    __slots__ = (
+        "source",
+        "_event_name",
+        "event_data",
+        "sheet",
+        "cells",
+        "cancel",
+        "handled",
+        "_event_source",
+        "_kv_data",
+    )
 
     @staticmethod
     def from_args(args: CellCancelArgs) -> CellCancelArgs:
@@ -43,4 +54,5 @@ class CellCancelArgs(AbstractCellCancelArgs):
         eargs.cells = args.cells
         eargs.event_data = args.event_data
         eargs.cancel = args.cancel
+        eargs.handled = args.handled
         return eargs

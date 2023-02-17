@@ -47,7 +47,7 @@ class PresetHatchKind(Enum):
         Gets if name is a preset name.
 
         Args:
-            name (str): Name such as ``"Red 45 Degrees``.
+            name (str): Name such as ``Red 45 Degrees``.
 
         Returns:
             bool: ``True`` if preset name; Otherwise, ``False``.
