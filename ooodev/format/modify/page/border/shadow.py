@@ -43,7 +43,7 @@ class Shadow(PageStyleBaseMulti):
             color (Color, optional):contains the color value of the shadow. Defaults to ``StandardColor.GRAY``.
             transparent (bool, optional): Shadow transparency. Defaults to False.
             width (float, optional): contains the size of the shadow (in mm units). Defaults to ``1.76``.
-            style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to. Deftult is Default Paragraph Style.
+            style_name (StyleParaKind, str, optional): Specifies the Page Style that instance applies to. Deftult is Default Page Style.
             style_family (str, optional): Style family. Defatult ``PageStyles``.
 
         Returns:

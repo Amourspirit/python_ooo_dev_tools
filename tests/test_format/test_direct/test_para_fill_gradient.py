@@ -6,6 +6,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
+from ooodev.format.preset import preset_gradient as mPreset
 from ooodev.format.writer.direct.para.area import Gradient, PresetGradientKind
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
@@ -15,7 +16,7 @@ if TYPE_CHECKING:
     from com.sun.star.drawing import FillProperties  # service
 
 
-def test_write(loader, para_text) -> None:
+def test_write_presets(loader, para_text) -> None:
     delay = 0
     # delay = 0 if Lo.bridge_connector.headless else 3_000
 
@@ -70,6 +71,36 @@ def test_write(loader, para_text) -> None:
         fp = cast("FillProperties", cursor_p.TextParagraph)
         pg_obj = Gradient.from_obj(fp)
         assert pg_obj == pg
+
+        Lo.delay(delay)
+    finally:
+        Lo.close_doc(doc)
+
+
+def test_write(loader, para_text) -> None:
+    delay = 0
+    # delay = 0 if Lo.bridge_connector.headless else 3_000
+
+    doc = Write.create_doc()
+    if not Lo.bridge_connector.headless:
+        GUI.set_visible()
+        Lo.delay(500)
+        GUI.zoom(GUI.ZoomEnum.ZOOM_150_PERCENT)
+    try:
+        preset = mPreset.get_preset(PresetGradientKind.GREEN_GRASS)
+        preset["name"] = ""
+        preset["angle"] = 22
+        cursor = Write.get_cursor(doc)
+        cursor_p = Write.get_paragraph_cursor(cursor)
+
+        pg = Gradient(**preset)
+        Write.append_para(cursor=cursor, text=para_text, styles=(pg,))
+        cursor_p.gotoEnd(False)
+        cursor_p.gotoPreviousParagraph(True)
+        fp = cast("FillProperties", cursor_p.TextParagraph)
+        pg_obj = Gradient.from_obj(fp)
+        assert pg_obj == pg
+        cursor_p.gotoEnd(False)
 
         Lo.delay(delay)
     finally:

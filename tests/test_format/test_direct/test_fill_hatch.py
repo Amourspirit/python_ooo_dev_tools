@@ -126,7 +126,7 @@ def test_draw(loader) -> None:
         hatch = Hatch(style=HatchStyle.SINGLE, space=2.03, angle=45, color=StandardColor.BRICK_LIGHT2)
         hatch.apply(rec)
         fp = cast("FillProperties", rec)
-        hatch_struct = cast(HatchStruct, hatch._get_style("fill_hatch")[0])
+        hatch_struct = cast(HatchStruct, hatch._get_style_inst("fill_hatch"))
         assert hatch_struct.prop_color == StandardColor.BRICK_LIGHT2
         assert fp.FillStyle == FillStyle.HATCH
         assert fp.FillBackground == False
@@ -144,7 +144,7 @@ def test_draw(loader) -> None:
         )
         hatch.apply(rec)
         fp = cast("FillProperties", rec)
-        hatch_struct = cast(HatchStruct, hatch._get_style("fill_hatch")[0])
+        hatch_struct = cast(HatchStruct, hatch._get_style_inst("fill_hatch"))
         assert hatch_struct.prop_color == StandardColor.GOLD_LIGHT1
         assert fp.FillStyle == FillStyle.HATCH
         assert fp.FillBackground == True

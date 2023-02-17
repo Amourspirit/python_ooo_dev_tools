@@ -13,7 +13,7 @@ from .....utils.color import Color
 from .....utils.data_type.intensity_range import IntensityRange as IntensityRange
 from ....preset.preset_gradient import PresetGradientKind as PresetGradientKind
 
-from ....direct.para.area.gradient import Gradient as DirectGradient
+from ....direct.fill.area.gradient import Gradient as DirectGradient
 
 
 class Gradient(PageStyleBaseMulti):
@@ -50,7 +50,7 @@ class Gradient(PageStyleBaseMulti):
             grad_color (ColorRange, optional): Specifies the color at the start point and stop point of the gradient. Defaults to ``ColorRange(Color(0), Color(16777215))``.
             grad_intensity (IntensityRange, optional): Specifies the intensity at the start point and stop point of the gradient. Defaults to ``IntensityRange(100, 100)``.
             name (str, optional): Specifies the Fill Gradient Name.
-            style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to. Deftult is Default Paragraph Style.
+            style_name (StyleParaKind, str, optional): Specifies the Page Style that instance applies to. Deftult is Default Page Style.
             style_family (str, optional): Style family. Defatult ``PageStyles``.
 
         Returns:

@@ -45,6 +45,26 @@ class PresetGradientKind(Enum):
     def __str__(self) -> str:
         return self.value
 
+    @staticmethod
+    def is_preset(name: str) -> bool:
+        """
+        Gets if name is a preset name.
+
+        Args:
+            name (str): Name such as ``Deep Ocean``.
+
+        Returns:
+            bool: ``True`` if preset name; Otherwise, ``False``.
+        """
+        try:
+            p_name = PresetGradientKind._preset_names
+        except AttributeError:
+            attrs = [getattr(PresetGradientKind, x).value for x in dir(PresetGradientKind) if x.isupper()]
+            PresetGradientKind._preset_names = tuple(attrs)
+            p_name = PresetGradientKind._preset_names
+
+        return name in p_name
+
 
 def pastel_bouquet() -> Dict[str, Any]:
     """Pastel Bouquet preset"""

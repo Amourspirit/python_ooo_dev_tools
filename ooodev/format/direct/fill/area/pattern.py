@@ -19,6 +19,7 @@ from ....kind.format_kind import FormatKind
 from ....preset import preset_pattern as mPattern
 from ....preset.preset_pattern import PresetPatternKind as PresetPatternKind
 from ....style_base import StyleBase
+from ...common.props.area_pattern_props import AreaPatternProps
 
 
 # https://github.com/LibreOffice/core/blob/6379414ca34527fbe69df2035d49d651655317cd/vcl/source/filter/ipict/ipict.cxx#L92
@@ -62,8 +63,8 @@ class Pattern(StyleBase):
 
         init_vals = {}
         # if bitmap or name is passed in then get the bitmap
-        init_vals["FillBitmapTile"] = tile
-        init_vals["FillBitmapStretch"] = stretch
+        init_vals[self._props.tile] = tile
+        init_vals[self._props.stretch] = stretch
         bmap = None
         try:
             bmap = self._get_bitmap(bitmap, name, auto_name)
@@ -71,9 +72,9 @@ class Pattern(StyleBase):
             pass
         if not bmap is None:
 
-            init_vals["FillBitmap"] = bmap
-            init_vals["FillBitmapName"] = self._name
-            init_vals["FillStyle"] = FillStyle.BITMAP
+            init_vals[self._props.bitmap] = bmap
+            init_vals[self._props.name] = self._name
+            init_vals[self._props.style] = FillStyle.BITMAP
 
         super().__init__(**init_vals)
 
@@ -136,7 +137,7 @@ class Pattern(StyleBase):
         Returns:
             None:
         """
-        if not self._has("FillBitmap"):
+        if not self._has(self._props.bitmap):
             mLo.Lo.print("Pattern.apply(): There is nothing to apply.")
             return
         super().apply(obj, **kwargs)
@@ -152,10 +153,10 @@ class Pattern(StyleBase):
     # endregion apply()
 
     def on_property_restore_setting(self, event_args: KeyValCancelArgs) -> None:
-        if event_args.key == "FillBitmap":
+        if event_args.key == self._props.bitmap:
             if event_args.value is None:
                 event_args.default = True
-        elif event_args.key == "FillBitmapName":
+        elif event_args.key == self._props.name:
             if not event_args.value:
                 event_args.default = True
         return super().on_property_restore_setting(event_args)
@@ -213,13 +214,13 @@ class Pattern(StyleBase):
 
         inst = super(Pattern, cls).__new__(cls)
         inst.__init__()
-        name = mProps.Props.get(obj, "FillBitmapName")
+        name = mProps.Props.get(obj, inst._props.name)
         inst._name = name
-        inst._set("FillBitmapName", name)
-        set_prop("FillBitmapTile", inst)
-        set_prop("FillBitmapStretch", inst)
-        set_prop("FillBitmap", inst)
-        set_prop("FillStyle", inst)
+        inst._set(inst._props.name, name)
+        set_prop(inst._props.tile, inst)
+        set_prop(inst._props.stretch, inst)
+        set_prop(inst._props.bitmap, inst)
+        set_prop(inst._props.style, inst)
         return inst
 
     # endregion Static Methods
@@ -233,19 +234,33 @@ class Pattern(StyleBase):
     @property
     def prop_tile(self) -> bool:
         """Gets sets if fill image is tiled"""
-        return self._get("FillBitmapTile")
+        return self._get(self._props.tile)
 
     @prop_tile.setter
     def prop_tile(self, value: bool):
-        self._set("FillBitmapTile", value)
+        self._set(self._props.tile, value)
 
     @property
     def prop_stretch(self) -> bool:
         """Gets sets if fill image is stretched"""
-        return self._get("FillBitmapStretch")
+        return self._get(self._props.stretch)
 
     @prop_stretch.setter
     def prop_stretch(self, value: bool):
-        self._set("FillBitmapStretch", value)
+        self._set(self._props.stretch, value)
+
+    @property
+    def _props(self) -> AreaPatternProps:
+        try:
+            return self._props_area_pattern
+        except AttributeError:
+            self._props_area_pattern = AreaPatternProps(
+                style="FillStyle",
+                name="FillBitmapName",
+                tile="FillBitmapTile",
+                stretch="FillBitmapStretch",
+                bitmap="FillBitmap",
+            )
+        return self._props_area_pattern
 
     # endregion Properties
