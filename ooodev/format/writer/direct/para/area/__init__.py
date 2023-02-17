@@ -9,7 +9,7 @@ from ......utils.data_type.intensity import Intensity as Intensity
 from ......utils.data_type.intensity_range import IntensityRange as IntensityRange
 from ......utils.data_type.color_range import ColorRange as ColorRange
 from .....direct.para.area.color import Color as Color
-from .....direct.para.area.gradient import Gradient as Gradient
+from .....direct.fill.area.gradient import Gradient as Gradient
 from .....direct.para.area.pattern import Pattern as Pattern
 from .....preset.preset_gradient import PresetGradientKind as PresetGradientKind
 from .....preset.preset_hatch import PresetHatchKind as PresetHatchKind

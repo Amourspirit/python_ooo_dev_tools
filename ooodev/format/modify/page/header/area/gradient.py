@@ -1,24 +1,53 @@
 from __future__ import annotations
-from typing import cast
+from typing import Tuple, cast
 import uno
 from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
+from ...page_style_base_multi import PageStyleBaseMulti
+from ......utils.color import Color
+from ......utils.data_type.angle import Angle as Angle
+from ......utils.data_type.color_range import ColorRange as ColorRange
+from ......utils.data_type.intensity import Intensity as Intensity
+from ......utils.data_type.intensity_range import IntensityRange as IntensityRange
+from ......utils.data_type.offset import Offset as Offset
+from .....writer.style.page.kind.style_page_kind import StylePageKind as StylePageKind
+from .....kind.format_kind import FormatKind
+from .....preset.preset_gradient import PresetGradientKind as PresetGradientKind
+from .....direct.common.props.area_gradient_props import AreaGradientProps
+from .....direct.fill.area.gradient import Gradient as FillGradient
 
-from ....writer.style.page.kind.style_page_kind import StylePageKind as StylePageKind
-from ..page_style_base_multi import PageStyleBaseMulti
-from .....utils.data_type.angle import Angle as Angle
-from .....utils.data_type.offset import Offset as Offset
-from .....utils.data_type.intensity import Intensity as Intensity
-from .....utils.data_type.color_range import ColorRange as ColorRange
-from .....utils.color import Color
-from .....utils.data_type.intensity_range import IntensityRange as IntensityRange
-from ....preset.preset_gradient import PresetGradientKind as PresetGradientKind
 
-from ....direct.fill.area.gradient import Gradient as DirectGradient
+class HeaderGradient(FillGradient):
+    """
+    Header Gradient Color
+
+    .. versionadded:: 0.9.0
+    """
+
+    def _supported_services(self) -> Tuple[str, ...]:
+        return ("com.sun.star.style.PageProperties", "com.sun.star.style.PageStyle")
+
+    @property
+    def prop_format_kind(self) -> FormatKind:
+        """Gets the kind of style"""
+        return FormatKind.DOC | FormatKind.STYLE
+
+    @property
+    def _props(self) -> AreaGradientProps:
+        try:
+            return self._props_gradient
+        except AttributeError:
+            self._props_gradient = AreaGradientProps(
+                style="HeaderFillStyle",
+                step_count="HeaderFillGradientStepCount",
+                name="HeaderFillGradientName",
+                grad_prop_name="HeaderFillGradient",
+            )
+        return self._props_gradient
 
 
 class Gradient(PageStyleBaseMulti):
     """
-    Page Style Gradient
+    Page Header Gradient Color
 
     .. versionadded:: 0.9.0
     """
@@ -57,7 +86,7 @@ class Gradient(PageStyleBaseMulti):
             None:
         """
 
-        direct = DirectGradient(
+        direct = HeaderGradient(
             style=style,
             step_count=step_count,
             offset=offset,
@@ -92,7 +121,7 @@ class Gradient(PageStyleBaseMulti):
         """
         inst = super(Gradient, cls).__new__(cls)
         inst.__init__(style_name=style_name, style_family=style_family)
-        direct = DirectGradient.from_obj(inst.get_style_props(doc))
+        direct = HeaderGradient.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -104,7 +133,7 @@ class Gradient(PageStyleBaseMulti):
         style_family: str = "PageStyles",
     ) -> Gradient:
         """
-        Gets instance from preset
+        Gets instance from preset.
 
         Args:
             preset (PresetKind): Preset.
@@ -112,11 +141,11 @@ class Gradient(PageStyleBaseMulti):
             style_family (str, optional): Style family. Defatult ``PageStyles``.
 
         Returns:
-            Gradient: Graident from a preset.
+            Gradient: ``Gradient`` instance from document properties.
         """
         inst = super(Gradient, cls).__new__(cls)
         inst.__init__(style_name=style_name, style_family=style_family)
-        direct = DirectGradient.from_preset(preset=preset)
+        direct = HeaderGradient.from_preset(preset=preset)
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -130,10 +159,10 @@ class Gradient(PageStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> DirectGradient:
+    def prop_inner(self) -> HeaderGradient:
         """Gets Inner Gradient instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(DirectGradient, self._get_style_inst("direct"))
+            self._direct_inner = cast(HeaderGradient, self._get_style_inst("direct"))
         return self._direct_inner

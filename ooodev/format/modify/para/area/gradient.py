@@ -11,7 +11,7 @@ from ....writer.style.para.kind import StyleParaKind as StyleParaKind
 from ....preset import preset_gradient
 from ....preset.preset_gradient import PresetGradientKind as PresetGradientKind
 from ..para_style_base_multi import ParaStyleBaseMulti
-from ....direct.para.area.gradient import Gradient as DirectGradient
+from ....direct.fill.area.gradient import Gradient as DirectGradient
 
 from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
 
