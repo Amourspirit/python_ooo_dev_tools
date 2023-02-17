@@ -8,6 +8,7 @@ from ..utils import props as mProps
 from ..utils import info as mInfo
 from ..utils import lo as mLo
 from ..events.lo_events import Events
+from ..events.event_singleton import _Events
 from ..events.props_named_event import PropsNamedEvent
 from ..events.args.key_val_cancel_args import KeyValCancelArgs as KeyValCancelArgs
 from ..events.args.key_val_args import KeyValArgs as KeyValArgs
@@ -46,18 +47,42 @@ class StyleBase(ABC):
     """
 
     def __init__(self, **kwargs) -> None:
+
+        # this property is used in child classes that have default instances
+        self._events = Events(source=self)
+        self._uniquie_id = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
+
+        trigger_initalizing: bool = kwargs.get("__trigger_initalizing", True)
+        trigger_initalized: bool = kwargs.get("__trigger_initalized", True)
+        cargs: CancelEventArgs = None
+        if trigger_initalizing or trigger_initalized:
+            cargs = CancelEventArgs(source=self)
+
+        if trigger_initalizing:
+            _Events().trigger(FormatNamedEvent.STYLE_INITIALIZING, cargs)
+            if cargs.cancel:
+                if not cargs.handled:
+                    raise mEx.CancelEventError(
+                        event_args=cargs, message=f"Cancel Event as been called in {self.__class__.__name__}"
+                    )
+
+        self._is_default_inst = False
+        self._prop_parent = None
+
         self._dv = {}
         self._dv_bak = None
 
         for (key, value) in kwargs.items():
+            if key.startswith("__"):
+                # internal and not consider a property
+                continue
             if not value is None:
                 self._dv[key] = value
 
-        # this property is used in child classes that have default instances
-        self._is_default_inst = False
-        self._events = Events(source=self)
-        self._uniquie_id = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
         super().__init__()
+
+        if trigger_initalized:
+            _Events().trigger(FormatNamedEvent.STYLE_INITIALIZED, EventArgs.from_args(cargs))
 
     # region Events
 
@@ -512,7 +537,7 @@ class StyleBase(ABC):
             return ()
         return mProps.Props.make_props(**self._dv)
 
-    def copy(self: _T) -> _T:
+    def copy(self: TStyleBase) -> TStyleBase:
         """Gets a copy of instance as a new instance"""
         cargs = CancelEventArgs(self.copy.__qualname__)
         self._on_copying(cargs)
@@ -615,6 +640,11 @@ class StyleBase(ABC):
         """Gets the kind of style"""
         return FormatKind.UNKNOWN
 
+    @property
+    def prop_parent(self) -> StyleBase | None:
+        """Gets Parent Class"""
+        return self._prop_parent
+
     # endregion Properties
 
 
@@ -663,9 +693,15 @@ class StyleMulti(StyleBase):
     """
 
     def __init__(self, **kwargs) -> None:
+        trigger_initalized: bool = kwargs.get("__trigger_initalized", True)
+        kwargs["__trigger_initalized"] = False
+
         super().__init__(**kwargs)
         self._styles: Dict[str, _StyleInfo] = {}
         self._all_attributes = True
+
+        if trigger_initalized:
+            _Events().trigger(FormatNamedEvent.STYLE_INITIALIZED, EventArgs(source=self))
 
     def _set_style(self, key: str, style: StyleBase, *attrs, **kwargs) -> None:
         """

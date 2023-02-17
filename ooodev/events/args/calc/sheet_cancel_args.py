@@ -16,6 +16,7 @@ class AbstractSheetCancelArgs(AbstractCancelEventArgs, AbstractSheetArgs):
             cancel (bool, optional): Cancel value. Defaults to False.
         """
         super().__init__(source=source, cancel=cancel)
+        self.handled = False
 
 
 class SheetCancelArgs(AbstractSheetCancelArgs):
@@ -32,6 +33,7 @@ class SheetCancelArgs(AbstractSheetCancelArgs):
         "doc",
         "sheet",
         "cancel",
+        "handled",
         "_event_source",
         "_kv_data",
     )
@@ -56,4 +58,5 @@ class SheetCancelArgs(AbstractSheetCancelArgs):
         eargs.name = args.name
         eargs.sheet = args.sheet
         eargs.cancel = args.cancel
+        eargs.handled = args.handled
         return eargs

@@ -19,6 +19,7 @@ class AbstractKeyValueArgs(AbstractKeyValArgs, AbstractCancelEventArgs):
         super().__init__(source=source, key=key, value=value)
         self.cancel = cancel
         self.default = False
+        self.handled = False
 
 
 class KeyValCancelArgs(AbstractKeyValueArgs):
@@ -35,6 +36,7 @@ class KeyValCancelArgs(AbstractKeyValueArgs):
         "_event_name",
         "event_data",
         "cancel",
+        "handled",
         "_event_source",
         "_kv_data",
         "default",
@@ -57,4 +59,5 @@ class KeyValCancelArgs(AbstractKeyValueArgs):
         eargs._event_source = args.event_source
         eargs.event_data = args.event_data
         eargs.cancel = args.cancel
+        eargs.handled = args.handled
         return eargs

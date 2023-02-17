@@ -68,7 +68,11 @@ class HatchStruct(StyleBase):
         return "com.sun.star.drawing.HatchTable"
 
     def _get_property_name(self) -> str:
-        return "FillHatch"
+        try:
+            return self._struct_property_name
+        except AttributeError:
+            self._struct_property_name = "FillHatch"
+        return self._struct_property_name
 
     def copy(self: _THatchStruct) -> _THatchStruct:
         nu = super(HatchStruct, self.__class__).__new__(self.__class__)

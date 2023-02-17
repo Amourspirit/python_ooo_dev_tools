@@ -9,8 +9,13 @@ class FormatNamedEvent:
     Named events for :py:class:`~.format.style_base.StyleBase` class
     """
 
+    STYLE_INITIALIZING = "format_style_initializing"
+    """Style initalizing. Event when Style is initalizing."""
+    STYLE_INITIALIZED = "format_style_initialized"
+    """Style initialized. Event when Style has been initialized"""
+
     STYLE_APPLYING = "format_style_applying"
-    """Style applying. Event when Style is being applied to an object such as a ``XShape``"""
+    """Style applying. Event when Style is applying to an object such as a ``XShape``"""
     STYLE_APPLIED = "format_style_applyed"
     """Style Applied. Event when Style has been applied to an object such as a ``XShape``"""
 

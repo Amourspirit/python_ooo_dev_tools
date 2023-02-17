@@ -7,12 +7,15 @@ from __future__ import annotations
 from typing import Any, overload, Type, TypeVar
 
 from .....events.args.cancel_event_args import CancelEventArgs
+from .....events.format_named_event import FormatNamedEvent as FormatNamedEvent
+from .....events.event_singleton import _Events
 from .....utils import lo as mLo
 from .....utils import props as mProps
 from .....exceptions import ex as mEx
 from .....utils import color as mColor
 from ....style_base import StyleBase
 from ..props.fill_color_props import FillColorProps
+
 from ooo.dyn.drawing.fill_style import FillStyle
 
 
@@ -41,7 +44,13 @@ class AbstractColor(StyleBase):
         Returns:
             None:
         """
-
+        cargs = CancelEventArgs(source=self)
+        _Events().trigger(FormatNamedEvent.STYLE_INITIALIZING, cargs)
+        if cargs.cancel:
+            if not cargs.handled:
+                raise mEx.CancelEventError(
+                    event_args=cargs, message=f"Cancel Event as been called in {self.__class__.__name__}"
+                )
         init_vals = {}
         if color >= 0:
             init_vals[self._props.color] = color
@@ -53,6 +62,8 @@ class AbstractColor(StyleBase):
             init_vals[self._props.style] = FillStyle.NONE
             if self._props.bg:
                 init_vals[self._props.bg] = True
+
+        init_vals["__trigger_initalizing"] = False
 
         super().__init__(**init_vals)
 
