@@ -141,7 +141,7 @@ class Gradient(PageStyleBaseMulti):
             style_family (str, optional): Style family. Defatult ``PageStyles``.
 
         Returns:
-            Gradient: ``Gradient`` instance from document properties.
+            Gradient: ``Gradient`` instance from preset.
         """
         inst = super(Gradient, cls).__new__(cls)
         inst.__init__(style_name=style_name, style_family=style_family)

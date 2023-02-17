@@ -14,10 +14,7 @@ from .....events.args.key_val_cancel_args import KeyValCancelArgs
 from .....exceptions import ex as mEx
 from .....utils import lo as mLo
 from .....utils import props as mProps
-from .....utils.data_type.intensity import Intensity
 from .....utils.data_type.offset import Offset as Offset
-from .....utils.data_type.width_height_fraction import WidthHeightFraction
-from .....utils.data_type.width_height_percent import WidthHeightPercent
 from .....utils.unit_convert import UnitConvert
 from ....kind.format_kind import FormatKind
 from ....preset import preset_image as mImage
@@ -27,6 +24,7 @@ from ...common.format_types.size_mm import SizeMM as SizeMM
 from ...common.format_types.size_percent import SizePercent as SizePercent
 from ...common.format_types.offset_row import OffsetRow as OffsetRow
 from ...common.format_types.offset_column import OffsetColumn as OffsetColumn
+from ...common.props.area_img_props import AreaImgProps
 
 
 from com.sun.star.awt import XBitmap
@@ -114,9 +112,9 @@ class Img(StyleBase):
             pass
         if not bmap is None:
 
-            init_vals["FillBitmap"] = bmap
-            init_vals["FillBitmapName"] = self._name
-            init_vals["FillStyle"] = FillStyle.BITMAP
+            init_vals[self._props.bitmap] = bmap
+            init_vals[self._props.name] = self._name
+            init_vals[self._props.style] = FillStyle.BITMAP
 
         super().__init__(**init_vals)
         self.prop_mode = mode
@@ -185,7 +183,7 @@ class Img(StyleBase):
         Returns:
             None:
         """
-        if not self._has("FillBitmap"):
+        if not self._has(self._props.bitmap):
             mLo.Lo.print("Img.apply(): There is nothing to apply.")
             return
         super().apply(obj, **kwargs)
@@ -201,10 +199,10 @@ class Img(StyleBase):
     # endregion apply()
 
     def on_property_restore_setting(self, event_args: KeyValCancelArgs) -> None:
-        if event_args.key == "FillBitmap":
+        if event_args.key == self._props.bitmap:
             if event_args.value is None:
                 event_args.default = True
-        elif event_args.key == "FillBitmapName":
+        elif event_args.key == self._props.name:
             if not event_args.value:
                 event_args.default = True
         return super().on_property_restore_setting(event_args)
@@ -243,8 +241,8 @@ class Img(StyleBase):
         )
         # set size
         point = preset._get_point()
-        inst._set("FillBitmapSizeX", point.x)
-        inst._set("FillBitmapSizeY", point.y)
+        inst._set(inst._props.size_x, point.x)
+        inst._set(inst._props.size_y, point.y)
         return inst
 
     @classmethod
@@ -274,19 +272,19 @@ class Img(StyleBase):
 
         inst = super(Img, cls).__new__(cls)
         inst.__init__()
-        name = mProps.Props.get(obj, "FillBitmapName")
+        name = mProps.Props.get(obj, inst._props.name)
         inst._name = name
-        inst._set("FillBitmapName", name)
-        set_prop("FillBitmap", inst)
-        set_prop("FillBitmapMode", inst)
-        set_prop("FillBitmapOffsetX", inst)
-        set_prop("FillBitmapOffsetY", inst)
-        set_prop("FillBitmapPositionOffsetX", inst)
-        set_prop("FillBitmapPositionOffsetY", inst)
-        set_prop("FillBitmapRectanglePoint", inst)
-        set_prop("FillBitmapSizeX", inst)
-        set_prop("FillBitmapSizeY", inst)
-        set_prop("FillStyle", inst)
+        inst._set(inst._props.name, name)
+        set_prop(inst._props.bitmap, inst)
+        set_prop(inst._props.mode, inst)
+        set_prop(inst._props.offset_x, inst)
+        set_prop(inst._props.offset_y, inst)
+        set_prop(inst._props.pos_x, inst)
+        set_prop(inst._props.pos_y, inst)
+        set_prop(inst._props.point, inst)
+        set_prop(inst._props.size_x, inst)
+        set_prop(inst._props.size_y, inst)
+        set_prop(inst._props.style, inst)
 
         # FillBitmapStretch and FillBitmapTile properties should not be used anymore
         # The FillBitmapMode property can be used instead to set all supported bitmap modes.
@@ -305,7 +303,7 @@ class Img(StyleBase):
     @property
     def prop_mode(self) -> ImgStyleKind | None:
         """Gets/Sets if fill image is tiled"""
-        pv = self._get("FillBitmapMode")
+        pv = self._get(self._props.mode)
         if pv is None:
             return None
         return ImgStyleKind.from_bitmap_mode(pv)
@@ -313,15 +311,15 @@ class Img(StyleBase):
     @prop_mode.setter
     def prop_mode(self, value: ImgStyleKind | None) -> None:
         if value is None:
-            self._remove("FillBitmapMode")
+            self._remove(self._props.mode)
             return
-        self._set("FillBitmapMode", value.value)
+        self._set(self._props.mode, value.value)
 
     @property
     def prop_is_size_percent(self) -> bool:
         """Gets if size is stored in percentage units."""
-        x = cast(int, self._get("FillBitmapSizeX"))
-        y = cast(int, self._get("FillBitmapSizeY"))
+        x = cast(int, self._get(self._props.size_x))
+        y = cast(int, self._get(self._props.size_y))
         if x is None or y is None:
             return False
         if x < 0 or y < 0:
@@ -331,8 +329,8 @@ class Img(StyleBase):
     @property
     def prop_is_size_mm(self) -> bool:
         """Gets if size is stored in ``mm`` units."""
-        x = cast(int, self._get("FillBitmapSizeX"))
-        y = cast(int, self._get("FillBitmapSizeY"))
+        x = cast(int, self._get(self._props.size_x))
+        y = cast(int, self._get(self._props.size_y))
         if x is None or y is None:
             return False
         if x < 0 or y < 0:
@@ -345,8 +343,8 @@ class Img(StyleBase):
         # size percent is stored as negative int
         # size mm is stored as 1/100th mm as postitive int
 
-        x = cast(int, self._get("FillBitmapSizeX"))
-        y = cast(int, self._get("FillBitmapSizeY"))
+        x = cast(int, self._get(self._props.size_x))
+        y = cast(int, self._get(self._props.size_y))
         if x is None or y is None:
             return None
         if x == 0 and y == 0:
@@ -361,38 +359,38 @@ class Img(StyleBase):
     @prop_size.setter
     def prop_size(self, value: SizePercent | SizeMM | None) -> None:
         if value is None:
-            self._remove("FillBitmapSizeX")
-            self._remove("FillBitmapSizeY")
+            self._remove(self._props.size_x)
+            self._remove(self._props.size_y)
             return
 
         if isinstance(value, SizePercent):
-            self._set("FillBitmapSizeX", -value.width)
-            self._set("FillBitmapSizeY", -value.height)
+            self._set(self._props.size_x, -value.width)
+            self._set(self._props.size_y, -value.height)
             return
         if isinstance(value, SizeMM):
             x = UnitConvert.convert_mm_mm100(value.height)
             y = UnitConvert.convert_mm_mm100(value.width)
-            self._set("FillBitmapSizeX", x)
-            self._set("FillBitmapSizeY", y)
+            self._set(self._props.size_x, x)
+            self._set(self._props.size_y, y)
             return
 
     @property
     def prop_posiion(self) -> RectanglePoint | None:
         """Gets/Sets if fill image is tiled"""
-        return self._get("FillBitmapRectanglePoint")
+        return self._get(self._props.point)
 
     @prop_posiion.setter
     def prop_posiion(self, value: RectanglePoint | None) -> None:
         if value is None:
-            self._remove("FillBitmapRectanglePoint")
+            self._remove(self._props.point)
             return
-        self._set("FillBitmapRectanglePoint", value)
+        self._set(self._props.point, value)
 
     @property
     def prop_pos_offset(self) -> Offset | None:
         """Gets/Sets Position Offset"""
-        x = cast(int, self._get("FillBitmapPositionOffsetX"))
-        y = cast(int, self._get("FillBitmapPositionOffsetY"))
+        x = cast(int, self._get(self._props.pos_x))
+        y = cast(int, self._get(self._props.pos_y))
         if x is None or y is None:
             return None
         return Offset(x, y)
@@ -400,17 +398,17 @@ class Img(StyleBase):
     @prop_pos_offset.setter
     def prop_pos_offset(self, value: Offset | None) -> None:
         if value is None:
-            self._remove("FillBitmapPositionOffsetX")
-            self._remove("FillBitmapPositionOffsetY")
+            self._remove(self._props.pos_x)
+            self._remove(self._props.pos_y)
             return
-        self._set("FillBitmapPositionOffsetX", value.x)
-        self._set("FillBitmapPositionOffsetY", value.y)
+        self._set(self._props.pos_x, value.x)
+        self._set(self._props.pos_y, value.y)
 
     @property
     def prop_is_offset_row(self) -> bool:
         """Gets if the offset value is a row offset."""
-        row = cast(int, self._get("FillBitmapOffsetX"))
-        col = cast(int, self._get("FillBitmapOffsetY"))
+        row = cast(int, self._get(self._props.offset_x))
+        col = cast(int, self._get(self._props.offset_y))
         if row is None or col is None:
             return False
         if col > 0:
@@ -420,7 +418,7 @@ class Img(StyleBase):
     @property
     def prop_is_offset_column(self) -> bool:
         """Gets if the offset value is a column offset."""
-        col = cast(int, self._get("FillBitmapOffsetY"))
+        col = cast(int, self._get(self._props.offset_y))
         if col is None:
             return False
         return col > 0
@@ -430,8 +428,8 @@ class Img(StyleBase):
         """Gets/Sets Tile Offset"""
         # row is X
         # col is Y
-        row = cast(int, self._get("FillBitmapOffsetX"))
-        col = cast(int, self._get("FillBitmapOffsetY"))
+        row = cast(int, self._get(self._props.offset_x))
+        col = cast(int, self._get(self._props.offset_y))
         if row is None or col is None:
             return None
         if col > 0:
@@ -442,14 +440,34 @@ class Img(StyleBase):
     @prop_tile_offset.setter
     def prop_tile_offset(self, value: OffsetColumn | OffsetRow | None) -> None:
         if value is None:
-            self._remove("FillBitmapOffsetX")
-            self._remove("FillBitmapOffsetY")
+            self._remove(self._props.offset_x)
+            self._remove(self._props.offset_y)
             return
         if isinstance(value, OffsetColumn):
-            self._set("FillBitmapOffsetX", 0)
-            self._set("FillBitmapOffsetY", value.value)
+            self._set(self._props.offset_x, 0)
+            self._set(self._props.offset_y, value.value)
         else:
-            self._set("FillBitmapOffsetX", value.value)
-            self._set("FillBitmapOffsetY", 0)
+            self._set(self._props.offset_x, value.value)
+            self._set(self._props.offset_y, 0)
+
+    @property
+    def _props(self) -> AreaImgProps:
+        try:
+            return self._props_area_img
+        except AttributeError:
+            self._props_area_img = AreaImgProps(
+                name="FillBitmapName",
+                style="FillStyle",
+                mode="FillBitmapMode",
+                point="FillBitmapRectanglePoint",
+                bitmap="FillBitmap",
+                offset_x="FillBitmapOffsetX",
+                offset_y="FillBitmapOffsetY",
+                pos_x="FillBitmapPositionOffsetX",
+                pos_y="FillBitmapPositionOffsetY",
+                size_x="FillBitmapSizeX",
+                size_y="FillBitmapSizeY",
+            )
+        return self._props_area_img
 
     # endregion Properties

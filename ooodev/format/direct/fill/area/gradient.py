@@ -107,8 +107,6 @@ class Gradient(StyleMulti):
         fs._struct_property_name = self._props.grad_prop_name
         fs._supported_struct_services = self._supported_services()
         super().__init__()
-        self._auto_name = True
-        # gradient
 
         self._set(self._props.style, FillStyle.GRADIENT)
         self._set(self._props.step_count, step_count)
