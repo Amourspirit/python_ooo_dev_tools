@@ -7,6 +7,9 @@ from __future__ import annotations
 from typing import Any, Tuple, cast, overload, Type, TypeVar
 
 import uno
+from ooo.dyn.drawing.fill_style import FillStyle
+from ooo.dyn.drawing.hatch_style import HatchStyle as HatchStyle
+from ooo.dyn.drawing.hatch import Hatch as UnoHatch
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....events.args.key_val_cancel_args import KeyValCancelArgs
@@ -28,11 +31,6 @@ from ...common.props.area_hatch_props import AreaHatchProps
 from ...common.props.fill_color_props import FillColorProps
 from .....events.format_named_event import FormatNamedEvent as FormatNamedEvent
 from .....events.lo_events import Events, GenericArgs
-
-
-from ooo.dyn.drawing.fill_style import FillStyle
-from ooo.dyn.drawing.hatch_style import HatchStyle as HatchStyle
-from ooo.dyn.drawing.hatch import Hatch as UnoHatch
 
 
 _THatch = TypeVar(name="_THatch", bound="Hatch")
@@ -88,22 +86,13 @@ class Hatch(StyleMulti):
         init_vals = {}
         init_vals[self._props.style] = FillStyle.HATCH
         if bg_color < 0:
-            init_vals["FillBackground"] = False
+            init_vals[self._props.bg] = False
         else:
-            init_vals["FillBackground"] = True
+            init_vals[self._props.bg] = True
 
         super().__init__(**init_vals)
         self._set_style("fill_color", bk_color, *bk_color.get_attrs())
         self._set_style("fill_hatch", hatch, *hatch.get_attrs())
-
-    # region Internal Methods
-    # def _get_fill_color(self) -> FillColor:
-    #     return self._get_style_inst("fill_color")
-
-    # def _get_hatch_struct(self) -> HatchStruct:
-    #     return self._get_style_inst("fill_hatch")
-
-    # endregion Internal Methods
 
     # region Overrides
 
@@ -184,7 +173,7 @@ class Hatch(StyleMulti):
         if not nu._is_valid_obj(obj):
             raise mEx.NotSupportedError("Object is not support to convert to Hatch")
 
-        hatch = cast(UnoHatch, mProps.Props.get(obj, "FillHatch"))
+        hatch = cast(UnoHatch, mProps.Props.get(obj, nu._props.hatch_prop))
         fc = FillColor.from_obj(obj)
 
         inst = super(Hatch, cls).__new__(cls)
@@ -218,9 +207,9 @@ class Hatch(StyleMulti):
     def prop_bg_color(self, value: Color):
         self.prop_inner_color.prop_color = value
         if value < 0:
-            self._set("FillBackground", False)
+            self._set(self._props.bg, False)
         else:
-            self._set("FillBackground", True)
+            self._set(self._props.bg, True)
 
     @property
     def prop_style(self) -> HatchStyle:
