@@ -3,6 +3,7 @@ from typing import Tuple, cast
 import uno
 from ....writer.style.page.kind.style_page_kind import StylePageKind as StylePageKind
 from ..page_style_base_multi import PageStyleBaseMulti
+from ....kind.format_kind import FormatKind
 from ....direct.common.abstract.abstract_hf import AbstractHF
 from ....direct.common.props.hf_props import HfProps
 
@@ -16,6 +17,11 @@ class PageHeader(AbstractHF):
 
     def _supported_services(self) -> Tuple[str, ...]:
         return ("com.sun.star.style.PageProperties", "com.sun.star.style.PageStyle")
+
+    @property
+    def prop_format_kind(self) -> FormatKind:
+        """Gets the kind of style"""
+        return FormatKind.DOC | FormatKind.STYLE
 
     @property
     def _props(self) -> HfProps:
