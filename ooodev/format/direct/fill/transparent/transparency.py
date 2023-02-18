@@ -14,6 +14,7 @@ from .....utils import props as mProps
 from .....utils.data_type.intensity import Intensity as Intensity
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleBase
+from ...common.props.transparent_transparency_props import TransparentTransparencyProps
 
 _TTransparency = TypeVar(name="_TTransparency", bound="Transparency")
 
@@ -32,9 +33,8 @@ class Transparency(StyleBase):
         Args:
             value (Intensity, int, optional): Specifies the transparency value from ``0`` to ``100``.
         """
-        value = Intensity(int(value))
-
-        super().__init__(FillTransparence=value.value)
+        super().__init__()
+        self.prop_value = value
 
     # region Internal Methods
 
@@ -62,7 +62,7 @@ class Transparency(StyleBase):
                 mLo.Lo.print(f"  {err}")
 
     def _is_valid_obj(self, obj: object) -> bool:
-        return mProps.Props.has(obj, "FillTransparence")
+        return mProps.Props.has(obj, self._props.transparence)
 
     # endregion Overrides
 
@@ -84,7 +84,7 @@ class Transparency(StyleBase):
         if not nu._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
-        tp = cast(int, mProps.Props.get(obj, "FillTransparence", None))
+        tp = cast(int, mProps.Props.get(obj, nu._props.transparence, None))
         inst = super(Transparency, cls).__new__(cls)
         if tp is None:
             inst.__init__(value=0)
@@ -100,13 +100,21 @@ class Transparency(StyleBase):
     @property
     def prop_value(self) -> Intensity:
         """Gets/Sets Transparency value"""
-        pv = cast(int, self._get("FillTransparence"))
+        pv = cast(int, self._get(self._props.transparence))
         return Intensity(pv)
 
     @prop_value.setter
     def prop_value(self, value: Intensity | int) -> None:
         val = Intensity(int(value))
-        self._set("FillTransparence", val.value)
+        self._set(self._props.transparence, val.value)
+
+    @property
+    def _props(self) -> TransparentTransparencyProps:
+        try:
+            return self._props_transparency
+        except AttributeError:
+            self._props_transparency = TransparentTransparencyProps(transparence="FillTransparence")
+        return self._props_transparency
 
     @static_prop
     def default() -> Transparency:  # type: ignore[misc]
