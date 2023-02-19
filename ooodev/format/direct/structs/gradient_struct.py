@@ -116,6 +116,7 @@ class GradientStruct(StyleBase):
     def copy(self: _TGradientStruct) -> _TGradientStruct:
         nu = super(GradientStruct, self.__class__).__new__(self.__class__)
         nu.__init__()
+        nu._prop_parent = self._prop_parent
         if self._dv:
             nu._update(self._dv)
         return nu

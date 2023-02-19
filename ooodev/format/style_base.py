@@ -37,6 +37,7 @@ _T = TypeVar("_T")
 
 TStyleBase = TypeVar("TStyleBase", bound="StyleBase")
 TStyleMulti = TypeVar("TStyleMulti", bound="StyleMulti")
+_TStyleModifyMulti = TypeVar("_TStyleModifyMulti", bound="StyleModifyMulti")
 
 
 class StyleBase(ABC):
@@ -539,12 +540,16 @@ class StyleBase(ABC):
 
     def copy(self: TStyleBase) -> TStyleBase:
         """Gets a copy of instance as a new instance"""
-        cargs = CancelEventArgs(self.copy.__qualname__)
+        cargs = CancelEventArgs(self)
         self._on_copying(cargs)
         if cargs.cancel:
-            return
+            if cargs.handled:
+                return cargs.event_data
+            else:
+                mEx.CancelEventError(cargs)
         nu = super(StyleBase, self.__class__).__new__(self.__class__)
         nu.__init__()
+        nu._prop_parent = self._prop_parent
         nu._update(self._dv)
         return nu
 
@@ -929,12 +934,8 @@ class StyleModifyMulti(StyleMulti):
         return True
         # return mInfo.Info.is_doc_type(obj, mLo.Lo.Service.WRITER)
 
-    def copy(self) -> Self:
+    def copy(self: _TStyleModifyMulti) -> _TStyleModifyMulti:
         """Gets a copy of instance as a new instance"""
-        cargs = CancelEventArgs(self.copy.__qualname__)
-        self._on_copying(cargs)
-        if cargs.cancel:
-            return
         cp = super().copy()
         cp.prop_style_name = self.prop_style_name
         return cp
