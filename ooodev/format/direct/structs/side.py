@@ -109,7 +109,7 @@ class Side(StyleBase):
         Args:
             line (BorderLineStyleEnum, optional): Line Style of the border.
             color (Color, optional): Color of the border.
-            width (LineSize, float, optional): Contains the width in of a single line or the width of outer part of a double line (in pt units). If this value is zero, no line is drawn. Default ``0.75``
+            width (LineSize, float, optional): Contains the width in of a single line or the width of outer part of a double line (in `pt` units). If this value is zero, no line is drawn. Default ``0.75``
 
         Raises:
             ValueError: if ``color``, ``width`` or ``width_inner`` is less than ``0``.
