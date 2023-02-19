@@ -4,7 +4,7 @@ Module for Fill Transparency.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from dataclasses import dataclass
+import dataclasses
 from typing import Any, Tuple, Type, TypeVar, overload
 from enum import Enum
 import math
@@ -37,7 +37,7 @@ class RelativeKind(Enum):
         return self.value
 
 
-@dataclass(frozen=True)
+@dataclasses.dataclass(frozen=True)
 class RelativeSize:
     """Relative size"""
 
@@ -59,7 +59,7 @@ class RelativeSize:
         return NotImplemented
 
 
-@dataclass(frozen=True)
+@dataclasses.dataclass(frozen=True)
 class AbsoluteSize:
     """Absolute size"""
 
@@ -204,8 +204,14 @@ class Size(AbstractDocument):
 
     def copy(self: _TSize) -> _TSize:
         cp = super().copy()
-        cp._width = self._width
-        cp._height = self._height
+        if self._width is None:
+            cp._width = None
+        else:
+            cp._width = dataclasses.replace(self._width)
+        if self._height is None:
+            cp._height = None
+        else:
+            cp._height = dataclasses.replace(self._height)
         cp._auto_width = self._auto_width
         cp._auto_height = self._auto_height
         return cp

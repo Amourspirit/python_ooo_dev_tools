@@ -9,17 +9,12 @@ import uno
 
 from ..frame_style_base_multi import FrameStyleBaseMulti
 from ....writer.style.frame.style_frame_kind import StyleFrameKind as StyleFrameKind
-from ....direct.frame.frame_type.size import (
-    Size as DirectSize,
-    RelativeKind as RelativeKind,
-    RelativeSize as RelativeSize,
-    AbsoluteSize as AbsoluteSize,
-)
+from ....direct.frame.frame_type.anchor import Anchor as DirectAnchor, AnchorKind as AnchorKind
 
 
-class Size(FrameStyleBaseMulti):
+class Anchor(FrameStyleBaseMulti):
     """
-    Frame Style Type size.
+    Frame Style Type Anchor Position.
 
     .. versionadded:: 0.9.0
     """
@@ -27,10 +22,7 @@ class Size(FrameStyleBaseMulti):
     def __init__(
         self,
         *,
-        width: RelativeSize | AbsoluteSize | None = None,
-        height: RelativeSize | AbsoluteSize | None = None,
-        auto_width: bool = False,
-        auto_height: bool = False,
+        anchor: AnchorKind = AnchorKind.AT_PARAGRAPH,
         style_name: StyleFrameKind | str = StyleFrameKind.FRAME,
         style_family: str = "FrameStyles",
     ) -> None:
@@ -38,10 +30,7 @@ class Size(FrameStyleBaseMulti):
         Constructor
 
         Args:
-            width (RelativeSize, AbsoluteSize, optional): width value.
-            height (RelativeSize, AbsoluteSize, optional): height value.
-            auto_width (bool, optional): Auto Size Width. Default ``False``.
-            auto_height (bool, optional): Auto Size Height. Default ``False``.
+            anchor (AnchorKind): Specifies the anchor position. Default is ``AnchorKind.AT_PARAGRAPH``
             style_name (StyleFrameKind, str, optional): Specifies the Frame Style that instance applies to. Deftult is Default Frame Style.
             style_family (str, optional): Style family. Defatult ``FrameStyles``.
 
@@ -49,12 +38,12 @@ class Size(FrameStyleBaseMulti):
             None:
         """
 
-        direct = DirectSize(width=width, height=height, auto_width=auto_width, auto_height=auto_height)
+        direct = DirectAnchor(anchor=anchor)
         direct._prop_parent = self
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
-        self._set_style("direct", direct)
+        self._set_style("direct", direct, *direct.get_attrs())
 
     @classmethod
     def from_style(
@@ -62,7 +51,7 @@ class Size(FrameStyleBaseMulti):
         doc: object,
         style_name: StyleFrameKind | str = StyleFrameKind.FRAME,
         style_family: str = "FrameStyles",
-    ) -> Size:
+    ) -> Anchor:
         """
         Gets instance from Document.
 
@@ -72,12 +61,13 @@ class Size(FrameStyleBaseMulti):
             style_family (str, optional): Style family. Defatult ``FrameStyles``.
 
         Returns:
-            Size: ``Size`` instance from style properties.
+            Anchor: ``Anchor`` instance from style properties.
         """
-        inst = super(Size, cls).__new__(cls)
+        inst = super(Anchor, cls).__new__(cls)
         inst.__init__(style_name=style_name, style_family=style_family)
-        direct = DirectSize.from_obj(inst.get_style_props(doc))
-        inst._set_style("direct", direct)
+        direct = DirectAnchor.from_obj(inst.get_style_props(doc))
+        direct._prop_parent = inst
+        inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
     @property
@@ -90,10 +80,10 @@ class Size(FrameStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> DirectSize:
-        """Gets Inner Size instance"""
+    def prop_inner(self) -> DirectAnchor:
+        """Gets Inner Anchor instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(DirectSize, self._get_style_inst("direct"))
+            self._direct_inner = cast(DirectAnchor, self._get_style_inst("direct"))
         return self._direct_inner
