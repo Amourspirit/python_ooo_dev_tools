@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     # When python is running this class will not exist
     class VertAdjustKind(Enum):
         """
-        Anchor Positon Enum.
+        This enumeration specifies the vertical position of text inside a shape in relation to the shape.
         """
 
         @property

@@ -48,15 +48,29 @@ class WritingMode(StyleBase):
         init_vals = {}
 
         if not mode is None:
-            init_vals["WritingMode"] = mode.value
+            init_vals[self._get_property_name()] = mode.value
 
         super().__init__(**init_vals)
 
     # endregion init
 
     # region methods
+    def _get_property_name(self) -> str:
+        try:
+            return self._property_name
+        except AttributeError:
+            self._property_name = "WritingMode"
+        return self._property_name
+
     def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.style.ParagraphPropertiesComplex", "com.sun.star.style.ParagraphStyle")
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = (
+                "com.sun.star.style.ParagraphPropertiesComplex",
+                "com.sun.star.style.ParagraphStyle",
+            )
+        return self._supported_services_values
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:
@@ -88,7 +102,7 @@ class WritingMode(StyleBase):
 
     # endregion apply()
 
-    @staticmethod
+    @classmethod
     def from_obj(cls: Type[_TWritingMode], obj: object) -> _TWritingMode:
         """
         Gets instance from object
@@ -107,7 +121,7 @@ class WritingMode(StyleBase):
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
-        inst._set("WritingMode", int(mProps.Props.get(obj, "WritingMode")))
+        inst._set("WritingMode", int(mProps.Props.get(obj, inst._get_property_name())))
         return inst
 
     # endregion methods
@@ -118,7 +132,7 @@ class WritingMode(StyleBase):
         Gets copy of instance with writing mode set or removed
 
         Args:
-            value (ParagraphAdjust | None): mode value
+            value (WritingMode2Enum | None): mode value
 
         Returns:
             WritingMode: ``WritingMode`` instance
@@ -228,7 +242,7 @@ class WritingMode(StyleBase):
     @property
     def prop_mode(self) -> WritingMode2Enum | None:
         """Gets/Sets wrighting mode of a paragraph."""
-        pv = cast(int, self._get("WritingMode"))
+        pv = cast(int, self._get(self._get_property_name()))
         if pv is None:
             return None
         return WritingMode2Enum(pv)
@@ -236,9 +250,9 @@ class WritingMode(StyleBase):
     @prop_mode.setter
     def prop_mode(self, value: WritingMode2Enum | None):
         if value is None:
-            self._remove("WritingMode")
+            self._remove(self._get_property_name())
             return
-        self._set("WritingMode", value)
+        self._set(self._get_property_name(), value.value)
 
     @static_prop
     def default() -> WritingMode:  # type: ignore[misc]

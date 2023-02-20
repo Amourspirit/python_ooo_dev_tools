@@ -40,7 +40,29 @@ TStyleMulti = TypeVar("TStyleMulti", bound="StyleMulti")
 _TStyleModifyMulti = TypeVar("_TStyleModifyMulti", bound="StyleModifyMulti")
 
 
-class StyleBase(ABC):
+class MetaStyle(type):
+    # def __new__(metacls, name, bases, namespace, **kwargs):
+    #     cls = super().__new__(metacls, name, bases, namespace, **kwargs)
+    #     return cls
+
+    def __call__(cls, *args, **kw):
+        if "_cattribs" in kw:
+            custom_args = kw["_cattribs"]
+            del kw["_cattribs"]
+        else:
+            custom_args = None
+        obj = cls.__new__(cls, *args, **kw)
+        uniquie_id = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
+        object.__setattr__(obj, "_uniquie_id", uniquie_id)
+
+        if custom_args:
+            for key, value in cast(Dict[str, Any], custom_args).items():
+                object.__setattr__(obj, key, value)
+        obj.__init__(*args, **kw)
+        return obj
+
+
+class StyleBase(metaclass=MetaStyle):
     """
     Base Styles class
 
@@ -51,7 +73,7 @@ class StyleBase(ABC):
 
         # this property is used in child classes that have default instances
         self._events = Events(source=self)
-        self._uniquie_id = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
+        # self._uniquie_id = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
 
         trigger_initalizing: bool = kwargs.get("__trigger_initalizing", True)
         trigger_initalized: bool = kwargs.get("__trigger_initalized", True)

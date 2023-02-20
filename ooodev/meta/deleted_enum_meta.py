@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 Use caution when using this Module.
 
@@ -11,7 +9,7 @@ Usage Example.
 
 .. code-block:: python
 
-    class AnchorType(
+    class AnchorKind(
             metaclass=DeletedEnumMeta,
             type_name="com.sun.star.text.TextContentAnchorType",
             name_space="com.sun.star.text",
@@ -20,6 +18,7 @@ Usage Example.
             def _get_deleted_attribs() -> Tuple[str]:
                 return ("AT_FRAME",)
 """
+from __future__ import annotations
 from typing import Any
 import uno
 from ooo.helper.enum_helper import UnoEnumMeta
