@@ -9,14 +9,14 @@ from .....utils import lo as mLo
 from .....utils import props as mProps
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleBase
-from ...common.props.frame_type_anchor_props import FrameTypeAnchorProps
+from ...common.props.frame_options_align_props import FrameOptionsAlignProps
 
-_TAnchor = TypeVar(name="_TAnchor", bound="Anchor")
+_TAlign = TypeVar(name="_TAlign", bound="Align")
 
 if TYPE_CHECKING:
     # this class is only available at design time.
     # When python is running this class will not exist
-    class AnchorKind(Enum):
+    class VertAdjustKind(Enum):
         """
         Anchor Positon Enum.
         """
@@ -25,52 +25,52 @@ if TYPE_CHECKING:
         def typeName(self) -> str:
             return "com.sun.star.text.TextContentAnchorType"
 
-        AS_CHARACTER = "AS_CHARACTER"
+        BOTTOM = "BOTTOM"
         """
-        The object is anchored instead of a character.
+        The connection line leaves the connected object from the bottom,
+        The text is positioned below the main line.
+        The bottom edge of the text is adjusted to the bottom edge of the shape.
         """
-        AT_CHARACTER = "AT_CHARACTER"
+        CENTER = "CENTER"
         """
-        The object is anchored to a character.
+        The text is centered inside the shape.
         """
-        AT_PAGE = "AT_PAGE"
+        TOP = "TOP"
         """
-        The object is anchored to the page.
-        """
-        AT_PARAGRAPH = "AT_PARAGRAPH"
-        """
-        The anchor of the object is set at the top left position of the paragraph.
+        The connection line leaves the connected object from the top,
+        The text is positioned above the main line.
+        The top edge of the text is adjusted to the top edge of the shape.
         """
 
 else:
     # Class takes the place of the above class at runtime.
-    # The reason for this to make sure 'AT_FRAME' enum value is excluded
-    class AnchorKind(
+    # The reason for this to make sure 'BLOCK' enum value is excluded
+    class VertAdjustKind(
         metaclass=DeletedUnoEnumMeta,
-        type_name="com.sun.star.text.TextContentAnchorType",
-        name_space="com.sun.star.text",
+        type_name="com.sun.star.drawing.TextVerticalAdjust",
+        name_space="com.sun.star.drawing",
     ):
         @staticmethod
         def _get_deleted_attribs() -> Tuple[str]:
-            return ("AT_FRAME",)
+            return ("BLOCK",)
 
 
-class Anchor(StyleBase):
+class Align(StyleBase):
     """
-    Fill Transparency
+    Frame Vertical Alignment
 
     .. versionadded:: 0.9.0
     """
 
-    def __init__(self, anchor: AnchorKind = AnchorKind.AT_PARAGRAPH) -> None:
+    def __init__(self, adjust: VertAdjustKind = VertAdjustKind.TOP) -> None:
         """
         Constructor
 
         Args:
-            anchor (AnchorKind): Specifies the anchor position. Default is ``AnchorKind.AT_PARAGRAPH``
+            adjust (VertAdjustKindl): Specifies Verticial Adjustment. Default ``VertAdjustKind.TOP``
         """
         super().__init__()
-        self.prop_anchor = anchor
+        self.prop_adjust = adjust
 
     # region Overrides
 
@@ -88,7 +88,7 @@ class Anchor(StyleBase):
     # endregion Overrides
 
     @classmethod
-    def from_obj(cls: Type[_TAnchor], obj: object) -> _TAnchor:
+    def from_obj(cls: Type[_TAlign], obj: object) -> _TAlign:
         """
         Gets instance from object
 
@@ -96,16 +96,15 @@ class Anchor(StyleBase):
             obj (object): UNO Object.
 
         Returns:
-            Anchor: Instance that represents Frame Anchor Position.
+            Align: Instance that represents Frame Protection.
         """
         # this nu is only used to get Property Name
 
-        inst = super(Anchor, cls).__new__(cls)
+        inst = super(Align, cls).__new__(cls)
         inst.__init__()
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
-        val = mProps.Props.get(obj, inst._props.name)
-        inst.prop_anchor = val
+        inst.prop_adjust = VertAdjustKind(mProps.Props.get(obj, inst._props.name))
         return inst
 
     @property
@@ -114,18 +113,18 @@ class Anchor(StyleBase):
         return FormatKind.DOC | FormatKind.STYLE
 
     @property
-    def prop_anchor(self) -> AnchorKind:
-        """Gets/Sets Anchor position"""
+    def prop_adjust(self) -> VertAdjustKind:
+        """Gets/Sets Adjust value"""
         return self._get(self._props.name)
 
-    @prop_anchor.setter
-    def prop_anchor(self, value: AnchorKind) -> None:
+    @prop_adjust.setter
+    def prop_adjust(self, value: VertAdjustKind) -> None:
         self._set(self._props.name, value)
 
     @property
-    def _props(self) -> FrameTypeAnchorProps:
+    def _props(self) -> FrameOptionsAlignProps:
         try:
-            return self._props_frame_type_anchor
+            return self._props_frame_opts_align
         except AttributeError:
-            self._props_frame_type_anchor = FrameTypeAnchorProps(name="AnchorType")
-        return self._props_frame_type_anchor
+            self._props_frame_opts_align = FrameOptionsAlignProps(name="TextVerticalAdjust")
+        return self._props_frame_opts_align

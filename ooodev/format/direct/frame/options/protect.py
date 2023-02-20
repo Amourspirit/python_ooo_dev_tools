@@ -1,0 +1,124 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
+from typing import Any, Tuple, Type, TypeVar
+from enum import Enum
+import uno
+from .....exceptions import ex as mEx
+from .....meta.deleted_enum_meta import DeletedUnoEnumMeta
+from .....utils import lo as mLo
+from .....utils import props as mProps
+from ....kind.format_kind import FormatKind
+from ....style_base import StyleBase
+from ...common.props.frame_options_protect_props import FrameOptionsProtectProps
+
+_TProtect = TypeVar(name="_TProtect", bound="Protect")
+
+
+class Protect(StyleBase):
+    """
+    Frame Protections
+
+    .. versionadded:: 0.9.0
+    """
+
+    def __init__(self, size: bool | None = None, postiion: bool | None = None, content: bool | None = None) -> None:
+        """
+        Constructor
+
+        Args:
+            size (bool, optional): Specifies size protection.
+            postiion (bool, optional): Specifies postiion protection.
+            content (bool, optional): Specifies content protection.
+        """
+        super().__init__()
+        self.prop_size = size
+        self.prop_position = postiion
+        self.prop_content = content
+
+    # region Overrides
+
+    def _supported_services(self) -> Tuple[str, ...]:
+        return ("com.sun.star.style.Style",)
+
+    def _props_set(self, obj: object, **kwargs: Any) -> None:
+        try:
+            return super()._props_set(obj, **kwargs)
+        except mEx.MultiError as e:
+            mLo.Lo.print(f"{self.__class__.__name__}.apply(): Unable to set Property")
+            for err in e.errors:
+                mLo.Lo.print(f"  {err}")
+
+    # endregion Overrides
+
+    @classmethod
+    def from_obj(cls: Type[_TProtect], obj: object) -> _TProtect:
+        """
+        Gets instance from object
+
+        Args:
+            obj (object): UNO Object.
+
+        Returns:
+            Protect: Instance that represents Frame Protection.
+        """
+        # this nu is only used to get Property Name
+
+        inst = super(Protect, cls).__new__(cls)
+        inst.__init__()
+        if not inst._is_valid_obj(obj):
+            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
+        inst.prop_size = mProps.Props.get(obj, inst._props.size)
+        inst.prop_position = mProps.Props.get(obj, inst._props.pos)
+        inst.prop_content = mProps.Props.get(obj, inst._props.content)
+        return inst
+
+    @property
+    def prop_format_kind(self) -> FormatKind:
+        """Gets the kind of style"""
+        return FormatKind.DOC | FormatKind.STYLE
+
+    @property
+    def prop_size(self) -> bool | None:
+        """Gets/Sets size"""
+        return self._get(self._props.size)
+
+    @prop_size.setter
+    def prop_size(self, value: bool | None) -> None:
+        if value is None:
+            self._remove(self._props.size)
+            return
+        self._set(self._props.size, value)
+
+    @property
+    def prop_position(self) -> bool | None:
+        """Gets/Sets position"""
+        return self._get(self._props.pos)
+
+    @prop_position.setter
+    def prop_position(self, value: bool | None) -> None:
+        if value is None:
+            self._remove(self._props.pos)
+            return
+        self._set(self._props.pos, value)
+
+    @property
+    def prop_content(self) -> bool | None:
+        """Gets/Sets content"""
+        return self._get(self._props.content)
+
+    @prop_content.setter
+    def prop_content(self, value: bool | None) -> None:
+        if value is None:
+            self._remove(self._props.content)
+            return
+        self._set(self._props.content, value)
+
+    @property
+    def _props(self) -> FrameOptionsProtectProps:
+        try:
+            return self._props_frame_opts_protect
+        except AttributeError:
+            self._props_frame_opts_protect = FrameOptionsProtectProps(
+                size="SizeProtected", pos="PositionProtected", content="ContentProtected"
+            )
+        return self._props_frame_opts_protect

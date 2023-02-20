@@ -27,7 +27,7 @@ from ooo.helper.enum_helper import UnoEnumMeta
 from ..exceptions import ex as mEx
 
 
-class DeletedEnumMeta(UnoEnumMeta):
+class DeletedUnoEnumMeta(UnoEnumMeta):
     def __getattr__(cls, __name: str) -> uno.Enum | Any:
         if __name in cls._get_deleted_attribs():
             cls_name = cls.__name__
