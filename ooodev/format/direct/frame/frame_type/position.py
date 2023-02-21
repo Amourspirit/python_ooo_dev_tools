@@ -5,7 +5,7 @@ Module for Fill Transparency.
 """
 from __future__ import annotations
 import dataclasses
-from typing import Any, Tuple, cast, Type, TypeVar
+from typing import Any, Tuple, cast, Type, TypeVar, overload
 from enum import Enum
 import math
 import uno
@@ -204,7 +204,11 @@ class Position(StyleBase):
         return cp
 
     def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.style.Style",)
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = ("com.sun.star.style.Style",)
+        return self._supported_services_values
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:
@@ -220,9 +224,19 @@ class Position(StyleBase):
                 mLo.Lo.print(f"  {err}")
 
     # endregion Overrides
-
+    # region from_obj()
+    @overload
     @classmethod
     def from_obj(cls: Type[_TPosition], obj: object) -> _TPosition:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TPosition], obj: object, **kwargs) -> _TPosition:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TPosition], obj: object, **kwargs) -> _TPosition:
         """
         Gets instance from object
 
@@ -232,10 +246,8 @@ class Position(StyleBase):
         Returns:
             Position: Instance that represents Frame Position.
         """
-        # this nu is only used to get Property Name
 
-        inst = super(Position, cls).__new__(cls)
-        inst.__init__()
+        inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
         pp = inst._props
@@ -276,10 +288,15 @@ class Position(StyleBase):
 
         return inst
 
+    # endregion from_obj()
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.DOC | FormatKind.STYLE
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.DOC | FormatKind.STYLE
+        return self._format_kind_prop
 
     @property
     def prop_keep_boundries(self) -> bool | None:
@@ -326,9 +343,9 @@ class Position(StyleBase):
     @property
     def _props(self) -> FrameTypePositonProps:
         try:
-            return self._props_frame_type_pos
+            return self._props_internal_attributes
         except AttributeError:
-            self._props_frame_type_pos = FrameTypePositonProps(
+            self._props_internal_attributes = FrameTypePositonProps(
                 hori_orient="HoriOrient",
                 hori_pos="HoriOrientPosition",
                 hori_rel="HoriOrientRelation",
@@ -339,4 +356,4 @@ class Position(StyleBase):
                 page_toggle="PageToggle",
             )
 
-        return self._props_frame_type_pos
+        return self._props_internal_attributes

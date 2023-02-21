@@ -11,14 +11,21 @@ from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 
 class Shadow(ShadowStruct):
     def _get_property_name(self) -> str:
-        return "ParaShadowFormat"
+        try:
+            return self._property_name
+        except AttributeError:
+            self._property_name = "ParaShadowFormat"
+        return self._property_name
 
     def _supported_services(self) -> Tuple[str, ...]:
-        # will affect apply() on parent class.
-        return (
-            "com.sun.star.style.CharacterProperties",
-            "com.sun.star.style.ParagraphStyle",
-        )
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = (
+                "com.sun.star.style.CharacterProperties",
+                "com.sun.star.style.ParagraphStyle",
+            )
+        return self._supported_services_values
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:

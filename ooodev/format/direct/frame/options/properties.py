@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, cast, overload
 from typing import Any, Tuple, Type, TypeVar
 from enum import Enum
 import uno
@@ -196,18 +196,33 @@ class Properties(StyleMulti):
     # endregion Overrides
 
     # region Static Methods
+
+    # region from_obj()
+    @overload
     @classmethod
     def from_obj(cls: Type[_TProperties], obj: object) -> _TProperties:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TProperties], obj: object, **kwargs) -> _TProperties:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TProperties], obj: object, **kwargs) -> _TProperties:
         """
         Gets instance from object
 
         Args:
             obj (object): UNO Object.
 
+        Raises:
+            NotSupportedServiceError: If ``obj`` is not supported.
+
         Returns:
             Properties: Instance that represents Frame Option Properties.
         """
-        inst = cls()
+        inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
@@ -218,13 +233,20 @@ class Properties(StyleMulti):
         inst.prop_printable = bool(mProps.Props.get(obj, inst._props.printable, False))
         return inst
 
+    # endregion from_obj()
+
     # endregion Static Methods
 
     # region Properties
+
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.DOC | FormatKind.STYLE
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.DOC | FormatKind.STYLE
+        return self._format_kind_prop
 
     @property
     def prop_editable(self) -> bool | None:

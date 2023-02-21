@@ -78,13 +78,14 @@ class Hyphenation(StyleBase):
 
     # region methods
     def _supported_services(self) -> Tuple[str, ...]:
-        """
-        Gets a tuple of supported services (``com.sun.star.style.ParagraphProperties``,)
-
-        Returns:
-            Tuple[str, ...]: Supported services
-        """
-        return ("com.sun.star.style.ParagraphProperties", "com.sun.star.style.ParagraphStyle")
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = (
+                "com.sun.star.style.ParagraphProperties",
+                "com.sun.star.style.ParagraphStyle",
+            )
+        return self._supported_services_values
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:
@@ -114,9 +115,19 @@ class Hyphenation(StyleBase):
                 mLo.Lo.print(f"  {err}")
 
     # endregion apply()
-
+    # region from_obj()
+    @overload
     @classmethod
     def from_obj(cls: Type[_THyphenation], obj: object) -> _THyphenation:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_THyphenation], obj: object, **kwargs) -> _THyphenation:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_THyphenation], obj: object, **kwargs) -> _THyphenation:
         """
         Gets instance from object
 
@@ -129,8 +140,7 @@ class Hyphenation(StyleBase):
         Returns:
             Hyphenation: ``Hyphenation`` instance that represents ``obj`` hypenation properties.
         """
-        inst = super(Hyphenation, cls).__new__(cls)
-        inst.__init__()
+        inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
@@ -147,6 +157,8 @@ class Hyphenation(StyleBase):
         set_prop("ParaHyphenationMaxHyphens", inst)
 
         return inst
+
+    # endregion from_obj()
 
     # endregion methods
 
@@ -248,7 +260,11 @@ class Hyphenation(StyleBase):
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.PARA
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.PARA
+        return self._format_kind_prop
 
     @property
     def prop_auto(self) -> bool | None:

@@ -93,23 +93,18 @@ class TabStopStruct(StyleBase):
 
     # region methods
     def _supported_services(self) -> Tuple[str, ...]:
-        """
-        Gets a tuple of supported services (``com.sun.star.style.ParagraphProperties``,)
-
-        Returns:
-            Tuple[str, ...]: Supported services
-        """
-        return ()
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = ()
+        return self._supported_services_values
 
     def _get_property_name(self) -> str:
-        return "ParaTabStops"
-
-    def copy(self: _TTabStopStruct) -> _TTabStopStruct:
-        nu = cast(TabStopStruct, super(TabStopStruct, self.__class__).__new__(self.__class__))
-        nu.__init__()
-        if self._dv:
-            nu._update(self._dv)
-        return nu
+        try:
+            return self._property_name
+        except AttributeError:
+            self._property_name = "ParaTabStops"
+        return self._property_name
 
     def get_attrs(self) -> Tuple[str, ...]:
         return (self._get_property_name(),)
@@ -214,8 +209,19 @@ class TabStopStruct(StyleBase):
             FillChar=self._get("FillChar"),
         )
 
+    # region from_obj()
+    @overload
     @classmethod
-    def from_obj(cls: Type[_TTabStopStruct], obj: object, index: int = 0) -> _TTabStopStruct:
+    def from_obj(cls: Type[_TTabStopStruct], obj: object) -> _TTabStopStruct:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TTabStopStruct], obj: object, **kwargs) -> _TTabStopStruct:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TTabStopStruct], obj: object, index: int = 0, **kwargs) -> _TTabStopStruct:
         """
         Gets instance from object
 
@@ -230,8 +236,7 @@ class TabStopStruct(StyleBase):
             Tab: ``Tab`` instance that represents ``obj`` Tab properties.
         """
         # this nu is only used to get Property Name
-        nu = super(TabStopStruct, cls).__new__(cls)
-        nu.__init__()
+        nu = cls(**kwargs)
         prop_name = nu._get_property_name()
         try:
             tss = cast(Tuple[TabStop, ...], mProps.Props.get(obj, prop_name))
@@ -240,10 +245,23 @@ class TabStopStruct(StyleBase):
         # can expcet for ts to contain at least one TabAlign
         ts = tss[index]
 
-        return cls.from_tab_stop(ts)
+        return cls.from_tab_stop(ts, **kwargs)
 
+    # endregion from_obj()
+
+    # region from_tab_stop()
+    @overload
     @classmethod
     def from_tab_stop(cls: Type[_TTabStopStruct], ts: TabStop) -> _TTabStopStruct:
+        ...
+
+    @overload
+    @classmethod
+    def from_tab_stop(cls: Type[_TTabStopStruct], ts: TabStop, **kwargs) -> _TTabStopStruct:
+        ...
+
+    @classmethod
+    def from_tab_stop(cls: Type[_TTabStopStruct], ts: TabStop, **kwargs) -> _TTabStopStruct:
         """
         Converts a Tab Stop instance to a Tab
 
@@ -253,13 +271,14 @@ class TabStopStruct(StyleBase):
         Returns:
             Tab: Tab set with Tab Stop properties
         """
-        inst = super(TabStopStruct, cls).__new__(cls)
-        inst.__init__()
+        inst = cls(**kwargs)
         inst._set("FillChar", ts.FillChar)
         inst._set("Alignment", ts.Alignment)
         inst._set("DecimalChar", ts.DecimalChar)
         inst._set("Position", ts.Position)
         return inst
+
+    # endregion from_tab_stop()
 
     def _set_obj_tabs(self, obj: object, tabs: Iterable[TabStop], prop: str = "") -> None:
         if not prop:
@@ -354,7 +373,11 @@ class TabStopStruct(StyleBase):
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.PARA | FormatKind.STATIC
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.PARA | FormatKind.STATIC
+        return self._format_kind_prop
 
     @property
     def prop_position(self) -> float:

@@ -4,7 +4,7 @@ Module for managing paragraph padding.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, cast, Type, TypeVar
+from typing import Tuple, cast, Type, TypeVar, overload
 
 from ....events.args.cancel_event_args import CancelEventArgs
 from ....exceptions import ex as mEx
@@ -27,15 +27,33 @@ class Padding(AbstractPadding):
 
     # region methods
     def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.style.ParagraphProperties", "com.sun.star.style.ParagraphStyle")
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = (
+                "com.sun.star.style.ParagraphProperties",
+                "com.sun.star.style.ParagraphStyle",
+            )
+        return self._supported_services_values
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:
             raise ValueError("Modifying a default instance is not allowed")
         return super()._on_modifing(event)
 
+    # region from_obj()
+    @overload
     @classmethod
     def from_obj(cls: Type[_TPadding], obj: object) -> _TPadding:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TPadding], obj: object, **kwargs) -> _TPadding:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TPadding], obj: object, **kwargs) -> _TPadding:
         """
         Gets Padding instance from object
 
@@ -48,8 +66,7 @@ class Padding(AbstractPadding):
         Returns:
             Padding: Padding that represents ``obj`` padding.
         """
-        inst = super(Padding, cls).__new__(cls)
-        inst.__init__()
+        inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
@@ -60,13 +77,19 @@ class Padding(AbstractPadding):
 
         return inst
 
+    # endregion from_obj()
+
     # endregion methods
 
     # region properties
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.PARA
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.PARA
+        return self._format_kind_prop
 
     @static_prop
     def default() -> Padding:  # type: ignore[misc]

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, overload
 from typing import Any, Tuple, Type, TypeVar
 from enum import Enum
 import uno
@@ -75,7 +75,11 @@ class Align(StyleBase):
     # region Overrides
 
     def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.style.Style",)
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = ("com.sun.star.style.Style",)
+        return self._supported_services_values
 
     def _props_set(self, obj: object, **kwargs: Any) -> None:
         try:
@@ -86,31 +90,49 @@ class Align(StyleBase):
                 mLo.Lo.print(f"  {err}")
 
     # endregion Overrides
-
+    # region from_obj()
+    @overload
     @classmethod
     def from_obj(cls: Type[_TAlign], obj: object) -> _TAlign:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TAlign], obj: object, **kwargs) -> _TAlign:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TAlign], obj: object, **kwargs) -> _TAlign:
         """
         Gets instance from object
 
         Args:
             obj (object): UNO Object.
 
+        Raises:
+            NotSupportedServiceError: If ``obj`` is not supported.
+
         Returns:
-            Align: Instance that represents Frame Protection.
+            Align: Instance that represents Frame Alignment.
         """
         # this nu is only used to get Property Name
 
-        inst = super(Align, cls).__new__(cls)
-        inst.__init__()
+        inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
         inst.prop_adjust = VertAdjustKind(mProps.Props.get(obj, inst._props.name))
         return inst
 
+    # endregion from_obj()
+
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.DOC | FormatKind.STYLE
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.DOC | FormatKind.STYLE
+        return self._format_kind_prop
 
     @property
     def prop_adjust(self) -> VertAdjustKind:
@@ -124,7 +146,7 @@ class Align(StyleBase):
     @property
     def _props(self) -> FrameOptionsAlignProps:
         try:
-            return self._props_frame_opts_align
+            return self._props_internal_attributes
         except AttributeError:
-            self._props_frame_opts_align = FrameOptionsAlignProps(name="TextVerticalAdjust")
-        return self._props_frame_opts_align
+            self._props_internal_attributes = FrameOptionsAlignProps(name="TextVerticalAdjust")
+        return self._props_internal_attributes

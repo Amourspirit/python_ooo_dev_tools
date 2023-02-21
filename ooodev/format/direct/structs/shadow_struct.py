@@ -103,7 +103,11 @@ class ShadowStruct(StyleBase):
         )
 
     def _supported_services(self) -> Tuple[str, ...]:
-        return ()
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = ()
+        return self._supported_services_values
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:
@@ -111,7 +115,11 @@ class ShadowStruct(StyleBase):
         return super()._on_modifing(event)
 
     def _get_property_name(self) -> str:
-        return "ShadowFormat"
+        try:
+            return self._property_name
+        except AttributeError:
+            self._property_name = "ShadowFormat"
+        return self._property_name
 
     def get_attrs(self) -> Tuple[str, ...]:
         """
@@ -123,8 +131,7 @@ class ShadowStruct(StyleBase):
         return (self._get_property_name(),)
 
     def copy(self: _TShadowStruct) -> _TShadowStruct:
-        nu = super(ShadowStruct, self.__class__).__new__(self.__class__)
-        nu.__init__(
+        nu = self.__class__(
             location=self.prop_width, color=self.prop_color, transparent=self.prop_transparent, width=self.prop_width
         )
         if self._dv:
@@ -176,8 +183,19 @@ class ShadowStruct(StyleBase):
 
     # endregion apply()
 
+    # region from_obj()
+    @overload
     @classmethod
     def from_obj(cls: Type[_TShadowStruct], obj: object) -> _TShadowStruct:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TShadowStruct], obj: object, **kwargs) -> _TShadowStruct:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TShadowStruct], obj: object, **kwargs) -> _TShadowStruct:
         """
         Gets instance from object
 
@@ -189,20 +207,32 @@ class ShadowStruct(StyleBase):
         """
 
         # this nu is only used to get Property Name
-        nu = super(ShadowStruct, cls).__new__(cls)
-        nu.__init__()
+        nu = cls(**kwargs)
 
         shadow = cast(ShadowFormat, mProps.Props.get(obj, nu._get_property_name()))
         if shadow is None:
             return cls.empty.copy()
         width = UnitConvert.convert(num=shadow.ShadowWidth, frm=Length.MM100, to=Length.MM)
 
-        nu = super(ShadowStruct, cls).__new__(cls)
-        nu.__init__(location=shadow.Location, color=shadow.Color, transparent=shadow.IsTransparent, width=width)
-        return nu
+        return cls(
+            location=shadow.Location, color=shadow.Color, transparent=shadow.IsTransparent, width=width, **kwargs
+        )
 
+    # endregion from_obj()
+
+    # region from_shadow()
+    @overload
     @classmethod
     def from_shadow(cls: Type[_TShadowStruct], shadow: ShadowFormat) -> _TShadowStruct:
+        ...
+
+    @overload
+    @classmethod
+    def from_shadow(cls: Type[_TShadowStruct], shadow: ShadowFormat, **kwargs) -> _TShadowStruct:
+        ...
+
+    @classmethod
+    def from_shadow(cls: Type[_TShadowStruct], shadow: ShadowFormat, **kwargs) -> _TShadowStruct:
         """
         Gets an instance
 
@@ -213,10 +243,11 @@ class ShadowStruct(StyleBase):
             Shadow: Instance representing ``shadow``.
         """
         width = UnitConvert.convert(num=shadow.ShadowWidth, frm=Length.MM100, to=Length.MM)
-        nu = super(ShadowStruct, cls).__new__(cls)
-        nu.__init__(location=shadow.Location, color=shadow.Color, transparent=shadow.IsTransparent, width=width)
-        return nu
+        return cls(
+            location=shadow.Location, color=shadow.Color, transparent=shadow.IsTransparent, width=width, **kwargs
+        )
 
+    # endregion from_shadow()
     # endregion methods
 
     # region style methods
@@ -282,7 +313,11 @@ class ShadowStruct(StyleBase):
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.STRUCT
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.STRUCT
+        return self._format_kind_prop
 
     @property
     def prop_location(self) -> ShadowLocation:

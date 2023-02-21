@@ -4,7 +4,7 @@ Module for Fill Transparency.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Any, Tuple, cast, Type, TypeVar, NamedTuple
+from typing import Any, Tuple, cast, Type, TypeVar, NamedTuple, overload
 
 import uno
 from .....events.args.cancel_event_args import CancelEventArgs
@@ -41,7 +41,11 @@ class PaperFormat(StyleBase):
 
     # region Overrides
     def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.style.PageProperties", "com.sun.star.style.PageStyle")
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = ("com.sun.star.style.PageProperties", "com.sun.star.style.PageStyle")
+        return self._supported_services_values
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:
@@ -63,8 +67,20 @@ class PaperFormat(StyleBase):
     # endregion internal methods
 
     # region Static Methods
+
+    # region from_obj()
+    @overload
     @classmethod
     def from_obj(cls: Type[_TPaperFormat], obj: object) -> _TPaperFormat:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TPaperFormat], obj: object, **kwargs) -> _TPaperFormat:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TPaperFormat], obj: object, **kwargs) -> _TPaperFormat:
         """
         Gets instance from object
 
@@ -76,8 +92,7 @@ class PaperFormat(StyleBase):
         """
         # this nu is only used to get Property Name
 
-        inst = super(PaperFormat, cls).__new__(cls)
-        inst.__init__()
+        inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
@@ -94,8 +109,25 @@ class PaperFormat(StyleBase):
 
         return inst
 
+    # endregion from_obj()
+
+    # region from_preset()
+    @overload
     @classmethod
     def from_preset(cls: Type[_TPaperFormat], preset: PaperFormatKind, landscape: bool = False) -> _TPaperFormat:
+        ...
+
+    @overload
+    @classmethod
+    def from_preset(
+        cls: Type[_TPaperFormat], preset: PaperFormatKind, landscape: bool = False, **kwargs
+    ) -> _TPaperFormat:
+        ...
+
+    @classmethod
+    def from_preset(
+        cls: Type[_TPaperFormat], preset: PaperFormatKind, landscape: bool = False, **kwargs
+    ) -> _TPaperFormat:
         """
         Gets instance from preset
 
@@ -109,16 +141,19 @@ class PaperFormat(StyleBase):
         sz = preset.get_size()
         if landscape:
             sz = sz.swap()
-        inst = super(PaperFormat, cls).__new__(cls)
-        inst.__init__(SizeMM.from_size_mm100(sz))
-        return inst
+        return cls(SizeMM.from_size_mm100(sz), **kwargs)
+
+    # endregion from_preset()
 
     # endregion Static Methods
-
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.PAGE
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.PAGE
+        return self._format_kind_prop
 
     @property
     def prop_size(self) -> SizeMM:

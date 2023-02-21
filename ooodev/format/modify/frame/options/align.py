@@ -63,8 +63,7 @@ class Align(FrameStyleBaseMulti):
         Returns:
             Align: ``Align`` instance from style properties.
         """
-        inst = super(Align, cls).__new__(cls)
-        inst.__init__(style_name=style_name, style_family=style_family)
+        inst = cls(style_name=style_name, style_family=style_family)
         direct = DirectAlign.from_obj(inst.get_style_props(doc))
         direct._prop_parent = inst
         inst._set_style("direct", direct, *direct.get_attrs())

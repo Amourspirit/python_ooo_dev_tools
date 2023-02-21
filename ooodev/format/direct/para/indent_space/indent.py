@@ -69,7 +69,14 @@ class Indent(StyleBase):
 
     # region methods
     def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.style.ParagraphProperties", "com.sun.star.style.ParagraphStyle")
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = (
+                "com.sun.star.style.ParagraphProperties",
+                "com.sun.star.style.ParagraphStyle",
+            )
+        return self._supported_services_values
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:
@@ -100,8 +107,19 @@ class Indent(StyleBase):
 
     # endregion apply()
 
+    # region from_obj()
+    @overload
     @classmethod
     def from_obj(cls: Type[_TIndent], obj: object) -> _TIndent:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TIndent], obj: object, **kwargs) -> _TIndent:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TIndent], obj: object, **kwargs) -> _TIndent:
         """
         Gets instance from object
 
@@ -114,8 +132,7 @@ class Indent(StyleBase):
         Returns:
             Indent: ``Indent`` instance that represents ``obj`` writing mode.
         """
-        inst = cast(Indent, super(Indent, cls).__new__(cls))
-        inst.__init__()
+        inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
@@ -130,6 +147,8 @@ class Indent(StyleBase):
         set_prop("ParaFirstLineIndent", inst)
         set_prop("ParaIsAutoFirstLineIndent", inst)
         return inst
+
+    # endregion from_obj()
 
     # endregion methods
 
@@ -206,7 +225,11 @@ class Indent(StyleBase):
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.PARA
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.PARA
+        return self._format_kind_prop
 
     @property
     def prop_before(self) -> float | None:

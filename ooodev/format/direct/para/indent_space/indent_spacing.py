@@ -4,17 +4,19 @@ Modele for managing paragraph Indents and Spacing.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, cast, Type
+from typing import Tuple, cast, Type, overload, TypeVar
 from numbers import Real
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
 from .....meta.static_prop import static_prop
 from ....kind.format_kind import FormatKind
-from ....style_base import StyleMulti, _T
+from ....style_base import StyleMulti
 from .indent import Indent
 from .line_spacing import LineSpacing, ModeKind as ModeKind
 from .spacing import Spacing
+
+_TIndentSpacing = TypeVar(name="_TIndentSpacing", bound="IndentSpacing")
 
 
 class IndentSpacing(StyleMulti):
@@ -88,22 +90,35 @@ class IndentSpacing(StyleMulti):
     # endregion init
 
     # region methods
-    def _supported_services(self) -> Tuple[str, ...]:
-        """
-        Gets a tuple of supported services (``com.sun.star.style.ParagraphProperties``,)
 
-        Returns:
-            Tuple[str, ...]: Supported services
-        """
-        return ("com.sun.star.style.ParagraphProperties", "com.sun.star.style.ParagraphStyle")
+    def _supported_services(self) -> Tuple[str, ...]:
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = (
+                "com.sun.star.style.ParagraphProperties",
+                "com.sun.star.style.ParagraphStyle",
+            )
+        return self._supported_services_values
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:
             raise ValueError("Modifying a default instance is not allowed")
         return super()._on_modifing(event)
 
+    # region from_obj()
+    @overload
     @classmethod
-    def from_obj(cls: Type[_T], obj: object) -> _T:
+    def from_obj(cls: Type[_TIndentSpacing], obj: object) -> _TIndentSpacing:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TIndentSpacing], obj: object, **kwargs) -> _TIndentSpacing:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TIndentSpacing], obj: object, **kwargs) -> _TIndentSpacing:
         """
         Gets instance from object
 
@@ -116,8 +131,7 @@ class IndentSpacing(StyleMulti):
         Returns:
             IndentSpacing: ``IndentSpacing`` instance that represents ``obj`` Indents and spacing.
         """
-        inst = cast(IndentSpacing, super(IndentSpacing, cls).__new__(cls))
-        inst.__init__()
+        inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError("Object is not supported for conversion to IndentSpacing")
         ls = LineSpacing.from_obj(obj)
@@ -131,13 +145,19 @@ class IndentSpacing(StyleMulti):
             inst._set_style("indent", indent, *indent.get_attrs())
         return inst
 
+    # endregion from_obj()
+
     # endregion methods
 
     # region properties
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.PARA
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.PARA
+        return self._format_kind_prop
 
     @property
     def prop_inner_line_spacing(self) -> LineSpacing | None:

@@ -23,11 +23,15 @@ class FillColor(AbstractColor):
     """
 
     def _supported_services(self) -> Tuple[str, ...]:
-        return (
-            "com.sun.star.drawing.FillProperties",
-            "com.sun.star.beans.PropertySet",
-            "com.sun.star.chart2.PageBackground",
-        )
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = (
+                "com.sun.star.drawing.FillProperties",
+                "com.sun.star.beans.PropertySet",
+                "com.sun.star.chart2.PageBackground",
+            )
+        return self._supported_services_values
 
     def _is_valid_obj(self, obj: object) -> bool:
         valid = super()._is_valid_obj(obj)
@@ -40,15 +44,19 @@ class FillColor(AbstractColor):
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.TXT_CONTENT
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.TXT_CONTENT
+        return self._format_kind_prop
 
     @property
     def _props(self) -> FillColorProps:
         try:
-            return self._props_fill_color
+            return self._props_internal_attributes
         except AttributeError:
-            self._props_fill_color = FillColorProps(color="FillColor", style="FillStyle", bg="FillBackground")
-        return self._props_fill_color
+            self._props_internal_attributes = FillColorProps(color="FillColor", style="FillStyle", bg="FillBackground")
+        return self._props_internal_attributes
 
     @static_prop
     def empty() -> FillColor:  # type: ignore[misc]

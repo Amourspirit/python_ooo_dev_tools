@@ -76,14 +76,17 @@ class Borders(StyleMulti):
             bottom=bottom,
             border_side=border_side,
         )
+        sides._prop_parent = self
 
         super().__init__(**init_vals)
 
         if sides.prop_has_attribs:
             self._set_style("sides", sides, *sides.get_attrs())
         if not padding is None:
+            padding._prop_parent = self
             self._set_style("padding", padding, *padding.get_attrs())
         if not shadow is None:
+            shadow._prop_parent = self
             self._set_style("shadow", shadow, *shadow.get_attrs())
 
     # endregion init
@@ -232,7 +235,14 @@ class Borders(StyleMulti):
 
     # region methods
     def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.style.CharacterProperties", "com.sun.star.style.CharacterStyle")
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = (
+                "com.sun.star.style.CharacterProperties",
+                "com.sun.star.style.CharacterStyle",
+            )
+        return self._supported_services_values
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:
@@ -269,7 +279,11 @@ class Borders(StyleMulti):
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.CHAR
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.CHAR
+        return self._format_kind_prop
 
     @property
     def prop_inner_sides(self) -> Sides:

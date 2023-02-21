@@ -102,8 +102,19 @@ class WritingMode(StyleBase):
 
     # endregion apply()
 
+    # region from_obj()
+    @overload
     @classmethod
     def from_obj(cls: Type[_TWritingMode], obj: object) -> _TWritingMode:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TWritingMode], obj: object, **kwargs) -> _TWritingMode:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TWritingMode], obj: object, **kwargs) -> _TWritingMode:
         """
         Gets instance from object
 
@@ -116,13 +127,14 @@ class WritingMode(StyleBase):
         Returns:
             WritingMode: ``WritingMode`` instance that represents ``obj`` writing mode.
         """
-        inst = super(WritingMode, cls).__new__(cls)
-        inst.__init__()
+        inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
         inst._set("WritingMode", int(mProps.Props.get(obj, inst._get_property_name())))
         return inst
+
+    # endregion from_obj()
 
     # endregion methods
 
@@ -237,7 +249,11 @@ class WritingMode(StyleBase):
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.PARA | FormatKind.PARA_COMPLEX
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.PARA | FormatKind.PARA_COMPLEX
+        return self._format_kind_prop
 
     @property
     def prop_mode(self) -> WritingMode2Enum | None:

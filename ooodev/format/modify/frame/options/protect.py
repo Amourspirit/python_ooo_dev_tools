@@ -67,8 +67,7 @@ class Protect(FrameStyleBaseMulti):
         Returns:
             Protect: ``Protect`` instance from style properties.
         """
-        inst = super(Protect, cls).__new__(cls)
-        inst.__init__(style_name=style_name, style_family=style_family)
+        inst = cls(style_name=style_name, style_family=style_family)
         direct = DirectProtect.from_obj(inst.get_style_props(doc))
         direct._prop_parent = inst
         inst._set_style("direct", direct, *direct.get_attrs())

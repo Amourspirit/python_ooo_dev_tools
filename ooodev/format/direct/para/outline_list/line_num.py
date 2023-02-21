@@ -24,7 +24,11 @@ class LineNum(AbstractLineNumber):
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.PARA
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.PARA
+        return self._format_kind_prop
 
     @static_prop
     def default() -> LineNum:  # type: ignore[misc]

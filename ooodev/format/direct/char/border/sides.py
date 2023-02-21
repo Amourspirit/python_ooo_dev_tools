@@ -29,7 +29,14 @@ class Sides(AbstractSides):
 
     # region methods
     def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.style.CharacterProperties", "com.sun.star.style.CharacterStyle")
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = (
+                "com.sun.star.style.CharacterProperties",
+                "com.sun.star.style.CharacterStyle",
+            )
+        return self._supported_services_values
 
     # endregion methods
 
@@ -37,16 +44,20 @@ class Sides(AbstractSides):
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.CHAR
+        try:
+            return self._fromat_kind_prop
+        except AttributeError:
+            self._fromat_kind_prop = FormatKind.CHAR
+        return self._fromat_kind_prop
 
     @property
     def _props(self) -> BorderProps:
         try:
-            return self.__border_properties
+            return self._props_internal_attributes
         except AttributeError:
-            self.__border_properties = BorderProps(
+            self._props_internal_attributes = BorderProps(
                 left="CharLeftBorder", top="CharTopBorder", right="CharRightBorder", bottom="CharBottomBorder"
             )
-        return self.__border_properties
+        return self._props_internal_attributes
 
     # endregion Properties

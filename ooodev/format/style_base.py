@@ -569,8 +569,7 @@ class StyleBase(metaclass=MetaStyle):
                 return cargs.event_data
             else:
                 mEx.CancelEventError(cargs)
-        nu = super(StyleBase, self.__class__).__new__(self.__class__)
-        nu.__init__()
+        nu = self.__class__()
         nu._prop_parent = self._prop_parent
         nu._update(self._dv)
         return nu
@@ -743,6 +742,8 @@ class StyleMulti(StyleBase):
             kwargs: Expandalble key value args to that are to be passed to style when ``apply_style()`` is called.
         """
         styles = self._get_multi_styles()
+        if style._prop_parent is None:
+            style._prop_parent = self
         if len(attrs) + len(kwargs) == 0:
             styles[key] = _StyleInfo(style, None)
         else:
@@ -1016,7 +1017,11 @@ class StyleModifyMulti(StyleMulti):
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.DOC | FormatKind.STYLE
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.DOC | FormatKind.STYLE
+        return self._format_kind_prop
 
     @property
     def prop_style_name(self) -> str:

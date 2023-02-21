@@ -4,7 +4,7 @@ Modele for managing paragraph Tabs.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, cast, Type, TypeVar
+from typing import Tuple, cast, Type, TypeVar, overload
 
 import uno
 
@@ -36,7 +36,14 @@ class Tabs(TabStopStruct):
 
     # region methods
     def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.style.ParagraphProperties", "com.sun.star.style.ParagraphStyle")
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = (
+                "com.sun.star.style.ParagraphProperties",
+                "com.sun.star.style.ParagraphStyle",
+            )
+        return self._supported_services_values
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:
@@ -44,10 +51,25 @@ class Tabs(TabStopStruct):
         return super()._on_modifing(event)
 
     def _get_property_name(self) -> str:
-        return "ParaTabStops"
+        try:
+            return self._property_name
+        except AttributeError:
+            self._property_name = "ParaTabStops"
+        return self._property_name
 
+    # region find()
+    @overload
     @classmethod
     def find(cls: Type[_TTabs], obj: object, position: float) -> _TTabs | None:
+        ...
+
+    @overload
+    @classmethod
+    def find(cls: Type[_TTabs], obj: object, position: float, **kwargs) -> _TTabs | None:
+        ...
+
+    @classmethod
+    def find(cls: Type[_TTabs], obj: object, position: float, **kwargs) -> _TTabs | None:
         """
         Gets a Tab that matches position from obj such as a cursor.
 
@@ -58,8 +80,7 @@ class Tabs(TabStopStruct):
         Returns:
             Tab | None: ``Tab`` instance if found; Otherwise, ``None``
         """
-        nu = super(Tabs, cls).__new__(cls)
-        nu.__init__()
+        nu = cls(**kwargs)
         if not nu._is_valid_obj(obj):
             return None
         key = Tabs.default._get_property_name()
@@ -83,10 +104,24 @@ class Tabs(TabStopStruct):
         if match == -1:
             return None
         ts = tss[match]
-        return cls.from_tab_stop(ts)
+        return cls.from_tab_stop(ts, **kwargs)
 
+    # endregion find()
+
+    # region remove_by_pos()
+
+    @overload
     @classmethod
     def remove_by_pos(cls, obj: object, position: float) -> bool:
+        ...
+
+    @overload
+    @classmethod
+    def remove_by_pos(cls, obj: object, position: float, **kwargs) -> bool:
+        ...
+
+    @classmethod
+    def remove_by_pos(cls, obj: object, position: float, **kwargs) -> bool:
         """
         Removes a Tab Stop from ``obj``
 
@@ -97,15 +132,15 @@ class Tabs(TabStopStruct):
         Returns:
             bool: ``True`` if a Tab Stop has been removed; Oherwise, ``False``
         """
-        tb = cls.find(obj, position)
+        tb = cls.find(obj, position, **kwargs)
         if tb is None:
             return False
         # tb will contain the exact Position number so no need to plus or minus
         pos = cast(int, tb._get("Position"))
-        return cls._remove_by_positon(obj, pos)
+        return cls._remove_by_positon(obj, pos, **kwargs)
 
     @classmethod
-    def _remove_by_positon(cls, obj: object, position: int) -> bool:
+    def _remove_by_positon(cls, obj: object, position: int, **kwargs) -> bool:
         """
         Removes a Tab Stop from ``obj``
 
@@ -116,7 +151,8 @@ class Tabs(TabStopStruct):
         Returns:
             None:
         """
-        tss = cast(Tuple[TabStop, ...], mProps.Props.get(obj, Tabs.default._get_property_name()))
+        inst = cls(**kwargs)
+        tss = cast(Tuple[TabStop, ...], mProps.Props.get(obj, inst._get_property_name()))
         if tss is None:
             return False
         lst = []
@@ -125,11 +161,24 @@ class Tabs(TabStopStruct):
                 lst.append(ts)
         if len(lst) == len(tss):
             return False
-        Tabs.default._set_obj_tabs(obj, lst)
+        inst._set_obj_tabs(obj, lst)
         return True
 
+    # endregion remove_by_pos()
+
+    # region remove()
+    @overload
     @classmethod
     def remove(cls, obj: object, tab: TabStop | TabStopStruct) -> bool:
+        ...
+
+    @overload
+    @classmethod
+    def remove(cls, obj: object, tab: TabStop | TabStopStruct, **kwargs) -> bool:
+        ...
+
+    @classmethod
+    def remove(cls, obj: object, tab: TabStop | TabStopStruct, **kwargs) -> bool:
         """
         Removes a Tab Stop from ``obj`` ``ParaTabStops`` property.
 
@@ -140,31 +189,48 @@ class Tabs(TabStopStruct):
         Returns:
             bool: ``True`` if a Tab has been removed; Oherwise, ``False``
         """
-        if not Tabs.default._is_valid_obj(obj):
+        inst = cls(**kwargs)
+        if not inst._is_valid_obj(obj):
             return False
         if isinstance(tab, TabStopStruct):
-            return Tabs.default._remove_by_positon(obj, tab._get("Position"))
+            return inst._remove_by_positon(obj, tab._get("Position"), **kwargs)
         ts = cast(TabStop, tab)
-        return Tabs.default._remove_by_positon(obj, ts.Position)
+        return inst._remove_by_positon(obj, ts.Position, **kwargs)
 
+    # endregion remove()
+
+    # region remove_all()
+    @overload
     @classmethod
     def remove_all(cls, obj: object) -> None:
+        ...
+
+    @overload
+    @classmethod
+    def remove_all(cls, obj: object, **kwargs) -> None:
+        ...
+
+    @classmethod
+    def remove_all(cls, obj: object, **kwargs) -> None:
         """
         Removes all tab from ``obj`` ``ParaTabStops`` property.
 
         Args:
-            obj (object): Object that supports ``com.sun.star.style.ParagraphProperties``
+            obj (object): UNO Object.
         """
-        if not Tabs.default._is_valid_obj(obj):
+        inst = cls(**kwargs)
+        if not inst._is_valid_obj(obj):
             return
-        tss = cast(Tuple[TabStop, ...], mProps.Props.get(obj, Tabs.default._get_property_name()))
+        tss = cast(Tuple[TabStop, ...], mProps.Props.get(obj, inst._get_property_name()))
         if tss is None:
             return
         try:
-            Tabs.default._set_obj_tabs(obj, [Tabs.default.get_uno_struct()])
+            inst._set_obj_tabs(obj, [inst.get_uno_struct()])
         except Exception:
             # if for any reason can't get default it is ok to just remove all.
-            Tabs.default._set_obj_tabs(obj, [])
+            inst._set_obj_tabs(obj, [])
+
+    # endregion remove_all()
 
     def get_uno_struct(self) -> TabStop:
         """

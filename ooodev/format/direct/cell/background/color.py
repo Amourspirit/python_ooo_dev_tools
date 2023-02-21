@@ -4,7 +4,7 @@ Module for Cell Properties Cell Back Color.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, overload
+from typing import Tuple, overload, Type, TypeVar
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
@@ -14,6 +14,8 @@ from .....utils import lo as mLo
 from .....utils import color as mColor
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleBase
+
+_TColor = TypeVar(name="_TColor", bound="Color")
 
 
 class Color(StyleBase):
@@ -83,23 +85,34 @@ class Color(StyleBase):
 
     # endregion apply()
 
-    @staticmethod
-    def from_obj(obj: object) -> Color:
+    # region from_obj()
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TColor], obj: object) -> _TColor:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TColor], obj: object, **kwargs) -> _TColor:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TColor], obj: object, **kwargs) -> _TColor:
         """
         Gets instance from object
 
         Args:
-            obj (object): UNO object that supports ``com.sun.star.table.CellProperties`` service.
+            obj (object): UNO Object.
 
         Raises:
-            NotSupportedServiceError: If ``obj`` does not support  ``com.sun.star.table.CellProperties`` service.
+            NotSupportedError: If ``obj`` is not supported.
 
         Returns:
             BackColor: ``BackColor`` instance that represents ``obj`` Back Color properties.
         """
-        inst = Color()
+        inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
-            raise mEx.NotSupportedServiceError(inst._supported_services()[0])
+            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
         color = mProps.Props.get(obj, "CellBackColor", None)
         bg = mProps.Props.get(obj, "IsCellBackgroundTransparent", None)
@@ -110,6 +123,7 @@ class Color(StyleBase):
 
         return inst
 
+    # endregion from_obj()
     # region set styles
 
     # endregion set styles
@@ -117,7 +131,11 @@ class Color(StyleBase):
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.CELL
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.CELL
+        return self._format_kind_prop
 
     @property
     def prop_color(self) -> mColor.Color:

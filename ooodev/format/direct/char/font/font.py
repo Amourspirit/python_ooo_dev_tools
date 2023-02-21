@@ -179,7 +179,14 @@ class Font(StyleBase):
 
     # region methods
     def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.style.CharacterProperties", "com.sun.star.style.CharacterStyle")
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = (
+                "com.sun.star.style.CharacterProperties",
+                "com.sun.star.style.CharacterStyle",
+            )
+        return self._supported_services_values
 
     # region apply()
     @overload
@@ -620,7 +627,11 @@ class Font(StyleBase):
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.CHAR
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.CHAR
+        return self._format_kind_prop
 
     @property
     def prop_is_bold(self) -> bool:

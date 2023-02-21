@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, overload
 from typing import Any, Tuple, Type, TypeVar
 from enum import Enum
 import uno
@@ -38,7 +38,11 @@ class Protect(StyleBase):
     # region Overrides
 
     def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.style.Style",)
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = ("com.sun.star.style.Style",)
+        return self._supported_services_values
 
     def _props_set(self, obj: object, **kwargs: Any) -> None:
         try:
@@ -49,22 +53,34 @@ class Protect(StyleBase):
                 mLo.Lo.print(f"  {err}")
 
     # endregion Overrides
-
+    # region from_obj()
+    @overload
     @classmethod
     def from_obj(cls: Type[_TProtect], obj: object) -> _TProtect:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TProtect], obj: object, **kwargs) -> _TProtect:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TProtect], obj: object, **kwargs) -> _TProtect:
         """
         Gets instance from object
 
         Args:
             obj (object): UNO Object.
 
+        Raises:
+            NotSupportedServiceError: If ``obj`` is not supported.
+
         Returns:
             Protect: Instance that represents Frame Protection.
         """
         # this nu is only used to get Property Name
 
-        inst = super(Protect, cls).__new__(cls)
-        inst.__init__()
+        inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
         inst.prop_size = mProps.Props.get(obj, inst._props.size)
@@ -72,10 +88,15 @@ class Protect(StyleBase):
         inst.prop_content = mProps.Props.get(obj, inst._props.content)
         return inst
 
+    # endregion from_obj()
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.DOC | FormatKind.STYLE
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.DOC | FormatKind.STYLE
+        return self._format_kind_prop
 
     @property
     def prop_size(self) -> bool | None:

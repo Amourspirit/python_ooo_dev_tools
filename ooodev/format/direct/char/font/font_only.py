@@ -31,10 +31,21 @@ class FontLang(LocaleStruct):
     """Class for Character Language"""
 
     def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.style.CharacterProperties", "com.sun.star.style.ParagraphStyle")
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = (
+                "com.sun.star.style.CharacterProperties",
+                "com.sun.star.style.ParagraphStyle",
+            )
+        return self._supported_services_values
 
     def _get_property_name(self) -> str:
-        return "CharLocale"
+        try:
+            return self._property_name
+        except AttributeError:
+            self._property_name = "CharLocale"
+        return self._property_name
 
     def _props_set(self, obj: object, **kwargs: Any) -> None:
         try:
@@ -130,11 +141,15 @@ class FontOnly(StyleMulti):
 
     # region Overrides
     def _supported_services(self) -> Tuple[str, ...]:
-        return (
-            "com.sun.star.style.CharacterProperties",
-            "com.sun.star.style.CharacterStyle",
-            "com.sun.star.style.ParagraphStyle",
-        )
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = (
+                "com.sun.star.style.CharacterProperties",
+                "com.sun.star.style.CharacterStyle",
+                "com.sun.star.style.ParagraphStyle",
+            )
+        return self._supported_services_values
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:
@@ -201,8 +216,19 @@ class FontOnly(StyleMulti):
     # endregion Internal Methods
 
     # region Static Methods
+    # region from_obj()
+    @overload
     @classmethod
     def from_obj(cls: Type[_TFontOnly], obj: object) -> _TFontOnly:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TFontOnly], obj: object, **kwargs) -> _TFontOnly:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TFontOnly], obj: object, **kwargs) -> _TFontOnly:
         """
         Gets Font Only instance from object
 
@@ -215,8 +241,7 @@ class FontOnly(StyleMulti):
         Returns:
             FontOnly: Font Only that represents ``obj`` Font.
         """
-        inst = super(FontOnly, cls).__new__(cls)
-        inst.__init__()
+        inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
@@ -236,6 +261,7 @@ class FontOnly(StyleMulti):
             pass
         return inst
 
+    # endregion from_obj()
     # endregion Static Methods
 
     # region Format Methods
@@ -292,7 +318,11 @@ class FontOnly(StyleMulti):
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.CHAR
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.CHAR
+        return self._format_kind_prop
 
     @property
     def prop_size(self) -> float | None:
@@ -331,12 +361,12 @@ class FontOnly(StyleMulti):
     @property
     def _props(self) -> FontOnlyProps:
         try:
-            return self._font_only_properties
+            return self._props_internal_attributes
         except AttributeError:
-            self._font_only_properties = FontOnlyProps(
+            self._props_internal_attributes = FontOnlyProps(
                 name="CharFontName", size="CharHeight", style_name="CharFontStyleName"
             )
-        return self._font_only_properties
+        return self._props_internal_attributes
 
     @property
     def prop_inner(self) -> FontLang:

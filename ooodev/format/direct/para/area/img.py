@@ -73,6 +73,7 @@ class Img(StyleMulti):
             tile_offset=tile_offset,
             auto_name=auto_name,
         )
+        fimg._prop_parent = self
 
         init_vars = {
             "ParaBackColor": -1,
@@ -91,12 +92,16 @@ class Img(StyleMulti):
     # region Overrides
 
     def _supported_services(self) -> Tuple[str, ...]:
-        return (
-            "com.sun.star.style.ParagraphProperties",
-            "com.sun.star.text.TextContent",
-            "com.sun.star.beans.PropertySet",
-            "com.sun.star.style.ParagraphStyle",
-        )
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = (
+                "com.sun.star.style.ParagraphProperties",
+                "com.sun.star.text.TextContent",
+                "com.sun.star.beans.PropertySet",
+                "com.sun.star.style.ParagraphStyle",
+            )
+        return self._supported_services_values
 
     def _props_set(self, obj: object, **kwargs: Any) -> None:
         try:
@@ -183,8 +188,19 @@ class Img(StyleMulti):
     # endregion Internal methods
 
     # region Static Methods
+    # region from_preset()
+    @overload
     @classmethod
     def from_preset(cls: Type[_TImg], preset: PresetImageKind) -> _TImg:
+        ...
+
+    @overload
+    @classmethod
+    def from_preset(cls: Type[_TImg], preset: PresetImageKind, **kwargs) -> _TImg:
+        ...
+
+    @classmethod
+    def from_preset(cls: Type[_TImg], preset: PresetImageKind, **kwargs) -> _TImg:
         """
         Gets an instance from a preset.
 
@@ -196,19 +212,32 @@ class Img(StyleMulti):
         """
         fill_img = FillImg.from_preset(preset)
 
-        inst = cast(Img, super(Img, cls).__new__(cls))
-        inst.__init__()
+        inst = cls(**kwargs)
         inst._set(
             "ParaBackGraphicLocation", inst._get_graphic_loc(position=fill_img.prop_posiion, mode=fill_img.prop_mode)
         )
         inst._set("ParaBackGraphic", fill_img._get("FillBitmap"))
+        fill_img._prop_parent = inst
         inst._set_style("fill_image", fill_img, *fill_img.get_attrs())
         fill_img.add_event_listener(FormatNamedEvent.STYLE_PROPERTY_APPLYING, _on_fill_img_prop_setting)
         fill_img.add_event_listener(FormatNamedEvent.STYLE_BACKING_UP, _on_fill_img_prop_backup)
         return inst
 
+    # endregion from_preset()
+
+    # region from_obj()
+    @overload
     @classmethod
     def from_obj(cls: Type[_TImg], obj: object) -> _TImg:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TImg], obj: object, **kwargs) -> _TImg:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TImg], obj: object, **kwargs) -> _TImg:
         """
         Gets instance from object
 
@@ -222,25 +251,30 @@ class Img(StyleMulti):
             Img: ``Img`` instance that represents ``obj`` fill imgage.
         """
         fill_img = FillImg.from_obj(obj)
-        inst = cast(Img, super(Img, cls).__new__(cls))
-        inst.__init__()
+        inst = cls(**kwargs)
         bmap = fill_img._get("FillBitmap")
         inst._set(
             "ParaBackGraphicLocation", inst._get_graphic_loc(position=fill_img.prop_posiion, mode=fill_img.prop_mode)
         )
         if not bmap is None:
             inst._set("ParaBackGraphic", fill_img._get("FillBitmap"))
+        fill_img._prop_parent = inst
         inst._set_style("fill_image", fill_img, *fill_img.get_attrs())
         fill_img.add_event_listener(FormatNamedEvent.STYLE_PROPERTY_APPLYING, _on_fill_img_prop_setting)
         fill_img.add_event_listener(FormatNamedEvent.STYLE_BACKING_UP, _on_fill_img_prop_backup)
         return inst
 
-    # endregion Static Methods
+    # endregion from_obj()
 
+    # endregion Static Methods
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.TXT_CONTENT | FormatKind.PARA | FormatKind.FILL
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.TXT_CONTENT | FormatKind.PARA | FormatKind.FILL
+        return self._format_kind_prop
 
     @property
     def prop_inner(self) -> FillImg:

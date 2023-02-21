@@ -91,7 +91,11 @@ class AbstractPadding(StyleBase):
         return super()._on_modifing(event)
 
     def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.style.ParagraphProperties",)
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = ("com.sun.star.style.ParagraphProperties",)
+        return self._supported_services_values
 
     # region apply()
     @overload
@@ -119,34 +123,43 @@ class AbstractPadding(StyleBase):
 
     # endregion apply()
 
+    # region from_obj()
+    @overload
     @classmethod
     def from_obj(cls: Type[_TAbstractPadding], obj: object) -> _TAbstractPadding:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TAbstractPadding], obj: object, **kwargs) -> _TAbstractPadding:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TAbstractPadding], obj: object, **kwargs) -> _TAbstractPadding:
         """
         Gets Border Padding instance from object
 
         Args:
-            obj (object): UNO object that supports ``com.sun.star.style.ParagraphProperties`` service.
+            obj (object): UNO object.
 
         Raises:
-            NotSupportedServiceError: If ``obj`` does not support ``com.sun.star.style.ParagraphProperties`` service.
+            NotSupportedError: If ``obj`` is not supported.
 
         Returns:
             BorderPadding: BorderPadding that represents ``obj`` padding.
         """
-        inst = super(AbstractPadding, cls).__new__(cls)
-        inst.__init__()
+        inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
-            raise mEx.NotSupportedServiceError(inst._supported_services()[0])
+            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
-        if inst._is_valid_obj(obj):
-            inst._set(inst._props.left, int(mProps.Props.get(obj, inst._props.left)))
-            inst._set(inst._props.right, int(mProps.Props.get(obj, inst._props.right)))
-            inst._set(inst._props.top, int(mProps.Props.get(obj, inst._props.top)))
-            inst._set(inst._props.bottom, int(mProps.Props.get(obj, inst._props.bottom)))
-        else:
-            raise mEx.NotSupportedServiceError(inst._supported_services()[0])
+        inst._set(inst._props.left, int(mProps.Props.get(obj, inst._props.left)))
+        inst._set(inst._props.right, int(mProps.Props.get(obj, inst._props.right)))
+        inst._set(inst._props.top, int(mProps.Props.get(obj, inst._props.top)))
+        inst._set(inst._props.bottom, int(mProps.Props.get(obj, inst._props.bottom)))
+
         return inst
 
+    # endregion from_obj()
     # endregion methods
 
     # region style methods
@@ -229,7 +242,11 @@ class AbstractPadding(StyleBase):
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.PARA
+        try:
+            return self._fromat_kind_prop
+        except AttributeError:
+            self._fromat_kind_prop = FormatKind.PARA
+        return self._fromat_kind_prop
 
     @property
     def prop_left(self) -> float | None:

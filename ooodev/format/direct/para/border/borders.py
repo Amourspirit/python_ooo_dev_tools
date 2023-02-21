@@ -91,6 +91,7 @@ class Borders(StyleMulti):
         super().__init__(**init_vals)
 
         if sides.prop_has_attribs:
+            sides._prop_parent = self
             self._set_style("sides", sides, *sides.get_attrs())
         if not padding is None:
             self._set_style("padding", padding, *padding.get_attrs())
@@ -245,14 +246,16 @@ class Borders(StyleMulti):
     # endregion format Methods
 
     # region methods
-    def _supported_services(self) -> Tuple[str, ...]:
-        """
-        Gets a tuple of supported services (``com.sun.star.style.CharacterProperties``,)
 
-        Returns:
-            Tuple[str, ...]: Supported services
-        """
-        return ("com.sun.star.style.CharacterProperties", "com.sun.star.style.ParagraphStyle")
+    def _supported_services(self) -> Tuple[str, ...]:
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = (
+                "com.sun.star.style.CharacterProperties",
+                "com.sun.star.style.ParagraphStyle",
+            )
+        return self._supported_services_values
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:
@@ -284,8 +287,19 @@ class Borders(StyleMulti):
 
     # endregion apply()
 
+    # region from_obj()
+    @overload
     @classmethod
     def from_obj(cls: Type[_TBorders], obj: object) -> _TBorders:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TBorders], obj: object, **kwargs) -> _TBorders:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TBorders], obj: object, **kwargs) -> _TBorders:
         """
         Gets instance from object
 
@@ -298,8 +312,7 @@ class Borders(StyleMulti):
         Returns:
             Borders: ``Borders`` instance that represents the ``obj`` borders.
         """
-        inst = cast(Borders, super(Borders, cls).__new__(cls))
-        inst.__init__()
+        inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.ServiceNotSupported(inst._supported_services()[0])
         inst_sides = Sides.from_obj(obj)
@@ -312,13 +325,19 @@ class Borders(StyleMulti):
         inst._set_style("shadow", inst_shadow, *inst_shadow.get_attrs())
         return inst
 
+    # endregion from_obj()
+
     # endregion methods
 
     # region Properties
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.PARA | FormatKind.STATIC
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.PARA | FormatKind.STATIC
+        return self._format_kind_prop
 
     @property
     def prop_inner_sides(self) -> Sides | None:

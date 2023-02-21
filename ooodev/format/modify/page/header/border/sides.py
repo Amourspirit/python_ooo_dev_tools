@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Tuple, cast
+from typing import Tuple, cast, Type, TypeVar
 import uno
 from ooo.dyn.table.border_line_style import BorderLineStyleEnum as BorderLineStyleEnum
 
@@ -10,10 +10,12 @@ from .....direct.common.abstract.abstract_sides import AbstractSides
 from .....direct.common.props.border_props import BorderProps
 from .....kind.format_kind import FormatKind
 
+_TSides = TypeVar(name="_TSides", bound="Sides")
 
-class HeaderSides(AbstractSides):
+
+class InnerSides(AbstractSides):
     """
-    Page Header Style Border Sides.
+    Page Footer Style Border Sides.
 
     Any properties starting with ``prop_`` set or get current instance values.
 
@@ -24,11 +26,15 @@ class HeaderSides(AbstractSides):
 
     # region methods
     def _supported_services(self) -> Tuple[str, ...]:
-        return (
-            "com.sun.star.style.ParagraphProperties",
-            "com.sun.star.style.ParagraphStyle",
-            "com.sun.star.style.PageStyle",
-        )
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = (
+                "com.sun.star.style.ParagraphProperties",
+                "com.sun.star.style.ParagraphStyle",
+                "com.sun.star.style.PageStyle",
+            )
+        return self._supported_services_values
 
     # endregion methods
 
@@ -36,17 +42,21 @@ class HeaderSides(AbstractSides):
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.DOC | FormatKind.STYLE
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.DOC | FormatKind.STYLE
+        return self._format_kind_prop
 
     @property
     def _props(self) -> BorderProps:
         try:
-            return self.__border_properties
+            return self._props_internal_attributes
         except AttributeError:
-            self.__border_properties = BorderProps(
+            self._props_internal_attributes = BorderProps(
                 left="HeaderLeftBorder", top="HeaderTopBorder", right="HeaderRightBorder", bottom="HeaderBottomBorder"
             )
-        return self.__border_properties
+        return self._props_internal_attributes
 
     # endregion Properties
 
@@ -85,19 +95,42 @@ class Sides(PageStyleBaseMulti):
             None:
         """
 
-        direct = HeaderSides(left=left, right=right, top=top, bottom=bottom, border_side=border_side)
+        direct = InnerSides(
+            left=left,
+            right=right,
+            top=top,
+            bottom=bottom,
+            border_side=border_side,
+            _cattribs=self._get_inner_cattribs(),
+        )
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
         self._set_style("direct", direct, *direct.get_attrs())
 
+    # region Internal Methods
+    def _get_inner_props(self) -> BorderProps:
+        return BorderProps(
+            left="HeaderLeftBorder", top="HeaderTopBorder", right="HeaderRightBorder", bottom="HeaderBottomBorder"
+        )
+
+    def _get_inner_cattribs(self) -> dict:
+        return {
+            "_supported_services_values": self._supported_services(),
+            "_format_kind_prop": self.prop_format_kind,
+            "_props_internal_attributes": self._get_inner_props(),
+        }
+
+    # endregion Internal Methods
+
+    # region Static Methods
     @classmethod
     def from_style(
-        cls,
+        cls: Type[_TSides],
         doc: object,
         style_name: StylePageKind | str = StylePageKind.STANDARD,
         style_family: str = "PageStyles",
-    ) -> Sides:
+    ) -> _TSides:
         """
         Gets instance from Document.
 
@@ -109,12 +142,14 @@ class Sides(PageStyleBaseMulti):
         Returns:
             Sides: ``Sides`` instance from document properties.
         """
-        inst = super(Sides, cls).__new__(cls)
-        inst.__init__(style_name=style_name, style_family=style_family)
-        direct = HeaderSides.from_obj(inst.get_style_props(doc))
+        inst = cls(style_name=style_name, style_family=style_family)
+        direct = InnerSides.from_obj(inst.get_style_props(doc), _cattribs=inst._get_inner_cattribs())
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
+    # endregion Static Methods
+
+    # region Properties
     @property
     def prop_style_name(self) -> str:
         """Gets/Sets property Style Name"""
@@ -125,10 +160,12 @@ class Sides(PageStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> HeaderSides:
+    def prop_inner(self) -> InnerSides:
         """Gets Inner Sides instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(HeaderSides, self._get_style_inst("direct"))
+            self._direct_inner = cast(InnerSides, self._get_style_inst("direct"))
         return self._direct_inner
+
+    # endregion Properties

@@ -88,8 +88,7 @@ class Img(FillStyleBaseMulti):
             Img: Instance from preset.
         """
         direct = DirectImg.from_preset(preset)
-        inst = super(Img, cls).__new__(cls)
-        inst.__init__(style_name=style_name, style_family=style_family)
+        inst = cls(style_name=style_name, style_family=style_family)
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -111,8 +110,7 @@ class Img(FillStyleBaseMulti):
         Returns:
             Img: ``Img`` instance from document properties.
         """
-        inst = super(Img, cls).__new__(cls)
-        inst.__init__(style_name=style_name, style_family=style_family)
+        inst = cls(style_name=style_name, style_family=style_family)
         direct = DirectImg.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst

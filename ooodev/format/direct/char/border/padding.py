@@ -25,8 +25,14 @@ class Padding(AbstractPadding):
 
     # region methods
     def _supported_services(self) -> Tuple[str, ...]:
-        # will affect apply() on parent class.
-        return ("com.sun.star.style.CharacterProperties", "com.sun.star.style.CharacterStyle")
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = (
+                "com.sun.star.style.CharacterProperties",
+                "com.sun.star.style.CharacterStyle",
+            )
+        return self._supported_services_values
 
     # endregion methods
 
@@ -34,20 +40,24 @@ class Padding(AbstractPadding):
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.PARA
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.PARA
+        return self._format_kind_prop
 
     @property
     def _props(self) -> BorderProps:
         try:
-            return self.__border_properties
+            return self._props_internal_attributes
         except AttributeError:
-            self.__border_properties = BorderProps(
+            self._props_internal_attributes = BorderProps(
                 left="CharLeftBorderDistance",
                 top="CharTopBorderDistance",
                 right="CharRightBorderDistance",
                 bottom="CharBottomBorderDistance",
             )
-        return self.__border_properties
+        return self._props_internal_attributes
 
     @static_prop
     def default() -> Padding:  # type: ignore[misc]

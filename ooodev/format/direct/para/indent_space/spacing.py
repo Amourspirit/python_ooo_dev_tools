@@ -64,7 +64,14 @@ class Spacing(StyleBase):
 
     # region methods
     def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.style.ParagraphProperties", "com.sun.star.style.ParagraphStyle")
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = (
+                "com.sun.star.style.ParagraphProperties",
+                "com.sun.star.style.ParagraphStyle",
+            )
+        return self._supported_services_values
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:
@@ -95,8 +102,19 @@ class Spacing(StyleBase):
 
     # endregion apply()
 
+    # region from_obj()
+    @overload
     @classmethod
     def from_obj(cls: Type[_TSpacing], obj: object) -> _TSpacing:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TSpacing], obj: object, **kwargs) -> _TSpacing:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TSpacing], obj: object, **kwargs) -> _TSpacing:
         """
         Gets instance from object
 
@@ -109,8 +127,7 @@ class Spacing(StyleBase):
         Returns:
             Spacing: ``Spacing`` instance that represents ``obj`` spacing.
         """
-        inst = super(Spacing, cls).__new__(cls)
-        inst.__init__()
+        inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
@@ -124,6 +141,8 @@ class Spacing(StyleBase):
         set_prop("ParaBottomMargin", inst)
         set_prop("ParaContextMargin", inst)
         return inst
+
+    # endregion from_obj()
 
     # endregion methods
 
@@ -186,7 +205,11 @@ class Spacing(StyleBase):
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.PARA
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.PARA
+        return self._format_kind_prop
 
     @property
     def prop_above(self) -> float | None:

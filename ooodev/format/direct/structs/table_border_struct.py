@@ -115,17 +115,18 @@ class TableBorderStruct(StyleBase):
     # region methods
 
     def _supported_services(self) -> Tuple[str, ...]:
-        return ()
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = ()
+        return self._supported_services_values
 
     def _get_property_name(self) -> str:
-        return "TableBorder2"
-
-    def copy(self: _TTableBorderStruct) -> _TTableBorderStruct:
-        nu = super(TableBorderStruct, self.__class__).__new__(self.__class__)
-        nu.__init__()
-        if self._dv:
-            nu._update(self._dv)
-        return nu
+        try:
+            return self._property_name
+        except AttributeError:
+            self._property_name = "TableBorder2"
+        return self._property_name
 
     # region apply()
 
@@ -220,8 +221,19 @@ class TableBorderStruct(StyleBase):
 
     # endregion apply()
 
+    # region from_obj()
+    @overload
     @classmethod
     def from_obj(cls: Type[_TTableBorderStruct], obj: object) -> _TTableBorderStruct:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TTableBorderStruct], obj: object, **kwargs) -> _TTableBorderStruct:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TTableBorderStruct], obj: object, **kwargs) -> _TTableBorderStruct:
         """
         Gets instance from object properties
 
@@ -235,8 +247,7 @@ class TableBorderStruct(StyleBase):
             BorderTable: Border Table.
         """
         # this nu is only used to get Property Name
-        nu = super(TableBorderStruct, cls).__new__(cls)
-        nu.__init__()
+        nu = cls(**kwargs)
         prop_name = nu._get_property_name()
 
         tb = cast(TableBorder2, mProps.Props.get(obj, prop_name, None))
@@ -264,8 +275,7 @@ class TableBorderStruct(StyleBase):
                 vertical._set(prop, getattr(tb.VerticalLine, prop))
             if horizontal:
                 horizontal._set(prop, getattr(tb.HorizontalLine, prop))
-        inst = super(TableBorderStruct, cls).__new__(cls)
-        inst.__init__(left=left, right=right, top=top, bottom=bottom, vertical=vertical, horizontal=horizontal)
+        inst = cls(left=left, right=right, top=top, bottom=bottom, vertical=vertical, horizontal=horizontal, **kwargs)
 
         if tb.IsDistanceValid:
             p = inst._props.dist
@@ -273,6 +283,8 @@ class TableBorderStruct(StyleBase):
             if p.second:
                 inst._set(p.second, True)
         return inst
+
+    # endregion from_obj()
 
     def get_uno_struct(self) -> TableBorder2:
         """
@@ -434,10 +446,15 @@ class TableBorderStruct(StyleBase):
     # endregion Style methods
 
     # region Properties
+
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.STRUCT
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.STRUCT
+        return self._format_kind_prop
 
     @property
     def prop_distance(self) -> float | None:
@@ -566,9 +583,9 @@ class TableBorderStruct(StyleBase):
     @property
     def _props(self) -> BorderTableProps:
         try:
-            return self.__border_properties
+            return self._props_internal_attributes
         except AttributeError:
-            self.__border_properties = BorderTableProps(
+            self._props_internal_attributes = BorderTableProps(
                 left=PropPair("LeftLine", "IsLeftLineValid"),
                 top=PropPair("TopLine", "IsTopLineValid"),
                 right=PropPair("RightLine", "IsRightLineValid"),
@@ -577,6 +594,6 @@ class TableBorderStruct(StyleBase):
                 vert=PropPair("VerticalLine", "IsVerticalLineValid"),
                 dist=PropPair("Distance", "IsDistanceValid"),
             )
-        return self.__border_properties
+        return self._props_internal_attributes
 
     # endregion Properties

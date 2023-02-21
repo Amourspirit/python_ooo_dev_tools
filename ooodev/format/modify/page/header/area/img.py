@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Tuple, cast
+from typing import cast, Type, TypeVar
 import uno
 from com.sun.star.awt import XBitmap
 from ooo.dyn.drawing.rectangle_point import RectanglePoint as RectanglePoint
@@ -15,51 +15,16 @@ from .....direct.common.format_types.size_mm import SizeMM as SizeMM
 from .....direct.common.format_types.size_percent import SizePercent as SizePercent
 from .....direct.common.props.area_img_props import AreaImgProps
 from .....direct.fill.area.img import Img as FillImg, ImgStyleKind as ImgStyleKind
-from .....kind.format_kind import FormatKind
 from .....preset.preset_image import PresetImageKind as PresetImageKind
 from .....writer.style.page.kind.style_page_kind import StylePageKind as StylePageKind
 from ...page_style_base_multi import PageStyleBaseMulti
 
-
-class HeaderImg(FillImg):
-    """
-    Header Image Background
-
-    .. versionadded:: 0.9.0
-    """
-
-    def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.style.PageProperties", "com.sun.star.style.PageStyle")
-
-    @property
-    def prop_format_kind(self) -> FormatKind:
-        """Gets the kind of style"""
-        return FormatKind.DOC | FormatKind.STYLE
-
-    @property
-    def _props(self) -> AreaImgProps:
-        try:
-            return self._props_area_img
-        except AttributeError:
-            self._props_area_img = AreaImgProps(
-                name="HeaderFillBitmapName",
-                style="HeaderFillStyle",
-                mode="HeaderFillBitmapMode",
-                point="HeaderFillBitmapRectanglePoint",
-                bitmap="HeaderFillBitmap",
-                offset_x="HeaderFillBitmapOffsetX",
-                offset_y="HeaderFillBitmapOffsetY",
-                pos_x="HeaderFillBitmapPositionOffsetX",
-                pos_y="HeaderFillBitmapPositionOffsetY",
-                size_x="HeaderFillBitmapSizeX",
-                size_y="HeaderFillBitmapSizeY",
-            )
-        return self._props_area_img
+_TImg = TypeVar(name="_TImg", bound="Img")
 
 
 class Img(PageStyleBaseMulti):
     """
-    Page Header Background Image
+    Page Footer Background Image
 
     .. versionadded:: 0.9.0
     """
@@ -97,7 +62,7 @@ class Img(PageStyleBaseMulti):
             None:
         """
 
-        direct = HeaderImg(
+        direct = FillImg(
             bitmap=bitmap,
             name=name,
             mode=mode,
@@ -106,19 +71,46 @@ class Img(PageStyleBaseMulti):
             pos_offset=pos_offset,
             tile_offset=tile_offset,
             auto_name=auto_name,
+            _cattribs=self._get_inner_cattribs(),
         )
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
         self._set_style("direct", direct, *direct.get_attrs())
 
+    # region internal methods
+    def _get_inner_props(self) -> AreaImgProps:
+        return AreaImgProps(
+            name="HeaderFillBitmapName",
+            style="HeaderFillStyle",
+            mode="HeaderFillBitmapMode",
+            point="HeaderFillBitmapRectanglePoint",
+            bitmap="HeaderFillBitmap",
+            offset_x="HeaderFillBitmapOffsetX",
+            offset_y="HeaderFillBitmapOffsetY",
+            pos_x="HeaderFillBitmapPositionOffsetX",
+            pos_y="HeaderFillBitmapPositionOffsetY",
+            size_x="HeaderFillBitmapSizeX",
+            size_y="HeaderFillBitmapSizeY",
+        )
+
+    def _get_inner_cattribs(self) -> dict:
+        return {
+            "_supported_services_values": self._supported_services(),
+            "_format_kind_prop": self.prop_format_kind,
+            "_props_internal_attributes": self._get_inner_props(),
+        }
+
+    # endregion internal methods
+
+    # region Static Methods
     @classmethod
     def from_style(
-        cls,
+        cls: Type[_TImg],
         doc: object,
         style_name: StylePageKind | str = StylePageKind.STANDARD,
         style_family: str = "PageStyles",
-    ) -> Img:
+    ) -> _TImg:
         """
         Gets instance from Document.
 
@@ -130,19 +122,18 @@ class Img(PageStyleBaseMulti):
         Returns:
             Img: ``Img`` instance from document properties.
         """
-        inst = super(Img, cls).__new__(cls)
-        inst.__init__(style_name=style_name, style_family=style_family)
-        direct = HeaderImg.from_obj(inst.get_style_props(doc))
+        inst = cls(style_name=style_name, style_family=style_family)
+        direct = FillImg.from_obj(inst.get_style_props(doc), _cattribs=inst._get_inner_cattribs())
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
     @classmethod
     def from_preset(
-        cls,
+        cls: Type[_TImg],
         preset: PresetImageKind,
         style_name: StylePageKind | str = StylePageKind.STANDARD,
         style_family: str = "PageStyles",
-    ) -> Img:
+    ) -> _TImg:
         """
         Gets instance from preset.
 
@@ -154,12 +145,14 @@ class Img(PageStyleBaseMulti):
         Returns:
             Img: ``Img`` instance from preset.
         """
-        inst = super(Img, cls).__new__(cls)
-        inst.__init__(style_name=style_name, style_family=style_family)
-        direct = HeaderImg.from_preset(preset=preset)
+        inst = cls(style_name=style_name, style_family=style_family)
+        direct = FillImg.from_preset(preset=preset, _cattribs=inst._get_inner_cattribs())
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
+    # endregion Static Methods
+
+    # region Properties
     @property
     def prop_style_name(self) -> str:
         """Gets/Sets property Style Name"""
@@ -170,10 +163,12 @@ class Img(PageStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> HeaderImg:
+    def prop_inner(self) -> FillImg:
         """Gets Inner Image instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(HeaderImg, self._get_style_inst("direct"))
+            self._direct_inner = cast(FillImg, self._get_style_inst("direct"))
         return self._direct_inner
+
+    # endregion Properties
