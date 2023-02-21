@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Tuple, cast
+from typing import Tuple, cast, Type, TypeVar
 import uno
 from .....writer.style.page.kind.style_page_kind import StylePageKind as StylePageKind
 from ...page_style_base_multi import PageStyleBaseMulti
@@ -8,10 +8,12 @@ from .....kind.format_kind import FormatKind
 from .....direct.common.abstract.abstract_padding import AbstractPadding
 from .....direct.common.props.border_props import BorderProps
 
+_TPadding = TypeVar(name="_TPadding", bound="Padding")
 
-class FillPadding(AbstractPadding):
+
+class InnerPadding(AbstractPadding):
     """
-    Page Header Border Padding
+    Page Style Footer Border Padding
 
     Any properties starting with ``prop_`` set or get current instance values.
 
@@ -28,23 +30,28 @@ class FillPadding(AbstractPadding):
     # endregion methods
 
     # region properties
+
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.DOC | FormatKind.STYLE
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.DOC | FormatKind.STYLE
+        return self._format_kind_prop
 
     @property
     def _props(self) -> BorderProps:
         try:
-            return self.__border_properties
+            return self._props_internal_attributes
         except AttributeError:
-            self.__border_properties = BorderProps(
+            self._props_internal_attributes = BorderProps(
                 left="HeaderLeftBorderDistance",
                 top="HeaderTopBorderDistance",
                 right="HeaderRightBorderDistance",
                 bottom="HeaderBottomBorderDistance",
             )
-        return self.__border_properties
+        return self._props_internal_attributes
 
     # endregion properties
 
@@ -83,19 +90,45 @@ class Padding(PageStyleBaseMulti):
             None:
         """
 
-        direct = FillPadding(left=left, right=right, top=top, bottom=bottom, padding_all=padding_all)
+        direct = InnerPadding(
+            left=left,
+            right=right,
+            top=top,
+            bottom=bottom,
+            padding_all=padding_all,
+            _cattribs=self._get_inner_cattribs(),
+        )
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
         self._set_style("direct", direct, *direct.get_attrs())
 
+    # region Internal Methods
+    def _get_inner_props(self) -> BorderProps:
+        return BorderProps(
+            left="HeaderLeftBorderDistance",
+            top="HeaderTopBorderDistance",
+            right="HeaderRightBorderDistance",
+            bottom="HeaderBottomBorderDistance",
+        )
+
+    def _get_inner_cattribs(self) -> dict:
+        return {
+            "_supported_services_values": self._supported_services(),
+            "_format_kind_prop": self.prop_format_kind,
+            "_props_internal_attributes": self._get_inner_props(),
+        }
+
+    # endregion Internal Methods
+
+    # region Static Methods
     @classmethod
     def from_style(
-        cls,
+        cls: Type[_TPadding],
         doc: object,
         style_name: StylePageKind | str = StylePageKind.STANDARD,
         style_family: str = "PageStyles",
-    ) -> Padding:
+    ) -> _TPadding:
         """
         Gets instance from Document.
 
@@ -107,12 +140,14 @@ class Padding(PageStyleBaseMulti):
         Returns:
             Padding: ``Padding`` instance from document properties.
         """
-        inst = super(Padding, cls).__new__(cls)
-        inst.__init__(style_name=style_name, style_family=style_family)
-        direct = FillPadding.from_obj(inst.get_style_props(doc))
+        inst = cls(style_name=style_name, style_family=style_family)
+        direct = InnerPadding.from_obj(inst.get_style_props(doc), _cattribs=inst._get_inner_cattribs())
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
+    # endregion Static Methods
+
+    # region Properties
     @property
     def prop_style_name(self) -> str:
         """Gets/Sets property Style Name"""
@@ -123,10 +158,12 @@ class Padding(PageStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> FillPadding:
+    def prop_inner(self) -> InnerPadding:
         """Gets Inner Padding instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(FillPadding, self._get_style_inst("direct"))
+            self._direct_inner = cast(InnerPadding, self._get_style_inst("direct"))
         return self._direct_inner
+
+    # endregion Properties

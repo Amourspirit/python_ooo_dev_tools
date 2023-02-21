@@ -1,14 +1,12 @@
 from __future__ import annotations
 from typing import cast
 import uno
-from .....utils.color import Color
 from .....utils.data_type.angle import Angle as Angle
 from .....utils.data_type.color_range import ColorRange as ColorRange
 from .....utils.data_type.intensity import Intensity as Intensity
 from .....utils.data_type.intensity_range import IntensityRange as IntensityRange
 from .....utils.data_type.offset import Offset as Offset
 from ....writer.style.para.kind import StyleParaKind as StyleParaKind
-from ....preset import preset_pattern
 from ....preset.preset_pattern import PresetPatternKind as PresetPatternKind
 from ..para_style_base_multi import ParaStyleBaseMulti
 
@@ -76,8 +74,7 @@ class Pattern(ParaStyleBaseMulti):
             Hatch: Hatch from a preset.
         """
         direct = DirectPattern.from_preset(preset)
-        inst = super(Pattern, cls).__new__(cls)
-        inst.__init__(style_name=style_name, style_family=style_family)
+        inst = cls(style_name=style_name, style_family=style_family)
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -99,8 +96,7 @@ class Pattern(ParaStyleBaseMulti):
         Returns:
             Alignment: ``Alignment`` instance from document properties.
         """
-        inst = super(Pattern, cls).__new__(cls)
-        inst.__init__(style_name=style_name, style_family=style_family)
+        inst = cls(style_name=style_name, style_family=style_family)
         direct = DirectPattern.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst

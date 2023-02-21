@@ -71,8 +71,7 @@ class Tabs(ParaStyleBaseMulti):
         Returns:
             Tabs: ``Tabs`` instance from document properties.
         """
-        inst = super(Tabs, cls).__new__(cls)
-        inst.__init__(style_name=style_name, style_family=style_family)
+        inst = cls(style_name=style_name, style_family=style_family)
         direct = DirectTabs.from_obj(obj=inst.get_style_props(doc), index=index)
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst

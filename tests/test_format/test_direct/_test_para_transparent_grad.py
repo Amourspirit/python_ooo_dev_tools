@@ -12,7 +12,7 @@ from ooodev.format.direct.para.transparent.gradient import Gradient, GradientSty
 # from ooodev.format.writer.direct.para.transparency import Gradient, GradientStyle
 # from ooodev.format.direct.para.area.color import Color
 from ooodev.format.writer.direct.para.area import Color
-from ooodev.format.direct.fill.transparent.gradient import FillTransparentGrad
+from ooodev.format.direct.fill.transparent.gradient import GradientStruct
 from ooodev.format import Styler
 from ooodev.format.writer.style.para import Para
 from ooodev.format import StandardColor
@@ -54,7 +54,7 @@ def _test_write(loader, para_text) -> None:
         cursor_p.gotoStartOfParagraph(False)
         cursor_p.gotoEndOfParagraph(True)
         pp = cast("ParagraphProperties", cursor_p.TextParagraph)
-        grad = cast(FillTransparentGrad, tp._get_style_inst("fill_grad")).get_uno_struct()
+        grad = cast(GradientStruct, tp._get_style_inst("fill_grad")).get_uno_struct()
 
         cursor_p.gotoEnd(False)
 

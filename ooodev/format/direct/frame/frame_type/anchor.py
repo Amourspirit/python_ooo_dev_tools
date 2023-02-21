@@ -1,10 +1,10 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, overload
 from typing import Any, Tuple, Type, TypeVar
 from enum import Enum
 import uno
 from .....exceptions import ex as mEx
-from .....meta.deleted_enum_meta import DeletedEnumMeta
+from .....meta.deleted_enum_meta import DeletedUnoEnumMeta
 from .....utils import lo as mLo
 from .....utils import props as mProps
 from ....kind.format_kind import FormatKind
@@ -46,7 +46,9 @@ else:
     # Class takes the place of the above class at runtime.
     # The reason for this to make sure 'AT_FRAME' enum value is excluded
     class AnchorKind(
-        metaclass=DeletedEnumMeta, type_name="com.sun.star.text.TextContentAnchorType", name_space="com.sun.star.text"
+        metaclass=DeletedUnoEnumMeta,
+        type_name="com.sun.star.text.TextContentAnchorType",
+        name_space="com.sun.star.text",
     ):
         @staticmethod
         def _get_deleted_attribs() -> Tuple[str]:
@@ -73,7 +75,11 @@ class Anchor(StyleBase):
     # region Overrides
 
     def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.style.Style",)
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = ("com.sun.star.style.Style",)
+        return self._supported_services_values
 
     def _props_set(self, obj: object, **kwargs: Any) -> None:
         try:
@@ -84,9 +90,19 @@ class Anchor(StyleBase):
                 mLo.Lo.print(f"  {err}")
 
     # endregion Overrides
-
+    # region from_obj()
+    @overload
     @classmethod
     def from_obj(cls: Type[_TAnchor], obj: object) -> _TAnchor:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TAnchor], obj: object, **kwargs) -> _TAnchor:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TAnchor], obj: object, **kwargs) -> _TAnchor:
         """
         Gets instance from object
 
@@ -98,18 +114,22 @@ class Anchor(StyleBase):
         """
         # this nu is only used to get Property Name
 
-        inst = super(Anchor, cls).__new__(cls)
-        inst.__init__()
+        inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
         val = mProps.Props.get(obj, inst._props.name)
         inst.prop_anchor = val
         return inst
 
+    # endregion from_obj()
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.DOC | FormatKind.STYLE
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.DOC | FormatKind.STYLE
+        return self._format_kind_prop
 
     @property
     def prop_anchor(self) -> AnchorKind:
@@ -123,7 +143,7 @@ class Anchor(StyleBase):
     @property
     def _props(self) -> FrameTypeAnchorProps:
         try:
-            return self._props_frame_type_anchor
+            return self._props_internal_attributes
         except AttributeError:
-            self._props_frame_type_anchor = FrameTypeAnchorProps(name="AnchorType")
-        return self._props_frame_type_anchor
+            self._props_internal_attributes = FrameTypeAnchorProps(name="AnchorType")
+        return self._props_internal_attributes

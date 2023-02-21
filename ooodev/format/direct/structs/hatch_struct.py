@@ -61,7 +61,11 @@ class HatchStruct(StyleBase):
 
     # region methods
     def _supported_services(self) -> Tuple[str, ...]:
-        return ()
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = ()
+        return self._supported_services_values
 
     def _container_get_service_name(self) -> str:
         # https://github.com/LibreOffice/core/blob/d9e044f04ac11b76b9a3dac575f4e9155b67490e/chart2/source/tools/PropertyHelper.cxx#L229
@@ -69,14 +73,13 @@ class HatchStruct(StyleBase):
 
     def _get_property_name(self) -> str:
         try:
-            return self._struct_property_name
+            return self._property_name
         except AttributeError:
-            self._struct_property_name = "FillHatch"
-        return self._struct_property_name
+            self._property_name = "FillHatch"
+        return self._property_name
 
     def copy(self: _THatchStruct) -> _THatchStruct:
-        nu = super(HatchStruct, self.__class__).__new__(self.__class__)
-        nu.__init__()
+        nu = self.__class__()
         if self._dv:
             nu._update(self._dv)
         return nu
@@ -146,8 +149,20 @@ class HatchStruct(StyleBase):
     # endregion apply()
 
     # region static methods
+
+    # region from_hatch()
+    @overload
     @classmethod
     def from_hatch(cls: Type[_THatchStruct], value: Hatch) -> _THatchStruct:
+        ...
+
+    @overload
+    @classmethod
+    def from_hatch(cls: Type[_THatchStruct], value: Hatch, **kwargs) -> _THatchStruct:
+        ...
+
+    @classmethod
+    def from_hatch(cls: Type[_THatchStruct], value: Hatch, **kwargs) -> _THatchStruct:
         """
         Converts a ``Hatch`` instance to a ``HatchStruct``
 
@@ -157,16 +172,28 @@ class HatchStruct(StyleBase):
         Returns:
             HatchStruct: ``HatchStruct`` set with ``Hatch`` properties
         """
-        inst = super(HatchStruct, cls).__new__(cls)
-        inst.__init__()
+        inst = cls(**kwargs)
         inst._set("Style", value.Style)
         inst._set("Color", value.Color)
         inst._set("Distance", value.Distance)
         inst._set("Angle", value.Angle)
         return inst
 
+    # endregion from_hatch()
+
+    # region from_obj()
+    @overload
     @classmethod
     def from_obj(cls: Type[_THatchStruct], obj: object) -> _THatchStruct:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_THatchStruct], obj: object, **kwargs) -> _THatchStruct:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_THatchStruct], obj: object, **kwargs) -> _THatchStruct:
         """
         Gets instance from object
 
@@ -180,8 +207,7 @@ class HatchStruct(StyleBase):
             HatchStruct: ``HatchStruct`` instance that represents ``obj`` hatch properties.
         """
         # this nu is only used to get Property Name
-        nu = super(HatchStruct, cls).__new__(cls)
-        nu.__init__()
+        nu = cls(**kwargs)
         prop_name = nu._get_property_name()
 
         try:
@@ -189,7 +215,9 @@ class HatchStruct(StyleBase):
         except mEx.PropertyNotFoundError:
             raise mEx.PropertyNotFoundError(prop_name, f"from_obj() obj as no {prop_name} property")
 
-        return cls.from_hatch(grad)
+        return cls.from_hatch(grad, **kwargs)
+
+    # endregion from_obj()
 
     # endregion static methods
     # endregion methods
@@ -198,7 +226,11 @@ class HatchStruct(StyleBase):
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.PARA | FormatKind.TXT_CONTENT
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.PARA | FormatKind.TXT_CONTENT
+        return self._format_kind_prop
 
     @property
     def prop_style(self) -> HatchStyle:

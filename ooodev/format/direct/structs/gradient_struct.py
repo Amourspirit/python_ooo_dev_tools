@@ -104,22 +104,18 @@ class GradientStruct(StyleBase):
 
     # region methods
     def _supported_services(self) -> Tuple[str, ...]:
-        return ()
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = ()
+        return self._supported_services_values
 
     def _get_property_name(self) -> str:
         try:
-            return self._struct_property_name
+            return self._property_name
         except AttributeError:
-            self._struct_property_name = "FillGradient"
-        return self._struct_property_name
-
-    def copy(self: _TGradientStruct) -> _TGradientStruct:
-        nu = super(GradientStruct, self.__class__).__new__(self.__class__)
-        nu.__init__()
-        nu._prop_parent = self._prop_parent
-        if self._dv:
-            nu._update(self._dv)
-        return nu
+            self._property_name = "FillGradient"
+        return self._property_name
 
     def get_attrs(self) -> Tuple[str, ...]:
         return (self._get_property_name(),)
@@ -236,8 +232,19 @@ class GradientStruct(StyleBase):
     # endregion JSON
 
     # region static methods
+    # region from_gradient()
+    @overload
     @classmethod
     def from_gradient(cls: Type[_TGradientStruct], value: Gradient) -> _TGradientStruct:
+        ...
+
+    @overload
+    @classmethod
+    def from_gradient(cls: Type[_TGradientStruct], value: Gradient, **kwargs) -> _TGradientStruct:
+        ...
+
+    @classmethod
+    def from_gradient(cls: Type[_TGradientStruct], value: Gradient, **kwargs) -> _TGradientStruct:
         """
         Converts a ``Gradient`` instance to a ``GradinetStruct``
 
@@ -247,8 +254,7 @@ class GradientStruct(StyleBase):
         Returns:
             GradinetStruct: ``GradinetStruct`` set with ``Gradient`` properties
         """
-        inst = super(GradientStruct, cls).__new__(cls)
-        inst.__init__()
+        inst = cls(**kwargs)
         inst._set("Style", value.Style)
         inst._set("StartColor", value.StartColor)
         inst._set("EndColor", value.EndColor)
@@ -261,8 +267,21 @@ class GradientStruct(StyleBase):
         inst._set("StepCount", value.StepCount)
         return inst
 
+    # endregion from_gradient()
+
+    # region from_obj()
+    @overload
     @classmethod
     def from_obj(cls: Type[_TGradientStruct], obj: object) -> _TGradientStruct:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TGradientStruct], obj: object, **kwargs) -> _TGradientStruct:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TGradientStruct], obj: object, **kwargs) -> _TGradientStruct:
         """
         Gets instance from object
 
@@ -276,8 +295,7 @@ class GradientStruct(StyleBase):
             GradientStruct: ``GradientStruct`` instance that represents ``obj`` gradient properties.
         """
         # this nu is only used to get Property Name
-        nu = super(GradientStruct, cls).__new__(cls)
-        nu.__init__()
+        nu = cls(**kwargs)
         prop_name = nu._get_property_name()
 
         try:
@@ -285,16 +303,23 @@ class GradientStruct(StyleBase):
         except mEx.PropertyNotFoundError:
             raise mEx.PropertyNotFoundError(prop_name, f"from_obj() obj as no {prop_name} property")
 
-        return cls.from_gradient(grad)
+        return cls.from_gradient(grad, **kwargs)
+
+    # endregion from_obj()
 
     # endregion static methods
+
     # endregion methods
 
     # region properties
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.PARA | FormatKind.TXT_CONTENT
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.PARA | FormatKind.TXT_CONTENT
+        return self._format_kind_prop
 
     @property
     def prop_style(self) -> GradientStyle:

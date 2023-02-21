@@ -64,27 +64,21 @@ class LocaleStruct(StyleBase):
 
     # region methods
     def _supported_services(self) -> Tuple[str, ...]:
-        """
-        Gets a tuple of supported services.
-        This is an empty value for this class but may be different for child classes.
-
-        Returns:
-            Tuple[str, ...]: Supported services
-        """
-        return ()
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = ()
+        return self._supported_services_values
 
     def _get_property_name(self) -> str:
-        return "CharLocale"
+        try:
+            return self._property_name
+        except AttributeError:
+            self._property_name = "CharLocale"
+        return self._property_name
 
     def _is_valid_obj(self, obj: object) -> bool:
         return mProps.Props.has(obj, self._get_property_name())
-
-    def copy(self: _TLocaleStruct) -> _TLocaleStruct:
-        nu = super(LocaleStruct, self.__class__).__new__(self.__class__)
-        nu.__init__()
-        if self._dv:
-            nu._update(self._dv)
-        return nu
 
     def get_attrs(self) -> Tuple[str, ...]:
         return (self._get_property_name(),)
@@ -152,8 +146,19 @@ class LocaleStruct(StyleBase):
         """
         return Locale(Language=self._get("Language"), Country=self._get("Country"), Variant=self._get("Variant"))
 
+    # region from_obj()
+    @overload
     @classmethod
     def from_obj(cls: Type[_TLocaleStruct], obj: object) -> _TLocaleStruct:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TLocaleStruct], obj: object, **kwargs) -> _TLocaleStruct:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TLocaleStruct], obj: object, **kwargs) -> _TLocaleStruct:
         """
         Gets instance from object
 
@@ -167,8 +172,7 @@ class LocaleStruct(StyleBase):
             DropCap: ``DropCap`` instance that represents ``obj`` Drop cap format properties.
         """
         # this nu is only used to get Property Name
-        nu = super(LocaleStruct, cls).__new__(cls)
-        nu.__init__()
+        nu = cls(**kwargs)
         prop_name = nu._get_property_name()
 
         try:
@@ -176,11 +180,23 @@ class LocaleStruct(StyleBase):
         except mEx.PropertyNotFoundError:
             raise mEx.PropertyNotFoundError(prop_name, f"from_obj() obj as no {prop_name} property")
 
-        ls = cast(LocaleStruct, cls)
-        return ls.from_locale(dcf)
+        return cls.from_locale(dcf, **kwargs)
 
+    # endregion from_obj()
+
+    # region from_locale()
+    @overload
     @classmethod
     def from_locale(cls: Type[_TLocaleStruct], locale: Locale) -> _TLocaleStruct:
+        ...
+
+    @overload
+    @classmethod
+    def from_locale(cls: Type[_TLocaleStruct], locale: Locale, **kwargs) -> _TLocaleStruct:
+        ...
+
+    @classmethod
+    def from_locale(cls: Type[_TLocaleStruct], locale: Locale, **kwargs) -> _TLocaleStruct:
         """
         Converts a ``Locale`` Stop instance to a ``LocaleStruct``
 
@@ -190,9 +206,9 @@ class LocaleStruct(StyleBase):
         Returns:
             LocaleStruct: ``LocaleStruct`` set with locale properties
         """
-        inst = super(LocaleStruct, cls).__new__(cls)
-        inst.__init__(country=locale.Country, language=locale.Language, variant=locale.Variant)
-        return inst
+        return cls(country=locale.Country, language=locale.Language, variant=locale.Variant, **kwargs)
+
+    # endregion from_locale()
 
     # endregion methods
 
@@ -642,7 +658,11 @@ class LocaleStruct(StyleBase):
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.CHAR
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.CHAR
+        return self._format_kind_prop
 
     @property
     def prop_country(self) -> str:

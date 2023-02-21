@@ -1,27 +1,14 @@
 from __future__ import annotations
-from typing import Tuple, cast
+from typing import cast, Type, TypeVar
 import uno
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 
-from .....kind.format_kind import FormatKind
 from ......utils.color import StandardColor, Color
 from .....writer.style.page.kind.style_page_kind import StylePageKind as StylePageKind
 from ...page_style_base_multi import PageStyleBaseMulti
 from .....direct.structs.shadow_struct import ShadowStruct
 
-# from ....direct.para.border.shadow import Shadow as DirectShadow
-class HeaderShadow(ShadowStruct):
-    def _get_property_name(self) -> str:
-        return "HeaderShadowFormat"
-
-    def _supported_services(self) -> Tuple[str, ...]:
-        # will affect apply() on parent class.
-        return ("com.sun.star.style.PageStyle",)
-
-    @property
-    def prop_format_kind(self) -> FormatKind:
-        """Gets the kind of style"""
-        return FormatKind.DOC | FormatKind.STYLE
+_TShadow = TypeVar(name="_TShadow", bound="Shadow")
 
 
 class Shadow(PageStyleBaseMulti):
@@ -56,19 +43,35 @@ class Shadow(PageStyleBaseMulti):
             None:
         """
 
-        direct = HeaderShadow(location=location, color=color, transparent=transparent, width=width)
+        direct = ShadowStruct(
+            location=location, color=color, transparent=transparent, width=width, _cattribs=self._get_inner_cattribs()
+        )
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
         self._set_style("direct", direct, *direct.get_attrs())
 
+    # region Internal Methods
+    def _get_inner_prop_name(self) -> str:
+        return "HeaderShadowFormat"
+
+    def _get_inner_cattribs(self) -> dict:
+        return {
+            "_supported_services_values": self._supported_services(),
+            "_format_kind_prop": self.prop_format_kind,
+            "_property_name": self._get_inner_prop_name(),
+        }
+
+    # endregion Internal Methods
+
+    # region Static Methods
     @classmethod
     def from_style(
-        cls,
+        cls: Type[_TShadow],
         doc: object,
         style_name: StylePageKind | str = StylePageKind.STANDARD,
         style_family: str = "PageStyles",
-    ) -> Shadow:
+    ) -> _TShadow:
         """
         Gets instance from Document.
 
@@ -80,12 +83,14 @@ class Shadow(PageStyleBaseMulti):
         Returns:
             Shadow: ``Shadow`` instance from document properties.
         """
-        inst = super(Shadow, cls).__new__(cls)
-        inst.__init__(style_name=style_name, style_family=style_family)
-        direct = HeaderShadow.from_obj(inst.get_style_props(doc))
+        inst = cls(style_name=style_name, style_family=style_family)
+        direct = ShadowStruct.from_obj(inst.get_style_props(doc), _cattribs=inst._get_inner_cattribs())
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
+    # endregion Static Methods
+
+    # region Properties
     @property
     def prop_style_name(self) -> str:
         """Gets/Sets property Style Name"""
@@ -96,10 +101,12 @@ class Shadow(PageStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> HeaderShadow:
+    def prop_inner(self) -> ShadowStruct:
         """Gets Inner Shadow instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(HeaderShadow, self._get_style_inst("direct"))
+            self._direct_inner = cast(ShadowStruct, self._get_style_inst("direct"))
         return self._direct_inner
+
+    # endregion Properties

@@ -87,7 +87,14 @@ class Hyperlink(StyleBase):
 
     # region methods
     def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.style.CharacterProperties", "com.sun.star.style.CharacterStyle")
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = (
+                "com.sun.star.style.CharacterProperties",
+                "com.sun.star.style.CharacterStyle",
+            )
+        return self._supported_services_values
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:
@@ -121,8 +128,19 @@ class Hyperlink(StyleBase):
 
     # endregion apply()
 
+    # region from_obj()
+    @overload
     @classmethod
     def from_obj(cls: Type[_THyperlink], obj: object) -> _THyperlink:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_THyperlink], obj: object, **kwargs) -> _THyperlink:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_THyperlink], obj: object, **kwargs) -> _THyperlink:
         """
         Gets hyperlink instance from object
 
@@ -135,8 +153,7 @@ class Hyperlink(StyleBase):
         Returns:
             Hyperlink: Hyperlink that represents ``obj`` Hyperlink.
         """
-        inst = super(Hyperlink, cls).__new__(cls)
-        inst.__init__()
+        inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
@@ -148,6 +165,7 @@ class Hyperlink(StyleBase):
 
         return inst
 
+    # endregion from_obj()
     # endregion methods
 
     # region Properties
@@ -208,7 +226,11 @@ class Hyperlink(StyleBase):
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.CHAR
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.CHAR
+        return self._format_kind_prop
 
     @static_prop
     def empty() -> Hyperlink:  # type: ignore[misc]

@@ -40,7 +40,29 @@ TStyleMulti = TypeVar("TStyleMulti", bound="StyleMulti")
 _TStyleModifyMulti = TypeVar("_TStyleModifyMulti", bound="StyleModifyMulti")
 
 
-class StyleBase(ABC):
+class MetaStyle(type):
+    # def __new__(metacls, name, bases, namespace, **kwargs):
+    #     cls = super().__new__(metacls, name, bases, namespace, **kwargs)
+    #     return cls
+
+    def __call__(cls, *args, **kw):
+        if "_cattribs" in kw:
+            custom_args = kw["_cattribs"]
+            del kw["_cattribs"]
+        else:
+            custom_args = None
+        obj = cls.__new__(cls, *args, **kw)
+        uniquie_id = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
+        object.__setattr__(obj, "_uniquie_id", uniquie_id)
+
+        if custom_args:
+            for key, value in cast(Dict[str, Any], custom_args).items():
+                object.__setattr__(obj, key, value)
+        obj.__init__(*args, **kw)
+        return obj
+
+
+class StyleBase(metaclass=MetaStyle):
     """
     Base Styles class
 
@@ -51,7 +73,7 @@ class StyleBase(ABC):
 
         # this property is used in child classes that have default instances
         self._events = Events(source=self)
-        self._uniquie_id = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
+        # self._uniquie_id = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
 
         trigger_initalizing: bool = kwargs.get("__trigger_initalizing", True)
         trigger_initalized: bool = kwargs.get("__trigger_initalized", True)
@@ -547,8 +569,7 @@ class StyleBase(ABC):
                 return cargs.event_data
             else:
                 mEx.CancelEventError(cargs)
-        nu = super(StyleBase, self.__class__).__new__(self.__class__)
-        nu.__init__()
+        nu = self.__class__()
         nu._prop_parent = self._prop_parent
         nu._update(self._dv)
         return nu
@@ -721,6 +742,8 @@ class StyleMulti(StyleBase):
             kwargs: Expandalble key value args to that are to be passed to style when ``apply_style()`` is called.
         """
         styles = self._get_multi_styles()
+        if style._prop_parent is None:
+            style._prop_parent = self
         if len(attrs) + len(kwargs) == 0:
             styles[key] = _StyleInfo(style, None)
         else:
@@ -994,7 +1017,11 @@ class StyleModifyMulti(StyleMulti):
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.DOC | FormatKind.STYLE
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.DOC | FormatKind.STYLE
+        return self._format_kind_prop
 
     @property
     def prop_style_name(self) -> str:

@@ -9,13 +9,6 @@ from ..page_style_base_multi import PageStyleBaseMulti
 from ....direct.structs.shadow_struct import ShadowStruct
 
 # from ....direct.para.border.shadow import Shadow as DirectShadow
-class PageShadow(ShadowStruct):
-    def _get_property_name(self) -> str:
-        return "ShadowFormat"
-
-    def _supported_services(self) -> Tuple[str, ...]:
-        # will affect apply() on parent class.
-        return ("com.sun.star.style.PageStyle",)
 
 
 class Shadow(PageStyleBaseMulti):
@@ -49,8 +42,8 @@ class Shadow(PageStyleBaseMulti):
         Returns:
             None:
         """
-
-        direct = PageShadow(location=location, color=color, transparent=transparent, width=width)
+        cattribs = {"_property_name": "ShadowFormat", "_supported_services_values": self._supported_services()}
+        direct = ShadowStruct(location=location, color=color, transparent=transparent, width=width, _cattribs=cattribs)
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
@@ -74,9 +67,9 @@ class Shadow(PageStyleBaseMulti):
         Returns:
             Shadow: ``Shadow`` instance from document properties.
         """
-        inst = super(Shadow, cls).__new__(cls)
-        inst.__init__(style_name=style_name, style_family=style_family)
-        direct = PageShadow.from_obj(inst.get_style_props(doc))
+        inst = cls(style_name=style_name, style_family=style_family)
+        cattribs = {"_property_name": "ShadowFormat", "_supported_services_values": inst._supported_services()}
+        direct = ShadowStruct.from_obj(inst.get_style_props(doc), _cattribs=cattribs)
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -90,10 +83,10 @@ class Shadow(PageStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> PageShadow:
+    def prop_inner(self) -> ShadowStruct:
         """Gets Inner Shadow instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(PageShadow, self._get_style_inst("direct"))
+            self._direct_inner = cast(ShadowStruct, self._get_style_inst("direct"))
         return self._direct_inner

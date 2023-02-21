@@ -24,10 +24,18 @@ class BulletList(StyleBase):
         super().__init__(**{self._get_property_name(): str(name)})
 
     def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.style.ParagraphProperties",)
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = ("com.sun.star.style.ParagraphProperties",)
+        return self._supported_services_values
 
     def _get_property_name(self) -> str:
-        return "NumberingStyleName"
+        try:
+            return self._property_name
+        except AttributeError:
+            self._property_name = "NumberingStyleName"
+        return self._property_name
 
     # region Style Properties
     @property
@@ -90,7 +98,11 @@ class BulletList(StyleBase):
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.STYLE | FormatKind.STATIC
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.STYLE | FormatKind.STATIC
+        return self._format_kind_prop
 
     @property
     def prop_name(self) -> str:

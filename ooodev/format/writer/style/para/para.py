@@ -26,7 +26,11 @@ class Para(StyleBase):
         super().__init__(**{self._get_property_name(): str(name)})
 
     def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.style.ParagraphProperties",)
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = ("com.sun.star.style.ParagraphProperties",)
+        return self._supported_services_values
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:
@@ -34,7 +38,11 @@ class Para(StyleBase):
         return super()._on_modifing(event)
 
     def _get_property_name(self) -> str:
-        return "ParaStyleName"
+        try:
+            return self._property_name
+        except AttributeError:
+            self._property_name = "ParaStyleName"
+        return self._property_name
 
     def on_property_setting(self, event_args: KeyValCancelArgs):
         """
@@ -392,11 +400,14 @@ class Para(StyleBase):
         return Para(StyleParaKind.TEXT_BODY_INDENT)
 
     # endregion Style Properties
-
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.STYLE | FormatKind.PARA
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.STYLE | FormatKind.PARA
+        return self._format_kind_prop
 
     @property
     def prop_name(self) -> str:

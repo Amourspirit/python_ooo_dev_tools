@@ -4,7 +4,7 @@ Module for Fill Transparency.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Any, Tuple, cast, Type, TypeVar
+from typing import Any, Tuple, cast, Type, TypeVar, overload
 import uno
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
@@ -41,12 +41,17 @@ class Transparency(StyleBase):
     # endregion Internal Methods
 
     # region Overrides
+
     def _supported_services(self) -> Tuple[str, ...]:
-        return (
-            "com.sun.star.drawing.FillProperties",
-            "com.sun.star.text.TextContent",
-            "com.sun.star.style.ParagraphStyle",
-        )
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = (
+                "com.sun.star.drawing.FillProperties",
+                "com.sun.star.text.TextContent",
+                "com.sun.star.style.ParagraphStyle",
+            )
+        return self._supported_services_values
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:
@@ -65,9 +70,19 @@ class Transparency(StyleBase):
         return mProps.Props.has(obj, self._props.transparence)
 
     # endregion Overrides
-
+    # region from_obj()
+    @overload
     @classmethod
     def from_obj(cls: Type[_TTransparency], obj: object) -> _TTransparency:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TTransparency], obj: object, **kwargs) -> _TTransparency:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TTransparency], obj: object, **kwargs) -> _TTransparency:
         """
         Gets instance from object
 
@@ -79,23 +94,25 @@ class Transparency(StyleBase):
         """
         # this nu is only used to get Property Name
 
-        nu = super(Transparency, cls).__new__(cls)
-        nu.__init__()
+        nu = cls(value=0, **kwargs)
         if not nu._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
         tp = cast(int, mProps.Props.get(obj, nu._props.transparence, None))
-        inst = super(Transparency, cls).__new__(cls)
         if tp is None:
-            inst.__init__(value=0)
+            return nu
         else:
-            inst.__init__(value=tp)
-        return inst
+            return cls(value=tp, **kwargs)
 
+    # endregion from_obj()
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.PARA | FormatKind.TXT_CONTENT | FormatKind.FILL
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.PARA | FormatKind.TXT_CONTENT | FormatKind.FILL
+        return self._format_kind_prop
 
     @property
     def prop_value(self) -> Intensity:
@@ -111,10 +128,10 @@ class Transparency(StyleBase):
     @property
     def _props(self) -> TransparentTransparencyProps:
         try:
-            return self._props_transparency
+            return self._props_internal_attributes
         except AttributeError:
-            self._props_transparency = TransparentTransparencyProps(transparence="FillTransparence")
-        return self._props_transparency
+            self._props_internal_attributes = TransparentTransparencyProps(transparence="FillTransparence")
+        return self._props_internal_attributes
 
     @static_prop
     def default() -> Transparency:  # type: ignore[misc]

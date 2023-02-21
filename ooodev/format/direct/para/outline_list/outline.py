@@ -63,7 +63,14 @@ class Outline(StyleBase):
 
     # region methods
     def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.style.ParagraphProperties", "com.sun.star.style.ParagraphStyle")
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = (
+                "com.sun.star.style.ParagraphProperties",
+                "com.sun.star.style.ParagraphStyle",
+            )
+        return self._supported_services_values
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:
@@ -94,8 +101,19 @@ class Outline(StyleBase):
 
     # endregion apply()
 
+    # region from_obj()
+    @overload
     @classmethod
     def from_obj(cls: Type[_TOutline], obj: object) -> _TOutline:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TOutline], obj: object, **kwargs) -> _TOutline:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TOutline], obj: object, **kwargs) -> _TOutline:
         """
         Gets instance from object
 
@@ -108,14 +126,15 @@ class Outline(StyleBase):
         Returns:
             Outline: ``Outline`` instance that represents ``obj`` break properties.
         """
-        inst = super(Outline, cls).__new__(cls)
-        inst.__init__(level=LevelKind.TEXT_BODY)
+        inst = cls(level=LevelKind.TEXT_BODY, **kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
         level = int(mProps.Props.get(obj, "OutlineLevel"))
         inst._set("OutlineLevel", level)
         return inst
+
+    # endregion from_obj()
 
     # endregion methods
     # region style methods
@@ -219,7 +238,11 @@ class Outline(StyleBase):
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.PARA
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.PARA
+        return self._format_kind_prop
 
     @property
     def prop_level(self) -> LevelKind:

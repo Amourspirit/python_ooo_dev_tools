@@ -4,7 +4,7 @@ Module for Fill Transparency.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Any, Tuple, cast, Type, TypeVar, NamedTuple
+from typing import Any, Tuple, cast, Type, TypeVar, NamedTuple, overload
 
 import uno
 from .....events.args.cancel_event_args import CancelEventArgs
@@ -61,8 +61,13 @@ class LayoutSettings(StyleBase):
         self.prop_right_gutter = right_gutter
 
     # region Overrides
+
     def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.style.PageProperties", "com.sun.star.style.PageStyle")
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = ("com.sun.star.style.PageProperties", "com.sun.star.style.PageStyle")
+        return self._supported_services_values
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:
@@ -84,8 +89,20 @@ class LayoutSettings(StyleBase):
     # endregion internal methods
 
     # region Static Methods
+
+    # region from_obj()
+    @overload
     @classmethod
     def from_obj(cls: Type[_TLayoutSettings], obj: object) -> _TLayoutSettings:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TLayoutSettings], obj: object, **kwargs) -> _TLayoutSettings:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TLayoutSettings], obj: object, **kwargs) -> _TLayoutSettings:
         """
         Gets instance from object
 
@@ -97,8 +114,7 @@ class LayoutSettings(StyleBase):
         """
         # this nu is only used to get Property Name
 
-        inst = super(LayoutSettings, cls).__new__(cls)
-        inst.__init__()
+        inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
@@ -114,12 +130,17 @@ class LayoutSettings(StyleBase):
         set_prop("RtlGutter", inst)
         return inst
 
-    # endregion Static Methods
+    # endregion from_obj()
 
+    # endregion Static Methods
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.PAGE
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.PAGE
+        return self._format_kind_prop
 
     @property
     def prop_layout(self) -> PageStyleLayout | None:

@@ -84,8 +84,16 @@ class Breaks(StyleBase):
     # endregion init
 
     # region methods
+
     def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.style.ParagraphProperties", "com.sun.star.style.ParagraphStyle")
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = (
+                "com.sun.star.style.ParagraphProperties",
+                "com.sun.star.style.ParagraphStyle",
+            )
+        return self._supported_services_values
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:
@@ -116,8 +124,19 @@ class Breaks(StyleBase):
 
     # endregion apply()
 
+    # region from_obj()
+    @overload
     @classmethod
     def from_obj(cls: Type[_TBreaks], obj: object) -> _TBreaks:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TBreaks], obj: object, **kwargs) -> _TBreaks:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TBreaks], obj: object, **kwargs) -> _TBreaks:
         """
         Gets instance from object
 
@@ -130,17 +149,16 @@ class Breaks(StyleBase):
         Returns:
             Breaks: ``Breaks`` instance that represents ``obj`` break properties.
         """
-        nu = cast(Breaks, super(Breaks, cls).__new__(cls))
-        nu.__init__()
+        nu = cls(**kwargs)
         if not nu._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
         t = mProps.Props.get(obj, "BreakType", None)
         style = mProps.Props.get(obj, "PageDescName", None)
         num = mProps.Props.get(obj, "PageNumberOffset", None)
-        inst = cast(Breaks, super(Breaks, cls).__new__(cls))
-        inst.__init__(type=t, style=style, num=num)
-        return inst
+        return cls(type=t, style=style, num=num, **kwargs)
+
+    # endregion from_obj()
 
     # endregion methods
 
@@ -148,7 +166,11 @@ class Breaks(StyleBase):
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.PARA
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.PARA
+        return self._format_kind_prop
 
     @property
     def prop_type(self) -> BreakType | None:

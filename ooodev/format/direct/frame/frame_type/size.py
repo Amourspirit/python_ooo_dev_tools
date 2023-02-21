@@ -133,7 +133,11 @@ class Size(AbstractDocument):
 
     # region Overrides
     def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.style.Style",)
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = ("com.sun.star.style.Style",)
+        return self._supported_services_values
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:
@@ -220,8 +224,19 @@ class Size(AbstractDocument):
 
     # region Static Methods
 
+    # region from_obj()
+    @overload
     @classmethod
     def from_obj(cls: Type[_TSize], obj: object) -> _TSize:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TSize], obj: object, **kwargs) -> _TSize:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TSize], obj: object, **kwargs) -> _TSize:
         """
         Gets instance from object
 
@@ -231,8 +246,7 @@ class Size(AbstractDocument):
         Returns:
             Size: Instance that represents Frame size.
         """
-        inst = super(Size, cls).__new__(cls)
-        inst.__init__()
+        inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
@@ -272,14 +286,19 @@ class Size(AbstractDocument):
 
         return inst
 
+    # endregion from_obj()
+
     # endregion Static Methods
 
     # region Properties
-
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.DOC | FormatKind.STYLE
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.DOC | FormatKind.STYLE
+        return self._format_kind_prop
 
     @property
     def prop_width(self) -> RelativeSize | AbsoluteSize | None:
@@ -328,9 +347,9 @@ class Size(AbstractDocument):
     @property
     def _props(self) -> FrameTypeSizeProps:
         try:
-            return self._props_frame_type_size
+            return self._props_internal_attributes
         except AttributeError:
-            self._props_frame_type_size = FrameTypeSizeProps(
+            self._props_internal_attributes = FrameTypeSizeProps(
                 width="Width",
                 height="Height",
                 rel_width="RelativeWidth",
@@ -340,6 +359,6 @@ class Size(AbstractDocument):
                 size_type="SizeType",
                 width_type="WidthType",
             )
-        return self._props_frame_type_size
+        return self._props_internal_attributes
 
     # endregion Properties

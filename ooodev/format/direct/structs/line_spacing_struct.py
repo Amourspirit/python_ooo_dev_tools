@@ -137,7 +137,11 @@ class LineSpacingStruct(StyleBase):
         return False
 
     def _supported_services(self) -> Tuple[str, ...]:
-        return ()
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = ()
+        return self._supported_services_values
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:
@@ -145,7 +149,11 @@ class LineSpacingStruct(StyleBase):
         return super()._on_modifing(event)
 
     def _get_property_name(self) -> str:
-        return "ParaLineSpacing"
+        try:
+            return self._property_name
+        except AttributeError:
+            self._property_name = "ParaLineSpacing"
+        return self._property_name
 
     def get_attrs(self) -> Tuple[str, ...]:
         """
@@ -157,8 +165,7 @@ class LineSpacingStruct(StyleBase):
         return (self._get_property_name(),)
 
     def copy(self: _TLineSpacingStruct) -> _TLineSpacingStruct:
-        nu = super(LineSpacingStruct, self.__class__).__new__(self.__class__)
-        nu.__init__(mode=self._mode, height=self._value)
+        nu = self.__class__(mode=self._mode, height=self._value)
         if self._dv:
             nu._update(self._dv)
         return nu
@@ -225,8 +232,19 @@ class LineSpacingStruct(StyleBase):
         """
         return UnoLineSpacing(Mode=self._mode, Height=self._value)
 
+    # region from_line_spacing()
+    @overload
     @classmethod
     def from_line_spacing(cls: Type[_TLineSpacingStruct], ln_spacing: UnoLineSpacing) -> _TLineSpacingStruct:
+        ...
+
+    @overload
+    @classmethod
+    def from_line_spacing(cls: Type[_TLineSpacingStruct], ln_spacing: UnoLineSpacing, **kwargs) -> _TLineSpacingStruct:
+        ...
+
+    @classmethod
+    def from_line_spacing(cls: Type[_TLineSpacingStruct], ln_spacing: UnoLineSpacing, **kwargs) -> _TLineSpacingStruct:
         """
         Converts a UNO ``LineSpacing`` struct into a ``LineSpacingStruct``
 
@@ -236,12 +254,13 @@ class LineSpacingStruct(StyleBase):
         Returns:
             LineSpacingStruct: ``LineSpacingStruct`` set with Line spacing properties.
         """
-        inst = super(LineSpacingStruct, cls).__new__(cls)
-        inst.__init__()
+        inst = cls(**kwargs)
         inst._mode = ln_spacing.Mode
         inst._value = ln_spacing.Height
         inst._line_mode = ModeKind.from_uno(ln_spacing)
         return inst
+
+    # endregion from_line_spacing()
 
     # endregion methods
 
@@ -249,7 +268,11 @@ class LineSpacingStruct(StyleBase):
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.STRUCT
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.STRUCT
+        return self._format_kind_prop
 
     @property
     def prop_mode(self) -> ModeKind:

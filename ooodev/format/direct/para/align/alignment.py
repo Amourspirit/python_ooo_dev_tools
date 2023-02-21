@@ -101,13 +101,14 @@ class Alignment(StyleMulti):
     # region methods
 
     def _supported_services(self) -> Tuple[str, ...]:
-        """
-        Gets a tuple of supported services (``com.sun.star.style.ParagraphProperties``,)
-
-        Returns:
-            Tuple[str, ...]: Supported services
-        """
-        return ("com.sun.star.style.ParagraphProperties", "com.sun.star.style.ParagraphStyle")
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = (
+                "com.sun.star.style.ParagraphProperties",
+                "com.sun.star.style.ParagraphStyle",
+            )
+        return self._supported_services_values
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:
@@ -163,8 +164,19 @@ class Alignment(StyleMulti):
             return ParagraphAdjust.CENTER
         return ParagraphAdjust.STRETCH
 
+    # region from_obj()
+    @overload
     @classmethod
     def from_obj(cls: Type[_TAlignment], obj: object) -> _TAlignment:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TAlignment], obj: object, **kwargs) -> _TAlignment:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TAlignment], obj: object, **kwargs) -> _TAlignment:
         """
         Gets Padding instance from object
 
@@ -177,8 +189,7 @@ class Alignment(StyleMulti):
         Returns:
             Alignment: Alignment that represents ``obj`` alignment.
         """
-        inst = super(Alignment, cls).__new__(cls)
-        inst.__init__()
+        inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
@@ -209,6 +220,8 @@ class Alignment(StyleMulti):
         except Exception:
             mLo.Lo.print("Alignment.from_obj(): unable to set txt_direction style")
         return inst
+
+    # endregion from_obj()
 
     # endregion static methods
 
@@ -353,7 +366,11 @@ class Alignment(StyleMulti):
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.PARA
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.PARA
+        return self._format_kind_prop
 
     @property
     def prop_align(self) -> ParagraphAdjust | None:

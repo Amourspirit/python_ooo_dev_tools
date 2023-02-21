@@ -164,8 +164,19 @@ class Pattern(StyleBase):
     # endregion Overrides
 
     # region Static Methods
+    # region from_preset()
+    @overload
     @classmethod
     def from_preset(cls: Type[_TPattern], preset: PresetPatternKind) -> _TPattern:
+        ...
+
+    @overload
+    @classmethod
+    def from_preset(cls: Type[_TPattern], preset: PresetPatternKind, **kwargs) -> _TPattern:
+        ...
+
+    @classmethod
+    def from_preset(cls: Type[_TPattern], preset: PresetPatternKind, **kwargs) -> _TPattern:
         """
         Gets an instance from a preset.
 
@@ -176,19 +187,29 @@ class Pattern(StyleBase):
             Pattern: ``Pattern`` instance from preset.
         """
         name = str(preset)
-        nu = super(Pattern, cls).__new__(cls)
-        nu.__init__()
+        nu = cls(**kwargs)
 
         nc = nu._container_get_inst()
         bmap = nu._container_get_value(name, nc)
         if bmap is None:
             bmap = mPattern.get_prest_bitmap(preset)
-        inst = super(Pattern, cls).__new__(cls)
-        inst.__init__(bitmap=bmap, name=name, tile=True, stretch=False, auto_name=False)
-        return inst
+        return cls(bitmap=bmap, name=name, tile=True, stretch=False, auto_name=False, **kwargs)
 
+    # endregion from_preset()
+
+    # region from_obj()
+    @overload
     @classmethod
     def from_obj(cls: Type[_TPattern], obj: object) -> _TPattern:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TPattern], obj: object, **kwargs) -> _TPattern:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TPattern], obj: object, **kwargs) -> _TPattern:
         """
         Gets instance from object
 
@@ -201,9 +222,8 @@ class Pattern(StyleBase):
         Returns:
             Pattern: ``Pattern`` instance that represents ``obj`` fill pattern.
         """
-        nu = super(Pattern, cls).__new__(cls)
-        nu.__init__()
-        if not nu._is_valid_obj(obj):
+        inst = cls(**kwargs)
+        if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
         def set_prop(key: str, fp: Pattern):
@@ -212,8 +232,6 @@ class Pattern(StyleBase):
             if not val is None:
                 fp._set(key, val)
 
-        inst = super(Pattern, cls).__new__(cls)
-        inst.__init__()
         name = mProps.Props.get(obj, inst._props.name)
         inst._name = name
         inst._set(inst._props.name, name)
@@ -223,13 +241,18 @@ class Pattern(StyleBase):
         set_prop(inst._props.style, inst)
         return inst
 
+    # endregion from_obj()
     # endregion Static Methods
 
     # region Properties
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.TXT_CONTENT | FormatKind.FILL
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.TXT_CONTENT | FormatKind.FILL
+        return self._format_kind_prop
 
     @property
     def prop_tile(self) -> bool:
@@ -252,15 +275,15 @@ class Pattern(StyleBase):
     @property
     def _props(self) -> AreaPatternProps:
         try:
-            return self._props_area_pattern
+            return self._props_internal_attributes
         except AttributeError:
-            self._props_area_pattern = AreaPatternProps(
+            self._props_internal_attributes = AreaPatternProps(
                 style="FillStyle",
                 name="FillBitmapName",
                 tile="FillBitmapTile",
                 stretch="FillBitmapStretch",
                 bitmap="FillBitmap",
             )
-        return self._props_area_pattern
+        return self._props_internal_attributes
 
     # endregion Properties

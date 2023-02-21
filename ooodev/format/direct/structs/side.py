@@ -278,7 +278,11 @@ class Side(StyleBase):
         return False
 
     def _supported_services(self) -> Tuple[str, ...]:
-        return ()
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = ()
+        return self._supported_services_values
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:
@@ -410,8 +414,19 @@ class Side(StyleBase):
             Side._EMPTY_INST._is_default_inst = True
         return Side._EMPTY_INST
 
+    # region from_border2()
+    @overload
     @classmethod
     def from_border2(cls: Type[_TSide], border: BorderLine2) -> _TSide:
+        ...
+
+    @overload
+    @classmethod
+    def from_border2(cls: Type[_TSide], border: BorderLine2, **kwargs) -> _TSide:
+        ...
+
+    @classmethod
+    def from_border2(cls: Type[_TSide], border: BorderLine2, **kwargs) -> _TSide:
         """
         Gets instance that is populated from UNO ``BorderLine2``.
 
@@ -421,8 +436,7 @@ class Side(StyleBase):
         Returns:
             Side: instance.
         """
-        inst = super(Side, cls).__new__(cls)
-        inst.__init__()
+        inst = cls(**kwargs)
         inst._set("Color", border.Color)
         inst._set("InnerLineWidth", border.InnerLineWidth)
         inst._set("LineDistance", border.LineDistance)
@@ -431,6 +445,7 @@ class Side(StyleBase):
         inst._set("OuterLineWidth", border.OuterLineWidth)
         return inst
 
+    # endregion from_border2()
     # endregion methods
 
     # region style methods
@@ -444,9 +459,7 @@ class Side(StyleBase):
         Returns:
             Side: Side with style set
         """
-        inst = cast(Side, super(Side, self.__class__).__new__(self.__class__))
-        inst.__init__(line=value, width=self._pts, color=self.prop_color)
-        return inst
+        return self.__class__(line=value, width=self._pts, color=self.prop_color)
 
     def fmt_color(self: _TSide, value: Color) -> _TSide:
         """
@@ -472,9 +485,7 @@ class Side(StyleBase):
         Returns:
             Side: Side with width set
         """
-        inst = cast(Side, super(Side, self.__class__).__new__(self.__class__))
-        inst.__init__(line=self.prop_line, width=value, color=self.prop_color)
-        return inst
+        return self.__class__(line=self.prop_line, width=value, color=self.prop_color)
 
     # endregion style methods
     # region Style Properties
@@ -578,7 +589,11 @@ class Side(StyleBase):
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.STRUCT
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.STRUCT
+        return self._format_kind_prop
 
     @property
     def prop_line(self) -> BorderLineStyleEnum:

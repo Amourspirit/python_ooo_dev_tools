@@ -64,27 +64,21 @@ class DropCapStruct(StyleBase):
 
     # region methods
     def _supported_services(self) -> Tuple[str, ...]:
-        """
-        Gets a tuple of supported services.
-        This is an empty value for this class but may be different for child classes.
-
-        Returns:
-            Tuple[str, ...]: Supported services
-        """
-        return ()
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = ()
+        return self._supported_services_values
 
     def _get_property_name(self) -> str:
-        return "DropCapFormat"
+        try:
+            return self._property_name
+        except AttributeError:
+            self._property_name = "DropCapFormat"
+        return self._property_name
 
     def _is_valid_obj(self, obj: object) -> bool:
         return mProps.Props.has(obj, self._get_property_name())
-
-    def copy(self: T) -> T:
-        nu = super(DropCapStruct, self.__class__).__new__(self.__class__)
-        nu.__init__()
-        if self._dv:
-            nu._update(self._dv)
-        return nu
 
     def get_attrs(self) -> Tuple[str, ...]:
         return (self._get_property_name(),)
@@ -155,8 +149,19 @@ class DropCapStruct(StyleBase):
         """
         return DropCapFormat(Lines=self._get("Lines"), Count=self._get("Count"), Distance=self._get("Distance"))
 
+    # region from_obj()
+    @overload
     @classmethod
     def from_obj(cls: Type[_TDropCapStruct], obj: object) -> _TDropCapStruct:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TDropCapStruct], obj: object, **kwargs) -> _TDropCapStruct:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TDropCapStruct], obj: object, **kwargs) -> _TDropCapStruct:
         """
         Gets instance from object
 
@@ -170,8 +175,7 @@ class DropCapStruct(StyleBase):
             DropCap: ``DropCap`` instance that represents ``obj`` Drop cap format properties.
         """
         # this nu is only used to get Property Name
-        nu = super(DropCapStruct, cls).__new__(cls)
-        nu.__init__()
+        nu = cls(**kwargs)
         prop_name = nu._get_property_name()
 
         try:
@@ -179,10 +183,23 @@ class DropCapStruct(StyleBase):
         except mEx.PropertyNotFoundError:
             raise mEx.PropertyNotFoundError(prop_name, f"from_obj() obj as no {prop_name} property")
 
-        return cls.from_drop_cap_format(dcf)
+        return cls.from_drop_cap_format(dcf, **kwargs)
 
+    # endregion from_obj()
+
+    # region from_drop_cap_format()
+    @overload
     @classmethod
     def from_drop_cap_format(cls: Type[_TDropCapStruct], dcf: DropCapFormat) -> _TDropCapStruct:
+        ...
+
+    @overload
+    @classmethod
+    def from_drop_cap_format(cls: Type[_TDropCapStruct], dcf: DropCapFormat, **kwargs) -> _TDropCapStruct:
+        ...
+
+    @classmethod
+    def from_drop_cap_format(cls: Type[_TDropCapStruct], dcf: DropCapFormat, **kwargs) -> _TDropCapStruct:
         """
         Converts a ``DropCapFormat`` Stop instance to a ``DropCap``
 
@@ -192,9 +209,9 @@ class DropCapStruct(StyleBase):
         Returns:
             DropCap: ``DropCap`` set with Drop Cap Format properties
         """
-        inst = super(DropCapStruct, cls).__new__(cls)
-        inst.__init__(count=dcf.Count, distance=dcf.Distance, lines=dcf.Lines)
-        return inst
+        return cls(count=dcf.Count, distance=dcf.Distance, lines=dcf.Lines, **kwargs)
+
+    # endregion from_drop_cap_format()
 
     # endregion methods
 
@@ -266,7 +283,11 @@ class DropCapStruct(StyleBase):
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.PARA
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.PARA
+        return self._format_kind_prop
 
     @property
     def prop_count(self) -> int:
