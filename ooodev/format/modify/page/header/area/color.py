@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Tuple, cast
+from typing import Tuple, cast, Type, TypeVar
 import uno
 from ......utils import color as mColor
 from .....writer.style.page.kind.style_page_kind import StylePageKind as StylePageKind
@@ -8,29 +8,39 @@ from .....kind.format_kind import FormatKind
 from .....direct.common.abstract.abstract_fill_color import AbstractColor
 from .....direct.common.props.fill_color_props import FillColorProps
 
+_TColor = TypeVar(name="_TColor", bound="Color")
 
-class HeaderColor(AbstractColor):
+
+class InnerColor(AbstractColor):
     """
-    Header Fill Coloring
+    Inner Fill Coloring
 
     .. versionadded:: 0.9.0
     """
 
     def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.style.PageProperties", "com.sun.star.style.PageStyle")
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = ("com.sun.star.style.PageProperties", "com.sun.star.style.PageStyle")
+        return self._supported_services_values
 
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.DOC | FormatKind.STYLE
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.DOC | FormatKind.STYLE
+        return self._format_kind_prop
 
     @property
     def _props(self) -> FillColorProps:
         try:
-            return self._props_fill_color
+            return self._props_internal_attributes
         except AttributeError:
-            self._props_fill_color = FillColorProps(color="HeaderFillColor", style="HeaderFillStyle")
-        return self._props_fill_color
+            self._props_internal_attributes = FillColorProps(color="FooterFillColor", style="FooterFillStyle")
+        return self._props_internal_attributes
 
 
 class Color(PageStyleBaseMulti):
@@ -59,19 +69,33 @@ class Color(PageStyleBaseMulti):
             None:
         """
 
-        direct = HeaderColor(color=color)
+        direct = InnerColor(color=color, _cattribs=self._get_inner_cattribs())
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
         self._set_style("direct", direct, *direct.get_attrs())
 
+    # region internal methods
+    def _get_inner_props(self) -> FillColorProps:
+        return FillColorProps(color="HeaderFillColor", style="HeaderFillStyle")
+
+    def _get_inner_cattribs(self) -> dict:
+        return {
+            "_supported_services_values": self._supported_services(),
+            "_format_kind_prop": self.prop_format_kind,
+            "_props_internal_attributes": self._get_inner_props(),
+        }
+
+    # endregion internal methods
+
+    # region Static Methods
     @classmethod
     def from_style(
-        cls,
+        cls: Type[_TColor],
         doc: object,
         style_name: StylePageKind | str = StylePageKind.STANDARD,
         style_family: str = "PageStyles",
-    ) -> Color:
+    ) -> _TColor:
         """
         Gets instance from Document.
 
@@ -83,11 +107,12 @@ class Color(PageStyleBaseMulti):
         Returns:
             Color: ``Color`` instance from document properties.
         """
-        inst = super(Color, cls).__new__(cls)
-        inst.__init__(style_name=style_name, style_family=style_family)
-        direct = HeaderColor.from_obj(inst.get_style_props(doc))
+        inst = cls(style_name=style_name, style_family=style_family)
+        direct = InnerColor.from_obj(inst.get_style_props(doc), _cattribs=inst._get_inner_cattribs())
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
+
+    # endregion Static Methods
 
     @property
     def prop_style_name(self) -> str:
@@ -99,10 +124,10 @@ class Color(PageStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> HeaderColor:
+    def prop_inner(self) -> InnerColor:
         """Gets Inner Color instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(HeaderColor, self._get_style_inst("direct"))
+            self._direct_inner = cast(InnerColor, self._get_style_inst("direct"))
         return self._direct_inner

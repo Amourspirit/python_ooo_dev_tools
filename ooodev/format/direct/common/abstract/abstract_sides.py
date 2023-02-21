@@ -134,8 +134,19 @@ class AbstractSides(StyleBase):
             )
         return False
 
+    # region from_obj()
+    @overload
     @classmethod
     def from_obj(cls: Type[_TAbstractSides], obj: object) -> _TAbstractSides:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TAbstractSides], obj: object, **kwargs) -> _TAbstractSides:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TAbstractSides], obj: object, **kwargs) -> _TAbstractSides:
         """
         Gets instance from object properties
 
@@ -148,8 +159,7 @@ class AbstractSides(StyleBase):
         Returns:
             Sides: Instance that represents ``BorderLine2``.
         """
-        inst = super(AbstractSides, cls).__new__(cls)
-        inst.__init__()
+        inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
@@ -160,6 +170,7 @@ class AbstractSides(StyleBase):
             inst._set(attr, side)
         return inst
 
+    # endregion from_obj()
     # endregion methods
 
     # region style methods
@@ -242,7 +253,11 @@ class AbstractSides(StyleBase):
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.CHAR
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.CHAR
+        return self._format_kind_prop
 
     @property
     def prop_left(self) -> Side | None:
@@ -295,11 +310,11 @@ class AbstractSides(StyleBase):
     @property
     def _props(self) -> BorderProps:
         try:
-            return self.__border_properties
+            return self._props_internal_attributes
         except AttributeError:
-            self.__border_properties = BorderProps(
+            self._props_internal_attributes = BorderProps(
                 left="CharLeftBorder", top="CharTopBorder", right="CharRightBorder", bottom="CharBottomBorder"
             )
-        return self.__border_properties
+        return self._props_internal_attributes
 
     # endregion Properties

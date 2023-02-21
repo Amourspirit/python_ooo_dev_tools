@@ -465,3 +465,15 @@ class ConvertPathError(OSError):
     """Path Conversion Error"""
 
     pass
+
+
+class DeletedAttributeError(AttributeError):
+    """Generic error raise when attribue has been deleted."""
+
+    pass
+
+
+class DisabledMethodError(AttributeError):
+    """Generic error raise when method has been disabled."""
+
+    pass

@@ -57,8 +57,7 @@ class Outline(ParaStyleBaseMulti):
         Returns:
             Outline: ``Outline`` instance from document properties.
         """
-        inst = super(Outline, cls).__new__(cls)
-        inst.__init__(style_name=style_name, style_family=style_family)
+        inst = cls(style_name=style_name, style_family=style_family)
         direct = DirectOutline.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst

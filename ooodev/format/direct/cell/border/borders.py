@@ -5,7 +5,7 @@ Module for managing table borders (cells and ranges).
 """
 # region imports
 from __future__ import annotations
-from typing import overload, cast, Tuple
+from typing import overload, cast, Tuple, Type, TypeVar
 
 import uno
 
@@ -29,6 +29,8 @@ from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 
 # endregion imports
 
+_TBorders = TypeVar(name="_TBorders", bound="Borders")
+
 
 class TblBorder2(TableBorderStruct):
     """
@@ -40,11 +42,18 @@ class TblBorder2(TableBorderStruct):
     """
 
     def _get_property_name(self) -> str:
-        return "TableBorder2"
+        try:
+            return self._property_name
+        except AttributeError:
+            self._property_name = "TableBorder2"
+        return self._property_name
 
     def _supported_services(self) -> Tuple[str, ...]:
-        # will affect apply() on parent class.
-        return ("com.sun.star.table.CellProperties",)
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = ("com.sun.star.table.CellProperties",)
+        return self._supported_services_values
 
 
 class Borders(StyleMulti):
@@ -164,7 +173,7 @@ class Borders(StyleMulti):
     # endregion methods
 
     # region Style Methods
-    def fmt_border_side(self, value: Side | None) -> Borders:
+    def fmt_border_side(self: _TBorders, value: Side | None) -> _TBorders:
         """
         Gets copy of instance with left, right, top, bottom sides set or removed
 
@@ -188,7 +197,7 @@ class Borders(StyleMulti):
         cp._border_table = bt
         return cp
 
-    def fmt_left(self, value: Side | None) -> Borders:
+    def fmt_left(self: _TBorders, value: Side | None) -> _TBorders:
         """
         Gets copy of instance with left set or removed
 
@@ -209,7 +218,7 @@ class Borders(StyleMulti):
         cp._border_table = bt
         return cp
 
-    def fmt_right(self, value: Side | None) -> Borders:
+    def fmt_right(self: _TBorders, value: Side | None) -> _TBorders:
         """
         Gets copy of instance with right set or removed
 
@@ -230,7 +239,7 @@ class Borders(StyleMulti):
         cp._border_table = bt
         return cp
 
-    def fmt_top(self, value: Side | None) -> Borders:
+    def fmt_top(self: _TBorders, value: Side | None) -> _TBorders:
         """
         Gets copy of instance with top set or removed
 
@@ -251,7 +260,7 @@ class Borders(StyleMulti):
         cp._border_table = bt
         return cp
 
-    def fmt_bottom(self, value: Side | None) -> Borders:
+    def fmt_bottom(self: _TBorders, value: Side | None) -> _TBorders:
         """
         Gets copy of instance with bottom set or removed
 
@@ -272,7 +281,7 @@ class Borders(StyleMulti):
         cp._border_table = bt
         return cp
 
-    def fmt_horizontal(self, value: Side | None) -> Borders:
+    def fmt_horizontal(self: _TBorders, value: Side | None) -> _TBorders:
         """
         Gets copy of instance with horizontal set or removed
 
@@ -293,7 +302,7 @@ class Borders(StyleMulti):
         cp._border_table = bt
         return cp
 
-    def fmt_vertical(self, value: Side | None) -> Borders:
+    def fmt_vertical(self: _TBorders, value: Side | None) -> _TBorders:
         """
         Gets copy of instance with vertical set or removed
 
@@ -314,7 +323,7 @@ class Borders(StyleMulti):
         cp._border_table = bt
         return cp
 
-    def fmt_distance(self, value: float | None) -> Borders:
+    def fmt_distance(self: _TBorders, value: float | None) -> _TBorders:
         """
         Gets copy of instance with distance set or removed
 
@@ -335,7 +344,7 @@ class Borders(StyleMulti):
         cp._border_table = bt
         return cp
 
-    def fmt_diagonal_down(self, value: Side | None) -> Borders:
+    def fmt_diagonal_down(self: _TBorders, value: Side | None) -> _TBorders:
         """
         Gets copy of instance with diagonal down set or removed
 
@@ -352,7 +361,7 @@ class Borders(StyleMulti):
             cp._set("DiagonalTLBR2", value.get_uno_struct())
         return cp
 
-    def fmt_diagonal_up(self, value: Side | None) -> Borders:
+    def fmt_diagonal_up(self: _TBorders, value: Side | None) -> _TBorders:
         """
         Gets copy of instance with diagonal up set or removed
 
@@ -369,7 +378,7 @@ class Borders(StyleMulti):
             cp._set("DiagonalBLTR2", value.get_uno_struct())
         return cp
 
-    def fmt_shadow(self, value: Shadow | None) -> Borders:
+    def fmt_shadow(self: _TBorders, value: Shadow | None) -> _TBorders:
         """
         Gets copy of instance with shadow set or removed
 
@@ -386,7 +395,7 @@ class Borders(StyleMulti):
             cp._set("ShadowFormat", value.get_uno_struct())
         return cp
 
-    def fmt_padding(self, value: Padding | None) -> Borders:
+    def fmt_padding(self: _TBorders, value: Padding | None) -> _TBorders:
         """
         Gets copy of instance with padding set or removed
 
@@ -403,10 +412,15 @@ class Borders(StyleMulti):
     # endregion Style Methods
 
     # region Properties
+
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.CELL
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.CELL
+        return self._format_kind_prop
 
     @property
     def prop_inner_padding(self) -> Padding:

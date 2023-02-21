@@ -64,8 +64,7 @@ class Padding(ParaStyleBaseMulti):
         Returns:
             Padding: ``Padding`` instance from document properties.
         """
-        inst = super(Padding, cls).__new__(cls)
-        inst.__init__(style_name=style_name, style_family=style_family)
+        inst = cls(style_name=style_name, style_family=style_family)
         direct = DirectPadding.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst

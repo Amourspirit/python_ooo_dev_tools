@@ -4,7 +4,7 @@ Module for Fill Transparency.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Any, Tuple, cast, Type, TypeVar
+from typing import Any, Tuple, cast, Type, TypeVar, overload
 import uno
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
@@ -14,6 +14,7 @@ from .....utils import props as mProps
 from .....utils.data_type.intensity import Intensity as Intensity
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleBase
+from ...common.props.transparent_transparency_props import TransparentTransparencyProps
 
 _TTransparency = TypeVar(name="_TTransparency", bound="Transparency")
 
@@ -32,21 +33,25 @@ class Transparency(StyleBase):
         Args:
             value (Intensity, int, optional): Specifies the transparency value from ``0`` to ``100``.
         """
-        value = Intensity(int(value))
-
-        super().__init__(FillTransparence=value.value)
+        super().__init__()
+        self.prop_value = value
 
     # region Internal Methods
 
     # endregion Internal Methods
 
     # region Overrides
+
     def _supported_services(self) -> Tuple[str, ...]:
-        return (
-            "com.sun.star.drawing.FillProperties",
-            "com.sun.star.text.TextContent",
-            "com.sun.star.style.ParagraphStyle",
-        )
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = (
+                "com.sun.star.drawing.FillProperties",
+                "com.sun.star.text.TextContent",
+                "com.sun.star.style.ParagraphStyle",
+            )
+        return self._supported_services_values
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:
@@ -62,12 +67,22 @@ class Transparency(StyleBase):
                 mLo.Lo.print(f"  {err}")
 
     def _is_valid_obj(self, obj: object) -> bool:
-        return mProps.Props.has(obj, "FillTransparence")
+        return mProps.Props.has(obj, self._props.transparence)
 
     # endregion Overrides
-
+    # region from_obj()
+    @overload
     @classmethod
     def from_obj(cls: Type[_TTransparency], obj: object) -> _TTransparency:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TTransparency], obj: object, **kwargs) -> _TTransparency:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TTransparency], obj: object, **kwargs) -> _TTransparency:
         """
         Gets instance from object
 
@@ -79,34 +94,44 @@ class Transparency(StyleBase):
         """
         # this nu is only used to get Property Name
 
-        nu = super(Transparency, cls).__new__(cls)
-        nu.__init__()
+        nu = cls(value=0, **kwargs)
         if not nu._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
-        tp = cast(int, mProps.Props.get(obj, "FillTransparence", None))
-        inst = super(Transparency, cls).__new__(cls)
+        tp = cast(int, mProps.Props.get(obj, nu._props.transparence, None))
         if tp is None:
-            inst.__init__(value=0)
+            return nu
         else:
-            inst.__init__(value=tp)
-        return inst
+            return cls(value=tp, **kwargs)
 
+    # endregion from_obj()
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.PARA | FormatKind.TXT_CONTENT | FormatKind.FILL
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.PARA | FormatKind.TXT_CONTENT | FormatKind.FILL
+        return self._format_kind_prop
 
     @property
     def prop_value(self) -> Intensity:
         """Gets/Sets Transparency value"""
-        pv = cast(int, self._get("FillTransparence"))
+        pv = cast(int, self._get(self._props.transparence))
         return Intensity(pv)
 
     @prop_value.setter
     def prop_value(self, value: Intensity | int) -> None:
         val = Intensity(int(value))
-        self._set("FillTransparence", val.value)
+        self._set(self._props.transparence, val.value)
+
+    @property
+    def _props(self) -> TransparentTransparencyProps:
+        try:
+            return self._props_internal_attributes
+        except AttributeError:
+            self._props_internal_attributes = TransparentTransparencyProps(transparence="FillTransparence")
+        return self._props_internal_attributes
 
     @static_prop
     def default() -> Transparency:  # type: ignore[misc]

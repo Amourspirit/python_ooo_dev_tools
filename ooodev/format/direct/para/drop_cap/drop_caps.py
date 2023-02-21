@@ -4,7 +4,7 @@ Module for managing paragraph Drop Caps.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, cast, Type, TypeVar
+from typing import Tuple, cast, Type, TypeVar, overload
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....events.args.key_val_cancel_args import KeyValCancelArgs
@@ -32,19 +32,31 @@ class DropCapFmt(DropCapStruct):
     """
 
     def _supported_services(self) -> Tuple[str, ...]:
-        return (
-            "com.sun.star.style.ParagraphProperties",
-            "com.sun.star.text.TextContent",
-            "com.sun.star.style.ParagraphStyle",
-        )
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = (
+                "com.sun.star.style.ParagraphProperties",
+                "com.sun.star.text.TextContent",
+                "com.sun.star.style.ParagraphStyle",
+            )
+        return self._supported_services_values
 
     def _get_property_name(self) -> str:
-        return "DropCapFormat"
+        try:
+            return self._property_name
+        except AttributeError:
+            self._property_name = "DropCapFormat"
+        return self._property_name
 
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.PARA | FormatKind.TXT_CONTENT
+        try:
+            return self._fromat_kind_prop
+        except AttributeError:
+            self._fromat_kind_prop = FormatKind.PARA | FormatKind.TXT_CONTENT
+        return self._fromat_kind_prop
 
 
 class DropCaps(StyleMulti):
@@ -170,6 +182,7 @@ class DropCaps(StyleMulti):
         if dc is None:
             self._remove_style("drop_cap")
             return
+        dc._prop_parent = self
         self._set_style("drop_cap", dc, *dc.get_attrs())
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
@@ -178,14 +191,29 @@ class DropCaps(StyleMulti):
         return super()._on_modifing(event)
 
     def _supported_services(self) -> Tuple[str, ...]:
-        return (
-            "com.sun.star.style.ParagraphProperties",
-            "com.sun.star.text.TextContent",
-            "com.sun.star.style.ParagraphStyle",
-        )
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = (
+                "com.sun.star.style.ParagraphProperties",
+                "com.sun.star.text.TextContent",
+                "com.sun.star.style.ParagraphStyle",
+            )
+        return self._supported_services_values
 
+    # region from_obj()
+    @overload
     @classmethod
     def from_obj(cls: Type[_TDropCaps], obj: object) -> _TDropCaps:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TDropCaps], obj: object, **kwargs) -> _TDropCaps:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TDropCaps], obj: object, **kwargs) -> _TDropCaps:
         """
         Gets instance from object
 
@@ -198,8 +226,7 @@ class DropCaps(StyleMulti):
         Returns:
             DropCaps: ``DropCaps`` instance that represents ``obj`` Drop Caps.
         """
-        inst = cast(DropCaps, super(DropCaps, cls).__new__(cls))
-        inst.__init__()
+        inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
         dc = DropCapFmt.from_obj(obj)
@@ -213,6 +240,7 @@ class DropCaps(StyleMulti):
             inst._set("DropCapCharStyleName", style)
         return inst
 
+    # endregion from_obj()
     # endregion methods
 
     # region properties
@@ -220,7 +248,11 @@ class DropCaps(StyleMulti):
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.PARA | FormatKind.TXT_CONTENT
+        try:
+            return self._fromat_kind_prop
+        except AttributeError:
+            self._fromat_kind_prop = FormatKind.PARA | FormatKind.TXT_CONTENT
+        return self._fromat_kind_prop
 
     @property
     def prop_inner(self) -> DropCapFmt | None:

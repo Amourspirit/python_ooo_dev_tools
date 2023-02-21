@@ -160,13 +160,17 @@ class Img(StyleBase):
         return "com.sun.star.drawing.BitmapTable"
 
     def _supported_services(self) -> Tuple[str, ...]:
-        return (
-            "com.sun.star.drawing.FillProperties",
-            "com.sun.star.text.TextContent",
-            "com.sun.star.beans.PropertySet",
-            "com.sun.star.style.ParagraphStyle",
-            "com.sun.star.style.PageStyle",
-        )
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = (
+                "com.sun.star.drawing.FillProperties",
+                "com.sun.star.text.TextContent",
+                "com.sun.star.beans.PropertySet",
+                "com.sun.star.style.ParagraphStyle",
+                "com.sun.star.style.PageStyle",
+            )
+        return self._supported_services_values
 
     # region apply()
     @overload
@@ -210,8 +214,19 @@ class Img(StyleBase):
     # endregion Overrides
 
     # region Static Methods
+    # region from_preset()
+    @overload
     @classmethod
     def from_preset(cls: Type[_TImg], preset: PresetImageKind) -> _TImg:
+        ...
+
+    @overload
+    @classmethod
+    def from_preset(cls: Type[_TImg], preset: PresetImageKind, **kwargs) -> _TImg:
+        ...
+
+    @classmethod
+    def from_preset(cls: Type[_TImg], preset: PresetImageKind, **kwargs) -> _TImg:
         """
         Gets an instance from a preset
 
@@ -222,15 +237,13 @@ class Img(StyleBase):
             Img: Instance from preset.
         """
         name = str(preset)
-        nu = super(Img, cls).__new__(cls)
-        nu.__init__()
+        nu = cls(**kwargs)
 
         nc = nu._container_get_inst()
         bmap = cast("Graphic", nu._container_get_value(name, nc))
         if bmap is None:
             bmap = mImage.get_prest_bitmap(preset)
-        inst = super(Img, cls).__new__(cls)
-        inst.__init__(
+        inst = cls(
             bitmap=bmap,
             name=name,
             mode=ImgStyleKind.TILED,
@@ -238,6 +251,7 @@ class Img(StyleBase):
             pos_offset=Offset(0, 0),
             tile_offset=OffsetRow(0),
             auto_name=False,
+            **kwargs,
         )
         # set size
         point = preset._get_point()
@@ -245,8 +259,21 @@ class Img(StyleBase):
         inst._set(inst._props.size_y, point.y)
         return inst
 
+    # endregion from_preset()
+
+    # region from_obj()
+    @overload
     @classmethod
     def from_obj(cls: Type[_TImg], obj: object) -> _TImg:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TImg], obj: object, **kwargs) -> _TImg:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TImg], obj: object, **kwargs) -> _TImg:
         """
         Gets instance from object
 
@@ -259,9 +286,8 @@ class Img(StyleBase):
         Returns:
             Img: ``Img`` instance that represents ``obj`` fill image.
         """
-        nu = super(Img, cls).__new__(cls)
-        nu.__init__()
-        if not nu._is_valid_obj(obj):
+        inst = cls(**kwargs)
+        if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError("Object is not support to convert to Img")
 
         def set_prop(key: str, fp: Img):
@@ -270,8 +296,6 @@ class Img(StyleBase):
             if not val is None:
                 fp._set(key, val)
 
-        inst = super(Img, cls).__new__(cls)
-        inst.__init__()
         name = mProps.Props.get(obj, inst._props.name)
         inst._name = name
         inst._set(inst._props.name, name)
@@ -292,13 +316,18 @@ class Img(StyleBase):
         # set_prop("FillBitmapTile", inst)
         return inst
 
+    # endregion from_obj()
     # endregion Static Methods
 
     # region Properties
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.TXT_CONTENT | FormatKind.FILL
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.TXT_CONTENT | FormatKind.FILL
+        return self._format_kind_prop
 
     @property
     def prop_mode(self) -> ImgStyleKind | None:
@@ -453,9 +482,9 @@ class Img(StyleBase):
     @property
     def _props(self) -> AreaImgProps:
         try:
-            return self._props_area_img
+            return self._props_internal_attributes
         except AttributeError:
-            self._props_area_img = AreaImgProps(
+            self._props_internal_attributes = AreaImgProps(
                 name="FillBitmapName",
                 style="FillStyle",
                 mode="FillBitmapMode",
@@ -468,6 +497,6 @@ class Img(StyleBase):
                 size_x="FillBitmapSizeX",
                 size_y="FillBitmapSizeY",
             )
-        return self._props_area_img
+        return self._props_internal_attributes
 
     # endregion Properties

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Tuple, cast
+from typing import cast, Type, TypeVar
 import uno
 from ooo.dyn.drawing.hatch_style import HatchStyle as HatchStyle
 
@@ -11,44 +11,16 @@ from ......utils.data_type.intensity import Intensity as Intensity
 from ......utils.data_type.intensity_range import IntensityRange as IntensityRange
 from ......utils.data_type.offset import Offset as Offset
 from .....writer.style.page.kind.style_page_kind import StylePageKind as StylePageKind
-from .....kind.format_kind import FormatKind
 from .....preset.preset_hatch import PresetHatchKind as PresetHatchKind
 from .....direct.common.props.area_hatch_props import AreaHatchProps
 from .....direct.fill.area.hatch import Hatch as FillHatch
 
-
-class HeaderHatch(FillHatch):
-    """
-    Page Header Hatch
-
-    .. versionadded:: 0.9.0
-    """
-
-    def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.style.PageProperties", "com.sun.star.style.PageStyle")
-
-    @property
-    def prop_format_kind(self) -> FormatKind:
-        """Gets the kind of style"""
-        return FormatKind.DOC | FormatKind.STYLE
-
-    @property
-    def _props(self) -> AreaHatchProps:
-        try:
-            return self._props_area_hatch
-        except AttributeError:
-            self._props_area_hatch = AreaHatchProps(
-                color="HeaderFillColor",
-                style="HeaderFillStyle",
-                bg="HeaderFillBackground",
-                hatch_prop="HeaderFillHatch",
-            )
-        return self._props_area_hatch
+_THatch = TypeVar(name="_THatch", bound="Hatch")
 
 
 class Hatch(PageStyleBaseMulti):
     """
-    Page Header Hatch
+    Page Footer Hatch
     .. versionadded:: 0.9.0
     """
 
@@ -79,19 +51,45 @@ class Hatch(PageStyleBaseMulti):
             None:
         """
 
-        direct = HeaderHatch(style=style, color=color, space=space, angle=angle, bg_color=bg_color)
+        direct = FillHatch(
+            style=style,
+            color=color,
+            space=space,
+            angle=angle,
+            bg_color=bg_color,
+            _cattribs=self._get_inner_cattribs(),
+        )
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
         self._set_style("direct", direct, *direct.get_attrs())
 
+    # region internal methods
+    def _get_inner_props(self) -> AreaHatchProps:
+        return AreaHatchProps(
+            color="HeaderFillColor",
+            style="HeaderFillStyle",
+            bg="HeaderFillBackground",
+            hatch_prop="HeaderFillHatch",
+        )
+
+    def _get_inner_cattribs(self) -> dict:
+        return {
+            "_supported_services_values": self._supported_services(),
+            "_format_kind_prop": self.prop_format_kind,
+            "_props_internal_attributes": self._get_inner_props(),
+        }
+
+    # endregion internal methods
+
+    # region Static methods
     @classmethod
     def from_style(
-        cls,
+        cls: Type[_THatch],
         doc: object,
         style_name: StylePageKind | str = StylePageKind.STANDARD,
         style_family: str = "PageStyles",
-    ) -> Hatch:
+    ) -> _THatch:
         """
         Gets instance from Document.
 
@@ -103,19 +101,18 @@ class Hatch(PageStyleBaseMulti):
         Returns:
             Hatch: ``Hatch`` instance from document properties.
         """
-        inst = super(Hatch, cls).__new__(cls)
-        inst.__init__(style_name=style_name, style_family=style_family)
-        direct = HeaderHatch.from_obj(inst.get_style_props(doc))
+        inst = cls(style_name=style_name, style_family=style_family)
+        direct = FillHatch.from_obj(inst.get_style_props(doc), _cattribs=inst._get_inner_cattribs())
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
     @classmethod
     def from_preset(
-        cls,
+        cls: Type[_THatch],
         preset: PresetHatchKind,
         style_name: StylePageKind | str = StylePageKind.STANDARD,
         style_family: str = "PageStyles",
-    ) -> Hatch:
+    ) -> _THatch:
         """
         Gets instance from preset.
 
@@ -127,12 +124,14 @@ class Hatch(PageStyleBaseMulti):
         Returns:
             Gradient: ``Gradient`` instance from preset.
         """
-        inst = super(Hatch, cls).__new__(cls)
-        inst.__init__(style_name=style_name, style_family=style_family)
-        direct = HeaderHatch.from_preset(preset=preset)
+        inst = cls(style_name=style_name, style_family=style_family)
+        direct = FillHatch.from_preset(preset=preset, _cattribs=inst._get_inner_cattribs())
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
+    # endregion Static methods
+
+    # region Properties
     @property
     def prop_style_name(self) -> str:
         """Gets/Sets property Style Name"""
@@ -143,10 +142,12 @@ class Hatch(PageStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> HeaderHatch:
+    def prop_inner(self) -> FillHatch:
         """Gets Inner Hatch instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(HeaderHatch, self._get_style_inst("direct"))
+            self._direct_inner = cast(FillHatch, self._get_style_inst("direct"))
         return self._direct_inner
+
+    # endregion Properties

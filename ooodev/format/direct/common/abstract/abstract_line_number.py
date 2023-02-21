@@ -65,7 +65,14 @@ class AbstractLineNumber(StyleBase):
 
     # region methods
     def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.style.ParagraphProperties", "com.sun.star.style.ParagraphStyle")
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = (
+                "com.sun.star.style.ParagraphProperties",
+                "com.sun.star.style.ParagraphStyle",
+            )
+        return self._supported_services_values
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:
@@ -98,9 +105,19 @@ class AbstractLineNumber(StyleBase):
                 mLo.Lo.print(f"  {err}")
 
     # endregion apply()
-
+    # region from_obj()
+    @overload
     @classmethod
     def from_obj(cls: Type[_TAbstractLineNumber], obj: object) -> _TAbstractLineNumber:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TAbstractLineNumber], obj: object, **kwargs) -> _TAbstractLineNumber:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TAbstractLineNumber], obj: object, **kwargs) -> _TAbstractLineNumber:
         """
         Gets instance from object
 
@@ -113,8 +130,7 @@ class AbstractLineNumber(StyleBase):
         Returns:
             LineNum: ``LineNum`` instance that represents ``obj`` properties.
         """
-        inst = super(AbstractLineNumber, cls).__new__(cls)
-        inst.__init__()
+        inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
@@ -128,6 +144,8 @@ class AbstractLineNumber(StyleBase):
         set_prop(inst._props.count, inst)
 
         return inst
+
+    # endregion from_obj()
 
     # endregion methods
 
@@ -156,9 +174,7 @@ class AbstractLineNumber(StyleBase):
     @property
     def restart_numbers(self: _TAbstractLineNumber) -> _TAbstractLineNumber:
         """Gets instance with restart numbers set to ``1``"""
-        inst = super(AbstractLineNumber, self.__class__).__new__(self.__class__)
-        inst.__init__(1)
-        return inst
+        return self.__class__(1)
 
     @property
     def include(self: _TAbstractLineNumber) -> _TAbstractLineNumber:
@@ -172,9 +188,7 @@ class AbstractLineNumber(StyleBase):
     @property
     def exclude(self: _TAbstractLineNumber) -> _TAbstractLineNumber:
         """Gets instance with include in line numbering set to exclude."""
-        inst = super(AbstractLineNumber, self.__class__).__new__(self.__class__)
-        inst.__init__(-1)
-        return inst
+        return self.__class__(-1)
 
     # endregion Style Properties
 
@@ -182,7 +196,11 @@ class AbstractLineNumber(StyleBase):
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.PARA
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.PARA
+        return self._format_kind_prop
 
     @property
     def prop_num_start(self) -> int | None:

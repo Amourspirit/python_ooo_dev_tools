@@ -30,7 +30,6 @@ from .fill_color import FillColor
 from ...common.props.area_hatch_props import AreaHatchProps
 from ...common.props.fill_color_props import FillColorProps
 from .....events.format_named_event import FormatNamedEvent as FormatNamedEvent
-from .....events.lo_events import Events, GenericArgs
 
 
 _THatch = TypeVar(name="_THatch", bound="Hatch")
@@ -66,15 +65,31 @@ class Hatch(StyleMulti):
             None:
         """
 
-        hatch = HatchStruct(style=style, color=color, distance=space, angle=angle)
+        hatch = HatchStruct(
+            style=style,
+            color=color,
+            distance=space,
+            angle=angle,
+            _cattribs={
+                "_supported_services_values": self._supported_services(),
+                "_format_kind_prop": self.prop_format_kind,
+                "_property_name": self._props.hatch_prop,
+            },
+        )
         hatch._prop_parent = self
-        hatch._struct_property_name = self._props.hatch_prop
+        # hatch._struct_property_name = self._props.hatch_prop
 
         # create event just to listen to fill color init
-        fc_init_event = Events(source=self, trigger_args=GenericArgs(hatch_init=True))
-        fc_init_event.on(FormatNamedEvent.STYLE_INITIALIZING, _on_style_initalizing)
-        bk_color = FillColor(bg_color)
-        fc_init_event = None  # done with init events
+        bk_color = FillColor(
+            color=bg_color,
+            _cattribs={
+                "_supported_services_values": self._supported_services(),
+                "_format_kind_prop": self.prop_format_kind,
+                "_props_internal_attributes": FillColorProps(
+                    color=self._props.color, style=self._props.style, bg=self._props.bg
+                ),
+            },
+        )
 
         bk_color._prop_parent = self
         # FillStyle is set by this class
@@ -97,12 +112,16 @@ class Hatch(StyleMulti):
     # region Overrides
 
     def _supported_services(self) -> Tuple[str, ...]:
-        return (
-            "com.sun.star.drawing.FillProperties",
-            "com.sun.star.text.TextContent",
-            "com.sun.star.beans.PropertySet",
-            "com.sun.star.style.PageStyle",
-        )
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = (
+                "com.sun.star.drawing.FillProperties",
+                "com.sun.star.text.TextContent",
+                "com.sun.star.beans.PropertySet",
+                "com.sun.star.style.PageStyle",
+            )
+        return self._supported_services_values
 
     def _container_get_service_name(self) -> str:
         # https://github.com/LibreOffice/core/blob/d9e044f04ac11b76b9a3dac575f4e9155b67490e/chart2/source/tools/PropertyHelper.cxx#L229
@@ -138,8 +157,19 @@ class Hatch(StyleMulti):
     # endregion Overrides
 
     # region Static Methods
+    # region from_preset()
+    @overload
     @classmethod
     def from_preset(cls: Type[_THatch], preset: PresetHatchKind) -> _THatch:
+        ...
+
+    @overload
+    @classmethod
+    def from_preset(cls: Type[_THatch], preset: PresetHatchKind, **kwargs) -> _THatch:
+        ...
+
+    @classmethod
+    def from_preset(cls: Type[_THatch], preset: PresetHatchKind, **kwargs) -> _THatch:
         """
         Gets an instance from a preset.
 
@@ -150,12 +180,24 @@ class Hatch(StyleMulti):
             Hatch: Instance from preset.
         """
         kargs = mPreset.get_preset(preset)
-        inst = super(Hatch, cls).__new__(cls)
-        inst.__init__(**kargs)
-        return inst
+        kargs.update(kwargs)
+        return cls(**kargs)
 
+    # endregion from_preset()
+
+    # region from_obj()
+    @overload
     @classmethod
     def from_obj(cls: Type[_THatch], obj: object) -> _THatch:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_THatch], obj: object, **kwargs) -> _THatch:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_THatch], obj: object, **kwargs) -> _THatch:
         """
         Gets instance from object
 
@@ -168,35 +210,45 @@ class Hatch(StyleMulti):
         Returns:
             Hatch: ``Hatch`` instance that represents ``obj`` hatch pattern.
         """
-        nu = super(Hatch, cls).__new__(cls)
-        nu.__init__()
+        nu = cls(**kwargs)
         if not nu._is_valid_obj(obj):
             raise mEx.NotSupportedError("Object is not support to convert to Hatch")
 
         hatch = cast(UnoHatch, mProps.Props.get(obj, nu._props.hatch_prop))
-        fc = FillColor.from_obj(obj)
+        cattribs = {
+            "_supported_services_values": nu._supported_services(),
+            "_format_kind_prop": nu.prop_format_kind,
+            "_props_internal_attributes": FillColorProps(
+                color=nu._props.color, style=nu._props.style, bg=nu._props.bg
+            ),
+        }
+        fc = FillColor.from_obj(obj, _cattribs=cattribs)
 
-        inst = super(Hatch, cls).__new__(cls)
         if hatch.Angle > 0:
             angle = round(hatch.Angle / 10)
         else:
             angle = 0
-        inst.__init__(
+        return cls(
             style=hatch.Style,
             color=hatch.Color,
             space=UnitConvert.convert_mm100_mm(hatch.Distance),
             angle=angle,
             bg_color=fc.prop_color,
+            **kwargs,
         )
-        return inst
 
+    # endregion from_obj()
     # endregion Static Methods
 
     # region Properties
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.TXT_CONTENT | FormatKind.FILL
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.TXT_CONTENT | FormatKind.FILL
+        return self._format_kind_prop
 
     @property
     def prop_bg_color(self) -> Color:
@@ -268,12 +320,12 @@ class Hatch(StyleMulti):
     @property
     def _props(self) -> AreaHatchProps:
         try:
-            return self._props_area_hatch
+            return self._props_internal_attributes
         except AttributeError:
-            self._props_area_hatch = AreaHatchProps(
+            self._props_internal_attributes = AreaHatchProps(
                 color="FillColor", style="FillStyle", bg="FillBackground", hatch_prop="FillHatch"
             )
-        return self._props_area_hatch
+        return self._props_internal_attributes
 
     # endregion Properties
 
@@ -289,11 +341,3 @@ def _on_bg_color_setting(source: Any, event_args: KeyValCancelArgs, *args, **kwa
         if event_args.value == -1:
             # strickly speaking this is not needed but follows how Draw handles it.
             event_args.value = StandardColor.DEFAULT_BLUE
-
-
-def _on_style_initalizing(source: Any, event_args: CancelEventArgs, *args, **kwargs) -> None:
-    if "hatch_init" in kwargs:
-        hatch = cast(_THatch, event_args.source)
-        if isinstance(source, FillColor):
-            props = FillColorProps(color=hatch._props.color, style=hatch._props.style, bg=hatch._props.bg)
-            source._props_fill_color = props

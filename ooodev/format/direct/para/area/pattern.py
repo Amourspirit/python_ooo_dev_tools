@@ -62,17 +62,22 @@ class Pattern(StyleMulti):
             init_vars["ParaBackGraphic"] = bmap
 
         super().__init__(**init_vars)
+        fp._prop_parent = self
         self._set_style("fill_props", fp, *fp.get_attrs())
 
     # region Overrides
 
     def _supported_services(self) -> Tuple[str, ...]:
-        return (
-            "com.sun.star.style.ParagraphProperties",
-            "com.sun.star.text.TextContent",
-            "com.sun.star.beans.PropertySet",
-            "com.sun.star.style.ParagraphStyle",
-        )
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = (
+                "com.sun.star.style.ParagraphProperties",
+                "com.sun.star.text.TextContent",
+                "com.sun.star.beans.PropertySet",
+                "com.sun.star.style.ParagraphStyle",
+            )
+        return self._supported_services_values
 
     def _props_set(self, obj: object, **kwargs: Any) -> None:
         try:
@@ -117,8 +122,20 @@ class Pattern(StyleMulti):
     # endregion Overrides
 
     # region Static Methods
+
+    # region from_preset()
+    @overload
     @classmethod
     def from_preset(cls: Type[_TPattern], preset: PresetPatternKind) -> _TPattern:
+        ...
+
+    @overload
+    @classmethod
+    def from_preset(cls: Type[_TPattern], preset: PresetPatternKind, **kwargs) -> _TPattern:
+        ...
+
+    @classmethod
+    def from_preset(cls: Type[_TPattern], preset: PresetPatternKind, **kwargs) -> _TPattern:
         """
         Gets an instance from a preset
 
@@ -131,12 +148,23 @@ class Pattern(StyleMulti):
         fp = FillPattern.from_preset(preset)
         bmap = fp._get("FillBitmap")
         name = str(preset)
-        inst = cast(Pattern, super(Pattern, cls).__new__(cls))
-        inst.__init__(bitmap=bmap, name=name, tile=True, stretch=False, auto_name=False)
-        return inst
+        return cls(bitmap=bmap, name=name, tile=True, stretch=False, auto_name=False, **kwargs)
 
+    # endregion from_preset()
+
+    # region from_obj()
+    @overload
     @classmethod
     def from_obj(cls: Type[_TPattern], obj: object) -> _TPattern:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TPattern], obj: object, **kwargs) -> _TPattern:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TPattern], obj: object, **kwargs) -> _TPattern:
         """
         Gets instance from object
 
@@ -152,9 +180,9 @@ class Pattern(StyleMulti):
         fp = FillPattern.from_obj(obj)
         bmap = fp._get("FillBitmap")
         name = fp._get("FillBitmapName")
-        inst = cast(Pattern, super(Pattern, cls).__new__(cls))
-        inst.__init__(bitmap=bmap, name=name, tile=True, stretch=False, auto_name=False)
-        return inst
+        return cls(bitmap=bmap, name=name, tile=True, stretch=False, auto_name=False, **kwargs)
+
+    # endregion from_obj()
 
     # endregion Static Methods
 
@@ -162,7 +190,11 @@ class Pattern(StyleMulti):
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.TXT_CONTENT | FormatKind.PARA
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.TXT_CONTENT | FormatKind.PARA
+        return self._format_kind_prop
 
     @property
     def prop_inner(self) -> FillPattern:

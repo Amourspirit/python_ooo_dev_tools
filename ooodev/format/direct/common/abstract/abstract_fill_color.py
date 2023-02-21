@@ -105,8 +105,19 @@ class AbstractColor(StyleBase):
     # endregion Overrides
 
     # region Static Methods
+    # region from_obj()
+    @overload
     @classmethod
     def from_obj(cls: Type[_TAbstractColor], obj: object) -> _TAbstractColor:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TAbstractColor], obj: object, **kwargs) -> _TAbstractColor:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TAbstractColor], obj: object, **kwargs) -> _TAbstractColor:
         """
         Gets instance from object
 
@@ -119,21 +130,19 @@ class AbstractColor(StyleBase):
         Returns:
             Color: ``Color`` instance that represents ``obj`` Color properties.
         """
-        nu = super(AbstractColor, cls).__new__(cls)
-        nu.__init__()
+        nu = cls(**kwargs)
 
         if not nu._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
         color = mProps.Props.get(obj, nu._props.color, None)
 
-        inst = super(AbstractColor, cls).__new__(cls)
-
         if color is None:
-            inst.__init__()
+            return cls(**kwargs)
         else:
-            inst.__init__(color=color)
-        return inst
+            return cls(color=color, **kwargs)
+
+    # endregion from_obj()
 
     # endregion Static Methods
 

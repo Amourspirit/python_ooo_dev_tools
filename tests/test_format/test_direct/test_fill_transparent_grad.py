@@ -9,7 +9,7 @@ import uno
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.draw import Draw
-from ooodev.format.direct.fill.transparent.gradient import Gradient, GradientStyle, FillTransparentGrad, IntensityRange
+from ooodev.format.direct.fill.transparent.gradient import Gradient, GradientStyle, GradientStruct, IntensityRange
 
 
 if TYPE_CHECKING:
@@ -38,7 +38,7 @@ def test_draw(loader) -> None:
         ts = Gradient(angle=30, grad_intensity=IntensityRange(0, 100))
         ts.apply(rec)
         fp = cast("FillProperties", rec)
-        tp_grad = cast(FillTransparentGrad, ts._get_style_inst("fill_style"))
+        tp_grad = cast(GradientStruct, ts._get_style_inst("fill_style"))
         assert tp_grad == fp.FillTransparenceGradient
 
         x += width
@@ -46,7 +46,7 @@ def test_draw(loader) -> None:
         ts = Gradient(style=GradientStyle.RECT, angle=25, grad_intensity=IntensityRange(0, 100))
         ts.apply(rec)
         fp = cast("FillProperties", rec)
-        tp_grad = cast(FillTransparentGrad, ts._get_style_inst("fill_style"))
+        tp_grad = cast(GradientStruct, ts._get_style_inst("fill_style"))
         assert tp_grad == fp.FillTransparenceGradient
 
         Lo.delay(delay)

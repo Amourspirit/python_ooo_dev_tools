@@ -130,11 +130,15 @@ class FontEffects(StyleBase):
 
     # region methods
     def _supported_services(self) -> Tuple[str, ...]:
-        return (
-            "com.sun.star.style.CharacterProperties",
-            "com.sun.star.style.CharacterStyle",
-            "com.sun.star.style.ParagraphStyle",
-        )
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = (
+                "com.sun.star.style.CharacterProperties",
+                "com.sun.star.style.CharacterStyle",
+                "com.sun.star.style.ParagraphStyle",
+            )
+        return self._supported_services_values
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:
@@ -167,8 +171,19 @@ class FontEffects(StyleBase):
                 mLo.Lo.print(f"  {err}")
 
     # endregion apply()
+    # region from_obj()
+    @overload
     @classmethod
     def from_obj(cls: Type[_TFontEffects], obj: object) -> _TFontEffects:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TFontEffects], obj: object, **kwargs) -> _TFontEffects:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TFontEffects], obj: object, **kwargs) -> _TFontEffects:
         """
         Gets instance from object
 
@@ -181,8 +196,7 @@ class FontEffects(StyleBase):
         Returns:
             FontEffects: ``FontEffects`` instance that represents ``obj`` font effects.
         """
-        inst = super(FontEffects, cls).__new__(cls)
-        inst.__init__()
+        inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
@@ -209,6 +223,7 @@ class FontEffects(StyleBase):
         set_prop("CharRelief", inst)
         return inst
 
+    # endregion from_obj()
     # endregion methods
 
     # region Format Methods
@@ -541,10 +556,15 @@ class FontEffects(StyleBase):
     # endregion Style Properties
 
     # region Prop Properties
+
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.CHAR
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.CHAR
+        return self._format_kind_prop
 
     @property
     def prop_color(self) -> Color | None:

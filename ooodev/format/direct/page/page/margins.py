@@ -4,7 +4,7 @@ Module for Fill Transparency.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Any, Tuple, cast, Type, TypeVar, NamedTuple
+from typing import Any, Tuple, cast, Type, TypeVar, NamedTuple, overload
 
 import uno
 from .....events.args.cancel_event_args import CancelEventArgs
@@ -82,8 +82,13 @@ class Margins(StyleBase):
     # endregion dunder methods
 
     # region Overrides
+
     def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.style.PageProperties", "com.sun.star.style.PageStyle")
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = ("com.sun.star.style.PageProperties", "com.sun.star.style.PageStyle")
+        return self._supported_services_values
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:
@@ -100,8 +105,19 @@ class Margins(StyleBase):
 
     # endregion Overrides
 
+    # region from_obj()
+    @overload
     @classmethod
     def from_obj(cls: Type[_TMargins], obj: object) -> _TMargins:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TMargins], obj: object, **kwargs) -> _TMargins:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TMargins], obj: object, **kwargs) -> _TMargins:
         """
         Gets instance from object
 
@@ -113,8 +129,7 @@ class Margins(StyleBase):
         """
         # this nu is only used to get Property Name
 
-        inst = super(Margins, cls).__new__(cls)
-        inst.__init__()
+        inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
@@ -122,10 +137,15 @@ class Margins(StyleBase):
             inst._set(attrib, mProps.Props.get(obj, attrib))
         return inst
 
+    # endregion from_obj()
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.PAGE
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.PAGE
+        return self._format_kind_prop
 
     @property
     def prop_top(self) -> float | None:
@@ -210,12 +230,12 @@ class Margins(StyleBase):
     @property
     def _props(self) -> MarginProps:
         try:
-            return self._props_margins
+            return self._props_internal_attributes
         except AttributeError:
-            self._props_margins = MarginProps(
+            self._props_internal_attributes = MarginProps(
                 left="LeftMargin", right="RightMargin", top="TopMargin", bottom="BottomMargin", gutter="GutterMargin"
             )
-        return self._props_margins
+        return self._props_internal_attributes
 
     @static_prop
     def default() -> Margins:  # type: ignore[misc]

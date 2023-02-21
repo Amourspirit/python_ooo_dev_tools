@@ -175,12 +175,16 @@ class Hatch(StyleMulti):
     # region Overrides
 
     def _supported_services(self) -> Tuple[str, ...]:
-        return (
-            "com.sun.star.drawing.FillProperties",
-            "com.sun.star.text.TextContent",
-            "com.sun.star.beans.PropertySet",
-            "com.sun.star.style.ParagraphStyle",
-        )
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = (
+                "com.sun.star.drawing.FillProperties",
+                "com.sun.star.text.TextContent",
+                "com.sun.star.beans.PropertySet",
+                "com.sun.star.style.ParagraphStyle",
+            )
+        return self._supported_services_values
 
     def _container_get_service_name(self) -> str:
         # https://github.com/LibreOffice/core/blob/d9e044f04ac11b76b9a3dac575f4e9155b67490e/chart2/source/tools/PropertyHelper.cxx#L229
@@ -223,8 +227,19 @@ class Hatch(StyleMulti):
     # endregion Overrides
 
     # region Static Methods
+    # region from_preset()
+    @overload
     @classmethod
     def from_preset(cls: Type[_THatch], preset: PresetHatchKind) -> _THatch:
+        ...
+
+    @overload
+    @classmethod
+    def from_preset(cls: Type[_THatch], preset: PresetHatchKind, **kwargs) -> _THatch:
+        ...
+
+    @classmethod
+    def from_preset(cls: Type[_THatch], preset: PresetHatchKind, **kwargs) -> _THatch:
         """
         Gets an instance from a preset
 
@@ -238,12 +253,24 @@ class Hatch(StyleMulti):
         kargs = mPreset.get_preset(preset)
         kargs["name"] = str(preset)
         kargs["auto_name"] = False
-        inst = super(Hatch, cls).__new__(cls)
-        inst.__init__(**kargs)
-        return inst
+        kargs.update(kwargs)
+        return cls(**kargs)
 
+    # endregion from_preset()
+
+    # region from_obj()
+    @overload
     @classmethod
     def from_obj(cls: Type[_THatch], obj: object) -> _THatch:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_THatch], obj: object, **kwargs) -> _THatch:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_THatch], obj: object, **kwargs) -> _THatch:
         """
         Gets instance from object
 
@@ -256,16 +283,14 @@ class Hatch(StyleMulti):
         Returns:
             Hatch: ``Hatch`` instance that represents ``obj`` hatch pattern.
         """
-        nu = super(Hatch, cls).__new__(cls)
-        nu.__init__()
+        nu = cls(**kwargs)
         if not nu._is_valid_obj(obj):
             raise mEx.NotSupportedError("Object is not support to convert to Hatch")
 
         hatch = cast(UnoHatch, mProps.Props.get(obj, "FillHatch"))
         fc = FillColor.from_obj(obj)
 
-        inst = super(Hatch, cls).__new__(cls)
-        inst.__init__(
+        return cls(
             style=hatch.Style,
             color=hatch.Color,
             space=UnitConvert.convert_mm100_mm(hatch.Distance),
@@ -273,8 +298,10 @@ class Hatch(StyleMulti):
             bg_color=fc.prop_color,
             name=mProps.Props.get(obj, "FillHatchName"),
             auto_name=False,
+            **kwargs,
         )
-        return inst
+
+    # endregion from_obj()
 
     # endregion Static Methods
 
@@ -282,7 +309,11 @@ class Hatch(StyleMulti):
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.TXT_CONTENT | FormatKind.FILL | FormatKind.PARA
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.TXT_CONTENT | FormatKind.FILL | FormatKind.PARA
+        return self._format_kind_prop
 
     @property
     def prop_bg_color(self) -> Color:

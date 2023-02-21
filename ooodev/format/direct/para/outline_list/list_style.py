@@ -116,8 +116,19 @@ class ListStyle(StyleBase):
 
     # endregion apply()
 
+    # region from_obj()
+    @overload
     @classmethod
     def from_obj(cls: Type[_TListStyle], obj: object) -> _TListStyle:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TListStyle], obj: object, **kwargs) -> _TListStyle:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TListStyle], obj: object, **kwargs) -> _TListStyle:
         """
         Gets instance from object
 
@@ -130,8 +141,7 @@ class ListStyle(StyleBase):
         Returns:
             ListStyle: ``ListStyle`` instance that represents ``obj`` properties.
         """
-        inst = super(ListStyle, cls).__new__(cls)
-        inst.__init__()
+        inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
@@ -146,6 +156,8 @@ class ListStyle(StyleBase):
         set_prop(inst._props.restart, inst)
 
         return inst
+
+    # endregion from_obj()
 
     # endregion methods
 
@@ -198,7 +210,11 @@ class ListStyle(StyleBase):
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.PARA
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.PARA
+        return self._format_kind_prop
 
     @property
     def prop_list_style(self) -> str | None:
@@ -246,12 +262,12 @@ class ListStyle(StyleBase):
     @property
     def _props(self) -> ListStyleProps:
         try:
-            return self._props_list_style
+            return self._props_internal_attributes
         except AttributeError:
-            self._props_list_style = ListStyleProps(
+            self._props_internal_attributes = ListStyleProps(
                 name="NumberingStyleName", value="NumberingStartValue", restart="ParaIsNumberingRestart"
             )
-        return self._props_list_style
+        return self._props_internal_attributes
 
     @static_prop
     def default() -> ListStyle:  # type: ignore[misc]

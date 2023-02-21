@@ -1828,7 +1828,7 @@ class Write(mSel.Selection):
             text_doc (XTextDocument): Text Document
 
         Returns:
-            int: Page Width on success; Otherwise 0
+            int: Page Width in ``1/100 mm`` units on success; Otherwise 0
         """
         props = mInfo.Info.get_style_props(doc=text_doc, family_style_name="PageStyles", prop_set_nm="Standard")
         if props is None:
@@ -1846,6 +1846,40 @@ class Write(mSel.Selection):
             return 0
 
     @staticmethod
+    def get_page_text_size(text_doc: XTextDocument) -> Size:
+        """
+        Get page text size
+
+        Args:
+            text_doc (XTextDocument): Text Document
+
+        Raises:
+            PropertiesError: If unable to access properties
+            Exception: If unable to get page size
+
+        Returns:
+            Size: Page text Size in ``1/100 mm`` units.
+
+        .. versionadded:: 0.9.0
+        """
+        props = mInfo.Info.get_style_props(doc=text_doc, family_style_name="PageStyles", prop_set_nm="Standard")
+        if props is None:
+            raise mEx.PropertiesError("Could not access the standard page style")
+        try:
+            width = int(props.getPropertyValue("Width"))
+            height = int(props.getPropertyValue("Height"))
+            left_margin = int(props.getPropertyValue("LeftMargin"))
+            right_margin = int(props.getPropertyValue("RightMargin"))
+            top_margin = int(props.getPropertyValue("TopMargin"))
+            btm_margin = int(props.getPropertyValue("BottomMargin"))
+            text_width = width - (left_margin + right_margin)
+            text_height = height - (top_margin + btm_margin)
+
+            return Size(text_width, text_height)
+        except Exception as e:
+            raise Exception("Could not access standard page style dimensions") from e
+
+    @staticmethod
     def get_page_size(text_doc: XTextDocument) -> Size:
         """
         Get page size
@@ -1858,7 +1892,7 @@ class Write(mSel.Selection):
             Exception: If unable to get page size
 
         Returns:
-            Size: _description_
+            Size: Page Size in ``1/100 mm`` units.
         """
         props = mInfo.Info.get_style_props(doc=text_doc, family_style_name="PageStyles", prop_set_nm="Standard")
         if props is None:
