@@ -16,8 +16,8 @@ from ......direct.common.format_types.size_percent import SizePercent as SizePer
 from ......direct.common.format_types.size_mm import SizeMM as SizeMM
 from ......direct.common.format_types.offset_row import OffsetRow as OffsetRow
 from ......direct.common.format_types.offset_column import OffsetColumn as OffsetColumn
-from ......modify.page.header.area.color import Color as Color
-from ......modify.page.header.area.gradient import Gradient as Gradient
-from ......modify.page.header.area.img import Img as Img
-from ......modify.page.header.area.hatch import Hatch as Hatch
-from ......modify.page.header.area.pattern import Pattern as Pattern
+from ......modify.page.header.area.color import Color as Color, InnerColor as InnerColor
+from ......modify.page.header.area.gradient import Gradient as Gradient, InnerGradient as InnerGradient
+from ......modify.page.header.area.img import Img as Img, InnerImg as InnerImg
+from ......modify.page.header.area.hatch import Hatch as Hatch, InnerHatch as InnerHatch
+from ......modify.page.header.area.pattern import Pattern as Pattern, InnerPattern as InnerPattern

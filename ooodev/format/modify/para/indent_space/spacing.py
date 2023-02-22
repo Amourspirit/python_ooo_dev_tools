@@ -3,7 +3,7 @@ from typing import cast
 import uno
 from ....writer.style.para.kind import StyleParaKind as StyleParaKind
 from ..para_style_base_multi import ParaStyleBaseMulti
-from ....direct.para.indent_space.spacing import Spacing as DirectSpacing
+from ....direct.para.indent_space.spacing import Spacing as InnerSpacing
 
 
 class Spacing(ParaStyleBaseMulti):
@@ -36,7 +36,7 @@ class Spacing(ParaStyleBaseMulti):
             None:
         """
 
-        direct = DirectSpacing(above=above, below=below, style_no_space=style_no_space)
+        direct = InnerSpacing(above=above, below=below, style_no_space=style_no_space)
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
@@ -61,7 +61,7 @@ class Spacing(ParaStyleBaseMulti):
             Spacing: ``Spacing`` instance from document properties.
         """
         inst = cls(style_name=style_name, style_family=style_family)
-        direct = DirectSpacing.from_obj(inst.get_style_props(doc))
+        direct = InnerSpacing.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -75,10 +75,17 @@ class Spacing(ParaStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> DirectSpacing:
+    def prop_inner(self) -> InnerSpacing:
         """Gets Inner Spacing instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(DirectSpacing, self._get_style_inst("direct"))
+            self._direct_inner = cast(InnerSpacing, self._get_style_inst("direct"))
         return self._direct_inner
+
+    @prop_inner.setter
+    def prop_inner(self, value: InnerSpacing) -> None:
+        if not isinstance(value, InnerSpacing):
+            raise TypeError(f'Expected type of InnerSpacing, got "{type(value).__name__}"')
+        self._del_attribs("_direct_inner")
+        self._set_style("direct", value, *value.get_attrs())

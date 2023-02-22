@@ -9,7 +9,7 @@ from .....utils.data_type.intensity import Intensity as Intensity
 from .....utils.data_type.intensity_range import IntensityRange as IntensityRange
 from .....utils import gen_util as gUtil
 from .....utils import lo as mLo
-from ...fill.transparent.gradient import Gradient as FillGradient
+from ...fill.transparent.gradient import Gradient as InnerGradient
 from ....kind.format_kind import FormatKind
 from .....events.args.key_val_cancel_args import KeyValCancelArgs
 
@@ -53,7 +53,7 @@ class Gradient(StyleMulti):
 
         mLo.Lo.print("Gradient Transparency Class for Paragraph is not currently supported.")
 
-        fg = FillGradient(style=style, offset=offset, angle=angle, border=border, grad_intensity=grad_intensity)
+        fg = InnerGradient(style=style, offset=offset, angle=angle, border=border, grad_intensity=grad_intensity)
         super().__init__()
         self._set("ParaBackColor", gUtil.NULL_OBJ)
         self._set_style("fill_grad", fg, *fg.get_attrs())

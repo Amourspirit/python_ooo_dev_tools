@@ -12,7 +12,7 @@ from ......utils.data_type.offset import Offset as Offset
 from .....writer.style.page.kind.style_page_kind import StylePageKind as StylePageKind
 from .....preset.preset_gradient import PresetGradientKind as PresetGradientKind
 from .....direct.common.props.area_gradient_props import AreaGradientProps
-from .....direct.fill.area.gradient import Gradient as FillGradient
+from .....direct.fill.area.gradient import Gradient as InnerGradient
 
 _TGradient = TypeVar(name="_TGradient", bound="Gradient")
 
@@ -57,7 +57,7 @@ class Gradient(PageStyleBaseMulti):
         Returns:
             None:
         """
-        direct = FillGradient(
+        direct = InnerGradient(
             style=style,
             step_count=step_count,
             offset=offset,
@@ -111,7 +111,7 @@ class Gradient(PageStyleBaseMulti):
             Gradient: ``Gradient`` instance from document properties.
         """
         inst = cls(style_name=style_name, style_family=style_family)
-        direct = FillGradient.from_obj(inst.get_style_props(doc), _cattribs=inst._get_inner_cattribs())
+        direct = InnerGradient.from_obj(inst.get_style_props(doc), _cattribs=inst._get_inner_cattribs())
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -134,7 +134,7 @@ class Gradient(PageStyleBaseMulti):
             Gradient: ``Gradient`` instance from document properties.
         """
         inst = cls(style_name=style_name, style_family=style_family)
-        direct = FillGradient.from_preset(preset=preset, _cattribs=inst._get_inner_cattribs())
+        direct = InnerGradient.from_preset(preset=preset, _cattribs=inst._get_inner_cattribs())
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -151,12 +151,19 @@ class Gradient(PageStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> FillGradient:
-        """Gets Inner Gradient instance"""
+    def prop_inner(self) -> InnerGradient:
+        """Gets/Sets Inner Gradient instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(FillGradient, self._get_style_inst("direct"))
+            self._direct_inner = cast(InnerGradient, self._get_style_inst("direct"))
         return self._direct_inner
+
+    @prop_inner.setter
+    def prop_inner(self, value: InnerGradient) -> None:
+        if not isinstance(value, InnerGradient):
+            raise TypeError(f'Expected type of InnerGradient, got "{type(value).__name__}"')
+        self._del_attribs("_direct_inner")
+        self._set_style("direct", value, *value.get_attrs())
 
     # endregion Properties

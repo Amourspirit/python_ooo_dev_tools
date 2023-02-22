@@ -14,7 +14,7 @@ from .....utils import props as mProps
 from ....style_base import StyleMulti
 from .....utils.data_type.offset import Offset as Offset
 from ...fill.area.img import (
-    Img as FillImg,
+    Img as InnerImg,
     SizeMM as SizeMM,
     SizePercent as SizePercent,
     OffsetColumn as OffsetColumn,
@@ -63,7 +63,7 @@ class Img(StyleMulti):
             All subsequent call of the same ``name`` will retreive the bitmap form the LibreOffice Bitmap Table.
         """
 
-        fimg = FillImg(
+        fimg = InnerImg(
             bitmap=bitmap,
             name=name,
             mode=mode,
@@ -210,7 +210,7 @@ class Img(StyleMulti):
         Returns:
             Img: Instance from preset.
         """
-        fill_img = FillImg.from_preset(preset)
+        fill_img = InnerImg.from_preset(preset)
 
         inst = cls(**kwargs)
         inst._set(
@@ -250,7 +250,7 @@ class Img(StyleMulti):
         Returns:
             Img: ``Img`` instance that represents ``obj`` fill imgage.
         """
-        fill_img = FillImg.from_obj(obj)
+        fill_img = InnerImg.from_obj(obj)
         inst = cls(**kwargs)
         bmap = fill_img._get("FillBitmap")
         inst._set(
@@ -277,12 +277,12 @@ class Img(StyleMulti):
         return self._format_kind_prop
 
     @property
-    def prop_inner(self) -> FillImg:
+    def prop_inner(self) -> InnerImg:
         """Gets Fill image instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(FillImg, self._get_style_inst("fill_image"))
+            self._direct_inner = cast(InnerImg, self._get_style_inst("fill_image"))
         return self._direct_inner
 
 

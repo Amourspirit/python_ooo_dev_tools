@@ -44,7 +44,7 @@ def test_char_borders(loader) -> None:
             family=FontFamilyEnum.SCRIPT,
         )
         side = Side(color=CommonColor.RED)
-        border = Borders(border_side=side)
+        border = Borders(all=side)
         Write.style_left(cursor=cursor, pos=pos, styles=(border, ft))
         cursor.gotoEnd(False)
         cursor.goLeft(5, True)
@@ -63,7 +63,7 @@ def test_char_borders(loader) -> None:
 
         # cursor.ParaStyleName = "Default Paragraph Style"
         side = Side(color=CommonColor.BLUE, width=5.0)
-        border = Borders(border_side=side)
+        border = Borders(all=side)
         pos = Write.get_position(cursor)
         Write.append(cursor, "World")
         Write.style_left(cursor=cursor, pos=pos, styles=(border,))
@@ -83,7 +83,7 @@ def test_char_borders(loader) -> None:
 
         # using 1.05 for this test. LibreOffice chnages 1.1 to 1.05 in  this case.
         side = Side(color=CommonColor.DARK_ORANGE, line=BorderLineStyleEnum.DOUBLE, width=1.05)
-        border = Borders(border_side=side)
+        border = Borders(all=side)
         ft = Font(size=30.0, b=True, i=True, u=True, color=CommonColor.BLUE, underline_color=CommonColor.GREEN)
         Write.append(cursor=cursor, text="Nice Day", styles=(border, ft))
         cursor.gotoEnd(False)
@@ -100,7 +100,7 @@ def test_char_borders(loader) -> None:
 
         txt = "adding\nmultiple\nlines"
         side = Side(color=CommonColor.CADET_BLUE, width=LineSize.MEDIUM)
-        Write.append(cursor=cursor, text=txt, styles=(Borders(border_side=side),))
+        Write.append(cursor=cursor, text=txt, styles=(Borders(all=side),))
 
         cursor.gotoEnd(False)
         cursor.goLeft(len(txt), True)

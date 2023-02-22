@@ -75,7 +75,7 @@ class Sides(PageStyleBaseMulti):
         right: Side | None = None,
         top: Side | None = None,
         bottom: Side | None = None,
-        border_side: Side | None = None,
+        all: Side | None = None,
         style_name: StylePageKind | str = StylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> None:
@@ -87,7 +87,7 @@ class Sides(PageStyleBaseMulti):
             right (Side | None, optional): Determines the line style at the right edge.
             top (Side | None, optional): Determines the line style at the top edge.
             bottom (Side | None, optional): Determines the line style at the bottom edge.
-            border_side (Side | None, optional): Determines the line style at the top, bottom, left, right edges. If this argument has a value then arguments ``top``, ``bottom``, ``left``, ``right`` are ignored
+            all (Side | None, optional): Determines the line style at the top, bottom, left, right edges. If this argument has a value then arguments ``top``, ``bottom``, ``left``, ``right`` are ignoreded
             style_name (StyleParaKind, str, optional): Specifies the Page Style that instance applies to. Deftult is Default Page Style.
             style_family (str, optional): Style family. Defatult ``PageStyles``.
 
@@ -100,7 +100,7 @@ class Sides(PageStyleBaseMulti):
             right=right,
             top=top,
             bottom=bottom,
-            border_side=border_side,
+            all=all,
             _cattribs=self._get_inner_cattribs(),
         )
         super().__init__()
@@ -161,11 +161,18 @@ class Sides(PageStyleBaseMulti):
 
     @property
     def prop_inner(self) -> InnerSides:
-        """Gets Inner Sides instance"""
+        """Gets/Sets Inner Sides instance"""
         try:
             return self._direct_inner
         except AttributeError:
             self._direct_inner = cast(InnerSides, self._get_style_inst("direct"))
         return self._direct_inner
+
+    @prop_inner.setter
+    def prop_inner(self, value: InnerSides) -> None:
+        if not isinstance(value, InnerSides):
+            raise TypeError(f'Expected type of InnerSides, got "{type(value).__name__}"')
+        self._del_attribs("_direct_inner")
+        self._set_style("direct", value, *value.get_attrs())
 
     # endregion Properties

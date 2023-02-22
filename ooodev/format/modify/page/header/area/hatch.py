@@ -13,7 +13,7 @@ from ......utils.data_type.offset import Offset as Offset
 from .....writer.style.page.kind.style_page_kind import StylePageKind as StylePageKind
 from .....preset.preset_hatch import PresetHatchKind as PresetHatchKind
 from .....direct.common.props.area_hatch_props import AreaHatchProps
-from .....direct.fill.area.hatch import Hatch as FillHatch
+from .....direct.fill.area.hatch import Hatch as InnerHatch
 
 _THatch = TypeVar(name="_THatch", bound="Hatch")
 
@@ -51,7 +51,7 @@ class Hatch(PageStyleBaseMulti):
             None:
         """
 
-        direct = FillHatch(
+        direct = InnerHatch(
             style=style,
             color=color,
             space=space,
@@ -102,7 +102,7 @@ class Hatch(PageStyleBaseMulti):
             Hatch: ``Hatch`` instance from document properties.
         """
         inst = cls(style_name=style_name, style_family=style_family)
-        direct = FillHatch.from_obj(inst.get_style_props(doc), _cattribs=inst._get_inner_cattribs())
+        direct = InnerHatch.from_obj(inst.get_style_props(doc), _cattribs=inst._get_inner_cattribs())
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -125,7 +125,7 @@ class Hatch(PageStyleBaseMulti):
             Gradient: ``Gradient`` instance from preset.
         """
         inst = cls(style_name=style_name, style_family=style_family)
-        direct = FillHatch.from_preset(preset=preset, _cattribs=inst._get_inner_cattribs())
+        direct = InnerHatch.from_preset(preset=preset, _cattribs=inst._get_inner_cattribs())
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -142,12 +142,19 @@ class Hatch(PageStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> FillHatch:
-        """Gets Inner Hatch instance"""
+    def prop_inner(self) -> InnerHatch:
+        """Gets/Sets Inner Hatch instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(FillHatch, self._get_style_inst("direct"))
+            self._direct_inner = cast(InnerHatch, self._get_style_inst("direct"))
         return self._direct_inner
+
+    @prop_inner.setter
+    def prop_inner(self, value: InnerHatch) -> None:
+        if not isinstance(value, InnerHatch):
+            raise TypeError(f'Expected type of InnerHatch, got "{type(value).__name__}"')
+        self._del_attribs("_direct_inner")
+        self._set_style("direct", value, *value.get_attrs())
 
     # endregion Properties

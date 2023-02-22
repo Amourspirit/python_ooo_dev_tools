@@ -43,7 +43,7 @@ class AbstractSides(StyleBase):
         right: Side | None = None,
         top: Side | None = None,
         bottom: Side | None = None,
-        border_side: Side | None = None,
+        all: Side | None = None,
     ) -> None:
         """
         Constructor
@@ -53,14 +53,14 @@ class AbstractSides(StyleBase):
             right (Side | None, optional): Determines the line style at the right edge.
             top (Side | None, optional): Determines the line style at the top edge.
             bottom (Side | None, optional): Determines the line style at the bottom edge.
-            border_side (Side | None, optional): Determines the line style at the top, bottom, left, right edges. If this argument has a value then arguments ``top``, ``bottom``, ``left``, ``right`` are ignored
+            all (Side | None, optional): Determines the line style at the top, bottom, left, right edges. If this argument has a value then arguments ``top``, ``bottom``, ``left``, ``right`` are ignored
         """
         init_vals = {}
-        if not border_side is None:
-            init_vals[self._props.top] = border_side
-            init_vals[self._props.bottom] = border_side
-            init_vals[self._props.left] = border_side
-            init_vals[self._props.right] = border_side
+        if not all is None:
+            init_vals[self._props.top] = all
+            init_vals[self._props.bottom] = all
+            init_vals[self._props.left] = all
+            init_vals[self._props.right] = all
 
         else:
             if not top is None:

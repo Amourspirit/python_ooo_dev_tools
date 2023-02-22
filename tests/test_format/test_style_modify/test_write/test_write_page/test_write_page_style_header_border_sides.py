@@ -47,7 +47,7 @@ def test_write(loader, para_text) -> None:
         )
         side = Side(line=BorderLineStyleEnum.DOUBLE, color=StandardColor.RED_DARK3, width=LineSize.MEDIUM)
 
-        style = Sides(border_side=side)
+        style = Sides(all=side)
         Styler.apply(doc, header_style, style)
         # props = style.get_style_props(doc)
 

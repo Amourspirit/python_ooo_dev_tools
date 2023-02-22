@@ -10,7 +10,7 @@ import uno
 from ..frame_style_base_multi import FrameStyleBaseMulti
 from ....writer.style.frame.style_frame_kind import StyleFrameKind as StyleFrameKind
 from ....direct.frame.frame_type.position import (
-    Position as DirectPosition,
+    Position as InnerPosition,
     HoriOrient as HoriOrient,
     VertOrient as VertOrient,
     RelHoriOrient as RelHoriOrient,
@@ -52,7 +52,7 @@ class Position(FrameStyleBaseMulti):
             None:
         """
 
-        direct = DirectPosition(
+        direct = InnerPosition(
             horizontal=horizontal, vertical=vertical, keep_boundries=keep_boundries, mirror_even=mirror_even
         )
         direct._prop_parent = self
@@ -80,7 +80,7 @@ class Position(FrameStyleBaseMulti):
             Position: ``Position`` instance from style properties.
         """
         inst = cls(style_name=style_name, style_family=style_family)
-        direct = DirectPosition.from_obj(inst.get_style_props(doc))
+        direct = InnerPosition.from_obj(inst.get_style_props(doc))
         direct._prop_parent = inst
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
@@ -95,10 +95,17 @@ class Position(FrameStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> DirectPosition:
-        """Gets Inner Position instance"""
+    def prop_inner(self) -> InnerPosition:
+        """Gets/Sets Inner Position instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(DirectPosition, self._get_style_inst("direct"))
+            self._direct_inner = cast(InnerPosition, self._get_style_inst("direct"))
         return self._direct_inner
+
+    @prop_inner.setter
+    def prop_inner(self, value: InnerPosition) -> None:
+        if not isinstance(value, InnerPosition):
+            raise TypeError(f'Expected type of InnerPosition, got "{type(value).__name__}"')
+        self._del_attribs("_direct_inner")
+        self._set_style("direct", value, *value.get_attrs())

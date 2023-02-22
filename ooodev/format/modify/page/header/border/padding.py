@@ -95,7 +95,7 @@ class Padding(PageStyleBaseMulti):
             right=right,
             top=top,
             bottom=bottom,
-            padding_all=padding_all,
+            all=padding_all,
             _cattribs=self._get_inner_cattribs(),
         )
         super().__init__()
@@ -159,11 +159,18 @@ class Padding(PageStyleBaseMulti):
 
     @property
     def prop_inner(self) -> InnerPadding:
-        """Gets Inner Padding instance"""
+        """Gets/Sets Inner Padding instance"""
         try:
             return self._direct_inner
         except AttributeError:
             self._direct_inner = cast(InnerPadding, self._get_style_inst("direct"))
         return self._direct_inner
+
+    @prop_inner.setter
+    def prop_inner(self, value: InnerPadding) -> None:
+        if not isinstance(value, InnerPadding):
+            raise TypeError(f'Expected type of InnerPadding, got "{type(value).__name__}"')
+        self._del_attribs("_direct_inner")
+        self._set_style("direct", value, *value.get_attrs())
 
     # endregion Properties

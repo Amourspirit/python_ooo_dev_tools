@@ -123,7 +123,7 @@ def test_calc_border(loader) -> None:
         Calc.set_val(value="Hello", sheet=sheet, cell_obj=cell_obj)
         cell = Calc.get_cell(sheet, cell_obj)
         cb = Borders(diagonal_down=side, diagonal_up=side)
-        Styler.apply(cell, Borders(padding=Padding(padding_all=0.7)))
+        Styler.apply(cell, Borders(padding=Padding(all=0.7)))
         cp = cast("ParagraphProperties", cell)
         # padding may not apply exact
         assert cp.ParaLeftMargin >= 69 and cp.ParaLeftMargin <= 72

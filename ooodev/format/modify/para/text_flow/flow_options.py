@@ -3,7 +3,7 @@ from typing import cast
 import uno
 from ....writer.style.para.kind import StyleParaKind as StyleParaKind
 from ..para_style_base_multi import ParaStyleBaseMulti
-from ....direct.para.text_flow.flow_options import FlowOptions as DirectFlowOptions
+from ....direct.para.text_flow.flow_options import FlowOptions as InnerFlowOptions
 
 
 class FlowOptions(ParaStyleBaseMulti):
@@ -38,7 +38,7 @@ class FlowOptions(ParaStyleBaseMulti):
             None:
         """
 
-        direct = DirectFlowOptions(orphans=orphans, widows=widows, keep=keep, no_split=no_split)
+        direct = InnerFlowOptions(orphans=orphans, widows=widows, keep=keep, no_split=no_split)
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
@@ -63,7 +63,7 @@ class FlowOptions(ParaStyleBaseMulti):
             Breaks: ``Breaks`` instance from document properties.
         """
         inst = cls(style_name=style_name, style_family=style_family)
-        direct = DirectFlowOptions.from_obj(inst.get_style_props(doc))
+        direct = InnerFlowOptions.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -77,10 +77,17 @@ class FlowOptions(ParaStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> DirectFlowOptions:
-        """Gets Inner Flow Options instance"""
+    def prop_inner(self) -> InnerFlowOptions:
+        """Gets/Sets Inner Flow Options instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(DirectFlowOptions, self._get_style_inst("direct"))
+            self._direct_inner = cast(InnerFlowOptions, self._get_style_inst("direct"))
         return self._direct_inner
+
+    @prop_inner.setter
+    def prop_inner(self, value: InnerFlowOptions) -> None:
+        if not isinstance(value, InnerFlowOptions):
+            raise TypeError(f'Expected type of InnerFlowOptions, got "{type(value).__name__}"')
+        self._del_attribs("_direct_inner")
+        self._set_style("direct", value, *value.get_attrs())

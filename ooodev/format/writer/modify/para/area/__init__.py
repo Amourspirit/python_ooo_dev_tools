@@ -20,6 +20,6 @@ from .....direct.fill.area.img import (
     OffsetRow as OffsetRow,
     ImgStyleKind as ImgStyleKind,
 )
-from .....modify.para.area.img import Img as Img
-from .....modify.para.area.hatch import Hatch as Hatch
-from .....modify.para.area.pattern import Pattern as Pattern
+from .....modify.para.area.img import Img as Img, InnerImg as InnerImg
+from .....modify.para.area.hatch import Hatch as Hatch, InnerHatch as InnerHatch
+from .....modify.para.area.pattern import Pattern as Pattern, InnerPattern as InnerPattern

@@ -10,7 +10,7 @@ from .....utils import props as mProps
 from ....kind.format_kind import FormatKind
 from ....preset.preset_pattern import PresetPatternKind as PresetPatternKind
 from ....style_base import StyleMulti
-from ...fill.area.pattern import Pattern as FillPattern
+from ...fill.area.pattern import Pattern as InnerPattern
 
 from com.sun.star.awt import XBitmap
 
@@ -47,7 +47,7 @@ class Pattern(StyleMulti):
             All subsequent call of the same name will retreive the bitmap form the LibreOffice Bitmap Table.
         """
 
-        fp = FillPattern(bitmap=bitmap, name=name, tile=tile, stretch=stretch, auto_name=auto_name)
+        fp = InnerPattern(bitmap=bitmap, name=name, tile=tile, stretch=stretch, auto_name=auto_name)
         if stretch:
             loc = GraphicLocation.AREA
         else:
@@ -101,7 +101,7 @@ class Pattern(StyleMulti):
         Returns:
             None:
         """
-        fp = cast(FillPattern, self._get_style("fill_props")[0])
+        fp = cast(InnerPattern, self._get_style("fill_props")[0])
         if not fp._has("FillBitmap"):
             mLo.Lo.print("Pattern.apply(): There is nothing to apply.")
             return
@@ -145,7 +145,7 @@ class Pattern(StyleMulti):
         Returns:
             Pattern: Instance from preset.
         """
-        fp = FillPattern.from_preset(preset)
+        fp = InnerPattern.from_preset(preset)
         bmap = fp._get("FillBitmap")
         name = str(preset)
         return cls(bitmap=bmap, name=name, tile=True, stretch=False, auto_name=False, **kwargs)
@@ -177,7 +177,7 @@ class Pattern(StyleMulti):
         Returns:
             Pattern: ``Pattern`` instance that represents ``obj`` fill pattern.
         """
-        fp = FillPattern.from_obj(obj)
+        fp = InnerPattern.from_obj(obj)
         bmap = fp._get("FillBitmap")
         name = fp._get("FillBitmapName")
         return cls(bitmap=bmap, name=name, tile=True, stretch=False, auto_name=False, **kwargs)
@@ -197,12 +197,12 @@ class Pattern(StyleMulti):
         return self._format_kind_prop
 
     @property
-    def prop_inner(self) -> FillPattern:
+    def prop_inner(self) -> InnerPattern:
         """Gets Fill Pattern instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(FillPattern, self._get_style_inst("fill_props"))
+            self._direct_inner = cast(InnerPattern, self._get_style_inst("fill_props"))
         return self._direct_inner
 
     # endregion Properties

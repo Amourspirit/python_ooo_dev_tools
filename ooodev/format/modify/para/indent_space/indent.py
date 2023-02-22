@@ -3,7 +3,7 @@ from typing import cast
 import uno
 from ....writer.style.para.kind import StyleParaKind as StyleParaKind
 from ..para_style_base_multi import ParaStyleBaseMulti
-from ....direct.para.indent_space.indent import Indent as DirectIndent
+from ....direct.para.indent_space.indent import Indent as InnerIndent
 
 
 class Indent(ParaStyleBaseMulti):
@@ -38,7 +38,7 @@ class Indent(ParaStyleBaseMulti):
             None:
         """
 
-        direct = DirectIndent(before=before, after=after, first=first, auto=auto)
+        direct = InnerIndent(before=before, after=after, first=first, auto=auto)
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
@@ -63,7 +63,7 @@ class Indent(ParaStyleBaseMulti):
             Indent: ``Indent`` instance from document properties.
         """
         inst = cls(style_name=style_name, style_family=style_family)
-        direct = DirectIndent.from_obj(inst.get_style_props(doc))
+        direct = InnerIndent.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -77,10 +77,17 @@ class Indent(ParaStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> DirectIndent:
+    def prop_inner(self) -> InnerIndent:
         """Gets Inner Indent instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(DirectIndent, self._get_style_inst("direct"))
+            self._direct_inner = cast(InnerIndent, self._get_style_inst("direct"))
         return self._direct_inner
+
+    @prop_inner.setter
+    def prop_inner(self, value: InnerIndent) -> None:
+        if not isinstance(value, InnerIndent):
+            raise TypeError(f'Expected type of InnerIndent, got "{type(value).__name__}"')
+        self._del_attribs("_direct_inner")
+        self._set_style("direct", value, *value.get_attrs())

@@ -6,7 +6,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.writer.direct.char.highlight import Highlight
+from ooodev.format.writer.direct.char.highlight import InnerHighlight
 from ooodev.format import CommonColor
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 
 
 def test_char_highlight_props() -> None:
-    hl = Highlight(color=CommonColor.LIGHT_YELLOW)
+    hl = InnerHighlight(color=CommonColor.LIGHT_YELLOW)
     assert hl.prop_color == CommonColor.LIGHT_YELLOW
     assert hl._get("CharBackColor") == CommonColor.LIGHT_YELLOW
     assert hl._get("CharBackTransparent") == False
@@ -32,7 +32,7 @@ def test_char_highlight_props() -> None:
     assert hl._get("CharBackColor") == -1
     assert hl._get("CharBackTransparent")
 
-    hl = Highlight()
+    hl = InnerHighlight()
     hl.prop_color = -1
     assert hl.prop_color == -1
     assert hl._get("CharBackColor") == -1
@@ -43,7 +43,7 @@ def test_char_highlight_props() -> None:
     assert hl._get("CharBackColor") == CommonColor.AQUA
     assert hl._get("CharBackTransparent") == False
 
-    hl = Highlight.empty
+    hl = InnerHighlight.empty
     hl.color = -1
     assert hl.color == -1
     assert hl._get("CharBackColor") == -1
@@ -66,7 +66,7 @@ def test_char_hightlight(loader) -> None:
         ft = Font(size=40)
         Write.append(cursor, "Starting ", (ft,))
         pos = Write.get_position(cursor)
-        hl = Highlight(color=CommonColor.LIGHT_YELLOW)
+        hl = InnerHighlight(color=CommonColor.LIGHT_YELLOW)
         Write.append(cursor, "Hello")
         Write.style_left(cursor=cursor, pos=pos, styles=(hl, ft))
         cursor.gotoEnd(False)
@@ -76,7 +76,7 @@ def test_char_hightlight(loader) -> None:
         assert cp.CharBackTransparent == False
         cursor.gotoEnd(False)
 
-        Write.style_left(cursor=cursor, pos=pos, styles=(Highlight.empty,))
+        Write.style_left(cursor=cursor, pos=pos, styles=(InnerHighlight.empty,))
         cursor.gotoEnd(False)
         cursor.goLeft(5, True)
         cp = cast("CharacterProperties", cursor)

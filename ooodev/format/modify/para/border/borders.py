@@ -4,9 +4,9 @@ import uno
 from ....writer.style.para.kind import StyleParaKind as StyleParaKind
 from ..para_style_base_multi import ParaStyleBaseMulti
 from ....direct.structs.side import Side as Side, SideFlags as SideFlags, LineSize as LineSize
-from ....direct.para.border.shadow import Shadow as Shadow
-from ....direct.para.border.padding import Padding as Padding
-from ....direct.para.border.borders import Borders as DirectBorders
+from ....direct.para.border.shadow import Shadow as InnerShadow
+from ....direct.para.border.padding import Padding as InnerPadding
+from ....direct.para.border.borders import Borders as InnerBorders
 
 
 class Borders(ParaStyleBaseMulti):
@@ -24,8 +24,8 @@ class Borders(ParaStyleBaseMulti):
         top: Side | None = None,
         bottom: Side | None = None,
         border_side: Side | None = None,
-        shadow: Shadow | None = None,
-        padding: Padding | None = None,
+        shadow: InnerShadow | None = None,
+        padding: InnerPadding | None = None,
         merge: bool | None = None,
         style_name: StyleParaKind | str = StyleParaKind.STANDARD,
         style_family: str = "ParagraphStyles",
@@ -49,12 +49,12 @@ class Borders(ParaStyleBaseMulti):
             None:
         """
 
-        direct = DirectBorders(
+        direct = InnerBorders(
             right=right,
             left=left,
             top=top,
             bottom=bottom,
-            border_side=border_side,
+            all=border_side,
             shadow=shadow,
             padding=padding,
             merge=merge,
@@ -83,7 +83,7 @@ class Borders(ParaStyleBaseMulti):
             Borders: ``Borders`` instance from document properties.
         """
         inst = cls(style_name=style_name, style_family=style_family)
-        direct = DirectBorders.from_obj(inst.get_style_props(doc))
+        direct = InnerBorders.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -97,10 +97,17 @@ class Borders(ParaStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> DirectBorders:
-        """Gets Inner Borders instance"""
+    def prop_inner(self) -> InnerBorders:
+        """Gets/Sets Inner Borders instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(DirectBorders, self._get_style_inst("direct"))
+            self._direct_inner = cast(InnerBorders, self._get_style_inst("direct"))
         return self._direct_inner
+
+    @prop_inner.setter
+    def prop_inner(self, value: InnerBorders) -> None:
+        if not isinstance(value, InnerBorders):
+            raise TypeError(f'Expected type of InnerBorders, got "{type(value).__name__}"')
+        self._del_attribs("_direct_inner")
+        self._set_style("direct", value, *value.get_attrs())

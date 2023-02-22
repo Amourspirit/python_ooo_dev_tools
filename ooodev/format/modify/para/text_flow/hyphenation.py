@@ -3,7 +3,7 @@ from typing import cast
 import uno
 from ....writer.style.para.kind import StyleParaKind as StyleParaKind
 from ..para_style_base_multi import ParaStyleBaseMulti
-from ....direct.para.text_flow.hyphenation import Hyphenation as DirectHyphenation
+from ....direct.para.text_flow.hyphenation import Hyphenation as InnerHyphenation
 
 
 class Hyphenation(ParaStyleBaseMulti):
@@ -40,7 +40,7 @@ class Hyphenation(ParaStyleBaseMulti):
             None:
         """
 
-        direct = DirectHyphenation(auto=auto, no_caps=no_caps, start_chars=start_chars, end_chars=end_chars, max=max)
+        direct = InnerHyphenation(auto=auto, no_caps=no_caps, start_chars=start_chars, end_chars=end_chars, max=max)
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
@@ -65,7 +65,7 @@ class Hyphenation(ParaStyleBaseMulti):
             Breaks: ``Breaks`` instance from document properties.
         """
         inst = cls(style_name=style_name, style_family=style_family)
-        direct = DirectHyphenation.from_obj(inst.get_style_props(doc))
+        direct = InnerHyphenation.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -79,10 +79,17 @@ class Hyphenation(ParaStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> DirectHyphenation:
-        """Gets Inner Hyphenation instance"""
+    def prop_inner(self) -> InnerHyphenation:
+        """Gets/Sets Inner Hyphenation instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(DirectHyphenation, self._get_style_inst("direct"))
+            self._direct_inner = cast(InnerHyphenation, self._get_style_inst("direct"))
         return self._direct_inner
+
+    @prop_inner.setter
+    def prop_inner(self, value: InnerHyphenation) -> None:
+        if not isinstance(value, InnerHyphenation):
+            raise TypeError(f'Expected type of InnerHyphenation, got "{type(value).__name__}"')
+        self._del_attribs("_direct_inner")
+        self._set_style("direct", value, *value.get_attrs())
