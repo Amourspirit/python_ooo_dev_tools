@@ -3,7 +3,7 @@ from typing import cast
 import uno
 from ....writer.style.para.kind import StyleParaKind as StyleParaKind
 from ..para_style_base_multi import ParaStyleBaseMulti
-from ....direct.para.text_flow.breaks import Breaks as DirectBreaks
+from ....direct.para.text_flow.breaks import Breaks as InnerBreaks
 
 from ooo.dyn.style.break_type import BreakType as BreakType
 
@@ -38,7 +38,7 @@ class Breaks(ParaStyleBaseMulti):
             None:
         """
 
-        direct = DirectBreaks(type=type, style=style, num=num)
+        direct = InnerBreaks(type=type, style=style, num=num)
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
@@ -63,7 +63,7 @@ class Breaks(ParaStyleBaseMulti):
             Breaks: ``Breaks`` instance from document properties.
         """
         inst = cls(style_name=style_name, style_family=style_family)
-        direct = DirectBreaks.from_obj(inst.get_style_props(doc))
+        direct = InnerBreaks.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -77,10 +77,17 @@ class Breaks(ParaStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> DirectBreaks:
-        """Gets Inner Breaks instance"""
+    def prop_inner(self) -> InnerBreaks:
+        """Gets/Sets Inner Breaks instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(DirectBreaks, self._get_style_inst("direct"))
+            self._direct_inner = cast(InnerBreaks, self._get_style_inst("direct"))
         return self._direct_inner
+
+    @prop_inner.setter
+    def prop_inner(self, value: InnerBreaks) -> None:
+        if not isinstance(value, InnerBreaks):
+            raise TypeError(f'Expected type of InnerBreaks, got "{type(value).__name__}"')
+        self._del_attribs("_direct_inner")
+        self._set_style("direct", value, *value.get_attrs())

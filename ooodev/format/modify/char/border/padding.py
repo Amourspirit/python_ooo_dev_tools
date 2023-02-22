@@ -3,7 +3,7 @@ from typing import cast
 import uno
 from ....writer.style.char.kind.style_char_kind import StyleCharKind as StyleCharKind
 from ..char_style_base_multi import CharStyleBaseMulti
-from ....direct.char.border.padding import Padding as DirectPadding
+from ....direct.char.border.padding import Padding as InnerPadding
 
 
 class Padding(CharStyleBaseMulti):
@@ -40,7 +40,7 @@ class Padding(CharStyleBaseMulti):
             None:
         """
 
-        direct = DirectPadding(left=left, right=right, top=top, bottom=bottom, padding_all=padding_all)
+        direct = InnerPadding(left=left, right=right, top=top, bottom=bottom, all=padding_all)
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
@@ -65,7 +65,7 @@ class Padding(CharStyleBaseMulti):
             Padding: ``Padding`` instance from document properties.
         """
         inst = cls(style_name=style_name, style_family=style_family)
-        direct = DirectPadding.from_obj(inst.get_style_props(doc))
+        direct = InnerPadding.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -79,10 +79,17 @@ class Padding(CharStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> DirectPadding:
-        """Gets Inner Padding instance"""
+    def prop_inner(self) -> InnerPadding:
+        """Gets/Sets Inner Padding instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(DirectPadding, self._get_style_inst("direct"))
+            self._direct_inner = cast(InnerPadding, self._get_style_inst("direct"))
         return self._direct_inner
+
+    @prop_inner.setter
+    def prop_inner(self, value: InnerPadding) -> None:
+        if not isinstance(value, InnerPadding):
+            raise TypeError(f'Expected type of InnerPadding, got "{type(value).__name__}"')
+        self._del_attribs("_direct_inner")
+        self._set_style("direct", value, *value.get_attrs())

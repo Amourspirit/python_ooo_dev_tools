@@ -18,9 +18,9 @@ from ....kind.format_kind import FormatKind
 from ....style_base import StyleMulti
 
 # from ..structs.shadow import Shadow
-from .shadow import Shadow as Shadow
+from .shadow import Shadow as InnerShadow
 from ...structs.side import Side as Side, SideFlags as SideFlags, LineSize as LineSize
-from .padding import Padding as Padding
+from .padding import Padding as InnerPadding
 from .sides import Sides
 
 from ooo.dyn.table.border_line import BorderLine as BorderLine
@@ -53,9 +53,9 @@ class Borders(StyleMulti):
         left: Side | None = None,
         top: Side | None = None,
         bottom: Side | None = None,
-        border_side: Side | None = None,
-        shadow: Shadow | None = None,
-        padding: Padding | None = None,
+        all: Side | None = None,
+        shadow: InnerShadow | None = None,
+        padding: InnerPadding | None = None,
         merge: bool | None = None,
     ) -> None:
         """
@@ -66,7 +66,7 @@ class Borders(StyleMulti):
             right (Side, None, optional): Determines the line style at the right edge.
             top (Side, None, optional): Determines the line style at the top edge.
             bottom (Side, None, optional): Determines the line style at the bottom edge.
-            border_side (Side, None, optional): Determines the line style at the top, bottom, left, right edges. If this argument has a value then arguments ``top``, ``bottom``, ``left``, ``right`` are ignored
+            all (Side, None, optional): Determines the line style at the top, bottom, left, right edges. If this argument has a value then arguments ``top``, ``bottom``, ``left``, ``right`` are ignored
             shadow (BorderShadow, None, optional): Character Shadow
             padding (BorderPadding, None, optional): Character padding
             merge (bool, None, optional): Merge with next paragraph
@@ -78,7 +78,7 @@ class Borders(StyleMulti):
             right=right,
             top=top,
             bottom=bottom,
-            border_side=border_side,
+            all=all,
         )
 
         if not merge is None:
@@ -115,7 +115,7 @@ class Borders(StyleMulti):
         if cp._sides is None and value is None:
             return cp
         if cp._sides is None:
-            cp._sides = Sides(border_side=value)
+            cp._sides = Sides(all=value)
             return cp
         sides = cp._sides.copy()
         sides.prop_left = value
@@ -209,7 +209,7 @@ class Borders(StyleMulti):
         cp._sides = sides
         return cp
 
-    def fmt_shadow(self: _TBorders, value: Shadow | None) -> _TBorders:
+    def fmt_shadow(self: _TBorders, value: InnerShadow | None) -> _TBorders:
         """
         Gets copy of instance with shadow set or removed
 
@@ -226,7 +226,7 @@ class Borders(StyleMulti):
             cp._set_style("shadow", value, *value.get_attrs())
         return cp
 
-    def fmt_padding(self: _TBorders, value: Padding | None) -> _TBorders:
+    def fmt_padding(self: _TBorders, value: InnerPadding | None) -> _TBorders:
         """
         Gets copy of instance with padding set or removed
 
@@ -316,8 +316,8 @@ class Borders(StyleMulti):
         if not inst._is_valid_obj(obj):
             raise mEx.ServiceNotSupported(inst._supported_services()[0])
         inst_sides = Sides.from_obj(obj)
-        inst_padding = Padding.from_obj(obj)
-        inst_shadow = Shadow.from_obj(obj)
+        inst_padding = InnerPadding.from_obj(obj)
+        inst_shadow = InnerShadow.from_obj(obj)
         inst._set("ParaIsConnectBorder", mProps.Props.get(obj, "ParaIsConnectBorder"))
         inst._set("BorderDistance", mProps.Props.get(obj, "BorderDistance"))
         inst._set_style("sides", inst_sides, *inst_sides.get_attrs())
@@ -349,21 +349,21 @@ class Borders(StyleMulti):
         return self._direct_inner_sides
 
     @property
-    def prop_inner_padding(self) -> Padding | None:
+    def prop_inner_padding(self) -> InnerPadding | None:
         """Gets Padding instance"""
         try:
             return self._direct_inner_padding
         except AttributeError:
-            self._direct_inner_padding = cast(Padding, self._get_style_inst("padding"))
+            self._direct_inner_padding = cast(InnerPadding, self._get_style_inst("padding"))
         return self._direct_inner_padding
 
     @property
-    def prop_inner_shadow(self) -> Shadow | None:
+    def prop_inner_shadow(self) -> InnerShadow | None:
         """Gets Shadow instance"""
         try:
             return self._direct_inner_shadow
         except AttributeError:
-            self._direct_inner_shadow = cast(Shadow, self._get_style_inst("shadow"))
+            self._direct_inner_shadow = cast(InnerShadow, self._get_style_inst("shadow"))
         return self._direct_inner_shadow
 
     @static_prop
@@ -373,7 +373,7 @@ class Borders(StyleMulti):
             return Borders._DEFAULT_INST
         except AttributeError:
             Borders._DEFAULT_INST = Borders(
-                border_side=Side.empty, padding=Padding.default, shadow=Shadow.empty, merge=True
+                all=Side.empty, padding=InnerPadding.default, shadow=InnerShadow.empty, merge=True
             )
             Borders._DEFAULT_INST._is_default_inst = True
         return Borders._DEFAULT_INST

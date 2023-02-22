@@ -20,8 +20,8 @@ from .....preset.preset_gradient import PresetGradientKind as PresetGradientKind
 from .....preset.preset_image import PresetImageKind as PresetImageKind
 from .....preset.preset_pattern import PresetPatternKind as PresetPatternKind
 from .....preset.preset_hatch import PresetHatchKind as PresetHatchKind
-from .....modify.page.area.color import Color as Color
-from .....modify.page.area.gradient import Gradient as Gradient
-from .....modify.page.area.img import Img as Img
-from .....modify.page.area.pattern import Pattern as Pattern
-from .....modify.page.area.hatch import Hatch as Hatch
+from .....modify.page.area.color import Color as Color, InnerColor as InnerColor
+from .....modify.page.area.gradient import Gradient as Gradient, InnerGradient as InnerGradient
+from .....modify.page.area.img import Img as Img, InnerImg as InnerImg
+from .....modify.page.area.pattern import Pattern as Pattern, InnerPattern as InnerPattern
+from .....modify.page.area.hatch import Hatch as Hatch, InnerHatch as InnerHatch

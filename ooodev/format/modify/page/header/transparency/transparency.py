@@ -11,7 +11,7 @@ from ......utils.data_type.offset import Offset as Offset
 from .....writer.style.page.kind.style_page_kind import StylePageKind as StylePageKind
 from .....preset.preset_gradient import PresetGradientKind as PresetGradientKind
 from .....direct.common.props.transparent_transparency_props import TransparentTransparencyProps
-from .....direct.fill.transparent.transparency import Transparency as FillTransparency
+from .....direct.fill.transparent.transparency import Transparency as InnerTransparency
 
 _TTransparency = TypeVar(name="_TTransparency", bound="Transparency")
 
@@ -42,7 +42,7 @@ class Transparency(PageStyleBaseMulti):
             None:
         """
 
-        direct = FillTransparency(value=value, _cattribs=self._get_inner_cattribs())
+        direct = InnerTransparency(value=value, _cattribs=self._get_inner_cattribs())
         direct._prop_parent = self
         super().__init__()
         self._style_name = str(style_name)
@@ -82,7 +82,7 @@ class Transparency(PageStyleBaseMulti):
             Transparency: ``Transparency`` instance from document properties.
         """
         inst = cls(style_name=style_name, style_family=style_family)
-        direct = FillTransparency.from_obj(obj=inst.get_style_props(doc), _cattribs=inst._get_inner_cattribs())
+        direct = InnerTransparency.from_obj(obj=inst.get_style_props(doc), _cattribs=inst._get_inner_cattribs())
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -99,12 +99,18 @@ class Transparency(PageStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> FillTransparency:
-        """Gets Inner Transparency instance"""
+    def prop_inner(self) -> InnerTransparency:
+        """Gets/Sets Inner Transparency instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(FillTransparency, self._get_style_inst("direct"))
+            self._direct_inner = cast(InnerTransparency, self._get_style_inst("direct"))
         return self._direct_inner
 
+    @prop_inner.setter
+    def prop_inner(self, value: InnerTransparency) -> None:
+        if not isinstance(value, InnerTransparency):
+            raise TypeError(f'Expected type of InnerTransparency, got "{type(value).__name__}"')
+        self._del_attribs("_direct_inner")
+        self._set_style("direct", value, *value.get_attrs())
     # endregion Properties

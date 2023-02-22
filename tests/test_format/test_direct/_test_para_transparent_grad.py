@@ -11,7 +11,7 @@ from ooodev.format.direct.para.transparent.gradient import Gradient, GradientSty
 
 # from ooodev.format.writer.direct.para.transparency import Gradient, GradientStyle
 # from ooodev.format.direct.para.area.color import Color
-from ooodev.format.writer.direct.para.area import Color
+from ooodev.format.writer.direct.para.area import InnerColor
 from ooodev.format.direct.fill.transparent.gradient import GradientStruct
 from ooodev.format import Styler
 from ooodev.format.writer.style.para import Para
@@ -44,7 +44,7 @@ def _test_write(loader, para_text) -> None:
         Write.append_para(cursor=cursor, text=para_text)
         cursor_p.gotoEnd(False)
 
-        dc = Color(StandardColor.LIME)
+        dc = InnerColor(StandardColor.LIME)
         # ParaBackColor 2088883226  Color   Lime  Linear  Start 0%    End value 100%
         tp = Gradient(style=GradientStyle.LINEAR, angle=0, grad_intensity=IntensityRange(0, 100))
         Write.append_para(cursor=cursor, text=para_text, styles=(dc, tp))
@@ -60,7 +60,7 @@ def _test_write(loader, para_text) -> None:
 
         page = Write.get_draw_page(doc)
         rs = Draw.draw_rectangle(slide=page, x=10, y=10, width=100, height=100)
-        dc = Color(StandardColor.DEFAULT_BLUE)
+        dc = InnerColor(StandardColor.DEFAULT_BLUE)
         Styler.apply(rs, dc, tp)
         page.add(rs)
         # add_gradient_to_table("", None)

@@ -11,7 +11,6 @@ from ....style.para import StyleParaKind as StyleParaKind
 from .....direct.char.font.font_only import FontLang as FontLang
 from .....direct.char.font.font_position import CharSpacingKind as CharSpacingKind, FontScriptKind as FontScriptKind
 
-from .....modify.para.font.font_effects import FontEffects as FontEffects
-from .....modify.para.font.font_only import FontOnly as FontOnly
-
-from .....modify.para.font.font_position import FontPosition as FontPosition
+from .....modify.para.font.font_effects import FontEffects as FontEffects, InnerFontEffects as InnerFontEffects
+from .....modify.para.font.font_only import FontOnly as FontOnly, InnerFontOnly as InnerFontOnly
+from .....modify.para.font.font_position import FontPosition as FontPosition, InnerFontPosition as InnerFontPosition

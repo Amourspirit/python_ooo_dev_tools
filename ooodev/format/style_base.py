@@ -8,7 +8,6 @@ from ..utils import props as mProps
 from ..utils import info as mInfo
 from ..utils import lo as mLo
 from ..events.lo_events import Events
-from ..events.event_singleton import _Events
 from ..events.props_named_event import PropsNamedEvent
 from ..events.args.key_val_cancel_args import KeyValCancelArgs as KeyValCancelArgs
 from ..events.args.key_val_args import KeyValArgs as KeyValArgs
@@ -41,10 +40,6 @@ _TStyleModifyMulti = TypeVar("_TStyleModifyMulti", bound="StyleModifyMulti")
 
 
 class MetaStyle(type):
-    # def __new__(metacls, name, bases, namespace, **kwargs):
-    #     cls = super().__new__(metacls, name, bases, namespace, **kwargs)
-    #     return cls
-
     def __call__(cls, *args, **kw):
         if "_cattribs" in kw:
             custom_args = kw["_cattribs"]
@@ -70,24 +65,10 @@ class StyleBase(metaclass=MetaStyle):
     """
 
     def __init__(self, **kwargs) -> None:
-
         # this property is used in child classes that have default instances
         self._events = Events(source=self)
+
         # self._uniquie_id = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
-
-        trigger_initalizing: bool = kwargs.get("__trigger_initalizing", True)
-        trigger_initalized: bool = kwargs.get("__trigger_initalized", True)
-        cargs: CancelEventArgs = None
-        if trigger_initalizing or trigger_initalized:
-            cargs = CancelEventArgs(source=self)
-
-        if trigger_initalizing:
-            _Events().trigger(FormatNamedEvent.STYLE_INITIALIZING, cargs)
-            if cargs.cancel:
-                if not cargs.handled:
-                    raise mEx.CancelEventError(
-                        event_args=cargs, message=f"Cancel Event as been called in {self.__class__.__name__}"
-                    )
 
         self._is_default_inst = False
         self._prop_parent = None
@@ -101,11 +82,7 @@ class StyleBase(metaclass=MetaStyle):
                 continue
             if not value is None:
                 self._dv[key] = value
-
         super().__init__()
-
-        if trigger_initalized:
-            _Events().trigger(FormatNamedEvent.STYLE_INITIALIZED, EventArgs.from_args(cargs))
 
     # region Events
 
@@ -719,15 +696,9 @@ class StyleMulti(StyleBase):
     """
 
     def __init__(self, **kwargs) -> None:
-        trigger_initalized: bool = kwargs.get("__trigger_initalized", True)
-        kwargs["__trigger_initalized"] = False
-
         super().__init__(**kwargs)
         self._styles: Dict[str, _StyleInfo] = {}
         self._all_attributes = True
-
-        if trigger_initalized:
-            _Events().trigger(FormatNamedEvent.STYLE_INITIALIZED, EventArgs(source=self))
 
     def _set_style(self, key: str, style: StyleBase, *attrs, **kwargs) -> None:
         """

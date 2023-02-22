@@ -7,8 +7,8 @@ if __name__ == "__main__":
 import uno
 from ooodev.format.writer.modify.para.borders import (
     Borders,
-    DirectPadding,
-    DirectShadow,
+    InnerPadding,
+    InnerShadow,
     ShadowLocation,
     ShadowFormat,
     Side,
@@ -38,8 +38,8 @@ def test_write(loader, para_text) -> None:
 
         style = Borders(
             border_side=Side(line=BorderLineStyleEnum.DOUBLE, color=StandardColor.DEFAULT_BLUE, width=LineSize.MEDIUM),
-            padding=DirectPadding(padding_all=3.0),
-            shadow=DirectShadow(location=ShadowLocation.BOTTOM_RIGHT, width=2.0),
+            padding=InnerPadding(all=3.0),
+            shadow=InnerShadow(location=ShadowLocation.BOTTOM_RIGHT, width=2.0),
             merge=False,
         )
         style.apply(doc)

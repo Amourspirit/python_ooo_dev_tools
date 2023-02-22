@@ -6,7 +6,7 @@ from .....utils.data_type.intensity import Intensity as Intensity
 from ....writer.style.page.kind import StylePageKind as StylePageKind
 from ..page_style_base_multi import PageStyleBaseMulti
 from ....preset.preset_paper_format import PaperFormatKind as PaperFormatKind
-from ....direct.page.page.paper_format import PaperFormat as DirectPaperFormat
+from ....direct.page.page.paper_format import PaperFormat as InnerPaperFormat
 
 
 class PaperFormat(PageStyleBaseMulti):
@@ -35,7 +35,7 @@ class PaperFormat(PageStyleBaseMulti):
             None:
         """
 
-        direct = DirectPaperFormat(size=size)
+        direct = InnerPaperFormat(size=size)
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
@@ -60,7 +60,7 @@ class PaperFormat(PageStyleBaseMulti):
             PaperFormat: ``PaperFormat`` instance from document properties.
         """
         inst = cls(style_name=style_name, style_family=style_family)
-        direct = DirectPaperFormat.from_obj(inst.get_style_props(doc))
+        direct = InnerPaperFormat.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -85,7 +85,7 @@ class PaperFormat(PageStyleBaseMulti):
             PaperFormat: Format from preset
         """
         inst = cls(style_name=style_name, style_family=style_family)
-        direct = DirectPaperFormat.from_preset(preset=preset, landscape=landscape)
+        direct = InnerPaperFormat.from_preset(preset=preset, landscape=landscape)
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -99,10 +99,17 @@ class PaperFormat(PageStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> DirectPaperFormat:
-        """Gets Inner Paper Format instance"""
+    def prop_inner(self) -> InnerPaperFormat:
+        """Gets/Sets Inner Paper Format instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(DirectPaperFormat, self._get_style_inst("direct"))
+            self._direct_inner = cast(InnerPaperFormat, self._get_style_inst("direct"))
         return self._direct_inner
+
+    @prop_inner.setter
+    def prop_inner(self, value: InnerPaperFormat) -> None:
+        if not isinstance(value, InnerPaperFormat):
+            raise TypeError(f'Expected type of InnerPaperFormat, got "{type(value).__name__}"')
+        self._del_attribs("_direct_inner")
+        self._set_style("direct", value, *value.get_attrs())

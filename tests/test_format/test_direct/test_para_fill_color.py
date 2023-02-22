@@ -6,7 +6,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.writer.direct.para.area import Color
+from ooodev.format.writer.direct.para.area import InnerColor
 from ooodev.format import CommonColor
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
@@ -36,7 +36,7 @@ def test_write(loader, para_text) -> None:
         cursor = Write.get_cursor(doc)
         p_len = len(para_text)
 
-        dc = Color(CommonColor.LIME_GREEN)
+        dc = InnerColor(CommonColor.LIME_GREEN)
         Write.append_para(cursor=cursor, text=para_text, styles=(dc,))
 
         cursor_p = Write.get_paragraph_cursor(cursor)
@@ -47,7 +47,7 @@ def test_write(loader, para_text) -> None:
             assert getattr(fp, attr) == dc._get(attr)
         cursor_p.gotoEnd(False)
 
-        dc = Color(CommonColor.LIGHT_BLUE)
+        dc = InnerColor(CommonColor.LIGHT_BLUE)
         Write.append_para(cursor=cursor, text=para_text, styles=(dc,))
         # dc.dispatch_reset()
 
@@ -68,7 +68,7 @@ def test_write(loader, para_text) -> None:
         cursor_p.gotoEnd(False)
 
         # test applying to cursor
-        dc = Color(CommonColor.AQUAMARINE)
+        dc = InnerColor(CommonColor.AQUAMARINE)
         dc.apply(cursor_p.TextParagraph)
 
         for _ in range(3):
@@ -80,7 +80,7 @@ def test_write(loader, para_text) -> None:
                 assert getattr(fp, attr) == dc._get(attr)
             cursor_p.gotoEnd(False)
 
-        Color.default.apply(cursor_p.TextParagraph)
+        InnerColor.default.apply(cursor_p.TextParagraph)
 
         fp = cast("FillProperties", cursor_p.TextParagraph)
         assert fp.FillStyle == FillStyle.NONE

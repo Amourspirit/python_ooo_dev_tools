@@ -10,7 +10,7 @@ from ....writer.style.para.kind import StyleParaKind as StyleParaKind
 from ....preset.preset_pattern import PresetPatternKind as PresetPatternKind
 from ..para_style_base_multi import ParaStyleBaseMulti
 
-from ....direct.para.area.pattern import Pattern as DirectPattern
+from ....direct.para.area.pattern import Pattern as InnerPattern
 
 from ooo.dyn.drawing.hatch_style import HatchStyle as HatchStyle
 
@@ -51,7 +51,7 @@ class Pattern(ParaStyleBaseMulti):
             None:
         """
 
-        direct = DirectPattern(bitmap=bitmap, name=name, tile=tile, stretch=stretch, auto_name=auto_name)
+        direct = InnerPattern(bitmap=bitmap, name=name, tile=tile, stretch=stretch, auto_name=auto_name)
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
@@ -73,7 +73,7 @@ class Pattern(ParaStyleBaseMulti):
         Returns:
             Hatch: Hatch from a preset.
         """
-        direct = DirectPattern.from_preset(preset)
+        direct = InnerPattern.from_preset(preset)
         inst = cls(style_name=style_name, style_family=style_family)
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
@@ -97,7 +97,7 @@ class Pattern(ParaStyleBaseMulti):
             Alignment: ``Alignment`` instance from document properties.
         """
         inst = cls(style_name=style_name, style_family=style_family)
-        direct = DirectPattern.from_obj(inst.get_style_props(doc))
+        direct = InnerPattern.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -111,10 +111,17 @@ class Pattern(ParaStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> DirectPattern:
-        """Gets Inner Pattern instance"""
+    def prop_inner(self) -> InnerPattern:
+        """Gets/Sets Inner Pattern instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(DirectPattern, self._get_style_inst("direct"))
+            self._direct_inner = cast(InnerPattern, self._get_style_inst("direct"))
         return self._direct_inner
+
+    @prop_inner.setter
+    def prop_inner(self, value: InnerPattern) -> None:
+        if not isinstance(value, InnerPattern):
+            raise TypeError(f'Expected type of InnerPattern, got "{type(value).__name__}"')
+        self._del_attribs("_direct_inner")
+        self._set_style("direct", value, *value.get_attrs())

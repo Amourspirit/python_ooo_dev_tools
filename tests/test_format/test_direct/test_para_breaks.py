@@ -6,7 +6,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.writer.direct.para.text_flow import Breaks, BreakType
+from ooodev.format.writer.direct.para.text_flow import InnerBreaks, BreakType
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
@@ -17,17 +17,17 @@ if TYPE_CHECKING:
 
 
 def test_props() -> None:
-    brk = Breaks(type=BreakType.PAGE_BEFORE)
+    brk = InnerBreaks(type=BreakType.PAGE_BEFORE)
     assert brk.prop_type == BreakType.PAGE_BEFORE
     assert brk._get("BreakType") == BreakType.PAGE_BEFORE
 
-    brk = Breaks(type=BreakType.PAGE_BEFORE, style="HTML")
+    brk = InnerBreaks(type=BreakType.PAGE_BEFORE, style="HTML")
     assert brk.prop_type == BreakType.PAGE_BEFORE
     assert brk._get("BreakType") == BreakType.PAGE_BEFORE
     assert brk.prop_style == "HTML"
     assert brk._get("PageDescName") == "HTML"
 
-    brk = Breaks(type=BreakType.PAGE_BEFORE, style="HTML", num=8)
+    brk = InnerBreaks(type=BreakType.PAGE_BEFORE, style="HTML", num=8)
     assert brk.prop_type == BreakType.PAGE_BEFORE
     assert brk._get("BreakType") == BreakType.PAGE_BEFORE
     assert brk.prop_style == "HTML"
@@ -35,14 +35,14 @@ def test_props() -> None:
     assert brk.prop_num == 8
     assert brk._get("PageNumberOffset") == 8
 
-    brk = Breaks(type=BreakType.PAGE_BEFORE, num=8)
+    brk = InnerBreaks(type=BreakType.PAGE_BEFORE, num=8)
     assert brk.prop_type == BreakType.PAGE_BEFORE
     assert brk._get("BreakType") == BreakType.PAGE_BEFORE
     assert brk.prop_style == None
     assert brk.prop_num == None
 
     # PAGE_AFTER does not allow style or num
-    brk = Breaks(type=BreakType.PAGE_AFTER, style="HTML", num=8)
+    brk = InnerBreaks(type=BreakType.PAGE_AFTER, style="HTML", num=8)
     assert brk.prop_type == BreakType.PAGE_AFTER
     assert brk._get("BreakType") == BreakType.PAGE_AFTER
     assert brk.prop_style == None
@@ -51,7 +51,7 @@ def test_props() -> None:
 
 def test_default() -> None:
     # brk = cast(Breaks, Breaks.default)
-    brk = Breaks.default
+    brk = InnerBreaks.default
     assert brk.prop_type == BreakType.NONE
     assert brk.prop_style == None
     assert brk.prop_num == None
@@ -71,7 +71,7 @@ def test_write(loader, para_text) -> None:
         p_len = len(para_text)
         Write.append_para(cursor=cursor, text="Starting here...")
 
-        brk = Breaks(type=BreakType.PAGE_BEFORE)
+        brk = InnerBreaks(type=BreakType.PAGE_BEFORE)
         Write.append_para(cursor=cursor, text=para_text, styles=(brk,))
 
         cursor.goLeft(p_len + 1, False)
@@ -80,7 +80,7 @@ def test_write(loader, para_text) -> None:
         assert pp.BreakType == BreakType.PAGE_BEFORE
         cursor.gotoEnd(False)
 
-        brk = Breaks(type=BreakType.PAGE_BEFORE, style="Right Page")
+        brk = InnerBreaks(type=BreakType.PAGE_BEFORE, style="Right Page")
         Write.append_para(cursor=cursor, text=para_text, styles=(brk,))
         cursor.goLeft(p_len + 1, False)
         cursor.goRight(p_len, True)
@@ -88,7 +88,7 @@ def test_write(loader, para_text) -> None:
         assert pp.PageDescName == "Right Page"
         cursor.gotoEnd(False)
 
-        brk = Breaks(type=BreakType.PAGE_BEFORE, style="Right Page", num=5)
+        brk = InnerBreaks(type=BreakType.PAGE_BEFORE, style="Right Page", num=5)
         Write.append_para(cursor=cursor, text=para_text, styles=(brk,))
         cursor.goLeft(p_len + 1, False)
         cursor.goRight(p_len, True)

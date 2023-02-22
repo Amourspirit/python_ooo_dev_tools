@@ -8,9 +8,9 @@ from ......utils.data_type.offset import Offset as Offset
 from ......utils.data_type.intensity import Intensity as Intensity
 from ......utils.data_type.intensity_range import IntensityRange as IntensityRange
 from ......utils.data_type.color_range import ColorRange as ColorRange
-from .....direct.para.area.color import Color as Color
-from .....direct.fill.area.gradient import Gradient as Gradient
-from .....direct.para.area.pattern import Pattern as Pattern
+from .....direct.para.area.color import Color as InnerColor
+from .....direct.fill.area.gradient import Gradient as InnerGradient
+from .....direct.para.area.pattern import Pattern as InnerPattern
 from .....preset.preset_gradient import PresetGradientKind as PresetGradientKind
 from .....preset.preset_hatch import PresetHatchKind as PresetHatchKind
 from .....preset.preset_pattern import PresetPatternKind as PresetPatternKind
@@ -25,4 +25,4 @@ from .....direct.fill.area.img import (
     ImgStyleKind as ImgStyleKind,
 )
 from .....direct.para.area.img import Img as Img
-from .....direct.para.area.hatch import Hatch as Hatch
+from .....direct.para.area.hatch import Hatch as InnerHatch

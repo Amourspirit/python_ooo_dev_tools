@@ -5,7 +5,7 @@ from numbers import Real
 from ....writer.style.para.kind import StyleParaKind as StyleParaKind
 from ..para_style_base_multi import ParaStyleBaseMulti
 from ....direct.structs.line_spacing_struct import ModeKind as ModeKind
-from ....direct.para.indent_space.line_spacing import LineSpacing as DirectLineSpacing
+from ....direct.para.indent_space.line_spacing import LineSpacing as InnerLineSpacing
 
 
 class LineSpacing(ParaStyleBaseMulti):
@@ -38,7 +38,7 @@ class LineSpacing(ParaStyleBaseMulti):
             None:
         """
 
-        direct = DirectLineSpacing(mode=mode, value=value, active_ln_spacing=active_ln_spacing)
+        direct = InnerLineSpacing(mode=mode, value=value, active_ln_spacing=active_ln_spacing)
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
@@ -63,7 +63,7 @@ class LineSpacing(ParaStyleBaseMulti):
             LineSpacing: ``LineSpacing`` instance from document properties.
         """
         inst = cls(style_name=style_name, style_family=style_family)
-        direct = DirectLineSpacing.from_obj(inst.get_style_props(doc))
+        direct = InnerLineSpacing.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -77,10 +77,17 @@ class LineSpacing(ParaStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> DirectLineSpacing:
+    def prop_inner(self) -> InnerLineSpacing:
         """Gets Inner Line Spacing instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(DirectLineSpacing, self._get_style_inst("direct"))
+            self._direct_inner = cast(InnerLineSpacing, self._get_style_inst("direct"))
         return self._direct_inner
+
+    @prop_inner.setter
+    def prop_inner(self, value: InnerLineSpacing) -> None:
+        if not isinstance(value, InnerLineSpacing):
+            raise TypeError(f'Expected type of InnerLineSpacing, got "{type(value).__name__}"')
+        self._del_attribs("_direct_inner")
+        self._set_style("direct", value, *value.get_attrs())

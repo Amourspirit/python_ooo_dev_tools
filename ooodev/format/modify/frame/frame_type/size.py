@@ -90,9 +90,16 @@ class Size(FrameStyleBaseMulti):
 
     @property
     def prop_inner(self) -> DirectSize:
-        """Gets Inner Size instance"""
+        """Gets/Sets Inner Size instance"""
         try:
             return self._direct_inner
         except AttributeError:
             self._direct_inner = cast(DirectSize, self._get_style_inst("direct"))
         return self._direct_inner
+
+    @prop_inner.setter
+    def prop_inner(self, value: DirectSize) -> None:
+        if not isinstance(value, DirectSize):
+            raise TypeError(f'Expected type of DirectSize, got "{type(value).__name__}"')
+        self._del_attribs("_direct_inner")
+        self._set_style("direct", value, *value.get_attrs())

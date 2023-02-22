@@ -14,7 +14,7 @@ from .....direct.common.format_types.offset_row import OffsetRow as OffsetRow
 from .....direct.common.format_types.size_mm import SizeMM as SizeMM
 from .....direct.common.format_types.size_percent import SizePercent as SizePercent
 from .....direct.common.props.area_img_props import AreaImgProps
-from .....direct.fill.area.img import Img as FillImg, ImgStyleKind as ImgStyleKind
+from .....direct.fill.area.img import Img as InnerImg, ImgStyleKind as ImgStyleKind
 from .....preset.preset_image import PresetImageKind as PresetImageKind
 from .....writer.style.page.kind.style_page_kind import StylePageKind as StylePageKind
 from ...page_style_base_multi import PageStyleBaseMulti
@@ -62,7 +62,7 @@ class Img(PageStyleBaseMulti):
             None:
         """
 
-        direct = FillImg(
+        direct = InnerImg(
             bitmap=bitmap,
             name=name,
             mode=mode,
@@ -123,7 +123,7 @@ class Img(PageStyleBaseMulti):
             Img: ``Img`` instance from document properties.
         """
         inst = cls(style_name=style_name, style_family=style_family)
-        direct = FillImg.from_obj(inst.get_style_props(doc), _cattribs=inst._get_inner_cattribs())
+        direct = InnerImg.from_obj(inst.get_style_props(doc), _cattribs=inst._get_inner_cattribs())
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -146,7 +146,7 @@ class Img(PageStyleBaseMulti):
             Img: ``Img`` instance from preset.
         """
         inst = cls(style_name=style_name, style_family=style_family)
-        direct = FillImg.from_preset(preset=preset, _cattribs=inst._get_inner_cattribs())
+        direct = InnerImg.from_preset(preset=preset, _cattribs=inst._get_inner_cattribs())
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -163,12 +163,19 @@ class Img(PageStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> FillImg:
-        """Gets Inner Image instance"""
+    def prop_inner(self) -> InnerImg:
+        """Gets/Sets Inner Image instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(FillImg, self._get_style_inst("direct"))
+            self._direct_inner = cast(InnerImg, self._get_style_inst("direct"))
         return self._direct_inner
+
+    @prop_inner.setter
+    def prop_inner(self, value: InnerImg) -> None:
+        if not isinstance(value, InnerImg):
+            raise TypeError(f'Expected type of InnerImg, got "{type(value).__name__}"')
+        self._del_attribs("_direct_inner")
+        self._set_style("direct", value, *value.get_attrs())
 
     # endregion Properties

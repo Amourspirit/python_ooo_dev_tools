@@ -3,7 +3,7 @@ from typing import cast
 import uno
 from ....writer.style.para.kind import StyleParaKind as StyleParaKind
 from ..para_style_base_multi import ParaStyleBaseMulti
-from ....direct.char.highlight.highlight import Highlight as DirectHighlight
+from ....direct.char.highlight.highlight import Highlight as InnerHighlight
 from .....utils.color import Color
 
 
@@ -34,7 +34,7 @@ class Highlight(ParaStyleBaseMulti):
             None:
         """
 
-        direct = DirectHighlight(color=color)
+        direct = InnerHighlight(color=color)
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
@@ -59,7 +59,7 @@ class Highlight(ParaStyleBaseMulti):
             Highlight: ``Highlight`` instance from document properties.
         """
         inst = cls(style_name=style_name, style_family=style_family)
-        direct = DirectHighlight.from_obj(inst.get_style_props(doc))
+        direct = InnerHighlight.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -73,10 +73,17 @@ class Highlight(ParaStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> DirectHighlight:
-        """Gets Inner Highlight instance"""
+    def prop_inner(self) -> InnerHighlight:
+        """Gets/Sets Inner Highlight instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(DirectHighlight, self._get_style_inst("direct"))
+            self._direct_inner = cast(InnerHighlight, self._get_style_inst("direct"))
         return self._direct_inner
+
+    @prop_inner.setter
+    def prop_inner(self, value: InnerHighlight) -> None:
+        if not isinstance(value, InnerHighlight):
+            raise TypeError(f'Expected type of InnerHighlight, got "{type(value).__name__}"')
+        self._del_attribs("_direct_inner")
+        self._set_style("direct", value, *value.get_attrs())

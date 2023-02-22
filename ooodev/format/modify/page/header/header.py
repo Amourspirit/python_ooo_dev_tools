@@ -162,11 +162,18 @@ class Header(PageStyleBaseMulti):
 
     @property
     def prop_inner(self) -> InnerStyle:
-        """Gets Inner Footer instance"""
+        """Gets/Sets Inner Footer instance"""
         try:
             return self._direct_inner
         except AttributeError:
             self._direct_inner = cast(InnerStyle, self._get_style_inst("direct"))
         return self._direct_inner
+
+    @prop_inner.setter
+    def prop_inner(self, value: InnerStyle) -> None:
+        if not isinstance(value, InnerStyle):
+            raise TypeError(f'Expected type of InnerStyle, got "{type(value).__name__}"')
+        self._del_attribs("_direct_inner")
+        self._set_style("direct", value, *value.get_attrs())
 
     # endregion Properties

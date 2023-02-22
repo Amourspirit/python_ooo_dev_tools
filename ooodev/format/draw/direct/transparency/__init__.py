@@ -5,5 +5,5 @@ from .....utils.data_type.angle import Angle as Angle
 from .....utils.data_type.offset import Offset as Offset
 from .....utils.data_type.intensity import Intensity as Intensity
 from .....utils.data_type.intensity_range import IntensityRange as IntensityRange
-from ....direct.fill.transparent.transparency import Transparency as Transparency
-from ....direct.fill.transparent.gradient import Gradient as Gradient
+from ....direct.fill.transparent.transparency import Transparency as InnerTransparency
+from ....direct.fill.transparent.gradient import Gradient as InnerGradient

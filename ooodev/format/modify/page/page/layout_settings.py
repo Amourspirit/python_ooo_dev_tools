@@ -4,7 +4,7 @@ import uno
 from ....writer.style.page.kind import StylePageKind as StylePageKind
 from ..page_style_base_multi import PageStyleBaseMulti
 from ....writer.style.para.kind.style_para_kind import StyleParaKind as StyleParaKind
-from ....direct.page.page.layout_settings import LayoutSettings as DirectLayoutSettings
+from ....direct.page.page.layout_settings import LayoutSettings as InnerLayoutSettings
 
 from ooo.dyn.style.page_style_layout import PageStyleLayout as PageStyleLayout
 from ooo.dyn.style.numbering_type import NumberingTypeEnum as NumberingTypeEnum
@@ -42,7 +42,7 @@ class LayoutSettings(PageStyleBaseMulti):
             None:
         """
 
-        direct = DirectLayoutSettings(layout=layout, numbers=numbers, ref_style=ref_style, right_gutter=right_gutter)
+        direct = InnerLayoutSettings(layout=layout, numbers=numbers, ref_style=ref_style, right_gutter=right_gutter)
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
@@ -67,7 +67,7 @@ class LayoutSettings(PageStyleBaseMulti):
             LayoutSettings: ``LayoutSettings`` instance from document properties.
         """
         inst = cls(style_name=style_name, style_family=style_family)
-        direct = DirectLayoutSettings.from_obj(inst.get_style_props(doc))
+        direct = InnerLayoutSettings.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -81,10 +81,17 @@ class LayoutSettings(PageStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> DirectLayoutSettings:
-        """Gets Inner Layout Settings instance"""
+    def prop_inner(self) -> InnerLayoutSettings:
+        """Gets/Sets Inner Layout Settings instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(DirectLayoutSettings, self._get_style_inst("direct"))
+            self._direct_inner = cast(InnerLayoutSettings, self._get_style_inst("direct"))
         return self._direct_inner
+    
+    @prop_inner.setter
+    def prop_inner(self, value: InnerLayoutSettings) -> None:
+        if not isinstance(value, InnerLayoutSettings):
+            raise TypeError(f'Expected type of InnerLayoutSettings, got "{type(value).__name__}"')
+        self._del_attribs("_direct_inner")
+        self._set_style("direct", value, *value.get_attrs())

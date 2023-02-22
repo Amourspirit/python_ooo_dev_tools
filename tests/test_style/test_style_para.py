@@ -6,7 +6,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.direct.para.align import Alignment, LastLineKind
+from ooodev.format.direct.para.align import InnerAlignment, LastLineKind
 from ooodev.format.writer.style.para import Para, StyleParaKind
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
@@ -29,7 +29,7 @@ def test_write(loader, para_text) -> None:
     try:
         cursor = Write.get_cursor(doc)
         p_len = len(para_text)
-        al = Alignment().align_right
+        al = InnerAlignment().align_right
         al.apply(cursor)
         Write.append_para(cursor=cursor, text=para_text)
 
@@ -42,7 +42,7 @@ def test_write(loader, para_text) -> None:
         assert pp.ParaStyleName == str(StyleParaKind.STANDARD)
         assert pp.ParaAdjust == 0
 
-        al = Alignment(snap_to_grid=False, align_last=LastLineKind.CENTER).justified
+        al = InnerAlignment(snap_to_grid=False, align_last=LastLineKind.CENTER).justified
         al.apply(cursor)
         Write.append_para(cursor=cursor, text=para_text)
         cursor.goLeft(p_len + 1, False)
@@ -56,7 +56,7 @@ def test_write(loader, para_text) -> None:
         assert pp.ParaAdjust == 0
         assert pp.ParaLastLineAdjust == 0
 
-        al = Alignment(align_last=LastLineKind.JUSTIFY, expand_single_word=True).justified
+        al = InnerAlignment(align_last=LastLineKind.JUSTIFY, expand_single_word=True).justified
         al.apply(cursor)
         Write.append_para(cursor=cursor, text=para_text)
         cursor.goLeft(p_len + 1, False)

@@ -1,6 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, overload
-from typing import Any, Tuple, Type, TypeVar
+from typing import Any, Tuple, Type, TypeVar, overload, TYPE_CHECKING
 from enum import Enum
 import uno
 from .....exceptions import ex as mEx
@@ -110,7 +109,7 @@ class Align(StyleBase):
             obj (object): UNO Object.
 
         Raises:
-            NotSupportedServiceError: If ``obj`` is not supported.
+            NotSupportedError: If ``obj`` is not supported.
 
         Returns:
             Align: Instance that represents Frame Alignment.

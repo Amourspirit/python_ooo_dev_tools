@@ -4,7 +4,7 @@ import uno
 from ....writer.style.para.kind import StyleParaKind as StyleParaKind
 from ..para_style_base_multi import ParaStyleBaseMulti
 from .....utils import color as mColor
-from ....direct.para.area.color import Color as DirectColor
+from ....direct.para.area.color import Color as InnerColor
 
 
 class Color(ParaStyleBaseMulti):
@@ -33,7 +33,7 @@ class Color(ParaStyleBaseMulti):
             None:
         """
 
-        direct = DirectColor(color=color)
+        direct = InnerColor(color=color)
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
@@ -58,7 +58,7 @@ class Color(ParaStyleBaseMulti):
             Color: ``Color`` instance from document properties.
         """
         inst = cls(style_name=style_name, style_family=style_family)
-        direct = DirectColor.from_obj(inst.get_style_props(doc))
+        direct = InnerColor.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -72,10 +72,10 @@ class Color(ParaStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> DirectColor:
+    def prop_inner(self) -> InnerColor:
         """Gets Inner Color instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(DirectColor, self._get_style_inst("direct"))
+            self._direct_inner = cast(InnerColor, self._get_style_inst("direct"))
         return self._direct_inner

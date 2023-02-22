@@ -10,7 +10,7 @@ from ....writer.style.page.kind.style_page_kind import StylePageKind as StylePag
 from ..page_style_base_multi import PageStyleBaseMulti
 from .....utils.data_type.intensity import Intensity as Intensity
 
-from ....direct.fill.transparent.gradient import Gradient as DirectGradient
+from ....direct.fill.transparent.gradient import Gradient as InnerGradient
 
 
 class Gradient(PageStyleBaseMulti):
@@ -43,7 +43,7 @@ class Gradient(PageStyleBaseMulti):
             None:
         """
 
-        direct = DirectGradient(style=style, offset=offset, angle=angle, border=border, grad_intensity=grad_intensity)
+        direct = InnerGradient(style=style, offset=offset, angle=angle, border=border, grad_intensity=grad_intensity)
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
@@ -68,7 +68,7 @@ class Gradient(PageStyleBaseMulti):
             Gradient: ``Gradient`` instance from document properties.
         """
         inst = cls(style_name=style_name, style_family=style_family)
-        direct = DirectGradient.from_obj(inst.get_style_props(doc))
+        direct = InnerGradient.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -82,10 +82,17 @@ class Gradient(PageStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> DirectGradient:
-        """Gets Inner Transparency instance"""
+    def prop_inner(self) -> InnerGradient:
+        """Gets/Sets Inner Transparency instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(DirectGradient, self._get_style_inst("direct"))
+            self._direct_inner = cast(InnerGradient, self._get_style_inst("direct"))
         return self._direct_inner
+
+    @prop_inner.setter
+    def prop_inner(self, value: InnerGradient) -> None:
+        if not isinstance(value, InnerGradient):
+            raise TypeError(f'Expected type of InnerGradient, got "{type(value).__name__}"')
+        self._del_attribs("_direct_inner")
+        self._set_style("direct", value, *value.get_attrs())

@@ -4,7 +4,7 @@ import uno
 from .....utils.data_type.intensity import Intensity as Intensity
 from ....writer.style.para.kind import StyleParaKind as StyleParaKind
 from ..para_style_base_multi import ParaStyleBaseMulti
-from ....direct.fill.transparent.transparency import Transparency as DirectTransparency
+from ....direct.fill.transparent.transparency import Transparency as InnerTransparency
 
 
 class Transparency(ParaStyleBaseMulti):
@@ -33,7 +33,7 @@ class Transparency(ParaStyleBaseMulti):
             None:
         """
 
-        direct = DirectTransparency(value=value)
+        direct = InnerTransparency(value=value)
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
@@ -59,7 +59,7 @@ class Transparency(ParaStyleBaseMulti):
         """
         inst = super(Transparency, cls).__new__(cls)
         inst.__init__(style_name=style_name, style_family=style_family)
-        direct = DirectTransparency.from_obj(inst.get_style_props(doc))
+        direct = InnerTransparency.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -73,10 +73,17 @@ class Transparency(ParaStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> DirectTransparency:
-        """Gets Inner Transparency instance"""
+    def prop_inner(self) -> InnerTransparency:
+        """Gets/Sets Inner Transparency instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(DirectTransparency, self._get_style_inst("direct"))
+            self._direct_inner = cast(InnerTransparency, self._get_style_inst("direct"))
         return self._direct_inner
+
+    @prop_inner.setter
+    def prop_inner(self, value: InnerTransparency) -> None:
+        if not isinstance(value, InnerTransparency):
+            raise TypeError(f'Expected type of InnerTransparency, got "{type(value).__name__}"')
+        self._del_attribs("_direct_inner")
+        self._set_style("direct", value, *value.get_attrs())

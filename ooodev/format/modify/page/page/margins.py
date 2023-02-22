@@ -4,7 +4,7 @@ import uno
 from .....utils.data_type.intensity import Intensity as Intensity
 from ....writer.style.page.kind import StylePageKind as StylePageKind
 from ..page_style_base_multi import PageStyleBaseMulti
-from ....direct.page.page.margins import Margins as DirectMargins
+from ....direct.page.page.margins import Margins as InnerMargins
 
 
 class Margins(PageStyleBaseMulti):
@@ -41,7 +41,7 @@ class Margins(PageStyleBaseMulti):
             None:
         """
 
-        direct = DirectMargins(left=left, right=right, top=top, bottom=bottom, gutter=gutter)
+        direct = InnerMargins(left=left, right=right, top=top, bottom=bottom, gutter=gutter)
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
@@ -66,7 +66,7 @@ class Margins(PageStyleBaseMulti):
             Margins: ``Margins`` instance from document properties.
         """
         inst = cls(style_name=style_name, style_family=style_family)
-        direct = DirectMargins.from_obj(inst.get_style_props(doc))
+        direct = InnerMargins.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -80,10 +80,17 @@ class Margins(PageStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> DirectMargins:
-        """Gets Inner Margins instance"""
+    def prop_inner(self) -> InnerMargins:
+        """Gets/Sets Inner Margins instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(DirectMargins, self._get_style_inst("direct"))
+            self._direct_inner = cast(InnerMargins, self._get_style_inst("direct"))
         return self._direct_inner
+
+    @prop_inner.setter
+    def prop_inner(self, value: InnerMargins) -> None:
+        if not isinstance(value, InnerMargins):
+            raise TypeError(f'Expected type of InnerMargins, got "{type(value).__name__}"')
+        self._del_attribs("_direct_inner")
+        self._set_style("direct", value, *value.get_attrs())

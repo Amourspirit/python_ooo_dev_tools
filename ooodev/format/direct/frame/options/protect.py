@@ -73,7 +73,7 @@ class Protect(StyleBase):
             obj (object): UNO Object.
 
         Raises:
-            NotSupportedServiceError: If ``obj`` is not supported.
+            NotSupportedError: If ``obj`` is not supported.
 
         Returns:
             Protect: Instance that represents Frame Protection.
