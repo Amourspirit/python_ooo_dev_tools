@@ -125,9 +125,16 @@ class Color(PageStyleBaseMulti):
 
     @property
     def prop_inner(self) -> InnerColor:
-        """Gets Inner Color instance"""
+        """Gets/Sets Inner Color instance"""
         try:
             return self._direct_inner
         except AttributeError:
             self._direct_inner = cast(InnerColor, self._get_style_inst("direct"))
         return self._direct_inner
+
+    @prop_inner.setter
+    def prop_inner(self, value: InnerColor) -> None:
+        if not isinstance(value, InnerColor):
+            raise TypeError(f'Expected type of InnerColor, got "{type(value).__name__}"')
+        self._del_attribs("_direct_inner")
+        self._set_style("direct", value, *value.get_attrs())

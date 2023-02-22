@@ -10,9 +10,9 @@ from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 from .....utils.data_type.intensity import Intensity as Intensity
 from ....direct.char.font.font_position import (
-    FontPosition as FontPosition,
+    FontPosition as InnerFontPosition,
     FontScriptKind as FontScriptKind,
     CharSpacingKind as CharSpacingKind,
 )
-from ....direct.char.font.font_effects import FontEffects as FontEffects
+from ....direct.char.font.font_effects import FontEffects as InnerFontEffects
 from ....direct.char.font.font import Font as Font, CharSpacingKind as CharSpacingKind

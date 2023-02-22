@@ -4,7 +4,7 @@ import uno
 from ....writer.style.para.kind import StyleParaKind as StyleParaKind
 from ....writer.style.char.kind import StyleCharKind as StyleCharKind
 from ..para_style_base_multi import ParaStyleBaseMulti
-from ....direct.para.drop_cap.drop_caps import DropCaps as DirectDropCaps, DropCapFmt as DropCapFmt
+from ....direct.para.drop_cap.drop_caps import DropCaps as InnerDropCaps, DropCapFmt as DropCapFmt
 
 
 class DropCaps(ParaStyleBaseMulti):
@@ -41,7 +41,7 @@ class DropCaps(ParaStyleBaseMulti):
             None:
         """
 
-        direct = DirectDropCaps(count=count, spaces=spaces, lines=lines, style=style, whole_word=whole_word)
+        direct = InnerDropCaps(count=count, spaces=spaces, lines=lines, style=style, whole_word=whole_word)
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
@@ -66,7 +66,7 @@ class DropCaps(ParaStyleBaseMulti):
             DropCaps: ``DropCaps`` instance from document properties.
         """
         inst = cls(style_name=style_name, style_family=style_family)
-        direct = DirectDropCaps.from_obj(inst.get_style_props(doc))
+        direct = InnerDropCaps.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -80,10 +80,17 @@ class DropCaps(ParaStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> DirectDropCaps:
-        """Gets Inner Drop Caps instance"""
+    def prop_inner(self) -> InnerDropCaps:
+        """Gets/Sets Inner Drop Caps instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(DirectDropCaps, self._get_style_inst("direct"))
+            self._direct_inner = cast(InnerDropCaps, self._get_style_inst("direct"))
         return self._direct_inner
+
+    @prop_inner.setter
+    def prop_inner(self, value: InnerDropCaps) -> None:
+        if not isinstance(value, InnerDropCaps):
+            raise TypeError(f'Expected type of InnerDropCaps, got "{type(value).__name__}"')
+        self._del_attribs("_direct_inner")
+        self._set_style("direct", value, *value.get_attrs())

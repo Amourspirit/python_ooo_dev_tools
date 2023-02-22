@@ -217,7 +217,7 @@ class Properties(StyleMulti):
             obj (object): UNO Object.
 
         Raises:
-            NotSupportedServiceError: If ``obj`` is not supported.
+            NotSupportedError: If ``obj`` is not supported.
 
         Returns:
             Properties: Instance that represents Frame Option Properties.

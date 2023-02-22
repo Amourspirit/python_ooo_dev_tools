@@ -7,7 +7,7 @@ from ....kind.format_kind import FormatKind
 from ....direct.common.abstract.abstract_line_number import AbstractLineNumber, LineNumeProps
 
 
-class DirectLineNum(AbstractLineNumber):
+class InnerLineNum(AbstractLineNumber):
     @property
     def _props(self) -> LineNumeProps:
         try:
@@ -57,7 +57,7 @@ class LineNum(ParaStyleBaseMulti):
             None:
         """
 
-        direct = DirectLineNum(num_start=num_start)
+        direct = InnerLineNum(num_start=num_start)
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
@@ -82,7 +82,7 @@ class LineNum(ParaStyleBaseMulti):
             LineNum: ``LineNum`` instance from document properties.
         """
         inst = cls(style_name=style_name, style_family=style_family)
-        direct = DirectLineNum.from_obj(inst.get_style_props(doc))
+        direct = InnerLineNum.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -96,10 +96,17 @@ class LineNum(ParaStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> DirectLineNum:
-        """Gets Inner Line Number instance"""
+    def prop_inner(self) -> InnerLineNum:
+        """Gets/Sets Inner Line Number instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(DirectLineNum, self._get_style_inst("direct"))
+            self._direct_inner = cast(InnerLineNum, self._get_style_inst("direct"))
         return self._direct_inner
+
+    @prop_inner.setter
+    def prop_inner(self, value: InnerLineNum) -> None:
+        if not isinstance(value, InnerLineNum):
+            raise TypeError(f'Expected type of InnerLineNum, got "{type(value).__name__}"')
+        self._del_attribs("_direct_inner")
+        self._set_style("direct", value, *value.get_attrs())

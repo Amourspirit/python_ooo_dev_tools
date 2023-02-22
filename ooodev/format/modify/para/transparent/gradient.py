@@ -7,7 +7,7 @@ from .....utils.data_type.intensity_range import IntensityRange as IntensityRang
 from .....utils.data_type.offset import Offset as Offset
 from ....writer.style.para.kind import StyleParaKind as StyleParaKind
 from ..para_style_base_multi import ParaStyleBaseMulti
-from ....direct.fill.transparent.gradient import Gradient as DirectGradient
+from ....direct.fill.transparent.gradient import Gradient as InnerGradient
 
 
 from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
@@ -44,7 +44,7 @@ class Gradient(ParaStyleBaseMulti):
             None:
         """
 
-        direct = DirectGradient(
+        direct = InnerGradient(
             style=style, offset=offset, angle=angle, border=border, grad_intensity=grad_intensity, kwargs=kwargs
         )
         super().__init__()
@@ -72,7 +72,7 @@ class Gradient(ParaStyleBaseMulti):
         """
         inst = super(Gradient, cls).__new__(cls)
         inst.__init__(style_name=style_name, style_family=style_family)
-        direct = DirectGradient.from_obj(inst.get_style_props(doc))
+        direct = InnerGradient.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -86,10 +86,17 @@ class Gradient(ParaStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> DirectGradient:
-        """Gets Inner Gradient instance"""
+    def prop_inner(self) -> InnerGradient:
+        """Gets/Sets Inner Gradient instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(DirectGradient, self._get_style_inst("direct"))
+            self._direct_inner = cast(InnerGradient, self._get_style_inst("direct"))
         return self._direct_inner
+
+    @prop_inner.setter
+    def prop_inner(self, value: InnerGradient) -> None:
+        if not isinstance(value, InnerGradient):
+            raise TypeError(f'Expected type of InnerGradient, got "{type(value).__name__}"')
+        self._del_attribs("_direct_inner")
+        self._set_style("direct", value, *value.get_attrs())

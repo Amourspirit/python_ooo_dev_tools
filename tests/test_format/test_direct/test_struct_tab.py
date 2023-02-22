@@ -7,7 +7,7 @@ if __name__ == "__main__":
 
 import uno
 from ooodev.format.direct.structs.tab_stop_struct import TabStopStruct, TabAlign, FillCharKind
-from ooodev.format.direct.para.tabs import Tabs
+from ooodev.format.direct.para.tabs import InnerTabs
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
@@ -63,7 +63,7 @@ def test_write(loader, para_text) -> None:
         p_len = len(txt)
 
         pos = 8.0
-        Write.append_para(cursor=cursor, text=txt, styles=(Tabs(position=pos, fill_char="^"),))
+        Write.append_para(cursor=cursor, text=txt, styles=(InnerTabs(position=pos, fill_char="^"),))
 
         cursor.goLeft(1, False)
         cursor.gotoStart(True)
@@ -83,7 +83,7 @@ def test_write(loader, para_text) -> None:
         cursor.gotoEnd(False)
 
         pos = 0.0
-        tb = Tabs()
+        tb = InnerTabs()
         Write.append_para(cursor=cursor, text="\t" + para_text, styles=(tb,))
 
         cursor.goLeft(p_len + 1, False)
@@ -102,7 +102,7 @@ def test_write(loader, para_text) -> None:
         cursor.gotoEnd(False)
 
         pos = 14.5
-        tb = Tabs(position=pos, align=TabAlign.DECIMAL, decimal_char=",")
+        tb = InnerTabs(position=pos, align=TabAlign.DECIMAL, decimal_char=",")
         Write.append_para(cursor=cursor, text="\t" + para_text, styles=(tb,))
 
         cursor.goLeft(p_len + 1, False)
@@ -122,7 +122,7 @@ def test_write(loader, para_text) -> None:
 
         # update existing tabstop (based on position)
         pos = 14.5
-        tb = Tabs(position=pos, align=TabAlign.RIGHT, fill_char="@")
+        tb = InnerTabs(position=pos, align=TabAlign.RIGHT, fill_char="@")
         Write.append_para(cursor=cursor, text="\t" + para_text, styles=(tb,))
 
         cursor.goLeft(p_len + 1, False)

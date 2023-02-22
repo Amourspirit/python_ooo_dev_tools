@@ -7,7 +7,7 @@ from ..char_style_base_multi import CharStyleBaseMulti
 from .....utils.data_type.intensity import Intensity as Intensity
 from .....utils.data_type.angle import Angle as Angle
 from ....direct.char.font.font_position import (
-    FontPosition as DirectFontPosition,
+    FontPosition as InnerFontPosition,
     CharSpacingKind as CharSpacingKind,
     FontScriptKind as FontScriptKind,
 )
@@ -53,7 +53,7 @@ class FontPosition(CharStyleBaseMulti):
             None:
         """
 
-        direct = DirectFontPosition(
+        direct = InnerFontPosition(
             script_kind=script_kind,
             raise_lower=raise_lower,
             rel_size=rel_size,
@@ -86,7 +86,7 @@ class FontPosition(CharStyleBaseMulti):
             FontPosition: ``FontPosition`` instance from document properties.
         """
         inst = cls(style_name=style_name, style_family=style_family)
-        direct = DirectFontPosition.from_obj(inst.get_style_props(doc))
+        direct = InnerFontPosition.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -100,10 +100,17 @@ class FontPosition(CharStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> DirectFontPosition:
-        """Gets Inner Font Postiion instance"""
+    def prop_inner(self) -> InnerFontPosition:
+        """Gets/Sets Inner Font Postiion instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(DirectFontPosition, self._get_style_inst("direct"))
+            self._direct_inner = cast(InnerFontPosition, self._get_style_inst("direct"))
         return self._direct_inner
+
+    @prop_inner.setter
+    def prop_inner(self, value: InnerFontPosition) -> None:
+        if not isinstance(value, InnerFontPosition):
+            raise TypeError(f'Expected type of InnerFontPosition, got "{type(value).__name__}"')
+        self._del_attribs("_direct_inner")
+        self._set_style("direct", value, *value.get_attrs())

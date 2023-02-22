@@ -5,7 +5,7 @@ from .....utils import color as mColor
 from ....writer.style.page.kind.style_page_kind import StylePageKind as StylePageKind
 from ..page_style_base_multi import PageStyleBaseMulti
 
-from ....direct.para.area.color import Color as DirectColor
+from ....direct.para.area.color import Color as InnerColor
 
 
 class Color(PageStyleBaseMulti):
@@ -34,7 +34,7 @@ class Color(PageStyleBaseMulti):
             None:
         """
 
-        direct = DirectColor(color=color)
+        direct = InnerColor(color=color)
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
@@ -59,7 +59,7 @@ class Color(PageStyleBaseMulti):
             Color: ``Color`` instance from document properties.
         """
         inst = cls(style_name=style_name, style_family=style_family)
-        direct = DirectColor.from_obj(inst.get_style_props(doc))
+        direct = InnerColor.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -73,10 +73,17 @@ class Color(PageStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> DirectColor:
-        """Gets Inner Color instance"""
+    def prop_inner(self) -> InnerColor:
+        """Gets/Sets Inner Color instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(DirectColor, self._get_style_inst("direct"))
+            self._direct_inner = cast(InnerColor, self._get_style_inst("direct"))
         return self._direct_inner
+
+    @prop_inner.setter
+    def prop_inner(self, value: InnerColor) -> None:
+        if not isinstance(value, InnerColor):
+            raise TypeError(f'Expected type of InnerColor, got "{type(value).__name__}"')
+        self._del_attribs("_direct_inner")
+        self._set_style("direct", value, *value.get_attrs())

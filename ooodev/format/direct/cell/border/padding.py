@@ -87,7 +87,7 @@ class Padding(AbstractPadding):
         try:
             return Padding._DEFAULT_INST
         except AttributeError:
-            Padding._DEFAULT_INST = Padding(padding_all=0.35)
+            Padding._DEFAULT_INST = Padding(all=0.35)
             Padding._DEFAULT_INST._is_default_inst = True
         return Padding._DEFAULT_INST
 

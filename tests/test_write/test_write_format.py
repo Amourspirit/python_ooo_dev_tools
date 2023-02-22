@@ -9,7 +9,7 @@ if __name__ == "__main__":
 from ooodev.utils.lo import Lo
 from ooodev.utils.gui import GUI
 from ooodev.office.write import Write
-from ooodev.format.writer.direct.char.highlight import Highlight
+from ooodev.format.writer.direct.char.highlight import InnerHighlight
 from ooodev.format import CommonColor
 
 if TYPE_CHECKING:
@@ -32,7 +32,7 @@ def test_format(loader, run_headless) -> None:
             GUI.zoom(GUI.ZoomEnum.ZOOM_200_PERCENT)
 
         cursor = Write.get_cursor(doc)
-        hl = Highlight(CommonColor.YELLOW_GREEN)
+        hl = InnerHighlight(CommonColor.YELLOW_GREEN)
         Write.append(cursor=cursor, text="Highlighting starts ")
         pos = Write.get_position(cursor)
         Write.append_para(cursor=cursor, text="here.")
@@ -45,7 +45,7 @@ def test_format(loader, run_headless) -> None:
         cursor.gotoEnd(False)
 
         Lo.delay(delay)
-        Write.style(pos=pos, length=4, styles=(Highlight.empty,))
+        Write.style(pos=pos, length=4, styles=(InnerHighlight.empty,))
         cursor.gotoStart(False)
         cursor.goRight(pos, False)
         cursor.goRight(4, True)
@@ -97,7 +97,7 @@ def test_format_left(loader, run_headless) -> None:
 
         cursor = Write.get_cursor(doc)
         cp = cast("CharacterProperties", cursor)
-        hl = Highlight(CommonColor.YELLOW_GREEN)
+        hl = InnerHighlight(CommonColor.YELLOW_GREEN)
         Write.append(cursor=cursor, text="Highlighting starts ")
         pos = Write.get_position(cursor)  # 20
         # pos = 20

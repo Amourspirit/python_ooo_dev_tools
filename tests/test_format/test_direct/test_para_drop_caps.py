@@ -6,7 +6,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.writer.direct.para.drop_caps import DropCaps, StyleCharKind
+from ooodev.format.writer.direct.para.drop_caps import InnerDropCaps, StyleCharKind
 from ooodev.format.direct.structs.drop_cap_struct import DropCapStruct
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
@@ -30,7 +30,7 @@ def test_write(loader, para_text) -> None:
     try:
         cursor = Write.get_cursor(doc)
 
-        dc = DropCaps(count=1)
+        dc = InnerDropCaps(count=1)
         Write.append_para(cursor=cursor, text=para_text, styles=(dc,))
         cursor_p = Write.get_paragraph_cursor(cursor)
         cursor_p.gotoEnd(False)
@@ -42,7 +42,7 @@ def test_write(loader, para_text) -> None:
         assert inner_dc == pp.DropCapFormat
         cursor_p.gotoEnd(False)
 
-        dc = DropCaps(count=1, style=StyleCharKind.DROP_CAPS)
+        dc = InnerDropCaps(count=1, style=StyleCharKind.DROP_CAPS)
         Write.append_para(cursor=cursor, text=para_text, styles=(dc,))
         cursor_p.gotoEnd(False)
         cursor_p.gotoPreviousParagraph(True)
@@ -53,7 +53,7 @@ def test_write(loader, para_text) -> None:
         assert inner_dc == pp.DropCapFormat
         cursor_p.gotoEnd(False)
 
-        dc = DropCaps(count=5, lines=5, style=StyleCharKind.DROP_CAPS)
+        dc = InnerDropCaps(count=5, lines=5, style=StyleCharKind.DROP_CAPS)
         Write.append_para(cursor=cursor, text=para_text, styles=(dc,))
         cursor_p.gotoEnd(False)
         cursor_p.gotoPreviousParagraph(True)
@@ -64,7 +64,7 @@ def test_write(loader, para_text) -> None:
         assert inner_dc == pp.DropCapFormat
         cursor_p.gotoEnd(False)
 
-        dc = DropCaps(count=3, whole_word=True)
+        dc = InnerDropCaps(count=3, whole_word=True)
         Write.append_para(cursor=cursor, text=para_text, styles=(dc,))
         cursor_p.gotoEnd(False)
         cursor_p.gotoPreviousParagraph(True)
@@ -76,7 +76,7 @@ def test_write(loader, para_text) -> None:
         cursor_p.gotoEnd(False)
 
         # set drop cap on cursor
-        dc = DropCaps(count=3, whole_word=True, style=StyleCharKind.DROP_CAPS)
+        dc = InnerDropCaps(count=3, whole_word=True, style=StyleCharKind.DROP_CAPS)
         dc.apply(cursor_p.TextParagraph)
         for _ in range(2):
             Write.append_para(cursor=cursor, text=para_text)
@@ -89,7 +89,7 @@ def test_write(loader, para_text) -> None:
             assert inner_dc == pp.DropCapFormat
             cursor_p.gotoEnd(False)
 
-        DropCaps.default.apply(cursor_p.TextParagraph)
+        InnerDropCaps.default.apply(cursor_p.TextParagraph)
         pp = cast("ParagraphProperties", cursor_p.TextParagraph)
         assert pp.DropCapCharStyleName == ""
         assert pp.DropCapWholeWord == False

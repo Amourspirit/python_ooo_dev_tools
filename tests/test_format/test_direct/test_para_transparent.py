@@ -6,7 +6,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.writer.direct.para.transparency import Transparency
+from ooodev.format.writer.direct.para.transparency import InnerTransparency
 from ooodev.format.direct.para.area.color import Color
 from ooodev.format.writer.style.para import Para
 from ooodev.format import StandardColor
@@ -36,7 +36,7 @@ def test_write(loader, para_text) -> None:
         cursor_p.gotoEnd(False)
 
         dc = Color(StandardColor.LIME)
-        tp = Transparency(52)
+        tp = InnerTransparency(52)
         Write.append_para(cursor=cursor, text=para_text, styles=(dc, tp))
         Para.default.apply(cursor)
         cursor_p.gotoEnd(False)

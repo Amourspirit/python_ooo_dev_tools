@@ -6,7 +6,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.writer.direct.para.tabs import Tabs, TabAlign, FillCharKind
+from ooodev.format.writer.direct.para.tabs import InnerTabs, TabAlign, FillCharKind
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
@@ -32,24 +32,24 @@ def test_write(loader, para_text) -> None:
         p_len = len(txt)
 
         pos = 8.0
-        Write.append_para(cursor=cursor, text=txt, styles=(Tabs(position=pos, fill_char="^"),))
+        Write.append_para(cursor=cursor, text=txt, styles=(InnerTabs(position=pos, fill_char="^"),))
 
         cursor.goLeft(1, False)
         cursor.gotoStart(True)
 
         pp = cast("ParagraphProperties", cursor)
-        tb = Tabs.find(cursor, pos)
+        tb = InnerTabs.find(cursor, pos)
         assert tb is not None
         assert tb.prop_fill_char == "^"
         cursor.gotoEnd(False)
 
         pos = 14.5
-        tb = Tabs(position=pos, align=TabAlign.DECIMAL, decimal_char=",")
+        tb = InnerTabs(position=pos, align=TabAlign.DECIMAL, decimal_char=",")
         Write.append_para(cursor=cursor, text=txt, styles=(tb,))
 
         cursor.goLeft(p_len + 1, False)
         cursor.goRight(p_len, True)
-        tb = Tabs.find(cursor, pos)
+        tb = InnerTabs.find(cursor, pos)
         ts_len = len(pp.ParaTabStops)
         assert tb is not None
         assert tb.prop_decimal_char == ","
@@ -57,27 +57,27 @@ def test_write(loader, para_text) -> None:
 
         # update existing tabstop (based on position)
         pos = 14.5
-        tb = Tabs.find(cursor, pos)
+        tb = InnerTabs.find(cursor, pos)
         assert tb is not None
         tb.prop_fill_char = FillCharKind.UNDER_SCORE
         tb.prop_align = TabAlign.RIGHT
         tb.apply(cursor)
         assert len(pp.ParaTabStops) == ts_len
-        tb = Tabs.find(cursor, pos)
+        tb = InnerTabs.find(cursor, pos)
         assert tb is not None
         assert tb.prop_fill_char == str(FillCharKind.UNDER_SCORE)
         assert tb.prop_align == TabAlign.RIGHT
 
         # remove tabstop
-        result = Tabs.remove(cursor, tb)
+        result = InnerTabs.remove(cursor, tb)
         assert result
         assert len(pp.ParaTabStops) == ts_len - 1
         ts_len = len(pp.ParaTabStops)
         cursor.gotoEnd(False)
 
         # remove all tabs
-        Tabs.remove_all(cursor)
-        tb = Tabs.from_obj(cursor, 0)
+        InnerTabs.remove_all(cursor)
+        tb = InnerTabs.from_obj(cursor, 0)
         assert tb is not None
         assert len(pp.ParaTabStops) == 1
         Write.append_para(cursor=cursor, text=para_text)

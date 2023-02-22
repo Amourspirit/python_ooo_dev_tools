@@ -7,7 +7,7 @@ if __name__ == "__main__":
 
 import uno
 from ooodev.format.preset import preset_gradient as mPreset
-from ooodev.format.writer.direct.para.area import Gradient, PresetGradientKind
+from ooodev.format.writer.direct.para.area import InnerGradient, PresetGradientKind
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
@@ -51,25 +51,25 @@ def test_write_presets(loader, para_text) -> None:
             PresetGradientKind.MAHOGANY,
         )
         for preset in presets:
-            pg = Gradient.from_preset(preset)
+            pg = InnerGradient.from_preset(preset)
             Write.append_para(cursor=cursor, text=para_text, styles=(pg,))
             cursor_p.gotoEnd(False)
             cursor_p.gotoPreviousParagraph(True)
             fp = cast("FillProperties", cursor_p.TextParagraph)
-            pg_obj = Gradient.from_obj(fp)
+            pg_obj = InnerGradient.from_obj(fp)
             assert pg_obj == pg
             cursor_p.gotoEnd(False)
 
         # test applying directly to cursor.
         cursor_p.gotoEnd(False)
         fp = cast("FillProperties", cursor_p.TextParagraph)
-        pg = Gradient.from_preset(PresetGradientKind.DEEP_OCEAN)
+        pg = InnerGradient.from_preset(PresetGradientKind.DEEP_OCEAN)
         pg.apply(fp)
         for _ in range(3):
             Write.append_para(cursor=cursor, text=para_text)
         cursor_p.gotoEnd(False)
         fp = cast("FillProperties", cursor_p.TextParagraph)
-        pg_obj = Gradient.from_obj(fp)
+        pg_obj = InnerGradient.from_obj(fp)
         assert pg_obj == pg
 
         Lo.delay(delay)
@@ -93,12 +93,12 @@ def test_write(loader, para_text) -> None:
         cursor = Write.get_cursor(doc)
         cursor_p = Write.get_paragraph_cursor(cursor)
 
-        pg = Gradient(**preset)
+        pg = InnerGradient(**preset)
         Write.append_para(cursor=cursor, text=para_text, styles=(pg,))
         cursor_p.gotoEnd(False)
         cursor_p.gotoPreviousParagraph(True)
         fp = cast("FillProperties", cursor_p.TextParagraph)
-        pg_obj = Gradient.from_obj(fp)
+        pg_obj = InnerGradient.from_obj(fp)
         assert pg_obj == pg
         cursor_p.gotoEnd(False)
 

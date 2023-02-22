@@ -12,7 +12,7 @@ from ....preset import preset_hatch
 from ....preset.preset_hatch import PresetHatchKind as PresetHatchKind
 from ..para_style_base_multi import ParaStyleBaseMulti
 
-from ....direct.para.area.hatch import Hatch as DirectHatch
+from ....direct.para.area.hatch import Hatch as InnerHatch
 
 # from ....direct.fill.area.hatch import Hatch as DirectHatch
 
@@ -59,7 +59,7 @@ class Hatch(ParaStyleBaseMulti):
             None:
         """
 
-        direct = DirectHatch(
+        direct = InnerHatch(
             style=style, color=color, space=space, angle=angle, bg_color=bg_color, name=name, auto_name=auto_name
         )
         super().__init__()
@@ -107,7 +107,7 @@ class Hatch(ParaStyleBaseMulti):
             Alignment: ``Alignment`` instance from document properties.
         """
         inst = cls(style_name=style_name, style_family=style_family)
-        direct = DirectHatch.from_obj(inst.get_style_props(doc))
+        direct = InnerHatch.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -121,10 +121,17 @@ class Hatch(ParaStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> DirectHatch:
-        """Gets Inner Hatch instance"""
+    def prop_inner(self) -> InnerHatch:
+        """Gets/Sets Inner Hatch instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(DirectHatch, self._get_style_inst("direct"))
+            self._direct_inner = cast(InnerHatch, self._get_style_inst("direct"))
         return self._direct_inner
+
+    @prop_inner.setter
+    def prop_inner(self, value: InnerHatch) -> None:
+        if not isinstance(value, InnerHatch):
+            raise TypeError(f'Expected type of InnerHatch, got "{type(value).__name__}"')
+        self._del_attribs("_direct_inner")
+        self._set_style("direct", value, *value.get_attrs())

@@ -6,7 +6,7 @@ from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 from .....utils.color import StandardColor, Color
 from ....writer.style.page.kind.style_page_kind import StylePageKind as StylePageKind
 from ..page_style_base_multi import PageStyleBaseMulti
-from ....direct.structs.shadow_struct import ShadowStruct
+from ....direct.structs.shadow_struct import ShadowStruct as InnerShadow
 
 # from ....direct.para.border.shadow import Shadow as DirectShadow
 
@@ -43,7 +43,7 @@ class Shadow(PageStyleBaseMulti):
             None:
         """
         cattribs = {"_property_name": "ShadowFormat", "_supported_services_values": self._supported_services()}
-        direct = ShadowStruct(location=location, color=color, transparent=transparent, width=width, _cattribs=cattribs)
+        direct = InnerShadow(location=location, color=color, transparent=transparent, width=width, _cattribs=cattribs)
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
@@ -69,7 +69,7 @@ class Shadow(PageStyleBaseMulti):
         """
         inst = cls(style_name=style_name, style_family=style_family)
         cattribs = {"_property_name": "ShadowFormat", "_supported_services_values": inst._supported_services()}
-        direct = ShadowStruct.from_obj(inst.get_style_props(doc), _cattribs=cattribs)
+        direct = InnerShadow.from_obj(inst.get_style_props(doc), _cattribs=cattribs)
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -83,10 +83,17 @@ class Shadow(PageStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> ShadowStruct:
-        """Gets Inner Shadow instance"""
+    def prop_inner(self) -> InnerShadow:
+        """Gets/Sets Inner Shadow instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(ShadowStruct, self._get_style_inst("direct"))
+            self._direct_inner = cast(InnerShadow, self._get_style_inst("direct"))
         return self._direct_inner
+
+    @prop_inner.setter
+    def prop_inner(self, value: InnerShadow) -> None:
+        if not isinstance(value, InnerShadow):
+            raise TypeError(f'Expected type of InnerShadow, got "{type(value).__name__}"')
+        self._del_attribs("_direct_inner")
+        self._set_style("direct", value, *value.get_attrs())

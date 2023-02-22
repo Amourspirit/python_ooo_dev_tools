@@ -3,7 +3,7 @@ from typing import cast
 import uno
 from ....writer.style.para.kind import StyleParaKind as StyleParaKind
 from ..para_style_base_multi import ParaStyleBaseMulti
-from ....direct.para.border.shadow import Shadow as DirectShadow
+from ....direct.para.border.shadow import Shadow as InnerShadow
 from .....utils.color import StandardColor, Color
 
 from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
@@ -42,7 +42,7 @@ class Shadow(ParaStyleBaseMulti):
             None:
         """
 
-        direct = DirectShadow(location=location, color=color, transparent=transparent, width=width)
+        direct = InnerShadow(location=location, color=color, transparent=transparent, width=width)
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
@@ -67,7 +67,7 @@ class Shadow(ParaStyleBaseMulti):
             Shadow: ``Shadow`` instance from document properties.
         """
         inst = cls(style_name=style_name, style_family=style_family)
-        direct = DirectShadow.from_obj(inst.get_style_props(doc))
+        direct = InnerShadow.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -81,10 +81,17 @@ class Shadow(ParaStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> DirectShadow:
-        """Gets Inner Shadow instance"""
+    def prop_inner(self) -> InnerShadow:
+        """Gets/Sets Inner Shadow instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(DirectShadow, self._get_style_inst("direct"))
+            self._direct_inner = cast(InnerShadow, self._get_style_inst("direct"))
         return self._direct_inner
+
+    @prop_inner.setter
+    def prop_inner(self, value: InnerShadow) -> None:
+        if not isinstance(value, InnerShadow):
+            raise TypeError(f'Expected type of InnerShadow, got "{type(value).__name__}"')
+        self._del_attribs("_direct_inner")
+        self._set_style("direct", value, *value.get_attrs())

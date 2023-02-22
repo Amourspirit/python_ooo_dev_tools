@@ -4,7 +4,7 @@ Modele for managing paragraph padding.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, cast, overload, Type, TypeVar
+from typing import Any, Tuple, cast, overload, Type, TypeVar
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....utils import props as mProps
@@ -19,7 +19,7 @@ _TAbstractPadding = TypeVar(name="_TAbstractPadding", bound="AbstractPadding")
 
 class AbstractPadding(StyleBase):
     """
-    Paragraph Padding
+    Abstract Padding
 
     Any properties starting with ``prop_`` set or get current instance values.
 
@@ -37,17 +37,17 @@ class AbstractPadding(StyleBase):
         right: float | None = None,
         top: float | None = None,
         bottom: float | None = None,
-        padding_all: float | None = None,
+        all: float | None = None,
     ) -> None:
         """
         Constructor
 
         Args:
-            left (float, optional): Paragraph left padding (in mm units).
-            right (float, optional): Paragraph right padding (in mm units).
-            top (float, optional): Paragraph top padding (in mm units).
-            bottom (float, optional): Paragraph bottom padding (in mm units).
-            padding_all (float, optional): Paragraph left, right, top, bottom padding (in mm units). If argument is present then ``left``, ``right``, ``top``, and ``bottom`` arguments are ignored.
+            left (float, optional): Left (in mm units).
+            right (float, optional): Right (in mm units).
+            top (float, optional): Top (in mm units).
+            bottom (float, optional): Bottom (in mm units).
+            all (float, optional): Left, right, top, bottom (in mm units). If argument is present then ``left``, ``right``, ``top``, and ``bottom`` arguments are ignored.
 
         Raises:
             ValueError: If any argument value is less than zero.
@@ -61,7 +61,7 @@ class AbstractPadding(StyleBase):
         def validate(val: float | None) -> None:
             if val is not None:
                 if val < 0.0:
-                    raise ValueError("padding values must be positive values")
+                    raise ValueError("Values must be positive values")
 
         def set_val(key, value) -> None:
             nonlocal init_vals
@@ -72,13 +72,13 @@ class AbstractPadding(StyleBase):
         validate(right)
         validate(top)
         validate(bottom)
-        validate(padding_all)
-        if padding_all is None:
+        validate(all)
+        if all is None:
             for key, value in zip(self._props, (left, top, right, bottom)):
                 set_val(key, value)
         else:
             for key in self._props:
-                set_val(key, padding_all)
+                set_val(key, all)
 
         super().__init__(**init_vals)
 
@@ -113,13 +113,15 @@ class AbstractPadding(StyleBase):
         Returns:
             None:
         """
+        super().apply(obj, **kwargs)
+
+    def _props_set(self, obj: object, **kwargs: Any) -> None:
         try:
-            super().apply(obj, **kwargs)
+            return super()._props_set(obj, **kwargs)
         except mEx.MultiError as e:
             mLo.Lo.print(f"{self.__class__.__name__}.apply(): Unable to set Property")
             for err in e.errors:
                 mLo.Lo.print(f"  {err}")
-        return None
 
     # endregion apply()
 
@@ -319,11 +321,11 @@ class AbstractPadding(StyleBase):
     @property
     def _props(self) -> BorderProps:
         try:
-            return self.__border_properties
+            return self._props_internal_attributes
         except AttributeError:
-            self.__border_properties = BorderProps(
+            self._props_internal_attributes = BorderProps(
                 left="ParaLeftMargin", top="ParaTopMargin", right="ParaRightMargin", bottom="ParaBottomMargin"
             )
-        return self.__border_properties
+        return self._props_internal_attributes
 
     # endregion properties

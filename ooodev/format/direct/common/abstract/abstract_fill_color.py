@@ -8,7 +8,6 @@ from typing import Any, overload, Type, TypeVar
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....events.format_named_event import FormatNamedEvent as FormatNamedEvent
-from .....events.event_singleton import _Events
 from .....utils import lo as mLo
 from .....utils import props as mProps
 from .....exceptions import ex as mEx
@@ -44,13 +43,6 @@ class AbstractColor(StyleBase):
         Returns:
             None:
         """
-        cargs = CancelEventArgs(source=self)
-        _Events().trigger(FormatNamedEvent.STYLE_INITIALIZING, cargs)
-        if cargs.cancel:
-            if not cargs.handled:
-                raise mEx.CancelEventError(
-                    event_args=cargs, message=f"Cancel Event as been called in {self.__class__.__name__}"
-                )
         init_vals = {}
         if color >= 0:
             init_vals[self._props.color] = color

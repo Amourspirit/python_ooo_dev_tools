@@ -1,2 +1,2 @@
 import uno
-from .....direct.char.highlight.highlight import Highlight as Highlight
+from .....direct.char.highlight.highlight import Highlight as InnerHighlight

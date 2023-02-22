@@ -3,7 +3,7 @@ from typing import cast
 import uno
 from ....writer.style.char.kind.style_char_kind import StyleCharKind as StyleCharKind
 from ..char_style_base_multi import CharStyleBaseMulti
-from ....direct.char.font.font_effects import FontEffects as DirectFontEffects
+from ....direct.char.font.font_effects import FontEffects as InnerFontEffects
 from .....utils.data_type.intensity import Intensity as Intensity
 from .....utils.color import Color
 
@@ -66,7 +66,7 @@ class FontEffects(CharStyleBaseMulti):
             None:
         """
 
-        direct = DirectFontEffects(
+        direct = InnerFontEffects(
             color=color,
             transparency=transparency,
             overline=overline,
@@ -105,7 +105,7 @@ class FontEffects(CharStyleBaseMulti):
             FontEffects: ``FontEffects`` instance from document properties.
         """
         inst = cls(style_name=style_name, style_family=style_family)
-        direct = DirectFontEffects.from_obj(inst.get_style_props(doc))
+        direct = InnerFontEffects.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -119,10 +119,17 @@ class FontEffects(CharStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> DirectFontEffects:
-        """Gets Inner Font Effects instance"""
+    def prop_inner(self) -> InnerFontEffects:
+        """Gets/Sets Inner Font Effects instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(DirectFontEffects, self._get_style_inst("direct"))
+            self._direct_inner = cast(InnerFontEffects, self._get_style_inst("direct"))
         return self._direct_inner
+
+    @prop_inner.setter
+    def prop_inner(self, value: InnerFontEffects) -> None:
+        if not isinstance(value, InnerFontEffects):
+            raise TypeError(f'Expected type of InnerFontEffects, got "{type(value).__name__}"')
+        self._del_attribs("_direct_inner")
+        self._set_style("direct", value, *value.get_attrs())

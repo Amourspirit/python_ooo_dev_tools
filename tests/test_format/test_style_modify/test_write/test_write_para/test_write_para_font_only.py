@@ -6,7 +6,7 @@ if __name__ == "__main__":
 
 import uno
 from ooodev.format.writer.modify.para.font import FontOnly, FontLang, StyleParaKind
-from ooodev.format.writer.direct.char.font import FontOnly as DirectFontOnly
+from ooodev.format.writer.direct.char.font import InnerFontOnly as DirectFontOnly
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write

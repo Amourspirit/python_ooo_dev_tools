@@ -11,7 +11,7 @@ from .....meta.static_prop import static_prop
 from ....style_base import StyleMulti
 from .....exceptions import ex as mEx
 from ....kind.format_kind import FormatKind
-from .outline import Outline as Outline, LevelKind as LevelKind
+from .outline import Outline as InnerOutline, LevelKind as LevelKind
 from .list_style import ListStyle as ParaListStyle, StyleListKind as StyleListKind
 from .line_num import LineNum as LineNum
 
@@ -63,7 +63,7 @@ class OutlineList(StyleMulti):
 
         super().__init__()
         if not ol_level is None:
-            ol = Outline(level=ol_level)
+            ol = InnerOutline(level=ol_level)
             self._set_style("outline", ol, *ol.get_attrs())
 
         ls = ParaListStyle(list_style=ls_style, num_start=ls_num)
@@ -119,7 +119,7 @@ class OutlineList(StyleMulti):
         inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
-        ol = Outline.from_obj(obj)
+        ol = InnerOutline.from_obj(obj)
         if ol.prop_has_attribs:
             inst._set_style("outline", ol, *ol.get_attrs())
         ls = ParaListStyle.from_obj(obj)
@@ -145,12 +145,12 @@ class OutlineList(StyleMulti):
         return self._format_kind_prop
 
     @property
-    def prop_inner_outline(self) -> Outline | None:
+    def prop_inner_outline(self) -> InnerOutline | None:
         """Gets Outline instance"""
         try:
             return self._direct_inner_outline
         except AttributeError:
-            self._direct_inner_outline = cast(Outline, self._get_style_inst("outline"))
+            self._direct_inner_outline = cast(InnerOutline, self._get_style_inst("outline"))
         return self._direct_inner_outline
 
     @property
@@ -178,7 +178,7 @@ class OutlineList(StyleMulti):
             return OutlineList._DEFAULT_INST
         except AttributeError:
             inst = OutlineList()
-            inst._set_style("outline", Outline.default, *Outline.default.get_attrs())
+            inst._set_style("outline", InnerOutline.default, *InnerOutline.default.get_attrs())
             inst._set_style("list_style", ParaListStyle.default, *ParaListStyle.default.get_attrs())
             inst._set_style("line_num", LineNum.default, *LineNum.default.get_attrs())
             inst._is_default_inst = True

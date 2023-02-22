@@ -1,15 +1,10 @@
-"""
-Module for Fill Transparency.
-
-.. versionadded:: 0.9.0
-"""
 from __future__ import annotations
 from typing import cast
 import uno
 
 from ..frame_style_base_multi import FrameStyleBaseMulti
 from ....writer.style.frame.style_frame_kind import StyleFrameKind as StyleFrameKind
-from ....direct.frame.options.align import Align as DirectAlign, VertAdjustKind as VertAdjustKind
+from ....direct.frame.options.align import Align as InnerAlign, VertAdjustKind as VertAdjustKind
 
 
 class Align(FrameStyleBaseMulti):
@@ -38,7 +33,7 @@ class Align(FrameStyleBaseMulti):
             None:
         """
 
-        direct = DirectAlign(adjust=adjust)
+        direct = InnerAlign(adjust=adjust)
         direct._prop_parent = self
         super().__init__()
         self._style_name = str(style_name)
@@ -64,7 +59,7 @@ class Align(FrameStyleBaseMulti):
             Align: ``Align`` instance from style properties.
         """
         inst = cls(style_name=style_name, style_family=style_family)
-        direct = DirectAlign.from_obj(inst.get_style_props(doc))
+        direct = InnerAlign.from_obj(inst.get_style_props(doc))
         direct._prop_parent = inst
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
@@ -79,10 +74,17 @@ class Align(FrameStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> DirectAlign:
-        """Gets Inner Align instance"""
+    def prop_inner(self) -> InnerAlign:
+        """Gets/Sets Inner Align instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(DirectAlign, self._get_style_inst("direct"))
+            self._direct_inner = cast(InnerAlign, self._get_style_inst("direct"))
         return self._direct_inner
+
+    @prop_inner.setter
+    def prop_inner(self, value: InnerAlign) -> None:
+        if not isinstance(value, InnerAlign):
+            raise TypeError(f'Expected type of InnerAlign, got "{type(value).__name__}"')
+        self._del_attribs("_direct_inner")
+        self._set_style("direct", value, *value.get_attrs())

@@ -12,10 +12,10 @@ from ....writer.style.para.kind import StyleParaKind as StyleParaKind
 from ..para_style_base_multi import ParaStyleBaseMulti
 
 
-_TDirectListStyle = TypeVar(name="_TDirectListStyle", bound="DirectListStyle")
+_TInnerListStyle = TypeVar(name="_TInnerListStyle", bound="InnerListStyle")
 
 
-class DirectListStyle(StyleBase):
+class InnerListStyle(StyleBase):
     """
     Style Paragraph ListStyle
 
@@ -97,7 +97,7 @@ class DirectListStyle(StyleBase):
     # endregion apply()
 
     @classmethod
-    def from_obj(cls: Type[_TDirectListStyle], obj: object) -> _TDirectListStyle:
+    def from_obj(cls: Type[_TInnerListStyle], obj: object) -> _TInnerListStyle:
         """
         Gets instance from object
 
@@ -114,7 +114,7 @@ class DirectListStyle(StyleBase):
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
-        def set_prop(key: str, o: DirectListStyle):
+        def set_prop(key: str, o: InnerListStyle):
             nonlocal obj
             val = mProps.Props.get(obj, key, None)
             if not val is None:
@@ -127,7 +127,7 @@ class DirectListStyle(StyleBase):
     # endregion methods
 
     # region Style Methods
-    def fmt_list_style(self: _TDirectListStyle, value: str | StyleListKind | None) -> _TDirectListStyle:
+    def fmt_list_style(self: _TInnerListStyle, value: str | StyleListKind | None) -> _TInnerListStyle:
         """
         Gets a copy of instance with before list style set or removed
 
@@ -199,7 +199,7 @@ class ListStyle(ParaStyleBaseMulti):
             None:
         """
 
-        direct = DirectListStyle(list_style=list_style)
+        direct = InnerListStyle(list_style=list_style)
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
@@ -224,7 +224,7 @@ class ListStyle(ParaStyleBaseMulti):
             ListStyle: ``ListStyle`` instance from document properties.
         """
         inst = cls(style_name=style_name, style_family=style_family)
-        direct = DirectListStyle.from_obj(inst.get_style_props(doc))
+        direct = InnerListStyle.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -238,10 +238,17 @@ class ListStyle(ParaStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> DirectListStyle:
-        """Gets Inner List Style instance"""
+    def prop_inner(self) -> InnerListStyle:
+        """Gets/Sets Inner List Style instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(DirectListStyle, self._get_style_inst("direct"))
+            self._direct_inner = cast(InnerListStyle, self._get_style_inst("direct"))
         return self._direct_inner
+
+    @prop_inner.setter
+    def prop_inner(self, value: InnerListStyle) -> None:
+        if not isinstance(value, InnerListStyle):
+            raise TypeError(f'Expected type of InnerListStyle, got "{type(value).__name__}"')
+        self._del_attribs("_direct_inner")
+        self._set_style("direct", value, *value.get_attrs())
