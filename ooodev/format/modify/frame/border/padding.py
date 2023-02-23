@@ -2,15 +2,14 @@ from __future__ import annotations
 from typing import cast
 import uno
 
-from .....utils.data_type.intensity import Intensity as Intensity
 from ..frame_style_base_multi import FrameStyleBaseMulti
 from ....writer.style.frame.style_frame_kind import StyleFrameKind as StyleFrameKind
-from ....direct.fill.transparent.transparency import Transparency as InnerTransparency
+from ....direct.para.border.padding import Padding as InnerPadding
 
 
-class Transparency(FrameStyleBaseMulti):
+class Padding(FrameStyleBaseMulti):
     """
-    Frame Style Transparency Transparency.
+    Frame Style Border Padding.
 
     .. versionadded:: 0.9.0
     """
@@ -19,7 +18,11 @@ class Transparency(FrameStyleBaseMulti):
     def __init__(
         self,
         *,
-        value: Intensity | int = 0,
+        left: float | None = None,
+        right: float | None = None,
+        top: float | None = None,
+        bottom: float | None = None,
+        all: float | None = None,
         style_name: StyleFrameKind | str = StyleFrameKind.FRAME,
         style_family: str = "FrameStyles",
     ) -> None:
@@ -27,7 +30,11 @@ class Transparency(FrameStyleBaseMulti):
         Constructor
 
         Args:
-            value (Intensity, int, optional): Specifies the transparency value from ``0`` to ``100``.
+            left (float, optional): Left (in mm units).
+            right (float, optional): Right (in mm units).
+            top (float, optional): Top (in mm units).
+            bottom (float, optional): Bottom (in mm units).
+            all (float, optional): Left, right, top, bottom (in mm units). If argument is present then ``left``, ``right``, ``top``, and ``bottom`` arguments are ignored.
             style_name (StyleFrameKind, str, optional): Specifies the Frame Style that instance applies to. Deftult is Default Frame Style.
             style_family (str, optional): Style family. Defatult ``FrameStyles``.
 
@@ -35,7 +42,9 @@ class Transparency(FrameStyleBaseMulti):
             None:
         """
 
-        direct = InnerTransparency(value=value, _cattribs=self._get_inner_cattribs())
+        direct = InnerPadding(
+            left=left, right=right, top=top, bottom=bottom, all=all, _cattribs=self._get_inner_cattribs()
+        )
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
@@ -50,7 +59,7 @@ class Transparency(FrameStyleBaseMulti):
         doc: object,
         style_name: StyleFrameKind | str = StyleFrameKind.FRAME,
         style_family: str = "FrameStyles",
-    ) -> Transparency:
+    ) -> Padding:
         """
         Gets instance from Document.
 
@@ -60,10 +69,10 @@ class Transparency(FrameStyleBaseMulti):
             style_family (str, optional): Style family. Defatult ``FrameStyles``.
 
         Returns:
-            Transparency: ``Transparency`` instance from style properties.
+            Padding: ``Padding`` instance from style properties.
         """
         inst = cls(style_name=style_name, style_family=style_family)
-        direct = InnerTransparency.from_obj(obj=inst.get_style_props(doc), _cattribs=inst._get_inner_cattribs())
+        direct = InnerPadding.from_obj(obj=inst.get_style_props(doc), _cattribs=inst._get_inner_cattribs())
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -86,19 +95,22 @@ class Transparency(FrameStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> InnerTransparency:
-        """Gets/Sets Inner Transparency instance"""
+    def prop_inner(self) -> InnerPadding:
+        """Gets/Sets Inner Padding instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(InnerTransparency, self._get_style_inst("direct"))
+            self._direct_inner = cast(InnerPadding, self._get_style_inst("direct"))
         return self._direct_inner
 
     @prop_inner.setter
-    def prop_inner(self, value: InnerTransparency) -> None:
-        if not isinstance(value, InnerTransparency):
+    def prop_inner(self, value: InnerPadding) -> None:
+        if not isinstance(value, InnerPadding):
             raise TypeError(f'Expected type of InnerTransparency, got "{type(value).__name__}"')
-        direct = value.__class__(value=value.prop_value, _cattribs=self._get_inner_cattribs())
+        direct = value.__class__(_cattribs=self._get_inner_cattribs())
+        vals = [value._get(pname) for pname in value._props]
+        for key, val in zip(direct._props, vals):
+            direct._set(key, val)
         self._del_attribs("_direct_inner")
         self._set_style("direct", direct, *direct.get_attrs())
 

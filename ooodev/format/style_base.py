@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Dict, NamedTuple, Tuple, TYPE_CHECKING, TypeVar, cast
+from typing import Any, Dict, NamedTuple, Tuple, TYPE_CHECKING, TypeVar, cast, overload
 import uno
 import random
 import string
@@ -192,12 +192,20 @@ class StyleBase(metaclass=MetaStyle):
     def _del_attribs(self, *attribs: str) -> bool:
         """Delete Attributes from instance if exist. Calls ``_on_deleting_attrib()``"""
         for attrib in attribs:
+            if hasattr(self.__class__, attrib):
+                kvargs = KeyValCancelArgs("style_base", key=attrib, value=getattr(self, attrib, None))
+                self._on_deleting_attrib(kvargs)
+                if kvargs.cancel:
+                    continue
+                delattr(self.__class_, attrib)
+        for attrib in attribs:
             if hasattr(self, attrib):
                 kvargs = KeyValCancelArgs("style_base", key=attrib, value=getattr(self, attrib, None))
                 self._on_deleting_attrib(kvargs)
                 if kvargs.cancel:
                     continue
                 delattr(self, attrib)
+                
 
     def _update(self, value: Dict[str, Any] | StyleBase) -> None:
         """Updates properties"""
@@ -537,7 +545,16 @@ class StyleBase(metaclass=MetaStyle):
             return ()
         return mProps.Props.make_props(**self._dv)
 
+    # region Copy()
+    @overload
     def copy(self: TStyleBase) -> TStyleBase:
+        ...
+
+    @overload
+    def copy(self: TStyleBase, **kwargs) -> TStyleBase:
+        ...
+
+    def copy(self: TStyleBase, **kwargs) -> TStyleBase:
         """Gets a copy of instance as a new instance"""
         cargs = CancelEventArgs(self)
         self._on_copying(cargs)
@@ -546,10 +563,31 @@ class StyleBase(metaclass=MetaStyle):
                 return cargs.event_data
             else:
                 mEx.CancelEventError(cargs)
-        nu = self.__class__()
+        nu = self.__class__(**kwargs)
         nu._prop_parent = self._prop_parent
-        nu._update(self._dv)
+        # depending on python 3.7 builtin dictionary ordering
+        dv = self._get_properties()
+        if dv:
+            # if ne contains a _props attribute (tuple of prop names) then use them to remap keys.
+            # For instance a key of BorderLength may become ParaBoderLength
+
+            if nu._props:
+                vals = [val for _, val in dv.items()]  # get old values
+                if len(vals) == len(nu._props):
+                    for key, val in zip(nu._props, vals):
+                        nu._set(key, val)
+                else:
+                    # fallback
+                    nu._update(self._get_properties())
+                    mLo.Lo.print(
+                        f"While Copying instance of {self.__class__.__name__} the new and old property lengths did not match."
+                    )
+                    mLo.Lo.print("  Copying using same attribute names as original.")
+            else:
+                nu._update(self._get_properties())
         return nu
+
+    # endregion Copy()
 
     # region Dunder Methods
 
@@ -647,6 +685,11 @@ class StyleBase(metaclass=MetaStyle):
     def prop_parent(self) -> StyleBase | None:
         """Gets Parent Class"""
         return self._prop_parent
+
+    @property
+    def _props(self) -> tuple:
+        # placeholder for child classes. Usd in copy method.
+        return ()
 
     # endregion Properties
 
@@ -772,16 +815,28 @@ class StyleMulti(StyleBase):
         # allows this instance to overwrite properties set by multi styles if needed.
         super().apply(obj, **kwargs)
 
+    # region Copy()
+    @overload
     def copy(self: TStyleMulti) -> TStyleMulti:
-        cp = super().copy()
+        ...
+
+    @overload
+    def copy(self: TStyleMulti, **kwargs) -> TStyleMulti:
+        ...
+
+    def copy(self: TStyleMulti, **kwargs) -> TStyleMulti:
+        """Gets a copy of instance as a new instance"""
+        cp = super().copy(**kwargs)
         styles = self._get_multi_styles()
         for key, info in styles.items():
             style, kw = info
             if kw:
-                cp._set_style(key, style.copy(), **kw.kwargs)
+                cp._set_style(key, style.copy(**kwargs), **kw.kwargs)
             else:
-                cp._set_style(key, style.copy())
+                cp._set_style(key, style.copy(**kwargs))
         return cp
+
+    # endregion Copy()
 
     def __eq__(self, oth: object) -> bool:
         if isinstance(oth, StyleMulti):
@@ -928,11 +983,22 @@ class StyleModifyMulti(StyleMulti):
         return True
         # return mInfo.Info.is_doc_type(obj, mLo.Lo.Service.WRITER)
 
+    # region copy()
+    @overload
     def copy(self: _TStyleModifyMulti) -> _TStyleModifyMulti:
+        ...
+
+    @overload
+    def copy(self: _TStyleModifyMulti, **kwargs) -> _TStyleModifyMulti:
+        ...
+
+    def copy(self: _TStyleModifyMulti, **kwargs) -> _TStyleModifyMulti:
         """Gets a copy of instance as a new instance"""
-        cp = super().copy()
+        cp = super().copy(**kwargs)
         cp.prop_style_name = self.prop_style_name
         return cp
+
+    # endregion copy()
 
     # region apply()
 

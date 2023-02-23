@@ -21,7 +21,7 @@ class Padding(PageStyleBaseMulti):
         right: float | None = None,
         top: float | None = None,
         bottom: float | None = None,
-        padding_all: float | None = None,
+        all: float | None = None,
         style_name: StylePageKind | str = StylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> None:
@@ -33,7 +33,7 @@ class Padding(PageStyleBaseMulti):
             right (float, optional): Page right padding (in mm units).
             top (float, optional): Page top padding (in mm units).
             bottom (float, optional): Page bottom padding (in mm units).
-            padding_all (float, optional): Page left, right, top, bottom padding (in mm units). If argument is present then ``left``, ``right``, ``top``, and ``bottom`` arguments are ignored.
+            all (float, optional): Page left, right, top, bottom padding (in mm units). If argument is present then ``left``, ``right``, ``top``, and ``bottom`` arguments are ignored.
             style_name (StyleParaKind, str, optional): Specifies the Page Style that instance applies to. Deftult is Default Page Style.
             style_family (str, optional): Style family. Defatult ``PageStyles``.
 
@@ -41,7 +41,7 @@ class Padding(PageStyleBaseMulti):
             None:
         """
 
-        direct = InnerPadding(left=left, right=right, top=top, bottom=bottom, all=padding_all)
+        direct = InnerPadding(left=left, right=right, top=top, bottom=bottom, all=all)
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
