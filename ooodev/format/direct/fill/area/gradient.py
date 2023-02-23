@@ -80,6 +80,7 @@ class Gradient(StyleMulti):
             _cattribs=self._get_gradient_struct_cattrib(),
         )
         super().__init__()
+        self._name = name
 
         self._set(self._props.style, FillStyle.GRADIENT)
         self._set(self._props.step_count, step_count)
@@ -150,6 +151,11 @@ class Gradient(StyleMulti):
             raise ValueError("Modifying a default instance is not allowed")
         return super()._on_modifing(event)
 
+    def copy(self: _TGradient) -> _TGradient:
+        cp = super().copy()
+        cp._name = self._name
+        return cp
+
     # region from_obj()
     @overload
     @classmethod
@@ -192,6 +198,37 @@ class Gradient(StyleMulti):
 
     # endregion from_obj()
 
+    # region from_gradient()
+    @classmethod
+    def from_struct(cls: Type[_TGradient], struct: GradientStruct, name: str = "", **kwargs) -> _TGradient:
+        """
+        Gets instance from ``GradientStruct`` instance
+
+        Args:
+            struct (GradientStruct): Gradient Struct instance.
+            name (str, optional): Name of Gradient.
+
+        Returns:
+            Gradient:
+        """
+        if name and PresetGradientKind.is_preset(name):
+            return cls.from_preset(PresetGradientKind(name), **kwargs)
+        if name:
+            auto_name = False
+        else:
+            auto_name = True
+        inst = cls(name="__constructor_default__", **kwargs)
+        grad_fill = struct.get_uno_struct()
+        gs = GradientStruct.from_gradient(grad_fill, _cattribs=inst._get_gradient_struct_cattrib())
+        fill_struct = inst._get_fill_struct(fill_struct=gs, name=name, auto_name=auto_name)
+
+        inst._set(inst._props.step_count, grad_fill.StepCount)
+        inst._set(inst._props.name, inst._name)
+        inst._set_style("fill_style", fill_struct, *fill_struct.get_attrs())
+        return inst
+
+    # endregion from_gradient()
+
     # region from_preset()
     @overload
     @classmethod
@@ -231,12 +268,17 @@ class Gradient(StyleMulti):
 
     @property
     def prop_inner(self) -> GradientStruct:
-        """Gets Fill styles instance"""
+        """Gets/Sets Fill styles instance"""
         try:
             return self._direct_inner
         except AttributeError:
             self._direct_inner = cast(GradientStruct, self._get_style_inst("fill_style"))
         return self._direct_inner
+
+    @property
+    def prop_name(self) -> str:
+        """Gets Current gradient Name"""
+        return self._name
 
     @property
     def _props(self) -> AreaGradientProps:

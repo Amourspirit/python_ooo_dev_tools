@@ -772,7 +772,7 @@ class StyleMulti(StyleBase):
         # allows this instance to overwrite properties set by multi styles if needed.
         super().apply(obj, **kwargs)
 
-    def copy(self: T) -> T:
+    def copy(self: TStyleMulti) -> TStyleMulti:
         cp = super().copy()
         styles = self._get_multi_styles()
         for key, info in styles.items():

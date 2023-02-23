@@ -9,6 +9,11 @@ from typing import Any, Tuple, cast, overload, Type, TypeVar, TYPE_CHECKING
 from enum import Enum
 
 import uno
+from com.sun.star.awt import XBitmap
+
+from ooo.dyn.drawing.fill_style import FillStyle as FillStyle
+from ooo.dyn.drawing.bitmap_mode import BitmapMode
+from ooo.dyn.drawing.rectangle_point import RectanglePoint as RectanglePoint
 
 from .....events.args.key_val_cancel_args import KeyValCancelArgs
 from .....exceptions import ex as mEx
@@ -26,12 +31,6 @@ from ...common.format_types.offset_row import OffsetRow as OffsetRow
 from ...common.format_types.offset_column import OffsetColumn as OffsetColumn
 from ...common.props.area_img_props import AreaImgProps
 
-
-from com.sun.star.awt import XBitmap
-
-from ooo.dyn.drawing.fill_style import FillStyle as FillStyle
-from ooo.dyn.drawing.bitmap_mode import BitmapMode
-from ooo.dyn.drawing.rectangle_point import RectanglePoint as RectanglePoint
 
 if TYPE_CHECKING:
     from com.sun.star.graphic import Graphic
@@ -228,10 +227,10 @@ class Img(StyleBase):
     @classmethod
     def from_preset(cls: Type[_TImg], preset: PresetImageKind, **kwargs) -> _TImg:
         """
-        Gets an instance from a preset
+        Gets an instance from a preset.
 
         Args:
-            preset (ImageKind): Preset
+            preset (PresetImageKind): Preset.
 
         Returns:
             Img: Instance from preset.
