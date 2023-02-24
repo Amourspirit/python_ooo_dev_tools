@@ -206,8 +206,18 @@ class Size(AbstractDocument):
 
         return super().apply(obj, **kwargs)
 
+    # region copy()
+    @overload
     def copy(self: _TSize) -> _TSize:
-        cp = super().copy()
+        ...
+
+    @overload
+    def copy(self: _TSize, **kwargs) -> _TSize:
+        ...
+
+    def copy(self: _TSize, **kwargs) -> _TSize:
+        """Gets a copy of instance as a new instance"""
+        cp = super().copy(**kwargs)
         if self._width is None:
             cp._width = None
         else:
@@ -219,6 +229,8 @@ class Size(AbstractDocument):
         cp._auto_width = self._auto_width
         cp._auto_height = self._auto_height
         return cp
+
+    # endregion copy()
 
     # endregion Overrides
 

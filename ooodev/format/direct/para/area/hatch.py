@@ -190,12 +190,24 @@ class Hatch(StyleMulti):
         # https://github.com/LibreOffice/core/blob/d9e044f04ac11b76b9a3dac575f4e9155b67490e/chart2/source/tools/PropertyHelper.cxx#L229
         return "com.sun.star.drawing.HatchTable"
 
+    # region copy()
+    @overload
     def copy(self: _THatch) -> _THatch:
-        cp = super().copy()
+        ...
+
+    @overload
+    def copy(self: _THatch, **kwargs) -> _THatch:
+        ...
+
+    def copy(self: _THatch, **kwargs) -> _THatch:
+        """Gets a copy of instance as a new instance"""
+        cp = super().copy(**kwargs)
         cp._name = self._name
         cp._is_preset = self._is_preset
         cp._auto_name = self._auto_name
         return cp
+
+    # endregion copy()
 
     # region apply()
     @overload

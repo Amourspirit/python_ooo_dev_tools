@@ -136,10 +136,22 @@ class Gradient(StyleMulti):
     # endregion Internal Methods
 
     # region Overrides
+    # region copy()
+    @overload
     def copy(self: _TGradient) -> _TGradient:
-        cp = super().copy()
+        ...
+
+    @overload
+    def copy(self: _TGradient, **kwargs) -> _TGradient:
+        ...
+
+    def copy(self: _TGradient, **kwargs) -> _TGradient:
+        """Gets a copy of instance as a new instance"""
+        cp = super().copy(**kwargs)
         cp._name = self._name
         return cp
+
+    # endregion copy()
 
     def _container_get_service_name(self) -> str:
         return "com.sun.star.drawing.TransparencyGradientTable"

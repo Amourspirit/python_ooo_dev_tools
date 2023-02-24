@@ -151,11 +151,22 @@ class Gradient(StyleMulti):
             raise ValueError("Modifying a default instance is not allowed")
         return super()._on_modifing(event)
 
+    # region copy()
+    @overload
     def copy(self: _TGradient) -> _TGradient:
-        cp = super().copy()
+        ...
+
+    @overload
+    def copy(self: _TGradient, **kwargs) -> _TGradient:
+        ...
+
+    def copy(self: _TGradient, **kwargs) -> _TGradient:
+        """Gets a copy of instance as a new instance"""
+        cp = super().copy(**kwargs)
         cp._name = self._name
         return cp
 
+    # endregion copy()
     # region from_obj()
     @overload
     @classmethod

@@ -149,10 +149,22 @@ class Img(StyleBase):
 
     # region Overrides
 
+    # region copy()
+    @overload
     def copy(self: _TImg) -> _TImg:
-        cp = super().copy()
+        ...
+
+    @overload
+    def copy(self: _TImg, **kwargs) -> _TImg:
+        ...
+
+    def copy(self: _TImg, **kwargs) -> _TImg:
+        """Gets a copy of instance as a new instance"""
+        cp = super().copy(**kwargs)
         cp._name = self._name
         return cp
+
+    # endregion copy()
 
     def _container_get_service_name(self) -> str:
         # https://github.com/LibreOffice/core/blob/d9e044f04ac11b76b9a3dac575f4e9155b67490e/chart2/source/tools/PropertyHelper.cxx#L246

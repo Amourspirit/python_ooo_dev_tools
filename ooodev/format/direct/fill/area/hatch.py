@@ -159,11 +159,21 @@ class Hatch(StyleMulti):
             ),
         }
 
+    # region copy()
+    @overload
     def copy(self: _THatch) -> _THatch:
-        cp = super().copy()
+        ...
+
+    @overload
+    def copy(self: _THatch, **kwargs) -> _THatch:
+        ...
+
+    def copy(self: _THatch, **kwargs) -> _THatch:
+        cp = super().copy(**kwargs)
         cp._bg_color = self._bg_color
         return cp
 
+    # endregion copy()
     # endregion Internal Methods
 
     # region Static Methods
@@ -274,11 +284,6 @@ class Hatch(StyleMulti):
     @prop_style.setter
     def prop_style(self, value: HatchStyle):
         self.prop_inner_hatch.prop_style = value
-
-    @property
-    def prop_bg_color(self) -> Color:
-        """Gets the back ground color passed in to constructor."""
-        return Color(self._bg_color)
 
     @property
     def prop_color(self) -> Color:
