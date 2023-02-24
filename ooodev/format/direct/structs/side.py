@@ -447,7 +447,8 @@ class Side(StyleBase):
         Returns:
             Side: instance.
         """
-        inst = cls(**kwargs)
+        pt_width = round(UnitConvert.convert(num=border.LineWidth, frm=Length.MM100, to=Length.PT), 2)
+        inst = cls(width=pt_width, **kwargs)
         inst._set("Color", border.Color)
         inst._set("InnerLineWidth", border.InnerLineWidth)
         inst._set("LineDistance", border.LineDistance)
