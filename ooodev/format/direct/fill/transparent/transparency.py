@@ -50,6 +50,7 @@ class Transparency(StyleBase):
                 "com.sun.star.drawing.FillProperties",
                 "com.sun.star.text.TextContent",
                 "com.sun.star.style.ParagraphStyle",
+                "com.sun.star.text.TextFrame",
             )
         return self._supported_services_values
 

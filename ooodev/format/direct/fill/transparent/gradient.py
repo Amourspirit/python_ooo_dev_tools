@@ -165,6 +165,7 @@ class Gradient(StyleMulti):
                 "com.sun.star.text.TextContent",
                 "com.sun.star.style.ParagraphStyle",
                 "com.sun.star.style.PageStyle",
+                "com.sun.star.text.TextFrame",
             )
         return self._supported_services_values
 
