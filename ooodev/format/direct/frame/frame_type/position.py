@@ -35,7 +35,7 @@ class HoriOrient(Enum):
     """The object is aligned at the right side. When frame is mirrored the value is ``Outside``; Otherwise, ``Right``."""
     CENTER = HoriOrientation.CENTER
     """The object is aligned at the middle."""
-    FROM_LEFT_OR_FROM_INSIDE = HoriOrientation.NONE
+    FROM_LEFT_OR_INSIDE = HoriOrientation.NONE
     """No hard alignment is applied. When frame is mirrored the value is ``From Inside``; Otherwise, ``From Left``."""
 
     def __int__(self) -> int:
@@ -51,48 +51,60 @@ class VertOrient(Enum):
     """Aligned at the center"""
     BOTTOM = VertOrientation.BOTTOM
     """Aligned at the bottom"""
-    FROM_TOP = VertOrientation.NONE
-    """no hard alignment"""
+    FROM_TOP_OR_BOTTOM = VertOrientation.NONE
+    """No hard alignment. From Top is only used when Anchor is ``To character``. From Bottom is only used when Anchor is ``To character`` or ``As character``."""
+    BELOW_CHAR = VertOrientation.CHAR_BOTTOM
+    """Aligned at the bottom of a character (anchored to character). Only used when Anchor is set ``To character``."""
 
 
 class RelHoriOrient(Enum):
+    # when Anchor is set to page, the paragraph enums are not present in the Writer Dialog.
+    # when Anchor is set to character.
     PARAGRAPH_AREA = RelOrientation.FRAME
-    """paragraph, including margins"""
+    """Paragraph, including margins. Only used when Anchor is set ``To paragraph`` or ``To Character``."""
     PARAGRAPH_TEXT_AREA = RelOrientation.PRINT_AREA
-    """Paragraph, without margins"""
+    """Paragraph, without margins. Only used when Anchor is set ``To paragraph`` or ``To Character``."""
     LEFT_PARAGRAPH_BORDER = RelOrientation.FRAME_LEFT
-    """Inside the left paragraph margin"""
+    """Inside the left paragraph margin. Only used when Anchor is set ``To paragraph`` or ``To Character``."""
     RIGHT_PARAGRAPH_BORDER = RelOrientation.FRAME_RIGHT
-    """Inside the right paragraph margin"""
+    """Inside the right paragraph margin. Only used when Anchor is set ``To paragraph`` or ``To Character``."""
     LEFT_PAGE_BORDER = RelOrientation.PAGE_LEFT
-    """Inside the left page margin"""
+    """Inside the left page margin."""
     RIGHT_PAGE_BORDER = RelOrientation.PAGE_RIGHT
     """Inside the right page margin"""
     ENTIRE_PAGE = RelOrientation.PAGE_FRAME
-    """Page includes margins for page-anchored frames identical with ``PARAGRAPH_AREA``"""
+    """Page includes margins for page-anchored frames identical with ``PARAGRAPH_AREA``."""
     PAGE_TEXT_AREA = RelOrientation.PAGE_PRINT_AREA
     """Page without borders (for page anchored frames identical with ``PARAGRAPH_TEXT_AREA``)."""
+    CHARACTER = RelOrientation.CHAR
+    """As character. Only used when Anchor is set ``To character``."""
 
 
 class RelVertOrient(Enum):
     MARGIN = RelOrientation.FRAME
-    """paragraph, including margins"""
-    PARAGRAPH_TEXT_AREA = RelOrientation.PRINT_AREA
-    """Paragraph, without margins"""
-    ENTIRE_PAGE = RelOrientation.PAGE_FRAME
-    """Page includes margins for page-anchored frames identical with ``PARAGRAPH_AREA``"""
+    """Paragraph, including margins. Only used when Anchor is set ``To paragraph`` or ``To character``."""
+    PARAGRAPH_TEXT_AREA_OR_BASE_LINE = RelOrientation.PRINT_AREA
+    """Paragraph, without margins. Only used when Anchor is set ``To paragraph``, ``To character`` or ``As character``."""
+    ENTIRE_PAGE_OR_ROW = RelOrientation.PAGE_FRAME
+    """Page includes margins for page-anchored frames identical with ``PARAGRAPH_AREA``. Only used when Anchor is set ``To page``, ``To paragraph``, ``To character`` or ``As character``."""
     PAGE_TEXT_AREA = RelOrientation.PAGE_PRINT_AREA
-    """Page without borders (for page anchored frames identical with ``PARAGRAPH_TEXT_AREA``)."""
+    """Page without borders (for page anchored frames identical with ``PARAGRAPH_TEXT_AREA``). Only used when Anchor is set ``To page``, ``To paragraph`` or ``To character``."""
+    CHARACTER = RelOrientation.CHAR
+    """As character. Only used when Anchor is set ``To character``."""
+    LINE_OF_TEXT = RelOrientation.TEXT_LINE
+    """at the top of the text line, only sensible for vertical orientation. Only used when Anchor ``To character`` and ``VertOrient`` is ``TOP``, ``BOTTOM``, ``CENTER`` or ``FROM_TOP_OR_BOTTOM``."""
 
 
 @dataclasses.dataclass(frozen=True)
 class Horizontal:
+    """Horizontal Frame Position. Not used when Anchor is set to ``As Character``."""
+
     position: HoriOrient
     """Horizontal Position"""
     rel: RelHoriOrient
     """Relative Orientation"""
     amount: float = 0.0
-    """Amount in ``mm`` units. Only effective when position is ``HoriOrient.FROM_LEFT``"""
+    """Amount in ``mm`` units. Only effective when position is ``HoriOrient.FROM_LEFT``."""
 
     def __eq__(self, oth: object) -> bool:
         if isinstance(oth, Horizontal):
@@ -107,6 +119,8 @@ class Horizontal:
 
 @dataclasses.dataclass(frozen=True)
 class Vertical:
+    """Vertical Frame Position."""
+
     position: VertOrient
     """Vertical Position"""
     rel: RelVertOrient
@@ -134,6 +148,7 @@ class Position(StyleBase):
 
     def __init__(
         self,
+        *,
         horizontal: Horizontal | None = None,
         vertical: Vertical | None = None,
         keep_boundries: bool | None = None,
@@ -143,10 +158,10 @@ class Position(StyleBase):
         Constructor
 
         Args:
-            horizontal (Horizontal, optional): Specifies the Horizontal position options.
+            horizontal (Horizontal, optional): Specifies the Horizontal position options. Not used when Anchor is set to ``As Character``.
             vertical (Vertical, optional): Specifies the Vertical position options.
             keep_boundries (bool, optional): Specifies keep inside text boundries.
-            mirror_even (bool, optional): Specifies mirror on even pages.
+            mirror_even (bool, optional): Specifies mirror on even pages. Not used when Anchor is set to ``As Character``.
         """
         super().__init__()
         if not horizontal is None:
@@ -168,7 +183,7 @@ class Position(StyleBase):
             self._remove(self._props.hori_pos)
             self._remove(self._props.hori_rel)
             return
-        if horizontal.position == HoriOrient.FROM_LEFT_OR_FROM_INSIDE:
+        if horizontal.position == HoriOrient.FROM_LEFT_OR_INSIDE:
             self._set(self._props.hori_pos, UnitConvert.convert_mm_mm100(horizontal.amount))
         else:
             self._set(self._props.hori_pos, 0)
@@ -181,7 +196,7 @@ class Position(StyleBase):
             self._remove(self._props.vert_pos)
             self._remove(self._props.vert_rel)
             return
-        if vertical.position == VertOrient.FROM_TOP:
+        if vertical.position == VertOrient.FROM_TOP_OR_BOTTOM:
             self._set(self._props.vert_pos, UnitConvert.convert_mm_mm100(vertical.amount))
         else:
             self._set(self._props.vert_pos, 0)
@@ -218,7 +233,7 @@ class Position(StyleBase):
         try:
             return self._supported_services_values
         except AttributeError:
-            self._supported_services_values = ("com.sun.star.style.Style",)
+            self._supported_services_values = ("com.sun.star.style.Style", "com.sun.star.text.TextFrame")
         return self._supported_services_values
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
@@ -277,7 +292,7 @@ class Position(StyleBase):
         vert_pos = int(mProps.Props.get(obj, pp.vert_pos, 0))
         inst._set(pp.vert_pos, vert_pos)
 
-        vert_rel = int(mProps.Props.get(obj, pp.vert_rel, RelVertOrient.PARAGRAPH_TEXT_AREA.value))
+        vert_rel = int(mProps.Props.get(obj, pp.vert_rel, RelVertOrient.PARAGRAPH_TEXT_AREA_OR_BASE_LINE.value))
         inst._set(pp.hori_rel, vert_rel)
 
         txt_flow = bool(mProps.Props.get(obj, pp.txt_flow, False))
@@ -334,7 +349,7 @@ class Position(StyleBase):
         self._set(self._props.page_toggle, value)
 
     @property
-    def prop_horizontal(self) -> HoriOrient | None:
+    def prop_horizontal(self) -> Horizontal | None:
         """Gets/Sets horizontal value"""
         return self._horizontal
 
@@ -343,7 +358,7 @@ class Position(StyleBase):
         self._set_horizontal(value)
 
     @property
-    def prop_vertical(self) -> HoriOrient | None:
+    def prop_vertical(self) -> Vertical | None:
         """Gets/Sets vertical value"""
         return self._vertical
 

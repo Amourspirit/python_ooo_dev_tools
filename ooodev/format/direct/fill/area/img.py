@@ -25,7 +25,7 @@ from ....kind.format_kind import FormatKind
 from ....preset import preset_image as mImage
 from ....preset.preset_image import PresetImageKind as PresetImageKind
 from ....style_base import StyleBase
-from ...common.format_types.size_mm import SizeMM as SizeMM
+from .....utils.data_type.size_mm import SizeMM as SizeMM
 from ...common.format_types.size_percent import SizePercent as SizePercent
 from ...common.format_types.offset_row import OffsetRow as OffsetRow
 from ...common.format_types.offset_column import OffsetColumn as OffsetColumn

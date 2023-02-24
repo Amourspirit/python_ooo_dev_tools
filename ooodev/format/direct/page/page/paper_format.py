@@ -4,7 +4,7 @@ Module for Fill Transparency.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Any, Tuple, cast, Type, TypeVar, NamedTuple, overload
+from typing import Any, Tuple, cast, Type, TypeVar, overload
 
 import uno
 from .....events.args.cancel_event_args import CancelEventArgs
@@ -13,7 +13,7 @@ from .....utils import lo as mLo
 from .....utils import props as mProps
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleBase
-from ...common.format_types.size_mm import SizeMM as SizeMM
+from .....utils.data_type.size_mm import SizeMM as SizeMM
 from ....preset.preset_paper_format import PaperFormatKind as PaperFormatKind
 
 from ooo.dyn.awt.size import Size as Size

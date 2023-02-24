@@ -64,6 +64,7 @@ class StyleBase(metaclass=MetaStyle):
     .. versionadded:: 0.9.0
     """
 
+    # region Init
     def __init__(self, **kwargs) -> None:
         # this property is used in child classes that have default instances
         self._events = Events(source=self)
@@ -83,6 +84,8 @@ class StyleBase(metaclass=MetaStyle):
             if not value is None:
                 self._dv[key] = value
         super().__init__()
+
+    # endregion Init
 
     # region Events
 
@@ -205,7 +208,6 @@ class StyleBase(metaclass=MetaStyle):
                 if kvargs.cancel:
                     continue
                 delattr(self, attrib)
-                
 
     def _update(self, value: Dict[str, Any] | StyleBase) -> None:
         """Updates properties"""
@@ -225,6 +227,22 @@ class StyleBase(metaclass=MetaStyle):
     # endregion style property methods
 
     # region Services
+    def support_service(self, *service: str) -> bool:
+        """
+        Gets if service is supported.
+
+        Args:
+            service: expandable list of service names of UNO services such as ``com.sun.star.text.TextFrame``.
+
+        Returns:
+            bool: ``True`` if service is supported; Otherwise, ``Fasle``.
+        """
+        services = self._supported_services()
+        for s in service:
+            if s in services:
+                return True
+        return False
+
     def _supported_services(self) -> Tuple[str, ...]:
         """
         Gets a tuple of suported services for the style such as (``com.sun.star.style.ParagraphProperties``,)

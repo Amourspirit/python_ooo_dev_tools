@@ -64,6 +64,18 @@ class StyleObj(Protocol):
         """
         ...
 
+    def support_service(self, *service: str) -> bool:
+        """
+        Gets if service is supported.
+
+        Args:
+            service: expandable list of service names of UNO services such as ``com.sun.star.text.TextFrame``.
+
+        Returns:
+            bool: ``True`` if service is supported; Otherwise, ``Fasle``.
+        """
+        ...
+
     @property
     def prop_has_attribs(self) -> bool:
         """Gets If instantance has any attributes set."""
