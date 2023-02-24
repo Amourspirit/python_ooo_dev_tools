@@ -9,7 +9,8 @@ from ooodev.format.writer.direct.frame.type import Size, RelativeKind, RelativeS
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.utils.color import StandardColor
-from ooodev.office.write import Write, UnitMM
+from ooodev.office.write import Write
+from ooodev.utils.data_type.unit_mm import UnitMM
 
 
 def test_write(loader, para_text) -> None:

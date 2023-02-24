@@ -7,9 +7,10 @@ from __future__ import annotations
 from typing import Any, Tuple, cast, overload, Type, TypeVar
 
 from .....events.args.cancel_event_args import CancelEventArgs
-from .....utils import props as mProps
 from .....exceptions import ex as mEx
 from .....utils import lo as mLo
+from .....utils import props as mProps
+from .....utils.data_type.unit_100_mm import Unit100MM
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleBase
 from ..props.border_props import BorderProps as BorderProps
@@ -33,21 +34,21 @@ class AbstractPadding(StyleBase):
     def __init__(
         self,
         *,
-        left: float | None = None,
-        right: float | None = None,
-        top: float | None = None,
-        bottom: float | None = None,
-        all: float | None = None,
+        left: float | Unit100MM | None = None,
+        right: float | Unit100MM | None = None,
+        top: float | Unit100MM | None = None,
+        bottom: float | Unit100MM | None = None,
+        all: float | Unit100MM | None = None,
     ) -> None:
         """
         Constructor
 
         Args:
-            left (float, optional): Left (in mm units).
-            right (float, optional): Right (in mm units).
-            top (float, optional): Top (in mm units).
-            bottom (float, optional): Bottom (in mm units).
-            all (float, optional): Left, right, top, bottom (in mm units). If argument is present then ``left``, ``right``, ``top``, and ``bottom`` arguments are ignored.
+            left (float, Unit100MM, optional): Left (in ``mm`` units) or ``Unit100MM`` (in ``1/100th mm`` units).
+            right (float, Unit100MM, optional): Right (in ``mm`` units)  or ``Unit100MM`` (in ``1/100th mm`` units).
+            top (float, Unit100MM, optional): Top (in ``mm`` units)  or ``Unit100MM`` (in ``1/100th mm`` units).
+            bottom (float, Unit100MM,  optional): Bottom (in ``mm`` units)  or ``Unit100MM`` (in ``1/100th mm`` units).
+            all (float, Unit100MM, optional): Left, right, top, bottom (in ``mm`` units)  or ``Unit100MM`` (in ``1/100th mm`` units). If argument is present then ``left``, ``right``, ``top``, and ``bottom`` arguments are ignored.
 
         Raises:
             ValueError: If any argument value is less than zero.
@@ -60,13 +61,18 @@ class AbstractPadding(StyleBase):
 
         def validate(val: float | None) -> None:
             if val is not None:
+                if isinstance(val, Unit100MM):
+                    val = float(val.value)
                 if val < 0.0:
                     raise ValueError("Values must be positive values")
 
         def set_val(key, value) -> None:
             nonlocal init_vals
             if not value is None:
-                init_vals[key] = round(value * 100)
+                if isinstance(value, Unit100MM):
+                    init_vals[key] = value.value
+                else:
+                    init_vals[key] = round(value * 100)
 
         validate(left)
         validate(right)
@@ -165,12 +171,12 @@ class AbstractPadding(StyleBase):
     # endregion methods
 
     # region style methods
-    def fmt_padding_all(self: _TAbstractPadding, value: float | None) -> _TAbstractPadding:
+    def fmt_padding_all(self: _TAbstractPadding, value: float | Unit100MM | None) -> _TAbstractPadding:
         """
         Gets copy of instance with left, right, top, bottom sides set or removed
 
         Args:
-            value (float | None): Padding value
+            value (float, Unit100MM, optional): Padding value
 
         Returns:
             Padding: Padding instance
@@ -182,12 +188,12 @@ class AbstractPadding(StyleBase):
         cp.prop_right = value
         return cp
 
-    def fmt_top(self: _TAbstractPadding, value: float | None) -> _TAbstractPadding:
+    def fmt_top(self: _TAbstractPadding, value: float | Unit100MM | None) -> _TAbstractPadding:
         """
         Gets a copy of instance with top side set or removed
 
         Args:
-            value (float | None): Padding value
+            value (float, Unit100MM, optional): Padding value
 
         Returns:
             Padding: Padding instance
@@ -196,12 +202,12 @@ class AbstractPadding(StyleBase):
         cp.prop_top = value
         return cp
 
-    def fmt_bottom(self: _TAbstractPadding, value: float | None) -> _TAbstractPadding:
+    def fmt_bottom(self: _TAbstractPadding, value: float | Unit100MM | None) -> _TAbstractPadding:
         """
         Gets a copy of instance with bottom side set or removed
 
         Args:
-            value (float | None): Padding value
+            value (float, Unit100MM, optional): Padding value
 
         Returns:
             Padding: Padding instance
@@ -210,12 +216,12 @@ class AbstractPadding(StyleBase):
         cp.prop_bottom = value
         return cp
 
-    def fmt_left(self: _TAbstractPadding, value: float | None) -> _TAbstractPadding:
+    def fmt_left(self: _TAbstractPadding, value: float | Unit100MM | None) -> _TAbstractPadding:
         """
         Gets a copy of instance with left side set or removed
 
         Args:
-            value (float | None): Padding value
+            value (float, Unit100MM, optional): Padding value
 
         Returns:
             Padding: Padding instance
@@ -224,12 +230,12 @@ class AbstractPadding(StyleBase):
         cp.prop_left = value
         return cp
 
-    def fmt_right(self: _TAbstractPadding, value: float | None) -> _TAbstractPadding:
+    def fmt_right(self: _TAbstractPadding, value: float | Unit100MM | None) -> _TAbstractPadding:
         """
         Gets a copy of instance with right side set or removed
 
         Args:
-            value (float | None): Padding value
+            value (float, Unit100MM, optional): Padding value
 
         Returns:
             Padding: Padding instance
@@ -261,11 +267,14 @@ class AbstractPadding(StyleBase):
         return float(pv / 100)
 
     @prop_left.setter
-    def prop_left(self, value: float | None):
+    def prop_left(self, value: float | Unit100MM | None):
         if value is None:
             self._remove(self._props.left)
             return
-        self._set(self._props.left, round(value * 100))
+        if isinstance(value, Unit100MM):
+            self._set(self._props.left, value.value)
+        else:
+            self._set(self._props.left, round(value * 100))
 
     @property
     def prop_right(self) -> float | None:
@@ -278,11 +287,14 @@ class AbstractPadding(StyleBase):
         return float(pv / 100)
 
     @prop_right.setter
-    def prop_right(self, value: float | None):
+    def prop_right(self, value: float | Unit100MM | None):
         if value is None:
             self._remove(self._props.right)
             return
-        self._set(self._props.right, round(value * 100))
+        if isinstance(value, Unit100MM):
+            self._set(self._props.right, value.value)
+        else:
+            self._set(self._props.right, round(value * 100))
 
     @property
     def prop_top(self) -> float | None:
@@ -295,11 +307,14 @@ class AbstractPadding(StyleBase):
         return float(pv / 100)
 
     @prop_top.setter
-    def prop_top(self, value: float | None):
+    def prop_top(self, value: float | Unit100MM | None):
         if value is None:
             self._remove(self._props.top)
             return
-        self._set(self._props.top, round(value * 100))
+        if isinstance(value, Unit100MM):
+            self._set(self._props.top, value.value)
+        else:
+            self._set(self._props.top, round(value * 100))
 
     @property
     def prop_bottom(self) -> float | None:
@@ -312,11 +327,14 @@ class AbstractPadding(StyleBase):
         return float(pv / 100)
 
     @prop_bottom.setter
-    def prop_bottom(self, value: float | None):
+    def prop_bottom(self, value: float | Unit100MM | None):
         if value is None:
             self._remove(self._props.bottom)
             return
-        self._set(self._props.bottom, round(value * 100))
+        if isinstance(value, Unit100MM):
+            self._set(self._props.bottom, value.value)
+        else:
+            self._set(self._props.bottom, round(value * 100))
 
     @property
     def _props(self) -> BorderProps:
