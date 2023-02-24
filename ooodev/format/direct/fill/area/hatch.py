@@ -106,6 +106,7 @@ class Hatch(StyleMulti):
                 "com.sun.star.text.TextContent",
                 "com.sun.star.beans.PropertySet",
                 "com.sun.star.style.PageStyle",
+                "com.sun.star.text.TextFrame",
             )
         return self._supported_services_values
 

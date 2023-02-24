@@ -30,6 +30,8 @@ class FillColor(AbstractColor):
                 "com.sun.star.drawing.FillProperties",
                 "com.sun.star.beans.PropertySet",
                 "com.sun.star.chart2.PageBackground",
+                "com.sun.star.style.Style",
+                "com.sun.star.text.TextFrame",
             )
         return self._supported_services_values
 

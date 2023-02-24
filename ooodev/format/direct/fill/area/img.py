@@ -180,6 +180,7 @@ class Img(StyleBase):
                 "com.sun.star.beans.PropertySet",
                 "com.sun.star.style.ParagraphStyle",
                 "com.sun.star.style.PageStyle",
+                "com.sun.star.text.TextFrame",
             )
         return self._supported_services_values
 

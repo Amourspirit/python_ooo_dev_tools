@@ -107,7 +107,7 @@ class GradientStruct(StyleBase):
         try:
             return self._supported_services_values
         except AttributeError:
-            self._supported_services_values = ()
+            self._supported_services_values = ("com.sun.star.text.TextFrame",)
         return self._supported_services_values
 
     def _get_property_name(self) -> str:
