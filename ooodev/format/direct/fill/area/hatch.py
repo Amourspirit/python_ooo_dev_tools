@@ -11,7 +11,6 @@ from ooo.dyn.drawing.fill_style import FillStyle
 from ooo.dyn.drawing.hatch_style import HatchStyle as HatchStyle
 from ooo.dyn.drawing.hatch import Hatch as UnoHatch
 
-from .....events.args.cancel_event_args import CancelEventArgs
 from .....events.args.key_val_cancel_args import KeyValCancelArgs
 from .....events.format_named_event import FormatNamedEvent
 from .....exceptions import ex as mEx
@@ -70,27 +69,13 @@ class Hatch(StyleMulti):
             color=color,
             distance=space,
             angle=angle,
-            _cattribs={
-                "_supported_services_values": self._supported_services(),
-                "_format_kind_prop": self.prop_format_kind,
-                "_property_name": self._props.hatch_prop,
-            },
+            _cattribs=self._get_hatch_cattribs(),
         )
         hatch._prop_parent = self
         # hatch._struct_property_name = self._props.hatch_prop
 
         # create event just to listen to fill color init
-        bk_color = FillColor(
-            color=bg_color,
-            _cattribs={
-                "_supported_services_values": self._supported_services(),
-                "_format_kind_prop": self.prop_format_kind,
-                "_props_internal_attributes": FillColorProps(
-                    color=self._props.color, style=self._props.style, bg=self._props.bg
-                ),
-            },
-        )
-
+        bk_color = FillColor(color=bg_color, _cattribs=self._get_fill_color_cattribs())
         bk_color._prop_parent = self
         # FillStyle is set by this class
         bk_color._remove(self._props.style)
@@ -104,6 +89,7 @@ class Hatch(StyleMulti):
             init_vals[self._props.bg] = False
         else:
             init_vals[self._props.bg] = True
+        self._bg_color = bg_color
 
         super().__init__(**init_vals)
         self._set_style("fill_color", bk_color, *bk_color.get_attrs())
@@ -155,6 +141,40 @@ class Hatch(StyleMulti):
     # endregion apply()
 
     # endregion Overrides
+
+    # region Internal Methods
+    def _get_hatch_cattribs(self) -> dict:
+        return {
+            "_supported_services_values": self._supported_services(),
+            "_format_kind_prop": self.prop_format_kind,
+            "_property_name": self._props.hatch_prop,
+        }
+
+    def _get_fill_color_cattribs(self) -> dict:
+        return {
+            "_supported_services_values": self._supported_services(),
+            "_format_kind_prop": self.prop_format_kind,
+            "_props_internal_attributes": FillColorProps(
+                color=self._props.color, style=self._props.style, bg=self._props.bg
+            ),
+        }
+
+    # region copy()
+    @overload
+    def copy(self: _THatch) -> _THatch:
+        ...
+
+    @overload
+    def copy(self: _THatch, **kwargs) -> _THatch:
+        ...
+
+    def copy(self: _THatch, **kwargs) -> _THatch:
+        cp = super().copy(**kwargs)
+        cp._bg_color = self._bg_color
+        return cp
+
+    # endregion copy()
+    # endregion Internal Methods
 
     # region Static Methods
     # region from_preset()
@@ -215,14 +235,7 @@ class Hatch(StyleMulti):
             raise mEx.NotSupportedError("Object is not support to convert to Hatch")
 
         hatch = cast(UnoHatch, mProps.Props.get(obj, nu._props.hatch_prop))
-        cattribs = {
-            "_supported_services_values": nu._supported_services(),
-            "_format_kind_prop": nu.prop_format_kind,
-            "_props_internal_attributes": FillColorProps(
-                color=nu._props.color, style=nu._props.style, bg=nu._props.bg
-            ),
-        }
-        fc = FillColor.from_obj(obj, _cattribs=cattribs)
+        fc = FillColor.from_obj(obj, _cattribs=nu._get_fill_color_cattribs())
 
         if hatch.Angle > 0:
             angle = round(hatch.Angle / 10)
@@ -301,21 +314,44 @@ class Hatch(StyleMulti):
 
     @property
     def prop_inner_color(self) -> FillColor:
-        """Gets Fill Color instance"""
+        """Gets/Sets Fill Color instance"""
         try:
             return self._direct_inner_color
         except AttributeError:
             self._direct_inner_color = cast(FillColor, self._get_style_inst("fill_color"))
         return self._direct_inner_color
 
+    @prop_inner_color.setter
+    def prop_inner_color(self, value: FillColor) -> None:
+        bk_color = FillColor(color=value.prop_color, _cattribs=self._get_fill_color_cattribs())
+        bk_color._prop_parent = self
+        # FillStyle is set by this class
+        bk_color._remove(self._props.style)
+        # add event listener to prevent FillStyle from being set
+        bk_color.add_event_listener(FormatNamedEvent.STYLE_SETTING, _on_bg_color_setting)
+        bk_color.prop_color = value.prop_color
+
+        if bk_color.prop_color < 0:
+            self._set(self._props.bg, False)
+        else:
+            self._set(self._props.bg, True)
+        self._del_attribs("_direct_inner_color")
+        self._set_style("fill_color", bk_color, *bk_color.get_attrs())
+
     @property
     def prop_inner_hatch(self) -> HatchStruct:
-        """Gets Hatch Struct instance"""
+        """Gets/Sets Hatch Struct instance"""
         try:
             return self._direct_inner_hatch
         except AttributeError:
             self._direct_inner_hatch = cast(HatchStruct, self._get_style_inst("fill_hatch"))
         return self._direct_inner_hatch
+
+    @prop_inner_hatch.setter
+    def prop_inner_hatch(self, value: HatchStruct) -> None:
+        hatch = HatchStruct.from_hatch(value=value.get_uno_struct(), _cattribs=self._get_hatch_cattribs())
+        self._del_attribs("_direct_inner_hatch")
+        self._set_style("fill_hatch", hatch, *hatch.get_attrs())
 
     @property
     def _props(self) -> AreaHatchProps:

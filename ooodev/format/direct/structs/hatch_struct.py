@@ -78,12 +78,6 @@ class HatchStruct(StyleBase):
             self._property_name = "FillHatch"
         return self._property_name
 
-    def copy(self: _THatchStruct) -> _THatchStruct:
-        nu = self.__class__()
-        if self._dv:
-            nu._update(self._dv)
-        return nu
-
     def get_attrs(self) -> Tuple[str, ...]:
         return (self._get_property_name(),)
 

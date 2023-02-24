@@ -1,21 +1,20 @@
 from __future__ import annotations
-from typing import Tuple, cast
+from typing import cast
 import uno
-from ooo.dyn.table.border_line_style import BorderLineStyleEnum as BorderLineStyleEnum
-
-from ....writer.style.page.kind.style_page_kind import StylePageKind as StylePageKind
-from ..page_style_base_multi import PageStyleBaseMulti
 from ....direct.structs.side import Side as Side, LineSize as LineSize, SideFlags as SideFlags
+from ..frame_style_base_multi import FrameStyleBaseMulti
+from ....writer.style.frame.style_frame_kind import StyleFrameKind as StyleFrameKind
 from ....direct.para.border.sides import Sides as InnerSides
 
 
-class Sides(PageStyleBaseMulti):
+class Sides(FrameStyleBaseMulti):
     """
-    Page Style Border Sides.
+    Frame Style Border Shadow.
 
     .. versionadded:: 0.9.0
     """
 
+    # region Init
     def __init__(
         self,
         *,
@@ -24,8 +23,8 @@ class Sides(PageStyleBaseMulti):
         top: Side | None = None,
         bottom: Side | None = None,
         all: Side | None = None,
-        style_name: StylePageKind | str = StylePageKind.STANDARD,
-        style_family: str = "PageStyles",
+        style_name: StyleFrameKind | str = StyleFrameKind.FRAME,
+        style_family: str = "FrameStyles",
     ) -> None:
         """
         Constructor
@@ -36,49 +35,66 @@ class Sides(PageStyleBaseMulti):
             top (Side | None, optional): Determines the line style at the top edge.
             bottom (Side | None, optional): Determines the line style at the bottom edge.
             all (Side | None, optional): Determines the line style at the top, bottom, left, right edges. If this argument has a value then arguments ``top``, ``bottom``, ``left``, ``right`` are ignored
-            style_name (StyleParaKind, str, optional): Specifies the Page Style that instance applies to. Deftult is Default Page Style.
-            style_family (str, optional): Style family. Defatult ``PageStyles``.
+            style_name (StyleFrameKind, str, optional): Specifies the Frame Style that instance applies to. Deftult is Default Frame Style.
+            style_family (str, optional): Style family. Defatult ``FrameStyles``.
 
         Returns:
             None:
         """
 
-        direct = InnerSides(left=left, right=right, top=top, bottom=bottom, all=all)
+        direct = InnerSides(
+            left=left, right=right, top=top, bottom=bottom, all=all, _cattribs=self._get_inner_cattribs()
+        )
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
         self._set_style("direct", direct, *direct.get_attrs())
 
+    # endregion Init
+
+    # region Static Methods
     @classmethod
     def from_style(
         cls,
         doc: object,
-        style_name: StylePageKind | str = StylePageKind.STANDARD,
-        style_family: str = "PageStyles",
+        style_name: StyleFrameKind | str = StyleFrameKind.FRAME,
+        style_family: str = "FrameStyles",
     ) -> Sides:
         """
         Gets instance from Document.
 
         Args:
             doc (object): UNO Documnet Object.
-            style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to. Deftult is Default Paragraph Style.
-            style_family (str, optional): Style family. Defatult ``PageStyles``.
+            style_name (StyleFrameKind, str, optional): Specifies the Frame Style that instance applies to. Deftult is Default Frame Style.
+            style_family (str, optional): Style family. Defatult ``FrameStyles``.
 
         Returns:
-            Sides: ``Sides`` instance from document properties.
+            Sides: ``Sides`` instance from style properties.
         """
         inst = cls(style_name=style_name, style_family=style_family)
-        direct = InnerSides.from_obj(inst.get_style_props(doc))
+        direct = InnerSides.from_obj(obj=inst.get_style_props(doc), _cattribs=inst._get_inner_cattribs())
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
+    # endregion Static Methods
+
+    # region internal methods
+    def _get_inner_cattribs(self) -> dict:
+        return {
+            "_format_kind_prop": self.prop_format_kind,
+            "_supported_services_values": self._supported_services(),
+        }
+
+    # endregion internal methods
+
+    # region Properties
     @property
     def prop_style_name(self) -> str:
         """Gets/Sets property Style Name"""
         return self._style_name
 
     @prop_style_name.setter
-    def prop_style_name(self, value: str | StylePageKind):
+    def prop_style_name(self, value: str | StyleFrameKind):
         self._style_name = str(value)
 
     @property
@@ -93,6 +109,9 @@ class Sides(PageStyleBaseMulti):
     @prop_inner.setter
     def prop_inner(self, value: InnerSides) -> None:
         if not isinstance(value, InnerSides):
-            raise TypeError(f'Expected type of InnerSides, got "{type(value).__name__}"')
+            raise TypeError(f'Expected type of InnerTransparency, got "{type(value).__name__}"')
+        direct = value.copy(_cattribs=self._get_inner_cattribs())
         self._del_attribs("_direct_inner")
-        self._set_style("direct", value, *value.get_attrs())
+        self._set_style("direct", direct, *direct.get_attrs())
+
+    # endregion Properties

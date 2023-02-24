@@ -4,12 +4,12 @@ import uno
 
 from ..frame_style_base_multi import FrameStyleBaseMulti
 from ....writer.style.frame.style_frame_kind import StyleFrameKind as StyleFrameKind
-from ....direct.frame.options.align import Align as InnerAlign, VertAdjustKind as VertAdjustKind
+from ....direct.para.border.padding import Padding as InnerPadding
 
 
-class Align(FrameStyleBaseMulti):
+class Padding(FrameStyleBaseMulti):
     """
-    Frame Style Options Align.
+    Frame Style Border Padding.
 
     .. versionadded:: 0.9.0
     """
@@ -18,7 +18,11 @@ class Align(FrameStyleBaseMulti):
     def __init__(
         self,
         *,
-        adjust: VertAdjustKind = VertAdjustKind.TOP,
+        left: float | None = None,
+        right: float | None = None,
+        top: float | None = None,
+        bottom: float | None = None,
+        all: float | None = None,
         style_name: StyleFrameKind | str = StyleFrameKind.FRAME,
         style_family: str = "FrameStyles",
     ) -> None:
@@ -26,7 +30,11 @@ class Align(FrameStyleBaseMulti):
         Constructor
 
         Args:
-            adjust (VertAdjustKindl): Specifies Verticial Adjustment. Default ``VertAdjustKind.TOP``
+            left (float, optional): Left (in mm units).
+            right (float, optional): Right (in mm units).
+            top (float, optional): Top (in mm units).
+            bottom (float, optional): Bottom (in mm units).
+            all (float, optional): Left, right, top, bottom (in mm units). If argument is present then ``left``, ``right``, ``top``, and ``bottom`` arguments are ignored.
             style_name (StyleFrameKind, str, optional): Specifies the Frame Style that instance applies to. Deftult is Default Frame Style.
             style_family (str, optional): Style family. Defatult ``FrameStyles``.
 
@@ -34,7 +42,9 @@ class Align(FrameStyleBaseMulti):
             None:
         """
 
-        direct = InnerAlign(adjust=adjust)
+        direct = InnerPadding(
+            left=left, right=right, top=top, bottom=bottom, all=all, _cattribs=self._get_inner_cattribs()
+        )
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
@@ -49,7 +59,7 @@ class Align(FrameStyleBaseMulti):
         doc: object,
         style_name: StyleFrameKind | str = StyleFrameKind.FRAME,
         style_family: str = "FrameStyles",
-    ) -> Align:
+    ) -> Padding:
         """
         Gets instance from Document.
 
@@ -59,14 +69,20 @@ class Align(FrameStyleBaseMulti):
             style_family (str, optional): Style family. Defatult ``FrameStyles``.
 
         Returns:
-            Align: ``Align`` instance from style properties.
+            Padding: ``Padding`` instance from style properties.
         """
         inst = cls(style_name=style_name, style_family=style_family)
-        direct = InnerAlign.from_obj(inst.get_style_props(doc))
+        direct = InnerPadding.from_obj(obj=inst.get_style_props(doc), _cattribs=inst._get_inner_cattribs())
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
     # endregion Static Methods
+
+    # region internal methods
+    def _get_inner_cattribs(self) -> dict:
+        return {"_format_kind_prop": self.prop_format_kind, "_supported_services_values": self._supported_services()}
+
+    # endregion internal methods
 
     # region Properties
     @property
@@ -79,19 +95,23 @@ class Align(FrameStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> InnerAlign:
-        """Gets/Sets Inner Align instance"""
+    def prop_inner(self) -> InnerPadding:
+        """Gets/Sets Inner Padding instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(InnerAlign, self._get_style_inst("direct"))
+            self._direct_inner = cast(InnerPadding, self._get_style_inst("direct"))
         return self._direct_inner
 
     @prop_inner.setter
-    def prop_inner(self, value: InnerAlign) -> None:
-        if not isinstance(value, InnerAlign):
-            raise TypeError(f'Expected type of InnerAlign, got "{type(value).__name__}"')
+    def prop_inner(self, value: InnerPadding) -> None:
+        if not isinstance(value, InnerPadding):
+            raise TypeError(f'Expected type of InnerTransparency, got "{type(value).__name__}"')
+        direct = value.__class__(_cattribs=self._get_inner_cattribs())
+        vals = [value._get(pname) for pname in value._props]
+        for key, val in zip(direct._props, vals):
+            direct._set(key, val)
         self._del_attribs("_direct_inner")
-        self._set_style("direct", value, *value.get_attrs())
+        self._set_style("direct", direct, *direct.get_attrs())
 
     # endregion Properties

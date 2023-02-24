@@ -5,17 +5,9 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.writer.modify.page.borders import (
-    Sides,
-    Side,
-    SideFlags,
-    LineSize,
-    StylePageKind,
-    BorderLineStyleEnum,
-)
+from ooodev.format.writer.modify.frame.area import StyleFrameKind, Img, PresetImageKind, SizeMM
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
-from ooodev.utils.color import StandardColor
 from ooodev.office.write import Write
 
 
@@ -33,16 +25,20 @@ def test_write(loader, para_text) -> None:
         if not Lo.bridge_connector.headless:
             Write.append_para(cursor=cursor, text=para_text)
 
-        side = Side(line=BorderLineStyleEnum.DOUBLE, color=StandardColor.RED_DARK3, width=LineSize.MEDIUM)
+        style = Img.from_preset(preset=PresetImageKind.COLORFUL_PEBBLES, style_name=StyleFrameKind.FRAME)
 
-        style = Sides(all=side)
         style.apply(doc)
         # props = style.get_style_props(doc)
 
-        f_style = Sides.from_style(doc, style.prop_style_name)
-        f_side = f_style.prop_inner.prop_left
-        assert f_side.prop_color == side.prop_color
-        assert f_side.prop_width == pytest.approx(side.prop_width, rel=1e2)
+        f_style = Img.from_style(doc, style.prop_style_name)
+        point = PresetImageKind.COLORFUL_PEBBLES._get_point()
+        xlst = [(point.x - 2) + i for i in range(5)]  # plus or minus 2
+        ylst = [(point.y - 2) + i for i in range(5)]  # plus or minus 2
+        assert f_style.prop_inner.prop_is_size_mm
+        size = f_style.prop_inner.prop_size
+        assert isinstance(size, SizeMM)
+        assert round(size.width * 100) in xlst
+        assert round(size.height * 100) in ylst
 
         Lo.delay(delay)
     finally:

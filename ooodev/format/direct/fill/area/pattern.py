@@ -104,23 +104,38 @@ class Pattern(StyleBase):
     # endregion Internal Methods
 
     # region Overrides
-
+    # region copy()
+    @overload
     def copy(self: _TPattern) -> _TPattern:
-        cp = super().copy()
+        ...
+
+    @overload
+    def copy(self: _TPattern, **kwargs) -> _TPattern:
+        ...
+
+    def copy(self: _TPattern, **kwargs) -> _TPattern:
+        """Gets a copy of instance as a new instance"""
+        cp = super().copy(**kwargs)
         cp._name = self._name
         return cp
+
+    # endregion copy()
 
     def _container_get_service_name(self) -> str:
         return "com.sun.star.drawing.BitmapTable"
 
     def _supported_services(self) -> Tuple[str, ...]:
-        return (
-            "com.sun.star.drawing.FillProperties",
-            "com.sun.star.text.TextContent",
-            "com.sun.star.beans.PropertySet",
-            "com.sun.star.style.ParagraphStyle",
-            "com.sun.star.style.PageStyle",
-        )
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = (
+                "com.sun.star.drawing.FillProperties",
+                "com.sun.star.text.TextContent",
+                "com.sun.star.beans.PropertySet",
+                "com.sun.star.style.ParagraphStyle",
+                "com.sun.star.style.PageStyle",
+            )
+        return self._supported_services_values
 
     # region apply()
     @overload

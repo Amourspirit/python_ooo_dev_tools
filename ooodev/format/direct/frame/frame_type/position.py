@@ -191,8 +191,18 @@ class Position(StyleBase):
     # endregion Internal Methods
 
     # region Overrides
+    # region copy()
+    @overload
     def copy(self: _TPosition) -> _TPosition:
-        cp = super().copy()
+        ...
+
+    @overload
+    def copy(self: _TPosition, **kwargs) -> _TPosition:
+        ...
+
+    def copy(self: _TPosition, **kwargs) -> _TPosition:
+        """Gets a copy of instance as a new instance"""
+        cp = super().copy(**kwargs)
         if self._horizontal is None:
             cp._horizontal = None
         else:
@@ -203,6 +213,7 @@ class Position(StyleBase):
             cp._vertical = dataclasses.replace(self._vertical)
         return cp
 
+    # endregion copy()
     def _supported_services(self) -> Tuple[str, ...]:
         try:
             return self._supported_services_values

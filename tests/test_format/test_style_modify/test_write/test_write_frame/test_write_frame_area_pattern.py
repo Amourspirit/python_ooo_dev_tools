@@ -5,17 +5,9 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.writer.modify.page.borders import (
-    Sides,
-    Side,
-    SideFlags,
-    LineSize,
-    StylePageKind,
-    BorderLineStyleEnum,
-)
+from ooodev.format.writer.modify.frame.area import StyleFrameKind, Pattern, PresetPatternKind
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
-from ooodev.utils.color import StandardColor
 from ooodev.office.write import Write
 
 
@@ -33,16 +25,13 @@ def test_write(loader, para_text) -> None:
         if not Lo.bridge_connector.headless:
             Write.append_para(cursor=cursor, text=para_text)
 
-        side = Side(line=BorderLineStyleEnum.DOUBLE, color=StandardColor.RED_DARK3, width=LineSize.MEDIUM)
+        style = Pattern.from_preset(preset=PresetPatternKind.HORIZONTAL_BRICK, style_name=StyleFrameKind.FRAME)
 
-        style = Sides(all=side)
         style.apply(doc)
         # props = style.get_style_props(doc)
-
-        f_style = Sides.from_style(doc, style.prop_style_name)
-        f_side = f_style.prop_inner.prop_left
-        assert f_side.prop_color == side.prop_color
-        assert f_side.prop_width == pytest.approx(side.prop_width, rel=1e2)
+        f_style = Pattern.from_style(doc, style.prop_style_name)
+        assert f_style.prop_inner.prop_tile == style.prop_inner.prop_tile
+        assert f_style.prop_inner.prop_stretch == style.prop_inner.prop_stretch
 
         Lo.delay(delay)
     finally:

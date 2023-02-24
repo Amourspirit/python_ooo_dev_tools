@@ -5,10 +5,10 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.writer.modify.page.borders import Padding, StylePageKind
+from ooodev.format.writer.modify.frame.area import Color, InnerColor, StyleFrameKind
+from ooodev.utils.color import StandardColor
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
-from ooodev.utils.color import StandardColor
 from ooodev.office.write import Write
 
 
@@ -26,19 +26,19 @@ def test_write(loader, para_text) -> None:
         if not Lo.bridge_connector.headless:
             Write.append_para(cursor=cursor, text=para_text)
 
-        amt = 15.3
-        style = Padding(all=amt)
+        style = Color(color=StandardColor.GREEN_LIGHT2, style_name=StyleFrameKind.FRAME)
+
         style.apply(doc)
-        props = style.get_style_props(doc)
+        # props = style.get_style_props(doc)
 
-        border = round(amt * 100)
-        assert props.getPropertyValue("LeftBorderDistance") in range(border - 2, border + 3)
+        f_style = Color.from_style(doc, style.prop_style_name)
+        assert f_style.prop_inner.prop_color == style.prop_inner.prop_color
 
-        f_style = Padding.from_style(doc, style.prop_style_name)
-        assert f_style.prop_inner.prop_left == pytest.approx(amt, rel=1e2)
-        assert f_style.prop_inner.prop_right == pytest.approx(amt, rel=1e2)
-        assert f_style.prop_inner.prop_top == pytest.approx(amt, rel=1e2)
-        assert f_style.prop_inner.prop_bottom == pytest.approx(amt, rel=1e2)
+        inner_color = InnerColor(color=StandardColor.BLUE_LIGHT3)
+        style.prop_inner = inner_color
+        style.apply(doc)
+        f_style = Color.from_style(doc, style.prop_style_name)
+        assert f_style.prop_inner.prop_color == style.prop_inner.prop_color
 
         Lo.delay(delay)
     finally:

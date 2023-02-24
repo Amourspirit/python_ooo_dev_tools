@@ -8,7 +8,6 @@ from __future__ import annotations
 from typing import Any, Dict, Tuple, Type, cast, overload, TypeVar
 
 import uno
-from ....events.event_singleton import _Events
 from ....meta.static_prop import static_prop
 from ....utils import props as mProps
 from ....utils import lo as mLo
@@ -130,13 +129,27 @@ class ShadowStruct(StyleBase):
         """
         return (self._get_property_name(),)
 
+    # region copy()
+    @overload
     def copy(self: _TShadowStruct) -> _TShadowStruct:
+        ...
+
+    @overload
+    def copy(self: _TShadowStruct, **kwargs) -> _TShadowStruct:
+        ...
+
+    def copy(self: _TShadowStruct, **kwargs) -> _TShadowStruct:
+        """Gets a copy of instance as a new instance"""
         nu = self.__class__(
-            location=self.prop_width, color=self.prop_color, transparent=self.prop_transparent, width=self.prop_width
+            location=self.prop_width,
+            color=self.prop_color,
+            transparent=self.prop_transparent,
+            width=self.prop_width,
+            **kwargs,
         )
-        if self._dv:
-            nu._update(self._dv)
         return nu
+
+    # endregion copy()
 
     # region apply()
 

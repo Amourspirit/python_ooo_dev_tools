@@ -4,12 +4,13 @@ import uno
 
 from ..frame_style_base_multi import FrameStyleBaseMulti
 from ....writer.style.frame.style_frame_kind import StyleFrameKind as StyleFrameKind
-from ....direct.frame.options.align import Align as InnerAlign, VertAdjustKind as VertAdjustKind
+from ....direct.fill.area.fill_color import FillColor as InnerColor
+from .....utils import color as mColor
 
 
-class Align(FrameStyleBaseMulti):
+class Color(FrameStyleBaseMulti):
     """
-    Frame Style Options Align.
+    Frame Style Area Color.
 
     .. versionadded:: 0.9.0
     """
@@ -18,7 +19,7 @@ class Align(FrameStyleBaseMulti):
     def __init__(
         self,
         *,
-        adjust: VertAdjustKind = VertAdjustKind.TOP,
+        color: mColor.Color = -1,
         style_name: StyleFrameKind | str = StyleFrameKind.FRAME,
         style_family: str = "FrameStyles",
     ) -> None:
@@ -26,7 +27,7 @@ class Align(FrameStyleBaseMulti):
         Constructor
 
         Args:
-            adjust (VertAdjustKindl): Specifies Verticial Adjustment. Default ``VertAdjustKind.TOP``
+            color (Color, optional): Color.
             style_name (StyleFrameKind, str, optional): Specifies the Frame Style that instance applies to. Deftult is Default Frame Style.
             style_family (str, optional): Style family. Defatult ``FrameStyles``.
 
@@ -34,13 +35,20 @@ class Align(FrameStyleBaseMulti):
             None:
         """
 
-        direct = InnerAlign(adjust=adjust)
+        direct = InnerColor(color=color, _cattribs=self._get_inner_cattribs())
+        direct._prop_parent = self
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
         self._set_style("direct", direct, *direct.get_attrs())
 
     # endregion Init
+
+    # region Internal Methods
+    def _get_inner_cattribs(self) -> dict:
+        return {"_supported_services_values": self._supported_services(), "_format_kind_prop": self.prop_format_kind}
+
+    # endregion Internal Methods
 
     # region Static Methods
     @classmethod
@@ -49,7 +57,7 @@ class Align(FrameStyleBaseMulti):
         doc: object,
         style_name: StyleFrameKind | str = StyleFrameKind.FRAME,
         style_family: str = "FrameStyles",
-    ) -> Align:
+    ) -> Color:
         """
         Gets instance from Document.
 
@@ -59,10 +67,11 @@ class Align(FrameStyleBaseMulti):
             style_family (str, optional): Style family. Defatult ``FrameStyles``.
 
         Returns:
-            Align: ``Align`` instance from style properties.
+            Color: ``Color`` instance from style properties.
         """
         inst = cls(style_name=style_name, style_family=style_family)
-        direct = InnerAlign.from_obj(inst.get_style_props(doc))
+        direct = InnerColor.from_obj(obj=inst.get_style_props(doc), _cattribs=inst._get_inner_cattribs())
+        direct._prop_parent = inst
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
@@ -79,19 +88,22 @@ class Align(FrameStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> InnerAlign:
-        """Gets/Sets Inner Align instance"""
+    def prop_inner(self) -> InnerColor:
+        """Gets/Sets Inner Color instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(InnerAlign, self._get_style_inst("direct"))
+            self._direct_inner = cast(InnerColor, self._get_style_inst("direct"))
         return self._direct_inner
 
     @prop_inner.setter
-    def prop_inner(self, value: InnerAlign) -> None:
-        if not isinstance(value, InnerAlign):
-            raise TypeError(f'Expected type of InnerAlign, got "{type(value).__name__}"')
+    def prop_inner(self, value: InnerColor) -> None:
+        if not isinstance(value, InnerColor):
+            raise TypeError(f'Expected type of InnerColor, got "{type(value).__name__}"')
+        inst = value.__class__(_cattribs=self._get_inner_cattribs())
+        for prop in value._props:
+            inst._set(prop, value._get(prop))
         self._del_attribs("_direct_inner")
-        self._set_style("direct", value, *value.get_attrs())
+        self._set_style("direct", inst, *inst.get_attrs())
 
     # endregion Properties
