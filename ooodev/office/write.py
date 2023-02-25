@@ -67,6 +67,7 @@ from com.sun.star.text import XTextContent
 from com.sun.star.text import XTextDocument
 from com.sun.star.text import XTextField
 from com.sun.star.text import XTextFrame
+from com.sun.star.text import XTextFramesSupplier
 from com.sun.star.text import XTextGraphicObjectsSupplier
 from com.sun.star.text import XTextRange
 from com.sun.star.text import XTextTable
@@ -2885,7 +2886,7 @@ class Write(mSel.Selection):
             doc (XComponent): Document
 
         Raises:
-            MissingInterfaceError: if doc does not implement XTextGraphicObjectsSupplier interface
+            MissingInterfaceError: if doc does not implement ``XTextGraphicObjectsSupplier`` interface
 
         Returns:
             XNameAccess | None: Graphic Links on success, Otherwise, None
@@ -2899,6 +2900,35 @@ class Write(mSel.Selection):
 
         if not xname_access.hasElements():
             mLo.Lo.print("No graphics elements found")
+            return None
+
+        return xname_access
+
+    @staticmethod
+    def get_text_frames(doc: XComponent) -> XNameAccess | None:
+        """
+        Gets document Text Frames.
+
+        Args:
+            doc (XComponent): Document
+
+        Raises:
+            MissingInterfaceError: if doc does not implement ``XTextFramesSupplier`` interface
+
+        Returns:
+            XNameAccess | None: Text Frames on success, Otherwise, None
+
+        .. versionadded:: 0.9.0
+        """
+        supplier = mLo.Lo.qi(XTextFramesSupplier, doc, True)
+
+        xname_access = supplier.getTextFrames()
+        if xname_access is None:
+            mLo.Lo.print("Name access to text frames not possible")
+            return None
+
+        if not xname_access.hasElements():
+            mLo.Lo.print("No text frame elements found")
             return None
 
         return xname_access

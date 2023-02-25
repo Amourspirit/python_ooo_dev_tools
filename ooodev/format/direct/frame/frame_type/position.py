@@ -19,6 +19,7 @@ from .....utils import lo as mLo
 from .....utils import props as mProps
 from .....utils.data_type.intensity import Intensity as Intensity
 from .....utils.unit_convert import UnitConvert
+from .....utils.data_type.unit_100_mm import Unit100MM
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleBase
 from ...common.props.frame_type_positon_props import FrameTypePositonProps
@@ -95,17 +96,30 @@ class RelVertOrient(Enum):
     """at the top of the text line, only sensible for vertical orientation. Only used when Anchor ``To character`` and ``VertOrient`` is ``TOP``, ``BOTTOM``, ``CENTER`` or ``FROM_TOP_OR_BOTTOM``."""
 
 
-@dataclasses.dataclass(frozen=True)
 class Horizontal:
     """Horizontal Frame Position. Not used when Anchor is set to ``As Character``."""
 
-    position: HoriOrient
-    """Horizontal Position"""
-    rel: RelHoriOrient
-    """Relative Orientation"""
-    amount: float = 0.0
-    """Amount in ``mm`` units. Only effective when position is ``HoriOrient.FROM_LEFT``."""
+    # region Init
+    def __init__(self, position: HoriOrient, rel: RelHoriOrient, amount: float | Unit100MM = 0.0) -> None:
+        """
+        Constructor
 
+        Args:
+            position (HoriOrient): Specifies Horizontal Position.
+            rel (RelHoriOrient): Specifies Relative Orientation.
+            amount (float, Unit100MM, optional): Spedifies Amount in ``mm`` units or ``1/100th mm`` units. Only effective when position is ``HoriOrient.FROM_LEFT``. Defaults to ``0.0``.
+        """
+
+        self._position = position
+        self._rel = rel
+        if isinstance(amount, Unit100MM):
+            self._amount = amount.get_value_mm()
+        else:
+            self._amount = amount
+
+    # endregion Init
+
+    # region Dunder Methods
     def __eq__(self, oth: object) -> bool:
         if isinstance(oth, Horizontal):
             result = True
@@ -116,20 +130,76 @@ class Horizontal:
             return math.isclose(self.amount, oth.amount, abs_tol=0.02)
         return NotImplemented
 
+    # endregion Dunder Methods
 
-@dataclasses.dataclass(frozen=True)
+    # region Properties
+    @property
+    def position(self) -> HoriOrient:
+        """
+        Gets/Sets Horizontal Position.
+        """
+        return self._position
+
+    @position.setter
+    def position(self, value: HoriOrient):
+        self._position = value
+
+    @property
+    def rel(self) -> RelHoriOrient:
+        """
+        Gets/Sets Relative Orientation
+        """
+        return self._rel
+
+    @rel.setter
+    def rel(self, value: RelHoriOrient):
+        self._rel = value
+
+    @property
+    def amount(self) -> float:
+        """
+        Gets/Sets Amount in ``mm`` units. Only effective when position is ``HoriOrient.FROM_LEFT``.
+
+        Setting also allows ``Unit100MM`` instance.
+        """
+        return self._amount
+
+    @amount.setter
+    def amount(self, value: float | Unit100MM):
+        if isinstance(value, Unit100MM):
+            self._amount = value.get_value_mm()
+        else:
+            self._amount = value
+
+    # endregion Properties
+
+
 class Vertical:
     """Vertical Frame Position."""
 
-    position: VertOrient
-    """Vertical Position"""
-    rel: RelVertOrient
-    """Relative Orientation"""
-    amount: float = 0.0
-    """Amount in ``mm`` units. Only effective when position is ``VertOrient.FROM_TOP``"""
+    # region Init
+    def __init__(self, position: VertOrient, rel: RelVertOrient, amount: float | Unit100MM = 0.0) -> None:
+        """
+        Constructor
 
+        Args:
+            position (VertOrient): Specifies Vertical Position.
+            rel (RelVertOrient): Specifies Relative Orientation.
+            amount (float, Unit100MM, optional): Spedifies Amount in ``mm`` units or ``1/100th mm`` units. Only effective when position is ``VertOrient.FROM_TOP``. Defaults to ``0.0``.
+        """
+
+        self._position = position
+        self._rel = rel
+        if isinstance(amount, Unit100MM):
+            self._amount = amount.get_value_mm()
+        else:
+            self._amount = amount
+
+    # endregion Init
+
+    # region Dunder Methods
     def __eq__(self, oth: object) -> bool:
-        if isinstance(oth, Vertical):
+        if isinstance(oth, Horizontal):
             result = True
             result = result and self.position == oth.position
             result = result and self.rel == oth.rel
@@ -137,6 +207,49 @@ class Vertical:
                 return False
             return math.isclose(self.amount, oth.amount, abs_tol=0.02)
         return NotImplemented
+
+    # endregion Dunder Methods
+
+    # region Properties
+    @property
+    def position(self) -> VertOrient:
+        """
+        Gets/Sets Vertical Position.
+        """
+        return self._position
+
+    @position.setter
+    def position(self, value: VertOrient):
+        self._position = value
+
+    @property
+    def rel(self) -> RelVertOrient:
+        """
+        Gets/Sets Relative Orientation
+        """
+        return self._rel
+
+    @rel.setter
+    def rel(self, value: RelVertOrient):
+        self._rel = value
+
+    @property
+    def amount(self) -> float:
+        """
+        Gets/Sets Amount in ``mm`` units. Only effective when position is ``VertOrient.FROM_TOP``.
+
+        Setting also allows ``Unit100MM`` instance.
+        """
+        return self._amount
+
+    @amount.setter
+    def amount(self, value: float | Unit100MM):
+        if isinstance(value, Unit100MM):
+            self._amount = value.get_value_mm()
+        else:
+            self._amount = value
+
+    # endregion Properties
 
 
 class Position(StyleBase):
