@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import cast
 import uno
-from ....direct.common.format_types.size_mm import SizeMM as SizeMM
+from .....utils.data_type.size_mm import SizeMM as SizeMM
 from .....utils.data_type.intensity import Intensity as Intensity
 from ....writer.style.page.kind import StylePageKind as StylePageKind
 from ..page_style_base_multi import PageStyleBaseMulti

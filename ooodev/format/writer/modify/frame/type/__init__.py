@@ -15,6 +15,6 @@ from .....direct.frame.frame_type.position import (
 )
 from .....direct.frame.frame_type.anchor import AnchorKind as AnchorKind
 
-from .....modify.frame.frame_type.size import Size as Size, DirectSize as DirectSize
+from .....modify.frame.frame_type.size import Size as Size, InnerSize as InnerSize
 from .....modify.frame.frame_type.position import Position as Position, InnerPosition as InnerPosition
 from .....modify.frame.frame_type.anchor import Anchor as Anchor, InnerAnchor as InnerAnchor

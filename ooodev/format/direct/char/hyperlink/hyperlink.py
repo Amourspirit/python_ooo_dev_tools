@@ -15,32 +15,16 @@ from .....utils import lo as mLo
 from .....utils import props as mProps
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleBase
+from ...common.props.hyperlink_props import HyperlinkProps
+from ...frame.hyperlink.link_to import LinkTo, TargetKind as TargetKind
+
 
 # endregion imports
 
 _THyperlink = TypeVar(name="_THyperlink", bound="Hyperlink")
 
 
-class TargetKind(Enum):
-    """
-    Hyperlink Target
-
-    .. versionadded:: 0.9.0
-    """
-
-    NONE = ""
-    """No target"""
-    BLANK = "_blank"
-    """Blank target"""
-    TOP = "_top"
-    """Top target"""
-    PARENT = "_parent"
-    """Parent target"""
-    SELF = "_self"
-    """Self target"""
-
-
-class Hyperlink(StyleBase):
+class Hyperlink(LinkTo):
     """
     Hyperlink
 
@@ -54,7 +38,7 @@ class Hyperlink(StyleBase):
         *,
         name: str | None = None,
         url: str | None = None,
-        target: TargetKind = TargetKind.NONE,
+        target: TargetKind | str = TargetKind.NONE,
         visited_style: str = "Visited Internet Link",
         unvisited_style: str = "Internet link",
     ) -> None:
@@ -64,24 +48,17 @@ class Hyperlink(StyleBase):
         Args:
             name (str, optional): Link name.
             url (str, optional): Link Url.
-            target (TargetKind, optional): Link target. Defaults to ``TargetKind.NONE``.
+            target (TargetKind, str, optional): Link target. Defaults to ``TargetKind.NONE``.
             visited_style (str, optional): Link visited style. Defaults to ``Internet link``.
             unvisited_style (str, optional): Link unvisited style. Defaults to ``Visited Internet Link``.
 
         Returns:
             None:
         """
-        init_vals = {
-            "HyperLinkTarget": target.value,
-            "VisitedCharStyleName": visited_style,
-            "UnvisitedCharStyleName": unvisited_style,
-        }
-        if not name is None:
-            init_vals["HyperLinkName"] = name
-        if not url is None:
-            init_vals["HyperLinkURL"] = url
 
-        super().__init__(**init_vals)
+        super().__init__(name=name, url=url, target=target)
+        self.prop_visited_style = visited_style
+        self.prop_unvisited_style = unvisited_style
 
     # endregion init
 
@@ -95,38 +72,6 @@ class Hyperlink(StyleBase):
                 "com.sun.star.style.CharacterStyle",
             )
         return self._supported_services_values
-
-    def _on_modifing(self, event: CancelEventArgs) -> None:
-        if self._is_default_inst:
-            raise ValueError("Modifying a default instance is not allowed")
-        return super()._on_modifing(event)
-
-    # region apply()
-
-    @overload
-    def apply(self, obj: object) -> None:
-        ...
-
-    def apply(self, obj: object, **kwargs) -> None:
-        """
-        Applies padding to ``obj``
-
-        Args:
-            obj (object): UNO object that supports ``com.sun.star.style.CharacterProperties`` service.
-            kwargs (Any, optional): Expandable list of key value pairs that may be used in child classes.
-
-        Returns:
-            None:
-        """
-        try:
-            super().apply(obj, **kwargs)
-        except mEx.MultiError as e:
-            mLo.Lo.print(f"{self.__class__.__name__}.apply(): Unable to set Property")
-            for err in e.errors:
-                mLo.Lo.print(f"  {err}")
-        return None
-
-    # endregion apply()
 
     # region from_obj()
     @overload
@@ -157,11 +102,11 @@ class Hyperlink(StyleBase):
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
-        inst._set("HyperLinkName", mProps.Props.get(obj, "HyperLinkName"))
-        inst._set("HyperLinkURL", mProps.Props.get(obj, "HyperLinkURL"))
-        inst._set("HyperLinkTarget", mProps.Props.get(obj, "HyperLinkTarget"))
-        inst._set("VisitedCharStyleName", mProps.Props.get(obj, "VisitedCharStyleName"))
-        inst._set("UnvisitedCharStyleName", mProps.Props.get(obj, "UnvisitedCharStyleName"))
+        inst._set(inst._props.name, mProps.Props.get(obj, inst._props.name))
+        inst._set(inst._props.url, mProps.Props.get(obj, inst._props.url))
+        inst._set(inst._props.target, mProps.Props.get(obj, inst._props.target))
+        inst._set(inst._props.visited, mProps.Props.get(obj, inst._props.visited))
+        inst._set(inst._props.unvisited, mProps.Props.get(obj, inst._props.unvisited))
 
         return inst
 
@@ -169,59 +114,23 @@ class Hyperlink(StyleBase):
     # endregion methods
 
     # region Properties
-
-    @property
-    def prop_name(self) -> str | None:
-        """Gets/Sets name"""
-        return self._get("HyperLinkName")
-
-    @prop_name.setter
-    def prop_name(self, value: str | None):
-        if value is None:
-            if self._has("HyperLinkName"):
-                self._remove("HyperLinkName")
-        else:
-            self._set("HyperLinkName", value)
-
-    @property
-    def prop_url(self) -> str | None:
-        """Gets/Sets url"""
-        return self._get("HyperLinkURL")
-
-    @prop_url.setter
-    def prop_url(self, value: str | None):
-        if value is None:
-            if self._has("HyperLinkURL"):
-                self._remove("HyperLinkURL")
-        else:
-            self._set("HyperLinkURL", value)
-
-    @property
-    def prop_target(self) -> TargetKind:
-        """Gets/Sets target"""
-        return TargetKind(self._get("HyperLinkTarget"))
-
-    @prop_target.setter
-    def prop_target(self, value: TargetKind):
-        self._set("HyperLinkTarget", value.value)
-
     @property
     def prop_visited_style(self) -> str:
         """Gets/Sets visited style"""
-        return self._get("VisitedCharStyleName")
+        return self._get(self._props.visited)
 
     @prop_visited_style.setter
     def prop_visited_style(self, value: str):
-        self._set("VisitedCharStyleName", value)
+        self._set(self._props.visited, value)
 
     @property
     def prop_unvisited_style(self) -> str:
         """Gets/Sets style for links that have not yet been visited"""
-        return self._get("UnvisitedCharStyleName")
+        return self._get(self._props.unvisited)
 
     @prop_unvisited_style.setter
     def prop_unvisited_style(self, value: str):
-        self._set("UnvisitedCharStyleName", value)
+        self._set(self._props.unvisited, value)
 
     @property
     def prop_format_kind(self) -> FormatKind:
@@ -231,6 +140,20 @@ class Hyperlink(StyleBase):
         except AttributeError:
             self._format_kind_prop = FormatKind.CHAR
         return self._format_kind_prop
+
+    @property
+    def _props(self) -> HyperlinkProps:
+        try:
+            return self._props_internal_attributes
+        except AttributeError:
+            self._props_internal_attributes = HyperlinkProps(
+                name="HyperLinkName",
+                target="HyperLinkTarget",
+                url="HyperLinkURL",
+                visited="VisitedCharStyleName",
+                unvisited="UnvisitedCharStyleName",
+            )
+        return self._props_internal_attributes
 
     @static_prop
     def empty() -> Hyperlink:  # type: ignore[misc]

@@ -10,7 +10,7 @@ from ......utils.data_type.intensity_range import IntensityRange as IntensityRan
 from ......utils.data_type.offset import Offset as Offset
 from .....direct.common.format_types.offset_column import OffsetColumn as OffsetColumn
 from .....direct.common.format_types.offset_row import OffsetRow as OffsetRow
-from .....direct.common.format_types.size_mm import SizeMM as SizeMM
+from ......utils.data_type.size_mm import SizeMM as SizeMM
 from .....direct.common.format_types.size_percent import SizePercent as SizePercent
 from .....direct.fill.area.img import ImgStyleKind as ImgStyleKind
 from .....preset.preset_gradient import PresetGradientKind as PresetGradientKind

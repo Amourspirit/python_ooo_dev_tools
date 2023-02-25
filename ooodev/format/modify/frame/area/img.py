@@ -6,7 +6,7 @@ from ooo.dyn.drawing.rectangle_point import RectanglePoint as RectanglePoint
 
 from ....preset.preset_image import PresetImageKind as PresetImageKind
 from .....utils.data_type.offset import Offset as Offset
-from ....direct.common.format_types.size_mm import SizeMM as SizeMM
+from .....utils.data_type.size_mm import SizeMM as SizeMM
 from ....direct.common.format_types.size_percent import SizePercent as SizePercent
 from ....direct.common.format_types.offset_row import OffsetRow as OffsetRow
 from ....direct.common.format_types.offset_column import OffsetColumn as OffsetColumn

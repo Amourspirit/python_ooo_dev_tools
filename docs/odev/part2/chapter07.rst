@@ -51,7 +51,7 @@ Most of the methods are in Supplier interfaces which are part of the GenericText
     +------------------+------------------------------------+---------------------------------------------------+
     | Content Name     | Service for Creating Content       | Access Method in Supplier                         |
     +==================+====================================+===================================================+
-    | Text Frame       | **TextFrame**                      | ``XNameAccess XTextFrameSupplier``                |
+    | Text Frame       | **TextFrame**                      | ``XNameAccess XTextFramesSupplier``               |
     |                  |                                    |                                                   |
     |                  |                                    | ``getTextFrames()``                               |
     +------------------+------------------------------------+---------------------------------------------------+

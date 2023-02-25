@@ -67,10 +67,8 @@ def test_write(loader, para_text) -> None:
         assert f_style.prop_inner.prop_keep_boundries == style.prop_inner.prop_keep_boundries
 
         style = Position(
-            horizontal=Horizontal(
-                position=HoriOrient.FROM_LEFT_OR_FROM_INSIDE, rel=RelHoriOrient.ENTIRE_PAGE, amount=7.8
-            ),
-            vertical=Vertical(position=VertOrient.FROM_TOP, rel=RelVertOrient.MARGIN, amount=3.6),
+            horizontal=Horizontal(position=HoriOrient.FROM_LEFT_OR_INSIDE, rel=RelHoriOrient.ENTIRE_PAGE, amount=7.8),
+            vertical=Vertical(position=VertOrient.FROM_TOP_OR_BOTTOM, rel=RelVertOrient.MARGIN, amount=3.6),
             mirror_even=False,
             keep_boundries=False,
             style_name=StyleFrameKind.FRAME,
