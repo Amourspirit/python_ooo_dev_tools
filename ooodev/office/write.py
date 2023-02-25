@@ -2419,9 +2419,9 @@ class Write(mSel.Selection):
             xtext_range = mLo.Lo.qi(XTextRange, xframe_text.createTextCursor(), True)
             xframe_text.insertString(xtext_range, text, False)
             if styles:
-                srv = "com.sun.star.text.TextFrame"
+                srv = ("com.sun.star.text.TextFrame", "com.sun.star.text.ChainedTextFrame")
                 for style in styles:
-                    if style.support_service(srv):
+                    if style.support_service(*srv):
                         style.apply(xframe)
         except Exception as e:
             raise Exception("Insertion of text frame failed:") from e

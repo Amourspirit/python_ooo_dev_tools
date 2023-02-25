@@ -1,10 +1,8 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, overload
+from typing import overload
 from typing import Any, Tuple, Type, TypeVar
-from enum import Enum
 import uno
 from .....exceptions import ex as mEx
-from .....meta.deleted_enum_meta import DeletedUnoEnumMeta
 from .....utils import lo as mLo
 from .....utils import props as mProps
 from ....kind.format_kind import FormatKind

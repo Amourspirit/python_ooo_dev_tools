@@ -60,6 +60,7 @@ mindmap
                         id{{Size}}
                     options
                         id{{Align}}
+                        id{{Names}}
                         id{{Properties}}
                         id{{Protect}}
                     wrap
