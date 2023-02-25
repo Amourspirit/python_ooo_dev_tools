@@ -199,7 +199,7 @@ class Vertical:
 
     # region Dunder Methods
     def __eq__(self, oth: object) -> bool:
-        if isinstance(oth, Horizontal):
+        if isinstance(oth, Vertical):
             result = True
             result = result and self.position == oth.position
             result = result and self.rel == oth.rel
