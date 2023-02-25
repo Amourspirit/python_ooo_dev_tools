@@ -589,10 +589,11 @@ class StyleBase(metaclass=MetaStyle):
             # if ne contains a _props attribute (tuple of prop names) then use them to remap keys.
             # For instance a key of BorderLength may become ParaBoderLength
 
-            if nu._props:
+            nu_props = [s for s in nu._props if len(s) > 0]  # some classes will have unused props
+            if nu_props:
                 vals = [val for _, val in dv.items()]  # get old values
-                if len(vals) == len(nu._props):
-                    for key, val in zip(nu._props, vals):
+                if len(nu_props) == len(vals):
+                    for key, val in zip(nu_props, vals):
                         nu._set(key, val)
                 else:
                     # fallback
@@ -705,7 +706,7 @@ class StyleBase(metaclass=MetaStyle):
         return self._prop_parent
 
     @property
-    def _props(self) -> tuple:
+    def _props(self) -> Tuple[str, ...]:
         # placeholder for child classes. Usd in copy method.
         return ()
 
