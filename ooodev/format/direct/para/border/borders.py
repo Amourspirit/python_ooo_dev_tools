@@ -254,6 +254,7 @@ class Borders(StyleMulti):
             self._supported_services_values = (
                 "com.sun.star.style.CharacterProperties",
                 "com.sun.star.style.ParagraphStyle",
+                "com.sun.star.text.TextFrame",
             )
         return self._supported_services_values
 

@@ -27,7 +27,7 @@ def test_write(loader, para_text) -> None:
             Write.append_para(cursor=cursor, text=para_text)
 
         amt = 15.3
-        style = Padding(padding_all=amt)
+        style = Padding(all=amt)
         style.apply(doc)
         props = style.get_style_props(doc)
 

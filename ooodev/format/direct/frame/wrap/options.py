@@ -57,7 +57,7 @@ class Options(StyleBase):
         try:
             return self._supported_services_values
         except AttributeError:
-            self._supported_services_values = ("com.sun.star.style.Style",)
+            self._supported_services_values = ("com.sun.star.style.Style", "com.sun.star.text.TextFrame")
         return self._supported_services_values
 
     def _props_set(self, obj: object, **kwargs: Any) -> None:

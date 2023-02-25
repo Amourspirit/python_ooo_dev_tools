@@ -14,6 +14,7 @@ class Align(FrameStyleBaseMulti):
     .. versionadded:: 0.9.0
     """
 
+    # region Init
     def __init__(
         self,
         *,
@@ -34,12 +35,14 @@ class Align(FrameStyleBaseMulti):
         """
 
         direct = InnerAlign(adjust=adjust)
-        direct._prop_parent = self
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
         self._set_style("direct", direct, *direct.get_attrs())
 
+    # endregion Init
+
+    # region Static Methods
     @classmethod
     def from_style(
         cls,
@@ -60,10 +63,12 @@ class Align(FrameStyleBaseMulti):
         """
         inst = cls(style_name=style_name, style_family=style_family)
         direct = InnerAlign.from_obj(inst.get_style_props(doc))
-        direct._prop_parent = inst
         inst._set_style("direct", direct, *direct.get_attrs())
         return inst
 
+    # endregion Static Methods
+
+    # region Properties
     @property
     def prop_style_name(self) -> str:
         """Gets/Sets property Style Name"""
@@ -88,3 +93,5 @@ class Align(FrameStyleBaseMulti):
             raise TypeError(f'Expected type of InnerAlign, got "{type(value).__name__}"')
         self._del_attribs("_direct_inner")
         self._set_style("direct", value, *value.get_attrs())
+
+    # endregion Properties

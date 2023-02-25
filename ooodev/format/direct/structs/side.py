@@ -398,11 +398,22 @@ class Side(StyleBase):
             setattr(line, key, val)
         return line
 
+    # region copy()
+    @overload
     def copy(self: _TSide) -> _TSide:
-        """Gets a copy of current instance"""
-        cp = super().copy()
+        ...
+
+    @overload
+    def copy(self: _TSide, **kwargs) -> _TSide:
+        ...
+
+    def copy(self: _TSide, **kwargs) -> _TSide:
+        """Gets a copy of instance as a new instance"""
+        cp = super().copy(**kwargs)
         cp._pts = self._pts
         return cp
+
+    # endregion copy()
 
     @static_prop
     def empty() -> Side:
@@ -436,7 +447,8 @@ class Side(StyleBase):
         Returns:
             Side: instance.
         """
-        inst = cls(**kwargs)
+        pt_width = round(UnitConvert.convert(num=border.LineWidth, frm=Length.MM100, to=Length.PT), 2)
+        inst = cls(width=pt_width, **kwargs)
         inst._set("Color", border.Color)
         inst._set("InnerLineWidth", border.InnerLineWidth)
         inst._set("LineDistance", border.LineDistance)

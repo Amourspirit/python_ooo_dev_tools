@@ -64,7 +64,7 @@ class HatchStruct(StyleBase):
         try:
             return self._supported_services_values
         except AttributeError:
-            self._supported_services_values = ()
+            self._supported_services_values = ("com.sun.star.style.Style", "com.sun.star.text.TextFrame")
         return self._supported_services_values
 
     def _container_get_service_name(self) -> str:
@@ -77,12 +77,6 @@ class HatchStruct(StyleBase):
         except AttributeError:
             self._property_name = "FillHatch"
         return self._property_name
-
-    def copy(self: _THatchStruct) -> _THatchStruct:
-        nu = self.__class__()
-        if self._dv:
-            nu._update(self._dv)
-        return nu
 
     def get_attrs(self) -> Tuple[str, ...]:
         return (self._get_property_name(),)

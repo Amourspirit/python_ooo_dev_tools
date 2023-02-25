@@ -164,11 +164,23 @@ class LineSpacingStruct(StyleBase):
         """
         return (self._get_property_name(),)
 
+    # region copy()
+    @overload
     def copy(self: _TLineSpacingStruct) -> _TLineSpacingStruct:
-        nu = self.__class__(mode=self._mode, height=self._value)
-        if self._dv:
-            nu._update(self._dv)
+        ...
+
+    @overload
+    def copy(self: _TLineSpacingStruct, **kwargs) -> _TLineSpacingStruct:
+        ...
+
+    def copy(self: _TLineSpacingStruct, **kwargs) -> _TLineSpacingStruct:
+        nu = self.__class__(mode=self._mode, height=self._value, **kwargs)
+        dv = self._get_properties()
+        if dv:
+            nu._update(dv)
         return nu
+
+    # endregion copy()
 
     # region apply()
 

@@ -84,7 +84,11 @@ class AbstractSides(StyleBase):
     # region methods
 
     def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.style.CharacterProperties",)
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = ("com.sun.star.style.CharacterProperties",)
+        return self._supported_services_values
 
     # region apply()
 

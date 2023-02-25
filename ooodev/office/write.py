@@ -26,6 +26,7 @@ from ..utils import props as mProps
 from ..utils import selection as mSel
 from ..utils.color import CommonColor, Color
 from ..utils.table_helper import TableHelper
+from ..utils.data_type.unit_mm import UnitMM as UnitMM
 from ..utils.type_var import PathOrStr, Table, DocOrCursor
 
 from ..mock import mock_g
@@ -66,6 +67,7 @@ from com.sun.star.text import XTextContent
 from com.sun.star.text import XTextDocument
 from com.sun.star.text import XTextField
 from com.sun.star.text import XTextFrame
+from com.sun.star.text import XTextFramesSupplier
 from com.sun.star.text import XTextGraphicObjectsSupplier
 from com.sun.star.text import XTextRange
 from com.sun.star.text import XTextTable
@@ -2286,33 +2288,35 @@ class Write(mSel.Selection):
     def add_text_frame(
         cls,
         cursor: XTextCursor,
-        ypos: int,
+        ypos: int | UnitMM,
         text: str,
-        width: int,
-        height: int,
+        width: int | UnitMM,
+        height: int | UnitMM,
         page_num: int = 1,
-        border_color: Color | None = CommonColor.RED,
-        background_color: Color | None = CommonColor.LIGHT_BLUE,
-    ) -> bool:
+        border_color: Color | None = None,
+        background_color: Color | None = None,
+        styles: Iterable[StyleObj] = None,
+    ) -> XTextFrame:
         """
-        Adds a text frame with a red border and light blue back color
+        Adds a text frame.
 
         Args:
             cursor (XTextCursor): Text Cursor
-            ypos (int): Frame Y pos
+            ypos (int, UnitMM): Frame Y pos in ``1/100th mm`` or ``UnitMM`` in ``mm`` units.
             text (str): Frame Text
-            width (int): Width
-            height (int): Height
+            width (int, UnitMM): Width in ``1/100th mm`` or ``UnitMM`` in ``mm`` units.
+            height (int, UnitMM): Height in ``1/100th mm`` or ``UnitMM`` in ``mm`` units.
             page_num (int): Page Number to add text frame
-            border_color (Color, optional): Border Color. Defaults to CommonColor.RED
-            background_color (Color, optional): Background Color. Defaults to CommonColor.LIGHT_BLUE
+            border_color (Color, optional): Border Color.
+            background_color (Color, optional): Background Color.
+            styles (Iterable[StyleObj]): One or more styles to apply to frame. Only styles that support ``com.sun.star.text.TextFrame`` service are applied.
 
         Raises:
             CreateInstanceMsfError: If unable to create text.TextFrame
             Exception: If unable to add text frame
 
         Returns:
-            bool: True if Text frame is added; Otherwise, False
+            XTextFrame: Text frame that is added to document.
 
         :events:
             .. cssclass:: lo_event
@@ -2324,7 +2328,14 @@ class Write(mSel.Selection):
            Event args ``event_data`` is a dictionary containing all method args.
 
         See Also:
-            :py:class:`~.utils.color.CommonColor`
+            - :py:class:`~.utils.color.CommonColor`
+            - :py:class:`~.utils.color.StandardColor`
+
+        .. versionchanged:: 0.9.0
+            Now returns the added text frame instead of bool value.
+            Added ``UnitMM`` values.
+            ``border_color`` and ``background_color`` now default to ``None``.
+            Added style parameter that allows for all styles that support ``com.sun.star.text.TextFrame`` service.
         """
         cargs = CancelEventArgs(Write.add_text_frame.__qualname__)
         cargs.event_data = {
@@ -2348,6 +2359,13 @@ class Write(mSel.Selection):
         page_num = cargs.event_data["page_num"]
         border_color = cargs.event_data["border_color"]
         background_color = cargs.event_data["background_color"]
+
+        if isinstance(ypos, UnitMM):
+            ypos = ypos.get_value_mm100()
+        if isinstance(width, UnitMM):
+            width = width.get_value_mm100()
+        if isinstance(height, UnitMM):
+            height = height.get_value_mm100()
 
         try:
             xframe = mLo.Lo.create_instance_msf(XTextFrame, "com.sun.star.text.TextFrame")
@@ -2400,10 +2418,15 @@ class Write(mSel.Selection):
             xframe_text = xframe.getText()
             xtext_range = mLo.Lo.qi(XTextRange, xframe_text.createTextCursor(), True)
             xframe_text.insertString(xtext_range, text, False)
+            if styles:
+                srv = ("com.sun.star.text.TextFrame", "com.sun.star.text.ChainedTextFrame")
+                for style in styles:
+                    if style.support_service(*srv):
+                        style.apply(xframe)
         except Exception as e:
             raise Exception("Insertion of text frame failed:") from e
         _Events().trigger(WriteNamedEvent.TEXT_FRAME_ADDED, EventArgs.from_args(cargs))
-        return True
+        return xframe
 
     @classmethod
     def add_table(
@@ -2414,7 +2437,7 @@ class Write(mSel.Selection):
         header_fg_color: Color | None = CommonColor.WHITE,
         tbl_bg_color: Color | None = CommonColor.LIGHT_BLUE,
         tbl_fg_color: Color | None = CommonColor.BLACK,
-    ) -> bool:
+    ) -> XTextTable:
         """
         Adds a table.
 
@@ -2434,7 +2457,7 @@ class Write(mSel.Selection):
             Exception: If unable to add table
 
         Returns:
-            bool: True if table is added; Otherwise, False
+            XTextTable: Table that is added to document.
 
         :events:
             .. cssclass:: lo_event
@@ -2449,6 +2472,9 @@ class Write(mSel.Selection):
             - :py:class:`~.utils.color.CommonColor`
             - :py:meth:`~.utils.table_helper.TableHelper.table_2d_to_dict`
             - :py:meth:`~.utils.table_helper.TableHelper.table_dict_to_table`
+
+        .. versionchanged:: 0.9.0
+            Now returns added table instead of bool value.
         """
 
         cargs = CancelEventArgs(Write.add_table.__qualname__)
@@ -2533,7 +2559,7 @@ class Write(mSel.Selection):
         except Exception as e:
             raise Exception("Table insertion failed:") from e
         _Events().trigger(WriteNamedEvent.TABLE_ADDED, EventArgs.from_args(cargs))
-        return True
+        return table
 
     # region    add_image_link()
 
@@ -2860,7 +2886,7 @@ class Write(mSel.Selection):
             doc (XComponent): Document
 
         Raises:
-            MissingInterfaceError: if doc does not implement XTextGraphicObjectsSupplier interface
+            MissingInterfaceError: if doc does not implement ``XTextGraphicObjectsSupplier`` interface
 
         Returns:
             XNameAccess | None: Graphic Links on success, Otherwise, None
@@ -2874,6 +2900,35 @@ class Write(mSel.Selection):
 
         if not xname_access.hasElements():
             mLo.Lo.print("No graphics elements found")
+            return None
+
+        return xname_access
+
+    @staticmethod
+    def get_text_frames(doc: XComponent) -> XNameAccess | None:
+        """
+        Gets document Text Frames.
+
+        Args:
+            doc (XComponent): Document
+
+        Raises:
+            MissingInterfaceError: if doc does not implement ``XTextFramesSupplier`` interface
+
+        Returns:
+            XNameAccess | None: Text Frames on success, Otherwise, None
+
+        .. versionadded:: 0.9.0
+        """
+        supplier = mLo.Lo.qi(XTextFramesSupplier, doc, True)
+
+        xname_access = supplier.getTextFrames()
+        if xname_access is None:
+            mLo.Lo.print("Name access to text frames not possible")
+            return None
+
+        if not xname_access.hasElements():
+            mLo.Lo.print("No text frame elements found")
             return None
 
         return xname_access

@@ -8,7 +8,6 @@ from __future__ import annotations
 from typing import Any, Dict, Tuple, Type, cast, overload, TypeVar
 
 import uno
-from ....events.event_singleton import _Events
 from ....meta.static_prop import static_prop
 from ....utils import props as mProps
 from ....utils import lo as mLo
@@ -17,6 +16,7 @@ from ....exceptions import ex as mEx
 from ...kind.format_kind import FormatKind
 from ...style_base import StyleBase, CancelEventArgs
 from ....utils.unit_convert import UnitConvert, Length
+from ....utils.data_type.unit_100_mm import Unit100MM
 
 from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
@@ -43,7 +43,7 @@ class ShadowStruct(StyleBase):
         location: ShadowLocation = ShadowLocation.BOTTOM_RIGHT,
         color: Color = StandardColor.GRAY,
         transparent: bool = False,
-        width: float = 1.76,
+        width: float | Unit100MM = 1.76,
     ) -> None:
         """
         Constructor
@@ -52,7 +52,7 @@ class ShadowStruct(StyleBase):
             location (ShadowLocation, optional): contains the location of the shadow. Default to ``ShadowLocation.BOTTOM_RIGHT``.
             color (Color, optional):contains the color value of the shadow. Defaults to ``StandardColor.GRAY``.
             transparent (bool, optional): Shadow transparency. Defaults to False.
-            width (float, optional): contains the size of the shadow (in mm units). Defaults to ``1.76``.
+            width (float, Unit100MM, optional): contains the size of the shadow (in ``mm`` units) or in ``1/100th mm`` units. Defaults to ``1.76``.
 
         Raises:
             ValueError: If ``color`` or ``width`` are less than zero.
@@ -65,7 +65,10 @@ class ShadowStruct(StyleBase):
         self._location = location
         self._color = color
         self._transparent = transparent
-        self._width: int = round(UnitConvert.convert(num=width, frm=Length.MM, to=Length.MM100))
+        if isinstance(width, Unit100MM):
+            self._width = width.value
+        else:
+            self._width = UnitConvert.convert_mm_mm100(width)
 
         super().__init__()
 
@@ -106,7 +109,7 @@ class ShadowStruct(StyleBase):
         try:
             return self._supported_services_values
         except AttributeError:
-            self._supported_services_values = ()
+            self._supported_services_values = ("com.sun.star.text.TextFrame",)
         return self._supported_services_values
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
@@ -130,13 +133,27 @@ class ShadowStruct(StyleBase):
         """
         return (self._get_property_name(),)
 
+    # region copy()
+    @overload
     def copy(self: _TShadowStruct) -> _TShadowStruct:
+        ...
+
+    @overload
+    def copy(self: _TShadowStruct, **kwargs) -> _TShadowStruct:
+        ...
+
+    def copy(self: _TShadowStruct, **kwargs) -> _TShadowStruct:
+        """Gets a copy of instance as a new instance"""
         nu = self.__class__(
-            location=self.prop_width, color=self.prop_color, transparent=self.prop_transparent, width=self.prop_width
+            location=self.prop_width,
+            color=self.prop_color,
+            transparent=self.prop_transparent,
+            width=self.prop_width,
+            **kwargs,
         )
-        if self._dv:
-            nu._update(self._dv)
         return nu
+
+    # endregion copy()
 
     # region apply()
 
@@ -212,10 +229,13 @@ class ShadowStruct(StyleBase):
         shadow = cast(ShadowFormat, mProps.Props.get(obj, nu._get_property_name()))
         if shadow is None:
             return cls.empty.copy()
-        width = UnitConvert.convert(num=shadow.ShadowWidth, frm=Length.MM100, to=Length.MM)
 
         return cls(
-            location=shadow.Location, color=shadow.Color, transparent=shadow.IsTransparent, width=width, **kwargs
+            location=shadow.Location,
+            color=shadow.Color,
+            transparent=shadow.IsTransparent,
+            width=Unit100MM(shadow.ShadowWidth),
+            **kwargs,
         )
 
     # endregion from_obj()
@@ -242,9 +262,12 @@ class ShadowStruct(StyleBase):
         Returns:
             Shadow: Instance representing ``shadow``.
         """
-        width = UnitConvert.convert(num=shadow.ShadowWidth, frm=Length.MM100, to=Length.MM)
         return cls(
-            location=shadow.Location, color=shadow.Color, transparent=shadow.IsTransparent, width=width, **kwargs
+            location=shadow.Location,
+            color=shadow.Color,
+            transparent=shadow.IsTransparent,
+            width=Unit100MM(shadow.ShadowWidth),
+            **kwargs,
         )
 
     # endregion from_shadow()
@@ -293,7 +316,7 @@ class ShadowStruct(StyleBase):
         cp.prop_transparent = value
         return cp
 
-    def fmt_width(self: _TShadowStruct, value: float) -> _TShadowStruct:
+    def fmt_width(self: _TShadowStruct, value: float | Unit100MM) -> _TShadowStruct:
         """
         Gets a copy of instance with width set
 
@@ -352,8 +375,11 @@ class ShadowStruct(StyleBase):
         return UnitConvert.convert(num=self._width, frm=Length.MM100, to=Length.MM)
 
     @prop_width.setter
-    def prop_width(self, value: float) -> None:
-        self._width = round(UnitConvert.convert(num=value, frm=Length.MM, to=Length.MM100))
+    def prop_width(self, value: float | Unit100MM) -> None:
+        if isinstance(value, Unit100MM):
+            self._width = value.value
+        else:
+            self._width = UnitConvert.convert_mm_mm100(value)
 
     @static_prop
     def empty() -> ShadowStruct:  # type: ignore[misc]

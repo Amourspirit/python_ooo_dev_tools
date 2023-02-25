@@ -16,4 +16,5 @@ class FormatKind(IntFlag):
     PAGE = 1 << 9
     FILL = 1 << 10
     DOC = 1 << 11
+    FRAME = 1 << 12
     """Document level Styles"""

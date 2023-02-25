@@ -24,7 +24,7 @@ def test_hyperlink_props() -> None:
 
     assert hl.prop_name == ln_name
     assert hl.prop_url == ln_url
-    assert hl.prop_target == TargetKind.NONE
+    assert hl.prop_target == str(TargetKind.NONE)
     assert hl.prop_visited_style == "Visited Internet Link"
     assert hl.prop_unvisited_style == "Internet link"
 
@@ -35,7 +35,7 @@ def test_hyperlink_props() -> None:
     assert hl.prop_url == "ftp:///notreal"
 
     hl.prop_target = TargetKind.PARENT
-    assert hl.prop_target == TargetKind.PARENT
+    assert hl.prop_target == str(TargetKind.PARENT)
 
     hl.prop_unvisited_style = "unvisited"
     assert hl.prop_unvisited_style == "unvisited"

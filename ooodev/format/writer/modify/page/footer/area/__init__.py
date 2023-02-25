@@ -13,7 +13,7 @@ from .......utils.data_type.intensity import Intensity as Intensity
 from .......utils.data_type.intensity_range import IntensityRange as IntensityRange
 from ......direct.fill.area.img import ImgStyleKind as ImgStyleKind
 from ......direct.common.format_types.size_percent import SizePercent as SizePercent
-from ......direct.common.format_types.size_mm import SizeMM as SizeMM
+from .......utils.data_type.size_mm import SizeMM as SizeMM
 from ......direct.common.format_types.offset_row import OffsetRow as OffsetRow
 from ......direct.common.format_types.offset_column import OffsetColumn as OffsetColumn
 from ......modify.page.header.area.color import InnerColor as InnerColor

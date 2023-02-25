@@ -10,7 +10,7 @@ import uno
 from ..frame_style_base_multi import FrameStyleBaseMulti
 from ....writer.style.frame.style_frame_kind import StyleFrameKind as StyleFrameKind
 from ....direct.frame.frame_type.size import (
-    Size as DirectSize,
+    Size as InnerSize,
     RelativeKind as RelativeKind,
     RelativeSize as RelativeSize,
     AbsoluteSize as AbsoluteSize,
@@ -49,7 +49,7 @@ class Size(FrameStyleBaseMulti):
             None:
         """
 
-        direct = DirectSize(width=width, height=height, auto_width=auto_width, auto_height=auto_height)
+        direct = InnerSize(width=width, height=height, auto_width=auto_width, auto_height=auto_height)
         direct._prop_parent = self
         super().__init__()
         self._style_name = str(style_name)
@@ -75,7 +75,7 @@ class Size(FrameStyleBaseMulti):
             Size: ``Size`` instance from style properties.
         """
         inst = cls(style_name=style_name, style_family=style_family)
-        direct = DirectSize.from_obj(inst.get_style_props(doc))
+        direct = InnerSize.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct)
         return inst
 
@@ -89,17 +89,17 @@ class Size(FrameStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> DirectSize:
+    def prop_inner(self) -> InnerSize:
         """Gets/Sets Inner Size instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(DirectSize, self._get_style_inst("direct"))
+            self._direct_inner = cast(InnerSize, self._get_style_inst("direct"))
         return self._direct_inner
 
     @prop_inner.setter
-    def prop_inner(self, value: DirectSize) -> None:
-        if not isinstance(value, DirectSize):
+    def prop_inner(self, value: InnerSize) -> None:
+        if not isinstance(value, InnerSize):
             raise TypeError(f'Expected type of DirectSize, got "{type(value).__name__}"')
         self._del_attribs("_direct_inner")
         self._set_style("direct", value, *value.get_attrs())

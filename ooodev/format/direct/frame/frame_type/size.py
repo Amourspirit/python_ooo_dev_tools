@@ -20,6 +20,7 @@ from .....utils.validation import check
 from ....direct.common.abstract.abstract_document import AbstractDocument
 from ....direct.common.props.frame_type_size_props import FrameTypeSizeProps
 from ....kind.format_kind import FormatKind
+from .....utils.data_type.unit_100_mm import Unit100MM
 
 
 _TSize = TypeVar(name="_TSize", bound="Size")
@@ -59,12 +60,17 @@ class RelativeSize:
         return NotImplemented
 
 
-@dataclasses.dataclass(frozen=True)
 class AbsoluteSize:
     """Absolute size"""
 
-    size: float
-    """Size in ``mm`` units"""
+    def __init__(self, value: float | Unit100MM) -> None:
+        """
+        Constructor
+
+        Args:
+            value (float | Unit100MM): Size value in ``mm`` units or as ``Unit100MM`` value.
+        """
+        self.size = value
 
     def __eq__(self, oth: object) -> bool:
         if isinstance(oth, AbsoluteSize):
@@ -72,6 +78,18 @@ class AbsoluteSize:
         if isinstance(oth, float):
             return math.isclose(self.size, oth, abs_tol=0.02)
         return NotImplemented
+
+    @property
+    def size(self) -> float:
+        """Gets/Sets Size value in ``mm`` units"""
+        return self._size
+
+    @size.setter
+    def size(self, value: float | Unit100MM):
+        if isinstance(value, Unit100MM):
+            self._size = round(value.get_value_mm(), 2)
+        else:
+            self._size = value
 
 
 class Size(AbstractDocument):
@@ -136,7 +154,7 @@ class Size(AbstractDocument):
         try:
             return self._supported_services_values
         except AttributeError:
-            self._supported_services_values = ("com.sun.star.style.Style",)
+            self._supported_services_values = ("com.sun.star.style.Style", "com.sun.star.text.TextFrame")
         return self._supported_services_values
 
     def _on_modifing(self, event: CancelEventArgs) -> None:
@@ -206,8 +224,18 @@ class Size(AbstractDocument):
 
         return super().apply(obj, **kwargs)
 
+    # region copy()
+    @overload
     def copy(self: _TSize) -> _TSize:
-        cp = super().copy()
+        ...
+
+    @overload
+    def copy(self: _TSize, **kwargs) -> _TSize:
+        ...
+
+    def copy(self: _TSize, **kwargs) -> _TSize:
+        """Gets a copy of instance as a new instance"""
+        cp = super().copy(**kwargs)
         if self._width is None:
             cp._width = None
         else:
@@ -219,6 +247,8 @@ class Size(AbstractDocument):
         cp._auto_width = self._auto_width
         cp._auto_height = self._auto_height
         return cp
+
+    # endregion copy()
 
     # endregion Overrides
 

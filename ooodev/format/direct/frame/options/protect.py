@@ -1,10 +1,8 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, overload
+from typing import overload
 from typing import Any, Tuple, Type, TypeVar
-from enum import Enum
 import uno
 from .....exceptions import ex as mEx
-from .....meta.deleted_enum_meta import DeletedUnoEnumMeta
 from .....utils import lo as mLo
 from .....utils import props as mProps
 from ....kind.format_kind import FormatKind
@@ -41,7 +39,7 @@ class Protect(StyleBase):
         try:
             return self._supported_services_values
         except AttributeError:
-            self._supported_services_values = ("com.sun.star.style.Style",)
+            self._supported_services_values = ("com.sun.star.style.Style", "com.sun.star.text.TextFrame")
         return self._supported_services_values
 
     def _props_set(self, obj: object, **kwargs: Any) -> None:

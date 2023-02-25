@@ -55,8 +55,6 @@ class AbstractColor(StyleBase):
             if self._props.bg:
                 init_vals[self._props.bg] = True
 
-        init_vals["__trigger_initalizing"] = False
-
         super().__init__(**init_vals)
 
     # region Overrides
