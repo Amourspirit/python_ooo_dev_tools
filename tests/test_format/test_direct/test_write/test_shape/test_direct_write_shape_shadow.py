@@ -5,7 +5,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.writer.direct.shape.area import Shadow, ShadowLocationKind
+from ooodev.format.writer.direct.shape.shadow import Shadow, ShadowLocationKind
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
@@ -21,7 +21,7 @@ def test_write(loader) -> None:
     if not Lo.bridge_connector.headless:
         GUI.set_visible()
         Lo.delay(500)
-        GUI.zoom(GUI.ZoomEnum.ENTIRE_PAGE)
+        GUI.zoom(GUI.ZoomEnum.ZOOM_150_PERCENT)
     try:
         style = Shadow(
             use_shadow=True,
