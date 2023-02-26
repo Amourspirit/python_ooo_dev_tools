@@ -26,8 +26,8 @@ class Byte(BaseIntValue):
             f"Value of {self.value} is out of range. Value must be from 0 to 255.",
         )
 
-    def _from_int(self, int) -> Self:
-        return Byte(int)
+    def _from_int(self, value: int) -> Self:
+        return Byte(value)
 
     def __eq__(self, other: object) -> bool:
         # for some reason BaseIntValue __eq__ is not picked up.

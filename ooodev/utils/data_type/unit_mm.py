@@ -1,7 +1,10 @@
 from __future__ import annotations
+from typing import TypeVar, Type
 from dataclasses import dataclass
 from .base_float_value import BaseFloatValue
-from ..unit_convert import UnitConvert
+from ..unit_convert import UnitConvert, Length
+
+_TUnitMM = TypeVar(name="_TUnitMM", bound="UnitMM")
 
 
 @dataclass(unsafe_hash=True)
@@ -21,7 +24,17 @@ class UnitMM(BaseFloatValue):
         """
         return UnitConvert.convert_mm_mm100(self.value)
 
-    def from_mm100(value: int) -> UnitMM:
+    def get_value_pt(self) -> int:
+        """
+        Gets instance value converted to Size in `pt`` (points) units.
+
+        Returns:
+            int: Value in ``pt`` units.
+        """
+        return round(UnitConvert.convert(num=self.value, frm=Length.MM, to=Length.PT))
+
+    @classmethod
+    def from_mm100(cls: Type[_TUnitMM], value: int) -> _TUnitMM:
         """
         Get instance from ``1/100th mm`` value.
 
@@ -31,4 +44,19 @@ class UnitMM(BaseFloatValue):
         Returns:
             UnitMM:
         """
-        return UnitMM(float(UnitConvert.convert_mm100_mm(value)))
+        inst = super(UnitMM, cls).__new__(cls)
+        return inst.__init__(value)
+
+    @classmethod
+    def from_pt(cls: Type[_TUnitMM], value: int) -> _TUnitMM:
+        """
+        Get instance from ``pt`` (points) value.
+
+        Args:
+            value (int): ``pt`` value.
+
+        Returns:
+            UnitMM:
+        """
+        inst = super(UnitMM, cls).__new__(cls)
+        return inst.__init__(float(UnitConvert.convert(num=value, frm=Length.PT, to=Length.MM)))
