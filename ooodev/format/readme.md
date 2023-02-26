@@ -83,6 +83,18 @@ mindmap
                     transparency
                         id{{Gradient}}
                         id{{Transparency}}
+                shape
+                    area
+                        id{{Color}}
+                        id{{Gradient}}
+                        id{{Hatch}}
+                        id{{Img}}
+                        id{{Pattern}}
+                    shadow
+                        id{{Shadowv
+                    transparency
+                        id{{Gradient}}
+                        id{{Transparency}}
             [modify]
                 page
                     page

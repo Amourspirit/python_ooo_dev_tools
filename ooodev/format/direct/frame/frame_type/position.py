@@ -132,6 +132,15 @@ class Horizontal:
 
     # endregion Dunder Methods
 
+    # region Methods
+    def copy(self) -> Horizontal:
+        """Gets a copy of instance as a new instance"""
+        inst = super(Horizontal, self.__class__).__new__(self.__class__)
+        inst.__init__(position=self.position, rel=self.rel, amount=self.amount)
+        return inst
+
+    # endregion Methods
+
     # region Properties
     @property
     def position(self) -> HoriOrient:
@@ -209,6 +218,15 @@ class Vertical:
         return NotImplemented
 
     # endregion Dunder Methods
+
+    # region Methods
+    def copy(self) -> Vertical:
+        """Gets a copy of instance as a new instance"""
+        inst = super(Vertical, self.__class__).__new__(self.__class__)
+        inst.__init__(position=self.position, rel=self.rel, amount=self.amount)
+        return inst
+
+    # endregion Methods
 
     # region Properties
     @property
@@ -334,11 +352,13 @@ class Position(StyleBase):
         if self._horizontal is None:
             cp._horizontal = None
         else:
-            cp._horizontal = dataclasses.replace(self._horizontal)
+            # cp._horizontal = dataclasses.replace(self._horizontal)
+            cp._horizontal = self._horizontal.copy()
         if self._vertical is None:
             cp._vertical = None
         else:
-            cp._vertical = dataclasses.replace(self._vertical)
+            # cp._vertical = dataclasses.replace(self._vertical)
+            cp._vertical = self._vertical.copy()
         return cp
 
     # endregion copy()

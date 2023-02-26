@@ -6,15 +6,15 @@ from ..decorator import enforce
 from .base_int_value import BaseIntValue
 from ..unit_convert import UnitConvert, Length
 
-_TUnit100MM = TypeVar(name="_TUnit100MM", bound="Unit100MM")
+_TUnitPT = TypeVar(name="_TUnitPT", bound="UnitPT")
 
 # Note that from __future__ import annotations converts annotations to string.
 # this means that @enforce.enforce_types will see string as type. This is fine in
 # most cases. Especially for built in types.
 @enforce.enforce_types
 @dataclass(unsafe_hash=True)
-class Unit100MM(BaseIntValue):
-    """Represents ``mm`` units."""
+class UnitPT(BaseIntValue):
+    """Represents a ``PT`` (points) value."""
 
     def __post_init__(self) -> None:
         check(
@@ -23,8 +23,8 @@ class Unit100MM(BaseIntValue):
             f"Value of {self.value} is out of range. Value must be a positive number.",
         )
 
-    def _from_int(self, value: int) -> _TUnit100MM:
-        inst = super(Unit100MM, self.__class__).__new__(self.__class__)
+    def _from_int(self, value: int) -> _TUnitPT:
+        inst = super(UnitPT, self.__class__).__new__(self.__class__)
         return inst.__init__(value)
 
     def __eq__(self, other: object) -> bool:
@@ -43,19 +43,19 @@ class Unit100MM(BaseIntValue):
         Returns:
             int: Value in ``mm`` units.
         """
-        return UnitConvert.convert_mm100_mm(self.value)
+        return float(UnitConvert.convert(num=self.value, frm=Length.PT, to=Length.MM))
 
-    def get_value_pt(self) -> float:
+    def get_value_mm_100(self) -> int:
         """
-        Gets instance value converted to Size in ``pt`` (point) units.
+        Gets instance value converted to Size in ``1/100th mm`` units.
 
         Returns:
-            int: Value in ``pt`` units.
+            int: Value in ``1/100th mm`` units.
         """
-        return round(UnitConvert.convert(num=self.value, frm=Length.MM100, to=Length.PT))
+        return round(UnitConvert.convert(num=self.value, frm=Length.PT, to=Length.MM100))
 
     @classmethod
-    def from_mm(cls: Type[_TUnit100MM], value: float) -> _TUnit100MM:
+    def from_mm(cls: Type[_TUnitPT], value: float) -> _TUnitPT:
         """
         Get instance from ``mm`` value.
 
@@ -63,21 +63,21 @@ class Unit100MM(BaseIntValue):
             value (int): ``mm`` value.
 
         Returns:
-            Unit100MM:
+            UnitPT:
         """
-        inst = super(Unit100MM, cls).__new__(cls)
-        return inst.__init__(UnitConvert.convert_mm_mm100(value))
+        inst = super(UnitPT, cls).__new__(cls)
+        return inst.__init__(round(UnitConvert.convert(num=value, frm=Length.MM, to=Length.PT)))
 
     @classmethod
-    def from_pt(cls: Type[_TUnit100MM], value: int) -> _TUnit100MM:
+    def from_mm_100(cls: Type[_TUnitPT], value: int) -> _TUnitPT:
         """
-        Get instance from ``pt`` (points) value.
+        Get instance from ``1/100th mm`` value.
 
         Args:
-            value (int): ``pt`` value.
+            value (int): ``1/100th mm`` value.
 
         Returns:
-            Unit100MM:
+            UnitPT:
         """
-        inst = super(Unit100MM, cls).__new__(cls)
-        return inst.__init__(round(UnitConvert.convert(num=value, frm=Length.PT, to=Length.MM100)))
+        inst = super(UnitPT, cls).__new__(cls)
+        return inst.__init__(round(UnitConvert.convert(num=value, frm=Length.MM100, to=Length.PT)))

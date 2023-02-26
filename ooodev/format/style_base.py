@@ -586,22 +586,24 @@ class StyleBase(metaclass=MetaStyle):
         # depending on python 3.7 builtin dictionary ordering
         dv = self._get_properties()
         if dv:
+            # it is possible that that a new instance will have different property names thne the current instance.
+            # This can happen because this class inherits from MetaStyle.
             # if ne contains a _props attribute (tuple of prop names) then use them to remap keys.
-            # For instance a key of BorderLength may become ParaBoderLength
+            # For instance a key of BorderLength may become ParaBoderLength.
 
-            nu_props = [s for s in nu._props if len(s) > 0]  # some classes will have unused props
-            if nu_props:
-                vals = [val for _, val in dv.items()]  # get old values
-                if len(nu_props) == len(vals):
-                    for key, val in zip(nu_props, vals):
-                        nu._set(key, val)
-                else:
-                    # fallback
-                    nu._update(self._get_properties())
-                    mLo.Lo.print(
-                        f"While Copying instance of {self.__class__.__name__} the new and old property lengths did not match."
-                    )
-                    mLo.Lo.print("  Copying using same attribute names as original.")
+            key_map = None
+            p_len = len(nu._props)
+            if p_len > 0 and p_len == len(self._props):
+                key_map = {}
+                for i, p_val in enumerate(self._props):
+                    if p_val == "":
+                        # some prop value may not be used in which case they are empty strings.
+                        continue
+                    key_map[p_val] = nu._props[i]
+
+            if key_map:
+                for key, nu_val in key_map.items():
+                    nu._set(nu_val, self._get(key))
             else:
                 nu._update(self._get_properties())
         return nu
