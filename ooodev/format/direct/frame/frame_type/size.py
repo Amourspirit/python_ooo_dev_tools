@@ -6,21 +6,12 @@ Module for Fill Transparency.
 from __future__ import annotations
 import dataclasses
 from typing import Any, Tuple, Type, TypeVar, cast, overload
-from enum import Enum
-import math
 import uno
 from ooo.dyn.text.size_type import SizeTypeEnum
 
-from .....events.args.cancel_event_args import CancelEventArgs
-from .....exceptions import ex as mEx
-from .....utils import lo as mLo
 from .....utils import props as mProps
-from .....utils.unit_convert import UnitConvert
-from .....utils.validation import check
-from ....direct.common.abstract.abstract_document import AbstractDocument
 from ....direct.common.props.frame_type_size_props import FrameTypeSizeProps
 from ....kind.format_kind import FormatKind
-from .....utils.data_type.unit_100_mm import Unit100MM
 from ...image.image_type.size import (
     Size as ImageSize,
     RelativeKind as RelativeKind,

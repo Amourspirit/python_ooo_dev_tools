@@ -18,6 +18,7 @@ from ..events.write_named_event import WriteNamedEvent
 from ..exceptions import ex as mEx
 from ..meta.static_meta import classproperty
 from ..proto.style_obj import StyleObj, FormatKind
+from ..proto.unit_obj import UnitObj
 from ..utils import file_io as mFileIO
 from ..utils import images_lo as mImgLo
 from ..utils import info as mInfo
@@ -26,7 +27,6 @@ from ..utils import props as mProps
 from ..utils import selection as mSel
 from ..utils.color import CommonColor, Color
 from ..utils.table_helper import TableHelper
-from ..utils.data_type.unit_mm import UnitMM as UnitMM
 from ..utils.type_var import PathOrStr, Table, DocOrCursor
 
 from ..mock import mock_g
@@ -2288,10 +2288,10 @@ class Write(mSel.Selection):
     def add_text_frame(
         cls,
         cursor: XTextCursor,
-        ypos: int | UnitMM,
+        ypos: int | UnitObj,
         text: str,
-        width: int | UnitMM,
-        height: int | UnitMM,
+        width: int | UnitObj,
+        height: int | UnitObj,
         page_num: int = 1,
         border_color: Color | None = None,
         background_color: Color | None = None,
@@ -2302,10 +2302,10 @@ class Write(mSel.Selection):
 
         Args:
             cursor (XTextCursor): Text Cursor
-            ypos (int, UnitMM): Frame Y pos in ``1/100th mm`` or ``UnitMM`` in ``mm`` units.
+            ypos (int, UnitObj): Frame Y pos in ``1/100th mm`` or :ref:`proto_unit_obj`.
             text (str): Frame Text
-            width (int, UnitMM): Width in ``1/100th mm`` or ``UnitMM`` in ``mm`` units.
-            height (int, UnitMM): Height in ``1/100th mm`` or ``UnitMM`` in ``mm`` units.
+            width (int, UnitObj): Width in ``1/100th mm`` or :ref:`proto_unit_obj`.
+            height (int, UnitObj): Height in ``1/100th mm`` or :ref:`proto_unit_obj`.
             page_num (int): Page Number to add text frame
             border_color (Color, optional): Border Color.
             background_color (Color, optional): Background Color.
@@ -2360,11 +2360,11 @@ class Write(mSel.Selection):
         border_color = cargs.event_data["border_color"]
         background_color = cargs.event_data["background_color"]
 
-        if isinstance(ypos, UnitMM):
+        if not isinstance(ypos, int):
             ypos = ypos.get_value_mm100()
-        if isinstance(width, UnitMM):
+        if not isinstance(width, int):
             width = width.get_value_mm100()
-        if isinstance(height, UnitMM):
+        if not isinstance(height, int):
             height = height.get_value_mm100()
 
         try:

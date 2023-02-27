@@ -9,7 +9,6 @@ from typing import Any, Tuple, Type, TypeVar, overload
 from enum import Enum
 import math
 import uno
-from ooo.dyn.text.size_type import SizeTypeEnum
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
@@ -20,7 +19,7 @@ from .....utils.validation import check
 from ....direct.common.abstract.abstract_document import AbstractDocument
 from ....direct.common.props.frame_type_size_props import FrameTypeSizeProps
 from ....kind.format_kind import FormatKind
-from .....utils.data_type.unit_100_mm import Unit100MM
+from .....proto.unit_obj import UnitObj
 
 
 _TSize = TypeVar(name="_TSize", bound="Size")
@@ -63,12 +62,12 @@ class RelativeSize:
 class AbsoluteSize:
     """Absolute size"""
 
-    def __init__(self, value: float | Unit100MM) -> None:
+    def __init__(self, value: float | UnitObj) -> None:
         """
         Constructor
 
         Args:
-            value (float | Unit100MM): Size value in ``mm`` units or as ``Unit100MM`` value.
+            value (float, UnitObj): Size value in ``mm`` units or :ref:`proto_unit_obj`.
         """
         self.size = value
 
@@ -85,11 +84,13 @@ class AbsoluteSize:
         return self._size
 
     @size.setter
-    def size(self, value: float | Unit100MM):
-        if isinstance(value, Unit100MM):
-            self._size = round(value.get_value_mm(), 2)
-        else:
+    def size(self, value: float | UnitObj):
+        if isinstance(value, float):
             self._size = value
+        elif isinstance(value, int):
+            self._size = float(value)
+        else:
+            self._size = round(value.get_value_mm(), 2)
 
 
 class Size(AbstractDocument):

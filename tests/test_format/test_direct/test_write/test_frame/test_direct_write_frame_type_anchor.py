@@ -24,7 +24,7 @@ from ooodev.format.writer.direct.frame.type import (
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.utils.color import StandardColor
-from ooodev.utils.data_type.unit_100_mm import Unit100MM
+from ooodev.utils.data_type.unit_mm100 import UnitMM100
 from ooodev.utils.data_type.unit_mm import UnitMM
 from ooodev.office.write import Write
 
@@ -45,7 +45,7 @@ def test_write(loader, para_text) -> None:
 
         text_width = Write.get_page_text_width(doc)
         size_style = Size(
-            width=AbsoluteSize(Unit100MM(text_width)), height=AbsoluteSize(50.2), auto_height=True, auto_width=False
+            width=AbsoluteSize(UnitMM100(text_width)), height=AbsoluteSize(50.2), auto_height=True, auto_width=False
         )
         style_position = Position(
             horizontal=Horizontal(

@@ -26,7 +26,7 @@ from ooodev.format.writer.direct.image.type import (
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.utils.images_lo import ImagesLo
-from ooodev.utils.data_type.unit_100_mm import Unit100MM
+from ooodev.utils.data_type.unit_mm100 import UnitMM100
 from ooodev.office.write import Write
 
 
@@ -45,8 +45,8 @@ def test_write(loader, fix_image_path) -> None:
         cursor = Write.get_cursor(doc)
         img_size = ImagesLo.get_size_100mm(im_fnm=im_fnm)
         size_style = Size(
-            width=AbsoluteSize(Unit100MM(img_size.Width)),
-            height=AbsoluteSize(Unit100MM(img_size.Height)),
+            width=AbsoluteSize(UnitMM100(img_size.Width)),
+            height=AbsoluteSize(UnitMM100(img_size.Height)),
         )
         style_position = Position(
             horizontal=Horizontal(

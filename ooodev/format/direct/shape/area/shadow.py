@@ -7,9 +7,8 @@ from ooo.dyn.text.wrap_text_mode import WrapTextMode as WrapTextMode
 from .....exceptions import ex as mEx
 from .....utils import lo as mLo
 from .....utils import props as mProps
+from .....proto.unit_obj import UnitObj
 from .....utils.unit_convert import UnitConvert
-from .....utils.data_type.unit_mm import UnitMM
-from .....utils.data_type.unit_pt import UnitPT
 from .....utils.data_type.intensity import Intensity
 from .....utils.color import Color
 from ....kind.format_kind import FormatKind
@@ -45,8 +44,8 @@ class Shadow(StyleBase):
         use_shadow: bool | None = None,
         location: ShadowLocationKind | None = None,
         color: Color | None = None,
-        distance: float | UnitPT | None = None,
-        blur: int | UnitMM | None = None,
+        distance: float | UnitObj | None = None,
+        blur: int | UnitObj | None = None,
         transparency: int | Intensity | None = None,
     ) -> None:
         """
@@ -273,7 +272,7 @@ class Shadow(StyleBase):
         Get copy of instance with use shadow color or removed.
 
         Args:
-            value (bool, optional): Specifies shadow color.
+            value (Color, optional): Specifies shadow color.
 
         Returns:
             Shadow: Shadow with style added or removed
@@ -282,12 +281,12 @@ class Shadow(StyleBase):
         cp.prop_color = value
         return cp
 
-    def fmt_distance(self: _TShadow, value: float | UnitPT | None = None) -> _TShadow:
+    def fmt_distance(self: _TShadow, value: float | UnitObj | None = None) -> _TShadow:
         """
         Get copy of instance with use shadow distance or removed.
 
         Args:
-            value (bool, optional): Specifies shadow distance in ``mm``units or in points.
+            value (float, UnitObj, optional): Specifies shadow distance in ``mm``units or :ref:`proto_unit_obj`.
 
         Returns:
             Shadow: Shadow with style added or removed
@@ -296,12 +295,12 @@ class Shadow(StyleBase):
         cp.prop_distance = value
         return cp
 
-    def fmt_blur(self: _TShadow, value: int | UnitMM | None = None) -> _TShadow:
+    def fmt_blur(self: _TShadow, value: int | UnitObj | None = None) -> _TShadow:
         """
         Get copy of instance with use shadow blur or removed.
 
         Args:
-            value (bool, optional): Specifies shadow blur in ``pt`` units or in ``mm`` units.
+            value (int, UnitObj, optional): Specifies shadow blur in ``pt`` units or :ref:`proto_unit_obj`.
 
         Returns:
             Shadow: Shadow with style added or removed
@@ -315,7 +314,7 @@ class Shadow(StyleBase):
         Get copy of instance with use shadow transparency or removed.
 
         Args:
-            value (bool, optional): Specifies shadow transparency value from ``0`` to ``100``.
+            value (int, Intensity, optional): Specifies shadow transparency value from ``0`` to ``100``.
 
         Returns:
             Shadow: Shadow with style added or removed
@@ -445,15 +444,15 @@ class Shadow(StyleBase):
         return UnitConvert.convert_mm100_mm(pv)
 
     @prop_distance.setter
-    def prop_distance(self, value: float | UnitPT | None) -> None:
+    def prop_distance(self, value: float | UnitObj | None) -> None:
         if value is None:
             self._remove(self._props.dist_x)
             self._remove(self._props.dist_y)
             return
-        if isinstance(value, UnitPT):
-            self._set_shaodw_distance(UnitPT.get_value_mm_100())
-        else:
+        if isinstance(value, (float, int)):
             self._set_shaodw_distance(UnitConvert.convert_mm_mm100(value))
+        else:
+            self._set_shaodw_distance(value.get_value_mm100())
 
     @property
     def prop_blur(self) -> int | None:
@@ -466,14 +465,14 @@ class Shadow(StyleBase):
         return round(UnitConvert.convert_mm100_pt(pv))
 
     @prop_blur.setter
-    def prop_blur(self, value: int | UnitMM | None) -> None:
+    def prop_blur(self, value: int | UnitObj | None) -> None:
         if value is None:
             self._remove(self._props.blur)
             return
-        if isinstance(value, UnitMM):
-            self._set(self._props.blur, value.get_value_mm100())
-        else:
+        if isinstance(value, int):
             self._set(self._props.blur, UnitConvert.convert_pt_mm100(value))
+        else:
+            self._set(self._props.blur, value.get_value_mm100())
 
     @property
     def prop_transparency(self) -> Intensity | None:
