@@ -116,12 +116,18 @@ class Names(StyleBase):
         inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
+        for prop_name in inst._props:
+            if prop_name:
+                try:
+                    inst._set(prop_name, mProps.Props.get(obj, prop_name))
+                except mEx.PropertyNotFoundError:
+                    # there is a bug. See apply()
+                    if hasattr(obj, prop_name):
+                        inst._set(prop_name, getattr(obj, prop_name))
+                    else:
+                        raise
 
-        inst.prop_name = mProps.Props.get(obj, inst._props.name, "")
-        inst.prop_desc = mProps.Props.get(obj, inst._props.desc, "")
         # prev, next not currently working
-        # inst.prop_prev = mProps.Props.get(obj, inst._props.prev, "")
-        # inst.prop_next = mProps.Props.get(obj, inst._props.next, "")
         return inst
 
     # endregion from_obj()
@@ -135,24 +141,24 @@ class Names(StyleBase):
         return self._format_kind_prop
 
     @property
-    def prop_name(self) -> bool | None:
-        """Gets/Sets frame name"""
+    def prop_name(self) -> SystemError | None:
+        """Gets/Sets name"""
         return self._get(self._props.name)
 
     @prop_name.setter
-    def prop_name(self, value: bool | None) -> None:
+    def prop_name(self, value: str | None) -> None:
         if value is None:
             self._remove(self._props.name)
             return
         self._set(self._props.name, value)
 
     @property
-    def prop_desc(self) -> bool | None:
-        """Gets/Sets frame description"""
+    def prop_desc(self) -> str | None:
+        """Gets/Sets description"""
         return self._get(self._props.desc)
 
     @prop_desc.setter
-    def prop_desc(self, value: bool | None) -> None:
+    def prop_desc(self, value: str | None) -> None:
         if value is None:
             self._remove(self._props.desc)
             return

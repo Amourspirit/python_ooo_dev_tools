@@ -2,6 +2,7 @@ from .....direct.image.image_type.size import (
     RelativeKind as RelativeKind,
     RelativeSize as RelativeSize,
     AbsoluteSize as AbsoluteSize,
+    Size as Size,
 )
 from .....direct.frame.frame_type.position import (
     HoriOrient as HoriOrient,
@@ -12,5 +13,4 @@ from .....direct.frame.frame_type.position import (
     Vertical as Vertical,
     Position as Position,
 )
-from .....direct.frame.frame_type.size import Size as Size
 from .....direct.frame.frame_type.anchor import Anchor as Anchor, AnchorKind as AnchorKind

@@ -41,11 +41,7 @@ _TStyleModifyMulti = TypeVar("_TStyleModifyMulti", bound="StyleModifyMulti")
 
 class MetaStyle(type):
     def __call__(cls, *args, **kw):
-        if "_cattribs" in kw:
-            custom_args = kw["_cattribs"]
-            del kw["_cattribs"]
-        else:
-            custom_args = None
+        custom_args =  kw.pop("_cattribs", None)
         obj = cls.__new__(cls, *args, **kw)
         uniquie_id = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
         object.__setattr__(obj, "_uniquie_id", uniquie_id)

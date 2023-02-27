@@ -131,7 +131,7 @@ class TextDirectionMode(WritingMode):
 
 class Properties(StyleMulti):
     """
-    Frame Vertical Alignment
+    Frame Frame Options Properties.
 
     .. versionadded:: 0.9.0
     """
