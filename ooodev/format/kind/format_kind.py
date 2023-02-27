@@ -18,4 +18,5 @@ class FormatKind(IntFlag):
     DOC = 1 << 11
     FRAME = 1 << 12
     SHAPE = 1 << 13
+    IMAGE = 1 << 14
     """Document level Styles"""

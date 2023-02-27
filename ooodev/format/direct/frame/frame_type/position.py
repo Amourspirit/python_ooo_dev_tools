@@ -19,7 +19,7 @@ from .....utils import lo as mLo
 from .....utils import props as mProps
 from .....utils.data_type.intensity import Intensity as Intensity
 from .....utils.unit_convert import UnitConvert
-from .....utils.data_type.unit_100_mm import Unit100MM
+from .....proto.unit_obj import UnitObj
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleBase
 from ...common.props.frame_type_positon_props import FrameTypePositonProps
@@ -100,22 +100,24 @@ class Horizontal:
     """Horizontal Frame Position. Not used when Anchor is set to ``As Character``."""
 
     # region Init
-    def __init__(self, position: HoriOrient, rel: RelHoriOrient, amount: float | Unit100MM = 0.0) -> None:
+    def __init__(self, position: HoriOrient, rel: RelHoriOrient, amount: float | UnitObj = 0.0) -> None:
         """
         Constructor
 
         Args:
             position (HoriOrient): Specifies Horizontal Position.
             rel (RelHoriOrient): Specifies Relative Orientation.
-            amount (float, Unit100MM, optional): Spedifies Amount in ``mm`` units or ``1/100th mm`` units. Only effective when position is ``HoriOrient.FROM_LEFT``. Defaults to ``0.0``.
+            amount (float, UnitObj, optional): Spedifies Amount in ``mm`` units or :ref:`proto_unit_obj`. Only effective when position is ``HoriOrient.FROM_LEFT``. Defaults to ``0.0``.
         """
 
         self._position = position
         self._rel = rel
-        if isinstance(amount, Unit100MM):
-            self._amount = amount.get_value_mm()
-        else:
+        if isinstance(amount, float):
             self._amount = amount
+        elif isinstance(amount, int):
+            self._amount = float(amount)
+        else:
+            self._amount = amount.get_value_mm()
 
     # endregion Init
 
@@ -174,11 +176,13 @@ class Horizontal:
         return self._amount
 
     @amount.setter
-    def amount(self, value: float | Unit100MM):
-        if isinstance(value, Unit100MM):
-            self._amount = value.get_value_mm()
-        else:
+    def amount(self, value: float | UnitObj):
+        if isinstance(value, float):
             self._amount = value
+        elif isinstance(value, int):
+            self._amount = float(value)
+        else:
+            self._amount = value.get_value_mm()
 
     # endregion Properties
 
@@ -187,22 +191,24 @@ class Vertical:
     """Vertical Frame Position."""
 
     # region Init
-    def __init__(self, position: VertOrient, rel: RelVertOrient, amount: float | Unit100MM = 0.0) -> None:
+    def __init__(self, position: VertOrient, rel: RelVertOrient, amount: float | UnitObj = 0.0) -> None:
         """
         Constructor
 
         Args:
             position (VertOrient): Specifies Vertical Position.
             rel (RelVertOrient): Specifies Relative Orientation.
-            amount (float, Unit100MM, optional): Spedifies Amount in ``mm`` units or ``1/100th mm`` units. Only effective when position is ``VertOrient.FROM_TOP``. Defaults to ``0.0``.
+            amount (float, UnitObj, optional): Spedifies Amount in ``mm`` units or :ref:`proto_unit_obj`. Only effective when position is ``VertOrient.FROM_TOP``. Defaults to ``0.0``.
         """
 
         self._position = position
         self._rel = rel
-        if isinstance(amount, Unit100MM):
-            self._amount = amount.get_value_mm()
-        else:
+        if isinstance(amount, float):
             self._amount = amount
+        elif isinstance(amount, int):
+            self._amount = float(amount)
+        else:
+            self._amount = amount.get_value_mm()
 
     # endregion Init
 
@@ -261,11 +267,13 @@ class Vertical:
         return self._amount
 
     @amount.setter
-    def amount(self, value: float | Unit100MM):
-        if isinstance(value, Unit100MM):
-            self._amount = value.get_value_mm()
-        else:
+    def amount(self, value: float | UnitObj):
+        if isinstance(value, float):
             self._amount = value
+        elif isinstance(value, int):
+            self._amount = float(value)
+        else:
+            self._amount = value.get_value_mm()
 
     # endregion Properties
 
@@ -366,7 +374,12 @@ class Position(StyleBase):
         try:
             return self._supported_services_values
         except AttributeError:
-            self._supported_services_values = ("com.sun.star.style.Style", "com.sun.star.text.TextFrame")
+            self._supported_services_values = (
+                "com.sun.star.style.Style",
+                "com.sun.star.text.TextFrame",
+                "com.sun.star.text.TextGraphicObject",
+                "com.sun.star.text.BaseFrame",
+            )
         return self._supported_services_values
 
     def _on_modifing(self, event: CancelEventArgs) -> None:

@@ -1,12 +1,14 @@
 from __future__ import annotations
+from typing import cast
+from pathlib import Path
 import pytest
 
 if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.utils.unit_convert import UnitConvert
-from ooodev.format.writer.direct.frame.type import (
+from ooodev.format.writer.direct.image.options import Names
+from ooodev.format.writer.direct.image.type import (
     Anchor,
     AnchorKind,
     Size,
@@ -23,13 +25,12 @@ from ooodev.format.writer.direct.frame.type import (
 )
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
-from ooodev.utils.color import StandardColor
+from ooodev.utils.images_lo import ImagesLo
 from ooodev.utils.data_type.unit_mm100 import UnitMM100
-from ooodev.utils.data_type.unit_mm import UnitMM
 from ooodev.office.write import Write
 
 
-def test_write(loader, para_text) -> None:
+def test_write(loader, fix_image_path) -> None:
     # delay = 0 if Lo.bridge_connector.headless else 3_000
     delay = 0
 
@@ -39,13 +40,13 @@ def test_write(loader, para_text) -> None:
         Lo.delay(500)
         GUI.zoom(GUI.ZoomEnum.ENTIRE_PAGE)
     try:
-        cursor = Write.get_cursor(doc)
-        if not Lo.bridge_connector.headless:
-            Write.append_para(cursor=cursor, text=para_text)
 
-        text_width = Write.get_page_text_width(doc)
+        im_fnm = cast(Path, fix_image_path("skinner.png"))
+        cursor = Write.get_cursor(doc)
+        img_size = ImagesLo.get_size_100mm(im_fnm=im_fnm)
         size_style = Size(
-            width=AbsoluteSize(UnitMM100(text_width)), height=AbsoluteSize(50.2), auto_height=True, auto_width=False
+            width=AbsoluteSize(UnitMM100(img_size.Width)),
+            height=AbsoluteSize(UnitMM100(img_size.Height)),
         )
         style_position = Position(
             horizontal=Horizontal(
@@ -56,20 +57,29 @@ def test_write(loader, para_text) -> None:
             keep_boundries=False,
         )
         style_anchor = Anchor(anchor=AnchorKind.AT_CHARACTER)
+        style_name = Names(name="skinner", desc="Skinner Pointing", alt="Pointer")
 
-        frame = Write.add_text_frame(
+        _ = Write.add_image_link(
+            doc=doc,
             cursor=cursor,
-            ypos=UnitMM(10),
-            text=para_text,
-            width=UnitMM(60),
-            height=UnitMM(40),
-            styles=(style_anchor, size_style, style_position),
+            fnm=im_fnm,
+            styles=(
+                style_name,
+                style_anchor,
+                size_style,
+                style_position,
+            ),
         )
 
-        f_style_anchor = Anchor.from_obj(frame)
+        graphics = Write.get_graphic_links(doc=doc)
+        assert graphics is not None
+        assert graphics.hasByName(style_name.prop_name)
+        graphic = graphics.getByName(style_name.prop_name)
+
+        f_style_anchor = Anchor.from_obj(graphic)
         assert f_style_anchor.prop_anchor == style_anchor.prop_anchor
 
-        f_style_position = Position.from_obj(frame)
+        f_style_position = Position.from_obj(graphic)
 
         assert f_style_position.prop_horizontal.position == style_position.prop_horizontal.position
         assert f_style_position.prop_horizontal.rel == style_position.prop_horizontal.rel

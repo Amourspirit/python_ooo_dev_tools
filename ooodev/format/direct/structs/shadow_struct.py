@@ -16,7 +16,8 @@ from ....exceptions import ex as mEx
 from ...kind.format_kind import FormatKind
 from ...style_base import StyleBase, CancelEventArgs
 from ....utils.unit_convert import UnitConvert, Length
-from ....utils.data_type.unit_100_mm import Unit100MM
+from ....utils.data_type.unit_mm100 import UnitMM100
+from ....proto.unit_obj import UnitObj
 
 from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
@@ -43,7 +44,7 @@ class ShadowStruct(StyleBase):
         location: ShadowLocation = ShadowLocation.BOTTOM_RIGHT,
         color: Color = StandardColor.GRAY,
         transparent: bool = False,
-        width: float | Unit100MM = 1.76,
+        width: float | UnitObj = 1.76,
     ) -> None:
         """
         Constructor
@@ -52,7 +53,7 @@ class ShadowStruct(StyleBase):
             location (ShadowLocation, optional): contains the location of the shadow. Default to ``ShadowLocation.BOTTOM_RIGHT``.
             color (Color, optional):contains the color value of the shadow. Defaults to ``StandardColor.GRAY``.
             transparent (bool, optional): Shadow transparency. Defaults to False.
-            width (float, Unit100MM, optional): contains the size of the shadow (in ``mm`` units) or in ``1/100th mm`` units. Defaults to ``1.76``.
+            width (float, Unit100MM, optional): contains the size of the shadow (in ``mm`` units) or :ref:`proto_unit_obj`. Defaults to ``1.76``.
 
         Raises:
             ValueError: If ``color`` or ``width`` are less than zero.
@@ -65,10 +66,10 @@ class ShadowStruct(StyleBase):
         self._location = location
         self._color = color
         self._transparent = transparent
-        if isinstance(width, Unit100MM):
-            self._width = width.value
-        else:
+        if isinstance(width, float):
             self._width = UnitConvert.convert_mm_mm100(width)
+        else:
+            self._width = width.get_value_mm100()
 
         super().__init__()
 
@@ -234,7 +235,7 @@ class ShadowStruct(StyleBase):
             location=shadow.Location,
             color=shadow.Color,
             transparent=shadow.IsTransparent,
-            width=Unit100MM(shadow.ShadowWidth),
+            width=UnitMM100(shadow.ShadowWidth),
             **kwargs,
         )
 
@@ -266,7 +267,7 @@ class ShadowStruct(StyleBase):
             location=shadow.Location,
             color=shadow.Color,
             transparent=shadow.IsTransparent,
-            width=Unit100MM(shadow.ShadowWidth),
+            width=UnitMM100(shadow.ShadowWidth),
             **kwargs,
         )
 
@@ -316,7 +317,7 @@ class ShadowStruct(StyleBase):
         cp.prop_transparent = value
         return cp
 
-    def fmt_width(self: _TShadowStruct, value: float | Unit100MM) -> _TShadowStruct:
+    def fmt_width(self: _TShadowStruct, value: float | UnitObj) -> _TShadowStruct:
         """
         Gets a copy of instance with width set
 
@@ -375,11 +376,11 @@ class ShadowStruct(StyleBase):
         return UnitConvert.convert(num=self._width, frm=Length.MM100, to=Length.MM)
 
     @prop_width.setter
-    def prop_width(self, value: float | Unit100MM) -> None:
-        if isinstance(value, Unit100MM):
-            self._width = value.value
-        else:
+    def prop_width(self, value: float | UnitObj) -> None:
+        if isinstance(value, float):
             self._width = UnitConvert.convert_mm_mm100(value)
+        else:
+            self._width = value.get_value_mm100()
 
     @static_prop
     def empty() -> ShadowStruct:  # type: ignore[misc]

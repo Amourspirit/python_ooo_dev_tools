@@ -18,6 +18,7 @@ from ..events.write_named_event import WriteNamedEvent
 from ..exceptions import ex as mEx
 from ..meta.static_meta import classproperty
 from ..proto.style_obj import StyleObj, FormatKind
+from ..proto.unit_obj import UnitObj
 from ..utils import file_io as mFileIO
 from ..utils import images_lo as mImgLo
 from ..utils import info as mInfo
@@ -26,7 +27,6 @@ from ..utils import props as mProps
 from ..utils import selection as mSel
 from ..utils.color import CommonColor, Color
 from ..utils.table_helper import TableHelper
-from ..utils.data_type.unit_mm import UnitMM as UnitMM
 from ..utils.type_var import PathOrStr, Table, DocOrCursor
 
 from ..mock import mock_g
@@ -2288,10 +2288,10 @@ class Write(mSel.Selection):
     def add_text_frame(
         cls,
         cursor: XTextCursor,
-        ypos: int | UnitMM,
+        ypos: int | UnitObj,
         text: str,
-        width: int | UnitMM,
-        height: int | UnitMM,
+        width: int | UnitObj,
+        height: int | UnitObj,
         page_num: int = 1,
         border_color: Color | None = None,
         background_color: Color | None = None,
@@ -2302,10 +2302,10 @@ class Write(mSel.Selection):
 
         Args:
             cursor (XTextCursor): Text Cursor
-            ypos (int, UnitMM): Frame Y pos in ``1/100th mm`` or ``UnitMM`` in ``mm`` units.
+            ypos (int, UnitObj): Frame Y pos in ``1/100th mm`` or :ref:`proto_unit_obj`.
             text (str): Frame Text
-            width (int, UnitMM): Width in ``1/100th mm`` or ``UnitMM`` in ``mm`` units.
-            height (int, UnitMM): Height in ``1/100th mm`` or ``UnitMM`` in ``mm`` units.
+            width (int, UnitObj): Width in ``1/100th mm`` or :ref:`proto_unit_obj`.
+            height (int, UnitObj): Height in ``1/100th mm`` or :ref:`proto_unit_obj`.
             page_num (int): Page Number to add text frame
             border_color (Color, optional): Border Color.
             background_color (Color, optional): Background Color.
@@ -2360,11 +2360,11 @@ class Write(mSel.Selection):
         border_color = cargs.event_data["border_color"]
         background_color = cargs.event_data["background_color"]
 
-        if isinstance(ypos, UnitMM):
+        if not isinstance(ypos, int):
             ypos = ypos.get_value_mm100()
-        if isinstance(width, UnitMM):
+        if not isinstance(width, int):
             width = width.get_value_mm100()
-        if isinstance(height, UnitMM):
+        if not isinstance(height, int):
             height = height.get_value_mm100()
 
         try:
@@ -2565,7 +2565,7 @@ class Write(mSel.Selection):
 
     @overload
     @classmethod
-    def add_image_link(cls, doc: XTextDocument, cursor: XTextCursor, fnm: PathOrStr) -> bool:
+    def add_image_link(cls, doc: XTextDocument, cursor: XTextCursor, fnm: PathOrStr) -> XShape | None:
         """
         Add Image Link
 
@@ -2576,12 +2576,64 @@ class Write(mSel.Selection):
 
         Returns:
             bool: True if image link is added; Otherwise, False
+        """
+        ...
+
+    # style: Iterable[StyleObj] = None
+    @overload
+    @classmethod
+    def add_image_link(
+        cls, doc: XTextDocument, cursor: XTextCursor, fnm: PathOrStr, width: int, height: int
+    ) -> XTextContent | None:
+        """
+        Add Image Link
+
+        Args:
+            doc (XTextDocument): Text Document
+            cursor (XTextCursor): Text Cursor
+            fnm (PathOrStr): Image path
+            width (int, optional): Width.
+            height (int, optional): Height.
+
+        Returns:
+            XTextContent: Image Link on success; Otherwise, ``None``
+        """
+
+    @overload
+    @classmethod
+    def add_image_link(
+        cls,
+        doc: XTextDocument,
+        cursor: XTextCursor,
+        fnm: PathOrStr,
+        *,
+        styles: Iterable[StyleObj],
+    ) -> XTextContent | None:
+        """
+        Add Image Link
+
+        Args:
+            doc (XTextDocument): Text Document
+            cursor (XTextCursor): Text Cursor
+            fnm (PathOrStr): Image path
+            styles (Iterable[StyleObj]): One or more styles to apply to frame. Only styles that support ``com.sun.star.text.TextGraphicObject`` service are applied.
+
+        Returns:
+            XTextContent: Image Link on success; Otherwise, ``None``
         """
         ...
 
     @overload
     @classmethod
-    def add_image_link(cls, doc: XTextDocument, cursor: XTextCursor, fnm: PathOrStr, width: int, height: int) -> bool:
+    def add_image_link(
+        cls,
+        doc: XTextDocument,
+        cursor: XTextCursor,
+        fnm: PathOrStr,
+        width: int,
+        height: int,
+        styles: Iterable[StyleObj],
+    ) -> XTextContent | None:
         """
         Add Image Link
 
@@ -2591,16 +2643,24 @@ class Write(mSel.Selection):
             fnm (PathOrStr): Image path
             width (int, optional): Width.
             height (int, optional): Height.
+            styles (Iterable[StyleObj]): One or more styles to apply to frame. Only styles that support ``com.sun.star.text.TextGraphicObject`` service are applied.
 
         Returns:
-            bool: True if image link is added; Otherwise, False
+            XTextContent: Image Link on success; Otherwise, ``None``
         """
         ...
 
     @classmethod
     def add_image_link(
-        cls, doc: XTextDocument, cursor: XTextCursor, fnm: PathOrStr, width: int = 0, height: int = 0
-    ) -> bool:
+        cls,
+        doc: XTextDocument,
+        cursor: XTextCursor,
+        fnm: PathOrStr,
+        *,
+        width: int = 0,
+        height: int = 0,
+        styles: Iterable[StyleObj] = None,
+    ) -> XTextContent | None:
         """
         Add Image Link
 
@@ -2610,6 +2670,7 @@ class Write(mSel.Selection):
             fnm (PathOrStr): Image path
             width (int, optional): Width.
             height (int, optional): Height.
+            styles (Iterable[StyleObj]): One or more styles to apply to frame. Only styles that support ``com.sun.star.text.TextGraphicObject`` service are applied.
 
         Raises:
             CreateInstanceMsfError: If Unable to create text.TextGraphicObject
@@ -2617,7 +2678,7 @@ class Write(mSel.Selection):
             Exception: If unable to add image
 
         Returns:
-            bool: True if image link is added; Otherwise, False
+            XTextContent: Image Link on success; Otherwise, ``None``
 
         :events:
             .. cssclass:: lo_event
@@ -2627,6 +2688,9 @@ class Write(mSel.Selection):
 
         Note:
            Event args ``event_data`` is a dictionary containing ``doc``, ``cursor``, ``fnm``, ``width`` and ``height``.
+
+        .. versionchanged:: 0.9.0
+            Return image shape instead of boolean.
         """
         # see Also: https://ask.libreoffice.org/t/graphicurl-no-longer-works-in-6-1-0-3/35459/3
         # see Also: https://tomazvajngerl.blogspot.com/2018/03/improving-image-handling-in-libreoffice.html
@@ -2660,40 +2724,42 @@ class Write(mSel.Selection):
                 props.setPropertyValue("Height", height)
 
             # append image to document, followed by a newline
+            if styles:
+                srv = ("com.sun.star.text.TextGraphicObject",)
+                for style in styles:
+                    if style.support_service(*srv):
+                        style.apply(tgo)
             cls._append_text_content(cursor, tgo)
             cls.end_line(cursor)
+            result = tgo
         except Exception as e:
             raise Exception(f"Insertion of graphic in '{fnm}' failed:") from e
         _Events().trigger(WriteNamedEvent.IMAGE_LNIK_ADDED, EventArgs.from_args(cargs))
-        return True
+        return result
 
     # endregion add_image_link()
 
     # region    add_image_shape()
     @overload
     @staticmethod
-    def add_image_shape(cursor: XTextCursor, fnm: PathOrStr) -> bool:
+    def add_image_shape(cursor: XTextCursor, fnm: PathOrStr) -> XShape | None:
         """
         Add Image Shape
-
-        Currently this method is only supported in terminal. Not in macros.
 
         Args:
             cursor (XTextCursor): Text Cursor
             fnm (PathOrStr): Image path
 
         Returns:
-            bool: True if image shape is added; Otherwise, False
+            XShape: Image Shape on success; Otherwise, ``None``
         """
         ...
 
     @overload
     @staticmethod
-    def add_image_shape(cursor: XTextCursor, fnm: PathOrStr, width: int, height: int) -> bool:
+    def add_image_shape(cursor: XTextCursor, fnm: PathOrStr, width: int, height: int) -> XShape | None:
         """
         Add Image Shape
-
-        Currently this method is only suported in terminal. Not in macros.
 
         Args:
             cursor (XTextCursor): Text Cursor
@@ -2702,12 +2768,12 @@ class Write(mSel.Selection):
             height (int, optional): Image height
 
         Returns:
-            bool: True if image shape is added; Otherwise, False
+            XShape: Image Shape on success; Otherwise, ``None``
         """
         ...
 
     @classmethod
-    def add_image_shape(cls, cursor: XTextCursor, fnm: PathOrStr, width: int = 0, height: int = 0) -> bool:
+    def add_image_shape(cls, cursor: XTextCursor, fnm: PathOrStr, width: int = 0, height: int = 0) -> XShape | None:
         """
         Add Image Shape
 
@@ -2724,7 +2790,7 @@ class Write(mSel.Selection):
             Exception: If unable to add image shape
 
         Returns:
-            bool: True if image shape is added; Otherwise, False
+            XShape: Image Shape on success; Otherwise, ``None``
 
         :events:
             .. cssclass:: lo_event
@@ -2734,6 +2800,9 @@ class Write(mSel.Selection):
 
         Note:
            Event args ``event_data`` is a dictionary containing ``doc``, ``cursor``, ``fnm``, ``width`` and ``height``.
+
+        .. versionchanged:: 0.9.0
+            Return image shape instead of boolean.
         """
         cargs = CancelEventArgs(Write.add_image_shape.__qualname__)
         cargs.event_data = {
@@ -2778,6 +2847,7 @@ class Write(mSel.Selection):
             # insert image shape into the document, followed by newline
             cls._append_text_content(cursor, gos)
             cls.end_line(cursor)
+            return xdraw_shape
         except ValueError:
             raise
         except mEx.CreateInstanceMsfError:
@@ -2787,7 +2857,7 @@ class Write(mSel.Selection):
         except Exception as e:
             raise Exception(f"Insertion of graphic in '{fnm}' failed:") from e
         _Events().trigger(WriteNamedEvent.IMAGE_SHAPE_ADDED, EventArgs.from_args(cargs))
-        return True
+        return None
 
     # endregion add_image_shape()
 

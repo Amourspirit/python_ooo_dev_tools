@@ -91,10 +91,20 @@ mindmap
                         id{{Img}}
                         id{{Pattern}}
                     shadow
-                        id{{Shadowv
+                        id{{Shadowv}}
                     transparency
                         id{{Gradient}}
                         id{{Transparency}}
+                image
+                    type
+                        id{{Anchor}}
+                        id{{Position}}
+                        id{{Size}}
+                    options
+                        id{{Align}}
+                        id{{Names}}
+                        id{{Properties}}
+                        id{{Protect}}
             [modify]
                 page
                     page
