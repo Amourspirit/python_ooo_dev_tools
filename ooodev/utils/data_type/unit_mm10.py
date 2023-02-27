@@ -24,7 +24,7 @@ class UnitMM10(BaseFloatValue):
 
     def get_value_pt(self) -> float:
         """
-        Gets instance value converted to `pt`` (points) units.
+        Gets instance value converted to ``pt`` (points) units.
 
         Returns:
             int: Value in ``pt`` units.

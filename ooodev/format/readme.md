@@ -91,7 +91,7 @@ mindmap
                         id{{Img}}
                         id{{Pattern}}
                     shadow
-                        id{{Shadowv}}
+                        id{{Shadow}}
                     transparency
                         id{{Gradient}}
                         id{{Transparency}}
