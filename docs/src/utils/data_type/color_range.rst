@@ -1,5 +1,5 @@
 Class ColorRange
 ================
 
-.. autoclass:: ooodev.utils.color_range.ColorRange.Byte
+.. autoclass:: ooodev.utils.data_type.color_range.ColorRange
     :members:

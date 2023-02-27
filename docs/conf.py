@@ -53,6 +53,7 @@ extensions = [
     "sphinx_toolbox.more_autodoc.autonamedtuple",
     "sphinx_toolbox.more_autodoc.typevars",
     "sphinx_toolbox.more_autodoc.autoprotocol",
+    "sphinx_toolbox.more_autodoc.overloads",
     "sphinx.ext.napoleon",
     "sphinx.ext.todo",
     "sphinx.ext.extlinks",
