@@ -15,7 +15,6 @@ ooodev
    listeners/index
    office/index
    proto/index
-   format/index
    utils/index
    wrapper/index
 

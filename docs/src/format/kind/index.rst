@@ -1,8 +1,0 @@
-kind
-====
-
-.. toctree::
-    :titlesonly:
-    :glob:
-
-    *
