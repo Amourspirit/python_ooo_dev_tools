@@ -11,6 +11,7 @@ ooodev
    dialog/index
    events/index
    exceptions/index
+   format/index
    formatters/index
    listeners/index
    office/index
