@@ -33,7 +33,7 @@ class UnitMM(BaseFloatValue):
 
     def get_value_pt(self) -> float:
         """
-        Gets instance value converted to Size in `pt`` (points) units.
+        Gets instance value converted to Size in ``pt`` (points) units.
 
         Returns:
             int: Value in ``pt`` units.

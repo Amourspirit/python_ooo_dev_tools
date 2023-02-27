@@ -117,6 +117,15 @@ html[data-theme='dark'] .rst-content tt.literal:not(a code) {
     color: #cecece;
 }
 
+html[data-theme='dark'].writer-html5 .rst-content dl[class]:not(.option-list):not(.field-list):not(.footnote):not(.citation):not(.glossary):not(.simple) dl:not(.option-list):not(.field-list):not(.footnote):not(.citation):not(.glossary):not(.simple)>dt {
+    /* This is a fix for theme.css overriding dark.css. Added Feb 27, 2023 */
+    margin-bottom: 6px;
+    border: none;
+    border-top: 3px solid #2b2b2b;
+    background: #0b0b0b;
+    color: #007dce;
+}
+
 /* start sphinx_design extension */
 html[data-theme='dark'] {
     /* overides for sphinx_design extension colors */
