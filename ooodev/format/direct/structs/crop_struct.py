@@ -51,7 +51,7 @@ class CropStruct(StyleBase):
             right (float, UnitObj, optional): Specifies right crop in ``mm`` units or :ref:`proto_unit_obj`. Default ``0.0``.
             top (float, UnitObj, optional): Specifies top crop in ``mm`` units or :ref:`proto_unit_obj`. Default ``0.0``.
             bottom (float, UnitObj, optional): Specifies bottom crop in ``mm`` units or :ref:`proto_unit_obj`. Default ``0.0``.
-            all (float, UnitObj, optional): Specifies ``left``, ``right``, ``top``, and ``bottom`` in ``mm`` units or :ref:`proto_unit_obj`. If set all other paramaters are ignored.
+            all (float, UnitObj, optional): Specifies ``left``, ``right``, ``top``, and ``bottom`` in ``mm`` units or :ref:`proto_unit_obj`. If set all other parameters are ignored.
         """
         super().__init__()
         if not all is None:
@@ -77,6 +77,25 @@ class CropStruct(StyleBase):
 
     # endregion internal methods
 
+    # region dunder methods
+    def __eq__(self, oth: object) -> bool:
+        obj2 = None
+        if isinstance(oth, CropStruct):
+            obj2 = oth.get_uno_struct()
+        if getattr(oth, "typeName", None) == "com.sun.star.text.GraphicCrop":
+            obj2 = cast(GraphicCrop, oth)
+        if obj2:
+            obj1 = self.get_uno_struct()
+            return (
+                obj1.Left == obj2.Left
+                and obj1.Right == obj2.Right
+                and obj1.Top == obj2.Top
+                and obj1.Bottom == obj2.Bottom
+            )
+        return NotImplemented
+
+    # endregion dunder methods
+
     # region methods
     def get_uno_struct(self) -> GraphicCrop:
         """
@@ -101,7 +120,7 @@ class CropStruct(StyleBase):
         try:
             return self._supported_services_values
         except AttributeError:
-            self._supported_services_values = ("com.sun.star.text.TextGraphicObjects",)
+            self._supported_services_values = ("com.sun.star.text.TextGraphicObject",)
         return self._supported_services_values
 
     # region apply()
@@ -214,7 +233,7 @@ class CropStruct(StyleBase):
             value (float, UnitObj): Specifies crop in ``mm`` units or :ref:`proto_unit_obj`.
 
         Returns:
-            BorderTable: Border Table
+            CropStruct: Border Table
         """
         cp = self.copy()
         cp.prop_top = value

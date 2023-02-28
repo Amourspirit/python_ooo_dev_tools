@@ -279,7 +279,7 @@ class Gradient(StyleMulti):
 
     @property
     def prop_inner(self) -> GradientStruct:
-        """Gets/Sets Fill styles instance"""
+        """Gets Fill styles instance"""
         try:
             return self._direct_inner
         except AttributeError:

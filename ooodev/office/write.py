@@ -3,7 +3,7 @@
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 # region Imports
 from __future__ import annotations
-from typing import TYPE_CHECKING, Iterable, List, cast, overload
+from typing import TYPE_CHECKING, Iterable, List, cast, overload, Union
 import re
 import uno
 
@@ -2352,20 +2352,26 @@ class Write(mSel.Selection):
         if cargs.cancel:
             return False
 
-        ypos = cargs.event_data["ypos"]
+        arg_ypos = cast(Union[int, UnitObj], cargs.event_data["ypos"])
         text = cargs.event_data["text"]
-        width = cargs.event_data["width"]
-        height = cargs.event_data["height"]
+        arg_width = cast(Union[int, UnitObj], cargs.event_data["width"])
+        arg_height = cast(Union[int, UnitObj], cargs.event_data["height"])
         page_num = cargs.event_data["page_num"]
         border_color = cargs.event_data["border_color"]
         background_color = cargs.event_data["background_color"]
 
-        if not isinstance(ypos, int):
-            ypos = ypos.get_value_mm100()
-        if not isinstance(width, int):
-            width = width.get_value_mm100()
-        if not isinstance(height, int):
-            height = height.get_value_mm100()
+        try:
+            ypos = arg_ypos.get_value_mm100()
+        except AttributeError:
+            ypos = int(arg_ypos)
+        try:
+            width = arg_width.get_value_mm100()
+        except AttributeError:
+            width = int(arg_width)
+        try:
+            height = arg_height.get_value_mm100()
+        except AttributeError:
+            height = int(arg_height)
 
         try:
             xframe = mLo.Lo.create_instance_msf(XTextFrame, "com.sun.star.text.TextFrame")
@@ -2720,18 +2726,15 @@ class Write(mSel.Selection):
 
             # optionally set the width and height
             if not width is None:
-                if isinstance(width, int):
-                    if width > 0:
-                        props.setPropertyValue("Width", width)
-                else:
+                try:
                     props.setPropertyValue("Width", width.get_value_mm100())
-
+                except AttributeError:
+                    props.setPropertyValue("Width", int(width))
             if not height is None:
-                if isinstance(height, int):
-                    if height > 0:
-                        props.setPropertyValue("Height", width)
-                else:
+                try:
                     props.setPropertyValue("Height", height.get_value_mm100())
+                except AttributeError:
+                    props.setPropertyValue("Height", int(height))
 
             # append image to document, followed by a newline
             if styles:
@@ -2838,14 +2841,15 @@ class Write(mSel.Selection):
         try:
             size_set = False
             if width is not None and height is not None:
-                if isinstance(width, int):
-                    w = width
-                else:
+                try:
                     w = width.get_value_mm100()
-                if isinstance(height, int):
-                    h = height
-                else:
+                except AttributeError:
+                    w = int(width)
+
+                try:
                     h = height.get_value_mm100()
+                except AttributeError:
+                    h = int(height)
                 if w > 0 and h > 0:
                     im_size = Size(w, h)
                     size_set = True
