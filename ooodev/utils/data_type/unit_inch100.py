@@ -8,9 +8,7 @@ from ..unit_convert import UnitConvert, Length
 
 _TUnitInch100 = TypeVar(name="_TUnitInch100", bound="UnitInch100")
 
-# Note that from __future__ import annotations converts annotations to string.
-# this means that @enforce.enforce_types will see string as type. This is fine in
-# most cases. Especially for built in types.
+
 @dataclass(unsafe_hash=True)
 class UnitInch100(BaseFloatValue):
     """
@@ -25,15 +23,6 @@ class UnitInch100(BaseFloatValue):
     def __post_init__(self):
         if not isinstance(self.value, float):
             object.__setattr__(self, "value", float(self.value))
-
-    def get_value_pt(self) -> float:
-        """
-        Gets instance value converted to Size in ``pt`` (points) units.
-
-        Returns:
-            int: Value in ``pt`` units.
-        """
-        return UnitConvert.convert(num=self.value, frm=Length.IN100, to=Length.PT)
 
     def get_value_mm(self) -> float:
         """
@@ -67,6 +56,24 @@ class UnitInch100(BaseFloatValue):
         inst = super(UnitInch100, cls).__new__(cls)
         return inst.__init__(UnitConvert.convert(num=value, frm=Length.MM100, to=Length.IN100))
 
+    def get_value_pt(self) -> float:
+        """
+        Gets instance value converted to Size in ``pt`` (points) units.
+
+        Returns:
+            int: Value in ``pt`` units.
+        """
+        return UnitConvert.convert(num=self.value, frm=Length.IN100, to=Length.PT)
+
+    def get_value_px(self) -> float:
+        """
+        Gets instance value in ``px`` (pixel) units.
+
+        Returns:
+            int: Value in ``px`` units.
+        """
+        return UnitConvert.convert(num=self.value, frm=Length.IN100, to=Length.PX)
+
     @classmethod
     def from_pt(cls: Type[_TUnitInch100], value: float) -> _TUnitInch100:
         """
@@ -80,6 +87,20 @@ class UnitInch100(BaseFloatValue):
         """
         inst = super(UnitInch100, cls).__new__(cls)
         return inst.__init__(float(UnitConvert.convert(num=value, frm=Length.PT, to=Length.IN100)))
+
+    @classmethod
+    def from_px(cls: Type[_TUnitInch100], value: float) -> _TUnitInch100:
+        """
+        Get instance from ``px`` (pixel) value.
+
+        Args:
+            value (float): ``px`` value.
+
+        Returns:
+            UnitInch100:
+        """
+        inst = super(UnitInch100, cls).__new__(cls)
+        return inst.__init__(UnitConvert.convert(num=value, frm=Length.PX, to=Length.IN100))
 
     @classmethod
     def from_in(cls: Type[_TUnitInch100], value: float) -> _TUnitInch100:

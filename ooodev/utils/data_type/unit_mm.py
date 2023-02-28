@@ -31,6 +31,15 @@ class UnitMM(BaseFloatValue):
         """
         return UnitConvert.convert_mm_mm100(self.value)
 
+    def get_value_mm(self) -> float:
+        """
+        Gets instance value converted to Size in ``mm`` units.
+
+        Returns:
+            int: Value in ``mm`` units.
+        """
+        return self.value
+
     def get_value_pt(self) -> float:
         """
         Gets instance value converted to Size in ``pt`` (points) units.
@@ -40,14 +49,14 @@ class UnitMM(BaseFloatValue):
         """
         return UnitConvert.convert(num=self.value, frm=Length.MM, to=Length.PT)
 
-    def get_value_mm(self) -> float:
+    def get_value_px(self) -> float:
         """
-        Gets instance value converted to Size in ``mm`` units.
+        Gets instance value in ``px`` (pixel) units.
 
         Returns:
-            int: Value in ``mm`` units.
+            int: Value in ``px`` units.
         """
-        return self.value
+        return UnitConvert.convert(num=self.value, frm=Length.MM, to=Length.PX)
 
     @classmethod
     def from_mm(cls: Type[_TUnitMM], value: float) -> _TUnitMM:
@@ -104,6 +113,20 @@ class UnitMM(BaseFloatValue):
         """
         inst = super(UnitMM, cls).__new__(cls)
         return inst.__init__(float(UnitConvert.convert(num=value, frm=Length.PT, to=Length.MM)))
+
+    @classmethod
+    def from_px(cls: Type[_TUnitMM], value: float) -> _TUnitMM:
+        """
+        Get instance from ``px`` (pixel) value.
+
+        Args:
+            value (float): ``px`` value.
+
+        Returns:
+            UnitMM:
+        """
+        inst = super(UnitMM, cls).__new__(cls)
+        return inst.__init__(UnitConvert.convert(num=value, frm=Length.PX, to=Length.MM))
 
     @classmethod
     def from_inch(cls: Type[_TUnitMM], value: float) -> _TUnitMM:

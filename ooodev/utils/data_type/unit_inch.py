@@ -49,6 +49,15 @@ class UnitInch(BaseFloatValue):
         """
         return round(UnitConvert.convert(num=self.value, frm=Length.IN, to=Length.MM100))
 
+    def get_value_px(self) -> float:
+        """
+        Gets instance value in ``px`` (pixel) units.
+
+        Returns:
+            int: Value in ``px`` units.
+        """
+        return UnitConvert.convert(num=self.value, frm=Length.IN, to=Length.PX)
+
     @classmethod
     def from_mm(cls: Type[_TUnitInch], value: float) -> _TUnitInch:
         """
@@ -90,6 +99,20 @@ class UnitInch(BaseFloatValue):
         """
         inst = super(UnitInch, cls).__new__(cls)
         return inst.__init__(UnitConvert.convert(num=value, frm=Length.PT, to=Length.IN))
+
+    @classmethod
+    def from_px(cls: Type[_TUnitInch], value: float) -> _TUnitInch:
+        """
+        Get instance from ``px`` (pixel) value.
+
+        Args:
+            value (float): ``px`` value.
+
+        Returns:
+            UnitInch:
+        """
+        inst = super(UnitInch, cls).__new__(cls)
+        return inst.__init__(UnitConvert.convert(num=value, frm=Length.PX, to=Length.IN))
 
     @classmethod
     def from_inch10(cls: Type[_TUnitInch], value: float) -> _TUnitInch:

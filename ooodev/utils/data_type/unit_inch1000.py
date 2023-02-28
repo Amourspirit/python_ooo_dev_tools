@@ -43,15 +43,6 @@ class UnitInch1000(BaseIntValue):
         except Exception as e:
             return False
 
-    def get_value_pt(self) -> float:
-        """
-        Gets instance value converted to ``pt`` (point) units.
-
-        Returns:
-            int: Value in ``pt`` units.
-        """
-        return UnitConvert.convert(num=self.value, frm=Length.IN1000, to=Length.PT)
-
     def get_value_mm(self) -> float:
         """
         Gets instance value converted to ``mm`` units.
@@ -69,6 +60,24 @@ class UnitInch1000(BaseIntValue):
             int: Value in ``1/100th mm`` units.
         """
         return round(UnitConvert.convert(num=self.value, frm=Length.IN1000, to=Length.MM100))
+
+    def get_value_pt(self) -> float:
+        """
+        Gets instance value converted to ``pt`` (point) units.
+
+        Returns:
+            int: Value in ``pt`` units.
+        """
+        return UnitConvert.convert(num=self.value, frm=Length.IN1000, to=Length.PT)
+
+    def get_value_px(self) -> float:
+        """
+        Gets instance value in ``px`` (pixel) units.
+
+        Returns:
+            int: Value in ``px`` units.
+        """
+        return UnitConvert.convert(num=self.value, frm=Length.IN1000, to=Length.PX)
 
     @classmethod
     def from_mm(cls: Type[_TUnitInch1000], value: float) -> _TUnitInch1000:
@@ -97,6 +106,20 @@ class UnitInch1000(BaseIntValue):
         """
         inst = super(UnitInch1000, cls).__new__(cls)
         return inst.__init__(round(UnitConvert.convert(num=value, frm=Length.PT, to=Length.IN1000)))
+
+    @classmethod
+    def from_px(cls: Type[_TUnitInch1000], value: float) -> _TUnitInch1000:
+        """
+        Get instance from ``px`` (pixel) value.
+
+        Args:
+            value (float): ``px`` value.
+
+        Returns:
+            UnitInch1000:
+        """
+        inst = super(UnitInch1000, cls).__new__(cls)
+        return inst.__init__(round(UnitConvert.convert(num=value, frm=Length.PX, to=Length.IN1000)))
 
     @classmethod
     def from_inch(cls: Type[_TUnitInch1000], value: float) -> _TUnitInch1000:
