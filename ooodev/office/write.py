@@ -2583,7 +2583,7 @@ class Write(mSel.Selection):
     @overload
     @classmethod
     def add_image_link(
-        cls, doc: XTextDocument, cursor: XTextCursor, fnm: PathOrStr, width: int, height: int
+        cls, doc: XTextDocument, cursor: XTextCursor, fnm: PathOrStr, width: int | UnitObj, height: int | UnitObj
     ) -> XTextContent | None:
         """
         Add Image Link
@@ -2592,8 +2592,8 @@ class Write(mSel.Selection):
             doc (XTextDocument): Text Document
             cursor (XTextCursor): Text Cursor
             fnm (PathOrStr): Image path
-            width (int, optional): Width.
-            height (int, optional): Height.
+            width (int, UnitObj): Width in ``1/100th mm`` or ``UnitObj``.
+            height (int, UnitObj): Height in ``1/100th mm`` or ``UnitObj``.
 
         Returns:
             XTextContent: Image Link on success; Otherwise, ``None``
@@ -2630,8 +2630,8 @@ class Write(mSel.Selection):
         doc: XTextDocument,
         cursor: XTextCursor,
         fnm: PathOrStr,
-        width: int,
-        height: int,
+        width: int | UnitObj,
+        height: int | UnitObj,
         styles: Iterable[StyleObj],
     ) -> XTextContent | None:
         """
@@ -2641,8 +2641,8 @@ class Write(mSel.Selection):
             doc (XTextDocument): Text Document
             cursor (XTextCursor): Text Cursor
             fnm (PathOrStr): Image path
-            width (int, optional): Width.
-            height (int, optional): Height.
+            width (int, UnitObj): Width in ``1/100th mm`` or ``UnitObj``.
+            height (int, UnitObj): Height in ``1/100th mm`` or ``UnitObj``.
             styles (Iterable[StyleObj]): One or more styles to apply to frame. Only styles that support ``com.sun.star.text.TextGraphicObject`` service are applied.
 
         Returns:
@@ -2657,8 +2657,8 @@ class Write(mSel.Selection):
         cursor: XTextCursor,
         fnm: PathOrStr,
         *,
-        width: int = 0,
-        height: int = 0,
+        width: int | UnitObj = 0,
+        height: int | UnitObj = 0,
         styles: Iterable[StyleObj] = None,
     ) -> XTextContent | None:
         """
@@ -2668,8 +2668,8 @@ class Write(mSel.Selection):
             doc (XTextDocument): Text Document
             cursor (XTextCursor): Text Cursor
             fnm (PathOrStr): Image path
-            width (int, optional): Width.
-            height (int, optional): Height.
+            width (int, UnitObj): Width in ``1/100th mm`` or :ref:`proto_unit_obj`.
+            height (int, UnitObj): Height in ``1/100th mm`` or :ref:`proto_unit_obj`.
             styles (Iterable[StyleObj]): One or more styles to apply to frame. Only styles that support ``com.sun.star.text.TextGraphicObject`` service are applied.
 
         Raises:
@@ -2719,9 +2719,19 @@ class Write(mSel.Selection):
             props.setPropertyValue("Graphic", graphic)
 
             # optionally set the width and height
-            if width > 0 and height > 0:
-                props.setPropertyValue("Width", width)
-                props.setPropertyValue("Height", height)
+            if not width is None:
+                if isinstance(width, int):
+                    if width > 0:
+                        props.setPropertyValue("Width", width)
+                else:
+                    props.setPropertyValue("Width", width.get_value_mm100())
+
+            if not height is None:
+                if isinstance(height, int):
+                    if height > 0:
+                        props.setPropertyValue("Height", width)
+                else:
+                    props.setPropertyValue("Height", height.get_value_mm100())
 
             # append image to document, followed by a newline
             if styles:
@@ -2757,15 +2767,17 @@ class Write(mSel.Selection):
 
     @overload
     @staticmethod
-    def add_image_shape(cursor: XTextCursor, fnm: PathOrStr, width: int, height: int) -> XShape | None:
+    def add_image_shape(
+        cursor: XTextCursor, fnm: PathOrStr, width: int | UnitObj, height: int | UnitObj
+    ) -> XShape | None:
         """
         Add Image Shape
 
         Args:
             cursor (XTextCursor): Text Cursor
             fnm (PathOrStr): Image path
-            width (int, optional): Image width
-            height (int, optional): Image height
+            width (int, UnitObj): Width in ``1/100th mm`` or ``UnitObj``.
+            height (int, UnitObj): Height in ``1/100th mm`` or ``UnitObj``.
 
         Returns:
             XShape: Image Shape on success; Otherwise, ``None``
@@ -2773,15 +2785,17 @@ class Write(mSel.Selection):
         ...
 
     @classmethod
-    def add_image_shape(cls, cursor: XTextCursor, fnm: PathOrStr, width: int = 0, height: int = 0) -> XShape | None:
+    def add_image_shape(
+        cls, cursor: XTextCursor, fnm: PathOrStr, width: int | UnitObj = 0, height: int | UnitObj = 0
+    ) -> XShape | None:
         """
         Add Image Shape
 
         Args:
             cursor (XTextCursor): Text Cursor
             fnm (PathOrStr): Image path
-            width (int, optional): Image width
-            height (int, optional): Image height
+            width (int, UnitObj): Width in ``1/100th mm`` or :ref:`proto_unit_obj`.
+            height (int, UnitObj): Height in ``1/100th mm`` or :ref:`proto_unit_obj`.
 
         Raises:
             CreateInstanceMsfError: If unable to create drawing.GraphicObjectShape
@@ -2822,9 +2836,20 @@ class Write(mSel.Selection):
         pth = mFileIO.FileIO.get_absolute_path(fnm)
 
         try:
-            if width > 0 and height > 0:
-                im_size = Size(width, height)
-            else:
+            size_set = False
+            if width is not None and height is not None:
+                if isinstance(width, int):
+                    w = width
+                else:
+                    w = width.get_value_mm100()
+                if isinstance(height, int):
+                    h = height
+                else:
+                    h = height.get_value_mm100()
+                if w > 0 and h > 0:
+                    im_size = Size(w, h)
+                    size_set = True
+            if not size_set:
                 im_size = mImgLo.ImagesLo.get_size_100mm(pth)  # in 1/100 mm units
                 if im_size is None:
                     raise ValueError(f"Unable to get image from {pth}")

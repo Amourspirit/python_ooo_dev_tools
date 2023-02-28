@@ -1,38 +1,36 @@
 from __future__ import annotations
-from typing import overload
+import dataclasses
+from typing import TYPE_CHECKING, cast, overload
 from typing import Any, Tuple, Type, TypeVar
 from enum import Enum
 import uno
 from .....exceptions import ex as mEx
 from .....utils import lo as mLo
 from .....utils import props as mProps
+from .....utils.data_type.angle import Angle as Angle
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleBase
-from ...common.props.image_options_properties import ImageOptionsProperties
+from ...common.props.image_rotation_props import ImageRotationProps
 
-_TProperties = TypeVar(name="_TProperties", bound="Properties")
+_TRotation = TypeVar(name="_TRotation", bound="Rotation")
 
 
-class Properties(StyleBase):
+class Rotation(StyleBase):
     """
-    Image Options Properties.
+    Image Rotation
 
     .. versionadded:: 0.9.0
     """
 
-    def __init__(
-        self,
-        printable: bool = True,
-    ) -> None:
+    def __init__(self, rotation: int | Angle = 0) -> None:
         """
         Constructor
 
         Args:
-            printable (bool, optional): Specifies if Frame can be printed. Defalut ``True``.
+            rotation (int, Angle, optional): Specifies if the image rotation. Default ``0``.
         """
         super().__init__()
-
-        self.prop_printable = printable
+        self.prop_rotation = rotation
 
     # region Overrides
 
@@ -40,7 +38,7 @@ class Properties(StyleBase):
         try:
             return self._supported_services_values
         except AttributeError:
-            self._supported_services_values = ("com.sun.star.text.TextGraphicObject", "com.sun.star.text.BaseFrame")
+            self._supported_services_values = ("com.sun.star.text.TextGraphicObject",)
         return self._supported_services_values
 
     def _props_set(self, obj: object, **kwargs: Any) -> None:
@@ -58,16 +56,16 @@ class Properties(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TProperties], obj: object) -> _TProperties:
+    def from_obj(cls: Type[_TRotation], obj: object) -> _TRotation:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TProperties], obj: object, **kwargs) -> _TProperties:
+    def from_obj(cls: Type[_TRotation], obj: object, **kwargs) -> _TRotation:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TProperties], obj: object, **kwargs) -> _TProperties:
+    def from_obj(cls: Type[_TRotation], obj: object, **kwargs) -> _TRotation:
         """
         Gets instance from object
 
@@ -78,7 +76,7 @@ class Properties(StyleBase):
             NotSupportedError: If ``obj`` is not supported.
 
         Returns:
-            Properties: Instance that represents Image Properties.
+            Properties: Instance that represents Image Flip Options.
         """
         inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
@@ -86,7 +84,6 @@ class Properties(StyleBase):
         for prop_name in inst._props:
             if prop_name:
                 inst._set(prop_name, mProps.Props.get(obj, prop_name))
-        # prev, next not currently working
         return inst
 
     # endregion from_obj()
@@ -105,23 +102,26 @@ class Properties(StyleBase):
         return self._format_kind_prop
 
     @property
-    def prop_printable(self) -> bool | None:
-        """Gets/Sets print value"""
-        return self._get(self._props.printable)
+    def prop_rotation(self) -> Angle | None:
+        """Gets/Sets Vertical flip option"""
+        # in 1/10 degree units
+        pv = cast(int, self._get(self._props.rotation))
+        if pv == 0:
+            return Angle(0)
+        return Angle(round(pv / 10))
 
-    @prop_printable.setter
-    def prop_printable(self, value: bool | None) -> None:
-        if value is None:
-            self._remove(self._props.printable)
-            return
-        self._set(self._props.printable, value)
+    @prop_rotation.setter
+    def prop_rotation(self, value: int | Angle | None) -> None:
+        # in 1/10 degree units
+        val = Angle(int(value)).value * 10
+        self._set(self._props.rotation, val)
 
     @property
-    def _props(self) -> ImageOptionsProperties:
+    def _props(self) -> ImageRotationProps:
         try:
             return self._props_internal_attributes
         except AttributeError:
-            self._props_internal_attributes = ImageOptionsProperties(printable="Print")
+            self._props_internal_attributes = ImageRotationProps(rotation="GraphicRotation")
         return self._props_internal_attributes
 
     # endregion Properties
