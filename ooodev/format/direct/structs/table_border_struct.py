@@ -8,19 +8,19 @@ from __future__ import annotations
 from typing import Tuple, Type, cast, overload, TypeVar
 
 import uno
+from ooo.dyn.table.table_border import TableBorder
+from ooo.dyn.table.table_border2 import TableBorder2
+
 from ....events.event_singleton import _Events
 from ....exceptions import ex as mEx
+from ....proto.unit_obj import UnitObj
 from ....utils import props as mProps
-from ....utils.type_var import T
 from ....utils.unit_convert import UnitConvert, Length
 from ...kind.format_kind import FormatKind
 from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent
-from ..common.props.border_table_props import BorderTableProps
+from ..common.props.struct_border_table_props import StructBorderTableProps
 from ..common.props.prop_pair import PropPair
 from .side import Side as Side
-
-from ooo.dyn.table.table_border import TableBorder
-from ooo.dyn.table.table_border2 import TableBorder2
 
 
 # endregion imports
@@ -49,20 +49,20 @@ class TableBorderStruct(StyleBase):
         border_side: Side | None = None,
         vertical: Side | None = None,
         horizontal: Side | None = None,
-        distance: float | None = None,
+        distance: float | UnitObj | None = None,
     ) -> None:
         """
         Constructor
 
         Args:
-            left (Side | None, optional): Determines the line style at the left edge.
-            right (Side | None, optional): Determines the line style at the right edge.
-            top (Side | None, optional): Determines the line style at the top edge.
-            bottom (Side | None, optional): Determines the line style at the bottom edge.
-            border_side (Side | None, optional): Determines the line style at the top, bottom, left, right edges. If this argument has a value then arguments ``top``, ``bottom``, ``left``, ``right`` are ignored
-            horizontal (Side | None, optional): Determines the line style of horizontal lines for the inner part of a cell range.
-            vertical (Side | None, optional): Determines the line style of vertical lines for the inner part of a cell range.
-            distance (float | None, optional): Contains the distance between the lines and other contents (in mm units).
+            left (Side, optional): Determines the line style at the left edge.
+            right (Side, optional): Determines the line style at the right edge.
+            top (Side, optional): Determines the line style at the top edge.
+            bottom (Side, optional): Determines the line style at the bottom edge.
+            border_side (Side, optional): Determines the line style at the top, bottom, left, right edges. If this argument has a value then arguments ``top``, ``bottom``, ``left``, ``right`` are ignored
+            horizontal (Side, optional): Determines the line style of horizontal lines for the inner part of a cell range.
+            vertical (Side, optional): Determines the line style of vertical lines for the inner part of a cell range.
+            distance (float, UnitObj, optional): Contains the distance between the lines and other contents (in mm units) or :ref:`proto_unit_obj`.
         """
         init_vals = {}
         if not border_side is None:
@@ -105,7 +105,10 @@ class TableBorderStruct(StyleBase):
             if self._props.vert.second:
                 init_vals[self._props.vert.second] = True
         if not distance is None:
-            init_vals[self._props.dist.first] = UnitConvert.convert(num=distance, frm=Length.MM, to=Length.MM100)
+            try:
+                init_vals[self._props.dist.first] = distance.get_value_mm100()
+            except AttributeError:
+                init_vals[self._props.dist.first] = UnitConvert.convert(num=distance, frm=Length.MM, to=Length.MM100)
             if self._props.dist.second:
                 init_vals[self._props.dist.second] = True
         super().__init__(**init_vals)
@@ -467,14 +470,17 @@ class TableBorderStruct(StyleBase):
         return None
 
     @prop_distance.setter
-    def prop_distance(self, value: float | None) -> None:
+    def prop_distance(self, value: float | UnitObj | None) -> None:
         p = self._props.dist
         if value is None:
             self._remove(p.first)
             if p.second:
                 self._remove(p.second)
             return
-        self._set(p.first, UnitConvert.convert(num=value, frm=Length.MM, to=Length.MM100))
+        try:
+            self._set(p.first, value.get_value_mm100())
+        except AttributeError:
+            self._set(p.first, UnitConvert.convert(num=value, frm=Length.MM, to=Length.MM100))
         if p.second:
             self._set(p.second, True)
 
@@ -581,11 +587,11 @@ class TableBorderStruct(StyleBase):
             self._set(p.second, True)
 
     @property
-    def _props(self) -> BorderTableProps:
+    def _props(self) -> StructBorderTableProps:
         try:
             return self._props_internal_attributes
         except AttributeError:
-            self._props_internal_attributes = BorderTableProps(
+            self._props_internal_attributes = StructBorderTableProps(
                 left=PropPair("LeftLine", "IsLeftLineValid"),
                 top=PropPair("TopLine", "IsTopLineValid"),
                 right=PropPair("RightLine", "IsRightLineValid"),

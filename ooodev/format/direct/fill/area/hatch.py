@@ -350,7 +350,7 @@ class Hatch(StyleMulti):
 
     @prop_inner_hatch.setter
     def prop_inner_hatch(self, value: HatchStruct) -> None:
-        hatch = HatchStruct.from_hatch(value=value.get_uno_struct(), _cattribs=self._get_hatch_cattribs())
+        hatch = HatchStruct.from_uno_struct(value=value.get_uno_struct(), _cattribs=self._get_hatch_cattribs())
         self._del_attribs("_direct_inner_hatch")
         self._set_style("fill_hatch", hatch, *hatch.get_attrs())
 

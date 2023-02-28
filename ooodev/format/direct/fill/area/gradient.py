@@ -120,13 +120,13 @@ class Gradient(StyleMulti):
 
         grad = self._container_get_value(self._name, nc)  # raises value error if name is empty
         if not grad is None:
-            return GradientStruct.from_gradient(grad, _cattribs=self._get_gradient_struct_cattrib())
+            return GradientStruct.from_uno_struct(grad, _cattribs=self._get_gradient_struct_cattrib())
         if fill_struct is None:
             raise ValueError(
                 f'No Gradient could be found in container for "{name}". In this case a Gradient is required.'
             )
         self._container_add_value(name=self._name, obj=fill_struct.get_uno_struct(), allow_update=False, nc=nc)
-        return GradientStruct.from_gradient(
+        return GradientStruct.from_uno_struct(
             self._container_get_value(self._name, nc), _cattribs=self._get_gradient_struct_cattrib()
         )
 
@@ -198,7 +198,7 @@ class Gradient(StyleMulti):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
         grad_fill = cast(UNOGradient, mProps.Props.get(obj, inst._props.grad_prop_name))
-        gs = GradientStruct.from_gradient(grad_fill, _cattribs=inst._get_gradient_struct_cattrib())
+        gs = GradientStruct.from_uno_struct(grad_fill, _cattribs=inst._get_gradient_struct_cattrib())
 
         fill_gradient_name = cast(str, mProps.Props.get(obj, inst._props.name))
 
@@ -230,7 +230,7 @@ class Gradient(StyleMulti):
             auto_name = True
         inst = cls(name="__constructor_default__", **kwargs)
         grad_fill = struct.get_uno_struct()
-        gs = GradientStruct.from_gradient(grad_fill, _cattribs=inst._get_gradient_struct_cattrib())
+        gs = GradientStruct.from_uno_struct(grad_fill, _cattribs=inst._get_gradient_struct_cattrib())
         fill_struct = inst._get_fill_struct(fill_struct=gs, name=name, auto_name=auto_name)
 
         inst._set(inst._props.step_count, grad_fill.StepCount)

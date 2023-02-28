@@ -183,23 +183,23 @@ class DropCapStruct(StyleBase):
         except mEx.PropertyNotFoundError:
             raise mEx.PropertyNotFoundError(prop_name, f"from_obj() obj as no {prop_name} property")
 
-        return cls.from_drop_cap_format(dcf, **kwargs)
+        return cls.from_uno_struct(dcf, **kwargs)
 
     # endregion from_obj()
 
     # region from_drop_cap_format()
     @overload
     @classmethod
-    def from_drop_cap_format(cls: Type[_TDropCapStruct], dcf: DropCapFormat) -> _TDropCapStruct:
+    def from_uno_struct(cls: Type[_TDropCapStruct], dcf: DropCapFormat) -> _TDropCapStruct:
         ...
 
     @overload
     @classmethod
-    def from_drop_cap_format(cls: Type[_TDropCapStruct], dcf: DropCapFormat, **kwargs) -> _TDropCapStruct:
+    def from_uno_struct(cls: Type[_TDropCapStruct], dcf: DropCapFormat, **kwargs) -> _TDropCapStruct:
         ...
 
     @classmethod
-    def from_drop_cap_format(cls: Type[_TDropCapStruct], dcf: DropCapFormat, **kwargs) -> _TDropCapStruct:
+    def from_uno_struct(cls: Type[_TDropCapStruct], dcf: DropCapFormat, **kwargs) -> _TDropCapStruct:
         """
         Converts a ``DropCapFormat`` Stop instance to a ``DropCap``
 

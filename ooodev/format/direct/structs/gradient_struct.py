@@ -174,12 +174,6 @@ class GradientStruct(StyleBase):
         Args:
             obj (object): UNO object.
 
-        :events:
-            .. cssclass:: lo_event
-
-                - :py:attr:`~.events.format_named_event.FormatNamedEvent.STYLE_APPLYING` :eventref:`src-docs-event-cancel`
-                - :py:attr:`~.events.format_named_event.FormatNamedEvent.STYLE_APPLYED` :eventref:`src-docs-event`
-
         Returns:
             None:
         """
@@ -232,27 +226,27 @@ class GradientStruct(StyleBase):
     # endregion JSON
 
     # region static methods
-    # region from_gradient()
+    # region from_uno_struct()
     @overload
     @classmethod
-    def from_gradient(cls: Type[_TGradientStruct], value: Gradient) -> _TGradientStruct:
+    def from_uno_struct(cls: Type[_TGradientStruct], value: Gradient) -> _TGradientStruct:
         ...
 
     @overload
     @classmethod
-    def from_gradient(cls: Type[_TGradientStruct], value: Gradient, **kwargs) -> _TGradientStruct:
+    def from_uno_struct(cls: Type[_TGradientStruct], value: Gradient, **kwargs) -> _TGradientStruct:
         ...
 
     @classmethod
-    def from_gradient(cls: Type[_TGradientStruct], value: Gradient, **kwargs) -> _TGradientStruct:
+    def from_uno_struct(cls: Type[_TGradientStruct], value: Gradient, **kwargs) -> _TGradientStruct:
         """
-        Converts a ``Gradient`` instance to a ``GradinetStruct``
+        Converts a ``Gradient`` instance to a ``GradientStruct``.
 
         Args:
-            value (Gradient): UNO Gradient
+            value (Gradient): UNO ``Gradient``.
 
         Returns:
-            GradinetStruct: ``GradinetStruct`` set with ``Gradient`` properties
+            GradientStruct: ``GradientStruct`` set with ``Gradient`` properties.
         """
         inst = cls(**kwargs)
         inst._set("Style", value.Style)
@@ -267,7 +261,7 @@ class GradientStruct(StyleBase):
         inst._set("StepCount", value.StepCount)
         return inst
 
-    # endregion from_gradient()
+    # endregion from_uno_struct()
 
     # region from_obj()
     @overload
@@ -303,7 +297,7 @@ class GradientStruct(StyleBase):
         except mEx.PropertyNotFoundError:
             raise mEx.PropertyNotFoundError(prop_name, f"from_obj() obj as no {prop_name} property")
 
-        return cls.from_gradient(grad, **kwargs)
+        return cls.from_uno_struct(grad, **kwargs)
 
     # endregion from_obj()
 

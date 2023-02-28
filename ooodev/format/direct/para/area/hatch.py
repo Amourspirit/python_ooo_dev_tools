@@ -158,11 +158,11 @@ class Hatch(StyleMulti):
             self._name = name
         hatch = self._container_get_value(self._name, nc)  # raises value error if name is empty
         if not hatch is None:
-            return HatchStruct.from_hatch(hatch)
+            return HatchStruct.from_uno_struct(hatch)
 
         self._container_add_value(name=self._name, obj=hatch_struct.get_uno_struct(), allow_update=False, nc=nc)
         hatch = self._container_get_value(self._name, nc)
-        return HatchStruct.from_hatch(hatch)
+        return HatchStruct.from_uno_struct(hatch)
 
     def _on_hatch_property_change(self) -> None:
         if self._is_preset:

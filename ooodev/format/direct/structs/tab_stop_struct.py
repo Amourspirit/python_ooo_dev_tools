@@ -245,23 +245,23 @@ class TabStopStruct(StyleBase):
         # can expcet for ts to contain at least one TabAlign
         ts = tss[index]
 
-        return cls.from_tab_stop(ts, **kwargs)
+        return cls.from_uno_struct(ts, **kwargs)
 
     # endregion from_obj()
 
     # region from_tab_stop()
     @overload
     @classmethod
-    def from_tab_stop(cls: Type[_TTabStopStruct], ts: TabStop) -> _TTabStopStruct:
+    def from_uno_struct(cls: Type[_TTabStopStruct], ts: TabStop) -> _TTabStopStruct:
         ...
 
     @overload
     @classmethod
-    def from_tab_stop(cls: Type[_TTabStopStruct], ts: TabStop, **kwargs) -> _TTabStopStruct:
+    def from_uno_struct(cls: Type[_TTabStopStruct], ts: TabStop, **kwargs) -> _TTabStopStruct:
         ...
 
     @classmethod
-    def from_tab_stop(cls: Type[_TTabStopStruct], ts: TabStop, **kwargs) -> _TTabStopStruct:
+    def from_uno_struct(cls: Type[_TTabStopStruct], ts: TabStop, **kwargs) -> _TTabStopStruct:
         """
         Converts a Tab Stop instance to a Tab
 

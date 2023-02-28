@@ -247,16 +247,16 @@ class LineSpacingStruct(StyleBase):
     # region from_line_spacing()
     @overload
     @classmethod
-    def from_line_spacing(cls: Type[_TLineSpacingStruct], ln_spacing: UnoLineSpacing) -> _TLineSpacingStruct:
+    def from_uno_struct(cls: Type[_TLineSpacingStruct], ln_spacing: UnoLineSpacing) -> _TLineSpacingStruct:
         ...
 
     @overload
     @classmethod
-    def from_line_spacing(cls: Type[_TLineSpacingStruct], ln_spacing: UnoLineSpacing, **kwargs) -> _TLineSpacingStruct:
+    def from_uno_struct(cls: Type[_TLineSpacingStruct], ln_spacing: UnoLineSpacing, **kwargs) -> _TLineSpacingStruct:
         ...
 
     @classmethod
-    def from_line_spacing(cls: Type[_TLineSpacingStruct], ln_spacing: UnoLineSpacing, **kwargs) -> _TLineSpacingStruct:
+    def from_uno_struct(cls: Type[_TLineSpacingStruct], ln_spacing: UnoLineSpacing, **kwargs) -> _TLineSpacingStruct:
         """
         Converts a UNO ``LineSpacing`` struct into a ``LineSpacingStruct``
 

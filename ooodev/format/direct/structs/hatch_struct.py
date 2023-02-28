@@ -8,6 +8,7 @@ from typing import Tuple, Type, cast, overload, TypeVar, TYPE_CHECKING
 
 import uno
 from ....exceptions import ex as mEx
+from ....proto.unit_obj import UnitObj
 from ....utils import props as mProps
 from ....utils.color import Color
 from ....utils.data_type.angle import Angle as Angle
@@ -37,7 +38,7 @@ class HatchStruct(StyleBase):
         *,
         style: HatchStyle = HatchStyle.SINGLE,
         color: Color = Color(0),
-        distance: float = 0.0,
+        distance: float | UnitObj = 0.0,
         angle: Angle | int = 0,
     ) -> None:
         """
@@ -46,7 +47,7 @@ class HatchStruct(StyleBase):
         Args:
             style (HatchStyle, optional): Specifies the kind of lines used to draw this hatch. Default ``HatchStyle.SINGLE``.
             color (Color, optional): Specifies the color of the hatch lines. Default ``0``.
-            distance (int, optional): Specifies the distance between the lines in the hatch (in ``mm`` units). Default ``0.0``
+            distance (int, optional): Specifies the distance between the lines in the hatch (in ``mm`` units) or :ref:`proto_unit_obj`. Default ``0.0``
             angle (Angle, int, optional): Specifies angle of the hatch in degrees. Default to ``0``.
 
         Returns:
@@ -147,16 +148,16 @@ class HatchStruct(StyleBase):
     # region from_hatch()
     @overload
     @classmethod
-    def from_hatch(cls: Type[_THatchStruct], value: Hatch) -> _THatchStruct:
+    def from_uno_struct(cls: Type[_THatchStruct], value: Hatch) -> _THatchStruct:
         ...
 
     @overload
     @classmethod
-    def from_hatch(cls: Type[_THatchStruct], value: Hatch, **kwargs) -> _THatchStruct:
+    def from_uno_struct(cls: Type[_THatchStruct], value: Hatch, **kwargs) -> _THatchStruct:
         ...
 
     @classmethod
-    def from_hatch(cls: Type[_THatchStruct], value: Hatch, **kwargs) -> _THatchStruct:
+    def from_uno_struct(cls: Type[_THatchStruct], value: Hatch, **kwargs) -> _THatchStruct:
         """
         Converts a ``Hatch`` instance to a ``HatchStruct``
 
@@ -209,7 +210,7 @@ class HatchStruct(StyleBase):
         except mEx.PropertyNotFoundError:
             raise mEx.PropertyNotFoundError(prop_name, f"from_obj() obj as no {prop_name} property")
 
-        return cls.from_hatch(grad, **kwargs)
+        return cls.from_uno_struct(grad, **kwargs)
 
     # endregion from_obj()
 
@@ -251,8 +252,11 @@ class HatchStruct(StyleBase):
         return round(UnitConvert.convert_mm100_mm(pv), 2)
 
     @prop_distance.setter
-    def prop_distance(self, value: float):
-        self._set("Distance", UnitConvert.convert_mm_mm100(value))
+    def prop_distance(self, value: float | UnitObj):
+        try:
+            self._set("Distance", value.get_value_mm100())
+        except AttributeError:
+            self._set("Distance", UnitConvert.convert_mm_mm100(value))
 
     @property
     def prop_angle(self) -> Angle:

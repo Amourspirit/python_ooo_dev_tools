@@ -157,7 +157,7 @@ class LineSpacing(StyleMulti):
         set_prop("ParaRegisterModeActive", inst)
 
         pls = cast(UnoLineSpacing, mProps.Props.get(obj, "ParaLineSpacing", None))
-        ls = mLs.LineSpacingStruct.from_line_spacing(
+        ls = mLs.LineSpacingStruct.from_uno_struct(
             pls,
             _cattribs={"_supported_services_values": inst._supported_services(), "_property_name": "ParaLineSpacing"},
         )
