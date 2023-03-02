@@ -3,6 +3,7 @@ import math
 from .size import Size
 from ..unit_convert import UnitConvert
 from ...proto.unit_obj import UnitObj
+from ...proto.size_obj import SizeObj
 
 
 class SizeMM:
@@ -29,7 +30,7 @@ class SizeMM:
         return Size(width=UnitConvert.convert_mm_mm100(self.width), height=UnitConvert.convert_mm_mm100(self.height))
 
     @staticmethod
-    def from_size_mm100(size: Size) -> SizeMM:
+    def from_size_mm100(size: SizeObj) -> SizeMM:
         """
         Gets instance from Size where Size is in ``1/100th mm`` units.
 
@@ -39,7 +40,7 @@ class SizeMM:
         Returns:
             SizeMM: Size in mm units
         """
-        return SizeMM(width=UnitConvert.convert_mm100_mm(size.width), height=UnitConvert.convert_mm100_mm(size.height))
+        return SizeMM(width=UnitConvert.convert_mm100_mm(size.Width), height=UnitConvert.convert_mm100_mm(size.Height))
 
     @staticmethod
     def from_mm100(width: int, height: int) -> SizeMM:

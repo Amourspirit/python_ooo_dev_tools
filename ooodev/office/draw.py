@@ -54,6 +54,7 @@ from ..events.args.cancel_event_args import CancelEventArgs
 from ..events.draw_named_event import DrawNamedEvent
 from ..events.event_singleton import _Events
 from ..exceptions import ex as mEx
+from ..proto.size_obj import SizeObj
 from ..utils import color as mColor
 from ..utils import file_io as mFileIO
 from ..utils import gui as mGui
@@ -2977,7 +2978,7 @@ class Draw:
         print(f"  Point (mm): [{round(pt.X/100)}, {round(pt.Y/100)}]")
 
     @staticmethod
-    def print_size(sz: Size | UnoSize) -> None:
+    def print_size(sz: SizeObj) -> None:
         """
         Prints size to console in mm units
 
@@ -3099,7 +3100,7 @@ class Draw:
 
     @overload
     @staticmethod
-    def set_size(shape: XShape, sz: Size) -> None:
+    def set_size(shape: XShape, sz: SizeObj) -> None:
         ...
 
     @overload
@@ -3159,7 +3160,7 @@ class Draw:
         try:
             if count == 2:
                 # def set_size(shape: XShape, sz: Size)
-                sz_in = cast(Size, kargs[2])
+                sz_in = cast(SizeObj, kargs[2])
                 sz = Size(sz_in.Width * 100, sz_in.Height * 100)
             else:
                 # def set_size(shape: XShape, width:int, height: int)

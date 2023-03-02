@@ -21,7 +21,7 @@ from ooodev.utils.lo import Lo
 from ooodev.office.draw import Draw
 from ooodev.utils.color import CommonColor
 from ooodev.utils.gui import GUI
-from ooodev.utils.data_type.size import Size
+from ooodev.proto.size_obj import SizeObj
 
 from ooo.dyn.drawing.line_cap import LineCap
 
@@ -67,7 +67,7 @@ class DrawHilbert:
             Lo.close_office()
             raise
 
-    def _start_hilbert(self, level_str: str, slide_size: Size) -> None:
+    def _start_hilbert(self, level_str: str, slide_size: SizeObj) -> None:
         self._level = 1
         try:
             self._level = int(level_str)
@@ -78,7 +78,7 @@ class DrawHilbert:
             print("Level must be >= 1; using 1")
 
         # store smallest mm dimension
-        sq_width = min(slide_size.height, slide_size.width)
+        sq_width = min(slide_size.Height, slide_size.Width)
         self._x = sq_width - 10
         self._y = 10
         self._incr = round((sq_width - 20) / ((math.pow(2, self._level) - 1)))

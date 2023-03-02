@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import TypeVar, Type
 import uno
 from ooo.dyn.awt.size import Size as UnoSize
+from ...proto.size_obj import SizeObj
 
 _TSize = TypeVar(name="_TSize", bound="Size")
 
@@ -29,15 +30,15 @@ class Size:
         return UnoSize(self.width, self.height)
 
     @classmethod
-    def from_uno_size(cls: Type[_TSize], sz: UnoSize) -> _TSize:
+    def from_size(cls: Type[_TSize], sz: SizeObj) -> _TSize:
         """
-        Gets instance from UNO Size.
+        Gets instance from Size.
 
         Args:
-            sz (UnoSize): UNO Size.
+            sz (Size): Size object, Can be UNO Size.
 
         Returns:
-            Size: Size instance from UNO Size values.
+            Size: Size instance from Size values.
         """
         inst = super(Size, cls).__new__(cls)
         inst.__init__(sz.Width, sz.Height)
