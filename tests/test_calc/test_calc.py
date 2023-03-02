@@ -2512,8 +2512,8 @@ def test_get_cell_size(rng: str, width: int, height: int) -> None:
     rng_obj = Calc.get_range_obj(range_name=range_name)
     size = Calc.get_range_size(rng_obj)
 
-    assert size.Width == width
-    assert size.Height == height
+    assert size.width == width
+    assert size.height == height
 
 
 def test_get_cell_pos(loader) -> None:

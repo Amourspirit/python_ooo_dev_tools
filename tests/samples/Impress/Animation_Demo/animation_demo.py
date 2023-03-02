@@ -36,8 +36,8 @@ class AnimationDemo:
                 slide_size = Draw.get_slide_size(slide)
                 width = 50
                 height = 50
-                x = round((slide_size.Width / 2) - (width / 2))
-                y = round((slide_size.Height / 2) - (height / 2))
+                x = round((slide_size.width / 2) - (width / 2))
+                y = round((slide_size.height / 2) - (height / 2))
                 s1 = Draw.draw_ellipse(slide=slide, x=x, y=y, width=width, height=height)
                 try:
                     root = Draw.get_animation_node(slide)

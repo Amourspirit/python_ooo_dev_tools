@@ -1,3 +1,9 @@
+from __future__ import annotations
+import pytest
+
+if __name__ == "__main__":
+    pytest.main([__file__])
+
 from ooodev.office.draw import Draw
 from ooodev.utils.lo import Lo
 

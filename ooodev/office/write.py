@@ -26,6 +26,7 @@ from ..utils import lo as mLo
 from ..utils import props as mProps
 from ..utils import selection as mSel
 from ..utils.color import CommonColor, Color
+from ..utils.data_type.size import Size
 from ..utils.table_helper import TableHelper
 from ..utils.type_var import PathOrStr, Table, DocOrCursor
 
@@ -91,7 +92,7 @@ if TYPE_CHECKING:
     from com.sun.star.text import XTextCursor
 
 from ooo.dyn.awt.font_slant import FontSlant
-from ooo.dyn.awt.size import Size  # struct
+from ooo.dyn.awt.size import Size as UnoSize  # struct
 from ooo.dyn.beans.property_value import PropertyValue
 from ooo.dyn.linguistic2.dictionary_type import DictionaryType as DictionaryType
 from ooo.dyn.style.break_type import BreakType
@@ -781,9 +782,9 @@ class Write(mSel.Selection):
         # see section 7.17  of Useful Macro Information For OpenOffice By Andrew Pitonyak.pdf
         size = cls.get_page_size(text_doc)
         print("Page Size is:")
-        print(f"  {round(size.Width / 100)} mm by {round(size.Height / 100)} mm")
-        print(f"  {round(size.Width / 2540)} inches by {round(size.Height / 2540)} inches")
-        print(f"  {round((size.Width *72.0) / 2540.0)} picas by {round((size.Height *72.0) / 2540.0)} picas")
+        print(f"  {round(size.width / 100)} mm by {round(size.height / 100)} mm")
+        print(f"  {round(size.width / 2540)} inches by {round(size.height / 2540)} inches")
+        print(f"  {round((size.width *72.0) / 2540.0)} picas by {round((size.height *72.0) / 2540.0)} picas")
 
     # endregion ---------- page methods --------------------------------
 
@@ -2384,7 +2385,7 @@ class Write(mSel.Selection):
             tf_shape = mLo.Lo.qi(XShape, xframe, True)
 
             # set dimensions of the text frame
-            tf_shape.setSize(Size(width, height))
+            tf_shape.setSize(UnoSize(width, height))
 
             #  anchor the text frame
             frame_props = mLo.Lo.qi(XPropertySet, xframe, True)
@@ -2871,7 +2872,7 @@ class Write(mSel.Selection):
 
             # set the shape's size
             xdraw_shape = mLo.Lo.qi(XShape, gos, True)
-            xdraw_shape.setSize(im_size)
+            xdraw_shape.setSize(im_size.get_uno_size())
 
             # insert image shape into the document, followed by newline
             cls._append_text_content(cursor, gos)
@@ -2910,7 +2911,7 @@ class Write(mSel.Selection):
                 raise mEx.CreateInstanceMsfError(XTextContent, "com.sun.star.drawing.LineShape")
 
             line_shape = mLo.Lo.qi(XShape, ls, True)
-            line_shape.setSize(Size(line_width, 0))
+            line_shape.setSize(UnoSize(line_width, 0))
 
             cls.end_paragraph(cursor)
             cls._append_text_content(cursor, ls)

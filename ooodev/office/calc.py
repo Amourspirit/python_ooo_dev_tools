@@ -77,7 +77,6 @@ if TYPE_CHECKING:
     from com.sun.star.util import XSearchDescriptor
 
 from ooo.dyn.awt.point import Point
-from ooo.dyn.awt.size import Size
 from ooo.dyn.beans.property_value import PropertyValue
 from ooo.dyn.sheet.cell_delete_mode import CellDeleteMode
 from ooo.dyn.sheet.cell_flags import CellFlagsEnum as CellFlagsEnum
@@ -101,6 +100,7 @@ from ..utils.color import CommonColor, Color
 from ..utils.data_type import range_obj as mRngObj
 from ..utils.data_type import range_values as mRngValues
 from ..utils.data_type import cell_obj as mCellObj
+from ..utils.data_type.size import Size
 from ..utils.gen_util import ArgsHelper, Util as GenUtil
 from ..utils.type_var import PathOrStr, Row, Column, Table, TupleArray, FloatList, FloatTable
 

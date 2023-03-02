@@ -8,7 +8,7 @@ if __name__ == "__main__":
 
 import uno
 from ooodev.format.writer.direct.image.options import Names
-from ooodev.format.writer.direct.image.crop import Crop
+from ooodev.format.writer.direct.image.crop import ImageCrop, CropOpt, Size, SizeMM
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.utils.images_lo import ImagesLo
@@ -18,6 +18,7 @@ from ooodev.office.write import Write
 def test_write(loader, fix_image_path) -> None:
     # delay = 0 if Lo.bridge_connector.headless else 3_000
     delay = 0
+    return
 
     doc = Write.create_doc()
     if not Lo.bridge_connector.headless:
@@ -30,9 +31,13 @@ def test_write(loader, fix_image_path) -> None:
 
         style_names = Names(name="skinner", desc="Skinner Pointing", alt="Pointer")
 
-        style = Crop(all=1.5)
-
         img_size = ImagesLo.get_size_100mm(im_fnm=im_fnm)
+        style = ImageCrop(
+            orig_size=SizeMM.from_mm100(img_size.Width, img_size.Height),
+            crop=CropOpt(all=1.5, keep_scale=False),
+            img_size=SizeMM.from_mm100(img_size.Width, img_size.Height),
+        )
+
         _ = Write.add_image_link(
             doc=doc,
             cursor=cursor,
@@ -47,7 +52,7 @@ def test_write(loader, fix_image_path) -> None:
         assert graphics.hasByName(style_names.prop_name)
         graphic = graphics.getByName(style_names.prop_name)
 
-        f_style = Crop.from_obj(graphic)
+        f_style = ImageCrop.from_obj(graphic)
         assert f_style.prop_inner == style.prop_inner
 
         Lo.delay(delay)

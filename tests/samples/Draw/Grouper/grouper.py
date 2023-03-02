@@ -43,9 +43,9 @@ class Grouper:
             slide_size = Draw.get_slide_size(curr_slide)
             width = 40
             height = 20
-            x = round(((slide_size.Width * 3) / 4) - (width / 2))
+            x = round(((slide_size.width * 3) / 4) - (width / 2))
             y1 = 20
-            y2 = round((slide_size.Height / 2) - (y1 + height))  # so separated
+            y2 = round((slide_size.height / 2) - (y1 + height))  # so separated
             # y2 = 30  # so overlapping
 
             s1 = Draw.draw_ellipse(slide=curr_slide, x=x, y=y1, width=width, height=height)
