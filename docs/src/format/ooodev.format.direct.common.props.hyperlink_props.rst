@@ -1,7 +1,0 @@
-ooodev.format.direct.common.props.hyperlink\_props module
-=========================================================
-
-.. automodule:: ooodev.format.direct.common.props.hyperlink_props
-   :members:
-   :undoc-members:
-   :show-inheritance:
