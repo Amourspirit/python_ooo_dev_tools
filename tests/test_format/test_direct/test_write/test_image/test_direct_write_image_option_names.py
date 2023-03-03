@@ -1,6 +1,6 @@
 from __future__ import annotations
-from typing import cast
 import pytest
+from typing import cast
 from pathlib import Path
 
 if __name__ == "__main__":

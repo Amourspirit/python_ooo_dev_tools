@@ -20,6 +20,15 @@ class UnitObj(Protocol):
         """
         ...
 
+    def get_value_mm100(self) -> int:
+        """
+        Gets instance value converted to Size in ``1/100th mm`` units.
+
+        Returns:
+            int: Value in ``1/100th mm`` units.
+        """
+        ...
+
     def get_value_pt(self) -> float:
         """
         Gets instance value converted to Size in ``pt`` (point) units.
@@ -29,11 +38,11 @@ class UnitObj(Protocol):
         """
         ...
 
-    def get_value_mm100(self) -> int:
+    def get_value_px(self) -> float:
         """
-        Gets instance value converted to Size in ``1/100th mm`` units.
+        Gets instance value in ``px`` (pixel) units.
 
         Returns:
-            int: Value in ``1/100th mm`` units.
+            int: Value in ``px`` units.
         """
         ...

@@ -6,6 +6,8 @@ from ....kind.format_kind import FormatKind
 
 
 class Names(FrameNames):
+    """Image Options Names"""
+
     # region Init
     def __init__(self, name: str | None = None, desc: str | None = None, alt: str | None = None) -> None:
         """
@@ -28,10 +30,7 @@ class Names(FrameNames):
         try:
             return self._supported_services_values
         except AttributeError:
-            self._supported_services_values = (
-                "com.sun.star.text.TextGraphicObject",
-                "com.sun.star.text.BaseFrame",
-            )
+            self._supported_services_values = ("com.sun.star.text.TextGraphicObject", "com.sun.star.text.BaseFrame")
         return self._supported_services_values
 
     # endregion Overrides

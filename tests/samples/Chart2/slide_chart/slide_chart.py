@@ -49,7 +49,7 @@ class SlideChart:
                 shape_size = Draw.get_size(ole_shape)
                 shape_pos = Draw.get_position(ole_shape)
 
-                y = slide_size.Height - shape_size.Height - 20
+                y = slide_size.height - shape_size.height - 20
                 # move pic down
                 Draw.set_position(shape=ole_shape, x=shape_pos.X, y=y)
             except mEx.ShapeMissingError:

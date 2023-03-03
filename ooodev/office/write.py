@@ -3,7 +3,7 @@
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 # region Imports
 from __future__ import annotations
-from typing import TYPE_CHECKING, Iterable, List, cast, overload
+from typing import TYPE_CHECKING, Iterable, List, cast, overload, Union
 import re
 import uno
 
@@ -26,6 +26,7 @@ from ..utils import lo as mLo
 from ..utils import props as mProps
 from ..utils import selection as mSel
 from ..utils.color import CommonColor, Color
+from ..utils.data_type.size import Size
 from ..utils.table_helper import TableHelper
 from ..utils.type_var import PathOrStr, Table, DocOrCursor
 
@@ -91,7 +92,7 @@ if TYPE_CHECKING:
     from com.sun.star.text import XTextCursor
 
 from ooo.dyn.awt.font_slant import FontSlant
-from ooo.dyn.awt.size import Size  # struct
+from ooo.dyn.awt.size import Size as UnoSize  # struct
 from ooo.dyn.beans.property_value import PropertyValue
 from ooo.dyn.linguistic2.dictionary_type import DictionaryType as DictionaryType
 from ooo.dyn.style.break_type import BreakType
@@ -781,9 +782,9 @@ class Write(mSel.Selection):
         # see section 7.17  of Useful Macro Information For OpenOffice By Andrew Pitonyak.pdf
         size = cls.get_page_size(text_doc)
         print("Page Size is:")
-        print(f"  {round(size.Width / 100)} mm by {round(size.Height / 100)} mm")
-        print(f"  {round(size.Width / 2540)} inches by {round(size.Height / 2540)} inches")
-        print(f"  {round((size.Width *72.0) / 2540.0)} picas by {round((size.Height *72.0) / 2540.0)} picas")
+        print(f"  {round(size.width / 100)} mm by {round(size.height / 100)} mm")
+        print(f"  {round(size.width / 2540)} inches by {round(size.height / 2540)} inches")
+        print(f"  {round((size.width *72.0) / 2540.0)} picas by {round((size.height *72.0) / 2540.0)} picas")
 
     # endregion ---------- page methods --------------------------------
 
@@ -2352,20 +2353,26 @@ class Write(mSel.Selection):
         if cargs.cancel:
             return False
 
-        ypos = cargs.event_data["ypos"]
+        arg_ypos = cast(Union[int, UnitObj], cargs.event_data["ypos"])
         text = cargs.event_data["text"]
-        width = cargs.event_data["width"]
-        height = cargs.event_data["height"]
+        arg_width = cast(Union[int, UnitObj], cargs.event_data["width"])
+        arg_height = cast(Union[int, UnitObj], cargs.event_data["height"])
         page_num = cargs.event_data["page_num"]
         border_color = cargs.event_data["border_color"]
         background_color = cargs.event_data["background_color"]
 
-        if not isinstance(ypos, int):
-            ypos = ypos.get_value_mm100()
-        if not isinstance(width, int):
-            width = width.get_value_mm100()
-        if not isinstance(height, int):
-            height = height.get_value_mm100()
+        try:
+            ypos = arg_ypos.get_value_mm100()
+        except AttributeError:
+            ypos = int(arg_ypos)
+        try:
+            width = arg_width.get_value_mm100()
+        except AttributeError:
+            width = int(arg_width)
+        try:
+            height = arg_height.get_value_mm100()
+        except AttributeError:
+            height = int(arg_height)
 
         try:
             xframe = mLo.Lo.create_instance_msf(XTextFrame, "com.sun.star.text.TextFrame")
@@ -2378,7 +2385,7 @@ class Write(mSel.Selection):
             tf_shape = mLo.Lo.qi(XShape, xframe, True)
 
             # set dimensions of the text frame
-            tf_shape.setSize(Size(width, height))
+            tf_shape.setSize(UnoSize(width, height))
 
             #  anchor the text frame
             frame_props = mLo.Lo.qi(XPropertySet, xframe, True)
@@ -2583,7 +2590,7 @@ class Write(mSel.Selection):
     @overload
     @classmethod
     def add_image_link(
-        cls, doc: XTextDocument, cursor: XTextCursor, fnm: PathOrStr, width: int, height: int
+        cls, doc: XTextDocument, cursor: XTextCursor, fnm: PathOrStr, width: int | UnitObj, height: int | UnitObj
     ) -> XTextContent | None:
         """
         Add Image Link
@@ -2592,8 +2599,8 @@ class Write(mSel.Selection):
             doc (XTextDocument): Text Document
             cursor (XTextCursor): Text Cursor
             fnm (PathOrStr): Image path
-            width (int, optional): Width.
-            height (int, optional): Height.
+            width (int, UnitObj): Width in ``1/100th mm`` or ``UnitObj``.
+            height (int, UnitObj): Height in ``1/100th mm`` or ``UnitObj``.
 
         Returns:
             XTextContent: Image Link on success; Otherwise, ``None``
@@ -2630,8 +2637,8 @@ class Write(mSel.Selection):
         doc: XTextDocument,
         cursor: XTextCursor,
         fnm: PathOrStr,
-        width: int,
-        height: int,
+        width: int | UnitObj,
+        height: int | UnitObj,
         styles: Iterable[StyleObj],
     ) -> XTextContent | None:
         """
@@ -2641,8 +2648,8 @@ class Write(mSel.Selection):
             doc (XTextDocument): Text Document
             cursor (XTextCursor): Text Cursor
             fnm (PathOrStr): Image path
-            width (int, optional): Width.
-            height (int, optional): Height.
+            width (int, UnitObj): Width in ``1/100th mm`` or ``UnitObj``.
+            height (int, UnitObj): Height in ``1/100th mm`` or ``UnitObj``.
             styles (Iterable[StyleObj]): One or more styles to apply to frame. Only styles that support ``com.sun.star.text.TextGraphicObject`` service are applied.
 
         Returns:
@@ -2657,8 +2664,8 @@ class Write(mSel.Selection):
         cursor: XTextCursor,
         fnm: PathOrStr,
         *,
-        width: int = 0,
-        height: int = 0,
+        width: int | UnitObj = 0,
+        height: int | UnitObj = 0,
         styles: Iterable[StyleObj] = None,
     ) -> XTextContent | None:
         """
@@ -2668,8 +2675,8 @@ class Write(mSel.Selection):
             doc (XTextDocument): Text Document
             cursor (XTextCursor): Text Cursor
             fnm (PathOrStr): Image path
-            width (int, optional): Width.
-            height (int, optional): Height.
+            width (int, UnitObj): Width in ``1/100th mm`` or :ref:`proto_unit_obj`.
+            height (int, UnitObj): Height in ``1/100th mm`` or :ref:`proto_unit_obj`.
             styles (Iterable[StyleObj]): One or more styles to apply to frame. Only styles that support ``com.sun.star.text.TextGraphicObject`` service are applied.
 
         Raises:
@@ -2719,18 +2726,29 @@ class Write(mSel.Selection):
             props.setPropertyValue("Graphic", graphic)
 
             # optionally set the width and height
-            if width > 0 and height > 0:
-                props.setPropertyValue("Width", width)
-                props.setPropertyValue("Height", height)
+            if not width is None:
+                try:
+                    props.setPropertyValue("Width", width.get_value_mm100())
+                except AttributeError:
+                    props.setPropertyValue("Width", int(width))
+            if not height is None:
+                try:
+                    props.setPropertyValue("Height", height.get_value_mm100())
+                except AttributeError:
+                    props.setPropertyValue("Height", int(height))
 
-            # append image to document, followed by a newline
+            # append image to document
+            cls._append_text_content(cursor, tgo)
+            # end the paragraph.
+            cls.end_line(cursor)
+            # set any styles for the image.
             if styles:
+                # is is important for some format styles such as Crop that styles
+                # not be applied until after they have been added to the document.
                 srv = ("com.sun.star.text.TextGraphicObject",)
                 for style in styles:
                     if style.support_service(*srv):
                         style.apply(tgo)
-            cls._append_text_content(cursor, tgo)
-            cls.end_line(cursor)
             result = tgo
         except Exception as e:
             raise Exception(f"Insertion of graphic in '{fnm}' failed:") from e
@@ -2757,15 +2775,17 @@ class Write(mSel.Selection):
 
     @overload
     @staticmethod
-    def add_image_shape(cursor: XTextCursor, fnm: PathOrStr, width: int, height: int) -> XShape | None:
+    def add_image_shape(
+        cursor: XTextCursor, fnm: PathOrStr, width: int | UnitObj, height: int | UnitObj
+    ) -> XShape | None:
         """
         Add Image Shape
 
         Args:
             cursor (XTextCursor): Text Cursor
             fnm (PathOrStr): Image path
-            width (int, optional): Image width
-            height (int, optional): Image height
+            width (int, UnitObj): Width in ``1/100th mm`` or ``UnitObj``.
+            height (int, UnitObj): Height in ``1/100th mm`` or ``UnitObj``.
 
         Returns:
             XShape: Image Shape on success; Otherwise, ``None``
@@ -2773,15 +2793,17 @@ class Write(mSel.Selection):
         ...
 
     @classmethod
-    def add_image_shape(cls, cursor: XTextCursor, fnm: PathOrStr, width: int = 0, height: int = 0) -> XShape | None:
+    def add_image_shape(
+        cls, cursor: XTextCursor, fnm: PathOrStr, width: int | UnitObj = 0, height: int | UnitObj = 0
+    ) -> XShape | None:
         """
         Add Image Shape
 
         Args:
             cursor (XTextCursor): Text Cursor
             fnm (PathOrStr): Image path
-            width (int, optional): Image width
-            height (int, optional): Image height
+            width (int, UnitObj): Width in ``1/100th mm`` or :ref:`proto_unit_obj`.
+            height (int, UnitObj): Height in ``1/100th mm`` or :ref:`proto_unit_obj`.
 
         Raises:
             CreateInstanceMsfError: If unable to create drawing.GraphicObjectShape
@@ -2822,9 +2844,21 @@ class Write(mSel.Selection):
         pth = mFileIO.FileIO.get_absolute_path(fnm)
 
         try:
-            if width > 0 and height > 0:
-                im_size = Size(width, height)
-            else:
+            size_set = False
+            if width is not None and height is not None:
+                try:
+                    w = width.get_value_mm100()
+                except AttributeError:
+                    w = int(width)
+
+                try:
+                    h = height.get_value_mm100()
+                except AttributeError:
+                    h = int(height)
+                if w > 0 and h > 0:
+                    im_size = Size(w, h)
+                    size_set = True
+            if not size_set:
                 im_size = mImgLo.ImagesLo.get_size_100mm(pth)  # in 1/100 mm units
                 if im_size is None:
                     raise ValueError(f"Unable to get image from {pth}")
@@ -2842,7 +2876,7 @@ class Write(mSel.Selection):
 
             # set the shape's size
             xdraw_shape = mLo.Lo.qi(XShape, gos, True)
-            xdraw_shape.setSize(im_size)
+            xdraw_shape.setSize(im_size.get_uno_size())
 
             # insert image shape into the document, followed by newline
             cls._append_text_content(cursor, gos)
@@ -2881,7 +2915,7 @@ class Write(mSel.Selection):
                 raise mEx.CreateInstanceMsfError(XTextContent, "com.sun.star.drawing.LineShape")
 
             line_shape = mLo.Lo.qi(XShape, ls, True)
-            line_shape.setSize(Size(line_width, 0))
+            line_shape.setSize(UnoSize(line_width, 0))
 
             cls.end_paragraph(cursor)
             cls._append_text_content(cursor, ls)

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, cast, overload
+from typing import overload
 from typing import Any, Tuple, Type, TypeVar
 from enum import Enum
 import uno
@@ -15,7 +15,7 @@ _TProperties = TypeVar(name="_TProperties", bound="Properties")
 
 class Properties(StyleBase):
     """
-    Frame Vertical Alignment
+    Image Options Properties.
 
     .. versionadded:: 0.9.0
     """
@@ -40,7 +40,7 @@ class Properties(StyleBase):
         try:
             return self._supported_services_values
         except AttributeError:
-            self._supported_services_values = ("com.sun.star.style.Style", "com.sun.star.text.TextFrame")
+            self._supported_services_values = ("com.sun.star.text.TextGraphicObject", "com.sun.star.text.BaseFrame")
         return self._supported_services_values
 
     def _props_set(self, obj: object, **kwargs: Any) -> None:
@@ -78,14 +78,14 @@ class Properties(StyleBase):
             NotSupportedError: If ``obj`` is not supported.
 
         Returns:
-            Properties: Instance that represents Frame Option Properties.
+            Properties: Instance that represents Image Properties.
         """
         inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
         for prop_name in inst._props:
             if prop_name:
-                inst._set(prop_name, mProps.Props.get(obj, inst._props.name))
+                inst._set(prop_name, mProps.Props.get(obj, prop_name))
         # prev, next not currently working
         return inst
 

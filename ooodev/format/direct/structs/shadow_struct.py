@@ -244,16 +244,16 @@ class ShadowStruct(StyleBase):
     # region from_shadow()
     @overload
     @classmethod
-    def from_shadow(cls: Type[_TShadowStruct], shadow: ShadowFormat) -> _TShadowStruct:
+    def from_uno_struct(cls: Type[_TShadowStruct], shadow: ShadowFormat) -> _TShadowStruct:
         ...
 
     @overload
     @classmethod
-    def from_shadow(cls: Type[_TShadowStruct], shadow: ShadowFormat, **kwargs) -> _TShadowStruct:
+    def from_uno_struct(cls: Type[_TShadowStruct], shadow: ShadowFormat, **kwargs) -> _TShadowStruct:
         ...
 
     @classmethod
-    def from_shadow(cls: Type[_TShadowStruct], shadow: ShadowFormat, **kwargs) -> _TShadowStruct:
+    def from_uno_struct(cls: Type[_TShadowStruct], shadow: ShadowFormat, **kwargs) -> _TShadowStruct:
         """
         Gets an instance
 

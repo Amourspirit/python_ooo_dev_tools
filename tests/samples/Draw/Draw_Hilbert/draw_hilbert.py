@@ -21,9 +21,9 @@ from ooodev.utils.lo import Lo
 from ooodev.office.draw import Draw
 from ooodev.utils.color import CommonColor
 from ooodev.utils.gui import GUI
+from ooodev.proto.size_obj import SizeObj
 
 from ooo.dyn.drawing.line_cap import LineCap
-from ooo.dyn.awt.size import Size
 
 
 class DrawHilbert:
@@ -67,7 +67,7 @@ class DrawHilbert:
             Lo.close_office()
             raise
 
-    def _start_hilbert(self, level_str: str, slide_size: Size) -> None:
+    def _start_hilbert(self, level_str: str, slide_size: SizeObj) -> None:
         self._level = 1
         try:
             self._level = int(level_str)

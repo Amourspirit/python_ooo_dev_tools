@@ -7,9 +7,7 @@ from ..unit_convert import UnitConvert, Length
 
 _TUnitPT = TypeVar(name="_TUnitPT", bound="UnitPT")
 
-# Note that from __future__ import annotations converts annotations to string.
-# this means that @enforce.enforce_types will see string as type. This is fine in
-# most cases. Especially for built in types.
+
 @dataclass(unsafe_hash=True)
 class UnitPT(BaseFloatValue):
     """
@@ -58,7 +56,7 @@ class UnitPT(BaseFloatValue):
         return self.value
 
     @classmethod
-    def from_pt(cls: Type[UnitPT], value: float) -> UnitPT:
+    def from_pt(cls: Type[_TUnitPT], value: float) -> _TUnitPT:
         """
         Get instance from ``pt`` (points) value.
 
@@ -70,6 +68,20 @@ class UnitPT(BaseFloatValue):
         """
         inst = super(UnitPT, cls).__new__(cls)
         return inst.__init__(value)
+
+    @classmethod
+    def from_px(cls: Type[_TUnitPT], value: float) -> _TUnitPT:
+        """
+        Get instance from ``px`` (pixel) value.
+
+        Args:
+            value (float): ``px`` value.
+
+        Returns:
+            UnitPT:
+        """
+        inst = super(UnitPT, cls).__new__(cls)
+        return inst.__init__(UnitConvert.convert(num=value, frm=Length.PX, to=Length.PT))
 
     @classmethod
     def from_mm(cls: Type[_TUnitPT], value: float) -> _TUnitPT:
@@ -133,7 +145,7 @@ class UnitPT(BaseFloatValue):
         Get instance from ``1/10th in`` (inch) value.
 
         Args:
-            value (int): ```/10th in`` value.
+            value (int): ``1/10th in`` value.
 
         Returns:
             UnitPT:

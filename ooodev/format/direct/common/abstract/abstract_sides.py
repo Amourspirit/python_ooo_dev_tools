@@ -170,7 +170,7 @@ class AbstractSides(StyleBase):
         empty = BorderLine2()
         for attr in inst._props:
             b2 = cast(BorderLine2, getattr(obj, attr, empty))
-            side = Side.from_border2(b2)
+            side = Side.from_uno_struct(b2)
             inst._set(attr, side)
         return inst
 

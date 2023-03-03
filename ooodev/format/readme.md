@@ -105,6 +105,11 @@ mindmap
                         id{{Names}}
                         id{{Properties}}
                         id{{Protect}}
+                    image
+                        id{{Flip}}
+                        id{{Rotation}}
+                    crop
+                        id{{ImageCrop}}
             [modify]
                 page
                     page

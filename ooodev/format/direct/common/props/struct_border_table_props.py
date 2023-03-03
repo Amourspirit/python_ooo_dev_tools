@@ -3,7 +3,7 @@ from typing import NamedTuple
 from .prop_pair import PropPair as PropPair
 
 
-class BorderTableProps(NamedTuple):
+class StructBorderTableProps(NamedTuple):
     left: PropPair
     top: PropPair
     right: PropPair

@@ -23,7 +23,7 @@ def test_get_bitmap(loader, fix_image_path) -> None:
         assert b_size.Width == 319
 
         img_size = ImagesLo.get_size_100mm(im_fnm=im_fnm)
-        assert img_size.Height == 5751
+        assert img_size.height == 5751
         assert img_size.Width == 6092
     finally:
         Lo.close_doc(doc, False)
@@ -79,8 +79,8 @@ def test_get_size_pixels(loader, fix_image_path) -> None:
     doc = Write.create_doc(loader)
     try:
         size = ImagesLo.get_size_pixels(im_fnm)
-        assert size.Height == 274
-        assert size.Width == 319
+        assert size.height == 274
+        assert size.width == 319
     finally:
         Lo.close_doc(doc, False)
 

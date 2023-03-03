@@ -428,16 +428,16 @@ class Side(StyleBase):
     # region from_border2()
     @overload
     @classmethod
-    def from_border2(cls: Type[_TSide], border: BorderLine2) -> _TSide:
+    def from_uno_struct(cls: Type[_TSide], border: BorderLine2) -> _TSide:
         ...
 
     @overload
     @classmethod
-    def from_border2(cls: Type[_TSide], border: BorderLine2, **kwargs) -> _TSide:
+    def from_uno_struct(cls: Type[_TSide], border: BorderLine2, **kwargs) -> _TSide:
         ...
 
     @classmethod
-    def from_border2(cls: Type[_TSide], border: BorderLine2, **kwargs) -> _TSide:
+    def from_uno_struct(cls: Type[_TSide], border: BorderLine2, **kwargs) -> _TSide:
         """
         Gets instance that is populated from UNO ``BorderLine2``.
 

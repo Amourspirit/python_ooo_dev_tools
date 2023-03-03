@@ -95,7 +95,7 @@ class AbsoluteSize:
 
 class Size(AbstractDocument):
     """
-    Frame Type Size
+    Image Type Size
 
     .. versionadded:: 0.9.0
     """

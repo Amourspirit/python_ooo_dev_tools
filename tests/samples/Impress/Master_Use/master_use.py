@@ -33,7 +33,7 @@ class MasterUse:
             # at the top-left of the slide
             sz = Draw.get_slide_size(master_page)
             _ = Draw.draw_rectangle(
-                slide=master_page, x=5, y=7, width=round(sz.Width / 6), height=round(sz.Height / 6)
+                slide=master_page, x=5, y=7, width=round(sz.width / 6), height=round(sz.height / 6)
             )
             _ = Draw.draw_text(
                 slide=master_page, msg="Default Master Page", x=10, y=15, width=100, height=10, font_size=24
@@ -67,7 +67,7 @@ class MasterUse:
 
             # put ellipse and text on master page 2
             ellipse = Draw.draw_ellipse(
-                slide=master2, x=5, y=7, width=round(sz.Width / 6), height=round(sz.Height / 6)
+                slide=master2, x=5, y=7, width=round(sz.width / 6), height=round(sz.height / 6)
             )
             Props.set(ellipse, FillColor=CommonColor.GREEN_YELLOW)
             _ = Draw.draw_text(slide=master2, msg="Master Page 2", x=10, y=15, width=100, height=10, font_size=24)

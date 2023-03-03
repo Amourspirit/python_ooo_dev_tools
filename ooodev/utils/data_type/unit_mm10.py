@@ -22,15 +22,6 @@ class UnitMM10(BaseFloatValue):
         if not isinstance(self.value, float):
             object.__setattr__(self, "value", float(self.value))
 
-    def get_value_pt(self) -> float:
-        """
-        Gets instance value converted to ``pt`` (points) units.
-
-        Returns:
-            int: Value in ``pt`` units.
-        """
-        return UnitConvert.convert(num=self.value, frm=Length.MM10, to=Length.PT)
-
     def get_value_mm(self) -> float:
         """
         Gets instance value converted to ``mm`` units.
@@ -49,6 +40,24 @@ class UnitMM10(BaseFloatValue):
         """
         return round(UnitConvert.convert(num=self.value, frm=Length.MM10, to=Length.MM100))
 
+    def get_value_pt(self) -> float:
+        """
+        Gets instance value converted to ``pt`` (points) units.
+
+        Returns:
+            int: Value in ``pt`` units.
+        """
+        return UnitConvert.convert(num=self.value, frm=Length.MM10, to=Length.PT)
+
+    def get_value_px(self) -> float:
+        """
+        Gets instance value in ``px`` (pixel) units.
+
+        Returns:
+            int: Value in ``px`` units.
+        """
+        return UnitConvert.convert(num=self.value, frm=Length.MM10, to=Length.PX)
+
     @classmethod
     def from_pt(cls: Type[_TUnitMM10], value: float) -> _TUnitMM10:
         """
@@ -62,6 +71,20 @@ class UnitMM10(BaseFloatValue):
         """
         inst = super(UnitMM10, cls).__new__(cls)
         return inst.__init__(float(UnitConvert.convert(num=value, frm=Length.PT, to=Length.MM10)))
+
+    @classmethod
+    def from_px(cls: Type[_TUnitMM10], value: float) -> _TUnitMM10:
+        """
+        Get instance from ``px`` (pixel) value.
+
+        Args:
+            value (float): ``px`` value.
+
+        Returns:
+            UnitMM10:
+        """
+        inst = super(UnitMM10, cls).__new__(cls)
+        return inst.__init__(UnitConvert.convert(num=value, frm=Length.PX, to=Length.MM10))
 
     @classmethod
     def from_mm(cls: Type[_TUnitMM10], value: float) -> _TUnitMM10:
