@@ -13,6 +13,7 @@ from ....utils import props as mProps
 from ....utils.color import Color
 from ....utils.data_type.angle import Angle as Angle
 from ....utils.data_type.intensity import Intensity as Intensity
+from ....utils.data_type.unit_mm import UnitMM
 from ...style_base import StyleBase
 from ...kind.format_kind import FormatKind
 from ....utils.unit_convert import UnitConvert
@@ -246,10 +247,10 @@ class HatchStruct(StyleBase):
         self._set("Color", value)
 
     @property
-    def prop_distance(self) -> float:
+    def prop_distance(self) -> UnitMM:
         """Gets/Sets the distance between the lines in the hatch (in ``mm`` units)."""
         pv = cast(int, self._get("Distance"))
-        return round(UnitConvert.convert_mm100_mm(pv), 2)
+        return UnitMM(round(UnitConvert.convert_mm100_mm(pv), 2))
 
     @prop_distance.setter
     def prop_distance(self, value: float | UnitObj):

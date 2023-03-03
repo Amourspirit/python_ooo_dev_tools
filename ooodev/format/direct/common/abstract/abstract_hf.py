@@ -2,15 +2,16 @@ from __future__ import annotations
 from typing import cast
 from typing import Any, Tuple, overload, Type, TypeVar
 
-from .....events.args.cancel_event_args import cancel_event_args
-from .....exceptions import ex as m_ex
-from .....utils import lo as m_lo
-from .....utils import props as m_props
-from ....kind.format_kind import format_kind
-from ....style_base import style_base
-from ..props.hf_props import hf_props
-from .....utils.unit_convert import unit_convert
-from .....proto.unit_obj import unit_obj
+from .....events.args.cancel_event_args import CancelEventArgs
+from .....exceptions import ex as mEx
+from .....proto.unit_obj import UnitObj
+from .....utils import lo as mLo
+from .....utils import props as mProps
+from .....utils.unit_convert import UnitConvert
+from .....utils.data_type.unit_mm import UnitMM
+from ....kind.format_kind import FormatKind
+from ....style_base import StyleBase
+from ..props.hf_props import HfProps
 
 # from ...events.args.key_val_cancel_args import KeyValCancelArgs
 
@@ -395,14 +396,14 @@ class AbstractHF(StyleBase):
         self._set(self._props.shared_first, value)
 
     @property
-    def prop_margin_left(self) -> float | None:
+    def prop_margin_left(self) -> UnitMM | None:
         """
         Gets/Sets Left Margin in ``mm`` units.
         """
         pv = cast(int, self._get(self._props.margin_left))
         if pv is None:
             return None
-        return UnitConvert.convert_mm100_mm(pv)
+        return UnitMM.from_mm100(pv)
 
     @prop_margin_left.setter
     def prop_margin_left(self, value: float | UnitObj | None) -> None:
@@ -415,14 +416,14 @@ class AbstractHF(StyleBase):
             self._set(self._props.margin_left, UnitConvert.convert_mm_mm100(value))
 
     @property
-    def prop_margin_right(self) -> float | None:
+    def prop_margin_right(self) -> UnitMM | None:
         """
         Gets/Sets Right Margin in ``mm`` units.
         """
         pv = cast(int, self._get(self._props.margin_right))
         if pv is None:
             return None
-        return UnitConvert.convert_mm100_mm(pv)
+        return UnitMM.from_mm100(pv)
 
     @prop_margin_right.setter
     def prop_margin_right(self, value: float | UnitObj | None) -> None:
@@ -435,14 +436,14 @@ class AbstractHF(StyleBase):
             self._set(self._props.margin_right, UnitConvert.convert_mm_mm100(value))
 
     @property
-    def prop_spacing(self) -> float | None:
+    def prop_spacing(self) -> UnitMM | None:
         """
         Gets/Sets Spacing in ``mm`` units.
         """
         pv = cast(int, self._get(self._props.spacing))
         if pv is None:
             return None
-        return UnitConvert.convert_mm100_mm(pv)
+        return UnitMM.from_mm100(pv)
 
     @prop_spacing.setter
     def prop_spacing(self, value: float | UnitObj | None) -> None:
@@ -469,7 +470,7 @@ class AbstractHF(StyleBase):
         self._set(self._props.spacing_dyn, value)
 
     @property
-    def prop_height(self) -> float | None:
+    def prop_height(self) -> UnitMM | None:
         """
         Gets/Sets Height in ``mm`` units.
         """
@@ -478,10 +479,10 @@ class AbstractHF(StyleBase):
         if pv is None:
             return None
         if pv is 0:
-            return 0
+            return UnitMM(0.0)
         spacing = self._get_spacing()
         val = pv - spacing
-        return UnitConvert.convert_mm100_mm(val)
+        return UnitMM.from_mm100(val)
 
     @prop_height.setter
     def prop_height(self, value: float | UnitObj | None) -> None:

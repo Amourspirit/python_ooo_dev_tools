@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import cast
 import uno
 
+from .....proto.unit_obj import UnitObj
 from ....writer.style.para.kind.style_para_kind import StyleParaKind as StyleParaKind
 from ..para_style_base_multi import ParaStyleBaseMulti
 from ....direct.char.font.font_only import FontOnly as InnerFontOnly, FontLang as FontLang
@@ -18,7 +19,7 @@ class FontOnly(ParaStyleBaseMulti):
         self,
         *,
         name: str | None = None,
-        size: float | None = None,
+        size: float | UnitObj | None = None,
         font_style_name: str | None = None,
         lang: FontLang | None = None,
         style_name: StyleParaKind | str = StyleParaKind.STANDARD,
@@ -29,7 +30,7 @@ class FontOnly(ParaStyleBaseMulti):
 
         Args:
             name (str, optional): This property specifies the name of the font style. It may contain more than one name separated by comma.
-            size (float, optional): This value contains the size of the characters in point units.
+            size (float, UnitObj, optional): This value contains the size of the characters in ``pt`` (point) units or :ref:`proto_unit_obj`.
             font_style_name (str, optional): Font style name such as ``Bold``.
             lang (Lang, optional): Font Language
             shadowed (bool, optional): Specifies if the characters are formatted and displayed with a shadow effect.

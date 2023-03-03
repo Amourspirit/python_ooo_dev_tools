@@ -35,7 +35,7 @@ def test_write(loader, para_text) -> None:
 
         f_style = Shadow.from_style(doc=doc, style_name=style.prop_style_name)
         assert f_style.prop_inner.prop_location == ShadowLocation.BOTTOM_RIGHT
-        assert f_style.prop_inner.prop_width == pytest.approx(2.0, rel=1e2)
+        assert f_style.prop_inner.prop_width.value == pytest.approx(2.0, rel=1e-2)
 
         Lo.delay(delay)
     finally:

@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import cast
 import uno
+from .....proto.unit_obj import UnitObj
 from ....writer.style.para.kind import StyleParaKind as StyleParaKind
 from ..para_style_base_multi import ParaStyleBaseMulti
 from ....direct.para.border.padding import Padding as InnerPadding
@@ -16,11 +17,11 @@ class Padding(ParaStyleBaseMulti):
     def __init__(
         self,
         *,
-        left: float | None = None,
-        right: float | None = None,
-        top: float | None = None,
-        bottom: float | None = None,
-        padding_all: float | None = None,
+        left: float | UnitObj | None = None,
+        right: float | UnitObj | None = None,
+        top: float | UnitObj | None = None,
+        bottom: float | UnitObj | None = None,
+        all: float | UnitObj | None = None,
         style_name: StyleParaKind | str = StyleParaKind.STANDARD,
         style_family: str = "ParagraphStyles",
     ) -> None:
@@ -28,11 +29,11 @@ class Padding(ParaStyleBaseMulti):
         Constructor
 
         Args:
-            left (float, optional): Paragraph left padding (in mm units).
-            right (float, optional): Paragraph right padding (in mm units).
-            top (float, optional): Paragraph top padding (in mm units).
-            bottom (float, optional): Paragraph bottom padding (in mm units).
-            padding_all (float, optional): Paragraph left, right, top, bottom padding (in mm units). If argument is present then ``left``, ``right``, ``top``, and ``bottom`` arguments are ignored.
+            left (float, UnitObj, optional): Left (in ``mm`` units) or :ref:`proto_unit_obj`.
+            right (float, UnitObj, optional): Right (in ``mm`` units)  or :ref:`proto_unit_obj`.
+            top (float, UnitObj, optional): Top (in ``mm`` units)  or :ref:`proto_unit_obj`.
+            bottom (float, UnitObj,  optional): Bottom (in ``mm`` units)  or :ref:`proto_unit_obj`.
+            all (float, UnitObj, optional): Left, right, top, bottom (in ``mm`` units)  or :ref:`proto_unit_obj`. If argument is present then ``left``, ``right``, ``top``, and ``bottom`` arguments are ignored.
             style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to. Deftult is Default Paragraph Style.
             style_family (str, optional): Style family. Defatult ``ParagraphStyles``.
 
@@ -40,7 +41,7 @@ class Padding(ParaStyleBaseMulti):
             None:
         """
 
-        direct = InnerPadding(left=left, right=right, top=top, bottom=bottom, all=padding_all)
+        direct = InnerPadding(left=left, right=right, top=top, bottom=bottom, all=all)
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family

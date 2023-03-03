@@ -11,6 +11,7 @@ from .....exceptions import ex as mEx
 from .....proto.unit_obj import UnitObj
 from .....utils import lo as mLo
 from .....utils import props as mProps
+from .....utils.data_type.unit_mm import UnitMM
 from .....utils.unit_convert import UnitConvert
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleBase
@@ -208,7 +209,7 @@ class AbstractPadding(StyleBase):
         Gets a copy of instance with bottom side set or removed
 
         Args:
-            value (float, UnitObj, optional): Padding value
+            value (float, UnitObj, optional): Padding (in ``mm`` units) or :ref:`proto_unit_obj`.
 
         Returns:
             Padding: Padding instance
@@ -222,7 +223,7 @@ class AbstractPadding(StyleBase):
         Gets a copy of instance with left side set or removed
 
         Args:
-            value (float, UnitObj, optional): Padding value
+            value (float, UnitObj, optional): Padding (in ``mm`` units) or :ref:`proto_unit_obj`.
 
         Returns:
             Padding: Padding instance
@@ -236,7 +237,7 @@ class AbstractPadding(StyleBase):
         Gets a copy of instance with right side set or removed
 
         Args:
-            value (float, UnitObj, optional): Padding value
+            value (float, UnitObj, optional): Padding (in ``mm`` units) or :ref:`proto_unit_obj`.
 
         Returns:
             Padding: Padding instance
@@ -258,14 +259,12 @@ class AbstractPadding(StyleBase):
         return self._fromat_kind_prop
 
     @property
-    def prop_left(self) -> float | None:
+    def prop_left(self) -> UnitMM | None:
         """Gets/Sets paragraph left padding (in mm units)."""
         pv = cast(int, self._get(self._props.left))
         if pv is None:
             return None
-        if pv == 0:
-            return 0.0
-        return float(pv / 100)
+        return UnitMM.from_mm100(pv)
 
     @prop_left.setter
     def prop_left(self, value: float | UnitObj | None):
@@ -278,14 +277,12 @@ class AbstractPadding(StyleBase):
             self._set(self._props.left, UnitConvert.convert_mm_mm100(value))
 
     @property
-    def prop_right(self) -> float | None:
+    def prop_right(self) -> UnitMM | None:
         """Gets/Sets paragraph right padding (in mm units)."""
         pv = cast(int, self._get(self._props.right))
         if pv is None:
             return None
-        if pv == 0:
-            return 0.0
-        return float(pv / 100)
+        return UnitMM.from_mm100(pv)
 
     @prop_right.setter
     def prop_right(self, value: float | UnitObj | None):
@@ -298,14 +295,12 @@ class AbstractPadding(StyleBase):
             self._set(self._props.right, UnitConvert.convert_mm_mm100(value))
 
     @property
-    def prop_top(self) -> float | None:
+    def prop_top(self) -> UnitMM | None:
         """Gets/Sets paragraph top padding (in mm units)."""
         pv = cast(int, self._get(self._props.top))
         if pv is None:
             return None
-        if pv == 0:
-            return 0.0
-        return float(pv / 100)
+        return UnitMM.from_mm100(pv)
 
     @prop_top.setter
     def prop_top(self, value: float | UnitObj | None):
@@ -318,14 +313,12 @@ class AbstractPadding(StyleBase):
             self._set(self._props.top, UnitConvert.convert_mm_mm100(value))
 
     @property
-    def prop_bottom(self) -> float | None:
+    def prop_bottom(self) -> UnitMM | None:
         """Gets/Sets paragraph bottom padding (in mm units)."""
         pv = cast(int, self._get(self._props.bottom))
         if pv is None:
             return None
-        if pv == 0:
-            return 0.0
-        return float(pv / 100)
+        return UnitMM.from_mm100(pv)
 
     @prop_bottom.setter
     def prop_bottom(self, value: float | UnitObj | None):

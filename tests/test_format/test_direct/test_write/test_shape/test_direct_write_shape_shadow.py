@@ -39,9 +39,9 @@ def test_write(loader) -> None:
 
         f_style = Shadow.from_obj(rs)
         assert f_style.prop_use_shadow == style.prop_use_shadow
-        assert f_style.prop_blur == style.prop_blur
+        assert round(f_style.prop_blur.value) == round(style.prop_blur.value)
         assert f_style.prop_color == style.prop_color
-        assert f_style.prop_distance == pytest.approx(style.prop_distance, rel=1e-2)
+        assert f_style.prop_distance.value == pytest.approx(style.prop_distance.value, rel=1e-2)
         assert f_style.prop_transparency == style.prop_transparency
 
         kinds = (
@@ -60,9 +60,9 @@ def test_write(loader) -> None:
 
             f_style = Shadow.from_obj(rs)
             assert f_style.prop_use_shadow == kind_style.prop_use_shadow
-            assert f_style.prop_blur == kind_style.prop_blur
+            assert round(f_style.prop_blur.value) == round(kind_style.prop_blur.value)
             assert f_style.prop_color == kind_style.prop_color
-            assert f_style.prop_distance == pytest.approx(kind_style.prop_distance, rel=1e-2)
+            assert f_style.prop_distance.value == pytest.approx(kind_style.prop_distance.value, rel=1e-2)
             assert f_style.prop_transparency == kind_style.prop_transparency
 
         Lo.delay(delay)

@@ -33,10 +33,10 @@ def test_write(loader, para_text) -> None:
         )
 
         f_style = Padding.from_obj(frame)
-        assert f_style.prop_left == pytest.approx(amt, rel=1e2)
-        assert f_style.prop_right == pytest.approx(amt, rel=1e2)
-        assert f_style.prop_top == pytest.approx(amt, rel=1e2)
-        assert f_style.prop_bottom == pytest.approx(amt, rel=1e2)
+        assert f_style.prop_left.value == pytest.approx(amt, rel=1e-2)
+        assert f_style.prop_right.value == pytest.approx(amt, rel=1e-2)
+        assert f_style.prop_top.value == pytest.approx(amt, rel=1e-2)
+        assert f_style.prop_bottom.value == pytest.approx(amt, rel=1e-2)
 
         Lo.delay(delay)
     finally:

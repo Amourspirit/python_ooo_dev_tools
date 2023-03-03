@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import cast
 import uno
+from .....proto.unit_obj import UnitObj
 from ....writer.style.char.kind.style_char_kind import StyleCharKind as StyleCharKind
 from ..char_style_base_multi import CharStyleBaseMulti
 from ....direct.char.border.padding import Padding as InnerPadding
@@ -16,11 +17,11 @@ class Padding(CharStyleBaseMulti):
     def __init__(
         self,
         *,
-        left: float | None = None,
-        right: float | None = None,
-        top: float | None = None,
-        bottom: float | None = None,
-        padding_all: float | None = None,
+        left: float | UnitObj | None = None,
+        right: float | UnitObj | None = None,
+        top: float | UnitObj | None = None,
+        bottom: float | UnitObj | None = None,
+        all: float | UnitObj | None = None,
         style_name: StyleCharKind | str = StyleCharKind.STANDARD,
         style_family: str = "CharacterStyles",
     ) -> None:
@@ -28,11 +29,11 @@ class Padding(CharStyleBaseMulti):
         Constructor
 
         Args:
-            left (float, optional): Character left padding (in mm units).
-            right (float, optional): Character right padding (in mm units).
-            top (float, optional): Character top padding (in mm units).
-            bottom (float, optional): Character bottom padding (in mm units).
-            padding_all (float, optional): Character left, right, top, bottom padding (in mm units). If argument is present then ``left``, ``right``, ``top``, and ``bottom`` arguments are ignored.
+            left (float, UnitObj, optional): Left (in ``mm`` units) or :ref:`proto_unit_obj`.
+            right (float, UnitObj, optional): Right (in ``mm`` units)  or :ref:`proto_unit_obj`.
+            top (float, UnitObj, optional): Top (in ``mm`` units)  or :ref:`proto_unit_obj`.
+            bottom (float, UnitObj,  optional): Bottom (in ``mm`` units)  or :ref:`proto_unit_obj`.
+            all (float, UnitObj, optional): Left, right, top, bottom (in ``mm`` units)  or :ref:`proto_unit_obj`. If argument is present then ``left``, ``right``, ``top``, and ``bottom`` arguments are ignored.
             style_name (StyleParaKind, str, optional): Specifies the Character Style that instance applies to. Deftult is Default Character Style.
             style_family (str, optional): Style family. Defatult ``CharacterStyles``.
 
@@ -40,7 +41,7 @@ class Padding(CharStyleBaseMulti):
             None:
         """
 
-        direct = InnerPadding(left=left, right=right, top=top, bottom=bottom, all=padding_all)
+        direct = InnerPadding(left=left, right=right, top=top, bottom=bottom, all=all)
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family

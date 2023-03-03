@@ -58,6 +58,7 @@ class FontPosition(CharStyleBaseMulti):
             raise_lower=raise_lower,
             rel_size=rel_size,
             rotation=rotation,
+            scale=scale,
             fit=fit,
             spacing=spacing,
             pair=pair,

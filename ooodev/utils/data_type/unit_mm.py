@@ -70,7 +70,8 @@ class UnitMM(BaseFloatValue):
             UnitMM:
         """
         inst = super(UnitMM, cls).__new__(cls)
-        return inst.__init__(value)
+        inst.__init__(value)
+        return inst
 
     @classmethod
     def from_mm10(cls: Type[_TUnitMM], value: float) -> _TUnitMM:
@@ -84,7 +85,8 @@ class UnitMM(BaseFloatValue):
             UnitMM:
         """
         inst = super(UnitMM, cls).__new__(cls)
-        return inst.__init__(UnitConvert.convert(num=value, frm=Length.MM10, to=Length.MM))
+        inst.__init__(UnitConvert.convert(num=value, frm=Length.MM10, to=Length.MM))
+        return inst
 
     @classmethod
     def from_mm100(cls: Type[_TUnitMM], value: int) -> _TUnitMM:
@@ -98,7 +100,8 @@ class UnitMM(BaseFloatValue):
             UnitMM:
         """
         inst = super(UnitMM, cls).__new__(cls)
-        return inst.__init__(UnitConvert.convert_mm100_mm(value))
+        inst.__init__(UnitConvert.convert_mm100_mm(value))
+        return inst
 
     @classmethod
     def from_pt(cls: Type[_TUnitMM], value: float) -> _TUnitMM:
@@ -112,7 +115,8 @@ class UnitMM(BaseFloatValue):
             UnitMM:
         """
         inst = super(UnitMM, cls).__new__(cls)
-        return inst.__init__(float(UnitConvert.convert(num=value, frm=Length.PT, to=Length.MM)))
+        inst.__init__(float(UnitConvert.convert(num=value, frm=Length.PT, to=Length.MM)))
+        return inst
 
     @classmethod
     def from_px(cls: Type[_TUnitMM], value: float) -> _TUnitMM:
@@ -126,7 +130,8 @@ class UnitMM(BaseFloatValue):
             UnitMM:
         """
         inst = super(UnitMM, cls).__new__(cls)
-        return inst.__init__(UnitConvert.convert(num=value, frm=Length.PX, to=Length.MM))
+        inst.__init__(UnitConvert.convert(num=value, frm=Length.PX, to=Length.MM))
+        return inst
 
     @classmethod
     def from_inch(cls: Type[_TUnitMM], value: float) -> _TUnitMM:
@@ -140,7 +145,8 @@ class UnitMM(BaseFloatValue):
             UnitMM:
         """
         inst = super(UnitMM, cls).__new__(cls)
-        return inst.__init__(UnitConvert.convert(num=value, frm=Length.IN, to=Length.MM))
+        inst.__init__(UnitConvert.convert(num=value, frm=Length.IN, to=Length.MM))
+        return inst
 
     @classmethod
     def from_inch10(cls: Type[_TUnitMM], value: float) -> _TUnitMM:
@@ -154,7 +160,8 @@ class UnitMM(BaseFloatValue):
             UnitMM:
         """
         inst = super(UnitMM, cls).__new__(cls)
-        return inst.__init__(UnitConvert.convert(num=value, frm=Length.IN10, to=Length.MM))
+        inst.__init__(UnitConvert.convert(num=value, frm=Length.IN10, to=Length.MM))
+        return inst
 
     @classmethod
     def from_inch100(cls: Type[_TUnitMM], value: float) -> _TUnitMM:
@@ -168,7 +175,8 @@ class UnitMM(BaseFloatValue):
             UnitMM:
         """
         inst = super(UnitMM, cls).__new__(cls)
-        return inst.__init__(UnitConvert.convert(num=value, frm=Length.IN100, to=Length.MM))
+        inst.__init__(UnitConvert.convert(num=value, frm=Length.IN100, to=Length.MM))
+        return inst
 
     @classmethod
     def from_inch1000(cls: Type[_TUnitMM], value: int) -> _TUnitMM:
@@ -182,4 +190,5 @@ class UnitMM(BaseFloatValue):
             UnitMM:
         """
         inst = super(UnitMM, cls).__new__(cls)
-        return inst.__init__(UnitConvert.convert(num=value, frm=Length.IN1000, to=Length.MM))
+        inst.__init__(UnitConvert.convert(num=value, frm=Length.IN1000, to=Length.MM))
+        return inst

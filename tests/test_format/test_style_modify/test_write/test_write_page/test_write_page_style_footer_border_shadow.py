@@ -42,7 +42,7 @@ def test_write(loader, para_text) -> None:
         Styler.apply(doc, footer_style, style)
         # props = style.get_style_props(doc)
         f_style = Shadow.from_style(doc, style.prop_style_name)
-        assert f_style.prop_inner.prop_width == pytest.approx(style.prop_inner.prop_width, rel=1e2)
+        assert f_style.prop_inner.prop_width.value == pytest.approx(style.prop_inner.prop_width.value, rel=1e-2)
         assert f_style.prop_inner.prop_color == StandardColor.GRAY_LIGHT1
 
         Lo.delay(delay)

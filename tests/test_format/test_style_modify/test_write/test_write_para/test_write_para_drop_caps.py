@@ -6,7 +6,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.writer.modify.para.drop_caps import DropCaps, DropCapFmt, StyleCharKind, StyleParaKind
+from ooodev.format.writer.modify.para.drop_caps import DropCaps, StyleCharKind, StyleParaKind
 from ooodev.format.direct.structs.drop_cap_struct import DropCapStruct
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo

@@ -13,6 +13,7 @@ from ooo.dyn.text.graphic_crop import GraphicCrop
 from ....exceptions import ex as mEx
 from ....proto.unit_obj import UnitObj
 from ....utils import props as mProps
+from ....utils.data_type.unit_mm import UnitMM
 from ....utils.unit_convert import UnitConvert
 from ...kind.format_kind import FormatKind
 from ...style_base import StyleBase
@@ -312,12 +313,10 @@ class CropStruct(StyleBase):
         return self._format_kind_prop
 
     @property
-    def prop_left(self) -> float:
+    def prop_left(self) -> UnitMM:
         """Gets/Sets left value in ``mm`` units."""
         pv = self._get(self._props.left)
-        if pv == 0.0:
-            return 0.0
-        return UnitConvert.convert_mm100_mm(pv)
+        return UnitMM.from_mm100(pv)
 
     @prop_left.setter
     def prop_left(self, value: float | UnitObj) -> None:
@@ -327,12 +326,10 @@ class CropStruct(StyleBase):
             self._set(self._props.left, UnitConvert.convert_mm_mm100(value))
 
     @property
-    def prop_right(self) -> float:
+    def prop_right(self) -> UnitMM:
         """Gets/Sets right value in ``mm`` units."""
         pv = self._get(self._props.right)
-        if pv == 0.0:
-            return 0.0
-        return UnitConvert.convert_mm100_mm(pv)
+        return UnitMM.from_mm100(pv)
 
     @prop_right.setter
     def prop_right(self, value: float | UnitObj) -> None:
@@ -342,12 +339,10 @@ class CropStruct(StyleBase):
             self._set(self._props.right, UnitConvert.convert_mm_mm100(value))
 
     @property
-    def prop_top(self) -> float:
+    def prop_top(self) -> UnitMM:
         """Gets/Sets top value in ``mm`` units."""
         pv = self._get(self._props.top)
-        if pv == 0.0:
-            return 0.0
-        return UnitConvert.convert_mm100_mm(pv)
+        return UnitMM.from_mm100(pv)
 
     @prop_top.setter
     def prop_top(self, value: float | UnitObj) -> None:
@@ -357,12 +352,10 @@ class CropStruct(StyleBase):
             self._set(self._props.top, UnitConvert.convert_mm_mm100(value))
 
     @property
-    def prop_bottom(self) -> float:
+    def prop_bottom(self) -> UnitMM:
         """Gets/Sets bottom value in ``mm`` units."""
         pv = self._get(self._props.bottom)
-        if pv == 0.0:
-            return 0.0
-        return UnitConvert.convert_mm100_mm(pv)
+        return UnitMM.from_mm100(pv)
 
     @prop_bottom.setter
     def prop_bottom(self, value: float | UnitObj) -> None:

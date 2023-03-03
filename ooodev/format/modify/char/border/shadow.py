@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import cast
 import uno
+from .....proto.unit_obj import UnitObj
 from ....writer.style.char.kind.style_char_kind import StyleCharKind as StyleCharKind
 from ..char_style_base_multi import CharStyleBaseMulti
 from ....direct.char.border.shadow import Shadow as InnerShadow
@@ -23,7 +24,7 @@ class Shadow(CharStyleBaseMulti):
         location: ShadowLocation = ShadowLocation.BOTTOM_RIGHT,
         color: Color = StandardColor.GRAY,
         transparent: bool = False,
-        width: float = 1.76,
+        width: float | UnitObj = 1.76,
         style_name: StyleCharKind | str = StyleCharKind.STANDARD,
         style_family: str = "CharacterStyles",
     ) -> None:
@@ -34,7 +35,7 @@ class Shadow(CharStyleBaseMulti):
             location (ShadowLocation, optional): contains the location of the shadow. Default to ``ShadowLocation.BOTTOM_RIGHT``.
             color (Color, optional):contains the color value of the shadow. Defaults to ``StandardColor.GRAY``.
             transparent (bool, optional): Shadow transparency. Defaults to False.
-            width (float, optional): contains the size of the shadow (in mm units). Defaults to ``1.76``.
+            width (float, Unit100MM, optional): contains the size of the shadow (in ``mm`` units) or :ref:`proto_unit_obj`. Defaults to ``1.76``.
             style_name (StyleCharKind, str, optional): Specifies the Character Style that instance applies to. Deftult is Default Character Style.
             style_family (str, optional): Style family. Defatult ``CharacterStyles``.
 

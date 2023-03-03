@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import cast
 import uno
+from .....proto.unit_obj import UnitObj
 from ....writer.style.para.kind import StyleParaKind as StyleParaKind
 from ..para_style_base_multi import ParaStyleBaseMulti
 from ....direct.para.indent_space.indent import Indent as InnerIndent
@@ -16,9 +17,9 @@ class Indent(ParaStyleBaseMulti):
     def __init__(
         self,
         *,
-        before: float | None = None,
-        after: float | None = None,
-        first: float | None = None,
+        before: float | UnitObj | None = None,
+        after: float | UnitObj | None = None,
+        first: float | UnitObj | None = None,
         auto: bool | None = None,
         style_name: StyleParaKind | str = StyleParaKind.STANDARD,
         style_family: str = "ParagraphStyles",
@@ -27,9 +28,9 @@ class Indent(ParaStyleBaseMulti):
         Constructor
 
         Args:
-            before (float, optional): Determines the left margin of the paragraph (in ``mm`` units).
-            after (float, optional): Determines the right margin of the paragraph (in ``mm`` units).
-            first (float, optional): specifies the indent for the first line (in ``mm`` units).
+            before (float, UnitObj, optional): Determines the left margin of the paragraph (in ``mm`` units) or :ref:`proto_unit_obj`.
+            after (float, UnitObj, optional): Determines the right margin of the paragraph (in ``mm`` units) or :ref:`proto_unit_obj`.
+            first (float, UnitObj, optional): specifies the indent for the first line (in ``mm`` units) or :ref:`proto_unit_obj`.
             auto (bool, optional): Determines if the first line should be indented automatically.
             style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to. Deftult is Default Paragraph Style.
             style_family (str, optional): Style family. Defatult ``ParagraphStyles``.

@@ -70,7 +70,8 @@ class UnitInch(BaseFloatValue):
             UnitInch:
         """
         inst = super(UnitInch, cls).__new__(cls)
-        return inst.__init__(UnitConvert.convert(num=value, frm=Length.MM, to=Length.IN))
+        inst.__init__(UnitConvert.convert(num=value, frm=Length.MM, to=Length.IN))
+        return inst
 
     @classmethod
     def from_mm100(cls: Type[_TUnitInch], value: int) -> _TUnitInch:
@@ -84,7 +85,8 @@ class UnitInch(BaseFloatValue):
             UnitInch:
         """
         inst = super(UnitInch, cls).__new__(cls)
-        return inst.__init__(UnitConvert.convert(num=value, frm=Length.MM100, to=Length.IN))
+        inst.__init__(UnitConvert.convert(num=value, frm=Length.MM100, to=Length.IN))
+        return inst
 
     @classmethod
     def from_pt(cls: Type[_TUnitInch], value: float) -> _TUnitInch:
@@ -98,7 +100,8 @@ class UnitInch(BaseFloatValue):
             UnitInch:
         """
         inst = super(UnitInch, cls).__new__(cls)
-        return inst.__init__(UnitConvert.convert(num=value, frm=Length.PT, to=Length.IN))
+        inst.__init__(UnitConvert.convert(num=value, frm=Length.PT, to=Length.IN))
+        return inst
 
     @classmethod
     def from_px(cls: Type[_TUnitInch], value: float) -> _TUnitInch:
@@ -112,7 +115,8 @@ class UnitInch(BaseFloatValue):
             UnitInch:
         """
         inst = super(UnitInch, cls).__new__(cls)
-        return inst.__init__(UnitConvert.convert(num=value, frm=Length.PX, to=Length.IN))
+        inst.__init__(UnitConvert.convert(num=value, frm=Length.PX, to=Length.IN))
+        return inst
 
     @classmethod
     def from_inch10(cls: Type[_TUnitInch], value: float) -> _TUnitInch:
@@ -126,7 +130,8 @@ class UnitInch(BaseFloatValue):
             UnitInch:
         """
         inst = super(UnitInch, cls).__new__(cls)
-        return inst.__init__(round(UnitConvert.convert(num=value, frm=Length.IN10, to=Length.IN)))
+        inst.__init__(round(UnitConvert.convert(num=value, frm=Length.IN10, to=Length.IN)))
+        return inst
 
     @classmethod
     def from_inch100(cls: Type[_TUnitInch], value: float) -> _TUnitInch:
@@ -140,7 +145,8 @@ class UnitInch(BaseFloatValue):
             UnitInch:
         """
         inst = super(UnitInch, cls).__new__(cls)
-        return inst.__init__(round(UnitConvert.convert(num=value, frm=Length.IN100, to=Length.IN)))
+        inst.__init__(round(UnitConvert.convert(num=value, frm=Length.IN100, to=Length.IN)))
+        return inst
 
     @classmethod
     def from_inch1000(cls: Type[_TUnitInch], value: float) -> _TUnitInch:
@@ -154,4 +160,5 @@ class UnitInch(BaseFloatValue):
             UnitInch:
         """
         inst = super(UnitInch, cls).__new__(cls)
-        return inst.__init__(round(UnitConvert.convert(num=value, frm=Length.IN1000, to=Length.IN)))
+        inst.__init__(round(UnitConvert.convert(num=value, frm=Length.IN1000, to=Length.IN)))
+        return inst

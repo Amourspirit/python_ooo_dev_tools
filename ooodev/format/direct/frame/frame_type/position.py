@@ -15,11 +15,12 @@ from ooo.dyn.text.rel_orientation import RelOrientation
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
+from .....proto.unit_obj import UnitObj
 from .....utils import lo as mLo
 from .....utils import props as mProps
 from .....utils.data_type.intensity import Intensity as Intensity
+from .....utils.data_type.unit_mm import UnitMM
 from .....utils.unit_convert import UnitConvert
-from .....proto.unit_obj import UnitObj
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleBase
 from ...common.props.frame_type_positon_props import FrameTypePositonProps
@@ -112,12 +113,10 @@ class Horizontal:
 
         self._position = position
         self._rel = rel
-        if isinstance(amount, float):
-            self._amount = amount
-        elif isinstance(amount, int):
-            self._amount = float(amount)
-        else:
+        try:
             self._amount = amount.get_value_mm()
+        except AttributeError:
+            self._amount = float(amount)
 
     # endregion Init
 
@@ -129,7 +128,7 @@ class Horizontal:
             result = result and self.rel == oth.rel
             if not result:
                 return False
-            return math.isclose(self.amount, oth.amount, abs_tol=0.02)
+            return math.isclose(self.amount.value, oth.amount.value, abs_tol=0.02)
         return NotImplemented
 
     # endregion Dunder Methods
@@ -167,22 +166,20 @@ class Horizontal:
         self._rel = value
 
     @property
-    def amount(self) -> float:
+    def amount(self) -> UnitMM:
         """
         Gets/Sets Amount in ``mm`` units. Only effective when position is ``HoriOrient.FROM_LEFT``.
 
         Setting also allows ``Unit100MM`` instance.
         """
-        return self._amount
+        return UnitMM(self._amount)
 
     @amount.setter
     def amount(self, value: float | UnitObj):
-        if isinstance(value, float):
-            self._amount = value
-        elif isinstance(value, int):
-            self._amount = float(value)
-        else:
+        try:
             self._amount = value.get_value_mm()
+        except AttributeError:
+            self._amount = float(value)
 
     # endregion Properties
 
@@ -203,12 +200,10 @@ class Vertical:
 
         self._position = position
         self._rel = rel
-        if isinstance(amount, float):
-            self._amount = amount
-        elif isinstance(amount, int):
-            self._amount = float(amount)
-        else:
+        try:
             self._amount = amount.get_value_mm()
+        except AttributeError:
+            self._amount = float(amount)
 
     # endregion Init
 
@@ -220,7 +215,7 @@ class Vertical:
             result = result and self.rel == oth.rel
             if not result:
                 return False
-            return math.isclose(self.amount, oth.amount, abs_tol=0.02)
+            return math.isclose(self.amount.value, oth.amount.value, abs_tol=0.02)
         return NotImplemented
 
     # endregion Dunder Methods
@@ -258,22 +253,20 @@ class Vertical:
         self._rel = value
 
     @property
-    def amount(self) -> float:
+    def amount(self) -> UnitMM:
         """
         Gets/Sets Amount in ``mm`` units. Only effective when position is ``VertOrient.FROM_TOP``.
 
         Setting also allows ``Unit100MM`` instance.
         """
-        return self._amount
+        return UnitMM(self._amount)
 
     @amount.setter
     def amount(self, value: float | UnitObj):
-        if isinstance(value, float):
-            self._amount = value
-        elif isinstance(value, int):
-            self._amount = float(value)
-        else:
+        try:
             self._amount = value.get_value_mm()
+        except AttributeError:
+            self._amount = float(value)
 
     # endregion Properties
 
@@ -323,7 +316,7 @@ class Position(StyleBase):
             self._remove(self._props.hori_rel)
             return
         if horizontal.position == HoriOrient.FROM_LEFT_OR_INSIDE:
-            self._set(self._props.hori_pos, UnitConvert.convert_mm_mm100(horizontal.amount))
+            self._set(self._props.hori_pos, horizontal.amount.get_value_mm100())
         else:
             self._set(self._props.hori_pos, 0)
         self._set(self._props.hori_orient, horizontal.position.value)
@@ -336,7 +329,7 @@ class Position(StyleBase):
             self._remove(self._props.vert_rel)
             return
         if vertical.position == VertOrient.FROM_TOP_OR_BOTTOM:
-            self._set(self._props.vert_pos, UnitConvert.convert_mm_mm100(vertical.amount))
+            self._set(self._props.vert_pos, vertical.amount.get_value_mm100())
         else:
             self._set(self._props.vert_pos, 0)
         self._set(self._props.vert_orient, vertical.position.value)

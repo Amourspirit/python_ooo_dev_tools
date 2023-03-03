@@ -9,8 +9,11 @@ from typing import Tuple, cast, overload, Type, TypeVar
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
 from .....meta.static_prop import static_prop
+from .....proto.unit_obj import UnitObj
 from .....utils import lo as mLo
 from .....utils import props as mProps
+from .....utils.data_type.unit_mm import UnitMM
+from .....utils.unit_convert import UnitConvert
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleBase
 
@@ -33,32 +36,29 @@ class Spacing(StyleBase):
     def __init__(
         self,
         *,
-        above: float | None = None,
-        below: float | None = None,
+        above: float | UnitObj | None = None,
+        below: float | UnitObj | None = None,
         style_no_space: bool | None = None,
     ) -> None:
         """
         Constructor
 
         Args:
-            above (float, optional): Determines the top margin of the paragraph (in mm units).
-            below (float, optional): Determines the bottom margin of the paragraph (in mm units).
+            above (float, UnitObj, optional): Determines the top margin of the paragraph (in ``mm`` units) or :ref:`proto_unit_obj`.
+            below (float, UnitObj, optional): Determines the bottom margin of the paragraph (in ``mm`` units) or :ref:`proto_unit_obj`.
             style_no_space (bool, optional): Do not add space between paragraphs of the same style.
         Returns:
             None:
         """
         # https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1ParagraphProperties-members.html
-        init_vals = {}
+        super().__init__()
 
         if not above is None:
-            init_vals["ParaTopMargin"] = round(above * 100)
-
+            self.prop_above = above
         if not below is None:
-            init_vals["ParaBottomMargin"] = round(below * 100)
-
+            self.prop_below = below
         if not style_no_space is None:
-            init_vals["ParaContextMargin"] = style_no_space
-        super().__init__(**init_vals)
+            self.prop_style_no_space = style_no_space
 
     # endregion init
 
@@ -147,12 +147,12 @@ class Spacing(StyleBase):
     # endregion methods
 
     # region style methods
-    def fmt_above(self: _TSpacing, value: float | None) -> _TSpacing:
+    def fmt_above(self: _TSpacing, value: float | UnitObj | None) -> _TSpacing:
         """
         Gets a copy of instance with above margin set or removed
 
         Args:
-            value (float | None): Margin value (in mm units).
+            value (float, UnitObj, optional): Margin value (in ``mm`` units) or :ref:`proto_unit_obj`.
 
         Returns:
             Spacing: Indent instance
@@ -161,12 +161,12 @@ class Spacing(StyleBase):
         cp.prop_above = value
         return cp
 
-    def fmt_below(self: _TSpacing, value: float | None) -> _TSpacing:
+    def fmt_below(self: _TSpacing, value: float | UnitObj | None) -> _TSpacing:
         """
         Gets a copy of instance with below margin set or removed
 
         Args:
-            value (float | None): Margin value (in mm units).
+            value (float, UnitObj, optional): Margin value (in ``mm`` units) or :ref:`proto_unit_obj`.
 
         Returns:
             Spacing: Indent instance
@@ -212,38 +212,40 @@ class Spacing(StyleBase):
         return self._format_kind_prop
 
     @property
-    def prop_above(self) -> float | None:
-        """Gets/Sets the top margin of the paragraph (in mm units)."""
+    def prop_above(self) -> UnitMM | None:
+        """Gets/Sets the top margin of the paragraph (in ``mm`` units)."""
         pv = cast(int, self._get("ParaTopMargin"))
         if pv is None:
             return None
-        if pv == 0:
-            return 0.0
-        return float(pv / 100)
+        return UnitMM.from_mm100(pv)
 
     @prop_above.setter
-    def prop_above(self, value: float | None):
+    def prop_above(self, value: float | UnitObj | None):
         if value is None:
             self._remove("ParaTopMargin")
             return
-        self._set("ParaTopMargin", value)
+        try:
+            self._set("ParaTopMargin", value.get_value_mm100())
+        except AttributeError:
+            self._set("ParaTopMargin", UnitConvert.convert_mm_mm100(value))
 
     @property
-    def prop_below(self) -> float | None:
+    def prop_below(self) -> UnitMM | None:
         """Gets/Sets the bottom margin of the paragraph (in mm units)."""
         pv = cast(int, self._get("ParaBottomMargin"))
         if pv is None:
             return None
-        if pv == 0:
-            return 0.0
-        return float(pv / 100)
+        return UnitMM.from_mm100(pv)
 
     @prop_below.setter
-    def prop_below(self, value: float | None):
+    def prop_below(self, value: float | UnitObj | None):
         if value is None:
             self._remove("ParaBottomMargin")
             return
-        self._set("ParaBottomMargin", value)
+        try:
+            self._set("ParaBottomMargin", value.get_value_mm100())
+        except AttributeError:
+            self._set("ParaBottomMargin", UnitConvert.convert_mm_mm100(value))
 
     @property
     def prop_style_no_space(self) -> bool | None:

@@ -10,6 +10,7 @@ from numbers import Real
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
 from .....meta.static_prop import static_prop
+from .....proto.unit_obj import UnitObj
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleMulti
 from .indent import Indent
@@ -31,12 +32,12 @@ class IndentSpacing(StyleMulti):
     def __init__(
         self,
         *,
-        id_before: float | None = None,
-        id_after: float | None = None,
-        id_first: float | None = None,
+        id_before: float | UnitObj | None = None,
+        id_after: float | UnitObj | None = None,
+        id_first: float | UnitObj | None = None,
         id_auto: bool | None = None,
-        sp_above: float | None = None,
-        sp_below: float | None = None,
+        sp_above: float | UnitObj | None = None,
+        sp_below: float | UnitObj | None = None,
         sp_style_no_space: bool | None = None,
         ln_mode: ModeKind | None = None,
         ln_value: Real | None = None,
@@ -46,14 +47,14 @@ class IndentSpacing(StyleMulti):
         Constructor
 
         Args:
-            id_before (float, optional): Determines the left margin of the paragraph (in mm units).
-            id_after (float, optional): Determines the right margin of the paragraph (in mm units).
-            id_first (float, optional): specifies the indent for the first line (in mm units).
+            id_before (float, optional): Determines the left margin of the paragraph (in ``mm`` units) or :ref:`proto_unit_obj`.
+            id_after (float, optional): Determines the right margin of the paragraph (in ``mm`` units) or :ref:`proto_unit_obj`.
+            id_first (float, optional): specifies the indent for the first line (in ``mm`` units) or :ref:`proto_unit_obj`.
             id_auto (bool, optional): Determines if the first line should be indented automatically.
-            sp_above (float, optional): Determines the top margin of the paragraph (in mm units).
-            sp_below (float, optional): Determines the bottom margin of the paragraph (in mm units).
+            sp_above (float, optional): Determines the top margin of the paragraph (in ``mm`` units) or :ref:`proto_unit_obj`.
+            sp_below (float, optional): Determines the bottom margin of the paragraph (in ``mm`` units) or :ref:`proto_unit_obj`.
             sp_style_no_space (bool, optional): Do not add space between paragraphs of the same style.
-            ln_mode (ModeKind, optional): Determines the left margin of the paragraph (in mm units).
+            ln_mode (ModeKind, optional): mode (ModeKind, optional): Determines the mode that is use to apply units.
             ln_value (Real, optional): Value of line spacing. Only applies when ``ModeKind`` is ``PORPORTINAL``, ``AT_LEAST``, ``LEADING``, or ``FIXED``.
             ln_active_spacing (bool, optional): Determines active page line-spacing.
         Returns:

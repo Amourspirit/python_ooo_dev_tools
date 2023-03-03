@@ -33,7 +33,7 @@ def test_write(loader, para_text) -> None:
 
         f_style = FontOnly.from_style(doc)
         assert f_style.prop_inner.prop_name == DirectFontOnly.default.prop_name
-        assert f_style.prop_inner.prop_size == 14.0
+        assert f_style.prop_inner.prop_size.value == 14.0
         Lo.delay(delay)
     finally:
         Lo.close_doc(doc)

@@ -2,14 +2,19 @@ from __future__ import annotations
 from typing import Any, Tuple, overload, cast, Type, TypeVar
 
 import uno
+from ooo.dyn.drawing.fill_style import FillStyle
+from ooo.dyn.drawing.hatch_style import HatchStyle as HatchStyle
+from ooo.dyn.drawing.hatch import Hatch as UnoHatch
 
 from .....events.args.key_val_cancel_args import KeyValCancelArgs
 from .....events.format_named_event import FormatNamedEvent
 from .....exceptions import ex as mEx
+from .....proto.unit_obj import UnitObj
 from .....utils import lo as mLo
 from .....utils import props as mProps
 from .....utils.color import Color, StandardColor
 from .....utils.data_type.angle import Angle as Angle
+from .....utils.data_type.unit_mm import UnitMM
 from .....utils.unit_convert import UnitConvert
 from ....kind.format_kind import FormatKind
 from ....preset import preset_hatch as mPreset
@@ -18,9 +23,6 @@ from ....style_base import StyleMulti
 from ...structs.hatch_struct import HatchStruct
 from .color import Color as FillColor
 
-from ooo.dyn.drawing.fill_style import FillStyle
-from ooo.dyn.drawing.hatch_style import HatchStyle as HatchStyle
-from ooo.dyn.drawing.hatch import Hatch as UnoHatch
 
 PARA_BACK_COLOR_FLAGS = 0x7F000000
 
@@ -39,7 +41,7 @@ class Hatch(StyleMulti):
         *,
         style: HatchStyle = HatchStyle.SINGLE,
         color: Color = Color(0),
-        space: float = 0.0,
+        space: float | UnitObj = 0.0,
         angle: Angle | int = 0,
         bg_color: Color = Color(-1),
         name: str = "",
@@ -51,9 +53,11 @@ class Hatch(StyleMulti):
         Args:
             style (HatchStyle, optional): Specifies the kind of lines used to draw this hatch. Default ``HatchStyle.SINGLE``.
             color (Color, optional): Specifies the color of the hatch lines. Default ``0``.
-            space (int, optional): Specifies the space between the lines in the hatch (in ``mm`` units). Default ``0.0``
+            space (float, UnitObj, optional): Specifies the space between the lines in the hatch (in ``mm`` units)  or :ref:`proto_unit_obj`. Default ``0.0``
             angle (Angle, int, optional): Specifies angle of the hatch in degrees. Default to ``0``.
             bg_color(Color, optionl): Specifies the background Color. Set this ``-1`` (default) for no background color.
+            name (str, optional): Specifies the Hatch Name.
+            auto_name (bool, optional): Specifies if Hatch is give a auto name such as ``Hatch ``. Default ``False``.
 
         Returns:
             None:
@@ -363,12 +367,12 @@ class Hatch(StyleMulti):
         self._set_bg_color(value)
 
     @property
-    def prop_distance(self) -> float:
+    def prop_space(self) -> UnitObj:
         """Gets/Sets the distance between the lines in the hatch (in ``mm`` units)."""
         return self.prop_inner_hatch.prop_distance
 
-    @prop_distance.setter
-    def prop_distance(self, value: float):
+    @prop_space.setter
+    def prop_space(self, value: float | UnitObj):
         self._on_hatch_property_change()
         self.prop_inner_hatch.prop_distance = value
 

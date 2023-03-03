@@ -24,16 +24,16 @@ def test_write(loader, para_text) -> None:
         cursor = Write.get_cursor(doc)
         Write.append_para(cursor=cursor, text=para_text)
 
-        style = Padding(padding_all=3.0)
+        style = Padding(all=3.0)
         style.apply(doc)
         props = style.get_style_props(doc)
         assert props.getPropertyValue("CharLeftBorderDistance") in (298, 299, 300, 301, 302)
 
         f_style = Padding.from_style(doc)
-        assert f_style.prop_inner.prop_left == pytest.approx(3.0, rel=1e2)
-        assert f_style.prop_inner.prop_top == pytest.approx(3.0, rel=1e2)
-        assert f_style.prop_inner.prop_right == pytest.approx(3.0, rel=1e2)
-        assert f_style.prop_inner.prop_bottom == pytest.approx(3.0, rel=1e2)
+        assert f_style.prop_inner.prop_left.value == pytest.approx(3.0, rel=1e-2)
+        assert f_style.prop_inner.prop_top.value == pytest.approx(3.0, rel=1e-2)
+        assert f_style.prop_inner.prop_right.value == pytest.approx(3.0, rel=1e-2)
+        assert f_style.prop_inner.prop_bottom.value == pytest.approx(3.0, rel=1e-2)
 
         Lo.delay(delay)
     finally:

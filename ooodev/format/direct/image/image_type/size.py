@@ -12,14 +12,15 @@ import uno
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
+from .....proto.unit_obj import UnitObj
 from .....utils import lo as mLo
 from .....utils import props as mProps
+from .....utils.data_type.unit_mm import UnitMM
 from .....utils.unit_convert import UnitConvert
 from .....utils.validation import check
 from ....direct.common.abstract.abstract_document import AbstractDocument
 from ....direct.common.props.frame_type_size_props import FrameTypeSizeProps
 from ....kind.format_kind import FormatKind
-from .....proto.unit_obj import UnitObj
 
 
 _TSize = TypeVar(name="_TSize", bound="Size")
@@ -73,24 +74,22 @@ class AbsoluteSize:
 
     def __eq__(self, oth: object) -> bool:
         if isinstance(oth, AbsoluteSize):
-            return math.isclose(self.size, oth.size, abs_tol=0.02)
+            return math.isclose(self.size.value, oth.size.value, abs_tol=0.02)
         if isinstance(oth, float):
-            return math.isclose(self.size, oth, abs_tol=0.02)
+            return math.isclose(self.size.value, oth, abs_tol=0.02)
         return NotImplemented
 
     @property
-    def size(self) -> float:
+    def size(self) -> UnitMM:
         """Gets/Sets Size value in ``mm`` units"""
-        return self._size
+        return UnitMM(self._size)
 
     @size.setter
     def size(self, value: float | UnitObj):
-        if isinstance(value, float):
-            self._size = value
-        elif isinstance(value, int):
-            self._size = float(value)
-        else:
+        try:
             self._size = round(value.get_value_mm(), 2)
+        except AttributeError:
+            self._size = float(value)
 
 
 class Size(AbstractDocument):
@@ -186,7 +185,7 @@ class Size(AbstractDocument):
             return
         if self._width:
             if isinstance(self._width, AbsoluteSize):
-                self._set(self._props.width, UnitConvert.convert_mm_mm100(self._width.size))
+                self._set(self._props.width, UnitConvert.convert_mm_mm100(self._width.size.value))
                 self._set(self._props.rel_width, 0)
 
             else:
@@ -203,7 +202,7 @@ class Size(AbstractDocument):
 
         if self._height:
             if isinstance(self._height, AbsoluteSize):
-                self._set(self._props.height, UnitConvert.convert_mm_mm100(self._height.size))
+                self._set(self._props.height, UnitConvert.convert_mm_mm100(self._height.size.value))
                 self._set(self._props.rel_height, 0)
 
             else:

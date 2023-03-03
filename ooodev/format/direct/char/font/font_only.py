@@ -7,22 +7,22 @@ from __future__ import annotations
 from typing import Any, Tuple, Type, cast, overload, TypeVar
 
 import uno
+from com.sun.star.beans import XPropertySet
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....events.args.key_val_cancel_args import KeyValCancelArgs
 from .....exceptions import ex as mEx
 from .....meta.static_prop import static_prop
+from .....proto.unit_obj import UnitObj
 from .....utils import info as mInfo
 from .....utils import lo as mLo
 from .....utils import props as mProps
+from .....utils.data_type.unit_pt import UnitPT
 from .....utils.unit_convert import UnitConvert
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleMulti
 from ...common.props.font_only_props import FontOnlyProps
 from ...structs.locale_struct import LocaleStruct
-
-from com.sun.star.beans import XPropertySet
-
 
 _TFontOnly = TypeVar(name="_TFontOnly", bound="FontOnly")
 
@@ -113,7 +113,7 @@ class FontOnly(StyleMulti):
         self,
         *,
         name: str | None = None,
-        size: float | None = None,
+        size: float | UnitObj | None = None,
         style_name: str | None = None,
         lang: FontLang | None = None,
     ) -> None:
@@ -122,7 +122,7 @@ class FontOnly(StyleMulti):
 
         Args:
             name (str, optional): This property specifies the name of the font style. It may contain more than one name separated by comma.
-            size (float, optional): This value contains the size of the characters in point units.
+            size (float, UnitObj, optional): This value contains the size of the characters in ``pt`` (point) units or :ref:`proto_unit_obj`.
             style_name (str, optional): Font style name such as ``Bold``.
             lang (Lang, optional): Font Language
         """
@@ -266,12 +266,12 @@ class FontOnly(StyleMulti):
 
     # region Format Methods
 
-    def fmt_size(self: _TFontOnly, value: float | None = None) -> _TFontOnly:
+    def fmt_size(self: _TFontOnly, value: float | UnitObj | None = None) -> _TFontOnly:
         """
         Get copy of instance with text size set.
 
         Args:
-            value (float, optional): The size of the characters in point units of the font.
+            value (float, UnitObj, optional): The size of the characters in ``pt`` (point) units or :ref:`proto_unit_obj`.
 
         Returns:
             FontOnly: Font with style added
@@ -325,16 +325,19 @@ class FontOnly(StyleMulti):
         return self._format_kind_prop
 
     @property
-    def prop_size(self) -> float | None:
+    def prop_size(self) -> UnitPT | None:
         """This value contains the size of the characters in point."""
-        return self._get(self._props.size)
+        return UnitPT(self._get(self._props.size))
 
     @prop_size.setter
-    def prop_size(self, value: float | None) -> None:
+    def prop_size(self, value: float | UnitObj | None) -> None:
         if value is None:
             self._remove(self._props.size)
             return
-        self._set(self._props.size, value)
+        try:
+            self._set(self._props.size, value.get_value_pt())
+        except AttributeError:
+            self._set(self._props.size, value)
 
     @property
     def prop_name(self) -> str | None:

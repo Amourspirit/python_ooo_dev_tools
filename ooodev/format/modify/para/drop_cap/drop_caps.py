@@ -1,10 +1,12 @@
 from __future__ import annotations
 from typing import cast
 import uno
+
+from .....proto.unit_obj import UnitObj
 from ....writer.style.para.kind import StyleParaKind as StyleParaKind
 from ....writer.style.char.kind import StyleCharKind as StyleCharKind
 from ..para_style_base_multi import ParaStyleBaseMulti
-from ....direct.para.drop_cap.drop_caps import DropCaps as InnerDropCaps, DropCapFmt as DropCapFmt
+from ....direct.para.drop_cap.drop_caps import DropCaps as InnerDropCaps
 
 
 class DropCaps(ParaStyleBaseMulti):
@@ -18,7 +20,7 @@ class DropCaps(ParaStyleBaseMulti):
         self,
         *,
         count: int = 0,
-        spaces: float = 0.0,
+        spaces: float | UnitObj = 0.0,
         lines: int = 3,
         style: StyleCharKind | str | None = None,
         whole_word: bool | None = None,
@@ -30,7 +32,7 @@ class DropCaps(ParaStyleBaseMulti):
 
         Args:
             count (int): Specifies the number of characters in the drop cap. Must be from ``0`` to ``255``.
-            spaces (float): Specifies the distance between the drop cap in the following text (in mm units)
+            spaces (float, UnitObj): Specifies the distance between the drop cap in the following text (in ``mm`` units) or :ref:`proto_unit_obj`.
             lines (int): Specifies the number of lines used for a drop cap. Must be from ``0`` to ``255``.
             style (StyleCharKind, str, optional): Specifies the character style name for drop caps.
             whole_word (bool, optional): specifies if Drop Cap is applied to the whole first word.

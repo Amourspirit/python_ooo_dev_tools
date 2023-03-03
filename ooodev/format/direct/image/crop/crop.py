@@ -200,14 +200,14 @@ class ImageCrop(StyleMulti):
         # do calculations in 1/100th mm
         width = mImg.ImagesLo.calc_keep_scale_len(
             orig_len=img_width,
-            start_crop=UnitConvert.convert_mm_mm100(crop.prop_top),
-            end_crop=UnitConvert.convert_mm_mm100(crop.prop_bottom),
+            start_crop=crop.prop_top.get_value_mm100(),
+            end_crop=crop.prop_bottom.get_value_mm100(),
             scale=img_scale.width / 100,
         )
         height = mImg.ImagesLo.calc_keep_scale_len(
             orig_len=img_height,
-            start_crop=UnitConvert.convert_mm_mm100(crop.prop_left),
-            end_crop=UnitConvert.convert_mm_mm100(crop.prop_right),
+            start_crop=crop.prop_left.get_value_mm100(),
+            end_crop=crop.prop_right.get_value_mm100(),
             scale=img_scale.height / 100,
         )
         # retrun 1/100th mm
@@ -228,14 +228,14 @@ class ImageCrop(StyleMulti):
         # do calculations in 1/100th mm
         width = mImg.ImagesLo.calc_keep_scale_len(
             orig_len=img_width,
-            start_crop=UnitConvert.convert_mm_mm100(crop.prop_top),
-            end_crop=UnitConvert.convert_mm_mm100(crop.prop_bottom),
+            start_crop=crop.prop_top.get_value_mm100(),
+            end_crop=crop.prop_bottom.get_value_mm100(),
             scale=img_scale.width / 100,
         )
         height = mImg.ImagesLo.calc_keep_scale_len(
             orig_len=img_height,
-            start_crop=UnitConvert.convert_mm_mm100(crop.prop_left),
-            end_crop=UnitConvert.convert_mm_mm100(crop.prop_right),
+            start_crop=crop.prop_left.get_value_mm100(),
+            end_crop=crop.prop_right.get_value_mm100(),
             scale=img_scale.height / 100,
         )
         # retrun 1/100th mm
@@ -302,7 +302,7 @@ class ImageCrop(StyleMulti):
 
     def copy(self: _TImageCrop, **kwargs) -> _TImageCrop:
         """Gets a copy of instance as a new instance"""
-        cp = super().copy()
+        cp = super().copy(**kwargs)
         cp._img_size = self._img_size
         cp._img_scale = self._img_scale
         return cp

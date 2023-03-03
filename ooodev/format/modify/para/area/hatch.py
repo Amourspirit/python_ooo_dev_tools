@@ -1,6 +1,8 @@
 from __future__ import annotations
 from typing import cast
 import uno
+
+from .....proto.unit_obj import UnitObj
 from .....utils.color import Color
 from .....utils.data_type.angle import Angle as Angle
 from .....utils.data_type.color_range import ColorRange as ColorRange
@@ -31,7 +33,7 @@ class Hatch(ParaStyleBaseMulti):
         *,
         style: HatchStyle = HatchStyle.SINGLE,
         color: Color = Color(0),
-        space: float = 0.0,
+        space: float | UnitObj = 0.0,
         angle: Angle | int = 0,
         bg_color: Color = Color(-1),
         name: str = "",
@@ -43,15 +45,13 @@ class Hatch(ParaStyleBaseMulti):
         Constructor
 
         Args:
-            style (GradientStyle, optional): Specifies the style of the gradient. Defaults to ``GradientStyle.LINEAR``.
-            step_count (int, optional): Specifies the number of steps of change color. Defaults to ``0``.
-            offset (Offset, int, optional): Specifies the X and Y coordinate, where the gradient begins.
-                 X is is effectively the center of the ``RADIAL``, ``ELLIPTICAL``, ``SQUARE`` and ``RECT`` style gradients. Defaults to ``Offset(50, 50)``.
-            angle (Angle, int, optional): Specifies angle of the gradient. Defaults to 0.
-            border (int, optional): Specifies percent of the total width where just the start color is used. Defaults to 0.
-            grad_color (ColorRange, optional): Specifies the color at the start point and stop point of the gradient. Defaults to ``ColorRange(Color(0), Color(16777215))``.
-            grad_intensity (IntensityRange, optional): Specifies the intensity at the start point and stop point of the gradient. Defaults to ``IntensityRange(100, 100)``.
-            name (str, optional): Specifies the Fill Gradient Name.
+            style (HatchStyle, optional): Specifies the kind of lines used to draw this hatch. Default ``HatchStyle.SINGLE``.
+            color (Color, optional): Specifies the color of the hatch lines. Default ``0``.
+            space (float, UnitObj, optional): Specifies the space between the lines in the hatch (in ``mm`` units)  or :ref:`proto_unit_obj`. Default ``0.0``
+            angle (Angle, int, optional): Specifies angle of the hatch in degrees. Default to ``0``.
+            bg_color(Color, optionl): Specifies the background Color. Set this ``-1`` (default) for no background color.
+            name (str, optional): Specifies the Hatch Name.
+            auto_name (bool, optional): Specifies if Hatch is give a auto name such as ``Hatch ``. Default ``False``.
             style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to. Deftult is Default Paragraph Style.
             style_family (str, optional): Style family. Defatult ``ParagraphStyles``.
 

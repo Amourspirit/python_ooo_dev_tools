@@ -23,13 +23,6 @@ class UnitInch1000(BaseIntValue):
         :ref:`proto_unit_obj`
     """
 
-    def __post_init__(self) -> None:
-        check(
-            self.value >= 0,
-            f"{self}",
-            f"Value of {self.value} is out of range. Value must be a positive number.",
-        )
-
     def _from_int(self, value: int) -> _TUnitInch1000:
         inst = super(UnitInch1000, self.__class__).__new__(self.__class__)
         return inst.__init__(value)
@@ -91,7 +84,8 @@ class UnitInch1000(BaseIntValue):
             UnitInch1000:
         """
         inst = super(UnitInch1000, cls).__new__(cls)
-        return inst.__init__(round(UnitConvert.convert(num=value, frm=Length.MM, to=Length.IN1000)))
+        inst.__init__(round(UnitConvert.convert(num=value, frm=Length.MM, to=Length.IN1000)))
+        return inst
 
     @classmethod
     def from_pt(cls: Type[_TUnitInch1000], value: float) -> _TUnitInch1000:
@@ -105,7 +99,8 @@ class UnitInch1000(BaseIntValue):
             UnitInch1000:
         """
         inst = super(UnitInch1000, cls).__new__(cls)
-        return inst.__init__(round(UnitConvert.convert(num=value, frm=Length.PT, to=Length.IN1000)))
+        inst.__init__(round(UnitConvert.convert(num=value, frm=Length.PT, to=Length.IN1000)))
+        return inst
 
     @classmethod
     def from_px(cls: Type[_TUnitInch1000], value: float) -> _TUnitInch1000:
@@ -119,7 +114,8 @@ class UnitInch1000(BaseIntValue):
             UnitInch1000:
         """
         inst = super(UnitInch1000, cls).__new__(cls)
-        return inst.__init__(round(UnitConvert.convert(num=value, frm=Length.PX, to=Length.IN1000)))
+        inst.__init__(round(UnitConvert.convert(num=value, frm=Length.PX, to=Length.IN1000)))
+        return inst
 
     @classmethod
     def from_inch(cls: Type[_TUnitInch1000], value: float) -> _TUnitInch1000:
@@ -133,7 +129,8 @@ class UnitInch1000(BaseIntValue):
             UnitInch1000:
         """
         inst = super(UnitInch1000, cls).__new__(cls)
-        return inst.__init__(round(UnitConvert.convert(num=value, frm=Length.IN, to=Length.IN1000)))
+        inst.__init__(round(UnitConvert.convert(num=value, frm=Length.IN, to=Length.IN1000)))
+        return inst
 
     @classmethod
     def from_inch10(cls: Type[_TUnitInch1000], value: float) -> _TUnitInch1000:
@@ -147,7 +144,8 @@ class UnitInch1000(BaseIntValue):
             UnitInch1000:
         """
         inst = super(UnitInch1000, cls).__new__(cls)
-        return inst.__init__(round(UnitConvert.convert(num=value, frm=Length.IN10, to=Length.IN1000)))
+        inst.__init__(round(UnitConvert.convert(num=value, frm=Length.IN10, to=Length.IN1000)))
+        return inst
 
     @classmethod
     def from_inch100(cls: Type[_TUnitInch1000], value: float) -> _TUnitInch1000:
@@ -161,7 +159,8 @@ class UnitInch1000(BaseIntValue):
             UnitInch1000:
         """
         inst = super(UnitInch1000, cls).__new__(cls)
-        return inst.__init__(round(UnitConvert.convert(num=value, frm=Length.IN100, to=Length.IN1000)))
+        inst.__init__(round(UnitConvert.convert(num=value, frm=Length.IN100, to=Length.IN1000)))
+        return inst
 
     @classmethod
     def from_inch1000(cls: Type[_TUnitInch1000], value: int) -> _TUnitInch1000:
@@ -175,4 +174,5 @@ class UnitInch1000(BaseIntValue):
             UnitInch1000:
         """
         inst = super(UnitInch1000, cls).__new__(cls)
-        return inst.__init__(value)
+        inst.__init__(value)
+        return inst
