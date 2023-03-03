@@ -8,16 +8,17 @@ from __future__ import annotations
 from typing import Any, Dict, Tuple, Type, cast, overload, TypeVar
 
 import uno
-from ....meta.static_prop import static_prop
-from ....utils import props as mProps
-from ....utils import lo as mLo
-from ....utils.color import Color, StandardColor
 from ....exceptions import ex as mEx
+from ....meta.static_prop import static_prop
+from ....proto.unit_obj import UnitObj
+from ....utils import lo as mLo
+from ....utils import props as mProps
+from ....utils.color import Color, StandardColor
+from ....utils.data_type.unit_mm import UnitMM
+from ....utils.data_type.unit_mm100 import UnitMM100
+from ....utils.unit_convert import UnitConvert
 from ...kind.format_kind import FormatKind
 from ...style_base import StyleBase, CancelEventArgs
-from ....utils.unit_convert import UnitConvert, Length
-from ....utils.data_type.unit_mm100 import UnitMM100
-from ....proto.unit_obj import UnitObj
 
 from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
@@ -53,25 +54,26 @@ class ShadowStruct(StyleBase):
             location (ShadowLocation, optional): contains the location of the shadow. Default to ``ShadowLocation.BOTTOM_RIGHT``.
             color (Color, optional):contains the color value of the shadow. Defaults to ``StandardColor.GRAY``.
             transparent (bool, optional): Shadow transparency. Defaults to False.
-            width (float, Unit100MM, optional): contains the size of the shadow (in ``mm`` units) or :ref:`proto_unit_obj`. Defaults to ``1.76``.
+            width (float, UnitObj, optional): contains the size of the shadow (in ``mm`` units) or :ref:`proto_unit_obj`. Defaults to ``1.76``.
 
         Raises:
             ValueError: If ``color`` or ``width`` are less than zero.
         """
-        if color < 0:
-            raise ValueError("color must be a positive number")
-        if width < 0:
-            raise ValueError("Width must be a postivie number")
+        super().__init__()
 
         self._location = location
         self._color = color
         self._transparent = transparent
-        if isinstance(width, float):
-            self._width = UnitConvert.convert_mm_mm100(width)
-        else:
+        try:
             self._width = width.get_value_mm100()
+        except AttributeError:
+            self._width = UnitConvert.convert_mm_mm100(width)
 
-        super().__init__()
+        if self._color < 0:
+            raise ValueError("color must be a positive number")
+
+        if self._width < 0:
+            raise ValueError("Width must be a postivie number")
 
     # endregion init
 
@@ -146,7 +148,7 @@ class ShadowStruct(StyleBase):
     def copy(self: _TShadowStruct, **kwargs) -> _TShadowStruct:
         """Gets a copy of instance as a new instance"""
         nu = self.__class__(
-            location=self.prop_width,
+            location=self.prop_location,
             color=self.prop_color,
             transparent=self.prop_transparent,
             width=self.prop_width,
@@ -371,16 +373,16 @@ class ShadowStruct(StyleBase):
         self._transparent = value
 
     @property
-    def prop_width(self) -> float:
+    def prop_width(self) -> UnitMM:
         """Gets the size of the shadow (in mm units)"""
-        return UnitConvert.convert(num=self._width, frm=Length.MM100, to=Length.MM)
+        return UnitMM.from_mm100(self._width)
 
     @prop_width.setter
     def prop_width(self, value: float | UnitObj) -> None:
-        if isinstance(value, float):
-            self._width = UnitConvert.convert_mm_mm100(value)
-        else:
+        try:
             self._width = value.get_value_mm100()
+        except AttributeError:
+            self._width = UnitConvert.convert_mm_mm100(value)
 
     @static_prop
     def empty() -> ShadowStruct:  # type: ignore[misc]

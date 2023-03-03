@@ -3,7 +3,7 @@ from typing import cast
 import uno
 from ooo.dyn.drawing.hatch_style import HatchStyle as HatchStyle
 from .....utils.data_type.angle import Angle as Angle
-
+from .....proto.unit_obj import UnitObj
 from ....preset.preset_hatch import PresetHatchKind as PresetHatchKind
 from ..frame_style_base_multi import FrameStyleBaseMulti
 from ....writer.style.frame.style_frame_kind import StyleFrameKind as StyleFrameKind
@@ -23,7 +23,7 @@ class Hatch(FrameStyleBaseMulti):
         *,
         style: HatchStyle = HatchStyle.SINGLE,
         color: Color = Color(0),
-        space: float = 0.0,
+        space: float | UnitObj = 0.0,
         angle: Angle | int = 0,
         bg_color: Color = Color(-1),
         style_name: StyleFrameKind | str = StyleFrameKind.FRAME,
@@ -35,7 +35,7 @@ class Hatch(FrameStyleBaseMulti):
         Args:
             style (HatchStyle, optional): Specifies the kind of lines used to draw this hatch. Default ``HatchStyle.SINGLE``.
             color (Color, optional): Specifies the color of the hatch lines. Default ``0``.
-            space (int, optional): Specifies the space between the lines in the hatch (in ``mm`` units). Default ``0.0``
+            space (float, UnitObj, optional): Specifies the space between the lines in the hatch (in ``mm`` units) or :ref:`proto_unit_obj`. Default ``0.0``
             angle (Angle, int, optional): Specifies angle of the hatch in degrees. Default to ``0``.
             bg_color(Color, optionl): Specifies the background Color. Set this ``-1`` (default) for no background color.
             style_name (StyleFrameKind, str, optional): Specifies the Frame Style that instance applies to. Deftult is Default Frame Style.

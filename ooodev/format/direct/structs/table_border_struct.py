@@ -15,11 +15,12 @@ from ....events.event_singleton import _Events
 from ....exceptions import ex as mEx
 from ....proto.unit_obj import UnitObj
 from ....utils import props as mProps
+from ....utils.data_type.unit_mm import UnitMM
 from ....utils.unit_convert import UnitConvert, Length
 from ...kind.format_kind import FormatKind
 from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent
-from ..common.props.struct_border_table_props import StructBorderTableProps
 from ..common.props.prop_pair import PropPair
+from ..common.props.struct_border_table_props import StructBorderTableProps
 from .side import Side as Side
 
 
@@ -432,12 +433,12 @@ class TableBorderStruct(StyleBase):
         cp.prop_vertical = value
         return cp
 
-    def fmt_distance(self: _TTableBorderStruct, value: float | None) -> _TTableBorderStruct:
+    def fmt_distance(self: _TTableBorderStruct, value: float | UnitObj | None) -> _TTableBorderStruct:
         """
         Gets a copy of instance with distance set or removed
 
         Args:
-            value (float | None): Distance value
+            value (float | UnitObj | None): Distance value in ``mm`` units or :ref:`proto_unit_obj`.
 
         Returns:
             BorderTable: Border Table
@@ -460,14 +461,12 @@ class TableBorderStruct(StyleBase):
         return self._format_kind_prop
 
     @property
-    def prop_distance(self) -> float | None:
+    def prop_distance(self) -> UnitMM | None:
         """Gets/Sets distance value (``in mm`` units)"""
         pv = cast(int, self._get(self._props.dist.first))
-        if not pv is None:
-            if pv == 0:
-                return 0.0
-            return UnitConvert.convert(num=pv, frm=Length.MM100, to=Length.MM)
-        return None
+        if pv is None:
+            return None
+        return UnitMM.from_mm100(pv)
 
     @prop_distance.setter
     def prop_distance(self, value: float | UnitObj | None) -> None:

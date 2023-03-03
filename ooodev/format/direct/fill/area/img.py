@@ -20,15 +20,15 @@ from .....exceptions import ex as mEx
 from .....utils import lo as mLo
 from .....utils import props as mProps
 from .....utils.data_type.offset import Offset as Offset
+from .....utils.data_type.size_mm import SizeMM as SizeMM
 from .....utils.unit_convert import UnitConvert
 from ....kind.format_kind import FormatKind
 from ....preset import preset_image as mImage
 from ....preset.preset_image import PresetImageKind as PresetImageKind
 from ....style_base import StyleBase
-from .....utils.data_type.size_mm import SizeMM as SizeMM
-from ...common.format_types.size_percent import SizePercent as SizePercent
-from ...common.format_types.offset_row import OffsetRow as OffsetRow
 from ...common.format_types.offset_column import OffsetColumn as OffsetColumn
+from ...common.format_types.offset_row import OffsetRow as OffsetRow
+from ...common.format_types.size_percent import SizePercent as SizePercent
 from ...common.props.area_img_props import AreaImgProps
 
 

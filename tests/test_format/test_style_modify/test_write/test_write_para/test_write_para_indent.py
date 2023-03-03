@@ -38,7 +38,7 @@ def test_write(loader, para_text) -> None:
         f_style = Indent.from_style(
             doc=doc, style_name=style.prop_style_name, style_family=style.prop_style_family_name
         )
-        assert f_style.prop_inner.prop_first == pytest.approx(amt)
+        assert f_style.prop_inner.prop_first.value == pytest.approx(amt)
 
         Lo.delay(delay)
     finally:

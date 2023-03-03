@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import cast
 import uno
+from .....proto.unit_obj import UnitObj
 from .....utils.data_type.intensity import Intensity as Intensity
 from ....writer.style.page.kind import StylePageKind as StylePageKind
 from ..page_style_base_multi import PageStyleBaseMulti
@@ -17,11 +18,11 @@ class Margins(PageStyleBaseMulti):
     def __init__(
         self,
         *,
-        left: float | None = None,
-        right: float | None = None,
-        top: float | None = None,
-        bottom: float | None = None,
-        gutter: float | None = None,
+        left: float | UnitObj | None = None,
+        right: float | UnitObj | None = None,
+        top: float | UnitObj | None = None,
+        bottom: float | UnitObj | None = None,
+        gutter: float | UnitObj | None = None,
         style_name: StylePageKind | str = StylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> None:
@@ -29,11 +30,11 @@ class Margins(PageStyleBaseMulti):
         Constructor
 
         Args:
-            left (float, optional): Left Margin Value in ``mm`` units.
-            right (float, optional): Right Margin Value in ``mm`` units.
-            top (float, optional): Top Margin Value in ``mm`` units.
-            bottom (float, optional): Bottom Margin Value in ``mm`` units.
-            gutter (float, optional): Gutter Margin Value in ``mm`` units.
+            left (float, optional): Left Margin Value in ``mm`` units  or :ref:`proto_unit_obj`.
+            right (float, optional): Right Margin Value in ``mm`` units  or :ref:`proto_unit_obj`.
+            top (float, optional): Top Margin Value in ``mm`` units  or :ref:`proto_unit_obj`.
+            bottom (float, optional): Bottom Margin Value in ``mm`` units  or :ref:`proto_unit_obj`.
+            gutter (float, optional): Gutter Margin Value in ``mm`` units  or :ref:`proto_unit_obj`.
             style_name (StyleParaKind, str, optional): Specifies the Page Style that instance applies to. Deftult is Default Page Style.
             style_family (str, optional): Style family. Defatult ``PageStyles``.
 

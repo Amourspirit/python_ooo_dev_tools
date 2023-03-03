@@ -1,15 +1,17 @@
 from __future__ import annotations
-from typing import NamedTuple, cast
+from typing import cast
 from typing import Any, Tuple, overload, Type, TypeVar
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
+from .....proto.unit_obj import UnitObj
 from .....utils import lo as mLo
 from .....utils import props as mProps
+from .....utils.unit_convert import UnitConvert
+from .....utils.data_type.unit_mm import UnitMM
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleBase
 from ..props.hf_props import HfProps
-from .....utils.unit_convert import UnitConvert
 
 # from ...events.args.key_val_cancel_args import KeyValCancelArgs
 
@@ -35,11 +37,11 @@ class AbstractHF(StyleBase):
         on: bool | None = None,
         shared: bool | None = None,
         shared_first: bool | None = None,
-        margin_left: float | None = None,
-        margin_right: float | None = None,
-        spacing: float | None = None,
+        margin_left: float | UnitObj | None = None,
+        margin_right: float | UnitObj | None = None,
+        spacing: float | UnitObj | None = None,
         spacing_dyn: bool | None = None,
-        height: float | None = None,
+        height: float | UnitObj | None = None,
         height_auto: bool | None = None,
     ) -> None:
         """
@@ -49,11 +51,11 @@ class AbstractHF(StyleBase):
             on (bool | None, optional): Specifices if section is on.
             shared (bool | None, optional): Specifies if same contents left and right.
             shared_first (bool | None, optional): Specifies if same contents on first page.
-            margin_left (float | None, optional): Specifies Left Margin in ``mm`` units.
-            margin_right (float | None, optional): Specifies Right Margin in ``mm`` units.
-            spacing (float | None, optional): Specifies Spacing in ``mm`` units.
+            margin_left (float | None, optional): Specifies Left Margin in ``mm`` units or :ref:`proto_unit_obj`.
+            margin_right (float | None, optional): Specifies Right Margin in ``mm`` units or :ref:`proto_unit_obj`.
+            spacing (float | None, optional): Specifies Spacing in ``mm`` units or :ref:`proto_unit_obj`.
             spacing_dyn (bool | None, optional): Specifies if if dynamic spacing is used.
-            height (float | None, optional): Specifies Height in ``mm`` units.
+            height (float | None, optional): Specifies Height in ``mm`` units or :ref:`proto_unit_obj`.
             height_auto (bool | None, optional): Specifies if auto fit height is used.
         """
 
@@ -224,12 +226,12 @@ class AbstractHF(StyleBase):
         cp.prop_shared_first = value
         return cp
 
-    def fmt_margin_left(self: _TAbstractHF, value: float | None) -> _TAbstractHF:
+    def fmt_margin_left(self: _TAbstractHF, value: float | UnitObj | None) -> _TAbstractHF:
         """
         Gets a copy of instance with ``margin_left`` set or removed.
 
         Args:
-            value (float | None): Specifies Left Margin in ``mm`` units.
+            value (float | None): Specifies Left Margin in ``mm`` units or :ref:`proto_unit_obj`.
 
         Returns:
             AbstractHF:
@@ -238,12 +240,12 @@ class AbstractHF(StyleBase):
         cp.prop_margin_right = value
         return cp
 
-    def fmt_margin_right(self: _TAbstractHF, value: float | None) -> _TAbstractHF:
+    def fmt_margin_right(self: _TAbstractHF, value: float | UnitObj | None) -> _TAbstractHF:
         """
         Gets a copy of instance with ``margin_right`` set or removed.
 
         Args:
-            value (float | None): Specifies Right Margin in ``mm`` units.
+            value (float | None): Specifies Right Margin in ``mm`` units or :ref:`proto_unit_obj`.
 
         Returns:
             AbstractHF:
@@ -252,12 +254,12 @@ class AbstractHF(StyleBase):
         cp.prop_margin_left = value
         return cp
 
-    def fmt_spacing(self: _TAbstractHF, value: float | None) -> _TAbstractHF:
+    def fmt_spacing(self: _TAbstractHF, value: float | UnitObj | None) -> _TAbstractHF:
         """
         Gets a copy of instance with ``spacing`` set or removed.
 
         Args:
-            value (float | None): Specifies Spacing in ``mm`` units.
+            value (float | None): Specifies Spacing in ``mm`` units or :ref:`proto_unit_obj`.
 
         Returns:
             AbstractHF:
@@ -280,12 +282,12 @@ class AbstractHF(StyleBase):
         cp.prop_spacing_dynamic = value
         return cp
 
-    def fmt_height(self: _TAbstractHF, value: float | None) -> _TAbstractHF:
+    def fmt_height(self: _TAbstractHF, value: float | UnitObj | None) -> _TAbstractHF:
         """
         Gets a copy of instance with ``height`` set or removed.
 
         Args:
-            value (float | None): Specifies Height in ``mm`` units.
+            value (float | None): Specifies Height in ``mm`` units or :ref:`proto_unit_obj`.
 
         Returns:
             AbstractHF:
@@ -394,55 +396,64 @@ class AbstractHF(StyleBase):
         self._set(self._props.shared_first, value)
 
     @property
-    def prop_margin_left(self) -> float | None:
+    def prop_margin_left(self) -> UnitMM | None:
         """
         Gets/Sets Left Margin in ``mm`` units.
         """
         pv = cast(int, self._get(self._props.margin_left))
         if pv is None:
             return None
-        return UnitConvert.convert_mm100_mm(pv)
+        return UnitMM.from_mm100(pv)
 
     @prop_margin_left.setter
-    def prop_margin_left(self, value: float | None) -> None:
+    def prop_margin_left(self, value: float | UnitObj | None) -> None:
         if value is None:
             self._remove(self._props.margin_left)
             return
-        self._set(self._props.margin_left, UnitConvert.convert_mm_mm100(value))
+        try:
+            self._set(self._props.margin_left, value.get_value_mm100())
+        except AttributeError:
+            self._set(self._props.margin_left, UnitConvert.convert_mm_mm100(value))
 
     @property
-    def prop_margin_right(self) -> float | None:
+    def prop_margin_right(self) -> UnitMM | None:
         """
         Gets/Sets Right Margin in ``mm`` units.
         """
         pv = cast(int, self._get(self._props.margin_right))
         if pv is None:
             return None
-        return UnitConvert.convert_mm100_mm(pv)
+        return UnitMM.from_mm100(pv)
 
     @prop_margin_right.setter
-    def prop_margin_right(self, value: float | None) -> None:
+    def prop_margin_right(self, value: float | UnitObj | None) -> None:
         if value is None:
             self._remove(self._props.margin_right)
             return
-        self._set(self._props.margin_right, UnitConvert.convert_mm_mm100(value))
+        try:
+            self._set(self._props.margin_right, value.get_value_mm100())
+        except AttributeError:
+            self._set(self._props.margin_right, UnitConvert.convert_mm_mm100(value))
 
     @property
-    def prop_spacing(self) -> float | None:
+    def prop_spacing(self) -> UnitMM | None:
         """
         Gets/Sets Spacing in ``mm`` units.
         """
         pv = cast(int, self._get(self._props.spacing))
         if pv is None:
             return None
-        return UnitConvert.convert_mm100_mm(pv)
+        return UnitMM.from_mm100(pv)
 
     @prop_spacing.setter
-    def prop_spacing(self, value: float | None) -> None:
+    def prop_spacing(self, value: float | UnitObj | None) -> None:
         if value is None:
             self._remove(self._props.spacing)
             return
-        self._set(self._props.spacing, UnitConvert.convert_mm_mm100(value))
+        try:
+            self._set(self._props.spacing, value.get_value_mm100())
+        except AttributeError:
+            self._set(self._props.spacing, UnitConvert.convert_mm_mm100(value))
 
     @property
     def prop_spacing_dynamic(self) -> bool | None:
@@ -459,7 +470,7 @@ class AbstractHF(StyleBase):
         self._set(self._props.spacing_dyn, value)
 
     @property
-    def prop_height(self) -> float | None:
+    def prop_height(self) -> UnitMM | None:
         """
         Gets/Sets Height in ``mm`` units.
         """
@@ -468,19 +479,22 @@ class AbstractHF(StyleBase):
         if pv is None:
             return None
         if pv is 0:
-            return 0
+            return UnitMM(0.0)
         spacing = self._get_spacing()
         val = pv - spacing
-        return UnitConvert.convert_mm100_mm(val)
+        return UnitMM.from_mm100(val)
 
     @prop_height.setter
-    def prop_height(self, value: float | None) -> None:
+    def prop_height(self, value: float | UnitObj | None) -> None:
         # height includes spacing
         if value is None:
             self._remove(self._props.height)
             return
         spacing = self._get_spacing()
-        self._set(self._props.height, UnitConvert.convert_mm_mm100(value) + spacing)
+        try:
+            self._set(self._props.spacing, value.get_value_mm100() + spacing)
+        except AttributeError:
+            self._set(self._props.height, UnitConvert.convert_mm_mm100(value) + spacing)
 
     @property
     def prop_height_auto(self) -> bool | None:

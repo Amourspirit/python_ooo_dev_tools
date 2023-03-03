@@ -32,10 +32,10 @@ def test_write(loader, para_text) -> None:
         # props = style.get_style_props(doc)
 
         f_style = Spacing.from_style(doc=doc, style_name=style.prop_style_name)
-        assert f_style.prop_inner.prop_left == pytest.approx(style.prop_inner.prop_left, rel=1e2)
-        assert f_style.prop_inner.prop_right == pytest.approx(style.prop_inner.prop_right, rel=1e2)
-        assert f_style.prop_inner.prop_top == pytest.approx(style.prop_inner.prop_top, rel=1e2)
-        assert f_style.prop_inner.prop_bottom == pytest.approx(style.prop_inner.prop_bottom, rel=1e2)
+        assert f_style.prop_inner.prop_left.value == pytest.approx(style.prop_inner.prop_left.value, rel=1e-2)
+        assert f_style.prop_inner.prop_right.value == pytest.approx(style.prop_inner.prop_right.value, rel=1e-2)
+        assert f_style.prop_inner.prop_top.value == pytest.approx(style.prop_inner.prop_top.value, rel=1e-2)
+        assert f_style.prop_inner.prop_bottom.value == pytest.approx(style.prop_inner.prop_bottom.value, rel=1e-2)
 
         Lo.delay(delay)
     finally:

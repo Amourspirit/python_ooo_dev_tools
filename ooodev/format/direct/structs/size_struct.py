@@ -13,6 +13,7 @@ from ooo.dyn.awt.size import Size
 from ....exceptions import ex as mEx
 from ....proto.unit_obj import UnitObj
 from ....utils import props as mProps
+from ....utils.data_type.unit_mm import UnitMM
 from ....utils.unit_convert import UnitConvert
 from ...kind.format_kind import FormatKind
 from ...style_base import StyleBase
@@ -261,12 +262,10 @@ class SizeStruct(StyleBase):
         return self._format_kind_prop
 
     @property
-    def prop_height(self) -> float:
+    def prop_height(self) -> UnitMM:
         """Gets/Sets height value in ``mm`` units."""
         pv = self._get(self._props.height)
-        if pv == 0.0:
-            return 0.0
-        return UnitConvert.convert_mm100_mm(pv)
+        return UnitMM.from_mm100(pv)
 
     @prop_height.setter
     def prop_height(self, value: float | UnitObj) -> None:
@@ -276,12 +275,10 @@ class SizeStruct(StyleBase):
             self._set(self._props.height, UnitConvert.convert_mm_mm100(value))
 
     @property
-    def prop_width(self) -> float:
+    def prop_width(self) -> UnitMM:
         """Gets/Sets width value in ``mm`` units."""
         pv = self._get(self._props.width)
-        if pv == 0.0:
-            return 0.0
-        return UnitConvert.convert_mm100_mm(pv)
+        return UnitMM.from_mm100(pv)
 
     @prop_width.setter
     def prop_width(self, value: float | UnitObj) -> None:

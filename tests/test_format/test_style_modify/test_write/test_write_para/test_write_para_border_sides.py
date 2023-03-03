@@ -26,7 +26,7 @@ def test_write(loader, para_text) -> None:
         Write.append_para(cursor=cursor, text=para_text)
 
         style = Sides(
-            border_side=Side(line=BorderLineStyleEnum.DOUBLE, color=StandardColor.DEFAULT_BLUE, width=LineSize.MEDIUM)
+            all=Side(line=BorderLineStyleEnum.DOUBLE, color=StandardColor.DEFAULT_BLUE, width=LineSize.MEDIUM)
         )
         style.apply(doc)
         props = style.get_style_props(doc=doc)

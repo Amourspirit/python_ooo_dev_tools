@@ -10,11 +10,13 @@ import uno
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
 from .....meta.static_prop import static_prop
+from .....proto.unit_obj import UnitObj
 from .....utils import lo as mLo
 from .....utils import props as mProps
+from .....utils.data_type.unit_mm import UnitMM
+from .....utils.unit_convert import UnitConvert
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleBase
-from .....utils.unit_convert import UnitConvert
 
 _TMargins = TypeVar(name="_TMargins", bound="Margins")
 
@@ -37,21 +39,24 @@ class Margins(StyleBase):
     def __init__(
         self,
         *,
-        left: float | None = None,
-        right: float | None = None,
-        top: float | None = None,
-        bottom: float | None = None,
-        gutter: float | None = None,
+        left: float | UnitObj | None = None,
+        right: float | UnitObj | None = None,
+        top: float | UnitObj | None = None,
+        bottom: float | UnitObj | None = None,
+        gutter: float | UnitObj | None = None,
     ) -> None:
         """
         Constructor
 
         Args:
-            left (float, optional): Left Margin Value in ``mm`` units.
-            right (float, optional): Right Margin Value in ``mm`` units.
-            top (float, optional): Top Margin Value in ``mm`` units.
-            bottom (float, optional): Bottom Margin Value in ``mm`` units.
-            gutter (float, optional): Gutter Margin Value in ``mm`` units.
+            left (float, optional): Left Margin Value in ``mm`` units  or :ref:`proto_unit_obj`.
+            right (float, optional): Right Margin Value in ``mm`` units  or :ref:`proto_unit_obj`.
+            top (float, optional): Top Margin Value in ``mm`` units  or :ref:`proto_unit_obj`.
+            bottom (float, optional): Bottom Margin Value in ``mm`` units  or :ref:`proto_unit_obj`.
+            gutter (float, optional): Gutter Margin Value in ``mm`` units  or :ref:`proto_unit_obj`.
+
+        Returns:
+            None:
         """
 
         super().__init__()
@@ -148,84 +153,99 @@ class Margins(StyleBase):
         return self._format_kind_prop
 
     @property
-    def prop_top(self) -> float | None:
+    def prop_top(self) -> UnitMM | None:
         """Gets/Sets Top value"""
         pv = cast(int, self._get(self._props.top))
         if pv is None:
             return None
-        return UnitConvert.convert_mm100_mm(pv)
+        return UnitMM.from_mm100(pv)
 
     @prop_top.setter
-    def prop_top(self, value: float | None) -> None:
+    def prop_top(self, value: float | UnitObj | None) -> None:
         self._check(value, "top")
         if value is None:
             self._remove(self._props.top)
             return
-        self._set(self._props.top, UnitConvert.convert_mm_mm100(value))
+        try:
+            self._set(self._props.top, value.get_value_mm100())
+        except AttributeError:
+            self._set(self._props.top, UnitConvert.convert_mm_mm100(value))
 
     @property
-    def prop_bottom(self) -> float | None:
+    def prop_bottom(self) -> UnitMM | None:
         """Gets/Sets Bottom value"""
         pv = cast(int, self._get(self._props.bottom))
         if pv is None:
             return None
-        return UnitConvert.convert_mm100_mm(pv)
+        return UnitMM.from_mm100(pv)
 
     @prop_bottom.setter
-    def prop_bottom(self, value: float | None) -> None:
+    def prop_bottom(self, value: float | UnitObj | None) -> None:
         self._check(value, "bottom")
         if value is None:
             self._remove(self._props.bottom)
             return
-        self._set(self._props.bottom, UnitConvert.convert_mm_mm100(value))
+        try:
+            self._set(self._props.bottom, value.get_value_mm100())
+        except AttributeError:
+            self._set(self._props.bottom, UnitConvert.convert_mm_mm100(value))
 
     @property
-    def prop_left(self) -> float | None:
+    def prop_left(self) -> UnitMM | None:
         """Gets/Sets Left value"""
         pv = cast(int, self._get(self._props.left))
         if pv is None:
             return None
-        return UnitConvert.convert_mm100_mm(pv)
+        return UnitMM.from_mm100(pv)
 
     @prop_left.setter
-    def prop_left(self, value: float | None) -> None:
+    def prop_left(self, value: float | UnitObj | None) -> None:
         self._check(value, "left")
         if value is None:
             self._remove(self._props.left)
             return
-        self._set(self._props.left, UnitConvert.convert_mm_mm100(value))
+        try:
+            self._set(self._props.left, value.get_value_mm100())
+        except AttributeError:
+            self._set(self._props.left, UnitConvert.convert_mm_mm100(value))
 
     @property
-    def prop_right(self) -> float | None:
+    def prop_right(self) -> UnitMM | None:
         """Gets/Sets Right value"""
         pv = cast(int, self._get(self._props.right))
         if pv is None:
             return None
-        return UnitConvert.convert_mm100_mm(pv)
+        return UnitMM.from_mm100(pv)
 
     @prop_right.setter
-    def prop_right(self, value: float | None) -> None:
+    def prop_right(self, value: float | UnitObj | None) -> None:
         self._check(value, "right")
         if value is None:
             self._remove(self._props.right)
             return
-        self._set(self._props.right, UnitConvert.convert_mm_mm100(value))
+        try:
+            self._set(self._props.right, value.get_value_mm100())
+        except AttributeError:
+            self._set(self._props.right, UnitConvert.convert_mm_mm100(value))
 
     @property
-    def prop_gutter(self) -> float | None:
+    def prop_gutter(self) -> UnitMM | None:
         """Gets/Sets Gutter value"""
         pv = cast(int, self._get(self._props.gutter))
         if pv is None:
             return None
-        return UnitConvert.convert_mm100_mm(pv)
+        return UnitMM.from_mm100(pv)
 
     @prop_gutter.setter
-    def prop_gutter(self, value: float | None) -> None:
+    def prop_gutter(self, value: float | UnitObj | None) -> None:
         self._check(value, "gutter")
         if value is None:
             self._remove(self._props.gutter)
             return
-        self._set(self._props.gutter, UnitConvert.convert_mm_mm100(value))
+        try:
+            self._set(self._props.gutter, value.get_value_mm100())
+        except AttributeError:
+            self._set(self._props.gutter, UnitConvert.convert_mm_mm100(value))
 
     @property
     def _props(self) -> MarginProps:

@@ -18,11 +18,11 @@ if TYPE_CHECKING:
 
 def test_spacing_props() -> None:
     idt = Spacing(above=10.2)
-    assert idt.prop_above > 10.1 and idt.prop_above < 10.3
+    assert idt.prop_above.value > 10.1 and idt.prop_above.value < 10.3
     assert idt._get("ParaTopMargin") == 1020
 
     idt = Spacing(below=10.2)
-    assert idt.prop_below > 10.1 and idt.prop_below < 10.3
+    assert idt.prop_below.value > 10.1 and idt.prop_below.value < 10.3
     assert idt._get("ParaBottomMargin") == 1020
 
     idt = Spacing(style_no_space=True)
@@ -32,8 +32,8 @@ def test_spacing_props() -> None:
 
 def test_spacing_default() -> None:
     idt = cast(Spacing, Spacing.default)
-    assert idt.prop_above == 0.0
-    assert idt.prop_below == 0.0
+    assert idt.prop_above.value == 0.0
+    assert idt.prop_below.value == 0.0
     assert idt.prop_style_no_space == False
 
 

@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import cast
 import uno
 
+from .....proto.unit_obj import UnitObj
 from ..frame_style_base_multi import FrameStyleBaseMulti
 from ....writer.style.frame.style_frame_kind import StyleFrameKind as StyleFrameKind
 from ....direct.para.border.padding import Padding as InnerPadding
@@ -18,11 +19,11 @@ class Padding(FrameStyleBaseMulti):
     def __init__(
         self,
         *,
-        left: float | None = None,
-        right: float | None = None,
-        top: float | None = None,
-        bottom: float | None = None,
-        all: float | None = None,
+        left: float | UnitObj | None = None,
+        right: float | UnitObj | None = None,
+        top: float | UnitObj | None = None,
+        bottom: float | UnitObj | None = None,
+        all: float | UnitObj | None = None,
         style_name: StyleFrameKind | str = StyleFrameKind.FRAME,
         style_family: str = "FrameStyles",
     ) -> None:
@@ -30,11 +31,11 @@ class Padding(FrameStyleBaseMulti):
         Constructor
 
         Args:
-            left (float, optional): Left (in mm units).
-            right (float, optional): Right (in mm units).
-            top (float, optional): Top (in mm units).
-            bottom (float, optional): Bottom (in mm units).
-            all (float, optional): Left, right, top, bottom (in mm units). If argument is present then ``left``, ``right``, ``top``, and ``bottom`` arguments are ignored.
+            left (float, UnitObj, optional): Left (in ``mm`` units) or :ref:`proto_unit_obj`.
+            right (float, UnitObj, optional): Right (in ``mm`` units)  or :ref:`proto_unit_obj`.
+            top (float, UnitObj, optional): Top (in ``mm`` units)  or :ref:`proto_unit_obj`.
+            bottom (float, UnitObj,  optional): Bottom (in ``mm`` units)  or :ref:`proto_unit_obj`.
+            all (float, UnitObj, optional): Left, right, top, bottom (in ``mm`` units)  or :ref:`proto_unit_obj`. If argument is present then ``left``, ``right``, ``top``, and ``bottom`` arguments are ignored.
             style_name (StyleFrameKind, str, optional): Specifies the Frame Style that instance applies to. Deftult is Default Frame Style.
             style_family (str, optional): Style family. Defatult ``FrameStyles``.
 

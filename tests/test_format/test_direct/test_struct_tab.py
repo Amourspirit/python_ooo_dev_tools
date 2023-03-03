@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
 def test_props() -> None:
     tab = TabStopStruct(position=10.0)
-    assert tab.prop_position == 10.0
+    assert tab.prop_position.value == 10.0
     assert tab._get("Position") == 1000
 
     tab = TabStopStruct(align=TabAlign.LEFT)
@@ -39,7 +39,7 @@ def test_props() -> None:
     assert tab.prop_align == TabAlign.DEFAULT
 
     tab.prop_position = 10.0
-    assert tab.prop_position == 10.0
+    assert tab.prop_position.value == 10.0
 
     tab.prop_decimal_char = "#"
     assert tab.prop_decimal_char == "#"

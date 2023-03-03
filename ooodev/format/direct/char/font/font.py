@@ -7,9 +7,12 @@ from __future__ import annotations
 from typing import Any, Tuple, cast, overload, TypeVar
 
 from .....exceptions import ex as mEx
+from .....proto.unit_obj import UnitObj
 from .....utils import info as mInfo
 from .....utils import lo as mLo
 from .....utils.color import Color
+from .....utils.data_type.angle import Angle as Angle
+from .....utils.data_type.unit_pt import UnitPT
 from .....utils.unit_convert import UnitConvert
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleBase
@@ -59,13 +62,13 @@ class Font(StyleBase):
         charset: CharSetEnum | None = None,
         color: Color | None = None,
         family: FontFamilyEnum | None = None,
-        size: float | None = None,
+        size: float | UnitObj | None = None,
         name: str | None = None,
         overline: FontUnderlineEnum | None = None,
         overline_color: Color | None = None,
-        rotation: float | None = None,
+        rotation: float | Angle | None = None,
         slant: FontSlant | None = None,
-        spacing: CharSpacingKind | float | None = None,
+        spacing: CharSpacingKind | float | UnitObj | None = None,
         shadowed: bool | None = None,
         shadow_fmt: ShadowFormat | None = None,
         strike: FontStrikeoutEnum | None = None,
@@ -88,13 +91,13 @@ class Font(StyleBase):
             charset (CharSetEnum, optional): The text encoding of the font.
             color (Color, optional): The value of the text color. Setting to ``-1`` will cause automatic color.
             family (FontFamilyEnum, optional): Font Family
-            size (float, optional): This value contains the size of the characters in point units.
+            size (float, UnitObj, optional): This value contains the size of the characters in ``pt`` (point) units or :ref:`proto_unit_obj`.
             name (str, optional): This property specifies the name of the font style. It may contain more than one name separated by comma.
             overline (FontUnderlineEnum, optional): The value for the character overline.
             overline_color (Color, optional): Specifies if the property ``CharOverlinelineColor`` is used for an overline.
-            rotation (float, optional): Determines the rotation of a character in degrees. Depending on the implementation only certain values may be allowed.
+            rotation (int, Angle, optional): Specifies the rotation of a character in degrees. Depending on the implementation only certain values may be allowed.
             slant (FontSlant, optional): The value of the posture of the document such as ``FontSlant.ITALIC``.
-            spacing (float, optional): Character spacing in point units.
+            spacing (CharSpacingKind, float, UnitObj, optional): Specifies character spacing in ``pt` (point) units or :ref:`proto_unit_obj`.
             shadowed (bool, optional): Specifies if the characters are formatted and displayed with a shadow effect.
             shadow_fmt: (ShadowFormat, optional): Determines the type, color, and width of the shadow.
             strike (FontStrikeoutEnum, optional): Detrmines the type of the strike out of the character.
@@ -113,14 +116,18 @@ class Font(StyleBase):
             "CharBackColor": bg_color,
             "CharUnderlineColor": underline_color,
             "CharOverlineColor": overline_color,
-            "CharHeight": size,
             "CharBackTransparent": bg_transparent,
             "CharWordMode": word_mode,
             "CharShadowed": shadowed,
         }
+        if not size is None:
+            try:
+                init_vals["CharHeight"] = size.get_value_pt()
+            except AttributeError:
+                init_vals["CharHeight"] = float(size)
+
         if not bg_color is None:
             init_vals["CharBackTransparent"] = False
-
         if not overline_color is None:
             init_vals["CharOverlineHasColor"] = True
         if not underline_color is None:
@@ -161,9 +168,13 @@ class Font(StyleBase):
             init_vals["CharPosture"] = slant
 
         if not spacing is None:
-            init_vals["CharKerning"] = UnitConvert.convert_pt_mm100(float(spacing))
+            try:
+                init_vals["CharKerning"] = spacing.get_value_mm100()
+            except AttributeError:
+                init_vals["CharKerning"] = UnitConvert.convert_pt_mm100(float(spacing))
         if not rotation is None:
-            init_vals["CharRotation"] = round(rotation * 10)
+            angle = Angle(int(rotation))
+            init_vals["CharRotation"] = round(angle.value * 10)
 
         if not shadow_fmt is None:
             if mInfo.Info.is_type_struct(shadow_fmt, "com.sun.star.table.ShadowFormat"):
@@ -293,12 +304,12 @@ class Font(StyleBase):
         ft.prop_family = value
         return ft
 
-    def fmt_size(self: _TFont, value: float | None = None) -> _TFont:
+    def fmt_size(self: _TFont, value: float | UnitObj | None = None) -> _TFont:
         """
         Get copy of instance with text size set or removed.
 
         Args:
-            value (float, optional): The size of the characters in point units.
+            value (float, UnitObj, optional): The size of the characters in ``pt`` (point) units :ref:`proto_unit_obj`.
                 If ``None`` style is removed. Default ``None``
 
         Returns:
@@ -386,12 +397,12 @@ class Font(StyleBase):
         ft.prop_slant = value
         return ft
 
-    def fmt_spacing(self: _TFont, value: float | None = None) -> _TFont:
+    def fmt_spacing(self: _TFont, value: float | UnitObj | None = None) -> _TFont:
         """
         Get copy of instance with spacing set or removed.
 
         Args:
-            value (str, optional): The character spacing in point units.
+            value (float, UnitObj, optional): The character spacing in ``pt`` (point) units :ref:`proto_unit_obj`.
                 If ``None`` style is removed. Default ``None``
 
         Returns:
@@ -769,16 +780,22 @@ class Font(StyleBase):
         self._set("CharFontFamily", value.value)
 
     @property
-    def prop_size(self) -> float | None:
-        """This value contains the size of the characters in point."""
-        return self._get("CharHeight")
+    def prop_size(self) -> UnitPT | None:
+        """This value contains the size of the characters in ``pt`` (point) units."""
+        pv = cast(float, self._get("CharHeight"))
+        if pv is None:
+            return None
+        return UnitPT(pv)
 
     @prop_size.setter
-    def prop_size(self, value: float | None) -> None:
+    def prop_size(self, value: float | UnitObj | None) -> None:
         if value is None:
             self._remove("CharHeight")
             return
-        self._set("CharHeight", value)
+        try:
+            self._set("CharHeight", value.get_value_pt())
+        except AttributeError:
+            self._set("CharHeight", float(value))
 
     @property
     def prop_name(self) -> str | None:
@@ -835,21 +852,22 @@ class Font(StyleBase):
         self._set("CharPosture", value.value)
 
     @property
-    def prop_spacing(self) -> float | None:
-        """This value contains character spacing in point units"""
+    def prop_spacing(self) -> UnitPT | None:
+        """This value contains character spacing in ``pt`` (point) units"""
         pv = self._get("CharKerning")
-        if not pv is None:
-            if pv == 0.0:
-                return 0.0
-            return UnitConvert.convert_mm100_pt(pv)
-        return None
+        if pv is None:
+            return None
+        return UnitPT.from_mm100(pv)
 
     @prop_spacing.setter
-    def prop_spacing(self, value: float | CharSpacingKind | None) -> None:
+    def prop_spacing(self, value: float | CharSpacingKind | UnitObj | None) -> None:
         if value is None:
             self._remove("CharKerning")
             return
-        self._set("CharKerning", UnitConvert.convert_pt_mm100(float(value)))
+        try:
+            self._set("CharKerning", value.get_value_mm100())
+        except AttributeError:
+            self._set("CharKerning", UnitConvert.convert_pt_mm100(float(value)))
 
     @property
     def prop_shadowed(self) -> bool | None:
@@ -970,11 +988,12 @@ class Font(StyleBase):
         return None
 
     @prop_rotation.setter
-    def prop_rotation(self, value: float | None) -> None:
+    def prop_rotation(self, value: float | Angle | None) -> None:
         if value is None:
             self._remove("CharRotation")
             return
-        self._set("CharRotation", round(value * 10))
+        angle = Angle(int(value))
+        self._set("CharRotation", round(angle.value * 10))
 
     @property
     def prop_word_mode(self) -> bool | None:

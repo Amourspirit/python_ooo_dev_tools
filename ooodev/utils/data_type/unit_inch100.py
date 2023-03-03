@@ -42,6 +42,24 @@ class UnitInch100(BaseFloatValue):
         """
         return round(UnitConvert.convert(num=self.value, frm=Length.IN100, to=Length.MM100))
 
+    def get_value_px(self) -> float:
+        """
+        Gets instance value in ``px`` (pixel) units.
+
+        Returns:
+            int: Value in ``px`` units.
+        """
+        return UnitConvert.convert(num=self.value, frm=Length.IN100, to=Length.PX)
+
+    def get_value_pt(self) -> float:
+        """
+        Gets instance value converted to Size in ``pt`` (points) units.
+
+        Returns:
+            int: Value in ``pt`` units.
+        """
+        return UnitConvert.convert(num=self.value, frm=Length.IN100, to=Length.PT)
+
     @classmethod
     def from_mm100(cls: Type[_TUnitInch100], value: int) -> _TUnitInch100:
         """
@@ -54,25 +72,8 @@ class UnitInch100(BaseFloatValue):
             UnitInch100:
         """
         inst = super(UnitInch100, cls).__new__(cls)
-        return inst.__init__(UnitConvert.convert(num=value, frm=Length.MM100, to=Length.IN100))
-
-    def get_value_pt(self) -> float:
-        """
-        Gets instance value converted to Size in ``pt`` (points) units.
-
-        Returns:
-            int: Value in ``pt`` units.
-        """
-        return UnitConvert.convert(num=self.value, frm=Length.IN100, to=Length.PT)
-
-    def get_value_px(self) -> float:
-        """
-        Gets instance value in ``px`` (pixel) units.
-
-        Returns:
-            int: Value in ``px`` units.
-        """
-        return UnitConvert.convert(num=self.value, frm=Length.IN100, to=Length.PX)
+        inst.__init__(UnitConvert.convert(num=value, frm=Length.MM100, to=Length.IN100))
+        return inst
 
     @classmethod
     def from_pt(cls: Type[_TUnitInch100], value: float) -> _TUnitInch100:
@@ -86,7 +87,8 @@ class UnitInch100(BaseFloatValue):
             UnitInch100:
         """
         inst = super(UnitInch100, cls).__new__(cls)
-        return inst.__init__(float(UnitConvert.convert(num=value, frm=Length.PT, to=Length.IN100)))
+        inst.__init__(float(UnitConvert.convert(num=value, frm=Length.PT, to=Length.IN100)))
+        return inst
 
     @classmethod
     def from_px(cls: Type[_TUnitInch100], value: float) -> _TUnitInch100:
@@ -100,7 +102,8 @@ class UnitInch100(BaseFloatValue):
             UnitInch100:
         """
         inst = super(UnitInch100, cls).__new__(cls)
-        return inst.__init__(UnitConvert.convert(num=value, frm=Length.PX, to=Length.IN100))
+        inst.__init__(UnitConvert.convert(num=value, frm=Length.PX, to=Length.IN100))
+        return inst
 
     @classmethod
     def from_in(cls: Type[_TUnitInch100], value: float) -> _TUnitInch100:
@@ -114,7 +117,8 @@ class UnitInch100(BaseFloatValue):
             UnitInch100:
         """
         inst = super(UnitInch100, cls).__new__(cls)
-        return inst.__init__(UnitConvert.convert(num=value, frm=Length.IN, to=Length.IN100))
+        inst.__init__(UnitConvert.convert(num=value, frm=Length.IN, to=Length.IN100))
+        return inst
 
     @classmethod
     def from_inch10(cls: Type[_TUnitInch100], value: float) -> _TUnitInch100:
@@ -128,7 +132,8 @@ class UnitInch100(BaseFloatValue):
             UnitInch100:
         """
         inst = super(UnitInch100, cls).__new__(cls)
-        return inst.__init__(UnitConvert.convert(num=value, frm=Length.IN10, to=Length.IN100))
+        inst.__init__(UnitConvert.convert(num=value, frm=Length.IN10, to=Length.IN100))
+        return inst
 
     @classmethod
     def from_inch100(cls: Type[_TUnitInch100], value: float) -> _TUnitInch100:
@@ -142,7 +147,8 @@ class UnitInch100(BaseFloatValue):
             UnitInch100:
         """
         inst = super(UnitInch100, cls).__new__(cls)
-        return inst.__init__(value)
+        inst.__init__(value)
+        return inst
 
     @classmethod
     def from_inch1000(cls: Type[_TUnitInch100], value: int) -> _TUnitInch100:
@@ -156,4 +162,5 @@ class UnitInch100(BaseFloatValue):
             UnitInch100:
         """
         inst = super(UnitInch100, cls).__new__(cls)
-        return inst.__init__(UnitConvert.convert(num=value, frm=Length.IN1000, to=Length.IN100))
+        inst.__init__(UnitConvert.convert(num=value, frm=Length.IN1000, to=Length.IN100))
+        return inst

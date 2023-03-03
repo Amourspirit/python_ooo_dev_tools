@@ -49,11 +49,11 @@ class AbstractSides(StyleBase):
         Constructor
 
         Args:
-            left (Side | None, optional): Determines the line style at the left edge.
-            right (Side | None, optional): Determines the line style at the right edge.
-            top (Side | None, optional): Determines the line style at the top edge.
-            bottom (Side | None, optional): Determines the line style at the bottom edge.
-            all (Side | None, optional): Determines the line style at the top, bottom, left, right edges. If this argument has a value then arguments ``top``, ``bottom``, ``left``, ``right`` are ignored
+            left (Side, optional): Determines the line style at the left edge.
+            right (Side, optional): Determines the line style at the right edge.
+            top (Side, optional): Determines the line style at the top edge.
+            bottom (Side, optional): Determines the line style at the bottom edge.
+            all (Side, optional): Determines the line style at the top, bottom, left, right edges. If this argument has a value then arguments ``top``, ``bottom``, ``left``, ``right`` are ignored
         """
         init_vals = {}
         if not all is None:

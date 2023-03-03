@@ -22,11 +22,6 @@ class UnitPT(BaseFloatValue):
     def __post_init__(self) -> None:
         if not isinstance(self.value, float):
             object.__setattr__(self, "value", float(self.value))
-        check(
-            self.value >= 0,
-            f"{self}",
-            f"Value of {self.value} is out of range. Value must be a positive number.",
-        )
 
     def get_value_mm(self) -> float:
         """
@@ -67,7 +62,8 @@ class UnitPT(BaseFloatValue):
             UnitPT:
         """
         inst = super(UnitPT, cls).__new__(cls)
-        return inst.__init__(value)
+        inst.__init__(value)
+        return inst
 
     @classmethod
     def from_px(cls: Type[_TUnitPT], value: float) -> _TUnitPT:
@@ -81,7 +77,8 @@ class UnitPT(BaseFloatValue):
             UnitPT:
         """
         inst = super(UnitPT, cls).__new__(cls)
-        return inst.__init__(UnitConvert.convert(num=value, frm=Length.PX, to=Length.PT))
+        inst.__init__(UnitConvert.convert(num=value, frm=Length.PX, to=Length.PT))
+        return inst
 
     @classmethod
     def from_mm(cls: Type[_TUnitPT], value: float) -> _TUnitPT:
@@ -95,7 +92,8 @@ class UnitPT(BaseFloatValue):
             UnitPT:
         """
         inst = super(UnitPT, cls).__new__(cls)
-        return inst.__init__(UnitConvert.convert(num=value, frm=Length.MM, to=Length.PT))
+        inst.__init__(UnitConvert.convert(num=value, frm=Length.MM, to=Length.PT))
+        return inst
 
     @classmethod
     def from_mm10(cls: Type[_TUnitPT], value: float) -> _TUnitPT:
@@ -109,7 +107,8 @@ class UnitPT(BaseFloatValue):
             UnitPT:
         """
         inst = super(UnitPT, cls).__new__(cls)
-        return inst.__init__(UnitConvert.convert(num=value, frm=Length.MM10, to=Length.PT))
+        inst.__init__(UnitConvert.convert(num=value, frm=Length.MM10, to=Length.PT))
+        return inst
 
     @classmethod
     def from_mm100(cls: Type[_TUnitPT], value: int) -> _TUnitPT:
@@ -123,7 +122,8 @@ class UnitPT(BaseFloatValue):
             UnitPT:
         """
         inst = super(UnitPT, cls).__new__(cls)
-        return inst.__init__(UnitConvert.convert(num=value, frm=Length.MM100, to=Length.PT))
+        inst.__init__(UnitConvert.convert(num=value, frm=Length.MM100, to=Length.PT))
+        return inst
 
     @classmethod
     def from_inch(cls: Type[_TUnitPT], value: float) -> _TUnitPT:
@@ -137,7 +137,8 @@ class UnitPT(BaseFloatValue):
             UnitPT:
         """
         inst = super(UnitPT, cls).__new__(cls)
-        return inst.__init__(UnitConvert.convert(num=value, frm=Length.IN, to=Length.PT))
+        inst.__init__(UnitConvert.convert(num=value, frm=Length.IN, to=Length.PT))
+        return inst
 
     @classmethod
     def from_inch10(cls: Type[_TUnitPT], value: float) -> _TUnitPT:
@@ -151,7 +152,8 @@ class UnitPT(BaseFloatValue):
             UnitPT:
         """
         inst = super(UnitPT, cls).__new__(cls)
-        return inst.__init__(UnitConvert.convert(num=value, frm=Length.IN10, to=Length.PT))
+        inst.__init__(UnitConvert.convert(num=value, frm=Length.IN10, to=Length.PT))
+        return inst
 
     @classmethod
     def from_inch100(cls: Type[_TUnitPT], value: float) -> _TUnitPT:
@@ -165,7 +167,8 @@ class UnitPT(BaseFloatValue):
             UnitPT:
         """
         inst = super(UnitPT, cls).__new__(cls)
-        return inst.__init__(UnitConvert.convert(num=value, frm=Length.IN100, to=Length.PT))
+        inst.__init__(UnitConvert.convert(num=value, frm=Length.IN100, to=Length.PT))
+        return inst
 
     @classmethod
     def from_inch1000(cls: Type[_TUnitPT], value: int) -> _TUnitPT:
@@ -179,4 +182,5 @@ class UnitPT(BaseFloatValue):
             UnitPT:
         """
         inst = super(UnitPT, cls).__new__(cls)
-        return inst.__init__(UnitConvert.convert(num=value, frm=Length.IN1000, to=Length.PT))
+        inst.__init__(UnitConvert.convert(num=value, frm=Length.IN1000, to=Length.PT))
+        return inst

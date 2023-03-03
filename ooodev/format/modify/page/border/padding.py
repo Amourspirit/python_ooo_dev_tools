@@ -1,6 +1,8 @@
 from __future__ import annotations
-from typing import Tuple, cast
+from typing import cast
 import uno
+
+from .....proto.unit_obj import UnitObj
 from ....writer.style.page.kind.style_page_kind import StylePageKind as StylePageKind
 from ..page_style_base_multi import PageStyleBaseMulti
 
@@ -17,11 +19,11 @@ class Padding(PageStyleBaseMulti):
     def __init__(
         self,
         *,
-        left: float | None = None,
-        right: float | None = None,
-        top: float | None = None,
-        bottom: float | None = None,
-        all: float | None = None,
+        left: float | UnitObj | None = None,
+        right: float | UnitObj | None = None,
+        top: float | UnitObj | None = None,
+        bottom: float | UnitObj | None = None,
+        all: float | UnitObj | None = None,
         style_name: StylePageKind | str = StylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> None:
@@ -29,11 +31,11 @@ class Padding(PageStyleBaseMulti):
         Constructor
 
         Args:
-            left (float, optional): Page left padding (in mm units).
-            right (float, optional): Page right padding (in mm units).
-            top (float, optional): Page top padding (in mm units).
-            bottom (float, optional): Page bottom padding (in mm units).
-            all (float, optional): Page left, right, top, bottom padding (in mm units). If argument is present then ``left``, ``right``, ``top``, and ``bottom`` arguments are ignored.
+            left (float, UnitObj, optional): Left (in ``mm`` units) or :ref:`proto_unit_obj`.
+            right (float, UnitObj, optional): Right (in ``mm`` units)  or :ref:`proto_unit_obj`.
+            top (float, UnitObj, optional): Top (in ``mm`` units)  or :ref:`proto_unit_obj`.
+            bottom (float, UnitObj,  optional): Bottom (in ``mm`` units)  or :ref:`proto_unit_obj`.
+            all (float, UnitObj, optional): Left, right, top, bottom (in ``mm`` units)  or :ref:`proto_unit_obj`. If argument is present then ``left``, ``right``, ``top``, and ``bottom`` arguments are ignored.
             style_name (StyleParaKind, str, optional): Specifies the Page Style that instance applies to. Deftult is Default Page Style.
             style_family (str, optional): Style family. Defatult ``PageStyles``.
 

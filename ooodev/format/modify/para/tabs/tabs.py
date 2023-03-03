@@ -2,6 +2,8 @@ from __future__ import annotations
 from typing import cast
 import uno
 from ooo.dyn.style.tab_align import TabAlign as TabAlign
+
+from .....proto.unit_obj import UnitObj
 from ....writer.style.para.kind import StyleParaKind as StyleParaKind
 from ..para_style_base_multi import ParaStyleBaseMulti
 from ....direct.para.tabs.tabs import Tabs as InnerTabs
@@ -18,7 +20,7 @@ class Tabs(ParaStyleBaseMulti):
     def __init__(
         self,
         *,
-        position: float = 0.0,
+        position: float | UnitObj = 0.0,
         align: TabAlign = TabAlign.LEFT,
         decimal_char: str = ".",
         fill_char: FillCharKind | str = FillCharKind.NONE,
@@ -29,13 +31,13 @@ class Tabs(ParaStyleBaseMulti):
         Constructor
 
         Args:
-            position (float): Specifies the position of the tabulator in relation to the left border (in mm units).
+            position (float, UnitObj, optional): Specifies the position of the tabulator in relation to the left border (in ``mm`` units) or :ref:`proto_unit_obj`.
                 Defaults to ``0.0``
-            align (TabAlign): Specifies the alignment of the text range before the tabulator. Defaults to ``TabAlign.LEFT``
-            decimal_char (str): Specifies which delimiter is used for the decimal.
+            align (TabAlign, optional): Specifies the alignment of the text range before the tabulator. Defaults to ``TabAlign.LEFT``
+            decimal_char (str, optional): Specifies which delimiter is used for the decimal.
                 Argument is expected to be a single character string.
                 This argument is only used when ``align`` is set to ``TabAlign.DECIMAL``.
-            fill_char (FillCharKind, str): specifies the character that is used to fill up the space between the text in the text range and the tabulators.
+            fill_char (FillCharKind, str, optional): specifies the character that is used to fill up the space between the text in the text range and the tabulators.
                 If string value then argument is expected to be a single character string.
                 Defaults to ``FillCharKind.NONE``
             style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to. Deftult is Default Paragraph Style.

@@ -18,15 +18,15 @@ if TYPE_CHECKING:
 
 def test_indent_props() -> None:
     idt = InnerIndent(before=10.2)
-    assert idt.prop_before > 10.1 and idt.prop_before < 10.3
+    assert idt.prop_before.value > 10.1 and idt.prop_before.value < 10.3
     assert idt._get("ParaLeftMargin") == 1020
 
     idt = InnerIndent(after=10.2)
-    assert idt.prop_after > 10.1 and idt.prop_after < 10.3
+    assert idt.prop_after.value > 10.1 and idt.prop_after.value < 10.3
     assert idt._get("ParaRightMargin") == 1020
 
     idt = InnerIndent(first=10.2)
-    assert idt.prop_first > 10.1 and idt.prop_first < 10.3
+    assert idt.prop_first.value > 10.1 and idt.prop_first.value < 10.3
     assert idt._get("ParaFirstLineIndent") == 1020
 
     idt = InnerIndent(auto=True)
@@ -36,9 +36,9 @@ def test_indent_props() -> None:
 
 def test_indent_default() -> None:
     idt = cast(InnerIndent, InnerIndent.default)
-    assert idt.prop_after == 0.0
-    assert idt.prop_before == 0.0
-    assert idt.prop_first == 0.0
+    assert idt.prop_after.value == 0.0
+    assert idt.prop_before.value == 0.0
+    assert idt.prop_first.value == 0.0
     assert idt.prop_auto == False
 
 

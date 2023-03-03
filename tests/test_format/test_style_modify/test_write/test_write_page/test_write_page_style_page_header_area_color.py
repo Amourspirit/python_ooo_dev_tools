@@ -52,12 +52,14 @@ def test_write(loader, para_text) -> None:
         assert header_f_style.prop_inner.prop_on == header_style.prop_inner.prop_on
         assert header_f_style.prop_inner.prop_shared_first == header_style.prop_inner.prop_shared_first
         assert header_f_style.prop_inner.prop_shared == header_style.prop_inner.prop_shared
-        assert header_f_style.prop_inner.prop_height == pytest.approx(header_style.prop_inner.prop_height, rel=1.0e2)
-        assert header_f_style.prop_inner.prop_margin_left == pytest.approx(
-            header_style.prop_inner.prop_margin_left, rel=1.0e2
+        assert header_f_style.prop_inner.prop_height.value == pytest.approx(
+            header_style.prop_inner.prop_height.value, rel=1.0e-2
         )
-        assert header_f_style.prop_inner.prop_margin_right == pytest.approx(
-            header_style.prop_inner.prop_margin_right, rel=1.0e2
+        assert header_f_style.prop_inner.prop_margin_left.value == pytest.approx(
+            header_style.prop_inner.prop_margin_left.value, rel=1.0e-2
+        )
+        assert header_f_style.prop_inner.prop_margin_right.value == pytest.approx(
+            header_style.prop_inner.prop_margin_right.value, rel=1.0e-2
         )
 
         f_style = Color.from_style(

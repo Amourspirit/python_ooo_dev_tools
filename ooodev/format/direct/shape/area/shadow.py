@@ -5,12 +5,14 @@ import uno
 from ooo.dyn.text.wrap_text_mode import WrapTextMode as WrapTextMode
 
 from .....exceptions import ex as mEx
+from .....proto.unit_obj import UnitObj
 from .....utils import lo as mLo
 from .....utils import props as mProps
-from .....proto.unit_obj import UnitObj
-from .....utils.unit_convert import UnitConvert
-from .....utils.data_type.intensity import Intensity
 from .....utils.color import Color
+from .....utils.data_type.intensity import Intensity
+from .....utils.data_type.unit_mm import UnitMM
+from .....utils.data_type.unit_pt import UnitPT
+from .....utils.unit_convert import UnitConvert
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleBase
 from ...common.props.shape_shadow_props import ShapeShadowProps
@@ -55,8 +57,8 @@ class Shadow(StyleBase):
             use_shadow (bool, optional): Specifies if shadow is used.
             location (ShadowLocationKind , optional): Specifies the shadow location.
             color (Color , optional): Specifies shadow color.
-            distance (int , optional): Specifies shadow distance in ``mm``units or in points.
-            blur (float , optional): Specifies shadow blur in ``pt`` units or in ``mm`` units.
+            distance (float, UnitObj , optional): Specifies shadow distance in ``mm``units or :ref:`proto_unit_obj`.
+            blur (int, UnitObj, optional): Specifies shadow blur in ``pt`` units or in ``mm`` units  or :ref:`proto_unit_obj`.
             transparency (int , optional): Specifies shadow transparency value from ``0`` to ``100``.
         """
         # shadow distance is stored in 1/100th mm.
@@ -436,12 +438,9 @@ class Shadow(StyleBase):
         self._set(self._props.color, value)
 
     @property
-    def prop_distance(self) -> float | None:
+    def prop_distance(self) -> UnitMM | None:
         """Gets/Sets Shadow distance value. Return value is in ``mm`` units."""
-        pv = self._get_shadow_distance()
-        if pv == 0:
-            return 0.0
-        return UnitConvert.convert_mm100_mm(pv)
+        return UnitMM.from_mm100(self._get_shadow_distance())
 
     @prop_distance.setter
     def prop_distance(self, value: float | UnitObj | None) -> None:
@@ -449,30 +448,28 @@ class Shadow(StyleBase):
             self._remove(self._props.dist_x)
             self._remove(self._props.dist_y)
             return
-        if isinstance(value, (float, int)):
-            self._set_shaodw_distance(UnitConvert.convert_mm_mm100(value))
-        else:
+        try:
             self._set_shaodw_distance(value.get_value_mm100())
+        except AttributeError:
+            self._set_shaodw_distance(UnitConvert.convert_mm_mm100(value))
 
     @property
-    def prop_blur(self) -> int | None:
+    def prop_blur(self) -> UnitPT | None:
         """Gets/Sets Shadow blur value. Return value is in ``pt`` (points) units."""
         pv = cast(int, self._get(self._props.blur))
         if pv is None:
             return None
-        if pv == 0:
-            return 0
-        return round(UnitConvert.convert_mm100_pt(pv))
+        return UnitPT(round(UnitConvert.convert_mm100_pt(pv)))
 
     @prop_blur.setter
     def prop_blur(self, value: int | UnitObj | None) -> None:
         if value is None:
             self._remove(self._props.blur)
             return
-        if isinstance(value, int):
-            self._set(self._props.blur, UnitConvert.convert_pt_mm100(value))
-        else:
+        try:
             self._set(self._props.blur, value.get_value_mm100())
+        except AttributeError:
+            self._set(self._props.blur, UnitConvert.convert_pt_mm100(value))
 
     @property
     def prop_transparency(self) -> Intensity | None:

@@ -117,8 +117,8 @@ def test_write_crop(loader, fix_image_path) -> None:
 
         w_factor = style.prop_img_scale.width / 100
         h_factor = style.prop_img_scale.height / 100
-        crop_w = UnitMM(style.prop_crop_opt.prop_left + style.prop_crop_opt.prop_right).get_value_mm100()
-        crop_h = UnitMM(style.prop_crop_opt.prop_top + style.prop_crop_opt.prop_bottom).get_value_mm100()
+        crop_w = UnitMM(style.prop_crop_opt.prop_left.value + style.prop_crop_opt.prop_right.value).get_value_mm100()
+        crop_h = UnitMM(style.prop_crop_opt.prop_top.value + style.prop_crop_opt.prop_bottom.value).get_value_mm100()
         width = round((img_size.width - crop_w) * w_factor)  # 1/100th mm
         height = round((img_size.height - crop_h) * h_factor)
 

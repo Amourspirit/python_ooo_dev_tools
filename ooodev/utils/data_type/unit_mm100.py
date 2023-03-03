@@ -23,13 +23,6 @@ class UnitMM100(BaseIntValue):
         :ref:`proto_unit_obj`
     """
 
-    def __post_init__(self) -> None:
-        check(
-            self.value >= 0,
-            f"{self}",
-            f"Value of {self.value} is out of range. Value must be a positive number.",
-        )
-
     def _from_int(self, value: int) -> _TUnitMM100:
         inst = super(UnitMM100, self.__class__).__new__(self.__class__)
         return inst.__init__(value)
@@ -91,7 +84,8 @@ class UnitMM100(BaseIntValue):
             UnitMM100:
         """
         inst = super(UnitMM100, cls).__new__(cls)
-        return inst.__init__(UnitConvert.convert_mm_mm100(value))
+        inst.__init__(UnitConvert.convert_mm_mm100(value))
+        return inst
 
     @classmethod
     def from_mm10(cls: Type[_TUnitMM100], value: float) -> _TUnitMM100:
@@ -105,7 +99,8 @@ class UnitMM100(BaseIntValue):
             UnitMM100:
         """
         inst = super(UnitMM100, cls).__new__(cls)
-        return inst.__init__(round(UnitConvert.convert(num=value, frm=Length.MM10, to=Length.MM100)))
+        inst.__init__(round(UnitConvert.convert(num=value, frm=Length.MM10, to=Length.MM100)))
+        return inst
 
     @classmethod
     def from_mm100(cls: Type[_TUnitMM100], value: int) -> _TUnitMM100:
@@ -119,7 +114,8 @@ class UnitMM100(BaseIntValue):
             UnitMM100:
         """
         inst = super(UnitMM100, cls).__new__(cls)
-        return inst.__init__(value)
+        inst.__init__(value)
+        return inst
 
     @classmethod
     def from_pt(cls: Type[_TUnitMM100], value: float) -> _TUnitMM100:
@@ -133,7 +129,8 @@ class UnitMM100(BaseIntValue):
             UnitMM100:
         """
         inst = super(UnitMM100, cls).__new__(cls)
-        return inst.__init__(round(UnitConvert.convert(num=value, frm=Length.PT, to=Length.MM100)))
+        inst.__init__(round(UnitConvert.convert(num=value, frm=Length.PT, to=Length.MM100)))
+        return inst
 
     @classmethod
     def from_px(cls: Type[_TUnitMM100], value: float) -> _TUnitMM100:
@@ -147,7 +144,8 @@ class UnitMM100(BaseIntValue):
             UnitMM100:
         """
         inst = super(UnitMM100, cls).__new__(cls)
-        return inst.__init__(round(UnitConvert.convert(num=value, frm=Length.PX, to=Length.MM100)))
+        inst.__init__(round(UnitConvert.convert(num=value, frm=Length.PX, to=Length.MM100)))
+        return inst
 
     @classmethod
     def from_inch(cls: Type[_TUnitMM100], value: float) -> _TUnitMM100:
@@ -161,7 +159,8 @@ class UnitMM100(BaseIntValue):
             UnitMM100:
         """
         inst = super(UnitMM100, cls).__new__(cls)
-        return inst.__init__(round(UnitConvert.convert(num=value, frm=Length.IN, to=Length.MM100)))
+        inst.__init__(round(UnitConvert.convert(num=value, frm=Length.IN, to=Length.MM100)))
+        return inst
 
     @classmethod
     def from_inch10(cls: Type[_TUnitMM100], value: float) -> _TUnitMM100:
@@ -175,7 +174,8 @@ class UnitMM100(BaseIntValue):
             UnitMM100:
         """
         inst = super(UnitMM100, cls).__new__(cls)
-        return inst.__init__(round(UnitConvert.convert(num=value, frm=Length.IN10, to=Length.MM100)))
+        inst.__init__(round(UnitConvert.convert(num=value, frm=Length.IN10, to=Length.MM100)))
+        return inst
 
     @classmethod
     def from_inch100(cls: Type[_TUnitMM100], value: float) -> _TUnitMM100:
@@ -189,7 +189,8 @@ class UnitMM100(BaseIntValue):
             UnitMM100:
         """
         inst = super(UnitMM100, cls).__new__(cls)
-        return inst.__init__(round(UnitConvert.convert(num=value, frm=Length.IN100, to=Length.MM100)))
+        inst.__init__(round(UnitConvert.convert(num=value, frm=Length.IN100, to=Length.MM100)))
+        return inst
 
     @classmethod
     def from_inch1000(cls: Type[_TUnitMM100], value: int) -> _TUnitMM100:
@@ -203,4 +204,5 @@ class UnitMM100(BaseIntValue):
             UnitMM100:
         """
         inst = super(UnitMM100, cls).__new__(cls)
-        return inst.__init__(round(UnitConvert.convert(num=value, frm=Length.IN1000, to=Length.MM100)))
+        inst.__init__(round(UnitConvert.convert(num=value, frm=Length.IN1000, to=Length.MM100)))
+        return inst
