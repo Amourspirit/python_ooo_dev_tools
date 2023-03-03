@@ -2737,14 +2737,18 @@ class Write(mSel.Selection):
                 except AttributeError:
                     props.setPropertyValue("Height", int(height))
 
-            # append image to document, followed by a newline
+            # append image to document
+            cls._append_text_content(cursor, tgo)
+            # end the paragraph.
+            cls.end_line(cursor)
+            # set any styles for the image.
             if styles:
+                # is is important for some format styles such as Crop that styles
+                # not be applied until after they have been added to the document.
                 srv = ("com.sun.star.text.TextGraphicObject",)
                 for style in styles:
                     if style.support_service(*srv):
                         style.apply(tgo)
-            cls._append_text_content(cursor, tgo)
-            cls.end_line(cursor)
             result = tgo
         except Exception as e:
             raise Exception(f"Insertion of graphic in '{fnm}' failed:") from e

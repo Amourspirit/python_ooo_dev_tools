@@ -108,6 +108,8 @@ mindmap
                     image
                         id{{Flip}}
                         id{{Rotation}}
+                    crop
+                        id{{ImageCrop}}
             [modify]
                 page
                     page

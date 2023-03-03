@@ -1,5 +1,4 @@
 from __future__ import annotations
-from typing import Tuple, TYPE_CHECKING
 from ..format.kind.format_kind import FormatKind as FormatKind
 
 try:

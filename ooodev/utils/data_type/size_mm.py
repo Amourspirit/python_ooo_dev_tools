@@ -17,8 +17,8 @@ class SizeMM:
             width (float, UnitObj, optional): Specifies width in ``mm`` units or :ref:`proto_unit_obj`.
             height (float, UnitObj, optional): Specifies height in ``mm`` units or :ref:`proto_unit_obj`.
         """
-        self.width = width
-        self.height = height
+        self.width = round(width, 2)
+        self.height = round(height, 2)
 
     def get_size_mm100(self) -> Size:
         """
@@ -56,9 +56,18 @@ class SizeMM:
         """
         return SizeMM(width=UnitConvert.convert_mm100_mm(width), height=UnitConvert.convert_mm100_mm(height))
 
-    def __eq__(self, other: object) -> bool:
-        if isinstance(other, SizeMM):
-            return math.isclose(self.width, other.width) and math.isclose(self.height, other.height)
+    def __eq__(self, oth: object) -> bool:
+        if isinstance(oth, SizeMM):
+            w1 = round(round(self.width, 2) * 100)
+            w2 = round(round(oth.width, 2) * 100)
+            wrng = range(w1 - 2, w1 + 3)  # +- 2
+            if not w2 in wrng:
+                return False
+            h1 = round(round(self.height, 2) * 100)
+            h2 = round(round(oth.height, 2) * 100)
+            hrng = range(h1 - 2, h1 + 3)  # +- 2
+            return h2 in hrng
+            # return math.isclose(self.width, oth.width) and math.isclose(self.height, oth.height)
         return NotImplemented
 
     # region Properties
@@ -70,9 +79,9 @@ class SizeMM:
     @width.setter
     def width(self, value: float | UnitObj):
         try:
-            self._width = value.get_value_mm()
+            self._width = round(value.get_value_mm(), 2)
         except AttributeError:
-            self._width = float(value)
+            self._width = round(float(value), 2)
 
     @property
     def height(self) -> float:
@@ -82,8 +91,8 @@ class SizeMM:
     @height.setter
     def height(self, value: float | UnitObj):
         try:
-            self._height = value.get_value_mm()
+            self._height = round(value.get_value_mm(), 2)
         except AttributeError:
-            self._height = float(value)
+            self._height = round(float(value), 2)
 
     # endregion Properties

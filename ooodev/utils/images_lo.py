@@ -173,7 +173,7 @@ class ImagesLo:
             Size: Size containing Width and Height
         """
         graphic = cls.load_graphic_file(im_fnm)
-        sz =  cast(UnoSize, mProps.Props.get(graphic, "SizePixel"))
+        sz = cast(UnoSize, mProps.Props.get(graphic, "SizePixel"))
         return Size(sz.Width, sz.Height)
 
     @classmethod
@@ -196,7 +196,7 @@ class ImagesLo:
             Size: Size containing Width and Height
         """
         graphic = cls.load_graphic_file(im_fnm)
-        sz = cast(UnoSize,mProps.Props.get(graphic, "Size100thMM"))
+        sz = cast(UnoSize, mProps.Props.get(graphic, "Size100thMM"))
         return Size(sz.Width, sz.Height)
 
     @staticmethod
@@ -395,7 +395,7 @@ class ImagesLo:
         return (new_length / length) * 100
 
     @classmethod
-    def calc_scale_keep_size(cls, orig_len: float, new_len: float, start_crop: float, end_crop: float) -> float:
+    def calc_scale_crop(cls, orig_len: float, new_len: float, start_crop: float, end_crop: float) -> float:
         """
         Gets the scale factor for cropping values with keep size.
 

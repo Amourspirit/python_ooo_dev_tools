@@ -8,7 +8,12 @@ _TSize = TypeVar(name="_TSize", bound="Size")
 
 
 class Size:
-    """Represents a size with postive values."""
+    """
+    Represents a size with postive values.
+
+    See Also:
+        :ref:`proto_size_obj`
+    """
 
     def __init__(self, width: int, height: int) -> None:
         """
@@ -20,6 +25,15 @@ class Size:
         """
         self.width = width
         self.height = height
+
+    def __eq__(self, oth: object) -> bool:
+        if isinstance(oth, Size):
+            return self.width == oth.width and self.height == oth.height
+        try:
+            return self.width == oth.Width and self.height == oth.Height
+        except AttributeError:
+            pass
+        return NotImplemented
 
     def swap(self) -> Size:
         """Gets an instance with values swaped."""
