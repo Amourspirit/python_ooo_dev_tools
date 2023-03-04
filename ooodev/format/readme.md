@@ -110,6 +110,17 @@ mindmap
                         id{{Rotation}}
                     crop
                         id{{ImageCrop}}
+                    wrap
+                        id{{Options}}
+                        id{{Settings}}
+                        id{{Spacing}}
+                    area
+                        id{{Color}}
+                        id{{Gradient}}
+                        id{{Hatch}}
+                        id{{Img}}
+                        id{{Pattern}}
+
             [modify]
                 page
                     page

@@ -32,6 +32,8 @@ class FillColor(AbstractColor):
                 "com.sun.star.chart2.PageBackground",
                 "com.sun.star.style.Style",
                 "com.sun.star.text.TextFrame",
+                "com.sun.star.text.TextGraphicObject",
+                "com.sun.star.text.BaseFrame",
             )
         return self._supported_services_values
 
