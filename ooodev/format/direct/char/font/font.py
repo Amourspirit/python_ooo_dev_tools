@@ -41,6 +41,7 @@ class Font(StyleBase):
     Many properties such as ``bold``, ``italic``, ``underline`` can be chained together.
 
     Example:
+
         .. code-block:: python
 
             # chaining fonts together to add new properties
@@ -90,14 +91,14 @@ class Font(StyleBase):
             bg_transparent (bool, optional): Determines if the text background color is set to transparent.
             charset (CharSetEnum, optional): The text encoding of the font.
             color (Color, optional): The value of the text color. Setting to ``-1`` will cause automatic color.
-            family (FontFamilyEnum, optional): Font Family
+            family (FontFamilyEnum, optional): Font Family.
             size (float, UnitObj, optional): This value contains the size of the characters in ``pt`` (point) units or :ref:`proto_unit_obj`.
             name (str, optional): This property specifies the name of the font style. It may contain more than one name separated by comma.
             overline (FontUnderlineEnum, optional): The value for the character overline.
             overline_color (Color, optional): Specifies if the property ``CharOverlinelineColor`` is used for an overline.
             rotation (int, Angle, optional): Specifies the rotation of a character in degrees. Depending on the implementation only certain values may be allowed.
             slant (FontSlant, optional): The value of the posture of the document such as ``FontSlant.ITALIC``.
-            spacing (CharSpacingKind, float, UnitObj, optional): Specifies character spacing in ``pt` (point) units or :ref:`proto_unit_obj`.
+            spacing (CharSpacingKind, float, UnitObj, optional): Specifies character spacing in ``pt`` (point) units or :ref:`proto_unit_obj`.
             shadowed (bool, optional): Specifies if the characters are formatted and displayed with a shadow effect.
             shadow_fmt: (ShadowFormat, optional): Determines the type, color, and width of the shadow.
             strike (FontStrikeoutEnum, optional): Detrmines the type of the strike out of the character.
