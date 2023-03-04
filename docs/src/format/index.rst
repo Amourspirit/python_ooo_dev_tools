@@ -9,47 +9,30 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
-   format.calc
-   format.direct
-   format.draw
-   format.impress
-   format.kind
-   format.modify
-   format.preset
-   format.style
-   format.writer
+   ooodev.format.calc
+   ooodev.format.direct
+   ooodev.format.draw
+   ooodev.format.impress
+   ooodev.format.kind
+   ooodev.format.modify
+   ooodev.format.preset
+   ooodev.format.style
+   ooodev.format.writer
 
 Submodules
 ----------
 
-format.style\_base module
--------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: format.style_base
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-format.style\_const module
---------------------------
-
-.. automodule:: format.style_const
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-format.styler module
---------------------
-
-.. automodule:: format.styler
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   ooodev.format.style_base
+   ooodev.format.style_const
+   ooodev.format.styler
 
 Module contents
 ---------------
 
-.. automodule:: format
+.. automodule:: ooodev.format
    :members:
    :undoc-members:
    :show-inheritance:

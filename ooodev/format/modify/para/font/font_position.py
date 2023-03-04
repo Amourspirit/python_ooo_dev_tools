@@ -45,7 +45,7 @@ class FontPosition(ParaStyleBaseMulti):
             rotation (int, Angle, optional): Specifies the rotation of a character in degrees. Depending on the implementation only certain values may be allowed.
             scale (int, optional): Specifies scale width as percent value. Min value is ``1``.
             fit (bool, optional): Specifies if rotation is fit to line.
-            spacing (CharSpacingKind, float, UnitObj, optional): Specifies character spacing in ``pt` (point) units or :ref:`proto_unit_obj`.
+            spacing (CharSpacingKind, float, UnitObj, optional): Specifies character spacing in ``pt`` (point) units or :ref:`proto_unit_obj`.
             pair (bool, optional): Specifies pair kerning.
             style_name (StyleParaKind, str, optional): Specifies the Character Style that instance applies to. Deftult is Default Character Style.
             style_family (str, optional): Style family. Defatult ``ParagraphStyles``.
