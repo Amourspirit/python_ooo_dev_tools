@@ -127,6 +127,9 @@ mindmap
                     hyperlink
                         id{{LinkTo}}
                         id{{ImageMapOptions}}
+                    transparency
+                        id{{Gradient}}
+                        id{{Transparency}}
             [modify]
                 page
                     page
