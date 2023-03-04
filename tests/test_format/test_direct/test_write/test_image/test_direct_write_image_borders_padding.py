@@ -7,7 +7,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.writer.direct.frame.area import Pattern, PresetPatternKind
+from ooodev.format.writer.direct.image.borders import Padding
 from ooodev.format.writer.direct.image.options import Names
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
@@ -30,8 +30,9 @@ def test_write(loader, fix_image_path) -> None:
 
         img_size = ImagesLo.get_size_100mm(im_fnm=im_fnm)
         style_names = Names(name="skinner", desc="Skinner Pointing", alt="Pointer")
-        style = Pattern.from_preset(preset=PresetPatternKind.HORIZONTAL_BRICK)
 
+        amt = 2.3
+        style = Padding(all=amt)
         _ = Write.add_image_link(
             doc=doc,
             cursor=cursor,
@@ -46,9 +47,11 @@ def test_write(loader, fix_image_path) -> None:
         assert graphics.hasByName(style_names.prop_name)
         graphic = graphics.getByName(style_names.prop_name)
 
-        f_style = Pattern.from_obj(graphic)
-        assert f_style.prop_tile == style.prop_tile
-        assert f_style.prop_stretch == style.prop_stretch
+        f_style = Padding.from_obj(graphic)
+        assert f_style.prop_left.value == pytest.approx(amt, rel=1e-2)
+        assert f_style.prop_right.value == pytest.approx(amt, rel=1e-2)
+        assert f_style.prop_top.value == pytest.approx(amt, rel=1e-2)
+        assert f_style.prop_bottom.value == pytest.approx(amt, rel=1e-2)
 
         Lo.delay(delay)
     finally:

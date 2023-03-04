@@ -7,11 +7,13 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.writer.direct.frame.area import Pattern, PresetPatternKind
+from ooodev.format.writer.direct.image.borders import ShadowLocation, Shadow
 from ooodev.format.writer.direct.image.options import Names
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
+from ooodev.utils.color import StandardColor
+from ooodev.utils.data_type.unit_mm import UnitMM
 from ooodev.utils.images_lo import ImagesLo
 
 
@@ -30,8 +32,7 @@ def test_write(loader, fix_image_path) -> None:
 
         img_size = ImagesLo.get_size_100mm(im_fnm=im_fnm)
         style_names = Names(name="skinner", desc="Skinner Pointing", alt="Pointer")
-        style = Pattern.from_preset(preset=PresetPatternKind.HORIZONTAL_BRICK)
-
+        style = Shadow(location=ShadowLocation.BOTTOM_RIGHT, color=StandardColor.GRAY_LIGHT1, width=2.4)
         _ = Write.add_image_link(
             doc=doc,
             cursor=cursor,
@@ -46,9 +47,10 @@ def test_write(loader, fix_image_path) -> None:
         assert graphics.hasByName(style_names.prop_name)
         graphic = graphics.getByName(style_names.prop_name)
 
-        f_style = Pattern.from_obj(graphic)
-        assert f_style.prop_tile == style.prop_tile
-        assert f_style.prop_stretch == style.prop_stretch
+        f_style = Shadow.from_obj(graphic)
+        assert f_style.prop_width.value == pytest.approx(style.prop_width.value, rel=1e-2)
+        assert f_style.prop_color == StandardColor.GRAY_LIGHT1
+        assert f_style.prop_location == ShadowLocation.BOTTOM_RIGHT
 
         Lo.delay(delay)
     finally:
