@@ -96,6 +96,16 @@ mindmap
                         id{{Gradient}}
                         id{{Transparency}}
                 image
+                    area
+                        id{{Color}}
+                        id{{Gradient}}
+                        id{{Hatch}}
+                        id{{Img}}
+                        id{{Pattern}}
+                    borders
+                        id{{Padding}}
+                        id{{Sides}}
+                        id{{Shadow}}
                     type
                         id{{Anchor}}
                         id{{Position}}
@@ -110,6 +120,16 @@ mindmap
                         id{{Rotation}}
                     crop
                         id{{ImageCrop}}
+                    wrap
+                        id{{Options}}
+                        id{{Settings}}
+                        id{{Spacing}}
+                    hyperlink
+                        id{{LinkTo}}
+                        id{{ImageMapOptions}}
+                    transparency
+                        id{{Gradient}}
+                        id{{Transparency}}
             [modify]
                 page
                     page

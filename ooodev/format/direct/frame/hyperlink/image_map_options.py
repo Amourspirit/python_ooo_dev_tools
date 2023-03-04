@@ -44,7 +44,11 @@ class ImageMapOptions(StyleBase):
         try:
             return self._supported_services_values
         except AttributeError:
-            self._supported_services_values = ("com.sun.star.text.TextFrame",)
+            self._supported_services_values = (
+                "com.sun.star.text.TextFrame",
+                "com.sun.star.text.TextGraphicObject",
+                "com.sun.star.text.BaseFrame",
+            )
         return self._supported_services_values
 
     def _on_modifing(self, event: CancelEventArgs) -> None:

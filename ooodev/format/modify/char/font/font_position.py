@@ -6,6 +6,7 @@ from ....writer.style.char.kind.style_char_kind import StyleCharKind as StyleCha
 from ..char_style_base_multi import CharStyleBaseMulti
 from .....utils.data_type.intensity import Intensity as Intensity
 from .....utils.data_type.angle import Angle as Angle
+from .....proto.unit_obj import UnitObj
 from ....direct.char.font.font_position import (
     FontPosition as InnerFontPosition,
     CharSpacingKind as CharSpacingKind,
@@ -29,7 +30,7 @@ class FontPosition(CharStyleBaseMulti):
         rotation: int | Angle | None = None,
         scale: int | None = None,
         fit: bool | None = None,
-        spacing: CharSpacingKind | float | None = None,
+        spacing: CharSpacingKind | float | UnitObj | None = None,
         pair: bool | None = None,
         style_name: StyleCharKind | str = StyleCharKind.STANDARD,
         style_family: str = "CharacterStyles",
@@ -39,12 +40,12 @@ class FontPosition(CharStyleBaseMulti):
 
         Args:
             script_kind (FontScriptKind, optional): Specifies Superscript/Subscript option.
-            raise_lower (int, Intensity, optional): Specifies raise or Lower.
-            rel_size (int, optional): Specifies realitive Font Size. Set this value to ``0`` for automatic.
+            raise_lower (int, Intensity, optional): Specifies raise or Lower as percent value. Min value is ``1``.
+            rel_size (int, optional): Specifies realitive Font Size as percent value. Set this value to ``0`` for automatic; Otherwise value from ``1`` to ``100``.
             rotation (int, Angle, optional): Specifies the rotation of a character in degrees. Depending on the implementation only certain values may be allowed.
-            scale (int, optional): Specifies scale width.
+            scale (int, optional): Specifies scale width as percent value. Min value is ``1``.
             fit (bool, optional): Specifies if rotation is fit to line.
-            spacing (float, optional): Specifies character spacing in point units.
+            spacing (CharSpacingKind, float, UnitObj, optional): Specifies character spacing in ``pt`` (point) units or :ref:`proto_unit_obj`.
             pair (bool, optional): Specifies pair kerning.
             style_name (StyleCharKind, str, optional): Specifies the Character Style that instance applies to. Deftult is Default Character Style.
             style_family (str, optional): Style family. Defatult ``CharacterStyles``.
