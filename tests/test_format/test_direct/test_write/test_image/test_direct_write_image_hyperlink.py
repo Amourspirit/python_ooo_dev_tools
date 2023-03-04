@@ -7,12 +7,11 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.writer.direct.image.borders import Side, Sides, BorderLineStyleEnum, LineSize
+from ooodev.format.writer.direct.image.hyperlink import LinkTo, ImageMapOptions, TargetKind
 from ooodev.format.writer.direct.image.options import Names
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
-from ooodev.utils.color import StandardColor
 from ooodev.utils.images_lo import ImagesLo
 
 
@@ -32,8 +31,11 @@ def test_write(loader, fix_image_path) -> None:
         img_size = ImagesLo.get_size_100mm(im_fnm=im_fnm)
         style_names = Names(name="skinner", desc="Skinner Pointing", alt="Pointer")
 
-        side = Side(line=BorderLineStyleEnum.DOUBLE, color=StandardColor.RED_DARK3, width=LineSize.MEDIUM)
-        style = Sides(all=side)
+        ln_name = "ODEV"
+        ln_url = "https://python-ooo-dev-tools.readthedocs.io/en/latest/"
+        img_style = ImageMapOptions(server_map=True)
+
+        link_style = LinkTo(name=ln_name, url=ln_url, target=TargetKind.SELF)
 
         _ = Write.add_image_link(
             doc=doc,
@@ -41,7 +43,7 @@ def test_write(loader, fix_image_path) -> None:
             fnm=im_fnm,
             width=img_size.Width,
             height=img_size.Height,
-            styles=(style_names, style),
+            styles=(style_names, img_style, link_style),
         )
 
         graphics = Write.get_graphic_links(doc=doc)
@@ -49,10 +51,13 @@ def test_write(loader, fix_image_path) -> None:
         assert graphics.hasByName(style_names.prop_name)
         graphic = graphics.getByName(style_names.prop_name)
 
-        f_style = Sides.from_obj(graphic)
-        f_side = f_style.prop_left
-        assert f_side.prop_color == side.prop_color
-        assert f_side.prop_width == pytest.approx(side.prop_width, rel=1e-2)
+        f_link_style = LinkTo.from_obj(graphic)
+        assert f_link_style.prop_name == link_style.prop_name
+        assert f_link_style.prop_target == link_style.prop_target
+        assert f_link_style.prop_url == link_style.prop_url
+
+        f_img = ImageMapOptions.from_obj(graphic)
+        assert f_img.prop_server_map
 
         Lo.delay(delay)
     finally:
