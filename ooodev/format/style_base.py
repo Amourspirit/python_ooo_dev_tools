@@ -13,7 +13,7 @@ from ..events.args.key_val_cancel_args import KeyValCancelArgs as KeyValCancelAr
 from ..events.args.key_val_args import KeyValArgs as KeyValArgs
 from ..events.args.cancel_event_args import CancelEventArgs as CancelEventArgs
 from ..events.args.event_args import EventArgs as EventArgs
-from ..utils.type_var import T, EventCallback
+from ..utils.type_var import EventCallback
 from .kind.format_kind import FormatKind
 from ..events.format_named_event import FormatNamedEvent as FormatNamedEvent
 from ..exceptions import ex as mEx
@@ -41,7 +41,7 @@ _TStyleModifyMulti = TypeVar("_TStyleModifyMulti", bound="StyleModifyMulti")
 
 class MetaStyle(type):
     def __call__(cls, *args, **kw):
-        custom_args =  kw.pop("_cattribs", None)
+        custom_args = kw.pop("_cattribs", None)
         obj = cls.__new__(cls, *args, **kw)
         uniquie_id = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
         object.__setattr__(obj, "_uniquie_id", uniquie_id)

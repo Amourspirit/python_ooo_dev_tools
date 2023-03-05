@@ -27,13 +27,14 @@ class FillColor(AbstractColor):
             return self._supported_services_values
         except AttributeError:
             self._supported_services_values = (
-                "com.sun.star.drawing.FillProperties",
                 "com.sun.star.beans.PropertySet",
                 "com.sun.star.chart2.PageBackground",
+                "com.sun.star.drawing.FillProperties",
                 "com.sun.star.style.Style",
+                "com.sun.star.text.BaseFrame",
+                "com.sun.star.text.TextEmbeddedObject",
                 "com.sun.star.text.TextFrame",
                 "com.sun.star.text.TextGraphicObject",
-                "com.sun.star.text.BaseFrame",
             )
         return self._supported_services_values
 
