@@ -25,7 +25,7 @@ def test_write(loader, formula_text) -> None:
     try:
         cursor = Write.get_cursor(doc)
 
-        style_names = Names(name="skinner", desc="Skinner Pointing", alt="Pointer")
+        style_name = Names(name="formula", desc="Just a test Formula", alt="A real Formula")
 
         style = Properties(printable=False)
 
@@ -33,7 +33,7 @@ def test_write(loader, formula_text) -> None:
             cursor=cursor,
             formula=formula_text,
             styles=(
-                style_names,
+                style_name,
                 style,
             ),
         )

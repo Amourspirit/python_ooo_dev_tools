@@ -80,9 +80,10 @@ class Anchor(StyleBase):
         except AttributeError:
             self._supported_services_values = (
                 "com.sun.star.style.Style",
+                "com.sun.star.text.BaseFrame",
+                "com.sun.star.text.TextEmbeddedObject",
                 "com.sun.star.text.TextFrame",
                 "com.sun.star.text.TextGraphicObject",
-                "com.sun.star.text.BaseFrame",
             )
         return self._supported_services_values
 

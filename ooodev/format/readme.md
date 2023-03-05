@@ -131,12 +131,35 @@ mindmap
                         id{{Gradient}}
                         id{{Transparency}}
                 obj
+                    type
+                        id{{Anchor}}
+                        id{{Position}}
+                        id{{Size}}
+                    options
+                        id{{Align}}
+                        id{{Names}}
+                        id{{Properties}}
+                        id{{Protect}}
+                    wrap
+                        id{{Options}}
+                        id{{Settings}}
+                        id{{Spacing}}
+                    hyperlink
+                        id{{LinkTo}}
+                        id{{ImageMapOptions}}
+                    borders
+                        id{{Padding}}
+                        id{{Sides}}
+                        id{{Shadow}}
                     area
                         id{{Color}}
                         id{{Gradient}}
                         id{{Hatch}}
                         id{{Img}}
                         id{{Pattern}}
+                    transparency
+                        id{{Gradient}}
+                        id{{Transparency}}
             [modify]
                 page
                     page

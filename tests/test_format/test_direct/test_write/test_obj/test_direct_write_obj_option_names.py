@@ -27,7 +27,7 @@ def test_write(loader, formula_text) -> None:
     try:
         cursor = Write.get_cursor(doc)
 
-        style = Names(name="skinner", desc="Skinner Pointing", alt="Pointer")
+        style = Names(name="formula", desc="Just a test Formula", alt="A real Formula")
 
         content = Write.add_formula(cursor=cursor, formula=formula_text, styles=(style,))
 
