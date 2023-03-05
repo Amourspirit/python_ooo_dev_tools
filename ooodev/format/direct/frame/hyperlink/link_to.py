@@ -80,6 +80,7 @@ class LinkTo(StyleBase):
                 "com.sun.star.text.TextFrame",
                 "com.sun.star.text.TextGraphicObject",
                 "com.sun.star.text.BaseFrame",
+                "com.sun.star.text.TextEmbeddedObject",
             )
         return self._supported_services_values
 
