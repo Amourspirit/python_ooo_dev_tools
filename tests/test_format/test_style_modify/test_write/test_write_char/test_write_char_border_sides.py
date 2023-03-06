@@ -5,7 +5,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.writer.modify.char.borders import Side, SideFlags, Sides, BorderLineStyleEnum, LineSize
+from ooodev.format.writer.modify.char.borders import Side, Sides, BorderLineStyleEnum, LineSize
 from ooodev.format import StandardColor
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo

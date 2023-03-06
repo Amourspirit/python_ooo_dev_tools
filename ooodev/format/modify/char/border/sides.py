@@ -4,7 +4,7 @@ import uno
 from ....writer.style.char.kind.style_char_kind import StyleCharKind as StyleCharKind
 from ..char_style_base_multi import CharStyleBaseMulti
 from ....direct.char.border.sides import Sides as InnerSides
-from ....direct.structs.side import Side as Side, SideFlags as SideFlags, LineSize as LineSize
+from ....direct.structs.side import Side as Side, LineSize as LineSize
 
 
 from ooo.dyn.table.border_line_style import BorderLineStyleEnum as BorderLineStyleEnum

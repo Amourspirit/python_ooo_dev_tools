@@ -3,7 +3,7 @@ from typing import cast
 import uno
 from ....writer.style.para.kind import StyleParaKind as StyleParaKind
 from ..para_style_base_multi import ParaStyleBaseMulti
-from ....direct.structs.side import Side as Side, SideFlags as SideFlags, LineSize as LineSize
+from ....direct.structs.side import Side as Side, LineSize as LineSize
 from ....direct.para.border.shadow import Shadow as InnerShadow
 from ....direct.para.border.padding import Padding as InnerPadding
 from ....direct.para.border.borders import Borders as InnerBorders

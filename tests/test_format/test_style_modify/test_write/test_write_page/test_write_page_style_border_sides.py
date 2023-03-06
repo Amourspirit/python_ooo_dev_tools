@@ -8,7 +8,6 @@ import uno
 from ooodev.format.writer.modify.page.borders import (
     Sides,
     Side,
-    SideFlags,
     LineSize,
     StylePageKind,
     BorderLineStyleEnum,
@@ -42,7 +41,7 @@ def test_write(loader, para_text) -> None:
         f_style = Sides.from_style(doc, style.prop_style_name)
         f_side = f_style.prop_inner.prop_left
         assert f_side.prop_color == side.prop_color
-        assert f_side.prop_width == pytest.approx(side.prop_width, rel=1e2)
+        assert f_side.prop_width.value == pytest.approx(side.prop_width.value, rel=1e-2)
 
         Lo.delay(delay)
     finally:

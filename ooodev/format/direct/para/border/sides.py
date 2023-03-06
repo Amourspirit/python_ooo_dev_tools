@@ -5,17 +5,19 @@ Module for managing character border side.
 """
 # region imports
 from __future__ import annotations
-from typing import Tuple
+from typing import Tuple, TypeVar
 
 import uno
 from ...common.abstract.abstract_sides import AbstractSides
 from ...common.props.border_props import BorderProps
 from ....kind.format_kind import FormatKind
-from ...structs.side import Side as Side, LineSize as LineSize, SideFlags as SideFlags
+from ...structs.side import Side as Side, LineSize as LineSize
 
 from ooo.dyn.table.border_line_style import BorderLineStyleEnum as BorderLineStyleEnum
 
 # endregion imports
+
+_TSides = TypeVar(name="_TSides", bound="Sides")
 
 
 class Sides(AbstractSides):

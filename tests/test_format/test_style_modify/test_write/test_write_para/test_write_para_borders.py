@@ -12,7 +12,6 @@ from ooodev.format.writer.modify.para.borders import (
     ShadowLocation,
     ShadowFormat,
     Side,
-    SideFlags,
     Sides,
     BorderLineStyleEnum,
     LineSize,

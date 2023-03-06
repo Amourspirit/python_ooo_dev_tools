@@ -17,7 +17,7 @@ from ....style_base import StyleMulti
 
 from ....kind.border_kind import BorderKind
 from ....kind.format_kind import FormatKind
-from ...structs.side import Side as Side, SideFlags as SideFlags, LineSize as LineSize
+from ...structs.side import Side as Side, LineSize as LineSize
 from .shadow import Shadow as InnerShadow
 from .padding import Padding as InnerPadding
 from .sides import Sides

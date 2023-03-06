@@ -3,7 +3,7 @@ from ooo.dyn.table.border_line_style import BorderLineStyleEnum as BorderLineSty
 from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 from ....style.para import StyleParaKind as StyleParaKind
-from .....direct.structs.side import Side as Side, SideFlags as SideFlags, LineSize as LineSize
+from .....direct.structs.side import Side as Side, LineSize as LineSize
 from .....modify.para.border.padding import Padding as Padding, InnerPadding as InnerPadding
 from .....modify.para.border.sides import Sides as Sides, InnerSides as InnerSides
 from .....modify.para.border.shadow import Shadow as Shadow, InnerShadow as InnerShadow

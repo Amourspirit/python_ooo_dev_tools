@@ -352,6 +352,21 @@ class StyleBase(metaclass=MetaStyle):
         # may be usful to wrap in try statements in child classes
         mProps.Props.set(obj, **kwargs)
 
+    def _copy_missing_attribs(self, src: TStyleBase, dst: TStyleBase, *args: str) -> None:
+        """
+        Copies attribs from source to dst if dst does not already have the attrib.
+
+        Args:
+            src (TStyleBase): Source
+            dst (TStyleBase): Destination
+
+        Returns:
+            None:
+        """
+        for arg in args:
+            if not hasattr(dst, arg) and hasattr(src, arg):
+                setattr(dst, arg, getattr(src, arg))
+
     # region Backup/Restore
 
     def backup(self, obj: object) -> None:

@@ -19,7 +19,7 @@ from ....style_base import StyleMulti
 
 # from ..structs.shadow import Shadow
 from .shadow import Shadow as InnerShadow
-from ...structs.side import Side as Side, SideFlags as SideFlags, LineSize as LineSize
+from ...structs.side import Side as Side, LineSize as LineSize
 from .padding import Padding as InnerPadding
 from .sides import Sides
 

@@ -13,7 +13,7 @@ from .....exceptions import ex as mEx
 from .....utils import lo as mLo
 from ....kind.format_kind import FormatKind
 from ...structs.side import Side as Side
-from ....style_base import StyleBase
+from ....style_base import StyleMulti
 from ..props.border_props import BorderProps as BorderProps
 
 from ooo.dyn.table.border_line2 import BorderLine2
@@ -23,7 +23,7 @@ from ooo.dyn.table.border_line2 import BorderLine2
 _TAbstractSides = TypeVar(name="_TAbstractSides", bound="AbstractSides")
 
 
-class AbstractSides(StyleBase):
+class AbstractSides(StyleMulti):
     """
     Character Border for use in styles.
 
@@ -55,25 +55,21 @@ class AbstractSides(StyleBase):
             bottom (Side, optional): Determines the line style at the bottom edge.
             all (Side, optional): Determines the line style at the top, bottom, left, right edges. If this argument has a value then arguments ``top``, ``bottom``, ``left``, ``right`` are ignored
         """
-        init_vals = {}
+        super().__init__()
         if not all is None:
-            init_vals[self._props.top] = all
-            init_vals[self._props.bottom] = all
-            init_vals[self._props.left] = all
-            init_vals[self._props.right] = all
-
+            self.prop_left = all
+            self.prop_right = all
+            self.prop_top = all
+            self.prop_bottom = all
         else:
             if not top is None:
-                init_vals[self._props.top] = top
+                self.prop_top = top
             if not bottom is None:
-                init_vals[self._props.bottom] = bottom
+                self.prop_bottom = bottom
             if not left is None:
-                init_vals[self._props.left] = left
+                self.prop_left = left
             if not right is None:
-                init_vals[self._props.right] = right
-
-        self._has_attribs = len(init_vals) > 0
-        super().__init__(**init_vals)
+                self.prop_right = right
 
     # endregion init
 
@@ -81,7 +77,15 @@ class AbstractSides(StyleBase):
     # def style_left(self, value: Side | None = None) -> Sides:
     #     pass
     # endregion style methods
-    # region methods
+
+    # region internal methods
+    def _get_property_side(self, side: Side, prop: str) -> Side:
+        inst = side.copy(_cattribs={"_property_name": prop, "_supported_services_values": self._supported_services()})
+        return inst
+
+    # endregion internal methods
+
+    # region Overloads
 
     def _supported_services(self) -> Tuple[str, ...]:
         try:
@@ -90,44 +94,9 @@ class AbstractSides(StyleBase):
             self._supported_services_values = ("com.sun.star.style.CharacterProperties",)
         return self._supported_services_values
 
-    # region apply()
+    # endregion Overloads
 
-    @overload
-    def apply(self, obj: object) -> None:
-        ...
-
-    def apply(self, obj: object, **kwargs) -> None:
-        """
-        Applies Style to obj
-
-        Args:
-            obj (object): UNO object
-
-        Returns:
-            None:
-        """
-        try:
-            super().apply(obj, **kwargs)
-        except mEx.MultiError as e:
-            mLo.Lo.print(f"{self.__class__.__name__}.apply(): Unable to set Property")
-            for err in e.errors:
-                mLo.Lo.print(f"  {err}")
-
-    # endregion apply()
-
-    def on_property_setting(self, event_args: KeyValCancelArgs):
-        """
-        Raise for each property that is set
-
-        Args:
-            event_args (KeyValueCancelArgs): Event Args
-        """
-        if event_args.has("sides_border2_set"):
-            return
-        side = cast(Side, event_args.value)
-        event_args.value = side.get_uno_struct()
-        event_args.set("sides_border2_set", True)
-
+    # region Dunder Methods
     def __eq__(self, other: object) -> bool:
         if isinstance(other, AbstractSides):
             return (
@@ -137,6 +106,10 @@ class AbstractSides(StyleBase):
                 and self.prop_top == other.prop_top
             )
         return False
+
+    # endregion Dunder Methods
+
+    # region Static Methods
 
     # region from_obj()
     @overload
@@ -168,14 +141,22 @@ class AbstractSides(StyleBase):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
         empty = BorderLine2()
-        for attr in inst._props:
-            b2 = cast(BorderLine2, getattr(obj, attr, empty))
-            side = Side.from_uno_struct(b2)
-            inst._set(attr, side)
+        b2 = cast(BorderLine2, getattr(obj, inst._props.bottom, empty))
+        inst.prop_bottom = Side.from_uno_struct(b2)
+
+        b2 = cast(BorderLine2, getattr(obj, inst._props.left, empty))
+        inst.prop_left = Side.from_uno_struct(b2)
+
+        b2 = cast(BorderLine2, getattr(obj, inst._props.top, empty))
+        inst.prop_top = Side.from_uno_struct(b2)
+
+        b2 = cast(BorderLine2, getattr(obj, inst._props.right, empty))
+        inst.prop_right = Side.from_uno_struct(b2)
+
         return inst
 
     # endregion from_obj()
-    # endregion methods
+    # endregion Static Methods
 
     # region style methods
     def fmt_border_side(self: _TAbstractSides, value: Side | None) -> _TAbstractSides:
@@ -266,50 +247,90 @@ class AbstractSides(StyleBase):
     @property
     def prop_left(self) -> Side | None:
         """Gets left value"""
-        return self._get(self._props.left)
+        try:
+            return self._prop_left
+        except AttributeError:
+            val = self._get_style("left")
+            if val is None:
+                self._prop_left = None
+            else:
+                self._prop_left = val.style
+        return self._prop_left
 
     @prop_left.setter
     def prop_left(self, value: Side | None) -> None:
+        self._del_attribs("_prop_left")
         if value is None:
-            self._remove(self._props.left)
+            self._remove_style("left")
             return
-        self._set(self._props.left, value)
+        inst = self._get_property_side(value, self._props.left)
+        self._set_style("left", inst, *inst.get_attrs())
 
     @property
     def prop_right(self) -> Side | None:
         """Gets right value"""
-        return self._get(self._props.right)
+        try:
+            return self._prop_right
+        except AttributeError:
+            val = self._get_style("right")
+            if val is None:
+                self._prop_right = None
+            else:
+                self._prop_right = val.style
+        return self._prop_right
 
     @prop_right.setter
     def prop_right(self, value: Side | None) -> None:
+        self._del_attribs("_prop_right")
         if value is None:
-            self._remove(self._props.right)
+            self._remove_style("right")
             return
-        self._set(self._props.right, value)
+        inst = self._get_property_side(value, self._props.right)
+        self._set_style("right", inst, *inst.get_attrs())
 
     @property
     def prop_top(self) -> Side | None:
         """Gets top value"""
-        return self._get(self._props.top)
+        try:
+            return self._prop_top
+        except AttributeError:
+            val = self._get_style("top")
+            if val is None:
+                self._prop_top = None
+            else:
+                self._prop_top = val.style
+        return self._prop_top
 
     @prop_top.setter
     def prop_top(self, value: Side | None) -> None:
+        self._del_attribs("_prop_top")
         if value is None:
-            self._remove(self._props.top)
+            self._remove_style("top")
             return
-        self._set(self._props.top, value)
+        inst = self._get_property_side(value, self._props.top)
+        self._set_style("top", inst, *inst.get_attrs())
 
     @property
     def prop_bottom(self) -> Side | None:
         """Gets bottom value"""
-        return self._get(self._props.bottom)
+        try:
+            return self._prop_bottom
+        except AttributeError:
+            val = self._get_style("bottom")
+            if val is None:
+                self._prop_bottom = None
+            else:
+                self._prop_bottom = val.style
+        return self._prop_bottom
 
     @prop_bottom.setter
     def prop_bottom(self, value: Side | None) -> None:
+        self._del_attribs("_prop_bottom")
         if value is None:
-            self._remove(self._props.bottom)
+            self._remove_style("bottom")
             return
-        self._set(self._props.bottom, value)
+        inst = self._get_property_side(value, self._props.bottom)
+        self._set_style("bottom", inst, *inst.get_attrs())
 
     @property
     def _props(self) -> BorderProps:

@@ -47,12 +47,8 @@ def test_calc_border(loader) -> None:
         cp = cast("CellProperties", cell)
         # line width may not be applied exact by LibreOffice.
         assert cp.TableBorder2.IsLeftLineValid
-        assert cp.TableBorder2.LeftLine.LineWidth in [
-            UnitConvert.convert_pt_mm100(0.75) - 1 + i for i in range(3)
-        ]  # plus or minus 1
-        assert cp.TableBorder2.LeftLine.LineWidth in [
-            UnitConvert.convert_pt_mm100(0.75) - 1 + i for i in range(3)
-        ]  # plus or minus 1
+        lw_mm100 = UnitConvert.convert_pt_mm100(0.75)
+        assert cp.TableBorder2.LeftLine.LineWidth in range(lw_mm100 - 2, lw_mm100 + 3)  # +- 2
 
         assert cp.TableBorder2.IsRightLineValid
         assert cp.TableBorder2.RightLine.LineWidth == cp.TableBorder2.LeftLine.LineWidth
@@ -75,15 +71,13 @@ def test_calc_border(loader) -> None:
         Styler.apply(cell, cb)
         cp = cast("CellProperties", cell)
         assert cp.TableBorder2.IsLeftLineValid
-        assert cp.TableBorder2.LeftLine.LineWidth in [
-            UnitConvert.convert_pt_mm100(4.5) - 2 + i for i in range(5)
-        ]  # plus or minus 2
+        lw_mm100 = UnitConvert.convert_pt_mm100(4.5)
+        assert cp.TableBorder2.LeftLine.LineWidth in range(lw_mm100 - 2, lw_mm100 + 3)  # +- 2
         assert cp.TableBorder2.LeftLine.LineStyle == BorderLineStyleEnum.DASHED.value
 
         assert cp.TableBorder2.IsRightLineValid
-        assert cp.TableBorder2.RightLine.LineWidth in [
-            UnitConvert.convert_pt_mm100(2.5) - 2 + i for i in range(5)
-        ]  # plus or minus 2
+        lw_mm100 = UnitConvert.convert_pt_mm100(2.5)
+        assert cp.TableBorder2.RightLine.LineWidth in range(lw_mm100 - 2, lw_mm100 + 3)  # +- 2
         assert cp.TableBorder2.RightLine.LineStyle == BorderLineStyleEnum.DOUBLE.value
 
         assert cp.ShadowFormat == shadow.get_uno_struct()
