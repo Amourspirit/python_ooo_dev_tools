@@ -11,7 +11,7 @@ import uno
 from ...common.abstract.abstract_sides import AbstractSides
 from ...common.props.border_props import BorderProps
 from ....kind.format_kind import FormatKind
-from ...structs.side import Side as Side, BorderLineStyleEnum as BorderLineStyleEnum
+from ...structs.side import Side as Side, BorderLineKind as BorderLineKind
 
 # endregion imports
 

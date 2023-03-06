@@ -10,7 +10,7 @@ from ooodev.format.writer.modify.page.borders import (
     Side,
     LineSize,
     StylePageKind,
-    BorderLineStyleEnum,
+    BorderLineKind,
 )
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
@@ -32,7 +32,7 @@ def test_write(loader, para_text) -> None:
         if not Lo.bridge_connector.headless:
             Write.append_para(cursor=cursor, text=para_text)
 
-        side = Side(line=BorderLineStyleEnum.DOUBLE, color=StandardColor.RED_DARK3, width=LineSize.MEDIUM)
+        side = Side(line=BorderLineKind.DOUBLE, color=StandardColor.RED_DARK3, width=LineSize.MEDIUM)
 
         style = Sides(all=side)
         style.apply(doc)

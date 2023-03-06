@@ -6,8 +6,6 @@ from ..para_style_base_multi import ParaStyleBaseMulti
 from ....direct.structs.side import Side as Side, LineSize as LineSize
 from ....direct.para.border.sides import Sides as InnerSides
 
-from ooo.dyn.table.border_line_style import BorderLineStyleEnum as BorderLineStyleEnum
-
 
 class Sides(ParaStyleBaseMulti):
     """

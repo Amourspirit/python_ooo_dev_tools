@@ -13,7 +13,7 @@ from ooodev.format.writer.modify.para.borders import (
     ShadowFormat,
     Side,
     Sides,
-    BorderLineStyleEnum,
+    BorderLineKind,
     LineSize,
 )
 from ooodev.format import StandardColor
@@ -36,7 +36,7 @@ def test_write(loader, para_text) -> None:
         Write.append_para(cursor=cursor, text=para_text)
 
         style = Borders(
-            border_side=Side(line=BorderLineStyleEnum.DOUBLE, color=StandardColor.DEFAULT_BLUE, width=LineSize.MEDIUM),
+            border_side=Side(line=BorderLineKind.DOUBLE, color=StandardColor.DEFAULT_BLUE, width=LineSize.MEDIUM),
             padding=InnerPadding(all=3.0),
             shadow=InnerShadow(location=ShadowLocation.BOTTOM_RIGHT, width=2.0),
             merge=False,

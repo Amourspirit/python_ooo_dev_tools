@@ -5,7 +5,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.writer.direct.obj.borders import Side, Sides, BorderLineStyleEnum, LineSize
+from ooodev.format.writer.direct.obj.borders import Side, Sides, BorderLineKind, LineSize
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
@@ -24,7 +24,7 @@ def test_write(loader, formula_text) -> None:
     try:
         cursor = Write.get_cursor(doc)
 
-        side = Side(line=BorderLineStyleEnum.DOUBLE, color=StandardColor.RED_DARK3, width=LineSize.MEDIUM)
+        side = Side(line=BorderLineKind.DOUBLE, color=StandardColor.RED_DARK3, width=LineSize.MEDIUM)
         style = Sides(all=side)
 
         content = Write.add_formula(cursor=cursor, formula=formula_text, styles=(style,))

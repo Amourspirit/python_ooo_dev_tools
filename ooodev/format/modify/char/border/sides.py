@@ -7,9 +7,6 @@ from ....direct.char.border.sides import Sides as InnerSides
 from ....direct.structs.side import Side as Side, LineSize as LineSize
 
 
-from ooo.dyn.table.border_line_style import BorderLineStyleEnum as BorderLineStyleEnum
-
-
 class Sides(CharStyleBaseMulti):
     """
     Character Style Border Sides (lines).

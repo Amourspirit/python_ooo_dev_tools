@@ -13,8 +13,6 @@ from ...common.props.border_props import BorderProps
 from ....kind.format_kind import FormatKind
 from ...structs.side import Side as Side, LineSize as LineSize
 
-from ooo.dyn.table.border_line_style import BorderLineStyleEnum as BorderLineStyleEnum
-
 # endregion imports
 
 _TSides = TypeVar(name="_TSides", bound="Sides")

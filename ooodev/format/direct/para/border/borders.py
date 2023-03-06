@@ -24,7 +24,6 @@ from .padding import Padding as InnerPadding
 from .sides import Sides
 
 from ooo.dyn.table.border_line import BorderLine as BorderLine
-from ooo.dyn.table.border_line_style import BorderLineStyleEnum as BorderLineStyleEnum
 from ooo.dyn.table.border_line2 import BorderLine2 as BorderLine2
 from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation

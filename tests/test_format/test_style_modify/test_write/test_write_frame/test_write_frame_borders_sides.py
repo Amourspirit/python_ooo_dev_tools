@@ -9,7 +9,7 @@ from ooodev.format.writer.modify.frame.borders import (
     StyleFrameKind,
     Side,
     Sides,
-    BorderLineStyleEnum,
+    BorderLineKind,
     LineSize,
     InnerSides,
 )
@@ -29,14 +29,14 @@ def test_write(loader, para_text) -> None:
         Lo.delay(500)
         GUI.zoom(GUI.ZoomEnum.ENTIRE_PAGE)
     try:
-        # from some reason LibreOffice sometimes changes the values of BorderLine2 value with certain BorderLineStyleEnum
+        # from some reason LibreOffice sometimes changes the values of BorderLine2 value with certain BorderLineKind
         # such as DOUBLE_THIN, in testing is showed that DOUBLE_THIN caused BorderLine2.LineWidth to be changed.
         # However setting DOUBLE_THIN in libreOffice manually does not have this effect.
         cursor = Write.get_cursor(doc)
         if not Lo.bridge_connector.headless:
             Write.append_para(cursor=cursor, text=para_text)
 
-        side = Side(line=BorderLineStyleEnum.DOUBLE, color=StandardColor.RED_DARK3, width=LineSize.MEDIUM)
+        side = Side(line=BorderLineKind.DOUBLE, color=StandardColor.RED_DARK3, width=LineSize.MEDIUM)
 
         style = Sides(all=side, style_name=StyleFrameKind.FRAME)
         style.apply(doc)
@@ -56,7 +56,7 @@ def test_write(loader, para_text) -> None:
         assert f_side.prop_width.get_value_mm100() in range(side_mm100 - 2, side_mm100 + 2)  # +- 2
 
         # ========================================================
-        side = Side(line=BorderLineStyleEnum.DOUBLE, color=StandardColor.BLUE_DARK1, width=0.75)
+        side = Side(line=BorderLineKind.DOUBLE, color=StandardColor.BLUE_DARK1, width=0.75)
 
         style = Sides(all=side, style_name=StyleFrameKind.FRAME)
         style.apply(doc)
@@ -77,7 +77,7 @@ def test_write(loader, para_text) -> None:
 
         # ========================================================
 
-        side = Side(line=BorderLineStyleEnum.DASHED, color=StandardColor.BLUE_DARK1, width=LineSize.THIN)
+        side = Side(line=BorderLineKind.DASHED, color=StandardColor.BLUE_DARK1, width=LineSize.THIN)
 
         inner = InnerSides(all=side)
         # _ = style.prop_inner

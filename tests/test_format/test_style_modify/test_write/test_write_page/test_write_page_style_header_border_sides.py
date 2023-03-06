@@ -11,7 +11,7 @@ from ooodev.format.writer.modify.page.header.borders import (
     Side,
     LineSize,
     StylePageKind,
-    BorderLineStyleEnum,
+    BorderLineKind,
 )
 from ooodev.format import Styler
 from ooodev.utils.gui import GUI
@@ -44,7 +44,7 @@ def test_write(loader, para_text) -> None:
             margin_left=1.5,
             margin_right=2.0,
         )
-        side = Side(line=BorderLineStyleEnum.DOUBLE, color=StandardColor.RED_DARK3, width=LineSize.MEDIUM)
+        side = Side(line=BorderLineKind.DOUBLE, color=StandardColor.RED_DARK3, width=LineSize.MEDIUM)
 
         style = Sides(all=side)
         Styler.apply(doc, header_style, style)

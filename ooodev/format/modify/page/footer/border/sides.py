@@ -1,6 +1,5 @@
 from __future__ import annotations
 import uno
-from ooo.dyn.table.border_line_style import BorderLineStyleEnum as BorderLineStyleEnum
 
 from .....writer.style.page.kind.style_page_kind import StylePageKind as StylePageKind
 from .....direct.structs.side import Side as Side, LineSize as LineSize

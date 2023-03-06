@@ -1,7 +1,6 @@
 from __future__ import annotations
-from typing import Tuple, cast, Type, TypeVar
+from typing import cast, Type, TypeVar
 import uno
-from ooo.dyn.table.border_line_style import BorderLineStyleEnum as BorderLineStyleEnum
 
 from .....writer.style.page.kind.style_page_kind import StylePageKind as StylePageKind
 from ...page_style_base_multi import PageStyleBaseMulti

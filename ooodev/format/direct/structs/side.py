@@ -5,11 +5,12 @@ Module for table side (``BorderLine2``) struct.
 """
 # region imports
 from __future__ import annotations
-from typing import Tuple, cast, overload, Type, TypeVar
-from enum import Enum
+from typing import Tuple, cast, overload, Type, TypeVar, TYPE_CHECKING
+from enum import Enum, IntEnum
 
 import uno
 from ....meta.static_prop import static_prop
+from ....meta.deleted_enum_meta import DeletedUnoConstEnumMeta
 from ....proto.unit_obj import UnitObj
 from ....utils import props as mProps
 from ....utils.color import Color
@@ -20,8 +21,9 @@ from ...kind.format_kind import FormatKind
 from ...style_base import StyleBase, CancelEventArgs
 from ..common import border_width_impl as mBwi
 
+
 from ooo.dyn.table.border_line import BorderLine as BorderLine
-from ooo.dyn.table.border_line_style import BorderLineStyleEnum as BorderLineStyleEnum
+from ooo.dyn.table.border_line_style import BorderLineStyle
 from ooo.dyn.table.border_line2 import BorderLine2 as BorderLine2
 
 
@@ -30,6 +32,113 @@ from ooo.dyn.table.border_line2 import BorderLine2 as BorderLine2
 _TSide = TypeVar(name="_TSide", bound="Side")
 
 # region Enums
+
+if TYPE_CHECKING:
+
+    class BorderLineKind(IntEnum):
+        """
+        Enum of Const Class BorderLineStyle
+
+        """
+
+        NONE = BorderLineStyle.NONE
+        """
+        No border line.
+        """
+        SOLID = BorderLineStyle.SOLID
+        """
+        Solid border line.
+        """
+        DOTTED = BorderLineStyle.DOTTED
+        """
+        Dotted border line.
+        """
+        DASHED = BorderLineStyle.DASHED
+        """
+        Dashed border line.
+        """
+        DOUBLE = BorderLineStyle.DOUBLE
+        """
+        Double border line.
+        
+        Widths of the lines and the gap are all equal, and vary equally with the total width.
+        """
+        THINTHICK_SMALLGAP = BorderLineStyle.THINTHICK_SMALLGAP
+        """
+        Double border line with a thin line outside and a thick line inside separated by a small gap.
+        """
+        THINTHICK_MEDIUMGAP = BorderLineStyle.THINTHICK_MEDIUMGAP
+        """
+        Double border line with a thin line outside and a thick line inside separated by a medium gap.
+        """
+        THINTHICK_LARGEGAP = BorderLineStyle.THINTHICK_LARGEGAP
+        """
+        Double border line with a thin line outside and a thick line inside separated by a large gap.
+        """
+        THICKTHIN_SMALLGAP = BorderLineStyle.THICKTHIN_SMALLGAP
+        """
+        Double border line with a thick line outside and a thin line inside separated by a small gap.
+        """
+        THICKTHIN_MEDIUMGAP = BorderLineStyle.THICKTHIN_MEDIUMGAP
+        """
+        Double border line with a thick line outside and a thin line inside separated by a medium gap.
+        """
+        THICKTHIN_LARGEGAP = BorderLineStyle.THICKTHIN_LARGEGAP
+        """
+        Double border line with a thick line outside and a thin line inside separated by a large gap.
+        """
+        EMBOSSED = BorderLineStyle.EMBOSSED
+        """
+        3D embossed border line.
+        """
+        ENGRAVED = BorderLineStyle.ENGRAVED
+        """
+        3D engraved border line.
+        """
+        OUTSET = BorderLineStyle.OUTSET
+        """
+        Outset border line.
+        """
+        INSET = BorderLineStyle.INSET
+        """
+        Inset border line.
+        """
+        FINE_DASHED = BorderLineStyle.FINE_DASHED
+        """
+        Finely dashed border line.
+        """
+        DOUBLE_THIN = BorderLineStyle.DOUBLE_THIN
+        """
+        Double border line consisting of two fixed thin lines separated by a variable gap.
+        """
+        DASH_DOT = BorderLineStyle.DASH_DOT
+        """
+        Line consisting of a repetition of one dash and one dot.
+        """
+        DASH_DOT_DOT = BorderLineStyle.DASH_DOT_DOT
+        """
+        Line consisting of a repetition of one dash and 2 dots.
+        """
+        BORDER_LINE_STYLE_MAX = BorderLineStyle.BORDER_LINE_STYLE_MAX
+        """
+        Maximum valid border line style value.
+        """
+
+else:
+    # Class takes the place of the above class at runtime.
+    # The reason for this to make sure 'AT_FRAME' enum value is excluded.
+    # Also fture proof enum, if later version add new enum values.
+    class BorderLineKind(
+        IntEnum,
+        metaclass=DeletedUnoConstEnumMeta,
+        type_name="com.sun.star.table.BorderLineStyle",
+        name_space="com.sun.star.table",
+    ):
+        """Dynamic Enum. Contains all the constant values of ``com.sun.star.table.BorderLineStyle`` as Enum values"""
+
+        @staticmethod
+        def _get_deleted_attribs() -> Tuple[str]:
+            return ("BORDER_LINE_STYLE_MAX",)
 
 
 class LineSize(Enum):
@@ -82,7 +191,7 @@ class Side(StyleBase):
     def __init__(
         self,
         *,
-        line: BorderLineStyleEnum = BorderLineStyleEnum.SOLID,
+        line: BorderLineKind = BorderLineKind.SOLID,
         color: Color = CommonColor.BLACK,
         width: LineSize | float | UnitObj = LineSize.THIN,
     ) -> None:
@@ -126,27 +235,28 @@ class Side(StyleBase):
         super().__init__(**init_vals)
         self._set_line_values(pts=self._pts, line=line)
 
-    def _set_line_values(self, pts: int, line: BorderLineStyleEnum) -> None:
-        if line.name == BorderLineStyleEnum.BORDER_LINE_STYLE_MAX:
-            raise ValueError("BORDER_LINE_STYLE_MAX is not supported")
+    def _set_line_values(self, pts: int, line: BorderLineKind) -> None:
+        # taken care of by creating dynamic enum BorderLineKind
+        # if line.name == BorderLineKind.BORDER_LINE_STYLE_MAX:
+        #     raise ValueError("BORDER_LINE_STYLE_MAX is not supported")
 
         val_keys = ("OuterLineWidth", "InnerLineWidth", "LineDistance")
 
-        if line == BorderLineStyleEnum.NONE:
+        if line == BorderLineKind.NONE:
             for attr in val_keys:
                 self._set(attr, 0)
             return
 
         twips = UnitConvert.to_twips(pts, Length.PT)
         single_lns = (
-            BorderLineStyleEnum.SOLID,
-            BorderLineStyleEnum.DOTTED,
-            BorderLineStyleEnum.DASHED,
-            BorderLineStyleEnum.FINE_DASHED,
-            BorderLineStyleEnum.DASH_DOT,
-            BorderLineStyleEnum.DASH_DOT_DOT,
+            BorderLineKind.SOLID,
+            BorderLineKind.DOTTED,
+            BorderLineKind.DASHED,
+            BorderLineKind.FINE_DASHED,
+            BorderLineKind.DASH_DOT,
+            BorderLineKind.DASH_DOT_DOT,
         )
-        en_em = (BorderLineStyleEnum.ENGRAVED, BorderLineStyleEnum.EMBOSSED)
+        en_em = (BorderLineKind.ENGRAVED, BorderLineKind.EMBOSSED)
 
         vals = None
 
@@ -155,7 +265,7 @@ class Side(StyleBase):
             bw = mBwi.BorderWidthImpl(nFlags=flags, nRate1=1.0, nRate2=0.0, nRateGap=0.0)
             vals = (bw.get_line1(twips), bw.get_line2(twips), bw.get_gap(twips))
 
-        elif line == BorderLineStyleEnum.DOUBLE:
+        elif line == BorderLineKind.DOUBLE:
             flags = (
                 mBwi.BorderWidthImplFlags.CHANGE_DIST
                 | mBwi.BorderWidthImplFlags.CHANGE_LINE1
@@ -164,19 +274,19 @@ class Side(StyleBase):
             bw = mBwi.BorderWidthImpl(nFlags=flags, nRate1=1 / 3, nRate2=1 / 3, nRateGap=1 / 3)
             vals = (bw.get_line1(twips), bw.get_line2(twips), bw.get_gap(twips))
 
-        elif line == BorderLineStyleEnum.DOUBLE_THIN:
+        elif line == BorderLineKind.DOUBLE_THIN:
             flags = mBwi.BorderWidthImplFlags.CHANGE_DIST
             bw = mBwi.BorderWidthImpl(nFlags=flags, nRate1=10.0, nRate2=10.0, nRateGap=1.0)
             vals = (bw.get_line1(twips), bw.get_line2(twips), bw.get_gap(twips))
 
-        elif line == BorderLineStyleEnum.THINTHICK_SMALLGAP:
+        elif line == BorderLineKind.THINTHICK_SMALLGAP:
             flags = mBwi.BorderWidthImplFlags.CHANGE_LINE1
             bw = mBwi.BorderWidthImpl(
                 nFlags=flags, nRate1=1.0, nRate2=mBwi.THINTHICK_SMALLGAP_LINE2, nRateGap=mBwi.THINTHICK_SMALLGAP_GAP
             )
             vals = (bw.get_line1(twips), bw.get_line2(twips), bw.get_gap(twips))
 
-        elif line == BorderLineStyleEnum.THINTHICK_MEDIUMGAP:
+        elif line == BorderLineKind.THINTHICK_MEDIUMGAP:
             flags = (
                 mBwi.BorderWidthImplFlags.CHANGE_DIST
                 | mBwi.BorderWidthImplFlags.CHANGE_LINE1
@@ -185,21 +295,21 @@ class Side(StyleBase):
             bw = mBwi.BorderWidthImpl(nFlags=flags, nRate1=0.5, nRate2=0.25, nRateGap=0.25)
             vals = (bw.get_line1(twips), bw.get_line2(twips), bw.get_gap(twips))
 
-        elif line == BorderLineStyleEnum.THINTHICK_LARGEGAP:
+        elif line == BorderLineKind.THINTHICK_LARGEGAP:
             flags = mBwi.BorderWidthImplFlags.CHANGE_DIST
             bw = mBwi.BorderWidthImpl(
                 nFlags=flags, nRate1=mBwi.THINTHICK_LARGEGAP_LINE1, nRate2=mBwi.THINTHICK_LARGEGAP_LINE2, nRateGap=1.0
             )
             vals = (bw.get_line1(twips), bw.get_line2(twips), bw.get_gap(twips))
 
-        elif line == BorderLineStyleEnum.THICKTHIN_SMALLGAP:
+        elif line == BorderLineKind.THICKTHIN_SMALLGAP:
             flags = mBwi.BorderWidthImplFlags.CHANGE_LINE2
             bw = mBwi.BorderWidthImpl(
                 nFlags=flags, nRate1=mBwi.THICKTHIN_SMALLGAP_LINE1, nRate2=1.0, nRateGap=mBwi.THICKTHIN_SMALLGAP_GAP
             )
             vals = (bw.get_line1(twips), bw.get_line2(twips), bw.get_gap(twips))
 
-        elif line == BorderLineStyleEnum.THICKTHIN_MEDIUMGAP:
+        elif line == BorderLineKind.THICKTHIN_MEDIUMGAP:
             flags = (
                 mBwi.BorderWidthImplFlags.CHANGE_DIST
                 | mBwi.BorderWidthImplFlags.CHANGE_LINE1
@@ -208,7 +318,7 @@ class Side(StyleBase):
             bw = mBwi.BorderWidthImpl(nFlags=flags, nRate1=0.25, nRate2=0.5, nRateGap=0.25)
             vals = (bw.get_line1(twips), bw.get_line2(twips), bw.get_gap(twips))
 
-        elif line == BorderLineStyleEnum.THICKTHIN_LARGEGAP:
+        elif line == BorderLineKind.THICKTHIN_LARGEGAP:
             flags = mBwi.BorderWidthImplFlags.CHANGE_DIST
             bw = mBwi.BorderWidthImpl(
                 nFlags=flags, nRate1=mBwi.THICKTHIN_LARGEGAP_LINE1, nRate2=mBwi.THICKTHIN_LARGEGAP_LINE2, nRateGap=1.0
@@ -226,12 +336,12 @@ class Side(StyleBase):
             bw = mBwi.BorderWidthImpl(nFlags=flags, nRate1=0.25, nRate2=0.25, nRateGap=0.5)
             vals = (bw.get_line1(twips), bw.get_line2(twips), bw.get_gap(twips))
 
-        elif line == BorderLineStyleEnum.OUTSET:
+        elif line == BorderLineKind.OUTSET:
             flags = flags = mBwi.BorderWidthImplFlags.CHANGE_DIST | mBwi.BorderWidthImplFlags.CHANGE_LINE2
             bw = mBwi.BorderWidthImpl(nFlags=flags, nRate1=mBwi.OUTSET_LINE1, nRate2=0.5, nRateGap=0.5)
             vals = (bw.get_line1(twips), bw.get_line2(twips), bw.get_gap(twips))
 
-        elif line == BorderLineStyleEnum.INSET:
+        elif line == BorderLineKind.INSET:
             flags = flags = mBwi.BorderWidthImplFlags.CHANGE_DIST | mBwi.BorderWidthImplFlags.CHANGE_LINE1
             bw = mBwi.BorderWidthImpl(nFlags=flags, nRate1=0.5, nRate2=mBwi.INSET_LINE2, nRateGap=0.5)
             vals = (bw.get_line1(twips), bw.get_line2(twips), bw.get_gap(twips))
@@ -369,7 +479,7 @@ class Side(StyleBase):
         try:
             return Side._EMPTY_INST
         except AttributeError:
-            Side._EMPTY_INST = Side(line=BorderLineStyleEnum.NONE, color=0, width=0.0)
+            Side._EMPTY_INST = Side(line=BorderLineKind.NONE, color=0, width=0.0)
             Side._EMPTY_INST._is_default_inst = True
         return Side._EMPTY_INST
 
@@ -409,7 +519,7 @@ class Side(StyleBase):
     # endregion methods
 
     # region style methods
-    def fmt_style(self: _TSide, value: BorderLineStyleEnum) -> _TSide:
+    def fmt_style(self: _TSide, value: BorderLineKind) -> _TSide:
         """
         Gets copy of instance with style set.
 
@@ -452,97 +562,97 @@ class Side(StyleBase):
     @property
     def line_none(self: _TSide) -> _TSide:
         """Gets instance with no border line"""
-        return self.fmt_style(BorderLineStyleEnum.NONE)
+        return self.fmt_style(BorderLineKind.NONE)
 
     @property
     def line_solid(self: _TSide) -> _TSide:
         """Gets instance with solid border line"""
-        return self.fmt_style(BorderLineStyleEnum.SOLID)
+        return self.fmt_style(BorderLineKind.SOLID)
 
     @property
     def line_dotted(self: _TSide) -> _TSide:
         """Gets instance with dotted border line"""
-        return self.fmt_style(BorderLineStyleEnum.DOTTED)
+        return self.fmt_style(BorderLineKind.DOTTED)
 
     @property
     def line_dashed(self: _TSide) -> _TSide:
         """Gets instance with dashed border line"""
-        return self.fmt_style(BorderLineStyleEnum.DASHED)
+        return self.fmt_style(BorderLineKind.DASHED)
 
     @property
     def line_double(self: _TSide) -> _TSide:
         """Gets instance with double border line"""
-        return self.fmt_style(BorderLineStyleEnum.DOUBLE)
+        return self.fmt_style(BorderLineKind.DOUBLE)
 
     @property
     def line_thin_thick_small_gap(self: _TSide) -> _TSide:
         """Gets instance with double border line with a thin line outside and a thick line inside separated by a small gap."""
-        return self.fmt_style(BorderLineStyleEnum.THINTHICK_SMALLGAP)
+        return self.fmt_style(BorderLineKind.THINTHICK_SMALLGAP)
 
     @property
     def line_thin_thick_medium_gap(self: _TSide) -> _TSide:
         """Gets instance with double border line with a thin line outside and a thick line inside separated by a medium gap."""
-        return self.fmt_style(BorderLineStyleEnum.THINTHICK_MEDIUMGAP)
+        return self.fmt_style(BorderLineKind.THINTHICK_MEDIUMGAP)
 
     @property
     def line_thin_thick_large_gap(self: _TSide) -> _TSide:
         """Gets instance with double border line with a thin line outside and a thick line inside separated by a large gap."""
-        return self.fmt_style(BorderLineStyleEnum.THINTHICK_LARGEGAP)
+        return self.fmt_style(BorderLineKind.THINTHICK_LARGEGAP)
 
     @property
     def line_thick_thin_small_gap(self: _TSide) -> _TSide:
         """Gets instance with double border line with a thick line outside and a thin line inside separated by a small gap."""
-        return self.fmt_style(BorderLineStyleEnum.THICKTHIN_SMALLGAP)
+        return self.fmt_style(BorderLineKind.THICKTHIN_SMALLGAP)
 
     @property
     def line_thick_thin_medium_gap(self: _TSide) -> _TSide:
         """Gets instance with double border line with a thick line outside and a thin line inside separated by a medium gap."""
-        return self.fmt_style(BorderLineStyleEnum.THICKTHIN_MEDIUMGAP)
+        return self.fmt_style(BorderLineKind.THICKTHIN_MEDIUMGAP)
 
     @property
     def line_thick_thin_large_gap(self: _TSide) -> _TSide:
         """Gets instance with double border line with a thick line outside and a thin line inside separated by a large gap."""
-        return self.fmt_style(BorderLineStyleEnum.THICKTHIN_LARGEGAP)
+        return self.fmt_style(BorderLineKind.THICKTHIN_LARGEGAP)
 
     @property
     def line_embossed(self: _TSide) -> _TSide:
         """Gets instance with 3D embossed border line."""
-        return self.fmt_style(BorderLineStyleEnum.EMBOSSED)
+        return self.fmt_style(BorderLineKind.EMBOSSED)
 
     @property
     def line_engraved(self: _TSide) -> _TSide:
         """Gets instance with 3D engraved border line."""
-        return self.fmt_style(BorderLineStyleEnum.ENGRAVED)
+        return self.fmt_style(BorderLineKind.ENGRAVED)
 
     @property
     def line_outset(self: _TSide) -> _TSide:
         """Gets instance with outset border line."""
-        return self.fmt_style(BorderLineStyleEnum.OUTSET)
+        return self.fmt_style(BorderLineKind.OUTSET)
 
     @property
     def line_inset(self: _TSide) -> _TSide:
         """Gets instance with inset border line."""
-        return self.fmt_style(BorderLineStyleEnum.INSET)
+        return self.fmt_style(BorderLineKind.INSET)
 
     @property
     def line_fine_dashed(self: _TSide) -> _TSide:
         """Gets instance with finely dashed border line."""
-        return self.fmt_style(BorderLineStyleEnum.FINE_DASHED)
+        return self.fmt_style(BorderLineKind.FINE_DASHED)
 
     @property
     def line_double_thin(self: _TSide) -> _TSide:
         """Gets instance with Double border line consisting of two fixed thin lines separated by a variable gap."""
-        return self.fmt_style(BorderLineStyleEnum.DOUBLE_THIN)
+        return self.fmt_style(BorderLineKind.DOUBLE_THIN)
 
     @property
     def line_dash_dot(self: _TSide) -> _TSide:
         """Gets instance with line consisting of a repetition of one dash and one dot."""
-        return self.fmt_style(BorderLineStyleEnum.DASH_DOT)
+        return self.fmt_style(BorderLineKind.DASH_DOT)
 
     @property
     def line_dash_dot_dot(self: _TSide) -> _TSide:
         """Gets instance with line consisting of a repetition of one dash and 2 dots."""
-        return self.fmt_style(BorderLineStyleEnum.DASH_DOT_DOT)
+        return self.fmt_style(BorderLineKind.DASH_DOT_DOT)
 
     # endregion Style Properties
     # region properties
@@ -556,13 +666,13 @@ class Side(StyleBase):
         return self._format_kind_prop
 
     @property
-    def prop_line(self) -> BorderLineStyleEnum:
+    def prop_line(self) -> BorderLineKind:
         """Gets Border Line style"""
         pv = cast(int, self._get("LineStyle"))
-        return BorderLineStyleEnum(pv)
+        return BorderLineKind(pv)
 
     @prop_line.setter
-    def prop_line(self, value: BorderLineStyleEnum) -> None:
+    def prop_line(self, value: BorderLineKind) -> None:
         self._set("LineStyle", value.value)
         self._set_line_values(self._pts, value)
 
