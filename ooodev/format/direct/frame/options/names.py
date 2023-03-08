@@ -192,12 +192,12 @@ class Names(StyleBase):
     @property
     def _props(self) -> FrameOptionsNamesProps:
         try:
-            return self._props_frame_opts_protect
+            return self._props_internal_attributes
         except AttributeError:
-            self._props_frame_opts_protect = FrameOptionsNamesProps(
+            self._props_internal_attributes = FrameOptionsNamesProps(
                 name="Name",
                 desc="Description",
                 prev="",  # ChainPrevName not working
                 next="",  # ChainNextName not working
             )
-        return self._props_frame_opts_protect
+        return self._props_internal_attributes

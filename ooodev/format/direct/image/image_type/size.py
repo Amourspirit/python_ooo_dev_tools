@@ -43,7 +43,7 @@ class RelativeSize:
     """Relative size"""
 
     size: int
-    """Percentage of Page Or Paragraph from 1 to 254"""
+    """Percentage of Page Or Paragraph from ``1`` to ``254``"""
     kind: RelativeKind
     """Relative Kind"""
 
@@ -131,7 +131,7 @@ class Size(AbstractDocument):
         else:
             doc_size = self.get_page_text_size()
         percent = size.size / 100
-        return round(doc_size.Width * percent)
+        return round(doc_size.width * percent)
 
     def _get_rel_height(self, size: RelativeSize) -> int:
         if size.kind == RelativeKind.PAGE:
@@ -139,7 +139,7 @@ class Size(AbstractDocument):
         else:
             doc_size = self.get_page_text_size()
         percent = size.size / 100
-        return round(doc_size.Height * percent)
+        return round(doc_size.height * percent)
 
     # endregion Internal Methods
 

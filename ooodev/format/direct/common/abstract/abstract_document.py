@@ -7,10 +7,10 @@ from __future__ import annotations
 
 import uno
 from com.sun.star.text import XTextDocument
-from ooo.dyn.awt.size import Size
 
 from .....exceptions import ex as mEx
 from .....utils import info as mInfo
+from .....utils.data_type.size import Size
 from .....office import write as mWrite
 from ....style_base import StyleBase
 from ..props.border_props import BorderProps as BorderProps
@@ -46,7 +46,7 @@ class AbstractDocument(StyleBase):
 
     def get_page_text_size(self) -> Size:
         """
-        Get page text size
+        Get page text size  in ``1/100 mm`` units.
 
         Raises:
             PropertiesError: If unable to access properties
@@ -80,7 +80,7 @@ class AbstractDocument(StyleBase):
 
     def get_page_size(self) -> Size:
         """
-        Get page size
+        Get page size  in ``1/100 mm`` units.
 
         Raises:
             PropertiesError: If unable to access properties

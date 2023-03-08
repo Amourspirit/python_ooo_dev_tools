@@ -1825,7 +1825,7 @@ class Write(mSel.Selection):
     @staticmethod
     def get_page_text_width(text_doc: XTextDocument) -> int:
         """
-        get the width of the page's text area
+        Get the width of the page's text area in ``1/100 mm`` units.
 
         Args:
             text_doc (XTextDocument): Text Document
@@ -1851,7 +1851,7 @@ class Write(mSel.Selection):
     @staticmethod
     def get_page_text_size(text_doc: XTextDocument) -> Size:
         """
-        Get page text size
+        Get page text size in ``1/100 mm`` units.
 
         Args:
             text_doc (XTextDocument): Text Document
@@ -1885,7 +1885,7 @@ class Write(mSel.Selection):
     @staticmethod
     def get_page_size(text_doc: XTextDocument) -> Size:
         """
-        Get page size
+        Get page size in ``1/100 mm`` units.
 
         Args:
             text_doc (XTextDocument): Text Document

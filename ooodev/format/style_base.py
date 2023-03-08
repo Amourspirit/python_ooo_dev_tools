@@ -138,7 +138,7 @@ class StyleBase(metaclass=MetaStyle):
 
     def _get(self, key: str) -> Any:
         """Gets the property value"""
-        return self._dv.get(key, None)
+        return self._get_properties().get(key, None)
 
     def _set(self, key: str, val: Any) -> bool:
         """Sets a property value"""
@@ -152,7 +152,8 @@ class StyleBase(metaclass=MetaStyle):
             return False
         if cargs.cancel:
             return False
-        self._dv[kvargs.key] = kvargs.value
+        dv = self._get_properties()
+        dv[kvargs.key] = kvargs.value
         self._events.trigger(FormatNamedEvent.STYLE_SET, KeyValArgs.from_args(kvargs))
         return True
 
@@ -167,11 +168,12 @@ class StyleBase(metaclass=MetaStyle):
             return
         self._on_setting(cargs)
         self._on_modifing(cargs)
-        self._dv.clear()
+        dv = self._get_properties()
+        dv.clear()
 
     def _has(self, key: str) -> bool:
         """Gets if a property exist"""
-        return key in self._dv
+        return key in self._get_properties()
 
     def _remove(self, key: str) -> bool:
         """Removes a property if it exist"""
@@ -184,7 +186,8 @@ class StyleBase(metaclass=MetaStyle):
         if cargs.cancel:
             return
         if self._has(key):
-            del self._dv[key]
+            dv = self._get_properties()
+            del dv[key]
             return True
         return False
 
@@ -215,10 +218,11 @@ class StyleBase(metaclass=MetaStyle):
         self._events.trigger(self._get_uniquie_event_name(FormatNamedEvent.STYLE_MODIFING), cargs)
         if cargs.cancel:
             return
+        dv = self._get_properties()
         if isinstance(cargs.event_data, StyleBase):
-            self._dv.update(cargs.event_data._dv)
+            dv.update(cargs.event_data._dv)
             return
-        self._dv.update(cargs.event_data)
+        dv.update(cargs.event_data)
 
     # endregion style property methods
 
@@ -297,7 +301,7 @@ class StyleBase(metaclass=MetaStyle):
             Tuple(str, ...): Tuple of attribures
         """
         # get current keys in internal dictionary
-        return tuple(self._dv.keys())
+        return tuple(self._get_properties().keys())
 
     def apply(self, obj: object, **kwargs) -> None:
         """
@@ -322,7 +326,7 @@ class StyleBase(metaclass=MetaStyle):
         if "override_dv" in kwargs:
             dv = kwargs["override_dv"]
         else:
-            dv = self._dv
+            dv = self._get_properties()
         if len(dv) > 0:
             if self._is_valid_obj(obj):
                 cargs = CancelEventArgs(source=f"{self.apply.__qualname__}")
@@ -614,7 +618,8 @@ class StyleBase(metaclass=MetaStyle):
 
             if key_map:
                 for key, nu_val in key_map.items():
-                    nu._set(nu_val, self._get(key))
+                    if self._has(key):
+                        nu._set(nu_val, self._get(key))
             else:
                 nu._update(self._get_properties())
         return nu
