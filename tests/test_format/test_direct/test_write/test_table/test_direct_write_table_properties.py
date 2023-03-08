@@ -15,10 +15,11 @@ from ooodev.format.writer.direct.table.properties import (
     TblFromLeft,
     TblFromLeftWidth,
     TblManual,
-    TblRelLeft,
+    TblRelLeftByWidth,
     TblRelFromLeft,
-    TblRelRight,
+    TblRelRightByWidth,
     TblRelCenter,
+    TableAlignKind,
 )
 from ooodev.utils.color import StandardColor
 from ooodev.utils.gui import GUI
@@ -115,6 +116,34 @@ def test_write(loader) -> None:
         assert pobj.prop_above.get_value_mm100() in range(above.value - 2, above.value + 3)  # +- 2
         assert pobj.prop_below.get_value_mm100() in range(below.value - 2, below.value + 3)  # +- 2
         assert pobj.prop_margin.get_value_mm100() in range(margin.value - 2, margin.value + 3)  # +- 2
+
+        Lo.delay(delay)
+    finally:
+        Lo.close_doc(doc)
+
+
+def test_write_abs(loader) -> None:
+    # delay = 0 if Lo.bridge_connector.headless else 3_000
+    delay = 0
+
+    doc = Write.create_doc()
+    if not Lo.bridge_connector.headless:
+        GUI.set_visible()
+        Lo.delay(500)
+        GUI.zoom(GUI.ZoomEnum.ZOOM_150_PERCENT)
+    try:
+        cursor = Write.get_cursor(doc)
+
+        tbl_data = TableHelper.make_2d_array(num_rows=5, num_cols=5)
+
+        above = UnitMM100.from_mm(2.0)
+        below = UnitMM100.from_mm(1.8)
+        style = TableProperties(name="My_Table", relative=False, align=TableAlignKind.AUTO)
+
+        table = Write.add_table(cursor=cursor, table_data=tbl_data)
+        style.apply(table)
+
+        tp = TableProperties.from_obj(table)
 
         Lo.delay(delay)
     finally:
