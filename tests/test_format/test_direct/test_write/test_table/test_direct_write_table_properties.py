@@ -8,13 +8,13 @@ import uno
 from ooodev.format.writer.direct.table.properties import (
     TableProperties,
     TblAuto,
-    TblWidth,
+    TblCenterWidth,
     TblLeft,
     TblRight,
-    TblCenter,
+    TblCenterLeft,
     TblFromLeft,
     TblFromLeftWidth,
-    TblManual,
+    TblManualLeftRight,
     TblRelLeftByWidth,
     TblRelFromLeft,
     TblRelRightByWidth,
@@ -27,99 +27,6 @@ from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
 from ooodev.utils.table_helper import TableHelper
 from ooodev.utils.data_type.unit_mm100 import UnitMM100
-
-
-def test_write(loader) -> None:
-    # delay = 0 if Lo.bridge_connector.headless else 3_000
-    delay = 0
-
-    doc = Write.create_doc()
-    if not Lo.bridge_connector.headless:
-        GUI.set_visible()
-        Lo.delay(500)
-        GUI.zoom(GUI.ZoomEnum.ZOOM_150_PERCENT)
-    try:
-        cursor = Write.get_cursor(doc)
-
-        tbl_data = TableHelper.make_2d_array(num_rows=5, num_cols=5)
-
-        above = UnitMM100.from_mm(2.0)
-        below = UnitMM100.from_mm(1.8)
-        style = TableProperties(name="My_Table", size=TblAuto(above=above, below=below))
-
-        table = Write.add_table(cursor=cursor, table_data=tbl_data)
-        style.apply(table)
-
-        tp = TableProperties.from_obj(table)
-        pobj = tp.prop_obj
-        assert isinstance(pobj, TblAuto)
-        assert tp.prop_name == "My_Table"
-        assert pobj.prop_above.get_value_mm100() in range(above.value - 2, above.value + 3)  # +- 2
-        assert pobj.prop_below.get_value_mm100() in range(below.value - 2, below.value + 3)  # +- 2
-
-        margin = UnitMM100.from_mm(3.0)
-        style = TableProperties(size=TblLeft(margin=margin, above=above, below=below))
-        style.apply(table)
-
-        tp = TableProperties.from_obj(table)
-        pobj = tp.prop_obj
-        assert isinstance(pobj, TblLeft)
-        assert tp.prop_name == "My_Table"
-        assert pobj.prop_above.get_value_mm100() in range(above.value - 2, above.value + 3)  # +- 2
-        assert pobj.prop_below.get_value_mm100() in range(below.value - 2, below.value + 3)  # +- 2
-        assert pobj.prop_margin.get_value_mm100() in range(margin.value - 2, margin.value + 3)  # +- 2
-
-        width = UnitMM100.from_mm(150.0)
-        style = TableProperties(size=TblWidth(width=width, above=above, below=below))
-        style.apply(table)
-
-        tp = TableProperties.from_obj(table)
-        pobj = tp.prop_obj
-        assert isinstance(pobj, TblWidth)
-        assert tp.prop_name == "My_Table"
-        assert pobj.prop_above.get_value_mm100() in range(above.value - 2, above.value + 3)  # +- 2
-        assert pobj.prop_below.get_value_mm100() in range(below.value - 2, below.value + 3)  # +- 2
-        assert pobj.prop_width.get_value_mm100() in range(width.value - 2, width.value + 3)  # +- 2
-
-        margin = UnitMM100.from_mm(100.0)
-        style = TableProperties(size=TblRight(margin=margin, above=above, below=below))
-        style.apply(table)
-
-        tp = TableProperties.from_obj(table)
-        pobj = tp.prop_obj
-        assert isinstance(pobj, TblRight)
-        assert tp.prop_name == "My_Table"
-        assert pobj.prop_above.get_value_mm100() in range(above.value - 2, above.value + 3)  # +- 2
-        assert pobj.prop_below.get_value_mm100() in range(below.value - 2, below.value + 3)  # +- 2
-        assert pobj.prop_margin.get_value_mm100() in range(margin.value - 2, margin.value + 3)  # +- 2
-
-        margin = UnitMM100.from_mm(50)
-        style = TableProperties(size=TblCenter(margin=margin, above=above, below=below))
-        style.apply(table)
-
-        tp = TableProperties.from_obj(table)
-        pobj = tp.prop_obj
-        # from_obj for TblCenter will return TblWidth
-        assert isinstance(pobj, TblWidth)
-        assert tp.prop_name == "My_Table"
-        assert pobj.prop_above.get_value_mm100() in range(above.value - 2, above.value + 3)  # +- 2
-        assert pobj.prop_below.get_value_mm100() in range(below.value - 2, below.value + 3)  # +- 2
-
-        margin = UnitMM100.from_mm(3.5)
-        style = TableProperties(size=TblFromLeft(margin=margin, above=above, below=below))
-        style.apply(table)
-
-        tp = TableProperties.from_obj(table)
-        pobj = tp.prop_obj
-        assert isinstance(pobj, TblFromLeft)
-        assert tp.prop_name == "My_Table"
-        assert pobj.prop_above.get_value_mm100() in range(above.value - 2, above.value + 3)  # +- 2
-        assert pobj.prop_below.get_value_mm100() in range(below.value - 2, below.value + 3)  # +- 2
-        assert pobj.prop_margin.get_value_mm100() in range(margin.value - 2, margin.value + 3)  # +- 2
-
-        Lo.delay(delay)
-    finally:
-        Lo.close_doc(doc)
 
 
 def test_write_abs(loader) -> None:
@@ -136,14 +43,217 @@ def test_write_abs(loader) -> None:
 
         tbl_data = TableHelper.make_2d_array(num_rows=5, num_cols=5)
 
-        above = UnitMM100.from_mm(2.0)
-        below = UnitMM100.from_mm(1.8)
         style = TableProperties(name="My_Table", relative=False, align=TableAlignKind.AUTO)
 
         table = Write.add_table(cursor=cursor, table_data=tbl_data)
         style.apply(table)
 
         tp = TableProperties.from_obj(table)
+        assert tp.prop_left.value == 0
+        assert tp.prop_right.value == 0
+        assert tp.prop_width.value > 0
+
+        # ==================== Center Width ===============================
+
+        above100 = UnitMM100.from_mm(2.0)
+        below100 = UnitMM100.from_mm(1.8)
+        width100 = UnitMM100.from_mm(60)
+        style = TableProperties(
+            relative=False,
+            align=TableAlignKind.CENTER,
+            above=above100,
+            below=below100,
+            width=width100,
+        )
+
+        style.apply(table)
+
+        tp = TableProperties.from_obj(table)
+        assert tp.prop_left.value > 0
+        assert tp.prop_right.value > 0
+        assert tp.prop_right.get_value_mm100() in range(
+            tp.prop_left.get_value_mm100() - 2, tp.prop_left.get_value_mm100() + 3
+        )  # +- 2
+        assert tp.prop_width.get_value_mm100() in range(width100.value - 2, width100.value + 3)
+        assert tp.prop_above.get_value_mm100() in range(above100.value - 2, above100.value + 3)  # +- 2
+        assert tp.prop_below.get_value_mm100() in range(below100.value - 2, below100.value + 3)  # +- 2
+
+        # ==================== Center Left ===============================
+
+        above100 = UnitMM100.from_mm(2.0)
+        below100 = UnitMM100.from_mm(1.8)
+        left100 = UnitMM100.from_mm(40)
+        style = TableProperties(
+            relative=False,
+            align=TableAlignKind.CENTER,
+            above=above100,
+            below=below100,
+            left=left100,
+        )
+
+        style.apply(table)
+
+        tp = TableProperties.from_obj(table)
+        assert tp.prop_width.value > 0
+        assert tp.prop_left.get_value_mm100() in range(left100.value - 2, left100.value + 3)  # +- 2
+        assert tp.prop_right.get_value_mm100() in range(left100.value - 2, left100.value + 3)  # +- 2
+        assert tp.prop_above.get_value_mm100() in range(above100.value - 2, above100.value + 3)  # +- 2
+        assert tp.prop_below.get_value_mm100() in range(below100.value - 2, below100.value + 3)  # +- 2
+
+        # ===================== From Left Width ==============================
+
+        above100 = UnitMM100.from_mm(2.0)
+        below100 = UnitMM100.from_mm(1.8)
+        width100 = UnitMM100.from_mm(60)
+        style = TableProperties(
+            relative=False,
+            align=TableAlignKind.FROM_LEFT,
+            above=above100,
+            below=below100,
+            width=width100,
+        )
+
+        style.apply(table)
+
+        tp = TableProperties.from_obj(table)
+        assert tp.prop_left.value > 0
+        assert tp.prop_right.value == 0
+        assert tp.prop_width.get_value_mm100() in range(width100.value - 2, width100.value + 3)
+
+        # =====================From Left Left==============================
+
+        left100 = UnitMM100.from_mm(55)
+        style = TableProperties(
+            relative=False,
+            align=TableAlignKind.FROM_LEFT,
+            above=above100,
+            below=below100,
+            left=left100,
+        )
+
+        style.apply(table)
+
+        tp = TableProperties.from_obj(table)
+        assert tp.prop_left.get_value_mm100() in range(left100.value - 2, left100.value + 3)
+        assert tp.prop_width.value > 0
+
+        # ===================== Left Width ==============================
+
+        above100 = UnitMM100.from_mm(2.3)
+        below100 = UnitMM100.from_mm(2.5)
+        width100 = UnitMM100.from_mm(60)
+        style = TableProperties(
+            relative=False,
+            align=TableAlignKind.LEFT,
+            above=above100,
+            below=below100,
+            width=width100,
+        )
+
+        style.apply(table)
+
+        tp = TableProperties.from_obj(table)
+        assert tp.prop_left.value == 0
+        assert tp.prop_right.value > 0
+        assert tp.prop_width.get_value_mm100() in range(width100.value - 2, width100.value + 3)
+        assert tp.prop_above.get_value_mm100() in range(above100.value - 2, above100.value + 3)  # +- 2
+        assert tp.prop_below.get_value_mm100() in range(below100.value - 2, below100.value + 3)  # +- 2
+
+        # =================== Left Right ================================
+
+        above100 = UnitMM100.from_mm(2.3)
+        below100 = UnitMM100.from_mm(2.5)
+        right100 = UnitMM100.from_mm(60)
+        style = TableProperties(
+            relative=False,
+            align=TableAlignKind.LEFT,
+            above=above100,
+            below=below100,
+            right=right100,
+        )
+
+        style.apply(table)
+
+        tp = TableProperties.from_obj(table)
+        assert tp.prop_left.value == 0
+        assert tp.prop_right.get_value_mm100() in range(right100.value - 2, right100.value + 3)
+        assert tp.prop_above.get_value_mm100() in range(above100.value - 2, above100.value + 3)  # +- 2
+        assert tp.prop_below.get_value_mm100() in range(below100.value - 2, below100.value + 3)  # +- 2
+
+        # =================== Right Width ================================
+
+        above100 = UnitMM100.from_mm(2.3)
+        below100 = UnitMM100.from_mm(2.5)
+        width100 = UnitMM100.from_mm(60)
+        style = TableProperties(
+            relative=False,
+            align=TableAlignKind.RIGHT,
+            above=above100,
+            below=below100,
+            width=width100,
+        )
+
+        style.apply(table)
+
+        tp = TableProperties.from_obj(table)
+        assert tp.prop_right.value == 0
+        assert tp.prop_left.value > 0
+        assert tp.prop_width.get_value_mm100() in range(width100.value - 2, width100.value + 3)
+        assert tp.prop_above.get_value_mm100() in range(above100.value - 2, above100.value + 3)  # +- 2
+        assert tp.prop_below.get_value_mm100() in range(below100.value - 2, below100.value + 3)  # +- 2
+
+        # ==================== Right Left ===============================
+
+        above100 = UnitMM100.from_mm(2.3)
+        below100 = UnitMM100.from_mm(2.5)
+        left100 = UnitMM100.from_mm(60)
+        style = TableProperties(
+            relative=False,
+            align=TableAlignKind.RIGHT,
+            above=above100,
+            below=below100,
+            left=left100,
+        )
+
+        style.apply(table)
+
+        tp = TableProperties.from_obj(table)
+        assert tp.prop_right.value == 0
+        assert tp.prop_left.get_value_mm100() in range(left100.value - 2, left100.value + 3)
+        assert tp.prop_above.get_value_mm100() in range(above100.value - 2, above100.value + 3)  # +- 2
+        assert tp.prop_below.get_value_mm100() in range(below100.value - 2, below100.value + 3)  # +- 2
+
+        # ==================== Manual Width ===============================
+
+        above100 = UnitMM100.from_mm(2.3)
+        below100 = UnitMM100.from_mm(2.5)
+        width100 = UnitMM100.from_mm(60)
+        style = TableProperties(
+            relative=False,
+            align=TableAlignKind.MANUAL,
+            above=above100,
+            below=below100,
+            width=width100,
+        )
+
+        style.apply(table)
+
+        tp = TableProperties.from_obj(table)
+        assert tp.prop_width.get_value_mm100() in range(width100.value - 2, width100.value + 3)
+        assert tp.prop_above.get_value_mm100() in range(above100.value - 2, above100.value + 3)  # +- 2
+        assert tp.prop_below.get_value_mm100() in range(below100.value - 2, below100.value + 3)  # +- 2
+
+        # ==================== Manual Left Right ===============================
+
+        left100 = UnitMM100.from_mm(66)
+        right100 = UnitMM100.from_mm(55)
+        style = TableProperties(relative=False, align=TableAlignKind.MANUAL, left=left100, right=right100)
+
+        style.apply(table)
+
+        tp = TableProperties.from_obj(table)
+        assert tp.prop_left.get_value_mm100() in range(left100.value - 2, left100.value + 3)  # +- 2
+        assert tp.prop_right.get_value_mm100() in range(right100.value - 2, right100.value + 3)  # +- 2
 
         Lo.delay(delay)
     finally:
