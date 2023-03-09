@@ -10,4 +10,5 @@ class TablePropertiesProps(NamedTuple):
     right: str
     bottom: str
     is_rel: str
+    rel_width: str
     hori_orient: str
