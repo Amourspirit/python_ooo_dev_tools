@@ -5,23 +5,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.writer.direct.table.properties import (
-    TableProperties,
-    TblAuto,
-    TblCenterWidth,
-    TblLeft,
-    TblRight,
-    TblCenterLeft,
-    TblFromLeft,
-    TblFromLeftWidth,
-    TblManualLeftRight,
-    TblRelLeftByWidth,
-    TblRelFromLeft,
-    TblRelRightByWidth,
-    TblRelCenter,
-    TableAlignKind,
-)
-from ooodev.utils.color import StandardColor
+from ooodev.format.writer.direct.table.properties import TableProperties, TableAlignKind
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.utils.data_type.intensity import Intensity

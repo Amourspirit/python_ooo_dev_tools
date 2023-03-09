@@ -1,3 +1,4 @@
+# region Imports
 from __future__ import annotations
 from typing import Union, cast, overload
 from typing import Any, Tuple, Type, TypeVar, NamedTuple
@@ -8,7 +9,6 @@ from ooo.dyn.text.hori_orientation import HoriOrientation
 
 from .....events.args.key_val_cancel_args import KeyValCancelArgs
 from .....exceptions import ex as mEx
-from .....proto.style_obj import StyleObj
 from .....proto.unit_obj import UnitObj
 from .....utils import lo as mLo
 from .....utils import props as mProps
@@ -22,12 +22,18 @@ from ...common.props.table_properties_props import TablePropertiesProps
 
 from .....utils.unit_convert import UnitConvert
 
+# endregion Imports
+
+# region Types
+
 _TTableProperties = TypeVar(name="_TTableProperties", bound="TableProperties")
-_TTblAuto = TypeVar(name="_TTblAuto", bound="TblAuto")
+_TTblAuto = TypeVar(name="_TTblAuto", bound="_TblAuto")
 TblAbsUnit = Union[float, UnitObj]
 TblRelUnit = Union[int, Intensity]
 
+# endregion Types
 
+# region Enums
 class TableAlignKind(Enum):
     MANUAL = HoriOrientation.NONE
     """No hard alignment is applied."""
@@ -47,12 +53,20 @@ class TableAlignKind(Enum):
     """
 
 
-class RelVals(NamedTuple):
+# endregion Enums
+
+# region Tuples
+class _RelVals(NamedTuple):
     """Relative values. Total expected to add up to ``100``"""
 
     left: int
     right: int
     balance: int
+
+
+# endregion Tuples
+
+# region Module Methods
 
 
 def _get_default_tbl_props() -> TablePropertiesProps:
@@ -73,35 +87,12 @@ def _get_default_tbl_services() -> Tuple[str]:
     return ("com.sun.star.text.TextTable",)
 
 
-class TblPropObj(StyleObj):
-    """
-    Protcol class for Table Properties
-
-    Supported Classes:
-
-    .. cssclass:: ul-list
-
-        - :py:class:`~.format.direct.table.props.table_properties.TblAuto`
-        - :py:class:`~.format.direct.table.props.table_properties.TblWidth`
-        - :py:class:`~.format.direct.table.props.table_properties.TblLeft`
-        - :py:class:`~.format.direct.table.props.table_properties.TblRight`
-        - :py:class:`~.format.direct.table.props.table_properties.TblCenter`
-        - :py:class:`~.format.direct.table.props.table_properties.TblFromLeft`
-        - :py:class:`~.format.direct.table.props.table_properties.TblFromLeftWidth`
-        - :py:class:`~.format.direct.table.props.table_properties.TblManual`
-        - :py:class:`~.format.direct.table.props.table_properties.TblRelLeft`
-        - :py:class:`~.format.direct.table.props.table_properties.TblRelRight`
-        - :py:class:`~.format.direct.table.props.table_properties.TblRelCenter`
-
-    """
-
-    pass
-
+# endregion Module Methods
 
 # region Table size in MM units
 
 
-class TblAuto(AbstractDocument):
+class _TblAuto(AbstractDocument):
     """
     Automatically set table width.
     """
@@ -143,7 +134,7 @@ class TblAuto(AbstractDocument):
     def _post_init(self) -> None:
         self._set(self._props.hori_orient, TableAlignKind.AUTO.value)
 
-    def _get_relative_values(self) -> RelVals:
+    def _get_relative_values(self) -> _RelVals:
         left100: int = self._get(self._props.left)
         right100: int = self._get(self._props.right)
         page_txt_width = self._prop_page_text_size.width
@@ -156,7 +147,7 @@ class TblAuto(AbstractDocument):
         else:
             right = round((right100 / page_txt_width) * 100)
         width = 100 - (left + right)
-        return RelVals(left=left, right=right, balance=width)
+        return _RelVals(left=left, right=right, balance=width)
 
     def _set_props_from_obj(self, obj: object) -> None:
         if not self._is_valid_obj(obj):
@@ -228,16 +219,16 @@ class TblAuto(AbstractDocument):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: object) -> TblAuto:
+    def from_obj(cls, obj: object) -> _TblAuto:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> TblAuto:
+    def from_obj(cls, obj: object, **kwargs) -> _TblAuto:
         ...
 
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> TblAuto:
+    def from_obj(cls, obj: object, **kwargs) -> _TblAuto:
         """
         Gets instance from object
 
@@ -250,7 +241,7 @@ class TblAuto(AbstractDocument):
         Returns:
             TblAuto: ``TblAuto`` Instance.
         """
-        return TblAuto._from_obj(cls, obj, **kwargs)
+        return _TblAuto._from_obj(cls, obj, **kwargs)
 
     @staticmethod
     def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
@@ -421,7 +412,7 @@ class TblAuto(AbstractDocument):
     # endregion Properties
 
 
-class TblCenterWidth(TblAuto):
+class _TblCenterWidth(_TblAuto):
     """
     Sets the table width using a width value and centers the table.
     """
@@ -488,16 +479,16 @@ class TblCenterWidth(TblAuto):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: object) -> TblCenterWidth:
+    def from_obj(cls, obj: object) -> _TblCenterWidth:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> TblCenterWidth:
+    def from_obj(cls, obj: object, **kwargs) -> _TblCenterWidth:
         ...
 
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> TblCenterWidth:
+    def from_obj(cls, obj: object, **kwargs) -> _TblCenterWidth:
         """
         Gets instance from object
 
@@ -510,18 +501,18 @@ class TblCenterWidth(TblAuto):
         Returns:
             TblCenterWidth: ``TblCenterWidth`` Instance.
         """
-        return TblCenterWidth._from_obj(cls, obj, **kwargs)
+        return _TblCenterWidth._from_obj(cls, obj, **kwargs)
 
     @staticmethod
     def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
-        inst = TblAuto._from_obj(cls, obj, **kwargs)
+        inst = _TblAuto._from_obj(cls, obj, **kwargs)
         return inst
 
     # endregion from_obj()
     # endregion static methods
 
 
-class TblLeft(TblCenterWidth):
+class _TblLeft(_TblCenterWidth):
     """
     Sets the right table margin.
     """
@@ -574,16 +565,16 @@ class TblLeft(TblCenterWidth):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: object) -> TblLeft:
+    def from_obj(cls, obj: object) -> _TblLeft:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> TblLeft:
+    def from_obj(cls, obj: object, **kwargs) -> _TblLeft:
         ...
 
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> TblLeft:
+    def from_obj(cls, obj: object, **kwargs) -> _TblLeft:
         """
         Gets instance from object
 
@@ -596,18 +587,18 @@ class TblLeft(TblCenterWidth):
         Returns:
             TblLeft: ``TblLeft`` Instance.
         """
-        return TblLeft._from_obj(cls, obj, **kwargs)
+        return _TblLeft._from_obj(cls, obj, **kwargs)
 
     @staticmethod
     def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
-        inst = TblCenterWidth._from_obj(cls, obj, **kwargs)
+        inst = _TblCenterWidth._from_obj(cls, obj, **kwargs)
         return inst
 
     # endregion from_obj()
     # endregion static methods
 
 
-class TblLeftWidth(TblLeft):
+class _TblLeftWidth(_TblLeft):
     """
     Sets the right table margin.
     """
@@ -644,16 +635,16 @@ class TblLeftWidth(TblLeft):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: object) -> TblLeftWidth:
+    def from_obj(cls, obj: object) -> _TblLeftWidth:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> TblLeftWidth:
+    def from_obj(cls, obj: object, **kwargs) -> _TblLeftWidth:
         ...
 
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> TblLeftWidth:
+    def from_obj(cls, obj: object, **kwargs) -> _TblLeftWidth:
         """
         Gets instance from object
 
@@ -666,18 +657,18 @@ class TblLeftWidth(TblLeft):
         Returns:
             TblLeftWidth: ``TblLeftWidth`` Instance.
         """
-        return TblLeftWidth._from_obj(cls, obj, **kwargs)
+        return _TblLeftWidth._from_obj(cls, obj, **kwargs)
 
     @staticmethod
     def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
-        inst = TblLeft._from_obj(cls, obj, **kwargs)
+        inst = _TblLeft._from_obj(cls, obj, **kwargs)
         return inst
 
     # endregion from_obj()
     # endregion static methods
 
 
-class TblRight(TblLeft):
+class _TblRight(_TblLeft):
     """
     Sets the left table margin.
     """
@@ -726,16 +717,16 @@ class TblRight(TblLeft):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: object) -> TblRight:
+    def from_obj(cls, obj: object) -> _TblRight:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> TblRight:
+    def from_obj(cls, obj: object, **kwargs) -> _TblRight:
         ...
 
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> TblRight:
+    def from_obj(cls, obj: object, **kwargs) -> _TblRight:
         """
         Gets instance from object
 
@@ -748,18 +739,18 @@ class TblRight(TblLeft):
         Returns:
             TblRight: ``TblRight`` Instance.
         """
-        return TblRight._from_obj(cls, obj, **kwargs)
+        return _TblRight._from_obj(cls, obj, **kwargs)
 
     @staticmethod
     def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
-        inst = TblLeft._from_obj(cls, obj, **kwargs)
+        inst = _TblLeft._from_obj(cls, obj, **kwargs)
         return inst
 
     # endregion from_obj()
     # endregion static methods
 
 
-class TblRightWidth(TblRight):
+class _TblRightWidth(_TblRight):
     """
     Sets the left table margin.
     """
@@ -790,16 +781,16 @@ class TblRightWidth(TblRight):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: object) -> TblRightWidth:
+    def from_obj(cls, obj: object) -> _TblRightWidth:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> TblRightWidth:
+    def from_obj(cls, obj: object, **kwargs) -> _TblRightWidth:
         ...
 
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> TblRightWidth:
+    def from_obj(cls, obj: object, **kwargs) -> _TblRightWidth:
         """
         Gets instance from object
 
@@ -812,18 +803,18 @@ class TblRightWidth(TblRight):
         Returns:
             TblRightWidth: ``TblRightWidth`` Instance.
         """
-        return TblRightWidth._from_obj(cls, obj, **kwargs)
+        return _TblRightWidth._from_obj(cls, obj, **kwargs)
 
     @staticmethod
     def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
-        inst = TblRight._from_obj(cls, obj, **kwargs)
+        inst = _TblRight._from_obj(cls, obj, **kwargs)
         return inst
 
     # endregion from_obj()
     # endregion static methods
 
 
-class TblCenterLeft(TblLeft):
+class _TblCenterLeft(_TblLeft):
     """
     Sets the table width using a width value and centers the table.
     """
@@ -867,16 +858,16 @@ class TblCenterLeft(TblLeft):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: object) -> TblCenterLeft:
+    def from_obj(cls, obj: object) -> _TblCenterLeft:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> TblCenterLeft:
+    def from_obj(cls, obj: object, **kwargs) -> _TblCenterLeft:
         ...
 
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> TblCenterLeft:
+    def from_obj(cls, obj: object, **kwargs) -> _TblCenterLeft:
         """
         Gets instance from object
 
@@ -889,18 +880,18 @@ class TblCenterLeft(TblLeft):
         Returns:
             TblCenterLeft: ``TblCenterLeft`` Instance.
         """
-        return TblCenterLeft._from_obj(cls, obj, **kwargs)
+        return _TblCenterLeft._from_obj(cls, obj, **kwargs)
 
     @staticmethod
     def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
-        inst = TblLeft._from_obj(cls, obj, **kwargs)
+        inst = _TblLeft._from_obj(cls, obj, **kwargs)
         return inst
 
     # endregion from_obj()
     # endregion static methods
 
 
-class TblFromLeft(TblLeft):
+class _TblFromLeft(_TblLeft):
     """
     Sets the table width from left using a margin value.
     """
@@ -939,16 +930,16 @@ class TblFromLeft(TblLeft):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: object) -> TblFromLeft:
+    def from_obj(cls, obj: object) -> _TblFromLeft:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> TblFromLeft:
+    def from_obj(cls, obj: object, **kwargs) -> _TblFromLeft:
         ...
 
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> TblFromLeft:
+    def from_obj(cls, obj: object, **kwargs) -> _TblFromLeft:
         """
         Gets instance from object
 
@@ -961,18 +952,18 @@ class TblFromLeft(TblLeft):
         Returns:
             TblFromLeft: ``TblFromLeft`` Instance.
         """
-        return TblFromLeft._from_obj(cls, obj, **kwargs)
+        return _TblFromLeft._from_obj(cls, obj, **kwargs)
 
     @staticmethod
     def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
-        inst = TblLeft._from_obj(cls, obj, **kwargs)
+        inst = _TblLeft._from_obj(cls, obj, **kwargs)
         return inst
 
     # endregion from_obj()
     # endregion static methods
 
 
-class TblFromLeftWidth(TblCenterWidth):
+class _TblFromLeftWidth(_TblCenterWidth):
     """
     Sets the table width from left using a width value.
     """
@@ -1019,16 +1010,16 @@ class TblFromLeftWidth(TblCenterWidth):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: object) -> TblFromLeftWidth:
+    def from_obj(cls, obj: object) -> _TblFromLeftWidth:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> TblFromLeftWidth:
+    def from_obj(cls, obj: object, **kwargs) -> _TblFromLeftWidth:
         ...
 
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> TblFromLeftWidth:
+    def from_obj(cls, obj: object, **kwargs) -> _TblFromLeftWidth:
         """
         Gets instance from object
 
@@ -1041,18 +1032,18 @@ class TblFromLeftWidth(TblCenterWidth):
         Returns:
             TblFromLeftWidth: ``TblFromLeftWidth`` Instance.
         """
-        return TblFromLeftWidth._from_obj(cls, obj, **kwargs)
+        return _TblFromLeftWidth._from_obj(cls, obj, **kwargs)
 
     @staticmethod
     def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
-        inst = TblCenterWidth._from_obj(cls, obj, **kwargs)
+        inst = _TblCenterWidth._from_obj(cls, obj, **kwargs)
         return inst
 
     # endregion from_obj()
     # endregion static methods
 
 
-class TblManualLeftRight(TblCenterWidth):
+class _TblManualLeftRight(_TblCenterWidth):
     """
     Sets the table width manually.
     """
@@ -1092,16 +1083,16 @@ class TblManualLeftRight(TblCenterWidth):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: object) -> TblManualLeftRight:
+    def from_obj(cls, obj: object) -> _TblManualLeftRight:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> TblManualLeftRight:
+    def from_obj(cls, obj: object, **kwargs) -> _TblManualLeftRight:
         ...
 
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> TblManualLeftRight:
+    def from_obj(cls, obj: object, **kwargs) -> _TblManualLeftRight:
         """
         Gets instance from object
 
@@ -1114,18 +1105,18 @@ class TblManualLeftRight(TblCenterWidth):
         Returns:
             TblManualLeftRight: ``TblManualLeftRight`` Instance.
         """
-        return TblManualLeftRight._from_obj(cls, obj, **kwargs)
+        return _TblManualLeftRight._from_obj(cls, obj, **kwargs)
 
     @staticmethod
     def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
-        inst = TblCenterWidth._from_obj(cls, obj, **kwargs)
+        inst = _TblCenterWidth._from_obj(cls, obj, **kwargs)
         return inst
 
     # endregion from_obj()
     # endregion static methods
 
 
-class TblManualCenter(TblManualLeftRight):
+class _TblManualCenter(_TblManualLeftRight):
     """
     Sets the table width manually.
     """
@@ -1187,16 +1178,16 @@ class TblManualCenter(TblManualLeftRight):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: object) -> TblManualCenter:
+    def from_obj(cls, obj: object) -> _TblManualCenter:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> TblManualCenter:
+    def from_obj(cls, obj: object, **kwargs) -> _TblManualCenter:
         ...
 
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> TblManualCenter:
+    def from_obj(cls, obj: object, **kwargs) -> _TblManualCenter:
         """
         Gets instance from object
 
@@ -1209,11 +1200,11 @@ class TblManualCenter(TblManualLeftRight):
         Returns:
             TblManualCenter: ``TblManualCenter`` Instance.
         """
-        return TblManualCenter._from_obj(cls, obj, **kwargs)
+        return _TblManualCenter._from_obj(cls, obj, **kwargs)
 
     @staticmethod
     def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
-        inst = TblManualLeftRight._from_obj(cls, obj, **kwargs)
+        inst = _TblManualLeftRight._from_obj(cls, obj, **kwargs)
         return inst
 
     # endregion from_obj()
@@ -1225,7 +1216,7 @@ class TblManualCenter(TblManualLeftRight):
 # region Table size in percentage units
 
 
-class TblRelLeftByWidth(TblAuto):
+class _TblRelLeftByWidth(_TblAuto):
     """
     Relative Table size. Set table right margin using width as a percentage value.
     """
@@ -1303,16 +1294,16 @@ class TblRelLeftByWidth(TblAuto):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: object) -> TblRelLeftByWidth:
+    def from_obj(cls, obj: object) -> _TblRelLeftByWidth:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> TblRelLeftByWidth:
+    def from_obj(cls, obj: object, **kwargs) -> _TblRelLeftByWidth:
         ...
 
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> TblRelLeftByWidth:
+    def from_obj(cls, obj: object, **kwargs) -> _TblRelLeftByWidth:
         """
         Gets instance from object
 
@@ -1325,11 +1316,11 @@ class TblRelLeftByWidth(TblAuto):
         Returns:
             TblRelLeft: ``TblRelLeft`` Instance.
         """
-        return TblRelLeftByWidth._from_obj(cls, obj, **kwargs)
+        return _TblRelLeftByWidth._from_obj(cls, obj, **kwargs)
 
     @staticmethod
     def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
-        inst = TblAuto._from_obj(cls, obj, **kwargs)
+        inst = _TblAuto._from_obj(cls, obj, **kwargs)
         return inst
 
     # endregion from_obj()
@@ -1377,7 +1368,7 @@ class TblRelLeftByWidth(TblAuto):
     # endregion properties
 
 
-class TblRelLeftByRight(TblRelLeftByWidth):
+class _TblRelLeftByRight(_TblRelLeftByWidth):
     """
     Relative Table size. Set table right margin using right as a percentage value.
     """
@@ -1427,16 +1418,16 @@ class TblRelLeftByRight(TblRelLeftByWidth):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: object) -> TblRelLeftByWidth:
+    def from_obj(cls, obj: object) -> _TblRelLeftByWidth:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> TblRelLeftByWidth:
+    def from_obj(cls, obj: object, **kwargs) -> _TblRelLeftByWidth:
         ...
 
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> TblRelLeftByWidth:
+    def from_obj(cls, obj: object, **kwargs) -> _TblRelLeftByWidth:
         """
         Gets instance from object
 
@@ -1449,18 +1440,18 @@ class TblRelLeftByRight(TblRelLeftByWidth):
         Returns:
             TblRelLeft: ``TblRelLeft`` Instance.
         """
-        return TblRelLeftByRight._from_obj(cls, obj, **kwargs)
+        return _TblRelLeftByRight._from_obj(cls, obj, **kwargs)
 
     @staticmethod
     def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
-        inst = TblRelLeftByWidth._from_obj(cls, obj, **kwargs)
+        inst = _TblRelLeftByWidth._from_obj(cls, obj, **kwargs)
         return inst
 
     # endregion from_obj()
     # endregion static methods
 
 
-class TblRelFromLeft(TblRelLeftByWidth):
+class _TblRelFromLeft(_TblRelLeftByWidth):
     """
     Relative Table size. Sets the table relative width from left using percentage values.
     """
@@ -1513,16 +1504,16 @@ class TblRelFromLeft(TblRelLeftByWidth):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: object) -> TblRelFromLeft:
+    def from_obj(cls, obj: object) -> _TblRelFromLeft:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> TblRelFromLeft:
+    def from_obj(cls, obj: object, **kwargs) -> _TblRelFromLeft:
         ...
 
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> TblRelFromLeft:
+    def from_obj(cls, obj: object, **kwargs) -> _TblRelFromLeft:
         """
         Gets instance from object
 
@@ -1535,18 +1526,18 @@ class TblRelFromLeft(TblRelLeftByWidth):
         Returns:
             TblRelFromLeft: ``TblRelFromLeft`` Instance.
         """
-        return TblRelFromLeft._from_obj(cls, obj, **kwargs)
+        return _TblRelFromLeft._from_obj(cls, obj, **kwargs)
 
     @staticmethod
     def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
-        inst = TblRelLeftByWidth._from_obj(cls, obj, **kwargs)
+        inst = _TblRelLeftByWidth._from_obj(cls, obj, **kwargs)
         return inst
 
     # endregion from_obj()
     # endregion static methods
 
 
-class TblRelRightByWidth(TblRelLeftByWidth):
+class _TblRelRightByWidth(_TblRelLeftByWidth):
     """
     Relative Table size. Set table left margin using width as a percentage value.
     """
@@ -1583,16 +1574,16 @@ class TblRelRightByWidth(TblRelLeftByWidth):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: object) -> TblRelRightByWidth:
+    def from_obj(cls, obj: object) -> _TblRelRightByWidth:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> TblRelRightByWidth:
+    def from_obj(cls, obj: object, **kwargs) -> _TblRelRightByWidth:
         ...
 
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> TblRelRightByWidth:
+    def from_obj(cls, obj: object, **kwargs) -> _TblRelRightByWidth:
         """
         Gets instance from object
 
@@ -1605,18 +1596,18 @@ class TblRelRightByWidth(TblRelLeftByWidth):
         Returns:
             TblRelRight: ``TblRelRight`` Instance.
         """
-        return TblRelRightByWidth._from_obj(cls, obj, **kwargs)
+        return _TblRelRightByWidth._from_obj(cls, obj, **kwargs)
 
     @staticmethod
     def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
-        inst = TblRelLeftByWidth._from_obj(cls, obj, **kwargs)
+        inst = _TblRelLeftByWidth._from_obj(cls, obj, **kwargs)
         return inst
 
     # endregion from_obj()
     # endregion static methods
 
 
-class TblRelRightByLeft(TblRelRightByWidth):
+class _TblRelRightByLeft(_TblRelRightByWidth):
     """
     Relative Table size. Set table left margin using left as a percentage value.
     """
@@ -1662,16 +1653,16 @@ class TblRelRightByLeft(TblRelRightByWidth):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: object) -> TblRelLeftByWidth:
+    def from_obj(cls, obj: object) -> _TblRelLeftByWidth:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> TblRelLeftByWidth:
+    def from_obj(cls, obj: object, **kwargs) -> _TblRelLeftByWidth:
         ...
 
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> TblRelLeftByWidth:
+    def from_obj(cls, obj: object, **kwargs) -> _TblRelLeftByWidth:
         """
         Gets instance from object
 
@@ -1684,18 +1675,18 @@ class TblRelRightByLeft(TblRelRightByWidth):
         Returns:
             TblRelLeft: ``TblRelLeft`` Instance.
         """
-        return TblRelRightByLeft._from_obj(cls, obj, **kwargs)
+        return _TblRelRightByLeft._from_obj(cls, obj, **kwargs)
 
     @staticmethod
     def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
-        inst = TblRelRightByWidth._from_obj(cls, obj, **kwargs)
+        inst = _TblRelRightByWidth._from_obj(cls, obj, **kwargs)
         return inst
 
     # endregion from_obj()
     # endregion static methods
 
 
-class TblRelCenter(TblRelLeftByWidth):
+class _TblRelCenter(_TblRelLeftByWidth):
     """
     Relative Table size. Set table left adn right margins using width as a percentage value.
     """
@@ -1740,16 +1731,16 @@ class TblRelCenter(TblRelLeftByWidth):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: object) -> TblRelCenter:
+    def from_obj(cls, obj: object) -> _TblRelCenter:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> TblRelCenter:
+    def from_obj(cls, obj: object, **kwargs) -> _TblRelCenter:
         ...
 
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> TblRelCenter:
+    def from_obj(cls, obj: object, **kwargs) -> _TblRelCenter:
         """
         Gets instance from object
 
@@ -1762,11 +1753,11 @@ class TblRelCenter(TblRelLeftByWidth):
         Returns:
             TblRelCenter: ``TblRelCenter`` Instance.
         """
-        return TblRelCenter._from_obj(cls, obj, **kwargs)
+        return _TblRelCenter._from_obj(cls, obj, **kwargs)
 
     @staticmethod
     def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
-        inst = TblRelLeftByWidth._from_obj(cls, obj, **kwargs)
+        inst = _TblRelLeftByWidth._from_obj(cls, obj, **kwargs)
         return inst
 
     # endregion from_obj()
@@ -1775,7 +1766,7 @@ class TblRelCenter(TblRelLeftByWidth):
 
 # endregion Table size in percentage units
 
-
+# region TableProperties Class
 class TableProperties(StyleMulti):
     """
     Table options.
@@ -1918,7 +1909,7 @@ class TableProperties(StyleMulti):
         right: TblAbsUnit | TblRelUnit | None = None,
         above: TblAbsUnit | TblRelUnit | None = None,
         below: TblAbsUnit | TblRelUnit | None = None,
-    ) -> TblAuto:
+    ) -> _TblAuto:
         if relative:
             return self._get_size_rel_class(
                 align=align,
@@ -1946,7 +1937,7 @@ class TableProperties(StyleMulti):
         right: TblAbsUnit | None = None,
         above: TblAbsUnit | None = None,
         below: TblAbsUnit | None = None,
-    ) -> TblAuto:
+    ) -> _TblAuto:
         def check_req(*args: Any) -> bool:
             for arg in args:
                 if arg is None:
@@ -1954,7 +1945,7 @@ class TableProperties(StyleMulti):
             return True
 
         if align == TableAlignKind.AUTO:
-            return TblAuto(above=above, below=below, _cattribs=self._get_tbl_cattribs())
+            return _TblAuto(above=above, below=below, _cattribs=self._get_tbl_cattribs())
         if align == TableAlignKind.CENTER:
             if width is None:
                 ck = check_req(left)
@@ -1962,9 +1953,9 @@ class TableProperties(StyleMulti):
                     raise ValueError(
                         f"left or width are required when align is set to {align.name} and relative value is False."
                     )
-                return TblCenterLeft(above=above, below=below, left=left, _cattribs=self._get_tbl_cattribs())
+                return _TblCenterLeft(above=above, below=below, left=left, _cattribs=self._get_tbl_cattribs())
             else:
-                return TblCenterWidth(above=above, below=below, width=width, _cattribs=self._get_tbl_cattribs())
+                return _TblCenterWidth(above=above, below=below, width=width, _cattribs=self._get_tbl_cattribs())
         if align == TableAlignKind.FROM_LEFT:
             if width is None:
                 ck = check_req(left)
@@ -1972,9 +1963,9 @@ class TableProperties(StyleMulti):
                     raise ValueError(
                         f"left or width are required when align is set to {align.name} and relative value is False."
                     )
-                return TblFromLeft(above=above, below=below, left=left, _cattribs=self._get_tbl_cattribs())
+                return _TblFromLeft(above=above, below=below, left=left, _cattribs=self._get_tbl_cattribs())
             else:
-                return TblFromLeftWidth(above=above, below=below, width=width, _cattribs=self._get_tbl_cattribs())
+                return _TblFromLeftWidth(above=above, below=below, width=width, _cattribs=self._get_tbl_cattribs())
         if align == TableAlignKind.LEFT:
             if width is None:
                 ck = check_req(right)
@@ -1982,9 +1973,9 @@ class TableProperties(StyleMulti):
                     raise ValueError(
                         f"right or width are required when align is set to {align.name} and relative value is False."
                     )
-                return TblLeft(above=above, below=below, right=right, _cattribs=self._get_tbl_cattribs())
+                return _TblLeft(above=above, below=below, right=right, _cattribs=self._get_tbl_cattribs())
             else:
-                return TblLeftWidth(above=above, below=below, width=width, _cattribs=self._get_tbl_cattribs())
+                return _TblLeftWidth(above=above, below=below, width=width, _cattribs=self._get_tbl_cattribs())
         if align == TableAlignKind.RIGHT:
             if width is None:
                 ck = check_req(left)
@@ -1992,9 +1983,9 @@ class TableProperties(StyleMulti):
                     raise ValueError(
                         f"left or width are required when align is set to {align.name} and relative value is False."
                     )
-                return TblRight(above=above, below=below, left=left, _cattribs=self._get_tbl_cattribs())
+                return _TblRight(above=above, below=below, left=left, _cattribs=self._get_tbl_cattribs())
             else:
-                return TblRightWidth(above=above, below=below, width=width, _cattribs=self._get_tbl_cattribs())
+                return _TblRightWidth(above=above, below=below, width=width, _cattribs=self._get_tbl_cattribs())
         if align == TableAlignKind.MANUAL:
             if width is None:
                 ck = check_req(left, right)
@@ -2002,11 +1993,11 @@ class TableProperties(StyleMulti):
                     raise ValueError(
                         f"left and right or width are required when align is set to {align.name} and relative value is False."
                     )
-                return TblManualLeftRight(
+                return _TblManualLeftRight(
                     above=above, below=below, left=left, right=right, _cattribs=self._get_tbl_cattribs()
                 )
             else:
-                return TblManualCenter(above=above, below=below, width=width, _cattribs=self._get_tbl_cattribs())
+                return _TblManualCenter(above=above, below=below, width=width, _cattribs=self._get_tbl_cattribs())
         raise ValueError("Align Value is Unknown")
 
     def _get_size_rel_class(
@@ -2018,7 +2009,7 @@ class TableProperties(StyleMulti):
         right: TblRelUnit | None = None,
         above: TblRelUnit | None = None,
         below: TblRelUnit | None = None,
-    ) -> TblAuto:
+    ) -> _TblAuto:
         def check_req(*args: Tuple[str, any]) -> None:
             for arg in args:
                 if arg is None:
@@ -2032,16 +2023,18 @@ class TableProperties(StyleMulti):
                     raise ValueError(
                         f"left or width are required when align is set to {align.name} and relative value is True."
                     )
-                return TblRelCenter(above=above, below=below, left=left, _cattribs=self._get_tbl_cattribs())
+                return _TblRelCenter(above=above, below=below, left=left, _cattribs=self._get_tbl_cattribs())
             else:
-                return TblManualCenter(above=above, below=below, width=width, _cattribs=self._get_tbl_cattribs())
+                return _TblManualCenter(above=above, below=below, width=width, _cattribs=self._get_tbl_cattribs())
         if align == TableAlignKind.FROM_LEFT:
             ck = check_req(width, left)
             if not ck:
                 raise ValueError(
                     f"width and left are required when align is set to {align.name} and relative value is True."
                 )
-            return TblRelFromLeft(above=above, below=below, width=width, left=left, _cattribs=self._get_tbl_cattribs())
+            return _TblRelFromLeft(
+                above=above, below=below, width=width, left=left, _cattribs=self._get_tbl_cattribs()
+            )
         if align == TableAlignKind.LEFT:
             if width is None:
                 ck = check_req(right)
@@ -2049,9 +2042,9 @@ class TableProperties(StyleMulti):
                     raise ValueError(
                         f"right or width are required when align is set to {align.name} and relative value is True."
                     )
-                return TblRelLeftByRight(above=above, below=below, right=right, _cattribs=self._get_tbl_cattribs())
+                return _TblRelLeftByRight(above=above, below=below, right=right, _cattribs=self._get_tbl_cattribs())
             else:
-                return TblRelLeftByWidth(above=above, below=below, width=width, _cattribs=self._get_tbl_cattribs())
+                return _TblRelLeftByWidth(above=above, below=below, width=width, _cattribs=self._get_tbl_cattribs())
         if align == TableAlignKind.RIGHT:
             if width is None:
                 ck = check_req(left)
@@ -2059,9 +2052,9 @@ class TableProperties(StyleMulti):
                     raise ValueError(
                         f"left or width are required when align is set to {align.name} and relative value is True."
                     )
-                return TblRelRightByLeft(above=above, below=below, left=left, _cattribs=self._get_tbl_cattribs())
+                return _TblRelRightByLeft(above=above, below=below, left=left, _cattribs=self._get_tbl_cattribs())
             else:
-                return TblRelRightByWidth(above=above, below=below, width=width, _cattribs=self._get_tbl_cattribs())
+                return _TblRelRightByWidth(above=above, below=below, width=width, _cattribs=self._get_tbl_cattribs())
         if align == TableAlignKind.AUTO:
             raise ValueError('align must not be set to "TableAlignKind.AUTO" when relative is set to False')
         if align == TableAlignKind.MANUAL:
@@ -2125,26 +2118,26 @@ class TableProperties(StyleMulti):
 
         if rel:
             if hori == HoriOrientation.LEFT:
-                size_obj = TblRelLeftByWidth.from_obj(obj, _cattribs=inst._get_tbl_cattribs())
+                size_obj = _TblRelLeftByWidth.from_obj(obj, _cattribs=inst._get_tbl_cattribs())
             elif hori == HoriOrientation.LEFT_AND_WIDTH:
-                size_obj = TblRelFromLeft.from_obj(obj, _cattribs=inst._get_tbl_cattribs())
+                size_obj = _TblRelFromLeft.from_obj(obj, _cattribs=inst._get_tbl_cattribs())
             elif hori == HoriOrientation.RIGHT:
-                size_obj = TblRelRightByWidth.from_obj(obj, _cattribs=inst._get_tbl_cattribs())
+                size_obj = _TblRelRightByWidth.from_obj(obj, _cattribs=inst._get_tbl_cattribs())
             else:
-                size_obj = TblRelCenter.from_obj(obj, _cattribs=inst._get_tbl_cattribs())
+                size_obj = _TblRelCenter.from_obj(obj, _cattribs=inst._get_tbl_cattribs())
         else:
             if hori == HoriOrientation.FULL:
-                size_obj = TblAuto.from_obj(obj, _cattribs=inst._get_tbl_cattribs())
+                size_obj = _TblAuto.from_obj(obj, _cattribs=inst._get_tbl_cattribs())
             elif hori == HoriOrientation.CENTER:
-                size_obj = TblCenterWidth.from_obj(obj, _cattribs=inst._get_tbl_cattribs())
+                size_obj = _TblCenterWidth.from_obj(obj, _cattribs=inst._get_tbl_cattribs())
             elif hori == HoriOrientation.LEFT:
-                size_obj = TblLeft.from_obj(obj, _cattribs=inst._get_tbl_cattribs())
+                size_obj = _TblLeft.from_obj(obj, _cattribs=inst._get_tbl_cattribs())
             elif hori == HoriOrientation.RIGHT:
-                size_obj = TblRight.from_obj(obj, _cattribs=inst._get_tbl_cattribs())
+                size_obj = _TblRight.from_obj(obj, _cattribs=inst._get_tbl_cattribs())
             elif hori == HoriOrientation.LEFT_AND_WIDTH:
-                size_obj = TblFromLeft.from_obj(obj, _cattribs=inst._get_tbl_cattribs())
+                size_obj = _TblFromLeft.from_obj(obj, _cattribs=inst._get_tbl_cattribs())
             else:
-                size_obj = TblManualLeftRight.from_obj(obj, _cattribs=inst._get_tbl_cattribs())
+                size_obj = _TblManualLeftRight.from_obj(obj, _cattribs=inst._get_tbl_cattribs())
 
         inst._set_style("size", size_obj)
 
@@ -2245,7 +2238,7 @@ class TableProperties(StyleMulti):
 
     @property
     def _prop_obj(self) -> Any:
-        """Gets ``TblPropObj`` instance if exst."""
+        """Gets inner instance if exst."""
         try:
             return self._prop_inner_obj
         except AttributeError:
@@ -2345,3 +2338,8 @@ class TableProperties(StyleMulti):
         return self._props_internal_attributes
 
     # endregion properties
+
+
+# endregion TableProperties Class
+
+__all__ = ("TblAbsUnit", "TblRelUnit", "TableAlignKind", "TableProperties")
