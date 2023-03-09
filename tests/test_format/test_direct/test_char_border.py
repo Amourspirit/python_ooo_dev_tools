@@ -6,7 +6,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.writer.direct.char.borders import Borders, BorderLineStyleEnum, Side, LineSize
+from ooodev.format.writer.direct.char.borders import Borders, BorderLineKind, Side, LineSize
 from ooodev.format import CommonColor
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
@@ -82,7 +82,7 @@ def test_char_borders(loader) -> None:
         Write.style_left(cursor=cursor, pos=0, prop_name="ParaStyleName", prop_val="Standard")
 
         # using 1.05 for this test. LibreOffice chnages 1.1 to 1.05 in  this case.
-        side = Side(color=CommonColor.DARK_ORANGE, line=BorderLineStyleEnum.DOUBLE, width=1.05)
+        side = Side(color=CommonColor.DARK_ORANGE, line=BorderLineKind.DOUBLE, width=1.05)
         border = Borders(all=side)
         ft = Font(size=30.0, b=True, i=True, u=True, color=CommonColor.BLUE, underline_color=CommonColor.GREEN)
         Write.append(cursor=cursor, text="Nice Day", styles=(border, ft))

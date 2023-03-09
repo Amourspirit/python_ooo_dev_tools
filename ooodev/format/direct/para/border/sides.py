@@ -5,17 +5,17 @@ Module for managing character border side.
 """
 # region imports
 from __future__ import annotations
-from typing import Tuple
+from typing import Tuple, TypeVar
 
 import uno
 from ...common.abstract.abstract_sides import AbstractSides
 from ...common.props.border_props import BorderProps
 from ....kind.format_kind import FormatKind
-from ...structs.side import Side as Side, LineSize as LineSize, SideFlags as SideFlags
-
-from ooo.dyn.table.border_line_style import BorderLineStyleEnum as BorderLineStyleEnum
+from ...structs.side import Side as Side, LineSize as LineSize
 
 # endregion imports
+
+_TSides = TypeVar(name="_TSides", bound="Sides")
 
 
 class Sides(AbstractSides):
@@ -35,12 +35,13 @@ class Sides(AbstractSides):
             return self._supported_services_values
         except AttributeError:
             self._supported_services_values = (
+                "com.sun.star.style.PageStyle",
                 "com.sun.star.style.ParagraphProperties",
                 "com.sun.star.style.ParagraphStyle",
-                "com.sun.star.style.PageStyle",
+                "com.sun.star.text.BaseFrame",
+                "com.sun.star.text.TextEmbeddedObject",
                 "com.sun.star.text.TextFrame",
                 "com.sun.star.text.TextGraphicObject",
-                "com.sun.star.text.BaseFrame",
             )
         return self._supported_services_values
 

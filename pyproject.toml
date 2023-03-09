@@ -52,6 +52,7 @@ hypothesis = "^6.56.4"
 thefuzz = "^0.19.0"
 python-Levenshtein = "^0.20.7"
 lo-dev-search = {version = "^1.2.2", platform = "linux"}
+ruff = "^0.0.254"
 
 
 [tool.poetry.group.docs.dependencies]
@@ -72,3 +73,9 @@ testpaths = [
 markers = [
     "skip_headless: skips a test in headless mode",
 ]
+
+[tool.ruff]
+extended-select=["ANN", "C4", "N", "SIM", "TCH"]
+ignore=[]
+show-fixes=true
+target="py37"

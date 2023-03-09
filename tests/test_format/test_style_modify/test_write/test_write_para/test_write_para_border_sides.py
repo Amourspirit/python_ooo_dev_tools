@@ -5,7 +5,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.writer.modify.para.borders import Side, SideFlags, Sides, BorderLineStyleEnum, LineSize
+from ooodev.format.writer.modify.para.borders import Side, Sides, BorderLineKind, LineSize
 from ooodev.format import StandardColor
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
@@ -25,9 +25,7 @@ def test_write(loader, para_text) -> None:
         cursor = Write.get_cursor(doc)
         Write.append_para(cursor=cursor, text=para_text)
 
-        style = Sides(
-            all=Side(line=BorderLineStyleEnum.DOUBLE, color=StandardColor.DEFAULT_BLUE, width=LineSize.MEDIUM)
-        )
+        style = Sides(all=Side(line=BorderLineKind.DOUBLE, color=StandardColor.DEFAULT_BLUE, width=LineSize.MEDIUM))
         style.apply(doc)
         props = style.get_style_props(doc=doc)
         left = props.getPropertyValue("LeftBorder")
@@ -39,10 +37,10 @@ def test_write(loader, para_text) -> None:
         assert f_style.prop_inner.prop_right.prop_color == StandardColor.DEFAULT_BLUE
         assert f_style.prop_inner.prop_bottom.prop_color == StandardColor.DEFAULT_BLUE
 
-        assert f_style.prop_inner.prop_left.prop_line == BorderLineStyleEnum.DOUBLE
-        assert f_style.prop_inner.prop_top.prop_line == BorderLineStyleEnum.DOUBLE
-        assert f_style.prop_inner.prop_right.prop_line == BorderLineStyleEnum.DOUBLE
-        assert f_style.prop_inner.prop_bottom.prop_line == BorderLineStyleEnum.DOUBLE
+        assert f_style.prop_inner.prop_left.prop_line == BorderLineKind.DOUBLE
+        assert f_style.prop_inner.prop_top.prop_line == BorderLineKind.DOUBLE
+        assert f_style.prop_inner.prop_right.prop_line == BorderLineKind.DOUBLE
+        assert f_style.prop_inner.prop_bottom.prop_line == BorderLineKind.DOUBLE
 
         Lo.delay(delay)
     finally:

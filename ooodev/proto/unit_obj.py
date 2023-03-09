@@ -16,7 +16,7 @@ class UnitObj(Protocol):
         Gets instance value converted to Size in ``mm`` units.
 
         Returns:
-            int: Value in ``mm`` units.
+            float: Value in ``mm`` units.
         """
         ...
 
@@ -34,7 +34,7 @@ class UnitObj(Protocol):
         Gets instance value converted to Size in ``pt`` (point) units.
 
         Returns:
-            int: Value in ``pt`` units.
+            float: Value in ``pt`` units.
         """
         ...
 
@@ -43,6 +43,6 @@ class UnitObj(Protocol):
         Gets instance value in ``px`` (pixel) units.
 
         Returns:
-            int: Value in ``px`` units.
+            float: Value in ``px`` units.
         """
         ...

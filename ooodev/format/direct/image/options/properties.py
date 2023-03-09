@@ -40,7 +40,11 @@ class Properties(StyleBase):
         try:
             return self._supported_services_values
         except AttributeError:
-            self._supported_services_values = ("com.sun.star.text.TextGraphicObject", "com.sun.star.text.BaseFrame")
+            self._supported_services_values = (
+                "com.sun.star.text.TextGraphicObject",
+                "com.sun.star.text.BaseFrame",
+                "com.sun.star.text.TextEmbeddedObject",
+            )
         return self._supported_services_values
 
     def _props_set(self, obj: object, **kwargs: Any) -> None:

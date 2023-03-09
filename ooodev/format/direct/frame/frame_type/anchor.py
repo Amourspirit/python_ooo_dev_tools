@@ -45,6 +45,7 @@ if TYPE_CHECKING:
 else:
     # Class takes the place of the above class at runtime.
     # The reason for this to make sure 'AT_FRAME' enum value is excluded
+    # Also fture proof enum, if later version add new enum values.
     class AnchorKind(
         metaclass=DeletedUnoEnumMeta,
         type_name="com.sun.star.text.TextContentAnchorType",
@@ -80,9 +81,10 @@ class Anchor(StyleBase):
         except AttributeError:
             self._supported_services_values = (
                 "com.sun.star.style.Style",
+                "com.sun.star.text.BaseFrame",
+                "com.sun.star.text.TextEmbeddedObject",
                 "com.sun.star.text.TextFrame",
                 "com.sun.star.text.TextGraphicObject",
-                "com.sun.star.text.BaseFrame",
             )
         return self._supported_services_values
 

@@ -17,13 +17,12 @@ from ....style_base import StyleMulti
 
 from ....kind.border_kind import BorderKind
 from ....kind.format_kind import FormatKind
-from ...structs.side import Side as Side, SideFlags as SideFlags, LineSize as LineSize
+from ...structs.side import Side as Side, LineSize as LineSize
 from .shadow import Shadow as InnerShadow
 from .padding import Padding as InnerPadding
 from .sides import Sides
 
 from ooo.dyn.table.border_line import BorderLine as BorderLine
-from ooo.dyn.table.border_line_style import BorderLineStyleEnum as BorderLineStyleEnum
 from ooo.dyn.table.border_line2 import BorderLine2 as BorderLine2
 from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation

@@ -5,7 +5,7 @@ Module for managing table borders (cells and ranges).
 """
 # region imports
 from __future__ import annotations
-from typing import overload, cast, Tuple, Type, TypeVar
+from typing import Any, overload, cast, Tuple, TypeVar
 
 import uno
 
@@ -19,10 +19,9 @@ from ....kind.format_kind import FormatKind
 from .padding import Padding as Padding
 from ...structs.table_border_struct import TableBorderStruct
 from .shadow import Shadow
-from ...structs.side import Side as Side
+from ...structs.side import Side as Side, BorderLineKind as BorderLineKind
 
 from ooo.dyn.table.border_line import BorderLine as BorderLine
-from ooo.dyn.table.border_line_style import BorderLineStyleEnum as BorderLineStyleEnum
 from ooo.dyn.table.border_line2 import BorderLine2 as BorderLine2
 from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
@@ -30,30 +29,6 @@ from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 # endregion imports
 
 _TBorders = TypeVar(name="_TBorders", bound="Borders")
-
-
-class TblBorder2(TableBorderStruct):
-    """
-    Table Border struct positioning for setting Calc borders.
-
-    Any properties starting with ``prop_`` set or get current instance values.
-
-    All methods starting with ``fmt_`` can be used to chain together Border Table properties.
-    """
-
-    def _get_property_name(self) -> str:
-        try:
-            return self._property_name
-        except AttributeError:
-            self._property_name = "TableBorder2"
-        return self._property_name
-
-    def _supported_services(self) -> Tuple[str, ...]:
-        try:
-            return self._supported_services_values
-        except AttributeError:
-            self._supported_services_values = ("com.sun.star.table.CellProperties",)
-        return self._supported_services_values
 
 
 class Borders(StyleMulti):
@@ -111,7 +86,7 @@ class Borders(StyleMulti):
         if not diagonal_up is None:
             init_vals["DiagonalBLTR2"] = diagonal_up.get_uno_struct()
 
-        border_table = TblBorder2(
+        border_table = TableBorderStruct(
             left=left,
             right=right,
             top=top,
@@ -120,6 +95,7 @@ class Borders(StyleMulti):
             horizontal=horizontal,
             vertical=vertical,
             distance=distance,
+            _cattribs=self._get_tb_cattribs(),
         )
 
         super().__init__(**init_vals)
@@ -132,19 +108,20 @@ class Borders(StyleMulti):
 
     # region methods
 
+    def _get_tb_cattribs(self) -> dict:
+        return {"_property_name": "TableBorder2", "_supported_services_values": self._supported_services()}
+
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:
             raise ValueError("Modifying a default instance is not allowed")
         return super()._on_modifing(event)
 
     def _supported_services(self) -> Tuple[str, ...]:
-        """
-        Gets a tuple of supported services (``com.sun.star.table.CellProperties``,)
-
-        Returns:
-            Tuple[str, ...]: Supported services
-        """
-        return ("com.sun.star.table.CellProperties",)
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = ("com.sun.star.table.CellProperties",)
+        return self._supported_services_values
 
     # region apply()
     @overload
@@ -161,14 +138,17 @@ class Borders(StyleMulti):
         Returns:
             None:
         """
-        try:
-            super().apply(obj, **kwargs)
-        except mEx.MultiError as e:
-            mLo.Lo.print(f"CellBorder.apply_style(): Unable to set Property")
-            for err in e.errors:
-                mLo.Lo.print(f"  {err}")
+        super().apply(obj, **kwargs)
 
     # endregion apply()
+
+    def _props_set(self, obj: object, **kwargs: Any) -> None:
+        try:
+            super()._props_set(obj, **kwargs)
+        except mEx.MultiError as e:
+            mLo.Lo.print(f"{self.__class__.__name__}.apply(): Unable to set Property")
+            for err in e.errors:
+                mLo.Lo.print(f"  {err}")
 
     # endregion methods
 
@@ -187,7 +167,7 @@ class Borders(StyleMulti):
         if cp._border_table is None and value is None:
             return cp
         if cp._border_table is None:
-            cp._border_table = TblBorder2(border_side=value)
+            cp._border_table = TableBorderStruct(border_side=value, _cattribs=self._get_tb_cattribs())
             return cp
         bt = cp._border_table.copy()
         bt.prop_left = value
@@ -211,7 +191,7 @@ class Borders(StyleMulti):
         if cp._border_table is None and value is None:
             return cp
         if cp._border_table is None:
-            cp._border_table = TblBorder2(left=value)
+            cp._border_table = TableBorderStruct(left=value, _cattribs=self._get_tb_cattribs())
             return cp
         bt = cp._border_table.copy()
         bt.prop_left = value
@@ -232,7 +212,7 @@ class Borders(StyleMulti):
         if cp._border_table is None and value is None:
             return cp
         if cp._border_table is None:
-            cp._border_table = TblBorder2(right=value)
+            cp._border_table = TableBorderStruct(right=value, _cattribs=self._get_tb_cattribs())
             return cp
         bt = cp._border_table.copy()
         bt.prop_right = value
@@ -253,7 +233,7 @@ class Borders(StyleMulti):
         if cp._border_table is None and value is None:
             return cp
         if cp._border_table is None:
-            cp._border_table = TblBorder2(top=value)
+            cp._border_table = TableBorderStruct(top=value, _cattribs=self._get_tb_cattribs())
             return cp
         bt = cp._border_table.copy()
         bt.prop_top = value
@@ -274,7 +254,7 @@ class Borders(StyleMulti):
         if cp._border_table is None and value is None:
             return cp
         if cp._border_table is None:
-            cp._border_table = TblBorder2(bottom=value)
+            cp._border_table = TableBorderStruct(bottom=value, _cattribs=self._get_tb_cattribs())
             return cp
         bt = cp._border_table.copy()
         bt.prop_bottom = value
@@ -295,7 +275,7 @@ class Borders(StyleMulti):
         if cp._border_table is None and value is None:
             return cp
         if cp._border_table is None:
-            cp._border_table = TblBorder2(horizontal=value)
+            cp._border_table = TableBorderStruct(horizontal=value, _cattribs=self._get_tb_cattribs())
             return cp
         bt = cp._border_table.copy()
         bt.prop_horizontal = value
@@ -316,7 +296,7 @@ class Borders(StyleMulti):
         if cp._border_table is None and value is None:
             return cp
         if cp._border_table is None:
-            cp._border_table = TblBorder2(vertical=value)
+            cp._border_table = TableBorderStruct(vertical=value, _cattribs=self._get_tb_cattribs())
             return cp
         bt = cp._border_table.copy()
         bt.prop_vertical = value
@@ -337,7 +317,7 @@ class Borders(StyleMulti):
         if cp._border_table is None and value is None:
             return cp
         if cp._border_table is None:
-            cp._border_table = TblBorder2(distance=value)
+            cp._border_table = TableBorderStruct(distance=value, _cattribs=self._get_tb_cattribs())
             return cp
         bt = cp._border_table.copy()
         bt.prop_distance = value
@@ -432,12 +412,12 @@ class Borders(StyleMulti):
         return self._direct_inner_padding
 
     @property
-    def prop_inner_border_table(self) -> TblBorder2:
+    def prop_inner_border_table(self) -> TableBorderStruct:
         """Gets border table instance"""
         try:
             return self._direct_inner_table
         except AttributeError:
-            self._direct_inner_table = cast(TblBorder2, self._get_style_inst("border_table"))
+            self._direct_inner_table = cast(TableBorderStruct, self._get_style_inst("border_table"))
         return self._direct_inner_table
 
     @static_prop

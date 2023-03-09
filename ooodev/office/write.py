@@ -1825,7 +1825,7 @@ class Write(mSel.Selection):
     @staticmethod
     def get_page_text_width(text_doc: XTextDocument) -> int:
         """
-        get the width of the page's text area
+        Get the width of the page's text area in ``1/100 mm`` units.
 
         Args:
             text_doc (XTextDocument): Text Document
@@ -1851,7 +1851,7 @@ class Write(mSel.Selection):
     @staticmethod
     def get_page_text_size(text_doc: XTextDocument) -> Size:
         """
-        Get page text size
+        Get page text size in ``1/100 mm`` units.
 
         Args:
             text_doc (XTextDocument): Text Document
@@ -1885,7 +1885,7 @@ class Write(mSel.Selection):
     @staticmethod
     def get_page_size(text_doc: XTextDocument) -> Size:
         """
-        Get page size
+        Get page size in ``1/100 mm`` units.
 
         Args:
             text_doc (XTextDocument): Text Document
@@ -2102,21 +2102,33 @@ class Write(mSel.Selection):
 
     # region ------------- adding elements -----------------------------
 
+    # region add_formula()
+    @overload
     @classmethod
-    def add_formula(cls, cursor: XTextCursor, formula: str) -> bool:
+    def add_formula(cls, cursor: XTextCursor, formula: str) -> XTextContent:
+        ...
+
+    @overload
+    @classmethod
+    def add_formula(cls, cursor: XTextCursor, formula: str, styles: Iterable[StyleObj] = None) -> XTextContent:
+        ...
+
+    @classmethod
+    def add_formula(cls, cursor: XTextCursor, formula: str, styles: Iterable[StyleObj] = None) -> XTextContent:
         """
         Adds a formula
 
         Args:
             cursor (XTextCursor): Cursor
             formula (str): formula
+            styles (Iterable[StyleObj]): One or more styles to apply to frame. Only styles that support ``com.sun.star.text.TextEmbeddedObject`` service are applied.
 
         Raises:
             CreateInstanceMsfError: If unable to create text.TextEmbeddedObject
             Exception: If unable to add formula
 
         Returns:
-            bool: True if formula is added; Otherwise, False
+            XTextContent: Embeded Object.
 
         :events:
             .. cssclass:: lo_event
@@ -2126,7 +2138,12 @@ class Write(mSel.Selection):
 
         Note:
            Event args ``event_data`` is a dictionary containing ``formula`` and ``cursor``.
+
+        .. versionchanged:: 0.9.0
+            Now returns the embeded Object instead of bool value.
+            Added style parameter that allows for all styles that support ``com.sun.star.text.TextEmbeddedObject`` service.
         """
+        result = None
         cargs = CancelEventArgs(Write.add_formula.__qualname__)
         cargs.event_data = {"cursor": cursor, "formula": formula}
         _Events().trigger(WriteNamedEvent.FORMULA_ADDING, cargs)
@@ -2152,11 +2169,19 @@ class Write(mSel.Selection):
 
             formula_props = mLo.Lo.qi(XPropertySet, embed_obj_model, True)
             formula_props.setPropertyValue("Formula", formula)
+            result = embed_content
+            if styles:
+                srv = ("com.sun.star.text.TextEmbeddedObject",)
+                for style in styles:
+                    if style.support_service(*srv):
+                        style.apply(embed_content)
             mLo.Lo.print(f'Inserted formula "{formula}"')
         except Exception as e:
             raise Exception(f'Insertion fo formula "{formula}" failed:') from e
         _Events().trigger(WriteNamedEvent.FORMULA_ADDED, EventArgs.from_args(cargs))
-        return True
+        return result
+
+    # endregion add_formula()
 
     @classmethod
     def add_hyperlink(cls, cursor: XTextCursor, label: str, url_str: str) -> bool:
@@ -2338,6 +2363,7 @@ class Write(mSel.Selection):
             ``border_color`` and ``background_color`` now default to ``None``.
             Added style parameter that allows for all styles that support ``com.sun.star.text.TextFrame`` service.
         """
+        result = None
         cargs = CancelEventArgs(Write.add_text_frame.__qualname__)
         cargs.event_data = {
             "cursor": cursor,
@@ -2425,6 +2451,7 @@ class Write(mSel.Selection):
             xframe_text = xframe.getText()
             xtext_range = mLo.Lo.qi(XTextRange, xframe_text.createTextCursor(), True)
             xframe_text.insertString(xtext_range, text, False)
+            result = xframe
             if styles:
                 srv = ("com.sun.star.text.TextFrame", "com.sun.star.text.ChainedTextFrame")
                 for style in styles:
@@ -2433,7 +2460,7 @@ class Write(mSel.Selection):
         except Exception as e:
             raise Exception("Insertion of text frame failed:") from e
         _Events().trigger(WriteNamedEvent.TEXT_FRAME_ADDED, EventArgs.from_args(cargs))
-        return xframe
+        return result
 
     @classmethod
     def add_table(
@@ -2701,6 +2728,7 @@ class Write(mSel.Selection):
         """
         # see Also: https://ask.libreoffice.org/t/graphicurl-no-longer-works-in-6-1-0-3/35459/3
         # see Also: https://tomazvajngerl.blogspot.com/2018/03/improving-image-handling-in-libreoffice.html
+        result = None
         cargs = CancelEventArgs(Write.add_image_link.__qualname__)
         cargs.event_data = {
             "doc": doc,
@@ -2826,6 +2854,7 @@ class Write(mSel.Selection):
         .. versionchanged:: 0.9.0
             Return image shape instead of boolean.
         """
+        result = None
         cargs = CancelEventArgs(Write.add_image_shape.__qualname__)
         cargs.event_data = {
             "cursor": cursor,
@@ -2855,6 +2884,7 @@ class Write(mSel.Selection):
                     h = height.get_value_mm100()
                 except AttributeError:
                     h = int(height)
+
                 if w > 0 and h > 0:
                     im_size = Size(w, h)
                     size_set = True
@@ -2881,7 +2911,7 @@ class Write(mSel.Selection):
             # insert image shape into the document, followed by newline
             cls._append_text_content(cursor, gos)
             cls.end_line(cursor)
-            return xdraw_shape
+            result = xdraw_shape
         except ValueError:
             raise
         except mEx.CreateInstanceMsfError:
@@ -2891,7 +2921,7 @@ class Write(mSel.Selection):
         except Exception as e:
             raise Exception(f"Insertion of graphic in '{fnm}' failed:") from e
         _Events().trigger(WriteNamedEvent.IMAGE_SHAPE_ADDED, EventArgs.from_args(cargs))
-        return None
+        return result
 
     # endregion add_image_shape()
 

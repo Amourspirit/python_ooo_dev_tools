@@ -7,7 +7,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.writer.direct.image.borders import Side, Sides, BorderLineStyleEnum, LineSize
+from ooodev.format.writer.direct.image.borders import Side, Sides, BorderLineKind, LineSize
 from ooodev.format.writer.direct.image.options import Names
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
@@ -32,7 +32,7 @@ def test_write(loader, fix_image_path) -> None:
         img_size = ImagesLo.get_size_100mm(im_fnm=im_fnm)
         style_names = Names(name="skinner", desc="Skinner Pointing", alt="Pointer")
 
-        side = Side(line=BorderLineStyleEnum.DOUBLE, color=StandardColor.RED_DARK3, width=LineSize.MEDIUM)
+        side = Side(line=BorderLineKind.DOUBLE, color=StandardColor.RED_DARK3, width=LineSize.MEDIUM)
         style = Sides(all=side)
 
         _ = Write.add_image_link(
@@ -52,7 +52,7 @@ def test_write(loader, fix_image_path) -> None:
         f_style = Sides.from_obj(graphic)
         f_side = f_style.prop_left
         assert f_side.prop_color == side.prop_color
-        assert f_side.prop_width == pytest.approx(side.prop_width, rel=1e-2)
+        assert f_side.prop_width.value == pytest.approx(side.prop_width.value, rel=1e-2)
 
         Lo.delay(delay)
     finally:

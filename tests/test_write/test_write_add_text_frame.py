@@ -8,7 +8,7 @@ from typing import cast, TYPE_CHECKING
 import uno
 
 from ooodev.format.writer.direct.frame.borders import Padding
-from ooodev.format.writer.direct.frame.borders import Side, Sides, BorderLineStyleEnum, LineSize
+from ooodev.format.writer.direct.frame.borders import Side, Sides, BorderLineKind, LineSize
 from ooodev.format.writer.direct.frame.area import Color
 from ooodev.format.writer.direct.frame.type import (
     Anchor,
@@ -56,7 +56,7 @@ def test_write(loader, para_text) -> None:
         amt = 2.0
         style_padding = Padding(all=amt)
         style_color = Color(color=StandardColor.DEFAULT_BLUE)
-        side = Side(line=BorderLineStyleEnum.SOLID, color=StandardColor.BLUE_DARK3, width=LineSize.MEDIUM)
+        side = Side(line=BorderLineKind.SOLID, color=StandardColor.BLUE_DARK3, width=LineSize.MEDIUM)
         style_border = Sides(all=side)
         style_position = Position(
             horizontal=Horizontal(position=HoriOrient.CENTER, rel=RelHoriOrient.PARAGRAPH_AREA),

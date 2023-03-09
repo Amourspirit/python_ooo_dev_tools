@@ -10,7 +10,7 @@ from ooodev.format.calc.direct.borders import (
     Borders,
     Shadow,
     Side,
-    BorderLineStyleEnum,
+    BorderLineKind,
     ShadowLocation,
     Padding,
 )
@@ -47,12 +47,8 @@ def test_calc_border(loader) -> None:
         cp = cast("CellProperties", cell)
         # line width may not be applied exact by LibreOffice.
         assert cp.TableBorder2.IsLeftLineValid
-        assert cp.TableBorder2.LeftLine.LineWidth in [
-            UnitConvert.convert_pt_mm100(0.75) - 1 + i for i in range(3)
-        ]  # plus or minus 1
-        assert cp.TableBorder2.LeftLine.LineWidth in [
-            UnitConvert.convert_pt_mm100(0.75) - 1 + i for i in range(3)
-        ]  # plus or minus 1
+        lw_mm100 = UnitConvert.convert_pt_mm100(0.75)
+        assert cp.TableBorder2.LeftLine.LineWidth in range(lw_mm100 - 2, lw_mm100 + 3)  # +- 2
 
         assert cp.TableBorder2.IsRightLineValid
         assert cp.TableBorder2.RightLine.LineWidth == cp.TableBorder2.LeftLine.LineWidth
@@ -68,23 +64,21 @@ def test_calc_border(loader) -> None:
         cell_obj = Calc.get_cell_obj("c1")
         cell = Calc.get_cell(sheet, cell_obj)
         cb = Borders(
-            left=Side(line=BorderLineStyleEnum.DASHED, color=CommonColor.BLUE, width=4.5),
-            right=Side(line=BorderLineStyleEnum.DOUBLE, width=2.5),
+            left=Side(line=BorderLineKind.DASHED, color=CommonColor.BLUE, width=4.5),
+            right=Side(line=BorderLineKind.DOUBLE, width=2.5),
             shadow=shadow,
         )
         Styler.apply(cell, cb)
         cp = cast("CellProperties", cell)
         assert cp.TableBorder2.IsLeftLineValid
-        assert cp.TableBorder2.LeftLine.LineWidth in [
-            UnitConvert.convert_pt_mm100(4.5) - 2 + i for i in range(5)
-        ]  # plus or minus 2
-        assert cp.TableBorder2.LeftLine.LineStyle == BorderLineStyleEnum.DASHED.value
+        lw_mm100 = UnitConvert.convert_pt_mm100(4.5)
+        assert cp.TableBorder2.LeftLine.LineWidth in range(lw_mm100 - 2, lw_mm100 + 3)  # +- 2
+        assert cp.TableBorder2.LeftLine.LineStyle == BorderLineKind.DASHED.value
 
         assert cp.TableBorder2.IsRightLineValid
-        assert cp.TableBorder2.RightLine.LineWidth in [
-            UnitConvert.convert_pt_mm100(2.5) - 2 + i for i in range(5)
-        ]  # plus or minus 2
-        assert cp.TableBorder2.RightLine.LineStyle == BorderLineStyleEnum.DOUBLE.value
+        lw_mm100 = UnitConvert.convert_pt_mm100(2.5)
+        assert cp.TableBorder2.RightLine.LineWidth in range(lw_mm100 - 2, lw_mm100 + 3)  # +- 2
+        assert cp.TableBorder2.RightLine.LineStyle == BorderLineKind.DOUBLE.value
 
         assert cp.ShadowFormat == shadow.get_uno_struct()
 
@@ -93,19 +87,19 @@ def test_calc_border(loader) -> None:
 
         cell_obj = Calc.get_cell_obj("e1")
         cell = Calc.get_cell(sheet, cell_obj)
-        cb = Borders(diagonal_up=Side(line=BorderLineStyleEnum.DOUBLE_THIN, color=CommonColor.RED))
+        cb = Borders(diagonal_up=Side(line=BorderLineKind.DOUBLE_THIN, color=CommonColor.RED))
         Styler.apply(cell, cb)
         cp = cast("CellProperties", cell)
         assert cp.DiagonalBLTR2.Color == CommonColor.RED
-        assert cp.DiagonalBLTR2.LineStyle == BorderLineStyleEnum.DOUBLE_THIN.value
+        assert cp.DiagonalBLTR2.LineStyle == BorderLineKind.DOUBLE_THIN.value
 
         cell_obj = Calc.get_cell_obj("g1")
         cell = Calc.get_cell(sheet, cell_obj)
-        cb = Borders(diagonal_down=Side(line=BorderLineStyleEnum.DOTTED, color=CommonColor.BROWN))
+        cb = Borders(diagonal_down=Side(line=BorderLineKind.DOTTED, color=CommonColor.BROWN))
         Styler.apply(cell, cb)
         cp = cast("CellProperties", cell)
         assert cp.DiagonalTLBR2.Color == CommonColor.BROWN
-        assert cp.DiagonalTLBR2.LineStyle == BorderLineStyleEnum.DOTTED.value
+        assert cp.DiagonalTLBR2.LineStyle == BorderLineKind.DOTTED.value
 
         side = Side(color=CommonColor.ORANGE_RED)
 
@@ -115,9 +109,9 @@ def test_calc_border(loader) -> None:
         Styler.apply(cell, cb)
         cp = cast("CellProperties", cell)
         assert cp.DiagonalTLBR2.Color == CommonColor.ORANGE_RED
-        assert cp.DiagonalTLBR2.LineStyle == BorderLineStyleEnum.SOLID.value
+        assert cp.DiagonalTLBR2.LineStyle == BorderLineKind.SOLID.value
         assert cp.DiagonalBLTR2.Color == CommonColor.ORANGE_RED
-        assert cp.DiagonalBLTR2.LineStyle == BorderLineStyleEnum.SOLID.value
+        assert cp.DiagonalBLTR2.LineStyle == BorderLineKind.SOLID.value
 
         cell_obj = Calc.get_cell_obj("C3")
         Calc.set_val(value="Hello", sheet=sheet, cell_obj=cell_obj)
@@ -173,25 +167,25 @@ def test_calc_border_range(loader) -> None:
         # for some unknown reason LibreOffice is overriding style of horizontal Side. to match outter border.
         # Soluttion is to create a new border with only horizontal side set after inital range has been set
         cb = Borders(
-            border_side=Side(line=BorderLineStyleEnum.SOLID, color=CommonColor.BLUE),
-            vertical=Side(color=CommonColor.RED, line=BorderLineStyleEnum.DASHED),
-            horizontal=Side(color=CommonColor.GREEN, width=1.4, line=BorderLineStyleEnum.DOUBLE),
+            border_side=Side(line=BorderLineKind.SOLID, color=CommonColor.BLUE),
+            vertical=Side(color=CommonColor.RED, line=BorderLineKind.DASHED),
+            horizontal=Side(color=CommonColor.GREEN, width=1.4, line=BorderLineKind.DOUBLE),
         )
         Styler.apply(cr, cb)
 
         rng = cast("CellRange", cr)
 
         assert rng.TableBorder2.TopLine.Color == CommonColor.BLUE
-        assert rng.TableBorder2.RightLine.LineStyle == BorderLineStyleEnum.SOLID.value
+        assert rng.TableBorder2.RightLine.LineStyle == BorderLineKind.SOLID.value
 
-        cb = Borders(horizontal=Side(color=CommonColor.GREEN, width=1.4, line=BorderLineStyleEnum.DOUBLE))
+        cb = Borders(horizontal=Side(color=CommonColor.GREEN, width=1.4, line=BorderLineKind.DOUBLE))
         Styler.apply(cr, cb)
 
         assert rng.TableBorder2.VerticalLine.Color == CommonColor.RED
-        assert rng.TableBorder2.VerticalLine.LineStyle == BorderLineStyleEnum.DASHED.value
+        assert rng.TableBorder2.VerticalLine.LineStyle == BorderLineKind.DASHED.value
 
         assert rng.TableBorder2.HorizontalLine.Color == CommonColor.GREEN
-        assert rng.TableBorder2.HorizontalLine.LineStyle == BorderLineStyleEnum.DOUBLE.value
+        assert rng.TableBorder2.HorizontalLine.LineStyle == BorderLineKind.DOUBLE.value
 
         rng_obj = Calc.get_range_obj("B8:G12")
         cr = Calc.get_cell_range(sheet, rng_obj)
@@ -246,16 +240,16 @@ def test_calc_border_range(loader) -> None:
         cell = Calc.get_cell(sheet=sheet, cell_obj=rng_obj.cell_start)
         cp = cast("CellProperties", cell)
         assert cp.LeftBorder2.Color == CommonColor.GREEN
-        assert cp.LeftBorder2.LineStyle == BorderLineStyleEnum.DOUBLE_THIN
+        assert cp.LeftBorder2.LineStyle == BorderLineKind.DOUBLE_THIN
         assert cp.TopBorder2.Color == CommonColor.GREEN
-        assert cp.TopBorder2.LineStyle == BorderLineStyleEnum.DOUBLE_THIN
+        assert cp.TopBorder2.LineStyle == BorderLineKind.DOUBLE_THIN
 
         cell = Calc.get_cell(sheet=sheet, cell_obj=rng_obj.cell_end)
         cp = cast("CellProperties", cell)
         assert cp.RightBorder2.Color == CommonColor.GREEN
-        assert cp.RightBorder2.LineStyle == BorderLineStyleEnum.DOUBLE_THIN
+        assert cp.RightBorder2.LineStyle == BorderLineKind.DOUBLE_THIN
         assert cp.BottomBorder2.Color == CommonColor.GREEN
-        assert cp.BottomBorder2.LineStyle == BorderLineStyleEnum.DOUBLE_THIN
+        assert cp.BottomBorder2.LineStyle == BorderLineKind.DOUBLE_THIN
 
         Lo.delay(delay)
     finally:

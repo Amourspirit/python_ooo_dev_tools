@@ -8,10 +8,9 @@ import uno
 from ooodev.format.writer.modify.page.borders import (
     Sides,
     Side,
-    SideFlags,
     LineSize,
     StylePageKind,
-    BorderLineStyleEnum,
+    BorderLineKind,
 )
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
@@ -33,7 +32,7 @@ def test_write(loader, para_text) -> None:
         if not Lo.bridge_connector.headless:
             Write.append_para(cursor=cursor, text=para_text)
 
-        side = Side(line=BorderLineStyleEnum.DOUBLE, color=StandardColor.RED_DARK3, width=LineSize.MEDIUM)
+        side = Side(line=BorderLineKind.DOUBLE, color=StandardColor.RED_DARK3, width=LineSize.MEDIUM)
 
         style = Sides(all=side)
         style.apply(doc)
@@ -42,7 +41,7 @@ def test_write(loader, para_text) -> None:
         f_style = Sides.from_style(doc, style.prop_style_name)
         f_side = f_style.prop_inner.prop_left
         assert f_side.prop_color == side.prop_color
-        assert f_side.prop_width == pytest.approx(side.prop_width, rel=1e2)
+        assert f_side.prop_width.value == pytest.approx(side.prop_width.value, rel=1e-2)
 
         Lo.delay(delay)
     finally:

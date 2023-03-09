@@ -1,64 +1,14 @@
 from __future__ import annotations
-from typing import Tuple, cast, Type, TypeVar
+from typing import cast, Type, TypeVar
 import uno
-from ooo.dyn.table.border_line_style import BorderLineStyleEnum as BorderLineStyleEnum
 
 from .....writer.style.page.kind.style_page_kind import StylePageKind as StylePageKind
 from ...page_style_base_multi import PageStyleBaseMulti
-from .....direct.structs.side import Side as Side, LineSize as LineSize, SideFlags as SideFlags
-from .....direct.common.abstract.abstract_sides import AbstractSides
+from .....direct.structs.side import Side as Side, LineSize as LineSize
+from .....direct.char.border.sides import Sides as InnerSides
 from .....direct.common.props.border_props import BorderProps
-from .....kind.format_kind import FormatKind
 
 _TSides = TypeVar(name="_TSides", bound="Sides")
-
-
-class InnerSides(AbstractSides):
-    """
-    Page Footer Style Border Sides.
-
-    Any properties starting with ``prop_`` set or get current instance values.
-
-    All methods starting with ``fmt_`` can be used to chain together Sides properties.
-
-    .. versionadded:: 0.9.0
-    """
-
-    # region methods
-    def _supported_services(self) -> Tuple[str, ...]:
-        try:
-            return self._supported_services_values
-        except AttributeError:
-            self._supported_services_values = (
-                "com.sun.star.style.ParagraphProperties",
-                "com.sun.star.style.ParagraphStyle",
-                "com.sun.star.style.PageStyle",
-            )
-        return self._supported_services_values
-
-    # endregion methods
-
-    # region Properties
-    @property
-    def prop_format_kind(self) -> FormatKind:
-        """Gets the kind of style"""
-        try:
-            return self._format_kind_prop
-        except AttributeError:
-            self._format_kind_prop = FormatKind.DOC | FormatKind.STYLE
-        return self._format_kind_prop
-
-    @property
-    def _props(self) -> BorderProps:
-        try:
-            return self._props_internal_attributes
-        except AttributeError:
-            self._props_internal_attributes = BorderProps(
-                left="HeaderLeftBorder", top="HeaderTopBorder", right="HeaderRightBorder", bottom="HeaderBottomBorder"
-            )
-        return self._props_internal_attributes
-
-    # endregion Properties
 
 
 class Sides(PageStyleBaseMulti):
