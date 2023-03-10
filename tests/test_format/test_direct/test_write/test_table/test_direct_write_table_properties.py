@@ -32,8 +32,8 @@ def test_write_abs(loader) -> None:
 
         style = TableProperties(name="My_Table", relative=False, align=TableAlignKind.AUTO)
 
-        table = Write.add_table(cursor=cursor, table_data=tbl_data)
-        style.apply(table)
+        table = Write.add_table(cursor=cursor, table_data=tbl_data, first_row_header=False, styles=(style,))
+        # style.apply(table)
 
         tp = TableProperties.from_obj(table)
         assert tp.prop_left.value == 0
@@ -295,8 +295,8 @@ def test_write_rel(loader) -> None:
             width=width,
         )
 
-        table = Write.add_table(cursor=cursor, table_data=tbl_data)
-        style.apply(table)
+        table = Write.add_table(cursor=cursor, table_data=tbl_data, styles=(style,))
+        # style.apply(table)
 
         tp = TableProperties.from_obj(table)
         assert tp.prop_width.value in range(width.value - 2, width.value + 3)  # +- 2
