@@ -17,6 +17,7 @@ Subpackages
    ooodev.format.direct.para
    ooodev.format.direct.shape
    ooodev.format.direct.structs
+   ooodev.format.direct.table
 
 Module contents
 ---------------
