@@ -11,10 +11,12 @@ from .....events.args.cancel_event_args import CancelEventArgs
 from .....events.args.key_val_cancel_args import KeyValCancelArgs
 from .....exceptions import ex as mEx
 from .....meta.static_prop import static_prop
+from .....proto.unit_obj import UnitObj
 from .....utils import lo as mLo
 from .....utils import props as mProps
 from .....utils.data_type.angle import Angle as Angle
 from .....utils.data_type.intensity import Intensity as Intensity
+from .....utils.data_type.unit_pt import UnitPT
 from .....utils.unit_convert import UnitConvert
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleBase
@@ -75,7 +77,7 @@ class FontPosition(StyleBase):
         rotation: int | Angle | None = None,
         scale: int | None = None,
         fit: bool | None = None,
-        spacing: CharSpacingKind | float | None = None,
+        spacing: CharSpacingKind | float | UnitObj | None = None,
         pair: bool | None = None,
     ) -> None:
         """
@@ -83,12 +85,12 @@ class FontPosition(StyleBase):
 
         Args:
             script_kind (FontScriptKind, optional): Specifies Superscript/Subscript option.
-            raise_lower (int, Intensity, optional): Specifies raise or Lower.
-            rel_size (int, optional): Specifies realitive Font Size. Set this value to ``0`` for automatic.
+            raise_lower (int, Intensity, optional): Specifies raise or Lower as percent value. Min value is ``1``.
+            rel_size (int, optional): Specifies realitive Font Size as percent value. Set this value to ``0`` for automatic; Otherwise value from ``1`` to ``100``.
             rotation (int, Angle, optional): Specifies the rotation of a character in degrees. Depending on the implementation only certain values may be allowed.
-            scale (int, optional): Specifies scale width.
+            scale (int, optional): Specifies scale width as percent value. Min value is ``1``.
             fit (bool, optional): Specifies if rotation is fit to line.
-            spacing (float, optional): Specifies character spacing in point units.
+            spacing (CharSpacingKind, float, UnitObj, optional): Specifies character spacing in ``pt`` (point) units or :ref:`proto_unit_obj`.
             pair (bool, optional): Specifies pair kerning.
         """
 
@@ -255,7 +257,7 @@ class FontPosition(StyleBase):
         Get copy of instance with relative size set or removed.
 
         Args:
-            value (int, Intensity, optional): relative size value.
+            value (int, optional): relative size value.
                 If ``None`` style is removed. Default ``None``
 
         Returns:
@@ -285,7 +287,7 @@ class FontPosition(StyleBase):
         Get copy of instance with scale width set or removed.
 
         Args:
-            value (int, Intensity, optional): scale width value.
+            value (int, optional): scale width value.
                 If ``None`` style is removed. Default ``None``
 
         Returns:
@@ -300,7 +302,7 @@ class FontPosition(StyleBase):
         Get copy of instance with rotation fit set or removed.
 
         Args:
-            value (int, Intensity, optional): Rotation fit value.
+            value (bool, optional): Rotation fit value.
                 If ``None`` style is removed. Default ``None``
 
         Returns:
@@ -310,12 +312,12 @@ class FontPosition(StyleBase):
         ft.prop_fit = value
         return ft
 
-    def fmt_spacing(self: _TFontPosition, value: float | None = None) -> _TFontPosition:
+    def fmt_spacing(self: _TFontPosition, value: float | UnitObj | None = None) -> _TFontPosition:
         """
         Get copy of instance with spacing set or removed.
 
         Args:
-            value (str, optional): The character spacing in point units.
+            value (float, UnitObj, optional): The character spacing in ``pt`` (point) units :ref:`proto_unit_obj`.
                 If ``None`` style is removed. Default ``None``
 
         Returns:
@@ -330,7 +332,7 @@ class FontPosition(StyleBase):
         Get copy of instance with pair kerning set or removed.
 
         Args:
-            value (int, Intensity, optional): Pair kerning value.
+            value (bool, optional): Pair kerning value.
                 If ``None`` style is removed. Default ``None``
 
         Returns:
@@ -586,21 +588,22 @@ class FontPosition(StyleBase):
         self._set("CharRotationIsFitToLine", value)
 
     @property
-    def prop_spacing(self) -> float | None:
+    def prop_spacing(self) -> UnitPT | None:
         """This value contains character spacing in point units"""
-        pv = self._get("CharKerning")
-        if not pv is None:
-            if pv == 0.0:
-                return 0.0
-            return UnitConvert.convert_mm100_pt(pv)
-        return None
+        pv = cast(int, self._get("CharKerning"))
+        if pv is None:
+            return None
+        return UnitPT.from_mm100(pv)
 
     @prop_spacing.setter
-    def prop_spacing(self, value: float | CharSpacingKind | None) -> None:
+    def prop_spacing(self, value: float | CharSpacingKind | UnitObj | None) -> None:
         if value is None:
             self._remove("CharKerning")
             return
-        self._set("CharKerning", UnitConvert.convert_pt_mm100(float(value)))
+        try:
+            self._set("CharKerning", value.get_value_mm100())
+        except AttributeError:
+            self._set("CharKerning", UnitConvert.convert_pt_mm100(float(value)))
 
     @property
     def prop_pair(self) -> bool | None:

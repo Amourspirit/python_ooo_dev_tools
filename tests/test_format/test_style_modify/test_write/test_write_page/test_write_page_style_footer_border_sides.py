@@ -9,10 +9,9 @@ from ooodev.format.writer.modify.page.footer import Footer, StylePageKind
 from ooodev.format.writer.modify.page.footer.borders import (
     Sides,
     Side,
-    SideFlags,
     LineSize,
     StylePageKind,
-    BorderLineStyleEnum,
+    BorderLineKind,
 )
 from ooodev.format import Styler
 from ooodev.utils.gui import GUI
@@ -45,7 +44,7 @@ def test_write(loader, para_text) -> None:
             margin_left=1.5,
             margin_right=2.0,
         )
-        side = Side(line=BorderLineStyleEnum.DOUBLE, color=StandardColor.BLUE_DARK2, width=LineSize.MEDIUM)
+        side = Side(line=BorderLineKind.DOUBLE, color=StandardColor.BLUE_DARK2, width=LineSize.MEDIUM)
 
         style = Sides(all=side)
         Styler.apply(doc, footer_style, style)
@@ -54,7 +53,7 @@ def test_write(loader, para_text) -> None:
         f_style = Sides.from_style(doc, style.prop_style_name)
         f_side = f_style.prop_inner.prop_left
         assert f_side.prop_color == side.prop_color
-        assert f_side.prop_width == pytest.approx(side.prop_width, rel=1e2)
+        assert f_side.prop_width.value == pytest.approx(side.prop_width.value, rel=1e-2)
 
         Lo.delay(delay)
     finally:

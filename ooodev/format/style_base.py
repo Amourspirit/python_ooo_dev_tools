@@ -13,10 +13,11 @@ from ..events.args.key_val_cancel_args import KeyValCancelArgs as KeyValCancelAr
 from ..events.args.key_val_args import KeyValArgs as KeyValArgs
 from ..events.args.cancel_event_args import CancelEventArgs as CancelEventArgs
 from ..events.args.event_args import EventArgs as EventArgs
-from ..utils.type_var import T, EventCallback
+from ..utils.type_var import EventCallback
 from .kind.format_kind import FormatKind
 from ..events.format_named_event import FormatNamedEvent as FormatNamedEvent
 from ..exceptions import ex as mEx
+from .direct.common.props.prop_pair import PropPair
 
 # from ..events.event_singleton import _Events
 from abc import ABC
@@ -41,11 +42,7 @@ _TStyleModifyMulti = TypeVar("_TStyleModifyMulti", bound="StyleModifyMulti")
 
 class MetaStyle(type):
     def __call__(cls, *args, **kw):
-        if "_cattribs" in kw:
-            custom_args = kw["_cattribs"]
-            del kw["_cattribs"]
-        else:
-            custom_args = None
+        custom_args = kw.pop("_cattribs", None)
         obj = cls.__new__(cls, *args, **kw)
         uniquie_id = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
         object.__setattr__(obj, "_uniquie_id", uniquie_id)
@@ -142,7 +139,7 @@ class StyleBase(metaclass=MetaStyle):
 
     def _get(self, key: str) -> Any:
         """Gets the property value"""
-        return self._dv.get(key, None)
+        return self._get_properties().get(key, None)
 
     def _set(self, key: str, val: Any) -> bool:
         """Sets a property value"""
@@ -156,7 +153,8 @@ class StyleBase(metaclass=MetaStyle):
             return False
         if cargs.cancel:
             return False
-        self._dv[kvargs.key] = kvargs.value
+        dv = self._get_properties()
+        dv[kvargs.key] = kvargs.value
         self._events.trigger(FormatNamedEvent.STYLE_SET, KeyValArgs.from_args(kvargs))
         return True
 
@@ -171,11 +169,12 @@ class StyleBase(metaclass=MetaStyle):
             return
         self._on_setting(cargs)
         self._on_modifing(cargs)
-        self._dv.clear()
+        dv = self._get_properties()
+        dv.clear()
 
     def _has(self, key: str) -> bool:
         """Gets if a property exist"""
-        return key in self._dv
+        return key in self._get_properties()
 
     def _remove(self, key: str) -> bool:
         """Removes a property if it exist"""
@@ -188,7 +187,8 @@ class StyleBase(metaclass=MetaStyle):
         if cargs.cancel:
             return
         if self._has(key):
-            del self._dv[key]
+            dv = self._get_properties()
+            del dv[key]
             return True
         return False
 
@@ -219,10 +219,11 @@ class StyleBase(metaclass=MetaStyle):
         self._events.trigger(self._get_uniquie_event_name(FormatNamedEvent.STYLE_MODIFING), cargs)
         if cargs.cancel:
             return
+        dv = self._get_properties()
         if isinstance(cargs.event_data, StyleBase):
-            self._dv.update(cargs.event_data._dv)
+            dv.update(cargs.event_data._dv)
             return
-        self._dv.update(cargs.event_data)
+        dv.update(cargs.event_data)
 
     # endregion style property methods
 
@@ -301,7 +302,7 @@ class StyleBase(metaclass=MetaStyle):
             Tuple(str, ...): Tuple of attribures
         """
         # get current keys in internal dictionary
-        return tuple(self._dv.keys())
+        return tuple(self._get_properties().keys())
 
     def apply(self, obj: object, **kwargs) -> None:
         """
@@ -326,7 +327,7 @@ class StyleBase(metaclass=MetaStyle):
         if "override_dv" in kwargs:
             dv = kwargs["override_dv"]
         else:
-            dv = self._dv
+            dv = self._get_properties()
         if len(dv) > 0:
             if self._is_valid_obj(obj):
                 cargs = CancelEventArgs(source=f"{self.apply.__qualname__}")
@@ -355,6 +356,21 @@ class StyleBase(metaclass=MetaStyle):
         # set properties. Can be overriden in child classes
         # may be usful to wrap in try statements in child classes
         mProps.Props.set(obj, **kwargs)
+
+    def _copy_missing_attribs(self, src: TStyleBase, dst: TStyleBase, *args: str) -> None:
+        """
+        Copies attribs from source to dst if dst does not already have the attrib.
+
+        Args:
+            src (TStyleBase): Source
+            dst (TStyleBase): Destination
+
+        Returns:
+            None:
+        """
+        for arg in args:
+            if not hasattr(dst, arg) and hasattr(src, arg):
+                setattr(dst, arg, getattr(src, arg))
 
     # region Backup/Restore
 
@@ -586,22 +602,32 @@ class StyleBase(metaclass=MetaStyle):
         # depending on python 3.7 builtin dictionary ordering
         dv = self._get_properties()
         if dv:
+            # it is possible that that a new instance will have different property names thne the current instance.
+            # This can happen because this class inherits from MetaStyle.
             # if ne contains a _props attribute (tuple of prop names) then use them to remap keys.
-            # For instance a key of BorderLength may become ParaBoderLength
+            # For instance a key of BorderLength may become ParaBoderLength.
 
-            nu_props = [s for s in nu._props if len(s) > 0]  # some classes will have unused props
-            if nu_props:
-                vals = [val for _, val in dv.items()]  # get old values
-                if len(nu_props) == len(vals):
-                    for key, val in zip(nu_props, vals):
-                        nu._set(key, val)
-                else:
-                    # fallback
-                    nu._update(self._get_properties())
-                    mLo.Lo.print(
-                        f"While Copying instance of {self.__class__.__name__} the new and old property lengths did not match."
-                    )
-                    mLo.Lo.print("  Copying using same attribute names as original.")
+            key_map = None
+            p_len = len(nu._props)
+            if p_len > 0 and p_len == len(self._props):
+                key_map = {}
+                for i, p_val in enumerate(self._props):
+                    if p_val == "":
+                        # some prop value may not be used in which case they are empty strings.
+                        continue
+                    if isinstance(p_val, PropPair):
+                        nu_pair = cast(PropPair, nu._props[i])
+                        if p_val.first:
+                            key_map[p_val.first] = nu_pair.first
+                        if p_val.second:
+                            key_map[p_val.second] = nu_pair.second
+                    else:
+                        key_map[p_val] = nu._props[i]
+
+            if key_map:
+                for key, nu_val in key_map.items():
+                    if self._has(key):
+                        nu._set(nu_val, self._get(key))
             else:
                 nu._update(self._get_properties())
         return nu

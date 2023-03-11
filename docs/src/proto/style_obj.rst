@@ -1,3 +1,5 @@
+.. _proto_style_obj:
+
 Class StyleObj
 ==============
 

@@ -11,11 +11,11 @@ ooodev
    dialog/index
    events/index
    exceptions/index
+   format/index
    formatters/index
    listeners/index
    office/index
    proto/index
-   format/index
    utils/index
    wrapper/index
 

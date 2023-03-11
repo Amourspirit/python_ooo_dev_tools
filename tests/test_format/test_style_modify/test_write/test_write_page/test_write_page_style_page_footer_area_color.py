@@ -52,12 +52,14 @@ def test_write(loader, para_text) -> None:
         assert footer_f_style.prop_inner.prop_on == footer_style.prop_inner.prop_on
         assert footer_f_style.prop_inner.prop_shared_first == footer_style.prop_inner.prop_shared_first
         assert footer_f_style.prop_inner.prop_shared == footer_style.prop_inner.prop_shared
-        assert footer_f_style.prop_inner.prop_height == pytest.approx(footer_style.prop_inner.prop_height, rel=1.0e2)
-        assert footer_f_style.prop_inner.prop_margin_left == pytest.approx(
-            footer_style.prop_inner.prop_margin_left, rel=1.0e2
+        assert footer_f_style.prop_inner.prop_height.value == pytest.approx(
+            footer_style.prop_inner.prop_height.value, rel=1.0e-2
         )
-        assert footer_f_style.prop_inner.prop_margin_right == pytest.approx(
-            footer_style.prop_inner.prop_margin_right, rel=1.0e2
+        assert footer_f_style.prop_inner.prop_margin_left.value == pytest.approx(
+            footer_style.prop_inner.prop_margin_left.value, rel=1.0e-2
+        )
+        assert footer_f_style.prop_inner.prop_margin_right.value == pytest.approx(
+            footer_style.prop_inner.prop_margin_right.value, rel=1.0e-2
         )
 
         f_style = Color.from_style(

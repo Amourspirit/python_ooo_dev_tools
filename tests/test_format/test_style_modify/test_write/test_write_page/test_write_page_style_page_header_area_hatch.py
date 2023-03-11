@@ -49,8 +49,8 @@ def test_write(loader, para_text) -> None:
         f_style = Hatch.from_style(
             doc=doc, style_name=header_style.prop_style_name, style_family=header_style.prop_style_family_name
         )
-        assert f_style.prop_inner.prop_inner_hatch.prop_distance == pytest.approx(
-            style.prop_inner.prop_inner_hatch.prop_distance, rel=1e2
+        assert f_style.prop_inner.prop_inner_hatch.prop_distance.value == pytest.approx(
+            style.prop_inner.prop_inner_hatch.prop_distance.value, rel=1e-2
         )
         assert f_style.prop_inner.prop_inner_hatch.prop_angle == style.prop_inner.prop_inner_hatch.prop_angle
         assert f_style.prop_inner.prop_inner_hatch.prop_color == style.prop_inner.prop_inner_hatch.prop_color

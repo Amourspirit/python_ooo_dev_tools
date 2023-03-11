@@ -130,7 +130,7 @@ def test_write(loader, para_text) -> None:
         cursor_p.gotoEnd(False)
 
         hatch = Hatch.from_preset(PresetHatchKind.GREEN_30_DEGREES)
-        hatch.prop_distance = 2.7
+        hatch.prop_space = 2.7
         hatch.prop_color = StandardColor.BRICK_DARK3
         hatch.prop_bg_color = StandardColor.BRICK_LIGHT2
         Write.append_para(cursor=cursor, text=para_text, styles=(hatch,))

@@ -5,7 +5,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.writer.direct.frame.borders import Side, Sides, BorderLineStyleEnum, LineSize
+from ooodev.format.writer.direct.frame.borders import Side, Sides, BorderLineKind, LineSize
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
@@ -27,7 +27,7 @@ def test_write(loader, para_text) -> None:
         if not Lo.bridge_connector.headless:
             Write.append_para(cursor=cursor, text=para_text)
 
-        side = Side(line=BorderLineStyleEnum.DOUBLE, color=StandardColor.RED_DARK3, width=LineSize.MEDIUM)
+        side = Side(line=BorderLineKind.DOUBLE, color=StandardColor.RED_DARK3, width=LineSize.MEDIUM)
         style = Sides(all=side)
 
         frame = Write.add_text_frame(
@@ -37,7 +37,7 @@ def test_write(loader, para_text) -> None:
         f_style = Sides.from_obj(frame)
         f_side = f_style.prop_left
         assert f_side.prop_color == side.prop_color
-        assert f_side.prop_width == pytest.approx(side.prop_width, rel=1e2)
+        assert f_side.prop_width.value == pytest.approx(side.prop_width.value, rel=1e-2)
 
         Lo.delay(delay)
     finally:

@@ -15,11 +15,12 @@ from ooo.dyn.text.rel_orientation import RelOrientation
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
+from .....proto.unit_obj import UnitObj
 from .....utils import lo as mLo
 from .....utils import props as mProps
 from .....utils.data_type.intensity import Intensity as Intensity
+from .....utils.data_type.unit_mm import UnitMM
 from .....utils.unit_convert import UnitConvert
-from .....utils.data_type.unit_100_mm import Unit100MM
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleBase
 from ...common.props.frame_type_positon_props import FrameTypePositonProps
@@ -100,22 +101,22 @@ class Horizontal:
     """Horizontal Frame Position. Not used when Anchor is set to ``As Character``."""
 
     # region Init
-    def __init__(self, position: HoriOrient, rel: RelHoriOrient, amount: float | Unit100MM = 0.0) -> None:
+    def __init__(self, position: HoriOrient, rel: RelHoriOrient, amount: float | UnitObj = 0.0) -> None:
         """
         Constructor
 
         Args:
             position (HoriOrient): Specifies Horizontal Position.
             rel (RelHoriOrient): Specifies Relative Orientation.
-            amount (float, Unit100MM, optional): Spedifies Amount in ``mm`` units or ``1/100th mm`` units. Only effective when position is ``HoriOrient.FROM_LEFT``. Defaults to ``0.0``.
+            amount (float, UnitObj, optional): Spedifies Amount in ``mm`` units or :ref:`proto_unit_obj`. Only effective when position is ``HoriOrient.FROM_LEFT``. Defaults to ``0.0``.
         """
 
         self._position = position
         self._rel = rel
-        if isinstance(amount, Unit100MM):
+        try:
             self._amount = amount.get_value_mm()
-        else:
-            self._amount = amount
+        except AttributeError:
+            self._amount = float(amount)
 
     # endregion Init
 
@@ -127,10 +128,19 @@ class Horizontal:
             result = result and self.rel == oth.rel
             if not result:
                 return False
-            return math.isclose(self.amount, oth.amount, abs_tol=0.02)
+            return math.isclose(self.amount.value, oth.amount.value, abs_tol=0.02)
         return NotImplemented
 
     # endregion Dunder Methods
+
+    # region Methods
+    def copy(self) -> Horizontal:
+        """Gets a copy of instance as a new instance"""
+        inst = super(Horizontal, self.__class__).__new__(self.__class__)
+        inst.__init__(position=self.position, rel=self.rel, amount=self.amount)
+        return inst
+
+    # endregion Methods
 
     # region Properties
     @property
@@ -156,20 +166,20 @@ class Horizontal:
         self._rel = value
 
     @property
-    def amount(self) -> float:
+    def amount(self) -> UnitMM:
         """
         Gets/Sets Amount in ``mm`` units. Only effective when position is ``HoriOrient.FROM_LEFT``.
 
         Setting also allows ``Unit100MM`` instance.
         """
-        return self._amount
+        return UnitMM(self._amount)
 
     @amount.setter
-    def amount(self, value: float | Unit100MM):
-        if isinstance(value, Unit100MM):
+    def amount(self, value: float | UnitObj):
+        try:
             self._amount = value.get_value_mm()
-        else:
-            self._amount = value
+        except AttributeError:
+            self._amount = float(value)
 
     # endregion Properties
 
@@ -178,22 +188,22 @@ class Vertical:
     """Vertical Frame Position."""
 
     # region Init
-    def __init__(self, position: VertOrient, rel: RelVertOrient, amount: float | Unit100MM = 0.0) -> None:
+    def __init__(self, position: VertOrient, rel: RelVertOrient, amount: float | UnitObj = 0.0) -> None:
         """
         Constructor
 
         Args:
             position (VertOrient): Specifies Vertical Position.
             rel (RelVertOrient): Specifies Relative Orientation.
-            amount (float, Unit100MM, optional): Spedifies Amount in ``mm`` units or ``1/100th mm`` units. Only effective when position is ``VertOrient.FROM_TOP``. Defaults to ``0.0``.
+            amount (float, UnitObj, optional): Spedifies Amount in ``mm`` units or :ref:`proto_unit_obj`. Only effective when position is ``VertOrient.FROM_TOP``. Defaults to ``0.0``.
         """
 
         self._position = position
         self._rel = rel
-        if isinstance(amount, Unit100MM):
+        try:
             self._amount = amount.get_value_mm()
-        else:
-            self._amount = amount
+        except AttributeError:
+            self._amount = float(amount)
 
     # endregion Init
 
@@ -205,10 +215,19 @@ class Vertical:
             result = result and self.rel == oth.rel
             if not result:
                 return False
-            return math.isclose(self.amount, oth.amount, abs_tol=0.02)
+            return math.isclose(self.amount.value, oth.amount.value, abs_tol=0.02)
         return NotImplemented
 
     # endregion Dunder Methods
+
+    # region Methods
+    def copy(self) -> Vertical:
+        """Gets a copy of instance as a new instance"""
+        inst = super(Vertical, self.__class__).__new__(self.__class__)
+        inst.__init__(position=self.position, rel=self.rel, amount=self.amount)
+        return inst
+
+    # endregion Methods
 
     # region Properties
     @property
@@ -234,20 +253,20 @@ class Vertical:
         self._rel = value
 
     @property
-    def amount(self) -> float:
+    def amount(self) -> UnitMM:
         """
         Gets/Sets Amount in ``mm`` units. Only effective when position is ``VertOrient.FROM_TOP``.
 
         Setting also allows ``Unit100MM`` instance.
         """
-        return self._amount
+        return UnitMM(self._amount)
 
     @amount.setter
-    def amount(self, value: float | Unit100MM):
-        if isinstance(value, Unit100MM):
+    def amount(self, value: float | UnitObj):
+        try:
             self._amount = value.get_value_mm()
-        else:
-            self._amount = value
+        except AttributeError:
+            self._amount = float(value)
 
     # endregion Properties
 
@@ -297,7 +316,7 @@ class Position(StyleBase):
             self._remove(self._props.hori_rel)
             return
         if horizontal.position == HoriOrient.FROM_LEFT_OR_INSIDE:
-            self._set(self._props.hori_pos, UnitConvert.convert_mm_mm100(horizontal.amount))
+            self._set(self._props.hori_pos, horizontal.amount.get_value_mm100())
         else:
             self._set(self._props.hori_pos, 0)
         self._set(self._props.hori_orient, horizontal.position.value)
@@ -310,7 +329,7 @@ class Position(StyleBase):
             self._remove(self._props.vert_rel)
             return
         if vertical.position == VertOrient.FROM_TOP_OR_BOTTOM:
-            self._set(self._props.vert_pos, UnitConvert.convert_mm_mm100(vertical.amount))
+            self._set(self._props.vert_pos, vertical.amount.get_value_mm100())
         else:
             self._set(self._props.vert_pos, 0)
         self._set(self._props.vert_orient, vertical.position.value)
@@ -334,11 +353,13 @@ class Position(StyleBase):
         if self._horizontal is None:
             cp._horizontal = None
         else:
-            cp._horizontal = dataclasses.replace(self._horizontal)
+            # cp._horizontal = dataclasses.replace(self._horizontal)
+            cp._horizontal = self._horizontal.copy()
         if self._vertical is None:
             cp._vertical = None
         else:
-            cp._vertical = dataclasses.replace(self._vertical)
+            # cp._vertical = dataclasses.replace(self._vertical)
+            cp._vertical = self._vertical.copy()
         return cp
 
     # endregion copy()
@@ -346,7 +367,13 @@ class Position(StyleBase):
         try:
             return self._supported_services_values
         except AttributeError:
-            self._supported_services_values = ("com.sun.star.style.Style", "com.sun.star.text.TextFrame")
+            self._supported_services_values = (
+                "com.sun.star.style.Style",
+                "com.sun.star.text.BaseFrame",
+                "com.sun.star.text.TextEmbeddedObject",
+                "com.sun.star.text.TextFrame",
+                "com.sun.star.text.TextGraphicObject",
+            )
         return self._supported_services_values
 
     def _on_modifing(self, event: CancelEventArgs) -> None:

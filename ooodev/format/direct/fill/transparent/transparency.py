@@ -48,9 +48,12 @@ class Transparency(StyleBase):
         except AttributeError:
             self._supported_services_values = (
                 "com.sun.star.drawing.FillProperties",
-                "com.sun.star.text.TextContent",
                 "com.sun.star.style.ParagraphStyle",
+                "com.sun.star.text.BaseFrame",
+                "com.sun.star.text.TextContent",
+                "com.sun.star.text.TextEmbeddedObject",
                 "com.sun.star.text.TextFrame",
+                "com.sun.star.text.TextGraphicObject",
             )
         return self._supported_services_values
 

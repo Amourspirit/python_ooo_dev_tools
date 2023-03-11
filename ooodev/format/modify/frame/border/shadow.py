@@ -3,6 +3,7 @@ from typing import cast
 import uno
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 
+from .....proto.unit_obj import UnitObj
 from ..frame_style_base_multi import FrameStyleBaseMulti
 from ....writer.style.frame.style_frame_kind import StyleFrameKind as StyleFrameKind
 from ....direct.para.border.shadow import Shadow as InnerShadow
@@ -23,7 +24,7 @@ class Shadow(FrameStyleBaseMulti):
         location: ShadowLocation = ShadowLocation.BOTTOM_RIGHT,
         color: Color = StandardColor.GRAY,
         transparent: bool = False,
-        width: float = 1.76,
+        width: float | UnitObj = 1.76,
         style_name: StyleFrameKind | str = StyleFrameKind.FRAME,
         style_family: str = "FrameStyles",
     ) -> None:
@@ -34,7 +35,7 @@ class Shadow(FrameStyleBaseMulti):
             location (ShadowLocation, optional): contains the location of the shadow. Default to ``ShadowLocation.BOTTOM_RIGHT``.
             color (Color, optional):contains the color value of the shadow. Defaults to ``StandardColor.GRAY``.
             transparent (bool, optional): Shadow transparency. Defaults to False.
-            width (float, optional): contains the size of the shadow (in mm units). Defaults to ``1.76``.
+            width (float, UnitObj, optional): contains the size of the shadow (in ``mm`` units) or :ref:`proto_unit_obj`. Defaults to ``1.76``.
             style_name (StyleFrameKind, str, optional): Specifies the Frame Style that instance applies to. Deftult is Default Frame Style.
             style_family (str, optional): Style family. Defatult ``FrameStyles``.
 

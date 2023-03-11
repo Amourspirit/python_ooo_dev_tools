@@ -8,19 +8,22 @@ from __future__ import annotations
 from typing import Tuple, Type, cast, overload, TypeVar
 
 import uno
-from ....events.event_singleton import _Events
-from ....exceptions import ex as mEx
-from ....utils import props as mProps
-from ....utils.type_var import T
-from ....utils.unit_convert import UnitConvert, Length
-from ...kind.format_kind import FormatKind
-from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent
-from ..common.props.border_table_props import BorderTableProps
-from ..common.props.prop_pair import PropPair
-from .side import Side as Side
-
 from ooo.dyn.table.table_border import TableBorder
 from ooo.dyn.table.table_border2 import TableBorder2
+
+from ....events.event_singleton import _Events
+from ....events.lo_events import Events
+from ....events.props_named_event import PropsNamedEvent
+from ....exceptions import ex as mEx
+from ....proto.unit_obj import UnitObj
+from ....utils import props as mProps
+from ....utils.data_type.unit_mm import UnitMM
+from ....utils.unit_convert import UnitConvert, Length
+from ...kind.format_kind import FormatKind
+from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent, _on_props_setting, _on_props_set
+from ..common.props.prop_pair import PropPair
+from ..common.props.struct_border_table_props import StructBorderTableProps
+from .side import Side as Side
 
 
 # endregion imports
@@ -49,20 +52,20 @@ class TableBorderStruct(StyleBase):
         border_side: Side | None = None,
         vertical: Side | None = None,
         horizontal: Side | None = None,
-        distance: float | None = None,
+        distance: float | UnitObj | None = None,
     ) -> None:
         """
         Constructor
 
         Args:
-            left (Side | None, optional): Determines the line style at the left edge.
-            right (Side | None, optional): Determines the line style at the right edge.
-            top (Side | None, optional): Determines the line style at the top edge.
-            bottom (Side | None, optional): Determines the line style at the bottom edge.
-            border_side (Side | None, optional): Determines the line style at the top, bottom, left, right edges. If this argument has a value then arguments ``top``, ``bottom``, ``left``, ``right`` are ignored
-            horizontal (Side | None, optional): Determines the line style of horizontal lines for the inner part of a cell range.
-            vertical (Side | None, optional): Determines the line style of vertical lines for the inner part of a cell range.
-            distance (float | None, optional): Contains the distance between the lines and other contents (in mm units).
+            left (Side, optional): Determines the line style at the left edge.
+            right (Side, optional): Determines the line style at the right edge.
+            top (Side, optional): Determines the line style at the top edge.
+            bottom (Side, optional): Determines the line style at the bottom edge.
+            border_side (Side, optional): Determines the line style at the top, bottom, left, right edges. If this argument has a value then arguments ``top``, ``bottom``, ``left``, ``right`` are ignored
+            horizontal (Side, optional): Determines the line style of horizontal lines for the inner part of a cell range.
+            vertical (Side, optional): Determines the line style of vertical lines for the inner part of a cell range.
+            distance (float, UnitObj, optional): Contains the distance between the lines and other contents (in mm units) or :ref:`proto_unit_obj`.
         """
         init_vals = {}
         if not border_side is None:
@@ -105,7 +108,10 @@ class TableBorderStruct(StyleBase):
             if self._props.vert.second:
                 init_vals[self._props.vert.second] = True
         if not distance is None:
-            init_vals[self._props.dist.first] = UnitConvert.convert(num=distance, frm=Length.MM, to=Length.MM100)
+            try:
+                init_vals[self._props.dist.first] = distance.get_value_mm100()
+            except AttributeError:
+                init_vals[self._props.dist.first] = UnitConvert.convert(num=distance, frm=Length.MM, to=Length.MM100)
             if self._props.dist.second:
                 init_vals[self._props.dist.second] = True
         super().__init__(**init_vals)
@@ -177,6 +183,9 @@ class TableBorderStruct(StyleBase):
         _Events().trigger(FormatNamedEvent.STYLE_APPLYING, cargs)
         if cargs.cancel:
             return
+        events = Events(source=self)
+        events.on(PropsNamedEvent.PROP_SETTING, _on_props_setting)
+        events.on(PropsNamedEvent.PROP_SET, _on_props_set)
 
         tb = cast(TableBorder2, mProps.Props.get(obj, prop_name, None))
         if tb is None:
@@ -193,7 +202,7 @@ class TableBorderStruct(StyleBase):
         if not distance is None:
             tb.Distance = distance
             tb.IsDistanceValid = True
-        mProps.Props.set(obj, TableBorder2=tb)
+        mProps.Props.set(obj, **{prop_name: tb})
 
         h_line = cast(Side, self._get(self._props.horz.first))
 
@@ -209,12 +218,13 @@ class TableBorderStruct(StyleBase):
                 tb = cast(TableBorder2, mProps.Props.get(obj, prop_name))
                 tb.HorizontalLine = Side.empty.get_uno_struct()
                 tb.IsHorizontalLineValid = True
-                mProps.Props.set(obj, TableBorder2=tb)
+                mProps.Props.set(obj, **{prop_name: tb})
         else:
             tb = cast(TableBorder2, mProps.Props.get(obj, prop_name))
             tb.HorizontalLine = h_line.get_uno_struct()
             tb.IsHorizontalLineValid = True
-            mProps.Props.set(obj, TableBorder2=tb)
+            mProps.Props.set(obj, **{prop_name: tb})
+        events = None
         eargs = EventArgs.from_args(cargs)
         self.on_applied(eargs)
         _Events().trigger(FormatNamedEvent.STYLE_APPLIED, eargs)
@@ -253,28 +263,37 @@ class TableBorderStruct(StyleBase):
         tb = cast(TableBorder2, mProps.Props.get(obj, prop_name, None))
         if tb is None:
             raise mEx.PropertyNotFoundError(prop_name, f"from_obj() obj as no {prop_name} property")
-        line_props = ("Color", "InnerLineWidth", "LineDistance", "LineStyle", "LineWidth", "OuterLineWidth")
 
-        left = Side() if tb.IsLeftLineValid else None
-        top = Side() if tb.IsTopLineValid else None
-        right = Side() if tb.IsRightLineValid else None
-        bottom = Side() if tb.IsBottomLineValid else None
-        vertical = Side() if tb.IsVerticalLineValid else None
-        horizontal = Side() if tb.IsHorizontalLineValid else None
+        if tb.IsLeftLineValid:
+            left = Side.from_uno_struct(tb.LeftLine)
+        else:
+            left = None
 
-        for prop in line_props:
-            if left:
-                left._set(prop, getattr(tb.LeftLine, prop))
-            if top:
-                top._set(prop, getattr(tb.TopLine, prop))
-            if right:
-                right._set(prop, getattr(tb.RightLine, prop))
-            if bottom:
-                bottom._set(prop, getattr(tb.BottomLine, prop))
-            if vertical:
-                vertical._set(prop, getattr(tb.VerticalLine, prop))
-            if horizontal:
-                horizontal._set(prop, getattr(tb.HorizontalLine, prop))
+        if tb.IsTopLineValid:
+            top = Side.from_uno_struct(tb.TopLine)
+        else:
+            top = None
+
+        if tb.IsRightLineValid:
+            right = Side.from_uno_struct(tb.RightLine)
+        else:
+            right = None
+
+        if tb.IsBottomLineValid:
+            bottom = Side.from_uno_struct(tb.BottomLine)
+        else:
+            bottom = None
+
+        if tb.IsVerticalLineValid:
+            vertical = Side.from_uno_struct(tb.VerticalLine)
+        else:
+            vertical = None
+
+        if tb.IsHorizontalLineValid:
+            horizontal = Side.from_uno_struct(tb.HorizontalLine)
+        else:
+            horizontal = None
+
         inst = cls(left=left, right=right, top=top, bottom=bottom, vertical=vertical, horizontal=horizontal, **kwargs)
 
         if tb.IsDistanceValid:
@@ -429,12 +448,12 @@ class TableBorderStruct(StyleBase):
         cp.prop_vertical = value
         return cp
 
-    def fmt_distance(self: _TTableBorderStruct, value: float | None) -> _TTableBorderStruct:
+    def fmt_distance(self: _TTableBorderStruct, value: float | UnitObj | None) -> _TTableBorderStruct:
         """
         Gets a copy of instance with distance set or removed
 
         Args:
-            value (float | None): Distance value
+            value (float | UnitObj | None): Distance value in ``mm`` units or :ref:`proto_unit_obj`.
 
         Returns:
             BorderTable: Border Table
@@ -457,24 +476,25 @@ class TableBorderStruct(StyleBase):
         return self._format_kind_prop
 
     @property
-    def prop_distance(self) -> float | None:
+    def prop_distance(self) -> UnitMM | None:
         """Gets/Sets distance value (``in mm`` units)"""
         pv = cast(int, self._get(self._props.dist.first))
-        if not pv is None:
-            if pv == 0:
-                return 0.0
-            return UnitConvert.convert(num=pv, frm=Length.MM100, to=Length.MM)
-        return None
+        if pv is None:
+            return None
+        return UnitMM.from_mm100(pv)
 
     @prop_distance.setter
-    def prop_distance(self, value: float | None) -> None:
+    def prop_distance(self, value: float | UnitObj | None) -> None:
         p = self._props.dist
         if value is None:
             self._remove(p.first)
             if p.second:
                 self._remove(p.second)
             return
-        self._set(p.first, UnitConvert.convert(num=value, frm=Length.MM, to=Length.MM100))
+        try:
+            self._set(p.first, value.get_value_mm100())
+        except AttributeError:
+            self._set(p.first, UnitConvert.convert(num=value, frm=Length.MM, to=Length.MM100))
         if p.second:
             self._set(p.second, True)
 
@@ -581,11 +601,11 @@ class TableBorderStruct(StyleBase):
             self._set(p.second, True)
 
     @property
-    def _props(self) -> BorderTableProps:
+    def _props(self) -> StructBorderTableProps:
         try:
             return self._props_internal_attributes
         except AttributeError:
-            self._props_internal_attributes = BorderTableProps(
+            self._props_internal_attributes = StructBorderTableProps(
                 left=PropPair("LeftLine", "IsLeftLineValid"),
                 top=PropPair("TopLine", "IsTopLineValid"),
                 right=PropPair("RightLine", "IsRightLineValid"),

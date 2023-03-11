@@ -23,7 +23,13 @@ class Spacing(AbstractPadding):
         try:
             return self._supported_services_values
         except AttributeError:
-            self._supported_services_values = ("com.sun.star.style.Style", "com.sun.star.text.TextFrame")
+            self._supported_services_values = (
+                "com.sun.star.style.Style",
+                "com.sun.star.text.BaseFrame",
+                "com.sun.star.text.TextEmbeddedObject",
+                "com.sun.star.text.TextFrame",
+                "com.sun.star.text.TextGraphicObject",
+            )
         return self._supported_services_values
 
     @property

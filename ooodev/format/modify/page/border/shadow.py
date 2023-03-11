@@ -3,6 +3,7 @@ from typing import Tuple, cast
 import uno
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 
+from .....proto.unit_obj import UnitObj
 from .....utils.color import StandardColor, Color
 from ....writer.style.page.kind.style_page_kind import StylePageKind as StylePageKind
 from ..page_style_base_multi import PageStyleBaseMulti
@@ -24,7 +25,7 @@ class Shadow(PageStyleBaseMulti):
         location: ShadowLocation = ShadowLocation.BOTTOM_RIGHT,
         color: Color = StandardColor.GRAY,
         transparent: bool = False,
-        width: float = 1.76,
+        width: float | UnitObj = 1.76,
         style_name: StylePageKind | str = StylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> None:
@@ -35,7 +36,7 @@ class Shadow(PageStyleBaseMulti):
             location (ShadowLocation, optional): contains the location of the shadow. Default to ``ShadowLocation.BOTTOM_RIGHT``.
             color (Color, optional):contains the color value of the shadow. Defaults to ``StandardColor.GRAY``.
             transparent (bool, optional): Shadow transparency. Defaults to False.
-            width (float, optional): contains the size of the shadow (in mm units). Defaults to ``1.76``.
+            width (float, UnitObj, optional): contains the size of the shadow (in ``mm`` units) or :ref:`proto_unit_obj`. Defaults to ``1.76``.
             style_name (StyleParaKind, str, optional): Specifies the Page Style that instance applies to. Deftult is Default Page Style.
             style_family (str, optional): Style family. Defatult ``PageStyles``.
 

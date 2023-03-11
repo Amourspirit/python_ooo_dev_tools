@@ -7,16 +7,17 @@ from __future__ import annotations
 from typing import Dict, Tuple, Type, cast, overload, TypeVar
 
 import uno
+from ooo.dyn.style.drop_cap_format import DropCapFormat
+
 from ....events.event_singleton import _Events
 from ....exceptions import ex as mEx
+from ....proto.unit_obj import UnitObj
 from ....utils import props as mProps
 from ....utils.data_type.byte import Byte
-from ....utils.type_var import T
+from ....utils.data_type.unit_mm100 import UnitMM100
 from ...kind.format_kind import FormatKind
 from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent
 
-
-from ooo.dyn.style.drop_cap_format import DropCapFormat
 
 _TDropCapStruct = TypeVar(name="_TDropCapStruct", bound="DropCapStruct")
 
@@ -34,13 +35,13 @@ class DropCapStruct(StyleBase):
 
     # region init
 
-    def __init__(self, *, count: int = 0, distance: int = 0, lines: int = 0) -> None:
+    def __init__(self, *, count: int = 0, distance: int | UnitObj = 0, lines: int = 0) -> None:
         """
         Constructor
 
         Args:
             count (int, optional): Specifies the number of characters in the drop cap. Must be from ``0`` to ``255``. Defaults to ``0``
-            distance (int, optional): Specifies the distance between the drop cap in the following text. Defaults to ``0``
+            distance (int, UnitObj, optional): Specifies the distance between the drop cap in the following text in ``1/100th mm`` or :ref:`proto_unit_obj`. Defaults to ``0``
             lines (int, optional): Specifies the number of lines used for a drop cap. Must be from ``0`` to ``255``. Defaults to ``0``
 
         Returns:
@@ -53,10 +54,14 @@ class DropCapStruct(StyleBase):
         count = bcount.value
         blines = Byte(lines)
         lines = blines.value
-        if distance < 0:
-            raise ValueError("distance arg must be a positive number.")
+        try:
+            dist = distance.get_value_mm100()
+        except AttributeError:
+            dist = int(distance)
+        if dist < 0:
+            raise ValueError("distance arg must be a positive value.")
 
-        init_vals = {"Count": count, "Distance": distance, "Lines": lines}
+        init_vals = {"Count": count, "Distance": dist, "Lines": lines}
 
         super().__init__(**init_vals)
 
@@ -183,23 +188,23 @@ class DropCapStruct(StyleBase):
         except mEx.PropertyNotFoundError:
             raise mEx.PropertyNotFoundError(prop_name, f"from_obj() obj as no {prop_name} property")
 
-        return cls.from_drop_cap_format(dcf, **kwargs)
+        return cls.from_uno_struct(dcf, **kwargs)
 
     # endregion from_obj()
 
     # region from_drop_cap_format()
     @overload
     @classmethod
-    def from_drop_cap_format(cls: Type[_TDropCapStruct], dcf: DropCapFormat) -> _TDropCapStruct:
+    def from_uno_struct(cls: Type[_TDropCapStruct], dcf: DropCapFormat) -> _TDropCapStruct:
         ...
 
     @overload
     @classmethod
-    def from_drop_cap_format(cls: Type[_TDropCapStruct], dcf: DropCapFormat, **kwargs) -> _TDropCapStruct:
+    def from_uno_struct(cls: Type[_TDropCapStruct], dcf: DropCapFormat, **kwargs) -> _TDropCapStruct:
         ...
 
     @classmethod
-    def from_drop_cap_format(cls: Type[_TDropCapStruct], dcf: DropCapFormat, **kwargs) -> _TDropCapStruct:
+    def from_uno_struct(cls: Type[_TDropCapStruct], dcf: DropCapFormat, **kwargs) -> _TDropCapStruct:
         """
         Converts a ``DropCapFormat`` Stop instance to a ``DropCap``
 
@@ -249,12 +254,12 @@ class DropCapStruct(StyleBase):
         cp.prop_count = value
         return cp
 
-    def fmt_distance(self: _TDropCapStruct, value: int) -> _TDropCapStruct:
+    def fmt_distance(self: _TDropCapStruct, value: int | UnitObj) -> _TDropCapStruct:
         """
         Gets a copy of instance with distance set.
 
         Args:
-            value (int): Distance value.
+            value (int, UnitObj): Distance value in ``1/100th mm`` or :ref:`proto_unit_obj`.
 
         Returns:
             DropCap: ``DropCap`` instance
@@ -310,14 +315,17 @@ class DropCapStruct(StyleBase):
         self._set("Lines", val.value)
 
     @property
-    def prop_distance(self) -> int:
+    def prop_distance(self) -> UnitMM100:
         """Gets/Sets the distance between the drop cap in the following text."""
-        return self._get("Distance")
+        return UnitMM100(self._get("Distance"))
 
     @prop_distance.setter
-    def prop_distance(self, value: int) -> None:
+    def prop_distance(self, value: int | UnitObj) -> None:
         if value < 0:
             raise ValueError("value must be a positive number.")
-        self._set("Distance", value)
+        try:
+            self._set("Distance", value.get_value_mm100())
+        except AttributeError:
+            self._set("Distance", value)
 
     # endregion properties

@@ -188,14 +188,14 @@ class UnitConvert:
 
     @overload
     @classmethod
-    def convert(cls, num: int, frm: Length, to: Length) -> float:
+    def convert(cls, num: N, frm: Length, to: Length) -> float:
         """
         Converts a number from one unit to another unit.
 
         Args:
-            num (int): Number to convert
-            frm (Length): Current number kind
-            to (Length): Kind to convert to
+            num (N): Number to convert such as a ``float`` or ``int``.
+            frm (Length): Current number kind.
+            to (Length): Kind to convert to.
 
         Returns:
             float: Converted number
@@ -204,14 +204,14 @@ class UnitConvert:
 
     @overload
     @classmethod
-    def convert(cls, num: int, frm: int, to: int) -> float:
+    def convert(cls, num: N, frm: int, to: int) -> float:
         """
         Converts number by calling ``mul_div()``.
 
         Args:
-            num (int): Number to convert
-            frm (int): multiplier
-            to (int): divisor
+            num (N): Number to convert such as a ``float`` or ``int``.
+            frm (int): multiplier.
+            to (int): divisor.
 
         Returns:
             float: Converted number
@@ -219,14 +219,14 @@ class UnitConvert:
         ...
 
     @classmethod
-    def convert(cls, num: int, frm: int | Length, to: int | Length) -> float:
+    def convert(cls, num: N, frm: int | Length, to: int | Length) -> float:
         """
         Converts a number from one unit to another unit.
 
         Args:
-            num (int): Number to convert
-            frm (int | Length): Current number kind
-            to (int | Length): Kind to convert to
+            num (N): Number to convert such as a ``float`` or ``int``.
+            frm (int | Length): Current number kind.
+            to (int | Length): Kind to convert to.
 
         Returns:
             float: Converted number

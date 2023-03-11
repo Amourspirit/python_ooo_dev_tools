@@ -38,7 +38,7 @@ def test_write(loader, para_text) -> None:
         f_style = FontPosition.from_style(doc=doc, style_name=style.prop_style_name)
         assert f_style.prop_inner.prop_rotation == Angle(90)
         assert f_style.prop_inner.prop_script_kind == FontScriptKind.NORMAL
-        assert f_style.prop_inner.prop_spacing == pytest.approx(CharSpacingKind.LOOSE.value, rel=1e2)
+        assert f_style.prop_inner.prop_spacing.value == pytest.approx(CharSpacingKind.LOOSE.value, rel=1e2)
         Lo.delay(delay)
     finally:
         Lo.close_doc(doc)

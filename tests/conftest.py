@@ -277,3 +277,8 @@ def para_text() -> str:
         " that woman was the late Irene Adler, of dubious and questionable memory."
     )
     return p_txt
+
+
+@pytest.fixture(scope="session")
+def formula_text() -> str:
+    return "{{{sqrt{4x}} over 5} + {8 over 2}={4 over 3}}"

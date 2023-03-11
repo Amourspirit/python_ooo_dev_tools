@@ -26,8 +26,8 @@ class Intensity(BaseIntValue):
             f"Value of {self.value} is out of range. Value must be from 0 to 100.",
         )
 
-    def _from_int(self, int) -> Self:
-        return Intensity(int)
+    def _from_int(self, value: int) -> Self:
+        return Intensity(value)
 
     def __eq__(self, other: object) -> bool:
         # for some reason BaseIntValue __eq__ is not picked up.

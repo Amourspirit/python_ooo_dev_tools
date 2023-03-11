@@ -35,10 +35,10 @@ def test_write(loader, para_text) -> None:
         assert props.getPropertyValue("LeftBorderDistance") in range(border - 2, border + 3)
 
         f_style = Padding.from_style(doc, style.prop_style_name)
-        assert f_style.prop_inner.prop_left == pytest.approx(amt, rel=1e2)
-        assert f_style.prop_inner.prop_right == pytest.approx(amt, rel=1e2)
-        assert f_style.prop_inner.prop_top == pytest.approx(amt, rel=1e2)
-        assert f_style.prop_inner.prop_bottom == pytest.approx(amt, rel=1e2)
+        assert f_style.prop_inner.prop_left.value == pytest.approx(amt, rel=1e-2)
+        assert f_style.prop_inner.prop_right.value == pytest.approx(amt, rel=1e-2)
+        assert f_style.prop_inner.prop_top.value == pytest.approx(amt, rel=1e-2)
+        assert f_style.prop_inner.prop_bottom.value == pytest.approx(amt, rel=1e-2)
 
         Lo.delay(delay)
     finally:

@@ -14,6 +14,7 @@ from ooo.dyn.drawing.hatch import Hatch as UnoHatch
 from .....events.args.key_val_cancel_args import KeyValCancelArgs
 from .....events.format_named_event import FormatNamedEvent
 from .....exceptions import ex as mEx
+from .....proto.unit_obj import UnitObj
 from .....utils import lo as mLo
 from .....utils import props as mProps
 from .....utils.color import Color
@@ -46,7 +47,7 @@ class Hatch(StyleMulti):
         *,
         style: HatchStyle = HatchStyle.SINGLE,
         color: Color = Color(0),
-        space: float = 0.0,
+        space: float | UnitObj = 0.0,
         angle: Angle | int = 0,
         bg_color: Color = Color(-1),
     ) -> None:
@@ -56,7 +57,7 @@ class Hatch(StyleMulti):
         Args:
             style (HatchStyle, optional): Specifies the kind of lines used to draw this hatch. Default ``HatchStyle.SINGLE``.
             color (Color, optional): Specifies the color of the hatch lines. Default ``0``.
-            space (int, optional): Specifies the space between the lines in the hatch (in ``mm`` units). Default ``0.0``
+            space (float, UnitObj, optional): Specifies the space between the lines in the hatch (in ``mm`` units) or :ref:`proto_unit_obj`. Default ``0.0``
             angle (Angle, int, optional): Specifies angle of the hatch in degrees. Default to ``0``.
             bg_color(Color, optionl): Specifies the background Color. Set this ``-1`` (default) for no background color.
 
@@ -102,11 +103,14 @@ class Hatch(StyleMulti):
             return self._supported_services_values
         except AttributeError:
             self._supported_services_values = (
-                "com.sun.star.drawing.FillProperties",
-                "com.sun.star.text.TextContent",
                 "com.sun.star.beans.PropertySet",
+                "com.sun.star.drawing.FillProperties",
                 "com.sun.star.style.PageStyle",
+                "com.sun.star.text.BaseFrame",
+                "com.sun.star.text.TextContent",
+                "com.sun.star.text.TextEmbeddedObject",
                 "com.sun.star.text.TextFrame",
+                "com.sun.star.text.TextGraphicObject",
             )
         return self._supported_services_values
 
@@ -350,7 +354,7 @@ class Hatch(StyleMulti):
 
     @prop_inner_hatch.setter
     def prop_inner_hatch(self, value: HatchStruct) -> None:
-        hatch = HatchStruct.from_hatch(value=value.get_uno_struct(), _cattribs=self._get_hatch_cattribs())
+        hatch = HatchStruct.from_uno_struct(value=value.get_uno_struct(), _cattribs=self._get_hatch_cattribs())
         self._del_attribs("_direct_inner_hatch")
         self._set_style("fill_hatch", hatch, *hatch.get_attrs())
 

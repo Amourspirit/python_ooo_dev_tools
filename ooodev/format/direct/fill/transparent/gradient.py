@@ -120,16 +120,16 @@ class Gradient(StyleMulti):
             struct = self._container_get_value(name, nc)  # raises value error if name is empty
             if not struct is None:
                 self._name = name
-                return GradientStruct.from_gradient(value=struct, _cattribs=self._get_inner_cattribs())
+                return GradientStruct.from_uno_struct(value=struct, _cattribs=self._get_inner_cattribs())
 
         name = "Transparency "
         self._name = self._container_get_unique_el_name(name, nc)
         struct = self._container_get_value(self._name, nc)  # raises value error if name is empty
         if not struct is None:
-            return GradientStruct.from_gradient(value=struct, _cattribs=self._get_inner_cattribs())
+            return GradientStruct.from_uno_struct(value=struct, _cattribs=self._get_inner_cattribs())
         struct = fill_tp.get_uno_struct()
         self._container_add_value(name=self._name, obj=struct, allow_update=False, nc=nc)
-        return GradientStruct.from_gradient(
+        return GradientStruct.from_uno_struct(
             value=self._container_get_value(self._name, nc), _cattribs=self._get_inner_cattribs()
         )
 
@@ -162,10 +162,13 @@ class Gradient(StyleMulti):
         except AttributeError:
             self._supported_services_values = (
                 "com.sun.star.drawing.FillProperties",
-                "com.sun.star.text.TextContent",
-                "com.sun.star.style.ParagraphStyle",
                 "com.sun.star.style.PageStyle",
+                "com.sun.star.style.ParagraphStyle",
+                "com.sun.star.text.BaseFrame",
+                "com.sun.star.text.TextContent",
+                "com.sun.star.text.TextEmbeddedObject",
                 "com.sun.star.text.TextFrame",
+                "com.sun.star.text.TextGraphicObject",
             )
         return self._supported_services_values
 

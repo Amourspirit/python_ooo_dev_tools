@@ -26,8 +26,8 @@ class ByteSigned(BaseIntValue):
             f"Value of {self.value} is out of range. Value must be from -128 to 127.",
         )
 
-    def _from_int(self, int) -> Self:
-        return ByteSigned(int)
+    def _from_int(self, value: int) -> Self:
+        return ByteSigned(value)
 
     def __eq__(self, other: object) -> bool:
         # for some reason BaseIntValue __eq__ is not picked up.

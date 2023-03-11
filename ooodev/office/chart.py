@@ -35,6 +35,7 @@ from ooo.dyn.chart.data_label_placement import DataLabelPlacementEnum as DataLab
 from ooo.dyn.table.cell_range_address import CellRangeAddress as CellRangeAddress
 from ooo.dyn.text.hori_orientation import HoriOrientation
 from ooo.dyn.text.vert_orientation import VertOrientation
+from ooo.dyn.awt.size import Size as UnoSize
 
 from . import draw as mDraw
 from ..exceptions import ex as mEx
@@ -176,7 +177,7 @@ class Chart:
 
             # set size and position
             shape = mLo.Lo.qi(XShape, tc, True)
-            shape.setSize(mDraw.Draw.Size(width * 1_000, height * 1_000))
+            shape.setSize(UnoSize(width * 1_000, height * 1_000))
 
             ps.setPropertyValue("VertOrient", VertOrientation.NONE)
             ps.setPropertyValue("HoriOrient", HoriOrientation.NONE)
@@ -475,7 +476,6 @@ class Chart:
     def get_chart_type(chart_doc: XChartDocument) -> str:
         """
         Gets chart document chart type
-
         Args:
             chart_doc (XChartDocument): Chart Document
 
@@ -1261,8 +1261,6 @@ class Chart:
             print(f"  {e}")
 
     # endregion adjust properties
-
-    # endregion background colors
 
 
 __all__ = ("Chart",)

@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import cast
 import uno
-from ....direct.structs.side import Side as Side, LineSize as LineSize, SideFlags as SideFlags
+from ....direct.structs.side import Side as Side, LineSize as LineSize
 from ..frame_style_base_multi import FrameStyleBaseMulti
 from ....writer.style.frame.style_frame_kind import StyleFrameKind as StyleFrameKind
 from ....direct.para.border.sides import Sides as InnerSides

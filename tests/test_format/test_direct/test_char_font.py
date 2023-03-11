@@ -115,11 +115,11 @@ def test_font(loader) -> None:
     assert ft.prop_strike == FontStrikeoutEnum.BOLD
     assert ft.prop_underline_color == CommonColor.AQUA
     assert ft.prop_superscript
-    assert ft.prop_size == 22.0
+    assert ft.prop_size.value == 22.0
     assert ft.prop_rotation == 90.0
     assert ft.prop_overline == FontUnderlineEnum.BOLDDASHDOT
     assert ft.prop_overline_color == CommonColor.BEIGE
-    assert ft.prop_spacing == pytest.approx(CharSpacingKind.TIGHT.value, rel=1e-2)
+    assert ft.prop_spacing.value == pytest.approx(CharSpacingKind.TIGHT.value, rel=1e-2)
     assert ft.prop_shadowed
 
     ft = Font(
@@ -134,7 +134,7 @@ def test_font(loader) -> None:
     assert ft.prop_underline == FontUnderlineEnum.BOLDDASH
     assert ft.prop_slant == FontSlant.OBLIQUE
     assert ft.prop_subscript
-    assert ft.prop_spacing == pytest.approx(2.0, rel=1e-2)
+    assert ft.prop_spacing.value == pytest.approx(2.0, rel=1e-2)
 
 
 def test_font_effects() -> None:
@@ -152,7 +152,7 @@ def test_font_effects() -> None:
     assert fp.prop_raise_lower == 58
     assert fp.prop_rotation == 93
     assert fp.prop_scale == 99
-    assert fp.prop_spacing == pytest.approx(CharSpacingKind.TIGHT.value, 0.01)
+    assert fp.prop_spacing.value == pytest.approx(CharSpacingKind.TIGHT.value, 0.01)
     assert fp.prop_pair == True
 
     fp = fp.script_kind_subscript
@@ -160,7 +160,7 @@ def test_font_effects() -> None:
     assert fp.prop_raise_lower == 58
 
     fp = fp.spacing_normal
-    assert fp.prop_spacing == pytest.approx(CharSpacingKind.NORMAL.value, 0.01)
+    assert fp.prop_spacing.value == pytest.approx(CharSpacingKind.NORMAL.value, 0.01)
 
     fp = fp.rotation_270
     assert fp.prop_rotation == 270

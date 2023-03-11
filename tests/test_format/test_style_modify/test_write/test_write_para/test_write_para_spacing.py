@@ -31,8 +31,8 @@ def test_write(loader, para_text) -> None:
         assert props.getPropertyValue("ParaBottomMargin") in (348, 349, 350, 351, 352)
 
         f_style = Spacing.from_style(doc)
-        assert f_style.prop_inner.prop_above == pytest.approx(4.5, rel=1e-2)
-        assert f_style.prop_inner.prop_below == pytest.approx(3.5, rel=1e-2)
+        assert f_style.prop_inner.prop_above.value == pytest.approx(4.5, rel=1e-2)
+        assert f_style.prop_inner.prop_below.value == pytest.approx(3.5, rel=1e-2)
         Lo.delay(delay)
     finally:
         Lo.close_doc(doc)

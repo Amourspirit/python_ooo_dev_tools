@@ -3,10 +3,8 @@ from typing import cast
 import uno
 from ....writer.style.para.kind import StyleParaKind as StyleParaKind
 from ..para_style_base_multi import ParaStyleBaseMulti
-from ....direct.structs.side import Side as Side, LineSize as LineSize, SideFlags as SideFlags
+from ....direct.structs.side import Side as Side, LineSize as LineSize
 from ....direct.para.border.sides import Sides as InnerSides
-
-from ooo.dyn.table.border_line_style import BorderLineStyleEnum as BorderLineStyleEnum
 
 
 class Sides(ParaStyleBaseMulti):
@@ -23,7 +21,7 @@ class Sides(ParaStyleBaseMulti):
         right: Side | None = None,
         top: Side | None = None,
         bottom: Side | None = None,
-        border_side: Side | None = None,
+        all: Side | None = None,
         style_name: StyleParaKind | str = StyleParaKind.STANDARD,
         style_family: str = "ParagraphStyles",
     ) -> None:
@@ -31,11 +29,11 @@ class Sides(ParaStyleBaseMulti):
         Constructor
 
         Args:
-            left (float, optional): Paragraph left padding (in mm units).
-            right (float, optional): Paragraph right padding (in mm units).
-            top (float, optional): Paragraph top padding (in mm units).
-            bottom (float, optional): Paragraph bottom padding (in mm units).
-            padding_all (float, optional): Paragraph left, right, top, bottom padding (in mm units). If argument is present then ``left``, ``right``, ``top``, and ``bottom`` arguments are ignored.
+            left (Side, optional): Determines the line style at the left edge.
+            right (Side, optional): Determines the line style at the right edge.
+            top (Side, optional): Determines the line style at the top edge.
+            bottom (Side, optional): Determines the line style at the bottom edge.
+            all (Side, optional): Determines the line style at the top, bottom, left, right edges. If this argument has a value then arguments ``top``, ``bottom``, ``left``, ``right`` are ignored
             style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to. Deftult is Default Paragraph Style.
             style_family (str, optional): Style family. Defatult ``ParagraphStyles``.
 
@@ -43,7 +41,7 @@ class Sides(ParaStyleBaseMulti):
             None:
         """
 
-        direct = InnerSides(left=left, right=right, top=top, bottom=bottom, all=border_side)
+        direct = InnerSides(left=left, right=right, top=top, bottom=bottom, all=all)
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family

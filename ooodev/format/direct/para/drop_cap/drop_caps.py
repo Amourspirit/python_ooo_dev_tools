@@ -9,54 +9,17 @@ from typing import Tuple, cast, Type, TypeVar, overload
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....events.args.key_val_cancel_args import KeyValCancelArgs
 from .....exceptions import ex as mEx
+from .....proto.unit_obj import UnitObj
 from .....meta.static_prop import static_prop
 from .....utils import lo as mLo
 from .....utils import props as mProps
+from .....utils.unit_convert import UnitConvert
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleMulti
 from ....writer.style.char.kind import StyleCharKind as StyleCharKind
 from ...structs.drop_cap_struct import DropCapStruct
 
 _TDropCaps = TypeVar(name="_TDropCaps", bound="DropCaps")
-
-
-class DropCapFmt(DropCapStruct):
-    """
-    Paragraph Drop Cap
-
-    Any properties starting with ``prop_`` set or get current instance values.
-
-    All methods starting with ``fmt_`` can be used to chain together properties.
-
-    .. versionadded:: 0.9.0
-    """
-
-    def _supported_services(self) -> Tuple[str, ...]:
-        try:
-            return self._supported_services_values
-        except AttributeError:
-            self._supported_services_values = (
-                "com.sun.star.style.ParagraphProperties",
-                "com.sun.star.text.TextContent",
-                "com.sun.star.style.ParagraphStyle",
-            )
-        return self._supported_services_values
-
-    def _get_property_name(self) -> str:
-        try:
-            return self._property_name
-        except AttributeError:
-            self._property_name = "DropCapFormat"
-        return self._property_name
-
-    @property
-    def prop_format_kind(self) -> FormatKind:
-        """Gets the kind of style"""
-        try:
-            return self._fromat_kind_prop
-        except AttributeError:
-            self._fromat_kind_prop = FormatKind.PARA | FormatKind.TXT_CONTENT
-        return self._fromat_kind_prop
 
 
 class DropCaps(StyleMulti):
@@ -72,7 +35,7 @@ class DropCaps(StyleMulti):
         self,
         *,
         count: int = 0,
-        spaces: float = 0.0,
+        spaces: float | UnitObj = 0.0,
         lines: int = 3,
         style: StyleCharKind | str | None = None,
         whole_word: bool | None = None,
@@ -82,7 +45,7 @@ class DropCaps(StyleMulti):
 
         Args:
             count (int): Specifies the number of characters in the drop cap. Must be from ``0`` to ``255``.
-            spaces (float): Specifies the distance between the drop cap in the following text (in mm units)
+            spaces (float, UnitObj): Specifies the distance between the drop cap in the following text (in ``mm`` units) or :ref:`proto_unit_obj`.
             lines (int): Specifies the number of lines used for a drop cap. Must be from ``0`` to ``255``.
             style (StyleCharKind, str, optional): Specifies the character style name for drop caps.
             whole_word (bool, optional): specifies if Drop Cap is applied to the whole first word.
@@ -100,7 +63,7 @@ class DropCaps(StyleMulti):
         """
         # https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1ParagraphProperties-members.html
 
-        # if count == -1 then do not include DropCapFmt. only update style
+        # if count == -1 then do not include DropCapStruct. only update style
         # if count = 0 then default to no drop cap values
         dc = None
         init_vars = {}
@@ -114,9 +77,13 @@ class DropCaps(StyleMulti):
             style = ""
             init_vars["DropCapWholeWord"] = False
             init_vars["DropCapCharStyleName"] = ""
-            dc = DropCapFmt(count=0, distance=0, lines=0)
+            dc = DropCapStruct(count=0, distance=0, lines=0, _cattribs=self._get_cattribs())
         elif count > 0:
-            dc = DropCapFmt(count=count, distance=round(spaces * 100), lines=lines)
+            try:
+                dist = spaces.get_value_mm100()
+            except AttributeError:
+                dist = UnitConvert.convert_mm_mm100(spaces)
+            dc = DropCapStruct(count=count, distance=dist, lines=lines, _cattribs=self._get_cattribs())
             if not whole_word is None:
                 init_vars["DropCapWholeWord"] = whole_word
                 if whole_word:
@@ -162,6 +129,9 @@ class DropCaps(StyleMulti):
         mLo.Lo.dispatch_cmd("SetDropCapCharStyleName", mProps.Props.make_props(CharStyleName=""))
         # mLo.Lo.delay(300)
 
+        # endregion methods
+
+    # region Overrides
     def on_property_setting(self, event_args: KeyValCancelArgs) -> None:
         """
         Triggers for each property that is set
@@ -178,13 +148,6 @@ class DropCaps(StyleMulti):
                 event_args.default = True
             super().on_property_setting(event_args)
 
-    def _set_style_dc(self, dc: DropCapFmt | None) -> None:
-        if dc is None:
-            self._remove_style("drop_cap")
-            return
-        dc._prop_parent = self
-        self._set_style("drop_cap", dc, *dc.get_attrs())
-
     def _on_modifing(self, event: CancelEventArgs) -> None:
         if self._is_default_inst:
             raise ValueError("Modifying a default instance is not allowed")
@@ -200,6 +163,27 @@ class DropCaps(StyleMulti):
                 "com.sun.star.style.ParagraphStyle",
             )
         return self._supported_services_values
+
+    # endregion Overrides
+
+    # region internal methods
+    def _set_style_dc(self, dc: DropCapStruct | None) -> None:
+        if dc is None:
+            self._remove_style("drop_cap")
+            return
+        dc._prop_parent = self
+        self._set_style("drop_cap", dc, *dc.get_attrs())
+
+    def _get_cattribs(self) -> dict:
+        return {
+            "_supported_services_values": self._supported_services(),
+            "_property_name": "DropCapFormat",
+            "_fromat_kind_prop": self.prop_format_kind,
+        }
+
+    # endregion internal methods
+
+    # region Static Methods
 
     # region from_obj()
     @overload
@@ -229,7 +213,7 @@ class DropCaps(StyleMulti):
         inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
-        dc = DropCapFmt.from_obj(obj)
+        dc = DropCapStruct.from_obj(obj, _cattribs=inst._get_cattribs())
         inst._set_style_dc(dc)
 
         whole_word = cast(bool, mProps.Props.get(obj, "DropCapWholeWord"))
@@ -241,7 +225,7 @@ class DropCaps(StyleMulti):
         return inst
 
     # endregion from_obj()
-    # endregion methods
+    # endregion Static Methods
 
     # region properties
 
@@ -255,12 +239,12 @@ class DropCaps(StyleMulti):
         return self._fromat_kind_prop
 
     @property
-    def prop_inner(self) -> DropCapFmt | None:
+    def prop_inner(self) -> DropCapStruct | None:
         """Gets Drop Caps Format instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(DropCapFmt, self._get_style_inst("drop_cap"))
+            self._direct_inner = cast(DropCapStruct, self._get_style_inst("drop_cap"))
         return self._direct_inner
 
     @static_prop

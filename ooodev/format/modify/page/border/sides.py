@@ -1,11 +1,10 @@
 from __future__ import annotations
 from typing import Tuple, cast
 import uno
-from ooo.dyn.table.border_line_style import BorderLineStyleEnum as BorderLineStyleEnum
 
 from ....writer.style.page.kind.style_page_kind import StylePageKind as StylePageKind
 from ..page_style_base_multi import PageStyleBaseMulti
-from ....direct.structs.side import Side as Side, LineSize as LineSize, SideFlags as SideFlags
+from ....direct.structs.side import Side as Side, LineSize as LineSize
 from ....direct.para.border.sides import Sides as InnerSides
 
 

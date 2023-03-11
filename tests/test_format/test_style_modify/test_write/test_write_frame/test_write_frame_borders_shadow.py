@@ -35,7 +35,7 @@ def test_write(loader, para_text) -> None:
         style.apply(doc)
         # props = style.get_style_props(doc)
         f_style = Shadow.from_style(doc=doc, style_name=style.prop_style_name)
-        assert f_style.prop_inner.prop_width == pytest.approx(style.prop_inner.prop_width, rel=1e2)
+        assert f_style.prop_inner.prop_width.value == pytest.approx(style.prop_inner.prop_width.value, rel=1e-2)
         assert f_style.prop_inner.prop_color == StandardColor.GRAY_LIGHT1
         assert f_style.prop_inner.prop_location == ShadowLocation.BOTTOM_RIGHT
 
@@ -44,7 +44,7 @@ def test_write(loader, para_text) -> None:
         style.apply(doc)
         # props = style.get_style_props(doc)
         f_style = Shadow.from_style(doc=doc, style_name=style.prop_style_name)
-        assert f_style.prop_inner.prop_width == pytest.approx(style.prop_inner.prop_width, rel=1e2)
+        assert f_style.prop_inner.prop_width.value == pytest.approx(style.prop_inner.prop_width.value, rel=1e-2)
         assert f_style.prop_inner.prop_color == StandardColor.RED_LIGHT2
         assert f_style.prop_inner.prop_location == ShadowLocation.TOP_RIGHT
 

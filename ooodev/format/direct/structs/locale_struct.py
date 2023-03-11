@@ -180,23 +180,23 @@ class LocaleStruct(StyleBase):
         except mEx.PropertyNotFoundError:
             raise mEx.PropertyNotFoundError(prop_name, f"from_obj() obj as no {prop_name} property")
 
-        return cls.from_locale(dcf, **kwargs)
+        return cls.from_uno_struct(dcf, **kwargs)
 
     # endregion from_obj()
 
     # region from_locale()
     @overload
     @classmethod
-    def from_locale(cls: Type[_TLocaleStruct], locale: Locale) -> _TLocaleStruct:
+    def from_uno_struct(cls: Type[_TLocaleStruct], locale: Locale) -> _TLocaleStruct:
         ...
 
     @overload
     @classmethod
-    def from_locale(cls: Type[_TLocaleStruct], locale: Locale, **kwargs) -> _TLocaleStruct:
+    def from_uno_struct(cls: Type[_TLocaleStruct], locale: Locale, **kwargs) -> _TLocaleStruct:
         ...
 
     @classmethod
-    def from_locale(cls: Type[_TLocaleStruct], locale: Locale, **kwargs) -> _TLocaleStruct:
+    def from_uno_struct(cls: Type[_TLocaleStruct], locale: Locale, **kwargs) -> _TLocaleStruct:
         """
         Converts a ``Locale`` Stop instance to a ``LocaleStruct``
 

@@ -104,7 +104,7 @@ class Tabs(TabStopStruct):
         if match == -1:
             return None
         ts = tss[match]
-        return cls.from_tab_stop(ts, **kwargs)
+        return cls.from_uno_struct(ts, **kwargs)
 
     # endregion find()
 

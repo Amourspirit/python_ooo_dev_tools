@@ -34,13 +34,11 @@ def test_write(loader, para_text) -> None:
 
         f_style = Img.from_obj(frame)
         point = PresetImageKind.COLORFUL_PEBBLES._get_point()
-        xlst = [(point.x - 2) + i for i in range(5)]  # plus or minus 2
-        ylst = [(point.y - 2) + i for i in range(5)]  # plus or minus 2
         assert f_style.prop_is_size_mm
         size = f_style.prop_size
         assert isinstance(size, SizeMM)
-        assert round(size.width * 100) in xlst
-        assert round(size.height * 100) in ylst
+        assert round(size.width * 100) in range(point.x - 2, point.x + 3)  # +- 2
+        assert round(size.height * 100) in range(point.y - 2, point.y + 3)  # +- 2
 
         Lo.delay(delay)
     finally:

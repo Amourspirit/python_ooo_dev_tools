@@ -33,7 +33,7 @@ def test_write(loader, para_text) -> None:
         )
 
         f_style = Shadow.from_obj(frame)
-        assert f_style.prop_width == pytest.approx(style.prop_width, rel=1e2)
+        assert f_style.prop_width.value == pytest.approx(style.prop_width.value, rel=1e-2)
         assert f_style.prop_color == StandardColor.GRAY_LIGHT1
         assert f_style.prop_location == ShadowLocation.BOTTOM_RIGHT
 

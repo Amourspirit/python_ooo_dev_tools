@@ -33,7 +33,7 @@ from com.sun.star.lang import XServiceInfo
 from com.sun.star.script import XEventAttacherManager
 
 from ooo.dyn.awt.point import Point
-from ooo.dyn.awt.size import Size
+from ooo.dyn.awt.size import Size as UnoSize
 from ooo.dyn.form.form_component_type import FormComponentType
 from ooo.dyn.form.list_source_type import ListSourceType
 from ooo.dyn.script.script_event_descriptor import ScriptEventDescriptor
@@ -865,7 +865,7 @@ class Forms:
             cshape = mLo.Lo.create_instance_msf(XControlShape, "com.sun.star.drawing.ControlShape", raise_err=True)
 
             # position and size of the shape
-            cshape.setSize(Size(width * 100, height * 100))
+            cshape.setSize(UnoSize(width * 100, height * 100))
             cshape.setPosition(Point(x * 100, y * 100))
 
             # adjust the anchor so that the control is tied to the page

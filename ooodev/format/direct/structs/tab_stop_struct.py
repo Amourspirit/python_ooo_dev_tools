@@ -8,17 +8,21 @@ from typing import Dict, Iterable, Tuple, Type, cast, overload, TypeVar
 from enum import Enum
 
 import uno
-from ....events.event_singleton import _Events
-from ....exceptions import ex as mEx
-from ....utils import lo as mLo
-from ....utils import props as mProps
-from ...kind.format_kind import FormatKind
-from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent
-
 from com.sun.star.beans import XPropertySet
 
 from ooo.dyn.style.tab_align import TabAlign as TabAlign
 from ooo.dyn.style.tab_stop import TabStop
+
+from ....events.event_singleton import _Events
+from ....exceptions import ex as mEx
+from ....proto.unit_obj import UnitObj
+from ....utils import lo as mLo
+from ....utils import props as mProps
+from ....utils.data_type.unit_mm import UnitMM
+from ....utils.unit_convert import UnitConvert
+from ...kind.format_kind import FormatKind
+from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent
+
 
 _TTabStopStruct = TypeVar(name="_TTabStopStruct", bound="TabStopStruct")
 
@@ -51,7 +55,7 @@ class TabStopStruct(StyleBase):
     def __init__(
         self,
         *,
-        position: float = 0.0,
+        position: float | UnitObj = 0.0,
         align: TabAlign = TabAlign.LEFT,
         decimal_char: str = ".",
         fill_char: FillCharKind | str = FillCharKind.NONE,
@@ -60,13 +64,13 @@ class TabStopStruct(StyleBase):
         Constructor
 
         Args:
-            position (float): Specifies the position of the tabulator in relation to the left border (in mm units).
+            position (float, UnitObj, optional): Specifies the position of the tabulator in relation to the left border (in ``mm`` units) or :ref:`proto_unit_obj`.
                 Defaults to ``0.0``
-            align (TabAlign): Specifies the alignment of the text range before the tabulator. Defaults to ``TabAlign.LEFT``
-            decimal_char (str): Specifies which delimiter is used for the decimal.
+            align (TabAlign, optional): Specifies the alignment of the text range before the tabulator. Defaults to ``TabAlign.LEFT``
+            decimal_char (str, optional): Specifies which delimiter is used for the decimal.
                 Argument is expected to be a single character string.
                 This argument is only used when ``align`` is set to ``TabAlign.DECIMAL``.
-            fill_char (FillCharKind, str): specifies the character that is used to fill up the space between the text in the text range and the tabulators.
+            fill_char (FillCharKind, str, optional): specifies the character that is used to fill up the space between the text in the text range and the tabulators.
                 If string value then argument is expected to be a single character string.
                 Defaults to ``FillCharKind.NONE``
 
@@ -83,7 +87,10 @@ class TabStopStruct(StyleBase):
         # most likely it would be best practice not to backup and restore this property (ParaLineSpacing) when appending paragraphs in Writer.
 
         init_vals = {"FillChar": str(fill_char)[:1], "Alignment": align, "DecimalChar": decimal_char[:1]}
-        init_vals["Position"] = round(position * 100)
+        try:
+            init_vals["Position"] = position.get_value_mm100()
+        except AttributeError:
+            init_vals["Position"] = UnitConvert.convert_mm_mm100(position)
         if align != TabAlign.DECIMAL:
             init_vals["DecimalChar"] = " "
 
@@ -245,23 +252,23 @@ class TabStopStruct(StyleBase):
         # can expcet for ts to contain at least one TabAlign
         ts = tss[index]
 
-        return cls.from_tab_stop(ts, **kwargs)
+        return cls.from_uno_struct(ts, **kwargs)
 
     # endregion from_obj()
 
     # region from_tab_stop()
     @overload
     @classmethod
-    def from_tab_stop(cls: Type[_TTabStopStruct], ts: TabStop) -> _TTabStopStruct:
+    def from_uno_struct(cls: Type[_TTabStopStruct], ts: TabStop) -> _TTabStopStruct:
         ...
 
     @overload
     @classmethod
-    def from_tab_stop(cls: Type[_TTabStopStruct], ts: TabStop, **kwargs) -> _TTabStopStruct:
+    def from_uno_struct(cls: Type[_TTabStopStruct], ts: TabStop, **kwargs) -> _TTabStopStruct:
         ...
 
     @classmethod
-    def from_tab_stop(cls: Type[_TTabStopStruct], ts: TabStop, **kwargs) -> _TTabStopStruct:
+    def from_uno_struct(cls: Type[_TTabStopStruct], ts: TabStop, **kwargs) -> _TTabStopStruct:
         """
         Converts a Tab Stop instance to a Tab
 
@@ -311,12 +318,12 @@ class TabStopStruct(StyleBase):
     # endregion dunder methods
 
     # region format methods
-    def fmt_position(self: _TTabStopStruct, value: float) -> _TTabStopStruct:
+    def fmt_position(self: _TTabStopStruct, value: float | UnitObj) -> _TTabStopStruct:
         """
         Gets a copy of instance with position set.
 
         Args:
-            value (float): Position value.
+            value (float, UnitObj): Position value (in ``mm`` units) or :ref:`proto_unit_obj`.
 
         Returns:
             Tab: Tab instance
@@ -380,16 +387,16 @@ class TabStopStruct(StyleBase):
         return self._format_kind_prop
 
     @property
-    def prop_position(self) -> float:
-        """Gets/Sets the position of the tabulator in relation to the left border (in mm units)."""
-        pv = self._get("Position")
-        if pv == 0:
-            return 0.0
-        return float(pv / 100)
+    def prop_position(self) -> UnitMM:
+        """Gets/Sets the position of the tabulator in relation to the left border (in ``mm`` units)."""
+        return UnitMM.from_mm100(self._get("Position"))
 
     @prop_position.setter
-    def prop_position(self, value: float) -> None:
-        self._set("Position", round(value * 100))
+    def prop_position(self, value: float | UnitObj) -> None:
+        try:
+            self._set("Position", value.get_value_mm100())
+        except AttributeError:
+            self._set("Position", UnitConvert.convert_mm_mm100(value))
 
     @property
     def prop_align(self) -> TabAlign:
