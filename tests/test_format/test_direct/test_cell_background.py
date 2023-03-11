@@ -36,6 +36,12 @@ def test_calc_background(loader) -> None:
         cp = cast("CellProperties", cell)
         assert cp.CellBackColor == CommonColor.LIGHT_BLUE
 
+        color = Color.empty
+        color = Color.empty
+        color.apply(cell)
+        cp = cast("CellProperties", cell)
+        assert cp.CellBackColor == -1
+
         rng_obj = Calc.get_range_obj("A3:F8")
         cr = Calc.get_cell_range(sheet, rng_obj)
         color = Color(CommonColor.LIGHT_GREEN)
