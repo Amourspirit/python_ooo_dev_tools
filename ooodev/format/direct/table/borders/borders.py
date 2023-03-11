@@ -8,26 +8,28 @@ from __future__ import annotations
 from typing import Any, Type, overload, cast, Tuple, TypeVar
 
 import uno
+from ooo.dyn.table.border_line import BorderLine as BorderLine
+from ooo.dyn.table.border_line2 import BorderLine2 as BorderLine2
+from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
+from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
 from .....meta.static_prop import static_prop
 from .....proto.unit_obj import UnitObj
 from .....utils import lo as mLo
+from .....utils import props as mProps
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleMulti
 from ...cell.border.padding import Padding
 from ...cell.border.shadow import Shadow
-from ...structs.side import Side as Side, BorderLineKind as BorderLineKind
-from ...structs.table_border_struct import TableBorderStruct
-from ...structs.table_border_distances_struct import TableBorderDistancesStruct
+from ...common.props.prop_pair import PropPair
+from ...common.props.struct_border_table_props import StructBorderTableProps
 from ...common.props.table_borders_props import TableBordersProps
-from .....utils import props as mProps
+from ...structs.side import Side as Side, BorderLineKind as BorderLineKind
+from ...structs.table_border_distances_struct import TableBorderDistancesStruct
+from ...structs.table_border_struct import TableBorderStruct
 
-from ooo.dyn.table.border_line import BorderLine as BorderLine
-from ooo.dyn.table.border_line2 import BorderLine2 as BorderLine2
-from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
-from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 
 # endregion imports
 
@@ -123,13 +125,34 @@ class Borders(StyleMulti):
 
     # region Internal Methods
     def _get_tb_cattribs(self) -> dict:
-        return {"_property_name": self._props.tbl_border, "_supported_services_values": self._supported_services()}
+        return {
+            "_property_name": self._props.tbl_border,
+            "_supported_services_values": self._supported_services(),
+            "_format_kind_prop": self.prop_format_kind,
+            "_props_internal_attributes": StructBorderTableProps(
+                left=self._props.tbl_bdr_left,
+                top=self._props.tbl_bdr_top,
+                right=self._props.tbl_bdr_right,
+                bottom=self._props.tbl_bdr_bottom,
+                horz=self._props.tbl_bdr_horz,
+                vert=self._props.tbl_bdr_vert,
+                dist=self._props.tbl_bdr_dist,
+            ),
+        }
 
     def _get_shadow_cattribs(self) -> dict:
-        return {"_property_name": self._props.shadow, "_supported_services_values": self._supported_services()}
+        return {
+            "_property_name": self._props.shadow,
+            "_supported_services_values": self._supported_services(),
+            "_format_kind_prop": self.prop_format_kind,
+        }
 
     def _get_tbd_cattribs(self) -> dict:
-        return {"_property_name": self._props.tbl_distance, "_supported_services_values": self._supported_services()}
+        return {
+            "_property_name": self._props.tbl_distance,
+            "_supported_services_values": self._supported_services(),
+            "_format_kind_prop": self.prop_format_kind,
+        }
 
     # endregion Internal Methods
 
@@ -404,7 +427,7 @@ class Borders(StyleMulti):
         Gets copy of instance with padding set or removed
 
         Args:
-            value (Padding | None): Padding value
+            value (Padding, optional): Padding value
 
         Returns:
             Borders: Borders instance
@@ -488,6 +511,13 @@ class Borders(StyleMulti):
                 shadow="ShadowFormat",
                 tbl_distance="TableBorderDistances",
                 merge="CollapsingBorders",
+                tbl_bdr_left=PropPair("LeftLine", "IsLeftLineValid"),
+                tbl_bdr_top=PropPair("TopLine", "IsTopLineValid"),
+                tbl_bdr_right=PropPair("RightLine", "IsRightLineValid"),
+                tbl_bdr_bottom=PropPair("BottomLine", "IsBottomLineValid"),
+                tbl_bdr_horz=PropPair("HorizontalLine", "IsHorizontalLineValid"),
+                tbl_bdr_vert=PropPair("VerticalLine", "IsVerticalLineValid"),
+                tbl_bdr_dist=PropPair("Distance", "IsDistanceValid"),
             )
         return self._props_internal_attributes
 

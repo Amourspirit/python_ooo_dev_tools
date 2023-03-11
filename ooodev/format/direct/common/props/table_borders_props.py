@@ -8,3 +8,10 @@ class TableBordersProps(NamedTuple):
     shadow: str
     tbl_distance: str
     merge: str
+    tbl_bdr_left: PropPair
+    tbl_bdr_top: PropPair
+    tbl_bdr_right: PropPair
+    tbl_bdr_bottom: PropPair
+    tbl_bdr_horz: PropPair
+    tbl_bdr_vert: PropPair
+    tbl_bdr_dist: PropPair
