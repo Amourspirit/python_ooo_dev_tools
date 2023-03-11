@@ -2471,6 +2471,8 @@ class Write(mSel.Selection):
         header_fg_color: Color | None = CommonColor.WHITE,
         tbl_bg_color: Color | None = CommonColor.LIGHT_BLUE,
         tbl_fg_color: Color | None = CommonColor.BLACK,
+        first_row_header: bool = True,
+        styles: Iterable[StyleObj] = None,
     ) -> XTextTable:
         """
         Adds a table.
@@ -2480,10 +2482,12 @@ class Write(mSel.Selection):
         Args:
             cursor (XTextCursor): Text Cursor
             table_data (Table): 2D Table with the the first row containing column names.
-            header_bg_color (Color | None, optional): Table header background color. Set to None to ignore header color. Defaults to CommonColor.DARK_BLUE.
-            header_fg_color (Color | None, optional): Table header foreground color. Set to None to ignore header color. Defaults to CommonColor.WHITE.
-            tbl_bg_color (Color | None, optional): Table background color. Set to None to ignore background color. Defaults to CommonColor.LIGHT_BLUE.
-            tbl_fg_color (Color | None, optional): Table background color. Set to None to ignore background color. Defaults to CommonColor.BLACK.
+            header_bg_color (Color, optional): Table header background color. Set to None to ignore header color. Defaults to CommonColor.DARK_BLUE.
+            header_fg_color (Color, optional): Table header foreground color. Set to None to ignore header color. Defaults to CommonColor.WHITE.
+            tbl_bg_color (Color, optional): Table background color. Set to None to ignore background color. Defaults to CommonColor.LIGHT_BLUE.
+            tbl_fg_color (Color, optional): Table background color. Set to None to ignore background color. Defaults to CommonColor.BLACK.
+            first_row_header (bool, optional): If ``True`` First row is treated as header data. Default ``True``.
+            styles (Iterable[StyleObj]): One or more styles to apply to frame. Only styles that support ``com.sun.star.text.TextTable`` service are applied.
 
         Raises:
             ValueError: If table_data is empty
@@ -2509,6 +2513,7 @@ class Write(mSel.Selection):
 
         .. versionchanged:: 0.9.0
             Now returns added table instead of bool value.
+            Added options ``first_row_header`` and ``styles``.
         """
 
         cargs = CancelEventArgs(Write.add_table.__qualname__)
@@ -2519,6 +2524,8 @@ class Write(mSel.Selection):
             "header_fg_color": header_fg_color,
             "tbl_bg_color": tbl_bg_color,
             "tbl_fg_color": tbl_fg_color,
+            "first_row_header": first_row_header,
+            "styles": styles,
         }
         _Events().trigger(WriteNamedEvent.TABLE_ADDING, cargs)
         if cargs.cancel:
@@ -2528,13 +2535,14 @@ class Write(mSel.Selection):
         header_fg_color = cargs.event_data["header_fg_color"]
         tbl_bg_color = cargs.event_data["tbl_bg_color"]
         tbl_fg_color = cargs.event_data["tbl_fg_color"]
+        first_row_header = cargs.event_data["first_row_header"]
 
         def make_cell_name(row: int, col: int) -> str:
             return TableHelper.make_cell_name(row=row + 1, col=col + 1)
 
         def set_cell_header(cell_name: str, data: str, table: XTextTable) -> None:
             cell_text = mLo.Lo.qi(XText, table.getCellByName(cell_name), True)
-            if header_fg_color is not None:
+            if first_row_header and header_fg_color is not None:
                 text_cursor = cell_text.createTextCursor()
                 mProps.Props.set(text_cursor, CharColor=header_fg_color)
 
@@ -2542,9 +2550,17 @@ class Write(mSel.Selection):
 
         def set_cell_text(cell_name: str, data: str, table: XTextTable) -> None:
             cell_text = mLo.Lo.qi(XText, table.getCellByName(cell_name), True)
-            if tbl_fg_color is not None:
+            if first_row_header is False or tbl_fg_color is not None:
                 text_cursor = cell_text.createTextCursor()
-                mProps.Props.set(text_cursor, CharColor=tbl_fg_color)
+                props = {}
+                if not first_row_header:
+                    # By default the first row has a style by the name of: Table Heading
+                    # Table Contents is the default for cell that are not in the header row.
+                    props["ParaStyleName"] = "Table Contents"
+                if tbl_fg_color is not None:
+                    props["CharColor"] = tbl_fg_color
+                mProps.Props.set(text_cursor, **props)
+
             cell_text.setString(str(data))
 
         num_rows = len(table_data)
@@ -2575,21 +2591,34 @@ class Write(mSel.Selection):
                 table_props.setPropertyValue("BackColor", tbl_bg_color)
 
             # set color of first row (i.e. the header)
-            if header_bg_color is not None:
+            if first_row_header and header_bg_color is not None:
                 rows = table.getRows()
                 mProps.Props.set(rows.getByIndex(0), BackColor=header_bg_color)
 
             #  write table header
-            row_data = table_data[0]
-            for x in range(num_cols):
-                set_cell_header(make_cell_name(0, x), row_data[x], table)
-                # e.g. "A1", "B1", "C1", etc
-
-            # insert table body
-            for y in range(1, num_rows):  # start in 2nd row
-                row_data = table_data[y]
+            if first_row_header:
+                row_data = table_data[0]
                 for x in range(num_cols):
-                    set_cell_text(make_cell_name(y, x), row_data[x], table)
+                    set_cell_header(make_cell_name(0, x), row_data[x], table)
+                    # e.g. "A1", "B1", "C1", etc
+
+                # insert table body
+                for y in range(1, num_rows):  # start in 2nd row
+                    row_data = table_data[y]
+                    for x in range(num_cols):
+                        set_cell_text(make_cell_name(y, x), row_data[x], table)
+            else:
+                # insert table body
+                for y in range(0, num_rows):  # start in 1st row
+                    row_data = table_data[y]
+                    for x in range(num_cols):
+                        set_cell_text(make_cell_name(y, x), row_data[x], table)
+
+            if styles:
+                srv = ("com.sun.star.text.TextTable",)
+                for style in styles:
+                    if style.support_service(*srv):
+                        style.apply(table)
         except Exception as e:
             raise Exception("Table insertion failed:") from e
         _Events().trigger(WriteNamedEvent.TABLE_ADDED, EventArgs.from_args(cargs))

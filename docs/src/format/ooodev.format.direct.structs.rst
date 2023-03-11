@@ -17,6 +17,7 @@ Submodules
    ooodev.format.direct.structs.side
    ooodev.format.direct.structs.size_struct
    ooodev.format.direct.structs.tab_stop_struct
+   ooodev.format.direct.structs.table_border_distances_struct
    ooodev.format.direct.structs.table_border_struct
 
 Module contents

@@ -263,28 +263,37 @@ class TableBorderStruct(StyleBase):
         tb = cast(TableBorder2, mProps.Props.get(obj, prop_name, None))
         if tb is None:
             raise mEx.PropertyNotFoundError(prop_name, f"from_obj() obj as no {prop_name} property")
-        line_props = ("Color", "InnerLineWidth", "LineDistance", "LineStyle", "LineWidth", "OuterLineWidth")
 
-        left = Side() if tb.IsLeftLineValid else None
-        top = Side() if tb.IsTopLineValid else None
-        right = Side() if tb.IsRightLineValid else None
-        bottom = Side() if tb.IsBottomLineValid else None
-        vertical = Side() if tb.IsVerticalLineValid else None
-        horizontal = Side() if tb.IsHorizontalLineValid else None
+        if tb.IsLeftLineValid:
+            left = Side.from_uno_struct(tb.LeftLine)
+        else:
+            left = None
 
-        for prop in line_props:
-            if left:
-                left._set(prop, getattr(tb.LeftLine, prop))
-            if top:
-                top._set(prop, getattr(tb.TopLine, prop))
-            if right:
-                right._set(prop, getattr(tb.RightLine, prop))
-            if bottom:
-                bottom._set(prop, getattr(tb.BottomLine, prop))
-            if vertical:
-                vertical._set(prop, getattr(tb.VerticalLine, prop))
-            if horizontal:
-                horizontal._set(prop, getattr(tb.HorizontalLine, prop))
+        if tb.IsTopLineValid:
+            top = Side.from_uno_struct(tb.TopLine)
+        else:
+            top = None
+
+        if tb.IsRightLineValid:
+            right = Side.from_uno_struct(tb.RightLine)
+        else:
+            right = None
+
+        if tb.IsBottomLineValid:
+            bottom = Side.from_uno_struct(tb.BottomLine)
+        else:
+            bottom = None
+
+        if tb.IsVerticalLineValid:
+            vertical = Side.from_uno_struct(tb.VerticalLine)
+        else:
+            vertical = None
+
+        if tb.IsHorizontalLineValid:
+            horizontal = Side.from_uno_struct(tb.HorizontalLine)
+        else:
+            horizontal = None
+
         inst = cls(left=left, right=right, top=top, bottom=bottom, vertical=vertical, horizontal=horizontal, **kwargs)
 
         if tb.IsDistanceValid:

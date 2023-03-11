@@ -9,6 +9,7 @@ from typing import Tuple, cast, overload, Type, TypeVar, TYPE_CHECKING
 from enum import Enum, IntEnum
 
 import uno
+from ....exceptions import ex as mEx
 from ....meta.static_prop import static_prop
 from ....meta.deleted_enum_meta import DeletedUnoConstEnumMeta
 from ....proto.unit_obj import UnitObj
@@ -414,17 +415,6 @@ class Side(StyleBase):
         props = {self._get_property_name(): struct}
         super().apply(obj=obj, override_dv=props)
 
-        # keys = {
-        #     "left": "LeftBorder2",
-        #     "right": "RightBorder2",
-        #     "top": "TopBorder2",
-        #     "bottom": "BottomBorder2",
-        #     "diagonal_up": "DiagonalBLTR2",
-        #     "diagonal_down": "DiagonalTLBR2",
-        # }
-        # if "keys" in kwargs:
-        #     keys.update(kwargs["keys"])
-
     # endregion apply()
 
     def get_uno_struct_border_line(self) -> BorderLine:
@@ -483,7 +473,7 @@ class Side(StyleBase):
             Side._EMPTY_INST._is_default_inst = True
         return Side._EMPTY_INST
 
-    # region from_border2()
+    # region from_uno_struct()
     @overload
     @classmethod
     def from_uno_struct(cls: Type[_TSide], border: BorderLine2) -> _TSide:
@@ -515,7 +505,8 @@ class Side(StyleBase):
         inst._set("OuterLineWidth", border.OuterLineWidth)
         return inst
 
-    # endregion from_border2()
+    # endregion from_uno_struct()
+
     # endregion methods
 
     # region style methods
