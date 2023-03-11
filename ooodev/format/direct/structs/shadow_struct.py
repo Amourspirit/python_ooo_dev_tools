@@ -242,7 +242,7 @@ class ShadowStruct(StyleBase):
             location=shadow.Location,
             color=shadow.Color,
             transparent=shadow.IsTransparent,
-            width=UnitMM100(shadow.ShadowWidth),
+            width=UnitMM100(shadow.ShadowWidth).get_value_mm(),
             **kwargs,
         )
 

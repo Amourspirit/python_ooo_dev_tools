@@ -194,11 +194,11 @@ class SizeStruct(StyleBase):
         prop_name = nu._get_property_name()
 
         try:
-            grad = cast(SizeStruct, mProps.Props.get(obj, prop_name))
+            size = cast(SizeStruct, mProps.Props.get(obj, prop_name))
         except mEx.PropertyNotFoundError:
             raise mEx.PropertyNotFoundError(prop_name, f"from_obj() obj as no {prop_name} property")
 
-        return cls.from_gradient(grad, **kwargs)
+        return cls.from_uno_struct(size, **kwargs)
 
     # endregion from_obj()
 

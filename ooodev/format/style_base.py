@@ -17,6 +17,7 @@ from ..utils.type_var import EventCallback
 from .kind.format_kind import FormatKind
 from ..events.format_named_event import FormatNamedEvent as FormatNamedEvent
 from ..exceptions import ex as mEx
+from .direct.common.props.prop_pair import PropPair
 
 # from ..events.event_singleton import _Events
 from abc import ABC
@@ -614,7 +615,14 @@ class StyleBase(metaclass=MetaStyle):
                     if p_val == "":
                         # some prop value may not be used in which case they are empty strings.
                         continue
-                    key_map[p_val] = nu._props[i]
+                    if isinstance(p_val, PropPair):
+                        nu_pair = cast(PropPair, nu._props[i])
+                        if p_val.first:
+                            key_map[p_val.first] = nu_pair.first
+                        if p_val.second:
+                            key_map[p_val.second] = nu_pair.second
+                    else:
+                        key_map[p_val] = nu._props[i]
 
             if key_map:
                 for key, nu_val in key_map.items():

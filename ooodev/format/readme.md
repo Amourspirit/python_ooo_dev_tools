@@ -160,6 +160,11 @@ mindmap
                     transparency
                         id{{Gradient}}
                         id{{Transparency}}
+                table
+                    properties
+                        id{{TableProperties}}
+                    borders
+                        id{{borders}}
             [modify]
                 page
                     page

@@ -1,14 +1,9 @@
-"""
-Module for Image Crop (``GraphicCrop``) struct
-
-.. versionadded:: 0.9.0
-"""
 # region imports
 from __future__ import annotations
 from typing import Tuple, Type, cast, overload, TypeVar
 
 import uno
-from ooo.dyn.text.graphic_crop import GraphicCrop
+from ooo.dyn.table.table_border_distances import TableBorderDistances
 
 from ....exceptions import ex as mEx
 from ....proto.unit_obj import UnitObj
@@ -17,20 +12,22 @@ from ....utils.data_type.unit_mm import UnitMM
 from ....utils.unit_convert import UnitConvert
 from ...kind.format_kind import FormatKind
 from ...style_base import StyleBase
-from ..common.props.struct_crop_props import StructCropProps
+from ..common.props.struct_table_border_distances_props import StructTableBorderDistancesProps
 
 # endregion imports
 
-_TCropStruct = TypeVar(name="_TCropStruct", bound="CropStruct")
+_TTableBorderDistancesStruct = TypeVar(name="_TTableBorderDistancesStruct", bound="TableBorderDistancesStruct")
 
 
-class CropStruct(StyleBase):
+class TableBorderDistancesStruct(StyleBase):
     """
     Crop struct.
 
     Any properties starting with ``prop_`` set or get current instance values.
 
     All methods starting with ``fmt_`` can be used to chain together Border Table properties.
+
+    .. versionadded:: 0.9.0
     """
 
     # region init
@@ -48,10 +45,10 @@ class CropStruct(StyleBase):
         Constructor
 
         Args:
-            left (float, UnitObj, optional): Specifies left crop in ``mm`` units or :ref:`proto_unit_obj`. Default ``0.0``.
-            right (float, UnitObj, optional): Specifies right crop in ``mm`` units or :ref:`proto_unit_obj`. Default ``0.0``.
-            top (float, UnitObj, optional): Specifies top crop in ``mm`` units or :ref:`proto_unit_obj`. Default ``0.0``.
-            bottom (float, UnitObj, optional): Specifies bottom crop in ``mm`` units or :ref:`proto_unit_obj`. Default ``0.0``.
+            left (float, UnitObj, optional): Specifies left distance in ``mm`` units or :ref:`proto_unit_obj`. Default ``0.0``.
+            right (float, UnitObj, optional): Specifies right distance in ``mm`` units or :ref:`proto_unit_obj`. Default ``0.0``.
+            top (float, UnitObj, optional): Specifies top distance in ``mm`` units or :ref:`proto_unit_obj`. Default ``0.0``.
+            bottom (float, UnitObj, optional): Specifies bottom distance in ``mm`` units or :ref:`proto_unit_obj`. Default ``0.0``.
             all (float, UnitObj, optional): Specifies ``left``, ``right``, ``top``, and ``bottom`` in ``mm`` units or :ref:`proto_unit_obj`. If set all other parameters are ignored.
         """
         super().__init__()
@@ -73,7 +70,7 @@ class CropStruct(StyleBase):
         try:
             return self._property_name
         except AttributeError:
-            self._property_name = "GraphicCrop"
+            self._property_name = "TableBorderDistances"
         return self._property_name
 
     # endregion internal methods
@@ -81,35 +78,43 @@ class CropStruct(StyleBase):
     # region dunder methods
     def __eq__(self, oth: object) -> bool:
         obj2 = None
-        if isinstance(oth, CropStruct):
+        if isinstance(oth, TableBorderDistancesStruct):
             obj2 = oth.get_uno_struct()
-        if getattr(oth, "typeName", None) == "com.sun.star.text.GraphicCrop":
-            obj2 = cast(GraphicCrop, oth)
+        if getattr(oth, "typeName", None) == "com.sun.star.table.TableBorderDistances":
+            obj2 = cast(TableBorderDistances, oth)
         if obj2:
             obj1 = self.get_uno_struct()
             return (
-                obj1.Left == obj2.Left
-                and obj1.Right == obj2.Right
-                and obj1.Top == obj2.Top
-                and obj1.Bottom == obj2.Bottom
+                obj1.TopDistance == obj1.TopDistance
+                and obj1.IsTopDistanceValid == obj1.IsTopDistanceValid
+                and obj1.BottomDistance == obj1.BottomDistance
+                and obj1.IsBottomDistanceValid == obj1.IsBottomDistanceValid
+                and obj1.LeftDistance == obj1.LeftDistance
+                and obj1.IsLeftDistanceValid == obj1.IsLeftDistanceValid
+                and obj1.RightDistance == obj1.RightDistance
+                and obj1.IsRightDistanceValid == obj1.IsRightDistanceValid
             )
         return NotImplemented
 
     # endregion dunder methods
 
     # region methods
-    def get_uno_struct(self) -> GraphicCrop:
+    def get_uno_struct(self) -> TableBorderDistances:
         """
-        Gets UNO ``GraphicCrop`` from instance.
+        Gets UNO ``TableBorderDistances`` from instance.
 
         Returns:
-            GraphicCrop: ``GraphicCrop`` instance
+            TableBorderDistances: ``TableBorderDistances`` instance
         """
-        inst = GraphicCrop(
-            Top=self._get(self._props.top),
-            Bottom=self._get(self._props.bottom),
-            Left=self._get(self._props.left),
-            Right=self._get(self._props.right),
+        inst = TableBorderDistances(
+            TopDistance=self._get(self._props.top),
+            IsTopDistanceValid=self._get(self._props.valid_top),
+            BottomDistance=self._get(self._props.bottom),
+            IsBottomDistanceValid=self._get(self._props.valid_bottom),
+            LeftDistance=self._get(self._props.left),
+            IsLeftDistanceValid=self._get(self._props.valid_left),
+            RightDistance=self._get(self._props.right),
+            IsRightDistanceValid=self._get(self._props.valid_right),
         )
         return inst
 
@@ -121,7 +126,7 @@ class CropStruct(StyleBase):
         try:
             return self._supported_services_values
         except AttributeError:
-            self._supported_services_values = ("com.sun.star.text.TextGraphicObject",)
+            self._supported_services_values = ("com.sun.star.text.TextTable",)
         return self._supported_services_values
 
     # region apply()
@@ -157,30 +162,40 @@ class CropStruct(StyleBase):
     # region from_uno_struct()
     @overload
     @classmethod
-    def from_uno_struct(cls: Type[_TCropStruct], value: GraphicCrop) -> _TCropStruct:
+    def from_uno_struct(
+        cls: Type[_TTableBorderDistancesStruct], value: TableBorderDistances
+    ) -> _TTableBorderDistancesStruct:
         ...
 
     @overload
     @classmethod
-    def from_uno_struct(cls: Type[_TCropStruct], value: GraphicCrop, **kwargs) -> _TCropStruct:
+    def from_uno_struct(
+        cls: Type[_TTableBorderDistancesStruct], value: TableBorderDistances, **kwargs
+    ) -> _TTableBorderDistancesStruct:
         ...
 
     @classmethod
-    def from_uno_struct(cls: Type[_TCropStruct], value: GraphicCrop, **kwargs) -> _TCropStruct:
+    def from_uno_struct(
+        cls: Type[_TTableBorderDistancesStruct], value: TableBorderDistances, **kwargs
+    ) -> _TTableBorderDistancesStruct:
         """
-        Converts a ``GraphicCrop`` instance to a ``CropStruct``.
+        Converts a ``TableBorderDistances`` instance to a ``TableBorderDistancesStruct``.
 
         Args:
-            value (GraphicCrop): UNO ``GraphicCrop``.
+            value (TableBorderDistances): UNO ``TableBorderDistances``.
 
         Returns:
-            CropStruct: ``CropStruct`` set with ``GraphicCrop`` properties.
+            TableBorderDistancesStruct: ``TableBorderDistancesStruct`` set with ``TableBorderDistances`` properties.
         """
         inst = cls(**kwargs)
-        inst._set(inst._props.left, value.Left)
-        inst._set(inst._props.right, value.Right)
-        inst._set(inst._props.top, value.Top)
-        inst._set(inst._props.bottom, value.Bottom)
+        inst._set(inst._props.left, value.LeftDistance)
+        inst._set(inst._props.right, value.RightDistance)
+        inst._set(inst._props.top, value.TopDistance)
+        inst._set(inst._props.bottom, value.BottomDistance)
+        inst._set(inst._props.valid_left, value.IsLeftDistanceValid)
+        inst._set(inst._props.valid_right, value.IsRightDistanceValid)
+        inst._set(inst._props.valid_top, value.IsTopDistanceValid)
+        inst._set(inst._props.valid_bottom, value.IsBottomDistanceValid)
         return inst
 
     # endregion from_uno_struct()
@@ -188,16 +203,16 @@ class CropStruct(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TCropStruct], obj: object) -> _TCropStruct:
+    def from_obj(cls: Type[_TTableBorderDistancesStruct], obj: object) -> _TTableBorderDistancesStruct:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TCropStruct], obj: object, **kwargs) -> _TCropStruct:
+    def from_obj(cls: Type[_TTableBorderDistancesStruct], obj: object, **kwargs) -> _TTableBorderDistancesStruct:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TCropStruct], obj: object, **kwargs) -> _TCropStruct:
+    def from_obj(cls: Type[_TTableBorderDistancesStruct], obj: object, **kwargs) -> _TTableBorderDistancesStruct:
         """
         Gets instance from object
 
@@ -208,25 +223,25 @@ class CropStruct(StyleBase):
             PropertyNotFoundError: If ``obj`` does not have required property
 
         Returns:
-            CropStruct: ``CropStruct`` instance that represents ``obj`` crop properties.
+            TableBorderDistancesStruct: ``TableBorderDistancesStruct`` instance that represents ``obj`` crop properties.
         """
         # this nu is only used to get Property Name
         nu = cls(**kwargs)
         prop_name = nu._get_property_name()
 
         try:
-            grad = cast(CropStruct, mProps.Props.get(obj, prop_name))
+            struct = cast(TableBorderDistancesStruct, mProps.Props.get(obj, prop_name))
         except mEx.PropertyNotFoundError:
             raise mEx.PropertyNotFoundError(prop_name, f"from_obj() obj as no {prop_name} property")
 
-        return cls.from_uno_struct(grad, **kwargs)
+        return cls.from_uno_struct(struct, **kwargs)
 
     # endregion from_obj()
 
     # endregion static methods
 
     # region Style methods
-    def fmt_all(self: _TCropStruct, value: float | UnitObj) -> _TCropStruct:
+    def fmt_all(self: _TTableBorderDistancesStruct, value: float | UnitObj) -> _TTableBorderDistancesStruct:
         """
         Gets copy of instance with left, right, top, bottom set.
 
@@ -243,7 +258,7 @@ class CropStruct(StyleBase):
         cp.prop_right = value
         return cp
 
-    def fmt_top(self: _TCropStruct, value: float | UnitObj) -> _TCropStruct:
+    def fmt_top(self: _TTableBorderDistancesStruct, value: float | UnitObj) -> _TTableBorderDistancesStruct:
         """
         Gets a copy of instance with top set.
 
@@ -257,7 +272,7 @@ class CropStruct(StyleBase):
         cp.prop_top = value
         return cp
 
-    def fmt_bottom(self: _TCropStruct, value: float | UnitObj) -> _TCropStruct:
+    def fmt_bottom(self: _TTableBorderDistancesStruct, value: float | UnitObj) -> _TTableBorderDistancesStruct:
         """
         Gets a copy of instance with bottom set.
 
@@ -271,7 +286,7 @@ class CropStruct(StyleBase):
         cp.prop_bottom = value
         return cp
 
-    def fmt_left(self: _TCropStruct, value: float | UnitObj) -> _TCropStruct:
+    def fmt_left(self: _TTableBorderDistancesStruct, value: float | UnitObj) -> _TTableBorderDistancesStruct:
         """
         Gets a copy of instance with left set.
 
@@ -285,7 +300,7 @@ class CropStruct(StyleBase):
         cp.prop_left = value
         return cp
 
-    def fmt_right(self: _TCropStruct, value: float | UnitObj) -> _TCropStruct:
+    def fmt_right(self: _TTableBorderDistancesStruct, value: float | UnitObj) -> _TTableBorderDistancesStruct:
         """
         Gets a copy of instance with right set.
 
@@ -324,6 +339,7 @@ class CropStruct(StyleBase):
             self._set(self._props.left, value.get_value_mm100())
         except AttributeError:
             self._set(self._props.left, UnitConvert.convert_mm_mm100(value))
+        self._set(self._props.valid_left, True)
 
     @property
     def prop_right(self) -> UnitMM:
@@ -337,6 +353,7 @@ class CropStruct(StyleBase):
             self._set(self._props.right, value.get_value_mm100())
         except AttributeError:
             self._set(self._props.right, UnitConvert.convert_mm_mm100(value))
+        self._set(self._props.valid_right, True)
 
     @property
     def prop_top(self) -> UnitMM:
@@ -350,6 +367,7 @@ class CropStruct(StyleBase):
             self._set(self._props.top, value.get_value_mm100())
         except AttributeError:
             self._set(self._props.top, UnitConvert.convert_mm_mm100(value))
+        self._set(self._props.valid_top, True)
 
     @property
     def prop_bottom(self) -> UnitMM:
@@ -363,13 +381,23 @@ class CropStruct(StyleBase):
             self._set(self._props.bottom, value.get_value_mm100())
         except AttributeError:
             self._set(self._props.bottom, UnitConvert.convert_mm_mm100(value))
+        self._set(self._props.valid_bottom, True)
 
     @property
-    def _props(self) -> StructCropProps:
+    def _props(self) -> StructTableBorderDistancesProps:
         try:
             return self._props_internal_attributes
         except AttributeError:
-            self._props_internal_attributes = StructCropProps(left="Left", top="Top", right="Right", bottom="Bottom")
+            self._props_internal_attributes = StructTableBorderDistancesProps(
+                left="LeftDistance",
+                top="TopDistance",
+                right="RightDistance",
+                bottom="BottomDistance",
+                valid_left="IsLeftDistanceValid",
+                valid_top="IsTopDistanceValid",
+                valid_right="IsRightDistanceValid",
+                valid_bottom="IsBottomDistanceValid",
+            )
         return self._props_internal_attributes
 
     # endregion Properties
