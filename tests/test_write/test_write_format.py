@@ -45,7 +45,7 @@ def test_format(loader, run_headless) -> None:
         cursor.gotoEnd(False)
 
         Lo.delay(delay)
-        Write.style(pos=pos, length=4, styles=(InnerHighlight.empty,))
+        Write.style(pos=pos, length=4, styles=(hl.empty,))
         cursor.gotoStart(False)
         cursor.goRight(pos, False)
         cursor.goRight(4, True)

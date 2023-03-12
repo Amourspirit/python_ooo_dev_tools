@@ -12,6 +12,7 @@ Submodules
    ooodev.format.direct.common.props.area_img_props
    ooodev.format.direct.common.props.area_pattern_props
    ooodev.format.direct.common.props.border_props
+   ooodev.format.direct.common.props.cell_background_color_props
    ooodev.format.direct.common.props.cell_borders_props
    ooodev.format.direct.common.props.fill_color_props
    ooodev.format.direct.common.props.font_only_props

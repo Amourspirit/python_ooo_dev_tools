@@ -93,10 +93,10 @@ class AbstractPadding(StyleBase):
     # endregion init
 
     # region methods
-    def _on_modifing(self, event: CancelEventArgs) -> None:
+    def _on_modifing(self, source: Any, event: CancelEventArgs) -> None:
         if self._is_default_inst:
             raise ValueError("Modifying a default instance is not allowed")
-        return super()._on_modifing(event)
+        return super()._on_modifing(source, event)
 
     def _supported_services(self) -> Tuple[str, ...]:
         try:
@@ -329,6 +329,16 @@ class AbstractPadding(StyleBase):
             self._set(self._props.bottom, value.get_value_mm100())
         except AttributeError:
             self._set(self._props.bottom, UnitConvert.convert_mm_mm100(value))
+
+    @property
+    def default(self: _TAbstractPadding) -> _TAbstractPadding:  # type: ignore[misc]
+        """Gets Padding default."""
+        try:
+            return self._default_inst
+        except AttributeError:
+            self._default_inst = self.__class__(all=0.35, _cattribs=self._get_internal_cattribs())
+            self._default_inst._is_default_inst = True
+        return self._default_inst
 
     @property
     def _props(self) -> BorderProps:

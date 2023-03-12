@@ -51,7 +51,7 @@ def test_props() -> None:
 
 
 def test_default() -> None:
-    idt = LineSpacing.default
+    idt = LineSpacing().default
     assert idt.prop_value == 100
     assert idt.prop_mode == ModeKind.SINGLE
 

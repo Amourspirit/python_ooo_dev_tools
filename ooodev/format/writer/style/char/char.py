@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Tuple
+from typing import Any, Tuple
 
 from .....events.args.key_val_cancel_args import KeyValCancelArgs
 from .....meta.static_prop import static_prop
@@ -38,7 +38,7 @@ class Char(StyleBase):
     def _get_property_name(self) -> str:
         return "CharStyleName"
 
-    def on_property_setting(self, event_args: KeyValCancelArgs):
+    def on_property_setting(self, source: Any, event_args: KeyValCancelArgs):
         """
         Triggers for each property that is set
 
@@ -51,6 +51,7 @@ class Char(StyleBase):
         # this event covers apply() and resore()
         if event_args.value == "":
             event_args.value = Char.default.prop_name
+        super().on_property_setting(source, event_args)
 
     # region Style Properties
     @property

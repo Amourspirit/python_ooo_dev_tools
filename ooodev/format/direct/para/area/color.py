@@ -6,7 +6,6 @@ Module for Paragraph Fill Color.
 from __future__ import annotations
 from typing import Tuple
 
-from .....meta.static_prop import static_prop
 from .....utils import lo as mLo
 from .....utils import props as mProps
 from ....kind.format_kind import FormatKind
@@ -59,13 +58,3 @@ class Color(AbstractColor):
         except AttributeError:
             self._props_internal_attributes = FillColorProps(color="FillColor", style="FillStyle")
         return self._props_internal_attributes
-
-    @static_prop
-    def default() -> Color:  # type: ignore[misc]
-        """Gets FillColor empty. Static Property."""
-        try:
-            return Color._DEFAULT_INST
-        except AttributeError:
-            Color._DEFAULT_INST = Color(-1)
-            Color._DEFAULT_INST._is_default_inst = True
-        return Color._DEFAULT_INST

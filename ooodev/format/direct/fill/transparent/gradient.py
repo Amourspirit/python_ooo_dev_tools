@@ -172,10 +172,10 @@ class Gradient(StyleMulti):
             )
         return self._supported_services_values
 
-    def _on_modifing(self, event: CancelEventArgs) -> None:
+    def _on_modifing(self, source: Any, event: CancelEventArgs) -> None:
         if self._is_default_inst:
             raise ValueError("Modifying a default instance is not allowed")
-        return super()._on_modifing(event)
+        return super()._on_modifing(source, event)
 
     def _props_set(self, obj: object, **kwargs: Any) -> None:
         try:
@@ -185,7 +185,7 @@ class Gradient(StyleMulti):
             for err in e.errors:
                 mLo.Lo.print(f"  {err}")
 
-    def on_property_setting(self, event_args: KeyValCancelArgs) -> None:
+    def on_property_setting(self, source: Any, event_args: KeyValCancelArgs) -> None:
         """
         Triggers for each property that is set
 
@@ -197,7 +197,7 @@ class Gradient(StyleMulti):
                 # instruct Props.set to call set_default()
                 event_args.default = True
 
-        super().on_property_setting(event_args)
+        super().on_property_setting(source, event_args)
 
     # endregion Overrides
     # region from_obj()
@@ -277,20 +277,21 @@ class Gradient(StyleMulti):
             )
         return self._props_internal_attributes
 
-    @static_prop
-    def default() -> Gradient:  # type: ignore[misc]
+    @property
+    def default(self: _TGradient) -> _TGradient:
         """Gets Gradient empty. Static Property."""
         try:
-            return Gradient._DEFAULT_INST
+            return self._default_inst
         except AttributeError:
-            inst = Gradient(
+            inst = self(
                 style=GradientStyle.LINEAR,
                 step_count=0,
                 offset=Offset(0, 0),
                 angle=Angle(0),
                 border=0,
                 grad_intensity=IntensityRange(0, 0),
+                _cattribs=self._get_inner_cattribs(),
             )
             inst._is_default_inst = True
-            Gradient._DEFAULT_INST = inst
-        return Gradient._DEFAULT_INST
+            self._default_inst = inst
+        return self._default_inst

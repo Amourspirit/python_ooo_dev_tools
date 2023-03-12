@@ -60,12 +60,12 @@ class Names(StyleBase):
         if hasattr(obj, self._props.name):
             setattr(obj, self._props.name, self.prop_name)
 
-    def on_property_setting(self, event_args: KeyValCancelArgs) -> None:
+    def on_property_setting(self,source: Any, event_args: KeyValCancelArgs) -> None:
         if event_args.key == self._props.name:
             event_args.cancel = True
             event_args.handled = True
             # see bug specified in apply() method.
-        super().on_property_setting(event_args)
+        super().on_property_setting(source, event_args)
 
     def _supported_services(self) -> Tuple[str, ...]:
         try:

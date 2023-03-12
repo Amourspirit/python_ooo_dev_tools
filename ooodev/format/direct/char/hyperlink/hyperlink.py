@@ -6,15 +6,10 @@ Module for creating hyperlinks
 # region imports
 from __future__ import annotations
 from typing import Tuple, overload, Type, TypeVar
-from enum import Enum
 
-from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
-from .....meta.static_prop import static_prop
-from .....utils import lo as mLo
 from .....utils import props as mProps
 from ....kind.format_kind import FormatKind
-from ....style_base import StyleBase
 from ...common.props.hyperlink_props import HyperlinkProps
 from ...frame.hyperlink.link_to import LinkTo, TargetKind as TargetKind
 
@@ -155,14 +150,14 @@ class Hyperlink(LinkTo):
             )
         return self._props_internal_attributes
 
-    @static_prop
-    def empty() -> Hyperlink:  # type: ignore[misc]
-        """Gets Highlight empty. Static Property."""
+    @property
+    def empty(self: _THyperlink) -> _THyperlink:  # type: ignore[misc]
+        """Gets Highlight empty."""
         try:
-            return Hyperlink._EMPTY_INST
+            return self._empty_inst
         except AttributeError:
-            Hyperlink._EMPTY_INST = Hyperlink(name="", url="")
-            Hyperlink._EMPTY_INST._is_default_inst = True
-        return Hyperlink._EMPTY_INST
+            self._empty_inst = self.__class__(name="", url="", _cattribs=self._get_internal_cattribs())
+            self._empty_inst._is_default_inst = True
+        return self._empty_inst
 
     # endregion Properties

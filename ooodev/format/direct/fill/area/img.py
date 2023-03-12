@@ -217,14 +217,14 @@ class Img(StyleBase):
 
     # endregion apply()
 
-    def on_property_restore_setting(self, event_args: KeyValCancelArgs) -> None:
+    def on_property_restore_setting(self,source: Any, event_args: KeyValCancelArgs) -> None:
         if event_args.key == self._props.bitmap:
             if event_args.value is None:
                 event_args.default = True
         elif event_args.key == self._props.name:
             if not event_args.value:
                 event_args.default = True
-        return super().on_property_restore_setting(event_args)
+        return super().on_property_restore_setting(source, event_args)
 
     # endregion Overrides
 

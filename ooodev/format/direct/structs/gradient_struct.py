@@ -4,15 +4,15 @@ Module for ``Gradient`` struct.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, Type, cast, overload, TypeVar, TYPE_CHECKING
+from typing import Tuple, Type, cast, overload, TypeVar
 import json
 
+from .struct_base import StructBase
 from ....exceptions import ex as mEx
 from ....utils import props as mProps
 from ....utils.color import Color, RGB
 from ....utils.data_type.angle import Angle as Angle
 from ....utils.data_type.intensity import Intensity as Intensity
-from ...style_base import StyleBase
 from ...kind.format_kind import FormatKind
 
 
@@ -27,7 +27,7 @@ from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
 _TGradientStruct = TypeVar(name="_TGradientStruct", bound="GradientStruct")
 
 
-class GradientStruct(StyleBase):
+class GradientStruct(StructBase):
     """
     Represents UNO ``Gradient`` struct.
 

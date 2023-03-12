@@ -16,7 +16,7 @@ from ....utils import props as mProps
 from ....utils.data_type.unit_mm import UnitMM
 from ....utils.unit_convert import UnitConvert
 from ...kind.format_kind import FormatKind
-from ...style_base import StyleBase
+from .struct_base import StructBase
 from ..common.props.struct_crop_props import StructCropProps
 
 # endregion imports
@@ -24,7 +24,7 @@ from ..common.props.struct_crop_props import StructCropProps
 _TCropStruct = TypeVar(name="_TCropStruct", bound="CropStruct")
 
 
-class CropStruct(StyleBase):
+class CropStruct(StructBase):
     """
     Crop struct.
 

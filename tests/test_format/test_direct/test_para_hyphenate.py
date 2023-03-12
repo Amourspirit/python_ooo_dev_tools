@@ -39,7 +39,7 @@ def test_props() -> None:
 
 
 def test_default() -> None:
-    hy = cast(InnerHyphenation, InnerHyphenation.default)
+    hy = cast(InnerHyphenation, InnerHyphenation().default)
     assert hy.prop_auto == False
     assert hy.prop_no_caps == False
     assert hy.prop_start_chars == 2
@@ -121,7 +121,7 @@ def test_write(loader, para_text) -> None:
         cursor.gotoEnd(False)
 
         # restore cursor
-        InnerHyphenation.default.apply(cursor)
+        hy.default.apply(cursor)
         assert pp.ParaIsHyphenation == False
         assert pp.ParaHyphenationNoCaps == False
         assert pp.ParaHyphenationMaxLeadingChars == 2

@@ -7,7 +7,15 @@ if __name__ == "__main__":
 
 import uno
 from ooodev.format.calc.direct.background import Color
-from ooodev.format import CommonColor
+from ooodev.format.calc.direct.borders import (
+    Borders,
+    Shadow,
+    Side,
+    BorderLineKind,
+    ShadowLocation,
+    Padding,
+)
+from ooodev.format import CommonColor, Styler
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 
@@ -32,9 +40,17 @@ def test_calc_background(loader) -> None:
         Calc.set_val(value="Hello", sheet=sheet, cell_obj=cell_obj)
         cell = Calc.get_cell(sheet, cell_obj)
         color = Color(CommonColor.LIGHT_BLUE)
-        color.apply(cell)
+        cb = Borders(border_side=Side())
+        # color.apply(cell)
+        Styler.apply(cell, color, cb)
         cp = cast("CellProperties", cell)
         assert cp.CellBackColor == CommonColor.LIGHT_BLUE
+
+        color = color.empty
+        clr = color.empty
+        clr.apply(cell)
+        cp = cast("CellProperties", cell)
+        assert cp.CellBackColor == -1
 
         rng_obj = Calc.get_range_obj("A3:F8")
         cr = Calc.get_cell_range(sheet, rng_obj)

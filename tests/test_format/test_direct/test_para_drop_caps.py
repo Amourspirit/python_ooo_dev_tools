@@ -89,7 +89,7 @@ def test_write(loader, para_text) -> None:
             assert inner_dc == pp.DropCapFormat
             cursor_p.gotoEnd(False)
 
-        InnerDropCaps.default.apply(cursor_p.TextParagraph)
+        dc.default.apply(cursor_p.TextParagraph)
         pp = cast("ParagraphProperties", cursor_p.TextParagraph)
         assert pp.DropCapCharStyleName == ""
         assert pp.DropCapWholeWord == False

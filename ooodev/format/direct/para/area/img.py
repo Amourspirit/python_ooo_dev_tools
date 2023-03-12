@@ -135,7 +135,7 @@ class Img(StyleMulti):
             for err in e.errors:
                 mLo.Lo.print(f"  {err}")
 
-    def on_property_restore_setting(self, event_args: KeyValCancelArgs) -> None:
+    def on_property_restore_setting(self, source: Any, event_args: KeyValCancelArgs) -> None:
         # mLo.Lo.print(f'Restoring "{event_args.key}"')
         defaults = ("ParaBackColor", "ParaBackGraphicLocation", "ParaBackTransparent")
         if event_args.key in defaults:
@@ -146,11 +146,11 @@ class Img(StyleMulti):
             if not event_args.value:
                 event_args.cancel = True
 
-        return super().on_property_restore_setting(event_args)
+        return super().on_property_restore_setting(source, event_args)
 
-    def on_property_setting(self, event_args: KeyValCancelArgs) -> None:
+    def on_property_setting(self, source: Any, event_args: KeyValCancelArgs) -> None:
         # mLo.Lo.print(f'Setting "{event_args.key}"')
-        return super().on_property_setting(event_args)
+        return super().on_property_setting(source, event_args)
 
     # endregion Overrides
 

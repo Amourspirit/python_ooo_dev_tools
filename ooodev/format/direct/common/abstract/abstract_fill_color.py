@@ -59,10 +59,10 @@ class AbstractColor(StyleBase):
 
     # region Overrides
 
-    def _on_modifing(self, event: CancelEventArgs) -> None:
+    def _on_modifing(self, source: Any, event: CancelEventArgs) -> None:
         if self._is_default_inst:
             raise ValueError("Modifying a default instance is not allowed")
-        return super()._on_modifing(event)
+        return super()._on_modifing(source, event)
 
     # region apply()
 
@@ -159,5 +159,15 @@ class AbstractColor(StyleBase):
     @property
     def _props(self) -> FillColorProps:
         raise NotImplementedError
+
+    @property
+    def default(self: _TAbstractColor) -> _TAbstractColor:
+        """Gets Color empty."""
+        try:
+            return self._default_inst
+        except AttributeError:
+            self._default_inst = self.__class__(color=-1, _cattribs=self._get_internal_cattribs())
+            self._default_inst._is_default_inst = True
+        return self._default_inst
 
     # endregion Properties

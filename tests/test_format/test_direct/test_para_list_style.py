@@ -61,7 +61,7 @@ def test_props() -> None:
 
 def test_default() -> None:
     # brk = cast(Breaks, Breaks.default)
-    ls = ParaListStyle.default
+    ls = ParaListStyle().default
     assert ls._get("NumberingStyleName") == ""
     assert ls._get("NumberingStartValue") == -1
     assert ls._get("ParaIsNumberingRestart") == False
@@ -79,6 +79,7 @@ def test_write(loader) -> None:
     try:
         cursor = Write.get_cursor(doc)
         ls = ParaListStyle(list_style=StyleListKind.LIST_01)
+        ls_default = ls.default.copy()
         ls.apply(cursor)
         start_pos = 0
         for i in range(1, 6):
@@ -89,7 +90,7 @@ def test_write(loader) -> None:
         assert pp.NumberingStyleName == StyleListKind.LIST_01.value
         cursor.gotoEnd(False)
 
-        ParaListStyle.default.apply(cursor)
+        ls_default.apply(cursor)
         Write.append_para(cursor, "Moving on...")
 
         start_pos = Write.get_position(cursor)
@@ -102,7 +103,7 @@ def test_write(loader) -> None:
         assert pp.NumberingStyleName == StyleListKind.NUM_123.value
         cursor.gotoEnd(False)
 
-        ParaListStyle.default.apply(cursor)
+        ls_default.apply(cursor)
         Write.append_para(cursor, "Moving on...")
 
         start_pos = Write.get_position(cursor)
@@ -135,7 +136,7 @@ def test_write(loader) -> None:
         Write.append_para(cursor=cursor, text="Num Point 8")
         Write.append_para(cursor=cursor, text="Num Point 9")
 
-        ParaListStyle.default.apply(cursor)
+        ls_default.apply(cursor)
         Write.append_para(cursor, "Moving on...")
 
         start_pos = Write.get_position(cursor)
@@ -151,7 +152,7 @@ def test_write(loader) -> None:
         assert pp.NumberingStyleName == StyleListKind.NUM_ABC.value
         cursor.gotoEnd(False)
 
-        ParaListStyle.default.apply(cursor)
+        ls_default.apply(cursor)
         Write.append_para(cursor, "Moving on...")
 
         start_pos = Write.get_position(cursor)
@@ -167,7 +168,7 @@ def test_write(loader) -> None:
         assert pp.NumberingStyleName == StyleListKind.NUM_abc.value
         cursor.gotoEnd(False)
 
-        ParaListStyle.default.apply(cursor)
+        ls_default.apply(cursor)
         Write.append_para(cursor, "Moving on...")
 
         start_pos = Write.get_position(cursor)
@@ -183,7 +184,7 @@ def test_write(loader) -> None:
         assert pp.NumberingStyleName == StyleListKind.NUM_IVX.value
         cursor.gotoEnd(False)
 
-        ParaListStyle.default.apply(cursor)
+        ls_default.apply(cursor)
         Write.append_para(cursor, "Moving on...")
 
         start_pos = Write.get_position(cursor)
@@ -199,7 +200,7 @@ def test_write(loader) -> None:
         assert pp.NumberingStyleName == StyleListKind.NUM_ivx.value
         cursor.gotoEnd(False)
 
-        ParaListStyle.default.apply(cursor)
+        ls_default.apply(cursor)
         Write.append_para(cursor, "Moving on...")
 
         start_pos = Write.get_position(cursor)
@@ -215,7 +216,7 @@ def test_write(loader) -> None:
         assert pp.NumberingStyleName == StyleListKind.LIST_02.value
         cursor.gotoEnd(False)
 
-        ParaListStyle.default.apply(cursor)
+        ls_default.apply(cursor)
         Write.append_para(cursor, "Moving on...")
 
         start_pos = Write.get_position(cursor)
@@ -231,7 +232,7 @@ def test_write(loader) -> None:
         assert pp.NumberingStyleName == StyleListKind.LIST_03.value
         cursor.gotoEnd(False)
 
-        ParaListStyle.default.apply(cursor)
+        ls_default.apply(cursor)
         Write.append_para(cursor, "Moving on...")
 
         start_pos = Write.get_position(cursor)
@@ -247,7 +248,7 @@ def test_write(loader) -> None:
         assert pp.NumberingStyleName == StyleListKind.LIST_04.value
         cursor.gotoEnd(False)
 
-        ParaListStyle.default.apply(cursor)
+        ls_default.apply(cursor)
         Write.append_para(cursor, "Moving on...")
 
         start_pos = Write.get_position(cursor)
@@ -263,7 +264,7 @@ def test_write(loader) -> None:
         assert pp.NumberingStyleName == StyleListKind.LIST_05.value
         cursor.gotoEnd(False)
 
-        ParaListStyle.default.apply(cursor)
+        ls_default.apply(cursor)
 
         Lo.delay(delay)
     finally:

@@ -98,8 +98,7 @@ class Tabs(ParaStyleBaseMulti):
         Returns:
             Tabs | None: ``Tab`` instance if found; Otherwise, ``None``
         """
-        inst = super(Tabs, cls).__new__(cls)
-        inst.__init__(style_name=style_name, style_family=style_family)
+        inst = cls(style_name=style_name, style_family=style_family)
 
         direct = InnerTabs.find(obj=inst.get_style_props(doc), position=position)
         if direct is None:

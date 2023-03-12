@@ -4,16 +4,17 @@ Module for Cell Properties Cell Back Color.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, overload, Type, TypeVar
+from typing import Any, Tuple, overload, Type, TypeVar
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
 from .....utils import props as mProps
-from .....meta.static_prop import static_prop
+from .....meta.class_property_readonly import ClassPropertyReadonly
 from .....utils import lo as mLo
 from .....utils import color as mColor
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleBase
+from ...common.props.cell_background_color_props import CellBackgroundColorProps
 
 _TColor = TypeVar(name="_TColor", bound="Color")
 
@@ -25,6 +26,7 @@ class Color(StyleBase):
     .. versionadded:: 0.9.0
     """
 
+    # region Init
     def __init__(self, color: mColor.Color = -1) -> None:
         """
         Constructor
@@ -35,30 +37,23 @@ class Color(StyleBase):
         Returns:
             None:
         """
+        super().__init__()
+        self.prop_color = color
 
-        init_vals = {}
-        if color >= 0:
-            init_vals["CellBackColor"] = color
-            init_vals["IsCellBackgroundTransparent"] = False
-        else:
-            init_vals["CellBackColor"] = -1
-            init_vals["IsCellBackgroundTransparent"] = True
+    # endregion Init
 
-        super().__init__(**init_vals)
-
+    # region overrides
     def _supported_services(self) -> Tuple[str, ...]:
-        """
-        Gets a tuple of supported services (``com.sun.star.table.CellProperties``,)
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = ("com.sun.star.table.CellProperties",)
+        return self._supported_services_values
 
-        Returns:
-            Tuple[str, ...]: Supported services
-        """
-        return ("com.sun.star.table.CellProperties",)
-
-    def _on_modifing(self, event: CancelEventArgs) -> None:
+    def _on_modifing(self, source: Any, event: CancelEventArgs) -> None:
         if self._is_default_inst:
             raise ValueError("Modifying a default instance is not allowed")
-        return super()._on_modifing(event)
+        return super()._on_modifing(source, event)
 
     # region apply()
 
@@ -84,7 +79,9 @@ class Color(StyleBase):
                 mLo.Lo.print(f"  {err}")
 
     # endregion apply()
+    # endregion overrides
 
+    # region Static Methods
     # region from_obj()
     @overload
     @classmethod
@@ -114,20 +111,23 @@ class Color(StyleBase):
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
-        color = mProps.Props.get(obj, "CellBackColor", None)
-        bg = mProps.Props.get(obj, "IsCellBackgroundTransparent", None)
+        color = mProps.Props.get(obj, inst._props.color, None)
+        if inst._props.is_transparent:
+            bg = mProps.Props.get(obj, inst._props.is_transparent, None)
+        else:
+            bg = None
         if not color is None:
-            inst._set("CellBackColor", int(color))
+            inst._set(inst._props.color, int(color))
         if not bg is None:
-            inst._set("IsCellBackgroundTransparent", bool(bg))
+            inst._set(inst._props.is_transparent, bool(bg))
 
         return inst
 
     # endregion from_obj()
-    # region set styles
 
-    # endregion set styles
+    # endregion Static Methods
 
+    # region Properties
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
@@ -140,32 +140,37 @@ class Color(StyleBase):
     @property
     def prop_color(self) -> mColor.Color:
         """Gets/Sets color"""
-        return self._get("CellBackColor")
+        return self._get(self._props.color)
 
     @prop_color.setter
     def prop_color(self, value: mColor.Color):
         if value >= 0:
-            self._set("CellBackColor", value)
-            self._set("IsCellBackgroundTransparent", False)
+            self._set(self._props.color, value)
+            if self._props.is_transparent:
+                self._set(self._props.is_transparent, False)
         else:
-            self._set("CellBackColor", -1)
-            self._set("IsCellBackgroundTransparent", True)
+            self._set(self._props.color, -1)
+            if self._props.is_transparent:
+                self._set(self._props.is_transparent, True)
 
     @property
-    def prop_is_bg_transparent(self) -> bool:
-        """Gets/Sets if Background color is Transparent"""
-        return self._get("IsCellBackgroundTransparent")
-
-    @prop_is_bg_transparent.setter
-    def prop_is_bg_transparent(self, value: bool):
-        self._set("IsCellBackgroundTransparent", value)
-
-    @static_prop
-    def empty() -> Color:  # type: ignore[misc]
-        """Gets BackColor empty. Static Property."""
+    def _props(self) -> CellBackgroundColorProps:
         try:
-            return Color._EMPTY_INST
+            return self._props_internal_attributes
         except AttributeError:
-            Color._EMPTY_INST = Color()
-            Color._EMPTY_INST._is_default_inst = True
-        return Color._EMPTY_INST
+            self._props_internal_attributes = CellBackgroundColorProps(
+                color="CellBackColor", is_transparent="IsCellBackgroundTransparent"
+            )
+        return self._props_internal_attributes
+
+    @property
+    def empty(self: _TColor) -> _TColor:  # type: ignore[misc]
+        """Gets BackColor empty."""
+        try:
+            return self._empty_inst
+        except AttributeError:
+            self._empty_inst = self.__class__(_cattribs=self._get_internal_cattribs())
+            self._empty_inst._is_default_inst = True
+        return self._empty_inst
+
+    # endregion Properties

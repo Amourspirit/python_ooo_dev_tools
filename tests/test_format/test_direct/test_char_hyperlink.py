@@ -110,7 +110,7 @@ def test_hyperlink(loader) -> None:
         assert cp.VisitedCharStyleName == "Visited Internet Link"
         cursor.gotoEnd(False)
 
-        Write.style_left(cursor=cursor, pos=pos, styles=(Hyperlink.empty,))
+        Write.style_left(cursor=cursor, pos=pos, styles=(hl.empty,))
 
         cursor.gotoEnd(False)
         cursor.goLeft(31, True)

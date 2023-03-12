@@ -4,7 +4,7 @@ Module for managing paragraph padding.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, cast, Type, TypeVar, overload
+from typing import Any, Tuple, cast, Type, TypeVar, overload
 
 from ....events.args.cancel_event_args import CancelEventArgs
 from ....exceptions import ex as mEx
@@ -36,10 +36,10 @@ class Padding(AbstractPadding):
             )
         return self._supported_services_values
 
-    def _on_modifing(self, event: CancelEventArgs) -> None:
+    def _on_modifing(self, source: Any, event: CancelEventArgs) -> None:
         if self._is_default_inst:
             raise ValueError("Modifying a default instance is not allowed")
-        return super()._on_modifing(event)
+        return super()._on_modifing(source, event)
 
     # region from_obj()
     @overload
@@ -90,15 +90,5 @@ class Padding(AbstractPadding):
         except AttributeError:
             self._format_kind_prop = FormatKind.PARA
         return self._format_kind_prop
-
-    @static_prop
-    def default() -> Padding:  # type: ignore[misc]
-        """Gets Padding default. Static Property."""
-        try:
-            return Padding._DEFAULT_INST
-        except AttributeError:
-            Padding._DEFAULT_INST = Padding(all=0.35)
-            Padding._DEFAULT_INST._is_default_inst = True
-        return Padding._DEFAULT_INST
 
     # endregion properties

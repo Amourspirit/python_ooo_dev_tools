@@ -35,7 +35,7 @@ def test_indent_props() -> None:
 
 
 def test_indent_default() -> None:
-    idt = cast(InnerIndent, InnerIndent.default)
+    idt = InnerIndent().default
     assert idt.prop_after.value == 0.0
     assert idt.prop_before.value == 0.0
     assert idt.prop_first.value == 0.0
