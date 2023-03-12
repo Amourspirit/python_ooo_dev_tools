@@ -107,7 +107,7 @@ class Pattern(StyleMulti):
             return
         super().apply(obj, **kwargs)
 
-    def on_property_restore_setting(self, event_args: KeyValCancelArgs) -> None:
+    def on_property_restore_setting(self, source: Any, event_args: KeyValCancelArgs) -> None:
         defaults = ("ParaBackColor", "ParaBackGraphicLocation", "ParaBackTransparent")
         if event_args.key in defaults:
             default = mProps.Props.get_default(event_args.event_data, event_args.key)
@@ -117,7 +117,7 @@ class Pattern(StyleMulti):
             if not event_args.value:
                 event_args.cancel = True
 
-        return super().on_property_restore_setting(event_args)
+        return super().on_property_restore_setting(source, event_args)
 
     # endregion Overrides
 

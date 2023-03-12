@@ -8,7 +8,7 @@ from typing import Any, Tuple, Type, cast, overload, TypeVar
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
-from .....meta.static_prop import static_prop
+from .....meta.class_property_readonly import ClassPropertyReadonly
 from .....utils import lo as mLo
 from .....utils import props as mProps
 from .....utils.color import Color
@@ -140,10 +140,10 @@ class FontEffects(StyleBase):
             )
         return self._supported_services_values
 
-    def _on_modifing(self, event: CancelEventArgs) -> None:
+    def _on_modifing(self, source: Any, event: CancelEventArgs) -> None:
         if self._is_default_inst:
             raise ValueError("Modifying a default instance is not allowed")
-        return super()._on_modifing(event)
+        return super()._on_modifing(source, event)
 
     # region apply()
     @overload
@@ -754,13 +754,14 @@ class FontEffects(StyleBase):
             return
         self._set("CharShadowed", value)
 
-    @static_prop
-    def default() -> FontEffects:  # type: ignore[misc]
+    @ClassPropertyReadonly
+    @classmethod
+    def default(cls: Type[_TFontEffects]) -> _TFontEffects:  # type: ignore[misc]
         """Gets Font Position default. Static Property."""
         try:
-            return FontEffects._DEFAULT_INST
+            return cls._DEFAULT_INST
         except AttributeError:
-            fe = FontEffects()
+            fe = cls()
             fe._set("CharColor", -1)
             fe._set("CharOverline", 0)
             fe._set("CharOverlineColor", -1)
@@ -777,7 +778,7 @@ class FontEffects(StyleBase):
             fe._set("CharCaseMap", 0)
             fe._set("CharRelief", 0)
             fe._is_default_inst = True
-            FontEffects._DEFAULT_INST = fe
-        return FontEffects._DEFAULT_INST
+            cls._DEFAULT_INST = fe
+        return cls._DEFAULT_INST
 
     # endregion Prop Properties

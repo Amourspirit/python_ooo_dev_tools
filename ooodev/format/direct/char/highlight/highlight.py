@@ -4,11 +4,11 @@ Module for handeling character highlight.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, Type, overload, TypeVar
+from typing import Any, Tuple, Type, overload, TypeVar
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
-from .....meta.static_prop import static_prop
+from .....meta.class_property_readonly import ClassPropertyReadonly
 from .....utils import lo as mLo
 from .....utils import props as mProps
 from .....utils.color import Color
@@ -56,10 +56,10 @@ class Highlight(StyleBase):
             )
         return self._supported_services_values
 
-    def _on_modifing(self, event: CancelEventArgs) -> None:
+    def _on_modifing(self, source: Any, event: CancelEventArgs) -> None:
         if self._is_default_inst:
             raise ValueError("Modifying a default instance is not allowed")
-        return super()._on_modifing(event)
+        return super()._on_modifing(source, event)
 
     # region apply()
 
@@ -164,12 +164,13 @@ class Highlight(StyleBase):
             self._set("CharBackColor", -1)
             self._set("CharBackTransparent", True)
 
-    @static_prop
-    def empty() -> Highlight:  # type: ignore[misc]
+    @ClassPropertyReadonly
+    @classmethod
+    def empty(cls: Type[_THighlight]) -> _THighlight:  # type: ignore[misc]
         """Gets Highlight empty. Static Property."""
         try:
-            return Highlight._EMPTY_INST
+            return cls._EMPTY_INST
         except AttributeError:
-            Highlight._EMPTY_INST = Highlight()
-            Highlight._EMPTY_INST._is_default_inst = True
-        return Highlight._EMPTY_INST
+            cls._EMPTY_INST = cls()
+            cls._EMPTY_INST._is_default_inst = True
+        return cls._EMPTY_INST

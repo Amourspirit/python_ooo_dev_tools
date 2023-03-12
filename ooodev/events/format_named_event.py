@@ -44,3 +44,5 @@ class FormatNamedEvent:
     """Style Removing. Generally when style is calling ``_remove()``."""
     STYLE_UPDATING = "format_style_updating"
     """Style Updating. Generall when style is calling ``_update``"""
+    STYLE_COPYING = "format_style_copying"
+    """Style Copying. Generall when style is calling ``copy``"""

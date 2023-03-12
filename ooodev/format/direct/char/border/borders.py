@@ -5,27 +5,26 @@ Module for managing character borders.
 """
 # region imports
 from __future__ import annotations
-from typing import Tuple, cast, overload, TypeVar
+from typing import Any, Tuple, cast, overload, TypeVar, Type
 
 import uno
-
-from .....events.args.cancel_event_args import CancelEventArgs
-from .....exceptions import ex as mEx
-from .....meta.static_prop import static_prop
-from .....utils import lo as mLo
-from ....style_base import StyleMulti
-
-from ....kind.border_kind import BorderKind
-from ....kind.format_kind import FormatKind
-from ...structs.side import Side as Side, LineSize as LineSize
-from .shadow import Shadow as InnerShadow
-from .padding import Padding as InnerPadding
-from .sides import Sides
-
 from ooo.dyn.table.border_line import BorderLine as BorderLine
 from ooo.dyn.table.border_line2 import BorderLine2 as BorderLine2
 from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
+
+from .....events.args.cancel_event_args import CancelEventArgs
+from .....exceptions import ex as mEx
+from .....meta.class_property_readonly import ClassPropertyReadonly
+from .....utils import lo as mLo
+from ....kind.border_kind import BorderKind
+from ....kind.format_kind import FormatKind
+from ....style_base import StyleMulti
+from ...structs.side import Side as Side, LineSize as LineSize
+from .padding import Padding as InnerPadding
+from .shadow import Shadow as InnerShadow
+from .sides import Sides
+
 
 # endregion imports
 
@@ -243,10 +242,10 @@ class Borders(StyleMulti):
             )
         return self._supported_services_values
 
-    def _on_modifing(self, event: CancelEventArgs) -> None:
+    def _on_modifing(self, source: Any, event: CancelEventArgs) -> None:
         if self._is_default_inst:
             raise ValueError("Modifying a default instance is not allowed")
-        return super()._on_modifing(event)
+        return super()._on_modifing(source, event)
 
     # region apply()
     @overload
@@ -311,30 +310,32 @@ class Borders(StyleMulti):
             self._direct_inner_shadow = cast(InnerShadow, self._get_style_inst("shadow"))
         return self._direct_inner_shadow
 
-    @static_prop
-    def default() -> Borders:  # type: ignore[misc]
+    @ClassPropertyReadonly
+    @classmethod
+    def default(cls: Type[_TBorders]) -> _TBorders:  # type: ignore[misc]
         """Gets Default Border. Static Property"""
         try:
-            return Borders._DEFAULT_INST
+            return cls._DEFAULT_INST
         except AttributeError:
-            Borders._DEFAULT_INST = Borders(all=Side.empty, padding=InnerPadding.default, shadow=InnerShadow.empty)
-            Borders._DEFAULT_INST._is_default_inst = True
-        return Borders._DEFAULT_INST
+            cls._DEFAULT_INST = cls(all=Side.empty, padding=InnerPadding.default, shadow=InnerShadow.empty)
+            cls._DEFAULT_INST._is_default_inst = True
+        return cls._DEFAULT_INST
 
-    @static_prop
-    def empty() -> Borders:  # type: ignore[misc]
+    @ClassPropertyReadonly
+    @classmethod
+    def empty(cls: Type[_TBorders]) -> _TBorders:  # type: ignore[misc]
         """Gets Empty Border. Static Property. When style is applied formatting is removed."""
         try:
-            return Borders._EMPTY_INST
+            return cls._EMPTY_INST
         except AttributeError:
-            Borders._EMPTY_INST = Borders(
+            cls._EMPTY_INST = cls(
                 all=Side.empty,
                 vertical=Side.empty,
                 horizontal=Side.empty,
                 shadow=InnerShadow.empty,
                 padding=InnerPadding.default,
             )
-            Borders._EMPTY_INST._is_default_inst = True
-        return Borders._EMPTY_INST
+            cls._EMPTY_INST._is_default_inst = True
+        return cls._EMPTY_INST
 
     # endregion Properties

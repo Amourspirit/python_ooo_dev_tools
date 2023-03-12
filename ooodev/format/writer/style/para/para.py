@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Tuple
+from typing import Any, Tuple
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....events.args.key_val_cancel_args import KeyValCancelArgs
@@ -32,10 +32,10 @@ class Para(StyleBase):
             self._supported_services_values = ("com.sun.star.style.ParagraphProperties",)
         return self._supported_services_values
 
-    def _on_modifing(self, event: CancelEventArgs) -> None:
+    def _on_modifing(self, source: Any, event: CancelEventArgs) -> None:
         if self._is_default_inst:
             raise ValueError("Modifying a default instance is not allowed")
-        return super()._on_modifing(event)
+        return super()._on_modifing(source, event)
 
     def _get_property_name(self) -> str:
         try:
@@ -44,7 +44,7 @@ class Para(StyleBase):
             self._property_name = "ParaStyleName"
         return self._property_name
 
-    def on_property_setting(self, event_args: KeyValCancelArgs):
+    def on_property_setting(self, source: Any, event_args: KeyValCancelArgs):
         """
         Triggers for each property that is set
 
@@ -57,6 +57,7 @@ class Para(StyleBase):
         # this event covers apply() and resore()
         if event_args.value == "":
             event_args.value = Para.default.prop_name
+        super().on_property_setting(source, event_args)
 
     # region Style Properties
     @property

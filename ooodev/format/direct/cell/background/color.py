@@ -4,7 +4,7 @@ Module for Cell Properties Cell Back Color.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, cast, overload, Type, TypeVar
+from typing import Any, Tuple, overload, Type, TypeVar
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
@@ -26,6 +26,7 @@ class Color(StyleBase):
     .. versionadded:: 0.9.0
     """
 
+    # region Init
     def __init__(self, color: mColor.Color = -1) -> None:
         """
         Constructor
@@ -39,6 +40,8 @@ class Color(StyleBase):
         super().__init__()
         self.prop_color = color
 
+    # endregion Init
+
     # region overrides
     def _supported_services(self) -> Tuple[str, ...]:
         try:
@@ -47,10 +50,10 @@ class Color(StyleBase):
             self._supported_services_values = ("com.sun.star.table.CellProperties",)
         return self._supported_services_values
 
-    def _on_modifing(self, event: CancelEventArgs) -> None:
+    def _on_modifing(self, source: Any, event: CancelEventArgs) -> None:
         if self._is_default_inst:
             raise ValueError("Modifying a default instance is not allowed")
-        return super()._on_modifing(event)
+        return super()._on_modifing(source, event)
 
     # region apply()
 
@@ -160,15 +163,14 @@ class Color(StyleBase):
             )
         return self._props_internal_attributes
 
-    @ClassPropertyReadonly
-    @classmethod
-    def empty(cls: Type[_TColor]) -> _TColor:  # type: ignore[misc]
-        """Gets BackColor empty. Static Property."""
+    @property
+    def empty(self: Type[_TColor]) -> _TColor:  # type: ignore[misc]
+        """Gets BackColor empty."""
         try:
-            return Color._EMPTY_INST
+            return self._empty_inst
         except AttributeError:
-            Color._EMPTY_INST = cls()
-            Color._EMPTY_INST._is_default_inst = True
-        return Color._EMPTY_INST
+            self._empty_inst = self.__class__(_cattribs=self._get_internal_cattribs())
+            self._empty_inst._is_default_inst = True
+        return self._empty_inst
 
     # endregion Properties

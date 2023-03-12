@@ -12,7 +12,7 @@ from com.sun.star.beans import XPropertySet
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....events.args.key_val_cancel_args import KeyValCancelArgs
 from .....exceptions import ex as mEx
-from .....meta.static_prop import static_prop
+from .....meta.class_property_readonly import ClassPropertyReadonly
 from .....proto.unit_obj import UnitObj
 from .....utils import info as mInfo
 from .....utils import lo as mLo
@@ -25,6 +25,7 @@ from ...common.props.font_only_props import FontOnlyProps
 from ...structs.locale_struct import LocaleStruct
 
 _TFontOnly = TypeVar(name="_TFontOnly", bound="FontOnly")
+_TFontLang = TypeVar(name="_TFontLang", bound="FontLang")
 
 
 class FontLang(LocaleStruct):
@@ -55,13 +56,14 @@ class FontLang(LocaleStruct):
             for err in e.errors:
                 mLo.Lo.print(f"  {err}")
 
-    def _on_modifing(self, event: CancelEventArgs) -> None:
+    def _on_modifing(self, source: Any, event: CancelEventArgs) -> None:
         if self._is_default_inst:
             raise ValueError("Modifying a default instance is not allowed")
-        return super()._on_setting(event)
+        return super()._on_modifing(source, event)
 
-    @static_prop
-    def default() -> FontLang:  # type: ignore[misc]
+    @ClassPropertyReadonly
+    @classmethod
+    def default(cls: Type[_TFontLang]) -> _TFontLang:  # type: ignore[misc]
         """
         Gets ``Lang`` default.
 
@@ -69,9 +71,9 @@ class FontLang(LocaleStruct):
 
         Static Property."""
         try:
-            return FontLang._DEFAULT_INSTANCE
+            return cls._DEFAULT_INSTANCE
         except AttributeError:
-            inst = FontLang()
+            inst = cls()
             s = cast(
                 str, mInfo.Info.get_config(node_str="ooSetupSystemLocale", node_path="/org.openoffice.Setup/L10N")
             )
@@ -94,8 +96,8 @@ class FontLang(LocaleStruct):
                 inst._set("Country", country)
                 inst._set("Variant", s)
                 inst._is_default_inst = True
-            FontLang._DEFAULT_INSTANCE = inst
-        return FontLang._DEFAULT_INSTANCE
+            cls._DEFAULT_INSTANCE = inst
+        return cls._DEFAULT_INSTANCE
 
 
 class FontOnly(StyleMulti):
@@ -151,16 +153,16 @@ class FontOnly(StyleMulti):
             )
         return self._supported_services_values
 
-    def _on_modifing(self, event: CancelEventArgs) -> None:
+    def _on_modifing(self, source: Any, event: CancelEventArgs) -> None:
         if self._is_default_inst:
             raise ValueError("Setting properties on a default instance is not allowed")
-        return super()._on_setting(event)
+        return super()._on_modifing(source, event)
 
-    def on_property_setting(self, event_args: KeyValCancelArgs) -> None:
+    def on_property_setting(self, source: Any, event_args: KeyValCancelArgs) -> None:
         if event_args.key == self._props.style_name:
             if not event_args.value:
                 event_args.default = True
-        return super().on_property_setting(event_args)
+        return super().on_property_setting(source, event_args)
 
     # region apply()
     @overload
@@ -382,8 +384,11 @@ class FontOnly(StyleMulti):
 
     # endregion Prop Properties
 
-    @static_prop
-    def default() -> FontOnly:  # type: ignore[misc]
+    # region Static Properties
+
+    @ClassPropertyReadonly
+    @classmethod
+    def default(cls: Type[_TFontOnly]) -> _TFontOnly:  # type: ignore[misc]
         """
         Gets ``Font`` default.
 
@@ -391,10 +396,10 @@ class FontOnly(StyleMulti):
 
         Static Property."""
         try:
-            return FontOnly._DEFAULT_STANDARD
+            return cls._DEFAULT_STANDARD
         except AttributeError:
 
-            inst = FontOnly()
+            inst = cls()
 
             props = mLo.Lo.qi(
                 XPropertySet,
@@ -412,11 +417,12 @@ class FontOnly(StyleMulti):
             lang = FontLang.default.copy()
             inst._set_style("lang", lang, *lang.get_attrs())
             inst._is_default_inst = True
-            FontOnly._DEFAULT_STANDARD = inst
-        return FontOnly._DEFAULT_STANDARD
+            cls._DEFAULT_STANDARD = inst
+        return cls._DEFAULT_STANDARD
 
-    @static_prop
-    def default_caption() -> FontOnly:  # type: ignore[misc]
+    @ClassPropertyReadonly
+    @classmethod
+    def default_caption(cls: Type[_TFontOnly]) -> _TFontOnly:  # type: ignore[misc]
         """
         Gets ``Font`` caption default.
 
@@ -424,10 +430,10 @@ class FontOnly(StyleMulti):
 
         Static Property."""
         try:
-            return FontOnly._DEFAULT_CAPTION
+            return cls._DEFAULT_CAPTION
         except AttributeError:
 
-            inst = FontOnly()
+            inst = cls()
 
             props = mLo.Lo.qi(
                 XPropertySet,
@@ -445,11 +451,12 @@ class FontOnly(StyleMulti):
             lang = FontLang.default.copy()
             inst._set_style("lang", lang, *lang.get_attrs())
             inst._is_default_inst = True
-            FontOnly._DEFAULT_CAPTION = inst
-        return FontOnly._DEFAULT_CAPTION
+            cls._DEFAULT_CAPTION = inst
+        return cls._DEFAULT_CAPTION
 
-    @static_prop
-    def default_heading() -> FontOnly:  # type: ignore[misc]
+    @ClassPropertyReadonly
+    @classmethod
+    def default_heading(cls: Type[_TFontOnly]) -> _TFontOnly:  # type: ignore[misc]
         """
         Gets ``Font`` heading default.
 
@@ -457,10 +464,10 @@ class FontOnly(StyleMulti):
 
         Static Property."""
         try:
-            return FontOnly._DEFAULT_HEADING
+            return cls._DEFAULT_HEADING
         except AttributeError:
 
-            inst = FontOnly()
+            inst = cls()
 
             props = mLo.Lo.qi(
                 XPropertySet,
@@ -478,11 +485,12 @@ class FontOnly(StyleMulti):
             lang = FontLang.default.copy()
             inst._set_style("lang", lang, *lang.get_attrs())
             inst._is_default_inst = True
-            FontOnly._DEFAULT_HEADING = inst
-        return FontOnly._DEFAULT_HEADING
+            cls._DEFAULT_HEADING = inst
+        return cls._DEFAULT_HEADING
 
-    @static_prop
-    def default_list() -> FontOnly:  # type: ignore[misc]
+    @ClassPropertyReadonly
+    @classmethod
+    def default_list(cls: Type[_TFontOnly]) -> _TFontOnly:  # type: ignore[misc]
         """
         Gets ``Font`` list default.
 
@@ -490,10 +498,10 @@ class FontOnly(StyleMulti):
 
         Static Property."""
         try:
-            return FontOnly._DEFAULT_LIST
+            return cls._DEFAULT_LIST
         except AttributeError:
 
-            inst = FontOnly()
+            inst = cls()
 
             props = mLo.Lo.qi(
                 XPropertySet,
@@ -511,11 +519,12 @@ class FontOnly(StyleMulti):
             lang = FontLang.default.copy()
             inst._set_style("lang", lang, *lang.get_attrs())
             inst._is_default_inst = True
-            FontOnly._DEFAULT_LIST = inst
-        return FontOnly._DEFAULT_LIST
+            cls._DEFAULT_LIST = inst
+        return cls._DEFAULT_LIST
 
-    @static_prop
-    def default_index() -> FontOnly:  # type: ignore[misc]
+    @ClassPropertyReadonly
+    @classmethod
+    def default_index(cls: Type[_TFontOnly]) -> _TFontOnly:  # type: ignore[misc]
         """
         Gets ``Font`` index default.
 
@@ -523,10 +532,10 @@ class FontOnly(StyleMulti):
 
         Static Property."""
         try:
-            return FontOnly._DEFAULT_INDEX
+            return cls._DEFAULT_INDEX
         except AttributeError:
 
-            inst = FontOnly()
+            inst = cls()
 
             props = mLo.Lo.qi(
                 XPropertySet,
@@ -544,5 +553,7 @@ class FontOnly(StyleMulti):
             lang = FontLang.default.copy()
             inst._set_style("lang", lang, *lang.get_attrs())
             inst._is_default_inst = True
-            FontOnly._DEFAULT_INDEX = inst
-        return FontOnly._DEFAULT_INDEX
+            cls._DEFAULT_INDEX = inst
+        return cls._DEFAULT_INDEX
+
+    # endregion Static Properties

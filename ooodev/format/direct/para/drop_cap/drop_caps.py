@@ -4,7 +4,7 @@ Module for managing paragraph Drop Caps.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, cast, Type, TypeVar, overload
+from typing import Any, Tuple, cast, Type, TypeVar, overload
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....events.args.key_val_cancel_args import KeyValCancelArgs
@@ -132,7 +132,7 @@ class DropCaps(StyleMulti):
         # endregion methods
 
     # region Overrides
-    def on_property_setting(self, event_args: KeyValCancelArgs) -> None:
+    def on_property_setting(self, source: Any, event_args: KeyValCancelArgs) -> None:
         """
         Triggers for each property that is set
 
@@ -146,12 +146,12 @@ class DropCaps(StyleMulti):
             if event_args.value is None or event_args.value == "":
                 # instruct Props.set to call set_default()
                 event_args.default = True
-            super().on_property_setting(event_args)
+        super().on_property_setting(source, event_args)
 
-    def _on_modifing(self, event: CancelEventArgs) -> None:
+    def _on_modifing(self, source: Any, event: CancelEventArgs) -> None:
         if self._is_default_inst:
             raise ValueError("Modifying a default instance is not allowed")
-        return super()._on_modifing(event)
+        return super()._on_modifing(source, event)
 
     def _supported_services(self) -> Tuple[str, ...]:
         try:

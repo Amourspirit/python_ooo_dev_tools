@@ -46,6 +46,8 @@ class MetaStyle(type):
         obj = cls.__new__(cls, *args, **kw)
         uniquie_id = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
         object.__setattr__(obj, "_uniquie_id", uniquie_id)
+        _events = Events(source=obj)
+        object.__setattr__(obj, "_internal_events", _events)
 
         if custom_args:
             for key, value in cast(Dict[str, Any], custom_args).items():
@@ -64,7 +66,7 @@ class StyleBase(metaclass=MetaStyle):
     # region Init
     def __init__(self, **kwargs) -> None:
         # this property is used in child classes that have default instances
-        self._events = Events(source=self)
+        # self._events = Events(source=self)
 
         # self._uniquie_id = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
 
@@ -80,6 +82,53 @@ class StyleBase(metaclass=MetaStyle):
                 continue
             if not value is None:
                 self._dv[key] = value
+
+        def on_getting_cattribs(source: Any, event_args: CancelEventArgs) -> None:
+            self._on_getting_cattribs(source=source, event_args=event_args)
+
+        def on_clearing(source: Any, event_args: CancelEventArgs) -> None:
+            self._on_clearing(source=source, event_args=event_args)
+
+        def on_removing(source: Any, event_args: CancelEventArgs) -> None:
+            self._on_removing(source=source, event_args=event_args)
+
+        def on_setting(source: Any, event_args: KeyValCancelArgs) -> None:
+            self._on_setting(source=source, event_args=event_args)
+
+        def on_copying(source: Any, event_args: CancelEventArgs) -> None:
+            self._on_copying(source=source, event_args=event_args)
+
+        def on_backing_up(source: Any, event_args: KeyValCancelArgs) -> None:
+            self.on_property_backing_up(source=source, event_args=event_args)
+
+        def on_backed_up(source: Any, event_args: KeyValArgs) -> None:
+            self.on_property_backed_up(source=source, event_args=event_args)
+
+        def on_applying(source: Any, event_args: CancelEventArgs) -> None:
+            self.on_applying(source=source, event_args=event_args)
+
+        def on_applied(source: Any, event_args: EventArgs) -> None:
+            self.on_applied(source=source, event_args=event_args)
+
+        self._fn_on_getting_cattribs = on_getting_cattribs
+        self._fn_on_clearing = on_clearing
+        self._fn_on_removing = on_removing
+        self._fn_on_setting = on_setting
+        self._fn_on_copying = on_copying
+        self._fn_on_backing_up = on_backing_up
+        self._fn_on_backed_up = on_backed_up
+        self._fn_on_applying = on_applying
+        self._fn_on_applied = on_applied
+
+        self._events.on(self._get_uniquie_event_name("internal_cattribs"), on_getting_cattribs)
+        self._events.on(self._get_uniquie_event_name(FormatNamedEvent.STYLE_CLEARING), on_clearing)
+        self._events.on(self._get_uniquie_event_name(FormatNamedEvent.STYLE_REMOVING), on_removing)
+        self._events.on(self._get_uniquie_event_name(FormatNamedEvent.STYLE_SETTING), on_setting)
+        self._events.on(self._get_uniquie_event_name(FormatNamedEvent.STYLE_COPYING), on_copying)
+        self._events.on(self._get_uniquie_event_name(FormatNamedEvent.STYLE_BACKING_UP), on_backing_up)
+        self._events.on(self._get_uniquie_event_name(FormatNamedEvent.STYLE_BACKED_UP), on_backed_up)
+        self._events.on(FormatNamedEvent.STYLE_APPLYING, on_applying)
+        self._events.on(FormatNamedEvent.STYLE_APPLIED, on_applied)
         super().__init__()
 
     # endregion Init
@@ -129,6 +178,10 @@ class StyleBase(metaclass=MetaStyle):
     def _get_uniquie_event_name(self, event_name: str) -> str:
         return f"{event_name}_{self._uniquie_id}"
 
+    # def _trigger(self, event: str, make_unique: bool = True) -> None:
+    #     if make_unique:
+    #         event = self._get_uniquie_event_name(event)
+    #     self._events.on()
     # endregion Events
 
     # region style property methods
@@ -145,8 +198,6 @@ class StyleBase(metaclass=MetaStyle):
         """Sets a property value"""
         kvargs = KeyValCancelArgs("style_base", key=key, value=val)
         cargs = CancelEventArgs.from_args(kvargs)
-        self._on_setting(kvargs)
-        self._on_modifing(cargs)
         self._events.trigger(self._get_uniquie_event_name(FormatNamedEvent.STYLE_SETTING), kvargs)
         self._events.trigger(self._get_uniquie_event_name(FormatNamedEvent.STYLE_MODIFING), cargs)
         if kvargs.cancel:
@@ -161,14 +212,10 @@ class StyleBase(metaclass=MetaStyle):
     def _clear(self) -> None:
         """Clears all properties"""
         cargs = CancelEventArgs("style_base")
-        self._on_clearing(cargs)
-        self._on_modifing(cargs)
         self._events.trigger(self._get_uniquie_event_name(FormatNamedEvent.STYLE_MODIFING), cargs)
         self._events.trigger(self._get_uniquie_event_name(FormatNamedEvent.STYLE_CLEARING), cargs)
         if cargs.cancel:
             return
-        self._on_setting(cargs)
-        self._on_modifing(cargs)
         dv = self._get_properties()
         dv.clear()
 
@@ -180,8 +227,6 @@ class StyleBase(metaclass=MetaStyle):
         """Removes a property if it exist"""
         cargs = CancelEventArgs("style_base")
         cargs.event_data = key
-        self._on_removing(cargs)
-        self._on_modifing(cargs)
         self._events.trigger(self._get_uniquie_event_name(FormatNamedEvent.STYLE_REMOVING), cargs)
         self._events.trigger(self._get_uniquie_event_name(FormatNamedEvent.STYLE_MODIFING), cargs)
         if cargs.cancel:
@@ -197,14 +242,14 @@ class StyleBase(metaclass=MetaStyle):
         for attrib in attribs:
             if hasattr(self.__class__, attrib):
                 kvargs = KeyValCancelArgs("style_base", key=attrib, value=getattr(self, attrib, None))
-                self._on_deleting_attrib(kvargs)
+                self._on_deleting_attrib(self, kvargs)
                 if kvargs.cancel:
                     continue
                 delattr(self.__class_, attrib)
         for attrib in attribs:
             if hasattr(self, attrib):
                 kvargs = KeyValCancelArgs("style_base", key=attrib, value=getattr(self, attrib, None))
-                self._on_deleting_attrib(kvargs)
+                self._on_deleting_attrib(self, kvargs)
                 if kvargs.cancel:
                     continue
                 delattr(self, attrib)
@@ -213,8 +258,6 @@ class StyleBase(metaclass=MetaStyle):
         """Updates properties"""
         cargs = CancelEventArgs("style_base")
         cargs.event_data: Dict[str, Any] | StyleBase = value
-        self._on_clearing(cargs)
-        self._on_modifing(cargs)
         self._events.trigger(self._get_uniquie_event_name(FormatNamedEvent.STYLE_UPDATING), cargs)
         self._events.trigger(self._get_uniquie_event_name(FormatNamedEvent.STYLE_MODIFING), cargs)
         if cargs.cancel:
@@ -332,7 +375,6 @@ class StyleBase(metaclass=MetaStyle):
             if self._is_valid_obj(obj):
                 cargs = CancelEventArgs(source=f"{self.apply.__qualname__}")
                 cargs.event_data = self
-                self.on_applying(cargs)
                 if cargs.cancel:
                     return
                 # _Events().trigger(FormatNamedEvent.STYLE_APPLYING, cargs)
@@ -346,7 +388,6 @@ class StyleBase(metaclass=MetaStyle):
                 self._props_set(obj, **dv)
                 events = None
                 eargs = EventArgs.from_args(cargs)
-                self.on_applied(eargs)
                 # _Events().trigger(FormatNamedEvent.STYLE_APPLIED, eargs)
                 self._events.trigger(FormatNamedEvent.STYLE_APPLIED, eargs)
             else:
@@ -403,13 +444,11 @@ class StyleBase(metaclass=MetaStyle):
         for attr in self.get_attrs():
             val = mProps.Props.get(obj, attr, None)
             cargs = KeyValCancelArgs("style_base", key=attr, value=val)
-            self.on_property_backing_up(cargs)
             self._events.trigger(self._get_uniquie_event_name(FormatNamedEvent.STYLE_BACKING_UP), cargs)
             if cargs.cancel:
                 continue
             self._dv_bak[attr] = val
             eargs = KeyValArgs.from_args(cargs)
-            self.on_property_backed_up(eargs)
             self._events.trigger(self._get_uniquie_event_name(FormatNamedEvent.STYLE_BACKED_UP), eargs)
 
     def restore(self, obj: object, clear: bool = False) -> None:
@@ -449,116 +488,124 @@ class StyleBase(metaclass=MetaStyle):
 
     # region Event Methods
 
-    def _on_setting(self, event: KeyValCancelArgs) -> None:
+    def _on_setting(self, source: Any, event_args: KeyValCancelArgs) -> None:
         # can be overridden in child classes to manage or modify setting
         # called by _set()
         pass
 
-    def _on_removing(self, event: CancelEventArgs) -> None:
+    def _on_removing(self, source: Any, event_args: CancelEventArgs) -> None:
         # can be overridden in child classes to manage or modify setting
         # called by _remove()
         pass
 
-    def _on_clearing(self, event: CancelEventArgs) -> None:
+    def _on_getting_cattribs(self, source: Any, event_args: CancelEventArgs) -> None:
+        # can be overridden in child classes to manage or modify setting
+        # called by _remove()
+        pass
+
+    def _on_clearing(self, source: Any, event_args: CancelEventArgs) -> None:
         # can be overridden in child classes to manage or modify setting
         # called by _clear()
         pass
 
-    def _on_updateing(self, event: CancelEventArgs) -> None:
-        # can be overridden in child classes to manage or modify setting
-        # called by _update()
-        pass
-
-    def _on_modifing(self, event: CancelEventArgs) -> None:
+    def _on_modifing(self, source: Any, event_args: CancelEventArgs) -> None:
         # can be overridden in child classes to manage or modify setting
         # called by _set(), _remove(), _clear(), _update()
         pass
 
-    def _on_copying(self, event: CancelEventArgs) -> None:
+    def _on_copying(self, source: Any, event_args: CancelEventArgs) -> None:
         # can be overridden in child classes to manage or modify setting
         pass
 
-    def _on_deleting_attrib(self, event: KeyValCancelArgs) -> None:
+    def _on_deleting_attrib(self, source: Any, event_args: KeyValCancelArgs) -> None:
         # can be overridden in child classes to manage or modify setting
         pass
 
-    def on_property_setting(self, event_args: KeyValCancelArgs) -> None:
+    def on_property_setting(self, source: Any, event_args: KeyValCancelArgs) -> None:
         """
         Triggers for each property that is set
 
         Args:
+            source (Any): Event Source.
             event_args (KeyValueCancelArgs): Event Args
         """
         # can be overriden in child classes.
         pass
 
-    def on_property_set(self, event_args: KeyValArgs) -> None:
+    def on_property_set(self, source: Any, event_args: KeyValArgs) -> None:
         """
         Triggers for each property that is set
 
         Args:
+            source (Any): Event Source.
             event_args (KeyValArgs): Event Args
         """
         # can be overriden in child classes.
         pass
 
-    def on_property_backing_up(self, event_args: KeyValCancelArgs) -> None:
+    def on_property_backing_up(self, source: Any, event_args: KeyValCancelArgs) -> None:
         """
         Triggers before each property that is about to be backup up during backup
 
         Args:
-            event_args (KeyValueCancelArgs): Event Args
+            source (Any): Event Source.
+            event_args (KeyValueCancelArgs): Event Args.
         """
         # can be overriden in child classes.
         pass
 
-    def on_property_backed_up(self, event_args: KeyValArgs) -> None:
+    def on_property_backed_up(self, source: Any, event_args: KeyValArgs) -> None:
         """
-        Triggers before each property that is about to be set during restore
+        Triggers before each property that is about to be set during backup.
 
         Args:
+            source (Any): Event Source.
             event_args (KeyValArgs): Event Args
         """
         # can be overriden in child classes.
         pass
 
-    def on_property_restore_setting(self, event_args: KeyValCancelArgs) -> None:
+    def on_property_restore_setting(self, source: Any, event_args: KeyValCancelArgs) -> None:
         """
         Triggers before each property that is about to be set during restore
 
         Args:
+            source (Any): Event Source.
             event_args (KeyValueCancelArgs): Event Args
         """
         # can be overriden in child classes.
         event_args.set("on_property_restore_setting", True)
-        self.on_property_setting(event_args)
+        self.on_property_setting(source, event_args)
 
-    def on_property_restore_set(self, event_args: KeyValArgs) -> None:
+    def on_property_restore_set(self, source: Any, event_args: KeyValArgs) -> None:
         """
         Triggers for each property that has been set during restore
 
         Args:
+            source (Any): Event Source.
             event_args (KeyValArgs): Event Args
         """
         # can be overriden in child classes.
         event_args.set("on_property_restore_set", True)
-        self.on_property_set(event_args)
+        self.on_property_set(source, event_args)
 
-    def on_applying(self, event_args: CancelEventArgs) -> None:
+    def on_applying(self, source: Any, event_args: CancelEventArgs) -> None:
         """
         Triggers before style/format is applied.
 
         Args:
+            source (Any): Event Source.
             event_args (CancelEventArgs): Event Args
         """
         # can be overriden in child classes.
         pass
 
-    def on_applied(self, event_args: EventArgs) -> None:
+    def on_applied(self, source: Any, event_args: EventArgs) -> None:
         """
         Triggers after style/format is applied.
 
         Args:
+            source (Any): Event Source.
             event_args (KeyValArgs): Event Args
         """
         # can be overriden in child classes.
@@ -591,7 +638,7 @@ class StyleBase(metaclass=MetaStyle):
     def copy(self: TStyleBase, **kwargs) -> TStyleBase:
         """Gets a copy of instance as a new instance"""
         cargs = CancelEventArgs(self)
-        self._on_copying(cargs)
+        self._events.trigger(self._get_uniquie_event_name(FormatNamedEvent.STYLE_COPYING), cargs)
         if cargs.cancel:
             if cargs.handled:
                 return cargs.event_data
@@ -633,6 +680,22 @@ class StyleBase(metaclass=MetaStyle):
         return nu
 
     # endregion Copy()
+
+    # region _props methods
+    def _get_internal_cattribs(self) -> dict:
+        cattribs = {
+            "_props_internal_attributes": self._props,
+            "_supported_services_values": self._supported_services(),
+            "_format_kind_prop": self.prop_format_kind,
+        }
+        cargs = CancelEventArgs(self)
+        cargs.event_data = cattribs
+        self._events.trigger(self._get_uniquie_event_name("internal_cattribs"), cargs)
+        if cargs.cancel:
+            return None
+        return cargs.event_data
+
+    # endregion _props methods
 
     # region Dunder Methods
 
@@ -735,6 +798,10 @@ class StyleBase(metaclass=MetaStyle):
     def _props(self) -> Tuple[str, ...]:
         # placeholder for child classes. Usd in copy method.
         return ()
+
+    @property
+    def _events(self) -> Events:
+        return self._internal_events
 
     # endregion Properties
 
@@ -1131,25 +1198,25 @@ class StyleModifyMulti(StyleMulti):
 
 def _on_props_setting(source: Any, event_args: KeyValCancelArgs, *args, **kwargs) -> None:
     instance = cast(StyleBase, event_args.event_source)
-    instance.on_property_setting(event_args)
+    instance.on_property_setting(source, event_args)
     instance._events.trigger(instance._get_uniquie_event_name(FormatNamedEvent.STYLE_PROPERTY_APPLYING), event_args)
 
 
 def _on_props_set(source: Any, event_args: KeyValArgs, *args, **kwargs) -> None:
     instance = cast(StyleBase, event_args.event_source)
-    instance.on_property_set(event_args)
+    instance.on_property_set(source, event_args)
     instance._events.trigger(instance._get_uniquie_event_name(FormatNamedEvent.STYLE_PROPERTY_APPLIED), event_args)
 
 
 def _on_props_restore_setting(source: Any, event_args: KeyValCancelArgs, *args, **kwargs) -> None:
     instance = cast(StyleBase, event_args.event_source)
-    instance.on_property_restore_setting(event_args)
+    instance.on_property_restore_setting(source, event_args)
     instance._events.trigger(instance._get_uniquie_event_name(FormatNamedEvent.STYLE_PROPERTY_RESTORING), event_args)
 
 
 def _on_props_restore_set(source: Any, event_args: KeyValArgs, *args, **kwargs) -> None:
     instance = cast(StyleBase, event_args.event_source)
-    instance.on_property_restore_set(event_args)
+    instance.on_property_restore_set(source, event_args)
     instance._events.trigger(instance._get_uniquie_event_name(FormatNamedEvent.STYLE_PROPERTY_RESTORED), event_args)
 
 

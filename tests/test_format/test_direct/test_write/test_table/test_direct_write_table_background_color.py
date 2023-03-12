@@ -34,7 +34,7 @@ def test_write(loader) -> None:
         clr = Color.from_obj(table)
         assert clr.prop_color == StandardColor.LIME_LIGHT3
 
-        Color.empty.apply(table)
+        style.empty.apply(table)
         clr = Color.from_obj(table)
         assert clr.prop_color == -1
 

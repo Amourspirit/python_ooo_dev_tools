@@ -10,7 +10,7 @@ from enum import Enum
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....events.args.key_val_cancel_args import KeyValCancelArgs
 from .....exceptions import ex as mEx
-from .....meta.static_prop import static_prop
+from .....meta.class_property_readonly import ClassPropertyReadonly
 from .....proto.unit_obj import UnitObj
 from .....utils import lo as mLo
 from .....utils import props as mProps
@@ -125,10 +125,10 @@ class FontPosition(StyleBase):
             )
         return self._supported_services_values
 
-    def _on_modifing(self, event: CancelEventArgs) -> None:
+    def _on_modifing(self, source: Any, event: CancelEventArgs) -> None:
         if self._is_default_inst:
             raise ValueError("Modifying a default instance is not allowed")
-        return super()._on_setting(event)
+        return super()._on_modifing(source, event)
 
     # region apply()
     @overload
@@ -203,7 +203,7 @@ class FontPosition(StyleBase):
 
     # endregion from_obj()
 
-    def on_property_setting(self, event_args: KeyValCancelArgs) -> None:
+    def on_property_setting(self, source: Any, event_args: KeyValCancelArgs) -> None:
         """
         Triggers for each property that is set
 
@@ -217,7 +217,7 @@ class FontPosition(StyleBase):
         if event_args.key == "CharEscapement":
             if self.prop_script_kind == FontScriptKind.NORMAL:
                 event_args.value == 0
-        super().on_property_setting(event_args)
+        super().on_property_setting(source, event_args)
 
     # endregion methods
 
@@ -618,13 +618,14 @@ class FontPosition(StyleBase):
         self._set("CharAutoKerning", value)
 
     # endregion Prop Properties
-    @static_prop
-    def default() -> FontPosition:  # type: ignore[misc]
+    @ClassPropertyReadonly
+    @classmethod
+    def default(cls: Type[_TFontPosition]) -> _TFontPosition:  # type: ignore[misc]
         """Gets Font Position default. Static Property."""
         try:
-            return FontPosition._DEFAULT_INSTANCE
+            return cls._DEFAULT_INSTANCE
         except AttributeError:
-            fp = FontPosition()
+            fp = cls()
             fp._set("CharEscapement", 0)
             fp._set("CharEscapementHeight", 100)
             fp._set("CharRotation", 0)
@@ -633,5 +634,5 @@ class FontPosition(StyleBase):
             fp._set("CharKerning", 0)
             fp._set("CharAutoKerning", True)
             fp._is_default_inst = True
-            FontPosition._DEFAULT_INSTANCE = fp
-        return FontPosition._DEFAULT_INSTANCE
+            cls._DEFAULT_INSTANCE = fp
+        return cls._DEFAULT_INSTANCE

@@ -7,10 +7,8 @@ from __future__ import annotations
 from typing import Dict, Tuple, Type, cast, overload, TypeVar
 
 import uno
-from ....events.event_singleton import _Events
 from ....exceptions import ex as mEx
 from ....utils import props as mProps
-from ....utils.type_var import T
 from ...kind.format_kind import FormatKind
 from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent
 
@@ -116,10 +114,9 @@ class LocaleStruct(StyleBase):
 
         cargs = CancelEventArgs(source=f"{self.apply.__qualname__}")
         cargs.event_data = self
-        self.on_applying(cargs)
         if cargs.cancel:
             return
-        _Events().trigger(FormatNamedEvent.STYLE_APPLYING, cargs)
+        self._events.trigger(FormatNamedEvent.STYLE_APPLYING, cargs)
         if cargs.cancel:
             return
 
@@ -130,8 +127,7 @@ class LocaleStruct(StyleBase):
         dcf = self.get_uno_struct()
         mProps.Props.set(obj, **{key: dcf})
         eargs = EventArgs.from_args(cargs)
-        self.on_applied(eargs)
-        _Events().trigger(FormatNamedEvent.STYLE_APPLIED, eargs)
+        self._events.trigger(FormatNamedEvent.STYLE_APPLIED, eargs)
 
         # mProps.Props.set(obj, **{key: tuple(tss_lst)})
 

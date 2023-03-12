@@ -11,7 +11,6 @@ import uno
 from ooo.dyn.table.table_border import TableBorder
 from ooo.dyn.table.table_border2 import TableBorder2
 
-from ....events.event_singleton import _Events
 from ....events.lo_events import Events
 from ....events.props_named_event import PropsNamedEvent
 from ....exceptions import ex as mEx
@@ -177,10 +176,9 @@ class TableBorderStruct(StyleBase):
 
         cargs = CancelEventArgs(source=f"{self.apply.__qualname__}")
         cargs.event_data = self
-        self.on_applying(cargs)
         if cargs.cancel:
             return
-        _Events().trigger(FormatNamedEvent.STYLE_APPLYING, cargs)
+        self._events.trigger(FormatNamedEvent.STYLE_APPLYING, cargs)
         if cargs.cancel:
             return
         events = Events(source=self)
@@ -226,8 +224,7 @@ class TableBorderStruct(StyleBase):
             mProps.Props.set(obj, **{prop_name: tb})
         events = None
         eargs = EventArgs.from_args(cargs)
-        self.on_applied(eargs)
-        _Events().trigger(FormatNamedEvent.STYLE_APPLIED, eargs)
+        self._events.trigger(FormatNamedEvent.STYLE_APPLIED, eargs)
 
     # endregion apply()
 

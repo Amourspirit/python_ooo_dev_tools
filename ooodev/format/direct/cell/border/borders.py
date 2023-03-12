@@ -5,7 +5,7 @@ Module for managing table borders (cells and ranges).
 """
 # region imports
 from __future__ import annotations
-from typing import Any, overload, cast, Tuple, TypeVar
+from typing import Any, overload, cast, Tuple, TypeVar, Type
 
 import uno
 from ooo.dyn.table.border_line import BorderLine as BorderLine
@@ -15,7 +15,7 @@ from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
-from .....meta.static_prop import static_prop
+from .....meta.class_property_readonly import ClassPropertyReadonly
 from .....proto.unit_obj import UnitObj
 from .....utils import lo as mLo
 from ....kind.format_kind import FormatKind
@@ -180,10 +180,10 @@ class Borders(StyleMulti):
 
     # region Overrides
 
-    def _on_modifing(self, event: CancelEventArgs) -> None:
+    def _on_modifing(self, source: Any, event: CancelEventArgs) -> None:
         if self._is_default_inst:
             raise ValueError("Modifying a default instance is not allowed")
-        return super()._on_modifing(event)
+        return super()._on_modifing(source, event)
 
     def _supported_services(self) -> Tuple[str, ...]:
         try:
@@ -535,23 +535,25 @@ class Borders(StyleMulti):
             )
         return self._props_internal_attributes
 
-    @static_prop
-    def default() -> Borders:  # type: ignore[misc]
+    @ClassPropertyReadonly
+    @classmethod
+    def default(cls: Type[_TBorders]) -> _TBorders:  # type: ignore[misc]
         """Gets Default Border. Static Property"""
         try:
-            return Borders._DEFAULT_INST
+            return cls._DEFAULT_INST
         except AttributeError:
-            Borders._DEFAULT_INST = Borders(border_side=Side(), padding=Padding.default)
-            Borders._DEFAULT_INST._is_default_inst = True
-        return Borders._DEFAULT_INST
+            cls._DEFAULT_INST = cls(border_side=Side(), padding=Padding.default)
+            cls._DEFAULT_INST._is_default_inst = True
+        return cls._DEFAULT_INST
 
-    @static_prop
-    def empty() -> Borders:  # type: ignore[misc]
+    @ClassPropertyReadonly
+    @classmethod
+    def empty(cls: Type[_TBorders]) -> _TBorders:  # type: ignore[misc]
         """Gets Empty Border. Static Property. When style is applied formatting is removed."""
         try:
-            return Borders._EMPTY_INST
+            return cls._EMPTY_INST
         except AttributeError:
-            Borders._EMPTY_INST = Borders(
+            cls._EMPTY_INST = cls(
                 border_side=Side.empty,
                 vertical=Side.empty,
                 horizontal=Side.empty,
@@ -561,7 +563,7 @@ class Borders(StyleMulti):
                 shadow=Shadow.empty,
                 padding=Padding.default,
             )
-            Borders._EMPTY_INST._is_default_inst = True
-        return Borders._EMPTY_INST
+            cls._EMPTY_INST._is_default_inst = True
+        return cls._EMPTY_INST
 
     # endregion Properties
