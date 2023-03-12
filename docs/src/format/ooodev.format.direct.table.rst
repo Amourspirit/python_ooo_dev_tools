@@ -7,6 +7,7 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
+   ooodev.format.direct.table.background
    ooodev.format.direct.table.borders
 
 Module contents

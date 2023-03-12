@@ -120,13 +120,13 @@ class StyleBase(metaclass=MetaStyle):
         self._fn_on_applying = on_applying
         self._fn_on_applied = on_applied
 
-        self._events.on(self._get_uniquie_event_name("internal_cattribs"), on_getting_cattribs)
-        self._events.on(self._get_uniquie_event_name(FormatNamedEvent.STYLE_CLEARING), on_clearing)
-        self._events.on(self._get_uniquie_event_name(FormatNamedEvent.STYLE_REMOVING), on_removing)
-        self._events.on(self._get_uniquie_event_name(FormatNamedEvent.STYLE_SETTING), on_setting)
-        self._events.on(self._get_uniquie_event_name(FormatNamedEvent.STYLE_COPYING), on_copying)
-        self._events.on(self._get_uniquie_event_name(FormatNamedEvent.STYLE_BACKING_UP), on_backing_up)
-        self._events.on(self._get_uniquie_event_name(FormatNamedEvent.STYLE_BACKED_UP), on_backed_up)
+        self._events.on("internal_cattribs", on_getting_cattribs)
+        self._events.on(FormatNamedEvent.STYLE_CLEARING, on_clearing)
+        self._events.on(FormatNamedEvent.STYLE_REMOVING, on_removing)
+        self._events.on(FormatNamedEvent.STYLE_SETTING, on_setting)
+        self._events.on(FormatNamedEvent.STYLE_COPYING, on_copying)
+        self._events.on(FormatNamedEvent.STYLE_BACKING_UP, on_backing_up)
+        self._events.on(FormatNamedEvent.STYLE_BACKED_UP, on_backed_up)
         self._events.on(FormatNamedEvent.STYLE_APPLYING, on_applying)
         self._events.on(FormatNamedEvent.STYLE_APPLIED, on_applied)
         super().__init__()
@@ -153,7 +153,7 @@ class StyleBase(metaclass=MetaStyle):
         Note:
             This method is generally only used in the context of child classes.
         """
-        self._events.on(self._get_uniquie_event_name(event_name), callback)
+        self._events.on(event_name, callback)
 
     def remove_event_listener(self, event_name: str, callback: EventCallback) -> None:
         """
@@ -173,15 +173,8 @@ class StyleBase(metaclass=MetaStyle):
         Note:
             This method is generally only used in the context of child classes.
         """
-        self._events.remove(self._get_uniquie_event_name(event_name), callback)
+        self._events.remove(event_name, callback)
 
-    def _get_uniquie_event_name(self, event_name: str) -> str:
-        return f"{event_name}_{self._uniquie_id}"
-
-    # def _trigger(self, event: str, make_unique: bool = True) -> None:
-    #     if make_unique:
-    #         event = self._get_uniquie_event_name(event)
-    #     self._events.on()
     # endregion Events
 
     # region style property methods
@@ -198,8 +191,8 @@ class StyleBase(metaclass=MetaStyle):
         """Sets a property value"""
         kvargs = KeyValCancelArgs("style_base", key=key, value=val)
         cargs = CancelEventArgs.from_args(kvargs)
-        self._events.trigger(self._get_uniquie_event_name(FormatNamedEvent.STYLE_SETTING), kvargs)
-        self._events.trigger(self._get_uniquie_event_name(FormatNamedEvent.STYLE_MODIFING), cargs)
+        self._events.trigger(FormatNamedEvent.STYLE_SETTING, kvargs)
+        self._events.trigger(FormatNamedEvent.STYLE_MODIFING, cargs)
         if kvargs.cancel:
             return False
         if cargs.cancel:
@@ -212,8 +205,8 @@ class StyleBase(metaclass=MetaStyle):
     def _clear(self) -> None:
         """Clears all properties"""
         cargs = CancelEventArgs("style_base")
-        self._events.trigger(self._get_uniquie_event_name(FormatNamedEvent.STYLE_MODIFING), cargs)
-        self._events.trigger(self._get_uniquie_event_name(FormatNamedEvent.STYLE_CLEARING), cargs)
+        self._events.trigger(FormatNamedEvent.STYLE_MODIFING, cargs)
+        self._events.trigger(FormatNamedEvent.STYLE_CLEARING, cargs)
         if cargs.cancel:
             return
         dv = self._get_properties()
@@ -227,8 +220,8 @@ class StyleBase(metaclass=MetaStyle):
         """Removes a property if it exist"""
         cargs = CancelEventArgs("style_base")
         cargs.event_data = key
-        self._events.trigger(self._get_uniquie_event_name(FormatNamedEvent.STYLE_REMOVING), cargs)
-        self._events.trigger(self._get_uniquie_event_name(FormatNamedEvent.STYLE_MODIFING), cargs)
+        self._events.trigger(FormatNamedEvent.STYLE_REMOVING, cargs)
+        self._events.trigger(FormatNamedEvent.STYLE_MODIFING, cargs)
         if cargs.cancel:
             return
         if self._has(key):
@@ -258,8 +251,8 @@ class StyleBase(metaclass=MetaStyle):
         """Updates properties"""
         cargs = CancelEventArgs("style_base")
         cargs.event_data: Dict[str, Any] | StyleBase = value
-        self._events.trigger(self._get_uniquie_event_name(FormatNamedEvent.STYLE_UPDATING), cargs)
-        self._events.trigger(self._get_uniquie_event_name(FormatNamedEvent.STYLE_MODIFING), cargs)
+        self._events.trigger(FormatNamedEvent.STYLE_UPDATING, cargs)
+        self._events.trigger(FormatNamedEvent.STYLE_MODIFING, cargs)
         if cargs.cancel:
             return
         dv = self._get_properties()
@@ -444,12 +437,12 @@ class StyleBase(metaclass=MetaStyle):
         for attr in self.get_attrs():
             val = mProps.Props.get(obj, attr, None)
             cargs = KeyValCancelArgs("style_base", key=attr, value=val)
-            self._events.trigger(self._get_uniquie_event_name(FormatNamedEvent.STYLE_BACKING_UP), cargs)
+            self._events.trigger(FormatNamedEvent.STYLE_BACKING_UP, cargs)
             if cargs.cancel:
                 continue
             self._dv_bak[attr] = val
             eargs = KeyValArgs.from_args(cargs)
-            self._events.trigger(self._get_uniquie_event_name(FormatNamedEvent.STYLE_BACKED_UP), eargs)
+            self._events.trigger(FormatNamedEvent.STYLE_BACKED_UP, eargs)
 
     def restore(self, obj: object, clear: bool = False) -> None:
         """
@@ -638,7 +631,7 @@ class StyleBase(metaclass=MetaStyle):
     def copy(self: TStyleBase, **kwargs) -> TStyleBase:
         """Gets a copy of instance as a new instance"""
         cargs = CancelEventArgs(self)
-        self._events.trigger(self._get_uniquie_event_name(FormatNamedEvent.STYLE_COPYING), cargs)
+        self._events.trigger(FormatNamedEvent.STYLE_COPYING, cargs)
         if cargs.cancel:
             if cargs.handled:
                 return cargs.event_data
@@ -690,7 +683,7 @@ class StyleBase(metaclass=MetaStyle):
         }
         cargs = CancelEventArgs(self)
         cargs.event_data = cattribs
-        self._events.trigger(self._get_uniquie_event_name("internal_cattribs"), cargs)
+        self._events.trigger("internal_cattribs", cargs)
         if cargs.cancel:
             return None
         return cargs.event_data
@@ -1199,25 +1192,25 @@ class StyleModifyMulti(StyleMulti):
 def _on_props_setting(source: Any, event_args: KeyValCancelArgs, *args, **kwargs) -> None:
     instance = cast(StyleBase, event_args.event_source)
     instance.on_property_setting(source, event_args)
-    instance._events.trigger(instance._get_uniquie_event_name(FormatNamedEvent.STYLE_PROPERTY_APPLYING), event_args)
+    instance._events.trigger(FormatNamedEvent.STYLE_PROPERTY_APPLYING, event_args)
 
 
 def _on_props_set(source: Any, event_args: KeyValArgs, *args, **kwargs) -> None:
     instance = cast(StyleBase, event_args.event_source)
     instance.on_property_set(source, event_args)
-    instance._events.trigger(instance._get_uniquie_event_name(FormatNamedEvent.STYLE_PROPERTY_APPLIED), event_args)
+    instance._events.trigger(FormatNamedEvent.STYLE_PROPERTY_APPLIED, event_args)
 
 
 def _on_props_restore_setting(source: Any, event_args: KeyValCancelArgs, *args, **kwargs) -> None:
     instance = cast(StyleBase, event_args.event_source)
     instance.on_property_restore_setting(source, event_args)
-    instance._events.trigger(instance._get_uniquie_event_name(FormatNamedEvent.STYLE_PROPERTY_RESTORING), event_args)
+    instance._events.trigger(FormatNamedEvent.STYLE_PROPERTY_RESTORING, event_args)
 
 
 def _on_props_restore_set(source: Any, event_args: KeyValArgs, *args, **kwargs) -> None:
     instance = cast(StyleBase, event_args.event_source)
     instance.on_property_restore_set(source, event_args)
-    instance._events.trigger(instance._get_uniquie_event_name(FormatNamedEvent.STYLE_PROPERTY_RESTORED), event_args)
+    instance._events.trigger(FormatNamedEvent.STYLE_PROPERTY_RESTORED, event_args)
 
 
 __all__ = ("StyleBase", "StyleMulti")
