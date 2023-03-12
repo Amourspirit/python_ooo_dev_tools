@@ -366,16 +366,22 @@ class Borders(StyleMulti):
             self._direct_inner_shadow = cast(InnerShadow, self._get_style_inst("shadow"))
         return self._direct_inner_shadow
 
-    @static_prop
-    def default() -> Borders:  # type: ignore[misc]
-        """Gets Default Border. Static Property"""
+    @property
+    def default(self: _TBorders) -> _TBorders:  # type: ignore[misc]
+        """Gets Default Border."""
         try:
-            return Borders._DEFAULT_INST
+            return self._default_inst
         except AttributeError:
-            Borders._DEFAULT_INST = Borders(
-                all=Side.empty, padding=InnerPadding.default, shadow=InnerShadow.empty, merge=True
-            )
-            Borders._DEFAULT_INST._is_default_inst = True
-        return Borders._DEFAULT_INST
+            if self.prop_inner_padding is None:
+                padding = InnerPadding().default
+            else:
+                padding = self.prop_inner_padding.default
+            if self.prop_inner_shadow is None:
+                shadow = InnerShadow().empty
+            else:
+                shadow = self.prop_inner_shadow.empty
+            self._default_inst = self.__class__(all=Side().empty, padding=padding, shadow=shadow, merge=True)
+            self._default_inst._is_default_inst = True
+        return self._default_inst
 
     # endregion Properties

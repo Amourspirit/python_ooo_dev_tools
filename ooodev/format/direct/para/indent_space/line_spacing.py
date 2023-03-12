@@ -9,7 +9,6 @@ from numbers import Real
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
-from .....meta.static_prop import static_prop
 from .....utils import lo as mLo
 from .....utils import props as mProps
 from ....style_base import StyleMulti
@@ -64,10 +63,7 @@ class LineSpacing(StyleMulti):
             ls = mLs.LineSpacingStruct(
                 mode=mode,
                 value=value,
-                _cattribs={
-                    "_supported_services_values": self._supported_services(),
-                    "_property_name": "ParaLineSpacing",
-                },
+                _cattribs=self._get_ls_cattribs(),
             )
 
         if not active_ln_spacing is None:
@@ -78,8 +74,16 @@ class LineSpacing(StyleMulti):
 
     # endregion init
 
-    # region methods
+    # region Internal Methods
+    def _get_ls_cattribs(self) -> dict:
+        return {
+            "_supported_services_values": self._supported_services(),
+            "_property_name": "ParaLineSpacing",
+        }
 
+    # endregion Internal Methods
+
+    # region Overrides
     def _supported_services(self) -> Tuple[str, ...]:
         try:
             return self._supported_services_values
@@ -118,6 +122,10 @@ class LineSpacing(StyleMulti):
                 mLo.Lo.print(f"  {err}")
 
     # endregion apply()
+
+    # endregion Overrides
+
+    # region static methods
 
     # region from_obj()
     @overload
@@ -167,7 +175,7 @@ class LineSpacing(StyleMulti):
 
     # endregion from_obj()
 
-    # endregion methods
+    # endregion static methods
 
     # region properties
     @property
@@ -210,14 +218,14 @@ class LineSpacing(StyleMulti):
             self._direct_inner = cast(mLs.LineSpacingStruct, self._get_style_inst("line_spacing"))
         return self._direct_inner
 
-    @static_prop
-    def default() -> LineSpacing:  # type: ignore[misc]
-        """Gets ``LineSpacing`` default. Static Property."""
+    @property
+    def default(self: _TLineSpacing) -> _TLineSpacing:
+        """Gets ``LineSpacing`` default."""
         try:
-            return LineSpacing._DEFAULT_INST
+            return self._default_inst
         except AttributeError:
-            LineSpacing._DEFAULT_INST = LineSpacing(mode=ModeKind.SINGLE)
-            LineSpacing._DEFAULT_INST._is_default_inst = True
-        return LineSpacing._DEFAULT_INST
+            self._default_inst = self.__class__(mode=ModeKind.SINGLE, _cattribs=self._get_internal_cattribs())
+            self._default_inst._is_default_inst = True
+        return self._default_inst
 
     # endregion properties

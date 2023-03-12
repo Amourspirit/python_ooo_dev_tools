@@ -187,17 +187,18 @@ class IndentSpacing(StyleMulti):
             self._direct_inner_indent = cast(Indent, self._get_style_inst("indent"))
         return self._direct_inner_indent
 
-    @static_prop
-    def default() -> IndentSpacing:  # type: ignore[misc]
-        """Gets ``IndentSpacing`` default. Static Property."""
+    @property
+    def default(self: _TIndentSpacing) -> _TIndentSpacing:
+        """Gets ``IndentSpacing`` default."""
         try:
-            return IndentSpacing._DEFAULT_INST
+            return self._default_inst
         except AttributeError:
-            ls = LineSpacing.default
-            indent = Indent.default
-            spc = Spacing.default
 
-            IndentSpacing._DEFAULT_INST = IndentSpacing(
+            ls = LineSpacing().default
+            indent = Indent().default
+            spc = Spacing().default
+
+            self._default_inst = self.__class__(
                 ln_mode=ls.prop_mode,
                 ln_value=ls.prop_value,
                 ln_active_spacing=ls.prop_active_ln_spacing,
@@ -208,8 +209,9 @@ class IndentSpacing(StyleMulti):
                 id_after=indent.prop_after,
                 id_first=indent.prop_first,
                 id_auto=indent.prop_auto,
+                _cattribs=self._get_internal_cattribs(),
             )
-            IndentSpacing._DEFAULT_INST._is_default_inst = True
-        return IndentSpacing._DEFAULT_INST
+            self._default_inst._is_default_inst = True
+        return self._default_inst
 
     # endregion properties

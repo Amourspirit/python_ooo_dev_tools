@@ -297,14 +297,16 @@ class Indent(StyleBase):
             return
         self._set("ParaIsAutoFirstLineIndent", value)
 
-    @static_prop
-    def default() -> Indent:  # type: ignore[misc]
-        """Gets ``Indent`` default. Static Property."""
+    @property
+    def default(self: _TIndent) -> _TIndent:
+        """Gets ``Indent`` default."""
         try:
-            return Indent._DEFAULT_INST
+            return self._default_inst
         except AttributeError:
-            Indent._DEFAULT_INST = Indent(before=0.0, after=0.0, first=0.0, auto=False)
-            Indent._DEFAULT_INST._is_default_inst = True
-        return Indent._DEFAULT_INST
+            self._default_inst = self.__class__(
+                before=0.0, after=0.0, first=0.0, auto=False, _cattribs=self._get_internal_cattribs()
+            )
+            self._default_inst._is_default_inst = True
+        return self._default_inst
 
     # endregion properties

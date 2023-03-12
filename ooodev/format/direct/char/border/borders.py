@@ -284,7 +284,7 @@ class Borders(StyleMulti):
         return self._format_kind_prop
 
     @property
-    def prop_inner_sides(self) -> Sides:
+    def prop_inner_sides(self) -> Sides | None:
         """Gets Sides Instance"""
         try:
             return self._direct_inner_sides
@@ -293,7 +293,7 @@ class Borders(StyleMulti):
         return self._direct_inner_sides
 
     @property
-    def prop_inner_padding(self) -> InnerPadding:
+    def prop_inner_padding(self) -> InnerPadding | None:
         """Gets Padding Instance"""
         try:
             return self._direct_inner_padding
@@ -302,7 +302,7 @@ class Borders(StyleMulti):
         return self._direct_inner_padding
 
     @property
-    def prop_inner_shadow(self) -> InnerShadow:
+    def prop_inner_shadow(self) -> InnerShadow | None:
         """Gets Shadow Instance"""
         try:
             return self._direct_inner_shadow
@@ -310,32 +310,33 @@ class Borders(StyleMulti):
             self._direct_inner_shadow = cast(InnerShadow, self._get_style_inst("shadow"))
         return self._direct_inner_shadow
 
-    @ClassPropertyReadonly
-    @classmethod
-    def default(cls: Type[_TBorders]) -> _TBorders:  # type: ignore[misc]
-        """Gets Default Border. Static Property"""
+    @property
+    def default(self: _TBorders) -> _TBorders:  # type: ignore[misc]
+        """Gets Default Border."""
         try:
-            return cls._DEFAULT_INST
+            return self._default_inst
         except AttributeError:
-            cls._DEFAULT_INST = cls(all=Side.empty, padding=InnerPadding.default, shadow=InnerShadow.empty)
-            cls._DEFAULT_INST._is_default_inst = True
-        return cls._DEFAULT_INST
+            if self.prop_inner_padding is None:
+                padding = InnerPadding().default
+            else:
+                padding = self.prop_inner_padding.default
+            if self.prop_inner_shadow is None:
+                shadow = InnerShadow().empty
+            else:
+                shadow = self.prop_inner_shadow.empty
 
-    @ClassPropertyReadonly
-    @classmethod
-    def empty(cls: Type[_TBorders]) -> _TBorders:  # type: ignore[misc]
-        """Gets Empty Border. Static Property. When style is applied formatting is removed."""
-        try:
-            return cls._EMPTY_INST
-        except AttributeError:
-            cls._EMPTY_INST = cls(
-                all=Side.empty,
-                vertical=Side.empty,
-                horizontal=Side.empty,
-                shadow=InnerShadow.empty,
-                padding=InnerPadding.default,
+            self._default_inst = self.__class__(
+                all=Side().empty,
+                padding=padding,
+                shadow=shadow,
+                _cattribs=self._get_internal_cattribs(),
             )
-            cls._EMPTY_INST._is_default_inst = True
-        return cls._EMPTY_INST
+            self._default_inst._is_default_inst = True
+        return self._default_inst
+
+    @property
+    def empty(self: _TBorders) -> _TBorders:  # type: ignore[misc]
+        """Gets Empty Border. When style is applied formatting is removed."""
+        return self.default
 
     # endregion Properties

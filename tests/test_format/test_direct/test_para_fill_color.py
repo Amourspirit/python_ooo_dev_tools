@@ -80,7 +80,7 @@ def test_write(loader, para_text) -> None:
                 assert getattr(fp, attr) == dc._get(attr)
             cursor_p.gotoEnd(False)
 
-        InnerColor.default.apply(cursor_p.TextParagraph)
+        dc.default.apply(cursor_p.TextParagraph)
 
         fp = cast("FillProperties", cursor_p.TextParagraph)
         assert fp.FillStyle == FillStyle.NONE

@@ -6,7 +6,6 @@ Module for managing character padding.
 from __future__ import annotations
 from typing import Tuple, Type, TypeVar
 
-from .....meta.class_property_readonly import ClassPropertyReadonly
 from ....kind.format_kind import FormatKind
 from ...common.abstract.abstract_padding import AbstractPadding
 from ...common.props.border_props import BorderProps
@@ -61,16 +60,15 @@ class Padding(AbstractPadding):
             )
         return self._props_internal_attributes
 
-    @ClassPropertyReadonly
-    @classmethod
-    def default(cls: Type[_TPadding]) -> _TPadding:  # type: ignore[misc]
-        """Gets BorderPadding default. Static Property."""
+    @property
+    def default(self: _TPadding) -> _TPadding:  # type: ignore[misc]
+        """Gets BorderPadding default."""
         try:
-            return cls._DEFAULT_INST
+            return self._default_inst
         except AttributeError:
-            inst = cls(all=0.0)
+            inst = self.__class__(all=0.0, _cattribs=self._get_internal_cattribs())
             inst._is_default_inst = True
-            cls._DEFAULT_INST = inst
-        return cls._DEFAULT_INST
+            self._default_inst = inst
+        return self._default_inst
 
     # endregion properties

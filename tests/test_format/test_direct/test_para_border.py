@@ -41,6 +41,7 @@ def test_write(loader, para_text) -> None:
 
         side = Side(line=BorderLineKind.DOUBLE, width=0.75)
         bdr = InnerBorders(all=side)
+        bdr_default = bdr.default.copy()
         Write.append_para(cursor=cursor, text=para_text, styles=(bdr,))
 
         cursor.goLeft(p_len + 1, False)
@@ -51,7 +52,7 @@ def test_write(loader, para_text) -> None:
         assert side == pp.RightBorder
         assert side == pp.BottomBorder
         cursor.gotoEnd(False)
-        InnerBorders.default.apply(cursor)
+        bdr_default.apply(cursor)
 
         side = Side(line=BorderLineKind.DASH_DOT, color=CommonColor.DARK_RED)
         bdr = InnerBorders(all=side, merge=False)
@@ -64,7 +65,7 @@ def test_write(loader, para_text) -> None:
         assert side == pp.BottomBorder
         assert pp.ParaIsConnectBorder == False
         cursor.gotoEnd(False)
-        InnerBorders.default.apply(cursor)
+        bdr_default.apply(cursor)
 
         side = Side(line=BorderLineKind.DOUBLE_THIN, color=CommonColor.DARK_RED, width=LineSize.MEDIUM)
         bdr = InnerBorders(all=side, merge=False)
@@ -77,7 +78,7 @@ def test_write(loader, para_text) -> None:
         assert side == pp.BottomBorder
         assert pp.ParaIsConnectBorder == False
         cursor.gotoEnd(False)
-        InnerBorders.default.apply(cursor)
+        bdr_default.apply(cursor)
 
         side = Side(line=BorderLineKind.THINTHICK_SMALLGAP, color=CommonColor.DARK_RED)
         bdr = InnerBorders(all=side, merge=False)
@@ -90,7 +91,7 @@ def test_write(loader, para_text) -> None:
         assert side == pp.BottomBorder
         assert pp.ParaIsConnectBorder == False
         cursor.gotoEnd(False)
-        InnerBorders.default.apply(cursor)
+        bdr_default.apply(cursor)
 
         side = Side(line=BorderLineKind.THINTHICK_MEDIUMGAP, color=CommonColor.DARK_RED)
         bdr = InnerBorders(all=side, merge=False)
@@ -103,7 +104,7 @@ def test_write(loader, para_text) -> None:
         assert side == pp.BottomBorder
         assert pp.ParaIsConnectBorder == False
         cursor.gotoEnd(False)
-        InnerBorders.default.apply(cursor)
+        bdr_default.apply(cursor)
 
         side = Side(line=BorderLineKind.THINTHICK_LARGEGAP, color=CommonColor.DARK_RED)
         bdr = InnerBorders(all=side, merge=False)
@@ -116,7 +117,7 @@ def test_write(loader, para_text) -> None:
         assert side == pp.BottomBorder
         assert pp.ParaIsConnectBorder == False
         cursor.gotoEnd(False)
-        InnerBorders.default.apply(cursor)
+        bdr_default.apply(cursor)
 
         side = Side(line=BorderLineKind.THICKTHIN_SMALLGAP, color=CommonColor.BLUE_VIOLET)
         bdr = InnerBorders(all=side, merge=False)
@@ -129,7 +130,7 @@ def test_write(loader, para_text) -> None:
         assert side == pp.BottomBorder
         assert pp.ParaIsConnectBorder == False
         cursor.gotoEnd(False)
-        InnerBorders.default.apply(cursor)
+        bdr_default.apply(cursor)
 
         side = Side(line=BorderLineKind.THICKTHIN_MEDIUMGAP, color=CommonColor.BLUE_VIOLET)
         bdr = InnerBorders(all=side, merge=False)
@@ -142,7 +143,7 @@ def test_write(loader, para_text) -> None:
         assert side == pp.BottomBorder
         assert pp.ParaIsConnectBorder == False
         cursor.gotoEnd(False)
-        InnerBorders.default.apply(cursor)
+        bdr_default.apply(cursor)
 
         side = Side(line=BorderLineKind.THICKTHIN_LARGEGAP, color=CommonColor.BROWN)
         bdr = InnerBorders(all=side, merge=False)
@@ -155,7 +156,7 @@ def test_write(loader, para_text) -> None:
         assert side == pp.BottomBorder
         assert pp.ParaIsConnectBorder == False
         cursor.gotoEnd(False)
-        InnerBorders.default.apply(cursor)
+        bdr_default.apply(cursor)
 
         side = Side(line=BorderLineKind.ENGRAVED, color=CommonColor.CADET_BLUE)
         bdr = InnerBorders(all=side, merge=False)
@@ -168,7 +169,7 @@ def test_write(loader, para_text) -> None:
         assert side == pp.BottomBorder
         assert pp.ParaIsConnectBorder == False
         cursor.gotoEnd(False)
-        InnerBorders.default.apply(cursor)
+        bdr_default.apply(cursor)
 
         side = Side(line=BorderLineKind.OUTSET, color=CommonColor.DARK_GREEN)
         bdr = InnerBorders(all=side, merge=False)
@@ -181,7 +182,7 @@ def test_write(loader, para_text) -> None:
         assert side == pp.BottomBorder
         assert pp.ParaIsConnectBorder == False
         cursor.gotoEnd(False)
-        InnerBorders.default.apply(cursor)
+        bdr_default.apply(cursor)
 
         side = Side(line=BorderLineKind.INSET, color=CommonColor.DARK_GREEN)
         bdr = InnerBorders(all=side, merge=False)
@@ -194,7 +195,7 @@ def test_write(loader, para_text) -> None:
         assert side == pp.BottomBorder
         assert pp.ParaIsConnectBorder == False
         cursor.gotoEnd(False)
-        InnerBorders.default.apply(cursor)
+        bdr_default.apply(cursor)
 
         side = Side(line=BorderLineKind.DOUBLE, color=CommonColor.GREEN)
         shadow = InnerShadow(location=ShadowLocation.BOTTOM_RIGHT)
@@ -209,7 +210,7 @@ def test_write(loader, para_text) -> None:
         assert side == pp.BottomBorder
         assert pp.ParaIsConnectBorder
         cursor.gotoEnd(False)
-        InnerBorders.default.apply(cursor)
+        bdr_default.apply(cursor)
 
         bdr = InnerBorders(
             all=Side(line=BorderLineKind.DOUBLE_THIN, color=CommonColor.BLUE),

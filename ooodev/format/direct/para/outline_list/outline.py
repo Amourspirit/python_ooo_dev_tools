@@ -9,7 +9,6 @@ from enum import IntEnum
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
-from .....meta.static_prop import static_prop
 from .....utils import lo as mLo
 from .....utils import props as mProps
 from ....kind.format_kind import FormatKind
@@ -254,14 +253,14 @@ class Outline(StyleBase):
     def prop_level(self, value: LevelKind) -> LevelKind:
         self._set("OutlineLevel", value.value)
 
-    @static_prop
-    def default() -> Outline:  # type: ignore[misc]
-        """Gets ``Outline`` default. Static Property."""
+    @property
+    def default(self: _TOutline) -> _TOutline:
+        """Gets ``Outline`` default."""
         try:
-            return Outline._DEFAULT_INST
+            return self._default_inst
         except AttributeError:
-            Outline._DEFAULT_INST = Outline(level=LevelKind.TEXT_BODY)
-            Outline._DEFAULT_INST._is_default_inst = True
-        return Outline._DEFAULT_INST
+            self._default_inst = self.__class__(level=LevelKind.TEXT_BODY, _cattribs=self._get_internal_cattribs())
+            self._default_inst._is_default_inst = True
+        return self._default_inst
 
     # endregion properties

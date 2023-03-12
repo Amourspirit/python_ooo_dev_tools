@@ -164,7 +164,7 @@ class Color(StyleBase):
         return self._props_internal_attributes
 
     @property
-    def empty(self: Type[_TColor]) -> _TColor:  # type: ignore[misc]
+    def empty(self: _TColor) -> _TColor:  # type: ignore[misc]
         """Gets BackColor empty."""
         try:
             return self._empty_inst

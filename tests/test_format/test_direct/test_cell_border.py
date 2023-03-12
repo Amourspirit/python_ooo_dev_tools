@@ -142,7 +142,7 @@ def test_calc_border(loader) -> None:
         Calc.set_val(value="Hello", sheet=sheet, cell_obj=cell_obj)
         cell = Calc.get_cell(sheet, cell_obj)
         cb = Borders(diagonal_down=side, diagonal_up=side)
-        Styler.apply(cell, Borders.default)
+        Styler.apply(cell, cb.default)
 
         Lo.delay(delay)
     finally:
@@ -218,7 +218,7 @@ def test_calc_border_range(loader) -> None:
         if not Lo.bridge_connector.headless:
             Calc.goto_cell(cell_obj=rng_obj.cell_start, doc=doc)
 
-        Styler.apply(cr, Borders.empty)
+        Styler.apply(cr, cb.empty)
 
         cell = Calc.get_cell(sheet=sheet, cell_obj=rng_obj.cell_start)
         cp = cast("CellProperties", cell)

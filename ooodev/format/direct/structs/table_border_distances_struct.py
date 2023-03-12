@@ -11,15 +11,15 @@ from ....utils import props as mProps
 from ....utils.data_type.unit_mm import UnitMM
 from ....utils.unit_convert import UnitConvert
 from ...kind.format_kind import FormatKind
-from ...style_base import StyleBase
 from ..common.props.struct_table_border_distances_props import StructTableBorderDistancesProps
+from .struct_base import StructBase
 
 # endregion imports
 
 _TTableBorderDistancesStruct = TypeVar(name="_TTableBorderDistancesStruct", bound="TableBorderDistancesStruct")
 
 
-class TableBorderDistancesStruct(StyleBase):
+class TableBorderDistancesStruct(StructBase):
     """
     Crop struct.
 

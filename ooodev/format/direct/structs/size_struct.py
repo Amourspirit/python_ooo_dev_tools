@@ -16,15 +16,15 @@ from ....utils import props as mProps
 from ....utils.data_type.unit_mm import UnitMM
 from ....utils.unit_convert import UnitConvert
 from ...kind.format_kind import FormatKind
-from ...style_base import StyleBase
 from ..common.props.struct_size_props import StructSizeProps
+from .struct_base import StructBase
 
 # endregion imports
 
 _TSizeStruct = TypeVar(name="_TSizeStruct", bound="SizeStruct")
 
 
-class SizeStruct(StyleBase):
+class SizeStruct(StructBase):
     """
     Crop struct.
 

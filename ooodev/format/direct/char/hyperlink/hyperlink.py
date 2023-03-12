@@ -8,7 +8,6 @@ from __future__ import annotations
 from typing import Tuple, overload, Type, TypeVar
 
 from .....exceptions import ex as mEx
-from .....meta.class_property_readonly import ClassPropertyReadonly
 from .....utils import props as mProps
 from ....kind.format_kind import FormatKind
 from ...common.props.hyperlink_props import HyperlinkProps
@@ -151,15 +150,14 @@ class Hyperlink(LinkTo):
             )
         return self._props_internal_attributes
 
-    @ClassPropertyReadonly
-    @classmethod
-    def empty(cls: Type[_THyperlink]) -> _THyperlink:  # type: ignore[misc]
-        """Gets Highlight empty. Static Property."""
+    @property
+    def empty(self: _THyperlink) -> _THyperlink:  # type: ignore[misc]
+        """Gets Highlight empty."""
         try:
-            return cls._EMPTY_INST
+            return self._empty_inst
         except AttributeError:
-            cls._EMPTY_INST = cls(name="", url="")
-            cls._EMPTY_INST._is_default_inst = True
-        return cls._EMPTY_INST
+            self._empty_inst = self.__class__(name="", url="", _cattribs=self._get_internal_cattribs())
+            self._empty_inst._is_default_inst = True
+        return self._empty_inst
 
     # endregion Properties

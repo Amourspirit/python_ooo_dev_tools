@@ -160,7 +160,7 @@ class FlowOptions(StyleBase):
 
     # endregion from_obj()
 
-    def on_property_setting(self,source: Any, event_args: KeyValCancelArgs):
+    def on_property_setting(self, source: Any, event_args: KeyValCancelArgs):
         """
         Subscribe to property setting events
 
@@ -319,19 +319,19 @@ class FlowOptions(StyleBase):
             return
         self._set("ParaSplit", not value)
 
-    @static_prop
-    def default() -> FlowOptions:  # type: ignore[misc]
-        """Gets ``FlowOptions`` default. Static Property."""
+    @property
+    def default(self: _TFlowOptions) -> _TFlowOptions:
+        """Gets ``FlowOptions`` default."""
         try:
-            return FlowOptions._DEFAULT_INST
+            return self._default_inst
         except AttributeError:
-            flo = FlowOptions()
+            flo = self.__class__(_cattribs=self._get_internal_cattribs())
             flo._set("ParaOrphans", 2)
             flo._set("ParaWidows", 2)
             flo._set("ParaSplit", True)
             flo._set("ParaKeepTogether", False)
             flo._is_default_inst = True
-            FlowOptions._DEFAULT_INST = flo
-        return FlowOptions._DEFAULT_INST
+            self._default_inst = flo
+        return self._default_inst
 
     # endregion properties

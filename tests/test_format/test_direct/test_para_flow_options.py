@@ -55,7 +55,7 @@ def test_props() -> None:
 
 
 def test_default() -> None:
-    flo = InnerFlowOptions.default
+    flo = InnerFlowOptions().default
     assert flo.prop_orphans == 2
     assert flo.prop_widows == 2
     assert flo.prop_keep == False

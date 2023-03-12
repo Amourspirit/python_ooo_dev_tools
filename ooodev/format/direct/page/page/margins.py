@@ -9,7 +9,6 @@ from typing import Any, Tuple, cast, Type, TypeVar, NamedTuple, overload
 import uno
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
-from .....meta.static_prop import static_prop
 from .....proto.unit_obj import UnitObj
 from .....utils import lo as mLo
 from .....utils import props as mProps
@@ -257,16 +256,16 @@ class Margins(StyleBase):
             )
         return self._props_internal_attributes
 
-    @static_prop
-    def default() -> Margins:  # type: ignore[misc]
+    @property
+    def default(self: _TMargins) -> _TMargins:  # type: ignore[misc]
         """Gets Margin Default. Static Property."""
         try:
-            return Margins._DEFAULT_INST
+            return self._DEFAULT_INST
         except AttributeError:
-            inst = Margins()
+            inst = self.__class__(_cattribs=self._get_internal_cattribs())
             for attrib in inst._props:
                 inst._set(attrib, 2000)
             inst._set(inst._props.gutter, 0)
             inst._is_default_inst = True
-            Margins._DEFAULT_INST = inst
-        return Margins._DEFAULT_INST
+            self._DEFAULT_INST = inst
+        return self._DEFAULT_INST

@@ -10,7 +10,6 @@ from .....events.args.cancel_event_args import CancelEventArgs
 from .....events.args.key_val_cancel_args import KeyValCancelArgs
 from .....exceptions import ex as mEx
 from .....proto.unit_obj import UnitObj
-from .....meta.static_prop import static_prop
 from .....utils import lo as mLo
 from .....utils import props as mProps
 from .....utils.unit_convert import UnitConvert
@@ -247,15 +246,15 @@ class DropCaps(StyleMulti):
             self._direct_inner = cast(DropCapStruct, self._get_style_inst("drop_cap"))
         return self._direct_inner
 
-    @static_prop
-    def default() -> DropCaps:  # type: ignore[misc]
-        """Gets ``DropCaps`` default. Static Property."""
+    @property
+    def default(self: _TDropCaps) -> _TDropCaps:
+        """Gets ``DropCaps`` default."""
         try:
-            return DropCaps._DEFAULT_INST
+            return self._default_inst
         except AttributeError:
-            inst = DropCaps(count=0)
+            inst = self.__class__(count=0, _cattribs=self._get_cattribs())
             inst._is_default_inst = True
-            DropCaps._DEFAULT_INST = inst
-        return DropCaps._DEFAULT_INST
+            self._default_inst = inst
+        return self._default_inst
 
     # endregion properties

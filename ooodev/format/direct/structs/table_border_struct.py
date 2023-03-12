@@ -19,10 +19,11 @@ from ....utils import props as mProps
 from ....utils.data_type.unit_mm import UnitMM
 from ....utils.unit_convert import UnitConvert, Length
 from ...kind.format_kind import FormatKind
-from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent, _on_props_setting, _on_props_set
+from ...style_base import EventArgs, CancelEventArgs, FormatNamedEvent, _on_props_setting, _on_props_set
 from ..common.props.prop_pair import PropPair
 from ..common.props.struct_border_table_props import StructBorderTableProps
 from .side import Side as Side
+from .struct_base import StructBase
 
 
 # endregion imports
@@ -30,7 +31,7 @@ from .side import Side as Side
 _TTableBorderStruct = TypeVar(name="_TTableBorderStruct", bound="TableBorderStruct")
 
 
-class TableBorderStruct(StyleBase):
+class TableBorderStruct(StructBase):
     """
     Table Border struct positioning for use in styles.
 
@@ -214,7 +215,7 @@ class TableBorderStruct(StyleBase):
             )
             if h_invalid:
                 tb = cast(TableBorder2, mProps.Props.get(obj, prop_name))
-                tb.HorizontalLine = Side.empty.get_uno_struct()
+                tb.HorizontalLine = Side().empty.get_uno_struct()
                 tb.IsHorizontalLineValid = True
                 mProps.Props.set(obj, **{prop_name: tb})
         else:

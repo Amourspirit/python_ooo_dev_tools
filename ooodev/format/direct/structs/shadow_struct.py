@@ -9,7 +9,7 @@ from typing import Any, Dict, Tuple, Type, cast, overload, TypeVar
 
 import uno
 from ....exceptions import ex as mEx
-from ....meta.static_prop import static_prop
+
 from ....proto.unit_obj import UnitObj
 from ....utils import lo as mLo
 from ....utils import props as mProps
@@ -18,7 +18,8 @@ from ....utils.data_type.unit_mm import UnitMM
 from ....utils.data_type.unit_mm100 import UnitMM100
 from ....utils.unit_convert import UnitConvert
 from ...kind.format_kind import FormatKind
-from ...style_base import StyleBase, CancelEventArgs
+from ...style_base import CancelEventArgs
+from .struct_base import StructBase
 
 from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
@@ -26,7 +27,7 @@ from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 _TShadowStruct = TypeVar(name="_TShadowStruct", bound="ShadowStruct")
 
 # endregion imports
-class ShadowStruct(StyleBase):
+class ShadowStruct(StructBase):
     """
     Shadow struct
 
@@ -231,12 +232,11 @@ class ShadowStruct(StyleBase):
             Shadow: Instance from object
         """
 
-        # this nu is only used to get Property Name
         nu = cls(**kwargs)
 
         shadow = cast(ShadowFormat, mProps.Props.get(obj, nu._get_property_name()))
         if shadow is None:
-            return cls.empty.copy()
+            return nu.empty.copy()
 
         return cls(
             location=shadow.Location,
@@ -389,16 +389,20 @@ class ShadowStruct(StyleBase):
         except AttributeError:
             self._width = UnitConvert.convert_mm_mm100(value)
 
-    @static_prop
-    def empty() -> ShadowStruct:  # type: ignore[misc]
-        """Gets empty Shadow. Static Property. when style is applied it remove any shadow."""
+    @property
+    def empty(self: _TShadowStruct) -> _TShadowStruct:  # type: ignore[misc]
+        """Gets empty Shadow. When style is applied it remove any shadow."""
         try:
-            return ShadowStruct._EMPTY_INST
+            return self._empty_inst
         except AttributeError:
-            ShadowStruct._EMPTY_INST = ShadowStruct(
-                location=ShadowLocation.NONE, transparent=False, color=8421504, width=1.76
+            self._empty_inst = self.__class__(
+                location=ShadowLocation.NONE,
+                transparent=False,
+                color=8421504,
+                width=1.76,
+                _cattribs=self._get_internal_cattribs(),
             )
-            ShadowStruct._EMPTY_INST._is_default_inst = True
-        return ShadowStruct._EMPTY_INST
+            self._empty_inst._is_default_inst = True
+        return self._empty_inst
 
     # endregion Properties

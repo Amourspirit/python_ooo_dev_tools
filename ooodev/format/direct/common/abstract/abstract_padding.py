@@ -331,6 +331,16 @@ class AbstractPadding(StyleBase):
             self._set(self._props.bottom, UnitConvert.convert_mm_mm100(value))
 
     @property
+    def default(self: _TAbstractPadding) -> _TAbstractPadding:  # type: ignore[misc]
+        """Gets Padding default."""
+        try:
+            return self._default_inst
+        except AttributeError:
+            self._default_inst = self.__class__(all=0.35, _cattribs=self._get_internal_cattribs())
+            self._default_inst._is_default_inst = True
+        return self._default_inst
+
+    @property
     def _props(self) -> BorderProps:
         try:
             return self._props_internal_attributes

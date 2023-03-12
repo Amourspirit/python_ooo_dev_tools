@@ -232,4 +232,14 @@ class AbstractLineNumber(StyleBase):
             self._props_line_num = LineNumeProps(value="ParaLineNumberStartValue", count="ParaLineNumberCount")
         return self._props_line_num
 
+    @property
+    def default(self: _TAbstractLineNumber) -> _TAbstractLineNumber:
+        """Gets ``LineNum`` default."""
+        try:
+            return self._default_inst
+        except AttributeError:
+            self._default_inst = self.__class__(num_start=0, _cattribs=self._get_internal_cattribs())
+            self._default_inst._is_default_inst = True
+        return self._default_inst
+
     # endregion properties

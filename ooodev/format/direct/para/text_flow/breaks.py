@@ -187,14 +187,14 @@ class Breaks(StyleBase):
         """Gets Page number to apply to break"""
         return self._get("PageNumberOffset")
 
-    @static_prop
-    def default() -> Breaks:  # type: ignore[misc]
-        """Gets ``Breaks`` default. Static Property."""
+    @property
+    def default(self: _TBreaks) -> _TBreaks:
+        """Gets ``Breaks`` default."""
         try:
-            return Breaks._DEFAULT_INST
+            return self._default_inst
         except AttributeError:
-            Breaks._DEFAULT_INST = Breaks(type=BreakType.NONE)
-            Breaks._DEFAULT_INST._is_default_inst = True
-        return Breaks._DEFAULT_INST
+            self._default_inst = self.__class__(type=BreakType.NONE, _cattribs=self._get_internal_cattribs())
+            self._default_inst._is_default_inst = True
+        return self._default_inst
 
     # endregion properties

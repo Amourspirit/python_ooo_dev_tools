@@ -39,7 +39,7 @@ def test_props() -> None:
 
 
 def test_default() -> None:
-    ln = LineNum.default
+    ln = LineNum().default
     assert ln._get("ParaLineNumberStartValue") == 0
     assert ln._get("ParaLineNumberCount") == True
     assert ln.prop_num_start == 0
@@ -113,7 +113,7 @@ def test_write(loader, para_text) -> None:
         assert pp.ParaLineNumberStartValue == 1
         cursor.gotoEnd(False)
 
-        Write.append_para(cursor=cursor, text=para_text, styles=(LineNum.default,))
+        Write.append_para(cursor=cursor, text=para_text, styles=(LineNum().default,))
         cursor.goLeft(p_len + 1, False)
         cursor.goRight(p_len, True)
         assert pp.ParaLineNumberCount == True

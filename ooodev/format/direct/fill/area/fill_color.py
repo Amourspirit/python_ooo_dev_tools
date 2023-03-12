@@ -4,15 +4,18 @@ Module for Fill Properties Fill Color.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple
+from typing import Tuple, TypeVar
 
-from .....meta.static_prop import static_prop
+import uno
+from ooo.dyn.drawing.fill_style import FillStyle as FillStyle
+
 from .....utils import lo as mLo
 from ....kind.format_kind import FormatKind
 from ...common.abstract.abstract_fill_color import AbstractColor
 from ...common.props.fill_color_props import FillColorProps
 
-from ooo.dyn.drawing.fill_style import FillStyle as FillStyle
+
+_TFillColor = TypeVar(name="_TFillColor", bound="FillColor")
 
 
 class FillColor(AbstractColor):
@@ -63,12 +66,12 @@ class FillColor(AbstractColor):
             self._props_internal_attributes = FillColorProps(color="FillColor", style="FillStyle", bg="FillBackground")
         return self._props_internal_attributes
 
-    @static_prop
-    def empty() -> FillColor:  # type: ignore[misc]
-        """Gets FillColor empty. Static Property."""
+    @property
+    def empty(self: _TFillColor) -> _TFillColor:  # type: ignore[misc]
+        """Gets FillColor empty."""
         try:
-            return FillColor._EMPTY_PROPS
+            return self._empty_props
         except AttributeError:
-            FillColor._EMPTY_PROPS = FillColor()
-            FillColor._EMPTY_PROPS._is_default_inst = True
-        return FillColor._EMPTY_PROPS
+            self._empty_props = self.__class__(_cattribs=self._get_internal_cattribs())
+            self._empty_props._is_default_inst = True
+        return self._empty_props

@@ -8,7 +8,6 @@ from typing import Any, Tuple, Type, overload, TypeVar
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
-from .....meta.class_property_readonly import ClassPropertyReadonly
 from .....utils import lo as mLo
 from .....utils import props as mProps
 from .....utils.color import Color
@@ -164,13 +163,12 @@ class Highlight(StyleBase):
             self._set("CharBackColor", -1)
             self._set("CharBackTransparent", True)
 
-    @ClassPropertyReadonly
-    @classmethod
-    def empty(cls: Type[_THighlight]) -> _THighlight:  # type: ignore[misc]
-        """Gets Highlight empty. Static Property."""
+    @property
+    def empty(self: _THighlight) -> _THighlight:  # type: ignore[misc]
+        """Gets Highlight empty."""
         try:
-            return cls._EMPTY_INST
+            return self._empty_inst
         except AttributeError:
-            cls._EMPTY_INST = cls()
-            cls._EMPTY_INST._is_default_inst = True
-        return cls._EMPTY_INST
+            self._empty_inst = self.__class__(_cattribs=self._get_internal_cattribs())
+            self._empty_inst._is_default_inst = True
+        return self._empty_inst

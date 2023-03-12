@@ -189,21 +189,30 @@ class TextFlow(StyleMulti):
             self._direct_inner_fo = cast(FlowOptions, self._get_style_inst("flow_options"))
         return self._direct_inner_fo
 
-    @static_prop
-    def default() -> TextFlow:  # type: ignore[misc]
-        """Gets ``TextFlow`` default. Static Property."""
+    @property
+    def default(self: _TTextFlow) -> _TTextFlow:
+        """Gets ``TextFlow`` default."""
         try:
-            return TextFlow._DEFAULT_INST
+            return self._default_inst
         except AttributeError:
-            hy = Hyphenation.default
-            brk = Breaks.default
-            flo = FlowOptions.default
-            tf = TextFlow()
+            if self.prop_inner_hyphenation is None:
+                hy = Hyphenation().default
+            else:
+                hy = self.prop_inner_hyphenation.default
+            if self.prop_inner_breaks is None:
+                brk = Breaks().default
+            else:
+                brk = self.prop_inner_breaks.default
+            if self.prop_inner_flow_options is None:
+                flo = FlowOptions().default
+            else:
+                flo = self.prop_inner_flow_options.default
+            tf = self()
             tf._set_style("hyphenation", hy, *hy.get_attrs())
             tf._set_style("breaks", brk, *brk.get_attrs())
             tf._set_style("flow_options", flo, *flo.get_attrs())
             tf._is_default_inst = True
-            TextFlow._DEFAULT_INST = tf
-        return TextFlow._DEFAULT_INST
+            self._default_inst = tf
+        return self._default_inst
 
     # endregion properties

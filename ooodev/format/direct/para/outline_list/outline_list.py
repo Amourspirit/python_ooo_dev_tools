@@ -7,7 +7,6 @@ from __future__ import annotations
 from typing import Any, Tuple, Type, cast, TypeVar, overload
 
 from .....events.args.cancel_event_args import CancelEventArgs
-from .....meta.static_prop import static_prop
 from ....style_base import StyleMulti
 from .....exceptions import ex as mEx
 from ....kind.format_kind import FormatKind
@@ -171,18 +170,31 @@ class OutlineList(StyleMulti):
             self._direct_inner_ln = cast(LineNum, self._get_style_inst("line_num"))
         return self._direct_inner_ln
 
-    @static_prop
-    def default() -> OutlineList:  # type: ignore[misc]
-        """Gets ``OutlineList`` default. Static Property."""
+    @property
+    def default(self: _TOutlineList) -> _TOutlineList:
+        """Gets ``OutlineList`` default."""
         try:
-            return OutlineList._DEFAULT_INST
+            return self._default_inst
         except AttributeError:
-            inst = OutlineList()
-            inst._set_style("outline", InnerOutline.default, *InnerOutline.default.get_attrs())
-            inst._set_style("list_style", ParaListStyle.default, *ParaListStyle.default.get_attrs())
-            inst._set_style("line_num", LineNum.default, *LineNum.default.get_attrs())
+
+            if self.prop_inner_line_number is None:
+                ln = LineNum().default
+            else:
+                ln = self.prop_inner_line_number.default
+            if self.prop_inner_outline is None:
+                ol = InnerOutline().default
+            else:
+                ol = self.prop_inner_outline.default
+            if self.prop_inner_list_style is None:
+                ls = ParaListStyle().default
+            else:
+                ls = self.prop_inner_list_style.default
+            inst = self.__class__(_cattribs=self._get_internal_cattribs())
+            inst._set_style("outline", ol, *ol.get_attrs())
+            inst._set_style("list_style", ls, *ls.get_attrs())
+            inst._set_style("line_num", ln, *ln.get_attrs())
             inst._is_default_inst = True
-            OutlineList._DEFAULT_INST = inst
-        return OutlineList._DEFAULT_INST
+            self._default_inst = inst
+        return self._default_inst
 
     # endregion properties

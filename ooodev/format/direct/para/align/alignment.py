@@ -10,7 +10,6 @@ from enum import Enum
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
-from .....meta.static_prop import static_prop
 from .....utils import lo as mLo
 from .....utils import props as mProps
 from ....kind.format_kind import FormatKind
@@ -452,21 +451,26 @@ class Alignment(StyleMulti):
             self._direct_inner_mode = cast(WritingMode, self._get_style_inst("txt_direction"))
         return self._direct_inner_mode
 
-    @static_prop
-    def default() -> Alignment:  # type: ignore[misc]
-        """Gets Alignment defult. Static Property."""
+    @property
+    def default(self: _TAlignment) -> _TAlignment:
+        """Gets Alignment defult."""
         try:
-            return Alignment._DEFAULT_INST
+            return self._default_inst
         except AttributeError:
-            Alignment._DEFAULT_INST = Alignment(
+            if self.prop_inner_mode is None:
+                mode = WritingMode(_cattribs=self._get_internal_cattribs()).default
+            else:
+                mode = self.prop_inner_mode.default
+            self._default_inst = self.__class__(
                 align=ParagraphAdjust.LEFT,
                 align_vert=ParagraphVertAlignEnum.AUTOMATIC,
-                txt_direction=WritingMode.default.copy(),
+                txt_direction=mode,
                 align_last=LastLineKind.START,
                 expand_single_word=False,
                 snap_to_grid=True,
+                _cattribs=self._get_internal_cattribs(),
             )
-            Alignment._DEFAULT_INST._is_default_inst = True
-        return Alignment._DEFAULT_INST
+            self._default_inst._is_default_inst = True
+        return self._default_inst
 
     # endregion properties

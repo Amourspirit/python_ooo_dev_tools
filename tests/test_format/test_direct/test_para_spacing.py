@@ -31,7 +31,7 @@ def test_spacing_props() -> None:
 
 
 def test_spacing_default() -> None:
-    idt = cast(Spacing, Spacing.default)
+    idt = Spacing().default
     assert idt.prop_above.value == 0.0
     assert idt.prop_below.value == 0.0
     assert idt.prop_style_no_space == False

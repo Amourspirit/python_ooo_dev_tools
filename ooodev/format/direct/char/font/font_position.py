@@ -10,7 +10,6 @@ from enum import Enum
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....events.args.key_val_cancel_args import KeyValCancelArgs
 from .....exceptions import ex as mEx
-from .....meta.class_property_readonly import ClassPropertyReadonly
 from .....proto.unit_obj import UnitObj
 from .....utils import lo as mLo
 from .....utils import props as mProps
@@ -618,14 +617,13 @@ class FontPosition(StyleBase):
         self._set("CharAutoKerning", value)
 
     # endregion Prop Properties
-    @ClassPropertyReadonly
-    @classmethod
-    def default(cls: Type[_TFontPosition]) -> _TFontPosition:  # type: ignore[misc]
-        """Gets Font Position default. Static Property."""
+    @property
+    def default(self: _TFontPosition) -> _TFontPosition:  # type: ignore[misc]
+        """Gets Font Position default."""
         try:
-            return cls._DEFAULT_INSTANCE
+            return self._default_instance
         except AttributeError:
-            fp = cls()
+            fp = self.__class__(_cattribs=self._get_internal_cattribs())
             fp._set("CharEscapement", 0)
             fp._set("CharEscapementHeight", 100)
             fp._set("CharRotation", 0)
@@ -634,5 +632,5 @@ class FontPosition(StyleBase):
             fp._set("CharKerning", 0)
             fp._set("CharAutoKerning", True)
             fp._is_default_inst = True
-            cls._DEFAULT_INSTANCE = fp
-        return cls._DEFAULT_INSTANCE
+            self._default_instance = fp
+        return self._default_instance

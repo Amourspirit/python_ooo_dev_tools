@@ -81,16 +81,6 @@ class Padding(AbstractPadding):
             self._format_kind_prop = FormatKind.PARA
         return self._format_kind_prop
 
-    @static_prop
-    def default() -> Padding:  # type: ignore[misc]
-        """Gets Padding default. Static Property."""
-        try:
-            return Padding._DEFAULT_INST
-        except AttributeError:
-            Padding._DEFAULT_INST = Padding(all=0.35)
-            Padding._DEFAULT_INST._is_default_inst = True
-        return Padding._DEFAULT_INST
-
     @property
     def _props(self) -> BorderProps:
         try:

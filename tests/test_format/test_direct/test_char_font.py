@@ -334,7 +334,7 @@ def test_font_position_super_sub_cursor(loader) -> None:
         assert cp.CharEscapementHeight == InnerFontPosition._DEFAULT_SUPER_SUB_HEIGHT
         cursor.gotoEnd(False)
 
-        InnerFontPosition.default.apply(cursor)
+        fp.default.apply(cursor)
         Write.end_paragraph(cursor=cursor)
         pos = Write.get_position(cursor)
         Write.append(cursor, "hello")
@@ -494,6 +494,7 @@ def test_font_effects_cursor(loader) -> None:
         cursor.gotoEnd(False)
         cursor.goLeft(5, True)
         fp = InnerFontEffects.from_obj(cursor)
+        default_font = fp.default.copy()
         fp.prop_overline = FontUnderlineEnum.DASH
         fp.prop_overline_color = CommonColor.AZURE
         Styler.apply(cursor, fp)
@@ -506,7 +507,7 @@ def test_font_effects_cursor(loader) -> None:
         assert cp.CharOverlineColor == -1
         assert cp.CharOverlineHasColor == False
         cursor.gotoEnd(False)
-        InnerFontEffects.default.apply(cursor)
+        default_font.apply(cursor)
         Write.end_paragraph(cursor)
 
         Write.append(cursor, "hello")
@@ -531,7 +532,7 @@ def test_font_effects_cursor(loader) -> None:
         fp.apply(cursor)
         assert cp.CharTransparence == 15
         cursor.gotoEnd(False)
-        InnerFontEffects.default.apply(cursor)
+        default_font.apply(cursor)
         Write.end_paragraph(cursor)
 
         fp = InnerFontEffects(hidden=True)
@@ -540,7 +541,7 @@ def test_font_effects_cursor(loader) -> None:
         fp.apply(cursor)
         assert cp.CharHidden
         cursor.gotoEnd(False)
-        InnerFontEffects.default.apply(cursor)
+        default_font.apply(cursor)
         Write.end_paragraph(cursor)
 
         fp = InnerFontEffects().outline
@@ -549,7 +550,7 @@ def test_font_effects_cursor(loader) -> None:
         fp.apply(cursor)
         assert cp.CharContoured
         cursor.gotoEnd(False)
-        InnerFontEffects.default.apply(cursor)
+        default_font.apply(cursor)
         Write.end_paragraph(cursor)
 
         fp = InnerFontEffects().relief_embossed
@@ -558,7 +559,7 @@ def test_font_effects_cursor(loader) -> None:
         fp.apply(cursor)
         assert cp.CharRelief == FontReliefEnum.EMBOSSED.value
         cursor.gotoEnd(False)
-        InnerFontEffects.default.apply(cursor)
+        default_font.apply(cursor)
         Write.end_paragraph(cursor)
 
         # When relief is set shadow should be ignored
@@ -570,7 +571,7 @@ def test_font_effects_cursor(loader) -> None:
         fp.apply(cursor)
         assert cp.CharRelief == FontReliefEnum.ENGRAVED.value
         cursor.gotoEnd(False)
-        InnerFontEffects.default.apply(cursor)
+        default_font.apply(cursor)
         Write.end_paragraph(cursor)
 
         fp = InnerFontEffects(strike=FontStrikeoutEnum.DOUBLE, word_mode=True)
@@ -580,7 +581,7 @@ def test_font_effects_cursor(loader) -> None:
         assert cp.CharStrikeout == FontStrikeoutEnum.DOUBLE.value
         assert cp.CharWordMode
         cursor.gotoEnd(False)
-        InnerFontEffects.default.apply(cursor)
+        default_font.apply(cursor)
         Write.end_paragraph(cursor)
 
         Lo.delay(delay)

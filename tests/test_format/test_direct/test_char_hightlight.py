@@ -43,7 +43,7 @@ def test_char_highlight_props() -> None:
     assert hl._get("CharBackColor") == CommonColor.AQUA
     assert hl._get("CharBackTransparent") == False
 
-    hl = InnerHighlight.empty
+    hl = hl.empty.copy()
     hl.color = -1
     assert hl.color == -1
     assert hl._get("CharBackColor") == -1
@@ -76,7 +76,7 @@ def test_char_hightlight(loader) -> None:
         assert cp.CharBackTransparent == False
         cursor.gotoEnd(False)
 
-        Write.style_left(cursor=cursor, pos=pos, styles=(InnerHighlight.empty,))
+        Write.style_left(cursor=cursor, pos=pos, styles=(hl.empty,))
         cursor.gotoEnd(False)
         cursor.goLeft(5, True)
         cp = cast("CharacterProperties", cursor)

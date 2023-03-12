@@ -277,20 +277,21 @@ class Gradient(StyleMulti):
             )
         return self._props_internal_attributes
 
-    @static_prop
-    def default() -> Gradient:  # type: ignore[misc]
+    @property
+    def default(self: _TGradient) -> _TGradient:
         """Gets Gradient empty. Static Property."""
         try:
-            return Gradient._DEFAULT_INST
+            return self._default_inst
         except AttributeError:
-            inst = Gradient(
+            inst = self(
                 style=GradientStyle.LINEAR,
                 step_count=0,
                 offset=Offset(0, 0),
                 angle=Angle(0),
                 border=0,
                 grad_intensity=IntensityRange(0, 0),
+                _cattribs=self._get_inner_cattribs(),
             )
             inst._is_default_inst = True
-            Gradient._DEFAULT_INST = inst
-        return Gradient._DEFAULT_INST
+            self._default_inst = inst
+        return self._default_inst

@@ -160,4 +160,14 @@ class AbstractColor(StyleBase):
     def _props(self) -> FillColorProps:
         raise NotImplementedError
 
+    @property
+    def default(self: _TAbstractColor) -> _TAbstractColor:
+        """Gets Color empty."""
+        try:
+            return self._default_inst
+        except AttributeError:
+            self._default_inst = self.__class__(color=-1, _cattribs=self._get_internal_cattribs())
+            self._default_inst._is_default_inst = True
+        return self._default_inst
+
     # endregion Properties

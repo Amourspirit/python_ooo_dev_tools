@@ -326,14 +326,16 @@ class Hyphenation(StyleBase):
             return
         self._set("ParaHyphenationMaxHyphens", value)
 
-    @static_prop
-    def default() -> Hyphenation:  # type: ignore[misc]
+    @property
+    def default(self: _THyphenation) -> _THyphenation:
         """Gets ``Hyphenation`` default. Static Property."""
         try:
-            return Hyphenation._DEFAULT_INST
+            return self._default_inst
         except AttributeError:
-            Hyphenation._DEFAULT_INST = Hyphenation(auto=False, no_caps=False, start_chars=2, end_chars=2, max=0)
-            Hyphenation._DEFAULT_INST._is_default_inst = True
-        return Hyphenation._DEFAULT_INST
+            self._default_inst = self.__class__(
+                auto=False, no_caps=False, start_chars=2, end_chars=2, max=0, _cattribs=self._get_internal_cattribs()
+            )
+            self._default_inst._is_default_inst = True
+        return self._default_inst
 
     # endregion properties

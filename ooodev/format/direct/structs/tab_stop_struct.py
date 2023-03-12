@@ -20,7 +20,8 @@ from ....utils import props as mProps
 from ....utils.data_type.unit_mm import UnitMM
 from ....utils.unit_convert import UnitConvert
 from ...kind.format_kind import FormatKind
-from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent
+from ...style_base import EventArgs, CancelEventArgs, FormatNamedEvent
+from .struct_base import StructBase
 
 
 _TTabStopStruct = TypeVar(name="_TTabStopStruct", bound="TabStopStruct")
@@ -38,7 +39,7 @@ class FillCharKind(Enum):
         return self.value
 
 
-class TabStopStruct(StyleBase):
+class TabStopStruct(StructBase):
     """
     Paragraph Tab
 
