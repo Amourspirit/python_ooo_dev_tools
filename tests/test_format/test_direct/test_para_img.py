@@ -9,7 +9,9 @@ import uno
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
-from ooodev.format.direct.para.area.img import (
+
+# from ooodev.format.direct.para.area.img import (
+from ooodev.format.writer.direct.para.area import (
     Img,
     PresetImageKind,
     ImgStyleKind,

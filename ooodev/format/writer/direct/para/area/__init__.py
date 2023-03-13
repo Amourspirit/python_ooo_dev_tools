@@ -22,7 +22,6 @@ from .....direct.fill.area.img import (
     Offset as Offset,
     OffsetColumn as OffsetColumn,
     OffsetRow as OffsetRow,
-    ImgStyleKind as ImgStyleKind,
 )
 from .....direct.para.area.img import Img as Img
 from .....direct.para.area.hatch import Hatch as InnerHatch

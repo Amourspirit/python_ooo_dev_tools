@@ -24,6 +24,7 @@ from ...fill.area.img import (
 from ....preset.preset_image import PresetImageKind as PresetImageKind
 from ....kind.format_kind import FormatKind
 from .....events.format_named_event import FormatNamedEvent
+from ...common.props.img_para_area_props import ImgParaAreaProps
 
 
 _TImg = TypeVar(name="_TImg", bound="Img")
@@ -75,14 +76,14 @@ class Img(StyleMulti):
         )
         fimg._prop_parent = self
 
-        init_vars = {
-            "ParaBackColor": -1,
-            "ParaBackGraphicLocation": self._get_graphic_loc(position, mode),
-            "ParaBackTransparent": True,
-        }
-        bmap = fimg._get("FillBitmap")
+        init_vars = {}
+        init_vars[self._props.back_color] = -1
+        init_vars[self._props.graphic_loc] = self._get_graphic_loc(position, mode)
+        init_vars[self._props.transparent] = True
+
+        bmap = fimg._get(fimg._props.bitmap)
         if not bmap is None:
-            init_vars["ParaBackGraphic"] = bmap
+            init_vars[self._props.back_graphic] = bmap
 
         super().__init__(**init_vars)
         self._set_style("fill_image", fimg, *fimg.get_attrs())
@@ -137,12 +138,12 @@ class Img(StyleMulti):
 
     def on_property_restore_setting(self, source: Any, event_args: KeyValCancelArgs) -> None:
         # mLo.Lo.print(f'Restoring "{event_args.key}"')
-        defaults = ("ParaBackColor", "ParaBackGraphicLocation", "ParaBackTransparent")
+        defaults = (self._props.back_color, self._props.graphic_loc, self._props.transparent)
         if event_args.key in defaults:
             default = mProps.Props.get_default(event_args.event_data, event_args.key)
             if default == event_args.value:
                 event_args.default = True
-        elif event_args.key == "ParaBackGraphic":
+        elif event_args.key == self._props.back_graphic:
             if not event_args.value:
                 event_args.cancel = True
 
@@ -214,9 +215,9 @@ class Img(StyleMulti):
 
         inst = cls(**kwargs)
         inst._set(
-            "ParaBackGraphicLocation", inst._get_graphic_loc(position=fill_img.prop_posiion, mode=fill_img.prop_mode)
+            inst._props.graphic_loc, inst._get_graphic_loc(position=fill_img.prop_posiion, mode=fill_img.prop_mode)
         )
-        inst._set("ParaBackGraphic", fill_img._get("FillBitmap"))
+        inst._set(inst._props.back_graphic, fill_img._get(fill_img._props.bitmap))
         fill_img._prop_parent = inst
         inst._set_style("fill_image", fill_img, *fill_img.get_attrs())
         fill_img.add_event_listener(FormatNamedEvent.STYLE_PROPERTY_APPLYING, _on_fill_img_prop_setting)
@@ -254,10 +255,10 @@ class Img(StyleMulti):
         inst = cls(**kwargs)
         bmap = fill_img._get("FillBitmap")
         inst._set(
-            "ParaBackGraphicLocation", inst._get_graphic_loc(position=fill_img.prop_posiion, mode=fill_img.prop_mode)
+            inst._props.graphic_loc, inst._get_graphic_loc(position=fill_img.prop_posiion, mode=fill_img.prop_mode)
         )
         if not bmap is None:
-            inst._set("ParaBackGraphic", fill_img._get("FillBitmap"))
+            inst._set(inst._props.back_graphic, fill_img._get(fill_img._props.bitmap))
         fill_img._prop_parent = inst
         inst._set_style("fill_image", fill_img, *fill_img.get_attrs())
         fill_img.add_event_listener(FormatNamedEvent.STYLE_PROPERTY_APPLYING, _on_fill_img_prop_setting)
@@ -285,16 +286,31 @@ class Img(StyleMulti):
             self._direct_inner = cast(InnerImg, self._get_style_inst("fill_image"))
         return self._direct_inner
 
+    @property
+    def _props(self) -> ImgParaAreaProps:
+        try:
+            return self._props_internal_attributes
+        except AttributeError:
+            self._props_internal_attributes = ImgParaAreaProps(
+                back_color="ParaBackColor",
+                back_graphic="ParaBackGraphic",
+                graphic_loc="ParaBackGraphicLocation",
+                transparent="ParaBackTransparent",
+            )
+        return self._props_internal_attributes
+
 
 def _on_fill_img_prop_setting(source: Any, event_args: KeyValCancelArgs, *args, **kwargs) -> None:
     # Fill images do not support setting of FillBitmapMode in Write
-    if event_args.key == "FillBitmapMode":
+    img = cast(InnerImg, event_args.event_source)
+    if event_args.key == img._props.mode:
         # print("Setting Fill Property: Found FillBitmapMode, canceling.")
         event_args.cancel = True
 
 
 def _on_fill_img_prop_backup(source: Any, event_args: KeyValCancelArgs, *args, **kwargs) -> None:
     # Fill images do not support setting of FillBitmapMode in Write
-    if event_args.key == "FillBitmapMode":
+    img = cast(InnerImg, event_args.event_source)
+    if event_args.key == img._props.mode:
         # print("Backup up Fill Property: Found FillBitmapMode, canceling.")
         event_args.cancel = True

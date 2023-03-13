@@ -9,6 +9,7 @@ Subpackages
 
    ooodev.format.direct.table.background
    ooodev.format.direct.table.borders
+   ooodev.format.direct.table.props
 
 Module contents
 ---------------
