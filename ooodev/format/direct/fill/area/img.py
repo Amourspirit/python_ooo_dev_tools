@@ -4,7 +4,6 @@ Module for Fill Properties Fill Image.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from dataclasses import dataclass
 from typing import Any, Tuple, cast, overload, Type, TypeVar, TYPE_CHECKING
 from enum import Enum
 
@@ -217,7 +216,7 @@ class Img(StyleBase):
 
     # endregion apply()
 
-    def on_property_restore_setting(self,source: Any, event_args: KeyValCancelArgs) -> None:
+    def on_property_restore_setting(self, source: Any, event_args: KeyValCancelArgs) -> None:
         if event_args.key == self._props.bitmap:
             if event_args.value is None:
                 event_args.default = True
@@ -343,6 +342,14 @@ class Img(StyleBase):
         except AttributeError:
             self._format_kind_prop = FormatKind.TXT_CONTENT | FormatKind.FILL
         return self._format_kind_prop
+
+    @property
+    def prop_bitmap(self) -> XBitmap | None:
+        """Gets bitmap"""
+        pv = self._get(self._props.bitmap)
+        if pv is None:
+            return None
+        return pv
 
     @property
     def prop_mode(self) -> ImgStyleKind | None:

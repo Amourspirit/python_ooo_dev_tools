@@ -775,6 +775,8 @@ class Props:
                 if cargs.default:
                     cls.set_default(obj, cargs.key)
                 else:
+                    if cargs.key == "":
+                        continue
                     ps.setPropertyValue(cargs.key, cargs.value)
             except AttributeError as e:
                 # handle a LibreOffice bug

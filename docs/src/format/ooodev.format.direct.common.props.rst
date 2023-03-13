@@ -32,6 +32,7 @@ Submodules
    ooodev.format.direct.common.props.image_options_names_props
    ooodev.format.direct.common.props.image_options_properties
    ooodev.format.direct.common.props.image_rotation_props
+   ooodev.format.direct.common.props.img_para_area_props
    ooodev.format.direct.common.props.list_style_props
    ooodev.format.direct.common.props.prop_pair
    ooodev.format.direct.common.props.shape_shadow_props

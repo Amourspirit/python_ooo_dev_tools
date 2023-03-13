@@ -8,6 +8,7 @@ Submodules
    :maxdepth: 4
 
    ooodev.format.direct.table.background.color
+   ooodev.format.direct.table.background.img
 
 Module contents
 ---------------
