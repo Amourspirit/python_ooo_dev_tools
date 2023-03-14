@@ -1,6 +1,6 @@
 # region Imports
 from __future__ import annotations
-from typing import Any, Dict, NamedTuple, Tuple, TYPE_CHECKING, TypeVar, cast, overload
+from typing import Any, Dict, NamedTuple, Tuple, TYPE_CHECKING, Type, TypeVar, cast, overload
 import uno
 import random
 import string
@@ -32,9 +32,10 @@ if TYPE_CHECKING:
 # endregion Imports
 
 # region Type Vars
-TStyleBase = TypeVar("TStyleBase", bound="StyleBase")
-TStyleMulti = TypeVar("TStyleMulti", bound="StyleMulti")
-_TStyleModifyMulti = TypeVar("_TStyleModifyMulti", bound="StyleModifyMulti")
+TStyleBase = TypeVar(name="TStyleBase", bound="StyleBase")
+TStyleMulti = TypeVar(name="TStyleMulti", bound="StyleMulti")
+TStyleName = TypeVar(name="TStyleName", bound="StyleName")
+_TStyleModifyMulti = TypeVar(name="_TStyleModifyMulti", bound="StyleModifyMulti")
 # endregion Type Vars
 
 # region Meta
@@ -1344,6 +1345,109 @@ class StyleModifyMulti(StyleMulti):
 
 # endregion Style Modify Multi class
 
+# region StyleName Class
+class StyleName(StyleBase):
+    # region Init
+    def __init__(self, name: Any, **kwargs) -> None:
+        """
+        Constructor
+
+        Args:
+            name (Any): Style Name.
+
+        Raises:
+            ValueError: If Name is ``None`` or empty string.
+        """
+        if not name and name != "":
+            raise ValueError("Name is required.")
+        init_vars = {self._get_property_name(): str(name)}
+        init_vars.update(kwargs)
+        super().__init__(**init_vars)
+
+    # endregion Init
+
+    # region internal methods
+    def _get_property_name(self) -> str:
+        try:
+            return self._style_property_name
+        except AttributeError:
+            raise NotImplementedError
+
+    # endregion internal methods
+
+    # region Overrides
+    def _on_modifing(self, source: Any, event: CancelEventArgs) -> None:
+        if self._is_default_inst:
+            raise ValueError("Modifying a default instance is not allowed")
+        return super()._on_modifing(source, event)
+
+    # endregion Overrides
+
+    # region Static Methods
+    # region from_obj()
+    @overload
+    @classmethod
+    def from_obj(cls: Type[TStyleName], obj: object) -> TStyleName:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[TStyleName], obj: object, **kwargs) -> TStyleName:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[TStyleName], obj: object, **kwargs) -> TStyleName:
+        """
+        Gets instance from object
+
+        Args:
+            obj (object): UNO object.
+
+        Raises:
+            NotSupportedError: If ``obj`` is not supported.
+
+        Returns:
+            TStyleName: ``TStyleName`` instance that represents ``obj`` style.
+        """
+        inst = cls(**kwargs)
+        if not inst._is_valid_obj(obj):
+            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
+
+        pname = mProps.Props.get(obj, inst._get_property_name(), "")
+        if pname:
+            inst.prop_name = pname
+        return inst
+
+    # endregion from_obj()
+
+    # endregion Static Methods
+
+    # region Properties
+    @property
+    def prop_format_kind(self) -> FormatKind:
+        """Gets the kind of style"""
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.STYLE | FormatKind.STATIC
+        return self._format_kind_prop
+
+    @property
+    def prop_name(self) -> str:
+        """Gets/Sets style name"""
+        return self._get(self._get_property_name())
+
+    @prop_name.setter
+    def prop_name(self, value: Any) -> None:
+        if not value:
+            raise ValueError("Value must not be None or Empty string.")
+        self._set(self._get_property_name(), str(value))
+
+    # endregion Properties
+
+
+# endregion StyleName Class
+
 # region Props Property event handlers
 def _on_props_setting(source: Any, event_args: KeyValCancelArgs, *args, **kwargs) -> None:
     instance = cast(StyleBase, event_args.event_source)
@@ -1371,4 +1475,4 @@ def _on_props_restore_set(source: Any, event_args: KeyValArgs, *args, **kwargs) 
 
 # endregion Props Property event handlers
 
-__all__ = ("StyleBase", "StyleMulti", "StyleModifyMulti")
+__all__ = ("StyleBase", "StyleMulti", "StyleModifyMulti", "StyleName", "TStyleBase", "TStyleMulti", "TStyleName")

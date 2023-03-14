@@ -804,7 +804,15 @@ class Write(mSel.Selection):
 
         cursor.setString(text)
         cursor.gotoEnd(False)
+        style_srv = (
+            "com.sun.star.style.CharacterProperties",
+            "com.sun.star.style.ParagraphProperties",
+            "com.sun.star.drawing.FillProperties",
+        )
         for style in styles:
+            if not style.support_service(*style_srv):
+                mLo.Lo.print(f"_append_text_style(), Suppoted services are {style_srv}. Not Supported style: {style}")
+                continue
             cargs = CancelEventArgs("Write.append")
             cargs.event_data = style
             _Events().trigger(WriteNamedEvent.STYLING, cargs)
@@ -1062,8 +1070,17 @@ class Write(mSel.Selection):
         fill_lst: List[StyleObj] = []
         restore_style_lst: List[StyleObj] = []
         restore_fill_lst: List[StyleObj] = []
+        style_srv = (
+            "com.sun.star.style.CharacterProperties",
+            "com.sun.star.style.ParagraphProperties",
+            "com.sun.star.drawing.FillProperties",
+        )
+
         if not styles is None:
             for style in styles:
+                if not style.support_service(*style_srv):
+                    mLo.Lo.print(f"append_para(), Suppoted services are {style_srv}. Not Supported style: {style}")
+                    continue
                 if FormatKind.TXT_CONTENT in style.prop_format_kind and FormatKind.PARA in style.prop_format_kind:
                     fill_lst.append(style)
                 else:
@@ -1351,7 +1368,16 @@ class Write(mSel.Selection):
         cursor.goRight(pos, False)
         cursor.goRight(distance, True)
 
+        style_srv = (
+            "com.sun.star.style.CharacterProperties",
+            "com.sun.star.style.ParagraphProperties",
+            "com.sun.star.drawing.FillProperties",
+        )
+
         for style in styles:
+            if not style.support_service(*style_srv):
+                mLo.Lo.print(f"_style_style(), Suppoted services are {style_srv}. Not Supported style: {style}")
+                continue
             cargs = CancelEventArgs("Write.style")
             cargs.event_data = style
             _Events().trigger(WriteNamedEvent.STYLING, cargs)
@@ -1491,7 +1517,16 @@ class Write(mSel.Selection):
             curr_pos = mSel.Selection.get_position(cursor)
             amt = curr_pos - pos
 
+        style_srv = (
+            "com.sun.star.style.CharacterProperties",
+            "com.sun.star.style.ParagraphProperties",
+            "com.sun.star.drawing.FillProperties",
+        )
+
         for style in styles:
+            if not style.support_service(*style_srv):
+                mLo.Lo.print(f"_style_left_style(), Suppoted services are {style_srv}. Not Supported style: {style}")
+                continue
             cargs = CancelEventArgs("Write.style_left")
             cargs.event_data = style
             _Events().trigger(WriteNamedEvent.STYLING, cargs)
@@ -1699,7 +1734,19 @@ class Write(mSel.Selection):
         _Events().trigger(WriteNamedEvent.STYLE_PREV_PARA_STYLES_SETTING, c_styles_args)
         if c_styles_args.cancel:
             return
+        style_srv = (
+            "com.sun.star.style.CharacterProperties",
+            "com.sun.star.style.ParagraphProperties",
+            "com.sun.star.drawing.FillProperties",
+        )
+
         for style in cast(Iterable[StyleObj], c_styles_args.event_data):
+            if not style.support_service(*style_srv):
+                mLo.Lo.print(
+                    f"_style_prev_paragraph_style(), Suppoted services are {style_srv}. Not Supported style: {style}"
+                )
+                continue
+
             cargs = CancelEventArgs(c_styles_args.source)
             cargs.event_data = style
             _Events().trigger(WriteNamedEvent.STYLING, cargs)

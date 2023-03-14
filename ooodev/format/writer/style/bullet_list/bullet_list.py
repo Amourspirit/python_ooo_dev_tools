@@ -3,11 +3,11 @@ from typing import Tuple
 
 from .....meta.static_prop import static_prop
 from ....kind.format_kind import FormatKind
-from ....style_base import StyleBase
+from ....style_base import StyleName
 from ..lst import StyleListKind as StyleListKind
 
 
-class BulletList(StyleBase):
+class BulletList(StyleName):
     """
     Style List. Manages List styles for Writer.
 
@@ -18,11 +18,10 @@ class BulletList(StyleBase):
     .. versionadded:: 0.9.0
     """
 
-    _DEFAULT = None
-
     def __init__(self, name: StyleListKind | str = "") -> None:
-        super().__init__(**{self._get_property_name(): str(name)})
+        super().__init__(name=name)
 
+    # region Overrides
     def _supported_services(self) -> Tuple[str, ...]:
         try:
             return self._supported_services_values
@@ -36,6 +35,8 @@ class BulletList(StyleBase):
         except AttributeError:
             self._property_name = "NumberingStyleName"
         return self._property_name
+
+    # endregion Overrides
 
     # region Style Properties
     @property
@@ -118,6 +119,9 @@ class BulletList(StyleBase):
     @static_prop
     def default() -> BulletList:  # type: ignore[misc]
         """Gets ``StyleList`` default. Static Property."""
-        if BulletList._DEFAULT is None:
+        try:
+            return BulletList._DEFAULT
+        except AttributeError:
             BulletList._DEFAULT = BulletList(name="")
+            BulletList._DEFAULT._is_default_inst = True
         return BulletList._DEFAULT
