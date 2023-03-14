@@ -4,13 +4,13 @@ from typing import Any, Tuple
 from .....events.args.key_val_cancel_args import KeyValCancelArgs
 from .....meta.static_prop import static_prop
 from ....kind.format_kind import FormatKind
-from ....style_base import StyleBase
+from ....style_base import StyleName
 from .kind import StyleCharKind as StyleCharKind
 
 
-class Char(StyleBase):
+class Char(StyleName):
     """
-    Style Characters. Manages Chacter styles for Writer.
+    Characters Style.
 
     Any properties starting with ``prop_`` set or get current instance values.
 
@@ -19,24 +19,26 @@ class Char(StyleBase):
     .. versionadded:: 0.9.0
     """
 
-    _DEFAULT = None
-
     def __init__(self, name: StyleCharKind | str = "") -> None:
         if name == "":
             name = Char.default.prop_name
-        super().__init__(**{self._get_property_name(): str(name)})
+        super().__init__(name=name)
+
+    # region Overrides
 
     def _supported_services(self) -> Tuple[str, ...]:
-        """
-        Gets a tuple of supported services (``com.sun.star.style.CharacterProperties``,)
-
-        Returns:
-            Tuple[str, ...]: Supported services
-        """
-        return ("com.sun.star.style.CharacterProperties",)
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = ("com.sun.star.style.CharacterProperties",)
+        return self._supported_services_values
 
     def _get_property_name(self) -> str:
-        return "CharStyleName"
+        try:
+            return self._style_property_name
+        except AttributeError:
+            self._style_property_name = "CharStyleName"
+        return self._style_property_name
 
     def on_property_setting(self, source: Any, event_args: KeyValCancelArgs):
         """
@@ -52,6 +54,8 @@ class Char(StyleBase):
         if event_args.value == "":
             event_args.value = Char.default.prop_name
         super().on_property_setting(source, event_args)
+
+    # endregion Overrides
 
     # region Style Properties
     @property
@@ -196,25 +200,30 @@ class Char(StyleBase):
 
     # endregion Style Properties
 
+    # region Properties
+
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
         return FormatKind.STYLE | FormatKind.CHAR
 
     @property
-    def prop_name(self) -> str:
-        """Gets/Sets Character style namd"""
-        return self._get(self._get_property_name())
-
-    @prop_name.setter
-    def prop_name(self, value: StyleCharKind | str) -> None:
-        if self is Char.default:
-            raise ValueError("Setting StyleChar.default properties is not allowed.")
-        self._set(self._get_property_name(), str(value))
+    def prop_format_kind(self) -> FormatKind:
+        """Gets the kind of style"""
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.STYLE | FormatKind.CHAR
+        return self._format_kind_prop
 
     @static_prop
     def default() -> Char:  # type: ignore[misc]
         """Gets ``StyleChar`` default. Static Property."""
-        if Char._DEFAULT is None:
-            Char._DEFAULT = Char(name="Standard")
-        return Char._DEFAULT
+        try:
+            return Char._DEFAULT_CHAR
+        except AttributeError:
+            Char._DEFAULT_CHAR = Char(name="Standard")
+            Char._DEFAULT_CHAR._is_default_inst = True
+        return Char._DEFAULT_CHAR
+
+    # endregion Properties

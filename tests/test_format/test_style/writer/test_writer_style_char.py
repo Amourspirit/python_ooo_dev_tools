@@ -6,7 +6,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.writer.style.char import Char, StyleCharKind
+from ooodev.format.writer.style import Char, StyleCharKind
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
@@ -27,21 +27,25 @@ def test_write(loader) -> None:
         GUI.zoom(GUI.ZoomEnum.ZOOM_150_PERCENT)
     try:
         cursor = Write.get_cursor(doc)
+        # document = Lo.ThisComponent.CurrentController.Frame
+        # cursor.PageDescName = "First Page"
 
         txt = "Hello "
         Write.append(cursor=cursor, text=txt)
-        sc = Char(name=StyleCharKind.EXAMPLE)
-        Write.append(cursor=cursor, text="World", styles=(sc,))
+        style = Char(name=StyleCharKind.EXAMPLE)
+        Write.append(cursor=cursor, text="World", styles=(style,))
         cursor.goLeft(5, False)
         cursor.goRight(5, True)
         cp = cast("CharacterProperties", cursor)
         assert cp.CharStyleName == str(StyleCharKind.EXAMPLE)
+        f_style = Char.from_obj(cursor)
+        assert f_style.prop_name == style.prop_name
         cursor.gotoEnd(False)
         Write.end_paragraph(cursor)
 
         Write.append(cursor=cursor, text="What a ")
-        sc = Char().source_text
-        Write.append_para(cursor=cursor, text="World", styles=(sc,))
+        style = Char().source_text
+        Write.append_para(cursor=cursor, text="World", styles=(style,))
         cursor.goLeft(6, False)
         cursor.goRight(5, True)
         assert cp.CharStyleName == str(StyleCharKind.SOURCE_TEXT)

@@ -7,7 +7,7 @@ if __name__ == "__main__":
 
 import uno
 from ooodev.format.direct.para.align import InnerAlignment, LastLineKind
-from ooodev.format.writer.style.para import Para, StyleParaKind
+from ooodev.format.writer.style import Para, StyleParaKind
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write

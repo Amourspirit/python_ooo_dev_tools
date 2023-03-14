@@ -9,6 +9,14 @@ Subpackages
 
    ooodev.format.writer.style.page.kind
 
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   ooodev.format.writer.style.page.page
+
 Module contents
 ---------------
 

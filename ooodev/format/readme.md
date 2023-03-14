@@ -165,6 +165,8 @@ mindmap
                         id{{TableProperties}}
                     borders
                         id{{borders}}
+                    background
+                        id{{Img}}
             [modify]
                 page
                     page
@@ -290,6 +292,12 @@ mindmap
                         id{{Padding}}
                         id{{Sides}}
                         id{{Shadow}}
+            [style]
+                id{{BulletList}}
+                id{{Char}}
+                id{{Frame}}
+                id{{page}}
+                id{{Para}}
         calc
             [direct]
             [modify]
