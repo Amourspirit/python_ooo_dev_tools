@@ -21,7 +21,6 @@ from ooodev.format.calc.direct.font import (
 from ooodev.format import CommonColor
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
-from ooodev.utils.data_type.unit_mm100 import UnitMM100
 from ooodev.utils.data_type.unit_pt import UnitPT
 
 if TYPE_CHECKING:

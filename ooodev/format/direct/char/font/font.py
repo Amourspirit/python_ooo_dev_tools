@@ -63,15 +63,15 @@ class Font(StyleBase):
         charset: CharSetEnum | None = None,
         color: Color | None = None,
         family: FontFamilyEnum | None = None,
-        size: float | UnitObj | None = None,
         name: str | None = None,
-        overline: FontUnderlineEnum | None = None,
         overline_color: Color | None = None,
-        rotation: float | Angle | None = None,
+        overline: FontUnderlineEnum | None = None,
+        rotation: int | Angle | None = None,
+        shadow_fmt: ShadowFormat | None = None,
+        shadowed: bool | None = None,
+        size: float | UnitObj | None = None,
         slant: FontSlant | None = None,
         spacing: CharSpacingKind | float | UnitObj | None = None,
-        shadowed: bool | None = None,
-        shadow_fmt: ShadowFormat | None = None,
         strike: FontStrikeoutEnum | None = None,
         subscript: bool | None = None,
         superscript: bool | None = None,
@@ -92,15 +92,15 @@ class Font(StyleBase):
             charset (CharSetEnum, optional): The text encoding of the font.
             color (Color, optional): The value of the text color. Setting to ``-1`` will cause automatic color.
             family (FontFamilyEnum, optional): Font Family.
-            size (float, UnitObj, optional): This value contains the size of the characters in ``pt`` (point) units or :ref:`proto_unit_obj`.
             name (str, optional): This property specifies the name of the font style. It may contain more than one name separated by comma.
-            overline (FontUnderlineEnum, optional): The value for the character overline.
             overline_color (Color, optional): Specifies if the property ``CharOverlinelineColor`` is used for an overline.
+            overline (FontUnderlineEnum, optional): The value for the character overline.
             rotation (int, Angle, optional): Specifies the rotation of a character in degrees. Depending on the implementation only certain values may be allowed.
+            shadow_fmt: (ShadowFormat, optional): Determines the type, color, and width of the shadow.
+            shadowed (bool, optional): Specifies if the characters are formatted and displayed with a shadow effect.
+            size (float, UnitObj, optional): This value contains the size of the characters in ``pt`` (point) units or :ref:`proto_unit_obj`.
             slant (FontSlant, optional): The value of the posture of the document such as ``FontSlant.ITALIC``.
             spacing (CharSpacingKind, float, UnitObj, optional): Specifies character spacing in ``pt`` (point) units or :ref:`proto_unit_obj`.
-            shadowed (bool, optional): Specifies if the characters are formatted and displayed with a shadow effect.
-            shadow_fmt: (ShadowFormat, optional): Determines the type, color, and width of the shadow.
             strike (FontStrikeoutEnum, optional): Detrmines the type of the strike out of the character.
             subscript (bool, optional): Subscript option.
             superscript (bool, optional): Superscript option.
@@ -111,83 +111,57 @@ class Font(StyleBase):
         """
         # could not find any documention in the API or elsewhere online for Overline
         # see: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1CharacterProperties.html
-        init_vals = {
-            "CharFontName": name,
-            "CharColor": color,
-            "CharBackColor": bg_color,
-            "CharUnderlineColor": underline_color,
-            "CharOverlineColor": overline_color,
-            "CharBackTransparent": bg_transparent,
-            "CharWordMode": word_mode,
-            "CharShadowed": shadowed,
-        }
-        if not size is None:
-            try:
-                init_vals["CharHeight"] = size.get_value_pt()
-            except AttributeError:
-                init_vals["CharHeight"] = float(size)
 
-        if not bg_color is None:
-            init_vals["CharBackTransparent"] = False
-        if not overline_color is None:
-            init_vals["CharOverlineHasColor"] = True
-        if not underline_color is None:
-            init_vals["CharUnderlineHasColor"] = True
-        if not charset is None:
-            init_vals["CharFontCharSet"] = charset.value
-        if not family is None:
-            init_vals["CharFontFamily"] = family.value
-        if not strike is None:
-            init_vals["CharStrikeout"] = strike.value
-
+        super().__init__()
         if not b is None:
-            if b:
-                init_vals["CharWeight"] = FontWeightEnum.BOLD.value
-            else:
-                init_vals["CharWeight"] = FontWeightEnum.NORMAL.value
+            self.prop_is_bold = b
         if not i is None:
-            if i:
-                init_vals["CharPosture"] = FontSlant.ITALIC
-            else:
-                init_vals["CharPosture"] = FontSlant.NONE
+            self.prop_is_italic = i
         if not u is None:
-            if u:
-                init_vals["CharUnderline"] = FontUnderlineEnum.SINGLE.value
-            else:
-                init_vals["CharUnderline"] = FontUnderlineEnum.NONE.value
-
+            self.prop_is_underline = u
+        if not bg_color is None:
+            self.prop_bg_color = bg_color
+        if not bg_transparent is None:
+            self.prop_bg_color_transparent = bg_transparent
+        if not charset is None:
+            self.prop_charset = charset
+        if not color is None:
+            self.prop_color = color
+        if not family is None:
+            self.prop_family = family
+        if not name is None:
+            self.prop_name = name
+        if not overline_color is None:
+            self.prop_overline_color = overline_color
         if not overline is None:
-            init_vals["CharOverline"] = overline.value
-
-        if not underine is None:
-            init_vals["CharUnderline"] = underine.value
-
-        if not weight is None:
-            init_vals["CharWeight"] = weight.value
-
-        if not slant is None:
-            init_vals["CharPosture"] = slant
-
-        if not spacing is None:
-            try:
-                init_vals["CharKerning"] = spacing.get_value_mm100()
-            except AttributeError:
-                init_vals["CharKerning"] = UnitConvert.convert_pt_mm100(float(spacing))
+            self.prop_overline = overline
         if not rotation is None:
-            angle = Angle(int(rotation))
-            init_vals["CharRotation"] = round(angle.value * 10)
-
+            self.prop_rotation = rotation
         if not shadow_fmt is None:
-            if mInfo.Info.is_type_struct(shadow_fmt, "com.sun.star.table.ShadowFormat"):
-                init_vals["CharShadowFormat"] = shadow_fmt
-
-        super().__init__(**init_vals)
-
+            self.prop_shadow_fmt = shadow_fmt
+        if not shadowed is None:
+            self.prop_shadowed = shadowed
+        if not size is None:
+            self.prop_size = size
+        if not slant is None:
+            self.prop_slant = slant
+        if not spacing is None:
+            self.prop_spacing = spacing
+        if not strike is None:
+            self.prop_strike = strike
         # superscript and subscript use the same internal properties,CharEscapementHeight, CharEscapement
-        if not superscript is None:
-            self.prop_superscript = superscript
         if not subscript is None:
             self.prop_subscript = subscript
+        if not superscript is None:
+            self.prop_superscript = superscript
+        if not underine is None:
+            self.prop_underline = underine
+        if not underline_color is None:
+            self.prop_underline_color = underline_color
+        if not weight is None:
+            self.prop_weight = weight
+        if not word_mode is None:
+            self.prop_word_mode = word_mode
 
     # region methods
     def _supported_services(self) -> Tuple[str, ...]:
@@ -850,7 +824,7 @@ class Font(StyleBase):
         if value is None:
             self._remove("CharPosture")
             return
-        self._set("CharPosture", value.value)
+        self._set("CharPosture", value)
 
     @property
     def prop_spacing(self) -> UnitPT | None:
@@ -961,8 +935,14 @@ class Font(StyleBase):
     def prop_overline_color(self, value: Color | None) -> None:
         if value is None:
             self._remove("CharOverlineColor")
+            self._remove("CharOverlineHasColor")
             return
-        self._set("CharOverlineColor", value)
+        if value < 0:
+            self._set("CharOverlineHasColor", False)
+            self._set("CharOverlineColor", -1)
+        else:
+            self._set("CharOverlineHasColor", True)
+            self._set("CharOverlineColor", value)
 
     @property
     def prop_underline_color(self) -> Color | None:
@@ -974,27 +954,31 @@ class Font(StyleBase):
         if value is None:
             self._remove("CharUnderlineColor")
             return
-        self._set("CharUnderlineColor", value)
+        if value < 0:
+            self._set("CharUnderlineHasColor", False)
+            self._set("CharUnderlineColor", -1)
+        else:
+            self._set("CharUnderlineHasColor", True)
+            self._set("CharUnderlineColor", value)
 
     @property
-    def prop_rotation(self) -> float | None:
+    def prop_rotation(self) -> Angle | None:
         """
         This optional property determines the rotation of a character in degrees.
 
         Depending on the implementation only certain values may be allowed.
         """
         pv = cast(int, self._get("CharRotation"))
-        if not pv is None:
-            return float(pv / 10)
-        return None
+        if pv is None:
+            return None
+        return Angle(round(pv / 10))
 
     @prop_rotation.setter
-    def prop_rotation(self, value: float | Angle | None) -> None:
+    def prop_rotation(self, value: int | Angle | None) -> None:
         if value is None:
             self._remove("CharRotation")
             return
-        angle = Angle(int(value))
-        self._set("CharRotation", round(angle.value * 10))
+        self._set("CharRotation", Angle(int(value)).value * 10)
 
     @property
     def prop_word_mode(self) -> bool | None:
