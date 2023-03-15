@@ -286,7 +286,9 @@ class FontEffects(StyleBase):
             FontEffects: Font with style added or removed
         """
         ft = self.copy()
-        ft.prop_overline = value
+        fl = ft.prop_overline
+        fl.line = value
+        ft.prop_overline = ft
         return ft
 
     def fmt_overline_color(self: _TFontEffects, value: Color | None = None) -> _TFontEffects:
@@ -301,7 +303,9 @@ class FontEffects(StyleBase):
             FontEffects: Font with style added or removed
         """
         ft = self.copy()
-        ft.prop_overline_color = value
+        fl = ft.prop_overline
+        fl.color = value
+        ft.prop_overline = fl
         return ft
 
     def fmt_strike(self: _TFontEffects, value: FontStrikeoutEnum | None = None) -> _TFontEffects:
@@ -331,7 +335,9 @@ class FontEffects(StyleBase):
             FontEffects: Font with style added or removed
         """
         ft = self.copy()
-        ft.prop_underline = value
+        fl = ft.prop_underline
+        fl.line = value
+        ft.prop_underline = ft
         return ft
 
     def fmt_underline_color(self: _TFontEffects, value: Color | None = None) -> _TFontEffects:
@@ -346,7 +352,9 @@ class FontEffects(StyleBase):
             FontEffects: Font with style added or removed
         """
         ft = self.copy()
-        ft.prop_underline_color = value
+        fl = ft.prop_underline
+        fl.color = value
+        ft.prop_underline = fl
         return ft
 
     def fmt_word_mode(self: _TFontEffects, value: bool | None = None) -> _TFontEffects:

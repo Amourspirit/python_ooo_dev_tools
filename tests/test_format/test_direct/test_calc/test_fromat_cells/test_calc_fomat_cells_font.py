@@ -10,6 +10,7 @@ import uno
 # simpler test then test_char_font because it is testing the same font class under the hood.
 from ooodev.format.calc.direct.font import (
     Font,
+    FontLine,
     FontOnly,
     FontUnderlineEnum,
     FontWeightEnum,
@@ -55,8 +56,7 @@ def test_calc_font(loader) -> None:
             cell,
             Font(
                 i=True,
-                overline=FontUnderlineEnum.DOUBLE,
-                overline_color=CommonColor.RED,
+                overline=FontLine(line=FontUnderlineEnum.DOUBLE, color=CommonColor.RED),
                 color=CommonColor.DARK_GREEN,
                 bg_color=CommonColor.LIGHT_GRAY,
             ),

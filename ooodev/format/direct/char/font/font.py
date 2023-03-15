@@ -17,6 +17,7 @@ from .....utils.unit_convert import UnitConvert
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleBase
 from .font_position import CharSpacingKind as CharSpacingKind
+from .font_effects import FontLine as FontLine
 
 from ooo.dyn.awt.char_set import CharSetEnum as CharSetEnum
 from ooo.dyn.awt.font_family import FontFamilyEnum as FontFamilyEnum
@@ -64,8 +65,7 @@ class Font(StyleBase):
         color: Color | None = None,
         family: FontFamilyEnum | None = None,
         name: str | None = None,
-        overline_color: Color | None = None,
-        overline: FontUnderlineEnum | None = None,
+        overline: FontLine | None = None,
         rotation: int | Angle | None = None,
         shadow_fmt: ShadowFormat | None = None,
         shadowed: bool | None = None,
@@ -75,8 +75,7 @@ class Font(StyleBase):
         strike: FontStrikeoutEnum | None = None,
         subscript: bool | None = None,
         superscript: bool | None = None,
-        underine: FontUnderlineEnum | None = None,
-        underline_color: Color | None = None,
+        underline: FontLine | None = None,
         weight: FontWeightEnum | None = None,
         word_mode: bool | None = None,
     ) -> None:
@@ -93,8 +92,7 @@ class Font(StyleBase):
             color (Color, optional): The value of the text color. Setting to ``-1`` will cause automatic color.
             family (FontFamilyEnum, optional): Font Family.
             name (str, optional): This property specifies the name of the font style. It may contain more than one name separated by comma.
-            overline_color (Color, optional): Specifies if the property ``CharOverlinelineColor`` is used for an overline.
-            overline (FontUnderlineEnum, optional): The value for the character overline.
+            overline (FontLine, optional): Character overline values.
             rotation (int, Angle, optional): Specifies the rotation of a character in degrees. Depending on the implementation only certain values may be allowed.
             shadow_fmt: (ShadowFormat, optional): Determines the type, color, and width of the shadow.
             shadowed (bool, optional): Specifies if the characters are formatted and displayed with a shadow effect.
@@ -104,8 +102,7 @@ class Font(StyleBase):
             strike (FontStrikeoutEnum, optional): Detrmines the type of the strike out of the character.
             subscript (bool, optional): Subscript option.
             superscript (bool, optional): Superscript option.
-            underine (FontUnderlineEnum, optional): The value for the character underline.
-            underline_color (Color, optional): Specifies if the property ``CharUnderlineColor`` is used for an underline.
+            underline (FontLine, optional): Character underline values.
             weight (FontWeightEnum, optional): The value of the font weight.
             word_mode(bool, optional): If ``True``, the underline and strike-through properties are not applied to white spaces.
         """
@@ -131,8 +128,6 @@ class Font(StyleBase):
             self.prop_family = family
         if not name is None:
             self.prop_name = name
-        if not overline_color is None:
-            self.prop_overline_color = overline_color
         if not overline is None:
             self.prop_overline = overline
         if not rotation is None:
@@ -154,10 +149,8 @@ class Font(StyleBase):
             self.prop_subscript = subscript
         if not superscript is None:
             self.prop_superscript = superscript
-        if not underine is None:
-            self.prop_underline = underine
-        if not underline_color is None:
-            self.prop_underline_color = underline_color
+        if not underline is None:
+            self.prop_underline = underline
         if not weight is None:
             self.prop_weight = weight
         if not word_mode is None:
@@ -321,7 +314,9 @@ class Font(StyleBase):
             Font: Font with style added or removed
         """
         ft = self.copy()
-        ft.prop_overline = value
+        fl = ft.prop_overline
+        fl.line = value
+        ft.prop_overline = ft
         return ft
 
     def fmt_overline_color(self: _TFont, value: Color | None = None) -> _TFont:
@@ -336,7 +331,9 @@ class Font(StyleBase):
             Font: Font with style added or removed
         """
         ft = self.copy()
-        ft.prop_overline_color = value
+        fl = ft.prop_overline
+        fl.color = value
+        ft.prop_overline = fl
         return ft
 
     def fmt_rotation(self: _TFont, value: float | None = None) -> _TFont:
@@ -459,7 +456,26 @@ class Font(StyleBase):
             Font: Font with style added or removed
         """
         ft = self.copy()
-        ft.prop_underline = value
+        fl = ft.prop_underline
+        fl.line = value
+        ft.prop_underline = ft
+        return ft
+
+    def fmt_underline_color(self: _TFont, value: Color | None = None) -> _TFont:
+        """
+        Gets copy of instance with text underline color set or removed.
+
+        Args:
+            value (Color, optional): The color is used for an underline.
+                If ``None`` style is removed. Default ``None``
+
+        Returns:
+            Font: Font with style added or removed
+        """
+        ft = self.copy()
+        fl = ft.prop_underline
+        fl.color = value
+        ft.prop_underline = fl
         return ft
 
     def fmt_weight(self: _TFont, value: FontWeightEnum | None = None) -> _TFont:
@@ -698,19 +714,38 @@ class Font(StyleBase):
             self._set("CharUnderline", FontUnderlineEnum.NONE.value)
 
     @property
-    def prop_underline(self) -> FontUnderlineEnum | None:
-        """Specifies underline"""
+    def prop_underline(self) -> FontLine:
+        """This property contains the value for the character underline."""
         pv = cast(int, self._get("CharUnderline"))
-        if not pv is None:
-            return FontUnderlineEnum(pv)
-        return None
+        if pv is None:
+            line = None
+        else:
+            line = FontUnderlineEnum(pv)
+        return FontLine(line=line, color=cast(int, self._get("CharUnderlineColor")))
 
     @prop_underline.setter
-    def prop_underline(self, value: FontUnderlineEnum | None) -> None:
+    def prop_underline(self, value: FontLine | None) -> None:
         if value is None:
             self._remove("CharUnderline")
+            self._remove("CharUnderlineColor")
+            self._remove("CharUnderlineHasColor")
             return
-        self._set("CharUnderline", value.value)
+        if value.line is None:
+            self._remove("CharUnderline")
+        else:
+            self._set("CharUnderline", value.line.value)
+
+        if value.color is None:
+            self._remove("CharUnderlineColor")
+            self._remove("CharUnderlineHasColor")
+        else:
+            if value.color < 0:
+                # automatic color
+                self._set("CharUnderlineHasColor", False)
+                self._set("CharUnderlineColor", -1)
+            else:
+                self._set("CharUnderlineHasColor", True)
+                self._set("CharUnderlineColor", value.color)
 
     @property
     def prop_charset(self) -> CharSetEnum | None:
@@ -912,54 +947,38 @@ class Font(StyleBase):
             self._set("CharEscapement", 0)
 
     @property
-    def prop_overline(self) -> FontUnderlineEnum | None:
+    def prop_overline(self) -> FontLine:
         """This property contains the value for the character overline."""
         pv = cast(int, self._get("CharOverline"))
-        if not pv is None:
-            return FontUnderlineEnum(pv)
-        return None
+        if pv is None:
+            line = None
+        else:
+            line = FontUnderlineEnum(pv)
+        return FontLine(line=line, color=cast(int, self._get("CharOverlineColor")))
 
     @prop_overline.setter
-    def prop_overline(self, value: FontUnderlineEnum | None) -> None:
+    def prop_overline(self, value: FontLine | None) -> None:
         if value is None:
             self._remove("CharOverline")
-            return
-        self._set("CharOverline", value.value)
-
-    @property
-    def prop_overline_color(self) -> Color | None:
-        """This property specifies if the property ``CharOverlineColor`` is used for an overline."""
-        return self._get("CharOverlineColor")
-
-    @prop_overline_color.setter
-    def prop_overline_color(self, value: Color | None) -> None:
-        if value is None:
             self._remove("CharOverlineColor")
             self._remove("CharOverlineHasColor")
             return
-        if value < 0:
-            self._set("CharOverlineHasColor", False)
-            self._set("CharOverlineColor", -1)
+        if value.line is None:
+            self._remove("CharOverline")
         else:
-            self._set("CharOverlineHasColor", True)
-            self._set("CharOverlineColor", value)
+            self._set("CharOverline", value.line.value)
 
-    @property
-    def prop_underline_color(self) -> Color | None:
-        """This property specifies if the property ``CharUnderlineColor`` is used for an underline."""
-        return self._get("CharUnderlineColor")
-
-    @prop_underline_color.setter
-    def prop_underline_color(self, value: Color | None) -> None:
-        if value is None:
-            self._remove("CharUnderlineColor")
-            return
-        if value < 0:
-            self._set("CharUnderlineHasColor", False)
-            self._set("CharUnderlineColor", -1)
+        if value.color is None:
+            self._remove("CharOverlineColor")
+            self._remove("CharOverlineHasColor")
         else:
-            self._set("CharUnderlineHasColor", True)
-            self._set("CharUnderlineColor", value)
+            if value.color < 0:
+                # automatic color
+                self._set("CharOverlineHasColor", False)
+                self._set("CharOverlineColor", -1)
+            else:
+                self._set("CharOverlineHasColor", True)
+                self._set("CharOverlineColor", value.color)
 
     @property
     def prop_rotation(self) -> Angle | None:

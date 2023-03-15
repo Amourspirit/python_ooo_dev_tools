@@ -95,9 +95,8 @@ def test_font(loader) -> None:
         u=True,
         color=CommonColor.BLUE,
         strike=FontStrikeoutEnum.BOLD,
-        underline_color=CommonColor.AQUA,
-        overline=FontUnderlineEnum.BOLDDASHDOT,
-        overline_color=CommonColor.BEIGE,
+        underline=FontLine(line=FontUnderlineEnum.SINGLE, color=CommonColor.AQUA),
+        overline=FontLine(line=FontUnderlineEnum.BOLDDASHDOT, color=CommonColor.BEIGE),
         superscript=True,
         rotation=90.0,
         spacing=CharSpacingKind.TIGHT,
@@ -111,28 +110,26 @@ def test_font(loader) -> None:
     assert ft.prop_is_underline
     assert ft.prop_weight == FontWeightEnum.BOLD
     assert ft.prop_slant == FontSlant.ITALIC
-    assert ft.prop_underline == FontUnderlineEnum.SINGLE
+    assert ft.prop_underline == FontLine(line=FontUnderlineEnum.SINGLE, color=CommonColor.AQUA)
     assert ft.prop_color == CommonColor.BLUE
     assert ft.prop_strike == FontStrikeoutEnum.BOLD
-    assert ft.prop_underline_color == CommonColor.AQUA
     assert ft.prop_superscript
     assert ft.prop_size.value == 22.0
     assert ft.prop_rotation == 90.0
-    assert ft.prop_overline == FontUnderlineEnum.BOLDDASHDOT
-    assert ft.prop_overline_color == CommonColor.BEIGE
+    assert ft.prop_overline == FontLine(line=FontUnderlineEnum.BOLDDASHDOT, color=CommonColor.BEIGE)
     assert ft.prop_spacing.value == pytest.approx(CharSpacingKind.TIGHT.value, rel=1e-2)
     assert ft.prop_shadowed
 
     ft = Font(
         weight=FontWeightEnum.BOLD,
-        underine=FontUnderlineEnum.BOLDDASH,
+        underline=FontLine(line=FontUnderlineEnum.BOLDDASHDOT, color=CommonColor.BEIGE),
         slant=FontSlant.OBLIQUE,
         subscript=True,
         spacing=2.0,
     )
     assert ft.prop_weight == FontWeightEnum.BOLD
     assert ft.prop_is_underline
-    assert ft.prop_underline == FontUnderlineEnum.BOLDDASH
+    assert ft.prop_underline == FontLine(line=FontUnderlineEnum.BOLDDASHDOT, color=CommonColor.BEIGE)
     assert ft.prop_slant == FontSlant.OBLIQUE
     assert ft.prop_subscript
     assert ft.prop_spacing.value == pytest.approx(2.0, rel=1e-2)
@@ -183,7 +180,14 @@ def test_font_cursor(loader) -> None:
         Lo.delay(500)
         GUI.zoom(GUI.ZoomEnum.ZOOM_150_PERCENT)
     try:
-        ft = Font(size=30.0, b=True, i=True, u=True, color=CommonColor.BLUE, underline_color=CommonColor.GREEN)
+        ft = Font(
+            size=30.0,
+            b=True,
+            i=True,
+            u=True,
+            color=CommonColor.BLUE,
+            underline=FontLine(line=FontUnderlineEnum.SINGLE, color=CommonColor.GREEN),
+        )
         cursor = Write.get_cursor(doc)
         style = partial(Styler.apply, cursor)
         Write.append(cursor, "hello")
@@ -232,7 +236,7 @@ def test_font_cursor(loader) -> None:
 
         Write.append(cursor, "Overline")
         cursor.goLeft(8, True)
-        style(Font(overline=FontUnderlineEnum.BOLDWAVE, size=40, overline_color=CommonColor.CHARTREUSE))
+        style(Font(overline=FontLine(line=FontUnderlineEnum.BOLDWAVE, color=CommonColor.CHARTREUSE), size=40))
         # no documentation found for Overline
         assert cursor.CharOverlineHasColor
         assert cursor.CharOverlineColor == CommonColor.CHARTREUSE
