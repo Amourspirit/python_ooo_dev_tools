@@ -3,21 +3,17 @@ from typing import Tuple
 from ...frame.options.names import Names as FrameNames
 from ...common.props.image_options_names_props import ImageOptionsNamesProps
 from ....kind.format_kind import FormatKind
+from .....meta.deleted_attrib import DeletedAttrib
 
 
 class Names(FrameNames):
     """Image Options Names"""
 
+    prop_next = DeletedAttrib()
+    prop_prev = DeletedAttrib()
+
     # region Init
-    def __init__(
-        self,
-        *,
-        name: str | None = None,
-        desc: str | None = None,
-        alt: str | None = None,
-        prev: str | None = None,
-        next: str | None = None,
-    ) -> None:
+    def __init__(self, *, name: str | None = None, desc: str | None = None, alt: str | None = None) -> None:
         """
         Constructor
 
@@ -30,7 +26,7 @@ class Names(FrameNames):
         """
         # TODO: Implement prev and next on Frame options Names class.
         # see FrameNames base class.
-        super().__init__(name=name, desc=desc, prev=prev, next=next)
+        super().__init__(name=name, desc=desc)
         self.prop_alt = alt
 
     # endregion Init
@@ -79,8 +75,8 @@ class Names(FrameNames):
             self._props_frame_opts_protect = ImageOptionsNamesProps(
                 name="Name",
                 desc="Description",
-                prev="",  # ChainPrevName not working
-                next="",  # ChainNextName not working
+                prev="",
+                next="",
                 alt="Title",
             )
         return self._props_frame_opts_protect

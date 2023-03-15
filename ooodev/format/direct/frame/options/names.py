@@ -82,8 +82,12 @@ class Names(AbstractDocument):
             # only set name is it is different
             setattr(obj, self._props.name, name)
 
-        prev = self.prop_prev
-        next = self.prop_next
+        try:
+            prev = self.prop_prev
+            next = self.prop_next
+        except mEx.DeletedAttributeError:
+            # attriutes not used in a child class.
+            return
 
         if prev is None and next is None:
             return
@@ -237,7 +241,7 @@ class Names(AbstractDocument):
             self._props_internal_attributes = FrameOptionsNamesProps(
                 name="Name",
                 desc="Description",
-                prev="ChainPrevName",  # ChainPrevName not working
-                next="ChainNextName",  # ChainNextName not working
+                prev="ChainPrevName",
+                next="ChainNextName",
             )
         return self._props_internal_attributes
