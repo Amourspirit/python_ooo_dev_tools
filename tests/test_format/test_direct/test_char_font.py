@@ -16,9 +16,9 @@ from ooodev.format.writer.direct.char.font import (
     FontSlant,
     CharSpacingKind,
     FontScriptKind,
-    InnerFontPosition,
-    InnerFontEffects,
-    InnerFontOnly,
+    FontPosition,
+    FontEffects,
+    FontOnly,
     CaseMapEnum,
     FontReliefEnum,
     FontLang,
@@ -138,7 +138,7 @@ def test_font(loader) -> None:
 
 
 def test_font_effects() -> None:
-    fp = InnerFontPosition(
+    fp = FontPosition(
         script_kind=FontScriptKind.SUPERSCRIPT,
         rel_size=45,
         raise_lower=58,
@@ -317,7 +317,7 @@ def test_font_position_super_sub_cursor(loader) -> None:
         Lo.delay(500)
         GUI.zoom(GUI.ZoomEnum.ZOOM_150_PERCENT)
     try:
-        fp = InnerFontPosition().script_kind_superscript
+        fp = FontPosition().script_kind_superscript
         cursor = Write.get_cursor(doc)
         Write.append(cursor, "hello")
         Write.style(pos=0, length=1, styles=(fp,), cursor=cursor)
@@ -325,13 +325,13 @@ def test_font_position_super_sub_cursor(loader) -> None:
         cursor.goLeft(1, True)
         cp = cast("CharacterProperties", cursor)
         assert cp.CharEscapement == FontScriptKind.SUPERSCRIPT.value
-        assert cp.CharEscapementHeight == InnerFontPosition._DEFAULT_SUPER_SUB_HEIGHT
+        assert cp.CharEscapementHeight == FontPosition._DEFAULT_SUPER_SUB_HEIGHT
 
         fp = fp.script_kind_subscript
         Write.style(pos=4, length=1, styles=(fp,), cursor=cursor)
         cursor.goLeft(1, True)
         assert cp.CharEscapement == FontScriptKind.SUBSCRIPT.value
-        assert cp.CharEscapementHeight == InnerFontPosition._DEFAULT_SUPER_SUB_HEIGHT
+        assert cp.CharEscapementHeight == FontPosition._DEFAULT_SUPER_SUB_HEIGHT
         cursor.gotoEnd(False)
 
         fp.default.apply(cursor)
@@ -343,7 +343,7 @@ def test_font_position_super_sub_cursor(loader) -> None:
         cursor.goLeft(5, False)
         cursor.goRight(1, True)
         assert cp.CharEscapement == -47
-        assert cp.CharEscapementHeight == InnerFontPosition._DEFAULT_SUPER_SUB_HEIGHT
+        assert cp.CharEscapementHeight == FontPosition._DEFAULT_SUPER_SUB_HEIGHT
 
         fp = fp.script_kind_superscript
         fp.prop_rel_size = 45
@@ -380,7 +380,7 @@ def test_font_position_rotation_cursor(loader) -> None:
         Lo.delay(500)
         GUI.zoom(GUI.ZoomEnum.ZOOM_150_PERCENT)
     try:
-        fp = InnerFontPosition().rotation_270.fit
+        fp = FontPosition().rotation_270.fit
         cursor = Write.get_cursor(doc)
         Write.append(cursor, "hello", (fp,))
         cursor.gotoStart(False)
@@ -391,7 +391,7 @@ def test_font_position_rotation_cursor(loader) -> None:
         cursor.gotoEnd(False)
         Write.end_paragraph(cursor)
 
-        fp = InnerFontPosition(rotation=90, fit=False, scale=90)
+        fp = FontPosition(rotation=90, fit=False, scale=90)
         Write.append(cursor, "hello", (fp,))
         cursor.goLeft(5, True)
         cp = cast("CharacterProperties", cursor)
@@ -399,7 +399,7 @@ def test_font_position_rotation_cursor(loader) -> None:
         assert cp.CharRotationIsFitToLine == False
         assert cp.CharScaleWidth == 90
 
-        fp = InnerFontPosition.from_obj(cursor)
+        fp = FontPosition.from_obj(cursor)
         cursor.gotoEnd(False)
         Write.end_paragraph(cursor)
 
@@ -439,7 +439,7 @@ def test_font_position_spacing_cursor(loader) -> None:
         Lo.delay(500)
         GUI.zoom(GUI.ZoomEnum.ZOOM_150_PERCENT)
     try:
-        fp = InnerFontPosition(spacing=CharSpacingKind.TIGHT, pair=False)
+        fp = FontPosition(spacing=CharSpacingKind.TIGHT, pair=False)
         cursor = Write.get_cursor(doc)
         Write.append(cursor, "hello", (fp,))
         cursor.gotoStart(False)
@@ -476,7 +476,7 @@ def test_font_effects_cursor(loader) -> None:
         Lo.delay(500)
         GUI.zoom(GUI.ZoomEnum.ZOOM_150_PERCENT)
     try:
-        fp = InnerFontEffects(color=CommonColor.BLUE, underline_color=CommonColor.GREEN)
+        fp = FontEffects(color=CommonColor.BLUE, underline_color=CommonColor.GREEN)
         cursor = Write.get_cursor(doc)
         style = partial(Styler.apply, cursor)
         Write.append(cursor, "hello")
@@ -493,7 +493,7 @@ def test_font_effects_cursor(loader) -> None:
 
         cursor.gotoEnd(False)
         cursor.goLeft(5, True)
-        fp = InnerFontEffects.from_obj(cursor)
+        fp = FontEffects.from_obj(cursor)
         default_font = fp.default.copy()
         fp.prop_overline = FontUnderlineEnum.DASH
         fp.prop_overline_color = CommonColor.AZURE
@@ -513,7 +513,7 @@ def test_font_effects_cursor(loader) -> None:
         Write.append(cursor, "hello")
         cursor.goLeft(5, False)
         cursor.goRight(1, True)
-        fp = InnerFontEffects(case=CaseMapEnum.SMALLCAPS)
+        fp = FontEffects(case=CaseMapEnum.SMALLCAPS)
         fp.apply(cursor)
         assert cp.CharCaseMap == CaseMapEnum.SMALLCAPS.value
         cursor.gotoEnd(False)
@@ -521,12 +521,12 @@ def test_font_effects_cursor(loader) -> None:
 
         Write.append(cursor, "Hello")
         cursor.goLeft(5, True)
-        style(InnerFontEffects(shadowed=True))
+        style(FontEffects(shadowed=True))
         assert cp.CharShadowed
         cursor.gotoEnd(False)
         Write.end_paragraph(cursor)
 
-        fp = InnerFontEffects(transparency=15)
+        fp = FontEffects(transparency=15)
         Write.append(cursor, "Hello")
         cursor.goLeft(5, True)
         fp.apply(cursor)
@@ -535,7 +535,7 @@ def test_font_effects_cursor(loader) -> None:
         default_font.apply(cursor)
         Write.end_paragraph(cursor)
 
-        fp = InnerFontEffects(hidden=True)
+        fp = FontEffects(hidden=True)
         Write.append(cursor, "Hello")
         cursor.goLeft(5, True)
         fp.apply(cursor)
@@ -544,7 +544,7 @@ def test_font_effects_cursor(loader) -> None:
         default_font.apply(cursor)
         Write.end_paragraph(cursor)
 
-        fp = InnerFontEffects().outline
+        fp = FontEffects().outline
         Write.append(cursor, "Hello")
         cursor.goLeft(5, True)
         fp.apply(cursor)
@@ -553,7 +553,7 @@ def test_font_effects_cursor(loader) -> None:
         default_font.apply(cursor)
         Write.end_paragraph(cursor)
 
-        fp = InnerFontEffects().relief_embossed
+        fp = FontEffects().relief_embossed
         Write.append(cursor, "Hello")
         cursor.goLeft(5, True)
         fp.apply(cursor)
@@ -574,7 +574,7 @@ def test_font_effects_cursor(loader) -> None:
         default_font.apply(cursor)
         Write.end_paragraph(cursor)
 
-        fp = InnerFontEffects(strike=FontStrikeoutEnum.DOUBLE, word_mode=True)
+        fp = FontEffects(strike=FontStrikeoutEnum.DOUBLE, word_mode=True)
         Write.append(cursor, "Hello World")
         cursor.goLeft(11, True)
         fp.apply(cursor)
@@ -610,7 +610,7 @@ def test_font_only_cursor(loader) -> None:
         # fe_index = FontOnly.default_index
         # fe_list = FontOnly.default_list
 
-        fo = InnerFontOnly(name="DejaVu Sans Mono", size=14.0)
+        fo = FontOnly(name="DejaVu Sans Mono", size=14.0)
         cursor = Write.get_cursor(doc)
         Write.append(cursor, "hello")
         cursor.goLeft(5, True)
@@ -619,44 +619,44 @@ def test_font_only_cursor(loader) -> None:
         assert cp.CharFontName == "DejaVu Sans Mono"
         assert cp.CharHeight == pytest.approx(14, 0.01)
         cursor.gotoEnd(False)
-        InnerFontOnly.default.apply(cursor)
+        FontOnly.default.apply(cursor)
         Write.end_paragraph(cursor)
 
         # fd = fo.get_font_descriptor()
         # assert fd is not None
 
-        fo = InnerFontOnly(name="Lucida Fax", style_name="Demibold Italic")
+        fo = FontOnly(name="Lucida Fax", style_name="Demibold Italic")
         Write.append(cursor, "World")
         cursor.goLeft(5, True)
         fo.apply(cursor)
         assert cp.CharFontName == "Lucida Fax"
         assert cp.CharFontStyleName == "Demibold Italic"
         cursor.gotoEnd(False)
-        InnerFontOnly.default.apply(cursor)
+        FontOnly.default.apply(cursor)
         Write.end_paragraph(cursor)
 
-        fo = InnerFontOnly(name="Noto Serif Cond", style_name="Regular", size=14.0)
+        fo = FontOnly(name="Noto Serif Cond", style_name="Regular", size=14.0)
         Write.append(cursor, "World")
         cursor.goLeft(5, True)
         fo.apply(cursor)
         assert cp.CharFontName == "Noto Serif Cond"
         assert cp.CharFontStyleName == "Regular"
         cursor.gotoEnd(False)
-        InnerFontOnly.default.apply(cursor)
+        FontOnly.default.apply(cursor)
         Write.end_paragraph(cursor)
 
-        fo = InnerFontOnly(name="Noto Serif Cond", style_name="Bold Italic", size=15.0)
+        fo = FontOnly(name="Noto Serif Cond", style_name="Bold Italic", size=15.0)
         Write.append(cursor, "World")
         cursor.goLeft(5, True)
         fo.apply(cursor)
         assert cp.CharFontName == "Noto Serif Cond"
         assert cp.CharFontStyleName == "Bold Italic"
         cursor.gotoEnd(False)
-        InnerFontOnly.default.apply(cursor)
+        FontOnly.default.apply(cursor)
         Write.end_paragraph(cursor)
 
         lang = FontLang().english_canada
-        fo = InnerFontOnly(name="Noto Serif Cond", style_name="Italic", size=15.0, lang=lang)
+        fo = FontOnly(name="Noto Serif Cond", style_name="Italic", size=15.0, lang=lang)
         Write.append(cursor, "World")
         cursor.goLeft(5, True)
         fo.apply(cursor)
@@ -664,7 +664,7 @@ def test_font_only_cursor(loader) -> None:
         assert cp.CharFontStyleName == "Italic"
         assert lang == cp.CharLocale
         cursor.gotoEnd(False)
-        InnerFontOnly.default.apply(cursor)
+        FontOnly.default.apply(cursor)
         Write.end_paragraph(cursor)
 
         # fd = fo._get_font_descriptor("Lucida Fax", "Demibold Italic")
