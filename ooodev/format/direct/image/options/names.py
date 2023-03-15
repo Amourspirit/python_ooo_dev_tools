@@ -9,18 +9,28 @@ class Names(FrameNames):
     """Image Options Names"""
 
     # region Init
-    def __init__(self, name: str | None = None, desc: str | None = None, alt: str | None = None) -> None:
+    def __init__(
+        self,
+        *,
+        name: str | None = None,
+        desc: str | None = None,
+        alt: str | None = None,
+        prev: str | None = None,
+        next: str | None = None,
+    ) -> None:
         """
         Constructor
 
         Args:
             name (str, optional): Specifies name.
             desc (str, optional): Specifies description.
-            alt (str, optional): Specifies alternative text
+            alt (str, optional): Specifies alternative text.
+            prev (str, optional): Specifies previous link.
+            next (str, optional): Specifies next link.
         """
         # TODO: Implement prev and next on Frame options Names class.
         # see FrameNames base class.
-        super().__init__(name=name, desc=desc)
+        super().__init__(name=name, desc=desc, prev=prev, next=next)
         self.prop_alt = alt
 
     # endregion Init

@@ -213,3 +213,24 @@ class Util:
         if strip:
             return result.strip()
         return result
+
+    @staticmethod
+    def _atoi(text):
+        return int(text) if text.isdigit() else text
+
+    @staticmethod
+    def natural_key_sorter(text: str) -> list:
+        """
+        Sort Key Sorts in human order.
+
+        # Example:
+
+        .. code-block:: python
+
+            alist.sort(key=Util.natural_key_sorter)
+        """
+        # alist.sort(key=natural_keys) sorts in human order
+        # http://nedbatchelder.com/blog/200712/human_sorting.html
+        # (See Toothy's implementation in the comments)
+        # https://stackoverflow.com/questions/5967500/how-to-correctly-sort-a-string-with-a-number-inside
+        return [Util._atoi(c) for c in re.split(r"(\d+)", text)]

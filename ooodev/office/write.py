@@ -9,8 +9,8 @@ import uno
 
 from ..events.args.cancel_event_args import CancelEventArgs
 from ..events.args.event_args import EventArgs
-from ..events.args.key_val_cancel_args import KeyValCancelArgs
 from ..events.args.key_val_args import KeyValArgs
+from ..events.args.key_val_cancel_args import KeyValCancelArgs
 from ..events.event_singleton import _Events
 from ..events.gbl_named_event import GblNamedEvent
 from ..events.lo_named_event import LoNamedEvent
@@ -20,6 +20,7 @@ from ..meta.static_meta import classproperty
 from ..proto.style_obj import StyleObj, FormatKind
 from ..proto.unit_obj import UnitObj
 from ..utils import file_io as mFileIO
+from ..utils import gen_util as mUtil
 from ..utils import images_lo as mImgLo
 from ..utils import info as mInfo
 from ..utils import lo as mLo
@@ -2360,11 +2361,12 @@ class Write(mSel.Selection):
     @classmethod
     def add_text_frame(
         cls,
+        *,
         cursor: XTextCursor,
-        ypos: int | UnitObj,
-        text: str,
-        width: int | UnitObj,
-        height: int | UnitObj,
+        text: str = "",
+        ypos: int | UnitObj = 300,
+        width: int | UnitObj = 5000,
+        height: int | UnitObj = 5000,
         page_num: int = 1,
         border_color: Color | None = None,
         background_color: Color | None = None,
@@ -2375,11 +2377,11 @@ class Write(mSel.Selection):
 
         Args:
             cursor (XTextCursor): Text Cursor
-            ypos (int, UnitObj): Frame Y pos in ``1/100th mm`` or :ref:`proto_unit_obj`.
-            text (str): Frame Text
-            width (int, UnitObj): Width in ``1/100th mm`` or :ref:`proto_unit_obj`.
-            height (int, UnitObj): Height in ``1/100th mm`` or :ref:`proto_unit_obj`.
-            page_num (int): Page Number to add text frame
+            text (str, optional): Frame Text
+            ypos (int, UnitObj. optional): Frame Y pos in ``1/100th mm`` or :ref:`proto_unit_obj`. Default ``300``.
+            width (int, UnitObj, optional): Width in ``1/100th mm`` or :ref:`proto_unit_obj`.
+            height (int, UnitObj, optional): Height in ``1/100th mm`` or :ref:`proto_unit_obj`.
+            page_num (int, optional): Page Number to add text frame. If ``0`` Then Frame is anchored to paragraph. Default ``1``.
             border_color (Color, optional): Border Color.
             background_color (Color, optional): Background Color.
             styles (Iterable[StyleObj]): One or more styles to apply to frame. Only styles that support ``com.sun.star.text.TextFrame`` service are applied.
@@ -2410,6 +2412,16 @@ class Write(mSel.Selection):
             ``border_color`` and ``background_color`` now default to ``None``.
             Added style parameter that allows for all styles that support ``com.sun.star.text.TextFrame`` service.
         """
+        # If Text is added to both frames that are to be chained together then
+        # LO will not chain them.
+        # The Frame.ChainNextName and Frame.ChainPrevName properties cannot be set. and do not raise any error.
+        # This is the default behavour and makes sense.
+        # If the frame to flow to has text already then previous frame cannot flow to it.
+        #
+        # xframe = Lo.create_instance_msf(XTextFrame, "com.sun.star.text.ChainedTextFrame")
+        # Raises error: see, https://bugs.documentfoundation.org/show_bug.cgi?id=153825
+        # tf_shape = Lo.qi(XShape, xframe, True)
+
         result = None
         cargs = CancelEventArgs(Write.add_text_frame.__qualname__)
         cargs.event_data = {
@@ -2447,12 +2459,13 @@ class Write(mSel.Selection):
         except AttributeError:
             height = int(arg_height)
 
-        try:
-            xframe = mLo.Lo.create_instance_msf(XTextFrame, "com.sun.star.text.TextFrame")
-            if xframe is None:
-                raise ValueError("Null value")
-        except Exception as e:
-            raise mEx.CreateInstanceMsfError(XTextFrame, "com.sun.star.text.TextFrame") from e
+        # if mLo.Lo.bridge_connector.headless:
+        #     # this does not allow chaining. See above comments.
+        #     xframe = mLo.Lo.create_instance_msf(XTextFrame, "com.sun.star.text.TextFrame", raise_err=True)
+        # else:
+        #     xframe = cls._add_text_frame_via_dispatch(ypos=ypos, width=width, height=height)
+
+        xframe = mLo.Lo.create_instance_msf(XTextFrame, "com.sun.star.text.TextFrame", raise_err=True)
 
         try:
             tf_shape = mLo.Lo.qi(XShape, xframe, True)
@@ -2462,7 +2475,14 @@ class Write(mSel.Selection):
 
             #  anchor the text frame
             frame_props = mLo.Lo.qi(XPropertySet, xframe, True)
-            frame_props.setPropertyValue("AnchorType", TextContentAnchorType.AT_PAGE)
+            # if page number is Not include for TextContentAnchorType.AT_PAGE
+            # then Lo Default so At AT_PARAGRAPH
+            if not page_num or page_num < 1:
+                frame_props.setPropertyValue("AnchorType", TextContentAnchorType.AT_PARAGRAPH)
+            else:
+                frame_props.setPropertyValue("AnchorType", TextContentAnchorType.AT_PAGE)
+                frame_props.setPropertyValue("AnchorPageNo", page_num)
+
             frame_props.setPropertyValue("FrameIsAutomaticHeight", True)  # will grow if necessary
 
             # add a red border around all 4 sides
@@ -2486,28 +2506,59 @@ class Write(mSel.Selection):
             frame_props.setPropertyValue("VertOrient", VertOrientation.NONE)
             frame_props.setPropertyValue("VertOrientPosition", ypos)  # down from top
 
-            # if page number is Not include for TextContentAnchorType.AT_PAGE
-            # then Lo Default so At AT_PARAGRAPH
-            frame_props.setPropertyValue("AnchorPageNo", page_num)
-
             # insert text frame into document (order is important here)
             cls._append_text_content(cursor, xframe)
             cls.end_paragraph(cursor)
 
-            # add text into the text frame
-            xframe_text = xframe.getText()
-            xtext_range = mLo.Lo.qi(XTextRange, xframe_text.createTextCursor(), True)
-            xframe_text.insertString(xtext_range, text, False)
-            result = xframe
+            if text:
+                xframe_text = xframe.getText()
+                xtext_range = mLo.Lo.qi(XTextRange, xframe_text.createTextCursor(), True)
+                xframe_text.insertString(xtext_range, text, False)
+                result = xframe
+
             if styles:
                 srv = ("com.sun.star.text.TextFrame", "com.sun.star.text.ChainedTextFrame")
                 for style in styles:
                     if style.support_service(*srv):
                         style.apply(xframe)
+            # add text into the text frame
         except Exception as e:
             raise Exception("Insertion of text frame failed:") from e
         _Events().trigger(WriteNamedEvent.TEXT_FRAME_ADDED, EventArgs.from_args(cargs))
         return result
+
+    @classmethod
+    def _add_text_frame_via_dispatch(cls, ypos: int, width: int, height: int) -> XTextFrame:
+        # this method is not currently being used.
+        # It works so it is left here for possible future use.
+        def filter_frame(val: str) -> bool:
+            regex = r"Frame\d+$"
+            if re.match(regex, val):
+                return True
+            return False
+
+        dargs = {"AnchorType": 0, "Pos.X": 1000, "Pos.Y": ypos, "Size.Width": width, "Size.Height": height}
+        pvals = mProps.Props.make_props(**dargs)
+        mLo.Lo.dispatch_cmd(cmd="Escape")
+        mLo.Lo.delay(200)
+        mLo.Lo.dispatch_cmd(cmd="InsertFrame", props=pvals)
+        mLo.Lo.delay(200)
+        mLo.Lo.dispatch_cmd(cmd="Escape")
+        mLo.Lo.delay(200)
+        frames = cls.get_text_frames(cls.active_doc)
+        names = frames.getElementNames()
+        if not names:
+            raise RuntimeError("Failed to add frames to document")
+
+        if len(names) == 1:
+            return frames.getByName(names[0])
+
+        # Filter out any frames that don't start with Frame...
+        filtered_names = filter(filter_frame, names)
+        frame_names = list(filtered_names)
+        # Sort in human readable so the highest frame name is at the end of the list.
+        frame_names.sort(key=mUtil.Util.natural_key_sorter)
+        return frames.getByName(frame_names.pop())
 
     @classmethod
     def add_table(
