@@ -18,6 +18,7 @@ from ooodev.format.writer.direct.char.font import (
     FontScriptKind,
     FontPosition,
     FontEffects,
+    FontLine,
     FontOnly,
     CaseMapEnum,
     FontReliefEnum,
@@ -476,7 +477,9 @@ def test_font_effects_cursor(loader) -> None:
         Lo.delay(500)
         GUI.zoom(GUI.ZoomEnum.ZOOM_150_PERCENT)
     try:
-        fp = FontEffects(color=CommonColor.BLUE, underline_color=CommonColor.GREEN)
+        fp = FontEffects(
+            color=CommonColor.BLUE, underline=FontLine(line=FontUnderlineEnum.SINGLE, color=CommonColor.GREEN)
+        )
         cursor = Write.get_cursor(doc)
         style = partial(Styler.apply, cursor)
         Write.append(cursor, "hello")
@@ -495,8 +498,8 @@ def test_font_effects_cursor(loader) -> None:
         cursor.goLeft(5, True)
         fp = FontEffects.from_obj(cursor)
         default_font = fp.default.copy()
-        fp.prop_overline = FontUnderlineEnum.DASH
-        fp.prop_overline_color = CommonColor.AZURE
+
+        fp.prop_overline = FontLine(line=FontUnderlineEnum.DASH, color=CommonColor.AZURE)
         Styler.apply(cursor, fp)
         assert cp.CharOverlineColor == CommonColor.AZURE
         assert cursor.CharOverline == FontUnderlineEnum.DASH.value

@@ -3,7 +3,7 @@ from typing import cast
 import uno
 from ....writer.style.char.kind.style_char_kind import StyleCharKind as StyleCharKind
 from ..char_style_base_multi import CharStyleBaseMulti
-from ....direct.char.font.font_effects import FontEffects as InnerFontEffects
+from ....direct.char.font.font_effects import FontEffects as InnerFontEffects, FontLine as FontLine
 from .....utils.data_type.intensity import Intensity as Intensity
 from .....utils.color import Color
 
@@ -25,11 +25,9 @@ class FontEffects(CharStyleBaseMulti):
         *,
         color: Color | None = None,
         transparency: Intensity | int | None = None,
-        overline: FontUnderlineEnum | None = None,
-        overline_color: Color | None = None,
+        overline: FontLine | None = None,
+        underline: FontLine | None = None,
         strike: FontStrikeoutEnum | None = None,
-        underine: FontUnderlineEnum | None = None,
-        underline_color: Color | None = None,
         word_mode: bool | None = None,
         case: CaseMapEnum | None = None,
         relief: FontReliefEnum | None = None,
@@ -46,13 +44,9 @@ class FontEffects(CharStyleBaseMulti):
             color (Color, optional): The value of the text color.
                 If value is ``-1`` the automatic color is applied.
             transparency (Intensity, int, optional): The transparency value from ``0`` to ``100`` for the font color.
-            overline (FontUnderlineEnum, optional): The value for the character overline.
-            overline_color (Color, optional): Specifies if the property ``CharOverlinelineColor`` is used for an overline.
-                If value is ``-1`` the automatic color is applied.
+            overline (FontLine, optional): Character overline values.
+            underline (FontLine, optional): Character underline values.
             strike (FontStrikeoutEnum, optional): Detrmines the type of the strike out of the character.
-            underine (FontUnderlineEnum, optional): The value for the character underline.
-            underline_color (Color, optional): Specifies if the property ``CharUnderlineColor`` is used for an underline.
-                If value is ``-1`` the automatic color is applied.
             word_mode(bool, optional): If ``True``, the underline and strike-through properties are not applied to white spaces.
             case (CaseMapEnum, optional): Specifies the case of the font.
             releif (FontReliefEnum, optional): Specifies the relief of the font.
@@ -70,10 +64,8 @@ class FontEffects(CharStyleBaseMulti):
             color=color,
             transparency=transparency,
             overline=overline,
-            overline_color=overline_color,
+            underline=underline,
             strike=strike,
-            underine=underine,
-            underline_color=underline_color,
             word_mode=word_mode,
             case=case,
             relief=relief,

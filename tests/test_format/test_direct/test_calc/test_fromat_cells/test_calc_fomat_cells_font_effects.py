@@ -16,6 +16,7 @@ from ooodev.format.calc.direct.font import (
     FontStrikeoutEnum,
     FontSlant,
     FontEffects,
+    FontLine,
 )
 from ooodev.format import CommonColor
 from ooodev.utils.gui import GUI
@@ -50,8 +51,7 @@ def test_calc_font_effects(loader) -> None:
         style_fo = FontOnly(name="Liberation Sans", size=font_size, style_name="Bold")
         style_fe = FontEffects(
             color=CommonColor.BLUE,
-            underine=FontUnderlineEnum.SINGLE,
-            underline_color=CommonColor.RED,
+            underline=FontLine(line=FontUnderlineEnum.SINGLE, color=CommonColor.RED),
             strike=FontStrikeoutEnum.SINGLE,
         )
         Styler.apply(cell, style_fo, style_fe)
