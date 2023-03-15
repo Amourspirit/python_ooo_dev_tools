@@ -35,7 +35,7 @@ def test_calc_border(loader) -> None:
         if not Lo.bridge_connector.headless:
             GUI.set_visible()
             Lo.delay(500)
-            Calc.zoom(doc, GUI.ZoomEnum.ZOOM_150_PERCENT)
+            Calc.zoom(doc, GUI.ZoomEnum.ZOOM_100_PERCENT)
 
         cell_obj = Calc.get_cell_obj("A1")
         Calc.set_val(value="Hello", sheet=sheet, cell_obj=cell_obj)
@@ -159,7 +159,7 @@ def test_calc_border_range(loader) -> None:
         if not Lo.bridge_connector.headless:
             GUI.set_visible()
             Lo.delay(500)
-            Calc.zoom(doc, GUI.ZoomEnum.ZOOM_150_PERCENT)
+            Calc.zoom(doc, GUI.ZoomEnum.ZOOM_100_PERCENT)
 
         rng_obj = Calc.get_range_obj("B2:G6")
         cr = Calc.get_cell_range(sheet, rng_obj)
