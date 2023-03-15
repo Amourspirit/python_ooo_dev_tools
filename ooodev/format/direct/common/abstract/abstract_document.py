@@ -7,9 +7,11 @@ from __future__ import annotations
 
 import uno
 from com.sun.star.text import XTextDocument
+from com.sun.star.container import XNameAccess
 
 from .....exceptions import ex as mEx
 from .....utils import info as mInfo
+from .....utils import lo as mLo
 from .....utils.data_type.size import Size
 from .....office import write as mWrite
 from ....style_base import StyleBase
@@ -102,5 +104,21 @@ class AbstractDocument(StyleBase):
             return Size(width, height)
         except Exception as e:
             raise Exception("Could not access standard page style dimensions") from e
+
+    def get_text_frames(self) -> XNameAccess | None:
+        """
+        Gets document Text Frames.
+
+        Args:
+            doc (XComponent): Document
+
+        Raises:
+            MissingInterfaceError: if doc does not implement ``XTextFramesSupplier`` interface
+
+        Returns:
+            XNameAccess | None: Text Frames on success, Otherwise, None
+        """
+        # return mLo.Lo.this_component.TextFrames
+        return mWrite.Write.get_text_frames(mWrite.Write.active_doc)
 
     # endregion methods

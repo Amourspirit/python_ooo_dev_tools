@@ -9,7 +9,6 @@ from .....utils import lo as mLo
 from .....utils import props as mProps
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleMulti
-from .....meta.static_prop import static_prop
 from ...para.align.writing_mode import WritingMode, _TWritingMode
 from .....meta.deleted_attrib import DeletedAttrib
 from ...common.props.frame_options_properties import FrameOptionsProperties
