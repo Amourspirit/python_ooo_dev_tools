@@ -152,8 +152,6 @@ class TextAlign(StyleBase):
         Returns:
             TextAlign: Instance that represents Text Alignment.
         """
-        # this nu is only used to get Property Name
-
         inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')

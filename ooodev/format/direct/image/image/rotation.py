@@ -1,9 +1,8 @@
 from __future__ import annotations
-import dataclasses
-from typing import TYPE_CHECKING, cast, overload
+from typing import cast, overload
 from typing import Any, Tuple, Type, TypeVar
-from enum import Enum
 import uno
+
 from .....exceptions import ex as mEx
 from .....utils import lo as mLo
 from .....utils import props as mProps
@@ -102,7 +101,7 @@ class Rotation(StyleBase):
         return self._format_kind_prop
 
     @property
-    def prop_rotation(self) -> Angle | None:
+    def prop_rotation(self) -> Angle:
         """Gets/Sets Vertical flip option"""
         # in 1/10 degree units
         pv = cast(int, self._get(self._props.rotation))
@@ -111,7 +110,7 @@ class Rotation(StyleBase):
         return Angle(round(pv / 10))
 
     @prop_rotation.setter
-    def prop_rotation(self, value: int | Angle | None) -> None:
+    def prop_rotation(self, value: int | Angle) -> None:
         # in 1/10 degree units
         val = Angle(int(value)).value * 10
         self._set(self._props.rotation, val)
