@@ -8,12 +8,12 @@ from ooo.dyn.awt.font_weight import FontWeightEnum as FontWeightEnum
 from ooo.dyn.style.case_map import CaseMapEnum as CaseMapEnum
 from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
-from .....utils.data_type.intensity import Intensity as Intensity
-from ....direct.char.font.font_position import (
+from ......utils.data_type.intensity import Intensity as Intensity
+from .....direct.char.font.font_position import (
     FontPosition as FontPosition,
     FontScriptKind as FontScriptKind,
     CharSpacingKind as CharSpacingKind,
 )
-from ....direct.char.font.font import Font as Font
-from ....direct.char.font.font_effects import FontEffects as FontEffects, FontLine as FontLine
-from ....direct.char.font.font_only import FontOnly as FontOnly, FontLang as FontLang
+from .....direct.char.font.font import Font as Font
+from .....direct.char.font.font_effects import FontEffects as FontEffects, FontLine as FontLine
+from .....direct.char.font.font_only import FontOnly as FontOnly, FontLang as FontLang

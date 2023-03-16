@@ -8,7 +8,7 @@ if __name__ == "__main__":
 import uno
 
 # simpler test then test_char_font because it is testing the same font class under the hood.
-from ooodev.format.calc.direct.font import (
+from ooodev.format.calc.direct.format_cells.font import (
     Font,
     FontOnly,
     FontUnderlineEnum,
@@ -46,7 +46,6 @@ def test_calc_font_effects(loader) -> None:
         cell = Calc.get_cell(sheet, cell_obj)
         cp = cast("CharacterProperties", cell)
         font_size = UnitPT(12.0)
-        font_size100 = font_size.get_value_mm100()
         style_fo = FontOnly(name="Liberation Sans", size=font_size, style_name="Bold")
         style_fe = FontEffects(
             color=CommonColor.BLUE,

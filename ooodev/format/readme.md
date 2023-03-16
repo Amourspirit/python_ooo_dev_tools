@@ -300,6 +300,15 @@ mindmap
                 id{{Para}}
         calc
             [direct]
+                borders
+                    id{{Borders}}
+                    id{{Padding}}
+                    id{{Shadow}}
+                font
+                    id{{Font}}
+                    id{{FontOnly}}
+                    id{{FontEffects}}
+                    id{{FontPosition}}
             [modify]
             [style]
         draw

@@ -8,7 +8,7 @@ if __name__ == "__main__":
 import uno
 
 # simpler test then test_char_font because it is testing the same font class under the hood.
-from ooodev.format.calc.direct.font import (
+from ooodev.format.calc.direct.format_cells.font import (
     Font,
     FontLine,
     FontOnly,
