@@ -57,10 +57,10 @@ class Transparency(StyleBase):
             )
         return self._supported_services_values
 
-    def _on_modifing(self, event: CancelEventArgs) -> None:
+    def _on_modifing(self, source: Any, event: CancelEventArgs) -> None:
         if self._is_default_inst:
             raise ValueError("Modifying a default instance is not allowed")
-        return super()._on_modifing(event)
+        return super()._on_modifing(source, event)
 
     def _props_set(self, obj: object, **kwargs: Any) -> None:
         try:
@@ -137,13 +137,13 @@ class Transparency(StyleBase):
             self._props_internal_attributes = TransparentTransparencyProps(transparence="FillTransparence")
         return self._props_internal_attributes
 
-    @static_prop
-    def default() -> Transparency:  # type: ignore[misc]
-        """Gets Transparency Default. Static Property."""
+    @property
+    def default(self: _TTransparency) -> _TTransparency:  # type: ignore[misc]
+        """Gets Transparency Default."""
         try:
-            return Transparency._DEFAULT_INST
+            return self._DEFAULT_INST
         except AttributeError:
-            inst = Transparency(0)
+            inst = self.__class__(value=0, _cattribs=self._get_internal_cattribs())
             inst._is_default_inst = True
-            Transparency._DEFAULT_INST = inst
-        return Transparency._DEFAULT_INST
+            self._DEFAULT_INST = inst
+        return self._DEFAULT_INST

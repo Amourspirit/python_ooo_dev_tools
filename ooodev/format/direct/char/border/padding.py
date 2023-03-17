@@ -4,12 +4,13 @@ Module for managing character padding.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple
+from typing import Tuple, Type, TypeVar
 
-from .....meta.static_prop import static_prop
 from ....kind.format_kind import FormatKind
 from ...common.abstract.abstract_padding import AbstractPadding
 from ...common.props.border_props import BorderProps
+
+_TPadding = TypeVar(name="_TPadding", bound="Padding")
 
 
 class Padding(AbstractPadding):
@@ -59,15 +60,15 @@ class Padding(AbstractPadding):
             )
         return self._props_internal_attributes
 
-    @static_prop
-    def default() -> Padding:  # type: ignore[misc]
-        """Gets BorderPadding default. Static Property."""
+    @property
+    def default(self: _TPadding) -> _TPadding:  # type: ignore[misc]
+        """Gets BorderPadding default."""
         try:
-            return Padding._DEFAULT_INST
+            return self._default_inst
         except AttributeError:
-            inst = Padding(all=0.0)
+            inst = self.__class__(all=0.0, _cattribs=self._get_internal_cattribs())
             inst._is_default_inst = True
-            Padding._DEFAULT_INST = inst
-        return Padding._DEFAULT_INST
+            self._default_inst = inst
+        return self._default_inst
 
     # endregion properties

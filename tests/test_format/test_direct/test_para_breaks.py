@@ -51,7 +51,7 @@ def test_props() -> None:
 
 def test_default() -> None:
     # brk = cast(Breaks, Breaks.default)
-    brk = InnerBreaks.default
+    brk = InnerBreaks().default
     assert brk.prop_type == BreakType.NONE
     assert brk.prop_style == None
     assert brk.prop_num == None

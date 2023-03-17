@@ -4,11 +4,10 @@ Modele for managing paragraph padding.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, cast, overload, Type, TypeVar
+from typing import Any, Tuple, cast, overload, Type, TypeVar
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
-from .....meta.static_prop import static_prop
 from .....proto.unit_obj import UnitObj
 from .....utils import lo as mLo
 from .....utils import props as mProps
@@ -73,10 +72,10 @@ class Spacing(StyleBase):
             )
         return self._supported_services_values
 
-    def _on_modifing(self, event: CancelEventArgs) -> None:
+    def _on_modifing(self, source: Any, event: CancelEventArgs) -> None:
         if self._is_default_inst:
             raise ValueError("Modifying a default instance is not allowed")
-        return super()._on_modifing(event)
+        return super()._on_modifing(source, event)
 
     # region apply()
     @overload
@@ -259,14 +258,16 @@ class Spacing(StyleBase):
             return
         self._set("ParaContextMargin", value)
 
-    @static_prop
-    def default() -> Spacing:  # type: ignore[misc]
-        """Gets ``Spacing`` default. Static Property."""
+    @property
+    def default(self: _TSpacing) -> _TSpacing:
+        """Gets ``Spacing`` default."""
         try:
-            return Spacing._DEFAULT_INST
+            return self._default_inst
         except AttributeError:
-            Spacing._DEFAULT_INST = Spacing(above=0.0, below=0.0, style_no_space=False)
-            Spacing._DEFAULT_INST._is_default_inst = True
-        return Spacing._DEFAULT_INST
+            self._default_inst = self.__class__(
+                above=0.0, below=0.0, style_no_space=False, _cattribs=self._get_internal_cattribs()
+            )
+            self._default_inst._is_default_inst = True
+        return self._default_inst
 
     # endregion properties

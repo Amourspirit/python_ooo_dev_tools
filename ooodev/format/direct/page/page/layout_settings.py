@@ -69,10 +69,10 @@ class LayoutSettings(StyleBase):
             self._supported_services_values = ("com.sun.star.style.PageProperties", "com.sun.star.style.PageStyle")
         return self._supported_services_values
 
-    def _on_modifing(self, event: CancelEventArgs) -> None:
+    def _on_modifing(self,source: Any, event: CancelEventArgs) -> None:
         if self._is_default_inst:
             raise ValueError("Modifying a default instance is not allowed")
-        return super()._on_modifing(event)
+        return super()._on_modifing(source, event)
 
     def _props_set(self, obj: object, **kwargs: Any) -> None:
         try:

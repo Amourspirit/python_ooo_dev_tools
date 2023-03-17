@@ -4,11 +4,10 @@ Modele for managing paragraph hyphenation.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, overload, cast, Type, TypeVar
+from typing import Any, Tuple, overload, Type, TypeVar
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
-from .....meta.static_prop import static_prop
 from .....utils import lo as mLo
 from .....utils import props as mProps
 from ....kind.format_kind import FormatKind
@@ -87,10 +86,10 @@ class Hyphenation(StyleBase):
             )
         return self._supported_services_values
 
-    def _on_modifing(self, event: CancelEventArgs) -> None:
+    def _on_modifing(self, source: Any, event: CancelEventArgs) -> None:
         if self._is_default_inst:
             raise ValueError("Modifying a default instance is not allowed")
-        return super()._on_modifing(event)
+        return super()._on_modifing(source, event)
 
     # region apply()
     @overload
@@ -326,14 +325,16 @@ class Hyphenation(StyleBase):
             return
         self._set("ParaHyphenationMaxHyphens", value)
 
-    @static_prop
-    def default() -> Hyphenation:  # type: ignore[misc]
+    @property
+    def default(self: _THyphenation) -> _THyphenation:
         """Gets ``Hyphenation`` default. Static Property."""
         try:
-            return Hyphenation._DEFAULT_INST
+            return self._default_inst
         except AttributeError:
-            Hyphenation._DEFAULT_INST = Hyphenation(auto=False, no_caps=False, start_chars=2, end_chars=2, max=0)
-            Hyphenation._DEFAULT_INST._is_default_inst = True
-        return Hyphenation._DEFAULT_INST
+            self._default_inst = self.__class__(
+                auto=False, no_caps=False, start_chars=2, end_chars=2, max=0, _cattribs=self._get_internal_cattribs()
+            )
+            self._default_inst._is_default_inst = True
+        return self._default_inst
 
     # endregion properties

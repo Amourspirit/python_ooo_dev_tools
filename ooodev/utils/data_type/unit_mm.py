@@ -154,7 +154,7 @@ class UnitMM(BaseFloatValue):
         Get instance from ``1/10th in`` (inch) value.
 
         Args:
-            value (int): ```/10th in`` value.
+            value (int): ``1/10th in`` value.
 
         Returns:
             UnitMM:

@@ -1819,11 +1819,11 @@ class TableProperties(StyleMulti):
 
         Args:
             name (str, optional): Specifies frame name. Space are NOT allowed in names
-            width (RelativeSize, AbsoluteSize optional): Specifies table Width.
-            left (RelativeSize, AbsoluteSize optional): Specifies table Left.
-            right (RelativeSize, AbsoluteSize optional): Specifies table Right.
-            above (RelativeSize, AbsoluteSize optional): Specifies table spacing above.
-            below (RelativeSize, AbsoluteSize optional): Specifies table spacing below.
+            width (RelativeSize, AbsoluteSize, optional): Specifies table Width.
+            left (RelativeSize, AbsoluteSize, optional): Specifies table Left.
+            right (RelativeSize, AbsoluteSize, optional): Specifies table Right.
+            above (RelativeSize, AbsoluteSize, optional): Specifies table spacing above.
+            below (RelativeSize, AbsoluteSize, optional): Specifies table spacing below.
             align (TableAlignKind, optional): Specifies table alignment.
             realitive (bool, optional): Specifies if table horizontal values are in percentanges or ``mm`` units.
 
@@ -1874,12 +1874,12 @@ class TableProperties(StyleMulti):
                     # not case sensitive
                     setattr(obj, self._props.name, self.prop_name)
 
-    def on_property_setting(self, event_args: KeyValCancelArgs) -> None:
+    def on_property_setting(self, source: Any, event_args: KeyValCancelArgs) -> None:
         if event_args.key == self._props.name:
             event_args.cancel = True
             event_args.handled = True
             # see bug specified in apply() method.
-        super().on_property_setting(event_args)
+        super().on_property_setting(source, event_args)
 
     def _supported_services(self) -> Tuple[str, ...]:
         try:
@@ -2151,7 +2151,7 @@ class TableProperties(StyleMulti):
     # region Methods
     def get_width_mm(self) -> UnitMM | None:
         """
-        Gets Width in ``mm` units.
+        Gets Width in ``mm`` units.
 
         When class is constructed using relative values this method will still
         return ``mm`` units.
@@ -2172,7 +2172,7 @@ class TableProperties(StyleMulti):
 
     def get_left_mm(self) -> UnitMM | None:
         """
-        Gets left in ``mm` units.
+        Gets left in ``mm`` units.
 
         When class is constructed using relative values this method will still
         return ``mm`` units.
@@ -2193,7 +2193,7 @@ class TableProperties(StyleMulti):
 
     def get_right_mm(self) -> UnitMM | None:
         """
-        Gets right in ``mm` units.
+        Gets right in ``mm`` units.
 
         When class is constructed using relative values this method will still
         return ``mm`` units.

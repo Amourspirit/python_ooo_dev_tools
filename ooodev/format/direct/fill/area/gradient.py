@@ -4,7 +4,7 @@ Module for Paragraph Gradient Color.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, Type, cast, TypeVar, overload
+from typing import Any, Tuple, Type, cast, TypeVar, overload
 
 import uno
 from ooo.dyn.drawing.fill_style import FillStyle
@@ -13,7 +13,6 @@ from ooo.dyn.awt.gradient import Gradient as UNOGradient
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
-from .....meta.static_prop import static_prop
 from .....utils import props as mProps
 from .....utils.color import Color
 from .....utils.data_type.angle import Angle as Angle
@@ -149,10 +148,10 @@ class Gradient(StyleMulti):
             )
         return self._supported_services_values
 
-    def _on_modifing(self, event: CancelEventArgs) -> None:
+    def _on_modifing(self, source: Any, event: CancelEventArgs) -> None:
         if self._is_default_inst:
             raise ValueError("Modifying a default instance is not allowed")
-        return super()._on_modifing(event)
+        return super()._on_modifing(source, event)
 
     # region copy()
     @overload
@@ -307,13 +306,13 @@ class Gradient(StyleMulti):
             )
         return self._props_internal_attributes
 
-    @static_prop
-    def default() -> Gradient:  # type: ignore[misc]
-        """Gets Gradient empty. Static Property."""
+    @property
+    def default(self: _TGradient) -> _TGradient:
+        """Gets Gradient empty."""
         try:
-            return Gradient._DEFAULT_INST
+            return self._default_inst
         except AttributeError:
-            inst = Gradient(
+            inst = self.__class__(
                 style=GradientStyle.LINEAR,
                 step_count=0,
                 offset=Offset(0, 0),
@@ -321,9 +320,10 @@ class Gradient(StyleMulti):
                 border=0,
                 grad_color=ColorRange(0, 16777215),
                 grad_intensity=IntensityRange(100, 100),
+                _cattribs=self._get_gradient_struct_cattrib(),
             )
             inst._set(inst._props.style, FillStyle.NONE)
             inst._set(inst._props.name, "")
             inst._is_default_inst = True
-            Gradient._DEFAULT_INST = inst
-        return Gradient._DEFAULT_INST
+            self._default_inst = inst
+        return self._default_inst

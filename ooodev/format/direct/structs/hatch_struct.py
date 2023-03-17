@@ -4,9 +4,10 @@ Module for ``Hatch`` struct.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, Type, cast, overload, TypeVar, TYPE_CHECKING
+from typing import Tuple, Type, cast, overload, TypeVar
 
 import uno
+from .struct_base import StructBase
 from ....exceptions import ex as mEx
 from ....proto.unit_obj import UnitObj
 from ....utils import props as mProps
@@ -14,7 +15,6 @@ from ....utils.color import Color
 from ....utils.data_type.angle import Angle as Angle
 from ....utils.data_type.intensity import Intensity as Intensity
 from ....utils.data_type.unit_mm import UnitMM
-from ...style_base import StyleBase
 from ...kind.format_kind import FormatKind
 from ....utils.unit_convert import UnitConvert
 
@@ -27,7 +27,7 @@ from ooo.dyn.drawing.hatch_style import HatchStyle
 _THatchStruct = TypeVar(name="_THatchStruct", bound="HatchStruct")
 
 
-class HatchStruct(StyleBase):
+class HatchStruct(StructBase):
     """
     Represents UNO ``Hatch`` struct.
 

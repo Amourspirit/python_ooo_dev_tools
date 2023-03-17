@@ -84,10 +84,10 @@ class ListStyle(StyleBase):
     def _supported_services(self) -> Tuple[str, ...]:
         return ("com.sun.star.style.ParagraphProperties", "com.sun.star.style.ParagraphStyle")
 
-    def _on_modifing(self, event: CancelEventArgs) -> None:
+    def _on_modifing(self, source: Any, event: CancelEventArgs) -> None:
         if self._is_default_inst:
             raise ValueError("Modifying a default instance is not allowed")
-        return super()._on_modifing(event)
+        return super()._on_modifing(source, event)
 
     # region apply()
     @overload
@@ -269,18 +269,18 @@ class ListStyle(StyleBase):
             )
         return self._props_internal_attributes
 
-    @static_prop
-    def default() -> ListStyle:  # type: ignore[misc]
-        """Gets ``ListStyle`` default. Static Property."""
+    @property
+    def default(self: _TListStyle) -> _TListStyle:
+        """Gets ``ListStyle`` default."""
         try:
-            return ListStyle._DEFAULT_INST
+            return self._default_inst
         except AttributeError:
-            ls = ListStyle()
+            ls = self.__class__(_cattribs=self._get_internal_cattribs())
             ls._set(ls._props.name, "")
             ls._set(ls._props.restart, False)
             ls._set(ls._props.value, -1)
             ls._is_default_inst = True
-            ListStyle._DEFAULT_INST = ls
-        return ListStyle._DEFAULT_INST
+            self._default_inst = ls
+        return self._default_inst
 
     # endregion properties

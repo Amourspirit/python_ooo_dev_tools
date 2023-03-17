@@ -23,7 +23,7 @@ def test_props() -> None:
 
 
 def test_default() -> None:
-    ol = InnerOutline.default
+    ol = InnerOutline().default
     assert ol._get("OutlineLevel") == LevelKind.TEXT_BODY
     assert ol.prop_level == LevelKind.TEXT_BODY
 

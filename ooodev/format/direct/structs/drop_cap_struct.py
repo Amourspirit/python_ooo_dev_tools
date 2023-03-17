@@ -9,20 +9,20 @@ from typing import Dict, Tuple, Type, cast, overload, TypeVar
 import uno
 from ooo.dyn.style.drop_cap_format import DropCapFormat
 
-from ....events.event_singleton import _Events
+from .struct_base import StructBase
 from ....exceptions import ex as mEx
 from ....proto.unit_obj import UnitObj
 from ....utils import props as mProps
 from ....utils.data_type.byte import Byte
 from ....utils.data_type.unit_mm100 import UnitMM100
 from ...kind.format_kind import FormatKind
-from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent
+from ...style_base import EventArgs, CancelEventArgs, FormatNamedEvent
 
 
 _TDropCapStruct = TypeVar(name="_TDropCapStruct", bound="DropCapStruct")
 
 
-class DropCapStruct(StyleBase):
+class DropCapStruct(StructBase):
     """
     Paragraph Drop Cap
 
@@ -124,10 +124,9 @@ class DropCapStruct(StyleBase):
 
         cargs = CancelEventArgs(source=f"{self.apply.__qualname__}")
         cargs.event_data = self
-        self.on_applying(cargs)
         if cargs.cancel:
             return
-        _Events().trigger(FormatNamedEvent.STYLE_APPLYING, cargs)
+        self._events.trigger(FormatNamedEvent.STYLE_APPLYING, cargs)
         if cargs.cancel:
             return
 
@@ -138,8 +137,7 @@ class DropCapStruct(StyleBase):
         dcf = self.get_uno_struct()
         mProps.Props.set(obj, **{key: dcf})
         eargs = EventArgs.from_args(cargs)
-        self.on_applied(eargs)
-        _Events().trigger(FormatNamedEvent.STYLE_APPLIED, eargs)
+        self._events.trigger(FormatNamedEvent.STYLE_APPLIED, eargs)
 
         # mProps.Props.set(obj, **{key: tuple(tss_lst)})
 

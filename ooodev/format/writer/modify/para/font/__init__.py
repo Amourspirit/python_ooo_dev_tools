@@ -9,6 +9,7 @@ from ......utils.data_type.angle import Angle as Angle
 
 from ....style.para import StyleParaKind as StyleParaKind
 from .....direct.char.font.font_only import FontLang as FontLang
+from .....direct.char.font.font_effects import FontLine as FontLine
 from .....direct.char.font.font_position import CharSpacingKind as CharSpacingKind, FontScriptKind as FontScriptKind
 
 from .....modify.para.font.font_effects import FontEffects as FontEffects, InnerFontEffects as InnerFontEffects

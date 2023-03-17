@@ -5,10 +5,9 @@ from ooo.dyn.style.case_map import CaseMapEnum as CaseMapEnum
 from ooo.dyn.awt.font_relief import FontReliefEnum as FontReliefEnum
 from ......utils.data_type.intensity import Intensity as Intensity
 from ......utils.data_type.angle import Angle as Angle
-
-
 from ....style.char import StyleCharKind as StyleCharKind
 from .....direct.char.font.font_only import FontLang as FontLang
+from .....direct.char.font.font_effects import FontLine as FontLine
 from .....direct.char.font.font_position import CharSpacingKind as CharSpacingKind, FontScriptKind as FontScriptKind
 from .....modify.char.font.font_effects import FontEffects as FontEffects, InnerFontEffects as InnerFontEffects
 from .....modify.char.font.font_only import FontOnly as FontOnly, InnerFontOnly as InnerFontOnly

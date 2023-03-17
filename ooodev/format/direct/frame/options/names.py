@@ -1,55 +1,70 @@
 from __future__ import annotations
 from typing import overload
-from typing import Any, Tuple, Type, TypeVar
+from typing import Any, cast, Tuple, Type, TypeVar, TYPE_CHECKING
 import uno
 
+# from ....style_base import StyleBase
 from .....events.args.key_val_cancel_args import KeyValCancelArgs
 from .....exceptions import ex as mEx
 from .....utils import lo as mLo
 from .....utils import props as mProps
 from ....kind.format_kind import FormatKind
-from ....style_base import StyleBase
+from ...common.abstract.abstract_document import AbstractDocument
 from ...common.props.frame_options_names_props import FrameOptionsNamesProps
+
+if TYPE_CHECKING:
+    from com.sun.star.text import ChainedTextFrame
 
 _TNames = TypeVar(name="_TNames", bound="Names")
 
 
-class Names(StyleBase):
+class Names(AbstractDocument):
     """
     Frame Name options
 
     .. versionadded:: 0.9.0
     """
 
-    def __init__(self, name: str | None = None, desc: str | None = None) -> None:
+    def __init__(
+        self, *, name: str | None = None, desc: str | None = None, prev: str | None = None, next: str | None = None
+    ) -> None:
         """
         Constructor
 
         Args:
             name (str, optional): Specifies frame name.
             desc (str, optional): Specifies frame description.
-        """
-        # TODO: Implement prev and next on Frame options Names class.
-        # prev (str, optional): Specifies previous link.
-        # next (str, optional): Specifies next link.
-        # prev: str | None = None, next: str | None = None
+            prev (str, optional): Specifies previous link.
+            next (str, optional): Specifies next link.
 
-        # Not able to get prev and next working on "com.sun.star.text.TextFrame" service.
+        Returns:
+            None:
+
+        See Also:
+            LibreOffice Help <Inserting, Editing and Linking Frames `https://help.libreoffice.org/latest/en-GB/text/swriter/guide/text_frame.html?DbPAR=WRITER#bm_id3149487`>__
+
+        Note:
+            Flowing text from one text frame to another, via ``prev`` and ``next`` required the text frame
+            being flow to not contain text. If the frame to flow to contains text then ``prev`` and ``next``
+            do not have any effect.
+        """
+        # Now Working, able to get prev and next working on "com.sun.star.text.TextFrame" service.
         # Posted issue on Ask: https://ask.libreoffice.org/t/how-to-link-text-frames-in-writer-via-macro/88497
-        # The "com.sun.star.text.TextFrame" has the expected properties of "ChainPrevName" and "ChainNextName" but not able to set them.
-        # It may be that a "com.sun.star.text.ChainedTextFrame" service needs to be created (see Write.add_text_frame() for ref).
-        # However creating "com.sun.star.text.ChainedTextFrame" results in a error.
-        # bug posted: https://bugs.documentfoundation.org/show_bug.cgi?id=153825
+        # If Text is added to both frames that are to be chained together then
+        # LO will not chain them.
+        # The Frame.ChainNextName and Frame.ChainPrevName properties cannot be set. and do not raise any error.
+        # This is the default behavour and makes sense.
+        # If the frame to flow to has text already then previous frame cannot flow to it.
 
         super().__init__()
         if name is not None:
             self.prop_name = name
         if desc is not None:
             self.prop_desc = desc
-        # if prev is not None:
-        #     self.prop_prev = prev
-        # if next is not None:
-        #     self.prop_next = next
+        if prev is not None:
+            self.prop_prev = prev
+        if next is not None:
+            self.prop_next = next
 
     # region Overrides
     def apply(self, obj: object, **kwargs) -> None:
@@ -57,15 +72,44 @@ class Names(StyleBase):
         # for some reason setting Name property raises "UnknownPropertyException" when "setPropertyValue()" is used (Which Props.set() uses).
         # However, setting Name via setattr() works fine.
         # for this reason this class cancels setting of Name property and sets it via setattr() here.
-        if hasattr(obj, self._props.name):
-            setattr(obj, self._props.name, self.prop_name)
+        name = self.prop_name
+        if not name:
+            return
+        obj_name = cast(str, getattr(obj, self._props.name, None))
+        if obj_name is None:
+            return
+        if obj_name != name:
+            # only set name is it is different
+            setattr(obj, self._props.name, name)
 
-    def on_property_setting(self, event_args: KeyValCancelArgs) -> None:
-        if event_args.key == self._props.name:
+        try:
+            prev = self.prop_prev
+            next = self.prop_next
+        except mEx.DeletedAttributeError:
+            # attriutes not used in a child class.
+            return
+
+        if prev is None and next is None:
+            return
+
+        frames = self.get_text_frames()
+        if frames is None:
+            return
+        if not frames.hasByName(self.prop_name):
+            return
+        this_frame = cast("ChainedTextFrame", frames.getByName(self.prop_name))
+        if not prev is None:
+            this_frame.ChainPrevName = prev
+        if not next is None:
+            this_frame.ChainNextName = next
+
+    def on_property_setting(self, source: Any, event_args: KeyValCancelArgs) -> None:
+        skip = (self._props.name, self._props.prev, self._props.next)
+        if event_args.key in skip:
             event_args.cancel = True
             event_args.handled = True
             # see bug specified in apply() method.
-        super().on_property_setting(event_args)
+        super().on_property_setting(source, event_args)
 
     def _supported_services(self) -> Tuple[str, ...]:
         try:
@@ -165,29 +209,29 @@ class Names(StyleBase):
         self._set(self._props.desc, value)
 
     # Prev and Next not currently working
-    # @property
-    # def prop_prev(self) -> bool | None:
-    #     """Gets/Sets frame previous link"""
-    #     return self._get(self._props.prev)
+    @property
+    def prop_prev(self) -> str | None:
+        """Gets/Sets frame previous link"""
+        return self._get(self._props.prev)
 
-    # @prop_prev.setter
-    # def prop_prev(self, value: bool | None) -> None:
-    #     if value is None:
-    #         self._remove(self._props.prev)
-    #         return
-    #     self._set(self._props.prev, value)
+    @prop_prev.setter
+    def prop_prev(self, value: str | None) -> None:
+        if value is None:
+            self._remove(self._props.prev)
+            return
+        self._set(self._props.prev, value)
 
-    # @property
-    # def prop_next(self) -> bool | None:
-    #     """Gets/Sets frame next link"""
-    #     return self._get(self._props.next)
+    @property
+    def prop_next(self) -> str | None:
+        """Gets/Sets frame next link"""
+        return self._get(self._props.next)
 
-    # @prop_next.setter
-    # def prop_next(self, value: bool | None) -> None:
-    #     if value is None:
-    #         self._remove(self._props.next)
-    #         return
-    #     self._set(self._props.next, value)
+    @prop_next.setter
+    def prop_next(self, value: str | None) -> None:
+        if value is None:
+            self._remove(self._props.next)
+            return
+        self._set(self._props.next, value)
 
     @property
     def _props(self) -> FrameOptionsNamesProps:
@@ -197,7 +241,7 @@ class Names(StyleBase):
             self._props_internal_attributes = FrameOptionsNamesProps(
                 name="Name",
                 desc="Description",
-                prev="",  # ChainPrevName not working
-                next="",  # ChainNextName not working
+                prev="ChainPrevName",
+                next="ChainNextName",
             )
         return self._props_internal_attributes

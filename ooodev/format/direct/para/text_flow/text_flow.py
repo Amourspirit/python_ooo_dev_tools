@@ -4,7 +4,7 @@ Modele for managing paragraph Text Flow.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, cast, Type, TypeVar, overload
+from typing import Any, Tuple, cast, Type, TypeVar, overload
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
@@ -103,10 +103,10 @@ class TextFlow(StyleMulti):
             )
         return self._supported_services_values
 
-    def _on_modifing(self, event: CancelEventArgs) -> None:
+    def _on_modifing(self, source: Any, event: CancelEventArgs) -> None:
         if self._is_default_inst:
             raise ValueError("Modifying a default instance is not allowed")
-        return super()._on_modifing(event)
+        return super()._on_modifing(source, event)
 
     # region from_obj()
     @overload
@@ -189,21 +189,30 @@ class TextFlow(StyleMulti):
             self._direct_inner_fo = cast(FlowOptions, self._get_style_inst("flow_options"))
         return self._direct_inner_fo
 
-    @static_prop
-    def default() -> TextFlow:  # type: ignore[misc]
-        """Gets ``TextFlow`` default. Static Property."""
+    @property
+    def default(self: _TTextFlow) -> _TTextFlow:
+        """Gets ``TextFlow`` default."""
         try:
-            return TextFlow._DEFAULT_INST
+            return self._default_inst
         except AttributeError:
-            hy = Hyphenation.default
-            brk = Breaks.default
-            flo = FlowOptions.default
-            tf = TextFlow()
+            if self.prop_inner_hyphenation is None:
+                hy = Hyphenation().default
+            else:
+                hy = self.prop_inner_hyphenation.default
+            if self.prop_inner_breaks is None:
+                brk = Breaks().default
+            else:
+                brk = self.prop_inner_breaks.default
+            if self.prop_inner_flow_options is None:
+                flo = FlowOptions().default
+            else:
+                flo = self.prop_inner_flow_options.default
+            tf = self()
             tf._set_style("hyphenation", hy, *hy.get_attrs())
             tf._set_style("breaks", brk, *brk.get_attrs())
             tf._set_style("flow_options", flo, *flo.get_attrs())
             tf._is_default_inst = True
-            TextFlow._DEFAULT_INST = tf
-        return TextFlow._DEFAULT_INST
+            self._default_inst = tf
+        return self._default_inst
 
     # endregion properties

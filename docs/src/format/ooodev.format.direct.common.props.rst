@@ -12,7 +12,11 @@ Submodules
    ooodev.format.direct.common.props.area_img_props
    ooodev.format.direct.common.props.area_pattern_props
    ooodev.format.direct.common.props.border_props
+   ooodev.format.direct.common.props.cell_background_color_props
    ooodev.format.direct.common.props.cell_borders_props
+   ooodev.format.direct.common.props.cell_text_align_props
+   ooodev.format.direct.common.props.cell_text_orientation_props
+   ooodev.format.direct.common.props.cell_text_properties_props
    ooodev.format.direct.common.props.fill_color_props
    ooodev.format.direct.common.props.font_only_props
    ooodev.format.direct.common.props.frame_options_align_props
@@ -31,10 +35,12 @@ Submodules
    ooodev.format.direct.common.props.image_options_names_props
    ooodev.format.direct.common.props.image_options_properties
    ooodev.format.direct.common.props.image_rotation_props
+   ooodev.format.direct.common.props.img_para_area_props
    ooodev.format.direct.common.props.list_style_props
    ooodev.format.direct.common.props.prop_pair
    ooodev.format.direct.common.props.shape_shadow_props
    ooodev.format.direct.common.props.struct_border_table_props
+   ooodev.format.direct.common.props.struct_cell_protection_props
    ooodev.format.direct.common.props.struct_crop_props
    ooodev.format.direct.common.props.struct_size_props
    ooodev.format.direct.common.props.struct_table_border_distances_props

@@ -1,15 +1,15 @@
 from __future__ import annotations
-from typing import Tuple
+from typing import Any, Tuple
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....events.args.key_val_cancel_args import KeyValCancelArgs
 from .....meta.static_prop import static_prop
 from ....kind.format_kind import FormatKind
-from ....style_base import StyleBase
+from ....style_base import StyleName
 from .kind import StyleParaKind as StyleParaKind
 
 
-class Para(StyleBase):
+class Para(StyleName):
     """
     Style Paragraph. Manages Paragraph styles for Writer.
 
@@ -23,7 +23,9 @@ class Para(StyleBase):
     def __init__(self, name: StyleParaKind | str = "") -> None:
         if name == "":
             name = Para.default.prop_name
-        super().__init__(**{self._get_property_name(): str(name)})
+        super().__init__(name=name)
+
+    # region Overrides
 
     def _supported_services(self) -> Tuple[str, ...]:
         try:
@@ -32,11 +34,6 @@ class Para(StyleBase):
             self._supported_services_values = ("com.sun.star.style.ParagraphProperties",)
         return self._supported_services_values
 
-    def _on_modifing(self, event: CancelEventArgs) -> None:
-        if self._is_default_inst:
-            raise ValueError("Modifying a default instance is not allowed")
-        return super()._on_modifing(event)
-
     def _get_property_name(self) -> str:
         try:
             return self._property_name
@@ -44,7 +41,7 @@ class Para(StyleBase):
             self._property_name = "ParaStyleName"
         return self._property_name
 
-    def on_property_setting(self, event_args: KeyValCancelArgs):
+    def on_property_setting(self, source: Any, event_args: KeyValCancelArgs):
         """
         Triggers for each property that is set
 
@@ -57,6 +54,9 @@ class Para(StyleBase):
         # this event covers apply() and resore()
         if event_args.value == "":
             event_args.value = Para.default.prop_name
+        super().on_property_setting(source, event_args)
+
+    # endregion Overrides
 
     # region Style Properties
     @property
@@ -409,22 +409,12 @@ class Para(StyleBase):
             self._format_kind_prop = FormatKind.STYLE | FormatKind.PARA
         return self._format_kind_prop
 
-    @property
-    def prop_name(self) -> str:
-        """Gets/Sets Character style namd"""
-        return self._get(self._get_property_name())
-
-    @prop_name.setter
-    def prop_name(self, value: StyleParaKind | str) -> None:
-        self._set(self._get_property_name(), str(value))
-
     @static_prop
     def default() -> Para:  # type: ignore[misc]
-        """Gets ``StylePara`` default. Static Property."""
+        """Gets ``Para`` default. Static Property."""
         try:
             return Para._DEFAULT_INST
         except AttributeError:
             Para._DEFAULT_INST = Para(name=StyleParaKind.STANDARD)
             Para._DEFAULT_INST._is_default_inst = True
-
         return Para._DEFAULT_INST

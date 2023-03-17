@@ -74,10 +74,10 @@ class AbstractLineNumber(StyleBase):
             )
         return self._supported_services_values
 
-    def _on_modifing(self, event: CancelEventArgs) -> None:
+    def _on_modifing(self, source: Any, event: CancelEventArgs) -> None:
         if self._is_default_inst:
             raise ValueError("Modifying a default instance is not allowed")
-        return super()._on_modifing(event)
+        return super()._on_modifing(source, event)
 
     # region apply()
     @overload
@@ -231,5 +231,15 @@ class AbstractLineNumber(StyleBase):
         except AttributeError:
             self._props_line_num = LineNumeProps(value="ParaLineNumberStartValue", count="ParaLineNumberCount")
         return self._props_line_num
+
+    @property
+    def default(self: _TAbstractLineNumber) -> _TAbstractLineNumber:
+        """Gets ``LineNum`` default."""
+        try:
+            return self._default_inst
+        except AttributeError:
+            self._default_inst = self.__class__(num_start=0, _cattribs=self._get_internal_cattribs())
+            self._default_inst._is_default_inst = True
+        return self._default_inst
 
     # endregion properties

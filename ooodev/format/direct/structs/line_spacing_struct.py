@@ -5,16 +5,15 @@ Module for Shadow format (``LineSpacing``) struct.
 """
 # region imports
 from __future__ import annotations
-from typing import Dict, Tuple, Type, TypeVar, cast, overload, TYPE_CHECKING
+from typing import Any, Dict, Tuple, Type, TypeVar, overload
 from enum import Enum
 from numbers import Real
 
 import uno
-from ....events.event_singleton import _Events
-from ....meta.static_prop import static_prop
+from .struct_base import StructBase
 from ....utils import props as mProps
 from ...kind.format_kind import FormatKind
-from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent
+from ...style_base import EventArgs, CancelEventArgs, FormatNamedEvent
 from ....utils.unit_convert import UnitConvert, Length
 from ....utils.type_var import T
 
@@ -79,7 +78,7 @@ class ModeKind(Enum):
 
 
 # endregion imports
-class LineSpacingStruct(StyleBase):
+class LineSpacingStruct(StructBase):
     """
     Line Spacing struct
     """
@@ -143,10 +142,10 @@ class LineSpacingStruct(StyleBase):
             self._supported_services_values = ()
         return self._supported_services_values
 
-    def _on_modifing(self, event: CancelEventArgs) -> None:
+    def _on_modifing(self, source: Any, event: CancelEventArgs) -> None:
         if self._is_default_inst:
             raise ValueError("Modifying a default instance is not allowed")
-        return super()._on_modifing(event)
+        return super()._on_modifing(source, event)
 
     def _get_property_name(self) -> str:
         try:
@@ -217,10 +216,9 @@ class LineSpacingStruct(StyleBase):
             return
         cargs = CancelEventArgs(source=f"{self.apply.__qualname__}")
         cargs.event_data = self
-        self.on_applying(cargs)
         if cargs.cancel:
             return
-        _Events().trigger(FormatNamedEvent.STYLE_APPLYING, cargs)
+        self._events.trigger(FormatNamedEvent.STYLE_APPLYING, cargs)
         if cargs.cancel:
             return
 
@@ -230,8 +228,7 @@ class LineSpacingStruct(StyleBase):
         key = keys["spacing"]
         mProps.Props.set(obj, **{key: self.get_uno_struct()})
         eargs = EventArgs.from_args(cargs)
-        self.on_applied(eargs)
-        _Events().trigger(FormatNamedEvent.STYLE_APPLIED, eargs)
+        self._events.trigger(FormatNamedEvent.STYLE_APPLIED, eargs)
 
     # endregion apply()
 
@@ -296,14 +293,14 @@ class LineSpacingStruct(StyleBase):
         """Gets the spacing value in regard to Mode"""
         return self._value
 
-    @static_prop
-    def default() -> LineSpacingStruct:  # type: ignore[misc]
+    @property
+    def default(self: _TLineSpacingStruct) -> _TLineSpacingStruct:  # type: ignore[misc]
         """Gets empty Line Spacing. Static Property."""
         try:
-            return LineSpacingStruct._DEFAULT_INST
+            return self._default_inst
         except AttributeError:
-            LineSpacingStruct._DEFAULT_INST = LineSpacingStruct(ModeKind.SINGLE, 0)
-            LineSpacingStruct._DEFAULT_INST._is_default_inst = True
-        return LineSpacingStruct._DEFAULT_INST
+            self._default_inst = self.__class__(ModeKind.SINGLE, 0, _cattribs=self._get_internal_cattribs())
+            self._default_inst._is_default_inst = True
+        return self._default_inst
 
     # endregion Properties

@@ -50,7 +50,7 @@ def test_write(loader, para_text) -> None:
         assert pp.NumberingStyleName == StyleListKind.NUM_123.value
         cursor.gotoEnd(False)
 
-        OutlineList.default.apply(cursor)
+        ls.default.apply(cursor)
 
         # test LineNum
         Write.append_para(cursor=cursor, text=para_text, styles=(OutlineList(ln_num=6),))

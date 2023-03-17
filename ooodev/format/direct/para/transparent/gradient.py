@@ -81,7 +81,7 @@ class Gradient(StyleMulti):
                 #     event_args.value = PARA_BACK_COLOR_FLAGS
                 # else:
                 #     event_args.value = PARA_BACK_COLOR_FLAGS | color
-        return super().on_property_setting(event_args)
+        super().on_property_setting(event_args)
 
     # region Properties
     @property

@@ -1,12 +1,10 @@
 from __future__ import annotations
 from typing import Tuple
 
-from .....events.args.cancel_event_args import CancelEventArgs
-from ...structs.shadow_struct import ShadowStruct
-from .....meta.static_prop import static_prop
-
 import uno
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
+
+from ...structs.shadow_struct import ShadowStruct
 
 
 class Shadow(ShadowStruct):
@@ -26,13 +24,3 @@ class Shadow(ShadowStruct):
                 "com.sun.star.style.ParagraphStyle",
             )
         return self._supported_services_values
-
-    @static_prop
-    def empty() -> Shadow:  # type: ignore[misc]
-        """Gets empty Shadow. Static Property. when style is applied it remove any shadow."""
-        try:
-            return Shadow._EMPTY_INST
-        except AttributeError:
-            Shadow._EMPTY_INST = Shadow(location=ShadowLocation.NONE, transparent=False, color=8421504, width=1.76)
-            Shadow._EMPTY_INST._is_default_inst = True
-        return Shadow._EMPTY_INST

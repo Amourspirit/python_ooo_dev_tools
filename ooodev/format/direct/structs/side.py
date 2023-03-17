@@ -5,12 +5,15 @@ Module for table side (``BorderLine2``) struct.
 """
 # region imports
 from __future__ import annotations
-from typing import Tuple, cast, overload, Type, TypeVar, TYPE_CHECKING
+from typing import Any, Tuple, cast, overload, Type, TypeVar, TYPE_CHECKING
 from enum import Enum, IntEnum
 
 import uno
-from ....exceptions import ex as mEx
-from ....meta.static_prop import static_prop
+from ooo.dyn.table.border_line import BorderLine as BorderLine
+from ooo.dyn.table.border_line_style import BorderLineStyle
+from ooo.dyn.table.border_line2 import BorderLine2 as BorderLine2
+
+
 from ....meta.deleted_enum_meta import DeletedUnoConstEnumMeta
 from ....proto.unit_obj import UnitObj
 from ....utils import props as mProps
@@ -19,14 +22,9 @@ from ....utils.color import CommonColor
 from ....utils.data_type.unit_pt import UnitPT
 from ....utils.unit_convert import UnitConvert, Length
 from ...kind.format_kind import FormatKind
-from ...style_base import StyleBase, CancelEventArgs
+from ...style_base import CancelEventArgs
 from ..common import border_width_impl as mBwi
-
-
-from ooo.dyn.table.border_line import BorderLine as BorderLine
-from ooo.dyn.table.border_line_style import BorderLineStyle
-from ooo.dyn.table.border_line2 import BorderLine2 as BorderLine2
-
+from .struct_base import StructBase
 
 # endregion imports
 
@@ -178,7 +176,7 @@ class LineSize(Enum):
 # However setting DOUBLE_THIN in libreOffice manually does not have this effect.
 
 
-class Side(StyleBase):
+class Side(StructBase):
     """
     Side struct.
 
@@ -354,12 +352,18 @@ class Side(StyleBase):
 
     # endregion init
 
-    # region methods
-    def _get_property_name(self) -> str:
+    # region Overrides
+    def _get_internal_cattribs(self) -> dict:
+        cattribs = {
+            "_props_internal_attributes": self._props,
+            "_supported_services_values": self._supported_services(),
+            "_format_kind_prop": self.prop_format_kind,
+        }
         try:
-            return self._property_name
-        except AttributeError:
-            raise NotImplementedError
+            cattribs["_property_name"] = self._get_property_name()
+        except NotImplementedError:
+            pass
+        return cattribs
 
     def __eq__(self, other: object) -> bool:
         bl2: BorderLine2 = None
@@ -386,10 +390,10 @@ class Side(StyleBase):
             self._supported_services_values = ()
         return self._supported_services_values
 
-    def _on_modifing(self, event: CancelEventArgs) -> None:
+    def _on_modifing(self, source: Any, event: CancelEventArgs) -> None:
         if self._is_default_inst:
             raise ValueError("Modifying a default instance is not allowed")
-        return super()._on_modifing(event)
+        return super()._on_modifing(source, event)
 
     # region apply()
 
@@ -416,6 +420,29 @@ class Side(StyleBase):
         super().apply(obj=obj, override_dv=props)
 
     # endregion apply()
+
+    # region copy()
+    @overload
+    def copy(self: _TSide) -> _TSide:
+        ...
+
+    @overload
+    def copy(self: _TSide, **kwargs) -> _TSide:
+        ...
+
+    def copy(self: _TSide, **kwargs) -> _TSide:
+        """Gets a copy of instance as a new instance"""
+
+        cp = super().copy(**kwargs)
+        cp._pts = self._pts
+        self._copy_missing_attribs(self, cp, "_property_name", "_supported_services_values")
+        return cp
+
+    # endregion copy()
+
+    # endregion Overrides
+
+    # region methods
 
     def get_uno_struct_border_line(self) -> BorderLine:
         """
@@ -444,34 +471,9 @@ class Side(StyleBase):
             setattr(line, key, val)
         return line
 
-    # region copy()
-    @overload
-    def copy(self: _TSide) -> _TSide:
-        ...
+    # endregion methods
 
-    @overload
-    def copy(self: _TSide, **kwargs) -> _TSide:
-        ...
-
-    def copy(self: _TSide, **kwargs) -> _TSide:
-        """Gets a copy of instance as a new instance"""
-
-        cp = super().copy(**kwargs)
-        cp._pts = self._pts
-        self._copy_missing_attribs(self, cp, "_property_name", "_supported_services_values")
-        return cp
-
-    # endregion copy()
-
-    @static_prop
-    def empty() -> Side:
-        """Gets an empyty side. When applied formatting is removed"""
-        try:
-            return Side._EMPTY_INST
-        except AttributeError:
-            Side._EMPTY_INST = Side(line=BorderLineKind.NONE, color=0, width=0.0)
-            Side._EMPTY_INST._is_default_inst = True
-        return Side._EMPTY_INST
+    # region static methods
 
     # region from_uno_struct()
     @overload
@@ -507,7 +509,7 @@ class Side(StyleBase):
 
     # endregion from_uno_struct()
 
-    # endregion methods
+    # endregion static methods
 
     # region style methods
     def fmt_style(self: _TSide, value: BorderLineKind) -> _TSide:
@@ -549,6 +551,7 @@ class Side(StyleBase):
         return self.__class__(line=self.prop_line, width=value, color=self.prop_color)
 
     # endregion style methods
+
     # region Style Properties
     @property
     def line_none(self: _TSide) -> _TSide:
@@ -646,6 +649,7 @@ class Side(StyleBase):
         return self.fmt_style(BorderLineKind.DASH_DOT_DOT)
 
     # endregion Style Properties
+
     # region properties
     @property
     def prop_format_kind(self) -> FormatKind:
@@ -685,5 +689,17 @@ class Side(StyleBase):
         If this value is zero, no line is drawn.
         """
         return UnitPT(self._pts)
+
+    @property
+    def empty(self: _TSide) -> _TSide:
+        """Gets an empyty side. When applied formatting is removed"""
+        try:
+            return self._empty_inst
+        except AttributeError:
+            self._empty_inst = self.__class__(
+                line=BorderLineKind.NONE, color=0, width=0.0, _cattribs=self._get_internal_cattribs()
+            )
+            self._empty_inst._is_default_inst = True
+        return self._empty_inst
 
     # endregion properties

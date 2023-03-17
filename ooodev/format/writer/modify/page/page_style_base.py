@@ -7,7 +7,6 @@ from __future__ import annotations
 from typing import Tuple, overload
 
 import uno
-from .....events.event_singleton import _Events
 from .....exceptions import ex as mEx
 from .....utils import info as mInfo
 from .....utils import lo as mLo
@@ -61,10 +60,9 @@ class PageStyleBase(StyleBase):
         """
         cargs = CancelEventArgs(source=f"{self.apply.__qualname__}")
         cargs.event_data = self
-        self.on_applying(cargs)
         if cargs.cancel:
             return
-        _Events().trigger(FormatNamedEvent.STYLE_APPLYING, cargs)
+        self._events.trigger(FormatNamedEvent.STYLE_APPLYING, cargs)
         if cargs.cancel:
             return
         try:
@@ -74,8 +72,7 @@ class PageStyleBase(StyleBase):
                 # but by calling Props.set() events are triggered.
                 self._props_set(p, **self._get_properties())
                 eargs = EventArgs.from_args(cargs)
-                self.on_applied(eargs)
-                _Events().trigger(FormatNamedEvent.STYLE_APPLIED, eargs)
+                self._events.trigger(FormatNamedEvent.STYLE_APPLIED, eargs)
             else:
                 mLo.Lo.print(f"{self.__class__.__name__}.apply(): Not a Writer Document. Unable to set Style Property")
         except mEx.MultiError as e:

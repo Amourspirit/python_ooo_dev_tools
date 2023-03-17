@@ -33,7 +33,7 @@ def test_writing_mode_props() -> None:
     mode = WritingMode()
     assert mode.prop_mode is None
 
-    assert WritingMode.default.prop_mode == WritingMode2Enum.PAGE
+    assert mode.default.prop_mode == WritingMode2Enum.PAGE
 
 
 def test_alignment_props() -> None:
@@ -85,7 +85,7 @@ def test_alignment_props() -> None:
 
 
 def test_alignment_default() -> None:
-    al = cast(InnerAlignment, InnerAlignment.default)
+    al = InnerAlignment().default
     assert al.prop_align == ParagraphAdjust.LEFT
     assert al.prop_align_vert == ParagraphVertAlignEnum.AUTOMATIC
     assert al.prop_align_last == LastLineKind.START
@@ -96,7 +96,7 @@ def test_alignment_default() -> None:
 
 
 def test_alignment_justify() -> None:
-    al = cast(InnerAlignment, InnerAlignment.default)
+    al = InnerAlignment().default
     j = al.justified
     assert j.prop_align == ParagraphAdjust.BLOCK
 
@@ -111,7 +111,7 @@ def test_alignment_justify() -> None:
 
 
 def test_alignment_copy() -> None:
-    al = cast(InnerAlignment, InnerAlignment.default.copy())
+    al = InnerAlignment().default.copy()
     assert al.prop_align == ParagraphAdjust.LEFT
     assert al.prop_align_vert == ParagraphVertAlignEnum.AUTOMATIC
     assert al.prop_align_last == LastLineKind.START

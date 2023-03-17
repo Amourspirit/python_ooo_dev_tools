@@ -9,7 +9,6 @@ from .....utils import lo as mLo
 from .....utils import props as mProps
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleMulti
-from .....meta.static_prop import static_prop
 from ...para.align.writing_mode import WritingMode, _TWritingMode
 from .....meta.deleted_attrib import DeletedAttrib
 from ...common.props.frame_options_properties import FrameOptionsProperties
@@ -118,15 +117,15 @@ class TextDirectionMode(WritingMode):
             return
         self._set(self._get_property_name(), value)
 
-    @static_prop
-    def default() -> TextDirectionMode:  # type: ignore[misc]
-        """Gets ``WritingMode`` default. Static Property."""
+    @property
+    def default(self) -> TextDirectionMode:  # type: ignore[misc]
+        """Gets ``WritingMode`` default."""
         try:
-            return TextDirectionMode._DEFAULT_INST
+            return self._default_inst
         except AttributeError:
-            TextDirectionMode._DEFAULT_INST = TextDirectionKind(TextDirectionKind.LR_TB)
-            TextDirectionMode._DEFAULT_INST._is_default_inst = True
-        return TextDirectionMode._DEFAULT_INST
+            self._default_inst = self.__class__(mode=TextDirectionKind.LR_TB, _cattribs=self._get_internal_cattribs())
+            self._default_inst._is_default_inst = True
+        return self._default_inst
 
 
 class Properties(StyleMulti):

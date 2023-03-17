@@ -11,7 +11,6 @@ import uno
 from ooo.dyn.table.table_border import TableBorder
 from ooo.dyn.table.table_border2 import TableBorder2
 
-from ....events.event_singleton import _Events
 from ....events.lo_events import Events
 from ....events.props_named_event import PropsNamedEvent
 from ....exceptions import ex as mEx
@@ -20,10 +19,11 @@ from ....utils import props as mProps
 from ....utils.data_type.unit_mm import UnitMM
 from ....utils.unit_convert import UnitConvert, Length
 from ...kind.format_kind import FormatKind
-from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent, _on_props_setting, _on_props_set
+from ...style_base import EventArgs, CancelEventArgs, FormatNamedEvent, _on_props_setting, _on_props_set
 from ..common.props.prop_pair import PropPair
 from ..common.props.struct_border_table_props import StructBorderTableProps
 from .side import Side as Side
+from .struct_base import StructBase
 
 
 # endregion imports
@@ -31,7 +31,7 @@ from .side import Side as Side
 _TTableBorderStruct = TypeVar(name="_TTableBorderStruct", bound="TableBorderStruct")
 
 
-class TableBorderStruct(StyleBase):
+class TableBorderStruct(StructBase):
     """
     Table Border struct positioning for use in styles.
 
@@ -177,10 +177,9 @@ class TableBorderStruct(StyleBase):
 
         cargs = CancelEventArgs(source=f"{self.apply.__qualname__}")
         cargs.event_data = self
-        self.on_applying(cargs)
         if cargs.cancel:
             return
-        _Events().trigger(FormatNamedEvent.STYLE_APPLYING, cargs)
+        self._events.trigger(FormatNamedEvent.STYLE_APPLYING, cargs)
         if cargs.cancel:
             return
         events = Events(source=self)
@@ -216,7 +215,7 @@ class TableBorderStruct(StyleBase):
             )
             if h_invalid:
                 tb = cast(TableBorder2, mProps.Props.get(obj, prop_name))
-                tb.HorizontalLine = Side.empty.get_uno_struct()
+                tb.HorizontalLine = Side().empty.get_uno_struct()
                 tb.IsHorizontalLineValid = True
                 mProps.Props.set(obj, **{prop_name: tb})
         else:
@@ -226,8 +225,7 @@ class TableBorderStruct(StyleBase):
             mProps.Props.set(obj, **{prop_name: tb})
         events = None
         eargs = EventArgs.from_args(cargs)
-        self.on_applied(eargs)
-        _Events().trigger(FormatNamedEvent.STYLE_APPLIED, eargs)
+        self._events.trigger(FormatNamedEvent.STYLE_APPLIED, eargs)
 
     # endregion apply()
 

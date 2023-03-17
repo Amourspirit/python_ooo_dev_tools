@@ -15,7 +15,6 @@ from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
-from .....meta.static_prop import static_prop
 from .....proto.unit_obj import UnitObj
 from .....utils import lo as mLo
 from .....utils import props as mProps
@@ -158,10 +157,10 @@ class Borders(StyleMulti):
 
     # region Overrides
 
-    def _on_modifing(self, event: CancelEventArgs) -> None:
+    def _on_modifing(self, source: Any, event: CancelEventArgs) -> None:
         if self._is_default_inst:
             raise ValueError("Modifying a default instance is not allowed")
-        return super()._on_modifing(event)
+        return super()._on_modifing(source, event)
 
     def _supported_services(self) -> Tuple[str, ...]:
         try:
@@ -521,33 +520,36 @@ class Borders(StyleMulti):
             )
         return self._props_internal_attributes
 
-    @static_prop
-    def default() -> Borders:  # type: ignore[misc]
-        """Gets Default Border. Static Property"""
+    @property
+    def default(self: _TBorders) -> _TBorders:  # type: ignore[misc]
+        """Gets Default Border."""
         try:
-            return Borders._DEFAULT_INST
+            return self._default_inst
         except AttributeError:
-            Borders._DEFAULT_INST = Borders(border_side=Side(), padding=Padding.default)
-            Borders._DEFAULT_INST._is_default_inst = True
-        return Borders._DEFAULT_INST
-
-    @static_prop
-    def empty() -> Borders:  # type: ignore[misc]
-        """Gets Empty Border. Static Property. When style is applied formatting is removed."""
-        try:
-            return Borders._EMPTY_INST
-        except AttributeError:
-            Borders._EMPTY_INST = Borders(
-                border_side=Side.empty,
-                vertical=Side.empty,
-                horizontal=Side.empty,
-                diagonal_down=Side.empty,
-                diagonal_up=Side.empty,
-                distance=0.0,
-                shadow=Shadow.empty,
-                padding=Padding.default,
+            self._default_inst = self.__class__(
+                border_side=Side(), padding=Padding(_cattribs=self._get_tbd_cattribs()).default
             )
-            Borders._EMPTY_INST._is_default_inst = True
-        return Borders._EMPTY_INST
+            self._default_inst._is_default_inst = True
+        return self._default_inst
+
+    @property
+    def empty(self: _TBorders) -> _TBorders:  # type: ignore[misc]
+        """Gets Empty Border. When style is applied formatting is removed."""
+        try:
+            return self._empty_inst
+        except AttributeError:
+            side = Side()
+            self._empty_inst = self(
+                border_side=side.empty,
+                vertical=side.empty,
+                horizontal=side.empty,
+                diagonal_down=side.empty,
+                diagonal_up=side.empty,
+                distance=0.0,
+                shadow=Shadow(_cattribs=self._get_shadow_cattribs()).empty,
+                padding=Padding(_cattribs=self._get_tbd_cattribs()).default,
+            )
+            self._empty_inst._is_default_inst = True
+        return self._empty_inst
 
     # endregion Properties

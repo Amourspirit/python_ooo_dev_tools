@@ -7,12 +7,11 @@ from __future__ import annotations
 from typing import Dict, Tuple, Type, cast, overload, TypeVar
 
 import uno
-from ....events.event_singleton import _Events
 from ....exceptions import ex as mEx
 from ....utils import props as mProps
-from ....utils.type_var import T
 from ...kind.format_kind import FormatKind
-from ...style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent
+from .struct_base import StructBase
+from ...style_base import EventArgs, CancelEventArgs, FormatNamedEvent
 
 
 from ooo.dyn.lang.locale import Locale
@@ -20,7 +19,7 @@ from ooo.dyn.lang.locale import Locale
 _TLocaleStruct = TypeVar(name="_TLocaleStruct", bound="LocaleStruct")
 
 
-class LocaleStruct(StyleBase):
+class LocaleStruct(StructBase):
     """
     Paragraph Drop Cap
 
@@ -116,10 +115,9 @@ class LocaleStruct(StyleBase):
 
         cargs = CancelEventArgs(source=f"{self.apply.__qualname__}")
         cargs.event_data = self
-        self.on_applying(cargs)
         if cargs.cancel:
             return
-        _Events().trigger(FormatNamedEvent.STYLE_APPLYING, cargs)
+        self._events.trigger(FormatNamedEvent.STYLE_APPLYING, cargs)
         if cargs.cancel:
             return
 
@@ -130,8 +128,7 @@ class LocaleStruct(StyleBase):
         dcf = self.get_uno_struct()
         mProps.Props.set(obj, **{key: dcf})
         eargs = EventArgs.from_args(cargs)
-        self.on_applied(eargs)
-        _Events().trigger(FormatNamedEvent.STYLE_APPLIED, eargs)
+        self._events.trigger(FormatNamedEvent.STYLE_APPLIED, eargs)
 
         # mProps.Props.set(obj, **{key: tuple(tss_lst)})
 
@@ -275,382 +272,762 @@ class LocaleStruct(StyleBase):
     @property
     def english_us(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English US locale"""
-        return LocaleStruct(country="US", language="en", variant="")
+        return self.__class__(
+            country="US",
+            language="en",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def locale_none(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets no locale"""
-        return LocaleStruct(country="", language="zxx", variant="")
+        return self.__class__(
+            country="",
+            language="zxx",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def english_australia(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Australia locale"""
-        return LocaleStruct(country="AU", language="en", variant="")
+        return self.__class__(
+            country="AU",
+            language="en",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def english_belize(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Belize locale"""
-        return LocaleStruct(country="BZ", language="en", variant="")
+        return self.__class__(
+            country="BZ",
+            language="en",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def english_botswana(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Botswana locale"""
-        return LocaleStruct(country="BW", language="en", variant="")
+        return self.__class__(
+            country="BW",
+            language="en",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def english_canada(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Canada locale"""
-        return LocaleStruct(country="CA", language="en", variant="")
+        return self.__class__(
+            country="CA",
+            language="en",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def english_caribbean(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Caribbean locale"""
-        return LocaleStruct(country="BS", language="en", variant="")
+        return self.__class__(
+            country="BS",
+            language="en",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def english_gambia(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Gambia locale"""
-        return LocaleStruct(country="GM", language="en", variant="")
+        return self.__class__(
+            country="GM",
+            language="en",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def english_ghana(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Ghana locale"""
-        return LocaleStruct(country="GH", language="en", variant="")
+        return self.__class__(
+            country="GH",
+            language="en",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def english_hong_kong(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Hong Kong locale"""
-        return LocaleStruct(country="HK", language="en", variant="")
+        return self.__class__(
+            country="HK",
+            language="en",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def english_india(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English India locale"""
-        return LocaleStruct(country="IN", language="en", variant="")
+        return self.__class__(
+            country="IN",
+            language="en",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def english_ireland(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Ireland locale"""
-        return LocaleStruct(country="IE", language="en", variant="")
+        return self.__class__(
+            country="IE",
+            language="en",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def english_ireland(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Ireland locale"""
-        return LocaleStruct(country="IE", language="en", variant="")
+        return self.__class__(
+            country="IE",
+            language="en",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def english_israel(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Israel locale"""
-        return LocaleStruct(country="IL", language="en", variant="")
+        return self.__class__(
+            country="IL",
+            language="en",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def english_jamaica(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Jamaica locale"""
-        return LocaleStruct(country="JM", language="en", variant="")
+        return self.__class__(
+            country="JM",
+            language="en",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def english_kenya(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Kenya locale"""
-        return LocaleStruct(country="KE", language="en", variant="")
+        return self.__class__(
+            country="KE",
+            language="en",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def english_malawi(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Malawi locale"""
-        return LocaleStruct(country="MW", language="en", variant="")
+        return self.__class__(
+            country="MW",
+            language="en",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def english_malaysia(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Malaysia locale"""
-        return LocaleStruct(country="MY", language="en", variant="")
+        return self.__class__(
+            country="MY",
+            language="en",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def english_mauritius(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Mauritius locale"""
-        return LocaleStruct(country="MU", language="en", variant="")
+        return self.__class__(
+            country="MU",
+            language="en",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def english_namibia(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Namibia locale"""
-        return LocaleStruct(country="NA", language="en", variant="")
+        return self.__class__(
+            country="NA",
+            language="en",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def english_new_zealand(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English New Zealand locale"""
-        return LocaleStruct(country="NZ", language="en", variant="")
+        return self.__class__(
+            country="NZ",
+            language="en",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def english_nigeria(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Nigeria locale"""
-        return LocaleStruct(country="NG", language="en", variant="")
+        return self.__class__(
+            country="NG",
+            language="en",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def english_philippines(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Philippines locale"""
-        return LocaleStruct(country="PH", language="en", variant="")
+        return self.__class__(
+            country="PH",
+            language="en",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def english_south_africa(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English South Africa locale"""
-        return LocaleStruct(country="ZA", language="en", variant="")
+        return self.__class__(
+            country="ZA",
+            language="en",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def english_sri_lanka(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Sri Lanka locale"""
-        return LocaleStruct(country="LK", language="en", variant="")
+        return self.__class__(
+            country="LK",
+            language="en",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def english_trinidad(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Trinidad locale"""
-        return LocaleStruct(country="TT", language="en", variant="")
+        return self.__class__(
+            country="TT",
+            language="en",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def english_uk(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English UK locale"""
-        return LocaleStruct(country="GB", language="en", variant="")
+        return self.__class__(
+            country="GB",
+            language="en",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def english_usa(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English USA locale"""
-        return LocaleStruct(country="US", language="en", variant="")
+        return self.__class__(
+            country="US",
+            language="en",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def english_zambia(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Zambia locale"""
-        return LocaleStruct(country="ZM", language="en", variant="")
+        return self.__class__(
+            country="ZM",
+            language="en",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def english_zimbabwe(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English Zimbabwe locale"""
-        return LocaleStruct(country="ZW", language="en", variant="")
+        return self.__class__(
+            country="ZW",
+            language="en",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def english_uk_ode(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets English ODE Spelling UK locale"""
-        return LocaleStruct(country="GB", language="qlt", variant="en-GB-oxendict")
+        return self.__class__(
+            country="GB",
+            language="qlt",
+            variant="en-GB-oxendict",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def german_austria(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets German Austria locale"""
-        return LocaleStruct(country="AT", language="de", variant="")
+        return self.__class__(
+            country="AT",
+            language="de",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def german_belgium(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets German Belgium locale"""
-        return LocaleStruct(country="BE", language="de", variant="")
+        return self.__class__(
+            country="BE",
+            language="de",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def german_germany(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets German Germany locale"""
-        return LocaleStruct(country="DE", language="de", variant="")
+        return self.__class__(
+            country="DE",
+            language="de",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def german_liechtenstein(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets German Liechtenstein locale"""
-        return LocaleStruct(country="LI", language="de", variant="")
+        return self.__class__(
+            country="LI",
+            language="de",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def german_luxembourg(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets German Luxembourg locale"""
-        return LocaleStruct(country="LU", language="de", variant="")
+        return self.__class__(
+            country="LU",
+            language="de",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def german_switzerland(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets German Switzerland locale"""
-        return LocaleStruct(country="CH", language="de", variant="")
+        return self.__class__(
+            country="CH",
+            language="de",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def french_belgium(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets French Belgium locale"""
-        return LocaleStruct(country="BE", language="fr", variant="")
+        return self.__class__(
+            country="BE",
+            language="fr",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def french_benin(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets French Benin locale"""
-        return LocaleStruct(country="BJ", language="fr", variant="")
+        return self.__class__(
+            country="BJ",
+            language="fr",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def french_benin(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets French Benin locale"""
-        return LocaleStruct(country="BJ", language="fr", variant="")
+        return self.__class__(
+            country="BJ",
+            language="fr",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def french_burkina_faso(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets French Burkina Faso locale"""
-        return LocaleStruct(country="BF", language="fr", variant="")
+        return self.__class__(
+            country="BF",
+            language="fr",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def french_canada(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets French Canada locale"""
-        return LocaleStruct(country="CA", language="fr", variant="")
+        return self.__class__(
+            country="CA",
+            language="fr",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def french_cote_d_ivoire(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets French (Côte d'Ivoire) locale"""
-        return LocaleStruct(country="CI", language="fr", variant="")
+        return self.__class__(
+            country="CI",
+            language="fr",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def french_france(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets French France locale"""
-        return LocaleStruct(country="FR", language="fr", variant="")
+        return self.__class__(
+            country="FR",
+            language="fr",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def french_luxembourg(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets French Luxembourg locale"""
-        return LocaleStruct(country="LU", language="fr", variant="")
+        return self.__class__(
+            country="LU",
+            language="fr",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def french_mali(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets French Mali locale"""
-        return LocaleStruct(country="ML", language="fr", variant="")
+        return self.__class__(
+            country="ML",
+            language="fr",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def french_mauritius(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets French Mauritius locale"""
-        return LocaleStruct(country="MU", language="fr", variant="")
+        return self.__class__(
+            country="MU",
+            language="fr",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def french_monaco(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets French Monaco locale"""
-        return LocaleStruct(country="MC", language="fr", variant="")
+        return self.__class__(
+            country="MC",
+            language="fr",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def french_niger(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets French Niger locale"""
-        return LocaleStruct(country="NE", language="fr", variant="")
+        return self.__class__(
+            country="NE",
+            language="fr",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def french_senegal(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets French Senegal locale"""
-        return LocaleStruct(country="SN", language="fr", variant="")
+        return self.__class__(
+            country="SN",
+            language="fr",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def french_switzerland(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets French Switzerland locale"""
-        return LocaleStruct(country="CH", language="fr", variant="")
+        return self.__class__(
+            country="CH",
+            language="fr",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def french_togo(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets French Togo locale"""
-        return LocaleStruct(country="TG", language="fr", variant="")
+        return self.__class__(
+            country="TG",
+            language="fr",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def spanish_argentina(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish Argentina locale"""
-        return LocaleStruct(country="AR", language="es", variant="")
+        return self.__class__(
+            country="AR",
+            language="es",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def spanish_bolivia(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish Bolivia locale"""
-        return LocaleStruct(country="BO", language="es", variant="")
+        return self.__class__(
+            country="BO",
+            language="es",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def spanish_chile(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish Chile locale"""
-        return LocaleStruct(country="CL", language="es", variant="")
+        return self.__class__(
+            country="CL",
+            language="es",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def spanish_colombia(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish Colombia locale"""
-        return LocaleStruct(country="CO", language="es", variant="")
+        return self.__class__(
+            country="CO",
+            language="es",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def spanish_costa_rica(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish Costa Rica locale"""
-        return LocaleStruct(country="CR", language="es", variant="")
+        return self.__class__(
+            country="CR",
+            language="es",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def spanish_cuba(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish Cuba locale"""
-        return LocaleStruct(country="CU", language="es", variant="")
+        return self.__class__(
+            country="CU",
+            language="es",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def spanish_dom_rep(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish Dominion Republic locale"""
-        return LocaleStruct(country="DO", language="es", variant="")
+        return self.__class__(
+            country="DO",
+            language="es",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def spanish_ecuador(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish Ecuador locale"""
-        return LocaleStruct(country="EC", language="es", variant="")
+        return self.__class__(
+            country="EC",
+            language="es",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def spanish_el_salvador(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish El Salvador locale"""
-        return LocaleStruct(country="SV", language="es", variant="")
+        return self.__class__(
+            country="SV",
+            language="es",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def spanish_equatorial_guinea(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish Equatorial Guinea locale ``es-GQ``"""
-        return LocaleStruct(country="GQ", language="es", variant="")
+        return self.__class__(
+            country="GQ",
+            language="es",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def spanish_guatemala(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish Guatemala locale"""
-        return LocaleStruct(country="GT", language="es", variant="")
+        return self.__class__(
+            country="GT",
+            language="es",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def spanish_honduras(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish Honduras locale"""
-        return LocaleStruct(country="HN", language="es", variant="")
+        return self.__class__(
+            country="HN",
+            language="es",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def spanish_mexico(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish Mexico locale"""
-        return LocaleStruct(country="MX", language="es", variant="")
+        return self.__class__(
+            country="MX",
+            language="es",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def spanish_nicaragua(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish Nicaragua locale"""
-        return LocaleStruct(country="NI", language="es", variant="")
+        return self.__class__(
+            country="NI",
+            language="es",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def spanish_panama(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish Panama locale"""
-        return LocaleStruct(country="PA", language="es", variant="")
+        return self.__class__(
+            country="PA",
+            language="es",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def spanish_paraguay(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish Paraguay locale"""
-        return LocaleStruct(country="PY", language="es", variant="")
+        return self.__class__(
+            country="PY",
+            language="es",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def spanish_peru(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish Peru locale"""
-        return LocaleStruct(country="PE", language="es", variant="")
+        return self.__class__(
+            country="PE",
+            language="es",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def spanish_philippines(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish Philippines locale ``es-PH``"""
-        return LocaleStruct(country="PH", language="es", variant="")
+        return self.__class__(
+            country="PH",
+            language="es",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def spanish_puerto_rico(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish Puerto Rico locale"""
-        return LocaleStruct(country="PR", language="es", variant="")
+        return self.__class__(
+            country="PR",
+            language="es",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def spanish_spain(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish Spain locale"""
-        return LocaleStruct(country="ES", language="es", variant="")
+        return self.__class__(
+            country="ES",
+            language="es",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def spanish_usa(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish USA locale ``es-US``"""
-        return LocaleStruct(country="US", language="es", variant="")
+        return self.__class__(
+            country="US",
+            language="es",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def spanish_uruguay(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish Uruguay locale"""
-        return LocaleStruct(country="UY", language="es", variant="")
+        return self.__class__(
+            country="UY",
+            language="es",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def spanish_venezuela(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish Venezuela locale"""
-        return LocaleStruct(country="VE", language="es", variant="")
+        return self.__class__(
+            country="VE",
+            language="es",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     @property
     def spanish_es(self: _TLocaleStruct) -> _TLocaleStruct:
         """Gets Spanish locale ``es``"""
-        return LocaleStruct(country="", language="es", variant="")
+        return self.__class__(
+            country="",
+            language="es",
+            variant="",
+            _cattribs=self._get_internal_cattribs(),
+        )
 
     # endregion Style Properties
 

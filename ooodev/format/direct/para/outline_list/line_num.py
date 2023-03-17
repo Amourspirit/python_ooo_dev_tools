@@ -5,7 +5,6 @@ Modele for managing paragraph line numbrs.
 """
 from __future__ import annotations
 
-from .....meta.static_prop import static_prop
 from ....kind.format_kind import FormatKind
 from ...common.abstract.abstract_line_number import AbstractLineNumber, LineNumeProps
 
@@ -29,13 +28,3 @@ class LineNum(AbstractLineNumber):
         except AttributeError:
             self._format_kind_prop = FormatKind.PARA
         return self._format_kind_prop
-
-    @static_prop
-    def default() -> LineNum:  # type: ignore[misc]
-        """Gets ``LineNum`` default. Static Property."""
-        try:
-            return LineNum._DEFAULT_INST
-        except AttributeError:
-            LineNum._DEFAULT_INST = LineNum(0)
-            LineNum._DEFAULT_INST._is_default_inst = True
-        return LineNum._DEFAULT_INST

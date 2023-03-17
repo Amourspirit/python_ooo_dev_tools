@@ -4,7 +4,7 @@ Modele for managing paragraph breaks.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, overload, cast, Type, TypeVar
+from typing import Any, Tuple, overload, cast, Type, TypeVar
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
@@ -95,10 +95,10 @@ class Breaks(StyleBase):
             )
         return self._supported_services_values
 
-    def _on_modifing(self, event: CancelEventArgs) -> None:
+    def _on_modifing(self, source: Any, event: CancelEventArgs) -> None:
         if self._is_default_inst:
             raise ValueError("Modifying a default instance is not allowed")
-        return super()._on_modifing(event)
+        return super()._on_modifing(source, event)
 
     # region apply()
     @overload
@@ -187,14 +187,14 @@ class Breaks(StyleBase):
         """Gets Page number to apply to break"""
         return self._get("PageNumberOffset")
 
-    @static_prop
-    def default() -> Breaks:  # type: ignore[misc]
-        """Gets ``Breaks`` default. Static Property."""
+    @property
+    def default(self: _TBreaks) -> _TBreaks:
+        """Gets ``Breaks`` default."""
         try:
-            return Breaks._DEFAULT_INST
+            return self._default_inst
         except AttributeError:
-            Breaks._DEFAULT_INST = Breaks(type=BreakType.NONE)
-            Breaks._DEFAULT_INST._is_default_inst = True
-        return Breaks._DEFAULT_INST
+            self._default_inst = self.__class__(type=BreakType.NONE, _cattribs=self._get_internal_cattribs())
+            self._default_inst._is_default_inst = True
+        return self._default_inst
 
     # endregion properties

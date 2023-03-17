@@ -7,7 +7,6 @@ from __future__ import annotations
 from typing import Tuple, overload, Type, TypeVar
 
 import uno
-from .....events.event_singleton import _Events
 from .....exceptions import ex as mEx
 from .....utils import info as mInfo
 from .....utils import lo as mLo
@@ -63,10 +62,9 @@ class PageStyleBaseMulti(StyleMulti):
         """
         cargs = CancelEventArgs(source=f"{self.apply.__qualname__}")
         cargs.event_data = self
-        self.on_applying(cargs)
         if cargs.cancel:
             return
-        _Events().trigger(FormatNamedEvent.STYLE_APPLYING, cargs)
+        self._events.trigger(FormatNamedEvent.STYLE_APPLYING, cargs)
         if cargs.cancel:
             return
         try:
@@ -76,8 +74,7 @@ class PageStyleBaseMulti(StyleMulti):
                 # but by calling Props.set() events are triggered.
                 mProps.Props.set(p, **self._get_properties())
                 eargs = EventArgs.from_args(cargs)
-                self.on_applied(eargs)
-                _Events().trigger(FormatNamedEvent.STYLE_APPLIED, eargs)
+                self._events.trigger(FormatNamedEvent.STYLE_APPLIED, eargs)
                 styles = self._get_multi_styles()
                 for _, info in styles.items():
                     style, kw = info
