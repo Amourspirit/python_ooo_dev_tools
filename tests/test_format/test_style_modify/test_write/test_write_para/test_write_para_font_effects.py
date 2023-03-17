@@ -7,6 +7,7 @@ if __name__ == "__main__":
 import uno
 from ooodev.format.writer.modify.para.font import (
     FontEffects,
+    FontLine,
     FontStrikeoutEnum,
     FontReliefEnum,
     FontUnderlineEnum,
@@ -33,7 +34,9 @@ def test_write(loader, para_text) -> None:
         Write.append_para(cursor=cursor, text=para_text)
 
         style = FontEffects(
-            color=StandardColor.BLUE_LIGHT1, underine=FontUnderlineEnum.DOUBLE, style_name=StyleParaKind.CAPTION
+            color=StandardColor.BLUE_LIGHT1,
+            underline=FontLine(line=FontUnderlineEnum.DOUBLE),
+            style_name=StyleParaKind.CAPTION,
         )
         style.apply(doc)
         props = style.get_style_props(doc)
@@ -41,7 +44,7 @@ def test_write(loader, para_text) -> None:
 
         f_style = FontEffects.from_style(doc=doc, style_name=style.prop_style_name)
         assert f_style.prop_inner.prop_color == StandardColor.BLUE_LIGHT1
-        assert f_style.prop_inner.prop_underline == FontUnderlineEnum.DOUBLE
+        assert f_style.prop_inner.prop_underline == FontLine(line=FontUnderlineEnum.DOUBLE, color=-1)
         Lo.delay(delay)
     finally:
         Lo.close_doc(doc)

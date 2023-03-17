@@ -26,7 +26,7 @@ _TSizeStruct = TypeVar(name="_TSizeStruct", bound="SizeStruct")
 
 class SizeStruct(StructBase):
     """
-    Crop struct.
+    Size struct.
 
     Any properties starting with ``prop_`` set or get current instance values.
 

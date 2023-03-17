@@ -7,6 +7,7 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   ooodev.format.direct.structs.cell_protection_struct
    ooodev.format.direct.structs.crop_struct
    ooodev.format.direct.structs.drop_cap_struct
    ooodev.format.direct.structs.gradient_struct

@@ -6,8 +6,8 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.calc.direct.background import Color
-from ooodev.format.calc.direct.borders import (
+from ooodev.format.calc.direct.format_cells.background import Color
+from ooodev.format.calc.direct.format_cells.borders import (
     Borders,
     Shadow,
     Side,

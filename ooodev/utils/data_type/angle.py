@@ -60,3 +60,41 @@ class Angle(BaseIntValue):
             return i == self.value
         except Exception as e:
             return False
+
+    def get_angle10(self) -> int:
+        """Gets Angle Value as ``1/10 degree``"""
+        return self.value * 10
+
+    def get_angle100(self) -> int:
+        """Gets Angle Value as ``1/100 degree``"""
+        return self.value * 100
+
+    @staticmethod
+    def from_angle10(value: int) -> Angle:
+        """
+        Get an angle from ``1/10 degree`` units.
+
+        Args:
+            value (int): Angle in ``1/10 degree`` units.
+
+        Returns:
+            Angle:
+        """
+        if value == 0:
+            return Angle(0)
+        return Angle(round(value / 10))
+
+    @staticmethod
+    def from_angle100(value: int) -> Angle:
+        """
+        Get an angle from ``1/100 degree`` units.
+
+        Args:
+            value (int): Angle in ``1/10 degree`` units.
+
+        Returns:
+            Angle:
+        """
+        if value == 0:
+            return Angle(0)
+        return Angle(round(value / 100))

@@ -25,6 +25,54 @@ from ....style_base import StyleBase
 _TFontEffects = TypeVar(name="_TFontEffects", bound="FontEffects")
 
 
+class FontLine:
+    """Font Line such as overline and underline."""
+
+    def __init__(self, line: FontUnderlineEnum | None = None, color: Color | None = None) -> None:
+        """
+        Constructor
+
+        Args:
+            line (FontUnderlineEnum, optional): Font Line kind.
+            color (Color, optional): Line color. If value is ``-1`` the automatic color is applied.
+        """
+        self._line = line
+        self._color = color
+
+    def __eq__(self, oth: object) -> bool:
+        if isinstance(oth, FontLine):
+            return self.color == oth.color and self.line == oth.line
+        return NotImplemented
+
+    def has_values(self) -> bool:
+        """Gets if instaance has any values."""
+        if self._line is None and self._color is None:
+            return False
+        return True
+
+    @property
+    def line(self) -> FontUnderlineEnum | None:
+        """
+        Gets/Sets line.
+        """
+        return self._line
+
+    @line.setter
+    def line(self, value: FontUnderlineEnum | None):
+        self._line = value
+
+    @property
+    def color(self) -> Color | None:
+        """
+        Gets/Sets color.
+        """
+        return self._color
+
+    @color.setter
+    def color(self, value: Color | None):
+        self._color = value
+
+
 class FontEffects(StyleBase):
     """
     Character Font Effects
@@ -43,11 +91,9 @@ class FontEffects(StyleBase):
         *,
         color: Color | None = None,
         transparency: Intensity | int | None = None,
-        overline: FontUnderlineEnum | None = None,
-        overline_color: Color | None = None,
+        overline: FontLine | None = None,
+        underline: FontLine | None = None,
         strike: FontStrikeoutEnum | None = None,
-        underine: FontUnderlineEnum | None = None,
-        underline_color: Color | None = None,
         word_mode: bool | None = None,
         case: CaseMapEnum | None = None,
         relief: FontReliefEnum | None = None,
@@ -62,13 +108,9 @@ class FontEffects(StyleBase):
             color (Color, optional): The value of the text color.
                 If value is ``-1`` the automatic color is applied.
             transparency (Intensity, int, optional): The transparency value from ``0`` to ``100`` for the font color.
-            overline (FontUnderlineEnum, optional): The value for the character overline.
-            overline_color (Color, optional): Specifies if the property ``CharOverlinelineColor`` is used for an overline.
-                If value is ``-1`` the automatic color is applied.
+            overline (FontLine, optional): Character overline values.
+            underline (FontLine, optional): Character underline values.
             strike (FontStrikeoutEnum, optional): Detrmines the type of the strike out of the character.
-            underine (FontUnderlineEnum, optional): The value for the character underline.
-            underline_color (Color, optional): Specifies if the property ``CharUnderlineColor`` is used for an underline.
-                If value is ``-1`` the automatic color is applied.
             word_mode(bool, optional): If ``True``, the underline and strike-through properties are not applied to white spaces.
             case (CaseMapEnum, optional): Specifies the case of the font.
             releif (FontReliefEnum, optional): Specifies the relief of the font.
@@ -78,56 +120,30 @@ class FontEffects(StyleBase):
         """
         # could not find any documention in the API or elsewhere online for Overline
         # see: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1CharacterProperties.html
-        init_vals = {
-            "CharWordMode": word_mode,
-            "CharShadowed": shadowed,
-            "CharContoured": outline,
-            "CharHidden": hidden,
-        }
-        if not color is None:
-            if color < 0:
-                init_vals["CharColor"] = -1
-            else:
-                init_vals["CharColor"] = color
 
-        if not transparency is None:
-            transparency = Intensity(int(transparency))
-            init_vals["CharTransparence"] = transparency.value
-
-        if not overline_color is None:
-            if overline_color < 0:
-                # -1 is set color to automatic
-                init_vals["CharOverlineColor"] = -1
-                init_vals["CharOverlineHasColor"] = False
-            else:
-                init_vals["CharOverlineColor"] = overline_color
-                init_vals["CharOverlineHasColor"] = True
-
-        if not underline_color is None:
-            if underline_color < 0:
-                # -1 is set color to automatic
-                init_vals["CharUnderlineColor"] = -1
-                init_vals["CharUnderlineHasColor"] = False
-            else:
-                init_vals["CharUnderlineColor"] = underline_color
-                init_vals["CharUnderlineHasColor"] = True
-
-        if not strike is None:
-            init_vals["CharStrikeout"] = strike.value
-
-        if not overline is None:
-            init_vals["CharOverline"] = overline.value
-
-        if not underine is None:
-            init_vals["CharUnderline"] = underine.value
-
-        if not case is None:
-            init_vals["CharCaseMap"] = case.value
-
-        if not relief is None:
-            init_vals["CharRelief"] = relief.value
-
-        super().__init__(**init_vals)
+        super().__init__()
+        if transparency is not None:
+            self.prop_transparency = transparency
+        if color is not None:
+            self.prop_color = color
+        if overline is not None:
+            self.prop_overline = overline
+        if underline is not None:
+            self.prop_underline = underline
+        if strike is not None:
+            self.prop_strike = strike
+        if word_mode is not None:
+            self.prop_word_mode = word_mode
+        if case is not None:
+            self.prop_case = case
+        if relief is not None:
+            self.prop_relief = relief
+        if outline is not None:
+            self.prop_outline = outline
+        if hidden is not None:
+            self.prop_hidden = hidden
+        if shadowed is not None:
+            self.prop_shadowed = shadowed
 
     # region methods
     def _supported_services(self) -> Tuple[str, ...]:
@@ -270,7 +286,9 @@ class FontEffects(StyleBase):
             FontEffects: Font with style added or removed
         """
         ft = self.copy()
-        ft.prop_overline = value
+        fl = ft.prop_overline
+        fl.line = value
+        ft.prop_overline = ft
         return ft
 
     def fmt_overline_color(self: _TFontEffects, value: Color | None = None) -> _TFontEffects:
@@ -285,7 +303,9 @@ class FontEffects(StyleBase):
             FontEffects: Font with style added or removed
         """
         ft = self.copy()
-        ft.prop_overline_color = value
+        fl = ft.prop_overline
+        fl.color = value
+        ft.prop_overline = fl
         return ft
 
     def fmt_strike(self: _TFontEffects, value: FontStrikeoutEnum | None = None) -> _TFontEffects:
@@ -315,7 +335,9 @@ class FontEffects(StyleBase):
             FontEffects: Font with style added or removed
         """
         ft = self.copy()
-        ft.prop_underline = value
+        fl = ft.prop_underline
+        fl.line = value
+        ft.prop_underline = ft
         return ft
 
     def fmt_underline_color(self: _TFontEffects, value: Color | None = None) -> _TFontEffects:
@@ -330,7 +352,9 @@ class FontEffects(StyleBase):
             FontEffects: Font with style added or removed
         """
         ft = self.copy()
-        ft.prop_underline_color = value
+        fl = ft.prop_underline
+        fl.color = value
+        ft.prop_underline = fl
         return ft
 
     def fmt_word_mode(self: _TFontEffects, value: bool | None = None) -> _TFontEffects:
@@ -439,14 +463,32 @@ class FontEffects(StyleBase):
     def overline(self: _TFontEffects) -> _TFontEffects:
         """Gets copy of instance with overline set"""
         ft = self.copy()
-        ft.prop_overline = FontUnderlineEnum.SINGLE
+        ft.prop_overline = FontLine(line=FontUnderlineEnum.SINGLE, color=-1)
         return ft
 
     @property
     def overline_color_auto(self: _TFontEffects) -> _TFontEffects:
         """Gets copy of instance with overline color set to automatic"""
         ft = self.copy()
-        ft.prop_overline_color = -1
+        fl = ft.prop_overline
+        fl.color = -1
+        ft.prop_overline = fl
+        return ft
+
+    @property
+    def underline(self: _TFontEffects) -> _TFontEffects:
+        """Gets copy of instance with underline set"""
+        ft = self.copy()
+        ft.prop_underline = FontLine(line=FontUnderlineEnum.SINGLE, color=-1)
+        return ft
+
+    @property
+    def under_color_auto(self: _TFontEffects) -> _TFontEffects:
+        """Gets copy of instance with underline color set to automatic"""
+        ft = self.copy()
+        fl = ft.prop_underline
+        fl.color = -1
+        ft.prop_underline = fl
         return ft
 
     @property
@@ -454,20 +496,6 @@ class FontEffects(StyleBase):
         """Gets copy of instance with strike set"""
         ft = self.copy()
         ft.prop_strike = FontStrikeoutEnum.SINGLE
-        return ft
-
-    @property
-    def underline(self: _TFontEffects) -> _TFontEffects:
-        """Gets copy of instance with underline set"""
-        ft = self.copy()
-        ft.prop_underline = FontUnderlineEnum.SINGLE
-        return ft
-
-    @property
-    def under_color_auto(self: _TFontEffects) -> _TFontEffects:
-        """Gets copy of instance with underline color set to automatic"""
-        ft = self.copy()
-        ft.prop_underline_color = -1
         return ft
 
     @property
@@ -577,7 +605,10 @@ class FontEffects(StyleBase):
         if value is None:
             self._remove("CharColor")
             return
-        self._set("CharColor", value)
+        if value < 0:
+            self._set("CharColor", -1)
+        else:
+            self._set("CharColor", value)
 
     @property
     def prop_transparency(self) -> Intensity | None:
@@ -595,38 +626,72 @@ class FontEffects(StyleBase):
         self._set("CharTransparence", Intensity(int(value)).value)
 
     @property
-    def prop_overline(self) -> FontUnderlineEnum | None:
+    def prop_overline(self) -> FontLine:
         """This property contains the value for the character overline."""
         pv = cast(int, self._get("CharOverline"))
-        if not pv is None:
-            return FontUnderlineEnum(pv)
-        return None
+        if pv is None:
+            line = None
+        else:
+            line = FontUnderlineEnum(pv)
+        return FontLine(line=line, color=cast(int, self._get("CharOverlineColor")))
 
     @prop_overline.setter
-    def prop_overline(self, value: FontUnderlineEnum | None) -> None:
+    def prop_overline(self, value: FontLine | None) -> None:
         if value is None:
             self._remove("CharOverline")
-            return
-        self._set("CharOverline", value.value)
-
-    @property
-    def prop_overline_color(self) -> Color | None:
-        """This property specifies if the property ``CharOverlineColor`` is used for an overline."""
-        return self._get("CharOverlineColor")
-
-    @prop_overline_color.setter
-    def prop_overline_color(self, value: Color | None) -> None:
-        if value is None:
             self._remove("CharOverlineColor")
             self._remove("CharOverlineHasColor")
             return
-        if value < 0:
-            # automatic color
-            self._set("CharOverlineHasColor", False)
-            self._set("CharOverlineColor", -1)
+        if value.line is None:
+            self._remove("CharOverline")
         else:
-            self._set("CharOverlineHasColor", True)
-            self._set("CharOverlineColor", value)
+            self._set("CharOverline", value.line.value)
+
+        if value.color is None:
+            self._remove("CharOverlineColor")
+            self._remove("CharOverlineHasColor")
+        else:
+            if value.color < 0:
+                # automatic color
+                self._set("CharOverlineHasColor", False)
+                self._set("CharOverlineColor", -1)
+            else:
+                self._set("CharOverlineHasColor", True)
+                self._set("CharOverlineColor", value.color)
+
+    @property
+    def prop_underline(self) -> FontLine:
+        """This property contains the value for the character underline."""
+        pv = cast(int, self._get("CharUnderline"))
+        if pv is None:
+            line = None
+        else:
+            line = FontUnderlineEnum(pv)
+        return FontLine(line=line, color=cast(int, self._get("CharUnderlineColor")))
+
+    @prop_underline.setter
+    def prop_underline(self, value: FontLine | None) -> None:
+        if value is None:
+            self._remove("CharUnderline")
+            self._remove("CharUnderlineColor")
+            self._remove("CharUnderlineHasColor")
+            return
+        if value.line is None:
+            self._remove("CharUnderline")
+        else:
+            self._set("CharUnderline", value.line.value)
+
+        if value.color is None:
+            self._remove("CharUnderlineColor")
+            self._remove("CharUnderlineHasColor")
+        else:
+            if value.color < 0:
+                # automatic color
+                self._set("CharUnderlineHasColor", False)
+                self._set("CharUnderlineColor", -1)
+            else:
+                self._set("CharUnderlineHasColor", True)
+                self._set("CharUnderlineColor", value.color)
 
     @property
     def prop_strike(self) -> FontStrikeoutEnum | None:
@@ -642,40 +707,6 @@ class FontEffects(StyleBase):
             self._remove("CharStrikeout")
             return
         self._set("CharStrikeout", value.value)
-
-    @property
-    def prop_underline(self) -> FontUnderlineEnum | None:
-        """Gets/Sets underline"""
-        pv = cast(int, self._get("CharUnderline"))
-        if not pv is None:
-            return FontUnderlineEnum(pv)
-        return None
-
-    @prop_underline.setter
-    def prop_underline(self, value: FontUnderlineEnum | None) -> None:
-        if value is None:
-            self._remove("CharUnderline")
-            return
-        self._set("CharUnderline", value.value)
-
-    @property
-    def prop_underline_color(self) -> Color | None:
-        """Gets/Sets if the property ``CharUnderlineColor`` is used for an underline."""
-        return self._get("CharUnderlineColor")
-
-    @prop_underline_color.setter
-    def prop_underline_color(self, value: Color | None) -> None:
-        if value is None:
-            self._remove("CharUnderlineColor")
-            self._remove("CharUnderlineHasColor")
-            return
-        if value < 0:
-            # automatic color
-            self._set("CharUnderlineHasColor", False)
-            self._set("CharUnderlineColor", -1)
-        else:
-            self._set("CharUnderlineHasColor", True)
-            self._set("CharUnderlineColor", value)
 
     @property
     def prop_word_mode(self) -> bool | None:

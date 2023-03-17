@@ -66,7 +66,10 @@ class Align(StyleBase):
         Constructor
 
         Args:
-            adjust (VertAdjustKindl): Specifies Verticial Adjustment. Default ``VertAdjustKind.TOP``
+            adjust (VertAdjustKindl, optional): Specifies Verticial Adjustment. Default ``VertAdjustKind.TOP``
+
+        Returns:
+            None:
         """
         super().__init__()
         self.prop_adjust = adjust

@@ -12,6 +12,7 @@ from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.format.writer.direct.char.font import (
     Font,
+    FontLine,
     FontUnderlineEnum,
     FontFamilyEnum,
 )
@@ -38,9 +39,8 @@ def test_char_borders(loader) -> None:
         Write.append(cursor, "Hello")
         ft = Font(
             name="Lucida Console",
-            overline=FontUnderlineEnum.BOLDWAVE,
+            overline=FontLine(line=FontUnderlineEnum.BOLDWAVE, color=CommonColor.CHARTREUSE),
             size=40,
-            overline_color=CommonColor.CHARTREUSE,
             family=FontFamilyEnum.SCRIPT,
         )
         side = Side(color=CommonColor.RED)
@@ -84,7 +84,14 @@ def test_char_borders(loader) -> None:
         # using 1.05 for this test. LibreOffice chnages 1.1 to 1.05 in  this case.
         side = Side(color=CommonColor.DARK_ORANGE, line=BorderLineKind.DOUBLE, width=1.05)
         border = Borders(all=side)
-        ft = Font(size=30.0, b=True, i=True, u=True, color=CommonColor.BLUE, underline_color=CommonColor.GREEN)
+        ft = Font(
+            size=30.0,
+            b=True,
+            i=True,
+            u=True,
+            color=CommonColor.BLUE,
+            underline=FontLine(line=FontUnderlineEnum.SINGLE, color=CommonColor.GREEN),
+        )
         Write.append(cursor=cursor, text="Nice Day", styles=(border, ft))
         cursor.gotoEnd(False)
         cursor.goLeft(5, True)
