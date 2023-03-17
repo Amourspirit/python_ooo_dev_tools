@@ -5,3 +5,5 @@ from .....direct.cell.alignment.text_alignment import VertAlignKind as VertAlign
 from .....direct.cell.alignment.text_alignment import TextAlign as TextAlign
 from .....direct.cell.alignment.text_orientation import EdgeKind as EdgeKind
 from .....direct.cell.alignment.text_orientation import TextOrientation as TextOrientation
+from .....direct.cell.alignment.properties import TextDirectionKind as TextDirectionKind
+from .....direct.cell.alignment.properties import Properties as Properties

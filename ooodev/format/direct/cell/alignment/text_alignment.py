@@ -156,9 +156,10 @@ class TextAlign(StyleBase):
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
         for prop in inst._props:
-            val = mProps.Props.get(obj, prop, None)
-            if not val is None:
-                inst._set(prop, val)
+            if prop:
+                val = mProps.Props.get(obj, prop, None)
+                if not val is None:
+                    inst._set(prop, val)
         return inst
 
     # endregion from_obj()
