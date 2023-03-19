@@ -1,5 +1,6 @@
 import csv
 import os
+import sys
 from pathlib import Path
 import shutil
 import stat
@@ -50,7 +51,7 @@ def run_headless():
 
 
 @pytest.fixture(autouse=True)
-def skip_for_headless(request, run_headless):
+def skip_for_headless(request, run_headless: bool):
     # https://stackoverflow.com/questions/28179026/how-to-skip-a-pytest-using-an-external-fixture
     #
     # Also Added:
@@ -72,6 +73,29 @@ def skip_for_headless(request, run_headless):
                 pytest.skip(reason)
             else:
                 pytest.skip("Skiped in headless mode")
+
+
+@pytest.fixture(autouse=True)
+def skip_not_headless_os(request, run_headless: bool):
+    # Usage:
+    # @pytest.mark.skip_not_headless_os("linux", "Errors When GUI is present")
+    # def test_write(loader, para_text) -> None:
+
+    if not run_headless:
+        rq = request.node.get_closest_marker("skip_not_headless_os")
+        if rq:
+            is_os = sys.platform.startswith(rq.args[0])
+            if not is_os:
+                return
+            reason = ""
+            try:
+                reason = rq.args[1]
+            except Exception:
+                pass
+            if reason:
+                pytest.skip(reason)
+            else:
+                pytest.skip(f"Skiped in GUI mode on os: {rq.args[0]}")
 
 
 @pytest.fixture(scope="session")

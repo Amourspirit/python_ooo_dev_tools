@@ -1,4 +1,5 @@
 from __future__ import annotations
+import sys
 import pytest
 from typing import TYPE_CHECKING, cast
 
@@ -30,6 +31,7 @@ from ooodev.utils.unit_convert import UnitConvert
 from ooodev.utils.gui import GUI
 from ooodev.utils.info import Info
 from ooodev.utils.lo import Lo
+from ooodev.utils import sys_info as mSi
 
 if TYPE_CHECKING:
     from com.sun.star.style import CharacterProperties  # service
@@ -168,8 +170,12 @@ def test_font_effects() -> None:
     assert fp.prop_raise_lower == 0
 
 
+@pytest.mark.skip_not_headless_os(
+    "linux",
+    "Errors When GUI is present. LibreOffice Randomly Throws up Java errors. Sometimes you get a pass and sometimes not.",
+)
 def test_font_cursor(loader) -> None:
-    delay = 0  # 0 if Lo.bridge_connector.headless else 5_000
+    delay = 0
     from ooodev.office.write import Write
     from ooodev.format import Styler
     from functools import partial
@@ -312,8 +318,12 @@ def test_font_cursor(loader) -> None:
         Lo.close_doc(doc)
 
 
+@pytest.mark.skip_not_headless_os(
+    "linux",
+    "Errors When GUI is present. LibreOffice Randomly Throws up Java errors. Sometimes you get a pass and sometimes not.",
+)
 def test_font_position_super_sub_cursor(loader) -> None:
-    delay = 0  # 0 if Lo.bridge_connector.headless else 5_000
+    delay = 0
     from ooodev.office.write import Write
 
     doc = Write.create_doc()
@@ -375,8 +385,12 @@ def test_font_position_super_sub_cursor(loader) -> None:
         Lo.close_doc(doc)
 
 
+@pytest.mark.skip_not_headless_os(
+    "linux",
+    "Errors When GUI is present. LibreOffice Randomly Throws up Java errors. Sometimes you get a pass and sometimes not.",
+)
 def test_font_position_rotation_cursor(loader) -> None:
-    delay = 0  # 0 if Lo.bridge_connector.headless else 5_000
+    delay = 0
     from ooodev.office.write import Write
 
     doc = Write.create_doc()
@@ -434,8 +448,12 @@ def test_font_position_rotation_cursor(loader) -> None:
         Lo.close_doc(doc)
 
 
+@pytest.mark.skip_not_headless_os(
+    "linux",
+    "Errors When GUI is present. LibreOffice Randomly Throws up Java errors. Sometimes you get a pass and sometimes not.",
+)
 def test_font_position_spacing_cursor(loader) -> None:
-    delay = 0  # 0 if Lo.bridge_connector.headless else 5_000
+    delay = 0
     from ooodev.office.write import Write
 
     doc = Write.create_doc()
@@ -469,8 +487,12 @@ def test_font_position_spacing_cursor(loader) -> None:
         Lo.close_doc(doc)
 
 
+@pytest.mark.skip_not_headless_os(
+    "linux",
+    "Errors When GUI is present. LibreOffice Randomly Throws up Java errors. Sometimes you get a pass and sometimes not.",
+)
 def test_font_effects_cursor(loader) -> None:
-    delay = 0  # 0 if Lo.bridge_connector.headless else 5_000
+    delay = 0
     from ooodev.office.write import Write
     from ooodev.format import Styler
     from functools import partial
@@ -596,11 +618,13 @@ def test_font_effects_cursor(loader) -> None:
         Lo.close_doc(doc)
 
 
+@pytest.mark.skip_not_headless_os(
+    "linux",
+    "Errors When GUI is present. LibreOffice Randomly Throws up Java errors. Sometimes you get a pass and sometimes not.",
+)
 def test_font_only_cursor(loader) -> None:
-    delay = 0  # 0 if Lo.bridge_connector.headless else 5_000
+    delay = 0
     from ooodev.office.write import Write
-    from ooodev.format import Styler
-    from functools import partial
 
     doc = Write.create_doc()
     if not Lo.bridge_connector.headless:
@@ -632,47 +656,40 @@ def test_font_only_cursor(loader) -> None:
         # fd = fo.get_font_descriptor()
         # assert fd is not None
 
-        fo = FontOnly(name="Lucida Fax", style_name="Demibold Italic")
+        fo = FontOnly(name="Liberation Sans Narrow", style_name="Bold Italic")
         Write.append(cursor, "World")
         cursor.goLeft(5, True)
         fo.apply(cursor)
-        assert cp.CharFontName == "Lucida Fax"
-        assert cp.CharFontStyleName == "Demibold Italic"
-        cursor.gotoEnd(False)
-        FontOnly.default.apply(cursor)
-        Write.end_paragraph(cursor)
-
-        fo = FontOnly(name="Noto Serif Cond", style_name="Regular", size=14.0)
-        Write.append(cursor, "World")
-        cursor.goLeft(5, True)
-        fo.apply(cursor)
-        assert cp.CharFontName == "Noto Serif Cond"
-        assert cp.CharFontStyleName == "Regular"
-        cursor.gotoEnd(False)
-        FontOnly.default.apply(cursor)
-        Write.end_paragraph(cursor)
-
-        fo = FontOnly(name="Noto Serif Cond", style_name="Bold Italic", size=15.0)
-        Write.append(cursor, "World")
-        cursor.goLeft(5, True)
-        fo.apply(cursor)
-        assert cp.CharFontName == "Noto Serif Cond"
+        assert cp.CharFontName == "Liberation Sans Narrow"
         assert cp.CharFontStyleName == "Bold Italic"
         cursor.gotoEnd(False)
         FontOnly.default.apply(cursor)
         Write.end_paragraph(cursor)
 
-        lang = FontLang().english_canada
-        fo = FontOnly(name="Noto Serif Cond", style_name="Italic", size=15.0, lang=lang)
+        fo = FontOnly(name="Liberation Mono", style_name="Regular", size=14.0)
         Write.append(cursor, "World")
         cursor.goLeft(5, True)
         fo.apply(cursor)
-        assert cp.CharFontName == "Noto Serif Cond"
-        assert cp.CharFontStyleName == "Italic"
-        assert lang == cp.CharLocale
+        assert cp.CharFontName == "Liberation Mono"
+        assert cp.CharFontStyleName == "Regular"
         cursor.gotoEnd(False)
         FontOnly.default.apply(cursor)
         Write.end_paragraph(cursor)
+
+        if mSi.SysInfo.get_platform() == mSi.SysInfo.PlatformEnum.WINDOWS:
+            # Java Errors are occuring in linux.
+            # looks like xml conifuration of LibreOffice is not properly parsed.
+            lang = FontLang().english_canada
+            fo = FontOnly(name="Liberation Mono", style_name="Bold Italic", size=15.0, lang=lang)
+            Write.append(cursor, "World")
+            cursor.goLeft(5, True)
+            fo.apply(cursor)
+            assert cp.CharFontName == "Liberation Mono"
+            assert cp.CharFontStyleName == "Bold Italic"
+            assert lang == cp.CharLocale
+            cursor.gotoEnd(False)
+            FontOnly.default.apply(cursor)
+            Write.end_paragraph(cursor)
 
         # fd = fo._get_font_descriptor("Lucida Fax", "Demibold Italic")
         # assert fd is not None

@@ -72,6 +72,7 @@ testpaths = [
 ]
 markers = [
     "skip_headless: skips a test in headless mode",
+    "skip_not_headless_os: skips a test in GUI mode for give os"
 ]
 
 [tool.ruff]

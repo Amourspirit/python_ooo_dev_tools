@@ -504,14 +504,14 @@ files = [
 
 [[package]]
 name = "importlib-metadata"
-version = "6.0.0"
+version = "6.1.0"
 description = "Read metadata from Python packages"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "importlib_metadata-6.0.0-py3-none-any.whl", hash = "sha256:7efb448ec9a5e313a57655d35aa54cd3e01b7e1fbcf72dce1bf06119420f5bad"},
-    {file = "importlib_metadata-6.0.0.tar.gz", hash = "sha256:e354bedeb60efa6affdcc8ae121b73544a7aa74156d047311948f6d711cd378d"},
+    {file = "importlib_metadata-6.1.0-py3-none-any.whl", hash = "sha256:ff80f3b5394912eb1b108fcfd444dc78b7f1f3e16b16188054bd01cb9cb86f09"},
+    {file = "importlib_metadata-6.1.0.tar.gz", hash = "sha256:43ce9281e097583d758c2c708c4376371261a02c34682491a8e98352365aad20"},
 ]
 
 [package.dependencies]
@@ -2046,18 +2046,18 @@ files = [
 
 [[package]]
 name = "types-unopy"
-version = "0.4.7"
+version = "1.0.1"
 description = "Type annotations for LibreOffice API"
 category = "main"
 optional = false
-python-versions = ">=3.7.0"
+python-versions = ">=3.7,<4.0"
 files = [
-    {file = "types-unopy-0.4.7.tar.gz", hash = "sha256:e2b49ba0379644a9ab973e552ef3533aa925d3b7a17ddce9accd4d026469631d"},
-    {file = "types_unopy-0.4.7-py3-none-any.whl", hash = "sha256:84465306d6acfd2394af272e9e79d4f8ef5aa8c72c65d857638f33471354a20b"},
+    {file = "types_unopy-1.0.1-py3-none-any.whl", hash = "sha256:539c8503133ced47444a800618f3a2e61071012115d43168b94fe59d3ecf2833"},
+    {file = "types_unopy-1.0.1.tar.gz", hash = "sha256:9d75ca25dd0d94b212d3e574326fd9d68e8dc97bd7e541b954ef7409e7fbef17"},
 ]
 
 [package.dependencies]
-types-uno-script = ">=0.1.0"
+types-uno-script = ">=0.1.1"
 
 [[package]]
 name = "typing-extensions"
