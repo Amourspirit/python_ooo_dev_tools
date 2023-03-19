@@ -1375,8 +1375,16 @@
 <node TEXT="font" ID="ID_100055580" CREATED="1675066945337" MODIFIED="1675081113885">
 <icon BUILTIN="unchecked"/>
 </node>
-<node TEXT="alignment" ID="ID_485006306" CREATED="1675066957121" MODIFIED="1675081114549">
-<icon BUILTIN="unchecked"/>
+<node TEXT="alignment" ID="ID_485006306" CREATED="1675066957121" MODIFIED="1679260268859">
+<icon BUILTIN="checked"/>
+<node TEXT="TextAlign" ID="ID_503246624" CREATED="1679012791193" MODIFIED="1679012817839">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="TextOrientation" ID="ID_1587869969" CREATED="1679012805832" MODIFIED="1679012817839">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
 <node TEXT="Properties" ID="ID_497541030" CREATED="1679012811910" MODIFIED="1679012817836">
 <icon BUILTIN="checked"/>
 <icon BUILTIN="links/code/file_Python"/>

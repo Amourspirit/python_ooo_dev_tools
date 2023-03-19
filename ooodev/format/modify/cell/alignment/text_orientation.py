@@ -2,18 +2,16 @@ from __future__ import annotations
 from typing import cast
 import uno
 
+from .....utils.data_type.angle import Angle as Angle
 from ..cell_style_base_multi import CellStyleBaseMulti
-from .....proto.unit_obj import UnitObj
 from ....calc.style.cell.kind.style_cell_kind import StyleCellKind as StyleCellKind
-from ....direct.cell.alignment.properties import TextDirectionKind as TextDirectionKind
-from ....direct.cell.alignment.text_align import VertAlignKind as VertAlignKind
-from ....direct.cell.alignment.text_align import HoriAlignKind as HoriAlignKind
-from ....direct.cell.alignment.text_align import TextAlign as InnerTextAlign
+from ....direct.cell.alignment.text_orientation import EdgeKind as EdgeKind
+from ....direct.cell.alignment.text_orientation import TextOrientation as InnerTextOrientation
 
 
-class TextAlign(CellStyleBaseMulti):
+class TextOrientation(CellStyleBaseMulti):
     """
-    Cell Style Text Align.
+    Cell Style Text Orientation.
 
     .. versionadded:: 0.9.0
     """
@@ -22,9 +20,9 @@ class TextAlign(CellStyleBaseMulti):
     def __init__(
         self,
         *,
-        hori_align: HoriAlignKind | None = None,
-        indent: float | UnitObj | None = None,
-        vert_align: VertAlignKind | None = None,
+        vert_stack: bool | None = None,
+        rotation: int | Angle | None = None,
+        edge: EdgeKind | None = None,
         style_name: StyleCellKind | str = StyleCellKind.DEFAULT,
         style_family: str = "CellStyles",
     ) -> None:
@@ -32,9 +30,9 @@ class TextAlign(CellStyleBaseMulti):
         Constructor
 
         Args:
-            hori_align (HoriAlignKind, optional): Specifies Horizontal Alignment.
-            indent: (float, UnitObj, optional): Specifies indent in ``pt`` (point) units or :ref:`proto_unit_obj`. Only used when ``hori_align`` is set to ``HoriAlignKind.LEFT``
-            vert_align (VertAdjustKindl, optional): Specifies Verticial Alignment.
+            vert_stack (bool, optional): Specifies if vertical stack is to be used.
+            rotation (int, Angle, optional): Specifies if the rotation.
+            edge (EdgeKind, optional): Specifies the Reference Edge.
             style_name (StyleCellKind, str, optional): Specifies the Cell Style that instance applies to. Deftult is Default Cell Style.
             style_family (str, optional): Style family. Defatult ``CellStyles``.
 
@@ -42,7 +40,7 @@ class TextAlign(CellStyleBaseMulti):
             None:
         """
 
-        direct = InnerTextAlign(hori_align=hori_align, indent=indent, vert_align=vert_align)
+        direct = InnerTextOrientation(vert_stack=vert_stack, rotation=rotation, edge=edge)
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
@@ -57,7 +55,7 @@ class TextAlign(CellStyleBaseMulti):
         doc: object,
         style_name: StyleCellKind | str = StyleCellKind.DEFAULT,
         style_family: str = "CellStyles",
-    ) -> TextAlign:
+    ) -> TextOrientation:
         """
         Gets instance from Document.
 
@@ -67,10 +65,10 @@ class TextAlign(CellStyleBaseMulti):
             style_family (str, optional): Style family. Defatult ``CellStyles``.
 
         Returns:
-            TextAlign: ``TextAlign`` instance from style properties.
+            TextOrientation: ``TextOrientation`` instance from style properties.
         """
         inst = cls(style_name=style_name, style_family=style_family)
-        direct = InnerTextAlign.from_obj(obj=inst.get_style_props(doc))
+        direct = InnerTextOrientation.from_obj(obj=inst.get_style_props(doc))
         inst._set_style("direct", direct)
         return inst
 
@@ -87,18 +85,18 @@ class TextAlign(CellStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> InnerTextAlign:
-        """Gets/Sets Inner Text Align instance"""
+    def prop_inner(self) -> InnerTextOrientation:
+        """Gets/Sets Inner Inner Text Orientation instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(InnerTextAlign, self._get_style_inst("direct"))
+            self._direct_inner = cast(InnerTextOrientation, self._get_style_inst("direct"))
         return self._direct_inner
 
     @prop_inner.setter
-    def prop_inner(self, value: InnerTextAlign) -> None:
-        if not isinstance(value, InnerTextAlign):
-            raise TypeError(f'Expected type of InnerTextAlign, got "{type(value).__name__}"')
+    def prop_inner(self, value: InnerTextOrientation) -> None:
+        if not isinstance(value, InnerTextOrientation):
+            raise TypeError(f'Expected type of InnerTextOrientation, got "{type(value).__name__}"')
         self._del_attribs("_direct_inner")
         self._set_style("direct", value)
 

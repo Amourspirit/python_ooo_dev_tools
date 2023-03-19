@@ -72,7 +72,6 @@ class Properties(CellStyleBaseMulti):
         """
         inst = cls(style_name=style_name, style_family=style_family)
         direct = InnerProperties.from_obj(obj=inst.get_style_props(doc))
-        direct._prop_parent = inst
         inst._set_style("direct", direct)
         return inst
 
