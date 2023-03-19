@@ -1395,6 +1395,10 @@
 </node>
 <node TEXT="background" ID="ID_1803684931" CREATED="1675066973698" MODIFIED="1675145958798">
 <icon BUILTIN="unchecked"/>
+<node TEXT="Color" ID="ID_798961084" CREATED="1679267811336" MODIFIED="1679267821883">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
 </node>
 <node TEXT="cell_protect" ID="ID_1080814476" CREATED="1675066984730" MODIFIED="1675081132682">
 <icon BUILTIN="unchecked"/>

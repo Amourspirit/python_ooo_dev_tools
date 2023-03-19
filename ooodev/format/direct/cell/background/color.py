@@ -9,7 +9,6 @@ from typing import Any, Tuple, overload, Type, TypeVar
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
 from .....utils import props as mProps
-from .....meta.class_property_readonly import ClassPropertyReadonly
 from .....utils import lo as mLo
 from .....utils import color as mColor
 from ....kind.format_kind import FormatKind
@@ -32,7 +31,7 @@ class Color(StyleBase):
         Constructor
 
         Args:
-            color (Color, optional): Color such as ``CommonColor.LIGHT_BLUE``
+            color (Color, optional): Color such as ``CommonColor.LIGHT_BLUE``.
 
         Returns:
             None:
@@ -47,7 +46,7 @@ class Color(StyleBase):
         try:
             return self._supported_services_values
         except AttributeError:
-            self._supported_services_values = ("com.sun.star.table.CellProperties",)
+            self._supported_services_values = ("com.sun.star.style.CellStyle", "com.sun.star.table.CellProperties")
         return self._supported_services_values
 
     def _on_modifing(self, source: Any, event: CancelEventArgs) -> None:

@@ -315,6 +315,8 @@ mindmap
                         id{{TextAlign}}
                         id{{TextOrientation}}
                         id{{Properties}}
+                    background
+                        id{{Color}}
             [style]
         draw
             [direct]
