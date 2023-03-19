@@ -8,7 +8,7 @@ if __name__ == "__main__":
 import uno
 from ooo.dyn.table.cell_orientation import CellOrientation
 
-from ooodev.format.calc.direct.format_cells.alignment import Angle, EdgeKind, TextOrientation
+from ooodev.format.calc.direct.cell.alignment import Angle, EdgeKind, TextOrientation
 from ooodev.format import Styler
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo

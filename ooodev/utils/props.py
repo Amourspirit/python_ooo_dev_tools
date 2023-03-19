@@ -1033,21 +1033,6 @@ class Props:
 
         return cls.get(kargs[1], kargs[2])
 
-        # if mInfo.Info.is_type_interface(kargs[1], XPropertySet.__pyunointerface__):
-        #     prop_set = cast(XPropertySet, kargs[1])
-        # else:
-        #     prop_set = mLo.Lo.qi(XPropertySet, kargs[1])
-        #     if prop_set is None:
-        #         raise mEx.MissingInterfaceError(XPropertySet)
-        # name = kargs[2]
-        # try:
-        #     try:
-        #         return prop_set.getPropertyValue(name)
-        #     except RuntimeException as e:
-        #         mEx.PropertyError(name, f"Could not get runtime property '{name}': {e}")
-        # except Exception as e:
-        #     raise mEx.PropertyNotFoundError(prop_name=name) from e
-
     # endregion    get_property()
 
     @staticmethod
@@ -1418,8 +1403,12 @@ class Props:
             return
         print(f"{prop_kind} Properties")
         for prop in props:
-            prop_value = cls.get_property(props_set, prop.Name)
-            print(f"  {prop.Name}: {prop_value}")
+            try:
+                prop_value = props_set.getPropertyValue(prop.Name)
+                print(f"  {prop.Name}: {prop_value}")
+            except Exception as e:
+                print(f'Unable to get property for "{prop.Name}"')
+                print(f"  {e}")
         print()
 
     # endregion  show_props()
