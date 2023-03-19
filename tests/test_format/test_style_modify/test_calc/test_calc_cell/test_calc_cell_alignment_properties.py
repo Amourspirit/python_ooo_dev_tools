@@ -1,6 +1,5 @@
 from __future__ import annotations
 import pytest
-from typing import cast, TYPE_CHECKING
 
 
 if __name__ == "__main__":
@@ -12,9 +11,6 @@ from ooodev.format.calc.modify.cell.alignment import Properties, TextDirectionKi
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.calc import Calc
-
-if TYPE_CHECKING:
-    from com.sun.star.style import CharacterProperties  # service
 
 
 def test_write(loader, para_text) -> None:
