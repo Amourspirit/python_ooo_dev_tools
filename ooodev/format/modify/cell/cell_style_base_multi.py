@@ -7,9 +7,9 @@ from ....utils import lo as mLo
 from ...style_base import StyleModifyMulti
 
 
-class FrameStyleBaseMulti(StyleModifyMulti):
+class CellStyleBaseMulti(StyleModifyMulti):
     """
-    Frame Style Base Multi
+    Cell Style Base Multi
 
     .. versionadded:: 0.9.0
     """
@@ -18,8 +18,8 @@ class FrameStyleBaseMulti(StyleModifyMulti):
         try:
             return self._supported_services_values
         except AttributeError:
-            self._supported_services_values = ("com.sun.star.style.Style",)
+            self._supported_services_values = ("com.sun.star.style.CellStyle",)
         return self._supported_services_values
 
     def _is_valid_doc(self, obj: object) -> bool:
-        return mInfo.Info.is_doc_type(obj, mLo.Lo.Service.WRITER)
+        return mInfo.Info.is_doc_type(obj, mLo.Lo.Service.CALC)
