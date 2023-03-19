@@ -55,9 +55,9 @@ That's it! Now should be ready for development.
 
 For other options try:
 
-    .. code-block:: text
+.. code-block:: text
 
-        (.venv) $ python -m main cmd-link -h
+    (.venv) $ python -m main cmd-link -h
 
 .. _dev_doc_ve_windos:
 
@@ -75,7 +75,7 @@ Most likely the version of Python active on your system is not going to match th
 
 Checking LibreOffice Python version
 
-::
+.. code-block::
 
     PS C:\> & 'C:\Program Files\LibreOffice\program\python.exe' --version
     Python 3.8.10
@@ -85,7 +85,7 @@ However, for windows I would recommend a tool such as pyenv-win_.
 
 Install command might look someting link:
 
-::
+.. code--block::
 
     pyenv install 3.8.10
 
@@ -97,25 +97,25 @@ In summary, pyenv-win_ installs python versions and Virtualenv_ creates virtual 
 
 Start by using terminal to create a ``.venv`` environment in the projects root folder
 
-::
+.. code-block::
 
     PS C:\python_ooo_dev_tools> virtualenv -p "C:\Users\user\.pyenv\pyenv-win\versions\3.8.10\python.exe" .venv
 
 Activate Virtual environment.
 
-::
+.. code-block::
 
     PS C:\python_ooo_dev_tools> .\.venv\Scripts\activate.ps1
 
 Install requirements using poetry.
 
-::
+.. code-block::
 
     (.venv) PS C:\python_ooo_dev_tools> poetry install
 
 After installing using the previous command it time to set the environment to work with LibreOffice.
 
-::
+.. code-block::
 
     (.venv) PS C:\python_ooo_dev_tools> python -m main env -t
 
@@ -123,7 +123,7 @@ This will set the virtual environment to work with LibreOffice.
 
 To check of the virtual environment is set for LibreOffice use the following command.
 
-::
+.. code-block::
 
     (.venv) PS C:\python_ooo_dev_tools> python -m main env -u
     UNO Environment
@@ -133,6 +133,8 @@ Newer versions of poetry_ will not work with the configuration set up for LibreO
 When you need to use poetry_ just toggle environment.
 
 """
+
+.. code-block::
 
     (.venv) PS C:\python_ooo_dev_tools> python -m main env -t
 
@@ -145,7 +147,7 @@ Testing Virtual Environment
 
 For a quick test of environment import ``uno`` If there is no import  error you should be good to go.
 
-::
+.. code-block::
 
     PS C:\python_ooo_dev_tools> .\.venv\scripts\activate
     (.venv) PS C:\python_ooo_dev_tools> python
@@ -177,9 +179,9 @@ In these cases run ``--no--verify`` flag of git.
 
 Example git ``--no-verify`` command:
 
-    .. code-block:: shell
+.. code-block:: shell
 
-        git commit -n -m "rename somefile.txt to myfile.txt"
+    git commit -n -m "rename somefile.txt to myfile.txt"
 
 .. _dev_doc_docs:
 
@@ -243,7 +245,7 @@ Doc Spelling
 Manual spell check
 """"""""""""""""""
 
-Documents are spelled checked before commit by default when `Hooks` are set up.
+Documents are spelled checked before commit by default when ``Hooks`` are set up.
 
 Manual spell check can be run in a ``./docs`` terminal Windows.
 
@@ -272,9 +274,25 @@ Environment Variables
 ODEV_CONN_SOFFICE
 ^^^^^^^^^^^^^^^^^
 
-If set and soffice is not passed to :py:class:`~.connectors.ConnectorBridgeBase` and `ODEV_CONN_SOFFICE` is present then the environment variable value is used.
+If set and soffice is not passed to :py:class:`~.connectors.ConnectorBridgeBase` and ``ODEV_CONN_SOFFICE`` is present then the environment variable value is used.
+
+Testing
+-------
+
+Test are written for pytest_
+
+.. warning::
+
+    Make sure any unnecessary extensions are disabled in LibreOffice for testing.
+
+    For Example ``LanguageTool 5.8`` enabled on Linux (``Ubuntu 22.04``) resulted in critical failure,
+    but only when test were run in GUI mode. Disabling ``LanguageTool 5.8`` extension resolved the testing issue.
 
 .. _poetry: https://python-poetry.org/
 
 .. _pyenv-win: https://github.com/pyenv-win/pyenv-win
 .. _Virtualenv: https://virtualenv.pypa.io/en/latest/
+.. _pytest: https://docs.pytest.org
+
+
+

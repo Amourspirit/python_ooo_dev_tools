@@ -170,10 +170,10 @@ def test_font_effects() -> None:
     assert fp.prop_raise_lower == 0
 
 
-@pytest.mark.skip_not_headless_os(
-    "linux",
-    "Errors When GUI is present. LibreOffice Randomly Throws up Java errors. Sometimes you get a pass and sometimes not.",
-)
+# @pytest.mark.skip_not_headless_os(
+#     "linux",
+#     "Errors When GUI is present. LibreOffice Randomly Throws up Java errors. Sometimes you get a pass and sometimes not.",
+# )
 def test_font_cursor(loader) -> None:
     delay = 0
     from ooodev.office.write import Write
@@ -318,10 +318,10 @@ def test_font_cursor(loader) -> None:
         Lo.close_doc(doc)
 
 
-@pytest.mark.skip_not_headless_os(
-    "linux",
-    "Errors When GUI is present. LibreOffice Randomly Throws up Java errors. Sometimes you get a pass and sometimes not.",
-)
+# @pytest.mark.skip_not_headless_os(
+#     "linux",
+#     "Errors When GUI is present. LibreOffice Randomly Throws up Java errors. Sometimes you get a pass and sometimes not.",
+# )
 def test_font_position_super_sub_cursor(loader) -> None:
     delay = 0
     from ooodev.office.write import Write
@@ -385,10 +385,10 @@ def test_font_position_super_sub_cursor(loader) -> None:
         Lo.close_doc(doc)
 
 
-@pytest.mark.skip_not_headless_os(
-    "linux",
-    "Errors When GUI is present. LibreOffice Randomly Throws up Java errors. Sometimes you get a pass and sometimes not.",
-)
+# @pytest.mark.skip_not_headless_os(
+#     "linux",
+#     "Errors When GUI is present. LibreOffice Randomly Throws up Java errors. Sometimes you get a pass and sometimes not.",
+# )
 def test_font_position_rotation_cursor(loader) -> None:
     delay = 0
     from ooodev.office.write import Write
@@ -448,10 +448,10 @@ def test_font_position_rotation_cursor(loader) -> None:
         Lo.close_doc(doc)
 
 
-@pytest.mark.skip_not_headless_os(
-    "linux",
-    "Errors When GUI is present. LibreOffice Randomly Throws up Java errors. Sometimes you get a pass and sometimes not.",
-)
+# @pytest.mark.skip_not_headless_os(
+#     "linux",
+#     "Errors When GUI is present. LibreOffice Randomly Throws up Java errors. Sometimes you get a pass and sometimes not.",
+# )
 def test_font_position_spacing_cursor(loader) -> None:
     delay = 0
     from ooodev.office.write import Write
@@ -487,10 +487,10 @@ def test_font_position_spacing_cursor(loader) -> None:
         Lo.close_doc(doc)
 
 
-@pytest.mark.skip_not_headless_os(
-    "linux",
-    "Errors When GUI is present. LibreOffice Randomly Throws up Java errors. Sometimes you get a pass and sometimes not.",
-)
+# @pytest.mark.skip_not_headless_os(
+#     "linux",
+#     "Errors When GUI is present. LibreOffice Randomly Throws up Java errors. Sometimes you get a pass and sometimes not.",
+# )
 def test_font_effects_cursor(loader) -> None:
     delay = 0
     from ooodev.office.write import Write
@@ -618,10 +618,10 @@ def test_font_effects_cursor(loader) -> None:
         Lo.close_doc(doc)
 
 
-@pytest.mark.skip_not_headless_os(
-    "linux",
-    "Errors When GUI is present. LibreOffice Randomly Throws up Java errors. Sometimes you get a pass and sometimes not.",
-)
+# @pytest.mark.skip_not_headless_os(
+#     "linux",
+#     "Errors When GUI is present. LibreOffice Randomly Throws up Java errors. Sometimes you get a pass and sometimes not.",
+# )
 def test_font_only_cursor(loader) -> None:
     delay = 0
     from ooodev.office.write import Write
