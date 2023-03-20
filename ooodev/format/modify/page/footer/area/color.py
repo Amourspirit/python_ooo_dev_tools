@@ -1,6 +1,6 @@
 from __future__ import annotations
 import uno
-from .....writer.style.page.kind.style_page_kind import StylePageKind as StylePageKind
+from .....writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
 from .....direct.common.props.fill_color_props import FillColorProps
 from ...header.area.color import Color as HeaderColor
 

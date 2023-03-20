@@ -7,7 +7,7 @@ from .....proto.unit_obj import UnitObj
 from .....utils.data_type.angle import Angle as Angle
 from .....utils.color import Color
 from ....preset.preset_hatch import PresetHatchKind as PresetHatchKind
-from ....writer.style.page.kind.style_page_kind import StylePageKind as StylePageKind
+from ....writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
 from ..page_style_base_multi import PageStyleBaseMulti
 
 from ....direct.fill.area.hatch import Hatch as InnerHatch
@@ -28,7 +28,7 @@ class Hatch(PageStyleBaseMulti):
         space: float | UnitObj = 0.0,
         angle: Angle | int = 0,
         bg_color: Color = Color(-1),
-        style_name: StylePageKind | str = StylePageKind.STANDARD,
+        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> None:
         """
@@ -57,7 +57,7 @@ class Hatch(PageStyleBaseMulti):
     def from_style(
         cls,
         doc: object,
-        style_name: StylePageKind | str = StylePageKind.STANDARD,
+        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> Hatch:
         """
@@ -80,7 +80,7 @@ class Hatch(PageStyleBaseMulti):
     def from_preset(
         cls,
         preset: PresetHatchKind,
-        style_name: StylePageKind | str = StylePageKind.STANDARD,
+        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> Hatch:
         """
@@ -105,7 +105,7 @@ class Hatch(PageStyleBaseMulti):
         return self._style_name
 
     @prop_style_name.setter
-    def prop_style_name(self, value: str | StylePageKind):
+    def prop_style_name(self, value: str | WriterStylePageKind):
         self._style_name = str(value)
 
     @property

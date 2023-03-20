@@ -14,7 +14,7 @@ from .....direct.common.format_types.size_percent import SizePercent as SizePerc
 from .....direct.common.props.area_img_props import AreaImgProps
 from .....direct.fill.area.img import ImgStyleKind as ImgStyleKind
 from .....preset.preset_image import PresetImageKind as PresetImageKind
-from .....writer.style.page.kind.style_page_kind import StylePageKind as StylePageKind
+from .....writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
 from ...header.area.img import Img as HeaderImg
 
 

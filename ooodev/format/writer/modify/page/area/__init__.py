@@ -15,7 +15,7 @@ from .....direct.common.format_types.offset_row import OffsetRow as OffsetRow
 from .....direct.common.format_types.offset_column import OffsetColumn as OffsetColumn
 from .....direct.fill.area.img import ImgStyleKind as ImgStyleKind
 
-from ....style.page.kind.style_page_kind import StylePageKind as StylePageKind
+from ....style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
 from .....preset.preset_gradient import PresetGradientKind as PresetGradientKind
 from .....preset.preset_image import PresetImageKind as PresetImageKind
 from .....preset.preset_pattern import PresetPatternKind as PresetPatternKind

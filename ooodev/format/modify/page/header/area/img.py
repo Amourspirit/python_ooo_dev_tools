@@ -16,7 +16,7 @@ from .....direct.common.format_types.size_percent import SizePercent as SizePerc
 from .....direct.common.props.area_img_props import AreaImgProps
 from .....direct.fill.area.img import Img as InnerImg, ImgStyleKind as ImgStyleKind
 from .....preset.preset_image import PresetImageKind as PresetImageKind
-from .....writer.style.page.kind.style_page_kind import StylePageKind as StylePageKind
+from .....writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
 from ...page_style_base_multi import PageStyleBaseMulti
 
 _TImg = TypeVar(name="_TImg", bound="Img")
@@ -40,7 +40,7 @@ class Img(PageStyleBaseMulti):
         pos_offset: Offset | None = None,
         tile_offset: OffsetColumn | OffsetRow | None = None,
         auto_name: bool = False,
-        style_name: StylePageKind | str = StylePageKind.STANDARD,
+        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> None:
         """
@@ -108,7 +108,7 @@ class Img(PageStyleBaseMulti):
     def from_style(
         cls: Type[_TImg],
         doc: object,
-        style_name: StylePageKind | str = StylePageKind.STANDARD,
+        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> _TImg:
         """
@@ -131,7 +131,7 @@ class Img(PageStyleBaseMulti):
     def from_preset(
         cls: Type[_TImg],
         preset: PresetImageKind,
-        style_name: StylePageKind | str = StylePageKind.STANDARD,
+        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> _TImg:
         """
@@ -159,7 +159,7 @@ class Img(PageStyleBaseMulti):
         return self._style_name
 
     @prop_style_name.setter
-    def prop_style_name(self, value: str | StylePageKind):
+    def prop_style_name(self, value: str | WriterStylePageKind):
         self._style_name = str(value)
 
     @property

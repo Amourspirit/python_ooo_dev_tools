@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Tuple, cast, Type, TypeVar
 import uno
-from ....writer.style.page.kind.style_page_kind import StylePageKind as StylePageKind
+from ....writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
 from ..page_style_base_multi import PageStyleBaseMulti
 from ....direct.common.abstract.abstract_hf import AbstractHF
 from ....direct.common.props.hf_props import HfProps
@@ -61,7 +61,7 @@ class Header(PageStyleBaseMulti):
         spacing_dyn: bool | None = None,
         height: float | None = None,
         height_auto: bool | None = None,
-        style_name: StylePageKind | str = StylePageKind.STANDARD,
+        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> None:
         """
@@ -129,7 +129,7 @@ class Header(PageStyleBaseMulti):
     def from_style(
         cls: Type[_THeader],
         doc: object,
-        style_name: StylePageKind | str = StylePageKind.STANDARD,
+        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> _THeader:
         """
@@ -157,7 +157,7 @@ class Header(PageStyleBaseMulti):
         return self._style_name
 
     @prop_style_name.setter
-    def prop_style_name(self, value: str | StylePageKind):
+    def prop_style_name(self, value: str | WriterStylePageKind):
         self._style_name = str(value)
 
     @property

@@ -11,7 +11,7 @@ from ......utils.data_type.color_range import ColorRange as ColorRange
 from ......utils.data_type.intensity import Intensity as Intensity
 from ......utils.data_type.intensity_range import IntensityRange as IntensityRange
 from ......utils.data_type.offset import Offset as Offset
-from .....writer.style.page.kind.style_page_kind import StylePageKind as StylePageKind
+from .....writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
 from .....preset.preset_hatch import PresetHatchKind as PresetHatchKind
 from .....direct.common.props.area_hatch_props import AreaHatchProps
 from .....direct.fill.area.hatch import Hatch as InnerHatch
@@ -33,7 +33,7 @@ class Hatch(PageStyleBaseMulti):
         space: float | UnitObj = 0.0,
         angle: Angle | int = 0,
         bg_color: Color = Color(-1),
-        style_name: StylePageKind | str = StylePageKind.STANDARD,
+        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> None:
         """
@@ -88,7 +88,7 @@ class Hatch(PageStyleBaseMulti):
     def from_style(
         cls: Type[_THatch],
         doc: object,
-        style_name: StylePageKind | str = StylePageKind.STANDARD,
+        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> _THatch:
         """
@@ -111,7 +111,7 @@ class Hatch(PageStyleBaseMulti):
     def from_preset(
         cls: Type[_THatch],
         preset: PresetHatchKind,
-        style_name: StylePageKind | str = StylePageKind.STANDARD,
+        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> _THatch:
         """
@@ -139,7 +139,7 @@ class Hatch(PageStyleBaseMulti):
         return self._style_name
 
     @prop_style_name.setter
-    def prop_style_name(self, value: str | StylePageKind):
+    def prop_style_name(self, value: str | WriterStylePageKind):
         self._style_name = str(value)
 
     @property

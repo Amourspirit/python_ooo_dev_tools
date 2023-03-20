@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Tuple, cast
 import uno
 
-from ....writer.style.page.kind.style_page_kind import StylePageKind as StylePageKind
+from ....writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
 from ..page_style_base_multi import PageStyleBaseMulti
 from ....direct.structs.side import Side as Side, LineSize as LineSize
 from ....direct.para.border.sides import Sides as InnerSides
@@ -23,7 +23,7 @@ class Sides(PageStyleBaseMulti):
         top: Side | None = None,
         bottom: Side | None = None,
         all: Side | None = None,
-        style_name: StylePageKind | str = StylePageKind.STANDARD,
+        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> None:
         """
@@ -52,7 +52,7 @@ class Sides(PageStyleBaseMulti):
     def from_style(
         cls,
         doc: object,
-        style_name: StylePageKind | str = StylePageKind.STANDARD,
+        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> Sides:
         """
@@ -77,7 +77,7 @@ class Sides(PageStyleBaseMulti):
         return self._style_name
 
     @prop_style_name.setter
-    def prop_style_name(self, value: str | StylePageKind):
+    def prop_style_name(self, value: str | WriterStylePageKind):
         self._style_name = str(value)
 
     @property

@@ -8,7 +8,7 @@ import uno
 from ooodev.format.writer.modify.page.area import Color
 from ooodev.format.writer.modify.page.transparency import (
     Gradient,
-    StylePageKind,
+    WriterStylePageKind,
     Intensity,
     IntensityRange,
     Angle,

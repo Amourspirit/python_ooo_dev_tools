@@ -5,7 +5,7 @@ from com.sun.star.awt import XBitmap
 from ooo.dyn.drawing.rectangle_point import RectanglePoint as RectanglePoint
 
 from .....utils.data_type.offset import Offset as Offset
-from ....writer.style.page.kind.style_page_kind import StylePageKind as StylePageKind
+from ....writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
 from ..page_style_base_multi import PageStyleBaseMulti
 
 from .....utils.data_type.size_mm import SizeMM as SizeMM
@@ -35,7 +35,7 @@ class Img(PageStyleBaseMulti):
         pos_offset: Offset | None = None,
         tile_offset: OffsetColumn | OffsetRow | None = None,
         auto_name: bool = False,
-        style_name: StylePageKind | str = StylePageKind.STANDARD,
+        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> None:
         """
@@ -76,7 +76,7 @@ class Img(PageStyleBaseMulti):
     def from_style(
         cls,
         doc: object,
-        style_name: StylePageKind | str = StylePageKind.STANDARD,
+        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> Img:
         """
@@ -99,7 +99,7 @@ class Img(PageStyleBaseMulti):
     def from_preset(
         cls,
         preset: PresetImageKind,
-        style_name: StylePageKind | str = StylePageKind.STANDARD,
+        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> Img:
         """
@@ -124,7 +124,7 @@ class Img(PageStyleBaseMulti):
         return self._style_name
 
     @prop_style_name.setter
-    def prop_style_name(self, value: str | StylePageKind):
+    def prop_style_name(self, value: str | WriterStylePageKind):
         self._style_name = str(value)
 
     @property

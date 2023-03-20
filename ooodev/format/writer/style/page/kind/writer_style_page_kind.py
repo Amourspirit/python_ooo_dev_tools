@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class StylePageKind(Enum):
+class WriterStylePageKind(Enum):
     """Style Lookups for Page Styles"""
 
     ENDNOTE = "Endnote"

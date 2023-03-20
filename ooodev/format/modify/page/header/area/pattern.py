@@ -9,7 +9,7 @@ from ......utils.data_type.color_range import ColorRange as ColorRange
 from ......utils.data_type.intensity import Intensity as Intensity
 from ......utils.data_type.intensity_range import IntensityRange as IntensityRange
 from ......utils.data_type.offset import Offset as Offset
-from .....writer.style.page.kind.style_page_kind import StylePageKind as StylePageKind
+from .....writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
 from .....preset.preset_pattern import PresetPatternKind as PresetPatternKind
 from .....direct.common.props.area_pattern_props import AreaPatternProps
 from .....direct.fill.area.pattern import Pattern as InnerPattern
@@ -31,7 +31,7 @@ class Pattern(PageStyleBaseMulti):
         tile: bool = True,
         stretch: bool = False,
         auto_name: bool = False,
-        style_name: StylePageKind | str = StylePageKind.STANDARD,
+        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> None:
         """
@@ -87,7 +87,7 @@ class Pattern(PageStyleBaseMulti):
     def from_style(
         cls: Type[_TPattern],
         doc: object,
-        style_name: StylePageKind | str = StylePageKind.STANDARD,
+        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> _TPattern:
         """
@@ -110,7 +110,7 @@ class Pattern(PageStyleBaseMulti):
     def from_preset(
         cls: Type[_TPattern],
         preset: PresetPatternKind,
-        style_name: StylePageKind | str = StylePageKind.STANDARD,
+        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> _TPattern:
         """
@@ -138,7 +138,7 @@ class Pattern(PageStyleBaseMulti):
         return self._style_name
 
     @prop_style_name.setter
-    def prop_style_name(self, value: str | StylePageKind):
+    def prop_style_name(self, value: str | WriterStylePageKind):
         self._style_name = str(value)
 
     @property

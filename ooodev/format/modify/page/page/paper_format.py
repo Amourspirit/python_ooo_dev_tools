@@ -3,7 +3,7 @@ from typing import cast
 import uno
 from .....utils.data_type.size_mm import SizeMM as SizeMM
 from .....utils.data_type.intensity import Intensity as Intensity
-from ....writer.style.page.kind import StylePageKind as StylePageKind
+from ....writer.style.page.kind import WriterStylePageKind as WriterStylePageKind
 from ..page_style_base_multi import PageStyleBaseMulti
 from ....preset.preset_paper_format import PaperFormatKind as PaperFormatKind
 from ....direct.page.page.paper_format import PaperFormat as InnerPaperFormat
@@ -20,7 +20,7 @@ class PaperFormat(PageStyleBaseMulti):
         self,
         *,
         size: SizeMM = SizeMM(215.9, 279.4),
-        style_name: StylePageKind | str = StylePageKind.STANDARD,
+        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> None:
         """
@@ -28,7 +28,7 @@ class PaperFormat(PageStyleBaseMulti):
 
         Args:
             size (SizeMM, optional): Width and height in ``mm`` units. Defaults to Letter size in Portrait mode.
-            style_name (StyleParaKind, str, optional): Specifies the Page Style that instance applies to. Deftult is Default Page Style.
+            style_name (WriterStylePageKind, str, optional): Specifies the Page Style that instance applies to. Deftult is Default Page Style.
             style_family (str, optional): Style family. Defatult ``PageStyles``.
 
         Returns:
@@ -45,7 +45,7 @@ class PaperFormat(PageStyleBaseMulti):
     def from_style(
         cls,
         doc: object,
-        style_name: StylePageKind | str = StylePageKind.STANDARD,
+        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> PaperFormat:
         """
@@ -53,7 +53,7 @@ class PaperFormat(PageStyleBaseMulti):
 
         Args:
             doc (object): UNO Documnet Object.
-            style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to. Deftult is Default Paragraph Style.
+            style_name (WriterStylePageKind, str, optional): Specifies the Paragraph Style that instance applies to. Deftult is Default Paragraph Style.
             style_family (str, optional): Style family. Defatult ``PageStyles``.
 
         Returns:
@@ -69,7 +69,7 @@ class PaperFormat(PageStyleBaseMulti):
         cls,
         preset: PaperFormatKind,
         landscape: bool = False,
-        style_name: StylePageKind | str = StylePageKind.STANDARD,
+        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> PaperFormat:
         """
@@ -78,7 +78,7 @@ class PaperFormat(PageStyleBaseMulti):
         Args:
             preset (PaperFormatKind): Preset kind
             landscape (bool, optional): Specifies if the preset is in landscape mode. Defaults to ``False``.
-            style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to. Deftult is Default Paragraph Style.
+            style_name (WriterStylePageKind, str, optional): Specifies the Paragraph Style that instance applies to. Deftult is Default Paragraph Style.
             style_family (str, optional): Style family. Defatult ``PageStyles``.
 
         Returns:
@@ -95,7 +95,7 @@ class PaperFormat(PageStyleBaseMulti):
         return self._style_name
 
     @prop_style_name.setter
-    def prop_style_name(self, value: str | StylePageKind):
+    def prop_style_name(self, value: str | WriterStylePageKind):
         self._style_name = str(value)
 
     @property

@@ -7,7 +7,7 @@ from ....kind.format_kind import FormatKind
 from ....style_base import StyleName
 from .....utils import props as mProps
 from .....exceptions import ex as mEx
-from .kind.writer_style_page_kind import WriterStylePageKind
+from .kind.style_page_kind import StylePageKind
 
 
 class Page(StyleName):
@@ -23,13 +23,7 @@ class Page(StyleName):
     # Setting Page style is done via the PageDescName property. After settig the PageDescName becomes null.
     # Reading Page style is done via the PageStyleName property.
 
-    def __init__(self, name: WriterStylePageKind | str = "") -> None:
-        """
-        Constructor
-
-        Args:
-            name (StyleParaKind, str, optional): Specifies the Page Style that instance applies to.
-        """
+    def __init__(self, name: StylePageKind | str = "") -> None:
         if name == "":
             name = Page.default.prop_name
         super().__init__(name=name)
@@ -141,7 +135,7 @@ class Page(StyleName):
         try:
             return Page._DEFAULT_PAGE
         except AttributeError:
-            Page._DEFAULT_PAGE = Page(name=WriterStylePageKind.STANDARD)
+            Page._DEFAULT_PAGE = Page(name=StylePageKind.STANDARD)
             Page._DEFAULT_PAGE._is_default_inst = True
         return Page._DEFAULT_PAGE
 

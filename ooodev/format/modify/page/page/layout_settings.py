@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import cast
 import uno
-from ....writer.style.page.kind import StylePageKind as StylePageKind
+from ....writer.style.page.kind import WriterStylePageKind as WriterStylePageKind
 from ..page_style_base_multi import PageStyleBaseMulti
 from ....writer.style.para.kind.style_para_kind import StyleParaKind as StyleParaKind
 from ....direct.page.page.layout_settings import LayoutSettings as InnerLayoutSettings
@@ -24,7 +24,7 @@ class LayoutSettings(PageStyleBaseMulti):
         numbers: NumberingTypeEnum | None = None,
         ref_style: str | StyleParaKind | None = None,
         right_gutter: bool | None = None,
-        style_name: StylePageKind | str = StylePageKind.STANDARD,
+        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> None:
         """
@@ -52,7 +52,7 @@ class LayoutSettings(PageStyleBaseMulti):
     def from_style(
         cls,
         doc: object,
-        style_name: StylePageKind | str = StylePageKind.STANDARD,
+        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> LayoutSettings:
         """
@@ -77,7 +77,7 @@ class LayoutSettings(PageStyleBaseMulti):
         return self._style_name
 
     @prop_style_name.setter
-    def prop_style_name(self, value: str | StylePageKind):
+    def prop_style_name(self, value: str | WriterStylePageKind):
         self._style_name = str(value)
 
     @property
@@ -88,7 +88,7 @@ class LayoutSettings(PageStyleBaseMulti):
         except AttributeError:
             self._direct_inner = cast(InnerLayoutSettings, self._get_style_inst("direct"))
         return self._direct_inner
-    
+
     @prop_inner.setter
     def prop_inner(self, value: InnerLayoutSettings) -> None:
         if not isinstance(value, InnerLayoutSettings):

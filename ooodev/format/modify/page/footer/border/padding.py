@@ -1,6 +1,6 @@
 from __future__ import annotations
 import uno
-from .....writer.style.page.kind.style_page_kind import StylePageKind as StylePageKind
+from .....writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
 from .....direct.common.props.border_props import BorderProps
 from ...header.border.padding import Padding as HeaderPadding
 

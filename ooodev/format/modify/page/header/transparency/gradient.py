@@ -8,7 +8,7 @@ from ......utils.data_type.color_range import ColorRange as ColorRange
 from ......utils.data_type.intensity import Intensity as Intensity
 from ......utils.data_type.intensity_range import IntensityRange as IntensityRange
 from ......utils.data_type.offset import Offset as Offset
-from .....writer.style.page.kind.style_page_kind import StylePageKind as StylePageKind
+from .....writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
 from .....preset.preset_gradient import PresetGradientKind as PresetGradientKind
 from .....direct.common.props.transparent_gradient_props import TransparentGradientProps
 from .....direct.fill.transparent.gradient import Gradient as InnerGradient
@@ -31,7 +31,7 @@ class Gradient(PageStyleBaseMulti):
         angle: Angle | int = 0,
         border: Intensity | int = 0,
         grad_intensity: IntensityRange = IntensityRange(100, 100),
-        style_name: StylePageKind | str = StylePageKind.STANDARD,
+        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> None:
         """
@@ -88,7 +88,7 @@ class Gradient(PageStyleBaseMulti):
     def from_style(
         cls: Type[_TGradient],
         doc: object,
-        style_name: StylePageKind | str = StylePageKind.STANDARD,
+        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> _TGradient:
         """
@@ -116,7 +116,7 @@ class Gradient(PageStyleBaseMulti):
         return self._style_name
 
     @prop_style_name.setter
-    def prop_style_name(self, value: str | StylePageKind):
+    def prop_style_name(self, value: str | WriterStylePageKind):
         self._style_name = str(value)
 
     @property

@@ -5,7 +5,7 @@ from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 
 from ......proto.unit_obj import UnitObj
 from ......utils.color import StandardColor, Color
-from .....writer.style.page.kind.style_page_kind import StylePageKind as StylePageKind
+from .....writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
 from ...page_style_base_multi import PageStyleBaseMulti
 from .....direct.structs.shadow_struct import ShadowStruct as InnerShadow
 
@@ -26,7 +26,7 @@ class Shadow(PageStyleBaseMulti):
         color: Color = StandardColor.GRAY,
         transparent: bool = False,
         width: float | UnitObj = 1.76,
-        style_name: StylePageKind | str = StylePageKind.STANDARD,
+        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> None:
         """
@@ -70,7 +70,7 @@ class Shadow(PageStyleBaseMulti):
     def from_style(
         cls: Type[_TShadow],
         doc: object,
-        style_name: StylePageKind | str = StylePageKind.STANDARD,
+        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> _TShadow:
         """
@@ -98,7 +98,7 @@ class Shadow(PageStyleBaseMulti):
         return self._style_name
 
     @prop_style_name.setter
-    def prop_style_name(self, value: str | StylePageKind):
+    def prop_style_name(self, value: str | WriterStylePageKind):
         self._style_name = str(value)
 
     @property

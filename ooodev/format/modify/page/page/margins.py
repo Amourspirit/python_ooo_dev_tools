@@ -3,7 +3,7 @@ from typing import cast
 import uno
 from .....proto.unit_obj import UnitObj
 from .....utils.data_type.intensity import Intensity as Intensity
-from ....writer.style.page.kind import StylePageKind as StylePageKind
+from ....writer.style.page.kind import WriterStylePageKind as WriterStylePageKind
 from ..page_style_base_multi import PageStyleBaseMulti
 from ....direct.page.page.margins import Margins as InnerMargins
 
@@ -23,7 +23,7 @@ class Margins(PageStyleBaseMulti):
         top: float | UnitObj | None = None,
         bottom: float | UnitObj | None = None,
         gutter: float | UnitObj | None = None,
-        style_name: StylePageKind | str = StylePageKind.STANDARD,
+        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> None:
         """
@@ -52,7 +52,7 @@ class Margins(PageStyleBaseMulti):
     def from_style(
         cls,
         doc: object,
-        style_name: StylePageKind | str = StylePageKind.STANDARD,
+        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> Margins:
         """
@@ -77,7 +77,7 @@ class Margins(PageStyleBaseMulti):
         return self._style_name
 
     @prop_style_name.setter
-    def prop_style_name(self, value: str | StylePageKind):
+    def prop_style_name(self, value: str | WriterStylePageKind):
         self._style_name = str(value)
 
     @property

@@ -6,7 +6,7 @@ from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
 from .....utils.data_type.angle import Angle as Angle
 from .....utils.data_type.offset import Offset as Offset
 from .....utils.data_type.intensity_range import IntensityRange as IntensityRange
-from ....writer.style.page.kind.style_page_kind import StylePageKind as StylePageKind
+from ....writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
 from ..page_style_base_multi import PageStyleBaseMulti
 from .....utils.data_type.intensity import Intensity as Intensity
 
@@ -28,7 +28,7 @@ class Gradient(PageStyleBaseMulti):
         angle: Angle | int = 0,
         border: Intensity | int = 0,
         grad_intensity: IntensityRange = IntensityRange(0, 0),
-        style_name: StylePageKind | str = StylePageKind.STANDARD,
+        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> None:
         """
@@ -53,7 +53,7 @@ class Gradient(PageStyleBaseMulti):
     def from_style(
         cls,
         doc: object,
-        style_name: StylePageKind | str = StylePageKind.STANDARD,
+        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> Gradient:
         """
@@ -78,7 +78,7 @@ class Gradient(PageStyleBaseMulti):
         return self._style_name
 
     @prop_style_name.setter
-    def prop_style_name(self, value: str | StylePageKind):
+    def prop_style_name(self, value: str | WriterStylePageKind):
         self._style_name = str(value)
 
     @property

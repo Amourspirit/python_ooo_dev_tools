@@ -13,7 +13,7 @@ from .....utils import lo as mLo
 from .....utils.type_var import T
 from ....kind.format_kind import FormatKind
 from ....style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent
-from ...style.page.kind import StylePageKind
+from ...style.page.kind import WriterStylePageKind
 
 from com.sun.star.beans import XPropertySet
 
@@ -101,5 +101,5 @@ class PageStyleBase(StyleBase):
         raise NotImplementedError
 
     @prop_style_name.setter
-    def prop_style_name(self, value: str | StylePageKind):
+    def prop_style_name(self, value: str | WriterStylePageKind):
         raise NotImplementedError

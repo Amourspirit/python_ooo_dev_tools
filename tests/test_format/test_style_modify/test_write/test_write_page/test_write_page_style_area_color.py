@@ -5,7 +5,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.writer.modify.page.area import Color, StylePageKind
+from ooodev.format.writer.modify.page.area import Color, WriterStylePageKind
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.utils.color import StandardColor

@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Tuple, cast, Type, TypeVar
 import uno
-from .....writer.style.page.kind.style_page_kind import StylePageKind as StylePageKind
+from .....writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
 from ...page_style_base_multi import PageStyleBaseMulti
 from .....kind.format_kind import FormatKind
 
@@ -71,7 +71,7 @@ class Padding(PageStyleBaseMulti):
         top: float | None = None,
         bottom: float | None = None,
         padding_all: float | None = None,
-        style_name: StylePageKind | str = StylePageKind.STANDARD,
+        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> None:
         """
@@ -126,7 +126,7 @@ class Padding(PageStyleBaseMulti):
     def from_style(
         cls: Type[_TPadding],
         doc: object,
-        style_name: StylePageKind | str = StylePageKind.STANDARD,
+        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> _TPadding:
         """
@@ -154,7 +154,7 @@ class Padding(PageStyleBaseMulti):
         return self._style_name
 
     @prop_style_name.setter
-    def prop_style_name(self, value: str | StylePageKind):
+    def prop_style_name(self, value: str | WriterStylePageKind):
         self._style_name = str(value)
 
     @property

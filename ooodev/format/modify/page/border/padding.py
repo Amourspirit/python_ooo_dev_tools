@@ -3,7 +3,7 @@ from typing import cast
 import uno
 
 from .....proto.unit_obj import UnitObj
-from ....writer.style.page.kind.style_page_kind import StylePageKind as StylePageKind
+from ....writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
 from ..page_style_base_multi import PageStyleBaseMulti
 
 from ....direct.para.border.padding import Padding as InnerPadding
@@ -24,7 +24,7 @@ class Padding(PageStyleBaseMulti):
         top: float | UnitObj | None = None,
         bottom: float | UnitObj | None = None,
         all: float | UnitObj | None = None,
-        style_name: StylePageKind | str = StylePageKind.STANDARD,
+        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> None:
         """
@@ -53,7 +53,7 @@ class Padding(PageStyleBaseMulti):
     def from_style(
         cls,
         doc: object,
-        style_name: StylePageKind | str = StylePageKind.STANDARD,
+        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> Padding:
         """
@@ -78,7 +78,7 @@ class Padding(PageStyleBaseMulti):
         return self._style_name
 
     @prop_style_name.setter
-    def prop_style_name(self, value: str | StylePageKind):
+    def prop_style_name(self, value: str | WriterStylePageKind):
         self._style_name = str(value)
 
     @property

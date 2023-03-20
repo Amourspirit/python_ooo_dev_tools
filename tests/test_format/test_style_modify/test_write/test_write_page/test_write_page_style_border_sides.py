@@ -9,7 +9,7 @@ from ooodev.format.writer.modify.page.borders import (
     Sides,
     Side,
     LineSize,
-    StylePageKind,
+    WriterStylePageKind,
     BorderLineKind,
 )
 from ooodev.utils.gui import GUI
