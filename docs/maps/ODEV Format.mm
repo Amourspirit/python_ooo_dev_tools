@@ -1404,8 +1404,12 @@
 <icon BUILTIN="links/code/file_Python"/>
 </node>
 </node>
-<node TEXT="cell_protect" ID="ID_1080814476" CREATED="1675066984730" MODIFIED="1675081132682">
-<icon BUILTIN="unchecked"/>
+<node TEXT="cell_protect" ID="ID_1080814476" CREATED="1675066984730" MODIFIED="1679347266157">
+<icon BUILTIN="checked"/>
+<node TEXT="CellProtection" ID="ID_418881402" CREATED="1679017780504" MODIFIED="1679017791267">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
 </node>
 </node>
 <node TEXT="page" ID="ID_226381545" CREATED="1675066930609" MODIFIED="1675066932244">
