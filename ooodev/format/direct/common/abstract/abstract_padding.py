@@ -63,9 +63,11 @@ class AbstractPadding(StyleBase):
 
         def validate(val: float | UnitObj | None) -> None:
             if val is not None:
-                if not isinstance(val, float):
-                    val = float(val.get_value_mm100())
-                if val < 0.0:
+                try:
+                    value = val.get_value_mm()
+                except AttributeError:
+                    value = float(val)
+                if value < 0:
                     raise ValueError("Values must be positive values")
 
         def set_val(key, value: float | UnitObj) -> None:

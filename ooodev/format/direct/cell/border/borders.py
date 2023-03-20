@@ -188,7 +188,7 @@ class Borders(StyleMulti):
         try:
             return self._supported_services_values
         except AttributeError:
-            self._supported_services_values = "com.sun.star.table.CellProperties"
+            self._supported_services_values = ("com.sun.star.table.CellProperties",)
         return self._supported_services_values
 
     # region apply()

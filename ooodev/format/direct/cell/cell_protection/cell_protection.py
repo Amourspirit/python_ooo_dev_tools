@@ -7,7 +7,7 @@ class CellProtection(CellProtectionStruct):
     Cell Protection.
 
     Note:
-        Cell protection is only effective afte the sheet is has been applied to is also been protected.
+        Cell protection is only effective after the sheet is has been applied to is also been protected.
 
     .. versionadded:: 0.9.0
     """
