@@ -41,7 +41,7 @@ class FontOnly(CharStyleBaseMulti):
             None:
         """
 
-        direct = InnerFontOnly(name=name, size=size, style_name=font_style_name, lang=lang)
+        direct = InnerFontOnly(name=name, size=size, font_style=font_style_name, lang=lang)
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family

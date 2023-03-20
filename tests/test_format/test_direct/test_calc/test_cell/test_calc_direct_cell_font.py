@@ -8,18 +8,10 @@ if __name__ == "__main__":
 import uno
 
 # simpler test then test_char_font because it is testing the same font class under the hood.
-from ooodev.format.calc.direct.cell.font import (
-    Font,
-    FontLine,
-    FontOnly,
-    FontUnderlineEnum,
-    FontWeightEnum,
-    FontSlant,
-)
+from ooodev.format.calc.direct.cell.font import Font, FontLine, FontOnly, FontUnderlineEnum, FontWeightEnum, FontSlant
 from ooodev.format import CommonColor
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
-from ooodev.utils.data_type.unit_mm100 import UnitMM100
 from ooodev.utils.data_type.unit_pt import UnitPT
 
 if TYPE_CHECKING:
@@ -95,7 +87,7 @@ def test_calc_font_only(loader) -> None:
         cp = cast("CharacterProperties", cell)
         font_size = UnitPT(12.0)
         font_size100 = font_size.get_value_mm100()
-        Styler.apply(cell, FontOnly(name="Liberation Sans", size=font_size, style_name="Bold"))
+        Styler.apply(cell, FontOnly(name="Liberation Sans", size=font_size, font_style="Bold"))
         assert cp.CharWeight == FontWeightEnum.BOLD.value
         assert cp.CharFontName == "Liberation Sans"
         assert UnitPT(cp.CharHeight).get_value_mm100() in range(font_size100 - 2, font_size100 + 3)  # +- 2

@@ -1313,10 +1313,6 @@
 <icon BUILTIN="checked"/>
 <icon BUILTIN="links/code/file_Python"/>
 </node>
-<node TEXT="FontPosition" ID="ID_510352820" CREATED="1675364923716" MODIFIED="1679012752370">
-<icon BUILTIN="checked"/>
-<icon BUILTIN="links/code/file_Python"/>
-</node>
 </node>
 <node TEXT="alignment" ID="ID_1709460140" CREATED="1675066792968" MODIFIED="1679185482843">
 <icon BUILTIN="checked"/>
@@ -1372,8 +1368,16 @@
 <node TEXT="numbers" ID="ID_1565352658" CREATED="1675066941937" MODIFIED="1675081113137">
 <icon BUILTIN="unchecked"/>
 </node>
-<node TEXT="font" ID="ID_100055580" CREATED="1675066945337" MODIFIED="1675081113885">
-<icon BUILTIN="unchecked"/>
+<node TEXT="font" ID="ID_100055580" CREATED="1675066945337" MODIFIED="1679352416857">
+<icon BUILTIN="checked"/>
+<node TEXT="FontOnly" ID="ID_309016685" CREATED="1675364933860" MODIFIED="1679012752369">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="FontEffects" ID="ID_1482167025" CREATED="1675364914764" MODIFIED="1679012752370">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
 </node>
 <node TEXT="alignment" ID="ID_485006306" CREATED="1675066957121" MODIFIED="1679260268859">
 <icon BUILTIN="checked"/>
@@ -1404,8 +1408,12 @@
 <icon BUILTIN="links/code/file_Python"/>
 </node>
 </node>
-<node TEXT="cell_protect" ID="ID_1080814476" CREATED="1675066984730" MODIFIED="1675081132682">
-<icon BUILTIN="unchecked"/>
+<node TEXT="cell_protect" ID="ID_1080814476" CREATED="1675066984730" MODIFIED="1679347266157">
+<icon BUILTIN="checked"/>
+<node TEXT="CellProtection" ID="ID_418881402" CREATED="1679017780504" MODIFIED="1679017791267">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
 </node>
 </node>
 <node TEXT="page" ID="ID_226381545" CREATED="1675066930609" MODIFIED="1675066932244">
