@@ -317,6 +317,8 @@ mindmap
                         id{{Properties}}
                     background
                         id{{Color}}
+                    borders
+                        id{{Borders}}
             [style]
         draw
             [direct]

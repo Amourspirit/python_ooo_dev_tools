@@ -93,7 +93,7 @@ class Indent(StyleBase):
         Applies writing mode to ``obj``
 
         Args:
-            obj (object): UNO object that supports ``com.sun.star.style.ParagraphProperties`` service.
+            obj (object): UNO object.
 
         Returns:
             None:

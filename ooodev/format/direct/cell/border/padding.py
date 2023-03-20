@@ -8,7 +8,6 @@ from typing import Any, Type, TypeVar, overload
 
 from .....events.args.cancel_event_args import CancelEventArgs
 from .....exceptions import ex as mEx
-from .....meta.static_prop import static_prop
 from .....utils import props as mProps
 from ....kind.format_kind import FormatKind
 from ...common.abstract.abstract_padding import AbstractPadding
@@ -39,7 +38,7 @@ class Padding(AbstractPadding):
     def from_obj(cls: Type[_TPadding], obj: object, **kwargs) -> _TPadding:
         ...
 
-    @staticmethod
+    @classmethod
     def from_obj(cls: Type[_TPadding], obj: object, **kwargs) -> _TPadding:
         """
         Gets Padding instance from object

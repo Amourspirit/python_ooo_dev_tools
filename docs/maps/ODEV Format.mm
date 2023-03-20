@@ -1390,8 +1390,12 @@
 <icon BUILTIN="links/code/file_Python"/>
 </node>
 </node>
-<node TEXT="borders" ID="ID_322717388" CREATED="1675066964545" MODIFIED="1675145958798">
-<icon BUILTIN="unchecked"/>
+<node TEXT="borders" ID="ID_322717388" CREATED="1675066964545" MODIFIED="1679333865740">
+<icon BUILTIN="checked"/>
+<node TEXT="Borders" ID="ID_983626793" CREATED="1679269437325" MODIFIED="1679333847150">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
 </node>
 <node TEXT="background" ID="ID_1803684931" CREATED="1675066973698" MODIFIED="1675145958798">
 <icon BUILTIN="unchecked"/>

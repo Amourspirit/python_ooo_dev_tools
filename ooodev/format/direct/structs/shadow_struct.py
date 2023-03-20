@@ -8,8 +8,10 @@ from __future__ import annotations
 from typing import Any, Dict, Tuple, Type, cast, overload, TypeVar
 
 import uno
-from ....exceptions import ex as mEx
+from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
+from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 
+from ....exceptions import ex as mEx
 from ....proto.unit_obj import UnitObj
 from ....utils import lo as mLo
 from ....utils import props as mProps
@@ -21,8 +23,6 @@ from ...kind.format_kind import FormatKind
 from ...style_base import CancelEventArgs
 from .struct_base import StructBase
 
-from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
-from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 
 _TShadowStruct = TypeVar(name="_TShadowStruct", bound="ShadowStruct")
 
@@ -183,12 +183,6 @@ class ShadowStruct(StructBase):
             keys: (Dict[str, str], optional): key map for properties.
                 Can be ``prop`` which defaults to ``ShadowFormat``.
 
-        :events:
-            .. cssclass:: lo_event
-
-                - :py:attr:`~.events.format_named_event.FormatNamedEvent.STYLE_APPLYING` :eventref:`src-docs-event-cancel`
-                - :py:attr:`~.events.format_named_event.FormatNamedEvent.STYLE_APPLYED` :eventref:`src-docs-event`
-
         Returns:
             None:
         """
@@ -208,6 +202,9 @@ class ShadowStruct(StructBase):
                 mLo.Lo.print(f"  {err}")
 
     # endregion apply()
+    # endregion methods
+
+    # region Static Methods
 
     # region from_obj()
     @overload
@@ -279,7 +276,7 @@ class ShadowStruct(StructBase):
         )
 
     # endregion from_shadow()
-    # endregion methods
+    # endregion Static Methods
 
     # region style methods
     def fmt_location(self: _TShadowStruct, value: ShadowLocation) -> _TShadowStruct:

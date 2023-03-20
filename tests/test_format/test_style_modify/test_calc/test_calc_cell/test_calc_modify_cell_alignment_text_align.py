@@ -14,7 +14,7 @@ from ooodev.office.calc import Calc
 from ooodev.utils.data_type.unit_mm100 import UnitMM100
 
 
-def test_write(loader, para_text) -> None:
+def test_write(loader) -> None:
     # delay = 0 if Lo.bridge_connector.headless else 3_000
     delay = 0
 

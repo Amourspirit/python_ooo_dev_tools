@@ -102,7 +102,10 @@ class AbstractPadding(StyleBase):
         try:
             return self._supported_services_values
         except AttributeError:
-            self._supported_services_values = ("com.sun.star.style.ParagraphProperties",)
+            self._supported_services_values = (
+                "com.sun.star.style.CellStyle",
+                "com.sun.star.style.ParagraphProperties",
+            )
         return self._supported_services_values
 
     # region apply()
