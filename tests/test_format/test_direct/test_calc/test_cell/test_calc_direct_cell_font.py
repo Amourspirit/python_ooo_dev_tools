@@ -8,18 +8,10 @@ if __name__ == "__main__":
 import uno
 
 # simpler test then test_char_font because it is testing the same font class under the hood.
-from ooodev.format.calc.direct.cell.font import (
-    Font,
-    FontLine,
-    FontOnly,
-    FontUnderlineEnum,
-    FontWeightEnum,
-    FontSlant,
-)
+from ooodev.format.calc.direct.cell.font import Font, FontLine, FontOnly, FontUnderlineEnum, FontWeightEnum, FontSlant
 from ooodev.format import CommonColor
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
-from ooodev.utils.data_type.unit_mm100 import UnitMM100
 from ooodev.utils.data_type.unit_pt import UnitPT
 
 if TYPE_CHECKING:

@@ -15,5 +15,4 @@ from .....direct.char.font.font_effects import FontLine as FontLine
 from .....direct.char.font.font_only import FontLang as FontLang
 from .....direct.char.font.font_only import FontOnly as FontOnly
 from .....direct.char.font.font_position import CharSpacingKind as CharSpacingKind
-from .....direct.char.font.font_position import FontPosition as FontPosition
 from .....direct.char.font.font_position import FontScriptKind as FontScriptKind
