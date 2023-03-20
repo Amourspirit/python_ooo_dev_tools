@@ -656,7 +656,7 @@ def test_font_only_cursor(loader) -> None:
         # fd = fo.get_font_descriptor()
         # assert fd is not None
 
-        fo = FontOnly(name="Liberation Sans Narrow", style_name="Bold Italic")
+        fo = FontOnly(name="Liberation Sans Narrow", font_style="Bold Italic")
         Write.append(cursor, "World")
         cursor.goLeft(5, True)
         fo.apply(cursor)
@@ -666,7 +666,7 @@ def test_font_only_cursor(loader) -> None:
         FontOnly.default.apply(cursor)
         Write.end_paragraph(cursor)
 
-        fo = FontOnly(name="Liberation Mono", style_name="Regular", size=14.0)
+        fo = FontOnly(name="Liberation Mono", font_style="Regular", size=14.0)
         Write.append(cursor, "World")
         cursor.goLeft(5, True)
         fo.apply(cursor)
@@ -680,7 +680,7 @@ def test_font_only_cursor(loader) -> None:
             # Java Errors are occuring in linux.
             # looks like xml conifuration of LibreOffice is not properly parsed.
             lang = FontLang().english_canada
-            fo = FontOnly(name="Liberation Mono", style_name="Bold Italic", size=15.0, lang=lang)
+            fo = FontOnly(name="Liberation Mono", font_style="Bold Italic", size=15.0, lang=lang)
             Write.append(cursor, "World")
             cursor.goLeft(5, True)
             fo.apply(cursor)

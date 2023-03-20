@@ -120,7 +120,7 @@ class FontOnly(StyleMulti):
         *,
         name: str | None = None,
         size: float | UnitObj | None = None,
-        style_name: str | None = None,
+        font_style: str | None = None,
         lang: FontLang | None = None,
     ) -> None:
         """
@@ -129,19 +129,19 @@ class FontOnly(StyleMulti):
         Args:
             name (str, optional): This property specifies the name of the font style. It may contain more than one name separated by comma.
             size (float, UnitObj, optional): This value contains the size of the characters in ``pt`` (point) units or :ref:`proto_unit_obj`.
-            style_name (str, optional): Font style name such as ``Bold``.
+            font_style (str, optional): Font style name such as ``Bold``.
             lang (Lang, optional): Font Language
         """
         init_vals = {}
         if not name is None:
             init_vals[self._props.name] = name
-        if not style_name is None:
-            init_vals[self._props.style_name] = style_name
+        if not font_style is None:
+            init_vals[self._props.style_name] = font_style
 
         super().__init__(**init_vals)
         if not lang is None:
             self._set_style("lang", lang, *lang.get_attrs())
-        self._set_fd_style(name, style_name)
+        self._set_fd_style(name, font_style)
         if not size is None:
             self.prop_size = size
 

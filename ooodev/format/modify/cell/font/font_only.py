@@ -1,14 +1,40 @@
 from __future__ import annotations
-from typing import cast
+from typing import cast, Tuple
 import uno
 
+from ....kind.format_kind import FormatKind
 from .....proto.unit_obj import UnitObj
-from ....writer.style.para.kind.style_para_kind import StyleParaKind as StyleParaKind
-from ..para_style_base_multi import ParaStyleBaseMulti
-from ....direct.char.font.font_only import FontOnly as InnerFontOnly, FontLang as FontLang
+from ....calc.style.cell.kind.style_cell_kind import StyleCellKind as StyleCellKind
+from ..cell_style_base_multi import CellStyleBaseMulti
+from ....direct.char.font import font_only
+from ....direct.char.font.font_only import FontLang as FontLang
 
 
-class FontOnly(ParaStyleBaseMulti):
+class InnerFontOnly(font_only.FontOnly):
+    """
+    Inner Style Font
+
+    .. versionadded:: 0.9.0
+    """
+
+    def _supported_services(self) -> Tuple[str, ...]:
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = ("com.sun.star.style.CellStyle",)
+        return self._supported_services_values
+
+    @property
+    def prop_format_kind(self) -> FormatKind:
+        """Gets the kind of style"""
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.STYLE
+        return self._format_kind_prop
+
+
+class FontOnly(CellStyleBaseMulti):
     """
     Style Font
 
@@ -20,28 +46,27 @@ class FontOnly(ParaStyleBaseMulti):
         *,
         name: str | None = None,
         size: float | UnitObj | None = None,
-        font_style_name: str | None = None,
+        font_style: str | None = None,
         lang: FontLang | None = None,
-        style_name: StyleParaKind | str = StyleParaKind.STANDARD,
-        style_family: str = "ParagraphStyles",
+        style_name: StyleCellKind | str = StyleCellKind.DEFAULT,
+        style_family: str = "CellStyles",
     ) -> None:
         """
         Constructor
 
         Args:
             name (str, optional): This property specifies the name of the font style. It may contain more than one name separated by comma.
-            size (float, UnitObj, optional): This value contains the size of the characters in ``pt`` (point) units or :ref:`proto_unit_obj`.
-            font_style_name (str, optional): Font style name such as ``Bold``.
+            size (float, optional): This value contains the size of the characters in ``pt`` (point) units or :ref:`proto_unit_obj`.
+            font_style (str, optional): Font style name such as ``Bold``.
             lang (Lang, optional): Font Language
-            shadowed (bool, optional): Specifies if the characters are formatted and displayed with a shadow effect.
-            style_name (StyleParaKind, str, optional): Specifies the Character Style that instance applies to. Deftult is Default Character Style.
-            style_family (str, optional): Style family. Defatult ``ParagraphStyles``.
+            style_name (StyleCellKind, str, optional): Specifies the Cell Style that instance applies to. Deftult is Default Cell Style.
+            style_family (str, optional): Style family. Defatult ``CellStyles``.
 
         Returns:
             None:
         """
 
-        direct = InnerFontOnly(name=name, size=size, font_style=font_style_name, lang=lang)
+        direct = InnerFontOnly(name=name, size=size, font_style=font_style, lang=lang)
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
@@ -51,16 +76,16 @@ class FontOnly(ParaStyleBaseMulti):
     def from_style(
         cls,
         doc: object,
-        style_name: StyleParaKind | str = StyleParaKind.STANDARD,
-        style_family: str = "ParagraphStyles",
+        style_name: StyleCellKind | str = StyleCellKind.DEFAULT,
+        style_family: str = "CellStyles",
     ) -> FontOnly:
         """
         Gets instance from Document.
 
         Args:
             doc (object): UNO Documnet Object.
-            style_name (StyleParaKind, str, optional): Specifies the Character Style that instance applies to. Deftult is Default Character Style.
-            style_family (str, optional): Style family. Defatult ``ParagraphStyles``.
+            style_name (StyleCellKind, str, optional): Specifies the Cell Style that instance applies to. Deftult is Default Cell Style.
+            style_family (str, optional): Style family. Defatult ``CellStyles``.
 
         Returns:
             FontOnly: ``FontOnly`` instance from document properties.
@@ -76,7 +101,7 @@ class FontOnly(ParaStyleBaseMulti):
         return self._style_name
 
     @prop_style_name.setter
-    def prop_style_name(self, value: str | StyleParaKind):
+    def prop_style_name(self, value: str | StyleCellKind):
         self._style_name = str(value)
 
     @property

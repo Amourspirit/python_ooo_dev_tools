@@ -46,7 +46,7 @@ def test_calc_font_effects(loader) -> None:
         cell = Calc.get_cell(sheet, cell_obj)
         cp = cast("CharacterProperties", cell)
         font_size = UnitPT(12.0)
-        style_fo = FontOnly(name="Liberation Sans", size=font_size, style_name="Bold")
+        style_fo = FontOnly(name="Liberation Sans", size=font_size, font_style="Bold")
         style_fe = FontEffects(
             color=CommonColor.BLUE,
             underline=FontLine(line=FontUnderlineEnum.SINGLE, color=CommonColor.RED),

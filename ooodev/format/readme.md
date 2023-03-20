@@ -308,7 +308,6 @@ mindmap
                     id{{Font}}
                     id{{FontOnly}}
                     id{{FontEffects}}
-                    id{{FontPosition}}
             [modify]
                 cell
                     alignment
@@ -319,6 +318,9 @@ mindmap
                         id{{Color}}
                     borders
                         id{{Borders}}
+                    font
+                        id{{FontOnly}}
+                        id{{FontEffects}}
             [style]
         draw
             [direct]
