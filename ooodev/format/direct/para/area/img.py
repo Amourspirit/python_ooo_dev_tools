@@ -112,6 +112,7 @@ class Img(StyleMulti):
             for err in e.errors:
                 mLo.Lo.print(f"  {err}")
 
+    # region apply()
     @overload
     def apply(self, obj: object) -> None:
         ...
@@ -127,6 +128,8 @@ class Img(StyleMulti):
             None:
         """
         super().apply(obj, **kwargs)
+
+    # endregion apply()
 
     def _props_set(self, obj: object, **kwargs: Any) -> None:
         try:

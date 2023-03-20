@@ -7,7 +7,7 @@ if __name__ == "__main__":
 
 import uno
 
-from ooodev.format.calc.direct.format_cells.cell_protection import CellProtection
+from ooodev.format.calc.direct.cell.cell_protection import CellProtection
 from ooodev.format import Styler
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo

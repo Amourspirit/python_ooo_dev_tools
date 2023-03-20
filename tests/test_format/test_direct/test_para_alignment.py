@@ -121,6 +121,10 @@ def test_alignment_copy() -> None:
     assert wm.prop_mode == WritingMode2Enum.PAGE
 
 
+@pytest.mark.skip_not_headless_os(
+    "linux",
+    "Errors When GUI is present. LibreOffice Randomly Throws up Java errors. Sometimes you get a pass and sometimes not.",
+)
 def test_alignemnt_write(loader, para_text) -> None:
     # delay = 0 if Lo.bridge_connector.headless else 3_000
     delay = 0

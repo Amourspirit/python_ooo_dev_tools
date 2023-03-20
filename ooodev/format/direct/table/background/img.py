@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Tuple
+from typing import Any, Tuple, overload
 
 import uno
 from com.sun.star.graphic import XGraphic
@@ -33,7 +33,26 @@ class Img(ParaImg):
             event_args.cancel = True
         return super()._on_multi_child_style_applying(source, event_args)
 
+    # region apply()
+    @overload
     def apply(self, obj: object, **kwargs) -> None:
+
+        ...
+
+    @overload
+    def apply(self, obj: object) -> None:
+        ...
+
+    def apply(self, obj: object, **kwargs) -> None:
+        """
+        Applies styles to object
+
+        Args:
+            obj (object): UNO object.
+
+        Returns:
+            None:
+        """
         self._clear()
         self._set(self._props.back_color, -1)
         self._set(self._props.transparent, True)
@@ -43,6 +62,8 @@ class Img(ParaImg):
         loc = self._get_graphic_loc(position=None, mode=self.prop_inner.prop_mode)
         self._set(self._props.graphic_loc, loc)
         super().apply(obj, **kwargs)
+
+    # endregion apply()
 
     @property
     def _props(self) -> ImgParaAreaProps:

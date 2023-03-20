@@ -18,7 +18,7 @@ from ....meta.deleted_enum_meta import DeletedUnoConstEnumMeta
 from ....proto.unit_obj import UnitObj
 from ....utils import props as mProps
 from ....utils.color import Color
-from ....utils.color import CommonColor
+from ....utils.color import StandardColor
 from ....utils.data_type.unit_pt import UnitPT
 from ....utils.unit_convert import UnitConvert, Length
 from ...kind.format_kind import FormatKind
@@ -191,16 +191,16 @@ class Side(StructBase):
         self,
         *,
         line: BorderLineKind = BorderLineKind.SOLID,
-        color: Color = CommonColor.BLACK,
+        color: Color = StandardColor.BLACK,
         width: LineSize | float | UnitObj = LineSize.THIN,
     ) -> None:
         """
         Constructs Side
 
         Args:
-            line (BorderLineStyleEnum, optional): Line Style of the border.
-            color (Color, optional): Color of the border.
-            width (LineSize, float, UnitObj, optional): Contains the width in of a single line or the width of outer part of a double line (in ``pt`` units) or :ref:`proto_unit_obj`. If this value is zero, no line is drawn. Default ``0.75``
+            line (BorderLineStyleEnum, optional): Line Style of the border. Default ``BorderLineKind.SOLID``.
+            color (Color, optional): Color of the border. Default ``StandardColor.BLACK``
+            width (LineSize, float, UnitObj, optional): Contains the width in of a single line or the width of outer part of a double line (in ``pt`` units) or :ref:`proto_unit_obj`. If this value is zero, no line is drawn. Default ``LineSize.THIN``
 
         Raises:
             ValueError: if ``color``, ``width`` or ``width_inner`` is less than ``0``.
@@ -474,6 +474,35 @@ class Side(StructBase):
     # endregion methods
 
     # region static methods
+    # region from_obj()
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TSide], obj: object) -> _TSide:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TSide], obj: object, **kwargs) -> _TSide:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TSide], obj: object, **kwargs) -> _TSide:
+        """
+        Gets instance from object
+
+        Args:
+            obj (object): UNO object
+
+        Returns:
+            Side: Instance from object
+        """
+
+        nu = cls(**kwargs)
+
+        border = cast(BorderLine2, mProps.Props.get(obj, nu._get_property_name()))
+        return cls.from_uno_struct(border, **kwargs)
+
+    # endregion from_obj()
 
     # region from_uno_struct()
     @overload

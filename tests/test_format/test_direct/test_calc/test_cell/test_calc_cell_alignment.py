@@ -9,7 +9,7 @@ import uno
 from ooo.dyn.table.cell_vert_justify2 import CellVertJustify2
 from ooo.dyn.table.cell_hori_justify import CellHoriJustify
 
-from ooodev.format.calc.direct.format_cells.alignment import TextAlign, HoriAlignKind, VertAlignKind
+from ooodev.format.calc.direct.cell.alignment import TextAlign, HoriAlignKind, VertAlignKind
 from ooodev.format import Styler
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo

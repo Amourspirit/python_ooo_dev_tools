@@ -102,7 +102,8 @@ class Color(FrameStyleBaseMulti):
             raise TypeError(f'Expected type of InnerColor, got "{type(value).__name__}"')
         inst = value.__class__(_cattribs=self._get_inner_cattribs())
         for prop in value._props:
-            inst._set(prop, value._get(prop))
+            if prop:
+                inst._set(prop, value._get(prop))
         self._del_attribs("_direct_inner")
         self._set_style("direct", inst, *inst.get_attrs())
 

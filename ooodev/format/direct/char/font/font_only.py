@@ -69,7 +69,8 @@ class FontLang(LocaleStruct):
 
         The language is determined by LibreOffice settings / language settings / languages / Local Setting
 
-        Static Property."""
+        Static Property.
+        """
         try:
             return cls._DEFAULT_INSTANCE
         except AttributeError:
@@ -78,7 +79,10 @@ class FontLang(LocaleStruct):
                 str, mInfo.Info.get_config(node_str="ooSetupSystemLocale", node_path="/org.openoffice.Setup/L10N")
             )
             if not s:
-                raise RuntimeError("Unable to get System Locale from office instance.")
+                s = cast(str, mInfo.Info.get_config(node_str="ooLocale", node_path="/org.openoffice.Setup/L10N"))
+            if not s:
+                # default to en-us
+                s = "en-US"
 
             parts = s.split("-")
             if len(parts) == 2:

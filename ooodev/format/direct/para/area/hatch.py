@@ -223,7 +223,7 @@ class Hatch(StyleMulti):
         Applies styles to object
 
         Args:
-            obj (object): UNO object that has supports ``com.sun.star.style.FillProperties`` or ``com.sun.star.beans.PropertySet`` service.
+            obj (object): UNO object.
 
         Returns:
             None:

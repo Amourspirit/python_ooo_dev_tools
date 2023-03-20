@@ -5,7 +5,7 @@ Module for managing table borders (cells and ranges).
 """
 # region imports
 from __future__ import annotations
-from typing import Any, overload, cast, Tuple, TypeVar
+from typing import Any, Type, overload, cast, Tuple, TypeVar
 
 import uno
 from ooo.dyn.table.border_line import BorderLine as BorderLine
@@ -26,7 +26,7 @@ from ...common.props.struct_border_table_props import StructBorderTableProps
 from ...structs.side import Side as Side, BorderLineKind as BorderLineKind
 from ...structs.table_border_struct import TableBorderStruct
 from .padding import Padding as Padding
-from .shadow import Shadow
+from .shadow import Shadow as Shadow
 
 
 # endregion imports
@@ -219,6 +219,55 @@ class Borders(StyleMulti):
                 mLo.Lo.print(f"  {err}")
 
     # endregion Overrides
+
+    # region Static Methods
+    # region from_obj()
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TBorders], obj: object) -> _TBorders:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TBorders], obj: object, **kwargs) -> _TBorders:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TBorders], obj: object, **kwargs) -> _TBorders:
+        """
+        Gets Borders instance from object
+
+        Args:
+            obj (object): UNO Object.
+
+        Raises:
+            NotSupportedServiceError: If ``obj`` is not supported.
+
+        Returns:
+            Borders: Borders that represents ``obj`` borders.
+        """
+        inst = cls(**kwargs)
+        if not inst._is_valid_obj(obj):
+            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
+
+        border_table = TableBorderStruct.from_obj(obj=obj, _cattribs=inst._get_tb_cattribs())
+        if border_table.prop_has_attribs:
+            inst._set_style("border_table", border_table, *border_table.get_attrs())
+        else:
+            inst._remove_style("border_table")
+
+        shadow_fmt = Shadow.from_obj(obj=obj, _cattribs=inst._get_shadow_cattribs())
+        inst._set_style("shadow", shadow_fmt)
+
+        diag_dn = Side.from_obj(obj=obj, _cattribs=inst._get_diagonal_dn_cattribs())
+        inst._set_style("diag_dn", diag_dn)
+
+        diag_up = Side.from_obj(obj=obj, _cattribs=inst._get_diagonal_up_cattribs())
+        inst._set_style("diag_up", diag_up)
+        return inst
+
+    # endregion from_obj()
+    # endregion Static Methods
 
     # region Style Methods
     def _fmt_get_border_table(self: _TBorders, value: Side | None, side: str) -> Tuple[_TBorders, bool]:

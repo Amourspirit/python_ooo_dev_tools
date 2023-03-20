@@ -1861,6 +1861,15 @@ class TableProperties(StyleMulti):
     # region Overrides
 
     def apply(self, obj: object, **kwargs) -> None:
+        """
+        Applies styles to object
+
+        Args:
+            obj (object): UNO object.
+
+        Returns:
+            None:
+        """
         super().apply(obj, **kwargs)
         # for some reason setting Name property raises "UnknownPropertyException" when "setPropertyValue()" is used (Which Props.set() uses).
         # However, setting Name via setattr() works fine.

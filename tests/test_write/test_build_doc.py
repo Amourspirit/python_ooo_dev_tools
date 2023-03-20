@@ -20,7 +20,9 @@ from ooodev.utils.date_time_util import DateUtil
 from functools import partial
 
 
+@pytest.mark.skip_not_headless_os("linux", "Errors When GUI is present")
 def test_build_doc(loader, props_str_to_dict, fix_image_path, capsys: pytest.CaptureFixture):
+    # see comments Write.add_image_shape(cursor=cursor, fnm=im_fnm) Line: 181
 
     visible = False if Lo.bridge_connector.headless else True
     delay = 0  # 500
@@ -173,8 +175,15 @@ def test_build_doc(loader, props_str_to_dict, fix_image_path, capsys: pytest.Cap
 
         Write.style_prev_paragraph(cursor=cursor, prop_name="ParaAdjust", prop_val=ParagraphAdjust.CENTER)
 
-        append("Image as a shape: ")
+        # append("Image as a shape: ")
+        Write.append_line(cursor=cursor, text="Image as Shape:")
+
+        # for some unknown reason when image shape is added in linux in GUI mode test will fail drastically.
+        #   tests/test_write/test_build_doc.py terminate called after throwing an instance of 'com::sun::star::lang::DisposedException'
+        #   Fatal Python error: Aborted
+        # on windows is fine. Running on linux in headless fine.
         Write.add_image_shape(cursor=cursor, fnm=im_fnm)
+
         Write.end_paragraph(cursor)
         Lo.delay(delay)
 

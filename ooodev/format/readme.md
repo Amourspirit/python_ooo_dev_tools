@@ -310,6 +310,15 @@ mindmap
                     id{{FontEffects}}
                     id{{FontPosition}}
             [modify]
+                cell
+                    alignment
+                        id{{TextAlign}}
+                        id{{TextOrientation}}
+                        id{{Properties}}
+                    background
+                        id{{Color}}
+                    borders
+                        id{{Borders}}
             [style]
         draw
             [direct]
