@@ -19,7 +19,7 @@ from ooodev.utils.unit_convert import UnitConvert
 from ooodev.utils.validation import check
 from ooodev.format.inner.common.abstract.abstract_document import AbstractDocument
 from ooodev.format.inner.common.props.frame_type_size_props import FrameTypeSizeProps
-from ooodev.format.kind.format_kind import FormatKind
+from ooodev.format.inner.kind.format_kind import FormatKind
 
 
 _TSize = TypeVar(name="_TSize", bound="Size")

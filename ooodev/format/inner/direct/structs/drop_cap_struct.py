@@ -14,7 +14,7 @@ from ooodev.proto.unit_obj import UnitObj
 from ooodev.utils import props as mProps
 from ooodev.utils.data_type.byte import Byte
 from ooodev.utils.data_type.unit_mm100 import UnitMM100
-from ooodev.format.kind.format_kind import FormatKind
+from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import EventArgs, CancelEventArgs, FormatNamedEvent
 
 

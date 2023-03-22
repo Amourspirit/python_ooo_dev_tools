@@ -10,7 +10,7 @@ from numbers import Real
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
 from ooodev.proto.unit_obj import UnitObj
-from ooodev.format.kind.format_kind import FormatKind
+from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleMulti
 from .indent import Indent
 from .line_spacing import LineSpacing, ModeKind as ModeKind

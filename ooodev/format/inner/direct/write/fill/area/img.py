@@ -21,7 +21,7 @@ from ooodev.utils import props as mProps
 from ooodev.utils.data_type.offset import Offset as Offset
 from ooodev.utils.data_type.size_mm import SizeMM as SizeMM
 from ooodev.utils.unit_convert import UnitConvert
-from ooodev.format.kind.format_kind import FormatKind
+from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.preset import preset_image as mImage
 from ooodev.format.preset.preset_image import PresetImageKind as PresetImageKind
 from ooodev.format.inner.style_base import StyleBase

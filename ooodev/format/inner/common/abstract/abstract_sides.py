@@ -8,7 +8,7 @@ from __future__ import annotations
 from typing import Tuple, cast, overload, Type, TypeVar
 
 from ooodev.exceptions import ex as mEx
-from ooodev.format.kind.format_kind import FormatKind
+from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.direct.structs.side import Side as Side
 from ooodev.format.inner.style_base import StyleMulti
 from ..props.border_props import BorderProps as BorderProps

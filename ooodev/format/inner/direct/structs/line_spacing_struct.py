@@ -14,7 +14,7 @@ from ooo.dyn.style.line_spacing import LineSpacing as UnoLineSpacing
 
 from .struct_base import StructBase
 from ooodev.utils import props as mProps
-from ooodev.format.kind.format_kind import FormatKind
+from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.events.format_named_event import FormatNamedEvent
 from ooodev.events.args.event_args import EventArgs
 from ooodev.events.args.cancel_event_args import CancelEventArgs

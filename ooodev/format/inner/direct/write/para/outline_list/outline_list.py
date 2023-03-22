@@ -9,7 +9,7 @@ from typing import Any, Tuple, Type, cast, TypeVar, overload
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.format.inner.style_base import StyleMulti
 from ooodev.exceptions import ex as mEx
-from ooodev.format.kind.format_kind import FormatKind
+from ooodev.format.inner.kind.format_kind import FormatKind
 from .outline import Outline as InnerOutline, LevelKind as LevelKind
 from .list_style import ListStyle as ParaListStyle, StyleListKind as StyleListKind
 from .line_num import LineNum as LineNum

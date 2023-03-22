@@ -11,7 +11,7 @@ from ooo.dyn.style.break_type import BreakType as BreakType
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.style_base import StyleMulti
-from ooodev.format.kind.format_kind import FormatKind
+from ooodev.format.inner.kind.format_kind import FormatKind
 from .breaks import Breaks
 from .hyphenation import Hyphenation
 from .flow_options import FlowOptions

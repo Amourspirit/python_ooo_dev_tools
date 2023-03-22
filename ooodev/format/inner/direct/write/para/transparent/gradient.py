@@ -12,7 +12,7 @@ from ooodev.utils.data_type.intensity_range import IntensityRange as IntensityRa
 from ooodev.utils import gen_util as gUtil
 from ooodev.utils import lo as mLo
 from ooodev.format.inner.direct.write.fill.transparent.gradient import Gradient as InnerGradient
-from ooodev.format.kind.format_kind import FormatKind
+from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
 
 # endregion Imports

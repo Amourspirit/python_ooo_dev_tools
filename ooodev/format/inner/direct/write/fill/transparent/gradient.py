@@ -19,7 +19,7 @@ from ooodev.utils.data_type.angle import Angle as Angle
 from ooodev.utils.data_type.intensity import Intensity as Intensity
 from ooodev.utils.data_type.intensity_range import IntensityRange as IntensityRange
 from ooodev.utils.data_type.offset import Offset as Offset
-from ooodev.format.kind.format_kind import FormatKind
+from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleMulti
 from ooodev.format.inner.direct.structs.gradient_struct import GradientStruct
 from ooodev.format.inner.common.props.transparent_gradient_props import TransparentGradientProps

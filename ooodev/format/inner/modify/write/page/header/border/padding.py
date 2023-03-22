@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Tuple, cast, Type, TypeVar
 from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
 from ...page_style_base_multi import PageStyleBaseMulti
-from ooodev.format.kind.format_kind import FormatKind
+from ooodev.format.inner.kind.format_kind import FormatKind
 
 from ooodev.format.inner.common.abstract.abstract_padding import AbstractPadding
 from ooodev.format.inner.common.props.border_props import BorderProps

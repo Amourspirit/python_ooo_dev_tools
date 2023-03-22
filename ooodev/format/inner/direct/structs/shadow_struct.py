@@ -19,7 +19,7 @@ from ooodev.utils.color import Color, StandardColor
 from ooodev.utils.data_type.unit_mm import UnitMM
 from ooodev.utils.data_type.unit_mm100 import UnitMM100
 from ooodev.utils.unit_convert import UnitConvert
-from ooodev.format.kind.format_kind import FormatKind
+from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from .struct_base import StructBase
 

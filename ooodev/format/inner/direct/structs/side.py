@@ -20,7 +20,7 @@ from ooodev.utils.color import Color
 from ooodev.utils.color import StandardColor
 from ooodev.utils.data_type.unit_pt import UnitPT
 from ooodev.utils.unit_convert import UnitConvert, Length
-from ooodev.format.kind.format_kind import FormatKind
+from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ...common import border_width_impl as mBwi
 from .struct_base import StructBase

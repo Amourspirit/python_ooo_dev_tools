@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import cast
 from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
-from ooodev.format.kind.format_kind import FormatKind
+from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.common.abstract.abstract_line_number import AbstractLineNumber, LineNumberProps
 from ..para_style_base_multi import ParaStyleBaseMulti
 

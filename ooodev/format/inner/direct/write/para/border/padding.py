@@ -6,7 +6,7 @@ Modele for managing paragraph padding.
 from __future__ import annotations
 from typing import Tuple, TypeVar
 
-from ooodev.format.kind.format_kind import FormatKind
+from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.common.abstract.abstract_padding import AbstractPadding
 from ooodev.format.inner.common.props.border_props import BorderProps
 

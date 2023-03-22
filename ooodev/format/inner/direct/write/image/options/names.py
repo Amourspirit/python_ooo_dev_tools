@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Tuple
 from ooodev.format.inner.direct.write.frame.options.names import Names as FrameNames
 from ooodev.format.inner.common.props.image_options_names_props import ImageOptionsNamesProps
-from ooodev.format.kind.format_kind import FormatKind
+from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.meta.deleted_attrib import DeletedAttrib
 
 

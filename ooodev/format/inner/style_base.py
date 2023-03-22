@@ -16,7 +16,7 @@ from ooodev.events.args.key_val_args import KeyValArgs as KeyValArgs
 from ooodev.events.args.cancel_event_args import CancelEventArgs as CancelEventArgs
 from ooodev.events.args.event_args import EventArgs as EventArgs
 from ooodev.utils.type_var import EventCallback
-from ooodev.format.kind.format_kind import FormatKind
+from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.events.format_named_event import FormatNamedEvent as FormatNamedEvent
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.common.props.prop_pair import PropPair

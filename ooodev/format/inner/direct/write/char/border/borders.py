@@ -10,8 +10,8 @@ from typing import Any, Tuple, cast, overload, TypeVar
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import lo as mLo
-from ooodev.format.kind.border_kind import BorderKind
-from ooodev.format.kind.format_kind import FormatKind
+from ooodev.format.inner.kind.border_kind import BorderKind
+from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleMulti
 from ooodev.format.inner.direct.structs.side import Side as Side
 from .padding import Padding as InnerPadding

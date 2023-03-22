@@ -7,7 +7,7 @@ from __future__ import annotations
 from typing import Tuple, TypeVar
 
 from ooodev.utils import lo as mLo
-from ooodev.format.kind.format_kind import FormatKind
+from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.common.abstract.abstract_fill_color import AbstractColor
 from ooodev.format.inner.common.props.fill_color_props import FillColorProps
 

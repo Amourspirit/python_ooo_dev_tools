@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Tuple
 
 from ooodev.meta.static_prop import static_prop
-from ooodev.format.kind.format_kind import FormatKind
+from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleName
 from ..lst import StyleListKind as StyleListKind
 

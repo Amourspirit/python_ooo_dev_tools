@@ -10,7 +10,7 @@ from typing import Dict, Tuple, Type, cast, overload, TypeVar
 import uno
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import props as mProps
-from ooodev.format.kind.format_kind import FormatKind
+from ooodev.format.inner.kind.format_kind import FormatKind
 from .struct_base import StructBase
 from ooodev.events.format_named_event import FormatNamedEvent
 from ooodev.events.args.event_args import EventArgs

@@ -12,7 +12,7 @@ from ooodev.exceptions import ex as mEx
 from ooodev.proto.unit_obj import UnitObj
 from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
-from ooodev.format.kind.format_kind import FormatKind
+from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleMulti
 from ooodev.format.inner.direct.calc.border.padding import Padding
 from ooodev.format.inner.direct.calc.border.shadow import Shadow

@@ -4,7 +4,7 @@ from typing import Any, Tuple
 
 from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
 from ooodev.meta.static_prop import static_prop
-from ooodev.format.kind.format_kind import FormatKind
+from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleName
 from .kind import StyleParaKind as StyleParaKind
 

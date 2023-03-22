@@ -9,7 +9,7 @@ from ooo.dyn.text.size_type import SizeTypeEnum
 
 from ooodev.utils import props as mProps
 from ooodev.format.inner.common.props.frame_type_size_props import FrameTypeSizeProps
-from ooodev.format.kind.format_kind import FormatKind
+from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.direct.write.image.image_type.size import (
     Size as ImageSize,
     RelativeSize as RelativeSize,

@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Tuple, cast, Type, TypeVar
 from ooodev.utils import color as mColor
 from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
-from ooodev.format.kind.format_kind import FormatKind
+from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.common.abstract.abstract_fill_color import AbstractColor
 from ooodev.format.inner.common.props.fill_color_props import FillColorProps
 from ...page_style_base_multi import PageStyleBaseMulti

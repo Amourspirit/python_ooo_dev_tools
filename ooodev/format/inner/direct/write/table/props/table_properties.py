@@ -15,7 +15,7 @@ from ooodev.utils.data_type.intensity import Intensity
 from ooodev.utils.data_type.size import Size
 from ooodev.utils.data_type.unit_mm import UnitMM
 from ooodev.format.inner.common.abstract.abstract_document import AbstractDocument
-from ooodev.format.kind.format_kind import FormatKind
+from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleMulti
 from ooodev.format.inner.common.props.table_properties_props import TablePropertiesProps
 

@@ -3,11 +3,11 @@ from typing import Any, Tuple, overload
 
 from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
 from ooodev.meta.static_prop import static_prop
-from ooodev.format.kind.format_kind import FormatKind
+from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleName
 from ooodev.utils import props as mProps
 from ooodev.exceptions import ex as mEx
-from .kind.style_page_kind import StylePageKind
+from ooodev.format.calc.style.page.kind.style_page_kind import CalcStylePageKind
 
 
 class Page(StyleName):
@@ -23,7 +23,7 @@ class Page(StyleName):
     # Setting Page style is done via the PageDescName property. After settig the PageDescName becomes null.
     # Reading Page style is done via the PageStyleName property.
 
-    def __init__(self, name: StylePageKind | str = "") -> None:
+    def __init__(self, name: CalcStylePageKind | str = "") -> None:
         if name == "":
             name = Page.default.prop_name
         super().__init__(name=name)
@@ -135,7 +135,7 @@ class Page(StyleName):
         try:
             return Page._DEFAULT_PAGE
         except AttributeError:
-            Page._DEFAULT_PAGE = Page(name=StylePageKind.STANDARD)
+            Page._DEFAULT_PAGE = Page(name=CalcStylePageKind.STANDARD)
             Page._DEFAULT_PAGE._is_default_inst = True
         return Page._DEFAULT_PAGE
 

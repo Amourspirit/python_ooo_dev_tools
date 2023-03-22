@@ -11,7 +11,7 @@ from ooo.dyn.util.cell_protection import CellProtection
 
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import props as mProps
-from ooodev.format.kind.format_kind import FormatKind
+from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.common.props.struct_cell_protection_props import StructCellProtectionProps
 from .struct_base import StructBase
 

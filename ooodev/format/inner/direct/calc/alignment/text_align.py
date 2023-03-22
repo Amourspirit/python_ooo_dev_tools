@@ -11,7 +11,7 @@ from ooodev.utils import props as mProps
 from ooodev.utils.unit_convert import UnitConvert
 from ooodev.utils.data_type.unit_pt import UnitPT
 from ooodev.proto.unit_obj import UnitObj
-from ooodev.format.kind.format_kind import FormatKind
+from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
 from ooodev.format.inner.common.props.cell_text_align_props import CellTextAlignProps
 

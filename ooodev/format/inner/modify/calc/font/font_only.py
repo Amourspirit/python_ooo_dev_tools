@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import cast, Tuple
 import uno
 
-from ooodev.format.kind.format_kind import FormatKind
+from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.proto.unit_obj import UnitObj
 from ooodev.format.calc.style.cell.kind.style_cell_kind import StyleCellKind as StyleCellKind
 from ooodev.format.inner.direct.write.char.font import font_only

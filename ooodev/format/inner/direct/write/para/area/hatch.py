@@ -15,7 +15,7 @@ from ooodev.utils import props as mProps
 from ooodev.utils.color import Color, StandardColor
 from ooodev.utils.data_type.angle import Angle as Angle
 from ooodev.utils.unit_convert import UnitConvert
-from ooodev.format.kind.format_kind import FormatKind
+from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.preset import preset_hatch as mPreset
 from ooodev.format.preset.preset_hatch import PresetHatchKind as PresetHatchKind
 from ooodev.format.inner.style_base import StyleMulti

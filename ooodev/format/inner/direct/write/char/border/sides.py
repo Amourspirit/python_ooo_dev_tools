@@ -9,7 +9,7 @@ from typing import Tuple
 
 from ooodev.format.inner.common.abstract.abstract_sides import AbstractSides
 from ooodev.format.inner.common.props.border_props import BorderProps
-from ooodev.format.kind.format_kind import FormatKind
+from ooodev.format.inner.kind.format_kind import FormatKind
 
 # endregion Import
 

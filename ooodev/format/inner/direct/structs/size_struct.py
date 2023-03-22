@@ -14,7 +14,7 @@ from ooodev.proto.unit_obj import UnitObj
 from ooodev.utils import props as mProps
 from ooodev.utils.data_type.unit_mm import UnitMM
 from ooodev.utils.unit_convert import UnitConvert
-from ooodev.format.kind.format_kind import FormatKind
+from ooodev.format.inner.kind.format_kind import FormatKind
 from ...common.props.struct_size_props import StructSizeProps
 from .struct_base import StructBase
 

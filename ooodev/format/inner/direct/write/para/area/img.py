@@ -22,7 +22,7 @@ from ooodev.format.inner.direct.write.fill.area.img import (
     ImgStyleKind as ImgStyleKind,
 )
 from ooodev.format.preset.preset_image import PresetImageKind as PresetImageKind
-from ooodev.format.kind.format_kind import FormatKind
+from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.events.format_named_event import FormatNamedEvent
 from ooodev.format.inner.common.props.img_para_area_props import ImgParaAreaProps
 

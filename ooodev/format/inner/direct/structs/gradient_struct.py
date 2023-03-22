@@ -14,7 +14,7 @@ from ooodev.utils import props as mProps
 from ooodev.utils.color import Color, RGB
 from ooodev.utils.data_type.angle import Angle as Angle
 from ooodev.utils.data_type.intensity import Intensity as Intensity
-from ooodev.format.kind.format_kind import FormatKind
+from ooodev.format.inner.kind.format_kind import FormatKind
 
 
 import uno

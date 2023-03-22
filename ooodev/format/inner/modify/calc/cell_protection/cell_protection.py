@@ -5,7 +5,7 @@ import uno
 
 from ooodev.format.calc.style.cell.kind.style_cell_kind import StyleCellKind as StyleCellKind
 from ....direct.structs.cell_protection_struct import CellProtectionStruct
-from ooodev.format.kind.format_kind import FormatKind
+from ooodev.format.inner.kind.format_kind import FormatKind
 from ..cell_style_base_multi import CellStyleBaseMulti
 
 # endregion Imports

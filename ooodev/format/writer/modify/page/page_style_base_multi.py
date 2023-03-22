@@ -13,7 +13,7 @@ from ooodev.exceptions import ex as mEx
 from ooodev.utils import info as mInfo
 from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
-from ooodev.format.kind.format_kind import FormatKind
+from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleMulti
 from ooodev.format.writer.style.page.kind import WriterStylePageKind
 from ooodev.events.format_named_event import FormatNamedEvent
