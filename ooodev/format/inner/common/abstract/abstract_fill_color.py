@@ -2,16 +2,14 @@
 from __future__ import annotations
 from typing import Any, overload, Type, TypeVar
 
-import uno
 from ooo.dyn.drawing.fill_style import FillStyle
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
-from ooodev.events.format_named_event import FormatNamedEvent as FormatNamedEvent
 from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import color as mColor
-from ooodev.format.style_base import StyleBase
+from ooodev.format.inner.style_base import StyleBase
 from ..props.fill_color_props import FillColorProps
 
 # endregion Import

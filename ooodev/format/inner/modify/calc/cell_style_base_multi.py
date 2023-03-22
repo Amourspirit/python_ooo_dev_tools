@@ -2,11 +2,12 @@
 from __future__ import annotations
 from typing import Tuple
 
-import uno
 from ooodev.utils import info as mInfo
 from ooodev.utils import lo as mLo
-from ooodev.format.style_base import StyleModifyMulti
+from ooodev.format.inner.style_base import StyleModifyMulti
+
 # endregion Imports
+
 
 class CellStyleBaseMulti(StyleModifyMulti):
     """

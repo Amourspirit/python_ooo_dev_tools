@@ -11,7 +11,7 @@ from ooodev.utils import props as mProps
 from ooodev.utils.unit_convert import UnitConvert
 from ooodev.utils.data_type.unit_mm import UnitMM
 from ooodev.format.kind.format_kind import FormatKind
-from ooodev.format.style_base import StyleBase
+from ooodev.format.inner.style_base import StyleBase
 from ..props.hf_props import HfProps
 
 # endregion Import

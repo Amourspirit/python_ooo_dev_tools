@@ -17,7 +17,7 @@ from ooodev.utils import props as mProps
 from ooodev.format.kind.format_kind import FormatKind
 from ooodev.format.preset import preset_pattern as mPattern
 from ooodev.format.preset.preset_pattern import PresetPatternKind as PresetPatternKind
-from ooodev.format.style_base import StyleBase
+from ooodev.format.inner.style_base import StyleBase
 from ooodev.format.inner.common.props.area_pattern_props import AreaPatternProps
 
 
@@ -70,7 +70,6 @@ class Pattern(StyleBase):
         except Exception:
             pass
         if not bmap is None:
-
             init_vals[self._props.bitmap] = bmap
             init_vals[self._props.name] = self._name
             init_vals[self._props.style] = FillStyle.BITMAP

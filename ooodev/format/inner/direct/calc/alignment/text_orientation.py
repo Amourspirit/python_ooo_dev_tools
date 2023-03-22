@@ -11,7 +11,7 @@ from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.utils.data_type.angle import Angle as Angle
 from ooodev.format.kind.format_kind import FormatKind
-from ooodev.format.style_base import StyleBase
+from ooodev.format.inner.style_base import StyleBase
 from ooodev.format.inner.common.props.cell_text_orientation_props import CellTextOrientationProps
 
 # endregion Import

@@ -11,7 +11,7 @@ from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
 from ooodev.proto.unit_obj import UnitObj
 from ooodev.format.kind.format_kind import FormatKind
-from ooodev.format.style_base import StyleMulti
+from ooodev.format.inner.style_base import StyleMulti
 from .indent import Indent
 from .line_spacing import LineSpacing, ModeKind as ModeKind
 from .spacing import Spacing
@@ -192,7 +192,6 @@ class IndentSpacing(StyleMulti):
         try:
             return self._default_inst
         except AttributeError:
-
             ls = LineSpacing().default
             indent = Indent().default
             spc = Spacing().default

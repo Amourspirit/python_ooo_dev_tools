@@ -8,7 +8,6 @@ from __future__ import annotations
 from typing import Any, Tuple, cast, overload, Type, TypeVar, TYPE_CHECKING
 from enum import Enum
 
-import uno
 from com.sun.star.awt import XBitmap
 
 from ooo.dyn.drawing.fill_style import FillStyle as FillStyle
@@ -25,7 +24,7 @@ from ooodev.utils.unit_convert import UnitConvert
 from ooodev.format.kind.format_kind import FormatKind
 from ooodev.format.preset import preset_image as mImage
 from ooodev.format.preset.preset_image import PresetImageKind as PresetImageKind
-from ooodev.format.style_base import StyleBase
+from ooodev.format.inner.style_base import StyleBase
 from ooodev.format.inner.common.format_types.offset_column import OffsetColumn as OffsetColumn
 from ooodev.format.inner.common.format_types.offset_row import OffsetRow as OffsetRow
 from ooodev.format.inner.common.format_types.size_percent import SizePercent as SizePercent

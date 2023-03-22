@@ -7,7 +7,6 @@ Module for managing character fonts.
 from __future__ import annotations
 from typing import Any, Tuple, Type, cast, overload, TypeVar
 
-import uno
 from ooo.dyn.awt.font_strikeout import FontStrikeoutEnum as FontStrikeoutEnum
 from ooo.dyn.awt.font_underline import FontUnderlineEnum as FontUnderlineEnum
 from ooo.dyn.style.case_map import CaseMapEnum as CaseMapEnum
@@ -20,7 +19,7 @@ from ooodev.utils import props as mProps
 from ooodev.utils.color import Color
 from ooodev.utils.data_type.intensity import Intensity as Intensity
 from ooodev.format.kind.format_kind import FormatKind
-from ooodev.format.style_base import StyleBase
+from ooodev.format.inner.style_base import StyleBase
 
 # endregion Imports
 

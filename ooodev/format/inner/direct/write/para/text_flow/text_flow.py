@@ -6,12 +6,11 @@ Module for managing paragraph Text Flow.
 from __future__ import annotations
 from typing import Any, Tuple, cast, Type, TypeVar, overload
 
-import uno
 from ooo.dyn.style.break_type import BreakType as BreakType
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.format.style_base import StyleMulti
+from ooodev.format.inner.style_base import StyleMulti
 from ooodev.format.kind.format_kind import FormatKind
 from .breaks import Breaks
 from .hyphenation import Hyphenation

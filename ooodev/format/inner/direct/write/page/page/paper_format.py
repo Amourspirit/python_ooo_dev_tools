@@ -6,7 +6,6 @@ Module for Fill Transparency.
 from __future__ import annotations
 from typing import Any, Tuple, cast, Type, TypeVar, overload
 
-import uno
 from ooo.dyn.awt.size import Size as Size
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
@@ -14,7 +13,7 @@ from ooodev.exceptions import ex as mEx
 from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.format.kind.format_kind import FormatKind
-from ooodev.format.style_base import StyleBase
+from ooodev.format.inner.style_base import StyleBase
 from ooodev.utils.data_type.size_mm import SizeMM as SizeMM
 from ooodev.format.preset.preset_paper_format import PaperFormatKind as PaperFormatKind
 

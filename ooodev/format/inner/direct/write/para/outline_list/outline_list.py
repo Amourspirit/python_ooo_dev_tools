@@ -7,7 +7,7 @@ from __future__ import annotations
 from typing import Any, Tuple, Type, cast, TypeVar, overload
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
-from ooodev.format.style_base import StyleMulti
+from ooodev.format.inner.style_base import StyleMulti
 from ooodev.exceptions import ex as mEx
 from ooodev.format.kind.format_kind import FormatKind
 from .outline import Outline as InnerOutline, LevelKind as LevelKind
@@ -176,7 +176,6 @@ class OutlineList(StyleMulti):
         try:
             return self._default_inst
         except AttributeError:
-
             if self.prop_inner_line_number is None:
                 ln = LineNum().default
             else:

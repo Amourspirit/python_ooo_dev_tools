@@ -22,7 +22,7 @@ from ooodev.utils.unit_convert import UnitConvert
 from ooodev.format.kind.format_kind import FormatKind
 from ooodev.format.preset import preset_hatch as mPreset
 from ooodev.format.preset.preset_hatch import PresetHatchKind as PresetHatchKind
-from ooodev.format.style_base import StyleMulti
+from ooodev.format.inner.style_base import StyleMulti
 from ooodev.format.inner.direct.structs.hatch_struct import HatchStruct
 from .fill_color import FillColor
 from ooodev.format.inner.common.props.area_hatch_props import AreaHatchProps

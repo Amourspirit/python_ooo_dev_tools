@@ -7,7 +7,7 @@ from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.format.kind.format_kind import FormatKind
 from ooodev.format.preset.preset_pattern import PresetPatternKind as PresetPatternKind
-from ooodev.format.style_base import StyleMulti
+from ooodev.format.inner.style_base import StyleMulti
 from ooodev.format.inner.direct.write.fill.area.pattern import Pattern as InnerPattern
 
 from com.sun.star.awt import XBitmap

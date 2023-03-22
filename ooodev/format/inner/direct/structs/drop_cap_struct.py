@@ -6,7 +6,6 @@ Module for ``DropCapFormat`` struct.
 from __future__ import annotations
 from typing import Dict, Tuple, Type, cast, overload, TypeVar
 
-import uno
 from ooo.dyn.style.drop_cap_format import DropCapFormat
 
 from .struct_base import StructBase
@@ -16,7 +15,7 @@ from ooodev.utils import props as mProps
 from ooodev.utils.data_type.byte import Byte
 from ooodev.utils.data_type.unit_mm100 import UnitMM100
 from ooodev.format.kind.format_kind import FormatKind
-from ooodev.format.style_base import EventArgs, CancelEventArgs, FormatNamedEvent
+from ooodev.format.inner.style_base import EventArgs, CancelEventArgs, FormatNamedEvent
 
 
 _TDropCapStruct = TypeVar(name="_TDropCapStruct", bound="DropCapStruct")

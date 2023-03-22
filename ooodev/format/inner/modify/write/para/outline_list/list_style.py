@@ -1,14 +1,13 @@
 # region Import
 from __future__ import annotations
 from typing import Any, cast, Tuple, overload, Type, TypeVar
-import uno
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.format.kind.format_kind import FormatKind
-from ooodev.format.style_base import StyleBase
+from ooodev.format.inner.style_base import StyleBase
 from ooodev.format.writer.style.lst import StyleListKind as StyleListKind
 from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
 from ..para_style_base_multi import ParaStyleBaseMulti

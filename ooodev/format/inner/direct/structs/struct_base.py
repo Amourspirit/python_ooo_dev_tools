@@ -1,7 +1,7 @@
 # region Import
 from __future__ import annotations
 
-from ooodev.format.style_base import StyleBase
+from ooodev.format.inner.style_base import StyleBase
 
 # endregion Import
 

@@ -12,7 +12,7 @@ from ooodev.format.inner.common.props.border_props import BorderProps as BorderP
 from ooodev.format.inner.common.props.cell_style_borders_props import CellStyleBordersProps
 from ....direct.structs.side import Side as Side
 from ooodev.format.kind.format_kind import FormatKind
-from ooodev.format.style_base import StyleMulti
+from ooodev.format.inner.style_base import StyleMulti
 from ..cell_style_base_multi import CellStyleBaseMulti
 
 # endregion Imports

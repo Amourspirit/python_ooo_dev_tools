@@ -5,22 +5,15 @@ Module for managing character borders.
 """
 # region Import
 from __future__ import annotations
-from typing import Any, Tuple, cast, overload, TypeVar, Type
-
-import uno
-from ooo.dyn.table.border_line import BorderLine as BorderLine
-from ooo.dyn.table.border_line2 import BorderLine2 as BorderLine2
-from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
-from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
+from typing import Any, Tuple, cast, overload, TypeVar
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.meta.class_property_readonly import ClassPropertyReadonly
 from ooodev.utils import lo as mLo
 from ooodev.format.kind.border_kind import BorderKind
 from ooodev.format.kind.format_kind import FormatKind
-from ooodev.format.style_base import StyleMulti
-from ooodev.format.inner.direct.structs.side import Side as Side, LineSize as LineSize
+from ooodev.format.inner.style_base import StyleMulti
+from ooodev.format.inner.direct.structs.side import Side as Side
 from .padding import Padding as InnerPadding
 from .shadow import Shadow as InnerShadow
 from .sides import Sides

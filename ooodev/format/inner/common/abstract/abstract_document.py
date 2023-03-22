@@ -1,17 +1,14 @@
 # region Import
 from __future__ import annotations
 
-import uno
 from com.sun.star.text import XTextDocument
 from com.sun.star.container import XNameAccess
 
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import info as mInfo
-from ooodev.utils import lo as mLo
 from ooodev.utils.data_type.size import Size
 from ooodev.office import write as mWrite
-from ooodev.format.style_base import StyleBase
-from ..props.border_props import BorderProps as BorderProps
+from ooodev.format.inner.style_base import StyleBase
 
 
 # endregion Import

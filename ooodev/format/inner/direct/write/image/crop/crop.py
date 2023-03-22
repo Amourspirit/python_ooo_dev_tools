@@ -18,7 +18,7 @@ from ooodev.utils import images_lo as mImg
 from ooodev.utils.data_type.size_mm import SizeMM as SizeMM
 from ooodev.utils.data_type.size import Size as Size
 from ooodev.format.kind.format_kind import FormatKind
-from ooodev.format.style_base import StyleMulti
+from ooodev.format.inner.style_base import StyleMulti
 from ooodev.format.inner.direct.structs.crop_struct import CropStruct
 from ooodev.format.inner.common.props.image_crop_props import ImageCropProps
 
@@ -27,7 +27,6 @@ _TImageCrop = TypeVar(name="_TImageCrop", bound="ImageCrop")
 
 
 class CropOpt(CropStruct):
-
     # region Init
     def __init__(
         self,

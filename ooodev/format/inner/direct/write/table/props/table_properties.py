@@ -16,10 +16,11 @@ from ooodev.utils.data_type.size import Size
 from ooodev.utils.data_type.unit_mm import UnitMM
 from ooodev.format.inner.common.abstract.abstract_document import AbstractDocument
 from ooodev.format.kind.format_kind import FormatKind
-from ooodev.format.style_base import StyleMulti
+from ooodev.format.inner.style_base import StyleMulti
 from ooodev.format.inner.common.props.table_properties_props import TablePropertiesProps
 
 from ooodev.utils.unit_convert import UnitConvert
+
 # endregion Imports
 
 # region Types
@@ -30,6 +31,7 @@ TblAbsUnit = Union[float, UnitObj]
 TblRelUnit = Union[int, Intensity]
 
 # endregion Types
+
 
 # region Enums
 class TableAlignKind(Enum):
@@ -52,6 +54,7 @@ class TableAlignKind(Enum):
 
 
 # endregion Enums
+
 
 # region Tuples
 class _RelVals(NamedTuple):
@@ -1763,6 +1766,7 @@ class _TblRelCenter(_TblRelLeftByWidth):
 
 
 # endregion Table size in percentage units
+
 
 # region TableProperties Class
 class TableProperties(StyleMulti):

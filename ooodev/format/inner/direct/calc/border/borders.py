@@ -12,7 +12,7 @@ from ooodev.exceptions import ex as mEx
 from ooodev.proto.unit_obj import UnitObj
 from ooodev.utils import lo as mLo
 from ooodev.format.kind.format_kind import FormatKind
-from ooodev.format.style_base import StyleMulti
+from ooodev.format.inner.style_base import StyleMulti
 from ooodev.format.inner.common.props.border_props import BorderProps as BorderProps
 from ooodev.format.inner.common.props.cell_borders_props import CellBordersProps
 from ooodev.format.inner.common.props.prop_pair import PropPair

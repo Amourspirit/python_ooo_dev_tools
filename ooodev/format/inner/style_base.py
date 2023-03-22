@@ -6,19 +6,19 @@ import uno
 import random
 import string
 
-from ..utils import props as mProps
-from ..utils import info as mInfo
-from ..utils import lo as mLo
-from ..events.lo_events import Events
-from ..events.props_named_event import PropsNamedEvent
-from ..events.args.key_val_cancel_args import KeyValCancelArgs as KeyValCancelArgs
-from ..events.args.key_val_args import KeyValArgs as KeyValArgs
-from ..events.args.cancel_event_args import CancelEventArgs as CancelEventArgs
-from ..events.args.event_args import EventArgs as EventArgs
-from ..utils.type_var import EventCallback
-from .kind.format_kind import FormatKind
-from ..events.format_named_event import FormatNamedEvent as FormatNamedEvent
-from ..exceptions import ex as mEx
+from ooodev.utils import props as mProps
+from ooodev.utils import info as mInfo
+from ooodev.utils import lo as mLo
+from ooodev.events.lo_events import Events
+from ooodev.events.props_named_event import PropsNamedEvent
+from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs as KeyValCancelArgs
+from ooodev.events.args.key_val_args import KeyValArgs as KeyValArgs
+from ooodev.events.args.cancel_event_args import CancelEventArgs as CancelEventArgs
+from ooodev.events.args.event_args import EventArgs as EventArgs
+from ooodev.utils.type_var import EventCallback
+from ooodev.format.kind.format_kind import FormatKind
+from ooodev.events.format_named_event import FormatNamedEvent as FormatNamedEvent
+from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.common.props.prop_pair import PropPair
 
 

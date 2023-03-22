@@ -2,10 +2,9 @@
 from __future__ import annotations
 from typing import Tuple, TYPE_CHECKING
 
-import uno
 from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
 
-from ooodev.format.style_base import StyleMulti
+from ooodev.format.inner.style_base import StyleMulti
 from ooodev.utils.data_type.angle import Angle as Angle
 from ooodev.utils.data_type.offset import Offset as Offset
 from ooodev.utils.data_type.intensity import Intensity as Intensity

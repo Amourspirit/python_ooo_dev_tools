@@ -11,7 +11,7 @@ from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.utils.data_type.intensity import Intensity as Intensity
 from ooodev.format.kind.format_kind import FormatKind
-from ooodev.format.style_base import StyleBase
+from ooodev.format.inner.style_base import StyleBase
 from ooodev.format.inner.common.props.transparent_transparency_props import TransparentTransparencyProps
 
 _TTransparency = TypeVar(name="_TTransparency", bound="Transparency")

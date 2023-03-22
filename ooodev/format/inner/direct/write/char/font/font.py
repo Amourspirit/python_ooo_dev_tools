@@ -7,7 +7,6 @@ Module for managing character fonts.
 from __future__ import annotations
 from typing import Any, Tuple, cast, overload, TypeVar
 
-import uno
 from ooo.dyn.awt.char_set import CharSetEnum as CharSetEnum
 from ooo.dyn.awt.font_family import FontFamilyEnum as FontFamilyEnum
 from ooo.dyn.awt.font_slant import FontSlant as FontSlant
@@ -15,7 +14,6 @@ from ooo.dyn.awt.font_strikeout import FontStrikeoutEnum as FontStrikeoutEnum
 from ooo.dyn.awt.font_underline import FontUnderlineEnum as FontUnderlineEnum
 from ooo.dyn.awt.font_weight import FontWeightEnum as FontWeightEnum
 from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
-from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 
 from ooodev.exceptions import ex as mEx
 from ooodev.proto.unit_obj import UnitObj
@@ -26,7 +24,7 @@ from ooodev.utils.data_type.angle import Angle as Angle
 from ooodev.utils.data_type.unit_pt import UnitPT
 from ooodev.utils.unit_convert import UnitConvert
 from ooodev.format.kind.format_kind import FormatKind
-from ooodev.format.style_base import StyleBase
+from ooodev.format.inner.style_base import StyleBase
 from .font_position import CharSpacingKind as CharSpacingKind
 from .font_effects import FontLine as FontLine
 

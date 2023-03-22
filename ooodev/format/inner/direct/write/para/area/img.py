@@ -2,7 +2,6 @@
 from __future__ import annotations
 from typing import Any, Tuple, cast, overload, Type, TypeVar
 
-import uno
 from com.sun.star.awt import XBitmap
 
 from ooo.dyn.style.graphic_location import GraphicLocation
@@ -12,7 +11,7 @@ from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
-from ooodev.format.style_base import StyleMulti
+from ooodev.format.inner.style_base import StyleMulti
 from ooodev.utils.data_type.offset import Offset as Offset
 from ooodev.format.inner.direct.write.fill.area.img import (
     Img as InnerImg,
@@ -26,6 +25,7 @@ from ooodev.format.preset.preset_image import PresetImageKind as PresetImageKind
 from ooodev.format.kind.format_kind import FormatKind
 from ooodev.events.format_named_event import FormatNamedEvent
 from ooodev.format.inner.common.props.img_para_area_props import ImgParaAreaProps
+
 # endregion Imports
 
 _TImg = TypeVar(name="_TImg", bound="Img")

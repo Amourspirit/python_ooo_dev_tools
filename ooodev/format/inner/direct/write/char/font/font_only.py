@@ -7,7 +7,6 @@ Module for managing character font.
 from __future__ import annotations
 from typing import Any, Tuple, Type, cast, overload, TypeVar
 
-import uno
 from com.sun.star.beans import XPropertySet
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
@@ -21,7 +20,7 @@ from ooodev.utils import props as mProps
 from ooodev.utils.data_type.unit_pt import UnitPT
 from ooodev.utils.unit_convert import UnitConvert
 from ooodev.format.kind.format_kind import FormatKind
-from ooodev.format.style_base import StyleMulti
+from ooodev.format.inner.style_base import StyleMulti
 from ooodev.format.inner.common.props.font_only_props import FontOnlyProps
 from ooodev.format.inner.direct.structs.locale_struct import LocaleStruct
 

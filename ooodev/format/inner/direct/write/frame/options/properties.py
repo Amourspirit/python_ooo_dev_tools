@@ -7,7 +7,7 @@ from ooodev.exceptions import ex as mEx
 from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.format.kind.format_kind import FormatKind
-from ooodev.format.style_base import StyleMulti
+from ooodev.format.inner.style_base import StyleMulti
 from ooodev.format.inner.direct.write.para.align.writing_mode import WritingMode, _TWritingMode
 from ooodev.meta.deleted_attrib import DeletedAttrib
 from ooodev.format.inner.common.props.frame_options_properties import FrameOptionsProperties
