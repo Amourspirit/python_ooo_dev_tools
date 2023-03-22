@@ -15,8 +15,8 @@ from ooodev.exceptions import ex as mEx
 from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.format.preset import preset_pattern as mPattern
-from ooodev.format.preset.preset_pattern import PresetPatternKind as PresetPatternKind
+from ooodev.format.inner.preset import preset_pattern as mPattern
+from ooodev.format.inner.preset.preset_pattern import PresetPatternKind as PresetPatternKind
 from ooodev.format.inner.style_base import StyleBase
 from ooodev.format.inner.common.props.area_pattern_props import AreaPatternProps
 

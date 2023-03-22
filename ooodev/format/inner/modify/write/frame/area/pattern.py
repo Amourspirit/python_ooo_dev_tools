@@ -4,7 +4,7 @@ from typing import cast
 import uno
 from com.sun.star.awt import XBitmap
 
-from ooodev.format.preset.preset_pattern import PresetPatternKind as PresetPatternKind
+from ooodev.format.inner.preset.preset_pattern import PresetPatternKind as PresetPatternKind
 from ..frame_style_base_multi import FrameStyleBaseMulti
 from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind as StyleFrameKind
 from ooodev.format.inner.direct.write.fill.area.pattern import Pattern as InnerPattern

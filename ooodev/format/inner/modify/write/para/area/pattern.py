@@ -10,7 +10,7 @@ from ooodev.utils.data_type.intensity import Intensity as Intensity
 from ooodev.utils.data_type.intensity_range import IntensityRange as IntensityRange
 from ooodev.utils.data_type.offset import Offset as Offset
 from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
-from ooodev.format.preset.preset_pattern import PresetPatternKind as PresetPatternKind
+from ooodev.format.inner.preset.preset_pattern import PresetPatternKind as PresetPatternKind
 from ooodev.format.inner.direct.write.para.area.pattern import Pattern as InnerPattern
 from ..para_style_base_multi import ParaStyleBaseMulti
 

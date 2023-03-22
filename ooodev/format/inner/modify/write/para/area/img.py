@@ -7,7 +7,7 @@ from com.sun.star.awt import XBitmap
 from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
 from ooodev.utils.data_type.offset import Offset as Offset
 from ...para.para_style_base_multi import ParaStyleBaseMulti
-from ooodev.format.preset.preset_image import PresetImageKind as PresetImageKind
+from ooodev.format.inner.preset.preset_image import PresetImageKind as PresetImageKind
 from ooodev.format.inner.direct.write.fill.area.img import SizeMM as SizeMM
 from ooodev.format.inner.direct.write.fill.area.img import SizePercent as SizePercent
 from ooodev.format.inner.direct.write.fill.area.img import OffsetColumn as OffsetColumn

@@ -12,7 +12,7 @@ from ooodev.utils.data_type.intensity import Intensity as Intensity
 from ooodev.utils.data_type.color_range import ColorRange as ColorRange
 from ooodev.utils.color import Color
 from ooodev.utils.data_type.intensity_range import IntensityRange as IntensityRange
-from ooodev.format.preset.preset_gradient import PresetGradientKind as PresetGradientKind
+from ooodev.format.inner.preset.preset_gradient import PresetGradientKind as PresetGradientKind
 from ooodev.format.inner.direct.write.fill.area.gradient import Gradient as InnerGradient
 
 # endregion Imports

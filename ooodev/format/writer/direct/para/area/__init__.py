@@ -11,10 +11,10 @@ from ooodev.utils.data_type.color_range import ColorRange as ColorRange
 from ooodev.format.inner.direct.write.para.area.color import Color as Color
 from ooodev.format.inner.direct.write.fill.area.gradient import Gradient as Gradient
 from ooodev.format.inner.direct.write.para.area.pattern import Pattern as Pattern
-from ooodev.format.preset.preset_gradient import PresetGradientKind as PresetGradientKind
-from ooodev.format.preset.preset_hatch import PresetHatchKind as PresetHatchKind
-from ooodev.format.preset.preset_pattern import PresetPatternKind as PresetPatternKind
-from ooodev.format.preset.preset_image import PresetImageKind as PresetImageKind
+from ooodev.format.inner.preset.preset_gradient import PresetGradientKind as PresetGradientKind
+from ooodev.format.inner.preset.preset_hatch import PresetHatchKind as PresetHatchKind
+from ooodev.format.inner.preset.preset_pattern import PresetPatternKind as PresetPatternKind
+from ooodev.format.inner.preset.preset_image import PresetImageKind as PresetImageKind
 from ooodev.format.inner.direct.write.fill.area.img import ImgStyleKind as ImgStyleKind
 from ooodev.format.inner.direct.write.fill.area.img import SizeMM as SizeMM
 from ooodev.format.inner.direct.write.fill.area.img import SizePercent as SizePercent

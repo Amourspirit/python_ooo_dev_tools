@@ -11,7 +11,7 @@ from ooodev.utils.data_type.intensity import Intensity as Intensity
 from ooodev.utils.data_type.intensity_range import IntensityRange as IntensityRange
 from ooodev.utils.data_type.offset import Offset as Offset
 from ooodev.format.inner.direct.write.fill.area.gradient import Gradient as InnerGradient
-from ooodev.format.preset.preset_gradient import PresetGradientKind as PresetGradientKind
+from ooodev.format.inner.preset.preset_gradient import PresetGradientKind as PresetGradientKind
 from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind as StyleFrameKind
 from ..frame_style_base_multi import FrameStyleBaseMulti
 

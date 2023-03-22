@@ -4,7 +4,7 @@ from ooo.dyn.drawing.hatch_style import HatchStyle as HatchStyle
 
 from ooodev.utils.data_type.offset import Offset as Offset
 from ooodev.utils.data_type.color_range import ColorRange as ColorRange
-from ooodev.format.preset.preset_image import PresetImageKind as PresetImageKind
+from ooodev.format.inner.preset.preset_image import PresetImageKind as PresetImageKind
 from ooodev.format.inner.direct.write.fill.area.img import ImgStyleKind as ImgStyleKind
 from ooodev.format.inner.direct.write.fill.area.img import SizeMM as SizeMM
 from ooodev.format.inner.direct.write.fill.area.img import SizePercent as SizePercent

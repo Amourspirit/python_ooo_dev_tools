@@ -6,7 +6,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.preset import preset_gradient as mPreset
+from ooodev.format.inner.preset import preset_gradient as mPreset
 from ooodev.format.writer.direct.para.area import Gradient, PresetGradientKind
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo

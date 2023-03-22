@@ -3,11 +3,12 @@ from enum import Enum
 from typing import ByteString
 import uno
 
-from ...utils.images_lo import ImagesLo, BitmapArgs
-from ...utils.data_type.point import Point
+from ooodev.utils.images_lo import ImagesLo, BitmapArgs
+from ooodev.utils.data_type.point import Point
 
 
 from com.sun.star.awt import XBitmap
+
 
 # region Enum
 class PresetImageKind(Enum):
@@ -83,6 +84,7 @@ class PresetImageKind(Enum):
 
 
 # endregion Enum
+
 
 # region Base64 Pattern Images
 def _get_b64_zebra():

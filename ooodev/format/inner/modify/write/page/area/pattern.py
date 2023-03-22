@@ -4,7 +4,7 @@ from typing import cast
 import uno
 from com.sun.star.awt import XBitmap
 
-from ooodev.format.preset.preset_pattern import PresetPatternKind as PresetPatternKind
+from ooodev.format.inner.preset.preset_pattern import PresetPatternKind as PresetPatternKind
 from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
 from ooodev.format.inner.direct.write.fill.area.pattern import Pattern as InnerPattern
 from ..page_style_base_multi import PageStyleBaseMulti

@@ -10,8 +10,8 @@ from ooodev.format.inner.direct.write.fill.area.img import OffsetRow as OffsetRo
 from ooodev.format.inner.direct.write.fill.area.img import SizeMM as SizeMM
 from ooodev.format.inner.direct.write.fill.area.img import SizePercent as SizePercent
 from ooodev.format.inner.direct.write.fill.area.pattern import Pattern as Pattern
-from ooodev.format.preset.preset_hatch import PresetHatchKind as PresetHatchKind
-from ooodev.format.preset.preset_image import PresetImageKind as PresetImageKind
-from ooodev.format.preset.preset_pattern import PresetPatternKind as PresetPatternKind
+from ooodev.format.inner.preset.preset_hatch import PresetHatchKind as PresetHatchKind
+from ooodev.format.inner.preset.preset_image import PresetImageKind as PresetImageKind
+from ooodev.format.inner.preset.preset_pattern import PresetPatternKind as PresetPatternKind
 from ooodev.utils.data_type.angle import Angle as Angle
 from ooodev.utils.data_type.offset import Offset as Offset

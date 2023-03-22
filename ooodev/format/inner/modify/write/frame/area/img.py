@@ -4,7 +4,7 @@ from typing import cast
 from com.sun.star.awt import XBitmap
 from ooo.dyn.drawing.rectangle_point import RectanglePoint as RectanglePoint
 
-from ooodev.format.preset.preset_image import PresetImageKind as PresetImageKind
+from ooodev.format.inner.preset.preset_image import PresetImageKind as PresetImageKind
 from ooodev.utils.data_type.offset import Offset as Offset
 from ooodev.utils.data_type.size_mm import SizeMM as SizeMM
 from ooodev.format.inner.common.format_types.size_percent import SizePercent as SizePercent

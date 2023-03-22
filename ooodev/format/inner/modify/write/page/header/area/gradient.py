@@ -9,7 +9,7 @@ from ooodev.utils.data_type.intensity import Intensity as Intensity
 from ooodev.utils.data_type.intensity_range import IntensityRange as IntensityRange
 from ooodev.utils.data_type.offset import Offset as Offset
 from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
-from ooodev.format.preset.preset_gradient import PresetGradientKind as PresetGradientKind
+from ooodev.format.inner.preset.preset_gradient import PresetGradientKind as PresetGradientKind
 from ooodev.format.inner.common.props.area_gradient_props import AreaGradientProps
 from ooodev.format.inner.direct.write.fill.area.gradient import Gradient as InnerGradient
 from ...page_style_base_multi import PageStyleBaseMulti

@@ -1,6 +1,6 @@
 from __future__ import annotations
 from enum import Enum
-from ...utils.data_type.size import Size
+from ooodev.utils.data_type.size import Size
 
 
 class PaperFormatKind(Enum):

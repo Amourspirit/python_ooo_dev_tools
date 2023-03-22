@@ -2,11 +2,10 @@ from __future__ import annotations
 from enum import Enum
 from typing import ByteString
 import uno
-
-from ...utils.images_lo import ImagesLo, BitmapArgs
-
-
 from com.sun.star.awt import XBitmap
+
+from ooodev.utils.images_lo import ImagesLo, BitmapArgs
+
 
 # region Enum
 class PresetPatternKind(Enum):
@@ -48,6 +47,7 @@ class PresetPatternKind(Enum):
 
 
 # endregion Enum
+
 
 # region Base64 Pattern Images
 def _get_b64_horizontal_brick():

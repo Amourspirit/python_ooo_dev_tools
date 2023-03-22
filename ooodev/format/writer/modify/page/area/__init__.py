@@ -16,10 +16,10 @@ from ooodev.format.inner.common.format_types.offset_column import OffsetColumn a
 from ooodev.format.inner.direct.write.fill.area.img import ImgStyleKind as ImgStyleKind
 
 from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
-from ooodev.format.preset.preset_gradient import PresetGradientKind as PresetGradientKind
-from ooodev.format.preset.preset_image import PresetImageKind as PresetImageKind
-from ooodev.format.preset.preset_pattern import PresetPatternKind as PresetPatternKind
-from ooodev.format.preset.preset_hatch import PresetHatchKind as PresetHatchKind
+from ooodev.format.inner.preset.preset_gradient import PresetGradientKind as PresetGradientKind
+from ooodev.format.inner.preset.preset_image import PresetImageKind as PresetImageKind
+from ooodev.format.inner.preset.preset_pattern import PresetPatternKind as PresetPatternKind
+from ooodev.format.inner.preset.preset_hatch import PresetHatchKind as PresetHatchKind
 from ooodev.format.inner.modify.write.page.area.color import InnerColor as InnerColor
 from ooodev.format.inner.modify.write.page.area.color import Color as Color
 from ooodev.format.inner.modify.write.page.area.gradient import InnerGradient as InnerGradient

@@ -14,7 +14,7 @@ from ooodev.format.inner.common.format_types.size_percent import SizePercent as 
 from ooodev.format.inner.common.props.area_img_props import AreaImgProps
 from ooodev.format.inner.direct.write.fill.area.img import ImgStyleKind as ImgStyleKind
 from ooodev.format.inner.direct.write.fill.area.img import Img as InnerImg
-from ooodev.format.preset.preset_image import PresetImageKind as PresetImageKind
+from ooodev.format.inner.preset.preset_image import PresetImageKind as PresetImageKind
 from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
 from ...page_style_base_multi import PageStyleBaseMulti
 

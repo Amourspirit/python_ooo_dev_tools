@@ -8,7 +8,7 @@ from ooodev.proto.unit_obj import UnitObj
 from ooodev.utils.color import Color
 from ooodev.utils.data_type.angle import Angle as Angle
 from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
-from ooodev.format.preset.preset_hatch import PresetHatchKind as PresetHatchKind
+from ooodev.format.inner.preset.preset_hatch import PresetHatchKind as PresetHatchKind
 from ooodev.format.inner.common.props.area_hatch_props import AreaHatchProps
 from ooodev.format.inner.direct.write.fill.area.hatch import Hatch as InnerHatch
 

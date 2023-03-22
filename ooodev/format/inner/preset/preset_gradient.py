@@ -3,9 +3,9 @@ from typing import Dict, Any
 from enum import Enum
 import uno
 from ooo.dyn.awt.gradient_style import GradientStyle
-from ...utils.data_type.offset import Offset
-from ...utils.data_type.color_range import ColorRange
-from ...utils.data_type.intensity_range import IntensityRange
+from ooodev.utils.data_type.offset import Offset
+from ooodev.utils.data_type.color_range import ColorRange
+from ooodev.utils.data_type.intensity_range import IntensityRange
 
 
 class PresetGradientKind(Enum):

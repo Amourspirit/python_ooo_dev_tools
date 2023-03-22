@@ -21,8 +21,8 @@ from ooodev.utils.data_type.intensity import Intensity as Intensity
 from ooodev.utils.data_type.intensity_range import IntensityRange as IntensityRange
 from ooodev.utils.data_type.offset import Offset as Offset
 from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.format.preset import preset_gradient
-from ooodev.format.preset.preset_gradient import PresetGradientKind as PresetGradientKind
+from ooodev.format.inner.preset import preset_gradient
+from ooodev.format.inner.preset.preset_gradient import PresetGradientKind as PresetGradientKind
 from ooodev.format.inner.style_base import StyleMulti
 from ooodev.format.inner.common.props.area_gradient_props import AreaGradientProps
 from ooodev.format.inner.direct.structs.gradient_struct import GradientStruct

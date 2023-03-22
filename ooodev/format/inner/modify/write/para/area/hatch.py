@@ -12,8 +12,8 @@ from ooodev.utils.data_type.intensity import Intensity as Intensity
 from ooodev.utils.data_type.intensity_range import IntensityRange as IntensityRange
 from ooodev.utils.data_type.offset import Offset as Offset
 from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
-from ooodev.format.preset import preset_hatch
-from ooodev.format.preset.preset_hatch import PresetHatchKind as PresetHatchKind
+from ooodev.format.inner.preset import preset_hatch
+from ooodev.format.inner.preset.preset_hatch import PresetHatchKind as PresetHatchKind
 from ooodev.format.inner.direct.write.para.area.hatch import Hatch as InnerHatch
 from ..para_style_base_multi import ParaStyleBaseMulti
 

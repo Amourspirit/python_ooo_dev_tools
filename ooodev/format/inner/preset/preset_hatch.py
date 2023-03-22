@@ -2,8 +2,9 @@ from __future__ import annotations
 from typing import Dict, Any
 from enum import Enum
 import uno
-from ...utils.color import StandardColor
+from ooodev.utils.color import StandardColor
 from ooo.dyn.drawing.hatch_style import HatchStyle as HatchStyle
+
 
 # region Enum
 class PresetHatchKind(Enum):
@@ -63,6 +64,7 @@ class PresetHatchKind(Enum):
 
 
 # endregion Enum
+
 
 # region Fill Preset Dictionaries
 def fill_black_0_degrees() -> Dict[str, Any]:

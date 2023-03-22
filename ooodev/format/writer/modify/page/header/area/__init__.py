@@ -3,10 +3,10 @@ from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
 from ooo.dyn.drawing.hatch_style import HatchStyle as HatchStyle
 from ooo.dyn.drawing.rectangle_point import RectanglePoint as RectanglePoint
 
-from ooodev.format.preset.preset_gradient import PresetGradientKind as PresetGradientKind
-from ooodev.format.preset.preset_image import PresetImageKind as PresetImageKind
-from ooodev.format.preset.preset_hatch import PresetHatchKind as PresetHatchKind
-from ooodev.format.preset.preset_pattern import PresetPatternKind as PresetPatternKind
+from ooodev.format.inner.preset.preset_gradient import PresetGradientKind as PresetGradientKind
+from ooodev.format.inner.preset.preset_image import PresetImageKind as PresetImageKind
+from ooodev.format.inner.preset.preset_hatch import PresetHatchKind as PresetHatchKind
+from ooodev.format.inner.preset.preset_pattern import PresetPatternKind as PresetPatternKind
 from ooodev.utils.data_type.angle import Angle as Angle
 from ooodev.utils.data_type.color_range import ColorRange as ColorRange
 from ooodev.utils.data_type.intensity import Intensity as Intensity
