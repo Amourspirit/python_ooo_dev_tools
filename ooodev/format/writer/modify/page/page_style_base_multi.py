@@ -3,19 +3,24 @@ Base Class for Page Style.
 
 .. versionadded:: 0.9.0
 """
+# region Import
 from __future__ import annotations
-from typing import Tuple, overload, Type, TypeVar
-
-import uno
-from .....exceptions import ex as mEx
-from .....utils import info as mInfo
-from .....utils import lo as mLo
-from .....utils import props as mProps
-from ....kind.format_kind import FormatKind
-from ....style_base import StyleMulti, EventArgs, CancelEventArgs, FormatNamedEvent
-from ...style.page.kind import StylePageKind
+from typing import Tuple, overload, TypeVar
 
 from com.sun.star.beans import XPropertySet
+
+from ooodev.exceptions import ex as mEx
+from ooodev.utils import info as mInfo
+from ooodev.utils import lo as mLo
+from ooodev.utils import props as mProps
+from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.format.inner.style_base import StyleMulti
+from ooodev.format.writer.style.page.kind import WriterStylePageKind
+from ooodev.events.format_named_event import FormatNamedEvent
+from ooodev.events.args.event_args import EventArgs
+from ooodev.events.args.cancel_event_args import CancelEventArgs
+
+# endregion Import
 
 # LibreOffice seems to have an unresolved bug with Background color.
 # https://bugs.documentfoundation.org/show_bug.cgi?id=99125
@@ -70,7 +75,7 @@ class PageStyleBaseMulti(StyleMulti):
         try:
             if self._is_valid_obj(obj):
                 p = self._get_style_props(obj)
-                # Could call p.setPropertyValue() here insetead of Props.set()
+                # Could call p.setPropertyValue() here instead of Props.set()
                 # but by calling Props.set() events are triggered.
                 mProps.Props.set(p, **self._get_properties())
                 eargs = EventArgs.from_args(cargs)
@@ -110,5 +115,5 @@ class PageStyleBaseMulti(StyleMulti):
         raise NotImplementedError
 
     @prop_style_name.setter
-    def prop_style_name(self, value: str | StylePageKind):
+    def prop_style_name(self, value: str | WriterStylePageKind):
         raise NotImplementedError

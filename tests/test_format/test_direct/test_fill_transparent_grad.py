@@ -9,8 +9,20 @@ import uno
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.draw import Draw
-from ooodev.format.direct.fill.transparent.gradient import Gradient, GradientStyle, GradientStruct, IntensityRange
 
+# from ooodev.format.inner.direct.write.fill.transparent.gradient import (
+#     Gradient,
+#     GradientStyle,
+#     GradientStruct,
+#     IntensityRange,
+# )
+
+from ooodev.format.draw.direct.transparency import (
+    Gradient,
+    GradientStyle,
+    GradientStruct,
+    IntensityRange,
+)
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import FillProperties  # service

@@ -38,7 +38,7 @@ def test_write(loader, para_text) -> None:
             horizontal=Horizontal(position=HoriOrient.CENTER, rel=RelHoriOrient.LEFT_PARAGRAPH_BORDER),
             vertical=Vertical(position=VertOrient.CENTER, rel=RelVertOrient.PAGE_TEXT_AREA),
             mirror_even=False,
-            keep_boundries=False,
+            keep_boundaries=False,
             style_name=StyleFrameKind.FRAME,
         )
 
@@ -49,13 +49,13 @@ def test_write(loader, para_text) -> None:
         assert f_style.prop_inner.prop_horizontal == style.prop_inner.prop_horizontal
         assert f_style.prop_inner.prop_vertical == style.prop_inner.prop_vertical
         assert f_style.prop_inner.prop_mirror_even == style.prop_inner.prop_mirror_even
-        assert f_style.prop_inner.prop_keep_boundries == style.prop_inner.prop_keep_boundries
+        assert f_style.prop_inner.prop_keep_boundaries == style.prop_inner.prop_keep_boundaries
 
         style = Position(
             horizontal=Horizontal(position=HoriOrient.LEFT_OR_INSIDE, rel=RelHoriOrient.ENTIRE_PAGE),
             vertical=Vertical(position=VertOrient.BOTTOM, rel=RelVertOrient.MARGIN),
             mirror_even=True,
-            keep_boundries=True,
+            keep_boundaries=True,
             style_name=StyleFrameKind.FRAME,
         )
 
@@ -64,13 +64,13 @@ def test_write(loader, para_text) -> None:
         assert f_style.prop_inner.prop_horizontal == style.prop_inner.prop_horizontal
         assert f_style.prop_inner.prop_vertical == style.prop_inner.prop_vertical
         assert f_style.prop_inner.prop_mirror_even == style.prop_inner.prop_mirror_even
-        assert f_style.prop_inner.prop_keep_boundries == style.prop_inner.prop_keep_boundries
+        assert f_style.prop_inner.prop_keep_boundaries == style.prop_inner.prop_keep_boundaries
 
         style = Position(
             horizontal=Horizontal(position=HoriOrient.FROM_LEFT_OR_INSIDE, rel=RelHoriOrient.ENTIRE_PAGE, amount=7.8),
             vertical=Vertical(position=VertOrient.FROM_TOP_OR_BOTTOM, rel=RelVertOrient.MARGIN, amount=3.6),
             mirror_even=False,
-            keep_boundries=False,
+            keep_boundaries=False,
             style_name=StyleFrameKind.FRAME,
         )
 
@@ -79,7 +79,7 @@ def test_write(loader, para_text) -> None:
         assert f_style.prop_inner.prop_horizontal == style.prop_inner.prop_horizontal
         assert f_style.prop_inner.prop_vertical == style.prop_inner.prop_vertical
         assert f_style.prop_inner.prop_mirror_even == style.prop_inner.prop_mirror_even
-        assert f_style.prop_inner.prop_keep_boundries == style.prop_inner.prop_keep_boundries
+        assert f_style.prop_inner.prop_keep_boundaries == style.prop_inner.prop_keep_boundaries
 
         Lo.delay(delay)
     finally:

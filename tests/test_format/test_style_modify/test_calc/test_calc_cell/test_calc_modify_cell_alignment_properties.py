@@ -52,7 +52,7 @@ def test_write(loader) -> None:
             doc=doc, style_name=style.prop_style_name, style_family=style.prop_style_family_name
         )
         assert f_style.prop_inner.prop_wrap_auto == style.prop_inner.prop_wrap_auto
-        assert f_style.prop_inner.prop_shirnk_to_fit == style.prop_inner.prop_shirnk_to_fit
+        assert f_style.prop_inner.prop_shrink_to_fit == style.prop_inner.prop_shrink_to_fit
         assert f_style.prop_inner.prop_direction == style.prop_inner.prop_direction
         assert f_style.prop_inner.prop_direction == TextDirectionKind.LR_TB
 

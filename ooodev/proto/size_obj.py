@@ -1,5 +1,5 @@
 from __future__ import annotations
-from ..format.kind.format_kind import FormatKind as FormatKind
+from ..format.inner.kind.format_kind import FormatKind as FormatKind
 
 try:
     from typing import Protocol

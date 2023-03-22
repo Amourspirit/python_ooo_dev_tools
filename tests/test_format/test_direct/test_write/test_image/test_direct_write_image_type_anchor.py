@@ -23,6 +23,7 @@ from ooodev.format.writer.direct.image.type import (
     Horizontal,
     Vertical,
 )
+
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.utils.images_lo import ImagesLo
@@ -40,7 +41,6 @@ def test_write(loader, fix_image_path) -> None:
         Lo.delay(500)
         GUI.zoom(GUI.ZoomEnum.ENTIRE_PAGE)
     try:
-
         im_fnm = cast(Path, fix_image_path("skinner.png"))
         cursor = Write.get_cursor(doc)
         img_size = ImagesLo.get_size_100mm(im_fnm=im_fnm)
@@ -54,7 +54,7 @@ def test_write(loader, fix_image_path) -> None:
             ),
             vertical=Vertical(position=VertOrient.FROM_TOP_OR_BOTTOM, rel=RelVertOrient.MARGIN, amount=12.0),
             mirror_even=False,
-            keep_boundries=False,
+            keep_boundaries=False,
         )
         style_anchor = Anchor(anchor=AnchorKind.AT_CHARACTER)
         style_name = Names(name="skinner", desc="Skinner Pointing", alt="Pointer")
@@ -86,7 +86,7 @@ def test_write(loader, fix_image_path) -> None:
         assert f_style_position.prop_vertical.position == style_position.prop_vertical.position
         assert f_style_position.prop_vertical.rel == style_position.prop_vertical.rel
         assert f_style_position.prop_mirror_even == style_position.prop_mirror_even
-        assert f_style_position.prop_keep_boundries == style_position.prop_keep_boundries
+        assert f_style_position.prop_keep_boundaries == style_position.prop_keep_boundaries
 
         Lo.delay(delay)
     finally:

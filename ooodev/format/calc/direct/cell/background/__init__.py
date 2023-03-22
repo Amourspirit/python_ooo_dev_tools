@@ -1,2 +1,2 @@
 import uno
-from .....direct.cell.background.color import Color as Color
+from ooodev.format.inner.direct.calc.background.color import Color as Color

@@ -1,3 +1,4 @@
-from ......utils.data_type.size_mm import SizeMM as SizeMM
-from ......utils.data_type.size import Size as Size
-from .....direct.image.crop.crop import ImageCrop as ImageCrop, CropOpt as CropOpt
+from ooodev.utils.data_type.size_mm import SizeMM as SizeMM
+from ooodev.utils.data_type.size import Size as Size
+from ooodev.format.inner.direct.write.image.crop.crop import CropOpt as CropOpt
+from ooodev.format.inner.direct.write.image.crop.crop import ImageCrop as ImageCrop

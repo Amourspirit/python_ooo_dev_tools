@@ -1,10 +1,13 @@
+# region Import
 from __future__ import annotations
 from typing import Tuple
 
-from .....meta.static_prop import static_prop
-from ....kind.format_kind import FormatKind
-from ....style_base import StyleName
+from ooodev.meta.static_prop import static_prop
+from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.format.inner.style_base import StyleName
 from ..lst import StyleListKind as StyleListKind
+
+# endregion Import
 
 
 class BulletList(StyleName):
@@ -107,7 +110,7 @@ class BulletList(StyleName):
 
     @property
     def prop_name(self) -> str:
-        """Gets/Sets Character style namd"""
+        """Gets/Sets Character style name"""
         return self._get(self._get_property_name())
 
     @prop_name.setter

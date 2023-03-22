@@ -6,7 +6,9 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.direct.para.text_flow import TextFlow, BreakType
+
+# from ooodev.format.inner.direct.write.para.text_flow import TextFlow, BreakType
+from ooodev.format.writer.direct.para.text_flow import BreakType, Breaks, FlowOptions, Hyphenation
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
@@ -30,7 +32,7 @@ def test_write(loader, para_text) -> None:
         cursor = Write.get_cursor(doc)
         p_len = len(para_text)
         # test FlowOptions
-        Write.append_para(cursor=cursor, text=para_text, styles=(TextFlow(op_orphans=4),))
+        Write.append_para(cursor=cursor, text=para_text, styles=(FlowOptions(orphans=4),))
 
         cursor.goLeft(p_len + 1, False)
         cursor.goRight(p_len, True)
@@ -39,7 +41,7 @@ def test_write(loader, para_text) -> None:
         cursor.gotoEnd(False)
 
         # test Hyphenation
-        Write.append_para(cursor=cursor, text=para_text, styles=(TextFlow(hy_auto=True, hy_no_caps=True),))
+        Write.append_para(cursor=cursor, text=para_text, styles=(Hyphenation(auto=True, no_caps=True),))
         cursor.goLeft(p_len + 1, False)
         cursor.goRight(p_len, True)
         assert pp.ParaIsHyphenation
@@ -47,7 +49,7 @@ def test_write(loader, para_text) -> None:
         cursor.gotoEnd(False)
 
         # test Breaks
-        Write.append_para(cursor=cursor, text=para_text, styles=(TextFlow(bk_type=BreakType.PAGE_BEFORE),))
+        Write.append_para(cursor=cursor, text=para_text, styles=(Breaks(type=BreakType.PAGE_BEFORE),))
 
         cursor.goLeft(p_len + 1, False)
         cursor.goRight(p_len, True)

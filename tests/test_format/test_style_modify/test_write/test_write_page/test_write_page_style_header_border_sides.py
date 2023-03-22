@@ -5,12 +5,12 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.writer.modify.page.header import Header, StylePageKind
+from ooodev.format.writer.modify.page.header import Header, WriterStylePageKind
 from ooodev.format.writer.modify.page.header.borders import (
     Sides,
     Side,
     LineSize,
-    StylePageKind,
+    WriterStylePageKind,
     BorderLineKind,
 )
 from ooodev.format import Styler

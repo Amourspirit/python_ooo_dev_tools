@@ -48,7 +48,7 @@ def test_write(loader, formula_text) -> None:
             horizontal=Horizontal(position=HoriOrient.CENTER, rel=RelHoriOrient.LEFT_PARAGRAPH_BORDER),
             vertical=Vertical(position=VertOrient.CENTER, rel=RelVertOrient.PAGE_TEXT_AREA),
             mirror_even=False,
-            keep_boundries=False,
+            keep_boundaries=False,
         )
 
         # write formula can't actually change size but we can read and write the properties.
@@ -63,7 +63,7 @@ def test_write(loader, formula_text) -> None:
         assert f_style.prop_vertical.position == style_position.prop_vertical.position
         assert f_style.prop_vertical.rel == style_position.prop_vertical.rel
         assert f_style.prop_mirror_even == style_position.prop_mirror_even
-        assert f_style.prop_keep_boundries == style_position.prop_keep_boundries
+        assert f_style.prop_keep_boundaries == style_position.prop_keep_boundaries
 
         Lo.delay(delay)
     finally:

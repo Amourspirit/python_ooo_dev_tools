@@ -5,7 +5,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.writer.modify.page.area import Pattern, PresetPatternKind, StylePageKind
+from ooodev.format.writer.modify.page.area import Pattern, PresetPatternKind, WriterStylePageKind
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write

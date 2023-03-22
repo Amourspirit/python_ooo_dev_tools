@@ -5,7 +5,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.writer.modify.page.header import Header, StylePageKind
+from ooodev.format.writer.modify.page.header import Header, WriterStylePageKind
 from ooodev.format.writer.modify.page.header.area import Gradient, PresetGradientKind
 from ooodev.format import Styler
 from ooodev.utils.color import StandardColor

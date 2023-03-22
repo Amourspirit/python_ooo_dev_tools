@@ -5,8 +5,8 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.writer.modify.page.header import Header, StylePageKind
-from ooodev.format.writer.modify.page.header.borders import Padding, StylePageKind
+from ooodev.format.writer.modify.page.header import Header, WriterStylePageKind
+from ooodev.format.writer.modify.page.header.borders import Padding, WriterStylePageKind
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.format import Styler

@@ -8,4 +8,4 @@ import uno
 # from ......utils.data_type.intensity import Intensity as Intensity
 # from .....direct.fill.transparent.gradient import Gradient as Gradient
 
-from .....direct.fill.transparent.transparency import Transparency as InnerTransparency
+from ooodev.format.inner.direct.write.fill.transparent.transparency import Transparency as Transparency

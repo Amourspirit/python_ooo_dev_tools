@@ -1,0 +1,270 @@
+"""
+Module for Fill Transparency.
+
+.. versionadded:: 0.9.0
+"""
+from __future__ import annotations
+from typing import Any, Tuple, cast, Type, TypeVar, NamedTuple, overload
+
+from ooodev.events.args.cancel_event_args import CancelEventArgs
+from ooodev.exceptions import ex as mEx
+from ooodev.proto.unit_obj import UnitObj
+from ooodev.utils import lo as mLo
+from ooodev.utils import props as mProps
+from ooodev.utils.data_type.unit_mm import UnitMM
+from ooodev.utils.unit_convert import UnitConvert
+from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.format.inner.style_base import StyleBase
+
+_TMargins = TypeVar(name="_TMargins", bound="Margins")
+
+
+class MarginProps(NamedTuple):
+    left: str
+    right: str
+    top: str
+    bottom: str
+    gutter: str
+
+
+class Margins(StyleBase):
+    """
+    Fill Transparency
+
+    .. versionadded:: 0.9.0
+    """
+
+    def __init__(
+        self,
+        *,
+        left: float | UnitObj | None = None,
+        right: float | UnitObj | None = None,
+        top: float | UnitObj | None = None,
+        bottom: float | UnitObj | None = None,
+        gutter: float | UnitObj | None = None,
+    ) -> None:
+        """
+        Constructor
+
+        Args:
+            left (float, optional): Left Margin Value in ``mm`` units  or :ref:`proto_unit_obj`.
+            right (float, optional): Right Margin Value in ``mm`` units  or :ref:`proto_unit_obj`.
+            top (float, optional): Top Margin Value in ``mm`` units  or :ref:`proto_unit_obj`.
+            bottom (float, optional): Bottom Margin Value in ``mm`` units  or :ref:`proto_unit_obj`.
+            gutter (float, optional): Gutter Margin Value in ``mm`` units  or :ref:`proto_unit_obj`.
+
+        Returns:
+            None:
+        """
+
+        super().__init__()
+        self.prop_left = left
+        self.prop_right = right
+        self.prop_top = top
+        self.prop_bottom = bottom
+        self.prop_gutter = gutter
+
+    # region Internal Methods
+    def _check(self, value: float | None, name: str) -> None:
+        if value is None:
+            return
+        if value < 0.0:
+            raise ValueError(f'"{name}" parameter must be a positive value')
+
+    # endregion Internal Methods
+
+    # region dunder methods
+    def __eq__(self, oth: object) -> bool:
+        if isinstance(oth, Margins):
+            result = True
+            for attr in self._props:
+                result = result and self._get(attr) == oth._get(attr)
+            return result
+        return NotImplemented
+
+    # endregion dunder methods
+
+    # region Overrides
+
+    def _supported_services(self) -> Tuple[str, ...]:
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = ("com.sun.star.style.PageProperties", "com.sun.star.style.PageStyle")
+        return self._supported_services_values
+
+    def _on_modifying(self, source: Any, event: CancelEventArgs) -> None:
+        if self._is_default_inst:
+            raise ValueError("Modifying a default instance is not allowed")
+        return super()._on_modifying(source, event)
+
+    def _props_set(self, obj: object, **kwargs: Any) -> None:
+        try:
+            return super()._props_set(obj, **kwargs)
+        except mEx.MultiError as e:
+            mLo.Lo.print(f"{self.__class__.__name__}.apply(): Unable to set Property")
+            for err in e.errors:
+                mLo.Lo.print(f"  {err}")
+
+    # endregion Overrides
+
+    # region from_obj()
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TMargins], obj: object) -> _TMargins:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TMargins], obj: object, **kwargs) -> _TMargins:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TMargins], obj: object, **kwargs) -> _TMargins:
+        """
+        Gets instance from object
+
+        Args:
+            obj (object): UNO object.
+
+        Returns:
+            Margins: Instance that represents object margins.
+        """
+        # this nu is only used to get Property Name
+
+        inst = cls(**kwargs)
+        if not inst._is_valid_obj(obj):
+            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
+
+        for attrib in inst._props:
+            inst._set(attrib, mProps.Props.get(obj, attrib))
+        return inst
+
+    # endregion from_obj()
+    @property
+    def prop_format_kind(self) -> FormatKind:
+        """Gets the kind of style"""
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.PAGE
+        return self._format_kind_prop
+
+    @property
+    def prop_top(self) -> UnitMM | None:
+        """Gets/Sets Top value"""
+        pv = cast(int, self._get(self._props.top))
+        if pv is None:
+            return None
+        return UnitMM.from_mm100(pv)
+
+    @prop_top.setter
+    def prop_top(self, value: float | UnitObj | None) -> None:
+        self._check(value, "top")
+        if value is None:
+            self._remove(self._props.top)
+            return
+        try:
+            self._set(self._props.top, value.get_value_mm100())
+        except AttributeError:
+            self._set(self._props.top, UnitConvert.convert_mm_mm100(value))
+
+    @property
+    def prop_bottom(self) -> UnitMM | None:
+        """Gets/Sets Bottom value"""
+        pv = cast(int, self._get(self._props.bottom))
+        if pv is None:
+            return None
+        return UnitMM.from_mm100(pv)
+
+    @prop_bottom.setter
+    def prop_bottom(self, value: float | UnitObj | None) -> None:
+        self._check(value, "bottom")
+        if value is None:
+            self._remove(self._props.bottom)
+            return
+        try:
+            self._set(self._props.bottom, value.get_value_mm100())
+        except AttributeError:
+            self._set(self._props.bottom, UnitConvert.convert_mm_mm100(value))
+
+    @property
+    def prop_left(self) -> UnitMM | None:
+        """Gets/Sets Left value"""
+        pv = cast(int, self._get(self._props.left))
+        if pv is None:
+            return None
+        return UnitMM.from_mm100(pv)
+
+    @prop_left.setter
+    def prop_left(self, value: float | UnitObj | None) -> None:
+        self._check(value, "left")
+        if value is None:
+            self._remove(self._props.left)
+            return
+        try:
+            self._set(self._props.left, value.get_value_mm100())
+        except AttributeError:
+            self._set(self._props.left, UnitConvert.convert_mm_mm100(value))
+
+    @property
+    def prop_right(self) -> UnitMM | None:
+        """Gets/Sets Right value"""
+        pv = cast(int, self._get(self._props.right))
+        if pv is None:
+            return None
+        return UnitMM.from_mm100(pv)
+
+    @prop_right.setter
+    def prop_right(self, value: float | UnitObj | None) -> None:
+        self._check(value, "right")
+        if value is None:
+            self._remove(self._props.right)
+            return
+        try:
+            self._set(self._props.right, value.get_value_mm100())
+        except AttributeError:
+            self._set(self._props.right, UnitConvert.convert_mm_mm100(value))
+
+    @property
+    def prop_gutter(self) -> UnitMM | None:
+        """Gets/Sets Gutter value"""
+        pv = cast(int, self._get(self._props.gutter))
+        if pv is None:
+            return None
+        return UnitMM.from_mm100(pv)
+
+    @prop_gutter.setter
+    def prop_gutter(self, value: float | UnitObj | None) -> None:
+        self._check(value, "gutter")
+        if value is None:
+            self._remove(self._props.gutter)
+            return
+        try:
+            self._set(self._props.gutter, value.get_value_mm100())
+        except AttributeError:
+            self._set(self._props.gutter, UnitConvert.convert_mm_mm100(value))
+
+    @property
+    def _props(self) -> MarginProps:
+        try:
+            return self._props_internal_attributes
+        except AttributeError:
+            self._props_internal_attributes = MarginProps(
+                left="LeftMargin", right="RightMargin", top="TopMargin", bottom="BottomMargin", gutter="GutterMargin"
+            )
+        return self._props_internal_attributes
+
+    @property
+    def default(self: _TMargins) -> _TMargins:  # type: ignore[misc]
+        """Gets Margin Default. Static Property."""
+        try:
+            return self._DEFAULT_INST
+        except AttributeError:
+            inst = self.__class__(_cattribs=self._get_internal_cattribs())
+            for attrib in inst._props:
+                inst._set(attrib, 2000)
+            inst._set(inst._props.gutter, 0)
+            inst._is_default_inst = True
+            self._DEFAULT_INST = inst
+        return self._DEFAULT_INST

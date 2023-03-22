@@ -58,7 +58,7 @@ def test_calc(loader) -> None:
 
         f_style = Properties.from_obj(cell)
         assert f_style.prop_wrap_auto == style.prop_wrap_auto
-        assert f_style.prop_shirnk_to_fit == style.prop_shirnk_to_fit
+        assert f_style.prop_shrink_to_fit == style.prop_shrink_to_fit
         assert f_style.prop_direction == style.prop_direction
         # ====================================================
 

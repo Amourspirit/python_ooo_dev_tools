@@ -1,6 +1,9 @@
 import uno
 from ooo.dyn.style.break_type import BreakType as BreakType
-from ....style.para.kind import StyleParaKind as StyleParaKind
-from .....modify.para.text_flow.breaks import Breaks as Breaks, InnerBreaks as InnerBreaks
-from .....modify.para.text_flow.flow_options import FlowOptions as FlowOptions, InnerFlowOptions as InnerFlowOptions
-from .....modify.para.text_flow.hyphenation import Hyphenation as Hyphenation, InnerHyphenation as InnerHyphenation
+from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
+from ooodev.format.inner.modify.write.para.text_flow.breaks import InnerBreaks as InnerBreaks
+from ooodev.format.inner.modify.write.para.text_flow.breaks import Breaks as Breaks
+from ooodev.format.inner.modify.write.para.text_flow.flow_options import InnerFlowOptions as InnerFlowOptions
+from ooodev.format.inner.modify.write.para.text_flow.flow_options import FlowOptions as FlowOptions
+from ooodev.format.inner.modify.write.para.text_flow.hyphenation import InnerHyphenation as InnerHyphenation
+from ooodev.format.inner.modify.write.para.text_flow.hyphenation import Hyphenation as Hyphenation

@@ -1,17 +1,13 @@
 import uno
 from ooo.dyn.drawing.rectangle_point import RectanglePoint as RectanglePoint
-from .....utils.data_type.offset import Offset as Offset
-from ....preset.preset_image import PresetImageKind as PresetImageKind
-from ....draw.style.lookup import (
-    FamilyCell as FamilyCell,
-    FamilyDefault as FamilyDefault,
-    FamilyGraphics as FamilyGraphics,
-)
-from ....direct.fill.area.img import (
-    SizeMM as SizeMM,
-    SizePercent as SizePercent,
-    OffsetColumn as OffsetColumn,
-    OffsetRow as OffsetRow,
-    ImgStyleKind as ImgStyleKind,
-)
-from ....modify.fill.area.img import Img as Img
+from ooodev.utils.data_type.offset import Offset as Offset
+from ooodev.format.inner.preset.preset_image import PresetImageKind as PresetImageKind
+from ooodev.format.draw.style.lookup import FamilyCell as FamilyCell
+from ooodev.format.draw.style.lookup import FamilyDefault as FamilyDefault
+from ooodev.format.draw.style.lookup import FamilyGraphics as FamilyGraphics
+from ooodev.format.inner.direct.write.fill.area.img import SizeMM as SizeMM
+from ooodev.format.inner.direct.write.fill.area.img import SizePercent as SizePercent
+from ooodev.format.inner.direct.write.fill.area.img import OffsetColumn as OffsetColumn
+from ooodev.format.inner.direct.write.fill.area.img import OffsetRow as OffsetRow
+from ooodev.format.inner.direct.write.fill.area.img import ImgStyleKind as ImgStyleKind
+from ooodev.format.inner.modify.write.fill.area.img import Img as Img

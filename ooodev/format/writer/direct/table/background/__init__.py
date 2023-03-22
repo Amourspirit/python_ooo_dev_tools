@@ -2,16 +2,14 @@ from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
 from ooo.dyn.drawing.rectangle_point import RectanglePoint as RectanglePoint
 from ooo.dyn.drawing.hatch_style import HatchStyle as HatchStyle
 
-from ......utils.data_type.offset import Offset as Offset
-from ......utils.data_type.color_range import ColorRange as ColorRange
-from .....preset.preset_image import PresetImageKind as PresetImageKind
-from .....direct.fill.area.img import (
-    ImgStyleKind as ImgStyleKind,
-    SizeMM as SizeMM,
-    SizePercent as SizePercent,
-    Offset as Offset,
-    OffsetColumn as OffsetColumn,
-    OffsetRow as OffsetRow,
-)
-from .....direct.table.background.color import Color as Color
-from .....direct.table.background.img import Img as Img
+from ooodev.utils.data_type.offset import Offset as Offset
+from ooodev.utils.data_type.color_range import ColorRange as ColorRange
+from ooodev.format.inner.preset.preset_image import PresetImageKind as PresetImageKind
+from ooodev.format.inner.direct.write.fill.area.img import ImgStyleKind as ImgStyleKind
+from ooodev.format.inner.direct.write.fill.area.img import SizeMM as SizeMM
+from ooodev.format.inner.direct.write.fill.area.img import SizePercent as SizePercent
+from ooodev.format.inner.direct.write.fill.area.img import Offset as Offset
+from ooodev.format.inner.direct.write.fill.area.img import OffsetColumn as OffsetColumn
+from ooodev.format.inner.direct.write.fill.area.img import OffsetRow as OffsetRow
+from ooodev.format.inner.direct.write.table.background.color import Color as Color
+from ooodev.format.inner.direct.write.table.background.img import Img as Img

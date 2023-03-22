@@ -25,7 +25,7 @@ def test_write(loader, para_text) -> None:
         if not Lo.bridge_connector.headless:
             Write.append_para(cursor=cursor, text=para_text)
 
-        style = Protect(size=True, postiion=True, content=True, style_name=StyleFrameKind.FRAME)
+        style = Protect(size=True, position=True, content=True, style_name=StyleFrameKind.FRAME)
 
         style.apply(doc)
         # props = style.get_style_props(doc)
