@@ -43,7 +43,7 @@ def test_write(loader, para_text) -> None:
             horizontal=Horizontal(position=HoriOrient.CENTER, rel=RelHoriOrient.LEFT_PARAGRAPH_BORDER),
             vertical=Vertical(position=VertOrient.CENTER, rel=RelVertOrient.PAGE_TEXT_AREA),
             mirror_even=False,
-            keep_boundries=False,
+            keep_boundaries=False,
         )
 
         frame = Write.add_text_frame(
@@ -64,13 +64,13 @@ def test_write(loader, para_text) -> None:
         assert f_style.prop_vertical.position == style.prop_vertical.position
         assert f_style.prop_vertical.rel == style.prop_vertical.rel
         assert f_style.prop_mirror_even == style.prop_mirror_even
-        assert f_style.prop_keep_boundries == style.prop_keep_boundries
+        assert f_style.prop_keep_boundaries == style.prop_keep_boundaries
 
         style = Position(
             horizontal=Horizontal(position=HoriOrient.LEFT_OR_INSIDE, rel=RelHoriOrient.ENTIRE_PAGE),
             vertical=Vertical(position=VertOrient.BOTTOM, rel=RelVertOrient.PAGE_TEXT_AREA),
             mirror_even=True,
-            keep_boundries=True,
+            keep_boundaries=True,
         )
 
         style.apply(frame)
@@ -80,13 +80,13 @@ def test_write(loader, para_text) -> None:
         assert f_style.prop_vertical.position == style.prop_vertical.position
         assert f_style.prop_vertical.rel == style.prop_vertical.rel
         assert f_style.prop_mirror_even == style.prop_mirror_even
-        assert f_style.prop_keep_boundries == style.prop_keep_boundries
+        assert f_style.prop_keep_boundaries == style.prop_keep_boundaries
 
         style = Position(
             horizontal=Horizontal(position=HoriOrient.FROM_LEFT_OR_INSIDE, rel=RelHoriOrient.ENTIRE_PAGE),
             vertical=Vertical(position=VertOrient.CENTER, rel=RelVertOrient.ENTIRE_PAGE_OR_ROW),
             mirror_even=False,
-            keep_boundries=False,
+            keep_boundaries=False,
         )
 
         style.apply(frame)
@@ -96,7 +96,7 @@ def test_write(loader, para_text) -> None:
         assert f_style.prop_vertical.position == style.prop_vertical.position
         assert f_style.prop_vertical.rel == style.prop_vertical.rel
         assert f_style.prop_mirror_even == style.prop_mirror_even
-        assert f_style.prop_keep_boundries == style.prop_keep_boundries
+        assert f_style.prop_keep_boundaries == style.prop_keep_boundaries
 
         Lo.delay(delay)
     finally:

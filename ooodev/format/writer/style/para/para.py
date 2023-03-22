@@ -1,12 +1,14 @@
+# region Import
 from __future__ import annotations
 from typing import Any, Tuple
 
-from .....events.args.cancel_event_args import CancelEventArgs
-from .....events.args.key_val_cancel_args import KeyValCancelArgs
-from .....meta.static_prop import static_prop
-from ....kind.format_kind import FormatKind
-from ....style_base import StyleName
+from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
+from ooodev.meta.static_prop import static_prop
+from ooodev.format.kind.format_kind import FormatKind
+from ooodev.format.style_base import StyleName
 from .kind import StyleParaKind as StyleParaKind
+
+# endregion Import
 
 
 class Para(StyleName):
@@ -51,7 +53,7 @@ class Para(StyleName):
         # there is only one style property for this class.
         # if ParaStyleName is set to "" then an error is raised.
         # Solution is set to "Standard" Which LibreOffice recognizes and set to ""
-        # this event covers apply() and resore()
+        # this event covers apply() and restore()
         if event_args.value == "":
             event_args.value = Para.default.prop_name
         super().on_property_setting(source, event_args)
@@ -75,8 +77,8 @@ class Para(StyleName):
         return Para(StyleParaKind.SALUTATION)
 
     @property
-    def complinentary_close(self) -> Para:
-        """Style Complinentary Close"""
+    def complimentary_close(self) -> Para:
+        """Style Complimentary Close"""
         return Para(StyleParaKind.SALUTATION)
 
     @property

@@ -6,7 +6,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.direct.para.outline_list import InnerOutline, LevelKind
+from ooodev.format.writer.direct.para.outline_list import Outline, LevelKind
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
@@ -17,69 +17,69 @@ if TYPE_CHECKING:
 
 
 def test_props() -> None:
-    ol = InnerOutline(level=LevelKind.TEXT_BODY)
+    ol = Outline(level=LevelKind.TEXT_BODY)
     assert ol._get("OutlineLevel") == LevelKind.TEXT_BODY
     assert ol.prop_level == LevelKind.TEXT_BODY
 
 
 def test_default() -> None:
-    ol = InnerOutline().default
+    ol = Outline().default
     assert ol._get("OutlineLevel") == LevelKind.TEXT_BODY
     assert ol.prop_level == LevelKind.TEXT_BODY
 
 
 def test_text_body() -> None:
-    ol = InnerOutline().text_body
+    ol = Outline().text_body
     assert ol.prop_level == LevelKind.TEXT_BODY
 
 
 def test_level_01() -> None:
-    ol = InnerOutline().level_01
+    ol = Outline().level_01
     assert ol.prop_level == LevelKind.LEVEL_01
 
 
 def test_level_02() -> None:
-    ol = InnerOutline().level_02
+    ol = Outline().level_02
     assert ol.prop_level == LevelKind.LEVEL_02
 
 
 def test_level_03() -> None:
-    ol = InnerOutline().level_03
+    ol = Outline().level_03
     assert ol.prop_level == LevelKind.LEVEL_03
 
 
 def test_level_04() -> None:
-    ol = InnerOutline().level_04
+    ol = Outline().level_04
     assert ol.prop_level == LevelKind.LEVEL_04
 
 
 def test_level_05() -> None:
-    ol = InnerOutline().level_05
+    ol = Outline().level_05
     assert ol.prop_level == LevelKind.LEVEL_05
 
 
 def test_level_06() -> None:
-    ol = InnerOutline().level_06
+    ol = Outline().level_06
     assert ol.prop_level == LevelKind.LEVEL_06
 
 
 def test_level_07() -> None:
-    ol = InnerOutline().level_07
+    ol = Outline().level_07
     assert ol.prop_level == LevelKind.LEVEL_07
 
 
 def test_level_08() -> None:
-    ol = InnerOutline().level_08
+    ol = Outline().level_08
     assert ol.prop_level == LevelKind.LEVEL_08
 
 
 def test_level_09() -> None:
-    ol = InnerOutline().level_09
+    ol = Outline().level_09
     assert ol.prop_level == LevelKind.LEVEL_09
 
 
 def test_level_10() -> None:
-    ol = InnerOutline().level_10
+    ol = Outline().level_10
     assert ol.prop_level == LevelKind.LEVEL_10
 
 
@@ -95,7 +95,7 @@ def test_write(loader, para_text) -> None:
     try:
         cursor = Write.get_cursor(doc)
         p_len = len(para_text)
-        Write.append_para(cursor=cursor, text=para_text, styles=(InnerOutline(level=LevelKind.LEVEL_01),))
+        Write.append_para(cursor=cursor, text=para_text, styles=(Outline(level=LevelKind.LEVEL_01),))
 
         cursor.goLeft(1, False)
         cursor.gotoStart(True)
@@ -104,7 +104,7 @@ def test_write(loader, para_text) -> None:
         pp.OutlineLevel == int(LevelKind.LEVEL_01)
         cursor.gotoEnd(False)
 
-        Write.append_para(cursor=cursor, text=para_text, styles=(InnerOutline().level_03,))
+        Write.append_para(cursor=cursor, text=para_text, styles=(Outline().level_03,))
         cursor.goLeft(p_len + 1, False)
         cursor.goRight(p_len, True)
         pp.OutlineLevel == int(LevelKind.LEVEL_03)

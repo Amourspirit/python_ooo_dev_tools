@@ -1,3 +1,3 @@
-from .....calc.style.cell.kind.style_cell_kind import StyleCellKind as StyleCellKind
-from .....modify.cell.background.color import Color as Color
-from .....modify.cell.background.color import InnerColor as InnerColor
+from ooodev.format.calc.style.cell.kind.style_cell_kind import StyleCellKind as StyleCellKind
+from ooodev.format.inner.modify.calc.background.color import Color as Color
+from ooodev.format.inner.modify.calc.background.color import InnerColor as InnerColor

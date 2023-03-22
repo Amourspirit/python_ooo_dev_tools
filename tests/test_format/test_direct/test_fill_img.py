@@ -9,7 +9,7 @@ import uno
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.draw import Draw
-from ooodev.format.direct.fill.area.img import (
+from ooodev.format.draw.direct.area import (
     Img,
     PresetImageKind,
     ImgStyleKind,
@@ -20,7 +20,6 @@ from ooodev.format.direct.fill.area.img import (
     OffsetRow,
     RectanglePoint,
 )
-
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import FillProperties  # service

@@ -1,6 +1,7 @@
 # region Imports
 from __future__ import annotations
 from typing import Any, Dict, NamedTuple, Tuple, TYPE_CHECKING, Type, TypeVar, cast, overload
+from abc import ABC
 import uno
 import random
 import string
@@ -18,10 +19,8 @@ from ..utils.type_var import EventCallback
 from .kind.format_kind import FormatKind
 from ..events.format_named_event import FormatNamedEvent as FormatNamedEvent
 from ..exceptions import ex as mEx
-from .direct.common.props.prop_pair import PropPair
+from ooodev.format.inner.common.props.prop_pair import PropPair
 
-# from ..events.event_singleton import _Events
-from abc import ABC
 
 from com.sun.star.container import XNameContainer
 from com.sun.star.beans import XPropertySet
@@ -37,6 +36,7 @@ TStyleMulti = TypeVar(name="TStyleMulti", bound="StyleMulti")
 TStyleName = TypeVar(name="TStyleName", bound="StyleName")
 _TStyleModifyMulti = TypeVar(name="_TStyleModifyMulti", bound="StyleModifyMulti")
 # endregion Type Vars
+
 
 # region Meta
 class MetaStyle(type):
@@ -56,6 +56,7 @@ class MetaStyle(type):
 
 
 # endregion Meta
+
 
 # region Style Base Class
 class StyleBase(metaclass=MetaStyle):
@@ -78,7 +79,7 @@ class StyleBase(metaclass=MetaStyle):
         self._dv = {}
         self._dv_bak = None
 
-        for (key, value) in kwargs.items():
+        for key, value in kwargs.items():
             if key.startswith("__"):
                 # internal and not consider a property
                 continue
@@ -196,7 +197,7 @@ class StyleBase(metaclass=MetaStyle):
         kvargs = KeyValCancelArgs("style_base", key=key, value=val)
         cargs = CancelEventArgs.from_args(kvargs)
         self._events.trigger(FormatNamedEvent.STYLE_SETTING, kvargs)
-        self._events.trigger(FormatNamedEvent.STYLE_MODIFING, cargs)
+        self._events.trigger(FormatNamedEvent.STYLE_MODIFYING, cargs)
         if kvargs.cancel:
             return False
         if cargs.cancel:
@@ -209,7 +210,7 @@ class StyleBase(metaclass=MetaStyle):
     def _clear(self) -> None:
         """Clears all properties"""
         cargs = CancelEventArgs("style_base")
-        self._events.trigger(FormatNamedEvent.STYLE_MODIFING, cargs)
+        self._events.trigger(FormatNamedEvent.STYLE_MODIFYING, cargs)
         self._events.trigger(FormatNamedEvent.STYLE_CLEARING, cargs)
         if cargs.cancel:
             return
@@ -225,7 +226,7 @@ class StyleBase(metaclass=MetaStyle):
         cargs = CancelEventArgs("style_base")
         cargs.event_data = key
         self._events.trigger(FormatNamedEvent.STYLE_REMOVING, cargs)
-        self._events.trigger(FormatNamedEvent.STYLE_MODIFING, cargs)
+        self._events.trigger(FormatNamedEvent.STYLE_MODIFYING, cargs)
         if cargs.cancel:
             return
         if self._has(key):
@@ -256,7 +257,7 @@ class StyleBase(metaclass=MetaStyle):
         cargs = CancelEventArgs("style_base")
         cargs.event_data: Dict[str, Any] | StyleBase = value
         self._events.trigger(FormatNamedEvent.STYLE_UPDATING, cargs)
-        self._events.trigger(FormatNamedEvent.STYLE_MODIFING, cargs)
+        self._events.trigger(FormatNamedEvent.STYLE_MODIFYING, cargs)
         if cargs.cancel:
             return
         dv = self._get_properties()
@@ -591,7 +592,7 @@ class StyleBase(metaclass=MetaStyle):
         # called by _clear()
         pass
 
-    def _on_modifing(self, source: Any, event_args: CancelEventArgs) -> None:
+    def _on_modifying(self, source: Any, event_args: CancelEventArgs) -> None:
         # can be overridden in child classes to manage or modify setting
         # called by _set(), _remove(), _clear(), _update()
         pass
@@ -807,6 +808,7 @@ class StyleBase(metaclass=MetaStyle):
 
 # endregion Style Base Class
 
+
 # region Module Internal Helper Classes
 class _StyleMultArgs:
     """Generic Args"""
@@ -843,6 +845,7 @@ class _StyleInfo(NamedTuple):
 
 
 # endregion Module Internal Helper Classes
+
 
 # region Style Multi Class
 class StyleMulti(StyleBase):
@@ -1345,6 +1348,7 @@ class StyleModifyMulti(StyleMulti):
 
 # endregion Style Modify Multi class
 
+
 # region StyleName Class
 class StyleName(StyleBase):
     # region Init
@@ -1376,10 +1380,10 @@ class StyleName(StyleBase):
     # endregion internal methods
 
     # region Overrides
-    def _on_modifing(self, source: Any, event: CancelEventArgs) -> None:
+    def _on_modifying(self, source: Any, event: CancelEventArgs) -> None:
         if self._is_default_inst:
             raise ValueError("Modifying a default instance is not allowed")
-        return super()._on_modifing(source, event)
+        return super()._on_modifying(source, event)
 
     # endregion Overrides
 
@@ -1447,6 +1451,7 @@ class StyleName(StyleBase):
 
 
 # endregion StyleName Class
+
 
 # region Props Property event handlers
 def _on_props_setting(source: Any, event_args: KeyValCancelArgs, *args, **kwargs) -> None:

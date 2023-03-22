@@ -3,19 +3,25 @@ Module for Page Style Fill Color Fill Color.
 
 .. versionadded:: 0.9.0
 """
+# region Import
 from __future__ import annotations
 from typing import Tuple, overload
 
 import uno
-from .....exceptions import ex as mEx
-from .....utils import info as mInfo
-from .....utils import lo as mLo
-from .....utils.type_var import T
-from ....kind.format_kind import FormatKind
-from ....style_base import StyleBase, EventArgs, CancelEventArgs, FormatNamedEvent
-from ...style.page.kind import WriterStylePageKind
-
 from com.sun.star.beans import XPropertySet
+
+from ooodev.exceptions import ex as mEx
+from ooodev.utils import info as mInfo
+from ooodev.utils import lo as mLo
+from ooodev.utils.type_var import T
+from ooodev.format.kind.format_kind import FormatKind
+from ooodev.format.style_base import StyleBase
+from ooodev.format.writer.style.page.kind import WriterStylePageKind
+from ooodev.events.format_named_event import FormatNamedEvent
+from ooodev.events.args.event_args import EventArgs
+from ooodev.events.args.cancel_event_args import CancelEventArgs
+
+# endregion Import
 
 # LibreOffice seems to have an unresolved bug with Background color.
 # https://bugs.documentfoundation.org/show_bug.cgi?id=99125
@@ -68,7 +74,7 @@ class PageStyleBase(StyleBase):
         try:
             if self._is_valid_obj(obj):
                 p = self._get_style_props(obj)
-                # Could call p.setPropertyValue() here insetead of Props.set()
+                # Could call p.setPropertyValue() here instead of Props.set()
                 # but by calling Props.set() events are triggered.
                 self._props_set(p, **self._get_properties())
                 eargs = EventArgs.from_args(cargs)

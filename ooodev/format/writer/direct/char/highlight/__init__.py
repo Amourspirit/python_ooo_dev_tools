@@ -1,2 +1,2 @@
 import uno
-from .....direct.char.highlight.highlight import Highlight as InnerHighlight
+from ooodev.format.inner.direct.write.char.highlight.highlight import Highlight as Highlight

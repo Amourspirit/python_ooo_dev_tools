@@ -1,1 +1,1 @@
-from .....direct.cell.cell_protection.cell_protection import CellProtection as CellProtection
+from ooodev.format.inner.direct.calc.cell_protection.cell_protection import CellProtection as CellProtection

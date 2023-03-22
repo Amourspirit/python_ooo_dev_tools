@@ -1,12 +1,12 @@
 from __future__ import annotations
 from typing import Any, Tuple, overload
 
-from .....events.args.key_val_cancel_args import KeyValCancelArgs
-from .....meta.static_prop import static_prop
-from ....kind.format_kind import FormatKind
-from ....style_base import StyleName
-from .....utils import props as mProps
-from .....exceptions import ex as mEx
+from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
+from ooodev.meta.static_prop import static_prop
+from ooodev.format.kind.format_kind import FormatKind
+from ooodev.format.style_base import StyleName
+from ooodev.utils import props as mProps
+from ooodev.exceptions import ex as mEx
 from .kind.style_page_kind import StylePageKind
 
 

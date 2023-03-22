@@ -6,7 +6,9 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.direct.para.outline_list import OutlineList, LevelKind, StyleListKind
+
+# from ooodev.format.inner.direct.write.para.outline_list import OutlineList, LevelKind, StyleListKind
+from ooodev.format.writer.direct.para.outline_list import Outline, LineNum, ListStyle, LevelKind, StyleListKind
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
@@ -30,7 +32,7 @@ def test_write(loader, para_text) -> None:
         cursor = Write.get_cursor(doc)
         p_len = len(para_text)
         # Test Outline
-        Write.append_para(cursor=cursor, text=para_text, styles=(OutlineList(ol_level=LevelKind.LEVEL_01),))
+        Write.append_para(cursor=cursor, text=para_text, styles=(Outline(level=LevelKind.LEVEL_01),))
 
         cursor.goLeft(1, False)
         cursor.gotoStart(True)
@@ -41,7 +43,7 @@ def test_write(loader, para_text) -> None:
 
         # test ListStyle
         start_pos = Write.get_position(cursor)
-        ls = OutlineList(ls_style=StyleListKind.NUM_123)
+        ls = ListStyle(list_style=StyleListKind.NUM_123)
         ls.apply(cursor)
         for i in range(1, 6):
             Write.append_para(cursor=cursor, text=f"Num Point {i}")
@@ -53,7 +55,7 @@ def test_write(loader, para_text) -> None:
         ls.default.apply(cursor)
 
         # test LineNum
-        Write.append_para(cursor=cursor, text=para_text, styles=(OutlineList(ln_num=6),))
+        Write.append_para(cursor=cursor, text=para_text, styles=(LineNum(num_start=6),))
         cursor.goLeft(p_len + 1, False)
         cursor.goRight(p_len, True)
         assert pp.ParaLineNumberCount == True
