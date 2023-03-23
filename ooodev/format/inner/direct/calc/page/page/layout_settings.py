@@ -40,8 +40,8 @@ class LayoutSettings(StyleBase):
         *,
         layout: PageStyleLayout | None = None,
         numbers: NumberingTypeEnum | None = None,
-        ref_style: str | StyleParaKind | None = None,
-        right_gutter: bool | None = None,
+        align_hori: bool | None = None,
+        align_vert: bool | None = None,
     ) -> None:
         """
         Constructor
@@ -49,15 +49,19 @@ class LayoutSettings(StyleBase):
         Args:
             layout (PageStyleLayout, optional): Specifies the layout of the page.
             numbers (NumberingTypeEnum, optional): Specifies the default numbering type for this page.
-            ref_style (str, StyleParaKind, optional): Specifies the name of the paragraph style that is used as reference of the register mode.
-            right_gutter (bool, optional): Specifies that the page gutter shall be placed on the right side of the page.
+            align_hori (bool, optional): Specifies if table is aligned horizontaly.
+            align_vert (bool, optional): Specifies if table is aligned vertically.
         """
 
         super().__init__()
-        self.prop_layout = layout
-        self.prop_numbers = numbers
-        self.prop_ref_style = ref_style
-        self.prop_right_gutter = right_gutter
+        if layout is not None:
+            self.prop_layout = layout
+        if numbers is not None:
+            self.prop_numbers = numbers
+        if align_hori is not None:
+            self.prop_align_hori = align_hori
+        if align_vert is not None:
+            self.prop_align_vert = align_vert
 
     # region Overrides
 
@@ -125,8 +129,8 @@ class LayoutSettings(StyleBase):
 
         set_prop("PageStyleLayout", inst)
         set_prop("NumberingType", inst)
-        set_prop("RegisterParagraphStyle", inst)
-        set_prop("RtlGutter", inst)
+        set_prop("CenterHorizontally", inst)
+        set_prop("CenterVertically", inst)
         return inst
 
     # endregion from_obj()
@@ -170,27 +174,25 @@ class LayoutSettings(StyleBase):
         self._set("NumberingType", value.value)
 
     @property
-    def prop_ref_style(self) -> str | None:
-        """Gets/Sets the name of the paragraph style that is used as reference of the register mode."""
-        return self._get("RegisterParagraphStyle")
+    def prop_align_hori(self) -> bool | None:
+        """Gets/Sets Table align horizontally"""
+        return self._get("CenterHorizontally")
 
-    @prop_ref_style.setter
-    def prop_ref_style(self, value: str | StyleParaKind | None) -> None:
+    @prop_align_hori.setter
+    def prop_align_hori(self, value: bool | None) -> None:
         if value is None:
-            self._remove("RegisterParagraphStyle")
+            self._remove("CenterHorizontally")
             return
-
-        self._set("RegisterParagraphStyle", str(value))
+        self._set("CenterHorizontally", value)
 
     @property
-    def prop_right_gutter(self) -> bool | None:
-        """Gets/Sets if the page gutter is placed on the right side of the page."""
-        return self._get("RtlGutter")
+    def prop_align_vert(self) -> bool | None:
+        """Gets/Sets Table align Vertically"""
+        return self._get("CenterVertically")
 
-    @prop_right_gutter.setter
-    def prop_right_gutter(self, value: bool | None) -> None:
+    @prop_align_vert.setter
+    def prop_align_vert(self, value: bool | None) -> None:
         if value is None:
-            self._remove("RtlGutter")
+            self._remove("CenterVertically")
             return
-
-        self._set("RtlGutter", str(value))
+        self._set("CenterVertically", value)

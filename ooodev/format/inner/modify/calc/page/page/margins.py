@@ -2,14 +2,14 @@
 from __future__ import annotations
 from typing import cast
 from ooodev.proto.unit_obj import UnitObj
-from ooodev.format.writer.style.page.kind import WriterStylePageKind as WriterStylePageKind
-from ..page_style_base_multi import PageStyleBaseMulti
-from ooodev.format.inner.direct.write.page.page.margins import Margins as InnerMargins
+from ooodev.format.calc.style.page.kind import CalcStylePageKind as CalcStylePageKind
+from ooodev.format.inner.direct.calc.page.page.margins import Margins as InnerMargins
+from ...cell_style_base_multi import CellStyleBaseMulti
 
 # endregion Import
 
 
-class Margins(PageStyleBaseMulti):
+class Margins(CellStyleBaseMulti):
     """
     Page Style Margins
 
@@ -23,8 +23,7 @@ class Margins(PageStyleBaseMulti):
         right: float | UnitObj | None = None,
         top: float | UnitObj | None = None,
         bottom: float | UnitObj | None = None,
-        gutter: float | UnitObj | None = None,
-        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
+        style_name: CalcStylePageKind | str = CalcStylePageKind.DEFAULT,
         style_family: str = "PageStyles",
     ) -> None:
         """
@@ -35,8 +34,7 @@ class Margins(PageStyleBaseMulti):
             right (float, optional): Right Margin Value in ``mm`` units  or :ref:`proto_unit_obj`.
             top (float, optional): Top Margin Value in ``mm`` units  or :ref:`proto_unit_obj`.
             bottom (float, optional): Bottom Margin Value in ``mm`` units  or :ref:`proto_unit_obj`.
-            gutter (float, optional): Gutter Margin Value in ``mm`` units  or :ref:`proto_unit_obj`.
-            style_name (WriterStylePageKind, str, optional): Specifies the Page Style that instance applies to.
+            style_name (CalcStylePageKind, str, optional): Specifies the Page Style that instance applies to.
                 Default is Default Page Style.
             style_family (str, optional): Style family. Default ``PageStyles``.
 
@@ -44,7 +42,7 @@ class Margins(PageStyleBaseMulti):
             None:
         """
 
-        direct = InnerMargins(left=left, right=right, top=top, bottom=bottom, gutter=gutter)
+        direct = InnerMargins(left=left, right=right, top=top, bottom=bottom)
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
@@ -54,7 +52,7 @@ class Margins(PageStyleBaseMulti):
     def from_style(
         cls,
         doc: object,
-        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
+        style_name: CalcStylePageKind | str = CalcStylePageKind.DEFAULT,
         style_family: str = "PageStyles",
     ) -> Margins:
         """
@@ -62,7 +60,7 @@ class Margins(PageStyleBaseMulti):
 
         Args:
             doc (object): UNO Document Object.
-            style_name (WriterStylePageKind, str, optional): Specifies the Paragraph Style that instance applies to.
+            style_name (CalcStylePageKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.
             style_family (str, optional): Style family. Default ``PageStyles``.
 
@@ -80,7 +78,7 @@ class Margins(PageStyleBaseMulti):
         return self._style_name
 
     @prop_style_name.setter
-    def prop_style_name(self, value: str | WriterStylePageKind):
+    def prop_style_name(self, value: str | CalcStylePageKind):
         self._style_name = str(value)
 
     @property

@@ -38,6 +38,7 @@ Submodules
    ooodev.format.inner.common.props.image_rotation_props
    ooodev.format.inner.common.props.img_para_area_props
    ooodev.format.inner.common.props.list_style_props
+   ooodev.format.inner.common.props.page_margin_props
    ooodev.format.inner.common.props.prop_pair
    ooodev.format.inner.common.props.shape_shadow_props
    ooodev.format.inner.common.props.struct_border_table_props

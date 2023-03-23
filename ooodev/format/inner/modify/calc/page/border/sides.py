@@ -1,17 +1,64 @@
 # region Imports
 from __future__ import annotations
-from typing import cast
+from typing import Tuple, cast
 import uno
 
-from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
+from ooodev.format.inner.common.abstract.abstract_sides import AbstractSides
+from ooodev.format.inner.common.props.border_props import BorderProps
 from ooodev.format.inner.direct.structs.side import Side as Side, LineSize as LineSize
 from ooodev.format.inner.direct.write.para.border.sides import Sides as InnerSides
-from ..page_style_base_multi import PageStyleBaseMulti
+from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.format.calc.style.page.kind import CalcStylePageKind as CalcStylePageKind
+from ...cell_style_base_multi import CellStyleBaseMulti
 
 # endregion Imports
 
 
-class Sides(PageStyleBaseMulti):
+class InnerSides(AbstractSides):
+    """
+    Calc Page Border.
+
+    Any properties starting with ``prop_`` set or get current instance values.
+
+    All methods starting with ``fmt_`` can be used to chain together Sides properties.
+
+    .. versionadded:: 0.9.0
+    """
+
+    # region methods
+    def _supported_services(self) -> Tuple[str, ...]:
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = ("com.sun.star.style.PageStyle",)
+        return self._supported_services_values
+
+    # endregion methods
+
+    # region Properties
+    @property
+    def prop_format_kind(self) -> FormatKind:
+        """Gets the kind of style"""
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.PAGE | FormatKind.STYLE
+        return self._format_kind_prop
+
+    @property
+    def _props(self) -> BorderProps:
+        try:
+            return self._props_internal_attributes
+        except AttributeError:
+            self._props_internal_attributes = BorderProps(
+                left="LeftBorder", top="TopBorder", right="RightBorder", bottom="BottomBorder"
+            )
+        return self._props_internal_attributes
+
+    # endregion Properties
+
+
+class Sides(CellStyleBaseMulti):
     """
     Page Style Border Sides.
 
@@ -26,7 +73,7 @@ class Sides(PageStyleBaseMulti):
         top: Side | None = None,
         bottom: Side | None = None,
         all: Side | None = None,
-        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
+        style_name: CalcStylePageKind | str = CalcStylePageKind.DEFAULT,
         style_family: str = "PageStyles",
     ) -> None:
         """
@@ -39,7 +86,7 @@ class Sides(PageStyleBaseMulti):
             bottom (Side | None, optional): Determines the line style at the bottom edge.
             all (Side | None, optional): Determines the line style at the top, bottom, left, right edges.
                 If this argument has a value then arguments ``top``, ``bottom``, ``left``, ``right`` are ignored
-            style_name (WriterStylePageKind, str, optional): Specifies the Page Style that instance applies to.
+            style_name (CalcStylePageKind, str, optional): Specifies the Page Style that instance applies to.
                 Default is Default Page Style.
             style_family (str, optional): Style family. Default ``PageStyles``.
 
@@ -57,7 +104,7 @@ class Sides(PageStyleBaseMulti):
     def from_style(
         cls,
         doc: object,
-        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
+        style_name: CalcStylePageKind | str = CalcStylePageKind.DEFAULT,
         style_family: str = "PageStyles",
     ) -> Sides:
         """
@@ -65,7 +112,7 @@ class Sides(PageStyleBaseMulti):
 
         Args:
             doc (object): UNO Document Object.
-            style_name (WriterStylePageKind, str, optional): Specifies the Paragraph Style that instance applies to.
+            style_name (CalcStylePageKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.
             style_family (str, optional): Style family. Default ``PageStyles``.
 
@@ -83,7 +130,7 @@ class Sides(PageStyleBaseMulti):
         return self._style_name
 
     @prop_style_name.setter
-    def prop_style_name(self, value: str | WriterStylePageKind):
+    def prop_style_name(self, value: str | CalcStylePageKind):
         self._style_name = str(value)
 
     @property

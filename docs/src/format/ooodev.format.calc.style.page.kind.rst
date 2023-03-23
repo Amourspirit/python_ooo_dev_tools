@@ -7,7 +7,7 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
-   ooodev.format.calc.style.page.kind.style_page_kind
+   ooodev.format.calc.style.page.kind.calc_style_page_kind
 
 Module contents
 ---------------

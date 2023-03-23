@@ -12,6 +12,7 @@ Subpackages
    ooodev.format.inner.modify.calc.border
    ooodev.format.inner.modify.calc.cell_protection
    ooodev.format.inner.modify.calc.font
+   ooodev.format.inner.modify.calc.page
 
 Submodules
 ----------

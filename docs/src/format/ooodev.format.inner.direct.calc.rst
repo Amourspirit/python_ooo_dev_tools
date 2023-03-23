@@ -11,6 +11,7 @@ Subpackages
    ooodev.format.inner.direct.calc.background
    ooodev.format.inner.direct.calc.border
    ooodev.format.inner.direct.calc.cell_protection
+   ooodev.format.inner.direct.calc.page
 
 Module contents
 ---------------

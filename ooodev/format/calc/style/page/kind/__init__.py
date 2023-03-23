@@ -1,1 +1,1 @@
-from .style_page_kind import StylePageKind as StylePageKind
+from .calc_style_page_kind import CalcStylePageKind as CalcStylePageKind

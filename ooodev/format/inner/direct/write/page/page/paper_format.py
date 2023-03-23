@@ -151,7 +151,7 @@ class PaperFormat(StyleBase):
         try:
             return self._format_kind_prop
         except AttributeError:
-            self._format_kind_prop = FormatKind.PAGE
+            self._format_kind_prop = FormatKind.PAGE | FormatKind.STYLE
         return self._format_kind_prop
 
     @property

@@ -5,15 +5,15 @@ import uno
 from ooo.dyn.style.page_style_layout import PageStyleLayout as PageStyleLayout
 from ooo.dyn.style.numbering_type import NumberingTypeEnum as NumberingTypeEnum
 
-from ooodev.format.writer.style.page.kind import WriterStylePageKind as WriterStylePageKind
+from ooodev.format.calc.style.page.kind import CalcStylePageKind as CalcStylePageKind
 from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind as StyleParaKind
-from ooodev.format.inner.direct.write.page.page.layout_settings import LayoutSettings as InnerLayoutSettings
-from ..page_style_base_multi import PageStyleBaseMulti
+from ooodev.format.inner.direct.calc.page.page.layout_settings import LayoutSettings as InnerLayoutSettings
+from ...cell_style_base_multi import CellStyleBaseMulti
 
 # endregion Import
 
 
-class LayoutSettings(PageStyleBaseMulti):
+class LayoutSettings(CellStyleBaseMulti):
     """
     Page Layout Setting style
 
@@ -25,9 +25,9 @@ class LayoutSettings(PageStyleBaseMulti):
         *,
         layout: PageStyleLayout | None = None,
         numbers: NumberingTypeEnum | None = None,
-        ref_style: str | StyleParaKind | None = None,
-        right_gutter: bool | None = None,
-        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
+        align_hori: bool | None = None,
+        align_vert: bool | None = None,
+        style_name: CalcStylePageKind | str = CalcStylePageKind.DEFAULT,
         style_family: str = "PageStyles",
     ) -> None:
         """
@@ -36,10 +36,9 @@ class LayoutSettings(PageStyleBaseMulti):
         Args:
             layout (PageStyleLayout, optional): Specifies the layout of the page.
             numbers (NumberingTypeEnum, optional): Specifies the default numbering type for this page.
-            ref_style (str, StyleParaKind, optional): Specifies the name of the paragraph style that is used as
-                reference of the register mode.
-            right_gutter (bool, optional): Specifies that the page gutter shall be placed on the right side of the page.
-            style_name (WriterStylePageKind, str, optional): Specifies the Page Style that instance applies to.
+            align_hori: bool | None = None,
+            align_vert: bool | None = None,
+            style_name (CalcStylePageKind, str, optional): Specifies the Page Style that instance applies to.
                 Default is Default Page Style.
             style_family (str, optional): Style family. Default ``PageStyles``.
 
@@ -47,7 +46,7 @@ class LayoutSettings(PageStyleBaseMulti):
             None:
         """
 
-        direct = InnerLayoutSettings(layout=layout, numbers=numbers, ref_style=ref_style, right_gutter=right_gutter)
+        direct = InnerLayoutSettings(layout=layout, numbers=numbers, align_hori=align_hori, align_vert=align_vert)
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
@@ -57,7 +56,7 @@ class LayoutSettings(PageStyleBaseMulti):
     def from_style(
         cls,
         doc: object,
-        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
+        style_name: CalcStylePageKind | str = CalcStylePageKind.DEFAULT,
         style_family: str = "PageStyles",
     ) -> LayoutSettings:
         """
@@ -65,7 +64,7 @@ class LayoutSettings(PageStyleBaseMulti):
 
         Args:
             doc (object): UNO Document Object.
-            style_name (WriterStylePageKind, str, optional): Specifies the Paragraph Style that instance applies to.
+            style_name (CalcStylePageKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.
             style_family (str, optional): Style family. Default ``PageStyles``.
 
@@ -83,7 +82,7 @@ class LayoutSettings(PageStyleBaseMulti):
         return self._style_name
 
     @prop_style_name.setter
-    def prop_style_name(self, value: str | WriterStylePageKind):
+    def prop_style_name(self, value: str | CalcStylePageKind):
         self._style_name = str(value)
 
     @property
