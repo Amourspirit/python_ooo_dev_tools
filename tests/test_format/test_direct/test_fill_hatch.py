@@ -10,8 +10,10 @@ import uno
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.draw import Draw
-from ooodev.format.direct.fill.area.hatch import Hatch, PresetHatchKind
-from ooodev.format.direct.structs.hatch_struct import HatchStruct
+
+# from ooodev.format.inner.direct.write.fill.area.hatch import Hatch, PresetHatchKind
+from ooodev.format.inner.direct.structs.hatch_struct import HatchStruct
+from ooodev.format.draw.direct.area import Hatch, PresetHatchKind
 from ooodev.utils.color import StandardColor
 from ooodev.utils.table_helper import TableHelper
 

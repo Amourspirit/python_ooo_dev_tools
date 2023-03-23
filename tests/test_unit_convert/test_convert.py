@@ -1,7 +1,11 @@
 from __future__ import annotations
-from ooodev.utils.unit_convert import UnitConvert, Length
 import pytest
 import math
+
+if __name__ == "__main__":
+    pytest.main([__file__])
+
+from ooodev.utils.unit_convert import UnitConvert, Length
 
 
 @pytest.mark.parametrize(

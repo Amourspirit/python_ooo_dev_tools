@@ -8,6 +8,8 @@ Subpackages
    :maxdepth: 4
 
    ooodev.format.calc.direct
+   ooodev.format.calc.modify
+   ooodev.format.calc.style
 
 Module contents
 ---------------

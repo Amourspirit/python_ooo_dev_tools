@@ -38,7 +38,6 @@ def test_write(loader, formula_text) -> None:
         Lo.delay(500)
         GUI.zoom(GUI.ZoomEnum.ZOOM_150_PERCENT)
     try:
-
         cursor = Write.get_cursor(doc)
         size_style = Size(
             width=AbsoluteSize(UnitInch(1.0)),
@@ -50,7 +49,7 @@ def test_write(loader, formula_text) -> None:
             ),
             vertical=Vertical(position=VertOrient.FROM_TOP_OR_BOTTOM, rel=RelVertOrient.MARGIN, amount=12.0),
             mirror_even=False,
-            keep_boundries=False,
+            keep_boundaries=False,
         )
         style_anchor = Anchor(anchor=AnchorKind.AT_CHARACTER)
         style_name = Names(name="formula", desc="Just a test Formula", alt="A real Formula")
@@ -70,7 +69,7 @@ def test_write(loader, formula_text) -> None:
         assert f_style_position.prop_vertical.position == style_position.prop_vertical.position
         assert f_style_position.prop_vertical.rel == style_position.prop_vertical.rel
         assert f_style_position.prop_mirror_even == style_position.prop_mirror_even
-        assert f_style_position.prop_keep_boundries == style_position.prop_keep_boundries
+        assert f_style_position.prop_keep_boundaries == style_position.prop_keep_boundaries
 
         Lo.delay(delay)
     finally:

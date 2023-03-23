@@ -6,8 +6,7 @@ mindmap
     root((format))
         writer
             [direct]
-            ::icon(fa fa-book)
-                char
+                 char
                     highlight
                         id{{Highlight}}
                     hyperlink
@@ -308,8 +307,28 @@ mindmap
                     id{{Font}}
                     id{{FontOnly}}
                     id{{FontEffects}}
-                    id{{FontPosition}}
             [modify]
+                cell
+                    alignment
+                        id{{TextAlign}}
+                        id{{TextOrientation}}
+                        id{{Properties}}
+                    background
+                        id{{Color}}
+                    borders
+                        id{{Borders}}
+                    font
+                        id{{FontOnly}}
+                        id{{FontEffects}}
+                page
+                    borders
+                        id{{Padding}}
+                        id{{Sides}}
+                        id{{Shadow}}
+                    page
+                        id{{LayoutSettings}}
+                        id{{Margins}}
+                        id{{PaperFormat}}
             [style]
         draw
             [direct]

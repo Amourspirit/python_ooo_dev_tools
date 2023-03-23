@@ -8,6 +8,11 @@ from typing import List, Tuple, TypeVar, NamedTuple, overload
 from enum import IntEnum
 import math
 from . import table_helper as mTh
+# See Also:
+#   https://github.com/LibreOffice/core/blob/e5005c76bd60a004f6025728e794ba3e4d0dfff1/include/o3tl/unit_conversion.hxx
+#   https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1awt_1_1XUnitConversion.html
+#   https://help.libreoffice.org/latest/en-US/text/scalc/01/func_convert.html?&DbPAR=CALC&System=UNIX
+#   https://wiki.documentfoundation.org/Documentation/Calc_Functions/CONVERT
 
 
 N = TypeVar("N", int, float)

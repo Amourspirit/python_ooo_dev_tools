@@ -9,8 +9,9 @@ import uno
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.draw import Draw
-from ooodev.format.direct.fill.area.pattern import Pattern, PresetPatternKind
 
+# from ooodev.format.inner.direct.write.fill.area.pattern import Pattern, PresetPatternKind
+from ooodev.format.draw.direct.area import Pattern, PresetPatternKind
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import FillProperties  # service

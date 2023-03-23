@@ -1,11 +1,14 @@
+# region Import
 from __future__ import annotations
 from typing import Any, Tuple
 
-from .....events.args.key_val_cancel_args import KeyValCancelArgs
-from .....meta.static_prop import static_prop
-from ....kind.format_kind import FormatKind
-from ....style_base import StyleName
+from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
+from ooodev.meta.static_prop import static_prop
+from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.format.inner.style_base import StyleName
 from .kind import StyleCharKind as StyleCharKind
+
+# endregion Import
 
 
 class Char(StyleName):
@@ -50,7 +53,7 @@ class Char(StyleName):
         # there is only one style property for this class.
         # if CharStyleName is set to "" then an error is raised.
         # Solution is set to "No Character Style" or "Standard" Which LibreOffice recognizes and set to ""
-        # this event covers apply() and resore()
+        # this event covers apply() and restore()
         if event_args.value == "":
             event_args.value = Char.default.prop_name
         super().on_property_setting(source, event_args)

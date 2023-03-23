@@ -272,6 +272,7 @@ class Lo(metaclass=StaticProperty):
     _lo_inst: ConnectBase = None
 
     _loader = None
+    _disposed = True
 
     # region    qi()
 
@@ -718,7 +719,7 @@ class Lo(metaclass=StaticProperty):
         else:
             Lo.print("Invalid Connector type. Fatal Error.")
             raise SystemExit(1)
-
+        cls._disposed = False
         cls._xcc = cls._lo_inst.ctx
         cls._mc_factory = cls._xcc.getServiceManager()
         if cls._mc_factory is None:
@@ -787,6 +788,8 @@ class Lo(metaclass=StaticProperty):
 
     @classmethod
     def _try_to_terminate(cls, num_tries: int) -> bool:
+        if cls._disposed:
+            return True
         try:
             is_dead = cls._xdesktop.terminate()
             if is_dead:
@@ -1879,6 +1882,9 @@ class Lo(metaclass=StaticProperty):
         Attention:
             :py:meth:`~.utils.lo.Lo.close` method is called along with any of its events.
         """
+        if cls._disposed:
+            cls._doc = None
+            return
         try:
             closeable = cls.qi(XCloseable, doc, True)
             cls.close(closeable=closeable, deliver_ownership=deliver_ownership)
@@ -2836,6 +2842,7 @@ class _LoManager(metaclass=StaticProperty):
         dvals = (None, None, None, None, None, None, None)
         for attr, val in zip(dattrs, dvals):
             setattr(Lo, attr, val)
+        setattr(Lo, "_disposed", True)
 
     @staticmethod
     def on_loading(source: Any, event: CancelEventArgs) -> None:

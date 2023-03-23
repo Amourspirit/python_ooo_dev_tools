@@ -9,7 +9,9 @@ import uno
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
-from ooodev.format.direct.para.area.hatch import Hatch, PresetHatchKind, HatchStyle, Angle
+
+# from ooodev.format.inner.direct.write.para.area.hatch import Hatch, PresetHatchKind, HatchStyle, Angle
+from ooodev.format.writer.direct.para.area import HatchStyle, Hatch, PresetHatchKind, HatchStyle, Angle
 from ooodev.utils.color import StandardColor
 
 from ooo.dyn.drawing.fill_style import FillStyle

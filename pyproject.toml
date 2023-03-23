@@ -46,13 +46,13 @@ secondary = false
 
 
 [tool.poetry.group.dev.dependencies]
-black = "^22.10.0"
 pytest = "^7.2.0"
 hypothesis = "^6.56.4"
 thefuzz = "^0.19.0"
 python-Levenshtein = "^0.20.7"
 lo-dev-search = {version = "^1.2.2", platform = "linux"}
 ruff = "^0.0.254"
+black = {extras = ["d"], version = "^23.1.0"}
 
 
 [tool.poetry.group.docs.dependencies]
@@ -72,6 +72,7 @@ testpaths = [
 ]
 markers = [
     "skip_headless: skips a test in headless mode",
+    "skip_not_headless_os: skips a test in GUI mode for give os"
 ]
 
 [tool.ruff]

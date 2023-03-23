@@ -3,7 +3,9 @@ from ooo.dyn.table.border_line import BorderLine as BorderLine
 from ooo.dyn.table.border_line2 import BorderLine2 as BorderLine2
 from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
-from .....direct.structs.side import Side as Side, LineSize as LineSize, BorderLineKind as BorderLineKind
-from .....direct.para.border.padding import Padding as InnerPadding
-from .....direct.para.border.shadow import Shadow as InnerShadow
-from .....direct.para.border.borders import Borders as InnerBorders
+from ooodev.format.inner.direct.structs.side import BorderLineKind as BorderLineKind
+from ooodev.format.inner.direct.structs.side import LineSize as LineSize
+from ooodev.format.inner.direct.structs.side import Side as Side
+from ooodev.format.inner.direct.write.para.border.padding import Padding as Padding
+from ooodev.format.inner.direct.write.para.border.shadow import Shadow as Shadow
+from ooodev.format.inner.direct.write.para.border.borders import Borders as Borders

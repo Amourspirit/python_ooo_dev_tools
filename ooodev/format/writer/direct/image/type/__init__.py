@@ -1,16 +1,13 @@
-from .....direct.image.image_type.size import (
-    RelativeKind as RelativeKind,
-    RelativeSize as RelativeSize,
-    AbsoluteSize as AbsoluteSize,
-    Size as Size,
-)
-from .....direct.frame.frame_type.position import (
-    HoriOrient as HoriOrient,
-    VertOrient as VertOrient,
-    RelHoriOrient as RelHoriOrient,
-    RelVertOrient as RelVertOrient,
-    Horizontal as Horizontal,
-    Vertical as Vertical,
-    Position as Position,
-)
-from .....direct.frame.frame_type.anchor import Anchor as Anchor, AnchorKind as AnchorKind
+from ooodev.format.inner.direct.write.image.image_type.size import RelativeKind as RelativeKind
+from ooodev.format.inner.direct.write.image.image_type.size import RelativeSize as RelativeSize
+from ooodev.format.inner.direct.write.image.image_type.size import AbsoluteSize as AbsoluteSize
+from ooodev.format.inner.direct.write.image.image_type.size import Size as Size
+from ooodev.format.inner.direct.write.frame.frame_type.anchor import AnchorKind as AnchorKind
+from ooodev.format.inner.direct.write.frame.frame_type.anchor import Anchor as Anchor
+from ooodev.format.inner.direct.write.frame.frame_type.position import HoriOrient as HoriOrient
+from ooodev.format.inner.direct.write.frame.frame_type.position import VertOrient as VertOrient
+from ooodev.format.inner.direct.write.frame.frame_type.position import RelHoriOrient as RelHoriOrient
+from ooodev.format.inner.direct.write.frame.frame_type.position import RelVertOrient as RelVertOrient
+from ooodev.format.inner.direct.write.frame.frame_type.position import Horizontal as Horizontal
+from ooodev.format.inner.direct.write.frame.frame_type.position import Vertical as Vertical
+from ooodev.format.inner.direct.write.frame.frame_type.position import Position as Position

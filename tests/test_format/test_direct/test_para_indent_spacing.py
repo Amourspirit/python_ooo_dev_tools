@@ -6,7 +6,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.direct.para.indent_space import IndentSpacing, ModeKind
+from ooodev.format.writer.direct.para.indent_space import Spacing, Indent, LineSpacing, ModeKind
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
 
 def test_write(loader, para_text) -> None:
-    # minimal testing is fine here as each part of IndentSpacing is tested via Indent, Spacing and Line Spacing test.
+    # minimal testing is fine here as each part of Spacing is tested via Indent, Spacing and Line Spacing test.
     # delay = 0 if Lo.bridge_connector.headless else 3_000
     delay = 0
 
@@ -31,7 +31,7 @@ def test_write(loader, para_text) -> None:
         p_len = len(para_text)
         amt = 3.5
         # test Indent
-        Write.append_para(cursor=cursor, text=para_text, styles=(IndentSpacing(id_before=amt),))
+        Write.append_para(cursor=cursor, text=para_text, styles=(Indent(before=amt),))
 
         cursor.goLeft(1, False)
         cursor.gotoStart(True)
@@ -41,9 +41,7 @@ def test_write(loader, para_text) -> None:
         cursor.gotoEnd(False)
 
         # test LineSpacing
-        Write.append_para(
-            cursor=cursor, text=para_text, styles=(IndentSpacing(ln_mode=ModeKind.PROPORTIONAL, ln_value=96),)
-        )
+        Write.append_para(cursor=cursor, text=para_text, styles=(LineSpacing(mode=ModeKind.PROPORTIONAL, value=96),))
         cursor.goLeft(p_len + 1, False)
         cursor.goRight(p_len, True)
         ls = pp.ParaLineSpacing
@@ -53,7 +51,7 @@ def test_write(loader, para_text) -> None:
 
         # test Spacing
         amt = 2.0
-        Write.append_para(cursor=cursor, text=para_text, styles=(IndentSpacing(sp_below=amt),))
+        Write.append_para(cursor=cursor, text=para_text, styles=(Spacing(below=amt),))
         cursor.goLeft(p_len + 1, False)
         cursor.goRight(p_len, True)
         assert pp.ParaBottomMargin in [round(amt * 100) - 2 + i for i in range(5)]  # plus or minus 2

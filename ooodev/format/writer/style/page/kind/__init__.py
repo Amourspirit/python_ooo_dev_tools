@@ -1,1 +1,1 @@
-from .style_page_kind import StylePageKind as StylePageKind
+from .writer_style_page_kind import WriterStylePageKind as WriterStylePageKind

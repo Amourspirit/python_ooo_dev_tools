@@ -9,7 +9,9 @@ import uno
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.draw import Draw
-from ooodev.format.direct.fill.transparent.transparency import Transparency, Intensity
+
+# from ooodev.format.inner.direct.write.fill.transparent.transparency import Transparency, Intensity
+from ooodev.format.draw.direct.transparency import Transparency, Intensity
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import FillProperties  # service

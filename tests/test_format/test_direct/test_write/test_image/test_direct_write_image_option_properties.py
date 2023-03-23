@@ -13,7 +13,6 @@ from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.utils.images_lo import ImagesLo
 from ooodev.office.write import Write
-from ooodev.utils.data_type.unit_mm import UnitMM
 
 
 def test_write(loader, fix_image_path) -> None:

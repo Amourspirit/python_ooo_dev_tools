@@ -7,7 +7,7 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
-   ooodev.format.calc.direct.format_cells
+   ooodev.format.calc.direct.cell
 
 Module contents
 ---------------

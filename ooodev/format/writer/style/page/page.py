@@ -1,13 +1,16 @@
+# region Import
 from __future__ import annotations
 from typing import Any, Tuple, overload
 
-from .....events.args.key_val_cancel_args import KeyValCancelArgs
-from .....meta.static_prop import static_prop
-from ....kind.format_kind import FormatKind
-from ....style_base import StyleName
-from .....utils import props as mProps
-from .....exceptions import ex as mEx
-from .kind.style_page_kind import StylePageKind
+from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
+from ooodev.meta.static_prop import static_prop
+from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.format.inner.style_base import StyleName
+from ooodev.utils import props as mProps
+from ooodev.exceptions import ex as mEx
+from .kind.writer_style_page_kind import WriterStylePageKind
+
+# endregion Import
 
 
 class Page(StyleName):
@@ -18,12 +21,18 @@ class Page(StyleName):
     """
 
     # This class set the style of the ParagraphProperties PageDescName on a cursor.
-    # Don't know of any other way to change page style other then via a paragraph.
+    # Don't know of any other way to change page style other than via a paragraph.
     # https://ask.libreoffice.org/t/uno-change-page-style/14246
-    # Setting Page style is done via the PageDescName property. After settig the PageDescName becomes null.
+    # Setting Page style is done via the PageDescName property. After setting the PageDescName becomes null.
     # Reading Page style is done via the PageStyleName property.
 
-    def __init__(self, name: StylePageKind | str = "") -> None:
+    def __init__(self, name: WriterStylePageKind | str = "") -> None:
+        """
+        Constructor
+
+        Args:
+            name (StyleParaKind, str, optional): Specifies the Page Style that instance applies to.
+        """
         if name == "":
             name = Page.default.prop_name
         super().__init__(name=name)
@@ -70,7 +79,7 @@ class Page(StyleName):
         # there is only one style property for this class.
         # if CharStyleName is set to "" then an error is raised.
         # Solution is set to "No Character Style" or "Standard" Which LibreOffice recognizes and set to ""
-        # this event covers apply() and resore()
+        # this event covers apply() and restore()
         if event_args.value == "":
             event_args.value = Page.default.prop_name
         super().on_property_setting(source, event_args)
@@ -135,7 +144,7 @@ class Page(StyleName):
         try:
             return Page._DEFAULT_PAGE
         except AttributeError:
-            Page._DEFAULT_PAGE = Page(name=StylePageKind.STANDARD)
+            Page._DEFAULT_PAGE = Page(name=WriterStylePageKind.STANDARD)
             Page._DEFAULT_PAGE._is_default_inst = True
         return Page._DEFAULT_PAGE
 

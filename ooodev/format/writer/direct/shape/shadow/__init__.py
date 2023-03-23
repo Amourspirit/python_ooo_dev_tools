@@ -1,4 +1,5 @@
-from ......utils.data_type.unit_mm import UnitMM as UnitMM
-from ......utils.data_type.unit_pt import UnitPT as UnitPT
-from ......utils.data_type.intensity import Intensity as Intensity
-from .....direct.shape.area.shadow import Shadow as Shadow, ShadowLocationKind as ShadowLocationKind
+from ooodev.utils.data_type.unit_mm import UnitMM as UnitMM
+from ooodev.utils.data_type.unit_pt import UnitPT as UnitPT
+from ooodev.utils.data_type.intensity import Intensity as Intensity
+from ooodev.format.inner.direct.write.shape.area.shadow import ShadowLocationKind as ShadowLocationKind
+from ooodev.format.inner.direct.write.shape.area.shadow import Shadow as Shadow
