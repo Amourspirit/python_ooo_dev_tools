@@ -1426,6 +1426,10 @@
 <icon BUILTIN="checked"/>
 <icon BUILTIN="links/code/file_Python"/>
 </node>
+<node TEXT="Sides" ID="ID_1048288707" CREATED="1676502992851" MODIFIED="1676720850148">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
 </node>
 <node TEXT="background" ID="ID_884553978" CREATED="1675067040433" MODIFIED="1675067044076">
 <node TEXT="color" ID="ID_92709890" CREATED="1675067048986" MODIFIED="1675081137042">
