@@ -20,7 +20,10 @@ class CellStyleBaseMulti(StyleModifyMulti):
         try:
             return self._supported_services_values
         except AttributeError:
-            self._supported_services_values = ("com.sun.star.style.CellStyle",)
+            self._supported_services_values = (
+                "com.sun.star.style.CellStyle",
+                "com.sun.star.style.PageStyle",
+            )
         return self._supported_services_values
 
     def _is_valid_doc(self, obj: object) -> bool:

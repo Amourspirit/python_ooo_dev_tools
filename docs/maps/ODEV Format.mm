@@ -1420,13 +1420,17 @@
 <node TEXT="page" ID="ID_1272762403" CREATED="1675067021913" MODIFIED="1675081134166">
 <icon BUILTIN="unchecked"/>
 </node>
-<node TEXT="borders" ID="ID_1131843680" CREATED="1675067030906" MODIFIED="1675081134925">
-<icon BUILTIN="unchecked"/>
+<node TEXT="borders" FOLDED="true" ID="ID_1131843680" CREATED="1675067030906" MODIFIED="1679599793016">
+<icon BUILTIN="checked"/>
 <node TEXT="Padding" ID="ID_1192297075" CREATED="1676503017275" MODIFIED="1676720849328">
 <icon BUILTIN="checked"/>
 <icon BUILTIN="links/code/file_Python"/>
 </node>
 <node TEXT="Sides" ID="ID_1048288707" CREATED="1676502992851" MODIFIED="1676720850148">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Shadow" ID="ID_1039713720" CREATED="1676503005235" MODIFIED="1676720850866">
 <icon BUILTIN="checked"/>
 <icon BUILTIN="links/code/file_Python"/>
 </node>

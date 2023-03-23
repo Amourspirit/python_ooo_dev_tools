@@ -7,9 +7,9 @@ from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.proto.unit_obj import UnitObj
 from ooodev.utils.color import StandardColor, Color
-from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
-from ..page_style_base_multi import PageStyleBaseMulti
+from ooodev.format.calc.style.page.kind import CalcStylePageKind as CalcStylePageKind
 from ooodev.format.inner.direct.structs.shadow_struct import ShadowStruct
+from ...cell_style_base_multi import CellStyleBaseMulti
 
 # endregion Imports
 
@@ -29,7 +29,7 @@ class InnerShadow(ShadowStruct):
         try:
             return self._supported_services_values
         except AttributeError:
-            self._supported_services_values = ("com.sun.star.style.PageProperties", "com.sun.star.style.PageStyle")
+            self._supported_services_values = ("com.sun.star.style.PageStyle",)
         return self._supported_services_values
 
     def _get_property_name(self) -> str:
@@ -49,7 +49,7 @@ class InnerShadow(ShadowStruct):
         return self._format_kind_prop
 
 
-class Shadow(PageStyleBaseMulti):
+class Shadow(CellStyleBaseMulti):
     """
     Page Style Border Shadow
 
@@ -63,7 +63,7 @@ class Shadow(PageStyleBaseMulti):
         color: Color = StandardColor.GRAY,
         transparent: bool = False,
         width: float | UnitObj = 1.76,
-        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
+        style_name: CalcStylePageKind | str = CalcStylePageKind.DEFAULT,
         style_family: str = "PageStyles",
     ) -> None:
         """
@@ -93,7 +93,7 @@ class Shadow(PageStyleBaseMulti):
     def from_style(
         cls,
         doc: object,
-        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
+        style_name: CalcStylePageKind | str = CalcStylePageKind.DEFAULT,
         style_family: str = "PageStyles",
     ) -> Shadow:
         """
@@ -119,7 +119,7 @@ class Shadow(PageStyleBaseMulti):
         return self._style_name
 
     @prop_style_name.setter
-    def prop_style_name(self, value: str | WriterStylePageKind):
+    def prop_style_name(self, value: str | CalcStylePageKind):
         self._style_name = str(value)
 
     @property

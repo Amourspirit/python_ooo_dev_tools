@@ -8,6 +8,7 @@ Subpackages
    :maxdepth: 4
 
    ooodev.format.calc.modify.cell
+   ooodev.format.calc.modify.page
 
 Module contents
 ---------------

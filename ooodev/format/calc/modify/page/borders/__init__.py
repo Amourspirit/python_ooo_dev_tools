@@ -6,9 +6,7 @@ from ooodev.format.inner.direct.structs.side import LineSize as LineSize
 from ooodev.format.inner.direct.structs.side import Side as Side
 from ooodev.format.inner.modify.calc.page.border.padding import InnerPadding as InnerPadding
 from ooodev.format.inner.modify.calc.page.border.padding import Padding as Padding
-
 from ooodev.format.inner.modify.calc.page.border.sides import InnerSides as InnerSides
 from ooodev.format.inner.modify.calc.page.border.sides import Sides as Sides
-
-# from ooodev.format.inner.modify.write.page.border.shadow import InnerShadow as InnerShadow
-# from ooodev.format.inner.modify.write.page.border.shadow import Shadow as Shadow
+from ooodev.format.inner.modify.calc.page.border.shadow import InnerShadow as InnerShadow
+from ooodev.format.inner.modify.calc.page.border.shadow import Shadow as Shadow

@@ -321,6 +321,10 @@ mindmap
                         id{{FontOnly}}
                         id{{FontEffects}}
                 page
+                    borders
+                        id{{Padding}}
+                        id{{Sides}}
+                        id{{Shadow}}
                     page
                         id{{LayoutSettings}}
                         id{{Margins}}
