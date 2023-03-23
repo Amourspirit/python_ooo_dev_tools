@@ -7,7 +7,7 @@ from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleName
 from ooodev.utils import props as mProps
 from ooodev.exceptions import ex as mEx
-from ooodev.format.calc.style.page.kind.style_page_kind import CalcStylePageKind
+from ooodev.format.calc.style.page.kind.calc_style_page_kind import CalcStylePageKind
 
 
 class Page(StyleName):
