@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from com.sun.star.style import PageStyle
 
 
-def test_write(loader) -> None:
+def test_calc(loader) -> None:
     # delay = 0 if Lo.bridge_connector.headless else 3_000
     delay = 0
 

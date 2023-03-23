@@ -19,7 +19,7 @@ from ooodev.office.calc import Calc
 from ooodev.utils.data_type.unit_mm100 import UnitMM100
 
 
-def test_write(loader) -> None:
+def test_calc(loader) -> None:
     delay = 0
 
     doc = Calc.create_doc()

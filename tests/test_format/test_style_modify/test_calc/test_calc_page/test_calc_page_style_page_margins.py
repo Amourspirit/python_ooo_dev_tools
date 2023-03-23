@@ -13,7 +13,7 @@ from ooodev.utils.lo import Lo
 from ooodev.office.calc import Calc
 
 
-def test_cacl(loader) -> None:
+def test_calc(loader) -> None:
     # delay = 0 if Lo.bridge_connector.headless else 3_000
     delay = 0
 
