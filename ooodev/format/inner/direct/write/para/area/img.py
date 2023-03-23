@@ -257,7 +257,7 @@ class Img(StyleMulti):
         """
         fill_img = InnerImg.from_obj(obj)
         inst = cls(**kwargs)
-        bmap = fill_img._get("FillBitmap")
+        bmap = fill_img._get(fill_img._props.bitmap)
         inst._set(
             inst._props.graphic_loc, inst._get_graphic_loc(position=fill_img.prop_posiion, mode=fill_img.prop_mode)
         )

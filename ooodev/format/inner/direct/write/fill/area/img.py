@@ -310,6 +310,8 @@ class Img(StyleBase):
 
         def set_prop(key: str, fp: Img):
             nonlocal obj
+            if not key:
+                return
             val = mProps.Props.get(obj, key, None)
             if not val is None:
                 fp._set(key, val)

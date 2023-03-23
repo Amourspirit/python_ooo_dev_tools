@@ -321,6 +321,9 @@ mindmap
                         id{{FontOnly}}
                         id{{FontEffects}}
                 page
+                    background
+                        id{{Color}}
+                        id{{Img}}
                     borders
                         id{{Padding}}
                         id{{Sides}}
