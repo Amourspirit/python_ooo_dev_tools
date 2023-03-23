@@ -1,17 +1,65 @@
 # region Imports
 from __future__ import annotations
-from typing import cast
+from typing import Tuple, cast
 import uno
 
 from ooodev.proto.unit_obj import UnitObj
-from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
-from ooodev.format.inner.direct.write.para.border.padding import Padding as InnerPadding
-from ..page_style_base_multi import PageStyleBaseMulti
+from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.format.calc.style.page.kind import CalcStylePageKind as CalcStylePageKind
+from ooodev.format.inner.direct.calc.border.padding import Padding as DirectPadding
+from ooodev.format.inner.common.props.border_props import BorderProps as BorderProps
+from ...cell_style_base_multi import CellStyleBaseMulti
 
 # endregion Imports
 
 
-class Padding(PageStyleBaseMulti):
+class InnerPadding(DirectPadding):
+    """
+    Page Style Padding
+
+    Any properties starting with ``prop_`` set or get current instance values.
+
+    All methods starting with ``fmt_`` can be used to chain together properties.
+    """
+
+    # region methods
+
+    def _supported_services(self) -> Tuple[str, ...]:
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = ("com.sun.star.style.PageStyle",)
+        return self._supported_services_values
+
+    # endregion methods
+
+    # region properties
+    @property
+    def prop_format_kind(self) -> FormatKind:
+        """Gets the kind of style"""
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.PAGE | FormatKind.STYLE
+        return self._format_kind_prop
+
+    @property
+    def _props(self) -> BorderProps:
+        try:
+            return self._props_internal_attributes
+        except AttributeError:
+            self._props_internal_attributes = BorderProps(
+                left="LeftBorderDistance",
+                top="TopBorderDistance",
+                right="RightBorderDistance",
+                bottom="BottomBorderDistance",
+            )
+        return self._props_internal_attributes
+
+    # endregion properties
+
+
+class Padding(CellStyleBaseMulti):
     """
     Page Style Border Padding.
 
@@ -26,7 +74,7 @@ class Padding(PageStyleBaseMulti):
         top: float | UnitObj | None = None,
         bottom: float | UnitObj | None = None,
         all: float | UnitObj | None = None,
-        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
+        style_name: CalcStylePageKind | str = CalcStylePageKind.DEFAULT,
         style_family: str = "PageStyles",
     ) -> None:
         """
@@ -39,7 +87,7 @@ class Padding(PageStyleBaseMulti):
             bottom (float, UnitObj,  optional): Bottom (in ``mm`` units)  or :ref:`proto_unit_obj`.
             all (float, UnitObj, optional): Left, right, top, bottom (in ``mm`` units)  or :ref:`proto_unit_obj`.
                 If argument is present then ``left``, ``right``, ``top``, and ``bottom`` arguments are ignored.
-            style_name (WriterStylePageKind, str, optional): Specifies the Page Style that instance applies to.
+            style_name (CalcStylePageKind, str, optional): Specifies the Page Style that instance applies to.
                 Default is Default Page Style.
             style_family (str, optional): Style family. Default ``PageStyles``.
 
@@ -57,7 +105,7 @@ class Padding(PageStyleBaseMulti):
     def from_style(
         cls,
         doc: object,
-        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
+        style_name: CalcStylePageKind | str = CalcStylePageKind.DEFAULT,
         style_family: str = "PageStyles",
     ) -> Padding:
         """
@@ -65,7 +113,7 @@ class Padding(PageStyleBaseMulti):
 
         Args:
             doc (object): UNO Document Object.
-            style_name (WriterStylePageKind, str, optional): Specifies the Paragraph Style that instance applies to.
+            style_name (CalcStylePageKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.
             style_family (str, optional): Style family. Default ``PageStyles``.
 
@@ -83,7 +131,7 @@ class Padding(PageStyleBaseMulti):
         return self._style_name
 
     @prop_style_name.setter
-    def prop_style_name(self, value: str | WriterStylePageKind):
+    def prop_style_name(self, value: str | CalcStylePageKind):
         self._style_name = str(value)
 
     @property
