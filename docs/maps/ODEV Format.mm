@@ -1448,9 +1448,17 @@
 </node>
 <node TEXT="header" ID="ID_1482242310" CREATED="1675067060778" MODIFIED="1675081138957">
 <icon BUILTIN="unchecked"/>
+<node TEXT="Header" ID="ID_1190716620" CREATED="1676570357822" MODIFIED="1676720826148">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
 </node>
 <node TEXT="footer" ID="ID_819148117" CREATED="1675067067281" MODIFIED="1675081139715">
 <icon BUILTIN="unchecked"/>
+<node TEXT="Footer" ID="ID_843300538" CREATED="1676570357822" MODIFIED="1679670262347">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
 </node>
 <node TEXT="sheet" ID="ID_1849725842" CREATED="1675067073473" MODIFIED="1675081140379">
 <icon BUILTIN="unchecked"/>

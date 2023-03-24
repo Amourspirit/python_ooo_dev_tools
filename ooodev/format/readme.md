@@ -332,6 +332,10 @@ mindmap
                         id{{LayoutSettings}}
                         id{{Margins}}
                         id{{PaperFormat}}
+                    header
+                        id{{Header}}
+                    footer
+                        id{{Footer}}
             [style]
         draw
             [direct]

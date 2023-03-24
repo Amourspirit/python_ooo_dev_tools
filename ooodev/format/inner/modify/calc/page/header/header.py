@@ -1,10 +1,13 @@
 # region Import
 from __future__ import annotations
 from typing import Tuple, cast, Type, TypeVar
-from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
+from ooodev.utils.data_type.unit_mm import UnitMM
+from ooodev.utils.unit_convert import UnitConvert
+from ooodev.proto.unit_obj import UnitObj
+from ooodev.format.calc.style.page.kind import CalcStylePageKind as CalcStylePageKind
 from ooodev.format.inner.common.abstract.abstract_hf import AbstractHF
 from ooodev.format.inner.common.props.hf_props import HfProps
-from ..page_style_base_multi import PageStyleBaseMulti
+from ...cell_style_base_multi import CellStyleBaseMulti
 
 # endregion Import
 
@@ -18,12 +21,17 @@ class InnerStyle(AbstractHF):
     .. versionadded:: 0.9.0
     """
 
+    # region Overrides
     def _supported_services(self) -> Tuple[str, ...]:
         try:
             return self._supported_services_values
         except AttributeError:
             self._supported_services_values = ("com.sun.star.style.PageProperties", "com.sun.star.style.PageStyle")
         return self._supported_services_values
+
+    # endregion Overrides
+
+    # region Properties
 
     @property
     def _props(self) -> HfProps:
@@ -33,18 +41,20 @@ class InnerStyle(AbstractHF):
             self._props_internal_attributes = HfProps(
                 on="HeaderIsOn",
                 shared="HeaderIsShared",
-                shared_first="FirstIsShared",
+                shared_first="FirstPageHeaderIsShared",
                 margin_left="HeaderLeftMargin",
                 margin_right="HeaderRightMargin",
                 spacing="HeaderBodyDistance",
-                spacing_dyn="HeaderDynamicSpacing",
+                spacing_dyn="HeaderDynamic",
                 height="HeaderHeight",
                 height_auto="HeaderIsDynamicHeight",
             )
         return self._props_internal_attributes
 
+    # endregion Properties
 
-class Header(PageStyleBaseMulti):
+
+class Header(CellStyleBaseMulti):
     """
     Page Header Settings
 
@@ -63,7 +73,7 @@ class Header(PageStyleBaseMulti):
         spacing_dyn: bool | None = None,
         height: float | None = None,
         height_auto: bool | None = None,
-        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
+        style_name: CalcStylePageKind | str = CalcStylePageKind.DEFAULT,
         style_family: str = "PageStyles",
     ) -> None:
         """
@@ -79,7 +89,7 @@ class Header(PageStyleBaseMulti):
             spacing_dyn (bool | None, optional): Specifies if dynamic spacing is used.
             height (float | None, optional): Specifies Height in ``mm`` units.
             height_auto (bool | None, optional): Specifies if auto-fit height is used.
-            style_name (WriterStylePageKind, str, optional): Specifies the Page Style that instance applies to.
+            style_name (CalcStylePageKind, str, optional): Specifies the Page Style that instance applies to.
                 Default is Default Page Style.
             style_family (str, optional): Style family. Default ``PageStyles``.
 
@@ -102,18 +112,18 @@ class Header(PageStyleBaseMulti):
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
-        self._set_style("direct", direct, *direct.get_attrs())
+        self._set_style("direct", direct)
 
     # region Internal Methods
     def _get_inner_props(self) -> HfProps:
         return HfProps(
             on="HeaderIsOn",
             shared="HeaderIsShared",
-            shared_first="FirstIsShared",
+            shared_first="FirstPageHeaderIsShared",
             margin_left="HeaderLeftMargin",
             margin_right="HeaderRightMargin",
             spacing="HeaderBodyDistance",
-            spacing_dyn="HeaderDynamicSpacing",
+            spacing_dyn="HeaderDynamic",
             height="HeaderHeight",
             height_auto="HeaderIsDynamicHeight",
         )
@@ -132,7 +142,7 @@ class Header(PageStyleBaseMulti):
     def from_style(
         cls: Type[_THeader],
         doc: object,
-        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
+        style_name: CalcStylePageKind | str = CalcStylePageKind.DEFAULT,
         style_family: str = "PageStyles",
     ) -> _THeader:
         """
@@ -140,7 +150,7 @@ class Header(PageStyleBaseMulti):
 
         Args:
             doc (object): UNO Document Object.
-            style_name (WriterStylePageKind, str, optional): Specifies the Paragraph Style that instance applies to.
+            style_name (CalcStylePageKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.
             style_family (str, optional): Style family. Default ``PageStyles``.
 
@@ -149,7 +159,7 @@ class Header(PageStyleBaseMulti):
         """
         inst = cls(style_name=style_name, style_family=style_family)
         direct = InnerStyle.from_obj(obj=inst.get_style_props(doc), _cattribs=inst._get_inner_cattribs())
-        inst._set_style("direct", direct, *direct.get_attrs())
+        inst._set_style("direct", direct)
         return inst
 
     # endregion Static Methods
@@ -161,7 +171,7 @@ class Header(PageStyleBaseMulti):
         return self._style_name
 
     @prop_style_name.setter
-    def prop_style_name(self, value: str | WriterStylePageKind):
+    def prop_style_name(self, value: str | CalcStylePageKind):
         self._style_name = str(value)
 
     @property
@@ -178,6 +188,6 @@ class Header(PageStyleBaseMulti):
         if not isinstance(value, InnerStyle):
             raise TypeError(f'Expected type of InnerStyle, got "{type(value).__name__}"')
         self._del_attribs("_direct_inner")
-        self._set_style("direct", value, *value.get_attrs())
+        self._set_style("direct", value)
 
     # endregion Properties

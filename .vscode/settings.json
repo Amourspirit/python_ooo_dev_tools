@@ -159,5 +159,16 @@
         "**/.pytest_cache/**",
         "**/__pycache__/**",
         "**/_build/**",
+    ],
+    "openInExternalApp.openMapper": [
+        {
+            "extensionName": "mm",
+            "apps":[
+                {
+                    "title": "Freeplane",
+                    "openCommand": "freeplane"
+                }
+            ]
+        }
     ]
 }
