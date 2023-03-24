@@ -1420,7 +1420,7 @@
 <node TEXT="page" ID="ID_1272762403" CREATED="1675067021913" MODIFIED="1675081134166">
 <icon BUILTIN="unchecked"/>
 </node>
-<node TEXT="borders" FOLDED="true" ID="ID_1131843680" CREATED="1675067030906" MODIFIED="1679599793016">
+<node TEXT="borders" ID="ID_1131843680" CREATED="1675067030906" MODIFIED="1679599793016">
 <icon BUILTIN="checked"/>
 <node TEXT="Padding" ID="ID_1192297075" CREATED="1676503017275" MODIFIED="1676720849328">
 <icon BUILTIN="checked"/>
@@ -1435,19 +1435,50 @@
 <icon BUILTIN="links/code/file_Python"/>
 </node>
 </node>
-<node TEXT="background" ID="ID_884553978" CREATED="1675067040433" MODIFIED="1675067044076">
-<node TEXT="color" ID="ID_92709890" CREATED="1675067048986" MODIFIED="1675081137042">
-<icon BUILTIN="unchecked"/>
+<node TEXT="background" ID="ID_884553978" CREATED="1675067040433" MODIFIED="1679613159451">
+<icon BUILTIN="checked"/>
+<node TEXT="Color" ID="ID_92709890" CREATED="1675067048986" MODIFIED="1679602895759">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
 </node>
-<node TEXT="image" ID="ID_1588965253" CREATED="1675067051138" MODIFIED="1675081137886">
-<icon BUILTIN="unchecked"/>
+<node TEXT="Img" ID="ID_1588965253" CREATED="1675067051138" MODIFIED="1679612886232">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
 </node>
 </node>
 <node TEXT="header" ID="ID_1482242310" CREATED="1675067060778" MODIFIED="1675081138957">
 <icon BUILTIN="unchecked"/>
+<node TEXT="Header" ID="ID_1190716620" CREATED="1676570357822" MODIFIED="1676720826148">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="area" ID="ID_1165826949" CREATED="1679673000566" MODIFIED="1679673002439">
+<node TEXT="Color" ID="ID_1746330257" CREATED="1679673006646" MODIFIED="1679673012960">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Img" ID="ID_1665807306" CREATED="1679679316569" MODIFIED="1679679323151">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+</node>
 </node>
 <node TEXT="footer" ID="ID_819148117" CREATED="1675067067281" MODIFIED="1675081139715">
 <icon BUILTIN="unchecked"/>
+<node TEXT="Footer" ID="ID_843300538" CREATED="1676570357822" MODIFIED="1679670262347">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="area" ID="ID_831775965" CREATED="1679673020374" MODIFIED="1679673022555">
+<node TEXT="Color" ID="ID_1845487097" CREATED="1679673025110" MODIFIED="1679673030804">
+<icon BUILTIN="links/code/file_Python"/>
+<icon BUILTIN="checked"/>
+</node>
+<node TEXT="Img" ID="ID_1523050057" CREATED="1679679305858" MODIFIED="1679679311847">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+</node>
 </node>
 <node TEXT="sheet" ID="ID_1849725842" CREATED="1675067073473" MODIFIED="1675081140379">
 <icon BUILTIN="unchecked"/>

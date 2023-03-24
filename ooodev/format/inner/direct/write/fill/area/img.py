@@ -258,7 +258,7 @@ class Img(StyleBase):
         nu = cls(**kwargs)
 
         nc = nu._container_get_inst()
-        bmap = cast("Graphic", nu._container_get_value(name, nc))
+        bmap = cast(XBitmap, nu._container_get_value(name, nc))
         if bmap is None:
             bmap = mImage.get_prest_bitmap(preset)
         inst = cls(
@@ -310,6 +310,8 @@ class Img(StyleBase):
 
         def set_prop(key: str, fp: Img):
             nonlocal obj
+            if not key:
+                return
             val = mProps.Props.get(obj, key, None)
             if not val is None:
                 fp._set(key, val)

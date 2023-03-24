@@ -15,11 +15,11 @@ class Footer(Header):
         return HfProps(
             on="FooterIsOn",
             shared="FooterIsShared",
-            shared_first="FirstIsShared",
+            shared_first="FirstPageFooterIsShared",
             margin_left="FooterLeftMargin",
             margin_right="FooterRightMargin",
             spacing="FooterBodyDistance",
-            spacing_dyn="FooterDynamicSpacing",
+            spacing_dyn="FooterDynamic",
             height="FooterHeight",
             height_auto="FooterIsDynamicHeight",
         )

@@ -321,6 +321,9 @@ mindmap
                         id{{FontOnly}}
                         id{{FontEffects}}
                 page
+                    background
+                        id{{Color}}
+                        id{{Img}}
                     borders
                         id{{Padding}}
                         id{{Sides}}
@@ -329,6 +332,16 @@ mindmap
                         id{{LayoutSettings}}
                         id{{Margins}}
                         id{{PaperFormat}}
+                    header
+                        id{{Header}}
+                        area
+                            id{{Color}}
+                            id{{Img}}
+                    footer
+                        id{{Footer}}
+                        area
+                            id{{Color}}
+                            id{{Img}}
             [style]
         draw
             [direct]

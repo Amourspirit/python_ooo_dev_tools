@@ -17,7 +17,11 @@ class PageStyleBaseMulti(StyleModifyMulti):
     """
 
     def _supported_services(self) -> Tuple[str, ...]:
-        return ("com.sun.star.style.PageProperties", "com.sun.star.style.PageStyle")
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = ("com.sun.star.style.PageProperties", "com.sun.star.style.PageStyle")
+        return self._supported_services_values
 
     def _is_valid_doc(self, obj: object) -> bool:
         return mInfo.Info.is_doc_type(obj, mLo.Lo.Service.WRITER)

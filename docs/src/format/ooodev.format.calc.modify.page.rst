@@ -7,7 +7,10 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
+   ooodev.format.calc.modify.page.area
    ooodev.format.calc.modify.page.borders
+   ooodev.format.calc.modify.page.footer
+   ooodev.format.calc.modify.page.header
    ooodev.format.calc.modify.page.page
 
 Module contents
