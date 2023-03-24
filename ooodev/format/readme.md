@@ -334,8 +334,14 @@ mindmap
                         id{{PaperFormat}}
                     header
                         id{{Header}}
+                        area
+                            id{{Color}}
+                            id{{Img}}
                     footer
                         id{{Footer}}
+                        area
+                            id{{Color}}
+                            id{{Img}}
             [style]
         draw
             [direct]

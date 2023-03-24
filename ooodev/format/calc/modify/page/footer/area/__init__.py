@@ -10,6 +10,6 @@ from ooodev.format.inner.direct.write.fill.area.img import ImgStyleKind as ImgSt
 from ooodev.format.inner.common.format_types.size_percent import SizePercent as SizePercent
 from ooodev.format.inner.common.format_types.offset_row import OffsetRow as OffsetRow
 from ooodev.format.inner.common.format_types.offset_column import OffsetColumn as OffsetColumn
-from ooodev.format.inner.modify.calc.page.header.area.color import InnerColor as InnerColor
-from ooodev.format.inner.modify.calc.page.header.area.color import Color as Color
-from ooodev.format.inner.modify.calc.page.header.area.img import Img as Img
+from ooodev.format.inner.modify.calc.page.footer.area.color import InnerColor as InnerColor
+from ooodev.format.inner.modify.calc.page.footer.area.color import Color as Color
+from ooodev.format.inner.modify.calc.page.footer.area.img import Img as Img

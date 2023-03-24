@@ -258,7 +258,7 @@ class Img(StyleBase):
         nu = cls(**kwargs)
 
         nc = nu._container_get_inst()
-        bmap = cast("Graphic", nu._container_get_value(name, nc))
+        bmap = cast(XBitmap, nu._container_get_value(name, nc))
         if bmap is None:
             bmap = mImage.get_prest_bitmap(preset)
         inst = cls(

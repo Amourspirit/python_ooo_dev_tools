@@ -2,11 +2,11 @@
 from __future__ import annotations
 from typing import Tuple, cast, Type, TypeVar
 from ooodev.utils import color as mColor
-from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
+from ooodev.format.calc.style.page.kind import CalcStylePageKind as CalcStylePageKind
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.common.abstract.abstract_fill_color import AbstractColor
 from ooodev.format.inner.common.props.fill_color_props import FillColorProps
-from ...page_style_base_multi import PageStyleBaseMulti
+from ....cell_style_base_multi import CellStyleBaseMulti
 
 # endregion Import
 _TColor = TypeVar(name="_TColor", bound="Color")
@@ -14,7 +14,7 @@ _TColor = TypeVar(name="_TColor", bound="Color")
 
 class InnerColor(AbstractColor):
     """
-    Inner Fill Coloring
+    Page header Color.
 
     .. versionadded:: 0.9.0
     """
@@ -40,11 +40,13 @@ class InnerColor(AbstractColor):
         try:
             return self._props_internal_attributes
         except AttributeError:
-            self._props_internal_attributes = FillColorProps(color="FooterFillColor", style="FooterFillStyle")
+            self._props_internal_attributes = FillColorProps(
+                color="HeaderBackgroundColor", style="", bg="HeaderBackTransparent"
+            )
         return self._props_internal_attributes
 
 
-class Color(PageStyleBaseMulti):
+class Color(CellStyleBaseMulti):
     """
     Page Header Color
 
@@ -55,7 +57,7 @@ class Color(PageStyleBaseMulti):
         self,
         *,
         color: mColor.Color = -1,
-        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
+        style_name: CalcStylePageKind | str = CalcStylePageKind.DEFAULT,
         style_family: str = "PageStyles",
     ) -> None:
         """
@@ -63,7 +65,7 @@ class Color(PageStyleBaseMulti):
 
         Args:
             color (Color, optional): FillColor Color.
-            style_name (WriterStylePageKind, str, optional): Specifies the Page Style that instance applies to.
+            style_name (CalcStylePageKind, str, optional): Specifies the Page Style that instance applies to.
                 Default is Default Page Style.
             style_family (str, optional): Style family. Default ``PageStyles``.
 
@@ -75,11 +77,11 @@ class Color(PageStyleBaseMulti):
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
-        self._set_style("direct", direct, *direct.get_attrs())
+        self._set_style("direct", direct)
 
     # region internal methods
     def _get_inner_props(self) -> FillColorProps:
-        return FillColorProps(color="HeaderFillColor", style="HeaderFillStyle")
+        return FillColorProps(color="HeaderBackgroundColor", style="", bg="HeaderBackTransparent")
 
     def _get_inner_cattribs(self) -> dict:
         return {
@@ -95,7 +97,7 @@ class Color(PageStyleBaseMulti):
     def from_style(
         cls: Type[_TColor],
         doc: object,
-        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
+        style_name: CalcStylePageKind | str = CalcStylePageKind.DEFAULT,
         style_family: str = "PageStyles",
     ) -> _TColor:
         """
@@ -103,7 +105,7 @@ class Color(PageStyleBaseMulti):
 
         Args:
             doc (object): UNO Document Object.
-            style_name (WriterStylePageKind, str, optional): Specifies the Paragraph Style that instance applies to.
+            style_name (CalcStylePageKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.
             style_family (str, optional): Style family. Default ``PageStyles``.
 
@@ -112,7 +114,7 @@ class Color(PageStyleBaseMulti):
         """
         inst = cls(style_name=style_name, style_family=style_family)
         direct = InnerColor.from_obj(inst.get_style_props(doc), _cattribs=inst._get_inner_cattribs())
-        inst._set_style("direct", direct, *direct.get_attrs())
+        inst._set_style("direct", direct)
         return inst
 
     # endregion Static Methods
@@ -123,7 +125,7 @@ class Color(PageStyleBaseMulti):
         return self._style_name
 
     @prop_style_name.setter
-    def prop_style_name(self, value: str | WriterStylePageKind):
+    def prop_style_name(self, value: str | CalcStylePageKind):
         self._style_name = str(value)
 
     @property
@@ -141,4 +143,4 @@ class Color(PageStyleBaseMulti):
             raise TypeError(f'Expected type of InnerColor, got "{type(value).__name__}"')
         self._del_attribs("_direct_inner")
         cp = value.copy(_cattribs=self._get_inner_cattribs())
-        self._set_style("direct", cp, *cp.get_attrs())
+        self._set_style("direct", cp)
