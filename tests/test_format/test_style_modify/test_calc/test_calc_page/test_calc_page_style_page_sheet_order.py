@@ -8,7 +8,6 @@ import uno
 from ooodev.format.calc.modify.page.sheet import Order, CalcStylePageKind
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
-from ooodev.utils.color import StandardColor
 from ooodev.office.calc import Calc
 
 

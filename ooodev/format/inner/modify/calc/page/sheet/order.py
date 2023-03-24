@@ -72,12 +72,12 @@ class Order(CellStyleBase):
             NotSupportedError: If ``obj`` is not supported.
 
         Returns:
-            Color: ``Color`` instance from document properties.
+            Order: ``Order`` instance from document properties.
         """
         inst = cls(style_name=style_name, style_family=style_family)
         style_props = inst.get_style_props(doc)
         if not inst._is_valid_obj(style_props):
-            raise mEx.NotSupportedError("Object is not support to convert to Hatch")
+            raise mEx.NotSupportedError(f"Object is not support to convert to {cls.__name__}")
 
         inst.prop_top_btm = bool(mProps.Props.get(style_props, inst._props.top_btm))
         inst.prop_first_pg = int(mProps.Props.get(style_props, inst._props.first_pg))
