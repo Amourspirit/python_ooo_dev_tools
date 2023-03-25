@@ -12,7 +12,6 @@ from ooodev.office.calc import Calc
 
 
 def test_calc(loader) -> None:
-    # delay = 0 if Lo.bridge_connector.headless else 3_000
     delay = 0
 
     doc = Calc.create_doc()
@@ -37,7 +36,6 @@ def test_calc(loader) -> None:
         # ==========================================================
         style = Printing(comment=True, obj_img=False, style_name=CalcStylePageKind.DEFAULT)
         style.apply(doc)
-        # props = style.get_style_props(doc)
 
         f_style = Printing.from_style(doc=doc, style_name=style.prop_style_name)
         assert f_style.prop_comment == style.prop_comment
@@ -46,7 +44,6 @@ def test_calc(loader) -> None:
         # ==========================================================
         style = Printing(chart=False, drawing=False, style_name=CalcStylePageKind.DEFAULT)
         style.apply(doc)
-        # props = style.get_style_props(doc)
 
         f_style = Printing.from_style(doc=doc, style_name=style.prop_style_name)
         assert f_style.prop_chart == style.prop_chart
@@ -55,7 +52,6 @@ def test_calc(loader) -> None:
         # ==========================================================
         style = Printing(formula=True, zero_value=False, style_name=CalcStylePageKind.DEFAULT)
         style.apply(doc)
-        # props = style.get_style_props(doc)
 
         f_style = Printing.from_style(doc=doc, style_name=style.prop_style_name)
         assert f_style.prop_formula == style.prop_formula

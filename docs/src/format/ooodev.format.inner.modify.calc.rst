@@ -20,6 +20,7 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   ooodev.format.inner.modify.calc.cell_style_base
    ooodev.format.inner.modify.calc.cell_style_base_multi
 
 Module contents

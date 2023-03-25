@@ -12,6 +12,7 @@ Subpackages
    ooodev.format.calc.modify.page.footer
    ooodev.format.calc.modify.page.header
    ooodev.format.calc.modify.page.page
+   ooodev.format.calc.modify.page.sheet
 
 Module contents
 ---------------
