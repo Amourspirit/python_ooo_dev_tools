@@ -330,7 +330,7 @@ class StyleBase(metaclass=MetaStyle):
             mLo.Lo.print(f"{self.__class__.__name__}{name}: object is not valid.")
             return
         services = ", ".join(rs)
-        srv = "service" if rs_len == 1 else "serivces"
+        srv = "service" if rs_len == 1 else "services"
         mLo.Lo.print(f"{self.__class__.__name__}{name}: object must support {srv}: {services}")
 
     # endregion Services

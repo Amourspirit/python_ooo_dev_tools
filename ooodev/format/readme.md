@@ -342,6 +342,12 @@ mindmap
                         area
                             id{{Color}}
                             id{{Img}}
+                    sheet
+                        id{{Order}}
+                        id{{Printing}}
+                        id{{ScaleReduceEnlarge}}
+                        id{{ScaleNumOfPages}}
+                        id{{ScalePagesWidthHeight}}
             [style]
         draw
             [direct]
