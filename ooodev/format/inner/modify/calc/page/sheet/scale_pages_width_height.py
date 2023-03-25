@@ -80,7 +80,7 @@ class ScalePagesWidthHeight(CellStyleBase):
     @property
     def prop_width(self) -> int:
         """
-        Gets/Sets Print Range.
+        Gets/Sets number of pages width.
         """
         return self._get(self._props.page_x)
 
@@ -99,7 +99,7 @@ class ScalePagesWidthHeight(CellStyleBase):
     @property
     def prop_height(self) -> int:
         """
-        Gets/Sets Print Range.
+        Gets/Sets number of pages height.
         """
         return self._get(self._props.page_y)
 

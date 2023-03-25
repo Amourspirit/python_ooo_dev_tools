@@ -36,7 +36,7 @@ class ScaleReduceEnlarge(CellStyleBase):
         Constructor
 
         Args:
-            factor (bool, optional): Specifies scale factor between ``10`` and ``400``.
+            factor (int): Specifies scale factor between ``10`` and ``400``. Default is ``100``.
             style_name (CalcStylePageKind, str, optional): Specifies the Page Style that instance applies to.
                 Default is Default Page Style.
             style_family (str, optional): Style family. Default ``PageStyles``.

@@ -30,7 +30,7 @@ class ScaleNumOfPages(CellStyleBase):
         Constructor
 
         Args:
-            factor (bool, optional): Specifies scale factor between ``10`` and ``400``.
+            pages (int): Specifies the number of pages the spreedsheet will scale to when printed.
             style_name (CalcStylePageKind, str, optional): Specifies the Page Style that instance applies to.
                 Default is Default Page Style.
             style_family (str, optional): Style family. Default ``PageStyles``.
@@ -76,7 +76,7 @@ class ScaleNumOfPages(CellStyleBase):
     @property
     def prop_pages(self) -> int:
         """
-        Gets/Sets Print Range.
+        Gets/Sets the number of pages the spreedsheet will scale to when printed.
         """
         return self._get(self._props.scale)
 
