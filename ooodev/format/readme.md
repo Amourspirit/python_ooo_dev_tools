@@ -337,11 +337,19 @@ mindmap
                         area
                             id{{Color}}
                             id{{Img}}
+                        borders
+                            id{{Padding}}
+                            id{{Shadow}}
+                            id{{Sides}}
                     footer
                         id{{Footer}}
                         area
                             id{{Color}}
                             id{{Img}}
+                        borders
+                            id{{Padding}}
+                            id{{Shadow}}
+                            id{{Sides}}
                     sheet
                         id{{Order}}
                         id{{Printing}}

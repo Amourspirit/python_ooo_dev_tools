@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import Tuple, cast, Type, TypeVar
 import uno
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
-from ooodev.format.inner.common.props.border_props import BorderProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 
 from ooodev.proto.unit_obj import UnitObj
