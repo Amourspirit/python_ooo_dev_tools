@@ -357,6 +357,8 @@ mindmap
                         id{{ScaleNumOfPages}}
                         id{{ScalePagesWidthHeight}}
             [style]
+                id{{Cell}}
+                id{{Page}}
         draw
             [direct]
                 area
