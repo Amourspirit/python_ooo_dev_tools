@@ -3,13 +3,14 @@ from __future__ import annotations
 from typing import Tuple, cast, Type, TypeVar
 import uno
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
-
+from ooodev.format.inner.common.props.border_props import BorderProps
 from ooodev.format.inner.kind.format_kind import FormatKind
+
 from ooodev.proto.unit_obj import UnitObj
 from ooodev.utils.color import StandardColor, Color
-from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
+from ooodev.format.calc.style.page.kind import CalcStylePageKind as CalcStylePageKind
 from ooodev.format.inner.direct.structs.shadow_struct import ShadowStruct
-from ...page_style_base_multi import PageStyleBaseMulti
+from ....cell_style_base_multi import CellStyleBaseMulti
 
 # endregion Import
 
@@ -58,7 +59,7 @@ class InnerShadow(ShadowStruct):
 _TShadow = TypeVar(name="_TShadow", bound="Shadow")
 
 
-class Shadow(PageStyleBaseMulti):
+class Shadow(CellStyleBaseMulti):
     """
     Page Style Header Border Shadow
 
@@ -72,7 +73,7 @@ class Shadow(PageStyleBaseMulti):
         color: Color = StandardColor.GRAY,
         transparent: bool = False,
         width: float | UnitObj = 1.76,
-        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
+        style_name: CalcStylePageKind | str = CalcStylePageKind.DEFAULT,
         style_family: str = "PageStyles",
     ) -> None:
         """
@@ -85,7 +86,7 @@ class Shadow(PageStyleBaseMulti):
             transparent (bool, optional): Shadow transparency. Defaults to False.
             width (float, UnitObj, optional): contains the size of the shadow (in ``mm`` units)
                 or :ref:`proto_unit_obj`. Defaults to ``1.76``.
-            style_name (WriterStylePageKind, str, optional): Specifies the Page Style that instance applies to.
+            style_name (CalcStylePageKind, str, optional): Specifies the Page Style that instance applies to.
                 Default is Default Page Style.
             style_family (str, optional): Style family. Default ``PageStyles``.
 
@@ -99,7 +100,7 @@ class Shadow(PageStyleBaseMulti):
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
-        self._set_style("direct", direct, *direct.get_attrs())
+        self._set_style("direct", direct)
 
     # region Internal Methods
     def _get_inner_prop_name(self) -> str:
@@ -119,7 +120,7 @@ class Shadow(PageStyleBaseMulti):
     def from_style(
         cls: Type[_TShadow],
         doc: object,
-        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
+        style_name: CalcStylePageKind | str = CalcStylePageKind.DEFAULT,
         style_family: str = "PageStyles",
     ) -> _TShadow:
         """
@@ -127,7 +128,7 @@ class Shadow(PageStyleBaseMulti):
 
         Args:
             doc (object): UNO Document Object.
-            style_name (WriterStylePageKind, str, optional): Specifies the Paragraph Style that instance applies to.
+            style_name (CalcStylePageKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.
             style_family (str, optional): Style family. Default ``PageStyles``.
 
@@ -136,7 +137,7 @@ class Shadow(PageStyleBaseMulti):
         """
         inst = cls(style_name=style_name, style_family=style_family)
         direct = InnerShadow.from_obj(inst.get_style_props(doc), _cattribs=inst._get_inner_cattribs())
-        inst._set_style("direct", direct, *direct.get_attrs())
+        inst._set_style("direct", direct)
         return inst
 
     # endregion Static Methods
@@ -148,7 +149,7 @@ class Shadow(PageStyleBaseMulti):
         return self._style_name
 
     @prop_style_name.setter
-    def prop_style_name(self, value: str | WriterStylePageKind):
+    def prop_style_name(self, value: str | CalcStylePageKind):
         self._style_name = str(value)
 
     @property
@@ -166,6 +167,6 @@ class Shadow(PageStyleBaseMulti):
             raise TypeError(f'Expected type of InnerShadow, got "{type(value).__name__}"')
         self._del_attribs("_direct_inner")
         cp = value.copy(_cattribs=self._get_inner_cattribs())
-        self._set_style("direct", cp, *cp.get_attrs())
+        self._set_style("direct", cp)
 
     # endregion Properties

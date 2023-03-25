@@ -1,13 +1,13 @@
 # region Import
 from __future__ import annotations
 from typing import Tuple, cast, Type, TypeVar
-
 from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
+
+from ooodev.format.calc.style.page.kind import CalcStylePageKind as CalcStylePageKind
 from ooodev.format.inner.direct.structs.side import Side as Side
 from ooodev.format.inner.direct.write.char.border.sides import Sides as DirectSides
 from ooodev.format.inner.common.props.border_props import BorderProps
-from ...page_style_base_multi import PageStyleBaseMulti
+from ....cell_style_base_multi import CellStyleBaseMulti
 
 # endregion Import
 
@@ -56,7 +56,7 @@ class InnerSides(DirectSides):
 _TSides = TypeVar(name="_TSides", bound="Sides")
 
 
-class Sides(PageStyleBaseMulti):
+class Sides(CellStyleBaseMulti):
     """
     Page Header Style Border Sides.
 
@@ -71,7 +71,7 @@ class Sides(PageStyleBaseMulti):
         top: Side | None = None,
         bottom: Side | None = None,
         all: Side | None = None,
-        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
+        style_name: CalcStylePageKind | str = CalcStylePageKind.DEFAULT,
         style_family: str = "PageStyles",
     ) -> None:
         """
@@ -84,7 +84,7 @@ class Sides(PageStyleBaseMulti):
             bottom (Side | None, optional): Determines the line style at the bottom edge.
             all (Side | None, optional): Determines the line style at the top, bottom, left, right edges.
                 If this argument has a value then arguments ``top``, ``bottom``, ``left``, ``right`` are ignored
-            style_name (WriterStylePageKind, str, optional): Specifies the Page Style that instance applies to.
+            style_name (CalcStylePageKind, str, optional): Specifies the Page Style that instance applies to.
                 Default is Default Page Style.
             style_family (str, optional): Style family. Default ``PageStyles``.
 
@@ -103,7 +103,7 @@ class Sides(PageStyleBaseMulti):
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
-        self._set_style("direct", direct, *direct.get_attrs())
+        self._set_style("direct", direct)
 
     # region Internal Methods
     def _get_inner_props(self) -> BorderProps:
@@ -125,7 +125,7 @@ class Sides(PageStyleBaseMulti):
     def from_style(
         cls: Type[_TSides],
         doc: object,
-        style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
+        style_name: CalcStylePageKind | str = CalcStylePageKind.DEFAULT,
         style_family: str = "PageStyles",
     ) -> _TSides:
         """
@@ -133,7 +133,7 @@ class Sides(PageStyleBaseMulti):
 
         Args:
             doc (object): UNO Document Object.
-            style_name (WriterStylePageKind, str, optional): Specifies the Paragraph Style that instance applies to.
+            style_name (CalcStylePageKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.
             style_family (str, optional): Style family. Default ``PageStyles``.
 
@@ -142,7 +142,7 @@ class Sides(PageStyleBaseMulti):
         """
         inst = cls(style_name=style_name, style_family=style_family)
         direct = InnerSides.from_obj(inst.get_style_props(doc), _cattribs=inst._get_inner_cattribs())
-        inst._set_style("direct", direct, *direct.get_attrs())
+        inst._set_style("direct", direct)
         return inst
 
     # endregion Static Methods
@@ -154,7 +154,7 @@ class Sides(PageStyleBaseMulti):
         return self._style_name
 
     @prop_style_name.setter
-    def prop_style_name(self, value: str | WriterStylePageKind):
+    def prop_style_name(self, value: str | CalcStylePageKind):
         self._style_name = str(value)
 
     @property
@@ -172,6 +172,6 @@ class Sides(PageStyleBaseMulti):
             raise TypeError(f'Expected type of InnerSides, got "{type(value).__name__}"')
         self._del_attribs("_direct_inner")
         cp = value.copy(_cattribs=self._get_inner_cattribs())
-        self._set_style("direct", cp, *cp.get_attrs())
+        self._set_style("direct", cp)
 
     # endregion Properties

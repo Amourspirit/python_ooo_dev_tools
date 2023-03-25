@@ -1460,6 +1460,21 @@
 <icon BUILTIN="links/code/file_Python"/>
 </node>
 </node>
+<node TEXT="borders" ID="ID_259243281" CREATED="1679763038089" MODIFIED="1679763119839">
+<icon BUILTIN="checked"/>
+<node TEXT="Padding" ID="ID_1338226762" CREATED="1679763082370" MODIFIED="1679763114280">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Shadow" ID="ID_905033874" CREATED="1679763100417" MODIFIED="1679763114280">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Sides" ID="ID_1413918440" CREATED="1679763106817" MODIFIED="1679763114277">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+</node>
 </node>
 <node TEXT="footer" ID="ID_819148117" CREATED="1675067067281" MODIFIED="1679682228824">
 <icon BUILTIN="checked"/>
