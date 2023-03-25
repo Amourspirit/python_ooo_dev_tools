@@ -21,7 +21,7 @@ from ooodev.format.calc.direct.cell.font import (
 from ooodev.format import CommonColor
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
-from ooodev.utils.data_type.unit_pt import UnitPT
+from ooodev.units.unit_pt import UnitPT
 
 if TYPE_CHECKING:
     from com.sun.star.style import CharacterProperties  # service

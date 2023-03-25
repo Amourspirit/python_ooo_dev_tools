@@ -10,7 +10,7 @@ from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
 from ooodev.office.draw import Draw
-from ooodev.utils.data_type.unit_mm import UnitMM
+from ooodev.units.unit_mm import UnitMM
 
 
 def test_write(loader) -> None:

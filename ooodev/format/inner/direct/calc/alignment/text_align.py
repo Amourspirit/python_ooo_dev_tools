@@ -9,7 +9,7 @@ from ooodev.exceptions import ex as mEx
 from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.utils.unit_convert import UnitConvert
-from ooodev.utils.data_type.unit_pt import UnitPT
+from ooodev.units.unit_pt import UnitPT
 from ooodev.proto.unit_obj import UnitObj
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase

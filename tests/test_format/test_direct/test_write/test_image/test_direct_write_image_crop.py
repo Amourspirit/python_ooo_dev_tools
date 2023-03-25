@@ -9,7 +9,7 @@ if __name__ == "__main__":
 import uno
 from ooodev.format.writer.direct.image.options import Names
 from ooodev.format.writer.direct.image.crop import ImageCrop, CropOpt, Size, SizeMM
-from ooodev.utils.data_type.unit_mm import UnitMM
+from ooodev.units.unit_mm import UnitMM
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.utils.images_lo import ImagesLo

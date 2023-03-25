@@ -9,8 +9,8 @@ from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.utils.color import Color
 from ooodev.utils.data_type.intensity import Intensity
-from ooodev.utils.data_type.unit_mm import UnitMM
-from ooodev.utils.data_type.unit_pt import UnitPT
+from ooodev.units.unit_mm import UnitMM
+from ooodev.units.unit_pt import UnitPT
 from ooodev.utils.unit_convert import UnitConvert
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase

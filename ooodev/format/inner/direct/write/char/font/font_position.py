@@ -16,7 +16,7 @@ from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.utils.data_type.angle import Angle as Angle
 from ooodev.utils.data_type.intensity import Intensity as Intensity
-from ooodev.utils.data_type.unit_pt import UnitPT
+from ooodev.units.unit_pt import UnitPT
 from ooodev.utils.unit_convert import UnitConvert
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase

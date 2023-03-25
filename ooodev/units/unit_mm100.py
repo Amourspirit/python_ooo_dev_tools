@@ -1,12 +1,12 @@
 from __future__ import annotations
 from typing import TypeVar, Type
 from dataclasses import dataclass
-from ..validation import check
-from ..decorator import enforce
-from .base_int_value import BaseIntValue
-from ..unit_convert import UnitConvert, Length
+from ..utils.decorator import enforce
+from ooodev.utils.data_type.base_int_value import BaseIntValue
+from ooodev.utils.unit_convert import UnitConvert, Length
 
 _TUnitMM100 = TypeVar(name="_TUnitMM100", bound="UnitMM100")
+
 
 # Note that from __future__ import annotations converts annotations to string.
 # this means that @enforce.enforce_types will see string as type. This is fine in

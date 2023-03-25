@@ -18,7 +18,7 @@ from ooodev.proto.unit_obj import UnitObj
 from ooodev.utils import props as mProps
 from ooodev.utils.color import Color
 from ooodev.utils.color import StandardColor
-from ooodev.utils.data_type.unit_pt import UnitPT
+from ooodev.units.unit_pt import UnitPT
 from ooodev.utils.unit_convert import UnitConvert, Length
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.events.args.cancel_event_args import CancelEventArgs

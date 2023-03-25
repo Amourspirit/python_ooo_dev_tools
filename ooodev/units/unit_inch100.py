@@ -1,10 +1,8 @@
 from __future__ import annotations
 from typing import TypeVar, Type
 from dataclasses import dataclass
-from ..validation import check
-from ..decorator import enforce
-from .base_float_value import BaseFloatValue
-from ..unit_convert import UnitConvert, Length
+from ooodev.utils.data_type.base_float_value import BaseFloatValue
+from ooodev.utils.unit_convert import UnitConvert, Length
 
 _TUnitInch100 = TypeVar(name="_TUnitInch100", bound="UnitInch100")
 

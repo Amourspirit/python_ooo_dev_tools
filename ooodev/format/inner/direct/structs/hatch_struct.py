@@ -16,7 +16,7 @@ from ooodev.utils import props as mProps
 from ooodev.utils.color import Color
 from ooodev.utils.data_type.angle import Angle as Angle
 from ooodev.utils.data_type.intensity import Intensity as Intensity
-from ooodev.utils.data_type.unit_mm import UnitMM
+from ooodev.units.unit_mm import UnitMM
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.utils.unit_convert import UnitConvert
 
