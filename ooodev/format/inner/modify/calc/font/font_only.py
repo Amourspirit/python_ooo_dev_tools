@@ -4,7 +4,7 @@ from typing import cast, Tuple
 import uno
 
 from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.proto.unit_obj import UnitObj
+from ooodev.units import UnitObj
 from ooodev.format.calc.style.cell.kind.style_cell_kind import StyleCellKind as StyleCellKind
 from ooodev.format.inner.direct.write.char.font import font_only
 from ooodev.format.inner.direct.write.char.font.font_only import FontLang as FontLang

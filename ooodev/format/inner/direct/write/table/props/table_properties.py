@@ -8,12 +8,12 @@ from ooo.dyn.text.hori_orientation import HoriOrientation
 
 from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.proto.unit_obj import UnitObj
 from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.utils.data_type.intensity import Intensity
 from ooodev.utils.data_type.size import Size
-from ooodev.units.unit_mm import UnitMM
+from ooodev.units import UnitObj
+from ooodev.units import UnitMM
 from ooodev.format.inner.common.abstract.abstract_document import AbstractDocument
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleMulti

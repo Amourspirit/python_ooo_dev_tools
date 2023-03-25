@@ -10,8 +10,8 @@ from typing import Tuple, Type, cast, overload, TypeVar
 from ooo.dyn.text.graphic_crop import GraphicCrop
 
 from ooodev.exceptions import ex as mEx
-from ooodev.proto.unit_obj import UnitObj
 from ooodev.utils import props as mProps
+from ooodev.units import UnitObj
 from ooodev.units import UnitMM
 from ooodev.units import UnitConvert
 from ooodev.format.inner.kind.format_kind import FormatKind

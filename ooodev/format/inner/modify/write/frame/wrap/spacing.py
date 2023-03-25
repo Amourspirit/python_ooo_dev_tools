@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import cast
 
-from ooodev.proto.unit_obj import UnitObj
+from ooodev.units import UnitObj
 from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind as StyleFrameKind
 from ooodev.format.inner.direct.write.frame.wrap.spacing import Spacing as InnerSpacing
 from ..frame_style_base_multi import FrameStyleBaseMulti

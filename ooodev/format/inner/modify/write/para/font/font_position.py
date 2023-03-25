@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import cast
 import uno
 
-from ooodev.proto.unit_obj import UnitObj
+from ooodev.units import UnitObj
 from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind as StyleParaKind
 from ooodev.utils.data_type.intensity import Intensity as Intensity
 from ooodev.utils.data_type.angle import Angle as Angle

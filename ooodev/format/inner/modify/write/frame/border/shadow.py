@@ -4,11 +4,11 @@ from typing import cast
 import uno
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 
-from ooodev.proto.unit_obj import UnitObj
-from ..frame_style_base_multi import FrameStyleBaseMulti
+from ooodev.units import UnitObj
 from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind as StyleFrameKind
 from ooodev.format.inner.direct.write.para.border.shadow import Shadow as InnerShadow
 from ooodev.utils.color import StandardColor, Color
+from ..frame_style_base_multi import FrameStyleBaseMulti
 
 # endregion Imports
 

@@ -3,14 +3,16 @@ from __future__ import annotations
 from typing import cast
 
 import uno
-from ooodev.proto.unit_obj import UnitObj
+from ooodev.units import UnitObj
 from ooodev.format.writer.style.char.kind.style_char_kind import StyleCharKind as StyleCharKind
 from ooodev.format.inner.direct.write.char.border.shadow import Shadow as InnerShadow
 from ooodev.utils.color import Color, StandardColor
-from ..char_style_base_multi import CharStyleBaseMulti
 from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
+from ..char_style_base_multi import CharStyleBaseMulti
+
 # endregion Imports
+
 
 class Shadow(CharStyleBaseMulti):
     """

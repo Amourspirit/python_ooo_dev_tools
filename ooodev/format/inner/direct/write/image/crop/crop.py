@@ -11,8 +11,8 @@ from ooo.dyn.text.graphic_crop import GraphicCrop
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.proto.unit_obj import UnitObj
 from ooodev.proto.size_obj import SizeObj
+from ooodev.units import UnitObj
 from ooodev.utils import props as mProps
 from ooodev.utils import images_lo as mImg
 from ooodev.utils.data_type.size_mm import SizeMM as SizeMM

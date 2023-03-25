@@ -4,7 +4,7 @@ from typing import cast
 import uno
 
 from ..cell_style_base_multi import CellStyleBaseMulti
-from ooodev.proto.unit_obj import UnitObj
+from ooodev.units import UnitObj
 from ooodev.format.calc.style.cell.kind.style_cell_kind import StyleCellKind as StyleCellKind
 from ooodev.format.inner.direct.calc.alignment.text_align import VertAlignKind as VertAlignKind
 from ooodev.format.inner.direct.calc.alignment.text_align import HoriAlignKind as HoriAlignKind

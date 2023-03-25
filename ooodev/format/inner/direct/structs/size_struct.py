@@ -10,10 +10,10 @@ from typing import Tuple, Type, cast, overload, TypeVar
 from ooo.dyn.awt.size import Size
 
 from ooodev.exceptions import ex as mEx
-from ooodev.proto.unit_obj import UnitObj
 from ooodev.utils import props as mProps
-from ooodev.units.unit_mm import UnitMM
-from ooodev.units.unit_convert import UnitConvert
+from ooodev.units import UnitObj
+from ooodev.units import UnitMM
+from ooodev.units import UnitConvert
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ...common.props.struct_size_props import StructSizeProps
 from .struct_base import StructBase

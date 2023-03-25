@@ -1,9 +1,8 @@
 from __future__ import annotations
-import math
 from .size import Size
-from ...units.unit_convert import UnitConvert
-from ...proto.unit_obj import UnitObj
-from ...proto.size_obj import SizeObj
+from ooodev.units import UnitConvert
+from ooodev.units import UnitObj
+from ooodev.proto.size_obj import SizeObj
 
 
 class SizeMM:

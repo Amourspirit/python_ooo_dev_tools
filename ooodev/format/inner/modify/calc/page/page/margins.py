@@ -1,7 +1,7 @@
 # region Import
 from __future__ import annotations
 from typing import cast
-from ooodev.proto.unit_obj import UnitObj
+from ooodev.units import UnitObj
 from ooodev.format.calc.style.page.kind import CalcStylePageKind as CalcStylePageKind
 from ooodev.format.inner.direct.calc.page.page.margins import Margins as InnerMargins
 from ...cell_style_base_multi import CellStyleBaseMulti

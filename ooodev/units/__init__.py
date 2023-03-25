@@ -1,5 +1,6 @@
 from .unit_convert import UnitConvert as UnitConvert
 from .unit_convert import UnitLength as UnitLength
+from .unit_obj import UnitObj as UnitObj
 from .unit_inch import UnitInch as UnitInch
 from .unit_inch10 import UnitInch10 as UnitInch10
 from .unit_inch100 import UnitInch100 as UnitInch100

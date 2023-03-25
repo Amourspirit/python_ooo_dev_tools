@@ -14,12 +14,12 @@ from ooo.dyn.table.border_line_style import BorderLineStyle
 from ooo.dyn.table.border_line2 import BorderLine2 as BorderLine2
 
 from ooodev.meta.deleted_enum_meta import DeletedUnoConstEnumMeta
-from ooodev.proto.unit_obj import UnitObj
 from ooodev.utils import props as mProps
 from ooodev.utils.color import Color
 from ooodev.utils.color import StandardColor
-from ooodev.units.unit_pt import UnitPT
-from ooodev.units.unit_convert import UnitConvert, UnitLength
+from ooodev.units import UnitObj
+from ooodev.units import UnitPT
+from ooodev.units import UnitConvert, UnitLength
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ...common import border_width_impl as mBwi

@@ -18,7 +18,7 @@ from ..events.write_named_event import WriteNamedEvent
 from ..exceptions import ex as mEx
 from ..meta.static_meta import classproperty
 from ..proto.style_obj import StyleObj, FormatKind
-from ..proto.unit_obj import UnitObj
+from ..units import UnitObj
 from ..utils import file_io as mFileIO
 from ..utils import gen_util as mUtil
 from ..utils import images_lo as mImgLo
@@ -1346,7 +1346,6 @@ class Write(mSel.Selection):
     # region style()
     @classmethod
     def _style(cls, pos: int, distance: int, prop_name: str, prop_val: object, cursor: XTextCursor = None) -> None:
-
         cargs = KeyValCancelArgs("Write.style", prop_name, prop_val)
         _Events().trigger(WriteNamedEvent.STYLING, cargs)
         if cargs.cancel:

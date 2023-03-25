@@ -16,13 +16,13 @@ from ooo.dyn.awt.font_weight import FontWeightEnum as FontWeightEnum
 from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
 
 from ooodev.exceptions import ex as mEx
-from ooodev.proto.unit_obj import UnitObj
 from ooodev.utils import info as mInfo
 from ooodev.utils import lo as mLo
 from ooodev.utils.color import Color
 from ooodev.utils.data_type.angle import Angle as Angle
-from ooodev.units.unit_pt import UnitPT
-from ooodev.units.unit_convert import UnitConvert
+from ooodev.units import UnitObj
+from ooodev.units import UnitPT
+from ooodev.units import UnitConvert
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
 from .font_position import CharSpacingKind as CharSpacingKind

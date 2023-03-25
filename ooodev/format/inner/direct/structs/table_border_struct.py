@@ -13,10 +13,10 @@ from ooo.dyn.table.table_border2 import TableBorder2
 from ooodev.events.lo_events import Events
 from ooodev.events.props_named_event import PropsNamedEvent
 from ooodev.exceptions import ex as mEx
-from ooodev.proto.unit_obj import UnitObj
 from ooodev.utils import props as mProps
-from ooodev.units.unit_mm import UnitMM
-from ooodev.units.unit_convert import UnitConvert, UnitLength
+from ooodev.units import UnitObj
+from ooodev.units import UnitMM
+from ooodev.units import UnitConvert, UnitLength
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import _on_props_setting, _on_props_set
 from ooodev.events.format_named_event import FormatNamedEvent

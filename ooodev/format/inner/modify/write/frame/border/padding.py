@@ -3,10 +3,10 @@ from __future__ import annotations
 from typing import cast
 import uno
 
-from ooodev.proto.unit_obj import UnitObj
-from ..frame_style_base_multi import FrameStyleBaseMulti
+from ooodev.units import UnitObj
 from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind as StyleFrameKind
 from ooodev.format.inner.direct.write.para.border.padding import Padding as InnerPadding
+from ..frame_style_base_multi import FrameStyleBaseMulti
 
 # endregion Imports
 

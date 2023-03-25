@@ -4,7 +4,7 @@ from typing import cast
 import uno
 from ooo.dyn.drawing.hatch_style import HatchStyle as HatchStyle
 
-from ooodev.proto.unit_obj import UnitObj
+from ooodev.units import UnitObj
 from ooodev.utils.data_type.angle import Angle as Angle
 from ooodev.utils.color import Color
 from ooodev.format.inner.preset.preset_hatch import PresetHatchKind as PresetHatchKind

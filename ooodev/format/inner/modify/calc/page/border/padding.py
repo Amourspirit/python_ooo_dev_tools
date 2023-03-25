@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Tuple, cast
 import uno
 
-from ooodev.proto.unit_obj import UnitObj
+from ooodev.units import UnitObj
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.calc.style.page.kind import CalcStylePageKind as CalcStylePageKind
 from ooodev.format.inner.direct.calc.border.padding import Padding as DirectPadding
