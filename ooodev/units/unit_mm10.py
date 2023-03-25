@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import TypeVar, Type
 from dataclasses import dataclass
 from ooodev.utils.data_type.base_float_value import BaseFloatValue
-from ooodev.utils.unit_convert import UnitConvert, Length
+from .unit_convert import UnitConvert, UnitLength
 
 _TUnitMM10 = TypeVar(name="_TUnitMM10", bound="UnitMM10")
 
@@ -29,7 +29,7 @@ class UnitMM10(BaseFloatValue):
         Returns:
             int: Value in ``mm`` units.
         """
-        return UnitConvert.convert(num=self.value, frm=Length.MM10, to=Length.MM)
+        return UnitConvert.convert(num=self.value, frm=UnitLength.MM10, to=UnitLength.MM)
 
     def get_value_mm100(self) -> int:
         """
@@ -38,7 +38,7 @@ class UnitMM10(BaseFloatValue):
         Returns:
             int: Value in ``1/100th mm`` units.
         """
-        return round(UnitConvert.convert(num=self.value, frm=Length.MM10, to=Length.MM100))
+        return round(UnitConvert.convert(num=self.value, frm=UnitLength.MM10, to=UnitLength.MM100))
 
     def get_value_pt(self) -> float:
         """
@@ -47,7 +47,7 @@ class UnitMM10(BaseFloatValue):
         Returns:
             int: Value in ``pt`` units.
         """
-        return UnitConvert.convert(num=self.value, frm=Length.MM10, to=Length.PT)
+        return UnitConvert.convert(num=self.value, frm=UnitLength.MM10, to=UnitLength.PT)
 
     def get_value_px(self) -> float:
         """
@@ -56,7 +56,7 @@ class UnitMM10(BaseFloatValue):
         Returns:
             int: Value in ``px`` units.
         """
-        return UnitConvert.convert(num=self.value, frm=Length.MM10, to=Length.PX)
+        return UnitConvert.convert(num=self.value, frm=UnitLength.MM10, to=UnitLength.PX)
 
     @classmethod
     def from_pt(cls: Type[_TUnitMM10], value: float) -> _TUnitMM10:
@@ -70,7 +70,7 @@ class UnitMM10(BaseFloatValue):
             UnitMM10:
         """
         inst = super(UnitMM10, cls).__new__(cls)
-        inst.__init__(float(UnitConvert.convert(num=value, frm=Length.PT, to=Length.MM10)))
+        inst.__init__(float(UnitConvert.convert(num=value, frm=UnitLength.PT, to=UnitLength.MM10)))
         return inst
 
     @classmethod
@@ -85,7 +85,7 @@ class UnitMM10(BaseFloatValue):
             UnitMM10:
         """
         inst = super(UnitMM10, cls).__new__(cls)
-        inst.__init__(UnitConvert.convert(num=value, frm=Length.PX, to=Length.MM10))
+        inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.PX, to=UnitLength.MM10))
         return inst
 
     @classmethod
@@ -100,7 +100,7 @@ class UnitMM10(BaseFloatValue):
             UnitMM10:
         """
         inst = super(UnitMM10, cls).__new__(cls)
-        inst.__init__(UnitConvert.convert(num=value, frm=Length.MM, to=Length.MM10))
+        inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.MM, to=UnitLength.MM10))
         return inst
 
     @classmethod
@@ -130,7 +130,7 @@ class UnitMM10(BaseFloatValue):
             UnitMM10:
         """
         inst = super(UnitMM10, cls).__new__(cls)
-        inst.__init__(UnitConvert.convert(num=value, frm=Length.MM100, to=Length.MM10))
+        inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.MM100, to=UnitLength.MM10))
         return inst
 
     @classmethod
@@ -145,7 +145,7 @@ class UnitMM10(BaseFloatValue):
             UnitMM10:
         """
         inst = super(UnitMM10, cls).__new__(cls)
-        inst.__init__(UnitConvert.convert(num=value, frm=Length.IN, to=Length.MM10))
+        inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.IN, to=UnitLength.MM10))
         return inst
 
     @classmethod
@@ -160,7 +160,7 @@ class UnitMM10(BaseFloatValue):
             UnitMM10:
         """
         inst = super(UnitMM10, cls).__new__(cls)
-        inst.__init__(UnitConvert.convert(num=value, frm=Length.IN10, to=Length.MM10))
+        inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.IN10, to=UnitLength.MM10))
         return inst
 
     @classmethod
@@ -175,7 +175,7 @@ class UnitMM10(BaseFloatValue):
             UnitMM10:
         """
         inst = super(UnitMM10, cls).__new__(cls)
-        inst.__init__(UnitConvert.convert(num=value, frm=Length.IN100, to=Length.MM10))
+        inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.IN100, to=UnitLength.MM10))
         return inst
 
     @classmethod
@@ -190,5 +190,5 @@ class UnitMM10(BaseFloatValue):
             UnitMM10:
         """
         inst = super(UnitMM10, cls).__new__(cls)
-        inst.__init__(UnitConvert.convert(num=value, frm=Length.IN1000, to=Length.MM10))
+        inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.IN1000, to=UnitLength.MM10))
         return inst

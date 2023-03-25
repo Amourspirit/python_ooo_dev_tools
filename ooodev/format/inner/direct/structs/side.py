@@ -19,7 +19,7 @@ from ooodev.utils import props as mProps
 from ooodev.utils.color import Color
 from ooodev.utils.color import StandardColor
 from ooodev.units.unit_pt import UnitPT
-from ooodev.utils.unit_convert import UnitConvert, Length
+from ooodev.units.unit_convert import UnitConvert, UnitLength
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ...common import border_width_impl as mBwi
@@ -219,7 +219,7 @@ class Side(StructBase):
         if self._pts > 9.0000001:
             raise ValueError("Maximum width allowed is 9pt")
 
-        lw = round(UnitConvert.convert(num=self._pts, frm=Length.PT, to=Length.MM100))
+        lw = round(UnitConvert.convert(num=self._pts, frm=UnitLength.PT, to=UnitLength.MM100))
 
         init_vals = {
             "Color": color,
@@ -245,7 +245,7 @@ class Side(StructBase):
                 self._set(attr, 0)
             return
 
-        twips = round(UnitConvert.to_twips(pts, Length.PT))
+        twips = round(UnitConvert.to_twips(pts, UnitLength.PT))
         single_lns = (
             BorderLineKind.SOLID,
             BorderLineKind.DOTTED,
@@ -526,7 +526,7 @@ class Side(StructBase):
         Returns:
             Side: instance.
         """
-        pt_width = round(UnitConvert.convert(num=border.LineWidth, frm=Length.MM100, to=Length.PT), 2)
+        pt_width = round(UnitConvert.convert(num=border.LineWidth, frm=UnitLength.MM100, to=UnitLength.PT), 2)
         inst = cls(width=pt_width, **kwargs)
         inst._set("Color", border.Color)
         inst._set("InnerLineWidth", border.InnerLineWidth)

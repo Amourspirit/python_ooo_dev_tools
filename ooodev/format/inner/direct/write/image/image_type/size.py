@@ -15,7 +15,7 @@ from ooodev.proto.unit_obj import UnitObj
 from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.units.unit_mm import UnitMM
-from ooodev.utils.unit_convert import UnitConvert
+from ooodev.units.unit_convert import UnitConvert
 from ooodev.utils.validation import check
 from ooodev.format.inner.common.abstract.abstract_document import AbstractDocument
 from ooodev.format.inner.common.props.frame_type_size_props import FrameTypeSizeProps

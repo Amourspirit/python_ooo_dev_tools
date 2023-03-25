@@ -9,8 +9,8 @@ from ooodev.format.inner.style_base import StyleBase
 from ooodev.proto.unit_obj import UnitObj
 from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
-from ooodev.units.unit_mm import UnitMM
-from ooodev.utils.unit_convert import UnitConvert
+from ooodev.units import UnitMM
+from ooodev.units import UnitConvert
 
 _TMargins = TypeVar(name="_TMargins", bound="Margins")
 

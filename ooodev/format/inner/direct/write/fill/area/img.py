@@ -20,7 +20,7 @@ from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.utils.data_type.offset import Offset as Offset
 from ooodev.utils.data_type.size_mm import SizeMM as SizeMM
-from ooodev.utils.unit_convert import UnitConvert
+from ooodev.units.unit_convert import UnitConvert
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.preset import preset_image as mImage
 from ooodev.format.inner.preset.preset_image import PresetImageKind as PresetImageKind

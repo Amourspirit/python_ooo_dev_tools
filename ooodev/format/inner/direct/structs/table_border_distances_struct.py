@@ -8,7 +8,7 @@ from ooodev.exceptions import ex as mEx
 from ooodev.proto.unit_obj import UnitObj
 from ooodev.utils import props as mProps
 from ooodev.units.unit_mm import UnitMM
-from ooodev.utils.unit_convert import UnitConvert
+from ooodev.units.unit_convert import UnitConvert
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.common.props.struct_table_border_distances_props import StructTableBorderDistancesProps
 from .struct_base import StructBase

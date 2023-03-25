@@ -18,7 +18,7 @@ from ooodev.utils import info as mInfo
 from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.units.unit_pt import UnitPT
-from ooodev.utils.unit_convert import UnitConvert
+from ooodev.units.unit_convert import UnitConvert
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleMulti
 from ooodev.format.inner.common.props.font_only_props import FontOnlyProps

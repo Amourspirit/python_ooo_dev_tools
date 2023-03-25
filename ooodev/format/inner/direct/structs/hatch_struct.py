@@ -18,7 +18,7 @@ from ooodev.utils.data_type.angle import Angle as Angle
 from ooodev.utils.data_type.intensity import Intensity as Intensity
 from ooodev.units.unit_mm import UnitMM
 from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.utils.unit_convert import UnitConvert
+from ooodev.units.unit_convert import UnitConvert
 
 from ooo.dyn.drawing.hatch import Hatch
 from ooo.dyn.drawing.hatch_style import HatchStyle

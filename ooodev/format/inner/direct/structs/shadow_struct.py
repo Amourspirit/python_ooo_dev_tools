@@ -18,7 +18,7 @@ from ooodev.utils import props as mProps
 from ooodev.utils.color import Color, StandardColor
 from ooodev.units.unit_mm import UnitMM
 from ooodev.units.unit_mm100 import UnitMM100
-from ooodev.utils.unit_convert import UnitConvert
+from ooodev.units.unit_convert import UnitConvert
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from .struct_base import StructBase

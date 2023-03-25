@@ -1,7 +1,7 @@
 from __future__ import annotations
 import math
 from .size import Size
-from ..unit_convert import UnitConvert
+from ...units.unit_convert import UnitConvert
 from ...proto.unit_obj import UnitObj
 from ...proto.size_obj import SizeObj
 

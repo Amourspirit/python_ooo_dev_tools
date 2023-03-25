@@ -4,7 +4,7 @@ from typing import cast, TypeVar
 from ooodev.format.inner.common.props.page_margin_props import PageMarginProps
 from ooodev.proto.unit_obj import UnitObj
 from ooodev.units.unit_mm import UnitMM
-from ooodev.utils.unit_convert import UnitConvert
+from ooodev.units.unit_convert import UnitConvert
 from ooodev.format.inner.direct.calc.page.page.margins import Margins as CalcMargins
 
 _TMargins = TypeVar(name="_TMargins", bound="Margins")
