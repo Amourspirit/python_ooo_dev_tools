@@ -8,6 +8,7 @@ Subpackages
    :maxdepth: 4
 
    ooodev.format.calc.modify.page.footer.area
+   ooodev.format.calc.modify.page.footer.borders
 
 Module contents
 ---------------

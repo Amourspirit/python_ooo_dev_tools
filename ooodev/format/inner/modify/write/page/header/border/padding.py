@@ -26,8 +26,11 @@ class InnerPadding(AbstractPadding):
 
     # region methods
     def _supported_services(self) -> Tuple[str, ...]:
-        # will affect apply() on parent class.
-        return ("com.sun.star.style.PageStyle",)
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = ("com.sun.star.style.PageStyle",)
+        return self._supported_services_values
 
     # endregion methods
 
@@ -80,13 +83,13 @@ class Padding(PageStyleBaseMulti):
         Constructor
 
         Args:
-            left (float, optional): Page left padding (in mm units).
-            right (float, optional): Page right padding (in mm units).
-            top (float, optional): Page top padding (in mm units).
-            bottom (float, optional): Page bottom padding (in mm units).
-            padding_all (float, optional): Page left, right, top, bottom padding (in mm units). If argument is
-                present then ``left``, ``right``, ``top``, and ``bottom`` arguments are ignored.
-            style_name (StyleParaKind, str, optional): Specifies the Page Style that instance applies to.
+            left (float, UnitObj, optional): Left (in ``mm`` units) or :ref:`proto_unit_obj`.
+            right (float, UnitObj, optional): Right (in ``mm`` units)  or :ref:`proto_unit_obj`.
+            top (float, UnitObj, optional): Top (in ``mm`` units)  or :ref:`proto_unit_obj`.
+            bottom (float, UnitObj,  optional): Bottom (in ``mm`` units)  or :ref:`proto_unit_obj`.
+            all (float, UnitObj, optional): Left, right, top, bottom (in ``mm`` units)  or :ref:`proto_unit_obj`.
+                If argument is present then ``left``, ``right``, ``top``, and ``bottom`` arguments are ignored.
+            style_name (WriterStylePageKind, str, optional): Specifies the Page Style that instance applies to.
                 Default is Default Page Style.
             style_family (str, optional): Style family. Default ``PageStyles``.
 
@@ -138,7 +141,7 @@ class Padding(PageStyleBaseMulti):
 
         Args:
             doc (object): UNO Document Object.
-            style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to.
+            style_name (WriterStylePageKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.
             style_family (str, optional): Style family. Default ``PageStyles``.
 
@@ -176,6 +179,7 @@ class Padding(PageStyleBaseMulti):
         if not isinstance(value, InnerPadding):
             raise TypeError(f'Expected type of InnerPadding, got "{type(value).__name__}"')
         self._del_attribs("_direct_inner")
-        self._set_style("direct", value, *value.get_attrs())
+        cp = value.copy(_cattribs=self._get_inner_cattribs())
+        self._set_style("direct", cp, *cp.get_attrs())
 
     # endregion Properties
