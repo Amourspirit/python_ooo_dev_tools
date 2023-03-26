@@ -3,6 +3,8 @@ from typing import NamedTuple
 
 
 class FrameTypeSizeProps(NamedTuple):
+    """Internal Properties"""
+
     width: str  # Width
     height: str  # Height
     rel_width: str  # RealitiveWidth ( int )

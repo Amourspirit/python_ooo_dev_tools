@@ -53,8 +53,8 @@ class LineNum(ParaStyleBaseMulti):
                 If ``-1`` then this paragraph is excluded in line numbering.
                 If greater than zero this paragraph is included in line numbering and the numbering is restarted with
                 value of ``num_start``.
-            style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to. Deftult is Default Paragraph Style.
-            style_family (str, optional): Style family. Defatult ``ParagraphStyles``.
+            style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to. Default is Default Paragraph Style.
+            style_family (str, optional): Style family. Default ``ParagraphStyles``.
 
         Returns:
             None:
@@ -77,9 +77,9 @@ class LineNum(ParaStyleBaseMulti):
         Gets instance from Document.
 
         Args:
-            doc (object): UNO Documnet Object.
-            style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to. Deftult is Default Paragraph Style.
-            style_family (str, optional): Style family. Defatult ``ParagraphStyles``.
+            doc (object): UNO Document Object.
+            style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to. Default is Default Paragraph Style.
+            style_family (str, optional): Style family. Default ``ParagraphStyles``.
 
         Returns:
             LineNum: ``LineNum`` instance from document properties.

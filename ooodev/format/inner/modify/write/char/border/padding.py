@@ -37,8 +37,8 @@ class Padding(CharStyleBaseMulti):
             top (float, UnitObj, optional): Top (in ``mm`` units)  or :ref:`proto_unit_obj`.
             bottom (float, UnitObj,  optional): Bottom (in ``mm`` units)  or :ref:`proto_unit_obj`.
             all (float, UnitObj, optional): Left, right, top, bottom (in ``mm`` units)  or :ref:`proto_unit_obj`. If argument is present then ``left``, ``right``, ``top``, and ``bottom`` arguments are ignored.
-            style_name (StyleParaKind, str, optional): Specifies the Character Style that instance applies to. Deftult is Default Character Style.
-            style_family (str, optional): Style family. Defatult ``CharacterStyles``.
+            style_name (StyleParaKind, str, optional): Specifies the Character Style that instance applies to. Default is Default Character Style.
+            style_family (str, optional): Style family. Default ``CharacterStyles``.
 
         Returns:
             None:
@@ -61,9 +61,9 @@ class Padding(CharStyleBaseMulti):
         Gets instance from Document.
 
         Args:
-            doc (object): UNO Documnet Object.
-            style_name (StyleCharKind, str, optional): Specifies the Character Style that instance applies to. Deftult is Default Character Style.
-            style_family (str, optional): Style family. Defatult ``CharacterStyles``.
+            doc (object): UNO Document Object.
+            style_name (StyleCharKind, str, optional): Specifies the Character Style that instance applies to. Default is Default Character Style.
+            style_family (str, optional): Style family. Default ``CharacterStyles``.
 
         Returns:
             Padding: ``Padding`` instance from document properties.

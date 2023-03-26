@@ -40,8 +40,8 @@ class Pattern(FrameStyleBaseMulti):
             tile (bool, optional): Specified if bitmap is tiled. Defaults to ``True``.
             stretch (bool, optional): Specifies if bitmap is stretched. Defaults to ``False``.
             auto_name (bool, optional): Specifies if ``name`` is ensured to be unique. Defaults to ``False``.
-            style_name (StyleFrameKind, str, optional): Specifies the Frame Style that instance applies to. Deftult is Default Frame Style.
-            style_family (str, optional): Style family. Defatult ``FrameStyles``.
+            style_name (StyleFrameKind, str, optional): Specifies the Frame Style that instance applies to. Default is Default Frame Style.
+            style_family (str, optional): Style family. Default ``FrameStyles``.
 
         Returns:
             None:
@@ -85,9 +85,9 @@ class Pattern(FrameStyleBaseMulti):
         Gets instance from Document.
 
         Args:
-            doc (object): UNO Documnet Object.
-            style_name (StyleFrameKind, str, optional): Specifies the Frame Style that instance applies to. Deftult is Default Frame Style.
-            style_family (str, optional): Style family. Defatult ``FrameStyles``.
+            doc (object): UNO Document Object.
+            style_name (StyleFrameKind, str, optional): Specifies the Frame Style that instance applies to. Default is Default Frame Style.
+            style_family (str, optional): Style family. Default ``FrameStyles``.
 
         Returns:
             Pattern: ``Pattern`` instance from style properties.
@@ -110,8 +110,8 @@ class Pattern(FrameStyleBaseMulti):
 
         Args:
             preset (PatternKind): Preset.
-            style_name (StyleFrameKind, str, optional): Specifies the Frame Style that instance applies to. Deftult is Default Frame Style.
-            style_family (str, optional): Style family. Defatult ``FrameStyles``.
+            style_name (StyleFrameKind, str, optional): Specifies the Frame Style that instance applies to. Default is Default Frame Style.
+            style_family (str, optional): Style family. Default ``FrameStyles``.
 
         Returns:
             Pattern: ``Pattern`` instance from preset.

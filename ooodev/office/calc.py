@@ -359,7 +359,7 @@ class Calc:
         Gets the current document.
 
         Returns:
-            XSpreadsheetDocument: Spreadsheet Docoument
+            XSpreadsheetDocument: Spreadsheet Document
         """
         return cls.get_ss_doc(mLo.Lo.this_component)
 
@@ -473,7 +473,7 @@ class Calc:
             Added overload ``get_sheet() -> XSpreadsheet``.
             Added overload ``get_sheet(idx: int) -> XSpreadsheet``.
             Added overload ``get_sheet(sheet_name: str) -> XSpreadsheet``.
-            Chaged ``get_sheet(doc: XSpreadsheetDocument, index: int)`` to ``get_sheet(doc: XSpreadsheetDocument, idx: int)``
+            Changed ``get_sheet(doc: XSpreadsheetDocument, index: int)`` to ``get_sheet(doc: XSpreadsheetDocument, idx: int)``
         """
         ordered_keys = (1, 2)
         kargs_len = len(kwargs)
@@ -1880,7 +1880,6 @@ class Calc:
     # region insert_cells()
     @classmethod
     def _insert_cells(cls, sheet: XSpreadsheet, cell_range: XCellRange, is_shift_right: bool) -> bool:
-
         cargs = CellCancelArgs(Calc.insert_cells.__qualname__)
         cargs.sheet = sheet
         cargs.cells = cell_range
@@ -4690,10 +4689,10 @@ class Calc:
 
         Args:
             range_name (str): range name such as ``A1.B7`` or ``Sheet1.A1.B7``
-            allow_cell_name: Determins if ``range_name`` accepts cell name input.
+            allow_cell_name: Determines if ``range_name`` accepts cell name input.
 
         Returns:
-            str: Range name as strig with correct column an row order.
+            str: Range name as string with correct column an row order.
 
         Note:
             If ``allow_cell_name`` is ``True`` and ``range_name`` is a cell name then
@@ -5927,7 +5926,7 @@ class Calc:
     @classmethod
     def unmerge_cells(cls, *args, **kwargs) -> None:
         """
-        Un-merges a range of cells
+        Removes merging from a range of cells
 
         Args:
             sheet (XSpreadsheet): Spreadsheet Document
@@ -6223,7 +6222,6 @@ class Calc:
     # region    add_border()
     @classmethod
     def _add_border_sht_rng(cls, cargs: CellCancelArgs) -> None:
-
         cargs.event_data["color"] = CommonColor.BLACK
         cls._add_border_sht_rng_color(cargs)  # color black
 

@@ -736,7 +736,7 @@ class Side(StructBase):
 
     @property
     def empty(self: _TSide) -> _TSide:
-        """Gets an empyty side. When applied formatting is removed"""
+        """Gets an empty side. When applied formatting is removed"""
         try:
             return self._empty_inst
         except AttributeError:

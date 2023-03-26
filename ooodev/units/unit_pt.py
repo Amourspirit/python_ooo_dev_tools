@@ -12,7 +12,7 @@ class UnitPT(BaseFloatValue):
     """
     Represents a ``PT`` (points) value.
 
-    Supports ``UnitObj`` protcol.
+    Supports ``UnitObj`` protocol.
 
     See Also:
         :ref:`proto_unit_obj`

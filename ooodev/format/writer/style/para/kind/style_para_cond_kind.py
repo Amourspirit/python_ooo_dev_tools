@@ -3,7 +3,7 @@ from .style_para_kind import StyleParaKind
 
 
 class StyleParaCondKind(Enum):
-    """Style Lookups for Paragraph Conditional Styles"""
+    """Style Look ups for Paragraph Conditional Styles"""
 
     TEXT_BODY = StyleParaKind.TEXT_BODY.value
 

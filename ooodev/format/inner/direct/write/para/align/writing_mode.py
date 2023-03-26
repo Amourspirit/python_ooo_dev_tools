@@ -21,7 +21,7 @@ _TWritingMode = TypeVar(name="_TWritingMode", bound="WritingMode")
 
 class WritingMode(StyleBase):
     """
-    Paragraph Writeing Mode
+    Paragraph Writing Mode
 
     Any properties starting with ``prop_`` set or get current instance values.
 

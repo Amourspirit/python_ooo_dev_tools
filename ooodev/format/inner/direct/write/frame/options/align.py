@@ -65,7 +65,7 @@ class Align(StyleBase):
         Constructor
 
         Args:
-            adjust (VertAdjustKindl, optional): Specifies Verticial Adjustment. Default ``VertAdjustKind.TOP``
+            adjust (VertAdjustKindl, optional): Specifies Vertical Adjustment. Default ``VertAdjustKind.TOP``
 
         Returns:
             None:

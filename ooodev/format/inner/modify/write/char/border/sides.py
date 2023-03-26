@@ -8,7 +8,9 @@ from ooodev.format.writer.style.char.kind.style_char_kind import StyleCharKind a
 from ..char_style_base_multi import CharStyleBaseMulti
 from ooodev.format.inner.direct.write.char.border.sides import Sides as InnerSides
 from ooodev.format.inner.direct.structs.side import Side as Side, LineSize as LineSize
+
 # endregion Imports
+
 
 class Sides(CharStyleBaseMulti):
     """
@@ -38,8 +40,8 @@ class Sides(CharStyleBaseMulti):
             bottom (Side | None, optional): Determines the line style at the bottom edge.
             border_side (Side | None, optional): Determines the line style at the top, bottom, left, right edges. If this argument has a value then arguments ``top``, ``bottom``, ``left``, ``right`` are ignored
             shadowed (bool, optional): Specifies if the characters are formatted and displayed with a shadow effect.
-            style_name (StyleParaKind, str, optional): Specifies the Character Style that instance applies to. Deftult is Default Character Style.
-            style_family (str, optional): Style family. Defatult ``CharacterStyles``.
+            style_name (StyleParaKind, str, optional): Specifies the Character Style that instance applies to. Default is Default Character Style.
+            style_family (str, optional): Style family. Default ``CharacterStyles``.
 
         Returns:
             None:
@@ -62,9 +64,9 @@ class Sides(CharStyleBaseMulti):
         Gets instance from Document.
 
         Args:
-            doc (object): UNO Documnet Object.
-            style_name (StyleCharKind, str, optional): Specifies the Character Style that instance applies to. Deftult is Default Character Style.
-            style_family (str, optional): Style family. Defatult ``CharacterStyles``.
+            doc (object): UNO Document Object.
+            style_name (StyleCharKind, str, optional): Specifies the Character Style that instance applies to. Default is Default Character Style.
+            style_family (str, optional): Style family. Default ``CharacterStyles``.
 
         Returns:
             Sides: ``Sides`` instance from document properties.

@@ -12,7 +12,7 @@ class UnitPX(BaseFloatValue):
     """
     Represents a ``PX`` (pixel) value.
 
-    Supports ``UnitObj`` protcol.
+    Supports ``UnitObj`` protocol.
 
     See Also:
         :ref:`proto_unit_obj`

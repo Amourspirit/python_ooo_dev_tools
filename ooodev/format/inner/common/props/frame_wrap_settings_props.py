@@ -3,4 +3,6 @@ from typing import NamedTuple
 
 
 class FrameWrapSettingsProps(NamedTuple):
+    """Internal Properties"""
+
     name: str  # Surrond

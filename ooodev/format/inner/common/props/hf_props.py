@@ -3,6 +3,8 @@ from typing import NamedTuple
 
 
 class HfProps(NamedTuple):
+    """Internal Properties"""
+
     on: str  # HeaderIsOn (bool)
     shared: str  # HeaderIsShared (bool, Same contents left and right)
     shared_first: str  # FirstIsShared (bool, same content on first page)

@@ -42,7 +42,7 @@ class HoriOrient(Enum):
 
 
 class VertOrient(Enum):
-    """Verticial Orientation"""
+    """Vertical Orientation"""
 
     TOP = VertOrientation.TOP
     """Aligned at the top"""
@@ -105,7 +105,7 @@ class Horizontal:
         Args:
             position (HoriOrient): Specifies Horizontal Position.
             rel (RelHoriOrient): Specifies Relative Orientation.
-            amount (float, UnitObj, optional): Spedifies Amount in ``mm`` units or :ref:`proto_unit_obj`. Only effective when position is ``HoriOrient.FROM_LEFT``. Defaults to ``0.0``.
+            amount (float, UnitObj, optional): Specifies Amount in ``mm`` units or :ref:`proto_unit_obj`. Only effective when position is ``HoriOrient.FROM_LEFT``. Defaults to ``0.0``.
         """
 
         self._position = position
@@ -466,7 +466,7 @@ class Position(StyleBase):
 
     @property
     def prop_keep_boundaries(self) -> bool | None:
-        """Gets/Sets keep inside text boundries"""
+        """Gets/Sets keep inside text boundaries"""
         return self._get(self._props.txt_flow)
 
     @prop_keep_boundaries.setter

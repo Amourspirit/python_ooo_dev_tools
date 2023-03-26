@@ -3,7 +3,7 @@ from .style_para_kind import StyleParaKind
 
 
 class StyleChapterKind(Enum):
-    """Style Lookups for Paragraph Chapter Styles"""
+    """Style Look ups for Paragraph Chapter Styles"""
 
     APPENDIX = StyleParaKind.APPENDIX.value
     SUBTITLE = StyleParaKind.SUBTITLE.value

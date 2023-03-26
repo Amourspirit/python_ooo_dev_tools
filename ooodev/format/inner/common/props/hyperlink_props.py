@@ -3,6 +3,8 @@ from typing import NamedTuple
 
 
 class HyperlinkProps(NamedTuple):
+    """Internal Properties"""
+
     name: str  # HyperLinkName
     target: str  # HyperLinkTarget
     url: str  # HyperLinkURL

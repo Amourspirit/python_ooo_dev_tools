@@ -3,7 +3,7 @@ from .style_para_kind import StyleParaKind
 
 
 class StyleParaListKind(Enum):
-    """Style Lookups for Paragraph List Styles"""
+    """Style Look ups for Paragraph List Styles"""
 
     LIST = StyleParaKind.LIST.value
     LIST_1 = StyleParaKind.LIST_1.value

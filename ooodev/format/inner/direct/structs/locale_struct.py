@@ -507,7 +507,7 @@ class LocaleStruct(StructBase):
 
     @property
     def english_sri_lanka(self: _TLocaleStruct) -> _TLocaleStruct:
-        """Gets English Sri Lanka locale"""
+        """Gets English ``Sri Lanka`` locale"""
         return self.__class__(
             country="LK",
             language="en",
@@ -657,7 +657,7 @@ class LocaleStruct(StructBase):
 
     @property
     def french_burkina_faso(self: _TLocaleStruct) -> _TLocaleStruct:
-        """Gets French Burkina Faso locale"""
+        """Gets French ``Burkina Faso`` locale"""
         return self.__class__(
             country="BF",
             language="fr",
@@ -677,7 +677,7 @@ class LocaleStruct(StructBase):
 
     @property
     def french_cote_d_ivoire(self: _TLocaleStruct) -> _TLocaleStruct:
-        """Gets French (Côte d'Ivoire) locale"""
+        """Gets French ``Côte d'Ivoire`` locale"""
         return self.__class__(
             country="CI",
             language="fr",
@@ -817,7 +817,7 @@ class LocaleStruct(StructBase):
 
     @property
     def spanish_costa_rica(self: _TLocaleStruct) -> _TLocaleStruct:
-        """Gets Spanish Costa Rica locale"""
+        """Gets Spanish ``Costa Rica`` locale"""
         return self.__class__(
             country="CR",
             language="es",
@@ -857,7 +857,7 @@ class LocaleStruct(StructBase):
 
     @property
     def spanish_el_salvador(self: _TLocaleStruct) -> _TLocaleStruct:
-        """Gets Spanish El Salvador locale"""
+        """Gets Spanish ``El Salvador`` locale"""
         return self.__class__(
             country="SV",
             language="es",

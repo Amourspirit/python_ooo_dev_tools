@@ -46,7 +46,7 @@ class Pattern(StyleBase):
         Constructor
 
         Args:
-            bitmap (XBitmap, optional): Bitmap instance. If ``name`` is not already in the Bitmap Table then this property is requied.
+            bitmap (XBitmap, optional): Bitmap instance. If ``name`` is not already in the Bitmap Table then this property is required.
             name (str, optional): Specifies the name of the pattern. This is also the name that is used to store bitmap in LibreOffice Bitmap Table.
             tile (bool, optional): Specified if bitmap is tiled. Defaults to ``True``.
             stretch (bool, optional): Specifies if bitmap is stretched. Defaults to ``False``.
@@ -57,7 +57,7 @@ class Pattern(StyleBase):
 
         Note:
             If ``auto_name`` is ``False`` then a bitmap for a given name is only required the first call.
-            All subsequent call of the same name will retreive the bitmap form the LibreOffice Bitmap Table.
+            All subsequent call of the same name will retrieve the bitmap form the LibreOffice Bitmap Table.
         """
 
         init_vals = {}

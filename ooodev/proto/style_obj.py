@@ -2,17 +2,20 @@ from __future__ import annotations
 from typing import Tuple, TYPE_CHECKING
 from ..format.inner.kind.format_kind import FormatKind as FormatKind
 
-try:
-    from typing import Protocol
-except ImportError:
-    from typing_extensions import Protocol
 if TYPE_CHECKING:
     from com.sun.star.beans import PropertyValue
+
+    try:
+        from typing import Protocol
+    except ImportError:
+        from typing_extensions import Protocol
+else:
+    Protocol = object
 
 
 class StyleObj(Protocol):
     """
-    Protolcol Class for Styles
+    Protocol Class for Styles
     """
 
     def apply(self, obj: object, **kwargs) -> None:
@@ -28,13 +31,13 @@ class StyleObj(Protocol):
         Gets the attributes that are slated for change in the current instance
 
         Returns:
-            Tuple(str, ...): Tuple of attribures
+            Tuple(str, ...): Tuple of Attributes
         """
         ...
 
     def backup(self, obj: object) -> None:
         """
-        Backs up Attriubes that are to be changed by apply.
+        Backs up Attributes that are to be changed by apply.
 
         If used method should be called before apply.
 
@@ -54,7 +57,7 @@ class StyleObj(Protocol):
 
         Args:
             obj (object): Object to restore properties on.
-            clear (bool): Determines if backup is cleared after resore. Default ``False``
+            clear (bool): Determines if backup is cleared after restore. Default ``False``
 
         Returns:
             None:
@@ -78,12 +81,12 @@ class StyleObj(Protocol):
 
     @property
     def prop_has_attribs(self) -> bool:
-        """Gets If instantance has any attributes set."""
+        """Gets If instance has any attributes set."""
         ...
 
     @property
     def prop_has_backup(self) -> bool:
-        """Gets If instantance has backup data set."""
+        """Gets If instance has backup data set."""
         ...
 
     @property

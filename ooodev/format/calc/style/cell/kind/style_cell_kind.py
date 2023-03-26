@@ -2,7 +2,7 @@ from enum import Enum
 
 
 class StyleCellKind(Enum):
-    """Style Lookups for Cell Styles"""
+    """Style Lookup for Cell Styles"""
 
     ACCENT = "Accent"
     ACCENT_1 = "Accent 1"

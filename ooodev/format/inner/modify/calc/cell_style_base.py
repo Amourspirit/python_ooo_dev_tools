@@ -70,7 +70,7 @@ class CellStyleBase(StyleBase):
         Gets the Style Properties
 
         Args:
-            doc (object): UNO Documnet Object.
+            doc (object): UNO Document Object.
 
         Raised:
             NotSupportedDocumentError: If document is not supported.

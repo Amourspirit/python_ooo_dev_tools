@@ -17,7 +17,7 @@ class UnitInch1000(BaseIntValue):
     """
     Represents ``1/1,000th in`` units.
 
-    Supports ``UnitObj`` protcol.
+    Supports ``UnitObj`` protocol.
 
     See Also:
         :ref:`proto_unit_obj`

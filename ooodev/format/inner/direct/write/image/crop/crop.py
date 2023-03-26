@@ -316,7 +316,7 @@ class ImageCrop(StyleMulti):
         Applies style of current instance.
 
         Args:
-            obj (object): UNO Oject that styles are to be applied.
+            obj (object): UNO Object that styles are to be applied.
         """
         if not self._is_valid_obj(obj):
             self._print_not_valid_obj(method_name="apply")

@@ -2,7 +2,7 @@ from enum import Enum
 
 
 class StyleListKind(Enum):
-    """Style Lookups for paragraph List Styles"""
+    """Style Look ups for paragraph List Styles"""
 
     NONE = ""
     """No List Style"""

@@ -370,7 +370,7 @@ This discrepancy pointed to stay with the deprecated approach for shape rotation
 ======================================
 
 There's an alternative way to obtain gallery images based around themes and items, implemented by the ``com.sun.star.gallery`` module.
-Subdirectories of ``gallery/`` are themes, and the files in those directories are items.
+Sub-directories of ``gallery/`` are themes, and the files in those directories are items.
 
 The three interfaces in the module are: XGalleryThemeProvider_, XGalleryTheme_, and XGalleryItem_.
 XGalleryThemeProvider_ represents the ``gallery/`` directory as a sequence of named XGalleryTheme_ objects, as shown in :numref:`ch14fig_gallery_theme_provider_service`.
@@ -387,7 +387,7 @@ XGalleryThemeProvider_ represents the ``gallery/`` directory as a sequence of na
 
         :The GalleryThemeProvider_ Service.
 
-A XGalleryTheme_ represents the file contents of a subdirectory as a container of indexed XGalleryItem_ objects, which is depicted in :numref:`ch14fig_gallery_theme_service`.
+A XGalleryTheme_ represents the file contents of a sub-directory as a container of indexed XGalleryItem_ objects, which is depicted in :numref:`ch14fig_gallery_theme_service`.
 
 ..
     figure 3

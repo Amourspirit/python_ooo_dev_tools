@@ -3,7 +3,7 @@ from .style_para_kind import StyleParaKind
 
 
 class StyleParaIndexKind(Enum):
-    """Style Lookups for Paragraph Index Styles"""
+    """Style Look ups for Paragraph Index Styles"""
 
     BIBLIOGRAPHY_1 = StyleParaKind.BIBLIOGRAPHY_1.value
     BIBLIOGRAPHY_HEADING = StyleParaKind.BIBLIOGRAPHY_HEADING.value

@@ -54,7 +54,7 @@ class TextDirectionKind(Enum):
     """
     PAGE = WritingMode2.PAGE  # keep, use superordinate object settings
     """
-    Use superordinate object settings
+    Use super-ordinate object settings
     
     Obtain writing mode from the current page.
     May not be used in page styles.
@@ -103,7 +103,7 @@ class TextDirectionMode(WritingMode):
 
     @property
     def prop_mode(self) -> TextDirectionKind | None:
-        """Gets/Sets wrighting mode of a paragraph."""
+        """Gets/Sets writing mode of a paragraph."""
         pv = cast(int, self._get(self._get_property_name()))
         if pv is None:
             return None

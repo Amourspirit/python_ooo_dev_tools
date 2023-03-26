@@ -20,7 +20,7 @@ _TTextOrientation = TypeVar(name="_TTextOrientation", bound="TextOrientation")
 
 
 class EdgeKind(Enum):
-    """Reference Edge KInd"""
+    """Reference Edge Kind"""
 
     LOWER = CellVertJustify2.BOTTOM
     """Text Extension From Lower Cell Border (default)."""

@@ -39,8 +39,8 @@ class Padding(FrameStyleBaseMulti):
             top (float, UnitObj, optional): Top (in ``mm`` units)  or :ref:`proto_unit_obj`.
             bottom (float, UnitObj,  optional): Bottom (in ``mm`` units)  or :ref:`proto_unit_obj`.
             all (float, UnitObj, optional): Left, right, top, bottom (in ``mm`` units)  or :ref:`proto_unit_obj`. If argument is present then ``left``, ``right``, ``top``, and ``bottom`` arguments are ignored.
-            style_name (StyleFrameKind, str, optional): Specifies the Frame Style that instance applies to. Deftult is Default Frame Style.
-            style_family (str, optional): Style family. Defatult ``FrameStyles``.
+            style_name (StyleFrameKind, str, optional): Specifies the Frame Style that instance applies to. Default is Default Frame Style.
+            style_family (str, optional): Style family. Default ``FrameStyles``.
 
         Returns:
             None:
@@ -68,9 +68,9 @@ class Padding(FrameStyleBaseMulti):
         Gets instance from Document.
 
         Args:
-            doc (object): UNO Documnet Object.
-            style_name (StyleFrameKind, str, optional): Specifies the Frame Style that instance applies to. Deftult is Default Frame Style.
-            style_family (str, optional): Style family. Defatult ``FrameStyles``.
+            doc (object): UNO Document Object.
+            style_name (StyleFrameKind, str, optional): Specifies the Frame Style that instance applies to. Default is Default Frame Style.
+            style_family (str, optional): Style family. Default ``FrameStyles``.
 
         Returns:
             Padding: ``Padding`` instance from style properties.

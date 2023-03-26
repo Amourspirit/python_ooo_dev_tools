@@ -445,7 +445,7 @@ class InnerBorders(StyleMulti):
 
     @property
     def prop_diagonal_up(self) -> Side | None:
-        """Gets/Sets inner Digonal up instance"""
+        """Gets/Sets inner Diagonal up instance"""
         try:
             return self._direct_dial_up
         except AttributeError:
@@ -462,7 +462,7 @@ class InnerBorders(StyleMulti):
 
     @property
     def prop_diagonal_dn(self) -> Side | None:
-        """Gets/Sets inner Digonal down instance"""
+        """Gets/Sets inner Diagonal down instance"""
         try:
             return self._direct_dial_dn
         except AttributeError:

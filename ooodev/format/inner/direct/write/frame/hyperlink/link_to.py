@@ -55,7 +55,7 @@ class LinkTo(StyleBase):
 
         Args:
             name (str, optional): Link name.
-            url (str, optional): Link Url.
+            url (str, optional): Link URL.
             target (TargetKind, str, optional): Link target. Defaults to ``TargetKind.NONE``.
 
         Returns:

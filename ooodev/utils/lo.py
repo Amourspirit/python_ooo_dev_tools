@@ -812,6 +812,9 @@ class Lo(metaclass=StaticProperty):
         """
         Kills the office connection.
 
+        Returns:
+            None:
+
         See Also:
             :py:meth:`~Lo.close_office`
         """

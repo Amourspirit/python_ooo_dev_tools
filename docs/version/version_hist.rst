@@ -7,7 +7,7 @@ Version 0.9.0
 
 Renamed method ``GUI.show_memu_bar()`` to ``GUI.show_menu_bar()``
 
-Fixxed issue with ``Calc.get_sheet_names()`` when overload with no args was used.
+Fixed issue with ``Calc.get_sheet_names()`` when overload with no args was used.
 
 Rename ``CellObj.col_info`` to ``CellObj.col_obj``
 
@@ -44,9 +44,9 @@ Added :ref:`ns_format` namespace with many classes for applying styles and forma
 Version 0.8.6
 =============
 
-Added Styles namesapce.
+Added Styles namespace.
 
-Extended Cell Objects with focues on ``CellValues`` Class.
+Extended Cell Objects with focus on ``CellValues`` Class.
 
 Added overload to ``GUI.set_visible()``
 

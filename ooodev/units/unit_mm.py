@@ -12,7 +12,7 @@ class UnitMM(BaseFloatValue):
     """
     Unit in ``mm`` units.
 
-    Supports ``UnitObj`` protcol.
+    Supports ``UnitObj`` protocol.
 
     See Also:
         :ref:`proto_unit_obj`

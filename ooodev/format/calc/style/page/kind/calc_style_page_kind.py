@@ -2,7 +2,7 @@ from enum import Enum
 
 
 class CalcStylePageKind(Enum):
-    """Style Lookups for Page Styles fo Calc."""
+    """Style Lookup for Page Styles fo Calc."""
 
     DEFAULT = "Default"
     REPORT = "Report"

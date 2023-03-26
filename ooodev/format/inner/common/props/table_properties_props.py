@@ -3,6 +3,8 @@ from typing import NamedTuple
 
 
 class TablePropertiesProps(NamedTuple):
+    """Internal Properties"""
+
     name: str
     width: str
     left: str

@@ -18,18 +18,18 @@ class Protect(StyleBase):
     .. versionadded:: 0.9.0
     """
 
-    def __init__(self, size: bool | None = None, postiion: bool | None = None, content: bool | None = None) -> None:
+    def __init__(self, size: bool | None = None, position: bool | None = None, content: bool | None = None) -> None:
         """
         Constructor
 
         Args:
             size (bool, optional): Specifies size protection.
-            postiion (bool, optional): Specifies postiion protection.
+            position (bool, optional): Specifies position protection.
             content (bool, optional): Specifies content protection.
         """
         super().__init__()
         self.prop_size = size
-        self.prop_position = postiion
+        self.prop_position = position
         self.prop_content = content
 
     # region Overrides

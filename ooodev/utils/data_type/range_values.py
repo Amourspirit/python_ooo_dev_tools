@@ -437,10 +437,10 @@ class RangeValues:
             cell_name (str): Cell name
 
         Returns:
-            bool: ``True`` if instance contains cell; Otherwishe, ``False``.
+            bool: ``True`` if instance contains cell; Otherwise, ``False``.
 
         Note:
-            If cell input contains sheet info the it is use in comparsion.
+            If cell input contains sheet info the it is use in comparison.
             Otherwise sheet is ignored.
         """
         ordered_keys = (1,)

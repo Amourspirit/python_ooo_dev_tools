@@ -3,6 +3,8 @@ from typing import NamedTuple
 
 
 class FrameTypePositonProps(NamedTuple):
+    """Internal Properties"""
+
     hori_orient: str  # HoriOrient
     hori_pos: str  # HoriOrientPosition
     hori_rel: str  # HoriOrientRelation

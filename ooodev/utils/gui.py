@@ -61,7 +61,6 @@ SysInfo = m_sys_info.SysInfo
 
 
 class GUI:
-
     # region Class Enums
     # view settings zoom constants
     # ZoomEnum = DocumentZoomTypeEnum
@@ -1431,7 +1430,7 @@ class GUI:
 
     # endregion    get_layout_manager()
 
-    # region    show_memu_bar()
+    # region    show_menu_bar()
     @overload
     @classmethod
     def show_menu_bar(cls) -> None:
@@ -1451,26 +1450,26 @@ class GUI:
             doc (XComponent): doc (XComponent): office document
 
         .. versionchanged:: 0.9.0
-            Renamed from show_memu_bar to show_menu_bar
+            Renamed from show_menu_bar to show_menu_bar
         """
         lm = cls.get_layout_manager(doc=doc)
         lm.showElement(GUI.MENU_BAR)
 
-    # endregion show_memu_bar()
+    # endregion show_menu_bar()
 
-    # region    hide_memu_bar()
+    # region    hide_menu_bar()
     @overload
     @classmethod
-    def hide_memu_bar(cls) -> None:
+    def hide_menu_bar(cls) -> None:
         ...
 
     @overload
     @classmethod
-    def hide_memu_bar(cls, doc: XComponent) -> None:
+    def hide_menu_bar(cls, doc: XComponent) -> None:
         ...
 
     @classmethod
-    def hide_memu_bar(cls, doc: XComponent = None) -> None:
+    def hide_menu_bar(cls, doc: XComponent = None) -> None:
         """
         Hides the main menu bar
 
@@ -1480,6 +1479,9 @@ class GUI:
         lm = cls.get_layout_manager(doc=doc)
         lm.hideElement(GUI.MENU_BAR)
 
+    # added due to a spell correction.
+    hide_memu_bar = hide_menu_bar
+
     @staticmethod
     def toggle_menu_bar() -> None:
         """
@@ -1488,12 +1490,15 @@ class GUI:
         If the menu is visible then it is hidden.
         If it is hidden then it will be made visible.
 
+        Returns:
+            None:
+
         Note:
             Toggle is done dispatching command ``Menubar``.
         """
         mLo.Lo.dispatch_cmd("Menubar")
 
-    # endregion hide_memu_bar()
+    # endregion hide_menu_bar()
 
     # region    print_u_is()
     @overload

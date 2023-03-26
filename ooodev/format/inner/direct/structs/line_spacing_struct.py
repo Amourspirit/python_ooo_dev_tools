@@ -80,7 +80,6 @@ class ModeKind(Enum):
         raise ValueError("Uanble to convert uno LineSpacing object to ModeKind Enum")
 
 
-# endregion imports
 class LineSpacingStruct(StructBase):
     """
     Line Spacing struct
@@ -162,7 +161,7 @@ class LineSpacingStruct(StructBase):
         Gets the attributes that are slated for change in the current instance
 
         Returns:
-            Tuple(str, ...): Tuple of attribures
+            Tuple(str, ...): Tuple of attributes
         """
         return (self._get_property_name(),)
 

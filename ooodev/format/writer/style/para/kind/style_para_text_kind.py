@@ -3,7 +3,7 @@ from .style_para_kind import StyleParaKind
 
 
 class StyleParaTextKind(Enum):
-    """Style Lookups for Paragraph Text Styles"""
+    """Style Look ups for Paragraph Text Styles"""
 
     FIRST_LINE_INDENT = StyleParaKind.FIRST_LINE_INDENT.value
     HANGING_INDENT = StyleParaKind.HANGING_INDENT.value

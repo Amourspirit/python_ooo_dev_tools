@@ -49,7 +49,7 @@ class LayoutSettings(StyleBase):
         Args:
             layout (PageStyleLayout, optional): Specifies the layout of the page.
             numbers (NumberingTypeEnum, optional): Specifies the default numbering type for this page.
-            align_hori (bool, optional): Specifies if table is aligned horizontaly.
+            align_hori (bool, optional): Specifies if table is aligned horizontally.
             align_vert (bool, optional): Specifies if table is aligned vertically.
         """
 

@@ -47,7 +47,7 @@ class Img(FillStyleBaseMulti):
 
         Args:
             color (Color, optional): FillColor Color
-            style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to. Deftult is Default Paragraph Style.
+            style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to. Default is Default Paragraph Style.
             style_family (str, DrawStyleFamilyKind, optional): Family Style.
 
         Returns:
@@ -101,9 +101,9 @@ class Img(FillStyleBaseMulti):
         Gets instance from Document.
 
         Args:
-            doc (object): UNO Documnet Object.
-            style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to. Deftult is Default Paragraph Style.
-            style_family (str, optional): Style family. Defatult ``ParagraphStyles``.
+            doc (object): UNO Document Object.
+            style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to. Default is Default Paragraph Style.
+            style_family (str, optional): Style family. Default ``ParagraphStyles``.
 
         Returns:
             Img: ``Img`` instance from document properties.

@@ -4,6 +4,8 @@ from .prop_pair import PropPair as PropPair
 
 
 class StructTableBorderDistancesProps(NamedTuple):
+    """Internal Properties"""
+
     left: str
     top: str
     right: str

@@ -22,7 +22,7 @@ class Styler:
         Applies style to object
 
         Args:
-            obj (Any): UNO Oject that styles are to be applied.
+            obj (Any): UNO Object that styles are to be applied.
             styles expandable list of styles object such as ``Font`` to apply to ``obj``.
             kwargs (Any, optional): Expandable list of key value pairs.
 

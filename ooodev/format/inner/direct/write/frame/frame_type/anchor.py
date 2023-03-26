@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     # When python is running this class will not exist
     class AnchorKind(Enum):
         """
-        Anchor Positon Enum.
+        Anchor Position Enum.
         """
 
         @property

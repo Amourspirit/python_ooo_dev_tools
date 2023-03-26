@@ -2,7 +2,7 @@ from enum import Enum
 
 
 class StyleCharKind(Enum):
-    """Style Lookups for Character Styles"""
+    """Style Look ups for Character Styles"""
 
     BULLET_SYMBOLS = "Bullet Symbols"
     CAPTION_CHARACTERS = "Caption characters"

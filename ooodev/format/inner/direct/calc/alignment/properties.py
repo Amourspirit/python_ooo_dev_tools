@@ -41,7 +41,7 @@ class TextDirectionKind(Enum):
 
     PAGE = WritingMode2.PAGE  # use superordinate object settings
     """
-    Use superordinate object settings
+    Use super-ordinate object settings
     
     Obtain writing mode from the current page.
     May not be used in page styles.

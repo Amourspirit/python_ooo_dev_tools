@@ -52,8 +52,8 @@ class Gradient(FrameStyleBaseMulti):
             grad_color (ColorRange, optional): Specifies the color at the start point and stop point of the gradient. Defaults to ``ColorRange(Color(0), Color(16777215))``.
             grad_intensity (IntensityRange, optional): Specifies the intensity at the start point and stop point of the gradient. Defaults to ``IntensityRange(100, 100)``.
             name (str, optional): Specifies the Fill Gradient Name.
-            style_name (StyleFrameKind, str, optional): Specifies the Frame Style that instance applies to. Deftult is Default Frame Style.
-            style_family (str, optional): Style family. Defatult ``FrameStyles``.
+            style_name (StyleFrameKind, str, optional): Specifies the Frame Style that instance applies to. Default is Default Frame Style.
+            style_family (str, optional): Style family. Default ``FrameStyles``.
 
         Returns:
             None:
@@ -90,9 +90,9 @@ class Gradient(FrameStyleBaseMulti):
         Gets instance from Document.
 
         Args:
-            doc (object): UNO Documnet Object.
-            style_name (StyleFrameKind, str, optional): Specifies the Frame Style that instance applies to. Deftult is Default Frame Style.
-            style_family (str, optional): Style family. Defatult ``FrameStyles``.
+            doc (object): UNO Document Object.
+            style_name (StyleFrameKind, str, optional): Specifies the Frame Style that instance applies to. Default is Default Frame Style.
+            style_family (str, optional): Style family. Default ``FrameStyles``.
 
         Returns:
             Gradient: ``Gradient`` instance from style properties.
@@ -115,8 +115,8 @@ class Gradient(FrameStyleBaseMulti):
 
         Args:
             preset (PresetKind): Preset.
-            style_name (StyleFrameKind, str, optional): Specifies the Frame Style that instance applies to. Deftult is Default Frame Style.
-            style_family (str, optional): Style family. Defatult ``FrameStyles``.
+            style_name (StyleFrameKind, str, optional): Specifies the Frame Style that instance applies to. Default is Default Frame Style.
+            style_family (str, optional): Style family. Default ``FrameStyles``.
 
         Returns:
             Gradient: ``Gradient`` instance from a preset.

@@ -401,7 +401,7 @@ class ImagesLo:
 
         Args:
             orig_len (float): Original length. Usually image original height or width.
-            new_len (float): The new length. Usually the new imae height or width.
+            new_len (float): The new length. Usually the new image height or width.
             start_crop (float): Start Crop. Usually the amount to crop image left or top.
             end_crop (float): Start Crop. Usually the amount to crop image right or bottom.
 

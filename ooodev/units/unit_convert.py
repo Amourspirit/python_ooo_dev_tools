@@ -21,9 +21,9 @@ N = TypeVar("N", int, float)
 
 class UnitLength(IntEnum):
     MM100 = 0
-    """1/100th mm"""
+    """``1/100th mm``"""
     MM10 = 1
-    """ 1/10 mm"""
+    """``1/10 mm``"""
     MM = 2
     """millimeter"""
     CM = 3

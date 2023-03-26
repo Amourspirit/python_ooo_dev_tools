@@ -31,7 +31,7 @@ def test_write(loader, fix_image_path) -> None:
         cursor = Write.get_cursor(doc)
 
         style_names = Names(name="skinner", desc="Skinner Pointing", alt="Pointer")
-        style = Protect(size=True, postiion=True, content=True)
+        style = Protect(size=True, position=True, content=True)
 
         img_size = ImagesLo.get_size_100mm(im_fnm=im_fnm)
         _ = Write.add_image_link(

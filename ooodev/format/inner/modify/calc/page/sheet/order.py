@@ -37,7 +37,7 @@ class Order(CellStyleBase):
 
         Args:
             top_btm (bool, optional): Specifies page order. ``True`` for Top to Bottom, then right, ``False`` for Left to right then down.
-            first_pg (int, optional): Specifies first page numger. Set to ``0`` for no page number.
+            first_pg (int, optional): Specifies first page number. Set to ``0`` for no page number.
             style_name (CalcStylePageKind, str, optional): Specifies the Page Style that instance applies to.
                 Default is Default Page Style.
             style_family (str, optional): Style family. Default ``PageStyles``.
@@ -101,7 +101,7 @@ class Order(CellStyleBase):
     @property
     def prop_first_pg(self) -> int | None:
         """
-        Gets/Sets first page numger. Set to ``0`` for no page number.
+        Gets/Sets first page number. Set to ``0`` for no page number.
         """
         return self._get(self._props.first_pg)
 

@@ -58,37 +58,37 @@ class ConnectBase(ABC):
 
     @property
     def start_office(self) -> bool:
-        """For compatability. Returns ``True``"""
+        """For compatibility. Returns ``True``"""
         return True
 
     @property
     def no_restore(self) -> bool:
-        """For compatability. Returns ``True``"""
+        """For compatibility. Returns ``True``"""
         return True
 
     @property
     def no_first_start_wizard(self) -> bool:
-        """For compatability. Returns ``True``"""
+        """For compatibility. Returns ``True``"""
         return True
 
     @property
     def no_logo(self) -> bool:
-        """For compatability. Returns ``True``"""
+        """For compatibility. Returns ``True``"""
         return True
 
     @property
     def invisible(self) -> bool:
-        """For compatability. Returns ``False``"""
+        """For compatibility. Returns ``False``"""
         return False
 
     @property
     def headless(self) -> bool:
-        """For compatability. Returns ``False``"""
+        """For compatibility. Returns ``False``"""
         return False
 
     @property
     def start_as_service(self) -> bool:
-        """For compatability. Returns ``False``"""
+        """For compatibility. Returns ``False``"""
         return False
 
 

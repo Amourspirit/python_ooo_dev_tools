@@ -2,7 +2,7 @@ from enum import Enum
 
 
 class StyleFrameKind(Enum):
-    """Style Lookups for Frame Styles"""
+    """Style Look ups for Frame Styles"""
 
     FORMULA: str = "Formula"
     FRAME: str = "Frame"

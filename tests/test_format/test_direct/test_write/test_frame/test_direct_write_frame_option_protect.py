@@ -26,7 +26,7 @@ def test_write(loader, para_text) -> None:
         if not Lo.bridge_connector.headless:
             Write.append_para(cursor=cursor, text=para_text)
 
-        style = Protect(size=True, postiion=True, content=True)
+        style = Protect(size=True, position=True, content=True)
 
         frame = Write.add_text_frame(
             cursor=cursor, ypos=UnitMM(10.2), text=para_text, width=UnitMM(60), height=UnitMM(40), styles=(style,)

@@ -1,6 +1,5 @@
 # region Imports
 from __future__ import annotations
-from typing import NamedTuple
 import uno
 
 from ooodev.utils import props as mProps
@@ -30,7 +29,7 @@ class ScaleNumOfPages(CellStyleBase):
         Constructor
 
         Args:
-            pages (int): Specifies the number of pages the spreedsheet will scale to when printed.
+            pages (int): Specifies the number of pages the spreadsheet will scale to when printed.
             style_name (CalcStylePageKind, str, optional): Specifies the Page Style that instance applies to.
                 Default is Default Page Style.
             style_family (str, optional): Style family. Default ``PageStyles``.
@@ -76,7 +75,7 @@ class ScaleNumOfPages(CellStyleBase):
     @property
     def prop_pages(self) -> int:
         """
-        Gets/Sets the number of pages the spreedsheet will scale to when printed.
+        Gets/Sets the number of pages the spreadsheet will scale to when printed.
         """
         return self._get(self._props.scale)
 

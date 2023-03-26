@@ -380,7 +380,7 @@ class StyleBase(metaclass=MetaStyle):
         Gets the attributes that are slated for change in the current instance
 
         Returns:
-            Tuple(str, ...): Tuple of attribures
+            Tuple(str, ...): Tuple of attributes
         """
         # get current keys in internal dictionary
         return tuple(self._get_properties().keys())
@@ -390,7 +390,7 @@ class StyleBase(metaclass=MetaStyle):
         Applies styles to object
 
         Args:
-            obj (object): UNO Oject that styles are to be applied.
+            obj (object): UNO Object that styles are to be applied.
             kwargs (Any, optional): Expandable list of key value pairs that may be used in child classes.
 
         Keyword Arguments:
@@ -924,7 +924,7 @@ class StyleMulti(StyleBase):
         Applies style of current instance and all other internal style instances.
 
         Args:
-            obj (object): UNO Oject that styles are to be applied.
+            obj (object): UNO Object that styles are to be applied.
         """
         styles = self._get_multi_styles()
         for key, info in styles.items():
@@ -1124,7 +1124,7 @@ class StyleMulti(StyleBase):
         Gets the attributes that are slated for change in the current instance
 
         Returns:
-            Tuple(str, ...): Tuple of attribures
+            Tuple(str, ...): Tuple of attributes
         """
         # get current keys in internal dictionary
         props = self._get_properties()
@@ -1296,7 +1296,7 @@ class StyleModifyMulti(StyleMulti):
         Gets the Style Properties
 
         Args:
-            doc (object): UNO Documnet Object.
+            doc (object): UNO Document Object.
 
         Raises:
             NotSupportedDocumentError: If document is not supported.

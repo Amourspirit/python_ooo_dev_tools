@@ -3,4 +3,6 @@ from typing import NamedTuple
 
 
 class ImageRotationProps(NamedTuple):
+    """Internal Properties"""
+
     rotation: str

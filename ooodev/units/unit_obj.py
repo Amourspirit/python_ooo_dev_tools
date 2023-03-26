@@ -2,14 +2,17 @@ from __future__ import annotations
 from typing import Tuple, TYPE_CHECKING
 from ..format.inner.kind.format_kind import FormatKind as FormatKind
 
-try:
-    from typing import Protocol
-except ImportError:
-    from typing_extensions import Protocol
+if TYPE_CHECKING:
+    try:
+        from typing import Protocol
+    except ImportError:
+        from typing_extensions import Protocol
+else:
+    Protocol = object
 
 
 class UnitObj(Protocol):
-    """Protolcol Class for units"""
+    """Protocol Class for units"""
 
     def get_value_mm(self) -> float:
         """
