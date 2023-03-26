@@ -42,7 +42,7 @@ class ListStyle(StyleBase):
             num_start (int, optional): Starts with number.
                 If ``-1`` then restart numbering at current paragraph is consider to be ``False``.
                 If ``-2`` then restart numbering at current paragraph is consider to be ``True``.
-                Otherewise, restart numbering is considered to be ``True``.
+                Otherwise, restart numbering is considered to be ``True``.
 
         Returns:
             None:
@@ -183,7 +183,7 @@ class ListStyle(StyleBase):
             value (int | None): List style value.
                 If ``-1`` then restart numbering at current paragraph is consider to be ``False``.
                 If ``-2`` then restart numbering at current paragraph is consider to be ``True``.
-                Otherewise, restart numbering is considered to be ``True``.
+                Otherwise, restart numbering is considered to be ``True``.
 
         Returns:
             ListStyle: List Style instance
@@ -238,7 +238,7 @@ class ListStyle(StyleBase):
         Gets/Sets Starts with number.
 
         If Less then zero then restart numbering at current paragraph is consider to be ``False``;
-        Otherewise; restart numbering is considered to be ``True``.
+        Otherwise; restart numbering is considered to be ``True``.
         """
         return self._get(self._props.value)
 

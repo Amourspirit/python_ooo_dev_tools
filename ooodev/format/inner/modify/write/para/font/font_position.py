@@ -109,7 +109,7 @@ class FontPosition(ParaStyleBaseMulti):
 
     @property
     def prop_inner(self) -> InnerFontPosition:
-        """Gets/Sets Inner Font Postiion instance"""
+        """Gets/Sets Inner Font Position instance"""
         try:
             return self._direct_inner
         except AttributeError:

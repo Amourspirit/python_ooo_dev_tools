@@ -4,6 +4,8 @@ from .prop_pair import PropPair as PropPair
 
 
 class ImageCropProps(NamedTuple):
+    """Internal Properties"""
+
     crop_struct: str
     width: str
     height: str

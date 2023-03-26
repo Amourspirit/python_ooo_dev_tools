@@ -9,10 +9,7 @@ from ooodev.format.inner.direct.calc.alignment.properties import TextDirectionKi
 from ooodev.format.inner.direct.calc.alignment.properties import Properties as Properties
 
 __all__ = [
-    "HoriAlignKind",
-    "VertAlignKind",
     "TextAlign",
-    "EdgeKind",
     "TextOrientation",
     "TextDirectionKind",
     "Properties",

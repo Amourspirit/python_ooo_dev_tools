@@ -39,8 +39,8 @@ class Shadow(FrameStyleBaseMulti):
             color (Color, optional):contains the color value of the shadow. Defaults to ``StandardColor.GRAY``.
             transparent (bool, optional): Shadow transparency. Defaults to False.
             width (float, UnitObj, optional): contains the size of the shadow (in ``mm`` units) or :ref:`proto_unit_obj`. Defaults to ``1.76``.
-            style_name (StyleFrameKind, str, optional): Specifies the Frame Style that instance applies to. Deftult is Default Frame Style.
-            style_family (str, optional): Style family. Defatult ``FrameStyles``.
+            style_name (StyleFrameKind, str, optional): Specifies the Frame Style that instance applies to. Default is Default Frame Style.
+            style_family (str, optional): Style family. Default ``FrameStyles``.
 
         Returns:
             None:
@@ -68,9 +68,9 @@ class Shadow(FrameStyleBaseMulti):
         Gets instance from Document.
 
         Args:
-            doc (object): UNO Documnet Object.
-            style_name (StyleFrameKind, str, optional): Specifies the Frame Style that instance applies to. Deftult is Default Frame Style.
-            style_family (str, optional): Style family. Defatult ``FrameStyles``.
+            doc (object): UNO Document Object.
+            style_name (StyleFrameKind, str, optional): Specifies the Frame Style that instance applies to. Default is Default Frame Style.
+            style_family (str, optional): Style family. Default ``FrameStyles``.
 
         Returns:
             Shadow: ``Shadow`` instance from style properties.

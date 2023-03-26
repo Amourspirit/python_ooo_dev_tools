@@ -13,6 +13,8 @@ from ...cell_style_base import CellStyleBase
 
 
 class PrintProps(NamedTuple):
+    """Inner Properties"""
+
     headers: str
     grid: str
     comments: str

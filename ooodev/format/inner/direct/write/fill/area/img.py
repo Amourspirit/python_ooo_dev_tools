@@ -84,7 +84,7 @@ class Img(StyleBase):
 
         Args:
             bitmap (XBitmap, optional): Bitmap instance. If ``name`` is not already in the Bitmap Table
-                then this property is requied.
+                then this property is required.
             name (str, optional): Specifies the name of the image. This is also the name that is used to store
                 bitmap in LibreOffice Bitmap Table.
             mode (ImgStyleKind, optional): Specifies the image style, tiled, stretched etc.
@@ -100,7 +100,7 @@ class Img(StyleBase):
 
         Note:
             If ``auto_name`` is ``False`` then a bitmap for a given ``name`` is only required the first call.
-            All subsequent call of the same ``name`` will retreive the bitmap form the LibreOffice Bitmap Table.
+            All subsequent call of the same ``name`` will retrieve the bitmap form the LibreOffice Bitmap Table.
         """
 
         # when mode is ImgStyleKind.STRETCHED size, position, pos_offset, and tile_offset are not required

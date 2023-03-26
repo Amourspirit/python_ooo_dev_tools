@@ -39,8 +39,8 @@ class Shadow(CharStyleBaseMulti):
             color (Color, optional):contains the color value of the shadow. Defaults to ``StandardColor.GRAY``.
             transparent (bool, optional): Shadow transparency. Defaults to False.
             width (float, Unit100MM, optional): contains the size of the shadow (in ``mm`` units) or :ref:`proto_unit_obj`. Defaults to ``1.76``.
-            style_name (StyleCharKind, str, optional): Specifies the Character Style that instance applies to. Deftult is Default Character Style.
-            style_family (str, optional): Style family. Defatult ``CharacterStyles``.
+            style_name (StyleCharKind, str, optional): Specifies the Character Style that instance applies to. Default is Default Character Style.
+            style_family (str, optional): Style family. Default ``CharacterStyles``.
 
         Returns:
             None:
@@ -63,9 +63,9 @@ class Shadow(CharStyleBaseMulti):
         Gets instance from Document.
 
         Args:
-            doc (object): UNO Documnet Object.
-            style_name (StyleParaKind, str, optional): Specifies the Character Style that instance applies to. Deftult is Default Character Style.
-            style_family (str, optional): Style family. Defatult ``CharacterStyles``.
+            doc (object): UNO Document Object.
+            style_name (StyleParaKind, str, optional): Specifies the Character Style that instance applies to. Default is Default Character Style.
+            style_family (str, optional): Style family. Default ``CharacterStyles``.
 
         Returns:
             Shadow: ``Shadow`` instance from document properties.

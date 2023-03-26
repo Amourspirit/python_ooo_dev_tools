@@ -3,6 +3,8 @@ from typing import NamedTuple
 
 
 class ShapeShadowProps(NamedTuple):
+    """Internal Properties"""
+
     use: str  # Shadow
     blur: str  # ShadowBlur
     color: str  # ShadowColor

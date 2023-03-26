@@ -66,7 +66,7 @@ class TextAlign(CellStyleBaseMulti):
         Gets instance from Document.
 
         Args:
-            doc (object): UNO Documnet Object.
+            doc (object): UNO Document Object.
             style_name (StyleCellKind, str, optional): Specifies the Cell Style that instance applies to.
                 Default is Default Cell Style.
             style_family (str, optional): Style family. Default ``CellStyles``.

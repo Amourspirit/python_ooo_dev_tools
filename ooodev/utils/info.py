@@ -147,7 +147,7 @@ class Info(metaclass=StaticProperty):
             style (str): Font Style
 
         Returns:
-            FontDescriptor: Instance if found; Othwerwise None.
+            FontDescriptor: Instance if found; Otherwise None.
 
         .. versionadded:: 0.9.0
         """

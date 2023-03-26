@@ -176,7 +176,7 @@ class Size(AbstractDocument):
         Applies style of current instance.
 
         Args:
-            obj (object): UNO Oject that styles are to be applied.
+            obj (object): UNO Object that styles are to be applied.
         """
         apply_clear = kwargs.pop("_apply_clear", True)
         if apply_clear:

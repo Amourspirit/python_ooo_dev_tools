@@ -35,8 +35,8 @@ class Anchor(FrameStyleBaseMulti):
 
         Args:
             anchor (AnchorKind): Specifies the anchor position. Default is ``AnchorKind.AT_PARAGRAPH``
-            style_name (StyleFrameKind, str, optional): Specifies the Frame Style that instance applies to. Deftult is Default Frame Style.
-            style_family (str, optional): Style family. Defatult ``FrameStyles``.
+            style_name (StyleFrameKind, str, optional): Specifies the Frame Style that instance applies to. Default is Default Frame Style.
+            style_family (str, optional): Style family. Default ``FrameStyles``.
 
         Returns:
             None:
@@ -60,9 +60,9 @@ class Anchor(FrameStyleBaseMulti):
         Gets instance from Document.
 
         Args:
-            doc (object): UNO Documnet Object.
-            style_name (StyleFrameKind, str, optional): Specifies the Frame Style that instance applies to. Deftult is Default Frame Style.
-            style_family (str, optional): Style family. Defatult ``FrameStyles``.
+            doc (object): UNO Document Object.
+            style_name (StyleFrameKind, str, optional): Specifies the Frame Style that instance applies to. Default is Default Frame Style.
+            style_family (str, optional): Style family. Default ``FrameStyles``.
 
         Returns:
             Anchor: ``Anchor`` instance from style properties.

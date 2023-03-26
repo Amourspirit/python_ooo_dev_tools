@@ -1372,7 +1372,7 @@ The poorly written ``badGrammar.odt`` is shown in :numref:`ch10fig_poor_writing_
 
     .. _ch10fig_poor_writing_ss:
     .. figure:: https://user-images.githubusercontent.com/4193389/186493075-c061f4f7-4599-45ca-8d16-83ff3a171f0d.png
-        :alt: Screen shot of poor writeing
+        :alt: Screen shot of poor writing
         :figclass: align-center
 
         :Poor writing.

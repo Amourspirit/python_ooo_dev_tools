@@ -3,4 +3,6 @@ from typing import NamedTuple
 
 
 class FrameOptionsAlignProps(NamedTuple):
+    """Internal Properties"""
+
     name: str  # TextVerticalAdjust

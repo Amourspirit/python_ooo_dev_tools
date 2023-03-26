@@ -2048,7 +2048,7 @@ class Draw:
             - :py:meth:`~.draw.Draw.warns_position`
             - :py:meth:`~.draw.Draw.make_shape`
         """
-        # shape are postiion from center.
+        # shape are position from center.
         # a square of 20x20 would be x=10, y=10 for top right corer to be at 0x0
         try:
             cls.warns_position(slide=slide, x=x, y=y)
@@ -3369,7 +3369,6 @@ class Draw:
         cls, shape: XShape, start_color: mColor.Color, end_color: mColor.Color, angle: Angle
     ) -> Gradient:
         try:
-
             grad = Gradient()
             grad.Style = GradientStyle.LINEAR
             grad.StartColor = start_color

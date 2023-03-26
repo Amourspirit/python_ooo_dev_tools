@@ -29,7 +29,6 @@ class ColObj:
     """Cell Object that instance is part of"""
 
     def __post_init__(self):
-
         object.__setattr__(self, "value", self.value.upper())
         try:
             idx = mTb.TableHelper.col_name_to_int(name=self.value, zero_index=True)
@@ -51,7 +50,7 @@ class ColObj:
             name (str): Column letter such as ``A`` or Cell Name such ``A1``
 
         Raises:
-            AssertionError: if unablt to create ``ColObj`` instance.
+            AssertionError: if unable to create ``ColObj`` instance.
 
         Returns:
             ColObj: Column Object
@@ -74,7 +73,7 @@ class ColObj:
             zero_index (bool, optional): Determines if the column number is treated as zero index. Defaults to ``False``.
 
         Raises:
-            AssertionError: if unablt to create ``ColObj`` instance.
+            AssertionError: if unable to create ``ColObj`` instance.
 
         Returns:
             ColObj: Cell Object
@@ -315,7 +314,7 @@ class ColObj:
         Gets the previous column
 
         Raises:
-            IndexError: If prevous column is out of range
+            IndexError: If previous column is out of range
         """
         try:
             p = self._prev

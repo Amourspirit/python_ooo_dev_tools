@@ -4,6 +4,8 @@ from .prop_pair import PropPair as PropPair
 
 
 class CellBordersProps(NamedTuple):
+    """Internal Properties"""
+
     tbl_border: str  # TableBorder2
     shadow: str  # ShadowFormat
     diag_up: str  # DiagonalBLTR2

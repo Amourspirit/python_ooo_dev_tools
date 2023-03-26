@@ -14,7 +14,9 @@ from ooo.dyn.awt.font_strikeout import FontStrikeoutEnum as FontStrikeoutEnum
 from ooo.dyn.awt.font_underline import FontUnderlineEnum as FontUnderlineEnum
 from ooo.dyn.style.case_map import CaseMapEnum as CaseMapEnum
 from ooo.dyn.awt.font_relief import FontReliefEnum as FontReliefEnum
+
 # endregion Imports
+
 
 class FontEffects(CharStyleBaseMulti):
     """
@@ -49,15 +51,15 @@ class FontEffects(CharStyleBaseMulti):
             transparency (Intensity, int, optional): The transparency value from ``0`` to ``100`` for the font color.
             overline (FontLine, optional): Character overline values.
             underline (FontLine, optional): Character underline values.
-            strike (FontStrikeoutEnum, optional): Detrmines the type of the strike out of the character.
+            strike (FontStrikeoutEnum, optional): Determines the type of the strike out of the character.
             word_mode(bool, optional): If ``True``, the underline and strike-through properties are not applied to white spaces.
             case (CaseMapEnum, optional): Specifies the case of the font.
             releif (FontReliefEnum, optional): Specifies the relief of the font.
             outline (bool, optional): Specifies if the font is outlined.
             hidden (bool, optional): Specifies if the font is hidden.
             shadowed (bool, optional): Specifies if the characters are formatted and displayed with a shadow effect.
-            style_name (StyleParaKind, str, optional): Specifies the Character Style that instance applies to. Deftult is Default Character Style.
-            style_family (str, optional): Style family. Defatult ``CharacterStyles``.
+            style_name (StyleParaKind, str, optional): Specifies the Character Style that instance applies to. Default is Default Character Style.
+            style_family (str, optional): Style family. Default ``CharacterStyles``.
 
         Returns:
             None:
@@ -92,9 +94,9 @@ class FontEffects(CharStyleBaseMulti):
         Gets instance from Document.
 
         Args:
-            doc (object): UNO Documnet Object.
-            style_name (StyleCharKind, str, optional): Specifies the Character Style that instance applies to. Deftult is Default Character Style.
-            style_family (str, optional): Style family. Defatult ``CharacterStyles``.
+            doc (object): UNO Document Object.
+            style_name (StyleCharKind, str, optional): Specifies the Character Style that instance applies to. Default is Default Character Style.
+            style_family (str, optional): Style family. Default ``CharacterStyles``.
 
         Returns:
             FontEffects: ``FontEffects`` instance from document properties.

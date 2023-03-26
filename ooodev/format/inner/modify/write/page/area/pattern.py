@@ -35,7 +35,7 @@ class Pattern(PageStyleBaseMulti):
 
         Args:
             bitmap (XBitmap, optional): Bitmap instance. If ``name`` is not already in the Bitmap Table then
-                this property is requied.
+                this property is required.
             name (str, optional): Specifies the name of the pattern. This is also the name that is used to store
                 bitmap in LibreOffice Bitmap Table.
             tile (bool, optional): Specified if bitmap is tiled. Defaults to ``True``.

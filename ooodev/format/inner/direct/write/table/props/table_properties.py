@@ -1827,7 +1827,7 @@ class TableProperties(StyleMulti):
             above (RelativeSize, AbsoluteSize, optional): Specifies table spacing above.
             below (RelativeSize, AbsoluteSize, optional): Specifies table spacing below.
             align (TableAlignKind, optional): Specifies table alignment.
-            realitive (bool, optional): Specifies if table horizontal values are in percentanges or ``mm`` units.
+            relative (bool, optional): Specifies if table horizontal values are in percentages or ``mm`` units.
 
         Raises:
             ValueError: If name contains spaces.
@@ -2276,7 +2276,7 @@ class TableProperties(StyleMulti):
         Gets width value.
 
         Returns:
-            UnitMM | Intensity | None: When ``relative`` is ``True`` ``Intensity`` or ``None``; Othersise, ``UnitMM`` or None.
+            UnitMM | Intensity | None: When ``relative`` is ``True`` ``Intensity`` or ``None``; Otherwise, ``UnitMM`` or None.
 
         See Also:
             :py:meth:`~.table_properties.TableProperties.get_width_mm`.
@@ -2292,7 +2292,7 @@ class TableProperties(StyleMulti):
         Gets left value.
 
         Returns:
-            UnitMM | Intensity | None: When ``relative`` is ``True`` ``Intensity`` or ``None``; Othersise, ``UnitMM`` or None.
+            UnitMM | Intensity | None: When ``relative`` is ``True`` ``Intensity`` or ``None``; Otherwise, ``UnitMM`` or None.
 
         See Also:
             :py:meth:`~.table_properties.TableProperties.get_left_mm`.
@@ -2308,7 +2308,7 @@ class TableProperties(StyleMulti):
         Gets right value.
 
         Returns:
-            UnitMM | Intensity | None: When ``relative`` is ``True`` ``Intensity`` or ``None``; Othersise, ``UnitMM`` or None.
+            UnitMM | Intensity | None: When ``relative`` is ``True`` ``Intensity`` or ``None``; Otherwise, ``UnitMM`` or None.
 
         See Also:
             :py:meth:`~.table_properties.TableProperties.get_right_mm`.

@@ -1,5 +1,5 @@
 """
-Modele for managing paragraph Indents and Spacing.
+Module for managing paragraph Indents and Spacing.
 
 .. versionadded:: 0.9.0
 """

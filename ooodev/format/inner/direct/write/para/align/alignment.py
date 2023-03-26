@@ -1,5 +1,5 @@
 """
-Modele for managing paragraph alignment.
+Module for managing paragraph alignment.
 
 .. versionadded:: 0.9.0
 """
@@ -60,7 +60,7 @@ class Alignment(StyleMulti):
 
         Args:
             align (ParagraphAdjust, optional): Determines horizontal alignment of a paragraph.
-            align_vert (ParagraphVertAlignEnum, optional): Determines verticial alignment of a paragraph.
+            align_vert (ParagraphVertAlignEnum, optional): Determines vertical alignment of a paragraph.
             align_last (LastLineKind, optional): Determines the adjustment of the last line.
             expand_single_word (bool, optional): Determines if single words are stretched.
                 It is only valid if ``align`` and ``align_last`` are also valid.
@@ -241,7 +241,7 @@ class Alignment(StyleMulti):
 
     def fmt_align_vert(self: _TAlignment, value: ParagraphVertAlignEnum | None) -> _TAlignment:
         """
-        Gets copy of instance with verticial alignment set or removed
+        Gets copy of instance with vertical alignment set or removed
 
         Args:
             value (ParagraphVertAlignEnum | None): Alignment value
@@ -297,7 +297,7 @@ class Alignment(StyleMulti):
 
     def fmt_txt_direction(self: _TAlignment, value: WritingMode | None) -> _TAlignment:
         """
-        Gets copy of instance with verticial alignment set or removed
+        Gets copy of instance with vertical alignment set or removed
 
         Args:
             value (ParagraphVertAlignEnum | None): Alignment value
@@ -383,7 +383,7 @@ class Alignment(StyleMulti):
 
     @property
     def prop_align_vert(self) -> ParagraphVertAlignEnum | None:
-        """Gets/Sets verticial alignment of a paragraph."""
+        """Gets/Sets vertical alignment of a paragraph."""
         pv = cast(int, self._get("ParaVertAlignment"))
         if pv is None:
             return None
@@ -451,7 +451,7 @@ class Alignment(StyleMulti):
 
     @property
     def default(self: _TAlignment) -> _TAlignment:
-        """Gets Alignment defult."""
+        """Gets Alignment default."""
         try:
             return self._default_inst
         except AttributeError:

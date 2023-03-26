@@ -42,14 +42,14 @@ class FontPosition(CharStyleBaseMulti):
         Args:
             script_kind (FontScriptKind, optional): Specifies Superscript/Subscript option.
             raise_lower (int, Intensity, optional): Specifies raise or Lower as percent value. Min value is ``1``.
-            rel_size (int, optional): Specifies realitive Font Size as percent value. Set this value to ``0`` for automatic; Otherwise value from ``1`` to ``100``.
+            rel_size (int, optional): Specifies relative Font Size as percent value. Set this value to ``0`` for automatic; Otherwise value from ``1`` to ``100``.
             rotation (int, Angle, optional): Specifies the rotation of a character in degrees. Depending on the implementation only certain values may be allowed.
             scale (int, optional): Specifies scale width as percent value. Min value is ``1``.
             fit (bool, optional): Specifies if rotation is fit to line.
             spacing (CharSpacingKind, float, UnitObj, optional): Specifies character spacing in ``pt`` (point) units or :ref:`proto_unit_obj`.
             pair (bool, optional): Specifies pair kerning.
-            style_name (StyleCharKind, str, optional): Specifies the Character Style that instance applies to. Deftult is Default Character Style.
-            style_family (str, optional): Style family. Defatult ``CharacterStyles``.
+            style_name (StyleCharKind, str, optional): Specifies the Character Style that instance applies to. Default is Default Character Style.
+            style_family (str, optional): Style family. Default ``CharacterStyles``.
 
         Returns:
             None:
@@ -81,9 +81,9 @@ class FontPosition(CharStyleBaseMulti):
         Gets instance from Document.
 
         Args:
-            doc (object): UNO Documnet Object.
-            style_name (StyleParaKind, str, optional): Specifies the Character Style that instance applies to. Deftult is Default Character Style.
-            style_family (str, optional): Style family. Defatult ``CharacterStyles``.
+            doc (object): UNO Document Object.
+            style_name (StyleParaKind, str, optional): Specifies the Character Style that instance applies to. Default is Default Character Style.
+            style_family (str, optional): Style family. Default ``CharacterStyles``.
 
         Returns:
             FontPosition: ``FontPosition`` instance from document properties.
@@ -104,7 +104,7 @@ class FontPosition(CharStyleBaseMulti):
 
     @property
     def prop_inner(self) -> InnerFontPosition:
-        """Gets/Sets Inner Font Postiion instance"""
+        """Gets/Sets Inner Font Position instance"""
         try:
             return self._direct_inner
         except AttributeError:

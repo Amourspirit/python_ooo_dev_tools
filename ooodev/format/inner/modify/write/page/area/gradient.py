@@ -120,7 +120,7 @@ class Gradient(PageStyleBaseMulti):
             style_family (str, optional): Style family. Default ``PageStyles``.
 
         Returns:
-            Gradient: Graident from a preset.
+            Gradient: Gradient from a preset.
         """
         inst = cls(style_name=style_name, style_family=style_family)
         direct = InnerGradient.from_preset(preset=preset)

@@ -43,7 +43,7 @@ class OutlineList(StyleMulti):
             ls_num (int, optional): Starts with number.
                 If ``-1`` then restart numbering at current paragraph is consider to be ``False``.
                 If ``-2`` then restart numbering at current paragraph is consider to be ``True``.
-                Otherewise, restart numbering is considered to be ``True``.
+                Otherwise, restart numbering is considered to be ``True``.
             ln_num (int, optional): Restart paragraph with number.
                 If ``0`` then this paragraph is include in line numbering.
                 If ``-1`` then this paragraph is excluded in line numbering.

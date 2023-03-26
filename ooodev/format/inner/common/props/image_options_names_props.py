@@ -3,6 +3,8 @@ from typing import NamedTuple
 
 
 class ImageOptionsNamesProps(NamedTuple):
+    """Internal Properties"""
+
     name: str
     desc: str
     prev: str

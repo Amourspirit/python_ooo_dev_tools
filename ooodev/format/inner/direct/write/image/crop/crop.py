@@ -47,7 +47,7 @@ class CropOpt(CropStruct):
             top (float, UnitObj, optional): Specifies top crop in ``mm`` units or :ref:`proto_unit_obj`. Default ``0.0``.
             bottom (float, UnitObj, optional): Specifies bottom crop in ``mm`` units or :ref:`proto_unit_obj`. Default ``0.0``.
             keep_scale (bool, options): If ``True`` then crop is
-            all (float, UnitObj, optional): Specifies ``left``, ``right``, ``top``, and ``bottom`` in ``mm`` units or :ref:`proto_unit_obj`. If set all other paramaters are ignored.
+            all (float, UnitObj, optional): Specifies ``left``, ``right``, ``top``, and ``bottom`` in ``mm`` units or :ref:`proto_unit_obj`. If set all other parameters are ignored.
             keep_scale (bool, optional): If ``True`` crop is applied keeping image scale; Otherwise crop is applied keeping image size. Defaults to ``True``.
         """
         super().__init__(left=left, right=right, top=top, bottom=bottom, all=all)
@@ -153,7 +153,7 @@ class ImageCrop(StyleMulti):
         Constructor
 
         Args:
-            crop: (CropOpt, optionla): Specifies crop values.
+            crop: (CropOpt, optional): Specifies crop values.
             img_size (SizeMM, optional): Specifies image size.
             image_scale (SizeObj, optional): Specifies image scale.
         """
@@ -316,7 +316,7 @@ class ImageCrop(StyleMulti):
         Applies style of current instance.
 
         Args:
-            obj (object): UNO Oject that styles are to be applied.
+            obj (object): UNO Object that styles are to be applied.
         """
         if not self._is_valid_obj(obj):
             self._print_not_valid_obj(method_name="apply")

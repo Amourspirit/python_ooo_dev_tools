@@ -2,7 +2,7 @@ from enum import Enum
 
 
 class StyleParaKind(Enum):
-    """Style Lookups for Paragraph Styles"""
+    """Style Look ups for Paragraph Styles"""
 
     ADDRESSEE = "Addressee"
     APPENDIX = "Appendix"

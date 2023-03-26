@@ -3,7 +3,7 @@ from .style_para_kind import StyleParaKind
 
 
 class StyleParaHtmlKind(Enum):
-    """Style Lookups for Paragraph Html Styles"""
+    """Style Look ups for Paragraph HTML Styles"""
 
     ENDNOTE = StyleParaKind.ENDNOTE.value
     FOOTNOTE = StyleParaKind.FOOTNOTE.value

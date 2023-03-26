@@ -17,7 +17,7 @@ class UnitMM100(BaseIntValue):
     """
     Represents ``1/100th mm`` units.
 
-    Supports ``UnitObj`` protcol.
+    Supports ``UnitObj`` protocol.
 
     See Also:
         :ref:`proto_unit_obj`
