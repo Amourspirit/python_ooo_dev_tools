@@ -22,6 +22,7 @@ from ooodev.units import UnitPT
 from ooodev.units import UnitConvert, UnitLength
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.events.args.cancel_event_args import CancelEventArgs
+from ooodev.mock import mock_g
 from ...common import border_width_impl as mBwi
 from .struct_base import StructBase
 
@@ -31,7 +32,9 @@ _TSide = TypeVar(name="_TSide", bound="Side")
 
 # region Enums
 
-if TYPE_CHECKING:
+if TYPE_CHECKING or mock_g.DOCS_BUILDING:
+    # if doc are building then use this class for doc puropses.
+    # Otherwise, Sphinx will error for BorderLineKind
 
     class BorderLineKind(IntEnum):
         """
@@ -151,9 +154,9 @@ class LineSize(Enum):
     MEDIUM = (4, 1.5)
     """``1.5pt``"""
     THICK = (4, 2.25)
-    """``2.5pt``"""
+    """``2.25pt``"""
     EXTRA_THICK = (5, 4.5)
-    """``5.5pt``"""
+    """``4.5pt``"""
 
     def __float__(self) -> float:
         return self.value[1]

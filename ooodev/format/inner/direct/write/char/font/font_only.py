@@ -23,8 +23,12 @@ from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleMulti
 from ooodev.format.inner.common.props.font_only_props import FontOnlyProps
 from ooodev.format.inner.direct.structs.locale_struct import LocaleStruct
+from ooodev.mock import mock_g
 
 # endregion Import
+
+if mock_g.DOCS_BUILDING:
+    from ooodev.meta.static_prop import static_prop
 
 _TFontOnly = TypeVar(name="_TFontOnly", bound="FontOnly")
 _TFontLang = TypeVar(name="_TFontLang", bound="FontLang")
@@ -63,9 +67,8 @@ class FontLang(LocaleStruct):
             raise ValueError("Modifying a default instance is not allowed")
         return super()._on_modifying(source, event)
 
-    @ClassPropertyReadonly
-    @classmethod
-    def default(cls: Type[_TFontLang]) -> _TFontLang:  # type: ignore[misc]
+    if mock_g.DOCS_BUILDING:
+        default: FontLang = None
         """
         Gets ``Lang`` default.
 
@@ -73,37 +76,50 @@ class FontLang(LocaleStruct):
 
         Static Property.
         """
-        try:
-            return cls._DEFAULT_INSTANCE
-        except AttributeError:
-            inst = cls()
-            s = cast(
-                str, mInfo.Info.get_config(node_str="ooSetupSystemLocale", node_path="/org.openoffice.Setup/L10N")
-            )
-            if not s:
-                s = cast(str, mInfo.Info.get_config(node_str="ooLocale", node_path="/org.openoffice.Setup/L10N"))
-            if not s:
-                # default to en-us
-                s = "en-US"
 
-            parts = s.split("-")
-            if len(parts) == 2:
-                inst._set("Language", parts[0])
-                inst._set("Country", parts[1])
-            else:
-                inst._set("Language", "qlt")
-                country = None
-                for part in parts:
-                    if part.upper() == part:
-                        country = part
-                        break
-                if country is None:
-                    raise RuntimeError(f'Unable to get country code from System locale "{s}"')
-                inst._set("Country", country)
-                inst._set("Variant", s)
-                inst._is_default_inst = True
-            cls._DEFAULT_INSTANCE = inst
-        return cls._DEFAULT_INSTANCE
+    else:
+
+        @ClassPropertyReadonly
+        @classmethod
+        def default(cls: Type[_TFontLang]) -> FontLang:
+            """
+            Gets ``Lang`` default.
+
+            The language is determined by LibreOffice settings / language settings / languages / Local Setting
+
+            Static Property.
+            """
+            try:
+                return cls._DEFAULT_INSTANCE
+            except AttributeError:
+                inst = cls()
+                s = cast(
+                    str, mInfo.Info.get_config(node_str="ooSetupSystemLocale", node_path="/org.openoffice.Setup/L10N")
+                )
+                if not s:
+                    s = cast(str, mInfo.Info.get_config(node_str="ooLocale", node_path="/org.openoffice.Setup/L10N"))
+                if not s:
+                    # default to en-us
+                    s = "en-US"
+
+                parts = s.split("-")
+                if len(parts) == 2:
+                    inst._set("Language", parts[0])
+                    inst._set("Country", parts[1])
+                else:
+                    inst._set("Language", "qlt")
+                    country = None
+                    for part in parts:
+                        if part.upper() == part:
+                            country = part
+                            break
+                    if country is None:
+                        raise RuntimeError(f'Unable to get country code from System locale "{s}"')
+                    inst._set("Country", country)
+                    inst._set("Variant", s)
+                    inst._is_default_inst = True
+                cls._DEFAULT_INSTANCE = inst
+            return cls._DEFAULT_INSTANCE
 
 
 class FontOnly(StyleMulti):
@@ -394,169 +410,217 @@ class FontOnly(StyleMulti):
 
     # region Static Properties
 
-    @ClassPropertyReadonly
-    @classmethod
-    def default(cls: Type[_TFontOnly]) -> _TFontOnly:  # type: ignore[misc]
+    if mock_g.DOCS_BUILDING:
+        default: FontOnly = None
         """
         Gets ``Font`` default.
 
         The language is determined by LibreOffice settings / Basic Fonts / Default
 
-        Static Property."""
-        try:
-            return cls._DEFAULT_STANDARD
-        except AttributeError:
-            inst = cls()
+        Static Property.
+        """
 
-            props = mLo.Lo.qi(
-                XPropertySet,
-                mInfo.Info.get_config(node_str="DefaultFont", node_path="/org.openoffice.Office.Writer/"),
-            )
-            font_name = mProps.Props.get(props, "Standard", "Liberation Serif")
-            font_size = mProps.Props.get(props, "StandardHeight", None)
-            if font_size is None:
-                font_size = 12
-            else:
-                font_size = round(UnitConvert.convert_mm100_pt(font_size), 2)
-            inst._set(inst._props.name, font_name)
-            inst._set(inst._props.size, font_size)
-            inst._set(inst._props.style_name, "")
-            lang = FontLang.default.copy()
-            inst._set_style("lang", lang, *lang.get_attrs())
-            inst._is_default_inst = True
-            cls._DEFAULT_STANDARD = inst
-        return cls._DEFAULT_STANDARD
-
-    @ClassPropertyReadonly
-    @classmethod
-    def default_caption(cls: Type[_TFontOnly]) -> _TFontOnly:  # type: ignore[misc]
+        default_caption: FontOnly = None
         """
         Gets ``Font`` caption default.
 
         The language is determined by LibreOffice settings / Basic Fonts / Caption
 
-        Static Property."""
-        try:
-            return cls._DEFAULT_CAPTION
-        except AttributeError:
-            inst = cls()
+        Static Property.
+        """
 
-            props = mLo.Lo.qi(
-                XPropertySet,
-                mInfo.Info.get_config(node_str="DefaultFont", node_path="/org.openoffice.Office.Writer/"),
-            )
-            font_name = mProps.Props.get(props, "Caption", "Liberation Serif")
-            font_size = mProps.Props.get(props, "CaptionHeight", None)
-            if font_size is None:
-                font_size = 12
-            else:
-                font_size = round(UnitConvert.convert_mm100_pt(font_size), 2)
-            inst._set(inst._props.name, font_name)
-            inst._set(inst._props.size, font_size)
-            inst._set(inst._props.style_name, "")
-            lang = FontLang.default.copy()
-            inst._set_style("lang", lang, *lang.get_attrs())
-            inst._is_default_inst = True
-            cls._DEFAULT_CAPTION = inst
-        return cls._DEFAULT_CAPTION
-
-    @ClassPropertyReadonly
-    @classmethod
-    def default_heading(cls: Type[_TFontOnly]) -> _TFontOnly:  # type: ignore[misc]
+        default_heading: FontOnly = None
         """
         Gets ``Font`` heading default.
 
         The language is determined by LibreOffice settings / Basic Fonts / Heading
 
-        Static Property."""
-        try:
-            return cls._DEFAULT_HEADING
-        except AttributeError:
-            inst = cls()
+        Static Property.
+        """
 
-            props = mLo.Lo.qi(
-                XPropertySet,
-                mInfo.Info.get_config(node_str="DefaultFont", node_path="/org.openoffice.Office.Writer/"),
-            )
-            font_name = mProps.Props.get(props, "Heading", "Liberation Sans")
-            font_size = mProps.Props.get(props, "HeadingHeight", None)
-            if font_size is None:
-                font_size = 14
-            else:
-                font_size = round(UnitConvert.convert_mm100_pt(font_size), 2)
-            inst._set(inst._props.name, font_name)
-            inst._set(inst._props.size, font_size)
-            inst._set(inst._props.style_name, "")
-            lang = FontLang.default.copy()
-            inst._set_style("lang", lang, *lang.get_attrs())
-            inst._is_default_inst = True
-            cls._DEFAULT_HEADING = inst
-        return cls._DEFAULT_HEADING
-
-    @ClassPropertyReadonly
-    @classmethod
-    def default_list(cls: Type[_TFontOnly]) -> _TFontOnly:  # type: ignore[misc]
+        default_list: FontOnly = None
         """
         Gets ``Font`` list default.
 
         The language is determined by LibreOffice settings / Basic Fonts / List
 
-        Static Property."""
-        try:
-            return cls._DEFAULT_LIST
-        except AttributeError:
-            inst = cls()
+        Static Property.
+        """
 
-            props = mLo.Lo.qi(
-                XPropertySet,
-                mInfo.Info.get_config(node_str="DefaultFont", node_path="/org.openoffice.Office.Writer/"),
-            )
-            font_name = mProps.Props.get(props, "List", "Liberation Serif")
-            font_size = mProps.Props.get(props, "ListHeight", None)
-            if font_size is None:
-                font_size = 12
-            else:
-                font_size = round(UnitConvert.convert_mm100_pt(font_size), 2)
-            inst._set(inst._props.name, font_name)
-            inst._set(inst._props.size, font_size)
-            inst._set(inst._props.style_name, "")
-            lang = FontLang.default.copy()
-            inst._set_style("lang", lang, *lang.get_attrs())
-            inst._is_default_inst = True
-            cls._DEFAULT_LIST = inst
-        return cls._DEFAULT_LIST
-
-    @ClassPropertyReadonly
-    @classmethod
-    def default_index(cls: Type[_TFontOnly]) -> _TFontOnly:  # type: ignore[misc]
+        default_index: FontOnly = None
         """
         Gets ``Font`` index default.
 
         The language is determined by LibreOffice settings / Basic Fonts / Index
 
-        Static Property."""
-        try:
-            return cls._DEFAULT_INDEX
-        except AttributeError:
-            inst = cls()
+        Static Property.
+        """
 
-            props = mLo.Lo.qi(
-                XPropertySet,
-                mInfo.Info.get_config(node_str="DefaultFont", node_path="/org.openoffice.Office.Writer/"),
-            )
-            font_name = mProps.Props.get(props, "Index", "Liberation Serif")
-            font_size = mProps.Props.get(props, "IndexHeight", None)
-            if font_size is None:
-                font_size = 12
-            else:
-                font_size = round(UnitConvert.convert_mm100_pt(font_size), 2)
-            inst._set(inst._props.name, font_name)
-            inst._set(inst._props.size, font_size)
-            inst._set(inst._props.style_name, "")
-            lang = FontLang.default.copy()
-            inst._set_style("lang", lang, *lang.get_attrs())
-            inst._is_default_inst = True
-            cls._DEFAULT_INDEX = inst
-        return cls._DEFAULT_INDEX
+    else:
+
+        @ClassPropertyReadonly
+        @classmethod
+        def default(cls: Type[_TFontOnly]) -> _TFontOnly:  # type: ignore[misc]
+            """
+            Gets ``Font`` default.
+
+            The language is determined by LibreOffice settings / Basic Fonts / Default
+
+            Static Property."""
+            try:
+                return cls._DEFAULT_STANDARD
+            except AttributeError:
+                inst = cls()
+
+                props = mLo.Lo.qi(
+                    XPropertySet,
+                    mInfo.Info.get_config(node_str="DefaultFont", node_path="/org.openoffice.Office.Writer/"),
+                )
+                font_name = mProps.Props.get(props, "Standard", "Liberation Serif")
+                font_size = mProps.Props.get(props, "StandardHeight", None)
+                if font_size is None:
+                    font_size = 12
+                else:
+                    font_size = round(UnitConvert.convert_mm100_pt(font_size), 2)
+                inst._set(inst._props.name, font_name)
+                inst._set(inst._props.size, font_size)
+                inst._set(inst._props.style_name, "")
+                lang = FontLang.default.copy()
+                inst._set_style("lang", lang, *lang.get_attrs())
+                inst._is_default_inst = True
+                cls._DEFAULT_STANDARD = inst
+            return cls._DEFAULT_STANDARD
+
+        @ClassPropertyReadonly
+        @classmethod
+        def default_caption(cls: Type[_TFontOnly]) -> _TFontOnly:  # type: ignore[misc]
+            """
+            Gets ``Font`` caption default.
+
+            The language is determined by LibreOffice settings / Basic Fonts / Caption
+
+            Static Property."""
+            try:
+                return cls._DEFAULT_CAPTION
+            except AttributeError:
+                inst = cls()
+
+                props = mLo.Lo.qi(
+                    XPropertySet,
+                    mInfo.Info.get_config(node_str="DefaultFont", node_path="/org.openoffice.Office.Writer/"),
+                )
+                font_name = mProps.Props.get(props, "Caption", "Liberation Serif")
+                font_size = mProps.Props.get(props, "CaptionHeight", None)
+                if font_size is None:
+                    font_size = 12
+                else:
+                    font_size = round(UnitConvert.convert_mm100_pt(font_size), 2)
+                inst._set(inst._props.name, font_name)
+                inst._set(inst._props.size, font_size)
+                inst._set(inst._props.style_name, "")
+                lang = FontLang.default.copy()
+                inst._set_style("lang", lang, *lang.get_attrs())
+                inst._is_default_inst = True
+                cls._DEFAULT_CAPTION = inst
+            return cls._DEFAULT_CAPTION
+
+        @ClassPropertyReadonly
+        @classmethod
+        def default_heading(cls: Type[_TFontOnly]) -> _TFontOnly:  # type: ignore[misc]
+            """
+            Gets ``Font`` heading default.
+
+            The language is determined by LibreOffice settings / Basic Fonts / Heading
+
+            Static Property."""
+            try:
+                return cls._DEFAULT_HEADING
+            except AttributeError:
+                inst = cls()
+
+                props = mLo.Lo.qi(
+                    XPropertySet,
+                    mInfo.Info.get_config(node_str="DefaultFont", node_path="/org.openoffice.Office.Writer/"),
+                )
+                font_name = mProps.Props.get(props, "Heading", "Liberation Sans")
+                font_size = mProps.Props.get(props, "HeadingHeight", None)
+                if font_size is None:
+                    font_size = 14
+                else:
+                    font_size = round(UnitConvert.convert_mm100_pt(font_size), 2)
+                inst._set(inst._props.name, font_name)
+                inst._set(inst._props.size, font_size)
+                inst._set(inst._props.style_name, "")
+                lang = FontLang.default.copy()
+                inst._set_style("lang", lang, *lang.get_attrs())
+                inst._is_default_inst = True
+                cls._DEFAULT_HEADING = inst
+            return cls._DEFAULT_HEADING
+
+        @ClassPropertyReadonly
+        @classmethod
+        def default_list(cls: Type[_TFontOnly]) -> _TFontOnly:  # type: ignore[misc]
+            """
+            Gets ``Font`` list default.
+
+            The language is determined by LibreOffice settings / Basic Fonts / List
+
+            Static Property."""
+            try:
+                return cls._DEFAULT_LIST
+            except AttributeError:
+                inst = cls()
+
+                props = mLo.Lo.qi(
+                    XPropertySet,
+                    mInfo.Info.get_config(node_str="DefaultFont", node_path="/org.openoffice.Office.Writer/"),
+                )
+                font_name = mProps.Props.get(props, "List", "Liberation Serif")
+                font_size = mProps.Props.get(props, "ListHeight", None)
+                if font_size is None:
+                    font_size = 12
+                else:
+                    font_size = round(UnitConvert.convert_mm100_pt(font_size), 2)
+                inst._set(inst._props.name, font_name)
+                inst._set(inst._props.size, font_size)
+                inst._set(inst._props.style_name, "")
+                lang = FontLang.default.copy()
+                inst._set_style("lang", lang, *lang.get_attrs())
+                inst._is_default_inst = True
+                cls._DEFAULT_LIST = inst
+            return cls._DEFAULT_LIST
+
+        @ClassPropertyReadonly
+        @classmethod
+        def default_index(cls: Type[_TFontOnly]) -> _TFontOnly:  # type: ignore[misc]
+            """
+            Gets ``Font`` index default.
+
+            The language is determined by LibreOffice settings / Basic Fonts / Index
+
+            Static Property."""
+            try:
+                return cls._DEFAULT_INDEX
+            except AttributeError:
+                inst = cls()
+
+                props = mLo.Lo.qi(
+                    XPropertySet,
+                    mInfo.Info.get_config(node_str="DefaultFont", node_path="/org.openoffice.Office.Writer/"),
+                )
+                font_name = mProps.Props.get(props, "Index", "Liberation Serif")
+                font_size = mProps.Props.get(props, "IndexHeight", None)
+                if font_size is None:
+                    font_size = 12
+                else:
+                    font_size = round(UnitConvert.convert_mm100_pt(font_size), 2)
+                inst._set(inst._props.name, font_name)
+                inst._set(inst._props.size, font_size)
+                inst._set(inst._props.style_name, "")
+                lang = FontLang.default.copy()
+                inst._set_style("lang", lang, *lang.get_attrs())
+                inst._is_default_inst = True
+                cls._DEFAULT_INDEX = inst
+            return cls._DEFAULT_INDEX
 
     # endregion Static Properties

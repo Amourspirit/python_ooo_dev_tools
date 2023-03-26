@@ -7,7 +7,7 @@ Convert from and to various units of ``Length`` enumeration.
 
 .. code-block:: python
 
-    >>> from ooodev.unit import UnitConvert, UnitLength
+    >>> from ooodev.units import UnitConvert, UnitLength
     # convert 100 inches into milli-meters
     >>> UnitConvert.convert(100, frm=UnitLength.IN, to=UnitLength.MM)
     2540.0
@@ -16,6 +16,6 @@ Convert from and to various units of ``Length`` enumeration.
     5669.291338582677
 
 
-.. automodule:: ooodev.unit.unit_convert
+.. automodule:: ooodev.units.unit_convert
     :members:
     :undoc-members:

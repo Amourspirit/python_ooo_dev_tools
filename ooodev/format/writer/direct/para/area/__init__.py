@@ -23,3 +23,21 @@ from ooodev.format.inner.direct.write.fill.area.img import OffsetColumn as Offse
 from ooodev.format.inner.direct.write.fill.area.img import OffsetRow as OffsetRow
 from ooodev.format.inner.direct.write.para.area.img import Img as Img
 from ooodev.format.inner.direct.write.para.area.hatch import Hatch as Hatch
+
+__all__ = [
+    "Color",
+    "Gradient",
+    "Pattern",
+    "PresetGradientKind",
+    "PresetHatchKind",
+    "PresetPatternKind",
+    "PresetImageKind",
+    "ImgStyleKind",
+    "SizeMM",
+    "SizePercent",
+    "Offset",
+    "OffsetColumn",
+    "OffsetRow",
+    "Img",
+    "Hatch",
+]

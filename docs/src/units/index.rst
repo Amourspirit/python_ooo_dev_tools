@@ -1,7 +1,7 @@
-.. _ns_unit:
+.. _ns_units:
 
-Unit
-====
+Units
+=====
 
 .. toctree::
     :titlesonly:

@@ -13,3 +13,15 @@ from ooodev.format.inner.modify.calc.page.area.color import InnerColor as InnerC
 from ooodev.format.inner.modify.calc.page.area.color import Color as Color
 from ooodev.format.inner.modify.calc.page.area.img import InnerImg as InnerImg
 from ooodev.format.inner.modify.calc.page.area.img import Img as Img
+
+__all__ = [
+    "SizePercent",
+    "OffsetRow",
+    "OffsetColumn",
+    "ImgStyleKind",
+    "PresetImageKind",
+    "InnerColor",
+    "Color",
+    "InnerImg",
+    "Img",
+]

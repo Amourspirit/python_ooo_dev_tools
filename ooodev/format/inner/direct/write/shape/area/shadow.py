@@ -58,7 +58,7 @@ class Shadow(StyleBase):
             use_shadow (bool, optional): Specifies if shadow is used.
             location (ShadowLocationKind , optional): Specifies the shadow location.
             color (Color , optional): Specifies shadow color.
-            distance (float, UnitObj , optional): Specifies shadow distance in ``mm``units or :ref:`proto_unit_obj`.
+            distance (float, UnitObj , optional): Specifies shadow distance in ``mm`` units or :ref:`proto_unit_obj`.
             blur (int, UnitObj, optional): Specifies shadow blur in ``pt`` units or in ``mm`` units  or :ref:`proto_unit_obj`.
             transparency (int , optional): Specifies shadow transparency value from ``0`` to ``100``.
         """
@@ -289,7 +289,7 @@ class Shadow(StyleBase):
         Get copy of instance with use shadow distance or removed.
 
         Args:
-            value (float, UnitObj, optional): Specifies shadow distance in ``mm``units or :ref:`proto_unit_obj`.
+            value (float, UnitObj, optional): Specifies shadow distance in ``mm`` units or :ref:`proto_unit_obj`.
 
         Returns:
             Shadow: Shadow with style added or removed
