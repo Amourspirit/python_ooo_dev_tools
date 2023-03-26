@@ -8,3 +8,5 @@ from ooodev.format.inner.direct.structs.side import BorderLineKind as BorderLine
 from ooodev.format.inner.direct.calc.border.borders import Borders as Borders
 from ooodev.format.inner.direct.calc.border.padding import Padding as Padding
 from ooodev.format.inner.direct.calc.border.shadow import Shadow as Shadow
+
+__all__ = ["Side", "BorderLineKind", "Borders", "Padding", "Shadow"]

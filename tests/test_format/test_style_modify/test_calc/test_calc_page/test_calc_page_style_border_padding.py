@@ -10,7 +10,7 @@ from ooodev.format.calc.modify.page.borders import Padding, CalcStylePageKind
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.calc import Calc
-from ooodev.utils.data_type.unit_mm100 import UnitMM100
+from ooodev.units.unit_mm100 import UnitMM100
 
 
 def test_calc(loader) -> None:

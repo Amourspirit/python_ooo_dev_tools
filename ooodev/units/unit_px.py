@@ -1,9 +1,8 @@
 from __future__ import annotations
 from typing import TypeVar, Type
 from dataclasses import dataclass
-from ..validation import check
-from .base_float_value import BaseFloatValue
-from ..unit_convert import UnitConvert, Length
+from ooodev.utils.data_type.base_float_value import BaseFloatValue
+from .unit_convert import UnitConvert, UnitLength
 
 _TUnitPX = TypeVar(name="_TUnitPX", bound="UnitPX")
 
@@ -30,7 +29,7 @@ class UnitPX(BaseFloatValue):
         Returns:
             int: Value in ``mm`` units.
         """
-        return float(UnitConvert.convert(num=self.value, frm=Length.PX, to=Length.MM))
+        return float(UnitConvert.convert(num=self.value, frm=UnitLength.PX, to=UnitLength.MM))
 
     def get_value_mm100(self) -> int:
         """
@@ -39,7 +38,7 @@ class UnitPX(BaseFloatValue):
         Returns:
             int: Value in ``1/100th mm`` units.
         """
-        return round(UnitConvert.convert(num=self.value, frm=Length.PX, to=Length.MM100))
+        return round(UnitConvert.convert(num=self.value, frm=UnitLength.PX, to=UnitLength.MM100))
 
     def get_value_pt(self) -> float:
         """
@@ -48,7 +47,7 @@ class UnitPX(BaseFloatValue):
         Returns:
             int: Value in ``pt`` units.
         """
-        return UnitConvert.convert(num=self.value, frm=Length.PX, to=Length.PT)
+        return UnitConvert.convert(num=self.value, frm=UnitLength.PX, to=UnitLength.PT)
 
     def get_value_px(self) -> float:
         """
@@ -71,7 +70,7 @@ class UnitPX(BaseFloatValue):
             UnitPX:
         """
         inst = super(UnitPX, cls).__new__(cls)
-        inst.__init__(UnitConvert.convert(num=value, frm=Length.PT, to=Length.PX))
+        inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.PT, to=UnitLength.PX))
         return inst
 
     @classmethod
@@ -101,7 +100,7 @@ class UnitPX(BaseFloatValue):
             UnitPX:
         """
         inst = super(UnitPX, cls).__new__(cls)
-        inst.__init__(UnitConvert.convert(num=value, frm=Length.MM, to=Length.PX))
+        inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.MM, to=UnitLength.PX))
         return inst
 
     @classmethod
@@ -116,7 +115,7 @@ class UnitPX(BaseFloatValue):
             UnitPX:
         """
         inst = super(UnitPX, cls).__new__(cls)
-        inst.__init__(UnitConvert.convert(num=value, frm=Length.MM10, to=Length.PX))
+        inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.MM10, to=UnitLength.PX))
         return inst
 
     @classmethod
@@ -131,7 +130,7 @@ class UnitPX(BaseFloatValue):
             UnitPX:
         """
         inst = super(UnitPX, cls).__new__(cls)
-        inst.__init__(UnitConvert.convert(num=value, frm=Length.MM100, to=Length.PX))
+        inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.MM100, to=UnitLength.PX))
         return inst
 
     @classmethod
@@ -146,7 +145,7 @@ class UnitPX(BaseFloatValue):
             UnitPX:
         """
         inst = super(UnitPX, cls).__new__(cls)
-        inst.__init__(UnitConvert.convert(num=value, frm=Length.IN, to=Length.PX))
+        inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.IN, to=UnitLength.PX))
         return inst
 
     @classmethod
@@ -161,7 +160,7 @@ class UnitPX(BaseFloatValue):
             UnitPX:
         """
         inst = super(UnitPX, cls).__new__(cls)
-        inst.__init__(UnitConvert.convert(num=value, frm=Length.IN10, to=Length.PX))
+        inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.IN10, to=UnitLength.PX))
         return inst
 
     @classmethod
@@ -176,7 +175,7 @@ class UnitPX(BaseFloatValue):
             UnitPX:
         """
         inst = super(UnitPX, cls).__new__(cls)
-        inst.__init__(UnitConvert.convert(num=value, frm=Length.IN100, to=Length.PX))
+        inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.IN100, to=UnitLength.PX))
         return inst
 
     @classmethod
@@ -191,5 +190,5 @@ class UnitPX(BaseFloatValue):
             UnitPX:
         """
         inst = super(UnitPX, cls).__new__(cls)
-        inst.__init__(UnitConvert.convert(num=value, frm=Length.IN1000, to=Length.PX))
+        inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.IN1000, to=UnitLength.PX))
         return inst

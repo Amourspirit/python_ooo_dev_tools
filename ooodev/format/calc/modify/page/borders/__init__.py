@@ -10,3 +10,15 @@ from ooodev.format.inner.modify.calc.page.border.sides import InnerSides as Inne
 from ooodev.format.inner.modify.calc.page.border.sides import Sides as Sides
 from ooodev.format.inner.modify.calc.page.border.shadow import InnerShadow as InnerShadow
 from ooodev.format.inner.modify.calc.page.border.shadow import Shadow as Shadow
+
+__all__ = [
+    "BorderLineKind",
+    "LineSize",
+    "Side",
+    "InnerPadding",
+    "Padding",
+    "InnerSides",
+    "Sides",
+    "InnerShadow",
+    "Shadow",
+]

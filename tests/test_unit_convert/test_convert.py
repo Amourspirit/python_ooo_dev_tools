@@ -5,7 +5,7 @@ import math
 if __name__ == "__main__":
     pytest.main([__file__])
 
-from ooodev.utils.unit_convert import UnitConvert, Length
+from ooodev.units.unit_convert import UnitConvert, UnitLength
 
 
 @pytest.mark.parametrize(
@@ -19,7 +19,7 @@ from ooodev.utils.unit_convert import UnitConvert, Length
     ],
 )
 def test_convert_inch_mm(val: int | float, expected: int) -> None:
-    result = UnitConvert.convert(val, Length.IN, Length.MM)
+    result = UnitConvert.convert(val, UnitLength.IN, UnitLength.MM)
     assert math.isclose(result, expected)
 
 
@@ -36,7 +36,7 @@ def test_convert_inch_mm(val: int | float, expected: int) -> None:
     ],
 )
 def test_convert_pt_mm(val: int | float, expected: int) -> None:
-    result = UnitConvert.convert(val, Length.PT, Length.MM)
+    result = UnitConvert.convert(val, UnitLength.PT, UnitLength.MM)
     assert math.isclose(result, expected)
 
 
@@ -59,7 +59,7 @@ def test_convert_pt_mm(val: int | float, expected: int) -> None:
     ],
 )
 def test_convert_pt_mm100(val: int | float, expected: int) -> None:
-    result = UnitConvert.convert(val, Length.PT, Length.MM100)
+    result = UnitConvert.convert(val, UnitLength.PT, UnitLength.MM100)
     assert math.isclose(result, expected)
 
 
@@ -75,7 +75,7 @@ def test_convert_pt_mm100(val: int | float, expected: int) -> None:
     ],
 )
 def test_convert_pt_twip(val: int | float, expected: int) -> None:
-    result = UnitConvert.to_twips(val, Length.PT)
+    result = UnitConvert.to_twips(val, UnitLength.PT)
     assert math.isclose(result, expected)
 
 
@@ -115,7 +115,7 @@ def test_convert_twip_mm100(val: int | float, expected: int) -> None:
     ],
 )
 def test_convert_mm100_twip(val: int | float, expected: int) -> None:
-    result = UnitConvert.convert(val, Length.MM100, Length.TWIP)
+    result = UnitConvert.convert(val, UnitLength.MM100, UnitLength.TWIP)
     assert math.isclose(result, expected)
 
 
@@ -124,5 +124,5 @@ def test_convert_mm100_twip(val: int | float, expected: int) -> None:
     [(2, 609.6), (2.9, 883.92), (14, 4267.2)],
 )
 def test_convert_ft_mm(val: int | float, expected: int) -> None:
-    result = UnitConvert.convert(val, Length.FT, Length.MM)
+    result = UnitConvert.convert(val, UnitLength.FT, UnitLength.MM)
     assert math.isclose(result, expected)

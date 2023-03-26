@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import cast
 import uno
 
-from ooodev.proto.unit_obj import UnitObj
+from ooodev.units import UnitObj
 from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
 from ooodev.format.writer.style.char.kind import StyleCharKind as StyleCharKind
 from ooodev.format.inner.direct.write.para.drop_cap.drop_caps import DropCaps as InnerDropCaps

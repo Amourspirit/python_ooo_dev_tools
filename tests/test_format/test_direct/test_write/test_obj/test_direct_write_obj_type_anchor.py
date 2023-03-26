@@ -24,7 +24,7 @@ from ooodev.format.writer.direct.obj.type import (
 )
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
-from ooodev.utils.data_type.unit_inch import UnitInch
+from ooodev.units.unit_inch import UnitInch
 from ooodev.office.write import Write
 
 

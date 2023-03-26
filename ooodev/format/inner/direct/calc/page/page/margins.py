@@ -1,16 +1,16 @@
 from __future__ import annotations
-from typing import Any, Tuple, cast, Type, TypeVar, NamedTuple, overload
+from typing import Any, Tuple, cast, Type, TypeVar, overload
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.common.props.page_margin_props import PageMarginProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
-from ooodev.proto.unit_obj import UnitObj
+from ooodev.units import UnitObj
 from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
-from ooodev.utils.data_type.unit_mm import UnitMM
-from ooodev.utils.unit_convert import UnitConvert
+from ooodev.units import UnitMM
+from ooodev.units import UnitConvert
 
 _TMargins = TypeVar(name="_TMargins", bound="Margins")
 

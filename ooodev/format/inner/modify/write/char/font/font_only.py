@@ -3,12 +3,14 @@ from __future__ import annotations
 from typing import cast
 import uno
 
-from ooodev.proto.unit_obj import UnitObj
+from ooodev.units import UnitObj
 from ooodev.format.writer.style.char.kind.style_char_kind import StyleCharKind as StyleCharKind
 from ooodev.format.inner.direct.write.char.font.font_only import FontOnly as InnerFontOnly
 from ooodev.format.inner.direct.write.char.font.font_only import FontLang as FontLang
 from ..char_style_base_multi import CharStyleBaseMulti
+
 # endregion Imports
+
 
 class FontOnly(CharStyleBaseMulti):
     """

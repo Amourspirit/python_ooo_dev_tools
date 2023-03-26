@@ -5,3 +5,5 @@ from ooodev.format.inner.direct.write.frame.options.protect import Protect as Pr
 from ooodev.format.inner.direct.write.frame.options.align import Align as Align
 from ooodev.format.inner.direct.write.frame.options.properties import Properties as Properties
 from ooodev.format.inner.direct.write.frame.options.names import Names as Names
+
+__all__ = ["VertAdjustKind", "TextDirectionKind", "Protect", "Align", "Properties", "Names"]

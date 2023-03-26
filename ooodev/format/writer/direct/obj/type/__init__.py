@@ -11,3 +11,19 @@ from ooodev.format.inner.direct.write.frame.frame_type.position import Vertical 
 from ooodev.format.inner.direct.write.frame.frame_type.position import Position as Position
 from ooodev.format.inner.direct.write.frame.frame_type.anchor import AnchorKind as AnchorKind
 from ooodev.format.inner.direct.write.frame.frame_type.anchor import Anchor as Anchor
+
+__all__ = [
+    "RelativeKind",
+    "RelativeSize",
+    "AbsoluteSize",
+    "Size",
+    "HoriOrient",
+    "VertOrient",
+    "RelHoriOrient",
+    "RelVertOrient",
+    "Horizontal",
+    "Vertical",
+    "Position",
+    "AnchorKind",
+    "Anchor",
+]

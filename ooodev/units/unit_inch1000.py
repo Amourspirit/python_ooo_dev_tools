@@ -1,12 +1,12 @@
 from __future__ import annotations
 from typing import TypeVar, Type
 from dataclasses import dataclass
-from ..validation import check
-from ..decorator import enforce
-from .base_int_value import BaseIntValue
-from ..unit_convert import UnitConvert, Length
+from ooodev.utils.decorator import enforce
+from ooodev.utils.data_type.base_int_value import BaseIntValue
+from .unit_convert import UnitConvert, UnitLength
 
 _TUnitInch1000 = TypeVar(name="_TUnitInch1000", bound="UnitInch1000")
+
 
 # Note that from __future__ import annotations converts annotations to string.
 # this means that @enforce.enforce_types will see string as type. This is fine in
@@ -43,7 +43,7 @@ class UnitInch1000(BaseIntValue):
         Returns:
             int: Value in ``mm`` units.
         """
-        return UnitConvert.convert(num=self.value, frm=Length.IN1000, to=Length.MM)
+        return UnitConvert.convert(num=self.value, frm=UnitLength.IN1000, to=UnitLength.MM)
 
     def get_value_mm100(self) -> int:
         """
@@ -52,7 +52,7 @@ class UnitInch1000(BaseIntValue):
         Returns:
             int: Value in ``1/100th mm`` units.
         """
-        return round(UnitConvert.convert(num=self.value, frm=Length.IN1000, to=Length.MM100))
+        return round(UnitConvert.convert(num=self.value, frm=UnitLength.IN1000, to=UnitLength.MM100))
 
     def get_value_pt(self) -> float:
         """
@@ -61,7 +61,7 @@ class UnitInch1000(BaseIntValue):
         Returns:
             int: Value in ``pt`` units.
         """
-        return UnitConvert.convert(num=self.value, frm=Length.IN1000, to=Length.PT)
+        return UnitConvert.convert(num=self.value, frm=UnitLength.IN1000, to=UnitLength.PT)
 
     def get_value_px(self) -> float:
         """
@@ -70,7 +70,7 @@ class UnitInch1000(BaseIntValue):
         Returns:
             int: Value in ``px`` units.
         """
-        return UnitConvert.convert(num=self.value, frm=Length.IN1000, to=Length.PX)
+        return UnitConvert.convert(num=self.value, frm=UnitLength.IN1000, to=UnitLength.PX)
 
     @classmethod
     def from_mm(cls: Type[_TUnitInch1000], value: float) -> _TUnitInch1000:
@@ -84,7 +84,7 @@ class UnitInch1000(BaseIntValue):
             UnitInch1000:
         """
         inst = super(UnitInch1000, cls).__new__(cls)
-        inst.__init__(round(UnitConvert.convert(num=value, frm=Length.MM, to=Length.IN1000)))
+        inst.__init__(round(UnitConvert.convert(num=value, frm=UnitLength.MM, to=UnitLength.IN1000)))
         return inst
 
     @classmethod
@@ -99,7 +99,7 @@ class UnitInch1000(BaseIntValue):
             UnitInch1000:
         """
         inst = super(UnitInch1000, cls).__new__(cls)
-        inst.__init__(round(UnitConvert.convert(num=value, frm=Length.PT, to=Length.IN1000)))
+        inst.__init__(round(UnitConvert.convert(num=value, frm=UnitLength.PT, to=UnitLength.IN1000)))
         return inst
 
     @classmethod
@@ -114,7 +114,7 @@ class UnitInch1000(BaseIntValue):
             UnitInch1000:
         """
         inst = super(UnitInch1000, cls).__new__(cls)
-        inst.__init__(round(UnitConvert.convert(num=value, frm=Length.PX, to=Length.IN1000)))
+        inst.__init__(round(UnitConvert.convert(num=value, frm=UnitLength.PX, to=UnitLength.IN1000)))
         return inst
 
     @classmethod
@@ -129,7 +129,7 @@ class UnitInch1000(BaseIntValue):
             UnitInch1000:
         """
         inst = super(UnitInch1000, cls).__new__(cls)
-        inst.__init__(round(UnitConvert.convert(num=value, frm=Length.IN, to=Length.IN1000)))
+        inst.__init__(round(UnitConvert.convert(num=value, frm=UnitLength.IN, to=UnitLength.IN1000)))
         return inst
 
     @classmethod
@@ -144,7 +144,7 @@ class UnitInch1000(BaseIntValue):
             UnitInch1000:
         """
         inst = super(UnitInch1000, cls).__new__(cls)
-        inst.__init__(round(UnitConvert.convert(num=value, frm=Length.IN10, to=Length.IN1000)))
+        inst.__init__(round(UnitConvert.convert(num=value, frm=UnitLength.IN10, to=UnitLength.IN1000)))
         return inst
 
     @classmethod
@@ -159,7 +159,7 @@ class UnitInch1000(BaseIntValue):
             UnitInch1000:
         """
         inst = super(UnitInch1000, cls).__new__(cls)
-        inst.__init__(round(UnitConvert.convert(num=value, frm=Length.IN100, to=Length.IN1000)))
+        inst.__init__(round(UnitConvert.convert(num=value, frm=UnitLength.IN100, to=UnitLength.IN1000)))
         return inst
 
     @classmethod

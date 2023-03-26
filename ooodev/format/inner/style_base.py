@@ -1298,7 +1298,7 @@ class StyleModifyMulti(StyleMulti):
         Args:
             doc (object): UNO Documnet Object.
 
-        Raised:
+        Raises:
             NotSupportedDocumentError: If document is not supported.
 
         Returns:

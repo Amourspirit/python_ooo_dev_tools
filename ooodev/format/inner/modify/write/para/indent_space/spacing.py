@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import cast
 import uno
 
-from ooodev.proto.unit_obj import UnitObj
+from ooodev.units import UnitObj
 from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
 from ooodev.format.inner.direct.write.para.indent_space.spacing import Spacing as InnerSpacing
 from ..para_style_base_multi import ParaStyleBaseMulti

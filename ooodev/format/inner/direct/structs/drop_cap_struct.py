@@ -10,10 +10,10 @@ from ooo.dyn.style.drop_cap_format import DropCapFormat
 
 from .struct_base import StructBase
 from ooodev.exceptions import ex as mEx
-from ooodev.proto.unit_obj import UnitObj
 from ooodev.utils import props as mProps
 from ooodev.utils.data_type.byte import Byte
-from ooodev.utils.data_type.unit_mm100 import UnitMM100
+from ooodev.units import UnitObj
+from ooodev.units.unit_mm100 import UnitMM100
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import EventArgs, CancelEventArgs, FormatNamedEvent
 

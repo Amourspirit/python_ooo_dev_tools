@@ -14,14 +14,15 @@ from ooo.dyn.table.border_line_style import BorderLineStyle
 from ooo.dyn.table.border_line2 import BorderLine2 as BorderLine2
 
 from ooodev.meta.deleted_enum_meta import DeletedUnoConstEnumMeta
-from ooodev.proto.unit_obj import UnitObj
 from ooodev.utils import props as mProps
 from ooodev.utils.color import Color
 from ooodev.utils.color import StandardColor
-from ooodev.utils.data_type.unit_pt import UnitPT
-from ooodev.utils.unit_convert import UnitConvert, Length
+from ooodev.units import UnitObj
+from ooodev.units import UnitPT
+from ooodev.units import UnitConvert, UnitLength
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.events.args.cancel_event_args import CancelEventArgs
+from ooodev.mock import mock_g
 from ...common import border_width_impl as mBwi
 from .struct_base import StructBase
 
@@ -31,7 +32,9 @@ _TSide = TypeVar(name="_TSide", bound="Side")
 
 # region Enums
 
-if TYPE_CHECKING:
+if TYPE_CHECKING or mock_g.DOCS_BUILDING:
+    # if doc are building then use this class for doc puropses.
+    # Otherwise, Sphinx will error for BorderLineKind
 
     class BorderLineKind(IntEnum):
         """
@@ -151,9 +154,9 @@ class LineSize(Enum):
     MEDIUM = (4, 1.5)
     """``1.5pt``"""
     THICK = (4, 2.25)
-    """``2.5pt``"""
+    """``2.25pt``"""
     EXTRA_THICK = (5, 4.5)
-    """``5.5pt``"""
+    """``4.5pt``"""
 
     def __float__(self) -> float:
         return self.value[1]
@@ -219,7 +222,7 @@ class Side(StructBase):
         if self._pts > 9.0000001:
             raise ValueError("Maximum width allowed is 9pt")
 
-        lw = round(UnitConvert.convert(num=self._pts, frm=Length.PT, to=Length.MM100))
+        lw = round(UnitConvert.convert(num=self._pts, frm=UnitLength.PT, to=UnitLength.MM100))
 
         init_vals = {
             "Color": color,
@@ -245,7 +248,7 @@ class Side(StructBase):
                 self._set(attr, 0)
             return
 
-        twips = round(UnitConvert.to_twips(pts, Length.PT))
+        twips = round(UnitConvert.to_twips(pts, UnitLength.PT))
         single_lns = (
             BorderLineKind.SOLID,
             BorderLineKind.DOTTED,
@@ -526,7 +529,7 @@ class Side(StructBase):
         Returns:
             Side: instance.
         """
-        pt_width = round(UnitConvert.convert(num=border.LineWidth, frm=Length.MM100, to=Length.PT), 2)
+        pt_width = round(UnitConvert.convert(num=border.LineWidth, frm=UnitLength.MM100, to=UnitLength.PT), 2)
         inst = cls(width=pt_width, **kwargs)
         inst._set("Color", border.Color)
         inst._set("InnerLineWidth", border.InnerLineWidth)

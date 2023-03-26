@@ -9,12 +9,12 @@ from ooo.dyn.drawing.hatch import Hatch as UnoHatch
 from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
 from ooodev.events.format_named_event import FormatNamedEvent
 from ooodev.exceptions import ex as mEx
-from ooodev.proto.unit_obj import UnitObj
 from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.utils.color import Color, StandardColor
 from ooodev.utils.data_type.angle import Angle as Angle
-from ooodev.utils.unit_convert import UnitConvert
+from ooodev.units import UnitObj
+from ooodev.units import UnitConvert
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.preset import preset_hatch as mPreset
 from ooodev.format.inner.preset.preset_hatch import PresetHatchKind as PresetHatchKind

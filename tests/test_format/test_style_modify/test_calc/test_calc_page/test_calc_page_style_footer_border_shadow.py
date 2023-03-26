@@ -12,7 +12,7 @@ from ooodev.utils.lo import Lo
 from ooodev.format import Styler
 from ooodev.utils.color import StandardColor
 from ooodev.office.calc import Calc
-from ooodev.utils.data_type.unit_mm100 import UnitMM100
+from ooodev.units.unit_mm100 import UnitMM100
 
 
 def test_calc(loader) -> None:

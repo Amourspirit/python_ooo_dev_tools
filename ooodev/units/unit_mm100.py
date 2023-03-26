@@ -1,12 +1,12 @@
 from __future__ import annotations
 from typing import TypeVar, Type
 from dataclasses import dataclass
-from ..validation import check
-from ..decorator import enforce
-from .base_int_value import BaseIntValue
-from ..unit_convert import UnitConvert, Length
+from ..utils.decorator import enforce
+from ooodev.utils.data_type.base_int_value import BaseIntValue
+from .unit_convert import UnitConvert, UnitLength
 
 _TUnitMM100 = TypeVar(name="_TUnitMM100", bound="UnitMM100")
+
 
 # Note that from __future__ import annotations converts annotations to string.
 # this means that @enforce.enforce_types will see string as type. This is fine in
@@ -61,7 +61,7 @@ class UnitMM100(BaseIntValue):
         Returns:
             int: Value in ``pt`` units.
         """
-        return UnitConvert.convert(num=self.value, frm=Length.MM100, to=Length.PT)
+        return UnitConvert.convert(num=self.value, frm=UnitLength.MM100, to=UnitLength.PT)
 
     def get_value_px(self) -> float:
         """
@@ -70,7 +70,7 @@ class UnitMM100(BaseIntValue):
         Returns:
             int: Value in ``px`` units.
         """
-        return UnitConvert.convert(num=self.value, frm=Length.MM100, to=Length.PX)
+        return UnitConvert.convert(num=self.value, frm=UnitLength.MM100, to=UnitLength.PX)
 
     @classmethod
     def from_mm(cls: Type[_TUnitMM100], value: float) -> _TUnitMM100:
@@ -99,7 +99,7 @@ class UnitMM100(BaseIntValue):
             UnitMM100:
         """
         inst = super(UnitMM100, cls).__new__(cls)
-        inst.__init__(round(UnitConvert.convert(num=value, frm=Length.MM10, to=Length.MM100)))
+        inst.__init__(round(UnitConvert.convert(num=value, frm=UnitLength.MM10, to=UnitLength.MM100)))
         return inst
 
     @classmethod
@@ -129,7 +129,7 @@ class UnitMM100(BaseIntValue):
             UnitMM100:
         """
         inst = super(UnitMM100, cls).__new__(cls)
-        inst.__init__(round(UnitConvert.convert(num=value, frm=Length.PT, to=Length.MM100)))
+        inst.__init__(round(UnitConvert.convert(num=value, frm=UnitLength.PT, to=UnitLength.MM100)))
         return inst
 
     @classmethod
@@ -144,7 +144,7 @@ class UnitMM100(BaseIntValue):
             UnitMM100:
         """
         inst = super(UnitMM100, cls).__new__(cls)
-        inst.__init__(round(UnitConvert.convert(num=value, frm=Length.PX, to=Length.MM100)))
+        inst.__init__(round(UnitConvert.convert(num=value, frm=UnitLength.PX, to=UnitLength.MM100)))
         return inst
 
     @classmethod
@@ -159,7 +159,7 @@ class UnitMM100(BaseIntValue):
             UnitMM100:
         """
         inst = super(UnitMM100, cls).__new__(cls)
-        inst.__init__(round(UnitConvert.convert(num=value, frm=Length.IN, to=Length.MM100)))
+        inst.__init__(round(UnitConvert.convert(num=value, frm=UnitLength.IN, to=UnitLength.MM100)))
         return inst
 
     @classmethod
@@ -174,7 +174,7 @@ class UnitMM100(BaseIntValue):
             UnitMM100:
         """
         inst = super(UnitMM100, cls).__new__(cls)
-        inst.__init__(round(UnitConvert.convert(num=value, frm=Length.IN10, to=Length.MM100)))
+        inst.__init__(round(UnitConvert.convert(num=value, frm=UnitLength.IN10, to=UnitLength.MM100)))
         return inst
 
     @classmethod
@@ -189,7 +189,7 @@ class UnitMM100(BaseIntValue):
             UnitMM100:
         """
         inst = super(UnitMM100, cls).__new__(cls)
-        inst.__init__(round(UnitConvert.convert(num=value, frm=Length.IN100, to=Length.MM100)))
+        inst.__init__(round(UnitConvert.convert(num=value, frm=UnitLength.IN100, to=UnitLength.MM100)))
         return inst
 
     @classmethod
@@ -204,5 +204,5 @@ class UnitMM100(BaseIntValue):
             UnitMM100:
         """
         inst = super(UnitMM100, cls).__new__(cls)
-        inst.__init__(round(UnitConvert.convert(num=value, frm=Length.IN1000, to=Length.MM100)))
+        inst.__init__(round(UnitConvert.convert(num=value, frm=UnitLength.IN1000, to=UnitLength.MM100)))
         return inst

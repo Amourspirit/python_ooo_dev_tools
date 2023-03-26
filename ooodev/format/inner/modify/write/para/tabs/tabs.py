@@ -4,11 +4,11 @@ from typing import cast
 import uno
 
 from ooo.dyn.style.tab_align import TabAlign as TabAlign
-from ooodev.proto.unit_obj import UnitObj
+from ooodev.units import UnitObj
 from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
 from ooodev.format.inner.direct.structs.tab_stop_struct import FillCharKind as FillCharKind
-from ..para_style_base_multi import ParaStyleBaseMulti
 from ooodev.format.inner.direct.write.para.tabs.tabs import Tabs as InnerTabs
+from ..para_style_base_multi import ParaStyleBaseMulti
 
 # endregion Import
 

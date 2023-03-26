@@ -27,7 +27,7 @@ from ooodev.format.writer.direct.char.font import (
 )
 from ooodev.format.writer.style.para import Para
 from ooodev.format import CommonColor
-from ooodev.utils.unit_convert import UnitConvert
+from ooodev.units.unit_convert import UnitConvert
 from ooodev.utils.gui import GUI
 from ooodev.utils.info import Info
 from ooodev.utils.lo import Lo

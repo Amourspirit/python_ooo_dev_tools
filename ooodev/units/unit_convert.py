@@ -7,7 +7,8 @@ from __future__ import annotations
 from typing import List, Tuple, TypeVar, NamedTuple, overload
 from enum import IntEnum
 import math
-from . import table_helper as mTh
+from ooodev.utils import table_helper as mTh
+
 # See Also:
 #   https://github.com/LibreOffice/core/blob/e5005c76bd60a004f6025728e794ba3e4d0dfff1/include/o3tl/unit_conversion.hxx
 #   https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1awt_1_1XUnitConversion.html
@@ -18,7 +19,7 @@ from . import table_helper as mTh
 N = TypeVar("N", int, float)
 
 
-class Length(IntEnum):
+class UnitLength(IntEnum):
     MM100 = 0
     """1/100th mm"""
     MM10 = 1
@@ -145,7 +146,7 @@ class UnitConvert:
         return num
 
     @classmethod
-    def _md(cls, i: Length, j: Length) -> int:
+    def _md(cls, i: UnitLength, j: UnitLength) -> int:
         ni = int(i)
         nj = int(j)
         al = len(_a_length_md_array)
@@ -193,7 +194,7 @@ class UnitConvert:
 
     @overload
     @classmethod
-    def convert(cls, num: N, frm: Length, to: Length) -> float:
+    def convert(cls, num: N, frm: UnitLength, to: UnitLength) -> float:
         """
         Converts a number from one unit to another unit.
 
@@ -224,7 +225,7 @@ class UnitConvert:
         ...
 
     @classmethod
-    def convert(cls, num: N, frm: int | Length, to: int | Length) -> float:
+    def convert(cls, num: N, frm: int | UnitLength, to: int | UnitLength) -> float:
         """
         Converts a number from one unit to another unit.
 
@@ -239,12 +240,12 @@ class UnitConvert:
         Note:
             If ``Length`` is not used then :py:meth:`~.UnitConvert.mul_div` is called directly.
         """
-        if isinstance(frm, Length):
+        if isinstance(frm, UnitLength):
             return cls.mul_div(num, cls._md(frm, to), cls._md(to, frm))
         return cls.mul_div(num, frm, to)
 
     @classmethod
-    def to_twips(cls, num: N, frm: Length) -> float:
+    def to_twips(cls, num: N, frm: UnitLength) -> float:
         """
         Converts number to twips
 
@@ -256,7 +257,7 @@ class UnitConvert:
             float: Converted number
         """
         # Convert to twips - for convenience as we do this a lot
-        return cls.convert(num=num, frm=frm, to=Length.TWIP)
+        return cls.convert(num=num, frm=frm, to=UnitLength.TWIP)
 
     @classmethod
     def convert_twip_mm100(cls, num: N) -> float:
@@ -270,7 +271,7 @@ class UnitConvert:
         Returns:
             float: Converted number
         """
-        return cls.convert(num=num, frm=Length.TWIP, to=Length.MM100)
+        return cls.convert(num=num, frm=UnitLength.TWIP, to=UnitLength.MM100)
 
     @classmethod
     def convert_pt_mm100(cls, num: N) -> int:
@@ -283,7 +284,7 @@ class UnitConvert:
         Returns:
             float: Converted number
         """
-        return round(cls.convert(num=num, frm=Length.PT, to=Length.MM100))
+        return round(cls.convert(num=num, frm=UnitLength.PT, to=UnitLength.MM100))
 
     @classmethod
     def convert_mm100_pt(cls, num: N) -> float:
@@ -296,7 +297,7 @@ class UnitConvert:
         Returns:
             float: Converted number
         """
-        return cls.convert(num=num, frm=Length.MM100, to=Length.PT)
+        return cls.convert(num=num, frm=UnitLength.MM100, to=UnitLength.PT)
 
     @classmethod
     def convert_mm_mm100(cls, num: N) -> int:
@@ -309,7 +310,7 @@ class UnitConvert:
         Returns:
             float: Converted number
         """
-        return round(cls.convert(num=num, frm=Length.MM, to=Length.MM100))
+        return round(cls.convert(num=num, frm=UnitLength.MM, to=UnitLength.MM100))
 
     @classmethod
     def convert_mm100_mm(cls, num: N) -> float:
@@ -322,12 +323,12 @@ class UnitConvert:
         Returns:
             float: Converted number
         """
-        return cls.convert(num=num, frm=Length.MM100, to=Length.MM)
+        return cls.convert(num=num, frm=UnitLength.MM100, to=UnitLength.MM)
 
 
-assert len(_mul_div) == Length.COUNT
+assert len(_mul_div) == UnitLength.COUNT
 
 # The resulting multipliers and divisors array
 _a_length_md_array = _prepare_mul_div(_mul_div)
 
-__all__ = ("UnitConvert", "MdItem", "MulDiv", "Length")
+__all__ = ("UnitConvert", "MdItem", "MulDiv", "UnitLength")
