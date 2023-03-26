@@ -18,7 +18,7 @@ class StyleListKind(Enum):
     """Bullet ꭗ"""
     NUM_123 = "Numbering 123"
     """Numbering ``123``"""
-    NUM_abc = "Numbering ``abc``"
+    NUM_abc = "Numbering abc"
     """Numbering ``abc`` (lower case)"""
     NUM_ABC = "Numbering ABC"
     """Numbering ``ABC`` (upper case)"""
