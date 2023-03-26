@@ -468,7 +468,7 @@ class Borders(StyleMulti):
 
     @property
     def prop_inner_padding(self) -> TableBorderDistancesStruct:
-        """Gets innner Padding as ``TableBorderDistancesStruct`` instance"""
+        """Gets inner Padding as ``TableBorderDistancesStruct`` instance"""
         try:
             return self._direct_inner_padding
         except AttributeError:

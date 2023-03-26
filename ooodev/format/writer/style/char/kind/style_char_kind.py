@@ -25,7 +25,7 @@ class StyleCharKind(Enum):
     RUBIES = "Rubies"
     SOURCE_TEXT = "Source Text"
     STANDARD = "Standard"
-    """Removes Charactor Styling"""
+    """Removes Character Styling"""
     STRONG_EMPHASIS = "Strong Emphasis"
     TELETYPE = "Teletype"
     USER_ENTRY = "User Entry"

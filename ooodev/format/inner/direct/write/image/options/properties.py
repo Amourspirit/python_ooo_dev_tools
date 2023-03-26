@@ -26,7 +26,7 @@ class Properties(StyleBase):
         Constructor
 
         Args:
-            printable (bool, optional): Specifies if Frame can be printed. Defalut ``True``.
+            printable (bool, optional): Specifies if Frame can be printed. Default ``True``.
         """
         super().__init__()
 

@@ -13,13 +13,7 @@ from ooodev.format.inner.modify.calc.page.header.border.shadow import InnerShado
 from ooodev.format.inner.modify.calc.page.footer.border.shadow import Shadow as Shadow
 
 __all__ = [
-    "BorderLineKind",
-    "LineSize",
-    "Side",
-    "InnerPadding",
     "Padding",
-    "InnerSides",
     "Sides",
-    "InnerShadow",
     "Shadow",
 ]

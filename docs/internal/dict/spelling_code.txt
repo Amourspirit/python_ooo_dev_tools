@@ -102,6 +102,7 @@ XMultiServiceFactory
 XPresentation
 XPrintable
 XProofreader
+XPropertySet
 XScenario
 XSCRIPTCONTEXT
 XShape

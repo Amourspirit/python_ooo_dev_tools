@@ -15,11 +15,6 @@ from ooodev.format.inner.modify.calc.page.area.img import InnerImg as InnerImg
 from ooodev.format.inner.modify.calc.page.area.img import Img as Img
 
 __all__ = [
-    "SizePercent",
-    "OffsetRow",
-    "OffsetColumn",
-    "ImgStyleKind",
-    "PresetImageKind",
     "InnerColor",
     "Color",
     "InnerImg",

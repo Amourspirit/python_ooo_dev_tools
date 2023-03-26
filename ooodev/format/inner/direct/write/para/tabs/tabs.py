@@ -131,7 +131,7 @@ class Tabs(TabStopStruct):
             position (float): position of tab stop (in mm units).
 
         Returns:
-            bool: ``True`` if a Tab Stop has been removed; Oherwise, ``False``
+            bool: ``True`` if a Tab Stop has been removed; Otherwise, ``False``
         """
         tb = cls.find(obj, position, **kwargs)
         if tb is None:
@@ -188,7 +188,7 @@ class Tabs(TabStopStruct):
             tab (TabStop | Tab): Tab or Tab Stop to remove.
 
         Returns:
-            bool: ``True`` if a Tab has been removed; Oherwise, ``False``
+            bool: ``True`` if a Tab has been removed; Otherwise, ``False``
         """
         inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):

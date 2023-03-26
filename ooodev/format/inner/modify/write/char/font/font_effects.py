@@ -51,7 +51,7 @@ class FontEffects(CharStyleBaseMulti):
             transparency (Intensity, int, optional): The transparency value from ``0`` to ``100`` for the font color.
             overline (FontLine, optional): Character overline values.
             underline (FontLine, optional): Character underline values.
-            strike (FontStrikeoutEnum, optional): Detrmines the type of the strike out of the character.
+            strike (FontStrikeoutEnum, optional): Determines the type of the strike out of the character.
             word_mode(bool, optional): If ``True``, the underline and strike-through properties are not applied to white spaces.
             case (CaseMapEnum, optional): Specifies the case of the font.
             releif (FontReliefEnum, optional): Specifies the relief of the font.

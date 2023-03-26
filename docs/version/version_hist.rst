@@ -5,6 +5,8 @@ Version History
 Version 0.9.0
 =============
 
+Added :ref:`ns_format` namespace with hundreds of new classes for applying styles and formatting to documents and sheets.
+
 Renamed method ``GUI.show_memu_bar()`` to ``GUI.show_menu_bar()``
 
 Fixed issue with ``Calc.get_sheet_names()`` when overload with no args was used.
@@ -38,8 +40,6 @@ Added ``Chart2.style_background()`` Method.
 Added ``Chart2.style_wall()`` Method.
 
 Added ``Chart2.style_data_point()`` Method.
-
-Added :ref:`ns_format` namespace with many classes for applying styles and formatting to documents and sheets.
 
 Version 0.8.6
 =============

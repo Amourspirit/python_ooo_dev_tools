@@ -1,5 +1,5 @@
 """
-Modele for managing paragraph Writing Mode.
+Module for managing paragraph Writing Mode.
 
 .. versionadded:: 0.9.0
 """
@@ -255,7 +255,7 @@ class WritingMode(StyleBase):
 
     @property
     def prop_mode(self) -> WritingMode2Enum | None:
-        """Gets/Sets wrighting mode of a paragraph."""
+        """Gets/Sets writing mode of a paragraph."""
         pv = cast(int, self._get(self._get_property_name()))
         if pv is None:
             return None

@@ -24,7 +24,6 @@ from ooodev.format.inner.direct.write.fill.area.img import Img as Img
 from ooodev.format.inner.direct.write.fill.area.pattern import Pattern as Pattern
 
 __all__ = [
-    "Offset",
     "OffsetColumn",
     "OffsetRow",
     "SizePercent",

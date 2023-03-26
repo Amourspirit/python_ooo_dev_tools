@@ -156,77 +156,77 @@ class Outline(StyleBase):
     # region Style Properties
     @property
     def text_body(self: _TOutline) -> _TOutline:
-        """GEts copy of instance set to outline level text body."""
+        """Gets copy of instance set to outline level text body."""
         cp = self.copy()
         cp.prop_level = LevelKind.TEXT_BODY
         return cp
 
     @property
     def level_01(self: _TOutline) -> _TOutline:
-        """GEts copy of instance set to outline level ``1``."""
+        """Gets copy of instance set to outline level ``1``."""
         cp = self.copy()
         cp.prop_level = LevelKind.LEVEL_01
         return cp
 
     @property
     def level_02(self: _TOutline) -> _TOutline:
-        """GEts copy of instance set to outline level ``2``."""
+        """Gets copy of instance set to outline level ``2``."""
         cp = self.copy()
         cp.prop_level = LevelKind.LEVEL_02
         return cp
 
     @property
     def level_03(self: _TOutline) -> _TOutline:
-        """GEts copy of instance set to outline level ``3``."""
+        """Gets copy of instance set to outline level ``3``."""
         cp = self.copy()
         cp.prop_level = LevelKind.LEVEL_03
         return cp
 
     @property
     def level_04(self: _TOutline) -> _TOutline:
-        """GEts copy of instance set to outline level ``4``."""
+        """Gets copy of instance set to outline level ``4``."""
         cp = self.copy()
         cp.prop_level = LevelKind.LEVEL_04
         return cp
 
     @property
     def level_05(self: _TOutline) -> _TOutline:
-        """GEts copy of instance set to outline level ``5``."""
+        """Gets copy of instance set to outline level ``5``."""
         cp = self.copy()
         cp.prop_level = LevelKind.LEVEL_05
         return cp
 
     @property
     def level_06(self: _TOutline) -> _TOutline:
-        """GEts copy of instance set to outline level ``6``."""
+        """Gets copy of instance set to outline level ``6``."""
         cp = self.copy()
         cp.prop_level = LevelKind.LEVEL_06
         return cp
 
     @property
     def level_07(self: _TOutline) -> _TOutline:
-        """GEts copy of instance set to outline level ``7``."""
+        """Gets copy of instance set to outline level ``7``."""
         cp = self.copy()
         cp.prop_level = LevelKind.LEVEL_07
         return cp
 
     @property
     def level_08(self: _TOutline) -> _TOutline:
-        """GEts copy of instance set to outline level ``8``."""
+        """Gets copy of instance set to outline level ``8``."""
         cp = self.copy()
         cp.prop_level = LevelKind.LEVEL_08
         return cp
 
     @property
     def level_09(self: _TOutline) -> _TOutline:
-        """GEts copy of instance set to outline level ``9``."""
+        """Gets copy of instance set to outline level ``9``."""
         cp = self.copy()
         cp.prop_level = LevelKind.LEVEL_09
         return cp
 
     @property
     def level_10(self: _TOutline) -> _TOutline:
-        """GEts copy of instance set to outline level ``10``."""
+        """Gets copy of instance set to outline level ``10``."""
         cp = self.copy()
         cp.prop_level = LevelKind.LEVEL_10
         return cp

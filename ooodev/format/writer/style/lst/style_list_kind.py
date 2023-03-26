@@ -17,15 +17,15 @@ class StyleListKind(Enum):
     LIST_05 = "List 5"
     """Bullet ꭗ"""
     NUM_123 = "Numbering 123"
-    """Numbering 123"""
-    NUM_abc = "Numbering abc"
-    """Numbering abc (lower case)"""
+    """Numbering ``123``"""
+    NUM_abc = "Numbering ``abc``"
+    """Numbering ``abc`` (lower case)"""
     NUM_ABC = "Numbering ABC"
-    """Numbering ABC (upper case)"""
+    """Numbering ``ABC`` (upper case)"""
     NUM_ivx = "Numbering ivx"
-    """Numbering ivx (lower case)"""
+    """Numbering ``ivx`` (lower case)"""
     NUM_IVX = "Numbering IVX"
-    """Numbering IVX (upper case)"""
+    """Numbering ``IVX`` (upper case)"""
 
     def __str__(self) -> str:
         return self.value

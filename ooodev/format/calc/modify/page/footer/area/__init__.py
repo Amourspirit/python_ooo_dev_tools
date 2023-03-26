@@ -15,13 +15,6 @@ from ooodev.format.inner.modify.calc.page.footer.area.color import Color as Colo
 from ooodev.format.inner.modify.calc.page.footer.area.img import Img as Img
 
 __all__ = [
-    "PresetImageKind",
-    "ColorRange",
-    "ImgStyleKind",
-    "SizePercent",
-    "OffsetRow",
-    "OffsetColumn",
-    "InnerColor",
     "Color",
     "Img",
 ]
