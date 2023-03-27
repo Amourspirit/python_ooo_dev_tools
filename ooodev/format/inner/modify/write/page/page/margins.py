@@ -1,10 +1,10 @@
 # region Import
 from __future__ import annotations
 from typing import cast
-from ooodev.proto.unit_obj import UnitObj
+from ooodev.units import UnitObj
 from ooodev.format.writer.style.page.kind import WriterStylePageKind as WriterStylePageKind
-from ..page_style_base_multi import PageStyleBaseMulti
 from ooodev.format.inner.direct.write.page.page.margins import Margins as InnerMargins
+from ..page_style_base_multi import PageStyleBaseMulti
 
 # endregion Import
 

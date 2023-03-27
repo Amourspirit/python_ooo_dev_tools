@@ -4,6 +4,8 @@ from .prop_pair import PropPair as PropPair
 
 
 class TableBordersProps(NamedTuple):
+    """Internal Properties"""
+
     tbl_border: str
     shadow: str
     tbl_distance: str

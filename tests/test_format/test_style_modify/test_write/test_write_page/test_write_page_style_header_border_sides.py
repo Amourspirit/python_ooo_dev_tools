@@ -10,7 +10,6 @@ from ooodev.format.writer.modify.page.header.borders import (
     Sides,
     Side,
     LineSize,
-    WriterStylePageKind,
     BorderLineKind,
 )
 from ooodev.format import Styler

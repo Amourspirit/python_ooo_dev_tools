@@ -9,7 +9,7 @@ from ooodev.format.writer.direct.frame.options import Protect
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
-from ooodev.utils.data_type.unit_mm import UnitMM
+from ooodev.units.unit_mm import UnitMM
 
 
 def test_write(loader, para_text) -> None:
@@ -26,7 +26,7 @@ def test_write(loader, para_text) -> None:
         if not Lo.bridge_connector.headless:
             Write.append_para(cursor=cursor, text=para_text)
 
-        style = Protect(size=True, postiion=True, content=True)
+        style = Protect(size=True, position=True, content=True)
 
         frame = Write.add_text_frame(
             cursor=cursor, ypos=UnitMM(10.2), text=para_text, width=UnitMM(60), height=UnitMM(40), styles=(style,)

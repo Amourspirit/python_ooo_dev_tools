@@ -1,10 +1,13 @@
 from __future__ import annotations
-import sys
+from typing import TYPE_CHECKING
 
-try:
-    from typing import Protocol
-except ImportError:
-    from typing_extensions import Protocol
+if TYPE_CHECKING:
+    try:
+        from typing import Protocol
+    except ImportError:
+        from typing_extensions import Protocol
+else:
+    Protocol = object
 
 import uno
 from com.sun.star.drawing import XShape

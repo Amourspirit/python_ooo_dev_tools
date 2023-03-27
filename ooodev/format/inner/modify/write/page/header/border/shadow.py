@@ -1,16 +1,59 @@
 # region Import
 from __future__ import annotations
-from typing import cast, Type, TypeVar
+from typing import Tuple, cast, Type, TypeVar
 import uno
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 
-from ooodev.proto.unit_obj import UnitObj
+from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.units import UnitObj
 from ooodev.utils.color import StandardColor, Color
 from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
+from ooodev.format.inner.direct.structs.shadow_struct import ShadowStruct
 from ...page_style_base_multi import PageStyleBaseMulti
-from ooodev.format.inner.direct.structs.shadow_struct import ShadowStruct as InnerShadow
 
 # endregion Import
+
+
+class InnerShadow(ShadowStruct):
+    """
+    Page Style Header/Footer Border Shadow
+
+    .. versionadded:: 0.9.0
+    """
+
+    # region Internal Methods
+    def _supported_services(self) -> Tuple[str, ...]:
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = (
+                "com.sun.star.style.CellStyle",
+                "com.sun.star.style.PageStyle",
+            )
+        return self._supported_services_values
+
+    def _get_property_name(self) -> str:
+        try:
+            return self._property_name
+        except AttributeError:
+            self._property_name = "HeaderShadowFormat"
+        return self._property_name
+
+    # endregion Internal Methods
+
+    # region properties
+
+    @property
+    def prop_format_kind(self) -> FormatKind:
+        """Gets the kind of style"""
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.DOC | FormatKind.STYLE
+        return self._format_kind_prop
+
+    # endregion properties
+
 
 _TShadow = TypeVar(name="_TShadow", bound="Shadow")
 
@@ -42,7 +85,7 @@ class Shadow(PageStyleBaseMulti):
             transparent (bool, optional): Shadow transparency. Defaults to False.
             width (float, UnitObj, optional): contains the size of the shadow (in ``mm`` units)
                 or :ref:`proto_unit_obj`. Defaults to ``1.76``.
-            style_name (StyleParaKind, str, optional): Specifies the Page Style that instance applies to.
+            style_name (WriterStylePageKind, str, optional): Specifies the Page Style that instance applies to.
                 Default is Default Page Style.
             style_family (str, optional): Style family. Default ``PageStyles``.
 
@@ -84,7 +127,7 @@ class Shadow(PageStyleBaseMulti):
 
         Args:
             doc (object): UNO Document Object.
-            style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to.
+            style_name (WriterStylePageKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.
             style_family (str, optional): Style family. Default ``PageStyles``.
 
@@ -122,6 +165,7 @@ class Shadow(PageStyleBaseMulti):
         if not isinstance(value, InnerShadow):
             raise TypeError(f'Expected type of InnerShadow, got "{type(value).__name__}"')
         self._del_attribs("_direct_inner")
-        self._set_style("direct", value, *value.get_attrs())
+        cp = value.copy(_cattribs=self._get_inner_cattribs())
+        self._set_style("direct", cp, *cp.get_attrs())
 
     # endregion Properties

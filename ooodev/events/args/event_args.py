@@ -54,7 +54,7 @@ class AbstractEvent(ABC):
         Args:
             key (str): Key
             value (Any): Value
-            allow_overwrite (bool, optional): If ``True`` and a ``key`` already exist then its ``value`` will be over writen; Otherwise ``value`` will not be over written. Defaults to ``True``.
+            allow_overwrite (bool, optional): If ``True`` and a ``key`` already exist then its ``value`` will be over written; Otherwise ``value`` will not be over written. Defaults to ``True``.
 
         Returns:
             bool: ``True`` if values is written; Otherwise, ``False``

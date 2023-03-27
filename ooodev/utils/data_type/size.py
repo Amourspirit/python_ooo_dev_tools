@@ -9,7 +9,7 @@ _TSize = TypeVar(name="_TSize", bound="Size")
 
 class Size:
     """
-    Represents a size with postive values.
+    Represents a size with positive values.
 
     See Also:
         :ref:`proto_size_obj`
@@ -36,7 +36,7 @@ class Size:
         return NotImplemented
 
     def swap(self) -> Size:
-        """Gets an instance with values swaped."""
+        """Gets an instance with values swapped."""
         return Size(self.height, self.width)
 
     def get_uno_size(self) -> UnoSize:

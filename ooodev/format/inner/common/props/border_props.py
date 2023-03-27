@@ -3,6 +3,8 @@ from typing import NamedTuple
 
 
 class BorderProps(NamedTuple):
+    """Internal Properties"""
+
     left: str
     top: str
     right: str

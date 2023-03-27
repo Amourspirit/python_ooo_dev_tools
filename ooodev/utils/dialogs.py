@@ -117,7 +117,7 @@ class Dialogs:
         print(f"No of controls: {len(controls)}")
         for i, ctl in enumerate(controls):
             print(f"{i}. Name: {cls.get_control_name(ctl)}")
-            print(f"  Defalut Contol: {cls.get_control_class_id(ctl)}")
+            print(f"  Default Contol: {cls.get_control_class_id(ctl)}")
             print()
 
     @staticmethod

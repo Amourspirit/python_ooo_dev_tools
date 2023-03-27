@@ -554,7 +554,7 @@ Ignoring the interfaces that inherit XCellRange_ is easy because their names alw
 The remaining names mean that XCellRange_ is implemented by almost every service in the Calc API: ``CellRange`` (twice), ``TableColumn``, ``TableRow``, and ``TextTable``.
 ``CellRange`` appears twice because the blue triangle in the bottom-right corner of the first ``CellRange`` box means that there's more subclass hierarchy that's not shown;
 in this case, ``SheetCellRange``, ``SheetCellCursor``, and ``Spreadsheet``.
-The ``height`` property must be in one of these services, or one of their superclasses.
+The ``height`` property must be in one of these services, or one of their super-classes.
 
 The correct choice is TableRow_ because the cell range is representing a spreadsheet row.
 TableRow_ contains four properties, one of which is ``Height``.

@@ -862,7 +862,7 @@ class Props:
 
         Args:
             obj (object): object to set properties for. Must support ``XPropertyState``
-            prop_name (str): Propery name to get default for.
+            prop_name (str): Property name to get default for.
             default (Any, optional): Return value if property value is ``None`` or ``obj`` does not support ``XPropertyState`` interface.
 
         Raises:

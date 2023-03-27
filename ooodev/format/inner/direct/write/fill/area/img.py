@@ -20,7 +20,7 @@ from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.utils.data_type.offset import Offset as Offset
 from ooodev.utils.data_type.size_mm import SizeMM as SizeMM
-from ooodev.utils.unit_convert import UnitConvert
+from ooodev.units.unit_convert import UnitConvert
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.preset import preset_image as mImage
 from ooodev.format.inner.preset.preset_image import PresetImageKind as PresetImageKind
@@ -84,7 +84,7 @@ class Img(StyleBase):
 
         Args:
             bitmap (XBitmap, optional): Bitmap instance. If ``name`` is not already in the Bitmap Table
-                then this property is requied.
+                then this property is required.
             name (str, optional): Specifies the name of the image. This is also the name that is used to store
                 bitmap in LibreOffice Bitmap Table.
             mode (ImgStyleKind, optional): Specifies the image style, tiled, stretched etc.
@@ -100,7 +100,7 @@ class Img(StyleBase):
 
         Note:
             If ``auto_name`` is ``False`` then a bitmap for a given ``name`` is only required the first call.
-            All subsequent call of the same ``name`` will retreive the bitmap form the LibreOffice Bitmap Table.
+            All subsequent call of the same ``name`` will retrieve the bitmap form the LibreOffice Bitmap Table.
         """
 
         # when mode is ImgStyleKind.STRETCHED size, position, pos_offset, and tile_offset are not required
@@ -258,7 +258,7 @@ class Img(StyleBase):
         nu = cls(**kwargs)
 
         nc = nu._container_get_inst()
-        bmap = cast("Graphic", nu._container_get_value(name, nc))
+        bmap = cast(XBitmap, nu._container_get_value(name, nc))
         if bmap is None:
             bmap = mImage.get_prest_bitmap(preset)
         inst = cls(
@@ -310,6 +310,8 @@ class Img(StyleBase):
 
         def set_prop(key: str, fp: Img):
             nonlocal obj
+            if not key:
+                return
             val = mProps.Props.get(obj, key, None)
             if not val is None:
                 fp._set(key, val)

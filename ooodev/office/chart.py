@@ -44,6 +44,7 @@ from ..utils import lo as mLo
 from ..utils import props as mProps
 from ..utils.data_type.intensity import Intensity as Intensity
 
+
 # endregion Imports
 class Chart:
     """Chart Class"""
@@ -476,6 +477,7 @@ class Chart:
     def get_chart_type(chart_doc: XChartDocument) -> str:
         """
         Gets chart document chart type
+
         Args:
             chart_doc (XChartDocument): Chart Document
 
@@ -831,7 +833,6 @@ class Chart:
             raise mEx.ServiceNotSupported("com.sun.star.chart.ChartDocument")
 
         try:
-
             mProps.Props.set_property(chart_doc, "HasLegend", is_visible)
         except Exception as e:
             raise mEx.ChartError(f'Error setting chart document legend visibility to "{is_visible}"') from e

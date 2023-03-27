@@ -3,12 +3,14 @@ from __future__ import annotations
 from typing import cast
 import uno
 
-from ooodev.proto.unit_obj import UnitObj
+from ooodev.units import UnitObj
 from ooodev.format.writer.style.char.kind.style_char_kind import StyleCharKind as StyleCharKind
 from ooodev.format.inner.direct.write.char.font.font_only import FontOnly as InnerFontOnly
 from ooodev.format.inner.direct.write.char.font.font_only import FontLang as FontLang
 from ..char_style_base_multi import CharStyleBaseMulti
+
 # endregion Imports
+
 
 class FontOnly(CharStyleBaseMulti):
     """
@@ -36,8 +38,8 @@ class FontOnly(CharStyleBaseMulti):
             font_style_name (str, optional): Font style name such as ``Bold``.
             lang (Lang, optional): Font Language
             shadowed (bool, optional): Specifies if the characters are formatted and displayed with a shadow effect.
-            style_name (StyleParaKind, str, optional): Specifies the Character Style that instance applies to. Deftult is Default Character Style.
-            style_family (str, optional): Style family. Defatult ``CharacterStyles``.
+            style_name (StyleParaKind, str, optional): Specifies the Character Style that instance applies to. Default is Default Character Style.
+            style_family (str, optional): Style family. Default ``CharacterStyles``.
 
         Returns:
             None:
@@ -60,9 +62,9 @@ class FontOnly(CharStyleBaseMulti):
         Gets instance from Document.
 
         Args:
-            doc (object): UNO Documnet Object.
-            style_name (StyleCharKind, str, optional): Specifies the Character Style that instance applies to. Deftult is Default Character Style.
-            style_family (str, optional): Style family. Defatult ``CharacterStyles``.
+            doc (object): UNO Document Object.
+            style_name (StyleCharKind, str, optional): Specifies the Character Style that instance applies to. Default is Default Character Style.
+            style_family (str, optional): Style family. Default ``CharacterStyles``.
 
         Returns:
             FontOnly: ``FontOnly`` instance from document properties.

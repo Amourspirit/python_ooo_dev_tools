@@ -45,7 +45,7 @@ class Img(PageStyleBaseMulti):
 
         Args:
             bitmap (XBitmap, optional): Bitmap instance. If ``name`` is not already in the Bitmap Table
-                then this property is requied.
+                then this property is required.
             name (str, optional): Specifies the name of the image. This is also the name that is used to store
                 bitmap in LibreOffice Bitmap Table.
             mode (ImgStyleKind, optional): Specifies the image style, tiled, stretched etc.
@@ -55,7 +55,7 @@ class Img(PageStyleBaseMulti):
             pos_offset (Offset, optional): Tiling position offset.
             tile_offset (OffsetColumn, OffsetRow, optional): The tiling offset.
             auto_name (bool, optional): Specifies if ``name`` is ensured to be unique. Defaults to ``False``.
-            style_name (StyleParaKind, str, optional): Specifies the Page Style that instance applies to.
+            style_name (WriterStylePageKind, str, optional): Specifies the Page Style that instance applies to.
                 Default is Default Page Style.
             style_family (str, optional): Style family. Default ``PageStyles``.
 
@@ -90,7 +90,7 @@ class Img(PageStyleBaseMulti):
 
         Args:
             doc (object): UNO Document Object.
-            style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to.
+            style_name (WriterStylePageKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.
             style_family (str, optional): Style family. Default ``PageStyles``.
 
@@ -114,7 +114,7 @@ class Img(PageStyleBaseMulti):
 
         Args:
             preset (PresetImageKind): Preset.
-            style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to.
+            style_name (WriterStylePageKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.
             style_family (str, optional): Style family. Default ``PageStyles``.
 

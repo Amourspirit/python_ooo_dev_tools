@@ -48,7 +48,7 @@ class Img(StyleMulti):
         Constructor
 
         Args:
-            bitmap (XBitmap, optional): Bitmap instance. If ``name`` is not already in the Bitmap Table then this property is requied.
+            bitmap (XBitmap, optional): Bitmap instance. If ``name`` is not already in the Bitmap Table then this property is required.
             name (str, optional): Specifies the name of the image. This is also the name that is used to store bitmap in LibreOffice Bitmap Table.
             mode (ImgStyleKind, optional): Specifies the image style, tiled, stretched etc. Default ``ImgStyleKind.TILED``.
             size (SizePercent, SizeMM, optional): Size in percent (``0 - 100``) or size in ``mm`` units.
@@ -62,7 +62,7 @@ class Img(StyleMulti):
 
         Note:
             If ``auto_name`` is ``False`` then a bitmap for a given ``name`` is only required the first call.
-            All subsequent call of the same ``name`` will retreive the bitmap form the LibreOffice Bitmap Table.
+            All subsequent call of the same ``name`` will retrieve the bitmap form the LibreOffice Bitmap Table.
         """
 
         fimg = InnerImg(
@@ -253,11 +253,11 @@ class Img(StyleMulti):
             NotSupportedError: If ``obj`` is not supported.
 
         Returns:
-            Img: ``Img`` instance that represents ``obj`` fill imgage.
+            Img: ``Img`` instance that represents ``obj`` fill image.
         """
         fill_img = InnerImg.from_obj(obj)
         inst = cls(**kwargs)
-        bmap = fill_img._get("FillBitmap")
+        bmap = fill_img._get(fill_img._props.bitmap)
         inst._set(
             inst._props.graphic_loc, inst._get_graphic_loc(position=fill_img.prop_posiion, mode=fill_img.prop_mode)
         )

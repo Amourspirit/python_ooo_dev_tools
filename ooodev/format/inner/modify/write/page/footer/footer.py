@@ -5,7 +5,7 @@ from ..header.header import Header
 
 class Footer(Header):
     """
-    Page Header Settings
+    Page Footer Settings
 
     .. versionadded:: 0.9.0
     """

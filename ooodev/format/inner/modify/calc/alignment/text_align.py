@@ -4,7 +4,7 @@ from typing import cast
 import uno
 
 from ..cell_style_base_multi import CellStyleBaseMulti
-from ooodev.proto.unit_obj import UnitObj
+from ooodev.units import UnitObj
 from ooodev.format.calc.style.cell.kind.style_cell_kind import StyleCellKind as StyleCellKind
 from ooodev.format.inner.direct.calc.alignment.text_align import VertAlignKind as VertAlignKind
 from ooodev.format.inner.direct.calc.alignment.text_align import HoriAlignKind as HoriAlignKind
@@ -66,7 +66,7 @@ class TextAlign(CellStyleBaseMulti):
         Gets instance from Document.
 
         Args:
-            doc (object): UNO Documnet Object.
+            doc (object): UNO Document Object.
             style_name (StyleCellKind, str, optional): Specifies the Cell Style that instance applies to.
                 Default is Default Cell Style.
             style_family (str, optional): Style family. Default ``CellStyles``.

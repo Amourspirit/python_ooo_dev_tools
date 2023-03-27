@@ -14,7 +14,7 @@ from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
 from ooodev.utils.images_lo import ImagesLo
-from ooodev.utils.data_type.unit_mm import UnitMM
+from ooodev.units.unit_mm import UnitMM
 
 
 def test_write(loader, fix_image_path) -> None:
@@ -31,7 +31,7 @@ def test_write(loader, fix_image_path) -> None:
         cursor = Write.get_cursor(doc)
 
         style_names = Names(name="skinner", desc="Skinner Pointing", alt="Pointer")
-        style = Protect(size=True, postiion=True, content=True)
+        style = Protect(size=True, position=True, content=True)
 
         img_size = ImagesLo.get_size_100mm(im_fnm=im_fnm)
         _ = Write.add_image_link(

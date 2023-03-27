@@ -2,7 +2,7 @@ from enum import Enum
 
 
 class StyleCharKind(Enum):
-    """Style Lookups for Character Styles"""
+    """Style Look ups for Character Styles"""
 
     BULLET_SYMBOLS = "Bullet Symbols"
     CAPTION_CHARACTERS = "Caption characters"
@@ -25,7 +25,7 @@ class StyleCharKind(Enum):
     RUBIES = "Rubies"
     SOURCE_TEXT = "Source Text"
     STANDARD = "Standard"
-    """Removes Charactor Styling"""
+    """Removes Character Styling"""
     STRONG_EMPHASIS = "Strong Emphasis"
     TELETYPE = "Teletype"
     USER_ENTRY = "User Entry"

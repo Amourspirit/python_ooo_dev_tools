@@ -3,5 +3,7 @@ from typing import NamedTuple
 
 
 class PropPair(NamedTuple):
+    """Internal Properties"""
+
     first: str
     second: str

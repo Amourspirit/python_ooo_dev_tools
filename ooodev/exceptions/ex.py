@@ -165,7 +165,7 @@ class NotSupportedError(Exception):
 
 
 class NotSupportedDocumentError(NotSupportedError):
-    """Generic Not Suppored Document Error"""
+    """Generic Not Supported Document Error"""
 
     pass
 
@@ -468,7 +468,7 @@ class ConvertPathError(OSError):
 
 
 class DeletedAttributeError(AttributeError):
-    """Generic error raise when attribue has been deleted."""
+    """Generic error raise when attribute has been deleted."""
 
     pass
 

@@ -79,7 +79,7 @@ class Header(PageStyleBaseMulti):
             spacing_dyn (bool | None, optional): Specifies if dynamic spacing is used.
             height (float | None, optional): Specifies Height in ``mm`` units.
             height_auto (bool | None, optional): Specifies if auto-fit height is used.
-            style_name (StyleParaKind, str, optional): Specifies the Page Style that instance applies to.
+            style_name (WriterStylePageKind, str, optional): Specifies the Page Style that instance applies to.
                 Default is Default Page Style.
             style_family (str, optional): Style family. Default ``PageStyles``.
 
@@ -140,7 +140,7 @@ class Header(PageStyleBaseMulti):
 
         Args:
             doc (object): UNO Document Object.
-            style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to.
+            style_name (WriterStylePageKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.
             style_family (str, optional): Style family. Default ``PageStyles``.
 

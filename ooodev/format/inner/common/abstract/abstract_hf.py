@@ -5,11 +5,11 @@ from typing import Any, Tuple, overload, Type, TypeVar
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.proto.unit_obj import UnitObj
+from ooodev.units import UnitObj
 from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
-from ooodev.utils.unit_convert import UnitConvert
-from ooodev.utils.data_type.unit_mm import UnitMM
+from ooodev.units import UnitConvert
+from ooodev.units import UnitMM
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
 from ..props.hf_props import HfProps
@@ -61,15 +61,24 @@ class AbstractHF(StyleBase):
         """
 
         super().__init__()
-        self.prop_on = on
-        self.prop_shared = shared
-        self.prop_shared_first = shared_first
-        self.prop_margin_left = margin_left
-        self.prop_margin_right = margin_right
-        self.prop_spacing = spacing
-        self.prop_spacing_dynamic = spacing_dyn
-        self.prop_height = height
-        self.prop_height_auto = height_auto
+        if on is not None:
+            self.prop_on = on
+        if shared is not None:
+            self.prop_shared = shared
+        if shared_first is not None:
+            self.prop_shared_first = shared_first
+        if margin_left is not None:
+            self.prop_margin_left = margin_left
+        if margin_right is not None:
+            self.prop_margin_right = margin_right
+        if spacing is not None:
+            self.prop_spacing = spacing
+        if spacing_dyn is not None:
+            self.prop_spacing_dynamic = spacing_dyn
+        if height is not None:
+            self.prop_height = height
+        if height_auto is not None:
+            self.prop_height_auto = height_auto
 
     # endregion init
 
@@ -161,6 +170,8 @@ class AbstractHF(StyleBase):
 
         def set_prop(key: str, o: AbstractHF):
             nonlocal obj
+            if not key:
+                return
             val = mProps.Props.get(obj, key, None)
             if not val is None:
                 o._set(key, val)
@@ -297,7 +308,7 @@ class AbstractHF(StyleBase):
         cp.prop_height = value
         return cp
 
-    def fmt_height_aut(self: _TAbstractHF, value: bool | None) -> _TAbstractHF:
+    def fmt_height_auto(self: _TAbstractHF, value: bool | None) -> _TAbstractHF:
         """
         Gets a copy of instance with Dynamic Height set or removed.
 
@@ -493,7 +504,7 @@ class AbstractHF(StyleBase):
             return
         spacing = self._get_spacing()
         try:
-            self._set(self._props.spacing, value.get_value_mm100() + spacing)
+            self._set(self._props.height, value.get_value_mm100() + spacing)
         except AttributeError:
             self._set(self._props.height, UnitConvert.convert_mm_mm100(value) + spacing)
 

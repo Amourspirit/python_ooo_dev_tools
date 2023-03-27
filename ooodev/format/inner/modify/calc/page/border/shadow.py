@@ -5,7 +5,7 @@ import uno
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 
 from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.proto.unit_obj import UnitObj
+from ooodev.units import UnitObj
 from ooodev.utils.color import StandardColor, Color
 from ooodev.format.calc.style.page.kind import CalcStylePageKind as CalcStylePageKind
 from ooodev.format.inner.direct.structs.shadow_struct import ShadowStruct

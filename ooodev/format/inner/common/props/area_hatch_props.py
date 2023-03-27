@@ -3,6 +3,8 @@ from typing import NamedTuple
 
 
 class AreaHatchProps(NamedTuple):
+    """Internal Properties"""
+
     color: str  # FillColor (int)
     style: str  # FillStyle such as FillStyle.HATCH
     bg: str  # FillBackground ( bool )

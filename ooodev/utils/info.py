@@ -39,7 +39,7 @@ from . import date_time_util as mDate
 from . import file_io as mFileIO
 from . import lo as mLo
 from . import props as mProps
-from . import unit_convert as mConvert
+from ..units import unit_convert as mConvert
 from ..events.args.event_args import EventArgs
 from ..events.event_singleton import _Events
 from ..events.lo_named_event import LoNamedEvent
@@ -51,7 +51,6 @@ from .type_var import PathOrStr
 
 
 class Info(metaclass=StaticProperty):
-
     REG_MOD_FNM = "registrymodifications.xcu"
     NODE_PRODUCT = "/org.openoffice.Setup/Product"
     NODE_L10N = "/org.openoffice.Setup/L10N"
@@ -148,7 +147,7 @@ class Info(metaclass=StaticProperty):
             style (str): Font Style
 
         Returns:
-            FontDescriptor: Instance if found; Othwerwise None.
+            FontDescriptor: Instance if found; Otherwise None.
 
         .. versionadded:: 0.9.0
         """
@@ -395,7 +394,6 @@ class Info(metaclass=StaticProperty):
 
     @classmethod
     def _get_config2(cls, node_str: str) -> object:
-
         for node_path in cls.NODE_PATHS:
             try:
                 return cls._get_config1(node_str=node_str, node_path=node_path)
@@ -1343,7 +1341,7 @@ class Info(metaclass=StaticProperty):
             print(f"  {s}")
 
     @staticmethod
-    def show_conversion_values(value: Any, frm: mConvert.Length) -> None:
+    def show_conversion_values(value: Any, frm: mConvert.UnitLength) -> None:
         """
         Prints values of conversions to terminal.
 
@@ -1357,13 +1355,13 @@ class Info(metaclass=StaticProperty):
         .. versionadded:: 0.9.0
         """
         lengths = cast(
-            List[mConvert.Length],
+            List[mConvert.UnitLength],
             [
-                getattr(mConvert.Length, x)
-                for x in dir(mConvert.Length)
+                getattr(mConvert.UnitLength, x)
+                for x in dir(mConvert.UnitLength)
                 if x.isupper()
-                and getattr(mConvert.Length, x).value < mConvert.Length.COUNT
-                and getattr(mConvert.Length, x).value >= 0
+                and getattr(mConvert.UnitLength, x).value < mConvert.UnitLength.COUNT
+                and getattr(mConvert.UnitLength, x).value >= 0
             ],
         )
         for length in lengths:

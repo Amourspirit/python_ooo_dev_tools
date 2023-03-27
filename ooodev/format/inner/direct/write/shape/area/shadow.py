@@ -4,14 +4,14 @@ from typing import Any, Tuple, Type, TypeVar, cast, overload
 from enum import Enum
 
 from ooodev.exceptions import ex as mEx
-from ooodev.proto.unit_obj import UnitObj
 from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.utils.color import Color
 from ooodev.utils.data_type.intensity import Intensity
-from ooodev.utils.data_type.unit_mm import UnitMM
-from ooodev.utils.data_type.unit_pt import UnitPT
-from ooodev.utils.unit_convert import UnitConvert
+from ooodev.units import UnitObj
+from ooodev.units import UnitMM
+from ooodev.units import UnitPT
+from ooodev.units import UnitConvert
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
 from ooodev.format.inner.common.props.shape_shadow_props import ShapeShadowProps
@@ -58,7 +58,7 @@ class Shadow(StyleBase):
             use_shadow (bool, optional): Specifies if shadow is used.
             location (ShadowLocationKind , optional): Specifies the shadow location.
             color (Color , optional): Specifies shadow color.
-            distance (float, UnitObj , optional): Specifies shadow distance in ``mm``units or :ref:`proto_unit_obj`.
+            distance (float, UnitObj , optional): Specifies shadow distance in ``mm`` units or :ref:`proto_unit_obj`.
             blur (int, UnitObj, optional): Specifies shadow blur in ``pt`` units or in ``mm`` units  or :ref:`proto_unit_obj`.
             transparency (int , optional): Specifies shadow transparency value from ``0`` to ``100``.
         """
@@ -289,7 +289,7 @@ class Shadow(StyleBase):
         Get copy of instance with use shadow distance or removed.
 
         Args:
-            value (float, UnitObj, optional): Specifies shadow distance in ``mm``units or :ref:`proto_unit_obj`.
+            value (float, UnitObj, optional): Specifies shadow distance in ``mm`` units or :ref:`proto_unit_obj`.
 
         Returns:
             Shadow: Shadow with style added or removed

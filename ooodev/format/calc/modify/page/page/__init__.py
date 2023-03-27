@@ -11,3 +11,13 @@ from ooodev.format.inner.modify.calc.page.page.paper_format import InnerPaperFor
 from ooodev.format.inner.modify.calc.page.page.paper_format import PaperFormat as PaperFormat
 from ooodev.format.inner.modify.calc.page.page.layout_settings import InnerLayoutSettings as InnerLayoutSettings
 from ooodev.format.inner.modify.calc.page.page.layout_settings import LayoutSettings as LayoutSettings
+
+__all__ = [
+    "PaperFormatKind",
+    "InnerMargins",
+    "Margins",
+    "InnerPaperFormat",
+    "PaperFormat",
+    "InnerLayoutSettings",
+    "LayoutSettings",
+]

@@ -1081,7 +1081,7 @@ The call to  :py:meth:`.Draw.delete_slide` in ``main()`` is commented out due to
 The problem is that the new slide may cause the overall indexing of the slide deck to change.
 For example, consider what happens if the fourth slide is copied to after the second slide.
 This will create a new third slide, moving the old third slide, and all later slides, to the right.
-If the program now deletes the fourth slide, that's not the slide that's just been copied, but the repositioned third slide.
+If the program now deletes the fourth slide, that's not the slide that's just been copied, but the re-positioned third slide.
 
 The ``_copy_to()`` function in |copy_slide_py|_:
 

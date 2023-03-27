@@ -41,7 +41,7 @@ class Hyperlink(LinkTo):
 
         Args:
             name (str, optional): Link name.
-            url (str, optional): Link Url.
+            url (str, optional): Link URL.
             target (TargetKind, str, optional): Link target. Defaults to ``TargetKind.NONE``.
             visited_style (str, optional): Link visited style. Defaults to ``Internet link``.
             unvisited_style (str, optional): Link unvisited style. Defaults to ``Visited Internet Link``.

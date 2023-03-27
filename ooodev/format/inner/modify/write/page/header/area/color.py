@@ -63,7 +63,7 @@ class Color(PageStyleBaseMulti):
 
         Args:
             color (Color, optional): FillColor Color.
-            style_name (StyleParaKind, str, optional): Specifies the Page Style that instance applies to.
+            style_name (WriterStylePageKind, str, optional): Specifies the Page Style that instance applies to.
                 Default is Default Page Style.
             style_family (str, optional): Style family. Default ``PageStyles``.
 
@@ -103,7 +103,7 @@ class Color(PageStyleBaseMulti):
 
         Args:
             doc (object): UNO Document Object.
-            style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to.
+            style_name (WriterStylePageKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.
             style_family (str, optional): Style family. Default ``PageStyles``.
 
@@ -140,4 +140,5 @@ class Color(PageStyleBaseMulti):
         if not isinstance(value, InnerColor):
             raise TypeError(f'Expected type of InnerColor, got "{type(value).__name__}"')
         self._del_attribs("_direct_inner")
-        self._set_style("direct", value, *value.get_attrs())
+        cp = value.copy(_cattribs=self._get_inner_cattribs())
+        self._set_style("direct", cp, *cp.get_attrs())

@@ -7,7 +7,9 @@ from ooodev.format.writer.style.char.kind.style_char_kind import StyleCharKind a
 from ooodev.utils.color import Color
 from ooodev.format.inner.direct.write.char.highlight.highlight import Highlight as InnerHighlight
 from ..char_style_base_multi import CharStyleBaseMulti
+
 # endregion Imports
+
 
 class Highlight(CharStyleBaseMulti):
     """
@@ -28,8 +30,8 @@ class Highlight(CharStyleBaseMulti):
 
         Args:
             color (Color, optional): Highlight Color
-            style_name (StyleParaKind, str, optional): Specifies the Character Style that instance applies to. Deftult is Default Character Style.
-            style_family (str, optional): Style family. Defatult ``CharacterStyles``.
+            style_name (StyleParaKind, str, optional): Specifies the Character Style that instance applies to. Default is Default Character Style.
+            style_family (str, optional): Style family. Default ``CharacterStyles``.
 
         Returns:
             None:
@@ -52,9 +54,9 @@ class Highlight(CharStyleBaseMulti):
         Gets instance from Document.
 
         Args:
-            doc (object): UNO Documnet Object.
-            style_name (StyleCharKind, str, optional): Specifies the Character Style that instance applies to. Deftult is Default Character Style.
-            style_family (str, optional): Style family. Defatult ``CharacterStyles``.
+            doc (object): UNO Document Object.
+            style_name (StyleCharKind, str, optional): Specifies the Character Style that instance applies to. Default is Default Character Style.
+            style_family (str, optional): Style family. Default ``CharacterStyles``.
 
         Returns:
             Highlight: ``Highlight`` instance from document properties.

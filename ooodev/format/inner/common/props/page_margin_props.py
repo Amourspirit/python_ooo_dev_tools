@@ -3,6 +3,8 @@ from typing import NamedTuple
 
 
 class PageMarginProps(NamedTuple):
+    """Internal Properties"""
+
     left: str
     right: str
     top: str

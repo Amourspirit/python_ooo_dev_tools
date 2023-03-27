@@ -3,4 +3,6 @@ from typing import NamedTuple
 
 
 class ImageOptionsProperties(NamedTuple):
+    """Internal Properties"""
+
     printable: str  # Print

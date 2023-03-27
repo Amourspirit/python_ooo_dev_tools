@@ -8,18 +8,18 @@ from ooo.dyn.text.hori_orientation import HoriOrientation
 
 from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.proto.unit_obj import UnitObj
 from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.utils.data_type.intensity import Intensity
 from ooodev.utils.data_type.size import Size
-from ooodev.utils.data_type.unit_mm import UnitMM
+from ooodev.units import UnitObj
+from ooodev.units import UnitMM
 from ooodev.format.inner.common.abstract.abstract_document import AbstractDocument
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleMulti
 from ooodev.format.inner.common.props.table_properties_props import TablePropertiesProps
 
-from ooodev.utils.unit_convert import UnitConvert
+from ooodev.units.unit_convert import UnitConvert
 
 # endregion Imports
 
@@ -1827,7 +1827,7 @@ class TableProperties(StyleMulti):
             above (RelativeSize, AbsoluteSize, optional): Specifies table spacing above.
             below (RelativeSize, AbsoluteSize, optional): Specifies table spacing below.
             align (TableAlignKind, optional): Specifies table alignment.
-            realitive (bool, optional): Specifies if table horizontal values are in percentanges or ``mm`` units.
+            relative (bool, optional): Specifies if table horizontal values are in percentages or ``mm`` units.
 
         Raises:
             ValueError: If name contains spaces.
@@ -2276,7 +2276,7 @@ class TableProperties(StyleMulti):
         Gets width value.
 
         Returns:
-            UnitMM | Intensity | None: When ``relative`` is ``True`` ``Intensity`` or ``None``; Othersise, ``UnitMM`` or None.
+            UnitMM | Intensity | None: When ``relative`` is ``True`` ``Intensity`` or ``None``; Otherwise, ``UnitMM`` or None.
 
         See Also:
             :py:meth:`~.table_properties.TableProperties.get_width_mm`.
@@ -2292,7 +2292,7 @@ class TableProperties(StyleMulti):
         Gets left value.
 
         Returns:
-            UnitMM | Intensity | None: When ``relative`` is ``True`` ``Intensity`` or ``None``; Othersise, ``UnitMM`` or None.
+            UnitMM | Intensity | None: When ``relative`` is ``True`` ``Intensity`` or ``None``; Otherwise, ``UnitMM`` or None.
 
         See Also:
             :py:meth:`~.table_properties.TableProperties.get_left_mm`.
@@ -2308,7 +2308,7 @@ class TableProperties(StyleMulti):
         Gets right value.
 
         Returns:
-            UnitMM | Intensity | None: When ``relative`` is ``True`` ``Intensity`` or ``None``; Othersise, ``UnitMM`` or None.
+            UnitMM | Intensity | None: When ``relative`` is ``True`` ``Intensity`` or ``None``; Otherwise, ``UnitMM`` or None.
 
         See Also:
             :py:meth:`~.table_properties.TableProperties.get_right_mm`.

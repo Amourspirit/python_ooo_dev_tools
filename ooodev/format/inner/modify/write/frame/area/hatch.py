@@ -4,7 +4,7 @@ from typing import cast
 import uno
 from ooo.dyn.drawing.hatch_style import HatchStyle as HatchStyle
 from ooodev.utils.data_type.angle import Angle as Angle
-from ooodev.proto.unit_obj import UnitObj
+from ooodev.units import UnitObj
 from ooodev.format.inner.preset.preset_hatch import PresetHatchKind as PresetHatchKind
 from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind as StyleFrameKind
 from ooodev.format.inner.direct.write.fill.area.hatch import Hatch as InnerHatch
@@ -75,9 +75,9 @@ class Hatch(FrameStyleBaseMulti):
         Gets instance from Document.
 
         Args:
-            doc (object): UNO Documnet Object.
-            style_name (StyleFrameKind, str, optional): Specifies the Frame Style that instance applies to. Deftult is Default Frame Style.
-            style_family (str, optional): Style family. Defatult ``FrameStyles``.
+            doc (object): UNO Document Object.
+            style_name (StyleFrameKind, str, optional): Specifies the Frame Style that instance applies to. Default is Default Frame Style.
+            style_family (str, optional): Style family. Default ``FrameStyles``.
 
         Returns:
             Hatch: ``Hatch`` instance from style properties.
@@ -100,8 +100,8 @@ class Hatch(FrameStyleBaseMulti):
 
         Args:
             preset (PresetHatchKind): Preset.
-            style_name (StyleFrameKind, str, optional): Specifies the Frame Style that instance applies to. Deftult is Default Frame Style.
-            style_family (str, optional): Style family. Defatult ``FrameStyles``.
+            style_name (StyleFrameKind, str, optional): Specifies the Frame Style that instance applies to. Default is Default Frame Style.
+            style_family (str, optional): Style family. Default ``FrameStyles``.
 
         Returns:
             Hatch: ``Hatch`` instance from style properties.

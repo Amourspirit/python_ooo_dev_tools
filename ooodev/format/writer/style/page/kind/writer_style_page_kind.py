@@ -2,7 +2,7 @@ from enum import Enum
 
 
 class WriterStylePageKind(Enum):
-    """Style Lookups for Page Styles"""
+    """Style Look ups for Page Styles"""
 
     ENDNOTE = "Endnote"
     ENVELOPE = "Envelope"

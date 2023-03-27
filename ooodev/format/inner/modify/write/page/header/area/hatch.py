@@ -4,7 +4,7 @@ from typing import cast, Type, TypeVar
 from ooo.dyn.drawing.hatch_style import HatchStyle as HatchStyle
 
 from ...page_style_base_multi import PageStyleBaseMulti
-from ooodev.proto.unit_obj import UnitObj
+from ooodev.units import UnitObj
 from ooodev.utils.color import Color
 from ooodev.utils.data_type.angle import Angle as Angle
 from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind

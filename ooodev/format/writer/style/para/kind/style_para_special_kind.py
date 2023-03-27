@@ -3,7 +3,7 @@ from .style_para_kind import StyleParaKind
 
 
 class StyleParaSpecialKind(Enum):
-    """Style Lookups for Paragraph Special Styles"""
+    """Style Look ups for Paragraph Special Styles"""
 
     ADDRESSEE = StyleParaKind.ADDRESSEE.value
     CAPTION = StyleParaKind.CAPTION.value

@@ -67,11 +67,6 @@ class Para(StyleName):
         return Para(StyleParaKind.ADDRESSEE)
 
     @property
-    def addressee(self) -> Para:
-        """Style Addressee"""
-        return Para(StyleParaKind.ADDRESSEE)
-
-    @property
     def salutation(self) -> Para:
         """Style Salutation"""
         return Para(StyleParaKind.SALUTATION)

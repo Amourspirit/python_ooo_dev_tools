@@ -22,7 +22,7 @@ from ooodev.format.writer.direct.obj.type import (
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.utils.images_lo import ImagesLo
-from ooodev.utils.data_type.unit_mm100 import UnitMM100
+from ooodev.units.unit_mm100 import UnitMM100
 from ooodev.office.write import Write
 
 

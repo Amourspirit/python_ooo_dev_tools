@@ -3,6 +3,8 @@ from typing import NamedTuple
 
 
 class CellTextPropertiesProps(NamedTuple):
+    """Internal Properties"""
+
     mode: str
     wrapped: str
     hypen: str

@@ -3,6 +3,8 @@ from typing import NamedTuple
 
 
 class AreaImgProps(NamedTuple):
+    """Internal Properties"""
+
     name: str  # FillBitmapName
     style: str  # FillStyle
     mode: str  # FillBitmapMode

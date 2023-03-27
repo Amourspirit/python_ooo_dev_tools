@@ -6,3 +6,5 @@ from ooodev.utils.data_type.intensity_range import IntensityRange as IntensityRa
 from ooodev.utils.data_type.offset import Offset as Offset
 from ooodev.format.inner.direct.write.fill.transparent.gradient import Gradient as Gradient
 from ooodev.format.inner.direct.write.fill.transparent.transparency import Transparency as Transparency
+
+__all__ = ["Gradient", "Transparency"]

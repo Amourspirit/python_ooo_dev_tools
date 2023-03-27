@@ -606,7 +606,7 @@ class Lo(metaclass=StaticProperty):
         cls,
         connector: connectors.ConnectPipe | connectors.ConnectSocket | None = None,
         cache_obj: mCache.Cache | None = None,
-        opt: Options | None = None,
+        opt: Lo.Options | None = None,
     ) -> XComponentLoader:
         """
         Loads Office
@@ -811,6 +811,9 @@ class Lo(metaclass=StaticProperty):
     def kill_office(cls) -> None:
         """
         Kills the office connection.
+
+        Returns:
+            None:
 
         See Also:
             :py:meth:`~Lo.close_office`

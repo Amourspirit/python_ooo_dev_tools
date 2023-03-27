@@ -3,6 +3,8 @@ from typing import NamedTuple
 
 
 class ListStyleProps(NamedTuple):
+    """Internal Properties"""
+
     name: str
     value: str
     restart: str

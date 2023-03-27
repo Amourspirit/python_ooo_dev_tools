@@ -13,10 +13,10 @@ from ooo.dyn.table.table_border2 import TableBorder2
 from ooodev.events.lo_events import Events
 from ooodev.events.props_named_event import PropsNamedEvent
 from ooodev.exceptions import ex as mEx
-from ooodev.proto.unit_obj import UnitObj
 from ooodev.utils import props as mProps
-from ooodev.utils.data_type.unit_mm import UnitMM
-from ooodev.utils.unit_convert import UnitConvert, Length
+from ooodev.units import UnitObj
+from ooodev.units import UnitMM
+from ooodev.units import UnitConvert, UnitLength
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import _on_props_setting, _on_props_set
 from ooodev.events.format_named_event import FormatNamedEvent
@@ -112,7 +112,9 @@ class TableBorderStruct(StructBase):
             try:
                 init_vals[self._props.dist.first] = distance.get_value_mm100()
             except AttributeError:
-                init_vals[self._props.dist.first] = UnitConvert.convert(num=distance, frm=Length.MM, to=Length.MM100)
+                init_vals[self._props.dist.first] = UnitConvert.convert(
+                    num=distance, frm=UnitLength.MM, to=UnitLength.MM100
+                )
             if self._props.dist.second:
                 init_vals[self._props.dist.second] = True
         super().__init__(**init_vals)
@@ -493,7 +495,7 @@ class TableBorderStruct(StructBase):
         try:
             self._set(p.first, value.get_value_mm100())
         except AttributeError:
-            self._set(p.first, UnitConvert.convert(num=value, frm=Length.MM, to=Length.MM100))
+            self._set(p.first, UnitConvert.convert(num=value, frm=UnitLength.MM, to=UnitLength.MM100))
         if p.second:
             self._set(p.second, True)
 

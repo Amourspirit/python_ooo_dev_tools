@@ -47,7 +47,7 @@ class Gradient(ParaStyleBaseMulti):
             style (GradientStyle, optional): Specifies the style of the gradient. Defaults to ``GradientStyle.LINEAR``.
             step_count (int, optional): Specifies the number of steps of change color. Defaults to ``0``.
             offset (Offset, int, optional): Specifies the X and Y coordinate, where the gradient begins.
-                 X is effectively the center of the ``RADIAL``, ``ELLIPTICAL``, ``SQUARE`` and ``RECT``
+                X is effectively the center of the ``RADIAL``, ``ELLIPTICAL``, ``SQUARE`` and ``RECT``
                 style gradients. Defaults to ``Offset(50, 50)``.
             angle (Angle, int, optional): Specifies angle of the gradient. Defaults to ``0``.
             border (int, optional): Specifies percent of the total width where just the start color is used.

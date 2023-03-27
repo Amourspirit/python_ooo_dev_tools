@@ -18,7 +18,7 @@ from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.events.format_named_event import FormatNamedEvent
 from ooodev.events.args.event_args import EventArgs
 from ooodev.events.args.cancel_event_args import CancelEventArgs
-from ooodev.utils.unit_convert import UnitConvert, Length
+from ooodev.units.unit_convert import UnitConvert, UnitLength
 
 # endregion Import
 
@@ -80,7 +80,6 @@ class ModeKind(Enum):
         raise ValueError("Uanble to convert uno LineSpacing object to ModeKind Enum")
 
 
-# endregion imports
 class LineSpacingStruct(StructBase):
     """
     Line Spacing struct
@@ -120,7 +119,7 @@ class LineSpacingStruct(StructBase):
             self._value = value
 
         elif enum_val >= 5:
-            self._value = UnitConvert.convert(num=value, frm=Length.MM, to=Length.MM100)
+            self._value = UnitConvert.convert(num=value, frm=UnitLength.MM, to=UnitLength.MM100)
 
         super().__init__()
 
@@ -162,7 +161,7 @@ class LineSpacingStruct(StructBase):
         Gets the attributes that are slated for change in the current instance
 
         Returns:
-            Tuple(str, ...): Tuple of attribures
+            Tuple(str, ...): Tuple of attributes
         """
         return (self._get_property_name(),)
 

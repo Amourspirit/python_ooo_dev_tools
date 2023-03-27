@@ -74,27 +74,27 @@ class BulletList(StyleName):
 
     @property
     def num_123(self) -> BulletList:
-        """Gets List style Numbering 123"""
+        """Gets List style Numbering ``123``"""
         return BulletList(StyleListKind.NUM_123)
 
     @property
     def num_abc(self) -> BulletList:
-        """Gets List style Numbering abc (lower case)"""
+        """Gets List style Numbering ``abc`` (lower case)"""
         return BulletList(StyleListKind.NUM_abc)
 
     @property
     def num_ABC(self) -> BulletList:
-        """Gets List style Numbering ABC (upper case)"""
+        """Gets List style Numbering ``ABC`` (upper case)"""
         return BulletList(StyleListKind.NUM_ABC)
 
     @property
     def num_ivx(self) -> BulletList:
-        """Gets List style Numbering ivx (lower case)"""
+        """Gets List style Numbering ``ivx`` (lower case)"""
         return BulletList(StyleListKind.NUM_ivx)
 
     @property
     def num_IVX(self) -> BulletList:
-        """Gets List style Numbering IVX (upper case)"""
+        """Gets List style Numbering ``IVX`` (upper case)"""
         return BulletList(StyleListKind.NUM_IVX)
 
     # endregion Style Properties

@@ -18,7 +18,7 @@ from ..events.write_named_event import WriteNamedEvent
 from ..exceptions import ex as mEx
 from ..meta.static_meta import classproperty
 from ..proto.style_obj import StyleObj, FormatKind
-from ..proto.unit_obj import UnitObj
+from ..units import UnitObj
 from ..utils import file_io as mFileIO
 from ..utils import gen_util as mUtil
 from ..utils import images_lo as mImgLo
@@ -975,7 +975,7 @@ class Write(mSel.Selection):
         Args:
             cursor (XTextCursor): Text Cursor
             text (str, optional): text to append before new line is inserted.
-            styles (Iterable[StyleObj]): One or more styles to apply to text. If ``text`` is ommited then this argument is ignored.
+            styles (Iterable[StyleObj]): One or more styles to apply to text. If ``text`` is omitted then this argument is ignored.
 
         :events:
             If using styles then the following events are triggered for each style.
@@ -1346,7 +1346,6 @@ class Write(mSel.Selection):
     # region style()
     @classmethod
     def _style(cls, pos: int, distance: int, prop_name: str, prop_val: object, cursor: XTextCursor = None) -> None:
-
         cargs = KeyValCancelArgs("Write.style", prop_name, prop_val)
         _Events().trigger(WriteNamedEvent.STYLING, cargs)
         if cargs.cancel:
@@ -1603,7 +1602,7 @@ class Write(mSel.Selection):
             :py:meth:`~.Write.style`
 
         Note:
-            This method restors the style properties to their original state after the style is applied.
+            This method restores the style properties to their original state after the style is applied.
             This is done so applied style properties are reset before next text is appended.
             This is not the case for :py:meth:`~.Write.style` method.
 
@@ -2176,7 +2175,7 @@ class Write(mSel.Selection):
             Exception: If unable to add formula
 
         Returns:
-            XTextContent: Embeded Object.
+            XTextContent: Embedded Object.
 
         :events:
             .. cssclass:: lo_event
@@ -2188,7 +2187,7 @@ class Write(mSel.Selection):
            Event args ``event_data`` is a dictionary containing ``formula`` and ``cursor``.
 
         .. versionchanged:: 0.9.0
-            Now returns the embeded Object instead of bool value.
+            Now returns the embedded Object instead of bool value.
             Added style parameter that allows for all styles that support ``com.sun.star.text.TextEmbeddedObject`` service.
         """
         result = None
@@ -3861,6 +3860,9 @@ class Write(mSel.Selection):
         """
         open Options - Language Settings - English sentence checking
 
+        Returns:
+            None:
+
         Attention:
             :py:meth:`Lo.dispatch_cmd <.utils.lo.Lo.dispatch_cmd>` method is called along with any of its events.
         """
@@ -3877,6 +3879,9 @@ class Write(mSel.Selection):
         """
         Activate dialog in  Tools > Spelling and Grammar...
 
+        Returns:
+            None:
+
         Attention:
             :py:meth:`Lo.dispatch_cmd <.utils.lo.Lo.dispatch_cmd>` method is called along with any of its events.
         """
@@ -3887,6 +3892,9 @@ class Write(mSel.Selection):
     def toggle_auto_spell_check() -> None:
         """
         Toggles spell check on and off
+
+        Returns:
+            None:
 
         Attention:
             :py:meth:`Lo.dispatch_cmd <.utils.lo.Lo.dispatch_cmd>` method is called along with any of its events.
@@ -3899,6 +3907,9 @@ class Write(mSel.Selection):
     def open_thesaurus_dialog() -> None:
         """
         Opens LibreOffice Thesaurus Dialog
+
+        Returns:
+            None:
 
         Attention:
             :py:meth:`Lo.dispatch_cmd <.utils.lo.Lo.dispatch_cmd>` method is called along with any of its events.

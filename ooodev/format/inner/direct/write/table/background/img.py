@@ -9,11 +9,13 @@ from ooodev.meta.disabled_method import DisabledMethod
 
 from ooodev.format.inner.common.props.img_para_area_props import ImgParaAreaProps
 from ooodev.format.inner.direct.write.para.area.img import Img as ParaImg
+
 # endregion Imports
+
 
 class Img(ParaImg):
     """
-    Class for table background Image.
+    Class for table background image.
 
     .. versionadded:: 0.9.0
     """
@@ -36,7 +38,6 @@ class Img(ParaImg):
     # region apply()
     @overload
     def apply(self, obj: object, **kwargs) -> None:
-
         ...
 
     @overload

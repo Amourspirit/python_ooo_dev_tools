@@ -51,7 +51,7 @@ class TextFlow(StyleMulti):
             hy_auto (bool, optional): Hyphenate automatically.
             hy_no_caps (bool, optional): Don't hyphenate word in caps.
             hy_start_chars (int, optional): Characters at line begin.
-            hy_end_chars (int, optional): charactors at line end.
+            hy_end_chars (int, optional): characters at line end.
             hy_max (int, optional): Maximum consecutive hyphenated lines.
             bk_type (Any, optional): Break type.
             bk_style (str, optional): Style to apply to break.

@@ -11,3 +11,13 @@ from ooodev.format.inner.direct.write.char.border.borders import Borders as Bord
 from ooodev.format.inner.direct.write.char.border.padding import Padding as Padding
 from ooodev.format.inner.direct.write.char.border.shadow import Shadow as Shadow
 from ooodev.format.inner.direct.write.char.border.sides import Sides as Sides
+
+__all__ = [
+    "BorderLineKind",
+    "LineSize",
+    "Side",
+    "Borders",
+    "Padding",
+    "Shadow",
+    "Sides",
+]

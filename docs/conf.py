@@ -89,7 +89,6 @@ suppress_warnings = [
 
 
 def get_spell_dictionaries() -> list:
-
     p = _DOCS_PATH.absolute().resolve() / "internal" / "dict"
     dict_gen = p.glob("spelling_*.*")
     return [str(d) for d in dict_gen if d.is_file()]
@@ -246,7 +245,7 @@ with open("roles/theme_color_roles.txt", "r") as file:
 
 rst_prolog += "\n" + "\n".join(rst_prolog_lst)
 
-# set if figures can be referenced as numers. Defalut is False
+# set if figures can be referenced as numers. Default is False
 numfig = True
 
 # set is todo's will show up.
@@ -281,7 +280,6 @@ intersphinx_mapping = {"odevguiwin": (odevgui_win_url, None)}
 
 
 def get_active_branch_name():
-
     head_dir = _ROOT_PATH / ".git" / "HEAD"
     with head_dir.open("r") as f:
         content = f.read().splitlines()

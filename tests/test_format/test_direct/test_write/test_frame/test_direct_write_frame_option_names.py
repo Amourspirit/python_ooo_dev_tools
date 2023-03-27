@@ -27,7 +27,7 @@ from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.utils.props import Props
 from ooodev.office.write import Write
-from ooodev.utils.data_type.unit_mm import UnitMM
+from ooodev.units.unit_mm import UnitMM
 
 
 if TYPE_CHECKING:

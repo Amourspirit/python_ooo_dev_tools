@@ -30,7 +30,7 @@ from ooodev.utils.color import StandardColor
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
-from ooodev.utils.data_type.unit_mm import UnitMM
+from ooodev.units.unit_mm import UnitMM
 
 if TYPE_CHECKING:
     from com.sun.star.text import TextFrame  # service
@@ -62,7 +62,7 @@ def test_write(loader, para_text) -> None:
             horizontal=Horizontal(position=HoriOrient.CENTER, rel=RelHoriOrient.PARAGRAPH_AREA),
             vertical=Vertical(position=VertOrient.TOP, rel=RelVertOrient.PARAGRAPH_TEXT_AREA_OR_BASE_LINE),
             mirror_even=False,
-            keep_boundries=False,
+            keep_boundaries=False,
         )
         style_size = Size(
             width=RelativeSize(size=90, kind=RelativeKind.PARAGRAPH),

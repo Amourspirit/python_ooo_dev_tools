@@ -17,17 +17,10 @@ class Page(StyleName):
     .. versionadded:: 0.9.0
     """
 
-    # This class set the style of the ParagraphProperties PageDescName on a cursor.
-    # Don't know of any other way to change page style other then via a paragraph.
-    # https://ask.libreoffice.org/t/uno-change-page-style/14246
-    # Setting Page style is done via the PageDescName property. After settig the PageDescName becomes null.
-    # Reading Page style is done via the PageStyleName property.
-
     def __init__(self, name: CalcStylePageKind | str = "") -> None:
         if name == "":
             name = Page.default.prop_name
         super().__init__(name=name)
-        self._pg_style_name = "PageStyleName"
 
     # region Overrides
 
@@ -50,14 +43,14 @@ class Page(StyleName):
         try:
             return self._supported_services_values
         except AttributeError:
-            self._supported_services_values = ("com.sun.star.style.ParagraphProperties",)
+            self._supported_services_values = ("com.sun.star.sheet.Spreadsheet",)
         return self._supported_services_values
 
     def _get_property_name(self) -> str:
         try:
             return self._style_property_name
         except AttributeError:
-            self._style_property_name = "PageDescName"
+            self._style_property_name = "PageStyle"
         return self._style_property_name
 
     def on_property_setting(self, source: Any, event_args: KeyValCancelArgs):
@@ -67,10 +60,6 @@ class Page(StyleName):
         Args:
             event_args (KeyValueCancelArgs): Event Args
         """
-        # there is only one style property for this class.
-        # if CharStyleName is set to "" then an error is raised.
-        # Solution is set to "No Character Style" or "Standard" Which LibreOffice recognizes and set to ""
-        # this event covers apply() and resore()
         if event_args.value == "":
             event_args.value = Page.default.prop_name
         super().on_property_setting(source, event_args)
@@ -109,7 +98,7 @@ class Page(StyleName):
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
-        pname = mProps.Props.get(obj, inst._pg_style_name, "")
+        pname = mProps.Props.get(obj, inst._get_property_name(), "")
         if pname:
             inst.prop_name = pname
         return inst
@@ -117,6 +106,19 @@ class Page(StyleName):
     # endregion from_obj()
 
     # endregion Static Methods
+
+    # region Style Properties
+    @property
+    def default(self) -> Page:
+        """Style Default"""
+        return Page(CalcStylePageKind.DEFAULT)
+
+    @property
+    def report(self) -> Page:
+        """Style Report"""
+        return Page(CalcStylePageKind.REPORT)
+
+    # endregion Style Properties
 
     # region Properties
 
@@ -135,7 +137,7 @@ class Page(StyleName):
         try:
             return Page._DEFAULT_PAGE
         except AttributeError:
-            Page._DEFAULT_PAGE = Page(name=CalcStylePageKind.STANDARD)
+            Page._DEFAULT_PAGE = Page(name=CalcStylePageKind.DEFAULT)
             Page._DEFAULT_PAGE._is_default_inst = True
         return Page._DEFAULT_PAGE
 

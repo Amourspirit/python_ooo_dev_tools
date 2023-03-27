@@ -1,14 +1,56 @@
 # region Import
 from __future__ import annotations
-from typing import cast, Type, TypeVar
+from typing import Tuple, cast, Type, TypeVar
 
+from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
-from ...page_style_base_multi import PageStyleBaseMulti
 from ooodev.format.inner.direct.structs.side import Side as Side
-from ooodev.format.inner.direct.write.char.border.sides import Sides as InnerSides
+from ooodev.format.inner.direct.write.char.border.sides import Sides as DirectSides
 from ooodev.format.inner.common.props.border_props import BorderProps
+from ...page_style_base_multi import PageStyleBaseMulti
 
-# region Import
+# endregion Import
+
+
+class InnerSides(DirectSides):
+    """
+    Page Header/Footer Style Border Sides.
+
+    .. versionadded:: 0.9.0
+    """
+
+    # region overrides
+    def _supported_services(self) -> Tuple[str, ...]:
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = ("com.sun.star.style.PageStyle",)
+        return self._supported_services_values
+
+    # endregion overrides
+
+    # region properties
+
+    @property
+    def prop_format_kind(self) -> FormatKind:
+        """Gets the kind of style"""
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.DOC | FormatKind.STYLE
+        return self._format_kind_prop
+
+    @property
+    def _props(self) -> BorderProps:
+        try:
+            return self._props_internal_attributes
+        except AttributeError:
+            self._props_internal_attributes = BorderProps(
+                left="HeaderLeftBorder", top="HeaderTopBorder", right="HeaderRightBorder", bottom="HeaderBottomBorder"
+            )
+        return self._props_internal_attributes
+
+    # endregion properties
 
 
 _TSides = TypeVar(name="_TSides", bound="Sides")
@@ -42,7 +84,7 @@ class Sides(PageStyleBaseMulti):
             bottom (Side | None, optional): Determines the line style at the bottom edge.
             all (Side | None, optional): Determines the line style at the top, bottom, left, right edges.
                 If this argument has a value then arguments ``top``, ``bottom``, ``left``, ``right`` are ignored
-            style_name (StyleParaKind, str, optional): Specifies the Page Style that instance applies to.
+            style_name (WriterStylePageKind, str, optional): Specifies the Page Style that instance applies to.
                 Default is Default Page Style.
             style_family (str, optional): Style family. Default ``PageStyles``.
 
@@ -91,7 +133,7 @@ class Sides(PageStyleBaseMulti):
 
         Args:
             doc (object): UNO Document Object.
-            style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to.
+            style_name (WriterStylePageKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.
             style_family (str, optional): Style family. Default ``PageStyles``.
 
@@ -129,6 +171,7 @@ class Sides(PageStyleBaseMulti):
         if not isinstance(value, InnerSides):
             raise TypeError(f'Expected type of InnerSides, got "{type(value).__name__}"')
         self._del_attribs("_direct_inner")
-        self._set_style("direct", value, *value.get_attrs())
+        cp = value.copy(_cattribs=self._get_inner_cattribs())
+        self._set_style("direct", cp, *cp.get_attrs())
 
     # endregion Properties

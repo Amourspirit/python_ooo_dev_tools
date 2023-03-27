@@ -66,7 +66,7 @@ class CellProtection(CellStyleBaseMulti):
             hide_all (bool, optional): Specifies if all is hidden. Defaults to ``False``.
             protected (bool, optional): Specifies protected value. Defaults to ``False``.
             hide_formula (bool, optional): Specifies if the formula is hidden. Defaults to ``False``.
-            hide_print (bool, optional): Specifies if the cell are to be ommited during print. Defaults to ``False``.
+            hide_print (bool, optional): Specifies if the cell are to be omitted during print. Defaults to ``False``.
             style_name (StyleCellKind, str, optional): Specifies the Cell Style that instance applies to.
                 Default is Default Cell Style.
             style_family (str, optional): Style family. Default ``CellStyles``.

@@ -6,7 +6,7 @@ if __name__ == "__main__":
 
 import uno
 from ooodev.format.writer.modify.page.header import Header, WriterStylePageKind
-from ooodev.format.writer.modify.page.header.borders import Shadow, ShadowLocation, WriterStylePageKind
+from ooodev.format.writer.modify.page.header.borders import Shadow, ShadowLocation
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.format import Styler
@@ -38,7 +38,12 @@ def test_write(loader, para_text) -> None:
             margin_left=1.5,
             margin_right=2.0,
         )
-        style = Shadow(location=ShadowLocation.BOTTOM_RIGHT, color=StandardColor.GRAY_LIGHT1, width=2.4)
+        style = Shadow(
+            location=ShadowLocation.BOTTOM_RIGHT,
+            color=StandardColor.GRAY_LIGHT1,
+            width=2.4,
+            style_name=WriterStylePageKind.STANDARD,
+        )
         Styler.apply(doc, header_style, style)
         # props = style.get_style_props(doc)
         f_style = Shadow.from_style(doc, style.prop_style_name)

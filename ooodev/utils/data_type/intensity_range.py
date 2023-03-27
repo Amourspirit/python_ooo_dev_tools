@@ -25,5 +25,5 @@ class IntensityRange:
         )
 
     def swap(self) -> IntensityRange:
-        """Gets an instance with values swaped."""
+        """Gets an instance with values swapped."""
         return IntensityRange(self.end, self.start)

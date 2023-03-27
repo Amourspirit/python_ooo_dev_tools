@@ -13,11 +13,11 @@ from ooo.dyn.text.rel_orientation import RelOrientation
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.proto.unit_obj import UnitObj
 from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
-from ooodev.utils.data_type.unit_mm import UnitMM
-from ooodev.utils.unit_convert import UnitConvert
+from ooodev.units import UnitObj
+from ooodev.units import UnitMM
+from ooodev.units import UnitConvert
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
 from ooodev.format.inner.common.props.frame_type_positon_props import FrameTypePositonProps
@@ -42,7 +42,7 @@ class HoriOrient(Enum):
 
 
 class VertOrient(Enum):
-    """Verticial Orientation"""
+    """Vertical Orientation"""
 
     TOP = VertOrientation.TOP
     """Aligned at the top"""
@@ -105,7 +105,7 @@ class Horizontal:
         Args:
             position (HoriOrient): Specifies Horizontal Position.
             rel (RelHoriOrient): Specifies Relative Orientation.
-            amount (float, UnitObj, optional): Spedifies Amount in ``mm`` units or :ref:`proto_unit_obj`. Only effective when position is ``HoriOrient.FROM_LEFT``. Defaults to ``0.0``.
+            amount (float, UnitObj, optional): Specifies Amount in ``mm`` units or :ref:`proto_unit_obj`. Only effective when position is ``HoriOrient.FROM_LEFT``. Defaults to ``0.0``.
         """
 
         self._position = position
@@ -466,7 +466,7 @@ class Position(StyleBase):
 
     @property
     def prop_keep_boundaries(self) -> bool | None:
-        """Gets/Sets keep inside text boundries"""
+        """Gets/Sets keep inside text boundaries"""
         return self._get(self._props.txt_flow)
 
     @prop_keep_boundaries.setter

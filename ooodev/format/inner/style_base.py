@@ -315,7 +315,7 @@ class StyleBase(metaclass=MetaStyle):
 
     def _print_not_valid_obj(self, method_name: str = ""):
         """
-        Prints via ``Lo.print()`` notice that requied service is missing
+        Prints via ``Lo.print()`` notice that required service is missing
 
         Args:
             method_name (str, optional): Calling method name.
@@ -330,7 +330,7 @@ class StyleBase(metaclass=MetaStyle):
             mLo.Lo.print(f"{self.__class__.__name__}{name}: object is not valid.")
             return
         services = ", ".join(rs)
-        srv = "service" if rs_len == 1 else "serivces"
+        srv = "service" if rs_len == 1 else "services"
         mLo.Lo.print(f"{self.__class__.__name__}{name}: object must support {srv}: {services}")
 
     # endregion Services
@@ -380,7 +380,7 @@ class StyleBase(metaclass=MetaStyle):
         Gets the attributes that are slated for change in the current instance
 
         Returns:
-            Tuple(str, ...): Tuple of attribures
+            Tuple(str, ...): Tuple of attributes
         """
         # get current keys in internal dictionary
         return tuple(self._get_properties().keys())
@@ -390,7 +390,7 @@ class StyleBase(metaclass=MetaStyle):
         Applies styles to object
 
         Args:
-            obj (object): UNO Oject that styles are to be applied.
+            obj (object): UNO Object that styles are to be applied.
             kwargs (Any, optional): Expandable list of key value pairs that may be used in child classes.
 
         Keyword Arguments:
@@ -501,7 +501,7 @@ class StyleBase(metaclass=MetaStyle):
 
     def backup(self, obj: object) -> None:
         """
-        Backs up Attriubes that are to be changed by apply.
+        Backs up Attributes that are to be changed by apply.
 
         If used method should be called before apply.
 
@@ -543,7 +543,7 @@ class StyleBase(metaclass=MetaStyle):
 
         Args:
             obj (object): Object to restore properties on.
-            clear (bool): Determines if backup is cleared after resore. Default ``False``
+            clear (bool): Determines if backup is cleared after restore. Default ``False``
 
         Returns:
             None:
@@ -774,12 +774,12 @@ class StyleBase(metaclass=MetaStyle):
 
     @property
     def prop_has_attribs(self) -> bool:
-        """Gets If instantance has any attributes set."""
+        """Gets If instance has any attributes set."""
         return len(self._dv) > 0
 
     @property
     def prop_has_backup(self) -> bool:
-        """Gets If instantance has backup data set."""
+        """Gets If instance has backup data set."""
         if self._dv_bak is None:
             return False
         return len(self._dv_bak) > 0
@@ -924,7 +924,7 @@ class StyleMulti(StyleBase):
         Applies style of current instance and all other internal style instances.
 
         Args:
-            obj (object): UNO Oject that styles are to be applied.
+            obj (object): UNO Object that styles are to be applied.
         """
         styles = self._get_multi_styles()
         for key, info in styles.items():
@@ -1059,7 +1059,7 @@ class StyleMulti(StyleBase):
     # region Methods
     def backup(self, obj: object) -> None:
         """
-        Backs up Attriubes that are to be changed by apply.
+        Backs up Attributes that are to be changed by apply.
 
         If used method should be called before apply.
 
@@ -1099,7 +1099,7 @@ class StyleMulti(StyleBase):
 
         Args:
             obj (object): Object to restore properties on.
-            clear (bool): Determines if backup is cleared after resore. Default ``False``
+            clear (bool): Determines if backup is cleared after restore. Default ``False``
 
         Returns:
             None:
@@ -1124,7 +1124,7 @@ class StyleMulti(StyleBase):
         Gets the attributes that are slated for change in the current instance
 
         Returns:
-            Tuple(str, ...): Tuple of attribures
+            Tuple(str, ...): Tuple of attributes
         """
         # get current keys in internal dictionary
         props = self._get_properties()
@@ -1171,12 +1171,12 @@ class StyleMulti(StyleBase):
 
     @property
     def prop_has_attribs(self) -> bool:
-        """Gets If instantance has any attributes set."""
+        """Gets If instance has any attributes set."""
         return len(self._dv) + len(self._styles) > 0
 
     @property
     def prop_has_backup(self) -> bool:
-        """Gets If instantance or any added style has backup data set."""
+        """Gets If instance or any added style has backup data set."""
         result = False
         styles = self._get_multi_styles()
         for _, info in styles.items():
@@ -1296,9 +1296,9 @@ class StyleModifyMulti(StyleMulti):
         Gets the Style Properties
 
         Args:
-            doc (object): UNO Documnet Object.
+            doc (object): UNO Document Object.
 
-        Raised:
+        Raises:
             NotSupportedDocumentError: If document is not supported.
 
         Returns:

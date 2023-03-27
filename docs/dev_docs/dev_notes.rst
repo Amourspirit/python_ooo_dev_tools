@@ -80,10 +80,10 @@ Checking LibreOffice Python version
     PS C:\> & 'C:\Program Files\LibreOffice\program\python.exe' --version
     Python 3.8.10
 
-The details of installing a python version for use with a virtual evironment is beyond the scope of this document.
+The details of installing a python version for use with a virtual environment is beyond the scope of this document.
 However, for windows I would recommend a tool such as pyenv-win_.
 
-Install command might look someting link:
+Install command might look something link:
 
 .. code--block::
 
@@ -138,7 +138,7 @@ When you need to use poetry_ just toggle environment.
 
     (.venv) PS C:\python_ooo_dev_tools> python -m main env -t
 
-This will toggle between the origional setup configuration and the LibreOffice configuration.
+This will toggle between the original setup configuration and the LibreOffice configuration.
 
 .. _dev_doc_ve_test:
 

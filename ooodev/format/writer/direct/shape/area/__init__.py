@@ -22,3 +22,11 @@ from ooodev.format.inner.direct.write.fill.area.gradient import Gradient as Grad
 from ooodev.format.inner.direct.write.fill.area.hatch import Hatch as Hatch
 from ooodev.format.inner.direct.write.fill.area.img import Img as Img
 from ooodev.format.inner.direct.write.fill.area.pattern import Pattern as Pattern
+
+__all__ = [
+    "Color",
+    "Gradient",
+    "Hatch",
+    "Img",
+    "Pattern",
+]

@@ -1,18 +1,52 @@
 # region Imports
 from __future__ import annotations
-from typing import cast
+from typing import Tuple, cast
 import uno
+from ooodev.format.inner.common.props.fill_color_props import FillColorProps
+from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.utils import color as mColor
 from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
-from ooodev.format.inner.direct.write.para.area.color import Color as InnerColor
+from ooodev.format.inner.common.abstract.abstract_fill_color import AbstractColor
 from ..page_style_base_multi import PageStyleBaseMulti
 
 # endregion Imports
 
 
+class InnerColor(AbstractColor):
+    """
+    Page Style Color.
+
+    .. versionadded:: 0.9.0
+    """
+
+    def _supported_services(self) -> Tuple[str, ...]:
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = ("com.sun.star.style.PageProperties", "com.sun.star.style.PageStyle")
+        return self._supported_services_values
+
+    @property
+    def prop_format_kind(self) -> FormatKind:
+        """Gets the kind of style"""
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.PAGE | FormatKind.STYLE
+        return self._format_kind_prop
+
+    @property
+    def _props(self) -> FillColorProps:
+        try:
+            return self._props_internal_attributes
+        except AttributeError:
+            self._props_internal_attributes = FillColorProps(color="FillColor", style="FillStyle")
+        return self._props_internal_attributes
+
+
 class Color(PageStyleBaseMulti):
     """
-    Page Style Color
+    Page Style Color.
 
     .. versionadded:: 0.9.0
     """
@@ -29,7 +63,7 @@ class Color(PageStyleBaseMulti):
 
         Args:
             color (Color, optional): FillColor Color
-            style_name (StyleParaKind, str, optional): Specifies the Page Style that instance applies to.
+            style_name (WriterStylePageKind, str, optional): Specifies the Page Style that instance applies to.
                 Default is Default Page Style.
             style_family (str, optional): Style family. Default ``PageStyles``.
 
@@ -55,7 +89,7 @@ class Color(PageStyleBaseMulti):
 
         Args:
             doc (object): UNO Document Object.
-            style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to.
+            style_name (WriterStylePageKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.
             style_family (str, optional): Style family. Default ``PageStyles``.
 

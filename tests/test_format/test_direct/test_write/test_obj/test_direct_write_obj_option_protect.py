@@ -26,7 +26,7 @@ def test_write(loader, formula_text) -> None:
         cursor = Write.get_cursor(doc)
 
         style_name = Names(name="formula", desc="Just a test Formula", alt="A real Formula")
-        style = Protect(size=True, postiion=True, content=True)
+        style = Protect(size=True, position=True, content=True)
 
         content = Write.add_formula(
             cursor=cursor,

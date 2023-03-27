@@ -40,7 +40,7 @@ class Protect(FrameStyleBaseMulti):
             None:
         """
 
-        direct = InnerProtect(size=size, postiion=position, content=content)
+        direct = InnerProtect(size=size, position=position, content=content)
         direct._prop_parent = self
         super().__init__()
         self._style_name = str(style_name)
