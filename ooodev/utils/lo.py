@@ -24,7 +24,7 @@ from . import table_helper as mThelper
 from . import xml_util as mXML
 from ..conn import cache as mCache
 from ..conn import connectors
-from ..conn.connect import ConnectBase, LoPipeStart, LoSocketStart, LoDirectStart
+from ..conn.connect import ConnectBase, LoPipeStart, LoSocketStart, LoDirectStart, LoBridgeCommon
 from ..events.args.cancel_event_args import CancelEventArgs
 from ..events.args.dispatch_args import DispatchArgs
 from ..events.args.dispatch_cancel_args import DispatchCancelArgs
@@ -272,6 +272,7 @@ class Lo(metaclass=StaticProperty):
     _lo_inst: ConnectBase = None
 
     _loader = None
+    _disposed = True
 
     # region    qi()
 
@@ -605,7 +606,7 @@ class Lo(metaclass=StaticProperty):
         cls,
         connector: connectors.ConnectPipe | connectors.ConnectSocket | None = None,
         cache_obj: mCache.Cache | None = None,
-        opt: Options | None = None,
+        opt: Lo.Options | None = None,
     ) -> XComponentLoader:
         """
         Loads Office
@@ -718,7 +719,7 @@ class Lo(metaclass=StaticProperty):
         else:
             Lo.print("Invalid Connector type. Fatal Error.")
             raise SystemExit(1)
-
+        cls._disposed = False
         cls._xcc = cls._lo_inst.ctx
         cls._mc_factory = cls._xcc.getServiceManager()
         if cls._mc_factory is None:
@@ -787,6 +788,8 @@ class Lo(metaclass=StaticProperty):
 
     @classmethod
     def _try_to_terminate(cls, num_tries: int) -> bool:
+        if cls._disposed:
+            return True
         try:
             is_dead = cls._xdesktop.terminate()
             if is_dead:
@@ -808,6 +811,9 @@ class Lo(metaclass=StaticProperty):
     def kill_office(cls) -> None:
         """
         Kills the office connection.
+
+        Returns:
+            None:
 
         See Also:
             :py:meth:`~Lo.close_office`
@@ -1879,6 +1885,9 @@ class Lo(metaclass=StaticProperty):
         Attention:
             :py:meth:`~.utils.lo.Lo.close` method is called along with any of its events.
         """
+        if cls._disposed:
+            cls._doc = None
+            return
         try:
             closeable = cls.qi(XCloseable, doc, True)
             cls.close(closeable=closeable, deliver_ownership=deliver_ownership)
@@ -2054,6 +2063,10 @@ class Lo(metaclass=StaticProperty):
         Note:
             There are many dispatch command constants that can be found in :ref:`utils_dispatch` Namespace
 
+            | ``DISPATCHING`` Event args data contains any properties passed in via ``props``.
+            | ``DISPATCHED`` Event args data contains any results from the dispatch commands.
+
+
         See Also:
             - :ref:`ch04_dispatching`
             - `LibreOffice Dispatch Commands <https://wiki.documentfoundation.org/Development/DispatchCommands>`_
@@ -2063,10 +2076,11 @@ class Lo(metaclass=StaticProperty):
         try:
             str_cmd = str(cmd)  # make sure and enum or other lookup did not get passed by mistake
             cargs = DispatchCancelArgs(Lo.dispatch_cmd.__qualname__, str_cmd)
+            cargs.event_data = props
             _Events().trigger(LoNamedEvent.DISPATCHING, cargs)
             if cargs.cancel:
                 raise mEx.CancelEventError(cargs, f'Dispatch Command "{str_cmd}" has been canceled')
-
+            props = cargs.event_data
             if props is None:
                 props = ()
             if frame is None:
@@ -2078,7 +2092,9 @@ class Lo(metaclass=StaticProperty):
                     XDispatchHelper, f"Could not create dispatch helper for command {str_cmd}"
                 )
             result = helper.executeDispatch(frame, f".uno:{str_cmd}", "", 0, props)
-            _Events().trigger(LoNamedEvent.DISPATCHED, DispatchArgs.from_args(cargs))
+            eargs = DispatchArgs.from_args(cargs)
+            eargs.event_data = result
+            _Events().trigger(LoNamedEvent.DISPATCHED, eargs)
             return result
         except mEx.CancelEventError:
             raise
@@ -2199,7 +2215,7 @@ class Lo(metaclass=StaticProperty):
             ms (int): Number of milliseconds to delay
         """
         if ms <= 0:
-            Lo.print("Ms must be greater then zero")
+            Lo.print("Lo.delay(): Ms must be greater then zero")
             return
         sec = ms / 1000
         time.sleep(sec)
@@ -2792,6 +2808,16 @@ class Lo(metaclass=StaticProperty):
         """
         return cls._loader
 
+    @classproperty
+    def bridge_connector(cls) -> LoBridgeCommon:
+        """
+        Get the current Bride connection
+
+        Returns:
+            LoBridgeCommon: If not in macro mode; Otherwise, ``ConnectBase``
+        """
+        return cls._lo_inst
+
 
 class _LoManager(metaclass=StaticProperty):
     """Manages clearing and resetting for Lo static class"""
@@ -2819,6 +2845,7 @@ class _LoManager(metaclass=StaticProperty):
         dvals = (None, None, None, None, None, None, None)
         for attr, val in zip(dattrs, dvals):
             setattr(Lo, attr, val)
+        setattr(Lo, "_disposed", True)
 
     @staticmethod
     def on_loading(source: Any, event: CancelEventArgs) -> None:

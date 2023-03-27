@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "ooo-dev-tools"
-version = "0.8.5"
+version = "0.9.0"
 description = "LibreOffice Developer Tools"
 license = "Apache Software License"
 readme = "README.rst"
@@ -33,10 +33,10 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.7"
-ooouno = "^0.2.4"
-lxml = "^4.9.1"
+ooouno = "^0.2.5"
 Pillow = "^9.2.0"
 typing-extensions = {version = "^4.4.0", python = "<3.8"}
+lxml = "^4.9.2"
 
 [[tool.poetry.source]]
 name = "pypi-test"
@@ -46,12 +46,13 @@ secondary = false
 
 
 [tool.poetry.group.dev.dependencies]
-black = "^22.10.0"
 pytest = "^7.2.0"
 hypothesis = "^6.56.4"
 thefuzz = "^0.19.0"
 python-Levenshtein = "^0.20.7"
 lo-dev-search = {version = "^1.2.2", platform = "linux"}
+ruff = "^0.0.254"
+black = {extras = ["d"], version = "^23.1.0"}
 
 
 [tool.poetry.group.docs.dependencies]
@@ -63,8 +64,19 @@ sphinxcontrib-spelling = "^7.6.2"
 sphinx_design = "^0.3.0"
 esbonio = ">=0.15.0"
 pygls = {version = ">=0.12.4,<1.0", python = ">=3.7,<3.12"}
+sphinxcontrib-apidoc = "^0.3.0"
 
 [tool.pytest.ini_options]
 testpaths = [
     "tests",
 ]
+markers = [
+    "skip_headless: skips a test in headless mode",
+    "skip_not_headless_os: skips a test in GUI mode for give os"
+]
+
+[tool.ruff]
+extended-select=["ANN", "C4", "N", "SIM", "TCH"]
+ignore=[]
+show-fixes=true
+target="py37"

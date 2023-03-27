@@ -7,8 +7,8 @@ import subprocess
 import signal
 from typing import List, TYPE_CHECKING, cast
 import time
-import shutil
 import uno
+from pathlib import Path
 from com.sun.star.connection import NoConnectException
 from . import connectors
 from . import cache
@@ -56,12 +56,48 @@ class ConnectBase(ABC):
     def ctx(self) -> XComponentContext:
         return self._ctx
 
+    @property
+    def start_office(self) -> bool:
+        """For compatibility. Returns ``True``"""
+        return True
+
+    @property
+    def no_restore(self) -> bool:
+        """For compatibility. Returns ``True``"""
+        return True
+
+    @property
+    def no_first_start_wizard(self) -> bool:
+        """For compatibility. Returns ``True``"""
+        return True
+
+    @property
+    def no_logo(self) -> bool:
+        """For compatibility. Returns ``True``"""
+        return True
+
+    @property
+    def invisible(self) -> bool:
+        """For compatibility. Returns ``False``"""
+        return False
+
+    @property
+    def headless(self) -> bool:
+        """For compatibility. Returns ``False``"""
+        return False
+
+    @property
+    def start_as_service(self) -> bool:
+        """For compatibility. Returns ``False``"""
+        return False
+
 
 class LoBridgeCommon(ConnectBase):
     """Base Abstract Class for LoSocketStart and LoPipeStart"""
 
-    def __init__(self, cache_obj: cache.Cache | None):
+    def __init__(self, connector: connectors.ConnectorBridgeBase, cache_obj: cache.Cache | None):
         super().__init__()
+        self._connector = connector
         self._soffice_process = None
         self._bridge_component = None
         self._platform = SysInfo.get_platform()
@@ -235,10 +271,55 @@ class LoBridgeCommon(ConnectBase):
         with :py:attr:`Cache.use_cache <.conn.cache.Cache.use_cache>` set to false.
         """
         return self._cache
-    
+
     @property
     def bridge_component(self) -> XComponent:
         return self._bridge_component
+
+    @property
+    def soffice(self) -> Path:
+        """
+        Get Path to LibreOffice soffice. Default is auto discovered.
+        """
+        return self._connector.soffice
+
+    @property
+    def start_office(self) -> bool:
+        """Gets if office is to be started. Default is True"""
+        return self._connector.start_office
+
+    @property
+    def no_restore(self) -> bool:
+        """Gets if office is started with norestore Option. Default is True"""
+        return self._connector.no_restore
+
+    @property
+    def no_first_start_wizard(self) -> bool:
+        """Gets if office is started with nofirststartwizard option. Default is True"""
+        return self._connector.no_first_start_wizard
+
+    @property
+    def no_logo(self) -> bool:
+        """Gets if office is started with nologo option. Default is True"""
+        return self._connector.no_logo
+
+    @property
+    def invisible(self) -> bool:
+        """Gets if office is started with invisible option. Default is True"""
+        return self._connector.invisible
+
+    @property
+    def headless(self) -> bool:
+        """Gets/Sets if the connection is made using headless option. Default is False"""
+        return self._connector.headless
+
+    @property
+    def start_as_service(self) -> bool:
+        """
+        Gets if office is started as service (StarOffice.Service).
+        Default is False
+        """
+        return self._connector.start_as_service
 
     def __del__(self) -> None:
         try:
@@ -276,13 +357,13 @@ class LoDirectStart(ConnectBase):
 
 class LoPipeStart(LoBridgeCommon):
     def __init__(self, connector: connectors.ConnectPipe | None = None, cache_obj: cache.Cache | None = None) -> None:
-        super().__init__(cache_obj=cache_obj)
         if connector is None:
-            self._connector = connectors.ConnectPipe()
+            connector = connectors.ConnectPipe()
         else:
             if not isinstance(connector, connectors.ConnectPipe):
                 raise TypeError("connector arg must be ConnectPipe class")
-            self._connector = connector
+
+        super().__init__(connector=connector, cache_obj=cache_obj)
 
     def _get_connection_str(self) -> str:
         return self._connector.get_connnection_str()
@@ -357,13 +438,12 @@ class LoSocketStart(LoBridgeCommon):
     def __init__(
         self, connector: connectors.ConnectSocket | None = None, cache_obj: cache.Cache | None = None
     ) -> None:
-        super().__init__(cache_obj=cache_obj)
         if connector is None:
-            self._connector = connectors.ConnectSocket()
+            connector = connectors.ConnectSocket()
         else:
             if not isinstance(connector, connectors.ConnectSocket):
                 raise TypeError("connector arg must be ConnectSocket class")
-            self._connector = connector
+        super().__init__(connector=connector, cache_obj=cache_obj)
 
     def _get_connection_str(self) -> str:
         return self._connector.get_connnection_str()

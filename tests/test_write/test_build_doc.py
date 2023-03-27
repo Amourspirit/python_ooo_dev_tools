@@ -7,21 +7,24 @@ from typing import cast
 if __name__ == "__main__":
     pytest.main([__file__])
 
+from ooodev.utils.lo import Lo
+from ooodev.office.write import Write, ControlCharacterEnum, ParagraphAdjust
+from ooodev.utils.gui import GUI
+from ooodev.utils.props import Props
+from ooodev.utils.color import CommonColor
+from ooodev.utils.images_lo import ImagesLo
+from ooodev.utils.info import Info
+from ooodev.exceptions import ex
+from ooodev.utils.color import CommonColor
+from ooodev.utils.date_time_util import DateUtil
+from functools import partial
 
+
+@pytest.mark.skip_not_headless_os("linux", "Errors When GUI is present")
 def test_build_doc(loader, props_str_to_dict, fix_image_path, capsys: pytest.CaptureFixture):
-    from ooodev.utils.lo import Lo
-    from ooodev.office.write import Write, ControlCharacterEnum, ParagraphAdjust
-    from ooodev.utils.gui import GUI
-    from ooodev.utils.props import Props
-    from ooodev.utils.color import CommonColor
-    from ooodev.utils.images_lo import ImagesLo
-    from ooodev.utils.info import Info
-    from ooodev.exceptions import ex
-    from ooodev.utils.color import CommonColor
-    from ooodev.utils.date_time_util import DateUtil
-    from functools import partial
+    # see comments Write.add_image_shape(cursor=cursor, fnm=im_fnm) Line: 181
 
-    visible = False
+    visible = False if Lo.bridge_connector.headless else True
     delay = 0  # 500
     doc = Write.create_doc(loader)
     try:
@@ -159,21 +162,28 @@ def test_build_doc(loader, props_str_to_dict, fix_image_path, capsys: pytest.Cap
             assert img_size.Height == 5751
             assert img_size.Width == 6092
             # Write.add_image_link(doc, cursor, im_fnm, img_size.Width, img_size.Height)
-            Write.add_image_link(doc, cursor, im_fnm, img_size.Width, img_size.Height)
+            Write.add_image_link(doc, cursor, im_fnm, width=img_size.Width, height=img_size.Height)
 
             # enlarge by 1.5x
             h = round(img_size.Height * 1.5)
             w = round(img_size.Width * 1.5)
 
-            Write.add_image_link(doc, cursor, im_fnm, w, h)
+            Write.add_image_link(doc=doc, cursor=cursor, fnm=im_fnm, width=w, height=h)
             Write.end_paragraph(cursor)
 
         Lo.delay(delay)
 
         Write.style_prev_paragraph(cursor=cursor, prop_name="ParaAdjust", prop_val=ParagraphAdjust.CENTER)
 
-        append("Image as a shape: ")
+        # append("Image as a shape: ")
+        Write.append_line(cursor=cursor, text="Image as Shape:")
+
+        # for some unknown reason when image shape is added in linux in GUI mode test will fail drastically.
+        #   tests/test_write/test_build_doc.py terminate called after throwing an instance of 'com::sun::star::lang::DisposedException'
+        #   Fatal Python error: Aborted
+        # on windows is fine. Running on linux in headless fine.
         Write.add_image_shape(cursor=cursor, fnm=im_fnm)
+
         Write.end_paragraph(cursor)
         Lo.delay(delay)
 

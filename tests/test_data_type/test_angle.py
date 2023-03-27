@@ -130,3 +130,22 @@ def test_ge_angle(start: int, val: int) -> None:
 def test_angle_weird(val: int, expected: int) -> None:
     a1 = Angle(val)
     assert a1.value == expected
+
+
+@pytest.mark.parametrize(("val", "subval", "expected"), [(1, 100, 99), (2, 1, 359), (200, 201, 1)])
+def test_angle_rsub(val: int, subval: int, expected: int) -> None:
+    # test __rsub__
+    # Test when a number subtracts an Angle
+    a1 = Angle(val)
+    result = subval - a1
+    assert result == Angle(expected)
+
+
+@pytest.mark.parametrize("start", [1, 3, 5, 100, 0])
+def test_eq_angle(start: int) -> None:
+    a1 = Angle(start)
+    a2 = Angle(start)
+    assert a1 == a2
+    assert a2 == a1
+    assert a1 == start
+    assert start == a1

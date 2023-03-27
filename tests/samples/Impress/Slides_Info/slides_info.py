@@ -43,7 +43,7 @@ class SlidesInfo:
             slide = Draw.get_slide(doc=doc, idx=0)
 
             slide_size = Draw.get_slide_size(slide)
-            print(f"Size of slide (mm)({slide_size.Width}, {slide_size.Height})")
+            print(f"Size of slide (mm)({slide_size.width}, {slide_size.height})")
             print()
 
             self._report_layers(doc)

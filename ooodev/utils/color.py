@@ -9,8 +9,11 @@ from typing import Union, NamedTuple, overload, NewType
 import numbers
 
 from ..utils import gen_util as mGenUtil
+import random
 
 # ref: https://gist.github.com/mathebox/e0805f72e7db3269ec22
+
+# see Also: https://github.com/LibreOffice/core/blob/f4a568fc0553603fbf05477e0942af4e8466fba0/oox/source/drawingml/color.cxx
 
 MAX_COLOR = 255
 """Max Color Value"""
@@ -21,7 +24,157 @@ Color = NewType("Color", int)
 """Color Type. Int RGB Value"""
 
 
-class CommonColor:
+class StandardColor(NamedTuple):
+    """Standard palette Colors"""
+
+    # Standeard Palette
+    WHITE = Color(0xFFFFFF)
+    BLACK = Color(0)
+    GRAY = Color(0x808080)
+
+    GRAY_LIGHT1 = Color(0x999999)
+    GRAY_LIGHT2 = Color(0xB2B2B2)
+    GRAY_LIGHT3 = Color(0xCCCCCC)
+    GRAY_LIGHT4 = Color(0xDDDDDD)
+    GRAY_LIGHT5 = Color(0xEEEEEE)
+
+    GRAY_DARK1 = Color(0x666666)
+    GRAY_DARK2 = Color(0x333333)
+    GRAY_DARK3 = Color(0x1C1C1C)
+    GRAY_DARK4 = Color(0x111111)
+
+    YELLOW = Color(0xFFFF00)
+    YELLOW_LIGHT1 = Color(0xFFFF38)
+    YELLOW_LIGHT2 = Color(0xFFFF6D)
+    YELLOW_LIGHT3 = Color(0xFFFFA6)
+    YELLOW_LIGHT4 = Color(0xFFFFD7)
+    YELLOW_DARK1 = Color(0xE6E905)
+    YELLOW_DARK2 = Color(0xACB20C)
+    YELLOW_DARK3 = Color(0x706E0C)
+    YELLOW_DARK4 = Color(0x443205)
+
+    GOLD = Color(0xFFBF00)
+    GOLD_LIGHT1 = Color(0xFFD428)
+    GOLD_LIGHT2 = Color(0xFFDE59)
+    GOLD_LIGHT3 = Color(0xFFE994)
+    GOLD_LIGHT4 = Color(0xFFF5CE)
+    GOLD_DARK1 = Color(0xE8A202)
+    GOLD_DARK2 = Color(0xB47804)
+    GOLD_DARK3 = Color(0x784B04)
+    GOLD_DARK4 = Color(0x472702)
+
+    ORANGE = Color(0xFF8000)
+    ORANGE_LIGHT1 = Color(0xFF860D)
+    ORANGE_LIGHT2 = Color(0xFF972F)
+    ORANGE_LIGHT3 = Color(0xFFB66C)
+    ORANGE_LIGHT4 = Color(0xFFDBB6)
+    ORANGE_DARK1 = Color(0xEA7500)
+    ORANGE_DARK2 = Color(0xB85C00)
+    ORANGE_DARK3 = Color(0x7B3D00)
+    ORANGE_DARK4 = Color(0x492300)
+
+    BRICK = Color(0xFF4000)
+    BRICK_LIGHT1 = Color(0xFF5429)
+    BRICK_LIGHT2 = Color(0xFF7B59)
+    BRICK_LIGHT3 = Color(0xFFAA95)
+    BRICK_LIGHT4 = Color(0xFFD8CE)
+    BRICK_DARK1 = Color(0xED4C05)
+    BRICK_DARK2 = Color(0xBE480A)
+    BRICK_DARK3 = Color(0x813709)
+    BRICK_DARK4 = Color(0x4B2204)
+
+    RED = Color(0xFF0000)
+    RED_LIGHT1 = Color(0xFF3838)
+    RED_LIGHT2 = Color(0xFF6D6D)
+    RED_LIGHT3 = Color(0xFFA6A6)
+    RED_LIGHT4 = Color(0xFFD7D7)
+    RED_DARK1 = Color(0xF10D0C)
+    RED_DARK2 = Color(0xC9211E)
+    RED_DARK3 = Color(0x8D281E)
+    RED_DARK4 = Color(0x50200C)
+
+    MAGENTA = Color(0xBF0041)
+    MAGENTA_LIGHT1 = Color(0xD62E4E)
+    MAGENTA_LIGHT2 = Color(0xE16173)
+    MAGENTA_LIGHT3 = Color(0xEC9BA4)
+    MAGENTA_LIGHT4 = Color(0xF7D1D5)
+    MAGENTA_DARK1 = Color(0xA7074B)
+    MAGENTA_DARK2 = Color(0x861141)
+    MAGENTA_DARK3 = Color(0x611729)
+    MAGENTA_DARK4 = Color(0x41190D)
+
+    PURPLE = Color(0x800080)
+    PURPLE_LIGHT1 = Color(0x8D1D75)
+    PURPLE_LIGHT2 = Color(0xA1467E)
+    PURPLE_LIGHT3 = Color(0xBF819E)
+    PURPLE_LIGHT4 = Color(0xE0C2CD)
+    PURPLE_DARK1 = Color(0x780373)
+    PURPLE_DARK2 = Color(0x650953)
+    PURPLE_DARK3 = Color(0x4E102D)
+    PURPLE_DARK4 = Color(0x3B160E)
+
+    INDIGO = Color(0x55308D)
+    INDIGO_LIGHT1 = Color(0x6B5E9B)
+    INDIGO_LIGHT2 = Color(0x8E86AE)
+    INDIGO_LIGHT3 = Color(0xB7B3CA)
+    INDIGO_LIGHT4 = Color(0xDEDCE6)
+    INDIGO_DARK1 = Color(0x5B277D)
+    INDIGO_DARK2 = Color(0x55215B)
+    INDIGO_DARK3 = Color(0x481D32)
+    INDIGO_DARK4 = Color(0x3A1A0F)
+
+    BLUE = Color(0x2A6099)
+    BLUE_LIGHT1 = Color(0x5983B0)
+    BLUE_LIGHT2 = Color(0x729FCF)
+    BLUE_LIGHT3 = Color(0xB4C7DC)
+    BLUE_LIGHT4 = Color(0xDEE6EF)
+    BLUE_DARK1 = Color(0x3465A4)
+    BLUE_DARK2 = Color(0x355269)
+    BLUE_DARK3 = Color(0x383D3C)
+    BLUE_DARK4 = Color(0x362413)
+
+    TEAL = Color(0x158466)
+    TEAL_LIGHT1 = Color(0x50938A)
+    TEAL_LIGHT2 = Color(0x81ACA6)
+    TEAL_LIGHT3 = Color(0xB3CAC7)
+    TEAL_LIGHT4 = Color(0xDEE7E5)
+    TEAL_DARK1 = Color(0x168253)
+    TEAL_DARK2 = Color(0x1E6A39)
+    TEAL_DARK3 = Color(0x28471F)
+    TEAL_DARK4 = Color(0x302709)
+
+    GREEN = Color(0x00A933)
+    GREEN_LIGHT1 = Color(0x3FAF46)
+    GREEN_LIGHT2 = Color(0x77BC65)
+    GREEN_LIGHT3 = Color(0xAFD095)
+    GREEN_LIGHT4 = Color(0xDDE8CB)
+    GREEN_DARK1 = Color(0x069A2E)
+    GREEN_DARK2 = Color(0x127622)
+    GREEN_DARK3 = Color(0x224B12)
+    GREEN_DARK4 = Color(0x2E2706)
+
+    LIME = Color(0x81D41A)
+    LIME_LIGHT1 = Color(0xBBE33D)
+    LIME_LIGHT2 = Color(0xD4EA6B)
+    LIME_LIGHT3 = Color(0xE8F2A1)
+    LIME_LIGHT4 = Color(0xF6F9D4)
+    LIME_DARK1 = Color(0x5EB91E)
+    LIME_DARK2 = Color(0x468A1A)
+    LIME_DARK3 = Color(0x395511)
+    LIME_DARK4 = Color(0x342A06)
+
+    # Defaults
+    DEFAULT_BLUE = BLUE_LIGHT2  # LibreOffice Default Shape background color
+
+    @staticmethod
+    def get_random_color() -> Color:
+        """Gets a random Standard Palette color"""
+        attrs = [x for x in dir(StandardColor) if x.isupper() and not x.startswith("DEFAULT")]
+        i = random.randrange(start=0, stop=len(attrs) - 1)
+        return getattr(StandardColor, attrs[i])
+
+
+class CommonColor(NamedTuple):
     """
     Named Colors.
 
@@ -212,6 +365,16 @@ class CommonColor:
     # other
     PALE_BLUE = Color(0xD6EBFF)
 
+    # Defaults
+    DEFAULT_BLUE = StandardColor.BLUE_LIGHT2  # LibreOffice Default Shape background color
+
+    @staticmethod
+    def get_random_color() -> Color:
+        """Gets a random common color"""
+        attrs = [x for x in dir(CommonColor) if x.isupper() and not x.startswith("DEFAULT")]
+        i = random.randrange(start=0, stop=len(attrs) - 1)
+        return getattr(CommonColor, attrs[i])
+
     @classmethod
     def from_str(cls, str_color: str) -> Color:
         """
@@ -258,6 +421,42 @@ class CommonColor:
             return Color(int(getattr(cls, c_str)))
         except AttributeError:
             raise ValueError("str_color is not a valid color")
+
+
+class RGBA(NamedTuple):
+    red: int
+    """Red color as int"""
+    green: int
+    """Green color as int"""
+    blue: int
+    """Blue color as int"""
+    alpha: int
+
+    @staticmethod
+    def from_int(value: int) -> RGBA:
+        """
+        Gets RGAB from int value
+
+        Args:
+            value (int): Value that represents a RGBA
+
+        Returns:
+            RGBA: Instance converted from integer.
+        """
+        blue = value & 255
+        green = (value >> 8) & 255
+        red = (value >> 16) & 255
+        alpha = (value >> 24) & 255
+        return RGBA(red=red, green=green, blue=blue, alpha=alpha)
+
+    def to_int(self) -> int:
+        """
+        Gets integer representing RGBA value
+        """
+        return (self.alpha << 24) + (self.red << 16) + (self.green << 8) + self.blue
+
+    def __int__(self) -> int:
+        return self.to_int()
 
 
 class RGB(NamedTuple):
@@ -406,7 +605,10 @@ class RGB(NamedTuple):
         return not self.is_dark()
 
     def __str__(self) -> str:
-        return "rgb(" + round(self.red) + ", " + round(self.green) + ", " + round(self.blue) + ")"
+        return f"rgb({round(self.red)}, {round(self.green)}, {round(self.blue)})"
+
+    def __int__(self) -> int:
+        return self.to_int()
 
 
 class HSL(NamedTuple):
@@ -715,3 +917,52 @@ def darken(rgb_color: Union[RGB, int], percent: numbers.Number) -> RGB:
     c2_hsl = HSL(c_hsl.hue, c_hsl.saturation, decrease)
     c_rgb = hsl_to_rgb(c2_hsl)
     return c_rgb
+
+
+def get_gray_rgb(percent: int, rgb: RGB | None = None) -> RGB:
+    """
+    Gets a Gray RGB. The higher the percent the lighter the color.
+
+    ``100`` percent returns RGB of White color. ``0`` percent return Black color
+
+    Args:
+        percent (int): Percent from ``0`` to ``100``
+        rgb (RGB, optional): Optional RGB used for calculations.
+
+    Raises:
+        ValueError: If percent is out of range.
+
+    Returns:
+        RGB: RGB representing red, green blue.
+
+    Note:
+        The returned RGB has all channels are set to the same value.
+
+    .. versionadded:: 0.9.0
+    """
+    # same functionality as see in
+    # https://github.com/LibreOffice/core/blob/7c3ea0abeff6e0cb9e2893cec8ed63025a274117/oox/source/export/drawingml.cxx#L664
+    if percent < 0 or percent > 100:
+        raise ValueError("percent must br form 0 to 100")
+    if percent == 0:
+        return RGB(0, 0, 0)  # black
+    if percent == 100:
+        return RGB(255, 255, 255)  # white
+    if rgb is None:
+        # convert from white #ffffff
+        r, g, b = 255, 255, 255
+    else:
+        r = rgb.red
+        g = rgb.green
+        b = rgb.blue
+
+    r = 0.2989 * r
+    g = 0.5870 * g
+    b = 0.1140 * b
+    gs = r + g + b
+    if percent > 0:
+        gs_per = (percent / 100) * gs
+    else:
+        gs_per = gs
+    gs_int = round(gs_per)
+    return RGB(red=gs_int, green=gs_int, blue=gs_int)

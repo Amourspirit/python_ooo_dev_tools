@@ -1,3 +1,5 @@
+.. _events_lo_events_lo_events:
+
 Class LoEvents
 ==============
 

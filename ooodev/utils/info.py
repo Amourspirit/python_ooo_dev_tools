@@ -39,6 +39,7 @@ from . import date_time_util as mDate
 from . import file_io as mFileIO
 from . import lo as mLo
 from . import props as mProps
+from ..units import unit_convert as mConvert
 from ..events.args.event_args import EventArgs
 from ..events.event_singleton import _Events
 from ..events.lo_named_event import LoNamedEvent
@@ -50,7 +51,6 @@ from .type_var import PathOrStr
 
 
 class Info(metaclass=StaticProperty):
-
     REG_MOD_FNM = "registrymodifications.xcu"
     NODE_PRODUCT = "/org.openoffice.Setup/Product"
     NODE_L10N = "/org.openoffice.Setup/L10N"
@@ -99,6 +99,10 @@ class Info(metaclass=StaticProperty):
         AKA: 3RDPARTYFILTER
         """
 
+    class RegPropKind(Enum):
+        PROPERTY = 1
+        VALUE = 2
+
     @staticmethod
     def get_fonts() -> Tuple[FontDescriptor, ...]:
         """
@@ -127,11 +131,36 @@ class Info(metaclass=StaticProperty):
             return []
 
         names_set = set()
-        for name in fds:
-            names_set.add(name)
+        for fd in fds:
+            names_set.add(fd.Name)
         names = list(names_set)
         names.sort()
         return names
+
+    @classmethod
+    def get_font_descriptor(cls, name: str, style: str) -> FontDescriptor | None:
+        """
+        Gets font descriptor for a font name with a font style such as ``Bold Italic``.
+
+        Args:
+            name (str): Font Name
+            style (str): Font Style
+
+        Returns:
+            FontDescriptor: Instance if found; Otherwise None.
+
+        .. versionadded:: 0.9.0
+        """
+        if not name:
+            return None
+        if not style:
+            return None
+        style = style.casefold()
+        fds = cls.get_fonts()
+        for fd in fds:
+            if fd.Name == name and fd.StyleName.casefold() == style:
+                return fd
+        return None
 
     @staticmethod
     def get_font_mono_name() -> str:
@@ -182,42 +211,42 @@ class Info(metaclass=StaticProperty):
     @overload
     @classmethod
     def get_reg_item_prop(cls, item: str, prop: str) -> str:
-        """
-        Gets value from 'registrymodifications.xcu'
-
-        Args:
-            item (str): item name
-            prop (str): property value
-
-        Raises:
-            ValueError: if unable to get value
-
-        Returns:
-            str: value from 'registrymodifications.xcu'. e.g. "Writer/MailMergeWizard" null, "MailAddress"
-        """
         ...
 
     @overload
     @classmethod
     def get_reg_item_prop(cls, item: str, prop: str, node: str) -> str:
-        """
-        Gets value from 'registrymodifications.xcu'
+        ...
 
-        Args:
-            item (str): item name
-            prop (str): property value
-            node (str): node
+    @overload
+    @classmethod
+    def get_reg_item_prop(cls, item: str, *, kind: Info.RegPropKind) -> str:
+        ...
 
-        Raises:
-            ValueError: if unable to get value
+    @overload
+    @classmethod
+    def get_reg_item_prop(cls, item: str, *, kind: Info.RegPropKind, idx: int) -> str:
+        ...
 
-        Returns:
-            str: value from 'registrymodifications.xcu'. e.g. "Writer/MailMergeWizard" null, "MailAddress"
-        """
+    @overload
+    @classmethod
+    def get_reg_item_prop(cls, item: str, prop: str, *, idx: int) -> str:
+        ...
+
+    @overload
+    @classmethod
+    def get_reg_item_prop(cls, item: str, prop: str, node: str, kind: Info.RegPropKind) -> str:
         ...
 
     @classmethod
-    def get_reg_item_prop(cls, item: str, prop: str, node: Optional[str] = None) -> str:
+    def get_reg_item_prop(
+        cls,
+        item: str,
+        prop: str = "",
+        node: Optional[str] = None,
+        kind: Info.RegPropKind = RegPropKind.PROPERTY,
+        idx: int = 0,
+    ) -> str:
         """
         Gets value from ``registrymodifications.xcu``
 
@@ -225,17 +254,29 @@ class Info(metaclass=StaticProperty):
             item (str): item name
             prop (str): property value
             node (str): node
+            kind (Info.RegPropKind): property or value
+            idx: (int): index of value to return
 
         Raises:
             ValueError: if unable to get value
 
         Returns:
             str: value from ``registrymodifications.xcu``. e.g. ``Writer/MailMergeWizard``, ``None``, ``MailAddress``
+
+        Note:
+            Often is it not necessary to get value from registry.
+            Which is not available in macro mode.
+
+            Often the configuration option can be gotten via :py:meth:`~.info.Info.get_config`.
+
+        See Also:
+            :py:meth:`~.info.Info.get_config`
         """
         # return value from "registrymodifications.xcu"
-        # e.g. "Writer/MailMergeWizard" null, "MailAddress"
-        # e.g. "Logging/Settings", "org.openoffice.logging.sdbc.DriverManager", "LogLevel"
-        #
+        # windows C:\Users\user\AppData\Roaming\LibreOffice\4\user\registrymodifications.xcu
+        # e.g. val = Info.get_reg_item_prop("Calc/Calculate/Other", "DecimalPlaces")
+        # e.g. val = Info.get_reg_item_prop("Logging/Settings", "LogLevel", "org.openoffice.logging.sdbc.DriverManager")
+        # e.g. val = Info.get_reg_item_prop("Writer/Layout/Other/TabStop", kind=Info.RegPropKind.VALUE, idx=1)
         # This xpath doesn't deal with all cases in the XCU file, which sometimes
         # has many node levels between the item and the prop
         if mLo.Lo.is_macro_mode:
@@ -251,14 +292,21 @@ class Info(metaclass=StaticProperty):
             tree: XML_ETREE._ElementTree = XML_ETREE.parse(fnm, parser=_xml_parser)
 
             if node is None:
-                xpath = f"//item[@oor:path='/org.openoffice.Office.{item}']/prop[@oor:name='{prop}']"
+                if kind == Info.RegPropKind.PROPERTY:
+                    xpath = f'//item[@oor:path="/org.openoffice.Office.{item}"]/prop[@oor:name="{prop}"]/value'
+                elif kind == Info.RegPropKind.VALUE:
+                    xpath = f'//item[@oor:path="/org.openoffice.Office.{item}"]/value'
             else:
-                xpath = f"']/prop[@oor:name='{item}']/node[@oor:name='{node}']/prop[@oor:name='{prop}']"
-            value = tree.xpath(xpath)
-            if value is None:
+                if kind == Info.RegPropKind.PROPERTY:
+                    xpath = f'//item[@oor:path="/org.openoffice.Office.{item}"]/node[@oor:name="{node}"]/prop[@oor:name="{prop}"]/value'
+                elif kind == Info.RegPropKind.VALUE:
+                    xpath = f'//item[@oor:path="/org.openoffice.Office.{item}"]/node[@oor:name="{node}"]/value'
+                    xpath = f"//item[/prop[@oor:name='{item}']/node[@oor:name='{node}']/value"
+            value = tree.xpath(xpath, namespaces={"oor": "http://openoffice.org/2001/registry"})
+            if not value:
                 raise Exception("Item Property not found")
             else:
-                value = str(value).strip()
+                value = value[idx].text.strip()
                 if value == "":
                     raise Exception("Item Property is white space (?)")
             return value
@@ -317,7 +365,18 @@ class Info(metaclass=StaticProperty):
 
         See Also:
             :ref:`ch03`
+
+        Example:
+            .. code-block:: python
+
+                props = mLo.Lo.qi(
+                    XPropertySet,
+                    mInfo.Info.get_config(node_str="Other", node_path="/org.openoffice.Office.Writer/Layout/"),
+                )
+                ts_val = props.getPropertyValue("TabStop") # int val
         """
+        # props = Lo.qi(XPropertySet, Info.get_config(node_str='Data', node_path="/org.openoffice.UserProfile/"))
+        # Props.show_obj_props("User Data", props)
         try:
             if node_path is None:
                 return cls._get_config2(node_str=node_str)
@@ -335,7 +394,6 @@ class Info(metaclass=StaticProperty):
 
     @classmethod
     def _get_config2(cls, node_str: str) -> object:
-
         for node_path in cls.NODE_PATHS:
             try:
                 return cls._get_config1(node_str=node_str, node_path=node_path)
@@ -1283,6 +1341,37 @@ class Info(metaclass=StaticProperty):
             print(f"  {s}")
 
     @staticmethod
+    def show_conversion_values(value: Any, frm: mConvert.UnitLength) -> None:
+        """
+        Prints values of conversions to terminal.
+
+        Args:
+            value (Any): Any numeric value
+            frm (mConvert.Length): The unit type of ``value``.
+
+        Note:
+            Useful to help determine what different conversion of ``value`` are.
+
+        .. versionadded:: 0.9.0
+        """
+        lengths = cast(
+            List[mConvert.UnitLength],
+            [
+                getattr(mConvert.UnitLength, x)
+                for x in dir(mConvert.UnitLength)
+                if x.isupper()
+                and getattr(mConvert.UnitLength, x).value < mConvert.UnitLength.COUNT
+                and getattr(mConvert.UnitLength, x).value >= 0
+            ],
+        )
+        for length in lengths:
+            try:
+                result = mConvert.UnitConvert.convert(num=value, frm=frm, to=length)
+                print(f"{length.name}:".ljust(10), round(result, 2))
+            except Exception:
+                print(f'"{length.name}" does not convert')
+
+    @staticmethod
     def get_methods_obj(obj: object, property_concept: PropertyConceptEnum | None = None) -> List[str]:
         """
         Get Methods of an object such as a doc.
@@ -2026,6 +2115,24 @@ class Info(metaclass=StaticProperty):
         if hasattr(obj, "typeName"):
             return obj.typeName == type_name
         return False
+
+    @staticmethod
+    def is_uno(obj: object) -> bool:
+        """
+        Gets if an object is a UNO object
+
+        Args:
+            obj (object): Object to check
+
+        Returns:
+            bool: ``True`` if is ``UNO`` object; Otherwise, ``False``
+
+        Note:
+            This method only check for type ``pyuno``, therefore UNO ``struct`` are not considered UNO objects in this context.
+
+        .. versionadded:: 0.9.0
+        """
+        return type(obj).__name__ == "pyuno"
 
     # region is_type_enum_multi()
     @overload

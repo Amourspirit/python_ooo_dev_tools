@@ -1,4 +1,3 @@
-# coding: utf-8
 from __future__ import annotations
 from typing import Any
 from .event_args import AbstractEvent
@@ -18,15 +17,18 @@ class AbstractCancelEventArgs(AbstractEvent):
         """
         super().__init__(source)
         self.cancel = cancel
+        self.handled = False
 
     cancel: bool
     """Gets/Sets cancel value"""
+    handled: bool
+    """Get/Set Handled value. Typically if set to ``True`` then ``cancel`` is ignored."""
 
 
 class CancelEventArgs(AbstractCancelEventArgs):
     """Cancel Event Arguments"""
 
-    __slots__ = ("source", "_event_name", "event_data", "cancel", "_event_source")
+    __slots__ = ("source", "_event_name", "event_data", "cancel", "handled", "_event_source", "_kv_data")
 
     @staticmethod
     def from_args(args: CancelEventArgs) -> CancelEventArgs:
@@ -44,4 +46,5 @@ class CancelEventArgs(AbstractCancelEventArgs):
         eargs._event_source = args.event_source
         eargs.event_data = args.event_data
         eargs.cancel = args.cancel
+        eargs.handled = args.handled
         return eargs

@@ -151,6 +151,10 @@ def test_get_sheet(loader) -> None:
     try:
         sheet_names = Calc.get_sheet_names(doc)
         assert len(sheet_names) == 1
+        sheet_names2 = Calc.get_sheet_names()
+        assert len(sheet_names2) == 1
+        assert sheet_names[0] == sheet_names2[0]
+
         assert sheet_names[0] == "Sheet1"
         # test overloads
         with event_ctx() as events:
@@ -169,7 +173,8 @@ def test_get_sheet(loader) -> None:
         with event_ctx() as events:
             events.on(CalcNamedEvent.SHEET_GETTING, on)
             events.on(CalcNamedEvent.SHEET_GET, after)
-            sheet_1_2 = Calc.get_sheet(doc, "Sheet1")
+            # test overlaod no doc arg
+            sheet_1_2 = Calc.get_sheet("Sheet1")
         assert on_firing
         assert on_fired
         on_firing = False
@@ -177,14 +182,14 @@ def test_get_sheet(loader) -> None:
 
         assert sheet_1_2 is not None
 
-        name_1_2 = Calc.get_sheet_name(sheet_1_2)
+        name_1_2 = Calc.get_sheet_name(0)
         assert name_1_1 == name_1_2
 
         with event_ctx() as events:
             events.on(CalcNamedEvent.SHEET_GETTING, on)
             events.on(CalcNamedEvent.SHEET_GET, after)
-            sheet_1_3 = Calc.get_sheet(doc=doc, index=0)
-            sheet_1_3 = Calc.get_sheet(doc)
+            sheet_1_3 = Calc.get_sheet(doc=doc, idx=0)
+            sheet_1_3 = Calc.get_sheet()
 
         assert on_firing
         assert on_fired
@@ -207,7 +212,7 @@ def test_get_sheet(loader) -> None:
             Calc.get_sheet(doc=doc, name="Sheet1")
         with pytest.raises(TypeError):
             # Incorrect number of params
-            Calc.get_sheet()
+            Calc.get_sheet(1, 2, 3, 5, 5)
     finally:
         Lo.close_doc(doc=doc, deliver_ownership=False)
 
@@ -2507,8 +2512,8 @@ def test_get_cell_size(rng: str, width: int, height: int) -> None:
     rng_obj = Calc.get_range_obj(range_name=range_name)
     size = Calc.get_range_size(rng_obj)
 
-    assert size.Width == width
-    assert size.Height == height
+    assert size.width == width
+    assert size.height == height
 
 
 def test_get_cell_pos(loader) -> None:

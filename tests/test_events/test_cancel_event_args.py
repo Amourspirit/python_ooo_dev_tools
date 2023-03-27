@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import Any
 import pytest
 from hypothesis import given, example, settings
@@ -9,6 +10,7 @@ from hypothesis.strategies import text, characters, integers
 @settings(max_examples=25)
 def test_event_name(test_str: str):
     from ooodev.events.args.cancel_event_args import CancelEventArgs
+
     e = CancelEventArgs(test_event_name)
     e._event_name = test_str
     assert e.event_name == test_str
@@ -16,6 +18,7 @@ def test_event_name(test_str: str):
 
 def test_source():
     from ooodev.events.args.cancel_event_args import CancelEventArgs
+
     e = CancelEventArgs(test_source)
     assert e.source is test_source
 
@@ -79,12 +82,13 @@ def test_trigger_event_canceled(event_name_str: str, value: int):
     integers(min_value=-100, max_value=100),
 )
 @settings(max_examples=10)
-def test_from_args(event_name_str:str, value: int):
+def test_from_args(event_name_str: str, value: int):
     from ooodev.events.args.cancel_event_args import CancelEventArgs
+
     cargs = CancelEventArgs(test_from_args.__qualname__)
     cargs.event_data = value
     cargs._event_name = event_name_str
-    
+
     assert cargs.event_name == event_name_str
     assert cargs.event_data == value
     assert cargs.source is test_from_args.__qualname__
@@ -95,3 +99,28 @@ def test_from_args(event_name_str:str, value: int):
     assert e.source is cargs.source
     assert e.event_name == cargs.event_name
     assert e.cancel == cargs.cancel
+
+
+@given(
+    text(
+        alphabet=characters(min_codepoint=95, max_codepoint=122, blacklist_characters=("`",)), min_size=3, max_size=25
+    ),
+    integers(min_value=-100, max_value=100),
+)
+@settings(max_examples=10)
+def test_event_kv(key: str, value: Any) -> None:
+    from ooodev.events.args.cancel_event_args import CancelEventArgs
+
+    cargs = CancelEventArgs("random_event")
+    cargs._event_name = "test_event_kv"
+
+    with pytest.raises(KeyError):
+        _ = cargs.get(key)
+
+    assert cargs.get(key, None) is None
+    assert cargs.set(key, value)
+    assert cargs.has(key)
+    val = cargs.get(key)
+    assert val == value
+    cargs.remove(key)
+    assert cargs.has(key) == False

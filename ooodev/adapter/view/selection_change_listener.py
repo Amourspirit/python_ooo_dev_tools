@@ -52,7 +52,7 @@ class SelectionChangeListener(AdapterBase, XSelectionChangeListener):
         """
         Is called when the selection changes.
 
-        You can get the new selection via XSelectionSupplier from com.sun.star.lang.EventObject.Source.
+        You can get the new selection via XSelectionSupplier from ``com.sun.star.lang.EventObject.Source``.
         """
         self._trigger_event("selectionChanged", event)
 

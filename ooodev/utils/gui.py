@@ -61,7 +61,6 @@ SysInfo = m_sys_info.SysInfo
 
 
 class GUI:
-
     # region Class Enums
     # view settings zoom constants
     # ZoomEnum = DocumentZoomTypeEnum
@@ -793,27 +792,21 @@ class GUI:
             xcontroller = cls.get_current_controller(doc)
             return xcontroller.getFrame().getContainerWindow()
 
+    # region set_visible()
+
     @overload
     @classmethod
-    def set_visible(cls, is_visible: bool) -> None:
-        """
-        Set window visibility.
-
-        Args:
-            is_visible (bool): If True window is set visible; Otherwise, window is set invisible.
-        """
+    def set_visible(cls) -> None:
         ...
 
     @overload
     @classmethod
-    def set_visible(cls, is_visible: bool, doc: object) -> None:
-        """
-        Set window visibility.
+    def set_visible(cls, visible: bool) -> None:
+        ...
 
-        Args:
-            is_visible (bool): If True window is set visible; Otherwise, window is set invisible.
-            doc (object): office document
-        """
+    @overload
+    @classmethod
+    def set_visible(cls, visible: bool, doc: object) -> None:
         ...
 
     @classmethod
@@ -822,8 +815,8 @@ class GUI:
         Set window visibility.
 
         Args:
-            is_visible (bool): If True window is set visible; Otherwise, window is set invisible.
-            odoc (object): office document
+            visible (bool): If ``True`` window is set visible; Otherwise, window is set invisible. Default ``True``
+            doc (object): office document
         """
         ordered_keys = (1, 2)
         kargs_len = len(kwargs)
@@ -833,11 +826,15 @@ class GUI:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ("is_visible", "doc", "odoc")
+            valid_keys = ("is_visible", "visible", "doc", "odoc")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("set_visible() got an unexpected keyword argument")
-            ka[1] = kwargs.get("is_visible", None)
+            keys = ("is_visible", "visible")
+            for key in keys:
+                if key in kwargs:
+                    ka[1] = kwargs[key]
+                    break
             if count == 1:
                 return ka
             keys = ("doc", "odoc")
@@ -847,27 +844,29 @@ class GUI:
                     break
             return ka
 
-        if not count in (1, 2):
+        if not count in (0, 1, 2):
             raise TypeError("set_visible() got an invalid number of arguments")
 
         kargs = get_kwargs()
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
 
-        is_visible = bool(kargs[1])
+        is_visible = bool(kargs.get(1, True))
         odoc = kargs.get(2, None)
 
         if odoc is None:
-            xwindow = cls.get_window()
-        else:
-            component = mLo.Lo.qi(XComponent, odoc)
-            if component is None:
-                return
-            xwindow = cls.get_frame(component).getContainerWindow()
+            odoc = mLo.Lo.this_component
+
+        component = mLo.Lo.qi(XComponent, odoc)
+        if component is None:
+            return
+        xwindow = cls.get_frame(component).getContainerWindow()
 
         if xwindow is not None:
             xwindow.setVisible(is_visible)
             xwindow.setFocus()
+
+    # endregion set_visible()
 
     @classmethod
     def set_size_window(cls, doc: XComponent, width: int, height: int) -> None:
@@ -1431,43 +1430,46 @@ class GUI:
 
     # endregion    get_layout_manager()
 
-    # region    show_memu_bar()
+    # region    show_menu_bar()
     @overload
     @classmethod
-    def show_memu_bar(cls) -> None:
+    def show_menu_bar(cls) -> None:
         ...
 
     @overload
     @classmethod
-    def show_memu_bar(cls, doc: XComponent) -> None:
+    def show_menu_bar(cls, doc: XComponent) -> None:
         ...
 
     @classmethod
-    def show_memu_bar(cls, doc: XComponent = None) -> None:
+    def show_menu_bar(cls, doc: XComponent = None) -> None:
         """
         Shows the main menu bar
 
         Args:
             doc (XComponent): doc (XComponent): office document
+
+        .. versionchanged:: 0.9.0
+            Renamed from show_menu_bar to show_menu_bar
         """
         lm = cls.get_layout_manager(doc=doc)
         lm.showElement(GUI.MENU_BAR)
 
-    # endregion show_memu_bar()
+    # endregion show_menu_bar()
 
-    # region    hide_memu_bar()
+    # region    hide_menu_bar()
     @overload
     @classmethod
-    def hide_memu_bar(cls) -> None:
+    def hide_menu_bar(cls) -> None:
         ...
 
     @overload
     @classmethod
-    def hide_memu_bar(cls, doc: XComponent) -> None:
+    def hide_menu_bar(cls, doc: XComponent) -> None:
         ...
 
     @classmethod
-    def hide_memu_bar(cls, doc: XComponent = None) -> None:
+    def hide_menu_bar(cls, doc: XComponent = None) -> None:
         """
         Hides the main menu bar
 
@@ -1477,6 +1479,9 @@ class GUI:
         lm = cls.get_layout_manager(doc=doc)
         lm.hideElement(GUI.MENU_BAR)
 
+    # added due to a spell correction.
+    hide_memu_bar = hide_menu_bar
+
     @staticmethod
     def toggle_menu_bar() -> None:
         """
@@ -1485,12 +1490,15 @@ class GUI:
         If the menu is visible then it is hidden.
         If it is hidden then it will be made visible.
 
+        Returns:
+            None:
+
         Note:
             Toggle is done dispatching command ``Menubar``.
         """
         mLo.Lo.dispatch_cmd("Menubar")
 
-    # endregion hide_memu_bar()
+    # endregion hide_menu_bar()
 
     # region    print_u_is()
     @overload

@@ -46,6 +46,7 @@
         "**/build/**",
         "**/dist/**",
         "**/venv/**",
+        "**/.venv/**",
         "**/node_modules/**",
         "**/out/**",
         "**/output/**",
@@ -67,6 +68,7 @@
         "**/build/**",
         "**/dist/**",
         "**/venv/**",
+        "**/.venv/**",
         "**/node_modules/**",
         "**/out/**",
         "**/output/**",
@@ -144,6 +146,29 @@
             ],
             "format": "svg",
             "overrides": "config"
+        }
+    ],
+    "LineCount.excludes": [
+        "**/.vscode/**",
+        "**/node_modules/**",
+        "**/.venv/**",
+        "**/out/**",
+        "**/dist/**",
+        "**/.githooks/**",
+        "**/.hypothesis/**",
+        "**/.pytest_cache/**",
+        "**/__pycache__/**",
+        "**/_build/**",
+    ],
+    "openInExternalApp.openMapper": [
+        {
+            "extensionName": "mm",
+            "apps":[
+                {
+                    "title": "Freeplane",
+                    "openCommand": "freeplane"
+                }
+            ]
         }
     ]
 }

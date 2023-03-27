@@ -54,6 +54,7 @@ from ..events.args.cancel_event_args import CancelEventArgs
 from ..events.draw_named_event import DrawNamedEvent
 from ..events.event_singleton import _Events
 from ..exceptions import ex as mEx
+from ..proto.size_obj import SizeObj
 from ..utils import color as mColor
 from ..utils import file_io as mFileIO
 from ..utils import gui as mGui
@@ -65,7 +66,7 @@ from ..utils.data_type.angle import Angle as Angle
 from ..utils.data_type.image_offset import ImageOffset as ImageOffset
 from ..utils.data_type.intensity import Intensity as Intensity
 from ..utils.data_type.poly_sides import PolySides as PolySides
-from ..utils.data_type.window_title import WindowTitle
+from ..utils.data_type.size import Size
 from ..utils.dispatch.shape_dispatch_kind import ShapeDispatchKind as ShapeDispatchKind
 from ..utils.kind.drawing_bitmap_kind import DrawingBitmapKind as DrawingBitmapKind
 from ..utils.kind.drawing_gradient_kind import DrawingGradientKind as DrawingGradientKind
@@ -85,7 +86,7 @@ from ..utils.type_var import PathOrStr
 from ooo.dyn.awt.gradient import Gradient as Gradient
 from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
 from ooo.dyn.awt.point import Point as Point
-from ooo.dyn.awt.size import Size as Size
+from ooo.dyn.awt.size import Size as UnoSize
 from ooo.dyn.drawing.connector_type import ConnectorType as ConnectorType
 from ooo.dyn.drawing.fill_style import FillStyle as FillStyle
 from ooo.dyn.drawing.glue_point2 import GluePoint2 as GluePoint2
@@ -1982,7 +1983,7 @@ class Draw:
         try:
             shape = mLo.Lo.create_instance_msf(XShape, f"com.sun.star.drawing.{shape_type}", raise_err=True)
             shape.setPosition(Point(x * 100, y * 100))
-            shape.setSize(Size(width * 100, height * 100))
+            shape.setSize(UnoSize(width * 100, height * 100))
             return shape
         except Exception as e:
             raise mEx.ShapeError(f'Unable to create shape "{shape_type}"') from e
@@ -2009,8 +2010,8 @@ class Draw:
         except mEx.SizeError:
             mLo.Lo.print("No slide size found")
             return
-        slide_width = slide_size.Width
-        slide_height = slide_size.Height
+        slide_width = slide_size.width
+        slide_height = slide_size.height
 
         if x < 0:
             mLo.Lo.print("x < 0")
@@ -2047,6 +2048,8 @@ class Draw:
             - :py:meth:`~.draw.Draw.warns_position`
             - :py:meth:`~.draw.Draw.make_shape`
         """
+        # shape are position from center.
+        # a square of 20x20 would be x=10, y=10 for top right corer to be at 0x0
         try:
             cls.warns_position(slide=slide, x=x, y=y)
             shape = cls.make_shape(shape_type=shape_type, x=x, y=y, width=width, height=height)
@@ -2130,16 +2133,18 @@ class Draw:
     # region draw_polygon()
     @overload
     @classmethod
-    def draw_polygon(cls, slide: XDrawPage, x: int, y: int, sides: PolySides) -> XShape:
+    def draw_polygon(cls, slide: XDrawPage, x: int, y: int, sides: PolySides | int) -> XShape:
         ...
 
     @overload
     @classmethod
-    def draw_polygon(cls, slide: XDrawPage, x: int, y: int, sides: PolySides, radius: int) -> XShape:
+    def draw_polygon(cls, slide: XDrawPage, x: int, y: int, sides: PolySides | int, radius: int) -> XShape:
         ...
 
     @classmethod
-    def draw_polygon(cls, slide: XDrawPage, x: int, y: int, sides: PolySides, radius: int = POLY_RADIUS) -> XShape:
+    def draw_polygon(
+        cls, slide: XDrawPage, x: int, y: int, sides: PolySides | int, radius: int = POLY_RADIUS
+    ) -> XShape:
         """
         Gets a polygon
 
@@ -2147,7 +2152,7 @@ class Draw:
             slide (XDrawPage): Slide
             x (int): Shape X position in mm units.
             y (int): Shape Y position in mm units.
-            sides (PolySides): Polygon Sides value from ``3`` to ``30``.
+            sides (PolySides | int): Polygon Sides value from ``3`` to ``30``.
             radius (int, optional): Shape radius in mm units. Defaults to the value of :py:attr:`.Draw.POLY_RADIUS`
 
         Raises:
@@ -2182,7 +2187,7 @@ class Draw:
     # endregion draw_polygon()
 
     @staticmethod
-    def gen_polygon_points(x: int, y: int, radius: int, sides: PolySides) -> Tuple[Point, ...]:
+    def gen_polygon_points(x: int, y: int, radius: int, sides: PolySides | int) -> Tuple[Point, ...]:
         """
         Generates a list of polygon points
 
@@ -2190,7 +2195,7 @@ class Draw:
             x (int): Shape X position in mm units.
             y (int): Shape Y position in mm units.
             radius (int): Shape radius in mm units.
-            sides (int): Number of Polygon sides from 3 to 30.
+            sides (PolySides, int): Number of Polygon sides from 3 to 30.
 
         Raises:
             DrawError: If Error occurs
@@ -2199,9 +2204,10 @@ class Draw:
             Tuple[Point, ...]: Tuple of points.
         """
         try:
+            psides = PolySides(int(sides))
             pts: List[Point] = []
-            angle_step = math.pi / sides.value
-            for i in range(sides.value):
+            angle_step = math.pi / psides.value
+            for i in range(psides.value):
                 pt = Point(
                     int(round(((x * 100) + ((radius * 100)) * math.cos(i * 2 * angle_step)))),
                     int(round(((y * 100) + ((radius * 100)) * math.sin(i * 2 * angle_step)))),
@@ -2711,7 +2717,7 @@ class Draw:
         """
         try:
             cshape = mLo.Lo.create_instance_msf(XControlShape, "com.sun.star.drawing.ControlShape", raise_err=True)
-            cshape.setSize(Size(width * 100, height * 100))
+            cshape.setSize(UnoSize(width * 100, height * 100))
             cshape.setPosition(Point(x * 100, y * 100))
 
             cmodel = mLo.Lo.create_instance_msf(
@@ -2871,8 +2877,8 @@ class Draw:
             return cls.add_pres_shape(
                 slide=slide,
                 shape_type=PresentationKind.SLIDE_NUMBER_SHAPE,
-                x=sz.Width - width - 12,
-                y=sz.Height - height - 4,
+                x=sz.width - width - 12,
+                y=sz.height - height - 4,
                 width=width,
                 height=height,
             )
@@ -2972,7 +2978,7 @@ class Draw:
         print(f"  Point (mm): [{round(pt.X/100)}, {round(pt.Y/100)}]")
 
     @staticmethod
-    def print_size(sz: Size) -> None:
+    def print_size(sz: SizeObj) -> None:
         """
         Prints size to console in mm units
 
@@ -3094,7 +3100,7 @@ class Draw:
 
     @overload
     @staticmethod
-    def set_size(shape: XShape, sz: Size) -> None:
+    def set_size(shape: XShape, sz: SizeObj) -> None:
         ...
 
     @overload
@@ -3154,12 +3160,12 @@ class Draw:
         try:
             if count == 2:
                 # def set_size(shape: XShape, sz: Size)
-                sz_in = cast(Size, kargs[2])
+                sz_in = cast(SizeObj, kargs[2])
                 sz = Size(sz_in.Width * 100, sz_in.Height * 100)
             else:
                 # def set_size(shape: XShape, width:int, height: int)
                 sz = Size(kargs[2] * 100, kargs[3] * 100)
-            cast(XShape, kargs[1]).setSize(sz)
+            cast(XShape, kargs[1]).setSize(sz.get_uno_size())
         except Exception as e:
             raise mEx.ShapeError("Error setting size") from e
 
@@ -3363,7 +3369,6 @@ class Draw:
         cls, shape: XShape, start_color: mColor.Color, end_color: mColor.Color, angle: Angle
     ) -> Gradient:
         try:
-
             grad = Gradient()
             grad.Style = GradientStyle.LINEAR
             grad.StartColor = start_color
@@ -3734,10 +3739,10 @@ class Draw:
                 im_size = mImgLo.ImagesLo.get_size_100mm(fnm)
             except Exception as ex:
                 raise RuntimeError(f'Could not calculate size of "{fnm}"') from ex
-            im_width = round(im_size.Width / 100)  # in mm units
-            im_height = round(im_size.Height / 100)
-            x = round((slide_size.Width - im_width) / 2)
-            y = round((slide_size.Height - im_height) / 2)
+            im_width = round(im_size.width / 100)  # in mm units
+            im_height = round(im_size.height / 100)
+            x = round((slide_size.width - im_width) / 2)
+            y = round((slide_size.height - im_height) / 2)
             return cls._draw_image_path_x_y_w_h(slide=slide, fnm=fnm, x=x, y=y, width=im_width, height=im_height)
         except mEx.ShapeError:
             raise
@@ -3752,7 +3757,7 @@ class Draw:
             except Exception as ex:
                 raise RuntimeError(f'Could not calculate size of "{fnm}"') from ex
             return cls._draw_image_path_x_y_w_h(
-                slide=slide, fnm=fnm, x=x, y=y, width=round(im_size.Width / 100), height=round(im_size.Height / 100)
+                slide=slide, fnm=fnm, x=x, y=y, width=round(im_size.width / 100), height=round(im_size.height / 100)
             )
         except mEx.ShapeError:
             raise
@@ -3916,18 +3921,18 @@ class Draw:
         """
         try:
             slide_size = cls.get_slide_size(slide)
-            x = round(slide_size.Width * xoffset.value)  # in mm units
-            y = round(slide_size.Height * yoffset.value)
+            x = round(slide_size.width * xoffset.value)  # in mm units
+            y = round(slide_size.height * yoffset.value)
 
-            max_width = slide_size.Width - x
-            max_height = slide_size.Height - y
+            max_width = slide_size.width - x
+            max_height = slide_size.height - y
 
             im_size = mImgLo.ImagesLo.calc_scale(fnm=fnm, max_width=max_width, max_height=max_height)
             if im_size is None:
                 mLo.Lo.print(f'Unalbe to calc image size for "{fnm}"')
                 return None
             return cls._draw_image_path_x_y_w_h(
-                slide=slide, fnm=fnm, x=x, y=y, width=im_size.Width, height=im_size.Height
+                slide=slide, fnm=fnm, x=x, y=y, width=im_size.width, height=im_size.height
             )
         except mEx.ShapeError:
             raise

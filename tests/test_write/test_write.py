@@ -7,7 +7,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 
-def test_writer_lines(loader, fix_writer_path, tmp_path_fn):
+def test_writer_lines(loader, fix_writer_path, tmp_path):
     from ooodev.utils.lo import Lo
     from ooodev.office.write import Write
     from ooodev.utils.gui import GUI
@@ -32,10 +32,10 @@ def test_writer_lines(loader, fix_writer_path, tmp_path_fn):
         for line in lines:
             Write.append_para(cursor=cursor, text=line)
         Lo.delay(100)
-        fnm = Path(tmp_path_fn, "example.odt")
+        fnm = Path(tmp_path, "example.odt")
         Write.save_doc(text_doc=doc, fnm=fnm)
     finally:
-        Lo.close_doc(doc, False)
+        Lo.close_doc(doc)
 
     tmp_doc = Write.open_doc(fnm=str(fnm), loader=loader)
 
@@ -60,7 +60,7 @@ def test_open_no_loader(loader, fix_writer_path):
         assert doc is not None
         assert str(doc.Title) == "hello_sunny.odt"
     finally:
-        Lo.close_doc(doc, False)
+        Lo.close_doc(doc)
 
 
 def test_open_no_file_no_loader(loader):
@@ -72,4 +72,4 @@ def test_open_no_file_no_loader(loader):
         assert doc is not None
         assert str(doc.Title).startswith("Untitled")
     finally:
-        Lo.close_doc(doc, False)
+        Lo.close_doc(doc)

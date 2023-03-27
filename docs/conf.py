@@ -53,6 +53,7 @@ extensions = [
     "sphinx_toolbox.more_autodoc.autonamedtuple",
     "sphinx_toolbox.more_autodoc.typevars",
     "sphinx_toolbox.more_autodoc.autoprotocol",
+    "sphinx_toolbox.more_autodoc.overloads",
     "sphinx.ext.napoleon",
     "sphinx.ext.todo",
     "sphinx.ext.extlinks",
@@ -71,9 +72,23 @@ extensions = [
 # region spelling
 # https://sphinxcontrib-spelling.readthedocs.io/en/latest/
 
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#confval-suppress_warnings
+# https://github.com/sphinx-doc/sphinx/issues/4961
+# List of zero or more Sphinx-specific warning categories to be squelched (i.e.,
+# suppressed, ignored).
+suppress_warnings = [
+    # FIXME: *THIS IS TERRIBLE.* Generally speaking, we do want Sphinx to inform
+    # us about cross-referencing failures. Remove this hack entirely after Sphinx
+    # resolves this open issue:
+    #    https://github.com/sphinx-doc/sphinx/issues/4961
+    # Squelch mostly ignorable warnings resembling:
+    #     WARNING: more than one target found for cross-reference 'TypeHint':
+    #     beartype.door._doorcls.TypeHint, beartype.door.TypeHint
+    "ref.python",
+]
+
 
 def get_spell_dictionaries() -> list:
-
     p = _DOCS_PATH.absolute().resolve() / "internal" / "dict"
     dict_gen = p.glob("spelling_*.*")
     return [str(d) for d in dict_gen if d.is_file()]
@@ -230,7 +245,7 @@ with open("roles/theme_color_roles.txt", "r") as file:
 
 rst_prolog += "\n" + "\n".join(rst_prolog_lst)
 
-# set if figures can be referenced as numers. Defalut is False
+# set if figures can be referenced as numers. Default is False
 numfig = True
 
 # set is todo's will show up.
@@ -265,7 +280,6 @@ intersphinx_mapping = {"odevguiwin": (odevgui_win_url, None)}
 
 
 def get_active_branch_name():
-
     head_dir = _ROOT_PATH / ".git" / "HEAD"
     with head_dir.open("r") as f:
         content = f.read().splitlines()

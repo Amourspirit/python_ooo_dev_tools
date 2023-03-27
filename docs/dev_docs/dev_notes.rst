@@ -10,7 +10,7 @@ Virtual Environment
 
 It is assumed `<https://github.com/Amourspirit/python_ooo_dev_tools>`__ has been cloned or unzipped to a folder.
 
-`Poetry <https://python-poetry.org/>`_ is required to install this project in a development environment.
+poetry_ is required to install this project in a development environment.
 
 |odev| uses a virtual environment for development purposes.
 
@@ -55,9 +55,9 @@ That's it! Now should be ready for development.
 
 For other options try:
 
-    .. code-block:: text
+.. code-block:: text
 
-        (.venv) $ python -m main cmd-link -h
+    (.venv) $ python -m main cmd-link -h
 
 .. _dev_doc_ve_windos:
 
@@ -67,57 +67,78 @@ Windows
 Windows is a little trickery. Creating a link to ``uno.py`` and importing it will not work as it does in Linux.
 This is due to the how LibreOffice implements the python environment on Windows.
 
-The way |odev| works on Windows is a slight hack to the virtual environment.
+The recommended way to is to start by creating a virtual environment using a python version that matches the LibreOffice version being target.
+For instance LibreOffice ``7.3`` uses Python ``3.10``.
+
+Most likely the version of Python active on your system is not going to match the LibreOffice version.
+
+
+Checking LibreOffice Python version
+
+.. code-block::
+
+    PS C:\> & 'C:\Program Files\LibreOffice\program\python.exe' --version
+    Python 3.8.10
+
+The details of installing a python version for use with a virtual environment is beyond the scope of this document.
+However, for windows I would recommend a tool such as pyenv-win_.
+
+Install command might look something link:
+
+.. code--block::
+
+    pyenv install 3.8.10
+
+Lets assume Python ``3.8.10`` is installed to ``C:\Users\user\.pyenv\pyenv-win\versions\3.8.10``
+
+The recommended tool for creating the virtual environments that work with |odev| is Virtualenv_.
+
+In summary, pyenv-win_ installs python versions and Virtualenv_ creates virtual environments.
 
 Start by using terminal to create a ``.venv`` environment in the projects root folder
 
+.. code-block::
 
-.. code-block:: text
-
-    PS C:\python_ooo_dev_tools> python -m venv .\.venv
-
-Get LibreOffice python version.
-
-.. code-block:: text
-
-    PS C:\python_ooo_dev_tools> "C:\Program Files\LibreOffice\program\python.exe" --version
-
-Will return something like ``Python 3.8.10``
-
-Edit ``pyvenv.cfg``  file.
-
-.. code-block:: text
-
-    PS C:\python_ooo_dev_tools> notepad .\.venv\pyvenv.cfg
-
-Original may look something like:
-
-
-.. code-block:: text
-
-    home = C:\Users\User\AppData\Local\Programs\Python\Python310
-    include-system-site-packages = false
-    version = 3.10.1
-
-Change ``home`` and ``version`` using the current LibreOffice Version:
-
-.. code-block:: text
-
-    home = C:\Program Files\LibreOffice\program
-    include-system-site-packages = false
-    version = 3.8.10
+    PS C:\python_ooo_dev_tools> virtualenv -p "C:\Users\user\.pyenv\pyenv-win\versions\3.8.10\python.exe" .venv
 
 Activate Virtual environment.
 
-.. code-block:: text
+.. code-block::
 
-     PS C:\python_ooo_dev_tools> .\.venv\Scripts\Activate
+    PS C:\python_ooo_dev_tools> .\.venv\Scripts\activate.ps1
 
-Install requirements using Poetry.
+Install requirements using poetry.
 
-.. code-block:: text
+.. code-block::
 
     (.venv) PS C:\python_ooo_dev_tools> poetry install
+
+After installing using the previous command it time to set the environment to work with LibreOffice.
+
+.. code-block::
+
+    (.venv) PS C:\python_ooo_dev_tools> python -m main env -t
+
+This will set the virtual environment to work with LibreOffice.
+
+To check of the virtual environment is set for LibreOffice use the following command.
+
+.. code-block::
+
+    (.venv) PS C:\python_ooo_dev_tools> python -m main env -u
+    UNO Environment
+
+Newer versions of poetry_ will not work with the configuration set up for LibreOffice.
+
+When you need to use poetry_ just toggle environment.
+
+"""
+
+.. code-block::
+
+    (.venv) PS C:\python_ooo_dev_tools> python -m main env -t
+
+This will toggle between the original setup configuration and the LibreOffice configuration.
 
 .. _dev_doc_ve_test:
 
@@ -126,7 +147,7 @@ Testing Virtual Environment
 
 For a quick test of environment import ``uno`` If there is no import  error you should be good to go.
 
-.. code-block:: text
+.. code-block::
 
     PS C:\python_ooo_dev_tools> .\.venv\scripts\activate
     (.venv) PS C:\python_ooo_dev_tools> python
@@ -158,9 +179,9 @@ In these cases run ``--no--verify`` flag of git.
 
 Example git ``--no-verify`` command:
 
-    .. code-block:: shell
+.. code-block:: shell
 
-        git commit -n -m "rename somefile.txt to myfile.txt"
+    git commit -n -m "rename somefile.txt to myfile.txt"
 
 .. _dev_doc_docs:
 
@@ -224,7 +245,7 @@ Doc Spelling
 Manual spell check
 """"""""""""""""""
 
-Documents are spelled checked before commit by default when `Hooks` are set up.
+Documents are spelled checked before commit by default when ``Hooks`` are set up.
 
 Manual spell check can be run in a ``./docs`` terminal Windows.
 
@@ -246,11 +267,32 @@ Any custom dictionary in this directory starting with ``spelling_*`` is auto-loa
 .. _dev_doc_env_vars:
 
 Environment Variables
-=====================
+---------------------
 
 |odev| contains some environment variables.
 
 ODEV_CONN_SOFFICE
------------------
+^^^^^^^^^^^^^^^^^
 
-If set and soffice is not passed to :py:class:`~.connectors.ConnectorBridgeBase` and `ODEV_CONN_SOFFICE` is present then the environment variable value is used.
+If set and soffice is not passed to :py:class:`~.connectors.ConnectorBridgeBase` and ``ODEV_CONN_SOFFICE`` is present then the environment variable value is used.
+
+Testing
+-------
+
+Test are written for pytest_
+
+.. warning::
+
+    Make sure any unnecessary extensions are disabled in LibreOffice for testing.
+
+    For Example ``LanguageTool 5.8`` enabled on Linux (``Ubuntu 22.04``) resulted in critical failure,
+    but only when test were run in GUI mode. Disabling ``LanguageTool 5.8`` extension resolved the testing issue.
+
+.. _poetry: https://python-poetry.org/
+
+.. _pyenv-win: https://github.com/pyenv-win/pyenv-win
+.. _Virtualenv: https://virtualenv.pypa.io/en/latest/
+.. _pytest: https://docs.pytest.org
+
+
+

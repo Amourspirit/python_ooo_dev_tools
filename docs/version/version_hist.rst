@@ -2,6 +2,66 @@
 Version History
 ***************
 
+Version 0.9.0
+=============
+
+Added :ref:`ns_format` namespace with hundreds of new classes for applying styles and formatting to documents and sheets.
+
+Renamed method ``GUI.show_memu_bar()`` to ``GUI.show_menu_bar()``
+
+Fixed issue with ``Calc.get_sheet_names()`` when overload with no args was used.
+
+Rename ``CellObj.col_info`` to ``CellObj.col_obj``
+
+Rename ``CellObj.row_info`` to ``CellObj.row_obj``
+
+All events now can have key value pairs of data added or removed
+
+Added ``Calc.get_safe_rng_str()`` method.
+
+Added ``Info.is_uno()`` method.
+
+Added ``Write.style()`` method.
+
+Added ``Write.get_cursor()`` overload.
+
+Added ``Write.append(cursor: XTextCursor, text: str, styles: Iterable[StyleObj])`` overload.
+
+Added ``Write.style_left(cursor: XTextCursor, pos: int, styles: Iterable[StyleObj])`` overload.
+
+Added ``Write.style_prev_paragraph(cursor: XTextCursor, styles: Iterable[StyleObj])`` overload.
+
+Added ``Write.append_line(cursor: XTextCursor, text: str, styles: Iterable[StyleObj])`` overload.
+
+Added ``Write.append_para(cursor: XTextCursor, text: str, styles: Iterable[StyleObj])`` overload.
+
+Added ``Chart2.style_background()`` Method.
+
+Added ``Chart2.style_wall()`` Method.
+
+Added ``Chart2.style_data_point()`` Method.
+
+Version 0.8.6
+=============
+
+Added Styles namespace.
+
+Extended Cell Objects with focus on ``CellValues`` Class.
+
+Added overload to ``GUI.set_visible()``
+
+Added overload to ``GUI.set_visible()``
+
+Added overload to ``Calc.get_sheet_names()``
+
+Added overload to ``Calc.set_sheet_name()``
+
+Changed ``Calc.get_sheet(doc: XSpreadsheetDocument, index: int)`` to ``Calcget_sheet(doc: XSpreadsheetDocument, idx: int)``.
+``index`` will still work but is not documented.
+
+Changed ``Calc.remove_sheet(doc: XSpreadsheetDocument, index: int)`` to ``Calc.remove_sheet(doc: XSpreadsheetDocument, idx: int)``
+``index`` will still work but is not documented.
+
 Version 0.8.5
 =============
 

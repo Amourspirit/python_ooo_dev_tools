@@ -531,7 +531,22 @@ class Selection(metaclass=StaticProperty):
         xtext = xcursor.getText()
         l_cursor = cls.get_left_cursor(o_sel=xcursor, o_text=xtext)
         r_cursor = cls.get_right_cursor(o_sel=xcursor, o_text=xtext)
+
+        l_cursor.goRight(jmp_amt, False)
+
         i = 0
+        if cls.compare_cursor_ends(l_cursor, r_cursor) != cls.CompareEnum.BEFORE:
+            # cursor has less text then jmp_amt
+            l_cursor.gotoStart(False)
+            l_cursor.goRight(0, False)
+            while cls.compare_cursor_ends(l_cursor, r_cursor) == cls.CompareEnum.BEFORE:
+                i += 1
+                l_cursor.goRight(1, False)
+            return i
+
+        l_cursor.gotoStart(False)
+        l_cursor.goRight(0, False)
+
         if cls.compare_cursor_ends(c1=l_cursor, c2=r_cursor) < cls.CompareEnum.EQUAL:
             high = get_high(l_cursor, r_cursor)
             # l_cursor.gotoStart(False)
@@ -608,13 +623,14 @@ class Selection(metaclass=StaticProperty):
         Returns:
             XTextRangeCompare: Text Range Compare instance
         """
-
+        # Note: This class is inherited so is important the attribue be assigned directly
+        # to Selection and not to cls
         try:
-            return cls._text_range_compare
+            return Selection._text_range_compare
         except AttributeError:
             doc = mLo.Lo.XSCRIPTCONTEXT.getDocument()
             text = doc.getText()
-            cls._text_range_compare = mLo.Lo.qi(XTextRangeCompare, text)
+            Selection._text_range_compare = mLo.Lo.qi(XTextRangeCompare, text)
         return cls._text_range_compare
 
     @text_range_compare.setter

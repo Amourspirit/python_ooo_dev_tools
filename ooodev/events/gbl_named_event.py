@@ -3,10 +3,9 @@
 Global Named Events.
 """
 from __future__ import annotations
-from typing import NamedTuple
 
 
-class GblNamedEvent(NamedTuple):
+class GblNamedEvent:
     """
     Global Named Events
     """

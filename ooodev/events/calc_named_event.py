@@ -3,10 +3,9 @@
 Calc Named Events.
 """
 from __future__ import annotations
-from typing import NamedTuple
 
 
-class CalcNamedEvent(NamedTuple):
+class CalcNamedEvent:
     """
     Named events for :py:class:`~.office.calc.Calc` class
     """

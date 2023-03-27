@@ -253,7 +253,7 @@ class FormatterTable:
     @property
     def custom_formats_str(self) -> List[FormatString]:
         """
-        Gets Custom formats Str value
+        Gets Custom formats string value.
 
         If you need to apply extra formatting to a row after is has been formatted as string
         then ``FormatterString`` instances can be added.

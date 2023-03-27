@@ -1,8 +1,9 @@
-# coding: utf-8
 import csv
 import os
+import sys
 from pathlib import Path
 import shutil
+import stat
 import tempfile
 from typing import List
 import pytest
@@ -18,25 +19,83 @@ from ooodev.utils import paths as mPaths
 # from ooodev.connect import connectors as mConnectors
 from ooodev.conn import cache as mCache
 
+# os.environ["NO_HEADLESS"] = "1"
+
+
+def remove_readonly(func, path, excinfo):
+    try:
+        os.chmod(path, stat.S_IWRITE)
+        func(path)
+    except Exception:
+        pass
+
 
 @pytest.fixture(scope="session")
 def tmp_path_session():
     result = Path(tempfile.mkdtemp())
     yield result
     if os.path.exists(result):
-        shutil.rmtree(result, ignore_errors=True)
+        shutil.rmtree(result, onerror=remove_readonly)
 
 
 @pytest.fixture(scope="session")
-def test_headless():
+def run_headless():
     # windows/powershell
     #   $env:NO_HEADLESS='1'; pytest; Remove-Item Env:\NO_HEADLESS
     # linux
     #  NO_HEADLESS="1" pytest
-    no_headless = os.environ.get("NO_HEADLESS", 0)
+    no_headless = os.environ.get("NO_HEADLESS", "")
     if no_headless == "1":
         return False
     return True
+
+
+@pytest.fixture(autouse=True)
+def skip_for_headless(request, run_headless: bool):
+    # https://stackoverflow.com/questions/28179026/how-to-skip-a-pytest-using-an-external-fixture
+    #
+    # Also Added:
+    # [tool.pytest.ini_options]
+    # markers = ["skip_headless: skips a test in headless mode",]
+    # see: https://docs.pytest.org/en/stable/how-to/mark.html
+    #
+    # Usage:
+    # @pytest.mark.skip_headless("Requires Dispatch")
+    # def test_write(loader, para_text) -> None:
+    if run_headless:
+        if request.node.get_closest_marker("skip_headless"):
+            reason = ""
+            try:
+                reason = request.node.get_closest_marker("skip_headless").args[0]
+            except Exception:
+                pass
+            if reason:
+                pytest.skip(reason)
+            else:
+                pytest.skip("Skiped in headless mode")
+
+
+@pytest.fixture(autouse=True)
+def skip_not_headless_os(request, run_headless: bool):
+    # Usage:
+    # @pytest.mark.skip_not_headless_os("linux", "Errors When GUI is present")
+    # def test_write(loader, para_text) -> None:
+
+    if not run_headless:
+        rq = request.node.get_closest_marker("skip_not_headless_os")
+        if rq:
+            is_os = sys.platform.startswith(rq.args[0])
+            if not is_os:
+                return
+            reason = ""
+            try:
+                reason = rq.args[1]
+            except Exception:
+                pass
+            if reason:
+                pytest.skip(reason)
+            else:
+                pytest.skip(f"Skiped in GUI mode on os: {rq.args[0]}")
 
 
 @pytest.fixture(scope="session")
@@ -47,10 +106,11 @@ def soffice_path():
 
 
 @pytest.fixture(scope="session")
-def loader(tmp_path_session, test_headless, soffice_path):
+def loader(tmp_path_session, run_headless, soffice_path):
     loader = mLo.load_office(
-        connector=mLo.ConnectPipe(headless=test_headless, soffice=soffice_path),
+        connector=mLo.ConnectPipe(headless=run_headless, soffice=soffice_path),
         cache_obj=mCache.Cache(working_dir=tmp_path_session),
+        opt=mLo.Options(verbose=True),
     )
     # loader = mLo.load_office(connector=mLo.ConnectSocket(headless=True, soffice=soffice_path), cache_obj=mCache.Cache(working_dir=tmp_path_session))
     yield loader
@@ -62,7 +122,7 @@ def tmp_path_fn():
     result = Path(tempfile.mkdtemp())
     yield result
     if os.path.exists(result):
-        shutil.rmtree(result, ignore_errors=True)
+        shutil.rmtree(result, onerror=remove_readonly)
 
 
 @pytest.fixture(scope="session")
@@ -216,3 +276,33 @@ def bond_movies_table(fix_writer_path) -> List[list]:
             results.append(row)
             line_count += 1
     return results
+
+
+@pytest.fixture(scope="session")
+def para_text() -> str:
+    p_txt = (
+        "To Sherlock Holmes she is always THE woman. I have seldom heard"
+        " him mention her under any other name. In his eyes she eclipses"
+        " and predominates the whole of her sex. It was not that he felt"
+        " any emotion akin to love for Irene Adler. All emotions, and that"
+        " one particularly, were abhorrent to his cold, precise but"
+        " admirably balanced mind. He was, I take it, the most perfect"
+        " reasoning and observing machine that the world has seen, but as a"
+        " lover he would have placed himself in a false position. He never"
+        " spoke of the softer passions, save with a gibe and a sneer. They"
+        " were admirable things for the observer--excellent for drawing the"
+        " veil from men's motives and actions. But for the trained reasoner"
+        " to admit such intrusions into his own delicate and finely"
+        " adjusted temperament was to introduce a distracting factor which"
+        " might throw a doubt upon all his mental results. Grit in a"
+        " sensitive instrument, or a crack in one of his own high-power"
+        " lenses, would not be more disturbing than a strong emotion in a"
+        " nature such as his. And yet there was but one woman to him, and"
+        " that woman was the late Irene Adler, of dubious and questionable memory."
+    )
+    return p_txt
+
+
+@pytest.fixture(scope="session")
+def formula_text() -> str:
+    return "{{{sqrt{4x}} over 5} + {8 over 2}={4 over 3}}"

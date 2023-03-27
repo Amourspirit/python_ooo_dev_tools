@@ -47,7 +47,7 @@ class AnimBicycle:
 
             Draw.draw_lines(slide=slide, xs=xs, ys=ys)
 
-            pie = Draw.draw_ellipse(slide=slide, x=30, y=slide_size.Width - 100, width=40, height=20)
+            pie = Draw.draw_ellipse(slide=slide, x=30, y=slide_size.width - 100, width=40, height=20)
             Props.set(
                 pie,
                 FillColor=CommonColor.LIGHT_SKY_BLUE,

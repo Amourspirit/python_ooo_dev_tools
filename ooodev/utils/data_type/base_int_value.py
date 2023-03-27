@@ -69,7 +69,7 @@ class BaseIntValue:
     def __rsub__(self, other: object) -> Self:
         try:
             i = int(other)
-            return self._from_int(i=self.value)
+            return self._from_int(i - self.value)
         except AssertionError:
             raise
         except Exception:

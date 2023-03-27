@@ -3,25 +3,33 @@
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 # region Imports
 from __future__ import annotations
-from typing import TYPE_CHECKING, Iterable, List, overload
+from typing import TYPE_CHECKING, Iterable, List, cast, overload, Union
 import re
 import uno
 
-from ..exceptions import ex as mEx
-from ..utils import lo as mLo
-from ..utils import info as mInfo
-from ..utils import file_io as mFileIO
-from ..utils import props as mProps
-from ..utils.table_helper import TableHelper
-from ..utils.color import CommonColor, Color
-from ..utils.type_var import PathOrStr, Table, DocOrCursor
-from ..utils import images_lo as mImgLo
-from ..utils import selection as mSel
-from ..events.event_singleton import _Events
-from ..events.args.event_args import EventArgs
 from ..events.args.cancel_event_args import CancelEventArgs
-from ..events.write_named_event import WriteNamedEvent
+from ..events.args.event_args import EventArgs
+from ..events.args.key_val_args import KeyValArgs
+from ..events.args.key_val_cancel_args import KeyValCancelArgs
+from ..events.event_singleton import _Events
 from ..events.gbl_named_event import GblNamedEvent
+from ..events.lo_named_event import LoNamedEvent
+from ..events.write_named_event import WriteNamedEvent
+from ..exceptions import ex as mEx
+from ..meta.static_meta import classproperty
+from ..proto.style_obj import StyleObj, FormatKind
+from ..units import UnitObj
+from ..utils import file_io as mFileIO
+from ..utils import gen_util as mUtil
+from ..utils import images_lo as mImgLo
+from ..utils import info as mInfo
+from ..utils import lo as mLo
+from ..utils import props as mProps
+from ..utils import selection as mSel
+from ..utils.color import CommonColor, Color
+from ..utils.data_type.size import Size
+from ..utils.table_helper import TableHelper
+from ..utils.type_var import PathOrStr, Table, DocOrCursor
 
 from ..mock import mock_g
 
@@ -61,6 +69,7 @@ from com.sun.star.text import XTextContent
 from com.sun.star.text import XTextDocument
 from com.sun.star.text import XTextField
 from com.sun.star.text import XTextFrame
+from com.sun.star.text import XTextFramesSupplier
 from com.sun.star.text import XTextGraphicObjectsSupplier
 from com.sun.star.text import XTextRange
 from com.sun.star.text import XTextTable
@@ -73,6 +82,7 @@ if TYPE_CHECKING:
     # from com.sun.star.beans import PropertyValue
     from com.sun.star.container import XEnumeration
     from com.sun.star.container import XNameAccess
+    from com.sun.star.drawing import FillProperties
     from com.sun.star.drawing import XDrawPage
     from com.sun.star.frame import XComponentLoader
     from com.sun.star.frame import XFrame
@@ -83,7 +93,7 @@ if TYPE_CHECKING:
     from com.sun.star.text import XTextCursor
 
 from ooo.dyn.awt.font_slant import FontSlant
-from ooo.dyn.awt.size import Size  # struct
+from ooo.dyn.awt.size import Size as UnoSize  # struct
 from ooo.dyn.beans.property_value import PropertyValue
 from ooo.dyn.linguistic2.dictionary_type import DictionaryType as DictionaryType
 from ooo.dyn.style.break_type import BreakType
@@ -103,73 +113,93 @@ class Write(mSel.Selection):
     # At least not for static methods. My current work around is to implement the same
     # methods in this class.
 
-    if mock_g.DOCS_BUILDING:
-        # This code block will only ever import when doc are building.
-        # In Short this code block is not seen by Write
+    # region    get_cursor()
+    # https://tinyurl.com/2dlclzqf
+    @overload
+    @classmethod
+    def get_cursor(cls) -> XTextCursor:
+        ...
 
-        # region    get_cursor()
-        # https://tinyurl.com/2dlclzqf
-        @overload
-        @classmethod
-        def get_cursor(cls, cursor_obj: DocOrCursor) -> XTextCursor:
-            """
-            Gets text cursor
+    @overload
+    @classmethod
+    def get_cursor(cls, cursor_obj: DocOrCursor) -> XTextCursor:
+        ...
 
-            Args:
-                cursor_obj (DocOrCursor): Text Document or Text Cursor
+    @overload
+    @classmethod
+    def get_cursor(cls, rng: XTextRange, txt: XText) -> XTextCursor:
+        ...
 
-            Returns:
-                XTextCursor: Cursor
-            """
-            ...
+    @overload
+    @classmethod
+    def get_cursor(cls, rng: XTextRange, text_doc: XTextDocument) -> XTextCursor:
+        ...
 
-        @overload
-        @classmethod
-        def get_cursor(cls, rng: XTextRange, txt: XText) -> XTextCursor:
-            """
-            Gets text cursor
+    @classmethod
+    def get_cursor(cls, *args, **kwargs) -> XTextCursor:
+        """
+        Gets text cursor
 
-            Args:
-                rng (XTextRange): Text Range Instance
-                txt (XText): Text Instance
+        Args:
+            cursor_obj (DocOrCursor): Text Document or Text View Cursor
+            rng (XTextRange): Text Range Instance
+            text_doc (XTextDocument): Text Document instance
 
-            Returns:
-                XTextCursor: Cursor
-            """
-            ...
+        Raises:
+            CursorError: If Unable to get cursor
 
-        @overload
-        @classmethod
-        def get_cursor(cls, rng: XTextRange, text_doc: XTextDocument) -> XTextCursor:
-            """
-            Gets text cursor
+        Returns:
+            XTextCursor: Cursor
 
-            Args:
-                rng (XTextRange): Text Range instance
-                text_doc (XTextDocument): Text Document instance
+        .. versionchanged:: 0.9.0
+            Added overload ``get_cursor()``
+        """
+        ordered_keys = (1, 2)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
 
-            Returns:
-                XTextCursor: Cursor
-            """
-            ...
+        def get_kwargs() -> dict:
+            ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ("cursor_obj", "rng", "txt", "text_doc")
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("get_cursor() got an unexpected keyword argument")
 
-        @classmethod
-        def get_cursor(cls, *args, **kwargs) -> XTextCursor:
-            """
-            Gets text cursor
+            keys = ("cursor_obj", "rng")
+            for key in keys:
+                if key in kwargs:
+                    ka[1] = kwargs[key]
+                    break
+            if count == 1:
+                return ka
+            keys = ("txt", "text_doc")
+            for key in keys:
+                if key in kwargs:
+                    ka[2] = kwargs[key]
+                    break
+            return ka
 
-            Args:
-                cursor_obj (DocOrCursor): Text Document or Text View Cursor
-                rng (XTextRange): Text Range Instance
-                text_doc (XTextDocument): Text Document instance
+        if not count in (0, 1, 2):
+            raise TypeError("get_cursor() got an invalid number of arguments")
 
-            Raises:
-                CursorError: If Unable to get cursor
+        kargs = get_kwargs()
 
-            Returns:
-                XTextCursor: Cursor
-            """
-            return super(Write, cls).get_cursor(*args, **kwargs)
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
+
+        if count == 0:
+            return cls._get_cursor_obj(cls.active_doc)
+
+        if count == 1:
+            return cls._get_cursor_obj(kargs[1])
+        txt_doc = mLo.Lo.qi(XTextDocument, kargs[2])
+        if txt_doc is None:
+            txt = kargs[2]
+        else:
+            txt = txt_doc.getText()
+        return cls._get_cursor_txt(rng=kargs[1], txt=txt)
 
         # endregion get_cursor()
 
@@ -269,8 +299,20 @@ class Write(mSel.Selection):
         """
         return mInfo.Info.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.WRITER)
 
+    # region get_text_doc()
+
+    @overload
+    @classmethod
+    def get_text_doc(cls) -> XTextDocument:
+        ...
+
+    @overload
     @classmethod
     def get_text_doc(cls, doc: XComponent) -> XTextDocument:
+        ...
+
+    @classmethod
+    def get_text_doc(cls, doc: XComponent | None = None) -> XTextDocument:
         """
         Gets a writer document
 
@@ -290,13 +332,18 @@ class Write(mSel.Selection):
             .. cssclass:: lo_event
 
                 - :py:attr:`~.events.write_named_event.WriteNamedEvent.DOC_TEXT` :eventref:`src-docs-event`
+
+        .. versionchanged:: 0.9.0
+            Added overload ``get_text_doc()``
         """
         if doc is None:
-            raise TypeError("Document is null")
+            doc = mLo.Lo.this_component
 
         text_doc = mLo.Lo.qi(XTextDocument, doc, True)
         _Events().trigger(WriteNamedEvent.DOC_TEXT, EventArgs(Write.get_text_doc.__qualname__))
         return text_doc
+
+    # endregion get_text_doc()
 
     # region create_doc()
     @overload
@@ -411,8 +458,19 @@ class Write(mSel.Selection):
 
     # endregion create_doc_from_template()
 
-    @staticmethod
-    def close_doc(text_doc: XTextDocument) -> bool:
+    # region close_doc()
+    @overload
+    @classmethod
+    def close_doc(cls) -> bool:
+        ...
+
+    @overload
+    @classmethod
+    def close_doc(cls, text_doc: XTextDocument) -> bool:
+        ...
+
+    @classmethod
+    def close_doc(cls, text_doc: XTextDocument | None = None) -> bool:
         """
         Closes text document
 
@@ -436,7 +494,12 @@ class Write(mSel.Selection):
 
         Attention:
             :py:meth:`Lo.close <.utils.lo.Lo.close>` method is called along with any of its events.
+
+        .. versionchanged:: 0.9.0
+            Added overload ``close_doc()``
         """
+        if text_doc is None:
+            text_doc = cls.active_doc
         cargs = CancelEventArgs(Write.close_doc.__qualname__)
         cargs.event_data = {"text_doc": text_doc}
         _Events().trigger(WriteNamedEvent.DOC_CLOSING, cargs)
@@ -446,6 +509,8 @@ class Write(mSel.Selection):
         result = mLo.Lo.close(closable)
         _Events().trigger(WriteNamedEvent.DOC_CLOSED, EventArgs.from_args(cargs))
         return result
+
+    # endregion close_doc()
 
     @staticmethod
     def save_doc(text_doc: XTextDocument, fnm: PathOrStr) -> bool:
@@ -515,7 +580,7 @@ class Write(mSel.Selection):
             loader (XComponentLoader): Component Loader
 
         Raises:
-            # UnOpenableError: If fnm is not able to be opened
+            UnOpenableError: If fnm is not able to be opened
             ValueError: If template_path is not ott file
             MissingInterfaceError: If template_path document does not implement XTextDocument interface
             ValueError: If unable to obtain cursor object
@@ -718,9 +783,9 @@ class Write(mSel.Selection):
         # see section 7.17  of Useful Macro Information For OpenOffice By Andrew Pitonyak.pdf
         size = cls.get_page_size(text_doc)
         print("Page Size is:")
-        print(f"  {round(size.Width / 100)} mm by {round(size.Height / 100)} mm")
-        print(f"  {round(size.Width / 2540)} inches by {round(size.Height / 2540)} inches")
-        print(f"  {round((size.Width *72.0) / 2540.0)} picas by {round((size.Height *72.0) / 2540.0)} picas")
+        print(f"  {round(size.width / 100)} mm by {round(size.height / 100)} mm")
+        print(f"  {round(size.width / 2540)} inches by {round(size.height / 2540)} inches")
+        print(f"  {round((size.width *72.0) / 2540.0)} picas by {round((size.height *72.0) / 2540.0)} picas")
 
     # endregion ---------- page methods --------------------------------
 
@@ -731,6 +796,51 @@ class Write(mSel.Selection):
     def _append_text(cls, cursor: XTextCursor, text: str) -> None:
         cursor.setString(text)
         cursor.gotoEnd(False)
+
+    @classmethod
+    def _append_text_style(cls, cursor: XTextCursor, text: str, styles: Iterable[StyleObj]) -> None:
+        s_len = len(text)
+        if s_len == 0:
+            return
+
+        cursor.setString(text)
+        cursor.gotoEnd(False)
+        style_srv = (
+            "com.sun.star.style.CharacterProperties",
+            "com.sun.star.style.ParagraphProperties",
+            "com.sun.star.drawing.FillProperties",
+        )
+        for style in styles:
+            if not style.support_service(*style_srv):
+                mLo.Lo.print(f"_append_text_style(), Suppoted services are {style_srv}. Not Supported style: {style}")
+                continue
+            cargs = CancelEventArgs("Write.append")
+            cargs.event_data = style
+            _Events().trigger(WriteNamedEvent.STYLING, cargs)
+            if cargs.cancel:
+                continue
+            bak = not any((FormatKind.PARA in style.prop_format_kind, FormatKind.STATIC in style.prop_format_kind))
+
+            if bak:
+                # store properties about to be changed
+                style.backup(cursor)
+            cursor.goLeft(s_len, True)
+
+            style.apply(cursor)
+
+            cursor.gotoEnd(False)
+            if bak and style.prop_has_backup:
+                try:
+                    style.restore(cursor, True)
+                except mEx.MultiError as e:
+                    mLo.Lo.print(f"Write.append(): Unable to restore Property")
+                    for err in e.errors:
+                        mLo.Lo.print(f"  {err}")
+                except Exception as e:
+                    mLo.Lo.print(f"Write.append(): Unable to restore Property")
+                    mLo.Lo.print(f"  {e}")
+
+            _Events().trigger(WriteNamedEvent.STYLED, EventArgs.from_args(cargs))
 
     @classmethod
     def _append_ctl_char(cls, cursor: XTextCursor, ctl_char: int) -> None:
@@ -747,37 +857,21 @@ class Write(mSel.Selection):
     @overload
     @classmethod
     def append(cls, cursor: XTextCursor, text: str) -> None:
-        """
-        Appends text to text cursor
+        ...
 
-        Args:
-            cursor (XTextCursor): Text Cursor
-            text (str): Text to append
-        """
+    @overload
+    @classmethod
+    def append(cls, cursor: XTextCursor, text: str, styles: Iterable[StyleObj]) -> None:
         ...
 
     @overload
     @classmethod
     def append(cls, cursor: XTextCursor, ctl_char: ControlCharacterEnum) -> None:
-        """
-        Appents a control character (like a paragraph break or a hard space) into the text.
-
-        Args:
-            cursor (XTextCursor): Text Cursor
-            ctl_char (ControlCharacterEnum): Control Char
-        """
         ...
 
     @overload
     @classmethod
     def append(cls, cursor: XTextCursor, text_content: XTextContent) -> None:
-        """
-        Appends a content, such as a text table, text frame or text field.
-
-        Args:
-            cursor (XTextCursor): Text Cursor
-            text_content (XTextContent): Text Content
-        """
         ...
 
     @classmethod
@@ -788,13 +882,30 @@ class Write(mSel.Selection):
         Args:
             cursor (XTextCursor): Text Cursor
             text (str): Text to append
+            styles (Iterable[StyleObj]):One or more styles to apply to text.
             ctl_char (int): Control Char (like a paragraph break or a hard space)
             text_content (XTextContent): Text content, such as a text table, text frame or text field.
 
+        Returns:
+            None:
+
+        :events:
+            If using styles then the following events are triggered for each style.
+
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLED` :eventref:`src-docs-event`
+
         See Also:
             `API ControlCharacter <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1text_1_1ControlCharacter.html>`_
+
+        .. versionchanged:: 0.9.0
+            Added ``append(cursor: XTextCursor, text: str, styles: Iterable[StyleObj])`` overload.
+
+            Added Events.
         """
-        ordered_keys = (1, 2)
+        ordered_keys = (1, 2, 3)
         kargs_len = len(kwargs)
         count = len(args) + kargs_len
 
@@ -802,7 +913,7 @@ class Write(mSel.Selection):
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ("cursor", "text", "ctl_char", "text_content")
+            valid_keys = ("cursor", "text", "ctl_char", "text_content", "styles")
             check = all(key in valid_keys for key in kwargs.keys())
             if not check:
                 raise TypeError("append() got an unexpected keyword argument")
@@ -812,9 +923,12 @@ class Write(mSel.Selection):
                 if key in kwargs:
                     ka[2] = kwargs[key]
                     break
+            if count == 2:
+                return ka
+            ka[3] = kwargs.get("styles", None)
             return ka
 
-        if count != 2:
+        if not count in (2, 3):
             raise TypeError("append() got an invalid numer of arguments")
 
         kargs = get_kwargs()
@@ -822,27 +936,69 @@ class Write(mSel.Selection):
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
 
+        cursor = cast("XTextCursor", kargs[1])
+
+        if count == 3:
+            cls._append_text_style(cursor=cursor, text=kargs[2], styles=kargs[3])
+            return
+
         if isinstance(kargs[2], str):
-            cls._append_text(cursor=kargs[1], text=kargs[2])
+            cls._append_text(cursor=cursor, text=kargs[2])
         elif isinstance(kargs[2], int):
-            cls._append_ctl_char(cursor=kargs[1], ctl_char=kargs[2])
+            cls._append_ctl_char(cursor=cursor, ctl_char=kargs[2])
         else:
-            cls._append_text_content(cursor=kargs[1], text_content=kargs[2])
+            cls._append_text_content(cursor=cursor, text_content=kargs[2])
 
     # endregion append()
 
+    # region append_line()
+    @overload
     @classmethod
-    def append_line(cls, cursor: XTextCursor, text: str | None = None) -> None:
+    def append_line(cls, cursor: XTextCursor) -> None:
+        ...
+
+    @overload
+    @classmethod
+    def append_line(cls, cursor: XTextCursor, text: str) -> None:
+        ...
+
+    @overload
+    @classmethod
+    def append_line(cls, cursor: XTextCursor, text: str, styles: Iterable[StyleObj]) -> None:
+        ...
+
+    @classmethod
+    def append_line(cls, cursor: XTextCursor, text: str = "", styles: Iterable[StyleObj] = None) -> None:
         """
         Appends a new Line
 
         Args:
             cursor (XTextCursor): Text Cursor
             text (str, optional): text to append before new line is inserted.
+            styles (Iterable[StyleObj]): One or more styles to apply to text. If ``text`` is omitted then this argument is ignored.
+
+        :events:
+            If using styles then the following events are triggered for each style.
+
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLED` :eventref:`src-docs-event`
+
+        .. versionchanged:: 0.9.0
+            Added overload ``append_line(cursor: XTextCursor, text: str, styles: Iterable[StyleObj])``.
+
+            Added events.
         """
-        if text is not None:
-            cls._append_text(cursor=cursor, text=text)
+        if text:
+            if styles is None:
+                cls._append_text(cursor=cursor, text=text)
+            else:
+                cls._append_text_style(cursor=cursor, text=text, styles=styles)
+
         cls._append_ctl_char(cursor=cursor, ctl_char=ControlCharacterEnum.LINE_BREAK)
+
+    # endregion append_line()
 
     @classmethod
     def append_date_time(cls, cursor: XTextCursor) -> None:
@@ -866,17 +1022,130 @@ class Write(mSel.Selection):
         xtext_content = mLo.Lo.qi(XTextContent, dt_field, True)
         cls._append_text_content(cursor, xtext_content)
 
+    # region append_para()
+    @overload
+    @classmethod
+    def append_para(cls, cursor: XTextCursor) -> None:
+        ...
+
+    @overload
     @classmethod
     def append_para(cls, cursor: XTextCursor, text: str) -> None:
+        ...
+
+    @overload
+    @classmethod
+    def append_para(cls, cursor: XTextCursor, text: str, styles: Iterable[StyleObj]) -> None:
+        ...
+
+    @classmethod
+    def append_para(cls, cursor: XTextCursor, text: str = "", styles: Iterable[StyleObj] = None) -> None:
         """
-        Appends text and then a paragraph break.
+        Appends text (if present) and then a paragraph break.
 
         Args:
             cursor (XTextCursor): Text Cursor
-            text (str): Text to append
+            text (str, optional): Text to append
+            styles (Iterable[StyleObj]): One or more styles to apply to text. If ``text`` is empty then this argument is ignored.
+
+        :events:
+            If using styles then the following events are triggered for each style.
+
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLED` :eventref:`src-docs-event`
+
+        .. versionchanged:: 0.9.0
+            Added overload ``append_para(cursor: XTextCursor, text: str, styles: Iterable[StyleObj])``.
+
+            Added Events.
         """
-        cls._append_text(cursor=cursor, text=text)
+
+        # paragraph styles need to capture the current pargarph setting and restore them.
+        # other styles are handeled by _append_text_style().
+
+        restore = False
+
+        style_lst: List[StyleObj] = []
+        fill_lst: List[StyleObj] = []
+        restore_style_lst: List[StyleObj] = []
+        restore_fill_lst: List[StyleObj] = []
+        style_srv = (
+            "com.sun.star.style.CharacterProperties",
+            "com.sun.star.style.ParagraphProperties",
+            "com.sun.star.drawing.FillProperties",
+        )
+
+        if not styles is None:
+            for style in styles:
+                if not style.support_service(*style_srv):
+                    mLo.Lo.print(f"append_para(), Suppoted services are {style_srv}. Not Supported style: {style}")
+                    continue
+                if FormatKind.TXT_CONTENT in style.prop_format_kind and FormatKind.PARA in style.prop_format_kind:
+                    fill_lst.append(style)
+                else:
+                    style_lst.append(style)
+
+        para_c = None
+        if fill_lst:
+            para_c = cls.get_paragraph_cursor(cursor)
+
+        def capture_old_val(style: StyleObj) -> None:
+            nonlocal restore, para_c, restore_style_lst, restore_fill_lst
+            if FormatKind.PARA in style.prop_format_kind and not FormatKind.STATIC in style.prop_format_kind:
+                restore = True
+                if not para_c is None and FormatKind.TXT_CONTENT in style.prop_format_kind:
+                    style.backup(para_c.TextParagraph)
+                    restore_fill_lst.append(style)
+                else:
+                    style.backup(cursor)
+                    restore_style_lst.append(style)
+
+        if text:
+            if styles is None:
+                cls._append_text(cursor=cursor, text=text)
+            else:
+                for style in styles:
+                    capture_old_val(style)
+                cls._append_text_style(cursor=cursor, text=text, styles=style_lst)
+
+        if fill_lst:
+            # para_c = cls.get_paragraph_cursor(cursor)
+            para_c.gotoStartOfParagraph(False)
+            para_c.gotoEndOfParagraph(True)
+            fp = cast("FillProperties", para_c.TextParagraph)
+            for style in fill_lst:
+                style.apply(fp)
+            para_c.gotoEnd(False)
+
         cls._append_ctl_char(cursor=cursor, ctl_char=ControlCharacterEnum.PARAGRAPH_BREAK)
+
+        for style in restore_style_lst:
+            try:
+                style.restore(cursor, True)
+            except mEx.MultiError as e:
+                mLo.Lo.print(f"Write.append_para(): Unable to restore Property")
+                for err in e.errors:
+                    mLo.Lo.print(f"  {err}")
+            except Exception as e:
+                mLo.Lo.print(f"Write.append_para(): Unable to restore Property")
+                mLo.Lo.print(f"  {e}")
+
+        if not para_c is None:
+            fp = cast("FillProperties", para_c.TextParagraph)
+            for style in restore_fill_lst:
+                try:
+                    style.restore(fp, True)
+                except mEx.MultiError as e:
+                    mLo.Lo.print(f"Write.append_para(): Unable to restore Property")
+                    for err in e.errors:
+                        mLo.Lo.print(f"  {err}")
+                except Exception as e:
+                    mLo.Lo.print(f"Write.append_para(): Unable to restore Property")
+                    mLo.Lo.print(f"  {e}")
+
+    # endregion append_para()
 
     @classmethod
     def end_line(cls, cursor: XTextCursor) -> None:
@@ -1074,25 +1343,310 @@ class Write(mSel.Selection):
         cls.style_left(cursor, pos, "CharFontName", mInfo.Info.get_font_mono_name())
         cls.style_left(cursor, pos, "CharHeight", 10)
 
+    # region style()
+    @classmethod
+    def _style(cls, pos: int, distance: int, prop_name: str, prop_val: object, cursor: XTextCursor = None) -> None:
+        cargs = KeyValCancelArgs("Write.style", prop_name, prop_val)
+        _Events().trigger(WriteNamedEvent.STYLING, cargs)
+        if cargs.cancel:
+            return
+        if cursor is None:
+            cursor = cls.get_cursor()
+        cursor.gotoStart(False)
+        cursor.goRight(pos, False)
+        cursor.goRight(distance, True)
+        mProps.Props.set(cursor, **{prop_name: prop_val})
+        cursor.gotoEnd(False)
+        _Events().trigger(WriteNamedEvent.STYLED, KeyValArgs.from_args(cargs))
+
+    @classmethod
+    def _style_style(cls, pos: int, distance: int, styles: Iterable[StyleObj], cursor: XTextCursor = None) -> None:
+        if cursor is None:
+            cursor = cls.get_cursor()
+        # cursor.collapseToEnd()
+        cursor.gotoStart(False)
+        cursor.goRight(pos, False)
+        cursor.goRight(distance, True)
+
+        style_srv = (
+            "com.sun.star.style.CharacterProperties",
+            "com.sun.star.style.ParagraphProperties",
+            "com.sun.star.drawing.FillProperties",
+        )
+
+        for style in styles:
+            if not style.support_service(*style_srv):
+                mLo.Lo.print(f"_style_style(), Suppoted services are {style_srv}. Not Supported style: {style}")
+                continue
+            cargs = CancelEventArgs("Write.style")
+            cargs.event_data = style
+            _Events().trigger(WriteNamedEvent.STYLING, cargs)
+            if cargs.cancel:
+                continue
+            style.apply(cursor)
+            _Events().trigger(WriteNamedEvent.STYLED, EventArgs.from_args(cargs))
+        cursor.gotoEnd(False)
+
+    @overload
+    @classmethod
+    def style(cls, pos: int, length: int, styles: Iterable[StyleObj]) -> None:
+        ...
+
+    @overload
+    @classmethod
+    def style(cls, pos: int, length: int, styles: Iterable[StyleObj], cursor: XTextCursor) -> None:
+        ...
+
+    @overload
+    @classmethod
+    def style(cls, pos: int, length: int, prop_name: str, prop_val: object) -> None:
+        ...
+
+    @overload
+    @classmethod
+    def style(cls, pos: int, length: int, prop_name: str, prop_val: object, cursor: XTextCursor) -> None:
+        ...
+
+    @classmethod
+    def style(cls, *args, **kwargs) -> None:
+        """
+        Styles. From position styles right by distance amount.
+
+        Args:
+            pos (int): Position style start.
+            length (int): The distance from ``pos`` to apply style.
+            styles (Iterable[StyleObj]):One or more styles to apply to text.
+            prop_name (str): Property Name such as ``CharHeight``
+            prop_val (object): Property Value such as ``10``
+            cursor (XTextCursor): Text Cursor
+
+        Returns:
+            None:
+
+        See Also:
+            :py:meth:`~.Write.style_left`
+
+        Note:
+            Unlike :py:meth:`~.Write.style_left` this method does not restore any style properties after style is applied.
+
+        .. versionadded:: 0.9.0
+        """
+        ordered_keys = (1, 2, 3, 4, 5)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
+
+        def get_kwargs() -> dict:
+            ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ("pos", "length", "prop_name", "prop_val", "styles", "cursor")
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("style() got an unexpected keyword argument")
+            ka[1] = kwargs.get("pos", None)
+            ka[2] = kwargs.get("length", None)
+            keys = ("prop_name", "styles")
+            for key in keys:
+                if key in kwargs:
+                    ka[3] = kwargs[key]
+                    break
+            if count == 3:
+                return ka
+            keys = ("prop_val", "cursor")
+            for key in keys:
+                if key in kwargs:
+                    ka[4] = kwargs[key]
+                    break
+            if count == 4:
+                return ka
+            ka[5] = kwargs.get("cursor", None)
+            return ka
+
+        if not count in (3, 4, 5):
+            raise TypeError("style() got an invalid number of arguments")
+
+        kargs = get_kwargs()
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
+        if count == 3:
+            return cls._style_style(pos=kargs[1], distance=kargs[2], styles=kargs[3])
+        if count == 4:
+            # cursor or prop value
+            arg4 = kargs[4]
+            if mInfo.Info.is_uno(arg4):
+                return cls._style_style(pos=kargs[1], distance=kargs[2], styles=kargs[3], cursor=arg4)
+            return cls._style(pos=kargs[1], distance=kargs[2], prop_name=kargs[3], prop_val=arg4)
+        return cls._style(pos=kargs[1], distance=kargs[2], prop_name=kargs[3], prop_val=kargs[4], cursor=kargs[5])
+
+    # endregion style()
+    # region style_left()
+
+    @classmethod
+    def _style_left(cls, cursor: XTextCursor, pos: int, prop_name: str, prop_val: object) -> None:
+        cargs = KeyValCancelArgs("Write.style", prop_name, prop_val)
+        cargs.event_data = {"pos": pos}
+        _Events().trigger(WriteNamedEvent.STYLING, cargs)
+        if cargs.cancel:
+            return
+
+        if pos == 0:
+            cursor.goLeft(0, True)
+            amt = 0
+        else:
+            old_val = mProps.Props.get(cursor, prop_name)
+            curr_pos = mSel.Selection.get_position(cursor)
+            amt = curr_pos - pos
+            cursor.goLeft(amt, True)
+        mProps.Props.set(cursor, **{prop_name: prop_val})
+
+        if pos > 0:
+            cursor.goRight(amt, False)
+            mProps.Props.set(cursor, **{prop_name: old_val})
+        else:
+            cursor.goRight(0, False)
+        _Events().trigger(WriteNamedEvent.STYLED, KeyValArgs.from_args(cargs))
+
+    @classmethod
+    def _style_left_style(cls, cursor: XTextCursor, pos: int, styles: Iterable[StyleObj]) -> None:
+        # store properties about to be changed
+
+        if pos == 0:
+            cursor.goLeft(0, True)
+            amt = 0
+        else:
+            curr_pos = mSel.Selection.get_position(cursor)
+            amt = curr_pos - pos
+
+        style_srv = (
+            "com.sun.star.style.CharacterProperties",
+            "com.sun.star.style.ParagraphProperties",
+            "com.sun.star.drawing.FillProperties",
+        )
+
+        for style in styles:
+            if not style.support_service(*style_srv):
+                mLo.Lo.print(f"_style_left_style(), Suppoted services are {style_srv}. Not Supported style: {style}")
+                continue
+            cargs = CancelEventArgs("Write.style_left")
+            cargs.event_data = style
+            _Events().trigger(WriteNamedEvent.STYLING, cargs)
+            if cargs.cancel:
+                continue
+            if pos > 0:
+                bak = not any((FormatKind.PARA in style.prop_format_kind, FormatKind.STATIC in style.prop_format_kind))
+                if bak:
+                    style.backup(cursor)
+
+                cursor.goLeft(amt, True)
+            style.apply(cursor)
+            if pos > 0:
+                cursor.goRight(amt, False)
+
+            if bak and style.prop_has_backup:
+                try:
+                    style.restore(cursor)
+                except mEx.MultiError as e:
+                    mLo.Lo.print(f"Write.style_left(): Unable to restore Property")
+                    for err in e.errors:
+                        mLo.Lo.print(f"  {err}")
+                except Exception as e:
+                    mLo.Lo.print(f"Write.style_left(): Unable to restore Property")
+                    mLo.Lo.print(f"  {e}")
+
+            _Events().trigger(WriteNamedEvent.STYLED, EventArgs.from_args(cargs))
+
+        if pos <= 0:
+            cursor.goRight(0, False)
+
+    @overload
+    @classmethod
+    def style_left(cls, cursor: XTextCursor, pos: int, styles: Iterable[StyleObj]) -> None:
+        ...
+
+    @overload
     @classmethod
     def style_left(cls, cursor: XTextCursor, pos: int, prop_name: str, prop_val: object) -> None:
+        ...
+
+    @classmethod
+    def style_left(cls, *args, **kwargs) -> None:
         """
         Styles left. From current cursor position to left by pos amount.
 
         Args:
             cursor (XTextCursor): Text Cursor
             pos (int): Positions to style left
-            prop_name (str): Property Name such as 'CharHeight
-            prop_val (object): Property Value such as 10
+            styles (Iterable[StyleObj]):One or more styles to apply to text.
+            prop_name (str): Property Name such as ``CharHeight``
+            prop_val (object): Property Value such as ``10``
+
+        Returns:
+            None:
+
+        :events:
+            If using styles then the following events are triggered for each style.
+
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLED` :eventref:`src-docs-event`
+
+            Otherwise the following events are triggered once.
+
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLING` :eventref:`src-docs-key-event-cancel`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLED` :eventref:`src-docs-key-event`
+
+        See Also:
+            :py:meth:`~.Write.style`
+
+        Note:
+            This method restores the style properties to their original state after the style is applied.
+            This is done so applied style properties are reset before next text is appended.
+            This is not the case for :py:meth:`~.Write.style` method.
+
+        .. versionchanged:: 0.9.0
+            Added ``style_left(cursor: XTextCursor, pos: int, styles: Iterable[StyleObj])`` overload.
+
+            Added Events.
         """
-        old_val = mProps.Props.get_property(cursor, prop_name)
+        ordered_keys = (1, 2, 3, 4)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
 
-        curr_pos = mSel.Selection.get_position(cursor)
-        cursor.goLeft(curr_pos - pos, True)
-        mProps.Props.set_property(cursor, prop_name, prop_val)
+        def get_kwargs() -> dict:
+            ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ("cursor", "pos", "prop_name", "prop_val", "styles")
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("style_left() got an unexpected keyword argument")
+            ka[1] = kwargs.get("cursor", None)
+            ka[2] = kwargs.get("pos", None)
+            keys = ("prop_name", "styles")
+            for key in keys:
+                if key in kwargs:
+                    ka[3] = kwargs[key]
+                    break
+            if count == 3:
+                return ka
+            ka[4] = kwargs.get("prop_val", None)
+            return ka
 
-        cursor.goRight(curr_pos - pos, False)
-        mProps.Props.set_property(cursor, prop_name, old_val)
+        if not count in (3, 4):
+            raise TypeError("style_left() got an invalid number of arguments")
+
+        kargs = get_kwargs()
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
+
+        if count == 4:
+            return cls._style_left(kargs[1], kargs[2], kargs[3], kargs[4])
+        return cls._style_left_style(kargs[1], kargs[2], kargs[3])
+
+    # endregion style_left()
 
     @classmethod
     def dispatch_cmd_left(
@@ -1152,40 +1706,105 @@ class Write(mSel.Selection):
             mLo.Lo.dispatch_cmd(cmd=cmd, props=props, frame=frame)
 
     # region    style_prev_paragraph()
-    @overload
     @staticmethod
-    def style_prev_paragraph(cursor: XTextCursor, prop_val: object) -> None:
-        """
-        Style ParaStyleName of previous paragraph
+    def _style_prev_paragraph_prop(cursor: XTextCursor | XParagraphCursor, prop_val: object, prop_name: str) -> None:
+        cargs = KeyValCancelArgs("Write._style_prev_paragraph_prop", prop_name, prop_val)
+        _Events().trigger(WriteNamedEvent.STYLE_PREV_PARA_PROP_SETTING, cargs)
+        if cargs.cancel:
+            return
+        _Events().trigger(WriteNamedEvent.STYLING, cargs)
+        if cargs.cancel:
+            return
+        old_val = mProps.Props.get(cursor, prop_name)
 
-        Args:
-            cursor (XTextCursor): Text Cursor
-            prop_val (object): Property value
-        """
+        cursor.gotoPreviousParagraph(True)  # select previous paragraph
+        mProps.Props.set(cursor, **{prop_name: prop_val})
+
+        # reset
+        cursor.gotoNextParagraph(False)
+        mProps.Props.set(cursor, **{prop_name: old_val})
+        eargs = KeyValArgs.from_args(cargs)
+        _Events().trigger(WriteNamedEvent.STYLED, eargs)
+        _Events().trigger(WriteNamedEvent.STYLE_PREV_PARA_PROP_SET, eargs)
+
+    @classmethod
+    def _style_prev_paragraph_style(cls, cursor: XTextCursor | XParagraphCursor, styles: Iterable[StyleObj]) -> None:
+        c_styles_args = CancelEventArgs("Write._style_prev_paragraph_style")
+        c_styles_args.event_data = styles
+        _Events().trigger(WriteNamedEvent.STYLE_PREV_PARA_STYLES_SETTING, c_styles_args)
+        if c_styles_args.cancel:
+            return
+        style_srv = (
+            "com.sun.star.style.CharacterProperties",
+            "com.sun.star.style.ParagraphProperties",
+            "com.sun.star.drawing.FillProperties",
+        )
+
+        for style in cast(Iterable[StyleObj], c_styles_args.event_data):
+            if not style.support_service(*style_srv):
+                mLo.Lo.print(
+                    f"_style_prev_paragraph_style(), Suppoted services are {style_srv}. Not Supported style: {style}"
+                )
+                continue
+
+            cargs = CancelEventArgs(c_styles_args.source)
+            cargs.event_data = style
+            _Events().trigger(WriteNamedEvent.STYLING, cargs)
+            if cargs.cancel:
+                continue
+
+            if cursor.gotoPreviousParagraph(True):  # select previous paragraph
+                style.backup(cursor)
+                style.apply(cursor)
+                cursor.gotoNextParagraph(False)
+                if style.prop_has_backup:
+                    style.restore(cursor, True)
+
+                _Events().trigger(WriteNamedEvent.STYLED, EventArgs.from_args(cargs))
+
+        e_style_args = EventArgs.from_args(c_styles_args)
+        _Events().trigger(WriteNamedEvent.STYLE_PREV_PARA_STYLES_SET, e_style_args)
+
+    @overload
+    @classmethod
+    def style_prev_paragraph(cls, cursor: XTextCursor, styles: Iterable[StyleObj]) -> None:
         ...
 
     @overload
-    @staticmethod
-    def style_prev_paragraph(cursor: XTextCursor, prop_val: object, prop_name: str) -> None:
+    @classmethod
+    def style_prev_paragraph(cls, cursor: XTextCursor, prop_val: object) -> None:
+        ...
+
+    @overload
+    @classmethod
+    def style_prev_paragraph(cls, cursor: XTextCursor, prop_val: object, prop_name: str) -> None:
+        ...
+
+    @classmethod
+    def style_prev_paragraph(cls, *args, **kwargs) -> None:
         """
         Style previous paragraph
 
         Args:
             cursor (XTextCursor): Text Cursor
+            styles (Iterable[StyleObj]):One or more styles to apply to text.
             prop_val (object): Property value
             prop_name (str): Property Name
-        """
-        ...
 
-    @staticmethod
-    def style_prev_paragraph(cursor: XTextCursor | XParagraphCursor, prop_val: object, prop_name: str = None) -> None:
-        """
-        Style previous paragraph
+        :events:
+            If using styles then the following events are triggered for each style.
 
-        Args:
-            cursor (XTextCursor): Text Cursor
-            prop_val (object): Property value
-            prop_name (str): Property Name
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLED` :eventref:`src-docs-event`
+
+            Otherwise the following events are triggered once.
+
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLING` :eventref:`src-docs-key-event-cancel`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLED` :eventref:`src-docs-key-event`
 
         Returns:
             None:
@@ -1196,18 +1815,53 @@ class Write(mSel.Selection):
 
                 cursor = Write.get_cursor(doc)
                 Write.style_prev_paragraph(cursor=cursor, prop_val=ParagraphAdjust.CENTER, prop_name="ParaAdjust")
+
+        .. versionchanged:: 0.9.0
+            Added overload ``style_prev_paragraph(cursor: XTextCursor, styles: Iterable[StyleObj])``
         """
-        if prop_name is None:
-            prop_name = "ParaStyleName"
-        # raises PropertyNotFoundError if property is not found
-        old_val = mProps.Props.get_property(cursor, prop_name)
+        ordered_keys = (1, 2, 3)
+        kargs_len = len(kwargs)
+        count = len(args) + kargs_len
 
-        cursor.gotoPreviousParagraph(True)  # select previous paragraph
-        mProps.Props.set_property(cursor, prop_name, prop_val)
+        def get_kwargs() -> dict:
+            ka = {}
+            if kargs_len == 0:
+                return ka
+            valid_keys = ("cursor", "prop_name", "prop_val", "styles")
+            check = all(key in valid_keys for key in kwargs.keys())
+            if not check:
+                raise TypeError("style_prev_paragraph() got an unexpected keyword argument")
+            ka[1] = kwargs.get("cursor", None)
+            keys = ("prop_val", "styles")
+            for key in keys:
+                if key in kwargs:
+                    ka[2] = kwargs[key]
+                    break
+            if count == 2:
+                return ka
+            ka[3] = kwargs.get("prop_name", None)
+            return ka
 
-        # reset
-        cursor.gotoNextParagraph(False)
-        mProps.Props.set_property(cursor, prop_name, old_val)
+        if not count in (2, 3):
+            raise TypeError("style_prev_paragraph() got an invalid number of arguments")
+
+        kargs = get_kwargs()
+        for i, arg in enumerate(args):
+            kargs[ordered_keys[i]] = arg
+        # procees code here
+
+        if count == 3:
+            cls._style_prev_paragraph_prop(cursor=kargs[1], prop_val=kargs[2], prop_name=kargs[3])
+            return
+
+        # count == 2
+        arg2 = kargs[2]
+        # arg2 must be string or Iterable[StyleObj]
+        # ParaStyleName can only be set a string value
+        if isinstance(arg2, str):
+            cls._style_prev_paragraph_prop(cursor=kargs[1], prop_val=arg2, prop_name="ParaStyleName")
+        else:
+            cls._style_prev_paragraph_style(cursor=kargs[1], styles=arg2)
 
     # endregion style_prev_paragraph()
 
@@ -1218,13 +1872,13 @@ class Write(mSel.Selection):
     @staticmethod
     def get_page_text_width(text_doc: XTextDocument) -> int:
         """
-        get the width of the page's text area
+        Get the width of the page's text area in ``1/100 mm`` units.
 
         Args:
             text_doc (XTextDocument): Text Document
 
         Returns:
-            int: Page Width on success; Otherwise 0
+            int: Page Width in ``1/100 mm`` units on success; Otherwise 0
         """
         props = mInfo.Info.get_style_props(doc=text_doc, family_style_name="PageStyles", prop_set_nm="Standard")
         if props is None:
@@ -1242,9 +1896,9 @@ class Write(mSel.Selection):
             return 0
 
     @staticmethod
-    def get_page_size(text_doc: XTextDocument) -> Size:
+    def get_page_text_size(text_doc: XTextDocument) -> Size:
         """
-        Get page size
+        Get page text size in ``1/100 mm`` units.
 
         Args:
             text_doc (XTextDocument): Text Document
@@ -1254,7 +1908,41 @@ class Write(mSel.Selection):
             Exception: If unable to get page size
 
         Returns:
-            Size: _description_
+            Size: Page text Size in ``1/100 mm`` units.
+
+        .. versionadded:: 0.9.0
+        """
+        props = mInfo.Info.get_style_props(doc=text_doc, family_style_name="PageStyles", prop_set_nm="Standard")
+        if props is None:
+            raise mEx.PropertiesError("Could not access the standard page style")
+        try:
+            width = int(props.getPropertyValue("Width"))
+            height = int(props.getPropertyValue("Height"))
+            left_margin = int(props.getPropertyValue("LeftMargin"))
+            right_margin = int(props.getPropertyValue("RightMargin"))
+            top_margin = int(props.getPropertyValue("TopMargin"))
+            btm_margin = int(props.getPropertyValue("BottomMargin"))
+            text_width = width - (left_margin + right_margin)
+            text_height = height - (top_margin + btm_margin)
+
+            return Size(text_width, text_height)
+        except Exception as e:
+            raise Exception("Could not access standard page style dimensions") from e
+
+    @staticmethod
+    def get_page_size(text_doc: XTextDocument) -> Size:
+        """
+        Get page size in ``1/100 mm`` units.
+
+        Args:
+            text_doc (XTextDocument): Text Document
+
+        Raises:
+            PropertiesError: If unable to access properties
+            Exception: If unable to get page size
+
+        Returns:
+            Size: Page Size in ``1/100 mm`` units.
         """
         props = mInfo.Info.get_style_props(doc=text_doc, family_style_name="PageStyles", prop_set_nm="Standard")
         if props is None:
@@ -1461,21 +2149,33 @@ class Write(mSel.Selection):
 
     # region ------------- adding elements -----------------------------
 
+    # region add_formula()
+    @overload
     @classmethod
-    def add_formula(cls, cursor: XTextCursor, formula: str) -> bool:
+    def add_formula(cls, cursor: XTextCursor, formula: str) -> XTextContent:
+        ...
+
+    @overload
+    @classmethod
+    def add_formula(cls, cursor: XTextCursor, formula: str, styles: Iterable[StyleObj] = None) -> XTextContent:
+        ...
+
+    @classmethod
+    def add_formula(cls, cursor: XTextCursor, formula: str, styles: Iterable[StyleObj] = None) -> XTextContent:
         """
         Adds a formula
 
         Args:
             cursor (XTextCursor): Cursor
             formula (str): formula
+            styles (Iterable[StyleObj]): One or more styles to apply to frame. Only styles that support ``com.sun.star.text.TextEmbeddedObject`` service are applied.
 
         Raises:
             CreateInstanceMsfError: If unable to create text.TextEmbeddedObject
             Exception: If unable to add formula
 
         Returns:
-            bool: True if formula is added; Otherwise, False
+            XTextContent: Embedded Object.
 
         :events:
             .. cssclass:: lo_event
@@ -1485,7 +2185,12 @@ class Write(mSel.Selection):
 
         Note:
            Event args ``event_data`` is a dictionary containing ``formula`` and ``cursor``.
+
+        .. versionchanged:: 0.9.0
+            Now returns the embedded Object instead of bool value.
+            Added style parameter that allows for all styles that support ``com.sun.star.text.TextEmbeddedObject`` service.
         """
+        result = None
         cargs = CancelEventArgs(Write.add_formula.__qualname__)
         cargs.event_data = {"cursor": cursor, "formula": formula}
         _Events().trigger(WriteNamedEvent.FORMULA_ADDING, cargs)
@@ -1511,11 +2216,19 @@ class Write(mSel.Selection):
 
             formula_props = mLo.Lo.qi(XPropertySet, embed_obj_model, True)
             formula_props.setPropertyValue("Formula", formula)
+            result = embed_content
+            if styles:
+                srv = ("com.sun.star.text.TextEmbeddedObject",)
+                for style in styles:
+                    if style.support_service(*srv):
+                        style.apply(embed_content)
             mLo.Lo.print(f'Inserted formula "{formula}"')
         except Exception as e:
             raise Exception(f'Insertion fo formula "{formula}" failed:') from e
         _Events().trigger(WriteNamedEvent.FORMULA_ADDED, EventArgs.from_args(cargs))
-        return True
+        return result
+
+    # endregion add_formula()
 
     @classmethod
     def add_hyperlink(cls, cursor: XTextCursor, label: str, url_str: str) -> bool:
@@ -1647,34 +2360,37 @@ class Write(mSel.Selection):
     @classmethod
     def add_text_frame(
         cls,
+        *,
         cursor: XTextCursor,
-        ypos: int,
-        text: str,
-        width: int,
-        height: int,
+        text: str = "",
+        ypos: int | UnitObj = 300,
+        width: int | UnitObj = 5000,
+        height: int | UnitObj = 5000,
         page_num: int = 1,
-        border_color: Color | None = CommonColor.RED,
-        background_color: Color | None = CommonColor.LIGHT_BLUE,
-    ) -> bool:
+        border_color: Color | None = None,
+        background_color: Color | None = None,
+        styles: Iterable[StyleObj] = None,
+    ) -> XTextFrame:
         """
-        Adds a text frame with a red border and light blue back color
+        Adds a text frame.
 
         Args:
             cursor (XTextCursor): Text Cursor
-            ypos (int): Frame Y pos
-            text (str): Frame Text
-            width (int): Width
-            height (int): Height
-            page_num (int): Page Number to add text frame
-            border_color (Color, optional): Border Color. Defaults to CommonColor.RED
-            background_color (Color, optional): Background Color. Defaults to CommonColor.LIGHT_BLUE
+            text (str, optional): Frame Text
+            ypos (int, UnitObj. optional): Frame Y pos in ``1/100th mm`` or :ref:`proto_unit_obj`. Default ``300``.
+            width (int, UnitObj, optional): Width in ``1/100th mm`` or :ref:`proto_unit_obj`.
+            height (int, UnitObj, optional): Height in ``1/100th mm`` or :ref:`proto_unit_obj`.
+            page_num (int, optional): Page Number to add text frame. If ``0`` Then Frame is anchored to paragraph. Default ``1``.
+            border_color (Color, optional): Border Color.
+            background_color (Color, optional): Background Color.
+            styles (Iterable[StyleObj]): One or more styles to apply to frame. Only styles that support ``com.sun.star.text.TextFrame`` service are applied.
 
         Raises:
             CreateInstanceMsfError: If unable to create text.TextFrame
             Exception: If unable to add text frame
 
         Returns:
-            bool: True if Text frame is added; Otherwise, False
+            XTextFrame: Text frame that is added to document.
 
         :events:
             .. cssclass:: lo_event
@@ -1686,8 +2402,26 @@ class Write(mSel.Selection):
            Event args ``event_data`` is a dictionary containing all method args.
 
         See Also:
-            :py:class:`~.utils.color.CommonColor`
+            - :py:class:`~.utils.color.CommonColor`
+            - :py:class:`~.utils.color.StandardColor`
+
+        .. versionchanged:: 0.9.0
+            Now returns the added text frame instead of bool value.
+            Added ``UnitMM`` values.
+            ``border_color`` and ``background_color`` now default to ``None``.
+            Added style parameter that allows for all styles that support ``com.sun.star.text.TextFrame`` service.
         """
+        # If Text is added to both frames that are to be chained together then
+        # LO will not chain them.
+        # The Frame.ChainNextName and Frame.ChainPrevName properties cannot be set. and do not raise any error.
+        # This is the default behavour and makes sense.
+        # If the frame to flow to has text already then previous frame cannot flow to it.
+        #
+        # xframe = Lo.create_instance_msf(XTextFrame, "com.sun.star.text.ChainedTextFrame")
+        # Raises error: see, https://bugs.documentfoundation.org/show_bug.cgi?id=153825
+        # tf_shape = Lo.qi(XShape, xframe, True)
+
+        result = None
         cargs = CancelEventArgs(Write.add_text_frame.__qualname__)
         cargs.event_data = {
             "cursor": cursor,
@@ -1703,30 +2437,51 @@ class Write(mSel.Selection):
         if cargs.cancel:
             return False
 
-        ypos = cargs.event_data["ypos"]
+        arg_ypos = cast(Union[int, UnitObj], cargs.event_data["ypos"])
         text = cargs.event_data["text"]
-        width = cargs.event_data["width"]
-        height = cargs.event_data["height"]
+        arg_width = cast(Union[int, UnitObj], cargs.event_data["width"])
+        arg_height = cast(Union[int, UnitObj], cargs.event_data["height"])
         page_num = cargs.event_data["page_num"]
         border_color = cargs.event_data["border_color"]
         background_color = cargs.event_data["background_color"]
 
         try:
-            xframe = mLo.Lo.create_instance_msf(XTextFrame, "com.sun.star.text.TextFrame")
-            if xframe is None:
-                raise ValueError("Null value")
-        except Exception as e:
-            raise mEx.CreateInstanceMsfError(XTextFrame, "com.sun.star.text.TextFrame") from e
+            ypos = arg_ypos.get_value_mm100()
+        except AttributeError:
+            ypos = int(arg_ypos)
+        try:
+            width = arg_width.get_value_mm100()
+        except AttributeError:
+            width = int(arg_width)
+        try:
+            height = arg_height.get_value_mm100()
+        except AttributeError:
+            height = int(arg_height)
+
+        # if mLo.Lo.bridge_connector.headless:
+        #     # this does not allow chaining. See above comments.
+        #     xframe = mLo.Lo.create_instance_msf(XTextFrame, "com.sun.star.text.TextFrame", raise_err=True)
+        # else:
+        #     xframe = cls._add_text_frame_via_dispatch(ypos=ypos, width=width, height=height)
+
+        xframe = mLo.Lo.create_instance_msf(XTextFrame, "com.sun.star.text.TextFrame", raise_err=True)
 
         try:
             tf_shape = mLo.Lo.qi(XShape, xframe, True)
 
             # set dimensions of the text frame
-            tf_shape.setSize(Size(width, height))
+            tf_shape.setSize(UnoSize(width, height))
 
             #  anchor the text frame
             frame_props = mLo.Lo.qi(XPropertySet, xframe, True)
-            frame_props.setPropertyValue("AnchorType", TextContentAnchorType.AT_PAGE)
+            # if page number is Not include for TextContentAnchorType.AT_PAGE
+            # then Lo Default so At AT_PARAGRAPH
+            if not page_num or page_num < 1:
+                frame_props.setPropertyValue("AnchorType", TextContentAnchorType.AT_PARAGRAPH)
+            else:
+                frame_props.setPropertyValue("AnchorType", TextContentAnchorType.AT_PAGE)
+                frame_props.setPropertyValue("AnchorPageNo", page_num)
+
             frame_props.setPropertyValue("FrameIsAutomaticHeight", True)  # will grow if necessary
 
             # add a red border around all 4 sides
@@ -1750,22 +2505,59 @@ class Write(mSel.Selection):
             frame_props.setPropertyValue("VertOrient", VertOrientation.NONE)
             frame_props.setPropertyValue("VertOrientPosition", ypos)  # down from top
 
-            # if page number is Not include for TextContentAnchorType.AT_PAGE
-            # then Lo Default so At AT_PARAGRAPH
-            frame_props.setPropertyValue("AnchorPageNo", page_num)
-
             # insert text frame into document (order is important here)
             cls._append_text_content(cursor, xframe)
             cls.end_paragraph(cursor)
 
+            if text:
+                xframe_text = xframe.getText()
+                xtext_range = mLo.Lo.qi(XTextRange, xframe_text.createTextCursor(), True)
+                xframe_text.insertString(xtext_range, text, False)
+                result = xframe
+
+            if styles:
+                srv = ("com.sun.star.text.TextFrame", "com.sun.star.text.ChainedTextFrame")
+                for style in styles:
+                    if style.support_service(*srv):
+                        style.apply(xframe)
             # add text into the text frame
-            xframe_text = xframe.getText()
-            xtext_range = mLo.Lo.qi(XTextRange, xframe_text.createTextCursor(), True)
-            xframe_text.insertString(xtext_range, text, False)
         except Exception as e:
             raise Exception("Insertion of text frame failed:") from e
         _Events().trigger(WriteNamedEvent.TEXT_FRAME_ADDED, EventArgs.from_args(cargs))
-        return True
+        return result
+
+    @classmethod
+    def _add_text_frame_via_dispatch(cls, ypos: int, width: int, height: int) -> XTextFrame:
+        # this method is not currently being used.
+        # It works so it is left here for possible future use.
+        def filter_frame(val: str) -> bool:
+            regex = r"Frame\d+$"
+            if re.match(regex, val):
+                return True
+            return False
+
+        dargs = {"AnchorType": 0, "Pos.X": 1000, "Pos.Y": ypos, "Size.Width": width, "Size.Height": height}
+        pvals = mProps.Props.make_props(**dargs)
+        mLo.Lo.dispatch_cmd(cmd="Escape")
+        mLo.Lo.delay(200)
+        mLo.Lo.dispatch_cmd(cmd="InsertFrame", props=pvals)
+        mLo.Lo.delay(200)
+        mLo.Lo.dispatch_cmd(cmd="Escape")
+        mLo.Lo.delay(200)
+        frames = cls.get_text_frames(cls.active_doc)
+        names = frames.getElementNames()
+        if not names:
+            raise RuntimeError("Failed to add frames to document")
+
+        if len(names) == 1:
+            return frames.getByName(names[0])
+
+        # Filter out any frames that don't start with Frame...
+        filtered_names = filter(filter_frame, names)
+        frame_names = list(filtered_names)
+        # Sort in human readable so the highest frame name is at the end of the list.
+        frame_names.sort(key=mUtil.Util.natural_key_sorter)
+        return frames.getByName(frame_names.pop())
 
     @classmethod
     def add_table(
@@ -1776,7 +2568,9 @@ class Write(mSel.Selection):
         header_fg_color: Color | None = CommonColor.WHITE,
         tbl_bg_color: Color | None = CommonColor.LIGHT_BLUE,
         tbl_fg_color: Color | None = CommonColor.BLACK,
-    ) -> bool:
+        first_row_header: bool = True,
+        styles: Iterable[StyleObj] = None,
+    ) -> XTextTable:
         """
         Adds a table.
 
@@ -1785,10 +2579,12 @@ class Write(mSel.Selection):
         Args:
             cursor (XTextCursor): Text Cursor
             table_data (Table): 2D Table with the the first row containing column names.
-            header_bg_color (Color | None, optional): Table header background color. Set to None to ignore header color. Defaults to CommonColor.DARK_BLUE.
-            header_fg_color (Color | None, optional): Table header foreground color. Set to None to ignore header color. Defaults to CommonColor.WHITE.
-            tbl_bg_color (Color | None, optional): Table background color. Set to None to ignore background color. Defaults to CommonColor.LIGHT_BLUE.
-            tbl_fg_color (Color | None, optional): Table background color. Set to None to ignore background color. Defaults to CommonColor.BLACK.
+            header_bg_color (Color, optional): Table header background color. Set to None to ignore header color. Defaults to CommonColor.DARK_BLUE.
+            header_fg_color (Color, optional): Table header foreground color. Set to None to ignore header color. Defaults to CommonColor.WHITE.
+            tbl_bg_color (Color, optional): Table background color. Set to None to ignore background color. Defaults to CommonColor.LIGHT_BLUE.
+            tbl_fg_color (Color, optional): Table background color. Set to None to ignore background color. Defaults to CommonColor.BLACK.
+            first_row_header (bool, optional): If ``True`` First row is treated as header data. Default ``True``.
+            styles (Iterable[StyleObj]): One or more styles to apply to frame. Only styles that support ``com.sun.star.text.TextTable`` service are applied.
 
         Raises:
             ValueError: If table_data is empty
@@ -1796,7 +2592,7 @@ class Write(mSel.Selection):
             Exception: If unable to add table
 
         Returns:
-            bool: True if table is added; Otherwise, False
+            XTextTable: Table that is added to document.
 
         :events:
             .. cssclass:: lo_event
@@ -1811,6 +2607,10 @@ class Write(mSel.Selection):
             - :py:class:`~.utils.color.CommonColor`
             - :py:meth:`~.utils.table_helper.TableHelper.table_2d_to_dict`
             - :py:meth:`~.utils.table_helper.TableHelper.table_dict_to_table`
+
+        .. versionchanged:: 0.9.0
+            Now returns added table instead of bool value.
+            Added options ``first_row_header`` and ``styles``.
         """
 
         cargs = CancelEventArgs(Write.add_table.__qualname__)
@@ -1821,6 +2621,8 @@ class Write(mSel.Selection):
             "header_fg_color": header_fg_color,
             "tbl_bg_color": tbl_bg_color,
             "tbl_fg_color": tbl_fg_color,
+            "first_row_header": first_row_header,
+            "styles": styles,
         }
         _Events().trigger(WriteNamedEvent.TABLE_ADDING, cargs)
         if cargs.cancel:
@@ -1830,13 +2632,14 @@ class Write(mSel.Selection):
         header_fg_color = cargs.event_data["header_fg_color"]
         tbl_bg_color = cargs.event_data["tbl_bg_color"]
         tbl_fg_color = cargs.event_data["tbl_fg_color"]
+        first_row_header = cargs.event_data["first_row_header"]
 
         def make_cell_name(row: int, col: int) -> str:
             return TableHelper.make_cell_name(row=row + 1, col=col + 1)
 
         def set_cell_header(cell_name: str, data: str, table: XTextTable) -> None:
             cell_text = mLo.Lo.qi(XText, table.getCellByName(cell_name), True)
-            if header_fg_color is not None:
+            if first_row_header and header_fg_color is not None:
                 text_cursor = cell_text.createTextCursor()
                 mProps.Props.set(text_cursor, CharColor=header_fg_color)
 
@@ -1844,9 +2647,17 @@ class Write(mSel.Selection):
 
         def set_cell_text(cell_name: str, data: str, table: XTextTable) -> None:
             cell_text = mLo.Lo.qi(XText, table.getCellByName(cell_name), True)
-            if tbl_fg_color is not None:
+            if first_row_header is False or tbl_fg_color is not None:
                 text_cursor = cell_text.createTextCursor()
-                mProps.Props.set(text_cursor, CharColor=tbl_fg_color)
+                props = {}
+                if not first_row_header:
+                    # By default the first row has a style by the name of: Table Heading
+                    # Table Contents is the default for cell that are not in the header row.
+                    props["ParaStyleName"] = "Table Contents"
+                if tbl_fg_color is not None:
+                    props["CharColor"] = tbl_fg_color
+                mProps.Props.set(text_cursor, **props)
+
             cell_text.setString(str(data))
 
         num_rows = len(table_data)
@@ -1877,31 +2688,44 @@ class Write(mSel.Selection):
                 table_props.setPropertyValue("BackColor", tbl_bg_color)
 
             # set color of first row (i.e. the header)
-            if header_bg_color is not None:
+            if first_row_header and header_bg_color is not None:
                 rows = table.getRows()
                 mProps.Props.set(rows.getByIndex(0), BackColor=header_bg_color)
 
             #  write table header
-            row_data = table_data[0]
-            for x in range(num_cols):
-                set_cell_header(make_cell_name(0, x), row_data[x], table)
-                # e.g. "A1", "B1", "C1", etc
-
-            # insert table body
-            for y in range(1, num_rows):  # start in 2nd row
-                row_data = table_data[y]
+            if first_row_header:
+                row_data = table_data[0]
                 for x in range(num_cols):
-                    set_cell_text(make_cell_name(y, x), row_data[x], table)
+                    set_cell_header(make_cell_name(0, x), row_data[x], table)
+                    # e.g. "A1", "B1", "C1", etc
+
+                # insert table body
+                for y in range(1, num_rows):  # start in 2nd row
+                    row_data = table_data[y]
+                    for x in range(num_cols):
+                        set_cell_text(make_cell_name(y, x), row_data[x], table)
+            else:
+                # insert table body
+                for y in range(0, num_rows):  # start in 1st row
+                    row_data = table_data[y]
+                    for x in range(num_cols):
+                        set_cell_text(make_cell_name(y, x), row_data[x], table)
+
+            if styles:
+                srv = ("com.sun.star.text.TextTable",)
+                for style in styles:
+                    if style.support_service(*srv):
+                        style.apply(table)
         except Exception as e:
             raise Exception("Table insertion failed:") from e
         _Events().trigger(WriteNamedEvent.TABLE_ADDED, EventArgs.from_args(cargs))
-        return True
+        return table
 
     # region    add_image_link()
 
     @overload
     @classmethod
-    def add_image_link(cls, doc: XTextDocument, cursor: XTextCursor, fnm: PathOrStr) -> bool:
+    def add_image_link(cls, doc: XTextDocument, cursor: XTextCursor, fnm: PathOrStr) -> XShape | None:
         """
         Add Image Link
 
@@ -1912,12 +2736,64 @@ class Write(mSel.Selection):
 
         Returns:
             bool: True if image link is added; Otherwise, False
+        """
+        ...
+
+    # style: Iterable[StyleObj] = None
+    @overload
+    @classmethod
+    def add_image_link(
+        cls, doc: XTextDocument, cursor: XTextCursor, fnm: PathOrStr, width: int | UnitObj, height: int | UnitObj
+    ) -> XTextContent | None:
+        """
+        Add Image Link
+
+        Args:
+            doc (XTextDocument): Text Document
+            cursor (XTextCursor): Text Cursor
+            fnm (PathOrStr): Image path
+            width (int, UnitObj): Width in ``1/100th mm`` or ``UnitObj``.
+            height (int, UnitObj): Height in ``1/100th mm`` or ``UnitObj``.
+
+        Returns:
+            XTextContent: Image Link on success; Otherwise, ``None``
+        """
+
+    @overload
+    @classmethod
+    def add_image_link(
+        cls,
+        doc: XTextDocument,
+        cursor: XTextCursor,
+        fnm: PathOrStr,
+        *,
+        styles: Iterable[StyleObj],
+    ) -> XTextContent | None:
+        """
+        Add Image Link
+
+        Args:
+            doc (XTextDocument): Text Document
+            cursor (XTextCursor): Text Cursor
+            fnm (PathOrStr): Image path
+            styles (Iterable[StyleObj]): One or more styles to apply to frame. Only styles that support ``com.sun.star.text.TextGraphicObject`` service are applied.
+
+        Returns:
+            XTextContent: Image Link on success; Otherwise, ``None``
         """
         ...
 
     @overload
     @classmethod
-    def add_image_link(cls, doc: XTextDocument, cursor: XTextCursor, fnm: PathOrStr, width: int, height: int) -> bool:
+    def add_image_link(
+        cls,
+        doc: XTextDocument,
+        cursor: XTextCursor,
+        fnm: PathOrStr,
+        width: int | UnitObj,
+        height: int | UnitObj,
+        styles: Iterable[StyleObj],
+    ) -> XTextContent | None:
         """
         Add Image Link
 
@@ -1925,18 +2801,26 @@ class Write(mSel.Selection):
             doc (XTextDocument): Text Document
             cursor (XTextCursor): Text Cursor
             fnm (PathOrStr): Image path
-            width (int, optional): Width.
-            height (int, optional): Height.
+            width (int, UnitObj): Width in ``1/100th mm`` or ``UnitObj``.
+            height (int, UnitObj): Height in ``1/100th mm`` or ``UnitObj``.
+            styles (Iterable[StyleObj]): One or more styles to apply to frame. Only styles that support ``com.sun.star.text.TextGraphicObject`` service are applied.
 
         Returns:
-            bool: True if image link is added; Otherwise, False
+            XTextContent: Image Link on success; Otherwise, ``None``
         """
         ...
 
     @classmethod
     def add_image_link(
-        cls, doc: XTextDocument, cursor: XTextCursor, fnm: PathOrStr, width: int = 0, height: int = 0
-    ) -> bool:
+        cls,
+        doc: XTextDocument,
+        cursor: XTextCursor,
+        fnm: PathOrStr,
+        *,
+        width: int | UnitObj = 0,
+        height: int | UnitObj = 0,
+        styles: Iterable[StyleObj] = None,
+    ) -> XTextContent | None:
         """
         Add Image Link
 
@@ -1944,8 +2828,9 @@ class Write(mSel.Selection):
             doc (XTextDocument): Text Document
             cursor (XTextCursor): Text Cursor
             fnm (PathOrStr): Image path
-            width (int, optional): Width.
-            height (int, optional): Height.
+            width (int, UnitObj): Width in ``1/100th mm`` or :ref:`proto_unit_obj`.
+            height (int, UnitObj): Height in ``1/100th mm`` or :ref:`proto_unit_obj`.
+            styles (Iterable[StyleObj]): One or more styles to apply to frame. Only styles that support ``com.sun.star.text.TextGraphicObject`` service are applied.
 
         Raises:
             CreateInstanceMsfError: If Unable to create text.TextGraphicObject
@@ -1953,7 +2838,7 @@ class Write(mSel.Selection):
             Exception: If unable to add image
 
         Returns:
-            bool: True if image link is added; Otherwise, False
+            XTextContent: Image Link on success; Otherwise, ``None``
 
         :events:
             .. cssclass:: lo_event
@@ -1963,9 +2848,13 @@ class Write(mSel.Selection):
 
         Note:
            Event args ``event_data`` is a dictionary containing ``doc``, ``cursor``, ``fnm``, ``width`` and ``height``.
+
+        .. versionchanged:: 0.9.0
+            Return image shape instead of boolean.
         """
         # see Also: https://ask.libreoffice.org/t/graphicurl-no-longer-works-in-6-1-0-3/35459/3
         # see Also: https://tomazvajngerl.blogspot.com/2018/03/improving-image-handling-in-libreoffice.html
+        result = None
         cargs = CancelEventArgs(Write.add_image_link.__qualname__)
         cargs.event_data = {
             "doc": doc,
@@ -1991,67 +2880,84 @@ class Write(mSel.Selection):
             props.setPropertyValue("Graphic", graphic)
 
             # optionally set the width and height
-            if width > 0 and height > 0:
-                props.setPropertyValue("Width", width)
-                props.setPropertyValue("Height", height)
+            if not width is None:
+                try:
+                    props.setPropertyValue("Width", width.get_value_mm100())
+                except AttributeError:
+                    props.setPropertyValue("Width", int(width))
+            if not height is None:
+                try:
+                    props.setPropertyValue("Height", height.get_value_mm100())
+                except AttributeError:
+                    props.setPropertyValue("Height", int(height))
 
-            # append image to document, followed by a newline
+            # append image to document
             cls._append_text_content(cursor, tgo)
+            # end the paragraph.
             cls.end_line(cursor)
+            # set any styles for the image.
+            if styles:
+                # is is important for some format styles such as Crop that styles
+                # not be applied until after they have been added to the document.
+                srv = ("com.sun.star.text.TextGraphicObject",)
+                for style in styles:
+                    if style.support_service(*srv):
+                        style.apply(tgo)
+            result = tgo
         except Exception as e:
             raise Exception(f"Insertion of graphic in '{fnm}' failed:") from e
         _Events().trigger(WriteNamedEvent.IMAGE_LNIK_ADDED, EventArgs.from_args(cargs))
-        return True
+        return result
 
     # endregion add_image_link()
 
     # region    add_image_shape()
     @overload
     @staticmethod
-    def add_image_shape(cursor: XTextCursor, fnm: PathOrStr) -> bool:
+    def add_image_shape(cursor: XTextCursor, fnm: PathOrStr) -> XShape | None:
         """
         Add Image Shape
-
-        Currently this method is only supported in terminal. Not in macros.
 
         Args:
             cursor (XTextCursor): Text Cursor
             fnm (PathOrStr): Image path
 
         Returns:
-            bool: True if image shape is added; Otherwise, False
+            XShape: Image Shape on success; Otherwise, ``None``
         """
         ...
 
     @overload
     @staticmethod
-    def add_image_shape(cursor: XTextCursor, fnm: PathOrStr, width: int, height: int) -> bool:
+    def add_image_shape(
+        cursor: XTextCursor, fnm: PathOrStr, width: int | UnitObj, height: int | UnitObj
+    ) -> XShape | None:
         """
         Add Image Shape
-
-        Currently this method is only suported in terminal. Not in macros.
 
         Args:
             cursor (XTextCursor): Text Cursor
             fnm (PathOrStr): Image path
-            width (int, optional): Image width
-            height (int, optional): Image height
+            width (int, UnitObj): Width in ``1/100th mm`` or ``UnitObj``.
+            height (int, UnitObj): Height in ``1/100th mm`` or ``UnitObj``.
 
         Returns:
-            bool: True if image shape is added; Otherwise, False
+            XShape: Image Shape on success; Otherwise, ``None``
         """
         ...
 
     @classmethod
-    def add_image_shape(cls, cursor: XTextCursor, fnm: PathOrStr, width: int = 0, height: int = 0) -> bool:
+    def add_image_shape(
+        cls, cursor: XTextCursor, fnm: PathOrStr, width: int | UnitObj = 0, height: int | UnitObj = 0
+    ) -> XShape | None:
         """
         Add Image Shape
 
         Args:
             cursor (XTextCursor): Text Cursor
             fnm (PathOrStr): Image path
-            width (int, optional): Image width
-            height (int, optional): Image height
+            width (int, UnitObj): Width in ``1/100th mm`` or :ref:`proto_unit_obj`.
+            height (int, UnitObj): Height in ``1/100th mm`` or :ref:`proto_unit_obj`.
 
         Raises:
             CreateInstanceMsfError: If unable to create drawing.GraphicObjectShape
@@ -2060,7 +2966,7 @@ class Write(mSel.Selection):
             Exception: If unable to add image shape
 
         Returns:
-            bool: True if image shape is added; Otherwise, False
+            XShape: Image Shape on success; Otherwise, ``None``
 
         :events:
             .. cssclass:: lo_event
@@ -2070,7 +2976,11 @@ class Write(mSel.Selection):
 
         Note:
            Event args ``event_data`` is a dictionary containing ``doc``, ``cursor``, ``fnm``, ``width`` and ``height``.
+
+        .. versionchanged:: 0.9.0
+            Return image shape instead of boolean.
         """
+        result = None
         cargs = CancelEventArgs(Write.add_image_shape.__qualname__)
         cargs.event_data = {
             "cursor": cursor,
@@ -2089,9 +2999,22 @@ class Write(mSel.Selection):
         pth = mFileIO.FileIO.get_absolute_path(fnm)
 
         try:
-            if width > 0 and height > 0:
-                im_size = Size(width, height)
-            else:
+            size_set = False
+            if width is not None and height is not None:
+                try:
+                    w = width.get_value_mm100()
+                except AttributeError:
+                    w = int(width)
+
+                try:
+                    h = height.get_value_mm100()
+                except AttributeError:
+                    h = int(height)
+
+                if w > 0 and h > 0:
+                    im_size = Size(w, h)
+                    size_set = True
+            if not size_set:
                 im_size = mImgLo.ImagesLo.get_size_100mm(pth)  # in 1/100 mm units
                 if im_size is None:
                     raise ValueError(f"Unable to get image from {pth}")
@@ -2109,11 +3032,12 @@ class Write(mSel.Selection):
 
             # set the shape's size
             xdraw_shape = mLo.Lo.qi(XShape, gos, True)
-            xdraw_shape.setSize(im_size)
+            xdraw_shape.setSize(im_size.get_uno_size())
 
             # insert image shape into the document, followed by newline
             cls._append_text_content(cursor, gos)
             cls.end_line(cursor)
+            result = xdraw_shape
         except ValueError:
             raise
         except mEx.CreateInstanceMsfError:
@@ -2123,7 +3047,7 @@ class Write(mSel.Selection):
         except Exception as e:
             raise Exception(f"Insertion of graphic in '{fnm}' failed:") from e
         _Events().trigger(WriteNamedEvent.IMAGE_SHAPE_ADDED, EventArgs.from_args(cargs))
-        return True
+        return result
 
     # endregion add_image_shape()
 
@@ -2147,7 +3071,7 @@ class Write(mSel.Selection):
                 raise mEx.CreateInstanceMsfError(XTextContent, "com.sun.star.drawing.LineShape")
 
             line_shape = mLo.Lo.qi(XShape, ls, True)
-            line_shape.setSize(Size(line_width, 0))
+            line_shape.setSize(UnoSize(line_width, 0))
 
             cls.end_paragraph(cursor)
             cls._append_text_content(cursor, ls)
@@ -2222,7 +3146,7 @@ class Write(mSel.Selection):
             doc (XComponent): Document
 
         Raises:
-            MissingInterfaceError: if doc does not implement XTextGraphicObjectsSupplier interface
+            MissingInterfaceError: if doc does not implement ``XTextGraphicObjectsSupplier`` interface
 
         Returns:
             XNameAccess | None: Graphic Links on success, Otherwise, None
@@ -2236,6 +3160,35 @@ class Write(mSel.Selection):
 
         if not xname_access.hasElements():
             mLo.Lo.print("No graphics elements found")
+            return None
+
+        return xname_access
+
+    @staticmethod
+    def get_text_frames(doc: XComponent) -> XNameAccess | None:
+        """
+        Gets document Text Frames.
+
+        Args:
+            doc (XComponent): Document
+
+        Raises:
+            MissingInterfaceError: if doc does not implement ``XTextFramesSupplier`` interface
+
+        Returns:
+            XNameAccess | None: Text Frames on success, Otherwise, None
+
+        .. versionadded:: 0.9.0
+        """
+        supplier = mLo.Lo.qi(XTextFramesSupplier, doc, True)
+
+        xname_access = supplier.getTextFrames()
+        if xname_access is None:
+            mLo.Lo.print("Name access to text frames not possible")
+            return None
+
+        if not xname_access.hasElements():
+            mLo.Lo.print("No text frame elements found")
             return None
 
         return xname_access
@@ -2907,6 +3860,9 @@ class Write(mSel.Selection):
         """
         open Options - Language Settings - English sentence checking
 
+        Returns:
+            None:
+
         Attention:
             :py:meth:`Lo.dispatch_cmd <.utils.lo.Lo.dispatch_cmd>` method is called along with any of its events.
         """
@@ -2923,6 +3879,9 @@ class Write(mSel.Selection):
         """
         Activate dialog in  Tools > Spelling and Grammar...
 
+        Returns:
+            None:
+
         Attention:
             :py:meth:`Lo.dispatch_cmd <.utils.lo.Lo.dispatch_cmd>` method is called along with any of its events.
         """
@@ -2933,6 +3892,9 @@ class Write(mSel.Selection):
     def toggle_auto_spell_check() -> None:
         """
         Toggles spell check on and off
+
+        Returns:
+            None:
 
         Attention:
             :py:meth:`Lo.dispatch_cmd <.utils.lo.Lo.dispatch_cmd>` method is called along with any of its events.
@@ -2946,10 +3908,45 @@ class Write(mSel.Selection):
         """
         Opens LibreOffice Thesaurus Dialog
 
+        Returns:
+            None:
+
         Attention:
             :py:meth:`Lo.dispatch_cmd <.utils.lo.Lo.dispatch_cmd>` method is called along with any of its events.
         """
         mLo.Lo.dispatch_cmd("ThesaurusDialog")
 
+    @classproperty
+    def active_doc(cls) -> XTextDocument:
+        """
+        Gets current active document
+
+        Returns:
+            XTextDocument: Text Document
+
+        .. versionadded:: 0.9.0
+        """
+        # note:
+        # It is not permitted to create weak ref to pyuno objects.
+        try:
+            return Write._active_doc
+        except AttributeError:
+            Write._active_doc = Write.get_text_doc()
+            return Write._active_doc
+
+
+class _WriteManager:
+    """Manages clearing and resetting for Lo static class"""
+
+    @staticmethod
+    def del_cache_attrs(source: object, event: EventArgs) -> None:
+        # clears Lo Attributes that are dynamically created
+        dattrs = ("_active_doc",)
+        for attr in dattrs:
+            if hasattr(Write, attr):
+                delattr(Write, attr)
+
+
+_Events().on(LoNamedEvent.RESET, _WriteManager.del_cache_attrs)
 
 __all__ = ("Write",)
