@@ -31,7 +31,7 @@ class Highlight(StyleBase):
         Constructor
 
         Args:
-            color (Color, optional): Highlight Color. A value of ``-1`` Set color to Transparent.
+            color (:py:data:`~.utils.color.Color`, optional): Highlight Color. A value of ``-1`` Set color to Transparent.
 
         Returns:
             None:

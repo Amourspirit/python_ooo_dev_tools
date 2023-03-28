@@ -90,7 +90,7 @@ class Gradient(ParaStyleBaseMulti):
         Gets instance from preset
 
         Args:
-            preset (PresetKind): Preset
+            preset (PresetGradientKind): Preset
 
         Returns:
             Gradient: Gradient from a preset.

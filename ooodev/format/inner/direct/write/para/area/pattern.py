@@ -140,7 +140,7 @@ class Pattern(StyleMulti):
         Gets an instance from a preset
 
         Args:
-            preset (PatternKind): Preset
+            preset (PresetPatternKind): Preset
 
         Returns:
             Pattern: Instance from preset.

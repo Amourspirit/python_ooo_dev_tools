@@ -275,7 +275,7 @@ class Shadow(StyleBase):
         Get copy of instance with use shadow color or removed.
 
         Args:
-            value (Color, optional): Specifies shadow color.
+            value (:py:data:`~.utils.color.Color`, optional): Specifies shadow color.
 
         Returns:
             Shadow: Shadow with style added or removed

@@ -198,7 +198,7 @@ class Pattern(StyleBase):
         Gets an instance from a preset.
 
         Args:
-            preset (PatternKind): Preset.
+            preset (PresetPatternKind): Preset.
 
         Returns:
             Pattern: ``Pattern`` instance from preset.

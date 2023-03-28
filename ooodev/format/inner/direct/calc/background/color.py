@@ -34,7 +34,7 @@ class Color(StyleBase):
         Constructor
 
         Args:
-            color (Color, optional): Color such as ``CommonColor.LIGHT_BLUE``.
+            color (:py:data:`~.utils.color.Color`, optional): Color such as ``CommonColor.LIGHT_BLUE``.
 
         Returns:
             None:

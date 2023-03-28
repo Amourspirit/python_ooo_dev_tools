@@ -31,7 +31,7 @@ class Color(CellStyleBaseMulti):
         Constructor
 
         Args:
-            color (Color, optional): Color such as ``CommonColor.LIGHT_BLUE``.
+            color (:py:data:`~.utils.color.Color`, optional): Color such as ``CommonColor.LIGHT_BLUE``.
             style_name (StyleCellKind, str, optional): Specifies the Cell Style that instance applies to.
                 Default is Default Cell Style.
             style_family (str, optional): Style family. Default ``CellStyles``.

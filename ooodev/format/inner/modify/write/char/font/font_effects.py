@@ -46,7 +46,7 @@ class FontEffects(CharStyleBaseMulti):
         Constructor
 
         Args:
-            color (Color, optional): The value of the text color.
+            color (:py:data:`~.utils.color.Color`, optional): The value of the text color.
                 If value is ``-1`` the automatic color is applied.
             transparency (Intensity, int, optional): The transparency value from ``0`` to ``100`` for the font color.
             overline (FontLine, optional): Character overline values.

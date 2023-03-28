@@ -540,6 +540,28 @@ class Info(metaclass=StaticProperty):
             raise ValueError("Unable to get office dir") from e
 
     @classmethod
+    def get_office_theme(cls) -> str:
+        """
+        Gets the Current LibreOffice Theme.
+
+        Returns:
+            str: LibreOffice Theme Name such as ``LibreOffice Dark``
+
+        Note:
+            Older Version of LibreOffice will return empty string.
+
+        .. versionadded:: 0.9.1
+        """
+        try:
+            return cls.get_config(
+                node_str="CurrentColorScheme",
+                node_path="/org.openoffice.Office.ExtendedColorScheme/ExtendedColorScheme",
+            )
+        except mEx.ConfigError:
+            # most likely pre LO 7.4
+            return ""
+
+    @classmethod
     def get_gallery_dir(cls) -> Path:
         """
         Get the first directory that contain the Gallery database and multimedia files.

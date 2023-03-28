@@ -1517,41 +1517,85 @@ def test_set_val(loader) -> None:
 
     assert loader is not None
     doc = Calc.create_doc(loader)
-    sheet = Calc.get_active_sheet(doc)
+    try:
+        sheet = Calc.get_active_sheet(doc)
 
-    # test overloads
-    # set_val(value: object, sheet: XSpreadsheet, cell_name: str)
-    Calc.set_val(value="one", sheet=sheet, cell_name="A2")
-    val = Calc.get_val(sheet=sheet, cell_name="A2")
-    assert val == "one"
-    Calc.set_val("one", sheet, "B2")
-    val = Calc.get_val(sheet, "B2")
-    assert val == "one"
+        # test overloads
+        # set_val(value: object, sheet: XSpreadsheet, cell_name: str)
+        Calc.set_val(value="one", sheet=sheet, cell_name="A2")
+        val = Calc.get_val(sheet=sheet, cell_name="A2")
+        assert val == "one"
+        Calc.set_val("one", sheet, "B2")
+        val = Calc.get_val(sheet, "B2")
+        assert val == "one"
 
-    # set_val(value: object, sheet: XSpreadsheet, column: int, row: int)
-    Calc.set_val(value="two", sheet=sheet, col=1, row=2)
-    val = Calc.get_val(sheet=sheet, col=1, row=2)
-    assert val == "two"
-    Calc.set_val("two", sheet, 1, 3)
-    val = Calc.get_val(sheet, 1, 3)
-    assert val == "two"
+        # set_val(value: object, sheet: XSpreadsheet, column: int, row: int)
+        Calc.set_val(value="two", sheet=sheet, col=1, row=2)
+        val = Calc.get_val(sheet=sheet, col=1, row=2)
+        assert val == "two"
+        Calc.set_val("two", sheet, 1, 3)
+        val = Calc.get_val(sheet, 1, 3)
+        assert val == "two"
 
-    # set_val(value: object, cell: XCell)
-    cell = Calc.get_cell(sheet=sheet, col=2, row=4)
-    Calc.set_val(value="three", cell=cell)
-    val = Calc.get_val(sheet=sheet, col=2, row=4)
-    assert val == "three"
-    cell = Calc.get_cell(sheet, 2, 5)
-    Calc.set_val("three", cell)
-    val = Calc.get_val(sheet, 2, 5)
-    assert val == "three"
-    with pytest.raises(TypeError):
-        # error on unused key
-        Calc.set_val(value="one", sheet=sheet, cell_name="A2", other=1)
-    with pytest.raises(TypeError):
-        # error on incorrect number of args
-        Calc.set_val(sheet)
-    Lo.close(closeable=doc, deliver_ownership=False)
+        # set_val(value: object, cell: XCell)
+        cell = Calc.get_cell(sheet=sheet, col=2, row=4)
+        Calc.set_val(value="three", cell=cell)
+        val = Calc.get_val(sheet=sheet, col=2, row=4)
+        assert val == "three"
+        cell = Calc.get_cell(sheet, 2, 5)
+        Calc.set_val("three", cell)
+        val = Calc.get_val(sheet, 2, 5)
+        assert val == "three"
+        with pytest.raises(TypeError):
+            # error on unused key
+            Calc.set_val(value="one", sheet=sheet, cell_name="A2", other=1)
+        with pytest.raises(TypeError):
+            # error on incorrect number of args
+            Calc.set_val(sheet)
+    finally:
+        Lo.close_doc(doc)
+
+
+def test_set_val_style(loader) -> None:
+    from ooodev.format.calc.direct.cell.background import Color as BgColor
+    from ooodev.format.calc.direct.cell.borders import Borders, Side, Padding
+    from ooodev.office.calc import Calc
+    from ooodev.utils.color import StandardColor
+    from ooodev.utils.gui import GUI
+    from ooodev.utils.lo import Lo
+    from ooodev.units import UnitMM100
+
+    # from ooodev.utils.gui import GUI
+
+    assert loader is not None
+    doc = Calc.create_doc(loader)
+    try:
+        sheet = Calc.get_active_sheet(doc)
+        if not Lo.bridge_connector.headless:
+            GUI.set_visible()
+            Lo.delay(500)
+            Calc.zoom(doc, GUI.ZoomEnum.ZOOM_200_PERCENT)
+
+        # test overloads
+        # set_val(value: object, sheet: XSpreadsheet, cell_name: str)
+        co = Calc.get_cell_obj(cell_name="A2")
+        l_pad = UnitMM100.from_mm(5)
+        pd_style = Padding(left=l_pad)
+        bg_color_style = BgColor(color=StandardColor.LIME_LIGHT2)
+        bdr_style = Borders(border_side=Side(color=StandardColor.RED), padding=pd_style)
+        Calc.set_val(value="one", sheet=sheet, cell_obj=co, styles=(bg_color_style, bdr_style))
+        cell = Calc.get_cell(sheet=sheet, cell_obj=co)
+
+        f_bg_color_style = BgColor.from_obj(cell)
+        assert f_bg_color_style.prop_color == StandardColor.LIME_LIGHT2
+        f_bdr_style = Borders.from_obj(cell)
+        assert f_bdr_style.prop_inner_border_table.prop_left.prop_color == StandardColor.RED
+        assert f_bdr_style.prop_inner_padding.prop_left.get_value_mm100() in range(
+            l_pad.value - 2, l_pad.value + 3
+        )  # +- 2
+
+    finally:
+        Lo.close_doc(doc)
 
 
 def test_get_val(loader) -> None:
@@ -1923,7 +1967,60 @@ def test_set_array(loader) -> None:
             # error on incorrect number of args
             Calc.set_array(arr, doc, addr, 3)
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close_doc(doc)
+
+
+def test_set_array_style(loader) -> None:
+    from ooodev.format.calc.direct.cell.background import Color as BgColor
+    from ooodev.format.calc.direct.cell.borders import Borders, Side, LineSize, Padding
+    from ooodev.format.calc.direct.cell.font import Font
+    from ooodev.office.calc import Calc
+    from ooodev.utils.color import StandardColor
+    from ooodev.utils.data_type.range_obj import RangeObj
+    from ooodev.utils.gui import GUI
+    from ooodev.utils.lo import Lo
+
+    def arr_cb(row: int, col: int, prev_val) -> float:
+        if row == 0 and col == 0:
+            return 1.0
+        return prev_val + 1.0
+
+    # from ooodev.utils.gui import GUI
+    from ooodev.utils.table_helper import TableHelper
+
+    assert loader is not None
+    doc = Calc.create_doc(loader)
+    assert doc is not None
+    try:
+        if not Lo.bridge_connector.headless:
+            GUI.set_visible()
+            Lo.delay(500)
+            Calc.zoom(doc, GUI.ZoomEnum.ZOOM_100_PERCENT)
+
+        sheet = Calc.get_active_sheet(doc=doc)
+
+        arr_size = 12
+        arr = TableHelper.to_2d_tuple(TableHelper.make_2d_array(arr_size, arr_size, arr_cb))
+        rng = TableHelper.make_column_name(arr_size)
+        ro = RangeObj(col_start="A", col_end="L", row_start=1, row_end=12)
+
+        bg_color_style = BgColor(StandardColor.GREEN_LIGHT2)
+        side = Side(color=StandardColor.GREEN_DARK3, width=LineSize.THIN)
+        bdr_side = Side(color=StandardColor.BLUE_DARK1, width=LineSize.THICK)
+        bdr_style = Borders(border_side=bdr_side, horizontal=side, vertical=side, padding=Padding(all=3))
+        ft_style = Font(color=StandardColor.PURPLE_DARK2)
+
+        with Lo.ControllerLock():
+            Calc.set_array(values=arr, sheet=sheet, range_obj=ro, styles=(bg_color_style, bdr_style, ft_style))
+        xrng = Calc.get_cell_range(sheet=sheet, range_obj=ro)
+        f_bg_color_style = BgColor.from_obj(xrng)
+        assert f_bg_color_style.prop_color == StandardColor.GREEN_LIGHT2
+        f_bdr_style = Borders.from_obj(xrng)
+        assert f_bdr_style.prop_inner_border_table.prop_left.prop_color == StandardColor.BLUE_DARK1
+        assert f_bdr_style.prop_inner_border_table.prop_horizontal.prop_color == StandardColor.GREEN_DARK3
+
+    finally:
+        Lo.close_doc(doc)
 
 
 def test_get_array(loader) -> None:

@@ -201,7 +201,7 @@ class Side(StructBase):
 
         Args:
             line (BorderLineStyleEnum, optional): Line Style of the border. Default ``BorderLineKind.SOLID``.
-            color (Color, optional): Color of the border. Default ``StandardColor.BLACK``
+            color (:py:data:`~.utils.color.Color`, optional): Color of the border. Default ``StandardColor.BLACK``
             width (LineSize, float, UnitObj, optional): Contains the width in of a single line or the width of outer part of a double line (in ``pt`` units) or :ref:`proto_unit_obj`. If this value is zero, no line is drawn. Default ``LineSize.THIN``
 
         Raises:
