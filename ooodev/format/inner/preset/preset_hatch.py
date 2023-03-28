@@ -241,7 +241,7 @@ def get_preset(kind: PresetHatchKind) -> Dict[str:Any]:
     Gets preset
 
     Returns:
-        PresetKind: Preset Kind
+        PresetHatchKind: Preset Kind
     """
     if kind == PresetHatchKind.BLACK_0_DEGREES:
         return fill_black_0_degrees()

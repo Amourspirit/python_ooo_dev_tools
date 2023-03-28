@@ -118,7 +118,7 @@ class Pattern(PageStyleBaseMulti):
         Gets instance from preset.
 
         Args:
-            preset (PresetKind): Preset.
+            preset (PresetPatternKind): Preset.
             style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.
             style_family (str, optional): Style family. Default ``PageStyles``.

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Tuple, TYPE_CHECKING
+from typing import TYPE_CHECKING
 from ..format.inner.kind.format_kind import FormatKind as FormatKind
 
 if TYPE_CHECKING:
@@ -12,7 +12,15 @@ else:
 
 
 class UnitObj(Protocol):
-    """Protocol Class for units"""
+    """
+    Protocol Class for units.
+
+    .. _proto_unit_obj:
+
+    UnitObj
+    =======
+
+    """
 
     def get_value_mm(self) -> float:
         """

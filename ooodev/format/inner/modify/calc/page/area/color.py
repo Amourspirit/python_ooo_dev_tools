@@ -88,7 +88,7 @@ class Color(CellStyleBaseMulti):
         Constructor
 
         Args:
-            color (Color, optional): FillColor Color
+            color (:py:data:`~.utils.color.Color`, optional): FillColor Color
             style_name (CalcStylePageKind, str, optional): Specifies the Page Style that instance applies to.
                 Default is Default Page Style.
             style_family (str, optional): Style family. Default ``PageStyles``.

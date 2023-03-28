@@ -78,7 +78,7 @@ class ThemeCalc(ThemeBase):
 
     @property
     def page_break_auto_color(self) -> int:
-        """Page Break Automaitic color."""
+        """Page Break Automatic color."""
         try:
             return self._page_break_auto_color
         except AttributeError:

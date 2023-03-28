@@ -51,7 +51,7 @@ class ThemeSql(ThemeBase):
 
     @property
     def operator_color(self) -> int:
-        """Operater color."""
+        """Operator color."""
         try:
             return self._operator_color
         except AttributeError:

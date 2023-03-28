@@ -110,8 +110,8 @@ class Chart2:
             width (int, optional): Width. Default ``16``.
             height (int, optional): Height. Default ``9``.
             diagram_name (ChartTemplateBase | str): Diagram Name. Defaults to ``Column``.
-            color_bg (Color, optional): Color Background. Defaults to ``CommonColor.PALE_BLUE``.
-            color_wall (Color, optional): Color Wall. Defaults to ``CommonColor.LIGHT_BLUE``.
+            color_bg (:py:data:`~.utils.color.Color`, optional): Color Background. Defaults to ``CommonColor.PALE_BLUE``.
+            color_wall (:py:data:`~.utils.color.Color`, optional): Color Wall. Defaults to ``CommonColor.LIGHT_BLUE``.
 
         Keyword Arguments:
             chart_name (str, optional): Chart name

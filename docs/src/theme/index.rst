@@ -1,10 +1,12 @@
 .. _ns_theme:
 
-Theme
+theme
 =====
 
-Theme Contents
---------------
+.. versionadded:: 0.9.1
+
+Contents
+--------
 
 .. automodule:: ooodev.theme
    :members:

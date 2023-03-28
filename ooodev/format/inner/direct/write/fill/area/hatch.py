@@ -17,6 +17,7 @@ from ooodev.utils import props as mProps
 from ooodev.utils.color import Color
 from ooodev.utils.color import StandardColor
 from ooodev.utils.data_type.angle import Angle as Angle
+from ooodev.units import UnitMM
 from ooodev.units import UnitObj
 from ooodev.units import UnitConvert
 from ooodev.format.inner.kind.format_kind import FormatKind
@@ -24,10 +25,10 @@ from ooodev.format.inner.preset import preset_hatch as mPreset
 from ooodev.format.inner.preset.preset_hatch import PresetHatchKind as PresetHatchKind
 from ooodev.format.inner.style_base import StyleMulti
 from ooodev.format.inner.direct.structs.hatch_struct import HatchStruct
-from .fill_color import FillColor
 from ooodev.format.inner.common.props.area_hatch_props import AreaHatchProps
 from ooodev.format.inner.common.props.fill_color_props import FillColorProps
 from ooodev.events.format_named_event import FormatNamedEvent as FormatNamedEvent
+from .fill_color import FillColor
 
 
 _THatch = TypeVar(name="_THatch", bound="Hatch")
@@ -54,7 +55,7 @@ class Hatch(StyleMulti):
 
         Args:
             style (HatchStyle, optional): Specifies the kind of lines used to draw this hatch. Default ``HatchStyle.SINGLE``.
-            color (Color, optional): Specifies the color of the hatch lines. Default ``0``.
+            color (:py:data:`~.utils.color.Color`, optional): Specifies the color of the hatch lines. Default ``0``.
             space (float, UnitObj, optional): Specifies the space between the lines in the hatch (in ``mm`` units) or :ref:`proto_unit_obj`. Default ``0.0``
             angle (Angle, int, optional): Specifies angle of the hatch in degrees. Default to ``0``.
             bg_color(Color, optionl): Specifies the background Color. Set this ``-1`` (default) for no background color.
@@ -298,13 +299,16 @@ class Hatch(StyleMulti):
         self.prop_inner_hatch.prop_color = value
 
     @property
-    def prop_distance(self) -> float:
+    def prop_space(self) -> UnitMM:
         """Gets/Sets the distance between the lines in the hatch (in ``mm`` units)."""
         return self.prop_inner_hatch.prop_distance
 
-    @prop_distance.setter
-    def prop_distance(self, value: float):
+    @prop_space.setter
+    def prop_space(self, value: float):
         self.prop_inner_hatch.prop_distance = value
+
+    prop_distance = prop_space
+    """Alias of :py:attr:`~.format.inner.direct.write.fill.area.hatch.Hatch.prop_space`"""
 
     @property
     def prop_angle(self) -> Angle:

@@ -109,7 +109,7 @@ class Pattern(FrameStyleBaseMulti):
         Gets an instance from a preset.
 
         Args:
-            preset (PatternKind): Preset.
+            preset (PresetPatternKind): Preset.
             style_name (StyleFrameKind, str, optional): Specifies the Frame Style that instance applies to. Default is Default Frame Style.
             style_family (str, optional): Style family. Default ``FrameStyles``.
 

@@ -3,6 +3,8 @@
 format package
 ==============
 
+.. versionadded:: 0.9.0
+
 Subpackages
 -----------
 

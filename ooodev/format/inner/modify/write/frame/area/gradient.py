@@ -114,7 +114,7 @@ class Gradient(FrameStyleBaseMulti):
         Gets instance from preset.
 
         Args:
-            preset (PresetKind): Preset.
+            preset (PresetGradientKind): Preset.
             style_name (StyleFrameKind, str, optional): Specifies the Frame Style that instance applies to. Default is Default Frame Style.
             style_family (str, optional): Style family. Default ``FrameStyles``.
 
