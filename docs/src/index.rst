@@ -2,7 +2,7 @@ ooodev
 ======
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 4
    :caption: Contents:
 
    adapter/index
@@ -16,6 +16,7 @@ ooodev
    listeners/index
    office/index
    proto/index
+   theme/index
    units/index
    utils/index
    wrapper/index
