@@ -58,6 +58,8 @@ PIP
 Modules
 -------
 
+Currently there are more than ``4,000`` classes in this framework.
+
 Include modules:
     - Calc (Calc)
     - Write (Write)
@@ -67,6 +69,7 @@ Include modules:
     - GUI (Various GUI methods for manipulating LO Windows)
     - Lo (Various methods common to LO applications)
     - FileIO (File Input and Output for working with LO)
+    - Format (Format Module — **hundreds of classes** — for Styling and modifying the many Documents and Sheets properties.)
     - Props (Various methods setting and getting the many properties of Office objects)
     - Info (Various method for getting information about LO applications)
     - Color (Various color utils)
@@ -75,12 +78,14 @@ Include modules:
     - Props (Various methods for working with the many API properties)
     - Chart2 (charting)
     - Chart (charting)
+    - Gallery (Methods for accessing and reporting on the Gallery)
+    - Theme (Access to LibreOffice Theme Properties)
+    - Units (Various unit methods and classes for passing different kinds of units in LibreOffice such as inches, millimeters, points, pixels.)
     - And more ...
 
 Future releases will add:
     - Base (LibreOffice Base)
     - Clip (clipboard support)
-    - Gallery (Methods for accessing and reporting on the Gallery)
     - Mail (Mail service provider)
     - Print (Print service provider)
     - And more ...

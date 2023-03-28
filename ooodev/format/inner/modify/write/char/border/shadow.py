@@ -36,7 +36,7 @@ class Shadow(CharStyleBaseMulti):
 
         Args:
             location (ShadowLocation, optional): contains the location of the shadow. Default to ``ShadowLocation.BOTTOM_RIGHT``.
-            color (Color, optional):contains the color value of the shadow. Defaults to ``StandardColor.GRAY``.
+            color (:py:data:`~.utils.color.Color`, optional):contains the color value of the shadow. Defaults to ``StandardColor.GRAY``.
             transparent (bool, optional): Shadow transparency. Defaults to False.
             width (float, Unit100MM, optional): contains the size of the shadow (in ``mm`` units) or :ref:`proto_unit_obj`. Defaults to ``1.76``.
             style_name (StyleCharKind, str, optional): Specifies the Character Style that instance applies to. Default is Default Character Style.

@@ -928,7 +928,7 @@ class Write(mSel.Selection):
             ka[3] = kwargs.get("styles", None)
             return ka
 
-        if not count in (2, 3):
+        if count not in (2, 3):
             raise TypeError("append() got an invalid numer of arguments")
 
         kargs = get_kwargs()
@@ -1077,10 +1077,10 @@ class Write(mSel.Selection):
             "com.sun.star.drawing.FillProperties",
         )
 
-        if not styles is None:
+        if styles is not None:
             for style in styles:
                 if not style.support_service(*style_srv):
-                    mLo.Lo.print(f"append_para(), Suppoted services are {style_srv}. Not Supported style: {style}")
+                    mLo.Lo.print(f"append_para(), Supported services are {style_srv}. Not Supported style: {style}")
                     continue
                 if FormatKind.TXT_CONTENT in style.prop_format_kind and FormatKind.PARA in style.prop_format_kind:
                     fill_lst.append(style)
@@ -1091,16 +1091,16 @@ class Write(mSel.Selection):
         if fill_lst:
             para_c = cls.get_paragraph_cursor(cursor)
 
-        def capture_old_val(style: StyleObj) -> None:
+        def capture_old_val(sty: StyleObj) -> None:
             nonlocal restore, para_c, restore_style_lst, restore_fill_lst
-            if FormatKind.PARA in style.prop_format_kind and not FormatKind.STATIC in style.prop_format_kind:
+            if FormatKind.PARA in sty.prop_format_kind and FormatKind.STATIC not in sty.prop_format_kind:
                 restore = True
-                if not para_c is None and FormatKind.TXT_CONTENT in style.prop_format_kind:
-                    style.backup(para_c.TextParagraph)
-                    restore_fill_lst.append(style)
+                if para_c is not None and FormatKind.TXT_CONTENT in sty.prop_format_kind:
+                    sty.backup(para_c.TextParagraph)
+                    restore_fill_lst.append(sty)
                 else:
-                    style.backup(cursor)
-                    restore_style_lst.append(style)
+                    sty.backup(cursor)
+                    restore_style_lst.append(sty)
 
         if text:
             if styles is None:
@@ -1591,7 +1591,7 @@ class Write(mSel.Selection):
                 - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLING` :eventref:`src-docs-event-cancel`
                 - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLED` :eventref:`src-docs-event`
 
-            Otherwise the following events are triggered once.
+            Otherwise, the following events are triggered once.
 
             .. cssclass:: lo_event
 
@@ -1787,7 +1787,7 @@ class Write(mSel.Selection):
 
         Args:
             cursor (XTextCursor): Text Cursor
-            styles (Iterable[StyleObj]):One or more styles to apply to text.
+            styles (Iterable[StyleObj]): One or more styles to apply to text.
             prop_val (object): Property value
             prop_name (str): Property Name
 
@@ -2381,8 +2381,8 @@ class Write(mSel.Selection):
             width (int, UnitObj, optional): Width in ``1/100th mm`` or :ref:`proto_unit_obj`.
             height (int, UnitObj, optional): Height in ``1/100th mm`` or :ref:`proto_unit_obj`.
             page_num (int, optional): Page Number to add text frame. If ``0`` Then Frame is anchored to paragraph. Default ``1``.
-            border_color (Color, optional): Border Color.
-            background_color (Color, optional): Background Color.
+            border_color (:py:data:`~.utils.color.Color`, optional):.color.Color`, optional): Border Color.
+            background_color (:py:data:`~.utils.color.Color`, optional): Background Color.
             styles (Iterable[StyleObj]): One or more styles to apply to frame. Only styles that support ``com.sun.star.text.TextFrame`` service are applied.
 
         Raises:
@@ -2579,10 +2579,10 @@ class Write(mSel.Selection):
         Args:
             cursor (XTextCursor): Text Cursor
             table_data (Table): 2D Table with the the first row containing column names.
-            header_bg_color (Color, optional): Table header background color. Set to None to ignore header color. Defaults to CommonColor.DARK_BLUE.
-            header_fg_color (Color, optional): Table header foreground color. Set to None to ignore header color. Defaults to CommonColor.WHITE.
-            tbl_bg_color (Color, optional): Table background color. Set to None to ignore background color. Defaults to CommonColor.LIGHT_BLUE.
-            tbl_fg_color (Color, optional): Table background color. Set to None to ignore background color. Defaults to CommonColor.BLACK.
+            header_bg_color (:py:data:`~.utils.color.Color`, optional):.color.Color`, optional): Table header background color. Set to None to ignore header color. Defaults to CommonColor.DARK_BLUE.
+            header_fg_color (:py:data:`~.utils.color.Color`, optional): Table header foreground color. Set to None to ignore header color. Defaults to CommonColor.WHITE.
+            tbl_bg_color (:py:data:`~.utils.color.Color`, optional): Table background color. Set to None to ignore background color. Defaults to CommonColor.LIGHT_BLUE.
+            tbl_fg_color (:py:data:`~.utils.color.Color`, optional): Table background color. Set to None to ignore background color. Defaults to CommonColor.BLACK.
             first_row_header (bool, optional): If ``True`` First row is treated as header data. Default ``True``.
             styles (Iterable[StyleObj]): One or more styles to apply to frame. Only styles that support ``com.sun.star.text.TextTable`` service are applied.
 

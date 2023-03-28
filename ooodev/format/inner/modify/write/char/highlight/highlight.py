@@ -29,7 +29,7 @@ class Highlight(CharStyleBaseMulti):
         Constructor
 
         Args:
-            color (Color, optional): Highlight Color
+            color (:py:data:`~.utils.color.Color`, optional): Highlight Color
             style_name (StyleParaKind, str, optional): Specifies the Character Style that instance applies to. Default is Default Character Style.
             style_family (str, optional): Style family. Default ``CharacterStyles``.
 

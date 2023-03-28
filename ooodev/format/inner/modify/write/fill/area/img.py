@@ -46,7 +46,7 @@ class Img(FillStyleBaseMulti):
         Constructor
 
         Args:
-            color (Color, optional): FillColor Color
+            color (:py:data:`~.utils.color.Color`, optional): FillColor Color
             style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to. Default is Default Paragraph Style.
             style_family (str, DrawStyleFamilyKind, optional): Family Style.
 

@@ -72,7 +72,7 @@ class Borders(StyleMulti):
             diagonal_down (Side, optional): Specifies the line style from top-left to bottom-right diagonal.
             diagonal_up (Side, optional): Specifies the line style from bottom-left to top-right diagonal.
             shadow (Shadow, optional): Cell Shadow.
-            padding (BorderPadding, optional): Cell padding.
+            padding (padding, optional): Cell padding.
         """
         init_vals = {}
 
@@ -258,6 +258,9 @@ class Borders(StyleMulti):
 
         diag_up = Side.from_obj(obj=obj, _cattribs=inst._get_diagonal_up_cattribs())
         inst._set_style("diag_up", diag_up)
+
+        padding_fmt = Padding.from_obj(obj=obj, _cattribs=inst._get_padding_cattribs())
+        inst._set_style("padding", padding_fmt, *padding_fmt.get_attrs())
         return inst
 
     # endregion from_obj()

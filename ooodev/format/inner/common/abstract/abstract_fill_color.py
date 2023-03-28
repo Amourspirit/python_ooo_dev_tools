@@ -34,7 +34,7 @@ class AbstractColor(StyleBase):
         Constructor
 
         Args:
-            color (Color, optional): FillColor Color.
+            color (:py:data:`~.utils.color.Color`, optional): FillColor Color.
 
         Returns:
             None:

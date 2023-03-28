@@ -53,11 +53,11 @@ class Hatch(StyleMulti):
         Args:
             style (HatchStyle, optional): Specifies the kind of lines used to draw this hatch.
                 Default ``HatchStyle.SINGLE``.
-            color (Color, optional): Specifies the color of the hatch lines. Default ``0``.
+            color (:py:data:`~.utils.color.Color`, optional): Specifies the color of the hatch lines. Default ``0``.
             space (float, UnitObj, optional): Specifies the space between the lines in the hatch (in ``mm`` units)
                 or :ref:`proto_unit_obj`. Default ``0.0``
             angle (Angle, int, optional): Specifies angle of the hatch in degrees. Default to ``0``.
-            bg_color(Color, optional): Specifies the background Color.
+            bg_color(:py:data:`~.utils.color.Color`, optional): Specifies the background Color.
                 Set this ``-1`` (default) for no background color.
             name (str, optional): Specifies the Hatch Name.
             auto_name (bool, optional): Specifies if Hatch is give an auto name such as ``Hatch ``. Default ``False``.
@@ -263,7 +263,7 @@ class Hatch(StyleMulti):
         Gets an instance from a preset
 
         Args:
-            preset (PatternKind): Preset
+            preset (PresetHatchKind): Preset
 
         Returns:
             Hatch: Instance from preset.

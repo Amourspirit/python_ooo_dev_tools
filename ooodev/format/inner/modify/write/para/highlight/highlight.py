@@ -29,7 +29,7 @@ class Highlight(ParaStyleBaseMulti):
         Constructor
 
         Args:
-            color (Color, optional): Highlight Color. A value of ``-1`` Set color to Transparent.
+            color (:py:data:`~.utils.color.Color`, optional): Highlight Color. A value of ``-1`` Set color to Transparent.
             style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.
             style_family (str, optional): Style family. Default ``ParagraphStyles``.
