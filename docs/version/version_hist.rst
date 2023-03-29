@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.9.2
+=============
+
+Format Styles that inherit from ``StyleName`` such as ``ooodev.format.calc.style.Cell``.
+
 Version 0.9.1
 =============
 

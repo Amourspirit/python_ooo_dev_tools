@@ -1613,9 +1613,7 @@ class Info(metaclass=StaticProperty):
         """
         style_container = cls.get_style_container(doc, family_style_name)
         #       container is a collection of named property sets
-        name_props = mLo.Lo.qi(XPropertySet, style_container.getByName(prop_set_nm))
-        if name_props is None:
-            raise mEx.MissingInterfaceError(XPropertySet)
+        name_props = mLo.Lo.qi(XPropertySet, style_container.getByName(prop_set_nm), True)
         return name_props
 
     @classmethod

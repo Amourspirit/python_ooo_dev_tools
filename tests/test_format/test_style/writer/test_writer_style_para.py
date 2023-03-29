@@ -11,6 +11,7 @@ from ooodev.format.writer.style import Para, StyleParaKind
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
+from ooodev.utils.color import CommonColor
 
 
 if TYPE_CHECKING:
@@ -180,6 +181,13 @@ def test_write(loader, para_text) -> None:
         assert pp.ParaStyleName == str(StyleParaKind.HEADING_10)
         cursor.gotoEnd(False)
         assert pp.ParaStyleName == str(StyleParaKind.STANDARD)
+
+        style = Para(name=StyleParaKind.STANDARD)
+        xprops = style.get_style_props()
+        assert xprops is not None
+        xprops.setPropertyValue("FillColor", CommonColor.CORAL)
+        val = cast(int, xprops.getPropertyValue("FillColor"))
+        assert val == CommonColor.CORAL
 
         Lo.delay(delay)
     finally:

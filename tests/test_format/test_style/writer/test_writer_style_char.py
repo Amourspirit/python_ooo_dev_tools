@@ -10,6 +10,7 @@ from ooodev.format.writer.style import Char, StyleCharKind
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
+from ooodev.utils.color import CommonColor
 
 
 if TYPE_CHECKING:
@@ -52,6 +53,13 @@ def test_write(loader) -> None:
         Char.default.apply(cursor)
         assert cp.CharStyleName == ""
         cursor.gotoEnd(False)
+
+        style = Char(name=StyleCharKind.STANDARD)
+        xprops = style.get_style_props()
+        assert xprops is not None
+        xprops.setPropertyValue("CharBackColor", CommonColor.CORAL)
+        val = cast(int, xprops.getPropertyValue("CharBackColor"))
+        assert val == CommonColor.CORAL
 
         Lo.delay(delay)
     finally:

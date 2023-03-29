@@ -25,6 +25,9 @@ class BulletList(StyleName):
         super().__init__(name=name)
 
     # region Overrides
+    def _get_family_style_name(self) -> str:
+        return "NumberingStyles"
+
     def _supported_services(self) -> Tuple[str, ...]:
         try:
             return self._supported_services_values

@@ -101,6 +101,10 @@ def test_write(loader) -> None:
         BulletList.default.apply(cursor)
         Write.append_para(cursor=cursor, text="Moving On...")
 
+        style = BulletList(name=StyleListKind.NUM_123)
+        xprops = style.get_style_props()
+        assert xprops is not None
+
         Lo.delay(delay)
     finally:
         Lo.close_doc(doc)

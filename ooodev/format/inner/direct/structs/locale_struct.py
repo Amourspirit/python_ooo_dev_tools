@@ -116,7 +116,7 @@ class LocaleStruct(StructBase):
         """
         if not self._is_valid_obj(obj):
             # will not apply on this class but may apply on child classes
-            self._print_not_valid_obj("apply")
+            self._print_not_valid_srv("apply")
             return
 
         cargs = CancelEventArgs(source=f"{self.apply.__qualname__}")

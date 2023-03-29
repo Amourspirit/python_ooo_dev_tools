@@ -28,6 +28,8 @@ class Para(StyleName):
         super().__init__(name=name)
 
     # region Overrides
+    def _get_family_style_name(self) -> str:
+        return "ParagraphStyles"
 
     def _supported_services(self) -> Tuple[str, ...]:
         try:

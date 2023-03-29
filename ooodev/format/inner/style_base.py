@@ -1,10 +1,12 @@
 # region Imports
 from __future__ import annotations
 from typing import Any, Dict, NamedTuple, Tuple, TYPE_CHECKING, Type, TypeVar, cast, overload
-from abc import ABC
 import uno
-import random
-import string
+from com.sun.star.container import XNameContainer
+from com.sun.star.beans import XPropertySet
+
+# import random
+# import string
 
 from ooodev.utils import props as mProps
 from ooodev.utils import info as mInfo
@@ -21,12 +23,9 @@ from ooodev.events.format_named_event import FormatNamedEvent as FormatNamedEven
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.common.props.prop_pair import PropPair
 
-
-from com.sun.star.container import XNameContainer
-from com.sun.star.beans import XPropertySet
-
 if TYPE_CHECKING:
     from com.sun.star.beans import PropertyValue
+    from com.sun.star.style import CellStyle
 
 # endregion Imports
 
@@ -43,8 +42,8 @@ class MetaStyle(type):
     def __call__(cls, *args, **kw):
         custom_args = kw.pop("_cattribs", None)
         obj = cls.__new__(cls, *args, **kw)
-        uniquie_id = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
-        object.__setattr__(obj, "_uniquie_id", uniquie_id)
+        # uniquie_id = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
+        # object.__setattr__(obj, "_uniquie_id", uniquie_id)
         _events = Events(source=obj)
         object.__setattr__(obj, "_internal_events", _events)
 
@@ -307,13 +306,25 @@ class StyleBase(metaclass=MetaStyle):
         Returns:
             bool: ``True`` if has a required service; Otherwise, ``False``
         """
+        return self._is_obj_service(obj)
+
+    def _is_obj_service(self, obj: object) -> bool:
+        """
+        Gets if ``obj`` supports one of the services required by style class
+
+        Args:
+            obj (object): UNO object that must have requires service
+
+        Returns:
+            bool: ``True`` if has a required service; Otherwise, ``False``
+        """
         rs = self._supported_services()
         if rs:
             return mInfo.Info.support_service(obj, *rs)
         # if style class has no required services then return True
         return True
 
-    def _print_not_valid_obj(self, method_name: str = ""):
+    def _print_not_valid_srv(self, method_name: str = ""):
         """
         Prints via ``Lo.print()`` notice that required service is missing
 
@@ -425,7 +436,7 @@ class StyleBase(metaclass=MetaStyle):
                 eargs = EventArgs.from_args(cargs)
                 self._events.trigger(FormatNamedEvent.STYLE_APPLIED, eargs)
             else:
-                self._print_not_valid_obj("apply")
+                self._print_not_valid_srv("apply")
 
     def get_props(self) -> Tuple[PropertyValue, ...]:
         """
@@ -521,7 +532,7 @@ class StyleBase(metaclass=MetaStyle):
             :py:meth:`~.style_base.StyleBase.restore`
         """
         if not self._is_valid_obj(obj):
-            self._print_not_valid_obj("Backup")
+            self._print_not_valid_srv("Backup")
             return
         if self._dv_bak is None:
             self._dv_bak = {}
@@ -1079,7 +1090,7 @@ class StyleMulti(StyleBase):
             :py:meth:`~.style_base.StyleMulti.restore`
         """
         if not self._is_valid_obj(obj):
-            self._print_not_valid_obj("Backup")
+            self._print_not_valid_srv("Backup")
             return
         try:
             self._all_attributes = False
@@ -1222,9 +1233,12 @@ class StyleModifyMulti(StyleMulti):
         )
 
     def _is_valid_obj(self, obj: object) -> bool:
-        valid = super()._is_valid_obj(obj)
-        if valid:
-            return True
+        if mLo.Lo.is_uno_interfaces(obj, "com.sun.star.style.XStyle"):
+            return self._is_obj_service(obj)
+        else:
+            valid = self._is_obj_service(obj)
+            if valid:
+                return True
         return mInfo.Info.is_doc_type(obj, mLo.Lo.Service.WRITER)
 
     def _props_set(self, obj: object, **kwargs: Any) -> None:
@@ -1242,17 +1256,30 @@ class StyleModifyMulti(StyleMulti):
         Applies padding to ``obj``
 
         Args:
-            obj (object): UNO Writer Document
+            obj (object): UNO Object such as a Document, Spreadsheet, or ``XStyle``
 
         Returns:
             None:
         """
 
-        if not self._is_valid_doc(obj):
-            mLo.Lo.print(f"{self.__class__.__name__}.apply(): Not a Valid Document. Unable to set Style Property")
-            return
-        p = self.get_style_props(obj)
-        # super()._apply_direct(p, override_dv={**self._get_properties()})
+        if mLo.Lo.is_uno_interfaces(obj, "com.sun.star.style.XStyle"):
+            if not self._is_obj_service(obj):
+                self._print_not_valid_srv(method_name="apply")
+                return
+            p = mLo.Lo.qi(XPropertySet, obj)
+            if p is None:
+                mLo.Lo.print(
+                    f"{self.__class__.__name__}.apply(): Not a UNO Object for style. Unable to set Style Properties"
+                )
+                return
+        else:
+
+            if not self._is_valid_doc(obj):
+                mLo.Lo.print(
+                    f"{self.__class__.__name__}.apply(): Not a UNO Object for style. Unable to set Style Properties"
+                )
+                return
+            p = self.get_style_props(obj)
         super().apply(p, **kwargs)
 
     # endregion apply()
@@ -1351,6 +1378,8 @@ class StyleModifyMulti(StyleMulti):
 
 # region StyleName Class
 class StyleName(StyleBase):
+    """Style Name Base Class"""
+
     # region Init
     def __init__(self, name: Any, **kwargs) -> None:
         """
@@ -1370,7 +1399,27 @@ class StyleName(StyleBase):
 
     # endregion Init
 
+    # region methods
+    def get_style_props(self) -> XPropertySet:
+        """
+        Gets Style as ``XPropertySet`` that contains all style properties.
+
+        Returns:
+            XPropertySet: Returns result also implements ``com.sun.star.style.XStyle``
+
+        .. versionadded:: 0.9.2
+        """
+        props = mInfo.Info.get_style_props(
+            doc=mLo.Lo.this_component, family_style_name=self._get_family_style_name(), prop_set_nm=self.prop_name
+        )
+        return props
+
+    # endregion methods
+
     # region internal methods
+    def _get_family_style_name(self) -> str:
+        raise NotImplementedError
+
     def _get_property_name(self) -> str:
         try:
             return self._style_property_name
@@ -1414,6 +1463,13 @@ class StyleName(StyleBase):
             TStyleName: ``TStyleName`` instance that represents ``obj`` style.
         """
         inst = cls(**kwargs)
+
+        if mInfo.Info.support_service(obj, "com.sun.star.style.CellStyle"):
+            cs = cast("CellStyle", obj)
+            pname = cs.getName()
+            inst.prop_name = pname
+            return inst
+
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 

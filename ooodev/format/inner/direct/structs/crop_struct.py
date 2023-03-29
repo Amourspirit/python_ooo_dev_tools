@@ -140,7 +140,7 @@ class CropStruct(StructBase):
             None:
         """
         if not mProps.Props.has(obj, self._get_property_name()):
-            self._print_not_valid_obj("apply")
+            self._print_not_valid_srv("apply")
             return
 
         grad = self.get_uno_struct()

@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import cast
 import pytest
 
 if __name__ == "__main__":
@@ -9,7 +10,8 @@ from ooodev.format.writer.style import Frame, StyleFrameKind
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
-from ooodev.units.unit_mm import UnitMM
+from ooodev.units import UnitMM
+from ooodev.utils.color import CommonColor
 
 
 def test_write(loader) -> None:
@@ -33,6 +35,12 @@ def test_write(loader) -> None:
 
         f_style = Frame.from_obj(tf)
         assert f_style.prop_name == style.prop_name
+
+        xprops = style.get_style_props()
+        assert xprops is not None
+        xprops.setPropertyValue("BackColor", CommonColor.CORAL)
+        val = cast(int, xprops.getPropertyValue("BackColor"))
+        assert val == CommonColor.CORAL
 
         Lo.delay(delay)
     finally:
