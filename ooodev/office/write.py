@@ -1579,6 +1579,7 @@ class Write(mSel.Selection):
             styles (Iterable[StyleObj]):One or more styles to apply to text.
             prop_name (str): Property Name such as ``CharHeight``
             prop_val (object): Property Value such as ``10``
+            styles (Iterable[StyleObj], optional): One or more styles to apply.
 
         Returns:
             None:
@@ -1729,6 +1730,8 @@ class Write(mSel.Selection):
 
     @classmethod
     def _style_prev_paragraph_style(cls, cursor: XTextCursor | XParagraphCursor, styles: Iterable[StyleObj]) -> None:
+        if not styles:
+            return
         c_styles_args = CancelEventArgs("Write._style_prev_paragraph_style")
         c_styles_args.event_data = styles
         _Events().trigger(WriteNamedEvent.STYLE_PREV_PARA_STYLES_SETTING, c_styles_args)
@@ -1740,27 +1743,55 @@ class Write(mSel.Selection):
             "com.sun.star.drawing.FillProperties",
         )
 
-        for style in cast(Iterable[StyleObj], c_styles_args.event_data):
+        style_lst: List[StyleObj] = []
+        fill_lst: List[StyleObj] = []
+        style_data = cast(Iterable[StyleObj], c_styles_args.event_data)
+        for style in style_data:
             if not style.support_service(*style_srv):
                 mLo.Lo.print(
-                    f"_style_prev_paragraph_style(), Suppoted services are {style_srv}. Not Supported style: {style}"
+                    f"style_prev_paragraph(), Supported services are {style_srv}. Not Supported style: {style}"
                 )
                 continue
+            if FormatKind.TXT_CONTENT in style.prop_format_kind and FormatKind.PARA in style.prop_format_kind:
+                fill_lst.append(style)
+            else:
+                style_lst.append(style)
 
-            cargs = CancelEventArgs(c_styles_args.source)
-            cargs.event_data = style
-            _Events().trigger(WriteNamedEvent.STYLING, cargs)
-            if cargs.cancel:
-                continue
+        # has_prev = cursor.gotoPreviousParagraph(True)
+        para_c = mLo.Lo.qi(XParagraphCursor, cursor)
+        if para_c is None:
+            para_c = cls.get_paragraph_cursor(cursor)
 
-            if cursor.gotoPreviousParagraph(True):  # select previous paragraph
-                style.backup(cursor)
-                style.apply(cursor)
-                cursor.gotoNextParagraph(False)
-                if style.prop_has_backup:
-                    style.restore(cursor, True)
+        if fill_lst:
+            has_prev = para_c.gotoPreviousParagraph(False)
+            if has_prev:
+                para_c.gotoEndOfParagraph(True)
+                fp = cast("FillProperties", para_c.TextParagraph)
+                for style in fill_lst:
+                    cargs = CancelEventArgs(c_styles_args.source)
+                    cargs.event_data = style
+                    _Events().trigger(WriteNamedEvent.STYLING, cargs)
+                    if cargs.cancel:
+                        continue
+                    style.apply(fp)
+                    _Events().trigger(WriteNamedEvent.STYLED, EventArgs.from_args(cargs))
 
-                _Events().trigger(WriteNamedEvent.STYLED, EventArgs.from_args(cargs))
+                para_c.gotoNextParagraph(False)
+
+        if style_lst:
+            has_prev = para_c.gotoPreviousParagraph(False)
+            if has_prev:
+                para_c.gotoEndOfParagraph(True)
+                for style in style_lst:
+                    cargs = CancelEventArgs(c_styles_args.source)
+                    cargs.event_data = style
+                    _Events().trigger(WriteNamedEvent.STYLING, cargs)
+                    if cargs.cancel:
+                        continue
+                    style.apply(para_c)
+                    _Events().trigger(WriteNamedEvent.STYLED, EventArgs.from_args(cargs))
+
+                para_c.gotoNextParagraph(False)
 
         e_style_args = EventArgs.from_args(c_styles_args)
         _Events().trigger(WriteNamedEvent.STYLE_PREV_PARA_STYLES_SET, e_style_args)

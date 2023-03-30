@@ -128,6 +128,7 @@ class BulletList(StyleName):
         try:
             return BulletList._DEFAULT
         except AttributeError:
+            # empty string name will result in No List, list style being applied
             BulletList._DEFAULT = BulletList(name="")
             BulletList._DEFAULT._is_default_inst = True
         return BulletList._DEFAULT

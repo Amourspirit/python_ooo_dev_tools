@@ -2240,6 +2240,8 @@ class Calc:
             "com.sun.star.style.CharacterProperties",
             "com.sun.star.style.ParagraphProperties",
             "com.sun.star.table.CellProperties",
+            "com.sun.star.sheet.SheetCellRange",
+            "com.sun.star.sheet.SheetCell",
         )
         for style in styles:
             if style.support_service(*supported_styles):
@@ -2872,6 +2874,7 @@ class Calc:
             row_start (int): Zero-base Start Row
             col_end (int): Zero-base End Column
             row_end (int): Zero-base End Row
+            styles (Iterable[StyleObj], optional): One or more styles to apply to cell range.
 
         Returns:
             None:
@@ -3108,6 +3111,8 @@ class Calc:
             "com.sun.star.style.CharacterProperties",
             "com.sun.star.style.ParagraphProperties",
             "com.sun.star.table.CellProperties",
+            "com.sun.star.sheet.SheetCellRange",
+            "com.sun.star.sheet.SheetCell",
         )
 
         for style in styles:
@@ -7808,3 +7813,161 @@ class Calc:
         header_cursor.setString(text)
 
     # endregion --------------- headers /footers -----------------------
+
+    # region --------------- styles ------------------------------------
+    # region set_style_range()
+    @overload
+    @classmethod
+    def set_style_range(cls, sheet: XSpreadsheet, range_name: str, *, styles: Iterable[StyleObj]) -> XCellRange:
+        ...
+
+    @overload
+    @classmethod
+    def set_style_range(
+        cls, sheet: XSpreadsheet, range_obj: mRngObj.RangeObj, *, styles: Iterable[StyleObj]
+    ) -> XCellRange:
+        ...
+
+    @overload
+    @classmethod
+    def set_style_range(
+        cls, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj, *, styles: Iterable[StyleObj]
+    ) -> XCellRange:
+        ...
+
+    @overload
+    @classmethod
+    def set_style_range(
+        cls, sheet: XSpreadsheet, cr_addr: CellRangeAddress, *, styles: Iterable[StyleObj]
+    ) -> XCellRange:
+        ...
+
+    @overload
+    @classmethod
+    def set_style_range(cls, cell_range: XCellRange, *, styles: Iterable[StyleObj]) -> XCellRange:
+        ...
+
+    @overload
+    @classmethod
+    def set_style_range(
+        cls,
+        sheet: XSpreadsheet,
+        col_start: int,
+        row_start: int,
+        col_end: int,
+        row_end: int,
+        *,
+        styles: Iterable[StyleObj],
+    ) -> XCellRange:
+        ...
+
+    @classmethod
+    def set_style_range(cls, *args, **kwargs) -> None:
+        """
+        Set style/formatting on cell range
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet Document
+            range_name (str): Range Name such as ``A1:D5``
+            range_obj (RangeObj): Range Object
+            cell_obj (CellObj): Cell Object
+            cr_addr (CellRangeAddress): Cell range Address
+            cell_range (XCellRange): Cell Range. If passed in then the same instance is returned.
+            col_start (int): Start Column
+            row_start (int): Start Row
+            col_end (int): End Column
+            row_end (int): End Row
+            styles (Iterable[StyleObj], optional): One or more styles to apply to cell range.
+
+        Returns:
+            None:
+
+        .. versionadded:: 0.9.2
+        """
+        styles = cast(Iterable[StyleObj], kwargs.pop("styles", None))
+        if styles is None:
+            return
+        cell_range = cls.get_cell_range(*args, **kwargs)
+        supported_styles = (
+            "com.sun.star.style.CharacterProperties",
+            "com.sun.star.style.ParagraphProperties",
+            "com.sun.star.table.CellProperties",
+            "com.sun.star.sheet.SheetCellRange",
+            "com.sun.star.sheet.SheetCell",
+        )
+
+        for style in styles:
+            if style.support_service(*supported_styles):
+                style.apply(cell_range)
+
+    # endregion set_style_range()
+
+    # region set_style_cell()
+    @overload
+    @classmethod
+    def set_style_cell(cls, sheet: XSpreadsheet, addr: CellAddress, *, styles: Iterable[StyleObj]) -> XCell:
+        ...
+
+    @overload
+    @classmethod
+    def set_style_cell(cls, sheet: XSpreadsheet, cell_name: str, *, styles: Iterable[StyleObj]) -> XCell:
+        ...
+
+    @overload
+    @classmethod
+    def set_style_cell(cls, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj, *, styles: Iterable[StyleObj]) -> XCell:
+        ...
+
+    @overload
+    @classmethod
+    def set_style_cell(cls, sheet: XSpreadsheet, col: int, row: int, *, styles: Iterable[StyleObj]) -> XCell:
+        ...
+
+    @overload
+    @classmethod
+    def set_style_cell(cls, cell_range: XCellRange, *, styles: Iterable[StyleObj]) -> XCell:
+        ...
+
+    @overload
+    @classmethod
+    def set_style_cell(cls, cell_range: XCellRange, col: int, row: int, *, styles: Iterable[StyleObj]) -> XCell:
+        ...
+
+    @classmethod
+    def set_style_cell(cls, *args, **kwargs) -> None:
+        """
+        Set style/formatting on cell
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            addr (CellAddress): Cell Address
+            cell_name (str): Cell Name such as 'A1'
+            cell_obj: (CellObj): Cell object
+            cell_range (XCellRange): Cell Range
+            col (int): Cell column
+            row (int): cell row
+            styles (Iterable[StyleObj], optional): One or more styles to apply to cell range.
+
+        Returns:
+            None:
+
+        .. versionadded:: 0.9.2
+        """
+        styles = cast(Iterable[StyleObj], kwargs.pop("styles", None))
+        if styles is None:
+            return
+        cell = cls.get_cell(*args, **kwargs)
+        supported_styles = (
+            "com.sun.star.style.CharacterProperties",
+            "com.sun.star.style.ParagraphProperties",
+            "com.sun.star.table.CellProperties",
+            "com.sun.star.sheet.SheetCellRange",
+            "com.sun.star.sheet.SheetCell",
+        )
+
+        for style in styles:
+            if style.support_service(*supported_styles):
+                style.apply(cell)
+
+    # endregion set_style_cell()
+    # endregion ------------ styles ------------------------------------
