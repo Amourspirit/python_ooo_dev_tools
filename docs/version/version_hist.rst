@@ -7,6 +7,8 @@ Version 0.9.2
 
 Format Styles that inherit from ``StyleName`` such as ``ooodev.format.calc.style.Cell``.
 
+Added style options to ``from ooodev.utils.forms.Forms`` module methods.
+
 Version 0.9.1
 =============
 

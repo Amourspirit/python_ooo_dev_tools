@@ -1059,6 +1059,13 @@ class Info(metaclass=StaticProperty):
             List[str]: service names
         """
         try:
+            service_names = list(obj.SupportedServiceNames)
+            service_names.sort()
+            return service_names
+        except AttributeError:
+            pass
+
+        try:
             si = mLo.Lo.qi(XServiceInfo, obj, True)
             names = si.getSupportedServiceNames()
             service_names = list(names)
