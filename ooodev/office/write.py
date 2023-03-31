@@ -6,6 +6,57 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Iterable, List, cast, overload, Union
 import re
 import uno
+from com.sun.star.awt import FontWeight
+from com.sun.star.beans import XPropertySet
+from com.sun.star.container import XEnumerationAccess
+from com.sun.star.container import XNamed
+from com.sun.star.document import XDocumentInsertable
+from com.sun.star.document import XEmbeddedObjectSupplier2
+from com.sun.star.drawing import XDrawPageSupplier
+from com.sun.star.drawing import XShape
+from com.sun.star.frame import XModel
+from com.sun.star.lang import Locale  # struct class
+from com.sun.star.lang import XComponent
+from com.sun.star.lang import XServiceInfo
+from com.sun.star.linguistic2 import XConversionDictionaryList
+from com.sun.star.linguistic2 import XLanguageGuessing
+from com.sun.star.linguistic2 import XLinguProperties
+from com.sun.star.linguistic2 import XLinguServiceManager
+from com.sun.star.linguistic2 import XProofreader
+from com.sun.star.linguistic2 import XSearchableDictionaryList
+from com.sun.star.linguistic2 import XSpellChecker
+from com.sun.star.style import NumberingType  # const
+from com.sun.star.style import XStyle
+from com.sun.star.table import BorderLine  # struct
+from com.sun.star.text import HoriOrientation
+from com.sun.star.text import VertOrientation
+from com.sun.star.text import XBookmarksSupplier
+from com.sun.star.text import XPageCursor
+from com.sun.star.text import XParagraphCursor
+from com.sun.star.text import XText
+from com.sun.star.text import XTextContent
+from com.sun.star.text import XTextDocument
+from com.sun.star.text import XTextField
+from com.sun.star.text import XTextFrame
+from com.sun.star.text import XTextFramesSupplier
+from com.sun.star.text import XTextGraphicObjectsSupplier
+from com.sun.star.text import XTextRange
+from com.sun.star.text import XTextTable
+from com.sun.star.text import XTextViewCursor
+from com.sun.star.uno import Exception as UnoException
+from com.sun.star.util import XCloseable
+from com.sun.star.view import XPrintable
+
+from ooo.dyn.awt.font_slant import FontSlant
+from ooo.dyn.awt.size import Size as UnoSize  # struct
+from ooo.dyn.beans.property_value import PropertyValue
+from ooo.dyn.linguistic2.dictionary_type import DictionaryType as DictionaryType
+from ooo.dyn.style.break_type import BreakType
+from ooo.dyn.style.paragraph_adjust import ParagraphAdjust as ParagraphAdjust
+from ooo.dyn.text.control_character import ControlCharacterEnum as ControlCharacterEnum
+from ooo.dyn.text.page_number_type import PageNumberType
+from ooo.dyn.text.text_content_anchor_type import TextContentAnchorType
+from ooo.dyn.view.paper_format import PaperFormat as PaperFormat
 
 from ..events.args.cancel_event_args import CancelEventArgs
 from ..events.args.event_args import EventArgs
@@ -33,51 +84,6 @@ from ..utils.type_var import PathOrStr, Table, DocOrCursor
 
 from ..mock import mock_g
 
-
-# if not mock_g.DOCS_BUILDING:
-# not importing for doc building just result in short import name for
-# args that use these.
-# this is also true becuase docs/conf.py ignores com import for autodoc
-from com.sun.star.awt import FontWeight
-from com.sun.star.beans import XPropertySet
-from com.sun.star.container import XEnumerationAccess
-from com.sun.star.container import XNamed
-from com.sun.star.document import XDocumentInsertable
-from com.sun.star.document import XEmbeddedObjectSupplier2
-from com.sun.star.drawing import XDrawPageSupplier
-from com.sun.star.drawing import XShape
-from com.sun.star.frame import XModel
-from com.sun.star.lang import Locale  # struct class
-from com.sun.star.lang import XComponent
-from com.sun.star.lang import XServiceInfo
-from com.sun.star.linguistic2 import XConversionDictionaryList
-from com.sun.star.linguistic2 import XLanguageGuessing
-from com.sun.star.linguistic2 import XLinguProperties
-from com.sun.star.linguistic2 import XLinguServiceManager
-from com.sun.star.linguistic2 import XProofreader
-from com.sun.star.linguistic2 import XSearchableDictionaryList
-from com.sun.star.linguistic2 import XSpellChecker
-from com.sun.star.style import NumberingType  # const
-from com.sun.star.table import BorderLine  # struct
-from com.sun.star.text import HoriOrientation
-from com.sun.star.text import VertOrientation
-from com.sun.star.text import XBookmarksSupplier
-from com.sun.star.text import XPageCursor
-from com.sun.star.text import XParagraphCursor
-from com.sun.star.text import XText
-from com.sun.star.text import XTextContent
-from com.sun.star.text import XTextDocument
-from com.sun.star.text import XTextField
-from com.sun.star.text import XTextFrame
-from com.sun.star.text import XTextFramesSupplier
-from com.sun.star.text import XTextGraphicObjectsSupplier
-from com.sun.star.text import XTextRange
-from com.sun.star.text import XTextTable
-from com.sun.star.text import XTextViewCursor
-from com.sun.star.uno import Exception as UnoException
-from com.sun.star.util import XCloseable
-from com.sun.star.view import XPrintable
-
 if TYPE_CHECKING:
     # from com.sun.star.beans import PropertyValue
     from com.sun.star.container import XEnumeration
@@ -92,16 +98,6 @@ if TYPE_CHECKING:
     from com.sun.star.linguistic2 import XThesaurus
     from com.sun.star.text import XTextCursor
 
-from ooo.dyn.awt.font_slant import FontSlant
-from ooo.dyn.awt.size import Size as UnoSize  # struct
-from ooo.dyn.beans.property_value import PropertyValue
-from ooo.dyn.linguistic2.dictionary_type import DictionaryType as DictionaryType
-from ooo.dyn.style.break_type import BreakType
-from ooo.dyn.style.paragraph_adjust import ParagraphAdjust as ParagraphAdjust
-from ooo.dyn.text.control_character import ControlCharacterEnum as ControlCharacterEnum
-from ooo.dyn.text.page_number_type import PageNumberType
-from ooo.dyn.text.text_content_anchor_type import TextContentAnchorType
-from ooo.dyn.view.paper_format import PaperFormat as PaperFormat
 
 # endregion Imports
 
@@ -1899,6 +1895,63 @@ class Write(mSel.Selection):
     # endregion ---------- text cursor property methods ----------------
 
     # region ------------- style methods -------------------------------
+    @staticmethod
+    def create_style_para(text_doc: XTextDocument, style_name: str, styles: Iterable[StyleObj] = None) -> XStyle:
+        """
+        Creates a paragraph style and adds it to document paragraph styles.
+
+        Args:
+            text_doc (XTextDocument): Text Document
+            style_name (str): The name of the paragraph style.
+            styles (Iterable[StyleObj], optional): One or more styles to apply.
+
+        Returns:
+            XStyle: Newly created style
+
+        .. versionadded:: 0.9.2
+        """
+        para_styles = mInfo.Info.get_style_container(doc=text_doc, family_style_name="ParagraphStyles")
+
+        # create new paragraph style properties set
+        para_style = mLo.Lo.create_instance_msf(XStyle, "com.sun.star.style.ParagraphStyle", raise_err=True)
+        props = mLo.Lo.qi(XPropertySet, para_style, raise_err=True)
+
+        if styles:
+            for style in styles:
+                style.apply(props)
+
+        # add the style to Document
+        para_styles.insertByName(style_name, props)
+        return para_styles
+
+    @staticmethod
+    def create_style_char(text_doc: XTextDocument, style_name: str, styles: Iterable[StyleObj] = None) -> XStyle:
+        """
+        Creates a character style and adds it to document character styles.
+
+        Args:
+            text_doc (XTextDocument): Text Document
+            style_name (str): The name of the character style.
+            styles (Iterable[StyleObj], optional): One or more styles to apply.
+
+        Returns:
+            XStyle: Newly created style
+
+        .. versionadded:: 0.9.2
+        """
+        char_styles = mInfo.Info.get_style_container(doc=text_doc, family_style_name="CharacterStyles")
+
+        # create new character style properties set
+        char_style = mLo.Lo.create_instance_msf(XStyle, "com.sun.star.style.CharacterStyle", raise_err=True)
+        props = mLo.Lo.qi(XPropertySet, char_style, raise_err=True)
+
+        if styles:
+            for style in styles:
+                style.apply(props)
+
+        # add the style to Document
+        char_styles.insertByName(style_name, props)
+        return char_styles
 
     @staticmethod
     def get_page_text_width(text_doc: XTextDocument) -> int:
@@ -1995,10 +2048,10 @@ class Write(mSel.Selection):
             paper_format (PaperFormat): Paper Format.
 
         Raises:
-            MissingInterfaceError: If text_doc does not implement XPrintable interface
+            MissingInterfaceError: If ``text_doc`` does not implement ``XPrintable`` interface
 
         Returns:
-            bool: True if page format is set; Otherwise, False
+            bool: ``True`` if page format is set; Otherwise, ``False``
 
         :events:
             .. cssclass:: lo_event
@@ -2032,7 +2085,7 @@ class Write(mSel.Selection):
             text_doc (XTextDocument): Text Document
 
         Returns:
-            bool: True if page format is set; Otherwise, False
+            bool: ``True`` if page format is set; Otherwise, ``False``
 
         See Also:
             :py:meth:`set_page_format`
@@ -2608,14 +2661,19 @@ class Write(mSel.Selection):
         Each row becomes a row of the table. The first row is treated as a header.
 
         Args:
-            cursor (XTextCursor): Text Cursor
+            cursor (XTextCursor): Text Cursor.
             table_data (Table): 2D Table with the the first row containing column names.
-            header_bg_color (:py:data:`~.utils.color.Color`, optional):.color.Color`, optional): Table header background color. Set to None to ignore header color. Defaults to CommonColor.DARK_BLUE.
-            header_fg_color (:py:data:`~.utils.color.Color`, optional): Table header foreground color. Set to None to ignore header color. Defaults to CommonColor.WHITE.
-            tbl_bg_color (:py:data:`~.utils.color.Color`, optional): Table background color. Set to None to ignore background color. Defaults to CommonColor.LIGHT_BLUE.
-            tbl_fg_color (:py:data:`~.utils.color.Color`, optional): Table background color. Set to None to ignore background color. Defaults to CommonColor.BLACK.
+            header_bg_color (:py:data:`~.utils.color.Color`, optional): Table header background color.
+                Set to None to ignore header color. Defaults to ``CommonColor.DARK_BLUE``.
+            header_fg_color (:py:data:`~.utils.color.Color`, optional): Table header foreground color.
+                Set to None to ignore header color. Defaults to ``CommonColor.WHITE``.
+            tbl_bg_color (:py:data:`~.utils.color.Color`, optional): Table background color.
+                Set to None to ignore background color. Defaults to ``CommonColor.LIGHT_BLUE``.
+            tbl_fg_color (:py:data:`~.utils.color.Color`, optional): Table background color.
+                Set to None to ignore background color. Defaults to ``CommonColor.BLACK``.
             first_row_header (bool, optional): If ``True`` First row is treated as header data. Default ``True``.
-            styles (Iterable[StyleObj]): One or more styles to apply to frame. Only styles that support ``com.sun.star.text.TextTable`` service are applied.
+            styles (Iterable[StyleObj], optional): One or more styles to apply to frame.
+                Only styles that support ``com.sun.star.text.TextTable`` service are applied.
 
         Raises:
             ValueError: If table_data is empty
@@ -3932,8 +3990,6 @@ class Write(mSel.Selection):
         """
         mLo.Lo.dispatch_cmd("SpellOnline")
 
-    # endregion -- it seemse is end region comes after last methos in a class it is not being reconized by VS.Code
-
     @staticmethod
     def open_thesaurus_dialog() -> None:
         """
@@ -3946,6 +4002,8 @@ class Write(mSel.Selection):
             :py:meth:`Lo.dispatch_cmd <.utils.lo.Lo.dispatch_cmd>` method is called along with any of its events.
         """
         mLo.Lo.dispatch_cmd("ThesaurusDialog")
+
+    # endregion
 
     @classproperty
     def active_doc(cls) -> XTextDocument:

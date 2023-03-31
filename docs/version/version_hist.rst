@@ -9,6 +9,10 @@ Format Styles that inherit from ``StyleName`` such as ``ooodev.format.calc.style
 
 Added style options to ``from ooodev.utils.forms.Forms`` module methods.
 
+Added ``Write.create_style_para()`` that creates new paragraph styles and adds the them to the document paragraph styles.
+
+Added ``Write.create_style_char()`` that creates new character styles and adds the them to the document character styles.
+
 Version 0.9.1
 =============
 

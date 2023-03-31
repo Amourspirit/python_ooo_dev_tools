@@ -13,12 +13,13 @@ from numbers import Real
 from ooo.dyn.style.line_spacing import LineSpacing as UnoLineSpacing
 
 from .struct_base import StructBase
-from ooodev.utils import props as mProps
-from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.events.format_named_event import FormatNamedEvent
-from ooodev.events.args.event_args import EventArgs
 from ooodev.events.args.cancel_event_args import CancelEventArgs
+from ooodev.events.args.event_args import EventArgs
+from ooodev.events.format_named_event import FormatNamedEvent
+from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.units import UnitObj
 from ooodev.units.unit_convert import UnitConvert, UnitLength
+from ooodev.utils import props as mProps
 
 # endregion Import
 
@@ -87,13 +88,13 @@ class LineSpacingStruct(StructBase):
 
     # region init
 
-    def __init__(self, mode: ModeKind = ModeKind.SINGLE, value: Real = 0) -> None:
+    def __init__(self, mode: ModeKind = ModeKind.SINGLE, value: Real | UnitObj = 0) -> None:
         """
         Constructor
 
         Args:
             mode (LineMode, optional): This value specifies the way the spacing is specified.
-            value (Real, optional): This value specifies the spacing in regard to Mode.
+            value (Real, UnitObj, optional): This value specifies the spacing in regard to Mode.
 
         Raises:
             ValueError: If ``value`` are less than zero.
@@ -101,7 +102,8 @@ class LineSpacingStruct(StructBase):
         Note:
             If ``LineMode`` is ``SINGLE``, ``LINE_1_15``, ``LINE_1_5``, or ``DOUBLE`` then ``value`` is ignored.
 
-            If ``LineMode`` is ``AT_LEAST``, ``LEADING``, or ``FIXED`` then ``value`` is a float (``in mm uints``).
+            If ``LineMode`` is ``AT_LEAST``, ``LEADING``, or ``FIXED`` then ``value`` is a float (``in mm uints``)
+            or :ref:`proto_unit_obj`
 
             If ``LineMode`` is ``PROPORTIONAL`` then value is an int representing percentage.
             For example ``95`` equals ``95%``, ``130`` equals ``130%``
@@ -116,10 +118,17 @@ class LineSpacingStruct(StructBase):
 
         if mode == ModeKind.PROPORTIONAL:
             # no conversion
-            self._value = value
+            try:
+                # just in case passed in as a UnitObj
+                self._value = round(value.value)
+            except AttributeError:
+                self._value = int(value)
 
         elif enum_val >= 5:
-            self._value = UnitConvert.convert(num=value, frm=UnitLength.MM, to=UnitLength.MM100)
+            try:
+                self._value = value.get_value_mm100()
+            except AttributeError:
+                self._value = UnitConvert.convert(num=value, frm=UnitLength.MM, to=UnitLength.MM100)
 
         super().__init__()
 
