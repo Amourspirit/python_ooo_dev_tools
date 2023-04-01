@@ -42,7 +42,7 @@ class InnerPadding(AbstractPadding):
         try:
             return self._format_kind_prop
         except AttributeError:
-            self._format_kind_prop = FormatKind.DOC | FormatKind.STYLE
+            self._format_kind_prop = FormatKind.DOC | FormatKind.STYLE | FormatKind.HEADER
         return self._format_kind_prop
 
     @property
@@ -156,6 +156,15 @@ class Padding(PageStyleBaseMulti):
     # endregion Static Methods
 
     # region Properties
+    @property
+    def prop_format_kind(self) -> FormatKind:
+        """Gets the kind of style"""
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.DOC | FormatKind.STYLE | FormatKind.HEADER
+        return self._format_kind_prop
+
     @property
     def prop_style_name(self) -> str:
         """Gets/Sets property Style Name"""

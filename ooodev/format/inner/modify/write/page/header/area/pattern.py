@@ -1,13 +1,15 @@
 # region Import
 from __future__ import annotations
 from typing import cast, Type, TypeVar
+import uno
 from com.sun.star.awt import XBitmap
 
-from ...page_style_base_multi import PageStyleBaseMulti
+from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
 from ooodev.format.inner.preset.preset_pattern import PresetPatternKind as PresetPatternKind
 from ooodev.format.inner.common.props.area_pattern_props import AreaPatternProps
 from ooodev.format.inner.direct.write.fill.area.pattern import Pattern as InnerPattern
+from ...page_style_base_multi import PageStyleBaseMulti
 
 # endregion Import
 
@@ -134,6 +136,15 @@ class Pattern(PageStyleBaseMulti):
     # endregion Static Methods
 
     # region Properties
+    @property
+    def prop_format_kind(self) -> FormatKind:
+        """Gets the kind of style"""
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.DOC | FormatKind.STYLE | FormatKind.HEADER
+        return self._format_kind_prop
+
     @property
     def prop_style_name(self) -> str:
         """Gets/Sets property Style Name"""

@@ -99,8 +99,8 @@ class AbstractHF(StyleBase):
             return self._supported_services_values
         except AttributeError:
             self._supported_services_values = (
-                "com.sun.star.style.ParagraphProperties",
-                "com.sun.star.style.ParagraphStyle",
+                "com.sun.star.style.PageProperties",
+                "com.sun.star.style.PageStyle",
             )
         return self._supported_services_values
 
@@ -362,7 +362,7 @@ class AbstractHF(StyleBase):
         try:
             return self._format_kind_prop
         except AttributeError:
-            self._format_kind_prop = FormatKind.DOC | FormatKind.STYLE
+            self._format_kind_prop = FormatKind.HEADER | FormatKind.FOOTER
         return self._format_kind_prop
 
     @property

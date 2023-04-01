@@ -2175,7 +2175,58 @@ class Write(mSel.Selection):
         return pc_field
 
     @staticmethod
-    def set_header(text_doc: XTextDocument, text: str) -> None:
+    def _set_header_footer(
+        text_doc: XTextDocument, text: str, kind: str = "h", styles: Iterable[StyleObj] = None
+    ) -> None:
+        props = mInfo.Info.get_style_props(doc=text_doc, family_style_name="PageStyles", prop_set_nm="Standard")
+        if props is None:
+            raise mEx.PropertiesError("Could not access the standard page style container")
+        try:
+            # header or footer must be turned on in the document
+            if kind == "h":
+                props.setPropertyValue("HeaderIsOn", True)
+                hf_text = mLo.Lo.qi(XText, props.getPropertyValue("HeaderText"))
+            else:
+                props.setPropertyValue("FooterIsOn", True)
+                hf_text = mLo.Lo.qi(XText, props.getPropertyValue("FooterText"))
+            hf_cursor = hf_text.createTextCursor()
+            hf_cursor.gotoEnd(False)
+
+            hf_props = mLo.Lo.qi(XPropertySet, hf_cursor, True)
+            hf_props.setPropertyValue("CharFontName", mInfo.Info.get_font_general_name())
+            hf_props.setPropertyValue("CharHeight", 10)
+            hf_props.setPropertyValue("ParaAdjust", ParagraphAdjust.RIGHT)
+            txt_srv = (
+                "com.sun.star.style.CharacterProperties",
+                "com.sun.star.style.CharacterPropertiesAsian",
+                "com.sun.star.style.CharacterPropertiesComplex",
+                "com.sun.star.style.ParagraphProperties",
+                "com.sun.star.style.ParagraphPropertiesAsian",
+                "com.sun.star.style.ParagraphPropertiesComplex",
+            )
+            if styles is not None:
+                for style in styles:
+                    if style.support_service(*txt_srv):
+                        style.apply(hf_props)
+
+            hf_text.setString(f"{text}\n")
+            if kind == "h":
+                f_kind = FormatKind.HEADER
+            else:
+                f_kind = FormatKind.FOOTER
+            if styles is not None:
+                for style in styles:
+                    if f_kind not in style.prop_format_kind:
+                        continue
+                    if FormatKind.DOC in style.prop_format_kind:
+                        style.apply(text_doc)
+                    else:
+                        style.apply(props)
+        except Exception as e:
+            raise Exception("Unable to set header text") from e
+
+    @classmethod
+    def set_header(cls, text_doc: XTextDocument, text: str, styles: Iterable[StyleObj] = None) -> None:
         """
         Modify the header via the page style for the document.
         Put the text on the right hand side in the header in
@@ -2184,6 +2235,7 @@ class Write(mSel.Selection):
         Args:
             text_doc (XTextDocument): Text Document
             text (str): Header Text
+            styles (Iterable[StyleObj]): Styles to apply to the text.
 
         Raises:
             PropertiesError: If unable to access properties
@@ -2191,26 +2243,34 @@ class Write(mSel.Selection):
 
         Note:
             The font applied is determined by :py:meth:`.Info.get_font_general_name`
+
+        .. versionchanged:: 0.9.2
+            Added styles parameter
         """
-        props = mInfo.Info.get_style_props(doc=text_doc, family_style_name="PageStyles", prop_set_nm="Standard")
-        if props is None:
-            raise mEx.PropertiesError("Could not access the standard page style container")
-        try:
-            props.setPropertyValue("HeaderIsOn", True)
-            # header must be turned on in the document
-            # props.setPropertyValue("TopMargin", 2200)
-            header_text = mLo.Lo.qi(XText, props.getPropertyValue("HeaderText"))
-            header_cursor = header_text.createTextCursor()
-            header_cursor.gotoEnd(False)
+        return cls._set_header_footer(text_doc=text_doc, text=text, kind="h", styles=styles)
 
-            header_props = mLo.Lo.qi(XPropertySet, header_cursor, True)
-            header_props.setPropertyValue("CharFontName", mInfo.Info.get_font_general_name())
-            header_props.setPropertyValue("CharHeight", 10)
-            header_props.setPropertyValue("ParaAdjust", ParagraphAdjust.RIGHT)
+    @classmethod
+    def set_footer(cls, text_doc: XTextDocument, text: str, styles: Iterable[StyleObj] = None) -> None:
+        """
+        Modify the footer via the page style for the document.
+        Put the text on the right hand side in the header in
+        a general font of 10pt.
 
-            header_text.setString(f"{text}\n")
-        except Exception as e:
-            raise Exception("Unable to set header text") from e
+        Args:
+            text_doc (XTextDocument): Text Document
+            text (str): Header Text
+            styles (Iterable[StyleObj]): Styles to apply to the text.
+
+        Raises:
+            PropertiesError: If unable to access properties
+            Exception: If unable to set header text
+
+        Note:
+            The font applied is determined by :py:meth:`.Info.get_font_general_name`
+
+        .. versionadded:: 0.9.2
+        """
+        return cls._set_header_footer(text_doc=text_doc, text=text, kind="f", styles=styles)
 
     @staticmethod
     def get_draw_page(text_doc: XTextDocument) -> XDrawPage:

@@ -25,7 +25,8 @@
         }
     },
     "workbench.colorTheme": "Monokai",
-    "esbonio.sphinx.confDir": "${workspaceFolder}\\docs",
+    "esbonio.sphinx.confDir": "${workspaceFolder}/docs",
+    "esbonio.server.enabled": true,
     "python.testing.pytestArgs": [
         "tests"
     ],
@@ -161,8 +162,9 @@
         "**/.githooks/**",
         "**/.hypothesis/**",
         "**/.pytest_cache/**",
+        "**/.idea/**",
         "**/__pycache__/**",
-        "**/_build/**",
+        "**/_build/**"
     ],
     "openInExternalApp.openMapper": [
         {
@@ -174,5 +176,9 @@
                 }
             ]
         }
+    ],
+    "restructuredtext.preview.name": "sphinx",
+    "restructuredtext.linter.disabledLinters": [
+        "doc8"
     ]
 }
