@@ -4,6 +4,7 @@ from typing import Tuple, cast, Type, TypeVar
 from ooodev.format.calc.style.page.kind import CalcStylePageKind as CalcStylePageKind
 from ooodev.format.inner.common.abstract.abstract_hf import AbstractHF
 from ooodev.format.inner.common.props.hf_props import HfProps
+from ooodev.format.inner.kind.format_kind import FormatKind
 from ...cell_style_base_multi import CellStyleBaseMulti
 
 # endregion Import
@@ -47,6 +48,15 @@ class InnerStyle(AbstractHF):
                 height_auto="HeaderIsDynamicHeight",
             )
         return self._props_internal_attributes
+
+    @property
+    def prop_format_kind(self) -> FormatKind:
+        """Gets the kind of style"""
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.DOC | FormatKind.STYLE | FormatKind.HEADER
+        return self._format_kind_prop
 
     # endregion Properties
 
@@ -162,6 +172,15 @@ class Header(CellStyleBaseMulti):
     # endregion Static Methods
 
     # region Properties
+    @property
+    def prop_format_kind(self) -> FormatKind:
+        """Gets the kind of style"""
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.DOC | FormatKind.STYLE | FormatKind.HEADER
+        return self._format_kind_prop
+
     @property
     def prop_style_name(self) -> str:
         """Gets/Sets property Style Name"""

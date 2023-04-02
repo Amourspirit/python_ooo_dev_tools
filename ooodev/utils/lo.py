@@ -156,9 +156,9 @@ class Lo(metaclass=StaticProperty):
 
             Args:
                 connector (connectors.ConnectPipe | connectors.ConnectSocket | None): Connection information. Ignore for macros.
-                cache_obj (mCache.Cache | None, optional): Cache instance that determines if LibreOffice profile is to be copied and cached
+                cache_obj (~ooodev.conn.cache.Cache | None, optional): Cache instance that determines if LibreOffice profile is to be copied and cached
                     Ignore for macros. Defaults to None.
-                opt (Options, optional): Extra Load options.
+                opt (~ooodev.utils.lo.Lo.Options, optional): Extra Load options.
 
             .. versionchanged:: 0.6.10
 

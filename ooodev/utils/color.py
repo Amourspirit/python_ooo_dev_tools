@@ -393,7 +393,7 @@ class CommonColor(NamedTuple):
             ValueError: If unable to convert.
 
         Returns:
-            Color: Convert value as Color
+            ~ooodev.utils.color.Color: Convert value as Color
         """
         if not str_color:
             raise ValueError("str_color contains no value to convert to Color")
@@ -481,7 +481,7 @@ class RGB(NamedTuple):
         Gets instance as rgb Color
 
         Returns:
-            Color: red, green, blue encoded as Color.
+            ~ooodev.utils.color.Color: red, green, blue encoded as Color.
         """
         return Color(self.to_int())
 
@@ -527,7 +527,7 @@ class RGB(NamedTuple):
         Gets a color instance from input color that represents a rgb color.
 
         Args:
-            c (Color): Color that contains rgb color data.
+            c (~ooodev.utils.color.Color): Color that contains rgb color data.
 
         Returns:
             RGB: Color information as RGB struct.

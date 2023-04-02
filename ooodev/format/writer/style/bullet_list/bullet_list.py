@@ -25,6 +25,9 @@ class BulletList(StyleName):
         super().__init__(name=name)
 
     # region Overrides
+    def _get_family_style_name(self) -> str:
+        return "NumberingStyles"
+
     def _supported_services(self) -> Tuple[str, ...]:
         try:
             return self._supported_services_values
@@ -125,6 +128,7 @@ class BulletList(StyleName):
         try:
             return BulletList._DEFAULT
         except AttributeError:
+            # empty string name will result in No List, list style being applied
             BulletList._DEFAULT = BulletList(name="")
             BulletList._DEFAULT._is_default_inst = True
         return BulletList._DEFAULT

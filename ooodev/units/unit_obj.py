@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+from numbers import Real
 from ..format.inner.kind.format_kind import FormatKind as FormatKind
 
 if TYPE_CHECKING:
@@ -21,6 +22,9 @@ class UnitObj(Protocol):
     =======
 
     """
+
+    value: Real
+    """Unit actual value. Generally a ``float`` or ``int``"""
 
     def get_value_mm(self) -> float:
         """

@@ -170,7 +170,7 @@ class ImagesLo:
             im_fnm (PathOrStr): file path
 
         Returns:
-            Size: Size containing Width and Height
+            ~ooodev.utils.data_type.size.Size: Size containing Width and Height
         """
         graphic = cls.load_graphic_file(im_fnm)
         sz = cast(UnoSize, mProps.Props.get(graphic, "SizePixel"))
@@ -193,7 +193,7 @@ class ImagesLo:
             PropertyError: If Size100thMM property is not available
 
         Returns:
-            Size: Size containing Width and Height
+            ~ooodev.utils.data_type.size.Size: Size containing Width and Height
         """
         graphic = cls.load_graphic_file(im_fnm)
         sz = cast(UnoSize, mProps.Props.get(graphic, "Size100thMM"))
@@ -331,7 +331,7 @@ class ImagesLo:
             max_height (int): max_width
 
         Returns:
-            Size | None:
+            ~ooodev.utils.data_type.size.Size | None:
         """
         im_size = cls.get_size_100mm(fnm)  # in 1/100 mm units
         if im_size is None:

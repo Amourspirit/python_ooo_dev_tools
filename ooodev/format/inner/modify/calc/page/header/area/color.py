@@ -32,7 +32,7 @@ class InnerColor(AbstractColor):
         try:
             return self._format_kind_prop
         except AttributeError:
-            self._format_kind_prop = FormatKind.DOC | FormatKind.STYLE
+            self._format_kind_prop = FormatKind.DOC | FormatKind.STYLE | FormatKind.HEADER
         return self._format_kind_prop
 
     @property
@@ -118,6 +118,14 @@ class Color(CellStyleBaseMulti):
         return inst
 
     # endregion Static Methods
+    @property
+    def prop_format_kind(self) -> FormatKind:
+        """Gets the kind of style"""
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.DOC | FormatKind.STYLE | FormatKind.HEADER
+        return self._format_kind_prop
 
     @property
     def prop_style_name(self) -> str:

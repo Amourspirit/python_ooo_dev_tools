@@ -307,6 +307,8 @@ When the scanning reaches an empty cell, the end of the data has been reached, a
         def _increase_garlic_cost(self, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> int:
             row = 0
             prod_cell = Calc.get_cell(sheet=sheet, col=0, row=row)  # produce column
+            red_font = Font(b=True, color=CommonColor.RED)
+
             # iterate down produce column until an empty cell is reached
             while prod_cell.getType() != CellContentType.EMPTY:
                 if prod_cell.getFormula() == "Garlic":
@@ -315,10 +317,12 @@ When the scanning reaches an empty cell, the end of the data has been reached, a
                     # change cost/pound column
                     cost_cell = Calc.get_cell(sheet=sheet, col=1, row=row)
                     cost_cell.setValue(1.05 * cost_cell.getValue())
-                    Props.set(cost_cell, CharWeight=FontWeight.BOLD, CharColor=CommonColor.RED)
+                    # make the change more visible by making the text bold and red
+                    red_font.apply(cost_cell)
                 row += 1
                 prod_cell = Calc.get_cell(sheet=sheet, col=0, row=row)
             return row
+
 
     .. only:: html
 
@@ -460,14 +464,15 @@ The cell is made wider by merging a few cells together, made taller by adjusting
     .. code-tab:: python
 
         # in garlic_secrets.py
-        def _add_garlic_label(self, doc: XSpreadsheetDocument, sheet: XSpreadsheet, empty_row_num: int) -> None:
-
+        def _add_garlic_label(
+            self, doc: XSpreadsheetDocument, sheet: XSpreadsheet, empty_row_num: in
+            ) -> None:
             Calc.goto_cell(cell_name=Calc.get_cell_str(col=0, row=empty_row_num), doc=doc)
 
             # Merge first few cells of the last row
             rng_obj = Calc.get_range_obj(
                 col_start=0, row_start=empty_row_num, col_end=3, row_end=empty_row_num
-            )
+                )
 
             # merge and center range
             Calc.merge_cells(sheet=sheet, range_obj=rng_obj, center=True)
@@ -477,12 +482,10 @@ The cell is made wider by merging a few cells together, made taller by adjusting
             # get the cell from the range cell start
             cell = Calc.get_cell(sheet=sheet, cell_obj=rng_obj.cell_start)
             cell.setFormula("Top Secret Garlic Changes")
-            Props.set(
-                cell,
-                CharWeight=FontWeight.BOLD,
-                CharHeight=24,
-                CellBackColor=CommonColor.RED
-                )
+
+            font_red = Font(b=True, size=24, color=CommonColor.BLACK)
+            bg_color = BgColor(CommonColor.RED)
+            Styler.apply(cell, font_red, bg_color)
 
     .. only:: html
 

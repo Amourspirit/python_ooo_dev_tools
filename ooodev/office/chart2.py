@@ -1453,8 +1453,8 @@ class Chart2:
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            bg_color (Color): Color Value for background
-            wall_color (Color): Color Value for wall
+            bg_color (~ooodev.utils.color.Color): Color Value for background
+            wall_color (~ooodev.utils.color.Color): Color Value for wall
 
         Raises:
             ChartError: If error occurs.
@@ -2054,8 +2054,8 @@ class Chart2:
 
         Args:
             ct (XChartType): Chart Type.
-            w_day_color (Color): Chart white day color
-            b_day_color (Color): Chart black day color
+            w_day_color (~ooodev.utils.color.Color): Chart white day color
+            b_day_color (~ooodev.utils.color.Color): Chart black day color
 
         Raises:
             NotSupportedError: If Chart is not of type ``CandleStickChartType``

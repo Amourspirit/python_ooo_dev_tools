@@ -47,7 +47,7 @@ On Linux what is required to communicate with LibreOffice API it a copy of, or l
 
 .. code-block:: text
 
-    (.venv) $ python -m main cmd-link --add
+    (.venv) $ oooenv cmd-link --add
 
 After virtual environment is set up and **activated**, running the above command on Linux will search in known paths for ``uno.py`` and ``unohelper.py``
 and create links to files in the current virtual environment.
@@ -57,7 +57,7 @@ For other options try:
 
 .. code-block:: text
 
-    (.venv) $ python -m main cmd-link -h
+    (.venv) $ oooenv cmd-link -h
 
 .. _dev_doc_ve_windos:
 
@@ -117,7 +117,7 @@ After installing using the previous command it time to set the environment to wo
 
 .. code-block::
 
-    (.venv) PS C:\python_ooo_dev_tools> python -m main env -t
+    (.venv) PS C:\python_ooo_dev_tools> oooenv env -t
 
 This will set the virtual environment to work with LibreOffice.
 
@@ -125,7 +125,7 @@ To check of the virtual environment is set for LibreOffice use the following com
 
 .. code-block::
 
-    (.venv) PS C:\python_ooo_dev_tools> python -m main env -u
+    (.venv) PS C:\python_ooo_dev_tools> oooenv env -u
     UNO Environment
 
 Newer versions of poetry_ will not work with the configuration set up for LibreOffice.
@@ -136,7 +136,7 @@ When you need to use poetry_ just toggle environment.
 
 .. code-block::
 
-    (.venv) PS C:\python_ooo_dev_tools> python -m main env -t
+    (.venv) PS C:\python_ooo_dev_tools> oooenv env -t
 
 This will toggle between the original setup configuration and the LibreOffice configuration.
 

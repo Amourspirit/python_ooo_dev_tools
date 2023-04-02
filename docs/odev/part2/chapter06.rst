@@ -417,7 +417,9 @@ The last part of |styles_info|_ lists the properties for a specific property set
     .. code-tab:: python
 
         @classmethod
-        def get_style_props(cls, doc: object, family_style_name: str, prop_set_nm: str) -> XPropertySet:
+        def get_style_props(
+            cls, doc: object, family_style_name: str, prop_set_nm: str
+        ) -> XPropertySet:
             style_container = cls.get_style_container(doc, family_style_name)
             name_props = Lo.qi(XPropertySet, style_container.getByName(prop_set_nm), True)
             return name_props
@@ -488,81 +490,9 @@ ParagraphProperties_, and CharacterProperties_ services.
 6.3 Creating a New Style
 ========================
 
-The |story_creator|_ example adds a new style to the paragraph style family, and uses it to format the document's paragraphs.
-
-The new ParagraphStyle_ service is referenced using one of its interfaces, the usual one being XStyle_ since all the different
-style services support it (as shown in :numref:`ch06fig_style_inheritance`).
-
-.. tabs::
-
-    .. code-tab:: python
-
-        para_style = Lo.create_instance_msf(XStyle, "com.sun.star.style.ParagraphStyle", raise_err=True)
-
-    .. only:: html
-
-        .. cssclass:: tab-none
-
-            .. group-tab:: None
-
-:py:meth:`.Lo.create_instance_msf`'s second argument is the full name of the service, and the first argument is the interface,
-the third argument determines if a error should be raised if unable to obtain interface.
-All the style services are located in the "com.sun.star.style" package.
-
-Since the desired result is to change property in this new style, It is cast the XStyle_ interface to XPropertySet_:
-
-.. tabs::
-
-    .. code-tab:: python
-
-        props = Lo.qi(XPropertySet, para_style, raise_err=True)
-
-    .. only:: html
-
-        .. cssclass:: tab-none
-
-            .. group-tab:: None
-
-A property is modified using ``setPropertyValue()``.
-
-.. tabs::
-
-    .. code-tab:: python
-
-        props.setPropertyValue("CharFontName", "Times New Roman")
-        props.setPropertyValue("CharHeight", 12.0)
-        props.setPropertyValue("ParaBottomMargin", 400) # 4mm, in 100th mm
-
-    .. only:: html
-
-        .. cssclass:: tab-none
-
-            .. group-tab:: None
-
-These three properties are defined in one of the 'Properties' classes inherited by ``ParagraphStyle`` (as shown in :numref:`ch06fig_style_inheritance`).
-"ParaBottomMargin" appears in ``ParagraphProperties``, while "CharFontName" and "CharHeight" come from ``CharacterProperties``.
-
-After setting the style's properties, the new style added to the document's paragraph style family:
+The |story_creator|_ example adds a new style to the paragraph style family using :py:meth:`~.write.Write.create_style_para` of ``Write``, and uses it to format the document's paragraphs.
 
 
-.. tabs::
-
-    .. code-tab:: python
-
-        # access the paragraph style family
-        para_styles = Info.get_style_container(doc, "ParagraphStyles");
-        # store the style in the style family with the name "Foo"
-        para_styles.insertByName("Foo", props);
-
-    .. only:: html
-
-        .. cssclass:: tab-none
-
-            .. group-tab:: None
-
-The style is stored with the name "Foo", but any unique name would be good (perhaps one a little more descriptive than "Foo" would be better).
-
-The style creation code in |story_creator|_  is located in ``create_para_style()`` and follows the code fragment sequence described above:
 
 .. tabs::
 
@@ -570,21 +500,13 @@ The style creation code in |story_creator|_  is located in ``create_para_style()
 
         def create_para_style(doc: XTextDocument, style_name: str) -> bool:
             try:
-                para_styles = Info.get_style_container(doc=doc, family_style_name="ParagraphStyles")
+                font = Font(name=Info.get_font_general_name(), size=12.0)
+                spc = Spacing(below=UnitMM(4))
+                ln_spc = LineSpacing(mode=ModeKind.FIXED, value=UnitMM(6))
 
-                # create new paragraph style properties set
-                para_style = Lo.create_instance_msf(XStyle, "com.sun.star.style.ParagraphStyle", raise_err=True)
-                props = Lo.qi(XPropertySet, para_style, raise_err=True)
-
-                # set some properties
-                props.setPropertyValue("CharFontName", Info.get_font_general_name())
-                props.setPropertyValue("CharHeight", 12.0)
-                props.setPropertyValue("ParaBottomMargin", 400) # 4mm, in 100th mm
-
-                line_spacing = LineSpacing(Mode=LineSpacingMode.FIX, Height=600)
-                props.setPropertyValue("ParaLineSpacing", line_spacing)
-
-                para_styles.insertByName(style_name, props)
+                _ = Write.create_style_para(
+                    text_doc=doc, style_name=style_name, styles=[font, spc, ln_spc]
+                )
                 return True
             except Exception as e:
                 print("Could not set paragraph style")
@@ -597,23 +519,11 @@ The style creation code in |story_creator|_  is located in ``create_para_style()
 
             .. group-tab:: None
 
-The ``ParaLineSpacing`` property is a little more complex than the others since its value isn't a basic type, but a LineSpacing_ struct.
+Three style format are created, :py:class:`~.format.writer.direct.char.font.Font`, :py:class:`~.format.writer.direct.para.indent_space.Spacing`,
+and :py:class:`~.format.writer.direct.para.indent_space.LineSpacing`.
+These formats are passed to :py:meth:`~.write.Write.create_style_para` which results in the style formats being applied to the style as it is being created.
 
-The ParagraphProperties_ documentation for "ParaLineSpacing" is shown in :numref:`ch06fig_para_line_spc_ss`.
-
-..
-    Figure 7
-
-.. cssclass:: screen_shot invert
-
-    .. _ch06fig_para_line_spc_ss:
-    .. figure:: https://user-images.githubusercontent.com/4193389/184714150-2017f356-38c7-48ab-b7b0-e3a2fd2e47e4.png
-        :alt: Screen Shot of The ParaLineSpacing Property in the ParagraphProperties Documentation
-        :figclass: align-center
-
-        :The ``ParaLineSpacing`` Property in the ``ParagraphProperties`` Documentation.
-
-Clicking on the ``com::sun:star:style::LineSpacing`` return type will load the LineSpacing_ documentation page into the browser.
+:py:class:`~.units.UnitMM` are imported from :ref:`ns_units` and is a convenient way to pass values into methods that accept :ref:`proto_unit_obj` arguments.
 
 In |story_creator|_, ``create_para_style()`` is called like so:
 
@@ -622,10 +532,11 @@ In |story_creator|_, ``create_para_style()`` is called like so:
     .. code-tab:: python
 
         doc = Write.create_doc(loader=loader)
+        # ...
         if not create_para_style(doc, "adParagraph"):
-            print("Could not create new paragraph style")
-            # office will close and with statement is exited
-            raise BreakContext.Break
+            raise RuntimeError("Could not create new paragraph style")
+        
+        # ...
 
     .. only:: html
 
@@ -658,15 +569,22 @@ XTextRange_ is supported by the TextRange_ service, which inherits ParagraphProp
         :The TextRange Service.
 
 XTextRange_ can be cast to XPropertySet_ to make the properties in ParagraphProperties_ and CharacterProperties_ accessible.
-An existing (or new) paragraph style is applied to a text range by setting its ``ParaStyleName`` property:
+An existing (or new) paragraph style can be applied to a text range by setting its ``ParaStyleName`` property:
+
+However |odev| can simplify this process by using :py:class:`~.format.writer.style.Para` class.
+
+
 
 .. tabs::
 
     .. code-tab:: python
 
+        from ooodev.format.writer.style.para import Para as StylePara
+        # ...
+
         xtext_range = doc.getText().getStart()
-        props = Lo.qi(XPropertySet, xtext_range);
-        props.setProperty("ParaStyleName", "adParagraph")
+        para_style = StylePara("adParagraph")
+        para_style.apply(xtext_range)
 
     .. only:: html
 
@@ -674,20 +592,6 @@ An existing (or new) paragraph style is applied to a text range by setting its `
 
             .. group-tab:: None
 
-Using :py:meth:`.Props.set_property`, simplifies this to:
-
-.. tabs::
-
-    .. code-tab:: python
-
-        xtext_range = doc.getText().getStart()
-        Props.set_property(xtext_range, "ParaStyleName", "adParagraph")
-
-    .. only:: html
-
-        .. cssclass:: tab-none
-
-            .. group-tab:: None
 
 The code above obtains the text range at the start of the document, and set its paragraph style to ``adParagraph``.
 Any text added from this position onward will use that style.
@@ -752,8 +656,6 @@ Using :py:meth:`.Props.set_property`, simplifies this to:
 
             .. group-tab:: None
 
-This approach is employed in |story_creator|_ when some paragraphs (such as section headers) need to use a paragraph style other than ``adParagraph``.
-
 .. _ch06_build_story:
 
 6.6 Building a Story Document
@@ -766,13 +668,10 @@ This approach is employed in |story_creator|_ when some paragraphs (such as sect
     .. code-tab:: python
 
         xtext_range = doc.getText().getStart()
-        Props.set_property(xtext_range, "ParaStyleName", "adParagraph")
+        para_style = StylePara("adParagraph")
+        para_style.apply(xtext_range)
 
-        Write.set_header(text_doc=doc, text=f"From: {fnm.name}")
-        Write.set_a4_page_format(doc)
-        Write.set_page_numbers(doc)
-
-        cursor = Write.get_cursor(doc)
+        # ...
 
         read_text(fnm=fnm, cursor=cursor)
         Write.end_paragraph(cursor)
@@ -785,7 +684,7 @@ This approach is employed in |story_creator|_ when some paragraphs (such as sect
 
 ``read_text()`` assumes the text file has a certain format. For example, ``scandal.txt`` begins like so:
 
-::
+.. .. code-block:: text
 
     Title: A Scandal in Bohemia
     Author: Sir Arthur Conan Doyle
@@ -821,32 +720,27 @@ are treated as headings, and styled differently. When the text above is processe
 
     .. code-tab:: python
 
-        def read_text(fnm: Path, cursor: XTextCursor) -> None:
-            sb: List[str] = []
-            with open(fnm, 'r') as file:
-                i = 0
-                for ln in file:
-                    line = ln.rstrip() # remove new line \n
-                    if len(line) == 0:
-                        if len(sb) > 0:
-                            Write.append_para(cursor, ' '.join(sb))
-                        sb.clear()
-                    elif line.startswith("Title: "):
-                        Write.append_para(cursor, line[7:])
-                        Write.style_prev_paragraph(cursor, "Title")
-                    elif line.startswith("Author: "):
-                        Write.append_para(cursor, line[8:])
-                        Write.style_prev_paragraph(cursor, "Subtitle")
-                    elif line.startswith("Part "):
-                        Write.append_para(cursor, line)
-                        Write.style_prev_paragraph(cursor, "Heading")
-                    else:
-                        sb.append(line)
-                    i += 1
-                    # if i > 20:
-                    #     break
-                if len(sb) > 0:
-                    Write.append_para(cursor, ' '.join(sb))
+        sb: List[str] = []
+        with open(fnm, "r") as file:
+            i = 0
+            for ln in file:
+                line = ln.rstrip()  # remove new line \n
+                if len(line) == 0:
+                    if len(sb) > 0:
+                        Write.append_para(cursor, " ".join(sb))
+                    sb.clear()
+                elif line.startswith("Title: "):
+                    Write.append_para(cursor, line[7:], styles=[StylePara(StyleParaKind.TITLE)])
+                elif line.startswith("Author: "):
+                    Write.append_para(cursor, line[8:], styles=[StylePara(StyleParaKind.SUBTITLE)])
+                elif line.startswith("Part "):
+                    Write.append_para(cursor, line, styles=[StylePara(StyleParaKind.HEADING_1)])
+                else:
+                    sb.append(line)
+                i += 1
+
+            if len(sb) > 0:
+                Write.append_para(cursor, " ".join(sb))
 
     .. only:: html
 
@@ -854,7 +748,7 @@ are treated as headings, and styled differently. When the text above is processe
 
             .. group-tab:: None
 
-The interesting bits are the calls to :py:meth:`.Write.append_para` and :py:meth:`.Write.style_prev_paragraph` which add a paragraph to the document and apply a style to it.
+The interesting bits are the calls to :py:meth:`.Write.append_para` which add a paragraph to the document and apply a style to it.
 For instance:
 
 .. tabs::
@@ -862,8 +756,7 @@ For instance:
     .. code-tab:: python
 
         elif line.startswith("Author: "):
-            Write.append_para(cursor, line[8:])
-            Write.style_prev_paragraph(cursor, "Subtitle")
+            Write.append_para(cursor, line[8:], styles=[StylePara(StyleParaKind.SUBTITLE)])
 
     .. only:: html
 
@@ -871,42 +764,11 @@ For instance:
 
             .. group-tab:: None
 
-:py:meth:`~.Write.append_para` writes the string into the document as a paragraph (the input line without the "Author: " substring).
-:py:meth:`~.Write.style_prev_paragraph` changes the paragraph style from ``adParagraph`` to ``Subtitle``.
+:py:class:`~.format.writer.style.Para` (imported as ``StylePara``) is used to access ``Subtitle`` style.
+:py:class:`~.format.writer.style.StyleParaKind` is an enum contain built in style values.
 
-The hard part of :py:meth:`~.Write.style_prev_paragraph` is making sure that the style change only affects the previous paragraph.
-Text appended after this line should use ``adParagraph`` styling.
+:py:meth:`.Write.append_para` writes the string into the document as a paragraph and applies the style (the input line without the "Author: " substring).
 
-.. tabs::
-
-    .. code-tab:: python
-
-        @staticmethod
-        def style_prev_paragraph(cursor: XTextCursor | XParagraphCursor, prop_val: object, prop_name: str = None) -> None:
-            if prop_name is None:
-                prop_name = "ParaStyleName"
-            old_val = Props.get_property(cursor, prop_name)
-
-            cursor.gotoPreviousParagraph(True)  # select previous paragraph
-            Props.set_property(prop_set=cursor, name=prop_name, value=prop_val)
-
-            # reset the cursor and property
-            cursor.gotoNextParagraph(False)
-            Props.set_property(prop_set=cursor, name=prop_name, value=old_val)
-
-    .. only:: html
-
-        .. cssclass:: tab-none
-
-            .. group-tab:: None
-
-The current ``ParaStyleName`` value is stored before changing its value in the selected range.
-Afterwards, that style name is applied back to the cursor.
-
-:py:meth:`~.Write.style_prev_paragraph` changes the XTextCursor_ into a paragraph cursor so that it's easier to move around across paragraphs.
-
-``read_text()`` calls :py:meth:`~.Write.style_prev_paragraph` with three style names ("Title", "Subtitle", and "Heading").
-Those names come from looking at the "Paragraph Styles" dialog window in :numref:`ch06fig_writer_style_ss`.
 
 .. _ch06_style_change:
 
@@ -940,8 +802,25 @@ Character style changes are applied to the text range defined by that distance:
 
             .. group-tab:: None
 
+
 A XTextCursor_ is used to select the range, and the new style is set.
 Then the cursor is moved back to its old position, and the previous style reapplied.
+
+There is also an overload (shown below) of :py:meth:`.Write.style_left` that works in s similar manor but takes one or more :py:class:`~.proto.style_obj.StyleObj` styles.
+
+.. tabs::
+
+    .. code-tab:: python
+
+        def style_left(cls, cursor: XTextCursor, pos: int, styles: Iterable[StyleObj]) -> None:
+            ...
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 
 The Write class contain a few support functions that set common styles using :py:meth:`~.Write.style_left`:
 
@@ -983,11 +862,8 @@ The |build_doc|_ example takes advantage of a few python partial methods to cut 
         cursor = Write.get_cursor(doc)
 
         # take advantage of a few partial functions
-        append = partial(Write.append, cursor)
-        para = partial(Write.append_para, cursor)
         nl = partial(Write.append_line, cursor)
         np = partial(Write.end_paragraph, cursor)
-        get_pos = partial(Write.get_position, cursor)
 
     .. only:: html
 
@@ -995,23 +871,22 @@ The |build_doc|_ example takes advantage of a few python partial methods to cut 
 
             .. group-tab:: None
 
-The |build_doc|_ example contains several examples of how to use :py:meth:`~.Write.style_left`:
+The |build_doc|_ example contains several examples of how to use formatting styles from :ref:`ns_format` module.
 
 .. tabs::
 
     .. code-tab:: python
 
         cursor = Write.get_cursor(doc)
-        append(text="Some examples of simple text ")
-        pos = get_pos()
-        append("styles.")
-        append(ctl_char=Write.ControlCharacter.LINE_BREAK)
-        Write.style_left_bold(cursor=cursor, pos=pos)
-
-        pos = get_pos()
-        para("This line is written in red italics.")
-        Write.style_left_color(cursor=cursor, pos=pos, color=CommonColor.DARK_RED) # red
-        Write.style_left_italic(cursor=cursor, pos=pos) # italic
+        Write.append(cursor, "Some examples of simple text ")
+        Write.append_line(cursor=cursor, text="styles.", styles=[Font(b=True)])
+        Write.append_para(
+            cursor=cursor,
+            text="This line is written in red italics.",
+            styles=[Font(color=CommonColor.DARK_RED).bold.italic],
+        )
+        Write.append_para(cursor=cursor, text="Back to old style")
+        nl()
 
     .. only:: html
 
@@ -1039,16 +914,19 @@ The following fragment from |build_doc|_ applies a 'code' styling to several lin
 
     .. code-tab:: python
 
-        para("Here's some code:")
+        Write.append_para(cursor, "Here's some code:")
 
-        np()
-        pos = get_pos()
+        code_font = Font(name=Info.get_font_mono_name(), size=10)
+        code_font.apply(cursor)
+
         nl("public class Hello")
         nl("{")
         nl("  public static void main(String args[]")
         nl('  {  System.out.println("Hello World");  }')
-        para("}  // end of Hello class")
-        Write.style_left_code(cursor, pos)
+        Write.append_para(cursor, "}  // end of Hello class")
+
+        # reset the cursor formatting
+        ParaStyle.default.apply(cursor)
 
     .. only:: html
 
@@ -1070,32 +948,70 @@ The following fragment from |build_doc|_ applies a 'code' styling to several lin
 
         :Text with Code Styling.
 
-Unfortunately, :py:meth:`~.Write.style_left` depend on integer character positions, which are calculated using :py:meth:`.Write.get_position`.
-As previously mentioned, this method could fail if asked to generate too large a string, and this would cause :py:meth:`~.Write.style_left` to die.
+:py:class:`ooodev.format.writer.direct.char.font.Font` is imported and used to create mono font values and applied directly to the cursor.
+
+.. tabs::
+
+    .. code-tab:: python
+
+        from ooodev.format.writer.direct.char.font import Font
+        # ...
+
+        code_font = Font(name=Info.get_font_mono_name(), size=10)
+        code_font.apply(cursor)
+        # ...
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+Once the code as been written, :py:attr:`ParaStyle.default <ooodev.format.writer.style.para.para.Para.default>` is applied to the cursor to reset its values.
+
+.. tabs::
+
+    .. code-tab:: python
+
+        from ooodev.format.writer.style.para import Para as ParaStyle
+        # ...
+
+        # reset the cursor formatting
+        ParaStyle.default.apply(cursor)
+        # ...
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 .. _ch06_style_hyperlink:
 
 6.8 Hyperlink Styling
 =====================
 
-Text hyperlinks are implemented as styles, using ``HyperLinkURL``, and perhaps ``HyperLinkName``, and ``HyperLinkTarget``.
-|build_doc|_ shows how the ``HyperLinkURL`` property is set:
+Text hyperlinks are implemented as a style, using :py:class:`ooodev.format.writer.direct.char.hyperlink.Hyperlink`.
+|build_doc|_ shows how the hyperlink is constructed and applied.
 
 .. tabs::
 
     .. code-tab:: python
 
-        # Create text that contains a hyperlink
-        append("A link to ")
+        from ooodev.format.writer.direct.char.hyperlink import Hyperlink, TargetKind
+        # ...
 
-        pos = get_pos()
-        append("OOO Development Tools")
+        # Insert a hyperlink.
+        Write.append(cursor, "A link to ")
 
-        url_str = "https://github.com/Amourspirit/python_ooo_dev_tools"
-        Write.style_left(cursor=cursor, pos=pos, prop_name="HyperLinkURL", prop_val=url_str)
+        hl = Hyperlink(
+            name="ODEV_GITHUB",
+            url="https://github.com/Amourspirit/python_ooo_dev_tools",
+            target=TargetKind.BLANK
+        )
+        Write.append(cursor, "OOO Development Tools", styles=[hl])
 
-        append(" Website.")
-        Write.end_paragraph(cursor)
+        Write.append_para(cursor, " Website.")
 
     .. only:: html
 
@@ -1115,30 +1031,40 @@ Text hyperlinks are implemented as styles, using ``HyperLinkURL``, and perhaps `
 
         :Text Containing a Hypertext Link.
 
-If the user control-clicks on the link, then the URL value of ``HyperLinkURL`` will be loaded into the browser.
+If the user control-clicks on the link, then the URL value is loaded into the browser.
 
-The ``HyperLinkName`` property specifies a link name, which can be used when searching a document.
-``HyperLinkTarget`` corresponds to the HTML hypertext target attribute, and has a default value of "_self".
+The ``HyperLink`` name property ( ``name="ODEV_GITHUB"`` ) specifies a link name, which can be used when searching a document.
 
 .. _ch06_text_num:
 
 6.9 Text Numbering
 ==================
 
-It's straightforward to number paragraphs by using :py:meth:`~.Write.style_left` and the ``NumberingStyleName`` property.
+It's straightforward to number paragraphs by using  :py:class:`~ooodev.format.writer.direct.para.outline_list.ListStyle`, :py:class:`~ooodev.format.writer.style.lst.style_list_kind.StyleListKind`
+and :py:class:`~ooodev.format.writer.style.bullet_list.bullet_list.BulletList`.
+
 The following code from |build_doc|_ , numbers three paragraphs:
+
+
 
 .. tabs::
 
     .. code-tab:: python
 
+        from ooodev.format.writer.direct.para.outline_list import ListStyle, StyleListKind
+        # ...
+
         Write.append_para(cursor, "The following points are important:")
 
-        pos = get_pos()
+        list_style = ListStyle(list_style=StyleListKind.NUM_123, num_start=-2)
+        list_style.apply(cursor)
+
         Write.append_para(cursor, "Have a good breakfast")
         Write.append_para(cursor, "Have a good lunch")
         Write.append_para(cursor, "Have a good dinner")
-        Write.style_left(cursor, pos, "NumberingStyleName", "Numbering 123")
+
+        # Reset to default which set cursor to No List Style
+        list_style.default.apply(cursor)
 
     .. only:: html
 
@@ -1160,9 +1086,33 @@ The result is shown in :numref:`ch06fig_text_num_para_ss`.
 
         :Numbered Paragraphs.
 
-``NumberingStyleName`` is a property in ParagraphProperties_, and the "Numbering 123" style is from the "Paragraph Styles" dialog window in :numref:`ch06fig_writer_style_ss`.
-
 Letters are drawn instead of numbers by changing the style name to "Numbering abc" (see :numref:`ch06fig_text_letter_para_ss`).
+
+.. tabs::
+
+    .. code-tab:: python
+
+        from ooodev.format.writer.direct.para.outline_list import ListStyle, StyleListKind
+        from ooodev.format.writer.style.bullet_list import BulletList
+        # ...
+
+        Write.append_para(cursor=cursor, text="Breakfast should include:")
+
+        # set cursor style to Number abc
+        list_style = ListStyle(list_style=StyleListKind.NUM_abc, num_start=-2)
+        list_style.apply(cursor)
+
+        Write.append_para(cursor, "Porridge")
+        Write.append_para(cursor, "Orange Juice")
+        Write.append_para(cursor, "A Cup of Tea")
+        # reset cursor number style
+        list_style.default.apply(cursor)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 ..
     Figure 14
@@ -1177,14 +1127,15 @@ Letters are drawn instead of numbers by changing the style name to "Numbering ab
         :Letter Paragraphs.
 
 One issue with numbered paragraphs is that their default behavior retains the current count when numbering another group of text.
-For example, a second group of numbered paragraphs appearing in the document after :numref:`ch06fig_text_num_para_ss` would start at '4'.
-This is fixed by setting the ``ParaIsNumberingRestart`` property to true:
+For example, a second group of numbered paragraphs appearing in the document after :numref:`ch06fig_text_num_para_ss` would start at ``4``.
+This is fixed by setting ``num_start=-2`` when creating an instance of :py:class:`~ooodev.format.writer.direct.para.outline_list.ListStyle`,
+this forces a numbering reset.
 
 .. tabs::
 
     .. code-tab:: python
 
-        Write.style_left(cursor, pos, "ParaIsNumberingRestart", True)
+        list_style = ListStyle(list_style=StyleListKind.NUM_123, num_start=-2)
 
     .. only:: html
 
@@ -1212,7 +1163,34 @@ The relevant calls are:
     .. code-tab:: python
 
         # fragment from story creator
-        Write.set_header(text_doc=doc, text=f"From: {fnm.name}")
+        from ooodev.format.writer.direct.char.font import Font
+        from ooodev.format.writer.direct.page.header import Header
+        from ooodev.format.writer.direct.page.header.area import Img, PresetImageKind
+        # ...
+
+        # header formatting
+        # create a header font style with a size of 9 pt, italic and dark green.
+        header_font = Font(
+            name=Info.get_font_general_name(), size=9.0, i=True, color=CommonColor.DARK_GREEN
+        )
+        header_format = Header(
+            on=True,
+            shared_first=True,
+            shared=True,
+            height=13.0,
+            spacing=3.0,
+            spacing_dyn=True,
+            margin_left=1.5,
+            margin_right=2.0,
+        )
+        # create a header image from a preset
+        header_img = Img.from_preset(PresetImageKind.MARBLE)
+        # Set header can be passed a list of styles to format the header.
+        Write.set_header(
+            text_doc=doc, text=f"From: {fnm.name}", styles=[header_font, header_format, header_img]
+        )
+
+        # page format A4
         Write.set_a4_page_format(doc)
         Write.set_page_numbers(doc)
 
@@ -1223,11 +1201,31 @@ The relevant calls are:
             .. group-tab:: None
 
 :py:meth:`.Write.set_a4_page_format` sets the page formatting.
+
+Alternatively, the page format can be set via the :py:class:`~ooodev.format.writer.modify.page.page.PaperFormat` class.
+
+.. tabs::
+
+    .. code-tab:: python
+
+        from ooodev.format.writer.modify.page.page import PaperFormat, PaperFormatKind
+        # ...
+
+        page_size_style = PaperFormat.from_preset(preset=PaperFormatKind.A4)
+        page_size_style.apply(doc)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 :py:meth:`.Write.set_page_numbers` utilizes text fields, which is examined in the "Text Fields" section in :ref:`ch07`.
 
 Changing the header in :py:meth:`.Write.set_header` requires the setting of the ``HeaderIsOn`` boolean in the ``Standard`` page style.
 Adding text to the header is done via an XText_ reference.
-The code for :py:meth:`.Write.set_header`:
+A simpler version of |odev|'s :py:meth:`.Write.set_header` is shown below.
+
 
 .. tabs::
 
@@ -1235,7 +1233,9 @@ The code for :py:meth:`.Write.set_header`:
 
         @staticmethod
         def set_header(text_doc: XTextDocument, text: str) -> None:
-            props = Info.get_style_props(doc=text_doc, family_style_name="PageStyles", prop_set_nm="Standard")
+            props = Info.get_style_props(
+                doc=text_doc, family_style_name="PageStyles", prop_set_nm="Standard"
+            )
             if props is None:
                 raise PropertiesError("Could not access the standard page style container")
             try:
@@ -1260,6 +1260,8 @@ The code for :py:meth:`.Write.set_header`:
         .. cssclass:: tab-none
 
             .. group-tab:: None
+
+There also is a :py:meth:`.Write.set_footer` method in |odev| that allows for the passing of a list of styles to format the footer.
 
 The header's XText_ reference is retrieved via the page style's ``HeaderText`` property, and a cursor is created local to the header:
 

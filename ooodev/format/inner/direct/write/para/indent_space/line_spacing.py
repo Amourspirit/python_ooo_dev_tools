@@ -8,15 +8,16 @@ from __future__ import annotations
 from typing import Any, Tuple, cast, overload, Type, TypeVar
 from numbers import Real
 
+from ooo.dyn.style.line_spacing import LineSpacing as UnoLineSpacing
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
-from ooodev.utils import props as mProps
-from ooodev.format.inner.style_base import StyleMulti
 from ooodev.format.inner.direct.structs import line_spacing_struct as mLs
 from ooodev.format.inner.direct.structs.line_spacing_struct import ModeKind as ModeKind
 from ooodev.format.inner.kind.format_kind import FormatKind
-from ooo.dyn.style.line_spacing import LineSpacing as UnoLineSpacing
+from ooodev.format.inner.style_base import StyleMulti
+from ooodev.units import UnitObj
+from ooodev.utils import lo as mLo
+from ooodev.utils import props as mProps
 
 # endregion Import
 
@@ -36,7 +37,7 @@ class LineSpacing(StyleMulti):
         self,
         *,
         mode: ModeKind | None = None,
-        value: Real = 0,
+        value: Real | UnitObj = 0,
         active_ln_spacing: bool | None = None,
     ) -> None:
         """
@@ -44,7 +45,7 @@ class LineSpacing(StyleMulti):
 
         Args:
             mode (ModeKind, optional): Determines the mode that is used to apply units.
-            value (Real, optional): Value of line spacing. Only applies when ``ModeKind`` is ``PROPORTIONAL``,
+            value (Real, UnitObj, optional): Value of line spacing. Only applies when ``ModeKind`` is ``PROPORTIONAL``,
                 ``AT_LEAST``, ``LEADING``, or ``FIXED``.
             active_ln_spacing (bool, optional): Determines active page line-spacing.
         Returns:
@@ -53,7 +54,8 @@ class LineSpacing(StyleMulti):
         Note:
             If ``ModeKind`` is ``SINGLE``, ``LINE_1_15``, ``LINE_1_5``, or ``DOUBLE`` then ``value`` is ignored.
 
-            If ``ModeKind`` is ``AT_LEAST``, ``LEADING``, or ``FIXED`` then ``value`` is a float (``in mm units``).
+            If ``ModeKind`` is ``AT_LEAST``, ``LEADING``, or ``FIXED`` then ``value`` is a float (``in mm units``)
+            or :ref:`proto_unit_obj`
 
             If ``ModeKind`` is ``PROPORTIONAL`` then value is an int representing percentage.
             For example ``95`` equals ``95%``, ``130`` equals ``130%``

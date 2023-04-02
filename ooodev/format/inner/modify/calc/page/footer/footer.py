@@ -1,5 +1,6 @@
 from __future__ import annotations
 from ooodev.format.inner.common.props.hf_props import HfProps
+from ooodev.format.inner.kind.format_kind import FormatKind
 from ..header.header import Header
 
 
@@ -23,5 +24,14 @@ class Footer(Header):
             height="FooterHeight",
             height_auto="FooterIsDynamicHeight",
         )
+
+    @property
+    def prop_format_kind(self) -> FormatKind:
+        """Gets the kind of style"""
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.DOC | FormatKind.STYLE | FormatKind.FOOTER
+        return self._format_kind_prop
 
     # endregion Internal Methods
