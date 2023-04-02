@@ -1,7 +1,7 @@
 .. _ns_format:
 
-format package
-==============
+format
+======
 
 .. versionadded:: 0.9.0
 

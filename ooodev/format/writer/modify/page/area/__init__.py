@@ -30,22 +30,12 @@ from ooodev.utils.data_type.offset import Offset as Offset
 from ooodev.utils.data_type.size_mm import SizeMM as SizeMM
 
 __all__ = [
-    "OffsetColumn",
-    "OffsetRow",
-    "SizePercent",
-    "ImgStyleKind",
     "Color",
     "InnerColor",
     "Gradient",
-    "InnerGradient",
     "Hatch",
-    "InnerHatch",
     "Img",
     "InnerImg",
     "InnerPattern",
     "Pattern",
-    "PresetGradientKind",
-    "PresetHatchKind",
-    "PresetImageKind",
-    "PresetPatternKind",
 ]

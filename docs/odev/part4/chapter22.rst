@@ -302,27 +302,45 @@ If the resulting spreadsheet is saved and this document is examined by the |stle
 
         # in build_table.py
         def _create_styles(self, doc: XSpreadsheetDocument) -> None:
-            # create HEADER_STYLE_NAME and
-            # DATA_STYLE_NAME cell styles
             try:
-                style1 = Calc.create_cell_style(doc=doc, style_name=BuildTable.HEADER_STYLE_NAME)
-
-                Props.set(
-                    style1,
-                    IsCellBackgroundTransparent=False,
-                    CellBackColor=CommonColor.ROYAL_BLUE,
-                    CharColor=CommonColor.WHITE,
-                    HoriJustify=CellHoriJustify.CENTER,
-                    VertJustify=CellVertJustify.CENTER,
+                # create a style using Calc
+                header_style = Calc.create_cell_style(
+                    doc=doc, style_name=BuildTable.HEADER_STYLE_NAME
                 )
 
-                style2 = Calc.create_cell_style(doc=doc, style_name=BuildTable.DATA_STYLE_NAME)
-                Props.set(
-                    style2,
-                    IsCellBackgroundTransparent=False,
-                    CellBackColor=CommonColor.LIGHT_BLUE,
-                    ParaRightMargin=500,  # move away from right edge
+                # create formats to apply to header_style
+                header_bg_color_style = BgColor(
+                    color=CommonColor.ROYAL_BLUE, style_name=BuildTable.HEADER_STYLE_NAME
                 )
+                effects_style = FontEffects(
+                    color=CommonColor.WHITE, style_name=BuildTable.HEADER_STYLE_NAME
+                )
+                txt_align_style = TextAlign(
+                    hori_align=HoriAlignKind.CENTER,
+                    vert_align=VertAlignKind.MIDDLE,
+                    style_name=BuildTable.HEADER_STYLE_NAME,
+                )
+                # Apply formatting to header_style
+                Styler.apply(
+                    header_style, header_bg_color_style, effects_style, txt_align_style
+                )
+
+                # create style
+                data_style = Calc.create_cell_style(doc=doc, style_name=BuildTable.DATA_STYLE_NAME)
+
+                # create formats to apply to data_style
+                footer_bg_color_style = BgColor(
+                    color=CommonColor.LIGHT_BLUE, style_name=BuildTable.DATA_STYLE_NAME
+                )
+                bdr_style = modify_borders.Borders(
+                    padding=modify_borders.Padding(left=UnitMM(5))
+                )
+
+                # Apply formatting to data_style
+                Styler.apply(
+                    data_style, footer_bg_color_style, bdr_style, txt_align_style
+                )
+
             except Exception as e:
                 print(e)
 
@@ -384,20 +402,18 @@ The new styles, ``My HeaderStyle`` and ``My DataStyle``, are applied to the spre
 
         # in build_table.py
         def _apply_styles(self, sheet: XSpreadsheet) -> None:
-            Calc.change_style(sheet=sheet, style_name=BuildTable.HEADER_STYLE_NAME, range_name="B1:N1")
-            Calc.change_style(sheet=sheet, style_name=BuildTable.HEADER_STYLE_NAME, range_name="A2:A4")
-            Calc.change_style(sheet=sheet, style_name=BuildTable.DATA_STYLE_NAME, range_name="B2:N4")
 
-            Calc.add_border(
-                sheet=sheet, range_name="A4:N4", color=CommonColor.DARK_BLUE,
-                border_vals=Calc.BorderEnum.BOTTOM_BORDER
+            Calc.change_style(
+                sheet=sheet, style_name=BuildTable.HEADER_STYLE_NAME, range_name="B1:N1"
             )
-            Calc.add_border(
-                sheet=sheet,
-                range_name="N1:N4",
-                color=CommonColor.DARK_BLUE,
-                border_vals=Calc.BorderEnum.LEFT_BORDER | Calc.BorderEnum.RIGHT_BORDER,
+            Calc.change_style(
+                sheet=sheet, style_name=BuildTable.HEADER_STYLE_NAME, range_name="A2:A4"
             )
+            Calc.change_style(
+                sheet=sheet, style_name=BuildTable.DATA_STYLE_NAME, range_name="B2:N4"
+            )
+
+            # ... other code
 
     .. only:: html
 
@@ -455,62 +471,37 @@ and two lines on either side of the ``SUM`` column (the ``N1:N4`` range), as sho
 
         :Borders around the Data.
 
-Four border constants are defined in :py:class:`.Calc.BorderEnum`:
+The border style is applied to the bottom row of the table, and the right column.
 
-:py:meth:`.Calc.add_border` highlights a border or borders for a cell range the following steps.
+Using the :py:mod:`ooodev.format.calc.direct.cell.borders` module (imported as ``direct_borders`` in the code), the border style is created by calling
+:py:class:`~ooodev.format.inner.direct.structs.side.Side` class. The side has a width of ``2.85`` points, and a color of ``CommonColor.DARK_BLUE``.
 
-.. cssclass:: ul-list
-
-    * Creation of a border line style, by instantiating a BorderLine2_ object.
-    * XCellRange_ instance is gotten from ``sheet``
-    * TableBorder2_ and ``TopBorder2`` (BorderLine2_) is gotten from ``cell_range``
-    * The flags are checked to see if border elements should be applied.
-    * The XCellRange_ has border related properties updated.
+The side is applied to the bottom of the ``A4:N4`` range by creating a :py:class:`~ooodev.format.calc.direct.cell.borders.Borders` object,
+and to the left and right of the ``N1:N4`` range by creating a second :py:class:`~ooodev.format.calc.direct.cell.borders.Borders` object.
 
 .. tabs::
 
     .. code-tab:: python
 
-        # in Calc class (overload method, simplified)
-        @classmethod
-        def add_border(cls,
-            sheet: XSpreadsheet, range_name: str, color: Color, border_vals: BorderEnum
-        ) -> XCellRange:
-            line = BorderLine2()  # create the border line
-            line.Color = color
-            line.InnerLineWidth = 0
-            line.LineDistance = 0
-            line.OuterLineWidth = 100
+        # in build_table.py
+        from ooodev.format.calc.direct.cell import borders as direct_borders
+        # ... other imports
 
-            cell_range = sheet.getCellRangeByName(range_name)
+        def _apply_styles(self, sheet: XSpreadsheet) -> None:
 
-            border = cast(TableBorder2, Props.get(cell_range, "TableBorder2"))
-            inner_line = cast(BorderLine2, Props.get(cell_range, "TopBorder2"))
+            # ... other code
 
-            if (border_vals & cls.BorderEnum.TOP_BORDER) == cls.BorderEnum.TOP_BORDER:
-                border.TopLine = line
-                border.IsTopLineValid = True
+            # create a border side, default width units are points
+            side = direct_borders.Side(width=2.85, color=CommonColor.DARK_BLUE)
+            # create a border setting bottom side
+            bdr = direct_borders.Borders(bottom=side)
+            # Apply border to range
+            Calc.set_style_range(sheet=sheet, range_name="A4:N4", styles=[bdr])
 
-            if (border_vals & cls.BorderEnum.BOTTOM_BORDER) == cls.BorderEnum.BOTTOM_BORDER:
-                border.BottomLine = line
-                border.IsBottomLineValid = True
-
-            if (border_vals & cls.BorderEnum.LEFT_BORDER) == cls.BorderEnum.LEFT_BORDER:
-                border.LeftLine = line
-                border.IsLeftLineValid = True
-
-            if (border_vals & cls.BorderEnum.RIGHT_BORDER) == cls.BorderEnum.RIGHT_BORDER:
-                border.RightLine = line
-                border.IsRightLineValid = True
-
-            Props.set(
-                cell_range,
-                TopBorder2=inner_line,
-                RightBorder2=inner_line,
-                BottomBorder2=inner_line,
-                LeftBorder2=inner_line,
-                TableBorder2=border,
-            )
+            # create a border with left and right
+            bdr = direct_borders.Borders(left=side, right=side)
+            # Apply border to range
+            Calc.set_style_range(sheet=sheet, range_name="N1:N4", styles=[bdr])
 
     .. only:: html
 
@@ -518,11 +509,6 @@ Four border constants are defined in :py:class:`.Calc.BorderEnum`:
 
             .. group-tab:: None
 
-.. seealso::
-
-    .. cssclass:: src-link
-
-        :odev_src_calc_meth:`add_border`
 
 .. |stles_info| replace:: All Styles Info
 .. _stles_info: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/calc/odev_styles_all_info

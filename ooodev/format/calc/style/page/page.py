@@ -38,6 +38,8 @@ class Page(StyleName):
         return Page(name=self.prop_name)
 
     # endregion Copy()
+    def _get_family_style_name(self) -> str:
+        return "PageStyles"
 
     def _supported_services(self) -> Tuple[str, ...]:
         try:

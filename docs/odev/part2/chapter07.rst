@@ -259,17 +259,54 @@ In the |build_doc|_ example, text frame creation is done by :py:meth:`.Write.add
     .. code-tab:: python
 
         # code fragment from build doc
+        from ooodev.format.writer.direct.frame.area import Color as FrameColor
+        from ooodev.format.writer.direct.frame.borders import Side, Sides, BorderLineKind, LineSize
+        # ...
+
+        Write.append_para(cursor, "Here's some code:")
         tvc = Write.get_view_cursor(doc)
+
+        tvc = Write.get_view_cursor(doc)
+        tvc.gotoRange(cursor.getEnd(), False)
+
         ypos = tvc.getPosition().Y
 
+        np()
+        code_font = Font(name=Info.get_font_mono_name(), size=10)
+        code_font.apply(cursor)
+
+        nl("public class Hello")
+        nl("{")
+        nl("  public static void main(String args[]")
+        nl('  {  System.out.println("Hello World");  }')
+        Write.append_para(cursor, "}  // end of Hello class")
+
+        # reset the cursor formatting
+        ParaStyle.default.apply(cursor)
+
+        # Format the background color of the previous paragraph.
+        bg_color = ParaBgColor(CommonColor.LIGHT_GRAY)
+        Write.style_prev_paragraph(cursor=cursor, styles=[bg_color])
+
+        Write.append_para(cursor, "A text frame")
+
+        pg = Write.get_current_page(tvc)
+
+        frame_color = FrameColor(CommonColor.DEFAULT_BLUE)
+        # create a border
+        bdr_sides= Sides(
+            all=Side(line=BorderLineKind.SOLID, color=CommonColor.RED, width=LineSize.THIN)
+        )
+
         Write.add_text_frame(
-                cursor=cursor,
-                ypos=ypos,
-                text="This is a newly created text frame.\nWhich is over on the right of the page, next to the code.",
-                page_num=pg,
-                width=4000,
-                height=1500,
-            )
+            cursor=cursor,
+            ypos=ypos,
+            text="This is a newly created text frame.\nWhich is over on the right of the page, next to the code.",
+            page_num=pg,
+            width=UnitMM(40),
+            height=UnitMM(15),
+            styles=[frame_color, bdr_sides],
+        )
 
     .. only:: html
 
@@ -292,6 +329,10 @@ As :numref:`ch07fig_build_doc_frame_ss` shows, the text frame is located on the 
 
         :Text Frame Position in the Document.
 
+:py:mod:`ooodev.format.writer.direct.frame.type` module contains size and position classes such as :py:class:`~.writer.direct.frame.type.Anchor` class, which is used to specify the frame's anchor type
+that can be passed to :py:meth:`.Write.add_text_frame`.
+This creates a rich set of options for positioning the frame.
+
 In the code fragment above, :py:meth:`.Write.get_view_cursor` creates the view cursor,
 and ``XTextViewCursor.getPosition()`` returns its (x, y) coordinate on the page.
 The y-coordinate is stored in ``yPos`` until after the code listing has been inserted into the document, and then passed to :py:meth:`.Write.add_text_frame`.
@@ -305,15 +346,19 @@ The y-coordinate is stored in ``yPos`` until after the code listing has been ins
         @classmethod
         def add_text_frame(
             cls,
+            *,
             cursor: XTextCursor,
-            ypos: int,
-            text: str,
-            width: int,
-            height: int,
+            text: str = "",
+            ypos: int | UnitObj = 300,
+            width: int | UnitObj = 5000,
+            height: int | UnitObj = 5000,
             page_num: int = 1,
-            border_color: Color | None = CommonColor.RED,
-            background_color: Color | None = CommonColor.LIGHT_BLUE,
-        ) -> bool:
+            border_color: Color | None = None,
+            background_color: Color | None = None,
+            styles: Iterable[StyleObj] = None,
+        ) -> XTextFrame:
+
+            result = None
             cargs = CancelEventArgs(Write.add_text_frame.__qualname__)
             cargs.event_data = {
                 "cursor": cursor,
@@ -329,30 +374,45 @@ The y-coordinate is stored in ``yPos`` until after the code listing has been ins
             if cargs.cancel:
                 return False
 
-            ypos = cargs.event_data["ypos"]
+            arg_ypos = cast(Union[int, UnitObj], cargs.event_data["ypos"])
             text = cargs.event_data["text"]
-            width = cargs.event_data["width"]
-            height = cargs.event_data["height"]
+            arg_width = cast(Union[int, UnitObj], cargs.event_data["width"])
+            arg_height = cast(Union[int, UnitObj], cargs.event_data["height"])
             page_num = cargs.event_data["page_num"]
             border_color = cargs.event_data["border_color"]
             background_color = cargs.event_data["background_color"]
 
             try:
-                xframe = Lo.create_instance_msf(XTextFrame, "com.sun.star.text.TextFrame")
-                if xframe is None:
-                    raise ValueError("Null value")
-            except Exception as e:
-                raise CreateInstanceMsfError(XTextFrame, "com.sun.star.text.TextFrame") from e
+                ypos = arg_ypos.get_value_mm100()
+            except AttributeError:
+                ypos = int(arg_ypos)
+            try:
+                width = arg_width.get_value_mm100()
+            except AttributeError:
+                width = int(arg_width)
+            try:
+                height = arg_height.get_value_mm100()
+            except AttributeError:
+                height = int(arg_height)
+
+            xframe = mLo.Lo.create_instance_msf(XTextFrame, "com.sun.star.text.TextFrame", raise_err=True)
 
             try:
-                tf_shape = Lo.qi(XShape, xframe, True)
+                tf_shape = mLo.Lo.qi(XShape, xframe, True)
 
                 # set dimensions of the text frame
-                tf_shape.setSize(Size(width, height))
+                tf_shape.setSize(UnoSize(width, height))
 
                 #  anchor the text frame
-                frame_props = Lo.qi(XPropertySet, xframe, True)
-                frame_props.setPropertyValue("AnchorType", TextContentAnchorType.AT_PAGE)
+                frame_props = mLo.Lo.qi(XPropertySet, xframe, True)
+                # if page number is Not include for TextContentAnchorType.AT_PAGE
+                # then Lo Default so At AT_PARAGRAPH
+                if not page_num or page_num < 1:
+                    frame_props.setPropertyValue("AnchorType", TextContentAnchorType.AT_PARAGRAPH)
+                else:
+                    frame_props.setPropertyValue("AnchorType", TextContentAnchorType.AT_PAGE)
+                    frame_props.setPropertyValue("AnchorPageNo", page_num)
+
                 frame_props.setPropertyValue("FrameIsAutomaticHeight", True)  # will grow if necessary
 
                 # add a red border around all 4 sides
@@ -376,22 +436,26 @@ The y-coordinate is stored in ``yPos`` until after the code listing has been ins
                 frame_props.setPropertyValue("VertOrient", VertOrientation.NONE)
                 frame_props.setPropertyValue("VertOrientPosition", ypos)  # down from top
 
-                # if page number is Not include for TextContentAnchorType.AT_PAGE
-                # then Lo Default so At AT_PARAGRAPH
-                frame_props.setPropertyValue("AnchorPageNo", page_num)
-
                 # insert text frame into document (order is important here)
                 cls._append_text_content(cursor, xframe)
                 cls.end_paragraph(cursor)
 
-                # add text into the text frame
-                xframe_text = xframe.getText()
-                xtext_range = Lo.qi(XTextRange, xframe_text.createTextCursor(), True)
-                xframe_text.insertString(xtext_range, text, False)
+                if text:
+                    xframe_text = xframe.getText()
+                    xtext_range = mLo.Lo.qi(XTextRange, xframe_text.createTextCursor(), True)
+                    xframe_text.insertString(xtext_range, text, False)
+                    result = xframe
+
+                if styles:
+                    srv = ("com.sun.star.text.TextFrame", "com.sun.star.text.ChainedTextFrame")
+                    for style in styles:
+                        if style.support_service(*srv):
+                            style.apply(xframe)
+
             except Exception as e:
                 raise Exception("Insertion of text frame failed:") from e
             _Events().trigger(WriteNamedEvent.TEXT_FRAME_ADDED, EventArgs.from_args(cargs))
-            return True
+            return result
 
     .. only:: html
 
@@ -1060,7 +1124,9 @@ The cells are referred to using names, based on letters for columns and integers
             header_fg_color: Color | None = CommonColor.WHITE,
             tbl_bg_color: Color | None = CommonColor.LIGHT_BLUE,
             tbl_fg_color: Color | None = CommonColor.BLACK,
-        ) -> bool:
+            first_row_header: bool = True,
+            styles: Iterable[StyleObj] = None,
+        ) -> XTextTable:
 
             cargs = CancelEventArgs(Write.add_table.__qualname__)
             cargs.event_data = {
@@ -1070,56 +1136,65 @@ The cells are referred to using names, based on letters for columns and integers
                 "header_fg_color": header_fg_color,
                 "tbl_bg_color": tbl_bg_color,
                 "tbl_fg_color": tbl_fg_color,
+                "first_row_header": first_row_header,
+                "styles": styles,
             }
             _Events().trigger(WriteNamedEvent.TABLE_ADDING, cargs)
             if cargs.cancel:
                 return False
 
-            # capture any changes that may of been made from result of raising
-            # WriteNamedEvent.TABLE_ADDING event
             header_bg_color = cargs.event_data["header_bg_color"]
             header_fg_color = cargs.event_data["header_fg_color"]
             tbl_bg_color = cargs.event_data["tbl_bg_color"]
             tbl_fg_color = cargs.event_data["tbl_fg_color"]
+            first_row_header = cargs.event_data["first_row_header"]
 
             def make_cell_name(row: int, col: int) -> str:
                 return TableHelper.make_cell_name(row=row + 1, col=col + 1)
 
             def set_cell_header(cell_name: str, data: str, table: XTextTable) -> None:
-                cell_text = Lo.qi(XText, table.getCellByName(cell_name), True)
-                if header_fg_color is not None:
+                cell_text = mLo.Lo.qi(XText, table.getCellByName(cell_name), True)
+                if first_row_header and header_fg_color is not None:
                     text_cursor = cell_text.createTextCursor()
-                    Props.set_property(prop_set=text_cursor, name="CharColor", value=header_fg_color)
+                    mProps.Props.set(text_cursor, CharColor=header_fg_color)
 
                 cell_text.setString(str(data))
 
             def set_cell_text(cell_name: str, data: str, table: XTextTable) -> None:
-                cell_text = Lo.qi(XText, table.getCellByName(cell_name), True)
-                if tbl_fg_color is not None:
+                cell_text = mLo.Lo.qi(XText, table.getCellByName(cell_name), True)
+                if first_row_header is False or tbl_fg_color is not None:
                     text_cursor = cell_text.createTextCursor()
-                    Props.set_property(prop_set=text_cursor, name="CharColor", value=tbl_fg_color)
+                    props = {}
+                    if not first_row_header:
+                        # By default the first row has a style by the name of: Table Heading
+                        # Table Contents is the default for cell that are not in the header row.
+                        props["ParaStyleName"] = "Table Contents"
+                    if tbl_fg_color is not None:
+                        props["CharColor"] = tbl_fg_color
+                    mProps.Props.set(text_cursor, **props)
+
                 cell_text.setString(str(data))
 
             num_rows = len(table_data)
             if num_rows == 0:
                 raise ValueError("table_data has no values")
             try:
-                table = Lo.create_instance_msf(XTextTable, "com.sun.star.text.TextTable")
+                table = mLo.Lo.create_instance_msf(XTextTable, "com.sun.star.text.TextTable")
                 if table is None:
                     raise ValueError("Null Value")
             except Exception as e:
-                raise CreateInstanceMsfError(XTextTable, "com.sun.star.text.TextTable")
+                raise mEx.CreateInstanceMsfError(XTextTable, "com.sun.star.text.TextTable")
 
             try:
                 num_cols = len(table_data[0])
-                Lo.print(f"Creating table rows: {num_rows}, cols: {num_cols}")
+                mLo.Lo.print(f"Creating table rows: {num_rows}, cols: {num_cols}")
                 table.initialize(num_rows, num_cols)
 
                 # insert the table into the document
                 cls._append_text_content(cursor, table)
                 cls.end_paragraph(cursor)
 
-                table_props = Lo.qi(XPropertySet, table, True)
+                table_props = mLo.Lo.qi(XPropertySet, table, True)
 
                 # set table properties
                 if header_bg_color is not None or tbl_bg_color is not None:
@@ -1128,25 +1203,38 @@ The cells are referred to using names, based on letters for columns and integers
                     table_props.setPropertyValue("BackColor", tbl_bg_color)
 
                 # set color of first row (i.e. the header)
-                if header_bg_color is not None:
+                if first_row_header and header_bg_color is not None:
                     rows = table.getRows()
-                    Props.set_property(prop_set=rows.getByIndex(0), name="BackColor", value=header_bg_color)
+                    mProps.Props.set(rows.getByIndex(0), BackColor=header_bg_color)
 
                 #  write table header
-                row_data = table_data[0]
-                for x in range(num_cols):
-                    set_cell_header(make_cell_name(0, x), row_data[x], table)
-                    # e.g. "A1", "B1", "C1", etc
-
-                # insert table body
-                for y in range(1, num_rows):  # start in 2nd row
-                    row_data = table_data[y]
+                if first_row_header:
+                    row_data = table_data[0]
                     for x in range(num_cols):
-                        set_cell_text(make_cell_name(y, x), row_data[x], table)
+                        set_cell_header(make_cell_name(0, x), row_data[x], table)
+                        # e.g. "A1", "B1", "C1", etc
+
+                    # insert table body
+                    for y in range(1, num_rows):  # start in 2nd row
+                        row_data = table_data[y]
+                        for x in range(num_cols):
+                            set_cell_text(make_cell_name(y, x), row_data[x], table)
+                else:
+                    # insert table body
+                    for y in range(0, num_rows):  # start in 1st row
+                        row_data = table_data[y]
+                        for x in range(num_cols):
+                            set_cell_text(make_cell_name(y, x), row_data[x], table)
+
+                if styles:
+                    srv = ("com.sun.star.text.TextTable",)
+                    for style in styles:
+                        if style.support_service(*srv):
+                            style.apply(table)
             except Exception as e:
                 raise Exception("Table insertion failed:") from e
             _Events().trigger(WriteNamedEvent.TABLE_ADDED, EventArgs.from_args(cargs))
-            return True
+            return table
 
     .. only:: html
 
@@ -1227,10 +1315,10 @@ which makes the cell's text and properties accessible to a text cursor.
     .. code-tab:: python
 
         def set_cell_header(cell_name: str, data: str, table: XTextTable) -> None:
-            cell_text = Lo.qi(XText, table.getCellByName(cell_name), True)
-            if header_fg_color is not None:
+            cell_text = mLo.Lo.qi(XText, table.getCellByName(cell_name), True)
+            if first_row_header and header_fg_color is not None:
                 text_cursor = cell_text.createTextCursor()
-                Props.set_property(prop_set=text_cursor, name="CharColor", value=header_fg_color)
+                mProps.Props.set(text_cursor, CharColor=header_fg_color)
 
             cell_text.setString(str(data))
 
@@ -1249,10 +1337,18 @@ The cell's ``CharColor`` property is changed so the inserted text in the header 
     .. code-tab:: python
 
         def set_cell_text(cell_name: str, data: str, table: XTextTable) -> None:
-            cell_text = Lo.qi(XText, table.getCellByName(cell_name), True)
-            if tbl_fg_color is not None:
+            cell_text = mLo.Lo.qi(XText, table.getCellByName(cell_name), True)
+            if first_row_header is False or tbl_fg_color is not None:
                 text_cursor = cell_text.createTextCursor()
-                Props.set_property(prop_set=text_cursor, name="CharColor", value=tbl_fg_color)
+                props = {}
+                if not first_row_header:
+                    # By default the first row has a style by the name of: Table Heading
+                    # Table Contents is the default for cell that are not in the header row.
+                    props["ParaStyleName"] = "Table Contents"
+                if tbl_fg_color is not None:
+                    props["CharColor"] = tbl_fg_color
+                mProps.Props.set(text_cursor, **props)
+
             cell_text.setString(str(data))
 
     .. only:: html

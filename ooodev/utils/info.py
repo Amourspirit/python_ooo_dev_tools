@@ -1059,6 +1059,13 @@ class Info(metaclass=StaticProperty):
             List[str]: service names
         """
         try:
+            service_names = list(obj.SupportedServiceNames)
+            service_names.sort()
+            return service_names
+        except AttributeError:
+            pass
+
+        try:
             si = mLo.Lo.qi(XServiceInfo, obj, True)
             names = si.getSupportedServiceNames()
             service_names = list(names)
@@ -1613,9 +1620,7 @@ class Info(metaclass=StaticProperty):
         """
         style_container = cls.get_style_container(doc, family_style_name)
         #       container is a collection of named property sets
-        name_props = mLo.Lo.qi(XPropertySet, style_container.getByName(prop_set_nm))
-        if name_props is None:
-            raise mEx.MissingInterfaceError(XPropertySet)
+        name_props = mLo.Lo.qi(XPropertySet, style_container.getByName(prop_set_nm), True)
         return name_props
 
     @classmethod

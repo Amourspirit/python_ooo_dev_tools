@@ -17,6 +17,14 @@ Another approach is to employ the XSearchable_ and XReplaceable_ interfaces, as 
 
     .. code-tab:: python
 
+        # in replace_all.py
+
+        from ooodev.format import Styler
+        from ooodev.format.calc.direct.cell.background import Color as BgColor
+        from ooodev.format.calc.direct.cell.borders import Borders, BorderLineKind, Side, LineSize
+        from ooodev.format.calc.direct.cell.font import Font
+        # ... other imports
+
         class ReplaceAll:
             # ReplaceAll Globals
             ANIMALS = (
@@ -52,7 +60,19 @@ Another approach is to employ the XSearchable_ and XReplaceable_ interfaces, as 
                     tbl = TableHelper.make_2d_array(
                         num_rows=ReplaceAll.TOTAL_ROWS, num_cols=ReplaceAll.TOTAL_COLS, val=cb
                     )
-                    Calc.set_array_range(sheet=sheet, range_name="A1:F15", values=tbl)
+
+                    # create styles that can be applied to the cells via Calc.set_array_range().
+                    inner_side = Side()
+                    outter_side = Side(width=LineSize.THICK)
+                    bdr = Borders(
+                        border_side=outter_side, vertical=inner_side, horizontal=inner_side
+                    )
+                    bg_color = BgColor(StandardColor.BLUE)
+                    ft = Font(color=StandardColor.WHITE)
+
+                    Calc.set_array_range(
+                        sheet=sheet, range_name="A1:F15", values=tbl, styles=[bdr, bg_color, ft]
+                    )
 
                     # A1:F15
                     cell_rng = Calc.get_cell_range(
@@ -67,7 +87,9 @@ Another approach is to employ the XSearchable_ and XReplaceable_ interfaces, as 
 
                     if self._repl_str is not None:
                         for s in self._srch_strs:
-                            self._replace_all(cell_rng=cell_rng, srch_str=s, repl_str=self._repl_str)
+                            self._replace_all(
+                                cell_rng=cell_rng, srch_str=s, repl_str=self._repl_str
+                            )
 
                     if self._out_fnm:
                         Lo.save_doc(doc=doc, fnm=self._out_fnm)
@@ -278,15 +300,21 @@ It uses ``XSearchable.findFirst()`` and ``XSearchable.findNext()`` to incrementa
 
     .. code-tab:: python
 
+        from ooodev.format import Styler
+        from ooodev.format.calc.direct.cell.background import Color as BgColor
+        from ooodev.format.calc.direct.cell.borders import Borders, BorderLineKind, Side, LineSize
+        from ooodev.format.calc.direct.cell.font import Font
+        from ooodev.format.calc.direct.cell.standard_color import StandardColor
+        # ... other imports
+
         # in ReplaceAll._highlight() of replace_all.py
         def _highlight(self, cr: XCellRange) -> None:
-            # highlight by make cell bold, with text color of Indigo and a background color of light blue.
-            Props.set(
-                cr,
-                CharWeight=FontWeight.BOLD,
-                CharColor=CommonColor.INDIGO,
-                CellBackColor=CommonColor.LIGHT_BLUE
-            )
+            # highlight by make cell bold, with text color of Light purple and
+            # a background color of light blue.
+            ft = Font(b=True, color=StandardColor.PURPLE_LIGHT1)
+            bg_color = BgColor(StandardColor.DEFAULT_BLUE)
+            bdrs = Borders(border_side=Side(line=BorderLineKind.SOLID, color=StandardColor.RED_DARK3))
+            Styler.apply(cr, ft, bg_color, bdrs)
 
     .. only:: html
 

@@ -319,7 +319,7 @@ class ImageCrop(StyleMulti):
             obj (object): UNO Object that styles are to be applied.
         """
         if not self._is_valid_obj(obj):
-            self._print_not_valid_obj(method_name="apply")
+            self._print_not_valid_srv(method_name="apply")
             return
 
         actual_size = cast(SizeObj, mProps.Props.get(obj, self._props.actual_size))

@@ -42,7 +42,7 @@ class ListStyle(StyleBase):
             num_start (int, optional): Starts with number.
                 If ``-1`` then restart numbering at current paragraph is consider to be ``False``.
                 If ``-2`` then restart numbering at current paragraph is consider to be ``True``.
-                Otherwise, restart numbering is considered to be ``True``.
+                Otherwise, number starts at the value passed in.
 
         Returns:
             None:
@@ -55,6 +55,12 @@ class ListStyle(StyleBase):
         init_vals = {}
         if not list_style is None:
             # if list_style is StyleListKind and it is StyleListKind.NONE then str will be empty string
+
+            # Note: If LibreOffice does not have a name assigned (_props.name) then
+            # _props.restart will alwayse be false and cannot be change until a name assigned.
+            # So, it is also important that name is assigned in the inner dictionary before
+            # other values. This will make it possible for _props.restart to be changed
+
             str_style = str(list_style)
             if str_style:
                 init_vals[self._props.name] = str_style
@@ -63,7 +69,7 @@ class ListStyle(StyleBase):
                 init_vals[self._props.value] = -1
                 init_vals[self._props.restart] = False
 
-        if not num_start is None and not self._props.value in init_vals:
+        if num_start is not None and self._props.value not in init_vals:
             # ignore num_start if NumberingStartValue = -1 due to no style
             if num_start == -1:
                 init_vals[self._props.value] = -1
@@ -255,6 +261,7 @@ class ListStyle(StyleBase):
         if value < -1:
             self._set(self._props.value, -1)
             self._set(self._props.restart, True)
+            return
         self._set(self._props.value, value)
         self._set(self._props.restart, True)
 
@@ -263,21 +270,23 @@ class ListStyle(StyleBase):
         try:
             return self._props_internal_attributes
         except AttributeError:
+            # style_name="NumberingStyleName" is only used for default to reset to no list
             self._props_internal_attributes = ListStyleProps(
                 name="NumberingStyleName", value="NumberingStartValue", restart="ParaIsNumberingRestart"
             )
         return self._props_internal_attributes
 
     @property
-    def default(self: _TListStyle) -> _TListStyle:
+    def default(self: ListStyle) -> ListStyle:
         """Gets ``ListStyle`` default."""
         try:
             return self._default_inst
         except AttributeError:
-            ls = self.__class__(_cattribs=self._get_internal_cattribs())
-            ls._set(ls._props.name, "")
-            ls._set(ls._props.restart, False)
-            ls._set(ls._props.value, -1)
+            # empty string name will result in No List, list style being applied
+            ls = ListStyle(list_style="")
+            # as soon as name is set to empty string
+            # _props.restart will automatically become false and cannot be change again
+            # until a name is set.
             ls._is_default_inst = True
             self._default_inst = ls
         return self._default_inst

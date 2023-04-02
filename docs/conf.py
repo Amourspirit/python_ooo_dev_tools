@@ -158,6 +158,9 @@ napoleon_include_init_with_doc = True
 # This value controls how to represent typehints. The setting takes the following values:
 autodoc_typehints = "description"
 
+# https://documentation.help/Sphinx/autodoc.html
+autoclass_content = "init"
+
 
 # see: https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#confval-autodoc_mock_imports
 # see: https://read-the-docs.readthedocs.io/en/latest/faq.html#i-get-import-errors-on-libraries-that-depend-on-c-modules
