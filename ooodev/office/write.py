@@ -1310,7 +1310,7 @@ class Write(mSel.Selection):
         Args:
             cursor (XTextCursor): Text Cursor
             pos (int): Number of positions to go left
-            color (Color): RGB color as int to apply
+            color (~ooodev.utils.color.Color): RGB color as int to apply
 
         Returns:
             None:
@@ -1992,7 +1992,7 @@ class Write(mSel.Selection):
             Exception: If unable to get page size
 
         Returns:
-            Size: Page text Size in ``1/100 mm`` units.
+            ~ooodev.utils.data_type.size.Size: Page text Size in ``1/100 mm`` units.
 
         .. versionadded:: 0.9.0
         """
@@ -2026,7 +2026,7 @@ class Write(mSel.Selection):
             Exception: If unable to get page size
 
         Returns:
-            Size: Page Size in ``1/100 mm`` units.
+            ~ooodev.utils.data_type.size.Size: Page Size in ``1/100 mm`` units.
         """
         props = mInfo.Info.get_style_props(doc=text_doc, family_style_name="PageStyles", prop_set_nm="Standard")
         if props is None:
@@ -2045,7 +2045,7 @@ class Write(mSel.Selection):
 
         Args:
             text_doc (XTextDocument): Text Document
-            paper_format (PaperFormat): Paper Format.
+            paper_format (~com.sun.star.view.PaperFormat): Paper Format.
 
         Raises:
             MissingInterfaceError: If ``text_doc`` does not implement ``XPrintable`` interface
@@ -2241,13 +2241,16 @@ class Write(mSel.Selection):
             PropertiesError: If unable to access properties
             Exception: If unable to set header text
 
+        See Also:
+            :py:meth:`~.wrtie.Write.set_footer`
+
         Note:
             The font applied is determined by :py:meth:`.Info.get_font_general_name`
 
         .. versionchanged:: 0.9.2
             Added styles parameter
         """
-        return cls._set_header_footer(text_doc=text_doc, text=text, kind="h", styles=styles)
+        cls._set_header_footer(text_doc=text_doc, text=text, kind="h", styles=styles)
 
     @classmethod
     def set_footer(cls, text_doc: XTextDocument, text: str, styles: Iterable[StyleObj] = None) -> None:
@@ -2265,12 +2268,15 @@ class Write(mSel.Selection):
             PropertiesError: If unable to access properties
             Exception: If unable to set header text
 
+        See Also:
+            :py:meth:`~.wrtie.Write.set_header`
+
         Note:
             The font applied is determined by :py:meth:`.Info.get_font_general_name`
 
         .. versionadded:: 0.9.2
         """
-        return cls._set_header_footer(text_doc=text_doc, text=text, kind="f", styles=styles)
+        cls._set_header_footer(text_doc=text_doc, text=text, kind="f", styles=styles)
 
     @staticmethod
     def get_draw_page(text_doc: XTextDocument) -> XDrawPage:

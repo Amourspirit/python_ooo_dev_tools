@@ -5755,7 +5755,7 @@ class Calc:
             row_end (int): Zero-based end row index
 
         Returns:
-            Size: Size, Width is number of Columns and Height is number of Rows
+            ~ooodev.utils.data_type.size.Size: Size, Width is number of Columns and Height is number of Rows
 
         .. versionadded:: 0.8.2
         """
@@ -6896,7 +6896,7 @@ class Calc:
             cell_range (XCellRange): Cell Range
             range_name (str): Range Name such as 'A1:F9'
             range_obj (RangeObj)
-            color (Color): RGB color
+            color (~ooodev.utils.color.Color): RGB color
 
         Raises:
             CancelEventError: If CELLS_HIGH_LIGHTING event is canceled
