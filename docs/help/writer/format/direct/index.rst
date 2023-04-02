@@ -1,0 +1,8 @@
+Direct
+======
+
+.. toctree::
+    :titlesonly:
+    :glob:
+
+    *
