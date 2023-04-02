@@ -5,13 +5,18 @@ Version History
 Version 0.9.2
 =============
 
-Format Styles that inherit from ``StyleName`` such as ``ooodev.format.calc.style.Cell``.
-
 Added style options to ``from ooodev.utils.forms.Forms`` module methods.
 
 Added ``Write.create_style_para()`` that creates new paragraph styles and adds the them to the document paragraph styles.
 
 Added ``Write.create_style_char()`` that creates new character styles and adds the them to the document character styles.
+
+Added ``Write.set_footer()`` that sets the footer text and style.
+
+Added ``styles`` to ``Write.set_header()`` that also sets the header style.
+
+Added ``ooodev.format.writer.direct.page`` module that contains classes for page header and footer styles that can be
+used with ``Write.set_header()`` and ``Write.set_footer()``.
 
 Version 0.9.1
 =============
