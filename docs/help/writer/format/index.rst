@@ -6,3 +6,4 @@ Write Formatting and Style
     :glob:
 
     direct/index
+    style/index
