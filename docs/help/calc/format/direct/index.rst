@@ -3,6 +3,5 @@ Direct
 
 .. toctree::
     :titlesonly:
-    :glob:
 
-    *
+    cell/index

@@ -2,7 +2,5 @@ Direct
 ======
 
 .. toctree::
-    :titlesonly:
-    :glob:
 
-    *
+    char/index

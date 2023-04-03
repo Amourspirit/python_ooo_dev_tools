@@ -1,7 +1,7 @@
-.. _help_cacl_format_direct_font:
+.. _help_calc_format_direct_cell_font:
 
-Calc Direct Font Class
-======================
+Calc Direct Cell Font Class
+===========================
 
 Setup
 -----
@@ -106,9 +106,9 @@ Set Font based upon values
         ft_neg = ft_pos.fmt_color(CommonColor.DARK_RED).underline
 
         for cell_objs in rng_obj.get_cells():
-            for cell_obj in cell_objs:
-                val = Calc.get_num(sheet=sheet, cell_obj=cell_obj)
-                cell = Calc.get_cell(sheet=sheet, cell_obj=cell_obj)
+            for co in cell_objs:
+                val = Calc.get_num(sheet=sheet, cell_obj=co)
+                cell = Calc.get_cell(sheet=sheet, cell_obj=co)
                 if val < 0:
                     Styler.apply(cell, ft_neg)
                 else:
@@ -135,4 +135,4 @@ Set Font based upon values
 
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
-        - :ref:`help_writer_format_direct_font`
+        - :ref:`help_writer_format_direct_char_font`

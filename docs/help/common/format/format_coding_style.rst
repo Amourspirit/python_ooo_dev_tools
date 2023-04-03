@@ -91,4 +91,4 @@ and the property value can be retreived using ``spc_font.prop_spacing``.
     .. cssclass:: ul-list
 
         - :ref:`help_format_format_kinds`
-        - :ref:`help_writer_format_direct_font`
+        - :ref:`help_writer_format_direct_char_font`

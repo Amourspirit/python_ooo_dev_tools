@@ -1,12 +1,12 @@
-.. _help_writer_format_direct_font:
+.. _help_writer_format_direct_char_font:
 
-Write Direct Font Class
-=======================
+Write Direct Character Font Class
+=================================
 
 
 The :py:class:`ooodev.format.writer.direct.char.font.Font` class can set the values in :ref:`ss_writer_dialog_char_font`, :ref:`ss_writer_dialog_char_font_effects`
-and even more. This class is more of a goto rather than using both :ref:`help_writer_format_direct_font_only` and
-:ref:`help_writer_format_direct_font_effects`.
+and even more. This class is more of a goto rather than using both :ref:`help_writer_format_direct_char_font_only` and
+:ref:`help_writer_format_direct_char_font_effects`.
 
 Setup
 -----
@@ -198,5 +198,5 @@ Text with hyperlink and superscript
 
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
-        - :ref:`help_writer_format_direct_font_only`
-        - :ref:`help_writer_format_direct_font_effects`
+        - :ref:`help_writer_format_direct_char_font_only`
+        - :ref:`help_writer_format_direct_char_font_effects`

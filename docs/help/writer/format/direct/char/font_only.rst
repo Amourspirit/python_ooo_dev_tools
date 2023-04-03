@@ -1,7 +1,7 @@
-.. _help_writer_format_direct_font_only:
+.. _help_writer_format_direct_char_font_only:
 
-Write Direct FontOnly Class
-===========================
+Write Direct Character FontOnly Class
+=====================================
 
 The :py:class:`ooodev.format.writer.direct.char.font.FontOnly` class gives you the same options
 as Writer's Font Dialog, but without the dialog. as seen in :numref:`ss_writer_dialog_char_font`.
@@ -30,7 +30,7 @@ Setting the font name and size
         from ooodev.utils.lo import Lo
 
         def main() -> int:
-            with Lo.Loader(Lo.ConnectPipe(Lo.Options(verbose=True))):
+            with Lo.Loader(Lo.ConnectPipe()):
                 doc = Write.create_doc()
                 GUI.set_visible(doc)
                 Lo.delay(300)
@@ -117,5 +117,5 @@ The paragraph cursor is then used to get the font style.
 
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
-        - :ref:`help_writer_format_direct_font_effects`
-        - :ref:`help_writer_format_direct_font`
+        - :ref:`help_writer_format_direct_char_font_effects`
+        - :ref:`help_writer_format_direct_char_font`
