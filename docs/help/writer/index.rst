@@ -7,5 +7,4 @@ Text Dcouments (Writer)
     :titlesonly:
     :glob:
 
-    *
     format/index

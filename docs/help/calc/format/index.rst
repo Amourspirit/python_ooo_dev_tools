@@ -1,5 +1,5 @@
-Write Formatting and Style
-==========================
+Calc Formatting and Style
+=========================
 
 .. toctree::
     :titlesonly:
