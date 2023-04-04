@@ -1,14 +1,14 @@
-.. _help_writer_format_direct_para_area_color:
+.. _help_writer_format_direct_para_indent_spacing:
 
-Write Direct Paragraph Indent and Spacing
-=========================================
+Write Direct Paragraph Indent & Spacing
+=======================================
 
 Overview
 --------
 
-Writer has a Indents and spacing dialog.
+Writer has a Indents & spacing dialog.
 
-Then :py:class:`ooodev.format.writer.direct.para.indent_space.Indent`, :py:class:`ooodev.format.writer.direct.para.indent_space.Spacing`,
+The :py:class:`ooodev.format.writer.direct.para.indent_space.Indent`, :py:class:`ooodev.format.writer.direct.para.indent_space.Spacing`,
 and :py:class:`ooodev.format.writer.direct.para.indent_space.LineSpacing` classes are used to set the indent, spacing, and line spacing of a paragraph.
 
 .. cssclass:: screen_shot
@@ -21,8 +21,8 @@ and :py:class:`ooodev.format.writer.direct.para.indent_space.LineSpacing` classe
 
         :Writer Paragraph Indents and Spacing dialog
 
-Setting the style
------------------
+Setup
+-----
 
 General function used to run these examples.
 
