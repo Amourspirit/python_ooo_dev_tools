@@ -14,7 +14,6 @@ Welcome to OOO Development Tools documentation!
    odev/index
 
 .. toctree::
-   :maxdepth: 2
    :caption: Help:
 
    help/index

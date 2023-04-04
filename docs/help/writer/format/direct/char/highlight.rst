@@ -126,3 +126,14 @@ Remove Highlighting
         :figclass: align-center
 
         Highlighting starts here, no highlight.
+
+
+
+.. seealso::
+
+    .. cssclass:: ul-list
+
+        - :ref:`help_format_format_kinds`
+        - :ref:`help_format_coding_style`
+        - :py:class:`~ooodev.utils.gui.GUI`
+        - :py:class:`~ooodev.utils.lo.Lo`

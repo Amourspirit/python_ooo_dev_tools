@@ -16,6 +16,7 @@ Note: ``DropCaps`` class uses Dispatch Commands. This means the ``DropCaps`` cla
     .. figure:: https://user-images.githubusercontent.com/4193389/212792304-f523ef05-4e77-4743-9dc3-cf2bdc6985f7.png
         :alt: Drop Caps dialog screenshot
         :figclass: align-center
+        :width: 450px
 
         Drop Caps dialog screenshot
 
@@ -180,7 +181,7 @@ Increase Drop Caps Spacing
 
         Drop Caps dialog screenshot
 
-Gett the Drop Caps Style from a Paragraph
+Get the Drop Caps Style from a Paragraph
 -----------------------------------------
 
 Continuing from the code example above, we can get the Drop Caps from the document.
@@ -213,3 +214,5 @@ The paragraph cursor is then used to get the style.
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`ch02`
+        - :py:class:`~ooodev.utils.gui.GUI`
+        - :py:class:`~ooodev.utils.lo.Lo`

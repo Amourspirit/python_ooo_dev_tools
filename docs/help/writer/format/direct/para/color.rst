@@ -80,6 +80,15 @@ Fill Color a Paragraph
 
         Paragraph with background color.
 
+.. cssclass:: screen_shot
+
+    .. _212850105-ab0afde4-ff6f-42e1-ac54-78c0ad4cae04:
+    .. figure:: https://user-images.githubusercontent.com/4193389/212850105-ab0afde4-ff6f-42e1-ac54-78c0ad4cae04.png
+        :alt: Paragraph area color dialog
+        :figclass: align-center
+
+        Paragraph area color dialog.
+
 Fill Color Multiple paragraphs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -112,6 +121,11 @@ Fill Color Multiple paragraphs
 Apply Fill cursor to Cursor
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+A Fill Color can be set on the cursor and then it remains until it is removed.
+
+The fill color can be cleared by using :py:attr:`ParaStyle.default <ooodev.format.writer.style.Para.default>` values.
+
+
 .. tabs::
 
     .. code-tab:: python
@@ -137,11 +151,15 @@ Apply Fill cursor to Cursor
 
     .. _212851968-ab25ac9b-04a0-40aa-b3f5-808f2aa492f9:
     .. figure:: https://user-images.githubusercontent.com/4193389/212851968-ab25ac9b-04a0-40aa-b3f5-808f2aa492f9.png
-        :alt: Paragraph with background color
+        :alt: Paragraph style reset
         :figclass: align-center
 
-        Paragraph with background color.
+        Paragraph style reset.
 
-.. todo::
+.. seealso::
 
-    Added cross reference to ``ooodev.format.writer.style.para import Para.ParaStyle``
+    .. cssclass:: ul-list
+
+        - :ref:`help_writer_format_style_para_reset_default`
+        - :py:class:`~ooodev.utils.gui.GUI`
+        - :py:class:`~ooodev.utils.lo.Lo`
