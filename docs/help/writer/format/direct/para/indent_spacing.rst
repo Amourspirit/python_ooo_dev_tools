@@ -6,7 +6,7 @@ Write Direct Paragraph Indent & Spacing
 Overview
 --------
 
-Writer has a Indents & spacing dialog.
+Writer has a Indents & spacing dialog tab.
 
 The :py:class:`ooodev.format.writer.direct.para.indent_space.Indent`, :py:class:`ooodev.format.writer.direct.para.indent_space.Spacing`,
 and :py:class:`ooodev.format.writer.direct.para.indent_space.LineSpacing` classes are used to set the indent, spacing, and line spacing of a paragraph.

@@ -6,7 +6,7 @@ Write Direct Paragraph Outline & List
 Overview
 --------
 
-Writer has a Outlines & List dialog.
+Writer has a Outlines & List dialog tab.
 
 The :py:class:`ooodev.format.writer.direct.para.outline_list.Outline`, :py:class:`ooodev.format.writer.direct.para.outline_list.LineNum`,
 and :py:class:`ooodev.format.writer.direct.para.outline_list.ListStyle` classes are used to set the outline, list style, and line numbering of a paragraph.
@@ -337,7 +337,7 @@ LineNum Class
 The :py:class:`~ooodev.format.writer.direct.para.outline_list.LineNum` class is used to set line numbering for a paragraph.
 
 If ``num=0`` then this paragraph is include in line numbering.
-If ``num=-1``` then this paragraph is excluded in line numbering.
+If ``num=-1`` then this paragraph is excluded in line numbering.
 If greater then zero then this paragraph is included in line numbering and the numbering is restarted with value of ``num``.
 
 Example

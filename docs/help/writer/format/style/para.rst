@@ -170,9 +170,12 @@ This can be used to reset the paragraph style to the default style.
 
     .. code-tab:: python
 
+        from ooodev.format.writer.style import Para as StylePara
         # ... other code
+
         StylePara.default.apply(cursor)
         Write.append_para(cursor=cursor, text="Back to default style.")
+
         # ... other code
 
     .. only:: html
