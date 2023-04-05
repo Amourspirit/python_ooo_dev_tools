@@ -4,12 +4,16 @@ from typing import Any, Tuple, cast, TypeVar, Type, overload
 
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import lo as mLo
-from ooodev.format.calc.style.cell.kind.style_cell_kind import StyleCellKind as StyleCellKind
+from ooodev.format.calc.style.cell.kind.style_cell_kind import (
+    StyleCellKind as StyleCellKind,
+)
 
 from ooodev.format.inner.direct.calc.border.padding import Padding as Padding
 from ooodev.format.inner.direct.calc.border.shadow import Shadow as Shadow
 from ooodev.format.inner.common.props.border_props import BorderProps as BorderProps
-from ooodev.format.inner.common.props.cell_style_borders_props import CellStyleBordersProps
+from ooodev.format.inner.common.props.cell_style_borders_props import (
+    CellStyleBordersProps,
+)
 from ....direct.structs.side import Side as Side
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleMulti
@@ -50,14 +54,14 @@ class InnerBorders(StyleMulti):
         Constructor
 
         Args:
-            left (Side,, optional): Specifies the line style at the left edge.
-            right (Side, optional): Specifies the line style at the right edge.
-            top (Side, optional): Specifies the line style at the top edge.
-            bottom (Side, optional): Specifies the line style at the bottom edge.
-            border_side (Side, optional): Specifies the line style at the top, bottom, left, right edges.
+            left (~ooodev.format.inner.direct.structs.side.Side, optional): Specifies the line style at the left edge.
+            right (~ooodev.format.inner.direct.structs.side.Side, optional): Specifies the line style at the right edge.
+            top (~ooodev.format.inner.direct.structs.side.Side, optional): Specifies the line style at the top edge.
+            bottom (~ooodev.format.inner.direct.structs.side.Side, optional): Specifies the line style at the bottom edge.
+            border_side (~ooodev.format.inner.direct.structs.side.Side, optional): Specifies the line style at the top, bottom, left, right edges.
                 If this argument has a value then arguments ``top``, ``bottom``, ``left``, ``right`` are ignored
-            diagonal_down (Side, optional): Specifies the line style from top-left to bottom-right diagonal.
-            diagonal_up (Side, optional): Specifies the line style from bottom-left to top-right diagonal.
+            diagonal_down (~ooodev.format.inner.direct.structs.side.Side, optional): Specifies the line style from top-left to bottom-right diagonal.
+            diagonal_up (~ooodev.format.inner.direct.structs.side.Side, optional): Specifies the line style from bottom-left to top-right diagonal.
             shadow (Shadow, optional): Cell Shadow.
             padding (BorderPadding, optional): Cell padding.
         """
@@ -128,7 +132,10 @@ class InnerBorders(StyleMulti):
 
     # region internal methods
     def _get_shadow_cattribs(self) -> dict:
-        return {"_property_name": self._props.shadow, "_supported_services_values": self._supported_services()}
+        return {
+            "_property_name": self._props.shadow,
+            "_supported_services_values": self._supported_services(),
+        }
 
     def _get_padding_cattribs(self) -> dict:
         return {
@@ -252,7 +259,9 @@ class InnerBorders(StyleMulti):
         """
         inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
-            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
+            raise mEx.NotSupportedError(
+                f'Object is not supported for conversion to "{cls.__name__}"'
+            )
 
         shadow_fmt = Shadow.from_obj(obj=obj, _cattribs=inst._get_shadow_cattribs())
         inst._set_style("shadow", shadow_fmt)
@@ -289,7 +298,7 @@ class InnerBorders(StyleMulti):
         Gets copy of instance with left set or removed
 
         Args:
-            value (Side, optional): Side value
+            value (~ooodev.format.inner.direct.structs.side.Side, optional): Side value
 
         Returns:
             Borders: Borders instance
@@ -303,7 +312,7 @@ class InnerBorders(StyleMulti):
         Gets copy of instance with right set or removed
 
         Args:
-            value (Side, optional): Side value
+            value (~ooodev.format.inner.direct.structs.side.Side, optional): Side value
 
         Returns:
             Borders: Borders instance
@@ -317,7 +326,7 @@ class InnerBorders(StyleMulti):
         Gets copy of instance with top set or removed
 
         Args:
-            value (Side, optional): Side value
+            value (~ooodev.format.inner.direct.structs.side.Side, optional): Side value
 
         Returns:
             Borders: Borders instance
@@ -331,7 +340,7 @@ class InnerBorders(StyleMulti):
         Gets copy of instance with bottom set or removed
 
         Args:
-            value (Side, optional): Side value
+            value (~ooodev.format.inner.direct.structs.side.Side, optional): Side value
 
         Returns:
             Borders: Borders instance
@@ -345,7 +354,7 @@ class InnerBorders(StyleMulti):
         Gets copy of instance with diagonal down set or removed
 
         Args:
-            value (Side, optional): Side value
+            value (~ooodev.format.inner.direct.structs.side.Side, optional): Side value
 
         Returns:
             Borders: Borders instance
@@ -359,7 +368,7 @@ class InnerBorders(StyleMulti):
         Gets copy of instance with diagonal up set or removed
 
         Args:
-            value (Side, optional): Side value
+            value (~ooodev.format.inner.direct.structs.side.Side, optional): Side value
 
         Returns:
             Borders: Borders instance
@@ -458,7 +467,9 @@ class InnerBorders(StyleMulti):
         if value is None:
             self._remove_style("diag_up")
             return
-        self._set_style("diag_up", value.copy(_cattribs=self._get_diagonal_up_cattribs()))
+        self._set_style(
+            "diag_up", value.copy(_cattribs=self._get_diagonal_up_cattribs())
+        )
 
     @property
     def prop_diagonal_dn(self) -> Side | None:
@@ -475,7 +486,9 @@ class InnerBorders(StyleMulti):
         if value is None:
             self._remove_style("diag_dn")
             return
-        self._set_style("diag_dn", value.copy(_cattribs=self._get_diagonal_dn_cattribs()))
+        self._set_style(
+            "diag_dn", value.copy(_cattribs=self._get_diagonal_dn_cattribs())
+        )
 
     @property
     def prop_left(self) -> Side | None:
@@ -509,7 +522,9 @@ class InnerBorders(StyleMulti):
         if value is None:
             self._remove_style("bdr_right")
             return
-        self._set_style("bdr_right", value.copy(_cattribs=self._get_bdr_right_cattribs()))
+        self._set_style(
+            "bdr_right", value.copy(_cattribs=self._get_bdr_right_cattribs())
+        )
 
     @property
     def prop_top(self) -> Side | None:
@@ -595,14 +610,14 @@ class Borders(CellStyleBaseMulti):
         Constructor
 
         Args:
-            left (Side,, optional): Specifies the line style at the left edge.
-            right (Side, optional): Specifies the line style at the right edge.
-            top (Side, optional): Specifies the line style at the top edge.
-            bottom (Side, optional): Specifies the line style at the bottom edge.
-            border_side (Side, optional): Specifies the line style at the top, bottom, left, right edges.
+            left (~ooodev.format.inner.direct.structs.side.Side,, optional): Specifies the line style at the left edge.
+            right (~ooodev.format.inner.direct.structs.side.Side, optional): Specifies the line style at the right edge.
+            top (~ooodev.format.inner.direct.structs.side.Side, optional): Specifies the line style at the top edge.
+            bottom (~ooodev.format.inner.direct.structs.side.Side, optional): Specifies the line style at the bottom edge.
+            border_side (~ooodev.format.inner.direct.structs.side.Side, optional): Specifies the line style at the top, bottom, left, right edges.
                 If this argument has a value then arguments ``top``, ``bottom``, ``left``, ``right`` are ignored
-            diagonal_down (Side, optional): Specifies the line style from top-left to bottom-right diagonal.
-            diagonal_up (Side, optional): Specifies the line style from bottom-left to top-right diagonal.
+            diagonal_down (~ooodev.format.inner.direct.structs.side.Side, optional): Specifies the line style from top-left to bottom-right diagonal.
+            diagonal_up (~ooodev.format.inner.direct.structs.side.Side, optional): Specifies the line style from bottom-left to top-right diagonal.
             shadow (Shadow, optional): Cell Shadow.
             padding (BorderPadding, optional): Cell padding.
             style_name (StyleCellKind, str, optional): Specifies the Cell Style that instance applies to.
@@ -680,7 +695,9 @@ class Borders(CellStyleBaseMulti):
     @prop_inner.setter
     def prop_inner(self, value: InnerBorders) -> None:
         if not isinstance(value, InnerBorders):
-            raise TypeError(f'Expected type of InnerBorders, got "{type(value).__name__}"')
+            raise TypeError(
+                f'Expected type of InnerBorders, got "{type(value).__name__}"'
+            )
         self._del_attribs("_direct_inner")
         self._set_style("direct", value)
 
