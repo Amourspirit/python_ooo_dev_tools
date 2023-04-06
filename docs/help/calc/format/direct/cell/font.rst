@@ -3,6 +3,11 @@
 Calc Direct Cell Font Class
 ===========================
 
+.. contents:: Table of Contents
+    :local:
+    :backlinks: none
+    :depth: 2
+
 Setup
 -----
 

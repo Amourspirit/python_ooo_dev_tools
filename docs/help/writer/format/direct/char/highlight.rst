@@ -3,6 +3,11 @@
 Write Direct Character Highlight Class
 ======================================
 
+.. contents:: Table of Contents
+    :local:
+    :backlinks: none
+    :depth: 2
+
 Setting the style
 -----------------
 

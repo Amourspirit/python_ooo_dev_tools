@@ -3,6 +3,10 @@
 Write Direct Character Font Class
 =================================
 
+.. contents:: Table of Contents
+    :local:
+    :backlinks: none
+    :depth: 2
 
 The :py:class:`ooodev.format.writer.direct.char.font.Font` class can set the values in :ref:`ss_writer_dialog_char_font`, :ref:`ss_writer_dialog_char_font_effects`
 and even more. This class is more of a goto rather than using both :ref:`help_writer_format_direct_char_font_only` and

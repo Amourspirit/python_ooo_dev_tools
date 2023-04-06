@@ -3,6 +3,11 @@
 Calc Direct Cell Borders
 ========================
 
+.. contents:: Table of Contents
+    :local:
+    :backlinks: none
+    :depth: 3
+
 Overview
 --------
 
@@ -218,8 +223,8 @@ Passing ``width`` argument to ``Side()`` controls border width.
 
         Cell with left and right colored border.
 
-Apply different top and bottom colors
-"""""""""""""""""""""""""""""""""""""
+Apply different top and side colors
+"""""""""""""""""""""""""""""""""""
 
 .. tabs::
 
@@ -609,8 +614,8 @@ Passing `width` argument to `Side()` controls border width.
 
         Range with left and right colored border with increased width.
 
-Apply different top and bottom colors
-"""""""""""""""""""""""""""""""""""""
+Apply different top and side colors
+"""""""""""""""""""""""""""""""""""
 
 .. tabs::
 

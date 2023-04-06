@@ -3,6 +3,11 @@
 Write Direct Character FontEffects Class
 ========================================
 
+.. contents:: Table of Contents
+    :local:
+    :backlinks: none
+    :depth: 2
+
 The :py:class:`ooodev.format.writer.direct.char.font.FontEffects` class gives you the same options
 as Writer's Font Effects Dialog, but without the dialog. as seen in :numref:`ss_writer_dialog_char_font_effects`.
 

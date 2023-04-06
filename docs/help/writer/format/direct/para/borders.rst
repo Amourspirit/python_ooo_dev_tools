@@ -3,6 +3,11 @@
 Write Direct Paragraph Borders
 ==============================
 
+.. contents:: Table of Contents
+    :local:
+    :backlinks: none
+    :depth: 2
+
 Overview
 --------
 

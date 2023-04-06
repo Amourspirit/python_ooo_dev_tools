@@ -3,6 +3,11 @@
 Write Direct Paragraph Area Color Class
 =======================================
 
+.. contents:: Table of Contents
+    :local:
+    :backlinks: none
+    :depth: 2
+
 Overview
 --------
 
@@ -54,8 +59,8 @@ General function used to run these examples.
 Examples
 --------
 
-Fill Color a Paragraph
-^^^^^^^^^^^^^^^^^^^^^^
+Fill Color a single Paragraph
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. tabs::
 

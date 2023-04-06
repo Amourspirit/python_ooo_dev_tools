@@ -3,6 +3,11 @@
 Write Direct Character FontOnly Class
 =====================================
 
+.. contents:: Table of Contents
+    :local:
+    :backlinks: none
+    :depth: 2
+
 The :py:class:`ooodev.format.writer.direct.char.font.FontOnly` class gives you the same options
 as Writer's Font Dialog, but without the dialog. as seen in :numref:`ss_writer_dialog_char_font`.
 
