@@ -9,17 +9,19 @@ Welcome to OOO Development Tools documentation!
 .. include:: ../README.rst
 
 .. toctree::
+   :caption: Book:
    :maxdepth: 2
 
    odev/index
 
 .. toctree::
    :caption: Help:
+   :maxdepth: 2
 
    help/index
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Contents:
 
    src_docs/event/index
@@ -33,7 +35,7 @@ Welcome to OOO Development Tools documentation!
    src/index
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: DEVELOPING ODEV:
 
    dev_docs/dev_notes
