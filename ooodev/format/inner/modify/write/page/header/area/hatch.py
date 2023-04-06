@@ -1,9 +1,10 @@
 # region Import
 from __future__ import annotations
 from typing import cast, Type, TypeVar
+import uno
 from ooo.dyn.drawing.hatch_style import HatchStyle as HatchStyle
 
-from ...page_style_base_multi import PageStyleBaseMulti
+from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.units import UnitObj
 from ooodev.utils.color import Color
 from ooodev.utils.data_type.angle import Angle as Angle
@@ -11,6 +12,7 @@ from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterSt
 from ooodev.format.inner.preset.preset_hatch import PresetHatchKind as PresetHatchKind
 from ooodev.format.inner.common.props.area_hatch_props import AreaHatchProps
 from ooodev.format.inner.direct.write.fill.area.hatch import Hatch as InnerHatch
+from ...page_style_base_multi import PageStyleBaseMulti
 
 # endregion Import
 
@@ -40,12 +42,12 @@ class Hatch(PageStyleBaseMulti):
         Args:
             style (HatchStyle, optional): Specifies the kind of lines used to draw this hatch.
                 Default ``HatchStyle.SINGLE``.
-            color (Color, optional): Specifies the color of the hatch lines. Default ``0``.
+            color (:py:data:`~.utils.color.Color`, optional): Specifies the color of the hatch lines. Default ``0``.
             space (float, UnitObj, optional): Specifies the space between the lines in the hatch (in ``mm`` units)
                 or :ref:`proto_unit_obj`. Default ``0.0``
             angle (Angle, int, optional): Specifies angle of the hatch in degrees.
                 Default to ``0``.
-            bg_color(Color, optional): Specifies the background Color. Set this ``-1`` (default) for no background color.
+            bg_color(:py:data:`~.utils.color.Color`, optional): Specifies the background Color. Set this ``-1`` (default) for no background color.
             style_name (StyleParaKind, str, optional): Specifies the Page Style that instance applies to.
                 Default is Default Page Style.
             style_family (str, optional): Style family. Default ``PageStyles``.
@@ -121,7 +123,7 @@ class Hatch(PageStyleBaseMulti):
         Gets instance from preset.
 
         Args:
-            preset (PresetKind): Preset.
+            preset (PresetHatchKind): Preset.
             style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.
             style_family (str, optional): Style family. Default ``PageStyles``.
@@ -137,6 +139,15 @@ class Hatch(PageStyleBaseMulti):
     # endregion Static methods
 
     # region Properties
+    @property
+    def prop_format_kind(self) -> FormatKind:
+        """Gets the kind of style"""
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.DOC | FormatKind.STYLE | FormatKind.HEADER
+        return self._format_kind_prop
+
     @property
     def prop_style_name(self) -> str:
         """Gets/Sets property Style Name"""

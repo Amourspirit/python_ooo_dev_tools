@@ -1,6 +1,7 @@
 from __future__ import annotations
-
+import uno
 from ooodev.format.inner.common.props.area_hatch_props import AreaHatchProps
+from ooodev.format.inner.kind.format_kind import FormatKind
 from ...header.area.hatch import Hatch as HeaderHatch
 
 
@@ -20,3 +21,15 @@ class Hatch(HeaderHatch):
         )
 
     # endregion internal methods
+
+    # region properties
+    @property
+    def prop_format_kind(self) -> FormatKind:
+        """Gets the kind of style"""
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.DOC | FormatKind.STYLE | FormatKind.FOOTER
+        return self._format_kind_prop
+
+    # endregion properties

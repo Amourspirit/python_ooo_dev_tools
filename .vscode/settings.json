@@ -25,7 +25,8 @@
         }
     },
     "workbench.colorTheme": "Monokai",
-    "esbonio.sphinx.confDir": "${workspaceFolder}\\docs",
+    "esbonio.sphinx.confDir": "${workspaceFolder}/docs",
+    "esbonio.server.enabled": true,
     "python.testing.pytestArgs": [
         "tests"
     ],
@@ -46,6 +47,7 @@
         "**/build/**",
         "**/dist/**",
         "**/venv/**",
+        "**/.idea/**",
         "**/.venv/**",
         "**/node_modules/**",
         "**/out/**",
@@ -69,6 +71,7 @@
         "**/dist/**",
         "**/venv/**",
         "**/.venv/**",
+        "**/.idea/**",
         "**/node_modules/**",
         "**/out/**",
         "**/output/**",
@@ -96,6 +99,8 @@
         "**/build/**": true,
         "**/dist/**": true,
         "**/env/**": true,
+        "**/venv/**": true,
+        "**/.venv/**": true,
         "**/tmp/**": true,
         "**/.pytest_cache/**": true,
         "**/.idea/**": true,
@@ -157,8 +162,9 @@
         "**/.githooks/**",
         "**/.hypothesis/**",
         "**/.pytest_cache/**",
+        "**/.idea/**",
         "**/__pycache__/**",
-        "**/_build/**",
+        "**/_build/**"
     ],
     "openInExternalApp.openMapper": [
         {
@@ -170,5 +176,9 @@
                 }
             ]
         }
+    ],
+    "restructuredtext.preview.name": "sphinx",
+    "restructuredtext.linter.disabledLinters": [
+        "doc8"
     ]
 }

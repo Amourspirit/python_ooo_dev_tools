@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import cast
 import pytest
 
 if __name__ == "__main__":
@@ -11,6 +12,7 @@ from ooodev.utils.lo import Lo
 from ooodev.office.calc import Calc
 from ooodev.utils.data_type.range_obj import RangeObj
 from ooodev.utils.table_helper import TableHelper
+from ooodev.utils.color import CommonColor
 
 
 def test_calc(loader) -> None:
@@ -55,6 +57,13 @@ def test_calc(loader) -> None:
         style.apply(rng)
         f_style = Cell.from_obj(rng)
         assert f_style.prop_name == style.prop_name
+
+        style = Cell(name=StyleCellKind.DEFAULT)
+        xprops = style.get_style_props()
+        assert xprops is not None
+        xprops.setPropertyValue("CellBackColor", CommonColor.CORAL)
+        val = cast(int, xprops.getPropertyValue("CellBackColor"))
+        assert val == CommonColor.CORAL
 
         Lo.delay(delay)
     finally:

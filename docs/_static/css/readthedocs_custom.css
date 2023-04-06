@@ -1,3 +1,10 @@
+/* Start force display class properties on new lines */
+html.writer-html4 .rst-content dl:not(.docutils) .property,
+html.writer-html5 .rst-content dl[class]:not(.option-list):not(.field-list):not(.footnote):not(.citation):not(.glossary):not(.simple) .property {
+    display: inline;
+}
+/* end force display class properties on new lines */
+
 .bg-transparent {
     background-color: transparent !important;
 }

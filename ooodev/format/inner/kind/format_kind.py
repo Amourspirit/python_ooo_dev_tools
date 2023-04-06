@@ -20,4 +20,6 @@ class FormatKind(IntFlag):
     SHAPE = 1 << 13
     IMAGE = 1 << 14
     TABLE = 1 << 15
+    HEADER = 1 << 16
+    FOOTER = 1 << 17
     """Document level Styles"""

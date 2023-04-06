@@ -1,7 +1,7 @@
 .. _ns_proto:
 
-Protocol
-========
+proto
+=====
 
 .. toctree::
     :titlesonly:

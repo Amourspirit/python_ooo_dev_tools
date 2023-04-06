@@ -174,6 +174,7 @@ class FontOnly(StyleMulti):
                 "com.sun.star.style.CharacterProperties",
                 "com.sun.star.style.CharacterStyle",
                 "com.sun.star.style.ParagraphStyle",
+                "com.sun.star.drawing.ControlShape",
             )
         return self._supported_services_values
 

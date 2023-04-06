@@ -30,7 +30,7 @@ class Color(FrameStyleBaseMulti):
         Constructor
 
         Args:
-            color (Color, optional): Color.
+            color (:py:data:`~.utils.color.Color`, optional): Color.
             style_name (StyleFrameKind, str, optional): Specifies the Frame Style that instance applies to.
                 Default is Default Frame Style.
             style_family (str, optional): Style family. Default ``FrameStyles``.

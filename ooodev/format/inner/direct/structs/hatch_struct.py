@@ -51,7 +51,7 @@ class HatchStruct(StructBase):
 
         Args:
             style (HatchStyle, optional): Specifies the kind of lines used to draw this hatch. Default ``HatchStyle.SINGLE``.
-            color (Color, optional): Specifies the color of the hatch lines. Default ``0``.
+            color (:py:data:`~.utils.color.Color`, optional): Specifies the color of the hatch lines. Default ``0``.
             distance (int, UnitObj, optional): Specifies the distance between the lines in the hatch (in ``mm`` units) or :ref:`proto_unit_obj`. Default ``0.0``
             angle (Angle, int, optional): Specifies angle of the hatch in degrees. Default to ``0``.
 
@@ -133,7 +133,7 @@ class HatchStruct(StructBase):
             None:
         """
         if not mProps.Props.has(obj, self._get_property_name()):
-            self._print_not_valid_obj("apply")
+            self._print_not_valid_srv("apply")
             return
 
         hatch = self.get_uno_struct()

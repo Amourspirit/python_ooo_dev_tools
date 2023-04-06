@@ -10,6 +10,7 @@ from . import info as mInfo
 from . import props as mProps
 from . import gui as mGui
 from .kind.form_component_kind import FormComponentKind
+from ..proto.style_obj import StyleObj
 
 from com.sun.star.awt import XControl
 from com.sun.star.awt import XControlModel
@@ -785,22 +786,6 @@ class Forms:
     # region create controls
 
     # region    add_control
-    @overload
-    @classmethod
-    def add_control(
-        cls,
-        doc: XComponent,
-        name: str,
-        label: str | None,
-        comp_kind: FormComponentKind | str,
-        x: int,
-        y: int,
-        width: int,
-        height: int,
-    ) -> XPropertySet:
-        ...
-
-    @overload
     @classmethod
     def add_control(
         cls,
@@ -814,22 +799,8 @@ class Forms:
         height: int,
         anchor_type: TextContentAnchorType | None = None,
         parent_form: XNameContainer | None = None,
-    ) -> XPropertySet:
-        ...
-
-    @classmethod
-    def add_control(
-        cls,
-        doc: XComponent,
-        name: str,
-        label: str | None,
-        comp_kind: FormComponentKind | str,
-        x: int,
-        y: int,
-        width: int,
-        height: int,
-        anchor_type: TextContentAnchorType | None = None,
-        parent_form: XNameContainer | None = None,
+        *,
+        styles: Iterable[StyleObj] = None,
     ) -> XPropertySet:
         """
         Add a control
@@ -845,12 +816,16 @@ class Forms:
             height (int): control height
             anchor_type (TextContentAnchorType | None): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             parent_form (XNameContainer | None): Parent form in which to add control.
+            styles (Iterable[StyleObj], optional): One or more styles to apply.
 
         Returns:
             XPropertySet: Control Property Set
 
         See Also:
             For ``comp_kind`` `API component Module Namespace <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1form_1_1component.html>`_
+
+        .. versionchanged:: 0.9.2
+            Added ``styles`` argument.
         """
         try:
             # create a shape to represent the control's view
@@ -892,11 +867,17 @@ class Forms:
             form_shapes = mLo.Lo.qi(XShapes, draw_page)
             form_shapes.add(cshape)
 
+            # styles need to not be added until after form_shapes.add(cshape) or may not work
+            if styles:
+                for style in styles:
+                    style.apply(shape_props)
+
             # set Name and Label properties for the model
             model_props = mLo.Lo.qi(XPropertySet, cmodel, True)
             model_props.setPropertyValue("Name", name)
             if label is not None:
                 model_props.setPropertyValue("Label", label)
+
             return model_props
         except Exception:
             raise
@@ -914,7 +895,37 @@ class Forms:
     @overload
     @classmethod
     def add_labelled_control(
+        cls,
+        doc: XComponent,
+        label: str,
+        comp_kind: FormComponentKind | str,
+        y: int,
+        *,
+        lbl_styles: Iterable[StyleObj] = ...,
+        ctl_styles: Iterable[StyleObj] = ...,
+    ) -> XPropertySet:
+        ...
+
+    @overload
+    @classmethod
+    def add_labelled_control(
         cls, doc: XComponent, label: str, comp_kind: FormComponentKind | str, x: int, y: int, height: int
+    ) -> XPropertySet:
+        ...
+
+    @overload
+    @classmethod
+    def add_labelled_control(
+        cls,
+        doc: XComponent,
+        label: str,
+        comp_kind: FormComponentKind | str,
+        x: int,
+        y: int,
+        height: int,
+        *,
+        lbl_styles: Iterable[StyleObj] = ...,
+        ctl_styles: Iterable[StyleObj] = ...,
     ) -> XPropertySet:
         ...
 
@@ -930,10 +941,17 @@ class Forms:
             x (int): Control X position
             y (int): Control Y Position
             height (int): control height
+            lbl_styles (Iterable[StyleObj], optional): One or more styles to apply on the label portion of control.
+            ctl_styles (Iterable[StyleObj], optional): One or more styles to apply on the Textbox portion of control.
 
         Returns:
             XPropertySet: DataField Control Property Set
+
+        .. versionchanged:: 0.9.2
+            Added ``lbl_styles`` and ``ctl_styles`` arguments.
         """
+        lbl_styles = kwargs.pop("lbl_styles", None)
+        ctl_styles = kwargs.pop("ctl_styles", None)
         ordered_keys = (1, 2, 3, 4, 5, 6)
         kargs_len = len(kwargs)
         count = len(args) + kargs_len
@@ -969,17 +987,41 @@ class Forms:
             kargs[ordered_keys[i]] = arg
 
         if count == 4:
-            return cls._add_labelled_control(
-                doc=kargs[1], label=kargs[2], comp_kind=kargs[3], x=2, y=kargs[4], height=6
+            result = cls._add_labelled_control(
+                doc=kargs[1],
+                label=kargs[2],
+                comp_kind=kargs[3],
+                x=2,
+                y=kargs[4],
+                height=6,
+                lbl_styles=lbl_styles,
+                ctl_styles=ctl_styles,
             )
         else:
             return cls._add_labelled_control(
-                doc=kargs[1], label=kargs[2], comp_kind=kargs[3], x=kargs[4], y=kargs[5], height=kargs[6]
+                doc=kargs[1],
+                label=kargs[2],
+                comp_kind=kargs[3],
+                x=kargs[4],
+                y=kargs[5],
+                height=kargs[6],
+                lbl_styles=lbl_styles,
+                ctl_styles=ctl_styles,
             )
+
+        return result
 
     @classmethod
     def _add_labelled_control(
-        cls, doc: XComponent, label: str, comp_kind: FormComponentKind | str, x: int, y: int, height: int
+        cls,
+        doc: XComponent,
+        label: str,
+        comp_kind: FormComponentKind | str,
+        x: int,
+        y: int,
+        height: int,
+        lbl_styles: Iterable[StyleObj],
+        ctl_styles: Iterable[StyleObj],
     ) -> XPropertySet:
         try:
             name = f"{label}_label"
@@ -993,6 +1035,7 @@ class Forms:
                 y=y,
                 width=40,
                 height=height,
+                styles=lbl_styles,
             )
 
             # create data field control
@@ -1005,6 +1048,7 @@ class Forms:
                 y=y,
                 width=40,
                 height=height,
+                styles=ctl_styles,
             )
             ctl_props.setPropertyValue("DataField", label)
 
@@ -1019,19 +1063,47 @@ class Forms:
     # region    add_button
     @overload
     @classmethod
-    def add_button(cls, doc: XComponent, name: str, label: str | None, x: int, y: int, width: int) -> XPropertySet:
+    def add_button(
+        cls,
+        doc: XComponent,
+        name: str,
+        label: str | None,
+        x: int,
+        y: int,
+        width: int,
+        *,
+        styles: Iterable[StyleObj] = ...,
+    ) -> XPropertySet:
         ...
 
     @overload
     @classmethod
     def add_button(
-        cls, doc: XComponent, name: str, label: str | None, x: int, y: int, width: int, height: int
+        cls,
+        doc: XComponent,
+        name: str,
+        label: str | None,
+        x: int,
+        y: int,
+        width: int,
+        height: int,
+        *,
+        styles: Iterable[StyleObj] = ...,
     ) -> XPropertySet:
         ...
 
     @classmethod
     def add_button(
-        cls, doc: XComponent, name: str, label: str | None, x: int, y: int, width: int, height: int = 6
+        cls,
+        doc: XComponent,
+        name: str,
+        label: str | None,
+        x: int,
+        y: int,
+        width: int,
+        height: int = 6,
+        *,
+        styles: Iterable[StyleObj] = None,
     ) -> XPropertySet:
         """
         Adds a button control.
@@ -1046,9 +1118,13 @@ class Forms:
             y (int): Button Y position
             height (int): Button Height
             width (int, optional): Button Height. Defaults to 6.
+            styles (Iterable[StyleObj], optional): One or more styles to apply.
 
         Returns:
             XPropertySet: Button Property Set
+
+        .. versionchanged:: 0.9.2
+            Added ``styles`` argument.
         """
         try:
             btn_props = cls.add_control(
@@ -1060,6 +1136,7 @@ class Forms:
                 y=y,
                 width=width,
                 height=height,
+                styles=styles,
             )
             # don't want button to be accessible by the "tab" key
             btn_props.setPropertyValue("Tabstop", False)
@@ -1075,7 +1152,16 @@ class Forms:
 
     @classmethod
     def add_list(
-        cls, doc: XComponent, name: str, entries: Iterable[str], x: int, y: int, width: int, height: int
+        cls,
+        doc: XComponent,
+        name: str,
+        entries: Iterable[str],
+        x: int,
+        y: int,
+        width: int,
+        height: int,
+        *,
+        styles: Iterable[StyleObj] = None,
     ) -> XPropertySet:
         """
         Adds a list
@@ -1088,9 +1174,13 @@ class Forms:
             y (int): List Y Position
             width (int): List Width
             height (int): List Height
+            styles (Iterable[StyleObj], optional): One or more styles to apply.
 
         Returns:
             XPropertySet: List property set
+
+        .. versionchanged:: 0.9.2
+            Added ``styles`` argument.
         """
         try:
             lst_props = cls.add_control(
@@ -1102,6 +1192,7 @@ class Forms:
                 y=y,
                 width=width,
                 height=height,
+                styles=styles,
             )
             items = mProps.Props.any(*[s for s in entries])
             # lst_props.setPropertyValue("DefaultSelection", 0)
@@ -1117,7 +1208,16 @@ class Forms:
 
     @classmethod
     def add_database_list(
-        cls, doc: XComponent, name: str, sql_cmd: str, x: int, y: int, width: int, height: int
+        cls,
+        doc: XComponent,
+        name: str,
+        sql_cmd: str,
+        x: int,
+        y: int,
+        width: int,
+        height: int,
+        *,
+        styles: Iterable[StyleObj] = None,
     ) -> XPropertySet:
         """
         Add a list with a SQL command as it data source
@@ -1130,9 +1230,13 @@ class Forms:
             y (int): List Y Position
             width (int): List Width
             height (int): List Height
+            styles (Iterable[StyleObj], optional): One or more styles to apply.
 
         Returns:
             XPropertySet: List property set
+
+        .. versionchanged:: 0.9.2
+            Added ``styles`` argument.
         """
         try:
             lst_props = cls.add_control(
@@ -1144,6 +1248,7 @@ class Forms:
                 y=y,
                 width=width,
                 height=height,
+                styles=styles,
             )
             lst_props.setPropertyValue("Dropdown", True)
             lst_props.setPropertyValue("MultiSelection", False)

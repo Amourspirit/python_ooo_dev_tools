@@ -6,6 +6,7 @@ import uno
 from com.sun.star.awt import XBitmap
 from ooo.dyn.drawing.rectangle_point import RectanglePoint as RectanglePoint
 
+from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.utils.data_type.offset import Offset as Offset
 from ooodev.format.inner.common.format_types.offset_column import OffsetColumn as OffsetColumn
 from ooodev.format.inner.common.format_types.offset_row import OffsetRow as OffsetRow
@@ -144,7 +145,7 @@ class Img(PageStyleBaseMulti):
         Gets instance from preset.
 
         Args:
-            preset (PresetKind): Preset.
+            preset (PresetImageKind): Preset.
             style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.
             style_family (str, optional): Style family. Default ``PageStyles``.
@@ -160,6 +161,15 @@ class Img(PageStyleBaseMulti):
     # endregion Static Methods
 
     # region Properties
+    @property
+    def prop_format_kind(self) -> FormatKind:
+        """Gets the kind of style"""
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.DOC | FormatKind.STYLE | FormatKind.HEADER
+        return self._format_kind_prop
+
     @property
     def prop_style_name(self) -> str:
         """Gets/Sets property Style Name"""

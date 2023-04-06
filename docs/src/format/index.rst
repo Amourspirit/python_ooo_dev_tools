@@ -1,13 +1,15 @@
 .. _ns_format:
 
-format package
-==============
+format
+======
+
+.. versionadded:: 0.9.0
 
 Subpackages
 -----------
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 3
 
    ooodev.format.calc
    ooodev.format.draw
@@ -19,7 +21,7 @@ Submodules
 ----------
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 2
 
    ooodev.format.styler
 

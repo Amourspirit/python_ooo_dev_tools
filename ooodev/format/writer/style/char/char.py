@@ -29,6 +29,9 @@ class Char(StyleName):
 
     # region Overrides
 
+    def _get_family_style_name(self) -> str:
+        return "CharacterStyles"
+
     def _supported_services(self) -> Tuple[str, ...]:
         try:
             return self._supported_services_values

@@ -1,6 +1,8 @@
 # region Import
 from __future__ import annotations
+import uno
 from typing import Tuple, cast, Type, TypeVar
+from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
 from ooodev.format.inner.common.abstract.abstract_hf import AbstractHF
 from ooodev.format.inner.common.props.hf_props import HfProps
@@ -42,6 +44,15 @@ class InnerStyle(AbstractHF):
                 height_auto="HeaderIsDynamicHeight",
             )
         return self._props_internal_attributes
+
+    @property
+    def prop_format_kind(self) -> FormatKind:
+        """Gets the kind of style"""
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.DOC | FormatKind.STYLE | FormatKind.HEADER
+        return self._format_kind_prop
 
 
 class Header(PageStyleBaseMulti):
@@ -155,6 +166,15 @@ class Header(PageStyleBaseMulti):
     # endregion Static Methods
 
     # region Properties
+    @property
+    def prop_format_kind(self) -> FormatKind:
+        """Gets the kind of style"""
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.DOC | FormatKind.STYLE | FormatKind.HEADER
+        return self._format_kind_prop
+
     @property
     def prop_style_name(self) -> str:
         """Gets/Sets property Style Name"""

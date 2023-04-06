@@ -110,8 +110,8 @@ class Chart2:
             width (int, optional): Width. Default ``16``.
             height (int, optional): Height. Default ``9``.
             diagram_name (ChartTemplateBase | str): Diagram Name. Defaults to ``Column``.
-            color_bg (Color, optional): Color Background. Defaults to ``CommonColor.PALE_BLUE``.
-            color_wall (Color, optional): Color Wall. Defaults to ``CommonColor.LIGHT_BLUE``.
+            color_bg (:py:data:`~.utils.color.Color`, optional): Color Background. Defaults to ``CommonColor.PALE_BLUE``.
+            color_wall (:py:data:`~.utils.color.Color`, optional): Color Wall. Defaults to ``CommonColor.LIGHT_BLUE``.
 
         Keyword Arguments:
             chart_name (str, optional): Chart name
@@ -1453,8 +1453,8 @@ class Chart2:
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            bg_color (Color): Color Value for background
-            wall_color (Color): Color Value for wall
+            bg_color (~ooodev.utils.color.Color): Color Value for background
+            wall_color (~ooodev.utils.color.Color): Color Value for wall
 
         Raises:
             ChartError: If error occurs.
@@ -2054,8 +2054,8 @@ class Chart2:
 
         Args:
             ct (XChartType): Chart Type.
-            w_day_color (Color): Chart white day color
-            b_day_color (Color): Chart black day color
+            w_day_color (~ooodev.utils.color.Color): Chart white day color
+            b_day_color (~ooodev.utils.color.Color): Chart black day color
 
         Raises:
             NotSupportedError: If Chart is not of type ``CandleStickChartType``

@@ -1,6 +1,7 @@
 # region Imports
 from __future__ import annotations
 from ooo.dyn.drawing.rectangle_point import RectanglePoint as RectanglePoint
+from ooodev.format.inner.kind.format_kind import FormatKind
 
 from ooodev.utils.data_type.offset import Offset as Offset
 from ooodev.format.calc.style.page.kind import CalcStylePageKind as CalcStylePageKind
@@ -38,5 +39,14 @@ class Img(HeaderImg):
             "_supported_services_values": self._supported_services(),
             "_format_kind_prop": self.prop_format_kind,
         }
+
+    @property
+    def prop_format_kind(self) -> FormatKind:
+        """Gets the kind of style"""
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.DOC | FormatKind.STYLE | FormatKind.FOOTER
+        return self._format_kind_prop
 
     # endregion internal methods

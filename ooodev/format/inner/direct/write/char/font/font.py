@@ -88,10 +88,10 @@ class Font(StyleBase):
             b (bool, optional): Shortcut to set ``weight`` to bold.
             i (bool, optional): Shortcut to set ``slant`` to italic.
             u (bool, optional): Shortcut ot set ``underline`` to underline.
-            bg_color (Color, optional): The value of the text background color.
+            bg_color (:py:data:`~.utils.color.Color`, optional): The value of the text background color.
             bg_transparent (bool, optional): Determines if the text background color is set to transparent.
             charset (CharSetEnum, optional): The text encoding of the font.
-            color (Color, optional): The value of the text color. Setting to ``-1`` will cause automatic color.
+            color (:py:data:`~.utils.color.Color`, optional): The value of the text color. Setting to ``-1`` will cause automatic color.
             family (FontFamilyEnum, optional): Font Family.
             name (str, optional): This property specifies the name of the font style.
                 It may contain more than one name separated by comma.
@@ -171,6 +171,8 @@ class Font(StyleBase):
             self._supported_services_values = (
                 "com.sun.star.style.CharacterProperties",
                 "com.sun.star.style.CharacterStyle",
+                "com.sun.star.style.ParagraphStyle",
+                "com.sun.star.drawing.ControlShape",
             )
         return self._supported_services_values
 
@@ -209,7 +211,7 @@ class Font(StyleBase):
         Get copy of instance with text background color set or removed.
 
         Args:
-            value (Color, optional): The text background color.
+            value (:py:data:`~.utils.color.Color`, optional): The text background color.
                 If ``None`` style is removed. Default ``None``
 
         Returns:
@@ -254,7 +256,7 @@ class Font(StyleBase):
         Get copy of instance with text color set or removed.
 
         Args:
-            value (Color, optional): The text color.
+            value (:py:data:`~.utils.color.Color`, optional): The text color.
                 If ``None`` style is removed. Default ``None``
 
         Returns:
@@ -331,7 +333,7 @@ class Font(StyleBase):
         Get copy of instance with text overline color set or removed.
 
         Args:
-            value (Color, optional): The color is used for an overline.
+            value (:py:data:`~.utils.color.Color`, optional): The color is used for an overline.
                 If ``None`` style is removed. Default ``None``
 
         Returns:
@@ -473,7 +475,7 @@ class Font(StyleBase):
         Gets copy of instance with text underline color set or removed.
 
         Args:
-            value (Color, optional): The color is used for an underline.
+            value (:py:data:`~.utils.color.Color`, optional): The color is used for an underline.
                 If ``None`` style is removed. Default ``None``
 
         Returns:

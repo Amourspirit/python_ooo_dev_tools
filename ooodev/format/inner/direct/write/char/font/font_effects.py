@@ -35,7 +35,7 @@ class FontLine:
 
         Args:
             line (FontUnderlineEnum, optional): Font Line kind.
-            color (Color, optional): Line color. If value is ``-1`` the automatic color is applied.
+            color (:py:data:`~.utils.color.Color`, optional): Line color. If value is ``-1`` the automatic color is applied.
         """
         self._line = line
         self._color = color
@@ -106,7 +106,7 @@ class FontEffects(StyleBase):
         Font options used in styles.
 
         Args:
-            color (Color, optional): The value of the text color.
+            color (:py:data:`~.utils.color.Color`, optional): The value of the text color.
                 If value is ``-1`` the automatic color is applied.
             transparency (Intensity, int, optional): The transparency value from ``0`` to ``100`` for the font color.
             overline (FontLine, optional): Character overline values.
@@ -156,6 +156,7 @@ class FontEffects(StyleBase):
                 "com.sun.star.style.CharacterProperties",
                 "com.sun.star.style.CharacterStyle",
                 "com.sun.star.style.ParagraphStyle",
+                "com.sun.star.drawing.ControlShape",
             )
         return self._supported_services_values
 
@@ -251,7 +252,7 @@ class FontEffects(StyleBase):
         Gets copy of instance with text color set or removed.
 
         Args:
-            value (Color, optional): The text color.
+            value (:py:data:`~.utils.color.Color`, optional): The text color.
                 If ``None`` style is removed. Default ``None``
 
         Returns:
@@ -298,7 +299,7 @@ class FontEffects(StyleBase):
         Gets copy of instance with text overline color set or removed.
 
         Args:
-            value (Color, optional): The color is used for an overline.
+            value (:py:data:`~.utils.color.Color`, optional): The color is used for an overline.
                 If ``None`` style is removed. Default ``None``
 
         Returns:
@@ -347,7 +348,7 @@ class FontEffects(StyleBase):
         Gets copy of instance with text underline color set or removed.
 
         Args:
-            value (Color, optional): The color is used for an underline.
+            value (:py:data:`~.utils.color.Color`, optional): The color is used for an underline.
                 If ``None`` style is removed. Default ``None``
 
         Returns:

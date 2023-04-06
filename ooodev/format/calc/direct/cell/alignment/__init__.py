@@ -11,6 +11,5 @@ from ooodev.format.inner.direct.calc.alignment.properties import Properties as P
 __all__ = [
     "TextAlign",
     "TextOrientation",
-    "TextDirectionKind",
     "Properties",
 ]

@@ -62,6 +62,7 @@ extensions = [
     "sphinx_tabs.tabs",
     "sphinx_design",
     "sphinxcontrib.spelling",
+    "sphinx_substitution_extensions",
 ]
 # "sphinx.ext.linkcode",
 # sphinx_tabs.tabs docs: https://sphinx-tabs.readthedocs.io/en/latest/
@@ -71,6 +72,9 @@ extensions = [
 
 # region spelling
 # https://sphinxcontrib-spelling.readthedocs.io/en/latest/
+
+# sphinx_substitution_extensions
+# https://github.com/adamtheturtle/sphinx-substitution-extensions
 
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#confval-suppress_warnings
 # https://github.com/sphinx-doc/sphinx/issues/4961
@@ -158,6 +162,9 @@ napoleon_include_init_with_doc = True
 # This value controls how to represent typehints. The setting takes the following values:
 autodoc_typehints = "description"
 
+# https://documentation.help/Sphinx/autodoc.html
+autoclass_content = "init"
+
 
 # see: https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#confval-autodoc_mock_imports
 # see: https://read-the-docs.readthedocs.io/en/latest/faq.html#i-get-import-errors-on-libraries-that-depend-on-c-modules
@@ -226,12 +233,12 @@ rst_prolog_lst = [
     "",
     ".. |app_name_bold| replace:: **OOO Development Tools**",
     "",
-    ".. |odev| replace:: ODEV",
+    ".. |odev| replace:: OOODEV",
     "",
     ".. |ooouno| replace:: ooouno library",
     ".. _ooouno: https://pypi.org/project/ooouno/",
     "",
-    ".. |odevgui_win| replace:: ODEV GUI Automation for windows",
+    ".. |odevgui_win| replace:: OOODEV GUI Automation for windows",
     f".. _odevgui_win: {odevgui_win_url}",
     "",
 ]

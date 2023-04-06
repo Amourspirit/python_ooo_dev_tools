@@ -2,10 +2,38 @@
 Version History
 ***************
 
+Version 0.9.2
+=============
+
+Added style options to ``from ooodev.utils.forms.Forms`` module methods.
+
+Added ``Write.create_style_para()`` that creates new paragraph styles and adds the them to the document paragraph styles.
+
+Added ``Write.create_style_char()`` that creates new character styles and adds the them to the document character styles.
+
+Added ``Write.set_footer()`` that sets the footer text and style.
+
+Added ``styles`` to ``Write.set_header()`` that also sets the header style.
+
+Added ``ooodev.format.writer.direct.page`` module that contains classes for page header and footer styles that can be
+used with ``Write.set_header()`` and ``Write.set_footer()``.
+
+Version 0.9.1
+=============
+
+Added :ref:`ns_theme` that access LibreOffice theme properties.
+
+Added ``Info.get_office_theme()`` That gets the current LibreOffice theme name.
+
+Added overloads to several Calc methods to allow styles to be applied when setting sheet values.
+
+
 Version 0.9.0
 =============
 
-Added :ref:`ns_format` namespace with hundreds of new classes for applying styles and formatting to documents and sheets.
+Added :ref:`ns_format` module with hundreds of new classes for applying styles and formatting to documents and sheets.
+
+Added :ref:`ns_units` module that contains classes for many of the LibreOffice units such as ``mm`` units, ``px`` units and ``pt`` units (and more).
 
 Renamed method ``GUI.show_memu_bar()`` to ``GUI.show_menu_bar()``
 

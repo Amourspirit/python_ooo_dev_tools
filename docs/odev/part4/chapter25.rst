@@ -58,50 +58,72 @@ One way of doing this is to attach a XModifyListener_ interface to the open docu
                                 sheet=self._sheet,
                                 cell_name="A1",
                                 values=("Smith", 42, 58.9, -66.5, 43.4, 44.5, 45.3)
-                            )
+                                )
 
-                            # pass GenericArgs with listener arg of self.
-                            # this will allow for this instance to be passed to events.
-                            # pass doc to constructor,
-                            # this will allow listener to be automatically attached to document.
-                            self._m_listener = ModifyListener(
-                                trigger_args=GenericArgs(listener=self), doc=self._doc
-                            )
-                            self._m_listener.on("modified", ModifyListenerAdapter.on_modified)
-                            self._m_listener.on("disposing", ModifyListenerAdapter.on_disposing)
+                            # Event handlers are defined as methods on the class.
+                            # However class methods are not callable by the event system.
+                            # The solution is to create a function that calls the class method
+                            # and pass that function to the event system.
+                            # Also the function must be a member of the class so that it is
+                            # not garbage collected.
+
+                            def _on_window_closing(
+                                source: Any, event_args: EventArgs, *args, **kwargs
+                            ) -> None:
+                                self.on_window_closing(source, event_args, *args, **kwargs)
+
+                            def _on_modified(
+                                source: Any, event_args: EventArgs, *args, **kwargs
+                            ) -> None:
+                                self.on_modified(source, event_args, *args, **kwargs)
+
+                            def _on_disposing(
+                                source: Any, event_args: EventArgs, *args, **kwargs
+                            ) -> None:
+                                self.on_disposing(source, event_args, *args, **kwargs)
+
+                            self._fn_on_window_closing = _on_window_closing
+                            self._fn_on_modified = _on_modified
+                            self._fn_on_disposing = _on_disposing
+
+                            # pass doc to constructor, this will allow listener to be automatically
+                            # attached to document.
+                            self._m_listener = ModifyListener(doc=self._doc)
+                            self._m_listener.on("modified", _on_modified)
+                            self._m_listener.on("disposing", _on_disposing)
 
                             # close down when window closes
-                            self._twl = TopWindowListener(trigger_args=GenericArgs(listener=self))
-                            self._twl.on("windowClosing", ModifyListenerAdapter.on_window_closing)
+                            self._twl = TopWindowListener()
+                            self._twl.on("windowClosing", _on_window_closing)
 
-                        @staticmethod
-                        def on_window_closing(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                        def on_window_closing(
+                            self, source: Any, event_args: EventArgs, *args, **kwargs
+                        ) -> None:
+
                             print("Closing")
                             try:
-                                ml = cast(ModifyListenerAdapter, kwargs.get("listener", None))
-                                if ml:
-                                    Lo.close_doc(ml._doc)
-                                    Lo.close_office()
-                                    ml.closed = True
+                                Lo.close_doc(self._doc)
+                                Lo.close_office()
+                                self.closed = True
                             except Exception as e:
                                 print(f"  {e}")
 
-                        @staticmethod
-                        def on_modified(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                        def on_modified(
+                            self, source: Any, event_args: EventArgs, *args, **kwargs
+                        ) -> None:
+
                             print("Modified")
                             try:
                                 event = cast("EventObject", event_args.event_data)
-                                ml = cast(ModifyListenerAdapter, kwargs["listener"])
                                 doc = Lo.qi(XSpreadsheetDocument, event.Source, True)
                                 addr = Calc.get_selected_cell_addr(doc)
-                                print(
-                                    f"  {Calc.get_cell_str(addr=addr)} = {Calc.get_val(sheet=ml._sheet, addr=addr)}"
-                                )
+                                print(f"  {Calc.get_cell_str(addr=addr)} = {Calc.get_val(sheet=self._sheet, addr=addr)}")
                             except Exception as e:
                                 print(e)
 
-                        @staticmethod
-                        def on_disposing(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                        def on_disposing(
+                            self, source: Any, event_args: EventArgs, *args, **kwargs
+                        ) -> None:
                             print("Disposing")
 
             .. tab:: ModifyListener
@@ -134,19 +156,32 @@ One way of doing this is to attach a XModifyListener_ interface to the open docu
                             mb = Lo.qi(XModifyBroadcaster, self._doc, True)
                             mb.addModifyListener(self)
 
-                            # close down when window closes
-                            self._twl = TopWindowListener(trigger_args=GenericArgs(listener=self))
-                            self._twl.on("windowClosing", ModifyListener.on_window_closing)
+                            # Event handlers are defined as methods on the class.
+                            # However class methods are not callable by the event system.
+                            # The solution is to create a function that calls the class method and pass
+                            # that function to the event system.
+                            # Also the function must be a member of the class so that it
+                            # is not garbage collected.
 
-                        @staticmethod
-                        def on_window_closing(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                            def _on_window_closing(
+                                source: Any, event_args: EventArgs, *args, **kwargs
+                            ) -> None:
+                                self.on_window_closing(source, event_args, *args, **kwargs)
+
+                            self._fn_on_window_closing = _on_window_closing
+
+                            # close down when window closes
+                            self._twl = TopWindowListener()
+                            self._twl.on("windowClosing", _on_window_closing)
+
+                        def on_window_closing(
+                            self, source: Any, event_args: EventArgs, *args, **kwargs
+                        ) -> None:
                             print("Closing")
                             try:
-                                ml = cast(ModifyListener, kwargs.get("listener", None))
-                                if ml:
-                                    Lo.close_doc(ml._doc)
-                                    Lo.close_office()
-                                    ml.closed = True
+                                Lo.close_doc(self._doc)
+                                Lo.close_office()
+                                self.closed = True
                             except Exception as e:
                                 print(f"  {e}")
 
@@ -154,9 +189,7 @@ One way of doing this is to attach a XModifyListener_ interface to the open docu
                             print("Modified")
                             doc = Lo.qi(XSpreadsheetDocument, event.Source, True)
                             addr = Calc.get_selected_cell_addr(doc)
-                            print(
-                                f"  {Calc.get_cell_str(addr=addr)} = {Calc.get_val(sheet=self._sheet, addr=addr)}"
-                            )
+                            print(f"  {Calc.get_cell_str(addr=addr)} = {Calc.get_val(sheet=self._sheet, addr=addr)}")
 
                         def disposing(self, event: EventObject) -> None:
                             print("Disposing")
@@ -190,10 +223,10 @@ This is done by employing another listener: an adapter for XTopWindowListener_, 
         # in modify_listener_adapter.py
         # close down when window closes
         def __init__(self, out_fnm: PathOrStr) -> None:
-            # ...
-            self._twl = TopWindowListener(trigger_args=GenericArgs(listener=self))
-            self._twl.on("windowClosing", ModifyListenerAdapter.on_window_closing)
-            # ...
+            # ... other code
+            self._twl = TopWindowListener()
+            self._twl.on("windowClosing", _on_window_closing)
+            # ... other code
 
 
     .. only:: html
@@ -263,15 +296,12 @@ and it responds by closing the document and Office:
     .. code-tab:: python
 
         # in modify_listener_adapter.py
-        @staticmethod
-        def on_window_closing(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+        def on_window_closing(self, source: Any, event_args: EventArgs, *args, **kwargs) -> None:
             print("Closing")
             try:
-                ml = cast(ModifyListenerAdapter, kwargs.get("listener", None))
-                if ml:
-                    Lo.close_doc(ml._doc)
-                    Lo.close_office()
-                    ml.closed = True
+                Lo.close_doc(self._doc)
+                Lo.close_office()
+                self.closed = True
             except Exception as e:
                 print(f"  {e}")
 
@@ -315,24 +345,19 @@ and it responds by closing the document and Office:
 
         # in modify_listener_adapter.py
         def __init__(self, out_fnm: PathOrStr) -> None:
-            # ...
-            self._m_listener = ModifyListener(trigger_args=GenericArgs(listener=self), doc=self._doc)
-            self._m_listener.on("modified", ModifyListenerAdapter.on_modified)
-            # ...
+            # ... other code
+            self._m_listener = ModifyListener(doc=self._doc)
+            self._m_listener.on("modified", _on_modified)
+            # ... other code
 
-        @staticmethod
-        def on_modified(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+        def on_modified(self, source: Any, event_args: EventArgs, *args, **kwargs) -> None:
             print("Modified")
             try:
-                event = cast("EventObject", event_args.event_data)
-                # print("Modified: " + event.Source)
-                # Info.show_services("Event source", event.Source)
-
-                ml = cast(ModifyListenerAdapter, kwargs["listener"])
+                # event = cast("EventObject", event_args.event_data)
                 # doc = Lo.qi(XSpreadsheetDocument, event.Source, True)
-                doc  = ml._doc
+                doc = self._doc
                 addr = Calc.get_selected_cell_addr(doc)
-                print(f"  {Calc.get_cell_str(addr=addr)} = {Calc.get_val(sheet=ml._sheet, addr=addr)}")
+                print(f"  {Calc.get_cell_str(addr=addr)} = {Calc.get_val(sheet=self._sheet, addr=addr)}")
             except Exception as e:
                 print(e)
 
@@ -348,7 +373,7 @@ Every Office interface inherits XInterface_ so it's difficult to know what the s
 The simplest solution is to print the names of the source's supported services, by calling :py:meth:`.Info.show_services`, as seen in the commented-out code above.
 
 In this case, the ``Source`` field is supported by the SpreadsheetDocument_ service, which means that it can be converted into an XSpreadsheetDocument_ interface.
-Lots of useful things can be accessed through this interface, but that's also commented-out because ``ml._doc`` field points to the ``doc``.
+Lots of useful things can be accessed through this interface, but that's also commented-out because ``self._doc`` field points to the ``doc``.
 
 .. _ch25_examining_changed_cells:
 
@@ -497,13 +522,11 @@ The |sel_list|_ example is similar to |mod_list|_ except that it uses |selection
                 self._attach_listener()
 
                 # insert some data
-                Calc.set_col(sheet=self.sheet, cell_name="A1", values=(
-                    "Smith", 42, 58.9, -66.5, 43.4, 44.5, 45.3)
+                Calc.set_col(
+                    sheet=self.sheet,
+                    cell_name="A1",
+                    values=("Smith", 42, 58.9, -66.5, 43.4, 44.5, 45.3)
                 )
-
-                # close down when window closes
-                self._twl = TopWindowListener(trigger_args=GenericArgs(listener=self))
-                self._twl.on("windowClosing", SelectionListener.on_window_closing)
 
     .. only:: html
 
@@ -522,11 +545,42 @@ If the cell doesn't contain a float then ``self.curr_val`` is assigned ``None``.
 
         # in select_listener.py
         def _attach_listener(self) -> None:
-            self._s_listener = SelectionChangeListener(
-                trigger_args=GenericArgs(listener=self), doc=self._doc
-            )
-            self._s_listener.on("selectionChanged", SelectionListener.on_selection_changed)
-            self._s_listener.on("disposing", SelectionListener.on_disposing)
+
+            # Event handlers are defined as methods on the class.
+            # However class methods are not callable by the event system.
+            # The solution is to create a function that calls the class method
+            # and pass that function to the event system.
+            # Also the function must be a member of the class so that it is not
+            # garbage collected.
+
+            def _on_window_closing(
+                source: Any, event_args: EventArgs, *args, **kwargs
+            ) -> None:
+                self.on_window_closing(source, event_args, *args, **kwargs)
+
+            def _on_selection_changed(
+                source: Any, event_args: EventArgs, *args, **kwargs
+            ) -> None:
+                self.on_selection_changed(source, event_args, *args, **kwargs)
+
+            def _on_disposing(
+                source: Any, event_args: EventArgs, *args, **kwarg
+            ) -> None:
+                self.on_disposing(source, event_args, *args, **kwargs)
+
+            self._fn_on_window_closing = _on_window_closing
+            self._on_selection_changed = _on_selection_changed
+            self._on_disposing = _on_disposing
+
+            # close down when window closes
+            self._twl = TopWindowListener()
+            self._twl.on("windowClosing", _on_window_closing)
+
+            # pass doc to constructor, this will allow listener to be
+            # automatically attached to document.
+            self._s_listener = SelectionChangeListener(doc=self._doc)
+            self._s_listener.on("selectionChanged", _on_selection_changed)
+            self._s_listener.on("disposing", _on_disposing)
 
     .. only:: html
 
@@ -603,45 +657,39 @@ The output from ``on_selection_changed()`` shown above shows how the user moved 
     .. code-tab:: python
 
         # in select_listener.py
-        @staticmethod
-        def on_selection_changed(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+        def on_selection_changed(
+            self, source: Any, event_args: EventArgs, *args, **kwargs
+        ) -> None:
             event = cast("EventObject", event_args.event_data)
             ctrl = Lo.qi(XController, event.Source)
             if ctrl is None:
                 print("No ctrl for event source")
                 return
-            sl = cast(SelectionListener, kwargs["listener"])
-            addr = Calc.get_selected_cell_addr(sl._doc)
+
+            addr = Calc.get_selected_cell_addr(self._doc)
             if addr is None:
                 return
             try:
                 # better to wrap in try block.
                 # otherwise errors crahses office
-                if not Calc.is_equal_addresses(addr, sl.curr_addr):
-                    flt = sl._get_cell_float(sl.curr_addr)
+                if not Calc.is_equal_addresses(addr, self.curr_addr):
+                    flt = self._get_cell_float(self.curr_addr)
                     if flt is not None:
-                        if sl.curr_val is None:  # so previously stored value was null
-                            print(f"{Calc.get_cell_str(sl.curr_addr)} new value: {flt:.2f}")
+                        if self.curr_val is None:  # so previously stored value was null
+                            print(f"{Calc.get_cell_str(self.curr_addr)} new value: {flt:.2f}")
                         else:
-                            if sl.curr_val != flt:
+                            if self.curr_val != flt:
                                 print(
-                                    f"{Calc.get_cell_str(sl.curr_addr)} has changed from {sl.curr_val:.2f} to {flt:.2f}"
+                                    f"{Calc.get_cell_str(self.curr_addr)} has changed from {self.curr_val:.2f} to {flt:.2f}"
                                 )
 
                 # update current address and value
-                sl.curr_addr = addr
-                sl.curr_val = sl._get_cell_float(addr)
-                if sl.curr_val is not None:
-                    print(f"{Calc.get_cell_str(sl.curr_addr)} value: {sl.curr_val}")
+                self.curr_addr = addr
+                self.curr_val = self._get_cell_float(addr)
+                if self.curr_val is not None:
+                    print(f"{Calc.get_cell_str(self.curr_addr)} value: {self.curr_val}")
             except Exception as e:
                 print(e)
-
-        def _get_cell_float(self, addr: CellAddress) -> float | None:
-            # get_val returns floats as float intance
-            obj = Calc.get_val(sheet=self.sheet, addr=addr)
-            if isinstance(obj, float):
-                return obj
-            return None
 
     .. only:: html
 

@@ -71,6 +71,7 @@ subclasses
 submodules
 subpackages
 superclass
+textbox
 TextEmbeddedObject
 TextFrame
 TextGraphicObject

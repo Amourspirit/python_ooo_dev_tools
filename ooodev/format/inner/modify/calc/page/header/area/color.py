@@ -32,7 +32,7 @@ class InnerColor(AbstractColor):
         try:
             return self._format_kind_prop
         except AttributeError:
-            self._format_kind_prop = FormatKind.DOC | FormatKind.STYLE
+            self._format_kind_prop = FormatKind.DOC | FormatKind.STYLE | FormatKind.HEADER
         return self._format_kind_prop
 
     @property
@@ -64,7 +64,7 @@ class Color(CellStyleBaseMulti):
         Constructor
 
         Args:
-            color (Color, optional): FillColor Color.
+            color (:py:data:`~.utils.color.Color`, optional): FillColor Color.
             style_name (CalcStylePageKind, str, optional): Specifies the Page Style that instance applies to.
                 Default is Default Page Style.
             style_family (str, optional): Style family. Default ``PageStyles``.
@@ -118,6 +118,14 @@ class Color(CellStyleBaseMulti):
         return inst
 
     # endregion Static Methods
+    @property
+    def prop_format_kind(self) -> FormatKind:
+        """Gets the kind of style"""
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.DOC | FormatKind.STYLE | FormatKind.HEADER
+        return self._format_kind_prop
 
     @property
     def prop_style_name(self) -> str:

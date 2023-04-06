@@ -30,7 +30,7 @@ def set_os_root_path() -> None:
     global _OS_PATH_SET
     if _OS_PATH_SET is False:
         _app_root = get_root()
-        if not _app_root in sys.path:
+        if _app_root not in sys.path:
             sys.path.insert(0, _app_root)
     _OS_PATH_SET = True
 

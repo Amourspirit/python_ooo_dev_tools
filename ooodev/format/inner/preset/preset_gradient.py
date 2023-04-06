@@ -281,7 +281,7 @@ def get_preset(kind: PresetGradientKind) -> Dict[str:Any]:
     Gets preset
 
     Returns:
-        PresetKind: Preset Kind
+        PresetGradientKind: Preset Kind
     """
     if kind == PresetGradientKind.PASTEL_BOUQUET:
         return pastel_bouquet()

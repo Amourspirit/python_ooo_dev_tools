@@ -173,7 +173,7 @@ class TableBorderStruct(StructBase):
         # The work around is to save TableBorder2 after setting other properties, read it again, set the HorizontalLine and save it again.
         if not self._is_valid_obj(obj):
             # will not apply on this class but may apply on child classes
-            self._print_not_valid_obj("apply()")
+            self._print_not_valid_srv("apply()")
             return
 
         prop_name = self._get_property_name()

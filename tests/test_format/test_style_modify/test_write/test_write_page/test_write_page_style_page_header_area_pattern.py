@@ -48,8 +48,8 @@ def test_write(loader, para_text) -> None:
         f_style = Pattern.from_style(
             doc=doc, style_name=header_style.prop_style_name, style_family=header_style.prop_style_family_name
         )
-        assert f_style.prop_inner.prop_stretch == f_style.prop_inner.prop_stretch
-        assert f_style.prop_inner.prop_tile == f_style.prop_inner.prop_tile
+        assert f_style.prop_inner.prop_stretch == style.prop_inner.prop_stretch
+        assert f_style.prop_inner.prop_tile == style.prop_inner.prop_tile
 
         Lo.delay(delay)
     finally:

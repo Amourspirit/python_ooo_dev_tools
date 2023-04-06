@@ -1,7 +1,9 @@
 # region Import
 from __future__ import annotations
 from typing import cast, Type, TypeVar
+import uno
 from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
+from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.utils.color import Color
 from ooodev.utils.data_type.angle import Angle as Angle
 from ooodev.utils.data_type.color_range import ColorRange as ColorRange
@@ -133,7 +135,7 @@ class Gradient(PageStyleBaseMulti):
         Gets instance from preset.
 
         Args:
-            preset (PresetKind): Preset.
+            preset (PresetGradientKind): Preset.
             style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to. Default is Default Paragraph Style.
             style_family (str, optional): Style family. Default ``PageStyles``.
 
@@ -148,6 +150,15 @@ class Gradient(PageStyleBaseMulti):
     # endregion Static Methods
 
     # region Properties
+    @property
+    def prop_format_kind(self) -> FormatKind:
+        """Gets the kind of style"""
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.DOC | FormatKind.STYLE | FormatKind.HEADER
+        return self._format_kind_prop
+
     @property
     def prop_style_name(self) -> str:
         """Gets/Sets property Style Name"""

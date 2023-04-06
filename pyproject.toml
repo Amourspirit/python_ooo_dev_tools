@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "ooo-dev-tools"
-version = "0.9.0"
+version = "0.9.3"
 description = "LibreOffice Developer Tools"
 license = "Apache Software License"
 readme = "README.rst"
@@ -33,10 +33,10 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.7"
-ooouno = "^0.2.5"
-Pillow = "^9.2.0"
-typing-extensions = {version = "^4.4.0", python = "<3.8"}
-lxml = "^4.9.2"
+ooouno = ">=0.2.5"
+Pillow = ">=9.2.0"
+typing-extensions = {version = ">=4.4.0", python = "<3.8"}
+lxml = ">=4.9.2"
 
 [[tool.poetry.source]]
 name = "pypi-test"
@@ -46,25 +46,28 @@ secondary = false
 
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7.2.0"
-hypothesis = "^6.56.4"
-thefuzz = "^0.19.0"
-python-Levenshtein = "^0.20.7"
-lo-dev-search = {version = "^1.2.2", platform = "linux"}
-ruff = "^0.0.254"
-black = {extras = ["d"], version = "^23.1.0"}
+pytest = ">=7.2.0"
+hypothesis = ">=6.56.4"
+thefuzz = ">=0.19.0"
+python-Levenshtein = ">=0.20.7"
+lo-dev-search = {version = ">=2.0.2", platform = "linux"}
+ruff = ">=0.0.254"
+black = {extras = ["d"], version = ">=23.1.0"}
+oooenv = ">=0.1.1"
 
 
 [tool.poetry.group.docs.dependencies]
-sphinx-toolbox = "^3.2.0"
-sphinx-tabs = "^3.4.1"
-sphinx-rtd-dark-mode = "^1.2.4"
-sphinx-autodoc-typehints = "^1.19.4"
-sphinxcontrib-spelling = "^7.6.2"
-sphinx_design = "^0.3.0"
-esbonio = ">=0.15.0"
-pygls = {version = ">=0.12.4,<1.0", python = ">=3.7,<3.12"}
-sphinxcontrib-apidoc = "^0.3.0"
+sphinx = "^5.3"
+sphinx-toolbox = ">=3.2.0"
+sphinx-tabs = ">=3.4.1"
+sphinx-rtd-dark-mode = ">=1.2.4"
+sphinx-autodoc-typehints = ">=1.19.4"
+sphinxcontrib-spelling = ">=8.0.0"
+sphinx_design = ">=0.3.0"
+sphinxcontrib-apidoc = ">=0.3.0"
+esbonio = ">=0.16.1"
+# pygls = {version = ">=0.12.4,<1.0", python = ">=3.7,<3.12"}
+sphinx-substitution-extensions = "^2022.2.16"
 
 [tool.pytest.ini_options]
 testpaths = [

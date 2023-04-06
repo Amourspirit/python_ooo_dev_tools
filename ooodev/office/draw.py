@@ -1337,7 +1337,7 @@ class Draw:
             SizeError: If unable to get size.
 
         Returns:
-            Size: Size struct.
+            ~ooodev.utils.data_type.size.Size: Size struct.
         """
         try:
             props = mLo.Lo.qi(XPropertySet, slide)
@@ -2955,7 +2955,7 @@ class Draw:
             SizeError: If error occurs.
 
         Returns:
-            Size: Size in mm units
+            ~ooodev.utils.data_type.size.Size: Size in mm units
         """
         try:
             sz = shape.getSize()
@@ -2983,7 +2983,7 @@ class Draw:
         Prints size to console in mm units
 
         Args:
-            sz (Size): Size object
+            sz (SizeObj): Size object
 
         Returns:
             None:
@@ -3115,7 +3115,7 @@ class Draw:
 
         Args:
             shape (XShape): Shape
-            sz (Size): Size that contains width and height positions.
+            sz (~ooodev.utils.data_type.size.Size): Size that contains width and height positions.
             width (int): Width position
             height (int): Height Position
 
@@ -3229,7 +3229,7 @@ class Draw:
             ColorError: If error occurs.
 
         Returns:
-            Color: Color
+            ~ooodev.utils.color.Color: Color
         """
         try:
             props = mLo.Lo.qi(XPropertySet, shape, True)
@@ -3302,7 +3302,7 @@ class Draw:
             ColorError: If error occurs.
 
         Returns:
-            Color: Color
+            ~ooodev.utils.color.Color: Color
         """
         try:
             props = mLo.Lo.qi(XPropertySet, shape, True)
@@ -3339,7 +3339,7 @@ class Draw:
 
         Args:
             shape (XShape): Shape
-            grad (Gradient): Gradient properties to set
+            grad (~com.sun.star.awt.Gradient): Gradient properties to set
 
         Returns:
             None:
@@ -3417,8 +3417,8 @@ class Draw:
         Args:
             shape (XShape): Shape
             name (DrawingGradientKind | str): Gradient color name.
-            start_color (mColor.Color): Start Color
-            end_color (mColor.Color): End Color
+            start_color (~ooodev.utils.color.Color): Start Color
+            end_color (~ooodev.utils.color.Color): End Color
             angle (Angle): Angle
 
         Raises:
@@ -3426,7 +3426,7 @@ class Draw:
             ShapeError: If any other error occurs.
 
         Returns:
-            Gradient: Gradient instance that just had properties set.
+            ~com.sun.star.awt.Gradient: Gradient instance that just had properties set.
 
         Note:
             When using Gradient Name.

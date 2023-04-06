@@ -62,9 +62,9 @@ class GradientStruct(StructBase):
                 See: ``x_offset``. Defaults to ``50``.
             angle (Angle, int, optional): Specifies angle of the gradient. Defaults to 0.
             border (int, optional): Specifies percent of the total width where just the start color is used. Defaults to 0.
-            start_color (Color, optional): Specifies the color at the start point of the gradient. Defaults to ``Color(0)``.
+            start_color (:py:data:`~.utils.color.Color`, optional): Specifies the color at the start point of the gradient. Defaults to ``Color(0)``.
             start_intensity (Intensity, int, optional): Specifies the intensity at the start point of the gradient. Defaults to ``100``.
-            end_color (Color, optional): Specifies the color at the end point of the gradient. Defaults to ``Color(16777215)``.
+            end_color (:py:data:`~.utils.color.Color`, optional): Specifies the color at the end point of the gradient. Defaults to ``Color(16777215)``.
             end_intensity (Intensity, int, optional): Specifies the intensity at the end point of the gradient. Defaults to ``100``.
 
         Raises:
@@ -181,7 +181,7 @@ class GradientStruct(StructBase):
         """
         # override_dv
         if not mProps.Props.has(obj, self._get_property_name()):
-            self._print_not_valid_obj("apply")
+            self._print_not_valid_srv("apply")
             return
 
         grad = self.get_uno_struct()

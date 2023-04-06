@@ -16,6 +16,7 @@ ooodev
    listeners/index
    office/index
    proto/index
+   theme/index
    units/index
    utils/index
    wrapper/index

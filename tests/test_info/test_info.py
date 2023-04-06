@@ -112,3 +112,13 @@ def test_version_info(loader) -> None:
     assert len(ver) >= 2
     assert isinstance(ver[0], int)
     assert isinstance(ver[1], int)
+
+
+def test_info_theme(loader) -> None:
+    from ooodev.utils.info import Info
+
+    ver = Info.version_info
+    theme = Info.get_office_theme()
+    if ver >= (7, 4, 0, 0):
+        assert len(theme) > 0
+    assert isinstance(theme, str)

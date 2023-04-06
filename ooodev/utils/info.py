@@ -540,6 +540,28 @@ class Info(metaclass=StaticProperty):
             raise ValueError("Unable to get office dir") from e
 
     @classmethod
+    def get_office_theme(cls) -> str:
+        """
+        Gets the Current LibreOffice Theme.
+
+        Returns:
+            str: LibreOffice Theme Name such as ``LibreOffice Dark``
+
+        Note:
+            Older Version of LibreOffice will return empty string.
+
+        .. versionadded:: 0.9.1
+        """
+        try:
+            return cls.get_config(
+                node_str="CurrentColorScheme",
+                node_path="/org.openoffice.Office.ExtendedColorScheme/ExtendedColorScheme",
+            )
+        except mEx.ConfigError:
+            # most likely pre LO 7.4
+            return ""
+
+    @classmethod
     def get_gallery_dir(cls) -> Path:
         """
         Get the first directory that contain the Gallery database and multimedia files.
@@ -1036,6 +1058,13 @@ class Info(metaclass=StaticProperty):
         Returns:
             List[str]: service names
         """
+        try:
+            service_names = list(obj.SupportedServiceNames)
+            service_names.sort()
+            return service_names
+        except AttributeError:
+            pass
+
         try:
             si = mLo.Lo.qi(XServiceInfo, obj, True)
             names = si.getSupportedServiceNames()
@@ -1591,9 +1620,7 @@ class Info(metaclass=StaticProperty):
         """
         style_container = cls.get_style_container(doc, family_style_name)
         #       container is a collection of named property sets
-        name_props = mLo.Lo.qi(XPropertySet, style_container.getByName(prop_set_nm))
-        if name_props is None:
-            raise mEx.MissingInterfaceError(XPropertySet)
+        name_props = mLo.Lo.qi(XPropertySet, style_container.getByName(prop_set_nm), True)
         return name_props
 
     @classmethod

@@ -7,6 +7,8 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
+   ooodev.format.inner.direct.write.page.footer
+   ooodev.format.inner.direct.write.page.header
    ooodev.format.inner.direct.write.page.page
 
 Module contents
