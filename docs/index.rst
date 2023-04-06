@@ -3,10 +3,15 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+===============================================
 Welcome to OOO Development Tools documentation!
 ===============================================
 
 .. include:: ../README.rst
+
+========
+Contents
+========
 
 .. toctree::
    :caption: Book:
@@ -22,7 +27,7 @@ Welcome to OOO Development Tools documentation!
 
 .. toctree::
    :maxdepth: 1
-   :caption: Contents:
+   :caption: Misc:
 
    src_docs/event/index
    version/version_hist
