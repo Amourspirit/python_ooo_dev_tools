@@ -234,6 +234,8 @@ This can be used to reset the paragraph style to the default style.
     .. cssclass:: ul-list
 
         - :ref:`ch06`
+        - :ref:`help_format_format_kinds`
+        - :ref:`help_format_coding_style`
         - |story_creator|_
         - :py:class:`~ooodev.units.UnitMM`
         - :py:mod:`ooodev.utils.color`

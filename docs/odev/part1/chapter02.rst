@@ -18,7 +18,7 @@ loading (or creating) a document, saving and closing the document, and shutting 
 
 Some the examples come from the `LibreOffice Python UNO Examples <https://github.com/Amourspirit/python-ooouno-ex>`_ project.
 
-The aim with these |odev| is to hide some of the verbiage of Office.
+The aim of |odev| is to hide some of the verbiage of Office.
 When (if?) a programmer feels ready for more detail, then my code is documented.
 Here, only explaining functions that illustrate Office ideas, such as service managers and components.
 

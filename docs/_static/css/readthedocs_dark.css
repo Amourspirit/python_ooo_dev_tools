@@ -126,6 +126,7 @@ html[data-theme='dark'].writer-html5 .rst-content dl[class]:not(.option-list):no
     color: #959595;
 }
 
+
 /* start sphinx_design extension */
 html[data-theme='dark'] {
     /* overides for sphinx_design extension colors */
@@ -138,6 +139,11 @@ html[data-theme='dark'] {
 
     /* overrides for readthedocs dark theme */
     --dark-link-color: #83caff;
+    --t-color-see-also: #101010;
+    --t-color-see-title: #004a7b;
+    --t-color-note-title: #004a7b;
+    --t-color-attention: #101010;
+    --t-color-attention-title: #803b00;
 }
 
 /* end sphinx_design extension */

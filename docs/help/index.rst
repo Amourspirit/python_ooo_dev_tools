@@ -3,6 +3,7 @@ Help Documentation
 
 .. toctree::
     :titlesonly:
+    :maxdepth: 2
     :glob:
 
     calc/index
