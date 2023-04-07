@@ -62,6 +62,7 @@ extensions = [
     "sphinx_tabs.tabs",
     "sphinx_design",
     "sphinxcontrib.spelling",
+    "sphinx_substitution_extensions",
 ]
 # "sphinx.ext.linkcode",
 # sphinx_tabs.tabs docs: https://sphinx-tabs.readthedocs.io/en/latest/
@@ -71,6 +72,9 @@ extensions = [
 
 # region spelling
 # https://sphinxcontrib-spelling.readthedocs.io/en/latest/
+
+# sphinx_substitution_extensions
+# https://github.com/adamtheturtle/sphinx-substitution-extensions
 
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#confval-suppress_warnings
 # https://github.com/sphinx-doc/sphinx/issues/4961
@@ -229,12 +233,12 @@ rst_prolog_lst = [
     "",
     ".. |app_name_bold| replace:: **OOO Development Tools**",
     "",
-    ".. |odev| replace:: ODEV",
+    ".. |odev| replace:: OooDev",
     "",
     ".. |ooouno| replace:: ooouno library",
     ".. _ooouno: https://pypi.org/project/ooouno/",
     "",
-    ".. |odevgui_win| replace:: ODEV GUI Automation for windows",
+    ".. |odevgui_win| replace:: OooDev GUI Automation for windows",
     f".. _odevgui_win: {odevgui_win_url}",
     "",
 ]

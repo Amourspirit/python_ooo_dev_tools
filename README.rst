@@ -3,7 +3,7 @@ OOO Development Tools
 
 |lic| |pver| |pwheel| |github|
 
-OOO Development Tools (ODEV) is intended for programmers who want to learn and use the
+OOO Development Tools (OooDev) is intended for programmers who want to learn and use the
 Python version of the `LibreOffice`_ API.
 
 This allows Python to control and manipulate LibreOffice's text, drawing, presentation, spreadsheet, and database applications,
