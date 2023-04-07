@@ -61,17 +61,17 @@ class Borders(StyleMulti):
         Constructor
 
         Args:
-            left (Side,, optional): Specifies the line style at the left edge.
-            right (Side, optional): Specifies the line style at the right edge.
-            top (Side, optional): Specifies the line style at the top edge.
-            bottom (Side, optional): Specifies the line style at the bottom edge.
-            border_side (Side, optional): Specifies the line style at the top, bottom, left, right edges. If this argument has a value then arguments ``top``, ``bottom``, ``left``, ``right`` are ignored
-            horizontal (Side, optional): Specifies the line style of horizontal lines for the inner part of a cell range.
-            vertical (Side, optional): Specifies the line style of vertical lines for the inner part of a cell range.
+            left (~ooodev.format.inner.direct.structs.side.Side, optional): Specifies the line style at the left edge.
+            right (~ooodev.format.inner.direct.structs.side.Side, optional): Specifies the line style at the right edge.
+            top (~ooodev.format.inner.direct.structs.side.Side, optional): Specifies the line style at the top edge.
+            bottom (~ooodev.format.inner.direct.structs.side.Side, optional): Specifies the line style at the bottom edge.
+            border_side (~ooodev.format.inner.direct.structs.side.Side, optional): Specifies the line style at the top, bottom, left, right edges. If this argument has a value then arguments ``top``, ``bottom``, ``left``, ``right`` are ignored
+            horizontal (~ooodev.format.inner.direct.structs.side.Side, optional): Specifies the line style of horizontal lines for the inner part of a cell range.
+            vertical (~ooodev.format.inner.direct.structs.side.Side, optional): Specifies the line style of vertical lines for the inner part of a cell range.
             distance (float, UnitObj, optional): Contains the distance between the lines and other contents in ``mm`` units or :ref:`proto_unit_obj`.
-            diagonal_down (Side, optional): Specifies the line style from top-left to bottom-right diagonal.
-            diagonal_up (Side, optional): Specifies the line style from bottom-left to top-right diagonal.
-            shadow (Shadow, optional): Cell Shadow.
+            diagonal_down (~ooodev.format.inner.direct.structs.side.Side, optional): Specifies the line style from top-left to bottom-right diagonal.
+            diagonal_up (~ooodev.format.inner.direct.structs.side.Side, optional): Specifies the line style from bottom-left to top-right diagonal.
+            shadow (~ooodev.format.inner.direct.calc.border.shadow.Shadow, optional): Cell Shadow.
             padding (padding, optional): Cell padding.
         """
         init_vals = {}
@@ -288,7 +288,7 @@ class Borders(StyleMulti):
         Gets copy of instance with left, right, top, bottom sides set or removed
 
         Args:
-            value (Side, optional): Side value
+            value (~ooodev.format.inner.direct.structs.side.Side, optional): Side value
 
         Returns:
             Borders: Borders instance
@@ -309,7 +309,7 @@ class Borders(StyleMulti):
         Gets copy of instance with left set or removed
 
         Args:
-            value (Side, optional): Side value
+            value (~ooodev.format.inner.direct.structs.side.Side, optional): Side value
 
         Returns:
             Borders: Borders instance
@@ -327,7 +327,7 @@ class Borders(StyleMulti):
         Gets copy of instance with right set or removed
 
         Args:
-            value (Side, optional): Side value
+            value (~ooodev.format.inner.direct.structs.side.Side, optional): Side value
 
         Returns:
             Borders: Borders instance
@@ -345,7 +345,7 @@ class Borders(StyleMulti):
         Gets copy of instance with top set or removed
 
         Args:
-            value (Side, optional): Side value
+            value (~ooodev.format.inner.direct.structs.side.Side, optional): Side value
 
         Returns:
             Borders: Borders instance
@@ -362,7 +362,7 @@ class Borders(StyleMulti):
         Gets copy of instance with bottom set or removed
 
         Args:
-            value (Side, optional): Side value
+            value (~ooodev.format.inner.direct.structs.side.Side, optional): Side value
 
         Returns:
             Borders: Borders instance
@@ -380,7 +380,7 @@ class Borders(StyleMulti):
         Gets copy of instance with horizontal set or removed
 
         Args:
-            value (Side, optional): Side value
+            value (~ooodev.format.inner.direct.structs.side.Side, optional): Side value
 
         Returns:
             Borders: Borders instance
@@ -398,7 +398,7 @@ class Borders(StyleMulti):
         Gets copy of instance with vertical set or removed
 
         Args:
-            value (Side, optional): Side value
+            value (~ooodev.format.inner.direct.structs.side.Side, optional): Side value
 
         Returns:
             Borders: Borders instance
@@ -434,7 +434,7 @@ class Borders(StyleMulti):
         Gets copy of instance with diagonal down set or removed
 
         Args:
-            value (Side, optional): Side value
+            value (~ooodev.format.inner.direct.structs.side.Side, optional): Side value
 
         Returns:
             Borders: Borders instance
@@ -451,7 +451,7 @@ class Borders(StyleMulti):
         Gets copy of instance with diagonal up set or removed
 
         Args:
-            value (Side, optional): Side value
+            value (~ooodev.format.inner.direct.structs.side.Side, optional): Side value
 
         Returns:
             Borders: Borders instance

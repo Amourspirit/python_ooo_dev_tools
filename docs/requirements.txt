@@ -6,3 +6,4 @@ sphinx_design
 typing_extensions
 ooouno
 sphinxcontrib-spelling
+Sphinx-Substitution-Extensions

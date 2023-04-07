@@ -1279,7 +1279,14 @@ The header's XText_ reference is retrieved via the page style's ``HeaderText`` p
 
 This cursor can only move around inside the header not the entire document.
 
-The properties of the header's XText_ are changed using the cursor, and then the text is added.
+The properties of the header's XText_ are changed using the cursor, and then the text is adde
+
+.. seealso:: 
+
+    .. cssclass:: ul-list
+
+        - :ref:`help_writer_format_style_para`
+
 
 .. |styles_info| replace:: Styles Info
 .. _styles_info: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_styles_info

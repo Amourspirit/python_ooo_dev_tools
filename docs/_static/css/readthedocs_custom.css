@@ -1,3 +1,26 @@
+.rst-content .seealso, .rst-content .note {
+    background: var(--t-color-see-also) !important;
+    background-color: var(--t-color-see-also) !important;
+}
+
+.rst-content .attention {
+    background: var(--t-color-attention) !important;
+    background-color: var(--t-color-attention) !important;
+}
+.rst-content .seealso .admonition-title {
+    background: var(--t-color-see-title) !important;
+    background-color: var(--t-color-see-title) !important;
+}
+.rst-content .note .admonition-title {
+    background: var(--t-color-note-title) !important;
+    background-color: var(--t-color-note-title) !important;
+}
+
+.rst-content .attention .admonition-title {
+    background: var(--t-color-attention-title) !important;
+    background-color: var(--t-color-attention-title) !important;
+}
+
 /* Start force display class properties on new lines */
 html.writer-html4 .rst-content dl:not(.docutils) .property,
 html.writer-html5 .rst-content dl[class]:not(.option-list):not(.field-list):not(.footnote):not(.citation):not(.glossary):not(.simple) .property {
@@ -341,6 +364,8 @@ a .rst-content tt {
 code {
     border: 1px solid #e7f1f5;
 }
+
+
 /* End Colors in theme_color_roles.txt */
 
 /* Custom theme colors
@@ -372,6 +397,11 @@ typically in rst to set a color would be something like:
     --t-color-blue: blue;
     --t-color-navy: navy;
     --t-color-purple: purple;
+    --t-color-see-also: #e7f2fa;
+    --t-color-see-title: #6ab0de;
+    --t-color-note-title: #6ab0de;
+    --t-color-attention: #ffedcc;
+    --t-color-attention-title: #f0b37e;
 
     --link-color: #0d0d9b;
     --link-color-visited: #0d0d9b;
