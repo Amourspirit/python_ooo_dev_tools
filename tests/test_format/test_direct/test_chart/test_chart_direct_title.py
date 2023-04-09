@@ -124,7 +124,7 @@ def test_calc_set_styles_title(loader, copy_fix_calc) -> None:
         assert fo_first.CharColor == CommonColor.DARK_GREEN
         assert fo_first.CharHeight == 14
 
-        grad = ChartTitleBgGradient.from_preset(PresetGradientKind.NEON_LIGHT)
+        grad = ChartTitleBgGradient.from_preset(chart_doc, PresetGradientKind.NEON_LIGHT)
         Chart2.style_title(chart_doc=chart_doc, styles=[grad])
         title = cast("Title", Chart2.get_title(chart_doc=chart_doc))
         assert title.FillGradientName == PresetGradientKind.NEON_LIGHT.value
@@ -200,7 +200,7 @@ def test_calc_set_styles_subtitle(loader, copy_fix_calc) -> None:
         assert fo_first.CharColor == StandardColor.RED_LIGHT2
         assert fo_first.CharHeight == 12
 
-        grad = ChartTitleBgGradient.from_preset(PresetGradientKind.NEON_LIGHT)
+        grad = ChartTitleBgGradient.from_preset(chart_doc, PresetGradientKind.NEON_LIGHT)
         Chart2.style_subtitle(chart_doc=chart_doc, styles=[grad])
         subtitle = cast("Title", Chart2.get_subtitle(chart_doc=chart_doc))
         assert subtitle.FillGradientName == PresetGradientKind.NEON_LIGHT.value
