@@ -10,23 +10,13 @@ from ooo.dyn.style.case_map import CaseMapEnum as CaseMapEnum
 from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 
-from ooodev.format.inner.direct.write.char.font.font import Font as Font
-from ooodev.format.inner.direct.write.char.font.font_effects import FontEffects as FontEffects
+from ooodev.format.inner.direct.chart.title.font.font import Font as Font
+from ooodev.format.inner.direct.chart.title.font.font_effects import FontEffects as FontEffects
+from ooodev.format.inner.direct.chart.title.font.font_only import FontOnly as FontOnly
 from ooodev.format.inner.direct.write.char.font.font_effects import FontLine as FontLine
 from ooodev.format.inner.direct.write.char.font.font_only import FontLang as FontLang
+from ooodev.format.inner.direct.write.char.font.font_only import FontLang as FontLang
 from ooodev.format.inner.direct.write.char.font.font_only import FontOnly as FontOnly
-from ooodev.format.inner.direct.write.char.font.font_position import CharSpacingKind as CharSpacingKind
-from ooodev.format.inner.direct.write.char.font.font_position import FontPosition as FontPosition
-from ooodev.format.inner.direct.write.char.font.font_position import FontScriptKind as FontScriptKind
 from ooodev.format.writer.style.char.kind.style_char_kind import StyleCharKind as StyleCharKind
 
-__all__ = [
-    "FontPosition",
-    "FontScriptKind",
-    "CharSpacingKind",
-    "Font",
-    "FontEffects",
-    "FontLine",
-    "FontOnly",
-    "FontLang",
-]
+__all__ = ["Font", "FontEffects", "FontOnly"]

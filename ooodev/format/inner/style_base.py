@@ -2,8 +2,9 @@
 from __future__ import annotations
 from typing import Any, Dict, NamedTuple, Tuple, TYPE_CHECKING, Type, TypeVar, cast, overload
 import uno
-from com.sun.star.container import XNameContainer
 from com.sun.star.beans import XPropertySet
+from com.sun.star.container import XNameContainer
+from com.sun.star.lang import XMultiServiceFactory
 
 # import random
 # import string
@@ -731,8 +732,16 @@ class StyleBase(metaclass=MetaStyle):
         raise NotImplementedError
 
     def _container_get_inst(self) -> XNameContainer:
-        container = mLo.Lo.create_instance_msf(XNameContainer, self._container_get_service_name(), raise_err=True)
+        container = mLo.Lo.create_instance_msf(
+            XNameContainer,
+            service_name=self._container_get_service_name(),
+            msf=self._container_get_msf(),
+            raise_err=True,
+        )
         return container
+
+    def _container_get_msf(self) -> XMultiServiceFactory | None:
+        return None
 
     def _container_add_value(
         self, name: str, obj: object, allow_update: bool = True, nc: XNameContainer | None = None
@@ -1273,7 +1282,6 @@ class StyleModifyMulti(StyleMulti):
                 )
                 return
         else:
-
             if not self._is_valid_doc(obj):
                 mLo.Lo.print(
                     f"{self.__class__.__name__}.apply(): Not a UNO Object for style. Unable to set Style Properties"

@@ -22,7 +22,9 @@ from ooodev.utils.data_type.intensity_range import IntensityRange as IntensityRa
 from ooodev.utils.data_type.offset import Offset as Offset
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.preset import preset_gradient
-from ooodev.format.inner.preset.preset_gradient import PresetGradientKind as PresetGradientKind
+from ooodev.format.inner.preset.preset_gradient import (
+    PresetGradientKind as PresetGradientKind,
+)
 from ooodev.format.inner.style_base import StyleMulti
 from ooodev.format.inner.common.props.area_gradient_props import AreaGradientProps
 from ooodev.format.inner.direct.structs.gradient_struct import GradientStruct
@@ -92,7 +94,9 @@ class Gradient(StyleMulti):
             self._set(self._props.name, "Gradient 9999")
             self._set_style("fill_style", fs, *fs.get_attrs())
         else:
-            fill_struct = self._get_fill_struct(fill_struct=fs, name=name, auto_name=False)
+            fill_struct = self._get_fill_struct(
+                fill_struct=fs, name=name, auto_name=False
+            )
             self._set(self._props.name, self._name)
             self._set_style("fill_style", fill_struct, *fill_struct.get_attrs())
 
@@ -103,7 +107,9 @@ class Gradient(StyleMulti):
             "_format_kind_prop": self.prop_format_kind,
         }
 
-    def _get_fill_struct(self, fill_struct: GradientStruct | None, name: str, auto_name: bool) -> GradientStruct:
+    def _get_fill_struct(
+        self, fill_struct: GradientStruct | None, name: str, auto_name: bool
+    ) -> GradientStruct:
         # if the name passed in already exist in the Gradient Table then it is returned.
         # Otherwise, the Gradient is added to the Gradient Table and then returned.
         # after Gradient is added to table all other subsequent call of this name will return
@@ -118,19 +124,28 @@ class Gradient(StyleMulti):
             name = "Gradient"
         nc = self._container_get_inst()
         if auto_name:
-            name = name.rstrip() + " "  # add a space after name before getting unique name
+            name = (
+                name.rstrip() + " "
+            )  # add a space after name before getting unique name
             self._name = self._container_get_unique_el_name(name, nc)
 
-        grad = self._container_get_value(self._name, nc)  # raises value error if name is empty
+        grad = self._container_get_value(
+            self._name, nc
+        )  # raises value error if name is empty
         if not grad is None:
-            return GradientStruct.from_uno_struct(grad, _cattribs=self._get_gradient_struct_cattrib())
+            return GradientStruct.from_uno_struct(
+                grad, _cattribs=self._get_gradient_struct_cattrib()
+            )
         if fill_struct is None:
             raise ValueError(
                 f'No Gradient could be found in container for "{name}". In this case a Gradient is required.'
             )
-        self._container_add_value(name=self._name, obj=fill_struct.get_uno_struct(), allow_update=False, nc=nc)
+        self._container_add_value(
+            name=self._name, obj=fill_struct.get_uno_struct(), allow_update=False, nc=nc
+        )
         return GradientStruct.from_uno_struct(
-            self._container_get_value(self._name, nc), _cattribs=self._get_gradient_struct_cattrib()
+            self._container_get_value(self._name, nc),
+            _cattribs=self._get_gradient_struct_cattrib(),
         )
 
     def _container_get_service_name(self) -> str:
@@ -142,6 +157,7 @@ class Gradient(StyleMulti):
             return self._supported_services_values
         except AttributeError:
             self._supported_services_values = (
+                "com.sun.star.beans.PropertySet",
                 "com.sun.star.drawing.FillProperties",
                 "com.sun.star.style.PageStyle",
                 "com.sun.star.style.ParagraphStyle",
@@ -201,10 +217,14 @@ class Gradient(StyleMulti):
         # this nu is only used to get Property Name
         inst = cls(name="__constructor_default__", **kwargs)
         if not inst._is_valid_obj(obj):
-            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
+            raise mEx.NotSupportedError(
+                f'Object is not supported for conversion to "{cls.__name__}"'
+            )
 
         grad_fill = cast(UNOGradient, mProps.Props.get(obj, inst._props.grad_prop_name))
-        gs = GradientStruct.from_uno_struct(grad_fill, _cattribs=inst._get_gradient_struct_cattrib())
+        gs = GradientStruct.from_uno_struct(
+            grad_fill, _cattribs=inst._get_gradient_struct_cattrib()
+        )
 
         fill_gradient_name = cast(str, mProps.Props.get(obj, inst._props.name))
 
@@ -217,7 +237,9 @@ class Gradient(StyleMulti):
 
     # region from_gradient()
     @classmethod
-    def from_struct(cls: Type[_TGradient], struct: GradientStruct, name: str = "", **kwargs) -> _TGradient:
+    def from_struct(
+        cls: Type[_TGradient], struct: GradientStruct, name: str = "", **kwargs
+    ) -> _TGradient:
         """
         Gets instance from ``GradientStruct`` instance
 
@@ -236,8 +258,12 @@ class Gradient(StyleMulti):
             auto_name = True
         inst = cls(name="__constructor_default__", **kwargs)
         grad_fill = struct.get_uno_struct()
-        gs = GradientStruct.from_uno_struct(grad_fill, _cattribs=inst._get_gradient_struct_cattrib())
-        fill_struct = inst._get_fill_struct(fill_struct=gs, name=name, auto_name=auto_name)
+        gs = GradientStruct.from_uno_struct(
+            grad_fill, _cattribs=inst._get_gradient_struct_cattrib()
+        )
+        fill_struct = inst._get_fill_struct(
+            fill_struct=gs, name=name, auto_name=auto_name
+        )
 
         inst._set(inst._props.step_count, grad_fill.StepCount)
         inst._set(inst._props.name, inst._name)
@@ -254,11 +280,15 @@ class Gradient(StyleMulti):
 
     @overload
     @classmethod
-    def from_preset(cls: Type[_TGradient], preset: PresetGradientKind, **kwargs) -> _TGradient:
+    def from_preset(
+        cls: Type[_TGradient], preset: PresetGradientKind, **kwargs
+    ) -> _TGradient:
         ...
 
     @classmethod
-    def from_preset(cls: Type[_TGradient], preset: PresetGradientKind, **kwargs) -> _TGradient:
+    def from_preset(
+        cls: Type[_TGradient], preset: PresetGradientKind, **kwargs
+    ) -> _TGradient:
         """
         Gets instance from preset.
 
@@ -289,7 +319,9 @@ class Gradient(StyleMulti):
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(GradientStruct, self._get_style_inst("fill_style"))
+            self._direct_inner = cast(
+                GradientStruct, self._get_style_inst("fill_style")
+            )
         return self._direct_inner
 
     @property

@@ -1,7 +1,7 @@
 # region Imports
 from __future__ import annotations
 from random import random
-from typing import List, Tuple, cast, overload, TYPE_CHECKING
+from typing import Iterable, List, Tuple, cast, overload, TYPE_CHECKING
 
 import uno
 
@@ -466,13 +466,14 @@ class Chart2:
 
     # region titles
     @classmethod
-    def set_title(cls, chart_doc: XChartDocument, title: str) -> XTitle:
+    def set_title(cls, chart_doc: XChartDocument, title: str, styles: Iterable[StyleObj] = None) -> XTitle:
         """
         Sets the title of chart
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            title (str): Title as string
+            title (str): Title as string.
+            styles (Iterable[StyleObj], optional): Styles to apply to title.
 
         Raises:
             ChartError: If error occurs.
@@ -481,49 +482,71 @@ class Chart2:
             XTitle: Title Object
 
         Note:
-            The title is set to a font size of ``14`` and the font applied is
-            the font returned by :py:meth:`.Info.get_font_general_name`
+            The title has a default font size of ``14`` and the font name applied is
+            the font returned by :py:meth:`.Info.get_font_general_name`.
 
         Hint:
-            The returned Title object can be passed to :py:meth:`~.Chart2.set_x_title_font` to
-            change default font.
+            Styles that can be supplied are found in :py:mod:`ooodev.format.chart.direct.title`.
         """
         try:
             # return XTilte so it may have futher styles applied
             titled = mLo.Lo.qi(XTitled, chart_doc, True)
-            xtitle = cls.create_title(title)
+            xtitle = cls._create_title(title, 14, styles)
             titled.setTitleObject(xtitle)
-            fname = mInfo.Info.get_font_general_name()
-            cls.set_x_title_font(xtitle, fname, 14)
+
             return xtitle
         except Exception as e:
             raise mEx.ChartError("Error setting title for chart") from e
 
-    @staticmethod
-    def create_title(title: str) -> XTitle:
-        """
-        Creates a title object
-
-        Args:
-            title (str): Title text.
-
-        Raises:
-            ChartError: If error occurs.
-
-        Returns:
-            XTitle: Title object.
-        """
+    @classmethod
+    def _create_title(cls, title: str, font_size: int, styles: Iterable[StyleObj] = None) -> XTitle:
         try:
             xtitle = mLo.Lo.create_instance_mcf(XTitle, "com.sun.star.chart2.Title", raise_err=True)
             xtitle_str = mLo.Lo.create_instance_mcf(
                 XFormattedString, "com.sun.star.chart2.FormattedString", raise_err=True
             )
             xtitle_str.setString(title)
+
+            # set default font. Styles can override the default.
+            fname = mInfo.Info.get_font_general_name()
+            cls.set_x_title_font(xtitle, fname, font_size)
+
+            if styles:
+                for style in styles:
+                    if style.support_service("com.sun.star.chart2.Title"):
+                        style.apply(xtitle)
+                    else:
+                        style.apply(xtitle_str)
+
             title_arr = (xtitle_str,)
             xtitle.setText(title_arr)
             return xtitle
         except Exception as e:
             raise mEx.ChartError(f'Error creating title for: "{title}"') from e
+
+    @classmethod
+    def create_title(cls, title: str, styles: Iterable[StyleObj] = None) -> XTitle:
+        """
+        Creates a title object
+
+        Args:
+            title (str): Title text.
+            styles (Iterable[StyleObj], optional): Styles to apply to title.
+
+        Raises:
+            ChartError: If error occurs.
+
+        Returns:
+            XTitle: Title object.
+
+        Note:
+            The title has a default font size of ``14`` and the font name applied is
+            the font returned by :py:meth:`.Info.get_font_general_name`.
+
+        Hint:
+            Styles that can be supplied are found in :py:mod:`ooodev.format.chart.direct.title`.
+        """
+        return cls._create_title(title, 14, styles)
 
     @staticmethod
     def set_x_title_font(xtitle: XTitle, font_name: str, pt_size: int) -> None:
@@ -573,13 +596,14 @@ class Chart2:
             raise mEx.ChartError("Error getting title from chart") from e
 
     @classmethod
-    def set_subtitle(cls, chart_doc: XChartDocument, subtitle: str) -> XTitle:
+    def set_subtitle(cls, chart_doc: XChartDocument, subtitle: str, styles: Iterable[StyleObj] = None) -> XTitle:
         """
         Gets subtitle
 
         Args:
             chart_doc (XChartDocument): Chart Document.
             subtitle (str): Subtitle text.
+            styles (Iterable[StyleObj], optional): Styles to apply to subtitle.
 
         Raises:
             ChartError: If error occurs
@@ -592,16 +616,13 @@ class Chart2:
             the font returned by :py:meth:`.Info.get_font_general_name`
 
         Hint:
-            The returned Title object can be passed to :py:meth:`~.Chart2.set_x_title_font` to
-            change default font.
+            Styles that can be supplied are found in :py:mod:`ooodev.format.chart.direct.title`.
         """
         try:
             diagram = chart_doc.getFirstDiagram()
             titled = mLo.Lo.qi(XTitled, diagram, True)
-            title = cls.create_title(subtitle)
+            title = cls._create_title(subtitle, 12, styles)
             titled.setTitleObject(title)
-            fname = mInfo.Info.get_font_general_name()
-            cls.set_x_title_font(title, fname, 12)
             return title
         except mEx.ChartError:
             raise
@@ -1384,13 +1405,13 @@ class Chart2:
     # region Styles
 
     @staticmethod
-    def style_background(chart_doc: XChartDocument, *styles: StyleObj) -> None:
+    def style_background(chart_doc: XChartDocument, styles: Iterable[StyleObj]) -> None:
         """
         Styles background of chart
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            styles: Expandable list of styles to apply to chart background
+            styles (Iterable[StyleObj]): One or more styles to apply chart background.
 
         Returns:
             None:
@@ -1402,13 +1423,13 @@ class Chart2:
             style.apply(bg_ps)
 
     @staticmethod
-    def style_wall(chart_doc: XChartDocument, *styles: StyleObj) -> None:
+    def style_wall(chart_doc: XChartDocument, styles: Iterable[StyleObj]) -> None:
         """
         Styles Wall of chart
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            styles: Expandable list of styles to apply to chart background
+            styles (Iterable[StyleObj]): One or more styles to apply chart wall.
 
         Returns:
             None:
@@ -1420,7 +1441,7 @@ class Chart2:
             style.apply(wall)
 
     @staticmethod
-    def style_data_point(chart_doc: XChartDocument, series_idx: int, idx: int, *styles: StyleObj) -> None:
+    def style_data_point(chart_doc: XChartDocument, series_idx: int, idx: int, styles: Iterable[StyleObj]) -> None:
         """
         Styles a data point of chart
 
@@ -1429,7 +1450,7 @@ class Chart2:
             series_idx (int): Series Index.
             idx (int): Index to extract from the datapoints data.
                 If ``idx=-1`` then the last data point is styled.
-            styles: Expandable list of styles to apply to chart background
+            styles (Iterable[StyleObj]): One or more styles to apply chart data point.
 
         Returns:
             None:
@@ -1441,6 +1462,69 @@ class Chart2:
 
         for style in styles:
             style.apply(pp)
+
+    @classmethod
+    def style_title(cls, chart_doc: XChartDocument, styles: Iterable[StyleObj]) -> None:
+        """
+        Styles title of chart.
+
+        Args:
+            chart_doc (XChartDocument): Chart Document.
+            styles (Iterable[StyleObj]): One or more styles to apply chart title.
+
+        Returns:
+            None:
+
+        Hint:
+            Styles that can be supplied are found in :py:mod:`ooodev.format.chart.direct.title`.
+
+        .. versionadded:: 0.9.4
+        """
+        xtitle = cls.get_title(chart_doc=chart_doc)
+        applied_styles = 0
+        if styles:
+            for style in styles:
+                if style.support_service("com.sun.star.chart2.Title"):
+                    style.apply(xtitle)
+                    applied_styles += 1
+            if len(styles) == applied_styles:
+                return
+            fo_strs = xtitle.getText()
+            if fo_strs:
+                fo_first = fo_strs[0]
+                for style in styles:
+                    if not style.support_service("com.sun.star.chart2.Title"):
+                        style.apply(fo_first)
+
+    @classmethod
+    def style_subtitle(cls, chart_doc: XChartDocument, styles: Iterable[StyleObj]) -> None:
+        """
+        Styles subtitle of chart.
+
+        Args:
+            chart_doc (XChartDocument): Chart Document.
+            styles (Iterable[StyleObj]): One or more styles to apply chart subtitle.
+
+        Returns:
+            None:
+
+        .. versionadded:: 0.9.4
+        """
+        xtitle = cls.get_subtitle(chart_doc=chart_doc)
+        applied_styles = 0
+        if styles:
+            for style in styles:
+                if style.support_service("com.sun.star.chart2.Title"):
+                    style.apply(xtitle)
+                    applied_styles += 1
+            if len(styles) == applied_styles:
+                return
+            fo_strs = xtitle.getText()
+            if fo_strs:
+                fo_first = fo_strs[0]
+                for style in styles:
+                    if not style.support_service("com.sun.star.chart2.Title"):
+                        style.apply(fo_first)
 
     # endregion Styles
 
