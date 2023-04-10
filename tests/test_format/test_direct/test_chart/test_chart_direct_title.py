@@ -32,6 +32,13 @@ from ooodev.format.chart.direct.title.area import (
 )
 from ooodev.format.chart.direct.title.font import Font as TitleFont
 from ooodev.format.chart.direct.title.borders import LineProperties as TitleBorderLineProperties, BorderLineKind
+from ooodev.format.chart.direct import LineProperties as ChartLineProperties
+from ooodev.format.chart.direct import Color as ChartColor
+from ooodev.format.chart.direct import Gradient as ChartGradient
+from ooodev.format.chart.direct import Hatch as ChartHatch
+from ooodev.format.chart.direct import Img as ChartImg
+from ooodev.format.chart.direct import Pattern as ChartPattern
+
 from ooodev.utils.color import CommonColor, StandardColor
 from ooodev.utils.info import Info
 from ooodev.format.chart.direct.title.alignment import Orientation as TitleOrientation
@@ -64,9 +71,19 @@ def test_calc_set_styles_title(loader, copy_fix_calc) -> None:
         chart_doc = Chart2.insert_chart(
             cells_range=rng_data.get_cell_range_address(), diagram_name=ChartTypes.Column.DEFAULT
         )
+        x_axis_title_font = TitleFont(b=True, size=12, color=CommonColor.DARK_ORANGE)
         Chart2.set_title(chart_doc=chart_doc, title=Calc.get_string(sheet=sheet, cell_name="A1"))
-        Chart2.set_x_axis_title(chart_doc=chart_doc, title=Calc.get_string(sheet=sheet, cell_name="A2"))
-        Chart2.set_y_axis_title(chart_doc=chart_doc, title=Calc.get_string(sheet=sheet, cell_name="B2"))
+        Chart2.set_x_axis_title(
+            chart_doc=chart_doc, title=Calc.get_string(sheet=sheet, cell_name="A2"), styles=[x_axis_title_font]
+        )
+        y_axix_title_font = TitleFont(color=StandardColor.RED_DARK4)
+        y_axis_title_orient = TitleOrientation(vertical=True)
+        y_axis_title_border = TitleBorderLineProperties(color=StandardColor.RED_DARK4)
+        Chart2.set_y_axis_title(
+            chart_doc=chart_doc,
+            title=Calc.get_string(sheet=sheet, cell_name="B2"),
+            styles=[y_axix_title_font, y_axis_title_orient, y_axis_title_border],
+        )
 
         title_area_bg_color = ChartTitleBgColor(CommonColor.LIGHT_YELLOW)
         title_font = TitleFont(b=True, size=14, color=CommonColor.DARK_GREEN)
@@ -203,6 +220,70 @@ def test_calc_set_styles_subtitle(loader, copy_fix_calc) -> None:
         subtitle = cast("Title", Chart2.get_subtitle(chart_doc=chart_doc))
         assert subtitle.FillBitmapName == str(PresetPatternKind.DIAGONAL_BRICK)
         assert subtitle.LineStyle is None
+
+        Lo.delay(delay)
+    finally:
+        Lo.close_doc(doc)
+
+
+def test_calc_set_styles_chart(loader, copy_fix_calc) -> None:
+    if Info.version_info < (7, 5):
+        pytest.skip("Not supported in this version, Requires LibreOffice 7.5 or higher.")
+
+    delay = 0  # 0 if Lo.bridge_connector.headless else 5_000
+    from ooodev.office.calc import Calc
+
+    fix_path = cast(Path, copy_fix_calc("chartsData.ods"))
+
+    doc = Calc.open_doc(fix_path)
+    try:
+        sheet = Calc.get_sheet(doc)
+        if not Lo.bridge_connector.headless:
+            GUI.set_visible()
+            Lo.delay(500)
+            Calc.zoom(doc, GUI.ZoomEnum.ZOOM_100_PERCENT)
+
+        rng_data = Calc.get_range_obj("A2:B8")
+        chart_doc = Chart2.insert_chart(
+            cells_range=rng_data.get_cell_range_address(), diagram_name=ChartTypes.Column.DEFAULT
+        )
+        Chart2.set_title(chart_doc=chart_doc, title=Calc.get_string(sheet=sheet, cell_name="A1"))
+
+        Chart2.set_subtitle(chart_doc=chart_doc, subtitle="Sales by month")
+
+        Chart2.set_x_axis_title(chart_doc=chart_doc, title=Calc.get_string(sheet=sheet, cell_name="A2"))
+        Chart2.set_y_axis_title(chart_doc=chart_doc, title=Calc.get_string(sheet=sheet, cell_name="B2"))
+        Chart2.set_background_colors(
+            chart_doc=chart_doc, bg_color=StandardColor.BLUE_LIGHT1, wall_color=StandardColor.BLUE_LIGHT2
+        )
+
+        Calc.goto_cell(cell_name="A1", doc=doc)
+
+        chart_color = ChartColor(color=StandardColor.GREEN_LIGHT2)
+        chart_bdr_line = ChartLineProperties(color=StandardColor.GREEN_DARK3, width=0.7)
+        Chart2.style_background(chart_doc=chart_doc, styles=[chart_color, chart_bdr_line])
+
+        bg_ps = chart_doc.getPageBackground()
+        assert bg_ps.FillColor == StandardColor.GREEN_LIGHT2
+
+        chart_grad = ChartGradient.from_preset(chart_doc, PresetGradientKind.NEON_LIGHT)
+        Chart2.style_background(chart_doc=chart_doc, styles=[chart_grad])
+        bg_ps = chart_doc.getPageBackground()
+        assert bg_ps.FillGradientName == PresetGradientKind.NEON_LIGHT.value
+
+        chart_hatch = ChartHatch.from_preset(chart_doc, PresetHatchKind.GREEN_30_DEGREES)
+        Chart2.style_background(chart_doc=chart_doc, styles=[chart_hatch])
+        bg_ps = chart_doc.getPageBackground()
+        assert bg_ps.FillHatchName == chart_hatch.prop_hatch_name
+
+        chart_img = ChartImg.from_preset(chart_doc, PresetImageKind.ICE_LIGHT)
+        Chart2.style_background(chart_doc=chart_doc, styles=[chart_img])
+        bg_ps = chart_doc.getPageBackground()
+        assert bg_ps.FillBitmapName == str(PresetImageKind.ICE_LIGHT)
+
+        chart_pattern = ChartPattern.from_preset(chart_doc, PresetPatternKind.HORIZONTAL_BRICK)
+        Chart2.style_background(chart_doc=chart_doc, styles=[chart_pattern])
+        bg_ps = chart_doc.getPageBackground()
 
         Lo.delay(delay)
     finally:

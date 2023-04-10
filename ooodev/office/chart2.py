@@ -621,7 +621,7 @@ class Chart2:
         try:
             diagram = chart_doc.getFirstDiagram()
             titled = mLo.Lo.qi(XTitled, diagram, True)
-            title = cls._create_title(subtitle, 12, styles)
+            title = cls._create_title(title=subtitle, font_size=12, styles=styles)
             titled.setTitleObject(title)
             return title
         except mEx.ChartError:
@@ -757,7 +757,9 @@ class Chart2:
         return cls.get_axis(chart_doc=chart_doc, axis_val=AxisKind.Y, idx=1)
 
     @classmethod
-    def set_axis_title(cls, chart_doc: XChartDocument, title: str, axis_val: AxisKind, idx: int) -> XTitle:
+    def set_axis_title(
+        cls, chart_doc: XChartDocument, title: str, axis_val: AxisKind, idx: int, styles: Iterable[StyleObj] = None
+    ) -> XTitle:
         """
         Sets axis title.
 
@@ -766,6 +768,7 @@ class Chart2:
             title (str): Title text.
             axis_val (AxisKind): Axis kind.
             idx (int): Index
+            styles (Iterable[StyleObj], optional): Styles to apply to title.
 
         Raises:
             ChartError: If error occurs.
@@ -787,7 +790,7 @@ class Chart2:
         try:
             axis = cls.get_axis(chart_doc=chart_doc, axis_val=axis_val, idx=idx)
             titled_axis = mLo.Lo.qi(XTitled, axis, True)
-            xtitle = cls.create_title(title)
+            xtitle = cls._create_title(title=title, font_size=12, styles=styles)
             titled_axis.setTitleObject(xtitle)
             fname = mInfo.Info.get_font_general_name()
             cls.set_x_title_font(xtitle, fname, 12)
@@ -798,13 +801,14 @@ class Chart2:
             raise mEx.ChartError(f'Error setting axis tile: "{title}" for chart') from e
 
     @classmethod
-    def set_x_axis_title(cls, chart_doc: XChartDocument, title: str) -> XTitle:
+    def set_x_axis_title(cls, chart_doc: XChartDocument, title: str, styles: Iterable[StyleObj] = None) -> XTitle:
         """
         Sets X axis Title
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            title (str): Title Text
+            title (str): Title Text.
+            styles (Iterable[StyleObj], optional): Styles to apply to title.
 
         Returns:
             XTitle: Title object
@@ -812,16 +816,17 @@ class Chart2:
         See Also:
             :py:meth:`~.Chart2.set_axis_title`
         """
-        return cls.set_axis_title(chart_doc=chart_doc, title=title, axis_val=AxisKind.X, idx=0)
+        return cls.set_axis_title(chart_doc=chart_doc, title=title, axis_val=AxisKind.X, idx=0, styles=styles)
 
     @classmethod
-    def set_y_axis_title(cls, chart_doc: XChartDocument, title: str) -> XTitle:
+    def set_y_axis_title(cls, chart_doc: XChartDocument, title: str, styles: Iterable[StyleObj] = None) -> XTitle:
         """
         Sets Y axis Title
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            title (str): Title Text
+            title (str): Title Text.
+            styles (Iterable[StyleObj], optional): Styles to apply to title.
 
         Returns:
             XTitle: Title object
@@ -829,16 +834,17 @@ class Chart2:
         See Also:
             :py:meth:`~.Chart2.set_axis_title`
         """
-        return cls.set_axis_title(chart_doc=chart_doc, title=title, axis_val=AxisKind.Y, idx=0)
+        return cls.set_axis_title(chart_doc=chart_doc, title=title, axis_val=AxisKind.Y, idx=0, styles=styles)
 
     @classmethod
-    def set_x_axis2_title(cls, chart_doc: XChartDocument, title: str) -> XTitle:
+    def set_x_axis2_title(cls, chart_doc: XChartDocument, title: str, styles: Iterable[StyleObj] = None) -> XTitle:
         """
         Sets X axis2 Title
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            title (str): Title Text
+            title (str): Title Text.
+            styles (Iterable[StyleObj], optional): Styles to apply to title.
 
         Returns:
             XTitle: Title object
@@ -846,16 +852,17 @@ class Chart2:
         See Also:
             :py:meth:`~.Chart2.set_axis_title`
         """
-        return cls.set_axis_title(chart_doc=chart_doc, title=title, axis_val=AxisKind.X, idx=1)
+        return cls.set_axis_title(chart_doc=chart_doc, title=title, axis_val=AxisKind.X, idx=1, styles=styles)
 
     @classmethod
-    def set_y_axis2_title(cls, chart_doc: XChartDocument, title: str) -> XTitle:
+    def set_y_axis2_title(cls, chart_doc: XChartDocument, title: str, styles: Iterable[StyleObj] = None) -> XTitle:
         """
         Sets Y axis2 Title
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            title (str): Title Text
+            title (str): Title Text.
+            styles (Iterable[StyleObj], optional): Styles to apply to title.
 
         Returns:
             XTitle: Title object
@@ -863,7 +870,7 @@ class Chart2:
         See Also:
             :py:meth:`~.Chart2.set_axis_title`
         """
-        return cls.set_axis_title(chart_doc=chart_doc, title=title, axis_val=AxisKind.Y, idx=1)
+        return cls.set_axis_title(chart_doc=chart_doc, title=title, axis_val=AxisKind.Y, idx=1, styles=styles)
 
     @classmethod
     def get_axis_title(cls, chart_doc: XChartDocument, axis_val: AxisKind, idx: int) -> XTitle:
@@ -1464,6 +1471,23 @@ class Chart2:
             style.apply(pp)
 
     @classmethod
+    def _style_title(cls, chart_doc: XChartDocument, xtitle: XTitle, styles: Iterable[StyleObj]) -> None:
+        applied_styles = 0
+        if styles:
+            for style in styles:
+                if style.support_service("com.sun.star.chart2.Title"):
+                    style.apply(xtitle)
+                    applied_styles += 1
+            if len(styles) == applied_styles:
+                return
+            fo_strs = xtitle.getText()
+            if fo_strs:
+                fo_first = fo_strs[0]
+                for style in styles:
+                    if not style.support_service("com.sun.star.chart2.Title"):
+                        style.apply(fo_first)
+
+    @classmethod
     def style_title(cls, chart_doc: XChartDocument, styles: Iterable[StyleObj]) -> None:
         """
         Styles title of chart.
@@ -1481,20 +1505,9 @@ class Chart2:
         .. versionadded:: 0.9.4
         """
         xtitle = cls.get_title(chart_doc=chart_doc)
-        applied_styles = 0
-        if styles:
-            for style in styles:
-                if style.support_service("com.sun.star.chart2.Title"):
-                    style.apply(xtitle)
-                    applied_styles += 1
-            if len(styles) == applied_styles:
-                return
-            fo_strs = xtitle.getText()
-            if fo_strs:
-                fo_first = fo_strs[0]
-                for style in styles:
-                    if not style.support_service("com.sun.star.chart2.Title"):
-                        style.apply(fo_first)
+        if xtitle is None:
+            return
+        cls._style_title(chart_doc=chart_doc, xtitle=xtitle, styles=styles)
 
     @classmethod
     def style_subtitle(cls, chart_doc: XChartDocument, styles: Iterable[StyleObj]) -> None:
@@ -1508,23 +1521,103 @@ class Chart2:
         Returns:
             None:
 
+        Hint:
+            Styles that can be supplied are found in :py:mod:`ooodev.format.chart.direct.title`.
+
         .. versionadded:: 0.9.4
         """
         xtitle = cls.get_subtitle(chart_doc=chart_doc)
-        applied_styles = 0
-        if styles:
-            for style in styles:
-                if style.support_service("com.sun.star.chart2.Title"):
-                    style.apply(xtitle)
-                    applied_styles += 1
-            if len(styles) == applied_styles:
-                return
-            fo_strs = xtitle.getText()
-            if fo_strs:
-                fo_first = fo_strs[0]
-                for style in styles:
-                    if not style.support_service("com.sun.star.chart2.Title"):
-                        style.apply(fo_first)
+        if xtitle is None:
+            return
+        cls._style_title(chart_doc=chart_doc, xtitle=xtitle, styles=styles)
+
+    @classmethod
+    def style_x_axis_title(cls, chart_doc: XChartDocument, styles: Iterable[StyleObj]) -> None:
+        """
+        Styles X axis title of chart.
+
+        Args:
+            chart_doc (XChartDocument): Chart Document.
+            styles (Iterable[StyleObj]): One or more styles to apply chart X axis title.
+
+        Returns:
+            None:
+
+        Hint:
+            Styles that can be supplied are found in :py:mod:`ooodev.format.chart.direct.title`.
+
+        .. versionadded:: 0.9.4
+        """
+        xtitle = cls.get_x_axis_title(chart_doc=chart_doc)
+        if xtitle is None:
+            return
+        cls._style_title(chart_doc=chart_doc, xtitle=xtitle, styles=styles)
+
+    @classmethod
+    def style_y_axis_title(cls, chart_doc: XChartDocument, styles: Iterable[StyleObj]) -> None:
+        """
+        Styles X axis title of chart.
+
+        Args:
+            chart_doc (XChartDocument): Chart Document.
+            styles (Iterable[StyleObj]): One or more styles to apply chart Y axis title.
+
+        Returns:
+            None:
+
+        Hint:
+            Styles that can be supplied are found in :py:mod:`ooodev.format.chart.direct.title`.
+
+        .. versionadded:: 0.9.4
+        """
+        xtitle = cls.get_y_axis_title(chart_doc=chart_doc)
+        if xtitle is None:
+            return
+        cls._style_title(chart_doc=chart_doc, xtitle=xtitle, styles=styles)
+
+    @classmethod
+    def style_x_axis2_title(cls, chart_doc: XChartDocument, styles: Iterable[StyleObj]) -> None:
+        """
+        Styles X axis2 title of chart.
+
+        Args:
+            chart_doc (XChartDocument): Chart Document.
+            styles (Iterable[StyleObj]): One or more styles to apply chart X axis2 title.
+
+        Returns:
+            None:
+
+        Hint:
+            Styles that can be supplied are found in :py:mod:`ooodev.format.chart.direct.title`.
+
+        .. versionadded:: 0.9.4
+        """
+        xtitle = cls.get_x_axis2_title(chart_doc=chart_doc)
+        if xtitle is None:
+            return
+        cls._style_title(chart_doc=chart_doc, xtitle=xtitle, styles=styles)
+
+    @classmethod
+    def style_y_axis2_title(cls, chart_doc: XChartDocument, styles: Iterable[StyleObj]) -> None:
+        """
+        Styles X axis2 title of chart.
+
+        Args:
+            chart_doc (XChartDocument): Chart Document.
+            styles (Iterable[StyleObj]): One or more styles to apply chart Y axis2 title.
+
+        Returns:
+            None:
+
+        Hint:
+            Styles that can be supplied are found in :py:mod:`ooodev.format.chart.direct.title`.
+
+        .. versionadded:: 0.9.4
+        """
+        xtitle = cls.get_y_axis2_title(chart_doc=chart_doc)
+        if xtitle is None:
+            return
+        cls._style_title(chart_doc=chart_doc, xtitle=xtitle, styles=styles)
 
     # endregion Styles
 
