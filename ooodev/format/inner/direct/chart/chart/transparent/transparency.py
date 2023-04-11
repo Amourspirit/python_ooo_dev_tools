@@ -16,7 +16,10 @@ class Transparency(WriteTransparency):
         try:
             return self._supported_services_values
         except AttributeError:
-            self._supported_services_values = ("com.sun.star.chart2.PageBackground",)
+            self._supported_services_values = (
+                "com.sun.star.chart2.PageBackground",
+                "com.sun.star.chart2.DataSeries",
+            )
         return self._supported_services_values
 
     def _is_valid_obj(self, obj: object) -> bool:

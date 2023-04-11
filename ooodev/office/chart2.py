@@ -5,7 +5,7 @@ from typing import Iterable, List, Tuple, cast, overload, TYPE_CHECKING
 
 import uno
 
-# XChartTypeTemplate import error in LO 7.4.0 to 7.4.3
+# XChartTypeTemplate import error in LO 7.4.0 to 7.4.3, Corrected in Lo 7.5
 from com.sun.star.beans import XPropertySet
 from com.sun.star.chart2 import XAxis
 from com.sun.star.chart2 import XChartDocument
@@ -1457,8 +1457,10 @@ class Chart2:
         for style in styles:
             style.apply(wall)
 
-    @staticmethod
-    def style_data_point(chart_doc: XChartDocument, series_idx: int, idx: int, styles: Iterable[StyleObj]) -> None:
+    @classmethod
+    def style_data_point(
+        cls, chart_doc: XChartDocument, series_idx: int, idx: int, styles: Iterable[StyleObj]
+    ) -> None:
         """
         Styles a data point of chart
 
@@ -1475,13 +1477,44 @@ class Chart2:
         .. versionadded:: 0.9.0
         """
 
-        pp = Chart2.get_data_point_props(chart_doc=chart_doc, series_idx=series_idx, idx=idx)
+        pp = cls.get_data_point_props(chart_doc=chart_doc, series_idx=series_idx, idx=idx)
 
         for style in styles:
             style.apply(pp)
 
     @classmethod
-    def _style_title(cls, chart_doc: XChartDocument, xtitle: XTitle, styles: Iterable[StyleObj]) -> None:
+    def style_data_series(cls, chart_doc: XChartDocument, styles: Iterable[StyleObj], idx: int = -1) -> None:
+        """
+        Styles one or more data series of chart.
+
+        Args:
+            chart_doc (XChartDocument): Chart Document.
+            styles (Iterable[StyleObj]): One or more styles to apply chart data series.
+            idx (int, optional): Zero based series index. If value is ``-1`` then styles all data series are styled,
+                Otherwise only data series specified by index is styled. Defaults to ``-1``.
+
+        Returns:
+            None:
+
+        .. versionadded:: 0.9.4
+        """
+        if idx < 0:
+            idx = -1
+
+        series = cls.get_data_series(chart_doc=chart_doc)
+        if idx == -1:
+            for itm in series:
+                for style in styles:
+                    style.apply(itm)
+        else:
+            if idx < 0 or idx >= len(series):
+                raise IndexError(f"Index value of {idx} is out of of range")
+            itm = series[idx]
+            for style in styles:
+                style.apply(itm)
+
+    @classmethod
+    def _style_title(cls, xtitle: XTitle, styles: Iterable[StyleObj]) -> None:
         applied_styles = 0
         if styles:
             for style in styles:
@@ -1517,7 +1550,7 @@ class Chart2:
         xtitle = cls.get_title(chart_doc=chart_doc)
         if xtitle is None:
             return
-        cls._style_title(chart_doc=chart_doc, xtitle=xtitle, styles=styles)
+        cls._style_title(xtitle=xtitle, styles=styles)
 
     @classmethod
     def style_subtitle(cls, chart_doc: XChartDocument, styles: Iterable[StyleObj]) -> None:
@@ -1539,7 +1572,7 @@ class Chart2:
         xtitle = cls.get_subtitle(chart_doc=chart_doc)
         if xtitle is None:
             return
-        cls._style_title(chart_doc=chart_doc, xtitle=xtitle, styles=styles)
+        cls._style_title(xtitle=xtitle, styles=styles)
 
     @classmethod
     def style_x_axis_title(cls, chart_doc: XChartDocument, styles: Iterable[StyleObj]) -> None:
@@ -1561,7 +1594,7 @@ class Chart2:
         xtitle = cls.get_x_axis_title(chart_doc=chart_doc)
         if xtitle is None:
             return
-        cls._style_title(chart_doc=chart_doc, xtitle=xtitle, styles=styles)
+        cls._style_title(xtitle=xtitle, styles=styles)
 
     @classmethod
     def style_y_axis_title(cls, chart_doc: XChartDocument, styles: Iterable[StyleObj]) -> None:
@@ -1583,7 +1616,7 @@ class Chart2:
         xtitle = cls.get_y_axis_title(chart_doc=chart_doc)
         if xtitle is None:
             return
-        cls._style_title(chart_doc=chart_doc, xtitle=xtitle, styles=styles)
+        cls._style_title(xtitle=xtitle, styles=styles)
 
     @classmethod
     def style_x_axis2_title(cls, chart_doc: XChartDocument, styles: Iterable[StyleObj]) -> None:
@@ -1605,7 +1638,7 @@ class Chart2:
         xtitle = cls.get_x_axis2_title(chart_doc=chart_doc)
         if xtitle is None:
             return
-        cls._style_title(chart_doc=chart_doc, xtitle=xtitle, styles=styles)
+        cls._style_title(xtitle=xtitle, styles=styles)
 
     @classmethod
     def style_y_axis2_title(cls, chart_doc: XChartDocument, styles: Iterable[StyleObj]) -> None:
@@ -1627,7 +1660,7 @@ class Chart2:
         xtitle = cls.get_y_axis2_title(chart_doc=chart_doc)
         if xtitle is None:
             return
-        cls._style_title(chart_doc=chart_doc, xtitle=xtitle, styles=styles)
+        cls._style_title(xtitle=xtitle, styles=styles)
 
     # endregion Styles
 

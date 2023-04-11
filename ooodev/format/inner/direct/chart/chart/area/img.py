@@ -89,6 +89,7 @@ class Img(FillImg):
             self._supported_services_values = (
                 "com.sun.star.chart2.PageBackground",
                 "com.sun.star.chart2.Title",
+                "com.sun.star.chart2.DataSeries",
             )
         return self._supported_services_values
 

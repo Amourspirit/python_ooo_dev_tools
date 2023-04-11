@@ -3,7 +3,7 @@ import uno
 from typing import Any, Tuple, cast, overload
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.format.inner.preset.preset_border_line import BorderLineKind, get_preset_border_line_props
+from ooodev.format.inner.preset.preset_border_line import BorderLineKind, get_preset_series_border_line_props
 from ooodev.format.inner.style_base import StyleBase
 from ooodev.units import UnitConvert, UnitMM
 from ooodev.units import UnitObj
@@ -13,7 +13,7 @@ from ooodev.utils.data_type.intensity import Intensity
 
 
 class LineProperties(StyleBase):
-    """This class represents the line properties of a chart borders line properties."""
+    """This class represents the line properties of a chart data series borders line properties."""
 
     def __init__(
         self,
@@ -44,11 +44,12 @@ class LineProperties(StyleBase):
     # region Private Methods
 
     def _set_line_style(self, style: BorderLineKind):
-        props = get_preset_border_line_props(kind=style)
+        props = get_preset_series_border_line_props(kind=style)
+        self._set("BorderDashName", props.border_name)
+        self._set("BorderStyle", props.border_style)
         self._set("LineCap", props.line_cap)
         self._set("LineDash", props.line_dash)
         self._set("LineDashName", props.line_dash_name)
-        self._set("LineJoint", props.line_joint)
         self._set("LineStyle", props.line_style)
 
     # endregion Private Methods
@@ -58,10 +59,7 @@ class LineProperties(StyleBase):
         try:
             return self._supported_services_values
         except AttributeError:
-            self._supported_services_values = (
-                "com.sun.star.chart2.PageBackground",
-                "com.sun.star.chart2.Title",
-            )
+            self._supported_services_values = ("com.sun.star.chart2.DataSeries",)
         return self._supported_services_values
 
     def _props_set(self, obj: object, **kwargs: Any) -> None:
@@ -116,10 +114,11 @@ class LineProperties(StyleBase):
         if value < 0:
             value = 0
         self._set("LineColor", value)
+        self._set("BorderColor", value)
 
     @property
     def prop_width(self) -> UnitMM:
-        pv = cast(int, self._get("LineWidth"))
+        pv = cast(int, self._get("BorderWidth"))
         return UnitMM.from_mm100(pv)
 
     @prop_width.setter
@@ -131,7 +130,7 @@ class LineProperties(StyleBase):
             val = UnitConvert.convert_mm_mm100(value)
         if val < 0:
             val = 0
-        self._set("LineWidth", val)
+        self._set("BorderWidth", val)
 
     @property
     def prop_style(self) -> BorderLineKind:
@@ -154,5 +153,6 @@ class LineProperties(StyleBase):
     def prop_transparency(self, value: int | Intensity) -> None:
         val = Intensity(int(value))
         self._set("LineTransparence", val.value)
+        self._set("BorderTransparency", val.value)
 
     # endregion Properties

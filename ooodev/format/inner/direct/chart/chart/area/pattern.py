@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Tuple, overload, Type, TypeVar
+from typing import Tuple, overload
 import uno
 from com.sun.star.awt import XBitmap
 from com.sun.star.chart2 import XChartDocument
@@ -58,6 +58,7 @@ class Pattern(FillPattern):
             self._supported_services_values = (
                 "com.sun.star.chart2.PageBackground",
                 "com.sun.star.chart2.Title",
+                "com.sun.star.chart2.DataSeries",
             )
         return self._supported_services_values
 

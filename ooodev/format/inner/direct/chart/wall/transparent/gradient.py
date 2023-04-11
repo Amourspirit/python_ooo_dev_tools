@@ -1,8 +1,3 @@
-"""
-Module for Fill Gradient Color.
-
-.. versionadded:: 0.9.0
-"""
 # region Import
 from __future__ import annotations
 import uno
